@@ -41,7 +41,7 @@ export default async ({ args, info }: CommandContext) => {
   let instance = await getSelectedInstance(instanceFlag);
 
   if (accessTokenNeedsRefresh(instance)) {
-    process.stderr.write('Refreshing access token...\n');
+    process.stdout.write('Refreshing access token...\n');
     instance = await refreshAccessToken(instance.name);
   }
   const authBase = new URL('/api/auth', instance.baseUrl)

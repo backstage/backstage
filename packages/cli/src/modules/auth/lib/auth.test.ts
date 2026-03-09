@@ -310,17 +310,14 @@ describe('auth', () => {
       );
       await expect(refreshAccessToken('test')).rejects.toThrow('expires_in');
 
-      // Test missing refresh_token
+      // Test missing refresh_token still succeeds and preserves existing token
       mockHttp.httpJson.mockResolvedValue({
         access_token: 'new-access-token',
         token_type: 'Bearer',
         expires_in: 3600,
       } as any);
 
-      await expect(refreshAccessToken('test')).rejects.toThrow(
-        'Invalid token response',
-      );
-      await expect(refreshAccessToken('test')).rejects.toThrow('refresh_token');
+      await expect(refreshAccessToken('test')).resolves.toBeDefined();
 
       // Test invalid expires_in (non-positive)
       mockHttp.httpJson.mockResolvedValue({

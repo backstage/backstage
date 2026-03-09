@@ -239,7 +239,6 @@ describe('http', () => {
         signal: customController.signal,
       });
 
-      // The implementation creates its own signal for timeout, but should still accept custom signal
       expect(mockFetch).toHaveBeenCalledWith(
         'https://example.com/api',
         expect.objectContaining({

@@ -46,23 +46,17 @@ export default async ({ args, info }: CommandContext) => {
 
   await withMetadataLock(async () => {
     const instance = await getInstanceByName(instanceName);
-    const clientId = instance.clientId;
     const secretStore = await getSecretStore();
     const service = `backstage-cli:instance:${instanceName}`;
-    const clientSecret = (await secretStore.get(service, 'clientSecret')) ?? '';
     const refreshToken = (await secretStore.get(service, 'refreshToken')) ?? '';
 
-    if (clientId && clientSecret && refreshToken) {
-      const basic = Buffer.from(`${clientId}:${clientSecret}`).toString(
-        'base64',
-      );
+    if (refreshToken) {
       try {
         const authBaseUrl = new URL('/api/auth', instance.baseUrl)
           .toString()
           .replace(/\/$/, '');
         await httpJson(`${authBaseUrl}/v1/revoke`, {
           method: 'POST',
-          headers: { Authorization: `Basic ${basic}` },
           body: {
             token: refreshToken,
             token_type_hint: 'refresh_token',
@@ -75,10 +69,9 @@ export default async ({ args, info }: CommandContext) => {
     }
 
     await secretStore.delete(service, 'accessToken');
-    await secretStore.delete(service, 'clientSecret');
     await secretStore.delete(service, 'refreshToken');
     await removeInstance(instance.name);
   });
 
-  process.stderr.write('Logged out\n');
+  process.stdout.write('Logged out\n');
 };

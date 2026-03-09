@@ -96,17 +96,19 @@ export default async ({ args, info }: CommandContext) => {
   const authBaseUrl = `${backendBaseUrl}/api/auth`;
   const clientId = `${authBaseUrl}/.well-known/oauth-client/cli.json`;
 
-  const metadataResponse = await fetch(clientId);
+  const metadataResponse = await fetch(clientId, {
+    signal: AbortSignal.timeout(30_000),
+  });
   if (!metadataResponse.ok) {
     throw new Error(
       `Server does not support CLI authentication. Ensure CIMD is enabled on the backend.`,
     );
   }
 
-  const callback = await startCallbackServer({ state: cryptoRandom() });
+  const { verifier, challenge, state } = createPkceState();
+  const callback = await startCallbackServer({ state });
 
   try {
-    const { verifier, challenge, state } = createPkceState();
     const authorizeUrl = buildAuthorizeUrl({
       authBaseUrl,
       clientId,
@@ -133,7 +135,7 @@ export default async ({ args, info }: CommandContext) => {
       token,
     });
 
-    process.stderr.write('Login successful\n');
+    process.stdout.write('Login successful\n');
   } finally {
     await callback.close();
   }
@@ -267,9 +269,9 @@ function buildAuthorizeUrl(options: {
 
 async function openBrowserOrPrint(url: string, noBrowser?: boolean) {
   if (noBrowser) {
-    process.stderr.write(`Open this URL to continue: ${url}\n`);
+    process.stdout.write(`Open this URL to continue: ${url}\n`);
   } else {
-    process.stderr.write(`Opening the following URL: ${url}\n`);
+    process.stdout.write(`Opening the following URL: ${url}\n`);
     openInBrowser(url);
   }
 }

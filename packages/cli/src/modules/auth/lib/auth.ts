@@ -28,7 +28,7 @@ const TokenResponseSchema = z.object({
   access_token: z.string().min(1),
   token_type: z.string().min(1),
   expires_in: z.number().positive().finite(),
-  refresh_token: z.string().min(1),
+  refresh_token: z.string().min(1).optional(),
 });
 
 export function accessTokenNeedsRefresh(instance: StoredInstance): boolean {
@@ -70,7 +70,9 @@ export async function refreshAccessToken(
     const token = parsed.data;
 
     await secretStore.set(service, 'accessToken', token.access_token);
-    await secretStore.set(service, 'refreshToken', token.refresh_token);
+    if (token.refresh_token) {
+      await secretStore.set(service, 'refreshToken', token.refresh_token);
+    }
     const newInstance = {
       ...instance,
       issuedAt: Date.now(),
