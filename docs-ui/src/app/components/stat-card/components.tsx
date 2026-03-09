@@ -1,7 +1,6 @@
 'use client';
 
-import { StatCard } from '../../../../../packages/ui/src/components/StatCard/StatCard';
-import { Grid } from '../../../../../packages/ui/src/components/Grid/Grid';
+import { Grid, StatCard } from '@backstage/ui';
 
 export const Default = () => {
   return <StatCard label="Active Services" value={142} status="neutral" />;

@@ -46,43 +46,50 @@ export const StatCard = forwardRef<HTMLDivElement, StatCardProps>(
       href,
     } = ownProps;
 
-    const isInteractive = !!(onPress || href);
+    const hasHref = !!href;
+    const hasOnPress = !!onPress;
+
+    if (process.env.NODE_ENV !== 'production' && hasHref && hasOnPress) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        'StatCard: `href` and `onPress` are mutually exclusive. `href` will take precedence and `onPress` will be ignored.',
+      );
+    }
+
+    const isInteractive = hasHref || hasOnPress;
 
     const content = (
       <Box
-        as={isInteractive && !href ? 'button' : 'div'}
+        as={isInteractive && !hasHref ? 'button' : 'div'}
         bg="neutral"
         ref={ref}
         className={classes.root}
         data-interactive={isInteractive || undefined}
-        onClick={onPress}
+        onClick={hasHref ? undefined : onPress}
+        type={isInteractive && !hasHref ? 'button' : undefined}
         {...dataAttributes}
         {...restProps}
       >
         <Flex direction="column" gap="2">
           <Flex align="center" gap="2">
-            {icon && <Box className="bui-StatCard-icon">{icon}</Box>}
+            {icon && <Box className={classes.icon}>{icon}</Box>}
             <Text
               variant="body-small"
               color="secondary"
-              className="bui-StatCard-label"
+              className={classes.label}
             >
               {label}
             </Text>
           </Flex>
 
           <Flex align="baseline" gap="2">
-            <Text
-              variant="title-large"
-              weight="bold"
-              className="bui-StatCard-value"
-            >
+            <Text variant="title-large" weight="bold" className={classes.value}>
               {value}
             </Text>
             {trend && (
               <Text
                 variant="body-small"
-                className={`bui-StatCard-trend bui-StatCard-trend--${status}`}
+                className={`${classes.trend} bui-StatCard-trend--${status}`}
               >
                 {trend}
               </Text>
@@ -93,7 +100,7 @@ export const StatCard = forwardRef<HTMLDivElement, StatCardProps>(
             <Text
               variant="body-small"
               color="secondary"
-              className="bui-StatCard-description"
+              className={classes.description}
             >
               {description}
             </Text>
@@ -104,7 +111,7 @@ export const StatCard = forwardRef<HTMLDivElement, StatCardProps>(
 
     if (href) {
       return (
-        <Link href={href} className="bui-StatCard-link">
+        <Link href={href} className={classes.link}>
           {content}
         </Link>
       );
