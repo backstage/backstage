@@ -80,7 +80,7 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
   const scaffolderApi = useApi(scaffolderApiRef);
   const catalogApi = useApi(catalogApiRef);
   const [isCreating, setIsCreating] = useState(false);
-  const [description, setDescription] = useState('');
+  const [description, setDescription] = useState<string | undefined>(undefined);
   const [showDescription, setShowDescription] = useState(false);
   const navigate = useNavigate();
   const { templateName, namespace } = useRouteRefParams(
@@ -138,11 +138,12 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
   const onError = useCallback(() => <Navigate to={rootRef()} />, [rootRef]);
 
   useEffect(() => {
-    const desc = manifest?.description ?? '';
+    const desc = manifest?.description || undefined;
     setDescription(desc);
     setShowDescription(
-      manifest?.presentation?.showDescription ??
-        desc.length > DESCRIPTION_LENGTH_THRESHOLD,
+      !!desc &&
+        (manifest?.presentation?.showDescription ??
+          desc.length > DESCRIPTION_LENGTH_THRESHOLD),
     );
   }, [manifest?.description, manifest?.presentation?.showDescription]);
 
@@ -154,15 +155,16 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
           title={title}
           subtitle={
             !showDescription &&
+            description !== undefined &&
             description.length <= DESCRIPTION_LENGTH_THRESHOLD
               ? description
-              : ''
+              : undefined
           }
           {...props.headerOptions}
         >
           <TemplateWizardPageContextMenu
             editUrl={editUrl}
-            hasDescription={description.length > 0}
+            hasDescription={!!description}
             showDescription={showDescription}
             onShowDescription={() => setShowDescription(true)}
             onHideDescription={() => setShowDescription(false)}
