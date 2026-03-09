@@ -154,7 +154,7 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
           title={title}
           subtitle={
             !showDescription &&
-            description.length < DESCRIPTION_LENGTH_THRESHOLD
+            description.length <= DESCRIPTION_LENGTH_THRESHOLD
               ? description
               : ''
           }
