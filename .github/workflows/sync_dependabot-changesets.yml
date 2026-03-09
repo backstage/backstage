@@ -37,7 +37,7 @@ jobs:
           git config --global user.name 'Github changeset workflow'
       - name: Setup Node
         if: steps.verify.outputs.is_dependabot == 'true'
-        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
           node-version: 22.x
       - name: Dedupe lockfiles
