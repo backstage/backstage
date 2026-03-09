@@ -35,6 +35,7 @@ export interface LocationService {
     location: LocationInput,
     dryRun: boolean,
     options: {
+      onConflict?: 'refresh' | 'reject';
       credentials: BackstageCredentials;
     },
   ): Promise<{ location: Location; entities: Entity[]; exists?: boolean }>;
