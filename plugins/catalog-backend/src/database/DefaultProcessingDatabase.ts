@@ -330,6 +330,10 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
 
     // Keeps track of the entities that we end up inserting to update refresh_state_references afterwards
     const stateReferences = new Array<string>();
+    // Tracks entities that are transitioning from null to non-null location key.
+    // These are entities being "claimed" by a specific location for the first time,
+    // so we need to remove any existing weak (null-key) references from other parents.
+    const stealableReferences = new Array<string>();
 
     // Upsert all of the unprocessed entities into the refresh_state table, by
     // their entity ref.
@@ -337,14 +341,18 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       const entityRef = stringifyEntityRef(entity);
       const hash = generateStableHash(entity);
 
-      const updated = await updateUnprocessedEntity({
-        tx,
-        entity,
-        hash,
-        locationKey,
-      });
+      const { updated, claimedFromNullLocationKey } =
+        await updateUnprocessedEntity({
+          tx,
+          entity,
+          hash,
+          locationKey,
+        });
       if (updated) {
         stateReferences.push(entityRef);
+        if (claimedFromNullLocationKey) {
+          stealableReferences.push(entityRef);
+        }
         continue;
       }
 
@@ -388,13 +396,21 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       }
     }
 
-    // Lastly, replace refresh state references for the originating entity and any successfully added entities
-    await tx<DbRefreshStateReferencesRow>('refresh_state_references')
+    // Replace refresh state references for the originating entity and any
+    // successfully added entities that are transitioning ownership.
+    const deletionQuery = tx<DbRefreshStateReferencesRow>(
+      'refresh_state_references',
+    )
       // Remove all existing references from the originating entity
-      .where({ source_entity_ref: options.sourceEntityRef })
-      // And remove any existing references to entities that we're inserting new references for
-      .orWhereIn('target_entity_ref', stateReferences)
-      .delete();
+      .where({ source_entity_ref: options.sourceEntityRef });
+    if (stealableReferences.length > 0) {
+      // Also remove references to entities that are being claimed from null
+      // location key (weak ownership) by a specific location key (strong
+      // ownership). This ensures that previously weak references from other
+      // parents are replaced when a location takes ownership of an entity.
+      deletionQuery.orWhereIn('target_entity_ref', stealableReferences);
+    }
+    await deletionQuery.delete();
     await tx.batchInsert(
       'refresh_state_references',
       stateReferences.map(entityRef => ({

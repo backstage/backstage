@@ -19,8 +19,12 @@ import { Knex } from 'knex';
 import { DbRefreshStateRow } from '../../tables';
 
 /**
- * Attempts to update an existing refresh state row, returning true if it was
- * updated and false if there was no entity with a matching ref and location key.
+ * Attempts to update an existing refresh state row, returning an object with:
+ * - `updated`: true if the row was updated, false if there was no entity with
+ *   a matching ref and location key.
+ * - `claimedFromNullLocationKey`: true if the update transitioned the entity's location_key
+ *   from null to a non-null value (i.e., the entity was claimed by a specific
+ *   location for the first time).
  *
  * Updating the entity will also cause it to be scheduled for immediate processing.
  */
@@ -29,11 +33,25 @@ export async function updateUnprocessedEntity(options: {
   entity: Entity;
   hash: string;
   locationKey?: string;
-}): Promise<boolean> {
+}): Promise<{ updated: boolean; claimedFromNullLocationKey: boolean }> {
   const { tx, entity, hash, locationKey } = options;
 
   const entityRef = stringifyEntityRef(entity);
   const serializedEntity = JSON.stringify(entity);
+
+  // When claiming an entity with a non-null location key, check whether it
+  // currently has a null location key. If so, the update will transition it
+  // from weak (null) to strong (keyed) ownership, and we'll need to steal
+  // references from other parents that only had weak ownership.
+  let claimedFromNullLocationKey = false;
+  if (locationKey) {
+    const existingNullKeyRow = await tx<DbRefreshStateRow>('refresh_state')
+      .where({ entity_ref: entityRef })
+      .whereNull('location_key')
+      .select('entity_id')
+      .first();
+    claimedFromNullLocationKey = existingNullKeyRow !== undefined;
+  }
 
   const refreshResult = await tx<DbRefreshStateRow>('refresh_state')
     .update({
@@ -56,5 +74,5 @@ export async function updateUnprocessedEntity(options: {
         .orWhereNull('location_key');
     });
 
-  return refreshResult === 1;
+  return { updated: refreshResult === 1, claimedFromNullLocationKey };
 }

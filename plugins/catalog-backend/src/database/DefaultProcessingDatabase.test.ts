@@ -483,6 +483,164 @@ describe('DefaultProcessingDatabase', () => {
     );
 
     it.each(databases.eachSupportedId())(
+      'preserves multi-ancestry when multiple null-key parents emit the same child entity, %p',
+      async databaseId => {
+        const { knex, db } = await createDatabase(databaseId);
+
+        const locationAId = uuid.v4();
+        const locationBId = uuid.v4();
+        const processedEntityA: Entity = {
+          apiVersion: '1',
+          kind: 'Location',
+          metadata: { name: 'location-a' },
+        };
+        const processedEntityB: Entity = {
+          apiVersion: '1',
+          kind: 'Location',
+          metadata: { name: 'location-b' },
+        };
+        await insertRefreshStateRow(knex, {
+          entity_id: locationAId,
+          entity_ref: stringifyEntityRef(processedEntityA),
+          unprocessed_entity: '{}',
+          processed_entity: '{}',
+          errors: '[]',
+          next_update_at: '2021-04-01 13:37:00',
+          last_discovery_at: '2021-04-01 13:37:00',
+        });
+        await insertRefreshStateRow(knex, {
+          entity_id: locationBId,
+          entity_ref: stringifyEntityRef(processedEntityB),
+          unprocessed_entity: '{}',
+          processed_entity: '{}',
+          errors: '[]',
+          next_update_at: '2021-04-01 13:37:00',
+          last_discovery_at: '2021-04-01 13:37:00',
+        });
+
+        const sharedChild: Entity = {
+          apiVersion: '1',
+          kind: 'Component',
+          metadata: { name: 'shared' },
+        };
+
+        // Location A (no location key) emits the shared child
+        await db.transaction(tx =>
+          db.updateProcessedEntity(tx, {
+            id: locationAId,
+            processedEntity: processedEntityA,
+            resultHash: '',
+            relations: [],
+            deferredEntities: [{ entity: sharedChild }],
+            refreshKeys: [],
+          }),
+        );
+
+        // Location B (no location key) also emits the same shared child
+        await db.transaction(tx =>
+          db.updateProcessedEntity(tx, {
+            id: locationBId,
+            processedEntity: processedEntityB,
+            resultHash: '',
+            relations: [],
+            deferredEntities: [{ entity: sharedChild }],
+            refreshKeys: [],
+          }),
+        );
+
+        // Both location A and location B should remain as ancestors of the shared child
+        const refs = await knex<DbRefreshStateReferencesRow>(
+          'refresh_state_references',
+        ).select();
+        const ancestorRefs = refs
+          .map(r => r.source_entity_ref)
+          .filter(Boolean)
+          .sort();
+        expect(ancestorRefs).toEqual([
+          'location:default/location-a',
+          'location:default/location-b',
+        ]);
+      },
+    );
+
+    it.each(databases.eachSupportedId())(
+      'steals references when a keyed location claims an entity previously owned with null key, %p',
+      async databaseId => {
+        const { knex, db } = await createDatabase(databaseId);
+
+        const nullKeyLocationId = uuid.v4();
+        const keyedLocationId = uuid.v4();
+        const processedEntityNullKey: Entity = {
+          apiVersion: '1',
+          kind: 'Location',
+          metadata: { name: 'null-key-location' },
+        };
+        const processedEntityKeyed: Entity = {
+          apiVersion: '1',
+          kind: 'Location',
+          metadata: { name: 'keyed-location' },
+        };
+        await insertRefreshStateRow(knex, {
+          entity_id: nullKeyLocationId,
+          entity_ref: stringifyEntityRef(processedEntityNullKey),
+          unprocessed_entity: '{}',
+          processed_entity: '{}',
+          errors: '[]',
+          next_update_at: '2021-04-01 13:37:00',
+          last_discovery_at: '2021-04-01 13:37:00',
+        });
+        await insertRefreshStateRow(knex, {
+          entity_id: keyedLocationId,
+          entity_ref: stringifyEntityRef(processedEntityKeyed),
+          unprocessed_entity: '{}',
+          processed_entity: '{}',
+          errors: '[]',
+          next_update_at: '2021-04-01 13:37:00',
+          last_discovery_at: '2021-04-01 13:37:00',
+        });
+
+        const sharedChild: Entity = {
+          apiVersion: '1',
+          kind: 'Component',
+          metadata: { name: 'shared' },
+        };
+
+        // Null-key location emits the child (weak/null ownership)
+        await db.transaction(tx =>
+          db.updateProcessedEntity(tx, {
+            id: nullKeyLocationId,
+            processedEntity: processedEntityNullKey,
+            resultHash: '',
+            relations: [],
+            deferredEntities: [{ entity: sharedChild }],
+            refreshKeys: [],
+          }),
+        );
+
+        // Keyed location claims the same child (strong ownership, steals from null-key location)
+        await db.transaction(tx =>
+          db.updateProcessedEntity(tx, {
+            id: keyedLocationId,
+            processedEntity: processedEntityKeyed,
+            resultHash: '',
+            relations: [],
+            deferredEntities: [
+              { entity: sharedChild, locationKey: 'specific-key' },
+            ],
+            refreshKeys: [],
+          }),
+        );
+
+        // Only the keyed location should remain as ancestor (it stole from null-key location)
+        const refs = await knex<DbRefreshStateReferencesRow>(
+          'refresh_state_references',
+        ).select();
+        const ancestorRefs = refs.map(r => r.source_entity_ref).filter(Boolean);
+        expect(ancestorRefs).toEqual(['location:default/keyed-location']);
+      },
+    );
+
+    it.each(databases.eachSupportedId())(
       'stores the refresh keys for the entity where key length is 255 chars or less',
       async databaseId => {
         const mockLogger = {
