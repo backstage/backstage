@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+@layer tokens, base, components, utilities;
+
 @layer components {
   .bui-Timeline {
     display: flex;
@@ -42,12 +44,12 @@
     width: 1.5rem;
     height: 1.5rem;
     border-radius: 50%;
-    background-color: var(--bui-bg-accent);
-    border: 2px solid var(--bui-border-accent);
+    background-color: var(--bui-bg-solid);
+    border: 2px solid var(--bui-border-2);
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--bui-text-on-accent);
+    color: var(--bui-fg-solid);
     font-size: 0.875rem;
     flex-shrink: 0;
     z-index: 1;
@@ -56,7 +58,7 @@
   .bui-TimelineItemLine {
     width: 2px;
     flex: 1;
-    background-color: var(--bui-border-default);
+    background-color: var(--bui-border-1);
     margin-top: var(--bui-space-1);
     min-height: var(--bui-space-5);
   }
@@ -75,21 +77,21 @@
   }
 
   .bui-TimelineItemTimestamp {
-    font-size: var(--bui-text-size-sm);
-    color: var(--bui-text-tertiary);
+    font-size: var(--bui-font-size-2);
+    color: var(--bui-fg-secondary);
     margin-bottom: var(--bui-space-1);
   }
 
   .bui-TimelineItemTitle {
-    font-size: var(--bui-text-size-base);
-    font-weight: var(--bui-text-weight-medium);
-    color: var(--bui-text-primary);
+    font-size: var(--bui-font-size-3);
+    font-weight: var(--bui-font-weight-bold);
+    color: var(--bui-fg-primary);
     margin-bottom: var(--bui-space-1);
   }
 
   .bui-TimelineItemDescription {
-    font-size: var(--bui-text-size-sm);
-    color: var(--bui-text-secondary);
+    font-size: var(--bui-font-size-2);
+    color: var(--bui-fg-secondary);
     line-height: 1.5;
   }
 }

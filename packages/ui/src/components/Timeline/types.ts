@@ -20,7 +20,11 @@ import type { ReactNode } from 'react';
  * Props for the Timeline component
  * @public
  */
-export interface TimelineProps {
+export interface TimelineProps
+  extends Omit<
+    React.OlHTMLAttributes<HTMLOListElement>,
+    'children' | 'className'
+  > {
   /**
    * Timeline items to display
    */
@@ -35,7 +39,8 @@ export interface TimelineProps {
  * Props for the TimelineItem component
  * @public
  */
-export interface TimelineItemProps {
+export interface TimelineItemProps
+  extends Omit<React.LiHTMLAttributes<HTMLLIElement>, 'title' | 'className'> {
   /**
    * Item title or heading
    */
