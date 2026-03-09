@@ -25,7 +25,7 @@ import clsx from 'clsx';
 import { FieldLabel } from '../FieldLabel';
 import { FieldError } from '../FieldError';
 import type { RangeSliderProps } from './types';
-import { useStyles } from '../../hooks/useStyles';
+import { useDefinition } from '../../hooks/useDefinition';
 import { RangeSliderDefinition } from './definition';
 import styles from './RangeSlider.module.css';
 
@@ -107,7 +107,7 @@ export const RangeSlider = forwardRef<HTMLDivElement, RangeSliderProps>(
       ...propsWithoutDefault
     } = props;
 
-    const { classNames, dataAttributes, style, cleanedProps } = useStyles(
+    const { ownProps, restProps, dataAttributes } = useDefinition(
       RangeSliderDefinition,
       {
         minValue,
@@ -120,16 +120,16 @@ export const RangeSlider = forwardRef<HTMLDivElement, RangeSliderProps>(
         ...propsWithoutDefault,
       },
     );
+    const { classes, className } = ownProps;
 
     const {
-      className,
       label: _ignoredLabel,
       description,
       secondaryLabel,
       showValueLabel = false,
       formatValue = (val: number) => val.toString(),
       ...rest
-    } = cleanedProps;
+    } = restProps;
 
     // If a secondary label is provided, use it. Otherwise, use 'Required' if the field is required.
     const secondaryLabelText =
@@ -137,16 +137,15 @@ export const RangeSlider = forwardRef<HTMLDivElement, RangeSliderProps>(
 
     return (
       <AriaSlider
-        className={clsx(classNames.root, styles[classNames.root], className)}
+        className={clsx(classes.root, styles[classes.root], className)}
         {...dataAttributes}
         aria-label={ariaLabel}
         aria-labelledby={ariaLabelledBy}
-        style={style}
         {...rest}
         ref={ref}
       >
         {(label || showValueLabel) && (
-          <div className={clsx(classNames.header, styles[classNames.header])}>
+          <div className={clsx(classes.header, styles[classes.header])}>
             <FieldLabel
               label={label}
               secondaryLabel={secondaryLabelText}
@@ -154,7 +153,7 @@ export const RangeSlider = forwardRef<HTMLDivElement, RangeSliderProps>(
             />
             {showValueLabel && (
               <SliderOutput
-                className={clsx(classNames.output, styles[classNames.output])}
+                className={clsx(classes.output, styles[classes.output])}
               >
                 {({ state }) => {
                   const values = state.values;
@@ -169,9 +168,7 @@ export const RangeSlider = forwardRef<HTMLDivElement, RangeSliderProps>(
             )}
           </div>
         )}
-        <SliderTrack
-          className={clsx(classNames.track, styles[classNames.track])}
-        >
+        <SliderTrack className={clsx(classes.track, styles[classes.track])}>
           {({ state }) => {
             const start = state.getThumbPercent(0);
             const end = state.getThumbPercent(1);
@@ -189,19 +186,16 @@ export const RangeSlider = forwardRef<HTMLDivElement, RangeSliderProps>(
             return (
               <>
                 <div
-                  className={clsx(
-                    classNames.trackFill,
-                    styles[classNames.trackFill],
-                  )}
+                  className={clsx(classes.trackFill, styles[classes.trackFill])}
                   style={trackFillStyle}
                 />
                 <SliderThumb
                   index={0}
-                  className={clsx(classNames.thumb, styles[classNames.thumb])}
+                  className={clsx(classes.thumb, styles[classes.thumb])}
                 />
                 <SliderThumb
                   index={1}
-                  className={clsx(classNames.thumb, styles[classNames.thumb])}
+                  className={clsx(classes.thumb, styles[classes.thumb])}
                 />
               </>
             );

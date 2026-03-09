@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-import type { ComponentDefinition } from '../../types';
+import { defineComponent } from '../../hooks/useDefinition';
+import type { RangeSliderOwnProps } from './types';
+import styles from './RangeSlider.module.css';
 
 /**
  * Component definition for RangeSlider
  * @public
  */
-export const RangeSliderDefinition = {
+export const RangeSliderDefinition = defineComponent<RangeSliderOwnProps>()({
+  styles,
   classNames: {
     root: 'bui-RangeSlider',
     header: 'bui-RangeSliderHeader',
@@ -29,8 +32,7 @@ export const RangeSliderDefinition = {
     thumb: 'bui-RangeSliderThumb',
     output: 'bui-RangeSliderOutput',
   },
-  dataAttributes: {
-    disabled: [true, false] as const,
-    orientation: ['horizontal', 'vertical'] as const,
+  propDefs: {
+    className: {},
   },
-} as const satisfies ComponentDefinition;
+});

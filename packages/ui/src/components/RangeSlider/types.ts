@@ -18,9 +18,23 @@ import type { SliderProps as AriaSliderProps } from 'react-aria-components';
 import type { FieldLabelProps } from '../FieldLabel/types';
 
 /** @public */
+export interface RangeSliderOwnProps {
+  className?: string;
+}
+
+/** @public */
 export interface RangeSliderProps
   extends Omit<AriaSliderProps<[number, number]>, 'children'>,
-    Omit<FieldLabelProps, 'htmlFor' | 'id' | 'className'> {
+    Omit<
+      FieldLabelProps,
+      | 'htmlFor'
+      | 'id'
+      | 'className'
+      | 'defaultValue'
+      | 'onChange'
+      | 'slot'
+      | 'style'
+    > {
   /**
    * Whether to show a value label in the header next to the field label
    * @defaultValue false

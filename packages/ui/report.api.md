@@ -39,6 +39,7 @@ import { RowProps as RowProps_2 } from 'react-aria-components';
 import type { SearchFieldProps as SearchFieldProps_2 } from 'react-aria-components';
 import type { SelectProps as SelectProps_2 } from 'react-aria-components';
 import type { SeparatorProps } from 'react-aria-components';
+import type { SliderProps } from 'react-aria-components';
 import type { SortDescriptor as SortDescriptor_2 } from 'react-stately';
 import type { SubmenuTriggerProps as SubmenuTriggerProps_2 } from 'react-aria-components';
 import type { SwitchProps as SwitchProps_2 } from 'react-aria-components';
@@ -1966,6 +1967,52 @@ export type RadioOwnProps = {
 export interface RadioProps
   extends RadioOwnProps,
     Omit<RadioProps_2, keyof RadioOwnProps> {}
+
+// @public (undocumented)
+export const RangeSlider: ForwardRefExoticComponent<
+  RangeSliderProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public
+export const RangeSliderDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-RangeSlider';
+    readonly header: 'bui-RangeSliderHeader';
+    readonly track: 'bui-RangeSliderTrack';
+    readonly trackFill: 'bui-RangeSliderTrackFill';
+    readonly thumb: 'bui-RangeSliderThumb';
+    readonly output: 'bui-RangeSliderOutput';
+  };
+  readonly propDefs: {
+    readonly className: {};
+  };
+};
+
+// @public (undocumented)
+export interface RangeSliderOwnProps {
+  // (undocumented)
+  className?: string;
+}
+
+// @public (undocumented)
+export interface RangeSliderProps
+  extends Omit<SliderProps<[number, number]>, 'children'>,
+    Omit<
+      FieldLabelProps,
+      | 'htmlFor'
+      | 'id'
+      | 'className'
+      | 'defaultValue'
+      | 'onChange'
+      | 'slot'
+      | 'style'
+    > {
+  formatValue?: (value: number) => string;
+  showValueLabel?: boolean;
+}
 
 // @public (undocumented)
 export type Responsive<T> = T | Partial<Record<Breakpoint, T>>;
