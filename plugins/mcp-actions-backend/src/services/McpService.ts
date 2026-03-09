@@ -32,20 +32,20 @@ import { performance } from 'node:perf_hooks';
 
 import { handleErrors } from './handleErrors';
 import { bucketBoundaries, McpServerOperationAttributes } from '../metrics';
-import { FilterRule, McpServerConfig, ToolOverrides } from '../config';
+import { FilterRule, McpServerConfig } from '../config';
 
 export class McpService {
   private readonly actions: ActionsService;
-  private readonly toolOverrides: ToolOverrides;
+  private readonly namespacedToolNames: boolean;
   private readonly operationDuration: MetricsServiceHistogram<McpServerOperationAttributes>;
 
   constructor(
     actions: ActionsService,
     metrics: MetricsService,
-    toolOverrides?: ToolOverrides,
+    namespacedToolNames?: boolean,
   ) {
     this.actions = actions;
-    this.toolOverrides = toolOverrides ?? new Map();
+    this.namespacedToolNames = namespacedToolNames ?? true;
     this.operationDuration =
       metrics.createHistogram<McpServerOperationAttributes>(
         'mcp.server.operation.duration',
@@ -60,13 +60,13 @@ export class McpService {
   static async create({
     actions,
     metrics,
-    toolOverrides,
+    namespacedToolNames,
   }: {
     actions: ActionsService;
     metrics: MetricsService;
-    toolOverrides?: ToolOverrides;
+    namespacedToolNames?: boolean;
   }) {
-    return new McpService(actions, metrics, toolOverrides);
+    return new McpService(actions, metrics, namespacedToolNames);
   }
 
   getServer({
@@ -100,24 +100,21 @@ export class McpService {
           : allActions;
 
         return {
-          tools: actions.map(action => {
-            const override = this.toolOverrides.get(action.id);
-            return {
-              inputSchema: action.schema.input,
-              // todo(blam): this is unfortunately not supported by most clients yet.
-              // When this is provided you need to provide structuredContent instead.
-              // outputSchema: action.schema.output,
-              name: action.name,
-              description: override?.description ?? action.description,
-              annotations: {
-                title: action.title,
-                destructiveHint: action.attributes.destructive,
-                idempotentHint: action.attributes.idempotent,
-                readOnlyHint: action.attributes.readOnly,
-                openWorldHint: false,
-              },
-            };
-          }),
+          tools: actions.map(action => ({
+            inputSchema: action.schema.input,
+            // todo(blam): this is unfortunately not supported by most clients yet.
+            // When this is provided you need to provide structuredContent instead.
+            // outputSchema: action.schema.output,
+            name: this.getToolName(action),
+            description: action.description,
+            annotations: {
+              title: action.title,
+              destructiveHint: action.attributes.destructive,
+              idempotentHint: action.attributes.idempotent,
+              readOnlyHint: action.attributes.readOnly,
+              openWorldHint: false,
+            },
+          })),
         };
       } catch (err) {
         errorType = err instanceof Error ? err.name : 'Error';
@@ -146,7 +143,7 @@ export class McpService {
             ? this.filterActions(allActions, serverConfig)
             : allActions;
 
-          const action = actions.find(a => a.name === params.name);
+          const action = actions.find(a => this.getToolName(a) === params.name);
 
           if (!action) {
             throw new NotFoundError(`Action "${params.name}" not found`);
@@ -205,19 +202,12 @@ export class McpService {
     actions: ActionsServiceAction[],
     serverConfig: McpServerConfig,
   ): ActionsServiceAction[] {
-    // First filter by plugin source prefix on the action ID
-    const bySource = actions.filter(action =>
-      serverConfig.pluginSources.some(source =>
-        action.id.startsWith(`${source}:`),
-      ),
-    );
-
     const { includeRules, excludeRules } = serverConfig;
     if (includeRules.length === 0 && excludeRules.length === 0) {
-      return bySource;
+      return actions;
     }
 
-    return bySource.filter(action => {
+    return actions.filter(action => {
       if (excludeRules.some(rule => this.matchesRule(action, rule))) {
         return false;
       }
@@ -228,6 +218,13 @@ export class McpService {
 
       return includeRules.some(rule => this.matchesRule(action, rule));
     });
+  }
+
+  private getToolName(action: ActionsServiceAction): string {
+    if (this.namespacedToolNames) {
+      return action.id;
+    }
+    return action.name;
   }
 
   private matchesRule(action: ActionsServiceAction, rule: FilterRule): boolean {

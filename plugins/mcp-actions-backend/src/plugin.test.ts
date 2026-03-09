@@ -118,7 +118,7 @@ describe('Mcp Backend', () => {
           required: ['name'],
           type: 'object',
         },
-        name: 'make-greeting',
+        name: 'local:make-greeting',
       },
     ]);
   });
@@ -161,7 +161,7 @@ describe('Mcp Backend', () => {
           required: ['name'],
           type: 'object',
         },
-        name: 'make-greeting',
+        name: 'local:make-greeting',
       },
     ]);
   });
@@ -231,11 +231,15 @@ describe('Mcp Backend', () => {
                 servers: {
                   catalog: {
                     name: 'Catalog Server',
-                    pluginSources: ['catalog-actions'],
+                    filter: {
+                      include: [{ id: 'catalog-actions:*' }],
+                    },
                   },
                   scaffolder: {
                     name: 'Scaffolder Server',
-                    pluginSources: ['scaffolder-actions'],
+                    filter: {
+                      include: [{ id: 'scaffolder-actions:*' }],
+                    },
                   },
                 },
               },
@@ -260,7 +264,7 @@ describe('Mcp Backend', () => {
         ListToolsResultSchema,
       );
       expect(catalogResult.tools).toHaveLength(1);
-      expect(catalogResult.tools[0].name).toBe('get-entity');
+      expect(catalogResult.tools[0].name).toBe('catalog-actions:get-entity');
 
       const scaffolderClient = new Client({ name: 'test', version: '1.0' });
       const scaffolderTransport = new StreamableHTTPClientTransport(
@@ -272,7 +276,9 @@ describe('Mcp Backend', () => {
         ListToolsResultSchema,
       );
       expect(scaffolderResult.tools).toHaveLength(1);
-      expect(scaffolderResult.tools[0].name).toBe('create-app');
+      expect(scaffolderResult.tools[0].name).toBe(
+        'scaffolder-actions:create-app',
+      );
     });
 
     it('should support SSE per-server routes', async () => {
@@ -292,7 +298,9 @@ describe('Mcp Backend', () => {
                 servers: {
                   catalog: {
                     name: 'Catalog Server',
-                    pluginSources: ['catalog-actions'],
+                    filter: {
+                      include: [{ id: 'catalog-actions:*' }],
+                    },
                   },
                 },
               },
@@ -320,54 +328,7 @@ describe('Mcp Backend', () => {
       await client.close();
 
       expect(result.tools).toHaveLength(1);
-      expect(result.tools[0].name).toBe('get-entity');
-    });
-
-    it('should apply tool description overrides from config', async () => {
-      const { server } = await startTestBackend({
-        features: [
-          mcpPlugin,
-          mockCatalogPlugin,
-          metricsServiceMock.mock().factory,
-          mockServices.rootConfig.factory({
-            data: {
-              backend: {
-                actions: {
-                  pluginSources: ['catalog-actions'],
-                },
-              },
-              mcpActions: {
-                tools: {
-                  'catalog-actions:get-entity': {
-                    description: 'Custom description for get-entity',
-                  },
-                },
-              },
-            },
-          }),
-        ],
-      });
-
-      const address = server.address();
-      if (typeof address !== 'object' || !('port' in address!)) {
-        throw new Error('server broke');
-      }
-      const serverAddress = `http://localhost:${address.port}`;
-
-      const client = new Client({ name: 'test', version: '1.0' });
-      const transport = new StreamableHTTPClientTransport(
-        new URL(`${serverAddress}/api/mcp-actions/v1`),
-      );
-      await client.connect(transport);
-
-      const result = await client.request(
-        { method: 'tools/list' },
-        ListToolsResultSchema,
-      );
-
-      expect(result.tools[0].description).toBe(
-        'Custom description for get-entity',
-      );
+      expect(result.tools[0].name).toBe('catalog-actions:get-entity');
     });
   });
 

@@ -27,7 +27,7 @@ import {
   actionsServiceRef,
   metricsServiceRef,
 } from '@backstage/backend-plugin-api/alpha';
-import { readToolOverrides, parseServerConfigs } from './config';
+import { parseServerConfigs } from './config';
 
 /**
  * mcpPlugin backend plugin
@@ -60,13 +60,15 @@ export const mcpPlugin = createBackendPlugin({
         config,
         metrics,
       }) {
-        const toolOverrides = readToolOverrides(config);
         const serverConfigs = parseServerConfigs(config);
+        const namespacedToolNames = config.getOptionalBoolean(
+          'mcpActions.namespacedToolNames',
+        );
 
         const mcpService = await McpService.create({
           actions,
           metrics,
-          toolOverrides,
+          namespacedToolNames,
         });
 
         const router = Router();

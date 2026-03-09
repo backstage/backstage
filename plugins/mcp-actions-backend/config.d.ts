@@ -17,14 +17,12 @@
 export interface Config {
   mcpActions?: {
     /**
-     * Global tool description overrides keyed by action ID.
+     * When true, MCP tool names include the plugin ID prefix to avoid
+     * collisions across plugins. For example an action registered as
+     * "get-entity" by the catalog plugin becomes "catalog:get-entity".
+     * Defaults to true.
      */
-    tools?: {
-      [actionId: string]: {
-        /** Override the tool description shown to MCP clients. */
-        description?: string;
-      };
-    };
+    namespacedToolNames?: boolean;
 
     /**
      * Named MCP servers, each exposed at /api/mcp-actions/v1/{key}.
@@ -36,8 +34,6 @@ export interface Config {
         name: string;
         /** Description of the MCP server. */
         description?: string;
-        /** Plugin IDs whose actions should be included in this server. */
-        pluginSources: string[];
         /** Filter rules to include or exclude specific actions. */
         filter?: {
           include?: Array<{

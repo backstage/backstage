@@ -27,29 +27,11 @@ export type FilterRule = {
 export type McpServerConfig = {
   name: string;
   description?: string;
-  pluginSources: string[];
   includeRules: FilterRule[];
   excludeRules: FilterRule[];
 };
 
-export type ToolOverrides = Map<string, { description?: string }>;
-
-export function readToolOverrides(config: Config): ToolOverrides {
-  const overrides: ToolOverrides = new Map();
-  const toolsConfig = config.getOptionalConfig('mcpActions.tools');
-  if (!toolsConfig) {
-    return overrides;
-  }
-
-  for (const actionId of toolsConfig.keys()) {
-    const toolConfig = toolsConfig.getConfig(actionId);
-    overrides.set(actionId, {
-      description: toolConfig.getOptionalString('description'),
-    });
-  }
-
-  return overrides;
-}
+const SERVER_KEY_PATTERN = /^[a-z0-9][a-z0-9-]*$/;
 
 export function parseFilterRules(configArray: Config[]): FilterRule[] {
   return configArray.map(ruleConfig => {
@@ -87,6 +69,12 @@ export function parseServerConfigs(
   const servers = new Map<string, McpServerConfig>();
 
   for (const key of serversConfig.keys()) {
+    if (!SERVER_KEY_PATTERN.test(key)) {
+      throw new Error(
+        `Invalid MCP server key "${key}": must be lowercase alphanumeric with hyphens`,
+      );
+    }
+
     const serverConfig = serversConfig.getConfig(key);
 
     const filterConfig = serverConfig.getOptionalConfig('filter');
@@ -100,7 +88,6 @@ export function parseServerConfigs(
     servers.set(key, {
       name: serverConfig.getString('name'),
       description: serverConfig.getOptionalString('description'),
-      pluginSources: serverConfig.getStringArray('pluginSources'),
       includeRules,
       excludeRules,
     });
