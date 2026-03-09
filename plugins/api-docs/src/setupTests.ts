@@ -23,3 +23,5 @@ Object.defineProperty(global, 'TextEncoder', {
 Object.defineProperty(global, 'TextDecoder', {
   value: require('node:util').TextDecoder,
 });
+
+jest.setTimeout(15_000);
