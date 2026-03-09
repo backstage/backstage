@@ -72,7 +72,6 @@ export class DefaultLocationService implements LocationService {
     }
     const location = await this.store.createLocation(input, {
       onConflict: options?.onConflict,
-      credentials: options?.credentials,
     });
     return { location, entities: [] };
   }

@@ -89,7 +89,6 @@ export interface LocationStore {
     location: LocationInput,
     options?: {
       onConflict?: 'refresh' | 'reject';
-      credentials?: BackstageCredentials;
     },
   ): Promise<Location>;
   listLocations(): Promise<Location[]>;

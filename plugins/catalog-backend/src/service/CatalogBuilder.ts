@@ -591,10 +591,6 @@ export class CatalogBuilder {
         new RepoLocationAnalyzer(logger, integrations, this.locationAnalyzers),
         permissionsService,
       );
-    const innerRefreshService = new DefaultRefreshService({
-      database: catalogDatabase,
-    });
-    locationStore.setRefreshService(innerRefreshService);
     const locationService = new AuthorizedLocationService(
       new DefaultLocationService(locationStore, orchestrator, {
         allowedLocationTypes: this.allowedLocationType,
@@ -602,7 +598,7 @@ export class CatalogBuilder {
       permissionsService,
     );
     const refreshService = new AuthorizedRefreshService(
-      innerRefreshService,
+      new DefaultRefreshService({ database: catalogDatabase }),
       permissionsService,
     );
 

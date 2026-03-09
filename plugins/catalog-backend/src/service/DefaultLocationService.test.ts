@@ -315,7 +315,7 @@ describe('DefaultLocationServiceTest', () => {
       ).rejects.toThrow(InputError);
     });
 
-    it('should pass onConflict and credentials through to store', async () => {
+    it('should pass onConflict through to store', async () => {
       const locationSpec = {
         type: 'url',
         target: 'https://backstage.io/catalog-info.yaml',
@@ -326,10 +326,9 @@ describe('DefaultLocationServiceTest', () => {
         ...locationSpec,
       });
 
-      const credentials = {} as any;
       const result = await locationService.createLocation(locationSpec, false, {
         onConflict: 'refresh',
-        credentials,
+        credentials: {} as any,
       });
 
       expect(result).toEqual({
@@ -338,7 +337,6 @@ describe('DefaultLocationServiceTest', () => {
       });
       expect(store.createLocation).toHaveBeenCalledWith(locationSpec, {
         onConflict: 'refresh',
-        credentials,
       });
     });
 

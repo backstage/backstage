@@ -29,14 +29,13 @@ import {
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
 import { locationSpecToLocationEntity } from '../util/conversion';
-import { LocationInput, LocationStore, RefreshService } from '../service/types';
+import { LocationInput, LocationStore } from '../service/types';
 import {
   ANNOTATION_ORIGIN_LOCATION,
   CompoundEntityRef,
   parseLocationRef,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import {
   CatalogScmEvent,
   CatalogScmEventsService,
@@ -54,7 +53,6 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
   private readonly db: Knex;
   private readonly scmEvents: CatalogScmEventsService;
   private readonly scmEventHandlingConfig: ScmEventHandlingConfig;
-  private refreshService?: RefreshService;
 
   constructor(
     db: Knex,
@@ -66,10 +64,6 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
     this.scmEventHandlingConfig = scmEventHandlingConfig;
   }
 
-  setRefreshService(refreshService: RefreshService): void {
-    this.refreshService = refreshService;
-  }
-
   getProviderName(): string {
     return 'DefaultLocationStore';
   }
@@ -78,7 +72,6 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
     input: LocationInput,
     options?: {
       onConflict?: 'refresh' | 'reject';
-      credentials?: BackstageCredentials;
     },
   ): Promise<Location> {
     let existed = false;
@@ -113,23 +106,15 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
     });
 
     if (existed) {
-      if (!this.refreshService) {
-        throw new InputError(
-          'onConflict refresh is not supported: no refresh service available',
-        );
-      }
-      if (!options?.credentials) {
-        throw new InputError(
-          'onConflict refresh requires credentials to be provided',
-        );
-      }
       const entityRef = stringifyEntityRef(
         locationSpecToLocationEntity({ location }),
       );
-      await this.refreshService.refresh({
-        entityRef,
-        credentials: options.credentials,
-      });
+      await this.db<DbRefreshStateRow>('refresh_state')
+        .where({ entity_ref: entityRef })
+        .update({
+          next_update_at: this.db.fn.now(),
+          result_hash: '',
+        });
     } else {
       const entity = locationSpecToLocationEntity({ location });
       await this.connection.applyMutation({
