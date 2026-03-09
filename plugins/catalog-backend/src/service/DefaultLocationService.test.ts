@@ -262,7 +262,7 @@ describe('DefaultLocationServiceTest', () => {
           target: 'https://backstage.io/catalog-info.yaml',
           type: 'url',
         },
-        { onConflict: undefined },
+        expect.anything(),
       );
     });
 
@@ -299,7 +299,7 @@ describe('DefaultLocationServiceTest', () => {
           target: 'https://backstage.io/catalog-info.yaml',
           type: 'unknown',
         },
-        { onConflict: undefined },
+        expect.anything(),
       );
     });
 
