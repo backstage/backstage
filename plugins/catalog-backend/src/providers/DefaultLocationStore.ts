@@ -105,23 +105,25 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
       return inner;
     });
 
+    // Always upsert the entity, even if the location already existed, to
+    // recover from cases where the entity was inadvertently deleted.
+    const entity = locationSpecToLocationEntity({ location });
+    await this.connection.applyMutation({
+      type: 'delta',
+      added: [{ entity, locationKey: getEntityLocationRef(entity) }],
+      removed: [],
+    });
+
     if (existed) {
-      const entityRef = stringifyEntityRef(
-        locationSpecToLocationEntity({ location }),
-      );
+      // This is the "onConflict refresh" case, where a re-registration safely
+      // tries to recover from a bad state.
+      const entityRef = stringifyEntityRef(entity);
       await this.db<DbRefreshStateRow>('refresh_state')
         .where({ entity_ref: entityRef })
         .update({
           next_update_at: this.db.fn.now(),
           result_hash: '',
         });
-    } else {
-      const entity = locationSpecToLocationEntity({ location });
-      await this.connection.applyMutation({
-        type: 'delta',
-        added: [{ entity, locationKey: getEntityLocationRef(entity) }],
-        removed: [],
-      });
     }
 
     return location;
