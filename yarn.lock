@@ -32395,15 +32395,15 @@ __metadata:
   linkType: hard
 
 "find-process@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "find-process@npm:2.0.0"
+  version: 2.1.0
+  resolution: "find-process@npm:2.1.0"
   dependencies:
     chalk: "npm:~4.1.2"
     commander: "npm:^12.1.0"
     loglevel: "npm:^1.9.2"
   bin:
-    find-process: dist/bin/find-process.js
-  checksum: 10/a8f23b72e7b67c8f039c2234116f68439c067e8d0f90484b53814aac04f1891cf322c7cf4b4193a14b91a19ba9c68bd8bcfb8a556626e6667dcaaefbca3294f9
+    find-process: dist/cjs/bin/find-process.js
+  checksum: 10/5ccaaddf66eacf74eb2605ddd8d8aaa4515029dc78eed2b0a39ceef3a4f1ae229046d30ff44845fd496b6306e2c750a7abad8db16f0683be7c32aa502dc61a21
   languageName: node
   linkType: hard
 
