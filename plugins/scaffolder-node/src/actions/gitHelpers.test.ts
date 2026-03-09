@@ -17,6 +17,7 @@
 import { Git } from '../scm';
 import {
   addFiles,
+  removeFiles,
   cloneRepo,
   commitAndPushBranch,
   commitAndPushRepo,
@@ -31,6 +32,7 @@ jest.mock('../scm', () => ({
     fromAuth: jest.fn().mockReturnValue({
       init: jest.fn(),
       add: jest.fn(),
+      remove: jest.fn(),
       checkout: jest.fn(),
       branch: jest.fn(),
       commit: jest
@@ -523,6 +525,47 @@ describe('addFiles', () => {
 
     expect(mockedGit.add).toHaveBeenCalledWith({
       filepath: '.',
+      dir: '/tmp/repo/dir/',
+    });
+  });
+});
+
+describe('removeFiles', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  describe('with minimal parameters', () => {
+    beforeEach(async () => {
+      await removeFiles({
+        dir: '/tmp/repo/dir/',
+        filepath: 'file-to-remove.txt',
+        auth: {
+          username: 'test-user',
+          password: 'test-password',
+        },
+      });
+    });
+
+    it('removes the file', () => {
+      expect(mockedGit.remove).toHaveBeenCalledWith({
+        filepath: 'file-to-remove.txt',
+        dir: '/tmp/repo/dir/',
+      });
+    });
+  });
+
+  it('with token', async () => {
+    await removeFiles({
+      dir: '/tmp/repo/dir/',
+      filepath: 'file-to-remove.txt',
+      auth: {
+        token: 'test-token',
+      },
+    });
+
+    expect(mockedGit.remove).toHaveBeenCalledWith({
+      filepath: 'file-to-remove.txt',
       dir: '/tmp/repo/dir/',
     });
   });
