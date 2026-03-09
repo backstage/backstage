@@ -213,7 +213,7 @@ describe('Mcp Backend', () => {
       },
     });
 
-    it('should route to per-server endpoints when mcp.servers is configured', async () => {
+    it('should route to per-server endpoints when mcpActions.servers is configured', async () => {
       const { server } = await startTestBackend({
         features: [
           mcpPlugin,

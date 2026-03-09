@@ -74,7 +74,7 @@ export const mcpPlugin = createBackendPlugin({
         const router = Router();
         router.use(json());
 
-        if (serverConfigs) {
+        if (serverConfigs && serverConfigs.size > 0) {
           for (const [key, serverConfig] of serverConfigs) {
             const streamableRouter = createStreamableRouter({
               mcpService,
