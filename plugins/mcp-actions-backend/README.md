@@ -71,6 +71,17 @@ export const myPlugin = createBackendPlugin({
 });
 ```
 
+### Namespaced Tool Names
+
+By default, MCP tool names include the plugin ID prefix to avoid collisions across plugins. For example, an action registered as `greet-user` by `my-custom-plugin` is exposed as `my-custom-plugin:greet-user`.
+
+You can disable this if you need the short names for backward compatibility:
+
+```yaml
+mcpActions:
+  namespacedToolNames: false
+```
+
 ### Multiple MCP Servers
 
 By default, the plugin serves a single MCP server at `/api/mcp-actions/v1` that exposes all available actions. You can split actions into multiple focused servers by configuring `mcpActions.servers`, where each key becomes a separate MCP server endpoint.
@@ -81,13 +92,15 @@ mcpActions:
     catalog:
       name: 'Backstage Catalog'
       description: 'Tools for interacting with the software catalog'
-      pluginSources:
-        - catalog
+      filter:
+        include:
+          - id: 'catalog:*'
     scaffolder:
       name: 'Backstage Scaffolder'
       description: 'Tools for creating new software from templates'
-      pluginSources:
-        - scaffolder
+      filter:
+        include:
+          - id: 'scaffolder:*'
 ```
 
 This creates two MCP server endpoints:
@@ -95,40 +108,25 @@ This creates two MCP server endpoints:
 - `http://localhost:7007/api/mcp-actions/v1/catalog`
 - `http://localhost:7007/api/mcp-actions/v1/scaffolder`
 
-Each server only exposes actions from the plugins listed in its `pluginSources`. Actions are matched by their ID prefix, so `pluginSources: ['catalog']` will include actions with IDs like `catalog:get-entity` and `catalog:query-entities`.
+Each server uses include filter rules with glob patterns on action IDs to control which actions are exposed. For example, `id: 'catalog:*'` matches all actions registered by the catalog plugin.
 
 When `mcpActions.servers` is not configured, the plugin behaves exactly as before with a single server at `/api/mcp-actions/v1`.
 
-#### Per-Server Filtering
+#### Filter Rules
 
-Each server can further refine which actions are exposed using include and exclude filter rules. Filters are applied on top of the `pluginSources` selection.
+Include and exclude filter rules support glob patterns on action IDs and attribute matching. Exclude rules take precedence over include rules. When include rules are specified, actions must match at least one include rule to be exposed.
 
 ```yaml
 mcpActions:
   servers:
     catalog:
       name: 'Backstage Catalog'
-      pluginSources:
-        - catalog
       filter:
         include:
-          - id: 'catalog:read-*'
+          - id: 'catalog:*'
         exclude:
           - attributes:
               destructive: true
-```
-
-Filter rules support glob patterns on action IDs and attribute matching. Exclude rules take precedence over include rules. When include rules are specified, actions must match at least one include rule to be exposed.
-
-### Tool Description Overrides
-
-You can override the description of any tool globally using `mcpActions.tools`, keyed by action ID. This applies regardless of whether you use a single server or multiple servers.
-
-```yaml
-mcpActions:
-  tools:
-    catalog:get-entity:
-      description: 'Retrieve a single entity from the Backstage catalog by kind, namespace, and name'
 ```
 
 ### Error Handling
