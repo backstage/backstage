@@ -26,6 +26,8 @@ export type {
   ComponentParts,
   ComponentRenderer,
   RendererProps,
+  WidgetLayout,
+  WidgetSettings,
   CardLayout,
   CardSettings,
   CardConfig,

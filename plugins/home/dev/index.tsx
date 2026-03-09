@@ -22,6 +22,8 @@ import catalogPlugin from '@backstage/plugin-catalog/alpha';
 import HomeIcon from '@material-ui/icons/Home';
 import ReactDOM from 'react-dom/client';
 import { Fragment } from 'react';
+// eslint-disable-next-line @backstage/no-ui-css-imports-in-non-frontend
+import '@backstage/ui/css/styles.css';
 
 import {
   ApiBlueprint,
@@ -35,6 +37,8 @@ import { HeaderWorldClock, WelcomeTitle, type ClockConfig } from '../src';
 import homePlugin from '../src/alpha';
 import { CustomHomepageGrid } from '../src/components';
 import type { LayoutConfiguration } from '../src/components/CustomHomepage/types';
+
+import searchPlugin from '@backstage/plugin-search/alpha'; // For reference in the SearchBarWidget loader test
 
 const clockConfigs: ClockConfig[] = [
   { label: 'NYC', timeZone: 'America/New_York' },
@@ -51,9 +55,18 @@ const timeFormat: Intl.DateTimeFormatOptions = {
 
 const defaultGridConfig: LayoutConfiguration[] = [
   {
+    component: 'HomePageSearchBar', // this is added from the Search plugin
+    x: 1,
+    y: 0,
+    width: 10,
+    height: 2,
+    movable: true,
+    resizable: true,
+  },
+  {
     component: 'HomePageToolkit',
     x: 0,
-    y: 0,
+    y: 1,
     width: 12,
     height: 4,
     movable: false,
@@ -62,14 +75,14 @@ const defaultGridConfig: LayoutConfiguration[] = [
   {
     component: 'HomePageStarredEntities',
     x: 0,
-    y: 4,
+    y: 6,
     width: 6,
     height: 5,
   },
   {
     component: 'HomePageRandomJoke',
     x: 6,
-    y: 4,
+    y: 6,
     width: 6,
     height: 5,
   },
@@ -220,6 +233,7 @@ const app = createApp({
     catalogPluginOverrides,
     homePlugin, // Load the home plugin
     homeDevModule, // Load the widgets and homepage content
+    searchPlugin,
   ],
 });
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { lazy, ReactElement } from 'react';
+import { ComponentType, lazy, ReactElement } from 'react';
 import {
   createExtensionBlueprint,
   ExtensionBoundary,
@@ -23,8 +23,8 @@ import { attachComponentData } from '@backstage/core-plugin-api';
 import {
   CardExtension,
   CardExtensionProps,
-  CardLayout,
-  CardSettings,
+  WidgetLayout,
+  WidgetSettings,
   ComponentParts,
 } from '../../extensions';
 import { homePageWidgetDataRef } from '../dataRefs';
@@ -32,39 +32,62 @@ import { homePageWidgetDataRef } from '../dataRefs';
 /**
  * Parameters for creating a home page widget extension.
  *
+ * Provide either `components` (card-based, wrapped in InfoCard) or `loader`
+ * (generic, rendered directly without card chrome). Exactly one must be
+ * provided — they are mutually exclusive.
+ *
  * @alpha
  */
-export interface HomePageWidgetBlueprintParams {
-  /**
-   * Optional name for the widget. If not provided, the extension will use only its kind
-   * in the extension ID.
-   */
-  name?: string;
-  /**
-   * Optional title displayed for the widget, used as the default card heading.
-   */
-  title?: string;
-  /**
-   * Optional description shown in the widget catalog when adding new cards.
-   */
-  description?: string;
-  /**
-   * Component parts rendered within the card.
-   */
-  components: () => Promise<ComponentParts>;
-  /**
-   * Layout hints used by the customizable grid.
-   */
-  layout?: CardLayout;
-  /**
-   * Schema used to configure widget settings.
-   */
-  settings?: CardSettings;
-  /**
-   * Default props forwarded to the rendered widget component.
-   */
-  componentProps?: Record<string, unknown>;
-}
+export type HomePageWidgetBlueprintParams =
+  | {
+      /**
+       * Component parts rendered within the card.
+       *
+       * Use this when the widget should be displayed as an InfoCard with a
+       * title header, optional actions, settings, and a context provider. This
+       * is the original card-based API and remains the recommended choice for
+       * card widgets.
+       */
+      components: () => Promise<ComponentParts>;
+      loader?: never;
+      /** Optional name for the widget. Defaults to the extension ID. */
+      name?: string;
+      /** Title displayed as the card heading. */
+      title?: string;
+      /** Description shown in the widget catalog. */
+      description?: string;
+      /** Layout hints used by the customizable grid. */
+      layout?: WidgetLayout;
+      /** Schema used to configure widget settings. */
+      settings?: WidgetSettings;
+      /** Default props forwarded to the rendered widget component. */
+      componentProps?: Record<string, unknown>;
+    }
+  | {
+      /**
+       * Async loader that returns a self-contained React component.
+       *
+       * Use this when the widget should render freely without any card chrome
+       * (no InfoCard, no title header, no divider). The returned component is
+       * rendered directly inside an ExtensionBoundary — layout and visual
+       * presentation are entirely the component's responsibility.
+       *
+       * Typical use cases: full-width search bars, banners, hero sections, or
+       * any widget that is not logically a "card".
+       */
+      loader: () => Promise<ComponentType<{}>>;
+      components?: never;
+      /** Optional name for the widget. Defaults to the extension ID. */
+      name?: string;
+      /** Title for the widget (used for catalogue display, not rendered as a heading). */
+      title?: string;
+      /** Description shown in the widget catalog. */
+      description?: string;
+      /** Layout hints used by the customizable grid. */
+      layout?: WidgetLayout;
+      /** Schema used to configure widget settings. */
+      settings?: WidgetSettings;
+    };
 
 const DEFAULT_WIDGET_ATTACH_POINT = {
   id: 'page:home',
@@ -84,28 +107,51 @@ export const HomePageWidgetBlueprint = createExtensionBlueprint({
   },
   output: [homePageWidgetDataRef],
   *factory(params: HomePageWidgetBlueprintParams, { node }) {
-    const isCustomizable = params.settings?.schema !== undefined;
     const widgetName = params.name ?? node.spec.id;
-    const LazyCard = lazy(() =>
-      params.components().then(parts => ({
-        default: (props: CardExtensionProps<Record<string, unknown>>) => (
-          <CardExtension
-            {...props}
-            {...parts}
-            title={props.title || params.title}
-            isCustomizable={isCustomizable}
-          />
-        ),
-      })),
-    );
+    // Narrow componentProps here while the union is still discriminated.
+    // loader-based widgets receive no props; card-based widgets may have componentProps.
+    const componentProps = params.loader ? {} : params.componentProps ?? {};
 
-    const Widget = (
-      props: CardExtensionProps<Record<string, unknown>>,
-    ): ReactElement => (
-      <ExtensionBoundary node={node}>
-        <LazyCard {...props} />
-      </ExtensionBoundary>
-    );
+    let Widget: (props: Record<string, unknown>) => ReactElement;
+
+    if (params.loader) {
+      // Generic (non-card) path: the component is rendered directly, without
+      // any CardExtension / InfoCard wrapping. The widget author is fully
+      // responsible for the visual presentation.
+      const LazyComponent = lazy(() =>
+        params.loader().then(Component => ({ default: Component })),
+      );
+
+      Widget = (): ReactElement => (
+        <ExtensionBoundary node={node}>
+          <LazyComponent />
+        </ExtensionBoundary>
+      );
+    } else {
+      // Card-based path (original behaviour): wraps ComponentParts in
+      // CardExtension → InfoCard.
+      const isCustomizable = params.settings?.schema !== undefined;
+      const LazyCard = lazy(() =>
+        params.components().then(parts => ({
+          default: (props: CardExtensionProps<Record<string, unknown>>) => (
+            <CardExtension
+              {...props}
+              {...parts}
+              title={props.title || params.title}
+              isCustomizable={isCustomizable}
+            />
+          ),
+        })),
+      );
+
+      Widget = (
+        props: CardExtensionProps<Record<string, unknown>>,
+      ): ReactElement => (
+        <ExtensionBoundary node={node}>
+          <LazyCard {...props} />
+        </ExtensionBoundary>
+      );
+    }
 
     attachComponentData(Widget, 'core.extensionName', widgetName);
     attachComponentData(Widget, 'title', params.title);
@@ -117,7 +163,7 @@ export const HomePageWidgetBlueprint = createExtensionBlueprint({
 
     yield homePageWidgetDataRef({
       node,
-      component: <Widget {...(params.componentProps ?? {})} />,
+      component: <Widget {...componentProps} />,
       name: widgetName,
       title: params.title,
       description: params.description,

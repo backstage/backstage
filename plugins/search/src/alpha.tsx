@@ -46,6 +46,7 @@ import {
   catalogApiRef,
   CATALOG_FILTER_EXISTS,
 } from '@backstage/plugin-catalog-react';
+import { HomePageWidgetBlueprint } from '@backstage/plugin-home-react/alpha';
 
 import {
   DefaultResultListItem,
@@ -274,12 +275,22 @@ export const searchNavItem = NavItemBlueprint.make({
 });
 
 /** @alpha */
+export const homePageSearchBar = HomePageWidgetBlueprint.make({
+  params: {
+    name: 'HomePageSearchBar',
+    title: 'Search Bar',
+    loader: async () =>
+      import('./components/HomePageComponent').then(m => m.HomePageSearchBar),
+  },
+});
+
+/** @alpha */
 export default createFrontendPlugin({
   pluginId: 'search',
   title: 'Search',
   icon: <SearchIcon />,
   info: { packageJson: () => import('../package.json') },
-  extensions: [searchApi, searchPage, searchNavItem],
+  extensions: [searchApi, searchPage, searchNavItem, homePageSearchBar],
   routes: {
     root: rootRouteRef,
   },
