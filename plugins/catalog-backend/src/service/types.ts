@@ -85,7 +85,13 @@ export interface RefreshService {
  * Interacts with the database to manage locations.
  */
 export interface LocationStore {
-  createLocation(location: LocationInput): Promise<Location>;
+  createLocation(
+    location: LocationInput,
+    options?: {
+      onConflict?: 'refresh' | 'reject';
+      credentials?: BackstageCredentials;
+    },
+  ): Promise<Location>;
   listLocations(): Promise<Location[]>;
   queryLocations(options: {
     limit: number;

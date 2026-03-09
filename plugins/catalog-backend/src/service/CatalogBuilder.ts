@@ -594,10 +594,10 @@ export class CatalogBuilder {
     const innerRefreshService = new DefaultRefreshService({
       database: catalogDatabase,
     });
+    locationStore.setRefreshService(innerRefreshService);
     const locationService = new AuthorizedLocationService(
       new DefaultLocationService(locationStore, orchestrator, {
         allowedLocationTypes: this.allowedLocationType,
-        refreshService: innerRefreshService,
       }),
       permissionsService,
     );

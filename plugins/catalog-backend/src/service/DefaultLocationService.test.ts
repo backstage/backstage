@@ -16,8 +16,8 @@
 
 import { DefaultLocationService } from './DefaultLocationService';
 import { CatalogProcessingOrchestrator } from '../processing/types';
-import { LocationStore, RefreshService } from './types';
-import { ConflictError, InputError } from '@backstage/errors';
+import { LocationStore } from './types';
+import { InputError } from '@backstage/errors';
 
 describe('DefaultLocationServiceTest', () => {
   const orchestrator: jest.Mocked<CatalogProcessingOrchestrator> = {
@@ -257,10 +257,13 @@ describe('DefaultLocationServiceTest', () => {
           type: 'url',
         },
       });
-      expect(store.createLocation).toHaveBeenCalledWith({
-        target: 'https://backstage.io/catalog-info.yaml',
-        type: 'url',
-      });
+      expect(store.createLocation).toHaveBeenCalledWith(
+        {
+          target: 'https://backstage.io/catalog-info.yaml',
+          type: 'url',
+        },
+        { onConflict: undefined },
+      );
     });
 
     it('should create location with unknown type if configuration allows it', async () => {
@@ -291,10 +294,13 @@ describe('DefaultLocationServiceTest', () => {
           type: 'unknown',
         },
       });
-      expect(store.createLocation).toHaveBeenCalledWith({
-        target: 'https://backstage.io/catalog-info.yaml',
-        type: 'unknown',
-      });
+      expect(store.createLocation).toHaveBeenCalledWith(
+        {
+          target: 'https://backstage.io/catalog-info.yaml',
+          type: 'unknown',
+        },
+        { onConflict: undefined },
+      );
     });
 
     it('should not allow locations of unknown types by default', async () => {
@@ -309,84 +315,31 @@ describe('DefaultLocationServiceTest', () => {
       ).rejects.toThrow(InputError);
     });
 
-    it('should refresh existing location on conflict when onConflict is refresh', async () => {
+    it('should pass onConflict and credentials through to store', async () => {
       const locationSpec = {
         type: 'url',
         target: 'https://backstage.io/catalog-info.yaml',
       };
 
-      const refreshService: jest.Mocked<RefreshService> = {
-        refresh: jest.fn(),
-      };
-
-      const locationServiceWithRefresh = new DefaultLocationService(
-        store,
-        orchestrator,
-        { allowedLocationTypes: ['url'], refreshService },
-      );
-
-      store.createLocation.mockRejectedValueOnce(
-        new ConflictError(
-          `Location ${locationSpec.type}:${locationSpec.target} already exists`,
-        ),
-      );
-      store.getLocationByEntity.mockResolvedValueOnce({
+      store.createLocation.mockResolvedValueOnce({
         id: 'existing-id',
         ...locationSpec,
       });
 
       const credentials = {} as any;
-      const result = await locationServiceWithRefresh.createLocation(
-        locationSpec,
-        false,
-        { onConflict: 'refresh', credentials },
-      );
+      const result = await locationService.createLocation(locationSpec, false, {
+        onConflict: 'refresh',
+        credentials,
+      });
 
       expect(result).toEqual({
         location: { id: 'existing-id', ...locationSpec },
         entities: [],
       });
-      expect(refreshService.refresh).toHaveBeenCalledWith({
-        entityRef: expect.stringMatching(/^location:default\/generated-/),
+      expect(store.createLocation).toHaveBeenCalledWith(locationSpec, {
+        onConflict: 'refresh',
         credentials,
       });
-    });
-
-    it('should still throw conflict error when onConflict is reject', async () => {
-      const locationSpec = {
-        type: 'url',
-        target: 'https://backstage.io/catalog-info.yaml',
-      };
-
-      store.createLocation.mockRejectedValueOnce(
-        new ConflictError(
-          `Location ${locationSpec.type}:${locationSpec.target} already exists`,
-        ),
-      );
-
-      await expect(
-        locationService.createLocation(locationSpec, false, {
-          onConflict: 'reject',
-          credentials: {} as any,
-        }),
-      ).rejects.toThrow(ConflictError);
-    });
-
-    it('should throw conflict error by default when onConflict is not set', async () => {
-      const locationSpec = {
-        type: 'url',
-        target: 'https://backstage.io/catalog-info.yaml',
-      };
-
-      store.createLocation.mockRejectedValueOnce(
-        new ConflictError(
-          `Location ${locationSpec.type}:${locationSpec.target} already exists`,
-        ),
-      );
-
-      await expect(
-        locationService.createLocation(locationSpec, false),
-      ).rejects.toThrow(ConflictError);
     });
 
     it('should return default InputError for failed processed entities in dryRun mode', async () => {

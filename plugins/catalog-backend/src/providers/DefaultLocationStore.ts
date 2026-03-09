@@ -29,13 +29,14 @@ import {
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
 import { locationSpecToLocationEntity } from '../util/conversion';
-import { LocationInput, LocationStore } from '../service/types';
+import { LocationInput, LocationStore, RefreshService } from '../service/types';
 import {
   ANNOTATION_ORIGIN_LOCATION,
   CompoundEntityRef,
   parseLocationRef,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
+import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import {
   CatalogScmEvent,
   CatalogScmEventsService,
@@ -53,6 +54,7 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
   private readonly db: Knex;
   private readonly scmEvents: CatalogScmEventsService;
   private readonly scmEventHandlingConfig: ScmEventHandlingConfig;
+  private refreshService?: RefreshService;
 
   constructor(
     db: Knex,
@@ -64,20 +66,36 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
     this.scmEventHandlingConfig = scmEventHandlingConfig;
   }
 
+  setRefreshService(refreshService: RefreshService): void {
+    this.refreshService = refreshService;
+  }
+
   getProviderName(): string {
     return 'DefaultLocationStore';
   }
 
-  async createLocation(input: LocationInput): Promise<Location> {
+  async createLocation(
+    input: LocationInput,
+    options?: {
+      onConflict?: 'refresh' | 'reject';
+      credentials?: BackstageCredentials;
+    },
+  ): Promise<Location> {
+    let existed = false;
+
     const location = await this.db.transaction(async tx => {
       // Attempt to find a previous location matching the input
       const previousLocations = await this.locations(tx);
       // TODO: when location id's are a compilation of input target we can remove this full
       // lookup of locations first and just grab the by that instead.
-      const previousLocation = previousLocations.some(
+      const previousLocation = previousLocations.find(
         l => input.type === l.type && input.target === l.target,
       );
       if (previousLocation) {
+        if (options?.onConflict === 'refresh') {
+          existed = true;
+          return previousLocation;
+        }
         throw new ConflictError(
           `Location ${input.type}:${input.target} already exists`,
         );
@@ -93,12 +111,33 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
 
       return inner;
     });
-    const entity = locationSpecToLocationEntity({ location });
-    await this.connection.applyMutation({
-      type: 'delta',
-      added: [{ entity, locationKey: getEntityLocationRef(entity) }],
-      removed: [],
-    });
+
+    if (existed) {
+      if (!this.refreshService) {
+        throw new InputError(
+          'onConflict refresh is not supported: no refresh service available',
+        );
+      }
+      if (!options?.credentials) {
+        throw new InputError(
+          'onConflict refresh requires credentials to be provided',
+        );
+      }
+      const entityRef = stringifyEntityRef(
+        locationSpecToLocationEntity({ location }),
+      );
+      await this.refreshService.refresh({
+        entityRef,
+        credentials: options.credentials,
+      });
+    } else {
+      const entity = locationSpecToLocationEntity({ location });
+      await this.connection.applyMutation({
+        type: 'delta',
+        added: [{ entity, locationKey: getEntityLocationRef(entity) }],
+        removed: [],
+      });
+    }
 
     return location;
   }

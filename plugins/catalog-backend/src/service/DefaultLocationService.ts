@@ -24,21 +24,15 @@ import {
 } from '@backstage/catalog-model';
 import { Location } from '@backstage/catalog-client';
 import { CatalogProcessingOrchestrator } from '../processing/types';
-import {
-  LocationInput,
-  LocationService,
-  LocationStore,
-  RefreshService,
-} from './types';
+import { LocationInput, LocationService, LocationStore } from './types';
 import { locationSpecToMetadataName } from '../util/conversion';
-import { ConflictError, InputError } from '@backstage/errors';
+import { InputError } from '@backstage/errors';
 import { DeferredEntity } from '@backstage/plugin-catalog-node';
 import { FilterPredicate } from '@backstage/filter-predicates';
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
 
 export type DefaultLocationServiceOptions = {
   allowedLocationTypes: string[];
-  refreshService?: RefreshService;
 };
 
 export class DefaultLocationService implements LocationService {
@@ -76,48 +70,10 @@ export class DefaultLocationService implements LocationService {
     if (dryRun) {
       return this.dryRunCreateLocation(input);
     }
-    try {
-      const location = await this.store.createLocation(input);
-      return { location, entities: [] };
-    } catch (error) {
-      if (options?.onConflict === 'refresh' && error instanceof ConflictError) {
-        return this.refreshExistingLocation(input, options);
-      }
-      throw error;
-    }
-  }
-
-  private async refreshExistingLocation(
-    input: LocationInput,
-    options: { credentials?: BackstageCredentials },
-  ): Promise<{ location: Location; entities: Entity[] }> {
-    const { refreshService } = this.options;
-    if (!refreshService) {
-      throw new InputError(
-        'onConflict refresh is not supported: no refresh service available',
-      );
-    }
-    if (!options.credentials) {
-      throw new InputError(
-        'onConflict refresh requires credentials to be provided',
-      );
-    }
-
-    const location = await this.store.getLocationByEntity(
-      `location:default/${locationSpecToMetadataName(input)}`,
-    );
-
-    const entityRef = stringifyEntityRef({
-      kind: 'Location',
-      namespace: 'default',
-      name: locationSpecToMetadataName(input),
+    const location = await this.store.createLocation(input, {
+      onConflict: options?.onConflict,
+      credentials: options?.credentials,
     });
-
-    await refreshService.refresh({
-      entityRef,
-      credentials: options.credentials,
-    });
-
     return { location, entities: [] };
   }
 
