@@ -18,12 +18,13 @@
 
 @layer components {
   .bui-MenuPopover {
+    --menu-border-radius: var(--bui-radius-2);
     display: flex;
     flex-direction: column;
     box-shadow: var(--bui-shadow);
-    border: 1px solid var(--bui-border);
-    border-radius: var(--bui-radius-2);
-    background: var(--bui-bg-surface-1);
+    border: 1px solid var(--bui-border-1);
+    border-radius: var(--menu-border-radius);
+    background: var(--bui-bg-app);
     color: var(--bui-fg-primary);
     outline: none;
     transition: transform 200ms, opacity 200ms;
@@ -55,6 +56,14 @@
     }
   }
 
+  .bui-MenuInner {
+    border-radius: var(--menu-border-radius);
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+  }
+
   .bui-MenuContent {
     max-height: inherit;
     box-sizing: border-box;
@@ -69,13 +78,22 @@
     padding-inline: var(--bui-space-1);
     display: block;
 
+    &:focus-visible {
+      outline: none;
+    }
+
+    &[data-focus-visible] {
+      outline: 2px solid var(--bui-ring);
+      outline-offset: -2px;
+    }
+
     &[data-focused] .bui-MenuItemWrapper {
-      background: var(--bui-bg-surface-2);
+      background: var(--bui-bg-neutral-2);
       color: var(--bui-fg-primary);
     }
 
     &[data-open] .bui-MenuItemWrapper {
-      background: var(--bui-bg-surface-2);
+      background: var(--bui-bg-neutral-2);
       color: var(--bui-fg-primary);
     }
 
@@ -114,7 +132,7 @@
     display: block;
 
     &:hover .bui-MenuItemWrapper {
-      background: var(--bui-bg-surface-2);
+      background: var(--bui-bg-neutral-2);
       color: var(--bui-fg-primary);
     }
 
@@ -183,7 +201,7 @@
 
   .bui-MenuSeparator {
     height: 1px;
-    background: var(--bui-border);
+    background: var(--bui-border-1);
     margin-inline: var(--bui-space-1_5);
     margin-block: var(--bui-space-1);
   }
@@ -194,8 +212,8 @@
     flex-shrink: 0;
     display: flex;
     align-items: center;
-    border-bottom: 1px solid var(--bui-border);
-    background-color: var(--bui-bg-surface-1);
+    border-bottom: 1px solid var(--bui-border-1);
+    background-color: var(--bui-bg-neutral-1);
     height: 2rem;
 
     &[data-empty] {

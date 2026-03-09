@@ -16,7 +16,7 @@
 
 import { TestApiProvider } from '@backstage/test-utils';
 // eslint-disable-next-line no-restricted-imports
-import { TextEncoder } from 'util';
+import { TextEncoder } from 'node:util';
 import {
   base64EncodeContent,
   DryRunProvider,

@@ -26,9 +26,9 @@ import {
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import kebabCase from 'lodash/kebabCase';
 import startCase from 'lodash/startCase';
-import { ComponentType } from 'react';
+import { ComponentType, ReactElement } from 'react';
 import { EntityContentBlueprint } from '../blueprints/EntityContentBlueprint';
-import { EntityPredicate } from '../predicates/types';
+import { FilterPredicate } from '@backstage/filter-predicates';
 import { Entity } from '@backstage/catalog-model';
 
 /** @alpha */
@@ -36,9 +36,10 @@ export function convertLegacyEntityContentExtension(
   LegacyExtension: ComponentType<{}>,
   overrides?: {
     name?: string;
-    filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+    filter?: string | FilterPredicate | ((entity: Entity) => boolean);
     path?: string;
     title?: string;
+    icon?: string | ReactElement;
 
     /**
      * @deprecated Use the `path` param instead.
@@ -95,6 +96,7 @@ export function convertLegacyEntityContentExtension(
       title: (overrides?.title ??
         overrides?.defaultTitle ??
         startCase(infix)) as string,
+      icon: overrides?.icon,
       routeRef: mountPoint && convertLegacyRouteRef(mountPoint),
       loader: async () => compatWrapper(element),
     },

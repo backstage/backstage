@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { command } from './command';
+export { default } from './command';

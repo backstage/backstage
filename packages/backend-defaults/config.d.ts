@@ -594,6 +594,32 @@ export interface Config {
         | string
         | {
             /**
+             * The specific config for Azure database for PostgreSQL connections with Entra authentication
+             */
+            type: 'azure';
+            /**
+             * Optional Azure token credential configuration
+             */
+            tokenCredential?: {
+              /**
+               * How early before an access token expires to refresh it with a new one.
+               * Defaults to 5 minutes
+               * Supported formats:
+               * - A string in the format of '1d', '2 seconds' etc. as supported by the `ms` library.
+               * - A standard ISO formatted duration string, e.g. 'P2DT6H' or 'PT1M'.
+               * - An object with individual units (in plural) as keys, e.g. `{ days: 2, hours: 6 }`.
+               */
+              tokenRenewableOffsetTime?: string | HumanDuration;
+              clientId?: string;
+              /**
+               * @visibility secret
+               */
+              clientSecret?: string;
+              tenantId?: string;
+            };
+          }
+        | {
+            /**
              * The specific config for cloudsql connections
              */
             type: 'cloudsql';
@@ -607,6 +633,10 @@ export interface Config {
             ipAddressType?: 'PUBLIC' | 'PRIVATE' | 'PSC';
           }
         | {
+            /**
+             * The rest config for default, regular connections
+             */
+            type?: 'default';
             /**
              * Password that belongs to the client User
              * @visibility secret
@@ -1095,6 +1125,36 @@ export interface Config {
        * and set the `x-envoy-upstream-healthchecked-cluster` header to a matching value.
        */
       headers?: { [name: string]: string };
+    };
+
+    /**
+     * Options for the metrics service.
+     */
+    metrics?: {
+      /**
+       * Plugin-specific metrics configuration. Each plugin can override meter metadata.
+       */
+      plugin?: {
+        [pluginId: string]: {
+          /**
+           * Meter configuration for this plugin.
+           */
+          meter?: {
+            /**
+             * Custom meter name. If not set, defaults to backstage-plugin-{pluginId}.
+             */
+            name?: string;
+            /**
+             * Version for the meter.
+             */
+            version?: string;
+            /**
+             * Schema URL for the meter.
+             */
+            schemaUrl?: string;
+          };
+        };
+      };
     };
 
     /**

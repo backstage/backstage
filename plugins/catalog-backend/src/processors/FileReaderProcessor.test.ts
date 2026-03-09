@@ -20,7 +20,7 @@ import {
   CatalogProcessorErrorResult,
   CatalogProcessorResult,
 } from '@backstage/plugin-catalog-node';
-import path from 'path';
+import path from 'node:path';
 import { defaultEntityDataParser } from '../util/parse';
 
 describe('FileReaderProcessor', () => {

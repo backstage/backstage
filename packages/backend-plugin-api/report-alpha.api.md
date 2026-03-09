@@ -103,6 +103,150 @@ export const actionsServiceRef: ServiceRef<
   'singleton'
 >;
 
+// @alpha
+export interface MetricAdvice {
+  explicitBucketBoundaries?: number[];
+}
+
+// @alpha
+export interface MetricAttributes {
+  // (undocumented)
+  [attributeKey: string]: MetricAttributeValue | undefined;
+}
+
+// @alpha
+export type MetricAttributeValue =
+  | string
+  | number
+  | boolean
+  | Array<null | undefined | string>
+  | Array<null | undefined | number>
+  | Array<null | undefined | boolean>;
+
+// @alpha
+export interface MetricOptions {
+  advice?: MetricAdvice;
+  description?: string;
+  unit?: string;
+}
+
+// @alpha
+export interface MetricsService {
+  createCounter<TAttributes extends MetricAttributes = MetricAttributes>(
+    name: string,
+    opts?: MetricOptions,
+  ): MetricsServiceCounter<TAttributes>;
+  createGauge<TAttributes extends MetricAttributes = MetricAttributes>(
+    name: string,
+    opts?: MetricOptions,
+  ): MetricsServiceGauge<TAttributes>;
+  createHistogram<TAttributes extends MetricAttributes = MetricAttributes>(
+    name: string,
+    opts?: MetricOptions,
+  ): MetricsServiceHistogram<TAttributes>;
+  createObservableCounter<
+    TAttributes extends MetricAttributes = MetricAttributes,
+  >(
+    name: string,
+    opts?: MetricOptions,
+  ): MetricsServiceObservableCounter<TAttributes>;
+  createObservableGauge<
+    TAttributes extends MetricAttributes = MetricAttributes,
+  >(
+    name: string,
+    opts?: MetricOptions,
+  ): MetricsServiceObservableGauge<TAttributes>;
+  createObservableUpDownCounter<
+    TAttributes extends MetricAttributes = MetricAttributes,
+  >(
+    name: string,
+    opts?: MetricOptions,
+  ): MetricsServiceObservableUpDownCounter<TAttributes>;
+  createUpDownCounter<TAttributes extends MetricAttributes = MetricAttributes>(
+    name: string,
+    opts?: MetricOptions,
+  ): MetricsServiceUpDownCounter<TAttributes>;
+}
+
+// @alpha
+export interface MetricsServiceCounter<
+  TAttributes extends MetricAttributes = MetricAttributes,
+> {
+  // (undocumented)
+  add(value: number, attributes?: TAttributes): void;
+}
+
+// @alpha
+export interface MetricsServiceGauge<
+  TAttributes extends MetricAttributes = MetricAttributes,
+> {
+  // (undocumented)
+  record(value: number, attributes?: TAttributes): void;
+}
+
+// @alpha
+export interface MetricsServiceHistogram<
+  TAttributes extends MetricAttributes = MetricAttributes,
+> {
+  // (undocumented)
+  record(value: number, attributes?: TAttributes): void;
+}
+
+// @alpha
+export interface MetricsServiceObservable<
+  TAttributes extends MetricAttributes = MetricAttributes,
+> {
+  // (undocumented)
+  addCallback(callback: MetricsServiceObservableCallback<TAttributes>): void;
+  // (undocumented)
+  removeCallback(callback: MetricsServiceObservableCallback<TAttributes>): void;
+}
+
+// @alpha
+export type MetricsServiceObservableCallback<
+  TAttributes extends MetricAttributes = MetricAttributes,
+> = (
+  observableResult: MetricsServiceObservableResult<TAttributes>,
+) => void | Promise<void>;
+
+// @alpha
+export type MetricsServiceObservableCounter<
+  TAttributes extends MetricAttributes = MetricAttributes,
+> = MetricsServiceObservable<TAttributes>;
+
+// @alpha
+export type MetricsServiceObservableGauge<
+  TAttributes extends MetricAttributes = MetricAttributes,
+> = MetricsServiceObservable<TAttributes>;
+
+// @alpha
+export interface MetricsServiceObservableResult<
+  TAttributes extends MetricAttributes = MetricAttributes,
+> {
+  // (undocumented)
+  observe(value: number, attributes?: TAttributes): void;
+}
+
+// @alpha
+export type MetricsServiceObservableUpDownCounter<
+  TAttributes extends MetricAttributes = MetricAttributes,
+> = MetricsServiceObservable<TAttributes>;
+
+// @alpha
+export const metricsServiceRef: ServiceRef<
+  MetricsService,
+  'plugin',
+  'singleton'
+>;
+
+// @alpha
+export interface MetricsServiceUpDownCounter<
+  TAttributes extends MetricAttributes = MetricAttributes,
+> {
+  // (undocumented)
+  add(value: number, attributes?: TAttributes): void;
+}
+
 // @public (undocumented)
 export interface RootSystemMetadataService {
   // (undocumented)

@@ -101,6 +101,7 @@ export const AllColors = meta.story({
       <Text {...args} color="danger" children="I am danger" />
       <Text {...args} color="warning" children="I am warning" />
       <Text {...args} color="success" children="I am success" />
+      <Text {...args} color="info" children="I am info" />
     </Flex>
   ),
 });

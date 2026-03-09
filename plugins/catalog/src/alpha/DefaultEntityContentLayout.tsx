@@ -32,6 +32,9 @@ import {
 } from '../components/EntityProcessingErrorsPanel';
 import { HorizontalScrollGrid } from '@backstage/core-components';
 
+// Module-level flag to ensure deprecation warning is only logged once
+let hasLoggedSummaryWarning = false;
+
 const useStyles = makeStyles<
   Theme,
   { infoCards: boolean; summaryCards: boolean; contentCards: boolean }
@@ -137,10 +140,20 @@ export function DefaultEntityContentLayout(props: EntityContentLayoutProps) {
   const { cards } = props;
 
   const infoCards = cards.filter(card => card.type === 'info');
-  const summaryCards = cards.filter(card => card.type === 'summary');
+  // Keep support for 'summary' type at runtime for backward compatibility
+  // even though it's been removed from the type system
+  const summaryCards = cards.filter(card => card.type === ('summary' as any));
   const contentCards = cards.filter(
     card => !card.type || card.type === 'content',
   );
+
+  if (summaryCards.length > 0 && !hasLoggedSummaryWarning) {
+    hasLoggedSummaryWarning = true;
+    // eslint-disable-next-line no-console
+    console.warn(
+      "The 'summary' entity card type has been removed. Please update your cards to use 'content' or 'info' types instead.",
+    );
+  }
 
   const classes = useStyles({
     infoCards: !!infoCards.length,

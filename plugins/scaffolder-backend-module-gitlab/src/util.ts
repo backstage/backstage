@@ -26,8 +26,8 @@ import commonGitlabConfig from './commonGitlabConfig';
 
 import { SerializedFile } from '@backstage/plugin-scaffolder-node';
 
-import { createHash } from 'crypto';
-import path from 'path';
+import { createHash } from 'node:crypto';
+import path from 'node:path';
 
 export const parseRepoHost = (repoUrl: string): string => {
   let parsed;

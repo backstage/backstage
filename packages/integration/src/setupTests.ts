@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-global.setImmediate = require('timers').setImmediate;
-global.clearImmediate = require('timers').clearImmediate;
+global.setImmediate = require('node:timers').setImmediate;
+global.clearImmediate = require('node:timers').clearImmediate;

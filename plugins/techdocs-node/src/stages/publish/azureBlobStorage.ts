@@ -25,7 +25,7 @@ import { assertError, ForwardedError } from '@backstage/errors';
 import express from 'express';
 import JSON5 from 'json5';
 import limiterFactory from 'p-limit';
-import { default as path, default as platformPath } from 'path';
+import { default as path, default as platformPath } from 'node:path';
 import {
   bulkStorageOperation,
   getCloudPathForLocalPath,

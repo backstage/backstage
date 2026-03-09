@@ -141,6 +141,13 @@ export const notificationsPlugin: BackstagePlugin<
   {}
 >;
 
+// @public
+export type NotificationsRenderItemProps = {
+  unreadCount: number;
+  to: string;
+  onClick: () => void;
+};
+
 // @public (undocumented)
 export const NotificationsSidebarItem: (
   props?: NotificationsSideBarItemProps,
@@ -158,23 +165,13 @@ export type NotificationsSideBarItemProps = {
   text?: string;
   disableHighlight?: boolean;
   noTrack?: boolean;
+  renderItem?: (props: NotificationsRenderItemProps) => React.ReactNode;
 };
 
 // @public (undocumented)
-export const NotificationsTable: ({
-  title,
-  markAsReadOnLinkOpen,
-  isLoading,
-  notifications,
-  isUnread,
-  onUpdate,
-  setContainsText,
-  onPageChange,
-  onRowsPerPageChange,
-  page,
-  pageSize,
-  totalCount,
-}: NotificationsTableProps) => JSX_2.Element;
+export const NotificationsTable: (
+  input: NotificationsTableProps,
+) => JSX_2.Element;
 
 // @public (undocumented)
 export type NotificationsTableProps = Pick<

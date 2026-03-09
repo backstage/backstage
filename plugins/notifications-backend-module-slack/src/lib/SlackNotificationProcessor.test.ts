@@ -17,7 +17,7 @@
 import { mockServices } from '@backstage/backend-test-utils';
 import { SlackNotificationProcessor } from './SlackNotificationProcessor';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
-import { WebClient } from '@slack/web-api';
+import { KnownBlock, WebClient } from '@slack/web-api';
 import { Entity } from '@backstage/catalog-model';
 import pThrottle from 'p-throttle';
 import { durationToMilliseconds } from '@backstage/types';
@@ -203,6 +203,43 @@ describe('SlackNotificationProcessor', () => {
               ],
             },
           ],
+          fallback: 'notification',
+        },
+      ],
+    });
+  });
+
+  it('should use a custom block kit renderer when provided', async () => {
+    const slack = new WebClient();
+    const customBlocks: KnownBlock[] = [
+      {
+        type: 'section',
+        text: { type: 'mrkdwn', text: 'Custom block' },
+      },
+    ];
+
+    const processor = SlackNotificationProcessor.fromConfig(config, {
+      auth,
+      logger,
+      catalog: catalogServiceMock({
+        entities: DEFAULT_ENTITIES_RESPONSE.items,
+      }),
+      slack,
+      blockKitRenderer: () => customBlocks,
+    })[0];
+
+    await processor.processOptions({
+      recipients: { type: 'entity', entityRef: 'group:default/mock' },
+      payload: { title: 'notification' },
+    });
+
+    expect(slack.chat.postMessage).toHaveBeenCalledWith({
+      channel: 'C12345678',
+      text: 'notification',
+      attachments: [
+        {
+          color: '#00A699',
+          blocks: customBlocks,
           fallback: 'notification',
         },
       ],

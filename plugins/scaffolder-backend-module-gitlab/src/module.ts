@@ -21,11 +21,13 @@ import { ScmIntegrations } from '@backstage/integration';
 import { scaffolderAutocompleteExtensionPoint } from '@backstage/plugin-scaffolder-node/alpha';
 import {
   createGitlabGroupEnsureExistsAction,
+  createGitlabGroupAccessAction,
   createGitlabIssueAction,
   createGitlabProjectAccessTokenAction,
   createGitlabProjectDeployTokenAction,
   createGitlabProjectVariableAction,
   createGitlabRepoPushAction,
+  createGitlabUserInfoAction,
   createPublishGitlabAction,
   createPublishGitlabMergeRequestAction,
   createTriggerGitlabPipelineAction,
@@ -54,12 +56,14 @@ export const gitlabModule = createBackendModule({
 
         scaffolder.addActions(
           createGitlabGroupEnsureExistsAction({ integrations }),
+          createGitlabGroupAccessAction({ integrations }),
           createGitlabProjectMigrateAction({ integrations }),
           createGitlabIssueAction({ integrations }),
           createGitlabProjectAccessTokenAction({ integrations }),
           createGitlabProjectDeployTokenAction({ integrations }),
           createGitlabProjectVariableAction({ integrations }),
           createGitlabRepoPushAction({ integrations }),
+          createGitlabUserInfoAction({ integrations }),
           editGitlabIssueAction({ integrations }),
           createPublishGitlabAction({ config, integrations }),
           createPublishGitlabMergeRequestAction({ integrations }),

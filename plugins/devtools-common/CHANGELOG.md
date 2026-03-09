@@ -1,5 +1,28 @@
 # @backstage/plugin-devtools-common
 
+## 0.1.22
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.6
+
+## 0.1.22-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.5-next.0
+  - @backstage/types@1.2.2
+
+## 0.1.21
+
+### Patch Changes
+
+- be6cef5: Add support for adding `unprocessed-entities` and other tabs to `devtools` when using the New Frontend system
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.4
+
 ## 0.1.20
 
 ### Patch Changes

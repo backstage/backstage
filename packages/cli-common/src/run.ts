@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ChildProcess, SpawnOptions } from 'child_process';
+import { ChildProcess, SpawnOptions } from 'node:child_process';
 import spawn from 'cross-spawn';
 import { ExitCodeError } from './errors';
 import { assertError } from '@backstage/errors';
@@ -211,7 +211,7 @@ export async function runOutput(
  */
 export async function runCheck(args: string[]): Promise<boolean> {
   try {
-    await run(args).waitForExit();
+    await run(args, { stdio: 'ignore' }).waitForExit();
     return true;
   } catch {
     return false;

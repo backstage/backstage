@@ -7,3 +7,4 @@ documentation: https://github.com/TeraSky-OSS/backstage-plugins/tree/main/plugin
 iconUrl: https://raw.githubusercontent.com/loft-sh/devpod/refs/heads/main/docs/static/media/devpod-logo.png
 npmPackageName: '@terasky/backstage-plugin-devpod'
 addedDate: '2024-12-30'
+status: active

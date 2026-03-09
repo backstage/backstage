@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-import { ConfigReader } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
 import { ScmIntegrations } from '@backstage/integration';
-import { createMockDirectory } from '@backstage/backend-test-utils';
+import {
+  createMockDirectory,
+  mockServices,
+} from '@backstage/backend-test-utils';
 import { createFetchCookiecutterAction } from './cookiecutter';
-import { join } from 'path';
+import { join } from 'node:path';
 import type { ActionContext } from '@backstage/plugin-scaffolder-node';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { examples } from './cookiecutter.examples';
@@ -46,16 +48,7 @@ jest.mock(
 
 describe('fetch:cookiecutter', () => {
   const mockDir = createMockDirectory({ mockOsTmpDir: true });
-  const integrations = ScmIntegrations.fromConfig(
-    new ConfigReader({
-      integrations: {
-        azure: [
-          { host: 'dev.azure.com', token: 'tokenlols' },
-          { host: 'myazurehostnotoken.com' },
-        ],
-      },
-    }),
-  );
+  const integrations = ScmIntegrations.fromConfig(mockServices.rootConfig());
 
   const mockTmpDir = mockDir.path;
 

@@ -15,6 +15,7 @@
  */
 
 import { InputError, NotAllowedError } from '@backstage/errors';
+import { createZodV3FilterPredicateSchema } from '@backstage/filter-predicates';
 import { Request } from 'express';
 import lodash from 'lodash';
 import { z } from 'zod';
@@ -24,17 +25,14 @@ import {
   QueryEntitiesInitialRequest,
   QueryEntitiesRequest,
 } from '../catalog/types';
-import {
-  CatalogProcessor,
-  EntityFilter,
-  EntityProvider,
-} from '@backstage/plugin-catalog-node';
+import { CatalogProcessor, EntityFilter } from '@backstage/plugin-catalog-node';
 import {
   Entity,
   parseEntityRef,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
+import type { EntityProviderEntry } from '../processing/connectEntityProviders';
 
 export async function requireRequestBody(req: Request): Promise<unknown> {
   const contentType = req.header('content-type');
@@ -112,6 +110,8 @@ const entityFilterParser: z.ZodSchema<EntityFilter> = z.lazy(() =>
     .or(z.object({ allOf: z.array(entityFilterParser) })),
 );
 
+const filterPredicateSchema = createZodV3FilterPredicateSchema(z);
+
 export const cursorParser: z.ZodSchema<Cursor> = z.object({
   orderFields: z.array(
     z.object({ field: z.string(), order: z.enum(['asc', 'desc']) }),
@@ -125,7 +125,7 @@ export const cursorParser: z.ZodSchema<Cursor> = z.object({
   orderFieldValues: z.array(z.string().or(z.null())),
   filter: entityFilterParser.optional(),
   isPrevious: z.boolean(),
-  query: z.string().optional(),
+  query: filterPredicateSchema.optional(),
   firstSortFieldValues: z.array(z.string().or(z.null())).optional(),
   totalItems: z.number().optional(),
 });
@@ -225,13 +225,13 @@ export function filterAndSortProcessors(
  * through the `catalog.providerOptions` config.
  */
 export function filterProviders(
-  providers: EntityProvider[],
+  providers: EntityProviderEntry[],
   config: Config,
-): EntityProvider[] {
-  function getProviderOptions(provider: EntityProvider): Config | undefined {
+): EntityProviderEntry[] {
+  function getProviderOptions(entry: EntityProviderEntry): Config | undefined {
     const root = config.getOptionalConfig('catalog.providerOptions');
     try {
-      return root?.getOptionalConfig(provider.getProviderName());
+      return root?.getOptionalConfig(entry.provider.getProviderName());
     } catch {
       // We silence errors specifically here, to cover for cases where the
       // provider name contains special characters which makes the config
@@ -240,11 +240,9 @@ export function filterProviders(
     }
   }
 
-  function isProviderDisabled(provider: EntityProvider): boolean {
-    return (
-      getProviderOptions(provider)?.getOptionalBoolean('disabled') === true
-    );
+  function isProviderDisabled(entry: EntityProviderEntry): boolean {
+    return getProviderOptions(entry)?.getOptionalBoolean('disabled') === true;
   }
 
-  return providers.filter(p => !isProviderDisabled(p));
+  return providers.filter(entry => !isProviderDisabled(entry));
 }

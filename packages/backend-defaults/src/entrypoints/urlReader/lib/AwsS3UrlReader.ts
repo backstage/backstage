@@ -49,8 +49,8 @@ import {
 } from '@aws-sdk/client-s3';
 import { AbortController } from '@aws-sdk/abort-controller';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
-import { Readable } from 'stream';
-import { relative } from 'path/posix';
+import { Readable } from 'node:stream';
+import { relative } from 'node:path/posix';
 
 export const DEFAULT_REGION = 'us-east-1';
 

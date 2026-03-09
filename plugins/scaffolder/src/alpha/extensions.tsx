@@ -25,7 +25,10 @@ import {
 } from '@backstage/frontend-plugin-api';
 import { rootRouteRef } from '../routes';
 import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
-import { FormFieldBlueprint } from '@backstage/plugin-scaffolder-react/alpha';
+import {
+  FormFieldBlueprint,
+  formFieldsApiRef,
+} from '@backstage/plugin-scaffolder-react/alpha';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
 import { ScaffolderClient } from '../api';
@@ -36,17 +39,29 @@ export const scaffolderPage = PageBlueprint.makeWithOverrides({
       FormFieldBlueprint.dataRefs.formFieldLoader,
     ]),
   },
-  factory(originalFactory, { inputs }) {
-    const formFieldLoaders = inputs.formFields.map(i =>
-      i.get(FormFieldBlueprint.dataRefs.formFieldLoader),
-    );
+  factory(originalFactory, { apis, inputs }) {
+    const formFieldsApi = apis.get(formFieldsApiRef);
+
     return originalFactory({
       routeRef: rootRouteRef,
       path: '/create',
-      loader: () =>
-        import('../components/Router/Router').then(m => (
-          <m.InternalRouter formFieldLoaders={formFieldLoaders} />
-        )),
+      loader: async () => {
+        // Merge form fields from the API with old-style direct attachments
+        const apiFormFields = (await formFieldsApi?.loadFormFields()) ?? [];
+        const formFieldLoaders = inputs.formFields.map(output =>
+          output.get(FormFieldBlueprint.dataRefs.formFieldLoader),
+        );
+
+        // Resolve direct attachments and combine with API form fields
+        const loadedFormFields = await Promise.all(
+          formFieldLoaders.map(loader => loader()),
+        );
+        const formFields = [...apiFormFields, ...loadedFormFields];
+
+        return import('../components/Router/Router').then(m => (
+          <m.InternalRouter formFields={formFields} />
+        ));
+      },
     });
   },
 });

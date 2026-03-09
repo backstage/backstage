@@ -15,13 +15,14 @@
  */
 
 import { FSWatcher, watch } from 'chokidar';
-import type { ChildProcess } from 'child_process';
+import type { ChildProcess } from 'node:child_process';
 import { ctrlc } from 'ctrlc-windows';
 import { IpcServer, ServerDataStore } from '../ipc';
 import debounce from 'lodash/debounce';
-import { fileURLToPath } from 'url';
-import { isAbsolute as isAbsolutePath } from 'path';
-import { paths } from '../../../../lib/paths';
+import { fileURLToPath } from 'node:url';
+import { isAbsolute as isAbsolutePath } from 'node:path';
+import { targetPaths } from '@backstage/cli-common';
+
 import spawn from 'cross-spawn';
 
 const loaderArgs = [
@@ -135,7 +136,7 @@ export async function runBackend(options: RunBackendOptions) {
           ...process.env,
           BACKSTAGE_CLI_LINKED_WORKSPACE: options.linkedWorkspace,
           BACKSTAGE_CLI_CHANNEL: '1',
-          ESBK_TSCONFIG_PATH: paths.resolveTargetRoot('tsconfig.json'),
+          ESBK_TSCONFIG_PATH: targetPaths.resolveRoot('tsconfig.json'),
         },
         serialization: 'advanced',
       },

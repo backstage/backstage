@@ -147,9 +147,6 @@ add the `UserNotificationSettingsCard` to your frontend.
 
 ```tsx title="packages/app/src/App.tsx"
 <Route path="/settings" element={<UserSettingsPage />}>
-  <SettingsLayout.Route path="/advanced" title="Advanced">
-    <AdvancedSettings />
-  </SettingsLayout.Route>
   <SettingsLayout.Route path="/notifications" title="Notifications">
     <UserNotificationSettingsCard
       originNames={{ 'plugin:scaffolder': 'Scaffolder' }}

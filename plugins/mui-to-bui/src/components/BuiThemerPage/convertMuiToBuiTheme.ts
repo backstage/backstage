@@ -94,37 +94,35 @@ function generateBuiVariables(theme: Mui5Theme): Record<string, string> {
   Object.entries({
     primary: palette.text.primary,
     secondary: palette.textSubtle,
-    link: palette.link ?? palette.primary.main,
-    'link-hover': palette.linkHover ?? palette.primary.dark,
     disabled: palette.text.disabled,
     solid: palette.primary.contrastText,
     'solid-disabled': palette.text.disabled,
-    tint: palette.textSubtle,
-    'tint-disabled': palette.textVerySubtle,
-    danger: palette.error.dark,
-    warning: palette.warning.dark,
-    success: palette.success.dark,
+    danger: palette.error.main,
+    warning: palette.warning.main,
+    success: palette.success.main,
+    info: palette.info?.main ?? palette.primary.main,
+    'danger-on-bg': palette.error.dark,
+    'warning-on-bg': palette.warning.dark,
+    'success-on-bg': palette.success.dark,
+    'info-on-bg': palette.info?.dark ?? palette.primary.dark,
   }).forEach(([key, value]) => {
     styleObject[`--bui-fg-${key}`] = value;
   });
 
-  // Generate surface colors
+  // Generate neutral background colors
+  styleObject['--bui-bg-app'] = palette.background.default;
   Object.entries({
-    'surface-0': palette.background.default,
-    'surface-1': palette.background.paper,
-    'surface-2': palette.background.default,
-    'surface-3': palette.background.default,
+    'neutral-1': palette.background.paper,
+    'neutral-2': palette.background.default,
+    'neutral-3': palette.background.default,
     solid: palette.primary.main,
     'solid-hover': blend(palette.primary.main, palette.primary.dark, 0.5),
     'solid-pressed': palette.primary.dark,
     'solid-disabled': palette.action.disabledBackground,
-    tint: 'transparent',
-    'tint-hover': alpha(palette.primary.main, 0.4),
-    'tint-pressed': alpha(palette.primary.main, 0.6),
-    'tint-disabled': palette.action.disabledBackground,
     danger: palette.error.light,
     warning: palette.warning.light,
     success: palette.success.light,
+    info: palette.info?.light ?? alpha(palette.primary.main, 0.1),
   }).forEach(([key, value]) => {
     styleObject[`--bui-bg-${key}`] = value;
   });
@@ -134,12 +132,13 @@ function generateBuiVariables(theme: Mui5Theme): Record<string, string> {
     danger: palette.error.main,
     warning: palette.warning.main,
     success: palette.success.main,
+    info: palette.info?.main ?? palette.primary.main,
   }).forEach(([key, value]) => {
     styleObject[`--bui-border-${key}`] = value;
   });
 
   // Base border color if available
-  styleObject['--bui-border'] = palette.border || palette.divider;
+  styleObject['--bui-border-2'] = palette.border || palette.divider;
   styleObject['--bui-border-danger'] = palette.error.main;
   styleObject['--bui-border-warning'] = palette.warning.main;
   styleObject['--bui-border-success'] = palette.success.main;

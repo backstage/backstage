@@ -31,3 +31,4 @@ export {
   convertLegacyRouteRefs,
   type ToNewRouteRef,
 } from './convertLegacyRouteRef';
+export { withApis } from './withApis';

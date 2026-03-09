@@ -29,9 +29,9 @@ import {
   createApiFactory,
   routeResolutionApiRef,
   AppNode,
-  ExtensionFactoryMiddleware,
   FrontendFeature,
 } from '@backstage/frontend-plugin-api';
+import { ExtensionFactoryMiddleware } from './types';
 import {
   AnyApiFactory,
   ApiHolder,
@@ -256,17 +256,6 @@ export type CreateSpecializedAppOptions = {
     apis?: ApiHolder;
 
     /**
-     * If set to true, the system will silently accept and move on if
-     * encountering config for extensions that do not exist. The default is to
-     * reject such config to help catch simple mistakes.
-     *
-     * This flag can be useful in some scenarios where you have a dynamic set of
-     * extensions enabled at different times, but also increases the risk of
-     * accidentally missing e.g. simple typos in your config.
-     */
-    allowUnknownExtensionConfig?: boolean;
-
-    /**
      * Applies one or more middleware on every extension, as they are added to
      * the application.
      *
@@ -284,6 +273,14 @@ export type CreateSpecializedAppOptions = {
   };
 };
 
+// Internal options type, not exported in the public API
+export interface CreateSpecializedAppInternalOptions
+  extends CreateSpecializedAppOptions {
+  __internal?: {
+    apiFactoryOverrides?: AnyApiFactory[];
+  };
+}
+
 /**
  * Creates an empty app without any default features. This is a low-level API is
  * intended for use in tests or specialized setups. Typically you want to use
@@ -296,6 +293,7 @@ export function createSpecializedApp(options?: CreateSpecializedAppOptions): {
   tree: AppTree;
   errors?: AppError[];
 } {
+  const internalOptions = options as CreateSpecializedAppInternalOptions;
   const config = options?.config ?? new ConfigReader({}, 'empty-config');
   const features = deduplicateFeatures(options?.features ?? []).map(
     createPluginInfoAttacher(config, options?.advanced?.pluginInfoResolver),
@@ -337,6 +335,7 @@ export function createSpecializedApp(options?: CreateSpecializedAppOptions): {
         createApiFactory(configApiRef, config),
         createApiFactory(routeResolutionApiRef, routeResolutionApi),
         createApiFactory(identityApiRef, appIdentityProxy),
+        ...(internalOptions?.__internal?.apiFactoryOverrides ?? []),
       ],
     });
 
@@ -347,6 +346,7 @@ export function createSpecializedApp(options?: CreateSpecializedAppOptions): {
         OpaqueFrontendPlugin.toInternal(feature).featureFlags.forEach(flag =>
           featureFlagApi.registerFlag({
             name: flag.name,
+            description: flag.description,
             pluginId: feature.id,
           }),
         );
@@ -355,6 +355,7 @@ export function createSpecializedApp(options?: CreateSpecializedAppOptions): {
         toInternalFrontendModule(feature).featureFlags.forEach(flag =>
           featureFlagApi.registerFlag({
             name: flag.name,
+            description: flag.description,
             pluginId: feature.pluginId,
           }),
         );
@@ -401,7 +402,7 @@ function createApiFactories(options: {
     if (apiFactory) {
       const apiRefId = apiFactory.api.id;
       const ownerId = getApiOwnerId(apiRefId);
-      const pluginId = apiNode.spec.plugin.id ?? 'app';
+      const pluginId = apiNode.spec.plugin.pluginId ?? 'app';
       const existingFactory = factoriesById.get(apiRefId);
 
       // This allows modules to override factories provided by the plugin, but

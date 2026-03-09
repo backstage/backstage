@@ -15,13 +15,23 @@ These are the [extension blueprints](../architecture/23-extension-blueprints.md)
 
 An API extension is used to add or override [Utility API factories](../utility-apis/01-index.md) in the app. They are commonly used by plugins for both internal and shared APIs. There are also many built-in Api extensions provided by the framework that you are able to override.
 
-### NavItem - [Reference](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.NavItemBlueprint.html)
+### NavItem (deprecated) - [Reference](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.NavItemBlueprint.html)
 
-Navigation item extensions are used to provide menu items that link to different parts of the app. By default nav items are attached to the app nav extension, which by default is rendered as the left sidebar in the app.
+The `NavItemBlueprint` is deprecated. The app now auto-discovers navigation items from page extensions, so explicit nav item extensions are no longer needed. To migrate, ensure your plugin and/or page extensions have a `title` and `icon` set — these are used to populate the sidebar automatically.
 
 ### Page - [Reference](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.PageBlueprint.html)
 
-Page extensions provide content for a particular route in the app. By default pages are attached to the app routes extensions, which renders the root routes.
+Page extensions provide content for a particular route in the app. By default pages are attached to the app routes extensions, which renders the root routes. Pages automatically inherit the plugin's `title` and `icon` as defaults, which can be overridden per-page via `PageBlueprint` params.
+
+To enable sub-pages on a page, you can either omit the `loader` param to use the built-in default implementation that renders sub-pages as tabs, or provide a custom `loader` that explicitly handles the sub-page inputs.
+
+### SubPage - [Reference](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.SubPageBlueprint.html)
+
+Sub-page extensions create tabbed content within a parent page. They are attached to a page extension's `pages` input and rendered as tabs in the page header. Each sub-page has a `path` (relative to the parent page), a `title` for the tab, and an optional `icon`. Content is lazy-loaded via a `loader` function.
+
+### PluginHeaderAction - [Reference](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.PluginHeaderActionBlueprint.html)
+
+Plugin header action extensions provide plugin-scoped actions that appear in the page header. They are automatically scoped to the plugin that provides them and will appear in the header of all pages belonging to that plugin. Actions are lazy-loaded via a `loader` function that returns a React element.
 
 ## Extension blueprints in `@backstage/frontend-plugin-api/alpha`
 
@@ -51,9 +61,11 @@ Icon bundle extensions provide the ability to replace or provide new icons to th
 
 Translation extension provide custom translation messages for the app. They can be used both to override the default english messages to custom ones, as well as provide translations for additional languages.
 
-### NavContent - [Reference](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.NavContentBlueprint.html)
+### NavContent - [Reference](https://backstage.io/api/stable/variables/_backstage_plugin-app-react.NavContentBlueprint.html)
 
 Nav content extensions allow you to replace the entire navbar with your own component. They are always attached to the app nav extension.
+
+Your custom component receives a `navItems` prop—a collection with `take(id)` and `rest()` methods for placing specific items in custom positions. Nav items are auto-discovered from page extensions, and metadata (title, icon) comes from page config, nav item extensions, or plugin defaults. Use `navItems.take('page:home')` to take a specific item by extension ID, and `navItems.rest()` to get all remaining items. The deprecated `items` prop (a flat list) remains supported for backward compatibility.
 
 ### Router - [Reference](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.RouterBlueprint.html)
 
@@ -72,6 +84,31 @@ Avoid using `convertLegacyEntityCardExtension` from `@backstage/core-compat-api`
 ### EntityContent - [Example](https://github.com/backstage/backstage/blob/cd71065a02bed740011daee96a865108a785dff6/plugins/kubernetes/src/alpha/entityContents.tsx#L22-L34)
 
 Creates entity content to be displayed on the entity pages of the catalog plugin. Exported as `EntityContentBlueprint`.
+
+Supports optional params such as `group` and `icon` to:
+
+- group: string | false — associates the content with a tab group on the entity page (for example "overview", "quality", "deployment", or any custom id). You can override or disable this per-installation via app-config using `app.extensions[...].config.group`, where `false` removes the grouping.
+- icon: string — sets the tab icon. Note: when providing a string, the icon is looked up via the app's IconsApi; make sure icon bundles are enabled/installed in your app (see the Icons blueprint reference above) so that the icon id you use is available.
+
+To render icons in the entity page tabs, the page must also have icons enabled via app configuration. Set `showNavItemIcons: true` on the catalog entity page config (created via `page:catalog/entity`). Example:
+
+```yaml
+app:
+  extensions:
+    # Entity page
+    - page:catalog/entity:
+        config:
+          # Enable tab- and group-icons
+          showNavItemIcons: true
+          # Optionally override default groups and their icons
+          groups:
+            - overview:
+                title: Overview
+                icon: dashboard
+            - documentation:
+                title: Docs
+                icon: description
+```
 
 Avoid using `convertLegacyEntityContentExtension` from `@backstage/core-compat-api` to convert legacy entity content extensions to the new system. Instead, use the `EntityContentBlueprint` directly. The legacy converter is only intended to help adapt 3rd party plugins that you don't control, and doesn't produce as good results as using the blueprint directly.
 

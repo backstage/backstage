@@ -34,7 +34,7 @@ import { ScmIntegrations } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
 import { initRepoAndPush } from '@backstage/plugin-scaffolder-node';
 import yaml from 'yaml';
-import { sep } from 'path';
+import { sep } from 'node:path';
 import { examples } from './bitbucketCloud.examples';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 

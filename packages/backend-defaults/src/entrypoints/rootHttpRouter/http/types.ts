@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as http from 'http';
+import * as http from 'node:http';
 
 /**
  * An HTTP server extended with utility methods.

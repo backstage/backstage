@@ -19,10 +19,17 @@ import { createPlugin } from '@backstage/core-plugin-api';
 
 export const examplePlugin = createPlugin({
   // ...
-  featureFlags: [{ name: 'show-example-feature' }],
+  featureFlags: [
+    {
+      name: 'show-example-feature',
+      description: 'Enables the new beta dashboard view',
+    },
+  ],
   // ...
 });
 ```
+
+Note that the `description` property is optional. If not provided, the default "Registered in {pluginId} plugin" message is shown.
 
 ### In the application
 
@@ -55,7 +62,7 @@ The user's selection is saved in the user's browser local storage. Once a featur
 
 ## FeatureFlagged Component
 
-The easiest way to control content based on the state of a feature flag is to use the [FeatureFlagged](https://backstage.io/docs/reference/core-app-api.featureflagged) component.
+The easiest way to control content based on the state of a feature flag is to use the [FeatureFlagged](https://backstage.io/api/stable/functions/_backstage_core-app-api.FeatureFlagged.html) component.
 
 ```ts
 import { FeatureFlagged } from '@backstage/core-app-api';
@@ -73,7 +80,7 @@ import { FeatureFlagged } from '@backstage/core-app-api';
 
 ## Evaluating Feature Flag State
 
-It is also possible to query a feature flag using the [FeatureFlags Api](https://backstage.io/docs/reference/core-plugin-api.featureflagsapi).
+It is also possible to query a feature flag using the [FeatureFlags Api](https://backstage.io/api/stable/interfaces/_backstage_core-plugin-api.index.FeatureFlagsApi.html).
 
 ```ts
 import { useApi, featureFlagsApiRef } from '@backstage/core-plugin-api';

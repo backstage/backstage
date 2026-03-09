@@ -15,12 +15,13 @@
  */
 import { BackstagePackageJson, PackageGraph } from '@backstage/cli-node';
 import chalk from 'chalk';
-import { resolve as resolvePath, join as joinPath } from 'path';
-import { OptionValues } from 'commander';
+import { resolve as resolvePath, join as joinPath } from 'node:path';
+import { cli } from 'cleye';
 import { readJson, writeJson } from 'fs-extra';
 import { minimatch } from 'minimatch';
 import { runYarnInstall } from '../../lib/utils';
 import replace from 'replace-in-file';
+import type { CommandContext } from '../../../../wiring/types';
 
 declare module 'replace-in-file' {
   export default function (config: {
@@ -38,10 +39,30 @@ declare module 'replace-in-file' {
   >;
 }
 
-export default async (options: OptionValues) => {
+export default async ({ args, info }: CommandContext) => {
+  const {
+    flags: { pattern, skipCodeChanges },
+  } = cli(
+    {
+      help: info,
+      flags: {
+        pattern: {
+          type: String,
+          description: 'Override glob for matching packages to upgrade',
+        },
+        skipCodeChanges: {
+          type: Boolean,
+          description: 'Skip code changes and only update package.json files',
+        },
+      },
+    },
+    undefined,
+    args,
+  );
+
   const changed = await migrateMovedPackages({
-    pattern: options.pattern,
-    skipCodeChanges: options.skipCodeChanges,
+    pattern,
+    skipCodeChanges,
   });
 
   if (changed) {

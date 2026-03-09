@@ -103,7 +103,7 @@ You can also pass overrides to the features array, for more details, please read
 
 ### Using an async features loader
 
-In case you need to perform asynchronous operations before passing features to the `createApp` function, define a [feature loader](https://backstage.io/docs/reference/frontend-defaults.createappfeatureloader/) object and pass it to the `features` option:
+In case you need to perform asynchronous operations before passing features to the `createApp` function, define a [feature loader](https://backstage.io/api/stable/functions/_backstage_frontend-plugin-api.index.createFrontendFeatureLoader.html) object and pass it to the `features` option:
 
 ```tsx title="packages/app/src/App.tsx"
 import { createApp } from '@backstage/frontend-defaults';

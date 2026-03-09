@@ -22,7 +22,7 @@ All parametrization is done through component properties, such as the `Notificat
 
 ![Notifications Page](notificationsPage.png)
 
-In the `packages/app/src/components/Root/Root.tsx`, tweak the [properties](https://backstage.io/docs/reference/plugin-notifications.notificationssidebaritem) of the `<NotificationsSidebarItem />` per specific needs.
+In the `packages/app/src/components/Root/Root.tsx`, tweak the [properties](https://backstage.io/api/stable/functions/_backstage_plugin-notifications.index.NotificationsSidebarItem.html) of the `<NotificationsSidebarItem />` per specific needs.
 
 ## Usage
 

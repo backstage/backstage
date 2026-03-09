@@ -696,3 +696,106 @@ filter:
       targetRef:
         $in: [group:default/admins, group:default/viewers]
 ```
+
+### Configure groups, titles, and icons
+
+You can define and customize the tab groups that appear on the entity page, as well as enable icons for both groups and individual tabs.
+
+```yaml
+app:
+  extensions:
+    # Entity page (new frontend system)
+    - page:catalog/entity:
+        config:
+          # Show icons next to group and tab titles
+          showNavItemIcons: true
+
+          # Optionally override default groups and their icons
+          groups:
+            - overview:
+                title: Overview
+                icon: dashboard
+            - quality:
+                title: Quality
+                icon: verified
+            - documentation:
+                title: Docs
+                icon: description
+```
+
+Notes:
+
+- Icons for groups and tabs are resolved via the app's IconsApi. When using a string icon id (for example `"dashboard"`), ensure that the corresponding icon bundles are enabled/installed in your app (see the [IconBundleBlueprint documentation](https://backstage.io/api/stable/variables/_backstage_plugin-app-react.IconBundleBlueprint.html)).
+- Group icons are only rendered if `showNavItemIcons` is set to `true`.
+
+### Content ordering within groups
+
+By default, content items within each group are sorted alphabetically by title. You can change this with the `defaultContentOrder` option, which supports two modes:
+
+- **`title`** (default) — sort alphabetically by the content extension's title (case-insensitive).
+- **`natural`** — preserve the natural extension discovery/registration order.
+
+A page-level `defaultContentOrder` sets the default for all groups, and individual groups can override it with a per-group `contentOrder`:
+
+```yaml
+app:
+  extensions:
+    - page:catalog/entity:
+        config:
+          # Default content order for all groups
+          defaultContentOrder: title
+
+          groups:
+            - documentation:
+                title: Docs
+                # Override: keep natural order for this group
+                contentOrder: natural
+```
+
+Note that content ordering only applies to content items within groups. Ungrouped tabs (those not matching any group definition) always retain their natural order.
+
+### Group aliases
+
+Groups can declare `aliases` — a list of other group IDs that should be treated as equivalent. Any entity content extension targeting an aliased group ID will be included in the aliasing group. This is useful when renaming or merging groups without having to reconfigure individual extensions:
+
+```yaml
+app:
+  extensions:
+    - page:catalog/entity:
+        config:
+          groups:
+            - develop:
+                title: Develop
+                # Content targeting 'development' will appear in this group
+                aliases:
+                  - development
+```
+
+### Overriding or disabling a tab's group (per extension)
+
+Each entity content extension (tabs on the entity page) can declare a default `group` in code. You can override or disable this per installation in `app-config.yaml` using the extension's config:
+
+```yaml
+app:
+  extensions:
+    # ...
+    # Example entity content extension instance id
+    - entity-content:example/my-content:
+        config:
+          # Move this tab to a custom group you defined above
+          group: custom
+          # Show an icon for this entity content page but only if `showNavItemIcons` is enabled for the `page:catalog/entity` extension
+          icon: my-icon
+
+    # Disassociate from any group and show as a standalone tab
+    - entity-content:example/another-content:
+        config:
+          group: false
+```
+
+### Tab icons for entity content
+
+Entity content extensions can also declare an `icon` parameter. When provided as a string, the icon id is looked up via the IconsApi. For the icon to render:
+
+- The entity page must have `showNavItemIcons: true` (see configuration above).
+- The icon id must be available in the app's enabled icon bundles.

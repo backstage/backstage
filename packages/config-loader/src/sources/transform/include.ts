@@ -15,7 +15,7 @@
  */
 
 import yaml from 'yaml';
-import { extname, dirname, resolve as resolvePath } from 'path';
+import { extname, dirname, resolve as resolvePath } from 'node:path';
 import { JsonObject, JsonValue } from '@backstage/types';
 import { isObject } from './utils';
 import { TransformFunc, ReadFileFunc } from './types';

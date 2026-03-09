@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-import clsx from 'clsx';
 import { forwardRef, Ref } from 'react';
 import { Button as RAButton, ProgressBar } from 'react-aria-components';
 import { RiLoader4Line } from '@remixicon/react';
 import type { ButtonProps } from './types';
-import { useStyles } from '../../hooks/useStyles';
+import { useDefinition } from '../../hooks/useDefinition';
 import { ButtonDefinition } from './definition';
-import styles from './Button.module.css';
-import { useSurface } from '../../hooks/useSurface';
 
 /**
  * A button component built on React Aria Components that provides accessible
@@ -56,41 +53,23 @@ import { useSurface } from '../../hooks/useSurface';
  */
 export const Button = forwardRef(
   (props: ButtonProps, ref: Ref<HTMLButtonElement>) => {
-    const { classNames, dataAttributes, cleanedProps } = useStyles(
+    const { ownProps, restProps, dataAttributes } = useDefinition(
       ButtonDefinition,
-      {
-        size: 'small',
-        variant: 'primary',
-        ...props,
-      },
+      props,
     );
-
-    const {
-      children,
-      className,
-      iconStart,
-      iconEnd,
-      loading,
-      onSurface,
-      ...rest
-    } = cleanedProps;
-
-    const { surface } = useSurface({ onSurface });
+    const { classes, iconStart, iconEnd, loading, children } = ownProps;
 
     return (
       <RAButton
-        className={clsx(classNames.root, styles[classNames.root], className)}
+        className={classes.root}
         ref={ref}
         isPending={loading}
         {...dataAttributes}
-        {...(typeof surface === 'string' ? { 'data-on-surface': surface } : {})}
-        {...rest}
+        {...restProps}
       >
         {({ isPending }) => (
           <>
-            <span
-              className={clsx(classNames.content, styles[classNames.content])}
-            >
+            <span className={classes.content}>
               {iconStart}
               {children}
               {iconEnd}
@@ -100,7 +79,7 @@ export const Button = forwardRef(
               <ProgressBar
                 aria-label="Loading"
                 isIndeterminate
-                className={clsx(classNames.spinner, styles[classNames.spinner])}
+                className={classes.spinner}
               >
                 <RiLoader4Line aria-hidden="true" />
               </ProgressBar>

@@ -86,7 +86,7 @@ Now with this example it will collate all entities that are `kind` equal to `api
 
 :::tip
 
-The filter configuration is implemented using the `EntityFilterQuery` syntax. The [reference documentation on `EntityFilterQuery`](https://backstage.io/docs/reference/catalog-client.entityfilterquery/) provides more details.
+The filter configuration is implemented using the `EntityFilterQuery` syntax. The [reference documentation on `EntityFilterQuery`](https://backstage.io/api/stable/types/_backstage_catalog-client.index.EntityFilterQuery.html) provides more details.
 
 :::
 

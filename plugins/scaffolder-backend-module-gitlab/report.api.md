@@ -9,6 +9,28 @@ import { ScmIntegrationRegistry } from '@backstage/integration';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 
 // @public
+export const createGitlabGroupAccessAction: (options: {
+  integrations: ScmIntegrationRegistry;
+}) => TemplateAction<
+  {
+    repoUrl: string;
+    path: string | number;
+    token?: string | undefined;
+    userIds?: number[] | undefined;
+    groupIds?: number[] | undefined;
+    action?: 'add' | 'remove' | undefined;
+    accessLevel?: string | number | undefined;
+  },
+  {
+    userIds?: number[] | undefined;
+    groupIds?: number[] | undefined;
+    path?: string | number | undefined;
+    accessLevel?: number | undefined;
+  },
+  'v2'
+>;
+
+// @public
 export const createGitlabGroupEnsureExistsAction: (options: {
   integrations: ScmIntegrationRegistry;
 }) => TemplateAction<
@@ -22,6 +44,7 @@ export const createGitlabGroupEnsureExistsAction: (options: {
         }
     )[];
     token?: string | undefined;
+    description?: string | undefined;
   },
   {
     groupId?: number | undefined;
@@ -110,6 +133,7 @@ export const createGitlabProjectVariableAction: (options: {
     token?: string | undefined;
     variableProtected?: boolean | undefined;
     masked?: boolean | undefined;
+    maskedAndHidden?: boolean | undefined;
     raw?: boolean | undefined;
     environmentScope?: string | undefined;
   },
@@ -136,6 +160,28 @@ export const createGitlabRepoPushAction: (options: {
     projectid: string;
     projectPath: string;
     commitHash: string;
+  },
+  'v2'
+>;
+
+// @public
+export const createGitlabUserInfoAction: (options: {
+  integrations: ScmIntegrationRegistry;
+}) => TemplateAction<
+  {
+    repoUrl: string;
+    token?: string | undefined;
+    userId?: number | undefined;
+  },
+  {
+    id: number;
+    username: string;
+    name: string;
+    state: string;
+    webUrl: string;
+    email?: string | undefined;
+    createdAt?: string | undefined;
+    publicEmail?: string | undefined;
   },
   'v2'
 >;
@@ -198,6 +244,7 @@ export function createPublishGitlabAction(options: {
           variable_type?: 'file' | 'env_var' | undefined;
           masked?: boolean | undefined;
           environment_scope?: string | undefined;
+          masked_and_hidden?: boolean | undefined;
         }[]
       | undefined;
   },

@@ -35,6 +35,7 @@ const meta = preview.meta({
       options: ['row', 'column', 'row-reverse', 'column-reverse'],
     },
   },
+  args: { children: null },
 });
 
 const DecorativeBox = ({
@@ -70,6 +71,7 @@ const DecorativeBox = ({
         fontWeight: 'bold',
         color: '#2563eb',
       }}
+      children={null}
     />
   );
 };
@@ -244,7 +246,7 @@ export const WithTextTruncate = meta.story({
   ),
 });
 
-export const Surfaces = meta.story({
+export const Backgrounds = meta.story({
   args: {
     px: '6',
     py: '4',
@@ -252,54 +254,49 @@ export const Surfaces = meta.story({
   render: args => (
     <Flex align="center" style={{ flexWrap: 'wrap' }}>
       <Flex {...args}>Default</Flex>
-      <Flex surface="0" {...args}>
-        Surface 0
+      <Flex bg="neutral" {...args}>
+        Neutral (level 1)
       </Flex>
-      <Flex surface="1" {...args}>
-        Surface 1
+      <Box bg="neutral">
+        <Flex bg="neutral" {...args}>
+          Neutral (level 2)
+        </Flex>
+      </Box>
+      <Box bg="neutral">
+        <Box bg="neutral">
+          <Flex bg="neutral" {...args}>
+            Neutral (level 3)
+          </Flex>
+        </Box>
+      </Box>
+      <Flex bg="danger" {...args}>
+        Danger
       </Flex>
-      <Flex surface="2" {...args}>
-        Surface 2
+      <Flex bg="warning" {...args}>
+        Warning
       </Flex>
-      <Flex surface="3" {...args}>
-        Surface 3
-      </Flex>
-      <Flex surface={{ initial: '0', sm: '1' }} {...args}>
-        Responsive Surface
-      </Flex>
-      <Flex surface="danger" {...args}>
-        Surface Danger
-      </Flex>
-      <Flex surface="warning" {...args}>
-        Surface Warning
-      </Flex>
-      <Flex surface="success" {...args}>
-        Surface Success
+      <Flex bg="success" {...args}>
+        Success
       </Flex>
     </Flex>
   ),
 });
 
-export const SurfacesAutoIncrement = meta.story({
+export const BgNeutral = meta.story({
   args: { px: '6', py: '4', gap: '4' },
   render: args => (
     <Flex direction="column">
       <div style={{ maxWidth: '600px', marginBottom: '16px' }}>
-        Using surface="auto" automatically increments from the parent surface.
-        This allows components to be reusable without hardcoding surface levels.
+        Using bg="neutral" on Flex auto-increments from the parent context. The
+        first Flex defaults to neutral-1 (no parent), then each nested Flex
+        increments by one, capping at neutral-3.
       </div>
-      <Flex {...args} surface="0" direction="column">
-        <div>Surface 0 (explicit)</div>
-        <Flex {...args} surface="auto" direction="column">
-          <div>Surface auto (becomes 1)</div>
-          <Flex {...args} surface="auto" direction="column">
-            <div>Surface auto (becomes 2)</div>
-            <Flex {...args} surface="auto" direction="column">
-              <div>Surface auto (becomes 3)</div>
-              <Flex {...args} surface="auto" direction="column">
-                <div>Surface auto (stays 3 - capped)</div>
-              </Flex>
-            </Flex>
+      <Flex {...args} bg="neutral" direction="column">
+        <div>Neutral 1 (no parent)</div>
+        <Flex {...args} bg="neutral" direction="column">
+          <div>Neutral 2 (auto-incremented)</div>
+          <Flex {...args} bg="neutral" direction="column">
+            <div>Neutral 3 (auto-incremented, capped)</div>
           </Flex>
         </Flex>
       </Flex>

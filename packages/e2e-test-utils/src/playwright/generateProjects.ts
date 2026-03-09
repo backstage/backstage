@@ -15,7 +15,7 @@
  */
 
 import fs from 'fs-extra';
-import { resolve as resolvePath } from 'path';
+import { resolve as resolvePath } from 'node:path';
 import { PlaywrightTestConfig } from '@playwright/test';
 import { getPackagesSync } from '@manypkg/get-packages';
 import type { BackstagePackage } from '@backstage/cli-node';
@@ -24,8 +24,14 @@ import type { BackstagePackage } from '@backstage/cli-node';
  * Generates a list of playwright projects by scanning the monorepo for packages with an `e2e-tests/` folder.
  *
  * @public
+ *
+ * @param options - Optional configuration for the generated Playwright projects.
+ *   When provided, `options.channel` controls the browser channel used for tests.
+ *   Valid values are listed in the [Playwright documentation](https://playwright.dev/docs/api/class-testoptions#test-options-channel).
  */
-export function generateProjects(): PlaywrightTestConfig['projects'] {
+export function generateProjects(options?: {
+  channel?: string;
+}): PlaywrightTestConfig['projects'] {
   // TODO(Rugvip): Switch this over to use @backstage/cli-node once released, and support SINCE=origin/main
   const { root, packages } = getPackagesSync(process.cwd());
   const e2eTestPackages = [...(root ? [root] : []), ...packages].filter(pkg => {
@@ -36,7 +42,7 @@ export function generateProjects(): PlaywrightTestConfig['projects'] {
     name: pkg.packageJson.name,
     testDir: resolvePath(pkg.dir, 'e2e-tests'),
     use: {
-      channel: 'chrome',
+      channel: options?.channel ?? 'chrome',
     },
   }));
 }

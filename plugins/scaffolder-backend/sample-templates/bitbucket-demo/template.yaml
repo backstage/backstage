@@ -21,7 +21,7 @@ spec:
             allowedHosts:
               - bitbucket.org
             # The rest of these options are optional.
-            # You can read more at: https://backstage.io/docs/reference/plugin-scaffolder.repourlpickerfieldextension
+            # You can read more at: https://backstage.io/api/stable/variables/_backstage_plugin-scaffolder.index.RepoUrlPickerFieldExtension.html
             # allowedOwners:
             #   - WORKSPACE1
             #   - WORKSPACE2

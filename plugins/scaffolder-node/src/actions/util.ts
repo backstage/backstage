@@ -16,7 +16,7 @@
 
 import { InputError } from '@backstage/errors';
 import { isChildPath } from '@backstage/backend-plugin-api';
-import { join as joinPath, normalize as normalizePath } from 'path';
+import { join as joinPath, normalize as normalizePath } from 'node:path';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { TemplateActionOptions } from './createTemplateAction';
 import zodToJsonSchema from 'zod-to-json-schema';
@@ -84,10 +84,11 @@ export const parseRepoUrl = (
     ]),
   );
   switch (type) {
-    case 'bitbucket': {
-      if (host === 'www.bitbucket.org') {
-        checkRequiredParams(parsed, 'workspace');
-      }
+    case 'bitbucketCloud': {
+      checkRequiredParams(parsed, 'workspace', 'project', 'repo');
+      break;
+    }
+    case 'bitbucketServer': {
       checkRequiredParams(parsed, 'project', 'repo');
       break;
     }

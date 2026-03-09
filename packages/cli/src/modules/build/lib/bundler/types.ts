@@ -17,18 +17,18 @@
 import { AppConfig, Config } from '@backstage/config';
 import { BundlingPathsOptions } from './paths';
 import { ConfigSchema } from '@backstage/config-loader';
+import { RemoteSharedDependencies } from '@backstage/module-federation-common';
 
-export type ModuleFederationOptions = {
+export type ModuleFederationRemoteOptions = {
   // Unique name for this module federation bundle
   name: string;
-  // Whether this is a host or remote bundle
-  mode: 'host' | 'remote';
   exposes?: {
     /**
      * Modules that should be exposed by this container.
      */
     [k: string]: string;
   };
+  sharedDependencies: RemoteSharedDependencies;
 };
 
 export type BundlingOptions = {
@@ -36,7 +36,6 @@ export type BundlingOptions = {
   isDev: boolean;
   frontendConfig: Config;
   getFrontendAppConfigs(): AppConfig[];
-  parallelism?: number;
   additionalEntryPoints?: string[];
   // Path to append to the detected public path, e.g. '/public'
   publicSubPath?: string;
@@ -44,7 +43,7 @@ export type BundlingOptions = {
   appMode?: string;
   // An external linked workspace to include in the bundling
   linkedWorkspace?: string;
-  moduleFederation?: ModuleFederationOptions;
+  moduleFederationRemote?: ModuleFederationRemoteOptions;
   webpack?: typeof import('webpack');
 };
 
@@ -54,7 +53,7 @@ export type ServeOptions = BundlingPathsOptions & {
   configPaths: string[];
   verifyVersions?: boolean;
   skipOpenBrowser?: boolean;
-  moduleFederation?: ModuleFederationOptions;
+  moduleFederationRemote?: ModuleFederationRemoteOptions;
   // An external linked workspace to include in the bundling
   linkedWorkspace?: string;
 };
@@ -63,19 +62,17 @@ export type BuildOptions = BundlingPathsOptions & {
   // Target directory, defaulting to paths.targetDir
   targetDir?: string;
   statsJsonEnabled: boolean;
-  parallelism?: number;
   schema?: ConfigSchema;
   frontendConfig: Config;
   frontendAppConfigs: AppConfig[];
   fullConfig: Config;
-  moduleFederation?: ModuleFederationOptions;
+  moduleFederationRemote?: ModuleFederationRemoteOptions;
   webpack?: typeof import('webpack');
 };
 
 export type BackendBundlingOptions = {
   checksEnabled: boolean;
   isDev: boolean;
-  parallelism?: number;
   inspectEnabled: boolean;
   inspectBrkEnabled: boolean;
   require?: string;

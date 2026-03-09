@@ -1,6 +1,6 @@
 export const avatarUsageSnippet = `import { Avatar } from '@backstage/ui';
 
-<Avatar />`;
+<Avatar src="https://example.com/user.jpg" name="Jane Doe" />`;
 
 export const defaultSnippet = `<Avatar
   src="https://avatars.githubusercontent.com/u/1540635?v=4"
@@ -14,18 +14,18 @@ export const fallbackSnippet = `<Avatar
 
 export const sizesSnippet = `<Flex direction="column" gap="6">
   <Flex>
-    <Avatar src="..." name="Charles de Dreuille" size="x-small" />
-    <Avatar src="..." name="Charles de Dreuille" size="small" />
-    <Avatar src="..." name="Charles de Dreuille" size="medium" />
-    <Avatar src="..." name="Charles de Dreuille" size="large" />
-    <Avatar src="..." name="Charles de Dreuille" size="x-large" />
+    <Avatar size="x-small" src="..." name="Charles de Dreuille" />
+    <Avatar size="small"   src="..." name="Charles de Dreuille" />
+    <Avatar size="medium"  src="..." name="Charles de Dreuille" />
+    <Avatar size="large"   src="..." name="Charles de Dreuille" />
+    <Avatar size="x-large" src="..." name="Charles de Dreuille" />
   </Flex>
   <Flex>
-    <Avatar name="Charles de Dreuille" size="x-small" src="" />
-    <Avatar name="Charles de Dreuille" size="small" src="" />
-    <Avatar name="Charles de Dreuille" size="medium" src="" />
-    <Avatar name="Charles de Dreuille" size="large" src="" />
-    <Avatar name="Charles de Dreuille" size="x-large" src="" />
+    <Avatar size="x-small" src="" name="Charles de Dreuille" />
+    <Avatar size="small"   src="" name="Charles de Dreuille" />
+    <Avatar size="medium"  src="" name="Charles de Dreuille" />
+    <Avatar size="large"   src="" name="Charles de Dreuille" />
+    <Avatar size="x-large" src="" name="Charles de Dreuille" />
   </Flex>
 </Flex>`;
 

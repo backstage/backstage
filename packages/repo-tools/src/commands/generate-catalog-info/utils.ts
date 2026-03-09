@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import fs from 'fs';
+import fs from 'node:fs';
 import { Package } from '@manypkg/get-packages';
 import {
   BackstagePackageJson as BackstagePackageJsonActual,
   PackageRole,
 } from '@backstage/cli-node';
-import { promisify } from 'util';
+import { promisify } from 'node:util';
 
 export const readFile = promisify(fs.readFile);
 export const writeFile = promisify(fs.writeFile);

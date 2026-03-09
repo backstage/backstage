@@ -14,22 +14,24 @@
  * limitations under the License.
  */
 
-import { Breakpoint } from '../..';
-import { ReactElement } from 'react';
-import { ButtonProps as RAButtonProps } from 'react-aria-components';
+import type { ReactElement } from 'react';
+import type { ButtonProps as RAButtonProps } from 'react-aria-components';
+import type { Responsive } from '../../types';
+
+/** @public */
+export type ButtonIconOwnProps = {
+  size?: Responsive<'small' | 'medium'>;
+  variant?: Responsive<'primary' | 'secondary' | 'tertiary'>;
+  icon?: ReactElement;
+  loading?: boolean;
+  className?: string;
+};
 
 /**
  * Properties for {@link ButtonIcon}
  *
  * @public
  */
-export interface ButtonIconProps extends RAButtonProps {
-  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
-  variant?:
-    | 'primary'
-    | 'secondary'
-    | 'tertiary'
-    | Partial<Record<Breakpoint, 'primary' | 'secondary' | 'tertiary'>>;
-  icon?: ReactElement;
-  loading?: boolean;
-}
+export interface ButtonIconProps
+  extends Omit<RAButtonProps, keyof ButtonIconOwnProps>,
+    ButtonIconOwnProps {}

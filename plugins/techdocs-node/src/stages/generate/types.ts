@@ -15,7 +15,7 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { Writable } from 'stream';
+import { Writable } from 'node:stream';
 import { Logger } from 'winston';
 import { ParsedLocationAnnotation } from '../../helpers';
 import { LoggerService } from '@backstage/backend-plugin-api';
@@ -45,6 +45,7 @@ export type GeneratorConfig = {
   omitTechdocsCoreMkdocsPlugin?: boolean;
   legacyCopyReadmeMdToIndexMd?: boolean;
   defaultPlugins?: string[];
+  dangerouslyAllowAdditionalKeys?: string[];
 };
 
 /**

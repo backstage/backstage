@@ -21,7 +21,7 @@ import {
 } from '@backstage/backend-test-utils';
 import { dynamicPluginsFeatureLoader } from './features';
 import { DynamicPlugin, dynamicPluginsServiceRef } from '../manager';
-import path, { resolve as resolvePath } from 'path';
+import path, { resolve as resolvePath } from 'node:path';
 import {
   BackendFeature,
   createBackendPlugin,
@@ -31,7 +31,7 @@ import {
   CommonJSModuleLoaderOptions,
 } from '../loader/CommonJSModuleLoader';
 import * as winston from 'winston';
-import * as url from 'url';
+import * as url from 'node:url';
 import { MESSAGE } from 'triple-beam';
 import { overridePackagePathResolution } from '@backstage/backend-plugin-api/testUtils';
 import { ScannedPluginPackage } from '../scanner';

@@ -37,6 +37,7 @@ import { ANNOTATION_SLACK_BOT_NOTIFY } from './constants';
 import { BroadcastRoute } from './types';
 import { ExpiryMap, toChatPostMessageArgs } from './util';
 import { CatalogService } from '@backstage/plugin-catalog-node';
+import { SlackBlockKitRenderer } from '../extensions';
 
 export class SlackNotificationProcessor implements NotificationProcessor {
   private readonly logger: LoggerService;
@@ -54,6 +55,7 @@ export class SlackNotificationProcessor implements NotificationProcessor {
   private readonly username?: string;
   private readonly concurrencyLimit: number;
   private readonly throttleInterval: number;
+  private readonly blockKitRenderer?: SlackBlockKitRenderer;
 
   static fromConfig(
     config: Config,
@@ -63,6 +65,7 @@ export class SlackNotificationProcessor implements NotificationProcessor {
       catalog: CatalogService;
       slack?: WebClient;
       broadcastChannels?: string[];
+      blockKitRenderer?: SlackBlockKitRenderer;
     },
   ): SlackNotificationProcessor[] {
     const slackConfig =
@@ -104,6 +107,7 @@ export class SlackNotificationProcessor implements NotificationProcessor {
     username?: string;
     concurrencyLimit?: number;
     throttleInterval?: number;
+    blockKitRenderer?: SlackBlockKitRenderer;
   }) {
     const {
       auth,
@@ -115,6 +119,7 @@ export class SlackNotificationProcessor implements NotificationProcessor {
       username,
       concurrencyLimit,
       throttleInterval,
+      blockKitRenderer,
     } = options;
     this.logger = logger;
     this.catalog = catalog;
@@ -126,6 +131,7 @@ export class SlackNotificationProcessor implements NotificationProcessor {
     this.concurrencyLimit = concurrencyLimit ?? 10;
     this.throttleInterval =
       throttleInterval ?? durationToMilliseconds({ minutes: 1 });
+    this.blockKitRenderer = blockKitRenderer;
 
     this.entityLoader = new DataLoader<string, Entity | undefined>(
       async entityRefs => {
@@ -246,6 +252,7 @@ export class SlackNotificationProcessor implements NotificationProcessor {
           channel,
           payload: options.payload,
           username: this.username,
+          blockKitRenderer: this.blockKitRenderer,
         });
 
         this.logger.debug(
@@ -306,6 +313,7 @@ export class SlackNotificationProcessor implements NotificationProcessor {
         channel,
         payload: formattedPayload,
         username: this.username,
+        blockKitRenderer: this.blockKitRenderer,
       }),
     );
 

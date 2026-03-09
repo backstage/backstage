@@ -15,7 +15,7 @@
  */
 
 import { GithubIntegrationConfig } from './config';
-import { getGithubFileFetchUrl, getGitHubRequestOptions } from './core';
+import { getGithubFileFetchUrl } from './core';
 import { GithubCredentials } from './types';
 
 describe('github core', () => {
@@ -34,28 +34,6 @@ describe('github core', () => {
   const noCredentials: GithubCredentials = {
     type: 'token',
   };
-
-  describe('getGitHubRequestOptions', () => {
-    it('inserts a token when needed', () => {
-      const withToken: GithubIntegrationConfig = {
-        host: '',
-        rawBaseUrl: '',
-        token: 'A',
-      };
-      const withoutToken: GithubIntegrationConfig = {
-        host: '',
-        rawBaseUrl: '',
-      };
-      expect(
-        (getGitHubRequestOptions(withToken, appCredentials).headers as any)
-          .Authorization,
-      ).toEqual('token A');
-      expect(
-        (getGitHubRequestOptions(withoutToken, noCredentials).headers as any)
-          .Authorization,
-      ).toBeUndefined();
-    });
-  });
 
   describe('getGithubFileFetchUrl', () => {
     it('rejects targets that do not look like URLs', () => {
@@ -175,6 +153,50 @@ describe('github core', () => {
           tokenCredentials,
         ),
       ).toEqual('https://ghe.mycompany.net/raw/a/b/branchname/path/to/c.yaml');
+    });
+
+    it('rejects URLs with encoded path traversal sequences', () => {
+      const config: GithubIntegrationConfig = {
+        host: 'github.com',
+        apiBaseUrl: 'https://api.github.com',
+      };
+      expect(() =>
+        getGithubFileFetchUrl(
+          'https://github.com/octocat/Hello-World/blob/main/%2e%2e%2f%2e%2e%2f%2e%2e%2f%2e%2e%2fuser/repos',
+          config,
+          tokenCredentials,
+        ),
+      ).toThrow(/path traversal/);
+    });
+
+    it('rejects URLs with literal path traversal in filepath', () => {
+      const config: GithubIntegrationConfig = {
+        host: 'github.com',
+        apiBaseUrl: 'https://api.github.com',
+      };
+      // Literal ../ is normalized by the URL constructor before git-url-parse
+      // sees it, so it fails with the existing validation instead
+      expect(() =>
+        getGithubFileFetchUrl(
+          'https://github.com/octocat/Hello-World/blob/main/../../user/repos',
+          config,
+          tokenCredentials,
+        ),
+      ).toThrow(/Incorrect URL/);
+    });
+
+    it('rejects raw endpoint URLs with path traversal', () => {
+      const config: GithubIntegrationConfig = {
+        host: 'github.com',
+        rawBaseUrl: 'https://raw.githubusercontent.com',
+      };
+      expect(() =>
+        getGithubFileFetchUrl(
+          'https://github.com/octocat/Hello-World/blob/main/%2e%2e%2f%2e%2e%2fuser/repos',
+          config,
+          tokenCredentials,
+        ),
+      ).toThrow(/path traversal/);
     });
   });
 });

@@ -18,10 +18,10 @@
 // This script generates an appropriate fossa config, and wraps the running
 // of `fossa analyze` in a retry loop as it frequently fails with a 502 error
 
-const { resolve: resolvePath, join: joinPath, basename } = require('path');
-const { promises: fs } = require('fs');
-const { execFile: execFileCb } = require('child_process');
-const { promisify } = require('util');
+const { resolve: resolvePath, join: joinPath, basename } = require('node:path');
+const { promises: fs } = require('node:fs');
+const { execFile: execFileCb } = require('node:child_process');
+const { promisify } = require('node:util');
 
 const execFile = promisify(execFileCb);
 

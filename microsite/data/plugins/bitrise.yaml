@@ -8,3 +8,4 @@ documentation: https://github.com/backstage/community-plugins/blob/main/workspac
 iconUrl: https://avatars.githubusercontent.com/u/7174390?s=400&v=4
 npmPackageName: '@backstage-community/plugin-bitrise'
 addedDate: '2021-03-01'
+status: active

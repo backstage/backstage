@@ -1,10 +1,14 @@
 import { CodeBlock } from '@/components/CodeBlock';
 import { PropsTable } from '@/components/PropsTable';
 import { Snippet } from '@/components/Snippet';
-import { gridPropDefs } from './props-definition';
-import { gridUsageSnippet, defaultSnippet } from './snippets';
-import { Default } from './components';
-import { spacingPropDefs } from '@/utils/propDefs';
+import { gridPropDefs, gridItemPropDefs } from './props-definition';
+import {
+  gridUsageSnippet,
+  defaultSnippet,
+  gridResponsiveSnippet,
+  gridItemSnippet,
+} from './snippets';
+import { Default, ResponsiveExample, GridItemExample } from './components';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
 import { GridDefinition } from '../../../utils/definitions';
@@ -13,7 +17,7 @@ import { ChangelogComponent } from '@/components/ChangelogComponent';
 <PageTitle
   type="Layout"
   title="Grid"
-  description="A layout component that helps to create simple column-based layouts as well as more complex ones."
+  description="A CSS grid container with columns, gap, and item spanning."
 />
 
 <Snippet py={4} preview={<Default />} code={defaultSnippet} />
@@ -26,15 +30,34 @@ import { ChangelogComponent } from '@/components/ChangelogComponent';
 
 ### Grid.Root
 
-This is the grid container component. It will help to define the number of
-columns that will be used in the grid. You can also define the gap between the
-columns. All values are responsive.
+The grid container. Defines column count and gap between items.
 
 <PropsTable data={gridPropDefs} />
 
-The grid component also accepts all the spacing props from the Box component.
+### Grid.Item
 
-<PropsTable data={spacingPropDefs} />
+A grid child with column and row spanning control.
+
+<PropsTable data={gridItemPropDefs} />
+
+## Examples
+
+### Responsive columns
+
+Column count can change at different breakpoints.
+
+<Snippet
+  py={4}
+  preview={<ResponsiveExample />}
+  code={gridResponsiveSnippet}
+  open
+/>
+
+### Column spanning
+
+Use Grid.Item to span multiple columns.
+
+<Snippet py={4} preview={<GridItemExample />} code={gridItemSnippet} open />
 
 <Theming definition={GridDefinition} />
 

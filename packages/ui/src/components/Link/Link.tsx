@@ -16,53 +16,34 @@
 
 import { forwardRef, useRef } from 'react';
 import { useLink } from 'react-aria';
-import { RouterProvider } from 'react-aria-components';
-import clsx from 'clsx';
-import { useStyles } from '../../hooks/useStyles';
-import { LinkDefinition } from './definition';
 import type { LinkProps } from './types';
-import { useNavigate, useHref } from 'react-router-dom';
-import { isExternalLink } from '../../utils/isExternalLink';
-import styles from './Link.module.css';
+import { useDefinition } from '../../hooks/useDefinition';
+import { LinkDefinition } from './definition';
+import { InternalLinkProvider } from '../InternalLinkProvider';
+import { getNodeText } from '../../analytics/getNodeText';
 
 const LinkInternal = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
-  const { classNames, dataAttributes, cleanedProps } = useStyles(
+  const { ownProps, restProps, dataAttributes, analytics } = useDefinition(
     LinkDefinition,
-    {
-      variant: 'body',
-      weight: 'regular',
-      color: 'primary',
-      ...props,
-    },
+    props,
   );
-
-  const {
-    className,
-    href,
-    title,
-    children,
-    onPress,
-    variant,
-    weight,
-    color,
-    truncate,
-    slot,
-    ...restProps
-  } = cleanedProps;
+  const { classes, title, children } = ownProps;
 
   const internalRef = useRef<HTMLAnchorElement>(null);
   const linkRef = (ref || internalRef) as React.RefObject<HTMLAnchorElement>;
 
-  // Use useLink hook to get link props
-  // For internal links, this will use the RouterProvider's navigate function
-  const { linkProps } = useLink(
-    {
-      href,
-      onPress,
-      ...restProps,
-    },
-    linkRef,
-  );
+  const { linkProps } = useLink(restProps, linkRef);
+
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    linkProps.onClick?.(e);
+    const text =
+      restProps['aria-label'] ??
+      getNodeText(children) ??
+      String(restProps.href ?? '');
+    analytics.captureEvent('click', text, {
+      attributes: { to: String(restProps.href ?? '') },
+    });
+  };
 
   return (
     <a
@@ -70,9 +51,9 @@ const LinkInternal = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
       {...dataAttributes}
       {...(restProps as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
       ref={linkRef}
-      href={href}
       title={title}
-      className={clsx(classNames.root, styles[classNames.root], className)}
+      className={classes.root}
+      onClick={handleClick}
     >
       {children}
     </a>
@@ -83,19 +64,10 @@ LinkInternal.displayName = 'LinkInternal';
 
 /** @public */
 export const Link = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
-  const navigate = useNavigate();
-  const isExternal = isExternalLink(props.href);
-
-  // If it's an external link, render without RouterProvider
-  if (isExternal) {
-    return <LinkInternal {...props} ref={ref} />;
-  }
-
-  // For internal links, wrap in RouterProvider so useLink can access the router
   return (
-    <RouterProvider navigate={navigate} useHref={useHref}>
+    <InternalLinkProvider href={props.href}>
       <LinkInternal {...props} ref={ref} />
-    </RouterProvider>
+    </InternalLinkProvider>
   );
 });
 

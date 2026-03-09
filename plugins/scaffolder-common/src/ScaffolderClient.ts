@@ -125,13 +125,6 @@ export class ScaffolderClient implements ScaffolderApi {
   ): Promise<ScaffolderGetIntegrationsListResponse> {
     const integrations = [
       ...this.scmIntegrationsApi.azure.list(),
-      ...this.scmIntegrationsApi.bitbucket
-        .list()
-        .filter(
-          item =>
-            !this.scmIntegrationsApi.bitbucketCloud.byHost(item.config.host) &&
-            !this.scmIntegrationsApi.bitbucketServer.byHost(item.config.host),
-        ),
       ...this.scmIntegrationsApi.bitbucketCloud.list(),
       ...this.scmIntegrationsApi.bitbucketServer.list(),
       ...this.scmIntegrationsApi.gerrit.list(),
@@ -381,7 +374,7 @@ export class ScaffolderClient implements ScaffolderApi {
   /**
    * {@inheritdoc ScaffolderApi.retry}
    */
-  async retry?(
+  async retry(
     taskId: string,
     options?: ScaffolderRequestOptions,
   ): Promise<{ id: string }> {
@@ -393,22 +386,28 @@ export class ScaffolderClient implements ScaffolderApi {
   /**
    * {@inheritdoc ScaffolderApi.retry}
    */
-  async autocomplete({
-    token,
-    resource,
-    provider,
-    context,
-  }: {
-    token: string;
-    provider: string;
-    resource: string;
-    context: Record<string, string>;
-  }): Promise<{ results: { title?: string; id: string }[] }> {
+  async autocomplete(
+    {
+      token,
+      resource,
+      provider,
+      context,
+    }: {
+      token: string;
+      provider: string;
+      resource: string;
+      context: Record<string, string>;
+    },
+    options?: ScaffolderRequestOptions,
+  ): Promise<{ results: { title?: string; id: string }[] }> {
     return await this.requestRequired(
-      await this.apiClient.autocomplete({
-        path: { provider, resource },
-        body: { token, context },
-      }),
+      await this.apiClient.autocomplete(
+        {
+          path: { provider, resource },
+          body: { token, context },
+        },
+        options,
+      ),
     );
   }
 

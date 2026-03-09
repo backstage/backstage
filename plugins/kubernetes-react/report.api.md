@@ -61,10 +61,7 @@ export class AksKubernetesAuthProvider implements KubernetesAuthProvider {
 }
 
 // @public
-export const Cluster: ({
-  clusterObjects,
-  podsWithErrors,
-}: ClusterProps) => JSX_2.Element;
+export const Cluster: (input: ClusterProps) => JSX_2.Element;
 
 // @public (undocumented)
 export const ClusterContext: Context<ClusterAttributes>;
@@ -116,7 +113,9 @@ export interface ContainerScope extends PodScope {
 }
 
 // @public (undocumented)
-export const CronJobsAccordions: ({}: CronJobsAccordionsProps) => JSX_2.Element;
+export const CronJobsAccordions: (
+  input: CronJobsAccordionsProps,
+) => JSX_2.Element;
 
 // @public (undocumented)
 export type CronJobsAccordionsProps = {
@@ -124,7 +123,7 @@ export type CronJobsAccordionsProps = {
 };
 
 // @public (undocumented)
-export const CustomResources: ({}: CustomResourcesProps) => JSX_2.Element;
+export const CustomResources: (input: CustomResourcesProps) => JSX_2.Element;
 
 // @public (undocumented)
 export interface CustomResourcesProps {
@@ -145,7 +144,7 @@ export class EksClusterLinksFormatter implements ClusterLinksFormatter {
 }
 
 // @public
-export const ErrorList: ({ podAndErrors }: ErrorListProps) => JSX_2.Element;
+export const ErrorList: (input: ErrorListProps) => JSX_2.Element;
 
 // @public
 export interface ErrorListProps {
@@ -159,11 +158,7 @@ export type ErrorMatcher = {
 } & TypeMeta;
 
 // @public (undocumented)
-export const ErrorPanel: ({
-  entityName,
-  errorMessage,
-  clustersWithErrors,
-}: ErrorPanelProps) => JSX_2.Element;
+export const ErrorPanel: (input: ErrorPanelProps) => JSX_2.Element;
 
 // @public (undocumented)
 export type ErrorPanelProps = {
@@ -174,10 +169,7 @@ export type ErrorPanelProps = {
 };
 
 // @public (undocumented)
-export const ErrorReporting: ({
-  detectedErrors,
-  clusters,
-}: ErrorReportingProps) => JSX_2.Element;
+export const ErrorReporting: (input: ErrorReportingProps) => JSX_2.Element;
 
 // @public (undocumented)
 export type ErrorReportingProps = {
@@ -186,18 +178,10 @@ export type ErrorReportingProps = {
 };
 
 // @public
-export const Events: ({
-  involvedObjectName,
-  namespace,
-  clusterName,
-  warningEventsOnly,
-}: EventsProps) => JSX_2.Element;
+export const Events: (input: EventsProps) => JSX_2.Element;
 
 // @public
-export const EventsContent: ({
-  events,
-  warningEventsOnly,
-}: EventsContentProps) => JSX_2.Element;
+export const EventsContent: (input: EventsContentProps) => JSX_2.Element;
 
 // @public
 export interface EventsContentProps {
@@ -297,13 +281,15 @@ export const HorizontalPodAutoscalerDrawer: (props: {
 }) => JSX_2.Element;
 
 // @public (undocumented)
-export const IngressesAccordions: ({}: IngressesAccordionsProps) => JSX_2.Element;
+export const IngressesAccordions: (
+  input: IngressesAccordionsProps,
+) => JSX_2.Element;
 
 // @public (undocumented)
 export type IngressesAccordionsProps = {};
 
 // @public (undocumented)
-export const JobsAccordions: ({ jobs }: JobsAccordionsProps) => JSX_2.Element;
+export const JobsAccordions: (input: JobsAccordionsProps) => JSX_2.Element;
 
 // @public (undocumented)
 export type JobsAccordionsProps = {
@@ -468,13 +454,7 @@ export interface KubernetesClusterLinkFormatterApi {
 export const kubernetesClusterLinkFormatterApiRef: ApiRef<KubernetesClusterLinkFormatterApi>;
 
 // @public
-export const KubernetesDrawer: ({
-  open,
-  label,
-  drawerContentsHeader,
-  kubernetesObject,
-  children,
-}: KubernetesDrawerProps) => JSX_2.Element;
+export const KubernetesDrawer: (input: KubernetesDrawerProps) => JSX_2.Element;
 
 // @public (undocumented)
 export interface KubernetesDrawerable {
@@ -549,11 +529,7 @@ export const kubernetesProxyApiRef: ApiRef<KubernetesProxyApi>;
 export class KubernetesProxyClient {
   constructor(options: { kubernetesApi: KubernetesApi });
   // (undocumented)
-  deletePod({
-    podName,
-    namespace,
-    clusterName,
-  }: {
+  deletePod(input: {
     podName: string;
     namespace: string;
     clusterName: string;
@@ -561,23 +537,13 @@ export class KubernetesProxyClient {
     text: string;
   }>;
   // (undocumented)
-  getEventsByInvolvedObjectName({
-    clusterName,
-    involvedObjectName,
-    namespace,
-  }: {
+  getEventsByInvolvedObjectName(input: {
     clusterName: string;
     involvedObjectName: string;
     namespace: string;
   }): Promise<Event_2[]>;
   // (undocumented)
-  getPodLogs({
-    podName,
-    namespace,
-    clusterName,
-    containerName,
-    previous,
-  }: {
+  getPodLogs(input: {
     podName: string;
     namespace: string;
     clusterName: string;
@@ -591,14 +557,9 @@ export class KubernetesProxyClient {
 // @public (undocumented)
 export const KubernetesStructuredMetadataTableDrawer: <
   T extends KubernetesDrawerable,
->({
-  object,
-  renderObject,
-  kind,
-  buttonVariant,
-  expanded,
-  children,
-}: KubernetesStructuredMetadataTableDrawerProps<T>) => JSX_2.Element;
+>(
+  input: KubernetesStructuredMetadataTableDrawerProps<T>,
+) => JSX_2.Element;
 
 // @public (undocumented)
 export interface KubernetesStructuredMetadataTableDrawerProps<
@@ -619,10 +580,7 @@ export interface KubernetesStructuredMetadataTableDrawerProps<
 }
 
 // @public (undocumented)
-export const LinkErrorPanel: ({
-  cluster,
-  errorMessage,
-}: LinkErrorPanelProps) => JSX_2.Element;
+export const LinkErrorPanel: (input: LinkErrorPanelProps) => JSX_2.Element;
 
 // @public (undocumented)
 export type LinkErrorPanelProps = {
@@ -632,7 +590,7 @@ export type LinkErrorPanelProps = {
 };
 
 // @public
-export const ManifestYaml: ({ object }: ManifestYamlProps) => JSX_2.Element;
+export const ManifestYaml: (input: ManifestYamlProps) => JSX_2.Element;
 
 // @public
 export interface ManifestYamlProps {
@@ -664,9 +622,9 @@ export class OpenshiftClusterLinksFormatter {
 }
 
 // @public
-export const PendingPodContent: ({
-  pod,
-}: PendingPodContentProps) => JSX_2.Element;
+export const PendingPodContent: (
+  input: PendingPodContentProps,
+) => JSX_2.Element;
 
 // @public
 export interface PendingPodContentProps {
@@ -688,10 +646,7 @@ export interface PodAndErrors {
 export type PodColumns = 'READY' | 'RESOURCE';
 
 // @public
-export const PodDrawer: ({
-  podAndErrors,
-  open,
-}: PodDrawerProps) => JSX_2.Element;
+export const PodDrawer: (input: PodDrawerProps) => JSX_2.Element;
 
 // @public
 export interface PodDrawerProps {
@@ -725,9 +680,7 @@ export interface PodExecTerminalProps {
 export const PodLogs: FC<PodLogsProps>;
 
 // @public
-export const PodLogsDialog: ({
-  containerScope,
-}: PodLogsDialogProps) => JSX_2.Element;
+export const PodLogsDialog: (input: PodLogsDialogProps) => JSX_2.Element;
 
 // @public
 export interface PodLogsDialogProps {
@@ -776,10 +729,7 @@ export interface PodScope {
 }
 
 // @public (undocumented)
-export const PodsTable: ({
-  pods,
-  extraColumns,
-}: PodsTablesProps) => JSX_2.Element;
+export const PodsTable: (input: PodsTablesProps) => JSX_2.Element;
 
 // @public (undocumented)
 export type PodsTablesProps = {
@@ -801,13 +751,9 @@ export const READY_COLUMNS: PodColumns;
 export const RESOURCE_COLUMNS: PodColumns;
 
 // @public
-export const ResourceUtilization: ({
-  compressed,
-  title,
-  usage,
-  total,
-  totalFormatted,
-}: ResourceUtilizationProps) => JSX_2.Element;
+export const ResourceUtilization: (
+  input: ResourceUtilizationProps,
+) => JSX_2.Element;
 
 // @public
 export interface ResourceUtilizationProps {
@@ -836,7 +782,9 @@ export class ServerSideKubernetesAuthProvider
 }
 
 // @public (undocumented)
-export const ServicesAccordions: ({}: ServicesAccordionsProps) => JSX_2.Element;
+export const ServicesAccordions: (
+  input: ServicesAccordionsProps,
+) => JSX_2.Element;
 
 // @public (undocumented)
 export type ServicesAccordionsProps = {};
@@ -855,11 +803,7 @@ export const useCustomResources: (
 ) => KubernetesObjects;
 
 // @public
-export const useEvents: ({
-  involvedObjectName,
-  namespace,
-  clusterName,
-}: EventsOptions) => AsyncState<Event_2[]>;
+export const useEvents: (input: EventsOptions) => AsyncState<Event_2[]>;
 
 // @public (undocumented)
 export const useKubernetesObjects: (
@@ -871,10 +815,7 @@ export const useKubernetesObjects: (
 export const useMatchingErrors: (matcher: ErrorMatcher) => DetectedError[];
 
 // @public
-export const usePodLogs: ({
-  containerScope,
-  previous,
-}: PodLogsOptions) => AsyncState<{
+export const usePodLogs: (input: PodLogsOptions) => AsyncState<{
   text: string;
 }>;
 

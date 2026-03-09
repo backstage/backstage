@@ -24,6 +24,7 @@ import { coreServices } from '@backstage/backend-plugin-api';
 - [Identity Service](./identity.md) - Deprecated user authentication service, use the [Auth Service](./auth.md) instead.
 - [Lifecycle Service](./lifecycle.md) - Registration of plugin startup and shutdown lifecycle hooks.
 - [Logger Service](./logger.md) - Plugin-level logging.
+- [Metrics Service](./metrics.md) - Plugin-scoped metrics instrumentation (alpha).
 - [Permissions Service](./permissions.md) - Permission system integration for authorization of user actions.
 - [Plugin Metadata Service](./plugin-metadata.md) - Built-in service for accessing metadata about the current plugin.
 - [Root Config Service](./root-config.md) - Access to static configuration.

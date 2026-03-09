@@ -20,7 +20,7 @@ import {
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
-import { InputError } from '@backstage/errors';
+import { InputError, NotImplementedError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
 import {
@@ -30,7 +30,7 @@ import {
   processingResult,
 } from '@backstage/plugin-catalog-node';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
-import { createHash } from 'crypto';
+import { createHash } from 'node:crypto';
 import { Knex } from 'knex';
 import merge from 'lodash/merge';
 import { EntitiesCatalog } from '../catalog/types';
@@ -56,6 +56,7 @@ import { mockServices, TestDatabases } from '@backstage/backend-test-utils';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { entitiesResponseToObjects } from '../service/response';
 import { deleteOrphanedEntities } from '../database/operations/util/deleteOrphanedEntities';
+import { metricsServiceMock } from '@backstage/backend-test-utils/alpha';
 
 const voidLogger = mockServices.logger.mock();
 
@@ -248,6 +249,7 @@ class TestHarness {
       logger,
       events: mockServices.events.mock(),
       refreshInterval: () => 0.05,
+      metrics: metricsServiceMock.mock(),
     });
 
     const integrations = ScmIntegrations.fromConfig(config);
@@ -280,6 +282,7 @@ class TestHarness {
     const stitcher = DefaultStitcher.fromConfig(config, {
       knex: options.db,
       logger,
+      metrics: metricsServiceMock.mock(),
     });
     const catalog = new DefaultEntitiesCatalog({
       database: options.db,
@@ -306,6 +309,7 @@ class TestHarness {
       },
       tracker: proxyProgressTracker,
       events: mockServices.events.mock(),
+      metrics: metricsServiceMock.mock(),
     });
 
     const refresh = new DefaultRefreshService({ database: catalogDatabase });
@@ -317,7 +321,17 @@ class TestHarness {
       providers.push(...options.additionalProviders);
     }
 
-    await connectEntityProviders(providerDatabase, providers);
+    await connectEntityProviders(
+      providerDatabase,
+      providers.map(p => ({
+        provider: p,
+        context: {
+          reportModuleStartupFailure: () => {
+            throw new NotImplementedError();
+          },
+        },
+      })),
+    );
 
     return new TestHarness(
       catalog,
@@ -522,6 +536,39 @@ describe('Catalog Backend Integration', () => {
           ],
         },
       },
+    });
+  });
+
+  it('should report module failures when provider connect throws', async () => {
+    const db = await databases.init('SQLITE_3');
+    await applyDatabaseMigrations(db);
+    const providerDatabase = new DefaultProviderDatabase({
+      database: db,
+      logger: mockServices.logger.mock(),
+    });
+    const error = new Error('NOPE');
+    const reportFailure = jest.fn();
+    const provider: EntityProvider = {
+      getProviderName: () => 'failing',
+      async connect() {
+        throw error;
+      },
+    };
+
+    await expect(
+      connectEntityProviders(providerDatabase, [
+        {
+          provider,
+          context: {
+            reportModuleStartupFailure: reportFailure,
+          },
+        },
+      ]),
+    ).resolves.toBeUndefined();
+    expect(reportFailure).toHaveBeenCalledWith({
+      error: new Error(
+        "Failed to connect entity provider 'failing'; caused by Error: NOPE",
+      ),
     });
   });
 

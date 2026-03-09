@@ -44,7 +44,7 @@ const HomePage = () => {
                     <div className="text--left bannerContent">
                       🗞️ Want to stay up to date with Backstage? Sign up for our{' '}
                       <Link
-                        to="https://info.backstage.spotify.com/newsletter_subscribe"
+                        to="https://spoti.fi/backstagenewsletter"
                         className="text--secondary"
                       >
                         Newsletter
@@ -84,7 +84,7 @@ const HomePage = () => {
                   label: 'GITHUB',
                 },
                 {
-                  link: 'https://info.backstage.spotify.com/office-hours',
+                  link: 'https://spoti.fi/backstageofficehours',
                   label: 'OFFICE HOURS',
                 },
               ]}

@@ -19,11 +19,14 @@ import {
   PackageGraph,
   PackageRole,
 } from '@backstage/cli-node';
-import { relative as relativePath } from 'path';
-import { paths } from '../../../../lib/paths';
+import { relative as relativePath } from 'node:path';
+import { targetPaths } from '@backstage/cli-common';
+import { cli } from 'cleye';
+
 import { resolveLinkedWorkspace } from '../package/start/resolveLinkedWorkspace';
 import { startPackage } from '../package/start/startPackage';
-import { parseArgs } from 'util';
+import { parseArgs } from 'node:util';
+import type { CommandContext } from '../../../../wiring/types';
 
 const ACCEPTED_PACKAGE_ROLES: Array<PackageRole | undefined> = [
   'frontend',
@@ -32,19 +35,61 @@ const ACCEPTED_PACKAGE_ROLES: Array<PackageRole | undefined> = [
   'backend-plugin',
 ];
 
-type CommandOptions = {
-  plugin: string[];
-  config: string[];
-  inspect?: boolean | string;
-  inspectBrk?: boolean | string;
-  require?: string;
-  link?: string;
-};
+export default async ({ args, info }: CommandContext) => {
+  const {
+    flags: { plugin, config, require: requirePath, link, inspect, inspectBrk },
+    _: namesOrPaths,
+  } = cli(
+    {
+      help: { ...info, usage: `${info.usage} [packages...]` },
+      parameters: ['[packages...]'],
+      flags: {
+        plugin: {
+          type: [String],
+          description:
+            'Start the dev entry-point for any matching plugin package in the repo',
+          default: [],
+        },
+        config: {
+          type: [String],
+          description: 'Config files to load instead of app-config.yaml',
+          default: [],
+        },
+        require: {
+          type: String,
+          description:
+            'Add a --require argument to the node process. Applies to backend package only',
+        },
+        link: {
+          type: String,
+          description: 'Link an external workspace for module resolution',
+        },
+        inspect: {
+          type: String,
+          description:
+            'Enable the Node.js inspector, optionally at a specific host:port',
+        },
+        inspectBrk: {
+          type: String,
+          description:
+            'Enable the Node.js inspector and break before user code starts',
+        },
+      },
+    },
+    undefined,
+    args,
+  );
 
-export async function command(namesOrPaths: string[], options: CommandOptions) {
-  const targetPackages = await findTargetPackages(namesOrPaths, options.plugin);
+  const targetPackages = await findTargetPackages(namesOrPaths, plugin);
 
-  const packageOptions = await resolvePackageOptions(targetPackages, options);
+  const packageOptions = await resolvePackageOptions(targetPackages, {
+    plugin,
+    config,
+    inspect: inspect || (inspect === '' ? true : undefined),
+    inspectBrk: inspectBrk || (inspectBrk === '' ? true : undefined),
+    require: requirePath,
+    link,
+  });
 
   if (packageOptions.length === 0) {
     console.log('No packages found to start');
@@ -59,7 +104,7 @@ export async function command(namesOrPaths: string[], options: CommandOptions) {
 
   // Each of these block until interrupted by user
   await Promise.all(packageOptions.map(entry => startPackage(entry.options)));
-}
+};
 
 export async function findTargetPackages(
   namesOrPaths: string[],
@@ -95,7 +140,7 @@ export async function findTargetPackages(
       pkg => nameOrPath === pkg.packageJson.name,
     );
     if (!matchingPackage) {
-      const absPath = paths.resolveTargetRoot(nameOrPath);
+      const absPath = targetPaths.resolveRoot(nameOrPath);
       matchingPackage = packages.find(
         pkg => relativePath(pkg.dir, absPath) === '',
       );
@@ -117,7 +162,7 @@ export async function findTargetPackages(
     );
     if (matchingPackages.length > 1) {
       // Final fallback is to check for the package path within the monorepo, packages/app or packages/backend
-      const expectedPath = paths.resolveTargetRoot(
+      const expectedPath = targetPaths.resolveRoot(
         role === 'frontend' ? 'packages/app' : 'packages/backend',
       );
       const matchByPath = matchingPackages.find(
@@ -163,6 +208,15 @@ export async function findTargetPackages(
     `Unable to find any packages with role 'frontend', 'backend', 'frontend-plugin', or 'backend-plugin'.`,
   );
 }
+
+type CommandOptions = {
+  plugin: string[];
+  config: string[];
+  inspect?: boolean | string;
+  inspectBrk?: boolean | string;
+  require?: string;
+  link?: string;
+};
 
 async function resolvePackageOptions(
   targetPackages: BackstagePackage[],

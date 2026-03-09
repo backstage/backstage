@@ -40,11 +40,6 @@ import { TableProps } from '@backstage/core-components';
 import { TabProps } from '@material-ui/core/Tab';
 import { UserListFilterKind } from '@backstage/plugin-catalog-react';
 
-// @public
-export type AboutCardProps = {
-  variant?: InfoCardVariants;
-};
-
 // @public (undocumented)
 export function AboutContent(props: AboutContentProps): JSX_2.Element;
 
@@ -63,8 +58,6 @@ export interface AboutFieldProps {
   children?: ReactNode;
   // (undocumented)
   className?: string;
-  // (undocumented)
-  gridSizes?: Record<string, number>;
   // (undocumented)
   label: string;
   // (undocumented)
@@ -334,7 +327,7 @@ export interface DependsOnResourcesCardProps {
 }
 
 // @public
-export const EntityAboutCard: (props: AboutCardProps) => JSX.Element;
+export const EntityAboutCard: () => JSX.Element;
 
 // @public (undocumented)
 export type EntityContextMenuClassKey = 'button';
@@ -384,8 +377,6 @@ export const EntityLabelsCard: (props: EntityLabelsCardProps) => JSX_2.Element;
 export interface EntityLabelsCardProps {
   // (undocumented)
   title?: string;
-  // (undocumented)
-  variant?: InfoCardVariants;
 }
 
 // @public (undocumented)
@@ -435,8 +426,6 @@ export const EntityLinksCard: (props: EntityLinksCardProps) => JSX_2.Element;
 export interface EntityLinksCardProps {
   // (undocumented)
   cols?: ColumnBreakpoints | number;
-  // (undocumented)
-  variant?: InfoCardVariants;
 }
 
 // @public (undocumented)

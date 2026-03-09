@@ -127,8 +127,18 @@ export function CatalogSearchResultListItem(
           }
         />
         <Box>
-          {result.kind && <Chip label={`Kind: ${result.kind}`} size="small" />}
-          {result.type && <Chip label={`Type: ${result.type}`} size="small" />}
+          {result.kind && (
+            <Chip
+              label={`${t('searchResultItem.kind')}: ${result.kind}`}
+              size="small"
+            />
+          )}
+          {result.type && (
+            <Chip
+              label={`${t('searchResultItem.type')}: ${result.type}`}
+              size="small"
+            />
+          )}
           {result.lifecycle && (
             <Chip
               label={`${t('searchResultItem.lifecycle')}: ${result.lifecycle}`}
@@ -137,7 +147,7 @@ export function CatalogSearchResultListItem(
           )}
           {result.owner && (
             <Chip
-              label={`${t('searchResultItem.Owner')}: ${result.owner}`}
+              label={`${t('searchResultItem.owner')}: ${result.owner}`}
               size="small"
             />
           )}

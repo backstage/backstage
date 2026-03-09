@@ -30,7 +30,7 @@
   }
 
   .bui-TableHeader {
-    border-bottom: 1px solid var(--bui-border);
+    border-bottom: 1px solid var(--bui-border-2);
     transition: color 0.2s ease-in-out;
   }
 
@@ -81,7 +81,7 @@
   }
 
   .bui-TableRow {
-    border-bottom: 1px solid var(--bui-border);
+    border-bottom: 1px solid var(--bui-border-2);
     transition: color 0.2s ease-in-out;
 
     &:hover {

@@ -27,7 +27,7 @@ import {
 import { InputError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { TECHDOCS_ANNOTATION } from '@backstage/plugin-techdocs-common';
-import path from 'path';
+import path from 'node:path';
 import { PreparerResponse, RemoteProtocol } from './stages/prepare/types';
 
 /**

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { PassThrough, Readable } from 'stream';
-import { ReadableStream as WebReadableStream } from 'stream/web';
+import { PassThrough, Readable } from 'node:stream';
+import { ReadableStream as WebReadableStream } from 'node:stream/web';
 
 export function parseLastModified(
   value: string | null | undefined,

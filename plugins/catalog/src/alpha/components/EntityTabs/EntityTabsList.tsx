@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { ReactElement, useMemo } from 'react';
 import Box from '@material-ui/core/Box';
 import Tabs from '@material-ui/core/Tabs';
 import { makeStyles } from '@material-ui/core/styles';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { EntityContentGroupDefinitions } from '@backstage/plugin-catalog-react/alpha';
+
 import { EntityTabsGroup } from './EntityTabsGroup';
+import { catalogTranslationRef } from '../../translation';
 
 /** @public */
 export type HeaderTabsClassKey =
@@ -59,51 +63,119 @@ type Tab = {
   id: string;
   label: string;
   path: string;
-  group: string;
+  group?: string;
+  icon?: string | ReactElement;
 };
 
-type TabItem = {
-  group: string;
-  id: string;
-  index: number;
-  label: string;
-  path: string;
+type TabGroup = {
+  group?: {
+    title: string;
+    icon?: string | ReactElement;
+  };
+  items: Array<Omit<Tab, 'group'>>;
 };
 
 type EntityTabsListProps = {
   tabs: Tab[];
+  groupDefinitions: EntityContentGroupDefinitions;
+  defaultContentOrder?: 'title' | 'natural';
+  showIcons?: boolean;
   selectedIndex?: number;
-  onChange?: (index: number) => void;
 };
+
+function resolveGroupId(
+  tabGroup: string | undefined,
+  groupDefinitions: EntityContentGroupDefinitions,
+  aliasToGroup: Record<string, string>,
+): string | undefined {
+  if (!tabGroup) {
+    return undefined;
+  }
+  if (groupDefinitions[tabGroup]) {
+    return tabGroup;
+  }
+  return aliasToGroup[tabGroup];
+}
 
 export function EntityTabsList(props: EntityTabsListProps) {
   const styles = useStyles();
+  const { t } = useTranslationRef(catalogTranslationRef);
 
-  const { tabs: items, onChange, selectedIndex: selectedItem = 0 } = props;
+  const {
+    tabs: items,
+    selectedIndex = 0,
+    showIcons,
+    groupDefinitions,
+    defaultContentOrder = 'title',
+  } = props;
 
-  const groups = useMemo(
-    () => [...new Set(items.map(item => item.group))],
-    [items],
+  const aliasToGroup = useMemo(
+    () =>
+      Object.entries(groupDefinitions).reduce((map, [groupId, def]) => {
+        for (const alias of def.aliases ?? []) {
+          map[alias] = groupId;
+        }
+        return map;
+      }, {} as Record<string, string>),
+    [groupDefinitions],
   );
 
-  const [selectedGroup, setSelectedGroup] = useState<number>(
-    selectedItem && items[selectedItem]
-      ? groups.indexOf(items[selectedItem].group)
-      : 0,
+  const groups = useMemo(() => {
+    const byKey = items.reduce((result, tab) => {
+      const resolvedGroupId = resolveGroupId(
+        tab.group,
+        groupDefinitions,
+        aliasToGroup,
+      );
+      const group = resolvedGroupId
+        ? groupDefinitions[resolvedGroupId]
+        : undefined;
+      const groupOrId = group && resolvedGroupId ? resolvedGroupId : tab.id;
+      result[groupOrId] = result[groupOrId] ?? {
+        group,
+        items: [],
+      };
+      result[groupOrId].items.push(tab);
+      return result;
+    }, {} as Record<string, TabGroup>);
+
+    const groupOrder = Object.keys(groupDefinitions);
+    const sorted = Object.entries(byKey).sort(([a], [b]) => {
+      const ai = groupOrder.indexOf(a);
+      const bi = groupOrder.indexOf(b);
+      if (ai !== -1 && bi !== -1) {
+        return ai - bi;
+      }
+      if (ai !== -1) {
+        return -1;
+      }
+      if (bi !== -1) {
+        return 1;
+      }
+      return 0;
+    });
+
+    for (const [id, tabGroup] of sorted) {
+      const groupDef = groupDefinitions[id];
+      if (groupDef) {
+        const order = groupDef.contentOrder ?? defaultContentOrder;
+        if (order === 'title') {
+          tabGroup.items.sort((a, b) =>
+            a.label.localeCompare(b.label, undefined, { sensitivity: 'base' }),
+          );
+        }
+      }
+    }
+
+    return sorted;
+  }, [items, groupDefinitions, aliasToGroup, defaultContentOrder]);
+
+  const selectedItem = items[selectedIndex];
+  const selectedGroup = resolveGroupId(
+    selectedItem?.group,
+    groupDefinitions,
+    aliasToGroup,
   );
-
-  const handleChange = useCallback(
-    (index: number) => {
-      if (selectedItem !== index) onChange?.(index);
-    },
-    [selectedItem, onChange],
-  );
-
-  useEffect(() => {
-    if (selectedItem === undefined || !items[selectedItem]) return;
-    setSelectedGroup(groups.indexOf(items[selectedItem].group));
-  }, [items, selectedItem, groups, setSelectedGroup]);
-
   return (
     <Box className={styles.tabsWrapper}>
       <Tabs
@@ -112,33 +184,23 @@ export function EntityTabsList(props: EntityTabsListProps) {
         textColor="inherit"
         variant="scrollable"
         scrollButtons="auto"
-        aria-label="tabs"
-        value={selectedGroup}
+        aria-label={t('entityTabs.tabsAriaLabel')}
+        value={selectedGroup ?? selectedItem?.id}
       >
-        {groups.map((group, groupIndex) => {
-          const groupItems: TabItem[] = [];
-          items.forEach((item, itemIndex) => {
-            if (item.group === group) {
-              groupItems.push({
-                ...item,
-                index: itemIndex,
-              });
-            }
-          });
-          return (
-            <EntityTabsGroup
-              data-testid={`header-tab-${groupIndex}`}
-              className={styles.defaultTab}
-              classes={{ selected: styles.selected, root: styles.tabRoot }}
-              key={group}
-              label={group}
-              value={groupIndex}
-              items={groupItems}
-              highlightedButton={selectedItem}
-              onSelectTab={() => handleChange(groupIndex)}
-            />
-          );
-        })}
+        {groups.map(([id, tabGroup]) => (
+          <EntityTabsGroup
+            data-testid={`header-tab-${id}`}
+            className={styles.defaultTab}
+            classes={{ selected: styles.selected, root: styles.tabRoot }}
+            key={id}
+            label={tabGroup.group?.title}
+            icon={tabGroup.group?.icon}
+            value={id}
+            items={tabGroup.items}
+            highlightedButton={selectedItem?.id}
+            showIcons={showIcons}
+          />
+        ))}
       </Tabs>
     </Box>
   );

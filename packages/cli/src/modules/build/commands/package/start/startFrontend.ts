@@ -15,14 +15,15 @@
  */
 
 import { readJson } from 'fs-extra';
-import { resolve as resolvePath } from 'path';
+import { resolve as resolvePath } from 'node:path';
 import {
-  getModuleFederationOptions,
+  getModuleFederationRemoteOptions,
   serveBundle,
-} from '../../../../build/lib/bundler';
-import { paths } from '../../../../../lib/paths';
+} from '../../../lib/bundler';
+import { targetPaths } from '@backstage/cli-common';
+
 import { BackstagePackageJson } from '@backstage/cli-node';
-import { hasReactDomClient } from '../../../../build/lib/bundler/hasReactDomClient';
+import { hasReactDomClient } from '../../../lib/bundler/hasReactDomClient';
 
 interface StartAppOptions {
   verifyVersions?: boolean;
@@ -38,7 +39,7 @@ interface StartAppOptions {
 
 export async function startFrontend(options: StartAppOptions) {
   const packageJson = (await readJson(
-    resolvePath(options.targetDir ?? paths.targetDir, 'package.json'),
+    resolvePath(options.targetDir ?? targetPaths.dir, 'package.json'),
   )) as BackstagePackageJson;
 
   if (!hasReactDomClient()) {
@@ -55,11 +56,12 @@ export async function startFrontend(options: StartAppOptions) {
     verifyVersions: options.verifyVersions,
     skipOpenBrowser: options.skipOpenBrowser,
     linkedWorkspace: options.linkedWorkspace,
-    moduleFederation: await getModuleFederationOptions(
-      packageJson,
-      resolvePath(paths.targetDir),
-      options.isModuleFederationRemote,
-    ),
+    moduleFederationRemote: options.isModuleFederationRemote
+      ? await getModuleFederationRemoteOptions(
+          packageJson,
+          resolvePath(targetPaths.dir),
+        )
+      : undefined,
   });
 
   await waitForExit();

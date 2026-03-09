@@ -6,7 +6,6 @@
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
-import { InfoCardVariants } from '@backstage/core-components';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
 
 // @public (undocumented)
@@ -18,7 +17,6 @@ export type ComponentsGridClassKey =
 
 // @public (undocumented)
 export const EntityGroupProfileCard: (props: {
-  variant?: InfoCardVariants;
   showLinks?: boolean;
 }) => JSX_2.Element;
 
@@ -34,13 +32,11 @@ export const EntityMembersListCard: (props: {
 
 // @public (undocumented)
 export const EntityOwnershipCard: (props: {
-  variant?: InfoCardVariants;
   entityFilterKind?: string[];
   hideRelationsToggle?: boolean;
   relationsType?: EntityRelationAggregation;
   relationAggregation?: EntityRelationAggregation;
   entityLimit?: number;
-  maxScrollHeight?: string;
 }) => JSX_2.Element;
 
 // @public (undocumented)
@@ -48,7 +44,6 @@ export type EntityRelationAggregation = 'direct' | 'aggregated';
 
 // @public (undocumented)
 export const EntityUserProfileCard: (props: {
-  variant?: InfoCardVariants;
   showLinks?: boolean;
   maxRelations?: number;
   hideIcons?: boolean;
@@ -56,12 +51,8 @@ export const EntityUserProfileCard: (props: {
 
 // @public (undocumented)
 export const GroupProfileCard: (props: {
-  variant?: InfoCardVariants;
   showLinks?: boolean;
 }) => JSX_2.Element;
-
-// @public (undocumented)
-export type MemberComponentClassKey = 'card' | 'avatar';
 
 // @public (undocumented)
 export const MembersListCard: (props: {
@@ -74,7 +65,7 @@ export const MembersListCard: (props: {
 }) => JSX_2.Element;
 
 // @public (undocumented)
-export type MembersListCardClassKey = 'root' | 'cardContent' | 'memberList';
+export type MembersListCardClassKey = 'memberList';
 
 // @public
 export const MyGroupsSidebarItem: (props: {
@@ -96,27 +87,18 @@ export { orgPlugin as plugin };
 
 // @public (undocumented)
 export const OwnershipCard: (props: {
-  variant?: InfoCardVariants;
   entityFilterKind?: string[];
   hideRelationsToggle?: boolean;
   relationsType?: EntityRelationAggregation;
   relationAggregation?: EntityRelationAggregation;
   entityLimit?: number;
-  maxScrollHeight?: string;
 }) => JSX_2.Element;
 
 // @public (undocumented)
-export type OwnershipCardClassKey =
-  | 'card'
-  | 'cardContent'
-  | 'list'
-  | 'listItemText'
-  | 'listItemSecondaryAction'
-  | 'grid';
+export type OwnershipCardClassKey = 'grid';
 
 // @public (undocumented)
 export const UserProfileCard: (props: {
-  variant?: InfoCardVariants;
   showLinks?: boolean;
   maxRelations?: number;
   hideIcons?: boolean;

@@ -35,6 +35,7 @@ import { alertApiRef, configApiRef, useApi } from '@backstage/core-plugin-api';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import NightsStay from '@material-ui/icons/NightsStay';
 import ErrorIcon from '@material-ui/icons/Error';
+import BlockIcon from '@material-ui/icons/Block';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { ScheduledTaskDetailPanel } from './ScheduledTaskDetailedPanel';
 import { RequirePermission } from '@backstage/plugin-permission-react';
@@ -87,6 +88,12 @@ const StatusDisplay = ({
       {text}
     </Typography>
   </Box>
+);
+
+const CreateNotAllowed = () => (
+  <Tooltip title="You are not allowed to perform this action">
+    <BlockIcon color="disabled" />
+  </Tooltip>
 );
 
 /** @public */
@@ -198,7 +205,10 @@ export const ScheduledTasksContent = () => {
     {
       title: 'Actions',
       render: (rowData: TaskApiTasksResponse) => (
-        <RequirePermission permission={devToolsTaskSchedulerCreatePermission}>
+        <RequirePermission
+          permission={devToolsTaskSchedulerCreatePermission}
+          errorPage={<CreateNotAllowed />}
+        >
           <Tooltip title="Run Task">
             <IconButton
               aria-label="Trigger"
@@ -225,6 +235,7 @@ export const ScheduledTasksContent = () => {
       ),
       sorting: false,
       width: '10%',
+      align: 'center',
     },
   ];
 

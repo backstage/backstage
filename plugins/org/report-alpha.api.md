@@ -5,9 +5,9 @@
 ```ts
 import { Entity } from '@backstage/catalog-model';
 import { EntityCardType } from '@backstage/plugin-catalog-react/alpha';
-import { EntityPredicate } from '@backstage/plugin-catalog-react/alpha';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
+import { FilterPredicate } from '@backstage/filter-predicates';
 import { JSX as JSX_2 } from 'react';
 import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
@@ -24,12 +24,12 @@ const _default: OverridableFrontendPlugin<
       kind: 'entity-card';
       name: 'group-profile';
       config: {
-        filter: EntityPredicate | undefined;
-        type: 'content' | 'summary' | 'info' | undefined;
+        filter: FilterPredicate | undefined;
+        type: 'content' | 'info' | undefined;
       };
       configInput: {
-        filter?: EntityPredicate | undefined;
-        type?: 'content' | 'summary' | 'info' | undefined;
+        filter?: FilterPredicate | undefined;
+        type?: 'content' | 'info' | undefined;
       };
       output:
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -57,7 +57,7 @@ const _default: OverridableFrontendPlugin<
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
-        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+        filter?: string | FilterPredicate | ((entity: Entity) => boolean);
         type?: EntityCardType;
       };
     }>;
@@ -65,14 +65,14 @@ const _default: OverridableFrontendPlugin<
       config: {
         initialRelationAggregation: 'direct' | 'aggregated' | undefined;
         showAggregateMembersToggle: boolean | undefined;
-        filter: EntityPredicate | undefined;
-        type: 'content' | 'summary' | 'info' | undefined;
+        filter: FilterPredicate | undefined;
+        type: 'content' | 'info' | undefined;
       };
       configInput: {
         showAggregateMembersToggle?: boolean | undefined;
         initialRelationAggregation?: 'direct' | 'aggregated' | undefined;
-        filter?: EntityPredicate | undefined;
-        type?: 'content' | 'summary' | 'info' | undefined;
+        filter?: FilterPredicate | undefined;
+        type?: 'content' | 'info' | undefined;
       };
       output:
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -102,7 +102,7 @@ const _default: OverridableFrontendPlugin<
       name: 'members-list';
       params: {
         loader: () => Promise<JSX.Element>;
-        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+        filter?: string | FilterPredicate | ((entity: Entity) => boolean);
         type?: EntityCardType;
       };
     }>;
@@ -111,15 +111,15 @@ const _default: OverridableFrontendPlugin<
         initialRelationAggregation: 'direct' | 'aggregated' | undefined;
         showAggregateMembersToggle: boolean | undefined;
         ownedKinds: string[] | undefined;
-        filter: EntityPredicate | undefined;
-        type: 'content' | 'summary' | 'info' | undefined;
+        filter: FilterPredicate | undefined;
+        type: 'content' | 'info' | undefined;
       };
       configInput: {
         showAggregateMembersToggle?: boolean | undefined;
         initialRelationAggregation?: 'direct' | 'aggregated' | undefined;
         ownedKinds?: string[] | undefined;
-        filter?: EntityPredicate | undefined;
-        type?: 'content' | 'summary' | 'info' | undefined;
+        filter?: FilterPredicate | undefined;
+        type?: 'content' | 'info' | undefined;
       };
       output:
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -149,7 +149,7 @@ const _default: OverridableFrontendPlugin<
       name: 'ownership';
       params: {
         loader: () => Promise<JSX.Element>;
-        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+        filter?: string | FilterPredicate | ((entity: Entity) => boolean);
         type?: EntityCardType;
       };
     }>;
@@ -157,14 +157,14 @@ const _default: OverridableFrontendPlugin<
       config: {
         maxRelations: number | undefined;
         hideIcons: boolean;
-        filter: EntityPredicate | undefined;
-        type: 'content' | 'summary' | 'info' | undefined;
+        filter: FilterPredicate | undefined;
+        type: 'content' | 'info' | undefined;
       };
       configInput: {
         hideIcons?: boolean | undefined;
         maxRelations?: number | undefined;
-        filter?: EntityPredicate | undefined;
-        type?: 'content' | 'summary' | 'info' | undefined;
+        filter?: FilterPredicate | undefined;
+        type?: 'content' | 'info' | undefined;
       };
       output:
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -194,7 +194,7 @@ const _default: OverridableFrontendPlugin<
       name: 'user-profile';
       params: {
         loader: () => Promise<JSX.Element>;
-        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+        filter?: string | FilterPredicate | ((entity: Entity) => boolean);
         type?: EntityCardType;
       };
     }>;
@@ -214,17 +214,13 @@ export const orgTranslationRef: TranslationRef<
     readonly 'groupProfileCard.listItemTitle.entityRef': 'Entity Ref';
     readonly 'groupProfileCard.listItemTitle.parentGroup': 'Parent Group';
     readonly 'groupProfileCard.listItemTitle.childGroups': 'Child Groups';
-    readonly 'membersListCard.title': 'Members';
-    readonly 'membersListCard.subtitle': 'of {{groupName}}';
-    readonly 'membersListCard.paginationLabel': ', page {{page}} of {{nbPages}}';
+    readonly 'membersListCard.title': '{{groupName}} members';
+    readonly 'membersListCard.cardLabel': 'User page for {{memberName}}';
     readonly 'membersListCard.noMembersDescription': 'This group has no members.';
-    readonly 'membersListCard.aggregateMembersToggle.ariaLabel': 'Users Type Switch';
-    readonly 'membersListCard.aggregateMembersToggle.directMembers': 'Direct Members';
-    readonly 'membersListCard.aggregateMembersToggle.aggregatedMembers': 'Aggregated Members';
+    readonly 'membersListCard.noSearchResult': 'Found no members matching "{{searchTerm}}".';
+    readonly 'membersListCard.aggregateMembersToggle.label': 'Include subgroups';
     readonly 'ownershipCard.title': 'Ownership';
-    readonly 'ownershipCard.aggregateRelationsToggle.ariaLabel': 'Ownership Type Switch';
-    readonly 'ownershipCard.aggregateRelationsToggle.directRelations': 'Direct Relations';
-    readonly 'ownershipCard.aggregateRelationsToggle.aggregatedRelations': 'Aggregated Relations';
+    readonly 'ownershipCard.aggregateRelationsToggle.label': 'Include indirect ownership';
     readonly 'userProfileCard.editIconButtonTitle': 'Edit Metadata';
     readonly 'userProfileCard.listItemTitle.email': 'Email';
     readonly 'userProfileCard.listItemTitle.memberOf': 'Member of';

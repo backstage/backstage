@@ -23,7 +23,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: color-mix(in srgb, var(--bui-gray-2) 80%, transparent);
+    background: color-mix(in srgb, var(--bui-bg-neutral-2) 80%, transparent);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -43,18 +43,25 @@
   }
 
   .bui-Dialog {
-    background: var(--bui-bg-surface-1);
-    border-radius: 0.5rem;
-    border: 1px solid var(--bui-border);
+    --dialog-border-radius: 0.5rem;
+    background: var(--bui-bg-app);
+    box-shadow: var(--bui-shadow);
+    border-radius: var(--dialog-border-radius);
+    border: 1px solid var(--bui-border-1);
     color: var(--bui-fg-primary);
     position: relative;
     width: min(var(--bui-dialog-min-width, 400px), calc(100vw - 3rem));
     max-width: calc(100vw - 3rem);
     height: min(var(--bui-dialog-min-height, auto), calc(100vh - 3rem));
     max-height: calc(100vh - 3rem);
+    outline: none;
+  }
+
+  .bui-DialogContent {
     display: flex;
     flex-direction: column;
-    outline: none;
+    border-radius: var(--dialog-border-radius);
+    height: 100%;
   }
 
   /* Dialog entering animation */
@@ -73,7 +80,7 @@
     align-items: center;
     padding-inline: var(--bui-space-3);
     padding-block: var(--bui-space-2);
-    border-bottom: 1px solid var(--bui-border);
+    border-bottom: 1px solid var(--bui-border-1);
   }
 
   .bui-DialogHeaderTitle {
@@ -89,7 +96,7 @@
     gap: var(--bui-space-2);
     padding-inline: var(--bui-space-3);
     padding-block: var(--bui-space-3);
-    border-top: 1px solid var(--bui-border);
+    border-top: 1px solid var(--bui-border-1);
   }
 
   .bui-DialogBody {

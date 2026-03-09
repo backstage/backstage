@@ -5,10 +5,6 @@ sidebar_label: Discovery
 description: Automatically discovering catalog entities from repositories in a GitHub organization or App
 ---
 
-:::info
-This documentation is written for [the new backend system](../../backend-system/index.md) which is the default since Backstage [version 1.24](../../releases/v1.24.0.md). If you are still on the old backend system, you may want to read [its own article](https://github.com/backstage/backstage/blob/v1.37.0/docs/integrations/github/discovery--old.md) instead, and [consider migrating](../../backend-system/building-backends/08-migrating.md)!
-:::
-
 ## GitHub Provider
 
 The GitHub integration has a discovery provider for discovering catalog
@@ -375,7 +371,7 @@ schedule:
   timeout: { minutes: 3 }
 ```
 
-More information about scheduling can be found on the [SchedulerServiceTaskScheduleDefinition](https://backstage.io/docs/reference/backend-plugin-api.schedulerservicetaskscheduledefinition) page.
+More information about scheduling can be found on the [SchedulerServiceTaskScheduleDefinition](https://backstage.io/api/stable/interfaces/_backstage_backend-plugin-api.index.SchedulerServiceTaskScheduleDefinition.html) page.
 
 Alternatively, or additionally, you can configure [github-apps](github-apps.md) authentication
 which carries a much higher rate limit at GitHub.

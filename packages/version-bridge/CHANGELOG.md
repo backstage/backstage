@@ -1,5 +1,17 @@
 # @backstage/version-bridge
 
+## 1.0.12
+
+### Patch Changes
+
+- a7e0d50: Updated `react-router-dom` peer dependency to `^6.30.2` and explicitly disabled v7 future flags to suppress deprecation warnings.
+
+## 1.0.12-next.0
+
+### Patch Changes
+
+- a7e0d50: Prepare for React Router v7 migration by updating to v6.30.2 across all NFS packages and enabling v7 future flags. Convert routes from splat paths to parent/child structure with Outlet components.
+
 ## 1.0.11
 
 ### Patch Changes

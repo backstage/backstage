@@ -15,48 +15,29 @@
  */
 
 import { forwardRef } from 'react';
-import { FlexProps } from './types';
-import clsx from 'clsx';
-import { useStyles } from '../../hooks/useStyles';
+import type { FlexProps } from './types';
+import { useDefinition } from '../../hooks/useDefinition';
 import { FlexDefinition } from './definition';
-import styles from './Flex.module.css';
-import { SurfaceProvider, useSurface } from '../../hooks/useSurface';
 
 /** @public */
 export const Flex = forwardRef<HTMLDivElement, FlexProps>((props, ref) => {
-  // Resolve the surface this Flex creates for its children
-  // Using 'surface' parameter = container behavior (auto increments)
-  const { surface: resolvedSurface } = useSurface({
-    surface: props.surface,
-  });
+  const { ownProps, dataAttributes, utilityStyle, restProps } = useDefinition(
+    FlexDefinition,
+    { gap: '4', ...props },
+  );
+  const { classes, childrenWithBgProvider } = ownProps;
 
-  const { classNames, dataAttributes, utilityClasses, style, cleanedProps } =
-    useStyles(FlexDefinition, {
-      gap: '4',
-      ...props,
-      surface: resolvedSurface, // Use resolved surface for data attribute
-    });
-
-  const { className, surface, ...rest } = cleanedProps;
-
-  const content = (
+  return (
     <div
       ref={ref}
-      className={clsx(
-        classNames.root,
-        utilityClasses,
-        styles[classNames.root],
-        className,
-      )}
-      style={style}
+      className={classes.root}
+      style={{ ...utilityStyle, ...ownProps.style }}
       {...dataAttributes}
-      {...rest}
-    />
-  );
-
-  return resolvedSurface ? (
-    <SurfaceProvider surface={resolvedSurface}>{content}</SurfaceProvider>
-  ) : (
-    content
+      {...restProps}
+    >
+      {childrenWithBgProvider}
+    </div>
   );
 });
+
+Flex.displayName = 'Flex';

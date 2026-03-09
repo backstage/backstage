@@ -14,20 +14,38 @@
  * limitations under the License.
  */
 
+import { cli } from 'cleye';
 import { JsonObject } from '@backstage/types';
 import { mergeConfigSchemas } from '@backstage/config-loader';
-import { OptionValues } from 'commander';
 import { JSONSchema7 as JSONSchema } from 'json-schema';
 import openBrowser from 'react-dev-utils/openBrowser';
 import chalk from 'chalk';
 import { loadCliConfig } from '../lib/config';
+import type { CommandContext } from '../../../wiring/types';
 
 const DOCS_URL = 'https://config.backstage.io';
 
-export default async (opts: OptionValues) => {
+export default async ({ args, info }: CommandContext) => {
+  const {
+    flags: { package: pkg },
+  } = cli(
+    {
+      help: info,
+      flags: {
+        package: {
+          type: String,
+          description:
+            'Only include the schema that applies to the given package',
+        },
+      },
+    },
+    undefined,
+    args,
+  );
+
   const { schema: appSchemas } = await loadCliConfig({
     args: [],
-    fromPackage: opts.package,
+    fromPackage: pkg,
     mockEnv: true,
   });
 

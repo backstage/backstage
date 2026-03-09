@@ -29,7 +29,7 @@ import getRawBody from 'raw-body';
 import { GiteaUrlReader } from './GiteaUrlReader';
 import { NotFoundError, NotModifiedError } from '@backstage/errors';
 import fs from 'fs-extra';
-import path from 'path';
+import path from 'node:path';
 
 const treeResponseFactory = DefaultReadTreeResponseFactory.create({
   config: new ConfigReader({}),

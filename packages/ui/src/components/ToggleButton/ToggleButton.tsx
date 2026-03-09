@@ -14,38 +14,27 @@
  * limitations under the License.
  */
 
-import clsx from 'clsx';
 import { forwardRef, Ref } from 'react';
 import { ToggleButton as AriaToggleButton } from 'react-aria-components';
 import type { ToggleButtonProps } from './types';
-import { useStyles } from '../../hooks/useStyles';
+import { useDefinition } from '../../hooks/useDefinition';
 import { ToggleButtonDefinition } from './definition';
-import styles from './ToggleButton.module.css';
-import { useSurface } from '../../hooks/useSurface';
 
 /** @public */
 export const ToggleButton = forwardRef(
   (props: ToggleButtonProps, ref: Ref<HTMLButtonElement>) => {
-    const { classNames, dataAttributes, cleanedProps } = useStyles(
+    const { ownProps, restProps, dataAttributes } = useDefinition(
       ToggleButtonDefinition,
-      {
-        size: 'small',
-        ...props,
-      },
+      props,
     );
-
-    const { children, className, iconStart, iconEnd, onSurface, ...rest } =
-      cleanedProps;
-
-    const { surface } = useSurface({ onSurface });
+    const { classes, children, iconStart, iconEnd } = ownProps;
 
     return (
       <AriaToggleButton
-        className={clsx(classNames.root, styles[classNames.root], className)}
+        className={classes.root}
         ref={ref}
         {...dataAttributes}
-        {...(typeof surface === 'string' ? { 'data-on-surface': surface } : {})}
-        {...rest}
+        {...restProps}
       >
         {renderProps => {
           // If children is a function, call it with render props; otherwise use children as-is
@@ -53,10 +42,7 @@ export const ToggleButton = forwardRef(
             typeof children === 'function' ? children(renderProps) : children;
 
           return (
-            <span
-              className={clsx(classNames.content, styles[classNames.content])}
-              data-slot="content"
-            >
+            <span className={classes.content} data-slot="content">
               {iconStart}
               {renderedChildren}
               {iconEnd}

@@ -14,32 +14,46 @@
  * limitations under the License.
  */
 
+import type { ReactNode, CSSProperties, HTMLAttributes } from 'react';
 import type {
   Space,
   SpaceProps,
   Responsive,
   Columns,
-  Surface,
+  ProviderBg,
 } from '../../types';
 
 /** @public */
-export interface GridProps extends SpaceProps {
-  children?: React.ReactNode;
+export type GridOwnProps = {
+  children: ReactNode;
   className?: string;
+  style?: CSSProperties;
+  bg?: Responsive<ProviderBg>;
+};
+
+/** @public */
+export interface GridProps
+  extends SpaceProps,
+    GridOwnProps,
+    Omit<HTMLAttributes<HTMLDivElement>, 'children'> {
   columns?: Responsive<Columns>;
   gap?: Responsive<Space>;
-  style?: React.CSSProperties;
-  surface?: Responsive<Surface>;
 }
 
 /** @public */
-export interface GridItemProps {
-  children?: React.ReactNode;
+export type GridItemOwnProps = {
+  children: ReactNode;
   className?: string;
+  style?: CSSProperties;
+  bg?: Responsive<ProviderBg>;
+};
+
+/** @public */
+export interface GridItemProps
+  extends GridItemOwnProps,
+    Omit<HTMLAttributes<HTMLDivElement>, 'children'> {
   colSpan?: Responsive<Columns>;
   colEnd?: Responsive<Columns>;
   colStart?: Responsive<Columns>;
   rowSpan?: Responsive<Columns>;
-  style?: React.CSSProperties;
-  surface?: Responsive<Surface>;
 }

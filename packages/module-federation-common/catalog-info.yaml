@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-module-federation-common
+  title: '@backstage/module-federation-common'
+  description: Helper library for module federation
+spec:
+  lifecycle: experimental
+  type: backstage-common-library
+  owner: framework-maintainers

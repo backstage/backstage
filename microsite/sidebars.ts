@@ -69,8 +69,16 @@ export default {
       ]),
       sidebarElementWithIndex({ label: 'Using Backstage' }, [
         'getting-started/logging-in',
-        'getting-started/register-a-component',
-        'getting-started/create-a-component',
+        'getting-started/viewing-catalog',
+        'getting-started/view-what-you-own',
+        'getting-started/viewing-entity-relationships',
+        'getting-started/filter-catalog',
+        sidebarElementWithIndex({ label: 'Managing Components' }, [
+          'getting-started/register-a-component',
+          'getting-started/create-a-component',
+          'getting-started/update-a-component',
+          'getting-started/unregister-delete-component',
+        ]),
       ]),
       'overview/support',
       'getting-started/keeping-backstage-updated',
@@ -247,6 +255,7 @@ export default {
             'features/software-catalog/extending-the-model',
             'features/software-catalog/external-integrations',
             'features/software-catalog/catalog-customization',
+            'features/software-catalog/audit-events',
             {
               type: 'category',
               label: 'API',
@@ -278,6 +287,7 @@ export default {
             'features/software-templates/adding-templates',
             'features/software-templates/writing-templates',
             'features/software-templates/input-examples',
+            'features/software-templates/ui-options-examples',
             'features/software-templates/builtin-actions',
             'features/software-templates/writing-custom-actions',
             'features/software-templates/writing-tests-for-actions',
@@ -289,6 +299,7 @@ export default {
             'features/software-templates/dry-run-testing',
             'features/software-templates/experimental',
             'features/software-templates/templating-extensions',
+            'features/software-templates/audit-events',
             {
               type: 'category',
               label: 'API',
@@ -435,7 +446,11 @@ export default {
         ),
         sidebarElementWithIndex(
           { label: 'Publishing', description: 'Publishing your plugins.' },
-          ['plugins/publish-private', 'plugins/add-to-directory'],
+          [
+            'plugins/publish-private',
+            'plugins/add-to-directory',
+            'plugins/plugin-directory-audit',
+          ],
         ),
         'plugins/observability',
       ],
@@ -464,6 +479,7 @@ export default {
               {
                 label: 'Architecture',
                 description: 'Architecture of the backend system.',
+                differentiator: 'backend-system/',
               },
               [
                 'backend-system/architecture/index',
@@ -513,6 +529,7 @@ export default {
                 'backend-system/core-services/identity',
                 'backend-system/core-services/lifecycle',
                 'backend-system/core-services/logger',
+                'backend-system/core-services/metrics',
                 'backend-system/core-services/permissions',
                 'backend-system/core-services/permissions-registry',
                 'backend-system/core-services/plugin-metadata',
@@ -543,6 +560,7 @@ export default {
               {
                 label: 'Architecture',
                 description: 'Architecture of the new frontend system.',
+                differentiator: 'frontend-system/',
               },
               [
                 'frontend-system/architecture/index',
@@ -551,6 +569,7 @@ export default {
                 'frontend-system/architecture/extensions',
                 'frontend-system/architecture/extension-blueprints',
                 'frontend-system/architecture/extension-overrides',
+                'frontend-system/architecture/sharing-extensions',
                 'frontend-system/architecture/references',
                 'frontend-system/architecture/utility-apis',
                 'frontend-system/architecture/routes',
@@ -581,6 +600,7 @@ export default {
                 'frontend-system/building-apps/configuring-extensions',
                 'frontend-system/building-apps/built-in-extensions',
                 'frontend-system/building-apps/plugin-conversion',
+                'frontend-system/building-apps/module-federation',
                 'frontend-system/building-apps/migrating',
               ],
             ),
@@ -594,6 +614,7 @@ export default {
                 'frontend-system/utility-apis/creating',
                 'frontend-system/utility-apis/consuming',
                 'frontend-system/utility-apis/configuring',
+                'frontend-system/utility-apis/testing',
               ],
             ),
           ],
@@ -750,7 +771,7 @@ export default {
         'api/deprecations',
         'references/glossary',
         'api/utility-apis',
-        'reference/index',
+        'references/index',
       ],
     ),
   ],

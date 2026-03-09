@@ -1,8 +1,10 @@
 import { PropsTable } from '@/components/PropsTable';
 import { Snippet } from '@/components/Snippet';
 import { CodeBlock } from '@/components/CodeBlock';
+import { ReactAriaLink } from '@/components/ReactAriaLink';
 import { toggleButtonGroupPropDefs } from './props-definition';
 import {
+  toggleButtonGroupHeroSnippet,
   toggleButtonGroupUsageSnippet,
   toggleButtonGroupSurfacesSnippet,
   toggleButtonGroupSingleSnippet,
@@ -28,16 +30,20 @@ import { Theming } from '@/components/Theming';
 import { ChangelogComponent } from '@/components/ChangelogComponent';
 import { ToggleButtonGroupDefinition } from '../../../utils/definitions';
 
+export const reactAriaUrls = {
+  toggleButtonGroup: 'https://react-aria.adobe.com/ToggleButtonGroup',
+};
+
 <PageTitle
   title="ToggleButtonGroup"
-  description="A grouping container for related [ToggleButtons](./toggle-button) supporting single or multiple selection."
+  description="A container for toggle buttons with single or multiple selection."
 />
 
 <Snippet
   align="center"
   py={4}
   preview={<ToggleButtonGroupSingle />}
-  code={toggleButtonGroupUsageSnippet}
+  code={toggleButtonGroupHeroSnippet}
 />
 
 ## Usage
@@ -48,6 +54,11 @@ import { ToggleButtonGroupDefinition } from '../../../utils/definitions';
 
 <PropsTable data={toggleButtonGroupPropDefs} />
 
+<ReactAriaLink
+  component="ToggleButtonGroup"
+  href={reactAriaUrls.toggleButtonGroup}
+/>
+
 ## Examples
 
 ### Surfaces
@@ -55,12 +66,11 @@ import { ToggleButtonGroupDefinition } from '../../../utils/definitions';
 <Snippet
   align="center"
   py={4}
-  open
   preview={<ToggleButtonGroupSurfaces />}
   code={toggleButtonGroupSurfacesSnippet}
 />
 
-### Single Selection
+### Single selection
 
 <Snippet
   align="center"
@@ -68,9 +78,10 @@ import { ToggleButtonGroupDefinition } from '../../../utils/definitions';
   open
   preview={<ToggleButtonGroupSingle />}
   code={toggleButtonGroupSingleSnippet}
+  layout="side-by-side"
 />
 
-### Multiple Selection
+### Multiple selection
 
 <Snippet
   align="center"
@@ -78,9 +89,10 @@ import { ToggleButtonGroupDefinition } from '../../../utils/definitions';
   open
   preview={<ToggleButtonGroupMultiple />}
   code={toggleButtonGroupMultipleSnippet}
+  layout="side-by-side"
 />
 
-### Icons and Text
+### Icons and text
 
 <Snippet
   align="center"
@@ -88,9 +100,10 @@ import { ToggleButtonGroupDefinition } from '../../../utils/definitions';
   open
   preview={<ToggleButtonGroupIcons />}
   code={toggleButtonGroupIconsSnippet}
+  layout="side-by-side"
 />
 
-### Icons Only
+### Icons only
 
 <Snippet
   align="center"
@@ -98,9 +111,10 @@ import { ToggleButtonGroupDefinition } from '../../../utils/definitions';
   open
   preview={<ToggleButtonGroupIconsOnly />}
   code={toggleButtonGroupIconsOnlySnippet}
+  layout="side-by-side"
 />
 
-### Disallow Empty Selection
+### Disallow empty selection
 
 <Snippet
   align="center"
@@ -108,9 +122,10 @@ import { ToggleButtonGroupDefinition } from '../../../utils/definitions';
   open
   preview={<ToggleButtonGroupDisallowEmpty />}
   code={toggleButtonGroupDisallowEmptySnippet}
+  layout="side-by-side"
 />
 
-### Vertical Orientation
+### Vertical orientation
 
 <Snippet
   align="center"
@@ -118,6 +133,7 @@ import { ToggleButtonGroupDefinition } from '../../../utils/definitions';
   open
   preview={<ToggleButtonGroupVertical />}
   code={toggleButtonGroupVerticalSnippet}
+  layout="side-by-side"
 />
 
 ### Disabled
@@ -128,6 +144,7 @@ import { ToggleButtonGroupDefinition } from '../../../utils/definitions';
   open
   preview={<ToggleButtonGroupDisabled />}
   code={toggleButtonGroupDisabledSnippet}
+  layout="side-by-side"
 />
 
 <Theming definition={ToggleButtonGroupDefinition} />

@@ -18,6 +18,7 @@ import {
   coreServices,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
+import { metricsServiceRef } from '@backstage/backend-plugin-api/alpha';
 import { DefaultSchedulerService } from './lib/DefaultSchedulerService';
 
 /**
@@ -37,6 +38,7 @@ export const schedulerServiceFactory = createServiceFactory({
     rootLifecycle: coreServices.rootLifecycle,
     httpRouter: coreServices.httpRouter,
     pluginMetadata: coreServices.pluginMetadata,
+    metrics: metricsServiceRef,
   },
   async factory({
     database,
@@ -44,6 +46,7 @@ export const schedulerServiceFactory = createServiceFactory({
     rootLifecycle,
     httpRouter,
     pluginMetadata,
+    metrics,
   }) {
     return DefaultSchedulerService.create({
       database,
@@ -51,6 +54,7 @@ export const schedulerServiceFactory = createServiceFactory({
       rootLifecycle,
       httpRouter,
       pluginMetadata,
+      metrics,
     });
   },
 });

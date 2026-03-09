@@ -10,8 +10,8 @@ import { AzureCredentialsManager } from '@backstage/integration';
 import { AzureDevOpsCredentialsProvider } from '@backstage/integration';
 import { AzureIntegration } from '@backstage/integration';
 import { BitbucketCloudIntegration } from '@backstage/integration';
-import { BitbucketIntegration } from '@backstage/integration';
 import { BitbucketServerIntegration } from '@backstage/integration';
+import { Config } from '@backstage/config';
 import { GerritIntegration } from '@backstage/integration';
 import { GiteaIntegration } from '@backstage/integration';
 import { GithubCredentialsProvider } from '@backstage/integration';
@@ -19,7 +19,7 @@ import { GithubIntegration } from '@backstage/integration';
 import { GitLabIntegration } from '@backstage/integration';
 import { HarnessIntegration } from '@backstage/integration';
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 import { RootConfigService } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 import { ServiceRef } from '@backstage/backend-plugin-api';
@@ -189,41 +189,11 @@ export class BitbucketServerUrlReader implements UrlReaderService {
   toString(): string;
 }
 
-// @public @deprecated
-export class BitbucketUrlReader implements UrlReaderService {
-  constructor(
-    integration: BitbucketIntegration,
-    logger: LoggerService,
-    deps: {
-      treeResponseFactory: ReadTreeResponseFactory;
-    },
-  );
-  // (undocumented)
-  static factory: ReaderFactory;
-  // (undocumented)
-  read(url: string): Promise<Buffer>;
-  // (undocumented)
-  readTree(
-    url: string,
-    options?: UrlReaderServiceReadTreeOptions,
-  ): Promise<UrlReaderServiceReadTreeResponse>;
-  // (undocumented)
-  readUrl(
-    url: string,
-    options?: UrlReaderServiceReadUrlOptions,
-  ): Promise<UrlReaderServiceReadUrlResponse>;
-  // (undocumented)
-  search(
-    url: string,
-    options?: UrlReaderServiceSearchOptions,
-  ): Promise<UrlReaderServiceSearchResponse>;
-  // (undocumented)
-  toString(): string;
-}
-
 // @public
 export class FetchUrlReader implements UrlReaderService {
   static factory: ReaderFactory;
+  // (undocumented)
+  static fromConfig(config: Config): FetchUrlReader;
   // (undocumented)
   read(url: string): Promise<Buffer>;
   // (undocumented)

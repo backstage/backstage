@@ -48,7 +48,7 @@ exports.down = async function down(knex) {
   if (!knex.client.config.client.includes('sqlite3')) {
     await knex.schema.alterTable('signing_keys', table => {
       table
-        .timestamp('created_at', { useTz: false, precision: 0 })
+        .timestamp('created_at', { useTz: true, precision: 0 })
         .notNullable()
         .defaultTo(knex.fn.now())
         .comment('The creation time of the key')

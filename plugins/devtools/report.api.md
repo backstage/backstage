@@ -6,6 +6,7 @@
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { ElementType } from 'react';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
+import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { TabProps } from '@material-ui/core/Tab';
@@ -16,7 +17,7 @@ export const ConfigContent: () => JSX_2.Element;
 
 // @public
 export const DevToolsLayout: {
-  ({ children, title, subtitle }: DevToolsLayoutProps): JSX_2.Element;
+  (input: DevToolsLayoutProps): JSX_2.Element;
   Route: (props: SubRoute) => null;
 };
 
@@ -28,7 +29,23 @@ export type DevToolsLayoutProps = {
 };
 
 // @public (undocumented)
-export const DevToolsPage: () => JSX_2.Element;
+export const DevToolsPage: (input: DevToolsPageProps) => JSX_2.Element;
+
+// @public (undocumented)
+export interface DevToolsPageContent {
+  // (undocumented)
+  children: ReactElement;
+  // (undocumented)
+  path: string;
+  // (undocumented)
+  title: string;
+}
+
+// @public (undocumented)
+export interface DevToolsPageProps {
+  // (undocumented)
+  contents?: DevToolsPageContent[];
+}
 
 // @public (undocumented)
 export const devToolsPlugin: BackstagePlugin<
@@ -45,9 +62,7 @@ export const ExternalDependenciesContent: () => JSX_2.Element;
 export const InfoContent: () => JSX_2.Element;
 
 // @public (undocumented)
-export const ScheduledTaskDetailPanel: ({
-  rowData,
-}: {
+export const ScheduledTaskDetailPanel: (input: {
   rowData: TaskApiTasksResponse;
 }) => JSX_2.Element;
 

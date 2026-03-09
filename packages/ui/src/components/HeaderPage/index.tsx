@@ -16,4 +16,8 @@
 
 export { HeaderPage } from './HeaderPage';
 export { HeaderPageDefinition } from './definition';
-export type { HeaderPageProps, HeaderPageBreadcrumb } from './types';
+export type {
+  HeaderPageOwnProps,
+  HeaderPageProps,
+  HeaderPageBreadcrumb,
+} from './types';

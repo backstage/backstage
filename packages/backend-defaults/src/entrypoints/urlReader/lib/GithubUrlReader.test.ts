@@ -27,7 +27,7 @@ import {
 import fs from 'fs-extra';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import path from 'path';
+import path from 'node:path';
 import { NotFoundError, NotModifiedError } from '@backstage/errors';
 import {
   GhBlobResponse,

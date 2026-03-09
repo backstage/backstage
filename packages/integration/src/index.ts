@@ -24,7 +24,6 @@ export * from './awsS3';
 export * from './awsCodeCommit';
 export * from './azureBlobStorage';
 export * from './azure';
-export * from './bitbucket';
 export * from './bitbucketCloud';
 export * from './bitbucketServer';
 export * from './gerrit';

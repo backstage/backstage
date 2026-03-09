@@ -43,5 +43,8 @@ export const getProcessorFiltersFromConfig = (config: Config) => {
   filter.excludedTopics = config.getOptionalStringArray(
     'filter.excludedTopics',
   );
+  filter.includedTopics = config.getOptionalStringArray(
+    'filter.includedTopics',
+  );
   return filter;
 };

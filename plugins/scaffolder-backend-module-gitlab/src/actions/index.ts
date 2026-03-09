@@ -15,6 +15,7 @@
  */
 export * from './gitlab';
 export * from './gitlabGroupEnsureExists';
+export * from './gitlabGroupAccessAction';
 export * from './gitlabIssueCreate';
 export * from './gitlabIssueEdit';
 export * from './gitlabMergeRequest';
@@ -23,4 +24,5 @@ export * from './gitlabProjectAccessTokenCreate';
 export * from './gitlabProjectDeployTokenCreate';
 export * from './gitlabProjectVariableCreate';
 export * from './gitlabRepoPush';
+export * from './gitlabUserInfo';
 export { IssueType, IssueStateEvent } from '../commonGitlabConfig';

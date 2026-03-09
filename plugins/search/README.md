@@ -15,6 +15,7 @@ Configure the search query values via `app-config.yaml` to define how it behaves
 ```yaml
 # app-config.yaml
 search:
+  defaultType: 'software-catalog'
   query:
     pageLimit: 50
 ```

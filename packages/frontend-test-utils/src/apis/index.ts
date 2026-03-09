@@ -14,18 +14,93 @@
  * limitations under the License.
  */
 
+export { mockApis } from './mockApis';
+export { createApiMock, type ApiMock } from './createApiMock';
 export {
-  MockConfigApi,
-  type ErrorWithContext,
-  MockErrorApi,
-  type MockErrorApiOptions,
-  MockFetchApi,
-  type MockFetchApiOptions,
-  MockPermissionApi,
-  MockStorageApi,
-  type MockStorageBucket,
-  mockApis,
-  type ApiMock,
-} from '@backstage/test-utils';
+  type MockApiFactorySymbol,
+  type MockWithApiFactory,
+  attachMockApiFactory,
+} from './MockWithApiFactory';
+export {
+  TestApiProvider,
+  type TestApiProviderProps,
+  type TestApiPair,
+  type TestApiPairs,
+} from './TestApiProvider';
 
-export { MockAnalyticsApi } from './AnalyticsApi/MockAnalyticsApi';
+/**
+ * @public
+ * @deprecated Use `mockApis.alert()` instead.
+ */
+export type { MockAlertApi } from './AlertApi';
+
+/**
+ * @public
+ * @deprecated Use `mockApis.analytics()` instead.
+ */
+export type { MockAnalyticsApi } from './AnalyticsApi';
+
+/**
+ * @public
+ * @deprecated Use `mockApis.config()` instead.
+ */
+export type { MockConfigApi } from './ConfigApi';
+
+/**
+ * @public
+ * @deprecated Use `mockApis.error()` instead.
+ */
+export type { MockErrorApi } from './ErrorApi';
+
+/**
+ * @public
+ * @deprecated Use `mockApis.error()` instead.
+ */
+export type { MockErrorApiOptions } from './ErrorApi/MockErrorApi';
+
+/**
+ * @public
+ * @deprecated Use the return type of `MockErrorApi.getErrors` instead.
+ */
+export type { ErrorWithContext } from './ErrorApi/MockErrorApi';
+
+/**
+ * @public
+ * @deprecated Use `mockApis.fetch()` instead.
+ */
+export type { MockFetchApi } from './FetchApi';
+
+/**
+ * @public
+ */
+export type { MockFetchApiOptions } from './FetchApi/MockFetchApi';
+
+/**
+ * @public
+ * @deprecated Use `mockApis.featureFlags()` instead.
+ */
+export type { MockFeatureFlagsApi } from './FeatureFlagsApi';
+
+/**
+ * @public
+ * @deprecated Use `mockApis.featureFlags()` instead.
+ */
+export type { MockFeatureFlagsApiOptions } from './FeatureFlagsApi/MockFeatureFlagsApi';
+
+/**
+ * @public
+ * @deprecated Use `mockApis.permission()` instead.
+ */
+export type { MockPermissionApi } from './PermissionApi';
+
+/**
+ * @public
+ * @deprecated Use `mockApis.storage()` instead.
+ */
+export type { MockStorageApi } from './StorageApi';
+
+/**
+ * @public
+ * @deprecated Use `mockApis.translation()` instead.
+ */
+export type { MockTranslationApi } from './TranslationApi';

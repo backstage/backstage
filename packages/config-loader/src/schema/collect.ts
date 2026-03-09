@@ -15,13 +15,13 @@
  */
 
 import fs from 'fs-extra';
-import { EOL } from 'os';
+import { EOL } from 'node:os';
 import {
   resolve as resolvePath,
   relative as relativePath,
   dirname,
   sep,
-} from 'path';
+} from 'node:path';
 import { ConfigSchemaPackageEntry } from './types';
 import { JsonObject } from '@backstage/types';
 import { assertError } from '@backstage/errors';

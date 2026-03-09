@@ -16,25 +16,24 @@
 
 import { ConfigSources, loadConfigSchema } from '@backstage/config-loader';
 import { AppConfig, ConfigReader } from '@backstage/config';
-import { paths } from '../../../lib/paths';
+import { targetPaths } from '@backstage/cli-common';
+
 import { getPackages } from '@manypkg/get-packages';
 import { PackageGraph } from '@backstage/cli-node';
-import { resolve as resolvePath } from 'path';
+import { resolve as resolvePath } from 'node:path';
 
 type Options = {
   args: string[];
   targetDir?: string;
   fromPackage?: string;
   mockEnv?: boolean;
-  withFilteredKeys?: boolean;
   withDeprecatedKeys?: boolean;
   fullVisibility?: boolean;
   strict?: boolean;
-  watch?: (newFrontendAppConfigs: AppConfig[]) => void;
 };
 
 export async function loadCliConfig(options: Options) {
-  const targetDir = options.targetDir ?? paths.targetDir;
+  const targetDir = options.targetDir ?? targetPaths.dir;
 
   // Consider all packages in the monorepo when loading in config
   const { packages } = await getPackages(targetDir);
@@ -63,7 +62,7 @@ export async function loadCliConfig(options: Options) {
   const schema = await loadConfigSchema({
     dependencies: localPackageNames,
     // Include the package.json in the project root if it exists
-    packagePaths: [paths.resolveTargetRoot('package.json')],
+    packagePaths: [targetPaths.resolveRoot('package.json')],
     noUndeclaredProperties: options.strict,
   });
 
@@ -72,48 +71,29 @@ export async function loadCliConfig(options: Options) {
     substitutionFunc: options.mockEnv
       ? async name => process.env[name] || 'x'
       : undefined,
-    watch: Boolean(options.watch),
-    rootDir: paths.targetRoot,
+    rootDir: targetPaths.rootDir,
     argv: options.args.flatMap(t => ['--config', resolvePath(targetDir, t)]),
   });
 
   const appConfigs = await new Promise<AppConfig[]>((resolve, reject) => {
-    async function loadConfigReaderLoop() {
+    async function readConfig() {
       let loaded = false;
-
       try {
         const abortController = new AbortController();
         for await (const { configs } of source.readConfigData({
           signal: abortController.signal,
         })) {
-          if (loaded) {
-            const newFrontendAppConfigs = schema.process(configs, {
-              visibility: options.fullVisibility
-                ? ['frontend', 'backend', 'secret']
-                : ['frontend'],
-              withFilteredKeys: options.withFilteredKeys,
-              withDeprecatedKeys: options.withDeprecatedKeys,
-              ignoreSchemaErrors: !options.strict,
-            });
-            options.watch?.(newFrontendAppConfigs);
-          } else {
-            resolve(configs);
-            loaded = true;
-
-            if (!options.watch) {
-              abortController.abort();
-            }
-          }
+          resolve(configs);
+          loaded = true;
+          abortController.abort();
         }
       } catch (error) {
-        if (loaded) {
-          console.error(`Failed to reload configuration, ${error}`);
-        } else {
+        if (!loaded) {
           reject(error);
         }
       }
     }
-    loadConfigReaderLoop();
+    readConfig();
   });
 
   const configurationLoadedMessage = appConfigs.length
@@ -129,7 +109,6 @@ export async function loadCliConfig(options: Options) {
       visibility: options.fullVisibility
         ? ['frontend', 'backend', 'secret']
         : ['frontend'],
-      withFilteredKeys: options.withFilteredKeys,
       withDeprecatedKeys: options.withDeprecatedKeys,
       ignoreSchemaErrors: !options.strict,
     });

@@ -12,6 +12,7 @@ import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { LoggerService } from '@backstage/backend-plugin-api';
+import { MetricsService } from '@backstage/backend-plugin-api/alpha';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 
 // @alpha (undocumented)
@@ -43,6 +44,16 @@ export namespace actionsServiceMock {
     ) => ServiceMock<ActionsService>;
 }
 
+// @alpha (undocumented)
+export namespace metricsServiceMock {
+  const // (undocumented)
+    factory: () => ServiceFactory<MetricsService, 'plugin', 'singleton'>;
+  const // (undocumented)
+    mock: (
+      partialImpl?: Partial<MetricsService> | undefined,
+    ) => ServiceMock<MetricsService>;
+}
+
 // @alpha
 export class MockActionsRegistry
   implements ActionsRegistryService, ActionsService
@@ -70,7 +81,7 @@ export class MockActionsRegistry
   >(options: ActionsRegistryActionOptions<TInputSchema, TOutputSchema>): void;
 }
 
-// @alpha (undocumented)
+// @public (undocumented)
 export type ServiceMock<TService> = {
   factory: ServiceFactory<TService>;
 } & {

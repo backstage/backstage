@@ -17,17 +17,21 @@
 import type { Breakpoint } from '../..';
 import type { ReactElement } from 'react';
 import type { ToggleButtonProps as AriaToggleButtonProps } from 'react-aria-components';
-import type { Responsive, Surface } from '../../types';
+
+/** @public */
+export type ToggleButtonOwnProps = {
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+  iconStart?: ReactElement;
+  iconEnd?: ReactElement;
+  children?: AriaToggleButtonProps['children'];
+  className?: string;
+};
 
 /**
  * Properties for {@link ToggleButton}
  *
  * @public
  */
-export interface ToggleButtonProps extends AriaToggleButtonProps {
-  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
-  iconStart?: ReactElement;
-  iconEnd?: ReactElement;
-  /** Surface the toggle button is placed on. Defaults to context surface if available */
-  onSurface?: Responsive<Surface>;
-}
+export interface ToggleButtonProps
+  extends Omit<AriaToggleButtonProps, 'children' | 'className'>,
+    ToggleButtonOwnProps {}

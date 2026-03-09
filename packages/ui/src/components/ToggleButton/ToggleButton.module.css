@@ -25,7 +25,7 @@
     gap: var(--bui-space-1_5);
     border: none;
     border-radius: var(--bui-radius-2);
-    background: var(--bui-bg-surface-1);
+    background: var(--bui-bg-neutral-1);
     color: var(--bui-fg-primary);
     font-family: var(--bui-font-regular);
     font-weight: var(--bui-font-weight-bold);
@@ -41,16 +41,16 @@
     }
 
     &:not([data-selected])[data-hovered] {
-      background: var(--bui-bg-surface-2);
+      background: var(--bui-bg-neutral-2);
     }
 
     &[data-disabled] {
-      background: var(--bui-bg-neutral-on-surface-0-disabled);
+      background: var(--bui-bg-neutral-1-disabled);
       color: var(--bui-fg-disabled);
     }
 
     &[data-disabled][data-hovered] {
-      background: var(--bui-bg-neutral-on-surface-0-disabled);
+      background: var(--bui-bg-neutral-1-disabled);
     }
 
     &[data-disabled][data-selected] {

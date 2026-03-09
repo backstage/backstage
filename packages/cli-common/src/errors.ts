@@ -21,6 +21,7 @@ import { CustomErrorBase } from '@backstage/errors';
  * @public
  */
 export class ExitCodeError extends CustomErrorBase {
+  /** The exit code of the child process. */
   readonly code: number;
 
   constructor(code: number, command?: string) {

@@ -16,12 +16,10 @@
 
 import { isMonoRepo } from './isMonoRepo';
 import { createMockDirectory } from '@backstage/backend-test-utils';
+import { overrideTargetPaths } from '@backstage/cli-common/testUtils';
 
 const mockDir = createMockDirectory();
-
-jest.mock('../paths', () => ({
-  paths: { resolveTargetRoot: (...args: string[]) => mockDir.resolve(...args) },
-}));
+overrideTargetPaths(mockDir.path);
 
 describe('isMonoRepo', () => {
   it('should detect a monorepo', async () => {

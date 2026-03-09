@@ -8,3 +8,4 @@ documentation: https://stackoverflowteams.help/en/articles/9692515-backstage-io-
 iconUrl: /img/stack-overflow-logo.svg
 npmPackageName: '@stackoverflow/backstage-plugin-stack-overflow-teams'
 addedDate: '2025-06-10'
+status: active

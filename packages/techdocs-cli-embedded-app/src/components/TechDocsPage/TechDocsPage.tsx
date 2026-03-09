@@ -25,7 +25,7 @@ import IconButton from '@material-ui/core/IconButton';
 import LightIcon from '@material-ui/icons/Brightness7';
 import DarkIcon from '@material-ui/icons/Brightness4';
 
-import { appThemeApiRef, useApi } from '@backstage/core-plugin-api';
+import { appThemeApiRef, useApi } from '@backstage/frontend-plugin-api';
 
 import {
   TechDocsReaderPage,
@@ -93,7 +93,7 @@ export const TechDocsThemeToggle = () => {
   );
 };
 
-const DefaultTechDocsPage = () => {
+export const DefaultTechDocsPage = () => {
   return (
     <TechDocsReaderPage>
       <TechDocsReaderPageHeader />

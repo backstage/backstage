@@ -15,12 +15,15 @@ export const coreComponentsTranslationRef: TranslationRef<
     readonly 'table.body.emptyDataSourceMessage': 'No records to display';
     readonly 'table.header.actions': 'Actions';
     readonly 'table.toolbar.search': 'Filter';
-    readonly 'table.pagination.firstTooltip': 'First Page';
     readonly 'table.pagination.labelDisplayedRows': '{from}-{to} of {count}';
+    readonly 'table.pagination.firstTooltip': 'First Page';
     readonly 'table.pagination.labelRowsSelect': 'rows';
     readonly 'table.pagination.lastTooltip': 'Last Page';
     readonly 'table.pagination.nextTooltip': 'Next Page';
     readonly 'table.pagination.previousTooltip': 'Previous Page';
+    readonly 'emptyState.missingAnnotation.title': 'Missing Annotation';
+    readonly 'emptyState.missingAnnotation.actionTitle': 'Add the annotation to your component YAML as shown in the highlighted example below:';
+    readonly 'emptyState.missingAnnotation.readMore': 'Read more';
     readonly 'signIn.title': 'Sign In';
     readonly 'signIn.loginFailed': 'Login failed';
     readonly 'signIn.customProvider.title': 'Custom User';
@@ -44,9 +47,6 @@ export const coreComponentsTranslationRef: TranslationRef<
     readonly 'errorPage.goBack': 'Go back';
     readonly 'errorPage.showMoreDetails': 'Show more details';
     readonly 'errorPage.showLessDetails': 'Show less details';
-    readonly 'emptyState.missingAnnotation.title': 'Missing Annotation';
-    readonly 'emptyState.missingAnnotation.actionTitle': 'Add the annotation to your component YAML as shown in the highlighted example below:';
-    readonly 'emptyState.missingAnnotation.readMore': 'Read more';
     readonly 'supportConfig.default.title': 'Support Not Configured';
     readonly 'supportConfig.default.linkTitle': 'Add `app.support` config key';
     readonly 'errorBoundary.title': 'Please contact {{slackChannel}} for help.';

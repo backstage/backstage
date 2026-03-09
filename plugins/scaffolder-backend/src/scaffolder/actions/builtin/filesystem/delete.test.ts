@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { resolve as resolvePath } from 'path';
+import { resolve as resolvePath } from 'node:path';
 import { createFilesystemDeleteAction } from './delete';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import fs from 'fs-extra';
@@ -228,5 +228,27 @@ describe('fs:delete', () => {
       const fileExists = fs.existsSync(filePath);
       expect(fileExists).toBe(false);
     });
+  });
+
+  it('should not delete files outside workspace via symlinks', async () => {
+    // Create an external file that should not be deleted
+    const externalDir = resolvePath(mockDir.path, 'external');
+    const externalFile = resolvePath(externalDir, 'config.yaml');
+    await fs.ensureDir(externalDir);
+    await fs.writeFile(externalFile, 'external content');
+
+    // Create a symlink inside workspace pointing to external directory
+    const linkPath = resolvePath(workspacePath, 'link');
+    await fs.symlink(externalDir, linkPath);
+
+    // Try to delete files through the symlink
+    await expect(() =>
+      action.handler({
+        ...mockContext,
+        input: { files: ['link/**'] },
+      }),
+    ).rejects.toThrow(
+      /Relative path is not allowed to refer to a directory outside its parent/,
+    );
   });
 });

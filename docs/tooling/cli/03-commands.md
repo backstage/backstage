@@ -24,6 +24,7 @@ repo [command]                                 Command that run across an entire
 package [command]                              Lifecycle scripts for individual packages
 migrate [command]                              Migration utilities
 versions:bump [options]                        Bump Backstage packages to the latest versions
+translations [command]                         Translation message management
 clean                                          Delete cache directories [DEPRECATED]
 build-workspace <workspace-dir> [packages...]  Builds a temporary dist workspace from the provided
                                                 packages
@@ -200,6 +201,7 @@ Options:
   --skip-build-dependencies  Skip the automatic building of local dependencies. Applies to backend packages only.
   --stats                    If bundle stats are available, write them to the output directory. Applies to app packages only.
   --config <path>            Config files to load instead of app-config.yaml. Applies to app packages only. (default: [])
+  --module-federation        Build a package as a module federation remote. Applies to frontend plugin packages only.
 ```
 
 ## package lint
@@ -286,7 +288,7 @@ it is possible to pre-select what you want to create using the `--select` flag,
 and provide options using `--option`, for example:
 
 ```bash
-backstage-cli new --select plugin --option pluginId=foo
+backstage-cli new --select frontend-plugin --option pluginId=foo
 ```
 
 This command is typically added as script in the root `package.json` to be
@@ -428,12 +430,150 @@ YAML file that can be referenced in the GitHub integration configuration.
 Usage: backstage-cli create-github-app <github-org>
 ```
 
+## translations export
+
+Export translation messages from an app and all of its frontend plugins to JSON
+files. This command must be run from within a package directory (e.g.
+`packages/app`), not from the repository root.
+
+The command discovers all `TranslationRef` definitions in the dependency tree,
+extracts their default messages using the TypeScript type system, and writes
+them as JSON files along with a manifest.
+
+For more details on the translation workflow, see the
+[Internationalization](../../plugins/internationalization.md) documentation.
+
+```text
+Usage: backstage-cli translations export [options]
+
+Options:
+  --output <dir>       Output directory for exported messages and manifest (default: "translations")
+  --pattern <pattern>  File path pattern for message files relative to the output
+                       directory, with {id} and {lang} placeholders
+                       (default: "messages/{id}.{lang}.json")
+  -h, --help           display help for command
+```
+
+### Examples
+
+Export translations with default settings:
+
+```bash
+cd packages/app
+yarn backstage-cli translations export
+```
+
+Export with language-based directory grouping:
+
+```bash
+yarn backstage-cli translations export --pattern '{lang}/{id}.json'
+```
+
+## translations import
+
+Generate translation resource wiring code from translated JSON files. Reads the
+manifest and translated message files produced by `translations export`, and
+generates a TypeScript module that creates `TranslationResource` objects for each
+translated ref.
+
+The file pattern used during export is stored in the manifest and automatically
+used by the import command.
+
+```text
+Usage: backstage-cli translations import [options]
+
+Options:
+  --input <dir>    Input directory containing the manifest and translated message files (default: "translations")
+  --output <path>  Output path for the generated wiring module (default: "src/translations/resources.ts")
+  -h, --help       display help for command
+```
+
+### Examples
+
+Generate wiring code with default settings:
+
+```bash
+cd packages/app
+yarn backstage-cli translations import
+```
+
 ## info
 
 Outputs debug information which is useful when opening an issue. Outputs system
 information, node.js and npm versions, CLI version and type (inside backstage
-repo or a created app), all `@backstage/*` package dependency versions.
+repo or a created app), all `@backstage/*` package dependency versions, and any
+packages that contain a `backstage` field in their `package.json`.
+
+The command distinguishes between installed packages (from npm) and local
+workspace packages, making it easier to understand your Backstage setup.
 
 ```text
-Usage: backstage-cli info
+Usage: backstage-cli info [options]
+
+Options:
+  --include <patterns...>  Glob patterns for additional packages to include
+                           (e.g., @mycompany/backstage-*)
+  --format <text|json>     Output format (default: text)
+  -h, --help               display help for command
+```
+
+### Examples
+
+Output debug information to the console:
+
+```bash
+yarn backstage-cli info
+```
+
+Include additional packages matching a glob pattern:
+
+```bash
+yarn backstage-cli info --include "@mycompany/*"
+```
+
+Output as JSON:
+
+```bash
+yarn backstage-cli info --format json
+```
+
+Export JSON to a file for further processing:
+
+```bash
+yarn backstage-cli info --format json > backstage-info.json
+```
+
+Combine options to include custom packages and export to JSON:
+
+```bash
+yarn backstage-cli info --include "@mycompany/backstage-*" --include "@internal/*" --format json > debug-info.json
+```
+
+Export text output to a file:
+
+```bash
+yarn backstage-cli info --format text > backstage-info.txt
+```
+
+### JSON Output Format
+
+When using `--format json`, the output is structured as follows:
+
+```json
+{
+  "system": {
+    "os": "Darwin 23.0.0 - darwin/arm64",
+    "node": "v18.17.0",
+    "yarn": "3.6.0",
+    "cli": { "version": "0.27.0", "local": false },
+    "backstage": "1.20.0"
+  },
+  "dependencies": {
+    "@backstage/core-plugin-api": "1.8.0",
+    "@backstage/plugin-catalog": "1.15.0"
+  },
+  "local": {
+    "@mycompany/backstage-plugin-custom": "0.1.0"
+  }
+}
 ```

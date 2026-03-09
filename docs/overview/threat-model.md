@@ -19,13 +19,13 @@ An **operator** is a user responsible for configuring and maintaining an instanc
 
 A **builder** is an internal or external code contributor and end up having a similar level of access as operators. When installing Backstage plugins you should vet them just like any other package from an external source. While it’s possible to limit the impact of for example a supply chain attack by splitting the deployment into separate services with different plugins, the Backstage project itself does not aim to prevent these kinds of attacks or in any other way sandbox or limit the access of plugins.
 
-An **external user** is a user that does not belong to the other two groups, for example a malicious actor outside of the organization. The security model of Backstage currently assumes that this group does not have any direct access to Backstage, and it is the responsibility of each adopter of Backstage to make sure this is the case.
+An **external user** is a user that does not belong to the other three groups, for example a malicious actor outside of the organization. The security model of Backstage currently assumes that this group does not have any direct access to Backstage, and it is the responsibility of each adopter of Backstage to make sure this is the case.
 
 ## Operator Responsibilities
 
 :::info
 This section assumes that you are using the
-[new backend system](../backend-system/index.md) and at least Backstage release [version 1.24](../releases/v1.24.0.md). Before that Backstage did not come with built-in protection against unauthorized access and you were required to deploy it in a protected environment.
+[backend system](../backend-system/index.md) and at least Backstage release [version 1.24](../releases/v1.24.0.md). Before that Backstage did not come with built-in protection against unauthorized access and you were required to deploy it in a protected environment.
 :::
 
 Backstage is primarily designed to be deployed in a protected environment rather than being exposed to the public internet. From a confidentiality and integrity perspective, Backstage is designed to protect against unauthorized access to data and to ensure that data is not tampered with. However, Backstage does not provide more than rudimentary protection against denial of service attacks, and it is the responsibility of the operator to ensure that the Backstage deployment is protected against such attacks. A common and recommended way to protect a Backstage deployment from unauthorized access is to deploy it behind an authenticating proxy such as AWS’s ALB, GCP’s IAP, or Cloudflare Access.
