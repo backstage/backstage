@@ -19,11 +19,11 @@ import {
 } from './snippets';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
-import { HeaderPageDefinition } from '../../../utils/definitions';
+import { HeaderDefinition } from '../../../utils/definitions';
 import { ChangelogComponent } from '@/components/ChangelogComponent';
 
 <PageTitle
-  title="HeaderPage"
+  title="Header"
   description="A secondary header with title, breadcrumbs, tabs, and actions."
 />
 
@@ -61,6 +61,6 @@ Use `customActions` to add a dropdown menu.
 
 <Snippet open preview={<WithMenu />} code={withMenu} />
 
-<Theming definition={HeaderPageDefinition} />
+<Theming definition={HeaderDefinition} />
 
-<ChangelogComponent component="header-page" />
+<ChangelogComponent component="header" />

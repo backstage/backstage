@@ -1,7 +1,7 @@
 'use client';
 
 import { PluginHeader } from '../../../../../packages/ui/src/components/PluginHeader/PluginHeader';
-import { HeaderPage } from '../../../../../packages/ui/src/components/HeaderPage/HeaderPage';
+import { Header } from '../../../../../packages/ui/src/components/Header/Header';
 import { ButtonIcon } from '../../../../../packages/ui/src/components/ButtonIcon/ButtonIcon';
 import { Button } from '../../../../../packages/ui/src/components/Button/Button';
 import { MemoryRouter } from 'react-router-dom';
@@ -58,11 +58,11 @@ export const WithAllOptions = () => (
   </MemoryRouter>
 );
 
-export const WithHeaderPage = () => (
+export const WithHeader = () => (
   <MemoryRouter>
     <>
       <PluginHeader title="My plugin" titleLink="/" tabs={tabs.slice(0, 2)} />
-      <HeaderPage
+      <Header
         title="Page title"
         tabs={tabs2}
         customActions={<Button>Custom action</Button>}

@@ -15,7 +15,7 @@ export type Component =
   | 'flex'
   | 'grid'
   | 'plugin-header'
-  | 'header-page'
+  | 'header'
   | 'heading'
   | 'icon'
   | 'link'
