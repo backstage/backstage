@@ -15,6 +15,7 @@
  */
 
 import { TestDatabases, mockServices } from '@backstage/backend-test-utils';
+import { ConflictError, NotFoundError } from '@backstage/errors';
 import { DateTime, Duration } from 'luxon';
 import waitForExpect from 'wait-for-expect';
 import { migrateBackendTasks } from '../database/migrateBackendTasks';
@@ -580,6 +581,81 @@ describe('TaskWorker', () => {
 
       const row = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
       expect(row.next_run_start_at).toBeNull();
+
+      await knex.destroy();
+    },
+  );
+
+  it.each(databases.eachSupportedId())(
+    'can cancel a running task, %p',
+    async databaseId => {
+      const knex = await databases.init(databaseId);
+      await migrateBackendTasks(knex);
+
+      const fn = jest.fn(async () => {});
+      const settings: TaskSettingsV2 = {
+        version: 2,
+        cadence: '* * * * * *',
+        initialDelayDuration: undefined,
+        timeoutAfterDuration: Duration.fromObject({ minutes: 1 }).toISO()!,
+      };
+
+      const worker = new TaskWorker('task1', fn, knex, logger);
+      await worker.persistTask(settings);
+      await worker.tryClaimTask('ticket', settings);
+
+      // Verify the task is running
+      let row = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
+      expect(row.current_run_ticket).toBe('ticket');
+
+      await TaskWorker.cancel(knex, 'task1');
+
+      // Verify the task is now idle with a cancellation error recorded
+      row = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
+      expect(row.current_run_ticket).toBeNull();
+      expect(row.current_run_started_at).toBeNull();
+      expect(row.current_run_expires_at).toBeNull();
+      expect(row.last_run_ended_at).not.toBeNull();
+      expect(row.last_run_error_json).toContain('Task was cancelled');
+
+      await knex.destroy();
+    },
+  );
+
+  it.each(databases.eachSupportedId())(
+    'cannot cancel a non-existent task, %p',
+    async databaseId => {
+      const knex = await databases.init(databaseId);
+      await migrateBackendTasks(knex);
+
+      await expect(TaskWorker.cancel(knex, 'nonexistent')).rejects.toThrow(
+        NotFoundError,
+      );
+
+      await knex.destroy();
+    },
+  );
+
+  it.each(databases.eachSupportedId())(
+    'cannot cancel a task that is not running, %p',
+    async databaseId => {
+      const knex = await databases.init(databaseId);
+      await migrateBackendTasks(knex);
+
+      const fn = jest.fn(async () => {});
+      const settings: TaskSettingsV2 = {
+        version: 2,
+        cadence: '* * * * * *',
+        initialDelayDuration: undefined,
+        timeoutAfterDuration: Duration.fromObject({ minutes: 1 }).toISO()!,
+      };
+
+      const worker = new TaskWorker('task1', fn, knex, logger);
+      await worker.persistTask(settings);
+
+      await expect(TaskWorker.cancel(knex, 'task1')).rejects.toThrow(
+        ConflictError,
+      );
 
       await knex.destroy();
     },

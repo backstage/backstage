@@ -152,6 +152,31 @@ export class TaskWorker {
     }
   }
 
+  static async cancel(knex: Knex, taskId: string): Promise<void> {
+    // check if task exists
+    const rows = await knex<DbTasksRow>(DB_TASKS_TABLE)
+      .select(knex.raw(1))
+      .where('id', '=', taskId);
+    if (rows.length !== 1) {
+      throw new NotFoundError(`Task ${taskId} does not exist`);
+    }
+
+    const dbNull = knex.raw('null');
+    const updatedRows = await knex<DbTasksRow>(DB_TASKS_TABLE)
+      .where('id', '=', taskId)
+      .whereNotNull('current_run_ticket')
+      .update({
+        current_run_ticket: dbNull,
+        current_run_started_at: dbNull,
+        current_run_expires_at: dbNull,
+        last_run_ended_at: knex.fn.now(),
+        last_run_error_json: serializeError(new Error('Task was cancelled')),
+      });
+    if (updatedRows < 1) {
+      throw new ConflictError(`Task ${taskId} is not running`);
+    }
+  }
+
   static async taskStates(
     knex: Knex,
   ): Promise<Map<string, TaskApiTasksResponse['taskState']>> {
@@ -227,11 +252,16 @@ export class TaskWorker {
     }
 
     // Abort the task execution either if the worker is stopped, or if the
-    // task timeout is hit
+    // task timeout is hit, or if the task ticket was lost (e.g. due to
+    // cancellation from another host)
     const taskAbortController = delegateAbortController(signal);
     const timeoutHandle = setTimeout(() => {
       taskAbortController.abort();
     }, Duration.fromISO(taskSettings.timeoutAfterDuration).as('milliseconds'));
+    const livenessHandle = setInterval(
+      () => this.checkLiveness(ticket, taskAbortController),
+      this.workCheckFrequency.as('milliseconds'),
+    );
 
     try {
       this.#workerState = {
@@ -248,6 +278,7 @@ export class TaskWorker {
         status: 'idle',
       };
       clearTimeout(timeoutHandle);
+      clearInterval(livenessHandle);
     }
 
     await this.tryReleaseTask(ticket, taskSettings);
@@ -332,6 +363,33 @@ export class TaskWorker {
               ),
             },
       );
+  }
+
+  /**
+   * Checks whether the current task ticket is still valid in the database.
+   * If the ticket has been cleared (e.g. by cancellation or janitor cleanup),
+   * aborts the task execution.
+   */
+  private async checkLiveness(
+    ticket: string,
+    taskAbortController: AbortController,
+  ): Promise<void> {
+    try {
+      const [row] = await this.knex<DbTasksRow>(DB_TASKS_TABLE)
+        .where('id', '=', this.taskId)
+        .select('current_run_ticket');
+
+      if (!row || row.current_run_ticket !== ticket) {
+        this.logger.info(
+          `Task ticket for "${this.taskId}" is no longer valid; aborting execution`,
+        );
+        taskAbortController.abort();
+      }
+    } catch (e) {
+      this.logger.warn(
+        `Failed to check liveness for task "${this.taskId}", ${e}`,
+      );
+    }
   }
 
   /**
