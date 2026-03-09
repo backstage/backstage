@@ -3,7 +3,7 @@ kind: Template
 metadata:
   name: notifications-demo
   title: Test Notifications template
-  description: scaffolder v1beta3 template demo sendieta3 template demo sendieta3 template demo sendieta3 template demo sendieta3 template demo sendieta3 template demo sendieta3 template demo sendieta3 template demo sendieta3 template demo sendieta3 template demo sendieta3 template demo sending notification
+  description: scaffolder v1beta3 template demo sending notification
 spec:
   owner: backstage/techdocs-core
   type: service
