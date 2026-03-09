@@ -1317,7 +1317,7 @@ init_react();
 var channels_default = __STORYBOOK_CHANNELS__, { Channel, HEARTBEAT_INTERVAL, HEARTBEAT_MAX_LATENCY, PostMessageTransport, WebsocketTransport, createBrowserChannel } = __STORYBOOK_CHANNELS__;
 
 // global-externals:storybook/internal/core-events
-var core_events_default = __STORYBOOK_CORE_EVENTS__, { ARGTYPES_INFO_REQUEST, ARGTYPES_INFO_RESPONSE, CHANNEL_CREATED, CHANNEL_WS_DISCONNECT, CONFIG_ERROR, CREATE_NEW_STORYFILE_REQUEST, CREATE_NEW_STORYFILE_RESPONSE, CURRENT_STORY_WAS_SET, DOCS_PREPARED, DOCS_RENDERED, FILE_COMPONENT_SEARCH_REQUEST, FILE_COMPONENT_SEARCH_RESPONSE, FORCE_REMOUNT, FORCE_RE_RENDER, GHOST_STORIES_REQUEST, GHOST_STORIES_RESPONSE, GLOBALS_UPDATED, MANAGER_INERT_ATTRIBUTE_CHANGED, NAVIGATE_URL, OPEN_IN_EDITOR_REQUEST, OPEN_IN_EDITOR_RESPONSE, PLAY_FUNCTION_THREW_EXCEPTION, PRELOAD_ENTRIES, PREVIEW_BUILDER_PROGRESS, PREVIEW_INITIALIZED, PREVIEW_KEYDOWN, REGISTER_SUBSCRIPTION, REQUEST_WHATS_NEW_DATA, RESET_STORY_ARGS, RESULT_WHATS_NEW_DATA, SAVE_STORY_REQUEST, SAVE_STORY_RESPONSE, SELECT_STORY, SET_CONFIG, SET_CURRENT_STORY, SET_FILTER, SET_GLOBALS, SET_INDEX, SET_STORIES, SET_WHATS_NEW_CACHE, SHARED_STATE_CHANGED, SHARED_STATE_SET, STORIES_COLLAPSE_ALL, STORIES_EXPAND_ALL, STORY_ARGS_UPDATED, STORY_CHANGED, STORY_ERRORED, STORY_FINISHED, STORY_HOT_UPDATED, STORY_INDEX_INVALIDATED, STORY_MISSING, STORY_PREPARED, STORY_RENDERED, STORY_RENDER_PHASE_CHANGED, STORY_SPECIFIED, STORY_THREW_EXCEPTION, STORY_UNCHANGED, TELEMETRY_ERROR, TOGGLE_WHATS_NEW_NOTIFICATIONS, UNHANDLED_ERRORS_WHILE_PLAYING, UPDATE_GLOBALS, UPDATE_QUERY_PARAMS, UPDATE_STORY_ARGS } = __STORYBOOK_CORE_EVENTS__;
+var core_events_default = __STORYBOOK_CORE_EVENTS__, { ARGTYPES_INFO_REQUEST, ARGTYPES_INFO_RESPONSE, CHANNEL_CREATED, CHANNEL_WS_DISCONNECT, CONFIG_ERROR, CREATE_NEW_STORYFILE_REQUEST, CREATE_NEW_STORYFILE_RESPONSE, CURRENT_STORY_WAS_SET, DOCS_PREPARED, DOCS_RENDERED, FILE_COMPONENT_SEARCH_REQUEST, FILE_COMPONENT_SEARCH_RESPONSE, FORCE_REMOUNT, FORCE_RE_RENDER, GHOST_STORIES_REQUEST, GHOST_STORIES_RESPONSE, GLOBALS_UPDATED, MANAGER_INERT_ATTRIBUTE_CHANGED, NAVIGATE_URL, OPEN_IN_EDITOR_REQUEST, OPEN_IN_EDITOR_RESPONSE, PLAY_FUNCTION_THREW_EXCEPTION, PRELOAD_ENTRIES, PREVIEW_BUILDER_PROGRESS, PREVIEW_INITIALIZED, PREVIEW_KEYDOWN, REGISTER_SUBSCRIPTION, REQUEST_WHATS_NEW_DATA, RESET_STORY_ARGS, RESULT_WHATS_NEW_DATA, SAVE_STORY_REQUEST, SAVE_STORY_RESPONSE, SELECT_STORY, SET_CONFIG, SET_CURRENT_STORY, SET_FILTER, SET_GLOBALS, SET_INDEX, SET_STORIES, SET_WHATS_NEW_CACHE, SHARED_STATE_CHANGED, SHARED_STATE_SET, SHARE_ISOLATE_MODE, SHARE_POPOVER_OPENED, SHARE_STORY_LINK, STORIES_COLLAPSE_ALL, STORIES_EXPAND_ALL, STORY_ARGS_UPDATED, STORY_CHANGED, STORY_ERRORED, STORY_FINISHED, STORY_HOT_UPDATED, STORY_INDEX_INVALIDATED, STORY_MISSING, STORY_PREPARED, STORY_RENDERED, STORY_RENDER_PHASE_CHANGED, STORY_SPECIFIED, STORY_THREW_EXCEPTION, STORY_UNCHANGED, TELEMETRY_ERROR, TOGGLE_WHATS_NEW_NOTIFICATIONS, UNHANDLED_ERRORS_WHILE_PLAYING, UPDATE_GLOBALS, UPDATE_QUERY_PARAMS, UPDATE_STORY_ARGS } = __STORYBOOK_CORE_EVENTS__;
 
 // ../../node_modules/@storybook/global/dist/index.mjs
 var scope = (() => {
@@ -1588,7 +1588,7 @@ var icons_default = __STORYBOOK_ICONS__, { AccessibilityAltIcon, AccessibilityIc
 var manager_api_default = __STORYBOOK_API__, { ActiveTabs, Consumer, ManagerContext, Provider, RequestResponseError, Tag, addons, combineParameters, controlOrMetaKey, controlOrMetaSymbol, eventMatchesShortcut, eventToShortcut, experimental_MockUniversalStore, experimental_UniversalStore, experimental_getStatusStore, experimental_getTestProviderStore, experimental_requestResponse, experimental_useStatusStore, experimental_useTestProviderStore, experimental_useUniversalStore, internal_checklistStore, internal_fullStatusStore, internal_fullTestProviderStore, internal_universalChecklistStore, internal_universalStatusStore, internal_universalTestProviderStore, isMacLike, isShortcutTaken, keyToSymbol, merge, mockChannel, optionOrAltSymbol, shortcutMatchesShortcut, shortcutToAriaKeyshortcuts, shortcutToHumanString, types, useAddonState, useArgTypes, useArgs, useChannel, useGlobalTypes, useGlobals, useParameter, useSharedState, useStoryPrepared, useStorybookApi, useStorybookState } = __STORYBOOK_API__;
 
 // global-externals:storybook/theming
-var theming_default = __STORYBOOK_THEMING__, { CacheProvider, ClassNames, Global, ThemeProvider, background, color, convert, create, createCache, createGlobal, createReset, css, darken, ensure, getPreferredColorScheme, ignoreSsrWarning, isPropValid, jsx, keyframes, lighten, styled, themes, tokens, typography, useTheme, withTheme } = __STORYBOOK_THEMING__;
+var theming_default = __STORYBOOK_THEMING__, { CacheProvider, ClassNames, Global, ThemeProvider, background, color, convert, create, createCache, createGlobal, createReset, css, darken, ensure, getPreferredColorScheme, ignoreSsrWarning, isPropValid, jsx, keyframes, lighten, srOnlyStyles, styled, themes, tokens, typography, useTheme, withTheme } = __STORYBOOK_THEMING__;
 
 // src/toolbar/components/ToolbarManager.tsx
 init_react();
@@ -1906,7 +1906,14 @@ var ToolbarMenuItemContainer = styled("div")({
   id,
   name,
   description,
-  toolbar: { icon: _icon, items, title: _title, preventDynamicIcon, dynamicTitle, shortcuts }
+  toolbar: {
+    icon: _icon,
+    items,
+    title: _title,
+    preventDynamicIcon,
+    dynamicTitle = !0,
+    shortcuts
+  }
 }) => {
   let api = useStorybookApi(), [globals, updateGlobals, storyGlobals] = useGlobals(), currentValue = globals[id], isOverridden = id in storyGlobals, icon = _icon, title2 = _title;
   preventDynamicIcon || (icon = getSelectedItem({ currentValue, items })?.icon || icon), dynamicTitle && (title2 = getSelectedItem({ currentValue, items })?.title || title2), !title2 && !icon && console.warn(`Toolbar '${name}' has no title or icon`);
@@ -1964,7 +1971,8 @@ var ToolbarMenuItemContainer = styled("div")({
       resetLabel,
       onReset: resetItem ? () => updateGlobals({ [id]: resetItem?.value }) : void 0,
       onSelect: (selected) => updateGlobals({ [id]: selected }),
-      icon: icon && react_default.createElement(Icons, { icon, __suppressDeprecationWarning: !0 })
+      icon: icon && react_default.createElement(Icons, { icon, __suppressDeprecationWarning: !0 }),
+      showSelectedOptionTitle: dynamicTitle
     },
     title2
   );
@@ -1989,7 +1997,7 @@ var client_default = __REACT_DOM_CLIENT__, { createRoot, hydrateRoot } = __REACT
 var manager_errors_default = __STORYBOOK_CORE_EVENTS_MANAGER_ERRORS__, { Category, ProviderDoesNotExtendBaseProviderError, StatusTypeIdMismatchError, UncaughtManagerError } = __STORYBOOK_CORE_EVENTS_MANAGER_ERRORS__;
 
 // global-externals:storybook/internal/router
-var router_default = __STORYBOOK_ROUTER__, { BaseLocationProvider, DEEPLY_EQUAL, Link: Link2, Location, LocationProvider, Match, Route, buildArgsParam, deepDiff, getMatch, parsePath, queryFromLocation, stringifyQuery, useNavigate } = __STORYBOOK_ROUTER__;
+var router_default = __STORYBOOK_ROUTER__, { BaseLocationProvider, DEEPLY_EQUAL, Link: Link2, Location, LocationProvider, Match, MemoryRouter, Route, buildArgsParam, deepDiff, getMatch, parsePath, queryFromLocation, stringifyQuery, useNavigate } = __STORYBOOK_ROUTER__;
 
 // ../../node_modules/react-helmet-async/lib/index.module.js
 init_react();
@@ -4661,7 +4669,7 @@ init_react();
 var types_default = __STORYBOOK_TYPES__, { Addon_TypesEnum, CoreWebpackCompiler, Feature, SupportedBuilder, SupportedFramework, SupportedLanguage, SupportedRenderer } = __STORYBOOK_TYPES__;
 
 // src/core-events/index.ts
-var events = /* @__PURE__ */ ((events2) => (events2.CHANNEL_WS_DISCONNECT = "channelWSDisconnect", events2.CHANNEL_CREATED = "channelCreated", events2.CONFIG_ERROR = "configError", events2.STORY_INDEX_INVALIDATED = "storyIndexInvalidated", events2.STORY_SPECIFIED = "storySpecified", events2.SET_CONFIG = "setConfig", events2.SET_STORIES = "setStories", events2.SET_INDEX = "setIndex", events2.SET_CURRENT_STORY = "setCurrentStory", events2.CURRENT_STORY_WAS_SET = "currentStoryWasSet", events2.FORCE_RE_RENDER = "forceReRender", events2.FORCE_REMOUNT = "forceRemount", events2.PRELOAD_ENTRIES = "preloadStories", events2.STORY_PREPARED = "storyPrepared", events2.DOCS_PREPARED = "docsPrepared", events2.STORY_CHANGED = "storyChanged", events2.STORY_UNCHANGED = "storyUnchanged", events2.STORY_RENDERED = "storyRendered", events2.STORY_FINISHED = "storyFinished", events2.STORY_MISSING = "storyMissing", events2.STORY_ERRORED = "storyErrored", events2.STORY_THREW_EXCEPTION = "storyThrewException", events2.STORY_RENDER_PHASE_CHANGED = "storyRenderPhaseChanged", events2.STORY_HOT_UPDATED = "storyHotUpdated", events2.PLAY_FUNCTION_THREW_EXCEPTION = "playFunctionThrewException", events2.UNHANDLED_ERRORS_WHILE_PLAYING = "unhandledErrorsWhilePlaying", events2.UPDATE_STORY_ARGS = "updateStoryArgs", events2.STORY_ARGS_UPDATED = "storyArgsUpdated", events2.RESET_STORY_ARGS = "resetStoryArgs", events2.SET_FILTER = "setFilter", events2.SET_GLOBALS = "setGlobals", events2.UPDATE_GLOBALS = "updateGlobals", events2.GLOBALS_UPDATED = "globalsUpdated", events2.REGISTER_SUBSCRIPTION = "registerSubscription", events2.PREVIEW_INITIALIZED = "previewInitialized", events2.PREVIEW_KEYDOWN = "previewKeydown", events2.PREVIEW_BUILDER_PROGRESS = "preview_builder_progress", events2.SELECT_STORY = "selectStory", events2.STORIES_COLLAPSE_ALL = "storiesCollapseAll", events2.STORIES_EXPAND_ALL = "storiesExpandAll", events2.DOCS_RENDERED = "docsRendered", events2.SHARED_STATE_CHANGED = "sharedStateChanged", events2.SHARED_STATE_SET = "sharedStateSet", events2.NAVIGATE_URL = "navigateUrl", events2.UPDATE_QUERY_PARAMS = "updateQueryParams", events2.REQUEST_WHATS_NEW_DATA = "requestWhatsNewData", events2.RESULT_WHATS_NEW_DATA = "resultWhatsNewData", events2.SET_WHATS_NEW_CACHE = "setWhatsNewCache", events2.TOGGLE_WHATS_NEW_NOTIFICATIONS = "toggleWhatsNewNotifications", events2.TELEMETRY_ERROR = "telemetryError", events2.FILE_COMPONENT_SEARCH_REQUEST = "fileComponentSearchRequest", events2.FILE_COMPONENT_SEARCH_RESPONSE = "fileComponentSearchResponse", events2.SAVE_STORY_REQUEST = "saveStoryRequest", events2.SAVE_STORY_RESPONSE = "saveStoryResponse", events2.ARGTYPES_INFO_REQUEST = "argtypesInfoRequest", events2.ARGTYPES_INFO_RESPONSE = "argtypesInfoResponse", events2.CREATE_NEW_STORYFILE_REQUEST = "createNewStoryfileRequest", events2.CREATE_NEW_STORYFILE_RESPONSE = "createNewStoryfileResponse", events2.GHOST_STORIES_REQUEST = "ghostStoriesRequest", events2.GHOST_STORIES_RESPONSE = "ghostStoriesResponse", events2.OPEN_IN_EDITOR_REQUEST = "openInEditorRequest", events2.OPEN_IN_EDITOR_RESPONSE = "openInEditorResponse", events2.MANAGER_INERT_ATTRIBUTE_CHANGED = "managerInertAttributeChanged", events2))(events || {});
+var events = /* @__PURE__ */ ((events2) => (events2.CHANNEL_WS_DISCONNECT = "channelWSDisconnect", events2.CHANNEL_CREATED = "channelCreated", events2.CONFIG_ERROR = "configError", events2.STORY_INDEX_INVALIDATED = "storyIndexInvalidated", events2.STORY_SPECIFIED = "storySpecified", events2.SET_CONFIG = "setConfig", events2.SET_STORIES = "setStories", events2.SET_INDEX = "setIndex", events2.SET_CURRENT_STORY = "setCurrentStory", events2.CURRENT_STORY_WAS_SET = "currentStoryWasSet", events2.FORCE_RE_RENDER = "forceReRender", events2.FORCE_REMOUNT = "forceRemount", events2.PRELOAD_ENTRIES = "preloadStories", events2.STORY_PREPARED = "storyPrepared", events2.DOCS_PREPARED = "docsPrepared", events2.STORY_CHANGED = "storyChanged", events2.STORY_UNCHANGED = "storyUnchanged", events2.STORY_RENDERED = "storyRendered", events2.STORY_FINISHED = "storyFinished", events2.STORY_MISSING = "storyMissing", events2.STORY_ERRORED = "storyErrored", events2.STORY_THREW_EXCEPTION = "storyThrewException", events2.STORY_RENDER_PHASE_CHANGED = "storyRenderPhaseChanged", events2.STORY_HOT_UPDATED = "storyHotUpdated", events2.PLAY_FUNCTION_THREW_EXCEPTION = "playFunctionThrewException", events2.UNHANDLED_ERRORS_WHILE_PLAYING = "unhandledErrorsWhilePlaying", events2.UPDATE_STORY_ARGS = "updateStoryArgs", events2.STORY_ARGS_UPDATED = "storyArgsUpdated", events2.RESET_STORY_ARGS = "resetStoryArgs", events2.SET_FILTER = "setFilter", events2.SET_GLOBALS = "setGlobals", events2.UPDATE_GLOBALS = "updateGlobals", events2.GLOBALS_UPDATED = "globalsUpdated", events2.REGISTER_SUBSCRIPTION = "registerSubscription", events2.PREVIEW_INITIALIZED = "previewInitialized", events2.PREVIEW_KEYDOWN = "previewKeydown", events2.PREVIEW_BUILDER_PROGRESS = "preview_builder_progress", events2.SELECT_STORY = "selectStory", events2.STORIES_COLLAPSE_ALL = "storiesCollapseAll", events2.STORIES_EXPAND_ALL = "storiesExpandAll", events2.DOCS_RENDERED = "docsRendered", events2.SHARED_STATE_CHANGED = "sharedStateChanged", events2.SHARED_STATE_SET = "sharedStateSet", events2.NAVIGATE_URL = "navigateUrl", events2.UPDATE_QUERY_PARAMS = "updateQueryParams", events2.REQUEST_WHATS_NEW_DATA = "requestWhatsNewData", events2.RESULT_WHATS_NEW_DATA = "resultWhatsNewData", events2.SET_WHATS_NEW_CACHE = "setWhatsNewCache", events2.TOGGLE_WHATS_NEW_NOTIFICATIONS = "toggleWhatsNewNotifications", events2.TELEMETRY_ERROR = "telemetryError", events2.FILE_COMPONENT_SEARCH_REQUEST = "fileComponentSearchRequest", events2.FILE_COMPONENT_SEARCH_RESPONSE = "fileComponentSearchResponse", events2.SAVE_STORY_REQUEST = "saveStoryRequest", events2.SAVE_STORY_RESPONSE = "saveStoryResponse", events2.ARGTYPES_INFO_REQUEST = "argtypesInfoRequest", events2.ARGTYPES_INFO_RESPONSE = "argtypesInfoResponse", events2.CREATE_NEW_STORYFILE_REQUEST = "createNewStoryfileRequest", events2.CREATE_NEW_STORYFILE_RESPONSE = "createNewStoryfileResponse", events2.GHOST_STORIES_REQUEST = "ghostStoriesRequest", events2.GHOST_STORIES_RESPONSE = "ghostStoriesResponse", events2.OPEN_IN_EDITOR_REQUEST = "openInEditorRequest", events2.OPEN_IN_EDITOR_RESPONSE = "openInEditorResponse", events2.MANAGER_INERT_ATTRIBUTE_CHANGED = "managerInertAttributeChanged", events2.SHARE_STORY_LINK = "shareStoryLink", events2.SHARE_ISOLATE_MODE = "shareIsolateMode", events2.SHARE_POPOVER_OPENED = "sharePopoverOpened", events2))(events || {});
 var {
   CHANNEL_WS_DISCONNECT: CHANNEL_WS_DISCONNECT2,
   CHANNEL_CREATED: CHANNEL_CREATED2,
@@ -4725,7 +4733,10 @@ var {
   GHOST_STORIES_RESPONSE: GHOST_STORIES_RESPONSE2,
   OPEN_IN_EDITOR_REQUEST: OPEN_IN_EDITOR_REQUEST2,
   OPEN_IN_EDITOR_RESPONSE: OPEN_IN_EDITOR_RESPONSE2,
-  MANAGER_INERT_ATTRIBUTE_CHANGED: MANAGER_INERT_ATTRIBUTE_CHANGED2
+  MANAGER_INERT_ATTRIBUTE_CHANGED: MANAGER_INERT_ATTRIBUTE_CHANGED2,
+  SHARE_STORY_LINK: SHARE_STORY_LINK2,
+  SHARE_ISOLATE_MODE: SHARE_ISOLATE_MODE2,
+  SHARE_POPOVER_OPENED: SHARE_POPOVER_OPENED2
 } = events;
 
 // src/manager/components/panel/Panel.tsx
@@ -4943,7 +4954,7 @@ var URL_VALUE_PATTERN = /^([0-9]{1,4})([a-z]{0,4})-([0-9]{1,4})([a-z]{0,4})$/, V
       isLocked: !0,
       isRotated: !1
     };
-  let global2 = normalizeGlobal(globals?.[PARAM_KEY]), userGlobal = normalizeGlobal(userGlobals?.[PARAM_KEY]), storyGlobal = normalizeGlobal(storyGlobals?.[PARAM_KEY]), value = userGlobal?.value ?? storyGlobal?.value ?? global2?.value, isRotated = userGlobal?.isRotated ?? storyGlobal?.isRotated ?? global2?.isRotated ?? !1, keys = Object.keys(options2), isLocked = disable || PARAM_KEY in storyGlobals || !keys.length, [match, vx, ux, vy, uy] = value?.match(URL_VALUE_PATTERN) || [];
+  let global2 = normalizeGlobal(globals?.[PARAM_KEY]), userGlobal = normalizeGlobal(userGlobals?.[PARAM_KEY]), storyGlobal = normalizeGlobal(storyGlobals?.[PARAM_KEY]), storyHasViewport = PARAM_KEY in storyGlobals, primaryGlobal = storyHasViewport ? storyGlobal : userGlobal, secondaryGlobal = storyHasViewport ? userGlobal : storyGlobal, value = primaryGlobal?.value ?? secondaryGlobal?.value ?? global2?.value, isRotated = primaryGlobal?.isRotated ?? secondaryGlobal?.isRotated ?? global2?.isRotated ?? !1, keys = Object.keys(options2), isLocked = disable || PARAM_KEY in storyGlobals || !keys.length, [match, vx, ux, vy, uy] = value?.match(URL_VALUE_PATTERN) || [];
   if (match) {
     let x2 = ux && ux !== "px" ? vx : Math.max(Number(vx), VIEWPORT_MIN_WIDTH), y2 = uy && uy !== "px" ? vy : Math.max(Number(vy), VIEWPORT_MIN_HEIGHT), width = `${x2}${ux === "pct" ? "%" : ux || "px"}`, height = `${y2}${uy === "pct" ? "%" : uy || "px"}`, selection = lastSelectedOption ? options2[lastSelectedOption] : void 0;
     return {
@@ -5006,10 +5017,8 @@ var URL_VALUE_PATTERN = /^([0-9]{1,4})([a-z]{0,4})-([0-9]{1,4})([a-z]{0,4})$/, V
     [update2, isRotated]
   );
   return useEffect(() => {
-    PARAM_KEY in storyGlobals && (update2(normalizeGlobal(storyGlobals?.[PARAM_KEY], !1)), lastSelectedOption.current = void 0);
-  }, [storyGlobals, update2]), useEffect(() => {
-    option && (Object.hasOwn(options2, option) ? lastSelectedOption.current = option : (lastSelectedOption.current = void 0, update2(normalizeGlobal(storyGlobals?.[PARAM_KEY], !1))));
-  }, [storyGlobals, options2, option, update2]), useEffect(() => {
+    parameter && option && (Object.hasOwn(options2, option) ? lastSelectedOption.current = option : (lastSelectedOption.current = void 0, PARAM_KEY in storyGlobals || update2({ value: void 0, isRotated: !1 })));
+  }, [parameter, storyGlobals, options2, option, update2]), useEffect(() => {
     api.setAddonShortcut(ADDON_ID, {
       label: "Next viewport",
       defaultShortcut: ["alt", "V"],
@@ -5768,9 +5777,13 @@ var Wrapper2 = styled.span(({ theme }) => ({
 })), Shortcut = ({ keys }) => react_default.createElement(Wrapper2, null, keys.map((key) => react_default.createElement(Key, { key }, shortcutToHumanString([key]))));
 
 // src/manager/components/preview/tools/zoom.tsx
-var ZOOM_LEVELS = [0.25, 0.5, 0.75, 0.9, 1, 1.1, 1.25, 1.5, 2, 3, 4, 8], INITIAL_ZOOM_LEVEL = 1, ZoomButton = styled(Button)({
+var ZOOM_LEVELS = [0.25, 0.5, 0.75, 0.9, 1, 1.1, 1.25, 1.5, 2, 3, 4, 8], INITIAL_ZOOM_LEVEL = 1, ZoomButton = styled(ToggleButton)({
   minWidth: 48
-}), Context = createContext({ value: INITIAL_ZOOM_LEVEL, set: (v2) => {
+}), ZoomResetButton = styled(ActionList.Button)(
+  ({ $isInitialValue }) => ({
+    visibility: $isInitialValue ? "hidden" : void 0
+  })
+), Context = createContext({ value: INITIAL_ZOOM_LEVEL, set: (v2) => {
 } }), ZoomInput = styled(NumericInput)({
   input: {
     width: 100
@@ -5787,7 +5800,7 @@ var ZOOM_LEVELS = [0.25, 0.5, 0.75, 0.9, 1, 1.1, 1.25, 1.5, 2, 3, 4, 8], INITIAL
     let { children, shouldScale } = this.props, { set } = this, { value } = this.state;
     return react_default.createElement(Context.Provider, { value: { value: shouldScale ? value : INITIAL_ZOOM_LEVEL, set } }, children);
   }
-}, Zoom2 = memo(function({ value, zoomIn, zoomOut, zoomTo }) {
+}, Zoom2 = memo(function({ value, zoomIn, zoomOut, zoomTo, zoomBy }) {
   let inputRef = useRef(null);
   return react_default.createElement(
     PopoverProvider,
@@ -5804,13 +5817,14 @@ var ZOOM_LEVELS = [0.25, 0.5, 0.75, 0.9, 1, 1.1, 1.25, 1.5, 2, 3, 4, 8], INITIAL
           unit: "%",
           before: react_default.createElement(ActionList.Button, { size: "small", padding: "small", readOnly: !0, "aria-hidden": !0 }, react_default.createElement(ZoomIcon, null)),
           after: react_default.createElement(
-            ActionList.Button,
+            ZoomResetButton,
             {
               size: "small",
               padding: "small",
-              disabled: value === INITIAL_ZOOM_LEVEL,
+              $isInitialValue: value === INITIAL_ZOOM_LEVEL,
               onClick: () => zoomTo(INITIAL_ZOOM_LEVEL),
-              ariaLabel: "Reset zoom"
+              ariaLabel: "Reset zoom",
+              "aria-hidden": value === INITIAL_ZOOM_LEVEL
             },
             react_default.createElement(UndoIcon, null)
           ),
@@ -5848,7 +5862,13 @@ var ZOOM_LEVELS = [0.25, 0.5, 0.75, 0.9, 1, 1.1, 1.25, 1.5, 2, 3, 4, 8], INITIAL
         padding: "small",
         variant: "ghost",
         ariaLabel: "Change zoom level",
-        active: value !== INITIAL_ZOOM_LEVEL
+        pressed: value !== INITIAL_ZOOM_LEVEL,
+        onKeyDown: (e2) => {
+          e2.key === "ArrowDown" ? (zoomBy(-0.01), e2.preventDefault()) : e2.key === "ArrowUp" ? (zoomBy(0.01), e2.preventDefault()) : e2.key === "PageDown" ? (zoomOut(), e2.preventDefault()) : e2.key === "PageUp" ? (zoomIn(), e2.preventDefault()) : e2.key === "Home" ? (zoomTo(ZOOM_LEVELS[ZOOM_LEVELS.length - 1]), e2.preventDefault()) : e2.key === "End" && (zoomTo(ZOOM_LEVELS[0]), e2.preventDefault());
+        },
+        onWheel: (e2) => {
+          e2.deltaY < 0 ? zoomIn() : e2.deltaY > 0 && zoomOut(), e2.preventDefault();
+        }
       },
       Math.round(value * 100),
       "%"
@@ -5861,7 +5881,13 @@ var ZOOM_LEVELS = [0.25, 0.5, 0.75, 0.9, 1, 1.1, 1.25, 1.5, 2, 3, 4, 8], INITIAL
   }, [set, value]), zoomOut = useCallback(() => {
     let lowerZoomLevel = ZOOM_LEVELS.findLast((level) => level < value);
     lowerZoomLevel && set(lowerZoomLevel);
-  }, [set, value]), zoomTo = useCallback(
+  }, [set, value]), zoomBy = useCallback(
+    (delta) => {
+      let min = ZOOM_LEVELS[0], max = ZOOM_LEVELS[ZOOM_LEVELS.length - 1];
+      set(Math.max(min, Math.min(max, value + delta)));
+    },
+    [set, value]
+  ), zoomTo = useCallback(
     (value2) => {
       set(value2);
     },
@@ -5889,7 +5915,7 @@ var ZOOM_LEVELS = [0.25, 0.5, 0.75, 0.9, 1, 1.1, 1.25, 1.5, 2, 3, 4, 8], INITIAL
       actionName: "zoomOut",
       action: zoomOut
     });
-  }, [api, zoomIn, zoomOut, zoomTo]), react_default.createElement(Zoom2, { key: "zoom", value, zoomIn, zoomOut, zoomTo });
+  }, [api, zoomIn, zoomOut, zoomTo]), react_default.createElement(Zoom2, { key: "zoom", value, zoomIn, zoomOut, zoomTo, zoomBy });
 }), zoomTool = {
   title: "zoom",
   id: "zoom",
@@ -6070,6 +6096,7 @@ init_react();
 var menuMapper2 = ({ api, state }) => ({
   isVisible: api.getIsNavShown(),
   singleStory: state.singleStory,
+  viewMode: state.viewMode,
   toggle: () => api.toggleNav()
 }), menuTool = {
   title: "menu",
@@ -6077,7 +6104,7 @@ var menuMapper2 = ({ api, state }) => ({
   type: types.TOOL,
   // @ts-expect-error (non strict)
   match: ({ viewMode }) => ["story", "docs"].includes(viewMode),
-  render: () => react_default.createElement(Consumer, { filter: menuMapper2 }, ({ isVisible, toggle, singleStory }) => !singleStory && !isVisible && react_default.createElement(react_default.Fragment, null, react_default.createElement(
+  render: () => react_default.createElement(Consumer, { filter: menuMapper2 }, ({ isVisible, toggle, singleStory, viewMode }) => !singleStory && !isVisible && react_default.createElement(react_default.Fragment, null, react_default.createElement(
     Button,
     {
       padding: "small",
@@ -6087,7 +6114,7 @@ var menuMapper2 = ({ api, state }) => ({
       onClick: toggle
     },
     react_default.createElement(MenuIcon, null)
-  ), react_default.createElement(Separator, null)))
+  ), viewMode === "story" && react_default.createElement(Separator, null)))
 };
 
 // src/manager/components/preview/tools/open-in-editor.tsx
@@ -7023,7 +7050,11 @@ var mapper3 = ({ api, state }) => {
   storyId,
   refId
 }) {
-  let shortcutKeys = api.getShortcutKeys(), enableShortcuts = !!shortcutKeys, [copied, setCopied] = useState(!1), copyStoryLink = shortcutKeys?.copyStoryLink, openInIsolation = shortcutKeys?.openInIsolation, links = useMemo(() => {
+  let shortcutKeys = api.getShortcutKeys(), enableShortcuts = !!shortcutKeys, [copied, setCopied] = useState(!1), copyStoryLink = shortcutKeys?.copyStoryLink, openInIsolation = shortcutKeys?.openInIsolation;
+  useEffect(() => {
+    api.emit(SHARE_POPOVER_OPENED);
+  }, [api]);
+  let links = useMemo(() => {
     let copyTitle = copied ? "Copied!" : "Copy story link", originHrefs = api.getStoryHrefs(storyId, { base: "origin", refId }), networkHrefs = api.getStoryHrefs(storyId, { base: "network", refId });
     return [
       [
@@ -7033,7 +7064,7 @@ var mapper3 = ({ api, state }) => {
           icon: react_default.createElement(LinkIcon, null),
           right: enableShortcuts ? react_default.createElement(Shortcut, { keys: copyStoryLink }) : null,
           onClick: () => {
-            (0, import_copy_to_clipboard.default)(originHrefs.managerHref), setCopied(!0), setTimeout(() => setCopied(!1), 2e3);
+            api.emit(SHARE_STORY_LINK, originHrefs.managerHref), (0, import_copy_to_clipboard.default)(originHrefs.managerHref), setCopied(!0), setTimeout(() => setCopied(!1), 2e3);
           }
         },
         {
@@ -7041,6 +7072,9 @@ var mapper3 = ({ api, state }) => {
           title: "Open in isolation mode",
           icon: react_default.createElement(ShareAltIcon, null),
           right: enableShortcuts ? react_default.createElement(Shortcut, { keys: openInIsolation }) : null,
+          onClick: () => {
+            api.emit(SHARE_ISOLATE_MODE, originHrefs.previewHref);
+          },
           href: originHrefs.previewHref,
           target: "_blank",
           rel: "noopener noreferrer"
@@ -7063,6 +7097,7 @@ var mapper3 = ({ api, state }) => {
   render: () => react_default.createElement(Consumer, { filter: mapper3 }, ({ api, storyId, refId }) => storyId ? react_default.createElement(
     PopoverProvider,
     {
+      ariaLabel: "Share this story",
       hasChrome: !0,
       placement: "bottom",
       padding: 0,
@@ -7409,7 +7444,7 @@ var storeOptions = {
     watching: !1,
     cancelling: !1,
     fatalError: void 0,
-    indexUrl: void 0,
+    index: { entries: {}, v: 5 },
     previewAnnotations: [],
     currentRun: {
       triggeredBy: void 0,
@@ -7417,6 +7452,9 @@ var storeOptions = {
         coverage: !1,
         a11y: !1
       },
+      componentTestStatuses: [],
+      a11yStatuses: [],
+      a11yReports: {},
       componentTestCount: {
         success: 0,
         error: 0
@@ -7436,6 +7474,7 @@ var storeOptions = {
   }
 };
 var STORE_CHANNEL_EVENT_NAME = `UNIVERSAL_STORE:${storeOptions.id}`;
+var TRIGGER_TEST_RUN_REQUEST = `${ADDON_ID5}/trigger-test-run-request`, TRIGGER_TEST_RUN_RESPONSE = `${ADDON_ID5}/trigger-test-run-response`;
 
 // src/cli/AddonVitestService.constants.ts
 var SUPPORTED_FRAMEWORKS = [
@@ -12622,7 +12661,7 @@ var fadeScaleIn = keyframes`
         {
           ...toggleProps,
           id: "checklist-module-collapse-toggle",
-          ariaLabel: `${isCollapsed ? "Expand" : "Collapse"} onboarding checklist`
+          ariaLabel: `${isCollapsed ? "Expand" : "Collapse"} onboarding guide`
         },
         react_default.createElement(
           ChevronSmallUpIcon,
@@ -12637,6 +12676,7 @@ var fadeScaleIn = keyframes`
       ), loaded && react_default.createElement(
         PopoverProvider,
         {
+          ariaLabel: "Onboarding guide menu",
           padding: 0,
           popover: ({ onHide }) => react_default.createElement(ActionList, null, react_default.createElement(ActionList.Item, null, react_default.createElement(OpenGuideButton, { afterClick: onHide }, react_default.createElement(ActionList.Text, null, "Open full guide"))), react_default.createElement(ActionList.Item, null, react_default.createElement(
             ActionList.Action,
@@ -14150,6 +14190,7 @@ var { window: globalWindow2 } = scope, TextStyle = styled.div(({ theme }) => ({
   return react_default.createElement(Contained, null, react_default.createElement(Spaced, null, react_default.createElement(TextStyle, null, "Oh no! Something went wrong loading this Storybook.", react_default.createElement("br", null), react_default.createElement(
     PopoverProvider,
     {
+      ariaLabel: "Error details",
       hasCloseButton: !0,
       offset: isMobile2 ? 0 : 8,
       placement: isMobile2 ? "bottom-end" : "bottom-start",
@@ -14264,6 +14305,7 @@ var { document: document3, window: globalWindow3 } = scope, IndicatorPlacement =
       return react_default.createElement(IndicatorPlacement, { ref: forwardedRef }, react_default.createElement(
         PopoverProvider,
         {
+          ariaLabel: "Composed Storybook status",
           placement: isMobile2 ? "bottom" : "bottom-start",
           padding: 0,
           popover: () => react_default.createElement(MessageWrapper, { isMobile: isMobile2 }, react_default.createElement(Spaced, { row: 0 }, state === "loading" && react_default.createElement(LoadingMessage, { url: ref.url }), (state === "error" || state === "empty") && react_default.createElement(ErrorOccurredMessage, { url: ref.url }), state === "ready" && react_default.createElement(react_default.Fragment, null, react_default.createElement(ReadyMessage, { url: ref.url, componentCount, leafCount }), ref.sourceUrl && react_default.createElement(SourceCodeMessage, { url: ref.sourceUrl })), state === "auth" && react_default.createElement(LoginRequiredMessage, { ...ref }), ref.type === "auto-inject" && state !== "error" && react_default.createElement(PerformanceDegradedMessage, null), state !== "loading" && react_default.createElement(ReadDocsMessage, null)))
@@ -14605,6 +14647,7 @@ var empty = {
     node: shouldRender ? react_default.createElement(
       PopoverProvider,
       {
+        ariaLabel: "Context menu",
         placement: "bottom-end",
         defaultVisible: !1,
         visible: isOpen,
@@ -15704,6 +15747,7 @@ var buttonStyleAdditions = ({
   )) : react_default.createElement(
     PopoverProvider,
     {
+      ariaLabel: "Storybook menu",
       placement: "bottom-start",
       padding: 0,
       popover: ({ onHide }) => react_default.createElement(SidebarMenuList, { onHide, menu }),
@@ -18682,8 +18726,8 @@ init_react();
 
 // src/manager/components/sidebar/TagsFilterPanel.tsx
 init_react();
-var groupByType = (filters) => filters.reduce(
-  (acc, filter) => (acc[filter.type] = acc[filter.type] || [], acc[filter.type].push(filter), acc),
+var groupByType = (filters) => filters.filter(Boolean).reduce(
+  (acc, filter) => (acc[filter.type] ??= [], acc[filter.type].push(filter), acc),
   {}
 ), Wrapper7 = styled.div({
   minWidth: 240,
@@ -18890,6 +18934,7 @@ var TAGS_FILTER = "tags-filter", BUILT_IN_TAGS = new Set(Object.values(Tag)), St
   return react_default.createElement(
     PopoverProvider,
     {
+      ariaLabel: "Tag filters",
       placement: "bottom",
       onVisibleChange: setExpanded,
       offset: 8,
@@ -18915,7 +18960,6 @@ var TAGS_FILTER = "tags-filter", BUILT_IN_TAGS = new Set(Object.values(Tag)), St
         key: "tags",
         ariaLabel: "Tag filters",
         ariaDescription: "Filter the items shown in a sidebar based on the tags applied to them.",
-        "aria-haspopup": "dialog",
         variant: "ghost",
         padding: "small",
         isHighlighted: tagsActive,
