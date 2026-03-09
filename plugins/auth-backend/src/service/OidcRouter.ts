@@ -28,6 +28,7 @@ import { OidcDatabase } from '../database/OidcDatabase';
 import { OfflineAccessService } from './OfflineAccessService';
 import { json } from 'express';
 import { z } from 'zod';
+import { fromZodError } from 'zod-validation-error';
 import { OidcError } from './OidcError';
 
 function ensureTrailingSlash(url: string): string {
@@ -77,11 +78,8 @@ const revokeRequestBodySchema = z.object({
 function validateRequest<T>(schema: z.ZodSchema<T>, data: unknown): T {
   const parseResult = schema.safeParse(data);
   if (!parseResult.success) {
-    throw new OidcError(
-      'invalid_request',
-      'Request validation failed. Check that all required parameters are present and valid.',
-      400,
-    );
+    const errorMessage = fromZodError(parseResult.error).message;
+    throw new OidcError('invalid_request', errorMessage, 400);
   }
   return parseResult.data;
 }
