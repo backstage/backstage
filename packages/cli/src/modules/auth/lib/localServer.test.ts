@@ -35,14 +35,20 @@ describe('localServer', () => {
     expect(missingCodeResponse.status).toBe(400);
     expect(await missingCodeResponse.text()).toBe('Missing code');
 
-    // 200 for valid callback
+    // 400 for mismatched state
+    const mismatchResponse = await fetch(
+      `${url}?code=test-code&state=wrong-state`,
+    );
+    expect(mismatchResponse.status).toBe(400);
+    expect(await mismatchResponse.text()).toBe('State mismatch');
+
+    // 200 for valid callback with matching state
     const codePromise = waitForCode();
     const specialCode = 'test-code+with/special=chars';
-    const specialState = 'test-state+with/special=chars';
     const successResponse = await fetch(
       `${url}?code=${encodeURIComponent(
         specialCode,
-      )}&state=${encodeURIComponent(specialState)}`,
+      )}&state=${encodeURIComponent('test-state')}`,
     );
     expect(successResponse.status).toBe(200);
     expect(await successResponse.text()).toBe('You may now close this window.');
@@ -52,7 +58,7 @@ describe('localServer', () => {
 
     const result = await codePromise;
     expect(result.code).toBe(specialCode);
-    expect(result.state).toBe(specialState);
+    expect(result.state).toBe('test-state');
 
     await close();
   });

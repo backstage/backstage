@@ -19,9 +19,7 @@ import { URL } from 'node:url';
 
 const CALLBACK_PORT = 8055;
 
-export async function startCallbackServer(_options: {
-  state: string;
-}): Promise<{
+export async function startCallbackServer(options: { state: string }): Promise<{
   url: string;
   waitForCode: () => Promise<{ code: string; state?: string }>;
   close: () => Promise<void>;
@@ -54,6 +52,11 @@ export async function startCallbackServer(_options: {
     if (!code) {
       res.statusCode = 400;
       res.end('Missing code');
+      return;
+    }
+    if (state !== options.state) {
+      res.statusCode = 400;
+      res.end('State mismatch');
       return;
     }
     res.statusCode = 200;
