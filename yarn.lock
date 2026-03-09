@@ -19987,19 +19987,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/addon-mcp@npm:^0.2.2":
-  version: 0.2.3
-  resolution: "@storybook/addon-mcp@npm:0.2.3"
+"@storybook/addon-mcp@npm:^0.3.0":
+  version: 0.3.4
+  resolution: "@storybook/addon-mcp@npm:0.3.4"
   dependencies:
-    "@storybook/mcp": "npm:0.2.2"
+    "@storybook/mcp": "npm:0.5.1"
     "@tmcp/adapter-valibot": "npm:^0.1.4"
     "@tmcp/transport-http": "npm:^0.8.0"
     picoquery: "npm:^2.5.0"
     tmcp: "npm:^1.16.0"
     valibot: "npm:1.2.0"
   peerDependencies:
+    "@storybook/addon-vitest": ^9.1.16 || ^10.0.0 || ^10.1.0-0 || ^10.2.0-0 || ^10.3.0-0 || ^10.4.0-0
     storybook: ^9.1.16 || ^10.0.0 || ^10.1.0-0 || ^10.2.0-0 || ^10.3.0-0 || ^10.4.0-0
-  checksum: 10/9b4fa821444f6d954a3f64a52fc835380d9196e0e857a058185da3c6dfe2bbaa5276a81bfbbf56294d3ea6fca1e8f85fac14c95e4414ba3ad1ecaceb1909c903
+  peerDependenciesMeta:
+    "@storybook/addon-vitest":
+      optional: true
+  checksum: 10/0fb377d8ee96055703cfee48c4a47d25367a090b4e343a0d5db15341137463ae01f167725e7087bc20fe072b474a798a6488452a3afce1b27c47049e65e56177
   languageName: node
   linkType: hard
 
@@ -20093,15 +20097,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/mcp@npm:0.2.2":
-  version: 0.2.2
-  resolution: "@storybook/mcp@npm:0.2.2"
+"@storybook/mcp@npm:0.5.1":
+  version: 0.5.1
+  resolution: "@storybook/mcp@npm:0.5.1"
   dependencies:
     "@tmcp/adapter-valibot": "npm:^0.1.4"
     "@tmcp/transport-http": "npm:^0.8.0"
     tmcp: "npm:^1.16.0"
     valibot: "npm:1.2.0"
-  checksum: 10/0825f2e248c98abe8062a52cc0843bee107f0e64ee885decf19c3c3c453ef3521cb2615bc1aede76a51799cec4ba8494269ba18553b09fbe27dd111027ec86db
+  checksum: 10/a5924be156db45ac86ee57c325878ee1a46cf3bf9523fc9f231d8f491e3a77f92d74801d138a4af6256cebcd74c8aa5985d0c9fded4fcbdbd4708ccdcc70ee31
   languageName: node
   linkType: hard
 
@@ -46235,7 +46239,7 @@ __metadata:
     "@storybook/addon-a11y": "npm:^10.3.0-alpha.1"
     "@storybook/addon-docs": "npm:^10.3.0-alpha.1"
     "@storybook/addon-links": "npm:^10.3.0-alpha.1"
-    "@storybook/addon-mcp": "npm:^0.2.2"
+    "@storybook/addon-mcp": "npm:^0.3.0"
     "@storybook/addon-themes": "npm:^10.3.0-alpha.1"
     "@storybook/addon-vitest": "npm:^10.3.0-alpha.1"
     "@storybook/react-vite": "npm:^10.3.0-alpha.1"

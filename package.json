@@ -138,7 +138,7 @@
     "@storybook/addon-a11y": "^10.3.0-alpha.1",
     "@storybook/addon-docs": "^10.3.0-alpha.1",
     "@storybook/addon-links": "^10.3.0-alpha.1",
-    "@storybook/addon-mcp": "^0.2.2",
+    "@storybook/addon-mcp": "^0.3.0",
     "@storybook/addon-themes": "^10.3.0-alpha.1",
     "@storybook/addon-vitest": "^10.3.0-alpha.1",
     "@storybook/react-vite": "^10.3.0-alpha.1",
