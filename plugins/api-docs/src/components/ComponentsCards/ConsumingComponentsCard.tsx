@@ -14,26 +14,13 @@
  * limitations under the License.
  */
 
+import { RELATION_API_CONSUMED_BY } from '@backstage/catalog-model';
+import { ColumnConfig } from '@backstage/ui';
 import {
-  ComponentEntity,
-  RELATION_API_CONSUMED_BY,
-} from '@backstage/catalog-model';
-import Typography from '@material-ui/core/Typography';
-import {
-  EntityTable,
-  useEntity,
-  useRelatedEntities,
+  EntityRelationCard,
+  EntityRow,
+  componentColumnConfig,
 } from '@backstage/plugin-catalog-react';
-import {
-  CodeSnippet,
-  InfoCard,
-  InfoCardVariants,
-  Link,
-  Progress,
-  TableColumn,
-  TableOptions,
-  WarningPanel,
-} from '@backstage/core-components';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { apiDocsTranslationRef } from '../../translation';
 
@@ -41,62 +28,25 @@ import { apiDocsTranslationRef } from '../../translation';
  * @public
  */
 export const ConsumingComponentsCard = (props: {
-  variant?: InfoCardVariants;
   title?: string;
-  columns?: TableColumn<ComponentEntity>[];
-  tableOptions?: TableOptions;
+  columnConfig?: ColumnConfig<EntityRow>[];
 }) => {
   const { t } = useTranslationRef(apiDocsTranslationRef);
   const {
-    variant = 'gridItem',
     title = t('consumingComponentsCard.title'),
-    columns = EntityTable.componentEntityColumns,
-    tableOptions = {},
+    columnConfig = componentColumnConfig,
   } = props;
-  const { entity } = useEntity();
-  const { entities, loading, error } = useRelatedEntities(entity, {
-    type: RELATION_API_CONSUMED_BY,
-  });
-
-  if (loading) {
-    return (
-      <InfoCard variant={variant} title={title}>
-        <Progress />
-      </InfoCard>
-    );
-  }
-
-  if (error || !entities) {
-    return (
-      <InfoCard variant={variant} title={title}>
-        <WarningPanel
-          severity="error"
-          title={t('consumingComponentsCard.error.title')}
-          message={<CodeSnippet text={`${error}`} language="text" />}
-        />
-      </InfoCard>
-    );
-  }
 
   return (
-    <EntityTable
+    <EntityRelationCard
       title={title}
-      variant={variant}
-      emptyContent={
-        <div style={{ textAlign: 'center' }}>
-          <Typography variant="body1">
-            {t('consumingComponentsCard.emptyContent.title')}
-          </Typography>
-          <Typography variant="body2">
-            <Link to="https://backstage.io/docs/features/software-catalog/descriptor-format#specconsumesapis-optional">
-              {t('apisCardHelpLinkTitle')}
-            </Link>
-          </Typography>
-        </div>
-      }
-      columns={columns}
-      tableOptions={tableOptions}
-      entities={entities as ComponentEntity[]}
+      relationType={RELATION_API_CONSUMED_BY}
+      columnConfig={columnConfig}
+      emptyState={{
+        message: t('consumingComponentsCard.emptyContent.title'),
+        helpLink:
+          'https://backstage.io/docs/features/software-catalog/descriptor-format#specconsumesapis-optional',
+      }}
     />
   );
 };

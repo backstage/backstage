@@ -16,7 +16,12 @@
 
 import { ApiEntity } from '@backstage/catalog-model';
 import { TableColumn } from '@backstage/core-components';
-import { EntityTable } from '@backstage/plugin-catalog-react';
+import {
+  EntityTable,
+  EntityRow,
+  entityDataTableColumns,
+} from '@backstage/plugin-catalog-react';
+import { Cell, ColumnConfig } from '@backstage/ui';
 import ExtensionIcon from '@material-ui/icons/Extension';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import { useState } from 'react';
@@ -81,3 +86,59 @@ export const getApiEntityColumns = (
     createApiDefinitionColumn(t),
   ];
 };
+
+// BUI column presets
+
+function createSpecApiTypeColumnConfig(
+  t: TranslationFunction<typeof apiDocsTranslationRef.T>,
+): ColumnConfig<EntityRow> {
+  return {
+    id: 'apiType',
+    label: t('apiEntityColumns.typeTitle'),
+    cell: entity => (
+      <Cell>
+        <ApiTypeTitle apiEntity={entity as unknown as ApiEntity} />
+      </Cell>
+    ),
+  };
+}
+
+function createApiDefinitionColumnConfig(
+  t: TranslationFunction<typeof apiDocsTranslationRef.T>,
+): ColumnConfig<EntityRow> {
+  return {
+    id: 'apiDefinition',
+    label: t('apiEntityColumns.apiDefinitionTitle'),
+    cell: entity => (
+      <Cell>
+        <ApiDefinitionButton apiEntity={entity as unknown as ApiEntity} />
+      </Cell>
+    ),
+  };
+}
+
+export function getApiEntityColumnConfig(
+  t: TranslationFunction<typeof apiDocsTranslationRef.T>,
+): ColumnConfig<EntityRow>[] {
+  return [
+    entityDataTableColumns.createEntityRefColumn({ defaultKind: 'API' }),
+    entityDataTableColumns.createSystemColumn(),
+    entityDataTableColumns.createOwnerColumn(),
+    createSpecApiTypeColumnConfig(t),
+    entityDataTableColumns.createSpecLifecycleColumn(),
+    entityDataTableColumns.createMetadataDescriptionColumn(),
+    createApiDefinitionColumnConfig(t),
+  ];
+}
+
+export function getHasApisColumnConfig(
+  t: TranslationFunction<typeof apiDocsTranslationRef.T>,
+): ColumnConfig<EntityRow>[] {
+  return [
+    entityDataTableColumns.createEntityRefColumn({ defaultKind: 'API' }),
+    entityDataTableColumns.createOwnerColumn(),
+    createSpecApiTypeColumnConfig(t),
+    entityDataTableColumns.createSpecLifecycleColumn(),
+    entityDataTableColumns.createMetadataDescriptionColumn(),
+  ];
+}
