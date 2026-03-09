@@ -6,9 +6,8 @@
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { CatalogApi } from '@backstage/plugin-catalog-react';
-import { ComponentEntity } from '@backstage/catalog-model';
+import { ColumnConfig } from '@backstage/ui';
 import { CompoundEntityRef } from '@backstage/catalog-model';
-import { DomainEntity } from '@backstage/catalog-model';
 import { ElementType } from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { EntityListContextProps } from '@backstage/plugin-catalog-react';
@@ -17,6 +16,7 @@ import { EntityOwnerPickerProps } from '@backstage/plugin-catalog-react';
 import { EntityPresentationApi } from '@backstage/plugin-catalog-react';
 import { EntityRefPresentation } from '@backstage/plugin-catalog-react';
 import { EntityRefPresentationSnapshot } from '@backstage/plugin-catalog-react';
+import { EntityRow } from '@backstage/plugin-catalog-react';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { HumanDuration } from '@backstage/types';
 import { IconComponent } from '@backstage/core-plugin-api';
@@ -26,14 +26,12 @@ import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { Observable } from '@backstage/types';
 import { Overrides } from '@material-ui/core/styles/overrides';
 import { ReactNode } from 'react';
-import { ResourceEntity } from '@backstage/catalog-model';
 import { ResultHighlight } from '@backstage/plugin-search-common';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { SearchResultListItemExtensionProps } from '@backstage/plugin-search-react';
 import { StarredEntitiesApi } from '@backstage/plugin-catalog-react';
 import { StorageApi } from '@backstage/core-plugin-api';
 import { StyleRules } from '@material-ui/core/styles/withStyles';
-import { SystemEntity } from '@backstage/catalog-model';
 import { TableColumn } from '@backstage/core-components';
 import { TableOptions } from '@backstage/core-components';
 import { TableProps } from '@backstage/core-components';
@@ -293,37 +291,25 @@ export class DefaultStarredEntitiesApi implements StarredEntitiesApi {
 // @public (undocumented)
 export interface DependencyOfComponentsCardProps {
   // (undocumented)
-  columns?: TableColumn<ComponentEntity>[];
-  // (undocumented)
-  tableOptions?: TableOptions;
+  columnConfig?: ColumnConfig<EntityRow>[];
   // (undocumented)
   title?: string;
-  // (undocumented)
-  variant?: InfoCardVariants;
 }
 
 // @public (undocumented)
 export interface DependsOnComponentsCardProps {
   // (undocumented)
-  columns?: TableColumn<ComponentEntity>[];
-  // (undocumented)
-  tableOptions?: TableOptions;
+  columnConfig?: ColumnConfig<EntityRow>[];
   // (undocumented)
   title?: string;
-  // (undocumented)
-  variant?: InfoCardVariants;
 }
 
 // @public (undocumented)
 export interface DependsOnResourcesCardProps {
   // (undocumented)
-  columns?: TableColumn<ResourceEntity>[];
-  // (undocumented)
-  tableOptions?: TableOptions;
+  columnConfig?: ColumnConfig<EntityRow>[];
   // (undocumented)
   title?: string;
-  // (undocumented)
-  variant?: InfoCardVariants;
 }
 
 // @public
@@ -505,13 +491,9 @@ export function hasCatalogProcessingErrors(
 // @public (undocumented)
 export interface HasComponentsCardProps {
   // (undocumented)
-  columns?: TableColumn<ComponentEntity>[];
-  // (undocumented)
-  tableOptions?: TableOptions;
+  columnConfig?: ColumnConfig<EntityRow>[];
   // (undocumented)
   title?: string;
-  // (undocumented)
-  variant?: InfoCardVariants;
 }
 
 // @public
@@ -528,51 +510,35 @@ export function hasRelationWarnings(
 // @public (undocumented)
 export interface HasResourcesCardProps {
   // (undocumented)
-  columns?: TableColumn<ResourceEntity>[];
-  // (undocumented)
-  tableOptions?: TableOptions;
+  columnConfig?: ColumnConfig<EntityRow>[];
   // (undocumented)
   title?: string;
-  // (undocumented)
-  variant?: InfoCardVariants;
 }
 
 // @public (undocumented)
 export interface HasSubcomponentsCardProps {
   // (undocumented)
-  columns?: TableColumn<ComponentEntity>[];
+  columnConfig?: ColumnConfig<EntityRow>[];
   // (undocumented)
   kind?: string;
   // (undocumented)
-  tableOptions?: TableOptions;
-  // (undocumented)
   title?: string;
-  // (undocumented)
-  variant?: InfoCardVariants;
 }
 
 // @public (undocumented)
 export interface HasSubdomainsCardProps {
   // (undocumented)
-  columns?: TableColumn<DomainEntity>[];
-  // (undocumented)
-  tableOptions?: TableOptions;
+  columnConfig?: ColumnConfig<EntityRow>[];
   // (undocumented)
   title?: string;
-  // (undocumented)
-  variant?: InfoCardVariants;
 }
 
 // @public (undocumented)
 export interface HasSystemsCardProps {
   // (undocumented)
-  columns?: TableColumn<SystemEntity>[];
-  // (undocumented)
-  tableOptions?: TableOptions;
+  columnConfig?: ColumnConfig<EntityRow>[];
   // (undocumented)
   title?: string;
-  // (undocumented)
-  variant?: InfoCardVariants;
 }
 
 // @public
