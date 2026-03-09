@@ -98,6 +98,10 @@ export const components: Page[] = [
     slug: 'skeleton',
   },
   {
+    title: 'StatCard',
+    slug: 'stat-card',
+  },
+  {
     title: 'Switch',
     slug: 'switch',
   },

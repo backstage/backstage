@@ -55,6 +55,7 @@ export { RadioGroupDefinition } from './components/RadioGroup/definition';
 export { SearchFieldDefinition } from './components/SearchField/definition';
 export { SelectDefinition } from './components/Select/definition';
 export { SkeletonDefinition } from './components/Skeleton/definition';
+export { StatCardDefinition } from './components/StatCard/definition';
 export { SwitchDefinition } from './components/Switch/definition';
 export { ToggleButtonDefinition } from './components/ToggleButton/definition';
 export { ToggleButtonGroupDefinition } from './components/ToggleButtonGroup/definition';

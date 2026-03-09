@@ -1,0 +1,152 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { CodeBlock } from '@/components/CodeBlock';
+import { statCardPropDefs } from './props-definition';
+import {
+  statCardUsageSnippet,
+  defaultSnippet,
+  withTrendSnippet,
+  withIconSnippet,
+  withDescriptionSnippet,
+  errorStatusSnippet,
+  warningStatusSnippet,
+  infoStatusSnippet,
+  interactiveSnippet,
+  linkSnippet,
+  gridLayoutSnippet,
+} from './snippets';
+import {
+  Default,
+  WithTrend,
+  WithIcon,
+  WithDescription,
+  ErrorStatus,
+  WarningStatus,
+  InfoStatus,
+  Interactive,
+  Link,
+  GridLayout,
+} from './components';
+import { PageTitle } from '@/components/PageTitle';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+import { Theming } from '@/components/Theming';
+import { StatCardDefinition } from '../../../utils/definitions';
+
+<PageTitle
+  title="Stat Card"
+  description="Display metrics and KPIs with status indicators and trends."
+/>
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<Default />}
+  code={defaultSnippet}
+/>
+
+## Usage
+
+<CodeBlock code={statCardUsageSnippet} />
+
+## Examples
+
+### With Trend
+
+Display a trend indicator to show metric changes.
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<WithTrend />}
+  code={withTrendSnippet}
+/>
+
+### With Icon
+
+Add an icon to provide visual context.
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<WithIcon />}
+  code={withIconSnippet}
+/>
+
+### With Description
+
+Include additional context or metadata.
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<WithDescription />}
+  code={withDescriptionSnippet}
+/>
+
+### Status Variants
+
+Different status colors for various metric states.
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<ErrorStatus />}
+  code={errorStatusSnippet}
+/>
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<WarningStatus />}
+  code={warningStatusSnippet}
+/>
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<InfoStatus />}
+  code={infoStatusSnippet}
+/>
+
+### Interactive
+
+Make the card clickable with `onPress` handler.
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<Interactive />}
+  code={interactiveSnippet}
+/>
+
+### As Link
+
+Navigate to a URL when clicked.
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<Link />}
+  code={linkSnippet}
+/>
+
+### Grid Layout
+
+Use with Grid component to create dashboard layouts.
+
+<Snippet
+  align="start"
+  py={4}
+  preview={<GridLayout />}
+  code={gridLayoutSnippet}
+/>
+
+## API reference
+
+StatCard extends `HTMLDivElement` attributes.
+
+<PropsTable data={statCardPropDefs} />
+
+<Theming definition={StatCardDefinition} />
+
+<ChangelogComponent name="StatCard" />

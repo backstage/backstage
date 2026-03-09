@@ -55,6 +55,7 @@ export * from './components/SearchField';
 export * from './components/Link';
 export * from './components/Select';
 export * from './components/Skeleton';
+export * from './components/StatCard';
 export * from './components/Switch';
 export * from './components/ToggleButton';
 export * from './components/ToggleButtonGroup';

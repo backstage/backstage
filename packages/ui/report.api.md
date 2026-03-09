@@ -2272,6 +2272,67 @@ export type Space =
 // @public (undocumented)
 export interface SpaceProps extends MarginProps, PaddingProps {}
 
+// @public
+export const StatCard: ForwardRefExoticComponent<
+  Omit<StatCardProps, 'ref'> & RefAttributes<HTMLDivElement>
+>;
+
+// @public
+export const StatCardDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-StatCard';
+    readonly icon: 'bui-StatCard-icon';
+    readonly label: 'bui-StatCard-label';
+    readonly value: 'bui-StatCard-value';
+    readonly trend: 'bui-StatCard-trend';
+    readonly description: 'bui-StatCard-description';
+    readonly link: 'bui-StatCard-link';
+  };
+  readonly dataAttributes: {
+    readonly status: readonly [
+      'success',
+      'warning',
+      'error',
+      'info',
+      'neutral',
+    ];
+  };
+  readonly propDefs: {
+    readonly label: {};
+    readonly value: {};
+    readonly trend: {};
+    readonly status: {
+      readonly dataAttribute: true;
+      readonly default: 'neutral';
+    };
+    readonly icon: {};
+    readonly description: {};
+    readonly onPress: {};
+    readonly href: {};
+    readonly className: {};
+  };
+};
+
+// @public (undocumented)
+export type StatCardOwnProps = {
+  label: string;
+  value: string | number;
+  trend?: string;
+  status?: 'success' | 'warning' | 'error' | 'info' | 'neutral';
+  icon?: ReactNode;
+  description?: string;
+  onPress?: () => void;
+  href?: string;
+  className?: string;
+};
+
+// @public (undocumented)
+export type StatCardProps = StatCardOwnProps &
+  Omit<ComponentPropsWithRef<'div'>, keyof StatCardOwnProps>;
+
 // @public (undocumented)
 export const SubmenuTrigger: (props: SubmenuTriggerProps) => JSX_2.Element;
 

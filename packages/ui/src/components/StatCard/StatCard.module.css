@@ -1,0 +1,111 @@
+/*
+ * Copyright 2026 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@layer tokens, base, components, utilities;
+
+@layer components {
+  .bui-StatCard {
+    padding: var(--bui-space-4);
+    border-radius: var(--bui-border-radius-1);
+    border: 1px solid var(--bui-color-border-default);
+    display: block;
+    width: 100%;
+    text-align: left;
+    font: inherit;
+    background: inherit;
+    color: inherit;
+    cursor: default;
+    transition: all 0.2s ease;
+  }
+
+  .bui-StatCard[data-interactive] {
+    cursor: pointer;
+  }
+
+  .bui-StatCard[data-interactive]:hover {
+    border-color: var(--bui-color-border-strong);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .bui-StatCard[data-interactive]:active {
+    transform: translateY(1px);
+  }
+
+  .bui-StatCard-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+  }
+
+  .bui-StatCard-label {
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 500;
+  }
+
+  .bui-StatCard-value {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .bui-StatCard-trend {
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: var(--bui-border-radius-0);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .bui-StatCard-trend--success {
+    color: var(--bui-color-text-success);
+    background-color: var(--bui-color-bg-success-subtle);
+  }
+
+  .bui-StatCard-trend--warning {
+    color: var(--bui-color-text-warning);
+    background-color: var(--bui-color-bg-warning-subtle);
+  }
+
+  .bui-StatCard-trend--error {
+    color: var(--bui-color-text-error);
+    background-color: var(--bui-color-bg-error-subtle);
+  }
+
+  .bui-StatCard-trend--info {
+    color: var(--bui-color-text-info);
+    background-color: var(--bui-color-bg-info-subtle);
+  }
+
+  .bui-StatCard-trend--neutral {
+    color: var(--bui-color-text-secondary);
+    background-color: var(--bui-color-bg-neutral-subtle);
+  }
+
+  .bui-StatCard-description {
+    margin-top: var(--bui-space-1);
+  }
+
+  .bui-StatCard-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+
+  .bui-StatCard-link:hover .bui-StatCard {
+    border-color: var(--bui-color-border-strong);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+}
