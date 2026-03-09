@@ -33352,7 +33352,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"glob@npm:13.0.6":
+"glob@npm:13.0.6, glob@npm:^13.0.1":
   version: 13.0.6
   resolution: "glob@npm:13.0.6"
   dependencies:
@@ -33392,17 +33392,6 @@ __metadata:
   bin:
     glob: dist/esm/bin.mjs
   checksum: 10/da4501819633daff8822c007bb3f93d5c4d2cbc7b15a8e886660f4497dd251a1fb4f53a85fba1e760b31704eff7164aeb2c7a82db10f9f2c362d12c02fe52cf3
-  languageName: node
-  linkType: hard
-
-"glob@npm:^13.0.1":
-  version: 13.0.6
-  resolution: "glob@npm:13.0.6"
-  dependencies:
-    minimatch: "npm:^10.2.2"
-    minipass: "npm:^7.1.3"
-    path-scurry: "npm:^2.0.2"
-  checksum: 10/201ad69e5f0aa74e1d8c00a481581f8b8c804b6a4fbfabeeb8541f5d756932800331daeba99b58fb9e4cd67e12ba5a7eba5b82fb476691588418060b84353214
   languageName: node
   linkType: hard
 
