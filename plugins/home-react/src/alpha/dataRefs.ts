@@ -19,7 +19,7 @@ import {
   type AppNode,
 } from '@backstage/frontend-plugin-api';
 import { JSX, ReactElement } from 'react';
-import type { CardLayout, CardSettings } from '../extensions';
+import type { WidgetLayout, WidgetSettings } from '../extensions';
 
 /**
  * Extension data for homepage widgets, bundling the rendered component
@@ -51,11 +51,11 @@ export interface HomePageWidgetData {
   /**
    * Optional layout hints for positioning and sizing
    */
-  layout?: CardLayout;
+  layout?: WidgetLayout;
   /**
    * Optional settings schema for widget configuration
    */
-  settings?: CardSettings;
+  settings?: WidgetSettings;
 }
 
 /**

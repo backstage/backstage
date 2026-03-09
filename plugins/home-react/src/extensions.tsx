@@ -54,27 +54,46 @@ export type CardExtensionProps<T> = ComponentRenderer & {
 } & T;
 
 /**
+ * Layout hints for a home page widget — controls the default, minimum and
+ * maximum number of columns and rows the widget occupies in the grid.
+ *
  * @public
  */
-export type CardLayout = {
+export type WidgetLayout = {
   width?: { minColumns?: number; maxColumns?: number; defaultColumns?: number };
   height?: { minRows?: number; maxRows?: number; defaultRows?: number };
 };
 
 /**
  * @public
+ * @deprecated Use {@link WidgetLayout} instead.
  */
-export type CardSettings = {
+export type CardLayout = WidgetLayout;
+
+/**
+ * Settings schema for a home page widget, expressed as a JSON Schema (RJSF)
+ * form. When provided, the grid renders a configuration overlay so users can
+ * customise the widget.
+ *
+ * @public
+ */
+export type WidgetSettings = {
   schema?: RJSFSchema;
   uiSchema?: UiSchema;
 };
 
 /**
  * @public
+ * @deprecated Use {@link WidgetSettings} instead.
+ */
+export type CardSettings = WidgetSettings;
+
+/**
+ * @public
  */
 export type CardConfig = {
-  layout?: CardLayout;
-  settings?: CardSettings;
+  layout?: WidgetLayout;
+  settings?: WidgetSettings;
 };
 
 /**

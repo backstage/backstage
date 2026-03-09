@@ -44,4 +44,10 @@ export {
   homePageLayoutComponentDataRef,
   type HomePageLayoutProps,
 } from './alpha/dataRefs';
-export type { ComponentParts, CardLayout, CardSettings } from './extensions';
+export type {
+  ComponentParts,
+  WidgetLayout,
+  WidgetSettings,
+  CardLayout,
+  CardSettings,
+} from './extensions';
