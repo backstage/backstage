@@ -22213,12 +22213,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jquery@npm:^3.3.34":
-  version: 3.5.33
-  resolution: "@types/jquery@npm:3.5.33"
-  dependencies:
-    "@types/sizzle": "npm:*"
-  checksum: 10/9a9e2cddc584f9afa1970b0febac0b65bed6d8084baf9655346f5787ee1b25975a0f259b0c81edc7757fbb92d584ed2d1b39804ab78ab0238407c7e4b0376011
+"@types/jquery@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "@types/jquery@npm:4.0.0"
+  checksum: 10/3a0491a1a2b7d0a9d471c318dcf245607c8af0954658a5d2758b9f746cd85a1ce362c37c2a3ab2a41ab24d67574e167d2f4e6a873fdceeef359536d73e03a804
   languageName: node
   linkType: hard
 
@@ -23091,13 +23089,6 @@ __metadata:
   version: 8.1.2
   resolution: "@types/sinonjs__fake-timers@npm:8.1.2"
   checksum: 10/5f0ddaa4c79924f6fa82ae5f4f2894f4c1d40740690866665d06a74c7e0f220989c99a7f49561c1d9ad6b15a3a8a7cf7be9dc306a7e42fc1c9cf2c89ad80bef3
-  languageName: node
-  linkType: hard
-
-"@types/sizzle@npm:*":
-  version: 2.3.2
-  resolution: "@types/sizzle@npm:2.3.2"
-  checksum: 10/3247c553400c3daab142682520249d818c473a8cf77c648c1e3e6e9fc9c477f5423e2b4112dd3c564c65f96db7e2b5be8dbbc22acf4da6fa0c5a149edd2feda5
   languageName: node
   linkType: hard
 
@@ -31662,7 +31653,7 @@ __metadata:
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
     "@testing-library/user-event": "npm:^14.0.0"
-    "@types/jquery": "npm:^3.3.34"
+    "@types/jquery": "npm:^4.0.0"
     "@types/react": "npm:*"
     "@types/react-dom": "npm:*"
     "@types/zen-observable": "npm:^0.8.0"
@@ -31743,7 +31734,7 @@ __metadata:
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
     "@testing-library/user-event": "npm:^14.0.0"
-    "@types/jquery": "npm:^3.3.34"
+    "@types/jquery": "npm:^4.0.0"
     "@types/react": "npm:*"
     "@types/react-dom": "npm:*"
     "@types/zen-observable": "npm:^0.8.0"
