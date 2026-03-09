@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
-import type { ReactNode } from 'react';
+import type { ReactNode, OlHTMLAttributes, LiHTMLAttributes } from 'react';
 
 /**
  * Props for the Timeline component
  * @public
  */
 export interface TimelineProps
-  extends Omit<
-    React.OlHTMLAttributes<HTMLOListElement>,
-    'children' | 'className'
-  > {
+  extends Omit<OlHTMLAttributes<HTMLOListElement>, 'children' | 'className'> {
   /**
    * Timeline items to display
    */
@@ -40,10 +37,7 @@ export interface TimelineProps
  * @public
  */
 export interface TimelineItemProps
-  extends Omit<
-    React.LiHTMLAttributes<HTMLLIElement>,
-    'className' | 'children'
-  > {
+  extends Omit<LiHTMLAttributes<HTMLLIElement>, 'className' | 'children'> {
   /**
    * Item heading
    */

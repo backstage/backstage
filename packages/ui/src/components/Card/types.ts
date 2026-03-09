@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ReactNode } from 'react';
+import type { ReactNode, HTMLAttributes } from 'react';
 import type { ButtonProps as RAButtonProps } from 'react-aria-components';
 
 /** @public */
@@ -63,7 +63,7 @@ export type CardStaticVariant = {
  * @public
  */
 export type CardProps = CardBaseProps &
-  Omit<React.HTMLAttributes<HTMLDivElement>, 'onPress'> &
+  Omit<HTMLAttributes<HTMLDivElement>, 'onPress'> &
   (CardButtonVariant | CardLinkVariant | CardStaticVariant);
 
 /**
@@ -96,7 +96,7 @@ export type CardHeaderOwnProps = {
  */
 export interface CardHeaderProps
   extends CardHeaderOwnProps,
-    React.HTMLAttributes<HTMLDivElement> {}
+    Omit<HTMLAttributes<HTMLDivElement>, 'children'> {}
 
 /** @public */
 export type CardBodyOwnProps = {
@@ -111,7 +111,7 @@ export type CardBodyOwnProps = {
  */
 export interface CardBodyProps
   extends CardBodyOwnProps,
-    React.HTMLAttributes<HTMLDivElement> {}
+    Omit<HTMLAttributes<HTMLDivElement>, 'children'> {}
 
 /** @public */
 export type CardFooterOwnProps = {
@@ -126,4 +126,4 @@ export type CardFooterOwnProps = {
  */
 export interface CardFooterProps
   extends CardFooterOwnProps,
-    React.HTMLAttributes<HTMLDivElement> {}
+    Omit<HTMLAttributes<HTMLDivElement>, 'children'> {}

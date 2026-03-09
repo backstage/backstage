@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ReactNode, CSSProperties } from 'react';
+import type { ReactNode, CSSProperties, HTMLAttributes } from 'react';
 import type { Responsive, ProviderBg, SpaceProps } from '../../types';
 
 /** @public */
@@ -45,4 +45,4 @@ export interface BoxProps
   extends SpaceProps,
     BoxOwnProps,
     BoxUtilityProps,
-    Omit<React.HTMLAttributes<HTMLDivElement>, 'children'> {}
+    Omit<HTMLAttributes<HTMLDivElement>, 'children'> {}
