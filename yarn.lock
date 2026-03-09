@@ -27747,12 +27747,12 @@ __metadata:
   linkType: hard
 
 "cleye@npm:^2.2.1":
-  version: 2.2.1
-  resolution: "cleye@npm:2.2.1"
+  version: 2.3.0
+  resolution: "cleye@npm:2.3.0"
   dependencies:
     terminal-columns: "npm:^2.0.0"
-    type-flag: "npm:^4.0.3"
-  checksum: 10/4d24a7e4863d38b9a40c01ca332baa7526b320c14fc488e7fb2d3f54b0ad5baa8c5defa6fc6adc079f50f629409056d9da74be6611f6394b709c9062d39b2216
+    type-flag: "npm:^4.1.0"
+  checksum: 10/a6fe9d8431db05907d1699099de338e2a227843ebb85d2b540d609d649dd35b482f6534105daa2930dd18649dd0bfd0526d43c1d746eec10195fda31784953c7
   languageName: node
   linkType: hard
 
@@ -49901,10 +49901,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"type-flag@npm:^4.0.3":
-  version: 4.0.3
-  resolution: "type-flag@npm:4.0.3"
-  checksum: 10/ffa9e56e50ed73ed802aa45b8d47eeba7677d2d66785e9153bfbc758c2613b6ba78b621d7766b713a287dbbe6758a61000f57d2ce8afc94e1876a37de914c73c
+"type-flag@npm:^4.1.0":
+  version: 4.1.0
+  resolution: "type-flag@npm:4.1.0"
+  checksum: 10/d3af106dab651751426f778095b3963791d15482b2154f92f4f98e5d6b72d593ae9873120d2de24f34191ab42c0d71c0259743162e543aee8d55b528ed1c6e78
   languageName: node
   linkType: hard
 
