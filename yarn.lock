@@ -48431,14 +48431,14 @@ __metadata:
   linkType: hard
 
 "swr@npm:^2.0.0, swr@npm:^2.2.5":
-  version: 2.4.0
-  resolution: "swr@npm:2.4.0"
+  version: 2.4.1
+  resolution: "swr@npm:2.4.1"
   dependencies:
     dequal: "npm:^2.0.3"
     use-sync-external-store: "npm:^1.6.0"
   peerDependencies:
     react: ^16.11.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
-  checksum: 10/3536db25748b49659d87450ed40e391b0a8c2cfe387e41224ee505a18ae739477bd60caba1d8ff7bd961db923cf3d6771e4aee13de822855436a7bca9e343ccc
+  checksum: 10/611c0a39d42abb7d7eae37eb36e6a30a8a2c387bab6026d8db13ae41b9f8f3c2a187486008781de3f083ef5b39e6d90af1f275a73ade882a567e338166266356
   languageName: node
   linkType: hard
 
