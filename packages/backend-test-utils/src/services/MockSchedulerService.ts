@@ -95,6 +95,10 @@ export class MockSchedulerService implements SchedulerService {
     });
   }
 
+  async cancelTask(_id: string): Promise<void> {
+    // No-op in mock
+  }
+
   async triggerTask(id: string): Promise<void> {
     const task = this.#tasks.get(id);
     if (!task) {

@@ -477,14 +477,12 @@ describe('PluginTaskManagerImpl', () => {
       async databaseId => {
         const { manager } = await init(databaseId);
 
-        const fn = jest.fn();
-        const promise = new Promise(resolve => fn.mockImplementation(resolve));
         await manager.scheduleTask({
           id: 'task1',
           timeout: Duration.fromMillis(5000),
           frequency: Duration.fromObject({ years: 1 }),
           initialDelay: Duration.fromObject({ years: 1 }),
-          fn,
+          fn: jest.fn(),
           scope: 'global',
         });
 
