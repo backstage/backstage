@@ -241,13 +241,15 @@ export class DefaultProviderDatabase implements ProviderDatabase {
         hash,
       } of toUpsert) {
         try {
-          let ok = await updateUnprocessedEntity({
-            tx,
-            entity,
-            entityRef,
-            hash,
-            locationKey,
-          });
+          const { updated, claimedFromNullLocationKey } =
+            await updateUnprocessedEntity({
+              tx,
+              entity,
+              entityRef,hash,
+              locationKey,
+            });
+
+          let ok = updated;
           if (!ok) {
             ok = await insertUnprocessedEntity({
               tx,
@@ -261,6 +263,11 @@ export class DefaultProviderDatabase implements ProviderDatabase {
           if (ok) {
             await tx<DbRefreshStateReferencesRow>('refresh_state_references')
               .where('target_entity_ref', entityRef)
+              .andWhere(inner => {
+                if (!claimedFromNullLocationKey) {
+                  inner.where({ source_key: options.sourceKey });
+                }
+              })
               .delete();
 
             await tx<DbRefreshStateReferencesRow>(
