@@ -14,17 +14,21 @@
  * limitations under the License.
  */
 
+import { createServiceFactory } from '@backstage/backend-plugin-api';
 import {
-  coreServices,
-  createServiceFactory,
   DLQHandler,
   Job,
   JobOptions,
+  ProcessHandler,
+  ProcessInput,
   ProcessOptions,
   Queue,
   QueueOptions,
   QueueService,
-} from '@backstage/backend-plugin-api';
+  QueueWorker,
+  QueueWorkerJob,
+} from '@backstage/backend-plugin-api/alpha';
+import { queueServiceRef } from '@backstage/backend-plugin-api/alpha';
 import { JsonValue } from '@backstage/types';
 
 /**
@@ -33,8 +37,7 @@ import { JsonValue } from '@backstage/types';
  * @remarks
  *
  * This mock queue processes jobs synchronously in-memory without any external
- * dependencies. It supports all Queue interface methods including pause/resume,
- * job counting, and disconnection.
+ * dependencies. It supports queueing, job counting, and disconnection.
  *
  * @public
  */
@@ -49,8 +52,7 @@ export class MockQueue implements Queue {
   }> = [];
   private readonly activeJobs = new Set<string>();
   private nextJobId = 1;
-  private handler?: (job: Job) => Promise<void>;
-  private isPaused = false;
+  private handler?: ProcessHandler<any>;
   private isDisconnected = false;
   private readonly maxAttempts: number;
   private readonly dlqHandler?: DLQHandler;
@@ -79,24 +81,40 @@ export class MockQueue implements Queue {
     this.jobs.push(job);
     this.sortJobs();
 
-    if (this.handler && !this.isPaused) {
+    if (this.handler) {
       await this.processNextJob();
     }
   }
 
-  process(
-    handler: (job: Job) => Promise<void>,
+  process<T extends JsonValue = JsonValue>(
+    handler: ProcessHandler<T>,
     options?: ProcessOptions,
-  ): void {
+  ): QueueWorker<T>;
+
+  process<T extends JsonValue = JsonValue>(
+    options?: ProcessOptions,
+  ): QueueWorker<T>;
+
+  process<T extends JsonValue = JsonValue>(
+    handlerOrOptions?: ProcessInput<T>,
+    maybeOptions?: ProcessOptions,
+  ): QueueWorker<T> {
+    const worker = this.createWorker<T>(
+      typeof handlerOrOptions === 'function' ? maybeOptions : handlerOrOptions,
+    );
+
+    if (typeof handlerOrOptions !== 'function') {
+      return worker;
+    }
+
     if (this.handler) {
       throw new Error('Handler already set for this queue');
     }
-    this.handler = handler;
-    this.concurrency = options?.concurrency ?? 1;
+    this.handler = handlerOrOptions as ProcessHandler<any>;
+    this.concurrency = maybeOptions?.concurrency ?? 1;
 
-    if (!this.isPaused) {
-      void this.processAllJobs();
-    }
+    void this.processAllJobs();
+    return worker;
   }
 
   private sortJobs() {
@@ -109,7 +127,7 @@ export class MockQueue implements Queue {
   }
 
   private async processNextJob(): Promise<void> {
-    if (this.isPaused || this.isDisconnected || !this.handler) {
+    if (this.isDisconnected || !this.handler) {
       return;
     }
 
@@ -141,7 +159,7 @@ export class MockQueue implements Queue {
       if (jobData.attempt < this.maxAttempts) {
         this.jobs.push(jobData);
         this.sortJobs();
-        if (!this.isPaused && !this.isDisconnected) {
+        if (!this.isDisconnected) {
           void this.processAllJobs();
         }
       } else if (this.dlqHandler) {
@@ -172,24 +190,13 @@ export class MockQueue implements Queue {
 
     await Promise.all(promises);
 
-    if (this.jobs.length > 0 && !this.isPaused && !this.isDisconnected) {
+    if (this.jobs.length > 0 && !this.isDisconnected) {
       await this.processAllJobs();
     }
   }
 
   async getJobCount(): Promise<number> {
     return this.jobs.length + this.activeJobs.size;
-  }
-
-  async pause(): Promise<void> {
-    this.isPaused = true;
-  }
-
-  async resume(): Promise<void> {
-    this.isPaused = false;
-    if (this.handler) {
-      await this.processAllJobs();
-    }
   }
 
   async disconnect(): Promise<void> {
@@ -199,11 +206,87 @@ export class MockQueue implements Queue {
     this.handler = undefined;
   }
 
-  /**
-   * Test helper to check if the queue is paused
-   */
-  isPausedState(): boolean {
-    return this.isPaused;
+  private createWorker<T extends JsonValue = JsonValue>(
+    options?: ProcessOptions,
+  ): QueueWorker<T> {
+    const batchSize = options?.batchSize ?? 1;
+    let closed = false;
+
+    return {
+      next: async () => {
+        if (closed) {
+          return undefined;
+        }
+
+        return this.claimNextJobs<T>(batchSize);
+      },
+      close: async () => {
+        closed = true;
+      },
+    };
+  }
+
+  private async claimNextJobs<T extends JsonValue = JsonValue>(
+    batchSize: number,
+  ): Promise<QueueWorkerJob<T>[]> {
+    if (this.isDisconnected) {
+      return [];
+    }
+
+    const now = Date.now();
+    const jobs: QueueWorkerJob<T>[] = [];
+
+    for (let i = 0; i < batchSize; i++) {
+      const jobIndex = this.jobs.findIndex(j => (j.availableAt ?? 0) <= now);
+      if (jobIndex === -1) {
+        break;
+      }
+
+      const [jobData] = this.jobs.splice(jobIndex, 1);
+      this.activeJobs.add(jobData.id);
+      this.activeProcessingCount++;
+      jobData.attempt++;
+
+      let settled = false;
+      jobs.push({
+        id: jobData.id,
+        payload: jobData.payload as T,
+        attempt: jobData.attempt,
+        complete: async () => {
+          if (settled) {
+            return;
+          }
+          settled = true;
+          this.activeJobs.delete(jobData.id);
+          this.activeProcessingCount--;
+        },
+        retry: async (error: Error) => {
+          if (settled) {
+            return;
+          }
+          settled = true;
+
+          if (jobData.attempt < this.maxAttempts) {
+            this.jobs.push(jobData);
+            this.sortJobs();
+          } else if (this.dlqHandler) {
+            await this.dlqHandler(
+              {
+                id: jobData.id,
+                payload: jobData.payload,
+                attempt: jobData.attempt,
+              },
+              error,
+            );
+          }
+
+          this.activeJobs.delete(jobData.id);
+          this.activeProcessingCount--;
+        },
+      });
+    }
+
+    return jobs;
   }
 
   /**
@@ -263,7 +346,10 @@ export class MockQueue implements Queue {
 export class MockQueueService implements QueueService {
   private queues = new Map<string, MockQueue>();
 
-  async getQueue(name: string, options?: QueueOptions): Promise<Queue> {
+  async getQueue<T extends JsonValue = JsonValue>(
+    name: string,
+    options?: QueueOptions,
+  ): Promise<Queue<T>> {
     let queue = this.queues.get(name);
     if (!queue) {
       queue = new MockQueue({
@@ -271,7 +357,7 @@ export class MockQueueService implements QueueService {
       });
       this.queues.set(name, queue);
     }
-    return queue;
+    return queue as Queue<T>;
   }
 
   /**
@@ -279,7 +365,7 @@ export class MockQueueService implements QueueService {
    */
   factory() {
     return createServiceFactory({
-      service: coreServices.queue,
+      service: queueServiceRef,
       deps: {},
       factory: async () => this,
     });

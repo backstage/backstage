@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-import { Job, JobOptions, ProcessOptions } from '@backstage/backend-plugin-api';
+import {
+  Job,
+  JobOptions,
+  ProcessHandler,
+  ProcessInput,
+  ProcessOptions,
+  QueueWorker,
+} from '@backstage/backend-plugin-api/alpha';
 import { JsonValue } from '@backstage/types';
 import { v4 as uuid } from 'uuid';
 import Redis from 'ioredis';
@@ -23,6 +30,14 @@ import { BaseQueue, BaseQueueOptions } from './BaseQueue';
 export type RedisQueueOptions = BaseQueueOptions & {
   client: Redis;
   keyPrefix?: string;
+};
+
+type RedisJob = Job & {
+  priority: number;
+};
+
+type RedisJobData = RedisJob & {
+  _seq: string;
 };
 
 /**
@@ -43,7 +58,6 @@ export class RedisQueue extends BaseQueue {
   private processLoopPromise?: Promise<void>;
   private delayedLoopPromise?: Promise<void>;
   private concurrency: number = 1;
-  private activeProcessingCount: number = 0;
 
   constructor(options: RedisQueueOptions) {
     super(options);
@@ -56,21 +70,13 @@ export class RedisQueue extends BaseQueue {
   }
 
   async add(payload: JsonValue, options?: JobOptions): Promise<void> {
-    const id = uuid();
-    const sequence = await this.client.incr(this.sequenceKey);
-    const sequenceToken = sequence.toString().padStart(20, '0');
-    const job: Job = {
-      id,
+    const job: RedisJob = {
+      id: uuid(),
       payload,
       attempt: 0,
-    };
-
-    const jobData = {
-      _seq: sequenceToken,
-      ...job,
       priority: options?.priority ?? 20,
     };
-    const serialized = JSON.stringify(jobData);
+    const serialized = await this.serializeJob(job);
 
     const delay = options?.delay ?? 0;
 
@@ -83,12 +89,26 @@ export class RedisQueue extends BaseQueue {
     }
   }
 
-  process(
-    handler: (job: Job) => Promise<void>,
+  process<T extends JsonValue = JsonValue>(
+    handler: ProcessHandler<T>,
     options?: ProcessOptions,
-  ): void {
-    super.process(handler, options);
-    this.concurrency = options?.concurrency ?? this.defaultConcurrency;
+  ): QueueWorker<T>;
+
+  process<T extends JsonValue = JsonValue>(
+    options?: ProcessOptions,
+  ): QueueWorker<T>;
+
+  process<T extends JsonValue = JsonValue>(
+    handlerOrOptions?: ProcessInput<T>,
+    maybeOptions?: ProcessOptions,
+  ): QueueWorker<T> {
+    const processing = this.prepareProcessing(handlerOrOptions, maybeOptions);
+    if (!processing.handler) {
+      return processing.worker;
+    }
+
+    this.concurrency =
+      processing.options?.concurrency ?? this.defaultConcurrency;
 
     if (!this.delayedClient) {
       // We need another client to process delayed jobs without blocking the main queue.
@@ -103,6 +123,7 @@ export class RedisQueue extends BaseQueue {
 
     this.startProcessLoop();
     this.startDelayedLoop();
+    return processing.worker;
   }
 
   async getJobCount(): Promise<number> {
@@ -124,33 +145,12 @@ export class RedisQueue extends BaseQueue {
     }
 
     if (loopPromises.length > 0) {
-      const maxWaitTime = 5000;
-      const timeoutPromise = new Promise<void>(resolve => {
-        setTimeout(() => {
-          this.logger.warn(
-            `[${this.queueName}] Timed out waiting for loops to complete`,
-          );
-          resolve();
-        }, maxWaitTime);
+      await this.waitForPromisesToSettle(loopPromises, {
+        timeoutMessage: 'Timed out waiting for loops to complete',
       });
-
-      await Promise.race([Promise.all(loopPromises), timeoutPromise]);
     }
 
-    const maxWaitTime = 5000;
-    const startTime = Date.now();
-    while (
-      this.activeProcessingCount > 0 &&
-      Date.now() - startTime < maxWaitTime
-    ) {
-      await new Promise(r => setTimeout(r, 100));
-    }
-
-    if (this.activeProcessingCount > 0) {
-      this.logger.warn(
-        `[${this.queueName}] Disconnecting with ${this.activeProcessingCount} jobs still processing`,
-      );
-    }
+    await this.waitForActiveProcessingToComplete();
 
     if (this.delayedClient) {
       await this.delayedClient.quit();
@@ -158,7 +158,7 @@ export class RedisQueue extends BaseQueue {
     }
   }
 
-  private async processJobFromQueue(job: Job): Promise<void> {
+  private async processJobFromQueue(job: RedisJob): Promise<void> {
     job.attempt++;
 
     try {
@@ -169,20 +169,18 @@ export class RedisQueue extends BaseQueue {
       const retryResult = await this.handleFailedJob(job, error);
 
       if (retryResult.shouldRetry) {
-        const sequence = await this.client.incr(this.sequenceKey);
-        const sequenceToken = sequence.toString().padStart(20, '0');
         const backoffDelay = 1000 * Math.pow(2, job.attempt - 1);
         const runAt = Date.now() + backoffDelay;
-        const jobData = { _seq: sequenceToken, ...job };
-        await this.client.zadd(this.delayedKey, runAt, JSON.stringify(jobData));
+        const serialized = await this.serializeJob(job);
+        await this.client.zadd(this.delayedKey, runAt, serialized);
       }
     } finally {
       this.activeProcessingCount--;
     }
   }
 
-  private async getJobs(availableCapacity: number): Promise<Job[]> {
-    const jobs: Job[] = [];
+  private async getJobs(availableCapacity: number): Promise<RedisJob[]> {
+    const jobs: RedisJob[] = [];
 
     try {
       const results = await this.client.zpopmin(
@@ -195,11 +193,12 @@ export class RedisQueue extends BaseQueue {
           if (!results[i]) {
             continue;
           }
-          const jobData = JSON.parse(results[i]);
-          const job: Job = {
+          const jobData = this.deserializeJob(results[i]);
+          const job: RedisJob = {
             id: jobData.id,
             payload: jobData.payload,
             attempt: jobData.attempt ?? 0,
+            priority: jobData.priority ?? 20,
           };
           jobs.push(job);
         }
@@ -221,11 +220,6 @@ export class RedisQueue extends BaseQueue {
     this.processLoopPromise = (async () => {
       try {
         while (!this.isDisconnecting) {
-          if (this.isPaused) {
-            await new Promise(r => setTimeout(r, 1000));
-            continue;
-          }
-
           try {
             const availableCapacity =
               this.concurrency - this.activeProcessingCount;
@@ -235,7 +229,7 @@ export class RedisQueue extends BaseQueue {
               continue;
             }
 
-            const jobs: Job[] = await this.getJobs(availableCapacity);
+            const jobs = await this.getJobs(availableCapacity);
 
             for (const job of jobs) {
               this.activeProcessingCount++;
@@ -268,7 +262,7 @@ export class RedisQueue extends BaseQueue {
     this.delayedLoopPromise = (async () => {
       try {
         while (!this.isDisconnecting) {
-          if (this.isPaused || !this.handler || !this.delayedClient) {
+          if (!this.handler || !this.delayedClient) {
             await new Promise(r => setTimeout(r, 1000));
             continue;
           }
@@ -298,7 +292,7 @@ export class RedisQueue extends BaseQueue {
             }
 
             // It's time to run the job, remove it from the delayed queue and add it to the main queue
-            const jobData = JSON.parse(serialized);
+            const jobData = this.deserializeJob(serialized);
             const priority = (jobData.priority ?? 20) as number;
             await this.client.zadd(this.queueKey, priority, serialized);
           } catch (error) {
@@ -314,5 +308,26 @@ export class RedisQueue extends BaseQueue {
         this.delayedLoopPromise = undefined;
       }
     })();
+  }
+
+  private async serializeJob(job: RedisJob): Promise<string> {
+    const sequence = await this.client.incr(this.sequenceKey);
+    const jobData: RedisJobData = {
+      _seq: sequence.toString().padStart(20, '0'),
+      ...job,
+    };
+
+    return `${jobData._seq}:${JSON.stringify(jobData)}`;
+  }
+
+  private deserializeJob(serialized: string): RedisJobData {
+    if (serialized.startsWith('{')) {
+      return JSON.parse(serialized) as RedisJobData;
+    }
+
+    const separatorIndex = serialized.indexOf(':');
+    const payload =
+      separatorIndex === -1 ? serialized : serialized.slice(separatorIndex + 1);
+    return JSON.parse(payload) as RedisJobData;
   }
 }

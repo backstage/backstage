@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-import { Job, JobOptions, ProcessOptions } from '@backstage/backend-plugin-api';
+import {
+  Job,
+  JobOptions,
+  ProcessHandler,
+  ProcessInput,
+  ProcessOptions,
+  QueueWorker,
+} from '@backstage/backend-plugin-api/alpha';
 import { JsonValue } from '@backstage/types';
 import { v4 as uuid } from 'uuid';
 import { BaseQueue, BaseQueueOptions } from './BaseQueue';
@@ -40,9 +47,8 @@ export class MemoryQueue extends BaseQueue {
 
   private processLoopActive: boolean = false;
   private readonly interval: number;
-  private intervalId?: NodeJS.Timeout;
+  private processLoopPromise?: Promise<void>;
   private concurrency: number = 1;
-  private activeProcessingCount: number = 0;
 
   constructor(options: MemoryQueueOptions) {
     super(options);
@@ -65,13 +71,28 @@ export class MemoryQueue extends BaseQueue {
     this.sortItems();
   }
 
-  process(
-    handler: (job: Job) => Promise<void>,
+  process<T extends JsonValue = JsonValue>(
+    handler: ProcessHandler<T>,
     options?: ProcessOptions,
-  ): void {
-    super.process(handler, options);
-    this.concurrency = options?.concurrency ?? this.defaultConcurrency;
+  ): QueueWorker<T>;
+
+  process<T extends JsonValue = JsonValue>(
+    options?: ProcessOptions,
+  ): QueueWorker<T>;
+
+  process<T extends JsonValue = JsonValue>(
+    handlerOrOptions?: ProcessInput<T>,
+    maybeOptions?: ProcessOptions,
+  ): QueueWorker<T> {
+    const processing = this.prepareProcessing(handlerOrOptions, maybeOptions);
+    if (!processing.handler) {
+      return processing.worker;
+    }
+
+    this.concurrency =
+      processing.options?.concurrency ?? this.defaultConcurrency;
     this.startLoop();
+    return processing.worker;
   }
 
   async getJobCount(): Promise<number> {
@@ -79,11 +100,14 @@ export class MemoryQueue extends BaseQueue {
   }
 
   protected async onDisconnect(): Promise<void> {
-    if (this.intervalId) {
-      clearInterval(this.intervalId);
-      this.intervalId = undefined;
-    }
-    this.processLoopActive = false;
+    await this.waitForPromisesToSettle(
+      this.processLoopPromise ? [this.processLoopPromise] : [],
+      {
+        timeoutMessage: 'Timed out waiting for process loop to complete',
+      },
+    );
+
+    await this.waitForActiveProcessingToComplete({ pollIntervalMs: 50 });
   }
 
   private sortItems() {
@@ -99,41 +123,43 @@ export class MemoryQueue extends BaseQueue {
     if (this.processLoopActive) return;
     this.processLoopActive = true;
 
-    this.intervalId = setInterval(async () => {
-      if (this.isDisconnecting) {
-        if (this.intervalId) {
-          clearInterval(this.intervalId);
+    this.processLoopPromise = (async () => {
+      try {
+        while (!this.isDisconnecting) {
+          if (this.items.length === 0 || !this.handler) {
+            await new Promise(resolve => setTimeout(resolve, this.interval));
+            continue;
+          }
+
+          while (
+            this.activeProcessingCount < this.concurrency &&
+            this.items.length > 0 &&
+            !this.isDisconnecting
+          ) {
+            const now = Date.now();
+            const candidateIndex = this.items.findIndex(i => i.runAt <= now);
+
+            if (candidateIndex === -1) {
+              break;
+            }
+
+            const [item] = this.items.splice(candidateIndex, 1);
+            this.activeJobs.add(item.job.id);
+            this.activeProcessingCount++;
+
+            this.processJob(item).finally(() => {
+              this.activeJobs.delete(item.job.id);
+              this.activeProcessingCount--;
+            });
+          }
+
+          await new Promise(resolve => setTimeout(resolve, this.interval));
         }
+      } finally {
         this.processLoopActive = false;
-        return;
+        this.processLoopPromise = undefined;
       }
-
-      if (this.isPaused || this.items.length === 0 || !this.handler) {
-        return;
-      }
-
-      while (
-        this.activeProcessingCount < this.concurrency &&
-        this.items.length > 0 &&
-        !this.isPaused
-      ) {
-        const now = Date.now();
-        const candidateIndex = this.items.findIndex(i => i.runAt <= now);
-
-        if (candidateIndex === -1) {
-          break;
-        }
-
-        const [item] = this.items.splice(candidateIndex, 1);
-        this.activeJobs.add(item.job.id);
-        this.activeProcessingCount++;
-
-        this.processJob(item).finally(() => {
-          this.activeJobs.delete(item.job.id);
-          this.activeProcessingCount--;
-        });
-      }
-    }, this.interval);
+    })();
   }
 
   private async processJob(item: QueueItem): Promise<void> {

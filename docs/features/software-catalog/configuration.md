@@ -253,17 +253,15 @@ catalog:
 For the `deferred` mode you can set up additional parameters to further tune the process,
 by setting the following parameters:
 
-- `pollingInterval` - the interval between polling for entities that need stitching
 - `stitchTimeout` - the maximum time to wait for an entity to be stitched
 
-These parameters accept a duration object, similar to the `processingInterval` parameter.
+This parameter accepts a duration object, similar to the `processingInterval` parameter.
 
 ```yaml title="app-config.yaml"
 catalog:
   stitchingStrategy:
     mode: deferred
-    pollingInterval: { seconds: 1 }
-    stitchTimeout: { minutes: 1 };
+    stitchTimeout: { minutes: 1 }
 ```
 
 ## Subscribing to Catalog Errors

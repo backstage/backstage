@@ -9,10 +9,17 @@ import { ActionsService } from '@backstage/backend-plugin-api/alpha';
 import { ActionsServiceAction } from '@backstage/backend-plugin-api/alpha';
 import { AnyZodObject } from 'zod';
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
+import { JobOptions } from '@backstage/backend-plugin-api/alpha';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { MetricsService } from '@backstage/backend-plugin-api/alpha';
+import { ProcessHandler } from '@backstage/backend-plugin-api/alpha';
+import { ProcessOptions } from '@backstage/backend-plugin-api/alpha';
+import { Queue } from '@backstage/backend-plugin-api/alpha';
+import { QueueOptions } from '@backstage/backend-plugin-api/alpha';
+import { QueueService } from '@backstage/backend-plugin-api/alpha';
+import { QueueWorker } from '@backstage/backend-plugin-api/alpha';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 
 // @alpha (undocumented)
@@ -79,6 +86,49 @@ export class MockActionsRegistry
     TInputSchema extends AnyZodObject,
     TOutputSchema extends AnyZodObject,
   >(options: ActionsRegistryActionOptions<TInputSchema, TOutputSchema>): void;
+}
+
+// @public
+export class MockQueue implements Queue {
+  constructor(
+    options?: QueueOptions & {
+      maxAttempts?: number;
+    },
+  );
+  // (undocumented)
+  add(payload: JsonValue, options?: JobOptions): Promise<void>;
+  // (undocumented)
+  disconnect(): Promise<void>;
+  getActiveJobIds(): ReadonlyArray<string>;
+  // (undocumented)
+  getJobCount(): Promise<number>;
+  getPendingJobs(): ReadonlyArray<{
+    id: string;
+    payload: JsonValue;
+    attempt: number;
+  }>;
+  // (undocumented)
+  process<T extends JsonValue = JsonValue>(
+    handler: ProcessHandler<T>,
+    options?: ProcessOptions,
+  ): QueueWorker<T>;
+  // (undocumented)
+  process<T extends JsonValue = JsonValue>(
+    options?: ProcessOptions,
+  ): QueueWorker<T>;
+}
+
+// @public
+export class MockQueueService implements QueueService {
+  clearAllQueues(): Promise<void>;
+  factory(): ServiceFactory<QueueService, 'plugin', 'singleton'>;
+  getExistingQueue(name: string): MockQueue | undefined;
+  // (undocumented)
+  getQueue<T extends JsonValue = JsonValue>(
+    name: string,
+    options?: QueueOptions,
+  ): Promise<Queue<T>>;
+  getQueueNames(): string[];
 }
 
 // @public (undocumented)

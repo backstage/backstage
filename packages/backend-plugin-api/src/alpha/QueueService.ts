@@ -17,24 +17,23 @@
 import { JsonValue } from '@backstage/types';
 
 /**
- * Handler function for jobs that have exceeded the maximum number of attempts.
- * This allows custom handling of failed jobs (e.g., logging, alerting, storage).
+ * Handler for jobs that have exceeded the maximum number of attempts.
  *
- * @public
+ * @alpha
  */
 export type DLQHandler = (job: Job, error: Error) => Promise<void>;
 
 /**
  * Store type for the queue service.
  *
- * @public
+ * @alpha
  */
-export type QueueStore = 'memory' | 'redis' | 'kafka' | 'sqs' | 'postgres';
+export type QueueStore = 'database' | 'memory' | 'redis' | 'kafka' | 'sqs';
 
 /**
  * Options passed to {@link QueueService.getQueue}.
  *
- * @public
+ * @alpha
  */
 export type QueueOptions = {
   /**
@@ -52,7 +51,7 @@ export type QueueOptions = {
 /**
  * Options passed to {@link Queue.add}.
  *
- * @public
+ * @alpha
  */
 export type JobOptions = {
   /**
@@ -60,7 +59,7 @@ export type JobOptions = {
    */
   delay?: number;
   /**
-   * Priority of the job. Lower number means higher priority (like Unix process priorities).
+   * Priority of the job. Lower number means higher priority.
    * Default is 20.
    */
   priority?: number;
@@ -69,9 +68,9 @@ export type JobOptions = {
 /**
  * Represents a job in the queue.
  *
- * @public
+ * @alpha
  */
-export interface Job {
+export interface Job<T extends JsonValue = JsonValue> {
   /**
    * Unique identifier for the job.
    */
@@ -79,7 +78,7 @@ export interface Job {
   /**
    * The payload of the job.
    */
-  payload: JsonValue;
+  payload: T;
   /**
    * The number of times the job has been attempted.
    */
@@ -87,9 +86,45 @@ export interface Job {
 }
 
 /**
- * Options passed to {@link Queue.process}.
+ * A claimed queue job with explicit completion control.
  *
- * @public
+ * @alpha
+ */
+export interface QueueWorkerJob<T extends JsonValue = JsonValue>
+  extends Job<T> {
+  /**
+   * Marks the job as successfully processed.
+   */
+  complete(): Promise<void>;
+
+  /**
+   * Marks the job as failed, triggering retry or DLQ handling.
+   */
+  retry(error: Error): Promise<void>;
+}
+
+/**
+ * Handler invoked for each claimed queue job.
+ *
+ * @alpha
+ */
+export type ProcessHandler<T extends JsonValue = JsonValue> = (
+  job: Job<T>,
+) => Promise<void>;
+
+/**
+ * Internal process invocation shape shared by queue implementations.
+ *
+ * @alpha
+ */
+export type ProcessInput<T extends JsonValue = JsonValue> =
+  | ProcessHandler<T>
+  | ProcessOptions;
+
+/**
+ * Options passed to queue processing.
+ *
+ * @alpha
  */
 export type ProcessOptions = {
   /**
@@ -98,45 +133,69 @@ export type ProcessOptions = {
    * The default is 1.
    */
   concurrency?: number;
+  /**
+   * Maximum number of jobs to claim in each lower-level worker poll.
+   *
+   * The default is 1.
+   */
+  batchSize?: number;
 };
+
+/**
+ * Lower-level stateful worker API for advanced queue consumers.
+ *
+ * @alpha
+ */
+export interface QueueWorker<T extends JsonValue = JsonValue> {
+  /**
+   * Claims the next batch of jobs.
+   *
+   * Returns `undefined` when the worker has been closed.
+   */
+  next(): Promise<QueueWorkerJob<T>[] | undefined>;
+
+  /**
+   * Closes the worker and stops further claims.
+   */
+  close(): Promise<void>;
+}
 
 /**
  * A queue that can be used to add and process jobs.
  *
- * @public
+ * @alpha
  */
-export interface Queue {
+export interface Queue<T extends JsonValue = JsonValue> {
   /**
    * Adds a job to the queue.
    */
-  add(payload: JsonValue, options?: JobOptions): Promise<void>;
+  add(payload: T, options?: JobOptions): Promise<void>;
 
   /**
    * Starts processing jobs depending on the queue implementation.
    *
    * Throwing an error from the process function will automatically retry
-   * the processing after backoff period maximum of config `backend.queue.maxAttempts`
-   * of times (default 5).
+   * the processing after a backoff period up to the configured maximum number
+   * of attempts.
    *
    * @param handler - Function to process each job
    * @param options - Processing options including concurrency control
    */
-  process(handler: (job: Job) => Promise<void>, options?: ProcessOptions): void;
+  process(handler: ProcessHandler<T>, options?: ProcessOptions): QueueWorker<T>;
 
   /**
-   * Returns the number of jobs in the queue (waiting + active).
+   * Creates a lower-level worker for direct batch-based queue processing.
+   */
+  process(options?: ProcessOptions): QueueWorker<T>;
+
+  /**
+   * Returns a backend-specific count of queued work.
+   *
+   * The exact semantics depend on the queue implementation. Some backends
+   * include actively processing jobs, while others report queue depth or lag
+   * using the underlying backend's native capabilities.
    */
   getJobCount(): Promise<number>;
-
-  /**
-   * Pauses the queue. Workers will stop picking up new jobs.
-   */
-  pause(): Promise<void>;
-
-  /**
-   * Resumes the queue. Workers will start picking up jobs again.
-   */
-  resume(): Promise<void>;
 
   /**
    * Disconnects from the queue backend and cleans up resources.
@@ -148,12 +207,15 @@ export interface Queue {
 /**
  * A service for creating and retrieving queues.
  *
- * @public
+ * @alpha
  */
 export interface QueueService {
   /**
    * Returns a queue with the given name. A new queue will be
    * created in case it doesn't exist.
    */
-  getQueue(name: string, options?: QueueOptions): Promise<Queue>;
+  getQueue<T extends JsonValue = JsonValue>(
+    name: string,
+    options?: QueueOptions,
+  ): Promise<Queue<T>>;
 }

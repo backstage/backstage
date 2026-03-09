@@ -18,29 +18,31 @@ import {
   coreServices,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
+import { queueServiceRef } from '@backstage/backend-plugin-api/alpha';
 import { QueueManager } from './QueueManager';
 
 /**
  * Service for creating and retrieving queues.
  *
- * See {@link @backstage/backend-plugin-api#QueueService}
+ * See {@link @backstage/backend-plugin-api/alpha#QueueService}
  * and {@link https://backstage.io/docs/backend-system/core-services/queue | the service docs}
  * for more information.
  *
- * @public
+ * @alpha
  */
 export const queueServiceFactory = createServiceFactory({
-  service: coreServices.queue,
+  service: queueServiceRef,
   deps: {
     config: coreServices.rootConfig,
-    plugin: coreServices.pluginMetadata,
+    database: coreServices.database,
     logger: coreServices.rootLogger,
+    plugin: coreServices.pluginMetadata,
     lifecycle: coreServices.rootLifecycle,
   },
   async createRootContext({ config, logger, lifecycle }) {
     return QueueManager.fromConfig(config, { logger, lifecycle });
   },
-  async factory({ plugin }, manager) {
-    return manager.forPlugin(plugin.getId());
+  async factory({ database, logger, plugin }, manager) {
+    return manager.forPlugin(plugin.getId(), { database, logger });
   },
 });

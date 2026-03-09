@@ -15,7 +15,7 @@
  */
 
 import { MemoryQueue } from './MemoryQueue';
-import { Job } from '@backstage/backend-plugin-api';
+import { Job } from '@backstage/backend-plugin-api/alpha';
 import { mockServices } from '@backstage/backend-test-utils';
 import waitForExpect from 'wait-for-expect';
 
@@ -56,18 +56,14 @@ describe('MemoryQueue', () => {
     try {
       const processed: any[] = [];
 
-      queue.process(async (job: Job) => {
-        await new Promise(resolve => setTimeout(resolve, 20));
-        processed.push(job.payload);
-      });
-
-      await queue.pause();
-
       await queue.add({ id: 'low' }, { priority: 50 });
       await queue.add({ id: 'high' }, { priority: 5 });
       await queue.add({ id: 'medium' }, { priority: 20 });
 
-      await queue.resume();
+      queue.process(async (job: Job) => {
+        await new Promise(resolve => setTimeout(resolve, 20));
+        processed.push(job.payload);
+      });
 
       await waitForExpect(() => {
         expect(processed).toHaveLength(3);
@@ -280,6 +276,39 @@ describe('MemoryQueue', () => {
     } finally {
       await queue.disconnect();
     }
+  });
+
+  it('should wait for active jobs during disconnect', async () => {
+    const queue = new MemoryQueue({
+      interval: 10,
+      logger: mockLogger,
+      queueName: 'test',
+    });
+
+    let releaseJob: (() => void) | undefined;
+    const jobStarted = new Promise<void>(resolve => {
+      queue.process(async () => {
+        resolve();
+        await new Promise<void>(jobResolve => {
+          releaseJob = jobResolve;
+        });
+      });
+    });
+
+    await queue.add({ id: 1 });
+    await jobStarted;
+
+    let disconnected = false;
+    const disconnectPromise = queue.disconnect().then(() => {
+      disconnected = true;
+    });
+
+    await new Promise(resolve => setTimeout(resolve, 100));
+    expect(disconnected).toBe(false);
+
+    releaseJob?.();
+    await disconnectPromise;
+    expect(disconnected).toBe(true);
   });
 
   it('should not retry successful jobs', async () => {

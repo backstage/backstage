@@ -20,7 +20,7 @@ import {
   TestCaches,
 } from '@backstage/backend-test-utils';
 import { RedisQueue } from './RedisQueue';
-import { DLQHandler, Job } from '@backstage/backend-plugin-api';
+import { DLQHandler, Job } from '@backstage/backend-plugin-api/alpha';
 import Redis from 'ioredis';
 import waitForExpect from 'wait-for-expect';
 
@@ -108,8 +108,6 @@ describe('RedisQueue', () => {
       try {
         const processed: any[] = [];
 
-        await queue.pause();
-
         await queue.add({ id: 'low' }, { priority: 50 });
         await queue.add({ id: 'high' }, { priority: 5 });
         await queue.add({ id: 'medium' }, { priority: 20 });
@@ -117,8 +115,6 @@ describe('RedisQueue', () => {
         queue.process(async (job: Job) => {
           processed.push(job.payload);
         });
-
-        await queue.resume();
         await waitForExpect(() => {
           expect(processed).toEqual([
             { id: 'high' },
@@ -189,6 +185,50 @@ describe('RedisQueue', () => {
       }
     });
 
+    it('should preserve job priority when retrying', async () => {
+      const { client, queue } = await createQueue({
+        cacheId,
+        queueName: 'test_retry_priority',
+        maxAttempts: 2,
+      });
+
+      try {
+        const attempts: number[] = [];
+
+        queue.process(async (job: Job) => {
+          attempts.push(job.attempt);
+          throw new Error('Job failed');
+        });
+
+        await queue.add({ id: 1 }, { priority: 42 });
+
+        await waitForExpect(async () => {
+          expect(attempts).toEqual([1]);
+
+          const delayedEntries = await client.zrangebyscore(
+            (queue as any).delayedKey,
+            '-inf',
+            '+inf',
+          );
+
+          expect(delayedEntries).toHaveLength(1);
+
+          const serialized = delayedEntries[0];
+          const json = serialized.startsWith('{')
+            ? serialized
+            : serialized.slice(serialized.indexOf(':') + 1);
+          expect(JSON.parse(json)).toEqual(
+            expect.objectContaining({
+              priority: 42,
+            }),
+          );
+        }, 5000);
+      } finally {
+        await queue.disconnect();
+        await client.quit();
+      }
+    });
+
     it('should handle DLQ', async () => {
       const dlqHandler = jest.fn();
       const { client, queue } = await createQueue({
@@ -232,8 +272,6 @@ describe('RedisQueue', () => {
       });
 
       try {
-        await queue.pause();
-
         await queue.add({ id: 1 });
         await queue.add({ id: 2 });
         await queue.add({ id: 3 });

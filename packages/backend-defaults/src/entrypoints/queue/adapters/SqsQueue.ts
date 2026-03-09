@@ -14,17 +14,35 @@
  * limitations under the License.
  */
 
-import { Job, JobOptions, ProcessOptions } from '@backstage/backend-plugin-api';
+import {
+  Job,
+  JobOptions,
+  ProcessHandler,
+  ProcessInput,
+  ProcessOptions,
+  QueueWorker,
+} from '@backstage/backend-plugin-api/alpha';
 import { JsonValue } from '@backstage/types';
 import { v4 as uuid } from 'uuid';
 import {
   DeleteMessageCommand,
   GetQueueAttributesCommand,
+  Message,
   ReceiveMessageCommand,
   SendMessageCommand,
   SQSClient,
 } from '@aws-sdk/client-sqs';
 import { BaseQueue, BaseQueueOptions } from './BaseQueue';
+
+const MAX_SQS_DELAY_SECONDS = 900;
+
+type SqsJobWrapper = {
+  id: string;
+  payload: JsonValue;
+  priority: number;
+  attempt: number;
+  availableAt?: number;
+};
 
 export type SqsQueueOptions = BaseQueueOptions & {
   client: SQSClient;
@@ -41,6 +59,7 @@ export class SqsQueue extends BaseQueue {
   private readonly queueUrl: string;
 
   private processLoopActive: boolean = false;
+  private processLoopPromise?: Promise<void>;
   private concurrency: number = 1;
 
   constructor(options: SqsQueueOptions) {
@@ -51,34 +70,41 @@ export class SqsQueue extends BaseQueue {
 
   async add(payload: JsonValue, options?: JobOptions): Promise<void> {
     const id = uuid();
+    const availableAt = options?.delay ? Date.now() + options.delay : undefined;
 
-    const wrapper = {
+    const wrapper: SqsJobWrapper = {
       id,
       payload,
       priority: options?.priority ?? 20,
       attempt: 0,
+      availableAt,
     };
 
-    const delay = options?.delay
-      ? Math.min(Math.floor(options.delay / 1000), 900)
-      : undefined;
-
-    const command = new SendMessageCommand({
-      QueueUrl: this.queueUrl,
-      MessageBody: JSON.stringify(wrapper),
-      DelaySeconds: delay,
-    });
-
-    await this.client.send(command);
+    await this.sendWrappedJob(wrapper, options?.delay ?? 0);
   }
 
-  process(
-    handler: (job: Job) => Promise<void>,
+  process<T extends JsonValue = JsonValue>(
+    handler: ProcessHandler<T>,
     options?: ProcessOptions,
-  ): void {
-    super.process(handler, options);
-    this.concurrency = options?.concurrency ?? this.defaultConcurrency;
+  ): QueueWorker<T>;
+
+  process<T extends JsonValue = JsonValue>(
+    options?: ProcessOptions,
+  ): QueueWorker<T>;
+
+  process<T extends JsonValue = JsonValue>(
+    handlerOrOptions?: ProcessInput<T>,
+    maybeOptions?: ProcessOptions,
+  ): QueueWorker<T> {
+    const processing = this.prepareProcessing(handlerOrOptions, maybeOptions);
+    if (!processing.handler) {
+      return processing.worker;
+    }
+
+    this.concurrency =
+      processing.options?.concurrency ?? this.defaultConcurrency;
     this.startProcessLoop();
+    return processing.worker;
   }
 
   async getJobCount(): Promise<number> {
@@ -110,6 +136,15 @@ export class SqsQueue extends BaseQueue {
 
   protected async onDisconnect(): Promise<void> {
     this.processLoopActive = false;
+
+    await this.waitForPromisesToSettle(
+      this.processLoopPromise ? [this.processLoopPromise] : [],
+      {
+        timeoutMessage: 'Timed out waiting for receive loop to complete',
+      },
+    );
+
+    await this.waitForActiveProcessingToComplete();
   }
 
   private async deleteMessage(receiptHandle: string): Promise<void> {
@@ -122,31 +157,25 @@ export class SqsQueue extends BaseQueue {
   }
 
   private async retryJob(job: Job, body: string): Promise<void> {
-    const wrapper = JSON.parse(body);
-    const updatedWrapper = {
+    const wrapper = JSON.parse(body) as SqsJobWrapper;
+    const updatedWrapper: SqsJobWrapper = {
       ...wrapper,
       attempt: job.attempt,
     };
 
-    const backoffDelay = Math.min(Math.pow(2, job.attempt - 1), 900);
+    const backoffDelay = Math.pow(2, job.attempt - 1) * 1000;
 
-    const command = new SendMessageCommand({
-      QueueUrl: this.queueUrl,
-      MessageBody: JSON.stringify(updatedWrapper),
-      DelaySeconds: backoffDelay,
-    });
-
-    await this.client.send(command);
+    await this.sendWrappedJob(updatedWrapper, backoffDelay);
   }
 
   private startProcessLoop() {
     if (this.processLoopActive) return;
     this.processLoopActive = true;
 
-    (async () => {
+    this.processLoopPromise = (async () => {
       try {
         while (!this.isDisconnecting) {
-          if (this.isPaused || !this.handler) {
+          if (!this.handler) {
             await new Promise(r => setTimeout(r, 1000));
             continue;
           }
@@ -163,6 +192,7 @@ export class SqsQueue extends BaseQueue {
             const result = await this.client.send(command);
 
             if (!result.Messages || result.Messages.length === 0) {
+              await new Promise(r => setTimeout(r, 100));
               continue;
             }
 
@@ -181,18 +211,34 @@ export class SqsQueue extends BaseQueue {
           `[${this.queueName}] Fatal error in SQS process loop`,
           error,
         );
+      } finally {
         this.processLoopActive = false;
+        this.processLoopPromise = undefined;
       }
     })();
   }
 
-  private async processMessage(message: any): Promise<void> {
+  private async processMessage(message: Message): Promise<void> {
     const body = message.Body;
     if (!body) return;
 
+    const receiptHandle = message.ReceiptHandle;
+    if (!receiptHandle) {
+      this.logger.error(
+        `[${this.queueName}] Received SQS message without a receipt handle`,
+      );
+      return;
+    }
+
     let job: Job | undefined;
+    this.activeProcessingCount++;
     try {
-      const wrapper = JSON.parse(body);
+      const wrapper = JSON.parse(body) as SqsJobWrapper;
+
+      if (await this.rescheduleDelayedMessageIfNeeded(wrapper, receiptHandle)) {
+        return;
+      }
+
       const attempt = (wrapper.attempt ?? 0) + 1;
 
       job = {
@@ -203,13 +249,13 @@ export class SqsQueue extends BaseQueue {
 
       if (this.handler) {
         await this.handler(job);
-        await this.deleteMessage(message.ReceiptHandle!);
+        await this.deleteMessage(receiptHandle);
       }
     } catch (error) {
       if (job) {
         const retryResult = await this.handleFailedJob(job, error);
 
-        await this.deleteMessage(message.ReceiptHandle!);
+        await this.deleteMessage(receiptHandle);
 
         if (retryResult.shouldRetry) {
           await this.retryJob(job, body);
@@ -219,8 +265,49 @@ export class SqsQueue extends BaseQueue {
           `[${this.queueName}] Failed to parse SQS message, deleting`,
           error,
         );
-        await this.deleteMessage(message.ReceiptHandle!);
+        await this.deleteMessage(receiptHandle);
       }
+    } finally {
+      this.activeProcessingCount--;
     }
   }
+
+  private async sendWrappedJob(
+    wrapper: SqsJobWrapper,
+    delayMs: number,
+  ): Promise<void> {
+    const command = new SendMessageCommand({
+      QueueUrl: this.queueUrl,
+      MessageBody: JSON.stringify(wrapper),
+      DelaySeconds: getDelaySeconds(delayMs),
+    });
+
+    await this.client.send(command);
+  }
+
+  private async rescheduleDelayedMessageIfNeeded(
+    wrapper: SqsJobWrapper,
+    receiptHandle: string,
+  ): Promise<boolean> {
+    if (!wrapper.availableAt) {
+      return false;
+    }
+
+    const remainingDelayMs = wrapper.availableAt - Date.now();
+    if (remainingDelayMs <= 0) {
+      return false;
+    }
+
+    await this.sendWrappedJob(wrapper, remainingDelayMs);
+    await this.deleteMessage(receiptHandle);
+    return true;
+  }
+}
+
+function getDelaySeconds(delayMs: number): number | undefined {
+  if (delayMs <= 0) {
+    return undefined;
+  }
+
+  return Math.min(Math.ceil(delayMs / 1000), MAX_SQS_DELAY_SECONDS);
 }

@@ -48,6 +48,7 @@ import { CatalogBuilder } from './CatalogBuilder';
 import {
   actionsRegistryServiceRef,
   metricsServiceRef,
+  queueServiceRef,
 } from '@backstage/backend-plugin-api/alpha';
 import { createCatalogActions } from '../actions';
 import type { EntityProviderEntry } from '../processing/connectEntityProviders';
@@ -218,6 +219,7 @@ export const catalogPlugin = createBackendPlugin({
         auth: coreServices.auth,
         httpAuth: coreServices.httpAuth,
         auditor: coreServices.auditor,
+        queue: queueServiceRef,
         events: eventsServiceRef,
         catalog: catalogServiceRef,
         actionsRegistry: actionsRegistryServiceRef,
@@ -239,6 +241,7 @@ export const catalogPlugin = createBackendPlugin({
         catalog,
         actionsRegistry,
         auditor,
+        queue,
         events,
         catalogScmEvents,
         metrics,
@@ -250,6 +253,7 @@ export const catalogPlugin = createBackendPlugin({
           permissionsRegistry,
           database,
           scheduler,
+          queue,
           logger,
           auth,
           httpAuth,

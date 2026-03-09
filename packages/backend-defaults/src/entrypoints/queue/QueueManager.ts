@@ -15,18 +15,23 @@
  */
 
 import {
+  DatabaseService,
   LoggerService,
-  Queue,
-  QueueOptions,
-  QueueService,
   RootConfigService,
   RootLifecycleService,
 } from '@backstage/backend-plugin-api';
+import {
+  QueueStore,
+  Queue as AlphaQueue,
+  QueueOptions as AlphaQueueOptions,
+  QueueService as AlphaQueueService,
+} from '@backstage/backend-plugin-api/alpha';
+import { JsonValue } from '@backstage/types';
 import { MemoryQueue } from './adapters/MemoryQueue';
 import { RedisQueue } from './adapters/RedisQueue';
 import { SqsQueue } from './adapters/SqsQueue';
 import { KafkaQueue } from './adapters/KafkaQueue';
-import { PostgresQueue } from './adapters/PostgresQueue';
+import { DatabaseQueue } from './adapters/DatabaseQueue';
 import Redis from 'ioredis';
 import {
   GetQueueUrlCommand,
@@ -34,8 +39,9 @@ import {
   type SQSClientConfig,
 } from '@aws-sdk/client-sqs';
 import { Kafka } from 'kafkajs';
-import PgBoss from 'pg-boss';
+import { Knex } from 'knex';
 import { DefaultAwsCredentialsManager } from '@backstage/integration-aws-node';
+import { migrateQueueItems } from './database/migrateQueueItems';
 
 /**
  * Options for {@link QueueManager}.
@@ -53,28 +59,31 @@ export type QueueManagerOptions = {
  * @public
  */
 export class QueueManager {
-  private readonly defaultStore: string;
+  private static readonly queueMigrations = new WeakMap<Knex, Promise<void>>();
+
+  private readonly defaultStore: QueueStore;
   private readonly config: RootConfigService;
   private readonly options: QueueManagerOptions;
 
   private redisClient?: Redis;
   private sqsClient?: SQSClient;
   private kafkaClient?: Kafka;
-  private pgBossClient?: PgBoss;
 
-  private readonly queues = new Map<string, Queue>();
+  private readonly queues = new Map<string, AlphaQueue>();
 
   static fromConfig(
     config: RootConfigService,
     options: QueueManagerOptions,
   ): QueueManager {
     const store =
-      config.getOptionalString('backend.queue.defaultStore') || 'memory';
+      (config.getOptionalString('backend.queue.defaultStore') as
+        | QueueStore
+        | undefined) || 'database';
     return new QueueManager(store, config, options);
   }
 
   constructor(
-    store: string,
+    store: QueueStore,
     config: RootConfigService,
     options: QueueManagerOptions,
   ) {
@@ -85,40 +94,56 @@ export class QueueManager {
     // Make sure we shut down queues gracefully when the app shuts down
     options.lifecycle.addShutdownHook(async () => {
       this.options.logger.info(`[Queue] Disconnecting queues...`);
-      await Promise.all(this.queues.values().map(queue => queue.disconnect()));
+      await Promise.all(
+        Array.from(this.queues.values()).map(queue => queue.disconnect()),
+      );
       this.queues.clear();
     });
   }
 
-  forPlugin(pluginId: string): QueueService {
+  forPlugin(
+    pluginId: string,
+    deps: { database: DatabaseService; logger: LoggerService },
+  ): AlphaQueueService {
     return {
-      getQueue: async (name: string, options: QueueOptions): Promise<Queue> => {
-        return this.getQueue(pluginId, name, options);
+      getQueue: async <T extends JsonValue = JsonValue>(
+        name: string,
+        options?: AlphaQueueOptions,
+      ): Promise<AlphaQueue<T>> => {
+        return this.getQueue<T>(pluginId, name, deps, options);
       },
     };
   }
 
-  private async getQueue(
+  private async getQueue<T extends JsonValue = JsonValue>(
     pluginId: string,
     name: string,
-    options: QueueOptions,
-  ): Promise<Queue> {
+    deps: { database: DatabaseService; logger: LoggerService },
+    options?: AlphaQueueOptions,
+  ): Promise<AlphaQueue<T>> {
     const store = options?.store ?? this.defaultStore;
     const queueName = `${pluginId}-${name}`;
 
     if (this.queues.has(queueName)) {
-      return this.queues.get(queueName)!;
+      return this.queues.get(queueName)! as AlphaQueue<T>;
     }
 
-    const queueLogger = this.options.logger.child({
+    const queueLogger = deps.logger.child({
       type: 'queue',
       plugin: pluginId,
       queue: name,
     });
 
-    let queue: Queue;
+    let queue: AlphaQueue;
 
-    if (store === 'memory') {
+    if (store === 'database') {
+      queue = await this.createDatabaseQueue(
+        queueName,
+        deps.database,
+        queueLogger,
+        options,
+      );
+    } else if (store === 'memory') {
       queue = new MemoryQueue({
         logger: queueLogger,
         queueName: queueName,
@@ -134,25 +159,23 @@ export class QueueManager {
       queue = await this.createSqsQueue(queueName, queueLogger, options);
     } else if (store === 'kafka') {
       queue = this.createKafkaQueue(queueName, queueLogger, options);
-    } else if (store === 'postgres') {
-      queue = await this.createPostgresQueue(queueName, queueLogger, options);
     } else {
       throw new Error(`Queue store '${store}' not supported`);
     }
 
     this.queues.set(queueName, queue);
-    return queue;
+    return queue as AlphaQueue<T>;
   }
 
   private createRedisQueue(
     name: string,
     logger: LoggerService,
-    options?: QueueOptions,
-  ): Queue {
+    options?: AlphaQueueOptions,
+  ): AlphaQueue {
     if (!this.redisClient) {
-      const connection =
-        this.config.getOptionalString('backend.queue.redis.connection') ||
-        process.env.REDIS_URL;
+      const connection = this.config.getOptionalString(
+        'backend.queue.redis.connection',
+      );
 
       if (!connection) {
         throw new Error('Redis queue connection config not found');
@@ -182,8 +205,8 @@ export class QueueManager {
   private async createSqsQueue(
     name: string,
     logger: LoggerService,
-    options?: QueueOptions,
-  ): Promise<Queue> {
+    options?: AlphaQueueOptions,
+  ): Promise<AlphaQueue> {
     if (!this.sqsClient) {
       const region = this.config.getOptionalString('backend.queue.sqs.region');
       const endpoint = this.config.getOptionalString(
@@ -207,7 +230,6 @@ export class QueueManager {
         clientConfig.credentials = {
           accessKeyId: credentials.getString('accessKeyId'),
           secretAccessKey: credentials.getString('secretAccessKey'),
-          accountId,
         };
       } else {
         const credsManager = DefaultAwsCredentialsManager.fromConfig(
@@ -247,8 +269,8 @@ export class QueueManager {
   private createKafkaQueue(
     name: string,
     logger: LoggerService,
-    options?: QueueOptions,
-  ): Queue {
+    options?: AlphaQueueOptions,
+  ): AlphaQueue {
     if (!this.kafkaClient) {
       const brokers = this.config.getStringArray('backend.queue.kafka.brokers');
 
@@ -277,40 +299,20 @@ export class QueueManager {
     });
   }
 
-  private async createPostgresQueue(
+  private async createDatabaseQueue(
     name: string,
+    database: DatabaseService,
     logger: LoggerService,
-    options?: QueueOptions,
-  ): Promise<Queue> {
-    if (!this.pgBossClient) {
-      const connectionString = this.config.getOptionalString(
-        'backend.queue.postgres.connection',
-      );
+    options?: AlphaQueueOptions,
+  ): Promise<AlphaQueue> {
+    const db = await database.getClient();
 
-      if (!connectionString) {
-        throw new Error('PostgreSQL queue connection string not found');
-      }
-
-      const schema =
-        this.config.getOptionalString('backend.queue.postgres.schema') ||
-        'backstage__queue_service';
-
-      this.pgBossClient = new PgBoss({
-        connectionString,
-        schema,
-        migrate: true,
-        retryBackoff: true,
-      });
-
-      await this.pgBossClient.start();
-
-      this.options.logger.info(
-        `[Queue] Connected to PostgreSQL queue backend (schema: ${schema})`,
-      );
+    if (!database.migrations?.skip) {
+      await this.ensureDatabaseQueueMigrations(db);
     }
 
-    return new PostgresQueue({
-      boss: this.pgBossClient,
+    return new DatabaseQueue({
+      db,
       queueName: name,
       logger,
       dlqHandler: options?.dlqHandler,
@@ -318,7 +320,22 @@ export class QueueManager {
       defaultConcurrency: this.config.getOptionalNumber(
         'backend.queue.defaultConcurrency',
       ),
-      stopBossOnDisconnect: false,
     });
+  }
+
+  private async ensureDatabaseQueueMigrations(db: Knex): Promise<void> {
+    let migration = QueueManager.queueMigrations.get(db);
+
+    if (!migration) {
+      migration = migrateQueueItems(db);
+      QueueManager.queueMigrations.set(db, migration);
+    }
+
+    try {
+      await migration;
+    } catch (error) {
+      QueueManager.queueMigrations.delete(db);
+      throw error;
+    }
   }
 }

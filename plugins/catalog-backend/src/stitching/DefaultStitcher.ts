@@ -15,27 +15,25 @@
  */
 
 import { Config } from '@backstage/config';
-import { durationToMilliseconds, HumanDuration } from '@backstage/types';
 import { Knex } from 'knex';
-import splitToChunks from 'lodash/chunk';
 import { DateTime } from 'luxon';
-import { getDeferredStitchableEntities } from '../database/operations/stitcher/getDeferredStitchableEntities';
-import { markForStitching } from '../database/operations/stitcher/markForStitching';
 import { performStitching } from '../database/operations/stitcher/performStitching';
 import { DbRefreshStateRow } from '../database/tables';
-import { startTaskPipeline } from '../processing/TaskPipeline';
 import { progressTracker } from './progressTracker';
 import {
+  DeferredStitchQueuePayload,
   Stitcher,
+  STITCHER_QUEUE_NAME,
   StitchingStrategy,
   stitchingStrategyFromConfig,
 } from './types';
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { MetricsService } from '@backstage/backend-plugin-api/alpha';
-
-type DeferredStitchItem = Awaited<
-  ReturnType<typeof getDeferredStitchableEntities>
->[0];
+import {
+  Job,
+  MetricsService,
+  Queue,
+  QueueService,
+} from '@backstage/backend-plugin-api/alpha';
 
 type StitchProgressTracker = ReturnType<typeof progressTracker>;
 
@@ -47,9 +45,10 @@ type StitchProgressTracker = ReturnType<typeof progressTracker>;
 export class DefaultStitcher implements Stitcher {
   private readonly knex: Knex;
   private readonly logger: LoggerService;
+  private readonly queue: QueueService;
   private readonly strategy: StitchingStrategy;
   private readonly tracker: StitchProgressTracker;
-  private stopFunc?: () => void;
+  private workQueue?: Queue<DeferredStitchQueuePayload>;
 
   static fromConfig(
     config: Config,
@@ -57,12 +56,14 @@ export class DefaultStitcher implements Stitcher {
       knex: Knex;
       logger: LoggerService;
       metrics: MetricsService;
+      queue: QueueService;
     },
   ): DefaultStitcher {
     return new DefaultStitcher({
       knex: options.knex,
       logger: options.logger,
       metrics: options.metrics,
+      queue: options.queue,
       strategy: stitchingStrategyFromConfig(config),
     });
   }
@@ -71,15 +72,15 @@ export class DefaultStitcher implements Stitcher {
     knex: Knex;
     logger: LoggerService;
     metrics: MetricsService;
+    queue: QueueService;
     strategy: StitchingStrategy;
   }) {
     this.knex = options.knex;
     this.logger = options.logger;
+    this.queue = options.queue;
     this.strategy = options.strategy;
-    this.tracker = progressTracker(
-      options.knex,
-      options.logger,
-      options.metrics,
+    this.tracker = progressTracker(options.logger, options.metrics, async () =>
+      this.#getPendingStitchCount(),
     );
   }
 
@@ -90,12 +91,7 @@ export class DefaultStitcher implements Stitcher {
     const { entityRefs, entityIds } = options;
 
     if (this.strategy.mode === 'deferred') {
-      await markForStitching({
-        knex: this.knex,
-        strategy: this.strategy,
-        entityRefs,
-        entityIds,
-      });
+      await this.#enqueueEntities({ entityRefs, entityIds });
       return;
     }
 
@@ -106,11 +102,10 @@ export class DefaultStitcher implements Stitcher {
     }
 
     if (entityIds) {
-      const chunks = splitToChunks(
+      for (const chunk of chunkArray(
         Array.isArray(entityIds) ? entityIds : [...entityIds],
         100,
-      );
-      for (const chunk of chunks) {
+      )) {
         const rows = await this.knex<DbRefreshStateRow>('refresh_state')
           .select('entity_ref')
           .whereIn('entity_id', chunk);
@@ -123,61 +118,106 @@ export class DefaultStitcher implements Stitcher {
 
   async start() {
     if (this.strategy.mode === 'deferred') {
-      if (this.stopFunc) {
-        throw new Error('Processing engine is already started');
+      if (this.workQueue) {
+        throw new Error('Stitcher is already started');
       }
 
-      const { pollingInterval, stitchTimeout } = this.strategy;
-
-      const stopPipeline = startTaskPipeline<DeferredStitchItem>({
-        lowWatermark: 2,
-        highWatermark: 5,
-        pollingIntervalMs: durationToMilliseconds(pollingInterval),
-        loadTasks: async count => {
-          return await this.#getStitchableEntities(count, stitchTimeout);
-        },
-        processTask: async item => {
-          return await this.#stitchOne({
-            entityRef: item.entityRef,
-            stitchTicket: item.stitchTicket,
-            stitchRequestedAt: item.stitchRequestedAt,
-          });
-        },
+      const workQueue = await this.#getWorkQueue();
+      workQueue.process(async (job: Job<DeferredStitchQueuePayload>) => {
+        await this.#stitchOne({
+          entityRef: job.payload.entityRef,
+          stitchRequestedAt: DateTime.fromISO(job.payload.stitchRequestedAt),
+        });
       });
 
-      this.stopFunc = () => {
-        stopPipeline();
-      };
+      this.workQueue = workQueue;
     }
   }
 
   async stop() {
     if (this.strategy.mode === 'deferred') {
-      if (this.stopFunc) {
-        this.stopFunc();
-        this.stopFunc = undefined;
+      if (this.workQueue) {
+        await this.workQueue.disconnect();
+        this.workQueue = undefined;
       }
     }
   }
 
-  async #getStitchableEntities(count: number, stitchTimeout: HumanDuration) {
-    try {
-      return await getDeferredStitchableEntities({
-        knex: this.knex,
-        batchSize: count,
-        stitchTimeout: stitchTimeout,
-      });
-    } catch (error) {
-      this.logger.warn('Failed to load stitchable entities', error);
-      return [];
+  async #getWorkQueue(): Promise<Queue<DeferredStitchQueuePayload>> {
+    return this.workQueue ?? this.queue.getQueue(STITCHER_QUEUE_NAME);
+  }
+
+  async #getPendingStitchCount(): Promise<number> {
+    if (this.strategy.mode === 'deferred') {
+      const queue = await this.#getWorkQueue();
+      return queue.getJobCount();
     }
+
+    const total = await this.knex<DbRefreshStateRow>('refresh_state')
+      .count({ count: '*' })
+      .where({ result_hash: 'force-stitching' });
+
+    return Number(total[0].count);
+  }
+
+  async #enqueueEntities(options: {
+    entityRefs?: Iterable<string>;
+    entityIds?: Iterable<string>;
+  }): Promise<void> {
+    const queue = await this.#getWorkQueue();
+    const entityRefs = await this.#resolveEntityRefs(options);
+    const stitchRequestedAt = new Date().toISOString();
+
+    for (const entityRef of entityRefs) {
+      await queue.add({ entityRef, stitchRequestedAt });
+    }
+  }
+
+  async #resolveEntityRefs(options: {
+    entityRefs?: Iterable<string>;
+    entityIds?: Iterable<string>;
+  }): Promise<string[]> {
+    const collected = new Set<string>();
+
+    for (const entityRef of options.entityRefs ?? []) {
+      collected.add(entityRef);
+    }
+
+    let entityIds: string[] = [];
+    if (options.entityIds) {
+      entityIds = Array.isArray(options.entityIds)
+        ? options.entityIds
+        : [...options.entityIds];
+    }
+
+    if (entityIds.length === 0) {
+      return Array.from(collected).sort();
+    }
+
+    for (const chunk of chunkArray(entityIds, 100)) {
+      let query = this.knex<DbRefreshStateRow>('refresh_state')
+        .select('entity_ref')
+        .whereIn('entity_id', chunk);
+
+      const existingRefs = Array.from(collected);
+      if (existingRefs.length > 0) {
+        query = query.whereNotIn('entity_ref', existingRefs);
+      }
+
+      const rows = await query;
+      for (const row of rows) {
+        collected.add(row.entity_ref);
+      }
+    }
+
+    return Array.from(collected).sort();
   }
 
   async #stitchOne(options: {
     entityRef: string;
     stitchTicket?: string;
     stitchRequestedAt?: DateTime;
-  }) {
+  }): Promise<void> {
     const track = this.tracker.stitchStart({
       entityRef: options.entityRef,
       stitchRequestedAt: options.stitchRequestedAt,
@@ -189,11 +229,20 @@ export class DefaultStitcher implements Stitcher {
         logger: this.logger,
         strategy: this.strategy,
         entityRef: options.entityRef,
-        stitchTicket: options.stitchTicket,
       });
       track.markComplete(result);
     } catch (error) {
       track.markFailed(error);
     }
   }
+}
+
+function chunkArray<T>(items: T[], chunkSize: number): T[][] {
+  const chunks: T[][] = [];
+
+  for (let index = 0; index < items.length; index += chunkSize) {
+    chunks.push(items.slice(index, index + chunkSize));
+  }
+
+  return chunks;
 }

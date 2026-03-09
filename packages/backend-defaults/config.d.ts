@@ -1319,13 +1319,17 @@ export interface Config {
       defaultConcurrency?: number;
       /**
        * Default store for new queues.
-       * @default memory
+       * @default database
        */
-      defaultStore?: 'memory' | 'redis' | 'postgres' | 'sqs' | 'kafka';
+      defaultStore?: 'database' | 'memory' | 'redis' | 'sqs' | 'kafka';
       /**
        * Redis queue store configuration.
        */
       redis?: {
+        /**
+         * Redis connection string.
+         * @visibility secret
+         */
         connection: string;
       };
       /**
@@ -1370,21 +1374,6 @@ export interface Config {
          * @default 'backstage-backend'
          */
         clientId?: string;
-      };
-      /**
-       * PostgreSQL queue store configuration.
-       */
-      postgres?: {
-        /**
-         * PostgreSQL connection string.
-         * @visibility secret
-         */
-        connection: string;
-        /**
-         * Database schema to use for pg-boss tables.
-         * @default 'backstage__queue_service'
-         */
-        schema?: string;
       };
     };
     /**

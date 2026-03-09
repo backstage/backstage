@@ -18,10 +18,13 @@ import {
   DLQHandler,
   Job,
   JobOptions,
-  LoggerService,
+  ProcessHandler,
+  ProcessInput,
   ProcessOptions,
   Queue,
-} from '@backstage/backend-plugin-api';
+  QueueWorker,
+} from '@backstage/backend-plugin-api/alpha';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { JsonValue } from '@backstage/types';
 
 /**
@@ -58,9 +61,9 @@ export abstract class BaseQueue implements Queue {
   protected readonly maxAttempts: number;
   protected readonly dlqHandler?: DLQHandler;
   protected readonly defaultConcurrency: number;
-  protected isPaused: boolean = true;
   protected isDisconnecting: boolean = false;
-  protected handler?: (job: Job) => Promise<void>;
+  protected activeProcessingCount: number = 0;
+  protected handler?: ProcessHandler<any>;
 
   constructor(options: BaseQueueOptions) {
     this.logger = options.logger;
@@ -72,28 +75,23 @@ export abstract class BaseQueue implements Queue {
 
   abstract add(payload: JsonValue, options?: JobOptions): Promise<void>;
 
-  process(
-    handler: (job: Job) => Promise<void>,
-    _options?: ProcessOptions,
-  ): void {
-    if (this.handler) {
-      throw new Error('Queue is already being processed');
-    }
-    this.handler = handler;
-    this.isPaused = false;
+  process<T extends JsonValue = JsonValue>(
+    handler: ProcessHandler<T>,
+    options?: ProcessOptions,
+  ): QueueWorker<T>;
+
+  process<T extends JsonValue = JsonValue>(
+    options?: ProcessOptions,
+  ): QueueWorker<T>;
+
+  process<T extends JsonValue = JsonValue>(
+    handlerOrOptions?: ProcessInput<T>,
+    maybeOptions?: ProcessOptions,
+  ): QueueWorker<T> {
+    return this.prepareProcessing(handlerOrOptions, maybeOptions).worker;
   }
 
   abstract getJobCount(): Promise<number>;
-
-  async pause(): Promise<void> {
-    this.isPaused = true;
-    this.logger.debug(`[${this.queueName}] Queue paused`);
-  }
-
-  async resume(): Promise<void> {
-    this.isPaused = false;
-    this.logger.debug(`[${this.queueName}] Queue resumed`);
-  }
 
   async disconnect(): Promise<void> {
     this.isDisconnecting = true;
@@ -141,4 +139,97 @@ export abstract class BaseQueue implements Queue {
   }
 
   protected abstract onDisconnect(): Promise<void>;
+
+  protected prepareProcessing<T extends JsonValue = JsonValue>(
+    handlerOrOptions?: ProcessInput<T>,
+    maybeOptions?: ProcessOptions,
+  ): {
+    worker: QueueWorker<T>;
+    handler?: ProcessHandler<T>;
+    options?: ProcessOptions;
+  } {
+    if (typeof handlerOrOptions !== 'function') {
+      return {
+        worker: this.createWorker<T>(handlerOrOptions),
+        options: handlerOrOptions,
+      };
+    }
+
+    if (this.handler) {
+      throw new Error('Queue is already being processed');
+    }
+
+    this.handler = handlerOrOptions as ProcessHandler<any>;
+    return {
+      worker: this.createWorker<T>(maybeOptions),
+      handler: handlerOrOptions,
+      options: maybeOptions,
+    };
+  }
+
+  protected createWorker<T extends JsonValue = JsonValue>(
+    _options?: ProcessOptions,
+  ): QueueWorker<T> {
+    return {
+      next: async () => {
+        throw new Error(
+          `[${this.queueName}] Direct worker API is not supported by this queue backend`,
+        );
+      },
+      close: async () => {},
+    };
+  }
+
+  protected async waitForActiveProcessingToComplete(options?: {
+    maxWaitTimeMs?: number;
+    pollIntervalMs?: number;
+  }): Promise<void> {
+    const maxWaitTimeMs = options?.maxWaitTimeMs ?? 5000;
+    const pollIntervalMs = options?.pollIntervalMs ?? 100;
+    const startTime = Date.now();
+
+    while (
+      this.activeProcessingCount > 0 &&
+      Date.now() - startTime < maxWaitTimeMs
+    ) {
+      await new Promise(resolve => setTimeout(resolve, pollIntervalMs));
+    }
+
+    if (this.activeProcessingCount > 0) {
+      this.logger.warn(
+        `[${this.queueName}] Disconnecting with ${this.activeProcessingCount} jobs still processing`,
+      );
+    }
+  }
+
+  protected async waitForPromisesToSettle(
+    promises: Promise<unknown>[],
+    options: {
+      timeoutMessage: string;
+      maxWaitTimeMs?: number;
+    },
+  ): Promise<void> {
+    if (promises.length === 0) {
+      return;
+    }
+
+    const maxWaitTimeMs = options.maxWaitTimeMs ?? 5000;
+    let timeoutId: NodeJS.Timeout | undefined;
+
+    try {
+      await Promise.race([
+        Promise.allSettled(promises).then(() => {}),
+        new Promise<void>(resolve => {
+          timeoutId = setTimeout(() => {
+            this.logger.warn(`[${this.queueName}] ${options.timeoutMessage}`);
+            resolve();
+          }, maxWaitTimeMs);
+        }),
+      ]);
+    } finally {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    }
+  }
 }

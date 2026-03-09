@@ -57,16 +57,6 @@ export type {
   PermissionsRegistryServiceAddResourceTypeOptions,
 } from './PermissionsRegistryService';
 export type { PluginMetadataService } from './PluginMetadataService';
-export type {
-  QueueService,
-  Queue,
-  Job,
-  QueueOptions,
-  JobOptions,
-  ProcessOptions,
-  DLQHandler,
-  QueueStore,
-} from './QueueService';
 export type { RootConfigService } from './RootConfigService';
 export type { RootHealthService } from './RootHealthService';
 export type { RootHttpRouterService } from './RootHttpRouterService';

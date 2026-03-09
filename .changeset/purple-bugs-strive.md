@@ -7,27 +7,27 @@
 Introduced a new core service for queue management.
 
 New queue service can be used in backend plugins by adding a dependency
-to `coreServices.queue`. The queue service supports multiple different adapters
-such as `memory`, `Kafka`, `Postgres`, `Redis` and `AWS SQS`. The service
-also supports job priorities, pausing and resuming processing,
-delays and automatic retries.
+to `queueServiceRef` from `@backstage/backend-plugin-api/alpha`. The queue
+service defaults to a database-backed implementation that uses each plugin's
+existing database connection, which works with SQLite in local development and
+PostgreSQL in production. The service also supports `memory`, `Kafka`, `Redis`,
+and `AWS SQS`, plus job priorities, delays, and automatic retries.
 
 Please see
 [documentation](https://backstage.io/docs/backend-system/core-services/queue)
 for additional information.
 
 ```ts
-import {
-  coreServices,
-  createBackendPlugin,
-} from '@backstage/backend-plugin-api';
+import { createBackendPlugin } from '@backstage/backend-plugin-api';
+import { queueServiceRef } from '@backstage/backend-plugin-api/alpha';
+import { coreServices } from '@backstage/backend-plugin-api';
 
 createBackendPlugin({
   pluginId: 'example',
   register(env) {
     env.registerInit({
       deps: {
-        queue: coreServices.queue,
+        queue: queueServiceRef,
         logger: coreServices.logger,
       },
       async init({ queue, logger }) {

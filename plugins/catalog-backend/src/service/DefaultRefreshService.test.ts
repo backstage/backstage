@@ -118,6 +118,7 @@ describe('DefaultRefreshService', () => {
       knex,
       logger: defaultLogger,
       metrics: metricsServiceMock.mock(),
+      queue: mockServices.queue(),
     });
     const engine = new DefaultCatalogProcessingEngine({
       config: new ConfigReader({}),

@@ -37,7 +37,6 @@ import {
   DiscoveryService,
   HttpAuthService,
   PermissionsService,
-  QueueService,
   RootConfigService,
   RootInstanceMetadataService,
   RootLoggerService,
@@ -46,6 +45,10 @@ import {
   ServiceRef,
   UserInfoService,
 } from '@backstage/backend-plugin-api';
+import {
+  QueueService,
+  queueServiceRef,
+} from '@backstage/backend-plugin-api/alpha';
 import { ConfigReader } from '@backstage/config';
 import { EventsService, eventsServiceRef } from '@backstage/plugin-events-node';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
@@ -584,7 +587,7 @@ export namespace mockServices {
 
   /**
    * Creates a functional mock implementation of the
-   * {@link @backstage/backend-plugin-api#QueueService}.
+   * {@link @backstage/backend-plugin-api/alpha#QueueService}.
    */
   export function queue(): QueueService {
     return new MockQueueService();
@@ -592,15 +595,15 @@ export namespace mockServices {
   export namespace queue {
     /**
      * Creates a mock factory for the
-     * {@link @backstage/backend-plugin-api#coreServices.queue}.
+     * {@link @backstage/backend-plugin-api/alpha#queueServiceRef}.
      */
-    export const factory = simpleFactoryWithOptions(coreServices.queue, queue);
+    export const factory = simpleFactoryWithOptions(queueServiceRef, queue);
     /**
      * Creates a mock of the
-     * {@link @backstage/backend-plugin-api#coreServices.queue},
+     * {@link @backstage/backend-plugin-api/alpha#queueServiceRef},
      * optionally with some given method implementations.
      */
-    export const mock = simpleMock(coreServices.queue, () => ({
+    export const mock = createServiceMock(queueServiceRef, () => ({
       getQueue: jest.fn(),
     }));
   }

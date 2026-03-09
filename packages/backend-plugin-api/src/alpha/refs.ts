@@ -67,3 +67,18 @@ export const metricsServiceRef = createServiceRef<
 >({
   id: 'alpha.core.metrics',
 });
+
+/**
+ * Service for creating and retrieving queues.
+ *
+ * See {@link QueueService}
+ * and {@link https://backstage.io/docs/backend-system/core-services/queue | the service docs}
+ * for more information.
+ *
+ * @alpha
+ */
+export const queueServiceRef = createServiceRef<
+  import('./QueueService').QueueService
+>({
+  id: 'alpha.core.queue',
+});

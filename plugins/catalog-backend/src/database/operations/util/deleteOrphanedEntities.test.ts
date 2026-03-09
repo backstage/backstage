@@ -14,9 +14,18 @@
  * limitations under the License.
  */
 
-import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
+import {
+  TestDatabaseId,
+  TestDatabases,
+  mockServices,
+} from '@backstage/backend-test-utils';
+import { Queue } from '@backstage/backend-plugin-api/alpha';
 import { Knex } from 'knex';
-import { StitchingStrategy } from '../../../stitching/types';
+import {
+  DeferredStitchQueuePayload,
+  STITCHER_QUEUE_NAME,
+  StitchingStrategy,
+} from '../../../stitching/types';
 import { applyDatabaseMigrations } from '../../migrations';
 import {
   DbFinalEntitiesRow,
@@ -37,14 +46,24 @@ describe('deleteOrphanedEntities', () => {
     return knex;
   }
 
-  async function run(knex: Knex, strategy: StitchingStrategy): Promise<number> {
+  async function run(
+    knex: Knex,
+    strategy: StitchingStrategy,
+    options?: {
+      queue?: Queue<DeferredStitchQueuePayload>;
+    },
+  ): Promise<number> {
     let result: number;
     await knex.transaction(
       async tx => {
         // We can't return here, as knex swallows the return type in case the
         // transaction is rolled back:
         // https://github.com/knex/knex/blob/e37aeaa31c8ef9c1b07d2e4d3ec6607e557d800d/lib/transaction.js#L136
-        result = await deleteOrphanedEntities({ knex: tx, strategy });
+        result = await deleteOrphanedEntities({
+          knex: tx,
+          strategy,
+          queue: options?.queue,
+        });
       },
       {
         // If we explicitly trigger a rollback, don't fail.
@@ -268,24 +287,39 @@ describe('deleteOrphanedEntities', () => {
       await insertRelation(knex, 'E2', 'E3');
       await insertRelation(knex, 'E10', 'E6');
       await insertRelation(knex, 'E7', 'E6');
+      const queueService = mockServices.queue();
+      const queue = await queueService.getQueue<DeferredStitchQueuePayload>(
+        STITCHER_QUEUE_NAME,
+      );
       await expect(
-        run(knex, {
-          mode: 'deferred',
-          pollingInterval: { seconds: 1 },
-          stitchTimeout: { seconds: 1 },
-        }),
+        run(
+          knex,
+          {
+            mode: 'deferred',
+            stitchTimeout: { seconds: 1 },
+          },
+          { queue },
+        ),
       ).resolves.toEqual(5);
+      const scheduledIds = (
+        queue as Queue<DeferredStitchQueuePayload> & {
+          getPendingJobs(): Array<{ payload: DeferredStitchQueuePayload }>;
+        }
+      )
+        .getPendingJobs()
+        .map(job => job.payload.entityRef);
+      expect(scheduledIds).toEqual(expect.arrayContaining(['E2', 'E7']));
       await expect(refreshState(knex)).resolves.toEqual([
         { entity_ref: 'E1', result_hash: 'original', next_stitch_at: null },
         {
           entity_ref: 'E2',
           result_hash: 'original',
-          next_stitch_at: expect.anything(),
+          next_stitch_at: null,
         },
         {
           entity_ref: 'E7',
           result_hash: 'original',
-          next_stitch_at: expect.anything(),
+          next_stitch_at: null,
         },
         { entity_ref: 'E8', result_hash: 'original', next_stitch_at: null },
         { entity_ref: 'E9', result_hash: 'original', next_stitch_at: null },
@@ -295,12 +329,12 @@ describe('deleteOrphanedEntities', () => {
         {
           entity_ref: 'E2',
           hash: 'original',
-          next_stitch_at: expect.anything(),
+          next_stitch_at: null,
         },
         {
           entity_ref: 'E7',
           hash: 'original',
-          next_stitch_at: expect.anything(),
+          next_stitch_at: null,
         },
         { entity_ref: 'E8', hash: 'original', next_stitch_at: null },
         { entity_ref: 'E9', hash: 'original', next_stitch_at: null },

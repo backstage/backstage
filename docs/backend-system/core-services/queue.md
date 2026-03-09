@@ -12,12 +12,40 @@ processes on-demand jobs that are added dynamically. It provides a unified
 interface for different queue backends, allowing you to switch implementations
 without changing your plugin code.
 
+The queue service is currently available from
+`@backstage/backend-plugin-api/alpha`.
+
 ## Configuration
 
 The queue service can be configured using the `backend.queue` section
 in your `app-config.yaml`.
 
-### In-Memory (default)
+### Database (default)
+
+The database adapter stores queue state in the plugin's existing database
+connection. It works with the same database that backs the plugin itself,
+including SQLite for local development and PostgreSQL in production. On
+PostgreSQL it stores payloads as `jsonb` and schedule metadata as timestamps,
+while other databases use the closest compatible types.
+
+```yaml
+backend:
+  queue:
+    defaultStore: database # Optional, defaults to database
+```
+
+Or configure it explicitly when getting a queue:
+
+```ts
+const workQueue = await queue.getQueue('my-work-queue', {
+  store: 'database',
+});
+```
+
+**Best for:** Local development and production when you want persistence
+without additional queue infrastructure.
+
+### In-Memory
 
 The in-memory adapter is suitable for local development and testing. It
 does not persist jobs across restarts.
@@ -25,7 +53,7 @@ does not persist jobs across restarts.
 ```yaml
 backend:
   queue:
-    defaultStore: memory # Optional, defaults to memory
+    defaultStore: memory
 ```
 
 Or configure it without setting a default store and specify the store type when
@@ -67,10 +95,15 @@ backend:
       endpoint: http://localhost:4566
 ```
 
+The queue must already exist in AWS or LocalStack. The queue service resolves
+the queue URL for the requested name, but it does not create the queue.
+
 **Limitations:**
 
 - **Priorities**: Not supported. SQS does not natively support message priorities.
-- **Delays**: Supported up to 15 minutes (AWS SQS limitation).
+- **Delays**: Delays longer than 15 minutes are emulated by re-enqueueing the
+  message until the full requested delay has elapsed. Individual SQS message
+  delays are still capped at 15 minutes.
 
 ### Apache Kafka
 
@@ -97,42 +130,32 @@ backend:
 - **Retries**: Supported, but retried messages are sent back to the end of the topic. This means retries are not
   immediate and may be delayed if there are many other messages in the queue.
 
-### PostgreSQL
-
-The PostgreSQL adapter uses pg-boss for a reliable, database-backed queue
-with full feature support.
-
-```yaml
-backend:
-  queue:
-    defaultStore: postgres # Optional
-    postgres:
-      connection: postgresql://user:password@localhost:5432/backstage_queue
-      schema: backstage__queue_service # Optional: database schema (default: backstage__queue_service)
-```
-
 ## Using the service
 
 The following example shows how to get a queue in your `example` backend
 plugin and how to add and process jobs.
 
 ```ts
-import {
-  coreServices,
-  createBackendPlugin,
-} from '@backstage/backend-plugin-api';
+import { createBackendPlugin } from '@backstage/backend-plugin-api';
+import { queueServiceRef } from '@backstage/backend-plugin-api/alpha';
+import { coreServices } from '@backstage/backend-plugin-api';
+
+type WorkQueueJob = {
+  task: 'send_email' | 'cleanup';
+  recipient?: string;
+};
 
 createBackendPlugin({
   pluginId: 'example',
   register(env) {
     env.registerInit({
       deps: {
-        queue: coreServices.queue,
+        queue: queueServiceRef,
         logger: coreServices.logger,
       },
       async init({ queue, logger }) {
-        // Get a queue instance with default store (memory if not configured).
-        const workQueue = await queue.getQueue('my-work-queue');
+        // Get a queue instance with the configured default store.
+        const workQueue = await queue.getQueue<WorkQueueJob>('my-work-queue');
 
         // Get a queue instance with a specific store type.
         // This allows mixing different queue backends in the same application.
@@ -160,7 +183,8 @@ createBackendPlugin({
         // Process jobs (with default concurrency of 1)
         workQueue.process(async job => {
           logger.info(`Processing job ${job.id}`, {
-            payload: job.payload,
+            task: job.payload.task,
+            recipient: job.payload.recipient,
             attempt: job.attempt,
           });
 
@@ -173,13 +197,16 @@ createBackendPlugin({
 });
 ```
 
-The queue will be paused until job handler is attached to the queue
-with `workQueue.process`.
+Jobs can be added before a handler is attached. Processing starts once
+`workQueue.process(...)` is called.
 
 Note that using `queue.getQueue` will create a new queue instance if it does not
 exist yet. Options, like the store used or the DLQ handler, passed to `getQueue`
 will be used to initialize the queue only if it does not exist yet and later
 calls will return the queue instance with the same options.
+
+The queue API is generic, so callers can type payloads at the queue boundary
+instead of validating them inside each handler.
 
 ## Job Options
 
@@ -257,9 +284,47 @@ backend:
     defaultConcurrency: 5
 ```
 
+### Lower-Level Workers
+
+For advanced consumers you can claim jobs directly and decide when to
+complete or retry them yourself.
+
+```ts
+type WorkQueueJob = {
+  task: string;
+};
+
+const workQueue = await queue.getQueue<WorkQueueJob>('my-work-queue', {
+  store: 'database',
+});
+const worker = workQueue.process({ batchSize: 10 });
+
+for (;;) {
+  const jobs = await worker.next();
+  if (!jobs) {
+    break;
+  }
+
+  for (const job of jobs) {
+    try {
+      await processTask(job.payload);
+      await job.complete();
+    } catch (error) {
+      await job.retry(error as Error);
+    }
+  }
+}
+```
+
+The direct worker API is currently implemented by the database-backed queue.
+Use the callback form for the other backends.
+
+`batchSize` is only meaningful when using the lower-level worker API.
+
 ## Retry and Error Handling
 
-Jobs automatically retry with exponential backoff when they fail.
+Jobs retry automatically when handlers throw, but the exact retry behavior is
+backend-specific.
 
 ### Automatic Retries
 
@@ -268,7 +333,8 @@ workQueue.process(async job => {
   // If this throws an error, the job will be retried
   await riskyOperation(job.payload);
 
-  // Retry schedule (with default maxAttempts: 5):
+  // Typical retry schedule for database, memory, redis, and sqs
+  // (with default maxAttempts: 5):
   // Attempt 1: Immediate
   // Attempt 2: ~1 second delay
   // Attempt 3: ~2 seconds delay
@@ -277,6 +343,9 @@ workQueue.process(async job => {
   // After attempt 5: Send to DLQ handler (if configured)
 });
 ```
+
+Kafka retries are different: failed messages are produced back to the topic
+without a delay and are retried when they are consumed again.
 
 ### Dead Letter Queue (DLQ) Handler
 
@@ -320,26 +389,20 @@ backend:
 
 ## Queue Management
 
-Control queue processing with pause, resume, and disconnect operations.
-
-### Pause and Resume
-
-```ts
-// Pause processing (workers stop picking up new jobs)
-await workQueue.pause();
-logger.info('Queue paused');
-
-// Resume processing
-await workQueue.resume();
-logger.info('Queue resumed');
-```
+Use the queue APIs to inspect queue depth and clean up workers during shutdown.
 
 ### Get Job Count
 
 ```ts
 const count = await workQueue.getJobCount();
-logger.info(`Queue has ${count} jobs (waiting + active)`);
+logger.info(`Queue depth: ${count}`);
 ```
+
+`getJobCount()` is a backend-specific queue depth signal, not a portable exact
+count with identical semantics across all backends. For example, the database
+and memory adapters include actively processing jobs, SQS returns AWS's
+approximate queue attributes, Redis reports waiting and delayed jobs, and Kafka
+reports consumer lag for the queue consumer group.
 
 ### Disconnect
 
@@ -349,8 +412,10 @@ await workQueue.disconnect();
 logger.info('Disconnected from queue');
 ```
 
-**Note:** `disconnect()` does NOT delete jobs from the queue. Jobs remain
-and can be processed when reconnecting. Disconnecting from the queue will
-stop workers from picking up new jobs and remove the job processing function.
+**Note:** `disconnect()` does NOT delete jobs from the queue. Jobs remain in
+the backend and can be processed by a future queue consumer. Disconnecting
+from the queue will stop workers from picking up new jobs and wait for active
+handlers to finish, subject to backend-specific shutdown timeouts.
 
-To continue processing jobs after disconnecting, call `process()` again.
+`disconnect()` is intended for shutdown. After disconnecting, treat the queue
+instance as closed and do not call `process()` again on the same instance.

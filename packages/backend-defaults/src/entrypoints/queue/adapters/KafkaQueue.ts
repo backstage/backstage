@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-import { Job, JobOptions, ProcessOptions } from '@backstage/backend-plugin-api';
+import {
+  Job,
+  JobOptions,
+  ProcessHandler,
+  ProcessInput,
+  ProcessOptions,
+  QueueWorker,
+} from '@backstage/backend-plugin-api/alpha';
 import { JsonValue } from '@backstage/types';
 import { v4 as uuid } from 'uuid';
 import { Admin, Consumer, Kafka, Producer } from 'kafkajs';
@@ -44,7 +51,7 @@ export class KafkaQueue extends BaseQueue {
     super(options);
     this.kafka = options.kafka;
     this.topic = options.topic ?? this.queueName;
-    this.groupId = options.groupId || `backstage-queue-${this.topic}`;
+    this.groupId = options.groupId ?? `backstage-queue-${this.topic}`;
   }
 
   async add(payload: JsonValue, options?: JobOptions): Promise<void> {
@@ -71,12 +78,31 @@ export class KafkaQueue extends BaseQueue {
     });
   }
 
-  process(
-    handler: (job: Job) => Promise<void>,
+  process<T extends JsonValue = JsonValue>(
+    handler: ProcessHandler<T>,
     options?: ProcessOptions,
-  ): void {
-    super.process(handler, options);
-    this.startConsumer();
+  ): QueueWorker<T>;
+
+  process<T extends JsonValue = JsonValue>(
+    options?: ProcessOptions,
+  ): QueueWorker<T>;
+
+  process<T extends JsonValue = JsonValue>(
+    handlerOrOptions?: ProcessInput<T>,
+    maybeOptions?: ProcessOptions,
+  ): QueueWorker<T> {
+    const processing = this.prepareProcessing(handlerOrOptions, maybeOptions);
+    if (!processing.handler) {
+      return processing.worker;
+    }
+
+    this.startConsumer().catch(error => {
+      this.logger.error(
+        `[${this.queueName}] Failed to start Kafka consumer`,
+        error,
+      );
+    });
+    return processing.worker;
   }
 
   async getJobCount(): Promise<number> {
@@ -120,21 +146,15 @@ export class KafkaQueue extends BaseQueue {
     }
   }
 
-  async pause(): Promise<void> {
-    if (this.consumer) {
-      this.consumer.pause([{ topic: this.topic }]);
-    }
-    await super.pause();
-  }
-
-  async resume(): Promise<void> {
-    if (this.consumer) {
-      this.consumer.resume([{ topic: this.topic }]);
-    }
-    await super.resume();
-  }
-
   protected async onDisconnect(): Promise<void> {
+    if (this.consumer) {
+      await this.waitForPromisesToSettle([this.consumer.stop()], {
+        timeoutMessage: 'Timed out waiting for Kafka consumer to stop',
+      });
+    }
+
+    await this.waitForActiveProcessingToComplete();
+
     if (this.producer) await this.producer.disconnect();
     if (this.consumer) await this.consumer.disconnect();
     if (this.admin) await this.admin.disconnect();
@@ -188,6 +208,7 @@ export class KafkaQueue extends BaseQueue {
 
         const body = message.value.toString();
         let job: Job | undefined;
+        this.activeProcessingCount++;
 
         try {
           job = this.parseJobFromMessage(body);
@@ -209,6 +230,8 @@ export class KafkaQueue extends BaseQueue {
               dlqError,
             );
           }
+        } finally {
+          this.activeProcessingCount--;
         }
       },
     });

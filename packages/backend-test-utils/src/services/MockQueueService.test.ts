@@ -89,12 +89,9 @@ describe('MockQueueService', () => {
       expect(processedJobs).toEqual([{ order: 1 }, { order: 2 }, { order: 3 }]);
     });
 
-    it('should pause and resume queue processing', async () => {
+    it('should wait to process jobs until a handler is attached', async () => {
       const queue = await service.getQueue('test-queue');
       const handler = jest.fn();
-
-      queue.process(handler);
-      await queue.pause();
 
       await queue.add({ message: 'test1' });
       await queue.add({ message: 'test2' });
@@ -102,7 +99,7 @@ describe('MockQueueService', () => {
       await new Promise(resolve => setTimeout(resolve, 50));
       expect(handler).not.toHaveBeenCalled();
 
-      await queue.resume();
+      queue.process(handler);
       await new Promise(resolve => setTimeout(resolve, 50));
 
       expect(handler).toHaveBeenCalledTimes(2);
@@ -113,7 +110,6 @@ describe('MockQueueService', () => {
 
       expect(await queue.getJobCount()).toBe(0);
 
-      await queue.pause();
       await queue.add({ message: 'test1' });
       await queue.add({ message: 'test2' });
 
@@ -123,7 +119,6 @@ describe('MockQueueService', () => {
     it('should disconnect and clear jobs', async () => {
       const queue = await service.getQueue('test-queue');
 
-      await queue.pause();
       await queue.add({ message: 'test1' });
       await queue.add({ message: 'test2' });
 
@@ -172,11 +167,7 @@ describe('MockQueueService', () => {
       const mockQueue = service.getExistingQueue('test-queue')!;
       const handler = jest.fn();
 
-      await queue.pause();
-
-      queue.process(handler);
-
-      await queue.add({ message: 'delayed' }, { delay: 1000 });
+      await queue.add({ message: 'delayed' }, { delay: 50 });
 
       const pending = mockQueue.getPendingJobs();
       expect(pending).toHaveLength(1);
@@ -184,9 +175,9 @@ describe('MockQueueService', () => {
 
       expect(handler).not.toHaveBeenCalled();
 
-      await queue.resume();
+      queue.process(handler);
 
-      await new Promise(resolve => setTimeout(resolve, 10));
+      await new Promise(resolve => setTimeout(resolve, 100));
       expect(handler).toHaveBeenCalled();
     });
   });
@@ -221,24 +212,10 @@ describe('MockQueueService', () => {
       expect(service.getQueueNames()).toEqual([]);
     });
 
-    it('should provide pause state', async () => {
-      const queue = await service.getQueue('test-queue');
-      const mockQueue = service.getExistingQueue('test-queue')!;
-
-      expect(mockQueue.isPausedState()).toBe(false);
-
-      await queue.pause();
-      expect(mockQueue.isPausedState()).toBe(true);
-
-      await queue.resume();
-      expect(mockQueue.isPausedState()).toBe(false);
-    });
-
     it('should provide pending jobs', async () => {
       const queue = await service.getQueue('test-queue');
       const mockQueue = service.getExistingQueue('test-queue')!;
 
-      await queue.pause();
       await queue.add({ order: 1 });
       await queue.add({ order: 2 });
 

@@ -104,6 +104,22 @@ export const actionsServiceRef: ServiceRef<
 >;
 
 // @alpha
+export type DLQHandler = (job: Job, error: Error) => Promise<void>;
+
+// @alpha
+export interface Job<T extends JsonValue = JsonValue> {
+  attempt: number;
+  id: string;
+  payload: T;
+}
+
+// @alpha
+export type JobOptions = {
+  delay?: number;
+  priority?: number;
+};
+
+// @alpha
 export interface MetricAdvice {
   explicitBucketBoundaries?: number[];
 }
@@ -245,6 +261,64 @@ export interface MetricsServiceUpDownCounter<
 > {
   // (undocumented)
   add(value: number, attributes?: TAttributes): void;
+}
+
+// @alpha
+export type ProcessHandler<T extends JsonValue = JsonValue> = (
+  job: Job<T>,
+) => Promise<void>;
+
+// @alpha
+export type ProcessInput<T extends JsonValue = JsonValue> =
+  | ProcessHandler<T>
+  | ProcessOptions;
+
+// @alpha
+export type ProcessOptions = {
+  concurrency?: number;
+  batchSize?: number;
+};
+
+// @alpha
+export interface Queue<T extends JsonValue = JsonValue> {
+  add(payload: T, options?: JobOptions): Promise<void>;
+  disconnect(): Promise<void>;
+  getJobCount(): Promise<number>;
+  process(handler: ProcessHandler<T>, options?: ProcessOptions): QueueWorker<T>;
+  process(options?: ProcessOptions): QueueWorker<T>;
+}
+
+// @alpha
+export type QueueOptions = {
+  dlqHandler?: DLQHandler;
+  store?: QueueStore;
+};
+
+// @alpha
+export interface QueueService {
+  getQueue<T extends JsonValue = JsonValue>(
+    name: string,
+    options?: QueueOptions,
+  ): Promise<Queue<T>>;
+}
+
+// @alpha
+export const queueServiceRef: ServiceRef<QueueService, 'plugin', 'singleton'>;
+
+// @alpha
+export type QueueStore = 'database' | 'memory' | 'redis' | 'kafka' | 'sqs';
+
+// @alpha
+export interface QueueWorker<T extends JsonValue = JsonValue> {
+  close(): Promise<void>;
+  next(): Promise<QueueWorkerJob<T>[] | undefined>;
+}
+
+// @alpha
+export interface QueueWorkerJob<T extends JsonValue = JsonValue>
+  extends Job<T> {
+  complete(): Promise<void>;
+  retry(error: Error): Promise<void>;
 }
 
 // @public (undocumented)

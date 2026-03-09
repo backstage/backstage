@@ -39,7 +39,6 @@
     "./scheduler": "./src/entrypoints/scheduler/index.ts",
     "./urlReader": "./src/entrypoints/urlReader/index.ts",
     "./userInfo": "./src/entrypoints/userInfo/index.ts",
-    "./queue": "./src/entrypoints/queue/index.ts",
     "./alpha": "./src/alpha/index.ts",
     "./package.json": "./package.json"
   },
@@ -103,9 +102,6 @@
       ],
       "userInfo": [
         "src/entrypoints/userInfo/index.ts"
-      ],
-      "queue": [
-        "src/entrypoints/queue/index.ts"
       ],
       "alpha": [
         "src/alpha/index.ts"
@@ -190,7 +186,6 @@
     "p-limit": "^3.1.0",
     "path-to-regexp": "^8.0.0",
     "pg": "^8.11.3",
-    "pg-boss": "^10.0.0",
     "pg-connection-string": "^2.3.0",
     "pg-format": "^1.0.4",
     "rate-limit-redis": "^4.2.0",

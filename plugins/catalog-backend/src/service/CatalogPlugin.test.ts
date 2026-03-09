@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import request from 'supertest';
-import { startTestBackend } from '@backstage/backend-test-utils';
+import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
 import { catalogPlugin } from './CatalogPlugin';
 import {
   coreServices,
@@ -26,6 +26,7 @@ describe('catalogPlugin', () => {
   it('should support custom permission rules', async () => {
     const { server } = await startTestBackend({
       features: [
+        mockServices.queue.factory(),
         catalogPlugin,
         createBackendModule({
           pluginId: 'catalog',

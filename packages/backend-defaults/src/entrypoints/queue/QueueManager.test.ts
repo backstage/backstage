@@ -15,28 +15,14 @@
  */
 
 import { ConfigReader } from '@backstage/config';
+import { SQSClient } from '@aws-sdk/client-sqs';
+import { mockServices } from '@backstage/backend-test-utils';
 import { QueueManager } from './QueueManager';
+import { DatabaseQueue } from './adapters/DatabaseQueue';
+import { KafkaQueue } from './adapters/KafkaQueue';
 import { MemoryQueue } from './adapters/MemoryQueue';
 import { RedisQueue } from './adapters/RedisQueue';
 import { SqsQueue } from './adapters/SqsQueue';
-import { KafkaQueue } from './adapters/KafkaQueue';
-import { SQSClient } from '@aws-sdk/client-sqs';
-import { Kafka } from 'kafkajs';
-import { mockServices } from '@backstage/backend-test-utils';
-
-jest.mock('pg-boss', () => {
-  return class PgBoss {
-    async start() {}
-    async stop() {}
-    async send() {}
-    async work() {}
-    async getQueueSize() {
-      return 0;
-    }
-    async pause() {}
-    async resume() {}
-  };
-});
 
 jest.mock('ioredis', () => {
   return class Redis {
@@ -47,52 +33,45 @@ jest.mock('ioredis', () => {
   };
 });
 
-jest.mock('@aws-sdk/client-sqs', () => {
-  return {
-    SQSClient: jest.fn().mockImplementation(() => ({
-      send: jest.fn().mockResolvedValue({
-        QueueUrl: 'https://sqs.us-east-1.amazonaws.com/123/test-plugin-test',
-      }),
-    })),
-    GetQueueUrlCommand: jest.fn(),
-  };
-});
-
-jest.mock('kafkajs', () => {
-  return {
-    Kafka: jest.fn().mockImplementation(() => ({
-      producer: jest.fn(),
-      consumer: jest.fn(),
-      admin: jest.fn(),
-    })),
-  };
-});
-
 const mockLogger = mockServices.logger.mock();
 const mockLifecycle = mockServices.rootLifecycle.mock();
+const mockKnex = {
+  client: {},
+  migrate: {
+    latest: jest.fn().mockResolvedValue(undefined),
+  },
+} as any;
+const mockDatabase = mockServices.database.mock({
+  getClient: jest.fn().mockResolvedValue(mockKnex),
+});
+
+beforeEach(() => {
+  mockKnex.migrate.latest.mockClear();
+});
 
 describe('QueueManager', () => {
-  it('should create memory queue by default', async () => {
+  it('should create database queue by default', async () => {
     const config = new ConfigReader({});
     const manager = QueueManager.fromConfig(config, {
       logger: mockLogger,
       lifecycle: mockLifecycle,
     });
-    const queue = await manager.forPlugin('test-plugin').getQueue('test');
+    const queue = await manager
+      .forPlugin('test-plugin', {
+        database: mockDatabase,
+        logger: mockLogger,
+      })
+      .getQueue('test');
 
-    expect(queue).toBeInstanceOf(MemoryQueue);
-    // @ts-ignore
-    expect(queue.queueName).toBe('test-plugin-test');
+    expect(queue).toBeInstanceOf(DatabaseQueue);
+    expect((queue as any).queueName).toBe('test-plugin-test');
   });
 
-  it('should create redis queue when configured as default store', async () => {
+  it('should create memory queue when configured as default store', async () => {
     const config = new ConfigReader({
       backend: {
         queue: {
-          defaultStore: 'redis',
-          redis: {
-            connection: 'redis://localhost:6379',
-          },
+          defaultStore: 'memory',
         },
       },
     });
@@ -100,11 +79,15 @@ describe('QueueManager', () => {
       logger: mockLogger,
       lifecycle: mockLifecycle,
     });
-    const queue = await manager.forPlugin('test-plugin').getQueue('test');
+    const queue = await manager
+      .forPlugin('test-plugin', {
+        database: mockDatabase,
+        logger: mockLogger,
+      })
+      .getQueue('test');
 
-    expect(queue).toBeInstanceOf(RedisQueue);
-    // @ts-ignore
-    expect(queue.queueName).toBe('test-plugin-test');
+    expect(queue).toBeInstanceOf(MemoryQueue);
+    expect((queue as any).queueName).toBe('test-plugin-test');
   });
 
   it('should create redis queue when requested via options', async () => {
@@ -122,20 +105,50 @@ describe('QueueManager', () => {
       lifecycle: mockLifecycle,
     });
     const queue = await manager
-      .forPlugin('test-plugin')
+      .forPlugin('test-plugin', {
+        database: mockDatabase,
+        logger: mockLogger,
+      })
       .getQueue('test', { store: 'redis' });
 
     expect(queue).toBeInstanceOf(RedisQueue);
-    // @ts-ignore
-    expect(queue.queueName).toBe('test-plugin-test');
+    expect((queue as any).queueName).toBe('test-plugin-test');
+  });
+
+  it('should require redis connection config when using redis queues', async () => {
+    const config = new ConfigReader({});
+    const manager = QueueManager.fromConfig(config, {
+      logger: mockLogger,
+      lifecycle: mockLifecycle,
+    });
+
+    await expect(
+      manager
+        .forPlugin('test-plugin', {
+          database: mockDatabase,
+          logger: mockLogger,
+        })
+        .getQueue('test', { store: 'redis' }),
+    ).rejects.toThrow('Redis queue connection config not found');
   });
 
   it('should create sqs queue when requested via options', async () => {
+    const sendSpy = jest
+      .spyOn(SQSClient.prototype as any, 'send')
+      .mockResolvedValue({
+        QueueUrl: 'https://sqs.us-east-1.amazonaws.com/123/test-plugin-test',
+      } as any);
+
     const config = new ConfigReader({
       backend: {
         queue: {
           sqs: {
             region: 'us-east-1',
+            endpoint: 'http://localhost:4566',
+            credentials: {
+              accessKeyId: 'test',
+              secretAccessKey: 'test',
+            },
           },
         },
       },
@@ -145,13 +158,18 @@ describe('QueueManager', () => {
       lifecycle: mockLifecycle,
     });
     const queue = await manager
-      .forPlugin('test-plugin')
+      .forPlugin('test-plugin', {
+        database: mockDatabase,
+        logger: mockLogger,
+      })
       .getQueue('test', { store: 'sqs' });
 
-    expect(queue).toBeInstanceOf(SqsQueue);
-    expect(SQSClient).toHaveBeenCalledWith(
-      expect.objectContaining({ region: 'us-east-1' }),
-    );
+    try {
+      expect(queue).toBeInstanceOf(SqsQueue);
+      expect(sendSpy).toHaveBeenCalled();
+    } finally {
+      sendSpy.mockRestore();
+    }
   });
 
   it('should create kafka queue when requested via options', async () => {
@@ -171,37 +189,31 @@ describe('QueueManager', () => {
       lifecycle: mockLifecycle,
     });
     const queue = await manager
-      .forPlugin('test-plugin')
+      .forPlugin('test-plugin', {
+        database: mockDatabase,
+        logger: mockLogger,
+      })
       .getQueue('test', { store: 'kafka' });
 
     expect(queue).toBeInstanceOf(KafkaQueue);
-    expect(Kafka).toHaveBeenCalledWith(
-      expect.objectContaining({ brokers: ['kafka:9092'] }),
-    );
+    expect((queue as any).queueName).toBe('test-plugin-test');
   });
 
-  it('should create postgres queue when requested via options', async () => {
-    const config = new ConfigReader({
-      backend: {
-        queue: {
-          postgres: {
-            connection: 'postgresql://localhost:5432/backstage_queue',
-            schema: 'test_pgboss',
-          },
-        },
-      },
-    });
+  it('should create database queue when requested via options', async () => {
+    const config = new ConfigReader({});
     const manager = QueueManager.fromConfig(config, {
       logger: mockLogger,
       lifecycle: mockLifecycle,
     });
     const queue = await manager
-      .forPlugin('test-plugin')
-      .getQueue('test', { store: 'postgres' });
+      .forPlugin('test-plugin', {
+        database: mockDatabase,
+        logger: mockLogger,
+      })
+      .getQueue('test', { store: 'database' });
 
-    expect(queue).toBeDefined();
-    // @ts-ignore
-    expect(queue.queueName).toBe('test-plugin-test');
+    expect(queue).toBeInstanceOf(DatabaseQueue);
+    expect((queue as any).queueName).toBe('test-plugin-test');
   });
 
   it('should reuse queue instances', async () => {
@@ -210,9 +222,38 @@ describe('QueueManager', () => {
       logger: mockLogger,
       lifecycle: mockLifecycle,
     });
-    const queue1 = await manager.forPlugin('test-plugin').getQueue('test');
-    const queue2 = await manager.forPlugin('test-plugin').getQueue('test');
+    const queueService = manager.forPlugin('test-plugin', {
+      database: mockDatabase,
+      logger: mockLogger,
+    });
+    const queue1 = await queueService.getQueue('test');
+    const queue2 = await queueService.getQueue('test');
 
     expect(queue1).toBe(queue2);
+  });
+
+  it('should disconnect all queues during shutdown', async () => {
+    const lifecycle = mockServices.rootLifecycle.mock();
+    const config = new ConfigReader({});
+    const manager = QueueManager.fromConfig(config, {
+      logger: mockLogger,
+      lifecycle,
+    });
+    const queueService = manager.forPlugin('test-plugin', {
+      database: mockDatabase,
+      logger: mockLogger,
+    });
+
+    const queue1 = await queueService.getQueue('first');
+    const queue2 = await queueService.getQueue('second');
+    const disconnect1 = jest.spyOn(queue1, 'disconnect').mockResolvedValue();
+    const disconnect2 = jest.spyOn(queue2, 'disconnect').mockResolvedValue();
+
+    const shutdownHook = (lifecycle.addShutdownHook as jest.Mock).mock
+      .calls[0][0];
+    await shutdownHook();
+
+    expect(disconnect1).toHaveBeenCalledTimes(1);
+    expect(disconnect2).toHaveBeenCalledTimes(1);
   });
 });
