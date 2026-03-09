@@ -33,6 +33,14 @@ export const spec = {
     },
     contact: {},
   },
+  tags: [
+    {
+      name: 'Entity',
+    },
+    {
+      name: 'Locations',
+    },
+  ],
   servers: [
     {
       url: '/',
@@ -1494,6 +1502,7 @@ export const spec = {
             in: 'query',
             name: 'onConflict',
             required: false,
+            allowReserved: true,
             schema: {
               type: 'string',
               enum: ['refresh', 'reject'],

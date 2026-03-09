@@ -25,6 +25,9 @@ info:
     name: Apache-2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   contact: {}
+tags:
+  - name: Entity
+  - name: Locations
 servers:
   - url: /
 components:
@@ -1270,6 +1273,7 @@ paths:
         - in: query
           name: onConflict
           required: false
+          allowReserved: true
           schema:
             type: string
             enum:
