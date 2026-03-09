@@ -14,16 +14,23 @@
  * limitations under the License.
  */
 
-import { appModulePublicSignIn } from '@backstage/plugin-app/alpha';
-import { CreateAppOptions, createApp } from './createApp';
+import { JsonObject } from '@backstage/types';
+import {
+  ApiHolder,
+  AppNode,
+  ExtensionDataContainer,
+  ExtensionDataRef,
+  ExtensionDataValue,
+} from '@backstage/frontend-plugin-api';
 
-/**
- * @public
- * @deprecated Use {@link @backstage/plugin-app/alpha#appModulePublicSignIn} instead.
- */
-export function createPublicSignInApp(options?: CreateAppOptions) {
-  return createApp({
-    ...options,
-    features: [...(options?.features ?? []), appModulePublicSignIn],
-  });
-}
+/** @public */
+export type ExtensionFactoryMiddleware = (
+  originalFactory: (contextOverrides?: {
+    config?: JsonObject;
+  }) => ExtensionDataContainer<ExtensionDataRef>,
+  context: {
+    node: AppNode;
+    apis: ApiHolder;
+    config?: JsonObject;
+  },
+) => Iterable<ExtensionDataValue<any, any>>;

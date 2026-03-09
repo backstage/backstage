@@ -16,7 +16,7 @@
 
 import preview from '../../../../../.storybook/preview';
 import type { StoryFn } from '@storybook/react-vite';
-import { HeaderPage } from './HeaderPage';
+import { Header } from './Header';
 import type { HeaderTab } from '../PluginHeader/types';
 import { MemoryRouter } from 'react-router-dom';
 import {
@@ -31,8 +31,8 @@ import {
 import { RiMore2Line } from '@remixicon/react';
 
 const meta = preview.meta({
-  title: 'Backstage UI/HeaderPage',
-  component: HeaderPage,
+  title: 'Backstage UI/Header',
+  component: Header,
   parameters: {
     layout: 'fullscreen',
   },
@@ -145,7 +145,7 @@ export const WithTabs = meta.story({
 export const WithCustomActions = meta.story({
   decorators: [withRouter],
   render: () => (
-    <HeaderPage
+    <Header
       {...Default.input.args}
       customActions={
         <>
@@ -196,7 +196,7 @@ export const WithLongBreadcrumbs = meta.story({
 export const WithEverything = meta.story({
   decorators: [withRouter],
   render: () => (
-    <HeaderPage
+    <Header
       {...Default.input.args}
       tabs={tabs}
       customActions={<Button>Custom action</Button>}
@@ -239,7 +239,7 @@ export const WithTabsMatchingStrategies = meta.story({
   },
   render: args => (
     <MemoryRouter initialEntries={['/mentorship/events']}>
-      <HeaderPage {...args} />
+      <Header {...args} />
       <Container>
         <Text>
           <strong>Current URL:</strong> /mentorship/events
@@ -292,7 +292,7 @@ export const WithTabsExactMatching = meta.story({
   },
   render: args => (
     <MemoryRouter initialEntries={['/mentorship/events']}>
-      <HeaderPage {...args} />
+      <Header {...args} />
       <Container>
         <Text>
           <strong>Current URL:</strong> /mentorship/events
@@ -334,7 +334,7 @@ export const WithTabsPrefixMatchingDeep = meta.story({
   },
   render: args => (
     <MemoryRouter initialEntries={['/catalog/users/john/details']}>
-      <HeaderPage {...args} />
+      <Header {...args} />
       <Container>
         <Text as="p">
           <strong>Current URL:</strong> /catalog/users/john/details

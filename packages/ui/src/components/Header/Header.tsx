@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-import type { HeaderPageProps } from './types';
+import type { HeaderProps } from './types';
 import { Text } from '../Text';
 import { RiArrowRightSLine } from '@remixicon/react';
 import { Tabs, TabList, Tab } from '../Tabs';
 import { useDefinition } from '../../hooks/useDefinition';
-import { HeaderPageDefinition } from './definition';
+import { HeaderDefinition } from './definition';
 import { Container } from '../Container';
 import { Link } from '../Link';
 import { Fragment } from 'react/jsx-runtime';
 
 /**
- * A component that renders a header page.
+ * A secondary header with title, breadcrumbs, tabs, and actions.
  *
  * @public
  */
-export const HeaderPage = (props: HeaderPageProps) => {
-  const { ownProps } = useDefinition(HeaderPageDefinition, props);
+export const Header = (props: HeaderProps) => {
+  const { ownProps } = useDefinition(HeaderDefinition, props);
   const { classes, title, tabs, customActions, breadcrumbs } = ownProps;
 
   return (
@@ -81,3 +81,9 @@ export const HeaderPage = (props: HeaderPageProps) => {
     </Container>
   );
 };
+
+/**
+ * @public
+ * @deprecated Use {@link Header} instead.
+ */
+export const HeaderPage = Header;
