@@ -37,6 +37,15 @@ import { data as data4 } from './mocked-data4';
 import { selectionData, selectionColumns, tableStoriesMeta } from './utils';
 import { SearchField } from '../../SearchField';
 
+const largeData = Array.from({ length: 500 }, (_, i) => ({
+  id: String(i),
+  name: `Service ${i}`,
+  owner: { name: `Team ${i % 10}` },
+  type: ['service', 'website', 'library'][i % 3],
+  lifecycle: ['production', 'experimental'][i % 2],
+  description: `Description for service ${i}`,
+}));
+
 const meta = {
   title: 'Backstage UI/Table/dev',
   ...tableStoriesMeta,
@@ -962,6 +971,93 @@ export const ComprehensiveServerSide: Story = {
           }
         />
       </Flex>
+    );
+  },
+};
+
+type LargeDataItem = (typeof largeData)[0];
+
+const largeDataColumns: ColumnConfig<LargeDataItem>[] = [
+  {
+    id: 'name',
+    label: 'Name',
+    isRowHeader: true,
+    cell: item => <CellText title={item.name} description={item.description} />,
+  },
+  {
+    id: 'owner',
+    label: 'Owner',
+    cell: item => <CellText title={item.owner.name} />,
+  },
+  {
+    id: 'type',
+    label: 'Type',
+    cell: item => <CellText title={item.type} />,
+  },
+];
+
+export const VirtualizedTable: Story = {
+  render: () => {
+    const { tableProps } = useTable({
+      mode: 'complete',
+      getData: () => largeData,
+      paginationOptions: { pageSize: 500 },
+    });
+
+    return (
+      <div style={{ height: 400, overflow: 'auto' }}>
+        <Table columnConfig={largeDataColumns} {...tableProps} virtualized />
+      </div>
+    );
+  },
+};
+
+export const VirtualizedWithCustomRowHeight: Story = {
+  render: () => {
+    const { tableProps } = useTable({
+      mode: 'complete',
+      getData: () => largeData,
+      paginationOptions: { pageSize: 500 },
+    });
+
+    return (
+      <div style={{ height: 400, overflow: 'auto' }}>
+        <Table
+          columnConfig={largeDataColumns}
+          {...tableProps}
+          virtualized={{ rowHeight: 56 }}
+        />
+      </div>
+    );
+  },
+};
+
+export const VirtualizedWithEstimatedRowHeight: Story = {
+  render: () => {
+    const variableData = largeData.map((item, i) => ({
+      ...item,
+      description:
+        i % 3 === 0
+          ? `Short desc`
+          : i % 3 === 1
+          ? `Medium description for service ${i} with some extra details`
+          : `Long description for service ${i} that contains a lot of text to demonstrate variable height rows in virtualized mode`,
+    }));
+
+    const { tableProps } = useTable({
+      mode: 'complete',
+      getData: () => variableData,
+      paginationOptions: { pageSize: 500 },
+    });
+
+    return (
+      <div style={{ height: 400, overflow: 'auto' }}>
+        <Table
+          columnConfig={largeDataColumns}
+          {...tableProps}
+          virtualized={{ estimatedRowHeight: 48 }}
+        />
+      </div>
     );
   },
 };
