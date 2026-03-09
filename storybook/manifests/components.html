@@ -3433,7 +3433,7 @@ className?: string</code></pre>
     Container,
     Flex,
     Grid,
-    HeaderPage,
+    Header,
     PluginHeader,
     Table,
     Text,
@@ -6532,29 +6532,29 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
   no-story-error
   no-doc-error"
   role="listitem"
-  aria-label="HeaderPage">
+  aria-label="Header">
   <div class="head">
     <div class="title">
-      <h2><span class="status-dot dot-ok"></span> HeaderPage</h2>
+      <h2><span class="status-dot dot-ok"></span> Header</h2>
       <div class="badges">
-        <label for="c-19-backstage-ui-headerpage-props" class="badge ok as-toggle">5 prop types</label>
+        <label for="c-19-backstage-ui-header-props" class="badge ok as-toggle">5 prop types</label>
         
-        <label for="c-19-backstage-ui-headerpage-stories" class="badge ok as-toggle">10 stories</label>
+        <label for="c-19-backstage-ui-header-stories" class="badge ok as-toggle">10 stories</label>
         
       </div>
     </div>
-    <div class="meta" title="./packages/ui/src/components/HeaderPage/HeaderPage.stories.tsx">backstage-ui-headerpage · ./packages/ui/src/components/HeaderPage/HeaderPage.stories.tsx</div>
+    <div class="meta" title="./packages/ui/src/components/Header/Header.stories.tsx">backstage-ui-header · ./packages/ui/src/components/Header/Header.stories.tsx</div>
     
-    <div class="hint">A component that renders a header page.</div>
+    <div class="hint">A secondary header with title, breadcrumbs, tabs, and actions.</div>
     <div class="kv"><span class="chip">public:  </span></div>
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-19-backstage-ui-headerpage-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-19-backstage-ui-header-stories" class="tg tg-stories" type="checkbox" hidden />
   
-  <input id="c-19-backstage-ui-headerpage-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-19-backstage-ui-header-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -6566,9 +6566,9 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
               <span class="ex-name">Prop types</span>
               <span class="badge ok">5 prop types</span>
             </div>
-            <pre><code>Component: packages/ui/src/components/HeaderPage/HeaderPage.tsx::HeaderPage</code></pre>
+            <pre><code>Component: packages/ui/src/components/Header/Header.tsx::Header</code></pre>
             <pre><code>Props:</code></pre>
-            <pre><code>breadcrumbs?: HeaderPageBreadcrumb[]
+            <pre><code>breadcrumbs?: HeaderBreadcrumb[]
 
 className?: string
 
@@ -6588,16 +6588,7 @@ title?: string</code></pre>
                 <div class="row">
                   <span class="ex-name">Imports</span>
                 </div>
-                <pre><code>import {
-    Button,
-    ButtonIcon,
-    Container,
-    HeaderPage,
-    Menu,
-    MenuItem,
-    MenuTrigger,
-    Text,
-} from "@backstage/ui";
+                <pre><code>import { Button, ButtonIcon, Container, Header, Menu, MenuItem, MenuTrigger, Text } from "@backstage/ui";
 import { MemoryRouter } from "react-router-dom";
 import { RiMore2Line } from "@remixicon/react";</code></pre>
               </div>
@@ -6610,7 +6601,7 @@ import { RiMore2Line } from "@remixicon/react";</code></pre>
               </div>
               
               
-              <pre><code>const Default = () =&gt; &lt;HeaderPage title=&quot;Page Title&quot; /&gt;;</code></pre>
+              <pre><code>const Default = () =&gt; &lt;Header title=&quot;Page Title&quot; /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -6619,7 +6610,7 @@ import { RiMore2Line } from "@remixicon/react";</code></pre>
               </div>
               
               
-              <pre><code>const WithTabs = () =&gt; &lt;HeaderPage tabs={tabs} /&gt;;</code></pre>
+              <pre><code>const WithTabs = () =&gt; &lt;Header tabs={tabs} /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -6629,7 +6620,7 @@ import { RiMore2Line } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const WithCustomActions = () =&gt; (
-  &lt;HeaderPage
+  &lt;Header
     {...Default.input.args}
     customActions={
       &lt;&gt;
@@ -6664,7 +6655,7 @@ import { RiMore2Line } from "@remixicon/react";</code></pre>
               </div>
               
               
-              <pre><code>const WithBreadcrumbs = () =&gt; &lt;HeaderPage breadcrumbs={[{ label: &#39;Home&#39;, href: &#39;/&#39; }]} /&gt;;</code></pre>
+              <pre><code>const WithBreadcrumbs = () =&gt; &lt;Header breadcrumbs={[{ label: &#39;Home&#39;, href: &#39;/&#39; }]} /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -6673,7 +6664,7 @@ import { RiMore2Line } from "@remixicon/react";</code></pre>
               </div>
               
               
-              <pre><code>const WithLongBreadcrumbs = () =&gt; &lt;HeaderPage
+              <pre><code>const WithLongBreadcrumbs = () =&gt; &lt;Header
     breadcrumbs={[
       { label: &#39;Home&#39;, href: &#39;/&#39; },
       { label: &#39;Long Breadcrumb Name&#39;, href: &#39;/long-breadcrumb&#39; },
@@ -6687,7 +6678,7 @@ import { RiMore2Line } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const WithEverything = () =&gt; (
-  &lt;HeaderPage
+  &lt;Header
     {...Default.input.args}
     tabs={tabs}
     customActions={&lt;Button&gt;Custom action&lt;/Button&gt;}
@@ -6702,7 +6693,7 @@ import { RiMore2Line } from "@remixicon/react";</code></pre>
               </div>
               
               
-              <pre><code>const WithLayout = () =&gt; &lt;HeaderPage /&gt;;</code></pre>
+              <pre><code>const WithLayout = () =&gt; &lt;Header /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -6712,7 +6703,7 @@ import { RiMore2Line } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const WithTabsMatchingStrategies = () =&gt; &lt;MemoryRouter initialEntries={[&#39;/mentorship/events&#39;]}&gt;
-    &lt;HeaderPage
+    &lt;Header
         title=&quot;Route Matching Demo&quot;
         tabs={[
           {
@@ -6768,7 +6759,7 @@ import { RiMore2Line } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const WithTabsExactMatching = () =&gt; &lt;MemoryRouter initialEntries={[&#39;/mentorship/events&#39;]}&gt;
-    &lt;HeaderPage
+    &lt;Header
         title=&quot;Exact Matching Demo&quot;
         tabs={[
           {
@@ -6807,7 +6798,7 @@ import { RiMore2Line } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const WithTabsPrefixMatchingDeep = () =&gt; &lt;MemoryRouter initialEntries={[&#39;/catalog/users/john/details&#39;]}&gt;
-    &lt;HeaderPage
+    &lt;Header
         title=&quot;Deep Nesting Demo&quot;
         tabs={[
           {
@@ -8683,7 +8674,7 @@ titleLink?: string</code></pre>
     Button,
     ButtonIcon,
     Container,
-    HeaderPage,
+    Header,
     Menu,
     MenuItem,
     MenuTrigger,
@@ -8754,12 +8745,12 @@ import { RiCloudy2Line, RiEmotionHappyLine, RiHeartLine, RiMore2Line } from "@re
             </div>
             <div class="note ok">
               <div class="row">
-                <span class="ex-name">WithHeaderPage</span>
+                <span class="ex-name">WithHeader</span>
                 <span class="badge ok">story ok</span>
               </div>
               
               
-              <pre><code>const WithHeaderPage = () =&gt; &lt;&gt;
+              <pre><code>const WithHeader = () =&gt; &lt;&gt;
     &lt;PluginHeader
         customActions={
           &lt;&gt;
@@ -8768,7 +8759,7 @@ import { RiCloudy2Line, RiEmotionHappyLine, RiHeartLine, RiMore2Line } from "@re
             &lt;ButtonIcon variant=&quot;tertiary&quot; icon={&lt;RiHeartLine /&gt;} /&gt;
           &lt;/&gt;
         } /&gt;
-    &lt;HeaderPage
+    &lt;Header
         title=&quot;Page title&quot;
         tabs={tabs2}
         customActions={&lt;Button&gt;Custom action&lt;/Button&gt;}
@@ -8784,7 +8775,7 @@ import { RiCloudy2Line, RiEmotionHappyLine, RiHeartLine, RiMore2Line } from "@re
               
               <pre><code>const WithLayout = () =&gt; &lt;&gt;
     &lt;PluginHeader tabs={tabs} /&gt;
-    &lt;HeaderPage
+    &lt;Header
         title=&quot;Page title&quot;
         tabs={tabs2}
         customActions={&lt;Button&gt;Custom action&lt;/Button&gt;}
@@ -8800,7 +8791,7 @@ import { RiCloudy2Line, RiEmotionHappyLine, RiHeartLine, RiMore2Line } from "@re
               
               <pre><code>const WithLayoutNoTabs = () =&gt; &lt;&gt;
     &lt;PluginHeader /&gt;
-    &lt;HeaderPage title=&quot;Page title&quot; tabs={tabs2} /&gt;
+    &lt;Header title=&quot;Page title&quot; tabs={tabs2} /&gt;
 &lt;/&gt;;</code></pre>
             </div>
             <div class="note ok">
@@ -8821,7 +8812,7 @@ import { RiCloudy2Line, RiEmotionHappyLine, RiHeartLine, RiMore2Line } from "@re
             &lt;ButtonIcon variant=&quot;tertiary&quot; icon={&lt;RiHeartLine /&gt;} /&gt;
           &lt;/&gt;
         } /&gt;
-    &lt;HeaderPage
+    &lt;Header
         title=&quot;Page title&quot;
         tabs={tabs2}
         customActions={
