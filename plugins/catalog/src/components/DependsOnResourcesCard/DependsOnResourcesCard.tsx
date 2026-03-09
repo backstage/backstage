@@ -14,48 +14,39 @@
  * limitations under the License.
  */
 
-import { RELATION_DEPENDS_ON, ResourceEntity } from '@backstage/catalog-model';
+import { RELATION_DEPENDS_ON } from '@backstage/catalog-model';
+import { ColumnConfig } from '@backstage/ui';
 import {
-  InfoCardVariants,
-  TableColumn,
-  TableOptions,
-} from '@backstage/core-components';
-import {
-  asResourceEntities,
+  EntityRelationCard,
+  EntityRow,
+  resourceColumnConfig,
   componentEntityHelpLink,
-  RelatedEntitiesCard,
-  resourceEntityColumns,
-} from '../RelatedEntitiesCard';
+} from '@backstage/plugin-catalog-react';
 import { catalogTranslationRef } from '../../alpha/translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /** @public */
 export interface DependsOnResourcesCardProps {
-  variant?: InfoCardVariants;
   title?: string;
-  columns?: TableColumn<ResourceEntity>[];
-  tableOptions?: TableOptions;
+  columnConfig?: ColumnConfig<EntityRow>[];
 }
 
 export function DependsOnResourcesCard(props: DependsOnResourcesCardProps) {
   const { t } = useTranslationRef(catalogTranslationRef);
   const {
-    variant = 'gridItem',
     title = t('dependsOnResourcesCard.title'),
-    columns = resourceEntityColumns,
-    tableOptions = {},
+    columnConfig = resourceColumnConfig,
   } = props;
   return (
-    <RelatedEntitiesCard
-      variant={variant}
+    <EntityRelationCard
       title={title}
       entityKind="Resource"
       relationType={RELATION_DEPENDS_ON}
-      columns={columns}
-      emptyMessage={t('dependsOnResourcesCard.emptyMessage')}
-      emptyHelpLink={componentEntityHelpLink}
-      asRenderableEntities={asResourceEntities}
-      tableOptions={tableOptions}
+      columnConfig={columnConfig}
+      emptyState={{
+        message: t('dependsOnResourcesCard.emptyMessage'),
+        helpLink: componentEntityHelpLink,
+      }}
     />
   );
 }
