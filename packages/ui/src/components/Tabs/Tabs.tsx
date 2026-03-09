@@ -153,7 +153,7 @@ export const Tabs = (props: TabsProps) => {
       return '';
     }
 
-    let selectedId: string | null = null;
+    let selectedId: string | undefined;
     let maxSegments = -1;
 
     activeTabs.forEach((segmentCount, id) => {
