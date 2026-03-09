@@ -14,10 +14,10 @@ export const timelinePropDefs: Record<string, PropDef> = {
 };
 
 export const timelineItemPropDefs: Record<string, PropDef> = {
-  title: {
+  heading: {
     type: 'enum',
     values: ['ReactNode'],
-    description: 'Item title or heading',
+    description: 'Item heading',
     required: true,
   },
   description: {

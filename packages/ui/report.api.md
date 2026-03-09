@@ -2745,14 +2745,6 @@ export const TimelineDefinition: {
   };
   readonly classNames: {
     readonly root: 'bui-Timeline';
-    readonly item: 'bui-TimelineItem';
-    readonly itemMarker: 'bui-TimelineItemMarker';
-    readonly itemIcon: 'bui-TimelineItemIcon';
-    readonly itemLine: 'bui-TimelineItemLine';
-    readonly itemContent: 'bui-TimelineItemContent';
-    readonly itemTimestamp: 'bui-TimelineItemTimestamp';
-    readonly itemHeading: 'bui-TimelineItemHeading';
-    readonly itemDescription: 'bui-TimelineItemDescription';
   };
   readonly propDefs: {
     readonly children: {};

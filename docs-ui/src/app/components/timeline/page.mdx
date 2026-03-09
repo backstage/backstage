@@ -17,7 +17,7 @@ import {
 } from './components';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
-import { TimelineDefinition } from '@/utils/definitions';
+import { TimelineItemDefinition } from '@/utils/definitions';
 import { ChangelogComponent } from '@/components/ChangelogComponent';
 
 <PageTitle
@@ -47,7 +47,7 @@ Container component for displaying chronological events. Renders an `<ol>` eleme
 
 ### TimelineItem
 
-Individual timeline event with title, description, timestamp, and optional icon. Renders an `<li>` element.
+Individual timeline event with heading, description, timestamp, and optional icon. Renders an `<li>` element.
 
 <PropsTable data={timelineItemPropDefs} />
 
@@ -89,6 +89,6 @@ Display rich content in timeline descriptions for complex event information.
   code={detailedEventsSnippet}
 />
 
-<Theming definition={TimelineDefinition} />
+<Theming definition={TimelineItemDefinition} />
 
 <ChangelogComponent packageName="@backstage/ui" />
