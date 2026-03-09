@@ -280,56 +280,6 @@ describe('Mcp Backend', () => {
         'scaffolder-actions:create-app',
       );
     });
-
-    it('should support SSE per-server routes', async () => {
-      const { server } = await startTestBackend({
-        features: [
-          mcpPlugin,
-          mockCatalogPlugin,
-          metricsServiceMock.mock().factory,
-          mockServices.rootConfig.factory({
-            data: {
-              backend: {
-                actions: {
-                  pluginSources: ['catalog-actions'],
-                },
-              },
-              mcpActions: {
-                servers: {
-                  catalog: {
-                    name: 'Catalog Server',
-                    filter: {
-                      include: [{ id: 'catalog-actions:*' }],
-                    },
-                  },
-                },
-              },
-            },
-          }),
-        ],
-      });
-
-      const address = server.address();
-      if (typeof address !== 'object' || !('port' in address!)) {
-        throw new Error('server broke');
-      }
-      const serverAddress = `http://localhost:${address.port}`;
-
-      const client = new Client({ name: 'test', version: '1.0' });
-      const transport = new SSEClientTransport(
-        new URL(`${serverAddress}/api/mcp-actions/v1/catalog/sse`),
-      );
-      await client.connect(transport);
-
-      const result = await client.request(
-        { method: 'tools/list' },
-        ListToolsResultSchema,
-      );
-      await client.close();
-
-      expect(result.tools).toHaveLength(1);
-      expect(result.tools[0].name).toBe('catalog-actions:get-entity');
-    });
   });
 
   describe('OAuth well-known endpoints', () => {

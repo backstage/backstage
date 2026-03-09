@@ -239,8 +239,8 @@ The SSE protocol is deprecated, and should be avoided as it will be removed in a
 
 When `mcpActions.servers` is configured, each server key becomes part of the URL. For example, with servers named `catalog` and `scaffolder`:
 
-- `Streamable HTTP`: `http://localhost:7007/api/mcp-actions/v1/catalog`
-- `SSE`: `http://localhost:7007/api/mcp-actions/v1/catalog/sse`
+- `http://localhost:7007/api/mcp-actions/v1/catalog`
+- `http://localhost:7007/api/mcp-actions/v1/scaffolder`
 
 ```json
 {

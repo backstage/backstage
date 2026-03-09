@@ -76,12 +76,6 @@ export const mcpPlugin = createBackendPlugin({
 
         if (serverConfigs) {
           for (const [key, serverConfig] of serverConfigs) {
-            const sseRouter = createSseRouter({
-              mcpService,
-              httpAuth,
-              serverConfig,
-            });
-
             const streamableRouter = createStreamableRouter({
               mcpService,
               httpAuth,
@@ -90,7 +84,6 @@ export const mcpPlugin = createBackendPlugin({
               serverConfig,
             });
 
-            router.use(`/v1/${key}/sse`, sseRouter);
             router.use(`/v1/${key}`, streamableRouter);
           }
         } else {
