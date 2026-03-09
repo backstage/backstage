@@ -58,7 +58,7 @@ export const TimelineItem = forwardRef<HTMLLIElement, TimelineItemProps>(
       TimelineItemDefinition,
       props,
     );
-    const { classes, title, description, timestamp, icon } = ownProps;
+    const { classes, heading, description, timestamp, icon } = ownProps;
 
     return (
       <li ref={ref} className={classes.root} {...restProps}>
@@ -68,7 +68,7 @@ export const TimelineItem = forwardRef<HTMLLIElement, TimelineItemProps>(
         </div>
         <div className={classes.content}>
           {timestamp && <div className={classes.timestamp}>{timestamp}</div>}
-          <div className={classes.title}>{title}</div>
+          <div className={classes.heading}>{heading}</div>
           {description && (
             <div className={classes.description}>{description}</div>
           )}

@@ -32,7 +32,7 @@ export const TimelineDefinition = defineComponent<TimelineProps>()({
     itemLine: 'bui-TimelineItemLine',
     itemContent: 'bui-TimelineItemContent',
     itemTimestamp: 'bui-TimelineItemTimestamp',
-    itemTitle: 'bui-TimelineItemTitle',
+    itemHeading: 'bui-TimelineItemHeading',
     itemDescription: 'bui-TimelineItemDescription',
   },
   propDefs: {
@@ -54,11 +54,11 @@ export const TimelineItemDefinition = defineComponent<TimelineItemProps>()({
     line: 'bui-TimelineItemLine',
     content: 'bui-TimelineItemContent',
     timestamp: 'bui-TimelineItemTimestamp',
-    title: 'bui-TimelineItemTitle',
+    heading: 'bui-TimelineItemHeading',
     description: 'bui-TimelineItemDescription',
   },
   propDefs: {
-    title: {},
+    heading: {},
     description: {},
     timestamp: {},
     icon: {},

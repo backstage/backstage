@@ -82,7 +82,7 @@
     margin-bottom: var(--bui-space-1);
   }
 
-  .bui-TimelineItemTitle {
+  .bui-TimelineItemHeading {
     font-size: var(--bui-font-size-3);
     font-weight: var(--bui-font-weight-bold);
     color: var(--bui-fg-primary);

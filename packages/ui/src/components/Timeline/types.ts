@@ -42,12 +42,12 @@ export interface TimelineProps
 export interface TimelineItemProps
   extends Omit<
     React.LiHTMLAttributes<HTMLLIElement>,
-    'title' | 'className' | 'children'
+    'className' | 'children'
   > {
   /**
-   * Item title or heading
+   * Item heading
    */
-  title: ReactNode;
+  heading: ReactNode;
   /**
    * Item description or content
    */

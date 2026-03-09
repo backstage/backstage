@@ -2751,7 +2751,7 @@ export const TimelineDefinition: {
     readonly itemLine: 'bui-TimelineItemLine';
     readonly itemContent: 'bui-TimelineItemContent';
     readonly itemTimestamp: 'bui-TimelineItemTimestamp';
-    readonly itemTitle: 'bui-TimelineItemTitle';
+    readonly itemHeading: 'bui-TimelineItemHeading';
     readonly itemDescription: 'bui-TimelineItemDescription';
   };
   readonly propDefs: {
@@ -2777,11 +2777,11 @@ export const TimelineItemDefinition: {
     readonly line: 'bui-TimelineItemLine';
     readonly content: 'bui-TimelineItemContent';
     readonly timestamp: 'bui-TimelineItemTimestamp';
-    readonly title: 'bui-TimelineItemTitle';
+    readonly heading: 'bui-TimelineItemHeading';
     readonly description: 'bui-TimelineItemDescription';
   };
   readonly propDefs: {
-    readonly title: {};
+    readonly heading: {};
     readonly description: {};
     readonly timestamp: {};
     readonly icon: {};
@@ -2793,9 +2793,9 @@ export const TimelineItemDefinition: {
 export interface TimelineItemProps {
   className?: string;
   description?: ReactNode;
+  heading: ReactNode;
   icon?: ReactNode;
   timestamp?: ReactNode;
-  title: ReactNode;
 }
 
 // @public
