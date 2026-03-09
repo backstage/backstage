@@ -8,6 +8,7 @@ import { ApiRef as ApiRef_2 } from '@backstage/core-plugin-api';
 import { AutocompleteProps } from '@material-ui/lab/Autocomplete';
 import { CATALOG_FILTER_EXISTS } from '@backstage/catalog-client';
 import { CatalogApi } from '@backstage/catalog-client';
+import { ColumnConfig } from '@backstage/ui';
 import { ComponentEntity } from '@backstage/catalog-model';
 import { ComponentProps } from 'react';
 import { CompoundEntityRef } from '@backstage/catalog-model';
@@ -29,6 +30,7 @@ import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import { StyleRules } from '@material-ui/core/styles/withStyles';
 import { SystemEntity } from '@backstage/catalog-model';
 import { TableColumn } from '@backstage/core-components';
+import { TableItem } from '@backstage/ui';
 import { TableOptions } from '@backstage/core-components';
 import { TextFieldProps } from '@material-ui/core/TextField';
 import { TypographyProps } from '@material-ui/core/Typography';
@@ -188,6 +190,13 @@ export const columnFactories: Readonly<{
 }>;
 
 // @public (undocumented)
+export const componentColumnConfig: ColumnConfig<EntityRow>[];
+
+// @public (undocumented)
+export const componentEntityHelpLink =
+  'https://backstage.io/docs/features/software-catalog/descriptor-format#kind-component';
+
+// @public (undocumented)
 export type DefaultEntityFilters = {
   kind?: EntityKindFilter;
   type?: EntityTypeFilter;
@@ -223,6 +232,13 @@ export type DefaultFiltersProps = {
 };
 
 // @public (undocumented)
+export const domainColumnConfig: ColumnConfig<EntityRow>[];
+
+// @public (undocumented)
+export const domainEntityHelpLink =
+  'https://backstage.io/docs/features/software-catalog/descriptor-format#kind-domain';
+
+// @public (undocumented)
 export function EntityAutocompletePicker<
   T extends DefaultEntityFilters = DefaultEntityFilters,
   Name extends AllowedEntityFilters<T> = AllowedEntityFilters<T>,
@@ -245,6 +261,46 @@ export type EntityAutocompletePickerProps<
   filtersForAvailableValues?: Array<keyof T>;
   hidden?: boolean;
 };
+
+// @public (undocumented)
+export function EntityDataTable(props: EntityDataTableProps): JSX_2.Element;
+
+// @public (undocumented)
+export const entityDataTableColumns: Readonly<{
+  createEntityRefColumn(options: {
+    defaultKind?: string;
+    isRowHeader?: boolean;
+  }): ColumnConfig<EntityRow>;
+  createEntityRelationColumn(options: {
+    id: string;
+    translationKey: 'owner' | 'system' | 'domain';
+    relation: string;
+    defaultKind?: string;
+    filter?: {
+      kind: string;
+    };
+  }): ColumnConfig<EntityRow>;
+  createOwnerColumn(): ColumnConfig<EntityRow>;
+  createSystemColumn(): ColumnConfig<EntityRow>;
+  createDomainColumn(): ColumnConfig<EntityRow>;
+  createMetadataDescriptionColumn(): ColumnConfig<EntityRow>;
+  createSpecTypeColumn(): ColumnConfig<EntityRow>;
+  createSpecLifecycleColumn(): ColumnConfig<EntityRow>;
+}>;
+
+// @public (undocumented)
+export interface EntityDataTableProps {
+  // (undocumented)
+  columnConfig: ColumnConfig<EntityRow>[];
+  // (undocumented)
+  data: Entity[];
+  // (undocumented)
+  emptyState?: ReactNode;
+  // (undocumented)
+  error?: Error;
+  // (undocumented)
+  loading?: boolean;
+}
 
 // @public
 export const EntityDisplayName: (props: EntityDisplayNameProps) => JSX.Element;
@@ -554,6 +610,30 @@ export interface EntityRefPresentationSnapshot {
   secondaryTitle?: string;
 }
 
+// @public (undocumented)
+export function EntityRelationCard(
+  props: EntityRelationCardProps,
+): JSX_2.Element;
+
+// @public (undocumented)
+export interface EntityRelationCardProps {
+  // (undocumented)
+  className?: string;
+  // (undocumented)
+  columnConfig: ColumnConfig<EntityRow>[];
+  // (undocumented)
+  emptyState?: {
+    message: string;
+    helpLink?: string;
+  };
+  // (undocumented)
+  entityKind?: string;
+  // (undocumented)
+  relationType: string;
+  // (undocumented)
+  title: string;
+}
+
 // @public
 export function entityRouteParams(
   entityOrRef: Entity | CompoundEntityRef | string,
@@ -575,6 +655,9 @@ export const entityRouteRef: RouteRef<{
   kind: string;
   namespace: string;
 }>;
+
+// @public (undocumented)
+export type EntityRow = Entity & TableItem;
 
 // @public
 export const EntitySearchBar: () => JSX_2.Element;
@@ -785,6 +868,13 @@ export class MockStarredEntitiesApi implements StarredEntitiesApi {
 // @public (undocumented)
 export type PaginationMode = 'cursor' | 'offset' | 'none';
 
+// @public (undocumented)
+export const resourceColumnConfig: ColumnConfig<EntityRow>[];
+
+// @public (undocumented)
+export const resourceEntityHelpLink =
+  'https://backstage.io/docs/features/software-catalog/descriptor-format#kind-resource';
+
 // @public
 export interface StarredEntitiesApi {
   starredEntitie$(): Observable<Set<string>>;
@@ -793,6 +883,13 @@ export interface StarredEntitiesApi {
 
 // @public
 export const starredEntitiesApiRef: ApiRef_2<StarredEntitiesApi>;
+
+// @public (undocumented)
+export const systemColumnConfig: ColumnConfig<EntityRow>[];
+
+// @public (undocumented)
+export const systemEntityHelpLink =
+  'https://backstage.io/docs/features/software-catalog/descriptor-format#kind-system';
 
 // @public (undocumented)
 export const UnregisterEntityDialog: (
