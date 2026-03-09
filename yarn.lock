@@ -3016,7 +3016,7 @@ __metadata:
     cron: "npm:^3.0.0"
     express: "npm:^4.22.0"
     express-promise-router: "npm:^4.1.0"
-    express-rate-limit: "npm:^8.0.0"
+    express-rate-limit: "npm:^8.2.2"
     fs-extra: "npm:^11.2.0"
     get-port: "npm:^5.1.1"
     git-url-parse: "npm:^15.0.0"
@@ -31622,7 +31622,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"express-rate-limit@npm:^8.0.0, express-rate-limit@npm:^8.2.1":
+"express-rate-limit@npm:^8.2.1, express-rate-limit@npm:^8.2.2":
   version: 8.3.0
   resolution: "express-rate-limit@npm:8.3.0"
   dependencies:
