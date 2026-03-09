@@ -91,6 +91,7 @@ export type MenuItemOwnProps = {
   children: React.ReactNode;
   color?: 'primary' | 'danger';
   href?: RAMenuItemProps['href'];
+  noTrack?: boolean;
   className?: string;
 };
 

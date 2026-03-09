@@ -9,7 +9,6 @@ import { CompoundEntityRef } from '@backstage/catalog-model';
 import { DependencyGraphTypes } from '@backstage/core-components';
 import { Entity } from '@backstage/catalog-model';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
-import { InfoCardVariants } from '@backstage/core-components';
 import { JsonObject } from '@backstage/types';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { MouseEvent as MouseEvent_2 } from 'react';
@@ -138,7 +137,6 @@ export namespace Direction {
 // @public
 export const EntityCatalogGraphCard: (
   props: Partial<EntityRelationsGraphProps> & {
-    variant?: InfoCardVariants;
     height?: number;
     title?: string;
     action?: ReactNode;

@@ -255,6 +255,23 @@ export interface AlertProps
 // @public (undocumented)
 export type AlignItems = 'stretch' | 'start' | 'center' | 'end';
 
+// @public
+export type AnalyticsEventAttributes = {
+  [key: string]: string | boolean | number;
+};
+
+// @public
+export type AnalyticsTracker = {
+  captureEvent: (
+    action: string,
+    subject: string,
+    options?: {
+      value?: number;
+      attributes?: AnalyticsEventAttributes;
+    },
+  ) => void;
+};
+
 // @public (undocumented)
 export const Avatar: ForwardRefExoticComponent<
   AvatarProps & RefAttributes<HTMLDivElement>
@@ -414,6 +431,15 @@ export type BoxUtilityProps = {
 export type Breakpoint = 'initial' | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
 // @public
+export function BUIProvider(props: BUIProviderProps): JSX_2.Element;
+
+// @public (undocumented)
+export type BUIProviderProps = {
+  useAnalytics?: UseAnalyticsFn;
+  children: ReactNode;
+};
+
+// @public
 export const Button: ForwardRefExoticComponent<
   ButtonProps & RefAttributes<HTMLButtonElement>
 >;
@@ -513,7 +539,9 @@ export const ButtonLinkDefinition: {
     readonly content: 'bui-ButtonLinkContent';
   };
   readonly bg: 'consumer';
+  readonly analytics: true;
   readonly propDefs: {
+    readonly noTrack: {};
     readonly size: {
       readonly dataAttribute: true;
       readonly default: 'small';
@@ -531,6 +559,7 @@ export const ButtonLinkDefinition: {
 
 // @public (undocumented)
 export type ButtonLinkOwnProps = {
+  noTrack?: boolean;
   size?: Responsive<'small' | 'medium'>;
   variant?: Responsive<'primary' | 'secondary' | 'tertiary'>;
   iconStart?: ReactElement;
@@ -1260,6 +1289,11 @@ export interface FullPageProps
   extends Omit<ComponentPropsWithoutRef<'main'>, 'className'>,
     FullPageOwnProps {}
 
+// @public
+export function getNodeText(
+  node: ReactNode | ((...args: any[]) => ReactNode),
+): string | undefined;
+
 // @public (undocumented)
 export const Grid: {
   Root: ForwardRefExoticComponent<GridProps & RefAttributes<HTMLDivElement>>;
@@ -1448,7 +1482,9 @@ export const LinkDefinition: {
   readonly classNames: {
     readonly root: 'bui-Link';
   };
+  readonly analytics: true;
   readonly propDefs: {
+    readonly noTrack: {};
     readonly variant: {
       readonly dataAttribute: true;
       readonly default: 'body-medium';
@@ -1475,6 +1511,7 @@ export const LinkDefinition: {
 
 // @public (undocumented)
 export type LinkOwnProps = {
+  noTrack?: boolean;
   variant?: TextVariants | Partial<Record<Breakpoint, TextVariants>>;
   weight?: TextWeights | Partial<Record<Breakpoint, TextWeights>>;
   color?:
@@ -1578,6 +1615,7 @@ export type MenuItemOwnProps = {
   children: React.ReactNode;
   color?: 'primary' | 'danger';
   href?: MenuItemProps_2['href'];
+  noTrack?: boolean;
   className?: string;
 };
 
@@ -1997,6 +2035,7 @@ export type RowOwnProps<T = object> = {
   columns?: RowProps_2<T>['columns'];
   children?: RowProps_2<T>['children'];
   href?: string;
+  noTrack?: boolean;
 };
 
 // @public (undocumented)
@@ -2427,6 +2466,7 @@ export type TabOwnProps = {
   matchStrategy?: TabMatchStrategy;
   href?: TabProps_2['href'];
   id?: TabProps_2['id'];
+  noTrack?: boolean;
 };
 
 // @public
@@ -2522,6 +2562,7 @@ export type TagOwnProps = {
   href?: TagProps_2['href'];
   children?: TagProps_2['children'];
   className?: string;
+  noTrack?: boolean;
 };
 
 // @public
@@ -2778,6 +2819,12 @@ export interface TooltipProps
 export const TooltipTrigger: (
   props: TooltipTriggerComponentProps,
 ) => JSX_2.Element;
+
+// @public
+export function useAnalytics(): AnalyticsTracker;
+
+// @public
+export type UseAnalyticsFn = () => AnalyticsTracker;
 
 // @public
 export function useBgConsumer(): BgContextValue;

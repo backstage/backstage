@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Command } from 'commander';
 import { createCliPlugin } from '../../wiring/factory';
-import { lazy } from '../../wiring/lazy';
 
 export default createCliPlugin({
   pluginId: 'maintenance',
@@ -23,36 +21,13 @@ export default createCliPlugin({
     reg.addCommand({
       path: ['repo', 'fix'],
       description: 'Automatically fix packages in the project',
-      execute: async ({ args }) => {
-        const command = new Command();
-        const defaultCommand = command
-          .option(
-            '--publish',
-            'Enable additional fixes that only apply when publishing packages',
-          )
-          .option(
-            '--check',
-            'Fail if any packages would have been changed by the command',
-          )
-          .action(lazy(() => import('./commands/repo/fix'), 'command'));
-
-        await defaultCommand.parseAsync(args, { from: 'user' });
-      },
+      execute: { loader: () => import('./commands/repo/fix') },
     });
 
     reg.addCommand({
       path: ['repo', 'list-deprecations'],
       description: 'List deprecations',
-      execute: async ({ args }) => {
-        const command = new Command();
-        const defaultCommand = command
-          .option('--json', 'Output as JSON')
-          .action(
-            lazy(() => import('./commands/repo/list-deprecations'), 'command'),
-          );
-
-        await defaultCommand.parseAsync(args, { from: 'user' });
-      },
+      execute: { loader: () => import('./commands/repo/list-deprecations') },
     });
   },
 });
