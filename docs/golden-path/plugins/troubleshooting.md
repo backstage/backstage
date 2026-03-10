@@ -163,8 +163,8 @@ This updates the `.api.md` files that document your plugin's public interface.
 For comprehensive guides on building plugins, refer to:
 
 - [Plugin Development Guide](../../plugins/plugin-development.md) - Complete guide to building plugins
-- [Backend Plugin Development](./backend/001-first-steps.md) - Backend-specific walkthrough
-- [Frontend Plugin Development](./frontend/001-first-steps.md) - Frontend-specific walkthrough
+- [Backend Plugin Development](./backend/001-first-steps.md) - Backend-specific guide
+- [Frontend Plugin Development](./frontend/001-first-steps.md) - Frontend-specific guide
 - [Structure of a Plugin](../../plugins/structure-of-a-plugin.md) - Understanding plugin architecture
 - [Testing Plugins](../../plugins/testing.md) - Testing strategies and best practices
 
