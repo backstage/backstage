@@ -83,6 +83,7 @@
   .bui-TableRow {
     border-bottom: 1px solid var(--bui-border-2);
     transition: color 0.2s ease-in-out;
+    cursor: default;
 
     &:hover {
       background-color: var(--bui-bg-tint-hover);
@@ -100,6 +101,8 @@
       background-color: var(--bui-bg-tint-disabled);
     }
 
+    &[data-href],
+    &[data-selection-mode],
     &[data-react-aria-pressable='true'] {
       cursor: pointer;
     }
