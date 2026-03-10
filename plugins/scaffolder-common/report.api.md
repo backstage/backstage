@@ -418,7 +418,9 @@ export interface TemplateEntityV1beta3 extends Entity {
       input?: JsonObject;
     }[];
     parameters?: TemplateParametersV1beta3 | TemplateParametersV1beta3[];
-    secrets?: JsonObject;
+    secrets?: {
+      schema?: JsonObject;
+    };
     steps: Array<TemplateEntityStepV1beta3>;
     output?: {
       [name: string]: string;
