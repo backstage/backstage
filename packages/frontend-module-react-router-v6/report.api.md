@@ -4,10 +4,8 @@
 
 ```ts
 import { ComponentType } from 'react';
-import type { LinkProps } from '@backstage/frontend-plugin-api';
 import type { Location as Location_2 } from '@backstage/frontend-plugin-api';
 import type { NavigateFunction } from '@backstage/frontend-plugin-api';
-import type { NavLinkProps } from '@backstage/frontend-plugin-api';
 import type { Path } from '@backstage/frontend-plugin-api';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
@@ -25,7 +23,7 @@ export class ReactRouter6RouterApi implements RouterApi {
     params?: Record<string, string | undefined>,
   ): string;
   // (undocumented)
-  Link: ComponentType<LinkProps>;
+  Link: RouterApi['Link'];
   // (undocumented)
   matchRoutes<T extends RouteObject>(
     routes: T[],
@@ -36,7 +34,7 @@ export class ReactRouter6RouterApi implements RouterApi {
   // (undocumented)
   Navigate: RouterApi['Navigate'];
   // (undocumented)
-  NavLink: ComponentType<NavLinkProps>;
+  NavLink: RouterApi['NavLink'];
   // (undocumented)
   Outlet: RouterApi['Outlet'];
   // (undocumented)

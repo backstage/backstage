@@ -39,10 +39,8 @@ import { IdentityApi as IdentityApi_2 } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
-import type { LinkProps } from '@backstage/frontend-plugin-api';
 import type { Location as Location_2 } from '@backstage/frontend-plugin-api';
 import type { NavigateFunction } from '@backstage/frontend-plugin-api';
-import type { NavLinkProps } from '@backstage/frontend-plugin-api';
 import { Observable } from '@backstage/types';
 import type { Path } from '@backstage/frontend-plugin-api';
 import { PermissionApi } from '@backstage/plugin-permission-react';
@@ -89,7 +87,7 @@ export class BaseReactRouterV6Api implements RouterApi {
     params?: Record<string, string | undefined>,
   ): string;
   // (undocumented)
-  Link: ComponentType<LinkProps>;
+  Link: RouterApi['Link'];
   // (undocumented)
   matchRoutes<T extends RouteObject>(
     routes: T[],
@@ -100,7 +98,7 @@ export class BaseReactRouterV6Api implements RouterApi {
   // (undocumented)
   Navigate: RouterApi['Navigate'];
   // (undocumented)
-  NavLink: ComponentType<NavLinkProps>;
+  NavLink: RouterApi['NavLink'];
   // (undocumented)
   Outlet: RouterApi['Outlet'];
   // (undocumented)

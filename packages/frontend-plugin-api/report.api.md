@@ -16,6 +16,7 @@ import { ExtensionBlueprint as ExtensionBlueprint_2 } from '@backstage/frontend-
 import { ExtensionBlueprintParams as ExtensionBlueprintParams_2 } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef as ExtensionDataRef_2 } from '@backstage/frontend-plugin-api';
 import { ExtensionInput as ExtensionInput_2 } from '@backstage/frontend-plugin-api';
+import { ForwardRefExoticComponent } from 'react';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { JSX as JSX_2 } from 'react';
@@ -25,6 +26,7 @@ import { Observable } from '@backstage/types';
 import { PropsWithChildren } from 'react';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
+import { RefAttributes } from 'react';
 import { SwappableComponentRef as SwappableComponentRef_2 } from '@backstage/frontend-plugin-api';
 import type { z } from 'zod';
 
@@ -1468,7 +1470,9 @@ export type IdentityApi = {
 export const identityApiRef: ApiRef<IdentityApi>;
 
 // @public
-export const Link: (props: LinkProps) => JSX_3.Element;
+export const Link: ForwardRefExoticComponent<
+  LinkProps & RefAttributes<HTMLAnchorElement>
+>;
 
 // @public
 export interface LinkProps
@@ -1564,7 +1568,9 @@ export const NavItemBlueprint: ExtensionBlueprint_2<{
 }>;
 
 // @public
-export const NavLink: (props: NavLinkProps) => JSX_3.Element;
+export const NavLink: ForwardRefExoticComponent<
+  NavLinkProps & RefAttributes<HTMLAnchorElement>
+>;
 
 // @public
 export interface NavLinkProps
@@ -2089,7 +2095,7 @@ export interface RouterApi {
     params?: Record<string, string | undefined>,
   ) => string;
   // (undocumented)
-  Link: ComponentType<LinkProps>;
+  Link: ForwardRefExoticComponent<LinkProps & RefAttributes<HTMLAnchorElement>>;
   // (undocumented)
   matchRoutes: <T extends RouteObject>(
     routes: T[],
@@ -2100,7 +2106,9 @@ export interface RouterApi {
   // (undocumented)
   Navigate: ComponentType<NavigateProps>;
   // (undocumented)
-  NavLink: ComponentType<NavLinkProps>;
+  NavLink: ForwardRefExoticComponent<
+    NavLinkProps & RefAttributes<HTMLAnchorElement>
+  >;
   // (undocumented)
   Outlet: ComponentType<{
     context?: unknown;
