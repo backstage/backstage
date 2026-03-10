@@ -170,9 +170,9 @@ export class DefaultProviderDatabase implements ProviderDatabase {
           if (ok) {
             await tx<DbRefreshStateReferencesRow>('refresh_state_references')
               .where('target_entity_ref', entityRef)
-              .andWhere(inner => {
+              .modify(qb => {
                 if (!claimedFromNullLocationKey) {
-                  inner.where({ source_key: options.sourceKey });
+                  qb.andWhere({ source_key: options.sourceKey });
                 }
               })
               .delete();
