@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import clsx from 'clsx';
 import {
-  RiCollageLine,
+  RiCodeSSlashLine,
   RiFileHistoryLine,
   RiHazeLine,
   RiPaletteLine,
@@ -66,7 +66,7 @@ export const Navigation = ({ onLinkClick }: NavigationProps) => {
         </ul>
       </nav>
       <div className={styles.sectionTitle}>
-        <RiCollageLine size={20} />
+        <RiCodeSSlashLine size={20} />
         <span>Components</span>
       </div>
       {components.map(item => {
@@ -93,7 +93,7 @@ export const Navigation = ({ onLinkClick }: NavigationProps) => {
         );
       })}
       <div className={styles.sectionTitle}>
-        <RiCollageLine size={20} /> <span>Hooks</span>
+        <RiCodeSSlashLine size={20} /> <span>Hooks</span>
       </div>
       {hooks.map(item => {
         const isActive = pathname === `/hooks/${item.slug}`;
