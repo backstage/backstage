@@ -63,8 +63,8 @@ export const coreComponentsTranslationRef: TranslationRef<
     readonly 'autoLogout.stillTherePrompt.buttonText': "Yes! Don't log me out";
     readonly 'dependencyGraph.fullscreenTooltip': 'Toggle fullscreen';
     readonly 'proxiedSignInPage.title': 'You do not appear to be signed in. Please try reloading the browser page.';
-    readonly 'logViewer.downloadBtn.tooltip': 'Download logs';
     readonly 'logViewer.searchField.placeholder': 'Search';
+    readonly 'logViewer.downloadBtn.tooltip': 'Download logs';
   }
 >;
 
