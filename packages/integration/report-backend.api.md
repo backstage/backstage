@@ -4,19 +4,44 @@
 
 ```ts
 import { AnonymousCredential } from '@azure/storage-blob';
-import { Config } from '@backstage/config';
-import { ConsumedResponse } from '@backstage/errors';
 import { StorageSharedKeyCredential } from '@azure/storage-blob';
 import type { TokenCredential } from '@azure/identity';
 
-// Warning: (ae-forgotten-export) The symbol "AzureCredentialsManager" needs to be exported by the entry point backend.d.ts
-//
+// @public
+export type AzureBlobStorageIntegrationConfig = {
+  accountName: string;
+  accountKey?: string;
+  sasToken?: string;
+  connectionString?: string;
+  endpointSuffix?: string;
+  host: string;
+  endpoint?: string;
+  aadCredential?: {
+    clientId: string;
+    tenantId: string;
+    clientSecret: string;
+  };
+};
+
+// @public
+export interface AzureCredentialsManager {
+  getCredentials(
+    accountName: string,
+  ): Promise<
+    TokenCredential | StorageSharedKeyCredential | AnonymousCredential
+  >;
+  getServiceUrl(accountName: string): string;
+}
+
 // @public
 export class DefaultAzureCredentialsManager implements AzureCredentialsManager {
-  // Warning: (ae-forgotten-export) The symbol "ScmIntegrationRegistry" needs to be exported by the entry point backend.d.ts
-  static fromIntegrations(
-    integrations: ScmIntegrationRegistry,
-  ): DefaultAzureCredentialsManager;
+  static fromIntegrations(integrations: {
+    azureBlobStorage: {
+      list(): Array<{
+        config: AzureBlobStorageIntegrationConfig;
+      }>;
+    };
+  }): DefaultAzureCredentialsManager;
   // (undocumented)
   getCredentials(
     accountName: string,
@@ -26,4 +51,6 @@ export class DefaultAzureCredentialsManager implements AzureCredentialsManager {
   // (undocumented)
   getServiceUrl(accountName: string): string;
 }
+
+// (No @packageDocumentation comment for this package)
 ```

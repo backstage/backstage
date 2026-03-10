@@ -25,7 +25,6 @@ import {
 } from '@azure/storage-blob';
 import { AzureBlobStorageIntegrationConfig } from './config';
 import { AzureCredentialsManager } from './types';
-import { ScmIntegrationRegistry } from '../registry';
 
 /**
  * Default implementation of AzureCredentialsManager that supports multiple Azure Blob Storage integrations.
@@ -51,8 +50,23 @@ export class DefaultAzureCredentialsManager implements AzureCredentialsManager {
 
   /**
    * Creates an instance of DefaultAzureCredentialsManager from a Backstage integration registry.
+   *
+   * @param integrations - An {@link ScmIntegrations} instance (or any object providing `azureBlobStorage.list()`)
+   *
+   * @example
+   * ```ts
+   * import { ScmIntegrations } from '@backstage/integration';
+   * import { DefaultAzureCredentialsManager } from '@backstage/integration/backend';
+   *
+   * const integrations = ScmIntegrations.fromConfig(config);
+   * const credentialsManager = DefaultAzureCredentialsManager.fromIntegrations(integrations);
+   * ```
    */
-  static fromIntegrations(integrations: ScmIntegrationRegistry) {
+  static fromIntegrations(integrations: {
+    azureBlobStorage: {
+      list(): Array<{ config: AzureBlobStorageIntegrationConfig }>;
+    };
+  }) {
     const configProviders = integrations.azureBlobStorage
       .list()
       .reduce((acc, integration) => {
@@ -95,6 +109,7 @@ export class DefaultAzureCredentialsManager implements AzureCredentialsManager {
     return new DefaultAzureCredential();
   }
 
+  /** {@inheritDoc AzureCredentialsManager.getCredentials} */
   async getCredentials(accountName: string) {
     if (this.cachedCredentials.has(accountName)) {
       return this.cachedCredentials.get(accountName)!;
@@ -113,6 +128,7 @@ export class DefaultAzureCredentialsManager implements AzureCredentialsManager {
     return credential;
   }
 
+  /** {@inheritDoc AzureCredentialsManager.getServiceUrl} */
   getServiceUrl(accountName: string) {
     const config = this.configProviders.get(accountName);
     if (!config) {

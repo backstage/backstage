@@ -21,7 +21,7 @@
   "sideEffects": false,
   "exports": {
     ".": "./src/index.ts",
-    "./backend": "./src/azureBlobStorage/backend.ts",
+    "./backend": "./src/backend.ts",
     "./package.json": "./package.json"
   },
   "main": "src/index.ts",
@@ -29,7 +29,7 @@
   "typesVersions": {
     "*": {
       "backend": [
-        "src/azureBlobStorage/backend.ts"
+        "src/backend.ts"
       ],
       "package.json": [
         "package.json"
