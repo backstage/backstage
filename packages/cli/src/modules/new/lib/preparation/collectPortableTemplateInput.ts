@@ -271,9 +271,9 @@ export function ownerPrompt(): DistinctQuestion {
 
 // Reuses the same pattern as namePrompt/pluginIdPrompt but extended to support npm scopes
 // Matches: @scope/package-name, @scope/package, package-name, package
-const packageNamePattern = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+const packageNamePattern = /^[a-z0-9][a-z0-9._-]*$/;
 const scopedPackageNamePattern =
-  /^@[a-z0-9]+(-[a-z0-9]+)*\/[a-z0-9]+(-[a-z0-9]+)*$/;
+  /^@[a-z0-9][a-z0-9._-]*\/[a-z0-9][a-z0-9._-]*$/;
 
 function isValidNpmPackageName(name: string) {
   return packageNamePattern.test(name) || scopedPackageNamePattern.test(name);
