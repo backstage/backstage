@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useOutlet } from 'react-router-dom';
+import { useOutlet } from '@backstage/frontend-plugin-api';
 import { DefaultDevToolsPage } from '../DefaultDevToolsPage';
 import { ReactElement } from 'react';
 

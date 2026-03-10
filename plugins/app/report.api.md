@@ -120,7 +120,10 @@ const appPlugin: OverridableFrontendPlugin<
       inputs: {
         router: ExtensionInput<
           ConfigurableExtensionDataRef<
-            (props: { children: ReactNode }) => JSX.Element | null,
+            (props: {
+              children: ReactNode;
+              basePath?: string;
+            }) => JSX.Element | null,
             'app.router.wrapper',
             {}
           >,

@@ -24,16 +24,16 @@ import {
 } from './index';
 import { Button } from '../..';
 import { useState, useEffect } from 'react';
-import { MemoryRouter } from 'react-router-dom';
+import { TestMemoryRouterProvider } from '@backstage/frontend-test-utils';
 
 const meta = preview.meta({
   title: 'Backstage UI/MenuAutocomplete',
   component: MenuTrigger,
   decorators: [
     Story => (
-      <MemoryRouter>
+      <TestMemoryRouterProvider>
         <Story />
-      </MemoryRouter>
+      </TestMemoryRouterProvider>
     ),
   ],
 });

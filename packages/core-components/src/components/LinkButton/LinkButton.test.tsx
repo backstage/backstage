@@ -17,7 +17,7 @@
 import { screen, fireEvent, act } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { LinkButton } from './LinkButton';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes } from '@backstage/frontend-plugin-api';
 
 describe('<LinkButton />', () => {
   it('navigates using react-router', async () => {

@@ -35,7 +35,6 @@ import FilterListIcon from '@material-ui/icons/FilterList';
 import ZoomOutMap from '@material-ui/icons/ZoomOutMap';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import { MouseEvent, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
 import {
   EntityRelationsGraph,
   EntityRelationsGraphProps,
@@ -47,7 +46,7 @@ import { SelectedKindsFilter } from './SelectedKindsFilter';
 import { SelectedRelationsFilter } from './SelectedRelationsFilter';
 import { SwitchFilter } from './SwitchFilter';
 import { useCatalogGraphPage } from './useCatalogGraphPage';
-import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { useNavigate, useTranslationRef } from '@backstage/frontend-plugin-api';
 import { catalogGraphTranslationRef } from '../../translation';
 import { Direction, EntityNode } from '../../lib/types';
 

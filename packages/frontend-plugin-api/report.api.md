@@ -16,11 +16,11 @@ import { ExtensionBlueprint as ExtensionBlueprint_2 } from '@backstage/frontend-
 import { ExtensionBlueprintParams as ExtensionBlueprintParams_2 } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef as ExtensionDataRef_2 } from '@backstage/frontend-plugin-api';
 import { ExtensionInput as ExtensionInput_2 } from '@backstage/frontend-plugin-api';
-import { FC } from 'react';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { JSX as JSX_2 } from 'react';
 import { JSX as JSX_3 } from 'react/jsx-runtime';
+import { JSXElementConstructor } from 'react';
 import { Observable } from '@backstage/types';
 import { PropsWithChildren } from 'react';
 import { ReactElement } from 'react';
@@ -1468,7 +1468,7 @@ export type IdentityApi = {
 export const identityApiRef: ApiRef<IdentityApi>;
 
 // @public
-export const Link: FC<LinkProps>;
+export const Link: (props: LinkProps) => JSX_3.Element;
 
 // @public
 export interface LinkProps
@@ -1507,7 +1507,7 @@ export const microsoftAuthApiRef: ApiRef<
 >;
 
 // @public
-export const Navigate: FC<NavigateProps>;
+export const Navigate: (props: NavigateProps) => JSX_3.Element;
 
 // @public
 export type NavigateFunction = {
@@ -1564,7 +1564,7 @@ export const NavItemBlueprint: ExtensionBlueprint_2<{
 }>;
 
 // @public
-export const NavLink: FC<NavLinkProps>;
+export const NavLink: (props: NavLinkProps) => JSX_3.Element;
 
 // @public
 export interface NavLinkProps
@@ -1660,9 +1660,7 @@ export const openshiftAuthApiRef: ApiRef<
 >;
 
 // @public
-export const Outlet: FC<{
-  context?: unknown;
-}>;
+export const Outlet: (props: { context?: unknown }) => JSX_3.Element;
 
 // @public (undocumented)
 export interface OverridableExtensionDefinition<
@@ -2038,7 +2036,7 @@ export type ResolvedExtensionInputs<
 export function resolvePath(to: To, fromPathname?: string): Path;
 
 // @public
-export const Route: FC<RouteProps>;
+export const Route: (_props: RouteProps) => ReactElement | null;
 
 // @public
 export type RouteFunc<TParams extends AnyRouteRefParams> = (
@@ -2179,7 +2177,9 @@ export interface RouteResolutionApi {
 export const routeResolutionApiRef: ApiRef_2<RouteResolutionApi>;
 
 // @public
-export const Routes: FC<RoutesProps>;
+export const Routes: (
+  input: RoutesProps,
+) => ReactElement<any, string | JSXElementConstructor<any>> | null;
 
 // @public
 export interface RoutesProps {

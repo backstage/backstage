@@ -27,7 +27,7 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from '@backstage/frontend-plugin-api';
 import { Direction } from '../../lib/types';
 
 export type CatalogGraphPageValue = {
@@ -196,7 +196,9 @@ export function useCatalogGraphPage({
       { arrayFormat: 'brackets', addQueryPrefix: true },
     );
 
-    navigate(newParams, { replace: true });
+    if (location.search !== newParams) {
+      navigate(newParams, { replace: true });
+    }
   }, [
     maxDepth,
     curve,
@@ -208,6 +210,7 @@ export function useCatalogGraphPage({
     showFilters,
     rootEntityNames,
     navigate,
+    location.search,
   ]);
 
   return {

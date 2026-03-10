@@ -16,7 +16,7 @@
 
 import yaml from 'yaml';
 import { useCallback, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@backstage/frontend-plugin-api';
 import useAsync from 'react-use/esm/useAsync';
 
 import { makeStyles } from '@material-ui/core/styles';

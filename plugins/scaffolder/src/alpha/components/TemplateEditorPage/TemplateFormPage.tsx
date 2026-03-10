@@ -15,7 +15,7 @@
  */
 
 import { useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@backstage/frontend-plugin-api';
 
 import { makeStyles } from '@material-ui/core/styles';
 

@@ -18,7 +18,7 @@ import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { EntityListProvider, useStarredEntities } from '../../hooks';
 import { catalogApiRef } from '../../api';
 import { ApiRef } from '@backstage/core-plugin-api';
-import { MemoryRouter } from 'react-router-dom';
+import { TestMemoryRouterProvider } from '@backstage/frontend-test-utils';
 import { useStarredEntitiesCount } from './useStarredEntitiesCount';
 import { renderHook, waitFor } from '@testing-library/react';
 
@@ -74,9 +74,9 @@ describe('useStarredEntitiesCount', () => {
 
     const { result } = renderHook(() => useStarredEntitiesCount(), {
       wrapper: ({ children }) => (
-        <MemoryRouter>
+        <TestMemoryRouterProvider>
           <EntityListProvider>{children}</EntityListProvider>
-        </MemoryRouter>
+        </TestMemoryRouterProvider>
       ),
     });
 
@@ -106,9 +106,9 @@ describe('useStarredEntitiesCount', () => {
 
     const { result } = renderHook(() => useStarredEntitiesCount(), {
       wrapper: ({ children }) => (
-        <MemoryRouter>
+        <TestMemoryRouterProvider>
           <EntityListProvider>{children}</EntityListProvider>
-        </MemoryRouter>
+        </TestMemoryRouterProvider>
       ),
     });
 

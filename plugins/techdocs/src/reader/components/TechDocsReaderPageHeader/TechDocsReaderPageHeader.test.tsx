@@ -53,9 +53,9 @@ const mockTechDocsMetadata = {
 };
 
 let useParamsPath = '/';
-jest.mock('react-router-dom', () => {
+jest.mock('@backstage/frontend-plugin-api', () => {
   return {
-    ...(jest.requireActual('react-router-dom') as any),
+    ...(jest.requireActual('@backstage/frontend-plugin-api') as any),
     useParams: () => ({ '*': useParamsPath }),
   };
 });

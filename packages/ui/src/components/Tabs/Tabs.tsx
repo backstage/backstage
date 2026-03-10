@@ -34,7 +34,8 @@ import type {
   TabsContextValue,
   TabProps,
 } from './types';
-import { useLocation } from 'react-router-dom';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { useLocation } from '../../../../frontend-plugin-api/src/routing/hooks';
 import { TabsIndicators } from './TabsIndicators';
 import {
   Tabs as AriaTabs,

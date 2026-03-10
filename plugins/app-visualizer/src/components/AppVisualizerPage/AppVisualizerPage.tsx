@@ -26,7 +26,7 @@ import {
   useNavigate,
   useParams,
   useRoutes,
-} from 'react-router-dom';
+} from '@backstage/frontend-plugin-api';
 
 export function AppVisualizerPage() {
   const tabs = useMemo(
@@ -57,7 +57,7 @@ export function AppVisualizerPage() {
   const element = useRoutes(tabs, location);
 
   const currentPath = `/${useParams()['*']}`;
-  const [matchedRoute] = matchRoutes(tabs, currentPath) ?? [];
+  const [matchedRoute] = matchRoutes(tabs, { pathname: currentPath }) ?? [];
 
   const currentTabIndex = matchedRoute
     ? tabs.findIndex(t => t.path === matchedRoute.route.path)

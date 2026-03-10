@@ -19,16 +19,16 @@ import { MenuTrigger, MenuListBox, MenuListBoxItem } from './index';
 import { Button, Flex, Text } from '../..';
 import { useEffect, useState } from 'react';
 import { Selection } from 'react-aria-components';
-import { MemoryRouter } from 'react-router-dom';
+import { TestMemoryRouterProvider } from '@backstage/frontend-test-utils';
 
 const meta = preview.meta({
   title: 'Backstage UI/MenuListBox',
   component: MenuTrigger,
   decorators: [
     Story => (
-      <MemoryRouter>
+      <TestMemoryRouterProvider>
         <Story />
-      </MemoryRouter>
+      </TestMemoryRouterProvider>
     ),
   ],
 });

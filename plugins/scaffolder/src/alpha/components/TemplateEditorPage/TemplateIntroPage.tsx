@@ -17,7 +17,7 @@ import { useCallback } from 'react';
 import { Content, Header, Page } from '@backstage/core-components';
 
 import { TemplateEditorIntro } from './TemplateEditorIntro';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@backstage/frontend-plugin-api';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import {
   rootRouteRef,

@@ -176,10 +176,13 @@ export const RouterBlueprint: ExtensionBlueprint<{
   kind: 'app-router-component';
   params: {
     Component?: [error: 'Use the `component` parameter instead'];
-    component: (props: { children: ReactNode }) => JSX.Element | null;
+    component: (props: {
+      children: ReactNode;
+      basePath?: string;
+    }) => JSX.Element | null;
   };
   output: ExtensionDataRef<
-    (props: { children: ReactNode }) => JSX.Element | null,
+    (props: { children: ReactNode; basePath?: string }) => JSX.Element | null,
     'app.router.wrapper',
     {}
   >;
@@ -188,7 +191,7 @@ export const RouterBlueprint: ExtensionBlueprint<{
   configInput: {};
   dataRefs: {
     component: ConfigurableExtensionDataRef<
-      (props: { children: ReactNode }) => JSX.Element | null,
+      (props: { children: ReactNode; basePath?: string }) => JSX.Element | null,
       'app.router.wrapper',
       {}
     >;

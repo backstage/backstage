@@ -41,7 +41,7 @@ import {
   Progress,
 } from '@backstage/core-components';
 import { ScaffolderPageContextMenu } from '@backstage/plugin-scaffolder-react/alpha';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@backstage/frontend-plugin-api';
 import {
   editRouteRef,
   rootRouteRef,

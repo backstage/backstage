@@ -15,7 +15,7 @@
  */
 
 import { JSX } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate } from '../routing';
 import { IconElement } from '../icons/types';
 import { RouteRef } from '../routing';
 import {

@@ -16,7 +16,7 @@
  */
 
 import type { Meta } from '@storybook/react-vite';
-import { MemoryRouter } from 'react-router-dom';
+import { TestMemoryRouterProvider } from '@backstage/frontend-test-utils';
 import { CellText, type ColumnConfig } from '..';
 
 // Selection demo data
@@ -46,9 +46,9 @@ export const selectionColumns: ColumnConfig<(typeof selectionData)[0]>[] = [
 export const tableStoriesMeta = {
   decorators: [
     (Story: () => JSX.Element) => (
-      <MemoryRouter>
+      <TestMemoryRouterProvider>
         <Story />
-      </MemoryRouter>
+      </TestMemoryRouterProvider>
     ),
   ],
 } satisfies Partial<Meta>;

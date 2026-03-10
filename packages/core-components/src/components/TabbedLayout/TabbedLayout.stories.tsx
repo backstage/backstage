@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 import { PropsWithChildren } from 'react';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { Route, Routes } from '@backstage/frontend-plugin-api';
+import { TestMemoryRouterProvider } from '@backstage/frontend-test-utils';
 import { TabbedLayout } from './TabbedLayout';
 
 export default {
@@ -24,11 +25,11 @@ export default {
 };
 
 const Wrapper = ({ children }: PropsWithChildren<{}>) => (
-  <MemoryRouter>
+  <TestMemoryRouterProvider>
     <Routes>
       <Route path="/*" element={<>{children}</>} />
     </Routes>
-  </MemoryRouter>
+  </TestMemoryRouterProvider>
 );
 
 export const Default = () => (

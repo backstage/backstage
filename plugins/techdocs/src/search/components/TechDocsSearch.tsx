@@ -22,7 +22,7 @@ import {
   useSearch,
 } from '@backstage/plugin-search-react';
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@backstage/frontend-plugin-api';
 import { TechDocsSearchResultListItem } from './TechDocsSearchResultListItem';
 
 /**

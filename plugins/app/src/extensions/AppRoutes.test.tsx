@@ -16,8 +16,12 @@
 
 import { screen, waitFor } from '@testing-library/react';
 import { renderTestApp } from '@backstage/frontend-test-utils';
-import { PageBlueprint } from '@backstage/frontend-plugin-api';
-import { Link, useLocation, useParams } from 'react-router-dom';
+import {
+  Link,
+  PageBlueprint,
+  useLocation,
+  useParams,
+} from '@backstage/frontend-plugin-api';
 
 describe('AppRoutes', () => {
   it('should render the first route at root path', async () => {

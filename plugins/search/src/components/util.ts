@@ -15,7 +15,7 @@
  */
 import qs from 'qs';
 import { useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@backstage/frontend-plugin-api';
 import { rootRouteRef } from '../plugin';
 
 import { useRouteRef } from '@backstage/core-plugin-api';

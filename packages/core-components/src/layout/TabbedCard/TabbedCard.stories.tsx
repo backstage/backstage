@@ -17,13 +17,13 @@
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { PropsWithChildren, useState } from 'react';
-import { MemoryRouter } from 'react-router-dom';
+import { TestMemoryRouterProvider } from '@backstage/frontend-test-utils';
 import { CardTab, TabbedCard } from './TabbedCard';
 
 const cardContentStyle = { height: 200, width: 500 };
 
 const Wrapper = ({ children }: PropsWithChildren<{}>) => (
-  <MemoryRouter>{children}</MemoryRouter>
+  <TestMemoryRouterProvider>{children}</TestMemoryRouterProvider>
 );
 
 export default {

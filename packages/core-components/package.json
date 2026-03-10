@@ -57,6 +57,7 @@
     "@backstage/config": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/errors": "workspace:^",
+    "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/theme": "workspace:^",
     "@backstage/version-bridge": "workspace:^",
     "@dagrejs/dagre": "^1.1.4",
@@ -101,6 +102,7 @@
     "@backstage/app-defaults": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@backstage/core-app-api": "workspace:^",
+    "@backstage/frontend-test-utils": "workspace:^",
     "@backstage/test-utils": "workspace:^",
     "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^6.0.0",
@@ -122,14 +124,12 @@
     "history": "^5.0.0",
     "msw": "^1.0.0",
     "react": "^18.0.2",
-    "react-dom": "^18.0.2",
-    "react-router-dom": "^6.30.2"
+    "react-dom": "^18.0.2"
   },
   "peerDependencies": {
     "@types/react": "^17.0.0 || ^18.0.0",
     "react": "^17.0.0 || ^18.0.0",
-    "react-dom": "^17.0.0 || ^18.0.0",
-    "react-router-dom": "^6.30.2"
+    "react-dom": "^17.0.0 || ^18.0.0"
   },
   "peerDependenciesMeta": {
     "@types/react": {

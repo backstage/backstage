@@ -17,7 +17,7 @@
 import { isEqual } from 'lodash';
 import qs from 'qs';
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams } from '@backstage/frontend-plugin-api';
 import { useDebouncedEffect } from '@react-hookz/web';
 
 function stringify(queryParams: any): string {
@@ -84,7 +84,7 @@ export function useQueryParamState<T>(
       );
 
       if (searchParamsString !== queryString) {
-        setSearchParams(queryString, { replace: true });
+        setSearchParams(new URLSearchParams(queryString), { replace: true });
       }
     },
     [setSearchParams, queryParamState, searchParamsString, stateName],

@@ -15,7 +15,7 @@
  */
 import { ReactNode, useEffect } from 'react';
 
-import { useLocation } from 'react-router-dom';
+import { useLocation } from '@backstage/frontend-plugin-api';
 
 import { visitsApiRef } from '../api';
 import { useApi } from '@backstage/core-plugin-api';

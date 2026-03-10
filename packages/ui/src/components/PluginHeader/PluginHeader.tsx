@@ -18,7 +18,8 @@ import type { PluginHeaderProps } from './types';
 import { Tabs, TabList, Tab } from '../Tabs';
 import { useDefinition } from '../../hooks/useDefinition';
 import { PluginHeaderDefinition } from './definition';
-import { type NavigateOptions } from 'react-router-dom';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { type NavigateOptions } from '../../../../frontend-plugin-api/src/routing/routerTypes';
 import { useRef } from 'react';
 import { useIsomorphicLayoutEffect } from '../../hooks/useIsomorphicLayoutEffect';
 import { Box } from '../Box';

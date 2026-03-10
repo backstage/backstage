@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import {
+  ComponentType,
   ReactNode,
   forwardRef,
   useState,
@@ -21,7 +22,6 @@ import {
   MouseEventHandler,
   ReactElement,
 } from 'react';
-import { Link } from 'react-router-dom';
 import classnames from 'classnames';
 
 import Typography from '@material-ui/core/Typography';
@@ -36,7 +36,14 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import List from '@material-ui/core/List';
 import { useApi } from '@backstage/core-plugin-api';
-import { IconsApi, iconsApiRef } from '@backstage/frontend-plugin-api';
+import {
+  IconsApi,
+  iconsApiRef,
+  Link,
+  type LinkProps,
+} from '@backstage/frontend-plugin-api';
+
+const LinkComponent = Link as ComponentType<LinkProps>;
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -237,7 +244,7 @@ const Tab = forwardRef(function Tab(props: EntityTabsGroupProps, ref: any) {
         role="tab"
         aria-selected={selected}
         disabled={disabled}
-        component={Link}
+        component={LinkComponent}
         onClick={onSelectTab}
         to={items[0]?.path}
         startIcon={resolveIcon(items[0].icon, iconsApi, showIcons)}
@@ -299,7 +306,7 @@ const Tab = forwardRef(function Tab(props: EntityTabsGroupProps, ref: any) {
                 aria-selected={selected}
                 disabled={disabled}
                 selected={highlightedButton === i.id}
-                component={Link}
+                component={LinkComponent}
                 onClick={e => {
                   handleMenuClose();
                   onSelectTab?.(e);

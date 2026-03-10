@@ -32,7 +32,7 @@ import { commonProvider } from './commonProvider';
 import { guestProvider } from './guestProvider';
 import { customProvider } from './customProvider';
 import { IdentityApiSignOutProxy } from './IdentityApiSignOutProxy';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams } from '@backstage/frontend-plugin-api';
 import { useMountEffect } from '@react-hookz/web';
 import { ForwardedError } from '@backstage/errors';
 import { coreComponentsTranslationRef } from '../../translation';

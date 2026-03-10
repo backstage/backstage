@@ -17,18 +17,18 @@
 import { PropsWithChildren } from 'react';
 import { GaugeCard } from './GaugeCard';
 import Grid from '@material-ui/core/Grid';
-import { MemoryRouter } from 'react-router-dom';
+import { TestMemoryRouterProvider } from '@backstage/frontend-test-utils';
 import Tooltip from '@material-ui/core/Tooltip';
 import Info from '@material-ui/icons/Info';
 
 const linkInfo = { title: 'Go to XYZ Location', link: '#' };
 
 const Wrapper = ({ children }: PropsWithChildren<{}>) => (
-  <MemoryRouter>
+  <TestMemoryRouterProvider>
     <Grid container spacing={2}>
       {children}
     </Grid>
-  </MemoryRouter>
+  </TestMemoryRouterProvider>
 );
 
 export default {

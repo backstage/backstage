@@ -19,8 +19,8 @@ import { useNavigateToQuery } from './util';
 import { rootRouteRef } from '../plugin';
 
 const navigate = jest.fn();
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+jest.mock('@backstage/frontend-plugin-api', () => ({
+  ...jest.requireActual('@backstage/frontend-plugin-api'),
   useNavigate: () => navigate,
 }));
 

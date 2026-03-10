@@ -22,7 +22,7 @@ import Typography from '@material-ui/core/Typography';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { MouseEvent, useState, Fragment } from 'react';
-import { MemoryRouter } from 'react-router-dom';
+import { TestMemoryRouterProvider } from '@backstage/frontend-test-utils';
 import { Link } from '../../components/Link';
 import { Header } from '../Header';
 import { Page } from '../Page';
@@ -35,7 +35,7 @@ export default {
 };
 
 export const InHeader = () => (
-  <MemoryRouter>
+  <TestMemoryRouterProvider>
     <h2>Standard breadcrumbs</h2>
     <Typography paragraph>
       Underlined pages are links. This should show a hierarchical relationship.
@@ -44,7 +44,7 @@ export const InHeader = () => (
     <Page themeId="other">
       <Header title="Current Page" type="General Page" typeLink="/" />
     </Page>
-  </MemoryRouter>
+  </TestMemoryRouterProvider>
 );
 
 export const OutsideOfHeader = () => {
@@ -59,7 +59,7 @@ export const OutsideOfHeader = () => {
 
   const open = Boolean(anchorEl);
   return (
-    <MemoryRouter>
+    <TestMemoryRouterProvider>
       <Typography paragraph>
         It might be the case that you want to keep your breadcrumbs outside of
         the header. In that case, they should be positioned above the title of
@@ -137,6 +137,6 @@ export const OutsideOfHeader = () => {
           </List>
         </Popover>
       </Fragment>
-    </MemoryRouter>
+    </TestMemoryRouterProvider>
   );
 };

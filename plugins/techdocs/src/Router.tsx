@@ -15,7 +15,7 @@
  */
 
 import { ReactElement, PropsWithChildren } from 'react';
-import { Route, Routes, useRoutes } from 'react-router-dom';
+import { Route, Routes, useRoutes } from '@backstage/frontend-plugin-api';
 
 import { Entity } from '@backstage/catalog-model';
 import { EntityPageDocs } from './EntityPageDocs';

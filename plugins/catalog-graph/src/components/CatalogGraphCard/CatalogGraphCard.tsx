@@ -31,7 +31,7 @@ import { RiArrowRightLine } from '@remixicon/react';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import qs from 'qs';
 import { MouseEvent, ReactNode, useCallback, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@backstage/frontend-plugin-api';
 import { catalogGraphRouteRef } from '../../routes';
 import {
   EntityRelationsGraph,

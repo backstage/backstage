@@ -23,9 +23,10 @@ import {
   PageBlueprint,
   FrontendPluginInfo,
   useAppNode,
+  Route,
+  Routes,
 } from '@backstage/frontend-plugin-api';
 import { useEffect, useState } from 'react';
-import { Route, Routes } from 'react-router-dom';
 
 const indexRouteRef = createRouteRef();
 const page1RouteRef = createRouteRef();

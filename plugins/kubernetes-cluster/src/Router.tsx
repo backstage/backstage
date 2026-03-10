@@ -19,7 +19,7 @@ import {
   useEntity,
   MissingAnnotationEmptyState,
 } from '@backstage/plugin-catalog-react';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes } from '@backstage/frontend-plugin-api';
 import { ANNOTATION_KUBERNETES_API_SERVER } from '@backstage/plugin-kubernetes-common';
 import { KubernetesClusterContent } from './components/KubernetesClusterContent';
 

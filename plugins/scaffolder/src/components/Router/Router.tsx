@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { ComponentType, PropsWithChildren } from 'react';
-import { Routes, Route, useOutlet } from 'react-router-dom';
+import { Routes, Route, useOutlet } from '@backstage/frontend-plugin-api';
 
 import {
   FieldExtensionOptions,

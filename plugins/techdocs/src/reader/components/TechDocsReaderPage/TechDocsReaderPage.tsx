@@ -15,7 +15,7 @@
  */
 
 import { Children, ReactElement, ReactNode, useMemo } from 'react';
-import { useOutlet } from 'react-router-dom';
+import { useOutlet } from '@backstage/frontend-plugin-api';
 import { Page, Progress } from '@backstage/core-components';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import {

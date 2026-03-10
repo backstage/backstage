@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useCallback, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@backstage/frontend-plugin-api';
 
 import { useRouteRef } from '@backstage/core-plugin-api';
 import type {

@@ -35,7 +35,7 @@ import {
   RiDeleteBinLine,
   RiShareBoxLine,
 } from '@remixicon/react';
-import { MemoryRouter } from 'react-router-dom';
+import { TestMemoryRouterProvider } from '@backstage/frontend-test-utils';
 import { useEffect, useState } from 'react';
 
 const meta = preview.meta({
@@ -43,9 +43,9 @@ const meta = preview.meta({
   component: MenuTrigger,
   decorators: [
     Story => (
-      <MemoryRouter>
+      <TestMemoryRouterProvider>
         <Story />
-      </MemoryRouter>
+      </TestMemoryRouterProvider>
     ),
   ],
 });

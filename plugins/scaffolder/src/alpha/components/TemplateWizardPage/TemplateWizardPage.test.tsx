@@ -35,14 +35,22 @@ import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { ScaffolderFormDecoratorsApi } from '../../api/types';
 import { formDecoratorsApiRef } from '../../api/ref';
 
-jest.mock('react-router-dom', () => {
-  return {
-    ...(jest.requireActual('react-router-dom') as any),
-    useParams: () => ({
-      templateName: 'test',
-    }),
-  };
-});
+jest.mock('@backstage/frontend-plugin-api', () => ({
+  ...jest.requireActual('@backstage/frontend-plugin-api'),
+  useParams: jest.fn(() => ({
+    templateName: 'test',
+    namespace: 'default',
+  })),
+  useNavigate: jest.fn(() => jest.fn()),
+}));
+
+jest.mock('@backstage/core-plugin-api', () => ({
+  ...jest.requireActual('@backstage/core-plugin-api'),
+  useRouteRefParams: jest.fn(() => ({
+    templateName: 'test',
+    namespace: 'default',
+  })),
+}));
 
 const scaffolderApiMock: jest.Mocked<ScaffolderApi> = {
   cancelTask: jest.fn(),

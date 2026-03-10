@@ -18,7 +18,7 @@ import preview from '../../../../../.storybook/preview';
 import type { StoryFn } from '@storybook/react-vite';
 import { ButtonLink } from './ButtonLink';
 import { Flex } from '../Flex';
-import { MemoryRouter } from 'react-router-dom';
+import { TestMemoryRouterProvider } from '@backstage/frontend-test-utils';
 import { RiArrowRightSLine, RiCloudLine } from '@remixicon/react';
 
 const meta = preview.meta({
@@ -26,9 +26,9 @@ const meta = preview.meta({
   component: ButtonLink,
   decorators: [
     (Story: StoryFn) => (
-      <MemoryRouter>
+      <TestMemoryRouterProvider>
         <Story />
-      </MemoryRouter>
+      </TestMemoryRouterProvider>
     ),
   ],
   argTypes: {

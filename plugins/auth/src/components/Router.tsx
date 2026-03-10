@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route } from '@backstage/frontend-plugin-api';
 import { ConsentPage } from './ConsentPage';
 
 /**

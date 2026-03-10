@@ -21,7 +21,7 @@ import { PluginHeader } from '../PluginHeader';
 import { Container } from '../Container';
 import { Text } from '../Text';
 import type { HeaderTab } from '../PluginHeader/types';
-import { MemoryRouter } from 'react-router-dom';
+import { TestMemoryRouterProvider } from '@backstage/frontend-test-utils';
 
 const meta = preview.meta({
   title: 'Backstage UI/FullPage',
@@ -32,9 +32,9 @@ const meta = preview.meta({
 });
 
 const withRouter = (Story: StoryFn) => (
-  <MemoryRouter>
+  <TestMemoryRouterProvider>
     <Story />
-  </MemoryRouter>
+  </TestMemoryRouterProvider>
 );
 
 const tabs: HeaderTab[] = [

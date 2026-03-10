@@ -32,6 +32,8 @@ const defaultSharedDependencies = {
     host: {},
     remote: { import: false },
   },
+  // TODO: Remove react-router and react-router-dom once all consumers
+  // have migrated to the RouterApi abstraction from @backstage/frontend-plugin-api
   // React Router
   'react-router': {
     host: {},

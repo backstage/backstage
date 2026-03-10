@@ -33,7 +33,7 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation } from '@backstage/frontend-plugin-api';
 import useAsyncFn from 'react-use/esm/useAsyncFn';
 import useDebounce from 'react-use/esm/useDebounce';
 import useMountedState from 'react-use/esm/useMountedState';

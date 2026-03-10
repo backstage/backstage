@@ -20,7 +20,7 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { EntityListProvider, useEntityList } from '../../hooks';
 import { catalogApiRef } from '../../api';
 import { ApiRef } from '@backstage/core-plugin-api';
-import { MemoryRouter } from 'react-router-dom';
+import { TestMemoryRouterProvider } from '@backstage/frontend-test-utils';
 import { EntityOwnerFilter } from '../../filters';
 import { useMountEffect } from '@react-hookz/web';
 
@@ -60,11 +60,11 @@ describe('useAllEntitiesCount', () => {
 
     const { result } = renderHook(() => useAllEntitiesCount(), {
       wrapper: ({ children }) => (
-        <MemoryRouter>
+        <TestMemoryRouterProvider>
           <EntityListProvider>
             <WrapFilters>{children}</WrapFilters>
           </EntityListProvider>
-        </MemoryRouter>
+        </TestMemoryRouterProvider>
       ),
     });
 
@@ -88,9 +88,9 @@ describe('useAllEntitiesCount', () => {
 
     const { result } = renderHook(() => useAllEntitiesCount(), {
       wrapper: ({ children }) => (
-        <MemoryRouter>
+        <TestMemoryRouterProvider>
           <EntityListProvider>{children}</EntityListProvider>
-        </MemoryRouter>
+        </TestMemoryRouterProvider>
       ),
     });
 

@@ -21,7 +21,7 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import { ThemeProvider } from '@material-ui/core/styles';
 import FindInPageIcon from '@material-ui/icons/FindInPage';
 import GroupIcon from '@material-ui/icons/Group';
-import { MemoryRouter } from 'react-router-dom';
+import { TestMemoryRouterProvider } from '@backstage/frontend-test-utils';
 import { DefaultResultListItem } from './DefaultResultListItem';
 
 export default {
@@ -29,13 +29,13 @@ export default {
   component: DefaultResultListItem,
   decorators: [
     (Story: () => JSX.Element) => (
-      <MemoryRouter>
+      <TestMemoryRouterProvider>
         <Grid container direction="row">
           <Grid item xs={12}>
             <Story />
           </Grid>
         </Grid>
-      </MemoryRouter>
+      </TestMemoryRouterProvider>
     ),
   ],
   tags: ['!manifest'],

@@ -28,7 +28,7 @@ import {
   Menu,
   MenuItem,
 } from '../../';
-import { MemoryRouter } from 'react-router-dom';
+import { TestMemoryRouterProvider } from '@backstage/frontend-test-utils';
 import {
   RiHeartLine,
   RiEmotionHappyLine,
@@ -46,9 +46,9 @@ const meta = preview.meta({
 });
 
 const withRouter = (Story: StoryFn) => (
-  <MemoryRouter>
+  <TestMemoryRouterProvider>
     <Story />
-  </MemoryRouter>
+  </TestMemoryRouterProvider>
 );
 
 const tabs: HeaderTab[] = [
@@ -335,7 +335,7 @@ export const WithMockedURLCampaigns = meta.story({
     tabs,
   },
   render: args => (
-    <MemoryRouter initialEntries={['/campaigns']}>
+    <TestMemoryRouterProvider initialEntries={['/campaigns']}>
       <PluginHeader {...args} />
       <Container>
         <Text as="p">
@@ -346,7 +346,7 @@ export const WithMockedURLCampaigns = meta.story({
           matches the current path.
         </Text>
       </Container>
-    </MemoryRouter>
+    </TestMemoryRouterProvider>
   ),
 });
 
@@ -355,7 +355,7 @@ export const WithMockedURLIntegrations = meta.story({
     tabs,
   },
   render: args => (
-    <MemoryRouter initialEntries={['/integrations']}>
+    <TestMemoryRouterProvider initialEntries={['/integrations']}>
       <PluginHeader {...args} />
       <Container>
         <Text as="p">
@@ -366,7 +366,7 @@ export const WithMockedURLIntegrations = meta.story({
           matches the current path.
         </Text>
       </Container>
-    </MemoryRouter>
+    </TestMemoryRouterProvider>
   ),
 });
 
@@ -375,7 +375,7 @@ export const WithMockedURLNoMatch = meta.story({
     tabs,
   },
   render: args => (
-    <MemoryRouter initialEntries={['/some-other-page']}>
+    <TestMemoryRouterProvider initialEntries={['/some-other-page']}>
       <PluginHeader {...args} />
       <Container>
         <Text as="p">
@@ -390,7 +390,7 @@ export const WithMockedURLNoMatch = meta.story({
           React Aria's internal state.
         </Text>
       </Container>
-    </MemoryRouter>
+    </TestMemoryRouterProvider>
   ),
 });
 
@@ -423,7 +423,7 @@ export const WithTabsMatchingStrategies = meta.story({
     ],
   },
   render: args => (
-    <MemoryRouter initialEntries={['/mentorship/events']}>
+    <TestMemoryRouterProvider initialEntries={['/mentorship/events']}>
       <PluginHeader {...args} />
       <Container>
         <Text>
@@ -450,7 +450,7 @@ export const WithTabsMatchingStrategies = meta.story({
           • <strong>Settings</strong>: exact matching (default) - not active
         </Text>
       </Container>
-    </MemoryRouter>
+    </TestMemoryRouterProvider>
   ),
 });
 
@@ -476,7 +476,7 @@ export const WithTabsExactMatching = meta.story({
     ],
   },
   render: args => (
-    <MemoryRouter initialEntries={['/mentorship/events']}>
+    <TestMemoryRouterProvider initialEntries={['/mentorship/events']}>
       <PluginHeader {...args} />
       <Container>
         <Text>
@@ -489,7 +489,7 @@ export const WithTabsExactMatching = meta.story({
           even though the URL is under /mentorship.
         </Text>
       </Container>
-    </MemoryRouter>
+    </TestMemoryRouterProvider>
   ),
 });
 
@@ -518,7 +518,7 @@ export const WithTabsPrefixMatchingDeep = meta.story({
     ],
   },
   render: args => (
-    <MemoryRouter initialEntries={['/catalog/users/john/details']}>
+    <TestMemoryRouterProvider initialEntries={['/catalog/users/john/details']}>
       <PluginHeader {...args} />
       <Container>
         <Text as="p">
@@ -546,6 +546,6 @@ export const WithTabsPrefixMatchingDeep = meta.story({
           This demonstrates how prefix matching works with deeply nested routes.
         </Text>
       </Container>
-    </MemoryRouter>
+    </TestMemoryRouterProvider>
   ),
 });
