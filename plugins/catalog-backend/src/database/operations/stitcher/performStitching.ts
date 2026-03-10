@@ -31,7 +31,6 @@ import {
   DbSearchRow,
 } from '../../tables';
 import { buildEntitySearch } from './buildEntitySearch';
-import { markDeferredStitchCompleted } from './markDeferredStitchCompleted';
 import { BATCH_SIZE, generateStableHash } from './util';
 import {
   LoggerService,
@@ -57,11 +56,6 @@ export async function performStitching(options: {
 }): Promise<'changed' | 'unchanged' | 'abandoned'> {
   const { knex, logger, entityRef } = options;
   const stitchTicket = options.stitchTicket ?? uuid();
-
-  // In deferred mode, the entity is removed from the stitch queue on ANY
-  // completion, except when an exception is thrown. In the latter case, the
-  // entity will be retried at a later time.
-  let removeFromStitchQueueOnCompletion = options.strategy.mode === 'deferred';
 
   try {
     const entityResult = await knex<DbRefreshStateRow>('refresh_state')
@@ -252,15 +246,6 @@ export async function performStitching(options: {
 
     return 'changed';
   } catch (error) {
-    removeFromStitchQueueOnCompletion = false;
     throw error;
-  } finally {
-    if (removeFromStitchQueueOnCompletion) {
-      await markDeferredStitchCompleted({
-        knex: knex,
-        entityRef,
-        stitchTicket,
-      });
-    }
   }
 }

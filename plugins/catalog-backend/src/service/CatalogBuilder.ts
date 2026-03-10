@@ -117,7 +117,10 @@ import {
 import { filterAndSortProcessors, filterProviders } from './util';
 import { GenericScmEventRefreshProvider } from '../providers/GenericScmEventRefreshProvider';
 import { readScmEventHandlingConfig } from '../util/readScmEventHandlingConfig';
-import { MetricsService } from '@backstage/backend-plugin-api/alpha';
+import {
+  MetricsService,
+  QueueService,
+} from '@backstage/backend-plugin-api/alpha';
 
 export type CatalogEnvironment = {
   logger: LoggerService;
@@ -127,6 +130,7 @@ export type CatalogEnvironment = {
   permissions: PermissionsService | PermissionAuthorizer;
   permissionsRegistry?: PermissionsRegistryService;
   scheduler: SchedulerService;
+  queue: QueueService;
   auth: AuthService;
   httpAuth: HttpAuthService;
   auditor: AuditorService;
@@ -425,6 +429,7 @@ export class CatalogBuilder {
       logger,
       permissions,
       scheduler,
+      queue,
       permissionsRegistry,
       auditor,
       auth,
@@ -452,6 +457,7 @@ export class CatalogBuilder {
       knex: dbClient,
       logger,
       metrics,
+      queue,
     });
 
     const processingDatabase = new DefaultProcessingDatabase({

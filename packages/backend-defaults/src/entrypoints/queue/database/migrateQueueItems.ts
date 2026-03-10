@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,18 @@
  * limitations under the License.
  */
 
-export { actionsRegistryServiceFactory } from './entrypoints/actionsRegistry';
-export { actionsServiceFactory } from './entrypoints/actions';
-export { metricsServiceFactory } from './entrypoints/metrics';
-export { queueServiceFactory } from './entrypoints/queue';
-export { rootSystemMetadataServiceFactory } from './entrypoints/rootSystemMetadata';
+import { resolvePackagePath } from '@backstage/backend-plugin-api';
+import { Knex } from 'knex';
+import { DB_MIGRATIONS_TABLE } from './tables';
+
+export const migrationsDir = resolvePackagePath(
+  '@backstage/backend-defaults',
+  'migrations/queue',
+);
+
+export async function migrateQueueItems(knex: Knex): Promise<void> {
+  await knex.migrate.latest({
+    directory: migrationsDir,
+    tableName: DB_MIGRATIONS_TABLE,
+  });
+}

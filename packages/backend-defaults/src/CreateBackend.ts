@@ -39,6 +39,7 @@ import {
   actionsRegistryServiceFactory,
   actionsServiceFactory,
   metricsServiceFactory,
+  queueServiceFactory,
 } from '@backstage/backend-defaults/alpha';
 import { instanceMetadataServiceFactory } from './alpha/entrypoints/instanceMetadata/instanceMetadataServiceFactory';
 
@@ -59,6 +60,7 @@ export const defaultServiceFactories = [
   rootHttpRouterServiceFactory,
   rootLifecycleServiceFactory,
   rootLoggerServiceFactory,
+  queueServiceFactory,
   schedulerServiceFactory,
   userInfoServiceFactory,
   urlReaderServiceFactory,

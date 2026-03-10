@@ -16,9 +16,14 @@
 
 import { Knex } from 'knex';
 import uniq from 'lodash/uniq';
-import { StitchingStrategy } from '../../../stitching/types';
-import { DbRefreshStateRow } from '../../tables';
-import { markForStitching } from '../stitcher/markForStitching';
+import { Queue } from '@backstage/backend-plugin-api/alpha';
+import {
+  DeferredStitchQueuePayload,
+  STITCHER_QUEUE_NAME,
+  StitchingStrategy,
+} from '../../../stitching/types';
+import { DbFinalEntitiesRow, DbRefreshStateRow } from '../../tables';
+import { retryOnDeadlock } from '../../util';
 
 /**
  * Finds and deletes all orphaned entities, i.e. entities that do not have any
@@ -28,8 +33,9 @@ import { markForStitching } from '../stitcher/markForStitching';
 export async function deleteOrphanedEntities(options: {
   knex: Knex.Transaction | Knex;
   strategy: StitchingStrategy;
+  queue?: Queue<DeferredStitchQueuePayload>;
 }): Promise<number> {
-  const { knex, strategy } = options;
+  const { knex, strategy, queue } = options;
 
   let total = 0;
 
@@ -80,13 +86,49 @@ export async function deleteOrphanedEntities(options: {
       .delete()
       .whereIn('entity_id', orphanIds);
 
-    // Mark all of the things that the orphans had relations to for stitching
-    await markForStitching({
-      knex,
-      strategy,
-      entityIds: orphanRelationIds,
-    });
+    // Queue all of the things that the orphans had relations to for stitching
+    if (orphanRelationIds.length > 0) {
+      if (strategy.mode === 'deferred') {
+        if (!queue) {
+          throw new Error(
+            `A ${STITCHER_QUEUE_NAME} queue is required for deferred orphan cleanup`,
+          );
+        }
+
+        const rows = await knex<DbRefreshStateRow>('refresh_state')
+          .select('entity_ref')
+          .whereIn('entity_id', orphanRelationIds);
+        const stitchRequestedAt = new Date().toISOString();
+
+        for (const entityRef of rows.map(row => row.entity_ref).sort()) {
+          await queue.add({
+            entityRef,
+            stitchRequestedAt,
+          });
+        }
+      } else {
+        await markEntityIdsForImmediateStitching(knex, orphanRelationIds);
+      }
+    }
   }
 
   return total;
+}
+
+async function markEntityIdsForImmediateStitching(
+  knex: Knex.Transaction | Knex,
+  entityIds: string[],
+): Promise<void> {
+  await knex<DbFinalEntitiesRow>('final_entities')
+    .update({ hash: 'force-stitching' })
+    .whereIn('entity_id', entityIds);
+
+  await retryOnDeadlock(async () => {
+    await knex<DbRefreshStateRow>('refresh_state')
+      .update({
+        result_hash: 'force-stitching',
+        next_update_at: knex.fn.now(),
+      })
+      .whereIn('entity_id', entityIds);
+  }, knex);
 }

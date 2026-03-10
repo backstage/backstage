@@ -17,6 +17,13 @@
 import { Config, readDurationFromConfig } from '@backstage/config';
 import { HumanDuration } from '@backstage/types';
 
+export const STITCHER_QUEUE_NAME = 'stitcher';
+
+export type DeferredStitchQueuePayload = {
+  entityRef: string;
+  stitchRequestedAt: string;
+};
+
 /**
  * Performs the act of stitching - to take all of the various outputs from the
  * ingestion process, and stitching them together into the final entity JSON
@@ -52,7 +59,6 @@ export type StitchingStrategy =
     }
   | {
       mode: 'deferred';
-      pollingInterval: HumanDuration;
       stitchTimeout: HumanDuration;
     };
 
@@ -66,19 +72,13 @@ export function stitchingStrategyFromConfig(config: Config): StitchingStrategy {
       mode: 'immediate',
     };
   } else if (strategyMode === undefined || strategyMode === 'deferred') {
-    const pollingIntervalKey = 'catalog.stitchingStrategy.pollingInterval';
     const stitchTimeoutKey = 'catalog.stitchingStrategy.stitchTimeout';
-
-    const pollingInterval = config.has(pollingIntervalKey)
-      ? readDurationFromConfig(config, { key: pollingIntervalKey })
-      : { seconds: 1 };
     const stitchTimeout = config.has(stitchTimeoutKey)
       ? readDurationFromConfig(config, { key: stitchTimeoutKey })
       : { seconds: 60 };
 
     return {
       mode: 'deferred',
-      pollingInterval: pollingInterval,
       stitchTimeout: stitchTimeout,
     };
   }

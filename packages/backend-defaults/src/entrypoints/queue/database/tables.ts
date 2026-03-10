@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,5 @@
  * limitations under the License.
  */
 
-export { actionsRegistryServiceFactory } from './entrypoints/actionsRegistry';
-export { actionsServiceFactory } from './entrypoints/actions';
-export { metricsServiceFactory } from './entrypoints/metrics';
-export { queueServiceFactory } from './entrypoints/queue';
-export { rootSystemMetadataServiceFactory } from './entrypoints/rootSystemMetadata';
+export const DB_MIGRATIONS_TABLE = 'backstage_backend_queue__knex_migrations';
+export const DB_QUEUE_ITEMS_TABLE = 'backstage_queue_items';

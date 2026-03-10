@@ -15,18 +15,16 @@
  */
 
 import { stringifyError } from '@backstage/errors';
-import { Knex } from 'knex';
 import { DateTime } from 'luxon';
-import { DbRefreshStateRow } from '../database/tables';
 import { createCounterMetric } from '../util/metrics';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { MetricsService } from '@backstage/backend-plugin-api/alpha';
 
 // Helps wrap the timing and logging behaviors
 export function progressTracker(
-  knex: Knex,
   logger: LoggerService,
   metrics: MetricsService,
+  getQueueLength: () => Promise<number>,
 ) {
   // prom-client metrics are deprecated in favour of OpenTelemetry metrics.
   const promStitchedEntities = createCounterMetric({
@@ -54,10 +52,7 @@ export function progressTracker(
     { description: 'Number of entities currently in the stitching queue' },
   );
   stitchingQueueCount.addCallback(async result => {
-    const total = await knex<DbRefreshStateRow>('refresh_state')
-      .count({ count: '*' })
-      .whereNotNull('next_stitch_at');
-    result.observe(Number(total[0].count));
+    result.observe(await getQueueLength());
   });
 
   const stitchingQueueDelay = metrics.createHistogram(

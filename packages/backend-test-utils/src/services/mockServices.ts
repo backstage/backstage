@@ -31,20 +31,24 @@ import {
   AuthService,
   BackstageCredentials,
   BackstageUserInfo,
+  coreServices,
+  createServiceFactory,
   DatabaseService,
   DiscoveryService,
   HttpAuthService,
-  RootInstanceMetadataService,
   PermissionsService,
   RootConfigService,
+  RootInstanceMetadataService,
+  RootLoggerService,
   SchedulerService,
   ServiceFactory,
   ServiceRef,
   UserInfoService,
-  coreServices,
-  createServiceFactory,
-  RootLoggerService,
 } from '@backstage/backend-plugin-api';
+import {
+  QueueService,
+  queueServiceRef,
+} from '@backstage/backend-plugin-api/alpha';
 import { ConfigReader } from '@backstage/config';
 import { EventsService, eventsServiceRef } from '@backstage/plugin-events-node';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
@@ -59,6 +63,7 @@ import { MockEventsService } from './MockEventsService';
 import { MockPermissionsService } from './MockPermissionsService';
 import { createServiceMock } from './createServiceMock';
 import { MockSchedulerService } from './MockSchedulerService';
+import { MockQueueService } from './MockQueueService';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { ObservableConfigProxy } from '../../../config-loader/src/sources/ObservableConfigProxy';
 
@@ -578,5 +583,28 @@ export namespace mockServices {
       coreServices.rootInstanceMetadata,
       rootInstanceMetadata,
     );
+  }
+
+  /**
+   * Creates a functional mock implementation of the
+   * {@link @backstage/backend-plugin-api/alpha#QueueService}.
+   */
+  export function queue(): QueueService {
+    return new MockQueueService();
+  }
+  export namespace queue {
+    /**
+     * Creates a mock factory for the
+     * {@link @backstage/backend-plugin-api/alpha#queueServiceRef}.
+     */
+    export const factory = simpleFactoryWithOptions(queueServiceRef, queue);
+    /**
+     * Creates a mock of the
+     * {@link @backstage/backend-plugin-api/alpha#queueServiceRef},
+     * optionally with some given method implementations.
+     */
+    export const mock = createServiceMock(queueServiceRef, () => ({
+      getQueue: jest.fn(),
+    }));
   }
 }

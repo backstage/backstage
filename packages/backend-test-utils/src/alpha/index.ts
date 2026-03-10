@@ -15,3 +15,4 @@
  */
 
 export * from './services';
+export { MockQueue, MockQueueService } from '../services/MockQueueService';

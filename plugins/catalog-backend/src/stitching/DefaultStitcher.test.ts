@@ -26,6 +26,7 @@ import {
 } from '../database/tables';
 import { DefaultStitcher } from './DefaultStitcher';
 import { metricsServiceMock } from '@backstage/backend-test-utils/alpha';
+import waitForExpect from 'wait-for-expect';
 
 jest.setTimeout(60_000);
 
@@ -44,6 +45,7 @@ describe('Stitcher', () => {
         logger,
         strategy: { mode: 'immediate' },
         metrics: metricsServiceMock.mock(),
+        queue: mockServices.queue(),
       });
       let entities: DbFinalEntitiesRow[];
       let entity: Entity;
@@ -271,6 +273,124 @@ describe('Stitcher', () => {
           },
         ]),
       );
+
+      await db.destroy();
+    },
+  );
+
+  it.each(databases.eachSupportedId())(
+    'queues deferred stitching by entity ref for %p',
+    async databaseId => {
+      const db = await databases.init(databaseId);
+      await applyDatabaseMigrations(db);
+
+      const stitcher = new DefaultStitcher({
+        knex: db,
+        logger,
+        strategy: { mode: 'deferred', stitchTimeout: { seconds: 1 } },
+        metrics: metricsServiceMock.mock(),
+        queue: mockServices.queue(),
+      });
+
+      await db<DbRefreshStateRow>('refresh_state').insert([
+        {
+          entity_id: 'my-id',
+          entity_ref: 'k:ns/n',
+          unprocessed_entity: JSON.stringify({}),
+          processed_entity: JSON.stringify({
+            apiVersion: 'a',
+            kind: 'k',
+            metadata: {
+              name: 'n',
+              namespace: 'ns',
+            },
+          }),
+          errors: '[]',
+          next_update_at: db.fn.now(),
+          last_discovery_at: db.fn.now(),
+        },
+      ]);
+
+      try {
+        await stitcher.start();
+        await stitcher.stitch({ entityIds: ['my-id'] });
+
+        await waitForExpect(async () => {
+          const entities = await db<DbFinalEntitiesRow>('final_entities');
+          expect(entities).toHaveLength(1);
+          expect(entities[0].entity_ref).toBe('k:ns/n');
+        }, 5000);
+      } finally {
+        await stitcher.stop();
+        await db.destroy();
+      }
+    },
+  );
+
+  it.each(databases.eachSupportedId())(
+    'reports immediate stitching backlog for %p',
+    async databaseId => {
+      const db = await databases.init(databaseId);
+      await applyDatabaseMigrations(db);
+
+      const metrics = metricsServiceMock.mock();
+
+      const stitcher = new DefaultStitcher({
+        knex: db,
+        logger,
+        strategy: { mode: 'immediate' },
+        metrics,
+        queue: mockServices.queue(),
+      });
+      expect(stitcher).toBeDefined();
+
+      await db<DbRefreshStateRow>('refresh_state').insert([
+        {
+          entity_id: 'my-id',
+          entity_ref: 'k:ns/n',
+          unprocessed_entity: JSON.stringify({}),
+          processed_entity: JSON.stringify({
+            apiVersion: 'a',
+            kind: 'k',
+            metadata: {
+              name: 'n',
+              namespace: 'ns',
+            },
+          }),
+          result_hash: 'force-stitching',
+          errors: '[]',
+          next_update_at: db.fn.now(),
+          last_discovery_at: db.fn.now(),
+        },
+        {
+          entity_id: 'other-id',
+          entity_ref: 'k:ns/other',
+          unprocessed_entity: JSON.stringify({}),
+          processed_entity: JSON.stringify({
+            apiVersion: 'a',
+            kind: 'k',
+            metadata: {
+              name: 'other',
+              namespace: 'ns',
+            },
+          }),
+          result_hash: 'original',
+          errors: '[]',
+          next_update_at: db.fn.now(),
+          last_discovery_at: db.fn.now(),
+        },
+      ]);
+
+      const gauge = (metrics.createObservableGauge as jest.Mock).mock.results[0]
+        .value;
+      const callback = (gauge.addCallback as jest.Mock).mock.calls[0][0];
+      const observe = jest.fn();
+
+      await callback({ observe });
+
+      expect(observe).toHaveBeenCalledWith(1);
+
+      await db.destroy();
     },
   );
 });

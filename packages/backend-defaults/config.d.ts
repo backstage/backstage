@@ -1304,6 +1304,79 @@ export interface Config {
         };
 
     /**
+     * Queue service configuration for background job processing.
+     */
+    queue?: {
+      /**
+       * Maximum number of attempts before a job is sent to the DLQ handler.
+       * @default 5
+       */
+      maxAttempts?: number;
+      /**
+       * Default concurrency for queue handler.
+       * @default 1
+       */
+      defaultConcurrency?: number;
+      /**
+       * Default store for new queues.
+       * @default database
+       */
+      defaultStore?: 'database' | 'memory' | 'redis' | 'sqs' | 'kafka';
+      /**
+       * Redis queue store configuration.
+       */
+      redis?: {
+        /**
+         * Redis connection string.
+         * @visibility secret
+         */
+        connection: string;
+      };
+      /**
+       * SQS queue store configuration.
+       */
+      sqs?: {
+        /**
+         * Optional AWS region.
+         */
+        region?: string;
+        /**
+         * Optional AWS endpoint.
+         */
+        endpoint?: string;
+        credentials?: {
+          /**
+           * User access key id
+           * @visibility secret
+           */
+          accessKeyId: string;
+          /**
+           * User secret access key
+           * @visibility secret
+           */
+          secretAccessKey: string;
+        };
+        /**
+         * Account id
+         */
+        accountId?: string;
+      };
+      /**
+       * Kafka queue store configuration.
+       */
+      kafka?: {
+        /**
+         * List of Kafka broker addresses.
+         */
+        brokers: string[];
+        /**
+         * Kafka client ID.
+         * @default 'backstage-backend'
+         */
+        clientId?: string;
+      };
+    };
+    /**
      * Configuration related to URL reading, used for example for reading catalog info
      * files, scaffolder templates, and techdocs content.
      */

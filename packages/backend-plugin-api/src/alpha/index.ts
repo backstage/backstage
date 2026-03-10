@@ -28,6 +28,21 @@ export type {
 export type { ActionsService, ActionsServiceAction } from './ActionsService';
 
 export type {
+  DLQHandler,
+  Job,
+  JobOptions,
+  ProcessHandler,
+  ProcessInput,
+  ProcessOptions,
+  Queue,
+  QueueOptions,
+  QueueService,
+  QueueStore,
+  QueueWorker,
+  QueueWorkerJob,
+} from './QueueService';
+
+export type {
   MetricsService,
   MetricAdvice,
   MetricAttributes,
@@ -49,5 +64,6 @@ export {
   actionsRegistryServiceRef,
   actionsServiceRef,
   metricsServiceRef,
+  queueServiceRef,
   rootSystemMetadataServiceRef,
 } from './refs';

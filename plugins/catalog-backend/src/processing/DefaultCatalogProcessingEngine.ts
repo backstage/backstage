@@ -39,7 +39,14 @@ import { deleteOrphanedEntities } from '../database/operations/util/deleteOrphan
 import { EventsService } from '@backstage/plugin-events-node';
 import { CATALOG_ERRORS_TOPIC } from '../constants';
 import { LoggerService, SchedulerService } from '@backstage/backend-plugin-api';
-import { MetricsService } from '@backstage/backend-plugin-api/alpha';
+import {
+  MetricsService,
+  QueueService,
+} from '@backstage/backend-plugin-api/alpha';
+import {
+  DeferredStitchQueuePayload,
+  STITCHER_QUEUE_NAME,
+} from '../stitching/types';
 
 const CACHE_TTL = 5;
 
@@ -75,6 +82,7 @@ export class DefaultCatalogProcessingEngine {
   }) => Promise<void> | void;
   private readonly tracker: ProgressTracker;
   private readonly events: EventsService;
+  private readonly queue?: QueueService;
 
   private stopFunc?: () => void;
 
@@ -96,6 +104,7 @@ export class DefaultCatalogProcessingEngine {
     tracker?: ProgressTracker;
     events: EventsService;
     metrics: MetricsService;
+    queue?: QueueService;
   }) {
     this.config = options.config;
     this.scheduler = options.scheduler;
@@ -110,6 +119,7 @@ export class DefaultCatalogProcessingEngine {
     this.onProcessingError = options.onProcessingError;
     this.tracker = options.tracker ?? progressTracker(options.metrics);
     this.events = options.events;
+    this.queue = options.queue;
 
     this.stopFunc = undefined;
   }
@@ -360,9 +370,17 @@ export class DefaultCatalogProcessingEngine {
 
     const runOnce = async () => {
       try {
+        const queue =
+          stitchingStrategy.mode === 'deferred'
+            ? await this.queue?.getQueue<DeferredStitchQueuePayload>(
+                STITCHER_QUEUE_NAME,
+              )
+            : undefined;
+
         const n = await deleteOrphanedEntities({
           knex: this.knex,
           strategy: stitchingStrategy,
+          queue,
         });
         if (n > 0) {
           this.logger.info(`Deleted ${n} orphaned entities`);

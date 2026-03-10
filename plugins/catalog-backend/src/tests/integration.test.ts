@@ -283,6 +283,7 @@ class TestHarness {
       knex: options.db,
       logger,
       metrics: metricsServiceMock.mock(),
+      queue: mockServices.queue(),
     });
     const catalog = new DefaultEntitiesCatalog({
       database: options.db,

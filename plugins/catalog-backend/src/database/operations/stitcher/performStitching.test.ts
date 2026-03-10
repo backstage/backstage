@@ -87,7 +87,6 @@ describe('performStitching', () => {
         logger,
         strategy: {
           mode: 'deferred',
-          pollingInterval: { seconds: 1 },
           stitchTimeout: { seconds: 1 },
         },
         entityRef: 'k:ns/n',
@@ -176,7 +175,6 @@ describe('performStitching', () => {
         logger,
         strategy: {
           mode: 'deferred',
-          pollingInterval: { seconds: 1 },
           stitchTimeout: { seconds: 1 },
         },
         entityRef: 'k:ns/n',
@@ -203,7 +201,6 @@ describe('performStitching', () => {
         logger,
         strategy: {
           mode: 'deferred',
-          pollingInterval: { seconds: 1 },
           stitchTimeout: { seconds: 1 },
         },
         entityRef: 'k:ns/n',
