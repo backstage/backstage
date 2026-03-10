@@ -216,7 +216,7 @@ async function validateSecrets(options: {
   }
 
   await auditorEvent?.fail({
-    error: (AggregateError as any)(result.errors, 'Secrets validation failed'),
+    error: new InputError('Secrets validation failed'),
   });
 
   res.status(400).json({
