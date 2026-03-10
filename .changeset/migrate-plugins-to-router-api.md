@@ -19,6 +19,8 @@
 '@backstage/plugin-auth': patch
 '@backstage/plugin-permission-react': patch
 '@backstage/plugin-app-visualizer': patch
+'@backstage/plugin-app': patch
+'@backstage/ui': patch
 ---
 
 Migrated routing imports from `react-router-dom` to `@backstage/frontend-plugin-api` and removed `react-router-dom` from peer dependencies.

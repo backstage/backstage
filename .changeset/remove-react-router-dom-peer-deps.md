@@ -1,6 +1,5 @@
 ---
 '@backstage/theme': patch
-'@backstage/ui': patch
 '@backstage/integration-react': patch
 '@backstage/version-bridge': patch
 '@backstage/module-federation-common': patch
@@ -20,6 +19,7 @@
 '@backstage/plugin-signals': patch
 '@backstage/plugin-signals-react': patch
 '@backstage/plugin-techdocs-module-addons-contrib': patch
+'@backstage/repo-tools': patch
 ---
 
 Removed `react-router-dom` from peer dependencies. Routing is now provided through the `@backstage/frontend-plugin-api` RouterApi abstraction.
