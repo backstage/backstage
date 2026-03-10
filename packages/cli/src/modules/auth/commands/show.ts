@@ -49,7 +49,7 @@ export default async ({ args, info }: CommandContext) => {
     .replace(/\/$/, '');
 
   const secretStore = await getSecretStore();
-  const service = `backstage-cli:instance:${instance.name}`;
+  const service = `backstage-cli:auth-instance:${instance.name}`;
   const accessToken = await secretStore.get(service, 'accessToken');
   if (!accessToken) {
     throw new Error('No access token found. Run "auth login" to authenticate.');

@@ -47,7 +47,7 @@ export default async ({ args, info }: CommandContext) => {
   await withMetadataLock(async () => {
     const instance = await getInstanceByName(instanceName);
     const secretStore = await getSecretStore();
-    const service = `backstage-cli:instance:${instanceName}`;
+    const service = `backstage-cli:auth-instance:${instanceName}`;
     const refreshToken = (await secretStore.get(service, 'refreshToken')) ?? '';
 
     if (refreshToken) {

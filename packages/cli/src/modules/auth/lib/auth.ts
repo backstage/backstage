@@ -43,7 +43,7 @@ export async function refreshAccessToken(
   return withMetadataLock(async () => {
     const instance = await getInstanceByName(instanceName);
 
-    const service = `backstage-cli:instance:${instanceName}`;
+    const service = `backstage-cli:auth-instance:${instanceName}`;
     const refreshToken = (await secretStore.get(service, 'refreshToken')) ?? '';
     if (!refreshToken) {
       throw new Error(

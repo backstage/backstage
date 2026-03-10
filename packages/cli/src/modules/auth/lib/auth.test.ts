@@ -135,7 +135,7 @@ describe('auth', () => {
 
       expect(mockStorage.getInstanceByName).toHaveBeenCalledWith('test');
       expect(mockSecretStoreInstance.get).toHaveBeenCalledWith(
-        'backstage-cli:instance:test',
+        'backstage-cli:auth-instance:test',
         'refreshToken',
       );
       expect(mockHttp.httpJson).toHaveBeenCalledWith(
@@ -150,12 +150,12 @@ describe('auth', () => {
         },
       );
       expect(mockSecretStoreInstance.set).toHaveBeenCalledWith(
-        'backstage-cli:instance:test',
+        'backstage-cli:auth-instance:test',
         'accessToken',
         'new-access-token',
       );
       expect(mockSecretStoreInstance.set).toHaveBeenCalledWith(
-        'backstage-cli:instance:test',
+        'backstage-cli:auth-instance:test',
         'refreshToken',
         'new-refresh-token',
       );
