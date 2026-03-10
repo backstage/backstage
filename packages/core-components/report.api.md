@@ -819,6 +819,7 @@ export interface LogViewerProps {
   classes?: {
     root?: string;
   };
+  onDownloadLog?: () => void;
   text: string;
   textWrap?: boolean;
 }
