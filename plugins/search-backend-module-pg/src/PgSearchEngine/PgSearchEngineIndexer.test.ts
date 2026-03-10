@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /*
  * Copyright 2022 The Backstage Authors
  *
@@ -24,13 +23,15 @@ describe('PgSearchEngineIndexer', () => {
   const subTx = {
     rollback: jest.fn(),
     commit: jest.fn(),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } as any;
 
   const tx = {
     rollback: jest.fn(),
     commit: jest.fn(),
-    transaction: jest.fn(() => subTx),
+    transaction: jest.fn().mockResolvedValue(subTx),
     isCompleted: jest.fn(),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } as any;
   let database: jest.Mocked<DatabaseStore>;
   let indexer: PgSearchEngineIndexer;
