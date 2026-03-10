@@ -90,6 +90,6 @@ export const apiDocsTranslationRef = createTranslationRef({
         title: 'No component provides this API.',
       },
     },
-    apisCardHelpLinkTitle: 'Learn how to change this',
+    apisCardHelpLinkTitle: 'Learn how to change this.',
   },
 });
