@@ -15,22 +15,22 @@
  */
 
 import { defineComponent } from '../../hooks/useDefinition';
-import type { RangeSliderOwnProps } from './types';
-import styles from './RangeSlider.module.css';
+import type { SliderOwnProps } from './types';
+import styles from './Slider.module.css';
 
 /**
- * Component definition for RangeSlider
+ * Component definition for Slider
  * @public
  */
-export const RangeSliderDefinition = defineComponent<RangeSliderOwnProps>()({
+export const SliderDefinition = defineComponent<SliderOwnProps>()({
   styles,
   classNames: {
-    root: 'bui-RangeSlider',
-    header: 'bui-RangeSliderHeader',
-    track: 'bui-RangeSliderTrack',
-    trackFill: 'bui-RangeSliderTrackFill',
-    thumb: 'bui-RangeSliderThumb',
-    output: 'bui-RangeSliderOutput',
+    root: 'bui-Slider',
+    header: 'bui-SliderHeader',
+    track: 'bui-SliderTrack',
+    trackFill: 'bui-SliderTrackFill',
+    thumb: 'bui-SliderThumb',
+    output: 'bui-SliderOutput',
   },
   propDefs: {
     className: {},

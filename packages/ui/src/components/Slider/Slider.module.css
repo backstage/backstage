@@ -17,17 +17,12 @@
 @layer tokens, base, components, utilities;
 
 @layer components {
-  .bui-RangeSlider {
+  .bui-Slider {
     display: flex;
     flex-direction: column;
     gap: var(--bui-space-2);
     width: 100%;
     color: var(--bui-fg-primary);
-
-    &[data-disabled] {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
 
     &[data-orientation='vertical'] {
       height: 200px;
@@ -35,21 +30,21 @@
     }
   }
 
-  .bui-RangeSliderHeader {
+  .bui-SliderHeader {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
     gap: var(--bui-space-3);
   }
 
-  .bui-RangeSliderOutput {
+  .bui-SliderOutput {
     font-size: var(--bui-font-size-2);
     font-weight: var(--bui-font-weight-medium);
     color: var(--bui-fg-secondary);
     white-space: nowrap;
   }
 
-  .bui-RangeSliderTrack {
+  .bui-SliderTrack {
     position: relative;
     height: 4px;
     width: 100%;
@@ -68,7 +63,7 @@
     }
   }
 
-  .bui-RangeSliderTrackFill {
+  .bui-SliderTrackFill {
     position: absolute;
     top: 0;
     height: 100%;
@@ -86,7 +81,7 @@
     }
   }
 
-  .bui-RangeSliderThumb {
+  .bui-SliderThumb {
     width: 20px;
     height: 20px;
     border-radius: 50%;
@@ -94,7 +89,11 @@
     border: 2px solid var(--bui-bg-solid);
     box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
     cursor: grab;
-    transition: all 200ms;
+    transition: transform 200ms;
+    
+    /* Fix: Ensure thumb is vertically centered on track */
+    top: 50%;
+    transform: translateY(-50%);
 
     &[data-focus-visible] {
       outline: 2px solid var(--bui-ring);
@@ -105,17 +104,32 @@
       cursor: grabbing;
       box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1),
         0 2px 4px -2px rgb(0 0 0 / 0.1);
-    }
-
-    &[data-disabled] {
-      cursor: not-allowed;
-      background: var(--bui-bg-neutral-3);
-      border-color: var(--bui-bg-neutral-3);
+      transform: translateY(-50%) scale(1.1);
     }
 
     /* Hover effect */
     &:hover:not([data-disabled]) {
-      transform: scale(1.1);
+      transform: translateY(-50%) scale(1.1);
+    }
+  }
+
+  /* Improved disabled state */
+  .bui-Slider[data-disabled] {
+    opacity: 0.6;
+    cursor: not-allowed;
+
+    .bui-SliderTrack {
+      background: var(--bui-bg-neutral-2);
+    }
+
+    .bui-SliderTrackFill {
+      background: var(--bui-bg-neutral-4);
+    }
+
+    .bui-SliderThumb {
+      cursor: not-allowed;
+      background: var(--bui-bg-neutral-4);
+      border-color: var(--bui-border-neutral);
     }
   }
 }

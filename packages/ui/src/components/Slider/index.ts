@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-export * from './RangeSlider';
+export { Slider } from './Slider';
 export * from './types';
-export { RangeSliderDefinition } from './definition';
+export { SliderDefinition } from './definition';

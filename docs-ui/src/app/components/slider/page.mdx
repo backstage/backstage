@@ -2,9 +2,10 @@ import { PropsTable } from '@/components/PropsTable';
 import { Snippet } from '@/components/Snippet';
 import { CodeBlock } from '@/components/CodeBlock';
 import { ReactAriaLink } from '@/components/ReactAriaLink';
-import { rangeSliderPropDefs } from './props-definition';
+import { sliderPropDefs } from './props-definition';
 import {
   snippetUsage,
+  singleValueSnippet,
   defaultSnippet,
   withCustomRangeSnippet,
   withFormattedValuesSnippet,
@@ -13,6 +14,7 @@ import {
   disabledSnippet,
 } from './snippets';
 import {
+  SingleValue,
   Default,
   WithCustomRange,
   WithFormattedValues,
@@ -23,15 +25,15 @@ import {
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
 import { ChangelogComponent } from '@/components/ChangelogComponent';
-import { RangeSliderDefinition } from '../../../utils/definitions';
+import { SliderDefinition } from '../../../utils/definitions';
 
 export const reactAriaUrls = {
   slider: 'https://react-spectrum.adobe.com/react-aria/Slider.html',
 };
 
 <PageTitle
-  title="RangeSlider"
-  description="A dual-thumb slider for selecting a numeric range with customizable formatting and validation."
+  title="Slider"
+  description="A slider for selecting numeric values, supporting both single values and ranges with customizable formatting and validation."
 />
 
 <Snippet align="center" py={4} preview={<Default />} code={defaultSnippet} />
@@ -42,11 +44,22 @@ export const reactAriaUrls = {
 
 ## API reference
 
-<PropsTable data={rangeSliderPropDefs} />
+<PropsTable data={sliderPropDefs} />
 
 <ReactAriaLink component="Slider" href={reactAriaUrls.slider} />
 
 ## Examples
+
+### Single value
+
+Use a single number as the default value to create a single-thumb slider.
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<SingleValue />}
+  code={singleValueSnippet}
+/>
 
 ### Custom range
 
@@ -61,7 +74,7 @@ Define custom minimum, maximum, and step values for specific use cases.
 
 ### Formatted values
 
-Use the `formatValue` prop to customize how values are displayed.
+Use the `formatOptions` prop with standard Intl.NumberFormat options to customize how values are displayed.
 
 <Snippet
   align="center"
@@ -91,6 +104,6 @@ Mark a field as required to show a "Required" indicator in the label.
 
 <Snippet align="center" py={4} preview={<Disabled />} code={disabledSnippet} />
 
-<Theming definition={RangeSliderDefinition} />
+<Theming definition={SliderDefinition} />
 
-<ChangelogComponent component="range-slider" />
+<ChangelogComponent component="slider" />

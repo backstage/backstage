@@ -39,7 +39,7 @@ import { RowProps as RowProps_2 } from 'react-aria-components';
 import type { SearchFieldProps as SearchFieldProps_2 } from 'react-aria-components';
 import type { SelectProps as SelectProps_2 } from 'react-aria-components';
 import type { SeparatorProps } from 'react-aria-components';
-import type { SliderProps } from 'react-aria-components';
+import type { SliderProps as SliderProps_2 } from 'react-aria-components';
 import type { SortDescriptor as SortDescriptor_2 } from 'react-stately';
 import type { SubmenuTriggerProps as SubmenuTriggerProps_2 } from 'react-aria-components';
 import type { SwitchProps as SwitchProps_2 } from 'react-aria-components';
@@ -1969,52 +1969,6 @@ export interface RadioProps
     Omit<RadioProps_2, keyof RadioOwnProps> {}
 
 // @public (undocumented)
-export const RangeSlider: ForwardRefExoticComponent<
-  RangeSliderProps & RefAttributes<HTMLDivElement>
->;
-
-// @public
-export const RangeSliderDefinition: {
-  readonly styles: {
-    readonly [key: string]: string;
-  };
-  readonly classNames: {
-    readonly root: 'bui-RangeSlider';
-    readonly header: 'bui-RangeSliderHeader';
-    readonly track: 'bui-RangeSliderTrack';
-    readonly trackFill: 'bui-RangeSliderTrackFill';
-    readonly thumb: 'bui-RangeSliderThumb';
-    readonly output: 'bui-RangeSliderOutput';
-  };
-  readonly propDefs: {
-    readonly className: {};
-  };
-};
-
-// @public (undocumented)
-export interface RangeSliderOwnProps {
-  // (undocumented)
-  className?: string;
-}
-
-// @public (undocumented)
-export interface RangeSliderProps
-  extends Omit<SliderProps<[number, number]>, 'children'>,
-    Omit<
-      FieldLabelProps,
-      | 'htmlFor'
-      | 'id'
-      | 'className'
-      | 'defaultValue'
-      | 'onChange'
-      | 'slot'
-      | 'style'
-    > {
-  formatValue?: (value: number) => string;
-  showValueLabel?: boolean;
-}
-
-// @public (undocumented)
 export type Responsive<T> = T | Partial<Record<Breakpoint, T>>;
 
 // @public (undocumented)
@@ -2203,6 +2157,53 @@ export type SkeletonOwnProps = {
 export interface SkeletonProps
   extends Omit<ComponentProps<'div'>, 'children' | 'className' | 'style'>,
     SkeletonOwnProps {}
+
+// Warning: (ae-forgotten-export) The symbol "SliderImpl" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export const Slider: <T extends number | number[]>(
+  props: SliderProps<T> & {
+    ref?: React.ForwardedRef<HTMLDivElement>;
+  },
+) => ReturnType<typeof SliderImpl>;
+
+// @public
+export const SliderDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-Slider';
+    readonly header: 'bui-SliderHeader';
+    readonly track: 'bui-SliderTrack';
+    readonly trackFill: 'bui-SliderTrackFill';
+    readonly thumb: 'bui-SliderThumb';
+    readonly output: 'bui-SliderOutput';
+  };
+  readonly propDefs: {
+    readonly className: {};
+  };
+};
+
+// @public (undocumented)
+export interface SliderOwnProps {
+  // (undocumented)
+  className?: string;
+}
+
+// @public (undocumented)
+export interface SliderProps<T extends number | number[]>
+  extends Omit<SliderProps_2<T>, 'children'>,
+    Omit<
+      FieldLabelProps,
+      | 'htmlFor'
+      | 'id'
+      | 'className'
+      | 'defaultValue'
+      | 'onChange'
+      | 'slot'
+      | 'style'
+    > {}
 
 // @public (undocumented)
 export type SortDescriptor = SortDescriptor_2;

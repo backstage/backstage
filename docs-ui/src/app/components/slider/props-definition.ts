@@ -1,10 +1,10 @@
 import { classNamePropDefs, stylePropDefs } from '@/utils/propDefs';
 import type { PropDef } from '@/utils/propDefs';
 
-export const rangeSliderPropDefs: Record<string, PropDef> = {
+export const sliderPropDefs: Record<string, PropDef> = {
   label: {
     type: 'string',
-    description: 'The label text for the range slider.',
+    description: 'The label text for the slider.',
   },
   description: {
     type: 'string',
@@ -22,12 +22,12 @@ export const rangeSliderPropDefs: Record<string, PropDef> = {
   },
   minValue: {
     type: 'number',
-    description: 'The minimum value of the slider range.',
+    description: 'The minimum value of the slider.',
     default: '0',
   },
   maxValue: {
     type: 'number',
-    description: 'The maximum value of the slider range.',
+    description: 'The maximum value of the slider.',
     default: '100',
   },
   step: {
@@ -37,38 +37,32 @@ export const rangeSliderPropDefs: Record<string, PropDef> = {
   },
   value: {
     type: 'enum',
-    values: ['[number, number]'],
+    values: ['number', '[number, number]'],
     description:
-      'Controlled value as an array [min, max]. Use with onChange for controlled behavior.',
+      'Controlled value. Use a single number for a single-thumb slider, or an array [min, max] for a range slider. Use with onChange for controlled behavior.',
   },
   defaultValue: {
     type: 'enum',
-    values: ['[number, number]'],
-    description: 'Initial value as an array [min, max] for uncontrolled usage.',
-    default: '[minValue, maxValue]',
+    values: ['number', '[number, number]'],
+    description:
+      'Initial value for uncontrolled usage. Use a single number for a single-thumb slider, or an array [min, max] for a range slider.',
+    default: 'minValue or [minValue, maxValue]',
   },
   onChange: {
     type: 'enum',
-    values: ['(value: [number, number]) => void'],
-    description: 'Called when the slider range changes.',
+    values: ['(value: number | [number, number]) => void'],
+    description: 'Called when the slider value changes.',
   },
   onChangeEnd: {
     type: 'enum',
-    values: ['(value: [number, number]) => void'],
+    values: ['(value: number | [number, number]) => void'],
     description:
       'Called when the user stops dragging, useful for triggering actions only on final values.',
   },
-  showValueLabel: {
-    type: 'boolean',
+  formatOptions: {
+    type: 'object',
     description:
-      'Whether to display the current range values above the slider.',
-    default: 'false',
-  },
-  formatValue: {
-    type: 'enum',
-    values: ['(value: number) => string'],
-    description:
-      'Custom formatter function for displaying values (e.g., adding currency symbols).',
+      'Intl.NumberFormat options for formatting the displayed value (e.g., { style: "currency", currency: "USD" }).',
   },
   isDisabled: {
     type: 'boolean',

@@ -1,81 +1,85 @@
 'use client';
 
-import { RangeSlider } from '../../../../../packages/ui/src/components/RangeSlider/RangeSlider';
+import { Slider } from '../../../../../packages/ui/src/components/Slider';
+
+export const SingleValue = () => {
+  return (
+    <Slider label="Volume" minValue={0} maxValue={100} defaultValue={50} />
+  );
+};
 
 export const Default = () => {
   return (
-    <RangeSlider
+    <Slider
       label="Price Range"
       minValue={0}
       maxValue={1000}
       defaultValue={[200, 800]}
-      showValueLabel
     />
   );
 };
 
 export const WithCustomRange = () => {
   return (
-    <RangeSlider
+    <Slider
       label="Temperature (°C)"
       minValue={-20}
       maxValue={40}
       defaultValue={[0, 20]}
       step={5}
-      showValueLabel
     />
   );
 };
 
 export const WithFormattedValues = () => {
   return (
-    <RangeSlider
+    <Slider
       label="Budget"
       minValue={0}
       maxValue={10000}
       defaultValue={[2000, 8000]}
       step={100}
-      showValueLabel
-      formatValue={(value: number) => `$${value.toLocaleString()}`}
+      formatOptions={{
+        style: 'currency',
+        currency: 'USD',
+        maximumFractionDigits: 0,
+      }}
     />
   );
 };
 
 export const WithDescription = () => {
   return (
-    <RangeSlider
+    <Slider
       label="Age Range"
       description="Select the age range for your target audience"
       minValue={0}
       maxValue={100}
       defaultValue={[18, 65]}
-      showValueLabel
     />
   );
 };
 
 export const Required = () => {
   return (
-    <RangeSlider
+    <Slider
       label="Score Range"
       minValue={0}
       maxValue={100}
       defaultValue={[20, 80]}
       isRequired
-      showValueLabel
     />
   );
 };
 
 export const Disabled = () => {
   return (
-    <RangeSlider
+    <Slider
       label="Disabled Range"
       minValue={0}
       maxValue={100}
       defaultValue={[30, 70]}
       isDisabled
-      showValueLabel
     />
   );
 };

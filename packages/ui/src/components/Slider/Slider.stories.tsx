@@ -14,18 +14,34 @@
  * limitations under the License.
  */
 import preview from '../../../../../.storybook/preview';
-import { RangeSlider } from './RangeSlider';
+import { Slider } from './Slider';
 
 const meta = preview.meta({
-  title: 'Backstage UI/RangeSlider',
-  component: RangeSlider,
+  title: 'Backstage UI/Slider',
+  component: Slider,
 });
 
-export const Default = meta.story({
+export const SingleThumb = meta.story({
+  args: {
+    label: 'Volume',
+    defaultValue: 50,
+  },
+});
+
+export const SingleThumbWithRange = meta.story({
+  args: {
+    label: 'Brightness',
+    minValue: 0,
+    maxValue: 100,
+    defaultValue: 75,
+    step: 5,
+  },
+});
+
+export const RangeSlider = meta.story({
   args: {
     label: 'Price Range',
     defaultValue: [25, 75],
-    showValueLabel: true,
   },
 });
 
@@ -36,7 +52,6 @@ export const WithCustomRange = meta.story({
     maxValue: 40,
     defaultValue: [0, 20],
     step: 5,
-    showValueLabel: true,
   },
 });
 
@@ -47,8 +62,11 @@ export const WithFormattedValues = meta.story({
     maxValue: 10000,
     defaultValue: [2000, 8000],
     step: 100,
-    showValueLabel: true,
-    formatValue: (value: number) => `$${value.toLocaleString()}`,
+    formatOptions: {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 0,
+    },
   },
 });
 
@@ -59,7 +77,6 @@ export const WithDescription = meta.story({
     minValue: 0,
     maxValue: 100,
     defaultValue: [18, 65],
-    showValueLabel: true,
   },
 });
 
@@ -68,7 +85,6 @@ export const Required = meta.story({
     label: 'Score Range',
     defaultValue: [20, 80],
     isRequired: true,
-    showValueLabel: true,
   },
 });
 
@@ -77,46 +93,29 @@ export const Disabled = meta.story({
     label: 'Disabled Range',
     defaultValue: [30, 70],
     isDisabled: true,
-    showValueLabel: true,
   },
 });
 
 export const WithSteps = meta.story({
   args: {
-    label: 'Rating Range',
+    label: 'Rating',
     minValue: 0,
     maxValue: 5,
     step: 0.5,
-    defaultValue: [1.5, 4],
-    showValueLabel: true,
-    formatValue: (value: number) => `${value} ★`,
+    defaultValue: 3.5,
   },
 });
 
-export const SmallRange = meta.story({
+export const Percentage = meta.story({
   args: {
-    label: 'Month Range',
-    minValue: 1,
-    maxValue: 12,
-    defaultValue: [3, 9],
-    step: 1,
-    showValueLabel: true,
-    formatValue: (value: number) => {
-      const months = [
-        'Jan',
-        'Feb',
-        'Mar',
-        'Apr',
-        'May',
-        'Jun',
-        'Jul',
-        'Aug',
-        'Sep',
-        'Oct',
-        'Nov',
-        'Dec',
-      ];
-      return months[value - 1] || '';
+    label: 'Completion',
+    minValue: 0,
+    maxValue: 100,
+    defaultValue: 65,
+    formatOptions: {
+      style: 'percent',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
     },
   },
 });
