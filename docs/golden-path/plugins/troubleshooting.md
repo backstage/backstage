@@ -45,12 +45,22 @@ If you see errors, ensure all dependencies are installed and the plugin structur
 The default ports are 3000 (frontend) and 7007 (backend). If these are in use:
 
 ```bash
-# Find and kill the process using the port
+# On macOS/Linux, find the process using the port
+lsof -ti:3000
+lsof -ti:7007
+
+# Try graceful shutdown first (SIGTERM)
+lsof -ti:3000 | xargs kill
+lsof -ti:7007 | xargs kill
+
+# If the process doesn't stop, force kill (SIGKILL)
 lsof -ti:3000 | xargs kill -9
 lsof -ti:7007 | xargs kill -9
 ```
 
-Or specify different ports in your `app-config.yaml`.
+Note: `lsof` is available on macOS and most Linux distributions. On Windows, use Task Manager or `netstat -ano | findstr :3000` to find the process ID.
+
+Alternatively, specify different ports in your `app-config.yaml`.
 
 #### Hot reload not working
 
@@ -104,22 +114,24 @@ Common causes:
 
 #### Routing issues
 
-Ensure your plugin route is defined correctly:
+If using the **new frontend system**, ensure your routes are defined correctly:
 
 ```typescript
-import { createPlugin, createRouteRef } from '@backstage/core-plugin-api';
+import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
+import { createRouteRef } from '@backstage/frontend-plugin-api';
 
-const rootRouteRef = createRouteRef({
-  id: 'my-plugin',
-});
+export const myPluginRouteRef = createRouteRef();
 
-export const myPlugin = createPlugin({
+export default createFrontendPlugin({
   id: 'my-plugin',
   routes: {
-    root: rootRouteRef,
+    root: myPluginRouteRef,
   },
+  // ... extensions
 });
 ```
+
+For **legacy plugins** using `@backstage/core-plugin-api`, ensure routes are properly defined. See the [Structure of a Plugin](../../plugins/structure-of-a-plugin.md) documentation for details.
 
 #### API calls to backend failing
 
@@ -174,11 +186,7 @@ If you encounter issues not covered in this guide:
 
 #### Backstage Community Discord
 
-Join the [Backstage Community Discord](https://discord.gg/backstage-687207715902193673) for real-time help:
-
-- **#support** - General support questions
-- **#plugins** - Plugin development discussions
-- **#contributing** - Contributing to Backstage core
+Join the [Backstage Community Discord](https://discord.gg/backstage-687207715902193673) for any questions.
 
 #### GitHub Resources
 
