@@ -90,18 +90,27 @@ export class PgSearchEngineIndexer extends BatchSearchEngineIndexer {
 
     do {
       // Sub-transaction allows a partial rollback if a truncated retry is needed
-      const subTx = await this.tx!.transaction();
+      let subTx: Knex.Transaction;
+      try {
+        subTx = await this.tx!.transaction();
+      } catch (e) {
+        // If sub-transaction creation fails, rollback the outer transaction
+        // and re-throw the error so that the stream can be closed and
+        // destroyed properly.
+        this.tx!.rollback!(e);
+        throw e;
+      }
 
       // Attempt to complete and commit the transaction.
       try {
         await this.store.completeInsert(subTx, this.type, retryTruncated);
 
         // Commit both transactions if successful
-        subTx.commit();
-        this.tx!.commit();
+        await subTx.commit();
+        await this.tx!.commit();
         retryTruncated = false;
       } catch (e) {
-        subTx.rollback(e); // Rollback the first completeInsert attempt
+        await subTx.rollback(e); // Rollback the first completeInsert attempt
 
         if (
           e instanceof Error &&
