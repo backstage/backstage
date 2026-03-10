@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { cli } from 'cleye';
 import { createFlagFinder } from './test';
 
 describe('createFlagFinder', () => {
@@ -43,5 +44,60 @@ describe('createFlagFinder', () => {
     expect(find('--baz')).toBe(true);
     expect(find('--qux')).toBe(true);
     expect(find('--qux')).toBe(true);
+  });
+});
+
+describe('repo test arg forwarding', () => {
+  // Mirrors the cleye configuration used in the repo test command handler
+  function parseRepoTestArgs(args: string[]) {
+    return cli(
+      {
+        help: false,
+        flags: {
+          since: { type: String },
+          successCache: { type: Boolean },
+          successCacheDir: { type: String },
+          jestHelp: { type: Boolean },
+        },
+        ignoreArgv: type => type === 'unknown-flag' || type === 'argument',
+      },
+      undefined,
+      args,
+    );
+  }
+
+  it('strips Backstage flags from args while preserving Jest flags and arguments', () => {
+    const args = [
+      '--since',
+      'main',
+      '--success-cache',
+      '--coverage',
+      '--watch',
+      'path/to/test',
+    ];
+
+    const { flags } = parseRepoTestArgs(args);
+
+    expect(flags.since).toBe('main');
+    expect(flags.successCache).toBe(true);
+    expect(args).toEqual(['--coverage', '--watch', 'path/to/test']);
+  });
+
+  it('supports legacy camelCase flag names', () => {
+    const args = ['--successCache', '--successCacheDir', '/tmp/cache'];
+
+    const { flags } = parseRepoTestArgs(args);
+
+    expect(flags.successCache).toBe(true);
+    expect(flags.successCacheDir).toBe('/tmp/cache');
+    expect(args).toEqual([]);
+  });
+
+  it('leaves args untouched when no Backstage flags are present', () => {
+    const args = ['--coverage', '--verbose', '--bail'];
+
+    parseRepoTestArgs(args);
+
+    expect(args).toEqual(['--coverage', '--verbose', '--bail']);
   });
 });

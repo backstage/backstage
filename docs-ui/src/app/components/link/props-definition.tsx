@@ -68,6 +68,11 @@ export const linkPropDefs: Record<string, PropDef> = {
       'Truncates text with ellipsis when it overflows its container.',
     default: 'false',
   },
+  noTrack: {
+    type: 'boolean',
+    description:
+      'Suppresses the automatic analytics click event, e.g. if you already have custom tracking.',
+  },
   standalone: {
     type: 'boolean',
     description: 'Removes underline by default. Underline appears on hover.',

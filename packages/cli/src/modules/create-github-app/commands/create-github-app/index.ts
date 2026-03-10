@@ -19,14 +19,27 @@ import chalk from 'chalk';
 import { stringify as stringifyYaml } from 'yaml';
 import inquirer, { Question, Answers } from 'inquirer';
 import { targetPaths } from '@backstage/cli-common';
+import { cli } from 'cleye';
 
 import { GithubCreateAppServer } from './GithubCreateAppServer';
 import openBrowser from 'react-dev-utils/openBrowser';
+import type { CommandContext } from '../../../../wiring/types';
 
 // This is an experimental command that at this point does not support GitHub Enterprise
 // due to lacking support for creating apps from manifests.
 // https://docs.github.com/en/free-pro-team@latest/developers/apps/creating-a-github-app-from-a-manifest
-export default async (org: string) => {
+export default async ({ args, info }: CommandContext) => {
+  const { _: positionals } = cli(
+    {
+      help: { ...info, usage: `${info.usage} <github-org>` },
+      parameters: ['<github-org>'],
+    },
+    undefined,
+    args,
+  );
+
+  const org = positionals[0];
+
   const answers: Answers = await inquirer.prompt({
     name: 'appType',
     type: 'checkbox',

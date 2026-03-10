@@ -63,7 +63,7 @@ export type CardStaticVariant = {
  * @public
  */
 export type CardProps = CardBaseProps &
-  Omit<React.HTMLAttributes<HTMLDivElement>, 'onPress'> &
+  Omit<React.HTMLAttributes<HTMLDivElement>, 'onClick'> &
   (CardButtonVariant | CardLinkVariant | CardStaticVariant);
 
 /**

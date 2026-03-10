@@ -35,6 +35,7 @@ export interface BackstageCommand {
   path: string[];
   description: string;
   deprecated?: boolean;
+  experimental?: boolean;
   execute:
     | CommandExecuteFn
     | {

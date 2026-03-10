@@ -33,6 +33,14 @@ export const spec = {
     },
     contact: {},
   },
+  tags: [
+    {
+      name: 'Entity',
+    },
+    {
+      name: 'Locations',
+    },
+  ],
   servers: [
     {
       url: '/',
@@ -1489,6 +1497,18 @@ export const spec = {
             schema: {
               type: 'string',
             },
+          },
+          {
+            in: 'query',
+            name: 'onConflict',
+            required: false,
+            allowReserved: true,
+            schema: {
+              type: 'string',
+              enum: ['refresh', 'reject'],
+            },
+            description:
+              "Behavior when the location already exists. 'reject' (default) returns a 409 error, 'refresh' triggers a refresh of the existing location entity and returns 201.",
           },
         ],
         requestBody: {

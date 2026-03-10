@@ -62,8 +62,8 @@ export const components: Page[] = [
     slug: 'plugin-header',
   },
   {
-    title: 'HeaderPage',
-    slug: 'header-page',
+    title: 'Header',
+    slug: 'header',
   },
   {
     title: 'Link',

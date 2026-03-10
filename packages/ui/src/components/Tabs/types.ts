@@ -82,6 +82,7 @@ export type TabOwnProps = {
   matchStrategy?: TabMatchStrategy;
   href?: AriaTabProps['href'];
   id?: AriaTabProps['id'];
+  noTrack?: boolean;
 };
 
 /**

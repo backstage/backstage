@@ -20,7 +20,7 @@ import { useDefinition } from '../../hooks/useDefinition';
 import { GridDefinition, GridItemDefinition } from './definition';
 
 const GridRoot = forwardRef<HTMLDivElement, GridProps>((props, ref) => {
-  const { ownProps, dataAttributes, utilityStyle } = useDefinition(
+  const { ownProps, dataAttributes, utilityStyle, restProps } = useDefinition(
     GridDefinition,
     { columns: 'auto', gap: '4', ...props },
   );
@@ -32,6 +32,7 @@ const GridRoot = forwardRef<HTMLDivElement, GridProps>((props, ref) => {
       className={classes.root}
       style={{ ...utilityStyle, ...ownProps.style }}
       {...dataAttributes}
+      {...restProps}
     >
       {childrenWithBgProvider}
     </div>
@@ -39,7 +40,7 @@ const GridRoot = forwardRef<HTMLDivElement, GridProps>((props, ref) => {
 });
 
 const GridItem = forwardRef<HTMLDivElement, GridItemProps>((props, ref) => {
-  const { ownProps, dataAttributes, utilityStyle } = useDefinition(
+  const { ownProps, dataAttributes, utilityStyle, restProps } = useDefinition(
     GridItemDefinition,
     props,
   );
@@ -51,6 +52,7 @@ const GridItem = forwardRef<HTMLDivElement, GridItemProps>((props, ref) => {
       className={classes.root}
       style={{ ...utilityStyle, ...ownProps.style }}
       {...dataAttributes}
+      {...restProps}
     >
       {childrenWithBgProvider}
     </div>

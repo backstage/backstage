@@ -17,7 +17,30 @@
 import { renderHook } from '@testing-library/react';
 import { createVersionedContextForTesting } from '@backstage/version-bridge';
 import { createApiRef } from './ApiRef';
-import { useApi } from './useApi';
+import { useApi, useApiHolder } from './useApi';
+
+describe('useApiHolder', () => {
+  const context = createVersionedContextForTesting('api-context');
+
+  afterEach(() => {
+    context.reset();
+  });
+
+  it('should return the API holder from context', () => {
+    const holder = { get: jest.fn() };
+    context.set({ 1: holder });
+
+    const renderedHook = renderHook(() => useApiHolder());
+    expect(renderedHook.result.current).toBe(holder);
+  });
+
+  it('should return an empty API holder when there is no context', () => {
+    const renderedHook = renderHook(() => useApiHolder());
+
+    const holder = renderedHook.result.current;
+    expect(holder.get(createApiRef<string>({ id: 'x' }))).toBeUndefined();
+  });
+});
 
 describe('useApi', () => {
   const context = createVersionedContextForTesting('api-context');

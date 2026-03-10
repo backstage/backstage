@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "@backstage/core-plugin-api": "workspace:^",
+    "@backstage/errors": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/plugin-app-react": "workspace:^",
     "@backstage/plugin-catalog-react": "workspace:^",

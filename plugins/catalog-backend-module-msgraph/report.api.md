@@ -78,6 +78,7 @@ export class MicrosoftGraphClient {
     groupId: string,
     query?: ODataQuery,
     queryMode?: 'basic' | 'advanced',
+    signal?: AbortSignal,
   ): AsyncIterable<GroupMember>;
   // (undocumented)
   getGroupPhoto(groupId: string, sizeId?: string): Promise<string | undefined>;
@@ -89,13 +90,18 @@ export class MicrosoftGraphClient {
     query?: ODataQuery,
     queryMode?: 'basic' | 'advanced',
     path?: string,
+    signal?: AbortSignal,
   ): AsyncIterable<MicrosoftGraph.Group>;
   getGroupUserMembers(
     groupId: string,
     query?: ODataQuery,
     queryMode?: 'basic' | 'advanced',
+    signal?: AbortSignal,
   ): AsyncIterable<MicrosoftGraph.User>;
-  getOrganization(tenantId: string): Promise<MicrosoftGraph.Organization>;
+  getOrganization(
+    tenantId: string,
+    signal?: AbortSignal,
+  ): Promise<MicrosoftGraph.Organization>;
   // (undocumented)
   getUserPhoto(userId: string, sizeId?: string): Promise<string | undefined>;
   getUserPhotoWithSizeLimit(
@@ -106,21 +112,25 @@ export class MicrosoftGraphClient {
     query?: ODataQuery,
     queryMode?: 'basic' | 'advanced',
     path?: string,
+    signal?: AbortSignal,
   ): AsyncIterable<MicrosoftGraph.User>;
   requestApi(
     path: string,
     query?: ODataQuery,
     headers?: Record<string, string>,
+    signal?: AbortSignal,
   ): Promise<Response>;
   requestCollection<T>(
     path: string,
     query?: ODataQuery,
     queryMode?: 'basic' | 'advanced',
+    signal?: AbortSignal,
   ): AsyncIterable<T>;
   requestRaw(
     url: string,
     headers?: Record<string, string>,
     retryCount?: number,
+    signal?: AbortSignal,
   ): Promise<Response>;
 }
 
@@ -142,7 +152,10 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
     options: MicrosoftGraphOrgEntityProviderOptions,
   ): MicrosoftGraphOrgEntityProvider[];
   getProviderName(): string;
-  read(options?: { logger?: LoggerService }): Promise<void>;
+  read(options?: {
+    logger?: LoggerService;
+    signal?: AbortSignal;
+  }): Promise<void>;
 }
 
 // @public @deprecated
@@ -304,6 +317,7 @@ export function readMicrosoftGraphOrg(
     groupTransformer?: GroupTransformer;
     organizationTransformer?: OrganizationTransformer;
     logger: LoggerService;
+    signal?: AbortSignal;
   },
 ): Promise<{
   users: UserEntity[];

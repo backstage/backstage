@@ -89,6 +89,7 @@ export interface MockFetchApiOptions {
  * A test helper implementation of {@link @backstage/core-plugin-api#FetchApi}.
  *
  * @public
+ * @deprecated Use `mockApis.fetch()` instead.
  */
 export class MockFetchApi implements FetchApi {
   private readonly implementation: FetchApi;
