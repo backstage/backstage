@@ -342,7 +342,7 @@ export function fixPluginId(pkg: FixablePackage) {
   }
 }
 
-const backendPluginPackageNameByPluginId = new Map(
+export const knownBackendPluginPackageNameByPluginId = Object.fromEntries(
   [
     'app',
     'auth',
@@ -351,6 +351,7 @@ const backendPluginPackageNameByPluginId = new Map(
     'kubernetes',
     'notifications',
     'permission',
+    'proxy',
     'scaffolder',
     'search',
     'signals',
@@ -405,8 +406,7 @@ export function fixPluginPackages(
         p =>
           p.packageJson.backstage?.pluginId === pluginId &&
           p.packageJson.backstage?.role === targetRole,
-      )?.packageJson.name ?? backendPluginPackageNameByPluginId.get(pluginId);
-
+      )?.packageJson.name ?? knownBackendPluginPackageNameByPluginId[pluginId];
     if (!pluginPkgName) {
       // If we can't find a matching package in the repo but one is declared, skip
       if (pkgBackstage.pluginPackage) {

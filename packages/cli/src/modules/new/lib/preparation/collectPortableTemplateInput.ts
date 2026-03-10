@@ -27,20 +27,7 @@ import {
 } from '../types';
 import { PortableTemplate } from '../types';
 import { resolvePackageParams } from './resolvePackageParams';
-
-const knownBackendPluginPackages: Record<string, string> = {
-  app: '@backstage/plugin-app-backend',
-  auth: '@backstage/plugin-auth-backend',
-  catalog: '@backstage/plugin-catalog-backend',
-  events: '@backstage/plugin-events-backend',
-  kubernetes: '@backstage/plugin-kubernetes-backend',
-  notifications: '@backstage/plugin-notifications-backend',
-  permission: '@backstage/plugin-permission-backend',
-  proxy: '@backstage/plugin-proxy-backend',
-  scaffolder: '@backstage/plugin-scaffolder-backend',
-  search: '@backstage/plugin-search-backend',
-  techdocs: '@backstage/plugin-techdocs-backend',
-};
+import { knownBackendPluginPackageNameByPluginId } from '../../../maintenance/commands/repo/fix';
 
 const knownFrontendPluginPackages: Record<string, string> = {
   app: '@backstage/plugin-app',
@@ -48,10 +35,9 @@ const knownFrontendPluginPackages: Record<string, string> = {
   catalog: '@backstage/plugin-catalog',
   kubernetes: '@backstage/plugin-kubernetes',
   notifications: '@backstage/plugin-notifications',
-  permission: '@backstage/plugin-permission',
-  proxy: '@backstage/plugin-proxy',
   scaffolder: '@backstage/plugin-scaffolder',
   search: '@backstage/plugin-search',
+  signals: '@backstage/plugin-signals',
   techdocs: '@backstage/plugin-techdocs',
 };
 
@@ -114,7 +100,7 @@ export async function collectPortableTemplateInput(
   ) {
     const knownPackages =
       template.role === 'backend-plugin-module'
-        ? knownBackendPluginPackages
+        ? knownBackendPluginPackageNameByPluginId
         : knownFrontendPluginPackages;
 
     pluginPackage =
