@@ -16,12 +16,26 @@
 
 import chalk from 'chalk';
 import { ESLint } from 'eslint';
-import { OptionValues } from 'commander';
+import { cli } from 'cleye';
 import { relative as relativePath } from 'node:path';
 import { PackageGraph } from '@backstage/cli-node';
 import { targetPaths } from '@backstage/cli-common';
+import type { CommandContext } from '../../../../wiring/types';
 
-export async function command(opts: OptionValues) {
+export default async ({ args, info }: CommandContext) => {
+  const {
+    flags: { json },
+  } = cli(
+    {
+      help: info,
+      flags: {
+        json: { type: Boolean, description: 'Output as JSON' },
+      },
+    },
+    undefined,
+    args,
+  );
+
   const packages = await PackageGraph.listTargetPackages();
 
   const eslint = new ESLint({
@@ -74,7 +88,7 @@ export async function command(opts: OptionValues) {
     stderr.cursorTo(0);
   }
 
-  if (opts.json) {
+  if (json) {
     console.log(JSON.stringify(deprecations, null, 2));
   } else {
     for (const d of deprecations) {
@@ -87,4 +101,4 @@ export async function command(opts: OptionValues) {
   if (deprecations.length > 0) {
     process.exit(1);
   }
-}
+};

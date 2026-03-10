@@ -103,7 +103,10 @@ describe('createSpecializedApp', () => {
       features: [
         createFrontendPlugin({
           pluginId: 'test',
-          featureFlags: [{ name: 'a' }, { name: 'b' }],
+          featureFlags: [
+            { name: 'a' },
+            { name: 'b', description: 'Feature B description' },
+          ],
           extensions: [
             createExtension({
               attachTo: { id: 'root', input: 'app' },
@@ -145,6 +148,11 @@ describe('createSpecializedApp', () => {
     render(app.tree.root.instance!.getData(coreExtensionData.reactElement));
 
     expect(screen.getByText('flags:test=a,test=b')).toBeInTheDocument();
+
+    expect(flags).toEqual([
+      { name: 'a', pluginId: 'test' },
+      { name: 'b', pluginId: 'test', description: 'Feature B description' },
+    ]);
 
     expect(app.apis).toMatchInlineSnapshot(`
       ApiResolver {

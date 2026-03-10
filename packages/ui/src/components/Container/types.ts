@@ -23,7 +23,9 @@ export type ContainerOwnProps = {
 };
 
 /** @public */
-export interface ContainerProps extends ContainerOwnProps {
+export interface ContainerProps
+  extends ContainerOwnProps,
+    Omit<React.ComponentPropsWithoutRef<'div'>, keyof ContainerOwnProps> {
   my?: SpaceProps['my'];
   mb?: SpaceProps['mb'];
   mt?: SpaceProps['mt'];

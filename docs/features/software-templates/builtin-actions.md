@@ -32,7 +32,7 @@ Here's how to add an action module, first you need to run this command:
 yarn --cwd packages/backend add @backstage/plugin-scaffolder-backend-module-github
 ```
 
-Then you need to add it to your backend, this is a simplified new backend system for example purposes:
+Then you need to add it to your backend, this is a simplified backend system for example purposes:
 
 ```ts title="/packages/backend/src/index.ts"
 import { createBackend } from '@backstage/backend-defaults';

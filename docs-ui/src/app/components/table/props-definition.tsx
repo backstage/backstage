@@ -456,6 +456,11 @@ export const rowPropDefs: Record<string, PropDef> = {
     description:
       'Row content. Can be a render function receiving column config.',
   },
+  noTrack: {
+    type: 'boolean',
+    description:
+      'Suppresses the automatic analytics click event, e.g. if you already have custom tracking.',
+  },
   ...classNamePropDefs,
   ...stylePropDefs,
 };

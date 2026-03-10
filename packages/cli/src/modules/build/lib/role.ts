@@ -15,16 +15,15 @@
  */
 
 import fs from 'fs-extra';
-import { OptionValues } from 'commander';
 import { targetPaths } from '@backstage/cli-common';
 
 import { PackageRoles, PackageRole } from '@backstage/cli-node';
 
-export async function findRoleFromCommand(
-  opts: OptionValues,
-): Promise<PackageRole> {
+export async function findRoleFromCommand(opts: {
+  role?: string;
+}): Promise<PackageRole> {
   if (opts.role) {
-    return PackageRoles.getRoleInfo(opts.role)?.role;
+    return PackageRoles.getRoleInfo(opts.role).role;
   }
 
   const pkg = await fs.readJson(targetPaths.resolve('package.json'));

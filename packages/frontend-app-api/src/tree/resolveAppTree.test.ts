@@ -149,7 +149,7 @@ describe('buildAppTree', () => {
           attachTo: [
             { id: 'a', input: 'x' },
             { id: 'b', input: 'x' },
-          ],
+          ] as any,
         },
         {
           ...baseSpec,
@@ -157,7 +157,7 @@ describe('buildAppTree', () => {
           attachTo: [
             { id: 'b', input: 'x' },
             { id: 'c', input: 'x' },
-          ],
+          ] as any,
         },
       ],
       collector,

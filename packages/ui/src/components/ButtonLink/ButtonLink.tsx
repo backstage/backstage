@@ -20,15 +20,27 @@ import type { ButtonLinkProps } from './types';
 import { useDefinition } from '../../hooks/useDefinition';
 import { ButtonLinkDefinition } from './definition';
 import { InternalLinkProvider } from '../InternalLinkProvider';
+import { getNodeText } from '../../analytics/getNodeText';
 
 /** @public */
 export const ButtonLink = forwardRef(
   (props: ButtonLinkProps, ref: Ref<HTMLAnchorElement>) => {
-    const { ownProps, restProps, dataAttributes } = useDefinition(
+    const { ownProps, restProps, dataAttributes, analytics } = useDefinition(
       ButtonLinkDefinition,
       props,
     );
     const { classes, iconStart, iconEnd, children } = ownProps;
+
+    const handlePress: typeof restProps.onPress = e => {
+      restProps.onPress?.(e);
+      const text =
+        restProps['aria-label'] ??
+        getNodeText(children) ??
+        String(restProps.href ?? '');
+      analytics.captureEvent('click', text, {
+        attributes: { to: String(restProps.href ?? '') },
+      });
+    };
 
     return (
       <InternalLinkProvider href={restProps.href}>
@@ -37,6 +49,7 @@ export const ButtonLink = forwardRef(
           ref={ref}
           {...dataAttributes}
           {...restProps}
+          onPress={handlePress}
         >
           <span className={classes.content}>
             {iconStart}

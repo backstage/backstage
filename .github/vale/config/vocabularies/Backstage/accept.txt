@@ -30,6 +30,7 @@ backend's
 backported
 backporting
 BEPs
+bg
 bigint
 Bigtable
 Billett
@@ -425,6 +426,7 @@ scrollable
 scrollbar
 scrollbars
 sdks
+SearchField
 seb
 semlas
 semver
@@ -494,6 +496,7 @@ templater
 Templater
 templaters
 Templaters
+TextField
 TFRecord
 theia
 Themer

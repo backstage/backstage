@@ -15,7 +15,7 @@
  */
 
 import { CommandGraph } from './CommandGraph';
-import { CliFeature, OpaqueCliPlugin } from './types';
+import { BackstageCommand, CliFeature, OpaqueCliPlugin } from './types';
 import { CommandRegistry } from './CommandRegistry';
 import { Command } from 'commander';
 import { version } from './version';
@@ -23,6 +23,17 @@ import chalk from 'chalk';
 import { exitWithError } from './errors';
 import { ForwardedError } from '@backstage/errors';
 import { isPromise } from 'node:util/types';
+
+function isNodeHidden(
+  node:
+    | { $$type: '@tree/leaf'; command: BackstageCommand }
+    | { $$type: '@tree/root'; children: unknown[] },
+): boolean {
+  if (node.$$type === '@tree/leaf') {
+    return !!node.command.deprecated || !!node.command.experimental;
+  }
+  return node.children.every(child => isNodeHidden(child as any));
+}
 
 type UninitializedFeature = CliFeature | Promise<{ default: CliFeature }>;
 
@@ -80,7 +91,9 @@ export class CliInitializer {
       const { node, argParser } = queue.shift()!;
       if (node.$$type === '@tree/root') {
         const treeParser = argParser
-          .command(`${node.name} [command]`)
+          .command(`${node.name} [command]`, {
+            hidden: isNodeHidden(node),
+          })
           .description(node.name);
 
         queue.push(
@@ -91,7 +104,9 @@ export class CliInitializer {
         );
       } else {
         argParser
-          .command(node.name, { hidden: !!node.command.deprecated })
+          .command(node.name, {
+            hidden: !!node.command.deprecated || !!node.command.experimental,
+          })
           .description(node.command.description)
           .helpOption(false)
           .allowUnknownOption(true)

@@ -23,7 +23,7 @@ import {
   createExtensionBlueprint,
   createExtensionInput,
 } from '../wiring';
-import { ExtensionBoundary, PageLayout, PageTab } from '../components';
+import { ExtensionBoundary, PageLayout, PageLayoutTab } from '../components';
 import { useApi } from '../apis/system';
 import { pluginHeaderActionsApiRef } from '../apis/definitions/PluginHeaderActionsApi';
 
@@ -59,10 +59,6 @@ export const PageBlueprint = createExtensionBlueprint({
   },
   *factory(
     params: {
-      /**
-       * @deprecated Use the `path` param instead.
-       */
-      defaultPath?: [Error: `Use the 'path' param instead`];
       path: string;
       title?: string;
       icon?: IconElement;
@@ -101,7 +97,7 @@ export const PageBlueprint = createExtensionBlueprint({
       yield coreExtensionData.reactElement(<PageContent />);
     } else if (inputs.pages.length > 0) {
       // Parent page with sub-pages - render header with tabs
-      const tabs: PageTab[] = inputs.pages.map(page => {
+      const tabs: PageLayoutTab[] = inputs.pages.map(page => {
         const path = page.get(coreExtensionData.routePath);
         const tabTitle = page.get(coreExtensionData.title);
         const tabIcon = page.get(coreExtensionData.icon);

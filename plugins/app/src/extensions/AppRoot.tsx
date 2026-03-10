@@ -29,12 +29,14 @@ import {
   createExtension,
   createExtensionInput,
   routeResolutionApiRef,
+  useAnalytics,
 } from '@backstage/frontend-plugin-api';
 import {
   AppRootWrapperBlueprint,
   RouterBlueprint,
   SignInPageBlueprint,
 } from '@backstage/plugin-app-react';
+import { BUIProvider } from '@backstage/ui';
 import {
   DiscoveryApi,
   ErrorApi,
@@ -115,19 +117,21 @@ export const AppRoot = createExtension({
 
     return [
       coreExtensionData.reactElement(
-        <AppRouter
-          SignInPageComponent={inputs.signInPage?.get(
-            SignInPageBlueprint.dataRefs.component,
-          )}
-          RouterComponent={inputs.router?.get(
-            RouterBlueprint.dataRefs.component,
-          )}
-          extraElements={inputs.elements?.map(el =>
-            el.get(coreExtensionData.reactElement),
-          )}
-        >
-          {content}
-        </AppRouter>,
+        <BUIProvider useAnalytics={useAnalytics}>
+          <AppRouter
+            SignInPageComponent={inputs.signInPage?.get(
+              SignInPageBlueprint.dataRefs.component,
+            )}
+            RouterComponent={inputs.router?.get(
+              RouterBlueprint.dataRefs.component,
+            )}
+            extraElements={inputs.elements?.map(el =>
+              el.get(coreExtensionData.reactElement),
+            )}
+          >
+            {content}
+          </AppRouter>
+        </BUIProvider>,
       ),
     ];
   },

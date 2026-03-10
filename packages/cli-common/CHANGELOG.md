@@ -1,5 +1,13 @@
 # @backstage/cli-common
 
+## 0.2.0-next.1
+
+### Patch Changes
+
+- e44b6a9: The `findOwnRootDir` utility now searches for the monorepo root by traversing up the directory tree looking for a `package.json` with `workspaces`, instead of assuming a fixed `../..` relative path. If no workspaces root is found during this traversal, `findOwnRootDir` now throws to enforce stricter validation of the repository layout.
+- Updated dependencies
+  - @backstage/errors@1.2.7
+
 ## 0.2.0-next.0
 
 ### Minor Changes

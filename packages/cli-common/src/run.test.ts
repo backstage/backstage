@@ -338,5 +338,26 @@ describe('run', () => {
       const result = await runCheck(['nonexistent-command-12345']);
       expect(result).toBe(false);
     });
+
+    it('should not leak stdout or stderr from the child process', async () => {
+      const stdoutSpy = jest.spyOn(process.stdout, 'write');
+      const stderrSpy = jest.spyOn(process.stderr, 'write');
+      const stdoutBefore = stdoutSpy.mock.calls.length;
+      const stderrBefore = stderrSpy.mock.calls.length;
+
+      await runCheck([
+        'node',
+        '--eval',
+        'console.log("leaked stdout"); console.error("leaked stderr")',
+      ]);
+
+      const stdoutCalls = stdoutSpy.mock.calls.slice(stdoutBefore);
+      const stderrCalls = stderrSpy.mock.calls.slice(stderrBefore);
+      const stdout = stdoutCalls.map(c => String(c[0])).join('');
+      const stderr = stderrCalls.map(c => String(c[0])).join('');
+
+      expect(stdout).not.toContain('leaked stdout');
+      expect(stderr).not.toContain('leaked stderr');
+    });
   });
 });

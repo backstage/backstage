@@ -16,6 +16,7 @@
 
 import { createNewPackage } from '../lib/createNewPackage';
 import { default as newCommand } from './new';
+import type { CommandContext } from '../../../wiring/types';
 
 jest.mock('../lib/createNewPackage');
 
@@ -34,13 +35,21 @@ describe.each([
   });
 
   it(`should generate naming options for --scope=${scope}`, async () => {
-    await newCommand({ scope, option: [], skipInstall: false });
+    const args = ['--skip-install'];
+    if (scope) {
+      args.push('--scope', scope);
+    }
+    const context: CommandContext = {
+      args,
+      info: { usage: 'backstage-cli new', description: 'test' },
+    };
+    await newCommand(context);
     expect(createNewPackage).toHaveBeenCalledWith(
       expect.objectContaining({
-        configOverrides: {
+        configOverrides: expect.objectContaining({
           packageNamePrefix: prefix,
           packageNamePluginInfix: infix,
-        },
+        }),
       }),
     );
   });

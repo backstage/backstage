@@ -19,6 +19,8 @@ import { useState } from 'react';
 import { SearchField } from './SearchField';
 import { Form } from 'react-aria-components';
 import { Flex } from '../Flex';
+import { Box } from '../Box';
+import { Text } from '../Text';
 import { FieldLabel } from '../FieldLabel';
 import { ButtonIcon } from '../ButtonIcon';
 import { RiCactusLine, RiEBike2Line } from '@remixicon/react';
@@ -340,4 +342,39 @@ export const StartCollapsedControlledWithValue = meta.story({
       </Flex>
     );
   },
+});
+
+export const AutoBg = meta.story({
+  render: () => (
+    <Flex direction="column" gap="4">
+      <div style={{ maxWidth: '600px' }}>
+        SearchField automatically detects its parent bg context and increments
+        the neutral level by 1. No prop is needed — it's fully automatic.
+      </div>
+      <Box bg="neutral" p="4">
+        <Text>Neutral 1 container</Text>
+        <Flex mt="2" style={{ maxWidth: '300px' }}>
+          <SearchField aria-label="Search" size="small" />
+        </Flex>
+      </Box>
+      <Box bg="neutral">
+        <Box bg="neutral" p="4">
+          <Text>Neutral 2 container</Text>
+          <Flex mt="2" style={{ maxWidth: '300px' }}>
+            <SearchField aria-label="Search" size="small" />
+          </Flex>
+        </Box>
+      </Box>
+      <Box bg="neutral">
+        <Box bg="neutral">
+          <Box bg="neutral" p="4">
+            <Text>Neutral 3 container</Text>
+            <Flex mt="2" style={{ maxWidth: '300px' }}>
+              <SearchField aria-label="Search" size="small" />
+            </Flex>
+          </Box>
+        </Box>
+      </Box>
+    </Flex>
+  ),
 });

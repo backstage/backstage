@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { OptionValues } from 'commander';
+import { cli } from 'cleye';
 import fs from 'fs-extra';
 import { buildPackage, Output } from '../../../lib/builder';
 import { findRoleFromCommand } from '../../../lib/role';
@@ -29,40 +29,90 @@ import { buildFrontend } from '../../../lib/buildFrontend';
 import { buildBackend } from '../../../lib/buildBackend';
 import { isValidUrl } from '../../../lib/urls';
 import chalk from 'chalk';
+import type { CommandContext } from '../../../../../wiring/types';
 
-export async function command(opts: OptionValues): Promise<void> {
+export default async ({ args, info }: CommandContext) => {
+  const {
+    flags: {
+      role,
+      minify,
+      skipBuildDependencies,
+      stats,
+      config,
+      moduleFederation,
+    },
+  } = cli(
+    {
+      help: info,
+      flags: {
+        role: {
+          type: String,
+          description: 'Run the command with an explicit package role',
+        },
+        minify: {
+          type: Boolean,
+          description:
+            'Minify the generated code. Does not apply to app package (app is minified by default).',
+        },
+        skipBuildDependencies: {
+          type: Boolean,
+          description:
+            'Skip the automatic building of local dependencies. Applies to backend packages only.',
+        },
+        stats: {
+          type: Boolean,
+          description:
+            'If bundle stats are available, write them to the output directory. Applies to app packages only.',
+        },
+        config: {
+          type: [String],
+          description:
+            'Config files to load instead of app-config.yaml. Applies to app packages only.',
+          default: [],
+        },
+        moduleFederation: {
+          type: Boolean,
+          description:
+            'Build a package as a module federation remote. Applies to frontend plugin packages only.',
+        },
+      },
+    },
+    undefined,
+    args,
+  );
+
   const webpack = process.env.LEGACY_WEBPACK_BUILD
     ? (require('webpack') as typeof import('webpack'))
     : undefined;
 
-  const role = await findRoleFromCommand(opts);
+  const resolvedRole = await findRoleFromCommand({ role });
 
-  if (role === 'frontend' || role === 'backend') {
-    const configPaths = (opts.config as string[]).map(arg => {
+  if (resolvedRole === 'frontend' || resolvedRole === 'backend') {
+    const configPaths = config.map(arg => {
       if (isValidUrl(arg)) {
         return arg;
       }
       return targetPaths.resolve(arg);
     });
 
-    if (role === 'frontend') {
+    if (resolvedRole === 'frontend') {
       return buildFrontend({
         targetDir: targetPaths.dir,
         configPaths,
-        writeStats: Boolean(opts.stats),
+        writeStats: Boolean(stats),
         webpack,
       });
     }
     return buildBackend({
       targetDir: targetPaths.dir,
       configPaths,
-      skipBuildDependencies: Boolean(opts.skipBuildDependencies),
-      minify: Boolean(opts.minify),
+      skipBuildDependencies: Boolean(skipBuildDependencies),
+      minify: Boolean(minify),
     });
   }
 
   let isModuleFederationRemote: boolean | undefined = undefined;
-  if ((role as string) === 'frontend-dynamic-container') {
+  if ((resolvedRole as string) === 'frontend-dynamic-container') {
     console.log(
       chalk.yellow(
         `⚠️  WARNING: The 'frontend-dynamic-container' package role is experimental and will receive immediate breaking changes in the future.`,
@@ -70,7 +120,7 @@ export async function command(opts: OptionValues): Promise<void> {
     );
     isModuleFederationRemote = true;
   }
-  if (opts.moduleFederation) {
+  if (moduleFederation) {
     isModuleFederationRemote = true;
   }
 
@@ -79,13 +129,13 @@ export async function command(opts: OptionValues): Promise<void> {
     return buildFrontend({
       targetDir: targetPaths.dir,
       configPaths: [],
-      writeStats: Boolean(opts.stats),
+      writeStats: Boolean(stats),
       isModuleFederationRemote,
       webpack,
     });
   }
 
-  const roleInfo = PackageRoles.getRoleInfo(role);
+  const roleInfo = PackageRoles.getRoleInfo(resolvedRole);
 
   const outputs = new Set<Output>();
 
@@ -106,7 +156,7 @@ export async function command(opts: OptionValues): Promise<void> {
   return buildPackage({
     outputs,
     packageJson,
-    minify: Boolean(opts.minify),
+    minify: Boolean(minify),
     workspacePackages: await PackageGraph.listTargetPackages(),
   });
-}
+};

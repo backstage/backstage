@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 import { createCliPlugin } from '../../wiring/factory';
-import { Command } from 'commander';
-import { lazy } from '../../wiring/lazy';
 
 export default createCliPlugin({
   pluginId: 'migrate',
@@ -24,45 +22,13 @@ export default createCliPlugin({
       path: ['versions:migrate'],
       description:
         'Migrate any plugins that have been moved to the @backstage-community namespace automatically',
-      execute: async ({ args }) => {
-        const command = new Command();
-        const defaultCommand = command
-          .option(
-            '--pattern <glob>',
-            'Override glob for matching packages to upgrade',
-          )
-          .option(
-            '--skip-code-changes',
-            'Skip code changes and only update package.json files',
-          )
-          .action(lazy(() => import('./commands/versions/migrate'), 'default'));
-
-        await defaultCommand.parseAsync(args, { from: 'user' });
-      },
+      execute: { loader: () => import('./commands/versions/migrate') },
     });
 
     reg.addCommand({
       path: ['versions:bump'],
       description: 'Bump Backstage packages to the latest versions',
-      execute: async ({ args }) => {
-        const command = new Command();
-
-        const defaultCommand = command
-          .option(
-            '--pattern <glob>',
-            'Override glob for matching packages to upgrade',
-          )
-          .option(
-            '--release <version|next|main>',
-            'Bump to a specific Backstage release line or version',
-            'main',
-          )
-          .option('--skip-install', 'Skips yarn install step')
-          .option('--skip-migrate', 'Skips migration of any moved packages')
-          .action(lazy(() => import('./commands/versions/bump'), 'default'));
-
-        await defaultCommand.parseAsync(args, { from: 'user' });
-      },
+      execute: { loader: () => import('./commands/versions/bump') },
     });
 
     reg.addCommand({

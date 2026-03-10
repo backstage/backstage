@@ -277,6 +277,23 @@ export type EntityFilter = {
   toQueryValue?: () => string | string[];
 };
 
+// @public (undocumented)
+export function EntityInfoCard(props: EntityInfoCardProps): JSX_2.Element;
+
+// @public (undocumented)
+export interface EntityInfoCardProps {
+  // (undocumented)
+  children?: ReactNode;
+  // (undocumented)
+  className?: string;
+  // (undocumented)
+  footerActions?: ReactNode;
+  // (undocumented)
+  headerActions?: ReactNode;
+  // (undocumented)
+  title?: ReactNode;
+}
+
 // @public
 export class EntityKindFilter implements EntityFilter {
   constructor(value: string, label: string);
@@ -819,6 +836,11 @@ export function useEntityPresentation(
     defaultNamespace?: string;
   },
 ): EntityRefPresentationSnapshot;
+
+// @public
+export function useEntityRefLink(): (
+  entityRef: Entity | CompoundEntityRef | string,
+) => string;
 
 // @public
 export function useEntityTypeFilter(): {

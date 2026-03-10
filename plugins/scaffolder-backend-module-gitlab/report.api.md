@@ -9,6 +9,28 @@ import { ScmIntegrationRegistry } from '@backstage/integration';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 
 // @public
+export const createGitlabGroupAccessAction: (options: {
+  integrations: ScmIntegrationRegistry;
+}) => TemplateAction<
+  {
+    repoUrl: string;
+    path: string | number;
+    token?: string | undefined;
+    userIds?: number[] | undefined;
+    groupIds?: number[] | undefined;
+    action?: 'add' | 'remove' | undefined;
+    accessLevel?: string | number | undefined;
+  },
+  {
+    userIds?: number[] | undefined;
+    groupIds?: number[] | undefined;
+    path?: string | number | undefined;
+    accessLevel?: number | undefined;
+  },
+  'v2'
+>;
+
+// @public
 export const createGitlabGroupEnsureExistsAction: (options: {
   integrations: ScmIntegrationRegistry;
 }) => TemplateAction<

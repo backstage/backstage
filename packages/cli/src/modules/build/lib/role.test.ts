@@ -16,20 +16,12 @@
 
 import { createMockDirectory } from '@backstage/backend-test-utils';
 import { overrideTargetPaths } from '@backstage/cli-common/testUtils';
-import { Command } from 'commander';
 import { findRoleFromCommand } from './role';
 
 const mockDir = createMockDirectory();
 overrideTargetPaths(mockDir.path);
 
 describe('findRoleFromCommand', () => {
-  function mkCommand(args?: string) {
-    const parsed = new Command()
-      .option('--role <role>', 'test role')
-      .parse(args?.split(' ') ?? [], { from: 'user' });
-    return parsed.opts();
-  }
-
   beforeEach(() => {
     mockDir.setContent({
       'package.json': JSON.stringify({
@@ -42,16 +34,14 @@ describe('findRoleFromCommand', () => {
   });
 
   it('provides role info by role', async () => {
-    await expect(findRoleFromCommand(mkCommand())).resolves.toEqual(
-      'web-library',
-    );
+    await expect(findRoleFromCommand({})).resolves.toEqual('web-library');
 
     await expect(
-      findRoleFromCommand(mkCommand('--role node-library')),
+      findRoleFromCommand({ role: 'node-library' }),
     ).resolves.toEqual('node-library');
 
-    await expect(
-      findRoleFromCommand(mkCommand('--role invalid')),
-    ).rejects.toThrow(`Unknown package role 'invalid'`);
+    await expect(findRoleFromCommand({ role: 'invalid' })).rejects.toThrow(
+      `Unknown package role 'invalid'`,
+    );
   });
 });

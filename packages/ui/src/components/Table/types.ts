@@ -73,6 +73,7 @@ export type RowOwnProps<T = object> = {
   columns?: ReactAriaRowProps<T>['columns'];
   children?: ReactAriaRowProps<T>['children'];
   href?: string;
+  noTrack?: boolean;
 };
 
 /** @public */

@@ -66,9 +66,7 @@ export const catalogAboutEntityCard = EntityCardBlueprint.makeWithOverrides({
         const { InternalAboutCard } = await import(
           '../components/AboutCard/AboutCard'
         );
-        return (
-          <InternalAboutCard variant="gridItem" subheader={<Subheader />} />
-        );
+        return <InternalAboutCard iconLinks={<Subheader />} />;
       },
     });
   },
@@ -80,9 +78,7 @@ export const catalogLinksEntityCard = EntityCardBlueprint.make({
     type: 'info',
     filter: { 'metadata.links': { $exists: true } },
     loader: async () =>
-      import('../components/EntityLinksCard').then(m => (
-        <m.EntityLinksCard variant="gridItem" />
-      )),
+      import('../components/EntityLinksCard').then(m => <m.EntityLinksCard />),
   },
 });
 
@@ -93,7 +89,7 @@ export const catalogLabelsEntityCard = EntityCardBlueprint.make({
     filter: { 'metadata.labels': { $exists: true } },
     loader: async () =>
       import('../components/EntityLabelsCard').then(m => (
-        <m.EntityLabelsCard variant="gridItem" />
+        <m.EntityLabelsCard />
       )),
   },
 });

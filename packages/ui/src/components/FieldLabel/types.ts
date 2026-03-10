@@ -45,4 +45,6 @@ export type FieldLabelOwnProps = {
 };
 
 /** @public */
-export interface FieldLabelProps extends FieldLabelOwnProps {}
+export interface FieldLabelProps
+  extends FieldLabelOwnProps,
+    Omit<React.ComponentPropsWithoutRef<'div'>, keyof FieldLabelOwnProps> {}

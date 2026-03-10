@@ -18,10 +18,10 @@ import {
   ApiHolder,
   ExtensionDataContainer,
   ExtensionDataRef,
-  ExtensionFactoryMiddleware,
   ExtensionInput,
   ResolvedExtensionInputs,
 } from '@backstage/frontend-plugin-api';
+import { ExtensionFactoryMiddleware } from '../wiring/types';
 import mapValues from 'lodash/mapValues';
 import { AppNode, AppNodeInstance } from '@backstage/frontend-plugin-api';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports

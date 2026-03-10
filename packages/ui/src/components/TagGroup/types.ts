@@ -58,6 +58,7 @@ export type TagOwnProps = {
   href?: ReactAriaTagProps['href'];
   children?: ReactAriaTagProps['children'];
   className?: string;
+  noTrack?: boolean;
 };
 
 /**

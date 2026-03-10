@@ -18,7 +18,6 @@ import { JSX, lazy, ReactNode, Suspense } from 'react';
 import {
   ConfigApi,
   coreExtensionData,
-  ExtensionFactoryMiddleware,
   FrontendFeature,
   FrontendFeatureLoader,
 } from '@backstage/frontend-plugin-api';
@@ -31,6 +30,7 @@ import { ConfigReader } from '@backstage/config';
 import {
   CreateAppRouteBinder,
   createSpecializedApp,
+  ExtensionFactoryMiddleware,
   FrontendPluginInfoResolver,
 } from '@backstage/frontend-app-api';
 import appPlugin from '@backstage/plugin-app';
@@ -58,17 +58,6 @@ export interface CreateAppOptions {
    * Advanced, more rarely used options.
    */
   advanced?: {
-    /**
-     * If set to true, the system will silently accept and move on if
-     * encountering config for extensions that do not exist. The default is to
-     * reject such config to help catch simple mistakes.
-     *
-     * This flag can be useful in some scenarios where you have a dynamic set of
-     * extensions enabled at different times, but also increases the risk of
-     * accidentally missing e.g. simple typos in your config.
-     */
-    allowUnknownExtensionConfig?: boolean;
-
     /**
      * Sets a custom config loader, replacing the builtin one.
      *

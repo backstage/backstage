@@ -32,7 +32,7 @@ import {
   useTable,
   type ColumnConfig,
   PluginHeader,
-  HeaderPage,
+  Header,
   Button,
 } from '..';
 
@@ -235,7 +235,7 @@ const CardsWithTableLayout = () => {
   return (
     <>
       <PluginHeader title="Plugin" />
-      <HeaderPage
+      <Header
         title="Page title"
         customActions={<Button>Custom action</Button>}
       />

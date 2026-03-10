@@ -16,7 +16,7 @@
 
 import chalk from 'chalk';
 import fs from 'fs-extra';
-import { Command, OptionValues } from 'commander';
+import { cli } from 'cleye';
 import { createHash } from 'node:crypto';
 import { relative as relativePath } from 'node:path';
 import {
@@ -29,6 +29,7 @@ import {
 import { targetPaths } from '@backstage/cli-common';
 
 import { createScriptOptionsParser } from '../../lib/optionsParser';
+import type { CommandContext } from '../../../../wiring/types';
 
 function depCount(pkg: BackstagePackageJson) {
   const deps = pkg.dependencies ? Object.keys(pkg.dependencies).length : 0;
@@ -38,24 +39,90 @@ function depCount(pkg: BackstagePackageJson) {
   return deps + devDeps;
 }
 
-export async function command(opts: OptionValues, cmd: Command): Promise<void> {
+export default async ({ args, info }: CommandContext) => {
+  for (const flag of [
+    'outputFile',
+    'successCache',
+    'successCacheDir',
+    'maxWarnings',
+  ]) {
+    if (args.some(a => a === `--${flag}` || a.startsWith(`--${flag}=`))) {
+      process.stderr.write(
+        `DEPRECATION WARNING: --${flag} is deprecated, use the kebab-case form instead\n`,
+      );
+    }
+  }
+
+  const {
+    flags: {
+      fix,
+      format,
+      outputFile,
+      successCache: useSuccessCache,
+      successCacheDir,
+      since,
+      maxWarnings,
+    },
+  } = cli(
+    {
+      help: info,
+      flags: {
+        fix: {
+          type: Boolean,
+          description: 'Attempt to automatically fix violations',
+        },
+        format: {
+          type: String,
+          description: 'Lint report output format',
+          default: 'eslint-formatter-friendly',
+        },
+        outputFile: {
+          type: String,
+          description: 'Write the lint report to a file instead of stdout',
+        },
+        successCache: {
+          type: Boolean,
+          description:
+            'Enable success caching, which skips running tests for unchanged packages that were successful in the previous run',
+        },
+        successCacheDir: {
+          type: String,
+          description:
+            'Set the success cache location, (default: node_modules/.cache/backstage-cli)',
+        },
+        since: {
+          type: String,
+          description:
+            'Only lint packages that changed since the specified ref',
+        },
+        maxWarnings: {
+          type: String,
+          description:
+            'Fail if more than this number of warnings. -1 allows warnings. (default: -1)',
+        },
+      },
+    },
+    undefined,
+    args,
+  );
+
   let packages = await PackageGraph.listTargetPackages();
 
   const cache = SuccessCache.create({
     name: 'lint',
-    basePath: opts.successCacheDir,
+    basePath: successCacheDir,
   });
-  const cacheContext = opts.successCache
+  const cacheContext = useSuccessCache
     ? {
         entries: await cache.read(),
         lockfile: await Lockfile.load(targetPaths.resolveRoot('yarn.lock')),
       }
     : undefined;
 
-  if (opts.since) {
+  if (since) {
     const graph = PackageGraph.fromPackages(packages);
     packages = await graph.listChangedPackages({
-      ref: opts.since,
+      ref: since,
       analyzeLockfile: true,
     });
   }
@@ -65,7 +132,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
   packages.sort((a, b) => depCount(b.packageJson) - depCount(a.packageJson));
 
   // This formatter uses the cwd to format file paths, so let's have that happen from the root instead
-  if (opts.format === 'eslint-formatter-friendly') {
+  if (format === 'eslint-formatter-friendly') {
     process.chdir(targetPaths.rootDir);
   }
 
@@ -74,7 +141,12 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
     process.env.FORCE_COLOR = '1';
   }
 
-  const parseLintScript = createScriptOptionsParser(cmd, ['package', 'lint']);
+  const parseLintScript = createScriptOptionsParser(['package', 'lint'], {
+    fix: { type: 'boolean' },
+    format: { type: 'string' },
+    'output-file': { type: 'string' },
+    'max-warnings': { type: 'string' },
+  });
 
   const items = await Promise.all(
     packages.map(async pkg => {
@@ -112,20 +184,20 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
   const { results: resultsList } = await runWorkerQueueThreads({
     items: items.filter(item => item.lintOptions), // Filter out packages without lint script
     context: {
-      fix: Boolean(opts.fix),
-      format: opts.format as string | undefined,
+      fix: Boolean(fix),
+      format: format as string | undefined,
       shouldCache: Boolean(cacheContext),
-      maxWarnings: opts.maxWarnings ?? -1,
+      maxWarnings: maxWarnings ?? '-1',
       successCache: cacheContext?.entries,
       rootDir: targetPaths.rootDir,
     },
     workerFactory: async ({
-      fix,
-      format,
+      fix: workerFix,
+      format: workerFormat,
       shouldCache,
       successCache,
       rootDir,
-      maxWarnings,
+      maxWarnings: workerMaxWarnings,
     }) => {
       const { ESLint } = require('eslint') as typeof import('eslint');
       const crypto = require('node:crypto') as typeof import('crypto');
@@ -151,7 +223,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
         const start = Date.now();
         const eslint = new ESLint({
           cwd: fullDir,
-          fix,
+          fix: workerFix,
           extensions: ['js', 'jsx', 'ts', 'tsx', 'mjs', 'cjs'],
         });
 
@@ -192,7 +264,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
           }
         }
 
-        const formatter = await eslint.loadFormatter(format);
+        const formatter = await eslint.loadFormatter(workerFormat);
 
         const results = await eslint.lintFiles(['.']);
 
@@ -200,18 +272,18 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
         const time = ((Date.now() - start) / 1000).toFixed(2);
         console.log(`Checked ${count} files in ${relativeDir} ${time}s`);
 
-        if (fix) {
+        if (workerFix) {
           await ESLint.outputFixes(results);
         }
 
-        const ignoreWarnings = +maxWarnings === -1;
+        const ignoreWarnings = +workerMaxWarnings === -1;
 
         const resultText = formatter.format(results) as string;
         const failed =
           results.some(r => r.errorCount > 0) ||
           (!ignoreWarnings &&
             results.reduce((current, next) => current + next.warningCount, 0) >
-              maxWarnings);
+              +workerMaxWarnings);
 
         return {
           relativeDir,
@@ -242,8 +314,8 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
       // When doing repo lint, only list the results if the lint failed to avoid a log
       // dump of all warnings that might be irrelevant
       if (resultText) {
-        if (opts.outputFile) {
-          if (opts.format === 'json') {
+        if (outputFile) {
+          if (format === 'json') {
             jsonResults.push(resultText);
           } else {
             errorOutput += `${resultText}\n`;
@@ -258,7 +330,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
     }
   }
 
-  if (opts.format === 'json') {
+  if (format === 'json') {
     let mergedJsonResults: any[] = [];
     for (const jsonResult of jsonResults) {
       mergedJsonResults = mergedJsonResults.concat(JSON.parse(jsonResult));
@@ -266,8 +338,8 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
     errorOutput = JSON.stringify(mergedJsonResults, null, 2);
   }
 
-  if (opts.outputFile && errorOutput) {
-    await fs.writeFile(targetPaths.resolveRoot(opts.outputFile), errorOutput);
+  if (outputFile && errorOutput) {
+    await fs.writeFile(targetPaths.resolveRoot(outputFile), errorOutput);
   }
 
   if (cacheContext) {
@@ -277,4 +349,4 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
   if (failed) {
     process.exit(1);
   }
-}
+};

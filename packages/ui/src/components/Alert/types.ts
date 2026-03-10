@@ -34,4 +34,10 @@ export type AlertOwnProps = {
  *
  * @public
  */
-export interface AlertProps extends MarginProps, AlertOwnProps {}
+export interface AlertProps
+  extends MarginProps,
+    AlertOwnProps,
+    Omit<
+      React.ComponentPropsWithoutRef<'div'>,
+      keyof AlertOwnProps | keyof MarginProps
+    > {}

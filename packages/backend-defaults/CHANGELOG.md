@@ -1,5 +1,30 @@
 # @backstage/backend-defaults
 
+## 0.16.0-next.1
+
+### Minor Changes
+
+- 0e7d8f9: The scheduler service now uses the metrics service to create metrics, providing plugin-scoped attribution.
+- 527cf88: **BREAKING** Removed deprecated `BitbucketUrlReader`. Use the `BitbucketCloudUrlReader` or the `BitbucketServerUrlReader` instead.
+
+### Patch Changes
+
+- 62f0a53: Fixed error forwarding in the actions registry so that known errors like `InputError` and `NotFoundError` thrown by actions preserve their original status codes and messages instead of being wrapped in `ForwardedError` and coerced to 500.
+- Updated dependencies
+  - @backstage/cli-node@0.2.19-next.1
+  - @backstage/integration@2.0.0-next.1
+  - @backstage/plugin-auth-node@0.6.14-next.1
+  - @backstage/backend-app-api@1.5.1-next.0
+  - @backstage/backend-dev-utils@0.1.7
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/config@1.3.6
+  - @backstage/config-loader@1.10.9-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/integration-aws-node@0.1.20
+  - @backstage/types@1.2.2
+  - @backstage/plugin-events-node@0.4.20-next.0
+  - @backstage/plugin-permission-node@0.10.11-next.0
+
 ## 0.15.3-next.0
 
 ### Patch Changes

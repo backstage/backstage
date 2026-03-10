@@ -66,6 +66,7 @@ import {
   isInternalLink,
   createRoutingRegistration,
 } from '../InternalLinkProvider';
+import { getNodeText } from '../../analytics/getNodeText';
 import { Box } from '../Box';
 import { BgReset } from '../../hooks/useBg';
 
@@ -311,13 +312,23 @@ export const MenuAutocompleteListbox = (
 
 /** @public */
 export const MenuItem = (props: MenuItemProps) => {
-  const { ownProps, restProps, dataAttributes } = useDefinition(
+  const { ownProps, restProps, dataAttributes, analytics } = useDefinition(
     MenuItemDefinition,
     props,
   );
   const { classes, iconStart, children, href } = ownProps;
 
   useRoutingRegistrationEffect(href);
+
+  const handleAction = () => {
+    if (href) {
+      const text =
+        restProps['aria-label'] ?? getNodeText(children) ?? String(href);
+      analytics.captureEvent('click', text, {
+        attributes: { to: String(href) },
+      });
+    }
+  };
 
   // External links open in new tab via window.open instead of client-side routing
   if (href && !isInternalLink(href)) {
@@ -326,8 +337,12 @@ export const MenuItem = (props: MenuItemProps) => {
         className={classes.root}
         {...dataAttributes}
         textValue={typeof children === 'string' ? children : undefined}
-        onAction={() => window.open(href, '_blank', 'noopener,noreferrer')}
         {...restProps}
+        onAction={() => {
+          restProps.onAction?.();
+          handleAction();
+          window.open(href, '_blank', 'noopener,noreferrer');
+        }}
       >
         <div className={classes.itemWrapper}>
           <div className={classes.itemContent}>
@@ -349,6 +364,10 @@ export const MenuItem = (props: MenuItemProps) => {
       href={href}
       textValue={typeof children === 'string' ? children : undefined}
       {...restProps}
+      onAction={() => {
+        restProps.onAction?.();
+        handleAction();
+      }}
     >
       <div className={classes.itemWrapper}>
         <div className={classes.itemContent}>

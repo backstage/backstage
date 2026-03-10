@@ -1,5 +1,17 @@
 # @backstage/cli-node
 
+## 0.2.19-next.1
+
+### Patch Changes
+
+- 61cb976: Added `toString()` method to `Lockfile` for serializing lockfiles back to string format.
+- 3c811bf: Added `hasBackstageYarnPlugin` and `SuccessCache` exports, moved from `@backstage/cli`.
+- a9d23c4: Properly support `package.json` `workspaces` field
+- Updated dependencies
+  - @backstage/cli-common@0.2.0-next.1
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
 ## 0.2.19-next.0
 
 ### Patch Changes

@@ -129,6 +129,53 @@ const createStepLogger = ({
   return { taskLogger };
 };
 
+/**
+ * Recursively compares two rendered objects and returns string values from
+ * `withSecrets` that differ from their counterpart in `withoutSecrets`.
+ * These are values that were influenced by secret interpolation and should
+ * be added as log redactions.
+ */
+function collectSecretRedactions(
+  withSecrets: unknown,
+  withoutSecrets: unknown,
+): string[] {
+  if (typeof withSecrets === 'string') {
+    return withSecrets !== withoutSecrets ? [withSecrets] : [];
+  }
+  if (Array.isArray(withSecrets)) {
+    const other = Array.isArray(withoutSecrets) ? withoutSecrets : [];
+    return withSecrets.flatMap((val, i) =>
+      collectSecretRedactions(val, other[i]),
+    );
+  }
+  if (withSecrets && typeof withSecrets === 'object') {
+    const other =
+      withoutSecrets && typeof withoutSecrets === 'object'
+        ? (withoutSecrets as Record<string, unknown>)
+        : {};
+    return Object.entries(withSecrets as Record<string, unknown>).flatMap(
+      ([key, val]) => collectSecretRedactions(val, other[key]),
+    );
+  }
+  return [];
+}
+
+/**
+ * Extracts all string values from a nested object structure.
+ * Used as a fallback when the comparison render fails.
+ */
+function extractStringValues(obj: unknown): string[] {
+  if (typeof obj === 'string') return [obj];
+  if (Array.isArray(obj)) return obj.flatMap(extractStringValues);
+  if (obj && typeof obj === 'object') {
+    return Object.entries(obj).flatMap(([key, val]) => [
+      key,
+      ...extractStringValues(val),
+    ]);
+  }
+  return [];
+}
+
 const isActionAuthorized = createConditionAuthorizer(
   Object.values(scaffolderActionRules),
 );
@@ -443,6 +490,39 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
               0,
             )}`,
           );
+        }
+
+        // Redact any rendered values that were influenced by secrets.
+        // Re-render the input without secrets and diff against the real render
+        // to find values that changed due to secret interpolation.
+        if (step.input) {
+          const hasSecrets =
+            Object.keys(task.secrets ?? {}).length > 0 ||
+            Object.keys(this.environment?.secrets ?? {}).length > 0;
+
+          if (hasSecrets) {
+            try {
+              const contextNoSecrets = {
+                ...preIterationContext,
+                ...(iteration.each ? { each: iteration.each } : {}),
+                secrets: {},
+                environment: {
+                  ...preIterationContext.environment,
+                  secrets: {},
+                },
+              };
+              const inputWithoutSecrets = this.render(
+                step.input,
+                contextNoSecrets,
+                renderTemplate,
+              );
+              taskLogger.addRedactions(
+                collectSecretRedactions(iteration.input, inputWithoutSecrets),
+              );
+            } catch {
+              taskLogger.addRedactions(extractStringValues(iteration.input));
+            }
+          }
         }
 
         await action.handler({

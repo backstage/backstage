@@ -21,7 +21,6 @@
  */
 
 export { createApp, type CreateAppOptions } from './createApp';
-export { createPublicSignInApp } from './createPublicSignInApp';
 export { discoverAvailableFeatures } from './discovery';
 export { resolveAsyncFeatures } from './resolution';
 export { maybeCreateErrorPage } from './maybeCreateErrorPage';

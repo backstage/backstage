@@ -19,7 +19,6 @@ import {
   Extension,
   ExtensionDataRef,
   ExtensionDefinition,
-  ExtensionFactoryMiddleware,
   ExtensionInput,
   PortableSchema,
   ResolvedExtensionInput,
@@ -29,6 +28,7 @@ import {
   createExtensionInput,
   createFrontendPlugin,
 } from '@backstage/frontend-plugin-api';
+import { ExtensionFactoryMiddleware } from '../wiring/types';
 import {
   createAppNodeInstance,
   instantiateAppNodeTree,

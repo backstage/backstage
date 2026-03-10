@@ -5,10 +5,6 @@ sidebar_label: Discovery
 description: Automatically discovering catalog entities from repositories in Bitbucket Server
 ---
 
-:::info
-This documentation is written for [the new backend system](../../backend-system/index.md) which is the default since Backstage [version 1.24](../../releases/v1.24.0.md). If you are still on the old backend system, you may want to read [its own article](https://github.com/backstage/backstage/blob/v1.37.0/docs/integrations/bitbucketServer/discovery--old.md) instead, and [consider migrating](../../backend-system/building-backends/08-migrating.md)!
-:::
-
 The Bitbucket Server integration has a special entity provider for discovering
 catalog files located in Bitbucket Server.
 The provider will search your Bitbucket Server account and register catalog files matching the configured path
@@ -25,9 +21,9 @@ dependency to `@backstage/plugin-catalog-backend-module-bitbucket-server` to you
 yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-bitbucket-server
 ```
 
-### Installation with New Backend System
+Then add the following to your backend:
 
-```ts
+```ts title="packages/backend/src/index.ts"
 // optional if you want HTTP endpojnts to receive external events
 // backend.add(import('@backstage/plugin-events-backend'));
 // optional if you want to use AWS SQS instead of HTTP endpoints to receive external events

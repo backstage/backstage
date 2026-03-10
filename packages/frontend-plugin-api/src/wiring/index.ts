@@ -31,7 +31,6 @@ export {
 } from './createExtensionInput';
 export {
   createExtensionDataRef,
-  type AnyExtensionDataRef,
   type ExtensionDataRef,
   type ExtensionDataRefToValue,
   type ExtensionDataValue,
@@ -58,7 +57,6 @@ export {
 export {
   type Extension,
   type ExtensionAttachTo,
-  type ExtensionAttachToSpec,
 } from './resolveExtensionDefinition';
 export {
   type ExtensionDataContainer,

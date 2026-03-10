@@ -28,6 +28,7 @@ import {
  * request.
  *
  * @public
+ * @deprecated Use `mockApis.permission()` instead.
  */
 export class MockPermissionApi implements PermissionApi {
   constructor(

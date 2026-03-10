@@ -16,6 +16,7 @@
 
 import fetch from 'cross-fetch';
 import parseGitUrl from 'git-url-parse';
+import { parseGitUrlSafe } from '../helpers';
 import { BitbucketCloudIntegrationConfig } from './config';
 import { DateTime } from 'luxon';
 
@@ -165,7 +166,7 @@ export async function getBitbucketCloudDownloadUrl(
     ref,
     protocol,
     resource,
-  } = parseGitUrl(url);
+  } = parseGitUrlSafe(url);
 
   let branch = ref;
   if (!branch) {
@@ -193,7 +194,7 @@ export function getBitbucketCloudFileFetchUrl(
   config: BitbucketCloudIntegrationConfig,
 ): string {
   try {
-    const { owner, name, ref, filepathtype, filepath } = parseGitUrl(url);
+    const { owner, name, ref, filepathtype, filepath } = parseGitUrlSafe(url);
     if (!owner || !name || (filepathtype !== 'src' && filepathtype !== 'raw')) {
       throw new Error('Invalid Bitbucket Cloud URL or file path');
     }

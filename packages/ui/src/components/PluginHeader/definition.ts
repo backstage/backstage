@@ -15,10 +15,7 @@
  */
 
 import { defineComponent } from '../../hooks/useDefinition';
-import type {
-  PluginHeaderOwnProps,
-  PluginHeaderToolbarOwnProps,
-} from './types';
+import type { PluginHeaderOwnProps } from './types';
 import styles from './PluginHeader.module.css';
 
 /**
@@ -29,7 +26,13 @@ export const PluginHeaderDefinition = defineComponent<PluginHeaderOwnProps>()({
   styles,
   classNames: {
     root: 'bui-PluginHeader',
-    tabsWrapper: 'bui-PluginHeaderTabsWrapper',
+    toolbar: 'bui-PluginHeaderToolbar',
+    toolbarWrapper: 'bui-PluginHeaderToolbarWrapper',
+    toolbarContent: 'bui-PluginHeaderToolbarContent',
+    toolbarControls: 'bui-PluginHeaderToolbarControls',
+    toolbarIcon: 'bui-PluginHeaderToolbarIcon',
+    toolbarName: 'bui-PluginHeaderToolbarName',
+    tabs: 'bui-PluginHeaderTabsWrapper',
   },
   propDefs: {
     icon: {},
@@ -41,28 +44,3 @@ export const PluginHeaderDefinition = defineComponent<PluginHeaderOwnProps>()({
     className: {},
   },
 });
-
-/**
- * Component definition for PluginHeaderToolbar
- * @internal
- */
-export const PluginHeaderToolbarDefinition =
-  defineComponent<PluginHeaderToolbarOwnProps>()({
-    styles,
-    classNames: {
-      root: 'bui-PluginHeaderToolbar',
-      wrapper: 'bui-PluginHeaderToolbarWrapper',
-      content: 'bui-PluginHeaderToolbarContent',
-      controls: 'bui-PluginHeaderToolbarControls',
-      icon: 'bui-PluginHeaderToolbarIcon',
-      name: 'bui-PluginHeaderToolbarName',
-    },
-    propDefs: {
-      icon: {},
-      title: {},
-      titleLink: {},
-      customActions: {},
-      hasTabs: {},
-      className: {},
-    },
-  });

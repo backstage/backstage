@@ -58,11 +58,13 @@ export const TabDefinition = defineComponent<TabOwnProps>()({
   classNames: {
     root: 'bui-Tab',
   },
+  analytics: true,
   propDefs: {
     className: {},
     matchStrategy: {},
     href: {},
     id: {},
+    noTrack: {},
   },
 });
 

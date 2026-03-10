@@ -22,11 +22,13 @@ import { FrontendPlugin } from '@backstage/frontend-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { JSX as JSX_3 } from 'react/jsx-runtime';
+import { PropsWithChildren } from 'react';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { RouteRef as RouteRef_2 } from '@backstage/frontend-plugin-api';
 import { SubRouteRef } from '@backstage/core-plugin-api';
 import { SubRouteRef as SubRouteRef_2 } from '@backstage/frontend-plugin-api';
+import { TypesToApiRefs } from '@backstage/frontend-plugin-api';
 
 // @public
 export function compatWrapper(element: ReactNode): JSX_3.Element;
@@ -142,6 +144,16 @@ export type ToNewRouteRef<T extends RouteRef | SubRouteRef | ExternalRouteRef> =
     : T extends ExternalRouteRef<infer IParams>
     ? ExternalRouteRef_2<IParams>
     : never;
+
+// @public
+export function withApis<T extends {}>(
+  apis: TypesToApiRefs<T>,
+): <TProps extends T>(
+  WrappedComponent: ComponentType<TProps>,
+) => {
+  (props: PropsWithChildren<Omit<TProps, keyof T>>): JSX_3.Element;
+  displayName: string;
+};
 
 // (No @packageDocumentation comment for this package)
 ```
