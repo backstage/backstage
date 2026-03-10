@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import { Alert, ColumnConfig, Text } from '@backstage/ui';
+import { Alert, ColumnConfig, Link, Text } from '@backstage/ui';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
-import { Link } from '@backstage/core-components';
 import { EntityInfoCard } from '../EntityInfoCard';
 import { EntityDataTable } from '../EntityDataTable';
 import { EntityRow } from '../EntityDataTable/columnFactories';
@@ -64,16 +63,19 @@ export function EntityRelationCard(props: EntityRelationCardProps) {
           loading={loading}
           emptyState={
             emptyState && (
-              <div style={{ textAlign: 'center' }}>
-                <Text>{emptyState.message}</Text>
+              <Text as="p">
+                {emptyState.message}{' '}
                 {emptyState.helpLink && (
-                  <Text variant="body-small">
-                    <Link to={emptyState.helpLink} externalLinkIcon>
-                      {t('entityRelationCard.emptyHelpLinkTitle')}
-                    </Link>
-                  </Text>
+                  <Link
+                    href={emptyState.helpLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    variant="body-medium"
+                  >
+                    {t('entityRelationCard.emptyHelpLinkTitle')}
+                  </Link>
                 )}
-              </div>
+              </Text>
             )
           }
         />

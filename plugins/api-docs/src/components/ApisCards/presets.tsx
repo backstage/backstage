@@ -21,9 +21,8 @@ import {
   EntityRow,
   entityDataTableColumns,
 } from '@backstage/plugin-catalog-react';
-import { Cell, ColumnConfig } from '@backstage/ui';
-import ExtensionIcon from '@material-ui/icons/Extension';
-import ToggleButton from '@material-ui/lab/ToggleButton';
+import { ButtonIcon, Cell, ColumnConfig } from '@backstage/ui';
+import { RiPuzzleLine } from '@remixicon/react';
 import { useState } from 'react';
 import { ApiTypeTitle } from '../ApiDefinitionCard';
 import { ApiDefinitionDialog } from '../ApiDefinitionDialog';
@@ -48,13 +47,13 @@ const ApiDefinitionButton = ({ apiEntity }: { apiEntity: ApiEntity }) => {
   const { t } = useTranslationRef(apiDocsTranslationRef);
   return (
     <>
-      <ToggleButton
+      <ButtonIcon
         aria-label={t('apiDefinitionDialog.toggleButtonAriaLabel')}
-        onClick={() => setDialogOpen(!dialogOpen)}
-        value={dialogOpen}
-      >
-        <ExtensionIcon />
-      </ToggleButton>
+        onPress={() => setDialogOpen(!dialogOpen)}
+        variant="tertiary"
+        size="small"
+        icon={<RiPuzzleLine />}
+      />
       <ApiDefinitionDialog
         entity={apiEntity}
         open={dialogOpen}

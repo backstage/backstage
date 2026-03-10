@@ -58,7 +58,7 @@ export const apiDocsTranslationRef: TranslationRef<
     readonly 'providingComponentsCard.error.title': 'Could not load components';
     readonly 'providingComponentsCard.title': 'Providers';
     readonly 'providingComponentsCard.emptyContent.title': 'No component provides this API.';
-    readonly apisCardHelpLinkTitle: 'Learn how to change this';
+    readonly apisCardHelpLinkTitle: 'Learn how to change this.';
   }
 >;
 
