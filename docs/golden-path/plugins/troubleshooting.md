@@ -1,6 +1,7 @@
 ---
 id: troubleshooting
 title: Plugin Development Troubleshooting
+sidebar_label: Troubleshooting
 description: Common issues and solutions when developing Backstage plugins
 ---
 
@@ -106,10 +107,11 @@ Common causes:
 Ensure your plugin route is defined correctly:
 
 ```typescript
-import {
-  createPlugin,
-  createRoutableExtension,
-} from '@backstage/core-plugin-api';
+import { createPlugin, createRouteRef } from '@backstage/core-plugin-api';
+
+const rootRouteRef = createRouteRef({
+  id: 'my-plugin',
+});
 
 export const myPlugin = createPlugin({
   id: 'my-plugin',

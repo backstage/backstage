@@ -99,6 +99,7 @@ export default {
               'golden-path/plugins/index',
               'golden-path/plugins/why-build-plugins',
               'golden-path/plugins/sustainable-plugin-development',
+              'golden-path/plugins/troubleshooting',
               sidebarElementWithIndex({ label: 'Backend Plugins' }, [
                 'golden-path/plugins/backend/001-first-steps',
                 'golden-path/plugins/backend/002-poking-around',
