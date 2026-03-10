@@ -90,7 +90,9 @@ export async function startCallbackServer(options: { state: string }): Promise<{
   return {
     url: `http://127.0.0.1:${port}/callback`,
     waitForCode: () => resultPromise,
-    close: async () =>
-      new Promise<void>(resolve => server.close(() => resolve())),
+    close: async () => {
+      server.closeAllConnections();
+      return new Promise<void>(resolve => server.close(() => resolve()));
+    },
   };
 }
