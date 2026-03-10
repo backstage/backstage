@@ -27,19 +27,10 @@ import {
 } from '../types';
 import { PortableTemplate } from '../types';
 import { resolvePackageParams } from './resolvePackageParams';
-import { knownBackendPluginPackageNameByPluginId } from '../../../maintenance/commands/repo/fix';
-
-const knownFrontendPluginPackageNameByPluginId: Record<string, string> = {
-  app: '@backstage/plugin-app',
-  auth: '@backstage/plugin-auth',
-  catalog: '@backstage/plugin-catalog',
-  kubernetes: '@backstage/plugin-kubernetes',
-  notifications: '@backstage/plugin-notifications',
-  scaffolder: '@backstage/plugin-scaffolder',
-  search: '@backstage/plugin-search',
-  signals: '@backstage/plugin-signals',
-  techdocs: '@backstage/plugin-techdocs',
-};
+import {
+  knownBackendPluginPackageNameByPluginId,
+  knownFrontendPluginPackageNameByPluginId,
+} from '../../../../lib/knownPluginPackages';
 
 type CollectTemplateParamsOptions = {
   config: PortableTemplateConfig;

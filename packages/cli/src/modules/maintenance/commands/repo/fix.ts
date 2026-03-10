@@ -30,6 +30,7 @@ import {
   extname,
 } from 'node:path';
 import { targetPaths } from '@backstage/cli-common';
+import { knownBackendPluginPackageNameByPluginId } from '../../../../lib/knownPluginPackages';
 
 const SCRIPT_EXTS = ['.js', '.jsx', '.ts', '.tsx', '.json'];
 
@@ -341,23 +342,6 @@ export function fixPluginId(pkg: FixablePackage) {
     pkg.changed = true;
   }
 }
-
-export const knownBackendPluginPackageNameByPluginId = Object.fromEntries(
-  [
-    'app',
-    'auth',
-    'catalog',
-    'events',
-    'kubernetes',
-    'notifications',
-    'permission',
-    'proxy',
-    'scaffolder',
-    'search',
-    'signals',
-    'techdocs',
-  ].map(pluginId => [pluginId, `@backstage/plugin-${pluginId}-backend`]),
-);
 
 const pluginPackageRoles: Array<string | undefined> = [
   'frontend-plugin',
