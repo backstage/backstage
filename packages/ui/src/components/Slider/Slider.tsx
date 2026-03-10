@@ -40,7 +40,6 @@ function SliderImpl<T extends number | number[]>(
     secondaryLabel,
     defaultValue,
     value,
-    isRequired,
     ...restProps
   } = props;
 
@@ -59,7 +58,8 @@ function SliderImpl<T extends number | number[]>(
   } = useDefinition(SliderDefinition, restProps);
   const { classes, className } = ownProps;
 
-  const secondaryLabelText = secondaryLabel || (isRequired ? 'Required' : null);
+  const secondaryLabelText =
+    secondaryLabel || (definitionRest.isRequired ? 'Required' : null);
 
   return (
     <AriaSlider
@@ -129,8 +129,8 @@ function SliderImpl<T extends number | number[]>(
 }
 
 /** @public */
-export const Slider = forwardRef(SliderImpl) as <T extends number | number[]>(
+export const Slider = forwardRef(SliderImpl) as (<T extends number | number[]>(
   props: SliderProps<T> & { ref?: React.ForwardedRef<HTMLDivElement> },
-) => JSX.Element;
+) => JSX.Element) & { displayName: string };
 
 Slider.displayName = 'Slider';
