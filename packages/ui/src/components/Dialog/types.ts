@@ -68,7 +68,9 @@ export type DialogBodyOwnProps = {
  * Props for the DialogBody component.
  * @public
  */
-export interface DialogBodyProps extends DialogBodyOwnProps {}
+export interface DialogBodyProps
+  extends DialogBodyOwnProps,
+    Omit<React.ComponentPropsWithoutRef<'div'>, keyof DialogBodyOwnProps> {}
 
 /** @public */
 export type DialogFooterOwnProps = {

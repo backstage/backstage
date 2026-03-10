@@ -75,6 +75,7 @@ export const TableBodyDefinition = defineComponent<TableBodyOwnProps>()({
  */
 export const RowDefinition = defineComponent<RowOwnProps>()({
   styles,
+  analytics: true,
   classNames: {
     root: 'bui-TableRow',
     cell: 'bui-TableCell',
@@ -84,6 +85,7 @@ export const RowDefinition = defineComponent<RowOwnProps>()({
     columns: {},
     children: {},
     href: {},
+    noTrack: {},
   },
 });
 

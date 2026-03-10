@@ -59,6 +59,7 @@ export const SelectTriggerDefinition = defineComponent<SelectTriggerOwnProps>()(
       chevron: 'bui-SelectTriggerChevron',
       value: 'bui-SelectValue',
     },
+    bg: 'consumer',
     propDefs: {
       icon: {},
     },

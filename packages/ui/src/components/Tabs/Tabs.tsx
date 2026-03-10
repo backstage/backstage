@@ -54,6 +54,7 @@ import {
   isInternalLink,
   createRoutingRegistration,
 } from '../InternalLinkProvider';
+import { getNodeText } from '../../analytics/getNodeText';
 
 const { RoutingProvider, useRoutingRegistrationEffect } =
   createRoutingRegistration();
@@ -152,7 +153,7 @@ export const Tabs = (props: TabsProps) => {
       return '';
     }
 
-    let selectedId: string | null = null;
+    let selectedId: string | undefined;
     let maxSegments = -1;
 
     activeTabs.forEach((segmentCount, id) => {
@@ -331,9 +332,24 @@ function RoutedTabEffects({
  * @public
  */
 export const Tab = (props: TabProps) => {
-  const { ownProps, restProps } = useDefinition(TabDefinition, props);
+  const { ownProps, restProps, analytics } = useDefinition(
+    TabDefinition,
+    props,
+  );
   const { classes, matchStrategy, href, id } = ownProps;
   const { setTabRef } = useTabsContext();
+
+  const handlePress = () => {
+    if (href) {
+      const text =
+        restProps['aria-label'] ??
+        getNodeText(restProps.children) ??
+        String(href);
+      analytics.captureEvent('click', text, {
+        attributes: { to: String(href) },
+      });
+    }
+  };
 
   return (
     <>
@@ -350,6 +366,10 @@ export const Tab = (props: TabProps) => {
         ref={el => setTabRef(id as string, el as HTMLDivElement)}
         href={href}
         {...restProps}
+        onPress={e => {
+          restProps.onPress?.(e);
+          handlePress();
+        }}
       />
     </>
   );

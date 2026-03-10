@@ -33,13 +33,14 @@ export interface Config {
        * If no organization matches the first credential without an organization is used.
        *
        * If no credentials are specified at all, either a default credential (for Azure DevOps) or anonymous access (for Azure DevOps Server) is used.
-       * @deepVisibility secret
        */
       credentials?: {
         organizations?: string[];
         clientId?: string;
+        /** @visibility secret */
         clientSecret?: string;
         tenantId?: string;
+        /** @visibility secret */
         personalAccessToken?: string;
         managedIdentityClientId?: string;
       }[];
@@ -90,7 +91,6 @@ export interface Config {
       endpoint?: string;
       /**
        * Optional credential to use for Azure Active Directory authentication.
-       * @deepVisibility secret
        */
       aadCredential?: {
         /**
@@ -105,6 +105,7 @@ export interface Config {
 
         /**
          * The client secret for the Azure AD application.
+         * @visibility secret
          */
         clientSecret: string;
       };
