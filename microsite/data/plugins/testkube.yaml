@@ -1,0 +1,11 @@
+---
+title: Testkube
+author: Testkube
+authorUrl: https://testkube.io
+category: Test Orchestration
+description: Catalog, Execute, Troubleshoot, & Report on automated testing from one centralized platform.
+documentation: https://github.com/kubeshop/testkube-backstage-plugin
+iconUrl: /img/testkube-logo.svg
+npmPackageName: '@testkube/backstage-plugin'
+addedDate: '2026-03-10'
+status: active
