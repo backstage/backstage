@@ -67,7 +67,7 @@ export class DefaultAzureCredentialsManager implements AzureCredentialsManager {
   }
 
   private createCredential(config: AzureBlobStorageIntegrationConfig) {
-    if (config.accountKey && config.accountName) {
+    if (config.accountKey) {
       return new StorageSharedKeyCredential(
         config.accountName,
         config.accountKey,
