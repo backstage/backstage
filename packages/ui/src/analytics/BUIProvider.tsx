@@ -15,8 +15,10 @@
  */
 
 import { useMemo, type ReactNode } from 'react';
+import { useInRouterContext } from 'react-router-dom';
 import { createVersionedValueMap } from '@backstage/version-bridge';
 import { BUIContext } from './useAnalytics';
+import { BUIRouterProvider } from '../routing';
 import type { UseAnalyticsFn } from './types';
 
 /** @public */
@@ -53,5 +55,14 @@ export function BUIProvider(props: BUIProviderProps) {
       }),
     [useAnalytics],
   );
-  return <BUIContext.Provider value={value}>{children}</BUIContext.Provider>;
+
+  const content = (
+    <BUIContext.Provider value={value}>{children}</BUIContext.Provider>
+  );
+
+  if (useInRouterContext()) {
+    return <BUIRouterProvider>{content}</BUIRouterProvider>;
+  }
+
+  return content;
 }

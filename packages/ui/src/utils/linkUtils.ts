@@ -40,3 +40,12 @@ export function isExternalLink(href?: string): boolean {
 
   return false;
 }
+
+/**
+ * Checks if an href is an internal link (not external and not empty).
+ *
+ * @internal
+ */
+export function isInternalLink(href: string | undefined): href is string {
+  return !!href && !isExternalLink(href);
+}
