@@ -2,31 +2,31 @@
 
 import { Link } from '../../../../../packages/ui/src/components/Link/Link';
 import { Flex } from '../../../../../packages/ui/src/components/Flex/Flex';
-import { MemoryRouter } from 'react-router-dom';
+import { DocsRouterProvider } from '@/utils/backstage-router-provider';
 
 export const Default = () => {
   return (
-    <MemoryRouter>
+    <DocsRouterProvider>
       <Link href="/" variant="body-large">
         Sign up for Backstage
       </Link>
-    </MemoryRouter>
+    </DocsRouterProvider>
   );
 };
 
 export const ExternalLink = () => {
   return (
-    <MemoryRouter>
+    <DocsRouterProvider>
       <Link href="https://backstage.io" target="_blank" variant="body-large">
         Sign up for Backstage
       </Link>
-    </MemoryRouter>
+    </DocsRouterProvider>
   );
 };
 
 export const AllVariants = () => {
   return (
-    <MemoryRouter>
+    <DocsRouterProvider>
       <Flex gap="4" direction="column">
         <Link href="#" variant="title-large">
           title-large
@@ -53,13 +53,13 @@ export const AllVariants = () => {
           body-x-small
         </Link>
       </Flex>
-    </MemoryRouter>
+    </DocsRouterProvider>
   );
 };
 
 export const AllColors = () => {
   return (
-    <MemoryRouter>
+    <DocsRouterProvider>
       <Flex gap="2" direction="column">
         <Link href="#" color="primary" variant="body-large">
           Primary
@@ -80,13 +80,13 @@ export const AllColors = () => {
           Info
         </Link>
       </Flex>
-    </MemoryRouter>
+    </DocsRouterProvider>
   );
 };
 
 export const Weight = () => {
   return (
-    <MemoryRouter>
+    <DocsRouterProvider>
       <Flex gap="4">
         <Link href="#" weight="regular" variant="body-large">
           Regular
@@ -95,13 +95,13 @@ export const Weight = () => {
           Bold
         </Link>
       </Flex>
-    </MemoryRouter>
+    </DocsRouterProvider>
   );
 };
 
 export const Standalone = () => {
   return (
-    <MemoryRouter>
+    <DocsRouterProvider>
       <Flex gap="4">
         <Link href="#" variant="body-large">
           Default link
@@ -110,6 +110,6 @@ export const Standalone = () => {
           Standalone link
         </Link>
       </Flex>
-    </MemoryRouter>
+    </DocsRouterProvider>
   );
 };

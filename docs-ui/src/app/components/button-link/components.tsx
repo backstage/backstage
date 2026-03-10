@@ -2,12 +2,12 @@
 
 import { ButtonLink } from '../../../../../packages/ui/src/components/ButtonLink/ButtonLink';
 import { Flex } from '../../../../../packages/ui/src/components/Flex/Flex';
-import { MemoryRouter } from 'react-router-dom';
+import { DocsRouterProvider } from '@/utils/backstage-router-provider';
 import { RiArrowRightSLine, RiCloudLine } from '@remixicon/react';
 
 export const Variants = () => {
   return (
-    <MemoryRouter>
+    <DocsRouterProvider>
       <Flex align="center">
         <ButtonLink
           iconStart={<RiCloudLine />}
@@ -34,13 +34,13 @@ export const Variants = () => {
           Button
         </ButtonLink>
       </Flex>
-    </MemoryRouter>
+    </DocsRouterProvider>
   );
 };
 
 export const Sizes = () => {
   return (
-    <MemoryRouter>
+    <DocsRouterProvider>
       <Flex align="center">
         <ButtonLink size="small" href="https://ui.backstage.io" target="_blank">
           Small
@@ -53,13 +53,13 @@ export const Sizes = () => {
           Medium
         </ButtonLink>
       </Flex>
-    </MemoryRouter>
+    </DocsRouterProvider>
   );
 };
 
 export const WithIcons = () => {
   return (
-    <MemoryRouter>
+    <DocsRouterProvider>
       <Flex align="center">
         <ButtonLink
           iconStart={<RiCloudLine />}
@@ -84,13 +84,13 @@ export const WithIcons = () => {
           Button
         </ButtonLink>
       </Flex>
-    </MemoryRouter>
+    </DocsRouterProvider>
   );
 };
 
 export const Disabled = () => {
   return (
-    <MemoryRouter>
+    <DocsRouterProvider>
       <Flex gap="4">
         <ButtonLink
           variant="primary"
@@ -117,6 +117,6 @@ export const Disabled = () => {
           Tertiary
         </ButtonLink>
       </Flex>
-    </MemoryRouter>
+    </DocsRouterProvider>
   );
 };

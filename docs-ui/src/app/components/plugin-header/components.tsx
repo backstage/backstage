@@ -4,7 +4,7 @@ import { PluginHeader } from '../../../../../packages/ui/src/components/PluginHe
 import { Header } from '../../../../../packages/ui/src/components/Header/Header';
 import { ButtonIcon } from '../../../../../packages/ui/src/components/ButtonIcon/ButtonIcon';
 import { Button } from '../../../../../packages/ui/src/components/Button/Button';
-import { MemoryRouter } from 'react-router-dom';
+import { DocsRouterProvider } from '@/utils/backstage-router-provider';
 import {
   RiHeartLine,
   RiEmotionHappyLine,
@@ -26,7 +26,7 @@ const tabs2 = [
 ];
 
 export const WithAllOptionsAndTabs = () => (
-  <MemoryRouter>
+  <DocsRouterProvider>
     <PluginHeader
       title="My plugin"
       titleLink="/"
@@ -39,11 +39,11 @@ export const WithAllOptionsAndTabs = () => (
         </>
       }
     />
-  </MemoryRouter>
+  </DocsRouterProvider>
 );
 
 export const WithAllOptions = () => (
-  <MemoryRouter>
+  <DocsRouterProvider>
     <PluginHeader
       title="My plugin"
       titleLink="/"
@@ -55,11 +55,11 @@ export const WithAllOptions = () => (
         </>
       }
     />
-  </MemoryRouter>
+  </DocsRouterProvider>
 );
 
 export const WithHeader = () => (
-  <MemoryRouter>
+  <DocsRouterProvider>
     <>
       <PluginHeader title="My plugin" titleLink="/" tabs={tabs.slice(0, 2)} />
       <Header
@@ -68,5 +68,5 @@ export const WithHeader = () => (
         customActions={<Button>Custom action</Button>}
       />
     </>
-  </MemoryRouter>
+  </DocsRouterProvider>
 );

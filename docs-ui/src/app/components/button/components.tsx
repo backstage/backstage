@@ -4,7 +4,7 @@ import { Button } from '../../../../../packages/ui/src/components/Button/Button'
 import { ButtonLink } from '../../../../../packages/ui/src/components/ButtonLink/ButtonLink';
 import { Flex } from '../../../../../packages/ui/src/components/Flex/Flex';
 import { RiArrowRightSLine, RiCloudLine } from '@remixicon/react';
-import { MemoryRouter } from 'react-router-dom';
+import { DocsRouterProvider } from '@/utils/backstage-router-provider';
 
 export const Variants = () => {
   return (
@@ -85,10 +85,10 @@ export const Loading = () => {
 
 export const AsLink = () => {
   return (
-    <MemoryRouter>
+    <DocsRouterProvider>
       <ButtonLink href="https://ui.backstage.io" target="_blank">
         Button
       </ButtonLink>
-    </MemoryRouter>
+    </DocsRouterProvider>
   );
 };
