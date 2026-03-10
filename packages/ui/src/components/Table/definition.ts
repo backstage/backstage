@@ -98,6 +98,7 @@ export const ColumnDefinition = defineComponent<ColumnOwnProps>()({
   classNames: {
     root: 'bui-TableHead',
     headContent: 'bui-TableHeadContent',
+    headLabel: 'bui-TableHeadLabel',
     headSortButton: 'bui-TableHeadSortButton',
   },
   propDefs: {
