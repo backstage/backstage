@@ -263,11 +263,16 @@ export class TaskWorker {
     const timeoutHandle = setTimeout(() => {
       taskAbortController.abort();
     }, Duration.fromISO(taskSettings.timeoutAfterDuration).as('milliseconds'));
-    const livenessHandle: { ref?: ReturnType<typeof setInterval> } = {};
-    livenessHandle.ref = setInterval(
-      () => this.checkLiveness(ticket, taskAbortController, livenessHandle),
-      this.workCheckFrequency.as('milliseconds'),
-    );
+    let livenessHandle: ReturnType<typeof setTimeout> | undefined;
+    const scheduleLivenessCheck = () => {
+      livenessHandle = setTimeout(async () => {
+        await this.checkLiveness(ticket, taskAbortController);
+        if (!taskAbortController.signal.aborted) {
+          scheduleLivenessCheck();
+        }
+      }, this.workCheckFrequency.as('milliseconds'));
+    };
+    scheduleLivenessCheck();
 
     try {
       this.#workerState = {
@@ -284,7 +289,7 @@ export class TaskWorker {
         status: 'idle',
       };
       clearTimeout(timeoutHandle);
-      clearInterval(livenessHandle.ref);
+      clearTimeout(livenessHandle);
     }
 
     await this.tryReleaseTask(ticket, taskSettings);
@@ -379,7 +384,6 @@ export class TaskWorker {
   private async checkLiveness(
     ticket: string,
     taskAbortController: AbortController,
-    livenessHandle: { ref?: ReturnType<typeof setInterval> },
   ): Promise<void> {
     try {
       const [row] = await this.knex<DbTasksRow>(DB_TASKS_TABLE)
@@ -390,7 +394,6 @@ export class TaskWorker {
         this.logger.info(
           `Task ticket for "${this.taskId}" is no longer valid; aborting execution`,
         );
-        clearInterval(livenessHandle.ref);
         taskAbortController.abort();
       }
     } catch (e) {

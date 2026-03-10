@@ -105,6 +105,7 @@ export class MockSchedulerService implements SchedulerService {
       throw new ConflictError(`Task ${id} is not running`);
     }
     task.abortControllers.abort();
+    task.abortControllers = new AbortController();
   }
 
   async triggerTask(id: string): Promise<void> {
