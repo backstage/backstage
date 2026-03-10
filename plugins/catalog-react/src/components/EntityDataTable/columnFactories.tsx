@@ -104,7 +104,7 @@ export const columnFactories = Object.freeze({
   },
 
   createOwnerColumn(): EntityColumnConfig {
-    return this.createEntityRelationColumn({
+    return columnFactories.createEntityRelationColumn({
       id: 'owner',
       translationKey: 'owner',
       relation: RELATION_OWNED_BY,
@@ -113,7 +113,7 @@ export const columnFactories = Object.freeze({
   },
 
   createSystemColumn(): EntityColumnConfig {
-    return this.createEntityRelationColumn({
+    return columnFactories.createEntityRelationColumn({
       id: 'system',
       translationKey: 'system',
       relation: RELATION_PART_OF,
@@ -123,7 +123,7 @@ export const columnFactories = Object.freeze({
   },
 
   createDomainColumn(): EntityColumnConfig {
-    return this.createEntityRelationColumn({
+    return columnFactories.createEntityRelationColumn({
       id: 'domain',
       translationKey: 'domain',
       relation: RELATION_PART_OF,
