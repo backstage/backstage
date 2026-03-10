@@ -80,25 +80,18 @@ async function findClosestPackageDir(
 
 /** @internal */
 export class PatternMatcher {
-  private weakCache?: WeakRef<Map<string, RegExp>>;
+  private cache = new Map<string, RegExp>();
 
   matches(name: string, pattern: string): boolean {
     if (!pattern.includes('*')) {
       return name === pattern;
     }
 
-    let cache = this.weakCache?.deref();
-
-    if (!cache) {
-      cache = new Map();
-      this.weakCache = new WeakRef(cache);
-    }
-
-    let regex = cache.get(pattern);
+    let regex = this.cache.get(pattern);
     if (!regex) {
       const escaped = pattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       regex = new RegExp(`^${escaped.replace(/\\\*/g, '.*')}$`);
-      cache.set(pattern, regex);
+      this.cache.set(pattern, regex);
     }
 
     return regex.test(name);
@@ -137,13 +130,9 @@ export class PackageDiscoveryService {
     ];
 
     const includedPackages = includedPackagesConfig
-      ? Array.from(
-          new Set(
-            dependencyNames.filter(name =>
-              includedPackagesConfig.some(pattern =>
-                this.patternMatcher.matches(name, pattern),
-              ),
-            ),
+      ? dependencyNames.filter(name =>
+          includedPackagesConfig.some(pattern =>
+            this.patternMatcher.matches(name, pattern),
           ),
         )
       : dependencyNames;
