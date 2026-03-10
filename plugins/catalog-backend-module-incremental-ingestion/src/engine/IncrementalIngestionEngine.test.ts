@@ -110,11 +110,12 @@ describe('IncrementalIngestionEngine - Burst Length', () => {
 
     const result = await engine.ingestOneBurst('test-ingestion', signal);
 
-    // After 3 calls: time is 1120, elapsed is 120 > 100ms burst length
-    // The burst check happens after the 3rd call, so we get 3 calls
+    // Call 1: time=1040, elapsed=40 < 100 → continue
+    // Call 2: time=1080, elapsed=80 < 100 → continue
+    // Call 3: time=1120, elapsed=120 > 100 → stop
     expect(result).toBe(false);
-    expect(mockProvider.next).toHaveBeenCalledTimes(callCount);
-    expect(callCount).toBeGreaterThan(1);
+    expect(mockProvider.next).toHaveBeenCalledTimes(3);
+    expect(callCount).toBe(3);
   });
 
   it('should complete burst normally when provider returns done before burst length', async () => {
