@@ -31,3 +31,4 @@ To start, this guide will walk through creating a backend plugin. You'll get you
 - [Why build plugins?](./why-build-plugins.md)
 - [Sustainable plugin development](./sustainable-plugin-development.md)
 - [Golden path: Backend plugins](./backend/001-first-steps.md)
+- [Troubleshooting & Common Issues](./troubleshooting.md)
