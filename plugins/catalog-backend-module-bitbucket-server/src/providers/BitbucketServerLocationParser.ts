@@ -19,7 +19,7 @@ import { Entity } from '@backstage/catalog-model';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
 import { BitbucketServerClient } from '../lib';
-import { BitbucketServerEntityProviderConfig } from './BitbucketServerEntityProviderConfig.ts';
+import { BitbucketServerEntityProviderConfig } from './BitbucketServerEntityProviderConfig';
 
 /**
  * A custom callback that reacts to finding a location by yielding entities.

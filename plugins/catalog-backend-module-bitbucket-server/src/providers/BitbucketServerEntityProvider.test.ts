@@ -37,16 +37,15 @@ import {
   BitbucketServerEntityProvider,
   toDeferredEntities,
 } from './BitbucketServerEntityProvider';
-import { BitbucketServerPagedResponse } from '../lib';
+import { BitbucketServerPagedResponse, BitbucketServerEvents } from '../lib';
 import {
   Entity,
   LocationEntity,
   LocationEntityV1alpha1,
 } from '@backstage/catalog-model';
-import { BitbucketServerEvents } from '../lib/index';
 import { DefaultEventsService } from '@backstage/plugin-events-node';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
-import { BitbucketServerLocationParser } from './BitbucketServerLocationParser.ts';
+import { BitbucketServerLocationParser } from './BitbucketServerLocationParser';
 
 class PersistingTaskRunner implements SchedulerServiceTaskRunner {
   private tasks: SchedulerServiceTaskInvocationDefinition[] = [];
