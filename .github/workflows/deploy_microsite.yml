@@ -233,7 +233,7 @@ jobs:
       - name: checkout latest release
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          ref: refs/tags/${{ needs.stable.outputs.release }}
+          ref: refs/heads/${{ needs.stable.outputs.release }}
 
       - name: microsite yarn install
         run: yarn install --immutable
