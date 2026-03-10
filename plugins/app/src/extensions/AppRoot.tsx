@@ -197,7 +197,7 @@ export interface AppRouterProps {
   SignInPageComponent?: ComponentType<SignInPageProps>;
   RouterComponent?: (props: {
     children: ReactNode;
-    basePath: string;
+    basePath?: string;
   }) => JSX.Element | null;
   extraElements?: Array<JSX.Element>;
 }

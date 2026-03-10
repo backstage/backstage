@@ -135,6 +135,9 @@ import type {
   Location,
   Path,
   To,
+  NavigateFunction,
+  LinkProps,
+  NavLinkProps,
 } from '@backstage/frontend-plugin-api';
 import { ComponentType, ReactElement, ReactNode } from 'react';
 
@@ -199,7 +202,7 @@ export class MyCustomRouterApi implements RouterApi {
   // Components
   Link: ComponentType<LinkProps> = YourLinkComponent;
   NavLink: ComponentType<NavLinkProps> = YourNavLinkComponent;
-  Outlet: ComponentType<OutletProps> = YourOutletComponent;
+  Outlet: ComponentType<{ context?: unknown }> = YourOutletComponent;
 }
 ```
 
@@ -220,13 +223,12 @@ const customRouterModule = createFrontendModule({
   extensions: [
     ApiBlueprint.make({
       name: 'router',
-      params: {
-        factory: createApiFactory({
+      params: defineParams =>
+        defineParams({
           api: routerApiRef,
           deps: {},
           factory: () => new MyCustomRouterApi(),
         }),
-      },
     }),
   ],
 });

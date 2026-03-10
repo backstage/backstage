@@ -17,7 +17,14 @@
 import { Fragment, createRef } from 'react';
 import { render, screen } from '@testing-library/react';
 import { TestMemoryRouterProvider } from '@backstage/frontend-test-utils';
-import { createRoutesFromChildren, Link, NavLink, Route } from './components';
+import {
+  createRoutesFromChildren,
+  Link,
+  NavLink,
+  Outlet,
+  Route,
+  Routes,
+} from './components';
 
 describe('Link', () => {
   it('forwards ref to the underlying anchor element', async () => {
@@ -137,5 +144,81 @@ describe('createRoutesFromChildren', () => {
     expect(warnSpy).not.toHaveBeenCalled();
 
     warnSpy.mockRestore();
+  });
+
+  it('warns about multi-segment splat paths but not root splats', () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    createRoutesFromChildren(
+      <>
+        <Route path="dashboard/*" element={<div>Dashboard</div>} />
+        <Route path="/*" element={<div>Root splat</div>} />
+        <Route path="*" element={<div>Catch all</div>} />
+      </>,
+    );
+
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining('dashboard/*'),
+    );
+
+    warnSpy.mockRestore();
+  });
+
+  it('processes nested children into route objects with children', () => {
+    const routes = createRoutesFromChildren(
+      <>
+        <Route path="/parent" element={<div>Parent</div>}>
+          <Route path="child-a" element={<div>A</div>} />
+          <Route path="child-b" element={<div>B</div>} />
+        </Route>
+      </>,
+    );
+
+    expect(routes).toHaveLength(1);
+    expect(routes[0].path).toBe('/parent');
+    expect(routes[0].children).toHaveLength(2);
+    expect(routes[0].children![0].path).toBe('child-a');
+    expect(routes[0].children![1].path).toBe('child-b');
+  });
+});
+
+describe('Routes', () => {
+  it('renders the matching route element', async () => {
+    render(
+      <TestMemoryRouterProvider initialEntries={['/about']}>
+        <Routes>
+          <Route path="/" element={<div>Home</div>} />
+          <Route path="/about" element={<div>About Page</div>} />
+        </Routes>
+      </TestMemoryRouterProvider>,
+    );
+
+    expect(await screen.findByText('About Page')).toBeInTheDocument();
+    expect(screen.queryByText('Home')).not.toBeInTheDocument();
+  });
+
+  it('renders nested routes with Outlet', async () => {
+    function Layout() {
+      return (
+        <div>
+          <h1>Layout</h1>
+          <Outlet />
+        </div>
+      );
+    }
+
+    render(
+      <TestMemoryRouterProvider initialEntries={['/parent/child']}>
+        <Routes>
+          <Route path="/parent" element={<Layout />}>
+            <Route path="child" element={<div>Child Content</div>} />
+          </Route>
+        </Routes>
+      </TestMemoryRouterProvider>,
+    );
+
+    expect(await screen.findByText('Layout')).toBeInTheDocument();
+    expect(await screen.findByText('Child Content')).toBeInTheDocument();
   });
 });

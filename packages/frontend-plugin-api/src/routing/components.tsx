@@ -21,6 +21,7 @@ import {
   Children,
   forwardRef,
   isValidElement,
+  useMemo,
 } from 'react';
 import { useApi, routerApiRef } from '../apis';
 import type {
@@ -273,7 +274,7 @@ export function createRoutesFromChildren(
 export const Routes = ({ children, location }: RoutesProps) => {
   const { useRoutes } = useApi(routerApiRef);
 
-  const routes = createRoutesFromChildren(children);
+  const routes = useMemo(() => createRoutesFromChildren(children), [children]);
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
   return useRoutes(routes, location) ?? null;

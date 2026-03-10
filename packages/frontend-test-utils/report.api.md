@@ -591,6 +591,7 @@ export const TestMemoryRouterProvider: (
 // @public
 export interface TestMemoryRouterProviderProps
   extends MockMemoryRouterApiOptions {
+  basePath?: string;
   children: ReactNode;
 }
 

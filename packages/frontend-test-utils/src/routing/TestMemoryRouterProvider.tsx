@@ -30,6 +30,8 @@ export interface TestMemoryRouterProviderProps
   extends MockMemoryRouterApiOptions {
   /** Children to render within the router context */
   children: ReactNode;
+  /** Base path for the router (defaults to empty string) */
+  basePath?: string;
 }
 
 function useStableEntries(entries?: string[]): string[] | undefined {
@@ -53,6 +55,7 @@ export const TestMemoryRouterProvider = ({
   children,
   initialEntries,
   initialIndex,
+  basePath,
 }: TestMemoryRouterProviderProps) => {
   const stableEntries = useStableEntries(initialEntries);
 
@@ -69,7 +72,7 @@ export const TestMemoryRouterProvider = ({
 
   return (
     <TestApiProvider apis={[[routerApiRef, mockRouterApi]]}>
-      <Router basePath="">{children}</Router>
+      <Router basePath={basePath ?? ''}>{children}</Router>
     </TestApiProvider>
   );
 };
