@@ -2,4 +2,4 @@
 '@backstage/plugin-scaffolder-common': minor
 ---
 
-Added an optional `secrets` field to `TemplateEntityV1beta3` that allows template authors to define a JSON Schema for validating secrets passed during task creation.
+Added an optional `secrets` field to `TemplateEntityV1beta3` for configuring secrets validation. The schema for validating secrets is defined under `secrets.schema` as a JSON Schema object.

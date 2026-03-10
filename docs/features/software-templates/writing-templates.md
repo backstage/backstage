@@ -341,12 +341,13 @@ spec:
 
   # Define required secrets with a JSON Schema
   secrets:
-    required:
-      - NPM_TOKEN
-    properties:
-      NPM_TOKEN:
-        type: string
-        description: NPM authentication token for publishing
+    schema:
+      required:
+        - NPM_TOKEN
+      properties:
+        NPM_TOKEN:
+          type: string
+          description: NPM authentication token for publishing
 
   parameters:
     - title: Package Details

@@ -148,7 +148,13 @@
             },
             "secrets": {
               "type": "object",
-              "description": "A JSONSchema for validating secrets passed during task creation."
+              "description": "Configuration for secrets that are passed during task creation.",
+              "properties": {
+                "schema": {
+                  "type": "object",
+                  "description": "A JSONSchema for validating secrets passed during task creation."
+                }
+              }
             },
             "presentation": {
               "type": "object",

@@ -639,10 +639,12 @@ describe('scaffolder router', () => {
     it('rejects when required secrets are missing', async () => {
       const templateWithSecrets = generateMockTemplate({
         secrets: {
-          type: 'object',
-          required: ['NPM_TOKEN'],
-          properties: {
-            NPM_TOKEN: { type: 'string' },
+          schema: {
+            type: 'object',
+            required: ['NPM_TOKEN'],
+            properties: {
+              NPM_TOKEN: { type: 'string' },
+            },
           },
         },
       });
@@ -679,10 +681,12 @@ describe('scaffolder router', () => {
     it('rejects when required secrets are missing without explicit type', async () => {
       const templateWithSecrets = generateMockTemplate({
         secrets: {
-          // No explicit type: 'object' - should still work
-          required: ['NPM_TOKEN'],
-          properties: {
-            NPM_TOKEN: { type: 'string' },
+          schema: {
+            // No explicit type: 'object' - should still work
+            required: ['NPM_TOKEN'],
+            properties: {
+              NPM_TOKEN: { type: 'string' },
+            },
           },
         },
       });
@@ -719,10 +723,12 @@ describe('scaffolder router', () => {
     it('accepts valid secrets matching the schema', async () => {
       const templateWithSecrets = generateMockTemplate({
         secrets: {
-          type: 'object',
-          required: ['NPM_TOKEN'],
-          properties: {
-            NPM_TOKEN: { type: 'string' },
+          schema: {
+            type: 'object',
+            required: ['NPM_TOKEN'],
+            properties: {
+              NPM_TOKEN: { type: 'string' },
+            },
           },
         },
       });
@@ -1196,10 +1202,12 @@ describe('scaffolder router', () => {
     it('rejects when required secrets are missing', async () => {
       const templateWithSecrets = generateMockTemplate({
         secrets: {
-          type: 'object',
-          required: ['NPM_TOKEN'],
-          properties: {
-            NPM_TOKEN: { type: 'string' },
+          schema: {
+            type: 'object',
+            required: ['NPM_TOKEN'],
+            properties: {
+              NPM_TOKEN: { type: 'string' },
+            },
           },
         },
       });
@@ -1240,10 +1248,12 @@ describe('scaffolder router', () => {
     it('accepts valid secrets on retry', async () => {
       const templateWithSecrets = generateMockTemplate({
         secrets: {
-          type: 'object',
-          required: ['NPM_TOKEN'],
-          properties: {
-            NPM_TOKEN: { type: 'string' },
+          schema: {
+            type: 'object',
+            required: ['NPM_TOKEN'],
+            properties: {
+              NPM_TOKEN: { type: 'string' },
+            },
           },
         },
       });
@@ -1628,10 +1638,12 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
 
       const templateWithSecrets = generateMockTemplate({
         secrets: {
-          type: 'object',
-          required: ['NPM_TOKEN'],
-          properties: {
-            NPM_TOKEN: { type: 'string' },
+          schema: {
+            type: 'object',
+            required: ['NPM_TOKEN'],
+            properties: {
+              NPM_TOKEN: { type: 'string' },
+            },
           },
         },
       });

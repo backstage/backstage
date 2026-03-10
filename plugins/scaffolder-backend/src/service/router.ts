@@ -206,11 +206,11 @@ async function validateSecrets(options: {
   auditorEvent?: AuditorServiceEvent;
 }): Promise<boolean> {
   const { template, secrets, res, auditorEvent } = options;
-  if (!template.spec.secrets) {
+  if (!template.spec.secrets?.schema) {
     return true;
   }
 
-  const result = validate(secrets, template.spec.secrets);
+  const result = validate(secrets, template.spec.secrets.schema);
   if (result.valid) {
     return true;
   }
