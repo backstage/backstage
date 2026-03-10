@@ -582,7 +582,7 @@
 <main>
   <div class="wrap">
     <div class="note info" style="margin-bottom: 16px;">
-            <strong>Tip:</strong> You are using <code>react-docgen</code> (the default). Generation took <strong>2.7s</strong>. For higher quality prop types, consider switching to <code>react-docgen-typescript</code> in your <code>main.ts</code>:
+            <strong>Tip:</strong> You are using <code>react-docgen</code> (the default). Generation took <strong>2.6s</strong>. For higher quality prop types, consider switching to <code>react-docgen-typescript</code> in your <code>main.ts</code>:
             <pre><code>typescript: {
   reactDocgen: 'react-docgen-typescript',
 }</code></pre>
@@ -13342,7 +13342,8 @@ style?: React.CSSProperties</code></pre>
     },
     {
       id: &#39;owner&#39;,
-      label: &#39;Owner&#39;,
+      label: &#39;Owner of the component or service in the organization&#39;,
+      defaultWidth: 120,
       cell: item =&gt; &lt;CellText title={item.owner.name} /&gt;,
     },
     {
