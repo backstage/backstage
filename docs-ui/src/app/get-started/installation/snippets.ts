@@ -7,11 +7,14 @@ export const snippet = `import { Flex, Button, Text } from '@backstage/ui';
 
 export const analyticsSetupSnippet = `import { BUIProvider } from '@backstage/ui';
 import { useAnalytics } from '@backstage/core-plugin-api';
+import { BrowserRouter } from 'react-router-dom';
 
-// Wrap your app content with the provider
-<BUIProvider useAnalytics={useAnalytics}>
-  <AppContent />
-</BUIProvider>`;
+// BUIProvider must be inside a Router for client-side navigation
+<BrowserRouter>
+  <BUIProvider useAnalytics={useAnalytics}>
+    <AppContent />
+  </BUIProvider>
+</BrowserRouter>`;
 
 export const analyticsNoTrackSnippet = `// Suppress analytics for a specific link
 <Link href="/internal" noTrack>
