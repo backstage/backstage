@@ -1192,6 +1192,93 @@ describe('scaffolder router', () => {
     });
   });
 
+  describe('POST /v2/tasks/:taskId/retry', () => {
+    it('rejects when required secrets are missing', async () => {
+      const templateWithSecrets = generateMockTemplate({
+        secrets: {
+          type: 'object',
+          required: ['NPM_TOKEN'],
+          properties: {
+            NPM_TOKEN: { type: 'string' },
+          },
+        },
+      });
+
+      const { router, taskBroker } = await createTestRouter({
+        entities: [templateWithSecrets, mockUser],
+      });
+
+      (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
+        id: 'a-random-id',
+        spec: {
+          templateInfo: {
+            entityRef: 'template:default/create-react-app-template',
+            baseUrl: 'https://example.com',
+            entity: { metadata: templateWithSecrets.metadata },
+          },
+        } as any,
+        status: 'failed',
+        createdAt: '',
+        createdBy: 'user:default/mock',
+      });
+
+      const response = await request(router)
+        .post('/v2/tasks/a-random-id/retry')
+        .send({});
+
+      expect(response.status).toEqual(400);
+      expect(response.body.errors).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            property: 'secrets',
+            message: 'secrets.NPM_TOKEN is required',
+          }),
+        ]),
+      );
+    });
+
+    it('accepts valid secrets on retry', async () => {
+      const templateWithSecrets = generateMockTemplate({
+        secrets: {
+          type: 'object',
+          required: ['NPM_TOKEN'],
+          properties: {
+            NPM_TOKEN: { type: 'string' },
+          },
+        },
+      });
+
+      const { router, taskBroker } = await createTestRouter({
+        entities: [templateWithSecrets, mockUser],
+      });
+
+      (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
+        id: 'a-random-id',
+        spec: {
+          templateInfo: {
+            entityRef: 'template:default/create-react-app-template',
+            baseUrl: 'https://example.com',
+            entity: { metadata: templateWithSecrets.metadata },
+          },
+        } as any,
+        status: 'failed',
+        createdAt: '',
+        createdBy: 'user:default/mock',
+      });
+
+      const response = await request(router)
+        .post('/v2/tasks/a-random-id/retry')
+        .send({
+          secrets: {
+            NPM_TOKEN: 'my-secret-token',
+          },
+        });
+
+      expect(response.status).toEqual(201);
+      expect(taskBroker.retry).toHaveBeenCalled();
+    });
+  });
+
   describe('GET /v2/tasks/:taskId/eventstream', () => {
     it('should return log messages', async () => {
       const { unwrappedRouter: router, taskBroker } = await createTestRouter();

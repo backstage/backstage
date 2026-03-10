@@ -16,6 +16,7 @@
 
 import {
   AuditorService,
+  AuditorServiceEvent,
   AuthService,
   BackstageCredentials,
   DatabaseService,
@@ -189,8 +190,39 @@ function formatSecretsValidationErrors(result: ValidatorResult) {
       err.name === 'required'
         ? `secrets.${secretName} is required`
         : `${property} ${err.message}`;
-    return { ...err, property, message };
+    return {
+      ...err,
+      property,
+      message,
+      instance: {},
+    };
   });
+}
+
+async function validateSecrets(options: {
+  template: TemplateEntityV1beta3;
+  secrets: Record<string, unknown>;
+  res: express.Response;
+  auditorEvent?: AuditorServiceEvent;
+}): Promise<boolean> {
+  const { template, secrets, res, auditorEvent } = options;
+  if (!template.spec.secrets) {
+    return true;
+  }
+
+  const result = validate(secrets, template.spec.secrets);
+  if (result.valid) {
+    return true;
+  }
+
+  await auditorEvent?.fail({
+    error: (AggregateError as any)(result.errors, 'Secrets validation failed'),
+  });
+
+  res.status(400).json({
+    errors: formatSecretsValidationErrors(result),
+  });
+  return false;
 }
 
 /**
@@ -539,19 +571,14 @@ export async function createRouter(
           }
         }
 
-        if (template.spec.secrets) {
-          const providedSecrets = req.body.secrets ?? {};
-          const secretsResult = validate(
-            providedSecrets,
-            template.spec.secrets,
-          );
-
-          if (!secretsResult.valid) {
-            res.status(400).json({
-              errors: formatSecretsValidationErrors(secretsResult),
-            });
-            return;
-          }
+        const secretsValid = await validateSecrets({
+          template,
+          secrets: req.body.secrets ?? {},
+          res,
+          auditorEvent,
+        });
+        if (!secretsValid) {
+          return;
         }
 
         const baseUrl = getEntityBaseUrl(template);
@@ -785,19 +812,14 @@ export async function createRouter(
             credentials,
           );
 
-          if (template.spec.secrets) {
-            const providedSecrets = req.body.secrets ?? {};
-            const secretsResult = validate(
-              providedSecrets,
-              template.spec.secrets,
-            );
-
-            if (!secretsResult.valid) {
-              res.status(400).json({
-                errors: formatSecretsValidationErrors(secretsResult),
-              });
-              return;
-            }
+          const secretsValid = await validateSecrets({
+            template,
+            secrets: req.body.secrets ?? {},
+            res,
+            auditorEvent,
+          });
+          if (!secretsValid) {
+            return;
           }
         }
 
@@ -1029,19 +1051,14 @@ export async function createRouter(
           }
         }
 
-        if (template.spec.secrets) {
-          const providedSecrets = body.secrets ?? {};
-          const secretsResult = validate(
-            providedSecrets,
-            template.spec.secrets,
-          );
-
-          if (!secretsResult.valid) {
-            res.status(400).json({
-              errors: formatSecretsValidationErrors(secretsResult),
-            });
-            return;
-          }
+        const secretsValid = await validateSecrets({
+          template,
+          secrets: body.secrets ?? {},
+          res,
+          auditorEvent,
+        });
+        if (!secretsValid) {
+          return;
         }
 
         const steps = template.spec.steps.map((step, index) => ({
