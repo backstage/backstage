@@ -131,8 +131,6 @@ export interface AzureCredentialsManager {
   ): Promise<
     TokenCredential | StorageSharedKeyCredential | AnonymousCredential
   >;
-  // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-  // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
   getServiceUrl(accountName: string): string;
 }
 

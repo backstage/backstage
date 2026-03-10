@@ -49,7 +49,7 @@ export interface AzureCredentialsManager {
    *
    * Returns the appropriate URL based on configuration:
    * - Custom endpoint URL if configured (with optional SAS token appended as query parameter)
-   * - Default Azure Blob Storage URL in the format: https://\{accountName\}.blob.core.windows.net
+   * - Default Azure Blob Storage URL in the format: `https://{accountName}.blob.core.windows.net`
    *
    * @param accountName - The name of the Azure storage account
    * @returns The service URL string
