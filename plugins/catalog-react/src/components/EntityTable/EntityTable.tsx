@@ -16,7 +16,7 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { makeStyles } from '@material-ui/core/styles';
-import { CSSProperties, ReactNode } from 'react';
+import { CSSProperties, ReactElement, ReactNode } from 'react';
 import { columnFactories } from './columns';
 import { componentEntityColumns, systemEntityColumns } from './presets';
 import {
@@ -32,7 +32,7 @@ import {
  * @public
  */
 export interface EntityTableProps<T extends Entity> {
-  title: string;
+  title: string | ReactElement;
   variant?: InfoCardVariants;
   entities: T[];
   emptyContent?: ReactNode;
