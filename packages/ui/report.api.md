@@ -2239,14 +2239,14 @@ export interface SkeletonProps
   extends Omit<ComponentProps<'div'>, 'children' | 'className' | 'style'>,
     SkeletonOwnProps {}
 
-// Warning: (ae-forgotten-export) The symbol "SliderImpl" needs to be exported by the entry point index.d.ts
-//
 // @public (undocumented)
-export const Slider: <T extends number | number[]>(
+export const Slider: (<T extends number | number[]>(
   props: SliderProps<T> & {
     ref?: React.ForwardedRef<HTMLDivElement>;
   },
-) => ReturnType<typeof SliderImpl>;
+) => JSX.Element) & {
+  displayName: string;
+};
 
 // @public
 export const SliderDefinition: {
@@ -2263,6 +2263,10 @@ export const SliderDefinition: {
   };
   readonly propDefs: {
     readonly className: {};
+    readonly label: {};
+    readonly secondaryLabel: {};
+    readonly description: {};
+    readonly isRequired: {};
   };
 };
 
@@ -2270,11 +2274,19 @@ export const SliderDefinition: {
 export interface SliderOwnProps {
   // (undocumented)
   className?: string;
+  // (undocumented)
+  description?: FieldLabelProps['description'];
+  // (undocumented)
+  isRequired?: boolean;
+  // (undocumented)
+  label?: FieldLabelProps['label'];
+  // (undocumented)
+  secondaryLabel?: FieldLabelProps['secondaryLabel'];
 }
 
 // @public (undocumented)
 export interface SliderProps<T extends number | number[]>
-  extends Omit<SliderProps_2<T>, 'children'>,
+  extends Omit<SliderProps_2<T>, 'children' | 'className'>,
     Omit<
       FieldLabelProps,
       | 'htmlFor'
@@ -2284,7 +2296,12 @@ export interface SliderProps<T extends number | number[]>
       | 'onChange'
       | 'slot'
       | 'style'
-    > {}
+      | 'label'
+      | 'secondaryLabel'
+      | 'description'
+      | 'isRequired'
+    >,
+    SliderOwnProps {}
 
 // @public (undocumented)
 export type SortDescriptor = SortDescriptor_2;
