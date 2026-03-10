@@ -104,14 +104,15 @@
       background-color: var(--bui-bg-tint-pressed);
     }
 
-    &[data-disabled] {
-      background-color: var(--bui-bg-tint-disabled);
-    }
-
     &[data-href],
     &[data-selection-mode],
     &[data-react-aria-pressable='true'] {
       cursor: pointer;
+    }
+
+    &[data-disabled] {
+      background-color: var(--bui-bg-tint-disabled);
+      cursor: not-allowed;
     }
   }
 
