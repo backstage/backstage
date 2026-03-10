@@ -61,7 +61,7 @@ export function EntityDataTable(props: EntityDataTableProps) {
     mode: 'complete',
     data: tableData,
     sortFn,
-    paginationOptions: { pageSize: Infinity },
+    paginationOptions: { pageSize: tableData.length || 1 },
   });
 
   return (
