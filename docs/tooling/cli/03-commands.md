@@ -280,32 +280,35 @@ Options:
                               plugins, this also enables yarn.lock generation for SBOM.
 ```
 
-### Output Structure
+### Output Contract
 
-The bundle is created in a directory named after the package. For example,
-`@myorg/plugin-foo` creates `myorg-plugin-foo/` with the following structure:
+The bundle output is a directory that can be deployed as a standalone unit.
+Consumers of the bundle (such as `@backstage/backend-dynamic-feature-service`
+or `@backstage/frontend-dynamic-feature-loader`) can rely on the following
+guarantees:
 
-**Backend plugins:**
+**All bundles:**
 
-```text
-myorg-plugin-foo/
-├── package.json              # Customized for dynamic loading
-├── dist/                     # Built plugin code
-│   ├── index.cjs.js
-│   └── .config-schema.json   # Config schema (local packages only)
-├── embedded/                 # Embedded workspace packages (if any)
-│   └── myorg-plugin-foo-common/
-│       ├── package.json
-│       └── dist/
-└── node_modules/             # All production dependencies
-```
+- A `package.json` at the bundle root with entry points configured for dynamic
+  loading. The `backstage.role` and `files` fields are preserved from the source package.
+- A `dist/` directory containing the built plugin code.
+- A `dist/.config-schema.json` file (when any config schemas apply) containing
+  gathered schemas from the plugin, its local workspace dependencies, and
+  third-party dependencies. Schemas from unrelated Backstage packages are excluded.
+- No `scripts` or `devDependencies` in `package.json`.
 
-**Frontend plugins** produce module federation assets at the bundle root (no `embedded/` or `node_modules/` unless `--pre-packed-dir` is used).
+**Backend plugins** (`backend-plugin`, `backend-plugin-module`):
 
-The `.config-schema.json` contains merged config schemas from the plugin and any
-embedded workspace packages. It excludes schemas from npm dependencies, as those
-should be provided by the host application. The `package.json` is updated to
-reference this generated JSON file instead of any original `.d.ts` schema.
+- A `node_modules/` directory with all production dependencies (including local
+  workspace dependencies), pinned to their exact versions from the source lockfile.
+- `bundleDependencies` is set to `true` in `package.json`.
+
+**Frontend plugins** (`frontend-plugin`, `frontend-plugin-module`):
+
+- `main` points to `dist/remoteEntry.js` (the Module Federation remote entry).
+- `types` points to `dist/@mf-types/index.d.ts` when type declarations are
+  available.
+- No embedded `node_modules/` directory.
 
 ### Environment Variables
 
