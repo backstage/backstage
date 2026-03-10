@@ -88,7 +88,7 @@ export interface LocationStore {
   createLocation(
     location: LocationInput,
     options?: {
-      onConflict?: 'refresh' | 'reject';
+      onConflict: 'refresh' | 'reject';
     },
   ): Promise<Location>;
   listLocations(): Promise<Location[]>;

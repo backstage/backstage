@@ -1685,7 +1685,10 @@ describe('POST /locations/by-query works end to end', () => {
     const locationService = new DefaultLocationService(
       store,
       { process: jest.fn() },
-      { allowedLocationTypes: ['url'] },
+      {
+        allowedLocationTypes: ['url'],
+        defaultLocationConflictStrategy: 'reject',
+      },
     );
 
     const router = await createRouter({

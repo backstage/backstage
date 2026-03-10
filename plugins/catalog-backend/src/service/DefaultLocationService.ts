@@ -33,6 +33,7 @@ import { BackstageCredentials } from '@backstage/backend-plugin-api';
 
 export type DefaultLocationServiceOptions = {
   allowedLocationTypes: string[];
+  defaultLocationConflictStrategy: 'refresh' | 'reject';
 };
 
 export class DefaultLocationService implements LocationService {
@@ -45,6 +46,7 @@ export class DefaultLocationService implements LocationService {
     orchestrator: CatalogProcessingOrchestrator,
     options: DefaultLocationServiceOptions = {
       allowedLocationTypes: ['url'],
+      defaultLocationConflictStrategy: 'reject',
     },
   ) {
     this.store = store;
@@ -71,7 +73,8 @@ export class DefaultLocationService implements LocationService {
       return this.dryRunCreateLocation(input);
     }
     const location = await this.store.createLocation(input, {
-      onConflict: options?.onConflict,
+      onConflict:
+        options?.onConflict ?? this.options.defaultLocationConflictStrategy,
     });
     return { location, entities: [] };
   }

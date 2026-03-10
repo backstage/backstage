@@ -282,6 +282,7 @@ describe('DefaultLocationServiceTest', () => {
         orchestrator,
         {
           allowedLocationTypes: ['url', 'unknown'],
+          defaultLocationConflictStrategy: 'reject',
         },
       );
       await expect(

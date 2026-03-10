@@ -3,4 +3,4 @@
 '@backstage/plugin-catalog-backend': minor
 ---
 
-Add an `onConflict` option to location creation, that enables it to perform refreshes instead of throwing conflict errors when there's a pre-existing location already
+Add an `onConflict` option to location creation that can refresh an existing location instead of throwing a conflict error.
