@@ -1,5 +1,107 @@
 # @backstage/plugin-catalog-react
 
+## 2.1.0-next.1
+
+### Minor Changes
+
+- 4d58894: Added `aliases` and `contentOrder` fields to `EntityContentGroupDefinition`, allowing groups to declare alias IDs and control the sort order of their content items.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.13.0-next.1
+  - @backstage/catalog-client@1.14.0-next.1
+  - @backstage/frontend-test-utils@0.5.1-next.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/core-compat-api@0.5.9-next.1
+  - @backstage/core-components@0.18.8-next.0
+  - @backstage/core-plugin-api@1.12.4-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/filter-predicates@0.1.0
+  - @backstage/frontend-plugin-api@0.14.2-next.0
+  - @backstage/integration-react@1.2.16-next.1
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.12
+  - @backstage/plugin-catalog-common@1.1.8
+  - @backstage/plugin-permission-common@0.9.6
+  - @backstage/plugin-permission-react@0.4.41-next.0
+
+## 2.0.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.12.1-next.0
+  - @backstage/frontend-plugin-api@0.14.2-next.0
+  - @backstage/frontend-test-utils@0.5.1-next.0
+  - @backstage/catalog-client@1.13.1-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/core-compat-api@0.5.9-next.0
+  - @backstage/core-components@0.18.8-next.0
+  - @backstage/core-plugin-api@1.12.4-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/filter-predicates@0.1.0
+  - @backstage/integration-react@1.2.16-next.0
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.12
+  - @backstage/plugin-catalog-common@1.1.8
+  - @backstage/plugin-permission-common@0.9.6
+  - @backstage/plugin-permission-react@0.4.41-next.0
+
+## 2.0.0
+
+### Minor Changes
+
+- 0e9578d: Migrated `UnregisterEntityDialog` from Material UI to Backstage UI components.
+- 491a06c: Add the ability to show icons for the tabs on the entity page (new frontend)
+- b4e8249: Implemented support for the new `queryLocations` and `streamLocations` that allow paginated/streamed and filtered location queries
+- 7feb83b: **BREAKING ALPHA**: All of the predicate types and functions have been moved to the `@backstage/filter-predicates` package.
+
+  When moving into the more general package, they were renamed as follows:
+
+  - `EntityPredicate` -> `FilterPredicate`
+  - `EntityPredicateExpression` -> `FilterPredicateExpression`
+  - `EntityPredicatePrimitive` -> `FilterPredicatePrimitive`
+  - `entityPredicateToFilterFunction` -> `filterPredicateToFilterFunction`
+  - `EntityPredicateValue` -> `FilterPredicateValue`
+
+- e8258d0: **BREAKING**: Removed the 'summary' entity card type from `EntityCardType`. Users should migrate to using 'content' or 'info' card types instead.
+
+  TypeScript will now show errors if you try to use `type: 'summary'` when creating entity cards.
+
+- ac9bead: Added `createTestEntityPage` test utility for testing entity cards and content extensions in the new frontend system. This utility creates a test page extension that provides `EntityProvider` context and accepts entity extensions through input redirects:
+
+  ```typescript
+  import { renderTestApp } from '@backstage/frontend-test-utils';
+  import { createTestEntityPage } from '@backstage/plugin-catalog-react/testUtils';
+
+  renderTestApp({
+    extensions: [createTestEntityPage({ entity: myEntity }), myEntityCard],
+  });
+  ```
+
+### Patch Changes
+
+- f523983: Fixes a bug where the `EntityListProvider` would not correctly hydrate query parameters if more than 20 were provided for the same key.
+- 09a6aad: The `catalogApiMock` test utility now returns a `MockWithApiFactory`, allowing it to be passed directly to test utilities like `renderTestApp` and `TestApiProvider` without needing the `[catalogApiRef, catalogApiMock()]` tuple.
+- 88dbd5e: fixed bug in `UserListPicker` by getting the `kindParamater` from the `filters` rather than from the `queryParameters`
+- a7e0d50: Updated `react-router-dom` peer dependency to `^6.30.2` and explicitly disabled v7 future flags to suppress deprecation warnings.
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/ui@0.12.0
+  - @backstage/frontend-test-utils@0.5.0
+  - @backstage/core-components@0.18.7
+  - @backstage/core-compat-api@0.5.8
+  - @backstage/frontend-plugin-api@0.14.0
+  - @backstage/catalog-client@1.13.0
+  - @backstage/core-plugin-api@1.12.3
+  - @backstage/integration-react@1.2.15
+  - @backstage/plugin-permission-react@0.4.40
+  - @backstage/version-bridge@1.0.12
+  - @backstage/filter-predicates@0.1.0
+  - @backstage/plugin-permission-common@0.9.6
+  - @backstage/plugin-catalog-common@1.1.8
+
 ## 2.0.0-next.2
 
 ### Minor Changes

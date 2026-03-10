@@ -16,7 +16,12 @@
 
 import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
 import { wrapServer } from '@backstage/backend-openapi-utils/testUtils';
-import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
+import {
+  mockCredentials,
+  mockServices,
+  TestDatabaseId,
+  TestDatabases,
+} from '@backstage/backend-test-utils';
 import type { Location } from '@backstage/catalog-client';
 import {
   ANNOTATION_LOCATION,
@@ -38,11 +43,17 @@ import { Server } from 'node:http';
 import request from 'supertest';
 import { z } from 'zod';
 import { Cursor, EntitiesCatalog } from '../catalog/types';
+import { applyDatabaseMigrations } from '../database/migrations';
+import { DbLocationsRow } from '../database/tables';
 import { CatalogProcessingOrchestrator } from '../processing/types';
+import { DefaultLocationStore } from '../providers/DefaultLocationStore';
 import { createRouter } from './createRouter';
+import { DefaultLocationService } from './DefaultLocationService';
 import { basicEntityFilter } from './request';
 import { LocationInput, LocationService, RefreshService } from './types';
 import { decodeCursor, encodeCursor } from './util';
+
+jest.setTimeout(60_000);
 
 const middleware = MiddlewareFactory.create({
   logger: mockServices.logger.mock(),
@@ -70,6 +81,7 @@ describe('createRouter readonly disabled', () => {
     locationService = {
       getLocation: jest.fn(),
       createLocation: jest.fn(),
+      queryLocations: jest.fn(),
       listLocations: jest.fn(),
       deleteLocation: jest.fn(),
       getLocationByEntity: jest.fn(),
@@ -467,6 +479,87 @@ describe('createRouter readonly disabled', () => {
     });
   });
 
+  describe('POST /entities/by-query', () => {
+    it('queries entities with a predicate filter', async () => {
+      const items: Entity[] = [
+        { apiVersion: 'a', kind: 'b', metadata: { name: 'n' } },
+      ];
+      entitiesCatalog.queryEntities.mockResolvedValue({
+        items: { type: 'object', entities: items },
+        pageInfo: {},
+        totalItems: 1,
+      });
+
+      const response = await request(app)
+        .post('/entities/by-query')
+        .send({ query: { kind: 'b' }, limit: 10 });
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({
+        items,
+        totalItems: 1,
+        pageInfo: {},
+      });
+      expect(entitiesCatalog.queryEntities).toHaveBeenCalledWith(
+        expect.objectContaining({
+          query: { kind: 'b' },
+          limit: 10,
+          credentials: mockCredentials.user(),
+        }),
+      );
+    });
+
+    it('queries entities with an offset', async () => {
+      const items: Entity[] = [
+        { apiVersion: 'a', kind: 'b', metadata: { name: 'n' } },
+      ];
+      entitiesCatalog.queryEntities.mockResolvedValue({
+        items: { type: 'object', entities: items },
+        pageInfo: {},
+        totalItems: 5,
+      });
+
+      const response = await request(app)
+        .post('/entities/by-query')
+        .send({ query: { kind: 'b' }, limit: 2, offset: 3 });
+
+      expect(response.status).toEqual(200);
+      expect(entitiesCatalog.queryEntities).toHaveBeenCalledWith(
+        expect.objectContaining({
+          query: { kind: 'b' },
+          limit: 2,
+          offset: 3,
+          credentials: mockCredentials.user(),
+        }),
+      );
+    });
+
+    it('paginates with a cursor in the body', async () => {
+      const items: Entity[] = [
+        { apiVersion: 'a', kind: 'b', metadata: { name: 'n' } },
+      ];
+      const cursor = mockCursor({ totalItems: 100, isPrevious: false });
+
+      entitiesCatalog.queryEntities.mockResolvedValue({
+        items: { type: 'object', entities: items },
+        pageInfo: { nextCursor: mockCursor() },
+        totalItems: 100,
+      });
+
+      const response = await request(app)
+        .post('/entities/by-query')
+        .send({ cursor: encodeCursor(cursor) });
+
+      expect(response.status).toEqual(200);
+      expect(entitiesCatalog.queryEntities).toHaveBeenCalledWith(
+        expect.objectContaining({
+          cursor,
+          credentials: mockCredentials.user(),
+        }),
+      );
+    });
+  });
+
   describe('GET /entities/by-uid/:uid', () => {
     it('can fetch entity by uid', async () => {
       const entity: Entity = {
@@ -632,6 +725,85 @@ describe('createRouter readonly disabled', () => {
     });
   });
 
+  describe('POST /entities/by-refs with query predicate', () => {
+    it('can fetch entities by refs with a predicate query', async () => {
+      const entity: Entity = {
+        apiVersion: 'a',
+        kind: 'component',
+        metadata: {
+          name: 'a',
+        },
+      };
+      const entityRef = stringifyEntityRef(entity);
+      entitiesCatalog.entitiesBatch.mockResolvedValue({
+        items: { type: 'object', entities: [entity] },
+      });
+      const response = await request(app)
+        .post('/entities/by-refs')
+        .set('Content-Type', 'application/json')
+        .send(
+          JSON.stringify({
+            entityRefs: [entityRef],
+            query: { kind: 'Component' },
+          }),
+        );
+      expect(entitiesCatalog.entitiesBatch).toHaveBeenCalledTimes(1);
+      expect(entitiesCatalog.entitiesBatch).toHaveBeenCalledWith({
+        entityRefs: [entityRef],
+        fields: undefined,
+        credentials: mockCredentials.user(),
+        filter: undefined,
+        query: { kind: 'Component' },
+      });
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({ items: [entity] });
+    });
+
+    it('forwards both filter query param and body query predicate independently', async () => {
+      const entity: Entity = {
+        apiVersion: 'a',
+        kind: 'component',
+        metadata: {
+          name: 'a',
+        },
+      };
+      const entityRef = stringifyEntityRef(entity);
+      entitiesCatalog.entitiesBatch.mockResolvedValue({
+        items: { type: 'object', entities: [entity] },
+      });
+      const response = await request(app)
+        .post('/entities/by-refs?filter=kind=Component')
+        .set('Content-Type', 'application/json')
+        .send(
+          JSON.stringify({
+            entityRefs: [entityRef],
+            query: { 'metadata.namespace': 'default' },
+          }),
+        );
+      expect(entitiesCatalog.entitiesBatch).toHaveBeenCalledWith({
+        entityRefs: [entityRef],
+        fields: undefined,
+        credentials: mockCredentials.user(),
+        filter: { key: 'kind', values: ['Component'] },
+        query: { 'metadata.namespace': 'default' },
+      });
+      expect(response.status).toEqual(200);
+    });
+
+    it('rejects invalid query predicate', async () => {
+      const response = await request(app)
+        .post('/entities/by-refs')
+        .set('Content-Type', 'application/json')
+        .send(
+          JSON.stringify({
+            entityRefs: ['component:default/a'],
+            query: { $invalid: 'bad' },
+          }),
+        );
+      expect(response.status).toEqual(400);
+    });
+  });
+
   describe('GET /locations', () => {
     it('happy path: lists locations', async () => {
       const locations: Location[] = [
@@ -745,6 +917,188 @@ describe('createRouter readonly disabled', () => {
           location: { id: 'a', ...spec },
         }),
       );
+    });
+  });
+
+  describe('POST /locations/by-query', () => {
+    beforeEach(async () => {
+      locationService = {
+        getLocation: jest.fn(),
+        createLocation: jest.fn(),
+        queryLocations: jest.fn(),
+        listLocations: jest.fn(),
+        deleteLocation: jest.fn(),
+        getLocationByEntity: jest.fn(),
+      };
+      const router = await createRouter({
+        locationService,
+        logger: mockServices.logger.mock(),
+        config: new ConfigReader(undefined),
+        auth: mockServices.auth(),
+        httpAuth: mockServices.httpAuth(),
+        orchestrator: { process: jest.fn() },
+        permissionsService: mockServices.permissions(),
+        auditor: mockServices.auditor.mock(),
+      });
+      router.use(middleware.error());
+      app = express().use(router);
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('happy path: queries locations without pagination', async () => {
+      const locations: Location[] = [
+        { id: 'loc1', type: 'url', target: 'https://example.com/a' },
+        { id: 'loc2', type: 'url', target: 'https://example.com/b' },
+      ];
+      locationService.queryLocations.mockResolvedValueOnce({
+        items: locations,
+        totalItems: 2,
+      });
+
+      const response = await request(app)
+        .post('/locations/by-query')
+        .send({ limit: 10 });
+
+      expect(locationService.queryLocations).toHaveBeenCalledTimes(1);
+      expect(locationService.queryLocations).toHaveBeenCalledWith({
+        limit: 11,
+        credentials: mockCredentials.user(),
+      });
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({
+        items: locations,
+        totalItems: 2,
+        pageInfo: {},
+      });
+    });
+
+    it('happy path: queries locations with filter', async () => {
+      const locations: Location[] = [
+        { id: 'loc1', type: 'url', target: 'https://example.com/a' },
+      ];
+      locationService.queryLocations.mockResolvedValueOnce({
+        items: locations,
+        totalItems: 1,
+      });
+
+      const response = await request(app)
+        .post('/locations/by-query')
+        .send({ limit: 10, query: { type: 'url' } });
+
+      expect(locationService.queryLocations).toHaveBeenCalledTimes(1);
+      expect(locationService.queryLocations).toHaveBeenCalledWith({
+        limit: 11,
+        query: { type: 'url' },
+        credentials: mockCredentials.user(),
+      });
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({
+        items: locations,
+        totalItems: 1,
+        pageInfo: {},
+      });
+    });
+
+    it('returns nextCursor when more results exist', async () => {
+      const locations: Location[] = [
+        { id: 'loc1', type: 'url', target: 'https://example.com/a' },
+        { id: 'loc2', type: 'url', target: 'https://example.com/b' },
+        { id: 'loc3', type: 'url', target: 'https://example.com/c' },
+      ];
+      locationService.queryLocations.mockResolvedValueOnce({
+        items: locations,
+        totalItems: 5,
+      });
+
+      const response = await request(app)
+        .post('/locations/by-query')
+        .send({ limit: 2 });
+
+      expect(locationService.queryLocations).toHaveBeenCalledWith({
+        limit: 3,
+        credentials: mockCredentials.user(),
+      });
+      expect(response.status).toEqual(200);
+      expect(response.body.items).toHaveLength(2);
+      expect(response.body.totalItems).toEqual(5);
+      expect(response.body.pageInfo.nextCursor).toBeDefined();
+
+      const cursor = JSON.parse(
+        Buffer.from(response.body.pageInfo.nextCursor, 'base64').toString(
+          'utf8',
+        ),
+      );
+      expect(cursor).toEqual({
+        limit: 2,
+        afterId: 'loc2',
+      });
+    });
+
+    it('uses cursor for pagination', async () => {
+      const locations: Location[] = [
+        { id: 'loc3', type: 'url', target: 'https://example.com/c' },
+      ];
+      locationService.queryLocations.mockResolvedValueOnce({
+        items: locations,
+        totalItems: 3,
+      });
+
+      const cursor = Buffer.from(
+        JSON.stringify({ limit: 2, afterId: 'loc2', query: { type: 'url' } }),
+      ).toString('base64');
+
+      const response = await request(app)
+        .post('/locations/by-query')
+        .send({ cursor });
+
+      expect(locationService.queryLocations).toHaveBeenCalledWith({
+        limit: 3,
+        afterId: 'loc2',
+        query: { type: 'url' },
+        credentials: mockCredentials.user(),
+      });
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({
+        items: locations,
+        totalItems: 3,
+        pageInfo: {},
+      });
+    });
+
+    it('uses default limit when not specified', async () => {
+      locationService.queryLocations.mockResolvedValueOnce({
+        items: [],
+        totalItems: 0,
+      });
+
+      const response = await request(app).post('/locations/by-query').send({});
+
+      expect(locationService.queryLocations).toHaveBeenCalledWith({
+        limit: 1001,
+        credentials: mockCredentials.user(),
+      });
+      expect(response.status).toEqual(200);
+    });
+
+    it('rejects invalid limit', async () => {
+      const response = await request(app)
+        .post('/locations/by-query')
+        .send({ limit: 0 });
+
+      expect(locationService.queryLocations).not.toHaveBeenCalled();
+      expect(response.status).toEqual(400);
+    });
+
+    it('rejects malformed cursor', async () => {
+      const response = await request(app)
+        .post('/locations/by-query')
+        .send({ cursor: 'not-valid-base64!!!' });
+
+      expect(locationService.queryLocations).not.toHaveBeenCalled();
+      expect(response.status).toEqual(400);
     });
   });
 
@@ -915,6 +1269,89 @@ describe('createRouter readonly disabled', () => {
       );
     });
   });
+
+  describe('GET /entity-facets', () => {
+    it('returns facets', async () => {
+      entitiesCatalog.facets.mockResolvedValue({
+        facets: { kind: [{ value: 'Component', count: 5 }] },
+      });
+
+      const response = await request(app).get('/entity-facets?facet=kind');
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual({
+        facets: { kind: [{ value: 'Component', count: 5 }] },
+      });
+    });
+
+    it('returns facets with filter parameter', async () => {
+      entitiesCatalog.facets.mockResolvedValue({
+        facets: { 'spec.type': [{ value: 'service', count: 3 }] },
+      });
+
+      const response = await request(app).get(
+        '/entity-facets?facet=spec.type&filter=kind=Component',
+      );
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual({
+        facets: { 'spec.type': [{ value: 'service', count: 3 }] },
+      });
+      expect(entitiesCatalog.facets).toHaveBeenCalledWith(
+        expect.objectContaining({
+          facets: ['spec.type'],
+          filter: { key: 'kind', values: ['Component'] },
+        }),
+      );
+    });
+  });
+
+  describe('POST /entity-facets', () => {
+    it('returns facets with predicate query', async () => {
+      entitiesCatalog.facets.mockResolvedValue({
+        facets: { 'spec.type': [{ value: 'service', count: 3 }] },
+      });
+
+      const response = await request(app)
+        .post('/entity-facets')
+        .send({
+          facets: ['spec.type'],
+          query: { kind: 'Component' },
+        });
+
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual({
+        facets: { 'spec.type': [{ value: 'service', count: 3 }] },
+      });
+      expect(entitiesCatalog.facets).toHaveBeenCalledWith(
+        expect.objectContaining({
+          facets: ['spec.type'],
+          query: { kind: 'Component' },
+        }),
+      );
+    });
+
+    it('returns facets without query predicate', async () => {
+      entitiesCatalog.facets.mockResolvedValue({
+        facets: { kind: [{ value: 'Component', count: 5 }] },
+      });
+
+      const response = await request(app)
+        .post('/entity-facets')
+        .send({ facets: ['kind'] });
+
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual({
+        facets: { kind: [{ value: 'Component', count: 5 }] },
+      });
+    });
+
+    it('returns 400 for missing facets', async () => {
+      const response = await request(app)
+        .post('/entity-facets')
+        .send({ query: { kind: 'Component' } });
+
+      expect(response.status).toBe(400);
+    });
+  });
 });
 
 describe('createRouter readonly and raw json enabled', () => {
@@ -936,6 +1373,7 @@ describe('createRouter readonly and raw json enabled', () => {
       getLocation: jest.fn(),
       createLocation: jest.fn(),
       listLocations: jest.fn(),
+      queryLocations: jest.fn(),
       deleteLocation: jest.fn(),
       getLocationByEntity: jest.fn(),
     };
@@ -1150,6 +1588,7 @@ describe('NextRouter permissioning', () => {
     locationService = {
       getLocation: jest.fn(),
       createLocation: jest.fn(),
+      queryLocations: jest.fn(),
       listLocations: jest.fn(),
       deleteLocation: jest.fn(),
       getLocationByEntity: jest.fn(),
@@ -1221,6 +1660,175 @@ describe('NextRouter permissioning', () => {
       items: [{ id: '123', result: AuthorizeResult.ALLOW }],
     });
   });
+});
+
+describe('POST /locations/by-query works end to end', () => {
+  const databases = TestDatabases.create();
+
+  async function createTestRouter(databaseId: TestDatabaseId) {
+    const knex = await databases.init(databaseId);
+    await applyDatabaseMigrations(knex);
+
+    const mockScmEvents = {
+      subscribe: jest.fn(),
+      publish: jest.fn(),
+      markEventActionTaken: jest.fn(),
+    };
+
+    const store = new DefaultLocationStore(knex, mockScmEvents, {
+      refresh: false,
+      unregister: false,
+      move: false,
+    });
+    await store.connect({ applyMutation: jest.fn(), refresh: jest.fn() });
+
+    const locationService = new DefaultLocationService(
+      store,
+      { process: jest.fn() },
+      { allowedLocationTypes: ['url'] },
+    );
+
+    const router = await createRouter({
+      locationService,
+      logger: mockServices.logger.mock(),
+      config: new ConfigReader(undefined),
+      auth: mockServices.auth(),
+      httpAuth: mockServices.httpAuth(),
+      orchestrator: { process: jest.fn() },
+      permissionsService: mockServices.permissions(),
+      auditor: mockServices.auditor.mock(),
+    });
+
+    const errorMiddleware = MiddlewareFactory.create({
+      logger: mockServices.logger.mock(),
+      config: mockServices.rootConfig(),
+    });
+    router.use(errorMiddleware.error());
+
+    return { knex, app: express().use(router) };
+  }
+
+  it.each(databases.eachSupportedId())(
+    'paginates through locations correctly, %p',
+    async databaseId => {
+      const { knex, app } = await createTestRouter(databaseId);
+
+      // Insert 5 locations directly into the database
+      const locations = [
+        {
+          id: '00000000-0000-0000-0000-000000000001',
+          type: 'url',
+          target: 'https://example.com/a.yaml',
+        },
+        {
+          id: '00000000-0000-0000-0000-000000000002',
+          type: 'url',
+          target: 'https://example.com/b.yaml',
+        },
+        {
+          id: '00000000-0000-0000-0000-000000000003',
+          type: 'url',
+          target: 'https://example.com/c.yaml',
+        },
+        {
+          id: '00000000-0000-0000-0000-000000000004',
+          type: 'url',
+          target: 'https://example.com/d.yaml',
+        },
+        {
+          id: '00000000-0000-0000-0000-000000000005',
+          type: 'url',
+          target: 'https://example.com/e.yaml',
+        },
+      ];
+
+      // Clear the table and insert our test data
+      await knex<DbLocationsRow>('locations').delete();
+      for (const location of locations) {
+        await knex<DbLocationsRow>('locations').insert(location);
+      }
+
+      // First request: get first 2 locations
+      const response1 = await request(app)
+        .post('/locations/by-query')
+        .send({ limit: 2 });
+
+      expect(response1.status).toEqual(200);
+      expect(response1.body).toEqual({
+        items: [locations[0], locations[1]],
+        totalItems: 5,
+        pageInfo: { nextCursor: expect.any(String) },
+      });
+
+      // Second request: use the cursor to get the next batch
+      const response2 = await request(app)
+        .post('/locations/by-query')
+        .send({ cursor: response1.body.pageInfo.nextCursor });
+
+      expect(response2.status).toEqual(200);
+      expect(response2.body).toEqual({
+        items: [locations[2], locations[3]],
+        totalItems: 5,
+        pageInfo: { nextCursor: expect.any(String) },
+      });
+
+      // Third request: get the last location (no more pages)
+      const response3 = await request(app)
+        .post('/locations/by-query')
+        .send({ cursor: response2.body.pageInfo.nextCursor });
+
+      expect(response3.status).toEqual(200);
+      expect(response3.body).toEqual({
+        items: [locations[4]],
+        totalItems: 5,
+        pageInfo: {},
+      });
+    },
+  );
+
+  it.each(databases.eachSupportedId())(
+    'filters locations with query parameter, %p',
+    async databaseId => {
+      const { knex, app } = await createTestRouter(databaseId);
+
+      // Insert locations with different types
+      const locations = [
+        {
+          id: '00000000-0000-0000-0000-000000000001',
+          type: 'url',
+          target: 'https://example.com/a.yaml',
+        },
+        {
+          id: '00000000-0000-0000-0000-000000000002',
+          type: 'file',
+          target: '/tmp/b.yaml',
+        },
+        {
+          id: '00000000-0000-0000-0000-000000000003',
+          type: 'url',
+          target: 'https://example.com/c.yaml',
+        },
+      ];
+
+      // Clear the table and insert our test data
+      await knex<DbLocationsRow>('locations').delete();
+      for (const location of locations) {
+        await knex<DbLocationsRow>('locations').insert(location);
+      }
+
+      // Query only url type locations
+      const response = await request(app)
+        .post('/locations/by-query')
+        .send({ limit: 10, query: { type: 'url' } });
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({
+        items: [locations[0], locations[2]],
+        totalItems: 2,
+        pageInfo: {},
+      });
+    },
+  );
 });
 
 function mockCursor(partialCursor?: Partial<Cursor>): Cursor {

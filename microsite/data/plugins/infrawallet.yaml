@@ -8,3 +8,4 @@ documentation: https://github.com/electrolux-oss/infrawallet/blob/main/README.md
 iconUrl: /img/infrawallet-logo.png
 npmPackageName: '@electrolux-oss/plugin-infrawallet'
 addedDate: '2024-06-03'
+status: active

@@ -14,51 +14,52 @@
  * limitations under the License.
  */
 
-import { TabsProps } from 'react-aria-components';
-import { TabMatchStrategy } from '../Tabs';
+import type { HeaderTab } from '../PluginHeader/types';
 
 /**
- * Props for the main Header component.
+ * Own props for the Header component.
  *
  * @public
  */
-export interface HeaderProps {
-  icon?: React.ReactNode;
+export interface HeaderOwnProps {
   title?: string;
-  titleLink?: string;
   customActions?: React.ReactNode;
   tabs?: HeaderTab[];
-  onTabSelectionChange?: TabsProps['onSelectionChange'];
+  breadcrumbs?: HeaderBreadcrumb[];
   className?: string;
 }
 
 /**
- * Represents a tab item in the header navigation.
+ * Props for the Header component.
  *
  * @public
  */
-export interface HeaderTab {
-  id: string;
+export interface HeaderProps extends HeaderOwnProps {}
+
+/**
+ * Represents a breadcrumb item in the header.
+ *
+ * @public
+ */
+export interface HeaderBreadcrumb {
   label: string;
   href: string;
-  /**
-   * Strategy for matching the current route to determine if this tab should be active.
-   * - 'exact': Tab href must exactly match the current pathname (default)
-   * - 'prefix': Tab is active if current pathname starts with tab href
-   */
-  matchStrategy?: TabMatchStrategy;
 }
 
 /**
- * Props for the HeaderToolbar component.
- *
- * @internal
+ * @public
+ * @deprecated Use {@link HeaderOwnProps} instead.
  */
-export interface HeaderToolbarProps {
-  icon?: HeaderProps['icon'];
-  title?: HeaderProps['title'];
-  titleLink?: HeaderProps['titleLink'];
-  customActions?: HeaderProps['customActions'];
-  hasTabs?: boolean;
-  className?: string;
-}
+export type HeaderPageOwnProps = HeaderOwnProps;
+
+/**
+ * @public
+ * @deprecated Use {@link HeaderProps} instead.
+ */
+export type HeaderPageProps = HeaderProps;
+
+/**
+ * @public
+ * @deprecated Use {@link HeaderBreadcrumb} instead.
+ */
+export type HeaderPageBreadcrumb = HeaderBreadcrumb;

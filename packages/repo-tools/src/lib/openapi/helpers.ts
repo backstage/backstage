@@ -18,8 +18,8 @@ import Parser from '@apidevtools/swagger-parser';
 import fs, { pathExists } from 'fs-extra';
 import YAML from 'js-yaml';
 import { cloneDeep } from 'lodash';
+import { targetPaths } from '@backstage/cli-common';
 import { resolve } from 'node:path';
-import { paths } from '../paths';
 import { YAML_SCHEMA_PATH } from './constants';
 
 export const getPathToFile = async (directory: string, filename: string) => {
@@ -27,7 +27,7 @@ export const getPathToFile = async (directory: string, filename: string) => {
 };
 
 export const getRelativePathToFile = async (filename: string) => {
-  return await getPathToFile(paths.targetDir, filename);
+  return await getPathToFile(targetPaths.dir, filename);
 };
 
 export const assertExists = async (path: string) => {
@@ -69,4 +69,33 @@ export function toGeneratorAdditionalProperties({
   return Object.entries(parsed)
     .map(([key, value]) => `${key}=${value}`)
     .join(',');
+}
+
+export async function getOpenApiGeneratorKey(
+  specPath: string,
+): Promise<string> {
+  const yaml = (await loadAndValidateOpenApiYaml(specPath)) as any;
+  const version = yaml.openapi;
+
+  if (!version) {
+    throw new Error(`Could not determine OpenAPI version from ${specPath}`);
+  }
+
+  const semver = /^(\d+)\.(\d+)\.(\d+)(-.+)?$/.exec(version);
+  if (!semver) {
+    throw new Error(`Invalid OpenAPI version format ${version} in ${specPath}`);
+  }
+  const [, major, minor] = semver;
+  const supportedVersions = ['3.0', '3.1'];
+
+  const majorMinor = `${major}.${minor}`;
+  if (!supportedVersions.includes(majorMinor)) {
+    throw new Error(
+      `Unsupported OpenAPI version ${version} in ${specPath}. Supported versions are: ${supportedVersions.join(
+        ', ',
+      )}`,
+    );
+  }
+
+  return `v${majorMinor}`;
 }

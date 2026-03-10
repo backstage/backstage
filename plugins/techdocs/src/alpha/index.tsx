@@ -223,6 +223,7 @@ const techDocsEntityContent = EntityContentBlueprint.makeWithOverrides({
       {
         path: 'docs',
         title: 'TechDocs',
+        group: 'documentation',
         routeRef: rootCatalogDocsRouteRef,
         loader: () => {
           // Merge addons from the API with old-style direct attachments
@@ -278,6 +279,8 @@ const techDocsNavItem = NavItemBlueprint.make({
 /** @alpha */
 export default createFrontendPlugin({
   pluginId: 'techdocs',
+  title: 'Docs',
+  icon: <LibraryBooks />,
   info: { packageJson: () => import('../../package.json') },
   extensions: [
     techDocsClientApi,

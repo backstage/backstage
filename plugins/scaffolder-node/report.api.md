@@ -9,15 +9,26 @@ import { Expand } from '@backstage/types';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
+import { ListActionsResponse } from '@backstage/plugin-scaffolder-common';
+import { ListTemplatingExtensionsResponse } from '@backstage/plugin-scaffolder-common';
+import { LogEvent } from '@backstage/plugin-scaffolder-common';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { Observable } from '@backstage/types';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
+import { ScaffolderDryRunOptions } from '@backstage/plugin-scaffolder-common';
+import { ScaffolderDryRunResponse } from '@backstage/plugin-scaffolder-common';
+import { ScaffolderScaffoldOptions } from '@backstage/plugin-scaffolder-common';
+import { ScaffolderScaffoldResponse } from '@backstage/plugin-scaffolder-common';
+import { ScaffolderTask } from '@backstage/plugin-scaffolder-common';
+import { ScaffolderTaskStatus } from '@backstage/plugin-scaffolder-common';
 import { Schema } from 'jsonschema';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { ScmIntegrations } from '@backstage/integration';
+import { ServiceRef } from '@backstage/backend-plugin-api';
 import { SpawnOptionsWithoutStdio } from 'node:child_process';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { TemplateInfo } from '@backstage/plugin-scaffolder-common';
+import type { TemplateParameterSchema } from '@backstage/plugin-scaffolder-common';
 import { UpdateTaskCheckpointOptions } from '@backstage/plugin-scaffolder-node/alpha';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { UserEntity } from '@backstage/catalog-model';
@@ -315,6 +326,110 @@ export interface ScaffolderActionsExtensionPoint {
 
 // @public
 export const scaffolderActionsExtensionPoint: ExtensionPoint<ScaffolderActionsExtensionPoint>;
+
+// @public
+export interface ScaffolderService {
+  // (undocumented)
+  autocomplete(
+    request: {
+      token: string;
+      provider: string;
+      resource: string;
+      context: Record<string, string>;
+    },
+    options: ScaffolderServiceRequestOptions,
+  ): Promise<{
+    results: {
+      title?: string;
+      id: string;
+    }[];
+  }>;
+  // (undocumented)
+  cancelTask(
+    request: {
+      taskId: string;
+    },
+    options: ScaffolderServiceRequestOptions,
+  ): Promise<{
+    status?: ScaffolderTaskStatus;
+  }>;
+  // (undocumented)
+  dryRun(
+    request: ScaffolderDryRunOptions,
+    options: ScaffolderServiceRequestOptions,
+  ): Promise<ScaffolderDryRunResponse>;
+  // (undocumented)
+  getLogs(
+    request: {
+      taskId: string;
+      after?: number;
+    },
+    options: ScaffolderServiceRequestOptions,
+  ): Promise<LogEvent[]>;
+  // (undocumented)
+  getTask(
+    request: {
+      taskId: string;
+    },
+    options: ScaffolderServiceRequestOptions,
+  ): Promise<ScaffolderTask>;
+  // (undocumented)
+  getTemplateParameterSchema(
+    request: {
+      templateRef: string;
+    },
+    options: ScaffolderServiceRequestOptions,
+  ): Promise<TemplateParameterSchema>;
+  // (undocumented)
+  listActions(
+    request?: {},
+    options?: ScaffolderServiceRequestOptions,
+  ): Promise<ListActionsResponse>;
+  // (undocumented)
+  listTasks(
+    request: {
+      createdBy?: string;
+      limit?: number;
+      offset?: number;
+    },
+    options: ScaffolderServiceRequestOptions,
+  ): Promise<{
+    items: ScaffolderTask[];
+    totalItems: number;
+  }>;
+  // (undocumented)
+  listTemplatingExtensions(
+    request?: {},
+    options?: ScaffolderServiceRequestOptions,
+  ): Promise<ListTemplatingExtensionsResponse>;
+  // (undocumented)
+  retry(
+    request: {
+      taskId: string;
+    },
+    options: ScaffolderServiceRequestOptions,
+  ): Promise<{
+    id: string;
+  }>;
+  // (undocumented)
+  scaffold(
+    request: ScaffolderScaffoldOptions,
+    options: ScaffolderServiceRequestOptions,
+  ): Promise<ScaffolderScaffoldResponse>;
+}
+
+// @public
+export const scaffolderServiceRef: ServiceRef<
+  ScaffolderService,
+  'plugin',
+  'singleton'
+>;
+
+// @public (undocumented)
+export interface ScaffolderServiceRequestOptions {
+  // (undocumented)
+  credentials: BackstageCredentials;
+}
 
 // @public (undocumented)
 export interface SerializedFile {

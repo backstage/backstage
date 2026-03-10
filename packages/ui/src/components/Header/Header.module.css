@@ -17,79 +17,35 @@
 @layer tokens, base, components, utilities;
 
 @layer components {
-  .bui-Header {
-    display: block;
+  .bui-HeaderPage {
+    display: flex;
+    flex-direction: column;
+    gap: var(--bui-space-1);
+    margin-top: var(--bui-space-6);
+    margin-bottom: var(--bui-space-6);
   }
 
-  .bui-HeaderToolbar {
-    &::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0px;
-      right: 0px;
-      height: 16px;
-      background-color: var(--bui-bg-app);
-      z-index: 0;
-    }
-  }
-
-  .bui-HeaderToolbarWrapper {
-    position: relative;
-    z-index: 1;
+  .bui-HeaderPageContent {
     display: flex;
     flex-direction: row;
-    align-items: center;
     justify-content: space-between;
-    background-color: var(--bui-bg-neutral-1);
-    padding-inline: var(--bui-space-5);
-    border-bottom: 1px solid var(--bui-border-1);
-    color: var(--bui-fg-primary);
-    height: 52px;
   }
 
-  .bui-HeaderToolbarContent {
+  .bui-HeaderPageTabsWrapper {
+    margin-left: -8px;
+  }
+
+  .bui-HeaderPageControls {
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: var(--bui-space-2);
   }
 
-  .bui-HeaderToolbarName {
+  .bui-HeaderPageBreadcrumbs {
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: var(--bui-space-2);
-    font-size: var(--bui-font-size-3);
-    font-weight: var(--bui-font-weight-regular);
-    flex-shrink: 0;
-  }
-
-  .bui-HeaderToolbarIcon {
-    width: 16px;
-    height: 16px;
-    color: var(--bui-fg-primary);
-
-    & svg {
-      width: 100%;
-      height: 100%;
-    }
-  }
-
-  .bui-HeaderToolbarControls {
-    position: absolute;
-    right: var(--bui-space-5);
-    top: 50%;
-    transform: translateY(-50%);
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: var(--bui-space-2);
-  }
-
-  .bui-HeaderTabsWrapper {
-    padding-inline: var(--bui-space-3);
-    border-bottom: 1px solid var(--bui-border-1);
-    background-color: var(--bui-bg-neutral-1);
   }
 }

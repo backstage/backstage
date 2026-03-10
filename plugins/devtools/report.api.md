@@ -17,7 +17,7 @@ export const ConfigContent: () => JSX_2.Element;
 
 // @public
 export const DevToolsLayout: {
-  ({ children, title, subtitle }: DevToolsLayoutProps): JSX_2.Element;
+  (input: DevToolsLayoutProps): JSX_2.Element;
   Route: (props: SubRoute) => null;
 };
 
@@ -29,7 +29,7 @@ export type DevToolsLayoutProps = {
 };
 
 // @public (undocumented)
-export const DevToolsPage: ({ contents }: DevToolsPageProps) => JSX_2.Element;
+export const DevToolsPage: (input: DevToolsPageProps) => JSX_2.Element;
 
 // @public (undocumented)
 export interface DevToolsPageContent {
@@ -62,9 +62,7 @@ export const ExternalDependenciesContent: () => JSX_2.Element;
 export const InfoContent: () => JSX_2.Element;
 
 // @public (undocumented)
-export const ScheduledTaskDetailPanel: ({
-  rowData,
-}: {
+export const ScheduledTaskDetailPanel: (input: {
   rowData: TaskApiTasksResponse;
 }) => JSX_2.Element;
 

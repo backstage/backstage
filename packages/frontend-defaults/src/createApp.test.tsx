@@ -283,7 +283,9 @@ describe('createApp', () => {
     ).resolves.toBeInTheDocument();
   });
 
-  it('should allow unknown extension config if the flag is set', async () => {
+  it('should warn about unknown extension config', async () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
     const app = createApp({
       features: [
         appPlugin,
@@ -300,7 +302,6 @@ describe('createApp', () => {
         }),
       ],
       advanced: {
-        allowUnknownExtensionConfig: true,
         configLoader: async () => ({
           config: mockApis.config({
             data: {
@@ -316,6 +317,12 @@ describe('createApp', () => {
     await renderWithEffects(app.createRoot());
 
     await expect(screen.findByText('Derp')).resolves.toBeInTheDocument();
+    expect(warnSpy).toHaveBeenCalledWith('App startup encountered warnings:');
+    expect(warnSpy).toHaveBeenCalledWith(
+      'INVALID_EXTENSION_CONFIG_KEY: Extension unknown:lols/wut does not exist',
+    );
+
+    warnSpy.mockRestore();
   });
   it('should make the app structure available through the AppTreeApi', async () => {
     let appTreeApi: AppTreeApi | undefined = undefined;
@@ -388,11 +395,13 @@ describe('createApp', () => {
               <component:app/core-progress out=[core.swappableComponent] />
               <component:app/core-not-found-error-page out=[core.swappableComponent] />
               <component:app/core-error-display out=[core.swappableComponent] />
+              <component:app/core-page-layout out=[core.swappableComponent] />
             ]
           </api:app/swappable-components>
           <api:app/icons out=[core.api.factory] />
           <api:app/feature-flags out=[core.api.factory] />
           <api:app/plugin-wrapper out=[core.api.factory] />
+          <api:app/plugin-header-actions out=[core.api.factory] />
           <api:app/translations out=[core.api.factory] />
           <api:app/components out=[core.api.factory] />
         ]

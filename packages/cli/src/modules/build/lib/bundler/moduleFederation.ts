@@ -16,11 +16,11 @@
 
 import { ModuleFederationRemoteOptions } from './types';
 import { BackstagePackageJson } from '@backstage/cli-node';
-import { readEntryPoints } from '../../../../lib/entryPoints';
+import { readEntryPoints } from '../entryPoints';
 import {
   createTypeDistProject,
   getEntryPointDefaultFeatureType,
-} from '../../../../lib/typeDistProject';
+} from '../typeDistProject';
 import {
   BACKSTAGE_RUNTIME_SHARED_DEPENDENCIES_GLOBAL,
   defaultRemoteSharedDependencies,
@@ -28,7 +28,7 @@ import {
   HostSharedDependencies,
   RuntimeSharedDependenciesGlobal,
 } from '@backstage/module-federation-common';
-import { dirname, join as joinPath, resolve as resolvePath } from 'path';
+import { dirname, join as joinPath, resolve as resolvePath } from 'node:path';
 import fs from 'fs-extra';
 import chokidar from 'chokidar';
 import PQueue from 'p-queue';

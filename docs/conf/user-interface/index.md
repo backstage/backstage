@@ -156,7 +156,6 @@ These colors form a layered neutral scale for your application backgrounds. `--b
 | Token Name                    | Description                                                  |
 | ----------------------------- | ------------------------------------------------------------ |
 | `--bui-bg-app`                | The base background color of your Backstage instance.        |
-| `--bui-bg-popover`            | The background color used for popovers, tooltips, and menus. |
 | `--bui-bg-neutral-1`          | First elevated layer. Use for cards, dialogs, and panels.    |
 | `--bui-bg-neutral-1-hover`    | Hover state for elements on neutral-1.                       |
 | `--bui-bg-neutral-1-pressed`  | Pressed state for elements on neutral-1.                     |

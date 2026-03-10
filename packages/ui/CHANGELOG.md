@@ -1,5 +1,486 @@
 # @backstage/ui
 
+## 0.13.0-next.1
+
+### Minor Changes
+
+- 768f09d: **BREAKING**: Simplified the neutral background prop API for container components. The explicit `neutral-1`, `neutral-2`, `neutral-3`, and `neutral-auto` values have been removed from `ProviderBg`. They are replaced by a single `'neutral'` value that always auto-increments from the parent context, making it impossible to skip or pin to an explicit neutral level.
+
+  **Migration:**
+
+  Replace any explicit `bg="neutral-1"`, `bg="neutral-2"`, `bg="neutral-3"`, or `bg="neutral-auto"` props with `bg="neutral"`. To achieve a specific neutral level in stories or tests, use nested containers — each additional `bg="neutral"` wrapper increments by one level.
+
+  ```tsx
+  // Before
+  <Box bg="neutral-2">...</Box>
+
+  // After
+  <Box bg="neutral">
+    <Box bg="neutral">...</Box>
+  </Box>
+  ```
+
+  **Affected components:** Box, Flex, Grid, Card, Accordion, Popover, Tooltip, Dialog, Menu
+
+- b42fcdc: **BREAKING**: Removed `--bui-bg-popover` CSS token. Popover, Tooltip, Menu, and Dialog now use `--bui-bg-app` for their outer shell and `Box bg="neutral-1"` for content areas, providing better theme consistency and eliminating a redundant token.
+
+  **Migration:**
+
+  Replace any usage of `--bui-bg-popover` with `--bui-bg-neutral-1` (for content surfaces) or `--bui-bg-app` (for outer shells):
+
+  ```diff
+  - background: var(--bui-bg-popover);
+  + background: var(--bui-bg-neutral-1);
+  ```
+
+  **Affected components:** Popover, Tooltip, Menu, Dialog
+
+- bd3a76e: **BREAKING**: Data attributes rendered by components are now always lowercase. This affects CSS selectors targeting camelCase data attributes.
+
+  **Migration:**
+
+  Update any custom CSS selectors that target camelCase data attributes to use lowercase instead:
+
+  ```diff
+  - [data-startCollapsed='true'] { ... }
+  + [data-startcollapsed='true'] { ... }
+  ```
+
+  **Affected components:** SearchField
+
+- 95702ab: **BREAKING**: Removed deprecated types `ComponentDefinition`, `ClassNamesMap`, `DataAttributeValues`, and `DataAttributesMap` from the public API. These were internal styling infrastructure types that have been replaced by the `defineComponent` system.
+
+  **Migration:**
+
+  Remove any direct usage of these types. Component definitions now use `defineComponent()` and their shapes are not part of the public API contract.
+
+  ```diff
+  - import type { ComponentDefinition, ClassNamesMap } from '@backstage/ui';
+  ```
+
+  If you were reading `definition.dataAttributes`, use `definition.propDefs` instead — props with `dataAttribute: true` in `propDefs` are the equivalent.
+
+### Patch Changes
+
+- 58224d3: Fixed neutral-1 hover & pressed state in light mode.
+- 95702ab: Migrated all components from `useStyles` to `useDefinition` hook. Exported `OwnProps` types for each component, enabling better type composition for consumers.
+
+  **Affected components:** Avatar, Checkbox, Container, Dialog, FieldError, FieldLabel, Flex, FullPage, Grid, HeaderPage, Link, Menu, PasswordField, PluginHeader, Popover, RadioGroup, SearchField, Select, Skeleton, Switch, Table, TablePagination, Tabs, TagGroup, Text, TextField, ToggleButton, ToggleButtonGroup, Tooltip, VisuallyHidden
+
+- 4c2c350: Removed the `transition` on `Container` padding to prevent an unwanted animation when the viewport is resized.
+
+  Affected components: Container
+
+- d4fa5b4: Fixed tab `matchStrategy` matching to ignore query parameters and hash fragments in tab `href` values. Previously, tabs with query params in their `href` (e.g., `/page?group=foo`) would never show as active since matching compared the full `href` string against `location.pathname` which never includes query params.
+
+  **Affected components:** Tabs, PluginHeader
+
+- 36987db: Fixed handling of the `style` prop on `Button`, `ButtonIcon`, and `ButtonLink` so that it is now correctly forwarded to the underlying element instead of being silently dropped.
+
+  **Affected components:** Button, ButtonIcon, ButtonLink
+
+- 95702ab: Fixed Link variant default from `'body'` to `'body-medium'` to match actual CSS selectors. The previous default did not correspond to a valid variant value.
+
+  **Affected components:** Link
+
+- 9027b10: Fixed scroll overflow in Menu and Select popover content when constrained by viewport height.
+
+  **Affected components:** Menu, Select
+
+- 4105a78: Merged the internal `PluginHeaderToolbar` component into `PluginHeader`, removing the separate component and its associated types (`PluginHeaderToolbarOwnProps`, `PluginHeaderToolbarProps`) and definition (`PluginHeaderToolbarDefinition`). This is an internal refactor with no changes to the public API of `PluginHeader`.
+
+  **Affected components:** PluginHeader
+
+- b303857: Fixed `isRequired` prop not being passed to the underlying React Aria field components in TextField, SearchField, and PasswordField. Previously, `isRequired` was consumed locally for the secondary label text but never forwarded, which meant the input elements lacked `aria-required="true"` and React Aria's built-in required validation was not activated.
+
+  **Affected components:** TextField, SearchField, PasswordField
+
+- cd3cb0f: Improved `useBreakpoint` performance by sharing a single set of `matchMedia` listeners across all component instances instead of creating independent listeners per hook call.
+- 36987db: Extended `AlertProps`, `ContainerProps`, `DialogBodyProps`, and `FieldLabelProps` with native div element props to allow passing attributes like `aria-*` and `data-*`.
+
+  **Affected components:** Alert, Container, DialogBody, FieldLabel
+
+- Updated dependencies
+  - @backstage/version-bridge@1.0.12
+
+## 0.12.1-next.0
+
+### Patch Changes
+
+- a1f4bee: Made Accordion a `bg` provider so nested components like Button auto-increment their background level. Updated `useDefinition` to resolve `bg` `propDef` defaults for provider components.
+- 8909359: Fixed focus-visible outline styles for Menu and Select components.
+
+  **Affected components:** Menu, Select
+
+- 0f462f8: Improved type safety in `useDefinition` by centralizing prop resolution and strengthening the `BgPropsConstraint` to require that `bg` provider components declare `children` as a required prop in their OwnProps type.
+- 8909359: Added proper cursor styles for RadioGroup items.
+
+  **Affected components:** RadioGroup
+
+- Updated dependencies
+  - @backstage/version-bridge@1.0.12
+
+## 0.12.0
+
+### Minor Changes
+
+- 46a9adc: **BREAKING**: Alert no longer accepts a `surface` prop
+
+  The Alert component's background is now driven entirely by its `status` prop. The `surface` prop has been removed.
+
+  ```diff
+  - <Alert surface="1" status="info" />
+  + <Alert status="info" />
+  ```
+
+  **Affected components:** Alert
+
+- b63c25b: **BREAKING**: Removed gray scale tokens and renamed background surface tokens to neutral tokens
+
+  The `--bui-gray-1` through `--bui-gray-8` tokens have been removed. The `--bui-bg-surface-*` and `--bui-bg-neutral-on-surface-*` tokens have been replaced by a unified `--bui-bg-neutral-*` scale.
+
+  **Migration:**
+
+  Replace surface tokens directly:
+
+  ```diff
+  - background: var(--bui-bg-surface-0);
+  + background: var(--bui-bg-neutral-0);
+  ```
+
+  Replace on-surface tokens shifted by +1:
+
+  ```diff
+  - background: var(--bui-bg-neutral-on-surface-0);
+  + background: var(--bui-bg-neutral-1);
+  ```
+
+  Replace gray tokens 1-4 with neutral equivalents (`--bui-gray-5` through `--bui-gray-8` have no direct replacement):
+
+  ```diff
+  - background: var(--bui-gray-1);
+  + background: var(--bui-bg-neutral-1);
+  ```
+
+- 7898df0: **BREAKING**: Replaced `Surface` / `onSurface` system with new provider/consumer background system
+
+  The old `Surface` type (`'0'`–`'3'`, `'auto'`) and its associated props (`surface`, `onSurface`) have been replaced by a provider/consumer `bg` architecture.
+
+  **Types:**
+
+  - `ContainerBg` — `'neutral-1'` | `'neutral-2'` | `'neutral-3'` | `'danger'` | `'warning'` | `'success'`
+  - `ProviderBg` — `ContainerBg | 'neutral-auto'`
+
+  Consumer components (e.g. Button) inherit the parent's `bg` via `data-on-bg`, and CSS handles the visual step-up. See "Neutral level capping" below for details on how levels are bounded.
+
+  **Hooks:**
+
+  - `useBgProvider(bg?)` — for provider components. Returns `{ bg: undefined }` when no `bg` is given (transparent). Supports `'neutral-auto'` to auto-increment from the parent context.
+  - `useBgConsumer()` — for consumer components. Returns the parent container's `bg` unchanged.
+
+  **Component roles:**
+
+  - **Provider-only** (Box, Flex, Grid): set `data-bg`, wrap children in `BgProvider`. **Transparent by default** — they do _not_ auto-increment; pass `bg="neutral-auto"` explicitly if you want automatic neutral stepping.
+  - **Consumer-only** (Button, ButtonIcon, ButtonLink): set `data-on-bg`, inherit the parent container's `bg` unchanged.
+  - **Provider + Consumer** (Card): sets both `data-bg` and `data-on-bg`, wraps children. Card passes `bg="neutral-auto"` to its inner Box, so it auto-increments from the parent context.
+
+  **Neutral level capping:**
+
+  Provider components cap at `neutral-3`. There is no `neutral-4` prop value. The `neutral-4` level exists only in consumer component CSS — for example, a Button sitting on a `neutral-3` surface uses `neutral-4` tokens internally via `data-on-bg`.
+
+  **Migration:**
+
+  Rename the `surface` prop to `bg` on provider components and update values:
+
+  ```diff
+  - <Box surface="1">
+  + <Box bg="neutral-1">
+
+  - <Card surface="2">
+  + <Card bg="neutral-2">
+
+  - <Flex surface="0">
+  + <Flex bg="neutral-1">
+
+  - <Grid.Root surface="1">
+  + <Grid.Root bg="neutral-1">
+  ```
+
+  Remove `onSurface` from consumer components — they now always inherit from the parent container:
+
+  ```diff
+  - <Button onSurface="1" variant="secondary">
+  + <Button variant="secondary">
+
+  - <ButtonIcon onSurface="2" variant="secondary" />
+  + <ButtonIcon variant="secondary" />
+
+  - <ToggleButton onSurface="1">
+  + <ToggleButton>
+  ```
+
+  Update type imports:
+
+  ```diff
+  - import type { Surface, LeafSurfaceProps, ContainerSurfaceProps } from '@backstage/ui';
+  + import type { ContainerBg, ProviderBg } from '@backstage/ui';
+  ```
+
+  Replace hook usage in custom components:
+
+  ```diff
+  - import { useSurface, SurfaceProvider } from '@backstage/ui';
+  + import { useBgProvider, useBgConsumer, BgProvider } from '@backstage/ui';
+
+  - const { surface } = useSurface({ surface: props.surface });
+  + const { bg } = useBgProvider(props.bg);
+
+  - const { surface } = useSurface({ onSurface: props.onSurface });
+  + const { bg } = useBgConsumer();
+  ```
+
+  Update CSS selectors targeting surface data attributes:
+
+  ```diff
+  - [data-surface='1'] { ... }
+  + [data-bg='neutral-1'] { ... }
+
+  - [data-on-surface='1'] { ... }
+  + [data-on-bg='neutral-1'] { ... }
+  ```
+
+  Note: Provider components use `data-bg` (values: `neutral-1` through `neutral-3`, plus intent values). Consumer components use `data-on-bg`, which reflects the parent container's `bg` directly. The `neutral-4` level never appears as a prop or `data-bg` value — it is used only in consumer CSS.
+
+  **Affected components:** Box, Button, ButtonIcon, ButtonLink, ToggleButton, Card, Flex, Grid
+
+- 4137a43: **BREAKING:** Renamed, added, and removed CSS tokens.
+
+  - Renamed `--bui-bg-neutral-0` to `--bui-bg-app`.
+  - Renamed `--bui-border` to `--bui-border-2`.
+  - Added `--bui-border-1` for subtle, low-contrast borders.
+  - Added `--bui-bg-popover` for the background color of popovers, tooltips, menus, and dialogs.
+  - Removed `--bui-border-hover`, `--bui-border-pressed`, and `--bui-border-disabled`.
+
+  **Migration:**
+
+  ```diff
+  - var(--bui-bg-neutral-0)
+  + var(--bui-bg-app)
+
+  - var(--bui-border)
+  + var(--bui-border-2)
+  ```
+
+  Remove any references to `--bui-border-hover`, `--bui-border-pressed`, and `--bui-border-disabled` as these tokens no longer exist.
+
+- b1f723b: **BREAKING**: Changed CSS selectors for `ButtonIcon` and `ButtonLink` components. Custom styles targeting `.bui-Button` to style these components must be updated to use `.bui-ButtonIcon` or `.bui-ButtonLink` respectively.
+
+  ```diff
+  -/* This no longer styles ButtonIcon or ButtonLink */
+  -.bui-Button[data-variant="primary"] { ... }
+  +/* Use component-specific selectors */
+  +.bui-ButtonIcon[data-variant="primary"] { ... }
+  +.bui-ButtonLink[data-variant="primary"] { ... }
+  ```
+
+  Affected components: ButtonIcon, ButtonLink
+
+- caeb9ad: **BREAKING**: The `cell` and `header` properties in `ColumnConfig` now return `ReactElement` instead of `ReactNode`.
+
+  This fixes an issue where React Aria's Collection component would inject an `id` prop into Fragment wrappers, causing "Invalid prop `id` supplied to `React.Fragment`" errors on render.
+
+  Migration:
+
+  ```diff
+  const columns: ColumnConfig<MyItem>[] = [
+    {
+      id: 'name',
+      label: 'Name',
+  -   cell: (item) => item.name,
+  +   cell: (item) => <CellText title={item.name} />,
+  -   header: () => 'Name',
+  +   header: () => <Column>Name</Column>,
+    },
+  ];
+  ```
+
+- 0ec3c0e: **BREAKING**: Renamed the `Header` component to `PluginHeader` for clarity.
+
+  The following exports have been renamed:
+
+  - `Header` → `PluginHeader`
+  - `HeaderProps` → `PluginHeaderProps`
+  - `HeaderDefinition` → `PluginHeaderDefinition`
+
+  The `HeaderTab` type is unchanged as it is shared with `HeaderPage`.
+
+  CSS class names have been updated from `bui-Header*` to `bui-PluginHeader*`.
+
+  **Migration:**
+
+  ```diff
+  -import { Header, HeaderDefinition } from '@backstage/ui';
+  +import { PluginHeader, PluginHeaderDefinition } from '@backstage/ui';
+
+  -<Header title="My plugin" />
+  +<PluginHeader title="My plugin" />
+  ```
+
+  **Affected components:** plugin-header
+
+- 058ffd9: **BREAKING**: Removed `large` size variant from Button component as it was never implemented.
+
+  **Migration:**
+
+  ```diff
+  - <Button size="large">Click me</Button>
+  + <Button size="medium">Click me</Button>
+  ```
+
+  **Affected components:** Button
+
+- 110fec0: **BREAKING**: Removed link and tint color tokens, added new status foreground tokens, and improved Link component styling
+
+  The following color tokens have been removed:
+
+  - `--bui-fg-link` (and all related tokens: `-hover`, `-pressed`, `-disabled`)
+  - `--bui-fg-tint` (and all related tokens: `-hover`, `-pressed`, `-disabled`)
+  - `--bui-bg-tint` (and all related tokens: `-hover`, `-pressed`, `-disabled`)
+  - `--bui-border-tint` (and all related tokens)
+
+  **New Status Tokens:**
+
+  Added dedicated tokens for status colors that distinguish between usage on status backgrounds vs. standalone usage:
+
+  - `--bui-fg-danger-on-bg` / `--bui-fg-danger`
+  - `--bui-fg-warning-on-bg` / `--bui-fg-warning`
+  - `--bui-fg-success-on-bg` / `--bui-fg-success`
+  - `--bui-fg-info-on-bg` / `--bui-fg-info`
+
+  The `-on-bg` variants are designed for text on colored backgrounds, while the base variants are for standalone status indicators with improved visibility and contrast.
+
+  **Migration:**
+
+  For link colors, migrate to one of the following alternatives:
+
+  ```diff
+  .custom-link {
+  - color: var(--bui-fg-link);
+  + color: var(--bui-fg-info);  /* For informational links */
+  + /* or */
+  + color: var(--bui-fg-primary);  /* For standard text links */
+  }
+  ```
+
+  For tint colors (backgrounds, foregrounds, borders), migrate to appropriate status or neutral colors:
+
+  ```diff
+  .info-section {
+  - background: var(--bui-bg-tint);
+  + background: var(--bui-bg-info);  /* For informational sections */
+  + /* or */
+  + background: var(--bui-bg-neutral-1);  /* For neutral emphasis */
+  }
+  ```
+
+  If you're using status foreground colors on colored backgrounds, update to the new `-on-bg` tokens:
+
+  ```diff
+  .error-badge {
+  - color: var(--bui-fg-danger);
+  + color: var(--bui-fg-danger-on-bg);
+    background: var(--bui-bg-danger);
+  }
+  ```
+
+  **Affected components:** Link
+
+### Patch Changes
+
+- 644e303: Added a new `FullPage` component that fills the remaining viewport height below the `PluginHeader`.
+
+  ```tsx
+  <PluginHeader title="My Plugin" tabs={tabs} />
+  <FullPage>
+    {/* content fills remaining height */}
+  </FullPage>
+  ```
+
+  **Affected components:** FullPage
+
+- 44877e4: Fixed dark theme `--bui-fg-secondary` and `--bui-fg-disabled` tokens using black-based `oklch(0% ...)` instead of white-based `oklch(100% ...)`, making secondary and disabled text visible on dark backgrounds.
+- 350c948: Fixed Box component to forward HTML attributes to the underlying div element.
+
+  **Affected components:** Box
+
+- 7455dae: Use node prefix on native imports
+- c8ae765: Fixed nested Accordion icon state issue where the inner accordion's arrow icon would incorrectly show as expanded when only the outer accordion was expanded. The CSS selector now uses a direct parent selector to ensure the icon only responds to its own accordion's expanded state.
+
+  Affected components: Accordion
+
+- 4d1b7f4: Fixed CSS Module syntax to comply with Next.js 16 Turbopack validation by flattening nested dark theme selectors.
+
+  **Affected components:** Popover, Tooltip
+
+- 2c219b9: Added `destructive` prop to Button for dangerous actions like delete or remove. Works with all variants (primary, secondary, tertiary).
+
+  **Affected components:** Button
+
+- 5af9e14: Fixed `useDefinition` hook adding literal "undefined" class name when no className prop was passed.
+- 5c76d13: Allow `ref` as a prop on the `Tag` component
+
+  Affected components: Tag
+
+- ab25658: Cleaned up `useDefinition` `ownProps` types to remove never-typed ghost properties from autocomplete.
+- 741a98d: Allow data to be passed directly to the `useTable` hook using the property `data` instead of `getData()` for mode `"complete"`.
+
+  This simplifies usage as data changes, rather than having to perform a `useEffect` when data changes, and then reloading the data. It also happens immediately, so stale data won't remain until a rerender (with an internal async state change), so less flickering.
+
+  Affected components: Table
+
+- a0fe1b2: Fixed changing columns after first render from crashing. It now renders the table with the new column layout as columns change.
+
+  Affected components: Table
+
+- 508bd1a: Added new `Alert` component with support for status variants (info, success, warning, danger), icons, loading states, and custom actions.
+
+  Updated status color tokens for improved contrast and consistency across light and dark themes:
+
+  - Added new `--bui-bg-info` and `--bui-fg-info` tokens for info status
+  - Updated `--bui-bg-danger`, `--bui-fg-danger` tokens
+  - Updated `--bui-bg-warning`, `--bui-fg-warning` tokens
+  - Updated `--bui-bg-success`, `--bui-fg-success` tokens
+
+  **Affected components**: Alert
+
+- da30862: Fixed client-side navigation for container components by wrapping the container (not individual items) in RouterProvider. Components now conditionally provide routing context only when children have internal links, removing the Router context requirement when not needed. This also removes the need to wrap these components in MemoryRouter during tests when they are not using the `href` prop.
+
+  Additionally, when multiple tabs match the current URL via prefix matching, the tab with the most specific path (highest segment count) is now selected. For example, with URL `/catalog/users/john`, a tab with path `/catalog/users` is now selected over a tab with path `/catalog`.
+
+  Affected components: Tabs, Tab, TagGroup, Tag, Menu, MenuItem, MenuAutocomplete
+
+- 092c453: Fixed an infinite render loop in Tabs when navigating to a URL that doesn't match any tab `href`.
+- becf851: export PasswordField component
+- becee36: Migrated Accordion components to use `useDefinition` instead of `useStyles`, and added automatic background adaptation based on parent container context.
+- 5320aa8: Fixed components to not require a Router context when rendering without internal links.
+
+  Affected components: Link, ButtonLink, Row
+
+- a7e0d50: Updated `react-router-dom` peer dependency to `^6.30.2` and explicitly disabled v7 future flags to suppress deprecation warnings.
+- 8c39412: The Table component now wraps the react-aria-components `Table` with a `ResizableTableContainer` only if any column has a width property set. This means that column widths can adapt to the content otherwise (if no width is explicitly set).
+
+  Affected components: Table
+
+- cb090b4: Bump react-aria-components to v1.14.0
+- c429101: Fixed React 17 compatibility by using `useId` from `react-aria` instead of the built-in React hook which is only available in React 18+.
+- 74c5a76: Fixed Switch component disabled state styling to show `not-allowed` cursor and disabled text color.
+
+  **Affected components:** Switch
+
+- 20131c5: Migrated to use the standard `backstage-cli package build` for CSS bundling instead of a custom build script.
+- Updated dependencies
+  - @backstage/version-bridge@1.0.12
+
 ## 0.12.0-next.2
 
 ### Minor Changes

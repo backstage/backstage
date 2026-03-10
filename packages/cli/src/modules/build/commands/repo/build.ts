@@ -15,31 +15,60 @@
  */
 
 import chalk from 'chalk';
-import { Command, OptionValues } from 'commander';
+import { cli } from 'cleye';
 import { relative as relativePath } from 'node:path';
 import { buildPackages, getOutputsForRole } from '../../lib/builder';
-import { paths } from '../../../../lib/paths';
+import { targetPaths } from '@backstage/cli-common';
+
 import {
   BackstagePackage,
   PackageGraph,
   PackageRoles,
+  runConcurrentTasks,
 } from '@backstage/cli-node';
-import { runParallelWorkers } from '../../../../lib/parallel';
 import { buildFrontend } from '../../lib/buildFrontend';
 import { buildBackend } from '../../lib/buildBackend';
-import { createScriptOptionsParser } from '../../../../lib/optionsParser';
+import { createScriptOptionsParser } from '../../lib/optionsParser';
+import type { CommandContext } from '../../../../wiring/types';
 
-export async function command(opts: OptionValues, cmd: Command): Promise<void> {
+export default async ({ args, info }: CommandContext) => {
+  const {
+    flags: { all, since, minify },
+  } = cli(
+    {
+      help: info,
+      flags: {
+        all: {
+          type: Boolean,
+          description:
+            'Build all packages, including bundled app and backend packages.',
+        },
+        since: {
+          type: String,
+          description:
+            'Only build packages and their dev dependents that changed since the specified ref',
+        },
+        minify: {
+          type: Boolean,
+          description:
+            'Minify the generated code. Does not apply to app package (app is minified by default).',
+        },
+      },
+    },
+    undefined,
+    args,
+  );
+
   let packages = await PackageGraph.listTargetPackages();
 
   const webpack = process.env.LEGACY_WEBPACK_BUILD
     ? (require('webpack') as typeof import('webpack'))
     : undefined;
 
-  if (opts.since) {
+  if (since) {
     const graph = PackageGraph.fromPackages(packages);
     const changedPackages = await graph.listChangedPackages({
-      ref: opts.since,
+      ref: since,
       analyzeLockfile: true,
     });
     const withDevDependents = graph.collectPackageNames(
@@ -52,7 +81,14 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
   const apps = new Array<BackstagePackage>();
   const backends = new Array<BackstagePackage>();
 
-  const parseBuildScript = createScriptOptionsParser(cmd, ['package', 'build']);
+  const parseBuildScript = createScriptOptionsParser(['package', 'build'], {
+    role: { type: 'string' },
+    minify: { type: 'boolean' },
+    'skip-build-dependencies': { type: 'boolean' },
+    stats: { type: 'boolean' },
+    config: { type: 'string', multiple: true },
+    'module-federation': { type: 'boolean' },
+  });
 
   const options = packages.flatMap(pkg => {
     const role =
@@ -89,20 +125,20 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
       targetDir: pkg.dir,
       packageJson: pkg.packageJson,
       outputs,
-      logPrefix: `${chalk.cyan(relativePath(paths.targetRoot, pkg.dir))}: `,
+      logPrefix: `${chalk.cyan(relativePath(targetPaths.rootDir, pkg.dir))}: `,
       workspacePackages: packages,
-      minify: opts.minify ?? buildOptions.minify,
+      minify: minify ?? Boolean(buildOptions.minify),
     };
   });
 
   console.log('Building packages');
   await buildPackages(options);
 
-  if (opts.all) {
+  if (all) {
     console.log('Building apps');
-    await runParallelWorkers({
+    await runConcurrentTasks({
       items: apps,
-      parallelismFactor: 1 / 2,
+      concurrencyFactor: 1 / 2,
       worker: async pkg => {
         const buildOptions = parseBuildScript(pkg.packageJson.scripts?.build);
         if (!buildOptions) {
@@ -111,9 +147,12 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
           );
           return;
         }
+        const configPaths = buildOptions.config;
         await buildFrontend({
           targetDir: pkg.dir,
-          configPaths: (buildOptions.config as string[]) ?? [],
+          configPaths: Array.isArray(configPaths)
+            ? (configPaths as string[])
+            : [],
           writeStats: Boolean(buildOptions.stats),
           webpack,
         });
@@ -121,9 +160,9 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
     });
 
     console.log('Building backends');
-    await runParallelWorkers({
+    await runConcurrentTasks({
       items: backends,
-      parallelismFactor: 1 / 2,
+      concurrencyFactor: 1 / 2,
       worker: async pkg => {
         const buildOptions = parseBuildScript(pkg.packageJson.scripts?.build);
         if (!buildOptions) {
@@ -135,9 +174,9 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
         await buildBackend({
           targetDir: pkg.dir,
           skipBuildDependencies: true,
-          minify: opts.minify ?? buildOptions.minify,
+          minify: minify ?? Boolean(buildOptions.minify),
         });
       },
     });
   }
-}
+};

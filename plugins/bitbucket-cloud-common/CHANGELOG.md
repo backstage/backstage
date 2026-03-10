@@ -1,5 +1,27 @@
 # @backstage/plugin-bitbucket-cloud-common
 
+## 0.3.8-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.0.0-next.1
+
+## 0.3.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.21.0-next.0
+
+## 0.3.7
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- Updated dependencies
+  - @backstage/integration@1.20.0
+
 ## 0.3.7-next.1
 
 ### Patch Changes

@@ -1,5 +1,42 @@
 # @backstage/plugin-scaffolder-backend-module-bitbucket-cloud
 
+## 0.3.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.0.0-next.1
+  - @backstage/plugin-scaffolder-node@0.13.0-next.1
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-bitbucket-cloud-common@0.3.8-next.1
+
+## 0.3.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.21.0-next.0
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-bitbucket-cloud-common@0.3.8-next.0
+  - @backstage/plugin-scaffolder-node@0.12.6-next.0
+
+## 0.3.3
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- 14741e2: Fully enable API token functionality for Bitbucket-Cloud.
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/integration@1.20.0
+  - @backstage/plugin-bitbucket-cloud-common@0.3.7
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/plugin-scaffolder-node@0.12.5
+
 ## 0.3.3-next.1
 
 ### Patch Changes

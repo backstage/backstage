@@ -8,3 +8,4 @@ documentation: https://github.com/jfvilas/kubelog
 iconUrl: https://raw.githubusercontent.com/jfvilas/kubelog/master/src/assets/kubelog-logo.png
 npmPackageName: '@jfvilas/plugin-kubelog'
 addedDate: '2024-08-25'
+status: active

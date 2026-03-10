@@ -31,6 +31,7 @@ import {
   EntityHeaderBlueprint,
   EntityContentGroupDefinitions,
 } from '@backstage/plugin-catalog-react/alpha';
+import CategoryIcon from '@material-ui/icons/Category';
 import { rootRouteRef } from '../routes';
 import { useEntityFromUrl } from '../components/CatalogEntityPage/useEntityFromUrl';
 import { buildFilterFn } from './filter/FilterWrapper';
@@ -58,6 +59,8 @@ export const catalogPage = PageBlueprint.makeWithOverrides({
     return originalFactory({
       path: '/catalog',
       routeRef: rootRouteRef,
+      icon: <CategoryIcon />,
+      title: 'Catalog',
       loader: async () => {
         const { BaseCatalogPage } = await import('../components/CatalogPage');
         const filters = inputs.filters.map(filter =>
@@ -106,16 +109,21 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
               z.object({
                 title: z.string(),
                 icon: z.string().optional(),
+                aliases: z.array(z.string()).optional(),
+                contentOrder: z.enum(['title', 'natural']).optional(),
               }),
             ),
           )
           .optional(),
+      defaultContentOrder: z =>
+        z.enum(['title', 'natural']).optional().default('title'),
       showNavItemIcons: z => z.boolean().optional().default(false),
     },
   },
   factory(originalFactory, { config, inputs }) {
     return originalFactory({
       path: '/catalog/:namespace/:kind/:name',
+      title: 'Catalog Entity',
       // NOTE: The `convertLegacyRouteRef` call here ensures that this route ref
       // is mutated to support the new frontend system. Removing this conversion
       // is a potentially breaking change since this is a singleton and the
@@ -170,6 +178,7 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
                 header={header}
                 contextMenuItems={filteredMenuItems}
                 groupDefinitions={groupDefinitions}
+                defaultContentOrder={config.defaultContentOrder}
                 showNavItemIcons={config.showNavItemIcons}
               >
                 {inputs.contents.map(output => (

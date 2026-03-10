@@ -26,11 +26,22 @@ export { CellProfile } from './components/CellProfile';
 export { useTable } from './hooks/useTable';
 
 export type {
+  CellOwnProps,
   CellProps,
+  CellTextOwnProps,
   CellTextProps,
+  CellProfileOwnProps,
   CellProfileProps,
+  ColumnOwnProps,
   ColumnProps,
+  RowOwnProps,
+  RowProps,
+  TableBodyOwnProps,
+  TableBodyProps,
+  TableHeaderOwnProps,
+  TableHeaderProps,
   TableProps,
+  TableRootOwnProps,
   TableRootProps,
   TableItem,
   ColumnConfig,

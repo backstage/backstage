@@ -1,5 +1,58 @@
 # @backstage/repo-tools
 
+## 0.17.0-next.1
+
+### Minor Changes
+
+- 0fbcf23: Added support for OpenAPI 3.1 to all `schema openapi` commands. The commands now auto-detect the OpenAPI version from the spec file and use the appropriate generator, supporting both OpenAPI 3.0.x and 3.1.x specifications.
+
+### Patch Changes
+
+- 426edbe: Fixed `generate-catalog-info` command failing with "too many arguments" when invoked by lint-staged via the pre-commit hook.
+- d5779e5: Updated the CLI report parser to support cleye-style help output, and strip ANSI escape codes from captured output.
+- Updated dependencies
+  - @backstage/cli-common@0.2.0-next.1
+  - @backstage/cli-node@0.2.19-next.1
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config-loader@1.10.9-next.0
+  - @backstage/errors@1.2.7
+
+## 0.16.6-next.0
+
+### Patch Changes
+
+- 6738cf0: build(deps): bump `minimatch` from 9.0.5 to 10.2.1
+- 2a51546: Fixed prettier existence checks in OpenAPI commands to use `fs.pathExists` instead of checking the resolved path string, which was always truthy.
+- 70fc178: Migrated from deprecated `findPaths` to `targetPaths` and `findOwnPaths` from `@backstage/cli-common`.
+- de62a9d: Upgraded `commander` dependency from `^12.0.0` to `^14.0.3` across all CLI packages.
+- 18a946c: Updated `@microsoft/api-extractor` to `7.57.3` and added tests for `getTsDocConfig`
+- Updated dependencies
+  - @backstage/cli-common@0.2.0-next.0
+  - @backstage/cli-node@0.2.19-next.0
+  - @backstage/config-loader@1.10.9-next.0
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/errors@1.2.7
+
+## 0.16.4
+
+### Patch Changes
+
+- cd75ed0: Add newline to OpenAPI license template files.
+- 7455dae: Use node prefix on native imports
+- 4fc7bf0: Bump to tar v7
+- 6523040: Support Prettier v3 for api-reports
+- be7ebad: Updated package-docs exclude list to reflect renamed example app packages.
+- df59ee6: The `type-deps` command now follows relative imports and re-exports into declaration chunk files, and detects ambient global types such as the `jest` namespace.
+- a7e0d50: Updated `react-router-dom` peer dependency to `^6.30.2` and explicitly disabled v7 future flags to suppress deprecation warnings.
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/config-loader@1.10.8
+  - @backstage/cli-common@0.1.18
+  - @backstage/cli-node@0.2.18
+
 ## 0.16.4-next.2
 
 ### Patch Changes

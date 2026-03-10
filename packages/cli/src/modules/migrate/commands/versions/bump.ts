@@ -13,7 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { BACKSTAGE_JSON, bootstrapEnvProxyAgents } from '@backstage/cli-common';
+import {
+  BACKSTAGE_JSON,
+  bootstrapEnvProxyAgents,
+  targetPaths,
+} from '@backstage/cli-common';
 
 bootstrapEnvProxyAgents();
 
@@ -22,18 +26,20 @@ import fs from 'fs-extra';
 import chalk from 'chalk';
 import { minimatch } from 'minimatch';
 import semver from 'semver';
-import { OptionValues } from 'commander';
+import { cli } from 'cleye';
 import { isError, NotFoundError } from '@backstage/errors';
 import { resolve as resolvePath } from 'node:path';
-import { paths } from '../../../../lib/paths';
-import { getHasYarnPlugin } from '../../../../lib/yarnPlugin';
+
+import {
+  hasBackstageYarnPlugin,
+  Lockfile,
+  runConcurrentTasks,
+} from '@backstage/cli-node';
 import {
   fetchPackageInfo,
-  Lockfile,
   mapDependencies,
   YarnInfoInspectData,
-} from '../../../../lib/versioning';
-import { runParallelWorkers } from '../../../../lib/parallel';
+} from '../../lib/versioning/packages';
 import {
   getManifestByReleaseLine,
   getManifestByVersion,
@@ -42,6 +48,7 @@ import {
 import { migrateMovedPackages } from './migrate';
 import { runYarnInstall } from '../../lib/utils';
 import { run } from '@backstage/cli-common';
+import type { CommandContext } from '../../../../wiring/types';
 
 const DEP_TYPES = [
   'dependencies',
@@ -67,12 +74,41 @@ function extendsDefaultPattern(pattern: string): boolean {
   return minimatch('@backstage/', pattern.slice(0, -1));
 }
 
-export default async (opts: OptionValues) => {
-  const lockfilePath = paths.resolveTargetRoot('yarn.lock');
-  const lockfile = await Lockfile.load(lockfilePath);
-  const hasYarnPlugin = await getHasYarnPlugin();
+export default async ({ args, info }: CommandContext) => {
+  const {
+    flags: { pattern: patternFlag, release, skipInstall, skipMigrate },
+  } = cli(
+    {
+      help: info,
+      flags: {
+        pattern: {
+          type: String,
+          description: 'Override glob for matching packages to upgrade',
+        },
+        release: {
+          type: String,
+          description: 'Bump to a specific Backstage release line or version',
+          default: 'main',
+        },
+        skipInstall: {
+          type: Boolean,
+          description: 'Skips yarn install step',
+        },
+        skipMigrate: {
+          type: Boolean,
+          description: 'Skips migration of any moved packages',
+        },
+      },
+    },
+    undefined,
+    args,
+  );
 
-  let pattern = opts.pattern;
+  const lockfilePath = targetPaths.resolveRoot('yarn.lock');
+  const lockfile = await Lockfile.load(lockfilePath);
+  const yarnPluginEnabled = await hasBackstageYarnPlugin();
+
+  let pattern = patternFlag;
 
   if (!pattern) {
     console.log(`Using default pattern glob ${DEFAULT_PATTERN_GLOB}`);
@@ -91,15 +127,15 @@ export default async (opts: OptionValues) => {
     findTargetVersion = createStrictVersionFinder({
       releaseManifest,
     });
-  } else if (semver.valid(opts.release)) {
+  } else if (semver.valid(release)) {
     // Specific release specified. Be strict when resolving versions
-    releaseManifest = await getManifestByVersion({ version: opts.release });
+    releaseManifest = await getManifestByVersion({ version: release! });
     findTargetVersion = createStrictVersionFinder({
       releaseManifest,
     });
   } else {
     // Release line specified. Be lenient when resolving versions.
-    if (opts.release === 'next') {
+    if (release === 'next') {
       const next = await getManifestByReleaseLine({
         releaseLine: 'next',
         versionsBaseUrl: env.BACKSTAGE_VERSIONS_BASE_URL,
@@ -114,17 +150,17 @@ export default async (opts: OptionValues) => {
         : main;
     } else {
       releaseManifest = await getManifestByReleaseLine({
-        releaseLine: opts.release,
+        releaseLine: release!,
         versionsBaseUrl: env.BACKSTAGE_VERSIONS_BASE_URL,
       });
     }
     findTargetVersion = createVersionFinder({
-      releaseLine: opts.releaseLine,
+      releaseLine: release,
       releaseManifest,
     });
   }
 
-  if (hasYarnPlugin) {
+  if (yarnPluginEnabled) {
     console.log();
     console.log(
       `Updating yarn plugin to v${releaseManifest.releaseVersion}...`,
@@ -140,13 +176,13 @@ export default async (opts: OptionValues) => {
   }
 
   // First we discover all Backstage dependencies within our own repo
-  const dependencyMap = await mapDependencies(paths.targetDir, pattern);
+  const dependencyMap = await mapDependencies(targetPaths.dir, pattern);
 
   // Next check with the package registry to see which dependency ranges we need to bump
   const versionBumps = new Map<string, PkgVersionInfo[]>();
 
-  await runParallelWorkers({
-    parallelismFactor: 4,
+  await runConcurrentTasks({
+    concurrencyFactor: 4,
     items: dependencyMap.entries(),
     async worker([name, pkgs]) {
       let target: string;
@@ -182,8 +218,8 @@ export default async (opts: OptionValues) => {
     console.log();
 
     const breakingUpdates = new Map<string, { from: string; to: string }>();
-    await runParallelWorkers({
-      parallelismFactor: 4,
+    await runConcurrentTasks({
+      concurrencyFactor: 4,
       items: versionBumps.entries(),
       async worker([name, deps]) {
         const pkgPath = resolvePath(deps[0].location, 'package.json');
@@ -208,7 +244,7 @@ export default async (opts: OptionValues) => {
               const oldLockfileRange = await asLockfileVersion(oldRange);
 
               const useBackstageRange =
-                hasYarnPlugin &&
+                yarnPluginEnabled &&
                 // Only use backstage:^ versions if the package is present in
                 // the manifest for the release we're bumping to.
                 releaseManifest.packages.find(
@@ -248,7 +284,7 @@ export default async (opts: OptionValues) => {
     if (extendsDefaultPattern(pattern)) {
       await bumpBackstageJsonVersion(
         releaseManifest.releaseVersion,
-        hasYarnPlugin,
+        yarnPluginEnabled,
       );
     } else {
       console.log(
@@ -258,7 +294,7 @@ export default async (opts: OptionValues) => {
       );
     }
 
-    if (!opts.skipInstall) {
+    if (!skipInstall) {
       await runYarnInstall();
     } else {
       console.log();
@@ -266,14 +302,14 @@ export default async (opts: OptionValues) => {
       console.log(chalk.yellow(`Skipping yarn install`));
     }
 
-    if (!opts.skipMigrate) {
+    if (!skipMigrate) {
       console.log();
 
       const changed = await migrateMovedPackages({
-        pattern: opts.pattern,
+        pattern: patternFlag,
       });
 
-      if (changed && !opts.skipInstall) {
+      if (changed && !skipInstall) {
         await runYarnInstall();
       }
     }
@@ -313,7 +349,7 @@ export default async (opts: OptionValues) => {
       console.log();
     }
 
-    if (hasYarnPlugin) {
+    if (yarnPluginEnabled) {
       console.log();
       console.log(
         chalk.blue(
@@ -417,7 +453,7 @@ export function createVersionFinder(options: {
 }
 
 function getBackstageJsonPath() {
-  return paths.resolveTargetRoot(BACKSTAGE_JSON);
+  return targetPaths.resolveRoot(BACKSTAGE_JSON);
 }
 
 async function getBackstageJson() {

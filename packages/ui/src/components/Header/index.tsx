@@ -14,6 +14,13 @@
  * limitations under the License.
  */
 
-export { Header } from './Header';
-export { HeaderDefinition } from './definition';
-export type { HeaderProps, HeaderTab } from './types';
+export { Header, HeaderPage } from './Header';
+export { HeaderDefinition, HeaderPageDefinition } from './definition';
+export type {
+  HeaderOwnProps,
+  HeaderProps,
+  HeaderBreadcrumb,
+  HeaderPageOwnProps,
+  HeaderPageProps,
+  HeaderPageBreadcrumb,
+} from './types';

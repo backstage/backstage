@@ -15,8 +15,6 @@
  */
 
 import { Content, Header, HeaderTabs, Page } from '@backstage/core-components';
-import { useApi } from '@backstage/core-plugin-api';
-import { appTreeApiRef } from '@backstage/frontend-plugin-api';
 import { Flex } from '@backstage/ui';
 import { useCallback, useEffect, useMemo } from 'react';
 import { DetailedVisualizer } from './DetailedVisualizer';
@@ -31,31 +29,28 @@ import {
 } from 'react-router-dom';
 
 export function AppVisualizerPage() {
-  const appTreeApi = useApi(appTreeApiRef);
-  const { tree } = appTreeApi.getTree();
-
   const tabs = useMemo(
     () => [
       {
         id: 'tree',
         path: 'tree',
         label: 'Tree',
-        element: <TreeVisualizer tree={tree} />,
+        element: <TreeVisualizer />,
       },
       {
         id: 'detailed',
         path: 'detailed',
         label: 'Detailed',
-        element: <DetailedVisualizer tree={tree} />,
+        element: <DetailedVisualizer />,
       },
       {
         id: 'text',
         path: 'text',
         label: 'Text',
-        element: <TextVisualizer tree={tree} />,
+        element: <TextVisualizer />,
       },
     ],
-    [tree],
+    [],
   );
 
   const location = useLocation();

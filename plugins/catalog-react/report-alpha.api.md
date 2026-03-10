@@ -258,7 +258,6 @@ export const EntityContentBlueprint: ExtensionBlueprint<{
   };
   output:
     | ExtensionDataRef<string, 'core.routing.path', {}>
-    | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
     | ExtensionDataRef<
         RouteRef<AnyRouteRefParams>,
         'core.routing.ref',
@@ -266,6 +265,7 @@ export const EntityContentBlueprint: ExtensionBlueprint<{
           optional: true;
         }
       >
+    | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
     | ExtensionDataRef<
         (entity: Entity) => boolean,
         'catalog.entity-filter-function',
@@ -345,6 +345,8 @@ export type EntityContentGroupDefinitions = Record<
   {
     title: string;
     icon?: string | ReactElement;
+    aliases?: string[];
+    contentOrder?: 'title' | 'natural';
   }
 >;
 
@@ -556,9 +558,9 @@ export const EntityIconLinkBlueprint: ExtensionBlueprint<{
 }>;
 
 // @alpha (undocumented)
-export const EntityTableColumnTitle: ({
-  translationKey,
-}: EntityTableColumnTitleProps) =>
+export const EntityTableColumnTitle: (
+  input: EntityTableColumnTitleProps,
+) =>
   | 'System'
   | 'Title'
   | 'Domain'

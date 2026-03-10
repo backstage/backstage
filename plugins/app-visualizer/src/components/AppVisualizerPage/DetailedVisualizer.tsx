@@ -16,15 +16,23 @@
 
 import {
   AppNode,
-  AppTree,
   ExtensionDataRef,
   coreExtensionData,
   ApiBlueprint,
   NavItemBlueprint,
   useApi,
   routeResolutionApiRef,
+  appTreeApiRef,
 } from '@backstage/frontend-plugin-api';
-import { Box, Flex, Link, Text, Tooltip, TooltipTrigger } from '@backstage/ui';
+import {
+  Box,
+  Flex,
+  FullPage,
+  Link,
+  Text,
+  Tooltip,
+  TooltipTrigger,
+} from '@backstage/ui';
 import {
   RiInputField as InputIcon,
   RiCloseCircleLine as DisabledIcon,
@@ -351,24 +359,29 @@ function Legend() {
   );
 }
 
-export function DetailedVisualizer({ tree }: { tree: AppTree }) {
-  return (
-    <Flex direction="column" style={{ height: '100%', flex: '1 1 100%' }}>
-      <Box ml="4" mt="4" style={{ flex: '1 1 0', overflow: 'auto' }}>
-        <Extension node={tree.root} depth={0} />
-      </Box>
+export function DetailedVisualizer() {
+  const appTreeApi = useApi(appTreeApiRef);
+  const { tree } = appTreeApi.getTree();
 
-      <Box
-        m="2"
-        style={{
-          flex: '0 0 auto',
-          background: 'var(--bui-bg-neutral-1)',
-          border: '1px solid var(--bui-border-2)',
-          borderRadius: 'var(--bui-radius-2)',
-        }}
-      >
-        <Legend />
-      </Box>
-    </Flex>
+  return (
+    <FullPage>
+      <Flex direction="column" style={{ height: '100%', flex: '1 1 100%' }}>
+        <Box ml="4" mt="4" style={{ flex: '1 1 0', overflow: 'auto' }}>
+          <Extension node={tree.root} depth={0} />
+        </Box>
+
+        <Box
+          m="2"
+          style={{
+            flex: '0 0 auto',
+            background: 'var(--bui-bg-neutral-1)',
+            border: '1px solid var(--bui-border-2)',
+            borderRadius: 'var(--bui-radius-2)',
+          }}
+        >
+          <Legend />
+        </Box>
+      </Flex>
+    </FullPage>
   );
 }

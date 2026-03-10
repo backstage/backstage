@@ -1,5 +1,38 @@
 # @backstage/cli-node
 
+## 0.2.19-next.1
+
+### Patch Changes
+
+- 61cb976: Added `toString()` method to `Lockfile` for serializing lockfiles back to string format.
+- 3c811bf: Added `hasBackstageYarnPlugin` and `SuccessCache` exports, moved from `@backstage/cli`.
+- a9d23c4: Properly support `package.json` `workspaces` field
+- Updated dependencies
+  - @backstage/cli-common@0.2.0-next.1
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 0.2.19-next.0
+
+### Patch Changes
+
+- 06c2015: Added `runConcurrentTasks` and `runWorkerQueueThreads` utilities, moved from the `@backstage/cli` internal code.
+- 70fc178: Migrated from deprecated `findPaths` to `targetPaths` and `findOwnPaths` from `@backstage/cli-common`.
+- Updated dependencies
+  - @backstage/cli-common@0.2.0-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 0.2.18
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- 5e3ef57: Added support for the new `peerModules` metadata field in `package.json`. This field allows plugin packages to declare modules that should be installed alongside them for cross-plugin integrations. The field is validated by `backstage-cli repo fix --publish`.
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/cli-common@0.1.18
+
 ## 0.2.18-next.1
 
 ### Patch Changes

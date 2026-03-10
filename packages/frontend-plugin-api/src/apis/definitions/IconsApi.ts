@@ -15,7 +15,7 @@
  */
 
 import { createApiRef } from '../system';
-import { IconComponent } from '../../icons';
+import { IconComponent, IconElement } from '../../icons';
 
 /**
  * API for accessing app icons.
@@ -23,6 +23,14 @@ import { IconComponent } from '../../icons';
  * @public
  */
 export interface IconsApi {
+  /**
+   * Look up an icon element by key.
+   */
+  icon(key: string): IconElement | undefined;
+
+  /**
+   * @deprecated Use {@link IconsApi.icon} instead.
+   */
   getIcon(key: string): IconComponent | undefined;
 
   listIconKeys(): string[];

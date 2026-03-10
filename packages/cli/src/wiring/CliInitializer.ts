@@ -15,14 +15,25 @@
  */
 
 import { CommandGraph } from './CommandGraph';
-import { CliFeature, OpaqueCliPlugin } from './types';
+import { BackstageCommand, CliFeature, OpaqueCliPlugin } from './types';
 import { CommandRegistry } from './CommandRegistry';
 import { Command } from 'commander';
-import { version } from '../lib/version';
+import { version } from './version';
 import chalk from 'chalk';
-import { exitWithError } from '../lib/errors';
+import { exitWithError } from './errors';
 import { ForwardedError } from '@backstage/errors';
 import { isPromise } from 'node:util/types';
+
+function isNodeHidden(
+  node:
+    | { $$type: '@tree/leaf'; command: BackstageCommand }
+    | { $$type: '@tree/root'; children: unknown[] },
+): boolean {
+  if (node.$$type === '@tree/leaf') {
+    return !!node.command.deprecated || !!node.command.experimental;
+  }
+  return node.children.every(child => isNodeHidden(child as any));
+}
 
 type UninitializedFeature = CliFeature | Promise<{ default: CliFeature }>;
 
@@ -80,7 +91,9 @@ export class CliInitializer {
       const { node, argParser } = queue.shift()!;
       if (node.$$type === '@tree/root') {
         const treeParser = argParser
-          .command(`${node.name} [command]`)
+          .command(`${node.name} [command]`, {
+            hidden: isNodeHidden(node),
+          })
           .description(node.name);
 
         queue.push(
@@ -91,7 +104,9 @@ export class CliInitializer {
         );
       } else {
         argParser
-          .command(node.name, { hidden: !!node.command.deprecated })
+          .command(node.name, {
+            hidden: !!node.command.deprecated || !!node.command.experimental,
+          })
           .description(node.command.description)
           .helpOption(false)
           .allowUnknownOption(true)
@@ -118,13 +133,25 @@ export class CliInitializer {
                 }
                 positionalArgs.push(nonProcessArgs[argIndex]);
               }
-              await node.command.execute({
+              const context = {
                 args: [...positionalArgs, ...args.unknown],
                 info: {
                   usage: [programName, ...node.command.path].join(' '),
                   description: node.command.description,
                 },
-              });
+              };
+
+              if (typeof node.command.execute === 'function') {
+                await node.command.execute(context);
+              } else {
+                const mod = await node.command.execute.loader();
+                // Handle CJS double-wrapping of default exports
+                const fn =
+                  typeof mod.default === 'function'
+                    ? mod.default
+                    : (mod.default as any).default;
+                await fn(context);
+              }
               process.exit(0);
             } catch (error: unknown) {
               exitWithError(error);
@@ -144,7 +171,7 @@ export class CliInitializer {
       exitWithError(new ForwardedError('Unhandled rejection', rejection));
     });
 
-    program.parse(process.argv);
+    await program.parseAsync(process.argv);
   }
 }
 

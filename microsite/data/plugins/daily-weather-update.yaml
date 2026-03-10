@@ -8,3 +8,4 @@ documentation: https://github.com/Infosys/daily-weather-plugin/tree/main/plugins
 iconUrl: https://github.com/Infosys/daily-weather-plugin/blob/main/plugins/weather/src/docs/plugin-logo.png?raw=true
 npmPackageName: '@infosys_ltd/daily-weather-plugin'
 addedDate: '2025-04-16'
+status: active

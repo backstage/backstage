@@ -47,6 +47,7 @@ import {
   parseQueryEntitiesParams,
 } from './request';
 import { parseEntityFacetParams } from './request/parseEntityFacetParams';
+import { parseEntityFacetsQuery } from './request/parseEntityFacetsQuery';
 import { parseEntityOrderParams } from './request/parseEntityOrderParams';
 import { parseEntityPaginationParams } from './request/parseEntityPaginationParams';
 import {
@@ -61,6 +62,11 @@ import {
   locationInput,
   validateRequestBody,
 } from './util';
+import {
+  encodeLocationQueryCursor,
+  parseLocationQuery,
+} from './request/parseLocationQuery';
+import { parseEntityQuery } from './request/parseEntityQuery';
 
 /**
  * Options used by {@link createRouter}.
@@ -251,6 +257,59 @@ export async function createRouter(
           await auditorEvent?.fail({
             error: err,
           });
+          throw err;
+        }
+      })
+      .post('/entities/by-query', async (req, res) => {
+        const auditorEvent = await auditor.createEvent({
+          eventId: 'entity-fetch',
+          request: req,
+          meta: {
+            queryType: 'by-query',
+          },
+        });
+
+        try {
+          const credentials = await httpAuth.credentials(req);
+          const { fields: rawFields, ...parsed } = parseEntityQuery(
+            req.body ?? {},
+          );
+          const fields = rawFields?.length
+            ? parseEntityTransformParams({ fields: rawFields })
+            : undefined;
+
+          const { items, pageInfo, totalItems } =
+            await entitiesCatalog.queryEntities({
+              credentials,
+              fields,
+              ...parsed,
+            });
+
+          const meta = {
+            totalItems,
+            pageInfo: {
+              ...(pageInfo.nextCursor && {
+                nextCursor: encodeCursor(pageInfo.nextCursor),
+              }),
+              ...(pageInfo.prevCursor && {
+                prevCursor: encodeCursor(pageInfo.prevCursor),
+              }),
+            },
+          };
+
+          await auditorEvent?.success({ meta });
+
+          await writeEntitiesResponse({
+            res,
+            items,
+            alwaysUseObjectMode: enableRelationsCompatibility,
+            responseWrapper: entities => ({
+              items: entities,
+              ...meta,
+            }),
+          });
+        } catch (err) {
+          await auditorEvent?.fail({ error: err });
           throw err;
         }
       })
@@ -466,6 +525,7 @@ export async function createRouter(
           const { items } = await entitiesCatalog.entitiesBatch({
             entityRefs: request.entityRefs,
             filter: parseEntityFilterParams(req.query),
+            query: request.query,
             fields: parseEntityTransformParams(req.query, request.fields),
             credentials: await httpAuth.credentials(req),
           });
@@ -501,6 +561,31 @@ export async function createRouter(
           const response = await entitiesCatalog.facets({
             filter: parseEntityFilterParams(req.query),
             facets: parseEntityFacetParams(req.query),
+            credentials: await httpAuth.credentials(req),
+          });
+
+          await auditorEvent?.success();
+
+          res.status(200).json(response);
+        } catch (err) {
+          await auditorEvent?.fail({
+            error: err,
+          });
+          throw err;
+        }
+      })
+      .post('/entity-facets', async (req, res) => {
+        const auditorEvent = await auditor.createEvent({
+          eventId: 'entity-facets',
+          request: req,
+        });
+
+        try {
+          const { facets, query } = parseEntityFacetsQuery(req.body ?? {});
+
+          const response = await entitiesCatalog.facets({
+            query,
+            facets,
             credentials: await httpAuth.credentials(req),
           });
 
@@ -587,6 +672,50 @@ export async function createRouter(
           await auditorEvent?.fail({
             error: err,
           });
+          throw err;
+        }
+      })
+
+      .post('/locations/by-query', async (req, res) => {
+        const auditorEvent = await auditor.createEvent({
+          eventId: 'location-fetch',
+          request: req,
+          meta: {
+            queryType: 'by-query',
+          },
+        });
+
+        try {
+          const request = parseLocationQuery(req.body ?? {});
+          const result = await locationService.queryLocations({
+            ...request,
+            limit: request.limit + 1,
+            credentials: await httpAuth.credentials(req),
+          });
+
+          const hasNextPage = result.items.length > request.limit;
+          const items = hasNextPage
+            ? result.items.slice(0, request.limit)
+            : result.items;
+          const nextCursor = hasNextPage
+            ? encodeLocationQueryCursor({
+                limit: request.limit,
+                afterId: items[items.length - 1].id,
+                query: request.query,
+              })
+            : undefined;
+
+          await auditorEvent?.success();
+
+          res.status(200).json({
+            items,
+            totalItems: result.totalItems,
+            pageInfo: {
+              nextCursor,
+            },
+          });
+        } catch (err) {
+          await auditorEvent?.fail({ error: err });
           throw err;
         }
       })

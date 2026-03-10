@@ -8,3 +8,4 @@ documentation: https://github.com/backstage/community-plugins/blob/main/workspac
 iconUrl: /img/quay.svg
 npmPackageName: '@backstage-community/plugin-quay'
 addedDate: '2023-05-15'
+status: active

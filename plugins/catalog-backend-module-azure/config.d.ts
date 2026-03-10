@@ -45,6 +45,10 @@ export interface Config {
            */
           repository?: string;
           /**
+           * (Optional) The name of a branch to use. If not set, defaults to the default branch of the repository.
+           */
+          branch?: string;
+          /**
            * (Optional) Where to find catalog-info.yaml files. Wildcards are supported.
            * If not set, defaults to /catalog-info.yaml.
            */

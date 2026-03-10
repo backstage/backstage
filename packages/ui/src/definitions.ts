@@ -42,8 +42,11 @@ export {
   GridDefinition,
   GridItemDefinition,
 } from './components/Grid/definition';
-export { HeaderDefinition } from './components/Header/definition';
-export { HeaderPageDefinition } from './components/HeaderPage/definition';
+export { PluginHeaderDefinition } from './components/PluginHeader/definition';
+export {
+  HeaderDefinition,
+  HeaderPageDefinition,
+} from './components/Header/definition';
 export { LinkDefinition } from './components/Link/definition';
 export { MenuDefinition } from './components/Menu/definition';
 export { PasswordFieldDefinition } from './components/PasswordField/definition';

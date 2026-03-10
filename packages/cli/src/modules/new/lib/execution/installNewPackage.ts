@@ -16,7 +16,8 @@
 import fs from 'fs-extra';
 import upperFirst from 'lodash/upperFirst';
 import camelCase from 'lodash/camelCase';
-import { paths } from '../../../../lib/paths';
+import { targetPaths } from '@backstage/cli-common';
+
 import { Task } from '../tasks';
 import { PortableTemplateInput } from '../types';
 
@@ -52,7 +53,7 @@ export async function installNewPackage(input: PortableTemplateInput) {
 }
 
 async function addDependency(input: PortableTemplateInput, path: string) {
-  const pkgJsonPath = paths.resolveTargetRoot(path);
+  const pkgJsonPath = targetPaths.resolveRoot(path);
 
   const pkgJson = await fs.readJson(pkgJsonPath).catch(error => {
     if (error.code === 'ENOENT') {
@@ -84,7 +85,7 @@ async function tryAddFrontendLegacy(input: PortableTemplateInput) {
     );
   }
 
-  const appDefinitionPath = paths.resolveTargetRoot('packages/app/src/App.tsx');
+  const appDefinitionPath = targetPaths.resolveRoot('packages/app/src/App.tsx');
   if (!(await fs.pathExists(appDefinitionPath))) {
     return;
   }
@@ -120,7 +121,7 @@ async function tryAddFrontendLegacy(input: PortableTemplateInput) {
 }
 
 async function tryAddBackend(input: PortableTemplateInput) {
-  const backendIndexPath = paths.resolveTargetRoot(
+  const backendIndexPath = targetPaths.resolveRoot(
     'packages/backend/src/index.ts',
   );
   if (!(await fs.pathExists(backendIndexPath))) {

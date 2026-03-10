@@ -8,3 +8,4 @@ documentation: https://github.com/backstage/community-plugins/tree/main/workspac
 iconUrl: /img/cost-insights.png
 npmPackageName: '@backstage-community/plugin-cost-insights'
 addedDate: '2021-04-28'
+status: active

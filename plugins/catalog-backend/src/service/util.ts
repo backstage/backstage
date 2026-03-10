@@ -15,6 +15,7 @@
  */
 
 import { InputError, NotAllowedError } from '@backstage/errors';
+import { createZodV3FilterPredicateSchema } from '@backstage/filter-predicates';
 import { Request } from 'express';
 import lodash from 'lodash';
 import { z } from 'zod';
@@ -109,6 +110,8 @@ const entityFilterParser: z.ZodSchema<EntityFilter> = z.lazy(() =>
     .or(z.object({ allOf: z.array(entityFilterParser) })),
 );
 
+const filterPredicateSchema = createZodV3FilterPredicateSchema(z);
+
 export const cursorParser: z.ZodSchema<Cursor> = z.object({
   orderFields: z.array(
     z.object({ field: z.string(), order: z.enum(['asc', 'desc']) }),
@@ -122,7 +125,7 @@ export const cursorParser: z.ZodSchema<Cursor> = z.object({
   orderFieldValues: z.array(z.string().or(z.null())),
   filter: entityFilterParser.optional(),
   isPrevious: z.boolean(),
-  query: z.string().optional(),
+  query: filterPredicateSchema.optional(),
   firstSortFieldValues: z.array(z.string().or(z.null())).optional(),
   totalItems: z.number().optional(),
 });

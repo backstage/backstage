@@ -2,17 +2,20 @@ import { PropsTable } from '@/components/PropsTable';
 import { CodeBlock } from '@/components/CodeBlock';
 import { Snippet } from '@/components/Snippet';
 import {
-  WithAllOptionsAndTabs,
-  WithAllOptions,
-  WithHeaderPage,
+  WithEverything,
+  WithLongBreadcrumbs,
+  WithTabs,
+  WithCustomActions,
+  WithMenu,
 } from './components';
-import { headerPropDefs } from './props-definition';
+import { headerPagePropDefs } from './props-definition';
 import {
   usage,
-  simple,
   defaultSnippet,
   withTabs,
-  withHeaderPage,
+  withBreadcrumbs,
+  withCustomActions,
+  withMenu,
 } from './snippets';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
@@ -21,10 +24,10 @@ import { ChangelogComponent } from '@/components/ChangelogComponent';
 
 <PageTitle
   title="Header"
-  description="A plugin header with icon, title, custom actions, and navigation tabs."
+  description="A secondary header with title, breadcrumbs, tabs, and actions."
 />
 
-<Snippet py={4} preview={<WithAllOptionsAndTabs />} code={defaultSnippet} />
+<Snippet py={4} preview={<WithEverything />} code={defaultSnippet} />
 
 ## Usage
 
@@ -32,25 +35,31 @@ import { ChangelogComponent } from '@/components/ChangelogComponent';
 
 ## API reference
 
-<PropsTable data={headerPropDefs} />
+<PropsTable data={headerPagePropDefs} />
 
 ## Examples
 
-### Simple header
+### Breadcrumbs
 
-<Snippet py={4} preview={<WithAllOptions />} code={simple} open />
+Labels are truncated at 240px.
 
-### Header with tabs
+<Snippet open preview={<WithLongBreadcrumbs />} code={withBreadcrumbs} />
 
-Tabs use React Router and highlight automatically based on the current route.
+### Tabs
 
-<Snippet preview={<WithAllOptionsAndTabs />} code={withTabs} open />
+Tabs use React Router and highlight based on the current route.
 
-### Header with HeaderPage
+<Snippet open preview={<WithTabs />} code={withTabs} />
 
-Combine with [HeaderPage](/components/header-page) for multi-level navigation.
+### Custom actions
 
-<Snippet preview={<WithHeaderPage />} code={withHeaderPage} open />
+<Snippet open preview={<WithCustomActions />} code={withCustomActions} />
+
+### With menu
+
+Use `customActions` to add a dropdown menu.
+
+<Snippet open preview={<WithMenu />} code={withMenu} />
 
 <Theming definition={HeaderDefinition} />
 

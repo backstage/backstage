@@ -5,6 +5,7 @@
 ```ts
 import { AnyApiRef } from '@backstage/core-plugin-api';
 import { ApiHolder } from '@backstage/core-plugin-api';
+import { ApiRef } from '@backstage/frontend-plugin-api';
 import { ComponentType } from 'react';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { CustomFieldValidator } from '@backstage/plugin-scaffolder-react';
@@ -199,6 +200,9 @@ export type FormFieldExtensionData<
 };
 
 // @alpha (undocumented)
+export const formFieldsApiRef: ApiRef<ScaffolderFormFieldsApi>;
+
+// @alpha (undocumented)
 export type FormValidation = {
   [name: string]: FieldValidation | FormValidation;
 };
@@ -271,6 +275,12 @@ export type ScaffolderFormDecoratorContext<
     fn: (currentState: Record<string, string>) => Record<string, string>,
   ) => void;
 };
+
+// @alpha (undocumented)
+export interface ScaffolderFormFieldsApi {
+  // (undocumented)
+  loadFormFields(): Promise<FormField[]>;
+}
 
 // @alpha (undocumented)
 export function ScaffolderPageContextMenu(

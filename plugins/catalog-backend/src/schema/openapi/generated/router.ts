@@ -21,7 +21,7 @@ import { createValidatedOpenApiRouterFromGeneratedEndpointMap } from '@backstage
 import { EndpointMap } from './apis';
 
 export const spec = {
-  openapi: '3.0.3',
+  openapi: '3.1.0',
   info: {
     title: 'catalog',
     version: '1',
@@ -46,7 +46,6 @@ export const spec = {
         name: 'kind',
         in: 'path',
         required: true,
-        allowReserved: true,
         schema: {
           type: 'string',
         },
@@ -55,7 +54,6 @@ export const spec = {
         name: 'namespace',
         in: 'path',
         required: true,
-        allowReserved: true,
         schema: {
           type: 'string',
         },
@@ -64,7 +62,6 @@ export const spec = {
         name: 'name',
         in: 'path',
         required: true,
-        allowReserved: true,
         schema: {
           type: 'string',
         },
@@ -73,7 +70,6 @@ export const spec = {
         name: 'uid',
         in: 'path',
         required: true,
-        allowReserved: true,
         schema: {
           type: 'string',
         },
@@ -404,36 +400,42 @@ export const spec = {
           "The parts of the format that's common to all versions/kinds of entity.",
       },
       NullableEntity: {
-        type: 'object',
-        properties: {
-          relations: {
-            type: 'array',
-            items: {
-              $ref: '#/components/schemas/EntityRelation',
+        anyOf: [
+          {
+            type: 'object',
+            properties: {
+              relations: {
+                type: 'array',
+                items: {
+                  $ref: '#/components/schemas/EntityRelation',
+                },
+                description:
+                  'The relations that this entity has with other entities.',
+              },
+              spec: {
+                $ref: '#/components/schemas/JsonObject',
+              },
+              metadata: {
+                $ref: '#/components/schemas/EntityMeta',
+              },
+              kind: {
+                type: 'string',
+                description: 'The high level entity type being described.',
+              },
+              apiVersion: {
+                type: 'string',
+                description:
+                  'The version of specification format for this particular entity that\nthis is written against.',
+              },
             },
+            required: ['metadata', 'kind', 'apiVersion'],
             description:
-              'The relations that this entity has with other entities.',
+              "The parts of the format that's common to all versions/kinds of entity.",
           },
-          spec: {
-            $ref: '#/components/schemas/JsonObject',
+          {
+            type: 'null',
           },
-          metadata: {
-            $ref: '#/components/schemas/EntityMeta',
-          },
-          kind: {
-            type: 'string',
-            description: 'The high level entity type being described.',
-          },
-          apiVersion: {
-            type: 'string',
-            description:
-              'The version of specification format for this particular entity that\nthis is written against.',
-          },
-        },
-        required: ['metadata', 'kind', 'apiVersion'],
-        description:
-          "The parts of the format that's common to all versions/kinds of entity.",
-        nullable: true,
+        ],
       },
       EntityAncestryResponse: {
         type: 'object',
@@ -536,6 +538,32 @@ export const spec = {
         },
         required: ['target', 'type'],
         description: 'Holds the entity location information.',
+        additionalProperties: false,
+      },
+      LocationsQueryResponse: {
+        type: 'object',
+        properties: {
+          items: {
+            type: 'array',
+            items: {
+              $ref: '#/components/schemas/Location',
+            },
+            description: 'The list of locations paginated by a specific query.',
+          },
+          totalItems: {
+            type: 'number',
+          },
+          pageInfo: {
+            type: 'object',
+            properties: {
+              nextCursor: {
+                type: 'string',
+                description: 'The cursor for the next batch of locations.',
+              },
+            },
+          },
+        },
+        required: ['items', 'totalItems', 'pageInfo'],
         additionalProperties: false,
       },
       AnalyzeLocationExistingEntity: {
@@ -677,8 +705,14 @@ export const spec = {
               'A text to show to the user to inform about the choices made. Like, it could say\n"Found a CODEOWNERS file that covers this target, so we suggest leaving this\nfield empty; which would currently make it owned by X" where X is taken from the\ncodeowners file.',
           },
           value: {
-            type: 'string',
-            nullable: true,
+            oneOf: [
+              {
+                type: 'string',
+              },
+              {
+                type: 'null',
+              },
+            ],
           },
           state: {
             type: 'string',
@@ -1098,6 +1132,9 @@ export const spec = {
                       type: 'string',
                     },
                   },
+                  query: {
+                    $ref: '#/components/schemas/JsonObject',
+                  },
                 },
               },
               examples: {
@@ -1202,6 +1239,95 @@ export const spec = {
           },
         ],
       },
+      post: {
+        operationId: 'QueryEntitiesByPredicate',
+        tags: ['Entity'],
+        description: 'Query entities using predicate-based filters.',
+        responses: {
+          '200': {
+            description: 'Ok',
+            content: {
+              'application/json': {
+                schema: {
+                  $ref: '#/components/schemas/EntitiesQueryResponse',
+                },
+              },
+            },
+          },
+          '400': {
+            $ref: '#/components/responses/ErrorResponse',
+          },
+          default: {
+            $ref: '#/components/responses/ErrorResponse',
+          },
+        },
+        security: [
+          {},
+          {
+            JWT: [],
+          },
+        ],
+        requestBody: {
+          required: false,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  cursor: {
+                    type: 'string',
+                  },
+                  limit: {
+                    type: 'number',
+                  },
+                  offset: {
+                    type: 'number',
+                  },
+                  orderBy: {
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      required: ['field', 'order'],
+                      properties: {
+                        field: {
+                          type: 'string',
+                        },
+                        order: {
+                          type: 'string',
+                          enum: ['asc', 'desc'],
+                        },
+                      },
+                    },
+                  },
+                  fullTextFilter: {
+                    type: 'object',
+                    properties: {
+                      term: {
+                        type: 'string',
+                      },
+                      fields: {
+                        type: 'array',
+                        items: {
+                          type: 'string',
+                        },
+                      },
+                    },
+                  },
+                  fields: {
+                    type: 'array',
+                    items: {
+                      type: 'string',
+                    },
+                  },
+                  query: {
+                    $ref: '#/components/schemas/JsonObject',
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     },
     '/entity-facets': {
       get: {
@@ -1257,6 +1383,57 @@ export const spec = {
             $ref: '#/components/parameters/filter',
           },
         ],
+      },
+      post: {
+        operationId: 'QueryEntityFacetsByPredicate',
+        tags: ['Entity'],
+        description: 'Get entity facets using predicate-based filters.',
+        responses: {
+          '200': {
+            description: 'Ok',
+            content: {
+              'application/json': {
+                schema: {
+                  $ref: '#/components/schemas/EntityFacetsResponse',
+                },
+              },
+            },
+          },
+          '400': {
+            $ref: '#/components/responses/ErrorResponse',
+          },
+          default: {
+            $ref: '#/components/responses/ErrorResponse',
+          },
+        },
+        security: [
+          {},
+          {
+            JWT: [],
+          },
+        ],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                required: ['facets'],
+                properties: {
+                  facets: {
+                    type: 'array',
+                    items: {
+                      type: 'string',
+                    },
+                  },
+                  query: {
+                    $ref: '#/components/schemas/JsonObject',
+                  },
+                },
+              },
+            },
+          },
+        },
       },
     },
     '/locations': {
@@ -1371,6 +1548,55 @@ export const spec = {
         parameters: [],
       },
     },
+    '/locations/by-query': {
+      post: {
+        operationId: 'GetLocationsByQuery',
+        tags: ['Locations'],
+        description: 'Query for locations',
+        responses: {
+          '200': {
+            description: 'Ok',
+            content: {
+              'application/json': {
+                schema: {
+                  $ref: '#/components/schemas/LocationsQueryResponse',
+                },
+              },
+            },
+          },
+          default: {
+            $ref: '#/components/responses/ErrorResponse',
+          },
+        },
+        security: [
+          {},
+          {
+            JWT: [],
+          },
+        ],
+        requestBody: {
+          required: false,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  cursor: {
+                    type: 'string',
+                  },
+                  limit: {
+                    type: 'number',
+                  },
+                  query: {
+                    $ref: '#/components/schemas/JsonObject',
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
     '/locations/{id}': {
       get: {
         operationId: 'GetLocation',
@@ -1402,7 +1628,6 @@ export const spec = {
             in: 'path',
             name: 'id',
             required: true,
-            allowReserved: true,
             schema: {
               type: 'string',
             },
@@ -1435,7 +1660,6 @@ export const spec = {
             in: 'path',
             name: 'id',
             required: true,
-            allowReserved: true,
             schema: {
               type: 'string',
             },
@@ -1474,7 +1698,6 @@ export const spec = {
             in: 'path',
             name: 'kind',
             required: true,
-            allowReserved: true,
             schema: {
               type: 'string',
             },
@@ -1483,7 +1706,6 @@ export const spec = {
             in: 'path',
             name: 'namespace',
             required: true,
-            allowReserved: true,
             schema: {
               type: 'string',
             },
@@ -1492,7 +1714,6 @@ export const spec = {
             in: 'path',
             name: 'name',
             required: true,
-            allowReserved: true,
             schema: {
               type: 'string',
             },

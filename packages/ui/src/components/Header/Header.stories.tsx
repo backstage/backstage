@@ -17,10 +17,10 @@
 import preview from '../../../../../.storybook/preview';
 import type { StoryFn } from '@storybook/react-vite';
 import { Header } from './Header';
-import type { HeaderTab } from './types';
+import type { HeaderTab } from '../PluginHeader/types';
+import { MemoryRouter } from 'react-router-dom';
 import {
   Button,
-  HeaderPage,
   Container,
   Text,
   ButtonIcon,
@@ -28,14 +28,7 @@ import {
   Menu,
   MenuItem,
 } from '../../';
-import { MemoryRouter } from 'react-router-dom';
-import {
-  RiHeartLine,
-  RiEmotionHappyLine,
-  RiCloudy2Line,
-  RiMore2Line,
-} from '@remixicon/react';
-import { HeaderPageBreadcrumb } from '../HeaderPage/types';
+import { RiMore2Line } from '@remixicon/react';
 
 const meta = preview.meta({
   title: 'Backstage UI/Header',
@@ -44,12 +37,6 @@ const meta = preview.meta({
     layout: 'fullscreen',
   },
 });
-
-const withRouter = (Story: StoryFn) => (
-  <MemoryRouter>
-    <Story />
-  </MemoryRouter>
-);
 
 const tabs: HeaderTab[] = [
   {
@@ -79,24 +66,6 @@ const tabs: HeaderTab[] = [
   },
 ];
 
-const tabs2: HeaderTab[] = [
-  {
-    id: 'Banana',
-    label: 'Banana',
-    href: '/banana',
-  },
-  {
-    id: 'Apple',
-    label: 'Apple',
-    href: '/apple',
-  },
-  {
-    id: 'Orange',
-    label: 'Orange',
-    href: '/orange',
-  },
-];
-
 const menuItems = [
   {
     label: 'Settings',
@@ -117,20 +86,11 @@ const menuItems = [
   },
 ];
 
-const breadcrumbs: HeaderPageBreadcrumb[] = [
-  {
-    label: 'Home',
-    href: '/',
-  },
-  {
-    label: 'Dashboard',
-    href: '/dashboard',
-  },
-  {
-    label: 'Settings',
-    href: '/settings',
-  },
-];
+const withRouter = (Story: StoryFn) => (
+  <MemoryRouter>
+    <Story />
+  </MemoryRouter>
+);
 
 // Extract layout decorator as a reusable constant
 const layoutDecorator = [
@@ -158,35 +118,7 @@ const layoutDecorator = [
       >
         <Story />
         <Container>
-          <Text as="p">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
-            quos.
-          </Text>
-          <Text as="p">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
-            quos.
-          </Text>
-          <Text as="p">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
-            quos.
-          </Text>
-          <Text as="p">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
-            quos.
-          </Text>
-          <Text as="p">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
-            quos.
-          </Text>
-          <Text as="p">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
-            quos.
-          </Text>
-          <Text as="p">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
-            quos.
-          </Text>
-          <Text as="p">
+          <Text>
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
             quos.
           </Text>
@@ -194,34 +126,36 @@ const layoutDecorator = [
       </div>
     </>
   ),
-  withRouter,
 ];
 
 export const Default = meta.story({
-  args: {},
-  decorators: [withRouter],
+  args: {
+    title: 'Page Title',
+  },
 });
 
 export const WithTabs = meta.story({
   args: {
+    ...Default.input.args,
     tabs,
   },
   decorators: [withRouter],
 });
 
 export const WithCustomActions = meta.story({
-  args: {},
   decorators: [withRouter],
-  render: args => (
+  render: () => (
     <Header
-      {...args}
+      {...Default.input.args}
       customActions={
         <>
-          <ButtonIcon variant="tertiary" icon={<RiCloudy2Line />} />
-          <ButtonIcon variant="tertiary" icon={<RiEmotionHappyLine />} />
-          <ButtonIcon variant="tertiary" icon={<RiHeartLine />} />
+          <Button>Custom action</Button>
           <MenuTrigger>
-            <ButtonIcon variant="tertiary" icon={<RiMore2Line />} />
+            <ButtonIcon
+              variant="tertiary"
+              icon={<RiMore2Line />}
+              aria-label="More options"
+            />
             <Menu placement="bottom end">
               {menuItems.map(option => (
                 <MenuItem
@@ -240,158 +174,39 @@ export const WithCustomActions = meta.story({
   ),
 });
 
-export const WithAllOptionsAndTabs = WithCustomActions.extend({
-  args: {
-    tabs,
-  },
-});
-
-export const WithHeaderPage = meta.story({
-  args: {
-    ...WithAllOptionsAndTabs.input.args,
-  },
+export const WithBreadcrumbs = meta.story({
   decorators: [withRouter],
-  render: args => (
-    <>
-      <Header
-        {...args}
-        customActions={
-          <>
-            <ButtonIcon variant="tertiary" icon={<RiCloudy2Line />} />
-            <ButtonIcon variant="tertiary" icon={<RiEmotionHappyLine />} />
-            <ButtonIcon variant="tertiary" icon={<RiHeartLine />} />
-          </>
-        }
-      />
-      <HeaderPage
-        title="Page title"
-        tabs={tabs2}
-        customActions={<Button>Custom action</Button>}
-        breadcrumbs={breadcrumbs}
-      />
-    </>
-  ),
+  args: {
+    ...Default.input.args,
+    breadcrumbs: [{ label: 'Home', href: '/' }],
+  },
 });
 
-export const WithLayout = meta.story({
-  decorators: layoutDecorator,
-  render: args => (
-    <>
-      <Header {...args} tabs={tabs} />
-      <HeaderPage
-        title="Page title"
-        tabs={tabs2}
-        customActions={<Button>Custom action</Button>}
-        breadcrumbs={breadcrumbs}
-      />
-    </>
-  ),
-});
-
-export const WithLayoutNoTabs = meta.story({
-  decorators: layoutDecorator,
-  render: args => (
-    <>
-      <Header {...args} />
-      <HeaderPage title="Page title" tabs={tabs2} />
-    </>
-  ),
+export const WithLongBreadcrumbs = meta.story({
+  decorators: [withRouter],
+  args: {
+    ...Default.input.args,
+    breadcrumbs: [
+      { label: 'Home', href: '/' },
+      { label: 'Long Breadcrumb Name', href: '/long-breadcrumb' },
+    ],
+  },
 });
 
 export const WithEverything = meta.story({
-  args: {
-    tabs,
-    titleLink: '/',
-  },
-  decorators: layoutDecorator,
-  render: args => (
-    <>
-      <Header
-        {...args}
-        customActions={
-          <>
-            <ButtonIcon variant="tertiary" icon={<RiCloudy2Line />} />
-            <ButtonIcon variant="tertiary" icon={<RiEmotionHappyLine />} />
-            <ButtonIcon variant="tertiary" icon={<RiHeartLine />} />
-          </>
-        }
-      />
-      <HeaderPage
-        title="Page title"
-        tabs={tabs2}
-        customActions={
-          <>
-            <Button variant="secondary">Secondary</Button>
-            <Button variant="primary">Primary</Button>
-          </>
-        }
-      />
-    </>
+  decorators: [withRouter],
+  render: () => (
+    <Header
+      {...Default.input.args}
+      tabs={tabs}
+      customActions={<Button>Custom action</Button>}
+      breadcrumbs={[{ label: 'Home', href: '/' }]}
+    />
   ),
 });
 
-export const WithMockedURLCampaigns = meta.story({
-  args: {
-    tabs,
-  },
-  render: args => (
-    <MemoryRouter initialEntries={['/campaigns']}>
-      <Header {...args} />
-      <Container>
-        <Text as="p">
-          Current URL is mocked to be: <strong>/campaigns</strong>
-        </Text>
-        <Text as="p">
-          Notice how the "Campaigns" tab is selected (highlighted) because it
-          matches the current path.
-        </Text>
-      </Container>
-    </MemoryRouter>
-  ),
-});
-
-export const WithMockedURLIntegrations = meta.story({
-  args: {
-    tabs,
-  },
-  render: args => (
-    <MemoryRouter initialEntries={['/integrations']}>
-      <Header {...args} />
-      <Container>
-        <Text as="p">
-          Current URL is mocked to be: <strong>/integrations</strong>
-        </Text>
-        <Text as="p">
-          Notice how the "Integrations" tab is selected (highlighted) because it
-          matches the current path.
-        </Text>
-      </Container>
-    </MemoryRouter>
-  ),
-});
-
-export const WithMockedURLNoMatch = meta.story({
-  args: {
-    tabs,
-  },
-  render: args => (
-    <MemoryRouter initialEntries={['/some-other-page']}>
-      <Header {...args} />
-      <Container>
-        <Text as="p">
-          Current URL is mocked to be: <strong>/some-other-page</strong>
-        </Text>
-        <Text as="p">
-          No tab is selected because the current path doesn't match any tab's
-          href.
-        </Text>
-        <Text as="p">
-          Tabs without href (like "Overview", "Checks", "Tracks") fall back to
-          React Aria's internal state.
-        </Text>
-      </Container>
-    </MemoryRouter>
-  ),
+export const WithLayout = WithEverything.extend({
+  decorators: [...layoutDecorator],
 });
 
 export const WithTabsMatchingStrategies = meta.story({

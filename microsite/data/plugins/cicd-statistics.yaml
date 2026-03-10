@@ -8,3 +8,4 @@ documentation: https://github.com/backstage/community-plugins/tree/main/workspac
 iconUrl: /img/cicd-statistics.svg
 npmPackageName: '@backstage-community/plugin-cicd-statistics'
 addedDate: '2022-01-13'
+status: active

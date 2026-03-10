@@ -119,6 +119,36 @@ entity:
     defaultNamespace: payment
 ```
 
+### `autoSelect`
+
+Whether to automatically select the highlighted option when the input loses focus. Defaults to `true`.
+
+When set to `false`, users must explicitly select an option from the dropdown by clicking or pressing Enter. This prevents accidental selections when typing to filter options.
+
+- Default behavior with `autoSelect` as `true` (auto-selects on blur)
+
+```yaml
+entity:
+  title: Entity
+  type: string
+  description: Entity of the component
+  ui:field: EntityPicker
+  ui:options:
+    autoSelect: true
+```
+
+- Require explicit selection with `autoSelect` as `false`
+
+```yaml
+entity:
+  title: Entity
+  type: string
+  description: Entity of the component
+  ui:field: EntityPicker
+  ui:options:
+    autoSelect: false
+```
+
 ## MultiEntityPicker
 
 The input props that can be specified under `ui:options` for the `MultiEntityPicker` field extension.

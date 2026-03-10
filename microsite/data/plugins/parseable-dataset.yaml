@@ -7,3 +7,4 @@ documentation: https://github.com/parseablehq/backstage-plugin/blob/main/parseab
 iconUrl: https://raw.githubusercontent.com/parseablehq/.github/main/images/logo.svg
 npmPackageName: '@parseable/backstage-plugin-logstream'
 addedDate: '2025-07-14'
+status: active

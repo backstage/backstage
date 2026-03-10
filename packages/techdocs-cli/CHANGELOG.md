@@ -1,5 +1,41 @@
 # @techdocs/cli
 
+## 1.10.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.2.0-next.1
+  - @backstage/plugin-techdocs-node@1.14.3-next.1
+  - @backstage/backend-defaults@0.16.0-next.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+
+## 1.10.6-next.0
+
+### Patch Changes
+
+- 70fc178: Migrated from deprecated `findPaths` to `targetPaths` and `findOwnPaths` from `@backstage/cli-common`.
+- de62a9d: Upgraded `commander` dependency from `^12.0.0` to `^14.0.3` across all CLI packages.
+- Updated dependencies
+  - @backstage/cli-common@0.2.0-next.0
+  - @backstage/backend-defaults@0.15.3-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/plugin-techdocs-node@1.14.3-next.0
+
+## 1.10.5
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- 27798df: Migrate the Techdocs CLI embedded app to the New Frontend System (NFS)
+- 508d127: Updated dependency `find-process` to `^2.0.0`.
+- Updated dependencies
+  - @backstage/backend-defaults@0.15.2
+  - @backstage/plugin-techdocs-node@1.14.2
+  - @backstage/cli-common@0.1.18
+
 ## 1.10.5-next.1
 
 ### Patch Changes

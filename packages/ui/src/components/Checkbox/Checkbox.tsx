@@ -17,32 +17,29 @@
 import { forwardRef } from 'react';
 import { Checkbox as RACheckbox } from 'react-aria-components';
 import type { CheckboxProps } from './types';
-import { useStyles } from '../../hooks/useStyles';
+import { useDefinition } from '../../hooks/useDefinition';
 import { CheckboxDefinition } from './definition';
-import clsx from 'clsx';
-import styles from './Checkbox.module.css';
 import { RiCheckLine, RiSubtractLine } from '@remixicon/react';
 
 /** @public */
 export const Checkbox = forwardRef<HTMLLabelElement, CheckboxProps>(
   (props, ref) => {
-    const { classNames } = useStyles(CheckboxDefinition);
-    const { className, children, ...rest } = props;
+    const { ownProps, restProps, dataAttributes } = useDefinition(
+      CheckboxDefinition,
+      props,
+    );
+    const { classes, children } = ownProps;
 
     return (
       <RACheckbox
         ref={ref}
-        className={clsx(classNames.root, styles[classNames.root], className)}
-        {...rest}
+        className={classes.root}
+        {...dataAttributes}
+        {...restProps}
       >
         {({ isIndeterminate }) => (
           <>
-            <div
-              className={clsx(
-                classNames.indicator,
-                styles[classNames.indicator],
-              )}
-            >
+            <div className={classes.indicator}>
               {isIndeterminate ? (
                 <RiSubtractLine size={12} />
               ) : (

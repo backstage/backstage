@@ -1,5 +1,70 @@
 # @backstage/plugin-catalog-node
 
+## 2.1.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.14.0-next.1
+  - @backstage/backend-test-utils@1.11.1-next.1
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-common@1.1.8
+  - @backstage/plugin-permission-common@0.9.6
+  - @backstage/plugin-permission-node@0.10.11-next.0
+
+## 2.1.0-next.0
+
+### Minor Changes
+
+- bf71677: Added the ability for SCM events subscribers to mark the fact that they have taken actions based on events, which produces output metrics:
+
+  - `catalog.events.scm.actions` with attribute `action`: Counter for the number of actions actually taken by catalog internals or other subscribers, based on SCM events. The `action` is currently either `create`, `delete`, `refresh`, or `move`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/catalog-client@1.13.1-next.0
+  - @backstage/backend-test-utils@1.11.1-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-common@1.1.8
+  - @backstage/plugin-permission-common@0.9.6
+  - @backstage/plugin-permission-node@0.10.11-next.0
+
+## 2.0.0
+
+### Minor Changes
+
+- cfd8103: Promoted stable catalog extension points from alpha to main export. The following extension points are now exported from `@backstage/plugin-catalog-node` instead of `@backstage/plugin-catalog-node/alpha`:
+
+  - `catalogLocationsExtensionPoint` and `CatalogLocationsExtensionPoint`
+  - `catalogProcessingExtensionPoint` and `CatalogProcessingExtensionPoint`
+  - `catalogAnalysisExtensionPoint` and `CatalogAnalysisExtensionPoint`
+
+  The old alpha exports for these extension points are now deprecated with `@deprecated` markers pointing to the new stable exports. Please update your imports from `@backstage/plugin-catalog-node/alpha` to `@backstage/plugin-catalog-node`.
+
+  Note: The `catalogModelExtensionPoint`, `catalogPermissionExtensionPoint`, and related types remain in alpha.
+
+- b4e8249: Implemented support for the new `queryLocations` and `streamLocations` that allow paginated/streamed and filtered location queries
+- 34cc520: Introduced the `catalogScmEventsServiceRef`, along with `CatalogScmEventsService` and associated types. These allow communicating a unified set of events, that parts of the catalog can react to.
+
+### Patch Changes
+
+- 42abfb1: Updated `catalogServiceMock.mock` to use `createServiceMock` from `@backstage/backend-test-utils`, replacing the internal copy of `simpleMock`. Added `@backstage/backend-test-utils` as an optional peer dependency.
+- 7455dae: Use node prefix on native imports
+- Updated dependencies
+  - @backstage/backend-test-utils@1.11.0
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/catalog-client@1.13.0
+  - @backstage/plugin-permission-common@0.9.6
+  - @backstage/plugin-permission-node@0.10.10
+  - @backstage/plugin-catalog-common@1.1.8
+
 ## 2.0.0-next.1
 
 ### Patch Changes

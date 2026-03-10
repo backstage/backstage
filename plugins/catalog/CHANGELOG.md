@@ -1,5 +1,100 @@
 # @backstage/plugin-catalog
 
+## 1.34.0-next.1
+
+### Minor Changes
+
+- 4d58894: Added support for group alias IDs and configurable content ordering on the entity page. Groups can now declare `aliases` so that content targeting an aliased group is included in the group. A new `defaultContentOrder` option (default `title`) controls how content items within each group are sorted, with support for both a page-level default and per-group overrides.
+
+### Patch Changes
+
+- 07ba746: Fixed entity page tab groups not respecting the ordering from the `groups` configuration.
+- Updated dependencies
+  - @backstage/ui@0.13.0-next.1
+  - @backstage/catalog-client@1.14.0-next.1
+  - @backstage/plugin-catalog-react@2.1.0-next.1
+  - @backstage/plugin-scaffolder-common@2.0.0-next.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/core-compat-api@0.5.9-next.1
+  - @backstage/core-components@0.18.8-next.0
+  - @backstage/core-plugin-api@1.12.4-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.14.2-next.0
+  - @backstage/integration-react@1.2.16-next.1
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.12
+  - @backstage/plugin-catalog-common@1.1.8
+  - @backstage/plugin-permission-react@0.4.41-next.0
+  - @backstage/plugin-search-common@1.2.22
+  - @backstage/plugin-search-react@1.10.5-next.0
+  - @backstage/plugin-techdocs-common@0.1.1
+  - @backstage/plugin-techdocs-react@1.3.9-next.0
+
+## 1.33.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.12.1-next.0
+  - @backstage/plugin-search-react@1.10.5-next.0
+  - @backstage/frontend-plugin-api@0.14.2-next.0
+  - @backstage/catalog-client@1.13.1-next.0
+  - @backstage/plugin-catalog-react@2.0.1-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/core-compat-api@0.5.9-next.0
+  - @backstage/core-components@0.18.8-next.0
+  - @backstage/core-plugin-api@1.12.4-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/integration-react@1.2.16-next.0
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.12
+  - @backstage/plugin-catalog-common@1.1.8
+  - @backstage/plugin-permission-react@0.4.41-next.0
+  - @backstage/plugin-scaffolder-common@1.7.7-next.0
+  - @backstage/plugin-search-common@1.2.22
+  - @backstage/plugin-techdocs-common@0.1.1
+  - @backstage/plugin-techdocs-react@1.3.9-next.0
+
+## 1.33.0
+
+### Minor Changes
+
+- 491a06c: Add the ability to show icons for the tabs on the entity page (new frontend)
+- 05aac34: Migrated `DeleteEntityDialog` and `EntityOrphanWarning` components to Backstage UI.
+
+  The `deleteEntity.description` translation key no longer includes "Click here to delete" text. A new `deleteEntity.actionButtonTitle` key was added for the action button.
+
+### Patch Changes
+
+- 220d6c3: Add missing translation entries for catalog UI text.
+
+  This change adds translation keys and updates relevant UI components to use the correct localized labels and text in the catalog plugin. It ensures that catalog screens such as entity layout, tabs, search result items, table labels, and other UI elements correctly reference the i18n system for translation.
+
+  No functional behavior is changed aside from the improved internationalization support.
+
+- 8d4c48b: Fixed vertical spacing between tags in the catalog table.
+- 7feb83b: Adjusted to use the new `@backstage/filter-predicates` types for predicate expressions.
+- 018ca87: Added `title` and `icon` to the plugin definition for the new frontend system.
+- e8258d0: The default entity content layout still supports rendering summary cards at runtime for backward compatibility, but logs a console warning when they are detected to help identify where migration is needed.
+- a7e0d50: Updated `react-router-dom` peer dependency to `^6.30.2` and explicitly disabled v7 future flags to suppress deprecation warnings.
+- 75ac651: Migrated `EntityRelationWarning` and `EntityProcessingErrorsPanel` components from Material UI to Backstage UI.
+- Updated dependencies
+  - @backstage/ui@0.12.0
+  - @backstage/plugin-catalog-react@2.0.0
+  - @backstage/core-components@0.18.7
+  - @backstage/plugin-search-common@1.2.22
+  - @backstage/core-compat-api@0.5.8
+  - @backstage/frontend-plugin-api@0.14.0
+  - @backstage/catalog-client@1.13.0
+  - @backstage/core-plugin-api@1.12.3
+  - @backstage/plugin-techdocs-react@1.3.8
+  - @backstage/integration-react@1.2.15
+  - @backstage/plugin-permission-react@0.4.40
+  - @backstage/version-bridge@1.0.12
+  - @backstage/plugin-search-react@1.10.3
+  - @backstage/plugin-catalog-common@1.1.8
+  - @backstage/plugin-scaffolder-common@1.7.6
+
 ## 1.33.0-next.2
 
 ### Minor Changes

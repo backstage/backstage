@@ -8,3 +8,4 @@ documentation: https://github.com/backstage/community-plugins/tree/main/workspac
 iconUrl: https://wp-assets.airbrake.io/wp-content/uploads/2020/10/05222904/Square-white-A-on-Orange.png
 npmPackageName: '@backstage-community/plugin-airbrake'
 addedDate: '2022-01-10'
+status: active

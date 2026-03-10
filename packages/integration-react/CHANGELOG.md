@@ -1,5 +1,32 @@
 # @backstage/integration-react
 
+## 1.2.16-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.0.0-next.1
+  - @backstage/config@1.3.6
+  - @backstage/core-plugin-api@1.12.4-next.0
+
+## 1.2.16-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.21.0-next.0
+  - @backstage/config@1.3.6
+  - @backstage/core-plugin-api@1.12.4-next.0
+
+## 1.2.15
+
+### Patch Changes
+
+- a7e0d50: Updated `react-router-dom` peer dependency to `^6.30.2` and explicitly disabled v7 future flags to suppress deprecation warnings.
+- Updated dependencies
+  - @backstage/integration@1.20.0
+  - @backstage/core-plugin-api@1.12.3
+
 ## 1.2.15-next.2
 
 ### Patch Changes

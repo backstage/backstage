@@ -174,6 +174,7 @@ const apiDocsDefinitionEntityContent = EntityContentBlueprint.make({
   params: {
     path: '/definition',
     title: 'Definition',
+    group: 'documentation',
     filter: { kind: 'api' },
     loader: async () =>
       import('./components/ApiDefinitionCard').then(m => (
@@ -191,6 +192,7 @@ const apiDocsApisEntityContent = EntityContentBlueprint.make({
   params: {
     path: '/apis',
     title: 'APIs',
+    group: 'development',
     filter: { kind: 'component' },
     loader: async () =>
       import('./components/ApisCards').then(m => (
@@ -208,6 +210,8 @@ const apiDocsApisEntityContent = EntityContentBlueprint.make({
 
 export default createFrontendPlugin({
   pluginId: 'api-docs',
+  title: 'APIs',
+  icon: <AppIcon id="kind:api" />,
   info: { packageJson: () => import('../package.json') },
   routes: {
     root: rootRoute,

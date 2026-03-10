@@ -27,12 +27,14 @@ jest.mock('./railsNewRunner', () => {
   };
 });
 
-import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import { resolve as resolvePath } from 'node:path';
 import { createFetchRailsAction } from './index';
 import { fetchContents } from '@backstage/plugin-scaffolder-node';
-import { createMockDirectory } from '@backstage/backend-test-utils';
+import {
+  createMockDirectory,
+  mockServices,
+} from '@backstage/backend-test-utils';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { examples } from './index.examples';
 import yaml from 'yaml';
@@ -41,16 +43,7 @@ import { ContainerRunner } from './ContainerRunner';
 
 describe('fetch:rails', () => {
   const mockDir = createMockDirectory();
-  const integrations = ScmIntegrations.fromConfig(
-    new ConfigReader({
-      integrations: {
-        azure: [
-          { host: 'dev.azure.com', token: 'tokenlols' },
-          { host: 'myazurehostnotoken.com' },
-        ],
-      },
-    }),
-  );
+  const integrations = ScmIntegrations.fromConfig(mockServices.rootConfig());
 
   const mockContext = createMockActionContext({
     input: {

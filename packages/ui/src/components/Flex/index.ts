@@ -15,4 +15,4 @@
  */
 export { Flex } from './Flex';
 export { FlexDefinition } from './definition';
-export type { FlexProps } from './types';
+export type { FlexProps, FlexOwnProps } from './types';

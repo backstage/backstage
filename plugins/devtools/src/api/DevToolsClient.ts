@@ -70,7 +70,7 @@ export class DevToolsClient implements DevToolsApi {
   ): Promise<TriggerScheduledTask> {
     const baseUrl = `${await this.discoveryApi.getBaseUrl(plugin)}/`;
     const url = new URL(
-      `.backstage/scheduler/v1/tasks/${taskId}/trigger`,
+      `.backstage/scheduler/v1/tasks/${encodeURIComponent(taskId)}/trigger`,
       baseUrl,
     );
 

@@ -129,6 +129,53 @@ const createStepLogger = ({
   return { taskLogger };
 };
 
+/**
+ * Recursively compares two rendered objects and returns string values from
+ * `withSecrets` that differ from their counterpart in `withoutSecrets`.
+ * These are values that were influenced by secret interpolation and should
+ * be added as log redactions.
+ */
+function collectSecretRedactions(
+  withSecrets: unknown,
+  withoutSecrets: unknown,
+): string[] {
+  if (typeof withSecrets === 'string') {
+    return withSecrets !== withoutSecrets ? [withSecrets] : [];
+  }
+  if (Array.isArray(withSecrets)) {
+    const other = Array.isArray(withoutSecrets) ? withoutSecrets : [];
+    return withSecrets.flatMap((val, i) =>
+      collectSecretRedactions(val, other[i]),
+    );
+  }
+  if (withSecrets && typeof withSecrets === 'object') {
+    const other =
+      withoutSecrets && typeof withoutSecrets === 'object'
+        ? (withoutSecrets as Record<string, unknown>)
+        : {};
+    return Object.entries(withSecrets as Record<string, unknown>).flatMap(
+      ([key, val]) => collectSecretRedactions(val, other[key]),
+    );
+  }
+  return [];
+}
+
+/**
+ * Extracts all string values from a nested object structure.
+ * Used as a fallback when the comparison render fails.
+ */
+function extractStringValues(obj: unknown): string[] {
+  if (typeof obj === 'string') return [obj];
+  if (Array.isArray(obj)) return obj.flatMap(extractStringValues);
+  if (obj && typeof obj === 'object') {
+    return Object.entries(obj).flatMap(([key, val]) => [
+      key,
+      ...extractStringValues(val),
+    ]);
+  }
+  return [];
+}
+
 const isActionAuthorized = createConditionAuthorizer(
   Object.values(scaffolderActionRules),
 );
@@ -270,6 +317,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
       if (
         step.if === false ||
         (typeof step.if === 'string' &&
+          step.each === undefined &&
           !isTruthy(this.render(step.if, context, renderTemplate)))
       ) {
         await stepTrack.skipFalsy();
@@ -340,20 +388,18 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
         }
       }
 
+      const preIterationContext = {
+        ...context,
+        environment: {
+          parameters: this.environment?.parameters ?? {},
+          secrets: this.environment?.secrets ?? {},
+        },
+        secrets: task.secrets ?? {},
+      };
+
       const resolvedEach =
         step.each &&
-        this.render(
-          step.each,
-          {
-            ...context,
-            environment: {
-              parameters: this.environment?.parameters || {},
-              secrets: this.environment?.secrets ?? {},
-            },
-            secrets: task?.secrets ?? {},
-          },
-          renderTemplate,
-        );
+        this.render(step.each, preIterationContext, renderTemplate);
 
       if (step.each && !resolvedEach) {
         throw new InputError(
@@ -367,26 +413,29 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
               each: { key, value },
             }))
           : [{}]
-      ).map(i => ({
-        ...i,
-        // Secrets are only passed when templating the input to actions for security reasons
-        input: step.input
-          ? this.render(
-              step.input,
-              {
-                ...context,
-                environment: {
-                  parameters: this.environment?.parameters ?? {},
-                  secrets: this.environment?.secrets ?? {},
-                },
-                secrets: task.secrets ?? {},
-                ...i,
-              },
-              renderTemplate,
-            )
-          : {},
-      }));
+      ).map(i => {
+        const fullContext = { ...preIterationContext, ...i };
+        // Evaluate if condition once per iteration, only when using 'each'
+        const shouldRun =
+          !('each' in i) ||
+          !step.if ||
+          isTruthy(this.render(step.if, fullContext, renderTemplate));
+
+        return {
+          ...i,
+          shouldRun,
+          // Secrets are only passed when templating the input to actions for security reasons
+          input: step.input
+            ? this.render(step.input, fullContext, renderTemplate)
+            : {},
+        };
+      });
       for (const iteration of iterations) {
+        if (!iteration.shouldRun) {
+          // No need to check schema or authorization for iterations that will not run
+          continue;
+        }
+
         const actionId = `${action.id}${
           iteration.each ? `[${iteration.each.key}]` : ''
         }`;
@@ -424,13 +473,56 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
 
       for (const iteration of iterations) {
         if (iteration.each) {
+          if (!iteration.shouldRun) {
+            taskLogger.info(
+              `Skipping step each: ${JSON.stringify(
+                iteration.each,
+                (k, v) => (k ? String(v) : v),
+                0,
+              )}`,
+            );
+            continue;
+          }
           taskLogger.info(
             `Running step each: ${JSON.stringify(
               iteration.each,
-              (k, v) => (k ? v.toString() : v),
+              (k, v) => (k ? String(v) : v),
               0,
             )}`,
           );
+        }
+
+        // Redact any rendered values that were influenced by secrets.
+        // Re-render the input without secrets and diff against the real render
+        // to find values that changed due to secret interpolation.
+        if (step.input) {
+          const hasSecrets =
+            Object.keys(task.secrets ?? {}).length > 0 ||
+            Object.keys(this.environment?.secrets ?? {}).length > 0;
+
+          if (hasSecrets) {
+            try {
+              const contextNoSecrets = {
+                ...preIterationContext,
+                ...(iteration.each ? { each: iteration.each } : {}),
+                secrets: {},
+                environment: {
+                  ...preIterationContext.environment,
+                  secrets: {},
+                },
+              };
+              const inputWithoutSecrets = this.render(
+                step.input,
+                contextNoSecrets,
+                renderTemplate,
+              );
+              taskLogger.addRedactions(
+                collectSecretRedactions(iteration.input, inputWithoutSecrets),
+              );
+            } catch {
+              taskLogger.addRedactions(extractStringValues(iteration.input));
+            }
+          }
         }
 
         await action.handler({

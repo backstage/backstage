@@ -17,6 +17,8 @@ import {
   NotFoundErrorPage as SwappableNotFoundErrorPage,
   Progress as SwappableProgress,
   ErrorDisplay as SwappableErrorDisplay,
+  PageLayout as SwappablePageLayout,
+  type PageLayoutProps,
 } from '@backstage/frontend-plugin-api';
 import { SwappableComponentBlueprint } from '@backstage/plugin-app-react';
 import {
@@ -24,7 +26,9 @@ import {
   ErrorPanel,
   Progress as ProgressComponent,
 } from '@backstage/core-components';
+import { PluginHeader } from '@backstage/ui';
 import Button from '@material-ui/core/Button';
+import { useMemo } from 'react';
 
 export const Progress = SwappableComponentBlueprint.make({
   name: 'core-progress',
@@ -60,6 +64,42 @@ export const ErrorDisplay = SwappableComponentBlueprint.make({
             </Button>
           </ErrorPanel>
         );
+      },
+    }),
+});
+
+export const PageLayout = SwappableComponentBlueprint.make({
+  name: 'core-page-layout',
+  params: define =>
+    define({
+      component: SwappablePageLayout,
+      loader: () => (props: PageLayoutProps) => {
+        const { title, icon, noHeader, headerActions, tabs, children } = props;
+        const tabsWithMatchStrategy = useMemo(
+          () =>
+            tabs?.map(tab => ({
+              ...tab,
+              matchStrategy: 'prefix' as const,
+            })),
+          [tabs],
+        );
+
+        if (tabsWithMatchStrategy) {
+          return (
+            <>
+              {!noHeader && (
+                <PluginHeader
+                  title={title}
+                  icon={icon}
+                  tabs={tabsWithMatchStrategy}
+                  customActions={headerActions}
+                />
+              )}
+              {children}
+            </>
+          );
+        }
+        return <>{children}</>;
       },
     }),
 });

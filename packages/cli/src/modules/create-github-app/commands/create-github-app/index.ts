@@ -18,14 +18,28 @@ import fs from 'fs-extra';
 import chalk from 'chalk';
 import { stringify as stringifyYaml } from 'yaml';
 import inquirer, { Question, Answers } from 'inquirer';
-import { paths } from '../../../../lib/paths';
+import { targetPaths } from '@backstage/cli-common';
+import { cli } from 'cleye';
+
 import { GithubCreateAppServer } from './GithubCreateAppServer';
 import openBrowser from 'react-dev-utils/openBrowser';
+import type { CommandContext } from '../../../../wiring/types';
 
 // This is an experimental command that at this point does not support GitHub Enterprise
 // due to lacking support for creating apps from manifests.
 // https://docs.github.com/en/free-pro-team@latest/developers/apps/creating-a-github-app-from-a-manifest
-export default async (org: string) => {
+export default async ({ args, info }: CommandContext) => {
+  const { _: positionals } = cli(
+    {
+      help: { ...info, usage: `${info.usage} <github-org>` },
+      parameters: ['<github-org>'],
+    },
+    undefined,
+    args,
+  );
+
+  const org = positionals[0];
+
   const answers: Answers = await inquirer.prompt({
     name: 'appType',
     type: 'checkbox',
@@ -62,7 +76,7 @@ export default async (org: string) => {
 
   const fileName = `github-app-${slug}-credentials.yaml`;
   const content = `# Name: ${name}\n${stringifyYaml(config)}`;
-  await fs.writeFile(paths.resolveTargetRoot(fileName), content);
+  await fs.writeFile(targetPaths.resolveRoot(fileName), content);
   console.log(`GitHub App configuration written to ${chalk.cyan(fileName)}`);
   console.log(
     chalk.yellow(

@@ -14,12 +14,19 @@
  * limitations under the License.
  */
 
+export {
+  AnalyticsImplementationBlueprint,
+  type AnalyticsImplementationFactory,
+} from './AnalyticsImplementationBlueprint';
 export { AppRootWrapperBlueprint } from './AppRootWrapperBlueprint';
 export { IconBundleBlueprint } from './IconBundleBlueprint';
 export { NavContentBlueprint } from './NavContentBlueprint';
 export type {
   NavContentComponent,
   NavContentComponentProps,
+  NavContentNavItem,
+  NavContentNavItemsWithComponent,
+  NavContentNavItems,
 } from './NavContentBlueprint';
 export { RouterBlueprint } from './RouterBlueprint';
 export { SignInPageBlueprint } from './SignInPageBlueprint';

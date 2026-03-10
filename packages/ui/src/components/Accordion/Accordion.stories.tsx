@@ -21,6 +21,7 @@ import {
   AccordionGroup,
 } from './Accordion';
 import { Box } from '../Box';
+import { Button } from '../Button';
 import { Flex } from '../Flex';
 import { Text } from '../Text';
 
@@ -187,41 +188,63 @@ export const AutoBg = meta.story({
           <AccordionTrigger title="Toggle Panel" />
           <AccordionPanel>
             <Content />
+            <Flex mt="3" gap="2">
+              <Button>Action</Button>
+              <Button variant="secondary">Cancel</Button>
+            </Flex>
           </AccordionPanel>
         </Accordion>
       </Flex>
-      <Box bg="neutral-1" p="4">
+      <Box bg="neutral" p="4">
         <Text>Neutral 1 container</Text>
         <Flex mt="2">
           <Accordion defaultExpanded>
             <AccordionTrigger title="Auto (neutral-2)" />
             <AccordionPanel>
               <Content />
+              <Flex mt="3" gap="2">
+                <Button>Action</Button>
+                <Button variant="secondary">Cancel</Button>
+              </Flex>
             </AccordionPanel>
           </Accordion>
         </Flex>
       </Box>
-      <Box bg="neutral-2" p="4">
-        <Text>Neutral 2 container</Text>
-        <Flex mt="2">
-          <Accordion defaultExpanded>
-            <AccordionTrigger title="Auto (neutral-3)" />
-            <AccordionPanel>
-              <Content />
-            </AccordionPanel>
-          </Accordion>
-        </Flex>
+      <Box bg="neutral">
+        <Box bg="neutral" p="4">
+          <Text>Neutral 2 container</Text>
+          <Flex mt="2">
+            <Accordion defaultExpanded>
+              <AccordionTrigger title="Auto (neutral-3)" />
+              <AccordionPanel>
+                <Content />
+                <Flex mt="3" gap="2">
+                  <Button>Action</Button>
+                  <Button variant="secondary">Cancel</Button>
+                </Flex>
+              </AccordionPanel>
+            </Accordion>
+          </Flex>
+        </Box>
       </Box>
-      <Box bg="neutral-3" p="4">
-        <Text>Neutral 3 container</Text>
-        <Flex mt="2">
-          <Accordion defaultExpanded>
-            <AccordionTrigger title="Auto (neutral-4)" />
-            <AccordionPanel>
-              <Content />
-            </AccordionPanel>
-          </Accordion>
-        </Flex>
+      <Box bg="neutral">
+        <Box bg="neutral">
+          <Box bg="neutral" p="4">
+            <Text>Neutral 3 container</Text>
+            <Flex mt="2">
+              <Accordion defaultExpanded>
+                <AccordionTrigger title="Auto (neutral-3)" />
+                <AccordionPanel>
+                  <Content />
+                  <Flex mt="3" gap="2">
+                    <Button>Action</Button>
+                    <Button variant="secondary">Cancel</Button>
+                  </Flex>
+                </AccordionPanel>
+              </Accordion>
+            </Flex>
+          </Box>
+        </Box>
       </Box>
     </Flex>
   ),

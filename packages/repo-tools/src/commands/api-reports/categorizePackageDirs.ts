@@ -15,7 +15,7 @@
  */
 
 import fs from 'fs-extra';
-import { paths as cliPaths } from '../../lib/paths';
+import { targetPaths } from '@backstage/cli-common';
 
 export async function categorizePackageDirs(packageDirs: string[]) {
   const dirs = packageDirs.slice();
@@ -34,7 +34,7 @@ export async function categorizePackageDirs(packageDirs: string[]) {
           }
 
           const pkgJson = await fs
-            .readJson(cliPaths.resolveTargetRoot(dir, 'package.json'))
+            .readJson(targetPaths.resolveRoot(dir, 'package.json'))
             .catch(error => {
               if (error.code === 'ENOENT') {
                 return undefined;
@@ -45,9 +45,7 @@ export async function categorizePackageDirs(packageDirs: string[]) {
           if (!role) {
             return; // Ignore packages without roles
           }
-          if (
-            await fs.pathExists(cliPaths.resolveTargetRoot(dir, 'migrations'))
-          ) {
+          if (await fs.pathExists(targetPaths.resolveRoot(dir, 'migrations'))) {
             sqlPackageDirs.push(dir);
           }
           // TODO(Rugvip): Inlined packages are ignored because we can't handle @internal exports

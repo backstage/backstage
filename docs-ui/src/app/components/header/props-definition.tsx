@@ -1,28 +1,19 @@
 import { classNamePropDefs, type PropDef } from '@/utils/propDefs';
 import { Chip } from '@/components/Chip';
 
-export const headerPropDefs: Record<string, PropDef> = {
-  icon: {
-    type: 'enum',
-    values: ['ReactNode'],
-    description: 'Icon displayed before the title.',
-  },
+export const headerPagePropDefs: Record<string, PropDef> = {
   title: {
     type: 'string',
-    description: 'Main heading text for the header.',
-  },
-  titleLink: {
-    type: 'string',
-    description: 'URL the title links to when clicked.',
+    description: 'Page heading displayed in the header.',
   },
   customActions: {
     type: 'enum',
     values: ['ReactNode'],
-    description: 'Custom elements rendered in the toolbar area.',
+    description: 'Custom elements rendered in the actions area.',
   },
   tabs: {
     type: 'complex',
-    description: 'Navigation tabs displayed below the toolbar.',
+    description: 'Navigation tabs displayed below the title.',
     complexType: {
       name: 'HeaderTab[]',
       properties: {
@@ -44,6 +35,7 @@ export const headerPropDefs: Record<string, PropDef> = {
         matchStrategy: {
           type: "'exact' | 'prefix'",
           required: false,
+          default: "'exact'",
           description: (
             <>
               Route matching strategy. Use <Chip>exact</Chip> for exact path
@@ -54,10 +46,24 @@ export const headerPropDefs: Record<string, PropDef> = {
       },
     },
   },
-  onTabSelectionChange: {
-    type: 'enum',
-    values: ['(key: Key) => void'],
-    description: 'Handler called when the selected tab changes.',
+  breadcrumbs: {
+    type: 'complex',
+    description: 'Breadcrumb trail displayed above the title.',
+    complexType: {
+      name: 'HeaderBreadcrumb[]',
+      properties: {
+        label: {
+          type: 'string',
+          required: true,
+          description: 'Display text for the breadcrumb. Truncated at 240px.',
+        },
+        href: {
+          type: 'string',
+          required: true,
+          description: 'URL for the breadcrumb link.',
+        },
+      },
+    },
   },
   ...classNamePropDefs,
 };

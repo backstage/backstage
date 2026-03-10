@@ -1,0 +1,1 @@
+Fixes the search component to register the first search that happens on initial navigation to the search page.

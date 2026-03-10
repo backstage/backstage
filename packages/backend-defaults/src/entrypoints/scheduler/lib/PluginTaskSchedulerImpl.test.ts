@@ -27,6 +27,7 @@ import {
   parseDuration,
 } from './PluginTaskSchedulerImpl';
 import { createDeferred } from '@backstage/types';
+import { metricsServiceMock } from '@backstage/backend-test-utils/alpha';
 
 jest.setTimeout(60_000);
 
@@ -56,6 +57,7 @@ describe('PluginTaskManagerImpl', () => {
       'myplugin',
       async () => knex,
       mockServices.logger.mock(),
+      metricsServiceMock.mock(),
       {
         addShutdownHook,
         addBeforeShutdownHook: jest.fn(),

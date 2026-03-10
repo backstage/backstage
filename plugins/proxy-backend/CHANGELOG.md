@@ -1,5 +1,23 @@
 # @backstage/plugin-proxy-backend
 
+## 0.6.11-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/types@1.2.2
+  - @backstage/plugin-proxy-node@0.1.13-next.0
+
+## 0.6.10
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0
+  - @backstage/plugin-proxy-node@0.1.12
+
 ## 0.6.10-next.0
 
 ### Patch Changes

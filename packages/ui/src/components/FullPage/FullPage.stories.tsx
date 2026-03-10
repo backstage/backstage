@@ -17,10 +17,10 @@
 import preview from '../../../../../.storybook/preview';
 import type { StoryFn } from '@storybook/react-vite';
 import { FullPage } from './FullPage';
-import { Header } from '../Header';
+import { PluginHeader } from '../PluginHeader';
 import { Container } from '../Container';
 import { Text } from '../Text';
-import type { HeaderTab } from '../Header/types';
+import type { HeaderTab } from '../PluginHeader/types';
 import { MemoryRouter } from 'react-router-dom';
 
 const meta = preview.meta({
@@ -57,7 +57,7 @@ export const Default = meta.story({
   decorators: [withRouter],
   render: () => (
     <>
-      <Header title="My Plugin" />
+      <PluginHeader title="My Plugin" />
       <FullPage style={{ backgroundColor: '#c3f0ff' }}>
         <Container>
           <Text as="p">
@@ -73,7 +73,7 @@ export const WithScrollableContent = meta.story({
   decorators: [withRouter],
   render: () => (
     <>
-      <Header title="My Plugin" />
+      <PluginHeader title="My Plugin" />
       <FullPage>
         <Container>
           <Text as="h2" variant="title-medium">
@@ -94,7 +94,7 @@ export const WithTabs = meta.story({
   decorators: [withRouter],
   render: () => (
     <>
-      <Header title="My Plugin" tabs={tabs} />
+      <PluginHeader title="My Plugin" tabs={tabs} />
       <FullPage>
         <Container>
           <Text as="p">

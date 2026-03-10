@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 import { createCliPlugin } from '../../wiring/factory';
-import { Command } from 'commander';
-import { lazy } from '../../lib/lazy';
 
 export default createCliPlugin({
   pluginId: 'new',
@@ -23,16 +21,7 @@ export default createCliPlugin({
     reg.addCommand({
       path: ['create-github-app'],
       description: 'Create new GitHub App in your organization.',
-      execute: async ({ args }) => {
-        const command = new Command();
-        const defaultCommand = command
-          .argument('<github-org>')
-          .action(
-            lazy(() => import('./commands/create-github-app'), 'default'),
-          );
-
-        await defaultCommand.parseAsync(args, { from: 'user' });
-      },
+      execute: { loader: () => import('./commands/create-github-app') },
     });
   },
 });

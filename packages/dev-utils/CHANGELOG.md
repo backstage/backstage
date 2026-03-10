@@ -1,5 +1,50 @@
 # @backstage/dev-utils
 
+## 1.1.21-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.13.0-next.1
+  - @backstage/plugin-catalog-react@2.1.0-next.1
+  - @backstage/app-defaults@1.7.6-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/core-app-api@1.19.6-next.0
+  - @backstage/core-components@0.18.8-next.0
+  - @backstage/core-plugin-api@1.12.4-next.0
+  - @backstage/integration-react@1.2.16-next.1
+  - @backstage/theme@0.7.2
+
+## 1.1.21-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.12.1-next.0
+  - @backstage/plugin-catalog-react@2.0.1-next.0
+  - @backstage/app-defaults@1.7.6-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/core-app-api@1.19.6-next.0
+  - @backstage/core-components@0.18.8-next.0
+  - @backstage/core-plugin-api@1.12.4-next.0
+  - @backstage/integration-react@1.2.16-next.0
+  - @backstage/theme@0.7.2
+
+## 1.1.20
+
+### Patch Changes
+
+- a7e0d50: Updated `react-router-dom` peer dependency to `^6.30.2` and explicitly disabled v7 future flags to suppress deprecation warnings.
+- Updated dependencies
+  - @backstage/ui@0.12.0
+  - @backstage/plugin-catalog-react@2.0.0
+  - @backstage/core-components@0.18.7
+  - @backstage/core-app-api@1.19.5
+  - @backstage/theme@0.7.2
+  - @backstage/core-plugin-api@1.12.3
+  - @backstage/integration-react@1.2.15
+  - @backstage/app-defaults@1.7.5
+
 ## 1.1.20-next.2
 
 ### Patch Changes

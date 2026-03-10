@@ -23,11 +23,14 @@ import { CatalogScmEventsServiceSubscriber } from '@backstage/plugin-catalog-nod
 import { Knex } from 'knex';
 import { applyDatabaseMigrations } from '../database/migrations';
 import {
+  DbFinalEntitiesRow,
   DbRefreshKeysRow,
   DbRefreshStateRow,
   DbSearchRow,
 } from '../database/tables';
 import { GenericScmEventRefreshProvider } from './GenericScmEventRefreshProvider';
+
+jest.setTimeout(60_000);
 
 describe('GenericScmEventRefreshProvider', () => {
   const databases = TestDatabases.create();
@@ -47,6 +50,7 @@ describe('GenericScmEventRefreshProvider', () => {
         return { unsubscribe: () => {} };
       }),
       publish: jest.fn(),
+      markEventActionTaken: jest.fn(),
     };
 
     const store = new GenericScmEventRefreshProvider(knex, scmEvents, {
@@ -74,6 +78,16 @@ describe('GenericScmEventRefreshProvider', () => {
       next_update_at: new Date('1980-01-01T00:00:00Z'),
       last_discovery_at: new Date('1980-01-01T00:00:00Z'),
       result_hash: 'h',
+    });
+  }
+
+  async function insertFinalEntity(knex: Knex, id: string) {
+    await knex<DbFinalEntitiesRow>('final_entities').insert({
+      entity_id: id,
+      entity_ref: `k:ns/${id}`,
+      hash: 'h',
+      stitch_ticket: '',
+      final_entity: '{}',
     });
   }
 
@@ -106,6 +120,11 @@ describe('GenericScmEventRefreshProvider', () => {
           key: 'url:https://github.com/backstage/demo/tree/master/folder/catalog-info.yaml2',
         },
       ]);
+
+      // Insert final_entities for entities that will have search rows
+      await insertFinalEntity(knex, '4');
+      await insertFinalEntity(knex, '5');
+      await insertFinalEntity(knex, '6');
 
       await knex<DbSearchRow>('search').insert([
         // match exact blob in location
@@ -185,6 +204,13 @@ describe('GenericScmEventRefreshProvider', () => {
           key: 'url:https://github.com/backstage/demo2/tree/master/folder/catalog-info.yaml',
         },
       ]);
+
+      // Insert final_entities for entities that will have search rows
+      await insertFinalEntity(knex, '4');
+      await insertFinalEntity(knex, '5');
+      await insertFinalEntity(knex, '6');
+      await insertFinalEntity(knex, '7');
+      await insertFinalEntity(knex, '8');
 
       await knex<DbSearchRow>('search').insert([
         // match blob in location

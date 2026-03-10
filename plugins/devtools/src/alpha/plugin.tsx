@@ -88,6 +88,8 @@ export const devToolsNavItem = NavItemBlueprint.make({
 /** @alpha */
 export default createFrontendPlugin({
   pluginId: 'devtools',
+  title: 'DevTools',
+  icon: <BuildIcon />,
   info: { packageJson: () => import('../../package.json') },
   routes: {
     root: rootRouteRef,

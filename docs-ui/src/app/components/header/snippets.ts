@@ -1,61 +1,56 @@
 export const usage = `import { Header } from '@backstage/ui';
 
-<Header title="My plugin" />`;
+<Header title="Page Title" />`;
 
 export const defaultSnippet = `<Header
-  title="My plugin"
-  titleLink="/"
+  title="Page Title"
+  breadcrumbs={[
+    { label: 'Home', href: '/' },
+    { label: 'Dashboard', href: '/dashboard' },
+  ]}
   tabs={[
     { id: 'overview', label: 'Overview', href: '/overview' },
-    { id: 'checks', label: 'Checks', href: '/checks' },
-    { id: 'tracks', label: 'Tracks', href: '/tracks' },
+    { id: 'settings', label: 'Settings', href: '/settings' },
   ]}
   customActions={
     <>
-      <ButtonIcon variant="tertiary" icon={<RiCloudy2Line />} />
-      <ButtonIcon variant="tertiary" icon={<RiEmotionHappyLine />} />
-      <ButtonIcon variant="tertiary" icon={<RiHeartLine />} />
+      <Button variant="secondary">Secondary</Button>
+      <Button variant="primary">Primary</Button>
     </>
   }
 />`;
 
-export const simple = `<Header
-  title="My plugin"
-  titleLink="/"
-  customActions={
-    <>
-      <ButtonIcon variant="tertiary" icon={<RiCloudy2Line />} />
-      <ButtonIcon variant="tertiary" icon={<RiEmotionHappyLine />} />
-      <ButtonIcon variant="tertiary" icon={<RiHeartLine />} />
-    </>
-  }
+export const withBreadcrumbs = `<Header
+  title="Page Title"
+  breadcrumbs={[
+    { label: 'Home', href: '/' },
+    { label: 'Long Breadcrumb Name', href: '/long-breadcrumb' },
+  ]}
 />`;
 
 export const withTabs = `<Header
-  title="My plugin"
-  titleLink="/"
+  title="Page Title"
   tabs={[
     { id: 'overview', label: 'Overview', href: '/overview' },
     { id: 'checks', label: 'Checks', href: '/checks' },
     { id: 'tracks', label: 'Tracks', href: '/tracks' },
-    { id: 'campaigns', label: 'Campaigns', href: '/campaigns' },
-    { id: 'integrations', label: 'Integrations', href: '/integrations' },
   ]}
 />`;
 
-export const withHeaderPage = `<Header
-  title="My plugin"
-  titleLink="/"
-  tabs={[
-    { id: 'overview', label: 'Overview', href: '/overview' },
-    { id: 'checks', label: 'Checks', href: '/checks' },
-  ]}
-/>
-<HeaderPage
-  title="Page title"
-  tabs={[
-    { id: 'banana', label: 'Banana', href: '/banana' },
-    { id: 'apple', label: 'Apple', href: '/apple' },
-  ]}
+export const withCustomActions = `<Header
+  title="Page Title"
   customActions={<Button>Custom action</Button>}
+/>`;
+
+export const withMenu = `<Header
+  title="Page Title"
+  customActions={
+    <MenuTrigger>
+      <ButtonIcon variant="tertiary" icon={<RiMore2Line />} />
+      <Menu placement="bottom end">
+        <MenuItem href="/settings">Settings</MenuItem>
+        <MenuItem onAction={() => {}}>Logout</MenuItem>
+      </Menu>
+    </MenuTrigger>
+  }
 />`;
