@@ -118,8 +118,8 @@ export async function collectPortableTemplateInput(
         : knownFrontendPluginPackages;
 
     pluginPackage =
-      knownPackages[answers.pluginId as string] ??
-      (answers.pluginPackage as string);
+      (answers.pluginPackage as string) ??
+      knownPackages[answers.pluginId as string];
   }
 
   const roleParams = {
