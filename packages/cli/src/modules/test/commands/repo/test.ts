@@ -147,6 +147,7 @@ export default async ({ args, info }: CommandContext) => {
   const { flags: opts } = cli(
     {
       help: info,
+      booleanFlagNegation: true,
       flags: {
         since: {
           type: String,

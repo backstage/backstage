@@ -20,6 +20,6 @@ import { revertProductionPack } from '../../lib/packager/productionPack';
 import type { CommandContext } from '../../../../wiring/types';
 
 export default async ({ args, info }: CommandContext) => {
-  cli({ help: info }, undefined, args);
+  cli({ help: info, booleanFlagNegation: true }, undefined, args);
   await revertProductionPack(targetPaths.dir);
 };

@@ -27,6 +27,7 @@ export default async ({ args, info }: CommandContext) => {
   } = cli(
     {
       help: info,
+      booleanFlagNegation: true,
       flags: {
         package: { type: String, description: 'Package to print config for' },
         lax: {
