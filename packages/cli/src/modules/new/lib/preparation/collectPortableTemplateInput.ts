@@ -29,7 +29,7 @@ import { PortableTemplate } from '../types';
 import { resolvePackageParams } from './resolvePackageParams';
 import { knownBackendPluginPackageNameByPluginId } from '../../../maintenance/commands/repo/fix';
 
-const knownFrontendPluginPackages: Record<string, string> = {
+const knownFrontendPluginPackageNameByPluginId: Record<string, string> = {
   app: '@backstage/plugin-app',
   auth: '@backstage/plugin-auth',
   catalog: '@backstage/plugin-catalog',
@@ -101,7 +101,7 @@ export async function collectPortableTemplateInput(
     const knownPackages =
       template.role === 'backend-plugin-module'
         ? knownBackendPluginPackageNameByPluginId
-        : knownFrontendPluginPackages;
+        : knownFrontendPluginPackageNameByPluginId;
 
     pluginPackage =
       (answers.pluginPackage as string) ??
@@ -187,8 +187,8 @@ export function pluginPackagePrompt(
 ): DistinctQuestion {
   const knownPackages =
     role === 'backend-plugin-module'
-      ? knownBackendPluginPackages
-      : knownFrontendPluginPackages;
+      ? knownBackendPluginPackageNameByPluginId
+      : knownFrontendPluginPackageNameByPluginId;
 
   const examplePackage =
     role === 'backend-plugin-module'
