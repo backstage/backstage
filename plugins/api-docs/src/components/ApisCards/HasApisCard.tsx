@@ -15,8 +15,11 @@
  */
 
 import { RELATION_HAS_PART } from '@backstage/catalog-model';
-import { ColumnConfig } from '@backstage/ui';
-import { EntityRelationCard, EntityRow } from '@backstage/plugin-catalog-react';
+
+import {
+  EntityRelationCard,
+  EntityColumnConfig,
+} from '@backstage/plugin-catalog-react';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { apiDocsTranslationRef } from '../../translation';
 import { getHasApisColumnConfig } from './presets';
@@ -26,7 +29,7 @@ import { getHasApisColumnConfig } from './presets';
  */
 export const HasApisCard = (props: {
   title?: string;
-  columnConfig?: ColumnConfig<EntityRow>[];
+  columnConfig?: EntityColumnConfig[];
 }) => {
   const { t } = useTranslationRef(apiDocsTranslationRef);
   const {

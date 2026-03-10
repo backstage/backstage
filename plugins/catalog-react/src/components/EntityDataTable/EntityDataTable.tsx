@@ -15,13 +15,14 @@
  */
 
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
-import { Table, ColumnConfig } from '@backstage/ui';
-import { useMemo, ReactNode } from 'react';
-import { EntityRow } from './columnFactories';
+import { Table, useTable } from '@backstage/ui';
+import { useCallback, useMemo, ReactNode } from 'react';
+import { EntityRow, EntityColumnConfig } from './columnFactories';
+import { SortDescriptor } from '@backstage/ui';
 
 /** @public */
 export interface EntityDataTableProps {
-  columnConfig: ColumnConfig<EntityRow>[];
+  columnConfig: EntityColumnConfig[];
   data: Entity[];
   loading?: boolean;
   error?: Error;
@@ -41,10 +42,32 @@ export function EntityDataTable(props: EntityDataTableProps) {
     [data],
   );
 
+  const sortFn = useCallback(
+    (items: EntityRow[], sort: SortDescriptor) => {
+      const column = columnConfig.find(c => c.id === sort.column);
+      if (!column?.sortValue) {
+        return items;
+      }
+      const getValue = column.sortValue;
+      const direction = sort.direction === 'descending' ? -1 : 1;
+      return [...items].sort(
+        (a, b) => getValue(a).localeCompare(getValue(b)) * direction,
+      );
+    },
+    [columnConfig],
+  );
+
+  const { tableProps } = useTable({
+    mode: 'complete',
+    data: tableData,
+    sortFn,
+    paginationOptions: { pageSize: Infinity },
+  });
+
   return (
     <Table
       columnConfig={columnConfig}
-      data={tableData}
+      {...tableProps}
       loading={loading}
       error={error}
       emptyState={emptyState}

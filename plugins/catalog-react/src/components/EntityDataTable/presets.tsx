@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-import { ColumnConfig } from '@backstage/ui';
-import { columnFactories, EntityRow } from './columnFactories';
+import { columnFactories, EntityColumnConfig } from './columnFactories';
 
 /** @public */
-export const componentColumnConfig: ColumnConfig<EntityRow>[] = [
+export const componentColumnConfig: EntityColumnConfig[] = [
   columnFactories.createEntityRefColumn({ defaultKind: 'component' }),
   columnFactories.createOwnerColumn(),
   columnFactories.createSpecTypeColumn(),
@@ -27,7 +26,7 @@ export const componentColumnConfig: ColumnConfig<EntityRow>[] = [
 ];
 
 /** @public */
-export const resourceColumnConfig: ColumnConfig<EntityRow>[] = [
+export const resourceColumnConfig: EntityColumnConfig[] = [
   columnFactories.createEntityRefColumn({ defaultKind: 'resource' }),
   columnFactories.createOwnerColumn(),
   columnFactories.createSpecTypeColumn(),
@@ -36,14 +35,14 @@ export const resourceColumnConfig: ColumnConfig<EntityRow>[] = [
 ];
 
 /** @public */
-export const systemColumnConfig: ColumnConfig<EntityRow>[] = [
+export const systemColumnConfig: EntityColumnConfig[] = [
   columnFactories.createEntityRefColumn({ defaultKind: 'system' }),
   columnFactories.createOwnerColumn(),
   columnFactories.createMetadataDescriptionColumn(),
 ];
 
 /** @public */
-export const domainColumnConfig: ColumnConfig<EntityRow>[] = [
+export const domainColumnConfig: EntityColumnConfig[] = [
   columnFactories.createEntityRefColumn({ defaultKind: 'domain' }),
   columnFactories.createOwnerColumn(),
   columnFactories.createMetadataDescriptionColumn(),

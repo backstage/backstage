@@ -15,10 +15,10 @@
  */
 
 import { RELATION_HAS_PART } from '@backstage/catalog-model';
-import { ColumnConfig } from '@backstage/ui';
+
 import {
   EntityRelationCard,
-  EntityRow,
+  EntityColumnConfig,
   componentColumnConfig,
   componentEntityHelpLink,
 } from '@backstage/plugin-catalog-react';
@@ -28,7 +28,7 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 /** @public */
 export interface HasComponentsCardProps {
   title?: string;
-  columnConfig?: ColumnConfig<EntityRow>[];
+  columnConfig?: EntityColumnConfig[];
 }
 
 export function HasComponentsCard(props: HasComponentsCardProps) {

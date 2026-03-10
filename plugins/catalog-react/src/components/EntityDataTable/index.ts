@@ -17,7 +17,7 @@
 export { EntityDataTable } from './EntityDataTable';
 export type { EntityDataTableProps } from './EntityDataTable';
 export { columnFactories as entityDataTableColumns } from './columnFactories';
-export type { EntityRow } from './columnFactories';
+export type { EntityRow, EntityColumnConfig } from './columnFactories';
 export {
   componentColumnConfig,
   resourceColumnConfig,

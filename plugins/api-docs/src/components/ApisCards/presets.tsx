@@ -18,10 +18,10 @@ import { ApiEntity } from '@backstage/catalog-model';
 import { TableColumn } from '@backstage/core-components';
 import {
   EntityTable,
-  EntityRow,
+  EntityColumnConfig,
   entityDataTableColumns,
 } from '@backstage/plugin-catalog-react';
-import { ButtonIcon, Cell, ColumnConfig } from '@backstage/ui';
+import { ButtonIcon, Cell } from '@backstage/ui';
 import { RiPuzzleLine } from '@remixicon/react';
 import { useState } from 'react';
 import { ApiTypeTitle } from '../ApiDefinitionCard';
@@ -90,7 +90,7 @@ export const getApiEntityColumns = (
 
 function createSpecApiTypeColumnConfig(
   t: TranslationFunction<typeof apiDocsTranslationRef.T>,
-): ColumnConfig<EntityRow> {
+): EntityColumnConfig {
   return {
     id: 'apiType',
     label: t('apiEntityColumns.typeTitle'),
@@ -104,7 +104,7 @@ function createSpecApiTypeColumnConfig(
 
 function createApiDefinitionColumnConfig(
   t: TranslationFunction<typeof apiDocsTranslationRef.T>,
-): ColumnConfig<EntityRow> {
+): EntityColumnConfig {
   return {
     id: 'apiDefinition',
     label: t('apiEntityColumns.apiDefinitionTitle'),
@@ -118,7 +118,7 @@ function createApiDefinitionColumnConfig(
 
 export function getApiEntityColumnConfig(
   t: TranslationFunction<typeof apiDocsTranslationRef.T>,
-): ColumnConfig<EntityRow>[] {
+): EntityColumnConfig[] {
   return [
     entityDataTableColumns.createEntityRefColumn({ defaultKind: 'API' }),
     entityDataTableColumns.createSystemColumn(),
@@ -132,7 +132,7 @@ export function getApiEntityColumnConfig(
 
 export function getHasApisColumnConfig(
   t: TranslationFunction<typeof apiDocsTranslationRef.T>,
-): ColumnConfig<EntityRow>[] {
+): EntityColumnConfig[] {
   return [
     entityDataTableColumns.createEntityRefColumn({ defaultKind: 'API' }),
     entityDataTableColumns.createOwnerColumn(),

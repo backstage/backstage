@@ -15,8 +15,11 @@
  */
 
 import { RELATION_PROVIDES_API } from '@backstage/catalog-model';
-import { ColumnConfig } from '@backstage/ui';
-import { EntityRelationCard, EntityRow } from '@backstage/plugin-catalog-react';
+
+import {
+  EntityRelationCard,
+  EntityColumnConfig,
+} from '@backstage/plugin-catalog-react';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { apiDocsTranslationRef } from '../../translation';
 import { getApiEntityColumnConfig } from './presets';
@@ -26,7 +29,7 @@ import { getApiEntityColumnConfig } from './presets';
  */
 export const ProvidedApisCard = (props: {
   title?: string;
-  columnConfig?: ColumnConfig<EntityRow>[];
+  columnConfig?: EntityColumnConfig[];
 }) => {
   const { t } = useTranslationRef(apiDocsTranslationRef);
   const {
