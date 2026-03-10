@@ -26,12 +26,12 @@ export const WarningContent = ({ error }: { error: ConfigError }) => {
     return <Text as="p">{error.message}</Text>;
   }
 
-  const messages = error.messages as string[];
+  const messages = error.messages;
 
   return (
     <Box>
-      {messages.map((message, index) => (
-        <Text as="p" key={index}>
+      {messages.map(message => (
+        <Text as="p" key={message}>
           {message}
         </Text>
       ))}
