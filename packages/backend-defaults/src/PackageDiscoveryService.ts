@@ -79,9 +79,37 @@ async function findClosestPackageDir(
 }
 
 /** @internal */
+export class PatternMatcher {
+  private weakCache?: WeakRef<Map<string, RegExp>>;
+
+  matches(name: string, pattern: string): boolean {
+    if (!pattern.includes('*')) {
+      return name === pattern;
+    }
+
+    let cache = this.weakCache?.deref();
+
+    if (!cache) {
+      cache = new Map();
+      this.weakCache = new WeakRef(cache);
+    }
+
+    let regex = cache.get(pattern);
+    if (!regex) {
+      const escaped = pattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      regex = new RegExp(`^${escaped.replace(/\\\*/g, '.*')}$`);
+      cache.set(pattern, regex);
+    }
+
+    return regex.test(name);
+  }
+}
+
+/** @internal */
 export class PackageDiscoveryService {
   private readonly config: RootConfigService;
   private readonly logger: RootLoggerService;
+  private readonly patternMatcher = new PatternMatcher();
 
   constructor(config: RootConfigService, logger: RootLoggerService) {
     this.config = config;
@@ -102,14 +130,30 @@ export class PackageDiscoveryService {
       'backend.packages.include',
     );
 
-    const includedPackages = includedPackagesConfig
-      ? new Set(includedPackagesConfig)
-      : dependencyNames;
-    const excludedPackagesSet = new Set(
-      this.config.getOptionalStringArray('backend.packages.exclude'),
-    );
+    const excludedPackagesConfig = [
+      ...new Set(
+        this.config.getOptionalStringArray('backend.packages.exclude') ?? [],
+      ),
+    ];
 
-    return [...includedPackages].filter(name => !excludedPackagesSet.has(name));
+    const includedPackages = includedPackagesConfig
+      ? Array.from(
+          new Set(
+            dependencyNames.filter(name =>
+              includedPackagesConfig.some(pattern =>
+                this.patternMatcher.matches(name, pattern),
+              ),
+            ),
+          ),
+        )
+      : dependencyNames;
+
+    return includedPackages.filter(
+      name =>
+        !excludedPackagesConfig.some(pattern =>
+          this.patternMatcher.matches(name, pattern),
+        ),
+    );
   }
 
   async getBackendFeatures(): Promise<{ features: Array<BackendFeature> }> {
