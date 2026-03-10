@@ -1,5 +1,19 @@
 # @backstage/backend-defaults
 
+## 0.16.0-next.2
+
+### Patch Changes
+
+- 015668c: Added `cancelTask` method to the `SchedulerService` interface and implementation, allowing cancellation of currently running scheduled tasks. For global tasks, the database lock is released and a periodic liveness check aborts the running task function. For local tasks, the task's abort signal is triggered directly. A new `POST /.backstage/scheduler/v1/tasks/:id/cancel` endpoint is also available.
+- 5fcbef2: Updated dependency `express-rate-limit` to `^8.0.0`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0-next.1
+  - @backstage/integration@2.0.0-next.2
+  - @backstage/backend-app-api@1.6.0-next.1
+  - @backstage/plugin-auth-node@0.6.14-next.2
+  - @backstage/plugin-events-node@0.4.20-next.1
+  - @backstage/plugin-permission-node@0.10.11-next.1
+
 ## 0.16.0-next.1
 
 ### Minor Changes

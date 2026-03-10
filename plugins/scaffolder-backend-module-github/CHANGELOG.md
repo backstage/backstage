@@ -1,5 +1,16 @@
 # @backstage/plugin-scaffolder-backend-module-github
 
+## 0.9.7-next.2
+
+### Patch Changes
+
+- b2591f6: Fixed environment `waitTime` description incorrectly asking for milliseconds instead of minutes.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0-next.1
+  - @backstage/integration@2.0.0-next.2
+  - @backstage/plugin-catalog-node@2.1.0-next.2
+  - @backstage/plugin-scaffolder-node@0.13.0-next.2
+
 ## 0.9.7-next.1
 
 ### Patch Changes

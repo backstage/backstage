@@ -1,5 +1,14 @@
 # @backstage/core-components
 
+## 0.18.8-next.1
+
+### Patch Changes
+
+- 8b1a847: Fixed Table component layout when both `filters` and `title` props are used together. The filter controls now use a dedicated CSS class (`filterControls`) instead of incorrectly reusing the root container class.
+- 470f72d: The `LogViewer` component from `@backstage/core-components` now supports downloading logs if a callback is passed to `onDownloadLogs`
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.4-next.1
+
 ## 0.18.8-next.0
 
 ### Patch Changes
