@@ -90,7 +90,7 @@
     box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
     cursor: grab;
     transition: transform 200ms;
-    
+
     /* Fix: Ensure thumb is vertically centered on track */
     top: 50%;
     transform: translateY(-50%);
@@ -118,15 +118,15 @@
     opacity: 0.6;
     cursor: not-allowed;
 
-    .bui-SliderTrack {
+    & .bui-SliderTrack {
       background: var(--bui-bg-neutral-2);
     }
 
-    .bui-SliderTrackFill {
+    & .bui-SliderTrackFill {
       background: var(--bui-bg-neutral-4);
     }
 
-    .bui-SliderThumb {
+    & .bui-SliderThumb {
       cursor: not-allowed;
       background: var(--bui-bg-neutral-4);
       border-color: var(--bui-border-neutral);

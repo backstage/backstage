@@ -27,7 +27,6 @@ import { FieldError } from '../FieldError';
 import type { SliderProps } from './types';
 import { useDefinition } from '../../hooks/useDefinition';
 import { SliderDefinition } from './definition';
-import styles from './Slider.module.css';
 
 function SliderImpl<T extends number | number[]>(
   props: SliderProps<T>,
@@ -41,10 +40,9 @@ function SliderImpl<T extends number | number[]>(
     secondaryLabel,
     defaultValue,
     value,
+    isRequired,
     ...restProps
   } = props;
-
-  const isRequired = (props as any).isRequired;
 
   useEffect(() => {
     if (!label && !ariaLabel && !ariaLabelledBy) {
@@ -63,12 +61,9 @@ function SliderImpl<T extends number | number[]>(
 
   const secondaryLabelText = secondaryLabel || (isRequired ? 'Required' : null);
 
-  // Determine if this is a range slider (array value) or single value
-  const isRange = Array.isArray(defaultValue) || Array.isArray(value);
-
   return (
     <AriaSlider
-      className={clsx(classes.root, styles[classes.root], className)}
+      className={clsx(classes.root, className)}
       {...dataAttributes}
       aria-label={ariaLabel}
       aria-labelledby={ariaLabelledBy}
@@ -78,15 +73,13 @@ function SliderImpl<T extends number | number[]>(
       ref={ref}
     >
       {label && (
-        <div className={clsx(classes.header, styles[classes.header])}>
+        <div className={classes.header}>
           <FieldLabel
             label={label}
             secondaryLabel={secondaryLabelText}
             description={description}
           />
-          <SliderOutput
-            className={clsx(classes.output, styles[classes.output])}
-          >
+          <SliderOutput className={classes.output}>
             {({ state }) =>
               state.values
                 .map((_, i) => state.getThumbValueLabel(i))
@@ -95,51 +88,40 @@ function SliderImpl<T extends number | number[]>(
           </SliderOutput>
         </div>
       )}
-      <SliderTrack className={clsx(classes.track, styles[classes.track])}>
-        {({ state }) => (
-          <>
-            {(() => {
-              const numThumbs = state.values.length;
+      <SliderTrack className={classes.track}>
+        {({ state }) => {
+          const numThumbs = state.values.length;
 
-              // Calculate track fill
-              let trackFillStyle: React.CSSProperties;
-              if (numThumbs === 1) {
-                // Single thumb: fill from start to thumb
-                const percent = state.getThumbPercent(0);
-                const isVertical = state.orientation === 'vertical';
-                trackFillStyle = isVertical
-                  ? { bottom: 0, height: `${percent * 100}%` }
-                  : { left: 0, width: `${percent * 100}%` };
-              } else {
-                // Range: fill between thumbs
-                const start = state.getThumbPercent(0);
-                const end = state.getThumbPercent(1);
-                const rangePercent = (end - start) * 100;
-                const isVertical = state.orientation === 'vertical';
-                trackFillStyle = isVertical
-                  ? { bottom: `${start * 100}%`, height: `${rangePercent}%` }
-                  : { left: `${start * 100}%`, width: `${rangePercent}%` };
-              }
+          // Calculate track fill
+          let trackFillStyle: React.CSSProperties;
+          if (numThumbs === 1) {
+            // Single thumb: fill from start to thumb
+            const percent = state.getThumbPercent(0);
+            const isVertical = state.orientation === 'vertical';
+            trackFillStyle = isVertical
+              ? { bottom: 0, height: `${percent * 100}%` }
+              : { left: 0, width: `${percent * 100}%` };
+          } else {
+            // Range: fill between thumbs
+            const start = state.getThumbPercent(0);
+            const end = state.getThumbPercent(1);
+            const rangePercent = (end - start) * 100;
+            const isVertical = state.orientation === 'vertical';
+            trackFillStyle = isVertical
+              ? { bottom: `${start * 100}%`, height: `${rangePercent}%` }
+              : { left: `${start * 100}%`, width: `${rangePercent}%` };
+          }
 
-              return (
-                <div
-                  className={clsx(classes.trackFill, styles[classes.trackFill])}
-                  style={trackFillStyle}
-                />
-              );
-            })()}
-            <SliderThumb
-              index={0}
-              className={clsx(classes.thumb, styles[classes.thumb])}
-            />
-            {isRange && (
-              <SliderThumb
-                index={1}
-                className={clsx(classes.thumb, styles[classes.thumb])}
-              />
-            )}
-          </>
-        )}
+          return (
+            <>
+              <div className={classes.trackFill} style={trackFillStyle} />
+              <SliderThumb index={0} className={classes.thumb} />
+              {numThumbs > 1 && (
+                <SliderThumb index={1} className={classes.thumb} />
+              )}
+            </>
+          );
+        }}
       </SliderTrack>
       <FieldError />
     </AriaSlider>
@@ -149,6 +131,6 @@ function SliderImpl<T extends number | number[]>(
 /** @public */
 export const Slider = forwardRef(SliderImpl) as <T extends number | number[]>(
   props: SliderProps<T> & { ref?: React.ForwardedRef<HTMLDivElement> },
-) => ReturnType<typeof SliderImpl>;
+) => JSX.Element;
 
-(Slider as any).displayName = 'Slider';
+Slider.displayName = 'Slider';

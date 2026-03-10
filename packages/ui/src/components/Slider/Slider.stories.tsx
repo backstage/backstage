@@ -110,8 +110,9 @@ export const Percentage = meta.story({
   args: {
     label: 'Completion',
     minValue: 0,
-    maxValue: 100,
-    defaultValue: 65,
+    maxValue: 1,
+    step: 0.01,
+    defaultValue: 0.65,
     formatOptions: {
       style: 'percent',
       minimumFractionDigits: 0,
