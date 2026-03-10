@@ -112,11 +112,11 @@ export const catalogReactTranslationRef: TranslationRef<
     readonly 'entityTableColumnTitle.label': 'Label';
     readonly 'entityTableColumnTitle.title': 'Title';
     readonly 'entityTableColumnTitle.description': 'Description';
-    readonly 'entityTableColumnTitle.domain': 'Domain';
     readonly 'entityTableColumnTitle.system': 'System';
     readonly 'entityTableColumnTitle.namespace': 'Namespace';
-    readonly 'entityTableColumnTitle.owner': 'Owner';
+    readonly 'entityTableColumnTitle.domain': 'Domain';
     readonly 'entityTableColumnTitle.tags': 'Tags';
+    readonly 'entityTableColumnTitle.owner': 'Owner';
     readonly 'entityTableColumnTitle.lifecycle': 'Lifecycle';
     readonly 'entityTableColumnTitle.targets': 'Targets';
     readonly 'entityRelationCard.emptyHelpLinkTitle': 'Learn how to change this.';
@@ -562,8 +562,8 @@ export const EntityIconLinkBlueprint: ExtensionBlueprint<{
 export const EntityTableColumnTitle: (
   input: EntityTableColumnTitleProps,
 ) =>
-  | 'Title'
   | 'System'
+  | 'Title'
   | 'Domain'
   | 'Lifecycle'
   | 'Namespace'
