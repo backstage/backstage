@@ -18,8 +18,6 @@ import { IncrementalIngestionEngine } from './IncrementalIngestionEngine';
 import { IterationEngineOptions } from '../types';
 import { performance } from 'node:perf_hooks';
 
-jest.setTimeout(60_000);
-
 describe('IncrementalIngestionEngine - Burst Length', () => {
   const createMockProvider = () => ({
     getProviderName: jest.fn().mockReturnValue('test-provider'),
@@ -50,6 +48,18 @@ describe('IncrementalIngestionEngine - Burst Length', () => {
       child: jest.fn().mockReturnThis(),
     } as any);
 
+  let mockTime: number;
+  let perfSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    mockTime = 0;
+    perfSpy = jest.spyOn(performance, 'now').mockImplementation(() => mockTime);
+  });
+
+  afterEach(() => {
+    perfSpy.mockRestore();
+  });
+
   it('should respect burst length and stop burst when time limit exceeded', async () => {
     const mockProvider = createMockProvider();
     const mockManager = createMockManager();
@@ -60,7 +70,7 @@ describe('IncrementalIngestionEngine - Burst Length', () => {
       provider: mockProvider,
       manager: mockManager,
       connection: mockConnection,
-      burstLength: { milliseconds: 100 }, // Short burst length for testing
+      burstLength: { milliseconds: 100 },
       restLength: { minutes: 1 },
       logger: mockLogger,
       ready: Promise.resolve(),
@@ -73,12 +83,9 @@ describe('IncrementalIngestionEngine - Burst Length', () => {
       await fn({});
     });
 
-    // Mock provider.next to return multiple batches that never complete
-    // Each call takes some time to simulate real processing
     mockProvider.next.mockImplementation(async () => {
       callCount++;
-      // Add a small delay to ensure we exceed burst length
-      await new Promise(resolve => setTimeout(resolve, 30));
+      mockTime += 30;
       return {
         done: false,
         entities: [
@@ -94,19 +101,13 @@ describe('IncrementalIngestionEngine - Burst Length', () => {
     });
 
     const signal = new AbortController().signal;
-    const start = performance.now();
 
     const result = await engine.ingestOneBurst('test-ingestion', signal);
 
-    const duration = performance.now() - start;
-
-    // Verify that the burst was stopped due to time limit, not completion
     expect(result).toBe(false);
-    expect(duration).toBeGreaterThanOrEqual(100);
-    expect(duration).toBeLessThan(200);
-    expect(mockProvider.next).toHaveBeenCalledTimes(callCount);
-
-    expect(callCount).toBeGreaterThan(1);
+    // At 30ms per call, with a 100ms burst: calls at 30, 60, 90 (< 100), 120 (> 100, stop)
+    expect(callCount).toBe(4);
+    expect(mockProvider.next).toHaveBeenCalledTimes(4);
   });
 
   it('should complete burst normally when provider returns done before burst length', async () => {
@@ -131,7 +132,6 @@ describe('IncrementalIngestionEngine - Burst Length', () => {
       await fn({});
     });
 
-    // Mock provider.next to return done after first call
     mockProvider.next.mockResolvedValueOnce({
       done: true,
       entities: [
@@ -146,13 +146,10 @@ describe('IncrementalIngestionEngine - Burst Length', () => {
     });
 
     const signal = new AbortController().signal;
-    const start = performance.now();
     const result = await engine.ingestOneBurst('test-ingestion', signal);
-    const duration = performance.now() - start;
 
     expect(result).toBe(true);
     expect(mockProvider.next).toHaveBeenCalledTimes(1);
-    expect(duration).toBeLessThan(100); // Should complete quickly since provider returns done immediately
   });
 
   it('should stop burst when time limit is reached', async () => {
@@ -180,7 +177,7 @@ describe('IncrementalIngestionEngine - Burst Length', () => {
 
     mockProvider.next.mockImplementation(async () => {
       callCount++;
-      await new Promise(resolve => setTimeout(resolve, 30));
+      mockTime += 30;
       return {
         done: false,
         entities: [
@@ -196,16 +193,12 @@ describe('IncrementalIngestionEngine - Burst Length', () => {
     });
 
     const signal = new AbortController().signal;
-    const start = performance.now();
 
     const result = await engine.ingestOneBurst('test-ingestion', signal);
 
-    const duration = performance.now() - start;
-
     expect(result).toBe(false);
-    expect(mockProvider.next).toHaveBeenCalledTimes(3);
+    // At 30ms per call, with an 80ms burst: calls at 30, 60 (< 80), 90 (> 80, stop)
     expect(callCount).toBe(3);
-    expect(duration).toBeGreaterThanOrEqual(90);
-    expect(duration).toBeLessThan(120);
+    expect(mockProvider.next).toHaveBeenCalledTimes(3);
   });
 });
