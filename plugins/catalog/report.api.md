@@ -6,17 +6,16 @@
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { CatalogApi } from '@backstage/plugin-catalog-react';
-import { ColumnConfig } from '@backstage/ui';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { ElementType } from 'react';
 import { Entity } from '@backstage/catalog-model';
+import { EntityColumnConfig } from '@backstage/plugin-catalog-react';
 import { EntityListContextProps } from '@backstage/plugin-catalog-react';
 import { EntityListPagination } from '@backstage/plugin-catalog-react';
 import { EntityOwnerPickerProps } from '@backstage/plugin-catalog-react';
 import { EntityPresentationApi } from '@backstage/plugin-catalog-react';
 import { EntityRefPresentation } from '@backstage/plugin-catalog-react';
 import { EntityRefPresentationSnapshot } from '@backstage/plugin-catalog-react';
-import { EntityRow } from '@backstage/plugin-catalog-react';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { HumanDuration } from '@backstage/types';
 import { IconComponent } from '@backstage/core-plugin-api';
@@ -291,7 +290,7 @@ export class DefaultStarredEntitiesApi implements StarredEntitiesApi {
 // @public (undocumented)
 export interface DependencyOfComponentsCardProps {
   // (undocumented)
-  columnConfig?: ColumnConfig<EntityRow>[];
+  columnConfig?: EntityColumnConfig[];
   // (undocumented)
   title?: string;
 }
@@ -299,7 +298,7 @@ export interface DependencyOfComponentsCardProps {
 // @public (undocumented)
 export interface DependsOnComponentsCardProps {
   // (undocumented)
-  columnConfig?: ColumnConfig<EntityRow>[];
+  columnConfig?: EntityColumnConfig[];
   // (undocumented)
   title?: string;
 }
@@ -307,7 +306,7 @@ export interface DependsOnComponentsCardProps {
 // @public (undocumented)
 export interface DependsOnResourcesCardProps {
   // (undocumented)
-  columnConfig?: ColumnConfig<EntityRow>[];
+  columnConfig?: EntityColumnConfig[];
   // (undocumented)
   title?: string;
 }
@@ -491,7 +490,7 @@ export function hasCatalogProcessingErrors(
 // @public (undocumented)
 export interface HasComponentsCardProps {
   // (undocumented)
-  columnConfig?: ColumnConfig<EntityRow>[];
+  columnConfig?: EntityColumnConfig[];
   // (undocumented)
   title?: string;
 }
@@ -510,7 +509,7 @@ export function hasRelationWarnings(
 // @public (undocumented)
 export interface HasResourcesCardProps {
   // (undocumented)
-  columnConfig?: ColumnConfig<EntityRow>[];
+  columnConfig?: EntityColumnConfig[];
   // (undocumented)
   title?: string;
 }
@@ -518,7 +517,7 @@ export interface HasResourcesCardProps {
 // @public (undocumented)
 export interface HasSubcomponentsCardProps {
   // (undocumented)
-  columnConfig?: ColumnConfig<EntityRow>[];
+  columnConfig?: EntityColumnConfig[];
   // (undocumented)
   kind?: string;
   // (undocumented)
@@ -528,7 +527,7 @@ export interface HasSubcomponentsCardProps {
 // @public (undocumented)
 export interface HasSubdomainsCardProps {
   // (undocumented)
-  columnConfig?: ColumnConfig<EntityRow>[];
+  columnConfig?: EntityColumnConfig[];
   // (undocumented)
   title?: string;
 }
@@ -536,7 +535,7 @@ export interface HasSubdomainsCardProps {
 // @public (undocumented)
 export interface HasSystemsCardProps {
   // (undocumented)
-  columnConfig?: ColumnConfig<EntityRow>[];
+  columnConfig?: EntityColumnConfig[];
   // (undocumented)
   title?: string;
 }

@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { Alert, ColumnConfig, Link, Text } from '@backstage/ui';
+import { Alert, Link, Text } from '@backstage/ui';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { EntityInfoCard } from '../EntityInfoCard';
 import { EntityDataTable } from '../EntityDataTable';
-import { EntityRow } from '../EntityDataTable/columnFactories';
+import { EntityColumnConfig } from '../EntityDataTable/columnFactories';
 import { useEntity, useRelatedEntities } from '../../hooks';
 import { catalogReactTranslationRef } from '../../translation';
 
@@ -27,7 +27,7 @@ export interface EntityRelationCardProps {
   title: string;
   relationType: string;
   entityKind?: string;
-  columnConfig: ColumnConfig<EntityRow>[];
+  columnConfig: EntityColumnConfig[];
   emptyState?: {
     message: string;
     helpLink?: string;

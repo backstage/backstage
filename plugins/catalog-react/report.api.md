@@ -190,7 +190,7 @@ export const columnFactories: Readonly<{
 }>;
 
 // @public (undocumented)
-export const componentColumnConfig: ColumnConfig<EntityRow>[];
+export const componentColumnConfig: EntityColumnConfig[];
 
 // @public (undocumented)
 export const componentEntityHelpLink =
@@ -232,7 +232,7 @@ export type DefaultFiltersProps = {
 };
 
 // @public (undocumented)
-export const domainColumnConfig: ColumnConfig<EntityRow>[];
+export const domainColumnConfig: EntityColumnConfig[];
 
 // @public (undocumented)
 export const domainEntityHelpLink =
@@ -263,6 +263,12 @@ export type EntityAutocompletePickerProps<
 };
 
 // @public (undocumented)
+export interface EntityColumnConfig extends ColumnConfig<EntityRow> {
+  // (undocumented)
+  sortValue?: (entity: EntityRow) => string;
+}
+
+// @public (undocumented)
 export function EntityDataTable(props: EntityDataTableProps): JSX_2.Element;
 
 // @public (undocumented)
@@ -270,7 +276,7 @@ export const entityDataTableColumns: Readonly<{
   createEntityRefColumn(options: {
     defaultKind?: string;
     isRowHeader?: boolean;
-  }): ColumnConfig<EntityRow>;
+  }): EntityColumnConfig;
   createEntityRelationColumn(options: {
     id: string;
     translationKey: 'owner' | 'system' | 'domain';
@@ -279,19 +285,19 @@ export const entityDataTableColumns: Readonly<{
     filter?: {
       kind: string;
     };
-  }): ColumnConfig<EntityRow>;
-  createOwnerColumn(): ColumnConfig<EntityRow>;
-  createSystemColumn(): ColumnConfig<EntityRow>;
-  createDomainColumn(): ColumnConfig<EntityRow>;
-  createMetadataDescriptionColumn(): ColumnConfig<EntityRow>;
-  createSpecTypeColumn(): ColumnConfig<EntityRow>;
-  createSpecLifecycleColumn(): ColumnConfig<EntityRow>;
+  }): EntityColumnConfig;
+  createOwnerColumn(): EntityColumnConfig;
+  createSystemColumn(): EntityColumnConfig;
+  createDomainColumn(): EntityColumnConfig;
+  createMetadataDescriptionColumn(): EntityColumnConfig;
+  createSpecTypeColumn(): EntityColumnConfig;
+  createSpecLifecycleColumn(): EntityColumnConfig;
 }>;
 
 // @public (undocumented)
 export interface EntityDataTableProps {
   // (undocumented)
-  columnConfig: ColumnConfig<EntityRow>[];
+  columnConfig: EntityColumnConfig[];
   // (undocumented)
   data: Entity[];
   // (undocumented)
@@ -620,7 +626,7 @@ export interface EntityRelationCardProps {
   // (undocumented)
   className?: string;
   // (undocumented)
-  columnConfig: ColumnConfig<EntityRow>[];
+  columnConfig: EntityColumnConfig[];
   // (undocumented)
   emptyState?: {
     message: string;
@@ -869,7 +875,7 @@ export class MockStarredEntitiesApi implements StarredEntitiesApi {
 export type PaginationMode = 'cursor' | 'offset' | 'none';
 
 // @public (undocumented)
-export const resourceColumnConfig: ColumnConfig<EntityRow>[];
+export const resourceColumnConfig: EntityColumnConfig[];
 
 // @public (undocumented)
 export const resourceEntityHelpLink =
@@ -885,7 +891,7 @@ export interface StarredEntitiesApi {
 export const starredEntitiesApiRef: ApiRef_2<StarredEntitiesApi>;
 
 // @public (undocumented)
-export const systemColumnConfig: ColumnConfig<EntityRow>[];
+export const systemColumnConfig: EntityColumnConfig[];
 
 // @public (undocumented)
 export const systemEntityHelpLink =

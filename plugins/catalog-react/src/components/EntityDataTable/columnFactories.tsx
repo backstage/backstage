@@ -20,7 +20,11 @@ import {
   RELATION_PART_OF,
 } from '@backstage/catalog-model';
 import { Cell, CellText, Column, ColumnConfig, TableItem } from '@backstage/ui';
-import { EntityRefLink, EntityRefLinks } from '../EntityRefLink';
+import {
+  EntityRefLink,
+  EntityRefLinks,
+  humanizeEntityRef,
+} from '../EntityRefLink';
 import { EntityTableColumnTitle } from '../EntityTable/TitleColumn';
 import { getEntityRelations } from '../../utils';
 
@@ -28,21 +32,27 @@ import { getEntityRelations } from '../../utils';
 export type EntityRow = Entity & TableItem;
 
 /** @public */
+export interface EntityColumnConfig extends ColumnConfig<EntityRow> {
+  sortValue?: (entity: EntityRow) => string;
+}
+
+/** @public */
 export const columnFactories = Object.freeze({
   createEntityRefColumn(options: {
     defaultKind?: string;
     isRowHeader?: boolean;
-  }): ColumnConfig<EntityRow> {
+  }): EntityColumnConfig {
     const isRowHeader = options.isRowHeader ?? true;
     return {
       id: 'name',
       label: 'Name',
       header: () => (
-        <Column id="name" isRowHeader={isRowHeader}>
+        <Column id="name" isRowHeader={isRowHeader} allowsSorting>
           <EntityTableColumnTitle translationKey="name" />
         </Column>
       ),
       isRowHeader,
+      isSortable: true,
       cell: entity => (
         <Cell>
           <EntityRefLink
@@ -52,6 +62,9 @@ export const columnFactories = Object.freeze({
           />
         </Cell>
       ),
+      sortValue: entity =>
+        entity.metadata?.title ||
+        humanizeEntityRef(entity, { defaultKind: options.defaultKind }),
     };
   },
 
@@ -61,15 +74,16 @@ export const columnFactories = Object.freeze({
     relation: string;
     defaultKind?: string;
     filter?: { kind: string };
-  }): ColumnConfig<EntityRow> {
+  }): EntityColumnConfig {
     return {
       id: options.id,
       label: options.id.charAt(0).toUpperCase() + options.id.slice(1),
       header: () => (
-        <Column id={options.id}>
+        <Column id={options.id} allowsSorting>
           <EntityTableColumnTitle translationKey={options.translationKey} />
         </Column>
       ),
+      isSortable: true,
       cell: entity => (
         <Cell>
           <EntityRefLinks
@@ -82,10 +96,14 @@ export const columnFactories = Object.freeze({
           />
         </Cell>
       ),
+      sortValue: entity =>
+        getEntityRelations(entity, options.relation, options.filter)
+          .map(r => humanizeEntityRef(r, { defaultKind: options.defaultKind }))
+          .join(', '),
     };
   },
 
-  createOwnerColumn(): ColumnConfig<EntityRow> {
+  createOwnerColumn(): EntityColumnConfig {
     return this.createEntityRelationColumn({
       id: 'owner',
       translationKey: 'owner',
@@ -94,7 +112,7 @@ export const columnFactories = Object.freeze({
     });
   },
 
-  createSystemColumn(): ColumnConfig<EntityRow> {
+  createSystemColumn(): EntityColumnConfig {
     return this.createEntityRelationColumn({
       id: 'system',
       translationKey: 'system',
@@ -104,7 +122,7 @@ export const columnFactories = Object.freeze({
     });
   },
 
-  createDomainColumn(): ColumnConfig<EntityRow> {
+  createDomainColumn(): EntityColumnConfig {
     return this.createEntityRelationColumn({
       id: 'domain',
       translationKey: 'domain',
@@ -114,28 +132,31 @@ export const columnFactories = Object.freeze({
     });
   },
 
-  createMetadataDescriptionColumn(): ColumnConfig<EntityRow> {
+  createMetadataDescriptionColumn(): EntityColumnConfig {
     return {
       id: 'description',
       label: 'Description',
       header: () => (
-        <Column id="description">
+        <Column id="description" allowsSorting>
           <EntityTableColumnTitle translationKey="description" />
         </Column>
       ),
+      isSortable: true,
       cell: entity => <CellText title={entity.metadata.description ?? ''} />,
+      sortValue: entity => entity.metadata.description ?? '',
     };
   },
 
-  createSpecTypeColumn(): ColumnConfig<EntityRow> {
+  createSpecTypeColumn(): EntityColumnConfig {
     return {
       id: 'type',
       label: 'Type',
       header: () => (
-        <Column id="type">
+        <Column id="type" allowsSorting>
           <EntityTableColumnTitle translationKey="type" />
         </Column>
       ),
+      isSortable: true,
       cell: entity => (
         <CellText
           title={
@@ -143,18 +164,21 @@ export const columnFactories = Object.freeze({
           }
         />
       ),
+      sortValue: entity =>
+        (entity.spec as Record<string, string> | undefined)?.type ?? '',
     };
   },
 
-  createSpecLifecycleColumn(): ColumnConfig<EntityRow> {
+  createSpecLifecycleColumn(): EntityColumnConfig {
     return {
       id: 'lifecycle',
       label: 'Lifecycle',
       header: () => (
-        <Column id="lifecycle">
+        <Column id="lifecycle" allowsSorting>
           <EntityTableColumnTitle translationKey="lifecycle" />
         </Column>
       ),
+      isSortable: true,
       cell: entity => (
         <CellText
           title={
@@ -162,6 +186,8 @@ export const columnFactories = Object.freeze({
           }
         />
       ),
+      sortValue: entity =>
+        (entity.spec as Record<string, string> | undefined)?.lifecycle ?? '',
     };
   },
 });

@@ -7,10 +7,9 @@ import { ApiEntity } from '@backstage/catalog-model';
 import { ApiRef } from '@backstage/frontend-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { CatalogTableRow } from '@backstage/plugin-catalog';
-import { ColumnConfig } from '@backstage/ui';
+import { EntityColumnConfig } from '@backstage/plugin-catalog-react';
 import { EntityListPagination } from '@backstage/plugin-catalog-react';
 import { EntityOwnerPickerProps } from '@backstage/plugin-catalog-react';
-import { EntityRow } from '@backstage/plugin-catalog-react';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { ReactElement } from 'react';
@@ -95,13 +94,13 @@ export type AsyncApiResolver = {
 // @public (undocumented)
 export const ConsumedApisCard: (props: {
   title?: string;
-  columnConfig?: ColumnConfig<EntityRow>[];
+  columnConfig?: EntityColumnConfig[];
 }) => JSX_2.Element;
 
 // @public (undocumented)
 export const ConsumingComponentsCard: (props: {
   title?: string;
-  columnConfig?: ColumnConfig<EntityRow>[];
+  columnConfig?: EntityColumnConfig[];
 }) => JSX_2.Element;
 
 // @public
@@ -127,31 +126,31 @@ export const EntityApiDefinitionCard: () => JSX_2.Element;
 // @public (undocumented)
 export const EntityConsumedApisCard: (props: {
   title?: string;
-  columnConfig?: ColumnConfig<EntityRow>[];
+  columnConfig?: EntityColumnConfig[];
 }) => JSX_2.Element;
 
 // @public (undocumented)
 export const EntityConsumingComponentsCard: (props: {
   title?: string;
-  columnConfig?: ColumnConfig<EntityRow>[];
+  columnConfig?: EntityColumnConfig[];
 }) => JSX_2.Element;
 
 // @public (undocumented)
 export const EntityHasApisCard: (props: {
   title?: string;
-  columnConfig?: ColumnConfig<EntityRow>[];
+  columnConfig?: EntityColumnConfig[];
 }) => JSX_2.Element;
 
 // @public (undocumented)
 export const EntityProvidedApisCard: (props: {
   title?: string;
-  columnConfig?: ColumnConfig<EntityRow>[];
+  columnConfig?: EntityColumnConfig[];
 }) => JSX_2.Element;
 
 // @public (undocumented)
 export const EntityProvidingComponentsCard: (props: {
   title?: string;
-  columnConfig?: ColumnConfig<EntityRow>[];
+  columnConfig?: EntityColumnConfig[];
 }) => JSX_2.Element;
 
 // @public (undocumented)
@@ -167,7 +166,7 @@ export type GraphQlDefinitionWidgetProps = {
 // @public (undocumented)
 export const HasApisCard: (props: {
   title?: string;
-  columnConfig?: ColumnConfig<EntityRow>[];
+  columnConfig?: EntityColumnConfig[];
 }) => JSX_2.Element;
 
 // @public (undocumented)
@@ -196,13 +195,13 @@ export type PlainApiDefinitionWidgetProps = {
 // @public (undocumented)
 export const ProvidedApisCard: (props: {
   title?: string;
-  columnConfig?: ColumnConfig<EntityRow>[];
+  columnConfig?: EntityColumnConfig[];
 }) => JSX_2.Element;
 
 // @public (undocumented)
 export const ProvidingComponentsCard: (props: {
   title?: string;
-  columnConfig?: ColumnConfig<EntityRow>[];
+  columnConfig?: EntityColumnConfig[];
 }) => JSX_2.Element;
 
 // @public (undocumented)

@@ -15,10 +15,10 @@
  */
 
 import { RELATION_DEPENDS_ON } from '@backstage/catalog-model';
-import { ColumnConfig } from '@backstage/ui';
+
 import {
   EntityRelationCard,
-  EntityRow,
+  EntityColumnConfig,
   resourceColumnConfig,
   componentEntityHelpLink,
 } from '@backstage/plugin-catalog-react';
@@ -28,7 +28,7 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 /** @public */
 export interface DependsOnResourcesCardProps {
   title?: string;
-  columnConfig?: ColumnConfig<EntityRow>[];
+  columnConfig?: EntityColumnConfig[];
 }
 
 export function DependsOnResourcesCard(props: DependsOnResourcesCardProps) {
