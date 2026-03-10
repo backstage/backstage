@@ -1,5 +1,24 @@
 # @backstage/frontend-plugin-api
 
+## 0.15.0-next.1
+
+### Minor Changes
+
+- 6573901: **BREAKING**: Removed the deprecated `AnyExtensionDataRef` type. Use `ExtensionDataRef` without type parameters instead.
+- a9440f0: **BREAKING**: Simplified the `ExtensionAttachTo` type to only support a single attachment target. The array form for attaching to multiple extension points has been removed. Also removed the deprecated `ExtensionAttachToSpec` type alias.
+
+### Patch Changes
+
+- 8a3a906: Deprecated `NavItemBlueprint`. Nav items are now automatically inferred from `PageBlueprint` extensions based on their `title` and `icon` params.
+- b15a685: Deprecated `withApis`, use the `withApis` export from `@backstage/core-compat-api` instead.
+- 0452d02: Add optional `description` field to plugin-level feature flags.
+- 1bec049: Fixed inconsistent `JSX.Element` type reference in the `DialogApiDialog.update` method signature.
+- 2c383b5: Deprecated `AnalyticsImplementationBlueprint` and `AnalyticsImplementationFactory` in favor of the exports from `@backstage/plugin-app-react`.
+- dab6c46: Deprecated the `ExtensionFactoryMiddleware` type, which has been moved to `@backstage/frontend-app-api`.
+- d0206c4: Removed the deprecated `defaultPath` migration helper from `PageBlueprint` params.
+- edb872c: Renamed the `PageTab` type to `PageLayoutTab`. The old `PageTab` name is now a deprecated type alias.
+- fe848e0: Changed `useApiHolder` to return an empty `ApiHolder` instead of throwing when used outside of an API context.
+
 ## 0.14.2-next.0
 
 ### Patch Changes

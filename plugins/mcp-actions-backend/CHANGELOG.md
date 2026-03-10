@@ -1,5 +1,15 @@
 # @backstage/plugin-mcp-actions-backend
 
+## 0.1.10-next.2
+
+### Patch Changes
+
+- c74b697: Added support for splitting MCP actions into multiple servers via `mcpActions.servers` configuration. Each server gets its own endpoint at `/api/mcp-actions/v1/{key}` with actions scoped using include/exclude filter rules. Tool names are now namespaced with the plugin ID by default, configurable via `mcpActions.namespacedToolNames`. When `mcpActions.servers` is not configured, the plugin continues to serve a single server at `/api/mcp-actions/v1`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0-next.1
+  - @backstage/catalog-client@1.14.0-next.2
+  - @backstage/plugin-catalog-node@2.1.0-next.2
+
 ## 0.1.10-next.1
 
 ### Patch Changes
