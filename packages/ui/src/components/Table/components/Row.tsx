@@ -24,8 +24,7 @@ import { Checkbox } from '../../Checkbox';
 import { useDefinition } from '../../../hooks/useDefinition';
 import { RowDefinition } from '../definition';
 import type { RowProps } from '../types';
-import { isExternalLink } from '../../../utils/isExternalLink';
-import { InternalLinkProvider } from '../../InternalLinkProvider';
+import { isExternalLink } from '../../../utils/linkUtils';
 import clsx from 'clsx';
 import { Flex } from '../../Flex';
 
@@ -85,18 +84,16 @@ export function Row<T extends object>(props: RowProps<T>) {
   );
 
   return (
-    <InternalLinkProvider href={href}>
-      <ReactAriaRow
-        href={href}
-        {...restProps}
-        target={effectiveTarget}
-        rel={effectiveRel}
-        className={clsx(classes.root, restProps.className)}
-        data-react-aria-pressable={hasInternalHref ? 'true' : undefined}
-        onAction={handlePress}
-      >
-        {content}
-      </ReactAriaRow>
-    </InternalLinkProvider>
+    <ReactAriaRow
+      href={href}
+      {...restProps}
+      target={effectiveTarget}
+      rel={effectiveRel}
+      className={clsx(classes.root, restProps.className)}
+      data-react-aria-pressable={hasInternalHref ? 'true' : undefined}
+      onAction={handlePress}
+    >
+      {content}
+    </ReactAriaRow>
   );
 }
