@@ -52,6 +52,13 @@
     gap: var(--bui-space-1);
   }
 
+  .bui-TableHeadLabel {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+  }
+
   .bui-TableHeadSortButton {
     cursor: pointer;
     user-select: none;
