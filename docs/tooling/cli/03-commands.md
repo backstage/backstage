@@ -38,7 +38,6 @@ The `package` command category, `yarn backstage-cli package --help`:
 ```text
 start [options]                  Start a package for local development
 build [options]                  Build a package for production deployment or publishing
-bundle [options]                 Bundle a plugin for dynamic loading (backend or frontend)
 lint [options] [directories...]  Lint a package
 test                             Run tests, forwarding args to Jest, defaulting to watch mode
 clean                            Delete cache directories
@@ -206,6 +205,11 @@ Options:
 ```
 
 ## package bundle
+
+:::caution Experimental
+This command is experimental and may receive breaking changes in future releases
+without a deprecation period. It is hidden from the main `--help` output.
+:::
 
 Bundle a plugin for dynamic loading. This creates a self-contained plugin
 package that can be deployed independently and loaded dynamically by a Backstage
