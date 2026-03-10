@@ -40,6 +40,7 @@ function SliderImpl<T extends number | number[]>(
     secondaryLabel,
     defaultValue,
     value,
+    isRequired,
     ...restProps
   } = props;
 
@@ -58,8 +59,7 @@ function SliderImpl<T extends number | number[]>(
   } = useDefinition(SliderDefinition, restProps);
   const { classes, className } = ownProps;
 
-  const secondaryLabelText =
-    secondaryLabel || (definitionRest.isRequired ? 'Required' : null);
+  const secondaryLabelText = secondaryLabel || (isRequired ? 'Required' : null);
 
   return (
     <AriaSlider
@@ -69,6 +69,7 @@ function SliderImpl<T extends number | number[]>(
       aria-labelledby={ariaLabelledBy}
       defaultValue={defaultValue}
       value={value}
+      isRequired={isRequired}
       {...definitionRest}
       ref={ref}
     >
