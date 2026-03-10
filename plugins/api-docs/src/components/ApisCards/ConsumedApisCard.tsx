@@ -19,6 +19,7 @@ import { RELATION_CONSUMES_API } from '@backstage/catalog-model';
 import {
   EntityRelationCard,
   EntityColumnConfig,
+  useEntity,
 } from '@backstage/plugin-catalog-react';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { apiDocsTranslationRef } from '../../translation';
@@ -32,6 +33,7 @@ export const ConsumedApisCard = (props: {
   columnConfig?: EntityColumnConfig[];
 }) => {
   const { t } = useTranslationRef(apiDocsTranslationRef);
+  const { entity } = useEntity();
   const {
     title = t('consumedApisCard.title'),
     columnConfig = getApiEntityColumnConfig(t),
@@ -44,7 +46,7 @@ export const ConsumedApisCard = (props: {
       columnConfig={columnConfig}
       emptyState={{
         message: t('consumedApisCard.emptyContent.title', {
-          entity: 'component',
+          entity: entity.kind.toLocaleLowerCase('en-US'),
         }),
         helpLink:
           'https://backstage.io/docs/features/software-catalog/descriptor-format#specconsumesapis-optional',

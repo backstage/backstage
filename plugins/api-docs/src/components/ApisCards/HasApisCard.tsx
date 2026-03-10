@@ -19,6 +19,7 @@ import { RELATION_HAS_PART } from '@backstage/catalog-model';
 import {
   EntityRelationCard,
   EntityColumnConfig,
+  useEntity,
 } from '@backstage/plugin-catalog-react';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { apiDocsTranslationRef } from '../../translation';
@@ -32,6 +33,7 @@ export const HasApisCard = (props: {
   columnConfig?: EntityColumnConfig[];
 }) => {
   const { t } = useTranslationRef(apiDocsTranslationRef);
+  const { entity } = useEntity();
   const {
     title = t('hasApisCard.title'),
     columnConfig = getHasApisColumnConfig(t),
@@ -45,7 +47,7 @@ export const HasApisCard = (props: {
       columnConfig={columnConfig}
       emptyState={{
         message: t('hasApisCard.emptyContent.title', {
-          entity: 'system',
+          entity: entity.kind.toLocaleLowerCase('en-US'),
         }),
         helpLink:
           'https://backstage.io/docs/features/software-catalog/descriptor-format#kind-api',
