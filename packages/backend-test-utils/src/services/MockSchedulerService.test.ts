@@ -261,7 +261,7 @@ describe('MockSchedulerService', () => {
     resolveBlock = undefined;
     const triggerPromise2 = blockingScheduler.triggerTask('blocking');
     await setTimeout(1);
-    resolveBlock?.();
+    resolveBlock!();
     await triggerPromise2;
 
     expect(signals).toHaveLength(3);
