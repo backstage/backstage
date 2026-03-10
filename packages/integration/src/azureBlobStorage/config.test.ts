@@ -232,7 +232,7 @@ describe('readAzureBlobStorageIntegrationConfigs', () => {
       {
         host: 'blob.core.windows.net',
         endpoint: undefined,
-        accountName: undefined,
+        accountName: 'default',
         accountKey: undefined,
         sasToken: undefined,
         connectionString: undefined,
