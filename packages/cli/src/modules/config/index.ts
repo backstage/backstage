@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createCliPlugin } from '../../wiring/factory';
+import { createCliPlugin } from '@backstage/cli-plugin-api';
 
 export const configOption = [
   '--config <path>',

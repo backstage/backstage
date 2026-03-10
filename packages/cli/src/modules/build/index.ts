@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createCliPlugin } from '../../wiring/factory';
+import { createCliPlugin } from '@backstage/cli-plugin-api';
 
 export const buildPlugin = createCliPlugin({
   pluginId: 'build',

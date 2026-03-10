@@ -14,11 +14,23 @@
  * limitations under the License.
  */
 
-// Re-export types from the plugin API for internal use within the CLI package.
-export type {
-  CommandContext,
-  CommandExecuteFn,
-  BackstageCommand,
-  CliFeature,
-  CliPlugin,
-} from '@backstage/cli-plugin-api';
+import { describeParentCallSite } from './describeParentCallSite';
+import { BackstageCommand, CliPlugin, OpaqueCliPlugin } from './types';
+
+/**
+ * Creates a new CLI plugin that provides commands to the Backstage CLI.
+ *
+ * @public
+ */
+export function createCliPlugin(options: {
+  pluginId: string;
+  init: (registry: {
+    addCommand: (command: BackstageCommand) => void;
+  }) => Promise<void>;
+}): CliPlugin {
+  return OpaqueCliPlugin.createInstance('v1', {
+    pluginId: options.pluginId,
+    init: options.init,
+    description: `created at '${describeParentCallSite()}'`,
+  });
+}

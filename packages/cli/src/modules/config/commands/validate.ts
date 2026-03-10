@@ -16,7 +16,7 @@
 
 import { cli } from 'cleye';
 import { loadCliConfig } from '../lib/config';
-import type { CommandContext } from '../../../wiring/types';
+import type { CommandContext } from '@backstage/cli-plugin-api';
 
 export default async ({ args, info }: CommandContext) => {
   const {

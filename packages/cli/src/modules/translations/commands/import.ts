@@ -28,7 +28,7 @@ import {
   createMessagePathParser,
   formatMessagePath,
 } from '../lib/messageFilePath';
-import type { CommandContext } from '../../../wiring/types';
+import type { CommandContext } from '@backstage/cli-plugin-api';
 
 interface ManifestRefEntry {
   package: string;

@@ -25,7 +25,7 @@ import {
 } from '@backstage/cli-node';
 import { minimatch } from 'minimatch';
 import fs from 'fs-extra';
-import type { CommandContext } from '../../../wiring/types';
+import type { CommandContext } from '@backstage/cli-plugin-api';
 
 /**
  * Attempts to read package.json from node_modules for a given package name.
