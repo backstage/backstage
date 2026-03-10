@@ -32,17 +32,14 @@ function SliderImpl<T extends number | number[]>(
   props: SliderProps<T>,
   ref: React.ForwardedRef<HTMLDivElement>,
 ) {
-  const {
-    label,
-    'aria-label': ariaLabel,
-    'aria-labelledby': ariaLabelledBy,
-    description,
-    secondaryLabel,
-    defaultValue,
-    value,
-    isRequired,
-    ...restProps
-  } = props;
+  const { ownProps, restProps } = useDefinition(SliderDefinition, props);
+  const { classes, className, label, secondaryLabel, description, isRequired } =
+    ownProps;
+
+  const ariaLabel = restProps['aria-label'];
+  const ariaLabelledBy = restProps['aria-labelledby'];
+  const defaultValue = restProps.defaultValue;
+  const value = restProps.value;
 
   useEffect(() => {
     if (!label && !ariaLabel && !ariaLabelledBy) {
@@ -52,25 +49,16 @@ function SliderImpl<T extends number | number[]>(
     }
   }, [label, ariaLabel, ariaLabelledBy]);
 
-  const {
-    ownProps,
-    restProps: definitionRest,
-    dataAttributes,
-  } = useDefinition(SliderDefinition, restProps);
-  const { classes, className } = ownProps;
-
   const secondaryLabelText = secondaryLabel || (isRequired ? 'Required' : null);
 
   return (
     <AriaSlider
       className={clsx(classes.root, className)}
-      {...dataAttributes}
       aria-label={ariaLabel}
       aria-labelledby={ariaLabelledBy}
       defaultValue={defaultValue}
       value={value}
-      isRequired={isRequired}
-      {...definitionRest}
+      {...restProps}
       ref={ref}
     >
       {label && (

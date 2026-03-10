@@ -34,5 +34,9 @@ export const SliderDefinition = defineComponent<SliderOwnProps>()({
   },
   propDefs: {
     className: {},
+    label: {},
+    secondaryLabel: {},
+    description: {},
+    isRequired: {},
   },
 });

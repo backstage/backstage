@@ -20,6 +20,10 @@ import type { FieldLabelProps } from '../FieldLabel/types';
 /** @public */
 export interface SliderOwnProps {
   className?: string;
+  label?: FieldLabelProps['label'];
+  secondaryLabel?: FieldLabelProps['secondaryLabel'];
+  description?: FieldLabelProps['description'];
+  isRequired?: boolean;
 }
 
 /** @public */
@@ -34,4 +38,9 @@ export interface SliderProps<T extends number | number[]>
       | 'onChange'
       | 'slot'
       | 'style'
-    > {}
+      | 'label'
+      | 'secondaryLabel'
+      | 'description'
+      | 'isRequired'
+    >,
+    SliderOwnProps {}
