@@ -109,22 +109,41 @@ exports.up = async function up(knex) {
     // Batch-delete orphaned rows before DDL to reduce lock time.
     await batchDeleteOrphansMysql(knex, 'final_entities');
 
-    // Perform the FK changes. Note that in MySQL/InnoDB, ALTER TABLE
-    // statements cause implicit commits, so wrapping in a transaction does
-    // not provide full atomicity. However the table is already cleaned of
-    // orphans and validation remains fast.
-    await knex.transaction(async trx => {
-      await trx.schema.alterTable('search', table => {
-        table.dropForeign(['entity_id']);
-      });
-      await trx.schema.alterTable('search', table => {
-        table
-          .foreign('entity_id')
-          .references('entity_id')
-          .inTable('final_entities')
-          .onDelete('CASCADE');
-      });
-    });
+    // Swap the FK with retry logic. MySQL DDL causes implicit commits so
+    // DROP and ADD are never truly atomic. If new orphan rows sneak in
+    // between the DROP and ADD, the ADD will fail — we clean up and retry.
+    // The information_schema check makes the DROP idempotent so that
+    // re-runs after a partial failure don't crash.
+    const MAX_ATTEMPTS = 5;
+    for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+      const [fks] = await knex.raw(`
+        SELECT CONSTRAINT_NAME FROM information_schema.TABLE_CONSTRAINTS
+        WHERE TABLE_SCHEMA = DATABASE()
+          AND TABLE_NAME = 'search'
+          AND CONSTRAINT_NAME = 'search_entity_id_foreign'
+          AND CONSTRAINT_TYPE = 'FOREIGN KEY'
+      `);
+      if (fks.length > 0) {
+        await knex.schema.alterTable('search', table => {
+          table.dropForeign(['entity_id']);
+        });
+      }
+
+      await batchDeleteOrphansMysql(knex, 'final_entities');
+
+      try {
+        await knex.schema.alterTable('search', table => {
+          table
+            .foreign('entity_id')
+            .references('entity_id')
+            .inTable('final_entities')
+            .onDelete('CASCADE');
+        });
+        break;
+      } catch (e) {
+        if (attempt === MAX_ATTEMPTS) throw e;
+      }
+    }
   } else {
     // SQLite: wrap in an explicit transaction since the global transaction
     // wrapper is disabled for this migration.
@@ -172,18 +191,36 @@ exports.down = async function down(knex) {
   } else if (client.includes('mysql')) {
     await batchDeleteOrphansMysql(knex, 'refresh_state');
 
-    await knex.transaction(async trx => {
-      await trx.schema.alterTable('search', table => {
-        table.dropForeign(['entity_id']);
-      });
-      await trx.schema.alterTable('search', table => {
-        table
-          .foreign('entity_id')
-          .references('entity_id')
-          .inTable('refresh_state')
-          .onDelete('CASCADE');
-      });
-    });
+    const MAX_ATTEMPTS = 5;
+    for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+      const [fks] = await knex.raw(`
+        SELECT CONSTRAINT_NAME FROM information_schema.TABLE_CONSTRAINTS
+        WHERE TABLE_SCHEMA = DATABASE()
+          AND TABLE_NAME = 'search'
+          AND CONSTRAINT_NAME = 'search_entity_id_foreign'
+          AND CONSTRAINT_TYPE = 'FOREIGN KEY'
+      `);
+      if (fks.length > 0) {
+        await knex.schema.alterTable('search', table => {
+          table.dropForeign(['entity_id']);
+        });
+      }
+
+      await batchDeleteOrphansMysql(knex, 'refresh_state');
+
+      try {
+        await knex.schema.alterTable('search', table => {
+          table
+            .foreign('entity_id')
+            .references('entity_id')
+            .inTable('refresh_state')
+            .onDelete('CASCADE');
+        });
+        break;
+      } catch (e) {
+        if (attempt === MAX_ATTEMPTS) throw e;
+      }
+    }
   } else {
     await knex.transaction(async trx => {
       await trx.schema.alterTable('search', table => {
