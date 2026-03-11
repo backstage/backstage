@@ -5,7 +5,8 @@ title: 'Creating your first Backstage app'
 
 ### Prerequisites
 
-None!
+- Make sure ports `3000` (frontend) and `7007` (backend) are available before starting the app locally.
+- If your machine has limited memory, you may need to set `NODE_OPTIONS=--max-old-space-size=4096` before running `yarn start`.
 
 ### What should I get out of this guide?
 
