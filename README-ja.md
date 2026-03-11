@@ -69,7 +69,7 @@ Backstage のドキュメントには次のものが含まれます。
 
 ## ライセンス
 
-Copyright 2020-2026 © The Backstage Authors. All rights reserved. Linux Foundation は登録商標を有しており、商標を使用しています。Linux Foundation の商標のリストについては、商標使用ページ（https://www.linuxfoundation.org/trademark-usage）を参照してください。
+著作権 © 2020-2026 The Backstage Authors. 無断転載を禁じます。Linux Foundation は登録商標を有しており、商標を使用しています。Linux Foundation の商標のリストについては、商標使用ページ（https://www.linuxfoundation.org/trademark-usage）を参照してください。
 
 Apache License, Version 2.0 の下でライセンスされています：http://www.apache.org/licenses/LICENSE-2.0
 

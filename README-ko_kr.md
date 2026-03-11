@@ -2,7 +2,7 @@
 
 # [Backstage](https://backstage.io)
 
-한국어 \| [English](README.md) \| [中文版](README-zh_Hans.md) \| [Français](README-fr_FR.md)
+한국어 \| [English](README.md) \| [中文版](README-zh_Hans.md) \| [Français](README-fr_FR.md) \| [Español](README-es.md) \| [Deutsch](README-de.md) \| [日本語](README-ja.md)
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![CNCF Status](https://img.shields.io/badge/cncf%20status-incubation-blue.svg)](https://www.cncf.io/projects)
