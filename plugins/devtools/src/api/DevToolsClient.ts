@@ -21,11 +21,10 @@ import {
   ExternalDependency,
 } from '@backstage/plugin-devtools-common';
 import {
-  CancelScheduledTask,
   ScheduledTasks,
   TriggerScheduledTask,
 } from '@backstage/plugin-devtools-common/alpha';
-import { ResponseError } from '@backstage/errors';
+import { ResponseError, NotFoundError, ConflictError } from '@backstage/errors';
 import { DevToolsApi } from './DevToolsApi';
 
 export class DevToolsClient implements DevToolsApi {
@@ -83,13 +82,13 @@ export class DevToolsClient implements DevToolsApi {
       throw await ResponseError.fromResponse(response);
     }
 
-    return response.json() as Promise<TriggerScheduledTask>;
+    return {};
   }
 
   public async cancelScheduledTask(
     plugin: string,
     taskId: string,
-  ): Promise<CancelScheduledTask> {
+  ): Promise<void> {
     const baseUrl = `${await this.discoveryApi.getBaseUrl(plugin)}/`;
     const url = new URL(
       `.backstage/scheduler/v1/tasks/${encodeURIComponent(taskId)}/cancel`,
@@ -101,10 +100,13 @@ export class DevToolsClient implements DevToolsApi {
     });
 
     if (!response.ok) {
+      if (response.status === 404) {
+        throw new NotFoundError(`Task ${taskId} not found`);
+      } else if (response.status === 409) {
+        throw new ConflictError(`Task ${taskId} is not running`);
+      }
       throw await ResponseError.fromResponse(response);
     }
-
-    return response.json() as Promise<CancelScheduledTask>;
   }
 
   public async getExternalDependencies(): Promise<

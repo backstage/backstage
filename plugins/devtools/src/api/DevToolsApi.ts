@@ -21,7 +21,6 @@ import {
   ExternalDependency,
 } from '@backstage/plugin-devtools-common';
 import {
-  CancelScheduledTask,
   ScheduledTasks,
   TriggerScheduledTask,
 } from '@backstage/plugin-devtools-common/alpha';
@@ -39,8 +38,5 @@ export interface DevToolsApi {
     plugin: string,
     taskId: string,
   ): Promise<TriggerScheduledTask>;
-  cancelScheduledTask(
-    plugin: string,
-    taskId: string,
-  ): Promise<CancelScheduledTask>;
+  cancelScheduledTask(plugin: string, taskId: string): Promise<void>;
 }

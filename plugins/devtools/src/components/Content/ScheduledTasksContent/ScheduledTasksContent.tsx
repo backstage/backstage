@@ -288,7 +288,7 @@ export const ScheduledTasksContent = () => {
         )}
       />
 
-      {loading && <Progress />}
+      {loading && !scheduledTasks && <Progress />}
 
       {error && (
         <ErrorPanel
@@ -317,7 +317,7 @@ export const ScheduledTasksContent = () => {
         </ErrorPanel>
       )}
 
-      {!loading && !error && (
+      {scheduledTasks && (
         <Table
           title={`Scheduled Tasks (${selectedPlugin})`}
           options={{
@@ -325,6 +325,7 @@ export const ScheduledTasksContent = () => {
             search: true,
             sorting: true,
             searchFieldAlignment: 'right',
+            padding: 'dense',
           }}
           columns={columns}
           data={scheduledTasks || []}

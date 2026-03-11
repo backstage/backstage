@@ -133,8 +133,3 @@ export type ScheduledTasks = {
 export type TriggerScheduledTask = {
   error?: string;
 };
-
-/** @alpha */
-export type CancelScheduledTask = {
-  error?: string;
-};
