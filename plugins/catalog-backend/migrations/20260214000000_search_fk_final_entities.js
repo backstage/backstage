@@ -82,7 +82,9 @@ exports.up = async function up(knex) {
       if (orphanIds.length === 0) {
         break;
       }
-      const ids = orphanIds.map(r => r.entity_id);
+      const ids = orphanIds.map(
+        (/** @type {{ entity_id: string }} */ r) => r.entity_id,
+      );
       await knex('search').whereIn('entity_id', ids).delete();
     }
 
@@ -165,7 +167,9 @@ exports.down = async function down(knex) {
       if (orphanIds.length === 0) {
         break;
       }
-      const ids = orphanIds.map(r => r.entity_id);
+      const ids = orphanIds.map(
+        (/** @type {{ entity_id: string }} */ r) => r.entity_id,
+      );
       await knex('search').whereIn('entity_id', ids).delete();
     }
 
