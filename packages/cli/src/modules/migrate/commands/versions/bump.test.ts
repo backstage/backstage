@@ -125,7 +125,7 @@ const expectLogsToMatch = (
   expect(receivedLogs.filter(Boolean).sort()).toEqual(expected.sort());
 };
 
-const info = { usage: 'backstage-cli versions:bump', description: '' };
+const info = { usage: 'backstage-cli versions:bump', name: 'versions:bump' };
 
 describe('bump', () => {
   const mockDir = createMockDirectory();

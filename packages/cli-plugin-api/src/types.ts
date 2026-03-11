@@ -27,18 +27,11 @@ export interface CommandContext {
      */
     usage: string;
     /**
-     * The description provided for the command
+     * The name of the command, for example: "repo test"
      */
-    description: string;
+    name: string;
   };
 }
-
-/**
- * A function that executes a CLI command.
- *
- * @public
- */
-export type CommandExecuteFn = (context: CommandContext) => Promise<void>;
 
 /**
  * A command definition for a Backstage CLI plugin.
@@ -51,9 +44,11 @@ export interface BackstageCommand {
   deprecated?: boolean;
   experimental?: boolean;
   execute:
-    | CommandExecuteFn
+    | ((context: CommandContext) => Promise<void>)
     | {
-        loader: () => Promise<{ default: CommandExecuteFn }>;
+        loader: () => Promise<{
+          default: (context: CommandContext) => Promise<void>;
+        }>;
       };
 }
 
@@ -70,6 +65,5 @@ export type CliFeature = CliPlugin;
  * @public
  */
 export interface CliPlugin {
-  readonly pluginId: string;
   readonly $$type: '@backstage/CliPlugin';
 }

@@ -56,7 +56,9 @@ export class CliInitializer {
   async #register(feature: CliFeature) {
     if (OpaqueCliPlugin.isType(feature)) {
       const internal = OpaqueCliPlugin.toInternal(feature);
-      await internal.init(this.commandRegistry);
+      for (const command of await internal.commands) {
+        this.commandRegistry.addCommand(command);
+      }
     } else {
       throw new Error(`Unsupported feature type: ${(feature as any).$$type}`);
     }
@@ -138,7 +140,7 @@ export class CliInitializer {
                 args: [...positionalArgs, ...args.unknown],
                 info: {
                   usage: [programName, ...node.command.path].join(' '),
-                  description: node.command.description,
+                  name: node.command.path.join(' '),
                 },
               };
 

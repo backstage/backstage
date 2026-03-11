@@ -15,9 +15,10 @@
  */
 import { createCliPlugin } from '@backstage/cli-plugin-api';
 import { NotImplementedError } from '@backstage/errors';
+import packageJson from '../../../package.json';
 
 export default createCliPlugin({
-  pluginId: 'new',
+  packageJson,
   init: async reg => {
     reg.addCommand({
       path: ['new'],

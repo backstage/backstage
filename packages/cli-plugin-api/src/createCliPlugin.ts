@@ -15,7 +15,6 @@
  */
 
 import { OpaqueCliPlugin } from '@internal/cli';
-import { describeParentCallSite } from './describeParentCallSite';
 import { BackstageCommand, CliPlugin } from './types';
 
 /**
@@ -24,14 +23,18 @@ import { BackstageCommand, CliPlugin } from './types';
  * @public
  */
 export function createCliPlugin(options: {
-  pluginId: string;
+  packageJson: { name: string };
   init: (registry: {
     addCommand: (command: BackstageCommand) => void;
   }) => Promise<void>;
 }): CliPlugin {
+  const commands: BackstageCommand[] = [];
+  const commandsPromise = options
+    .init({ addCommand: command => commands.push(command) })
+    .then(() => commands);
+
   return OpaqueCliPlugin.createInstance('v1', {
-    pluginId: options.pluginId,
-    init: options.init,
-    description: `created at '${describeParentCallSite()}'`,
+    packageName: options.packageJson.name,
+    commands: commandsPromise,
   });
 }

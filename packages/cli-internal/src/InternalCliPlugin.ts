@@ -21,10 +21,8 @@ export const OpaqueCliPlugin = OpaqueType.create<{
   public: CliPlugin;
   versions: {
     readonly version: 'v1';
-    readonly description: string;
-    init: (registry: {
-      addCommand: (command: BackstageCommand) => void;
-    }) => Promise<void>;
+    readonly packageName: string;
+    readonly commands: Promise<ReadonlyArray<BackstageCommand>>;
   };
 }>({
   type: '@backstage/CliPlugin',

@@ -15,9 +15,10 @@
  */
 
 import { createCliPlugin } from '@backstage/cli-plugin-api';
+import packageJson from '../../../package.json';
 
 export const buildPlugin = createCliPlugin({
-  pluginId: 'build',
+  packageJson,
   init: async reg => {
     reg.addCommand({
       path: ['package', 'build'],

@@ -11,10 +11,10 @@ export interface BackstageCommand {
   description: string;
   // (undocumented)
   execute:
-    | CommandExecuteFn
+    | ((context: CommandContext) => Promise<void>)
     | {
         loader: () => Promise<{
-          default: CommandExecuteFn;
+          default: (context: CommandContext) => Promise<void>;
         }>;
       };
   // (undocumented)
@@ -30,8 +30,6 @@ export type CliFeature = CliPlugin;
 export interface CliPlugin {
   // (undocumented)
   readonly $$type: '@backstage/CliPlugin';
-  // (undocumented)
-  readonly pluginId: string;
 }
 
 // @public
@@ -46,11 +44,10 @@ export interface CommandContext {
 }
 
 // @public
-export type CommandExecuteFn = (context: CommandContext) => Promise<void>;
-
-// @public
 export function createCliPlugin(options: {
-  pluginId: string;
+  packageJson: {
+    name: string;
+  };
   init: (registry: {
     addCommand: (command: BackstageCommand) => void;
   }) => Promise<void>;

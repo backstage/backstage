@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 import { createCliPlugin } from '@backstage/cli-plugin-api';
+import packageJson from '../../../package.json';
 
 export default createCliPlugin({
-  pluginId: 'maintenance',
+  packageJson,
   init: async reg => {
     reg.addCommand({
       path: ['repo', 'fix'],

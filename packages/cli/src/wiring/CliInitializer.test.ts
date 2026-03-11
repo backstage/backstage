@@ -29,7 +29,7 @@ describe('CliInitializer', () => {
     const initializer = new CliInitializer();
     initializer.add(
       createCliPlugin({
-        pluginId: 'test',
+        packageJson: { name: '@backstage/test' },
         init: async reg =>
           reg.addCommand({
             path: ['test'],
@@ -51,7 +51,7 @@ describe('CliInitializer', () => {
     const initializer = new CliInitializer();
     initializer.add(
       createCliPlugin({
-        pluginId: 'test',
+        packageJson: { name: '@backstage/test' },
         init: async reg =>
           reg.addCommand({
             path: ['test'],
@@ -73,7 +73,7 @@ describe('CliInitializer', () => {
     const initializer = new CliInitializer();
     initializer.add(
       createCliPlugin({
-        pluginId: 'test',
+        packageJson: { name: '@backstage/test' },
         init: async reg =>
           reg.addCommand({
             path: ['test'],
@@ -98,7 +98,7 @@ describe('CliInitializer', () => {
     const initializer = new CliInitializer();
     initializer.add(
       createCliPlugin({
-        pluginId: 'test',
+        packageJson: { name: '@backstage/test' },
         init: async reg => {
           reg.addCommand({
             path: ['visible'],
@@ -125,7 +125,7 @@ describe('CliInitializer', () => {
     const initializer2 = new CliInitializer();
     initializer2.add(
       createCliPlugin({
-        pluginId: 'test',
+        packageJson: { name: '@backstage/test' },
         init: async reg => {
           reg.addCommand({
             path: ['visible'],
@@ -153,7 +153,7 @@ describe('CliInitializer', () => {
     const initializer = new CliInitializer();
     initializer.add(
       createCliPlugin({
-        pluginId: 'test',
+        packageJson: { name: '@backstage/test' },
         init: async reg => {
           reg.addCommand({
             path: ['visible'],
@@ -188,7 +188,7 @@ describe('CliInitializer', () => {
     const initializer = new CliInitializer();
     initializer.add(
       createCliPlugin({
-        pluginId: 'test',
+        packageJson: { name: '@backstage/test' },
         init: async reg => {
           reg.addCommand({
             path: ['group', 'alpha'],
@@ -224,7 +224,7 @@ describe('CliInitializer', () => {
     const initializer = new CliInitializer();
     initializer.add(
       createCliPlugin({
-        pluginId: 'test',
+        packageJson: { name: '@backstage/test' },
         init: async reg =>
           reg.addCommand({
             path: ['test', 'nested', 'command'],

@@ -41,7 +41,7 @@ describe.each([
     }
     const context: CommandContext = {
       args,
-      info: { usage: 'backstage-cli new', description: 'test' },
+      info: { usage: 'backstage-cli new', name: 'new' },
     };
     await newCommand(context);
     expect(createNewPackage).toHaveBeenCalledWith(

@@ -15,9 +15,10 @@
  */
 
 import { createCliPlugin } from '../../wiring/factory';
+import packageJson from '../../../package.json';
 
 export default createCliPlugin({
-  pluginId: 'auth',
+  packageJson,
   init: async reg => {
     reg.addCommand({
       path: ['auth', 'login'],

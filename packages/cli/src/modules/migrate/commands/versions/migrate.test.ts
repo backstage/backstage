@@ -123,7 +123,7 @@ describe('versions:migrate', () => {
     });
 
     const { warn, log: logs } = await withLogCollector(async () => {
-      await migrate({ args: [], info: { usage: 'test', description: 'test' } });
+      await migrate({ args: [], info: { usage: 'test', name: 'test' } });
     });
 
     expectLogsToMatch(logs, [
@@ -229,7 +229,7 @@ describe('versions:migrate', () => {
     });
 
     await withLogCollector(async () => {
-      await migrate({ args: [], info: { usage: 'test', description: 'test' } });
+      await migrate({ args: [], info: { usage: 'test', name: 'test' } });
     });
 
     expect(runObj.run).toHaveBeenCalledTimes(1);
@@ -311,7 +311,7 @@ describe('versions:migrate', () => {
     });
 
     await withLogCollector(async () => {
-      await migrate({ args: [], info: { usage: 'test', description: 'test' } });
+      await migrate({ args: [], info: { usage: 'test', name: 'test' } });
     });
 
     expect(runObj.run).toHaveBeenCalledTimes(1);

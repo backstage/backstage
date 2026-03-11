@@ -18,7 +18,6 @@ export { createCliPlugin } from './createCliPlugin';
 export type {
   BackstageCommand,
   CommandContext,
-  CommandExecuteFn,
   CliPlugin,
   CliFeature,
 } from './types';

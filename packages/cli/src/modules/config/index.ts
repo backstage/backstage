@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { createCliPlugin } from '@backstage/cli-plugin-api';
+import packageJson from '../../../package.json';
 
 export const configOption = [
   '--config <path>',
@@ -23,7 +24,7 @@ export const configOption = [
 ] as const;
 
 export default createCliPlugin({
-  pluginId: 'config',
+  packageJson,
   init: async reg => {
     reg.addCommand({
       path: ['config:docs'],

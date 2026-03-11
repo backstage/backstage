@@ -16,7 +16,6 @@
 
 export type {
   CommandContext,
-  CommandExecuteFn,
   BackstageCommand,
   CliFeature,
   CliPlugin,
