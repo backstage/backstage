@@ -171,7 +171,7 @@
     "semver": "^7.5.3",
     "shx": "^0.4.0",
     "sloc": "^0.3.1",
-    "sort-package-json": "^2.8.0",
+    "sort-package-json": "^3.0.0",
     "storybook": "^10.3.0-alpha.1",
     "ts-morph": "^24.0.0",
     "typedoc": "^0.28.0",
