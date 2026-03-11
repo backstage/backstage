@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { mockCredentials } from '@backstage/backend-test-utils';
+import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 import { McpService } from './McpService';
 import {
   actionsRegistryServiceMock,
@@ -49,6 +49,7 @@ describe('McpService', () => {
     const mcpService = await McpService.create({
       actions: mockActionsRegistry,
       metrics: mockMetrics,
+      auditor: mockServices.auditor.mock(),
     });
 
     const server = mcpService.getServer({
@@ -121,6 +122,7 @@ describe('McpService', () => {
     const mcpService = await McpService.create({
       actions: mockActionsRegistry,
       metrics: mockMetrics,
+      auditor: mockServices.auditor.mock(),
     });
 
     const server = mcpService.getServer({
@@ -174,6 +176,7 @@ describe('McpService', () => {
     const mcpService = await McpService.create({
       actions: mockActionsRegistry,
       metrics: mockMetrics,
+      auditor: mockServices.auditor.mock(),
     });
 
     const server = mcpService.getServer({
@@ -238,6 +241,7 @@ describe('McpService', () => {
     const mcpService = await McpService.create({
       actions: actionsRegistryServiceMock(),
       metrics: mockMetrics,
+      auditor: mockServices.auditor.mock(),
     });
 
     const server = mcpService.getServer({
@@ -306,6 +310,7 @@ describe('McpService', () => {
     const mcpService = await McpService.create({
       actions: mockActionsRegistry,
       metrics: mockMetrics,
+      auditor: mockServices.auditor.mock(),
     });
 
     const server = mcpService.getServer({
@@ -366,6 +371,7 @@ describe('McpService', () => {
     const mcpService = await McpService.create({
       actions: mockActionsRegistry,
       metrics: metricsServiceMock.mock(),
+      auditor: mockServices.auditor.mock(),
     });
 
     const server = mcpService.getServer({
@@ -422,6 +428,7 @@ describe('McpService', () => {
     const mcpService = await McpService.create({
       actions: mockActionsRegistry,
       metrics: metricsServiceMock.mock(),
+      auditor: mockServices.auditor.mock(),
     });
 
     const server = mcpService.getServer({
@@ -506,6 +513,7 @@ describe('McpService', () => {
       const mcpService = await McpService.create({
         actions: fakeActionsService,
         metrics: metricsServiceMock.mock(),
+        auditor: mockServices.auditor.mock(),
       });
 
       const serverConfig: McpServerConfig = {
@@ -539,6 +547,7 @@ describe('McpService', () => {
       const mcpService = await McpService.create({
         actions: fakeActionsService,
         metrics: metricsServiceMock.mock(),
+        auditor: mockServices.auditor.mock(),
       });
 
       const serverConfig: McpServerConfig = {
@@ -580,6 +589,7 @@ describe('McpService', () => {
       const mcpService = await McpService.create({
         actions: fakeActionsService,
         metrics: metricsServiceMock.mock(),
+        auditor: mockServices.auditor.mock(),
       });
 
       const serverConfig: McpServerConfig = {
@@ -618,6 +628,7 @@ describe('McpService', () => {
       const mcpService = await McpService.create({
         actions: fakeActionsService,
         metrics: metricsServiceMock.mock(),
+        auditor: mockServices.auditor.mock(),
       });
 
       const serverConfig: McpServerConfig = {
@@ -656,6 +667,7 @@ describe('McpService', () => {
       const mcpService = await McpService.create({
         actions: fakeActionsService,
         metrics: metricsServiceMock.mock(),
+        auditor: mockServices.auditor.mock(),
       });
 
       const serverConfig: McpServerConfig = {
@@ -720,6 +732,7 @@ describe('McpService', () => {
       const mcpService = await McpService.create({
         actions: mockActionsRegistry,
         metrics: metricsServiceMock.mock(),
+        auditor: mockServices.auditor.mock(),
       });
 
       const server = mcpService.getServer({
@@ -758,6 +771,7 @@ describe('McpService', () => {
       const mcpService = await McpService.create({
         actions: mockActionsRegistry,
         metrics: metricsServiceMock.mock(),
+        auditor: mockServices.auditor.mock(),
         namespacedToolNames: false,
       });
 
@@ -797,6 +811,7 @@ describe('McpService', () => {
       const mcpService = await McpService.create({
         actions: mockActionsRegistry,
         metrics: metricsServiceMock.mock(),
+        auditor: mockServices.auditor.mock(),
       });
 
       const server = mcpService.getServer({

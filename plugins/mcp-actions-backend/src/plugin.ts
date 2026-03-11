@@ -49,6 +49,7 @@ export const mcpPlugin = createBackendPlugin({
         discovery: coreServices.discovery,
         config: coreServices.rootConfig,
         metrics: metricsServiceRef,
+        auditor: coreServices.auditor,
       },
       async init({
         actions,
@@ -59,6 +60,7 @@ export const mcpPlugin = createBackendPlugin({
         discovery,
         config,
         metrics,
+        auditor,
       }) {
         const serverConfigs = parseServerConfigs(config);
         const namespacedToolNames = config.getOptionalBoolean(
@@ -68,6 +70,7 @@ export const mcpPlugin = createBackendPlugin({
         const mcpService = await McpService.create({
           actions,
           metrics,
+          auditor,
           namespacedToolNames,
         });
 
@@ -81,6 +84,7 @@ export const mcpPlugin = createBackendPlugin({
               httpAuth,
               logger,
               metrics,
+              auditor,
               serverConfig,
             });
 
@@ -90,6 +94,7 @@ export const mcpPlugin = createBackendPlugin({
           const sseRouter = createSseRouter({
             mcpService,
             httpAuth,
+            auditor,
           });
 
           const streamableRouter = createStreamableRouter({
@@ -97,6 +102,7 @@ export const mcpPlugin = createBackendPlugin({
             httpAuth,
             logger,
             metrics,
+            auditor,
           });
 
           router.use('/v1/sse', sseRouter);

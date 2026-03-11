@@ -19,7 +19,11 @@ import { performance } from 'node:perf_hooks';
 import { McpService } from '../services/McpService';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import { LATEST_PROTOCOL_VERSION } from '@modelcontextprotocol/sdk/types.js';
-import { HttpAuthService, LoggerService } from '@backstage/backend-plugin-api';
+import {
+  AuditorService,
+  HttpAuthService,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
 import { isError } from '@backstage/errors';
 import { MetricsService } from '@backstage/backend-plugin-api/alpha';
 import { bucketBoundaries, McpServerSessionAttributes } from '../metrics';
@@ -30,12 +34,14 @@ export const createStreamableRouter = ({
   httpAuth,
   logger,
   metrics,
+  auditor,
   serverConfig,
 }: {
   mcpService: McpService;
   logger: LoggerService;
   httpAuth: HttpAuthService;
   metrics: MetricsService;
+  auditor: AuditorService;
   serverConfig?: McpServerConfig;
 }): Router => {
   const router = PromiseRouter();
@@ -59,10 +65,18 @@ export const createStreamableRouter = ({
       'network.protocol.name': 'http',
     };
 
+    const connectionEvent = await auditor.createEvent({
+      eventId: 'connection',
+      severityLevel: 'medium',
+      request: req,
+      meta: { transport: 'streamable', actionType: 'established' },
+    });
+
     try {
       const server = mcpService.getServer({
         credentials: await httpAuth.credentials(req),
         serverConfig,
+        req,
       });
 
       const transport = new StreamableHTTPServerTransport({
@@ -72,6 +86,7 @@ export const createStreamableRouter = ({
       });
 
       await server.connect(transport);
+      await connectionEvent.success();
       await transport.handleRequest(req, res, req.body);
 
       res.on('close', () => {
@@ -81,6 +96,14 @@ export const createStreamableRouter = ({
         const durationSeconds = (performance.now() - sessionStart) / 1000;
 
         sessionDuration.record(durationSeconds, baseAttributes);
+
+        auditor
+          .createEvent({
+            eventId: 'connection',
+            request: req,
+            meta: { transport: 'streamable', actionType: 'closed' },
+          })
+          .then(e => e.success());
       });
     } catch (error) {
       const errorType = isError(error) ? error.name : 'Error';
@@ -106,6 +129,8 @@ export const createStreamableRouter = ({
         ...baseAttributes,
         'error.type': errorType,
       });
+
+      await connectionEvent.fail({ error: error as Error });
     }
   });
 
