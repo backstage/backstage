@@ -1,0 +1,9 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: internal-cli
+  title: '@internal/cli'
+spec:
+  lifecycle: experimental
+  type: backstage-node-library
+  owner: tooling-maintainers

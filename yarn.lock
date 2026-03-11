@@ -9680,6 +9680,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@internal/cli@workspace:packages/cli-internal":
+  version: 0.0.0-use.local
+  resolution: "@internal/cli@workspace:packages/cli-internal"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@backstage/cli-plugin-api": "workspace:^"
+  languageName: unknown
+  linkType: soft
+
 "@internal/frontend@workspace:packages/frontend-internal":
   version: 0.0.0-use.local
   resolution: "@internal/frontend@workspace:packages/frontend-internal"

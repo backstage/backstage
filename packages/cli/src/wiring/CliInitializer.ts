@@ -15,10 +15,7 @@
  */
 
 import { CommandGraph } from './CommandGraph';
-import {
-  isCliPlugin,
-  initializeCliPlugin,
-} from '@backstage/cli-plugin-api/internals';
+import { OpaqueCliPlugin } from '@internal/cli';
 import type { BackstageCommand, CliFeature } from '@backstage/cli-plugin-api';
 import { CommandRegistry } from './CommandRegistry';
 import { Command } from 'commander';
@@ -57,8 +54,9 @@ export class CliInitializer {
   }
 
   async #register(feature: CliFeature) {
-    if (isCliPlugin(feature)) {
-      await initializeCliPlugin(feature, this.commandRegistry);
+    if (OpaqueCliPlugin.isType(feature)) {
+      const internal = OpaqueCliPlugin.toInternal(feature);
+      await internal.init(this.commandRegistry);
     } else {
       throw new Error(`Unsupported feature type: ${(feature as any).$$type}`);
     }

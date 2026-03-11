@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { OpaqueType } from '@internal/opaque';
 
 /**
  * The context provided to a CLI command when it is executed.
@@ -74,18 +73,3 @@ export interface CliPlugin {
   readonly pluginId: string;
   readonly $$type: '@backstage/CliPlugin';
 }
-
-/** @internal */
-export const OpaqueCliPlugin = OpaqueType.create<{
-  public: CliPlugin;
-  versions: {
-    readonly version: 'v1';
-    readonly description: string;
-    init: (registry: {
-      addCommand: (command: BackstageCommand) => void;
-    }) => Promise<void>;
-  };
-}>({
-  type: '@backstage/CliPlugin',
-  versions: ['v1'],
-});

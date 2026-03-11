@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
+import { OpaqueCliPlugin } from '@internal/cli';
 import { describeParentCallSite } from './describeParentCallSite';
-import { BackstageCommand, CliPlugin, OpaqueCliPlugin } from './types';
+import { BackstageCommand, CliPlugin } from './types';
 
 /**
  * Creates a new CLI plugin that provides commands to the Backstage CLI.
