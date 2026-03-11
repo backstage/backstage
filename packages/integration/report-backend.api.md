@@ -42,13 +42,11 @@ export class DefaultAzureCredentialsManager implements AzureCredentialsManager {
       }>;
     };
   }): DefaultAzureCredentialsManager;
-  // (undocumented)
   getCredentials(
     accountName: string,
   ): Promise<
     TokenCredential | AnonymousCredential | StorageSharedKeyCredential
   >;
-  // (undocumented)
   getServiceUrl(accountName: string): string;
 }
 

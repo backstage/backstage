@@ -51,7 +51,7 @@ export class DefaultAzureCredentialsManager implements AzureCredentialsManager {
   /**
    * Creates an instance of DefaultAzureCredentialsManager from a Backstage integration registry.
    *
-   * @param integrations - An {@link ScmIntegrations} instance (or any object providing `azureBlobStorage.list()`)
+   * @param integrations - An `ScmIntegrations` instance (or any object providing `azureBlobStorage.list()`)
    *
    * @example
    * ```ts
