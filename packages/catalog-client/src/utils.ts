@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
+import type {
+  FilterPredicate,
+  FilterPredicateExpression,
+} from '@backstage/filter-predicates';
 import {
+  CATALOG_FILTER_EXISTS,
+  EntityFilterQuery,
   QueryEntitiesCursorRequest,
   QueryEntitiesInitialRequest,
   QueryEntitiesRequest,
@@ -24,6 +30,58 @@ export function isQueryEntitiesInitialRequest(
   request: QueryEntitiesRequest,
 ): request is QueryEntitiesInitialRequest {
   return !(request as QueryEntitiesCursorRequest).cursor;
+}
+
+/**
+ * Check if a cursor contains a predicate query by attempting to decode it.
+ * @internal
+ */
+export function cursorContainsQuery(cursor: string): boolean {
+  try {
+    const decoded = JSON.parse(atob(cursor));
+    return 'query' in decoded;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Converts an {@link EntityFilterQuery} into a predicate query object.
+ * @internal
+ */
+export function convertFilterToPredicate(filter: EntityFilterQuery):
+  | FilterPredicateExpression
+  | {
+      $all: FilterPredicate[];
+    }
+  | {
+      $any: FilterPredicate[];
+    } {
+  const records = [filter].flat();
+
+  const clauses = records.map(record => {
+    const parts: FilterPredicateExpression[] = [];
+
+    for (const [key, value] of Object.entries(record)) {
+      const values = [value].flat();
+      const strings = values.filter((v): v is string => typeof v === 'string');
+      const hasExists = values.some(v => v === CATALOG_FILTER_EXISTS);
+
+      if (hasExists) {
+        // Ignore whether there ALSO were some strings - that would boil down to
+        // just existence anyway since there's effectively an OR between them
+        parts.push({ [key]: { $exists: true } } as FilterPredicateExpression);
+      } else if (strings.length === 1) {
+        parts.push({ [key]: strings[0] } as FilterPredicateExpression);
+      } else if (strings.length > 1) {
+        parts.push({ [key]: { $in: strings } } as FilterPredicateExpression);
+      }
+    }
+
+    return parts.length === 1 ? parts[0] : { $all: parts };
+  });
+
+  return clauses.length === 1 ? clauses[0] : { $any: clauses };
 }
 
 /**

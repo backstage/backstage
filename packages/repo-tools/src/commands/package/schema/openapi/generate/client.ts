@@ -24,11 +24,12 @@ import {
   OUTPUT_PATH,
 } from '../../../../../lib/openapi/constants';
 import { deduplicateImports } from '../../../../../lib/openapi/dedupe-imports';
+import { targetPaths } from '@backstage/cli-common';
 import {
+  getOpenApiGeneratorKey,
   getPathToCurrentOpenApiSpec,
   toGeneratorAdditionalProperties,
 } from '../../../../../lib/openapi/helpers';
-import { paths as cliPaths } from '../../../../../lib/paths';
 
 async function generate(
   outputDirectory: string,
@@ -36,13 +37,14 @@ async function generate(
   abortSignal?: AbortController,
 ) {
   const resolvedOpenapiPath = await getPathToCurrentOpenApiSpec();
-  const resolvedOutputDirectory = cliPaths.resolveTargetRoot(
+  const resolvedOutputDirectory = targetPaths.resolveRoot(
     outputDirectory,
     OUTPUT_PATH,
   );
   const additionalProperties = toGeneratorAdditionalProperties({
     initialValue: clientAdditionalProperties,
   });
+  const generatorKey = await getOpenApiGeneratorKey(resolvedOpenapiPath);
 
   await fs.emptyDir(resolvedOutputDirectory);
 
@@ -68,7 +70,7 @@ async function generate(
         'templates/typescript-backstage-client.yaml',
       ),
       '--generator-key',
-      'v3.0',
+      generatorKey,
       additionalProperties
         ? `--additional-properties=${additionalProperties}`
         : '',
@@ -87,7 +89,7 @@ async function generate(
 
   await fs.writeFile(
     resolve(parentDirectory, 'index.ts'),
-    `// 
+    `//
     export * from './generated';`,
   );
 
@@ -95,8 +97,8 @@ async function generate(
     signal: abortSignal?.signal,
   });
 
-  const prettier = cliPaths.resolveTargetRoot('node_modules/.bin/prettier');
-  if (prettier) {
+  const prettier = targetPaths.resolveRoot('node_modules/.bin/prettier');
+  if (await fs.pathExists(prettier)) {
     await exec(`${prettier} --write ${parentDirectory}`, [], {
       signal: abortSignal?.signal,
     });
@@ -111,7 +113,12 @@ async function generate(
   }
 
   fs.removeSync(resolve(resolvedOutputDirectory, '.openapi-generator-ignore'));
+  fs.removeSync(resolve(resolvedOutputDirectory, '.gitattributes'));
 
+  fs.rmSync(resolve(resolvedOutputDirectory, 'docs'), {
+    recursive: true,
+    force: true,
+  });
   fs.rmSync(resolve(resolvedOutputDirectory, '.openapi-generator'), {
     recursive: true,
     force: true,

@@ -17,7 +17,7 @@
 import { mockServices } from '@backstage/backend-test-utils';
 import { SlackNotificationProcessor } from './SlackNotificationProcessor';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
-import { WebClient } from '@slack/web-api';
+import { KnownBlock, WebClient } from '@slack/web-api';
 import { Entity } from '@backstage/catalog-model';
 import pThrottle from 'p-throttle';
 import { durationToMilliseconds } from '@backstage/types';
@@ -209,6 +209,43 @@ describe('SlackNotificationProcessor', () => {
     });
   });
 
+  it('should use a custom block kit renderer when provided', async () => {
+    const slack = new WebClient();
+    const customBlocks: KnownBlock[] = [
+      {
+        type: 'section',
+        text: { type: 'mrkdwn', text: 'Custom block' },
+      },
+    ];
+
+    const processor = SlackNotificationProcessor.fromConfig(config, {
+      auth,
+      logger,
+      catalog: catalogServiceMock({
+        entities: DEFAULT_ENTITIES_RESPONSE.items,
+      }),
+      slack,
+      blockKitRenderer: () => customBlocks,
+    })[0];
+
+    await processor.processOptions({
+      recipients: { type: 'entity', entityRef: 'group:default/mock' },
+      payload: { title: 'notification' },
+    });
+
+    expect(slack.chat.postMessage).toHaveBeenCalledWith({
+      channel: 'C12345678',
+      text: 'notification',
+      attachments: [
+        {
+          color: '#00A699',
+          blocks: customBlocks,
+          fallback: 'notification',
+        },
+      ],
+    });
+  });
+
   describe('when a user notification is sent directly', () => {
     it('should send a notification to a user', async () => {
       const slack = new WebClient();
@@ -315,6 +352,51 @@ describe('SlackNotificationProcessor', () => {
       );
 
       expect(slack.chat.postMessage).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('when recipients include both users and a group', () => {
+    it('should still DM explicit user recipients', async () => {
+      const slack = new WebClient();
+
+      const processor = SlackNotificationProcessor.fromConfig(config, {
+        auth,
+        logger,
+        catalog: catalogServiceMock({
+          entities: DEFAULT_ENTITIES_RESPONSE.items,
+        }),
+        slack,
+      })[0];
+
+      await processor.processOptions({
+        recipients: {
+          type: 'entity',
+          entityRef: ['group:default/mock', 'user:default/mock'],
+        },
+        payload: { title: 'notification' },
+      });
+
+      await processor.postProcess(
+        {
+          origin: 'plugin',
+          id: 'explicit-user-1',
+          user: 'user:default/mock',
+          created: new Date(),
+          payload: { title: 'notification' },
+        },
+        {
+          recipients: {
+            type: 'entity',
+            entityRef: ['group:default/mock', 'user:default/mock'],
+          },
+          payload: { title: 'notification' },
+        },
+      );
+
+      expect(slack.chat.postMessage).toHaveBeenCalledTimes(2);
+      expect(slack.chat.postMessage).toHaveBeenCalledWith(
+        expect.objectContaining({ channel: 'U12345678' }),
+      );
     });
   });
 

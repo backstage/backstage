@@ -59,7 +59,7 @@ export function registerCommands(program: Command) {
       'Name for site when using default MkDocs config',
       'Documentation Site',
     )
-    .option('-v --verbose', 'Enable verbose output.', false)
+    .option('-v, --verbose', 'Enable verbose output.', false)
     .option(
       '--omitTechdocsCoreMkdocsPlugin',
       "Don't patch MkDocs file automatically with techdocs-core plugin.",
@@ -142,7 +142,7 @@ export function registerCommands(program: Command) {
       'Optional Controls the number of API requests allowed to be performed simultaneously.',
       '25',
     )
-    .option('-v --verbose', 'Enable verbose output.', false)
+    .option('-v, --verbose', 'Enable verbose output.', false)
     .action(lazy(() => import('./migrate/migrate'), 'default'));
 
   program
@@ -253,7 +253,7 @@ export function registerCommands(program: Command) {
       'Documentation Site',
     )
     .option('-p, --port <PORT>', 'Port to serve documentation locally', '8000')
-    .option('-v --verbose', 'Enable verbose output.', false)
+    .option('-v, --verbose', 'Enable verbose output.', false)
     .action(lazy(() => import('./serve/mkdocs'), 'default'));
 
   program
@@ -284,7 +284,7 @@ export function registerCommands(program: Command) {
       'Documentation Site',
     )
     .option('--mkdocs-port <PORT>', 'Port for MkDocs server to use', '8000')
-    .option('-v --verbose', 'Enable verbose output.', false)
+    .option('-v, --verbose', 'Enable verbose output.', false)
     .option(
       '--preview-app-bundle-path <PATH_TO_BUNDLE>',
       'Preview documentation using another web app',

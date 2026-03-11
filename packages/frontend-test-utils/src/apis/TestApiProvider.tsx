@@ -29,7 +29,7 @@ import {
  */
 export type TestApiPair<TApi> =
   | readonly [ApiRef<TApi>, TApi extends infer TImpl ? Partial<TImpl> : never]
-  | MockWithApiFactory<TApi>;
+  | MockWithApiFactory<NoInfer<TApi>>;
 
 /**
  * Represents an array of mock API implementation.

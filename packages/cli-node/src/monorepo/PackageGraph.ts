@@ -16,7 +16,7 @@
 
 import path from 'node:path';
 import { getPackages, Package } from '@manypkg/get-packages';
-import { paths } from '../paths';
+import { targetPaths } from '@backstage/cli-common';
 import { PackageRole } from '../roles';
 import { GitUtils } from '../git';
 import { Lockfile } from './Lockfile';
@@ -192,7 +192,7 @@ export class PackageGraph extends Map<string, PackageGraphNode> {
    * Lists all local packages in a monorepo.
    */
   static async listTargetPackages(): Promise<BackstagePackage[]> {
-    const { packages } = await getPackages(paths.targetDir);
+    const { packages } = await getPackages(targetPaths.dir);
 
     return packages as BackstagePackage[];
   }
@@ -332,7 +332,7 @@ export class PackageGraph extends Map<string, PackageGraphNode> {
       Array.from(this.values()).map(pkg => [
         // relative from root, convert to posix, and add a / at the end
         path
-          .relative(paths.targetRoot, pkg.dir)
+          .relative(targetPaths.rootDir, pkg.dir)
           .split(path.sep)
           .join(path.posix.sep) + path.posix.sep,
         pkg,
@@ -374,7 +374,7 @@ export class PackageGraph extends Map<string, PackageGraphNode> {
       let otherLockfile: Lockfile;
       try {
         thisLockfile = await Lockfile.load(
-          paths.resolveTargetRoot('yarn.lock'),
+          targetPaths.resolveRoot('yarn.lock'),
         );
         otherLockfile = Lockfile.parse(
           await GitUtils.readFileAtRef('yarn.lock', options.ref),

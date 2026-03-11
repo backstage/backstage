@@ -1,1 +1,0 @@
-Add missing sharing extensions sidebar item in frontend system architecture docs

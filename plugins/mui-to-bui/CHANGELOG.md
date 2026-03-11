@@ -1,5 +1,35 @@
 # @backstage/plugin-mui-to-bui
 
+## 0.2.5-next.2
+
+### Patch Changes
+
+- ad7c883: Updated the MUI to BUI theme converter page to use the renamed `Header` component from `@backstage/ui`.
+- Updated dependencies
+  - @backstage/ui@0.13.0-next.2
+  - @backstage/frontend-plugin-api@0.15.0-next.1
+  - @backstage/core-plugin-api@1.12.4-next.1
+
+## 0.2.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.13.0-next.1
+  - @backstage/core-plugin-api@1.12.4-next.0
+  - @backstage/frontend-plugin-api@0.14.2-next.0
+  - @backstage/theme@0.7.2
+
+## 0.2.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.12.1-next.0
+  - @backstage/frontend-plugin-api@0.14.2-next.0
+  - @backstage/core-plugin-api@1.12.4-next.0
+  - @backstage/theme@0.7.2
+
 ## 0.2.4
 
 ### Patch Changes

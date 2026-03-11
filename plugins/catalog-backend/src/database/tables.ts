@@ -82,47 +82,6 @@ export type DbRefreshStateRow = {
    */
   next_update_at: string | Date;
   /**
-   * If a stitch has been requested, this is the point in time that that last
-   * happened.
-   *
-   * @remarks
-   *
-   * Each time that a request is made, this timestamp is updated to the current
-   * time, overwriting the previous value if applicable.
-   *
-   * When the stitch loop runs and picks up an entity, this timestamp is not
-   * immediately reset. It's instead moved forward in time by a certain amount,
-   * which means that if the stitcher for some reason fails (eg if the process
-   * crashes or gets shut down), the entity will be picked up again in the
-   * future.
-   *
-   * Only when a stitch run is completed successfully, AND it's found that the
-   * stitch ticket has not changed since the start (which means that no new
-   * request has been made behind our backs), does the timestamp (and the
-   * ticket) get reset.
-   */
-  next_stitch_at?: string | Date | null;
-  /**
-   * If a stitch has been requested, this is the unique ticket that was chosen
-   * to mark the last request.
-   *
-   * @remarks
-   *
-   * Each time that a request is made, a new random ticket is chosen,
-   * overwriting the previous value if applicable.
-   *
-   * When the stitch loop runs and picks up an entity, this column is left
-   * unchanged. This means that if the stitcher for some reason fails (eg if the
-   * process crashes or gets shut down), the entity will be picked up again in
-   * the future.
-   *
-   * Only when a stitch run is completed successfully, AND it's found that the
-   * stitch ticket has not changed since the start (which means that no new
-   * request has been made behind our backs), does the ticket (and the
-   * timestamp) get reset.
-   */
-  next_stitch_ticket?: string | null;
-  /**
    * The last time that this entity was emitted by somebody (the entity provider
    * or a parent entity).
    *
@@ -176,10 +135,50 @@ export type DbRelationsRow = {
 export type DbFinalEntitiesRow = {
   entity_id: string;
   hash: string;
-  stitch_ticket: string;
   final_entity?: string;
   last_updated_at?: string | Date;
   entity_ref: string;
+};
+
+/**
+ * Represents the stitch_queue table.
+ *
+ * @remarks
+ *
+ * Each row represents a pending stitch request for an entity. When a stitch
+ * completes successfully and the ticket hasn't changed, the row is deleted.
+ */
+export type DbStitchQueueRow = {
+  /**
+   * The entity ref that needs stitching (primary key).
+   */
+  entity_ref: string;
+  /**
+   * A random value that changes with every new stitch request. Used for
+   * optimistic concurrency: when a stitch completes, the row is only deleted
+   * if this ticket still matches (meaning no new request came in while
+   * stitching was in progress).
+   */
+  stitch_ticket: string;
+  /**
+   * The point in time when this entity should next be stitched.
+   *
+   * @remarks
+   *
+   * Each time that a request is made, this timestamp is updated to the current
+   * time, overwriting the previous value if applicable.
+   *
+   * When the stitch loop runs and picks up an entity, this timestamp is not
+   * immediately reset. It's instead moved forward in time by a certain amount,
+   * which means that if the stitcher for some reason fails (eg if the process
+   * crashes or gets shut down), the entity will be picked up again in the
+   * future.
+   *
+   * Only when a stitch run is completed successfully, AND it's found that the
+   * stitch ticket has not changed since the start (which means that no new
+   * request has been made behind our backs), does the row get deleted.
+   */
+  next_stitch_at: string | Date;
 };
 
 export type DbSearchRow = {

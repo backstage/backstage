@@ -16,6 +16,7 @@
 
 import { LocalTaskWorker } from './LocalTaskWorker';
 import { mockServices } from '@backstage/backend-test-utils';
+import { ConflictError } from '@backstage/errors';
 import waitFor from 'wait-for-expect';
 
 jest.setTimeout(10_000);
@@ -107,6 +108,54 @@ describe('LocalTaskWorker', () => {
     worker.trigger();
     await new Promise(r => setTimeout(r, 10));
     expect(fn).toHaveBeenCalledTimes(2);
+    controller.abort();
+  });
+
+  it('can cancel a running task', async () => {
+    let receivedSignal: AbortSignal | undefined;
+    const fn = jest.fn(async (signal: AbortSignal) => {
+      receivedSignal = signal;
+      await new Promise(r => setTimeout(r, 5000));
+    });
+    const controller = new AbortController();
+
+    const worker = new LocalTaskWorker('a', fn, logger);
+    worker.start(
+      {
+        version: 2,
+        cadence: 'PT10S',
+        timeoutAfterDuration: 'PT10S',
+      },
+      { signal: controller.signal },
+    );
+
+    await waitFor(() => {
+      expect(fn).toHaveBeenCalledTimes(1);
+    });
+
+    expect(receivedSignal?.aborted).toBe(false);
+    worker.cancel();
+    expect(receivedSignal?.aborted).toBe(true);
+
+    controller.abort();
+  });
+
+  it('cannot cancel a task that is not running', async () => {
+    const fn = jest.fn();
+    const controller = new AbortController();
+
+    const worker = new LocalTaskWorker('a', fn, logger);
+    worker.start(
+      {
+        version: 2,
+        initialDelayDuration: 'PT1000S',
+        cadence: 'PT10S',
+        timeoutAfterDuration: 'PT10S',
+      },
+      { signal: controller.signal },
+    );
+
+    expect(() => worker.cancel()).toThrow(ConflictError);
     controller.abort();
   });
 

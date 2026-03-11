@@ -8,3 +8,4 @@ documentation: https://github.com/CodeVerse-GP/usage-statistics/blob/main/README
 iconUrl: '/img/logo-gradient-on-dark.svg'
 npmPackageName: '@codeverse-gp/plugin-usage-statistics'
 addedDate: '2025-11-05'
+status: active

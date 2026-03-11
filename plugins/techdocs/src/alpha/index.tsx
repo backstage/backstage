@@ -223,6 +223,7 @@ const techDocsEntityContent = EntityContentBlueprint.makeWithOverrides({
       {
         path: 'docs',
         title: 'TechDocs',
+        group: 'documentation',
         routeRef: rootCatalogDocsRouteRef,
         loader: () => {
           // Merge addons from the API with old-style direct attachments

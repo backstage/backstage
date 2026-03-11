@@ -19,6 +19,7 @@ import {
   Entity,
   isUserEntity,
   parseEntityRef,
+  stringifyEntityRef,
   UserEntity,
 } from '@backstage/catalog-model';
 import { Config, readDurationFromConfig } from '@backstage/config';
@@ -37,6 +38,7 @@ import { ANNOTATION_SLACK_BOT_NOTIFY } from './constants';
 import { BroadcastRoute } from './types';
 import { ExpiryMap, toChatPostMessageArgs } from './util';
 import { CatalogService } from '@backstage/plugin-catalog-node';
+import { SlackBlockKitRenderer } from '../extensions';
 
 export class SlackNotificationProcessor implements NotificationProcessor {
   private readonly logger: LoggerService;
@@ -54,6 +56,7 @@ export class SlackNotificationProcessor implements NotificationProcessor {
   private readonly username?: string;
   private readonly concurrencyLimit: number;
   private readonly throttleInterval: number;
+  private readonly blockKitRenderer?: SlackBlockKitRenderer;
 
   static fromConfig(
     config: Config,
@@ -63,6 +66,7 @@ export class SlackNotificationProcessor implements NotificationProcessor {
       catalog: CatalogService;
       slack?: WebClient;
       broadcastChannels?: string[];
+      blockKitRenderer?: SlackBlockKitRenderer;
     },
   ): SlackNotificationProcessor[] {
     const slackConfig =
@@ -104,6 +108,7 @@ export class SlackNotificationProcessor implements NotificationProcessor {
     username?: string;
     concurrencyLimit?: number;
     throttleInterval?: number;
+    blockKitRenderer?: SlackBlockKitRenderer;
   }) {
     const {
       auth,
@@ -115,6 +120,7 @@ export class SlackNotificationProcessor implements NotificationProcessor {
       username,
       concurrencyLimit,
       throttleInterval,
+      blockKitRenderer,
     } = options;
     this.logger = logger;
     this.catalog = catalog;
@@ -126,6 +132,7 @@ export class SlackNotificationProcessor implements NotificationProcessor {
     this.concurrencyLimit = concurrencyLimit ?? 10;
     this.throttleInterval =
       throttleInterval ?? durationToMilliseconds({ minutes: 1 });
+    this.blockKitRenderer = blockKitRenderer;
 
     this.entityLoader = new DataLoader<string, Entity | undefined>(
       async entityRefs => {
@@ -246,6 +253,7 @@ export class SlackNotificationProcessor implements NotificationProcessor {
           channel,
           payload: options.payload,
           username: this.username,
+          blockKitRenderer: this.blockKitRenderer,
         });
 
         this.logger.debug(
@@ -273,8 +281,15 @@ export class SlackNotificationProcessor implements NotificationProcessor {
     } else if (options.recipients.type === 'entity') {
       // Handle user-specific notification
       const entityRefs = [options.recipients.entityRef].flat();
-      if (entityRefs.some(e => parseEntityRef(e).kind === 'group')) {
-        // We've already dispatched a slack channel message, so let's not send a DM.
+      const explicitUserEntityRefs = entityRefs
+        .filter(entityRef => parseEntityRef(entityRef).kind === 'user')
+        .map(entityRef => stringifyEntityRef(parseEntityRef(entityRef)));
+      const normalizedUserRef = stringifyEntityRef(
+        parseEntityRef(notification.user),
+      );
+
+      if (!explicitUserEntityRefs.includes(normalizedUserRef)) {
+        // This user was resolved from a non-user entity. Skip sending a DM.
         return;
       }
 
@@ -306,6 +321,7 @@ export class SlackNotificationProcessor implements NotificationProcessor {
         channel,
         payload: formattedPayload,
         username: this.username,
+        blockKitRenderer: this.blockKitRenderer,
       }),
     );
 

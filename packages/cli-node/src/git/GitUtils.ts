@@ -15,7 +15,7 @@
  */
 
 import { assertError, ForwardedError } from '@backstage/errors';
-import { paths } from '../paths';
+import { targetPaths } from '@backstage/cli-common';
 import { runOutput } from '@backstage/cli-common';
 
 /**
@@ -24,7 +24,7 @@ import { runOutput } from '@backstage/cli-common';
 export async function runGit(...args: string[]) {
   try {
     const stdout = await runOutput(['git', ...args], {
-      cwd: paths.targetRoot,
+      cwd: targetPaths.rootDir,
     });
     return stdout.trim().split(/\r\n|\r|\n/);
   } catch (error) {
@@ -88,7 +88,7 @@ export class GitUtils {
     }
 
     const stdout = await runOutput(['git', 'show', `${showRef}:${path}`], {
-      cwd: paths.targetRoot,
+      cwd: targetPaths.rootDir,
     });
     return stdout;
   }

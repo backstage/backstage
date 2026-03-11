@@ -48,6 +48,8 @@ app:
     - page:catalog/entity:
         config:
           showNavItemIcons: true
+          # default content order for all groups, can be 'title' or 'natural'
+          # defaultContentOrder: title
           groups:
             # placing a tab at the beginning
             - overview:
@@ -58,6 +60,9 @@ app:
             - documentation:
                 title: Docs
                 icon: docs
+                # example aliasing a group
+                # aliases:
+                #   - docs
             - deployment:
                 title: Deployments
             # example adding a new group
@@ -97,22 +102,19 @@ app:
     # - entity-card:azure-devops/readme
 
     # Entity page contents
-    - entity-content:catalog/overview:
-        config:
-          group: overview
+    - entity-content:catalog/overview
     - entity-content:api-docs/definition
     - entity-content:api-docs/apis:
         config:
-          # example associating with a default group
+          # example overriding the default group
           group: documentation
           icon: kind:api
     - entity-content:techdocs:
         config:
-          group: documentation
           icon: techdocs
     - entity-content:kubernetes/kubernetes:
         config:
-          # example disassociating with a default group
+          # example disassociating from the default group
           group: false
     # - entity-content:azure-devops/pipelines
     # - entity-content:azure-devops/pull-requests

@@ -183,27 +183,19 @@
     font-weight: var(--bui-font-weight-regular);
   }
 
-  .bui-HeaderToolbar {
-    padding-top: var(--bui-space-2);
-    padding-inline: var(--bui-space-2);
-  }
-
-  .bui-HeaderToolbarWrapper {
-    border-radius: var(--bui-radius-3);
-    padding-inline: var(--bui-space-3);
+  .bui-PluginHeaderToolbarWrapper {
+    padding: 0;
+    height: 32px;
     border: none;
+    background: none;
   }
 
-  .bui-HeaderToolbarControls {
-    right: calc(var(--bui-space-3) - 1px);
-  }
-
-  .bui-HeaderTabsWrapper {
-    margin-top: var(--bui-space-2);
-    margin-inline: var(--bui-space-2);
-    border-radius: var(--bui-radius-3);
-    padding-inline: var(--bui-space-1);
+  .bui-PluginHeaderTabsWrapper {
+    margin: 0;
+    padding: 0;
+    margin-left: -8px;
     border: none;
+    background: none;
   }
 
   .bui-Input {
@@ -212,6 +204,10 @@
 
   .bui-Tag {
     border-radius: var(--bui-radius-full);
+  }
+
+  .bui-Container {
+    padding-inline: 0;
   }
 }
 

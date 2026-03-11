@@ -15,8 +15,11 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { createHash } from 'node:crypto';
+import { ErrorLike, isError } from '@backstage/errors';
 import stableStringify from 'fast-json-stable-stringify';
+import { Knex } from 'knex';
+import { createHash } from 'node:crypto';
+import { setTimeout as sleep } from 'node:timers/promises';
 
 export function generateStableHash(entity: Entity) {
   return createHash('sha1')
@@ -30,4 +33,44 @@ export function generateTargetKey(target: string) {
         .update(target)
         .digest('hex')}`
     : target;
+}
+
+/**
+ * Retries an operation on database deadlock errors.
+ */
+export async function retryOnDeadlock<T>(
+  fn: () => Promise<T>,
+  knex: Knex | Knex.Transaction,
+  retries = 3,
+  baseMs = 25,
+): Promise<T> {
+  let attempt = 0;
+  for (;;) {
+    try {
+      return await fn();
+    } catch (e: unknown) {
+      if (isDeadlockError(knex, e) && attempt < retries) {
+        await sleep(baseMs * Math.pow(2, attempt));
+        attempt++;
+        continue;
+      }
+      throw e;
+    }
+  }
+}
+
+/**
+ * Checks if the given error is a deadlock error for the database engine in use.
+ */
+function isDeadlockError(
+  knex: Knex | Knex.Transaction,
+  e: unknown,
+): e is ErrorLike {
+  if (knex.client.config.client.includes('pg')) {
+    // PostgreSQL deadlock detection via error code
+    return isError(e) && e.code === '40P01';
+  }
+
+  // Add more database engine checks here as needed
+  return false;
 }

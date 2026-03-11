@@ -12,6 +12,7 @@ Options:
   -h, --help
 
 Commands:
+  auth [command]
   build-workspace
   config [command]
   config:check
@@ -25,17 +26,97 @@ Commands:
   new
   package [command]
   repo [command]
+  translations [command]
   versions:bump
   versions:migrate
+```
+
+### `backstage-cli auth`
+
+```
+Usage: backstage-cli auth [options] [command] [command]
+
+Options:
+  -h, --help
+
+Commands:
+  help [command]
+  list
+  login
+  logout
+  print-token
+  select
+  show
+```
+
+### `backstage-cli auth list`
+
+```
+Usage: backstage-cli auth list
+
+Options:
+  -h, --help
+```
+
+### `backstage-cli auth login`
+
+```
+Usage: backstage-cli auth login
+
+Options:
+  --backend-url <string>
+  --instance <string>
+  --no-browser
+  -h, --help
+```
+
+### `backstage-cli auth logout`
+
+```
+Usage: backstage-cli auth logout
+
+Options:
+  --instance <string>
+  -h, --help
+```
+
+### `backstage-cli auth print-token`
+
+```
+Usage: backstage-cli auth print-token
+
+Options:
+  --instance <string>
+  -h, --help
+```
+
+### `backstage-cli auth select`
+
+```
+Usage: backstage-cli auth select
+
+Options:
+  --instance <string>
+  -h, --help
+```
+
+### `backstage-cli auth show`
+
+```
+Usage: backstage-cli auth show
+
+Options:
+  --instance <string>
+  -h, --help
 ```
 
 ### `backstage-cli build-workspace`
 
 ```
-Usage: program [options] <workspace-dir> [packages...]
+Usage: backstage-cli build-workspace <workspace-dir> [packages...]
 
 Options:
-  --alwaysPack
+  --always-pack
   -h, --help
 ```
 
@@ -56,87 +137,81 @@ Commands:
 ### `backstage-cli config docs`
 
 ```
-Usage: backstage-cli config docs [options]
+Usage: backstage-cli config docs
 
 Options:
-  --package <name>
+  --package <string>
   -h, --help
 ```
 
 ### `backstage-cli config schema`
 
 ```
-Usage: <none>
+Usage: backstage-cli config schema
 
 Options:
-  --format
-  --help
+  --format <string>
   --merge
-  --no-merge
-  --package
-  --version
+  --package <string>
+  -h, --help
 ```
 
 ### `backstage-cli config:check`
 
 ```
-Usage: <none>
+Usage: backstage-cli config:check
 
 Options:
-  --config
+  --config <string>
   --deprecated
   --frontend
-  --help
   --lax
-  --package
+  --package <string>
   --strict
-  --version
+  -h, --help
 ```
 
 ### `backstage-cli config:docs`
 
 ```
-Usage: program [options]
+Usage: backstage-cli config:docs
 
 Options:
-  --package <name>
+  --package <string>
   -h, --help
 ```
 
 ### `backstage-cli config:print`
 
 ```
-Usage: <none>
+Usage: backstage-cli config:print
 
 Options:
-  --config
-  --format
+  --config <string>
+  --format <string>
   --frontend
-  --help
   --lax
-  --package
-  --version
+  --package <string>
   --with-secrets
+  -h, --help
 ```
 
 ### `backstage-cli config:schema`
 
 ```
-Usage: <none>
+Usage: backstage-cli config:schema
 
 Options:
-  --format
-  --help
+  --format <string>
   --merge
-  --no-merge
-  --package
-  --version
+  --package <string>
+  -h, --help
 ```
 
 ### `backstage-cli create-github-app`
 
 ```
-Usage: program [options] <github-org>
+Usage: backstage-cli create-github-app <github-org>
 
 Options:
   -h, --help
@@ -145,13 +220,12 @@ Options:
 ### `backstage-cli info`
 
 ```
-Usage: <none>
+Usage: backstage-cli info
 
 Options:
-  --format
-  --help
-  --include
-  --version
+  --format <string>
+  --include <string>
+  -h, --help
 ```
 
 ### `backstage-cli migrate`
@@ -174,7 +248,7 @@ Commands:
 ### `backstage-cli migrate package-exports`
 
 ```
-Usage: program [options]
+Usage: backstage-cli migrate package-exports
 
 Options:
   -h, --help
@@ -183,7 +257,7 @@ Options:
 ### `backstage-cli migrate package-lint-configs`
 
 ```
-Usage: program [options]
+Usage: backstage-cli migrate package-lint-configs
 
 Options:
   -h, --help
@@ -192,7 +266,7 @@ Options:
 ### `backstage-cli migrate package-roles`
 
 ```
-Usage: program [options]
+Usage: backstage-cli migrate package-roles
 
 Options:
   -h, --help
@@ -201,7 +275,7 @@ Options:
 ### `backstage-cli migrate package-scripts`
 
 ```
-Usage: program [options]
+Usage: backstage-cli migrate package-scripts
 
 Options:
   -h, --help
@@ -210,7 +284,7 @@ Options:
 ### `backstage-cli migrate react-router-deps`
 
 ```
-Usage: program [options]
+Usage: backstage-cli migrate react-router-deps
 
 Options:
   -h, --help
@@ -219,16 +293,16 @@ Options:
 ### `backstage-cli new`
 
 ```
-Usage: program [options]
+Usage: backstage-cli new
 
 Options:
-  --baseVersion <version>
-  --license <license>
-  --no-private
-  --npm-registry <URL>
-  --option <name>=<value>
-  --scope <scope>
-  --select <name>
+  --base-version <string>
+  --license <string>
+  --npm-registry <string>
+  --option <string>
+  --private
+  --scope <string>
+  --select <string>
   --skip-install
   -h, --help
 ```
@@ -255,13 +329,13 @@ Commands:
 ### `backstage-cli package build`
 
 ```
-Usage: program [options]
+Usage: backstage-cli package build
 
 Options:
-  --config <path>
+  --config <string>
   --minify
   --module-federation
-  --role <name>
+  --role <string>
   --skip-build-dependencies
   --stats
   -h, --help
@@ -270,7 +344,7 @@ Options:
 ### `backstage-cli package clean`
 
 ```
-Usage: program [options]
+Usage: backstage-cli package clean
 
 Options:
   -h, --help
@@ -279,20 +353,20 @@ Options:
 ### `backstage-cli package lint`
 
 ```
-Usage: program [options] [directories...]
+Usage: backstage-cli package lint [directories...]
 
 Options:
   --fix
-  --format <format>
-  --max-warnings <number>
-  --output-file <path>
+  --format <string>
+  --max-warnings <string>
+  --output-file <string>
   -h, --help
 ```
 
 ### `backstage-cli package postpack`
 
 ```
-Usage: program [options]
+Usage: backstage-cli package postpack
 
 Options:
   -h, --help
@@ -301,7 +375,7 @@ Options:
 ### `backstage-cli package prepack`
 
 ```
-Usage: program [options]
+Usage: backstage-cli package prepack
 
 Options:
   -h, --help
@@ -310,17 +384,17 @@ Options:
 ### `backstage-cli package start`
 
 ```
-Usage: program [options]
+Usage: backstage-cli package start
 
 Options:
   --check
-  --config <path>
-  --entrypoint <path>
-  --inspect [host]
-  --inspect-brk [host]
-  --link <path>
-  --require <path...>
-  --role <name>
+  --config <string>
+  --entrypoint <string>
+  --inspect <string>
+  --inspect-brk <string>
+  --link <string>
+  --require <string>
+  --role <string>
   -h, --help
 ```
 
@@ -459,19 +533,19 @@ Commands:
 ### `backstage-cli repo build`
 
 ```
-Usage: program [options] [command]
+Usage: backstage-cli repo build
 
 Options:
   --all
   --minify
-  --since <ref>
+  --since <string>
   -h, --help
 ```
 
 ### `backstage-cli repo clean`
 
 ```
-Usage: program [options]
+Usage: backstage-cli repo clean
 
 Options:
   -h, --help
@@ -480,7 +554,7 @@ Options:
 ### `backstage-cli repo fix`
 
 ```
-Usage: program [options]
+Usage: backstage-cli repo fix
 
 Options:
   --check
@@ -491,23 +565,23 @@ Options:
 ### `backstage-cli repo lint`
 
 ```
-Usage: program [options] [command]
+Usage: backstage-cli repo lint
 
 Options:
   --fix
-  --format <format>
-  --max-warnings <number>
-  --output-file <path>
-  --since <ref>
-  --successCache
-  --successCacheDir <path>
+  --format <string>
+  --max-warnings <string>
+  --output-file <string>
+  --since <string>
+  --success-cache
+  --success-cache-dir <string>
   -h, --help
 ```
 
 ### `backstage-cli repo list-deprecations`
 
 ```
-Usage: program [options]
+Usage: backstage-cli repo list-deprecations
 
 Options:
   --json
@@ -517,39 +591,75 @@ Options:
 ### `backstage-cli repo start`
 
 ```
-Usage: program [options] [packageNameOrPath...]
+Usage: backstage-cli repo start [packages...]
 
 Options:
-  --config <path>
-  --inspect [host]
-  --inspect-brk [host]
-  --link <path>
-  --plugin <pluginId>
-  --require <path...>
+  --config <string>
+  --inspect <string>
+  --inspect-brk <string>
+  --link <string>
+  --plugin <string>
+  --require <string>
   -h, --help
 ```
 
 ### `backstage-cli repo test`
 
 ```
-Usage: program [options]
+Usage: backstage-cli repo test
 
 Options:
   --jest-help
-  --since <ref>
-  --successCache
-  --successCacheDir <path>
+  --since <string>
+  --success-cache
+  --success-cache-dir <string>
+  -h, --help
+```
+
+### `backstage-cli translations`
+
+```
+Usage: backstage-cli translations [options] [command] [command]
+
+Options:
+  -h, --help
+
+Commands:
+  export
+  help [command]
+  import
+```
+
+### `backstage-cli translations export`
+
+```
+Usage: backstage-cli translations export
+
+Options:
+  --output <string>
+  --pattern <string>
+  -h, --help
+```
+
+### `backstage-cli translations import`
+
+```
+Usage: backstage-cli translations import
+
+Options:
+  --input <string>
+  --output <string>
   -h, --help
 ```
 
 ### `backstage-cli versions:bump`
 
 ```
-Usage: program [options]
+Usage: backstage-cli versions:bump
 
 Options:
-  --pattern <glob>
-  --release <version|next|main>
+  --pattern <string>
+  --release <string>
   --skip-install
   --skip-migrate
   -h, --help
@@ -558,10 +668,10 @@ Options:
 ### `backstage-cli versions:migrate`
 
 ```
-Usage: program [options]
+Usage: backstage-cli versions:migrate
 
 Options:
-  --pattern <glob>
+  --pattern <string>
   --skip-code-changes
   -h, --help
 ```

@@ -271,6 +271,24 @@ export interface Config {
             excludeSuspendedUsers?: boolean;
 
             /**
+             * (Optional) Configuration for the default user transformer.
+             * These options only apply when using the built-in transformer;
+             * they have no effect if a custom transformer is set via the
+             * extension point.
+             */
+            defaultUserTransformer?: {
+              /**
+               * (Optional) Whether to prefer organization verified domain emails
+               * over the user's public GitHub email when populating user entity profiles.
+               * When enabled, the transformer uses the first verified domain email
+               * (with plus-addressed routing tags stripped) and falls back to the
+               * public email if none are available.
+               * Default: `false`.
+               */
+              useVerifiedEmails?: boolean;
+            };
+
+            /**
              * The refresh schedule to use.
              */
             schedule: SchedulerServiceTaskScheduleDefinitionConfig;
@@ -326,6 +344,24 @@ export interface Config {
              * Default: `false`.
              */
             excludeSuspendedUsers?: boolean;
+
+            /**
+             * (Optional) Configuration for the default user transformer.
+             * These options only apply when using the built-in transformer;
+             * they have no effect if a custom transformer is set via the
+             * extension point.
+             */
+            defaultUserTransformer?: {
+              /**
+               * (Optional) Whether to prefer organization verified domain emails
+               * over the user's public GitHub email when populating user entity profiles.
+               * When enabled, the transformer uses the first verified domain email
+               * (with plus-addressed routing tags stripped) and falls back to the
+               * public email if none are available.
+               * Default: `false`.
+               */
+              useVerifiedEmails?: boolean;
+            };
 
             /**
              * The refresh schedule to use.

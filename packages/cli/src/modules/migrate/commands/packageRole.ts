@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
+import { cli } from 'cleye';
 import fs from 'fs-extra';
 import { resolve as resolvePath } from 'node:path';
 import { getPackages } from '@manypkg/get-packages';
 import { PackageRoles } from '@backstage/cli-node';
-import { paths } from '../../../lib/paths';
+import { targetPaths } from '@backstage/cli-common';
+import type { CommandContext } from '../../../wiring/types';
 
-export default async () => {
-  const { packages } = await getPackages(paths.targetDir);
+export default async ({ args, info }: CommandContext) => {
+  cli({ help: info, booleanFlagNegation: true }, undefined, args);
+  const { packages } = await getPackages(targetPaths.dir);
 
   await Promise.all(
     packages.map(async ({ dir, packageJson: pkg }) => {

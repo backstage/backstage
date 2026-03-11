@@ -19,8 +19,8 @@ import { isEqual } from 'lodash';
 import { join } from 'node:path';
 import chalk from 'chalk';
 import { relative as relativePath, resolve as resolvePath } from 'node:path';
+import { targetPaths } from '@backstage/cli-common';
 import { runner } from '../../../../lib/runner';
-import { paths as cliPaths } from '../../../../lib/paths';
 import {
   OLD_SCHEMA_PATH,
   TS_SCHEMA_PATH,
@@ -60,7 +60,7 @@ async function verify(directoryPath: string) {
     throw new Error(`\`${TS_SCHEMA_PATH}\` needs to have a 'spec' export.`);
   }
   if (!isEqual(schema.spec, yaml)) {
-    const path = relativePath(cliPaths.targetRoot, directoryPath);
+    const path = relativePath(targetPaths.rootDir, directoryPath);
     throw new Error(
       `\`${YAML_SCHEMA_PATH}\` and \`${TS_SCHEMA_PATH}\` do not match. Please run \`yarn backstage-repo-tools package schema openapi generate\` from '${path}' to regenerate \`${TS_SCHEMA_PATH}\`.`,
     );

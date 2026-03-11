@@ -17,33 +17,15 @@
 import { Knex } from 'knex';
 import splitToChunks from 'lodash/chunk';
 import { v4 as uuid } from 'uuid';
-import { ErrorLike, isError } from '@backstage/errors';
 import { StitchingStrategy } from '../../../stitching/types';
-import { setTimeout as sleep } from 'node:timers/promises';
-import { DbFinalEntitiesRow, DbRefreshStateRow } from '../../tables';
+import {
+  DbFinalEntitiesRow,
+  DbRefreshStateRow,
+  DbStitchQueueRow,
+} from '../../tables';
+import { retryOnDeadlock } from '../../util';
 
 const UPDATE_CHUNK_SIZE = 100; // Smaller chunks reduce contention
-const DEADLOCK_RETRY_ATTEMPTS = 3;
-const DEADLOCK_BASE_DELAY_MS = 25;
-
-// PostgreSQL deadlock error code
-const POSTGRES_DEADLOCK_SQLSTATE = '40P01';
-
-/**
- * Checks if the given error is a deadlock error for the database engine in use.
- */
-function isDeadlockError(
-  knex: Knex | Knex.Transaction,
-  e: unknown,
-): e is ErrorLike {
-  if (knex.client.config.client.includes('pg')) {
-    // PostgreSQL deadlock detection
-    return isError(e) && e.code === POSTGRES_DEADLOCK_SQLSTATE;
-  }
-
-  // Add more database engine checks here as needed
-  return false;
-}
 
 /**
  * Marks a number of entities for stitching some time in the near
@@ -69,12 +51,7 @@ export async function markForStitching(options: {
         .update({
           hash: 'force-stitching',
         })
-        .whereIn(
-          'entity_id',
-          knex<DbRefreshStateRow>('refresh_state')
-            .select('entity_id')
-            .whereIn('entity_ref', chunk),
-        );
+        .whereIn('entity_ref', chunk);
       await retryOnDeadlock(async () => {
         await knex
           .table<DbRefreshStateRow>('refresh_state')
@@ -104,30 +81,46 @@ export async function markForStitching(options: {
       }, knex);
     }
   } else if (mode === 'deferred') {
-    // It's OK that this is shared across refresh state rows; it just needs to
+    // It's OK that this is shared across stitch_queue rows; it just needs to
     // be uniquely generated for every new stitch request.
     const ticket = uuid();
 
-    // Update by primary key in deterministic order to avoid deadlocks
     for (const chunk of entityRefs) {
       await retryOnDeadlock(async () => {
-        await knex<DbRefreshStateRow>('refresh_state')
-          .update({
-            next_stitch_at: knex.fn.now(),
-            next_stitch_ticket: ticket,
-          })
-          .whereIn('entity_ref', chunk);
+        if (chunk.length > 0) {
+          await knex<DbStitchQueueRow>('stitch_queue')
+            .insert(
+              chunk.map(ref => ({
+                entity_ref: ref,
+                stitch_ticket: ticket,
+                next_stitch_at: knex.fn.now(),
+              })),
+            )
+            .onConflict('entity_ref')
+            .merge(['next_stitch_at', 'stitch_ticket']);
+        }
       }, knex);
     }
 
     for (const chunk of entityIds) {
       await retryOnDeadlock(async () => {
-        await knex<DbRefreshStateRow>('refresh_state')
-          .update({
-            next_stitch_at: knex.fn.now(),
-            next_stitch_ticket: ticket,
-          })
+        // Look up entity_refs from refresh_state by entity_id
+        const refreshStateRows = await knex<DbRefreshStateRow>('refresh_state')
+          .select('entity_ref')
           .whereIn('entity_id', chunk);
+
+        if (refreshStateRows.length > 0) {
+          await knex<DbStitchQueueRow>('stitch_queue')
+            .insert(
+              refreshStateRows.map(row => ({
+                entity_ref: row.entity_ref,
+                stitch_ticket: ticket,
+                next_stitch_at: knex.fn.now(),
+              })),
+            )
+            .onConflict('entity_ref')
+            .merge(['next_stitch_at', 'stitch_ticket']);
+        }
       }, knex);
     }
   } else {
@@ -142,25 +135,4 @@ function sortSplit(input: Iterable<string> | undefined): string[][] {
   const array = Array.isArray(input) ? input.slice() : [...input];
   array.sort();
   return splitToChunks(array, UPDATE_CHUNK_SIZE);
-}
-
-async function retryOnDeadlock<T>(
-  fn: () => Promise<T>,
-  knex: Knex | Knex.Transaction,
-  retries = DEADLOCK_RETRY_ATTEMPTS,
-  baseMs = DEADLOCK_BASE_DELAY_MS,
-): Promise<T> {
-  let attempt = 0;
-  for (;;) {
-    try {
-      return await fn();
-    } catch (e: unknown) {
-      if (isDeadlockError(knex, e) && attempt < retries) {
-        await sleep(baseMs * Math.pow(2, attempt));
-        attempt++;
-        continue;
-      }
-      throw e;
-    }
-  }
 }

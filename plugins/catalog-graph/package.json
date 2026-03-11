@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-graph",
-  "version": "0.5.7",
+  "version": "0.6.0-next.2",
   "backstage": {
     "role": "frontend-plugin",
     "pluginId": "catalog-graph",
@@ -56,9 +56,11 @@
     "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/plugin-catalog-react": "workspace:^",
     "@backstage/types": "workspace:^",
+    "@backstage/ui": "workspace:^",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.61",
+    "@remixicon/react": "^4.6.0",
     "classnames": "^2.3.1",
     "lodash": "^4.17.15",
     "p-limit": "^3.1.0",

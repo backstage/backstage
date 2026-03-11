@@ -512,7 +512,7 @@ export function FeatureCalloutCircular(
 ): JSX_2.Element;
 
 // @public (undocumented)
-export type FiltersContainerClassKey = 'root' | 'title';
+export type FiltersContainerClassKey = 'root' | 'filterControls' | 'title';
 
 // @public
 export function Gauge(props: GaugeProps): JSX_2.Element;
@@ -652,15 +652,7 @@ export type HorizontalScrollGridClassKey =
 export type IconComponentProps = ComponentProps<IconComponent>;
 
 // @public (undocumented)
-export function IconLinkVertical({
-  color,
-  disabled,
-  href,
-  icon,
-  label,
-  onClick,
-  title,
-}: IconLinkVerticalProps): JSX_2.Element;
+export function IconLinkVertical(input: IconLinkVerticalProps): JSX_2.Element;
 
 // @public (undocumented)
 export type IconLinkVerticalClassKey =
@@ -827,6 +819,7 @@ export interface LogViewerProps {
   classes?: {
     root?: string;
   };
+  onDownloadLog?: () => void;
   text: string;
   textWrap?: boolean;
 }

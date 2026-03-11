@@ -52,6 +52,13 @@
     gap: var(--bui-space-1);
   }
 
+  .bui-TableHeadLabel {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+  }
+
   .bui-TableHeadSortButton {
     cursor: pointer;
     user-select: none;
@@ -83,6 +90,7 @@
   .bui-TableRow {
     border-bottom: 1px solid var(--bui-border-2);
     transition: color 0.2s ease-in-out;
+    cursor: default;
 
     &:hover {
       background-color: var(--bui-bg-tint-hover);
@@ -96,12 +104,15 @@
       background-color: var(--bui-bg-tint-pressed);
     }
 
-    &[data-disabled] {
-      background-color: var(--bui-bg-tint-disabled);
-    }
-
+    &[data-href],
+    &[data-selection-mode],
     &[data-react-aria-pressable='true'] {
       cursor: pointer;
+    }
+
+    &[data-disabled] {
+      background-color: var(--bui-bg-tint-disabled);
+      cursor: not-allowed;
     }
   }
 

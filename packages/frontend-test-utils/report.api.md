@@ -46,10 +46,9 @@ import { RouteRef } from '@backstage/frontend-plugin-api';
 import { StorageApi } from '@backstage/core-plugin-api';
 import { StorageApi as StorageApi_2 } from '@backstage/frontend-plugin-api';
 import { StorageValueSnapshot } from '@backstage/core-plugin-api';
-import { TranslationApi } from '@backstage/core-plugin-api/alpha';
-import { TranslationApi as TranslationApi_2 } from '@backstage/frontend-plugin-api';
-import { TranslationRef } from '@backstage/core-plugin-api/alpha';
-import { TranslationSnapshot } from '@backstage/core-plugin-api/alpha';
+import { TranslationApi } from '@backstage/frontend-plugin-api';
+import { TranslationRef } from '@backstage/frontend-plugin-api';
+import { TranslationSnapshot } from '@backstage/frontend-plugin-api';
 import { withLogCollector } from '@backstage/test-utils';
 
 // @public
@@ -87,7 +86,7 @@ export function createExtensionTester<
   },
 ): ExtensionTester<NonNullable<T['output']>>;
 
-// @public
+// @public @deprecated
 export type ErrorWithContext = {
   error: ErrorApiError;
   context?: ErrorApiErrorContext;
@@ -144,7 +143,7 @@ export class ExtensionTester<UOutput extends ExtensionDataRef> {
   snapshot(): ExtensionSnapshotNode;
 }
 
-// @public
+// @public @deprecated
 export class MockAlertApi implements AlertApi {
   // (undocumented)
   alert$(): Observable<AlertMessage>;
@@ -158,7 +157,7 @@ export class MockAlertApi implements AlertApi {
   ): Promise<AlertMessage>;
 }
 
-// @public
+// @public @deprecated
 export class MockAnalyticsApi implements AnalyticsApi {
   // (undocumented)
   captureEvent(event: AnalyticsEvent): void;
@@ -201,18 +200,18 @@ export namespace mockApis {
         partialImpl?: Partial<DiscoveryApi> | undefined,
       ) => ApiMock<DiscoveryApi>;
   }
-  export function error(
-    options?: MockErrorApiOptions,
-  ): MockErrorApi & MockWithApiFactory<ErrorApi_2>;
+  export function error(options?: {
+    collect?: boolean;
+  }): MockErrorApi & MockWithApiFactory<ErrorApi_2>;
   export namespace error {
     const // (undocumented)
       mock: (
         partialImpl?: Partial<ErrorApi_2> | undefined,
       ) => ApiMock<ErrorApi_2>;
   }
-  export function featureFlags(
-    options?: MockFeatureFlagsApiOptions,
-  ): MockWithApiFactory<MockFeatureFlagsApi>;
+  export function featureFlags(options?: {
+    initialStates?: Record<string, FeatureFlagState>;
+  }): MockWithApiFactory<MockFeatureFlagsApi>;
   export namespace featureFlags {
     const mock: (
       partialImpl?: Partial<FeatureFlagsApi> | undefined,
@@ -265,17 +264,17 @@ export namespace mockApis {
       ) => ApiMock<StorageApi_2>;
   }
   export function translation(): MockTranslationApi &
-    MockWithApiFactory<TranslationApi_2>;
+    MockWithApiFactory<TranslationApi>;
   export namespace translation {
     const mock: (
-      partialImpl?: Partial<TranslationApi_2> | undefined,
-    ) => ApiMock<TranslationApi_2>;
+      partialImpl?: Partial<TranslationApi> | undefined,
+    ) => ApiMock<TranslationApi>;
   }
 }
 
-// @public
+// @public @deprecated
 export class MockConfigApi implements ConfigApi {
-  constructor({ data }: { data: JsonObject });
+  constructor(input: { data: JsonObject });
   get<T = JsonValue>(key?: string): T;
   getBoolean(key: string): boolean;
   getConfig(key: string): Config;
@@ -294,28 +293,37 @@ export class MockConfigApi implements ConfigApi {
   keys(): string[];
 }
 
-// @public
+// @public @deprecated
 export class MockErrorApi implements ErrorApi {
-  constructor(options?: MockErrorApiOptions);
+  constructor(options?: { collect?: boolean });
   // (undocumented)
   error$(): Observable<{
     error: ErrorApiError;
     context?: ErrorApiErrorContext;
   }>;
   // (undocumented)
-  getErrors(): ErrorWithContext[];
+  getErrors(): {
+    error: ErrorApiError;
+    context?: ErrorApiErrorContext;
+  }[];
   // (undocumented)
   post(error: ErrorApiError, context?: ErrorApiErrorContext): void;
   // (undocumented)
-  waitForError(pattern: RegExp, timeoutMs?: number): Promise<ErrorWithContext>;
+  waitForError(
+    pattern: RegExp,
+    timeoutMs?: number,
+  ): Promise<{
+    error: ErrorApiError;
+    context?: ErrorApiErrorContext;
+  }>;
 }
 
-// @public
+// @public @deprecated
 export type MockErrorApiOptions = {
   collect?: boolean;
 };
 
-// @public
+// @public @deprecated
 export class MockFeatureFlagsApi implements FeatureFlagsApi {
   constructor(options?: MockFeatureFlagsApiOptions);
   clearState(): void;
@@ -331,12 +339,12 @@ export class MockFeatureFlagsApi implements FeatureFlagsApi {
   setState(states: Record<string, FeatureFlagState>): void;
 }
 
-// @public
+// @public @deprecated
 export interface MockFeatureFlagsApiOptions {
   initialStates?: Record<string, FeatureFlagState>;
 }
 
-// @public
+// @public @deprecated
 export class MockFetchApi implements FetchApi {
   constructor(options?: MockFetchApiOptions);
   get fetch(): typeof fetch;
@@ -360,7 +368,7 @@ export interface MockFetchApiOptions {
       };
 }
 
-// @public
+// @public @deprecated
 export class MockPermissionApi implements PermissionApi {
   constructor(
     requestHandler?: (
@@ -373,7 +381,7 @@ export class MockPermissionApi implements PermissionApi {
   ): Promise<EvaluatePermissionResponse>;
 }
 
-// @public
+// @public @deprecated
 export class MockStorageApi implements StorageApi {
   // (undocumented)
   static create(data?: JsonObject): MockStorageApi;
@@ -391,7 +399,7 @@ export class MockStorageApi implements StorageApi {
   snapshot<T extends JsonValue>(key: string): StorageValueSnapshot<T>;
 }
 
-// @public
+// @public @deprecated
 export class MockTranslationApi implements TranslationApi {
   // (undocumented)
   static create(): MockTranslationApi;
@@ -444,7 +452,7 @@ export type RenderTestAppOptions<TApiPairs extends any[] = any[]> = {
 // @public
 export type TestApiPair<TApi> =
   | readonly [ApiRef<TApi>, TApi extends infer TImpl ? Partial<TImpl> : never]
-  | MockWithApiFactory<TApi>;
+  | MockWithApiFactory<NoInfer<TApi>>;
 
 // @public
 export type TestApiPairs<TApiPairs> = {

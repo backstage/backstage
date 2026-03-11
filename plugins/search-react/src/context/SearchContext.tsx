@@ -138,14 +138,13 @@ const useSearchContextValue = (
 
   const result = useAsync(async (): Promise<SearchResultSet> => {
     if (isFirstEmptyMount.current) {
+      isFirstEmptyMount.current = false;
       if (!term && !types.length && !Object.keys(filters).length) {
         return {
           results: [],
           numberOfResults: 0,
         };
       }
-
-      isFirstEmptyMount.current = false;
     }
 
     // Here we cancel the previous request before making a new one

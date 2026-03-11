@@ -14,45 +14,26 @@
  * limitations under the License.
  */
 
-import clsx from 'clsx';
 import { CellProfileProps } from '../types';
 import { Text } from '../../Text/Text';
 import { Link } from '../../Link/Link';
 import { Avatar } from '../../Avatar';
-import { useStyles } from '../../../hooks/useStyles';
-import { TableDefinition } from '../definition';
+import { useDefinition } from '../../../hooks/useDefinition';
+import { CellProfileDefinition } from '../definition';
 import { Cell as ReactAriaCell } from 'react-aria-components';
-import styles from '../Table.module.css';
 
 /** @public */
 export const CellProfile = (props: CellProfileProps) => {
-  const { classNames, cleanedProps } = useStyles(TableDefinition, {
-    color: 'primary' as const,
-    ...props,
-  });
-  const { className, src, name, href, description, color, ...rest } =
-    cleanedProps;
+  const { ownProps, restProps } = useDefinition(CellProfileDefinition, props);
+  const { classes, src, name, href, description, color } = ownProps;
 
   return (
-    <ReactAriaCell
-      className={clsx(classNames.cell, styles[classNames.cell], className)}
-      {...rest}
-    >
-      <div
-        className={clsx(
-          classNames.cellContentWrapper,
-          styles[classNames.cellContentWrapper],
-        )}
-      >
+    <ReactAriaCell className={classes.root} {...restProps}>
+      <div className={classes.cellContentWrapper}>
         {src && name && (
           <Avatar src={src} name={name} size="x-small" purpose="decoration" />
         )}
-        <div
-          className={clsx(
-            classNames.cellContent,
-            styles[classNames.cellContent],
-          )}
-        >
+        <div className={classes.cellContent}>
           {name && href ? (
             <Link href={href}>{name}</Link>
           ) : (

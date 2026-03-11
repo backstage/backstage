@@ -1,5 +1,67 @@
 # @backstage/plugin-scaffolder
 
+## 1.35.5-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.15.0-next.1
+  - @backstage/core-plugin-api@1.12.4-next.1
+  - @backstage/catalog-client@1.14.0-next.2
+  - @backstage/plugin-catalog-react@2.1.0-next.2
+  - @backstage/integration@2.0.0-next.2
+  - @backstage/core-components@0.18.8-next.1
+  - @backstage/plugin-scaffolder-react@1.20.0-next.2
+  - @backstage/plugin-scaffolder-common@2.0.0-next.2
+  - @backstage/plugin-techdocs-react@1.3.9-next.1
+
+## 1.35.5-next.1
+
+### Patch Changes
+
+- e27bd4e: Removed check for deprecated `bitbucket` integration from `repoPickerValidation` function used by the `RepoUrlPicker`, it now validates the `bitbucketServer` and `bitbucketCloud` integrations instead.
+- Updated dependencies
+  - @backstage/catalog-client@1.14.0-next.1
+  - @backstage/plugin-catalog-react@2.1.0-next.1
+  - @backstage/plugin-scaffolder-react@1.19.8-next.1
+  - @backstage/integration@2.0.0-next.1
+  - @backstage/plugin-scaffolder-common@2.0.0-next.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/core-components@0.18.8-next.0
+  - @backstage/core-plugin-api@1.12.4-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.14.2-next.0
+  - @backstage/integration-react@1.2.16-next.1
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-common@1.1.8
+  - @backstage/plugin-permission-react@0.4.41-next.0
+  - @backstage/plugin-techdocs-common@0.1.1
+  - @backstage/plugin-techdocs-react@1.3.9-next.0
+
+## 1.35.5-next.0
+
+### Patch Changes
+
+- bd5b842: Added a new `ui:autoSelect` option to the EntityPicker field that controls whether an entity is automatically selected when the field loses focus. When set to `false`, the field will remain empty if the user closes it without explicitly selecting an entity, preventing unintentional selections. Defaults to `true` for backward compatibility.
+- ee87720: Added back the `formFieldsApiRef` and `ScaffolderFormFieldsApi` alpha exports that were unintentionally removed.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.14.2-next.0
+  - @backstage/integration@1.21.0-next.0
+  - @backstage/catalog-client@1.13.1-next.0
+  - @backstage/plugin-catalog-react@2.0.1-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/core-components@0.18.8-next.0
+  - @backstage/core-plugin-api@1.12.4-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/integration-react@1.2.16-next.0
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-common@1.1.8
+  - @backstage/plugin-permission-react@0.4.41-next.0
+  - @backstage/plugin-scaffolder-common@1.7.7-next.0
+  - @backstage/plugin-scaffolder-react@1.19.8-next.0
+  - @backstage/plugin-techdocs-common@0.1.1
+  - @backstage/plugin-techdocs-react@1.3.9-next.0
+
 ## 1.35.3
 
 ### Patch Changes

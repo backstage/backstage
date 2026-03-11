@@ -45,7 +45,10 @@ import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { Permission } from '@backstage/plugin-permission-common';
 import { merge } from 'lodash';
 import { CatalogBuilder } from './CatalogBuilder';
-import { actionsRegistryServiceRef } from '@backstage/backend-plugin-api/alpha';
+import {
+  actionsRegistryServiceRef,
+  metricsServiceRef,
+} from '@backstage/backend-plugin-api/alpha';
 import { createCatalogActions } from '../actions';
 import type { EntityProviderEntry } from '../processing/connectEntityProviders';
 
@@ -219,6 +222,7 @@ export const catalogPlugin = createBackendPlugin({
         catalog: catalogServiceRef,
         actionsRegistry: actionsRegistryServiceRef,
         catalogScmEvents: catalogScmEventsServiceRef,
+        metrics: metricsServiceRef,
       },
       async init({
         logger,
@@ -237,6 +241,7 @@ export const catalogPlugin = createBackendPlugin({
         auditor,
         events,
         catalogScmEvents,
+        metrics,
       }) {
         const builder = await CatalogBuilder.create({
           config,
@@ -251,6 +256,7 @@ export const catalogPlugin = createBackendPlugin({
           auditor,
           events,
           catalogScmEvents,
+          metrics,
         });
 
         if (onProcessingError) {
@@ -300,6 +306,22 @@ export const catalogPlugin = createBackendPlugin({
         createCatalogActions({
           catalog,
           actionsRegistry,
+        });
+
+        const scmEventsMessagesCounter = metrics.createCounter<{
+          eventType: string;
+        }>('catalog.events.scm.messages', {
+          description:
+            'Number of SCM event messages received by the catalog backend',
+          unit: 'short',
+        });
+        catalogScmEvents.subscribe({
+          onEvents: async e => {
+            for (const event of e) {
+              const eventType = event.type.split('.')[0];
+              scmEventsMessagesCounter.add(1, { eventType });
+            }
+          },
         });
       },
     });

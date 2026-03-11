@@ -1,6 +1,6 @@
 {
   "name": "@backstage/core-app-api",
-  "version": "1.19.5",
+  "version": "1.19.6-next.1",
   "description": "Core app API used by Backstage apps",
   "backstage": {
     "role": "web-library"
@@ -49,6 +49,7 @@
     "@backstage/config": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/types": "workspace:^",
+    "@backstage/ui": "workspace:^",
     "@backstage/version-bridge": "workspace:^",
     "@types/prop-types": "^15.7.3",
     "history": "^5.0.0",

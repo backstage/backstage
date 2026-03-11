@@ -1,5 +1,46 @@
 # @backstage/plugin-scaffolder-common
 
+## 2.0.0-next.2
+
+### Minor Changes
+
+- e8736ea: Added an optional `secrets` field to `TemplateEntityV1beta3` for configuring secrets validation. The schema for validating secrets is defined under `secrets.schema` as a JSON Schema object.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.0.0-next.2
+
+## 2.0.0-next.1
+
+### Major Changes
+
+- 527cf88: **BREAKING** Removed deprecated `bitbucket` integration from being registered in the `ScaffolderClient`. Use the `bitbucketCloud` or `bitbucketServer` integrations instead.
+
+### Minor Changes
+
+- f598909: **BREAKING PRODUCERS**: Made `retry`, `listTasks`, `listTemplatingExtensions`, `dryRun`, and `autocomplete` required methods on the `ScaffolderApi` interface. Implementations of `ScaffolderApi` must now provide these methods.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.0.0-next.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-permission-common@0.9.6
+
+## 1.7.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.21.0-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-permission-common@0.9.6
+
 ## 1.7.6
 
 ### Patch Changes

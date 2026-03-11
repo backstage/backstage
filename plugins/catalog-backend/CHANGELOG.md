@@ -1,5 +1,90 @@
 # @backstage/plugin-catalog-backend
 
+## 3.5.0-next.2
+
+### Minor Changes
+
+- 5d95e8e: Add an `onConflict` option to location creation that can refresh an existing location instead of throwing a conflict error.
+
+### Patch Changes
+
+- 7416e8b: Moved stitch queue concerns out of `refresh_state` and `final_entities` into a dedicated `stitch_queue` table with `entity_ref` as the primary key. The `stitch_ticket` is used for optimistic concurrency control. When a stitch completes successfully and the ticket hasn't changed, the corresponding row is deleted from the queue. The migration handles existing data and is fully reversible.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0-next.1
+  - @backstage/catalog-client@1.14.0-next.2
+  - @backstage/integration@2.0.0-next.2
+  - @backstage/backend-openapi-utils@0.6.7-next.1
+  - @backstage/plugin-catalog-node@2.1.0-next.2
+  - @backstage/plugin-events-node@0.4.20-next.1
+  - @backstage/plugin-permission-node@0.10.11-next.1
+
+## 3.5.0-next.1
+
+### Minor Changes
+
+- a6b2819: Added `query-catalog-entities` action to the catalog backend actions registry. Supports predicate-based filtering with `$all`, `$any`, `$not`, `$exists`, `$in`, `$contains`, and `$hasPrefix` operators.
+- 972f686: Added support for predicate-based filtering on the `/entities/by-refs` endpoint via the `query` field in the request body. Supports `$all`, `$any`, `$not`, `$exists`, `$in`, `$contains`, and `$hasPrefix` operators.
+- 56c908e: Added support for predicate-based filtering on the `/entity-facets` endpoint via a new `POST` method. Supports `$all`, `$any`, `$not`, `$exists`, `$in`, `$contains`, and `$hasPrefix` operators.
+- 0fbcf23: Migrated OpenAPI schemas to 3.1.
+- 51e23eb: Added predicate-based entity filtering via POST /entities/by-query endpoint.
+
+  Supports `$all`, `$any`, `$not`, `$exists`, `$in`, `$hasPrefix`, and (partially) `$contains` operators for expressive entity queries. Integrated into the existing `queryEntities` flow with full cursor-based pagination, permission enforcement, and `totalItems` support.
+
+  The catalog client's `queryEntities()` method automatically routes to the POST endpoint when a `query` predicate is provided.
+
+### Patch Changes
+
+- 72747b4: Deprecated two processors as they have been moved to the Community Plugins repo with their own backend modules:
+
+  - `AnnotateScmSlugEntityProcessor`: Use `@backstage-community/plugin-catalog-backend-module-annotate-scm-slug` instead
+  - `CodeOwnersProcessor`: Use `@backstage-community/plugin-catalog-backend-module-codeowners` instead
+
+- Updated dependencies
+  - @backstage/catalog-client@1.14.0-next.1
+  - @backstage/integration@2.0.0-next.1
+  - @backstage/plugin-catalog-node@2.1.0-next.1
+  - @backstage/backend-openapi-utils@0.6.7-next.0
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/filter-predicates@0.1.0
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-common@1.1.8
+  - @backstage/plugin-events-node@0.4.20-next.0
+  - @backstage/plugin-permission-common@0.9.6
+  - @backstage/plugin-permission-node@0.10.11-next.0
+
+## 3.5.0-next.0
+
+### Minor Changes
+
+- bf71677: Added opentelemetry metrics for SCM events:
+
+  - `catalog.events.scm.messages` with attribute `eventType`: Counter for the number of SCM events actually received by the catalog backend. The `eventType` is currently either `location` or `repository`.
+
+### Patch Changes
+
+- 6738cf0: build(deps): bump `minimatch` from 9.0.5 to 10.2.1
+- fbf382f: Minor internal optimisation
+- 1ee5b28: Migrates existing catalog metrics to use the alpha MetricsService. This release is a 1:1 migration with no breaking changes.
+- 3181973: Changed the `search` table foreign key to point to `final_entities` instead of `refresh_state`
+- Updated dependencies
+  - @backstage/integration@1.21.0-next.0
+  - @backstage/plugin-catalog-node@2.1.0-next.0
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/catalog-client@1.13.1-next.0
+  - @backstage/backend-openapi-utils@0.6.7-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/filter-predicates@0.1.0
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-common@1.1.8
+  - @backstage/plugin-events-node@0.4.20-next.0
+  - @backstage/plugin-permission-common@0.9.6
+  - @backstage/plugin-permission-node@0.10.11-next.0
+
 ## 3.4.0
 
 ### Minor Changes

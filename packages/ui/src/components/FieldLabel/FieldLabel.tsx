@@ -16,62 +16,32 @@
 import { Label } from 'react-aria-components';
 import { forwardRef } from 'react';
 import type { FieldLabelProps } from './types';
-import { useStyles } from '../../hooks/useStyles';
+import { useDefinition } from '../../hooks/useDefinition';
 import { FieldLabelDefinition } from './definition';
-import styles from './FieldLabel.module.css';
-import clsx from 'clsx';
 
 /** @public */
 export const FieldLabel = forwardRef<HTMLDivElement, FieldLabelProps>(
   (props: FieldLabelProps, ref) => {
-    const { classNames, cleanedProps } = useStyles(FieldLabelDefinition, props);
-    const {
-      className,
-      label,
-      secondaryLabel,
-      description,
-      htmlFor,
-      id,
-      ...rest
-    } = cleanedProps;
+    const { ownProps, restProps } = useDefinition(FieldLabelDefinition, props);
+    const { classes, label, secondaryLabel, description, htmlFor, id } =
+      ownProps;
 
     if (!label) return null;
 
     return (
-      <div
-        className={clsx(classNames.root, styles[classNames.root], className)}
-        {...rest}
-        ref={ref}
-      >
+      <div className={classes.root} {...restProps} ref={ref}>
         {label && (
-          <Label
-            className={clsx(classNames.label, styles[classNames.label])}
-            htmlFor={htmlFor}
-            id={id}
-          >
+          <Label className={classes.label} htmlFor={htmlFor} id={id}>
             {label}
             {secondaryLabel && (
-              <span
-                aria-hidden="true"
-                className={clsx(
-                  classNames.secondaryLabel,
-                  styles[classNames.secondaryLabel],
-                )}
-              >
+              <span aria-hidden="true" className={classes.secondaryLabel}>
                 ({secondaryLabel})
               </span>
             )}
           </Label>
         )}
         {description && (
-          <div
-            className={clsx(
-              classNames.description,
-              styles[classNames.description],
-            )}
-          >
-            {description}
-          </div>
+          <div className={classes.description}>{description}</div>
         )}
       </div>
     );

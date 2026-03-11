@@ -7,3 +7,4 @@ description: Track and visualize DORA (DevOps Research and Assessment) metrics w
 documentation: https://github.com/zc149/backstage-plugin-dora-scorecard
 npmPackageName: '@jikwan/backstage-plugin-dora-scorecard'
 addedDate: '2025-12-29'
+status: active

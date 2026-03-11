@@ -1,5 +1,36 @@
 # @backstage/plugin-notifications-backend-module-slack
 
+## 0.4.0-next.1
+
+### Minor Changes
+
+- cd62d78: **BREAKING**: Only send direct messages to user entity recipients. Notifications sent to non-user entities no longer send Slack direct messages to resolved users.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0-next.1
+  - @backstage/plugin-catalog-node@2.1.0-next.2
+  - @backstage/plugin-notifications-node@0.2.24-next.2
+
+## 0.4.0-next.0
+
+### Minor Changes
+
+- 749ba60: Add an extension for custom Slack message layouts
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@2.1.0-next.0
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-notifications-common@0.2.1
+  - @backstage/plugin-notifications-node@0.2.24-next.0
+
 ## 0.3.1
 
 ### Patch Changes

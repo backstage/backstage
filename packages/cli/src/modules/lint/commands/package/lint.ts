@@ -15,14 +15,48 @@
  */
 
 import fs from 'fs-extra';
-import { OptionValues } from 'commander';
-import { paths } from '../../../../lib/paths';
+import { cli } from 'cleye';
+import { targetPaths } from '@backstage/cli-common';
 import { ESLint } from 'eslint';
+import type { CommandContext } from '../../../../wiring/types';
 
-export default async (directories: string[], opts: OptionValues) => {
+export default async ({ args, info }: CommandContext) => {
+  const {
+    flags: { fix, format, outputFile, maxWarnings },
+    _: directories,
+  } = cli(
+    {
+      help: { ...info, usage: `${info.usage} [directories...]` },
+      booleanFlagNegation: true,
+      parameters: ['[directories...]'],
+      flags: {
+        fix: {
+          type: Boolean,
+          description: 'Attempt to automatically fix violations',
+        },
+        format: {
+          type: String,
+          description: 'Lint report output format',
+          default: 'eslint-formatter-friendly',
+        },
+        outputFile: {
+          type: String,
+          description: 'Write the lint report to a file instead of stdout',
+        },
+        maxWarnings: {
+          type: String,
+          description:
+            'Fail if more than this number of warnings. -1 allows warnings. (default: -1)',
+        },
+      },
+    },
+    undefined,
+    args,
+  );
+
   const eslint = new ESLint({
-    cwd: paths.targetDir,
-    fix: opts.fix,
+    cwd: targetPaths.dir,
+    fix,
     extensions: ['js', 'jsx', 'ts', 'tsx', 'mjs', 'cjs'],
   });
 
@@ -30,31 +64,31 @@ export default async (directories: string[], opts: OptionValues) => {
     directories.length ? directories : ['.'],
   );
 
-  const maxWarnings = opts.maxWarnings ?? -1;
-  const ignoreWarnings = +maxWarnings === -1;
+  const maxWarningsNum = maxWarnings ? +maxWarnings : -1;
+  const ignoreWarnings = maxWarningsNum === -1;
 
   const failed =
     results.some(r => r.errorCount > 0) ||
     (!ignoreWarnings &&
       results.reduce((current, next) => current + next.warningCount, 0) >
-        maxWarnings);
+        maxWarningsNum);
 
-  if (opts.fix) {
+  if (fix) {
     await ESLint.outputFixes(results);
   }
 
-  const formatter = await eslint.loadFormatter(opts.format);
+  const formatter = await eslint.loadFormatter(format);
 
   // This formatter uses the cwd to format file paths, so let's have that happen from the root instead
-  if (opts.format === 'eslint-formatter-friendly') {
-    process.chdir(paths.targetRoot);
+  if (format === 'eslint-formatter-friendly') {
+    process.chdir(targetPaths.rootDir);
   }
 
   const resultText = await formatter.format(results);
 
   if (resultText) {
-    if (opts.outputFile) {
-      await fs.writeFile(paths.resolveTarget(opts.outputFile), resultText);
+    if (outputFile) {
+      await fs.writeFile(targetPaths.resolve(outputFile), resultText);
     } else {
       console.log(resultText);
     }

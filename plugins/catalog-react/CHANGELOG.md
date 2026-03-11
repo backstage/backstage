@@ -1,5 +1,71 @@
 # @backstage/plugin-catalog-react
 
+## 2.1.0-next.2
+
+### Minor Changes
+
+- d14b6e0: Exported `useEntityRefLink` hook that returns a function for generating entity page URLs from entity references.
+- c6080eb: Added `EntityInfoCard` component to `@backstage/plugin-catalog-react` as a BUI-based card wrapper for entity page cards.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-compat-api@0.5.9-next.2
+  - @backstage/ui@0.13.0-next.2
+  - @backstage/frontend-test-utils@0.5.1-next.2
+  - @backstage/frontend-plugin-api@0.15.0-next.1
+  - @backstage/core-plugin-api@1.12.4-next.1
+  - @backstage/catalog-client@1.14.0-next.2
+  - @backstage/core-components@0.18.8-next.1
+
+## 2.1.0-next.1
+
+### Minor Changes
+
+- 4d58894: Added `aliases` and `contentOrder` fields to `EntityContentGroupDefinition`, allowing groups to declare alias IDs and control the sort order of their content items.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.13.0-next.1
+  - @backstage/catalog-client@1.14.0-next.1
+  - @backstage/frontend-test-utils@0.5.1-next.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/core-compat-api@0.5.9-next.1
+  - @backstage/core-components@0.18.8-next.0
+  - @backstage/core-plugin-api@1.12.4-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/filter-predicates@0.1.0
+  - @backstage/frontend-plugin-api@0.14.2-next.0
+  - @backstage/integration-react@1.2.16-next.1
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.12
+  - @backstage/plugin-catalog-common@1.1.8
+  - @backstage/plugin-permission-common@0.9.6
+  - @backstage/plugin-permission-react@0.4.41-next.0
+
+## 2.0.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.12.1-next.0
+  - @backstage/frontend-plugin-api@0.14.2-next.0
+  - @backstage/frontend-test-utils@0.5.1-next.0
+  - @backstage/catalog-client@1.13.1-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/core-compat-api@0.5.9-next.0
+  - @backstage/core-components@0.18.8-next.0
+  - @backstage/core-plugin-api@1.12.4-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/filter-predicates@0.1.0
+  - @backstage/integration-react@1.2.16-next.0
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.12
+  - @backstage/plugin-catalog-common@1.1.8
+  - @backstage/plugin-permission-common@0.9.6
+  - @backstage/plugin-permission-react@0.4.41-next.0
+
 ## 2.0.0
 
 ### Minor Changes

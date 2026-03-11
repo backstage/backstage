@@ -1,5 +1,43 @@
 # @backstage/plugin-mcp-actions-backend
 
+## 0.1.10-next.2
+
+### Patch Changes
+
+- c74b697: Added support for splitting MCP actions into multiple servers via `mcpActions.servers` configuration. Each server gets its own endpoint at `/api/mcp-actions/v1/{key}` with actions scoped using include/exclude filter rules. Tool names are now namespaced with the plugin ID by default, configurable via `mcpActions.namespacedToolNames`. When `mcpActions.servers` is not configured, the plugin continues to serve a single server at `/api/mcp-actions/v1`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0-next.1
+  - @backstage/catalog-client@1.14.0-next.2
+  - @backstage/plugin-catalog-node@2.1.0-next.2
+
+## 0.1.10-next.1
+
+### Patch Changes
+
+- 62f0a53: Fixed error forwarding in the actions registry so that known errors like `InputError` and `NotFoundError` thrown by actions preserve their original status codes and messages instead of being wrapped in `ForwardedError` and coerced to 500.
+- Updated dependencies
+  - @backstage/catalog-client@1.14.0-next.1
+  - @backstage/plugin-catalog-node@2.1.0-next.1
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 0.1.10-next.0
+
+### Patch Changes
+
+- dc81af1: Adds two new metrics to track MCP server operations and sessions.
+
+  - `mcp.server.operation.duration`: The duration taken to process an individual MCP operation
+  - `mcp.server.session.duration`: The duration of the MCP session from the perspective of the server
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@2.1.0-next.0
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/catalog-client@1.13.1-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
 ## 0.1.9
 
 ### Patch Changes

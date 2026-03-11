@@ -36,6 +36,7 @@ const IGNORED_WHEN_LISTING = [
 const IGNORED_WHEN_EXPLICIT = [
   /^ADOPTERS\.md$/,
   /^OWNERS\.md$/,
+  /^.*[/\\]CHANGELOG\.md$/, // generated from changesets anyway - THOSE should have been checked earlier
   /^.*[/\\]knip-report\.md$/,
 ];
 
@@ -71,7 +72,7 @@ async function exitIfMissingVale() {
   try {
     // eslint-disable-next-line @backstage/no-undeclared-imports
     await require('command-exists')('vale');
-  } catch (e) {
+  } catch {
     console.log(
       `Language linter (vale) was not found. Please install vale linter (https://vale.sh/docs/vale-cli/installation/).\n`,
     );
@@ -101,7 +102,92 @@ async function runVale(files) {
   return true;
 }
 
+async function ciCheck(prFilesPath) {
+  const content = await fs.readFile(prFilesPath, 'utf8');
+  const prFiles = content.split('\n').filter(f => f.trim());
+
+  const mdFiles = prFiles
+    .filter(f => f.endsWith('.md'))
+    .filter(f => !IGNORED_WHEN_LISTING.some(p => p.test(f)));
+
+  if (mdFiles.length === 0) {
+    console.log('No documentation files to check.');
+    return;
+  }
+
+  console.log(`Checking ${mdFiles.length} changed documentation file(s)...`);
+
+  const result = spawnSync(
+    'vale',
+    [
+      '--config',
+      resolvePath(rootDir, '.vale.ini'),
+      '--output=JSON',
+      ...mdFiles,
+    ],
+    { encoding: 'utf8', maxBuffer: 50 * 1024 * 1024 },
+  );
+
+  if (result.error) {
+    console.error('Failed to run vale:', result.error.message);
+    process.exit(1);
+  }
+
+  let issueCount = 0;
+
+  if (result.stdout && result.stdout.trim()) {
+    try {
+      const data = JSON.parse(result.stdout);
+      for (const [file, alerts] of Object.entries(data)) {
+        for (const alert of alerts) {
+          const severityLevels = {
+            error: 'error',
+            warning: 'warning',
+            suggestion: 'notice',
+          };
+          const level = severityLevels[alert.Severity] ?? 'notice';
+          const col = alert.Span ? alert.Span[0] : 1;
+          const endCol = alert.Span ? `,endColumn=${alert.Span[1] + 1}` : '';
+          console.log(
+            `::${level} file=${file},line=${alert.Line},col=${col}${endCol},title=${alert.Check}::${alert.Message}`,
+          );
+          issueCount++;
+        }
+      }
+    } catch {
+      console.error('Failed to parse vale output:');
+      console.error(result.stdout);
+      process.exit(1);
+    }
+  }
+
+  if (result.stderr && result.stderr.trim()) {
+    console.error(result.stderr);
+  }
+
+  if (issueCount > 0) {
+    console.log(
+      `\nFound ${issueCount} documentation quality issue(s). Please review the annotations above.`,
+    );
+  }
+
+  if (result.status !== 0) {
+    process.exit(1);
+  }
+}
+
 async function main() {
+  if (process.argv.includes('--ci')) {
+    const idx = process.argv.indexOf('--ci');
+    const prFilesPath = process.argv[idx + 1];
+    if (!prFilesPath) {
+      console.error('Usage: check-docs-quality.js --ci <pr-files-list.txt>');
+      process.exit(1);
+    }
+    await ciCheck(prFilesPath);
+    return;
+  }
+
   if (process.argv.includes('--ci-args')) {
     const files = await listFiles();
 

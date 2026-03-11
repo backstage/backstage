@@ -94,7 +94,7 @@ const systemPage = (
     <EntityLayout.Route path="/" title="Overview">
       <Grid container spacing={3} alignItems="stretch">
         <Grid item md={6}>
-          <EntityAboutCard variant="gridItem" />
+          <EntityAboutCard />
         </Grid>
         <Grid item md={6}>
           <EntityHasComponentsCard variant="gridItem" />

@@ -68,16 +68,27 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
     return 'DefaultLocationStore';
   }
 
-  async createLocation(input: LocationInput): Promise<Location> {
+  async createLocation(
+    input: LocationInput,
+    options?: {
+      onConflict?: 'refresh' | 'reject';
+    },
+  ): Promise<Location> {
+    let existed = false;
+
     const location = await this.db.transaction(async tx => {
       // Attempt to find a previous location matching the input
       const previousLocations = await this.locations(tx);
       // TODO: when location id's are a compilation of input target we can remove this full
       // lookup of locations first and just grab the by that instead.
-      const previousLocation = previousLocations.some(
+      const previousLocation = previousLocations.find(
         l => input.type === l.type && input.target === l.target,
       );
       if (previousLocation) {
+        if (options?.onConflict === 'refresh') {
+          existed = true;
+          return previousLocation;
+        }
         throw new ConflictError(
           `Location ${input.type}:${input.target} already exists`,
         );
@@ -93,12 +104,27 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
 
       return inner;
     });
+
+    // Always upsert the entity, even if the location already existed, to
+    // recover from cases where the entity was inadvertently deleted.
     const entity = locationSpecToLocationEntity({ location });
     await this.connection.applyMutation({
       type: 'delta',
       added: [{ entity, locationKey: getEntityLocationRef(entity) }],
       removed: [],
     });
+
+    if (existed) {
+      // This is the "onConflict refresh" case, where a re-registration safely
+      // tries to recover from a bad state.
+      const entityRef = stringifyEntityRef(entity);
+      await this.db<DbRefreshStateRow>('refresh_state')
+        .where({ entity_ref: entityRef })
+        .update({
+          next_update_at: this.db.fn.now(),
+          result_hash: '',
+        });
+    }
 
     return location;
   }
@@ -305,16 +331,40 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
     }
 
     if (exactLocationsToDelete.size > 0) {
-      await this.#deleteLocationsByExactUrl(exactLocationsToDelete);
+      const count = await this.#deleteLocationsByExactUrl(
+        exactLocationsToDelete,
+      );
+      this.scmEvents.markEventActionTaken({
+        count,
+        action: 'delete',
+      });
     }
     if (locationPrefixesToDelete.size > 0) {
-      await this.#deleteLocationsByUrlPrefix(locationPrefixesToDelete);
+      const count = await this.#deleteLocationsByUrlPrefix(
+        locationPrefixesToDelete,
+      );
+      this.scmEvents.markEventActionTaken({
+        count,
+        action: 'delete',
+      });
     }
     if (exactLocationsToCreate.size > 0) {
-      await this.#createLocationsByExactUrl(exactLocationsToCreate);
+      const count = await this.#createLocationsByExactUrl(
+        exactLocationsToCreate,
+      );
+      this.scmEvents.markEventActionTaken({
+        count,
+        action: 'create',
+      });
     }
     if (locationPrefixesToMove.size > 0) {
-      await this.#moveLocationsByUrlPrefix(locationPrefixesToMove);
+      const count = await this.#moveLocationsByUrlPrefix(
+        locationPrefixesToMove,
+      );
+      this.scmEvents.markEventActionTaken({
+        count,
+        action: 'move',
+      });
     }
   }
 

@@ -257,10 +257,13 @@ describe('DefaultLocationServiceTest', () => {
           type: 'url',
         },
       });
-      expect(store.createLocation).toHaveBeenCalledWith({
-        target: 'https://backstage.io/catalog-info.yaml',
-        type: 'url',
-      });
+      expect(store.createLocation).toHaveBeenCalledWith(
+        {
+          target: 'https://backstage.io/catalog-info.yaml',
+          type: 'url',
+        },
+        expect.anything(),
+      );
     });
 
     it('should create location with unknown type if configuration allows it', async () => {
@@ -279,6 +282,7 @@ describe('DefaultLocationServiceTest', () => {
         orchestrator,
         {
           allowedLocationTypes: ['url', 'unknown'],
+          defaultLocationConflictStrategy: 'reject',
         },
       );
       await expect(
@@ -291,10 +295,13 @@ describe('DefaultLocationServiceTest', () => {
           type: 'unknown',
         },
       });
-      expect(store.createLocation).toHaveBeenCalledWith({
-        target: 'https://backstage.io/catalog-info.yaml',
-        type: 'unknown',
-      });
+      expect(store.createLocation).toHaveBeenCalledWith(
+        {
+          target: 'https://backstage.io/catalog-info.yaml',
+          type: 'unknown',
+        },
+        expect.anything(),
+      );
     });
 
     it('should not allow locations of unknown types by default', async () => {
@@ -307,6 +314,31 @@ describe('DefaultLocationServiceTest', () => {
           false,
         ),
       ).rejects.toThrow(InputError);
+    });
+
+    it('should pass onConflict through to store', async () => {
+      const locationSpec = {
+        type: 'url',
+        target: 'https://backstage.io/catalog-info.yaml',
+      };
+
+      store.createLocation.mockResolvedValueOnce({
+        id: 'existing-id',
+        ...locationSpec,
+      });
+
+      const result = await locationService.createLocation(locationSpec, false, {
+        onConflict: 'refresh',
+        credentials: {} as any,
+      });
+
+      expect(result).toEqual({
+        location: { id: 'existing-id', ...locationSpec },
+        entities: [],
+      });
+      expect(store.createLocation).toHaveBeenCalledWith(locationSpec, {
+        onConflict: 'refresh',
+      });
     });
 
     it('should return default InputError for failed processed entities in dryRun mode', async () => {

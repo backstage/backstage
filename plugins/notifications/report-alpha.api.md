@@ -108,7 +108,6 @@ const _default: OverridableFrontendPlugin<
         >;
       };
       params: {
-        defaultPath?: [Error: `Use the 'path' param instead`];
         path: string;
         title?: string;
         icon?: IconElement;

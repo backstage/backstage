@@ -8,3 +8,4 @@ documentation: https://github.com/backstage/community-plugins/tree/main/workspac
 iconUrl: /img/vault.png
 npmPackageName: '@backstage-community/plugin-vault'
 addedDate: '2022-06-03'
+status: active

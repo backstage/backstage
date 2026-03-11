@@ -29,7 +29,7 @@ import {
   OutputChunk,
   HasModuleSideEffects,
 } from 'rollup';
-import { EntryPoint } from '../../../../lib/entryPoints';
+import { EntryPoint } from '../entryPoints';
 
 type ForwardFileImportsOptions = {
   include: Array<string | RegExp> | string | RegExp | null;

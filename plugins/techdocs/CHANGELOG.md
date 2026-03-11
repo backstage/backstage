@@ -1,5 +1,65 @@
 # @backstage/plugin-techdocs
 
+## 1.17.1-next.2
+
+### Patch Changes
+
+- 9795d30: chore(deps): bump `dompurify` from 3.3.1 to 3.3.2
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.15.0-next.1
+  - @backstage/core-plugin-api@1.12.4-next.1
+  - @backstage/catalog-client@1.14.0-next.2
+  - @backstage/plugin-catalog-react@2.1.0-next.2
+  - @backstage/integration@2.0.0-next.2
+  - @backstage/core-components@0.18.8-next.1
+  - @backstage/plugin-search-react@1.10.5-next.1
+  - @backstage/plugin-techdocs-react@1.3.9-next.1
+
+## 1.17.1-next.1
+
+### Patch Changes
+
+- 30e08df: Added `documentation` as the default entity content group for the TechDocs entity content tab.
+- Updated dependencies
+  - @backstage/catalog-client@1.14.0-next.1
+  - @backstage/plugin-catalog-react@2.1.0-next.1
+  - @backstage/integration@2.0.0-next.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/core-components@0.18.8-next.0
+  - @backstage/core-plugin-api@1.12.4-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-plugin-api@0.14.2-next.0
+  - @backstage/integration-react@1.2.16-next.1
+  - @backstage/theme@0.7.2
+  - @backstage/plugin-auth-react@0.1.25-next.0
+  - @backstage/plugin-search-common@1.2.22
+  - @backstage/plugin-search-react@1.10.5-next.0
+  - @backstage/plugin-techdocs-common@0.1.1
+  - @backstage/plugin-techdocs-react@1.3.9-next.0
+
+## 1.17.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-react@1.10.5-next.0
+  - @backstage/frontend-plugin-api@0.14.2-next.0
+  - @backstage/integration@1.21.0-next.0
+  - @backstage/catalog-client@1.13.1-next.0
+  - @backstage/plugin-catalog-react@2.0.1-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/core-components@0.18.8-next.0
+  - @backstage/core-plugin-api@1.12.4-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/integration-react@1.2.16-next.0
+  - @backstage/theme@0.7.2
+  - @backstage/plugin-auth-react@0.1.25-next.0
+  - @backstage/plugin-search-common@1.2.22
+  - @backstage/plugin-techdocs-common@0.1.1
+  - @backstage/plugin-techdocs-react@1.3.9-next.0
+
 ## 1.17.0
 
 ### Minor Changes

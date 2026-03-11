@@ -8,3 +8,4 @@ documentation: https://github.com/backstage/community-plugins/tree/main/workspac
 iconUrl: https://sentry-brand.storage.googleapis.com/sentry-glyph-white.png
 npmPackageName: '@backstage-community/plugin-sentry'
 addedDate: '2020-11-03'
+status: active

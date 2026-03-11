@@ -8,3 +8,4 @@ documentation: https://github.com/backstage/community-plugins/blob/main/workspac
 iconUrl: /img/sonarqube-icon.svg
 npmPackageName: '@backstage-community/plugin-sonarqube'
 addedDate: '2020-11-03'
+status: active

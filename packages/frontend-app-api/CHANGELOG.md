@@ -1,5 +1,35 @@
 # @backstage/frontend-app-api
 
+## 0.16.0-next.1
+
+### Minor Changes
+
+- 92af1ae: **BREAKING**: Removed the `allowUnknownExtensionConfig` option from `createSpecializedApp`. This flag had no effect and was a no-op, so no behavioral changes are expected.
+
+### Patch Changes
+
+- 0452d02: Add optional `description` field to plugin-level feature flags.
+- dab6c46: Added the `ExtensionFactoryMiddleware` type as a public export.
+- Updated dependencies
+  - @backstage/core-app-api@1.19.6-next.1
+  - @backstage/frontend-plugin-api@0.15.0-next.1
+  - @backstage/core-plugin-api@1.12.4-next.1
+  - @backstage/frontend-defaults@0.5.0-next.1
+
+## 0.15.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.14.2-next.0
+  - @backstage/config@1.3.6
+  - @backstage/core-app-api@1.19.6-next.0
+  - @backstage/core-plugin-api@1.12.4-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/frontend-defaults@0.4.1-next.0
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.12
+
 ## 0.15.0
 
 ### Minor Changes

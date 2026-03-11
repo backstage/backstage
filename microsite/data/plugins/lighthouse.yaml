@@ -8,3 +8,4 @@ documentation: https://github.com/backstage/community-plugins/tree/main/workspac
 iconUrl: https://seeklogo.com/images/G/google-lighthouse-logo-1C7FA08580-seeklogo.com.png
 npmPackageName: '@backstage-community/plugin-lighthouse'
 addedDate: '2021-01-20'
+status: active

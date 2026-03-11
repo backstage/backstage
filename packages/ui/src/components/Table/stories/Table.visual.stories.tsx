@@ -115,7 +115,8 @@ export const NoPagination: Story = {
       },
       {
         id: 'owner',
-        label: 'Owner',
+        label: 'Owner of the component or service in the organization',
+        defaultWidth: 120,
         cell: item => <CellText title={item.owner.name} />,
       },
       {

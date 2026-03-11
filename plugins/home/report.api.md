@@ -273,11 +273,9 @@ export interface VisitDisplayContextValue {
 }
 
 // @public
-export const VisitDisplayProvider: ({
-  children,
-  getChipColor,
-  getLabel,
-}: VisitDisplayProviderProps) => JSX_2.Element;
+export const VisitDisplayProvider: (
+  input: VisitDisplayProviderProps,
+) => JSX_2.Element;
 
 // @public
 export interface VisitDisplayProviderProps {
@@ -309,14 +307,10 @@ export type VisitInput = {
 };
 
 // @public
-export const VisitListener: ({
-  children,
-  toEntityRef,
-  visitName,
-}: {
+export const VisitListener: (input: {
   children?: ReactNode;
-  toEntityRef?: ({ pathname }: { pathname: string }) => string | undefined;
-  visitName?: ({ pathname }: { pathname: string }) => string;
+  toEntityRef?: (input: { pathname: string }) => string | undefined;
+  visitName?: (input: { pathname: string }) => string;
 }) => JSX.Element;
 
 // @public
@@ -389,10 +383,7 @@ export type VisitsWebStorageApiOptions = {
 };
 
 // @public
-export const WelcomeTitle: ({
-  language,
-  variant,
-}: WelcomeTitleLanguageProps) => JSX_2.Element;
+export const WelcomeTitle: (input: WelcomeTitleLanguageProps) => JSX_2.Element;
 
 // @public (undocumented)
 export type WelcomeTitleLanguageProps = {

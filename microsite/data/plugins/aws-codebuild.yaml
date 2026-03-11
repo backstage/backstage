@@ -8,3 +8,4 @@ documentation: https://github.com/awslabs/backstage-plugins-for-aws/tree/main/pl
 iconUrl: https://raw.githubusercontent.com/awslabs/backstage-plugins-for-aws/main/docs/images/logos/aws-codebuild-logo.png
 npmPackageName: '@aws/aws-codebuild-plugin-for-backstage'
 addedDate: '2024-04-22'
+status: active

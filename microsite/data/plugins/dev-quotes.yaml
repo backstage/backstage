@@ -8,3 +8,4 @@ documentation: https://github.com/Parsifal-M/backstage-dev-quotes?tab=readme-ov-
 iconUrl: /img/dqicon.png
 npmPackageName: '@parsifal-m/plugin-dev-quotes-homepage'
 addedDate: '2023-12-13'
+status: active

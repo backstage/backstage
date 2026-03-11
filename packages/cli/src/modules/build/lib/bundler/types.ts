@@ -36,7 +36,6 @@ export type BundlingOptions = {
   isDev: boolean;
   frontendConfig: Config;
   getFrontendAppConfigs(): AppConfig[];
-  parallelism?: number;
   additionalEntryPoints?: string[];
   // Path to append to the detected public path, e.g. '/public'
   publicSubPath?: string;
@@ -63,7 +62,6 @@ export type BuildOptions = BundlingPathsOptions & {
   // Target directory, defaulting to paths.targetDir
   targetDir?: string;
   statsJsonEnabled: boolean;
-  parallelism?: number;
   schema?: ConfigSchema;
   frontendConfig: Config;
   frontendAppConfigs: AppConfig[];
@@ -75,7 +73,6 @@ export type BuildOptions = BundlingPathsOptions & {
 export type BackendBundlingOptions = {
   checksEnabled: boolean;
   isDev: boolean;
-  parallelism?: number;
   inspectEnabled: boolean;
   inspectBrkEnabled: boolean;
   require?: string;

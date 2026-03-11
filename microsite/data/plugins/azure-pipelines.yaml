@@ -8,3 +8,4 @@ documentation: https://github.com/backstage/community-plugins/blob/main/workspac
 iconUrl: /img/azure-pipelines.svg
 npmPackageName: '@backstage-community/plugin-azure-devops'
 addedDate: '2021-12-22'
+status: active

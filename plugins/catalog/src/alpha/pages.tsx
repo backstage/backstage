@@ -109,10 +109,14 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
               z.object({
                 title: z.string(),
                 icon: z.string().optional(),
+                aliases: z.array(z.string()).optional(),
+                contentOrder: z.enum(['title', 'natural']).optional(),
               }),
             ),
           )
           .optional(),
+      defaultContentOrder: z =>
+        z.enum(['title', 'natural']).optional().default('title'),
       showNavItemIcons: z => z.boolean().optional().default(false),
     },
   },
@@ -174,6 +178,7 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
                 header={header}
                 contextMenuItems={filteredMenuItems}
                 groupDefinitions={groupDefinitions}
+                defaultContentOrder={config.defaultContentOrder}
                 showNavItemIcons={config.showNavItemIcons}
               >
                 {inputs.contents.map(output => (

@@ -15,5 +15,5 @@
  */
 
 export { VisuallyHidden } from './VisuallyHidden';
-export type { VisuallyHiddenProps } from './types';
+export type { VisuallyHiddenOwnProps, VisuallyHiddenProps } from './types';
 export { VisuallyHiddenDefinition } from './definition';

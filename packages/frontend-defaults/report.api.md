@@ -8,7 +8,7 @@ import { AppErrorTypes } from '@backstage/frontend-app-api';
 import { Config } from '@backstage/config';
 import { ConfigApi } from '@backstage/frontend-plugin-api';
 import { CreateAppRouteBinder } from '@backstage/frontend-app-api';
-import { ExtensionFactoryMiddleware } from '@backstage/frontend-plugin-api';
+import { ExtensionFactoryMiddleware } from '@backstage/frontend-app-api';
 import { FrontendFeature } from '@backstage/frontend-plugin-api';
 import { FrontendFeatureLoader } from '@backstage/frontend-plugin-api';
 import { FrontendPluginInfoResolver } from '@backstage/frontend-app-api';
@@ -23,7 +23,6 @@ export function createApp(options?: CreateAppOptions): {
 // @public
 export interface CreateAppOptions {
   advanced?: {
-    allowUnknownExtensionConfig?: boolean;
     configLoader?: () => Promise<{
       config: ConfigApi;
     }>;
@@ -36,11 +35,6 @@ export interface CreateAppOptions {
   bindRoutes?(context: { bind: CreateAppRouteBinder }): void;
   features?: (FrontendFeature | FrontendFeatureLoader)[];
 }
-
-// @public @deprecated (undocumented)
-export function createPublicSignInApp(options?: CreateAppOptions): {
-  createRoot(): JSX_2;
-};
 
 // @public (undocumented)
 export function discoverAvailableFeatures(config: Config): {

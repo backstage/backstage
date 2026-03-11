@@ -1,5 +1,48 @@
 # @backstage/plugin-techdocs-addons-test-utils
 
+## 2.0.3-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-app-api@1.19.6-next.1
+  - @backstage/plugin-techdocs@1.17.1-next.2
+  - @backstage/core-plugin-api@1.12.4-next.1
+  - @backstage/plugin-catalog-react@2.1.0-next.2
+  - @backstage/plugin-catalog@2.0.0-next.2
+  - @backstage/plugin-search-react@1.10.5-next.1
+  - @backstage/plugin-techdocs-react@1.3.9-next.1
+
+## 2.0.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-techdocs@1.17.1-next.1
+  - @backstage/plugin-catalog@1.34.0-next.1
+  - @backstage/plugin-catalog-react@2.1.0-next.1
+  - @backstage/core-app-api@1.19.6-next.0
+  - @backstage/core-plugin-api@1.12.4-next.0
+  - @backstage/integration-react@1.2.16-next.1
+  - @backstage/test-utils@1.7.16-next.0
+  - @backstage/plugin-search-react@1.10.5-next.0
+  - @backstage/plugin-techdocs-react@1.3.9-next.0
+
+## 2.0.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-react@1.10.5-next.0
+  - @backstage/plugin-catalog@1.33.1-next.0
+  - @backstage/plugin-catalog-react@2.0.1-next.0
+  - @backstage/plugin-techdocs@1.17.1-next.0
+  - @backstage/core-app-api@1.19.6-next.0
+  - @backstage/core-plugin-api@1.12.4-next.0
+  - @backstage/integration-react@1.2.16-next.0
+  - @backstage/test-utils@1.7.16-next.0
+  - @backstage/plugin-techdocs-react@1.3.9-next.0
+
 ## 2.0.2
 
 ### Patch Changes

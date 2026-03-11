@@ -16,6 +16,7 @@
 
 import type { ReactNode } from 'react';
 import type { Responsive } from '../../types';
+import type { AnalyticsTracker } from '../../analytics/types';
 import type { utilityClassMap } from '../../utils/utilityClassMap';
 
 export type UnwrapResponsive<T> = T extends Responsive<infer U> ? U : T;
@@ -43,18 +44,45 @@ export interface ComponentConfig<
    * - `'consumer'` — calls `useBgConsumer`, sets `data-on-bg`
    */
   bg?: 'provider' | 'consumer';
+  /**
+   * Whether this component fires analytics events.
+   * When true, `useDefinition` will call `useAnalytics()` and return
+   * an `analytics` tracker. The component's own props type must include
+   * `noTrack?: boolean`.
+   */
+  analytics?: boolean;
 }
 
 /**
  * Type constraint that validates bg props are present in the props type.
- * - Provider components must include 'bg' in their props
+ * - Provider components must include 'bg' in their props and 'children' in propDefs
  * - Consumer components don't need a bg prop
  */
 export type BgPropsConstraint<P, Bg> = Bg extends 'provider'
   ? 'bg' extends keyof P
+    ? 'children' extends keyof P
+      ? {} extends Pick<P, 'children'>
+        ? {
+            __error: 'Bg provider components cannot have children as optional.';
+          }
+        : {}
+      : {
+          __error: 'Bg provider components must include children in own props type.';
+        }
+    : {
+        __error: 'Bg provider components must include bg in own props type.';
+      }
+  : {};
+
+/**
+ * Type constraint that validates analytics props are present in the props type.
+ * Components with analytics: true must include 'noTrack' in their props.
+ */
+export type AnalyticsPropsConstraint<P, Analytics> = Analytics extends true
+  ? 'noTrack' extends keyof P
     ? {}
     : {
-        __error: 'Bg provider components must include bg in props type.';
+        __error: 'Analytics components must include noTrack in own props type.';
       }
   : {};
 
@@ -127,10 +155,10 @@ type ResolvedUtilityStyle<D extends ComponentConfig<any, any>> = UtilityStyle<
   UtilityKeys<D>
 >;
 
-export interface UseDefinitionResult<
+export type UseDefinitionResult<
   D extends ComponentConfig<any, any>,
   P extends Record<string, any>,
-> {
+> = {
   ownProps: ResolveBgProps<D, BaseOwnProps<D, P>>;
 
   // Rest props excludes both propDefs keys AND utility prop keys
@@ -141,4 +169,4 @@ export interface UseDefinitionResult<
   dataAttributes: DataAttributes<D['propDefs']>;
 
   utilityStyle: ResolvedUtilityStyle<D>;
-}
+} & (D['analytics'] extends true ? { analytics: AnalyticsTracker } : {});

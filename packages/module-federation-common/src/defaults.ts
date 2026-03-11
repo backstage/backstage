@@ -55,7 +55,7 @@ const defaultSharedDependencies = {
   // MUI v5
   // not setting import: false for MUI packages as this
   // will break once Backstage moves to BUI
-  '@mui/material/styles/': {
+  '@mui/material/styles': {
     host: {},
     remote: {},
   },

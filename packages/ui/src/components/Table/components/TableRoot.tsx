@@ -14,27 +14,25 @@
  * limitations under the License.
  */
 
-import { useStyles } from '../../../hooks/useStyles';
+import { useDefinition } from '../../../hooks/useDefinition';
 import { TableDefinition } from '../definition';
 import { Table as ReactAriaTable } from 'react-aria-components';
-import styles from '../Table.module.css';
-import clsx from 'clsx';
 import { TableRootProps } from '../types';
 
 /** @public */
 export const TableRoot = (props: TableRootProps) => {
-  const { classNames, dataAttributes, cleanedProps } = useStyles(
+  const { ownProps, restProps, dataAttributes } = useDefinition(
     TableDefinition,
     props,
   );
 
   return (
     <ReactAriaTable
-      className={clsx(classNames.table, styles[classNames.table])}
+      className={ownProps.classes.root}
       aria-label="Data table"
-      aria-busy={props.stale}
+      aria-busy={ownProps.stale}
       {...dataAttributes}
-      {...cleanedProps}
+      {...restProps}
     />
   );
 };

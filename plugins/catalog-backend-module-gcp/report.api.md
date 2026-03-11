@@ -20,22 +20,13 @@ export class GkeEntityProvider implements EntityProvider {
   // (undocumented)
   connect(connection: EntityProviderConnection): Promise<void>;
   // (undocumented)
-  static fromConfig({
-    logger,
-    scheduler,
-    config,
-  }: {
+  static fromConfig(input: {
     logger: LoggerService;
     scheduler: SchedulerService;
     config: Config;
   }): GkeEntityProvider;
   // (undocumented)
-  static fromConfigWithClient({
-    logger,
-    scheduler,
-    config,
-    clusterManagerClient,
-  }: {
+  static fromConfigWithClient(input: {
     logger: LoggerService;
     scheduler: SchedulerService;
     config: Config;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ReactElement, CSSProperties } from 'react';
+import type { ReactElement } from 'react';
 import type { ButtonProps as RAButtonProps } from 'react-aria-components';
 import type { Responsive } from '../../types';
 
@@ -25,7 +25,6 @@ export type ButtonIconOwnProps = {
   icon?: ReactElement;
   loading?: boolean;
   className?: string;
-  style?: CSSProperties;
 };
 
 /**
@@ -34,5 +33,5 @@ export type ButtonIconOwnProps = {
  * @public
  */
 export interface ButtonIconProps
-  extends Omit<RAButtonProps, 'children' | 'className' | 'style'>,
+  extends Omit<RAButtonProps, keyof ButtonIconOwnProps>,
     ButtonIconOwnProps {}

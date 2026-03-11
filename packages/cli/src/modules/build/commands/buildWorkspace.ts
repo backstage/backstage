@@ -15,20 +15,52 @@
  */
 
 import fs from 'fs-extra';
+import { cli } from 'cleye';
 import { createDistWorkspace } from '../lib/packager';
+import type { CommandContext } from '../../../wiring/types';
 
-type Options = {
-  alwaysPack?: boolean;
-};
+export default async ({ args, info }: CommandContext) => {
+  // Normalize legacy --alwaysYarnPack alias (a genuinely different name, not
+  // just a casing variant — type-flag handles camelCase/kebab-case natively)
+  const normalizedArgs = args.map(a => {
+    if (a === '--alwaysYarnPack') {
+      return '--always-pack';
+    }
+    if (a.startsWith('--alwaysYarnPack=')) {
+      return `--always-pack${a.substring('--alwaysYarnPack'.length)}`;
+    }
+    return a;
+  });
 
-export default async (dir: string, packages: string[], options: Options) => {
+  const {
+    flags: { alwaysPack },
+    _: positionals,
+  } = cli(
+    {
+      help: { ...info, usage: `${info.usage} <workspace-dir> [packages...]` },
+      booleanFlagNegation: true,
+      parameters: ['<workspace-dir>', '[packages...]'],
+      flags: {
+        alwaysPack: {
+          type: Boolean,
+          description:
+            'Force workspace output to be a result of running `yarn pack` on each package (warning: very slow)',
+        },
+      },
+    },
+    undefined,
+    normalizedArgs,
+  );
+
+  const [dir, ...packages] = positionals;
+
   if (!(await fs.pathExists(dir))) {
     throw new Error(`Target workspace directory doesn't exist, '${dir}'`);
   }
 
   await createDistWorkspace(packages, {
     targetDir: dir,
-    alwaysPack: options.alwaysPack,
+    alwaysPack,
     enableFeatureDetection: true,
   });
 };

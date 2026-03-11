@@ -9,3 +9,4 @@ documentation: https://github.com/backstage/community-plugins/tree/main/workspac
 iconUrl: '/img/logo-gradient-on-dark.svg'
 npmPackageName: '@backstage-community/plugin-microsoft-calendar'
 addedDate: '2023-03-15'
+status: active

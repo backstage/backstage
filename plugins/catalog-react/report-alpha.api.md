@@ -345,6 +345,8 @@ export type EntityContentGroupDefinitions = Record<
   {
     title: string;
     icon?: string | ReactElement;
+    aliases?: string[];
+    contentOrder?: 'title' | 'natural';
   }
 >;
 
@@ -556,9 +558,11 @@ export const EntityIconLinkBlueprint: ExtensionBlueprint<{
 }>;
 
 // @alpha (undocumented)
-export const EntityTableColumnTitle: ({
-  translationKey,
-}: EntityTableColumnTitleProps) =>
+export const EntityTableColumnTitle: (
+  input: EntityTableColumnTitleProps,
+) =>
+  | 'System'
+  | 'Title'
   | 'Domain'
   | 'System'
   | 'Name'

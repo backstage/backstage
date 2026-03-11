@@ -6,5 +6,7 @@ category: Humor
 description: Can I deploy this plugin if it's Friday? Oh, hell no!!!
 documentation: https://github.com/NandoRFS/backstage-plugin-should-i-deploy/
 iconUrl: /img/should-i-deploy-logo.png
-npmPackageName: 'backstage-plugin-should-i-deploy'
+npmPackageName: backstage-plugin-should-i-deploy
 addedDate: '2023-11-05'
+status: inactive
+staleSince: '2026-02-17'
