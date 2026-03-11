@@ -128,7 +128,7 @@ export const AppRoot = createExtension({
             el.get(coreExtensionData.reactElement),
           )}
         >
-          <BUIProvider useAnalytics={useAnalytics}>{content}</BUIProvider>
+          {content}
         </AppRouter>,
       ),
     ];
@@ -271,23 +271,27 @@ export function AppRouter(props: AppRouterProps) {
 
     return (
       <RouterComponent>
-        {...extraElements}
-        <RouteTracker routeObjects={routeObjects} />
-        {children}
+        <BUIProvider useAnalytics={useAnalytics}>
+          {...extraElements}
+          <RouteTracker routeObjects={routeObjects} />
+          {children}
+        </BUIProvider>
       </RouterComponent>
     );
   }
 
   return (
     <RouterComponent>
-      {...extraElements}
-      <RouteTracker routeObjects={routeObjects} />
-      <SignInPageWrapper
-        component={SignInPageComponent}
-        appIdentityProxy={appIdentityProxy}
-      >
-        {children}
-      </SignInPageWrapper>
+      <BUIProvider useAnalytics={useAnalytics}>
+        {...extraElements}
+        <RouteTracker routeObjects={routeObjects} />
+        <SignInPageWrapper
+          component={SignInPageComponent}
+          appIdentityProxy={appIdentityProxy}
+        >
+          {children}
+        </SignInPageWrapper>
+      </BUIProvider>
     </RouterComponent>
   );
 }
