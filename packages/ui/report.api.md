@@ -1162,6 +1162,7 @@ export const FieldLabelDefinition: {
     readonly description: {};
     readonly htmlFor: {};
     readonly id: {};
+    readonly descriptionId: {};
     readonly className: {};
   };
 };
@@ -1173,6 +1174,7 @@ export type FieldLabelOwnProps = {
   description?: string | null;
   htmlFor?: string;
   id?: string;
+  descriptionId?: string;
   className?: string;
 };
 
@@ -2287,20 +2289,6 @@ export interface SliderOwnProps {
 // @public (undocumented)
 export interface SliderProps<T extends number | number[]>
   extends Omit<SliderProps_2<T>, 'children' | 'className'>,
-    Omit<
-      FieldLabelProps,
-      | 'htmlFor'
-      | 'id'
-      | 'className'
-      | 'defaultValue'
-      | 'onChange'
-      | 'slot'
-      | 'style'
-      | 'label'
-      | 'secondaryLabel'
-      | 'description'
-      | 'isRequired'
-    >,
     SliderOwnProps {}
 
 // @public (undocumented)
