@@ -1,5 +1,11 @@
 # @backstage/plugin-scaffolder-backend
 
+## 3.1.5
+
+### Patch Changes
+
+- 3b62dd2: Fixed a security vulnerability where server-configured environment secrets were exposed through the scaffolder dry-run endpoint.
+
 ## 3.1.4
 
 ### Patch Changes
