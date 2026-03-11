@@ -16,6 +16,56 @@
 
 // @ts-check
 
+const BATCH_SIZE = 10000;
+
+/**
+ * Batch-deletes orphaned search rows whose entity_id doesn't exist in the
+ * given reference table. Processes in chunks to avoid long locks.
+ *
+ * @param {import('knex').Knex} knex
+ * @param {string} refTable - The table to check entity_id against
+ */
+async function batchDeleteOrphansPg(knex, refTable) {
+  for (;;) {
+    const deleted = await knex.raw(`
+      DELETE FROM "search"
+      WHERE ctid IN (
+        SELECT s.ctid FROM "search" s
+        LEFT JOIN "${refTable}" r ON s."entity_id" = r."entity_id"
+        WHERE r."entity_id" IS NULL
+          AND s."entity_id" IS NOT NULL
+        LIMIT ${BATCH_SIZE}
+      )
+    `);
+    if (deleted.rowCount === 0) {
+      break;
+    }
+  }
+}
+
+/**
+ * @param {import('knex').Knex} knex
+ * @param {string} refTable
+ */
+async function batchDeleteOrphansMysql(knex, refTable) {
+  for (;;) {
+    const [orphanIds] = await knex.raw(`
+      SELECT DISTINCT s.\`entity_id\` FROM \`search\` s
+      LEFT JOIN \`${refTable}\` r ON s.\`entity_id\` = r.\`entity_id\`
+      WHERE r.\`entity_id\` IS NULL
+        AND s.\`entity_id\` IS NOT NULL
+      LIMIT ${BATCH_SIZE}
+    `);
+    if (orphanIds.length === 0) {
+      break;
+    }
+    const ids = orphanIds.map(
+      (/** @type {{ entity_id: string }} */ r) => r.entity_id,
+    );
+    await knex('search').whereIn('entity_id', ids).delete();
+  }
+}
+
 /**
  * Changes the search table's foreign key from refresh_state(entity_id)
  * to final_entities(entity_id). This allows search entries to reference
@@ -32,26 +82,9 @@ exports.up = async function up(knex) {
   const client = knex.client.config.client;
 
   if (client.includes('pg')) {
-    // Batch-delete orphaned rows BEFORE touching the schema.
-    // This runs outside any DDL lock, so it doesn't block reads.
-    for (;;) {
-      const deleted = await knex.raw(`
-        DELETE FROM "search"
-        WHERE ctid IN (
-          SELECT s.ctid FROM "search" s
-          LEFT JOIN "final_entities" fe ON s."entity_id" = fe."entity_id"
-          WHERE fe."entity_id" IS NULL
-            AND s."entity_id" IS NOT NULL
-          LIMIT 10000
-        )
-      `);
-      if (deleted.rowCount === 0) {
-        break;
-      }
-    }
-
-    // Drop old FK and add new one with NOT VALID (minimal lock time).
-    // NOT VALID skips the full table scan — we already cleaned up orphans above.
+    // Drop old FK and immediately add the new one as NOT VALID. This
+    // prevents new orphan rows from being inserted while we clean up
+    // existing ones, closing the race window between cleanup and FK add.
     await knex.raw(
       `ALTER TABLE "search" DROP CONSTRAINT IF EXISTS "search_entity_id_foreign"`,
     );
@@ -63,32 +96,19 @@ exports.up = async function up(knex) {
       NOT VALID
     `);
 
+    // Batch-delete orphaned rows that existed before the NOT VALID FK was
+    // added. This runs outside any DDL lock, so it doesn't block reads.
+    await batchDeleteOrphansPg(knex, 'final_entities');
+
     // Validate the FK separately. This only takes a
-    // ShareUpdateExclusiveLock, which does NOT block reads/writes.
+    // ShareUpdateExclusiveLock, which does not block normal reads/writes
+    // (DML) but can still conflict with some DDL or maintenance operations.
     await knex.raw(
       `ALTER TABLE "search" VALIDATE CONSTRAINT "search_entity_id_foreign"`,
     );
   } else if (client.includes('mysql')) {
     // Batch-delete orphaned rows before DDL to reduce lock time.
-    // Uses LEFT JOIN to find orphans efficiently, then deletes by entity_id.
-    // MySQL doesn't support LIMIT in multi-table DELETE, so we find the
-    // orphaned entity_ids first, then delete in a separate statement.
-    for (;;) {
-      const [orphanIds] = await knex.raw(`
-        SELECT DISTINCT s.\`entity_id\` FROM \`search\` s
-        LEFT JOIN \`final_entities\` fe ON s.\`entity_id\` = fe.\`entity_id\`
-        WHERE fe.\`entity_id\` IS NULL
-          AND s.\`entity_id\` IS NOT NULL
-        LIMIT 10000
-      `);
-      if (orphanIds.length === 0) {
-        break;
-      }
-      const ids = orphanIds.map(
-        (/** @type {{ entity_id: string }} */ r) => r.entity_id,
-      );
-      await knex('search').whereIn('entity_id', ids).delete();
-    }
+    await batchDeleteOrphansMysql(knex, 'final_entities');
 
     // Drop old FK and add new one inside an explicit transaction, since the
     // global transaction wrapper is disabled for this migration. MySQL does
@@ -136,22 +156,6 @@ exports.down = async function down(knex) {
   const client = knex.client.config.client;
 
   if (client.includes('pg')) {
-    for (;;) {
-      const deleted = await knex.raw(`
-        DELETE FROM "search"
-        WHERE ctid IN (
-          SELECT s.ctid FROM "search" s
-          LEFT JOIN "refresh_state" rs ON s."entity_id" = rs."entity_id"
-          WHERE rs."entity_id" IS NULL
-            AND s."entity_id" IS NOT NULL
-          LIMIT 10000
-        )
-      `);
-      if (deleted.rowCount === 0) {
-        break;
-      }
-    }
-
     await knex.raw(
       `ALTER TABLE "search" DROP CONSTRAINT IF EXISTS "search_entity_id_foreign"`,
     );
@@ -163,26 +167,13 @@ exports.down = async function down(knex) {
       NOT VALID
     `);
 
+    await batchDeleteOrphansPg(knex, 'refresh_state');
+
     await knex.raw(
       `ALTER TABLE "search" VALIDATE CONSTRAINT "search_entity_id_foreign"`,
     );
   } else if (client.includes('mysql')) {
-    for (;;) {
-      const [orphanIds] = await knex.raw(`
-        SELECT DISTINCT s.\`entity_id\` FROM \`search\` s
-        LEFT JOIN \`refresh_state\` rs ON s.\`entity_id\` = rs.\`entity_id\`
-        WHERE rs.\`entity_id\` IS NULL
-          AND s.\`entity_id\` IS NOT NULL
-        LIMIT 10000
-      `);
-      if (orphanIds.length === 0) {
-        break;
-      }
-      const ids = orphanIds.map(
-        (/** @type {{ entity_id: string }} */ r) => r.entity_id,
-      );
-      await knex('search').whereIn('entity_id', ids).delete();
-    }
+    await batchDeleteOrphansMysql(knex, 'refresh_state');
 
     await knex.transaction(async trx => {
       await trx.schema.alterTable('search', table => {
