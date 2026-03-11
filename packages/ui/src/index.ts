@@ -71,11 +71,14 @@ export type { BgContextValue, BgProviderProps } from './hooks/useBg';
 // Routing
 export { BUIRouterProvider } from './routing';
 
+// Provider
+export { BUIProvider } from './provider';
+export type { BUIProviderProps } from './provider';
+
 // Analytics
-export { useAnalytics, BUIProvider, getNodeText } from './analytics';
+export { useAnalytics, getNodeText } from './analytics';
 export type {
   AnalyticsTracker,
   AnalyticsEventAttributes,
   UseAnalyticsFn,
-  BUIProviderProps,
 } from './analytics';
