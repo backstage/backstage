@@ -19,7 +19,7 @@ import { stringify as stringifyYaml } from 'yaml';
 import { AppConfig, ConfigReader } from '@backstage/config';
 import { loadCliConfig } from '../lib/config';
 import { ConfigSchema, ConfigVisibility } from '@backstage/config-loader';
-import type { CommandContext } from '@backstage/cli-plugin-api';
+import type { CommandContext } from '../../../wiring/types';
 
 export default async ({ args, info }: CommandContext) => {
   const {

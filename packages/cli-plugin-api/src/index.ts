@@ -15,9 +15,6 @@
  */
 
 export { createCliPlugin } from './createCliPlugin';
-export { lazy } from './lazy';
-export type { ActionExports } from './lazy';
-export { ExitCodeError, exitWithError } from './errors';
 export type {
   BackstageCommand,
   CommandContext,
@@ -25,4 +22,3 @@ export type {
   CliPlugin,
   CliFeature,
 } from './types';
-export { isCliPlugin, initializeCliPlugin } from './internals';

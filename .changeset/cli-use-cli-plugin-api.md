@@ -2,4 +2,4 @@
 '@backstage/cli': patch
 ---
 
-Migrated CLI plugin modules to import from the new `@backstage/cli-plugin-api` package.
+Migrated CLI plugin modules to use `createCliPlugin` from the new `@backstage/cli-plugin-api` package.

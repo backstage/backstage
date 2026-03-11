@@ -33,7 +33,7 @@ import {
   formatMessagePath,
   validatePattern,
 } from '../lib/messageFilePath';
-import type { CommandContext } from '@backstage/cli-plugin-api';
+import type { CommandContext } from '../../../wiring/types';
 
 export default async ({ args, info }: CommandContext) => {
   const {

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-// Re-export types from the plugin API for internal use within the CLI package.
 export type {
   CommandContext,
   CommandExecuteFn,

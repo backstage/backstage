@@ -21,7 +21,7 @@ import { JSONSchema7 as JSONSchema } from 'json-schema';
 import openBrowser from 'react-dev-utils/openBrowser';
 import chalk from 'chalk';
 import { loadCliConfig } from '../lib/config';
-import type { CommandContext } from '@backstage/cli-plugin-api';
+import type { CommandContext } from '../../../wiring/types';
 
 const DOCS_URL = 'https://config.backstage.io';
 

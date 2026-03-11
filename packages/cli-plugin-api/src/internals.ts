@@ -16,6 +16,13 @@
 
 import { BackstageCommand, CliPlugin, OpaqueCliPlugin } from './types';
 
+export type {
+  BackstageCommand,
+  CliPlugin,
+  CommandContext,
+  CommandExecuteFn,
+} from './types';
+
 /**
  * Checks whether a value is a {@link CliPlugin}.
  *

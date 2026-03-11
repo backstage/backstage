@@ -24,9 +24,6 @@ export interface BackstageCommand {
 }
 
 // @public
-export type CliFeature = CliPlugin;
-
-// @public
 export interface CliPlugin {
   // (undocumented)
   readonly $$type: '@backstage/CliPlugin';
@@ -49,12 +46,15 @@ export interface CommandContext {
 export type CommandExecuteFn = (context: CommandContext) => Promise<void>;
 
 // @public
-export function createCliPlugin(options: {
-  pluginId: string;
-  init: (registry: {
+export function initializeCliPlugin(
+  plugin: CliPlugin,
+  registry: {
     addCommand: (command: BackstageCommand) => void;
-  }) => Promise<void>;
-}): CliPlugin;
+  },
+): Promise<void>;
+
+// @public
+export function isCliPlugin(value: unknown): value is CliPlugin;
 
 // (No @packageDocumentation comment for this package)
 ```

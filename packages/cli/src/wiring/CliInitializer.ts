@@ -18,13 +18,13 @@ import { CommandGraph } from './CommandGraph';
 import {
   isCliPlugin,
   initializeCliPlugin,
-  exitWithError,
-} from '@backstage/cli-plugin-api';
+} from '@backstage/cli-plugin-api/internals';
 import type { BackstageCommand, CliFeature } from '@backstage/cli-plugin-api';
 import { CommandRegistry } from './CommandRegistry';
 import { Command } from 'commander';
 import { version } from './version';
 import chalk from 'chalk';
+import { exitWithError } from './errors';
 import { ForwardedError } from '@backstage/errors';
 import { isPromise } from 'node:util/types';
 

@@ -2828,7 +2828,6 @@ __metadata:
   dependencies:
     "@backstage/cli": "workspace:^"
     "@backstage/errors": "workspace:^"
-    chalk: "npm:^4.0.0"
   languageName: unknown
   linkType: soft
 

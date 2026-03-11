@@ -14,4 +14,34 @@
  * limitations under the License.
  */
 
-export { lazy } from '@backstage/cli-plugin-api';
+import { assertError } from '@backstage/errors';
+import { exitWithError } from './errors';
+
+type ActionFunc = (...args: any[]) => Promise<void>;
+type ActionExports<TModule extends object> = {
+  [KName in keyof TModule as TModule[KName] extends ActionFunc
+    ? KName
+    : never]: TModule[KName];
+};
+
+// Wraps an action function so that it always exits and handles errors
+export function lazy<TModule extends object>(
+  moduleLoader: () => Promise<TModule>,
+  exportName: keyof ActionExports<TModule>,
+): (...args: any[]) => Promise<never> {
+  return async (...args: any[]) => {
+    try {
+      const mod = await moduleLoader();
+      const actualModule = (
+        mod as unknown as { default: ActionExports<TModule> }
+      ).default;
+      const actionFunc = actualModule[exportName] as ActionFunc;
+      await actionFunc(...args);
+
+      process.exit(0);
+    } catch (error) {
+      assertError(error);
+      exitWithError(error);
+    }
+  };
+}
