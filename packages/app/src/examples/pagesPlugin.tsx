@@ -426,6 +426,17 @@ const RestrictedCard = PermissionExampleCardBlueprint.make({
   if: { permissions: { $contains: 'catalog.entity.create' } },
 });
 
+// Feature flag-gated card — only instantiated when the user has
+// the experimental-card FF enabled.
+const FeatureFlagCard = PermissionExampleCardBlueprint.make({
+  name: 'feature-flag',
+  params: {
+    title: 'Feature Flagged Card',
+    description: 'Visible only with the experimental-card FF active.',
+  },
+  if: { featureFlags: { $contains: 'experimental-card' } },
+});
+
 // Example: Page enabled only when the user is allowed to create catalog entities.
 //
 // The `if` predicate is evaluated once at app startup (after sign-in),
@@ -479,6 +490,7 @@ export const pagesPlugin = createFrontendPlugin({
     { name: 'experimental-features' },
     { name: 'advanced-features' },
     { name: 'beta-access' },
+    { name: 'experimental-card' },
   ],
   extensions: [
     IndexPage,
@@ -491,5 +503,6 @@ export const pagesPlugin = createFrontendPlugin({
     PublicCard,
     RestrictedCard,
     PermissionGatedPage,
+    FeatureFlagCard,
   ],
 });
