@@ -742,6 +742,62 @@ describe('DefaultProviderDatabase', () => {
     );
 
     it.each(databases.eachSupportedId())(
+      'preserves unrelated source references during slow-path upserts, %p',
+      async databaseId => {
+        const fakeLogger = mockServices.logger.mock();
+        const { knex, db } = await createDatabase(databaseId, fakeLogger);
+
+        await createLocations(knex, ['component:default/a']);
+
+        await insertRefRow(knex, {
+          source_key: 'other-provider',
+          target_entity_ref: 'component:default/a',
+        });
+
+        await db.transaction(async tx => {
+          await db.replaceUnprocessedEntities(tx, {
+            type: 'full',
+            sourceKey: 'my-provider',
+            items: [
+              {
+                entity: {
+                  apiVersion: '1',
+                  kind: 'Component',
+                  metadata: { name: 'a' },
+                  spec: { marker: 'WILL_CHANGE' },
+                } as Entity,
+                locationKey: 'file:///tmp/a',
+              },
+            ],
+          });
+        });
+
+        expect(fakeLogger.debug).toHaveBeenCalledWith(
+          expect.stringMatching(
+            /Fast insert path failed, falling back to slow path/,
+          ),
+        );
+
+        const references = await knex<DbRefreshStateReferencesRow>(
+          'refresh_state_references',
+        )
+          .select(['source_key', 'target_entity_ref'])
+          .orderBy('source_key');
+
+        expect(references).toEqual([
+          {
+            source_key: 'my-provider',
+            target_entity_ref: 'component:default/a',
+          },
+          {
+            source_key: 'other-provider',
+            target_entity_ref: 'component:default/a',
+          },
+        ]);
+      },
+    );
+
+    it.each(databases.eachSupportedId())(
       'should gracefully handle accidental duplicate refresh state references when deletion happens during a full sync, %p',
       async databaseId => {
         const fakeLogger = mockServices.logger.mock();
