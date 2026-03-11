@@ -2053,6 +2053,42 @@ describe('NunjucksWorkflowRunner', () => {
       expect(fakeActionHandler.mock.calls[0][0].step.id).toEqual('test');
       expect(fakeActionHandler.mock.calls[0][0].step.name).toEqual('name');
     });
+
+    it('should not pass environment secrets or task secrets to action inputs during dry-run', async () => {
+      const dryRunHandler = jest.fn();
+      actionRegistry.register(
+        createTemplateAction({
+          id: 'jest-dryrun-action',
+          description: 'Mock action with dry-run support',
+          supportsDryRun: true,
+          handler: dryRunHandler,
+        }),
+      );
+
+      const task = createMockTaskWithSpec(
+        {
+          steps: [
+            {
+              id: 'test',
+              name: 'name',
+              action: 'jest-dryrun-action',
+              input: {
+                envSecret: '${{ environment.secrets.AWS_ACCESS_KEY }}',
+                taskSecret: '${{ secrets.mySecret }}',
+              },
+            },
+          ],
+        },
+        { mySecret: 'task-secret-value', backstageToken: token },
+        true,
+      );
+
+      await runner.execute(task);
+
+      const handlerCall = dryRunHandler.mock.calls[0][0];
+      expect(handlerCall.input.envSecret).toBeUndefined();
+      expect(handlerCall.input.taskSecret).toBeUndefined();
+    });
   });
 
   describe('permissions', () => {
