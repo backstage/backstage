@@ -23,6 +23,7 @@ import {
 } from '@backstage/catalog-model';
 import {
   CodeSnippet,
+  FavoriteToggleIcon,
   Table,
   TableColumn,
   TableProps,
@@ -43,7 +44,7 @@ import Edit from '@material-ui/icons/Edit';
 import OpenInNew from '@material-ui/icons/OpenInNew';
 import { capitalize } from 'lodash';
 import pluralize from 'pluralize';
-import { ReactNode, useMemo } from 'react';
+import { ReactElement, ReactNode, useMemo } from 'react';
 import { columnFactories } from './columns';
 import { CatalogTableColumnsFunc, CatalogTableRow } from './types';
 import { OffsetPaginatedCatalogTable } from './OffsetPaginatedCatalogTable';
@@ -51,7 +52,6 @@ import { CursorPaginatedCatalogTable } from './CursorPaginatedCatalogTable';
 import { defaultCatalogTableColumnsFunc } from './defaultCatalogTableColumnsFunc';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { catalogTranslationRef } from '../../alpha';
-import { FavoriteToggleIcon } from '@backstage/core-components';
 
 /**
  * Props for {@link CatalogTable}.
@@ -81,6 +81,24 @@ const refCompare = (a: Entity, b: Entity) => {
   return toRef(a).localeCompare(toRef(b));
 };
 
+// Small internal components that each call only one count hook.
+// Conditionally mounting these (based on the active user filter) avoids making
+// unnecessary catalog API requests when a given filter type is not active.
+const StarredTitle = ({ prefix }: { prefix: string }) => {
+  const { count } = useStarredEntitiesCount();
+  return <>{count !== undefined ? `${prefix} (${count})` : prefix}</>;
+};
+
+const OwnedTitle = ({ prefix }: { prefix: string }) => {
+  const { count } = useOwnedEntitiesCount();
+  return <>{count !== undefined ? `${prefix} (${count})` : prefix}</>;
+};
+
+const AllTitle = ({ prefix }: { prefix: string }) => {
+  const { count } = useAllEntitiesCount();
+  return <>{count !== undefined ? `${prefix} (${count})` : prefix}</>;
+};
+
 /**
  * CatalogTable is a wrapper around the Table component that is pre-configured
  * to display catalog entities.
@@ -101,13 +119,15 @@ export const CatalogTable = (props: CatalogTableProps) => {
   const { isStarredEntity, toggleStarredEntity } = useStarredEntities();
   const entityListContext = useEntityList();
 
-  const { loading, error, entities, filters, pageInfo, paginationMode } =
-    entityListContext;
-
-  // Get accurate counts from the same hooks used by the sidebar
-  const { count: starredCount } = useStarredEntitiesCount();
-  const { count: ownedCount } = useOwnedEntitiesCount();
-  const { count: allCount } = useAllEntitiesCount();
+  const {
+    loading,
+    error,
+    entities,
+    filters,
+    pageInfo,
+    totalItems,
+    paginationMode,
+  } = entityListContext;
 
   const tableColumns = useMemo(
     () =>
@@ -171,7 +191,6 @@ export const CatalogTable = (props: CatalogTableProps) => {
     ({ entity }) => {
       const entityRefString = stringifyEntityRef(entity);
       const isStarred = isStarredEntity(entityRefString);
-
       const title = isStarred
         ? t('catalogTable.unStarActionTitle')
         : t('catalogTable.starActionTitle');
@@ -188,33 +207,29 @@ export const CatalogTable = (props: CatalogTableProps) => {
   const currentKind = filters.kind?.label || '';
   const currentType = filters.type?.value || '';
 
-  // Use the appropriate count based on the active user filter
-  // These hooks return the same accurate counts that the sidebar uses
-  const userFilterValue = filters.user?.value;
-  let displayCount: number | undefined;
-
-  if (userFilterValue === 'starred') {
-    displayCount = starredCount;
-  } else if (userFilterValue === 'owned') {
-    displayCount = ownedCount;
-  } else if (userFilterValue === 'all') {
-    displayCount = allCount;
-  } else {
-    // For other filters, fall back to entities.length
-    displayCount = entities.length;
-  }
-
-  const currentCount = displayCount !== undefined ? `(${displayCount})` : '';
-
   // TODO(timbonicus): remove the title from the CatalogTable once using EntitySearchBar
   const titlePreamble = capitalize(
     filters.user?.value ?? t('catalogTable.allFilters'),
   );
-  const title =
-    props.title ||
-    [titlePreamble, currentType, pluralize(currentKind), currentCount]
-      .filter(s => s)
-      .join(' ');
+
+  const userFilterValue = filters.user?.value;
+  const titlePrefix = [titlePreamble, currentType, pluralize(currentKind)]
+    .filter(s => s)
+    .join(' ');
+
+  let title: string | ReactElement;
+  if (props.title) {
+    title = props.title;
+  } else if (userFilterValue === 'starred') {
+    title = <StarredTitle prefix={titlePrefix} />;
+  } else if (userFilterValue === 'owned') {
+    title = <OwnedTitle prefix={titlePrefix} />;
+  } else if (userFilterValue === 'all') {
+    title = <AllTitle prefix={titlePrefix} />;
+  } else {
+    title =
+      totalItems !== undefined ? `${titlePrefix} (${totalItems})` : titlePrefix;
+  }
 
   const actions = props.actions || defaultActions;
   const options: TableProps['options'] = {

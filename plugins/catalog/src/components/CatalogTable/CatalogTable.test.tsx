@@ -471,13 +471,14 @@ describe('CatalogTable component', () => {
     expect(labelCellValue).toBeInTheDocument();
   });
 
-  it('should display count based on filtered entities length, not totalItems', async () => {
-    // This test verifies that when totalItems differs from entities.length
-    // (e.g., due to client-side filtering like starred entities),
-    // the count in the title reflects the actual filtered count
+  it('should display correct starred count from hook, not totalItems from backend', async () => {
+    // When the starred filter is active, the count shown in the header must
+    // come from useStarredEntitiesCount (which correctly deduplicates entities
+    // that share a name across different namespaces) rather than from
+    // totalItems (which reflects the raw backend response and may be too high).
     const filteredEntities = [entities[0]]; // Only 1 entity visible after filtering
 
-    // Mock the starred count hook to return 1
+    // Mock the starred count hook to return 1 (e.g. only one namespace matched)
     useStarredEntitiesCount.mockReturnValue({ count: 1, loading: false });
 
     await renderInTestApp(
@@ -485,7 +486,7 @@ describe('CatalogTable component', () => {
         <MockEntityListContextProvider
           value={{
             entities: filteredEntities,
-            totalItems: 3, // Backend reports 3 total, but only 1 is shown after filtering
+            totalItems: 3, // Backend reports 3 (e.g. same name in 3 namespaces), but only 1 is starred
             filters: {
               user: new UserListFilter(
                 'starred',
@@ -511,8 +512,57 @@ describe('CatalogTable component', () => {
       },
     );
 
-    // Should show (1) based on filtered entities, not (3) from totalItems
+    // Should show (1) from the hook, not (3) from the backend's totalItems
     expect(screen.getByText(/Starred Components \(1\)/)).toBeInTheDocument();
     expect(screen.queryByText(/\(3\)/)).not.toBeInTheDocument();
+  });
+
+  it('should show count of 1 when two entities share the same name across different namespaces but only one is starred', async () => {
+    // Reproduces issue #32315: two entities with identical names in different
+    // namespaces. The backend query (which filters by name only) returns both,
+    // but useStarredEntitiesCount filters client-side by full ref and returns 1.
+    const artistLookupDefault: Entity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Component',
+      metadata: { name: 'artist-lookup', namespace: 'default' },
+    };
+
+    // Only the starred entity is present in the filtered entity list
+    useStarredEntitiesCount.mockReturnValue({ count: 1, loading: false });
+
+    await renderInTestApp(
+      <ApiProvider apis={mockApis}>
+        <MockEntityListContextProvider
+          value={{
+            entities: [artistLookupDefault],
+            totalItems: 2, // Backend sees both namespaces: default + test
+            filters: {
+              user: new UserListFilter(
+                'starred',
+                () => false,
+                () => false,
+              ),
+              kind: {
+                value: 'component',
+                label: 'Component',
+                getCatalogFilters: () => ({ kind: 'component' }),
+                toQueryValue: () => 'component',
+              },
+            },
+          }}
+        >
+          <CatalogTable />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
+    );
+
+    // Should show (1) — only the starred entity — not (2) from backend totalItems
+    expect(screen.getByText(/Starred Components \(1\)/)).toBeInTheDocument();
+    expect(screen.queryByText(/\(2\)/)).not.toBeInTheDocument();
   });
 });

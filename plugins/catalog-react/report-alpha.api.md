@@ -561,17 +561,15 @@ export const EntityIconLinkBlueprint: ExtensionBlueprint<{
 export const EntityTableColumnTitle: (
   input: EntityTableColumnTitleProps,
 ) =>
-  | 'System'
-  | 'Title'
   | 'Domain'
   | 'System'
-  | 'Name'
-  | 'Description'
   | 'Lifecycle'
   | 'Namespace'
   | 'Owner'
   | 'Tags'
   | 'Type'
+  | 'Name'
+  | 'Description'
   | 'Targets'
   | 'Title'
   | 'Label';
