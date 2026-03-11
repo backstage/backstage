@@ -21,49 +21,172 @@
  * to final_entities(entity_id). This allows search entries to reference
  * final entities directly, with CASCADE delete when entities are removed.
  *
+ * For PostgreSQL and MySQL, the migration is structured to minimize lock
+ * time on large tables by batch-deleting orphaned rows before any DDL.
+ * PostgreSQL additionally uses NOT VALID / VALIDATE CONSTRAINT to keep
+ * the AccessExclusiveLock duration minimal.
+ *
  * @param {import('knex').Knex} knex
  */
 exports.up = async function up(knex) {
-  // Step 1: Drop the old foreign key constraint (to refresh_state)
-  await knex.schema.alterTable('search', table => {
-    table.dropForeign(['entity_id']);
-  });
+  const client = knex.client.config.client;
 
-  // Step 2: Delete orphaned rows where entity_id doesn't exist in final_entities
-  await knex('search')
-    .whereNotIn('entity_id', knex('final_entities').select('entity_id'))
-    .delete();
+  if (client.includes('pg')) {
+    // Batch-delete orphaned rows BEFORE touching the schema.
+    // This runs outside any DDL lock, so it doesn't block reads.
+    for (;;) {
+      const deleted = await knex.raw(`
+        DELETE FROM "search"
+        WHERE ctid IN (
+          SELECT s.ctid FROM "search" s
+          LEFT JOIN "final_entities" fe ON s."entity_id" = fe."entity_id"
+          WHERE fe."entity_id" IS NULL
+          LIMIT 10000
+        )
+      `);
+      if (deleted.rowCount === 0) {
+        break;
+      }
+    }
 
-  // Step 3: Add new FK to final_entities(entity_id) with CASCADE
-  await knex.schema.alterTable('search', table => {
-    table
-      .foreign('entity_id')
-      .references('entity_id')
-      .inTable('final_entities')
-      .onDelete('CASCADE');
-  });
+    // Drop old FK and add new one with NOT VALID (minimal lock time).
+    // NOT VALID skips the full table scan — we already cleaned up orphans above.
+    await knex.raw(
+      `ALTER TABLE "search" DROP CONSTRAINT "search_entity_id_foreign"`,
+    );
+    await knex.raw(`
+      ALTER TABLE "search"
+      ADD CONSTRAINT "search_entity_id_foreign"
+      FOREIGN KEY ("entity_id") REFERENCES "final_entities"("entity_id")
+      ON DELETE CASCADE
+      NOT VALID
+    `);
+
+    // Validate the FK separately. This only takes a
+    // ShareUpdateExclusiveLock, which does NOT block reads/writes.
+    await knex.raw(
+      `ALTER TABLE "search" VALIDATE CONSTRAINT "search_entity_id_foreign"`,
+    );
+  } else if (client.includes('mysql')) {
+    // Batch-delete orphaned rows before DDL to reduce lock time.
+    for (;;) {
+      const [result] = await knex.raw(
+        `DELETE FROM \`search\` WHERE \`entity_id\` NOT IN (SELECT \`entity_id\` FROM \`final_entities\`) LIMIT 10000`,
+      );
+      if (result.affectedRows === 0) {
+        break;
+      }
+    }
+
+    // Drop old FK and add new one. MySQL does not support NOT VALID, but
+    // the table is already clean so validation is fast.
+    await knex.schema.alterTable('search', table => {
+      table.dropForeign(['entity_id']);
+    });
+    await knex.schema.alterTable('search', table => {
+      table
+        .foreign('entity_id')
+        .references('entity_id')
+        .inTable('final_entities')
+        .onDelete('CASCADE');
+    });
+  } else {
+    // SQLite: simple approach, locking is not a concern
+    await knex.schema.alterTable('search', table => {
+      table.dropForeign(['entity_id']);
+    });
+
+    await knex('search')
+      .whereNotIn('entity_id', knex('final_entities').select('entity_id'))
+      .delete();
+
+    await knex.schema.alterTable('search', table => {
+      table
+        .foreign('entity_id')
+        .references('entity_id')
+        .inTable('final_entities')
+        .onDelete('CASCADE');
+    });
+  }
 };
 
 /**
  * @param {import('knex').Knex} knex
  */
 exports.down = async function down(knex) {
-  // Step 1: Drop FK to final_entities
-  await knex.schema.alterTable('search', table => {
-    table.dropForeign(['entity_id']);
-  });
+  const client = knex.client.config.client;
 
-  // Step 2: Delete orphaned rows where entity_id doesn't exist in refresh_state
-  await knex('search')
-    .whereNotIn('entity_id', knex('refresh_state').select('entity_id'))
-    .delete();
+  if (client.includes('pg')) {
+    for (;;) {
+      const deleted = await knex.raw(`
+        DELETE FROM "search"
+        WHERE ctid IN (
+          SELECT s.ctid FROM "search" s
+          LEFT JOIN "refresh_state" rs ON s."entity_id" = rs."entity_id"
+          WHERE rs."entity_id" IS NULL
+          LIMIT 10000
+        )
+      `);
+      if (deleted.rowCount === 0) {
+        break;
+      }
+    }
 
-  // Step 3: Add back FK to refresh_state(entity_id) with CASCADE
-  await knex.schema.alterTable('search', table => {
-    table
-      .foreign('entity_id')
-      .references('entity_id')
-      .inTable('refresh_state')
-      .onDelete('CASCADE');
-  });
+    await knex.raw(
+      `ALTER TABLE "search" DROP CONSTRAINT "search_entity_id_foreign"`,
+    );
+    await knex.raw(`
+      ALTER TABLE "search"
+      ADD CONSTRAINT "search_entity_id_foreign"
+      FOREIGN KEY ("entity_id") REFERENCES "refresh_state"("entity_id")
+      ON DELETE CASCADE
+      NOT VALID
+    `);
+
+    await knex.raw(
+      `ALTER TABLE "search" VALIDATE CONSTRAINT "search_entity_id_foreign"`,
+    );
+  } else if (client.includes('mysql')) {
+    for (;;) {
+      const [result] = await knex.raw(
+        `DELETE FROM \`search\` WHERE \`entity_id\` NOT IN (SELECT \`entity_id\` FROM \`refresh_state\`) LIMIT 10000`,
+      );
+      if (result.affectedRows === 0) {
+        break;
+      }
+    }
+
+    await knex.schema.alterTable('search', table => {
+      table.dropForeign(['entity_id']);
+    });
+    await knex.schema.alterTable('search', table => {
+      table
+        .foreign('entity_id')
+        .references('entity_id')
+        .inTable('refresh_state')
+        .onDelete('CASCADE');
+    });
+  } else {
+    await knex.schema.alterTable('search', table => {
+      table.dropForeign(['entity_id']);
+    });
+
+    await knex('search')
+      .whereNotIn('entity_id', knex('refresh_state').select('entity_id'))
+      .delete();
+
+    await knex.schema.alterTable('search', table => {
+      table
+        .foreign('entity_id')
+        .references('entity_id')
+        .inTable('refresh_state')
+        .onDelete('CASCADE');
+    });
+  }
+};
+
+// Disable the default transaction wrapper so the batched deletes run
+// outside of the DDL transaction that holds AccessExclusiveLock.
+exports.config = {
+  transaction: false,
 };
