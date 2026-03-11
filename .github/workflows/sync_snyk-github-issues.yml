@@ -21,7 +21,7 @@ jobs:
       - name: Use Node.js 22.x
         uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
-          node-version: 22.x
+          node-version: 24.x
           registry-url: https://registry.npmjs.org/ # Needed for auth
       - name: yarn install
         uses: backstage/actions/yarn-install@2cd6978b476cbdc39fec48346f8b6ca13199dd6a # v0.7.8
