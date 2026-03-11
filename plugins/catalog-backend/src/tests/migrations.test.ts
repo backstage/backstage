@@ -784,67 +784,96 @@ describe('migrations', () => {
           value: 'my-api',
           original_value: 'my-api',
         },
+        // NULL entity_id row should survive the migration
+        {
+          entity_id: null,
+          key: 'global',
+          value: 'setting',
+          original_value: 'setting',
+        },
       ]);
 
       // Verify initial state
       const preMigrationCount = await knex('search').count('* as count');
-      expect(Number(preMigrationCount[0].count)).toBe(6);
+      expect(Number(preMigrationCount[0].count)).toBe(7);
 
       // Run the migration
       await migrateUpOnce(knex);
 
-      // Verify orphaned rows (id3) were deleted since id3 is not in final_entities
-      const postMigrationRows = await knex('search').orderBy([
-        'entity_id',
-        'key',
-      ]);
-      expect(postMigrationRows).toEqual([
-        {
-          entity_id: 'id1',
+      // Verify orphaned rows (id3) were deleted, but NULL entity_id row survived
+      const postMigrationRows = await knex('search');
+      expect(postMigrationRows).toHaveLength(5);
+      expect(postMigrationRows).toEqual(
+        expect.arrayContaining([
+          {
+            entity_id: null,
+            key: 'global',
+            value: 'setting',
+            original_value: 'setting',
+          },
+          {
+            entity_id: 'id1',
+            key: 'kind',
+            value: 'component',
+            original_value: 'Component',
+          },
+          {
+            entity_id: 'id1',
+            key: 'metadata.name',
+            value: 'service-a',
+            original_value: 'service-a',
+          },
+          {
+            entity_id: 'id2',
+            key: 'kind',
+            value: 'component',
+            original_value: 'Component',
+          },
+          {
+            entity_id: 'id2',
+            key: 'metadata.name',
+            value: 'service-b',
+            original_value: 'service-b',
+          },
+        ]),
+      );
+
+      // Verify FK is enforced: inserting with a nonexistent entity_id should be rejected
+      await expect(
+        knex('search').insert({
+          entity_id: 'nonexistent',
           key: 'kind',
-          value: 'component',
-          original_value: 'Component',
-        },
-        {
-          entity_id: 'id1',
-          key: 'metadata.name',
-          value: 'service-a',
-          original_value: 'service-a',
-        },
-        {
-          entity_id: 'id2',
-          key: 'kind',
-          value: 'component',
-          original_value: 'Component',
-        },
-        {
-          entity_id: 'id2',
-          key: 'metadata.name',
-          value: 'service-b',
-          original_value: 'service-b',
-        },
-      ]);
+          value: 'test',
+          original_value: 'test',
+        }),
+      ).rejects.toEqual(expect.anything());
 
       // Verify FK cascade works: deleting from final_entities should cascade to search
       await knex('final_entities').where({ entity_id: 'id1' }).delete();
-      const searchAfterDelete = await knex('search').orderBy([
-        'entity_id',
-        'key',
-      ]);
-      expect(searchAfterDelete).toEqual([
-        {
-          entity_id: 'id2',
-          key: 'kind',
-          value: 'component',
-          original_value: 'Component',
-        },
-        {
-          entity_id: 'id2',
-          key: 'metadata.name',
-          value: 'service-b',
-          original_value: 'service-b',
-        },
-      ]);
+      const searchAfterDelete = await knex('search');
+      expect(searchAfterDelete).toHaveLength(3);
+      expect(searchAfterDelete).toEqual(
+        expect.arrayContaining([
+          {
+            entity_id: null,
+            key: 'global',
+            value: 'setting',
+            original_value: 'setting',
+          },
+          {
+            entity_id: 'id2',
+            key: 'kind',
+            value: 'component',
+            original_value: 'Component',
+          },
+          {
+            entity_id: 'id2',
+            key: 'metadata.name',
+            value: 'service-b',
+            original_value: 'service-b',
+          },
+        ]),
+      );
 
       // Restore id1 for down migration test
       await knex('final_entities').insert({
@@ -863,53 +892,49 @@ describe('migrations', () => {
         },
       ]);
 
+      // Delete id1 from refresh_state so it becomes an orphan for the down
+      // migration (exists in final_entities but not in refresh_state)
+      await knex('refresh_state').where({ entity_id: 'id1' }).delete();
+
       // Run the down migration
       await migrateDownOnce(knex);
 
-      // Verify data is still intact after down migration
-      const revertedSearchRows = await knex('search').orderBy([
-        'entity_id',
-        'key',
-      ]);
-      expect(revertedSearchRows).toEqual([
-        {
-          entity_id: 'id1',
-          key: 'kind',
-          value: 'component',
-          original_value: 'Component',
-        },
-        {
-          entity_id: 'id2',
-          key: 'kind',
-          value: 'component',
-          original_value: 'Component',
-        },
-        {
-          entity_id: 'id2',
-          key: 'metadata.name',
-          value: 'service-b',
-          original_value: 'service-b',
-        },
-      ]);
+      // Verify id1 search rows were cleaned up (orphan for refresh_state FK),
+      // while id2 and the NULL entity_id row survived
+      const revertedSearchRows = await knex('search');
+      expect(revertedSearchRows).toHaveLength(3);
+      expect(revertedSearchRows).toEqual(
+        expect.arrayContaining([
+          {
+            entity_id: null,
+            key: 'global',
+            value: 'setting',
+            original_value: 'setting',
+          },
+          {
+            entity_id: 'id2',
+            key: 'kind',
+            value: 'component',
+            original_value: 'Component',
+          },
+          {
+            entity_id: 'id2',
+            key: 'metadata.name',
+            value: 'service-b',
+            original_value: 'service-b',
+          },
+        ]),
+      );
 
       // Verify FK is back to refresh_state: deleting from refresh_state should cascade
-      await knex('refresh_state').where({ entity_id: 'id1' }).delete();
-      const afterRefreshStateDelete = await knex('search').orderBy([
-        'entity_id',
-        'key',
-      ]);
+      await knex('refresh_state').where({ entity_id: 'id2' }).delete();
+      const afterRefreshStateDelete = await knex('search');
       expect(afterRefreshStateDelete).toEqual([
         {
-          entity_id: 'id2',
-          key: 'kind',
-          value: 'component',
-          original_value: 'Component',
-        },
-        {
-          entity_id: 'id2',
-          key: 'metadata.name',
-          value: 'service-b',
-          original_value: 'service-b',
+          entity_id: null,
+          key: 'global',
+          value: 'setting',
+          original_value: 'setting',
         },
       ]);
 
