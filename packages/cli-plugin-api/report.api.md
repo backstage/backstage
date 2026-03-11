@@ -5,11 +5,8 @@
 ```ts
 // @public
 export interface BackstageCommand {
-  // (undocumented)
   deprecated?: boolean;
-  // (undocumented)
   description: string;
-  // (undocumented)
   execute:
     | ((context: CommandContext) => Promise<void>)
     | {
@@ -17,9 +14,7 @@ export interface BackstageCommand {
           default: (context: CommandContext) => Promise<void>;
         }>;
       };
-  // (undocumented)
   experimental?: boolean;
-  // (undocumented)
   path: string[];
 }
 
@@ -34,12 +29,10 @@ export interface CliPlugin {
 
 // @public
 export interface CommandContext {
-  // (undocumented)
   args: string[];
-  // (undocumented)
   info: {
     usage: string;
-    description: string;
+    name: string;
   };
 }
 

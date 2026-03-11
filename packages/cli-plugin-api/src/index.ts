@@ -15,9 +15,4 @@
  */
 
 export { createCliPlugin } from './createCliPlugin';
-export type {
-  BackstageCommand,
-  CommandContext,
-  CliPlugin,
-  CliFeature,
-} from './types';
+export type { BackstageCommand, CommandContext, CliPlugin } from './types';

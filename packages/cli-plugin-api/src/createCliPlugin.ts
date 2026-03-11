@@ -20,11 +20,38 @@ import { BackstageCommand, CliPlugin } from './types';
 /**
  * Creates a new CLI plugin that provides commands to the Backstage CLI.
  *
+ * The `init` callback is invoked immediately at creation time and is used
+ * to register commands via the provided registry. The commands are then
+ * made available to the CLI host once the returned promise resolves.
+ *
+ * @example
+ * ```
+ * import { createCliPlugin } from '@backstage/cli-plugin-api';
+ * import packageJson from '../package.json';
+ *
+ * export default createCliPlugin({
+ *   packageJson,
+ *   init: async reg => {
+ *     reg.addCommand({
+ *       path: ['repo', 'test'],
+ *       description: 'Run tests across the repository',
+ *       execute: { loader: () => import('./commands/test') },
+ *     });
+ *   },
+ * });
+ * ```
+ *
  * @public
  */
 export function createCliPlugin(options: {
+  /** The `package.json` contents of the plugin package, used to identify the plugin. */
   packageJson: { name: string };
+  /**
+   * An initialization callback that registers commands with the CLI.
+   * Called immediately when the plugin is created.
+   */
   init: (registry: {
+    /** Registers a new command with the CLI. */
     addCommand: (command: BackstageCommand) => void;
   }) => Promise<void>;
 }): CliPlugin {

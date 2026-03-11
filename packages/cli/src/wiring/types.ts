@@ -17,6 +17,5 @@
 export type {
   CommandContext,
   BackstageCommand,
-  CliFeature,
   CliPlugin,
 } from '@backstage/cli-plugin-api';
