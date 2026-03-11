@@ -28,6 +28,7 @@ import { AppNode, AppNodeInstance } from '@backstage/frontend-plugin-api';
 import { toInternalExtension } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
 import { createExtensionDataContainer } from '@internal/frontend';
 import { ErrorCollector } from '../wiring/createErrorCollector';
+import { evaluateFilterPredicate } from '@backstage/filter-predicates';
 
 const INSTANTIATION_FAILED = new Error('Instantiation failed');
 
@@ -508,12 +509,20 @@ export function instantiateAppNodeTree(
   apis: ApiHolder,
   collector: ErrorCollector,
   extensionFactoryMiddleware?: ExtensionFactoryMiddleware,
+  predicateContext?: Record<string, unknown>,
 ): boolean {
   function createInstance(node: AppNode): AppNodeInstance | undefined {
     if (node.instance) {
       return node.instance;
     }
     if (node.spec.disabled) {
+      return undefined;
+    }
+    if (
+      predicateContext !== undefined &&
+      node.spec.if !== undefined &&
+      !evaluateFilterPredicate(node.spec.if, predicateContext)
+    ) {
       return undefined;
     }
 

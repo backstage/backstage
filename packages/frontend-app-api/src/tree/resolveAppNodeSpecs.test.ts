@@ -15,6 +15,8 @@
  */
 
 import {
+  createExtension,
+  createExtensionDataRef,
   createFrontendModule,
   createFrontendPlugin,
   Extension,
@@ -505,5 +507,29 @@ describe('resolveAppNodeSpecs', () => {
         },
       },
     ]);
+  });
+
+  it('should carry if predicate through to AppNodeSpec', () => {
+    const dataRef = createExtensionDataRef<string>().with({ id: 'test.data' });
+    const ifPredicate = { featureFlags: { $contains: 'my-flag' } };
+    const plugin = createFrontendPlugin({
+      pluginId: 'test-plugin',
+      extensions: [
+        createExtension({
+          attachTo: { id: 'app', input: 'root' },
+          if: ifPredicate,
+          output: [dataRef],
+          factory: () => [dataRef('value')],
+        }),
+      ],
+    });
+    const specs = resolveAppNodeSpecs({
+      features: [plugin],
+      builtinExtensions: [],
+      parameters: [],
+      collector,
+    });
+    expect(specs).toHaveLength(1);
+    expect(specs[0].if).toEqual(ifPredicate);
   });
 });

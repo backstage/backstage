@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import DataLoader from 'dataloader';
 import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
 import { PermissionApi } from './PermissionApi';
 import {
@@ -24,20 +25,27 @@ import {
 import { Config } from '@backstage/config';
 
 /**
- * The default implementation of the PermissionApi, which simply calls the authorize method of the given
- * {@link @backstage/plugin-permission-common#PermissionClient}.
+ * The default implementation of the PermissionApi, which batches calls to
+ * {@link @backstage/plugin-permission-common#PermissionClient} that are made
+ * within the same microtask into a single HTTP request.
  * @public
  */
 export class IdentityPermissionApi implements PermissionApi {
-  private readonly permissionClient: PermissionClient;
-  private readonly identityApi: IdentityApi;
+  private readonly loader: DataLoader<
+    AuthorizePermissionRequest,
+    AuthorizePermissionResponse
+  >;
 
   private constructor(
     permissionClient: PermissionClient,
     identityApi: IdentityApi,
   ) {
-    this.permissionClient = permissionClient;
-    this.identityApi = identityApi;
+    this.loader = new DataLoader(
+      async (requests: readonly AuthorizePermissionRequest[]) => {
+        const credentials = await identityApi.getCredentials();
+        return permissionClient.authorize([...requests], credentials);
+      },
+    );
   }
 
   static create(options: {
@@ -52,11 +60,16 @@ export class IdentityPermissionApi implements PermissionApi {
 
   async authorize(
     request: AuthorizePermissionRequest,
-  ): Promise<AuthorizePermissionResponse> {
-    const response = await this.permissionClient.authorize(
-      [request],
-      await this.identityApi.getCredentials(),
-    );
-    return response[0];
+  ): Promise<AuthorizePermissionResponse>;
+  async authorize(
+    requests: AuthorizePermissionRequest[],
+  ): Promise<AuthorizePermissionResponse[]>;
+  async authorize(
+    request: AuthorizePermissionRequest | AuthorizePermissionRequest[],
+  ): Promise<AuthorizePermissionResponse | AuthorizePermissionResponse[]> {
+    if (Array.isArray(request)) {
+      return Promise.all(request.map(r => this.loader.load(r)));
+    }
+    return this.loader.load(request);
   }
 }
