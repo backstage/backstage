@@ -35,7 +35,6 @@ import {
   routeResolutionApiRef,
   AppNode,
   AppNodeInstance,
-  ExtensionFactoryMiddleware,
   ExtensionDataRef,
   featureFlagsApiRef,
   FrontendFeature,
@@ -97,6 +96,7 @@ import {
   FrontendApiRegistry,
   FrontendApiResolver,
 } from './FrontendApiRegistry';
+import { ExtensionFactoryMiddleware } from './types';
 
 function deduplicateFeatures(
   allFeatures: FrontendFeature[],
