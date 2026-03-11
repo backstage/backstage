@@ -20,8 +20,10 @@ import {
 } from '@backstage/plugin-catalog-node';
 import { FilterPredicate } from '@backstage/filter-predicates';
 import { Knex } from 'knex';
-import { DbSearchRow } from '../../database/tables';
 import { applyPredicateEntityFilterToQuery } from './applyPredicateEntityFilterToQuery';
+
+// Alias used for the search table in EXISTS subqueries
+const S = 'search_flt';
 
 function isEntitiesSearchFilter(
   filter: EntitiesSearchFilter | EntityFilter,
@@ -82,21 +84,20 @@ function applyInStrategy(
   if (isEntitiesSearchFilter(filter)) {
     const key = filter.key.toLowerCase();
     const values = filter.values?.map(v => v.toLowerCase());
-    const matchQuery = knex<DbSearchRow>('search')
-      .select('search.entity_id')
-      .where({ key })
+    const subquery = knex(`search as ${S}`)
+      .select(knex.raw('1'))
+      .whereRaw('?? = ??', [`${S}.entity_id`, onEntityIdField])
+      .where(`${S}.key`, key)
       .andWhere(function keyFilter() {
         if (values?.length === 1) {
-          this.where({ value: values.at(0) });
+          this.where(`${S}.value`, values.at(0));
         } else if (values) {
-          this.andWhere('value', 'in', values);
+          this.whereIn(`${S}.value`, values);
         }
       });
-    return targetQuery.andWhere(
-      onEntityIdField,
-      negate ? 'not in' : 'in',
-      matchQuery,
-    );
+    return negate
+      ? targetQuery.whereNotExists(subquery)
+      : targetQuery.whereExists(subquery);
   }
 
   return targetQuery[negate ? 'andWhereNot' : 'andWhere'](
