@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-export { compileCatalogModel, type CatalogModel } from './compileCatalogModel';
-export {
-  createCatalogModelExtensionBuilder,
-  type CatalogModelExtensionBuilder,
-} from './createCatalogModelExtensionBuilder';
-export type { CatalogModelExtension } from './types';
+import { OpDeclareKindV1 } from './declareKind';
+import { OpDeclareKindSpecFieldV1 } from './declareKindSpecField';
+import { OpDeclareRelationV1 } from './declareRelation';
+
+export type { OpDeclareKindV1, OpDeclareKindSpecFieldV1, OpDeclareRelationV1 };
+
+export type CatalogModelOp =
+  | OpDeclareKindV1
+  | OpDeclareKindSpecFieldV1
+  | OpDeclareRelationV1;

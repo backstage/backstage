@@ -14,29 +14,10 @@
  * limitations under the License.
  */
 
-import Ajv, { type SchemaObject } from 'ajv';
-import ajvErrors from 'ajv-errors';
+import { type SchemaObject } from 'ajv';
 import { isJsonObject } from './util';
 import { InputError } from '@backstage/errors';
-
-/**
- * Gets a singleton instance of Ajv.
- */
-const getAjv = (() => {
-  let instance: Ajv | undefined = undefined;
-
-  return () => {
-    if (!instance) {
-      instance = new Ajv({
-        allowUnionTypes: true,
-        allErrors: true,
-        validateSchema: true,
-      });
-      ajvErrors(instance);
-    }
-    return instance;
-  };
-})();
+import { getAjv } from './getAjv';
 
 /**
  * Validates that the schema is valid according to known JSON Schema meta

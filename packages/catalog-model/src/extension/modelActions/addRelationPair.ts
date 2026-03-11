@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
+import { CatalogModelOp } from '../operations';
+
 /**
  * The definition of a catalog model relation.
  *
  * @alpha
  */
-export interface CatalogModelRelationDefinition {
+export interface CatalogModelRelationPairDefinition {
   /**
    * The kind(s) that this relation originates from, e.g. "Component" or
    * ["Component", "Resource"].
@@ -100,66 +102,40 @@ export interface CatalogModelRelationDefinition {
   };
 }
 
-/**
- * A catalog model relation.
- *
- * @alpha
- */
-export interface CatalogModelRelation {
-  /**
-   * The kind(s) that this relation originates from.
-   */
-  fromKind: string[];
+export function opsFromCatalogModelRelationPair(
+  relationPair: CatalogModelRelationPairDefinition,
+): CatalogModelOp[] {
+  const ops: CatalogModelOp[] = [];
 
-  /**
-   * The kind(s) that this relation points to.
-   */
-  toKind: string[];
+  // Duplicate across kinds, and both directions
+  for (const firstKind of [relationPair.fromKind].flat()) {
+    for (const secondKind of [relationPair.toKind].flat()) {
+      ops.push({
+        op: 'declareRelation.v1',
+        fromKind: firstKind,
+        type: relationPair.forward.type,
+        toKind: secondKind,
+        properties: {
+          reverseType: relationPair.reverse.type,
+          singular: relationPair.forward.singular,
+          plural: relationPair.forward.plural,
+          comment: relationPair.comment,
+        },
+      });
+      ops.push({
+        op: 'declareRelation.v1',
+        fromKind: secondKind,
+        type: relationPair.reverse.type,
+        toKind: firstKind,
+        properties: {
+          reverseType: relationPair.forward.type,
+          singular: relationPair.forward.singular,
+          plural: relationPair.forward.plural,
+          comment: relationPair.comment,
+        },
+      });
+    }
+  }
 
-  /**
-   * A human-readable comment describing the relation.
-   */
-  comment: string;
-
-  /**
-   * The names for the forward direction.
-   */
-  forward: {
-    type: string;
-    singular: string;
-    plural: string;
-  };
-
-  /**
-   * The names for the reverse direction.
-   */
-  reverse: {
-    type: string;
-    singular: string;
-    plural: string;
-  };
-}
-
-/**
- * Defines a new catalog model relation between entity kinds.
- *
- * @alpha
- */
-export function createCatalogModelRelation(
-  options: CatalogModelRelationDefinition,
-): CatalogModelRelation {
-  const fromKind = Array.isArray(options.fromKind)
-    ? [...options.fromKind]
-    : [options.fromKind];
-  const toKind = Array.isArray(options.toKind)
-    ? [...options.toKind]
-    : [options.toKind];
-
-  return {
-    fromKind,
-    toKind,
-    comment: options.comment,
-    forward: { ...options.forward },
-    reverse: { ...options.reverse },
-  };
+  return ops;
 }

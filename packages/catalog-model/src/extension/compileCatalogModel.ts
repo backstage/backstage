@@ -14,9 +14,56 @@
  * limitations under the License.
  */
 
-import { CatalogModelKind } from './createCatalogModelKind';
-import { CatalogModelRelation } from './createCatalogModelRelation';
+import { JsonObject } from '@backstage/types';
+import { OpDeclareKindV1 } from './operations';
 import { CatalogModelExtension, OpaqueCatalogModelExtension } from './types';
+
+/**
+ * A compiled catalog model kind.
+ */
+export interface CatalogModelKind {
+  /**
+   * The API version(s) of the kind that this schema applies to, e.g.
+   * "backstage.io/v1alpha1".
+   */
+  apiVersions: string[];
+
+  /**
+   * The names used for this kind.
+   */
+  names: {
+    /**
+     * The name of the kind with proper casing, e.g. "Component".
+     */
+    kind: string;
+
+    /**
+     * The singular form of the kind name, e.g. "component".
+     */
+    singular: string;
+
+    /**
+     * The plural form of the kind name, e.g. "components".
+     */
+    plural: string;
+  };
+
+  /**
+   * The JSON schema of the kind.
+   *
+   * @remarks
+   *
+   * This can be used for validation of entities. Note that it is up to the
+   * caller to ensure that the kind and apiVersion match what you are validating
+   * against.
+   */
+  jsonSchema: JsonObject;
+}
+
+/**
+ * A compiled catalog model relation.
+ */
+export interface CatalogModelRelation {}
 
 /**
  * A compiled catalog model.
@@ -25,13 +72,16 @@ import { CatalogModelExtension, OpaqueCatalogModelExtension } from './types';
  */
 export interface CatalogModel {
   /**
-   * Look up a kind by its kind name and API version.
+   * Look up a kind in the model.
    *
-   * @param kind - The kind name, e.g. "Component".
-   * @param apiVersion - The API version, e.g. "backstage.io/v1alpha1".
    * @returns The kind if found, or `undefined` if no matching kind exists.
+   * @throws TypeError if the kind exists in the model, but not for this apiVersion or type.
    */
-  getKind(kind: string, apiVersion: string): CatalogModelKind | undefined;
+  getKind(
+    options:
+      | { kind: string; apiVersion: string; type?: string }
+      | { kind: string; apiVersion: string; spec: { type?: string } },
+  ): CatalogModelKind | undefined;
   /**
    * Look up all relations that originate from a given kind.
    *
@@ -52,8 +102,42 @@ export interface CatalogModel {
 export function compileCatalogModel(
   extensions: Iterable<CatalogModelExtension>,
 ): CatalogModel {
+  const kinds = new Map<
+    string,
+    { modelName: string; properties: OpDeclareKindV1['properties'] }
+  >();
+
   for (const externalExtension of extensions) {
-    OpaqueCatalogModelExtension.toInternal(externalExtension);
+    const extension = OpaqueCatalogModelExtension.toInternal(externalExtension);
+    for (const op of extension.ops) {
+      switch (op.op) {
+        case 'declareKind.v1':
+          if (kinds.has(op.kind)) {
+            const previouos = kinds.get(op.kind)!.modelName;
+            throw new Error(
+              `Kind '${op.kind}' already declared in model extension '${previouos}', and now also in '${extension.modelName}'`,
+            );
+          }
+          // kinds.set(op.kind, {
+          //   modelName: extension.modelName,
+          //   properties: op.properties,
+          // });
+          break;
+
+        case 'declareKindSpecField.v1':
+          break;
+
+        case 'declareRelation.v1':
+          break;
+
+        default:
+          throw new Error(
+            `Unknown operation in model extension '${
+              extension.modelName
+            }': '${String((op as any).type)}'`,
+          );
+      }
+    }
   }
 
   return {} as any;

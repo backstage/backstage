@@ -5018,10 +5018,12 @@ __metadata:
     "@backstage/types": "workspace:^"
     "@opentelemetry/api": "npm:^1.9.0"
     "@types/express": "npm:^4.17.6"
+    "@types/supertest": "npm:^2.0.8"
     express: "npm:^4.22.0"
     express-promise-router: "npm:^4.1.0"
     lodash: "npm:^4.17.21"
     msw: "npm:^1.0.0"
+    supertest: "npm:^7.0.0"
     yaml: "npm:^2.0.0"
   peerDependencies:
     "@backstage/backend-test-utils": "workspace:^"

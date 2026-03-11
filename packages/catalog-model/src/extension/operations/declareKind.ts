@@ -14,9 +14,32 @@
  * limitations under the License.
  */
 
-export { compileCatalogModel, type CatalogModel } from './compileCatalogModel';
-export {
-  createCatalogModelExtensionBuilder,
-  type CatalogModelExtensionBuilder,
-} from './createCatalogModelExtensionBuilder';
-export type { CatalogModelExtension } from './types';
+/**
+ * Make a declaration about the properties of a certain kind.
+ */
+export interface OpDeclareKindV1 {
+  op: 'declareKind.v1';
+
+  /**
+   * The kind to declare, e.g. "Component".
+   */
+  kind: string;
+
+  /**
+   * Properties that apply for this kind
+   */
+  properties: {
+    /**
+     * The singular form of the human readable kind, e.g. "component".
+     */
+    singular: string;
+    /**
+     * The plural form of the human readable kind, e.g. "components".
+     */
+    plural: string;
+    /**
+     * Short description of the kind.
+     */
+    description: string;
+  };
+}

@@ -20,6 +20,7 @@ import { CatalogModelOp } from './operations';
 /**
  * The opaque type that represents a catalog model extension.
  *
+ * @internal
  * @remarks
  *
  * Model extensions are essentially an array of operations. Several such model
@@ -29,7 +30,8 @@ export const OpaqueCatalogModelExtension = OpaqueType.create<{
   public: CatalogModelExtension;
   versions: {
     readonly version: 'v1';
-    readonly modelName: string;
+    readonly pluginId: string;
+    readonly modelName?: string;
     readonly ops: Array<CatalogModelOp>;
   };
 }>({
@@ -44,43 +46,6 @@ export const OpaqueCatalogModelExtension = OpaqueType.create<{
  */
 export interface CatalogModelExtension {
   readonly $$type: '@backstage/CatalogModelExtension';
-  readonly modelName: string;
-}
-
-/**
- * A builder for catalog model extensions.
- *
- * @alpha
- */
-export interface CatalogModelBuilder {
-  /**
-   * Add a JSON schema describing an entity shape.
-   *
-   * @remarks
-   *
-   * The JSON schema must be valid, and describe (part of) an entity shape. It
-   * must contain the "kind" property (as a "const" or "enum" type), and
-   * optionally likewise an "apiVersion" property. These control what entities
-   * that it will be applied to.
-   *
-   * It does not have to describe the "metadata" object, but can describe a
-   * "spec".
-   *
-   * Fields that are strings or string arrays can be marked as sources of
-   * relations, by adding the custom "relation" property to their definition.
-   * Example:
-   *
-   * ```
-   * "owner": {
-   *   "type": "string",
-   *   "relation": {
-   *     "defaultKind": "Group",
-   *     "defaultNamespace": "inherit",
-   *     "outgoingType": "ownedBy",
-   *     "incomingType": "ownerOf"
-   *   }
-   * }
-   * ```
-   */
-  addJsonSchema(schema: unknown): void;
+  readonly pluginId: string;
+  readonly modelName?: string;
 }

@@ -14,9 +14,24 @@
  * limitations under the License.
  */
 
-export { compileCatalogModel, type CatalogModel } from './compileCatalogModel';
-export {
-  createCatalogModelExtensionBuilder,
-  type CatalogModelExtensionBuilder,
-} from './createCatalogModelExtensionBuilder';
-export type { CatalogModelExtension } from './types';
+import Ajv from 'ajv';
+import ajvErrors from 'ajv-errors';
+
+/**
+ * Gets a singleton instance of Ajv.
+ */
+export const getAjv = (() => {
+  let instance: Ajv | undefined = undefined;
+
+  return () => {
+    if (!instance) {
+      instance = new Ajv({
+        allowUnionTypes: true,
+        allErrors: true,
+        validateSchema: true,
+      });
+      ajvErrors(instance);
+    }
+    return instance;
+  };
+})();
