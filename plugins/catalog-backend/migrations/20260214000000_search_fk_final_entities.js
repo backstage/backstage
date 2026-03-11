@@ -41,6 +41,7 @@ exports.up = async function up(knex) {
           SELECT s.ctid FROM "search" s
           LEFT JOIN "final_entities" fe ON s."entity_id" = fe."entity_id"
           WHERE fe."entity_id" IS NULL
+            AND s."entity_id" IS NOT NULL
           LIMIT 10000
         )
       `);
@@ -52,7 +53,7 @@ exports.up = async function up(knex) {
     // Drop old FK and add new one with NOT VALID (minimal lock time).
     // NOT VALID skips the full table scan — we already cleaned up orphans above.
     await knex.raw(
-      `ALTER TABLE "search" DROP CONSTRAINT "search_entity_id_foreign"`,
+      `ALTER TABLE "search" DROP CONSTRAINT IF EXISTS "search_entity_id_foreign"`,
     );
     await knex.raw(`
       ALTER TABLE "search"
@@ -77,6 +78,7 @@ exports.up = async function up(knex) {
         SELECT DISTINCT s.\`entity_id\` FROM \`search\` s
         LEFT JOIN \`final_entities\` fe ON s.\`entity_id\` = fe.\`entity_id\`
         WHERE fe.\`entity_id\` IS NULL
+          AND s.\`entity_id\` IS NOT NULL
         LIMIT 10000
       `);
       if (orphanIds.length === 0) {
@@ -134,6 +136,7 @@ exports.down = async function down(knex) {
           SELECT s.ctid FROM "search" s
           LEFT JOIN "refresh_state" rs ON s."entity_id" = rs."entity_id"
           WHERE rs."entity_id" IS NULL
+            AND s."entity_id" IS NOT NULL
           LIMIT 10000
         )
       `);
@@ -143,7 +146,7 @@ exports.down = async function down(knex) {
     }
 
     await knex.raw(
-      `ALTER TABLE "search" DROP CONSTRAINT "search_entity_id_foreign"`,
+      `ALTER TABLE "search" DROP CONSTRAINT IF EXISTS "search_entity_id_foreign"`,
     );
     await knex.raw(`
       ALTER TABLE "search"
@@ -162,6 +165,7 @@ exports.down = async function down(knex) {
         SELECT DISTINCT s.\`entity_id\` FROM \`search\` s
         LEFT JOIN \`refresh_state\` rs ON s.\`entity_id\` = rs.\`entity_id\`
         WHERE rs.\`entity_id\` IS NULL
+          AND s.\`entity_id\` IS NOT NULL
         LIMIT 10000
       `);
       if (orphanIds.length === 0) {
