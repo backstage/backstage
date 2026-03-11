@@ -22,6 +22,7 @@ import { Container } from '../Container';
 import { Text } from '../Text';
 import type { HeaderTab } from '../PluginHeader/types';
 import { MemoryRouter } from 'react-router-dom';
+import { BUIProvider } from '../../provider';
 
 const meta = preview.meta({
   title: 'Backstage UI/FullPage',
@@ -33,7 +34,9 @@ const meta = preview.meta({
 
 const withRouter = (Story: StoryFn) => (
   <MemoryRouter>
-    <Story />
+    <BUIProvider>
+      <Story />
+    </BUIProvider>
   </MemoryRouter>
 );
 

@@ -18,6 +18,7 @@
 
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { MemoryRouter } from 'react-router-dom';
+import { BUIProvider } from '../provider';
 import {
   Card,
   CardHeader,
@@ -265,7 +266,9 @@ const meta = {
   decorators: [
     (Story: () => JSX.Element) => (
       <MemoryRouter>
-        <Story />
+        <BUIProvider>
+          <Story />
+        </BUIProvider>
       </MemoryRouter>
     ),
   ],

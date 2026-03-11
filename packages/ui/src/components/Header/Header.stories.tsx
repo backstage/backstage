@@ -19,6 +19,7 @@ import type { StoryFn } from '@storybook/react-vite';
 import { Header } from './Header';
 import type { HeaderTab } from '../PluginHeader/types';
 import { MemoryRouter } from 'react-router-dom';
+import { BUIProvider } from '../../provider';
 import {
   Button,
   Container,
@@ -88,7 +89,9 @@ const menuItems = [
 
 const withRouter = (Story: StoryFn) => (
   <MemoryRouter>
-    <Story />
+    <BUIProvider>
+      <Story />
+    </BUIProvider>
   </MemoryRouter>
 );
 
@@ -239,32 +242,34 @@ export const WithTabsMatchingStrategies = meta.story({
   },
   render: args => (
     <MemoryRouter initialEntries={['/mentorship/events']}>
-      <Header {...args} />
-      <Container>
-        <Text>
-          <strong>Current URL:</strong> /mentorship/events
-        </Text>
-        <br />
-        <Text>
-          Notice how the "Mentorship" tab is active even though we're on a
-          nested route. This is because it uses{' '}
-          <code>matchStrategy="prefix"</code>.
-        </Text>
-        <br />
-        <Text>
-          • <strong>Home</strong>: exact matching (default) - not active
-        </Text>
-        <Text>
-          • <strong>Mentorship</strong>: prefix matching - IS active (URL starts
-          with /mentorship)
-        </Text>
-        <Text>
-          • <strong>Catalog</strong>: prefix matching - not active
-        </Text>
-        <Text>
-          • <strong>Settings</strong>: exact matching (default) - not active
-        </Text>
-      </Container>
+      <BUIProvider>
+        <Header {...args} />
+        <Container>
+          <Text>
+            <strong>Current URL:</strong> /mentorship/events
+          </Text>
+          <br />
+          <Text>
+            Notice how the "Mentorship" tab is active even though we're on a
+            nested route. This is because it uses{' '}
+            <code>matchStrategy="prefix"</code>.
+          </Text>
+          <br />
+          <Text>
+            • <strong>Home</strong>: exact matching (default) - not active
+          </Text>
+          <Text>
+            • <strong>Mentorship</strong>: prefix matching - IS active (URL
+            starts with /mentorship)
+          </Text>
+          <Text>
+            • <strong>Catalog</strong>: prefix matching - not active
+          </Text>
+          <Text>
+            • <strong>Settings</strong>: exact matching (default) - not active
+          </Text>
+        </Container>
+      </BUIProvider>
     </MemoryRouter>
   ),
 });
@@ -292,18 +297,20 @@ export const WithTabsExactMatching = meta.story({
   },
   render: args => (
     <MemoryRouter initialEntries={['/mentorship/events']}>
-      <Header {...args} />
-      <Container>
-        <Text>
-          <strong>Current URL:</strong> /mentorship/events
-        </Text>
-        <br />
-        <Text>
-          With default exact matching, only the "Events" tab is active because
-          it exactly matches the current URL. The "Mentorship" tab is not active
-          even though the URL is under /mentorship.
-        </Text>
-      </Container>
+      <BUIProvider>
+        <Header {...args} />
+        <Container>
+          <Text>
+            <strong>Current URL:</strong> /mentorship/events
+          </Text>
+          <br />
+          <Text>
+            With default exact matching, only the "Events" tab is active because
+            it exactly matches the current URL. The "Mentorship" tab is not
+            active even though the URL is under /mentorship.
+          </Text>
+        </Container>
+      </BUIProvider>
     </MemoryRouter>
   ),
 });
@@ -334,33 +341,36 @@ export const WithTabsPrefixMatchingDeep = meta.story({
   },
   render: args => (
     <MemoryRouter initialEntries={['/catalog/users/john/details']}>
-      <Header {...args} />
-      <Container>
-        <Text as="p">
-          <strong>Current URL:</strong> /catalog/users/john/details
-        </Text>
-        <br />
-        <Text as="p">
-          Active tab is <strong>Users</strong> because:
-        </Text>
-        <ul>
-          <li>
-            <strong>Catalog</strong>: Matches since URL starts with /catalog
-          </li>
-          <li>
-            <strong>Users</strong>: Is active since URL starts with
-            /catalog/users, and is more specific (has more url segments) than
-            "Catalog"
-          </li>
-          <li>
-            <strong>Components</strong>: not active (URL doesn't start with
-            /catalog/components)
-          </li>
-        </ul>
-        <Text as="p">
-          This demonstrates how prefix matching works with deeply nested routes.
-        </Text>
-      </Container>
+      <BUIProvider>
+        <Header {...args} />
+        <Container>
+          <Text as="p">
+            <strong>Current URL:</strong> /catalog/users/john/details
+          </Text>
+          <br />
+          <Text as="p">
+            Active tab is <strong>Users</strong> because:
+          </Text>
+          <ul>
+            <li>
+              <strong>Catalog</strong>: Matches since URL starts with /catalog
+            </li>
+            <li>
+              <strong>Users</strong>: Is active since URL starts with
+              /catalog/users, and is more specific (has more url segments) than
+              "Catalog"
+            </li>
+            <li>
+              <strong>Components</strong>: not active (URL doesn't start with
+              /catalog/components)
+            </li>
+          </ul>
+          <Text as="p">
+            This demonstrates how prefix matching works with deeply nested
+            routes.
+          </Text>
+        </Container>
+      </BUIProvider>
     </MemoryRouter>
   ),
 });
