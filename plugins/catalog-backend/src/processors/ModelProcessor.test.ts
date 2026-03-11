@@ -55,6 +55,7 @@ const componentKind = {
   apiVersions: ['backstage.io/v1alpha1'],
   names: { kind: 'Component', singular: 'component', plural: 'components' },
   spec: componentSpec,
+  jsonSchema: {},
   TInput: null as any,
   TOutput: null as any,
 } as const satisfies CatalogModelKind;

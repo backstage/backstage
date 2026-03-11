@@ -21,6 +21,7 @@ import type {
   CatalogModelSchemaObjectType,
   CatalogModelSchemaPropertyDefinition,
 } from './catalogModelSchema.types';
+import entityMetaSchema from '../schema/EntityMeta.schema.json';
 
 /**
  * The definition of a catalog model kind, roughly resembling a JSON Schema.
@@ -113,6 +114,17 @@ export interface CatalogModelKind<
    * Attempting to actually read this value will result in an exception.
    */
   TOutput: TOutput;
+
+  /**
+   * The JSON schema of the kind.
+   *
+   * @remarks
+   *
+   * This can be used for validation of entities. Note that it is up to the
+   * caller to ensure that the kind and apiVersion match what you are validating
+   * against.
+   */
+  jsonSchema: JsonObject;
 }
 
 /**
@@ -247,6 +259,7 @@ export function createCatalogModelKind<
       apiVersions,
       names,
       spec,
+      jsonSchema: definitionToJsonSchema(options),
       get TInput() {
         if (process.env.NODE_ENV === 'test') {
           // Avoid throwing errors so tests asserting extensions' properties cannot be easily broken
@@ -271,4 +284,71 @@ export function createCatalogModelKind<
       },
     },
   );
+}
+
+// TODO(freben): This may need to be made smarter later
+function definitionToJsonSchema(
+  definition: CatalogModelKindDefinition,
+): JsonObject {
+  const { apiVersions, names, spec } = definition;
+
+  const apiVersionSchema: JsonObject =
+    apiVersions.length === 1
+      ? { const: apiVersions[0] }
+      : { enum: [...apiVersions] };
+
+  return {
+    $schema: 'http://json-schema.org/draft-07/schema',
+    type: 'object',
+    required: ['apiVersion', 'kind', 'metadata', 'spec'],
+    additionalProperties: true,
+    properties: {
+      apiVersion: apiVersionSchema,
+      kind: { const: names.kind },
+      metadata: entityMetaSchema as unknown as JsonObject,
+      spec: objectTypeToJsonSchema(spec),
+    },
+  };
+}
+
+function propertyTypeToJsonSchema(
+  def: CatalogModelSchemaPropertyDefinition,
+): JsonObject {
+  if (def.type === 'object') {
+    return objectTypeToJsonSchema(def);
+  }
+  if (def.type === 'relation') {
+    return { ...def, type: 'string' } as unknown as JsonObject;
+  }
+  if (def.type === 'array' && def.items?.type === 'relation') {
+    return {
+      ...def,
+      items: { ...def.items, type: 'string' },
+    } as unknown as JsonObject;
+  }
+  return def as unknown as JsonObject;
+}
+
+function objectTypeToJsonSchema(def: CatalogModelSchemaObjectType): JsonObject {
+  const properties: JsonObject = {};
+  for (const [key, prop] of Object.entries(def.properties)) {
+    properties[key] = propertyTypeToJsonSchema(prop);
+  }
+
+  const result: JsonObject = {
+    type: 'object',
+    properties,
+  };
+
+  if (def.required && def.required.length > 0) {
+    result.required = [...def.required];
+  }
+
+  if (def.allowAdditionalProperties === false) {
+    result.additionalProperties = false;
+  } else {
+    result.additionalProperties = true;
+  }
+
+  return result;
 }
