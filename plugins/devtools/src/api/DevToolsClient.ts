@@ -21,6 +21,7 @@ import {
   ExternalDependency,
 } from '@backstage/plugin-devtools-common';
 import {
+  CancelScheduledTask,
   ScheduledTasks,
   TriggerScheduledTask,
 } from '@backstage/plugin-devtools-common/alpha';
@@ -83,6 +84,27 @@ export class DevToolsClient implements DevToolsApi {
     }
 
     return response.json() as Promise<TriggerScheduledTask>;
+  }
+
+  public async cancelScheduledTask(
+    plugin: string,
+    taskId: string,
+  ): Promise<CancelScheduledTask> {
+    const baseUrl = `${await this.discoveryApi.getBaseUrl(plugin)}/`;
+    const url = new URL(
+      `.backstage/scheduler/v1/tasks/${encodeURIComponent(taskId)}/cancel`,
+      baseUrl,
+    );
+
+    const response = await this.fetchApi.fetch(url.toString(), {
+      method: 'POST',
+    });
+
+    if (!response.ok) {
+      throw await ResponseError.fromResponse(response);
+    }
+
+    return response.json() as Promise<CancelScheduledTask>;
   }
 
   public async getExternalDependencies(): Promise<

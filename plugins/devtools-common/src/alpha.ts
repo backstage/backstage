@@ -18,6 +18,7 @@ export {
   devToolsTaskSchedulerCreatePermission,
 } from './permissions';
 export type {
+  CancelScheduledTask,
   ScheduledTasks,
   TaskApiTasksResponse,
   TriggerScheduledTask,

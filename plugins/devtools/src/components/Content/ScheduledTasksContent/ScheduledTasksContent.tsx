@@ -29,10 +29,11 @@ import {
   TableColumn,
 } from '@backstage/core-components';
 import Alert from '@material-ui/lab/Alert';
-import { useScheduledTasks, useTriggerScheduledTask } from '../../../hooks';
+import { useScheduledTasks, useScheduledTasksOperations } from '../../../hooks';
 import { TaskApiTasksResponse } from '@backstage/plugin-devtools-common/alpha';
 import { alertApiRef, configApiRef, useApi } from '@backstage/core-plugin-api';
 import RefreshIcon from '@material-ui/icons/Refresh';
+import StopIcon from '@material-ui/icons/Stop';
 import NightsStay from '@material-ui/icons/NightsStay';
 import ErrorIcon from '@material-ui/icons/Error';
 import BlockIcon from '@material-ui/icons/Block';
@@ -105,7 +106,7 @@ export const ScheduledTasksContent = () => {
     configApi.getOptionalStringArray('devTools.scheduledTasks.plugins') || [];
   const [selectedPlugin, setSelectedPlugin] = useState(plugins[0] || '');
   const { scheduledTasks, loading, error } = useScheduledTasks(selectedPlugin);
-  const { triggerTask, isTriggering, triggerError } = useTriggerScheduledTask();
+  const { triggerTask, cancelTask, isLoading } = useScheduledTasksOperations();
 
   const [inputValue, setInputValue] = useState('');
 
@@ -209,28 +210,52 @@ export const ScheduledTasksContent = () => {
           permission={devToolsTaskSchedulerCreatePermission}
           errorPage={<CreateNotAllowed />}
         >
-          <Tooltip title="Run Task">
-            <IconButton
-              aria-label="Trigger"
-              disabled={isTriggering}
-              onClick={() => {
-                triggerTask(selectedPlugin, rowData.taskId);
-                if (triggerError) {
-                  alertApi.post({
-                    message: `Error triggering task ${rowData.taskId}: ${error}`,
-                    severity: 'error',
-                  });
-                } else {
-                  alertApi.post({
-                    message: `Successfully triggered task ${rowData.taskId}`,
-                    severity: 'success',
-                  });
-                }
-              }}
-            >
-              <RefreshIcon />
-            </IconButton>
-          </Tooltip>
+          <Box display="flex" justifyContent="center">
+            <Tooltip title="Run Task">
+              <IconButton
+                aria-label="Trigger"
+                disabled={isLoading}
+                onClick={async () => {
+                  try {
+                    await triggerTask(selectedPlugin, rowData.taskId);
+                    alertApi.post({
+                      message: `Successfully triggered task ${rowData.taskId}`,
+                      severity: 'success',
+                    });
+                  } catch (e) {
+                    alertApi.post({
+                      message: `Error triggering task ${rowData.taskId}: ${e.message}`,
+                      severity: 'error',
+                    });
+                  }
+                }}
+              >
+                <RefreshIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Cancel Task">
+              <IconButton
+                aria-label="Cancel"
+                disabled={isLoading}
+                onClick={async () => {
+                  try {
+                    await cancelTask(selectedPlugin, rowData.taskId);
+                    alertApi.post({
+                      message: `Successfully cancelled task ${rowData.taskId}`,
+                      severity: 'success',
+                    });
+                  } catch (e) {
+                    alertApi.post({
+                      message: `Error cancelling task ${rowData.taskId}: ${e.message}`,
+                      severity: 'error',
+                    });
+                  }
+                }}
+              >
+                <StopIcon />
+              </IconButton>
+            </Tooltip>
+          </Box>
         </RequirePermission>
       ),
       sorting: false,
