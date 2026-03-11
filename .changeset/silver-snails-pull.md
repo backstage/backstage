@@ -20,12 +20,14 @@
 '@backstage/plugin-auth-backend-module-okta-provider': patch
 '@backstage/plugin-scaffolder-backend-module-github': patch
 '@backstage/plugin-scaffolder-backend-module-gitlab': patch
+'@backstage/plugin-user-settings-backend': patch
 '@backstage/frontend-plugin-api': patch
 '@backstage/frontend-test-utils': patch
 '@internal/scaffolder': patch
 '@backstage/backend-plugin-api': patch
 '@backstage/backend-test-utils': patch
 '@backstage/plugin-mcp-actions-backend': patch
+'@backstage/filter-predicates': patch
 '@backstage/plugin-permission-backend': patch
 '@backstage/plugin-scaffolder-backend': patch
 '@backstage/backend-defaults': patch
@@ -42,22 +44,15 @@
 '@backstage/plugin-search-backend': patch
 '@backstage/core-app-api': patch
 '@backstage/plugin-catalog-react': patch
-'@backstage/plugin-techdocs-node': patch
+'@backstage/plugin-auth-backend': patch
 '@backstage/repo-tools': patch
-'@backstage/plugin-app-backend': patch
-'@backstage/plugin-mui-to-bui': patch
 '@backstage/plugin-scaffolder': patch
-'example-app-next': patch
 '@backstage/cli-node': patch
-'@backstage/plugin-app-react': patch
 '@backstage/plugin-auth-node': patch
 '@backstage/plugin-api-docs': patch
-'@backstage/plugin-app-node': patch
 '@backstage/cli': patch
 '@backstage/plugin-home': patch
-'@backstage/ui': patch
 '@backstage/plugin-app': patch
-'@backstage/plugin-org': patch
 ---
 
-Updated dependency `zod` to `3.25.76 || ^4.0.0`
+Updated dependency `zod` to `^3.25.76 || ^4.0.0` & migrated to `/v3` or `/v4` imports.
