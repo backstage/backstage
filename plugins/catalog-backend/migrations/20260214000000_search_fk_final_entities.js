@@ -71,10 +71,14 @@ async function batchDeleteOrphansMysql(knex, refTable) {
  * to final_entities(entity_id). This allows search entries to reference
  * final entities directly, with CASCADE delete when entities are removed.
  *
- * For PostgreSQL and MySQL, the migration is structured to minimize lock
- * time on large tables by batch-deleting orphaned rows before any DDL.
- * PostgreSQL additionally uses NOT VALID / VALIDATE CONSTRAINT to keep
- * the AccessExclusiveLock duration minimal.
+ * On PostgreSQL, the migration first switches the foreign key to point at
+ * final_entities using a single ALTER TABLE with a NOT VALID constraint,
+ * then batch-deletes any pre-existing orphaned rows outside of DDL, and
+ * finally VALIDATEs the constraint to keep the AccessExclusiveLock window
+ * as short as possible.
+ *
+ * On MySQL, the migration batch-deletes orphaned rows in chunks around the
+ * foreign key change to reduce lock time on large tables.
  *
  * @param {import('knex').Knex} knex
  */
