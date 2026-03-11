@@ -90,34 +90,41 @@ exports.up = async function up(knex) {
       await knex('search').whereIn('entity_id', ids).delete();
     }
 
-    // Drop old FK and add new one. MySQL does not support NOT VALID, but
-    // the table is already clean so validation is fast.
-    await knex.schema.alterTable('search', table => {
-      table.dropForeign(['entity_id']);
-    });
-    await knex.schema.alterTable('search', table => {
-      table
-        .foreign('entity_id')
-        .references('entity_id')
-        .inTable('final_entities')
-        .onDelete('CASCADE');
+    // Drop old FK and add new one inside an explicit transaction, since the
+    // global transaction wrapper is disabled for this migration. MySQL does
+    // not support NOT VALID, but the table is already clean so validation
+    // is fast.
+    await knex.transaction(async trx => {
+      await trx.schema.alterTable('search', table => {
+        table.dropForeign(['entity_id']);
+      });
+      await trx.schema.alterTable('search', table => {
+        table
+          .foreign('entity_id')
+          .references('entity_id')
+          .inTable('final_entities')
+          .onDelete('CASCADE');
+      });
     });
   } else {
-    // SQLite: simple approach, locking is not a concern
-    await knex.schema.alterTable('search', table => {
-      table.dropForeign(['entity_id']);
-    });
+    // SQLite: wrap in an explicit transaction since the global transaction
+    // wrapper is disabled for this migration.
+    await knex.transaction(async trx => {
+      await trx.schema.alterTable('search', table => {
+        table.dropForeign(['entity_id']);
+      });
 
-    await knex('search')
-      .whereNotIn('entity_id', knex('final_entities').select('entity_id'))
-      .delete();
+      await trx('search')
+        .whereNotIn('entity_id', trx('final_entities').select('entity_id'))
+        .delete();
 
-    await knex.schema.alterTable('search', table => {
-      table
-        .foreign('entity_id')
-        .references('entity_id')
-        .inTable('final_entities')
-        .onDelete('CASCADE');
+      await trx.schema.alterTable('search', table => {
+        table
+          .foreign('entity_id')
+          .references('entity_id')
+          .inTable('final_entities')
+          .onDelete('CASCADE');
+      });
     });
   }
 };
@@ -177,31 +184,35 @@ exports.down = async function down(knex) {
       await knex('search').whereIn('entity_id', ids).delete();
     }
 
-    await knex.schema.alterTable('search', table => {
-      table.dropForeign(['entity_id']);
-    });
-    await knex.schema.alterTable('search', table => {
-      table
-        .foreign('entity_id')
-        .references('entity_id')
-        .inTable('refresh_state')
-        .onDelete('CASCADE');
+    await knex.transaction(async trx => {
+      await trx.schema.alterTable('search', table => {
+        table.dropForeign(['entity_id']);
+      });
+      await trx.schema.alterTable('search', table => {
+        table
+          .foreign('entity_id')
+          .references('entity_id')
+          .inTable('refresh_state')
+          .onDelete('CASCADE');
+      });
     });
   } else {
-    await knex.schema.alterTable('search', table => {
-      table.dropForeign(['entity_id']);
-    });
+    await knex.transaction(async trx => {
+      await trx.schema.alterTable('search', table => {
+        table.dropForeign(['entity_id']);
+      });
 
-    await knex('search')
-      .whereNotIn('entity_id', knex('refresh_state').select('entity_id'))
-      .delete();
+      await trx('search')
+        .whereNotIn('entity_id', trx('refresh_state').select('entity_id'))
+        .delete();
 
-    await knex.schema.alterTable('search', table => {
-      table
-        .foreign('entity_id')
-        .references('entity_id')
-        .inTable('refresh_state')
-        .onDelete('CASCADE');
+      await trx.schema.alterTable('search', table => {
+        table
+          .foreign('entity_id')
+          .references('entity_id')
+          .inTable('refresh_state')
+          .onDelete('CASCADE');
+      });
     });
   }
 };
