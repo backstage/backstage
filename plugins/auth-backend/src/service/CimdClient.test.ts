@@ -314,7 +314,7 @@ describe('CimdClient', () => {
               );
             },
           ),
-          rest.get('http://127.0.0.1:8080/internal', (req, res, ctx) => {
+          rest.get('http://127.0.0.1:8080/internal', (_req, res, ctx) => {
             redirectTarget();
             return res(
               ctx.json({
