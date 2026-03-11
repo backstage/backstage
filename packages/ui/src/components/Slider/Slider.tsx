@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { forwardRef, useEffect } from 'react';
+import { forwardRef, useEffect, useId } from 'react';
 import {
   Slider as AriaSlider,
   SliderTrack,
@@ -36,37 +36,35 @@ function SliderImpl<T extends number | number[]>(
   const { classes, className, label, secondaryLabel, description, isRequired } =
     ownProps;
 
-  const ariaLabel = restProps['aria-label'];
-  const ariaLabelledBy = restProps['aria-labelledby'];
-  const defaultValue = restProps.defaultValue;
-  const value = restProps.value;
+  const labelId = useId();
+  const descriptionId = useId();
 
   useEffect(() => {
-    if (!label && !ariaLabel && !ariaLabelledBy) {
+    if (!label && !restProps['aria-label'] && !restProps['aria-labelledby']) {
       console.warn(
         'Slider requires either a visible label, aria-label, or aria-labelledby for accessibility',
       );
     }
-  }, [label, ariaLabel, ariaLabelledBy]);
+  }, [label, restProps]);
 
   const secondaryLabelText = secondaryLabel || (isRequired ? 'Required' : null);
 
   return (
     <AriaSlider
       className={clsx(classes.root, className)}
-      aria-label={ariaLabel}
-      aria-labelledby={ariaLabelledBy}
-      defaultValue={defaultValue}
-      value={value}
+      aria-labelledby={label ? labelId : undefined}
+      aria-describedby={label && description ? descriptionId : undefined}
       {...restProps}
       ref={ref}
     >
       {label && (
         <div className={classes.header}>
           <FieldLabel
+            id={labelId}
             label={label}
             secondaryLabel={secondaryLabelText}
             description={description}
+            descriptionId={description ? descriptionId : undefined}
           />
           <SliderOutput className={classes.output}>
             {({ state }) =>

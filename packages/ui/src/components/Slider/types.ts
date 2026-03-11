@@ -29,18 +29,4 @@ export interface SliderOwnProps {
 /** @public */
 export interface SliderProps<T extends number | number[]>
   extends Omit<AriaSliderProps<T>, 'children' | 'className'>,
-    Omit<
-      FieldLabelProps,
-      | 'htmlFor'
-      | 'id'
-      | 'className'
-      | 'defaultValue'
-      | 'onChange'
-      | 'slot'
-      | 'style'
-      | 'label'
-      | 'secondaryLabel'
-      | 'description'
-      | 'isRequired'
-    >,
     SliderOwnProps {}
