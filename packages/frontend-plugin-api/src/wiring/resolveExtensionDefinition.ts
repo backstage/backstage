@@ -75,7 +75,7 @@ export type InternalExtension<TConfig, TConfigInput> = Extension<
       }
     | {
         readonly version: 'v2';
-        readonly enabled?: FilterPredicate;
+        readonly if?: FilterPredicate;
         readonly inputs: { [inputName in string]: ExtensionInput };
         readonly output: Array<ExtensionDataRef>;
         factory(options: {

@@ -23,6 +23,9 @@ import {
   PageBlueprint,
   FrontendPluginInfo,
   useAppNode,
+  createExtensionBlueprint,
+  createExtensionInput,
+  coreExtensionData,
 } from '@backstage/frontend-plugin-api';
 import { useEffect, useState } from 'react';
 import { Route, Routes } from 'react-router-dom';
@@ -88,8 +91,8 @@ const IndexPage = PageBlueprint.make({
             <h2>Permission Enablement Examples</h2>
             <p>
               The following pages demonstrate conditional extension enablement
-              via the <code>enabled</code> predicate using permissions. They
-              will only appear when the user has the required permissions.
+              via the <code>if</code> predicate using permissions. They will
+              only appear when the user has the required permissions.
             </p>
             <ul>
               <li>
@@ -98,13 +101,20 @@ const IndexPage = PageBlueprint.make({
                 </Link>{' '}
                 — requires <code>catalog.entity.create</code>
               </li>
+              <li>
+                <Link to="/permission-card-example">
+                  Permission Card Example
+                </Link>{' '}
+                — a page that is always visible, but individual cards on it are
+                toggled by permissions
+              </li>
             </ul>
 
             <h2>Feature Flag Enablement Examples</h2>
             <p>
               The following pages demonstrate conditional extension enablement
-              via the <code>enabled</code> predicate. They will only appear in
-              the router tree when their conditions are satisfied. Toggle the
+              via the <code>if</code> predicate. They will only appear in the
+              router tree when their conditions are satisfied. Toggle the
               relevant feature flags in <Link to="/settings">Settings</Link>,
               then refresh the app to see the pages appear.
             </p>
@@ -194,7 +204,7 @@ const ExternalPage = PageBlueprint.make({
 
 // Example: Page enabled only when a single feature flag is active.
 //
-// The `enabled` predicate is evaluated once at app startup (before the router
+// The `if` predicate is evaluated once at app startup (before the router
 // tree is built), so this page simply won't exist in the app until the flag is
 // toggled and the page is refreshed.
 //
@@ -227,7 +237,7 @@ const FeatureFlagPage = PageBlueprint.make({
       return <Component />;
     },
   },
-  enabled: { featureFlags: { $contains: 'experimental-features' } },
+  if: { featureFlags: { $contains: 'experimental-features' } },
 });
 
 // Example: Page enabled only when ALL of several feature flags are active.
@@ -263,7 +273,7 @@ const AllFlagsPage = PageBlueprint.make({
       return <Component />;
     },
   },
-  enabled: {
+  if: {
     $all: [
       { featureFlags: { $contains: 'experimental-features' } },
       { featureFlags: { $contains: 'advanced-features' } },
@@ -304,7 +314,7 @@ const AnyFlagPage = PageBlueprint.make({
       return <Component />;
     },
   },
-  enabled: {
+  if: {
     $any: [
       { featureFlags: { $contains: 'experimental-features' } },
       { featureFlags: { $contains: 'beta-access' } },
@@ -312,9 +322,113 @@ const AnyFlagPage = PageBlueprint.make({
   },
 });
 
+// Blueprint for cards that attach to the PermissionCardPage below.
+//
+// Each card receives a title and description and renders a simple bordered card.
+// Individual card instances can be selectively enabled via the `if`
+// predicate, so only the cards the user is allowed to see will be instantiated.
+const PermissionExampleCardBlueprint = createExtensionBlueprint({
+  kind: 'permission-example-card',
+  attachTo: { id: 'page:pages/permissionCardExample', input: 'cards' },
+  output: [coreExtensionData.reactElement],
+  *factory(params: { title: string; description: string }) {
+    yield coreExtensionData.reactElement(
+      <div
+        style={{
+          border: '1px solid #ccc',
+          borderRadius: '4px',
+          padding: '1rem',
+        }}
+      >
+        <h3 style={{ marginTop: 0 }}>{params.title}</h3>
+        <p style={{ marginBottom: 0 }}>{params.description}</p>
+      </div>,
+    );
+  },
+});
+
+// Example: Page with cards that are individually toggled by permissions.
+//
+// The page itself is always present. What changes is which cards are
+// instantiated inside it — each card declares its own `enabled` predicate
+// and is only wired into the page if that predicate is satisfied at startup.
+//
+// To test: make sure you do NOT have the catalog.entity.create permission and
+// refresh the page — the "Restricted Card" below should disappear.
+const PermissionCardPage = PageBlueprint.makeWithOverrides({
+  name: 'permissionCardExample',
+  inputs: {
+    cards: createExtensionInput([coreExtensionData.reactElement]),
+  },
+  factory(originalFactory, { inputs }) {
+    return originalFactory({
+      path: '/permission-card-example',
+      loader: async () => {
+        const Component = () => {
+          const indexLink = useRouteRef(indexRouteRef);
+          const cards = inputs.cards.map(card =>
+            card.get(coreExtensionData.reactElement),
+          );
+          return (
+            <div>
+              <h1>Permission-Gated Card Example</h1>
+              <p>
+                This page is always visible. The cards below are individually
+                gated — each one declares its own{' '}
+                <code>{'if: { permissions: { $contains: "..." } }'}</code>{' '}
+                predicate. Cards whose predicate fails are never instantiated,
+                so they simply won't appear here.
+              </p>
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+                  gap: '1rem',
+                }}
+              >
+                {cards.length > 0 ? (
+                  cards
+                ) : (
+                  <p>
+                    No cards are visible — you may lack the required
+                    permissions.
+                  </p>
+                )}
+              </div>
+              {indexLink && <Link to={indexLink()}>Go back</Link>}
+            </div>
+          );
+        };
+        return <Component />;
+      },
+    });
+  },
+});
+
+// Always-visible card — no predicate, every user sees this.
+const PublicCard = PermissionExampleCardBlueprint.make({
+  name: 'public',
+  params: {
+    title: 'Public Card',
+    description: 'This card is visible to everyone regardless of permissions.',
+  },
+});
+
+// Permission-gated card — only instantiated when the user has
+// the catalog.entity.create permission.
+const RestrictedCard = PermissionExampleCardBlueprint.make({
+  name: 'restricted',
+  params: {
+    title: 'Restricted Card',
+    description:
+      'This card is only visible to users who have the catalog.entity.create permission.',
+  },
+  if: { permissions: { $contains: 'catalog.entity.create' } },
+});
+
 // Example: Page enabled only when the user is allowed to create catalog entities.
 //
-// The `enabled` predicate is evaluated once at app startup (after sign-in),
+// The `if` predicate is evaluated once at app startup (after sign-in),
 // so this page simply won't exist in the router tree if the user lacks the
 // required permission.
 const PermissionGatedPage = PageBlueprint.make({
@@ -338,7 +452,7 @@ const PermissionGatedPage = PageBlueprint.make({
       return <Component />;
     },
   },
-  enabled: { permissions: { $contains: 'catalog.entity.create' } },
+  if: { permissions: { $contains: 'catalog.entity.create' } },
 });
 
 export const pagesPlugin = createFrontendPlugin({
@@ -373,6 +487,9 @@ export const pagesPlugin = createFrontendPlugin({
     FeatureFlagPage,
     AllFlagsPage,
     AnyFlagPage,
+    PermissionCardPage,
+    PublicCard,
+    RestrictedCard,
     PermissionGatedPage,
   ],
 });

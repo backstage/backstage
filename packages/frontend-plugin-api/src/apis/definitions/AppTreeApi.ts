@@ -33,7 +33,7 @@ export interface AppNodeSpec {
   readonly attachTo: ExtensionAttachTo;
   readonly extension: Extension<unknown, unknown>;
   readonly disabled: boolean;
-  readonly enabled?: FilterPredicate;
+  readonly if?: FilterPredicate;
   readonly config?: unknown;
   readonly plugin: FrontendPlugin;
 }

@@ -70,7 +70,7 @@ export const OpaqueExtensionDefinition = OpaqueType.create<{
         readonly name?: string;
         readonly attachTo: ExtensionDefinitionAttachTo;
         readonly disabled: boolean;
-        readonly enabled?: FilterPredicate;
+        readonly if?: FilterPredicate;
         readonly configSchema?: PortableSchema<any, any>;
         readonly inputs: { [inputName in string]: ExtensionInput };
         readonly output: Array<ExtensionDataRef>;
