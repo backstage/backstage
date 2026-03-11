@@ -60,17 +60,6 @@ export interface CreateAppOptions {
    */
   advanced?: {
     /**
-     * If set to true, the system will silently accept and move on if
-     * encountering config for extensions that do not exist. The default is to
-     * reject such config to help catch simple mistakes.
-     *
-     * This flag can be useful in some scenarios where you have a dynamic set of
-     * extensions enabled at different times, but also increases the risk of
-     * accidentally missing e.g. simple typos in your config.
-     */
-    allowUnknownExtensionConfig?: boolean;
-
-    /**
      * Sets a custom config loader, replacing the builtin one.
      *
      * This can be used e.g. if you have the need to source config out of custom
