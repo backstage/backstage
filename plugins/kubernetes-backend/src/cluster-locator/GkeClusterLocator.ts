@@ -137,8 +137,10 @@ export class GkeClusterLocator implements KubernetesClustersSupplier {
       if (dnsEndpoint) {
         return `https://${dnsEndpoint}`;
       }
-      this.logger.warn(
-        `Cluster '${cluster.name}' has endpointType 'dns' configured but no DNS endpoint available, falling back to public IP`,
+      this.logger.info(
+        `Cluster '${
+          cluster.name ?? 'unknown'
+        }' has endpointType 'dns' configured but no DNS endpoint available, falling back to public IP`,
       );
     }
     return `https://${cluster.endpoint ?? ''}`;
@@ -198,12 +200,20 @@ export class GkeClusterLocator implements KubernetesClustersSupplier {
   }
 }
 
+function isValidEndpointType(
+  value: string,
+): value is (typeof VALID_ENDPOINT_TYPES)[number] {
+  return VALID_ENDPOINT_TYPES.includes(
+    value as (typeof VALID_ENDPOINT_TYPES)[number],
+  );
+}
+
 function parseEndpointType(value: string | undefined): 'public' | 'dns' {
   if (value === undefined) {
     return 'public';
   }
-  if (VALID_ENDPOINT_TYPES.includes(value as any)) {
-    return value as 'public' | 'dns';
+  if (isValidEndpointType(value)) {
+    return value;
   }
   throw new Error(
     `Invalid endpointType '${value}', must be one of: ${VALID_ENDPOINT_TYPES.join(

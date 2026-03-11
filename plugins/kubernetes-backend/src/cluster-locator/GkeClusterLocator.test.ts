@@ -649,7 +649,7 @@ describe('GkeClusterLocator', () => {
           skipMetricsLookup: false,
         },
       ]);
-      expect(logger.warn).toHaveBeenCalledWith(
+      expect(logger.info).toHaveBeenCalledWith(
         "Cluster 'some-cluster' has endpointType 'dns' configured but no DNS endpoint available, falling back to public IP",
       );
     });
