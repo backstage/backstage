@@ -36,6 +36,7 @@ import {
   RiShareBoxLine,
 } from '@remixicon/react';
 import { MemoryRouter } from 'react-router-dom';
+import { BUIProvider } from '../../provider';
 import { useEffect, useState } from 'react';
 
 const meta = preview.meta({
@@ -44,7 +45,9 @@ const meta = preview.meta({
   decorators: [
     Story => (
       <MemoryRouter>
-        <Story />
+        <BUIProvider>
+          <Story />
+        </BUIProvider>
       </MemoryRouter>
     ),
   ],
