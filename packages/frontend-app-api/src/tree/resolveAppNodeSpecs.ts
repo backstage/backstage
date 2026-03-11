@@ -116,9 +116,9 @@ export function resolveAppNodeSpecs(options: {
           source: plugin,
           attachTo: internalExtension.attachTo,
           disabled: internalExtension.disabled,
-          enabled:
+          if:
             internalExtension.version === 'v2'
-              ? internalExtension.enabled
+              ? internalExtension.if
               : undefined,
           config: undefined as unknown,
         },
@@ -133,9 +133,9 @@ export function resolveAppNodeSpecs(options: {
           plugin: appPlugin,
           attachTo: internalExtension.attachTo,
           disabled: internalExtension.disabled,
-          enabled:
+          if:
             internalExtension.version === 'v2'
-              ? internalExtension.enabled
+              ? internalExtension.if
               : undefined,
           config: undefined as unknown,
         },
@@ -156,10 +156,8 @@ export function resolveAppNodeSpecs(options: {
       configuredExtensions[index].extension = internalExtension;
       configuredExtensions[index].params.attachTo = internalExtension.attachTo;
       configuredExtensions[index].params.disabled = internalExtension.disabled;
-      configuredExtensions[index].params.enabled =
-        internalExtension.version === 'v2'
-          ? internalExtension.enabled
-          : undefined;
+      configuredExtensions[index].params.if =
+        internalExtension.version === 'v2' ? internalExtension.if : undefined;
     } else {
       // Add the extension as a new one when not overriding an existing one
       configuredExtensions.push({
@@ -169,9 +167,9 @@ export function resolveAppNodeSpecs(options: {
           source: extension.plugin,
           attachTo: internalExtension.attachTo,
           disabled: internalExtension.disabled,
-          enabled:
+          if:
             internalExtension.version === 'v2'
-              ? internalExtension.enabled
+              ? internalExtension.if
               : undefined,
           config: undefined,
         },
@@ -251,7 +249,7 @@ export function resolveAppNodeSpecs(options: {
     attachTo: param.params.attachTo,
     extension: param.extension,
     disabled: param.params.disabled,
-    enabled: param.params.enabled,
+    if: param.params.if,
     plugin: param.params.plugin,
     source: param.params.source,
     config: param.params.config,

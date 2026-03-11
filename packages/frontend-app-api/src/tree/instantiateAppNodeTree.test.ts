@@ -1784,9 +1784,9 @@ describe('instantiateAppNodeTree', () => {
     });
   });
 
-  describe('enabled predicate', () => {
+  describe('if predicate', () => {
     function makeNodeWithEnabled(
-      enabled: AppNodeSpec['enabled'],
+      enabled: AppNodeSpec['if'],
       disabled = false,
     ): AppNode {
       const ext = resolveExtensionDefinition(
@@ -1802,7 +1802,7 @@ describe('instantiateAppNodeTree', () => {
           id: ext.id,
           attachTo: ext.attachTo,
           disabled,
-          enabled,
+          if: enabled,
           extension: ext as Extension<unknown, unknown>,
           plugin: createFrontendPlugin({ pluginId: 'app' }),
         },

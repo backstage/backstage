@@ -44,7 +44,7 @@ import {
   identityApiRef,
   createExtensionDataRef,
 } from '@backstage/frontend-plugin-api';
-import {
+import type {
   EvaluatePermissionRequest,
   EvaluatePermissionResponse,
 } from '@backstage/plugin-permission-common';
@@ -550,11 +550,11 @@ export function prepareSpecializedApp(
       const referencedFlagNames = new Set<string>();
       const referencedPermissionNames = new Set<string>();
       for (const node of tree.nodes.values()) {
-        if (node.spec.enabled !== undefined) {
-          for (const name of extractFeatureFlagNames(node.spec.enabled)) {
+        if (node.spec.if !== undefined) {
+          for (const name of extractFeatureFlagNames(node.spec.if)) {
             referencedFlagNames.add(name);
           }
-          for (const name of extractPermissionNames(node.spec.enabled)) {
+          for (const name of extractPermissionNames(node.spec.if)) {
             referencedPermissionNames.add(name);
           }
         }

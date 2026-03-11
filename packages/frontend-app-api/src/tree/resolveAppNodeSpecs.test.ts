@@ -509,15 +509,15 @@ describe('resolveAppNodeSpecs', () => {
     ]);
   });
 
-  it('should carry enabled predicate through to AppNodeSpec', () => {
+  it('should carry if predicate through to AppNodeSpec', () => {
     const dataRef = createExtensionDataRef<string>().with({ id: 'test.data' });
-    const enabledPredicate = { featureFlags: { $contains: 'my-flag' } };
+    const ifPredicate = { featureFlags: { $contains: 'my-flag' } };
     const plugin = createFrontendPlugin({
       pluginId: 'test-plugin',
       extensions: [
         createExtension({
           attachTo: { id: 'app', input: 'root' },
-          enabled: enabledPredicate,
+          if: ifPredicate,
           output: [dataRef],
           factory: () => [dataRef('value')],
         }),
@@ -530,6 +530,6 @@ describe('resolveAppNodeSpecs', () => {
       collector,
     });
     expect(specs).toHaveLength(1);
-    expect(specs[0].enabled).toEqual(enabledPredicate);
+    expect(specs[0].if).toEqual(ifPredicate);
   });
 });
