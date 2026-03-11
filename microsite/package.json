@@ -22,7 +22,7 @@
   "resolutions": {
     "@swc/core": "1.15.18",
     "@swc/html": "1.15.18",
-    "node-polyfill-webpack-plugin": "^3.0.0"
+    "node-polyfill-webpack-plugin": "^4.0.0"
   },
   "dependencies": {
     "@docusaurus/core": "^3.9.0",
