@@ -7,6 +7,11 @@ import { BasicPermission } from '@backstage/plugin-permission-common';
 import { JsonObject } from '@backstage/types';
 
 // @alpha (undocumented)
+export type CancelScheduledTask = {
+  error?: string;
+};
+
+// @alpha (undocumented)
 export const devToolsTaskSchedulerCreatePermission: BasicPermission;
 
 // @alpha (undocumented)
