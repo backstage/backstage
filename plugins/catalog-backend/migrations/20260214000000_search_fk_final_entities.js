@@ -69,13 +69,21 @@ exports.up = async function up(knex) {
     );
   } else if (client.includes('mysql')) {
     // Batch-delete orphaned rows before DDL to reduce lock time.
+    // Uses LEFT JOIN to find orphans efficiently, then deletes by entity_id.
+    // MySQL doesn't support LIMIT in multi-table DELETE, so we find the
+    // orphaned entity_ids first, then delete in a separate statement.
     for (;;) {
-      const [result] = await knex.raw(
-        `DELETE FROM \`search\` WHERE \`entity_id\` NOT IN (SELECT \`entity_id\` FROM \`final_entities\`) LIMIT 10000`,
-      );
-      if (result.affectedRows === 0) {
+      const [orphanIds] = await knex.raw(`
+        SELECT DISTINCT s.\`entity_id\` FROM \`search\` s
+        LEFT JOIN \`final_entities\` fe ON s.\`entity_id\` = fe.\`entity_id\`
+        WHERE fe.\`entity_id\` IS NULL
+        LIMIT 10000
+      `);
+      if (orphanIds.length === 0) {
         break;
       }
+      const ids = orphanIds.map(r => r.entity_id);
+      await knex('search').whereIn('entity_id', ids).delete();
     }
 
     // Drop old FK and add new one. MySQL does not support NOT VALID, but
@@ -148,12 +156,17 @@ exports.down = async function down(knex) {
     );
   } else if (client.includes('mysql')) {
     for (;;) {
-      const [result] = await knex.raw(
-        `DELETE FROM \`search\` WHERE \`entity_id\` NOT IN (SELECT \`entity_id\` FROM \`refresh_state\`) LIMIT 10000`,
-      );
-      if (result.affectedRows === 0) {
+      const [orphanIds] = await knex.raw(`
+        SELECT DISTINCT s.\`entity_id\` FROM \`search\` s
+        LEFT JOIN \`refresh_state\` rs ON s.\`entity_id\` = rs.\`entity_id\`
+        WHERE rs.\`entity_id\` IS NULL
+        LIMIT 10000
+      `);
+      if (orphanIds.length === 0) {
         break;
       }
+      const ids = orphanIds.map(r => r.entity_id);
+      await knex('search').whereIn('entity_id', ids).delete();
     }
 
     await knex.schema.alterTable('search', table => {
