@@ -39,6 +39,12 @@ exports.up = async function up(knex) {
     );
     // Drop the old non-covering index, now superseded
     await knex.raw('DROP INDEX CONCURRENTLY IF EXISTS search_key_value_idx');
+  } else {
+    // The search_key_value_idx only existed on pg, so no need to drop it here
+    await knex.schema.alterTable('search', table => {
+      table.index(['entity_id', 'key', 'value'], 'search_entity_key_value_idx');
+      table.index(['key', 'value', 'entity_id'], 'search_key_value_entity_idx');
+    });
   }
 };
 
@@ -58,6 +64,12 @@ exports.down = async function down(knex) {
     await knex.raw(
       'DROP INDEX CONCURRENTLY IF EXISTS search_entity_key_value_idx',
     );
+  } else {
+    await knex.schema.alterTable('search', table => {
+      table.index(['key', 'value'], 'search_key_value_idx');
+      table.dropIndex([], 'search_key_value_entity_idx');
+      table.dropIndex([], 'search_entity_key_value_idx');
+    });
   }
 };
 
