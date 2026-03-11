@@ -20,7 +20,7 @@ import { targetPaths } from '@backstage/cli-common';
 import type { CommandContext } from '../../../../wiring/types';
 
 export default async ({ args, info }: CommandContext) => {
-  cli({ help: info }, undefined, args);
+  cli({ help: info, booleanFlagNegation: true }, undefined, args);
   await fs.remove(targetPaths.resolve('dist'));
   await fs.remove(targetPaths.resolve('dist-types'));
   await fs.remove(targetPaths.resolve('coverage'));

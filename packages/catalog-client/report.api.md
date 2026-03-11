@@ -15,6 +15,7 @@ export type AddLocationRequest = {
   type?: string;
   target: string;
   dryRun?: boolean;
+  onConflict?: 'refresh' | 'reject';
 };
 
 // @public

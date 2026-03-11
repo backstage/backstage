@@ -19,7 +19,6 @@
 | `final_entity`    | `text`                     | true     | -          | -       |
 | `hash`            | `character varying`        | false    | 255        | -       |
 | `last_updated_at` | `timestamp with time zone` | true     | -          | -       |
-| `stitch_ticket`   | `text`                     | false    | -          | -       |
 
 ### Indices
 
@@ -76,8 +75,6 @@
 | `errors`             | `text`                     | false    | -          | -       |
 | `last_discovery_at`  | `timestamp with time zone` | false    | -          | -       |
 | `location_key`       | `text`                     | true     | -          | -       |
-| `next_stitch_at`     | `timestamp with time zone` | true     | -          | -       |
-| `next_stitch_ticket` | `character varying`        | true     | 255        | -       |
 | `next_update_at`     | `timestamp with time zone` | false    | -          | -       |
 | `processed_entity`   | `text`                     | true     | -          | -       |
 | `result_hash`        | `text`                     | true     | -          | -       |
@@ -87,7 +84,6 @@
 ### Indices
 
 - `refresh_state_entity_ref_uniq` (`entity_ref`) unique
-- `refresh_state_next_stitch_at_idx` (`next_stitch_at`)
 - `refresh_state_next_update_at_idx` (`next_update_at`)
 - `refresh_state_pkey` (`entity_id`) unique primary
 
@@ -135,3 +131,16 @@
 - `search_entity_id_idx` (`entity_id`)
 - `search_key_original_value_idx` (`key`, `original_value`)
 - `search_key_value_idx` (`key`, `value`)
+
+## Table `stitch_queue`
+
+| Column           | Type                       | Nullable | Max Length | Default |
+| ---------------- | -------------------------- | -------- | ---------- | ------- |
+| `entity_ref`     | `character varying`        | false    | 255        | -       |
+| `next_stitch_at` | `timestamp with time zone` | false    | -          | -       |
+| `stitch_ticket`  | `character varying`        | false    | 255        | -       |
+
+### Indices
+
+- `stitch_queue_next_stitch_at_idx` (`next_stitch_at`)
+- `stitch_queue_pkey` (`entity_ref`) unique primary

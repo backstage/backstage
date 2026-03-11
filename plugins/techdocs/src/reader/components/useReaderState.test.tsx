@@ -415,39 +415,44 @@ describe('useReaderState', () => {
     });
 
     it('should handle stale content', async () => {
-      techdocsStorageApi.getEntityDocs
-        .mockResolvedValueOnce('my content')
-        .mockImplementationOnce(async () => {
-          await new Promise(resolve => setTimeout(resolve, 1100));
-          return 'my new content';
+      jest.useFakeTimers();
+
+      try {
+        techdocsStorageApi.getEntityDocs
+          .mockResolvedValueOnce('my content')
+          .mockImplementationOnce(async () => {
+            await new Promise(resolve => setTimeout(resolve, 1100));
+            return 'my new content';
+          });
+        techdocsStorageApi.syncEntityDocs.mockImplementation(
+          async (_, logHandler) => {
+            await 'a tick';
+            logHandler?.call(this, 'Line 1');
+            logHandler?.call(this, 'Line 2');
+            await new Promise(resolve => setTimeout(resolve, 1100));
+            return 'updated';
+          },
+        );
+
+        const { result } = renderHook(
+          () => useReaderState('Component', 'default', 'backstage', '/example'),
+          { wrapper: Wrapper },
+        );
+
+        expect(result.current).toEqual({
+          state: 'CHECKING',
+          path: '/example',
+          content: undefined,
+          contentErrorMessage: undefined,
+          syncErrorMessage: undefined,
+          buildLog: [],
+          contentReload: expect.any(Function),
         });
-      techdocsStorageApi.syncEntityDocs.mockImplementation(
-        async (_, logHandler) => {
-          await 'a tick';
-          logHandler?.call(this, 'Line 1');
-          logHandler?.call(this, 'Line 2');
-          await new Promise(resolve => setTimeout(resolve, 1100));
-          return 'updated';
-        },
-      );
 
-      const { result } = renderHook(
-        () => useReaderState('Component', 'default', 'backstage', '/example'),
-        { wrapper: Wrapper },
-      );
+        // flush microtasks: content loads (resolved promise) and sync progresses past 'a tick'
+        await act(async () => {});
 
-      expect(result.current).toEqual({
-        state: 'CHECKING',
-        path: '/example',
-        content: undefined,
-        contentErrorMessage: undefined,
-        syncErrorMessage: undefined,
-        buildLog: [],
-        contentReload: expect.any(Function),
-      });
-
-      // the content is returned but the sync is in progress
-      await waitFor(() => {
+        // the content is returned but the sync is in progress
         expect(result.current).toEqual({
           state: 'CONTENT_FRESH',
           path: '/example',
@@ -457,10 +462,12 @@ describe('useReaderState', () => {
           buildLog: ['Line 1', 'Line 2'],
           contentReload: expect.any(Function),
         });
-      });
 
-      // the sync takes longer than 1 seconds so the refreshing state starts
-      await waitFor(() => {
+        // the sync takes longer than 1 second so the refreshing state starts
+        await act(async () => {
+          jest.advanceTimersByTime(1000);
+        });
+
         expect(result.current).toEqual({
           state: 'CONTENT_STALE_REFRESHING',
           path: '/example',
@@ -470,10 +477,12 @@ describe('useReaderState', () => {
           buildLog: ['Line 1', 'Line 2'],
           contentReload: expect.any(Function),
         });
-      });
 
-      // the content is updated but not yet displayed
-      await waitFor(() => {
+        // the sync completes — content is updated but not yet displayed
+        await act(async () => {
+          jest.advanceTimersByTime(100);
+        });
+
         expect(result.current).toEqual({
           state: 'CONTENT_STALE_READY',
           path: '/example',
@@ -483,15 +492,13 @@ describe('useReaderState', () => {
           buildLog: ['Line 1', 'Line 2'],
           contentReload: expect.any(Function),
         });
-      });
 
-      // reload the content
-      await act(async () => {
-        result.current.contentReload();
-      });
+        // reload the content
+        await act(async () => {
+          result.current.contentReload();
+        });
 
-      // the new content refresh is triggered
-      await waitFor(() => {
+        // the new content refresh is triggered
         expect(result.current).toEqual({
           state: 'CHECKING',
           path: '/example',
@@ -501,39 +508,38 @@ describe('useReaderState', () => {
           buildLog: [],
           contentReload: expect.any(Function),
         });
-      });
 
-      // the new content is loaded
-      await waitFor(
-        () => {
-          expect(result.current).toEqual({
-            state: 'CONTENT_FRESH',
-            path: '/example',
-            content: 'my new content',
-            contentErrorMessage: undefined,
-            syncErrorMessage: undefined,
-            buildLog: [],
-            contentReload: expect.any(Function),
-          });
-        },
-        {
-          timeout: 2000,
-        },
-      );
+        // the new content is loaded
+        await act(async () => {
+          jest.advanceTimersByTime(1100);
+        });
 
-      expect(techdocsStorageApi.getEntityDocs).toHaveBeenCalledTimes(2);
-      expect(techdocsStorageApi.getEntityDocs).toHaveBeenCalledWith(
-        { kind: 'Component', namespace: 'default', name: 'backstage' },
-        '/example',
-      );
-      expect(techdocsStorageApi.syncEntityDocs).toHaveBeenCalledWith(
-        {
-          kind: 'Component',
-          namespace: 'default',
-          name: 'backstage',
-        },
-        expect.any(Function),
-      );
+        expect(result.current).toEqual({
+          state: 'CONTENT_FRESH',
+          path: '/example',
+          content: 'my new content',
+          contentErrorMessage: undefined,
+          syncErrorMessage: undefined,
+          buildLog: [],
+          contentReload: expect.any(Function),
+        });
+
+        expect(techdocsStorageApi.getEntityDocs).toHaveBeenCalledTimes(2);
+        expect(techdocsStorageApi.getEntityDocs).toHaveBeenCalledWith(
+          { kind: 'Component', namespace: 'default', name: 'backstage' },
+          '/example',
+        );
+        expect(techdocsStorageApi.syncEntityDocs).toHaveBeenCalledWith(
+          {
+            kind: 'Component',
+            namespace: 'default',
+            name: 'backstage',
+          },
+          expect.any(Function),
+        );
+      } finally {
+        jest.useRealTimers();
+      }
     });
 
     it('should handle navigation', async () => {

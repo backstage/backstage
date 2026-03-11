@@ -1,5 +1,20 @@
 # @backstage/frontend-defaults
 
+## 0.5.0-next.1
+
+### Minor Changes
+
+- 92af1ae: **BREAKING**: Removed the `allowUnknownExtensionConfig` option from `createApp`. This flag had no effect and was a no-op, so no behavioral changes are expected.
+- 33de79d: **BREAKING**: Removed the deprecated `createPublicSignInApp` function. Use `createApp` from `@backstage/frontend-defaults` with `appModulePublicSignIn` from `@backstage/plugin-app/alpha` instead.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.15.0-next.1
+  - @backstage/frontend-app-api@0.16.0-next.1
+  - @backstage/core-components@0.18.8-next.1
+  - @backstage/plugin-app@0.4.1-next.2
+
 ## 0.4.1-next.0
 
 ### Patch Changes

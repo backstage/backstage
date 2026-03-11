@@ -64,6 +64,7 @@ export const coreComponentsTranslationRef: TranslationRef<
     readonly 'dependencyGraph.fullscreenTooltip': 'Toggle fullscreen';
     readonly 'proxiedSignInPage.title': 'You do not appear to be signed in. Please try reloading the browser page.';
     readonly 'logViewer.searchField.placeholder': 'Search';
+    readonly 'logViewer.downloadBtn.tooltip': 'Download logs';
   }
 >;
 

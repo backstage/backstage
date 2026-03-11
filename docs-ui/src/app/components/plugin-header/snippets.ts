@@ -43,7 +43,7 @@ export const withTabs = `<PluginHeader
   ]}
 />`;
 
-export const withHeaderPage = `<PluginHeader
+export const withHeader = `<PluginHeader
   title="My plugin"
   titleLink="/"
   tabs={[
@@ -51,7 +51,7 @@ export const withHeaderPage = `<PluginHeader
     { id: 'checks', label: 'Checks', href: '/checks' },
   ]}
 />
-<HeaderPage
+<Header
   title="Page title"
   tabs={[
     { id: 'banana', label: 'Banana', href: '/banana' },

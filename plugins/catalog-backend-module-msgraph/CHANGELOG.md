@@ -1,5 +1,14 @@
 # @backstage/plugin-catalog-backend-module-msgraph
 
+## 0.9.1-next.1
+
+### Patch Changes
+
+- 97eaecf: Fixed scheduler task remaining stuck in running state after pod termination by propagating AbortSignal into MicrosoftGraphOrgEntityProvider.read()
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0-next.1
+  - @backstage/plugin-catalog-node@2.1.0-next.2
+
 ## 0.9.1-next.0
 
 ### Patch Changes

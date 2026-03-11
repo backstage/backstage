@@ -23,3 +23,6 @@ Object.defineProperty(global, 'TextEncoder', {
 Object.defineProperty(global, 'TextDecoder', {
   value: require('node:util').TextDecoder,
 });
+
+// Use a 15s timeout to accommodate the slowest API docs rendering tests under concurrency.
+jest.setTimeout(15_000);

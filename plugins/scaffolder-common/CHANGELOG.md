@@ -1,5 +1,16 @@
 # @backstage/plugin-scaffolder-common
 
+## 2.0.0-next.2
+
+### Minor Changes
+
+- e8736ea: Added an optional `secrets` field to `TemplateEntityV1beta3` for configuring secrets validation. The schema for validating secrets is defined under `secrets.schema` as a JSON Schema object.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.0.0-next.2
+
 ## 2.0.0-next.1
 
 ### Major Changes

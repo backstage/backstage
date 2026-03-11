@@ -1401,10 +1401,10 @@ export interface GridProps
 }
 
 // @public
-export const HeaderPage: (props: HeaderPageProps) => JSX_2.Element;
+export const Header: (props: HeaderProps) => JSX_2.Element;
 
 // @public
-export interface HeaderPageBreadcrumb {
+export interface HeaderBreadcrumb {
   // (undocumented)
   href: string;
   // (undocumented)
@@ -1412,7 +1412,7 @@ export interface HeaderPageBreadcrumb {
 }
 
 // @public
-export const HeaderPageDefinition: {
+export const HeaderDefinition: {
   readonly styles: {
     readonly [key: string]: string;
   };
@@ -1433,9 +1433,9 @@ export const HeaderPageDefinition: {
 };
 
 // @public
-export interface HeaderPageOwnProps {
+export interface HeaderOwnProps {
   // (undocumented)
-  breadcrumbs?: HeaderPageBreadcrumb[];
+  breadcrumbs?: HeaderBreadcrumb[];
   // (undocumented)
   className?: string;
   // (undocumented)
@@ -1446,8 +1446,41 @@ export interface HeaderPageOwnProps {
   title?: string;
 }
 
+// @public @deprecated (undocumented)
+export const HeaderPage: (props: HeaderProps) => JSX_2.Element;
+
+// @public @deprecated (undocumented)
+export type HeaderPageBreadcrumb = HeaderBreadcrumb;
+
+// @public @deprecated (undocumented)
+export const HeaderPageDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-HeaderPage';
+    readonly content: 'bui-HeaderPageContent';
+    readonly breadcrumbs: 'bui-HeaderPageBreadcrumbs';
+    readonly tabsWrapper: 'bui-HeaderPageTabsWrapper';
+    readonly controls: 'bui-HeaderPageControls';
+  };
+  readonly propDefs: {
+    readonly title: {};
+    readonly customActions: {};
+    readonly tabs: {};
+    readonly breadcrumbs: {};
+    readonly className: {};
+  };
+};
+
+// @public @deprecated (undocumented)
+export type HeaderPageOwnProps = HeaderOwnProps;
+
+// @public @deprecated (undocumented)
+export type HeaderPageProps = HeaderProps;
+
 // @public
-export interface HeaderPageProps extends HeaderPageOwnProps {}
+export interface HeaderProps extends HeaderOwnProps {}
 
 // @public
 export interface HeaderTab {
