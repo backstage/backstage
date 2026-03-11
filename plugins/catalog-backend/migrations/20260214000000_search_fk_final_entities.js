@@ -82,14 +82,13 @@ exports.up = async function up(knex) {
   const client = knex.client.config.client;
 
   if (client.includes('pg')) {
-    // Drop old FK and immediately add the new one as NOT VALID. This
-    // prevents new orphan rows from being inserted while we clean up
-    // existing ones, closing the race window between cleanup and FK add.
-    await knex.raw(
-      `ALTER TABLE "search" DROP CONSTRAINT IF EXISTS "search_entity_id_foreign"`,
-    );
+    // Drop old FK and immediately add the new one as NOT VALID in a single
+    // ALTER TABLE statement. This prevents new orphan rows from being
+    // inserted while we clean up existing ones, and eliminates any window
+    // where no FK exists at all.
     await knex.raw(`
       ALTER TABLE "search"
+      DROP CONSTRAINT IF EXISTS "search_entity_id_foreign",
       ADD CONSTRAINT "search_entity_id_foreign"
       FOREIGN KEY ("entity_id") REFERENCES "final_entities"("entity_id")
       ON DELETE CASCADE
@@ -110,10 +109,10 @@ exports.up = async function up(knex) {
     // Batch-delete orphaned rows before DDL to reduce lock time.
     await batchDeleteOrphansMysql(knex, 'final_entities');
 
-    // Drop old FK and add new one inside an explicit transaction, since the
-    // global transaction wrapper is disabled for this migration. MySQL does
-    // not support NOT VALID, but the table is already clean so validation
-    // is fast.
+    // Perform the FK changes. Note that in MySQL/InnoDB, ALTER TABLE
+    // statements cause implicit commits, so wrapping in a transaction does
+    // not provide full atomicity. However the table is already cleaned of
+    // orphans and validation remains fast.
     await knex.transaction(async trx => {
       await trx.schema.alterTable('search', table => {
         table.dropForeign(['entity_id']);
@@ -156,11 +155,9 @@ exports.down = async function down(knex) {
   const client = knex.client.config.client;
 
   if (client.includes('pg')) {
-    await knex.raw(
-      `ALTER TABLE "search" DROP CONSTRAINT IF EXISTS "search_entity_id_foreign"`,
-    );
     await knex.raw(`
       ALTER TABLE "search"
+      DROP CONSTRAINT IF EXISTS "search_entity_id_foreign",
       ADD CONSTRAINT "search_entity_id_foreign"
       FOREIGN KEY ("entity_id") REFERENCES "refresh_state"("entity_id")
       ON DELETE CASCADE
