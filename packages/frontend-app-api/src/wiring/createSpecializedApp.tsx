@@ -415,26 +415,25 @@ export function prepareSpecializedApp(
     options?.advanced?.extensionFactoryMiddleware,
   );
   const providedApis = options?.apis ?? options?.advanced?.apis;
+  const bootstrapNodes = collectBootstrapVisibleNodes(tree);
+  assertNoBootstrapPredicates(bootstrapNodes);
+  const predicateReferences = collectPredicateReferences(tree);
   const appApiRegistry = new FrontendApiRegistry();
   const internalStaticFactories =
     internalOptions?.__internal?.apiFactoryOverrides ?? [];
   const phaseStaticFactories = [...internalStaticFactories];
-  const deferredApiFactories: AnyApiFactory[] = [];
   let treeInstancesNeedReset = false;
 
   if (providedApis) {
     registerFeatureFlagDeclarationsInHolder(providedApis, features);
   } else {
-    const apiFactoryEntries = collectApiFactoryEntries({
+    const apiFactories = collectApiFactories({
       tree,
+      bootstrapNodes,
       collector,
-    });
-    const classifiedApiFactories = classifyApiFactories({
-      entries: apiFactoryEntries,
       features,
     });
-    appApiRegistry.registerAll(classifiedApiFactories.prepareApiFactories);
-    deferredApiFactories.push(...classifiedApiFactories.deferredApiFactories);
+    appApiRegistry.registerAll(apiFactories);
     treeInstancesNeedReset = true;
   }
 
@@ -452,7 +451,6 @@ export function prepareSpecializedApp(
     staticFactories: phaseStaticFactories,
   });
   let signInRuntime: SignInRuntime | null | undefined;
-  let deferredApiFactoriesRegistered = false;
   let cachedPredicateContext: ExtensionPredicateContext | undefined;
   let predicateContextPromise: Promise<ExtensionPredicateContext> | undefined;
 
@@ -472,26 +470,13 @@ export function prepareSpecializedApp(
     updateIdentityApiTarget();
 
     const featureFlagsApi = phase.apis.get(featureFlagsApiRef);
-    const referencedFlagNames = new Set<string>();
-    const referencedPermissionNames = new Set<string>();
-    for (const node of tree.nodes.values()) {
-      if (node.spec.if !== undefined) {
-        for (const name of extractFeatureFlagNames(node.spec.if)) {
-          referencedFlagNames.add(name);
-        }
-        for (const name of extractPermissionNames(node.spec.if)) {
-          referencedPermissionNames.add(name);
-        }
-      }
-    }
-
     let allowedPermissions: string[] = [];
-    if (referencedPermissionNames.size > 0) {
+    if (predicateReferences.permissions.length > 0) {
       const permissionApi = phase.apis.get(localPermissionApiRef);
       if (!permissionApi) {
         return {
           featureFlags: featureFlagsApi
-            ? Array.from(referencedFlagNames).filter(name =>
+            ? predicateReferences.featureFlags.filter(name =>
                 featureFlagsApi.isActive(name),
               )
             : [],
@@ -499,7 +484,7 @@ export function prepareSpecializedApp(
         };
       }
 
-      const permNames = Array.from(referencedPermissionNames);
+      const permNames = predicateReferences.permissions;
       const responses = await permissionApi.authorize(
         permNames.map(name => ({
           permission: { name, type: 'basic', attributes: {} },
@@ -512,7 +497,7 @@ export function prepareSpecializedApp(
 
     return {
       featureFlags: featureFlagsApi
-        ? Array.from(referencedFlagNames).filter(name =>
+        ? predicateReferences.featureFlags.filter(name =>
             featureFlagsApi.isActive(name),
           )
         : [],
@@ -635,11 +620,6 @@ export function prepareSpecializedApp(
         );
       }
 
-      if (!deferredApiFactoriesRegistered) {
-        appApiRegistry.registerAll(deferredApiFactories);
-        deferredApiFactoriesRegistered = true;
-      }
-
       updateIdentityApiTarget();
 
       prepareFinalizedTree({
@@ -744,67 +724,6 @@ type ApiFactoryEntry = {
   node: AppNode;
   factory: AnyApiFactory;
 };
-
-function classifyApiFactories(options: {
-  entries: ApiFactoryEntry[];
-  features: FrontendFeature[];
-}) {
-  const prepareApiFactories = new Array<AnyApiFactory>();
-  const deferredApiFactories = new Array<AnyApiFactory>();
-
-  for (const entry of options.entries) {
-    const wrappedFactory = wrapFeatureFlagApiFactory(
-      entry.factory,
-      options.features,
-    );
-
-    if (hasDeferredApiFactoryAttachments(entry.node)) {
-      deferredApiFactories.push(wrappedFactory);
-    } else {
-      prepareApiFactories.push(wrappedFactory);
-    }
-  }
-
-  return { prepareApiFactories, deferredApiFactories };
-}
-
-function hasDeferredApiFactoryAttachments(
-  node: AppNode,
-  visited = new Set<AppNode>(),
-): boolean {
-  if (visited.has(node)) {
-    return false;
-  }
-  visited.add(node);
-
-  if (hasPhaseSensitivePredicate(node)) {
-    return true;
-  }
-
-  for (const attachments of node.edges.attachments.values()) {
-    for (const child of attachments) {
-      if (hasDeferredApiFactoryAttachments(child, visited)) {
-        return true;
-      }
-    }
-  }
-
-  return false;
-}
-
-function hasPhaseSensitivePredicate(node: AppNode): boolean {
-  const spec = node.spec as AppNode['spec'] & {
-    if?: unknown;
-    enabled?: unknown;
-    predicate?: unknown;
-  };
-
-  return (
-    spec.if !== undefined ||
-    spec.enabled !== undefined ||
-    spec.predicate !== undefined
-  );
-}
 
 function extractSignInPageComponent(options: {
   tree: AppTree;
@@ -1067,8 +986,20 @@ const EMPTY_API_HOLDER: ApiHolder = {
   },
 };
 
+function collectApiFactories(options: {
+  tree: AppTree;
+  bootstrapNodes: Set<AppNode>;
+  collector: ErrorCollector;
+  features: FrontendFeature[];
+}): AnyApiFactory[] {
+  return collectApiFactoryEntries(options).map(entry =>
+    wrapFeatureFlagApiFactory(entry.factory, options.features),
+  );
+}
+
 function collectApiFactoryEntries(options: {
   tree: AppTree;
+  bootstrapNodes: Set<AppNode>;
   collector: ErrorCollector;
 }): ApiFactoryEntry[] {
   const factoriesById = new Map<
@@ -1077,6 +1008,9 @@ function collectApiFactoryEntries(options: {
   >();
 
   for (const apiNode of options.tree.root.edges.attachments.get('apis') ?? []) {
+    if (!options.bootstrapNodes.has(apiNode)) {
+      continue;
+    }
     if (!instantiateAppNodeTree(apiNode, EMPTY_API_HOLDER, options.collector)) {
       continue;
     }
@@ -1141,6 +1075,66 @@ function collectApiFactoryEntries(options: {
     node: entry.node,
     factory: entry.factory,
   }));
+}
+
+function collectBootstrapVisibleNodes(tree: AppTree) {
+  const visibleNodes = new Set<AppNode>();
+
+  function visit(node: AppNode) {
+    if (visibleNodes.has(node)) {
+      return;
+    }
+    visibleNodes.add(node);
+
+    for (const [input, children] of node.edges.attachments) {
+      if (isSessionBoundaryAttachment(node, input)) {
+        continue;
+      }
+
+      for (const child of children) {
+        visit(child);
+      }
+    }
+  }
+
+  visit(tree.root);
+
+  return visibleNodes;
+}
+
+function assertNoBootstrapPredicates(nodes: Iterable<AppNode>) {
+  for (const node of nodes) {
+    if (node.spec.if === undefined) {
+      continue;
+    }
+
+    throw new Error(
+      `Extension '${node.spec.id}' uses 'if' before the session boundary at 'app/root.children'. Move it behind the session boundary or remove the predicate.`,
+    );
+  }
+}
+
+function collectPredicateReferences(tree: AppTree): ExtensionPredicateContext {
+  const featureFlags = new Set<string>();
+  const permissions = new Set<string>();
+
+  for (const node of tree.nodes.values()) {
+    if (node.spec.if === undefined) {
+      continue;
+    }
+
+    for (const name of extractFeatureFlagNames(node.spec.if)) {
+      featureFlags.add(name);
+    }
+    for (const name of extractPermissionNames(node.spec.if)) {
+      permissions.add(name);
+    }
+  }
+
+  return {
+    featureFlags: Array.from(featureFlags),
+    permissions: Array.from(permissions),
+  };
 }
 
 // TODO(Rugvip): It would be good if this was more explicit, but I think that
