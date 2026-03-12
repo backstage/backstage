@@ -44,6 +44,10 @@ describe('authAtlassianTokenCaptureModule', () => {
         mockServices.database.factory(),
         // Mock the providerTokenService so the real factory (which needs DB migration
         // and provider configs) does not run during this smoke test.
+        // Note: upsertToken is not called during the /start redirect — it would be called
+        // during the /handler/frame callback when sign-in completes. That path requires a
+        // full OAuth mock server and is beyond the scope of this smoke test. The token
+        // capture logic is exercised in integration testing.
         createServiceFactory({
           service: providerTokenServiceRef,
           deps: {},

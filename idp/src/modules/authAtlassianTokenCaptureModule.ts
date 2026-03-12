@@ -60,11 +60,11 @@ function createAtlassianTokenCapturingResolver(
         );
 
         return ctx.signInWithCatalogUser(
-          { entityRef: { name: username } },
+          { entityRef: { namespace, name: username } },
           {
             dangerousEntityRefFallback:
               options?.dangerouslyAllowSignInWithoutUserInCatalog
-                ? { entityRef: { name: username } }
+                ? { entityRef: { namespace, name: username } }
                 : undefined,
           },
         );
