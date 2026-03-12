@@ -46,7 +46,7 @@ export const Checkbox = forwardRef<HTMLLabelElement, CheckboxProps>(
                 <RiCheckLine size={12} />
               )}
             </div>
-            <span>{children}</span>
+            <div>{children}</div>
           </>
         )}
       </RACheckbox>
