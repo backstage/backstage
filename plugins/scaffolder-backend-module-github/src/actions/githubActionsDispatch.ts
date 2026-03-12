@@ -168,7 +168,11 @@ export function createGithubActionsDispatchAction(options: {
           ctx.output('workflowRunUrl', runDetails.workflowRunUrl);
           ctx.output('workflowRunHtmlUrl', runDetails.workflowRunHtmlUrl);
 
-          ctx.logger.info(`Workflow run url: ${runDetails.workflowRunHtmlUrl}`);
+          if (runDetails.workflowRunHtmlUrl) {
+            ctx.logger.info(
+              `Workflow run url: ${runDetails.workflowRunHtmlUrl}`,
+            );
+          }
         }
       } catch (e) {
         assertError(e);
