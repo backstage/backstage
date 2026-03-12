@@ -576,13 +576,13 @@
 <header>
   <div class="wrap">
     <h1>Manifest Debugger</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">1/43 prop type error</a><a class="filter-pill info" data-k="infos" href="#filter-infos">31/43 infos</a><span class="filter-pill ok" aria-disabled="true">388 stories ok</span></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">1/43 prop type error</a><a class="filter-pill info" data-k="infos" href="#filter-infos">31/43 infos</a><span class="filter-pill ok" aria-disabled="true">390 stories ok</span></div>
   </div>
 </header>
 <main>
   <div class="wrap">
     <div class="note info" style="margin-bottom: 16px;">
-            <strong>Tip:</strong> You are using <code>react-docgen</code> (the default). Generation took <strong>2.6s</strong>. For higher quality prop types, consider switching to <code>react-docgen-typescript</code> in your <code>main.ts</code>:
+            <strong>Tip:</strong> You are using <code>react-docgen</code> (the default). Generation took <strong>2.7s</strong>. For higher quality prop types, consider switching to <code>react-docgen-typescript</code> in your <code>main.ts</code>:
             <pre><code>typescript: {
   reactDocgen: 'react-docgen-typescript',
 }</code></pre>
@@ -3475,9 +3475,9 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Checkbox</h2>
       <div class="badges">
-        <label for="c-9-backstage-ui-checkbox-props" class="badge ok as-toggle">4 prop types</label>
+        <label for="c-9-backstage-ui-checkbox-props" class="badge ok as-toggle">2 prop types</label>
         <label for="c-9-backstage-ui-checkbox-info" class="badge info as-toggle">1 info</label>
-        <label for="c-9-backstage-ui-checkbox-stories" class="badge ok as-toggle">3 stories</label>
+        <label for="c-9-backstage-ui-checkbox-stories" class="badge ok as-toggle">5 stories</label>
         
       </div>
     </div>
@@ -3509,17 +3509,13 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types <small>(react-docgen)</small></span>
-              <span class="badge ok">4 prop types</span>
+              <span class="badge ok">2 prop types</span>
             </div>
             <pre><code>Component: packages/ui/src/components/Checkbox/Checkbox.tsx::Checkbox</code></pre>
             <pre><code>Props:</code></pre>
             <pre><code>children: React.ReactNode
 
-className?: string
-
-indeterminate?: boolean
-
-selected?: boolean</code></pre>
+className?: string</code></pre>
           </div>
         </div>
     
@@ -3531,7 +3527,8 @@ selected?: boolean</code></pre>
                 <div class="row">
                   <span class="ex-name">Imports</span>
                 </div>
-                <pre><code>import { Checkbox, Flex } from "@backstage/ui";</code></pre>
+                <pre><code>import { Checkbox, Flex, Link } from "@backstage/ui";
+import { MemoryRouter } from "react-router-dom";</code></pre>
               </div>
           
           
@@ -3546,12 +3543,33 @@ selected?: boolean</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
+                <span class="ex-name">Selected</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Selected = () =&gt; &lt;Checkbox isSelected /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
                 <span class="ex-name">Indeterminate</span>
                 <span class="badge ok">story ok</span>
               </div>
               
               
               <pre><code>const Indeterminate = () =&gt; &lt;Checkbox isIndeterminate&gt;Select all&lt;/Checkbox&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Long Text</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithLongText = () =&gt; &lt;Checkbox&gt;(&lt;&gt;I agree to receive future communication from Spotify. You may
+              unsubscribe from these communications at any time. Please review our{&#39; &#39;}
+      &lt;Link href=&quot;#&quot;&gt;Privacy Policy&lt;/Link&gt;
+    &lt;/&gt;)&lt;/Checkbox&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
