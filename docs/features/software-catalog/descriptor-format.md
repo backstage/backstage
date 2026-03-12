@@ -817,10 +817,10 @@ Template, but there will always be one ultimate owner.
 
 Describes the following entity kind:
 
-| Field        | Value                   |
-| ------------ | ----------------------- |
-| `apiVersion` | `backstage.io/v1alpha1` |
-| `kind`       | `API`                   |
+| Field        | Value                                              |
+| ------------ | -------------------------------------------------- |
+| `apiVersion` | `backstage.io/v1alpha1` or `backstage.io/v1alpha2` |
+| `kind`       | `API`                                              |
 
 An API describes an interface that can be exposed by a component. The API can be
 defined in different formats, like [OpenAPI](https://swagger.io/specification/),
@@ -857,12 +857,33 @@ spec:
     ...
 ```
 
+API entities using `backstage.io/v1alpha2` support structured spec fields that
+vary by type. For example, MCP server entities use a `remotes` array instead of
+a `definition` string:
+
+```yaml
+apiVersion: backstage.io/v1alpha2
+kind: API
+metadata:
+  name: my-mcp-server
+  description: An MCP server
+spec:
+  type: mcp-server
+  lifecycle: production
+  owner: platform-team
+  remotes:
+    - type: streamable-http
+      url: https://example.com/api/mcp
+```
+
 In addition to the [common envelope metadata](#common-to-all-kinds-the-metadata)
 shape, this kind has the following structure.
 
 ### `apiVersion` and `kind` [required]
 
-Exactly equal to `backstage.io/v1alpha1` and `API`, respectively.
+The `kind` must be `API`. The `apiVersion` is either `backstage.io/v1alpha1` or
+`backstage.io/v1alpha2`. The available `spec` fields depend on the
+`apiVersion`.
 
 ### `spec.type` [required]
 
@@ -887,6 +908,9 @@ The current set of well-known and common values for this field is:
 - `grpc` - An API definition based on
   [Protocol Buffers](https://developers.google.com/protocol-buffers) to use with
   [gRPC](https://grpc.io/).
+- `mcp-server` - An [MCP](https://modelcontextprotocol.io/) server endpoint.
+  Only available on `backstage.io/v1alpha2`. Uses `spec.remotes` instead of
+  `spec.definition`.
 
 ### `spec.lifecycle` [required]
 
@@ -932,10 +956,17 @@ API belongs to, e.g. `artist-engagement-portal`. This field is optional.
 | --------------------------------------- | ------------------------------------------ | ----------------------------------------------------------------------------- |
 | [`System`](#kind-system) (default)      | Same as this entity, typically `default`   | [`partOf`, and reverse `hasPart`](well-known-relations.md#partof-and-haspart) |
 
-### `spec.definition` [required]
+### `spec.definition` [required on v1alpha1, conditional on v1alpha2]
 
-The definition of the API, based on the format defined by `spec.type`. This
-field is required.
+The definition of the API, based on the format defined by `spec.type`. Required
+on `backstage.io/v1alpha1` for all types. On `backstage.io/v1alpha2`, required
+for all types except `mcp-server`.
+
+### `spec.remotes` [v1alpha2 mcp-server only]
+
+An array of remote endpoints for MCP server entities. Each entry has a `type`
+string and a `url` string. At least one entry is required. Only available on
+`backstage.io/v1alpha2` entities with `spec.type: mcp-server`.
 
 ## Kind: Group
 
