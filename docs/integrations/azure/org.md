@@ -41,7 +41,7 @@ catalog:
 For large organizations, this plugin can take a long time, so be careful setting low frequency / timeouts and importing a large amount of users / groups for the first try.
 :::
 
-Finally, updated your backend by adding the following line:
+Finally, update your backend by adding the following line:
 
 ```ts title="packages/backend/src/index.ts"
 backend.add(import('@backstage/plugin-catalog-backend'));
