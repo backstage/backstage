@@ -148,9 +148,9 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
           throw new NotFoundError(`Action "${req.params.actionId}" not found`);
         }
 
-        if (action.permission) {
+        if (action.visibilityPermission) {
           const [decision] = await this.permissions.authorize(
-            [{ permission: action.permission }],
+            [{ permission: action.visibilityPermission }],
             { credentials },
           );
           if (decision.result === AuthorizeResult.DENY) {
@@ -204,8 +204,8 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
       throw new Error(`Action with id "${id}" is already registered`);
     }
 
-    if (options.permission) {
-      this.permissionsRegistry.addPermissions([options.permission]);
+    if (options.visibilityPermission) {
+      this.permissionsRegistry.addPermissions([options.visibilityPermission]);
     }
 
     this.actions.set(id, options);
@@ -216,7 +216,7 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
     credentials: BackstageCredentials,
   ): Promise<ActionEntry[]> {
     const permissionedEntries = entries.filter(
-      ([_, action]) => action.permission,
+      ([_, action]) => action.visibilityPermission,
     );
 
     if (permissionedEntries.length === 0) {
@@ -225,7 +225,7 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
 
     const decisions = await this.permissions.authorize(
       permissionedEntries.map(([_, action]) => ({
-        permission: action.permission!,
+        permission: action.visibilityPermission!,
       })),
       { credentials },
     );

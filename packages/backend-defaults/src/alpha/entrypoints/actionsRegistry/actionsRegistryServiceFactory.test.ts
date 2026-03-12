@@ -592,7 +592,7 @@ describe('actionsRegistryServiceFactory', () => {
                 name: 'protected-action',
                 title: 'Protected Action',
                 description: 'Permission required',
-                permission: testPermission,
+                visibilityPermission: testPermission,
                 schema: {
                   input: z => z.object({}),
                   output: z => z.object({}),
@@ -640,7 +640,7 @@ describe('actionsRegistryServiceFactory', () => {
                 name: 'protected-action',
                 title: 'Protected Action',
                 description: 'Permission required',
-                permission: testPermission,
+                visibilityPermission: testPermission,
                 schema: {
                   input: z => z.object({}),
                   output: z => z.object({}),
@@ -688,7 +688,7 @@ describe('actionsRegistryServiceFactory', () => {
                 name: 'protected-action',
                 title: 'Protected Action',
                 description: 'Permission required',
-                permission: testPermission,
+                visibilityPermission: testPermission,
                 schema: {
                   input: z => z.object({}),
                   output: z => z.object({}),
@@ -741,7 +741,7 @@ describe('actionsRegistryServiceFactory', () => {
                 name: 'protected-action',
                 title: 'Protected Action',
                 description: 'Permission required',
-                permission: testPermission,
+                visibilityPermission: testPermission,
                 schema: {
                   input: z => z.object({}),
                   output: z => z.object({ ok: z.boolean() }),
@@ -793,7 +793,7 @@ describe('actionsRegistryServiceFactory', () => {
                 name: 'protected-action',
                 title: 'Protected Action',
                 description: 'Permission required',
-                permission: testPermission,
+                visibilityPermission: testPermission,
                 schema: {
                   input: z => z.object({}),
                   output: z => z.object({}),
@@ -840,7 +840,7 @@ describe('actionsRegistryServiceFactory', () => {
                 name: 'protected-action',
                 title: 'Protected Action',
                 description: 'Permission required',
-                permission: testPermission,
+                visibilityPermission: testPermission,
                 schema: {
                   input: z => z.object({}),
                   output: z => z.object({}),

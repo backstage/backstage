@@ -41,7 +41,7 @@ export type ActionsRegistryActionOptions<
     input: (zod: typeof z) => TInputSchema;
     output: (zod: typeof z) => TOutputSchema;
   };
-  permission?: BasicPermission;
+  visibilityPermission?: BasicPermission;
   attributes?: {
     destructive?: boolean;
     idempotent?: boolean;
