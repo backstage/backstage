@@ -31,11 +31,11 @@ import {
   analyticsApiRef,
   createExtensionDataRef,
 } from '@backstage/frontend-plugin-api';
-import { screen, render } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import {
   createSpecializedApp,
   prepareSpecializedApp,
-  PreparedSpecializedAppSignInProps,
+  PreparedSpecializedApp,
 } from './createSpecializedApp';
 import { mockApis } from '@backstage/test-utils';
 import {
@@ -66,13 +66,29 @@ function makeAppPlugin(label: string = 'Test') {
   });
 }
 
-function renderPreparedSignIn(signIn: {
-  Component: ComponentType<PreparedSpecializedAppSignInProps>;
-}) {
-  return new Promise<void>(resolve => {
-    const SignIn = signIn.Component;
-    render(<SignIn onReady={() => resolve()} />);
+function renderPreparedBootstrap(preparedApp: PreparedSpecializedApp) {
+  const bootstrapApp = preparedApp.getBootstrapApp();
+  const bootstrapElement = bootstrapApp.tree.root.instance?.getData(
+    coreExtensionData.reactElement,
+  );
+  if (!bootstrapElement) {
+    throw new Error('Expected bootstrap tree to expose a root element');
+  }
+
+  render(bootstrapElement);
+}
+
+async function waitForFinalizedApp(preparedApp: PreparedSpecializedApp) {
+  await waitFor(() => {
+    expect(preparedApp.getFinalizedApp()).toBeDefined();
   });
+
+  const finalizedApp = preparedApp.getFinalizedApp();
+  if (!finalizedApp) {
+    throw new Error('Expected prepared app to finalize');
+  }
+
+  return finalizedApp;
 }
 
 describe('createSpecializedApp', () => {
@@ -912,22 +928,15 @@ describe('createSpecializedApp', () => {
         ],
       });
 
-      const signIn = preparedApp.getSignIn();
-      expect(signIn.Component).toBeDefined();
-      const readyPromise = renderPreparedSignIn(signIn);
+      renderPreparedBootstrap(preparedApp);
       await expect(
         screen.findByText('Custom Sign In'),
       ).resolves.toBeInTheDocument();
 
-      expect(appLayoutFactory).not.toHaveBeenCalled();
-
-      await readyPromise;
-      expect(appLayoutFactory).not.toHaveBeenCalled();
-
-      const finalizedApp = preparedApp.tryFinalize();
-      expect(finalizedApp).toBeDefined();
+      const finalizedApp = await waitForFinalizedApp(preparedApp);
+      expect(appLayoutFactory).toHaveBeenCalledTimes(1);
       render(
-        finalizedApp!.tree.root.instance!.getData(
+        finalizedApp.tree.root.instance!.getData(
           coreExtensionData.reactElement,
         ),
       );
@@ -995,18 +1004,14 @@ describe('createSpecializedApp', () => {
         ],
       });
 
-      const signIn = preparedApp.getSignIn();
-      expect(signIn.Component).toBeDefined();
-      const readyPromise = renderPreparedSignIn(signIn);
+      renderPreparedBootstrap(preparedApp);
       await expect(
         screen.findByText('Custom Sign In'),
       ).resolves.toBeInTheDocument();
 
-      await readyPromise;
-      const finalizedApp = preparedApp.tryFinalize();
-      expect(finalizedApp).toBeDefined();
+      const finalizedApp = await waitForFinalizedApp(preparedApp);
       render(
-        finalizedApp!.tree.root.instance!.getData(
+        finalizedApp.tree.root.instance!.getData(
           coreExtensionData.reactElement,
         ),
       );
@@ -1076,20 +1081,21 @@ describe('createSpecializedApp', () => {
         ],
       });
 
-      const signIn = preparedApp.getSignIn();
-      const readyPromise = renderPreparedSignIn(signIn);
+      renderPreparedBootstrap(preparedApp);
       await expect(
         screen.findByText('Custom Sign In'),
       ).resolves.toBeInTheDocument();
 
-      await readyPromise;
+      await waitForFinalizedApp(preparedApp);
       expect(featureFlagsApi.isActive).toHaveBeenCalledWith('test-flag');
       expect(featureFlagsApi.isActive).toHaveBeenCalledTimes(1);
 
-      const finalizedApp = preparedApp.tryFinalize();
-      expect(finalizedApp).toBeDefined();
+      const finalizedApp = preparedApp.getFinalizedApp();
+      if (!finalizedApp) {
+        throw new Error('Expected prepared app to finalize');
+      }
       render(
-        finalizedApp!.tree.root.instance!.getData(
+        finalizedApp.tree.root.instance!.getData(
           coreExtensionData.reactElement,
         ),
       );
@@ -1153,27 +1159,26 @@ describe('createSpecializedApp', () => {
         ],
       });
 
-      const signIn = preparedApp.getSignIn();
-      const readyPromise = renderPreparedSignIn(signIn);
+      renderPreparedBootstrap(preparedApp);
       await expect(
         screen.findByText('Custom Sign In'),
       ).resolves.toBeInTheDocument();
 
       expect(() => preparedApp.finalize()).toThrow(
-        'prepareSpecializedApp requires waiting for getSignIn().Component to call onReady before calling finalize()',
+        'prepareSpecializedApp requires waiting for the bootstrap app to be ready before calling finalize()',
       );
 
-      onSignInSuccess!(identityApi);
+      if (!onSignInSuccess) {
+        throw new Error('Expected sign-in success callback to be captured');
+      }
+      onSignInSuccess(identityApi);
       expect(() => preparedApp.finalize()).toThrow(
-        'prepareSpecializedApp requires waiting for getSignIn().Component to call onReady before calling finalize()',
+        'prepareSpecializedApp requires waiting for the bootstrap app to be ready before calling finalize()',
       );
 
-      await readyPromise;
-
-      const finalizedApp = preparedApp.tryFinalize();
-      expect(finalizedApp).toBeDefined();
+      const finalizedApp = await waitForFinalizedApp(preparedApp);
       render(
-        finalizedApp!.tree.root.instance!.getData(
+        finalizedApp.tree.root.instance!.getData(
           coreExtensionData.reactElement,
         ),
       );

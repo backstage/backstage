@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { JSX, lazy, ReactNode, Suspense, useReducer } from 'react';
+import { JSX, lazy, ReactNode, Suspense, useSyncExternalStore } from 'react';
 import {
   ConfigApi,
   coreExtensionData,
@@ -149,21 +149,17 @@ export function createApp(options?: CreateAppOptions): {
 function PreparedAppRoot(props: {
   preparedApp: PreparedSpecializedApp;
 }): JSX.Element {
-  const signIn = props.preparedApp.getSignIn();
-  const SignIn = signIn.Component;
-  const [, triggerRerender] = useReducer((count: number) => count + 1, 0);
-
+  const bootstrapApp = props.preparedApp.getBootstrapApp();
   const finalizedApp: FinalizedSpecializedApp | undefined =
-    props.preparedApp.tryFinalize();
+    useSyncExternalStore(
+      props.preparedApp.subscribe,
+      props.preparedApp.getFinalizedApp,
+    );
 
   if (!finalizedApp) {
-    return (
-      <SignIn
-        onReady={() => {
-          triggerRerender();
-        }}
-      />
-    );
+    return bootstrapApp.tree.root.instance!.getData(
+      coreExtensionData.reactElement,
+    )!;
   }
 
   const errorPage = maybeCreateErrorPage(finalizedApp);

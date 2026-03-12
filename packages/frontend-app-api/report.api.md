@@ -164,6 +164,11 @@ export type CreateAppRouteBinder = <
 export function createSpecializedApp(options?: CreateSpecializedAppOptions): FinalizedSpecializedApp;
 
 // @public
+export type BootstrapSpecializedApp = {
+  tree: AppTree;
+};
+
+// @public
 export type FinalizedSpecializedApp = {
   sessionState: SpecializedAppSessionState;
   tree: AppTree;
@@ -213,16 +218,10 @@ export type FrontendPluginInfoResolver = (ctx: {
 
 // @public
 export type PreparedSpecializedApp = {
-  getSignIn(): {
-    Component: ComponentType<PreparedSpecializedAppSignInProps>;
-  };
-  tryFinalize(): FinalizedSpecializedApp | undefined;
+  getBootstrapApp(): BootstrapSpecializedApp;
+  subscribe(listener: () => void): () => void;
+  getFinalizedApp(): FinalizedSpecializedApp | undefined;
   finalize(sessionState?: SpecializedAppSessionState): FinalizedSpecializedApp;
-};
-
-// @public
-export type PreparedSpecializedAppSignInProps = {
-  onReady(): void;
 };
 
 // @public
