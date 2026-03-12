@@ -172,4 +172,77 @@ describe('DefaultProviderTokenService', () => {
       ).toBeDefined();
     });
   });
+
+  describe('refresh deduplication (thundering-herd prevention)', () => {
+    it('calls refresher exactly once when 5 concurrent getToken calls hit an expiring token', async () => {
+      const { service, knex } = await createService();
+
+      const mockRefresher = {
+        providerId: 'atlassian',
+        refresh: jest.fn().mockResolvedValue({
+          accessToken: 'refreshed-at',
+          refreshToken: 'refreshed-rt',
+          expiresInSeconds: 3600,
+        }),
+      };
+      // Replace the empty refreshers map with one containing our mock
+      (service as any).refreshers = new Map([['atlassian', mockRefresher]]);
+
+      await service.upsertToken('user:default/alice', 'atlassian', {
+        accessToken: 'expiring-at',
+        refreshToken: 'rt-to-use',
+        expiresInSeconds: 1, // 1 second — within default 300s buffer
+      });
+      // Force expiry to trigger refresh path
+      await knex('provider_tokens')
+        .where({
+          user_entity_ref: 'user:default/alice',
+          provider_id: 'atlassian',
+        })
+        .update({ expires_at: new Date(Date.now() - 1000) });
+
+      // Fire 5 concurrent getToken calls
+      const results = await Promise.all(
+        Array.from({ length: 5 }, () =>
+          service.getToken('user:default/alice', 'atlassian'),
+        ),
+      );
+
+      // All calls succeed
+      for (const r of results) {
+        expect(r).toBeDefined();
+        expect(r!.accessToken).toBe('refreshed-at');
+      }
+
+      // Refresh was called exactly once — not 5 times
+      expect(mockRefresher.refresh).toHaveBeenCalledTimes(1);
+    });
+
+    it('returns undefined when refresher throws', async () => {
+      const { service, knex } = await createService();
+
+      const mockRefresher = {
+        providerId: 'atlassian',
+        refresh: jest
+          .fn()
+          .mockRejectedValue(new Error('Atlassian token endpoint unreachable')),
+      };
+      (service as any).refreshers = new Map([['atlassian', mockRefresher]]);
+
+      await service.upsertToken('user:default/alice', 'atlassian', {
+        accessToken: 'expiring-at',
+        refreshToken: 'stale-rt',
+        expiresInSeconds: 1,
+      });
+      await knex('provider_tokens')
+        .where({
+          user_entity_ref: 'user:default/alice',
+          provider_id: 'atlassian',
+        })
+        .update({ expires_at: new Date(Date.now() - 1000) });
+
+      const result = await service.getToken('user:default/alice', 'atlassian');
+      expect(result).toBeUndefined();
+    });
+  });
 });
