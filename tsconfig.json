@@ -6,7 +6,8 @@
     "plugins/*/src",
     "plugins/*/config.d.ts",
     "plugins/*/dev",
-    "plugins/*/migrations"
+    "plugins/*/migrations",
+    "idp/src"
   ],
   "compilerOptions": {
     "outDir": "dist-types",

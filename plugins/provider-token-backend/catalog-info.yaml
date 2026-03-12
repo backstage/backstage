@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: devhub-plugin-provider-token-backend
+  title: '@devhub/plugin-provider-token-backend'
+  description: Secure OAuth provider token storage for DevHub MCP actions.
+spec:
+  lifecycle: experimental
+  type: backstage-backend-plugin
+  owner: maintainers

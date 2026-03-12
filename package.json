@@ -18,7 +18,8 @@
   },
   "workspaces": [
     "packages/*",
-    "plugins/*"
+    "plugins/*",
+    "idp"
   ],
   "scripts": {
     "build-storybook": "storybook build --output-dir dist-storybook",

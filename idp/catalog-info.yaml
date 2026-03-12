@@ -1,0 +1,9 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: idp
+  title: idp
+spec:
+  lifecycle: experimental
+  type: backstage-backend-plugin
+  owner: maintainers
