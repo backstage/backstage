@@ -15,7 +15,10 @@
  */
 
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
-import { ANNOTATION_ORIGIN_LOCATION } from '@backstage/catalog-model';
+import {
+  ANNOTATION_ORIGIN_LOCATION,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import { v4 as uuid } from 'uuid';
 import { applyDatabaseMigrations } from '../database/migrations';
 import {
@@ -25,6 +28,7 @@ import {
   DbSearchRow,
 } from '../database/tables';
 import { DefaultLocationStore } from './DefaultLocationStore';
+import { locationSpecToLocationEntity } from '../util/conversion';
 import { CatalogScmEventsServiceSubscriber } from '@backstage/plugin-catalog-node/alpha';
 import waitFor from 'wait-for-expect';
 
@@ -154,6 +158,48 @@ describe('DefaultLocationStore', () => {
         });
       },
     );
+
+    it.each(databases.eachSupportedId())(
+      'updates refresh_state when onConflict is refresh, %p',
+      async databaseId => {
+        const { store, knex } = await createLocationStore(databaseId);
+        const spec = {
+          type: 'url',
+          target:
+            'https://github.com/backstage/demo/blob/master/catalog-info.yml',
+        };
+
+        // Create the location initially
+        await store.createLocation(spec);
+
+        // Seed a refresh_state row for the corresponding Location entity
+        const entity = locationSpecToLocationEntity({ location: spec });
+        const entityRef = stringifyEntityRef(entity);
+        const entityId = uuid();
+        const oldDate = new Date('2020-01-01T00:00:00Z');
+        await knex<DbRefreshStateRow>('refresh_state').insert({
+          entity_id: entityId,
+          entity_ref: entityRef,
+          unprocessed_entity: '{}',
+          errors: '[]',
+          next_update_at: oldDate,
+          last_discovery_at: oldDate,
+          result_hash: 'old-hash',
+        });
+
+        // Re-register the same location with onConflict: 'refresh'
+        await store.createLocation(spec, { onConflict: 'refresh' });
+
+        // Verify that the refresh_state row was updated
+        const [row] = await knex<DbRefreshStateRow>('refresh_state').where({
+          entity_ref: entityRef,
+        });
+        expect(row.result_hash).toBe('');
+        expect(new Date(row.next_update_at).getTime()).toBeGreaterThan(
+          oldDate.getTime(),
+        );
+      },
+    );
   });
 
   describe('deleteLocation', () => {
@@ -225,7 +271,6 @@ describe('DefaultLocationStore', () => {
           final_entity: '{}',
           hash: 'hash',
           last_updated_at: new Date(),
-          stitch_ticket: '',
           entity_ref: 'k:ns/n',
         });
 

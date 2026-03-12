@@ -1,5 +1,29 @@
 # @backstage/integration
 
+## 2.0.0-next.2
+
+### Patch Changes
+
+- 1513a0b: Fixed a security vulnerability where path traversal sequences in SCM URLs could be used to access unintended API endpoints using server-side integration credentials.
+
+## 2.0.0-next.1
+
+### Major Changes
+
+- 527cf88: **BREAKING** Removed deprecated Azure DevOps, Bitbucket, Gerrit and GitHub code:
+
+  - For Azure DevOps, the long deprecated `token` string and `credential` object have been removed from the `config.d.ts`. Use the `credentials` array object instead.
+  - For Bitbucket, the long deprecated `bitbucket` object has been removed from the `config.d.ts`. Use the `bitbucketCloud` or `bitbucketServer` objects instead.
+  - For Gerrit, the `parseGerritGitilesUrl` function has been removed, use `parseGitilesUrlRef` instead. The `buildGerritGitilesArchiveUrl` function has also been removed, use `buildGerritGitilesArchiveUrlFromLocation` instead.
+  - For GitHub, the `getGitHubRequestOptions` function has been removed.
+
+### Patch Changes
+
+- 993a598: Fixed Azure integration config schema visibility annotations to use per-field `@visibility secret` instead of `@deepVisibility secret` on parent objects, so that non-secret fields like `clientId`, `tenantId`, `organizations`, and `managedIdentityClientId` are no longer incorrectly marked as secret.
+- Updated dependencies
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+
 ## 1.21.0-next.0
 
 ### Minor Changes

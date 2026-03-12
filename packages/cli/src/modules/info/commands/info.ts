@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { cli } from 'cleye';
 import { version as cliVersion } from '../../../../package.json';
 import os from 'node:os';
 import { runOutput, targetPaths, findOwnPaths } from '@backstage/cli-common';
@@ -24,11 +25,7 @@ import {
 } from '@backstage/cli-node';
 import { minimatch } from 'minimatch';
 import fs from 'fs-extra';
-
-interface InfoOptions {
-  include: string[];
-  format: 'text' | 'json';
-}
+import type { CommandContext } from '../../../wiring/types';
 
 /**
  * Attempts to read package.json from node_modules for a given package name.
@@ -55,7 +52,32 @@ function hasBackstageField(packageName: string, targetPath: string): boolean {
   return pkg?.backstage !== undefined;
 }
 
-export default async (options: InfoOptions) => {
+export default async ({ args, info }: CommandContext) => {
+  const {
+    flags: { include, format },
+  } = cli(
+    {
+      help: info,
+      booleanFlagNegation: true,
+      flags: {
+        include: {
+          type: [String],
+          description:
+            'Glob patterns for additional packages to include (e.g., @spotify/backstage*)',
+        },
+        format: {
+          type: String,
+          description: 'Output format (text or json)',
+          default: 'text',
+        },
+      },
+    },
+    undefined,
+    args,
+  );
+
+  const options = { include, format: format as 'text' | 'json' };
+
   await new Promise(async () => {
     const yarnVersion = await runOutput(['yarn', '--version']);
     /* eslint-disable-next-line no-restricted-syntax */

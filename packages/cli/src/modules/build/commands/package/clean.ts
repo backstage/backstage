@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
+import { cli } from 'cleye';
 import fs from 'fs-extra';
 import { targetPaths } from '@backstage/cli-common';
+import type { CommandContext } from '../../../../wiring/types';
 
-export default async function clean() {
+export default async ({ args, info }: CommandContext) => {
+  cli({ help: info, booleanFlagNegation: true }, undefined, args);
   await fs.remove(targetPaths.resolve('dist'));
   await fs.remove(targetPaths.resolve('dist-types'));
   await fs.remove(targetPaths.resolve('coverage'));
-}
+};

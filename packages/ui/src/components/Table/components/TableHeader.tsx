@@ -16,39 +16,31 @@
 
 import {
   TableHeader as ReactAriaTableHeader,
-  type TableHeaderProps,
   Collection,
   useTableOptions,
 } from 'react-aria-components';
 import { Checkbox } from '../../Checkbox';
 import { Column } from './Column';
-import { useStyles } from '../../../hooks/useStyles';
-import { TableDefinition } from '../definition';
-import styles from '../Table.module.css';
-import clsx from 'clsx';
+import { useDefinition } from '../../../hooks/useDefinition';
+import { TableHeaderDefinition } from '../definition';
+import type { TableHeaderProps } from '../types';
 import { Flex } from '../../Flex';
 
 /** @public */
 export const TableHeader = <T extends object>(props: TableHeaderProps<T>) => {
   let { selectionBehavior, selectionMode } = useTableOptions();
 
-  const { classNames, cleanedProps } = useStyles(TableDefinition, props);
-  const { columns, children, ...rest } = cleanedProps;
+  const { ownProps, restProps } = useDefinition(TableHeaderDefinition, props);
+  const { classes, columns, children } = ownProps;
 
   return (
-    <ReactAriaTableHeader
-      className={clsx(classNames.header, styles[classNames.header])}
-      {...rest}
-    >
+    <ReactAriaTableHeader className={classes.root} {...restProps}>
       {selectionBehavior === 'toggle' && selectionMode === 'multiple' && (
         <Column
           width={40}
           minWidth={40}
           maxWidth={40}
-          className={clsx(
-            classNames.headSelection,
-            styles[classNames.headSelection],
-          )}
+          className={classes.headSelection}
         >
           <Flex justify="center" align="center">
             <Checkbox slot="selection">

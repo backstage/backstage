@@ -4,6 +4,8 @@
 
 This package is meant to provide a typed Express router for an OpenAPI spec. Based on the [`oatx`](https://github.com/varanauskas/oatx) library and adapted to override Express values.
 
+Only supports OpenAPI 3.1 specifications.
+
 ## Getting Started
 
 ### Configuration

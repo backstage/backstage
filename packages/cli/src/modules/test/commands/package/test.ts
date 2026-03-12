@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import { Command, OptionValues } from 'commander';
-
 import { runCheck, findOwnPaths } from '@backstage/cli-common';
+import type { CommandContext } from '../../../../wiring/types';
 
 function includesAnyOf(hayStack: string[], ...needles: string[]) {
   for (const needle of needles) {
@@ -27,15 +26,7 @@ function includesAnyOf(hayStack: string[], ...needles: string[]) {
   return false;
 }
 
-export default async (_opts: OptionValues, cmd: Command) => {
-  // all args are forwarded to jest
-  let parent = cmd;
-  while (parent.parent) {
-    parent = parent.parent;
-  }
-  const allArgs = parent.args as string[];
-  const args = allArgs.slice(allArgs.indexOf('test') + 1);
-
+export default async ({ args }: CommandContext) => {
   // Only include our config if caller isn't passing their own config
   if (!includesAnyOf(args, '-c', '--config')) {
     /* eslint-disable-next-line no-restricted-syntax */
@@ -85,11 +76,6 @@ export default async (_opts: OptionValues, cmd: Command) => {
     process.env.NODE_OPTIONS = `${
       process.env.NODE_OPTIONS ? `${process.env.NODE_OPTIONS} ` : ''
     }--no-node-snapshot`;
-  }
-
-  // This ensures that the process doesn't exit too early before stdout is flushed
-  if (args.includes('--help')) {
-    (process.stdout as any)._handle.setBlocking(true);
   }
 
   // Because of the ongoing migration to v30 of jest, jest is no longer hard-depended to allow

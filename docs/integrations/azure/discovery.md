@@ -5,10 +5,6 @@ sidebar_label: Discovery
 description: Automatically discovering catalog entities from repositories in an Azure DevOps organization
 ---
 
-:::info
-This documentation is written for [the new backend system](../../backend-system/index.md) which is the default since Backstage [version 1.24](../../releases/v1.24.0.md). If you are still on the old backend system, you may want to read [its own article](https://github.com/backstage/backstage/blob/v1.37.0/docs/integrations/azure/discovery--old.md) instead, and [consider migrating](../../backend-system/building-backends/08-migrating.md)!
-:::
-
 The Azure DevOps integration has a special entity provider for discovering catalog entities within an Azure DevOps. The provider will crawl your Azure DevOps organization and register entities matching the configured path. This can be useful as an alternative to static locations or manually adding things to the catalog.
 
 This guide explains how to install and configure the Azure DevOps Entity Provider (recommended) or the Azure DevOps Processor.
@@ -101,7 +97,7 @@ the Azure catalog plugin:
 yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-azure
 ```
 
-Then updated your backend by adding the following line:
+Then update your backend by adding the following line:
 
 ```ts title="packages/backend/src/index.ts"
 backend.add(import('@backstage/plugin-catalog-backend'));

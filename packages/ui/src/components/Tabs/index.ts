@@ -17,9 +17,13 @@
 export { Tabs, TabList, Tab, TabPanel } from './Tabs';
 export type {
   TabsProps,
+  TabsOwnProps,
   TabListProps,
+  TabListOwnProps,
   TabPanelProps,
+  TabPanelOwnProps,
   TabProps,
+  TabOwnProps,
   TabMatchStrategy,
 } from './types';
 export { TabsDefinition } from './definition';

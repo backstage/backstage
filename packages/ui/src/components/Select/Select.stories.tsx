@@ -17,6 +17,8 @@
 import preview from '../../../../../.storybook/preview';
 import { Select } from './Select';
 import { Flex } from '../Flex';
+import { Box } from '../Box';
+import { Text } from '../Text';
 import { Form } from 'react-aria-components';
 import { RiCloudLine } from '@remixicon/react';
 
@@ -389,6 +391,41 @@ export const WithLongNamesAndPadding = meta.story({
       </div>
     ),
   ],
+});
+
+export const AutoBg = meta.story({
+  render: () => (
+    <Flex direction="column" gap="4">
+      <div style={{ maxWidth: '600px' }}>
+        Select automatically detects its parent bg context and increments the
+        neutral level by 1. No prop is needed — it's fully automatic.
+      </div>
+      <Box bg="neutral" p="4">
+        <Text>Neutral 1 container</Text>
+        <Flex mt="2" style={{ maxWidth: '300px' }}>
+          <Select options={fontOptions} aria-label="Font family" />
+        </Flex>
+      </Box>
+      <Box bg="neutral">
+        <Box bg="neutral" p="4">
+          <Text>Neutral 2 container</Text>
+          <Flex mt="2" style={{ maxWidth: '300px' }}>
+            <Select options={fontOptions} aria-label="Font family" />
+          </Flex>
+        </Box>
+      </Box>
+      <Box bg="neutral">
+        <Box bg="neutral">
+          <Box bg="neutral" p="4">
+            <Text>Neutral 3 container</Text>
+            <Flex mt="2" style={{ maxWidth: '300px' }}>
+              <Select options={fontOptions} aria-label="Font family" />
+            </Flex>
+          </Box>
+        </Box>
+      </Box>
+    </Flex>
+  ),
 });
 
 export const WithAccessibilityProps = meta.story({

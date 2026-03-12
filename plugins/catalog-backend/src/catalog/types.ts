@@ -87,6 +87,10 @@ export interface EntitiesBatchRequest {
    */
   filter?: EntityFilter;
   /**
+   * Predicate-based query for filtering entities.
+   */
+  query?: FilterPredicate;
+  /**
    * Strips out only the parts of the entity bodies to include in the response.
    */
   fields?: (entity: Entity) => Entity;
@@ -120,6 +124,10 @@ export interface EntityFacetsRequest {
    * A filter to apply on the full list of entities before computing the facets.
    */
   filter?: EntityFilter;
+  /**
+   * Predicate-based query for filtering entities.
+   */
+  query?: FilterPredicate;
   /**
    * The facets to compute.
    *

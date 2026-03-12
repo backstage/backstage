@@ -1,5 +1,47 @@
 # @backstage/cli
 
+## 0.36.0-next.2
+
+### Minor Changes
+
+- d0f4cd2: Added new `auth` command group for authenticating the CLI with Backstage instances using OAuth 2.0 with a pre-registered client metadata document. Commands include `login`, `logout`, `list`, `show`, `print-token`, and `select` for managing multiple authenticated instances.
+
+### Patch Changes
+
+- a4e5902: Internal refactor of the CLI command registration
+- ff4a45a: Migrated remaining CLI command handlers from `commander` to `cleye` for argument parsing. Several camelCase CLI flags have been deprecated in favor of their kebab-case equivalents (e.g. `--successCache` → `--success-cache`). The old camelCase forms still work but will now log a deprecation warning. Please update any scripts or CI configurations to use the kebab-case versions.
+- 4a75544: Updated dependency `react-refresh` to `^0.18.0`.
+- Updated dependencies
+  - @backstage/cli-common@0.2.0-next.2
+  - @backstage/integration@2.0.0-next.2
+
+## 0.36.0-next.1
+
+### Minor Changes
+
+- b36a60d: **BREAKING**: The `migrate package-exports` command has been removed. Use `repo fix` instead.
+
+### Patch Changes
+
+- 0d2d0f2: Internal refactor of CLI modularization, moving individual commands to be implemented with cleye.
+- 2fcba39: Internal refactor to move shared utilities into their consuming modules, reducing cross-module dependencies.
+- c85ac86: Internal refactor to split `loadCliConfig` into separate implementations for the build and config CLI modules, removing a cross-module dependency.
+- 61cb976: Migrated internal versioning utilities to use `@backstage/cli-node` instead of a local implementation.
+- 825c81d: Internal refactor of CLI command modules.
+- a9d23c4: Properly support `package.json` `workspaces` field
+- Updated dependencies
+  - @backstage/cli-common@0.2.0-next.1
+  - @backstage/cli-node@0.2.19-next.1
+  - @backstage/module-federation-common@0.1.2-next.0
+  - @backstage/integration@2.0.0-next.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/config-loader@1.10.9-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/eslint-plugin@0.2.2-next.0
+  - @backstage/release-manifests@0.0.13
+  - @backstage/types@1.2.2
+
 ## 0.35.5-next.0
 
 ### Patch Changes

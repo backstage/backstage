@@ -52,7 +52,7 @@ describe('extractTranslations', () => {
     expect(refs[0].messages).toHaveProperty(['membersListCard.title']);
 
     // Verify interpolation placeholders are preserved
-    expect(refs[0].messages['membersListCard.subtitle']).toContain(
+    expect(refs[0].messages['membersListCard.title']).toContain(
       '{{groupName}}',
     );
   });

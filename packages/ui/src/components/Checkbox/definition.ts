@@ -14,19 +14,22 @@
  * limitations under the License.
  */
 
-import type { ComponentDefinition } from '../../types';
+import { defineComponent } from '../../hooks/useDefinition';
+import type { CheckboxOwnProps } from './types';
+import styles from './Checkbox.module.css';
 
 /**
  * Component definition for Checkbox
  * @public
  */
-export const CheckboxDefinition = {
+export const CheckboxDefinition = defineComponent<CheckboxOwnProps>()({
+  styles,
   classNames: {
     root: 'bui-Checkbox',
     indicator: 'bui-CheckboxIndicator',
   },
-  dataAttributes: {
-    selected: [true, false] as const,
-    indeterminate: [true, false] as const,
+  propDefs: {
+    children: {},
+    className: {},
   },
-} as const satisfies ComponentDefinition;
+});

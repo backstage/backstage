@@ -15,5 +15,9 @@
  */
 
 export { TablePagination } from './TablePagination';
-export type { TablePaginationProps, PageSizeOption } from './types';
+export type {
+  TablePaginationProps,
+  TablePaginationOwnProps,
+  PageSizeOption,
+} from './types';
 export { TablePaginationDefinition } from './definition';

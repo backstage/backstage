@@ -370,6 +370,25 @@ describe('InMemoryCatalogClient', () => {
         { kind: 'CustomKind', metadata: { name: 'e1' } },
       ]);
     });
+
+    it('supports query predicate filter', async () => {
+      const client = new InMemoryCatalogClient({ entities });
+      const result = await client.getEntitiesByRefs({
+        entityRefs: ['secondcustomkind:default/e2', 'customkind:default/e1'],
+        query: { kind: 'CustomKind' },
+      });
+      expect(result.items).toEqual([undefined, entity1]);
+    });
+
+    it('supports both filter and query predicate together', async () => {
+      const client = new InMemoryCatalogClient({ entities });
+      const result = await client.getEntitiesByRefs({
+        entityRefs: ['customkind:default/e1', 'customkind:other/e3'],
+        filter: { kind: 'CustomKind' },
+        query: { 'metadata.namespace': 'other' },
+      });
+      expect(result.items).toEqual([undefined, entity3]);
+    });
   });
 
   describe('queryEntities', () => {
@@ -974,6 +993,29 @@ describe('InMemoryCatalogClient', () => {
         facets: ['spec.nonexistent'],
       });
       expect(result.facets['spec.nonexistent']).toEqual([]);
+    });
+
+    it('supports query predicate filter', async () => {
+      const client = new InMemoryCatalogClient({ entities });
+      const result = await client.getEntityFacets({
+        facets: ['spec.type'],
+        query: { kind: 'CustomKind' },
+      });
+      expect(result.facets['spec.type']).toEqual([
+        { value: 'service', count: 2 },
+      ]);
+    });
+
+    it('supports both filter and query predicate together', async () => {
+      const client = new InMemoryCatalogClient({ entities });
+      const result = await client.getEntityFacets({
+        facets: ['spec.type'],
+        filter: { kind: 'CustomKind' },
+        query: { 'metadata.namespace': 'default' },
+      });
+      expect(result.facets['spec.type']).toEqual([
+        { value: 'service', count: 1 },
+      ]);
     });
   });
 

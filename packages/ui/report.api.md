@@ -5,14 +5,14 @@
 ```ts
 import type { ButtonProps as ButtonProps_2 } from 'react-aria-components';
 import { CellProps as CellProps_2 } from 'react-aria-components';
-import { CheckboxProps as CheckboxProps_2 } from 'react-aria-components';
+import type { CheckboxProps as CheckboxProps_2 } from 'react-aria-components';
 import { ColumnProps as ColumnProps_2 } from 'react-aria-components';
 import type { ColumnSize } from '@react-types/table';
 import type { ColumnStaticSize } from '@react-types/table';
-import { ComponentProps } from 'react';
+import type { ComponentProps } from 'react';
+import type { ComponentPropsWithoutRef } from 'react';
 import type { ComponentPropsWithRef } from 'react';
 import type { CSSProperties } from 'react';
-import { DetailedHTMLProps } from 'react';
 import type { DialogTriggerProps as DialogTriggerProps_2 } from 'react-aria-components';
 import type { DisclosureGroupProps } from 'react-aria-components';
 import type { DisclosurePanelProps } from 'react-aria-components';
@@ -20,7 +20,7 @@ import type { DisclosureProps } from 'react-aria-components';
 import type { ElementType } from 'react';
 import { ForwardRefExoticComponent } from 'react';
 import type { HeadingProps } from 'react-aria-components';
-import { HTMLAttributes } from 'react';
+import type { HTMLAttributes } from 'react';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
 import type { LinkProps as LinkProps_2 } from 'react-aria-components';
 import type { ListBoxItemProps } from 'react-aria-components';
@@ -36,15 +36,15 @@ import type { RadioProps as RadioProps_2 } from 'react-aria-components';
 import type { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { RefAttributes } from 'react';
-import { RowProps } from 'react-aria-components';
+import { RowProps as RowProps_2 } from 'react-aria-components';
 import type { SearchFieldProps as SearchFieldProps_2 } from 'react-aria-components';
 import type { SelectProps as SelectProps_2 } from 'react-aria-components';
 import type { SeparatorProps } from 'react-aria-components';
 import type { SortDescriptor as SortDescriptor_2 } from 'react-stately';
 import type { SubmenuTriggerProps as SubmenuTriggerProps_2 } from 'react-aria-components';
 import type { SwitchProps as SwitchProps_2 } from 'react-aria-components';
-import { TableBodyProps } from 'react-aria-components';
-import { TableHeaderProps } from 'react-aria-components';
+import { TableBodyProps as TableBodyProps_2 } from 'react-aria-components';
+import { TableHeaderProps as TableHeaderProps_2 } from 'react-aria-components';
 import { TableProps as TableProps_2 } from 'react-aria-components';
 import type { TabListProps as TabListProps_2 } from 'react-aria-components';
 import type { TabPanelProps as TabPanelProps_2 } from 'react-aria-components';
@@ -56,7 +56,7 @@ import type { TagProps as TagProps_2 } from 'react-aria-components';
 import type { TextFieldProps as TextFieldProps_2 } from 'react-aria-components';
 import type { ToggleButtonGroupProps as ToggleButtonGroupProps_2 } from 'react-aria-components';
 import type { ToggleButtonProps as ToggleButtonProps_2 } from 'react-aria-components';
-import { TooltipProps as TooltipProps_2 } from 'react-aria-components';
+import type { TooltipProps as TooltipProps_2 } from 'react-aria-components';
 import { TooltipTriggerComponentProps } from 'react-aria-components';
 
 // @public (undocumented)
@@ -244,10 +244,33 @@ export type AlertOwnProps = {
 };
 
 // @public
-export interface AlertProps extends MarginProps, AlertOwnProps {}
+export interface AlertProps
+  extends MarginProps,
+    AlertOwnProps,
+    Omit<
+      React.ComponentPropsWithoutRef<'div'>,
+      keyof AlertOwnProps | keyof MarginProps
+    > {}
 
 // @public (undocumented)
 export type AlignItems = 'stretch' | 'start' | 'center' | 'end';
+
+// @public
+export type AnalyticsEventAttributes = {
+  [key: string]: string | boolean | number;
+};
+
+// @public
+export type AnalyticsTracker = {
+  captureEvent: (
+    action: string,
+    subject: string,
+    options?: {
+      value?: number;
+      attributes?: AnalyticsEventAttributes;
+    },
+  ) => void;
+};
 
 // @public (undocumented)
 export const Avatar: ForwardRefExoticComponent<
@@ -256,23 +279,41 @@ export const Avatar: ForwardRefExoticComponent<
 
 // @public
 export const AvatarDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
   readonly classNames: {
     readonly root: 'bui-AvatarRoot';
     readonly image: 'bui-AvatarImage';
     readonly fallback: 'bui-AvatarFallback';
   };
-  readonly dataAttributes: {
-    readonly size: readonly ['small', 'medium', 'large'];
+  readonly propDefs: {
+    readonly size: {
+      readonly dataAttribute: true;
+      readonly default: 'medium';
+    };
+    readonly purpose: {
+      readonly default: 'informative';
+    };
+    readonly src: {};
+    readonly name: {};
+    readonly className: {};
   };
 };
 
 // @public (undocumented)
-export interface AvatarProps extends React.ComponentPropsWithoutRef<'div'> {
-  name: string;
-  purpose?: 'decoration' | 'informative';
-  size?: 'x-small' | 'small' | 'medium' | 'large' | 'x-large';
+export type AvatarOwnProps = {
   src: string;
-}
+  name: string;
+  size?: 'x-small' | 'small' | 'medium' | 'large' | 'x-large';
+  purpose?: 'decoration' | 'informative';
+  className?: string;
+};
+
+// @public (undocumented)
+export interface AvatarProps
+  extends Omit<React.ComponentPropsWithoutRef<'div'>, 'children' | 'className'>,
+    AvatarOwnProps {}
 
 // @public (undocumented)
 export interface BgContextValue {
@@ -390,6 +431,15 @@ export type BoxUtilityProps = {
 export type Breakpoint = 'initial' | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
 // @public
+export function BUIProvider(props: BUIProviderProps): JSX_2.Element;
+
+// @public (undocumented)
+export type BUIProviderProps = {
+  useAnalytics?: UseAnalyticsFn;
+  children: ReactNode;
+};
+
+// @public
 export const Button: ForwardRefExoticComponent<
   ButtonProps & RefAttributes<HTMLButtonElement>
 >;
@@ -424,7 +474,6 @@ export const ButtonDefinition: {
     readonly iconEnd: {};
     readonly children: {};
     readonly className: {};
-    readonly style: {};
   };
 };
 
@@ -458,7 +507,6 @@ export const ButtonIconDefinition: {
     };
     readonly icon: {};
     readonly className: {};
-    readonly style: {};
   };
 };
 
@@ -469,12 +517,11 @@ export type ButtonIconOwnProps = {
   icon?: ReactElement;
   loading?: boolean;
   className?: string;
-  style?: CSSProperties;
 };
 
 // @public
 export interface ButtonIconProps
-  extends Omit<ButtonProps_2, 'children' | 'className' | 'style'>,
+  extends Omit<ButtonProps_2, keyof ButtonIconOwnProps>,
     ButtonIconOwnProps {}
 
 // @public (undocumented)
@@ -492,7 +539,9 @@ export const ButtonLinkDefinition: {
     readonly content: 'bui-ButtonLinkContent';
   };
   readonly bg: 'consumer';
+  readonly analytics: true;
   readonly propDefs: {
+    readonly noTrack: {};
     readonly size: {
       readonly dataAttribute: true;
       readonly default: 'small';
@@ -505,24 +554,23 @@ export const ButtonLinkDefinition: {
     readonly iconEnd: {};
     readonly children: {};
     readonly className: {};
-    readonly style: {};
   };
 };
 
 // @public (undocumented)
 export type ButtonLinkOwnProps = {
+  noTrack?: boolean;
   size?: Responsive<'small' | 'medium'>;
   variant?: Responsive<'primary' | 'secondary' | 'tertiary'>;
   iconStart?: ReactElement;
   iconEnd?: ReactElement;
   children?: ReactNode;
   className?: string;
-  style?: CSSProperties;
 };
 
 // @public
 export interface ButtonLinkProps
-  extends Omit<LinkProps_2, 'children' | 'className' | 'style'>,
+  extends Omit<LinkProps_2, keyof ButtonLinkOwnProps>,
     ButtonLinkOwnProps {}
 
 // @public (undocumented)
@@ -535,18 +583,23 @@ export type ButtonOwnProps = {
   loading?: boolean;
   children?: ReactNode;
   className?: string;
-  style?: CSSProperties;
 };
 
 // @public
 export interface ButtonProps
-  extends Omit<ButtonProps_2, 'children' | 'className' | 'style'>,
+  extends Omit<ButtonProps_2, keyof ButtonOwnProps>,
     ButtonOwnProps {}
 
 // @public
 export const Card: ForwardRefExoticComponent<
   CardProps & RefAttributes<HTMLDivElement>
 >;
+
+// @public (undocumented)
+export type CardBaseProps = {
+  children?: ReactNode;
+  className?: string;
+};
 
 // @public
 export const CardBody: ForwardRefExoticComponent<
@@ -578,6 +631,16 @@ export interface CardBodyProps
   extends CardBodyOwnProps,
     React.HTMLAttributes<HTMLDivElement> {}
 
+// @public (undocumented)
+export type CardButtonVariant = {
+  onPress: NonNullable<ButtonProps_2['onPress']>;
+  href?: never;
+  label: string;
+  target?: never;
+  rel?: never;
+  download?: never;
+};
+
 // @public
 export const CardDefinition: {
   readonly styles: {
@@ -585,10 +648,17 @@ export const CardDefinition: {
   };
   readonly classNames: {
     readonly root: 'bui-Card';
+    readonly trigger: 'bui-CardTrigger';
   };
   readonly propDefs: {
     readonly children: {};
     readonly className: {};
+    readonly onPress: {};
+    readonly href: {};
+    readonly label: {};
+    readonly target: {};
+    readonly rel: {};
+    readonly download: {};
   };
 };
 
@@ -653,15 +723,42 @@ export interface CardHeaderProps
     React.HTMLAttributes<HTMLDivElement> {}
 
 // @public (undocumented)
-export type CardOwnProps = {
-  children?: ReactNode;
-  className?: string;
+export type CardLinkVariant = {
+  href: string;
+  onPress?: never;
+  label: string;
+  target?: string;
+  rel?: string;
+  download?: boolean | string;
 };
 
 // @public
-export interface CardProps
-  extends CardOwnProps,
-    React.HTMLAttributes<HTMLDivElement> {}
+export type CardOwnProps = Pick<
+  CardBaseProps & (CardButtonVariant | CardLinkVariant | CardStaticVariant),
+  | 'children'
+  | 'className'
+  | 'onPress'
+  | 'href'
+  | 'label'
+  | 'target'
+  | 'rel'
+  | 'download'
+>;
+
+// @public
+export type CardProps = CardBaseProps &
+  Omit<React.HTMLAttributes<HTMLDivElement>, 'onClick'> &
+  (CardButtonVariant | CardLinkVariant | CardStaticVariant);
+
+// @public (undocumented)
+export type CardStaticVariant = {
+  onPress?: never;
+  href?: never;
+  label?: never;
+  target?: never;
+  rel?: never;
+  download?: never;
+};
 
 // @public (undocumented)
 export const Cell: {
@@ -670,24 +767,32 @@ export const Cell: {
 };
 
 // @public (undocumented)
+export type CellOwnProps = {
+  className?: string;
+};
+
+// @public (undocumented)
 export const CellProfile: (props: CellProfileProps) => JSX_2.Element;
 
 // @public (undocumented)
-export interface CellProfileProps extends CellProps_2 {
-  // (undocumented)
-  color?: TextColors;
-  // (undocumented)
-  description?: string;
-  // (undocumented)
-  href?: string;
-  // (undocumented)
-  name?: string;
-  // (undocumented)
+export type CellProfileOwnProps = {
   src?: string;
-}
+  name?: string;
+  href?: string;
+  description?: string;
+  color?: TextColors;
+  className?: string;
+};
 
 // @public (undocumented)
-export interface CellProps extends CellProps_2 {}
+export interface CellProfileProps
+  extends CellProfileOwnProps,
+    Omit<CellProps_2, keyof CellProfileOwnProps> {}
+
+// @public (undocumented)
+export interface CellProps
+  extends CellOwnProps,
+    Omit<CellProps_2, keyof CellOwnProps> {}
 
 // @public (undocumented)
 export const CellText: {
@@ -696,18 +801,19 @@ export const CellText: {
 };
 
 // @public (undocumented)
-export interface CellTextProps extends CellProps_2 {
-  // (undocumented)
-  color?: TextColors;
-  // (undocumented)
-  description?: string;
-  // (undocumented)
-  href?: string;
-  // (undocumented)
-  leadingIcon?: React.ReactNode | null;
-  // (undocumented)
+export type CellTextOwnProps = {
   title: string;
-}
+  description?: string;
+  color?: TextColors;
+  leadingIcon?: React.ReactNode | null;
+  href?: string;
+  className?: string;
+};
+
+// @public (undocumented)
+export interface CellTextProps
+  extends CellTextOwnProps,
+    Omit<CellProps_2, keyof CellTextOwnProps> {}
 
 // @public (undocumented)
 export const Checkbox: ForwardRefExoticComponent<
@@ -716,24 +822,29 @@ export const Checkbox: ForwardRefExoticComponent<
 
 // @public
 export const CheckboxDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
   readonly classNames: {
     readonly root: 'bui-Checkbox';
     readonly indicator: 'bui-CheckboxIndicator';
   };
-  readonly dataAttributes: {
-    readonly selected: readonly [true, false];
-    readonly indeterminate: readonly [true, false];
+  readonly propDefs: {
+    readonly children: {};
+    readonly className: {};
   };
 };
 
 // @public (undocumented)
-export interface CheckboxProps extends CheckboxProps_2 {
-  // (undocumented)
+export type CheckboxOwnProps = {
   children: React.ReactNode;
-}
+  className?: string;
+};
 
-// @public
-export type ClassNamesMap = Record<string, string>;
+// @public (undocumented)
+export interface CheckboxProps
+  extends Omit<CheckboxProps_2, 'children' | 'className'>,
+    CheckboxOwnProps {}
 
 // @public (undocumented)
 export const Column: (props: ColumnProps) => JSX_2.Element;
@@ -765,10 +876,15 @@ export interface ColumnConfig<T extends TableItem> {
 }
 
 // @public (undocumented)
-export interface ColumnProps extends Omit<ColumnProps_2, 'children'> {
-  // (undocumented)
+export type ColumnOwnProps = {
   children?: React.ReactNode;
-}
+  className?: string;
+};
+
+// @public (undocumented)
+export interface ColumnProps
+  extends ColumnOwnProps,
+    Omit<ColumnProps_2, keyof ColumnOwnProps> {}
 
 // @public (undocumented)
 export type Columns =
@@ -786,16 +902,6 @@ export type Columns =
   | '12'
   | 'auto';
 
-// @public
-export interface ComponentDefinition {
-  // (undocumented)
-  classNames: ClassNamesMap;
-  // (undocumented)
-  dataAttributes?: DataAttributesMap;
-  // (undocumented)
-  utilityProps?: string[];
-}
-
 // @public (undocumented)
 export const Container: ForwardRefExoticComponent<
   ContainerProps & RefAttributes<HTMLDivElement>
@@ -812,18 +918,39 @@ export type ContainerBg =
 
 // @public
 export const ContainerDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
   readonly classNames: {
     readonly root: 'bui-Container';
   };
-  readonly utilityProps: ['my', 'mt', 'mb', 'py', 'pt', 'pb', 'display'];
+  readonly propDefs: {
+    readonly children: {};
+    readonly className: {};
+    readonly style: {};
+  };
+  readonly utilityProps: readonly [
+    'my',
+    'mt',
+    'mb',
+    'py',
+    'pt',
+    'pb',
+    'display',
+  ];
 };
 
 // @public (undocumented)
-export interface ContainerProps {
-  // (undocumented)
+export type ContainerOwnProps = {
   children?: React.ReactNode;
-  // (undocumented)
   className?: string;
+  style?: React.CSSProperties;
+};
+
+// @public (undocumented)
+export interface ContainerProps
+  extends ContainerOwnProps,
+    Omit<React.ComponentPropsWithoutRef<'div'>, keyof ContainerOwnProps> {
   // (undocumented)
   mb?: SpaceProps['mb'];
   // (undocumented)
@@ -836,8 +963,6 @@ export interface ContainerProps {
   pt?: SpaceProps['pt'];
   // (undocumented)
   py?: SpaceProps['py'];
-  // (undocumented)
-  style?: React.CSSProperties;
 }
 
 // @public (undocumented)
@@ -868,12 +993,6 @@ export interface CursorResponse<T> {
   totalCount?: number;
 }
 
-// @public
-export type DataAttributesMap = Record<string, DataAttributeValues>;
-
-// @public
-export type DataAttributeValues = readonly (string | number | boolean)[];
-
 // @public (undocumented)
 export const Dialog: ForwardRefExoticComponent<
   DialogProps & RefAttributes<HTMLDivElement>
@@ -885,34 +1004,78 @@ export const DialogBody: ForwardRefExoticComponent<
 >;
 
 // @public
-export interface DialogBodyProps {
-  // (undocumented)
-  children?: React.ReactNode;
-  // (undocumented)
+export const DialogBodyDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-DialogBody';
+  };
+  readonly propDefs: {
+    readonly children: {};
+    readonly className: {};
+  };
+};
+
+// @public (undocumented)
+export type DialogBodyOwnProps = {
+  children?: ReactNode;
   className?: string;
-}
+};
+
+// @public
+export interface DialogBodyProps
+  extends DialogBodyOwnProps,
+    Omit<React.ComponentPropsWithoutRef<'div'>, keyof DialogBodyOwnProps> {}
 
 // @public
 export const DialogDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
   readonly classNames: {
-    readonly overlay: 'bui-DialogOverlay';
+    readonly root: 'bui-DialogOverlay';
     readonly dialog: 'bui-Dialog';
     readonly content: 'bui-DialogContent';
-    readonly header: 'bui-DialogHeader';
-    readonly headerTitle: 'bui-DialogHeaderTitle';
-    readonly body: 'bui-DialogBody';
-    readonly footer: 'bui-DialogFooter';
+  };
+  readonly propDefs: {
+    readonly children: {};
+    readonly className: {};
+    readonly width: {};
+    readonly height: {};
+    readonly style: {};
   };
 };
 
 // @public (undocumented)
 export const DialogFooter: ForwardRefExoticComponent<
-  Omit<
-    DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>,
-    'ref'
-  > &
-    RefAttributes<HTMLDivElement>
+  DialogFooterProps & RefAttributes<HTMLDivElement>
 >;
+
+// @public
+export const DialogFooterDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-DialogFooter';
+  };
+  readonly propDefs: {
+    readonly children: {};
+    readonly className: {};
+  };
+};
+
+// @public (undocumented)
+export type DialogFooterOwnProps = {
+  children?: ReactNode;
+  className?: string;
+};
+
+// @public
+export interface DialogFooterProps
+  extends DialogFooterOwnProps,
+    Omit<React.ComponentPropsWithoutRef<'div'>, keyof DialogFooterOwnProps> {}
 
 // @public (undocumented)
 export const DialogHeader: ForwardRefExoticComponent<
@@ -920,24 +1083,44 @@ export const DialogHeader: ForwardRefExoticComponent<
 >;
 
 // @public
-export interface DialogHeaderProps extends HeadingProps {
-  // (undocumented)
-  children?: React.ReactNode;
-  // (undocumented)
+export const DialogHeaderDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-DialogHeader';
+    readonly title: 'bui-DialogHeaderTitle';
+  };
+  readonly propDefs: {
+    readonly children: {};
+    readonly className: {};
+  };
+};
+
+// @public (undocumented)
+export type DialogHeaderOwnProps = {
+  children?: ReactNode;
   className?: string;
-}
+};
 
 // @public
-export interface DialogProps extends ModalOverlayProps {
-  // (undocumented)
-  children?: React.ReactNode;
-  // (undocumented)
+export interface DialogHeaderProps
+  extends DialogHeaderOwnProps,
+    Omit<HeadingProps, keyof DialogHeaderOwnProps> {}
+
+// @public (undocumented)
+export type DialogOwnProps = {
+  children?: ReactNode;
   className?: string;
-  // (undocumented)
-  height?: number | string;
-  // (undocumented)
   width?: number | string;
-}
+  height?: number | string;
+  style?: React.CSSProperties;
+};
+
+// @public
+export interface DialogProps
+  extends DialogOwnProps,
+    Omit<ModalOverlayProps, keyof DialogOwnProps> {}
 
 // @public (undocumented)
 export const DialogTrigger: (props: DialogTriggerProps) => JSX_2.Element;
@@ -955,23 +1138,39 @@ export const FieldLabel: ForwardRefExoticComponent<
 
 // @public
 export const FieldLabelDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
   readonly classNames: {
     readonly root: 'bui-FieldLabelWrapper';
     readonly label: 'bui-FieldLabel';
     readonly secondaryLabel: 'bui-FieldSecondaryLabel';
     readonly description: 'bui-FieldDescription';
   };
+  readonly propDefs: {
+    readonly label: {};
+    readonly secondaryLabel: {};
+    readonly description: {};
+    readonly htmlFor: {};
+    readonly id: {};
+    readonly className: {};
+  };
+};
+
+// @public (undocumented)
+export type FieldLabelOwnProps = {
+  label?: string | null;
+  secondaryLabel?: string | null;
+  description?: string | null;
+  htmlFor?: string;
+  id?: string;
+  className?: string;
 };
 
 // @public (undocumented)
 export interface FieldLabelProps
-  extends Pick<React.HTMLAttributes<HTMLDivElement>, 'className'> {
-  description?: string | null;
-  htmlFor?: string;
-  id?: string;
-  label?: string | null;
-  secondaryLabel?: string | null;
-}
+  extends FieldLabelOwnProps,
+    Omit<React.ComponentPropsWithoutRef<'div'>, keyof FieldLabelOwnProps> {}
 
 // @public (undocumented)
 export interface FilterState<TFilter> {
@@ -988,10 +1187,22 @@ export const Flex: ForwardRefExoticComponent<
 
 // @public
 export const FlexDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
   readonly classNames: {
     readonly root: 'bui-Flex';
   };
-  readonly utilityProps: [
+  readonly bg: 'provider';
+  readonly propDefs: {
+    readonly bg: {
+      readonly dataAttribute: true;
+    };
+    readonly children: {};
+    readonly className: {};
+    readonly style: {};
+  };
+  readonly utilityProps: readonly [
     'm',
     'mb',
     'ml',
@@ -1011,32 +1222,32 @@ export const FlexDefinition: {
     'justify',
     'direction',
   ];
-  readonly dataAttributes: {
-    readonly bg: readonly ['neutral', 'danger', 'warning', 'success'];
-  };
 };
 
 // @public (undocumented)
 export type FlexDirection = 'row' | 'column';
 
 // @public (undocumented)
-export interface FlexProps extends SpaceProps {
+export type FlexOwnProps = {
+  children: ReactNode;
+  className?: string;
+  style?: CSSProperties;
+  bg?: Responsive<ProviderBg>;
+};
+
+// @public (undocumented)
+export interface FlexProps
+  extends SpaceProps,
+    FlexOwnProps,
+    Omit<React.HTMLAttributes<HTMLDivElement>, 'children'> {
   // (undocumented)
   align?: Responsive<'start' | 'center' | 'end' | 'baseline' | 'stretch'>;
-  // (undocumented)
-  bg?: Responsive<ProviderBg>;
-  // (undocumented)
-  children?: React.ReactNode;
-  // (undocumented)
-  className?: string;
   // (undocumented)
   direction?: Responsive<'row' | 'column' | 'row-reverse' | 'column-reverse'>;
   // (undocumented)
   gap?: Responsive<Space>;
   // (undocumented)
   justify?: Responsive<'start' | 'center' | 'end' | 'between'>;
-  // (undocumented)
-  style?: React.CSSProperties;
 }
 
 // @public (undocumented)
@@ -1049,13 +1260,31 @@ export const FullPage: ForwardRefExoticComponent<
 
 // @public
 export const FullPageDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
   readonly classNames: {
     readonly root: 'bui-FullPage';
   };
+  readonly propDefs: {
+    readonly className: {};
+  };
+};
+
+// @public (undocumented)
+export type FullPageOwnProps = {
+  className?: string;
 };
 
 // @public
-export interface FullPageProps extends React.ComponentPropsWithoutRef<'main'> {}
+export interface FullPageProps
+  extends Omit<ComponentPropsWithoutRef<'main'>, 'className'>,
+    FullPageOwnProps {}
+
+// @public
+export function getNodeText(
+  node: ReactNode | ((...args: any[]) => ReactNode),
+): string | undefined;
 
 // @public (undocumented)
 export const Grid: {
@@ -1067,10 +1296,22 @@ export const Grid: {
 
 // @public
 export const GridDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
   readonly classNames: {
     readonly root: 'bui-Grid';
   };
-  readonly utilityProps: [
+  readonly bg: 'provider';
+  readonly propDefs: {
+    readonly bg: {
+      readonly dataAttribute: true;
+    };
+    readonly children: {};
+    readonly className: {};
+    readonly style: {};
+  };
+  readonly utilityProps: readonly [
     'columns',
     'gap',
     'm',
@@ -1088,30 +1329,40 @@ export const GridDefinition: {
     'px',
     'py',
   ];
-  readonly dataAttributes: {
-    readonly bg: readonly ['neutral', 'danger', 'warning', 'success'];
-  };
 };
 
 // @public
 export const GridItemDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
   readonly classNames: {
     readonly root: 'bui-GridItem';
   };
-  readonly utilityProps: ['colSpan', 'colEnd', 'colStart', 'rowSpan'];
-  readonly dataAttributes: {
-    readonly bg: readonly ['neutral', 'danger', 'warning', 'success'];
+  readonly bg: 'provider';
+  readonly propDefs: {
+    readonly bg: {
+      readonly dataAttribute: true;
+    };
+    readonly children: {};
+    readonly className: {};
+    readonly style: {};
   };
+  readonly utilityProps: readonly ['colSpan', 'colEnd', 'colStart', 'rowSpan'];
 };
 
 // @public (undocumented)
-export interface GridItemProps {
-  // (undocumented)
-  bg?: Responsive<ProviderBg>;
-  // (undocumented)
-  children?: React.ReactNode;
-  // (undocumented)
+export type GridItemOwnProps = {
+  children: ReactNode;
   className?: string;
+  style?: CSSProperties;
+  bg?: Responsive<ProviderBg>;
+};
+
+// @public (undocumented)
+export interface GridItemProps
+  extends GridItemOwnProps,
+    Omit<HTMLAttributes<HTMLDivElement>, 'children'> {
   // (undocumented)
   colEnd?: Responsive<Columns>;
   // (undocumented)
@@ -1120,31 +1371,32 @@ export interface GridItemProps {
   colStart?: Responsive<Columns>;
   // (undocumented)
   rowSpan?: Responsive<Columns>;
-  // (undocumented)
-  style?: React.CSSProperties;
 }
 
 // @public (undocumented)
-export interface GridProps extends SpaceProps {
-  // (undocumented)
-  bg?: Responsive<ProviderBg>;
-  // (undocumented)
-  children?: React.ReactNode;
-  // (undocumented)
+export type GridOwnProps = {
+  children: ReactNode;
   className?: string;
+  style?: CSSProperties;
+  bg?: Responsive<ProviderBg>;
+};
+
+// @public (undocumented)
+export interface GridProps
+  extends SpaceProps,
+    GridOwnProps,
+    Omit<HTMLAttributes<HTMLDivElement>, 'children'> {
   // (undocumented)
   columns?: Responsive<Columns>;
   // (undocumented)
   gap?: Responsive<Space>;
-  // (undocumented)
-  style?: React.CSSProperties;
 }
 
 // @public
-export const HeaderPage: (props: HeaderPageProps) => JSX_2.Element;
+export const Header: (props: HeaderProps) => JSX_2.Element;
 
 // @public
-export interface HeaderPageBreadcrumb {
+export interface HeaderBreadcrumb {
   // (undocumented)
   href: string;
   // (undocumented)
@@ -1152,7 +1404,10 @@ export interface HeaderPageBreadcrumb {
 }
 
 // @public
-export const HeaderPageDefinition: {
+export const HeaderDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
   readonly classNames: {
     readonly root: 'bui-HeaderPage';
     readonly content: 'bui-HeaderPageContent';
@@ -1160,12 +1415,19 @@ export const HeaderPageDefinition: {
     readonly tabsWrapper: 'bui-HeaderPageTabsWrapper';
     readonly controls: 'bui-HeaderPageControls';
   };
+  readonly propDefs: {
+    readonly title: {};
+    readonly customActions: {};
+    readonly tabs: {};
+    readonly breadcrumbs: {};
+    readonly className: {};
+  };
 };
 
 // @public
-export interface HeaderPageProps {
+export interface HeaderOwnProps {
   // (undocumented)
-  breadcrumbs?: HeaderPageBreadcrumb[];
+  breadcrumbs?: HeaderBreadcrumb[];
   // (undocumented)
   className?: string;
   // (undocumented)
@@ -1175,6 +1437,42 @@ export interface HeaderPageProps {
   // (undocumented)
   title?: string;
 }
+
+// @public @deprecated (undocumented)
+export const HeaderPage: (props: HeaderProps) => JSX_2.Element;
+
+// @public @deprecated (undocumented)
+export type HeaderPageBreadcrumb = HeaderBreadcrumb;
+
+// @public @deprecated (undocumented)
+export const HeaderPageDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-HeaderPage';
+    readonly content: 'bui-HeaderPageContent';
+    readonly breadcrumbs: 'bui-HeaderPageBreadcrumbs';
+    readonly tabsWrapper: 'bui-HeaderPageTabsWrapper';
+    readonly controls: 'bui-HeaderPageControls';
+  };
+  readonly propDefs: {
+    readonly title: {};
+    readonly customActions: {};
+    readonly tabs: {};
+    readonly breadcrumbs: {};
+    readonly className: {};
+  };
+};
+
+// @public @deprecated (undocumented)
+export type HeaderPageOwnProps = HeaderOwnProps;
+
+// @public @deprecated (undocumented)
+export type HeaderPageProps = HeaderProps;
+
+// @public
+export interface HeaderProps extends HeaderOwnProps {}
 
 // @public
 export interface HeaderTab {
@@ -1203,45 +1501,59 @@ export const Link: ForwardRefExoticComponent<
 
 // @public
 export const LinkDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
   readonly classNames: {
     readonly root: 'bui-Link';
   };
-  readonly dataAttributes: {
-    readonly variant: readonly ['subtitle', 'body', 'caption', 'label'];
-    readonly weight: readonly ['regular', 'bold'];
-    readonly color: readonly [
-      'primary',
-      'secondary',
-      'danger',
-      'warning',
-      'success',
-      'info',
-    ];
-    readonly truncate: readonly [true, false];
-    readonly standalone: readonly [true, false];
+  readonly analytics: true;
+  readonly propDefs: {
+    readonly noTrack: {};
+    readonly variant: {
+      readonly dataAttribute: true;
+      readonly default: 'body-medium';
+    };
+    readonly weight: {
+      readonly dataAttribute: true;
+      readonly default: 'regular';
+    };
+    readonly color: {
+      readonly dataAttribute: true;
+      readonly default: 'primary';
+    };
+    readonly truncate: {
+      readonly dataAttribute: true;
+    };
+    readonly standalone: {
+      readonly dataAttribute: true;
+    };
+    readonly title: {};
+    readonly children: {};
+    readonly className: {};
   };
 };
 
 // @public (undocumented)
-export interface LinkProps extends LinkProps_2 {
-  // (undocumented)
-  children?: ReactNode;
-  // (undocumented)
+export type LinkOwnProps = {
+  noTrack?: boolean;
+  variant?: TextVariants | Partial<Record<Breakpoint, TextVariants>>;
+  weight?: TextWeights | Partial<Record<Breakpoint, TextWeights>>;
   color?:
     | TextColors
     | TextColorStatus
     | Partial<Record<Breakpoint, TextColors | TextColorStatus>>;
-  // (undocumented)
-  standalone?: boolean;
-  // (undocumented)
-  title?: string;
-  // (undocumented)
   truncate?: boolean;
-  // (undocumented)
-  variant?: TextVariants | Partial<Record<Breakpoint, TextVariants>>;
-  // (undocumented)
-  weight?: TextWeights | Partial<Record<Breakpoint, TextWeights>>;
-}
+  standalone?: boolean;
+  title?: string;
+  children?: ReactNode;
+  className?: string;
+};
+
+// @public (undocumented)
+export interface LinkProps
+  extends Omit<LinkProps_2, 'children' | 'className'>,
+    LinkOwnProps {}
 
 // @public (undocumented)
 export interface MarginProps {
@@ -1275,57 +1587,47 @@ export const MenuAutocompleteListbox: (
 ) => JSX_2.Element;
 
 // @public (undocumented)
-export interface MenuAutocompleteListBoxProps<T>
-  extends ListBoxProps<T>,
-    Omit<ListBoxProps<T>, 'children'> {
-  // (undocumented)
-  maxHeight?: string;
-  // (undocumented)
-  maxWidth?: string;
-  // (undocumented)
+export type MenuAutocompleteListBoxOwnProps = MenuPopoverOwnProps & {
   placeholder?: string;
-  // (undocumented)
-  placement?: PopoverProps_2['placement'];
-  // (undocumented)
-  virtualized?: boolean;
-}
+  selectionMode?: ListBoxProps<object>['selectionMode'];
+};
+
+// @public (undocumented)
+export interface MenuAutocompleteListBoxProps<T>
+  extends MenuAutocompleteListBoxOwnProps,
+    Omit<ListBoxProps<T>, keyof MenuAutocompleteListBoxOwnProps> {}
+
+// @public (undocumented)
+export type MenuAutocompleteOwnProps = MenuPopoverOwnProps & {
+  placeholder?: string;
+};
 
 // @public (undocumented)
 export interface MenuAutocompleteProps<T>
-  extends MenuProps_2<T>,
-    Omit<MenuProps_2<T>, 'children'> {
-  // (undocumented)
-  maxHeight?: string;
-  // (undocumented)
-  maxWidth?: string;
-  // (undocumented)
-  placeholder?: string;
-  // (undocumented)
-  placement?: PopoverProps_2['placement'];
-  // (undocumented)
-  virtualized?: boolean;
-}
+  extends MenuAutocompleteOwnProps,
+    Omit<MenuProps_2<T>, keyof MenuAutocompleteOwnProps> {}
 
 // @public
 export const MenuDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
   readonly classNames: {
-    readonly root: 'bui-Menu';
-    readonly popover: 'bui-MenuPopover';
+    readonly root: 'bui-MenuPopover';
     readonly inner: 'bui-MenuInner';
     readonly content: 'bui-MenuContent';
-    readonly section: 'bui-MenuSection';
-    readonly sectionHeader: 'bui-MenuSectionHeader';
-    readonly item: 'bui-MenuItem';
-    readonly itemListBox: 'bui-MenuItemListBox';
-    readonly itemListBoxCheck: 'bui-MenuItemListBoxCheck';
-    readonly itemWrapper: 'bui-MenuItemWrapper';
-    readonly itemContent: 'bui-MenuItemContent';
-    readonly itemArrow: 'bui-MenuItemArrow';
-    readonly separator: 'bui-MenuSeparator';
-    readonly searchField: 'bui-MenuSearchField';
-    readonly searchFieldInput: 'bui-MenuSearchFieldInput';
-    readonly searchFieldClear: 'bui-MenuSearchFieldClear';
-    readonly emptyState: 'bui-MenuEmptyState';
+  };
+  readonly propDefs: {
+    readonly placement: {
+      readonly default: 'bottom start';
+    };
+    readonly virtualized: {
+      readonly default: false;
+    };
+    readonly maxWidth: {};
+    readonly maxHeight: {};
+    readonly style: {};
+    readonly className: {};
   };
 };
 
@@ -1333,16 +1635,19 @@ export const MenuDefinition: {
 export const MenuItem: (props: MenuItemProps) => JSX_2.Element;
 
 // @public (undocumented)
-export interface MenuItemProps
-  extends MenuItemProps_2,
-    Omit<MenuItemProps_2, 'children'> {
-  // (undocumented)
-  children: React.ReactNode;
-  // (undocumented)
-  color?: 'primary' | 'danger';
-  // (undocumented)
+export type MenuItemOwnProps = {
   iconStart?: React.ReactNode;
-}
+  children: React.ReactNode;
+  color?: 'primary' | 'danger';
+  href?: MenuItemProps_2['href'];
+  noTrack?: boolean;
+  className?: string;
+};
+
+// @public (undocumented)
+export interface MenuItemProps
+  extends MenuItemOwnProps,
+    Omit<MenuItemProps_2, keyof MenuItemOwnProps> {}
 
 // @public (undocumented)
 export const MenuListBox: (props: MenuListBoxProps<object>) => JSX_2.Element;
@@ -1351,59 +1656,71 @@ export const MenuListBox: (props: MenuListBoxProps<object>) => JSX_2.Element;
 export const MenuListBoxItem: (props: MenuListBoxItemProps) => JSX_2.Element;
 
 // @public (undocumented)
-export interface MenuListBoxItemProps
-  extends ListBoxItemProps,
-    Omit<ListBoxItemProps, 'children'> {
-  // (undocumented)
+export type MenuListBoxItemOwnProps = {
   children: React.ReactNode;
-}
+  className?: string;
+};
+
+// @public (undocumented)
+export interface MenuListBoxItemProps
+  extends MenuListBoxItemOwnProps,
+    Omit<ListBoxItemProps, keyof MenuListBoxItemOwnProps> {}
+
+// @public (undocumented)
+export type MenuListBoxOwnProps = MenuPopoverOwnProps & {
+  selectionMode?: ListBoxProps<object>['selectionMode'];
+};
 
 // @public (undocumented)
 export interface MenuListBoxProps<T>
-  extends ListBoxProps<T>,
-    Omit<ListBoxProps<T>, 'children'> {
-  // (undocumented)
-  maxHeight?: string;
-  // (undocumented)
-  maxWidth?: string;
-  // (undocumented)
+  extends MenuListBoxOwnProps,
+    Omit<ListBoxProps<T>, keyof MenuListBoxOwnProps> {}
+
+// @public (undocumented)
+export type MenuOwnProps = MenuPopoverOwnProps;
+
+// @public
+export type MenuPopoverOwnProps = {
   placement?: PopoverProps_2['placement'];
-  // (undocumented)
   virtualized?: boolean;
-}
+  maxWidth?: string;
+  maxHeight?: string;
+  style?: React.CSSProperties;
+  className?: string;
+};
 
 // @public (undocumented)
 export interface MenuProps<T>
-  extends MenuProps_2<T>,
-    Omit<MenuProps_2<T>, 'children'> {
-  // (undocumented)
-  maxHeight?: string;
-  // (undocumented)
-  maxWidth?: string;
-  // (undocumented)
-  placement?: PopoverProps_2['placement'];
-  // (undocumented)
-  virtualized?: boolean;
-}
+  extends MenuOwnProps,
+    Omit<MenuProps_2<T>, keyof MenuOwnProps> {}
 
 // @public (undocumented)
 export const MenuSection: (props: MenuSectionProps<object>) => JSX_2.Element;
 
 // @public (undocumented)
-export interface MenuSectionProps<T>
-  extends MenuSectionProps_2<T>,
-    Omit<MenuSectionProps_2<T>, 'children'> {
-  // (undocumented)
-  children: React.ReactNode;
-  // (undocumented)
+export type MenuSectionOwnProps = {
   title: string;
-}
+  children: React.ReactNode;
+  className?: string;
+};
+
+// @public (undocumented)
+export interface MenuSectionProps<T>
+  extends MenuSectionOwnProps,
+    Omit<MenuSectionProps_2<T>, keyof MenuSectionOwnProps> {}
 
 // @public (undocumented)
 export const MenuSeparator: (props: MenuSeparatorProps) => JSX_2.Element;
 
 // @public (undocumented)
-export interface MenuSeparatorProps extends SeparatorProps {}
+export type MenuSeparatorOwnProps = {
+  className?: string;
+};
+
+// @public (undocumented)
+export interface MenuSeparatorProps
+  extends MenuSeparatorOwnProps,
+    Omit<SeparatorProps, keyof MenuSeparatorOwnProps> {}
 
 // @public (undocumented)
 export const MenuTrigger: (props: MenuTriggerProps) => JSX_2.Element;
@@ -1506,6 +1823,9 @@ export const PasswordField: ForwardRefExoticComponent<
 
 // @public
 export const PasswordFieldDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
   readonly classNames: {
     readonly root: 'bui-PasswordField';
     readonly inputWrapper: 'bui-PasswordFieldInputWrapper';
@@ -1513,25 +1833,44 @@ export const PasswordFieldDefinition: {
     readonly inputIcon: 'bui-PasswordFieldIcon';
     readonly inputVisibility: 'bui-PasswordFieldVisibility';
   };
-  readonly dataAttributes: {
-    readonly size: readonly ['small', 'medium'];
+  readonly propDefs: {
+    readonly size: {
+      readonly dataAttribute: true;
+      readonly default: 'small';
+    };
+    readonly className: {};
+    readonly icon: {};
+    readonly placeholder: {};
+    readonly label: {};
+    readonly description: {};
+    readonly secondaryLabel: {};
   };
 };
 
 // @public (undocumented)
-export interface PasswordFieldProps
-  extends TextFieldProps_2,
-    Omit<FieldLabelProps, 'htmlFor' | 'id' | 'className'> {
+export type PasswordFieldOwnProps = {
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+  className?: string;
   icon?: ReactNode;
   placeholder?: string;
-  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
-}
+  label?: FieldLabelProps['label'];
+  description?: FieldLabelProps['description'];
+  secondaryLabel?: FieldLabelProps['secondaryLabel'];
+};
+
+// @public (undocumented)
+export interface PasswordFieldProps
+  extends Omit<TextFieldProps_2, 'className' | 'description'>,
+    PasswordFieldOwnProps {}
 
 // @public
 export const PluginHeader: (props: PluginHeaderProps) => JSX_2.Element;
 
 // @public
 export const PluginHeaderDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
   readonly classNames: {
     readonly root: 'bui-PluginHeader';
     readonly toolbar: 'bui-PluginHeaderToolbar';
@@ -1540,12 +1879,21 @@ export const PluginHeaderDefinition: {
     readonly toolbarControls: 'bui-PluginHeaderToolbarControls';
     readonly toolbarIcon: 'bui-PluginHeaderToolbarIcon';
     readonly toolbarName: 'bui-PluginHeaderToolbarName';
-    readonly tabsWrapper: 'bui-PluginHeaderTabsWrapper';
+    readonly tabs: 'bui-PluginHeaderTabsWrapper';
+  };
+  readonly propDefs: {
+    readonly icon: {};
+    readonly title: {};
+    readonly titleLink: {};
+    readonly customActions: {};
+    readonly tabs: {};
+    readonly onTabSelectionChange: {};
+    readonly className: {};
   };
 };
 
 // @public
-export interface PluginHeaderProps {
+export interface PluginHeaderOwnProps {
   // (undocumented)
   className?: string;
   // (undocumented)
@@ -1563,24 +1911,41 @@ export interface PluginHeaderProps {
 }
 
 // @public
+export interface PluginHeaderProps extends PluginHeaderOwnProps {}
+
+// @public
 export const Popover: ForwardRefExoticComponent<
   PopoverProps & RefAttributes<HTMLDivElement>
 >;
 
 // @public
 export const PopoverDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
   readonly classNames: {
     readonly root: 'bui-Popover';
     readonly arrow: 'bui-PopoverArrow';
     readonly content: 'bui-PopoverContent';
   };
+  readonly propDefs: {
+    readonly children: {};
+    readonly hideArrow: {};
+    readonly className: {};
+  };
+};
+
+// @public (undocumented)
+export type PopoverOwnProps = {
+  children: React.ReactNode;
+  hideArrow?: boolean;
+  className?: string;
 };
 
 // @public
-export interface PopoverProps extends Omit<PopoverProps_2, 'children'> {
-  children: React.ReactNode;
-  hideArrow?: boolean;
-}
+export interface PopoverProps
+  extends Omit<PopoverProps_2, 'children' | 'className'>,
+    PopoverOwnProps {}
 
 // @public
 export type ProviderBg = 'neutral' | 'danger' | 'warning' | 'success';
@@ -1612,6 +1977,19 @@ export const Radio: ForwardRefExoticComponent<
   RadioProps & RefAttributes<HTMLLabelElement>
 >;
 
+// @public
+export const RadioDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-Radio';
+  };
+  readonly propDefs: {
+    readonly className: {};
+  };
+};
+
 // @public (undocumented)
 export const RadioGroup: ForwardRefExoticComponent<
   RadioGroupProps & RefAttributes<HTMLDivElement>
@@ -1619,23 +1997,47 @@ export const RadioGroup: ForwardRefExoticComponent<
 
 // @public
 export const RadioGroupDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
   readonly classNames: {
     readonly root: 'bui-RadioGroup';
     readonly content: 'bui-RadioGroupContent';
-    readonly radio: 'bui-Radio';
+  };
+  readonly propDefs: {
+    readonly children: {};
+    readonly className: {};
+    readonly label: {};
+    readonly secondaryLabel: {};
+    readonly description: {};
+    readonly isRequired: {};
   };
 };
 
 // @public (undocumented)
-export interface RadioGroupProps
-  extends Omit<RadioGroupProps_2, 'children'>,
-    Omit<FieldLabelProps, 'htmlFor' | 'id' | 'className'> {
-  // (undocumented)
+export type RadioGroupOwnProps = {
   children?: ReactNode;
-}
+  className?: string;
+  label?: FieldLabelProps['label'];
+  secondaryLabel?: FieldLabelProps['secondaryLabel'];
+  description?: FieldLabelProps['description'];
+  isRequired?: RadioGroupProps_2['isRequired'];
+};
 
 // @public (undocumented)
-export interface RadioProps extends RadioProps_2 {}
+export interface RadioGroupProps
+  extends RadioGroupOwnProps,
+    Omit<RadioGroupProps_2, keyof RadioGroupOwnProps> {}
+
+// @public (undocumented)
+export type RadioOwnProps = {
+  className?: string;
+};
+
+// @public (undocumented)
+export interface RadioProps
+  extends RadioOwnProps,
+    Omit<RadioProps_2, keyof RadioOwnProps> {}
 
 // @public (undocumented)
 export type Responsive<T> = T | Partial<Record<Breakpoint, T>>;
@@ -1654,6 +2056,19 @@ export interface RowConfig<T extends TableItem> {
 }
 
 // @public (undocumented)
+export type RowOwnProps<T = object> = {
+  columns?: RowProps_2<T>['columns'];
+  children?: RowProps_2<T>['children'];
+  href?: string;
+  noTrack?: boolean;
+};
+
+// @public (undocumented)
+export interface RowProps<T>
+  extends RowOwnProps<T>,
+    Omit<RowProps_2<T>, keyof RowOwnProps> {}
+
+// @public (undocumented)
 export type RowRenderFn<T extends TableItem> = (params: {
   item: T;
   index: number;
@@ -1666,6 +2081,9 @@ export const SearchField: ForwardRefExoticComponent<
 
 // @public
 export const SearchFieldDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
   readonly classNames: {
     readonly root: 'bui-SearchField';
     readonly clear: 'bui-SearchFieldClear';
@@ -1673,21 +2091,43 @@ export const SearchFieldDefinition: {
     readonly input: 'bui-SearchFieldInput';
     readonly inputIcon: 'bui-SearchFieldInputIcon';
   };
-  readonly dataAttributes: {
-    readonly startCollapsed: readonly [true, false];
-    readonly size: readonly ['small', 'medium'];
+  readonly bg: 'consumer';
+  readonly propDefs: {
+    readonly startCollapsed: {
+      readonly dataAttribute: true;
+      readonly default: false;
+    };
+    readonly size: {
+      readonly dataAttribute: true;
+      readonly default: 'small';
+    };
+    readonly className: {};
+    readonly icon: {};
+    readonly placeholder: {
+      readonly default: 'Search';
+    };
+    readonly label: {};
+    readonly description: {};
+    readonly secondaryLabel: {};
   };
 };
 
 // @public (undocumented)
-export interface SearchFieldProps
-  extends SearchFieldProps_2,
-    Omit<FieldLabelProps, 'htmlFor' | 'id' | 'className'> {
+export type SearchFieldOwnProps = {
   icon?: ReactNode | false;
-  placeholder?: string;
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+  placeholder?: string;
   startCollapsed?: boolean;
-}
+  className?: string;
+  label?: FieldLabelProps['label'];
+  description?: FieldLabelProps['description'];
+  secondaryLabel?: FieldLabelProps['secondaryLabel'];
+};
+
+// @public (undocumented)
+export interface SearchFieldProps
+  extends Omit<SearchFieldProps_2, 'className' | 'description'>,
+    SearchFieldOwnProps {}
 
 // @public (undocumented)
 export interface SearchState {
@@ -1704,36 +2144,49 @@ export const Select: ForwardRefExoticComponent<
 
 // @public
 export const SelectDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
   readonly classNames: {
     readonly root: 'bui-Select';
     readonly popover: 'bui-SelectPopover';
-    readonly trigger: 'bui-SelectTrigger';
-    readonly chevron: 'bui-SelectTriggerChevron';
-    readonly value: 'bui-SelectValue';
-    readonly list: 'bui-SelectList';
-    readonly item: 'bui-SelectItem';
-    readonly itemIndicator: 'bui-SelectItemIndicator';
-    readonly itemLabel: 'bui-SelectItemLabel';
-    readonly searchWrapper: 'bui-SelectSearchWrapper';
-    readonly search: 'bui-SelectSearch';
-    readonly searchClear: 'bui-SelectSearchClear';
-    readonly noResults: 'bui-SelectNoResults';
   };
-  readonly dataAttributes: {
-    readonly size: readonly ['small', 'medium'];
+  readonly propDefs: {
+    readonly icon: {};
+    readonly size: {
+      readonly dataAttribute: true;
+      readonly default: 'small';
+    };
+    readonly options: {};
+    readonly searchable: {};
+    readonly searchPlaceholder: {};
+    readonly label: {};
+    readonly secondaryLabel: {};
+    readonly description: {};
+    readonly isRequired: {};
+    readonly className: {};
   };
 };
 
 // @public (undocumented)
-export interface SelectProps<T extends 'single' | 'multiple'>
-  extends SelectProps_2<Option_2, T>,
-    Omit<FieldLabelProps, 'htmlFor' | 'id' | 'className'> {
+export type SelectOwnProps = {
   icon?: ReactNode;
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
   options?: Array<Option_2>;
   searchable?: boolean;
   searchPlaceholder?: string;
+  label?: FieldLabelProps['label'];
+  secondaryLabel?: FieldLabelProps['secondaryLabel'];
+  description?: FieldLabelProps['description'];
+  isRequired?: boolean;
+  className?: string;
+};
+
+// @public (undocumented)
+export interface SelectProps<T extends 'single' | 'multiple'>
+  extends SelectOwnProps,
+    Omit<SelectProps_2<Option_2, T>, keyof SelectOwnProps> {
   selectionMode?: T;
-  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
 }
 
 // @public (undocumented)
@@ -1741,20 +2194,41 @@ export const Skeleton: (props: SkeletonProps) => JSX_2.Element;
 
 // @public
 export const SkeletonDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
   readonly classNames: {
     readonly root: 'bui-Skeleton';
+  };
+  readonly propDefs: {
+    readonly width: {
+      readonly default: 80;
+    };
+    readonly height: {
+      readonly default: 24;
+    };
+    readonly rounded: {
+      readonly dataAttribute: true;
+      readonly default: false;
+    };
+    readonly className: {};
+    readonly style: {};
   };
 };
 
 // @public (undocumented)
-export interface SkeletonProps extends ComponentProps<'div'> {
-  // (undocumented)
-  height?: number | string;
-  // (undocumented)
-  rounded?: boolean;
-  // (undocumented)
+export type SkeletonOwnProps = {
   width?: number | string;
-}
+  height?: number | string;
+  rounded?: boolean;
+  className?: string;
+  style?: React.CSSProperties;
+};
+
+// @public (undocumented)
+export interface SkeletonProps
+  extends Omit<ComponentProps<'div'>, 'children' | 'className' | 'style'>,
+    SkeletonOwnProps {}
 
 // @public (undocumented)
 export type SortDescriptor = SortDescriptor_2;
@@ -1803,16 +2277,29 @@ export const Switch: ForwardRefExoticComponent<
 
 // @public
 export const SwitchDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
   readonly classNames: {
     readonly root: 'bui-Switch';
     readonly indicator: 'bui-SwitchIndicator';
   };
+  readonly propDefs: {
+    readonly label: {};
+    readonly className: {};
+  };
 };
 
 // @public (undocumented)
-export interface SwitchProps extends SwitchProps_2 {
+export type SwitchOwnProps = {
   label?: string;
-}
+  className?: string;
+};
+
+// @public (undocumented)
+export interface SwitchProps
+  extends Omit<SwitchProps_2, 'className'>,
+    SwitchOwnProps {}
 
 // @public
 export const Tab: (props: TabProps) => JSX_2.Element;
@@ -1825,31 +2312,26 @@ export const TableBody: <T extends object>(
   props: TableBodyProps<T>,
 ) => JSX_2.Element;
 
+// @public (undocumented)
+export type TableBodyOwnProps = {};
+
+// @public (undocumented)
+export interface TableBodyProps<T extends object>
+  extends TableBodyOwnProps,
+    Omit<TableBodyProps_2<T>, keyof TableBodyOwnProps> {}
+
 // @public
 export const TableDefinition: {
-  readonly classNames: {
-    readonly table: 'bui-Table';
-    readonly header: 'bui-TableHeader';
-    readonly body: 'bui-TableBody';
-    readonly row: 'bui-TableRow';
-    readonly head: 'bui-TableHead';
-    readonly headContent: 'bui-TableHeadContent';
-    readonly headSortButton: 'bui-TableHeadSortButton';
-    readonly caption: 'bui-TableCaption';
-    readonly cell: 'bui-TableCell';
-    readonly cellContentWrapper: 'bui-TableCellContentWrapper';
-    readonly cellContent: 'bui-TableCellContent';
-    readonly cellIcon: 'bui-TableCellIcon';
-    readonly cellProfileAvatar: 'bui-TableCellProfileAvatar';
-    readonly cellProfileAvatarImage: 'bui-TableCellProfileAvatarImage';
-    readonly cellProfileAvatarFallback: 'bui-TableCellProfileAvatarFallback';
-    readonly cellProfileName: 'bui-TableCellProfileName';
-    readonly cellProfileLink: 'bui-TableCellProfileLink';
-    readonly headSelection: 'bui-TableHeadSelection';
-    readonly cellSelection: 'bui-TableCellSelection';
+  readonly styles: {
+    readonly [key: string]: string;
   };
-  readonly dataAttributes: {
-    readonly stale: readonly [true, false];
+  readonly classNames: {
+    readonly root: 'bui-Table';
+  };
+  readonly propDefs: {
+    readonly stale: {
+      readonly dataAttribute: true;
+    };
   };
 };
 
@@ -1859,53 +2341,76 @@ export const TableHeader: <T extends object>(
 ) => JSX_2.Element;
 
 // @public (undocumented)
+export type TableHeaderOwnProps<T = object> = {
+  columns?: TableHeaderProps_2<T>['columns'];
+  children?: TableHeaderProps_2<T>['children'];
+};
+
+// @public (undocumented)
+export interface TableHeaderProps<T>
+  extends TableHeaderOwnProps<T>,
+    Omit<TableHeaderProps_2<T>, keyof TableHeaderOwnProps> {}
+
+// @public (undocumented)
 export interface TableItem {
   // (undocumented)
   id: string | number;
 }
 
 // @public
-export function TablePagination(input: TablePaginationProps): JSX_2.Element;
+export function TablePagination(props: TablePaginationProps): JSX_2.Element;
 
 // @public
 export const TablePaginationDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
   readonly classNames: {
     readonly root: 'bui-TablePagination';
     readonly left: 'bui-TablePaginationLeft';
     readonly right: 'bui-TablePaginationRight';
     readonly select: 'bui-TablePaginationSelect';
   };
+  readonly propDefs: {
+    readonly pageSize: {};
+    readonly pageSizeOptions: {
+      readonly default: PageSizeOption[];
+    };
+    readonly offset: {};
+    readonly totalCount: {};
+    readonly hasNextPage: {};
+    readonly hasPreviousPage: {};
+    readonly onNextPage: {};
+    readonly onPreviousPage: {};
+    readonly onPageSizeChange: {};
+    readonly showPageSizeOptions: {
+      readonly default: true;
+    };
+    readonly getLabel: {};
+  };
 };
 
 // @public (undocumented)
-export interface TablePaginationProps {
-  // (undocumented)
+export type TablePaginationOwnProps = {
+  pageSize: number;
+  pageSizeOptions?: number[] | PageSizeOption[];
+  offset?: number;
+  totalCount?: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+  onNextPage: () => void;
+  onPreviousPage: () => void;
+  onPageSizeChange?: (size: number) => void;
+  showPageSizeOptions?: boolean;
   getLabel?: (params: {
     pageSize: number;
     offset?: number;
     totalCount?: number;
   }) => string;
-  // (undocumented)
-  hasNextPage: boolean;
-  // (undocumented)
-  hasPreviousPage: boolean;
-  // (undocumented)
-  offset?: number;
-  // (undocumented)
-  onNextPage: () => void;
-  // (undocumented)
-  onPageSizeChange?: (size: number) => void;
-  // (undocumented)
-  onPreviousPage: () => void;
-  // (undocumented)
-  pageSize: number;
-  // (undocumented)
-  pageSizeOptions?: number[] | PageSizeOption[];
-  // (undocumented)
-  showPageSizeOptions?: boolean;
-  // (undocumented)
-  totalCount?: number;
-}
+};
+
+// @public (undocumented)
+export interface TablePaginationProps extends TablePaginationOwnProps {}
 
 // @public (undocumented)
 export type TablePaginationType = NoPagination | PagePagination;
@@ -1942,10 +2447,14 @@ export interface TableProps<T extends TableItem> {
 export const TableRoot: (props: TableRootProps) => JSX_2.Element;
 
 // @public (undocumented)
-export interface TableRootProps extends TableProps_2 {
-  // (undocumented)
+export type TableRootOwnProps = {
   stale?: boolean;
-}
+};
+
+// @public (undocumented)
+export interface TableRootProps
+  extends TableRootOwnProps,
+    Omit<TableProps_2, keyof TableRootOwnProps> {}
 
 // @public (undocumented)
 export interface TableSelection {
@@ -1963,40 +2472,73 @@ export interface TableSelection {
 export const TabList: (props: TabListProps) => JSX_2.Element;
 
 // @public
-export interface TabListProps extends Omit<TabListProps_2<object>, 'items'> {}
+export type TabListOwnProps = {
+  className?: string;
+  children?: TabListProps_2<object>['children'];
+};
+
+// @public
+export interface TabListProps
+  extends TabListOwnProps,
+    Omit<TabListProps_2<object>, 'items' | keyof TabListOwnProps> {}
 
 // @public
 export type TabMatchStrategy = 'exact' | 'prefix';
 
 // @public
+export type TabOwnProps = {
+  className?: string;
+  matchStrategy?: TabMatchStrategy;
+  href?: TabProps_2['href'];
+  id?: TabProps_2['id'];
+  noTrack?: boolean;
+};
+
+// @public
 export const TabPanel: (props: TabPanelProps) => JSX_2.Element;
 
 // @public
-export interface TabPanelProps extends TabPanelProps_2 {}
+export type TabPanelOwnProps = {
+  className?: string;
+};
 
 // @public
-export interface TabProps extends TabProps_2 {
-  matchStrategy?: 'exact' | 'prefix';
-}
+export interface TabPanelProps
+  extends TabPanelOwnProps,
+    Omit<TabPanelProps_2, keyof TabPanelOwnProps> {}
+
+// @public
+export interface TabProps
+  extends TabOwnProps,
+    Omit<TabProps_2, keyof TabOwnProps> {}
 
 // @public
 export const Tabs: (props: TabsProps) => JSX_2.Element | null;
 
 // @public
 export const TabsDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
   readonly classNames: {
-    readonly tabs: 'bui-Tabs';
-    readonly tabList: 'bui-TabList';
-    readonly tabListWrapper: 'bui-TabListWrapper';
-    readonly tab: 'bui-Tab';
-    readonly tabActive: 'bui-TabActive';
-    readonly tabHovered: 'bui-TabHovered';
-    readonly panel: 'bui-TabPanel';
+    readonly root: 'bui-Tabs';
+  };
+  readonly propDefs: {
+    readonly className: {};
+    readonly children: {};
   };
 };
 
 // @public
-export interface TabsProps extends TabsProps_2 {}
+export type TabsOwnProps = {
+  className?: string;
+  children?: TabsProps_2['children'];
+};
+
+// @public
+export interface TabsProps
+  extends TabsOwnProps,
+    Omit<TabsProps_2, keyof TabsOwnProps> {}
 
 // @public
 export const Tag: ForwardRefExoticComponent<
@@ -2010,25 +2552,48 @@ export const TagGroup: <T extends object>(
 
 // @public
 export const TagGroupDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
   readonly classNames: {
-    readonly group: 'bui-TagGroup';
+    readonly root: 'bui-TagGroup';
     readonly list: 'bui-TagList';
-    readonly tag: 'bui-Tag';
-    readonly tagIcon: 'bui-TagIcon';
-    readonly tagRemoveButton: 'bui-TagRemoveButton';
+  };
+  readonly propDefs: {
+    readonly items: {};
+    readonly children: {};
+    readonly renderEmptyState: {};
+    readonly className: {};
   };
 };
 
 // @public
-export interface TagGroupProps<T>
-  extends Omit<TagGroupProps_2, 'children'>,
-    Pick<TagListProps<T>, 'items' | 'children' | 'renderEmptyState'> {}
+export type TagGroupOwnProps<T = object> = {
+  items?: TagListProps<T>['items'];
+  children?: TagListProps<T>['children'];
+  renderEmptyState?: TagListProps<T>['renderEmptyState'];
+  className?: string;
+};
 
 // @public
-export interface TagProps extends TagProps_2 {
+export interface TagGroupProps<T>
+  extends TagGroupOwnProps<T>,
+    Omit<TagGroupProps_2, 'children' | keyof TagGroupOwnProps> {}
+
+// @public
+export type TagOwnProps = {
   icon?: React.ReactNode;
   size?: 'small' | 'medium';
-}
+  href?: TagProps_2['href'];
+  children?: TagProps_2['children'];
+  className?: string;
+  noTrack?: boolean;
+};
+
+// @public
+export interface TagProps
+  extends TagOwnProps,
+    Omit<TagProps_2, keyof TagOwnProps> {}
 
 // @public (undocumented)
 const Text_2: {
@@ -2049,21 +2614,32 @@ export type TextColorStatus = 'danger' | 'warning' | 'success' | 'info';
 
 // @public
 export const TextDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
   readonly classNames: {
     readonly root: 'bui-Text';
   };
-  readonly dataAttributes: {
-    readonly variant: readonly ['subtitle', 'body', 'caption', 'label'];
-    readonly weight: readonly ['regular', 'bold'];
-    readonly color: readonly [
-      'primary',
-      'secondary',
-      'danger',
-      'warning',
-      'success',
-      'info',
-    ];
-    readonly truncate: readonly [true, false];
+  readonly propDefs: {
+    readonly as: {
+      readonly default: 'span';
+    };
+    readonly variant: {
+      readonly dataAttribute: true;
+      readonly default: 'body-medium';
+    };
+    readonly weight: {
+      readonly dataAttribute: true;
+      readonly default: 'regular';
+    };
+    readonly color: {
+      readonly dataAttribute: true;
+      readonly default: 'primary';
+    };
+    readonly truncate: {
+      readonly dataAttribute: true;
+    };
+    readonly className: {};
   };
 };
 
@@ -2074,6 +2650,9 @@ export const TextField: ForwardRefExoticComponent<
 
 // @public
 export const TextFieldDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
   readonly classNames: {
     readonly root: 'bui-TextField';
     readonly inputWrapper: 'bui-InputWrapper';
@@ -2081,20 +2660,36 @@ export const TextFieldDefinition: {
     readonly inputIcon: 'bui-InputIcon';
     readonly inputAction: 'bui-InputAction';
   };
-  readonly dataAttributes: {
-    readonly invalid: readonly [true, false];
-    readonly disabled: readonly [true, false];
-    readonly size: readonly ['small', 'medium'];
+  readonly bg: 'consumer';
+  readonly propDefs: {
+    readonly size: {
+      readonly dataAttribute: true;
+      readonly default: 'small';
+    };
+    readonly className: {};
+    readonly icon: {};
+    readonly placeholder: {};
+    readonly label: {};
+    readonly description: {};
+    readonly secondaryLabel: {};
   };
 };
 
 // @public (undocumented)
-export interface TextFieldProps
-  extends TextFieldProps_2,
-    Omit<FieldLabelProps, 'htmlFor' | 'id' | 'className'> {
+export type TextFieldOwnProps = {
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+  className?: string;
   icon?: ReactNode;
   placeholder?: string;
-  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+  label?: FieldLabelProps['label'];
+  description?: FieldLabelProps['description'];
+  secondaryLabel?: FieldLabelProps['secondaryLabel'];
+};
+
+// @public (undocumented)
+export interface TextFieldProps
+  extends Omit<TextFieldProps_2, 'className' | 'description'>,
+    TextFieldOwnProps {
   type?: 'text' | 'email' | 'tel' | 'url';
 }
 
@@ -2122,6 +2717,7 @@ export type TextOwnProps = {
     | TextColorStatus
     | Partial<Record<Breakpoint, TextColors | TextColorStatus>>;
   truncate?: boolean;
+  className?: string;
 };
 
 // @public (undocumented)
@@ -2149,12 +2745,22 @@ export const ToggleButton: ForwardRefExoticComponent<
 
 // @public
 export const ToggleButtonDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
   readonly classNames: {
     readonly root: 'bui-ToggleButton';
     readonly content: 'bui-ToggleButtonContent';
   };
-  readonly dataAttributes: {
-    readonly size: readonly ['small', 'medium'];
+  readonly propDefs: {
+    readonly size: {
+      readonly dataAttribute: true;
+      readonly default: 'small';
+    };
+    readonly iconStart: {};
+    readonly iconEnd: {};
+    readonly children: {};
+    readonly className: {};
   };
 };
 
@@ -2165,30 +2771,42 @@ export const ToggleButtonGroup: ForwardRefExoticComponent<
 
 // @public
 export const ToggleButtonGroupDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
   readonly classNames: {
     readonly root: 'bui-ToggleButtonGroup';
   };
-  readonly dataAttributes: {
-    readonly orientation: readonly ['horizontal', 'vertical'];
+  readonly propDefs: {
+    readonly className: {};
+    readonly children: {};
   };
 };
 
 // @public (undocumented)
+export type ToggleButtonGroupOwnProps = {
+  className?: string;
+  children?: ReactNode;
+};
+
+// @public (undocumented)
 export interface ToggleButtonGroupProps
-  extends Omit<ToggleButtonGroupProps_2, 'orientation'> {
-  // (undocumented)
-  orientation?: NonNullable<ToggleButtonGroupProps_2['orientation']>;
-}
+  extends Omit<ToggleButtonGroupProps_2, 'className' | 'children'>,
+    ToggleButtonGroupOwnProps {}
+
+// @public (undocumented)
+export type ToggleButtonOwnProps = {
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+  iconStart?: ReactElement;
+  iconEnd?: ReactElement;
+  children?: ToggleButtonProps_2['children'];
+  className?: string;
+};
 
 // @public
-export interface ToggleButtonProps extends ToggleButtonProps_2 {
-  // (undocumented)
-  iconEnd?: ReactElement;
-  // (undocumented)
-  iconStart?: ReactElement;
-  // (undocumented)
-  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
-}
+export interface ToggleButtonProps
+  extends Omit<ToggleButtonProps_2, 'children' | 'className'>,
+    ToggleButtonOwnProps {}
 
 // @public (undocumented)
 export const Tooltip: ForwardRefExoticComponent<
@@ -2197,23 +2815,41 @@ export const Tooltip: ForwardRefExoticComponent<
 
 // @public
 export const TooltipDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
   readonly classNames: {
     readonly tooltip: 'bui-Tooltip';
     readonly content: 'bui-TooltipContent';
     readonly arrow: 'bui-TooltipArrow';
   };
+  readonly propDefs: {
+    readonly children: {};
+    readonly className: {};
+  };
 };
 
 // @public (undocumented)
-export interface TooltipProps extends Omit<TooltipProps_2, 'children'> {
-  // (undocumented)
+export type TooltipOwnProps = {
   children: React.ReactNode;
-}
+  className?: string;
+};
+
+// @public (undocumented)
+export interface TooltipProps
+  extends Omit<TooltipProps_2, 'children' | 'className'>,
+    TooltipOwnProps {}
 
 // @public (undocumented)
 export const TooltipTrigger: (
   props: TooltipTriggerComponentProps,
 ) => JSX_2.Element;
+
+// @public
+export function useAnalytics(): AnalyticsTracker;
+
+// @public
+export type UseAnalyticsFn = () => AnalyticsTracker;
 
 // @public
 export function useBgConsumer(): BgContextValue;
@@ -2332,14 +2968,24 @@ export const VisuallyHidden: (props: VisuallyHiddenProps) => JSX_2.Element;
 
 // @public
 export const VisuallyHiddenDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
   readonly classNames: {
     readonly root: 'bui-VisuallyHidden';
   };
+  readonly propDefs: {
+    readonly className: {};
+  };
+};
+
+// @public (undocumented)
+export type VisuallyHiddenOwnProps = {
+  className?: string;
 };
 
 // @public
-export interface VisuallyHiddenProps extends ComponentProps<'div'> {
-  // (undocumented)
-  children?: React.ReactNode;
-}
+export interface VisuallyHiddenProps
+  extends Omit<ComponentProps<'div'>, 'className'>,
+    VisuallyHiddenOwnProps {}
 ```

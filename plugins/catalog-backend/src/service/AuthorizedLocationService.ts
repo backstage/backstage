@@ -46,6 +46,7 @@ export class AuthorizedLocationService implements LocationService {
     spec: LocationInput,
     dryRun: boolean,
     options: {
+      onConflict?: 'refresh' | 'reject';
       credentials: BackstageCredentials;
     },
   ): Promise<{

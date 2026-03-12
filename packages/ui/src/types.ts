@@ -154,35 +154,8 @@ export interface UtilityProps extends SpaceProps {
 }
 
 /**
- * Base type for the component styles structure
- * @public
- */
-export type ClassNamesMap = Record<string, string>;
-
-/**
- * Base type for the component styles structure
- * @public
- */
-export type DataAttributeValues = readonly (string | number | boolean)[];
-
-/**
- * Base type for the component styles structure
- * @public
- */
-export type DataAttributesMap = Record<string, DataAttributeValues>;
-
-/**
- * Base type for the component styles structure
- * @public
- */
-export interface ComponentDefinition {
-  classNames: ClassNamesMap;
-  dataAttributes?: DataAttributesMap;
-  utilityProps?: string[];
-}
-
-/**
  * Resolved background level stored in context and applied as `data-bg` on DOM elements.
+ * Background type for the neutral bg system.
  *
  * Supports neutral levels ('neutral-1' through 'neutral-3') and
  * intent backgrounds ('danger', 'warning', 'success').

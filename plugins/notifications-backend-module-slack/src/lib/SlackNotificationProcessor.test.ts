@@ -355,6 +355,51 @@ describe('SlackNotificationProcessor', () => {
     });
   });
 
+  describe('when recipients include both users and a group', () => {
+    it('should still DM explicit user recipients', async () => {
+      const slack = new WebClient();
+
+      const processor = SlackNotificationProcessor.fromConfig(config, {
+        auth,
+        logger,
+        catalog: catalogServiceMock({
+          entities: DEFAULT_ENTITIES_RESPONSE.items,
+        }),
+        slack,
+      })[0];
+
+      await processor.processOptions({
+        recipients: {
+          type: 'entity',
+          entityRef: ['group:default/mock', 'user:default/mock'],
+        },
+        payload: { title: 'notification' },
+      });
+
+      await processor.postProcess(
+        {
+          origin: 'plugin',
+          id: 'explicit-user-1',
+          user: 'user:default/mock',
+          created: new Date(),
+          payload: { title: 'notification' },
+        },
+        {
+          recipients: {
+            type: 'entity',
+            entityRef: ['group:default/mock', 'user:default/mock'],
+          },
+          payload: { title: 'notification' },
+        },
+      );
+
+      expect(slack.chat.postMessage).toHaveBeenCalledTimes(2);
+      expect(slack.chat.postMessage).toHaveBeenCalledWith(
+        expect.objectContaining({ channel: 'U12345678' }),
+      );
+    });
+  });
+
   describe('when broadcast channels are not configured', () => {
     it('should not send broadcast messages', async () => {
       const slack = new WebClient();

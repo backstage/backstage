@@ -1,5 +1,37 @@
 # @backstage/frontend-test-utils
 
+## 0.5.1-next.2
+
+### Patch Changes
+
+- b56f573: Deprecated standalone mock API exports in favor of the `mockApis` namespace. This includes the mock classes (`MockAlertApi`, `MockAnalyticsApi`, `MockConfigApi`, `MockErrorApi`, `MockFetchApi`, `MockFeatureFlagsApi`, `MockPermissionApi`, `MockStorageApi`, `MockTranslationApi`), their option types (`MockErrorApiOptions`, `MockFeatureFlagsApiOptions`), and the `ErrorWithContext` type. `MockFetchApiOptions` is kept as a non-deprecated export. Use the `mockApis` namespace instead, for example `mockApis.alert()` or `mockApis.alert.mock()`.
+- Updated dependencies
+  - @backstage/core-app-api@1.19.6-next.1
+  - @backstage/frontend-plugin-api@0.15.0-next.1
+  - @backstage/core-plugin-api@1.12.4-next.1
+  - @backstage/frontend-app-api@0.16.0-next.1
+  - @backstage/plugin-app-react@0.2.1-next.1
+  - @backstage/plugin-app@0.4.1-next.2
+
+## 0.5.1-next.1
+
+### Patch Changes
+
+- 479282f: Fixed type inference of `TestApiPair` when using tuple syntax by wrapping `MockWithApiFactory` in `NoInfer`.
+- Updated dependencies
+  - @backstage/plugin-app@0.4.1-next.1
+  - @backstage/config@1.3.6
+  - @backstage/core-app-api@1.19.6-next.0
+  - @backstage/core-plugin-api@1.12.4-next.0
+  - @backstage/frontend-app-api@0.15.1-next.0
+  - @backstage/frontend-plugin-api@0.14.2-next.0
+  - @backstage/test-utils@1.7.16-next.0
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.12
+  - @backstage/plugin-app-react@0.2.1-next.0
+  - @backstage/plugin-permission-common@0.9.6
+  - @backstage/plugin-permission-react@0.4.41-next.0
+
 ## 0.5.1-next.0
 
 ### Patch Changes

@@ -35,6 +35,7 @@ const meta = preview.meta({
       options: ['row', 'column', 'row-reverse', 'column-reverse'],
     },
   },
+  args: { children: null },
 });
 
 const DecorativeBox = ({

@@ -26,7 +26,7 @@ import fs from 'fs-extra';
 import chalk from 'chalk';
 import { minimatch } from 'minimatch';
 import semver from 'semver';
-import { OptionValues } from 'commander';
+import { cli } from 'cleye';
 import { isError, NotFoundError } from '@backstage/errors';
 import { resolve as resolvePath } from 'node:path';
 
@@ -48,6 +48,7 @@ import {
 import { migrateMovedPackages } from './migrate';
 import { runYarnInstall } from '../../lib/utils';
 import { run } from '@backstage/cli-common';
+import type { CommandContext } from '../../../../wiring/types';
 
 const DEP_TYPES = [
   'dependencies',
@@ -73,12 +74,42 @@ function extendsDefaultPattern(pattern: string): boolean {
   return minimatch('@backstage/', pattern.slice(0, -1));
 }
 
-export default async (opts: OptionValues) => {
+export default async ({ args, info }: CommandContext) => {
+  const {
+    flags: { pattern: patternFlag, release, skipInstall, skipMigrate },
+  } = cli(
+    {
+      help: info,
+      booleanFlagNegation: true,
+      flags: {
+        pattern: {
+          type: String,
+          description: 'Override glob for matching packages to upgrade',
+        },
+        release: {
+          type: String,
+          description: 'Bump to a specific Backstage release line or version',
+          default: 'main',
+        },
+        skipInstall: {
+          type: Boolean,
+          description: 'Skips yarn install step',
+        },
+        skipMigrate: {
+          type: Boolean,
+          description: 'Skips migration of any moved packages',
+        },
+      },
+    },
+    undefined,
+    args,
+  );
+
   const lockfilePath = targetPaths.resolveRoot('yarn.lock');
   const lockfile = await Lockfile.load(lockfilePath);
   const yarnPluginEnabled = await hasBackstageYarnPlugin();
 
-  let pattern = opts.pattern;
+  let pattern = patternFlag;
 
   if (!pattern) {
     console.log(`Using default pattern glob ${DEFAULT_PATTERN_GLOB}`);
@@ -97,15 +128,15 @@ export default async (opts: OptionValues) => {
     findTargetVersion = createStrictVersionFinder({
       releaseManifest,
     });
-  } else if (semver.valid(opts.release)) {
+  } else if (semver.valid(release)) {
     // Specific release specified. Be strict when resolving versions
-    releaseManifest = await getManifestByVersion({ version: opts.release });
+    releaseManifest = await getManifestByVersion({ version: release! });
     findTargetVersion = createStrictVersionFinder({
       releaseManifest,
     });
   } else {
     // Release line specified. Be lenient when resolving versions.
-    if (opts.release === 'next') {
+    if (release === 'next') {
       const next = await getManifestByReleaseLine({
         releaseLine: 'next',
         versionsBaseUrl: env.BACKSTAGE_VERSIONS_BASE_URL,
@@ -120,12 +151,12 @@ export default async (opts: OptionValues) => {
         : main;
     } else {
       releaseManifest = await getManifestByReleaseLine({
-        releaseLine: opts.release,
+        releaseLine: release!,
         versionsBaseUrl: env.BACKSTAGE_VERSIONS_BASE_URL,
       });
     }
     findTargetVersion = createVersionFinder({
-      releaseLine: opts.releaseLine,
+      releaseLine: release,
       releaseManifest,
     });
   }
@@ -264,7 +295,7 @@ export default async (opts: OptionValues) => {
       );
     }
 
-    if (!opts.skipInstall) {
+    if (!skipInstall) {
       await runYarnInstall();
     } else {
       console.log();
@@ -272,14 +303,14 @@ export default async (opts: OptionValues) => {
       console.log(chalk.yellow(`Skipping yarn install`));
     }
 
-    if (!opts.skipMigrate) {
+    if (!skipMigrate) {
       console.log();
 
       const changed = await migrateMovedPackages({
-        pattern: opts.pattern,
+        pattern: patternFlag,
       });
 
-      if (changed && !opts.skipInstall) {
+      if (changed && !skipInstall) {
         await runYarnInstall();
       }
     }

@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import yargs from 'yargs';
 import { createCliPlugin } from '../../wiring/factory';
-import { lazy } from '../../wiring/lazy';
 
 export default createCliPlugin({
   pluginId: 'info',
@@ -23,27 +21,7 @@ export default createCliPlugin({
     reg.addCommand({
       path: ['info'],
       description: 'Show helpful information for debugging and reporting bugs',
-      execute: async ({ args }) => {
-        const argv = await yargs()
-          .options({
-            include: {
-              type: 'string',
-              array: true,
-              default: [],
-              description:
-                'Glob patterns for additional packages to include (e.g., @spotify/backstage*)',
-            },
-            format: {
-              type: 'string',
-              choices: ['text', 'json'],
-              default: 'text',
-              description: 'Output format (text or json)',
-            },
-          })
-          .help()
-          .parse(args);
-        await lazy(() => import('./commands/info'), 'default')(argv);
-      },
+      execute: { loader: () => import('./commands/info') },
     });
   },
 });

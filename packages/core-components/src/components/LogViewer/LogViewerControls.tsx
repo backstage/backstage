@@ -22,10 +22,14 @@ import Typography from '@material-ui/core/Typography';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import FilterListIcon from '@material-ui/icons/FilterList';
+import GetApp from '@material-ui/icons/GetApp';
+import ToolTip from '@material-ui/core/Tooltip';
 import { coreComponentsTranslationRef } from '../../translation';
 import { LogViewerSearch } from './useLogViewerSearch';
 
-export interface LogViewerControlsProps extends LogViewerSearch {}
+export interface LogViewerControlsProps extends LogViewerSearch {
+  onDownloadLog?: () => void;
+}
 
 export function LogViewerControls(props: LogViewerControlsProps) {
   const { t } = useTranslationRef(coreComponentsTranslationRef);
@@ -72,6 +76,13 @@ export function LogViewerControls(props: LogViewerControlsProps) {
           <FilterListIcon color="disabled" />
         )}
       </IconButton>
+      {Boolean(props?.onDownloadLog) ? (
+        <ToolTip title={t('logViewer.downloadBtn.tooltip')}>
+          <IconButton size="small" onClick={props.onDownloadLog}>
+            <GetApp />
+          </IconButton>
+        </ToolTip>
+      ) : null}
     </>
   );
 }

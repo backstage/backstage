@@ -21,7 +21,7 @@ import {
   PackageRole,
   PackageRoles,
 } from '@backstage/cli-node';
-import { OptionValues } from 'commander';
+import { cli } from 'cleye';
 import fs from 'fs-extra';
 import {
   resolve as resolvePath,
@@ -492,14 +492,39 @@ export function fixPeerModules(pkg: FixablePackage) {
 
 type PackageFixer = (pkg: FixablePackage, packages: FixablePackage[]) => void;
 
-export async function command(opts: OptionValues): Promise<void> {
+export default async ({
+  args,
+  info,
+}: import('../../../../wiring/types').CommandContext) => {
+  const {
+    flags: { publish, check },
+  } = cli(
+    {
+      help: info,
+      booleanFlagNegation: true,
+      flags: {
+        publish: {
+          type: Boolean,
+          description:
+            'Enable additional fixes that only apply when publishing packages',
+        },
+        check: {
+          type: Boolean,
+          description:
+            'Fail if any packages would have been changed by the command',
+        },
+      },
+    },
+    undefined,
+    args,
+  );
+
   const packages = await readFixablePackages();
   const fixRepositoryField = createRepositoryFieldFixer();
 
   const fixers: PackageFixer[] = [fixPackageExports, fixSideEffects];
 
-  // Fixers that only apply to repos that publish packages
-  if (opts.publish) {
+  if (publish) {
     fixers.push(
       fixRepositoryField,
       fixPluginId,
@@ -514,11 +539,11 @@ export async function command(opts: OptionValues): Promise<void> {
     }
   }
 
-  if (opts.check) {
+  if (check) {
     if (printPackageFixHint(packages)) {
       process.exit(1);
     }
   } else {
     await writeFixedPackages(packages);
   }
-}
+};

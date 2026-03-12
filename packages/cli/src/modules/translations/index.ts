@@ -13,10 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import yargs from 'yargs';
 import { createCliPlugin } from '../../wiring/factory';
-import { lazy } from '../../wiring/lazy';
-import { DEFAULT_MESSAGE_PATTERN } from './lib/messageFilePath';
 
 export default createCliPlugin({
   pluginId: 'translations',
@@ -25,51 +22,14 @@ export default createCliPlugin({
       path: ['translations', 'export'],
       description:
         'Export translation messages from an app and all of its frontend plugins to JSON files',
-      execute: async ({ args }) => {
-        const argv = await yargs()
-          .options({
-            output: {
-              type: 'string',
-              default: 'translations',
-              description:
-                'Output directory for exported messages and manifest',
-            },
-            pattern: {
-              type: 'string',
-              default: DEFAULT_MESSAGE_PATTERN,
-              description:
-                'File path pattern for message files, with {id} and {lang} placeholders',
-            },
-          })
-          .help()
-          .parse(args);
-        await lazy(() => import('./commands/export'), 'default')(argv);
-      },
+      execute: { loader: () => import('./commands/export') },
     });
 
     reg.addCommand({
       path: ['translations', 'import'],
       description:
         'Generate translation resource wiring from translated JSON files',
-      execute: async ({ args }) => {
-        const argv = await yargs()
-          .options({
-            input: {
-              type: 'string',
-              default: 'translations',
-              description:
-                'Input directory containing the manifest and translated message files',
-            },
-            output: {
-              type: 'string',
-              default: 'src/translations/resources.ts',
-              description: 'Output path for the generated wiring module',
-            },
-          })
-          .help()
-          .parse(args);
-        await lazy(() => import('./commands/import'), 'default')(argv);
-      },
+      execute: { loader: () => import('./commands/import') },
     });
   },
 });

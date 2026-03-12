@@ -20,7 +20,7 @@
   .bui-Checkbox {
     display: flex;
     flex-direction: row;
-    align-items: center;
+    align-items: flex-start;
     gap: var(--bui-space-2);
     font-size: var(--bui-font-size-3);
     font-family: var(--bui-font-regular);

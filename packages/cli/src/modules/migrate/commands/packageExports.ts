@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
-export async function command() {
+import { cli } from 'cleye';
+import type { CommandContext } from '../../../wiring/types';
+
+export default async ({ args, info }: CommandContext) => {
+  cli({ help: info, booleanFlagNegation: true }, undefined, args);
   throw new Error(
     'The `migrate package-exports` command has been removed, use `repo fix` instead.',
   );
-}
+};

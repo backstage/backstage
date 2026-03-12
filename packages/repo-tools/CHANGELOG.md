@@ -1,5 +1,31 @@
 # @backstage/repo-tools
 
+## 0.17.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0-next.1
+  - @backstage/cli-common@0.2.0-next.2
+
+## 0.17.0-next.1
+
+### Minor Changes
+
+- 0fbcf23: Added support for OpenAPI 3.1 to all `schema openapi` commands. The commands now auto-detect the OpenAPI version from the spec file and use the appropriate generator, supporting both OpenAPI 3.0.x and 3.1.x specifications.
+
+### Patch Changes
+
+- 426edbe: Fixed `generate-catalog-info` command failing with "too many arguments" when invoked by lint-staged via the pre-commit hook.
+- d5779e5: Updated the CLI report parser to support cleye-style help output, and strip ANSI escape codes from captured output.
+- Updated dependencies
+  - @backstage/cli-common@0.2.0-next.1
+  - @backstage/cli-node@0.2.19-next.1
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config-loader@1.10.9-next.0
+  - @backstage/errors@1.2.7
+
 ## 0.16.6-next.0
 
 ### Patch Changes

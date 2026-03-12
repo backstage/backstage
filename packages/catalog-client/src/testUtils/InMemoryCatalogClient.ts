@@ -361,10 +361,15 @@ export class InMemoryCatalogClient implements CatalogApi {
     request: GetEntitiesByRefsRequest,
   ): Promise<GetEntitiesByRefsResponse> {
     const filter = createFilter(request.filter);
+    const queryFilter = request.query
+      ? filterPredicateToFilterFunction(request.query)
+      : undefined;
     const refMap = this.#createEntityRefMap();
     const items = request.entityRefs
       .map(ref => refMap.get(ref))
-      .map(e => (e && filter(e) ? e : undefined));
+      .map(e =>
+        e && filter(e) && (!queryFilter || queryFilter(e)) ? e : undefined,
+      );
     return {
       items: request.fields
         ? items.map(e => (e ? applyFieldsFilter(e, request.fields) : undefined))
@@ -506,7 +511,12 @@ export class InMemoryCatalogClient implements CatalogApi {
     request: GetEntityFacetsRequest,
   ): Promise<GetEntityFacetsResponse> {
     const filter = createFilter(request.filter);
-    const filteredEntities = this.#entities.filter(filter);
+    let filteredEntities = this.#entities.filter(filter);
+    if (request.query) {
+      filteredEntities = filteredEntities.filter(
+        filterPredicateToFilterFunction(request.query),
+      );
+    }
     const facets = Object.fromEntries(
       request.facets.map(facet => {
         const facetValues = new Map<string, number>();

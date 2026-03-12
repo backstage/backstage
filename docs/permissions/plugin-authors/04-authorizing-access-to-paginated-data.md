@@ -4,10 +4,6 @@ title: 4. Authorizing access to paginated data
 description: Explains how to authorize access to paginated data in a Backstage plugin
 ---
 
-:::info
-This documentation is written for [the new backend system](../../backend-system/index.md) which is the default since Backstage [version 1.24](../../releases/v1.24.0.md). If you are still on the old backend system, you may want to read [its own article](https://github.com/backstage/backstage/blob/v1.37.0/docs/permissions/plugin-authors/04-authorizing-access-to-paginated-data--old.md) instead, and [consider migrating](../../backend-system/building-backends/08-migrating.md)!
-:::
-
 Authorizing `GET /todos` is similar to the update endpoint, in that it should be possible to authorize access based on the characteristics of each resource. However, we'll need to authorize a list of resources for this endpoint.
 
 One possible solution may leverage the batching functionality to authorize all of the todos, and then returning only the ones for which the decision was `ALLOW`:

@@ -84,10 +84,11 @@ export const parseRepoUrl = (
     ]),
   );
   switch (type) {
-    case 'bitbucket': {
-      if (host === 'www.bitbucket.org') {
-        checkRequiredParams(parsed, 'workspace');
-      }
+    case 'bitbucketCloud': {
+      checkRequiredParams(parsed, 'workspace', 'project', 'repo');
+      break;
+    }
+    case 'bitbucketServer': {
       checkRequiredParams(parsed, 'project', 'repo');
       break;
     }

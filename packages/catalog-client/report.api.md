@@ -15,6 +15,7 @@ export type AddLocationRequest = {
   type?: string;
   target: string;
   dryRun?: boolean;
+  onConflict?: 'refresh' | 'reject';
 };
 
 // @public
@@ -236,6 +237,7 @@ export interface GetEntitiesByRefsRequest {
   entityRefs: string[];
   fields?: EntityFieldsQuery | undefined;
   filter?: EntityFilterQuery;
+  query?: FilterPredicate;
 }
 
 // @public
@@ -280,6 +282,7 @@ export interface GetEntityAncestorsResponse {
 export interface GetEntityFacetsRequest {
   facets: string[];
   filter?: EntityFilterQuery;
+  query?: FilterPredicate;
 }
 
 // @public

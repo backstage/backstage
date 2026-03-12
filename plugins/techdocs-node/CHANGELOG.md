@@ -1,5 +1,29 @@
 # @backstage/plugin-techdocs-node
 
+## 1.14.4-next.2
+
+### Patch Changes
+
+- e96f6d9: Removed `INHERIT` from the `ALLOWED_MKDOCS_KEYS` set to address a security concern with MkDocs configuration inheritance.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0-next.1
+  - @backstage/integration@2.0.0-next.2
+
+## 1.14.3-next.1
+
+### Patch Changes
+
+- cb7c6b1: Added `techdocs.generator.mkdocs.dangerouslyAllowAdditionalKeys` configuration option to explicitly bypass MkDocs configuration key restrictions. This enables support for additional MkDocs configuration keys beyond the default safe allow list, such as the `hooks` key which some MkDocs plugins require.
+- Updated dependencies
+  - @backstage/integration@2.0.0-next.1
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/integration-aws-node@0.1.20
+  - @backstage/plugin-search-common@1.2.22
+  - @backstage/plugin-techdocs-common@0.1.1
+
 ## 1.14.3-next.0
 
 ### Patch Changes

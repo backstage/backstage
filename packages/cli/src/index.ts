@@ -28,5 +28,6 @@ import { CliInitializer } from './wiring/CliInitializer';
   initializer.add(import('./modules/new'));
   initializer.add(import('./modules/test'));
   initializer.add(import('./modules/translations'));
+  initializer.add(import('./modules/auth'));
   await initializer.run();
 })();

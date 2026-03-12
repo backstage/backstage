@@ -16,38 +16,46 @@
 
 import {
   Row as ReactAriaRow,
-  RowProps,
   useTableOptions,
   Cell as ReactAriaCell,
   Collection,
 } from 'react-aria-components';
 import { Checkbox } from '../../Checkbox';
-import { useStyles } from '../../../hooks/useStyles';
-import { TableDefinition } from '../definition';
+import { useDefinition } from '../../../hooks/useDefinition';
+import { RowDefinition } from '../definition';
+import type { RowProps } from '../types';
 import { isExternalLink } from '../../../utils/isExternalLink';
 import { InternalLinkProvider } from '../../InternalLinkProvider';
-import styles from '../Table.module.css';
 import clsx from 'clsx';
 import { Flex } from '../../Flex';
 
 /** @public */
 export function Row<T extends object>(props: RowProps<T>) {
-  const { classNames, cleanedProps } = useStyles(TableDefinition, props);
-  const { id, columns, children, href, ...rest } = cleanedProps;
+  const { ownProps, restProps, analytics } = useDefinition(
+    RowDefinition,
+    props,
+  );
+  const { classes, columns, children, href } = ownProps;
   const hasInternalHref = !!href && !isExternalLink(href);
+  const hasInteraction = !!restProps.onAction || !!href;
+
+  const handlePress = hasInteraction
+    ? () => {
+        restProps.onAction?.();
+        if (href) {
+          analytics.captureEvent('click', href, {
+            attributes: { to: String(href) },
+          });
+        }
+      }
+    : undefined;
 
   let { selectionBehavior, selectionMode } = useTableOptions();
 
   const content = (
     <>
       {selectionBehavior === 'toggle' && selectionMode === 'multiple' && (
-        <ReactAriaCell
-          className={clsx(
-            classNames.cellSelection,
-            styles[classNames.cell],
-            styles[classNames.cellSelection],
-          )}
-        >
+        <ReactAriaCell className={clsx(classes.cell, classes.cellSelection)}>
           <Flex justify="center" align="center">
             <Checkbox slot="selection">
               <></>
@@ -62,11 +70,11 @@ export function Row<T extends object>(props: RowProps<T>) {
   return (
     <InternalLinkProvider href={href}>
       <ReactAriaRow
-        id={id}
         href={href}
-        className={clsx(classNames.row, styles[classNames.row])}
+        className={classes.root}
         data-react-aria-pressable={hasInternalHref ? 'true' : undefined}
-        {...rest}
+        {...restProps}
+        onAction={handlePress}
       >
         {content}
       </ReactAriaRow>
