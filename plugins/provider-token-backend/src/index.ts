@@ -14,5 +14,10 @@
  * limitations under the License.
  */
 
-// Public exports — populated in Tasks 3 and 5
-export {};
+export type {
+  ProviderToken,
+  ProviderTokenService,
+} from './ProviderTokenService';
+export { providerTokenServiceRef } from './ProviderTokenService';
+// ProviderTokenRefresher and RefreshResult are intentionally NOT exported — internal implementation detail
+// crypto.ts is intentionally NOT exported — internal only
