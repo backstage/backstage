@@ -15,8 +15,11 @@
  */
 
 export {
+  type FinalizedSpecializedApp,
   prepareSpecializedApp,
   type PreparedSpecializedApp,
+  type PreparedSpecializedAppSignInProps,
+  type SpecializedAppSessionState,
   createSpecializedApp,
   type CreateSpecializedAppOptions,
 } from './createSpecializedApp';

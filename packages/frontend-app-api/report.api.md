@@ -16,6 +16,7 @@ import { FrontendFeature } from '@backstage/frontend-plugin-api';
 import { FrontendPlugin } from '@backstage/frontend-plugin-api';
 import { FrontendPluginInfo } from '@backstage/frontend-plugin-api';
 import { JsonObject } from '@backstage/types';
+import { ComponentType } from 'react';
 import { JSX as JSX_2 } from 'react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { SubRouteRef } from '@backstage/frontend-plugin-api';
@@ -160,7 +161,10 @@ export type CreateAppRouteBinder = <
 ) => void;
 
 // @public @deprecated
-export function createSpecializedApp(options?: CreateSpecializedAppOptions): {
+export function createSpecializedApp(options?: CreateSpecializedAppOptions): FinalizedSpecializedApp;
+
+// @public
+export type FinalizedSpecializedApp = {
   sessionState: SpecializedAppSessionState;
   tree: AppTree;
   errors?: AppError[];
@@ -210,16 +214,16 @@ export type FrontendPluginInfoResolver = (ctx: {
 // @public
 export type PreparedSpecializedApp = {
   getSignIn(): {
-    element?: JSX_2.Element;
-    ready: Promise<{
-      sessionState: SpecializedAppSessionState;
-    }>;
+    Component: ComponentType<PreparedSpecializedAppSignInProps>;
   };
-  finalize(sessionState?: SpecializedAppSessionState): {
-    sessionState: SpecializedAppSessionState;
-    tree: AppTree;
-    errors?: AppError[];
-  };
+  tryFinalize(): FinalizedSpecializedApp | undefined;
+  finalize(sessionState?: SpecializedAppSessionState): FinalizedSpecializedApp;
+};
+
+// @public
+export type PreparedSpecializedAppSignInProps = {
+  onError?(error: Error): void;
+  onReady(): void;
 };
 
 // @public

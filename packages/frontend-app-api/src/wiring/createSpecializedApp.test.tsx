@@ -35,6 +35,7 @@ import { screen, render } from '@testing-library/react';
 import {
   createSpecializedApp,
   prepareSpecializedApp,
+  PreparedSpecializedAppSignInProps,
 } from './createSpecializedApp';
 import { mockApis } from '@backstage/test-utils';
 import {
@@ -64,6 +65,16 @@ function makeAppPlugin(label: string = 'Test') {
     ],
   });
 }
+
+function renderPreparedSignIn(signIn: {
+  Component: ComponentType<PreparedSpecializedAppSignInProps>;
+}) {
+  return new Promise<void>((resolve, reject) => {
+    const SignIn = signIn.Component;
+    render(<SignIn onReady={() => resolve()} onError={reject} />);
+  });
+}
+
 describe('createSpecializedApp', () => {
   const appPlugin = appPluginOriginal.withOverrides({
     extensions: [
@@ -902,20 +913,21 @@ describe('createSpecializedApp', () => {
       });
 
       const signIn = preparedApp.getSignIn();
-      expect(signIn.element).toBeDefined();
-      render(signIn.element);
+      expect(signIn.Component).toBeDefined();
+      const readyPromise = renderPreparedSignIn(signIn);
       await expect(
         screen.findByText('Custom Sign In'),
       ).resolves.toBeInTheDocument();
 
       expect(appLayoutFactory).not.toHaveBeenCalled();
 
-      const { sessionState } = await signIn.ready;
+      await readyPromise;
       expect(appLayoutFactory).not.toHaveBeenCalled();
 
-      const finalizedApp = preparedApp.finalize(sessionState);
+      const finalizedApp = preparedApp.tryFinalize();
+      expect(finalizedApp).toBeDefined();
       render(
-        finalizedApp.tree.root.instance!.getData(
+        finalizedApp!.tree.root.instance!.getData(
           coreExtensionData.reactElement,
         ),
       );
@@ -984,16 +996,17 @@ describe('createSpecializedApp', () => {
       });
 
       const signIn = preparedApp.getSignIn();
-      expect(signIn.element).toBeDefined();
-      render(signIn.element);
+      expect(signIn.Component).toBeDefined();
+      const readyPromise = renderPreparedSignIn(signIn);
       await expect(
         screen.findByText('Custom Sign In'),
       ).resolves.toBeInTheDocument();
 
-      const { sessionState } = await signIn.ready;
-      const finalizedApp = preparedApp.finalize(sessionState);
+      await readyPromise;
+      const finalizedApp = preparedApp.tryFinalize();
+      expect(finalizedApp).toBeDefined();
       render(
-        finalizedApp.tree.root.instance!.getData(
+        finalizedApp!.tree.root.instance!.getData(
           coreExtensionData.reactElement,
         ),
       );
@@ -1064,18 +1077,19 @@ describe('createSpecializedApp', () => {
       });
 
       const signIn = preparedApp.getSignIn();
-      render(signIn.element);
+      const readyPromise = renderPreparedSignIn(signIn);
       await expect(
         screen.findByText('Custom Sign In'),
       ).resolves.toBeInTheDocument();
 
-      const { sessionState } = await signIn.ready;
+      await readyPromise;
       expect(featureFlagsApi.isActive).toHaveBeenCalledWith('test-flag');
       expect(featureFlagsApi.isActive).toHaveBeenCalledTimes(1);
 
-      const finalizedApp = preparedApp.finalize(sessionState);
+      const finalizedApp = preparedApp.tryFinalize();
+      expect(finalizedApp).toBeDefined();
       render(
-        finalizedApp.tree.root.instance!.getData(
+        finalizedApp!.tree.root.instance!.getData(
           coreExtensionData.reactElement,
         ),
       );
@@ -1140,25 +1154,26 @@ describe('createSpecializedApp', () => {
       });
 
       const signIn = preparedApp.getSignIn();
-      render(signIn.element);
+      const readyPromise = renderPreparedSignIn(signIn);
       await expect(
         screen.findByText('Custom Sign In'),
       ).resolves.toBeInTheDocument();
 
       expect(() => preparedApp.finalize()).toThrow(
-        'prepareSpecializedApp requires awaiting getSignIn().ready before calling finalize()',
+        'prepareSpecializedApp requires waiting for getSignIn().Component to call onReady before calling finalize()',
       );
 
       onSignInSuccess!(identityApi);
       expect(() => preparedApp.finalize()).toThrow(
-        'prepareSpecializedApp requires awaiting getSignIn().ready before calling finalize()',
+        'prepareSpecializedApp requires waiting for getSignIn().Component to call onReady before calling finalize()',
       );
 
-      const { sessionState } = await signIn.ready;
+      await readyPromise;
 
-      const finalizedApp = preparedApp.finalize(sessionState);
+      const finalizedApp = preparedApp.tryFinalize();
+      expect(finalizedApp).toBeDefined();
       render(
-        finalizedApp.tree.root.instance!.getData(
+        finalizedApp!.tree.root.instance!.getData(
           coreExtensionData.reactElement,
         ),
       );

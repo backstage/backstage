@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { JSX, lazy, ReactNode, Suspense, useEffect, useState } from 'react';
+import { JSX, lazy, ReactNode, Suspense, useReducer, useState } from 'react';
 import {
   ConfigApi,
   coreExtensionData,
@@ -30,6 +30,7 @@ import { overrideBaseUrlConfigs } from '../../core-app-api/src/app/overrideBaseU
 import { ConfigReader } from '@backstage/config';
 import {
   CreateAppRouteBinder,
+  FinalizedSpecializedApp,
   prepareSpecializedApp,
   PreparedSpecializedApp,
   FrontendPluginInfoResolver,
@@ -126,18 +127,9 @@ export function createApp(options?: CreateAppOptions): {
       bindRoutes: options?.bindRoutes,
       advanced: options?.advanced,
     });
-    const signIn = preparedApp.getSignIn();
-
-    if (signIn.element) {
-      return {
-        default: () => <PreparedAppRoot preparedApp={preparedApp} />,
-      };
-    }
-
-    const { sessionState } = await signIn.ready;
 
     return {
-      default: () => renderFinalizedApp(preparedApp.finalize(sessionState)),
+      default: () => <PreparedAppRoot preparedApp={preparedApp} />,
     };
   }
 
@@ -158,51 +150,34 @@ function PreparedAppRoot(props: {
   preparedApp: PreparedSpecializedApp;
 }): JSX.Element {
   const signIn = props.preparedApp.getSignIn();
+  const SignIn = signIn.Component;
   const [finalizeError, setFinalizeError] = useState<Error>();
-  const [finalizedApp, setFinalizedApp] = useState<
-    ReturnType<PreparedSpecializedApp['finalize']> | undefined
-  >(undefined);
-
-  useEffect(() => {
-    let cancelled = false;
-    const runFinalize = async () => {
-      try {
-        const { sessionState } = await signIn.ready;
-        if (cancelled) {
-          return;
-        }
-        setFinalizedApp(props.preparedApp.finalize(sessionState));
-      } catch (error) {
-        if (cancelled) {
-          return;
-        }
-        setFinalizeError(error as Error);
-      }
-    };
-    void runFinalize();
-    return () => {
-      cancelled = true;
-    };
-  }, [props.preparedApp, signIn]);
+  const [, triggerRerender] = useReducer((count: number) => count + 1, 0);
 
   if (finalizeError) {
     throw finalizeError;
   }
 
+  const finalizedApp: FinalizedSpecializedApp | undefined =
+    props.preparedApp.tryFinalize();
+
   if (!finalizedApp) {
-    return signIn.element ?? <></>;
+    return (
+      <SignIn
+        onReady={() => {
+          triggerRerender();
+        }}
+        onError={setFinalizeError}
+      />
+    );
   }
 
-  return renderFinalizedApp(finalizedApp);
-}
-
-function renderFinalizedApp(
-  app: ReturnType<PreparedSpecializedApp['finalize']>,
-) {
-  const errorPage = maybeCreateErrorPage(app);
+  const errorPage = maybeCreateErrorPage(finalizedApp);
   if (errorPage) {
     return errorPage;
   }
 
-  return app.tree.root.instance!.getData(coreExtensionData.reactElement)!;
+  return finalizedApp.tree.root.instance!.getData(
+    coreExtensionData.reactElement,
+  )!;
 }

@@ -54,8 +54,7 @@ import {
   OpaqueFrontendPlugin,
 } from '@internal/frontend';
 import { OpaqueType } from '@internal/opaque';
-import { createDeferred, type DeferredPromise } from '@backstage/types';
-import { ComponentType, JSX, ReactNode } from 'react';
+import { ComponentType, JSX, ReactNode, useEffect } from 'react';
 
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import {
@@ -130,12 +129,29 @@ type SignInPageProps = {
   children?: ReactNode;
 };
 
+/**
+ * Props for the bootstrap component exposed by {@link PreparedSpecializedApp.getSignIn}.
+ *
+ * @public
+ */
+export type PreparedSpecializedAppSignInProps = {
+  onReady(): void;
+  onError?(error: Error): void;
+};
+
+/**
+ * Result of finalizing a prepared specialized app.
+ *
+ * @public
+ */
+export type FinalizedSpecializedApp = {
+  sessionState: SpecializedAppSessionState;
+  tree: AppTree;
+  errors?: AppError[];
+};
+
 type SignInRuntime = {
   value: NonNullable<ReturnType<PreparedSpecializedApp['getSignIn']>>;
-  readyDeferred?: DeferredPromise<
-    { sessionState: SpecializedAppSessionState },
-    unknown
-  >;
   error?: unknown;
   readyIdentityApi?: IdentityApi;
   requiresSignIn: boolean;
@@ -299,8 +315,9 @@ export type CreateSpecializedAppOptions = {
   /**
    * A reusable specialized app session state to use.
    *
-   * This can be obtained from either {@link PreparedSpecializedApp.getSignIn}
-   * or {@link PreparedSpecializedApp.finalize}, and reused in a future app
+   * This can be obtained from either the `onReady` callback of
+   * {@link PreparedSpecializedApp.getSignIn} or
+   * {@link PreparedSpecializedApp.finalize}, and reused in a future app
    * instance to skip sign-in and session preparation.
    */
   sessionState?: SpecializedAppSessionState;
@@ -361,16 +378,10 @@ export type CreateSpecializedAppOptions = {
  */
 export type PreparedSpecializedApp = {
   getSignIn(): {
-    element?: JSX.Element;
-    ready: Promise<{
-      sessionState: SpecializedAppSessionState;
-    }>;
+    Component: ComponentType<PreparedSpecializedAppSignInProps>;
   };
-  finalize(sessionState?: SpecializedAppSessionState): {
-    sessionState: SpecializedAppSessionState;
-    tree: AppTree;
-    errors?: AppError[];
-  };
+  tryFinalize(): FinalizedSpecializedApp | undefined;
+  finalize(sessionState?: SpecializedAppSessionState): FinalizedSpecializedApp;
 };
 
 // Minimal local permission API interface to avoid a dependency on @backstage/plugin-permission-react
@@ -560,7 +571,7 @@ export function prepareSpecializedApp(
     if (signInRuntime?.requiresSignIn && !signInRuntime.readyIdentityApi) {
       return Promise.reject(
         new Error(
-          'prepareSpecializedApp requires awaiting getSignIn().ready before calling finalize()',
+          'prepareSpecializedApp requires waiting for getSignIn().Component to call onReady before calling finalize()',
         ),
       );
     }
@@ -583,36 +594,101 @@ export function prepareSpecializedApp(
   function startSignInFinalize(
     runtime: SignInRuntime,
     identityApi: IdentityApi,
-  ): Promise<{ sessionState: SpecializedAppSessionState }> {
-    if (!runtime.readyDeferred) {
-      throw new Error('Sign-in session bootstrap has not been initialized');
-    }
-
+  ): Promise<SpecializedAppSessionState> {
     runtime.readyIdentityApi = identityApi;
-    return getSessionState()
-      .then(sessionState => {
-        return { sessionState };
-      })
-      .catch(error => {
-        runtime.error = error;
-        throw error;
-      });
+    return getSessionState().catch(error => {
+      runtime.error = error;
+      throw error;
+    });
   }
 
-  let finalized:
-    | {
-        sessionState: SpecializedAppSessionState;
-        tree: AppTree;
-        errors?: AppError[];
-      }
-    | undefined;
+  function getPreparedSessionState() {
+    if (cachedSessionState) {
+      return cachedSessionState;
+    }
+
+    getSignIn();
+    return undefined;
+  }
+
+  function finalizeWithSessionState(
+    finalizedSessionState: SpecializedAppSessionState,
+  ): FinalizedSpecializedApp {
+    const sessionStateData = OpaqueSpecializedAppSessionState.toInternal(
+      finalizedSessionState,
+    );
+    updateIdentityApiTarget(sessionStateData.identityApi);
+
+    prepareFinalizedTree({
+      tree,
+    });
+    clearTreeInstances(tree);
+    instantiateAndInitializePhaseTree({
+      tree,
+      apis: phase.apis,
+      collector,
+      extensionFactoryMiddleware: mergedExtensionFactoryMiddleware,
+      routeResolutionApi: phase.routeResolutionApi,
+      appTreeApi: phase.appTreeApi,
+      routeRefsById,
+      predicateContext: sessionStateData.predicateContext,
+    });
+
+    return {
+      sessionState: finalizedSessionState,
+      tree,
+      errors: collector.collectErrors(),
+    };
+  }
+
+  let finalized: FinalizedSpecializedApp | undefined;
 
   function getSignIn() {
     if (signInRuntime) {
       return signInRuntime.value;
     }
 
-    let runtime: SignInRuntime;
+    const callbacks: {
+      onReady?: PreparedSpecializedAppSignInProps['onReady'];
+      onError?: PreparedSpecializedAppSignInProps['onError'];
+    } = {};
+    const runtimeRef: { current?: SignInRuntime } = {};
+    let bootstrapState:
+      | { status: 'idle' | 'pending' }
+      | { status: 'ready'; sessionState: SpecializedAppSessionState }
+      | { status: 'error'; error: Error } = { status: 'idle' };
+
+    function flushBootstrapState() {
+      if (bootstrapState.status === 'ready') {
+        callbacks.onReady?.();
+      } else if (bootstrapState.status === 'error') {
+        callbacks.onError?.(bootstrapState.error);
+      }
+    }
+
+    function startBootstrap(loader: Promise<SpecializedAppSessionState>) {
+      if (bootstrapState.status !== 'idle') {
+        return;
+      }
+
+      bootstrapState = { status: 'pending' };
+      void loader
+        .then(sessionState => {
+          bootstrapState = { status: 'ready', sessionState };
+          flushBootstrapState();
+        })
+        .catch(error => {
+          if (runtimeRef.current) {
+            runtimeRef.current.error = error;
+          }
+          bootstrapState = {
+            status: 'error',
+            error: asError(error),
+          };
+          flushBootstrapState();
+        });
+    }
+
     const signInElement = providedSessionState
       ? undefined
       : createSignInElement({
@@ -624,44 +700,73 @@ export function prepareSpecializedApp(
           appTreeApi: phase.appTreeApi,
           extensionFactoryMiddleware: mergedExtensionFactoryMiddleware,
           onSignInSuccess(identityApi) {
-            void startSignInFinalize(runtime, identityApi)
-              .then(ready => {
-                runtime.readyDeferred?.resolve(ready);
-              })
-              .catch(error => {
-                runtime.readyDeferred?.reject(error);
-              });
+            if (!runtimeRef.current) {
+              throw new Error('Sign-in runtime is not initialized');
+            }
+
+            startBootstrap(
+              startSignInFinalize(runtimeRef.current, identityApi),
+            );
           },
         });
 
-    if (signInElement) {
-      const readyDeferred = createDeferred<
-        { sessionState: SpecializedAppSessionState },
-        unknown
-      >();
-      runtime = {
-        requiresSignIn: true,
-        readyDeferred,
-        value: {
-          element: signInElement,
-          ready: readyDeferred,
-        },
-      };
-    } else {
-      runtime = {
-        requiresSignIn: false,
-        value: {
-          ready: getSessionState().then(sessionState => ({ sessionState })),
-        },
-      };
-    }
+    const Component = (props: PreparedSpecializedAppSignInProps) => {
+      callbacks.onReady = props.onReady;
+      callbacks.onError = props.onError;
 
+      useEffect(() => {
+        callbacks.onReady = props.onReady;
+        callbacks.onError = props.onError;
+
+        if (!signInElement) {
+          startBootstrap(getSessionState());
+        }
+        flushBootstrapState();
+
+        return () => {
+          if (callbacks.onReady === props.onReady) {
+            callbacks.onReady = undefined;
+          }
+          if (callbacks.onError === props.onError) {
+            callbacks.onError = undefined;
+          }
+        };
+      }, [props.onError, props.onReady]);
+
+      return signInElement ?? <></>;
+    };
+
+    const runtime = {
+      requiresSignIn: Boolean(signInElement),
+      value: {
+        Component,
+      },
+    };
+
+    runtimeRef.current = runtime;
     signInRuntime = runtime;
     return runtime.value;
   }
 
   return {
     getSignIn,
+    tryFinalize() {
+      if (finalized) {
+        return finalized;
+      }
+
+      if (signInRuntime?.error) {
+        throw signInRuntime.error;
+      }
+
+      const finalizedSessionState = getPreparedSessionState();
+      if (!finalizedSessionState) {
+        return undefined;
+      }
+
+      finalized = finalizeWithSessionState(finalizedSessionState);
+      return finalized;
+    },
     finalize(sessionState?: SpecializedAppSessionState) {
       if (finalized) {
         return finalized;
@@ -670,44 +775,20 @@ export function prepareSpecializedApp(
       if (signInRuntime?.error) {
         throw signInRuntime.error;
       }
-      const signIn = getSignIn();
       const finalizedSessionState =
         sessionState ??
-        cachedSessionState ??
-        (signIn.element
+        getPreparedSessionState() ??
+        (signInRuntime?.requiresSignIn
           ? undefined
           : createSessionState(EMPTY_PREDICATE_CONTEXT));
       if (!finalizedSessionState) {
         throw new Error(
-          'prepareSpecializedApp requires awaiting getSignIn().ready before calling finalize()',
+          'prepareSpecializedApp requires waiting for getSignIn().Component to call onReady before calling finalize()',
         );
       }
 
-      const sessionStateData = OpaqueSpecializedAppSessionState.toInternal(
-        finalizedSessionState,
-      );
-      updateIdentityApiTarget(sessionStateData.identityApi);
-
-      prepareFinalizedTree({
-        tree,
-      });
-      clearTreeInstances(tree);
-      instantiateAndInitializePhaseTree({
-        tree,
-        apis: phase.apis,
-        collector,
-        extensionFactoryMiddleware: mergedExtensionFactoryMiddleware,
-        routeResolutionApi: phase.routeResolutionApi,
-        appTreeApi: phase.appTreeApi,
-        routeRefsById,
-        predicateContext: sessionStateData.predicateContext,
-      });
-
-      finalized = {
-        sessionState: finalizedSessionState,
-        tree,
-        errors: collector.collectErrors(),
-      };
+      cachedSessionState = finalizedSessionState;
+      finalized = finalizeWithSessionState(finalizedSessionState);
       return finalized;
     },
   };
@@ -722,11 +803,9 @@ export function prepareSpecializedApp(
  *
  * @public
  */
-export function createSpecializedApp(options?: CreateSpecializedAppOptions): {
-  sessionState: SpecializedAppSessionState;
-  tree: AppTree;
-  errors?: AppError[];
-} {
+export function createSpecializedApp(
+  options?: CreateSpecializedAppOptions,
+): FinalizedSpecializedApp {
   return prepareSpecializedApp(options).finalize();
 }
 
@@ -1014,6 +1093,14 @@ function setNodeInstance(node: AppNode, instance?: AppNodeInstance) {
 
 function clearNodeInstance(node: AppNode) {
   setNodeInstance(node, undefined);
+}
+
+function asError(error: unknown): Error {
+  if (error instanceof Error) {
+    return error;
+  }
+
+  return new Error(String(error));
 }
 
 function setIdentityApiTarget(options: {
