@@ -453,6 +453,103 @@ export function prepareSpecializedApp(
   });
   let signInRuntime: SignInRuntime | null | undefined;
   let deferredApiFactoriesRegistered = false;
+  let cachedPredicateContext: ExtensionPredicateContext | undefined;
+  let predicateContextPromise: Promise<ExtensionPredicateContext> | undefined;
+
+  function updateIdentityApiTarget() {
+    if (!signInRuntime?.readyIdentityApi) {
+      return;
+    }
+
+    setIdentityApiTarget({
+      apis: phase.apis,
+      identityApi: signInRuntime.readyIdentityApi,
+      signOutTargetUrl: appBasePath || '/',
+    });
+  }
+
+  async function createPredicateContext() {
+    updateIdentityApiTarget();
+
+    const featureFlagsApi = phase.apis.get(featureFlagsApiRef);
+    const referencedFlagNames = new Set<string>();
+    const referencedPermissionNames = new Set<string>();
+    for (const node of tree.nodes.values()) {
+      if (node.spec.if !== undefined) {
+        for (const name of extractFeatureFlagNames(node.spec.if)) {
+          referencedFlagNames.add(name);
+        }
+        for (const name of extractPermissionNames(node.spec.if)) {
+          referencedPermissionNames.add(name);
+        }
+      }
+    }
+
+    let allowedPermissions: string[] = [];
+    if (referencedPermissionNames.size > 0) {
+      const permissionApi = phase.apis.get(localPermissionApiRef);
+      if (!permissionApi) {
+        return {
+          featureFlags: featureFlagsApi
+            ? Array.from(referencedFlagNames).filter(name =>
+                featureFlagsApi.isActive(name),
+              )
+            : [],
+          permissions: allowedPermissions,
+        };
+      }
+
+      const permNames = Array.from(referencedPermissionNames);
+      const responses = await permissionApi.authorize(
+        permNames.map(name => ({
+          permission: { name, type: 'basic', attributes: {} },
+        })),
+      );
+      allowedPermissions = permNames.filter(
+        (_, i) => responses[i].result === 'ALLOW',
+      );
+    }
+
+    return {
+      featureFlags: featureFlagsApi
+        ? Array.from(referencedFlagNames).filter(name =>
+            featureFlagsApi.isActive(name),
+          )
+        : [],
+      permissions: allowedPermissions,
+    };
+  }
+
+  function getPredicateContext() {
+    if (cachedPredicateContext) {
+      return Promise.resolve(cachedPredicateContext);
+    }
+    if (predicateContextPromise) {
+      return predicateContextPromise;
+    }
+    if (signInRuntime?.error) {
+      return Promise.reject(signInRuntime.error);
+    }
+    if (signInRuntime && !signInRuntime.readyIdentityApi) {
+      return Promise.reject(
+        new Error(
+          'prepareSpecializedApp requires awaiting signIn.complete before calling buildPredicateContext() or finalize()',
+        ),
+      );
+    }
+
+    predicateContextPromise = createPredicateContext()
+      .then(predicateContext => {
+        cachedPredicateContext = predicateContext;
+        return predicateContext;
+      })
+      .catch(error => {
+        predicateContextPromise = undefined;
+        throw error;
+      });
+
+    return predicateContextPromise;
+  }
 
   function startSignInFinalize(
     runtime: SignInRuntime,
@@ -464,15 +561,8 @@ export function prepareSpecializedApp(
 
     runtime.completion = Promise.resolve()
       .then(async () => {
-        void tree;
-        void identityApi;
-
-        // Future: build the post-sign-in predicate context here using the
-        // captured identity together with feature flags and permission APIs.
-        // finalize() should then use that context when constructing the final
-        // tree and deciding which APIs and extensions are available.
-
         runtime.readyIdentityApi = identityApi;
+        await getPredicateContext();
       })
       .catch(error => {
         runtime.error = error;
@@ -529,62 +619,7 @@ export function prepareSpecializedApp(
       return signInRuntime.value;
     },
     async buildPredicateContext(): Promise<ExtensionPredicateContext> {
-      if (signInRuntime?.error) {
-        throw signInRuntime.error;
-      }
-      if (signInRuntime?.readyIdentityApi) {
-        setIdentityApiTarget({
-          apis: phase.apis,
-          identityApi: signInRuntime.readyIdentityApi,
-          signOutTargetUrl: appBasePath || '/',
-        });
-      }
-
-      if (signInRuntime && !signInRuntime.readyIdentityApi) {
-        throw new Error(
-          'prepareSpecializedApp requires awaiting signIn.complete before calling buildPredicateContext() or finalize()',
-        );
-      }
-
-      const featureFlagsApi = phase.apis.get(featureFlagsApiRef);
-      const referencedFlagNames = new Set<string>();
-      const referencedPermissionNames = new Set<string>();
-      for (const node of tree.nodes.values()) {
-        if (node.spec.if !== undefined) {
-          for (const name of extractFeatureFlagNames(node.spec.if)) {
-            referencedFlagNames.add(name);
-          }
-          for (const name of extractPermissionNames(node.spec.if)) {
-            referencedPermissionNames.add(name);
-          }
-        }
-      }
-
-      // Single batched HTTP call for all permission names referenced in predicates.
-      // Synthetic BasicPermission objects are constructed from names so that no
-      // per-plugin declaration is required.
-      const permissionApi = phase.apis.get(localPermissionApiRef);
-      let allowedPermissions: string[] = [];
-      if (permissionApi && referencedPermissionNames.size > 0) {
-        const permNames = Array.from(referencedPermissionNames);
-        const responses = await permissionApi.authorize(
-          permNames.map(name => ({
-            permission: { name, type: 'basic', attributes: {} },
-          })),
-        );
-        allowedPermissions = permNames.filter(
-          (_, i) => responses[i].result === 'ALLOW',
-        );
-      }
-
-      return {
-        featureFlags: featureFlagsApi
-          ? Array.from(referencedFlagNames).filter(name =>
-              featureFlagsApi.isActive(name),
-            )
-          : [],
-        permissions: allowedPermissions,
-      };
+      return getPredicateContext();
     },
     finalize(predicateContext?: ExtensionPredicateContext) {
       if (finalized) {
@@ -605,13 +640,7 @@ export function prepareSpecializedApp(
         deferredApiFactoriesRegistered = true;
       }
 
-      if (signInRuntime?.readyIdentityApi) {
-        setIdentityApiTarget({
-          apis: phase.apis,
-          identityApi: signInRuntime.readyIdentityApi,
-          signOutTargetUrl: appBasePath || '/',
-        });
-      }
+      updateIdentityApiTarget();
 
       prepareFinalizedTree({
         tree,
@@ -625,7 +654,7 @@ export function prepareSpecializedApp(
         routeResolutionApi: phase.routeResolutionApi,
         appTreeApi: phase.appTreeApi,
         routeRefsById,
-        predicateContext,
+        predicateContext: predicateContext ?? cachedPredicateContext,
       });
 
       finalized = {
@@ -748,10 +777,6 @@ function hasDeferredApiFactoryAttachments(
   }
   visited.add(node);
 
-  // Future: once permissions / feature flag predicates are modeled in the app
-  // tree, any predicate on the API node itself or its attachment subtree should
-  // move the factory to the deferred phase instead of being registered during
-  // sign-in.
   if (hasPhaseSensitivePredicate(node)) {
     return true;
   }
@@ -933,9 +958,6 @@ function prepareSignInTree(options: {
     return;
   }
 
-  // Future: apply sign-in phase predicate filtering here before any wrappers,
-  // elements, sign-in page APIs, or app-owned APIs are instantiated. APIs or
-  // extensions gated by permissions or feature flags must be absent here.
   const signInPageNode = appRootNode.edges.attachments.get('signInPage')?.[0];
   if (!signInPageNode) {
     return;
@@ -966,9 +988,6 @@ function prepareFinalizedTree(options: { tree: AppTree }) {
     return;
   }
 
-  // Future: once post-sign-in predicate context has been evaluated, apply the
-  // final feature-flag and permission filtering here before collecting API
-  // factories or instantiating the final tree.
   deleteAttachment(appRootNode, 'signInPage');
 }
 

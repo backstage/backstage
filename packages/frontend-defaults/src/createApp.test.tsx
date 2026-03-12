@@ -386,6 +386,56 @@ describe('createApp', () => {
     ).resolves.toBeInTheDocument();
   });
 
+  it('should evaluate extension if predicates before rendering apps without sign-in', async () => {
+    const featureFlagsApi = {
+      isActive: jest.fn((name: string) => name === 'test-flag'),
+      registerFlag: jest.fn(),
+      getRegisteredFlags: () => [],
+      save: jest.fn(),
+    } as unknown as typeof featureFlagsApiRef.T;
+    const app = createApp({
+      advanced: {
+        configLoader: async () => ({ config: mockApis.config() }),
+      },
+      features: [
+        appPlugin,
+        createFrontendModule({
+          pluginId: 'app',
+          extensions: [
+            ApiBlueprint.make({
+              params: defineParams =>
+                defineParams({
+                  api: featureFlagsApiRef,
+                  deps: {},
+                  factory: () => featureFlagsApi,
+                }),
+            }),
+          ],
+        }),
+        createFrontendPlugin({
+          pluginId: 'test',
+          featureFlags: [{ name: 'test-flag' }],
+          extensions: [
+            PageBlueprint.make({
+              if: { featureFlags: { $contains: 'test-flag' } },
+              params: {
+                path: '/',
+                loader: async () => <div>Flagged Page</div>,
+              },
+            }),
+          ],
+        }),
+      ],
+    });
+
+    await renderWithEffects(app.createRoot());
+
+    await expect(
+      screen.findByText('Flagged Page'),
+    ).resolves.toBeInTheDocument();
+    expect(featureFlagsApi.isActive).toHaveBeenCalledWith('test-flag');
+  });
+
   it('should make the app structure available through the AppTreeApi', async () => {
     let appTreeApi: AppTreeApi | undefined = undefined;
 

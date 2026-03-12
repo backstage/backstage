@@ -133,6 +133,8 @@ export function createApp(options?: CreateAppOptions): {
       };
     }
 
+    await preparedApp.buildPredicateContext();
+
     return {
       default: () => renderFinalizedApp(preparedApp.finalize()),
     };
@@ -164,12 +166,15 @@ function PreparedAppRoot(props: {
     let cancelled = false;
     const runFinalize = async () => {
       try {
-        const predicateContext =
+        if (signIn) {
+          await signIn.complete;
+        } else {
           await props.preparedApp.buildPredicateContext();
+        }
         if (cancelled) {
           return;
         }
-        setFinalizedApp(props.preparedApp.finalize(predicateContext));
+        setFinalizedApp(props.preparedApp.finalize());
       } catch (error) {
         if (cancelled) {
           return;
@@ -177,23 +182,7 @@ function PreparedAppRoot(props: {
         setFinalizeError(error as Error);
       }
     };
-    if (signIn) {
-      void signIn.complete
-        .then(() => {
-          if (cancelled) {
-            return;
-          }
-          void runFinalize();
-        })
-        .catch(error => {
-          if (cancelled) {
-            return;
-          }
-          setFinalizeError(error);
-        });
-    } else {
-      setFinalizedApp(props.preparedApp.finalize());
-    }
+    void runFinalize();
     return () => {
       cancelled = true;
     };

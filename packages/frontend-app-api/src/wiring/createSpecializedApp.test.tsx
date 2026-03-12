@@ -961,6 +961,86 @@ describe('createSpecializedApp', () => {
       });
     });
 
+    it('should reuse predicate context gathered during sign-in completion', async () => {
+      const identityApi = {
+        getProfileInfo: async () => ({ displayName: 'Test User' }),
+        getBackstageIdentity: async () => ({
+          type: 'user' as const,
+          userEntityRef: 'user:default/test-user',
+          ownershipEntityRefs: ['user:default/test-user'],
+        }),
+        getCredentials: async () => ({ token: 'token' }),
+        signOut: async () => {},
+      };
+      const featureFlagsApi = {
+        isActive: jest.fn((name: string) => name === 'test-flag'),
+        registerFlag: jest.fn(),
+        getRegisteredFlags: () => [],
+        save: jest.fn(),
+      } as unknown as typeof featureFlagsApiRef.T;
+      const gatedAppPlugin = appPluginOriginal.withOverrides({
+        extensions: [
+          appPluginOriginal.getExtension('app/layout').override({
+            if: { featureFlags: { $contains: 'test-flag' } },
+            factory: () => [
+              coreExtensionData.reactElement(<div>Flagged Layout</div>),
+            ],
+          }),
+        ],
+      });
+
+      const preparedApp = prepareSpecializedApp({
+        features: [
+          gatedAppPlugin,
+          createFrontendModule({
+            pluginId: 'app',
+            extensions: [
+              ApiBlueprint.make({
+                params: defineParams =>
+                  defineParams({
+                    api: featureFlagsApiRef,
+                    deps: {},
+                    factory: () => featureFlagsApi,
+                  }),
+              }),
+              gatedAppPlugin.getExtension('sign-in-page:app').override({
+                factory: () => {
+                  function SignInPage(props: {
+                    onSignInSuccess(identity: IdentityApi): void;
+                  }) {
+                    useEffect(() => {
+                      props.onSignInSuccess(identityApi);
+                    }, [props]);
+                    return <div>Custom Sign In</div>;
+                  }
+
+                  return [signInPageComponentDataRef(SignInPage)];
+                },
+              }),
+            ],
+          }),
+        ],
+      });
+
+      const signIn = preparedApp.getSignIn();
+      render(signIn!.element);
+      await expect(
+        screen.findByText('Custom Sign In'),
+      ).resolves.toBeInTheDocument();
+
+      await signIn!.complete;
+      expect(featureFlagsApi.isActive).toHaveBeenCalledWith('test-flag');
+
+      const finalizedApp = preparedApp.finalize();
+      render(
+        finalizedApp.tree.root.instance!.getData(
+          coreExtensionData.reactElement,
+        ),
+      );
+
+      expect(screen.getByText('Flagged Layout')).toBeInTheDocument();
+    });
+
     it('should gate finalize behind internal async sign-in finalization', async () => {
       const identityApi = {
         getProfileInfo: async () => ({ displayName: 'Test User' }),
