@@ -126,17 +126,18 @@ export function createApp(options?: CreateAppOptions): {
       bindRoutes: options?.bindRoutes,
       advanced: options?.advanced,
     });
+    const signIn = preparedApp.getSignIn();
 
-    if (preparedApp.getSignIn()) {
+    if (signIn.element) {
       return {
         default: () => <PreparedAppRoot preparedApp={preparedApp} />,
       };
     }
 
-    await preparedApp.buildPredicateContext();
+    const { sessionState } = await signIn.ready;
 
     return {
-      default: () => renderFinalizedApp(preparedApp.finalize()),
+      default: () => renderFinalizedApp(preparedApp.finalize(sessionState)),
     };
   }
 
@@ -166,15 +167,11 @@ function PreparedAppRoot(props: {
     let cancelled = false;
     const runFinalize = async () => {
       try {
-        if (signIn) {
-          await signIn.complete;
-        } else {
-          await props.preparedApp.buildPredicateContext();
-        }
+        const { sessionState } = await signIn.ready;
         if (cancelled) {
           return;
         }
-        setFinalizedApp(props.preparedApp.finalize());
+        setFinalizedApp(props.preparedApp.finalize(sessionState));
       } catch (error) {
         if (cancelled) {
           return;
@@ -193,7 +190,7 @@ function PreparedAppRoot(props: {
   }
 
   if (!finalizedApp) {
-    return signIn?.element ?? <></>;
+    return signIn.element ?? <></>;
   }
 
   return renderFinalizedApp(finalizedApp);

@@ -27,15 +27,16 @@ import {
   createExternalRouteRef,
   createExtensionInput,
   useRouteRef,
+  useApi,
   analyticsApiRef,
   createExtensionDataRef,
 } from '@backstage/frontend-plugin-api';
-import { screen, render, waitFor } from '@testing-library/react';
+import { screen, render } from '@testing-library/react';
 import {
   createSpecializedApp,
   prepareSpecializedApp,
 } from './createSpecializedApp';
-import { mockApis, TestApiRegistry } from '@backstage/test-utils';
+import { mockApis } from '@backstage/test-utils';
 import {
   configApiRef,
   featureFlagsApiRef,
@@ -44,7 +45,7 @@ import {
 } from '@backstage/core-plugin-api';
 import { MemoryRouter } from 'react-router-dom';
 import { ApiProvider, ConfigReader } from '@backstage/core-app-api';
-import { ComponentType, Fragment, useEffect } from 'react';
+import { ComponentType, Fragment, useEffect, useState } from 'react';
 import appPluginOriginal from '@backstage/plugin-app';
 
 const signInPageComponentDataRef = createExtensionDataRef<
@@ -174,12 +175,7 @@ describe('createSpecializedApp', () => {
       { name: 'a', pluginId: 'test' },
       { name: 'b', pluginId: 'test', description: 'Feature B description' },
     ]);
-
-    expect(app.apis.get(featureFlagsApiRef)).toBeDefined();
-    expect(app.apis.get(featureFlagsApiRef)!.getRegisteredFlags()).toEqual(
-      flags,
-    );
-    expect(app.apis.get(identityApiRef)).toBeDefined();
+    expect(app.sessionState).toBeDefined();
   });
 
   it('should initialize the APIs in the correct order to allow for overrides', () => {
@@ -251,10 +247,24 @@ describe('createSpecializedApp', () => {
 
   it('should select the API factory from the owning plugin on conflict', () => {
     const testApiRef = createApiRef<{ value: string }>({ id: 'test.api' });
+    const appRootPlugin = createFrontendPlugin({
+      pluginId: 'app',
+      extensions: [
+        createExtension({
+          attachTo: { id: 'root', input: 'app' },
+          output: [coreExtensionData.reactElement],
+          factory: ({ apis }) => [
+            coreExtensionData.reactElement(
+              <div>Selected API: {apis.get(testApiRef)!.value}</div>,
+            ),
+          ],
+        }),
+      ],
+    });
 
     const app = createSpecializedApp({
       features: [
-        makeAppPlugin(),
+        appRootPlugin,
         createFrontendPlugin({
           pluginId: 'other-before',
           extensions: [
@@ -308,15 +318,30 @@ describe('createSpecializedApp', () => {
       }),
     ]);
 
-    expect(app.apis.get(testApiRef)).toEqual({ value: 'owner' });
+    render(app.tree.root.instance!.getData(coreExtensionData.reactElement));
+    expect(screen.getByText('Selected API: owner')).toBeInTheDocument();
   });
 
   it('should allow API overrides within the same plugin', () => {
     const testApiRef = createApiRef<{ value: string }>({ id: 'test.api' });
+    const appRootPlugin = createFrontendPlugin({
+      pluginId: 'app',
+      extensions: [
+        createExtension({
+          attachTo: { id: 'root', input: 'app' },
+          output: [coreExtensionData.reactElement],
+          factory: ({ apis }) => [
+            coreExtensionData.reactElement(
+              <div>Selected API: {apis.get(testApiRef)!.value}</div>,
+            ),
+          ],
+        }),
+      ],
+    });
 
     const app = createSpecializedApp({
       features: [
-        makeAppPlugin(),
+        appRootPlugin,
         createFrontendPlugin({
           pluginId: 'test',
           extensions: [
@@ -347,19 +372,18 @@ describe('createSpecializedApp', () => {
     });
 
     expect(app.errors).toBeUndefined();
-    expect(app.apis.get(testApiRef)).toEqual({ value: 'module' });
+    render(app.tree.root.instance!.getData(coreExtensionData.reactElement));
+    expect(screen.getByText('Selected API: module')).toBeInTheDocument();
   });
 
-  it('should use provided apis', async () => {
+  it('should reuse provided session state', async () => {
     const testApiRef = createApiRef<{ value: string }>({ id: 'test.api' });
-    const providedApis = TestApiRegistry.from([
-      configApiRef,
-      new ConfigReader({ anything: 'config' }),
-    ]);
+    const originalApp = createSpecializedApp({
+      config: new ConfigReader({ anything: 'config' }),
+      features: [makeAppPlugin()],
+    });
     const app = createSpecializedApp({
-      advanced: {
-        apis: providedApis,
-      },
+      sessionState: originalApp.sessionState,
       features: [
         createFrontendPlugin({
           pluginId: 'test',
@@ -378,8 +402,9 @@ describe('createSpecializedApp', () => {
               factory: ({ apis }) => [
                 coreExtensionData.reactElement(
                   <div>
-                    providedApis:
-                    {apis.get(configApiRef)!.getString('anything')}
+                    reusedSession:
+                    {apis.get(configApiRef)!.getString('anything')}:
+                    {String(Boolean(apis.get(testApiRef)))}
                   </div>,
                 ),
               ],
@@ -391,12 +416,7 @@ describe('createSpecializedApp', () => {
 
     render(app.tree.root.instance!.getData(coreExtensionData.reactElement));
 
-    expect(screen.getByText('providedApis:config')).toBeInTheDocument();
-
-    expect(app.apis).not.toBe(providedApis);
-    expect(app.apis.get(configApiRef)!.getString('anything')).toBe('config');
-    expect(app.apis.get(identityApiRef)).toBeDefined();
-    expect(app.apis.get(testApiRef)).toBeUndefined();
+    expect(screen.getByText('reusedSession:config:false')).toBeInTheDocument();
   });
 
   it('should make the app structure available through the AppTreeApi', async () => {
@@ -882,18 +902,18 @@ describe('createSpecializedApp', () => {
       });
 
       const signIn = preparedApp.getSignIn();
-      expect(signIn).toBeDefined();
-      render(signIn!.element);
+      expect(signIn.element).toBeDefined();
+      render(signIn.element);
       await expect(
         screen.findByText('Custom Sign In'),
       ).resolves.toBeInTheDocument();
 
       expect(appLayoutFactory).not.toHaveBeenCalled();
 
-      await signIn!.complete;
+      const { sessionState } = await signIn.ready;
       expect(appLayoutFactory).not.toHaveBeenCalled();
 
-      const finalizedApp = preparedApp.finalize();
+      const finalizedApp = preparedApp.finalize(sessionState);
       render(
         finalizedApp.tree.root.instance!.getData(
           coreExtensionData.reactElement,
@@ -915,14 +935,36 @@ describe('createSpecializedApp', () => {
         getCredentials: async () => ({ token: 'token' }),
         signOut: async () => {},
       };
+      const identityAppPlugin = appPluginOriginal.withOverrides({
+        extensions: [
+          appPluginOriginal.getExtension('app/layout').override({
+            factory: () => {
+              function IdentityReader() {
+                const [identity, setIdentity] = useState<string>();
+                const appIdentityApi = useApi(identityApiRef);
+
+                useEffect(() => {
+                  void appIdentityApi.getBackstageIdentity().then(result => {
+                    setIdentity(result.userEntityRef);
+                  });
+                }, [appIdentityApi]);
+
+                return <div>Identity: {identity}</div>;
+              }
+
+              return [coreExtensionData.reactElement(<IdentityReader />)];
+            },
+          }),
+        ],
+      });
 
       const preparedApp = prepareSpecializedApp({
         features: [
-          appPlugin,
+          identityAppPlugin,
           createFrontendModule({
             pluginId: 'app',
             extensions: [
-              appPlugin.getExtension('sign-in-page:app').override({
+              identityAppPlugin.getExtension('sign-in-page:app').override({
                 factory: () => {
                   function SignInPage(props: {
                     onSignInSuccess(identity: IdentityApi): void;
@@ -942,23 +984,22 @@ describe('createSpecializedApp', () => {
       });
 
       const signIn = preparedApp.getSignIn();
-      expect(signIn).toBeDefined();
-      render(signIn!.element);
+      expect(signIn.element).toBeDefined();
+      render(signIn.element);
       await expect(
         screen.findByText('Custom Sign In'),
       ).resolves.toBeInTheDocument();
 
-      await signIn!.complete;
-      const finalizedApp = preparedApp.finalize();
-      await waitFor(async () => {
-        await expect(
-          finalizedApp.apis.get(identityApiRef)!.getBackstageIdentity(),
-        ).resolves.toEqual({
-          type: 'user',
-          userEntityRef: 'user:default/test-user',
-          ownershipEntityRefs: ['user:default/test-user'],
-        });
-      });
+      const { sessionState } = await signIn.ready;
+      const finalizedApp = preparedApp.finalize(sessionState);
+      render(
+        finalizedApp.tree.root.instance!.getData(
+          coreExtensionData.reactElement,
+        ),
+      );
+      await expect(
+        screen.findByText('Identity: user:default/test-user'),
+      ).resolves.toBeInTheDocument();
     });
 
     it('should reuse predicate context gathered during sign-in completion', async () => {
@@ -1023,16 +1064,16 @@ describe('createSpecializedApp', () => {
       });
 
       const signIn = preparedApp.getSignIn();
-      render(signIn!.element);
+      render(signIn.element);
       await expect(
         screen.findByText('Custom Sign In'),
       ).resolves.toBeInTheDocument();
 
-      await signIn!.complete;
+      const { sessionState } = await signIn.ready;
       expect(featureFlagsApi.isActive).toHaveBeenCalledWith('test-flag');
       expect(featureFlagsApi.isActive).toHaveBeenCalledTimes(1);
 
-      const finalizedApp = preparedApp.finalize();
+      const finalizedApp = preparedApp.finalize(sessionState);
       render(
         finalizedApp.tree.root.instance!.getData(
           coreExtensionData.reactElement,
@@ -1099,23 +1140,23 @@ describe('createSpecializedApp', () => {
       });
 
       const signIn = preparedApp.getSignIn();
-      render(signIn!.element);
+      render(signIn.element);
       await expect(
         screen.findByText('Custom Sign In'),
       ).resolves.toBeInTheDocument();
 
       expect(() => preparedApp.finalize()).toThrow(
-        'prepareSpecializedApp requires awaiting signIn.complete before calling finalize()',
+        'prepareSpecializedApp requires awaiting getSignIn().ready before calling finalize()',
       );
 
       onSignInSuccess!(identityApi);
       expect(() => preparedApp.finalize()).toThrow(
-        'prepareSpecializedApp requires awaiting signIn.complete before calling finalize()',
+        'prepareSpecializedApp requires awaiting getSignIn().ready before calling finalize()',
       );
 
-      await signIn!.complete;
+      const { sessionState } = await signIn.ready;
 
-      const finalizedApp = preparedApp.finalize();
+      const finalizedApp = preparedApp.finalize(sessionState);
       render(
         finalizedApp.tree.root.instance!.getData(
           coreExtensionData.reactElement,

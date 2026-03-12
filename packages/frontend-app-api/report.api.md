@@ -161,23 +161,23 @@ export type CreateAppRouteBinder = <
 
 // @public @deprecated
 export function createSpecializedApp(options?: CreateSpecializedAppOptions): {
-  apis: ApiHolder;
+  sessionState: SpecializedAppSessionState;
   tree: AppTree;
   errors?: AppError[];
 };
 
 // @public
 export type CreateSpecializedAppOptions = {
-  apis?: ApiHolder;
   features?: FrontendFeature[];
   config?: ConfigApi;
   bindRoutes?(context: { bind: CreateAppRouteBinder }): void;
+  sessionState?: SpecializedAppSessionState;
   advanced?: {
-    apis?: ApiHolder;
     extensionFactoryMiddleware?:
       | ExtensionFactoryMiddleware_2
       | ExtensionFactoryMiddleware_2[];
     pluginInfoResolver?: FrontendPluginInfoResolver;
+    sessionState?: SpecializedAppSessionState;
   };
 };
 
@@ -208,25 +208,23 @@ export type FrontendPluginInfoResolver = (ctx: {
 }>;
 
 // @public
-export type ExtensionPredicateContext = {
-  featureFlags: string[];
-  permissions: string[];
-};
-
-// @public
 export type PreparedSpecializedApp = {
-  getSignIn():
-    | {
-        element: JSX_2.Element;
-        complete: Promise<void>;
-      }
-    | undefined;
-  buildPredicateContext(): Promise<ExtensionPredicateContext>;
-  finalize(predicateContext?: ExtensionPredicateContext): {
-    apis: ApiHolder;
+  getSignIn(): {
+    element?: JSX_2.Element;
+    ready: Promise<{
+      sessionState: SpecializedAppSessionState;
+    }>;
+  };
+  finalize(sessionState?: SpecializedAppSessionState): {
+    sessionState: SpecializedAppSessionState;
     tree: AppTree;
     errors?: AppError[];
   };
+};
+
+// @public
+export type SpecializedAppSessionState = {
+  $$type: '@backstage/SpecializedAppSessionState';
 };
 
 // @public
