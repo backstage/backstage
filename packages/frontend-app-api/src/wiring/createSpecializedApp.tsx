@@ -152,6 +152,11 @@ type InternalSpecializedAppSessionState = {
   predicateContext: ExtensionPredicateContext;
 };
 
+const EMPTY_PREDICATE_CONTEXT: ExtensionPredicateContext = {
+  featureFlags: [],
+  permissions: [],
+};
+
 /**
  * Opaque reusable session state for specialized apps.
  *
@@ -202,18 +207,25 @@ class AppTreeApiProxy implements AppTreeApi {
 
   getNodesByRoutePath(routePath: string): { nodes: AppNode[] } {
     this.checkIfInitialized();
+    const routeInfo = this.#routeInfo;
+    if (!routeInfo) {
+      throw new Error(
+        `You can't access the AppTreeApi during initialization of the app tree. Please move occurrences of this out of the initialization of the factory`,
+      );
+    }
 
     let path = routePath;
     if (path.startsWith(this.appBasePath)) {
       path = path.slice(this.appBasePath.length);
     }
 
-    const matchedRoutes = matchRoutes(this.#routeInfo!.routeObjects, path);
+    const matchedRoutes = matchRoutes(routeInfo.routeObjects, path);
 
     const matchedAppNodes =
-      matchedRoutes
-        ?.filter(routeObj => !!routeObj.route.appNode)
-        .map(routeObj => routeObj.route.appNode!) || [];
+      matchedRoutes?.flatMap(routeObj => {
+        const appNode = routeObj.route.appNode;
+        return appNode ? [appNode] : [];
+      }) || [];
 
     return { nodes: matchedAppNodes };
   }
@@ -485,22 +497,6 @@ export function prepareSpecializedApp(
     });
   }
 
-  function createPredicateContextSync(): ExtensionPredicateContext | undefined {
-    const featureFlagsApi = phase.apis.get(featureFlagsApiRef);
-    if (predicateReferences.permissions.length > 0) {
-      return undefined;
-    }
-
-    return {
-      featureFlags: featureFlagsApi
-        ? predicateReferences.featureFlags.filter(name =>
-            featureFlagsApi.isActive(name),
-          )
-        : [],
-      permissions: [],
-    };
-  }
-
   async function createPredicateContext() {
     const featureFlagsApi = phase.apis.get(featureFlagsApiRef);
     let allowedPermissions: string[] = [];
@@ -551,28 +547,6 @@ export function prepareSpecializedApp(
     return sessionState;
   }
 
-  function getSessionStateSync() {
-    if (cachedSessionState) {
-      return cachedSessionState;
-    }
-    if (sessionStatePromise) {
-      return undefined;
-    }
-    if (signInRuntime?.error) {
-      throw signInRuntime.error;
-    }
-    if (signInRuntime?.requiresSignIn && !signInRuntime.readyIdentityApi) {
-      return undefined;
-    }
-
-    const predicateContext = createPredicateContextSync();
-    if (!predicateContext) {
-      return undefined;
-    }
-
-    return createSessionState(predicateContext);
-  }
-
   function getSessionState() {
     if (cachedSessionState) {
       return Promise.resolve(cachedSessionState);
@@ -593,6 +567,9 @@ export function prepareSpecializedApp(
 
     sessionStatePromise = createPredicateContext()
       .then(predicateContext => {
+        if (cachedSessionState) {
+          return cachedSessionState;
+        }
         return createSessionState(predicateContext);
       })
       .catch(error => {
@@ -629,23 +606,16 @@ export function prepareSpecializedApp(
         errors?: AppError[];
       }
     | undefined;
-  return {
-    getSignIn() {
-      if (signInRuntime) {
-        return signInRuntime.value;
-      }
 
-      signInRuntime = {
-        requiresSignIn: false,
-        value: {
-          ready: new Promise<{ sessionState: SpecializedAppSessionState }>(
-            () => {},
-          ),
-        },
-      };
+  function getSignIn() {
+    if (signInRuntime) {
+      return signInRuntime.value;
+    }
 
-      if (!providedSessionState) {
-        const signInElement = createSignInElement({
+    let runtime: SignInRuntime;
+    const signInElement = providedSessionState
+      ? undefined
+      : createSignInElement({
           tree,
           apis: phase.apis,
           collector,
@@ -654,38 +624,44 @@ export function prepareSpecializedApp(
           appTreeApi: phase.appTreeApi,
           extensionFactoryMiddleware: mergedExtensionFactoryMiddleware,
           onSignInSuccess(identityApi) {
-            void startSignInFinalize(signInRuntime!, identityApi)
+            void startSignInFinalize(runtime, identityApi)
               .then(ready => {
-                signInRuntime!.readyDeferred?.resolve(ready);
+                runtime.readyDeferred?.resolve(ready);
               })
               .catch(error => {
-                signInRuntime!.readyDeferred?.reject(error);
+                runtime.readyDeferred?.reject(error);
               });
           },
         });
 
-        if (signInElement) {
-          const readyDeferred = createDeferred<
-            { sessionState: SpecializedAppSessionState },
-            unknown
-          >();
-          signInRuntime.requiresSignIn = true;
-          signInRuntime.readyDeferred = readyDeferred;
-          signInRuntime.value = {
-            element: signInElement,
-            ready: readyDeferred,
-          };
-        }
-      }
-
-      if (!signInRuntime.requiresSignIn) {
-        signInRuntime.value = {
+    if (signInElement) {
+      const readyDeferred = createDeferred<
+        { sessionState: SpecializedAppSessionState },
+        unknown
+      >();
+      runtime = {
+        requiresSignIn: true,
+        readyDeferred,
+        value: {
+          element: signInElement,
+          ready: readyDeferred,
+        },
+      };
+    } else {
+      runtime = {
+        requiresSignIn: false,
+        value: {
           ready: getSessionState().then(sessionState => ({ sessionState })),
-        };
-      }
+        },
+      };
+    }
 
-      return signInRuntime.value;
-    },
+    signInRuntime = runtime;
+    return runtime.value;
+  }
+
+  return {
+    getSignIn,
     finalize(sessionState?: SpecializedAppSessionState) {
       if (finalized) {
         return finalized;
@@ -694,7 +670,13 @@ export function prepareSpecializedApp(
       if (signInRuntime?.error) {
         throw signInRuntime.error;
       }
-      const finalizedSessionState = sessionState ?? getSessionStateSync();
+      const signIn = getSignIn();
+      const finalizedSessionState =
+        sessionState ??
+        cachedSessionState ??
+        (signIn.element
+          ? undefined
+          : createSessionState(EMPTY_PREDICATE_CONTEXT));
       if (!finalizedSessionState) {
         throw new Error(
           'prepareSpecializedApp requires awaiting getSignIn().ready before calling finalize()',
