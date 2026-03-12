@@ -115,7 +115,7 @@ export class DefaultProviderTokenService implements ProviderTokenService {
 
     if (isNearExpiry && refreshToken) {
       // Deduplicate concurrent refresh calls — prevents double-consumption of single-use tokens
-      const lockKey = `${userEntityRef}:${providerId}`;
+      const lockKey = `${userEntityRef}|${providerId}`;
       let refreshPromise = this.refreshLocks.get(lockKey);
       if (!refreshPromise) {
         refreshPromise = this.refreshAndPersist(
@@ -207,16 +207,16 @@ export class DefaultProviderTokenService implements ProviderTokenService {
       : undefined;
     const effectiveScope = result.scope ?? currentScope;
 
+    const expiresAt = result.expiresInSeconds
+      ? new Date(Date.now() + result.expiresInSeconds * 1000)
+      : undefined;
+
     await this.upsertToken(userEntityRef, providerId, {
       accessToken: result.accessToken,
       refreshToken: newRefreshToken,
       scope: effectiveScope,
       expiresInSeconds: result.expiresInSeconds,
     });
-
-    const expiresAt = result.expiresInSeconds
-      ? new Date(Date.now() + result.expiresInSeconds * 1000)
-      : undefined;
 
     return {
       userEntityRef,
