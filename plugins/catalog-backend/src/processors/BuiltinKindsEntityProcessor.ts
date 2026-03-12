@@ -17,6 +17,7 @@
 import {
   ApiEntity,
   apiEntityV1alpha1Validator,
+  apiEntityV1alpha2Validator,
   ComponentEntity,
   componentEntityV1alpha1Validator,
   DomainEntity,
@@ -60,6 +61,7 @@ import { get, set } from 'lodash';
 export class BuiltinKindsEntityProcessor implements CatalogProcessor {
   private readonly validators = [
     apiEntityV1alpha1Validator,
+    apiEntityV1alpha2Validator,
     componentEntityV1alpha1Validator,
     resourceEntityV1alpha1Validator,
     groupEntityV1alpha1Validator,

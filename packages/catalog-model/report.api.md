@@ -33,7 +33,10 @@ export const ANNOTATION_SOURCE_LOCATION = 'backstage.io/source-location';
 export const ANNOTATION_VIEW_URL = 'backstage.io/view-url';
 
 // @public
-interface ApiEntityV1alpha1 extends Entity {
+export type ApiEntity = ApiEntityV1alpha1 | ApiEntityV1alpha2;
+
+// @public
+export interface ApiEntityV1alpha1 extends Entity {
   // (undocumented)
   apiVersion: 'backstage.io/v1alpha1' | 'backstage.io/v1beta1';
   // (undocumented)
@@ -47,11 +50,40 @@ interface ApiEntityV1alpha1 extends Entity {
     system?: string;
   };
 }
-export { ApiEntityV1alpha1 as ApiEntity };
-export { ApiEntityV1alpha1 };
 
 // @public
 export const apiEntityV1alpha1Validator: KindValidator;
+
+// @public
+export interface ApiEntityV1alpha2 extends Entity {
+  // (undocumented)
+  apiVersion: 'backstage.io/v1alpha2';
+  // (undocumented)
+  kind: 'API';
+  // (undocumented)
+  spec: {
+    lifecycle: string;
+    owner: string;
+    system?: string;
+  } & ApiEntityV1alpha2Spec;
+}
+
+// @public
+export type ApiEntityV1alpha2Spec =
+  | {
+      type: 'mcp-server';
+      remotes: {
+        type: string;
+        url: string;
+      }[];
+    }
+  | {
+      type: string;
+      definition: string;
+    };
+
+// @public
+export const apiEntityV1alpha2Validator: KindValidator;
 
 // @public
 export class CommonValidatorFunctions {
@@ -255,7 +287,7 @@ export { GroupEntityV1alpha1 };
 export const groupEntityV1alpha1Validator: KindValidator;
 
 // @public (undocumented)
-export function isApiEntity(entity: Entity): entity is ApiEntityV1alpha1;
+export function isApiEntity(entity: Entity): entity is ApiEntity;
 
 // @public (undocumented)
 export function isComponentEntity(

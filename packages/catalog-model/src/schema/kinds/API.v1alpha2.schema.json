@@ -1,0 +1,143 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "ApiV1alpha2",
+  "description": "An API describes an interface that can be exposed by a component. The API can be defined in different formats, like OpenAPI, AsyncAPI, GraphQL, gRPC, or other formats. MCP server entities use a structured remotes array instead of a definition string.",
+  "examples": [
+    {
+      "apiVersion": "backstage.io/v1alpha2",
+      "kind": "API",
+      "metadata": {
+        "name": "artist-api",
+        "description": "Retrieve artist details",
+        "labels": {
+          "product_name": "Random value Generator"
+        },
+        "annotations": {
+          "docs": "https://github.com/..../tree/develop/doc"
+        }
+      },
+      "spec": {
+        "type": "openapi",
+        "lifecycle": "production",
+        "owner": "artist-relations-team",
+        "system": "artist-engagement-portal",
+        "definition": "openapi: \"3.0.0\"\ninfo:..."
+      }
+    },
+    {
+      "apiVersion": "backstage.io/v1alpha2",
+      "kind": "API",
+      "metadata": {
+        "name": "backstage-mcp-actions",
+        "description": "Exposes tools related to the Backstage Ecosystem such as the Software Catalog"
+      },
+      "spec": {
+        "type": "mcp-server",
+        "lifecycle": "experimental",
+        "owner": "backstage",
+        "remotes": [
+          {
+            "type": "streamable-http",
+            "url": "http://internal.backstage.company:7007/api/mcp-actions/v1"
+          }
+        ]
+      }
+    }
+  ],
+  "allOf": [
+    {
+      "$ref": "Entity"
+    },
+    {
+      "type": "object",
+      "required": ["spec"],
+      "properties": {
+        "apiVersion": {
+          "enum": ["backstage.io/v1alpha2"]
+        },
+        "kind": {
+          "enum": ["API"]
+        },
+        "spec": {
+          "type": "object",
+          "required": ["type", "lifecycle", "owner"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "description": "The type of the API definition.",
+              "examples": [
+                "openapi",
+                "asyncapi",
+                "graphql",
+                "grpc",
+                "trpc",
+                "mcp-server"
+              ],
+              "minLength": 1
+            },
+            "lifecycle": {
+              "type": "string",
+              "description": "The lifecycle state of the API.",
+              "examples": ["experimental", "production", "deprecated"],
+              "minLength": 1
+            },
+            "owner": {
+              "type": "string",
+              "description": "An entity reference to the owner of the API.",
+              "examples": ["artist-relations-team", "user:john.johnson"],
+              "minLength": 1
+            },
+            "system": {
+              "type": "string",
+              "description": "An entity reference to the system that the API belongs to.",
+              "minLength": 1
+            }
+          },
+          "if": {
+            "required": ["type"],
+            "properties": {
+              "type": { "const": "mcp-server" }
+            }
+          },
+          "then": {
+            "required": ["remotes"],
+            "properties": {
+              "remotes": {
+                "type": "array",
+                "description": "The list of remote endpoints for the MCP server.",
+                "items": {
+                  "type": "object",
+                  "required": ["type", "url"],
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "description": "The transport type of the MCP server remote.",
+                      "examples": ["streamable-http", "sse"],
+                      "minLength": 1
+                    },
+                    "url": {
+                      "type": "string",
+                      "description": "The URL of the MCP server remote endpoint.",
+                      "minLength": 1
+                    }
+                  }
+                },
+                "minItems": 1
+              }
+            }
+          },
+          "else": {
+            "required": ["definition"],
+            "properties": {
+              "definition": {
+                "type": "string",
+                "description": "The definition of the API, based on the format defined by the type.",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

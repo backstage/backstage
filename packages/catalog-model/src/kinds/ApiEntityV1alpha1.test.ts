@@ -180,4 +180,9 @@ components:
     (entity as any).annotations = 'Test';
     await expect(validator.check(entity)).rejects.toThrow(/annotations/);
   });
+
+  it('ignores v1alpha2 apiVersion', async () => {
+    (entity as any).apiVersion = 'backstage.io/v1alpha2';
+    await expect(validator.check(entity)).resolves.toBe(false);
+  });
 });
