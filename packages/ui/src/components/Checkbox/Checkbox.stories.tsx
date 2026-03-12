@@ -16,6 +16,8 @@
 import preview from '../../../../../.storybook/preview';
 import { Checkbox } from './Checkbox';
 import { Flex } from '../Flex';
+import { Link } from '../Link';
+import { MemoryRouter } from 'react-router-dom';
 
 const meta = preview.meta({
   title: 'Backstage UI/Checkbox',
@@ -28,11 +30,36 @@ export const Default = meta.story({
   },
 });
 
+export const Selected = Default.extend({
+  args: {
+    isSelected: true,
+  },
+});
+
 export const Indeterminate = meta.story({
   args: {
     children: 'Select all',
     isIndeterminate: true,
   },
+});
+
+export const WithLongText = Default.extend({
+  args: {
+    children: (
+      <>
+        I agree to receive future communication from Spotify. You may
+        unsubscribe from these communications at any time. Please review our{' '}
+        <Link href="#">Privacy Policy</Link>
+      </>
+    ),
+  },
+  decorators: [
+    Story => (
+      <MemoryRouter>
+        <Story />
+      </MemoryRouter>
+    ),
+  ],
 });
 
 export const AllVariants = meta.story({
