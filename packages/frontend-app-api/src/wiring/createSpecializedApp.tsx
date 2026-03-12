@@ -898,8 +898,13 @@ function instantiateAndInitializePhaseTree(options: {
     {
       ...(options.stopAtSessionBoundary
         ? {
-            stopAtAttachment: ({ node, input }: { node: AppNode; input: string }) =>
-              isSessionBoundaryAttachment(node, input),
+            stopAtAttachment: ({
+              node,
+              input,
+            }: {
+              node: AppNode;
+              input: string;
+            }) => isSessionBoundaryAttachment(node, input),
           }
         : {}),
       predicateContext: options.predicateContext,

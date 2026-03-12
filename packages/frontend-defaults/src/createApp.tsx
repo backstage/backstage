@@ -164,7 +164,8 @@ function PreparedAppRoot(props: {
     let cancelled = false;
     const runFinalize = async () => {
       try {
-        const predicateContext = await props.preparedApp.buildPredicateContext();
+        const predicateContext =
+          await props.preparedApp.buildPredicateContext();
         if (cancelled) {
           return;
         }
