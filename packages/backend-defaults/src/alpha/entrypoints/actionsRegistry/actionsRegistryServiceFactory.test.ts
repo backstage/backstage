@@ -439,7 +439,7 @@ describe('actionsRegistryServiceFactory', () => {
       });
     });
 
-    it('should throw an error if the action is invoked by a user', async () => {
+    it('should allow actions to be invoked by a user', async () => {
       const testServices = [
         actionsRegistryServiceFactory,
         httpRouterServiceFactory,
@@ -460,12 +460,8 @@ describe('actionsRegistryServiceFactory', () => {
           name: 'test',
         });
 
-      expect(status).toBe(403);
-      expect(body).toMatchObject({
-        error: {
-          message: 'Actions must be invoked by a service, not a user',
-        },
-      });
+      expect(status).toBe(200);
+      expect(body).toMatchObject({ output: { ok: true } });
     });
 
     it('should validate the output of the action if provided', async () => {

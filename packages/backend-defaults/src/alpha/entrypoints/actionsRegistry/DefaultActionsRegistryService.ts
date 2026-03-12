@@ -97,15 +97,9 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
       '/.backstage/actions/v1/actions/:actionId/invoke',
       async (req, res) => {
         const credentials = await this.httpAuth.credentials(req);
-        if (this.auth.isPrincipal(credentials, 'user')) {
-          if (!credentials.principal.actor) {
-            throw new NotAllowedError(
-              `Actions must be invoked by a service, not a user`,
-            );
-          }
-        } else if (this.auth.isPrincipal(credentials, 'none')) {
+        if (this.auth.isPrincipal(credentials, 'none')) {
           throw new NotAllowedError(
-            `Actions must be invoked by a service, not an anonymous request`,
+            `Actions must be invoked by an authenticated principal, not an anonymous request`,
           );
         }
 
