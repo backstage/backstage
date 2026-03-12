@@ -74,10 +74,7 @@ import { Root } from '../extensions/Root';
 import { resolveAppTree } from '../tree/resolveAppTree';
 import { resolveAppNodeSpecs } from '../tree/resolveAppNodeSpecs';
 import { readAppExtensionsConfig } from '../tree/readAppExtensionsConfig';
-import {
-  createAppNodeInstance,
-  instantiateAppNodeTree,
-} from '../tree/instantiateAppNodeTree';
+import { instantiateAppNodeTree } from '../tree/instantiateAppNodeTree';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppIdentityProxy } from '../../../core-app-api/src/apis/implementations/IdentityApi/AppIdentityProxy';
 import { BackstageRouteObject } from '../routing/types';
@@ -358,7 +355,7 @@ export function prepareSpecializedApp(
 
   const collector = createErrorCollector();
 
-  const baseTree = resolveAppTree(
+  const tree = resolveAppTree(
     'root',
     resolveAppNodeSpecs({
       features,
@@ -390,12 +387,13 @@ export function prepareSpecializedApp(
     internalOptions?.__internal?.apiFactoryOverrides ?? [];
   const phaseStaticFactories = [...internalStaticFactories];
   const deferredApiFactories: AnyApiFactory[] = [];
+  let treeInstancesNeedReset = false;
 
   if (providedApis) {
     registerFeatureFlagDeclarationsInHolder(providedApis, features);
   } else {
     const apiFactoryEntries = collectApiFactoryEntries({
-      tree: baseTree,
+      tree,
       collector,
     });
     const classifiedApiFactories = classifyApiFactories({
@@ -404,8 +402,22 @@ export function prepareSpecializedApp(
     });
     appApiRegistry.registerAll(classifiedApiFactories.prepareApiFactories);
     deferredApiFactories.push(...classifiedApiFactories.deferredApiFactories);
+    treeInstancesNeedReset = true;
   }
 
+  if (treeInstancesNeedReset) {
+    clearTreeInstances(tree);
+  }
+  const phase = createPhaseApis({
+    tree,
+    config,
+    appApiRegistry,
+    fallbackApis: providedApis,
+    includeConfigApi: !providedApis,
+    appBasePath,
+    routeBindings,
+    staticFactories: phaseStaticFactories,
+  });
   let signInRuntime: SignInRuntime | null | undefined;
   let deferredApiFactoriesRegistered = false;
 
@@ -419,7 +431,7 @@ export function prepareSpecializedApp(
 
     runtime.completion = Promise.resolve()
       .then(async () => {
-        void baseTree;
+        void tree;
         void identityApi;
 
         // Future: build the post-sign-in predicate context here using the
@@ -451,16 +463,12 @@ export function prepareSpecializedApp(
 
       const completionDeferred = createDeferred<void, unknown>();
       const signInElement = createSignInElement({
-        baseTree,
-        config,
-        appApiRegistry,
-        fallbackApis: providedApis,
-        includeConfigApi: !providedApis,
+        tree,
+        apis: phase.apis,
         collector,
-        appBasePath,
-        routeBindings,
         routeRefsById,
-        staticFactories: phaseStaticFactories,
+        routeResolutionApi: phase.routeResolutionApi,
+        appTreeApi: phase.appTreeApi,
         extensionFactoryMiddleware: mergedExtensionFactoryMiddleware,
         onSignInSuccess(identityApi) {
           void startSignInFinalize(signInRuntime!, identityApi)
@@ -507,24 +515,31 @@ export function prepareSpecializedApp(
         deferredApiFactoriesRegistered = true;
       }
 
-      const finalApp = createFinalizedApp({
-        baseTree,
-        config,
-        appApiRegistry,
-        fallbackApis: providedApis,
-        includeConfigApi: !providedApis,
+      if (signInRuntime?.readyIdentityApi) {
+        setIdentityApiTarget({
+          apis: phase.apis,
+          identityApi: signInRuntime.readyIdentityApi,
+          signOutTargetUrl: appBasePath || '/',
+        });
+      }
+
+      prepareFinalizedTree({
+        tree,
+      });
+      clearTreeInstances(tree);
+      instantiateAndInitializePhaseTree({
+        tree,
+        apis: phase.apis,
         collector,
-        appBasePath,
-        routeBindings,
-        routeRefsById,
-        staticFactories: phaseStaticFactories,
         extensionFactoryMiddleware: mergedExtensionFactoryMiddleware,
-        identityApi: signInRuntime?.readyIdentityApi,
+        routeResolutionApi: phase.routeResolutionApi,
+        appTreeApi: phase.appTreeApi,
+        routeRefsById,
       });
 
       finalized = {
-        apis: finalApp.apis,
-        tree: finalApp.tree,
+        apis: phase.apis,
+        tree,
         errors: collector.collectErrors(),
       };
       return finalized;
@@ -698,35 +713,18 @@ function extractSignInPageComponent(options: {
 }
 
 function createSignInElement(options: {
-  baseTree: AppTree;
-  config: ConfigApi;
-  appApiRegistry: FrontendApiRegistry;
-  fallbackApis?: ApiHolder;
-  includeConfigApi: boolean;
+  tree: AppTree;
+  apis: ApiHolder;
   collector: ErrorCollector;
-  appBasePath: string;
-  routeBindings: Map<ExternalRouteRef, RouteRef | SubRouteRef>;
   routeRefsById: ReturnType<typeof collectRouteIds>;
-  staticFactories: AnyApiFactory[];
+  routeResolutionApi: RouteResolutionApiProxy;
+  appTreeApi: AppTreeApiProxy;
   extensionFactoryMiddleware?: ExtensionFactoryMiddleware;
   onSignInSuccess(identityApi: IdentityApi): void;
 }): JSX.Element | undefined {
-  const tree = cloneAppTree(options.baseTree);
-  const phase = createPhaseApis({
-    tree,
-    config: options.config,
-    appApiRegistry: options.appApiRegistry,
-    fallbackApis: options.fallbackApis,
-    includeConfigApi: options.includeConfigApi,
-    collector: options.collector,
-    appBasePath: options.appBasePath,
-    routeBindings: options.routeBindings,
-    staticFactories: options.staticFactories,
-  });
-
   const signInPageComponent = extractSignInPageComponent({
-    tree,
-    apis: phase.apis,
+    tree: options.tree,
+    apis: options.apis,
     collector: options.collector,
     extensionFactoryMiddleware: options.extensionFactoryMiddleware,
   });
@@ -735,65 +733,23 @@ function createSignInElement(options: {
   }
 
   prepareSignInTree({
-    tree,
+    tree: options.tree,
     signInPageComponent,
     onSignInSuccess: options.onSignInSuccess,
   });
 
   instantiateAndInitializePhaseTree({
-    tree,
-    apis: phase.apis,
+    tree: options.tree,
+    apis: options.apis,
     collector: options.collector,
     extensionFactoryMiddleware: options.extensionFactoryMiddleware,
-    routeResolutionApi: phase.routeResolutionApi,
-    appTreeApi: phase.appTreeApi,
+    routeResolutionApi: options.routeResolutionApi,
+    appTreeApi: options.appTreeApi,
     routeRefsById: options.routeRefsById,
+    stopAtSessionBoundary: true,
   });
 
-  return tree.root.instance?.getData(coreExtensionData.reactElement);
-}
-
-function createFinalizedApp(options: {
-  baseTree: AppTree;
-  config: ConfigApi;
-  appApiRegistry: FrontendApiRegistry;
-  fallbackApis?: ApiHolder;
-  includeConfigApi: boolean;
-  collector: ErrorCollector;
-  appBasePath: string;
-  routeBindings: Map<ExternalRouteRef, RouteRef | SubRouteRef>;
-  routeRefsById: ReturnType<typeof collectRouteIds>;
-  staticFactories: AnyApiFactory[];
-  extensionFactoryMiddleware?: ExtensionFactoryMiddleware;
-  identityApi?: IdentityApi;
-}) {
-  const tree = cloneAppTree(options.baseTree);
-  prepareFinalizedTree(tree);
-
-  const phase = createPhaseApis({
-    tree,
-    config: options.config,
-    appApiRegistry: options.appApiRegistry,
-    fallbackApis: options.fallbackApis,
-    includeConfigApi: options.includeConfigApi,
-    collector: options.collector,
-    appBasePath: options.appBasePath,
-    routeBindings: options.routeBindings,
-    staticFactories: options.staticFactories,
-    identityApi: options.identityApi,
-  });
-
-  instantiateAndInitializePhaseTree({
-    tree,
-    apis: phase.apis,
-    collector: options.collector,
-    extensionFactoryMiddleware: options.extensionFactoryMiddleware,
-    routeResolutionApi: phase.routeResolutionApi,
-    appTreeApi: phase.appTreeApi,
-    routeRefsById: options.routeRefsById,
-  });
-
-  return { apis: phase.apis, tree };
+  return options.tree.root.instance?.getData(coreExtensionData.reactElement);
 }
 
 function createPhaseApis(options: {
@@ -802,11 +758,9 @@ function createPhaseApis(options: {
   appApiRegistry: FrontendApiRegistry;
   fallbackApis?: ApiHolder;
   includeConfigApi: boolean;
-  collector: ErrorCollector;
   appBasePath: string;
   routeBindings: Map<ExternalRouteRef, RouteRef | SubRouteRef>;
   staticFactories: AnyApiFactory[];
-  identityApi?: IdentityApi;
 }) {
   const appTreeApi = new AppTreeApiProxy(options.tree, options.appBasePath);
   const routeResolutionApi = new RouteResolutionApiProxy(
@@ -831,14 +785,6 @@ function createPhaseApis(options: {
     fallbackApis: options.fallbackApis,
   });
 
-  if (options.identityApi) {
-    setIdentityApiTarget({
-      apis,
-      identityApi: options.identityApi,
-      signOutTargetUrl: options.appBasePath || '/',
-    });
-  }
-
   return { apis, routeResolutionApi, appTreeApi };
 }
 
@@ -850,12 +796,19 @@ function instantiateAndInitializePhaseTree(options: {
   routeResolutionApi: RouteResolutionApiProxy;
   appTreeApi: AppTreeApiProxy;
   routeRefsById: ReturnType<typeof collectRouteIds>;
+  stopAtSessionBoundary?: boolean;
 }) {
   instantiateAppNodeTree(
     options.tree.root,
     options.apis,
     options.collector,
     options.extensionFactoryMiddleware,
+    options.stopAtSessionBoundary
+      ? {
+          stopAtAttachment: ({ node, input }) =>
+            isSessionBoundaryAttachment(node, input),
+        }
+      : undefined,
   );
 
   const routeInfo = extractRouteInfoFromAppNode(
@@ -875,7 +828,7 @@ function prepareSignInTree(options: {
   signInPageComponent: ComponentType<SignInPageProps>;
   onSignInSuccess(identityApi: IdentityApi): void;
 }) {
-  const appRootNode = options.tree.nodes.get('app/root');
+  const appRootNode = getAppRootNode(options.tree);
   if (!appRootNode) {
     return;
   }
@@ -883,39 +836,32 @@ function prepareSignInTree(options: {
   // Future: apply sign-in phase predicate filtering here before any wrappers,
   // elements, sign-in page APIs, or app-owned APIs are instantiated. APIs or
   // extensions gated by permissions or feature flags must be absent here.
-  replaceAttachment(appRootNode, 'children', [
-    createSyntheticNode({
-      templateNode:
-        appRootNode.edges.attachments.get('children')?.[0] ?? appRootNode,
-      id: 'sign-in-fallback:prepared',
-      instance: createSyntheticReactElementInstance(<div />),
-    }),
-  ]);
-  replaceAttachment(appRootNode, 'signInPage', [
-    createSyntheticNode({
-      templateNode:
-        appRootNode.edges.attachments.get('signInPage')?.[0] ?? appRootNode,
-      id: 'sign-in-page:prepared',
-      instance: createSyntheticDataRefInstance(
-        signInPageComponentDataRef,
-        (() => {
-          const SignInPageComponent = options.signInPageComponent;
-          return (props: SignInPageProps) => (
-            <SignInPageComponent
-              {...props}
-              onSignInSuccess={identityApi => {
-                options.onSignInSuccess(identityApi);
-              }}
-            />
-          );
-        })(),
-      ),
-    }),
-  ]);
+  const signInPageNode = appRootNode.edges.attachments.get('signInPage')?.[0];
+  if (!signInPageNode) {
+    return;
+  }
+
+  setNodeInstance(
+    signInPageNode,
+    createSyntheticDataRefInstance(
+      signInPageComponentDataRef,
+      (() => {
+        const SignInPageComponent = options.signInPageComponent;
+        return (props: SignInPageProps) => (
+          <SignInPageComponent
+            {...props}
+            onSignInSuccess={identityApi => {
+              options.onSignInSuccess(identityApi);
+            }}
+          />
+        );
+      })(),
+    ),
+  );
 }
 
-function prepareFinalizedTree(tree: AppTree) {
-  const appRootNode = tree.nodes.get('app/root');
+function prepareFinalizedTree(options: { tree: AppTree }) {
+  const appRootNode = getAppRootNode(options.tree);
   if (!appRootNode) {
     return;
   }
@@ -926,11 +872,19 @@ function prepareFinalizedTree(tree: AppTree) {
   deleteAttachment(appRootNode, 'signInPage');
 }
 
-function createSyntheticReactElementInstance(element: JSX.Element) {
-  return createSyntheticDataRefInstance(
-    coreExtensionData.reactElement,
-    element,
-  );
+function clearTreeInstances(tree: AppTree) {
+  const nodes = new Set<AppNode>([...tree.nodes.values(), ...tree.orphans]);
+  for (const node of nodes) {
+    clearNodeInstance(node);
+  }
+}
+
+function getAppRootNode(tree: AppTree) {
+  return tree.nodes.get('app/root');
+}
+
+function isSessionBoundaryAttachment(node: AppNode, input: string) {
+  return node.spec.id === 'app/root' && input === 'children';
 }
 
 function createSyntheticDataRefInstance<T>(
@@ -950,15 +904,12 @@ function createSyntheticDataRefInstance<T>(
   };
 }
 
-function createSyntheticNode(options: {
-  templateNode: AppNode;
-  id: string;
-  instance: NonNullable<ReturnType<typeof createAppNodeInstance>>;
-}) {
-  return createClonedAppNode(
-    { ...options.templateNode.spec, id: options.id },
-    options.instance,
-  );
+function setNodeInstance(node: AppNode, instance?: AppNodeInstance) {
+  (node as AppNode & { instance?: AppNodeInstance }).instance = instance;
+}
+
+function clearNodeInstance(node: AppNode) {
+  setNodeInstance(node, undefined);
 }
 
 function setIdentityApiTarget(options: {
@@ -1089,131 +1040,8 @@ function getApiOwnerId(apiRefId: string): string {
   return prefix;
 }
 
-function replaceAttachment(
-  node: AppNode,
-  input: string,
-  attachment: AppNode[],
-) {
-  const attachments = node.edges.attachments as Map<string, AppNode[]>;
-  attachments.set(input, attachment);
-
-  for (const child of attachment) {
-    (
-      child.edges as {
-        attachedTo?: { node: AppNode; input: string };
-      }
-    ).attachedTo = { node, input };
-  }
-}
-
 function deleteAttachment(node: AppNode, input: string) {
   (node.edges.attachments as Map<string, AppNode[]>).delete(input);
-}
-
-function cloneAppTree(tree: AppTree): AppTree {
-  const clonedNodes = new Map<AppNode, ClonedAppNode>();
-  const cloneNode = (node: AppNode): ClonedAppNode => {
-    const existing = clonedNodes.get(node);
-    if (existing) {
-      return existing;
-    }
-
-    const clonedNode = createClonedAppNode(node.spec);
-    clonedNodes.set(node, clonedNode);
-
-    const attachedTo = node.edges.attachedTo;
-    if (attachedTo) {
-      clonedNode.edges.attachedTo = {
-        node: cloneNode(attachedTo.node),
-        input: attachedTo.input,
-      };
-    }
-
-    for (const [input, attachment] of node.edges.attachments) {
-      clonedNode.edges.attachments.set(
-        input,
-        attachment.map(child => cloneNode(child)),
-      );
-    }
-
-    return clonedNode;
-  };
-
-  for (const node of tree.nodes.values()) {
-    cloneNode(node);
-  }
-
-  return {
-    root: cloneNode(tree.root),
-    nodes: new Map(
-      Array.from(tree.nodes.entries(), ([id, node]) => [id, cloneNode(node)]),
-    ),
-    orphans: Array.from(tree.orphans, node => cloneNode(node)),
-  };
-}
-
-function indent(str: string) {
-  return str.replace(/^/gm, '  ');
-}
-
-class ClonedAppNode implements AppNode {
-  public readonly spec: AppNode['spec'];
-  public readonly edges = {
-    attachedTo: undefined as { node: AppNode; input: string } | undefined,
-    attachments: new Map<string, AppNode[]>(),
-  };
-  public instance?: AppNodeInstance;
-
-  constructor(spec: AppNode['spec'], instance?: AppNodeInstance) {
-    this.spec = spec;
-    this.instance = instance;
-  }
-
-  toJSON() {
-    const dataRefs = this.instance && [...this.instance.getDataRefs()];
-    return {
-      id: this.spec.id,
-      output:
-        dataRefs && dataRefs.length > 0
-          ? dataRefs.map(ref => ref.id)
-          : undefined,
-      attachments:
-        this.edges.attachments.size > 0
-          ? Object.fromEntries(this.edges.attachments)
-          : undefined,
-    };
-  }
-
-  toString(): string {
-    const dataRefs = this.instance && [...this.instance.getDataRefs()];
-    const out =
-      dataRefs && dataRefs.length > 0
-        ? ` out=[${[...dataRefs].map(r => r.id).join(', ')}]`
-        : '';
-
-    if (this.edges.attachments.size === 0) {
-      return `<${this.spec.id}${out} />`;
-    }
-
-    return [
-      `<${this.spec.id}${out}>`,
-      ...[...this.edges.attachments.entries()].map(([key, value]) =>
-        indent(
-          [`${key} [`, ...value.map(node => indent(node.toString())), `]`].join(
-            '\n',
-          ),
-        ),
-      ),
-      `</${this.spec.id}>`,
-    ].join('\n');
-  }
-}
-
-function createClonedAppNode(
-  spec: AppNode['spec'],
-  instance?: AppNodeInstance,
-) {
-  return new ClonedAppNode(spec, instance);
 }
 
 function mergeExtensionFactoryMiddleware(

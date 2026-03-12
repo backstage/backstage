@@ -508,6 +508,9 @@ export function instantiateAppNodeTree(
   apis: ApiHolder,
   collector: ErrorCollector,
   extensionFactoryMiddleware?: ExtensionFactoryMiddleware,
+  options?: {
+    stopAtAttachment?(ctx: { node: AppNode; input: string }): boolean;
+  },
 ): boolean {
   function createInstance(node: AppNode): AppNodeInstance | undefined {
     if (node.instance) {
@@ -520,6 +523,9 @@ export function instantiateAppNodeTree(
     const instantiatedAttachments = new Map<string, AppNode[]>();
 
     for (const [input, children] of node.edges.attachments) {
+      if (options?.stopAtAttachment?.({ node, input })) {
+        continue;
+      }
       const instantiatedChildren = children.flatMap(child => {
         const childInstance = createInstance(child);
         if (!childInstance) {

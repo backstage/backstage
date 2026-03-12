@@ -834,6 +834,76 @@ describe('createSpecializedApp', () => {
   });
 
   describe('prepareSpecializedApp', () => {
+    it('should defer app root children until finalize', async () => {
+      const identityApi = {
+        getProfileInfo: async () => ({ displayName: 'Test User' }),
+        getBackstageIdentity: async () => ({
+          type: 'user' as const,
+          userEntityRef: 'user:default/test-user',
+          ownershipEntityRefs: ['user:default/test-user'],
+        }),
+        getCredentials: async () => ({ token: 'token' }),
+        signOut: async () => {},
+      };
+      const appLayoutFactory = jest.fn(() => [
+        coreExtensionData.reactElement(<div>App Layout</div>),
+      ]);
+      const phasedAppPlugin = appPluginOriginal.withOverrides({
+        extensions: [
+          appPluginOriginal.getExtension('app/layout').override({
+            factory: appLayoutFactory,
+          }),
+        ],
+      });
+
+      const preparedApp = prepareSpecializedApp({
+        features: [
+          phasedAppPlugin,
+          createFrontendModule({
+            pluginId: 'app',
+            extensions: [
+              phasedAppPlugin.getExtension('sign-in-page:app').override({
+                factory: () => {
+                  function SignInPage(props: {
+                    onSignInSuccess(identity: IdentityApi): void;
+                  }) {
+                    useEffect(() => {
+                      props.onSignInSuccess(identityApi);
+                    }, [props]);
+                    return <div>Custom Sign In</div>;
+                  }
+
+                  return [signInPageComponentDataRef(SignInPage)];
+                },
+              }),
+            ],
+          }),
+        ],
+      });
+
+      const signIn = preparedApp.getSignIn();
+      expect(signIn).toBeDefined();
+      render(signIn!.element);
+      await expect(
+        screen.findByText('Custom Sign In'),
+      ).resolves.toBeInTheDocument();
+
+      expect(appLayoutFactory).not.toHaveBeenCalled();
+
+      await signIn!.complete;
+      expect(appLayoutFactory).not.toHaveBeenCalled();
+
+      const finalizedApp = preparedApp.finalize();
+      render(
+        finalizedApp.tree.root.instance!.getData(
+          coreExtensionData.reactElement,
+        ),
+      );
+
+      expect(screen.getByText('App Layout')).toBeInTheDocument();
+      expect(appLayoutFactory).toHaveBeenCalledTimes(1);
+    });
+
     it('should expose a sign-in page element and finalize with the captured identity', async () => {
       const identityApi = {
         getProfileInfo: async () => ({ displayName: 'Test User' }),

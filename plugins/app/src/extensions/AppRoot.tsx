@@ -72,6 +72,7 @@ export const AppRoot = createExtension({
     }),
     children: createExtensionInput([coreExtensionData.reactElement], {
       singleton: true,
+      optional: true,
     }),
     elements: createExtensionInput([coreExtensionData.reactElement]),
     wrappers: createExtensionInput(
@@ -104,9 +105,7 @@ export const AppRoot = createExtension({
       });
     }
 
-    let content: ReactNode = inputs.children.get(
-      coreExtensionData.reactElement,
-    );
+    let content = inputs.children?.get(coreExtensionData.reactElement);
 
     for (const wrapper of inputs.wrappers) {
       const Component = wrapper.get(AppRootWrapperBlueprint.dataRefs.component);
