@@ -16,6 +16,7 @@
 
 import {
   AuthService,
+  BackstageCredentials,
   HttpAuthService,
   LoggerService,
   PermissionsService,
@@ -31,6 +32,8 @@ import {
 } from '@backstage/backend-plugin-api/alpha';
 import { InputError, NotAllowedError, NotFoundError } from '@backstage/errors';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
+
+type ActionEntry = [string, ActionsRegistryActionOptions<any, any>];
 
 export class DefaultActionsRegistryService implements ActionsRegistryService {
   private actions: Map<string, ActionsRegistryActionOptions<any, any>> =
@@ -196,9 +199,9 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
   }
 
   private async filterByPermissions(
-    entries: [string, ActionsRegistryActionOptions<any, any>][],
-    credentials: Parameters<PermissionsService['authorize']>[1]['credentials'],
-  ): Promise<[string, ActionsRegistryActionOptions<any, any>][]> {
+    entries: ActionEntry[],
+    credentials: BackstageCredentials,
+  ): Promise<ActionEntry[]> {
     const permissionedEntries = entries.filter(
       ([_, action]) => action.permission,
     );

@@ -25,6 +25,7 @@ Each action registered with the service must conform to the `ActionsRegistryActi
 
 ### Optional Properties
 
+- **`permission`:** A `BasicPermission` that controls visibility and access to the action through the permissions framework. See [Permissions](#permissions) below.
 - **`attributes`:** Object containing behavioral flags:
   - **`destructive`:** Boolean indicating if the action modifies or deletes data
   - **`idempotent`:** Boolean indicating if running the action multiple times produces the same result
@@ -156,6 +157,41 @@ export const myPlugin = createBackendPlugin({
   },
 });
 ```
+
+## Permissions
+
+Actions can optionally declare a `permission` to control visibility and access through the Backstage permissions framework. When a permission is set, the action is only visible in listings and accessible by users who are authorized.
+
+Actions that are denied by the permission policy are filtered from `list()` results and return a `404 Not Found` on `invoke()`, as if they don't exist.
+
+### Adding a Permission to an Action
+
+```typescript
+import { createPermission } from '@backstage/plugin-permission-common';
+
+// Define a permission for your action
+const deleteEntityPermission = createPermission({
+  name: 'catalog.entity.delete',
+  attributes: { action: 'delete' },
+});
+
+actionsRegistry.register({
+  name: 'delete-entity',
+  title: 'Delete Entity',
+  description: 'Removes an entity from the catalog',
+  permission: deleteEntityPermission,
+  schema: {
+    input: z => z.object({ entityRef: z.string() }),
+    output: z => z.object({ deleted: z.boolean() }),
+  },
+  action: async ({ input }) => {
+    // action logic
+    return { output: { deleted: true } };
+  },
+});
+```
+
+Actions without a `permission` field remain visible and accessible by all callers, preserving backwards compatibility.
 
 ## Best Practices
 
