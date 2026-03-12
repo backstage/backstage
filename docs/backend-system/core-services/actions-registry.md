@@ -162,7 +162,9 @@ export const myPlugin = createBackendPlugin({
 
 Actions can optionally declare a `permission` to control visibility and access through the Backstage permissions framework. When a permission is set, the action is only visible in listings and accessible by users who are authorized.
 
-Actions that are denied by the permission policy are filtered from `list()` results and return a `404 Not Found` on `invoke()`, as if they don't exist.
+When accessed via the Actions Service or the `/.backstage/actions/v1/...` HTTP endpoints, actions that are denied by the permission policy are filtered from list results and return a `404 Not Found` on invocation, as if they don't exist.
+
+Permissions declared on actions are automatically registered with the `PermissionsRegistryService` so they appear in the permission policy system.
 
 ### Adding a Permission to an Action
 
@@ -170,8 +172,8 @@ Actions that are denied by the permission policy are filtered from `list()` resu
 import { createPermission } from '@backstage/plugin-permission-common';
 
 // Define a permission for your action
-const deleteEntityPermission = createPermission({
-  name: 'catalog.entity.delete',
+const myDeletePermission = createPermission({
+  name: 'my-plugin.actions.deleteEntity',
   attributes: { action: 'delete' },
 });
 
@@ -179,7 +181,7 @@ actionsRegistry.register({
   name: 'delete-entity',
   title: 'Delete Entity',
   description: 'Removes an entity from the catalog',
-  permission: deleteEntityPermission,
+  permission: myDeletePermission,
   schema: {
     input: z => z.object({ entityRef: z.string() }),
     output: z => z.object({ deleted: z.boolean() }),

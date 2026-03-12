@@ -19,6 +19,7 @@ import {
   BackstageCredentials,
   HttpAuthService,
   LoggerService,
+  PermissionsRegistryService,
   PermissionsService,
   PluginMetadataService,
 } from '@backstage/backend-plugin-api';
@@ -44,6 +45,7 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
   private readonly auth: AuthService;
   private readonly metadata: PluginMetadataService;
   private readonly permissions: PermissionsService;
+  private readonly permissionsRegistry: PermissionsRegistryService;
 
   private constructor(
     logger: LoggerService,
@@ -51,12 +53,14 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
     auth: AuthService,
     metadata: PluginMetadataService,
     permissions: PermissionsService,
+    permissionsRegistry: PermissionsRegistryService,
   ) {
     this.logger = logger;
     this.httpAuth = httpAuth;
     this.auth = auth;
     this.metadata = metadata;
     this.permissions = permissions;
+    this.permissionsRegistry = permissionsRegistry;
   }
 
   static create({
@@ -65,12 +69,14 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
     auth,
     metadata,
     permissions,
+    permissionsRegistry,
   }: {
     httpAuth: HttpAuthService;
     logger: LoggerService;
     auth: AuthService;
     metadata: PluginMetadataService;
     permissions: PermissionsService;
+    permissionsRegistry: PermissionsRegistryService;
   }): DefaultActionsRegistryService {
     return new DefaultActionsRegistryService(
       logger,
@@ -78,6 +84,7 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
       auth,
       metadata,
       permissions,
+      permissionsRegistry,
     );
   }
 
@@ -97,7 +104,9 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
       return res.json({
         actions: allowedActions.map(([id, action]) => ({
           id,
-          ...action,
+          name: action.name,
+          title: action.title,
+          description: action.description,
           attributes: {
             // Inspired by the @modelcontextprotocol/sdk defaults for the hints.
             // https://github.com/modelcontextprotocol/typescript-sdk/blob/dd69efa1de8646bb6b195ff8d5f52e13739f4550/src/types.ts#L777-L812
@@ -193,6 +202,10 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
 
     if (this.actions.has(id)) {
       throw new Error(`Action with id "${id}" is already registered`);
+    }
+
+    if (options.permission) {
+      this.permissionsRegistry.addPermissions([options.permission]);
     }
 
     this.actions.set(id, options);

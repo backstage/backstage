@@ -824,5 +824,49 @@ describe('actionsRegistryServiceFactory', () => {
         expect.objectContaining({ credentials: expect.anything() }),
       );
     });
+
+    it('should register the permission with the permissions registry', async () => {
+      const permissionsRegistryMock = mockServices.permissionsRegistry.mock();
+
+      const pluginSubject = createBackendPlugin({
+        pluginId: 'my-plugin',
+        register(reg) {
+          reg.registerInit({
+            deps: {
+              actionsRegistry: actionsRegistryServiceRef,
+            },
+            async init({ actionsRegistry }) {
+              actionsRegistry.register({
+                name: 'protected-action',
+                title: 'Protected Action',
+                description: 'Permission required',
+                permission: testPermission,
+                schema: {
+                  input: z => z.object({}),
+                  output: z => z.object({}),
+                },
+                action: async () => ({ output: {} }),
+              });
+            },
+          });
+        },
+      });
+
+      await startTestBackend({
+        features: [
+          pluginSubject,
+          actionsRegistryServiceFactory,
+          httpRouterServiceFactory,
+          mockServices.httpAuth.factory({
+            defaultCredentials: mockCredentials.service('user:default/mock'),
+          }),
+          permissionsRegistryMock.factory,
+        ],
+      });
+
+      expect(permissionsRegistryMock.addPermissions).toHaveBeenCalledWith([
+        testPermission,
+      ]);
+    });
   });
 });
