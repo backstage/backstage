@@ -30,10 +30,10 @@ import { relative } from 'node:path/posix';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 import {
   AzureBlobStorageIntergation,
-  AzureCredentialsManager,
+  AzureBlobStorageCredentialProvider,
   ScmIntegrations,
 } from '@backstage/integration';
-import { DefaultAzureCredentialsManager } from '@backstage/integration/backend';
+import { DefaultAzureBlobStorageCredentialProvider } from '@backstage/integration/backend';
 import {
   UrlReaderService,
   UrlReaderServiceReadTreeOptions,
@@ -69,7 +69,7 @@ export class AzureBlobStorageUrlReader implements UrlReaderService {
     const integrations = ScmIntegrations.fromConfig(config);
 
     const credsManager =
-      DefaultAzureCredentialsManager.fromIntegrations(integrations);
+      DefaultAzureBlobStorageCredentialProvider.fromIntegrations(integrations);
 
     return integrations.azureBlobStorage.list().map(integrationConfig => {
       const reader = new AzureBlobStorageUrlReader(
@@ -88,16 +88,14 @@ export class AzureBlobStorageUrlReader implements UrlReaderService {
     });
   };
 
-  // private readonly blobServiceClient: BlobServiceClient;
-
-  private readonly credsManager: AzureCredentialsManager;
+  private readonly credsManager: AzureBlobStorageCredentialProvider;
   private readonly integration: AzureBlobStorageIntergation;
   private readonly deps: {
     treeResponseFactory: ReadTreeResponseFactory;
   };
 
   constructor(
-    credsManager: AzureCredentialsManager,
+    credsManager: AzureBlobStorageCredentialProvider,
     integration: AzureBlobStorageIntergation,
     deps: {
       treeResponseFactory: ReadTreeResponseFactory;

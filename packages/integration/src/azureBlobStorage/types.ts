@@ -21,12 +21,18 @@ import type {
 } from '@azure/storage-blob';
 
 /**
+ * @public
+ * @deprecated Use `AzureBlobStorageCredentialProvider` instead, which is more descriptive of its purpose and avoids confusion with Azure AD credentials.
+ */
+export type AzureCredentialsManager = AzureBlobStorageCredentialProvider;
+
+/**
  * This allows implementations to be provided to retrieve Azure Storage accounts credentials.
  *
  * @public
  *
  */
-export interface AzureCredentialsManager {
+export interface AzureBlobStorageCredentialProvider {
   /**
    * Retrieves the appropriate credential for the specified Azure storage account.
    *

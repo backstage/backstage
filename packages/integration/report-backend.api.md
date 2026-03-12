@@ -8,6 +8,16 @@ import { StorageSharedKeyCredential } from '@azure/storage-blob';
 import type { TokenCredential } from '@azure/identity';
 
 // @public
+export interface AzureBlobStorageCredentialProvider {
+  getCredentials(
+    accountName: string,
+  ): Promise<
+    TokenCredential | StorageSharedKeyCredential | AnonymousCredential
+  >;
+  getServiceUrl(accountName: string): string;
+}
+
+// @public
 export type AzureBlobStorageIntegrationConfig = {
   accountName: string;
   accountKey?: string;
@@ -24,24 +34,16 @@ export type AzureBlobStorageIntegrationConfig = {
 };
 
 // @public
-export interface AzureCredentialsManager {
-  getCredentials(
-    accountName: string,
-  ): Promise<
-    TokenCredential | StorageSharedKeyCredential | AnonymousCredential
-  >;
-  getServiceUrl(accountName: string): string;
-}
-
-// @public
-export class DefaultAzureCredentialsManager implements AzureCredentialsManager {
+export class DefaultAzureBlobStorageCredentialProvider
+  implements AzureBlobStorageCredentialProvider
+{
   static fromIntegrations(integrations: {
     azureBlobStorage: {
       list(): Array<{
         config: AzureBlobStorageIntegrationConfig;
       }>;
     };
-  }): DefaultAzureCredentialsManager;
+  }): DefaultAzureBlobStorageCredentialProvider;
   getCredentials(
     accountName: string,
   ): Promise<

@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-export { DefaultAzureCredentialsManager } from './azureBlobStorage/DefaultAzureCredentialsProvider';
+export { DefaultAzureBlobStorageCredentialProvider } from './azureBlobStorage/DefaultAzureCredentialsProvider';
 
-// Re-exported for API report completeness — also exported from the main entry point.
-export type { AzureCredentialsManager } from './azureBlobStorage/types';
+export type { AzureBlobStorageCredentialProvider } from './azureBlobStorage/types';
 export type { AzureBlobStorageIntegrationConfig } from './azureBlobStorage/config';

@@ -25,7 +25,7 @@ import {
 } from '@azure/storage-blob';
 import { ScmIntegrationRegistry } from '../registry';
 import { ConfigReader } from '@backstage/config';
-import { DefaultAzureCredentialsManager } from './DefaultAzureCredentialsProvider';
+import { DefaultAzureBlobStorageCredentialProvider } from './DefaultAzureCredentialsProvider';
 import { ScmIntegrations } from '../ScmIntegrations';
 import { DateTime } from 'luxon';
 
@@ -35,11 +35,11 @@ const MockedClientSecretCredential = ClientSecretCredential as jest.MockedClass<
 
 jest.mock('@azure/identity');
 
-describe('DefaultAzureCredentialsManager', () => {
+describe('DefaultAzureBlobStorageCredentialProvider', () => {
   let mockIntegration: ScmIntegrationRegistry;
 
   const buildProvider = (azureIntegrations: any[]) =>
-    DefaultAzureCredentialsManager.fromIntegrations(
+    DefaultAzureBlobStorageCredentialProvider.fromIntegrations(
       ScmIntegrations.fromConfig(
         new ConfigReader({
           integrations: {
@@ -77,8 +77,10 @@ describe('DefaultAzureCredentialsManager', () => {
 
   it('should create an instance from ScmIntegrationRegistry', () => {
     const manager =
-      DefaultAzureCredentialsManager.fromIntegrations(mockIntegration);
-    expect(manager).toBeInstanceOf(DefaultAzureCredentialsManager);
+      DefaultAzureBlobStorageCredentialProvider.fromIntegrations(
+        mockIntegration,
+      );
+    expect(manager).toBeInstanceOf(DefaultAzureBlobStorageCredentialProvider);
   });
 
   it('should return cached credentials if available', async () => {

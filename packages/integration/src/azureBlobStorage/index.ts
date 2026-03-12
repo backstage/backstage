@@ -19,4 +19,7 @@ export {
   readAzureBlobStorageIntegrationConfigs,
 } from './config';
 export type { AzureBlobStorageIntegrationConfig } from './config';
-export type { AzureCredentialsManager } from './types';
+export type {
+  AzureCredentialsManager,
+  AzureBlobStorageCredentialProvider,
+} from './types';

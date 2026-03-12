@@ -33,7 +33,7 @@ import {
   AzureBlobStorageIntergation,
   ScmIntegrations,
 } from '@backstage/integration';
-import { DefaultAzureCredentialsManager } from '@backstage/integration/backend';
+import { DefaultAzureBlobStorageCredentialProvider } from '@backstage/integration/backend';
 import { AzureBlobStorageConfig } from './types';
 
 /**
@@ -61,7 +61,9 @@ export class AzureBlobStorageEntityProvider implements EntityProvider {
 
     const scmIntegration = ScmIntegrations.fromConfig(configRoot);
     const credentialsProvider =
-      DefaultAzureCredentialsManager.fromIntegrations(scmIntegration);
+      DefaultAzureBlobStorageCredentialProvider.fromIntegrations(
+        scmIntegration,
+      );
     if (!options.schedule && !options.scheduler) {
       throw new Error('Either schedule or scheduler must be provided.');
     }
@@ -101,12 +103,12 @@ export class AzureBlobStorageEntityProvider implements EntityProvider {
   }
   private readonly config: AzureBlobStorageConfig;
   private readonly integration: AzureBlobStorageIntergation;
-  private readonly credentialsProvider: DefaultAzureCredentialsManager;
+  private readonly credentialsProvider: DefaultAzureBlobStorageCredentialProvider;
 
   private constructor(
     config: AzureBlobStorageConfig,
     integration: AzureBlobStorageIntergation,
-    credentialsProvider: DefaultAzureCredentialsManager,
+    credentialsProvider: DefaultAzureBlobStorageCredentialProvider,
     logger: LoggerService,
     schedule: SchedulerServiceTaskRunner,
   ) {

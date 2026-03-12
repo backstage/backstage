@@ -74,6 +74,16 @@ export type AwsS3IntegrationConfig = {
 };
 
 // @public
+export interface AzureBlobStorageCredentialProvider {
+  getCredentials(
+    accountName: string,
+  ): Promise<
+    TokenCredential | StorageSharedKeyCredential | AnonymousCredential
+  >;
+  getServiceUrl(accountName: string): string;
+}
+
+// @public
 export type AzureBlobStorageIntegrationConfig = {
   accountName: string;
   accountKey?: string;
@@ -124,15 +134,8 @@ export type AzureCredentialBase = {
   organizations?: string[];
 };
 
-// @public
-export interface AzureCredentialsManager {
-  getCredentials(
-    accountName: string,
-  ): Promise<
-    TokenCredential | StorageSharedKeyCredential | AnonymousCredential
-  >;
-  getServiceUrl(accountName: string): string;
-}
+// @public @deprecated (undocumented)
+export type AzureCredentialsManager = AzureBlobStorageCredentialProvider;
 
 // @public
 export type AzureDevOpsCredential =

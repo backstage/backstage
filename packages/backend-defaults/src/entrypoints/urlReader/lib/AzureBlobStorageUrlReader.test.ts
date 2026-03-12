@@ -23,7 +23,7 @@ import {
   parseUrl,
 } from './AzureBlobStorageUrlReader';
 import { ScmIntegrations } from '@backstage/integration';
-import { DefaultAzureCredentialsManager } from '@backstage/integration/backend';
+import { DefaultAzureBlobStorageCredentialProvider } from '@backstage/integration/backend';
 import { UrlReaderPredicateTuple } from './types';
 import { mockServices } from '@backstage/backend-test-utils';
 import { Readable } from 'node:stream';
@@ -155,7 +155,9 @@ describe('AzureBlobStorageUrlReader', () => {
 
       const integrations = ScmIntegrations.fromConfig(config);
       const credsManager =
-        DefaultAzureCredentialsManager.fromIntegrations(integrations);
+        DefaultAzureBlobStorageCredentialProvider.fromIntegrations(
+          integrations,
+        );
       const reader = new AzureBlobStorageUrlReader(
         credsManager,
         integrations.azureBlobStorage.list()[0],
@@ -180,7 +182,9 @@ describe('AzureBlobStorageUrlReader', () => {
 
       const integrations = ScmIntegrations.fromConfig(config);
       const credsManager =
-        DefaultAzureCredentialsManager.fromIntegrations(integrations);
+        DefaultAzureBlobStorageCredentialProvider.fromIntegrations(
+          integrations,
+        );
       const reader = new AzureBlobStorageUrlReader(
         credsManager,
         integrations.azureBlobStorage.list()[0],
