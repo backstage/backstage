@@ -15,3 +15,12 @@
  */
 
 export { OpaqueCliPlugin } from './InternalCliPlugin';
+export type {
+  CommandNode,
+  CommandTreeNode,
+  CommandLeafNode,
+} from './InternalCommandNode';
+export {
+  OpaqueCommandTreeNode,
+  OpaqueCommandLeafNode,
+} from './InternalCommandNode';

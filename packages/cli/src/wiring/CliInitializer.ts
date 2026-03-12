@@ -15,8 +15,13 @@
  */
 
 import { CommandGraph } from './CommandGraph';
-import { OpaqueCliPlugin } from '@internal/cli';
-import type { BackstageCommand, CliPlugin } from '@backstage/cli-plugin-api';
+import {
+  OpaqueCliPlugin,
+  OpaqueCommandTreeNode,
+  OpaqueCommandLeafNode,
+} from '@internal/cli';
+import type { CommandNode } from '@internal/cli';
+import type { CliPlugin } from '@backstage/cli-plugin-api';
 import { CommandRegistry } from './CommandRegistry';
 import { Command } from 'commander';
 import { version } from './version';
@@ -25,15 +30,13 @@ import { exitWithError } from './errors';
 import { ForwardedError } from '@backstage/errors';
 import { isPromise } from 'node:util/types';
 
-function isNodeHidden(
-  node:
-    | { $$type: '@tree/leaf'; command: BackstageCommand }
-    | { $$type: '@tree/root'; children: unknown[] },
-): boolean {
-  if (node.$$type === '@tree/leaf') {
-    return !!node.command.deprecated || !!node.command.experimental;
+function isNodeHidden(node: CommandNode): boolean {
+  if (OpaqueCommandLeafNode.isType(node)) {
+    const { command } = OpaqueCommandLeafNode.toInternal(node);
+    return !!command.deprecated || !!command.experimental;
   }
-  return node.children.every(child => isNodeHidden(child as any));
+  const { children } = OpaqueCommandTreeNode.toInternal(node);
+  return children.every(child => isNodeHidden(child));
 }
 
 type UninitializedFeature = CliPlugin | Promise<{ default: CliPlugin }>;
@@ -92,25 +95,28 @@ export class CliInitializer {
     }));
     while (queue.length) {
       const { node, argParser } = queue.shift()!;
-      if (node.$$type === '@tree/root') {
+      if (OpaqueCommandTreeNode.isType(node)) {
+        const internal = OpaqueCommandTreeNode.toInternal(node);
         const treeParser = argParser
-          .command(`${node.name} [command]`, {
+          .command(`${internal.name} [command]`, {
             hidden: isNodeHidden(node),
           })
-          .description(node.name);
+          .description(internal.name);
 
         queue.push(
-          ...node.children.map(child => ({
+          ...internal.children.map(child => ({
             node: child,
             argParser: treeParser,
           })),
         );
       } else {
+        const internal = OpaqueCommandLeafNode.toInternal(node);
         argParser
-          .command(node.name, {
-            hidden: !!node.command.deprecated || !!node.command.experimental,
+          .command(internal.name, {
+            hidden:
+              !!internal.command.deprecated || !!internal.command.experimental,
           })
-          .description(node.command.description)
+          .description(internal.command.description)
           .helpOption(false)
           .allowUnknownOption(true)
           .allowExcessArguments(true)
@@ -129,7 +135,7 @@ export class CliInitializer {
                 // Skip the command name
                 if (
                   argIndex === index &&
-                  node.command.path[argIndex] === nonProcessArgs[argIndex]
+                  internal.command.path[argIndex] === nonProcessArgs[argIndex]
                 ) {
                   index += 1;
                   continue;
@@ -139,15 +145,15 @@ export class CliInitializer {
               const context = {
                 args: [...positionalArgs, ...args.unknown],
                 info: {
-                  usage: [programName, ...node.command.path].join(' '),
-                  name: node.command.path.join(' '),
+                  usage: [programName, ...internal.command.path].join(' '),
+                  name: internal.command.path.join(' '),
                 },
               };
 
-              if (typeof node.command.execute === 'function') {
-                await node.command.execute(context);
+              if (typeof internal.command.execute === 'function') {
+                await internal.command.execute(context);
               } else {
-                const mod = await node.command.execute.loader();
+                const mod = await internal.command.execute.loader();
                 // Handle CJS double-wrapping of default exports
                 const fn =
                   typeof mod.default === 'function'
