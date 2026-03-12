@@ -102,4 +102,36 @@ describe('atlassianActionsPlugin — jira:getIssue action', () => {
       }),
     ).rejects.toThrow(/sign in with Atlassian/i);
   });
+
+  it('deletes stale token and throws on 401 from Jira API', async () => {
+    const action = registeredActions.get('atlassian:jira:getIssue')!;
+    const userCredentials = {
+      principal: { type: 'user', userEntityRef: 'user:default/alice' },
+    };
+
+    mockTokenService.getToken.mockResolvedValue({
+      accessToken: 'stale-token',
+      refreshToken: undefined,
+      expiresAt: undefined,
+      scope: undefined,
+    });
+
+    mockFetch.mockResolvedValue({
+      status: 401,
+      ok: false,
+    } as Response);
+
+    await expect(
+      action({
+        input: { issueKey: 'PROJ-1' },
+        credentials: userCredentials,
+        logger: mockServices.logger.mock(),
+      }),
+    ).rejects.toThrow(/re-authenticate/i);
+
+    expect(mockTokenService.deleteToken).toHaveBeenCalledWith(
+      'user:default/alice',
+      'atlassian',
+    );
+  });
 });

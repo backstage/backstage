@@ -19,7 +19,6 @@ import {
 } from '@backstage/backend-plugin-api';
 import { actionsRegistryServiceRef } from '@backstage/backend-plugin-api/alpha';
 import { providerTokenServiceRef } from '@devhub/plugin-provider-token-backend';
-import { z } from 'zod';
 
 export const atlassianActionsPlugin = createBackendPlugin({
   pluginId: 'atlassian-actions',
@@ -43,18 +42,18 @@ export const atlassianActionsPlugin = createBackendPlugin({
             'The user must have signed in with Atlassian via Backstage.',
           attributes: { readOnly: true, idempotent: true },
           schema: {
-            input: zod =>
-              zod.object({
-                issueKey: zod
+            input: z =>
+              z.object({
+                issueKey: z
                   .string()
                   .regex(
                     /^[A-Z]+-\d+$/,
                     'issueKey must match PROJECT-123 format',
                   ),
               }),
-            output: zod =>
-              zod.object({
-                issue: zod.unknown(),
+            output: z =>
+              z.object({
+                issue: z.unknown(),
               }),
           },
           async action(ctx) {
