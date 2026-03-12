@@ -63,6 +63,14 @@ export function createMicrosoftRefresher(
       }
 
       const data = await response.json();
+      // Microsoft can return HTTP 200 with {"error": "invalid_grant"} for conditional access, revoked tokens, etc.
+      if (data.error) {
+        throw new Error(
+          `Microsoft token refresh error: ${
+            data.error_description ?? data.error
+          }`,
+        );
+      }
       return {
         accessToken: data.access_token,
         refreshToken: data.refresh_token,
