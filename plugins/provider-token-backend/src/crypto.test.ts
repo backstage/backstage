@@ -1,0 +1,89 @@
+/*
+ * Copyright 2026 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { deriveKey, encrypt, decrypt } from './crypto';
+
+const SECRET = Buffer.from('test-secret-at-least-32-bytes-long-ok').toString(
+  'base64',
+);
+
+describe('deriveKey', () => {
+  it('returns a 32-byte Buffer', () => {
+    const key = deriveKey(SECRET);
+    expect(key).toBeInstanceOf(Buffer);
+    expect(key.length).toBe(32);
+  });
+
+  it('is deterministic — same secret yields same key', () => {
+    const k1 = deriveKey(SECRET);
+    const k2 = deriveKey(SECRET);
+    expect(k1.equals(k2)).toBe(true);
+  });
+
+  it('different secrets yield different keys', () => {
+    const other = Buffer.from('entirely-different-secret-string-xyz').toString(
+      'base64',
+    );
+    expect(deriveKey(SECRET).equals(deriveKey(other))).toBe(false);
+  });
+});
+
+describe('encrypt / decrypt', () => {
+  let key: Buffer;
+  beforeAll(() => {
+    key = deriveKey(SECRET);
+  });
+
+  it('round-trips plaintext correctly', () => {
+    const plaintext = 'access-token-abc123';
+    const ciphertext = encrypt(plaintext, key);
+    expect(decrypt(ciphertext, key)).toBe(plaintext);
+  });
+
+  it('produces a v1: prefixed string', () => {
+    expect(encrypt('x', key)).toMatch(
+      /^v1:[0-9a-f]{24}:[0-9a-f]{32}:[0-9a-f]+$/,
+    );
+  });
+
+  it('different calls produce different ciphertexts (random IV)', () => {
+    const c1 = encrypt('same', key);
+    const c2 = encrypt('same', key);
+    expect(c1).not.toBe(c2);
+  });
+
+  it('decrypt throws on tampered ciphertext (auth tag verification)', () => {
+    const ciphertext = encrypt('secret', key);
+    // Flip the last hex digit
+    const tampered =
+      ciphertext.slice(0, -1) + (ciphertext.endsWith('0') ? '1' : '0');
+    expect(() => decrypt(tampered, key)).toThrow();
+  });
+
+  it('decrypt throws on unknown version prefix', () => {
+    const ciphertext = encrypt('x', key).replace('v1:', 'v99:');
+    expect(() => decrypt(ciphertext, key)).toThrow(/Unsupported.*version/);
+  });
+
+  it('decrypt throws on malformed ciphertext (wrong number of parts)', () => {
+    expect(() => decrypt('notvalid', key)).toThrow(/Malformed/);
+  });
+
+  it('handles unicode plaintext', () => {
+    const unicode = '日本語テスト🔑';
+    expect(decrypt(encrypt(unicode, key), key)).toBe(unicode);
+  });
+});
