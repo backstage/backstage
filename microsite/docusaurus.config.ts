@@ -432,12 +432,14 @@ const config: Config = {
           position: 'right',
           className: 'header-github-link',
           'aria-label': 'GitHub repository',
+          title: 'GitHub repository',
         },
         {
           href: 'https://discord.gg/backstage-687207715902193673',
           position: 'right',
           className: 'header-discord-link',
           'aria-label': 'Discord community',
+          title: 'Discord community',
         },
         ...(useVersionedDocs
           ? [
