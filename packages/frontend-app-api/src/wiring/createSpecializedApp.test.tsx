@@ -69,9 +69,9 @@ function makeAppPlugin(label: string = 'Test') {
 function renderPreparedSignIn(signIn: {
   Component: ComponentType<PreparedSpecializedAppSignInProps>;
 }) {
-  return new Promise<void>((resolve, reject) => {
+  return new Promise<void>(resolve => {
     const SignIn = signIn.Component;
-    render(<SignIn onReady={() => resolve()} onError={reject} />);
+    render(<SignIn onReady={() => resolve()} />);
   });
 }
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { JSX, lazy, ReactNode, Suspense, useReducer, useState } from 'react';
+import { JSX, lazy, ReactNode, Suspense, useReducer } from 'react';
 import {
   ConfigApi,
   coreExtensionData,
@@ -151,12 +151,7 @@ function PreparedAppRoot(props: {
 }): JSX.Element {
   const signIn = props.preparedApp.getSignIn();
   const SignIn = signIn.Component;
-  const [finalizeError, setFinalizeError] = useState<Error>();
   const [, triggerRerender] = useReducer((count: number) => count + 1, 0);
-
-  if (finalizeError) {
-    throw finalizeError;
-  }
 
   const finalizedApp: FinalizedSpecializedApp | undefined =
     props.preparedApp.tryFinalize();
@@ -167,7 +162,6 @@ function PreparedAppRoot(props: {
         onReady={() => {
           triggerRerender();
         }}
-        onError={setFinalizeError}
       />
     );
   }

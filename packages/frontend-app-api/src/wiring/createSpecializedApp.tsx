@@ -54,7 +54,7 @@ import {
   OpaqueFrontendPlugin,
 } from '@internal/frontend';
 import { OpaqueType } from '@internal/opaque';
-import { ComponentType, JSX, ReactNode, useEffect } from 'react';
+import { ComponentType, JSX, ReactNode, useEffect, useState } from 'react';
 
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import {
@@ -136,7 +136,6 @@ type SignInPageProps = {
  */
 export type PreparedSpecializedAppSignInProps = {
   onReady(): void;
-  onError?(error: Error): void;
 };
 
 /**
@@ -650,7 +649,6 @@ export function prepareSpecializedApp(
 
     const callbacks: {
       onReady?: PreparedSpecializedAppSignInProps['onReady'];
-      onError?: PreparedSpecializedAppSignInProps['onError'];
     } = {};
     const runtimeRef: { current?: SignInRuntime } = {};
     let bootstrapState:
@@ -661,10 +659,31 @@ export function prepareSpecializedApp(
     function flushBootstrapState() {
       if (bootstrapState.status === 'ready') {
         callbacks.onReady?.();
-      } else if (bootstrapState.status === 'error') {
-        callbacks.onError?.(bootstrapState.error);
       }
     }
+
+    const signInElement = providedSessionState
+      ? undefined
+      : createSignInElement({
+          tree,
+          apis: phase.apis,
+          collector,
+          routeRefsById,
+          routeResolutionApi: phase.routeResolutionApi,
+          appTreeApi: phase.appTreeApi,
+          extensionFactoryMiddleware: mergedExtensionFactoryMiddleware,
+          onSignInSuccess(identityApi) {
+            if (!runtimeRef.current) {
+              throw new Error('Sign-in runtime is not initialized');
+            }
+
+            return startSignInFinalize(runtimeRef.current, identityApi).then(
+              () => {
+                callbacks.onReady?.();
+              },
+            );
+          },
+        });
 
     function startBootstrap(loader: Promise<SpecializedAppSessionState>) {
       if (bootstrapState.status !== 'idle') {
@@ -685,38 +704,17 @@ export function prepareSpecializedApp(
             status: 'error',
             error: asError(error),
           };
-          flushBootstrapState();
+          if (!signInElement) {
+            callbacks.onReady?.();
+          }
         });
     }
 
-    const signInElement = providedSessionState
-      ? undefined
-      : createSignInElement({
-          tree,
-          apis: phase.apis,
-          collector,
-          routeRefsById,
-          routeResolutionApi: phase.routeResolutionApi,
-          appTreeApi: phase.appTreeApi,
-          extensionFactoryMiddleware: mergedExtensionFactoryMiddleware,
-          onSignInSuccess(identityApi) {
-            if (!runtimeRef.current) {
-              throw new Error('Sign-in runtime is not initialized');
-            }
-
-            startBootstrap(
-              startSignInFinalize(runtimeRef.current, identityApi),
-            );
-          },
-        });
-
     const Component = (props: PreparedSpecializedAppSignInProps) => {
       callbacks.onReady = props.onReady;
-      callbacks.onError = props.onError;
 
       useEffect(() => {
         callbacks.onReady = props.onReady;
-        callbacks.onError = props.onError;
 
         if (!signInElement) {
           startBootstrap(getSessionState());
@@ -727,11 +725,8 @@ export function prepareSpecializedApp(
           if (callbacks.onReady === props.onReady) {
             callbacks.onReady = undefined;
           }
-          if (callbacks.onError === props.onError) {
-            callbacks.onError = undefined;
-          }
         };
-      }, [props.onError, props.onReady]);
+      }, [props.onReady]);
 
       return signInElement ?? <></>;
     };
@@ -900,7 +895,7 @@ function createSignInElement(options: {
   routeResolutionApi: RouteResolutionApiProxy;
   appTreeApi: AppTreeApiProxy;
   extensionFactoryMiddleware?: ExtensionFactoryMiddleware;
-  onSignInSuccess(identityApi: IdentityApi): void;
+  onSignInSuccess(identityApi: IdentityApi): Promise<void>;
 }): JSX.Element | undefined {
   const signInPageComponent = extractSignInPageComponent({
     tree: options.tree,
@@ -1015,7 +1010,7 @@ function instantiateAndInitializePhaseTree(options: {
 function prepareSignInTree(options: {
   tree: AppTree;
   signInPageComponent: ComponentType<SignInPageProps>;
-  onSignInSuccess(identityApi: IdentityApi): void;
+  onSignInSuccess(identityApi: IdentityApi): Promise<void>;
 }) {
   const appRootNode = getAppRootNode(options.tree);
   if (!appRootNode) {
@@ -1033,14 +1028,24 @@ function prepareSignInTree(options: {
       signInPageComponentDataRef,
       (() => {
         const SignInPageComponent = options.signInPageComponent;
-        return (props: SignInPageProps) => (
-          <SignInPageComponent
-            {...props}
-            onSignInSuccess={identityApi => {
-              options.onSignInSuccess(identityApi);
-            }}
-          />
-        );
+        return function PreparedSignInPage(props: SignInPageProps) {
+          const [signInError, setSignInError] = useState<Error>();
+
+          if (signInError) {
+            throw signInError;
+          }
+
+          return (
+            <SignInPageComponent
+              {...props}
+              onSignInSuccess={identityApi => {
+                void options.onSignInSuccess(identityApi).catch(error => {
+                  setSignInError(asError(error));
+                });
+              }}
+            />
+          );
+        };
       })(),
     ),
   );

@@ -222,7 +222,6 @@ export type PreparedSpecializedApp = {
 
 // @public
 export type PreparedSpecializedAppSignInProps = {
-  onError?(error: Error): void;
   onReady(): void;
 };
 

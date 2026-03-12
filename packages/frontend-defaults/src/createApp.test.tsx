@@ -187,6 +187,86 @@ describe('createApp', () => {
     ).resolves.toBeInTheDocument();
   });
 
+  it('should surface sign-in bootstrap errors through the app root boundary', async () => {
+    const identityApi = {
+      getProfileInfo: async () => ({ displayName: 'Test User' }),
+      getBackstageIdentity: async () => ({
+        type: 'user' as const,
+        userEntityRef: 'user:default/test-user',
+        ownershipEntityRefs: ['user:default/test-user'],
+      }),
+      getCredentials: async () => ({ token: 'token' }),
+      signOut: async () => {},
+    };
+    const featureFlagsApi = {
+      isActive: jest.fn(() => {
+        throw new Error('sign-in bootstrap failed');
+      }),
+      registerFlag: jest.fn(),
+      getRegisteredFlags: () => [],
+      save: jest.fn(),
+    } as unknown as typeof featureFlagsApiRef.T;
+
+    const app = createApp({
+      advanced: {
+        configLoader: async () => ({ config: mockApis.config() }),
+      },
+      features: [
+        appPluginOriginal,
+        createFrontendModule({
+          pluginId: 'app',
+          extensions: [
+            ApiBlueprint.make({
+              params: defineParams =>
+                defineParams({
+                  api: featureFlagsApiRef,
+                  deps: {},
+                  factory: () => featureFlagsApi,
+                }),
+            }),
+            appPluginOriginal.getExtension('sign-in-page:app').override({
+              factory: () => {
+                function SignInPage(props: {
+                  onSignInSuccess(identity: IdentityApi): void;
+                }) {
+                  useEffect(() => {
+                    props.onSignInSuccess(identityApi);
+                  }, [props]);
+
+                  return <div>Custom Sign In</div>;
+                }
+
+                return [signInPageComponentDataRef(SignInPage)];
+              },
+            }),
+          ],
+        }),
+        createFrontendPlugin({
+          pluginId: 'test',
+          featureFlags: [{ name: 'test-flag' }],
+          extensions: [
+            PageBlueprint.make({
+              if: { featureFlags: { $contains: 'test-flag' } },
+              params: {
+                path: '/',
+                loader: async () => <div>Flagged Page</div>,
+              },
+            }),
+          ],
+        }),
+      ],
+    });
+
+    await renderWithEffects(app.createRoot());
+
+    await expect(
+      screen.findByText(/Error in app/),
+    ).resolves.toBeInTheDocument();
+    await expect(
+      screen.findByText('sign-in bootstrap failed'),
+    ).resolves.toBeInTheDocument();
+  });
+
   it('should deduplicate features keeping the last received one', async () => {
     const duplicatedFeatureId = 'test';
     const app = createApp({
