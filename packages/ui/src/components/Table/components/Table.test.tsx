@@ -59,8 +59,8 @@ describe('Table', () => {
       expect(rows).toHaveLength(6);
 
       // Table should indicate it's in a loading/stale state via data-stale
-      // (react-aria-components Table renders this as a data attribute rather
-      // than aria-busy on the DOM element)
+      // (react-aria-components' Table does not forward aria-busy to the DOM,
+      // but the stale prop produces a data-stale attribute for CSS targeting)
       expect(table).toHaveAttribute('data-stale', 'true');
 
       // Each skeleton row should contain Skeleton placeholder elements

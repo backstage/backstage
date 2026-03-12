@@ -7652,6 +7652,8 @@ __metadata:
     "@backstage/version-bridge": "workspace:^"
     "@remixicon/react": "npm:^4.6.0"
     "@tanstack/react-table": "npm:^8.21.3"
+    "@testing-library/jest-dom": "npm:^6.0.0"
+    "@testing-library/react": "npm:^16.0.0"
     "@types/react": "npm:^18.0.0"
     "@types/react-dom": "npm:^18.0.0"
     "@types/use-sync-external-store": "npm:^0.0.6"

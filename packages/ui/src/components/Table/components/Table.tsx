@@ -151,10 +151,10 @@ export function Table<T extends TableItem>({
       </VisuallyHidden>
       {wrapResizable(
         <TableRoot
-          selectionMode={selectionMode}
-          selectionBehavior={selectionBehavior}
-          selectedKeys={selectedKeys}
-          onSelectionChange={onSelectionChange}
+          selectionMode={isInitialLoading ? undefined : selectionMode}
+          selectionBehavior={isInitialLoading ? undefined : selectionBehavior}
+          selectedKeys={isInitialLoading ? undefined : selectedKeys}
+          onSelectionChange={isInitialLoading ? undefined : onSelectionChange}
           sortDescriptor={sort?.descriptor ?? undefined}
           onSortChange={sort?.onSortChange}
           disabledKeys={disabledRows}
