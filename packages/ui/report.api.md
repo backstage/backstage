@@ -9,6 +9,7 @@ import type { CheckboxProps as CheckboxProps_2 } from 'react-aria-components';
 import { ColumnProps as ColumnProps_2 } from 'react-aria-components';
 import type { ColumnSize } from '@react-types/table';
 import type { ColumnStaticSize } from '@react-types/table';
+import type { ComboBoxProps } from 'react-aria-components';
 import type { ComponentProps } from 'react';
 import type { ComponentPropsWithoutRef } from 'react';
 import type { ComponentPropsWithRef } from 'react';
@@ -270,6 +271,51 @@ export type AnalyticsTracker = {
       attributes?: AnalyticsEventAttributes;
     },
   ) => void;
+};
+
+// @public (undocumented)
+export const Autocomplete: ForwardRefExoticComponent<
+  AutocompleteProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public (undocumented)
+export type AutocompleteDisplayMode =
+  | 'listbox'
+  | 'menu'
+  | 'grid'
+  | 'tags'
+  | 'table';
+
+// @public (undocumented)
+export type AutocompleteGridConfig = {
+  columns?: number | 'auto';
+  gap?: string;
+};
+
+// @public (undocumented)
+export type AutocompleteOption = {
+  value: string;
+  label: string;
+  disabled?: boolean;
+  [key: string]: any;
+};
+
+// Warning: (ae-forgotten-export) The symbol "AutocompleteOwnProps" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export interface AutocompleteProps
+  extends AutocompleteOwnProps,
+    Omit<
+      ComboBoxProps<AutocompleteOption>,
+      keyof AutocompleteOwnProps | 'children'
+    > {}
+
+// @public (undocumented)
+export type AutocompleteTableColumn = {
+  key: string;
+  label: string;
+  width?: string;
+  render?: (item: AutocompleteOption) => ReactNode;
 };
 
 // @public (undocumented)
