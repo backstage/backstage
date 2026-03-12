@@ -62,10 +62,13 @@ The `ReportIssue` addon supports custom templates via the `templateBuilder` prop
 
 ```tsx
 <ReportIssue
-  templateBuilder={({ selection }) => ({
-    title: `Documentation feedback: ${selection.title}`,
-    body: `Selected text:\n> ${selection.text}`,
-  })}
+  templateBuilder={({ selection }) => {
+    const selectedText = selection.toString();
+    return {
+      title: 'Documentation feedback',
+      body: `Selected text:\n> ${selectedText}`,
+    };
+  }}
 />
 ```
 
