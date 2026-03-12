@@ -32,6 +32,7 @@ import type {
 import { useMemo } from 'react';
 import { VisuallyHidden } from '../../VisuallyHidden';
 import { Flex } from '../../Flex';
+import { TableBodySkeleton } from './TableBodySkeleton';
 
 function isRowRenderFn<T extends TableItem>(
   rowConfig: RowConfig<T> | RowRenderFn<T> | undefined,
@@ -115,13 +116,7 @@ export function Table<T extends TableItem>({
     onSelectionChange,
   } = selection || {};
 
-  if (loading && !data) {
-    return (
-      <div className={className} style={style}>
-        Loading...
-      </div>
-    );
-  }
+  const isInitialLoading = loading && !data;
 
   if (error) {
     return (
@@ -131,11 +126,9 @@ export function Table<T extends TableItem>({
     );
   }
 
-  const liveRegionLabel = useLiveRegionLabel(
-    pagination,
-    isStale,
-    data !== undefined,
-  );
+  const liveRegionLabel = isInitialLoading
+    ? 'Loading table data.'
+    : useLiveRegionLabel(pagination, isStale, data !== undefined);
 
   const manualColumnSizing = columnConfig.some(
     col =>
@@ -165,7 +158,7 @@ export function Table<T extends TableItem>({
           sortDescriptor={sort?.descriptor ?? undefined}
           onSortChange={sort?.onSortChange}
           disabledKeys={disabledRows}
-          stale={isStale}
+          stale={isStale || isInitialLoading}
           aria-describedby={liveRegionId}
         >
           <TableHeader columns={visibleColumns}>
@@ -187,39 +180,43 @@ export function Table<T extends TableItem>({
               )
             }
           </TableHeader>
-          <TableBody
-            items={data}
-            dependencies={[visibleColumns]}
-            renderEmptyState={
-              emptyState ? () => <Flex p="3">{emptyState}</Flex> : undefined
-            }
-          >
-            {item => {
-              const itemIndex = data?.indexOf(item) ?? -1;
-
-              if (isRowRenderFn(rowConfig)) {
-                return rowConfig({
-                  item,
-                  index: itemIndex,
-                });
+          {isInitialLoading ? (
+            <TableBodySkeleton columns={visibleColumns} />
+          ) : (
+            <TableBody
+              items={data}
+              dependencies={[visibleColumns]}
+              renderEmptyState={
+                emptyState ? () => <Flex p="3">{emptyState}</Flex> : undefined
               }
+            >
+              {item => {
+                const itemIndex = data?.indexOf(item) ?? -1;
 
-              return (
-                <Row
-                  id={String(item.id)}
-                  columns={visibleColumns}
-                  href={rowConfig?.getHref?.(item)}
-                  onAction={
-                    rowConfig?.onClick
-                      ? () => rowConfig?.onClick?.(item)
-                      : undefined
-                  }
-                >
-                  {column => column.cell(item)}
-                </Row>
-              );
-            }}
-          </TableBody>
+                if (isRowRenderFn(rowConfig)) {
+                  return rowConfig({
+                    item,
+                    index: itemIndex,
+                  });
+                }
+
+                return (
+                  <Row
+                    id={String(item.id)}
+                    columns={visibleColumns}
+                    href={rowConfig?.getHref?.(item)}
+                    onAction={
+                      rowConfig?.onClick
+                        ? () => rowConfig?.onClick?.(item)
+                        : undefined
+                    }
+                  >
+                    {column => column.cell(item)}
+                  </Row>
+                );
+              }}
+            </TableBody>
+          )}
         </TableRoot>,
       )}
       {pagination.type === 'page' && (
