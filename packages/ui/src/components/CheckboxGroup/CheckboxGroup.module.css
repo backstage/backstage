@@ -1,3 +1,20 @@
-.root {
-  /* Add CheckboxGroup styles here */
+@layer tokens, base, components, utilities;
+
+@layer components {
+  .bui-CheckboxGroup {
+    display: flex;
+    flex-direction: column;
+    color: var(--bui-fg-primary);
+  }
+
+  .bui-CheckboxGroup[data-orientation='horizontal'] .bui-CheckboxGroupContent {
+    flex-direction: row;
+    gap: var(--bui-space-4);
+  }
+
+  .bui-CheckboxGroupContent {
+    display: flex;
+    flex-direction: column;
+    gap: var(--bui-space-2);
+  }
 }

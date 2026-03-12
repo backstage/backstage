@@ -13,8 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export const CheckboxGroupDefinition = {
-  classNames: {
-    root: 'root',
+
+import { defineComponent } from '../../hooks/useDefinition';
+import type { CheckboxGroupOwnProps } from './types';
+import styles from './CheckboxGroup.module.css';
+
+/**
+ * Component definition for CheckboxGroup
+ * @public
+ */
+export const CheckboxGroupDefinition = defineComponent<CheckboxGroupOwnProps>()(
+  {
+    styles,
+    classNames: {
+      root: 'bui-CheckboxGroup',
+      content: 'bui-CheckboxGroupContent',
+    },
+    propDefs: {
+      className: {},
+      children: {},
+      label: {},
+      secondaryLabel: {},
+      description: {},
+      isRequired: {},
+    },
   },
-};
+);

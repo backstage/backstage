@@ -2,4 +2,4 @@
 '@backstage/ui': patch
 ---
 
-Add CheckboxGroup story for UI component;
+Add an initial CheckboxGroup component implementation and docs coverage.

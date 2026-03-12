@@ -14,28 +14,59 @@
  * limitations under the License.
  */
 
-import { forwardRef } from 'react';
+import { forwardRef, useEffect } from 'react';
 import { CheckboxGroup as RACheckboxGroup } from 'react-aria-components';
 import type { CheckboxGroupProps } from './types';
-import { useStyles } from '../../hooks/useStyles';
+import { useDefinition } from '../../hooks/useDefinition';
 import { CheckboxGroupDefinition } from './definition';
-import clsx from 'clsx';
-import styles from './CheckboxGroup.module.css';
+import { FieldLabel } from '../FieldLabel';
+import { FieldError } from '../FieldError';
 
-/** @public */
+/**
+ * A group of checkboxes for selecting multiple options from a list.
+ * @public
+ */
 export const CheckboxGroup = forwardRef<HTMLDivElement, CheckboxGroupProps>(
   (props, ref) => {
-    const { classNames } = useStyles(CheckboxGroupDefinition);
-    const { className, children, ...rest } = props;
+    const { ownProps, restProps } = useDefinition(
+      CheckboxGroupDefinition,
+      props,
+    );
+    const {
+      classes,
+      label,
+      secondaryLabel,
+      description,
+      isRequired,
+      children,
+    } = ownProps;
+
+    const ariaLabel = restProps['aria-label'];
+    const ariaLabelledBy = restProps['aria-labelledby'];
+
+    useEffect(() => {
+      if (!label && !ariaLabel && !ariaLabelledBy) {
+        console.warn(
+          'CheckboxGroup requires either a visible label, aria-label, or aria-labelledby for accessibility',
+        );
+      }
+    }, [label, ariaLabel, ariaLabelledBy]);
+
+    const secondaryLabelText =
+      secondaryLabel || (isRequired ? 'Required' : null);
 
     return (
-      <RACheckboxGroup
-        ref={ref}
-        className={clsx(classNames.root, styles[classNames.root], className)}
-        {...rest}
-      >
-        {children}
+      <RACheckboxGroup ref={ref} className={classes.root} {...restProps}>
+        <FieldLabel
+          label={label}
+          secondaryLabel={secondaryLabelText}
+          description={description}
+        />
+        <div className={classes.content}>{children}</div>
+        <FieldError />
       </RACheckboxGroup>
     );
   },
 );
+
+CheckboxGroup.displayName = 'CheckboxGroup';

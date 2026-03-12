@@ -13,8 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export interface CheckboxGroupProps {
+
+import type { CheckboxGroupProps as RACheckboxGroupProps } from 'react-aria-components';
+import type { ReactNode } from 'react';
+import type { FieldLabelProps } from '../FieldLabel/types';
+
+/**
+ * Own props for the CheckboxGroup component.
+ * @public
+ */
+export type CheckboxGroupOwnProps = {
   className?: string;
-  children?: React.ReactNode;
-  [key: string]: any;
-}
+  children?: ReactNode;
+  label?: FieldLabelProps['label'];
+  secondaryLabel?: FieldLabelProps['secondaryLabel'];
+  description?: FieldLabelProps['description'];
+  isRequired?: RACheckboxGroupProps['isRequired'];
+};
+
+/**
+ * Props for the CheckboxGroup component.
+ * @public
+ */
+export interface CheckboxGroupProps
+  extends Omit<RACheckboxGroupProps, keyof CheckboxGroupOwnProps>,
+    CheckboxGroupOwnProps {}

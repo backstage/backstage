@@ -8,6 +8,7 @@ export type Component =
   | 'button-link'
   | 'card'
   | 'checkbox'
+  | 'checkbox-group'
   | 'collapsible'
   | 'container'
   | 'datatable'

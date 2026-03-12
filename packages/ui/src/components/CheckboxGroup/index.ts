@@ -14,3 +14,5 @@
  * limitations under the License.
  */
 export { CheckboxGroup } from './CheckboxGroup';
+export { CheckboxGroupDefinition } from './definition';
+export type { CheckboxGroupOwnProps, CheckboxGroupProps } from './types';
