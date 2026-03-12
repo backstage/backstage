@@ -333,7 +333,7 @@ export interface BgProviderProps {
   children: ReactNode;
 }
 
-// @public (undocumented)
+// @public
 export type Border = 'none' | 'base' | 'error' | 'warning' | 'selected';
 
 // @public (undocumented)
@@ -2981,33 +2981,20 @@ export interface UseTableResult<T extends TableItem, TFilter = unknown> {
   >;
 }
 
-// @public (undocumented)
+// @public
 export interface UtilityProps extends SpaceProps {
-  // (undocumented)
   alignItems?: Responsive<AlignItems>;
-  // (undocumented)
   border?: Responsive<Border>;
-  // (undocumented)
   borderRadius?: Responsive<BorderRadius>;
-  // (undocumented)
   colEnd?: Responsive<Columns | 'auto'>;
-  // (undocumented)
   colSpan?: Responsive<Columns | 'full'>;
-  // (undocumented)
   colStart?: Responsive<Columns | 'auto'>;
-  // (undocumented)
   columns?: Responsive<Columns>;
-  // (undocumented)
   display?: Responsive<Display>;
-  // (undocumented)
   flexDirection?: Responsive<FlexDirection>;
-  // (undocumented)
   flexWrap?: Responsive<FlexWrap>;
-  // (undocumented)
   gap?: Responsive<Space>;
-  // (undocumented)
   justifyContent?: Responsive<JustifyContent>;
-  // (undocumented)
   rowSpan?: Responsive<Columns | 'full'>;
 }
 
