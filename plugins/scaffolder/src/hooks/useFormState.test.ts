@@ -25,8 +25,8 @@ jest.mock('@backstage/core-plugin-api', () => ({
 
 describe('useFormState', () => {
   const mockSnapshot = jest.fn();
-  const mockSet = jest.fn();
-  const mockRemove = jest.fn();
+  const mockSet = jest.fn().mockResolvedValue(undefined);
+  const mockRemove = jest.fn().mockResolvedValue(undefined);
 
   beforeEach(() => {
     jest.clearAllMocks();
