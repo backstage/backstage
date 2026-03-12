@@ -2,6 +2,7 @@
 id: sustainable-plugin-development
 sidebar_label: Sustainable plugin development
 title: Sustainably developing plugins in Backstage
+description: Best practices for maintaining and iterating on Backstage plugins long-term
 ---
 
 Plugins are not created in a vacuum, they generally solve a customer ask, be that

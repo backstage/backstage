@@ -2,6 +2,7 @@
 id: testing
 sidebar_label: 005 - Unit testing your plugin
 title: 005 - Testing
+description: How to write unit tests for your Backstage backend plugin
 ---
 
 ## Testing is important

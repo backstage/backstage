@@ -2,6 +2,7 @@
 id: keeping-backstage-updated
 sidebar_label: 006 - Keep Backstage updated
 title: 006 - Keeping Backstage up to date
+description: How to keep your Backstage instance up to date with the latest releases
 ---
 
 Audience: Developers and Admins

@@ -2,6 +2,7 @@
 id: index
 sidebar_label: Backstage Plugins!
 title: How to create plugins with Backstage
+description: A guided walkthrough for building frontend and backend plugins in Backstage
 ---
 
 ### Prerequisites
