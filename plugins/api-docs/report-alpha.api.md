@@ -32,6 +32,7 @@ export const apiDocsTranslationRef: TranslationRef<
   {
     readonly 'apiDefinitionCard.error.title': 'Could not fetch the API';
     readonly 'apiDefinitionCard.rawButtonTitle': 'Raw';
+    readonly 'apiDefinitionCard.noDefinition.title': 'No API definition available for this entity.';
     readonly 'apiDefinitionDialog.closeButtonTitle': 'Close';
     readonly 'apiDefinitionDialog.tabsAriaLabel': 'API definition options';
     readonly 'apiDefinitionDialog.rawButtonTitle': 'Raw';

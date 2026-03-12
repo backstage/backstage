@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ApiEntity } from '@backstage/catalog-model';
+import { ApiEntity, ApiEntityV1alpha1 } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
@@ -117,7 +117,46 @@ export function ApiDefinitionDialog(props: {
   }, [open]);
 
   const config = useApi(apiDocsConfigRef);
-  const definitionWidget = config.getApiDefinitionWidget(entity);
+
+  if (
+    entity.apiVersion === 'backstage.io/v1alpha2' &&
+    entity.spec.type === 'mcp-server'
+  ) {
+    return (
+      <Dialog
+        fullWidth
+        maxWidth="xl"
+        open={open}
+        onClose={onClose}
+        aria-labelledby="api-definition-dialog-title"
+        PaperProps={{ className: classes.fullHeightDialog }}
+      >
+        <DialogTitle id="api-definition-dialog-title" disableTypography>
+          <Typography className={classes.type}>
+            API - {entity.spec.type}
+          </Typography>
+          <Typography className={classes.title} variant="h1">
+            {entity.metadata.title ?? entity.metadata.name}
+          </Typography>
+        </DialogTitle>
+        <DialogContent dividers>
+          <Box p={3}>
+            <Typography variant="body2">
+              {t('apiDefinitionCard.noDefinition.title')}
+            </Typography>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={onClose} color="primary">
+            {t('apiDefinitionDialog.closeButtonTitle')}
+          </Button>
+        </DialogActions>
+      </Dialog>
+    );
+  }
+
+  const apiEntity = entity as ApiEntityV1alpha1;
+  const definitionWidget = config.getApiDefinitionWidget(apiEntity);
 
   let tabIndex = 0;
   let tabPanelIndex = 0;
@@ -160,13 +199,13 @@ export function ApiDefinitionDialog(props: {
 
         {definitionWidget ? (
           <TabPanel value={activeTab} index={tabPanelIndex++}>
-            {definitionWidget.component(entity.spec.definition)}
+            {definitionWidget.component(apiEntity.spec.definition)}
           </TabPanel>
         ) : null}
         <TabPanel value={activeTab} index={tabPanelIndex++}>
           <PlainApiDefinitionWidget
-            definition={entity.spec.definition}
-            language={definitionWidget?.rawLanguage ?? entity.spec.type}
+            definition={apiEntity.spec.definition}
+            language={definitionWidget?.rawLanguage ?? apiEntity.spec.type}
           />
         </TabPanel>
       </DialogContent>

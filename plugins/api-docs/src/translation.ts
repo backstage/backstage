@@ -26,6 +26,9 @@ export const apiDocsTranslationRef = createTranslationRef({
       error: {
         title: 'Could not fetch the API',
       },
+      noDefinition: {
+        title: 'No API definition available for this entity.',
+      },
       rawButtonTitle: 'Raw',
     },
     apiDefinitionDialog: {

@@ -14,15 +14,29 @@
  * limitations under the License.
  */
 
-import { ApiEntity } from '@backstage/catalog-model';
+import { ApiEntity, ApiEntityV1alpha1 } from '@backstage/catalog-model';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { CardTab, TabbedCard } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import Alert from '@material-ui/lab/Alert';
+import Typography from '@material-ui/core/Typography';
 import { apiDocsConfigRef } from '../../config';
 import { apiDocsTranslationRef } from '../../translation';
 import { PlainApiDefinitionWidget } from '../PlainApiDefinitionWidget';
+
+function ApiDefinitionCardEmpty(props: { title: string; message: string }) {
+  return (
+    <TabbedCard
+      title={props.title}
+      children={[
+        <CardTab label="" key="empty">
+          <Typography variant="body2">{props.message}</Typography>
+        </CardTab>,
+      ]}
+    />
+  );
+}
 
 /** @public */
 export const ApiDefinitionCard = () => {
@@ -35,19 +49,33 @@ export const ApiDefinitionCard = () => {
     return <Alert severity="error">{t('apiDefinitionCard.error.title')}</Alert>;
   }
 
-  const definitionWidget = getApiDefinitionWidget(entity);
   const entityTitle = entity.metadata.title ?? entity.metadata.name;
+
+  if (
+    entity.apiVersion === 'backstage.io/v1alpha2' &&
+    entity.spec.type === 'mcp-server'
+  ) {
+    return (
+      <ApiDefinitionCardEmpty
+        title={entityTitle}
+        message={t('apiDefinitionCard.noDefinition.title')}
+      />
+    );
+  }
+
+  const apiEntity = entity as ApiEntityV1alpha1;
+  const definitionWidget = getApiDefinitionWidget(apiEntity);
 
   if (definitionWidget) {
     return (
       <TabbedCard title={entityTitle}>
         <CardTab label={definitionWidget.title} key="widget">
-          {definitionWidget.component(entity.spec.definition)}
+          {definitionWidget.component(apiEntity.spec.definition)}
         </CardTab>
         <CardTab label={t('apiDefinitionCard.rawButtonTitle')} key="raw">
           <PlainApiDefinitionWidget
-            definition={entity.spec.definition}
-            language={definitionWidget.rawLanguage || entity.spec.type}
+            definition={apiEntity.spec.definition}
+            language={definitionWidget.rawLanguage || apiEntity.spec.type}
           />
         </CardTab>
       </TabbedCard>
@@ -59,10 +87,10 @@ export const ApiDefinitionCard = () => {
       title={entityTitle}
       children={[
         // Has to be an array, otherwise typescript doesn't like that this has only a single child
-        <CardTab label={entity.spec.type} key="raw">
+        <CardTab label={apiEntity.spec.type} key="raw">
           <PlainApiDefinitionWidget
-            definition={entity.spec.definition}
-            language={entity.spec.type}
+            definition={apiEntity.spec.definition}
+            language={apiEntity.spec.type}
           />
         </CardTab>,
       ]}

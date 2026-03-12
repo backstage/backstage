@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ApiEntity } from '@backstage/catalog-model';
+import { ApiEntity, ApiEntityV1alpha2 } from '@backstage/catalog-model';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { waitFor } from '@testing-library/react';
@@ -130,5 +130,34 @@ paths:
         (_text, element) => element?.textContent === 'Custom Definition',
       ).length,
     ).toBeGreaterThan(0);
+  });
+
+  it('renders empty state for API entities without a definition', async () => {
+    const apiEntity: ApiEntityV1alpha2 = {
+      apiVersion: 'backstage.io/v1alpha2',
+      kind: 'API',
+      metadata: {
+        name: 'my-mcp-server',
+      },
+      spec: {
+        type: 'mcp-server',
+        lifecycle: '...',
+        owner: '...',
+        remotes: [
+          { type: 'streamable-http', url: 'http://localhost:7007/api/mcp' },
+        ],
+      },
+    };
+
+    const { getByText } = await renderInTestApp(
+      <Wrapper>
+        <EntityProvider entity={apiEntity}>
+          <ApiDefinitionCard />
+        </EntityProvider>
+      </Wrapper>,
+    );
+
+    expect(getByText(/my-mcp-server/i)).toBeInTheDocument();
+    expect(getByText(/No API definition available/i)).toBeInTheDocument();
   });
 });
