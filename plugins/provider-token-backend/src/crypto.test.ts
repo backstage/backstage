@@ -39,6 +39,11 @@ describe('deriveKey', () => {
     );
     expect(deriveKey(SECRET).equals(deriveKey(other))).toBe(false);
   });
+
+  it('throws when decoded secret is shorter than 16 bytes', () => {
+    const short = Buffer.from('tiny').toString('base64');
+    expect(() => deriveKey(short)).toThrow(/encryptionSecret/);
+  });
 });
 
 describe('encrypt / decrypt', () => {
@@ -80,6 +85,12 @@ describe('encrypt / decrypt', () => {
 
   it('decrypt throws on malformed ciphertext (wrong number of parts)', () => {
     expect(() => decrypt('notvalid', key)).toThrow(/Malformed/);
+  });
+
+  it('decrypt throws on stored value with invalid auth tag hex length', () => {
+    // tagHex must be exactly 32 hex chars (16 bytes); this one is only 2 chars
+    const badTag = `v1:${'a'.repeat(24)}:ab:${'cc'.repeat(4)}`;
+    expect(() => decrypt(badTag, key)).toThrow(/invalid auth tag length/);
   });
 
   it('handles unicode plaintext', () => {
