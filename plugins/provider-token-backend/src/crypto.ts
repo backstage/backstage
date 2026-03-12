@@ -27,10 +27,16 @@ const KEY_VERSION = 'v1';
 
 /** Derives a 32-byte AES key using HKDF-SHA-256 (RFC 5869). */
 export function deriveKey(secret: string): Buffer {
+  const ikm = Buffer.from(secret, 'base64');
+  if (ikm.length < 16) {
+    throw new Error(
+      'providerToken.encryptionSecret is too short: must decode to at least 16 bytes. Use `openssl rand -base64 32` to generate a suitable secret.',
+    );
+  }
   return Buffer.from(
     hkdfSync(
       'sha256',
-      Buffer.from(secret, 'base64'),
+      ikm,
       Buffer.from('backstage-provider-token-salt-v1', 'utf8'),
       Buffer.from('provider-token-service', 'utf8'),
       32,
@@ -69,6 +75,11 @@ export function decrypt(stored: string, key: Buffer): string {
   if (version !== KEY_VERSION) {
     throw new Error(
       `Unsupported provider token ciphertext version: ${version}`,
+    );
+  }
+  if (tagHex.length !== 32) {
+    throw new Error(
+      'Malformed provider token ciphertext: invalid auth tag length',
     );
   }
   const decipher = createDecipheriv(ALGO, key, Buffer.from(ivHex, 'hex'), {
