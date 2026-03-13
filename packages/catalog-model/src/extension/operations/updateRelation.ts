@@ -17,17 +17,18 @@
 import { z } from 'zod/v3';
 
 /**
- * Make a declaration about the properties of a certain relation type between a
- * given pair of kinds.
+ * Update the properties of a certain relation type between a given pair of
+ * kinds.
  *
  * @remarks
  *
- * Note that this is NOT the same as declaring that a certain field is a
- * relation type - it declares that IF a relation was generated between two
- * kinds for any reason, then these properties apply to it.
+ * Note that this is NOT the same as updating the properties of a certain field
+ * that is a relation type - it updates the properties of a relation that was
+ * generated between two kinds for any reason.
  */
-export const opDeclareRelationV1Schema = z.object({
-  op: z.literal('declareRelation.v1'),
+export const opUpdateRelationV1Schema = z.object({
+  op: z.literal('updateRelation.v1'),
+
   /**
    * The kind that this relation originates from, e.g. "Component".
    */
@@ -48,21 +49,21 @@ export const opDeclareRelationV1Schema = z.object({
     /**
      * The technical type of the reverse relation, e.g. "ownerOf".
      */
-    reverseType: z.string(),
+    reverseType: z.string().optional(),
     /**
      * The singular human readable form of the relation name, e.g. "owner".
      */
-    singular: z.string(),
+    singular: z.string().optional(),
     /**
      * The plural human readable form of the relation name, e.g. "owners".
      */
-    plural: z.string(),
+    plural: z.string().optional(),
     /**
      * A human-readable comment describing the relation.
      */
-    comment: z.string(),
+    comment: z.string().optional(),
   }),
 });
 
-/** {@inheritDoc opDeclareRelationV1Schema} */
-export type OpDeclareRelationV1 = z.infer<typeof opDeclareRelationV1Schema>;
+/** {@inheritDoc opUpdateRelationV1Schema} */
+export type OpUpdateRelationV1 = z.infer<typeof opUpdateRelationV1Schema>;

@@ -22,6 +22,14 @@ import {
   type CatalogModelRelationPairDefinition,
   opsFromCatalogModelRelationPair,
 } from './modelActions/addRelationPair';
+import {
+  CatalogModelUpdateKindDefinition,
+  opsFromCatalogModelUpdateKind,
+} from './modelActions/updateKind';
+import {
+  CatalogModelUpdateRelationPairDefinition,
+  opsFromCatalogModelUpdateRelationPair,
+} from './modelActions/updateRelationPair';
 import { CatalogModelOp } from './operations';
 import { CatalogModelExtension, OpaqueCatalogModelExtension } from './types';
 
@@ -41,9 +49,19 @@ export interface CatalogModelExtensionBuilder {
   addKind(kind: CatalogModelKindDefinition): void;
 
   /**
+   * Updates an existing kind in the model.
+   */
+  updateKind(kind: CatalogModelUpdateKindDefinition): void;
+
+  /**
    * Adds a new relation pair to the model.
    */
   addRelationPair(relation: CatalogModelRelationPairDefinition): void;
+
+  /**
+   * Updates an existing relation pair in the model.
+   */
+  updateRelationPair(relation: CatalogModelUpdateRelationPairDefinition): void;
 }
 
 /**
@@ -67,8 +85,18 @@ export class DefaultCatalogModelExtensionBuilder
     this.#ops.push(...ops);
   }
 
+  updateKind(kind: CatalogModelUpdateKindDefinition): void {
+    const ops = opsFromCatalogModelUpdateKind(kind);
+    this.#ops.push(...ops);
+  }
+
   addRelationPair(relation: CatalogModelRelationPairDefinition): void {
     const ops = opsFromCatalogModelRelationPair(relation);
+    this.#ops.push(...ops);
+  }
+
+  updateRelationPair(relation: CatalogModelUpdateRelationPairDefinition): void {
+    const ops = opsFromCatalogModelUpdateRelationPair(relation);
     this.#ops.push(...ops);
   }
 

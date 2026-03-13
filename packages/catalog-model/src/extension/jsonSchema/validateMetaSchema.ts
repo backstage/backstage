@@ -23,7 +23,7 @@ import { getAjv } from './getAjv';
  * Validates that the schema is valid according to known JSON Schema meta
  * schemas - does not perform any semantic validation beyond that.
  */
-export function validateMetaSchema(schema: unknown): SchemaObject {
+export function validateMetaSchema(schema: unknown): schema is SchemaObject {
   if (!isJsonObject(schema) || typeof schema.then === 'function') {
     throw new InputError('Invalid JSON schema: must be an object');
   }
@@ -54,5 +54,5 @@ export function validateMetaSchema(schema: unknown): SchemaObject {
     );
   }
 
-  return schema as SchemaObject;
+  return true;
 }

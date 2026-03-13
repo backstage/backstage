@@ -15,7 +15,7 @@
  */
 
 import { CatalogModelOp } from '../operations';
-import { CatalogModelSchemaObjectType } from './addKind.types';
+import { CatalogModelKindRootSchema } from '../jsonSchema/validateKindRootSchemaSemantics';
 
 /**
  * The definition of a catalog model kind, roughly resembling a JSON Schema.
@@ -24,16 +24,9 @@ import { CatalogModelSchemaObjectType } from './addKind.types';
  */
 export interface CatalogModelKindDefinition {
   /**
-   * The API version(s) of the kind that this schema applies to, e.g.
-   * "backstage.io/v1alpha1".
-   *
-   * @remarks
-   *
-   * Note that it is expected that as you add API versions to this array, you
-   * can only make backwards compatible changes to the schema. For example,
-   * adding optional fields is allowed, but removing required fields is not.
+   * The apiVersion group of the kind, e.g. "backstage.io".
    */
-  apiVersions: readonly string[];
+  group: string;
 
   /**
    * The names used for this kind.
@@ -60,18 +53,68 @@ export interface CatalogModelKindDefinition {
    */
   description: string;
 
+  versions?: Array<{
+    /**
+     * The specific version name, e.g. "v1alpha1". This and the kind group form the full apiVersion.
+     */
+    name: string;
+
+    /**
+     * The spec types that this version applies to.
+     *
+     * @remarks
+     *
+     * This can be used to make kinds whose spec effectively are discriminated
+     * unions. If you don't specify this, the schema will apply to a spec that
+     * has no type given at all, or to those where the type is not among the set
+     * of any other known declared spec types.
+     */
+    specTypes?: string[];
+
+    /**
+     * The fields that shall be used to generate relations, if any.
+     */
+    relationFields?: CatalogModelKindRelationFieldDefinition[];
+
+    schema: {
+      jsonSchema: CatalogModelKindRootSchema;
+    };
+  }>;
+}
+
+/**
+ * @alpha
+ */
+export interface CatalogModelKindRelationFieldDefinition {
   /**
-   * The spec schema of the kind.
+   * What field that shall be used to generate relations.
+   *
+   * @remarks
+   *
+   * The field value is expected to be a string or string array at runtime.
    */
-  spec: CatalogModelSchemaObjectType;
+  selector: { path: string };
+  /**
+   * If the given shorthand ref did not have a kind, use this kind as the
+   * default. If no default kind is specified, the ref must contain a kind.
+   */
+  defaultKind?: string;
+  /**
+   * If the given shorthand ref did not have a namespace, either inherit the
+   * namespace of the entity itself, or choose the default namespace.
+   */
+  defaultNamespace?: 'default' | 'inherit';
+  /**
+   * Only allow relations to be specified to the given kinds. This list must
+   * include the default kind, if any.
+   */
+  allowedKinds?: string[];
 }
 
 export function opsFromCatalogModelKind(
   kind: CatalogModelKindDefinition,
 ): CatalogModelOp[] {
   const ops: CatalogModelOp[] = [];
-
-  // TODO: apiVersion handling?
 
   ops.push({
     op: 'declareKind.v1',
@@ -83,6 +126,7 @@ export function opsFromCatalogModelKind(
     },
   });
 
+  // TODO: apiVersion handling?
   // TODO: Push the spec fields too
 
   return ops;

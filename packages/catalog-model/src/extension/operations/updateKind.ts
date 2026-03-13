@@ -19,32 +19,32 @@ import { z } from 'zod/v3';
 /**
  * Make a declaration about the properties of a certain kind.
  */
-export const opDeclareKindV1Schema = z.object({
-  op: z.literal('declareKind.v1'),
+export const opUpdateKindV1Schema = z.object({
+  op: z.literal('updateKind.v1'),
 
   /**
-   * The kind to declare, e.g. "Component".
+   * The kind to update, e.g. "Component".
    */
   kind: z.string(),
 
   /**
-   * Properties that apply for this kind
+   * Updated properties that apply for this kind
    */
   properties: z.object({
     /**
      * The singular form of the human readable kind, e.g. "component".
      */
-    singular: z.string(),
+    singular: z.string().optional(),
     /**
      * The plural form of the human readable kind, e.g. "components".
      */
-    plural: z.string(),
+    plural: z.string().optional(),
     /**
      * Short description of the kind.
      */
-    description: z.string(),
+    description: z.string().optional(),
   }),
 });
 
-/** {@inheritDoc opDeclareKindV1Schema} */
-export type OpDeclareKindV1 = z.infer<typeof opDeclareKindV1Schema>;
+/** {@inheritDoc opUpdateKindV1Schema} */
+export type OpUpdateKindV1 = z.infer<typeof opUpdateKindV1Schema>;
