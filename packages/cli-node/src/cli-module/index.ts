@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export { createCliPlugin } from './createCliPlugin';
-export type { CliCommand, CliCommandContext, CliPlugin } from './types';
+export { createCliModule } from './createCliModule';
+export type { CliCommand, CliCommandContext, CliModule } from './types';

@@ -2,4 +2,4 @@
 '@backstage/cli': patch
 ---
 
-Migrated CLI plugin modules to use `createCliPlugin` from `@backstage/cli-node`.
+Migrated CLI plugin modules to use `createCliModule` from `@backstage/cli-node`.

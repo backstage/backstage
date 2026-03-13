@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-export { OpaqueCliPlugin } from './InternalCliPlugin';
+export { OpaqueCliModule } from './InternalCliModule';
 export type {
   CommandNode,
   CommandTreeNode,

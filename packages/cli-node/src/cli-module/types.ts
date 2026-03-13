@@ -109,10 +109,10 @@ export interface CliCommand {
 
 /**
  * An opaque representation of a Backstage CLI plugin, created
- * using {@link createCliPlugin}.
+ * using {@link createCliModule}.
  *
  * @public
  */
-export interface CliPlugin {
-  readonly $$type: '@backstage/CliPlugin';
+export interface CliModule {
+  readonly $$type: '@backstage/CliModule';
 }

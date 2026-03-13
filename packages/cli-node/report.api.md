@@ -111,9 +111,9 @@ export interface CliCommandContext {
 }
 
 // @public
-export interface CliPlugin {
+export interface CliModule {
   // (undocumented)
-  readonly $$type: '@backstage/CliPlugin';
+  readonly $$type: '@backstage/CliModule';
 }
 
 // @public
@@ -124,14 +124,14 @@ export type ConcurrentTasksOptions<TItem> = {
 };
 
 // @public
-export function createCliPlugin(options: {
+export function createCliModule(options: {
   packageJson: {
     name: string;
   };
   init: (registry: {
     addCommand: (command: CliCommand) => void;
   }) => Promise<void>;
-}): CliPlugin;
+}): CliModule;
 
 // @public
 export class GitUtils {
@@ -227,7 +227,7 @@ export type PackageRole =
   | 'frontend'
   | 'backend'
   | 'cli'
-  | 'cli-plugin'
+  | 'cli-module'
   | 'web-library'
   | 'node-library'
   | 'common-library'

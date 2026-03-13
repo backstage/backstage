@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createCliPlugin } from '@backstage/cli-node';
+import { createCliModule } from '@backstage/cli-node';
 import packageJson from '../../../package.json';
 
 export const configOption = [
@@ -23,7 +23,7 @@ export const configOption = [
   Array<string>(),
 ] as const;
 
-export default createCliPlugin({
+export default createCliModule({
   packageJson,
   init: async reg => {
     reg.addCommand({

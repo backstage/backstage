@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { OpaqueCliPlugin } from '@internal/cli';
-import { CliCommand, CliPlugin } from './types';
+import { OpaqueCliModule } from '@internal/cli';
+import { CliCommand, CliModule } from './types';
 
 /**
  * Creates a new CLI plugin that provides commands to the Backstage CLI.
@@ -26,10 +26,10 @@ import { CliCommand, CliPlugin } from './types';
  *
  * @example
  * ```
- * import { createCliPlugin } from '@backstage/cli-node';
+ * import { createCliModule } from '@backstage/cli-node';
  * import packageJson from '../package.json';
  *
- * export default createCliPlugin({
+ * export default createCliModule({
  *   packageJson,
  *   init: async reg => {
  *     reg.addCommand({
@@ -43,7 +43,7 @@ import { CliCommand, CliPlugin } from './types';
  *
  * @public
  */
-export function createCliPlugin(options: {
+export function createCliModule(options: {
   /** The `package.json` contents of the plugin package, used to identify the plugin. */
   packageJson: { name: string };
   /**
@@ -54,13 +54,13 @@ export function createCliPlugin(options: {
     /** Registers a new command with the CLI. */
     addCommand: (command: CliCommand) => void;
   }) => Promise<void>;
-}): CliPlugin {
+}): CliModule {
   const commands: CliCommand[] = [];
   const commandsPromise = options
     .init({ addCommand: command => commands.push(command) })
     .then(() => commands);
 
-  return OpaqueCliPlugin.createInstance('v1', {
+  return OpaqueCliModule.createInstance('v1', {
     packageName: options.packageJson.name,
     commands: commandsPromise,
   });

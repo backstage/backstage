@@ -22,7 +22,7 @@ import type { CliCommandContext } from '../../../wiring/types';
 
 const configArgPattern = /--config[=\s][^\s$]+/;
 
-const noStartRoles: PackageRole[] = ['cli', 'cli-plugin', 'common-library'];
+const noStartRoles: PackageRole[] = ['cli', 'cli-module', 'common-library'];
 
 export default async ({ args, info }: CliCommandContext) => {
   cli({ help: info, booleanFlagNegation: true }, undefined, args);

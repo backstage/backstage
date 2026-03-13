@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { createCliPlugin } from '@backstage/cli-node';
+import { createCliModule } from '@backstage/cli-node';
 import packageJson from '../../../package.json';
 
-export const buildPlugin = createCliPlugin({
+export const buildPlugin = createCliModule({
   packageJson,
   init: async reg => {
     reg.addCommand({

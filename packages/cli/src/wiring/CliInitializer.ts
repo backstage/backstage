@@ -16,12 +16,12 @@
 
 import { CommandGraph } from './CommandGraph';
 import {
-  OpaqueCliPlugin,
+  OpaqueCliModule,
   OpaqueCommandTreeNode,
   OpaqueCommandLeafNode,
 } from '@internal/cli';
 import type { CommandNode } from '@internal/cli';
-import type { CliPlugin } from '@backstage/cli-node';
+import type { CliModule } from '@backstage/cli-node';
 import { CommandRegistry } from './CommandRegistry';
 import { Command } from 'commander';
 import { version } from './version';
@@ -39,12 +39,12 @@ function isNodeHidden(node: CommandNode): boolean {
   return children.every(child => isNodeHidden(child));
 }
 
-type UninitializedFeature = CliPlugin | Promise<{ default: CliPlugin }>;
+type UninitializedFeature = CliModule | Promise<{ default: CliModule }>;
 
 export class CliInitializer {
   private graph = new CommandGraph();
   private commandRegistry = new CommandRegistry(this.graph);
-  #uninitiazedFeatures: Promise<CliPlugin>[] = [];
+  #uninitiazedFeatures: Promise<CliModule>[] = [];
 
   add(feature: UninitializedFeature) {
     if (isPromise(feature)) {
@@ -56,9 +56,9 @@ export class CliInitializer {
     }
   }
 
-  async #register(feature: CliPlugin) {
-    if (OpaqueCliPlugin.isType(feature)) {
-      const internal = OpaqueCliPlugin.toInternal(feature);
+  async #register(feature: CliModule) {
+    if (OpaqueCliModule.isType(feature)) {
+      const internal = OpaqueCliModule.toInternal(feature);
       for (const command of await internal.commands) {
         this.commandRegistry.addCommand(command);
       }
@@ -186,8 +186,8 @@ export class CliInitializer {
 
 /** @internal */
 export function unwrapFeature(
-  feature: CliPlugin | { default: CliPlugin },
-): CliPlugin {
+  feature: CliModule | { default: CliModule },
+): CliModule {
   if ('$$type' in feature) {
     return feature;
   }

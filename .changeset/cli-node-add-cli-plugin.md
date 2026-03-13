@@ -2,4 +2,4 @@
 '@backstage/cli-node': minor
 ---
 
-Added `createCliPlugin` API and related types for building Backstage CLI plugins.
+Added `createCliModule` API and related types for building Backstage CLI plugins.

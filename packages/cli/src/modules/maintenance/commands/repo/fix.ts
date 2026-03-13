@@ -298,7 +298,7 @@ export function fixPluginId(pkg: FixablePackage) {
     role === 'backend' ||
     role === 'frontend' ||
     role === 'cli' ||
-    role === 'cli-plugin'
+    role === 'cli-module'
   ) {
     return;
   }
@@ -385,7 +385,7 @@ export function fixPluginPackages(
     role === 'backend' ||
     role === 'frontend' ||
     role === 'cli' ||
-    role === 'cli-plugin'
+    role === 'cli-module'
   ) {
     return;
   }

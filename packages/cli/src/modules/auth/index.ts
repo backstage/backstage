@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { createCliPlugin } from '../../wiring/factory';
+import { createCliModule } from '../../wiring/factory';
 import packageJson from '../../../package.json';
 
-export default createCliPlugin({
+export default createCliModule({
   packageJson,
   init: async reg => {
     reg.addCommand({

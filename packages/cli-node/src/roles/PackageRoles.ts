@@ -34,7 +34,7 @@ const packageRoleInfos: PackageRoleInfo[] = [
     output: ['cjs'],
   },
   {
-    role: 'cli-plugin',
+    role: 'cli-module',
     platform: 'node',
     output: ['types', 'cjs'],
   },
