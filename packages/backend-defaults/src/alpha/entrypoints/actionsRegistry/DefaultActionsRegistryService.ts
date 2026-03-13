@@ -73,6 +73,7 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
       return res.json({
         actions: Array.from(this.actions.entries()).map(([id, action]) => ({
           id,
+          pluginId: this.metadata.getId(),
           ...action,
           attributes: {
             // Inspired by the @modelcontextprotocol/sdk defaults for the hints.
