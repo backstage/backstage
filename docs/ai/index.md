@@ -40,7 +40,7 @@ For details on filtering actions, see the [filtering actions documentation](../b
 
 ## Single MCP Server Name & Description
 
-You can configure the name and description of the MCP Actions server with the following config for a single server:
+You can configure the name and description of your Backstage MCP server with the following config:
 
 ```yaml title="app-config.yaml"
 mcpActions:
