@@ -767,7 +767,7 @@ output:
         **Entity URL:** `${{ steps['publish'].output.remoteUrl }}`
 ```
 
-Output `links` and `text` items support an optional `if` condition, using the same syntax as step conditions. Items where the condition evaluates to a falsy value are excluded from the output:
+Output `links` and `text` items support an optional `if` condition, using the same syntax as step conditions. Items where the condition evaluates to false are excluded from the output:
 
 ```yaml
 output:
