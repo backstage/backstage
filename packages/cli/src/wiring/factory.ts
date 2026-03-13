@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { createCliPlugin } from '@backstage/cli-plugin-api';
+export { createCliPlugin } from '@backstage/cli-node';

@@ -21,7 +21,7 @@ import {
   OpaqueCommandLeafNode,
 } from '@internal/cli';
 import type { CommandNode } from '@internal/cli';
-import type { CliPlugin } from '@backstage/cli-plugin-api';
+import type { CliPlugin } from '@backstage/cli-node';
 import { CommandRegistry } from './CommandRegistry';
 import { Command } from 'commander';
 import { version } from './version';

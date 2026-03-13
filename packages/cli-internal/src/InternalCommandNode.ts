@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { BackstageCommand } from '@backstage/cli-plugin-api';
+import { BackstageCommand } from '@backstage/cli-node';
 import { OpaqueType } from '@internal/opaque';
 
 /** @internal */

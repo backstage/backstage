@@ -2822,15 +2822,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/cli-plugin-api@workspace:^, @backstage/cli-plugin-api@workspace:packages/cli-plugin-api":
-  version: 0.0.0-use.local
-  resolution: "@backstage/cli-plugin-api@workspace:packages/cli-plugin-api"
-  dependencies:
-    "@backstage/cli": "workspace:^"
-    "@backstage/errors": "workspace:^"
-  languageName: unknown
-  linkType: soft
-
 "@backstage/cli@workspace:*, @backstage/cli@workspace:^, @backstage/cli@workspace:packages/cli":
   version: 0.0.0-use.local
   resolution: "@backstage/cli@workspace:packages/cli"
@@ -2841,7 +2832,6 @@ __metadata:
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli-common": "workspace:^"
     "@backstage/cli-node": "workspace:^"
-    "@backstage/cli-plugin-api": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/config-loader": "workspace:^"
     "@backstage/core-app-api": "workspace:^"
@@ -9685,7 +9675,7 @@ __metadata:
   resolution: "@internal/cli@workspace:packages/cli-internal"
   dependencies:
     "@backstage/cli": "workspace:^"
-    "@backstage/cli-plugin-api": "workspace:^"
+    "@backstage/cli-node": "workspace:^"
   languageName: unknown
   linkType: soft
 

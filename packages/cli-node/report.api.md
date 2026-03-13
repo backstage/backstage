@@ -7,6 +7,21 @@ import { JsonValue } from '@backstage/types';
 import { Package } from '@manypkg/get-packages';
 
 // @public
+export interface BackstageCommand {
+  deprecated?: boolean;
+  description: string;
+  execute:
+    | ((context: CommandContext) => Promise<void>)
+    | {
+        loader: () => Promise<{
+          default: (context: CommandContext) => Promise<void>;
+        }>;
+      };
+  experimental?: boolean;
+  path: string[];
+}
+
+// @public
 export type BackstagePackage = {
   dir: string;
   packageJson: BackstagePackageJson;
@@ -87,11 +102,36 @@ export interface BackstagePackageJson {
 }
 
 // @public
+export interface CliPlugin {
+  // (undocumented)
+  readonly $$type: '@backstage/CliPlugin';
+}
+
+// @public
+export interface CommandContext {
+  args: string[];
+  info: {
+    usage: string;
+    name: string;
+  };
+}
+
+// @public
 export type ConcurrentTasksOptions<TItem> = {
   concurrencyFactor?: number;
   items: Iterable<TItem>;
   worker: (item: TItem) => Promise<void>;
 };
+
+// @public
+export function createCliPlugin(options: {
+  packageJson: {
+    name: string;
+  };
+  init: (registry: {
+    addCommand: (command: BackstageCommand) => void;
+  }) => Promise<void>;
+}): CliPlugin;
 
 // @public
 export class GitUtils {

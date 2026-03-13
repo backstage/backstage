@@ -26,7 +26,7 @@ import { BackstageCommand, CliPlugin } from './types';
  *
  * @example
  * ```
- * import { createCliPlugin } from '@backstage/cli-plugin-api';
+ * import { createCliPlugin } from '@backstage/cli-node';
  * import packageJson from '../package.json';
  *
  * export default createCliPlugin({

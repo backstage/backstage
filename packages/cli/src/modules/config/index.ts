@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createCliPlugin } from '@backstage/cli-plugin-api';
+import { createCliPlugin } from '@backstage/cli-node';
 import packageJson from '../../../package.json';
 
 export const configOption = [

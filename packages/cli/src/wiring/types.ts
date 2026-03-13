@@ -18,4 +18,4 @@ export type {
   CommandContext,
   BackstageCommand,
   CliPlugin,
-} from '@backstage/cli-plugin-api';
+} from '@backstage/cli-node';
