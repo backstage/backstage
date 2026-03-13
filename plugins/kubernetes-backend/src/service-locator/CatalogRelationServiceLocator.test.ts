@@ -142,6 +142,39 @@ describe('CatalogRelationServiceLocator', () => {
     });
   });
 
+  it('should return cluster when cluster entity namespace differs from component namespace', async () => {
+    const testEntity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Component',
+      relations: [
+        {
+          type: 'dependsOn',
+          targetRef: 'resource:cluster1/cluster1', // cluster lives in its own namespace
+        },
+        { type: 'ownedBy', targetRef: 'group:default/group1' },
+      ],
+      metadata: {
+        namespace: 'my-service', // component is in a different namespace
+        name: 'testEntity',
+      },
+    };
+
+    const result = await serviceLocator.getClustersByEntity(
+      testEntity,
+      {} as ServiceLocatorRequestContext,
+    );
+
+    expect(result).toEqual({
+      clusters: [
+        {
+          name: 'cluster1',
+          url: 'http://localhost:8080',
+          authMetadata: {},
+        },
+      ],
+    });
+  });
+
   it('should return an empty array when entity does not have dependsOn relation with resource target', async () => {
     const testEntity = {
       apiVersion: 'backstage.io/v1alpha1',

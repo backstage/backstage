@@ -61,8 +61,8 @@ export class CatalogRelationServiceLocator implements KubernetesServiceLocator {
     return entity.relations!.some(
       rel =>
         rel.type === 'dependsOn' &&
-        rel.targetRef ===
-          `resource:${entity.metadata.namespace ?? 'default'}/${cluster.name}`,
+        rel.targetRef.startsWith('resource:') &&
+        rel.targetRef.endsWith(`/${cluster.name}`),
     );
   }
 }
