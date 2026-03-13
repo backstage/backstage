@@ -81,8 +81,9 @@ const app = createApp({
 export default app.createRoot();
 ```
 
-Note that on the entity page, because the Catalog plugin is responsible for the
-page header, TechDocs Addons whose location is `Header` will not be rendered.
+:::note
+On the entity page, TechDocs Addons with the `Header` location will not be rendered because the Catalog plugin is responsible for managing the page header.
+:::
 
 ## Available Addons
 
