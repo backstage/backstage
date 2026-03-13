@@ -39,6 +39,7 @@ export const SelectDefinition = defineComponent<SelectOwnProps>()({
     options: {},
     searchable: {},
     searchPlaceholder: {},
+    onSearchChanged: {},
     label: {},
     secondaryLabel: {},
     description: {},
@@ -81,6 +82,7 @@ export const SelectContentDefinition = defineComponent<SelectContentOwnProps>()(
     propDefs: {
       searchable: {},
       searchPlaceholder: { default: 'Search...' },
+      onSearchChange: {},
       options: {},
     },
   },

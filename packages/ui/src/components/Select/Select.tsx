@@ -48,6 +48,7 @@ export const Select = forwardRef<
     icon,
     searchable,
     searchPlaceholder,
+    onSearchChanged,
     isRequired,
     secondaryLabel,
   } = ownProps;
@@ -87,6 +88,7 @@ export const Select = forwardRef<
           searchable={searchable}
           searchPlaceholder={searchPlaceholder}
           options={options}
+          onSearchChanged={onSearchChanged}
         />
       </Popover>
     </AriaSelect>
