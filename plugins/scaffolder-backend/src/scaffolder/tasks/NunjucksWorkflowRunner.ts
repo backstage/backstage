@@ -688,6 +688,31 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
       }
 
       const output = this.render(task.spec.output, context, renderTemplate);
+
+      // Filter output links and text items based on their `if` condition
+      if (Array.isArray(output?.links)) {
+        output.links = (output.links as JsonArray)
+          .filter(item => {
+            const obj = item as JsonObject;
+            return !('if' in obj) || isTruthy(obj.if);
+          })
+          .map(item => {
+            const { if: _if, ...rest } = item as JsonObject;
+            return rest;
+          });
+      }
+      if (Array.isArray(output?.text)) {
+        output.text = (output.text as JsonArray)
+          .filter(item => {
+            const obj = item as JsonObject;
+            return !('if' in obj) || isTruthy(obj.if);
+          })
+          .map(item => {
+            const { if: _if, ...rest } = item as JsonObject;
+            return rest;
+          });
+      }
+
       await taskTrack.markSuccessful();
       await task.cleanWorkspace?.();
 
