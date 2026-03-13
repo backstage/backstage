@@ -17,7 +17,7 @@
 import type { LoggerService } from '@backstage/backend-plugin-api';
 import type { Knex } from 'knex';
 import { LRUCache } from 'lru-cache';
-import { encrypt, decrypt, decryptWithFallback } from './crypto';
+import { encrypt, decryptWithFallback } from './crypto';
 import type {
   ProviderToken,
   ProviderTokenService,
