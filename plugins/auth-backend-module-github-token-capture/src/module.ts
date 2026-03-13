@@ -13,12 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createBackendModule } from '@backstage/backend-plugin-api';
+import {
+  createBackendModule,
+  coreServices,
+} from '@backstage/backend-plugin-api';
 import {
   authProvidersExtensionPoint,
   commonSignInResolvers,
   createOAuthProviderFactory,
   createSignInResolverFactory,
+  OAuthAuthenticatorLogoutInput,
   OAuthAuthenticatorResult,
   SignInInfo,
 } from '@backstage/plugin-auth-node';
@@ -127,12 +131,47 @@ export const authGithubTokenCaptureModule = createBackendModule({
       deps: {
         providers: authProvidersExtensionPoint,
         tokenService: providerTokenServiceRef,
+        httpAuth: coreServices.httpAuth,
+        logger: coreServices.logger,
       },
-      async init({ providers, tokenService }) {
+      async init({ providers, tokenService, httpAuth, logger }) {
+        /**
+         * Wraps the upstream authenticator to add a logout hook that deletes the
+         * user's stored provider tokens when they sign out of Backstage (G3 fix).
+         */
+        const authenticatorWithLogout: typeof githubAuthenticator = {
+          ...githubAuthenticator,
+          async logout(
+            input: OAuthAuthenticatorLogoutInput,
+            ctx: Parameters<typeof githubAuthenticator.authenticate>[1],
+          ) {
+            if (githubAuthenticator.logout) {
+              await githubAuthenticator.logout(input, ctx);
+            }
+            try {
+              const credentials = await httpAuth.credentials(input.req, {
+                allow: ['user'],
+                allowLimitedAccess: true,
+              });
+              await tokenService.deleteTokens(
+                credentials.principal.userEntityRef,
+              );
+              logger.info('Provider tokens deleted on GitHub sign-out', {
+                userEntityRef: credentials.principal.userEntityRef,
+              });
+            } catch (err) {
+              logger.warn(
+                'Failed to delete GitHub provider tokens on sign-out',
+                { error: err instanceof Error ? err.message : String(err) },
+              );
+            }
+          },
+        };
+
         providers.registerProvider({
           providerId: 'github',
           factory: createOAuthProviderFactory({
-            authenticator: githubAuthenticator,
+            authenticator: authenticatorWithLogout,
             signInResolverFactories: {
               usernameMatchingUserEntityName:
                 createGithubTokenCapturingResolver(tokenService),

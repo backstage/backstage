@@ -19,32 +19,34 @@ import { providerTokenServiceRef } from '@devhub/plugin-provider-token-node';
 import request from 'supertest';
 import { authGithubTokenCaptureModule } from './module';
 
+const TEST_CONFIG = {
+  data: {
+    app: { baseUrl: 'http://localhost:3000' },
+    auth: {
+      providers: {
+        github: {
+          development: {
+            clientId: 'test-gh-client-id',
+            clientSecret: 'test-gh-secret',
+          },
+        },
+      },
+    },
+    providerToken: {
+      encryptionSecret: Buffer.from(
+        'test-secret-32-bytes-minimum-xxxx',
+      ).toString('base64'),
+    },
+  },
+};
+
 describe('authGithubTokenCaptureModule', () => {
   it('starts and redirects to GitHub OAuth', async () => {
     const { server } = await startTestBackend({
       features: [
         import('@backstage/plugin-auth-backend'),
         authGithubTokenCaptureModule,
-        mockServices.rootConfig.factory({
-          data: {
-            app: { baseUrl: 'http://localhost:3000' },
-            auth: {
-              providers: {
-                github: {
-                  development: {
-                    clientId: 'test-gh-client-id',
-                    clientSecret: 'test-gh-secret',
-                  },
-                },
-              },
-            },
-            providerToken: {
-              encryptionSecret: Buffer.from(
-                'test-secret-32-bytes-minimum-xxxx',
-              ).toString('base64'),
-            },
-          },
-        }),
+        mockServices.rootConfig.factory({ data: TEST_CONFIG.data }),
         // Provide a mock database so migration can run
         mockServices.database.factory(),
         // Mock the providerTokenService so the real factory (which needs DB migration
@@ -74,5 +76,37 @@ describe('authGithubTokenCaptureModule', () => {
     const startUrl = new URL(res.get('location'));
     expect(startUrl.hostname).toBe('github.com');
     expect(startUrl.searchParams.get('client_id')).toBe('test-gh-client-id');
+  });
+
+  it('calls deleteTokens with the userEntityRef when a user logs out (G3)', async () => {
+    const deleteTokens = jest.fn().mockResolvedValue(undefined);
+
+    const { server } = await startTestBackend({
+      features: [
+        import('@backstage/plugin-auth-backend'),
+        authGithubTokenCaptureModule,
+        mockServices.rootConfig.factory({ data: TEST_CONFIG.data }),
+        mockServices.database.factory(),
+        // Mock httpAuth: any unauthenticated request falls back to user:default/mock
+        mockServices.httpAuth.factory(),
+        createServiceFactory({
+          service: providerTokenServiceRef,
+          deps: {},
+          factory: () => ({
+            upsertToken: jest.fn(),
+            getToken: jest.fn(),
+            deleteTokens,
+            deleteToken: jest.fn(),
+          }),
+        }),
+      ],
+    });
+
+    const res = await request(server)
+      .post('/api/auth/github/logout?env=development')
+      .set('X-Requested-With', 'XMLHttpRequest');
+
+    expect(res.status).toEqual(200);
+    expect(deleteTokens).toHaveBeenCalledWith('user:default/mock');
   });
 });

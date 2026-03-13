@@ -13,12 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createBackendModule } from '@backstage/backend-plugin-api';
+import {
+  createBackendModule,
+  coreServices,
+} from '@backstage/backend-plugin-api';
 import {
   authProvidersExtensionPoint,
   commonSignInResolvers,
   createOAuthProviderFactory,
   createSignInResolverFactory,
+  OAuthAuthenticatorLogoutInput,
   OAuthAuthenticatorResult,
   PassportProfile,
   SignInInfo,
@@ -118,12 +122,52 @@ export const authAtlassianTokenCaptureModule = createBackendModule({
       deps: {
         providers: authProvidersExtensionPoint,
         tokenService: providerTokenServiceRef,
+        httpAuth: coreServices.httpAuth,
+        logger: coreServices.logger,
       },
-      async init({ providers, tokenService }) {
+      async init({ providers, tokenService, httpAuth, logger }) {
+        /**
+         * Wraps the upstream authenticator to add a logout hook that deletes the
+         * user's stored provider tokens when they sign out of Backstage (G3 fix).
+         *
+         * The hook extracts the user entity ref from the Backstage limited-access
+         * cookie (sent via `credentials: 'include'` from the frontend). Failures
+         * are logged as warnings rather than propagated — logout itself must succeed
+         * even if token cleanup encounters an error.
+         */
+        const authenticatorWithLogout: typeof atlassianAuthenticator = {
+          ...atlassianAuthenticator,
+          async logout(
+            input: OAuthAuthenticatorLogoutInput,
+            ctx: Parameters<typeof atlassianAuthenticator.authenticate>[1],
+          ) {
+            if (atlassianAuthenticator.logout) {
+              await atlassianAuthenticator.logout(input, ctx);
+            }
+            try {
+              const credentials = await httpAuth.credentials(input.req, {
+                allow: ['user'],
+                allowLimitedAccess: true,
+              });
+              await tokenService.deleteTokens(
+                credentials.principal.userEntityRef,
+              );
+              logger.info('Provider tokens deleted on Atlassian sign-out', {
+                userEntityRef: credentials.principal.userEntityRef,
+              });
+            } catch (err) {
+              logger.warn(
+                'Failed to delete Atlassian provider tokens on sign-out',
+                { error: err instanceof Error ? err.message : String(err) },
+              );
+            }
+          },
+        };
+
         providers.registerProvider({
           providerId: 'atlassian',
           factory: createOAuthProviderFactory({
-            authenticator: atlassianAuthenticator,
+            authenticator: authenticatorWithLogout,
             signInResolverFactories: {
               usernameMatchingUserEntityName:
                 createAtlassianTokenCapturingResolver(tokenService),
