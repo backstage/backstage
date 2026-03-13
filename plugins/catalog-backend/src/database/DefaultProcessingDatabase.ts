@@ -398,19 +398,19 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
 
     // Replace refresh state references for the originating entity and any
     // successfully added entities that are transitioning ownership.
-    const deletionQuery = tx<DbRefreshStateReferencesRow>(
-      'refresh_state_references',
-    )
+    await tx<DbRefreshStateReferencesRow>('refresh_state_references')
       // Remove all existing references from the originating entity
-      .where({ source_entity_ref: options.sourceEntityRef });
-    if (stealableReferences.length > 0) {
-      // Also remove references to entities that are being claimed from null
-      // location key (weak ownership) by a specific location key (strong
-      // ownership). This ensures that previously weak references from other
-      // parents are replaced when a location takes ownership of an entity.
-      deletionQuery.orWhereIn('target_entity_ref', stealableReferences);
-    }
-    await deletionQuery.delete();
+      .where({ source_entity_ref: options.sourceEntityRef })
+      .modify(qb => {
+        if (stealableReferences.length > 0) {
+          // Also remove references to entities that are being claimed from null
+          // location key (weak ownership) by a specific location key (strong
+          // ownership). This ensures that previously weak references from other
+          // parents are replaced when a location takes ownership of an entity.
+          qb.orWhereIn('target_entity_ref', stealableReferences);
+        }
+      })
+      .delete();
     await tx.batchInsert(
       'refresh_state_references',
       stateReferences.map(entityRef => ({
