@@ -18,16 +18,16 @@ import { CliInitializer } from './wiring/CliInitializer';
 
 (async () => {
   const initializer = new CliInitializer();
-  initializer.add(import('./modules/build'));
-  initializer.add(import('./modules/config'));
-  initializer.add(import('./modules/create-github-app'));
-  initializer.add(import('./modules/info'));
-  initializer.add(import('./modules/lint'));
-  initializer.add(import('./modules/maintenance'));
-  initializer.add(import('./modules/migrate'));
-  initializer.add(import('./modules/new'));
-  initializer.add(import('./modules/test'));
-  initializer.add(import('./modules/translations'));
-  initializer.add(import('./modules/auth'));
+  initializer.add(import('@backstage/cli-module-build'));
+  initializer.add(import('@backstage/cli-module-config'));
+  initializer.add(import('@backstage/cli-module-create-github-app'));
+  initializer.add(import('@backstage/cli-module-info'));
+  initializer.add(import('@backstage/cli-module-lint'));
+  initializer.add(import('@backstage/cli-module-maintenance'));
+  initializer.add(import('@backstage/cli-module-migrate'));
+  initializer.add(import('@backstage/cli-module-new'));
+  initializer.add(import('@backstage/cli-module-test-jest'));
+  initializer.add(import('@backstage/cli-module-translations'));
+  initializer.add(import('@backstage/cli-module-auth'));
   await initializer.run();
 })();

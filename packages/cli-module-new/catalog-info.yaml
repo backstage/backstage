@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-cli-module-new
+  title: '@backstage/cli-module-new'
+  description: CLI module for Backstage CLI
+spec:
+  lifecycle: experimental
+  type: backstage-cli-module
+  owner: tooling-maintainers
