@@ -15,7 +15,6 @@
  */
 
 import express from 'express';
-import Router from 'express-promise-router';
 import cookieParser from 'cookie-parser';
 import {
   AuthService,
@@ -43,6 +42,7 @@ import { bindProviderRouters, ProviderFactories } from '../providers/router';
 import { OidcRouter } from './OidcRouter';
 import { OidcDatabase } from '../database/OidcDatabase';
 import { OfflineAccessService } from './OfflineAccessService';
+import { createOpenApiRouter } from '../schema/openapi';
 
 interface RouterOptions {
   logger: LoggerService;
@@ -71,7 +71,9 @@ export async function createRouter(
     httpAuth,
   } = options;
 
-  const router = Router();
+  const router = await createOpenApiRouter({
+    middleware: [express.urlencoded({ extended: false }), express.json()],
+  });
 
   const appUrl = config.getString('app.baseUrl');
   const authUrl = await discovery.getExternalBaseUrl('auth');
@@ -139,9 +141,6 @@ export async function createRouter(
   } else {
     router.use(cookieParser());
   }
-
-  router.use(express.urlencoded({ extended: false }));
-  router.use(express.json());
 
   bindProviderRouters(router, {
     providers: providerFactories,
