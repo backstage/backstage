@@ -73,14 +73,24 @@ describe.each([
     },
   ],
   [
-    { role: 'frontend-plugin-module', pluginId: 'test1', moduleId: 'test2' },
+    {
+      role: 'frontend-plugin-module',
+      pluginId: 'test1',
+      moduleId: 'test2',
+      pluginPackage: '@backstage/plugin-test1',
+    },
     {
       packageName: '@internal/plugin-test1-module-test2',
       packagePath: 'plugins/test1-module-test2',
     },
   ],
   [
-    { role: 'backend-plugin-module', pluginId: 'test1', moduleId: 'test2' },
+    {
+      role: 'backend-plugin-module',
+      pluginId: 'test1',
+      moduleId: 'test2',
+      pluginPackage: '@backstage/plugin-test1-backend',
+    },
     {
       packageName: '@internal/plugin-test1-backend-module-test2',
       packagePath: 'plugins/test1-backend-module-test2',

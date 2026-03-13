@@ -27,6 +27,10 @@ import {
 } from '../types';
 import { PortableTemplate } from '../types';
 import { resolvePackageParams } from './resolvePackageParams';
+import {
+  knownBackendPluginPackageNameByPluginId,
+  knownFrontendPluginPackageNameByPluginId,
+} from '../../../../lib/knownPluginPackages';
 
 type CollectTemplateParamsOptions = {
   config: PortableTemplateConfig;
@@ -80,11 +84,27 @@ export async function collectPortableTemplateInput(
     ...promptAnswers,
   };
 
+  let pluginPackage: string | undefined;
+  if (
+    template.role === 'backend-plugin-module' ||
+    template.role === 'frontend-plugin-module'
+  ) {
+    const knownPackages =
+      template.role === 'backend-plugin-module'
+        ? knownBackendPluginPackageNameByPluginId
+        : knownFrontendPluginPackageNameByPluginId;
+
+    pluginPackage =
+      (answers.pluginPackage as string) ??
+      knownPackages[answers.pluginId as string];
+  }
+
   const roleParams = {
     role: template.role,
     name: answers.name,
     pluginId: answers.pluginId,
     moduleId: answers.moduleId,
+    pluginPackage,
   } as PortableTemplateInputRoleParams;
 
   const packageParams = resolvePackageParams({
@@ -153,6 +173,37 @@ export function moduleIdIdPrompt(): DistinctQuestion {
   };
 }
 
+export function pluginPackagePrompt(
+  role: 'backend-plugin-module' | 'frontend-plugin-module',
+): DistinctQuestion {
+  const knownPackages =
+    role === 'backend-plugin-module'
+      ? knownBackendPluginPackageNameByPluginId
+      : knownFrontendPluginPackageNameByPluginId;
+
+  const examplePackage =
+    role === 'backend-plugin-module'
+      ? '@backstage/plugin-catalog-backend'
+      : '@backstage/plugin-catalog';
+
+  return {
+    type: 'input',
+    name: 'pluginPackage',
+    message: `Enter the package name of the plugin this module extends (e.g. ${examplePackage}) [required]`,
+    validate: (value: string) => {
+      if (!value) {
+        return 'Please enter the package name of the plugin';
+      }
+      if (!isValidNpmPackageName(value)) {
+        return `Please enter a valid npm package name (e.g. ${examplePackage} or my-plugin)`;
+      }
+      return true;
+    },
+    when: (answers: PortableTemplateParams) =>
+      !knownPackages[answers.pluginId as string],
+  };
+}
+
 export function getPromptsForRole(
   role: PortableTemplateRole,
 ): Array<DistinctQuestion> {
@@ -169,7 +220,7 @@ export function getPromptsForRole(
       return [pluginIdPrompt()];
     case 'frontend-plugin-module':
     case 'backend-plugin-module':
-      return [pluginIdPrompt(), moduleIdIdPrompt()];
+      return [pluginIdPrompt(), moduleIdIdPrompt(), pluginPackagePrompt(role)];
     default:
       return [];
   }
@@ -193,4 +244,14 @@ export function ownerPrompt(): DistinctQuestion {
       return true;
     },
   };
+}
+
+// Reuses the same pattern as namePrompt/pluginIdPrompt but extended to support npm scopes
+// Matches: @scope/package-name, @scope/package, package-name, package
+const packageNamePattern = /^[a-z0-9][a-z0-9._-]*$/;
+const scopedPackageNamePattern =
+  /^@[a-z0-9][a-z0-9._-]*\/[a-z0-9][a-z0-9._-]*$/;
+
+function isValidNpmPackageName(name: string) {
+  return packageNamePattern.test(name) || scopedPackageNamePattern.test(name);
 }

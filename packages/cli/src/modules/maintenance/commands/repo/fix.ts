@@ -30,6 +30,7 @@ import {
   extname,
 } from 'node:path';
 import { targetPaths } from '@backstage/cli-common';
+import { knownBackendPluginPackageNameByPluginId } from '../../../../lib/knownPluginPackages';
 
 const SCRIPT_EXTS = ['.js', '.jsx', '.ts', '.tsx', '.json'];
 
@@ -342,22 +343,6 @@ export function fixPluginId(pkg: FixablePackage) {
   }
 }
 
-const backendPluginPackageNameByPluginId = new Map(
-  [
-    'app',
-    'auth',
-    'catalog',
-    'events',
-    'kubernetes',
-    'notifications',
-    'permission',
-    'scaffolder',
-    'search',
-    'signals',
-    'techdocs',
-  ].map(pluginId => [pluginId, `@backstage/plugin-${pluginId}-backend`]),
-);
-
 const pluginPackageRoles: Array<string | undefined> = [
   'frontend-plugin',
   'backend-plugin',
@@ -405,8 +390,7 @@ export function fixPluginPackages(
         p =>
           p.packageJson.backstage?.pluginId === pluginId &&
           p.packageJson.backstage?.role === targetRole,
-      )?.packageJson.name ?? backendPluginPackageNameByPluginId.get(pluginId);
-
+      )?.packageJson.name ?? knownBackendPluginPackageNameByPluginId[pluginId];
     if (!pluginPkgName) {
       // If we can't find a matching package in the repo but one is declared, skip
       if (pkgBackstage.pluginPackage) {
