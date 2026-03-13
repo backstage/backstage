@@ -40,7 +40,6 @@ export const createSseRouter = ({
   router.get('/', async (req, res) => {
     const connectionEvent = await auditor.createEvent({
       eventId: 'connection',
-      severityLevel: 'medium',
       request: req,
       meta: { transport: 'sse', actionType: 'established' },
     });
@@ -67,7 +66,8 @@ export const createSseRouter = ({
             request: req,
             meta: { transport: 'sse', actionType: 'closed' },
           })
-          .then(e => e.success());
+          .then(e => e.success())
+          .catch(() => {});
       });
 
       await server.connect(transport);
