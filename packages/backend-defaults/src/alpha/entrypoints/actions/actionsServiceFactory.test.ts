@@ -20,6 +20,7 @@ import {
   ServiceFactoryTester,
   startTestBackend,
 } from '@backstage/backend-test-utils';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { actionsRegistryServiceFactory } from '../actionsRegistry';
 import { httpRouterServiceFactory } from '../../../entrypoints/httpRouter';
 import { actionsServiceFactory } from './actionsServiceFactory';
@@ -584,6 +585,207 @@ describe('actionsServiceFactory', () => {
           'my-plugin:action-one',
           'my-plugin:action-two',
         ]);
+      });
+    });
+
+    describe('overrides', () => {
+      it('should override action title and description from config', async () => {
+        server.use(
+          rest.get(
+            'http://localhost:0/api/my-plugin/.backstage/actions/v1/actions',
+            (_req, res, ctx) =>
+              res(ctx.json({ actions: [mockActionsDefinition] })),
+          ),
+        );
+
+        const subject = await ServiceFactoryTester.from(actionsServiceFactory, {
+          dependencies: [
+            mockServices.rootConfig.factory({
+              data: {
+                backend: {
+                  actions: {
+                    pluginSources: ['my-plugin'],
+                    overrides: {
+                      'my-plugin:test': {
+                        title: 'Custom Title',
+                        description: 'Custom Description',
+                      },
+                    },
+                  },
+                },
+              },
+            }),
+            actionsServiceFactory,
+            httpRouterServiceFactory,
+            mockServices.httpAuth.factory({
+              defaultCredentials: mockCredentials.service('user:default/mock'),
+            }),
+            mockServices.discovery.factory(),
+            actionsRegistryServiceFactory,
+          ],
+        }).getSubject();
+
+        const { actions } = await subject.list({
+          credentials: mockCredentials.service('user:default/mock'),
+        });
+
+        expect(actions[0].title).toBe('Custom Title');
+        expect(actions[0].description).toBe('Custom Description');
+        expect(actions[0].id).toBe('my-plugin:test');
+      });
+
+      it('should override schema title and description from config', async () => {
+        const actionWithSchema: ActionsServiceAction = {
+          ...mockActionsDefinition,
+          schema: {
+            input: { type: 'object', title: 'Original Input' },
+            output: { type: 'object', title: 'Original Output' },
+          },
+        };
+
+        server.use(
+          rest.get(
+            'http://localhost:0/api/my-plugin/.backstage/actions/v1/actions',
+            (_req, res, ctx) => res(ctx.json({ actions: [actionWithSchema] })),
+          ),
+        );
+
+        const subject = await ServiceFactoryTester.from(actionsServiceFactory, {
+          dependencies: [
+            mockServices.rootConfig.factory({
+              data: {
+                backend: {
+                  actions: {
+                    pluginSources: ['my-plugin'],
+                    overrides: {
+                      'my-plugin:test': {
+                        schema: {
+                          input: {
+                            title: 'Custom Input Title',
+                            description: 'Custom input desc',
+                          },
+                          output: {
+                            title: 'Custom Output Title',
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            }),
+            actionsServiceFactory,
+            httpRouterServiceFactory,
+            mockServices.httpAuth.factory({
+              defaultCredentials: mockCredentials.service('user:default/mock'),
+            }),
+            mockServices.discovery.factory(),
+            actionsRegistryServiceFactory,
+          ],
+        }).getSubject();
+
+        const { actions } = await subject.list({
+          credentials: mockCredentials.service('user:default/mock'),
+        });
+
+        expect(actions[0].schema.input.title).toBe('Custom Input Title');
+        expect(actions[0].schema.input.description).toBe('Custom input desc');
+        expect(actions[0].schema.output.title).toBe('Custom Output Title');
+      });
+
+      it('should filter actions denied by config visibilityPermission', async () => {
+        server.use(
+          rest.get(
+            'http://localhost:0/api/my-plugin/.backstage/actions/v1/actions',
+            (_req, res, ctx) =>
+              res(ctx.json({ actions: [mockActionsDefinition] })),
+          ),
+        );
+
+        const subject = await ServiceFactoryTester.from(actionsServiceFactory, {
+          dependencies: [
+            mockServices.rootConfig.factory({
+              data: {
+                backend: {
+                  actions: {
+                    pluginSources: ['my-plugin'],
+                    overrides: {
+                      'my-plugin:test': {
+                        visibilityPermission: {
+                          name: 'custom.permission',
+                          attributes: { action: 'read' },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            }),
+            actionsServiceFactory,
+            httpRouterServiceFactory,
+            mockServices.httpAuth.factory({
+              defaultCredentials: mockCredentials.service('user:default/mock'),
+            }),
+            mockServices.discovery.factory(),
+            actionsRegistryServiceFactory,
+            mockServices.permissions.factory({
+              result: AuthorizeResult.DENY,
+            }),
+          ],
+        }).getSubject();
+
+        const { actions } = await subject.list({
+          credentials: mockCredentials.service('user:default/mock'),
+        });
+
+        expect(actions).toHaveLength(0);
+      });
+
+      it('should not affect actions without overrides', async () => {
+        const multipleActions: ActionsServiceAction[] = [
+          { ...mockActionsDefinition, id: 'my-plugin:action-a', name: 'a' },
+          { ...mockActionsDefinition, id: 'my-plugin:action-b', name: 'b' },
+        ];
+
+        server.use(
+          rest.get(
+            'http://localhost:0/api/my-plugin/.backstage/actions/v1/actions',
+            (_req, res, ctx) => res(ctx.json({ actions: multipleActions })),
+          ),
+        );
+
+        const subject = await ServiceFactoryTester.from(actionsServiceFactory, {
+          dependencies: [
+            mockServices.rootConfig.factory({
+              data: {
+                backend: {
+                  actions: {
+                    pluginSources: ['my-plugin'],
+                    overrides: {
+                      'my-plugin:action-a': {
+                        title: 'Overridden',
+                      },
+                    },
+                  },
+                },
+              },
+            }),
+            actionsServiceFactory,
+            httpRouterServiceFactory,
+            mockServices.httpAuth.factory({
+              defaultCredentials: mockCredentials.service('user:default/mock'),
+            }),
+            mockServices.discovery.factory(),
+            actionsRegistryServiceFactory,
+          ],
+        }).getSubject();
+
+        const { actions } = await subject.list({
+          credentials: mockCredentials.service('user:default/mock'),
+        });
+
+        expect(actions[0].title).toBe('Overridden');
+        expect(actions[1].title).toBe('Test');
       });
     });
 

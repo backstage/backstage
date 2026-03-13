@@ -18,6 +18,7 @@ import {
   BackstageCredentials,
   DiscoveryService,
   LoggerService,
+  PermissionsService,
   RootConfigService,
 } from '@backstage/backend-plugin-api';
 import { ResponseError } from '@backstage/errors';
@@ -28,23 +29,30 @@ import {
 } from '@backstage/backend-plugin-api/alpha';
 import { Minimatch } from 'minimatch';
 import { Config } from '@backstage/config';
+import {
+  AuthorizeResult,
+  createPermission,
+} from '@backstage/plugin-permission-common';
 
 export class DefaultActionsService implements ActionsService {
   private readonly discovery: DiscoveryService;
   private readonly config: RootConfigService;
   private readonly logger: LoggerService;
   private readonly auth: AuthService;
+  private readonly permissions: PermissionsService;
 
   private constructor(
     discovery: DiscoveryService,
     config: RootConfigService,
     logger: LoggerService,
     auth: AuthService,
+    permissions: PermissionsService,
   ) {
     this.discovery = discovery;
     this.config = config;
     this.logger = logger;
     this.auth = auth;
+    this.permissions = permissions;
   }
 
   static create({
@@ -52,13 +60,21 @@ export class DefaultActionsService implements ActionsService {
     config,
     logger,
     auth,
+    permissions,
   }: {
     discovery: DiscoveryService;
     config: RootConfigService;
     logger: LoggerService;
     auth: AuthService;
+    permissions: PermissionsService;
   }) {
-    return new DefaultActionsService(discovery, config, logger, auth);
+    return new DefaultActionsService(
+      discovery,
+      config,
+      logger,
+      auth,
+      permissions,
+    );
   }
 
   async list({ credentials }: { credentials: BackstageCredentials }) {
@@ -88,7 +104,13 @@ export class DefaultActionsService implements ActionsService {
       }),
     );
 
-    return { actions: this.applyFilters(remoteActionsList.flat()) };
+    const filtered = this.applyFilters(remoteActionsList.flat());
+    const overridden = this.applyOverrides(filtered);
+    const permitted = await this.filterByOverridePermissions(
+      overridden,
+      credentials,
+    );
+    return { actions: permitted };
   }
 
   async invoke(opts: {
@@ -251,5 +273,111 @@ export class DefaultActionsService implements ActionsService {
     }
 
     return true;
+  }
+
+  private applyOverrides(
+    actions: ActionsServiceAction[],
+  ): ActionsServiceAction[] {
+    const overridesConfig = this.config.getOptionalConfig(
+      'backend.actions.overrides',
+    );
+
+    if (!overridesConfig) {
+      return actions;
+    }
+
+    return actions.map(action => {
+      const actionConfig = overridesConfig.getOptionalConfig(action.id);
+      if (!actionConfig) {
+        return action;
+      }
+
+      const title = actionConfig.getOptionalString('title') ?? action.title;
+      const description =
+        actionConfig.getOptionalString('description') ?? action.description;
+
+      const schemaConfig = actionConfig.getOptionalConfig('schema');
+      const inputSchema = { ...action.schema.input };
+      const outputSchema = { ...action.schema.output };
+
+      if (schemaConfig) {
+        const inputOverride = schemaConfig.getOptionalConfig('input');
+        if (inputOverride) {
+          inputSchema.title =
+            inputOverride.getOptionalString('title') ?? inputSchema.title;
+          inputSchema.description =
+            inputOverride.getOptionalString('description') ??
+            inputSchema.description;
+        }
+
+        const outputOverride = schemaConfig.getOptionalConfig('output');
+        if (outputOverride) {
+          outputSchema.title =
+            outputOverride.getOptionalString('title') ?? outputSchema.title;
+          outputSchema.description =
+            outputOverride.getOptionalString('description') ??
+            outputSchema.description;
+        }
+      }
+
+      return {
+        ...action,
+        title,
+        description,
+        schema: { input: inputSchema, output: outputSchema },
+      };
+    });
+  }
+
+  private async filterByOverridePermissions(
+    actions: ActionsServiceAction[],
+    credentials: BackstageCredentials,
+  ): Promise<ActionsServiceAction[]> {
+    const overridesConfig = this.config.getOptionalConfig(
+      'backend.actions.overrides',
+    );
+
+    if (!overridesConfig) {
+      return actions;
+    }
+
+    const actionsWithPermissions = actions.filter(action => {
+      const actionConfig = overridesConfig.getOptionalConfig(action.id);
+      return actionConfig?.has('visibilityPermission');
+    });
+
+    if (actionsWithPermissions.length === 0) {
+      return actions;
+    }
+
+    const permissions = actionsWithPermissions.map(action => {
+      const permConfig = overridesConfig
+        .getConfig(action.id)
+        .getConfig('visibilityPermission');
+      return createPermission({
+        name: permConfig.getString('name'),
+        attributes: {
+          action: permConfig.getOptionalString('attributes.action') as
+            | 'create'
+            | 'read'
+            | 'update'
+            | 'delete'
+            | undefined,
+        },
+      });
+    });
+
+    const decisions = await this.permissions.authorize(
+      permissions.map(permission => ({ permission })),
+      { credentials },
+    );
+
+    const deniedIds = new Set(
+      actionsWithPermissions
+        .filter((_, index) => decisions[index].result === AuthorizeResult.DENY)
+        .map(action => action.id),
+    );
+
+    return actions.filter(action => !deniedIds.has(action.id));
   }
 }

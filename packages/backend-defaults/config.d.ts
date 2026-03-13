@@ -252,6 +252,61 @@ export interface Config {
           };
         }>;
       };
+
+      /**
+       * Per-action overrides keyed by action ID. Allows customizing action
+       * metadata and adding visibility permissions from config.
+       *
+       * @example
+       * ```yaml
+       * overrides:
+       *   'catalog:delete-entity':
+       *     title: 'Remove Entity'
+       *     description: 'Custom description'
+       *     visibilityPermission:
+       *       name: 'custom.permission.name'
+       *       attributes:
+       *         action: 'delete'
+       *     schema:
+       *       input:
+       *         title: 'Delete Input'
+       *       output:
+       *         description: 'Result of the delete operation'
+       * ```
+       */
+      overrides?: {
+        [actionId: string]: {
+          /** Override the display title of the action. */
+          title?: string;
+          /** Override the description of the action. */
+          description?: string;
+          /**
+           * Set or override the visibility permission for this action.
+           * This is checked in addition to any permission set by the plugin author.
+           */
+          visibilityPermission?: {
+            /** The permission name. */
+            name: string;
+            /** Permission attributes. */
+            attributes?: {
+              action?: 'create' | 'read' | 'update' | 'delete';
+            };
+          };
+          /** Override schema metadata. */
+          schema?: {
+            /** Override input schema title and description. */
+            input?: {
+              title?: string;
+              description?: string;
+            };
+            /** Override output schema title and description. */
+            output?: {
+              title?: string;
+              description?: string;
+            };
+          };
+        };
+      };
     };
 
     /**
