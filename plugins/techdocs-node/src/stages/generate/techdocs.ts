@@ -32,6 +32,7 @@ import {
 
 import {
   patchMkdocsYmlPreBuild,
+  patchMkdocsYmlWithFontDisabled,
   patchMkdocsYmlWithPlugins,
   sanitizeMkdocsYml,
 } from './mkdocsPatchers';
@@ -150,6 +151,9 @@ export class TechdocsGenerator implements GeneratorBase {
     }
 
     await patchMkdocsYmlWithPlugins(mkdocsYmlPath, childLogger, defaultPlugins);
+    if (this.options.disableExternalFonts) {
+      await patchMkdocsYmlWithFontDisabled(mkdocsYmlPath, childLogger);
+    }
 
     // Directories to bind on container
     const mountDirs = {
@@ -263,6 +267,9 @@ export function readGeneratorConfig(
     ),
     dangerouslyAllowAdditionalKeys: config.getOptionalStringArray(
       'techdocs.generator.mkdocs.dangerouslyAllowAdditionalKeys',
+    ),
+    disableExternalFonts: config.getOptionalBoolean(
+      'techdocs.generator.mkdocs.disableExternalFonts',
     ),
   };
 }
