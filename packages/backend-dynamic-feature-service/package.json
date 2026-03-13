@@ -84,7 +84,7 @@
     "@backstage/repo-tools": "workspace:^",
     "@types/express": "^4.17.6",
     "triple-beam": "^1.4.1",
-    "wait-for-expect": "^3.0.2"
+    "wait-for-expect": "^4.0.0"
   },
   "configSchema": "config.d.ts"
 }

@@ -220,7 +220,7 @@
     "msw": "^1.0.0",
     "node-mocks-http": "^1.0.0",
     "supertest": "^7.0.0",
-    "wait-for-expect": "^3.0.2"
+    "wait-for-expect": "^4.0.0"
   },
   "peerDependencies": {
     "@google-cloud/cloud-sql-connector": "^1.4.0",
