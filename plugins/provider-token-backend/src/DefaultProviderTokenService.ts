@@ -132,8 +132,10 @@ export class DefaultProviderTokenService implements ProviderTokenService {
       return undefined;
     }
 
-    // Audit log — no token values
-    this.logger.info('Provider token retrieved', {
+    // Downgraded to debug: fires on every action invocation (hot path).
+    // Production log aggregation pipelines typically exclude debug-level logs,
+    // keeping userEntityRef (PII) out of long-retention log sinks.
+    this.logger.debug('Provider token retrieved', {
       userEntityRef,
       providerId,
       hasRefreshToken,

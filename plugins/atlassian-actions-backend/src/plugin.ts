@@ -20,6 +20,19 @@ import {
 import { actionsRegistryServiceRef } from '@backstage/backend-plugin-api/alpha';
 import { providerTokenServiceRef } from '@devhub/plugin-provider-token-node';
 
+/**
+ * Default set of Jira fields fetched by searchIssues when the caller does not specify fields.
+ * Matches the declared output schema fields. Sending an explicit list prevents Jira from
+ * returning all fields (which can be several MB per response at high maxResults).
+ */
+const DEFAULT_JIRA_SEARCH_FIELDS = [
+  'summary',
+  'status',
+  'issuetype',
+  'assignee',
+  'priority',
+];
+
 export const atlassianActionsPlugin = createBackendPlugin({
   pluginId: 'atlassian-actions',
   register(env) {
@@ -41,7 +54,8 @@ export const atlassianActionsPlugin = createBackendPlugin({
             // SECURITY: do not include userEntityRef in error message surfaced to MCP clients
             throw new Error(
               'No valid Atlassian session found. ' +
-                'Please sign in with Atlassian via Backstage before using this action.',
+                'Please sign in with Atlassian via Backstage before using this action. ' +
+                'Call atlassian:auth:checkSession to verify your session status.',
             );
           }
           return token;
@@ -64,18 +78,65 @@ export const atlassianActionsPlugin = createBackendPlugin({
           });
         }
 
-        /** Handle a 401 response: delete stale token and throw. */
-        async function handleUnauthorized(
-          userEntityRef: string,
-        ): Promise<never> {
-          await tokenService.deleteToken(userEntityRef, 'atlassian');
-          logger.warn('Atlassian token rejected (401) — deleted stale token', {
+        /**
+         * Handle a 401 response from Jira.
+         * Does NOT delete the token on first 401 — Jira can return 401 for transient reasons
+         * (scope mismatch, maintenance window, gateway errors). Token deletion happens automatically
+         * via OAuthPermanentError during the next refresh cycle if the refresh token is also invalid.
+         */
+        async function handleUnauthorized(): Promise<never> {
+          logger.warn('Atlassian token rejected (401) — may be transient', {
             providerId: 'atlassian',
           });
           throw new Error(
-            'Atlassian session was rejected. Please re-authenticate via Backstage.',
+            'Atlassian returned 401 — your session may be invalid or the request lacks required scope. ' +
+              'If this error persists, re-authenticate via Backstage.',
           );
         }
+
+        // ──────────────────────────────────────────────────────────────────────
+        // atlassian:auth:checkSession
+        // ──────────────────────────────────────────────────────────────────────
+        actions.register({
+          name: 'atlassian:auth:checkSession',
+          title: 'Check Atlassian Session',
+          description:
+            'Check whether the current user has an active Atlassian OAuth session stored in Backstage. ' +
+            'Call this before any other Atlassian action to verify the prerequisite is met. ' +
+            'Returns hasSession=false if no token is stored or if the token has expired.',
+          attributes: { readOnly: true, idempotent: true },
+          schema: {
+            input: z => z.object({}),
+            output: z =>
+              z.object({
+                hasSession: z
+                  .boolean()
+                  .describe(
+                    'Whether a valid Atlassian session is currently stored',
+                  ),
+                expiresAt: z
+                  .string()
+                  .optional()
+                  .describe('ISO 8601 expiry time of the current token'),
+              }),
+          },
+          async action(ctx) {
+            if (!auth.isPrincipal(ctx.credentials, 'user')) {
+              throw new Error('This action requires a user principal.');
+            }
+            const { userEntityRef } = ctx.credentials.principal;
+            const token = await tokenService.getToken(
+              userEntityRef,
+              'atlassian',
+            );
+            return {
+              output: {
+                hasSession: !!token,
+                expiresAt: token?.expiresAt?.toISOString(),
+              },
+            };
+          },
+        });
 
         // ──────────────────────────────────────────────────────────────────────
         // atlassian:jira:getIssue
@@ -85,16 +146,25 @@ export const atlassianActionsPlugin = createBackendPlugin({
           title: 'Get Jira Issue',
           description:
             "Fetch a Jira issue using the caller's own Atlassian OAuth token. " +
-            'The user must have signed in with Atlassian via Backstage.',
+            'The user must have signed in with Atlassian via Backstage. ' +
+            'Call atlassian:auth:checkSession first to verify the session.',
           attributes: { readOnly: true, idempotent: true },
           schema: {
             input: z =>
               z.object({
                 issueKey: z
                   .string()
-                  .regex(
-                    /^[A-Z]+-\d+$/,
-                    'issueKey must match PROJECT-123 format',
+                  .transform(k => k.toUpperCase())
+                  .pipe(
+                    z
+                      .string()
+                      .regex(
+                        /^[A-Z]+-\d+$/,
+                        'issueKey must match PROJECT-123 format (uppercase project key)',
+                      ),
+                  )
+                  .describe(
+                    'Issue key in PROJECT-123 format (uppercase project key). Example: MYPROJECT-42.',
                   ),
               }),
             output: z =>
@@ -136,7 +206,7 @@ export const atlassianActionsPlugin = createBackendPlugin({
             const token = await getAtlassianToken(userEntityRef);
 
             // SECURITY: cloudId from config (hard-coded constant), not from user input
-            // issueKey from user input is URL-encoded to prevent path traversal
+            // issueKey is regex-validated (only [A-Z]+-\d+) and URL-encoded as defence in depth
             const url = `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue/${encodeURIComponent(
               input.issueKey,
             )}`;
@@ -144,7 +214,7 @@ export const atlassianActionsPlugin = createBackendPlugin({
             const response = await jiraFetch(url, token.accessToken);
 
             if (response.status === 401) {
-              return handleUnauthorized(userEntityRef);
+              return handleUnauthorized();
             }
 
             if (!response.ok) {
@@ -166,15 +236,24 @@ export const atlassianActionsPlugin = createBackendPlugin({
           title: 'Search Jira Issues',
           description:
             "Search Jira issues using JQL with the caller's own Atlassian OAuth token. " +
-            'The user must have signed in with Atlassian via Backstage.',
+            'The user must have signed in with Atlassian via Backstage. ' +
+            'Call atlassian:auth:checkSession first to verify the session.',
           attributes: { readOnly: true, idempotent: true },
           schema: {
             input: z =>
               z.object({
                 jql: z
                   .string()
+                  .max(2_000)
                   .describe(
-                    'JQL query string, e.g. "project = MYPROJ AND status = Open"',
+                    'JQL query string. Key syntax rules: ' +
+                      '(1) Use currentUser() for the calling user (e.g., assignee = currentUser()). ' +
+                      '(2) Status names are case-sensitive and quoted if they contain spaces (e.g., status = "In Progress"). ' +
+                      '(3) Project keys are uppercase (e.g., project = MYPROJECT). ' +
+                      '(4) ORDER BY goes at the end (e.g., ORDER BY updated DESC). ' +
+                      'Common examples: ' +
+                      '"assignee = currentUser() AND status != Done ORDER BY updated DESC" — my open issues; ' +
+                      '"project = MYPROJ AND issuetype = Bug AND status = Open" — open bugs in a project.',
                   ),
                 maxResults: z
                   .number()
@@ -199,7 +278,8 @@ export const atlassianActionsPlugin = createBackendPlugin({
                   .array(z.string())
                   .optional()
                   .describe(
-                    'Issue fields to include, e.g. ["summary","status","assignee"]. Defaults to a standard set.',
+                    'Issue fields to include (default: summary, status, issuetype, assignee, priority). ' +
+                      'Add more fields like "labels", "description", or "comment" as needed.',
                   ),
               }),
             output: z =>
@@ -256,10 +336,10 @@ export const atlassianActionsPlugin = createBackendPlugin({
               jql: input.jql,
               maxResults: input.maxResults,
               startAt: input.startAt,
+              // Always send an explicit fields list. When the caller omits fields,
+              // use the default set to prevent Jira from returning all fields (can be MBs).
+              fields: input.fields ?? DEFAULT_JIRA_SEARCH_FIELDS,
             };
-            if (input.fields) {
-              searchBody.fields = input.fields;
-            }
 
             const url = `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/search`;
 
@@ -270,11 +350,27 @@ export const atlassianActionsPlugin = createBackendPlugin({
             });
 
             if (response.status === 401) {
-              return handleUnauthorized(userEntityRef);
+              return handleUnauthorized();
             }
 
             if (!response.ok) {
-              throw new Error(`Jira search API returned ${response.status}`);
+              if (response.status === 400) {
+                // Jira returns structured error messages on invalid JQL.
+                // Surface them so agents can self-correct the query.
+                const errorBody = await response.json().catch(() => null);
+                const messages = [
+                  ...(errorBody?.errorMessages ?? []),
+                  ...(errorBody?.warningMessages ?? []),
+                ].slice(0, 5);
+                const detail =
+                  messages.length > 0 ? `: ${messages.join('; ')}` : '';
+                throw new Error(`Jira JQL query is invalid${detail}`);
+              }
+              throw new Error(
+                `Jira search API returned ${
+                  response.status
+                } for JQL: ${input.jql.substring(0, 120)}`,
+              );
             }
 
             const data = await response.json();
@@ -297,18 +393,31 @@ export const atlassianActionsPlugin = createBackendPlugin({
           title: 'Add Jira Comment',
           description:
             "Add a comment to a Jira issue using the caller's own Atlassian OAuth token. " +
-            'The user must have signed in with Atlassian via Backstage.',
+            'The user must have signed in with Atlassian via Backstage. ' +
+            'Call atlassian:auth:checkSession first to verify the session.',
           attributes: { readOnly: false, idempotent: false },
           schema: {
             input: z =>
               z.object({
                 issueKey: z
                   .string()
-                  .regex(
-                    /^[A-Z]+-\d+$/,
-                    'issueKey must match PROJECT-123 format',
+                  .transform(k => k.toUpperCase())
+                  .pipe(
+                    z
+                      .string()
+                      .regex(
+                        /^[A-Z]+-\d+$/,
+                        'issueKey must match PROJECT-123 format (uppercase project key)',
+                      ),
+                  )
+                  .describe(
+                    'Issue key in PROJECT-123 format (uppercase project key). Example: MYPROJECT-42.',
                   ),
-                body: z.string().min(1).describe('Plain-text comment body'),
+                body: z
+                  .string()
+                  .min(1)
+                  .max(32_767)
+                  .describe('Plain-text comment body (max 32 767 characters)'),
               }),
             output: z =>
               z.object({
@@ -349,7 +458,7 @@ export const atlassianActionsPlugin = createBackendPlugin({
             });
 
             if (response.status === 401) {
-              return handleUnauthorized(userEntityRef);
+              return handleUnauthorized();
             }
 
             if (!response.ok) {
@@ -368,7 +477,9 @@ export const atlassianActionsPlugin = createBackendPlugin({
           },
         });
 
-        logger.info('Atlassian actions registered', { cloudId });
+        // Downgraded to debug: cloudId is an infrastructure identifier that should not appear
+        // in production log aggregation pipelines at info level.
+        logger.debug('Atlassian actions registered', { cloudId });
       },
     });
   },

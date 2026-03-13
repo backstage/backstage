@@ -162,11 +162,18 @@ export const providerTokenRefresherExtensionPoint =
 /**
  * ServiceRef for ProviderTokenService.
  * Plugin-scoped — each plugin that injects this gets an instance backed by the shared DB.
- * Requires the provider-token-backend plugin to be registered in the backend.
+ *
+ * The defaultFactory dynamically imports the canonical implementation from
+ * `@devhub/plugin-provider-token-backend`. No explicit service factory registration
+ * is required in the backend — registering the plugin is sufficient.
  *
  * @public
  */
 export const providerTokenServiceRef = createServiceRef<ProviderTokenService>({
   id: 'devhub.provider-token',
   scope: 'plugin',
+  defaultFactory: async service =>
+    import('@devhub/plugin-provider-token-backend').then(m =>
+      m.createProviderTokenServiceFactory(service),
+    ),
 });

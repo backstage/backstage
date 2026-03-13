@@ -59,15 +59,11 @@ function createMicrosoftTokenCapturingResolver(
         });
         const userEntityRef = stringifyEntityRef(entity);
 
-        // Step 2: Persist the token now that we have the correct userEntityRef.
-        await tokenService.upsertToken(
-          userEntityRef,
-          'microsoft',
-          info.result.session,
-        );
-
-        // Step 3: Complete sign-in (second catalog lookup is idempotent).
-        return ctx.signInWithCatalogUser(
+        // Step 2: Complete sign-in (second catalog lookup is idempotent).
+        // Sign-in happens before token persistence so we only store tokens for
+        // users that successfully complete the sign-in flow — no orphaned rows
+        // for rejected or non-catalog users.
+        const signInResult = await ctx.signInWithCatalogUser(
           { annotations: { 'microsoft.com/email': email } },
           {
             dangerousEntityRefFallback:
@@ -76,6 +72,15 @@ function createMicrosoftTokenCapturingResolver(
                 : undefined,
           },
         );
+
+        // Step 3: Persist the token now that sign-in succeeded.
+        await tokenService.upsertToken(
+          userEntityRef,
+          'microsoft',
+          info.result.session,
+        );
+
+        return signInResult;
       };
     },
   });

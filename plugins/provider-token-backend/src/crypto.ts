@@ -72,16 +72,32 @@ export function decrypt(stored: string, key: Buffer): string {
     throw new Error('Malformed provider token ciphertext');
   }
   const [version, ivHex, tagHex, dataHex] = parts;
+
+  // Sanitize version before including in error messages to prevent log injection
+  // from a tampered DB row (restrict to safe identifier characters).
+  if (!/^[a-z0-9_-]{1,16}$/.test(version ?? '')) {
+    throw new Error('Malformed provider token ciphertext: invalid version');
+  }
   if (version !== KEY_VERSION) {
     throw new Error(
       `Unsupported provider token ciphertext version: ${version}`,
     );
   }
-  if (tagHex.length !== 32) {
+
+  // Validate component lengths before allocating buffers:
+  // 12-byte IV = 24 hex chars, 16-byte GCM tag = 32 hex chars, data must be even-length hex.
+  if (!ivHex || ivHex.length !== 24) {
+    throw new Error('Malformed provider token ciphertext: invalid IV length');
+  }
+  if (!tagHex || tagHex.length !== 32) {
     throw new Error(
       'Malformed provider token ciphertext: invalid auth tag length',
     );
   }
+  if (!dataHex || dataHex.length % 2 !== 0) {
+    throw new Error('Malformed provider token ciphertext: invalid data length');
+  }
+
   const decipher = createDecipheriv(ALGO, key, Buffer.from(ivHex, 'hex'), {
     authTagLength: 16,
   });

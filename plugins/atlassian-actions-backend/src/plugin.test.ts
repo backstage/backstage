@@ -103,7 +103,10 @@ describe('atlassianActionsPlugin — jira:getIssue action', () => {
     ).rejects.toThrow(/sign in with Atlassian/i);
   });
 
-  it('deletes stale token and throws on 401 from Jira API', async () => {
+  it('throws and does NOT delete the token on 401 from Jira API', async () => {
+    // todo #020: handleUnauthorized no longer deletes tokens unconditionally —
+    // a 401 can be transient (rate-limit, brief outage). Deleting a valid token
+    // on a transient 401 would force the user to re-authenticate unnecessarily.
     const action = registeredActions.get('atlassian:jira:getIssue')!;
     const userCredentials = {
       principal: { type: 'user', userEntityRef: 'user:default/alice' },
@@ -130,9 +133,8 @@ describe('atlassianActionsPlugin — jira:getIssue action', () => {
       }),
     ).rejects.toThrow(/re-authenticate/i);
 
-    expect(mockTokenService.deleteToken).toHaveBeenCalledWith(
-      'user:default/alice',
-      'atlassian',
-    );
+    // Token must NOT be deleted — caller should re-authenticate only if they
+    // determine the failure is permanent (e.g. via atlassian:auth:checkSession).
+    expect(mockTokenService.deleteToken).not.toHaveBeenCalled();
   });
 });

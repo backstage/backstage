@@ -28,6 +28,16 @@ import { z } from 'zod';
 import type { ProviderTokenService } from '@devhub/plugin-provider-token-node';
 import { providerTokenServiceRef } from '@devhub/plugin-provider-token-node';
 
+/** Validates catalog namespace values (RFC 1123 DNS label, lowercase). */
+const NAMESPACE_RE = /^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$/;
+
+/**
+ * Validates Atlassian account usernames before constructing entity refs.
+ * Allows alphanumeric, dots, @, +, -, and underscores — rejecting characters
+ * that could enable path traversal or entity-ref injection.
+ */
+const USERNAME_RE = /^[\w.@+-]{1,255}$/;
+
 function createAtlassianTokenCapturingResolver(
   tokenService: ProviderTokenService,
 ) {
@@ -41,6 +51,15 @@ function createAtlassianTokenCapturingResolver(
       .optional(),
     create(options = {}) {
       const namespace = options.userEntityNamespace ?? 'default';
+
+      // Validate namespace at resolver-creation time so misconfiguration is
+      // caught at startup rather than silently constructing malformed entity refs.
+      if (!NAMESPACE_RE.test(namespace)) {
+        throw new Error(
+          `Invalid userEntityNamespace "${namespace}": must be a lowercase RFC 1123 DNS label`,
+        );
+      }
+
       return async (
         info: SignInInfo<OAuthAuthenticatorResult<PassportProfile>>,
         ctx,
@@ -50,16 +69,20 @@ function createAtlassianTokenCapturingResolver(
           throw new Error('Atlassian user profile does not contain a username');
         }
 
-        // Token is persisted FIRST — sign-in aborts if this fails.
-        // userEntityRef is constructed eagerly; Atlassian usernames map directly to catalog names.
-        const userEntityRef = `user:${namespace}/${username}`;
-        await tokenService.upsertToken(
-          userEntityRef,
-          'atlassian',
-          info.result.session,
-        );
+        // Validate the username before constructing an entity ref.
+        // Prevents path-traversal and entity-ref injection via crafted usernames.
+        if (!USERNAME_RE.test(username)) {
+          throw new Error(
+            `Atlassian username "${username}" contains characters not allowed in catalog entity refs`,
+          );
+        }
 
-        return ctx.signInWithCatalogUser(
+        // Step 1: Complete sign-in first so we only persist a token for users
+        // that actually exist in the catalog. If the catalog lookup fails (user
+        // not found, sign-in disabled) the token is never written, preventing
+        // orphaned rows for rejected sign-ins.
+        const userEntityRef = `user:${namespace}/${username}`;
+        const signInResult = await ctx.signInWithCatalogUser(
           { entityRef: { namespace, name: username } },
           {
             dangerousEntityRefFallback:
@@ -68,6 +91,15 @@ function createAtlassianTokenCapturingResolver(
                 : undefined,
           },
         );
+
+        // Step 2: Persist the token now that sign-in succeeded.
+        await tokenService.upsertToken(
+          userEntityRef,
+          'atlassian',
+          info.result.session,
+        );
+
+        return signInResult;
       };
     },
   });
