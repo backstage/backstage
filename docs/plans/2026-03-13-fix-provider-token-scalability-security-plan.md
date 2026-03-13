@@ -1,7 +1,7 @@
 ---
 title: 'fix: Provider Token Plugin — Scalability, Security, and Correctness Hardening'
 type: fix
-status: active
+status: completed
 date: 2026-03-13
 ---
 
