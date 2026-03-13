@@ -383,6 +383,226 @@ describe('DefaultProviderTokenService', () => {
     });
   });
 
+  describe('G5: dual-key rotation (fallback decrypt + lazy re-encrypt)', () => {
+    it('getToken returns a token encrypted with the previous key when fallbackKey is provided', async () => {
+      const { knex } = await createService();
+
+      const oldSecret = Buffer.from(
+        'old-secret-32-bytes-minimum-xxxxxxx',
+      ).toString('base64');
+      const oldKey = deriveKey(oldSecret);
+      const newSecret = Buffer.from(
+        'new-secret-32-bytes-minimum-xxxxxxx',
+      ).toString('base64');
+      const newKey = deriveKey(newSecret);
+
+      // Service with fallback key to read old-encrypted rows
+      const service = new DefaultProviderTokenService(
+        knex,
+        newKey,
+        new Map(),
+        300,
+        mockServices.logger.mock(),
+        undefined,
+        oldKey, // fallbackKey = old derived key
+      );
+
+      // Manually insert a row encrypted with the OLD key
+      const { encrypt: enc } = await import('./crypto');
+      await knex('provider_tokens').insert({
+        user_entity_ref: 'user:default/alice',
+        provider_id: 'atlassian',
+        access_token: enc('old-encrypted-at', oldKey),
+        refresh_token: null,
+        scope: null,
+        expires_at: new Date(Date.now() + 3600 * 1000),
+        updated_at: knex.fn.now(),
+      });
+
+      const token = await service.getToken('user:default/alice', 'atlassian');
+      expect(token).toBeDefined();
+      expect(token!.accessToken).toBe('old-encrypted-at');
+    });
+
+    it('lazily re-encrypts row with current key after reading with fallback key', async () => {
+      const { knex } = await createService();
+
+      const oldSecret = Buffer.from(
+        'old-secret-32-bytes-minimum-xxxxxxx',
+      ).toString('base64');
+      const oldKey = deriveKey(oldSecret);
+      const newSecret = Buffer.from(
+        'new-secret-32-bytes-minimum-xxxxxxx',
+      ).toString('base64');
+      const newKey = deriveKey(newSecret);
+
+      const service = new DefaultProviderTokenService(
+        knex,
+        newKey,
+        new Map(),
+        300,
+        mockServices.logger.mock(),
+        undefined,
+        oldKey,
+      );
+
+      const { encrypt: enc, decrypt: dec } = await import('./crypto');
+      await knex('provider_tokens').insert({
+        user_entity_ref: 'user:default/alice',
+        provider_id: 'atlassian',
+        access_token: enc('lazy-at', oldKey),
+        refresh_token: null,
+        scope: enc('read:me', oldKey),
+        expires_at: new Date(Date.now() + 3600 * 1000),
+        updated_at: knex.fn.now(),
+      });
+
+      // First read — triggers lazy re-encryption
+      const token = await service.getToken('user:default/alice', 'atlassian');
+      expect(token!.accessToken).toBe('lazy-at');
+
+      // Verify the row is now encrypted with the new key
+      const row = await knex('provider_tokens')
+        .where({
+          user_entity_ref: 'user:default/alice',
+          provider_id: 'atlassian',
+        })
+        .first();
+      expect(dec(row.access_token, newKey)).toBe('lazy-at');
+      expect(dec(row.scope, newKey)).toBe('read:me');
+    });
+
+    it('throws when neither current nor fallback key can decrypt', async () => {
+      const { knex } = await createService();
+
+      const encKey = deriveKey(SECRET);
+      const wrongKey = deriveKey(
+        Buffer.from('completely-wrong-secret-32-bytes-x').toString('base64'),
+      );
+      const wrongFallback = deriveKey(
+        Buffer.from('also-wrong-secret-32-bytes-xxxxx').toString('base64'),
+      );
+
+      const service = new DefaultProviderTokenService(
+        knex,
+        wrongKey,
+        new Map(),
+        300,
+        mockServices.logger.mock(),
+        undefined,
+        wrongFallback,
+      );
+
+      // Insert a row encrypted with the correct key — neither wrongKey nor wrongFallback can read it
+      const { encrypt: enc } = await import('./crypto');
+      await knex('provider_tokens').insert({
+        user_entity_ref: 'user:default/alice',
+        provider_id: 'github',
+        access_token: enc('secret', encKey),
+        refresh_token: null,
+        scope: null,
+        expires_at: new Date(Date.now() + 3600 * 1000),
+        updated_at: knex.fn.now(),
+      });
+
+      await expect(
+        service.getToken('user:default/alice', 'github'),
+      ).rejects.toThrow();
+    });
+  });
+
+  describe('G6: in-process LRU token cache', () => {
+    it('populates the cache after the first getToken DB read', async () => {
+      const { service } = await createService();
+
+      await service.upsertToken('user:default/alice', 'github', {
+        accessToken: 'cached-at',
+        expiresInSeconds: 3600,
+      });
+
+      // Before first read, cache should be empty for this key
+      const cache = (service as any).tokenCache;
+      expect(cache.has('user:default/alice|github')).toBe(false);
+
+      const first = await service.getToken('user:default/alice', 'github');
+      expect(first!.accessToken).toBe('cached-at');
+
+      // After first read, cache should be populated
+      expect(cache.has('user:default/alice|github')).toBe(true);
+
+      // Second read returns the same value from cache
+      const second = await service.getToken('user:default/alice', 'github');
+      expect(second!.accessToken).toBe('cached-at');
+    });
+
+    it('evicts cache entry on upsertToken and next read goes to DB', async () => {
+      const { service } = await createService();
+
+      await service.upsertToken('user:default/alice', 'github', {
+        accessToken: 'original-at',
+        expiresInSeconds: 3600,
+      });
+
+      // Populate cache
+      const first = await service.getToken('user:default/alice', 'github');
+      expect(first!.accessToken).toBe('original-at');
+
+      // Upsert new token — should evict cache
+      await service.upsertToken('user:default/alice', 'github', {
+        accessToken: 'updated-at',
+        expiresInSeconds: 3600,
+      });
+
+      // Next read should return the updated token (not the cached one)
+      const second = await service.getToken('user:default/alice', 'github');
+      expect(second!.accessToken).toBe('updated-at');
+    });
+
+    it('evicts cache entry on deleteToken and next read returns undefined', async () => {
+      const { service } = await createService();
+
+      await service.upsertToken('user:default/alice', 'github', {
+        accessToken: 'at-to-delete',
+        expiresInSeconds: 3600,
+      });
+
+      // Populate cache
+      await service.getToken('user:default/alice', 'github');
+
+      await service.deleteToken('user:default/alice', 'github');
+
+      // Cache should be evicted — returns undefined
+      const result = await service.getToken('user:default/alice', 'github');
+      expect(result).toBeUndefined();
+    });
+
+    it('evicts all cache entries for a user on deleteTokens', async () => {
+      const { service } = await createService();
+
+      await service.upsertToken('user:default/alice', 'github', {
+        accessToken: 'gh-at',
+        expiresInSeconds: 3600,
+      });
+      await service.upsertToken('user:default/alice', 'atlassian', {
+        accessToken: 'at-at',
+        expiresInSeconds: 3600,
+      });
+
+      // Populate cache for both providers
+      await service.getToken('user:default/alice', 'github');
+      await service.getToken('user:default/alice', 'atlassian');
+
+      await service.deleteTokens('user:default/alice');
+
+      expect(
+        await service.getToken('user:default/alice', 'github'),
+      ).toBeUndefined();
+      expect(
+        await service.getToken('user:default/alice', 'atlassian'),
+      ).toBeUndefined();
+    });
+  });
+
   describe('G2: cross-replica optimistic claim (claimAndRefresh path)', () => {
     it('proceeds to refresh when no Postgres claim is needed (SQLite path)', async () => {
       // On SQLite (isPostgres = false) the optimistic claim is skipped entirely.

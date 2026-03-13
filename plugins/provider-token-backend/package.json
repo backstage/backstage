@@ -3,7 +3,13 @@
   "version": "0.1.0",
   "description": "Secure OAuth provider token storage for DevHub MCP actions.",
   "backstage": {
-    "role": "backend-plugin"
+    "role": "backend-plugin",
+    "pluginId": "provider-token"
+  },
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.cjs.js",
+    "types": "dist/index.d.ts"
   },
   "private": true,
   "license": "Apache-2.0",
@@ -17,7 +23,9 @@
   },
   "dependencies": {
     "@backstage/backend-plugin-api": "workspace:^",
-    "knex": "^3.0.0"
+    "@devhub/plugin-provider-token-node": "workspace:^",
+    "knex": "^3.0.0",
+    "lru-cache": "^11.0.0"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",

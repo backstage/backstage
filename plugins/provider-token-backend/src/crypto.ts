@@ -117,3 +117,32 @@ export function decrypt(stored: string, key: Buffer): string {
     decipher.final('utf8')
   );
 }
+
+/**
+ * Decrypts a ciphertext using the primary key; if that fails and a fallback key is
+ * provided, attempts decryption with the fallback key (G5 dual-key rotation).
+ *
+ * Returns `{ plaintext, usedFallback: true }` when the fallback key was needed so
+ * the caller can lazily re-encrypt with the current key.
+ *
+ * Throws if neither key can decrypt — the error is from the primary key attempt so
+ * callers never log the fallback key value. If no fallback is provided, behaves
+ * identically to `decrypt()`.
+ */
+export function decryptWithFallback(
+  stored: string,
+  key: Buffer,
+  fallbackKey?: Buffer,
+): { plaintext: string; usedFallback: boolean } {
+  try {
+    return { plaintext: decrypt(stored, key), usedFallback: false };
+  } catch (primaryErr) {
+    if (!fallbackKey) throw primaryErr;
+    try {
+      return { plaintext: decrypt(stored, fallbackKey), usedFallback: true };
+    } catch {
+      // Re-throw the primary error — it carries the most relevant context.
+      throw primaryErr;
+    }
+  }
+}

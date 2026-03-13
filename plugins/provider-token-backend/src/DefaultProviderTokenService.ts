@@ -16,7 +16,8 @@
 
 import type { LoggerService } from '@backstage/backend-plugin-api';
 import type { Knex } from 'knex';
-import { encrypt, decrypt } from './crypto';
+import { LRUCache } from 'lru-cache';
+import { encrypt, decrypt, decryptWithFallback } from './crypto';
 import type {
   ProviderToken,
   ProviderTokenService,
@@ -54,6 +55,13 @@ function isPostgres(db: Knex): boolean {
   return lc === 'pg' || lc.startsWith('postgres');
 }
 
+/** Maximum number of user+provider entries to hold in the in-process LRU cache (G6). */
+const CACHE_MAX_ENTRIES = 1000;
+/** Hard upper bound on cache TTL regardless of token expiry (ms). */
+const CACHE_MAX_TTL_MS = 5 * 60 * 1000; // 5 minutes
+/** Buffer subtracted from token expiry when computing cache TTL (ms). */
+const CACHE_EXPIRY_BUFFER_MS = 60 * 1000; // 1 minute
+
 export class DefaultProviderTokenService implements ProviderTokenService {
   /**
    * Prevents concurrent refresh calls for the same user+provider from
@@ -65,6 +73,14 @@ export class DefaultProviderTokenService implements ProviderTokenService {
     Promise<ProviderToken | undefined>
   >;
 
+  /**
+   * Short-lived in-process LRU cache for valid tokens (G6).
+   * Reduces DB round-trips on hot paths (MCP tool calls).
+   * Cache key: `${userEntityRef}|${providerId}`.
+   * Entries are evicted immediately on upsertToken() and deleteToken()/deleteTokens().
+   */
+  private readonly tokenCache: LRUCache<string, ProviderToken>;
+
   constructor(
     private readonly db: Knex,
     private readonly encKey: Buffer,
@@ -72,8 +88,14 @@ export class DefaultProviderTokenService implements ProviderTokenService {
     private readonly refreshBufferSeconds: number,
     private readonly logger: LoggerService,
     refreshLocks?: Map<string, Promise<ProviderToken | undefined>>,
+    /** G5: optional previous-secret derived key for lazy key rotation. */
+    private readonly fallbackKey?: Buffer,
   ) {
     this.refreshLocks = refreshLocks ?? new Map();
+    this.tokenCache = new LRUCache<string, ProviderToken>({
+      max: CACHE_MAX_ENTRIES,
+      ttl: CACHE_MAX_TTL_MS,
+    });
   }
 
   async upsertToken(
@@ -106,6 +128,10 @@ export class DefaultProviderTokenService implements ProviderTokenService {
         'updated_at',
       ]);
 
+    // Evict the cache entry immediately so the next getToken() call reads fresh data
+    // (G6 cache invalidation — must happen after the write succeeds).
+    this.tokenCache.delete(`${userEntityRef}|${providerId}`);
+
     // Audit log — no token values, no scope values
     this.logger.info('Provider token stored', {
       userEntityRef,
@@ -119,6 +145,17 @@ export class DefaultProviderTokenService implements ProviderTokenService {
     userEntityRef: string,
     providerId: string,
   ): Promise<ProviderToken | undefined> {
+    // G6: check in-process cache before hitting the DB.
+    const cacheKey = `${userEntityRef}|${providerId}`;
+    const cached = this.tokenCache.get(cacheKey);
+    if (cached) {
+      this.logger.debug('Provider token served from cache', {
+        userEntityRef,
+        providerId,
+      });
+      return cached;
+    }
+
     const row = await this.db('provider_tokens')
       .where({ user_entity_ref: userEntityRef, provider_id: providerId })
       .first();
@@ -144,18 +181,29 @@ export class DefaultProviderTokenService implements ProviderTokenService {
     if (isNearExpiry && hasRefreshToken) {
       // Deduplicate concurrent refresh calls — prevents double-consumption of single-use tokens.
       // refreshLocks is shared across all service instances in this process (G1 fix).
-      const lockKey = `${userEntityRef}|${providerId}`;
-      let refreshPromise = this.refreshLocks.get(lockKey);
+      let refreshPromise = this.refreshLocks.get(cacheKey);
       if (!refreshPromise) {
-        const refreshToken = decrypt(row.refresh_token, this.encKey);
+        // G5: decrypt the refresh token using the current key; fall back to the previous key
+        // if the row was encrypted before the last secret rotation.
+        const { plaintext: refreshToken, usedFallback } = decryptWithFallback(
+          row.refresh_token,
+          this.encKey,
+          this.fallbackKey,
+        );
+        if (usedFallback) {
+          this.logger.info(
+            'Refresh token decrypted with previous key — will re-encrypt on write',
+            { userEntityRef, providerId },
+          );
+        }
         refreshPromise = this.claimAndRefresh(
           userEntityRef,
           providerId,
           refreshToken,
           row.scope,
           row.updated_at ?? null,
-        ).finally(() => this.refreshLocks.delete(lockKey));
-        this.refreshLocks.set(lockKey, refreshPromise);
+        ).finally(() => this.refreshLocks.delete(cacheKey));
+        this.refreshLocks.set(cacheKey, refreshPromise);
       }
       return refreshPromise;
     }
@@ -169,6 +217,54 @@ export class DefaultProviderTokenService implements ProviderTokenService {
       return undefined;
     }
 
+    // G5: decrypt access token and scope with fallback support.
+    const { plaintext: accessToken, usedFallback: accessFallback } =
+      decryptWithFallback(row.access_token, this.encKey, this.fallbackKey);
+    const scope = row.scope
+      ? decryptWithFallback(row.scope, this.encKey, this.fallbackKey).plaintext
+      : undefined;
+
+    if (accessFallback) {
+      // Row was encrypted with the previous key. Lazily re-encrypt with the current key
+      // so the row migrates transparently without a bulk migration job.
+      this.logger.info(
+        'Access token decrypted with previous key — lazily re-encrypting with current key',
+        { userEntityRef, providerId },
+      );
+      await this.db('provider_tokens')
+        .where({ user_entity_ref: userEntityRef, provider_id: providerId })
+        .update({
+          access_token: encrypt(accessToken, this.encKey),
+          scope: scope ? encrypt(scope, this.encKey) : null,
+          updated_at: this.db.fn.now(),
+        });
+    }
+
+    const token: ProviderToken = {
+      userEntityRef,
+      providerId,
+      accessToken,
+      scope,
+      expiresAt,
+    };
+
+    // G6: cache the token for subsequent calls.
+    // TTL = min(CACHE_MAX_TTL_MS, expiresAt - now - CACHE_EXPIRY_BUFFER_MS).
+    // Only cache tokens that won't expire within the buffer window.
+    const cacheTtl = expiresAt
+      ? Math.min(
+          CACHE_MAX_TTL_MS,
+          Math.max(
+            0,
+            expiresAt.getTime() - Date.now() - CACHE_EXPIRY_BUFFER_MS,
+          ),
+        )
+      : CACHE_MAX_TTL_MS;
+
+    if (cacheTtl > 0) {
+      this.tokenCache.set(cacheKey, token, { ttl: cacheTtl });
+    }
+
     // Downgraded to debug: fires on every action invocation (hot path).
     // Production log aggregation pipelines typically exclude debug-level logs,
     // keeping userEntityRef (PII) out of long-retention log sinks.
@@ -179,19 +275,22 @@ export class DefaultProviderTokenService implements ProviderTokenService {
       expiresAt: expiresAt?.toISOString() ?? 'none',
     });
 
-    return {
-      userEntityRef,
-      providerId,
-      accessToken: decrypt(row.access_token, this.encKey),
-      scope: row.scope ? decrypt(row.scope, this.encKey) : undefined,
-      expiresAt,
-    };
+    return token;
   }
 
   async deleteTokens(userEntityRef: string): Promise<void> {
     const count = await this.db('provider_tokens')
       .where({ user_entity_ref: userEntityRef })
       .delete();
+
+    // Evict all cached entries for this user (G6 invalidation).
+    // We don't know which providers were cached, so scan the cache keys.
+    for (const key of this.tokenCache.keys()) {
+      if (key.startsWith(`${userEntityRef}|`)) {
+        this.tokenCache.delete(key);
+      }
+    }
+
     this.logger.info('Provider tokens deleted for user', {
       userEntityRef,
       count,
@@ -202,6 +301,10 @@ export class DefaultProviderTokenService implements ProviderTokenService {
     await this.db('provider_tokens')
       .where({ user_entity_ref: userEntityRef, provider_id: providerId })
       .delete();
+
+    // Evict the cache entry immediately (G6 invalidation).
+    this.tokenCache.delete(`${userEntityRef}|${providerId}`);
+
     this.logger.info('Provider token deleted', { userEntityRef, providerId });
   }
 
@@ -249,9 +352,14 @@ export class DefaultProviderTokenService implements ProviderTokenService {
         return {
           userEntityRef,
           providerId,
-          accessToken: decrypt(freshRow.access_token, this.encKey),
+          accessToken: decryptWithFallback(
+            freshRow.access_token,
+            this.encKey,
+            this.fallbackKey,
+          ).plaintext,
           scope: freshRow.scope
-            ? decrypt(freshRow.scope, this.encKey)
+            ? decryptWithFallback(freshRow.scope, this.encKey, this.fallbackKey)
+                .plaintext
             : undefined,
           expiresAt: freshRow.expires_at
             ? new Date(freshRow.expires_at)
@@ -320,7 +428,8 @@ export class DefaultProviderTokenService implements ProviderTokenService {
 
     const newRefreshToken = result.refreshToken ?? refreshToken;
     const currentScope = encryptedScope
-      ? decrypt(encryptedScope, this.encKey)
+      ? decryptWithFallback(encryptedScope, this.encKey, this.fallbackKey)
+          .plaintext
       : undefined;
     const effectiveScope = result.scope ?? currentScope;
 

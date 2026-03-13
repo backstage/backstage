@@ -105,6 +105,17 @@ export function createProviderTokenServiceFactory(
       const hkdfSalt =
         config.getOptionalString('providerToken.hkdfSalt') ?? undefined;
       const encKey = deriveKey(secret, hkdfSalt);
+
+      // G5: optional previous secret for lazy key rotation.
+      // When providerToken.previousSecret is set, tokens encrypted with the old key
+      // are transparently re-encrypted with the current key on next read.
+      const previousSecret = config.getOptionalString(
+        'providerToken.previousSecret',
+      );
+      const fallbackKey = previousSecret
+        ? deriveKey(previousSecret, hkdfSalt)
+        : undefined;
+
       const refreshBufferSeconds =
         config.getOptionalNumber('providerToken.refreshBufferSeconds') ?? 300;
 
@@ -115,6 +126,7 @@ export function createProviderTokenServiceFactory(
         refreshBufferSeconds,
         logger,
         sharedRefreshLocks,
+        fallbackKey,
       );
     },
   });
