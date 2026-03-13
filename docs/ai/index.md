@@ -36,7 +36,7 @@ backend:
       - 'my-custom-plugin'
 ```
 
-For details on filtering actions, see the [Filtering actions documentation](../backend-system/core-services/actions.md#filtering-actions).
+For details on filtering actions, see the [filtering actions documentation](../backend-system/core-services/actions.md#filtering-actions).
 
 ## Single MCP Server Name & Description
 
