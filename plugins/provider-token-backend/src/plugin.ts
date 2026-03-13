@@ -26,7 +26,10 @@ import {
   type ProviderTokenRefresher,
   type ProviderTokenService,
 } from '@devhub/plugin-provider-token-node';
-import { DefaultProviderTokenService } from './DefaultProviderTokenService';
+import {
+  DefaultProviderTokenService,
+  sharedRefreshLocks,
+} from './DefaultProviderTokenService';
 import { deriveKey } from './crypto';
 
 /**
@@ -109,6 +112,7 @@ export function createProviderTokenServiceFactory(
         refreshers,
         refreshBufferSeconds,
         logger,
+        sharedRefreshLocks,
       );
     },
   });

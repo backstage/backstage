@@ -17,6 +17,7 @@
 import { TestDatabases, mockServices } from '@backstage/backend-test-utils';
 import { deriveKey } from './crypto';
 import { DefaultProviderTokenService } from './DefaultProviderTokenService';
+import type { ProviderToken } from '@devhub/plugin-provider-token-node';
 
 jest.setTimeout(60_000);
 
@@ -243,6 +244,176 @@ describe('DefaultProviderTokenService', () => {
 
       const result = await service.getToken('user:default/alice', 'atlassian');
       expect(result).toBeUndefined();
+    });
+  });
+
+  describe('G1: cross-instance refresh deduplication via shared locks', () => {
+    it('calls refresher exactly once when two service instances share the same lock map', async () => {
+      // Reproduces the multi-consumer-plugin scenario: atlassian-actions-backend and
+      // github-actions-backend each get their own DefaultProviderTokenService instance
+      // (scope: 'plugin'), but they share the same process-level refreshLocks map so
+      // concurrent near-expiry getToken calls from both instances deduplicate correctly.
+      const { knex } = await createService();
+      const encKey = deriveKey(SECRET);
+
+      const sharedLocks = new Map<string, Promise<ProviderToken | undefined>>();
+
+      const mockRefresher = {
+        providerId: 'atlassian',
+        refresh: jest.fn().mockResolvedValue({
+          accessToken: 'cross-instance-refreshed',
+          refreshToken: 'new-rt',
+          expiresInSeconds: 3600,
+        }),
+      };
+      const refreshers = new Map<string, any>([['atlassian', mockRefresher]]);
+
+      // Two separate instances — same DB, same shared locks (mimics two consumer plugins)
+      const service1 = new DefaultProviderTokenService(
+        knex,
+        encKey,
+        refreshers,
+        300,
+        mockServices.logger.mock(),
+        sharedLocks,
+      );
+      const service2 = new DefaultProviderTokenService(
+        knex,
+        encKey,
+        refreshers,
+        300,
+        mockServices.logger.mock(),
+        sharedLocks,
+      );
+
+      await service1.upsertToken('user:default/alice', 'atlassian', {
+        accessToken: 'expiring-at',
+        refreshToken: 'rt-shared',
+        expiresInSeconds: 1,
+      });
+      await knex('provider_tokens')
+        .where({
+          user_entity_ref: 'user:default/alice',
+          provider_id: 'atlassian',
+        })
+        .update({ expires_at: new Date(Date.now() - 1000) });
+
+      // Fire concurrent calls from both instances simultaneously
+      const results = await Promise.all([
+        service1.getToken('user:default/alice', 'atlassian'),
+        service2.getToken('user:default/alice', 'atlassian'),
+        service1.getToken('user:default/alice', 'atlassian'),
+      ]);
+
+      for (const r of results) {
+        expect(r).toBeDefined();
+        expect(r!.accessToken).toBe('cross-instance-refreshed');
+      }
+
+      // Without shared locks each instance would call refresh independently — verify dedup
+      expect(mockRefresher.refresh).toHaveBeenCalledTimes(1);
+    });
+
+    it('does NOT deduplicate across instances with isolated lock maps (regression guard)', async () => {
+      // Verifies that the old (broken) behaviour — each instance with its own Map —
+      // does allow two refreshes when two instances race. This documents the bug being fixed
+      // and ensures the test above is actually proving something.
+      const { knex } = await createService();
+      const encKey = deriveKey(SECRET);
+
+      let refreshCallCount = 0;
+      const mockRefresher = {
+        providerId: 'atlassian',
+        // Slow enough that both instances can start a refresh before either finishes
+        refresh: jest.fn().mockImplementation(
+          () =>
+            new Promise(resolve => {
+              refreshCallCount++;
+              setTimeout(
+                () =>
+                  resolve({
+                    accessToken: 'isolated-refreshed',
+                    refreshToken: 'new-rt',
+                    expiresInSeconds: 3600,
+                  }),
+                10,
+              );
+            }),
+        ),
+      };
+      const refreshers = new Map<string, any>([['atlassian', mockRefresher]]);
+
+      // Each instance has its own isolated lock map — the pre-G1 bug
+      const isolatedService1 = new DefaultProviderTokenService(
+        knex,
+        encKey,
+        refreshers,
+        300,
+        mockServices.logger.mock(),
+        new Map(), // isolated
+      );
+      const isolatedService2 = new DefaultProviderTokenService(
+        knex,
+        encKey,
+        refreshers,
+        300,
+        mockServices.logger.mock(),
+        new Map(), // isolated
+      );
+
+      await isolatedService1.upsertToken('user:default/bob', 'atlassian', {
+        accessToken: 'expiring-at',
+        refreshToken: 'rt-isolated',
+        expiresInSeconds: 1,
+      });
+      await knex('provider_tokens')
+        .where({
+          user_entity_ref: 'user:default/bob',
+          provider_id: 'atlassian',
+        })
+        .update({ expires_at: new Date(Date.now() - 1000) });
+
+      await Promise.all([
+        isolatedService1.getToken('user:default/bob', 'atlassian'),
+        isolatedService2.getToken('user:default/bob', 'atlassian'),
+      ]);
+
+      // With isolated locks, each instance starts its own refresh
+      expect(refreshCallCount).toBeGreaterThan(1);
+    });
+  });
+
+  describe('G2: cross-replica optimistic claim (claimAndRefresh path)', () => {
+    it('proceeds to refresh when no Postgres claim is needed (SQLite path)', async () => {
+      // On SQLite (isPostgres = false) the optimistic claim is skipped entirely.
+      // This test ensures the SQLite/dev code path reaches refreshAndPersist correctly.
+      const { service, knex } = await createService();
+
+      const mockRefresher = {
+        providerId: 'github',
+        refresh: jest.fn().mockResolvedValue({
+          accessToken: 'sqlite-refreshed',
+          refreshToken: 'new-rt',
+          expiresInSeconds: 3600,
+        }),
+      };
+      (service as any).refreshers = new Map([['github', mockRefresher]]);
+
+      await service.upsertToken('user:default/alice', 'github', {
+        accessToken: 'expiring-at',
+        refreshToken: 'rt-sqlite',
+        expiresInSeconds: 1,
+      });
+      await knex('provider_tokens')
+        .where({
+          user_entity_ref: 'user:default/alice',
+          provider_id: 'github',
+        })
+        .update({ expires_at: new Date(Date.now() - 1000) });
+
+      const result = await service.getToken('user:default/alice', 'github');
+      expect(result?.accessToken).toBe('sqlite-refreshed');
+      expect(mockRefresher.refresh).toHaveBeenCalledTimes(1);
     });
   });
 });

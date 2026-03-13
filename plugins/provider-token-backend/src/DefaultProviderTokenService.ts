@@ -26,12 +26,44 @@ import type {
 } from '@devhub/plugin-provider-token-node';
 import { OAuthPermanentError } from '@devhub/plugin-provider-token-node';
 
+/**
+ * Shared in-process lock map for refresh deduplication.
+ *
+ * Exported so createProviderTokenServiceFactory can pass the same instance to every
+ * DefaultProviderTokenService (one is created per consumer plugin due to 'plugin' scope).
+ * This ensures all plugin-scoped instances within a single process deduplicate concurrent
+ * refreshes instead of each racing independently to consume a single-use refresh token.
+ *
+ * Tests that construct DefaultProviderTokenService directly do NOT pass this map, so
+ * each test gets an isolated `new Map()` — preventing cross-test state leakage.
+ */
+export const sharedRefreshLocks = new Map<
+  string,
+  Promise<ProviderToken | undefined>
+>();
+
+/**
+ * Returns true when the Knex instance is connected to PostgreSQL.
+ * Used to gate the optimistic updated_at claim (G2 cross-replica guard).
+ * SQLite (development/test) is single-process so in-process locks are sufficient.
+ */
+function isPostgres(db: Knex): boolean {
+  const clientName = (db as any).client?.config?.client as unknown;
+  if (typeof clientName !== 'string') return false;
+  const lc = clientName.toLowerCase();
+  return lc === 'pg' || lc.startsWith('postgres');
+}
+
 export class DefaultProviderTokenService implements ProviderTokenService {
-  /** Prevents concurrent refresh for the same user+provider from double-consuming a refresh token. */
-  private readonly refreshLocks = new Map<
+  /**
+   * Prevents concurrent refresh calls for the same user+provider from
+   * double-consuming a single-use refresh token within one process.
+   * Set from the shared module-level map in production; isolated new Map() in tests.
+   */
+  private readonly refreshLocks: Map<
     string,
     Promise<ProviderToken | undefined>
-  >();
+  >;
 
   constructor(
     private readonly db: Knex,
@@ -39,7 +71,10 @@ export class DefaultProviderTokenService implements ProviderTokenService {
     private readonly refreshers: Map<string, ProviderTokenRefresher>,
     private readonly refreshBufferSeconds: number,
     private readonly logger: LoggerService,
-  ) {}
+    refreshLocks?: Map<string, Promise<ProviderToken | undefined>>,
+  ) {
+    this.refreshLocks = refreshLocks ?? new Map();
+  }
 
   async upsertToken(
     userEntityRef: string,
@@ -107,16 +142,18 @@ export class DefaultProviderTokenService implements ProviderTokenService {
     const hasRefreshToken = !!row.refresh_token;
 
     if (isNearExpiry && hasRefreshToken) {
-      // Deduplicate concurrent refresh calls — prevents double-consumption of single-use tokens
+      // Deduplicate concurrent refresh calls — prevents double-consumption of single-use tokens.
+      // refreshLocks is shared across all service instances in this process (G1 fix).
       const lockKey = `${userEntityRef}|${providerId}`;
       let refreshPromise = this.refreshLocks.get(lockKey);
       if (!refreshPromise) {
         const refreshToken = decrypt(row.refresh_token, this.encKey);
-        refreshPromise = this.refreshAndPersist(
+        refreshPromise = this.claimAndRefresh(
           userEntityRef,
           providerId,
           refreshToken,
           row.scope,
+          row.updated_at ?? null,
         ).finally(() => this.refreshLocks.delete(lockKey));
         this.refreshLocks.set(lockKey, refreshPromise);
       }
@@ -166,6 +203,69 @@ export class DefaultProviderTokenService implements ProviderTokenService {
       .where({ user_entity_ref: userEntityRef, provider_id: providerId })
       .delete();
     this.logger.info('Provider token deleted', { userEntityRef, providerId });
+  }
+
+  /**
+   * Attempts to atomically claim the refresh slot via an optimistic updated_at lock
+   * (PostgreSQL only), then delegates to refreshAndPersist.
+   *
+   * **Cross-replica guard (G2):** In a multi-replica deployment, two pods may read the
+   * same near-expiry row simultaneously. The first `UPDATE … WHERE updated_at = $last`
+   * to succeed "claims" the slot by bumping updated_at before making the HTTP refresh
+   * call. The losing replica sees 0 rows updated and re-reads the DB — either finding
+   * the already-refreshed token (if the winner finished first) or the row still near
+   * expiry (the loser's next request will attempt a claim again, which is safe).
+   *
+   * SQLite (development/test) is single-process so in-process `refreshLocks` are
+   * sufficient; the optimistic claim is skipped to avoid SQLite timestamp precision issues.
+   */
+  private async claimAndRefresh(
+    userEntityRef: string,
+    providerId: string,
+    refreshToken: string,
+    encryptedScope: string | null,
+    lastUpdatedAt: Date | string | null,
+  ): Promise<ProviderToken | undefined> {
+    if (isPostgres(this.db) && lastUpdatedAt !== null) {
+      const claimed = await this.db('provider_tokens')
+        .where({
+          user_entity_ref: userEntityRef,
+          provider_id: providerId,
+          updated_at: lastUpdatedAt,
+        })
+        .update({ updated_at: this.db.fn.now() });
+
+      if (claimed === 0) {
+        // Another replica already claimed the refresh slot.
+        // Re-read to return whatever is currently in the DB.
+        this.logger.debug(
+          'Refresh claim lost to concurrent replica — re-reading token from DB',
+          { userEntityRef, providerId },
+        );
+        const freshRow = await this.db('provider_tokens')
+          .where({ user_entity_ref: userEntityRef, provider_id: providerId })
+          .first();
+        if (!freshRow) return undefined;
+        return {
+          userEntityRef,
+          providerId,
+          accessToken: decrypt(freshRow.access_token, this.encKey),
+          scope: freshRow.scope
+            ? decrypt(freshRow.scope, this.encKey)
+            : undefined,
+          expiresAt: freshRow.expires_at
+            ? new Date(freshRow.expires_at)
+            : undefined,
+        };
+      }
+    }
+
+    return this.refreshAndPersist(
+      userEntityRef,
+      providerId,
+      refreshToken,
+      encryptedScope,
+    );
   }
 
   private async refreshAndPersist(
