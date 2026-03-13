@@ -15,10 +15,10 @@
  */
 
 import { cli } from 'cleye';
-import type { CommandContext } from '../../../wiring/types';
+import type { CliCommandContext } from '../../../wiring/types';
 import { getAllInstances } from '../lib/storage';
 
-export default async ({ args, info }: CommandContext) => {
+export default async ({ args, info }: CliCommandContext) => {
   cli({ help: info }, undefined, args);
 
   const { instances, selected } = await getAllInstances();

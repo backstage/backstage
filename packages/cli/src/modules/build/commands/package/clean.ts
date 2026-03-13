@@ -17,9 +17,9 @@
 import { cli } from 'cleye';
 import fs from 'fs-extra';
 import { targetPaths } from '@backstage/cli-common';
-import type { CommandContext } from '../../../../wiring/types';
+import type { CliCommandContext } from '../../../../wiring/types';
 
-export default async ({ args, info }: CommandContext) => {
+export default async ({ args, info }: CliCommandContext) => {
   cli({ help: info, booleanFlagNegation: true }, undefined, args);
   await fs.remove(targetPaths.resolve('dist'));
   await fs.remove(targetPaths.resolve('dist-types'));

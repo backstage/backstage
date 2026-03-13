@@ -21,7 +21,7 @@ import { readJson, writeJson } from 'fs-extra';
 import { minimatch } from 'minimatch';
 import { runYarnInstall } from '../../lib/utils';
 import replace from 'replace-in-file';
-import type { CommandContext } from '../../../../wiring/types';
+import type { CliCommandContext } from '../../../../wiring/types';
 
 declare module 'replace-in-file' {
   export default function (config: {
@@ -39,7 +39,7 @@ declare module 'replace-in-file' {
   >;
 }
 
-export default async ({ args, info }: CommandContext) => {
+export default async ({ args, info }: CliCommandContext) => {
   const {
     flags: { pattern, skipCodeChanges },
   } = cli(

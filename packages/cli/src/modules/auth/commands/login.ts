@@ -15,7 +15,7 @@
  */
 
 import { cli } from 'cleye';
-import type { CommandContext } from '../../../wiring/types';
+import type { CliCommandContext } from '../../../wiring/types';
 import { startCallbackServer } from '../lib/localServer';
 import { spawn } from 'node:child_process';
 import { challengeFromVerifier, generateVerifier } from '../lib/pkce';
@@ -37,7 +37,7 @@ import inquirer from 'inquirer';
 
 const TOKEN_EXCHANGE_TIMEOUT_MS = 30_000;
 
-export default async ({ args, info }: CommandContext) => {
+export default async ({ args, info }: CliCommandContext) => {
   const {
     flags: { backendUrl, noBrowser, instance: instanceFlag },
   } = cli(

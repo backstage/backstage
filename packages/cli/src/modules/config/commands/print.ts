@@ -19,9 +19,9 @@ import { stringify as stringifyYaml } from 'yaml';
 import { AppConfig, ConfigReader } from '@backstage/config';
 import { loadCliConfig } from '../lib/config';
 import { ConfigSchema, ConfigVisibility } from '@backstage/config-loader';
-import type { CommandContext } from '../../../wiring/types';
+import type { CliCommandContext } from '../../../wiring/types';
 
-export default async ({ args, info }: CommandContext) => {
+export default async ({ args, info }: CliCommandContext) => {
   const {
     flags: { config, lax, frontend, withSecrets, format, package: pkg },
   } = cli(

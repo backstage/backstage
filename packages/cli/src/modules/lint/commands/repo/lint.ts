@@ -29,7 +29,7 @@ import {
 import { targetPaths } from '@backstage/cli-common';
 
 import { createScriptOptionsParser } from '../../lib/optionsParser';
-import type { CommandContext } from '../../../../wiring/types';
+import type { CliCommandContext } from '../../../../wiring/types';
 
 function depCount(pkg: BackstagePackageJson) {
   const deps = pkg.dependencies ? Object.keys(pkg.dependencies).length : 0;
@@ -39,7 +39,7 @@ function depCount(pkg: BackstagePackageJson) {
   return deps + devDeps;
 }
 
-export default async ({ args, info }: CommandContext) => {
+export default async ({ args, info }: CliCommandContext) => {
   for (const flag of [
     'outputFile',
     'successCache',

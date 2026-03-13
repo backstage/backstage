@@ -19,9 +19,9 @@ import { startPackage } from './startPackage';
 import { resolveLinkedWorkspace } from './resolveLinkedWorkspace';
 import { findRoleFromCommand } from '../../../lib/role';
 import { targetPaths } from '@backstage/cli-common';
-import type { CommandContext } from '../../../../../wiring/types';
+import type { CliCommandContext } from '../../../../../wiring/types';
 
-export default async ({ args, info }: CommandContext) => {
+export default async ({ args, info }: CliCommandContext) => {
   const {
     flags: {
       config,

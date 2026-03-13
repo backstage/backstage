@@ -18,7 +18,7 @@ import {
   OpaqueCommandTreeNode,
   OpaqueCommandLeafNode,
 } from '@internal/cli';
-import { BackstageCommand } from './types';
+import { CliCommand } from './types';
 
 /**
  * A sparse graph of commands.
@@ -30,7 +30,7 @@ export class CommandGraph {
    * Adds a command to the graph. The graph is sparse, so we use the path to determine the nodes
    *    to traverse. Only leaf nodes should have a command/action.
    */
-  add(command: BackstageCommand) {
+  add(command: CliCommand) {
     const path = command.path;
     let current = this.graph;
     for (let i = 0; i < path.length - 1; i++) {
@@ -79,7 +79,7 @@ export class CommandGraph {
   /**
    * Given a path, try to find a command that matches it.
    */
-  find(path: string[]): BackstageCommand | undefined {
+  find(path: string[]): CliCommand | undefined {
     let current = this.graph;
     for (let i = 0; i < path.length - 1; i++) {
       const name = path[i];

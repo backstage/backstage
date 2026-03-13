@@ -15,7 +15,7 @@
  */
 
 import { OpaqueCliPlugin } from '@internal/cli';
-import { BackstageCommand, CliPlugin } from './types';
+import { CliCommand, CliPlugin } from './types';
 
 /**
  * Creates a new CLI plugin that provides commands to the Backstage CLI.
@@ -52,10 +52,10 @@ export function createCliPlugin(options: {
    */
   init: (registry: {
     /** Registers a new command with the CLI. */
-    addCommand: (command: BackstageCommand) => void;
+    addCommand: (command: CliCommand) => void;
   }) => Promise<void>;
 }): CliPlugin {
-  const commands: BackstageCommand[] = [];
+  const commands: CliCommand[] = [];
   const commandsPromise = options
     .init({ addCommand: command => commands.push(command) })
     .then(() => commands);

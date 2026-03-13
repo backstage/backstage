@@ -28,7 +28,7 @@ import {
   createMessagePathParser,
   formatMessagePath,
 } from '../lib/messageFilePath';
-import type { CommandContext } from '../../../wiring/types';
+import type { CliCommandContext } from '../../../wiring/types';
 
 interface ManifestRefEntry {
   package: string;
@@ -41,7 +41,7 @@ interface Manifest {
   refs: Record<string, ManifestRefEntry>;
 }
 
-export default async ({ args, info }: CommandContext) => {
+export default async ({ args, info }: CliCommandContext) => {
   const {
     flags: { input, output },
   } = cli(

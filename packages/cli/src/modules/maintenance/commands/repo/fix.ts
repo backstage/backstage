@@ -505,7 +505,7 @@ type PackageFixer = (pkg: FixablePackage, packages: FixablePackage[]) => void;
 export default async ({
   args,
   info,
-}: import('../../../../wiring/types').CommandContext) => {
+}: import('../../../../wiring/types').CliCommandContext) => {
   const {
     flags: { publish, check },
   } = cli(

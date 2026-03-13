@@ -7,21 +7,6 @@ import { JsonValue } from '@backstage/types';
 import { Package } from '@manypkg/get-packages';
 
 // @public
-export interface BackstageCommand {
-  deprecated?: boolean;
-  description: string;
-  execute:
-    | ((context: CommandContext) => Promise<void>)
-    | {
-        loader: () => Promise<{
-          default: (context: CommandContext) => Promise<void>;
-        }>;
-      };
-  experimental?: boolean;
-  path: string[];
-}
-
-// @public
 export type BackstagePackage = {
   dir: string;
   packageJson: BackstagePackageJson;
@@ -102,18 +87,33 @@ export interface BackstagePackageJson {
 }
 
 // @public
-export interface CliPlugin {
-  // (undocumented)
-  readonly $$type: '@backstage/CliPlugin';
+export interface CliCommand {
+  deprecated?: boolean;
+  description: string;
+  execute:
+    | ((context: CliCommandContext) => Promise<void>)
+    | {
+        loader: () => Promise<{
+          default: (context: CliCommandContext) => Promise<void>;
+        }>;
+      };
+  experimental?: boolean;
+  path: string[];
 }
 
 // @public
-export interface CommandContext {
+export interface CliCommandContext {
   args: string[];
   info: {
     usage: string;
     name: string;
   };
+}
+
+// @public
+export interface CliPlugin {
+  // (undocumented)
+  readonly $$type: '@backstage/CliPlugin';
 }
 
 // @public
@@ -129,7 +129,7 @@ export function createCliPlugin(options: {
     name: string;
   };
   init: (registry: {
-    addCommand: (command: BackstageCommand) => void;
+    addCommand: (command: CliCommand) => void;
   }) => Promise<void>;
 }): CliPlugin;
 

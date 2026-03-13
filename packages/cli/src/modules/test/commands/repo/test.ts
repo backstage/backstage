@@ -31,7 +31,7 @@ import {
   findOwnPaths,
   isChildPath,
 } from '@backstage/cli-common';
-import type { CommandContext } from '../../../../wiring/types';
+import type { CliCommandContext } from '../../../../wiring/types';
 
 type JestProject = {
   displayName: string;
@@ -131,7 +131,7 @@ export function createFlagFinder(args: string[]) {
   };
 }
 
-export default async ({ args, info }: CommandContext) => {
+export default async ({ args, info }: CliCommandContext) => {
   const testGlobal = global as TestGlobal;
 
   for (const flag of ['successCache', 'successCacheDir', 'jestHelp']) {

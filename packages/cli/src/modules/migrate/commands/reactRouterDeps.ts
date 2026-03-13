@@ -18,12 +18,12 @@ import { cli } from 'cleye';
 import fs from 'fs-extra';
 import { resolve as resolvePath } from 'node:path';
 import { PackageGraph, PackageRoles } from '@backstage/cli-node';
-import type { CommandContext } from '../../../wiring/types';
+import type { CliCommandContext } from '../../../wiring/types';
 
 const REACT_ROUTER_DEPS = ['react-router', 'react-router-dom'];
 const REACT_ROUTER_RANGE = '6.0.0-beta.0 || ^6.3.0';
 
-export default async ({ args, info }: CommandContext) => {
+export default async ({ args, info }: CliCommandContext) => {
   cli({ help: info, booleanFlagNegation: true }, undefined, args);
   const packages = await PackageGraph.listTargetPackages();
 

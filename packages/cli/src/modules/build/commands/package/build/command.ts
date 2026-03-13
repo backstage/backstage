@@ -29,9 +29,9 @@ import { buildFrontend } from '../../../lib/buildFrontend';
 import { buildBackend } from '../../../lib/buildBackend';
 import { isValidUrl } from '../../../lib/urls';
 import chalk from 'chalk';
-import type { CommandContext } from '../../../../../wiring/types';
+import type { CliCommandContext } from '../../../../../wiring/types';
 
-export default async ({ args, info }: CommandContext) => {
+export default async ({ args, info }: CliCommandContext) => {
   const {
     flags: {
       role,

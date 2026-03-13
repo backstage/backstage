@@ -25,7 +25,7 @@ import {
 } from '@backstage/cli-node';
 import { minimatch } from 'minimatch';
 import fs from 'fs-extra';
-import type { CommandContext } from '../../../wiring/types';
+import type { CliCommandContext } from '../../../wiring/types';
 
 /**
  * Attempts to read package.json from node_modules for a given package name.
@@ -52,7 +52,7 @@ function hasBackstageField(packageName: string, targetPath: string): boolean {
   return pkg?.backstage !== undefined;
 }
 
-export default async ({ args, info }: CommandContext) => {
+export default async ({ args, info }: CliCommandContext) => {
   const {
     flags: { include, format },
   } = cli(

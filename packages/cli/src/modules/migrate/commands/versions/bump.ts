@@ -48,7 +48,7 @@ import {
 import { migrateMovedPackages } from './migrate';
 import { runYarnInstall } from '../../lib/utils';
 import { run } from '@backstage/cli-common';
-import type { CommandContext } from '../../../../wiring/types';
+import type { CliCommandContext } from '../../../../wiring/types';
 
 const DEP_TYPES = [
   'dependencies',
@@ -74,7 +74,7 @@ function extendsDefaultPattern(pattern: string): boolean {
   return minimatch('@backstage/', pattern.slice(0, -1));
 }
 
-export default async ({ args, info }: CommandContext) => {
+export default async ({ args, info }: CliCommandContext) => {
   const {
     flags: { pattern: patternFlag, release, skipInstall, skipMigrate },
   } = cli(

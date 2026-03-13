@@ -16,9 +16,9 @@
 
 import { cli } from 'cleye';
 import { createNewPackage } from '../lib/createNewPackage';
-import type { CommandContext } from '../../../wiring/types';
+import type { CliCommandContext } from '../../../wiring/types';
 
-export default async ({ args, info }: CommandContext) => {
+export default async ({ args, info }: CliCommandContext) => {
   for (const flag of ['skipInstall', 'npmRegistry', 'baseVersion']) {
     if (args.some(a => a === `--${flag}` || a.startsWith(`--${flag}=`))) {
       process.stderr.write(

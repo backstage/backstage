@@ -29,9 +29,9 @@ import {
 import { buildFrontend } from '../../lib/buildFrontend';
 import { buildBackend } from '../../lib/buildBackend';
 import { createScriptOptionsParser } from '../../lib/optionsParser';
-import type { CommandContext } from '../../../../wiring/types';
+import type { CliCommandContext } from '../../../../wiring/types';
 
-export default async ({ args, info }: CommandContext) => {
+export default async ({ args, info }: CliCommandContext) => {
   const {
     flags: { all, since, minify },
   } = cli(

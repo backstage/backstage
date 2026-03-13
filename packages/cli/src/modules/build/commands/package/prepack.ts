@@ -20,9 +20,9 @@ import { targetPaths } from '@backstage/cli-common';
 import { productionPack } from '../../lib/packager/productionPack';
 import { publishPreflightCheck } from '../../lib/publishing';
 import { createTypeDistProject } from '../../lib/typeDistProject';
-import type { CommandContext } from '../../../../wiring/types';
+import type { CliCommandContext } from '../../../../wiring/types';
 
-export default async ({ args, info }: CommandContext) => {
+export default async ({ args, info }: CliCommandContext) => {
   cli({ help: info, booleanFlagNegation: true }, undefined, args);
 
   publishPreflightCheck({

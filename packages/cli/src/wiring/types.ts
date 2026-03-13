@@ -15,7 +15,7 @@
  */
 
 export type {
-  CommandContext,
-  BackstageCommand,
+  CliCommandContext,
+  CliCommand,
   CliPlugin,
 } from '@backstage/cli-node';

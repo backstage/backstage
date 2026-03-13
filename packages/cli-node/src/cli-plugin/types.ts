@@ -21,7 +21,7 @@
  *
  * @public
  */
-export interface CommandContext {
+export interface CliCommandContext {
   /**
    * The remaining arguments passed to the command after the command path
    * has been resolved. This includes both positional arguments and flags.
@@ -61,7 +61,7 @@ export interface CommandContext {
  *
  * @public
  */
-export interface BackstageCommand {
+export interface CliCommand {
   /**
    * The path segments that define the command's position in the CLI tree.
    * For example, `['repo', 'test']` maps to `backstage-cli repo test`.
@@ -99,10 +99,10 @@ export interface BackstageCommand {
    * ```
    */
   execute:
-    | ((context: CommandContext) => Promise<void>)
+    | ((context: CliCommandContext) => Promise<void>)
     | {
         loader: () => Promise<{
-          default: (context: CommandContext) => Promise<void>;
+          default: (context: CliCommandContext) => Promise<void>;
         }>;
       };
 }

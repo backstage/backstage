@@ -23,12 +23,12 @@ import { cli } from 'cleye';
 
 import { GithubCreateAppServer } from './GithubCreateAppServer';
 import openBrowser from 'react-dev-utils/openBrowser';
-import type { CommandContext } from '../../../../wiring/types';
+import type { CliCommandContext } from '../../../../wiring/types';
 
 // This is an experimental command that at this point does not support GitHub Enterprise
 // due to lacking support for creating apps from manifests.
 // https://docs.github.com/en/free-pro-team@latest/developers/apps/creating-a-github-app-from-a-manifest
-export default async ({ args, info }: CommandContext) => {
+export default async ({ args, info }: CliCommandContext) => {
   const { _: positionals } = cli(
     {
       help: { ...info, usage: `${info.usage} <github-org>` },

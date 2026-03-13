@@ -17,9 +17,9 @@
 import { cli } from 'cleye';
 import { targetPaths } from '@backstage/cli-common';
 import { revertProductionPack } from '../../lib/packager/productionPack';
-import type { CommandContext } from '../../../../wiring/types';
+import type { CliCommandContext } from '../../../../wiring/types';
 
-export default async ({ args, info }: CommandContext) => {
+export default async ({ args, info }: CliCommandContext) => {
   cli({ help: info, booleanFlagNegation: true }, undefined, args);
   await revertProductionPack(targetPaths.dir);
 };

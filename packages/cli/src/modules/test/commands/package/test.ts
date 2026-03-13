@@ -15,7 +15,7 @@
  */
 
 import { runCheck, findOwnPaths } from '@backstage/cli-common';
-import type { CommandContext } from '../../../../wiring/types';
+import type { CliCommandContext } from '../../../../wiring/types';
 
 function includesAnyOf(hayStack: string[], ...needles: string[]) {
   for (const needle of needles) {
@@ -26,7 +26,7 @@ function includesAnyOf(hayStack: string[], ...needles: string[]) {
   return false;
 }
 
-export default async ({ args }: CommandContext) => {
+export default async ({ args }: CliCommandContext) => {
   // Only include our config if caller isn't passing their own config
   if (!includesAnyOf(args, '-c', '--config')) {
     /* eslint-disable-next-line no-restricted-syntax */

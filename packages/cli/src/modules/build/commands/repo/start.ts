@@ -26,7 +26,7 @@ import { cli } from 'cleye';
 import { resolveLinkedWorkspace } from '../package/start/resolveLinkedWorkspace';
 import { startPackage } from '../package/start/startPackage';
 import { parseArgs } from 'node:util';
-import type { CommandContext } from '../../../../wiring/types';
+import type { CliCommandContext } from '../../../../wiring/types';
 
 const ACCEPTED_PACKAGE_ROLES: Array<PackageRole | undefined> = [
   'frontend',
@@ -35,7 +35,7 @@ const ACCEPTED_PACKAGE_ROLES: Array<PackageRole | undefined> = [
   'backend-plugin',
 ];
 
-export default async ({ args, info }: CommandContext) => {
+export default async ({ args, info }: CliCommandContext) => {
   const {
     flags: { plugin, config, require: requirePath, link, inspect, inspectBrk },
     _: namesOrPaths,

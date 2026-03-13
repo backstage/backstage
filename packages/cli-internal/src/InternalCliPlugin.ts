@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { BackstageCommand, CliPlugin } from '@backstage/cli-node';
+import { CliCommand, CliPlugin } from '@backstage/cli-node';
 import { OpaqueType } from '@internal/opaque';
 
 export const OpaqueCliPlugin = OpaqueType.create<{
@@ -22,7 +22,7 @@ export const OpaqueCliPlugin = OpaqueType.create<{
   versions: {
     readonly version: 'v1';
     readonly packageName: string;
-    readonly commands: Promise<ReadonlyArray<BackstageCommand>>;
+    readonly commands: Promise<ReadonlyArray<CliCommand>>;
   };
 }>({
   type: '@backstage/CliPlugin',

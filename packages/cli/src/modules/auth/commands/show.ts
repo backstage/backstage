@@ -15,13 +15,13 @@
  */
 
 import { cli } from 'cleye';
-import type { CommandContext } from '../../../wiring/types';
+import type { CliCommandContext } from '../../../wiring/types';
 import { httpJson } from '../lib/http';
 import { getSelectedInstance } from '../lib/storage';
 import { accessTokenNeedsRefresh, refreshAccessToken } from '../lib/auth';
 import { getSecretStore } from '../lib/secretStore';
 
-export default async ({ args, info }: CommandContext) => {
+export default async ({ args, info }: CliCommandContext) => {
   const {
     flags: { instance: instanceFlag },
   } = cli(

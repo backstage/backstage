@@ -17,9 +17,9 @@
 import fs from 'fs-extra';
 import { cli } from 'cleye';
 import { createDistWorkspace } from '../lib/packager';
-import type { CommandContext } from '../../../wiring/types';
+import type { CliCommandContext } from '../../../wiring/types';
 
-export default async ({ args, info }: CommandContext) => {
+export default async ({ args, info }: CliCommandContext) => {
   // Normalize legacy --alwaysYarnPack alias (a genuinely different name, not
   // just a casing variant — type-flag handles camelCase/kebab-case natively)
   const normalizedArgs = args.map(a => {

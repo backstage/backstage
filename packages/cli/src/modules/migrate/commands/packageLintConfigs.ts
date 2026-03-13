@@ -19,11 +19,11 @@ import fs from 'fs-extra';
 import { resolve as resolvePath } from 'node:path';
 import { PackageGraph } from '@backstage/cli-node';
 import { runOutput } from '@backstage/cli-common';
-import type { CommandContext } from '../../../wiring/types';
+import type { CliCommandContext } from '../../../wiring/types';
 
 const PREFIX = `module.exports = require('@backstage/cli/config/eslint-factory')`;
 
-export default async ({ args, info }: CommandContext) => {
+export default async ({ args, info }: CliCommandContext) => {
   cli({ help: info, booleanFlagNegation: true }, undefined, args);
   const packages = await PackageGraph.listTargetPackages();
 

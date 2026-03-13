@@ -15,7 +15,7 @@
  */
 
 import { cli } from 'cleye';
-import type { CommandContext } from '../../../wiring/types';
+import type { CliCommandContext } from '../../../wiring/types';
 import { getSecretStore } from '../lib/secretStore';
 import {
   removeInstance,
@@ -25,7 +25,7 @@ import {
 import { httpJson } from '../lib/http';
 import { pickInstance } from '../lib/prompt';
 
-export default async ({ args, info }: CommandContext) => {
+export default async ({ args, info }: CliCommandContext) => {
   const {
     flags: { instance: instanceFlag },
   } = cli(

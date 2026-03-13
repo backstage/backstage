@@ -16,7 +16,7 @@
 
 import { createNewPackage } from '../lib/createNewPackage';
 import { default as newCommand } from './new';
-import type { CommandContext } from '../../../wiring/types';
+import type { CliCommandContext } from '../../../wiring/types';
 
 jest.mock('../lib/createNewPackage');
 
@@ -39,7 +39,7 @@ describe.each([
     if (scope) {
       args.push('--scope', scope);
     }
-    const context: CommandContext = {
+    const context: CliCommandContext = {
       args,
       info: { usage: 'backstage-cli new', name: 'new' },
     };

@@ -21,11 +21,11 @@ import { JSONSchema7 as JSONSchema } from 'json-schema';
 import openBrowser from 'react-dev-utils/openBrowser';
 import chalk from 'chalk';
 import { loadCliConfig } from '../lib/config';
-import type { CommandContext } from '../../../wiring/types';
+import type { CliCommandContext } from '../../../wiring/types';
 
 const DOCS_URL = 'https://config.backstage.io';
 
-export default async ({ args, info }: CommandContext) => {
+export default async ({ args, info }: CliCommandContext) => {
   const {
     flags: { package: pkg },
   } = cli(

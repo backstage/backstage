@@ -18,9 +18,9 @@ import fs from 'fs-extra';
 import { cli } from 'cleye';
 import { targetPaths } from '@backstage/cli-common';
 import { ESLint } from 'eslint';
-import type { CommandContext } from '../../../../wiring/types';
+import type { CliCommandContext } from '../../../../wiring/types';
 
-export default async ({ args, info }: CommandContext) => {
+export default async ({ args, info }: CliCommandContext) => {
   const {
     flags: { fix, format, outputFile, maxWarnings },
     _: directories,

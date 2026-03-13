@@ -18,13 +18,13 @@ import { cli } from 'cleye';
 import fs from 'fs-extra';
 import { resolve as resolvePath } from 'node:path';
 import { PackageGraph, PackageRoles, PackageRole } from '@backstage/cli-node';
-import type { CommandContext } from '../../../wiring/types';
+import type { CliCommandContext } from '../../../wiring/types';
 
 const configArgPattern = /--config[=\s][^\s$]+/;
 
 const noStartRoles: PackageRole[] = ['cli', 'cli-plugin', 'common-library'];
 
-export default async ({ args, info }: CommandContext) => {
+export default async ({ args, info }: CliCommandContext) => {
   cli({ help: info, booleanFlagNegation: true }, undefined, args);
   const packages = await PackageGraph.listTargetPackages();
 

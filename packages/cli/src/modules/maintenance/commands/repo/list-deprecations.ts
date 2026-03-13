@@ -20,9 +20,9 @@ import { cli } from 'cleye';
 import { relative as relativePath } from 'node:path';
 import { PackageGraph } from '@backstage/cli-node';
 import { targetPaths } from '@backstage/cli-common';
-import type { CommandContext } from '../../../../wiring/types';
+import type { CliCommandContext } from '../../../../wiring/types';
 
-export default async ({ args, info }: CommandContext) => {
+export default async ({ args, info }: CliCommandContext) => {
   const {
     flags: { json },
   } = cli(

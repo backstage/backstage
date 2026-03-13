@@ -20,9 +20,9 @@ import { stringify as stringifyYaml } from 'yaml';
 import { loadCliConfig } from '../lib/config';
 import { JsonObject } from '@backstage/types';
 import { mergeConfigSchemas } from '@backstage/config-loader';
-import type { CommandContext } from '../../../wiring/types';
+import type { CliCommandContext } from '../../../wiring/types';
 
-export default async ({ args, info }: CommandContext) => {
+export default async ({ args, info }: CliCommandContext) => {
   const {
     flags: { merge, format, package: pkg },
   } = cli(
