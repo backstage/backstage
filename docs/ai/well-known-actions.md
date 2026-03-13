@@ -8,7 +8,7 @@ This section lists a number of well known [Actions](../backend-system/core-servi
 
 ## Actions
 
-This is a (non-exhaustive) list of actions that are known to be part of the actions registry. Entires are in the format: "`action-name` (Action Title): Shortened Action Description"
+This is a (non-exhaustive) list of actions that are known to be part of the actions registry. Entries are in the format: "`action-name` (Action Title): Shortened Action Description"
 
 ### Auth
 
