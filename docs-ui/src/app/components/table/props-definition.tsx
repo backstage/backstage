@@ -430,6 +430,17 @@ export const tableRootPropDefs: Record<string, PropDef> = {
       </>
     ),
   },
+  loading: {
+    type: 'boolean',
+    default: 'false',
+    description: (
+      <>
+        Whether the table is in a loading state (e.g., initial data fetch). Adds{' '}
+        <Chip>aria-busy</Chip> attribute and <Chip>data-loading</Chip> data
+        attribute for styling.
+      </>
+    ),
+  },
 };
 
 export const columnPropDefs: Record<string, PropDef> = {
