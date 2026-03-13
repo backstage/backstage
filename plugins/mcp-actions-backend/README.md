@@ -73,7 +73,7 @@ export const myPlugin = createBackendPlugin({
 
 ### Namespaced Tool Names
 
-By default, MCP tool names include the plugin ID prefix to avoid collisions across plugins. For example, an action registered as `greet-user` by `my-custom-plugin` is exposed as `my-custom-plugin:greet-user`.
+By default, MCP tool names include the plugin ID prefix to avoid collisions across plugins. For example, an action registered as `greet-user` by `my-custom-plugin` is exposed as `my-custom-plugin.greet-user`.
 
 You can disable this if you need the short names for backward compatibility:
 

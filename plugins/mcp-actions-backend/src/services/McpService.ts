@@ -76,13 +76,14 @@ export class McpService {
     credentials: BackstageCredentials;
     serverConfig?: McpServerConfig;
   }) {
-    const serverName = serverConfig?.name ?? 'backstage';
-
     const server = new McpServer(
       {
-        name: serverName,
+        name: serverConfig?.name ?? 'backstage',
         // TODO: this version will most likely change in the future.
         version,
+        ...(serverConfig?.description && {
+          description: serverConfig.description,
+        }),
       },
       { capabilities: { tools: {} } },
     );
@@ -222,7 +223,7 @@ export class McpService {
 
   private getToolName(action: ActionsServiceAction): string {
     if (this.namespacedToolNames) {
-      return action.id;
+      return `${action.pluginId}.${action.name}`;
     }
     return action.name;
   }
