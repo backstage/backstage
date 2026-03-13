@@ -15,7 +15,7 @@
  */
 
 import type { DeferredEntity } from '@backstage/plugin-catalog-node';
-import { Gauge, metrics } from '@opentelemetry/api';
+import { MetricsServiceGauge } from '@backstage/backend-plugin-api/alpha';
 import { IterationEngine, IterationEngineOptions } from '../types';
 import { IncrementalIngestionDatabaseManager } from '../database/IncrementalIngestionDatabaseManager';
 import { performance } from 'node:perf_hooks';
@@ -29,14 +29,12 @@ export class IncrementalIngestionEngine implements IterationEngine {
   private readonly restLength: Duration;
   private readonly burstLength: Duration;
   private readonly backoff: HumanDuration[];
-  private readonly lastStarted: Gauge;
-  private readonly lastCompleted: Gauge;
+  private readonly lastStarted: MetricsServiceGauge;
+  private readonly lastCompleted: MetricsServiceGauge;
 
   private manager: IncrementalIngestionDatabaseManager;
 
   constructor(private options: IterationEngineOptions) {
-    const meter = metrics.getMeter('default');
-
     this.manager = options.manager;
     this.restLength = Duration.fromObject(options.restLength);
     this.burstLength = Duration.fromObject(options.burstLength);
@@ -47,7 +45,7 @@ export class IncrementalIngestionEngine implements IterationEngine {
       { hours: 3 },
     ];
 
-    this.lastStarted = meter.createGauge(
+    this.lastStarted = options.metrics.createGauge(
       'catalog_incremental.ingestions.started',
       {
         description:
@@ -55,7 +53,7 @@ export class IncrementalIngestionEngine implements IterationEngine {
         unit: 'seconds',
       },
     );
-    this.lastCompleted = meter.createGauge(
+    this.lastCompleted = options.metrics.createGauge(
       'catalog_incremental.ingestions.completed',
       {
         description:

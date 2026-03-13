@@ -17,6 +17,7 @@
 import { IncrementalIngestionEngine } from './IncrementalIngestionEngine';
 import { IterationEngineOptions } from '../types';
 import { performance } from 'node:perf_hooks';
+import { metricsServiceMock } from '@backstage/backend-test-utils/alpha';
 
 jest.mock('node:perf_hooks', () => ({
   performance: {
@@ -76,6 +77,7 @@ describe('IncrementalIngestionEngine - Burst Length', () => {
       restLength: { minutes: 1 },
       logger: mockLogger,
       ready: Promise.resolve(),
+      metrics: metricsServiceMock.mock(),
     };
 
     const engine = new IncrementalIngestionEngine(options);
@@ -132,6 +134,7 @@ describe('IncrementalIngestionEngine - Burst Length', () => {
       restLength: { minutes: 1 },
       logger: mockLogger,
       ready: Promise.resolve(),
+      metrics: metricsServiceMock.mock(),
     };
 
     const engine = new IncrementalIngestionEngine(options);
@@ -177,6 +180,7 @@ describe('IncrementalIngestionEngine - Burst Length', () => {
       restLength: { minutes: 1 },
       logger: mockLogger,
       ready: Promise.resolve(),
+      metrics: metricsServiceMock.mock(),
     };
 
     const engine = new IncrementalIngestionEngine(options);

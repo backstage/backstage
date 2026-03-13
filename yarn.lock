@@ -4699,7 +4699,6 @@ __metadata:
     "@backstage/plugin-events-node": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/types": "workspace:^"
-    "@opentelemetry/api": "npm:^1.9.0"
     "@types/express": "npm:^4.17.6"
     express: "npm:^4.22.0"
     express-promise-router: "npm:^4.1.0"
