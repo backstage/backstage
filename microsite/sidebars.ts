@@ -117,7 +117,7 @@ export default {
           {
             label: 'AI',
             description:
-              'Features in Backstage you can leverage with your AI tools',
+              'Features in Backstage you can leverage with your AI tools.',
           },
           ['ai/index', 'ai/well-known-actions'],
         ),

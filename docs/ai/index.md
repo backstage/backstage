@@ -4,7 +4,7 @@ title: MCP Actions Backend
 description: The MCP Actions Backend exposes actions registered with the Actions Registry as MCP tools.
 ---
 
-The MCP Actions Backend exposes [Actions](../backend-system/core-services/actions.md) registered with the [Actions Registry](../../backend-system/core-services/actions-registry.md) as MCP tools.
+The MCP Actions Backend exposes [Actions](../backend-system/core-services/actions.md) registered with the [Actions Registry](../backend-system/core-services/actions-registry.md) as MCP tools.
 
 ## Installation
 
@@ -38,11 +38,11 @@ backend:
 
 For details on filtering actions, see the [Filtering actions documentation](../backend-system/core-services/actions.md#filtering-actions).
 
-## Single MCP Sever Name & Description
+## Single MCP Server Name & Description
 
-You can configure the name and description of the MCP Actions server with the following config for a single server, see Multiple MCP Server:
+You can configure the name and description of the MCP Actions server with the following config for a single server:
 
-```yaml title="app-config.yaml
+```yaml title="app-config.yaml"
 mcpActions:
   name: 'My MCP Server' # defaults to "backstage"
   description: 'Tools for interacting with My MCP Server' # optional
@@ -54,7 +54,7 @@ By default, MCP tool names include the plugin ID prefix to avoid collisions acro
 
 You can disable this if you need the short names for backward compatibility:
 
-```yaml title="app-config.yaml
+```yaml title="app-config.yaml"
 mcpActions:
   namespacedToolNames: false
 ```
@@ -63,7 +63,7 @@ mcpActions:
 
 By default, the plugin serves a single MCP server at `/api/mcp-actions/v1` that exposes all available actions. You can split actions into multiple focused servers by configuring `mcpActions.servers`, where each key becomes a separate MCP server endpoint.
 
-```yaml title="app-config.yaml
+```yaml title="app-config.yaml"
 mcpActions:
   servers:
     catalog:
@@ -93,7 +93,7 @@ When `mcpActions.servers` is not configured, the plugin behaves exactly as befor
 
 Include and exclude filter rules support glob patterns on action IDs and attribute matching. Exclude rules take precedence over include rules. When include rules are specified, actions must match at least one include rule to be exposed.
 
-```yaml title="app-config.yaml
+```yaml title="app-config.yaml"
 mcpActions:
   servers:
     catalog:
@@ -118,7 +118,7 @@ This is meant to be a temporary workaround until device authentication is comple
 
 Configure external access with static tokens in your app configuration:
 
-```yaml title="app-config.yaml
+```yaml title="app-config.yaml"
 backend:
   auth:
     externalAccess:

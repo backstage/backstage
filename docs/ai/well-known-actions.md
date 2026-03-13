@@ -4,7 +4,7 @@ title: Well-known Actions
 description: This section lists a number of well known actions that are a part of the action registry.
 ---
 
-This section lists a number of well known [Actions](../backend-system/core-services/actions.md) registered with the [Actions Registry](../../backend-system/core-services/actions-registry.md).
+This section lists a number of well known [Actions](../backend-system/core-services/actions.md) registered with the [Actions Registry](../backend-system/core-services/actions-registry.md).
 
 ## Actions
 
