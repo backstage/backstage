@@ -16,8 +16,7 @@
 
 import { cli } from 'cleye';
 import type { CommandContext } from '../../../wiring/types';
-import { getSelectedInstance } from '../../auth/lib/storage';
-import { getPluginSources } from '../lib/config';
+import { getSelectedInstance, getInstanceConfig } from '../../auth/lib/storage';
 
 export default async ({ args, info }: CommandContext) => {
   const {
@@ -37,7 +36,8 @@ export default async ({ args, info }: CommandContext) => {
   );
 
   const instance = await getSelectedInstance(instanceFlag);
-  const sources = await getPluginSources(instance.name);
+  const sources =
+    (await getInstanceConfig<string[]>(instance.name, 'pluginSources')) ?? [];
 
   if (sources.length === 0) {
     process.stdout.write('No plugin sources configured.\n');

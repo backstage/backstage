@@ -16,8 +16,11 @@
 
 import { cli } from 'cleye';
 import type { CommandContext } from '../../../wiring/types';
-import { getSelectedInstance } from '../../auth/lib/storage';
-import { addPluginSource } from '../lib/config';
+import {
+  getSelectedInstance,
+  getInstanceConfig,
+  updateInstanceConfig,
+} from '../../auth/lib/storage';
 
 export default async ({ args, info }: CommandContext) => {
   const argv = cli(
@@ -38,7 +41,14 @@ export default async ({ args, info }: CommandContext) => {
   const pluginId = argv._.pluginId;
   const instance = await getSelectedInstance(argv.flags.instance);
 
-  await addPluginSource(instance.name, pluginId);
+  const sources =
+    (await getInstanceConfig<string[]>(instance.name, 'pluginSources')) ?? [];
+  if (!sources.includes(pluginId)) {
+    await updateInstanceConfig(instance.name, 'pluginSources', [
+      ...sources,
+      pluginId,
+    ]);
+  }
   process.stdout.write(
     `Added plugin source "${pluginId}" for instance "${instance.name}"\n`,
   );

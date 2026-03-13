@@ -26,6 +26,8 @@ import {
   removeInstance,
   setSelectedInstance,
   withMetadataLock,
+  getInstanceConfig,
+  updateInstanceConfig,
   StoredInstance,
 } from './storage';
 
@@ -415,6 +417,93 @@ describe('storage', () => {
 
       const result2 = await getAllInstances();
       expect(result2.instances).toHaveLength(0);
+    });
+  });
+
+  describe('getInstanceConfig', () => {
+    it('should return undefined when no config is set', async () => {
+      await upsertInstance(mockInstance1);
+
+      const result = await getInstanceConfig(
+        mockInstance1.name,
+        'pluginSources',
+      );
+      expect(result).toBeUndefined();
+    });
+
+    it('should return the config value for a key', async () => {
+      await upsertInstance({
+        ...mockInstance1,
+        config: { pluginSources: ['scaffolder', 'catalog'] },
+      });
+
+      const result = await getInstanceConfig<string[]>(
+        mockInstance1.name,
+        'pluginSources',
+      );
+      expect(result).toEqual(['scaffolder', 'catalog']);
+    });
+
+    it('should throw NotFoundError for unknown instance', async () => {
+      await expect(
+        getInstanceConfig('nonexistent', 'pluginSources'),
+      ).rejects.toThrow(NotFoundError);
+    });
+  });
+
+  describe('updateInstanceConfig', () => {
+    it('should set a config value on an existing instance', async () => {
+      await upsertInstance(mockInstance1);
+
+      await updateInstanceConfig(mockInstance1.name, 'pluginSources', [
+        'scaffolder',
+      ]);
+
+      const result = await getInstanceConfig<string[]>(
+        mockInstance1.name,
+        'pluginSources',
+      );
+      expect(result).toEqual(['scaffolder']);
+    });
+
+    it('should preserve existing config keys when updating', async () => {
+      await upsertInstance({
+        ...mockInstance1,
+        config: { existingKey: 'value' },
+      });
+
+      await updateInstanceConfig(mockInstance1.name, 'pluginSources', [
+        'catalog',
+      ]);
+
+      const existing = await getInstanceConfig(
+        mockInstance1.name,
+        'existingKey',
+      );
+      const sources = await getInstanceConfig<string[]>(
+        mockInstance1.name,
+        'pluginSources',
+      );
+      expect(existing).toBe('value');
+      expect(sources).toEqual(['catalog']);
+    });
+
+    it('should throw NotFoundError for unknown instance', async () => {
+      await expect(
+        updateInstanceConfig('nonexistent', 'pluginSources', ['scaffolder']),
+      ).rejects.toThrow(NotFoundError);
+    });
+
+    it('should clean up config when instance is removed', async () => {
+      await upsertInstance({
+        ...mockInstance1,
+        config: { pluginSources: ['scaffolder'] },
+      });
+
+      await removeInstance(mockInstance1.name);
+
+      const result = await getAllInstances();
+      expect(result.instances).toHaveLength(0);
     });
   });
 });

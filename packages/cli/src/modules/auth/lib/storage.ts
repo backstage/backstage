@@ -36,6 +36,7 @@ const storedInstanceSchema = z.object({
   issuedAt: z.number().int().nonnegative(),
   accessTokenExpiresAt: z.number().int().nonnegative(),
   selected: z.boolean().optional(),
+  config: z.record(z.string(), z.unknown()).optional(),
 });
 
 export type StoredInstance = z.infer<typeof storedInstanceSchema>;
@@ -156,6 +157,33 @@ export async function setSelectedInstance(name: string): Promise<void> {
     if (!found) {
       throw new Error(`Unknown instance '${name}'`);
     }
+    await writeAll(data);
+  });
+}
+
+export async function getInstanceConfig<T = unknown>(
+  instanceName: string,
+  key: string,
+): Promise<T | undefined> {
+  const instance = await getInstanceByName(instanceName);
+  return instance.config?.[key] as T | undefined;
+}
+
+export async function updateInstanceConfig(
+  instanceName: string,
+  key: string,
+  value: unknown,
+): Promise<void> {
+  return withMetadataLock(async () => {
+    const data = await readAll();
+    const idx = data.instances.findIndex(i => i.name === instanceName);
+    if (idx === -1) {
+      throw new NotFoundError(`Instance '${instanceName}' not found`);
+    }
+    data.instances[idx] = {
+      ...data.instances[idx],
+      config: { ...data.instances[idx].config, [key]: value },
+    };
     await writeAll(data);
   });
 }

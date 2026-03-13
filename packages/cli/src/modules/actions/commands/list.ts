@@ -16,13 +16,12 @@
 
 import { cli } from 'cleye';
 import type { CommandContext } from '../../../wiring/types';
-import { getSelectedInstance } from '../../auth/lib/storage';
+import { getSelectedInstance, getInstanceConfig } from '../../auth/lib/storage';
 import {
   accessTokenNeedsRefresh,
   refreshAccessToken,
 } from '../../auth/lib/auth';
 import { getSecretStore } from '../../auth/lib/secretStore';
-import { getPluginSources } from '../lib/config';
 import { ActionsClient } from '../lib/ActionsClient';
 
 export default async ({ args, info }: CommandContext) => {
@@ -56,7 +55,8 @@ export default async ({ args, info }: CommandContext) => {
     throw new Error('No access token found. Run "auth login" to authenticate.');
   }
 
-  const pluginSources = await getPluginSources(instance.name);
+  const pluginSources =
+    (await getInstanceConfig<string[]>(instance.name, 'pluginSources')) ?? [];
   if (pluginSources.length === 0) {
     process.stdout.write(
       'No plugin sources configured. Run "actions sources add <pluginId>" to add one.\n',

@@ -16,8 +16,11 @@
 
 import { cli } from 'cleye';
 import type { CommandContext } from '../../../wiring/types';
-import { getSelectedInstance } from '../../auth/lib/storage';
-import { removePluginSource } from '../lib/config';
+import {
+  getSelectedInstance,
+  getInstanceConfig,
+  updateInstanceConfig,
+} from '../../auth/lib/storage';
 
 export default async ({ args, info }: CommandContext) => {
   const argv = cli(
@@ -38,7 +41,12 @@ export default async ({ args, info }: CommandContext) => {
   const pluginId = argv._.pluginId;
   const instance = await getSelectedInstance(argv.flags.instance);
 
-  await removePluginSource(instance.name, pluginId);
+  const sources =
+    (await getInstanceConfig<string[]>(instance.name, 'pluginSources')) ?? [];
+  const next = sources.filter(s => s !== pluginId);
+  if (next.length !== sources.length) {
+    await updateInstanceConfig(instance.name, 'pluginSources', next);
+  }
   process.stdout.write(
     `Removed plugin source "${pluginId}" from instance "${instance.name}"\n`,
   );
