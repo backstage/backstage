@@ -62,8 +62,13 @@ function useDisabledRows<T extends TableItem>({
 function useLiveRegionLabel(
   pagination: TablePaginationType,
   isStale: boolean,
+  isLoading: boolean,
   hasData: boolean,
 ): string {
+  if (isLoading) {
+    return 'Loading table data.';
+  }
+
   if (!hasData || pagination.type === 'none') {
     return '';
   }
@@ -126,9 +131,12 @@ export function Table<T extends TableItem>({
     );
   }
 
-  const liveRegionLabel = isInitialLoading
-    ? 'Loading table data.'
-    : useLiveRegionLabel(pagination, isStale, data !== undefined);
+  const liveRegionLabel = useLiveRegionLabel(
+    pagination,
+    isStale,
+    isInitialLoading,
+    data !== undefined,
+  );
 
   const manualColumnSizing = columnConfig.some(
     col =>
