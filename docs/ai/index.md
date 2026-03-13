@@ -14,7 +14,7 @@ This plugin is installed via the `@backstage/plugin-mcp-actions-backend` package
 yarn --cwd packages/backend add @backstage/plugin-mcp-actions-backend
 ```
 
-Then add the plugin to your backend:
+Then, add the plugin to your backend:
 
 ```ts title="packages/backend/src/index.ts"
 const backend = createBackend();
