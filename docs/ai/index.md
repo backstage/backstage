@@ -26,7 +26,7 @@ backend.start();
 
 ## Actions Configuration
 
-Make sure to provide the list of plugins from which you want exposed as MCP tools by populating the `pluginSources` configuration:
+Populate the `pluginSources` configuration with the list of plugins you want exposed as MCP tools like so:
 
 ```yaml
 backend:
