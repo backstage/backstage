@@ -263,7 +263,7 @@
                     "properties": {
                       "if": {
                         "type": ["string", "boolean"],
-                        "description": "A condition that must be truthy for this link to be included in the output."
+                        "description": "A templated condition that excludes this link when evaluated to false. If the condition is true or not defined, the link is included. The condition is true, if the input is not `false`, `undefined`, `null`, `\"\"`, `0`, or `[]`."
                       },
                       "url": {
                         "type": "string",
@@ -301,7 +301,7 @@
                     "properties": {
                       "if": {
                         "type": ["string", "boolean"],
-                        "description": "A condition that must be truthy for this text to be included in the output."
+                        "description": "A templated condition that excludes this text when evaluated to false. If the condition is true or not defined, the text is included. The condition is true, if the input is not `false`, `undefined`, `null`, `\"\"`, `0`, or `[]`."
                       },
                       "title": {
                         "type": "string",
