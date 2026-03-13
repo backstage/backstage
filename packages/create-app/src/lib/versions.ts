@@ -70,6 +70,7 @@ import { version as pluginCatalogGraph } from '../../../../plugins/catalog-graph
 import { version as pluginCatalogImport } from '../../../../plugins/catalog-import/package.json';
 import { version as pluginKubernetes } from '../../../../plugins/kubernetes/package.json';
 import { version as pluginKubernetesBackend } from '../../../../plugins/kubernetes-backend/package.json';
+import { version as pluginMcpActionsBackend } from '../../../../plugins/mcp-actions-backend/package.json';
 import { version as pluginNotifications } from '../../../../plugins/notifications/package.json';
 import { version as pluginNotificationsBackend } from '../../../../plugins/notifications-backend/package.json';
 import { version as pluginOrg } from '../../../../plugins/org/package.json';
@@ -139,6 +140,7 @@ export const packageVersions = {
   '@backstage/plugin-catalog-import': pluginCatalogImport,
   '@backstage/plugin-kubernetes': pluginKubernetes,
   '@backstage/plugin-kubernetes-backend': pluginKubernetesBackend,
+  '@backstage/plugin-mcp-actions-backend': pluginMcpActionsBackend,
   '@backstage/plugin-notifications': pluginNotifications,
   '@backstage/plugin-notifications-backend': pluginNotificationsBackend,
   '@backstage/plugin-org': pluginOrg,
