@@ -20,8 +20,8 @@ export type BackstageOverrides = Overrides & {
 
 // @public (undocumented)
 export type CardConfig = {
-  layout?: CardLayout;
-  settings?: CardSettings;
+  layout?: WidgetLayout;
+  settings?: WidgetSettings;
 };
 
 // @public (undocumented)
@@ -29,25 +29,11 @@ export type CardExtensionProps<T> = ComponentRenderer & {
   title?: string;
 } & T;
 
-// @public (undocumented)
-export type CardLayout = {
-  width?: {
-    minColumns?: number;
-    maxColumns?: number;
-    defaultColumns?: number;
-  };
-  height?: {
-    minRows?: number;
-    maxRows?: number;
-    defaultRows?: number;
-  };
-};
+// @public @deprecated (undocumented)
+export type CardLayout = WidgetLayout;
 
-// @public (undocumented)
-export type CardSettings = {
-  schema?: RJSFSchema;
-  uiSchema?: UiSchema;
-};
+// @public @deprecated (undocumented)
+export type CardSettings = WidgetSettings;
 
 // @public (undocumented)
 export type ComponentParts = {
@@ -101,4 +87,24 @@ export const SettingsModal: (props: {
   componentName?: string;
   children: JSX.Element;
 }) => JSX_2.Element;
+
+// @public
+export type WidgetLayout = {
+  width?: {
+    minColumns?: number;
+    maxColumns?: number;
+    defaultColumns?: number;
+  };
+  height?: {
+    minRows?: number;
+    maxRows?: number;
+    defaultRows?: number;
+  };
+};
+
+// @public
+export type WidgetSettings = {
+  schema?: RJSFSchema;
+  uiSchema?: UiSchema;
+};
 ```
