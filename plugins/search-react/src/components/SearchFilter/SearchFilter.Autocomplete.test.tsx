@@ -26,11 +26,22 @@ import { configApiRef } from '@backstage/core-plugin-api';
 const SearchContextFilterSpy = ({ name }: { name: string }) => {
   const { filters } = useSearch();
   const value = filters[name];
-  return (
-    <span data-testid={`${name}-filter-spy`}>
-      {Array.isArray(value) ? value.join(',') : value?.toString()}
-    </span>
-  );
+
+  const displayValue = () => {
+    if (!value) return '';
+
+    if (Array.isArray(value)) {
+      return value
+        .map(v => (v && typeof v === 'object' && 'value' in v ? v.value : v))
+        .join(',');
+    }
+
+    return typeof value === 'object' && 'value' in value
+      ? String(value.value)
+      : String(value);
+  };
+
+  return <span data-testid={`${name}-filter-spy`}>{displayValue()}</span>;
 };
 
 describe('SearchFilter.Autocomplete', () => {
