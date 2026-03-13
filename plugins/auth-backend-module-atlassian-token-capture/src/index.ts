@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-export {
-  providerTokenPlugin,
-  createProviderTokenServiceFactory,
-} from './plugin';
-export { providerTokenPlugin as default } from './plugin';
+/**
+ * The atlassian-token-capture backend module for the auth plugin.
+ *
+ * @packageDocumentation
+ */
+
+export { authAtlassianTokenCaptureModule as default } from './module';

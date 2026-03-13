@@ -1,0 +1,32 @@
+{
+  "name": "@devhub/plugin-provider-token-backend-module-github",
+  "version": "0.1.0",
+  "description": "GitHub OAuth token refresher module for the provider-token plugin.",
+  "backstage": {
+    "role": "backend-plugin-module",
+    "pluginId": "provider-token"
+  },
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.cjs.js",
+    "types": "dist/index.d.ts"
+  },
+  "private": true,
+  "license": "Apache-2.0",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test"
+  },
+  "dependencies": {
+    "@backstage/backend-plugin-api": "workspace:^",
+    "@devhub/plugin-provider-token-node": "workspace:^"
+  },
+  "devDependencies": {
+    "@backstage/backend-test-utils": "workspace:^",
+    "@backstage/cli": "workspace:^"
+  }
+}

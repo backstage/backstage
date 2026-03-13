@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: devhub-backstage-plugin-auth-backend-module-microsoft-token-capture
+  title: '@devhub/backstage-plugin-auth-backend-module-microsoft-token-capture'
+  description: The microsoft-token-capture backend module for the auth plugin.
+spec:
+  lifecycle: experimental
+  type: backstage-backend-plugin-module
+  owner: auth-maintainers

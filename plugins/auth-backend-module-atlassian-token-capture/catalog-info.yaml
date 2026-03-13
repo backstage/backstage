@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: devhub-backstage-plugin-auth-backend-module-atlassian-token-capture
+  title: '@devhub/backstage-plugin-auth-backend-module-atlassian-token-capture'
+  description: The atlassian-token-capture backend module for the auth plugin.
+spec:
+  lifecycle: experimental
+  type: backstage-backend-plugin-module
+  owner: auth-maintainers

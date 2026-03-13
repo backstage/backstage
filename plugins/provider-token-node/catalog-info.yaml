@@ -1,0 +1,12 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: devhub-plugin-provider-token-node
+  title: '@devhub/plugin-provider-token-node'
+  description: >-
+    Node library for DevHub provider token service — extension points and
+    service refs.
+spec:
+  lifecycle: experimental
+  type: backstage-node-library
+  owner: maintainers

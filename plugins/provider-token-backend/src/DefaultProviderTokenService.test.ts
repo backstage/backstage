@@ -58,7 +58,7 @@ describe('DefaultProviderTokenService', () => {
       const token = await service.getToken('user:default/alice', 'atlassian');
       expect(token).toBeDefined();
       expect(token!.accessToken).toBe('at-abc');
-      expect(token!.refreshToken).toBe('rt-xyz');
+      // refreshToken is intentionally absent from ProviderToken — action handlers must not see it
       expect(token!.scope).toBe('read:me offline_access');
       expect(token!.expiresAt).toBeInstanceOf(Date);
     });

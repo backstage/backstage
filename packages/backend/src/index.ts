@@ -41,7 +41,6 @@ const searchLoader = createBackendFeatureLoader({
 });
 
 backend.add(import('@backstage/plugin-auth-backend'));
-backend.add(import('./authModuleGithubProvider'));
 backend.add(import('@backstage/plugin-auth-backend-module-guest-provider'));
 backend.add(import('@backstage/plugin-auth-backend-module-openshift-provider'));
 backend.add(import('@backstage/plugin-app-backend'));
@@ -74,4 +73,22 @@ backend.add(rootSystemMetadataServiceFactory);
 
 backend.add(import('@backstage/plugin-events-backend-module-google-pubsub'));
 backend.add(import('@backstage/plugin-mcp-actions-backend'));
+backend.add(import('@devhub/plugin-provider-token-backend'));
+backend.add(import('@devhub/plugin-provider-token-backend-module-atlassian'));
+backend.add(import('@devhub/plugin-provider-token-backend-module-microsoft'));
+backend.add(import('@devhub/plugin-provider-token-backend-module-github'));
+backend.add(
+  import(
+    '@devhub/backstage-plugin-auth-backend-module-atlassian-token-capture'
+  ),
+);
+backend.add(
+  import(
+    '@devhub/backstage-plugin-auth-backend-module-microsoft-token-capture'
+  ),
+);
+backend.add(
+  import('@devhub/backstage-plugin-auth-backend-module-github-token-capture'),
+);
+backend.add(import('@devhub/backstage-plugin-atlassian-actions-backend'));
 backend.start();

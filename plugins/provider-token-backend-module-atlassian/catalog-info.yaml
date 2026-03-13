@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: devhub-plugin-provider-token-backend-module-atlassian
+  title: '@devhub/plugin-provider-token-backend-module-atlassian'
+  description: Atlassian OAuth token refresher module for the provider-token plugin.
+spec:
+  lifecycle: experimental
+  type: backstage-backend-plugin-module
+  owner: maintainers

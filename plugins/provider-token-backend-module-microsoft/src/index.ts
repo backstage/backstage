@@ -14,8 +14,4 @@
  * limitations under the License.
  */
 
-export {
-  providerTokenPlugin,
-  createProviderTokenServiceFactory,
-} from './plugin';
-export { providerTokenPlugin as default } from './plugin';
+export { providerTokenMicrosoftModule as default } from './module';

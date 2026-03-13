@@ -1,8 +1,8 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: idp
-  title: idp
+  name: devhub-backstage-plugin-atlassian-actions-backend
+  title: '@devhub/backstage-plugin-atlassian-actions-backend'
 spec:
   lifecycle: experimental
   type: backstage-backend-plugin

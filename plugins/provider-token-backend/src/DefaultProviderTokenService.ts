@@ -14,19 +14,17 @@
  * limitations under the License.
  */
 
-import {
-  createServiceFactory,
-  coreServices,
-  resolvePackagePath,
-} from '@backstage/backend-plugin-api';
-import type { LoggerService, ServiceRef } from '@backstage/backend-plugin-api';
+import type { LoggerService } from '@backstage/backend-plugin-api';
 import type { Knex } from 'knex';
-import { encrypt, decrypt, deriveKey } from './crypto';
+import { encrypt, decrypt } from './crypto';
 import type {
   ProviderToken,
   ProviderTokenService,
-} from './ProviderTokenService';
-import type { ProviderTokenRefresher } from './ProviderTokenRefresher';
+  ProviderTokenRefresher,
+  ProviderTokenSession,
+  RefreshResult,
+} from '@devhub/plugin-provider-token-node';
+import { OAuthPermanentError } from '@devhub/plugin-provider-token-node';
 
 export class DefaultProviderTokenService implements ProviderTokenService {
   /** Prevents concurrent refresh for the same user+provider from double-consuming a refresh token. */
@@ -46,12 +44,7 @@ export class DefaultProviderTokenService implements ProviderTokenService {
   async upsertToken(
     userEntityRef: string,
     providerId: string,
-    session: {
-      accessToken: string;
-      refreshToken?: string;
-      scope?: string;
-      expiresInSeconds?: number;
-    },
+    session: ProviderTokenSession,
   ): Promise<void> {
     const expiresAt = session.expiresInSeconds
       ? new Date(Date.now() + session.expiresInSeconds * 1000)
@@ -109,15 +102,16 @@ export class DefaultProviderTokenService implements ProviderTokenService {
       expiresAt !== undefined &&
       expiresAt.getTime() - Date.now() < expiryBufferMs;
 
-    const refreshToken = row.refresh_token
-      ? decrypt(row.refresh_token, this.encKey)
-      : undefined;
+    // Only decrypt the refresh token when we actually need it (near-expiry branch).
+    // Avoids AES-256-GCM decryption overhead on every hot-path getToken call.
+    const hasRefreshToken = !!row.refresh_token;
 
-    if (isNearExpiry && refreshToken) {
+    if (isNearExpiry && hasRefreshToken) {
       // Deduplicate concurrent refresh calls — prevents double-consumption of single-use tokens
       const lockKey = `${userEntityRef}|${providerId}`;
       let refreshPromise = this.refreshLocks.get(lockKey);
       if (!refreshPromise) {
+        const refreshToken = decrypt(row.refresh_token, this.encKey);
         refreshPromise = this.refreshAndPersist(
           userEntityRef,
           providerId,
@@ -129,7 +123,7 @@ export class DefaultProviderTokenService implements ProviderTokenService {
       return refreshPromise;
     }
 
-    if (isNearExpiry && !refreshToken) {
+    if (isNearExpiry && !hasRefreshToken) {
       this.logger.warn('Provider token expired with no refresh token', {
         userEntityRef,
         providerId,
@@ -142,7 +136,7 @@ export class DefaultProviderTokenService implements ProviderTokenService {
     this.logger.info('Provider token retrieved', {
       userEntityRef,
       providerId,
-      hasRefreshToken: !!refreshToken,
+      hasRefreshToken,
       expiresAt: expiresAt?.toISOString() ?? 'none',
     });
 
@@ -150,7 +144,6 @@ export class DefaultProviderTokenService implements ProviderTokenService {
       userEntityRef,
       providerId,
       accessToken: decrypt(row.access_token, this.encKey),
-      refreshToken,
       scope: row.scope ? decrypt(row.scope, this.encKey) : undefined,
       expiresAt,
     };
@@ -188,16 +181,38 @@ export class DefaultProviderTokenService implements ProviderTokenService {
       return undefined;
     }
 
-    let result;
+    let result: RefreshResult;
     try {
       result = await refresher.refresh(refreshToken);
     } catch (err) {
-      // Log error type/message — never include the token value
-      this.logger.error('Failed to refresh provider token', {
-        userEntityRef,
-        providerId,
-        error: err instanceof Error ? err.message : String(err),
-      });
+      if (err instanceof OAuthPermanentError) {
+        // Refresh token is permanently invalid (revoked, de-authorized, etc.).
+        // Delete the stale row to prevent an infinite retry loop on every subsequent getToken call.
+        this.logger.warn(
+          'Refresh token permanently revoked — deleting stale token',
+          { userEntityRef, providerId },
+        );
+        await this.deleteToken(userEntityRef, providerId).catch(deleteErr => {
+          this.logger.error(
+            'Failed to delete stale token after permanent refresh error',
+            {
+              userEntityRef,
+              providerId,
+              error:
+                deleteErr instanceof Error
+                  ? deleteErr.message
+                  : String(deleteErr),
+            },
+          );
+        });
+      } else {
+        // Transient failure (network error, 5xx, timeout) — keep the row for next attempt.
+        this.logger.error('Failed to refresh provider token', {
+          userEntityRef,
+          providerId,
+          error: err instanceof Error ? err.message : String(err),
+        });
+      }
       return undefined;
     }
 
@@ -222,60 +237,8 @@ export class DefaultProviderTokenService implements ProviderTokenService {
       userEntityRef,
       providerId,
       accessToken: result.accessToken,
-      refreshToken: newRefreshToken,
       scope: effectiveScope,
       expiresAt,
     };
   }
-}
-
-/**
- * Creates the Backstage ServiceFactory for ProviderTokenService.
- * Called by the defaultFactory in providerTokenServiceRef.
- */
-export function createProviderTokenServiceFactory(
-  service: ServiceRef<ProviderTokenService, 'plugin'>,
-) {
-  return createServiceFactory({
-    service,
-    deps: {
-      database: coreServices.database,
-      config: coreServices.rootConfig,
-      logger: coreServices.logger,
-    },
-    async factory({ database, config, logger }) {
-      const db = await database.getClient();
-
-      await db.migrate.latest({
-        directory: resolvePackagePath(
-          '@devhub/plugin-provider-token-backend',
-          'migrations',
-        ),
-      });
-
-      const secret = config.getString('providerToken.encryptionSecret');
-      const encKey = deriveKey(secret);
-      const refreshBufferSeconds =
-        config.getOptionalNumber('providerToken.refreshBufferSeconds') ?? 300;
-
-      // Refreshers are imported lazily to avoid loading provider-specific OAuth libs at startup
-      const { createAtlassianRefresher } = await import('./atlassianRefresher');
-      const { createMicrosoftRefresher } = await import('./microsoftRefresher');
-      const { createGithubRefresher } = await import('./githubRefresher');
-
-      const refreshers = new Map([
-        ['atlassian', createAtlassianRefresher(config)],
-        ['microsoft', createMicrosoftRefresher(config)],
-        ['github', createGithubRefresher(config)],
-      ]);
-
-      return new DefaultProviderTokenService(
-        db,
-        encKey,
-        refreshers,
-        refreshBufferSeconds,
-        logger,
-      );
-    },
-  });
 }

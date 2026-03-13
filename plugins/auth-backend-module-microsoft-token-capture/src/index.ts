@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-export {
-  providerTokenPlugin,
-  createProviderTokenServiceFactory,
-} from './plugin';
-export { providerTokenPlugin as default } from './plugin';
+/**
+ * The microsoft-token-capture backend module for the auth plugin.
+ *
+ * @packageDocumentation
+ */
+
+export { authMicrosoftTokenCaptureModule as default } from './module';

@@ -1,0 +1,30 @@
+{
+  "name": "@devhub/plugin-provider-token-node",
+  "version": "0.1.0",
+  "description": "Node library for DevHub provider token service — extension points and service refs.",
+  "backstage": {
+    "role": "node-library",
+    "pluginId": "provider-token"
+  },
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.cjs.js",
+    "types": "dist/index.d.ts"
+  },
+  "private": true,
+  "license": "Apache-2.0",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test"
+  },
+  "dependencies": {
+    "@backstage/backend-plugin-api": "workspace:^"
+  },
+  "devDependencies": {
+    "@backstage/cli": "workspace:^"
+  }
+}

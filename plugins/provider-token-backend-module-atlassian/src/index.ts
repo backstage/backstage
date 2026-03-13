@@ -14,8 +14,4 @@
  * limitations under the License.
  */
 
-export {
-  providerTokenPlugin,
-  createProviderTokenServiceFactory,
-} from './plugin';
-export { providerTokenPlugin as default } from './plugin';
+export { providerTokenAtlassianModule as default } from './module';

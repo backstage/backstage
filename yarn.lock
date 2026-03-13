@@ -3875,7 +3875,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-auth-backend-module-atlassian-provider@workspace:plugins/auth-backend-module-atlassian-provider":
+"@backstage/plugin-auth-backend-module-atlassian-provider@workspace:^, @backstage/plugin-auth-backend-module-atlassian-provider@workspace:plugins/auth-backend-module-atlassian-provider":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-auth-backend-module-atlassian-provider@workspace:plugins/auth-backend-module-atlassian-provider"
   dependencies:
@@ -4103,7 +4103,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-auth-backend-module-microsoft-provider@workspace:plugins/auth-backend-module-microsoft-provider":
+"@backstage/plugin-auth-backend-module-microsoft-provider@workspace:^, @backstage/plugin-auth-backend-module-microsoft-provider@workspace:plugins/auth-backend-module-microsoft-provider":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-auth-backend-module-microsoft-provider@workspace:plugins/auth-backend-module-microsoft-provider"
   dependencies:
@@ -8224,6 +8224,127 @@ __metadata:
   checksum: 10/647d4427f6aad119bdfea607ab19ca30be827f7f0462677b5a538d8f8ab4ebda2c05ece60fceb5d3abb093e69ab3393e24a8e966936d2745b07421cfd014b14f
   languageName: node
   linkType: hard
+
+"@devhub/backstage-plugin-atlassian-actions-backend@workspace:^, @devhub/backstage-plugin-atlassian-actions-backend@workspace:plugins/atlassian-actions-backend":
+  version: 0.0.0-use.local
+  resolution: "@devhub/backstage-plugin-atlassian-actions-backend@workspace:plugins/atlassian-actions-backend"
+  dependencies:
+    "@backstage/backend-defaults": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/plugin-catalog-node": "workspace:^"
+    "@devhub/plugin-provider-token-node": "workspace:^"
+    "@types/supertest": "npm:^2.0.8"
+    supertest: "npm:^7.0.0"
+  languageName: unknown
+  linkType: soft
+
+"@devhub/backstage-plugin-auth-backend-module-atlassian-token-capture@workspace:^, @devhub/backstage-plugin-auth-backend-module-atlassian-token-capture@workspace:plugins/auth-backend-module-atlassian-token-capture":
+  version: 0.0.0-use.local
+  resolution: "@devhub/backstage-plugin-auth-backend-module-atlassian-token-capture@workspace:plugins/auth-backend-module-atlassian-token-capture"
+  dependencies:
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/plugin-auth-backend": "workspace:^"
+    "@backstage/plugin-auth-backend-module-atlassian-provider": "workspace:^"
+    "@backstage/plugin-auth-node": "workspace:^"
+    "@devhub/plugin-provider-token-node": "workspace:^"
+    "@types/supertest": "npm:^2.0.8"
+    supertest: "npm:^7.0.0"
+    zod: "npm:^3.25.76"
+  languageName: unknown
+  linkType: soft
+
+"@devhub/backstage-plugin-auth-backend-module-github-token-capture@workspace:^, @devhub/backstage-plugin-auth-backend-module-github-token-capture@workspace:plugins/auth-backend-module-github-token-capture":
+  version: 0.0.0-use.local
+  resolution: "@devhub/backstage-plugin-auth-backend-module-github-token-capture@workspace:plugins/auth-backend-module-github-token-capture"
+  dependencies:
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/plugin-auth-backend": "workspace:^"
+    "@backstage/plugin-auth-backend-module-github-provider": "workspace:^"
+    "@backstage/plugin-auth-node": "workspace:^"
+    "@devhub/plugin-provider-token-node": "workspace:^"
+    "@types/supertest": "npm:^2.0.8"
+    supertest: "npm:^7.0.0"
+    zod: "npm:^3.25.76"
+  languageName: unknown
+  linkType: soft
+
+"@devhub/backstage-plugin-auth-backend-module-microsoft-token-capture@workspace:^, @devhub/backstage-plugin-auth-backend-module-microsoft-token-capture@workspace:plugins/auth-backend-module-microsoft-token-capture":
+  version: 0.0.0-use.local
+  resolution: "@devhub/backstage-plugin-auth-backend-module-microsoft-token-capture@workspace:plugins/auth-backend-module-microsoft-token-capture"
+  dependencies:
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/catalog-model": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/plugin-auth-backend": "workspace:^"
+    "@backstage/plugin-auth-backend-module-microsoft-provider": "workspace:^"
+    "@backstage/plugin-auth-node": "workspace:^"
+    "@devhub/plugin-provider-token-node": "workspace:^"
+    "@types/supertest": "npm:^2.0.8"
+    supertest: "npm:^7.0.0"
+    zod: "npm:^3.25.76"
+  languageName: unknown
+  linkType: soft
+
+"@devhub/plugin-provider-token-backend-module-atlassian@workspace:^, @devhub/plugin-provider-token-backend-module-atlassian@workspace:plugins/provider-token-backend-module-atlassian":
+  version: 0.0.0-use.local
+  resolution: "@devhub/plugin-provider-token-backend-module-atlassian@workspace:plugins/provider-token-backend-module-atlassian"
+  dependencies:
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@devhub/plugin-provider-token-node": "workspace:^"
+  languageName: unknown
+  linkType: soft
+
+"@devhub/plugin-provider-token-backend-module-github@workspace:^, @devhub/plugin-provider-token-backend-module-github@workspace:plugins/provider-token-backend-module-github":
+  version: 0.0.0-use.local
+  resolution: "@devhub/plugin-provider-token-backend-module-github@workspace:plugins/provider-token-backend-module-github"
+  dependencies:
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@devhub/plugin-provider-token-node": "workspace:^"
+  languageName: unknown
+  linkType: soft
+
+"@devhub/plugin-provider-token-backend-module-microsoft@workspace:^, @devhub/plugin-provider-token-backend-module-microsoft@workspace:plugins/provider-token-backend-module-microsoft":
+  version: 0.0.0-use.local
+  resolution: "@devhub/plugin-provider-token-backend-module-microsoft@workspace:plugins/provider-token-backend-module-microsoft"
+  dependencies:
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@devhub/plugin-provider-token-node": "workspace:^"
+  languageName: unknown
+  linkType: soft
+
+"@devhub/plugin-provider-token-backend@workspace:^, @devhub/plugin-provider-token-backend@workspace:plugins/provider-token-backend":
+  version: 0.0.0-use.local
+  resolution: "@devhub/plugin-provider-token-backend@workspace:plugins/provider-token-backend"
+  dependencies:
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@devhub/plugin-provider-token-node": "workspace:^"
+    knex: "npm:^3.0.0"
+  languageName: unknown
+  linkType: soft
+
+"@devhub/plugin-provider-token-node@workspace:^, @devhub/plugin-provider-token-node@workspace:plugins/provider-token-node":
+  version: 0.0.0-use.local
+  resolution: "@devhub/plugin-provider-token-node@workspace:plugins/provider-token-node"
+  dependencies:
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/cli": "workspace:^"
+  languageName: unknown
+  linkType: soft
 
 "@elastic/elasticsearch-mock@npm:^1.0.0":
   version: 1.0.0
@@ -31008,8 +31129,10 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/plugin-app-backend": "workspace:^"
     "@backstage/plugin-auth-backend": "workspace:^"
+    "@backstage/plugin-auth-backend-module-atlassian-provider": "workspace:^"
     "@backstage/plugin-auth-backend-module-github-provider": "workspace:^"
     "@backstage/plugin-auth-backend-module-guest-provider": "workspace:^"
+    "@backstage/plugin-auth-backend-module-microsoft-provider": "workspace:^"
     "@backstage/plugin-auth-backend-module-openshift-provider": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/plugin-catalog-backend": "workspace:^"
@@ -31039,6 +31162,15 @@ __metadata:
     "@backstage/plugin-search-backend-node": "workspace:^"
     "@backstage/plugin-signals-backend": "workspace:^"
     "@backstage/plugin-techdocs-backend": "workspace:^"
+    "@devhub/backstage-plugin-atlassian-actions-backend": "workspace:^"
+    "@devhub/backstage-plugin-auth-backend-module-atlassian-token-capture": "workspace:^"
+    "@devhub/backstage-plugin-auth-backend-module-github-token-capture": "workspace:^"
+    "@devhub/backstage-plugin-auth-backend-module-microsoft-token-capture": "workspace:^"
+    "@devhub/plugin-provider-token-backend": "workspace:^"
+    "@devhub/plugin-provider-token-backend-module-atlassian": "workspace:^"
+    "@devhub/plugin-provider-token-backend-module-github": "workspace:^"
+    "@devhub/plugin-provider-token-backend-module-microsoft": "workspace:^"
+    "@devhub/plugin-provider-token-node": "workspace:^"
     "@opentelemetry/auto-instrumentations-node": "npm:^0.71.0"
     "@opentelemetry/exporter-prometheus": "npm:^0.211.0"
     "@opentelemetry/sdk-node": "npm:^0.211.0"

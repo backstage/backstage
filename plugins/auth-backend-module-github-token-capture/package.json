@@ -1,0 +1,44 @@
+{
+  "name": "@devhub/backstage-plugin-auth-backend-module-github-token-capture",
+  "version": "0.1.0",
+  "description": "The github-token-capture backend module for the auth plugin.",
+  "backstage": {
+    "role": "backend-plugin-module",
+    "pluginId": "auth"
+  },
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.cjs.js",
+    "types": "dist/index.d.ts"
+  },
+  "private": true,
+  "license": "Apache-2.0",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
+  },
+  "dependencies": {
+    "@backstage/backend-plugin-api": "workspace:^",
+    "@backstage/plugin-auth-backend-module-github-provider": "workspace:^",
+    "@backstage/plugin-auth-node": "workspace:^",
+    "@devhub/plugin-provider-token-node": "workspace:^",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@backstage/backend-test-utils": "workspace:^",
+    "@backstage/cli": "workspace:^",
+    "@backstage/plugin-auth-backend": "workspace:^",
+    "@types/supertest": "^2.0.8",
+    "supertest": "^7.0.0"
+  }
+}
