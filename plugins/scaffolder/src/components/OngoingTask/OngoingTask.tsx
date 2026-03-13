@@ -164,7 +164,7 @@ function OngoingTaskContent(props: {
 
   useEffect(() => {
     if (taskStream.completed && !taskStream.error) {
-      setLogVisibleState(true);
+      setLogVisibleState(false);
       setButtonBarVisibleState(false);
     }
   }, [taskStream.error, taskStream.completed]);
