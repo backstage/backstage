@@ -693,10 +693,11 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
       if (Array.isArray(output?.links)) {
         output.links = (output.links as JsonArray)
           .filter(item => {
-            const obj = item as JsonObject;
-            return !('if' in obj) || isTruthy(obj.if);
+            if (typeof item !== 'object' || item === null) return true;
+            return !('if' in item) || isTruthy(item.if);
           })
           .map(item => {
+            if (typeof item !== 'object' || item === null) return item;
             const { if: _if, ...rest } = item as JsonObject;
             return rest;
           });
@@ -704,10 +705,11 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
       if (Array.isArray(output?.text)) {
         output.text = (output.text as JsonArray)
           .filter(item => {
-            const obj = item as JsonObject;
-            return !('if' in obj) || isTruthy(obj.if);
+            if (typeof item !== 'object' || item === null) return true;
+            return !('if' in item) || isTruthy(item.if);
           })
           .map(item => {
+            if (typeof item !== 'object' || item === null) return item;
             const { if: _if, ...rest } = item as JsonObject;
             return rest;
           });
