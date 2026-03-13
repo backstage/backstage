@@ -31,8 +31,17 @@ import { Minimatch } from 'minimatch';
 import { Config } from '@backstage/config';
 import {
   AuthorizeResult,
+  BasicPermission,
   createPermission,
+  PermissionAttributes,
 } from '@backstage/plugin-permission-common';
+
+type ActionWithPermission = ActionsServiceAction & {
+  visibilityPermission?: {
+    name: string;
+    attributes: PermissionAttributes;
+  };
+};
 
 export class DefaultActionsService implements ActionsService {
   private readonly discovery: DiscoveryService;
@@ -93,7 +102,7 @@ export class DefaultActionsService implements ActionsService {
             throw await ResponseError.fromResponse(response);
           }
           const { actions } = (await response.json()) as {
-            actions: ActionsServiceAction;
+            actions: ActionWithPermission[];
           };
 
           return actions;
@@ -106,11 +115,13 @@ export class DefaultActionsService implements ActionsService {
 
     const filtered = this.applyFilters(remoteActionsList.flat());
     const overridden = this.applyOverrides(filtered);
-    const permitted = await this.filterByOverridePermissions(
-      overridden,
-      credentials,
-    );
-    return { actions: permitted };
+    const permitted = await this.filterByPermissions(overridden, credentials);
+
+    return {
+      actions: permitted.map(
+        ({ visibilityPermission: _, ...action }) => action,
+      ),
+    };
   }
 
   async invoke(opts: {
@@ -174,8 +185,8 @@ export class DefaultActionsService implements ActionsService {
   }
 
   private applyFilters(
-    actions: ActionsServiceAction[],
-  ): ActionsServiceAction[] {
+    actions: ActionWithPermission[],
+  ): ActionWithPermission[] {
     const filterConfig = this.config.getOptionalConfig(
       'backend.actions.filter',
     );
@@ -276,8 +287,8 @@ export class DefaultActionsService implements ActionsService {
   }
 
   private applyOverrides(
-    actions: ActionsServiceAction[],
-  ): ActionsServiceAction[] {
+    actions: ActionWithPermission[],
+  ): ActionWithPermission[] {
     const overridesConfig = this.config.getOptionalConfig(
       'backend.actions.overrides',
     );
@@ -320,55 +331,58 @@ export class DefaultActionsService implements ActionsService {
         }
       }
 
+      const visibilityPermission = actionConfig.has('visibilityPermission')
+        ? this.parsePermissionConfig(
+            actionConfig.getConfig('visibilityPermission'),
+          )
+        : action.visibilityPermission;
+
       return {
         ...action,
         title,
         description,
         schema: { input: inputSchema, output: outputSchema },
+        visibilityPermission,
       };
     });
   }
 
-  private async filterByOverridePermissions(
-    actions: ActionsServiceAction[],
+  private parsePermissionConfig(
+    permConfig: Config,
+  ): ActionWithPermission['visibilityPermission'] {
+    return {
+      name: permConfig.getString('name'),
+      attributes: {
+        action: permConfig.getOptionalString('attributes.action') as
+          | 'create'
+          | 'read'
+          | 'update'
+          | 'delete'
+          | undefined,
+      },
+    };
+  }
+
+  private async filterByPermissions(
+    actions: ActionWithPermission[],
     credentials: BackstageCredentials,
-  ): Promise<ActionsServiceAction[]> {
-    const overridesConfig = this.config.getOptionalConfig(
-      'backend.actions.overrides',
-    );
-
-    if (!overridesConfig) {
-      return actions;
-    }
-
-    const actionsWithPermissions = actions.filter(action => {
-      const actionConfig = overridesConfig.getOptionalConfig(action.id);
-      return actionConfig?.has('visibilityPermission');
-    });
+  ): Promise<ActionWithPermission[]> {
+    const actionsWithPermissions = actions.filter(a => a.visibilityPermission);
 
     if (actionsWithPermissions.length === 0) {
       return actions;
     }
 
-    const permissions = actionsWithPermissions.map(action => {
-      const permConfig = overridesConfig
-        .getConfig(action.id)
-        .getConfig('visibilityPermission');
-      return createPermission({
-        name: permConfig.getString('name'),
-        attributes: {
-          action: permConfig.getOptionalString('attributes.action') as
-            | 'create'
-            | 'read'
-            | 'update'
-            | 'delete'
-            | undefined,
-        },
-      });
-    });
+    const permissionObjects: BasicPermission[] = actionsWithPermissions.map(
+      action =>
+        createPermission({
+          name: action.visibilityPermission!.name,
+          attributes: action.visibilityPermission!.attributes,
+        }),
+    );
 
     const decisions = await this.permissions.authorize(
-      permissions.map(permission => ({ permission })),
+      permissionObjects.map(permission => ({ permission })),
       { credentials },
     );
 

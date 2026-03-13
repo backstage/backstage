@@ -16,11 +16,8 @@
 
 import {
   AuthService,
-  BackstageCredentials,
   HttpAuthService,
   LoggerService,
-  PermissionsRegistryService,
-  PermissionsService,
   PluginMetadataService,
 } from '@backstage/backend-plugin-api';
 import PromiseRouter from 'express-promise-router';
@@ -32,9 +29,6 @@ import {
   ActionsRegistryService,
 } from '@backstage/backend-plugin-api/alpha';
 import { InputError, NotAllowedError, NotFoundError } from '@backstage/errors';
-import { AuthorizeResult } from '@backstage/plugin-permission-common';
-
-type ActionEntry = [string, ActionsRegistryActionOptions<any, any>];
 
 export class DefaultActionsRegistryService implements ActionsRegistryService {
   private actions: Map<string, ActionsRegistryActionOptions<any, any>> =
@@ -44,23 +38,17 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
   private readonly httpAuth: HttpAuthService;
   private readonly auth: AuthService;
   private readonly metadata: PluginMetadataService;
-  private readonly permissions: PermissionsService;
-  private readonly permissionsRegistry: PermissionsRegistryService;
 
   private constructor(
     logger: LoggerService,
     httpAuth: HttpAuthService,
     auth: AuthService,
     metadata: PluginMetadataService,
-    permissions: PermissionsService,
-    permissionsRegistry: PermissionsRegistryService,
   ) {
     this.logger = logger;
     this.httpAuth = httpAuth;
     this.auth = auth;
     this.metadata = metadata;
-    this.permissions = permissions;
-    this.permissionsRegistry = permissionsRegistry;
   }
 
   static create({
@@ -68,41 +56,22 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
     logger,
     auth,
     metadata,
-    permissions,
-    permissionsRegistry,
   }: {
     httpAuth: HttpAuthService;
     logger: LoggerService;
     auth: AuthService;
     metadata: PluginMetadataService;
-    permissions: PermissionsService;
-    permissionsRegistry: PermissionsRegistryService;
   }): DefaultActionsRegistryService {
-    return new DefaultActionsRegistryService(
-      logger,
-      httpAuth,
-      auth,
-      metadata,
-      permissions,
-      permissionsRegistry,
-    );
+    return new DefaultActionsRegistryService(logger, httpAuth, auth, metadata);
   }
 
   createRouter(): Router {
     const router = PromiseRouter();
     router.use(json());
 
-    router.get('/.backstage/actions/v1/actions', async (req, res) => {
-      const credentials = await this.httpAuth.credentials(req);
-      const entries = Array.from(this.actions.entries());
-
-      const allowedActions = await this.filterByPermissions(
-        entries,
-        credentials,
-      );
-
+    router.get('/.backstage/actions/v1/actions', (_, res) => {
       return res.json({
-        actions: allowedActions.map(([id, action]) => ({
+        actions: Array.from(this.actions.entries()).map(([id, action]) => ({
           id,
           name: action.name,
           title: action.title,
@@ -122,6 +91,12 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
               ? zodToJsonSchema(action.schema.output(z))
               : zodToJsonSchema(z.object({})),
           },
+          ...(action.visibilityPermission && {
+            visibilityPermission: {
+              name: action.visibilityPermission.name,
+              attributes: action.visibilityPermission.attributes,
+            },
+          }),
         })),
       });
     });
@@ -146,18 +121,6 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
 
         if (!action) {
           throw new NotFoundError(`Action "${req.params.actionId}" not found`);
-        }
-
-        if (action.visibilityPermission) {
-          const [decision] = await this.permissions.authorize(
-            [{ permission: action.visibilityPermission }],
-            { credentials },
-          );
-          if (decision.result === AuthorizeResult.DENY) {
-            throw new NotFoundError(
-              `Action "${req.params.actionId}" not found`,
-            );
-          }
         }
 
         const input = action.schema?.input
@@ -204,38 +167,6 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
       throw new Error(`Action with id "${id}" is already registered`);
     }
 
-    if (options.visibilityPermission) {
-      this.permissionsRegistry.addPermissions([options.visibilityPermission]);
-    }
-
     this.actions.set(id, options);
-  }
-
-  private async filterByPermissions(
-    entries: ActionEntry[],
-    credentials: BackstageCredentials,
-  ): Promise<ActionEntry[]> {
-    const permissionedEntries = entries.filter(
-      ([_, action]) => action.visibilityPermission,
-    );
-
-    if (permissionedEntries.length === 0) {
-      return entries;
-    }
-
-    const decisions = await this.permissions.authorize(
-      permissionedEntries.map(([_, action]) => ({
-        permission: action.visibilityPermission!,
-      })),
-      { credentials },
-    );
-
-    const deniedIds = new Set(
-      permissionedEntries
-        .filter((_, index) => decisions[index].result === AuthorizeResult.DENY)
-        .map(([id]) => id),
-    );
-
-    return entries.filter(([id]) => !deniedIds.has(id));
   }
 }

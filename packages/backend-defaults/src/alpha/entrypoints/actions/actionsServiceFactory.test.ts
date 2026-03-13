@@ -789,6 +789,144 @@ describe('actionsServiceFactory', () => {
       });
     });
 
+    describe('permissions', () => {
+      it('should filter actions with a registry-defined visibilityPermission when denied', async () => {
+        const actionWithPermission = {
+          ...mockActionsDefinition,
+          visibilityPermission: {
+            name: 'test.action.use',
+            attributes: {},
+          },
+        };
+
+        server.use(
+          rest.get(
+            'http://localhost:0/api/my-plugin/.backstage/actions/v1/actions',
+            (_req, res, ctx) =>
+              res(ctx.json({ actions: [actionWithPermission] })),
+          ),
+        );
+
+        const subject = await ServiceFactoryTester.from(actionsServiceFactory, {
+          dependencies: [
+            ...defaultServices,
+            mockServices.permissions.factory({
+              result: AuthorizeResult.DENY,
+            }),
+          ],
+        }).getSubject();
+
+        const { actions } = await subject.list({
+          credentials: mockCredentials.service('user:default/mock'),
+        });
+
+        expect(actions).toHaveLength(0);
+      });
+
+      it('should allow config visibilityPermission to replace the registry one', async () => {
+        const actionWithPermission = {
+          ...mockActionsDefinition,
+          visibilityPermission: {
+            name: 'original.permission',
+            attributes: {},
+          },
+        };
+
+        server.use(
+          rest.get(
+            'http://localhost:0/api/my-plugin/.backstage/actions/v1/actions',
+            (_req, res, ctx) =>
+              res(ctx.json({ actions: [actionWithPermission] })),
+          ),
+        );
+
+        const permissionsMock = mockServices.permissions.mock({
+          authorize: async requests => {
+            return requests.map(req => ({
+              result:
+                req.permission.name === 'replacement.permission'
+                  ? AuthorizeResult.ALLOW
+                  : AuthorizeResult.DENY,
+            }));
+          },
+        });
+
+        const subject = await ServiceFactoryTester.from(actionsServiceFactory, {
+          dependencies: [
+            mockServices.rootConfig.factory({
+              data: {
+                backend: {
+                  actions: {
+                    pluginSources: ['my-plugin'],
+                    overrides: {
+                      'my-plugin:test': {
+                        visibilityPermission: {
+                          name: 'replacement.permission',
+                          attributes: {},
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            }),
+            actionsServiceFactory,
+            httpRouterServiceFactory,
+            mockServices.httpAuth.factory({
+              defaultCredentials: mockCredentials.service('user:default/mock'),
+            }),
+            mockServices.discovery.factory(),
+            actionsRegistryServiceFactory,
+            permissionsMock.factory,
+          ],
+        }).getSubject();
+
+        const { actions } = await subject.list({
+          credentials: mockCredentials.service('user:default/mock'),
+        });
+
+        expect(actions).toHaveLength(1);
+        expect(permissionsMock.authorize).toHaveBeenCalledWith(
+          [
+            expect.objectContaining({
+              permission: expect.objectContaining({
+                name: 'replacement.permission',
+              }),
+            }),
+          ],
+          expect.anything(),
+        );
+      });
+
+      it('should not leak visibilityPermission in the list response', async () => {
+        const actionWithPermission = {
+          ...mockActionsDefinition,
+          visibilityPermission: {
+            name: 'test.action.use',
+            attributes: {},
+          },
+        };
+
+        server.use(
+          rest.get(
+            'http://localhost:0/api/my-plugin/.backstage/actions/v1/actions',
+            (_req, res, ctx) =>
+              res(ctx.json({ actions: [actionWithPermission] })),
+          ),
+        );
+
+        const subject = await ServiceFactoryTester.from(actionsServiceFactory, {
+          dependencies: defaultServices,
+        }).getSubject();
+
+        const { actions } = await subject.list({
+          credentials: mockCredentials.service('user:default/mock'),
+        });
+
+        expect(actions[0]).not.toHaveProperty('visibilityPermission');
+      });
+    });
+
     describe('invoke', () => {
       it('should invoke the action and return the output', async () => {
         server.use(
