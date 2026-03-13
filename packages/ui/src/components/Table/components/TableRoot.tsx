@@ -30,7 +30,7 @@ export const TableRoot = (props: TableRootProps) => {
     <ReactAriaTable
       className={ownProps.classes.root}
       aria-label="Data table"
-      aria-busy={ownProps.stale}
+      aria-busy={ownProps.stale || ownProps.loading}
       {...dataAttributes}
       {...restProps}
     />

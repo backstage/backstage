@@ -2332,6 +2332,9 @@ export const TableDefinition: {
     readonly stale: {
       readonly dataAttribute: true;
     };
+    readonly loading: {
+      readonly dataAttribute: true;
+    };
   };
 };
 
@@ -2449,6 +2452,7 @@ export const TableRoot: (props: TableRootProps) => JSX_2.Element;
 // @public (undocumented)
 export type TableRootOwnProps = {
   stale?: boolean;
+  loading?: boolean;
 };
 
 // @public (undocumented)

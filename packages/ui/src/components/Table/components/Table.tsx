@@ -159,14 +159,19 @@ export function Table<T extends TableItem>({
       </VisuallyHidden>
       {wrapResizable(
         <TableRoot
-          selectionMode={isInitialLoading ? undefined : selectionMode}
-          selectionBehavior={isInitialLoading ? undefined : selectionBehavior}
-          selectedKeys={isInitialLoading ? undefined : selectedKeys}
-          onSelectionChange={isInitialLoading ? undefined : onSelectionChange}
+          {...(isInitialLoading
+            ? {}
+            : {
+                selectionMode,
+                selectionBehavior,
+                selectedKeys,
+                onSelectionChange,
+              })}
           sortDescriptor={sort?.descriptor ?? undefined}
           onSortChange={sort?.onSortChange}
           disabledKeys={disabledRows}
-          stale={isStale || isInitialLoading}
+          stale={isStale}
+          loading={isInitialLoading}
           aria-describedby={liveRegionId}
         >
           <TableHeader columns={visibleColumns}>
