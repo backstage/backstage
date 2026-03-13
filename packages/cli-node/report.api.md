@@ -254,6 +254,13 @@ export class PackageRoles {
 }
 
 // @public
+export function runCliModule(options: {
+  module: CliModule;
+  name: string;
+  version?: string;
+}): Promise<void>;
+
+// @public
 export function runConcurrentTasks<TItem>(
   options: ConcurrentTasksOptions<TItem>,
 ): Promise<void>;
