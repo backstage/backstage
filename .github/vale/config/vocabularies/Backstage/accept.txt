@@ -299,6 +299,7 @@ Namespaces
 namespacing
 navbar
 neuro
+Netlify
 newrelic
 nginx
 nodegit
