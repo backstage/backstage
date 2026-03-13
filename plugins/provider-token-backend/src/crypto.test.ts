@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { deriveKey, encrypt, decrypt } from './crypto';
+import { deriveKey, encrypt, decrypt, DEFAULT_HKDF_SALT } from './crypto';
 
 const SECRET = Buffer.from('test-secret-at-least-32-bytes-long-ok').toString(
   'base64',
@@ -43,6 +43,24 @@ describe('deriveKey', () => {
   it('throws when decoded secret is shorter than 16 bytes', () => {
     const short = Buffer.from('tiny').toString('base64');
     expect(() => deriveKey(short)).toThrow(/encryptionSecret/);
+  });
+
+  it('uses DEFAULT_HKDF_SALT when salt is omitted', () => {
+    const withDefault = deriveKey(SECRET, DEFAULT_HKDF_SALT);
+    const withOmitted = deriveKey(SECRET);
+    expect(withDefault.equals(withOmitted)).toBe(true);
+  });
+
+  it('custom salt produces a different key than the default salt (G4)', () => {
+    const customKey = deriveKey(SECRET, 'custom-salt-for-dev-env');
+    const defaultKey = deriveKey(SECRET);
+    expect(customKey.equals(defaultKey)).toBe(false);
+  });
+
+  it('custom salt is deterministic — same salt yields same key (G4)', () => {
+    const k1 = deriveKey(SECRET, 'my-custom-salt');
+    const k2 = deriveKey(SECRET, 'my-custom-salt');
+    expect(k1.equals(k2)).toBe(true);
   });
 });
 

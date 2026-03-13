@@ -102,7 +102,9 @@ export function createProviderTokenServiceFactory(
       // Migrations are run exclusively in providerTokenPlugin.registerInit above.
       // The service factory assumes the schema already exists.
       const secret = config.getString('providerToken.encryptionSecret');
-      const encKey = deriveKey(secret);
+      const hkdfSalt =
+        config.getOptionalString('providerToken.hkdfSalt') ?? undefined;
+      const encKey = deriveKey(secret, hkdfSalt);
       const refreshBufferSeconds =
         config.getOptionalNumber('providerToken.refreshBufferSeconds') ?? 300;
 

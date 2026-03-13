@@ -25,8 +25,18 @@ import {
 const ALGO = 'aes-256-gcm' as const;
 const KEY_VERSION = 'v1';
 
-/** Derives a 32-byte AES key using HKDF-SHA-256 (RFC 5869). */
-export function deriveKey(secret: string): Buffer {
+/** Default HKDF salt. Kept in sync with the config default in plugin.ts. */
+export const DEFAULT_HKDF_SALT = 'backstage-provider-token-salt-v1';
+
+/**
+ * Derives a 32-byte AES key using HKDF-SHA-256 (RFC 5869).
+ *
+ * @param secret - Base64-encoded input key material from config.
+ * @param salt   - Optional HKDF salt override (G4: configurable via providerToken.hkdfSalt).
+ *                 Defaults to DEFAULT_HKDF_SALT. Use a custom salt for key-namespace isolation
+ *                 (e.g., separate dev/staging/prod environments sharing the same secret).
+ */
+export function deriveKey(secret: string, salt?: string): Buffer {
   const ikm = Buffer.from(secret, 'base64');
   if (ikm.length < 16) {
     throw new Error(
@@ -37,7 +47,7 @@ export function deriveKey(secret: string): Buffer {
     hkdfSync(
       'sha256',
       ikm,
-      Buffer.from('backstage-provider-token-salt-v1', 'utf8'),
+      Buffer.from(salt ?? DEFAULT_HKDF_SALT, 'utf8'),
       Buffer.from('provider-token-service', 'utf8'),
       32,
     ),
