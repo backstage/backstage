@@ -1,5 +1,5 @@
 ---
-id: index
+id: mcp-actions
 title: MCP Actions Backend
 description: The MCP Actions Backend exposes actions registered with the Actions Registry as MCP tools.
 ---
