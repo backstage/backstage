@@ -2075,6 +2075,85 @@ export type RowRenderFn<T extends TableItem> = (params: {
 }) => ReactNode;
 
 // @public (undocumented)
+export function SearchAutocomplete(
+  props: SearchAutocompleteProps,
+): JSX_2.Element;
+
+// @public
+export const SearchAutocompleteDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-SearchAutocomplete';
+    readonly searchField: 'bui-SearchAutocompleteSearchField';
+    readonly searchFieldInput: 'bui-SearchAutocompleteInput';
+    readonly searchFieldClear: 'bui-SearchAutocompleteClear';
+    readonly popover: 'bui-SearchAutocompletePopover';
+    readonly inner: 'bui-SearchAutocompleteInner';
+    readonly listBox: 'bui-SearchAutocompleteListBox';
+    readonly loadingState: 'bui-SearchAutocompleteLoadingState';
+    readonly emptyState: 'bui-SearchAutocompleteEmptyState';
+  };
+  readonly propDefs: {
+    readonly 'aria-label': {};
+    readonly 'aria-labelledby': {};
+    readonly size: {
+      readonly dataAttribute: true;
+      readonly default: 'small';
+    };
+    readonly placeholder: {
+      readonly default: 'Search';
+    };
+    readonly inputValue: {};
+    readonly onInputChange: {};
+    readonly popoverWidth: {};
+    readonly popoverPlacement: {};
+    readonly children: {};
+    readonly isLoading: {};
+    readonly defaultOpen: {};
+    readonly className: {};
+    readonly style: {};
+  };
+};
+
+// @public (undocumented)
+export function SearchAutocompleteItem(
+  props: SearchAutocompleteItemProps,
+): JSX_2.Element;
+
+// @public (undocumented)
+export type SearchAutocompleteItemOwnProps = {
+  children: ReactNode;
+  className?: string;
+};
+
+// @public (undocumented)
+export interface SearchAutocompleteItemProps
+  extends SearchAutocompleteItemOwnProps,
+    Omit<ListBoxItemProps, keyof SearchAutocompleteItemOwnProps> {}
+
+// @public (undocumented)
+export type SearchAutocompleteOwnProps = {
+  inputValue?: string;
+  onInputChange?: (value: string) => void;
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+  'aria-label'?: string;
+  'aria-labelledby'?: string;
+  placeholder?: string;
+  popoverWidth?: string;
+  popoverPlacement?: PopoverProps_2['placement'];
+  children?: ReactNode;
+  isLoading?: boolean;
+  defaultOpen?: boolean;
+  className?: string;
+  style?: React.CSSProperties;
+};
+
+// @public (undocumented)
+export interface SearchAutocompleteProps extends SearchAutocompleteOwnProps {}
+
+// @public (undocumented)
 export const SearchField: ForwardRefExoticComponent<
   SearchFieldProps & RefAttributes<HTMLDivElement>
 >;
