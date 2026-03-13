@@ -34,7 +34,11 @@ import {
   SecureTemplateRenderer,
 } from '../../lib/templating/SecureTemplater';
 import { TemplateActionRegistry } from '../actions/TemplateActionRegistry';
-import { generateExampleOutput, isTruthy } from './helper';
+import {
+  filterConditionalItems,
+  generateExampleOutput,
+  isTruthy,
+} from './helper';
 import { TaskTrackType, WorkflowResponse, WorkflowRunner } from './types';
 
 import type {
@@ -691,48 +695,10 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
 
       // Filter output links and text items based on their `if` condition
       if (Array.isArray(output?.links)) {
-        output.links = (output.links as JsonArray)
-          .filter(item => {
-            if (
-              typeof item !== 'object' ||
-              item === null ||
-              Array.isArray(item)
-            )
-              return true;
-            return !('if' in item) || isTruthy(item.if);
-          })
-          .map(item => {
-            if (
-              typeof item !== 'object' ||
-              item === null ||
-              Array.isArray(item)
-            )
-              return item;
-            const { if: _if, ...rest } = item as JsonObject;
-            return rest;
-          });
+        output.links = filterConditionalItems(output.links as JsonArray);
       }
       if (Array.isArray(output?.text)) {
-        output.text = (output.text as JsonArray)
-          .filter(item => {
-            if (
-              typeof item !== 'object' ||
-              item === null ||
-              Array.isArray(item)
-            )
-              return true;
-            return !('if' in item) || isTruthy(item.if);
-          })
-          .map(item => {
-            if (
-              typeof item !== 'object' ||
-              item === null ||
-              Array.isArray(item)
-            )
-              return item;
-            const { if: _if, ...rest } = item as JsonObject;
-            return rest;
-          });
+        output.text = filterConditionalItems(output.text as JsonArray);
       }
 
       await taskTrack.markSuccessful();
