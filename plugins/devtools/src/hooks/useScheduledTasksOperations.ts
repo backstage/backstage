@@ -17,22 +17,40 @@ import { useState, useCallback } from 'react';
 import { devToolsApiRef } from '../api';
 import { useApi } from '@backstage/core-plugin-api';
 
-export const useTriggerScheduledTask = () => {
+export const useScheduledTasksOperations = () => {
   const api = useApi(devToolsApiRef);
-  const [isTriggering, setIsTriggering] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | undefined>();
 
   const triggerTask = useCallback(
     async (plugin: string, taskId: string) => {
-      setIsTriggering(true);
+      setIsLoading(true);
       setError(undefined);
 
       try {
         await api.triggerScheduledTask(plugin, taskId);
       } catch (e) {
         setError(e);
+        throw e;
       } finally {
-        setIsTriggering(false);
+        setIsLoading(false);
+      }
+    },
+    [api],
+  );
+
+  const cancelTask = useCallback(
+    async (plugin: string, taskId: string) => {
+      setIsLoading(true);
+      setError(undefined);
+
+      try {
+        await api.cancelScheduledTask(plugin, taskId);
+      } catch (e) {
+        setError(e);
+        throw e;
+      } finally {
+        setIsLoading(false);
       }
     },
     [api],
@@ -40,7 +58,8 @@ export const useTriggerScheduledTask = () => {
 
   return {
     triggerTask,
-    isTriggering,
-    triggerError: error?.message,
+    cancelTask,
+    isLoading,
+    error: error?.message,
   };
 };

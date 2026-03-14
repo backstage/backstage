@@ -115,6 +115,14 @@ export default {
       [
         sidebarElementWithIndex(
           {
+            label: 'AI',
+            description:
+              'Features in Backstage you can leverage with your AI tools.',
+          },
+          ['ai/mcp-actions', 'ai/well-known-actions'],
+        ),
+        sidebarElementWithIndex(
+          {
             label: 'Auth and Identity',
             description: 'Authentication and identity management features.',
           },

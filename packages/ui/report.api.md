@@ -830,12 +830,6 @@ export const CheckboxDefinition: {
     readonly indicator: 'bui-CheckboxIndicator';
   };
   readonly propDefs: {
-    readonly selected: {
-      readonly dataAttribute: true;
-    };
-    readonly indeterminate: {
-      readonly dataAttribute: true;
-    };
     readonly children: {};
     readonly className: {};
   };
@@ -843,8 +837,6 @@ export const CheckboxDefinition: {
 
 // @public (undocumented)
 export type CheckboxOwnProps = {
-  selected?: boolean;
-  indeterminate?: boolean;
   children: React.ReactNode;
   className?: string;
 };

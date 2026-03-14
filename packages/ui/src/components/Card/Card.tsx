@@ -77,7 +77,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>((props, ref) => {
 
       triggerRef.current.dispatchEvent(
         new MouseEvent('click', {
-          bubbles: false,
+          bubbles: true,
           cancelable: true,
           ctrlKey: e.ctrlKey,
           metaKey: e.metaKey,

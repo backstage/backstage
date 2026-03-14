@@ -97,7 +97,7 @@ the Azure catalog plugin:
 yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-azure
 ```
 
-Then updated your backend by adding the following line:
+Then update your backend by adding the following line:
 
 ```ts title="packages/backend/src/index.ts"
 backend.add(import('@backstage/plugin-catalog-backend'));
