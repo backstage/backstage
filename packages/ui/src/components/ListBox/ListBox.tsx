@@ -23,6 +23,7 @@ import { RiCheckLine } from '@remixicon/react';
 import { useDefinition } from '../../hooks/useDefinition';
 import { ListBoxDefinition, ListBoxItemDefinition } from './definition';
 import type { ListBoxProps, ListBoxItemProps } from './types';
+import { Box } from '../Box/Box';
 
 /**
  * A listbox displays a list of options and allows a user to select one or more of them.
@@ -52,7 +53,7 @@ export const ListBox = <T extends object>(props: ListBoxProps<T>) => {
  */
 export const ListBoxItem = (props: ListBoxItemProps) => {
   const { ownProps, restProps } = useDefinition(ListBoxItemDefinition, props);
-  const { classes, children, description, icon } = ownProps;
+  const { classes, children, description, icon, customActions } = ownProps;
 
   const textValue = typeof children === 'string' ? children : undefined;
 
@@ -69,7 +70,11 @@ export const ListBoxItem = (props: ListBoxItemProps) => {
               <RiCheckLine />
             </div>
           )}
-          {icon && <div className={classes.icon}>{icon}</div>}
+          {icon && (
+            <Box bg="neutral" className={classes.icon}>
+              {icon}
+            </Box>
+          )}
           <div className={classes.label}>
             <Text slot="label">{children}</Text>
             {description && (
@@ -78,6 +83,15 @@ export const ListBoxItem = (props: ListBoxItemProps) => {
               </Text>
             )}
           </div>
+          {customActions && (
+            <div
+              className={classes.actions}
+              onClick={e => e.stopPropagation()}
+              onKeyDown={e => e.stopPropagation()}
+            >
+              {customActions}
+            </div>
+          )}
         </>
       )}
     </RAListBoxItem>

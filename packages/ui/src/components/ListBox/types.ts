@@ -55,9 +55,14 @@ export type ListBoxItemOwnProps = {
    */
   description?: string;
   /**
-   * Optional icon displayed before the label.
+   * Optional icon displayed before the label, rendered in a 32×32px box.
    */
   icon?: React.ReactNode;
+  /**
+   * Optional actions rendered in a flex row on the right side of the item,
+   * e.g. a ButtonIcon with a dropdown menu, or a set of tags.
+   */
+  customActions?: React.ReactNode;
   className?: string;
 };
 

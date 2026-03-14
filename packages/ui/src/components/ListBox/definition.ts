@@ -47,11 +47,13 @@ export const ListBoxItemDefinition = defineComponent<ListBoxItemOwnProps>()({
     icon: 'bui-ListBoxItemIcon',
     label: 'bui-ListBoxItemLabel',
     description: 'bui-ListBoxItemDescription',
+    actions: 'bui-ListBoxItemActions',
   },
   propDefs: {
     children: {},
     description: {},
     icon: {},
+    customActions: {},
     className: {},
   },
 });

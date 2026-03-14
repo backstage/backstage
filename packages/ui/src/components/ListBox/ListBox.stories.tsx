@@ -17,22 +17,37 @@
 import preview from '../../../../../.storybook/preview';
 import { useState } from 'react';
 import { ListBox, ListBoxItem } from './ListBox';
+import { ButtonIcon } from '../ButtonIcon';
+import { MenuTrigger, Menu, MenuItem } from '../Menu';
+import { TagGroup, Tag } from '../TagGroup';
 import type { Selection } from 'react-aria-components';
 import {
   RiJavascriptLine,
+  RiMoreLine,
   RiReactjsLine,
   RiShipLine,
   RiTerminalLine,
   RiCodeLine,
+  RiDeleteBinLine,
+  RiEdit2Line,
+  RiShareBoxLine,
 } from '@remixicon/react';
+import { MemoryRouter } from 'react-router-dom';
 
 const meta = preview.meta({
   title: 'Backstage UI/ListBox',
   component: ListBox,
   args: {
-    style: { width: 280 },
+    style: { width: 320 },
     'aria-label': 'List',
   },
+  decorators: [
+    Story => (
+      <MemoryRouter>
+        <Story />
+      </MemoryRouter>
+    ),
+  ],
 });
 
 const items = [
@@ -177,4 +192,72 @@ export const Disabled = meta.story({
       ))}
     </ListBox>
   ),
+});
+
+export const WithActionsMenu = meta.story({
+  render: args => (
+    <ListBox {...args}>
+      {items.map(item => (
+        <ListBoxItem
+          key={item.id}
+          id={item.id}
+          icon={itemIcons[item.id]}
+          customActions={
+            <MenuTrigger>
+              <ButtonIcon
+                icon={<RiMoreLine />}
+                size="small"
+                aria-label="More actions"
+              />
+              <Menu>
+                <MenuItem iconStart={<RiEdit2Line />}>Edit</MenuItem>
+                <MenuItem iconStart={<RiShareBoxLine />}>Share</MenuItem>
+                <MenuItem iconStart={<RiDeleteBinLine />} color="danger">
+                  Delete
+                </MenuItem>
+              </Menu>
+            </MenuTrigger>
+          }
+        >
+          {item.label}
+        </ListBoxItem>
+      ))}
+    </ListBox>
+  ),
+});
+
+export const WithActionsTags = meta.story({
+  args: {
+    style: { width: 380 },
+  },
+  render: args => {
+    const tagMap: Record<string, string[]> = {
+      react: ['frontend', 'ui'],
+      typescript: ['typed', 'js'],
+      javascript: ['web'],
+      rust: ['systems', 'fast'],
+      go: ['backend'],
+    };
+
+    return (
+      <ListBox {...args}>
+        {items.map(item => (
+          <ListBoxItem
+            key={item.id}
+            id={item.id}
+            icon={itemIcons[item.id]}
+            customActions={
+              <TagGroup aria-label={`Tags for ${item.label}`}>
+                {tagMap[item.id].map(tag => (
+                  <Tag key={tag}>{tag}</Tag>
+                ))}
+              </TagGroup>
+            }
+          >
+            {item.label}
+          </ListBoxItem>
+        ))}
+      </ListBox>
+    );
+  },
 });
