@@ -18,6 +18,7 @@ import { FieldExtensionOptions as FieldExtensionOptions_2 } from '@backstage/plu
 import { FieldSchema as FieldSchema_2 } from '@backstage/plugin-scaffolder-react';
 import { FieldValidation } from '@rjsf/utils';
 import { FormProps } from '@backstage/plugin-scaffolder-react';
+import { JsonValue } from '@backstage/types';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { LayoutOptions as LayoutOptions_2 } from '@backstage/plugin-scaffolder-react';
 import { LayoutTemplate as LayoutTemplate_2 } from '@backstage/plugin-scaffolder-react';
@@ -632,6 +633,31 @@ export type TemplateParameterSchema = TemplateParameterSchema_2;
 
 // @public
 export const TemplateTypePicker: () => JSX_2.Element | null;
+
+// @public (undocumented)
+export const useFormState: <T extends JsonValue>(
+  options: UseFormStateOptions<T>,
+) => UseFormStateResult<T>;
+
+// @public (undocumented)
+export interface UseFormStateOptions<T> {
+  // (undocumented)
+  debounceTime?: number;
+  // (undocumented)
+  id: string;
+  // (undocumented)
+  onLoad: (value: T | null) => void;
+}
+
+// @public (undocumented)
+export interface UseFormStateResult<T> {
+  // (undocumented)
+  cleanupFormState: () => void;
+  // (undocumented)
+  loading: boolean;
+  // (undocumented)
+  persistFormState: (value: T) => void;
+}
 
 // @public @deprecated (undocumented)
 export const useTemplateSecrets: () => ScaffolderUseTemplateSecrets_2;

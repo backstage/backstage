@@ -38,3 +38,9 @@ export {
 
 export * from './components';
 export * from './deprecated';
+
+export { useFormState } from './hooks/useFormState';
+export type {
+  UseFormStateOptions,
+  UseFormStateResult,
+} from './hooks/useFormState';
