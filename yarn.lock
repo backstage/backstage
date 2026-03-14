@@ -2801,7 +2801,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/cli-module-auth@workspace:^, @backstage/cli-module-auth@workspace:packages/cli-module-auth":
+"@backstage/cli-module-auth@workspace:*, @backstage/cli-module-auth@workspace:^, @backstage/cli-module-auth@workspace:packages/cli-module-auth":
   version: 0.0.0-use.local
   resolution: "@backstage/cli-module-auth@workspace:packages/cli-module-auth"
   dependencies:
@@ -2824,7 +2824,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/cli-module-build@workspace:^, @backstage/cli-module-build@workspace:packages/cli-module-build":
+"@backstage/cli-module-build@workspace:*, @backstage/cli-module-build@workspace:^, @backstage/cli-module-build@workspace:packages/cli-module-build":
   version: 0.0.0-use.local
   resolution: "@backstage/cli-module-build@workspace:packages/cli-module-build"
   dependencies:
@@ -2888,7 +2888,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/cli-module-config@workspace:^, @backstage/cli-module-config@workspace:packages/cli-module-config":
+"@backstage/cli-module-config@workspace:*, @backstage/cli-module-config@workspace:^, @backstage/cli-module-config@workspace:packages/cli-module-config":
   version: 0.0.0-use.local
   resolution: "@backstage/cli-module-config@workspace:packages/cli-module-config"
   dependencies:
@@ -2910,7 +2910,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/cli-module-create-github-app@workspace:^, @backstage/cli-module-create-github-app@workspace:packages/cli-module-create-github-app":
+"@backstage/cli-module-create-github-app@workspace:*, @backstage/cli-module-create-github-app@workspace:^, @backstage/cli-module-create-github-app@workspace:packages/cli-module-create-github-app":
   version: 0.0.0-use.local
   resolution: "@backstage/cli-module-create-github-app@workspace:packages/cli-module-create-github-app"
   dependencies:
@@ -2932,7 +2932,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/cli-module-info@workspace:^, @backstage/cli-module-info@workspace:packages/cli-module-info":
+"@backstage/cli-module-info@workspace:*, @backstage/cli-module-info@workspace:^, @backstage/cli-module-info@workspace:packages/cli-module-info":
   version: 0.0.0-use.local
   resolution: "@backstage/cli-module-info@workspace:packages/cli-module-info"
   dependencies:
@@ -2948,7 +2948,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/cli-module-lint@workspace:^, @backstage/cli-module-lint@workspace:packages/cli-module-lint":
+"@backstage/cli-module-lint@workspace:*, @backstage/cli-module-lint@workspace:^, @backstage/cli-module-lint@workspace:packages/cli-module-lint":
   version: 0.0.0-use.local
   resolution: "@backstage/cli-module-lint@workspace:packages/cli-module-lint"
   dependencies:
@@ -2968,7 +2968,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/cli-module-maintenance@workspace:^, @backstage/cli-module-maintenance@workspace:packages/cli-module-maintenance":
+"@backstage/cli-module-maintenance@workspace:*, @backstage/cli-module-maintenance@workspace:^, @backstage/cli-module-maintenance@workspace:packages/cli-module-maintenance":
   version: 0.0.0-use.local
   resolution: "@backstage/cli-module-maintenance@workspace:packages/cli-module-maintenance"
   dependencies:
@@ -2985,7 +2985,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/cli-module-migrate@workspace:^, @backstage/cli-module-migrate@workspace:packages/cli-module-migrate":
+"@backstage/cli-module-migrate@workspace:*, @backstage/cli-module-migrate@workspace:^, @backstage/cli-module-migrate@workspace:packages/cli-module-migrate":
   version: 0.0.0-use.local
   resolution: "@backstage/cli-module-migrate@workspace:packages/cli-module-migrate"
   dependencies:
@@ -3005,7 +3005,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/cli-module-new@workspace:^, @backstage/cli-module-new@workspace:packages/cli-module-new":
+"@backstage/cli-module-new@workspace:*, @backstage/cli-module-new@workspace:^, @backstage/cli-module-new@workspace:packages/cli-module-new":
   version: 0.0.0-use.local
   resolution: "@backstage/cli-module-new@workspace:packages/cli-module-new"
   dependencies:
@@ -3016,7 +3016,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/cli-module-test-jest@workspace:^, @backstage/cli-module-test-jest@workspace:packages/cli-module-test-jest":
+"@backstage/cli-module-test-jest@workspace:*, @backstage/cli-module-test-jest@workspace:^, @backstage/cli-module-test-jest@workspace:packages/cli-module-test-jest":
   version: 0.0.0-use.local
   resolution: "@backstage/cli-module-test-jest@workspace:packages/cli-module-test-jest"
   dependencies:
@@ -3027,7 +3027,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/cli-module-translations@workspace:^, @backstage/cli-module-translations@workspace:packages/cli-module-translations":
+"@backstage/cli-module-translations@workspace:*, @backstage/cli-module-translations@workspace:^, @backstage/cli-module-translations@workspace:packages/cli-module-translations":
   version: 0.0.0-use.local
   resolution: "@backstage/cli-module-translations@workspace:packages/cli-module-translations"
   dependencies:
@@ -45616,6 +45616,17 @@ __metadata:
   resolution: "root@workspace:."
   dependencies:
     "@backstage/cli": "workspace:*"
+    "@backstage/cli-module-auth": "workspace:*"
+    "@backstage/cli-module-build": "workspace:*"
+    "@backstage/cli-module-config": "workspace:*"
+    "@backstage/cli-module-create-github-app": "workspace:*"
+    "@backstage/cli-module-info": "workspace:*"
+    "@backstage/cli-module-lint": "workspace:*"
+    "@backstage/cli-module-maintenance": "workspace:*"
+    "@backstage/cli-module-migrate": "workspace:*"
+    "@backstage/cli-module-new": "workspace:*"
+    "@backstage/cli-module-test-jest": "workspace:*"
+    "@backstage/cli-module-translations": "workspace:*"
     "@backstage/codemods": "workspace:*"
     "@backstage/create-app": "workspace:*"
     "@backstage/e2e-test-utils": "workspace:*"
