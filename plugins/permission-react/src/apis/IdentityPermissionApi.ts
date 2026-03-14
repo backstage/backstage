@@ -62,14 +62,8 @@ export class IdentityPermissionApi implements PermissionApi {
     request: AuthorizePermissionRequest,
   ): Promise<AuthorizePermissionResponse>;
   async authorize(
-    requests: AuthorizePermissionRequest[],
-  ): Promise<AuthorizePermissionResponse[]>;
-  async authorize(
-    request: AuthorizePermissionRequest | AuthorizePermissionRequest[],
-  ): Promise<AuthorizePermissionResponse | AuthorizePermissionResponse[]> {
-    if (Array.isArray(request)) {
-      return Promise.all(request.map(r => this.loader.load(r)));
-    }
+    request: AuthorizePermissionRequest,
+  ): Promise<AuthorizePermissionResponse> {
     return this.loader.load(request);
   }
 }

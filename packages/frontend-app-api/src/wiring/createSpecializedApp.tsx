@@ -390,8 +390,8 @@ export type PreparedSpecializedApp = {
 // Minimal local permission API interface to avoid a dependency on @backstage/plugin-permission-react
 type MinimalPermissionApi = {
   authorize(
-    requests: EvaluatePermissionRequest[],
-  ): Promise<EvaluatePermissionResponse[]>;
+    request: EvaluatePermissionRequest,
+  ): Promise<EvaluatePermissionResponse>;
 };
 
 const localPermissionApiRef = createApiRef<MinimalPermissionApi>({
@@ -544,10 +544,12 @@ export function prepareSpecializedApp(
       }
 
       const permNames = predicateReferences.permissions;
-      const responses = await permissionApi.authorize(
-        permNames.map(name => ({
-          permission: { name, type: 'basic', attributes: {} },
-        })),
+      const responses = await Promise.all(
+        permNames.map(name =>
+          permissionApi.authorize({
+            permission: { name, type: 'basic', attributes: {} },
+          }),
+        ),
       );
       allowedPermissions = permNames.filter(
         (_, i) => responses[i].result === 'ALLOW',
