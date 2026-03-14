@@ -4,7 +4,7 @@
 
 **BREAKING**: Renamed internal CSS classes to match the `Header` component name.
 
-**Migration notes**: If you are targeting these classes directly in your styles, update the following:
+**Migration:**: If you are targeting these classes directly in your styles, update the following:
 
 - `bui-HeaderPage` → `bui-Header`
 - `bui-HeaderPageContent` → `bui-HeaderContent`
@@ -12,4 +12,4 @@
 - `bui-HeaderPageTabsWrapper` → `bui-HeaderTabsWrapper`
 - `bui-HeaderPageControls` → `bui-HeaderControls`
 
-**Affected components**: Header
+**Affected components:**: Header
