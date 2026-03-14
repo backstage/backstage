@@ -42,7 +42,6 @@
     "@backstage/plugin-notifications-common": "workspace:^",
     "@backstage/plugin-notifications-node": "workspace:^",
     "@backstage/types": "workspace:^",
-    "@opentelemetry/api": "^1.9.0",
     "@slack/bolt": "^3.21.4",
     "@slack/types": "^2.14.0",
     "@slack/web-api": "^7.5.0",
