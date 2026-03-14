@@ -291,10 +291,6 @@ const config: Config = {
             from: '/docs/plugins/existing-plugins',
             to: '/docs/plugins/',
           },
-          {
-            from: '/docs/features/software-templates/migrating-to-rjsf-v5',
-            to: '/docs/features/software-templates/',
-          },
         ],
       }),
     [

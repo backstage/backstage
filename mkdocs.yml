@@ -8,7 +8,6 @@ plugins:
   - redirects:
       redirect_maps:
         'index.md': 'overview/what-is-backstage.md'
-        'features/software-templates/migrating-from-v1beta2-to-v1beta3.md': 'features/software-templates/index.md'
 
 # For sidebar navigation on https://backstage.io/, see `microsite/sidebars.js`
 nav:
