@@ -605,15 +605,6 @@ export function prepareSpecializedApp(
     });
   }
 
-  function getPreparedSessionState() {
-    if (cachedSessionState) {
-      return cachedSessionState;
-    }
-
-    getBootstrapApp();
-    return undefined;
-  }
-
   let finalized: FinalizedSpecializedApp | undefined;
   let bootstrapApp: BootstrapSpecializedApp | undefined;
   let bootstrapError: Error | undefined;
@@ -813,9 +804,14 @@ export function prepareSpecializedApp(
       if (signInRuntime?.error && !signInRuntime.requiresSignIn) {
         throw signInRuntime.error;
       }
+
+      if (!sessionState && !cachedSessionState) {
+        getBootstrapApp();
+      }
+
       const finalizedSessionState =
         sessionState ??
-        getPreparedSessionState() ??
+        cachedSessionState ??
         (signInRuntime?.requiresSignIn
           ? undefined
           : createSessionState(EMPTY_PREDICATE_CONTEXT));
