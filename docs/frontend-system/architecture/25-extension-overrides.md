@@ -343,3 +343,5 @@ export default app.createRoot();
 ```
 
 You must define a `pluginId` when creating a frontend module, and the plugin must also be installed for the module to be loaded.
+
+Frontend modules also support an `if` option. Just like for plugins, that predicate is applied to every extension that comes from the module, and is combined with any extension-level `if` predicate using logical `AND`. This is useful when you want to enable or disable an entire override package based on a feature flag or permission.

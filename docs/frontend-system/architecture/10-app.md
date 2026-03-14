@@ -40,6 +40,36 @@ Each node in this tree is an extension with a parent node and children. The colo
 
 A common type of data that is shared between extensions is React elements and components. These can in turn be rendered by each other in their own React components, which ends up forming a parallel tree of React components that is similar in shape to that of the app extension tree. At the top of the app extension tree is a built-in root extension that among other things outputs a React element. This element also ends up being the root of the parallel React tree, and is rendered by the React element returned by `app.createRoot()`.
 
+## Preparing an App in Phases
+
+Most apps should use `createApp` from `@backstage/frontend-defaults`, which takes care of all app preparation internally. For more advanced use cases there is also a lower-level `prepareSpecializedApp` API in `@backstage/frontend-app-api`.
+
+This API is useful when you need to render a bootstrap tree before the full app can be finalized, for example while waiting for sign-in or other session-dependent state. It gives you access to a bootstrap app tree immediately, notifies you when the finalized app is ready, and lets you reuse a prepared session in a later app instance.
+
+```tsx
+import {
+  FinalizedSpecializedApp,
+  prepareSpecializedApp,
+} from '@backstage/frontend-app-api';
+
+const preparedApp = prepareSpecializedApp({
+  config,
+  features: [appPlugin, ...features],
+});
+
+const bootstrapApp = preparedApp.getBootstrapApp();
+
+const unsubscribe = preparedApp.onFinalized(
+  (finalizedApp: FinalizedSpecializedApp) => {
+    console.log(finalizedApp.sessionState);
+  },
+);
+```
+
+The `getBootstrapApp()` method exposes the partial app tree that is available during bootstrap. The `onFinalized()` method notifies you once the full app tree has been finalized, and `finalize(sessionState?)` can be used when you already have a reusable session state or when you want to bypass the asynchronous bootstrap flow in tests.
+
+When using phased app preparation, `app/root.children` acts as the main session boundary. Conditional extensions behind that boundary are evaluated during finalization. Conditional `app/root.elements` and API branches are also deferred until finalization, while other bootstrap-visible predicates are ignored and reported as warnings.
+
 ## Feature Discovery
 
 App feature discovery lets you automatically discover and install features provided by dependencies in your app. In practice, it means that you don't need to manually `import` features in code, but they are instead installed as soon as you add them as a dependency in your `package.json`.
