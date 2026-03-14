@@ -614,9 +614,21 @@ export function prepareSpecializedApp(
     return undefined;
   }
 
-  function finalizeWithSessionState(
+  let finalized: FinalizedSpecializedApp | undefined;
+  let bootstrapApp: BootstrapSpecializedApp | undefined;
+  let bootstrapError: Error | undefined;
+  let finalizationState: FinalizationState | undefined;
+  let bootstrapErrorReporter: ((error: Error) => void) | undefined;
+  let pendingBootstrapError: Error | undefined;
+
+  function finalizeFromSessionState(
     finalizedSessionState: SpecializedAppSessionState,
   ): FinalizedSpecializedApp {
+    if (finalized) {
+      return finalized;
+    }
+
+    cachedSessionState = finalizedSessionState;
     const sessionStateData = OpaqueSpecializedAppSessionState.toInternal(
       finalizedSessionState,
     );
@@ -637,28 +649,11 @@ export function prepareSpecializedApp(
       predicateContext: sessionStateData.predicateContext,
     });
 
-    return {
+    finalized = {
       sessionState: finalizedSessionState,
       tree,
       errors: collector.collectErrors(),
     };
-  }
-
-  let finalized: FinalizedSpecializedApp | undefined;
-  let bootstrapApp: BootstrapSpecializedApp | undefined;
-  let bootstrapError: Error | undefined;
-  let finalizationState: FinalizationState | undefined;
-  let bootstrapErrorReporter: ((error: Error) => void) | undefined;
-  let pendingBootstrapError: Error | undefined;
-
-  function finalizeFromSessionState(
-    finalizedSessionState: SpecializedAppSessionState,
-  ): FinalizedSpecializedApp {
-    cachedSessionState = finalizedSessionState;
-    if (!finalized) {
-      finalized = finalizeWithSessionState(finalizedSessionState);
-    }
-
     return finalized;
   }
 
@@ -830,8 +825,7 @@ export function prepareSpecializedApp(
         );
       }
 
-      cachedSessionState = finalizedSessionState;
-      finalized = finalizeWithSessionState(finalizedSessionState);
+      finalized = finalizeFromSessionState(finalizedSessionState);
       finalizationState?.resolve(finalized);
       return finalized;
     },
