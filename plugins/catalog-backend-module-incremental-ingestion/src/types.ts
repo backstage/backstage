@@ -18,6 +18,7 @@ import {
   LoggerService,
   SchedulerServiceTaskFunction,
 } from '@backstage/backend-plugin-api';
+import { MetricsService } from '@backstage/backend-plugin-api/alpha';
 import type {
   DeferredEntity,
   EntityProviderConnection,
@@ -184,6 +185,7 @@ export interface IterationEngine {
 
 export interface IterationEngineOptions {
   logger: LoggerService;
+  metrics: MetricsService;
   connection: EntityProviderConnection;
   manager: IncrementalIngestionDatabaseManager;
   provider: IncrementalEntityProvider<unknown, unknown>;
