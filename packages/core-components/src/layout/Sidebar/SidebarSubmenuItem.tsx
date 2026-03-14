@@ -137,6 +137,8 @@ export type SidebarSubmenuItemDropdownItem = {
  * to: Path to navigate to when item is clicked
  * icon: Icon displayed on the left of text content
  * dropdownItems: Optional array of dropdown items displayed when submenu item is clicked.
+ * exact: Match query parameters in URL exactly (otherwise subset match is used)
+ * matchHash: Match hash in URL (e.g. 'toolbox#my-tool') when testing for "active" menu item
  *
  * @public
  */
@@ -147,6 +149,7 @@ export type SidebarSubmenuItemProps = {
   icon?: IconComponent;
   dropdownItems?: SidebarSubmenuItemDropdownItem[];
   exact?: boolean;
+  matchHash?: boolean;
   initialShowDropdown?: boolean;
 };
 
@@ -156,7 +159,15 @@ export type SidebarSubmenuItemProps = {
  * @public
  */
 export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
-  const { title, subtitle, to, icon: Icon, dropdownItems, exact } = props;
+  const {
+    title,
+    subtitle,
+    to,
+    icon: Icon,
+    dropdownItems,
+    exact,
+    matchHash,
+  } = props;
   const classes = useStyles();
   const { setIsHoveredOn } = useContext(SidebarItemWithSubmenuContext);
   const closeSubmenu = () => {
@@ -164,7 +175,7 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
   };
   const toLocation = useResolvedPath(to ?? '');
   const currentLocation = useLocation();
-  let isActive = isLocationMatch(currentLocation, toLocation, exact);
+  let isActive = isLocationMatch(currentLocation, toLocation, exact, matchHash);
 
   const [showDropDown, setShowDropDown] = useState(
     props.initialShowDropdown ?? false,
@@ -175,7 +186,12 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
   if (dropdownItems !== undefined) {
     dropdownItems.some(item => {
       const resolvedPath = resolvePath(item.to);
-      isActive = isLocationMatch(currentLocation, resolvedPath, exact);
+      isActive = isLocationMatch(
+        currentLocation,
+        resolvedPath,
+        exact,
+        matchHash,
+      );
       return isActive;
     });
     return (
