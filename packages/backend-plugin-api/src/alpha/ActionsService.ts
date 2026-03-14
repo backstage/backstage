@@ -22,6 +22,7 @@ import { BackstageCredentials } from '@backstage/backend-plugin-api';
  */
 export type ActionsServiceAction = {
   id: string;
+  pluginId: string;
   name: string;
   title: string;
   description: string;

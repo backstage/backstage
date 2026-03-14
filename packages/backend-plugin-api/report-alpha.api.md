@@ -82,6 +82,7 @@ export interface ActionsService {
 // @alpha (undocumented)
 export type ActionsServiceAction = {
   id: string;
+  pluginId: string;
   name: string;
   title: string;
   description: string;

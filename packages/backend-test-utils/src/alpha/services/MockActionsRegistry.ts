@@ -82,6 +82,7 @@ export class MockActionsRegistry
     return {
       actions: Array.from(this.actions.entries()).map(([id, action]) => ({
         id,
+        pluginId: 'test',
         name: action.name,
         title: action.title,
         description: action.description,

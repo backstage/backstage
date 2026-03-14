@@ -17,9 +17,21 @@
 export interface Config {
   mcpActions?: {
     /**
+     * Display name for the MCP server. Defaults to "backstage".
+     * Used when running a single bundled server without mcpActions.servers.
+     */
+    name?: string;
+
+    /**
+     * Description of the MCP server.
+     * Used when running a single bundled server without mcpActions.servers.
+     */
+    description?: string;
+
+    /**
      * When true, MCP tool names include the plugin ID prefix to avoid
      * collisions across plugins. For example an action registered as
-     * "get-entity" by the catalog plugin becomes "catalog:get-entity".
+     * "get-entity" by the catalog plugin becomes "catalog.get-entity".
      * Defaults to true.
      */
     namespacedToolNames?: boolean;

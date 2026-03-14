@@ -66,6 +66,7 @@ describe('actionsServiceFactory', () => {
     const mockActionsDefinition: ActionsServiceAction = {
       description: 'my mock description',
       id: 'my-plugin:test',
+      pluginId: 'my-plugin',
       name: 'testy',
       title: 'Test',
       schema: {
@@ -755,6 +756,7 @@ describe('actionsServiceFactory', () => {
             {
               description: 'Test',
               id: 'plugin-with-action:with-validation',
+              pluginId: 'plugin-with-action',
               name: 'with-validation',
               schema: {
                 input: {
