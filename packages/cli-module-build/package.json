@@ -54,7 +54,7 @@
     "ctrlc-windows": "^2.1.0",
     "esbuild-loader": "^4.4.2",
     "eslint-rspack-plugin": "^4.2.1",
-    "eslint-webpack-plugin": "^5.0.3",
+    "eslint-webpack-plugin": "^4.2.0",
     "fork-ts-checker-webpack-plugin": "^9.1.0",
     "fs-extra": "^11.2.0",
     "glob": "^7.1.7",
