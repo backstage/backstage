@@ -82,7 +82,7 @@
     "@backstage/plugin-events-backend-module-google-pubsub": "workspace:^",
     "@types/lodash": "^4.14.151",
     "msw": "^2.0.0",
-    "type-fest": "^4.41.0"
+    "type-fest": "^5.0.0"
   },
   "configSchema": "config.d.ts"
 }
