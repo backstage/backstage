@@ -17,10 +17,10 @@
 import {
   Extension,
   FeatureFlagConfig,
-  FilterPredicate,
   IconElement,
   OverridableFrontendPlugin,
 } from '@backstage/frontend-plugin-api';
+import { FilterPredicate } from '@backstage/filter-predicates';
 import { JsonObject } from '@backstage/types';
 import { OpaqueType } from '@internal/opaque';
 

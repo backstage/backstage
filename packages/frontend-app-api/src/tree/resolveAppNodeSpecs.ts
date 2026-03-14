@@ -56,12 +56,8 @@ function combinePredicates(
 }
 
 function getExtensionPredicate(options: {
-  extension: Extension<any, any>;
   internalExtension: ReturnType<typeof toInternalExtension>;
 }) {
-  if (options.extension.version === 'v2') {
-    return options.extension.if;
-  }
   if (options.internalExtension.version === 'v2') {
     return options.internalExtension.if;
   }
@@ -109,20 +105,27 @@ export function resolveAppNodeSpecs(options: {
   const pluginExtensions = plugins.flatMap(plugin => {
     const internalPlugin = OpaqueFrontendPlugin.toInternal(plugin);
     return internalPlugin.extensions
-      .map(extension => ({
-        ...extension,
-        plugin,
-        if: combinePredicates(
-          internalPlugin.if,
-          extension.version === 'v2' ? extension.if : undefined,
-        ),
-      }))
+      .map(extension => {
+        const internalExtension = toInternalExtension(extension);
+        return {
+          ...internalExtension,
+          plugin,
+          if: combinePredicates(
+            internalPlugin.if,
+            internalExtension.version === 'v2'
+              ? internalExtension.if
+              : undefined,
+          ),
+        };
+      })
       .filter(filterForbidden);
   });
   const moduleExtensions = modules.flatMap(mod => {
     const internalModule = toInternalFrontendModule(mod);
     return internalModule.extensions
       .flatMap(extension => {
+        const internalExtension = toInternalExtension(extension);
+
         // Modules for plugins that are not installed are ignored
         const plugin = plugins.find(p => p.pluginId === mod.pluginId);
         if (!plugin) {
@@ -131,11 +134,13 @@ export function resolveAppNodeSpecs(options: {
 
         return [
           {
-            ...extension,
+            ...internalExtension,
             plugin,
             if: combinePredicates(
               internalModule.if,
-              extension.version === 'v2' ? extension.if : undefined,
+              internalExtension.version === 'v2'
+                ? internalExtension.if
+                : undefined,
             ),
           },
         ];
@@ -159,7 +164,7 @@ export function resolveAppNodeSpecs(options: {
           source: plugin,
           attachTo: internalExtension.attachTo,
           disabled: internalExtension.disabled,
-          if: getExtensionPredicate({ extension, internalExtension }),
+          if: getExtensionPredicate({ internalExtension }),
           config: undefined as unknown,
         },
       };
@@ -173,7 +178,7 @@ export function resolveAppNodeSpecs(options: {
           plugin: appPlugin,
           attachTo: internalExtension.attachTo,
           disabled: internalExtension.disabled,
-          if: getExtensionPredicate({ extension, internalExtension }),
+          if: getExtensionPredicate({ internalExtension }),
           config: undefined as unknown,
         },
       };
@@ -194,7 +199,6 @@ export function resolveAppNodeSpecs(options: {
       configuredExtensions[index].params.attachTo = internalExtension.attachTo;
       configuredExtensions[index].params.disabled = internalExtension.disabled;
       configuredExtensions[index].params.if = getExtensionPredicate({
-        extension,
         internalExtension,
       });
     } else {
@@ -206,7 +210,7 @@ export function resolveAppNodeSpecs(options: {
           source: extension.plugin,
           attachTo: internalExtension.attachTo,
           disabled: internalExtension.disabled,
-          if: getExtensionPredicate({ extension, internalExtension }),
+          if: getExtensionPredicate({ internalExtension }),
           config: undefined,
         },
       });

@@ -34,6 +34,7 @@ import {
 import { render, screen } from '@testing-library/react';
 import {
   createSpecializedApp,
+  FinalizedSpecializedApp,
   prepareSpecializedApp,
   PreparedSpecializedApp,
 } from './createSpecializedApp';
@@ -79,7 +80,7 @@ function renderPreparedBootstrap(preparedApp: PreparedSpecializedApp) {
 }
 
 async function waitForFinalizedApp(preparedApp: PreparedSpecializedApp) {
-  return new Promise(resolve => {
+  return new Promise<FinalizedSpecializedApp>(resolve => {
     preparedApp.onFinalized(resolve);
   });
 }
