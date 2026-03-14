@@ -42,6 +42,7 @@ export interface SortState {
 /** @public */
 export type TableRootOwnProps = {
   stale?: boolean;
+  loading?: boolean;
 };
 
 /** @public */

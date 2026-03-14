@@ -38,6 +38,7 @@ export const TableDefinition = defineComponent<TableRootOwnProps>()({
   },
   propDefs: {
     stale: { dataAttribute: true },
+    loading: { dataAttribute: true },
   },
 });
 

@@ -24,7 +24,8 @@
     table-layout: fixed;
     transition: opacity 0.2s ease-in-out;
 
-    &[data-stale='true'] {
+    &[data-stale='true'],
+    &[data-loading='true'] {
       opacity: 0.6;
     }
   }
