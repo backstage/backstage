@@ -26,15 +26,15 @@ import {
  *
  * @public
  */
-export class AzureBlobStorageIntergation implements ScmIntegration {
-  static factory: ScmIntegrationsFactory<AzureBlobStorageIntergation> = ({
+export class AzureBlobStorageIntegration implements ScmIntegration {
+  static factory: ScmIntegrationsFactory<AzureBlobStorageIntegration> = ({
     config,
   }) => {
     const configs = readAzureBlobStorageIntegrationConfigs(
       config.getOptionalConfigArray('integrations.azureBlobStorage') ?? [],
     );
     return basicIntegrations(
-      configs.map(c => new AzureBlobStorageIntergation(c)),
+      configs.map(c => new AzureBlobStorageIntegration(c)),
       i => i.config.host,
     );
   };

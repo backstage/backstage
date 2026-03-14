@@ -777,7 +777,7 @@ export function MockEntityListContextProvider<
 // @public
 export class MockStarredEntitiesApi implements StarredEntitiesApi {
   // (undocumented)
-  starredEntitie$(): Observable<Set<string>>;
+  starredEntities$(): Observable<Set<string>>;
   // (undocumented)
   toggleStarred(entityRef: string): Promise<void>;
 }
@@ -787,7 +787,7 @@ export type PaginationMode = 'cursor' | 'offset' | 'none';
 
 // @public
 export interface StarredEntitiesApi {
-  starredEntitie$(): Observable<Set<string>>;
+  starredEntities$(): Observable<Set<string>>;
   toggleStarred(entityRef: string): Promise<void>;
 }
 

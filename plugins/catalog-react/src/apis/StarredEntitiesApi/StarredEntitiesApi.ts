@@ -42,5 +42,5 @@ export interface StarredEntitiesApi {
   /**
    * Observe the set of starred entity references.
    */
-  starredEntitie$(): Observable<Set<string>>;
+  starredEntities$(): Observable<Set<string>>;
 }

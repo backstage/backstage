@@ -189,7 +189,7 @@ describe('createGitLabMergeRequest', () => {
         description: 'This is an important change',
         removeSourceBranch: false,
         targetPath: 'Subdirectory',
-        assingnee: 'John Doe',
+        assignee: 'John Doe',
       };
       mockDir.setContent({
         [workspacePath]: {

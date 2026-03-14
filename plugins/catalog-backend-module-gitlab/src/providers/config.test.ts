@@ -402,7 +402,7 @@ describe('config', () => {
     );
   });
 
-  it('valid config with empyt topics', () => {
+  it('valid config with empty topics', () => {
     const config = new ConfigReader({
       catalog: {
         providers: {

@@ -56,7 +56,7 @@ describe('CatalogFilterBlueprint', () => {
     `);
   });
 
-  it('should allow overrding of inputs and config', async () => {
+  it('should allow overriding of inputs and config', async () => {
     const extension = CatalogFilterBlueprint.makeWithOverrides({
       name: 'test-name',
       inputs: {

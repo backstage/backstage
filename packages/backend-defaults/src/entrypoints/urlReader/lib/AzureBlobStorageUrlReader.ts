@@ -30,7 +30,7 @@ import { Readable } from 'node:stream';
 import { relative } from 'node:path/posix';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 import {
-  AzureBlobStorageIntergation,
+  AzureBlobStorageIntegration,
   AzureCredentialsManager,
   DefaultAzureCredentialsManager,
   ScmIntegrations,
@@ -92,14 +92,14 @@ export class AzureBlobStorageUrlReader implements UrlReaderService {
   // private readonly blobServiceClient: BlobServiceClient;
 
   private readonly credsManager: AzureCredentialsManager;
-  private readonly integration: AzureBlobStorageIntergation;
+  private readonly integration: AzureBlobStorageIntegration;
   private readonly deps: {
     treeResponseFactory: ReadTreeResponseFactory;
   };
 
   constructor(
     credsManager: AzureCredentialsManager,
-    integration: AzureBlobStorageIntergation,
+    integration: AzureBlobStorageIntegration,
     deps: {
       treeResponseFactory: ReadTreeResponseFactory;
     },

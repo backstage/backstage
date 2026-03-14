@@ -74,6 +74,27 @@ export type AwsS3IntegrationConfig = {
 };
 
 // @public
+export class AzureBlobStorageIntegration implements ScmIntegration {
+  constructor(integrationConfig: AzureBlobStorageIntegrationConfig);
+  // (undocumented)
+  get config(): AzureBlobStorageIntegrationConfig;
+  // (undocumented)
+  static factory: ScmIntegrationsFactory<AzureBlobStorageIntegration>;
+  // (undocumented)
+  resolveEditUrl(url: string): string;
+  // (undocumented)
+  resolveUrl(options: {
+    url: string;
+    base: string;
+    lineNumber?: number | undefined;
+  }): string;
+  // (undocumented)
+  get title(): string;
+  // (undocumented)
+  get type(): string;
+}
+
+// @public
 export type AzureBlobStorageIntegrationConfig = {
   accountName?: string;
   accountKey?: string;
@@ -88,27 +109,6 @@ export type AzureBlobStorageIntegrationConfig = {
     clientSecret: string;
   };
 };
-
-// @public
-export class AzureBlobStorageIntergation implements ScmIntegration {
-  constructor(integrationConfig: AzureBlobStorageIntegrationConfig);
-  // (undocumented)
-  get config(): AzureBlobStorageIntegrationConfig;
-  // (undocumented)
-  static factory: ScmIntegrationsFactory<AzureBlobStorageIntergation>;
-  // (undocumented)
-  resolveEditUrl(url: string): string;
-  // (undocumented)
-  resolveUrl(options: {
-    url: string;
-    base: string;
-    lineNumber?: number | undefined;
-  }): string;
-  // (undocumented)
-  get title(): string;
-  // (undocumented)
-  get type(): string;
-}
 
 // @public
 export type AzureClientSecretCredential = AzureCredentialBase & {
@@ -771,7 +771,7 @@ export interface IntegrationsByType {
   // (undocumented)
   azure: ScmIntegrationsGroup<AzureIntegration>;
   // (undocumented)
-  azureBlobStorage: ScmIntegrationsGroup<AzureBlobStorageIntergation>;
+  azureBlobStorage: ScmIntegrationsGroup<AzureBlobStorageIntegration>;
   // (undocumented)
   bitbucketCloud: ScmIntegrationsGroup<BitbucketCloudIntegration>;
   // (undocumented)
@@ -980,7 +980,7 @@ export interface ScmIntegrationRegistry
   // (undocumented)
   azure: ScmIntegrationsGroup<AzureIntegration>;
   // (undocumented)
-  azureBlobStorage: ScmIntegrationsGroup<AzureBlobStorageIntergation>;
+  azureBlobStorage: ScmIntegrationsGroup<AzureBlobStorageIntegration>;
   // (undocumented)
   bitbucketCloud: ScmIntegrationsGroup<BitbucketCloudIntegration>;
   // (undocumented)
@@ -1013,7 +1013,7 @@ export class ScmIntegrations implements ScmIntegrationRegistry {
   // (undocumented)
   get azure(): ScmIntegrationsGroup<AzureIntegration>;
   // (undocumented)
-  get azureBlobStorage(): ScmIntegrationsGroup<AzureBlobStorageIntergation>;
+  get azureBlobStorage(): ScmIntegrationsGroup<AzureBlobStorageIntegration>;
   // (undocumented)
   get bitbucketCloud(): ScmIntegrationsGroup<BitbucketCloudIntegration>;
   // (undocumented)

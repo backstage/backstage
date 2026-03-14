@@ -278,14 +278,14 @@ describe('createExtension', () => {
     expect(String(extension)).toBe(
       'ExtensionDefinition{attachTo=<plugin>@tabs+page:<plugin>@tabs+<plugin>/index@tabs+page:<plugin>/index@otherTabs}',
     );
-    const overrdeExtension = extension.override({
+    const overrideExtension = extension.override({
       attachTo: [
         parent2.inputs.tabs,
         parent3.inputs.tabs,
         parent4.inputs.otherTabs,
       ] as any,
     });
-    expect(String(overrdeExtension)).toBe(
+    expect(String(overrideExtension)).toBe(
       'ExtensionDefinition{attachTo=page:<plugin>@tabs+<plugin>/index@tabs+page:<plugin>/index@otherTabs}',
     );
   });

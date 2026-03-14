@@ -45,7 +45,7 @@ export function useStarredEntities(): {
   const starredEntitiesApi = useApi(starredEntitiesApiRef);
 
   const starredEntities = useObservable(
-    useMemo(() => starredEntitiesApi.starredEntitie$(), [starredEntitiesApi]),
+    useMemo(() => starredEntitiesApi.starredEntities$(), [starredEntitiesApi]),
     new Set<string>(),
   );
 

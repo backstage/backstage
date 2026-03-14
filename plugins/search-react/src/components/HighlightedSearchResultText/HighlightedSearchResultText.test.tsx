@@ -24,7 +24,7 @@ describe('HighlightedSearchResultText', () => {
       <HighlightedSearchResultText
         preTag="<tag>"
         postTag="</tag>"
-        text="test <tag>highlighted</tag> restult <tag>text</tag>"
+        text="test <tag>highlighted</tag> result <tag>text</tag>"
       />,
     );
 

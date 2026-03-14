@@ -48,7 +48,7 @@ export class MockStarredEntitiesApi implements StarredEntitiesApi {
     }
   }
 
-  starredEntitie$(): Observable<Set<string>> {
+  starredEntities$(): Observable<Set<string>> {
     return this.observable;
   }
 }

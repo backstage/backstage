@@ -40,7 +40,7 @@ import { Observable } from '@backstage/types';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 
 const mockedStarredEntitiesApi: Partial<StarredEntitiesApi> = {
-  starredEntitie$: () => {
+  starredEntities$: () => {
     return {
       subscribe: () => {
         return {
