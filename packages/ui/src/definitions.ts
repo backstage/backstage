@@ -48,6 +48,10 @@ export {
   HeaderPageDefinition,
 } from './components/Header/definition';
 export { LinkDefinition } from './components/Link/definition';
+export {
+  ListBoxDefinition,
+  ListBoxItemDefinition,
+} from './components/ListBox/definition';
 export { MenuDefinition } from './components/Menu/definition';
 export { PasswordFieldDefinition } from './components/PasswordField/definition';
 export { PopoverDefinition } from './components/Popover/definition';
