@@ -86,6 +86,7 @@ describe('NavContentBlueprint', () => {
         "configSchema": undefined,
         "disabled": false,
         "factory": [Function],
+        "if": undefined,
         "inputs": {},
         "kind": "nav-content",
         "name": undefined,

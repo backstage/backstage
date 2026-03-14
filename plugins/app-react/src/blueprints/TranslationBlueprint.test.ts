@@ -54,6 +54,7 @@ describe('TranslationBlueprint', () => {
         "configSchema": undefined,
         "disabled": false,
         "factory": [Function],
+        "if": undefined,
         "inputs": {},
         "kind": "translation",
         "name": "blob",

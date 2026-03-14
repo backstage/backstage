@@ -43,6 +43,7 @@ describe('ApiBlueprint', () => {
         "configSchema": undefined,
         "disabled": false,
         "factory": [Function],
+        "if": undefined,
         "inputs": {},
         "kind": "api",
         "name": "test",
@@ -196,6 +197,7 @@ describe('ApiBlueprint', () => {
         },
         "disabled": false,
         "factory": [Function],
+        "if": undefined,
         "inputs": {
           "test": {
             "$$type": "@backstage/ExtensionInput",
