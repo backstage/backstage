@@ -18,7 +18,6 @@ import {
   BlobDownloadOptions,
   BlobServiceClient,
   ContainerClient,
-  StorageSharedKeyCredential,
 } from '@azure/storage-blob';
 import { ReaderFactory, ReadTreeResponseFactory } from './types';
 import {
@@ -31,10 +30,10 @@ import { relative } from 'node:path/posix';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 import {
   AzureBlobStorageIntergation,
-  AzureCredentialsManager,
-  DefaultAzureCredentialsManager,
+  AzureBlobStorageCredentialProvider,
   ScmIntegrations,
 } from '@backstage/integration';
+import { DefaultAzureBlobStorageCredentialProvider } from '@backstage/integration/backend';
 import {
   UrlReaderService,
   UrlReaderServiceReadTreeOptions,
@@ -70,7 +69,7 @@ export class AzureBlobStorageUrlReader implements UrlReaderService {
     const integrations = ScmIntegrations.fromConfig(config);
 
     const credsManager =
-      DefaultAzureCredentialsManager.fromIntegrations(integrations);
+      DefaultAzureBlobStorageCredentialProvider.fromIntegrations(integrations);
 
     return integrations.azureBlobStorage.list().map(integrationConfig => {
       const reader = new AzureBlobStorageUrlReader(
@@ -89,16 +88,14 @@ export class AzureBlobStorageUrlReader implements UrlReaderService {
     });
   };
 
-  // private readonly blobServiceClient: BlobServiceClient;
-
-  private readonly credsManager: AzureCredentialsManager;
+  private readonly credsManager: AzureBlobStorageCredentialProvider;
   private readonly integration: AzureBlobStorageIntergation;
   private readonly deps: {
     treeResponseFactory: ReadTreeResponseFactory;
   };
 
   constructor(
-    credsManager: AzureCredentialsManager,
+    credsManager: AzureBlobStorageCredentialProvider,
     integration: AzureBlobStorageIntergation,
     deps: {
       treeResponseFactory: ReadTreeResponseFactory;
@@ -112,38 +109,12 @@ export class AzureBlobStorageUrlReader implements UrlReaderService {
   private async createContainerClient(
     containerName: string,
   ): Promise<ContainerClient> {
-    const accountName = this.integration.config.accountName; // Use the account name from the integration config
-    const accountKey = this.integration.config.accountKey; // Get the account key if it exists
+    const accountName = this.integration.config.accountName;
 
-    if (accountKey && accountName) {
-      const creds = new StorageSharedKeyCredential(accountName, accountKey);
-      const blobServiceClient = new BlobServiceClient(
-        `https://${accountName}.${this.integration.config.host}`,
-        creds,
-      );
-      return blobServiceClient.getContainerClient(containerName);
-    }
-    // Use the credentials manager to get the correct credentials
-    const credential = await this.credsManager.getCredentials(
-      accountName as string,
-    );
+    const credential = await this.credsManager.getCredentials(accountName);
+    const serviceUrl = this.credsManager.getServiceUrl(accountName);
 
-    let blobServiceClientUrl: string;
-
-    if (this.integration.config.endpoint) {
-      if (this.integration.config.sasToken) {
-        blobServiceClientUrl = `${this.integration.config.endpoint}?${this.integration.config.sasToken}`;
-      } else {
-        blobServiceClientUrl = `${this.integration.config.endpoint}`;
-      }
-    } else {
-      blobServiceClientUrl = `https://${this.integration.config.accountName}.${this.integration.config.host}`;
-    }
-
-    const blobServiceClient = new BlobServiceClient(
-      blobServiceClientUrl,
-      credential,
-    );
+    const blobServiceClient = new BlobServiceClient(serviceUrl, credential);
     return blobServiceClient.getContainerClient(containerName);
   }
 

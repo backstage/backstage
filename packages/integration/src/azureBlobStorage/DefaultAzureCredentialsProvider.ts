@@ -17,18 +17,26 @@
 import {
   DefaultAzureCredential,
   ClientSecretCredential,
-  TokenCredential,
 } from '@azure/identity';
+import type { TokenCredential } from '@azure/identity';
+import {
+  StorageSharedKeyCredential,
+  AnonymousCredential,
+} from '@azure/storage-blob';
 import { AzureBlobStorageIntegrationConfig } from './config';
-import { AzureCredentialsManager } from './types';
-import { ScmIntegrationRegistry } from '../registry';
+import { AzureBlobStorageCredentialProvider } from './types';
 
 /**
- * Default implementation of AzureCredentialsManager that supports multiple Azure Blob Storage integrations.
+ * Default implementation of AzureBlobStorageCredentialProvider that supports multiple Azure Blob Storage integrations.
  * @public
  */
-export class DefaultAzureCredentialsManager implements AzureCredentialsManager {
-  private cachedCredentials: Map<string, TokenCredential>;
+export class DefaultAzureBlobStorageCredentialProvider
+  implements AzureBlobStorageCredentialProvider
+{
+  private cachedCredentials: Map<
+    string,
+    TokenCredential | StorageSharedKeyCredential | AnonymousCredential
+  >;
 
   private constructor(
     private readonly configProviders: Map<
@@ -36,15 +44,31 @@ export class DefaultAzureCredentialsManager implements AzureCredentialsManager {
       AzureBlobStorageIntegrationConfig
     >,
   ) {
-    this.cachedCredentials = new Map<string, TokenCredential>();
+    this.cachedCredentials = new Map<
+      string,
+      TokenCredential | StorageSharedKeyCredential | AnonymousCredential
+    >();
   }
 
   /**
-   * Creates an instance of DefaultAzureCredentialsManager from a Backstage integration registry.
+   * Creates an instance of DefaultAzureBlobStorageCredentialProvider from a Backstage integration registry.
+   *
+   * @param integrations - An `ScmIntegrations` instance (or any object providing `azureBlobStorage.list()`)
+   *
+   * @example
+   * ```ts
+   * import { ScmIntegrations } from '@backstage/integration';
+   * import { DefaultAzureBlobStorageCredentialProvider } from '@backstage/integration/backend';
+   *
+   * const integrations = ScmIntegrations.fromConfig(config);
+   * const credentialsProvider = DefaultAzureBlobStorageCredentialProvider.fromIntegrations(integrations);
+   * ```
    */
-  static fromIntegrations(
-    integrations: ScmIntegrationRegistry,
-  ): DefaultAzureCredentialsManager {
+  static fromIntegrations(integrations: {
+    azureBlobStorage: {
+      list(): Array<{ config: AzureBlobStorageIntegrationConfig }>;
+    };
+  }) {
     const configProviders = integrations.azureBlobStorage
       .list()
       .reduce((acc, integration) => {
@@ -55,12 +79,22 @@ export class DefaultAzureCredentialsManager implements AzureCredentialsManager {
         return acc;
       }, new Map<string, AzureBlobStorageIntegrationConfig>());
 
-    return new DefaultAzureCredentialsManager(configProviders);
+    return new DefaultAzureBlobStorageCredentialProvider(configProviders);
   }
 
-  private createCredential(
-    config: AzureBlobStorageIntegrationConfig,
-  ): TokenCredential {
+  private createCredential(config: AzureBlobStorageIntegrationConfig) {
+    if (config.accountKey) {
+      return new StorageSharedKeyCredential(
+        config.accountName,
+        config.accountKey,
+      );
+    }
+
+    // SAS Token, credentials embedded in getServiceUrl()
+    if (config.sasToken) {
+      return new AnonymousCredential();
+    }
+
     if (
       config.aadCredential &&
       config.aadCredential.clientId &&
@@ -77,7 +111,8 @@ export class DefaultAzureCredentialsManager implements AzureCredentialsManager {
     return new DefaultAzureCredential();
   }
 
-  async getCredentials(accountName: string): Promise<TokenCredential> {
+  /** {@inheritDoc AzureBlobStorageCredentialProvider.getCredentials} */
+  async getCredentials(accountName: string) {
     if (this.cachedCredentials.has(accountName)) {
       return this.cachedCredentials.get(accountName)!;
     }
@@ -93,5 +128,24 @@ export class DefaultAzureCredentialsManager implements AzureCredentialsManager {
     this.cachedCredentials.set(accountName, credential);
 
     return credential;
+  }
+
+  /** {@inheritDoc AzureBlobStorageCredentialProvider.getServiceUrl} */
+  getServiceUrl(accountName: string) {
+    const config = this.configProviders.get(accountName);
+    if (!config) {
+      throw new Error(`No configuration found for account: ${accountName}`);
+    }
+
+    // Custom endpoint with optional SAS token
+    if (config.endpoint) {
+      if (config.sasToken) {
+        return `${config.endpoint}?${config.sasToken}`;
+      }
+      return config.endpoint;
+    }
+
+    // Default Azure blob storage URL
+    return `https://${config.accountName}.${config.host}`;
   }
 }

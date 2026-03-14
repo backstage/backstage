@@ -5,8 +5,8 @@
 ```ts
 import { AwsCredentialsManager } from '@backstage/integration-aws-node';
 import { AwsS3Integration } from '@backstage/integration';
+import { AzureBlobStorageCredentialProvider } from '@backstage/integration';
 import { AzureBlobStorageIntergation } from '@backstage/integration';
-import { AzureCredentialsManager } from '@backstage/integration';
 import { AzureDevOpsCredentialsProvider } from '@backstage/integration';
 import { AzureIntegration } from '@backstage/integration';
 import { BitbucketCloudIntegration } from '@backstage/integration';
@@ -66,7 +66,7 @@ export class AwsS3UrlReader implements UrlReaderService {
 // @public
 export class AzureBlobStorageUrlReader implements UrlReaderService {
   constructor(
-    credsManager: AzureCredentialsManager,
+    credsManager: AzureBlobStorageCredentialProvider,
     integration: AzureBlobStorageIntergation,
     deps: {
       treeResponseFactory: ReadTreeResponseFactory;
