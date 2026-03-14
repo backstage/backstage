@@ -1,0 +1,11 @@
+---
+title: Spring Batch Dashboard
+author: zc149
+authorUrl: https://github.com/zc149
+category: Monitoring
+description: Monitor and manage Spring Batch jobs from Backstage.
+documentation: https://github.com/zc149/backstage-plugin-spring-batch-dashboard
+iconUrl: https://raw.githubusercontent.com/zc149/backstage-plugin-spring-batch-dashboard/main/.github/images/icon.png
+npmPackageName: '@jikwan/backstage-plugin-spring-batch-dashboard'
+addedDate: '2026-03-11'
+status: active
