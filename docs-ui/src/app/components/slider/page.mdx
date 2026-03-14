@@ -1,0 +1,109 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { CodeBlock } from '@/components/CodeBlock';
+import { ReactAriaLink } from '@/components/ReactAriaLink';
+import { sliderPropDefs } from './props-definition';
+import {
+  snippetUsage,
+  singleValueSnippet,
+  defaultSnippet,
+  withCustomRangeSnippet,
+  withFormattedValuesSnippet,
+  withDescriptionSnippet,
+  requiredSnippet,
+  disabledSnippet,
+} from './snippets';
+import {
+  SingleValue,
+  Default,
+  WithCustomRange,
+  WithFormattedValues,
+  WithDescription,
+  Required,
+  Disabled,
+} from './components';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+import { SliderDefinition } from '../../../utils/definitions';
+
+export const reactAriaUrls = {
+  slider: 'https://react-spectrum.adobe.com/react-aria/Slider.html',
+};
+
+<PageTitle
+  title="Slider"
+  description="A slider for selecting numeric values, supporting both single values and ranges with customizable formatting and validation."
+/>
+
+<Snippet align="center" py={4} preview={<Default />} code={defaultSnippet} />
+
+## Usage
+
+<CodeBlock code={snippetUsage} />
+
+## API reference
+
+<PropsTable data={sliderPropDefs} />
+
+<ReactAriaLink component="Slider" href={reactAriaUrls.slider} />
+
+## Examples
+
+### Single value
+
+Use a single number as the default value to create a single-thumb slider.
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<SingleValue />}
+  code={singleValueSnippet}
+/>
+
+### Custom range
+
+Define custom minimum, maximum, and step values for specific use cases.
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<WithCustomRange />}
+  code={withCustomRangeSnippet}
+/>
+
+### Formatted values
+
+Use the `formatOptions` prop with standard Intl.NumberFormat options to customize how values are displayed.
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<WithFormattedValues />}
+  code={withFormattedValuesSnippet}
+/>
+
+### With description
+
+Add helpful context with a description below the label.
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<WithDescription />}
+  code={withDescriptionSnippet}
+/>
+
+### Required
+
+Mark a field as required to show a "Required" indicator in the label.
+
+<Snippet align="center" py={4} preview={<Required />} code={requiredSnippet} />
+
+### Disabled
+
+<Snippet align="center" py={4} preview={<Disabled />} code={disabledSnippet} />
+
+<Theming definition={SliderDefinition} />
+
+<ChangelogComponent component="slider" />

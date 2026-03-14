@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,28 +15,28 @@
  */
 
 import { defineComponent } from '../../hooks/useDefinition';
-import type { FieldLabelOwnProps } from './types';
-import styles from './FieldLabel.module.css';
+import type { SliderOwnProps } from './types';
+import styles from './Slider.module.css';
 
 /**
- * Component definition for FieldLabel
+ * Component definition for Slider
  * @public
  */
-export const FieldLabelDefinition = defineComponent<FieldLabelOwnProps>()({
+export const SliderDefinition = defineComponent<SliderOwnProps>()({
   styles,
   classNames: {
-    root: 'bui-FieldLabelWrapper',
-    label: 'bui-FieldLabel',
-    secondaryLabel: 'bui-FieldSecondaryLabel',
-    description: 'bui-FieldDescription',
+    root: 'bui-Slider',
+    header: 'bui-SliderHeader',
+    track: 'bui-SliderTrack',
+    trackFill: 'bui-SliderTrackFill',
+    thumb: 'bui-SliderThumb',
+    output: 'bui-SliderOutput',
   },
   propDefs: {
+    className: {},
     label: {},
     secondaryLabel: {},
     description: {},
-    htmlFor: {},
-    id: {},
-    descriptionId: {},
-    className: {},
+    isRequired: {},
   },
 });

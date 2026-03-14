@@ -23,8 +23,15 @@ import { FieldLabelDefinition } from './definition';
 export const FieldLabel = forwardRef<HTMLDivElement, FieldLabelProps>(
   (props: FieldLabelProps, ref) => {
     const { ownProps, restProps } = useDefinition(FieldLabelDefinition, props);
-    const { classes, label, secondaryLabel, description, htmlFor, id } =
-      ownProps;
+    const {
+      classes,
+      label,
+      secondaryLabel,
+      description,
+      htmlFor,
+      id,
+      descriptionId,
+    } = ownProps;
 
     if (!label) return null;
 
@@ -41,7 +48,9 @@ export const FieldLabel = forwardRef<HTMLDivElement, FieldLabelProps>(
           </Label>
         )}
         {description && (
-          <div className={classes.description}>{description}</div>
+          <div className={classes.description} id={descriptionId}>
+            {description}
+          </div>
         )}
       </div>
     );

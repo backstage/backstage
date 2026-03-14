@@ -40,6 +40,7 @@ import { RowProps as RowProps_2 } from 'react-aria-components';
 import type { SearchFieldProps as SearchFieldProps_2 } from 'react-aria-components';
 import type { SelectProps as SelectProps_2 } from 'react-aria-components';
 import type { SeparatorProps } from 'react-aria-components';
+import type { SliderProps as SliderProps_2 } from 'react-aria-components';
 import type { SortDescriptor as SortDescriptor_2 } from 'react-stately';
 import type { SubmenuTriggerProps as SubmenuTriggerProps_2 } from 'react-aria-components';
 import type { SwitchProps as SwitchProps_2 } from 'react-aria-components';
@@ -1153,6 +1154,7 @@ export const FieldLabelDefinition: {
     readonly description: {};
     readonly htmlFor: {};
     readonly id: {};
+    readonly descriptionId: {};
     readonly className: {};
   };
 };
@@ -1164,6 +1166,7 @@ export type FieldLabelOwnProps = {
   description?: string | null;
   htmlFor?: string;
   id?: string;
+  descriptionId?: string;
   className?: string;
 };
 
@@ -2229,6 +2232,56 @@ export type SkeletonOwnProps = {
 export interface SkeletonProps
   extends Omit<ComponentProps<'div'>, 'children' | 'className' | 'style'>,
     SkeletonOwnProps {}
+
+// @public (undocumented)
+export const Slider: (<T extends number | number[]>(
+  props: SliderProps<T> & {
+    ref?: React.ForwardedRef<HTMLDivElement>;
+  },
+) => JSX.Element) & {
+  displayName: string;
+};
+
+// @public
+export const SliderDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-Slider';
+    readonly header: 'bui-SliderHeader';
+    readonly track: 'bui-SliderTrack';
+    readonly trackFill: 'bui-SliderTrackFill';
+    readonly thumb: 'bui-SliderThumb';
+    readonly output: 'bui-SliderOutput';
+  };
+  readonly propDefs: {
+    readonly className: {};
+    readonly label: {};
+    readonly secondaryLabel: {};
+    readonly description: {};
+    readonly isRequired: {};
+  };
+};
+
+// @public (undocumented)
+export interface SliderOwnProps {
+  // (undocumented)
+  className?: string;
+  // (undocumented)
+  description?: FieldLabelProps['description'];
+  // (undocumented)
+  isRequired?: boolean;
+  // (undocumented)
+  label?: FieldLabelProps['label'];
+  // (undocumented)
+  secondaryLabel?: FieldLabelProps['secondaryLabel'];
+}
+
+// @public (undocumented)
+export interface SliderProps<T extends number | number[]>
+  extends Omit<SliderProps_2<T>, 'children' | 'className'>,
+    SliderOwnProps {}
 
 // @public (undocumented)
 export type SortDescriptor = SortDescriptor_2;
