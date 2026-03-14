@@ -23,6 +23,7 @@ export type Component =
   | 'password-field'
   | 'radio-group'
   | 'scrollarea'
+  | 'search-autocomplete'
   | 'searchfield'
   | 'select'
   | 'skeleton'
