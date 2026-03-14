@@ -299,19 +299,27 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
     setWidgets(widgets.filter(w => w.deletable === false));
   };
 
-  const changeEditMode = (mode: boolean) => {
-    setEditMode(mode);
+  const changeEditMode = (isEditMode: boolean) => {
+    setEditMode(isEditMode);
 
-    if (!mode) {
-      const newWidgets = widgets.map(w => {
-        const resizable = w.resizable === false ? false : mode;
-        const movable = w.movable === false ? false : mode;
-        return {
-          ...w,
-          layout: { ...w.layout, isDraggable: movable, isResizable: resizable },
-        };
-      });
-      storeWidgets(newWidgets);
+    const updatedWidgets = widgets.map(widget => {
+      const isDraggable = Boolean(isEditMode && widget.movable);
+      const isResizable = Boolean(isEditMode && widget.resizable);
+
+      return {
+        ...widget,
+        layout: {
+          ...widget.layout,
+          isDraggable,
+          isResizable,
+        },
+      };
+    });
+
+    if (isEditMode) {
+      setWidgets(updatedWidgets);
+    } else {
+      storeWidgets(updatedWidgets);
     }
   };
 
