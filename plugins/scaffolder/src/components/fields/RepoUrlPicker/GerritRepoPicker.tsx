@@ -14,19 +14,47 @@
  * limitations under the License.
  */
 import FormControl from '@material-ui/core/FormControl';
-import TextField from '@material-ui/core/TextField';
+import MuiTextField from '@material-ui/core/TextField';
 import { BaseRepoUrlPickerProps } from './types';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../../translation';
+import { useScaffolderTheme } from '@backstage/plugin-scaffolder-react/alpha';
+import { TextField as BuiTextField } from '@backstage/ui';
 
 export const GerritRepoPicker = (props: BaseRepoUrlPickerProps) => {
+  const theme = useScaffolderTheme();
   const { onChange, rawErrors, state, isDisabled } = props;
   const { t } = useTranslationRef(scaffolderTranslationRef);
   const { workspace, owner } = state;
+
+  if (theme === 'bui') {
+    return (
+      <>
+        <BuiTextField
+          label={t('fields.gerritRepoPicker.owner.title')}
+          description={t('fields.gerritRepoPicker.owner.description')}
+          onChange={value => onChange({ owner: value })}
+          isDisabled={isDisabled}
+          value={owner ?? ''}
+          isInvalid={rawErrors?.length > 0 && !owner}
+        />
+        <BuiTextField
+          label={t('fields.gerritRepoPicker.parent.title')}
+          description={t('fields.gerritRepoPicker.parent.description')}
+          onChange={value => onChange({ workspace: value })}
+          isDisabled={isDisabled}
+          value={workspace ?? ''}
+          isInvalid={rawErrors?.length > 0 && !workspace}
+          isRequired
+        />
+      </>
+    );
+  }
+
   return (
     <>
       <FormControl margin="normal" error={rawErrors?.length > 0 && !workspace}>
-        <TextField
+        <MuiTextField
           id="ownerInput"
           label={t('fields.gerritRepoPicker.owner.title')}
           onChange={e => onChange({ owner: e.target.value })}
@@ -40,7 +68,7 @@ export const GerritRepoPicker = (props: BaseRepoUrlPickerProps) => {
         required
         error={rawErrors?.length > 0 && !workspace}
       >
-        <TextField
+        <MuiTextField
           id="parentInput"
           label={t('fields.gerritRepoPicker.parent.title')}
           onChange={e => onChange({ workspace: e.target.value })}

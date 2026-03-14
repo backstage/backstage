@@ -13,21 +13,79 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ScaffolderRJSFFieldProps } from '@backstage/plugin-scaffolder-react';
+import {
+  ScaffolderRJSFFieldProps,
+  useTemplateSecrets,
+} from '@backstage/plugin-scaffolder-react';
 import {
   ScaffolderField,
   SecretWidget,
+  useScaffolderTheme,
 } from '@backstage/plugin-scaffolder-react/alpha';
+import { PasswordField } from '@backstage/ui';
+import { useEffect, useMemo, useState } from 'react';
+import debounce from 'lodash/debounce';
 
 export const SecretInput = (props: ScaffolderRJSFFieldProps) => {
+  const theme = useScaffolderTheme();
   const {
-    schema: { description },
+    name,
+    onChange,
+    schema: { title, description, minLength, maxLength },
     rawErrors,
     disabled,
     errors,
     required,
     uiSchema,
   } = props;
+
+  const { setSecrets, secrets } = useTemplateSecrets();
+  const [localValue, setLocalValue] = useState(secrets[name] ?? '');
+
+  const debouncedSetSecrets = useMemo(
+    () =>
+      debounce((value: string) => {
+        setSecrets({ [name]: value });
+      }, 300),
+    [setSecrets, name],
+  );
+
+  useEffect(() => {
+    return () => {
+      debouncedSetSecrets.cancel();
+    };
+  }, [debouncedSetSecrets]);
+
+  const handleChange = (value: string) => {
+    setLocalValue(value);
+    onChange(Array(value.length).fill('*').join(''));
+    debouncedSetSecrets(value);
+  };
+
+  if (theme === 'bui') {
+    return (
+      <ScaffolderField
+        rawErrors={rawErrors}
+        rawDescription={uiSchema['ui:description'] ?? description}
+        disabled={disabled}
+        errors={errors}
+        required={required}
+      >
+        <PasswordField
+          label={title}
+          secondaryLabel={required ? 'Required' : undefined}
+          onChange={handleChange}
+          value={localValue}
+          autoComplete="off"
+          isRequired={required}
+          isDisabled={disabled}
+          isInvalid={rawErrors && rawErrors.length > 0}
+          minLength={minLength}
+          maxLength={maxLength}
+        />
+      </ScaffolderField>
+    );
+  }
 
   return (
     <ScaffolderField

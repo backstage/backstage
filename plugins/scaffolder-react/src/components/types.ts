@@ -38,7 +38,9 @@ export type FormProps = Pick<
   | 'formContext'
   | 'omitExtraData'
   | 'liveOmit'
->;
+> & {
+  EXPERIMENTAL_theme?: 'mui' | 'bui';
+};
 
 /**
  * The props for the Last Step in scaffolder template form.
