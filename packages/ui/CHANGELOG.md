@@ -1,5 +1,23 @@
 # @backstage/ui
 
+## 0.13.0-next.3
+
+### Minor Changes
+
+- 9d5f3ba: Removed redundant `selected` and `indeterminate` props from the `Checkbox` component. Use the `isSelected` and `isIndeterminate` props instead, which are the standard React Aria props and already handle both the checkbox behaviour and the corresponding CSS data attributes.
+
+  **Migration:**
+  Replace any usage of the `selected` and `indeterminate` props on `Checkbox` with the `isSelected` and `isIndeterminate` props. Note that the checked state and related CSS data attributes (such as `data-selected` and `data-indeterminate`) are now driven by React Aria, so any custom logic that previously inspected or set these via the old props should instead rely on the React Aria-managed state and attributes exposed through the new props.
+
+  **Affected components:** Checkbox
+
+### Patch Changes
+
+- 9599697: Updated dependency `globals` to `^17.0.0`.
+- fcaac3b: Fixed `Card` interactive cards not firing the `onPress` handler when clicking the card surface.
+
+  **Affected components**: Card
+
 ## 0.13.0-next.2
 
 ### Patch Changes

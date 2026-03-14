@@ -1,5 +1,12 @@
 # @backstage/plugin-auth-backend
 
+## 0.27.2-next.3
+
+### Patch Changes
+
+- e9b6e97: Fixed a security vulnerability where the CIMD metadata fetch could follow HTTP redirects to internal hosts, bypassing SSRF protections.
+- 0f9d673: Improved redirect URI validation in the experimental OIDC provider to match against normalized URLs rather than raw strings.
+
 ## 0.27.1-next.2
 
 ### Patch Changes

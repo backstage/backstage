@@ -1,5 +1,11 @@
 # @backstage/plugin-scaffolder-node
 
+## 0.13.0-next.3
+
+### Patch Changes
+
+- cd0ecc5: Added `removeFiles` helper function for staging file removals in Git.
+
 ## 0.13.0-next.2
 
 ### Patch Changes

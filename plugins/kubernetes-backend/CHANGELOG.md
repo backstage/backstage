@@ -1,5 +1,11 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.21.2-next.3
+
+### Patch Changes
+
+- 6b6b5de: Added `endpointType` config option to the GKE cluster locator, allowing use of DNS-based control plane endpoints instead of public IP endpoints. Set `endpointType: 'dns'` to use GKE DNS endpoints (e.g. `gke-<uid>.<region>.gke.goog`) which provide proper TLS certificates and IAM-based access control.
+
 ## 0.21.2-next.2
 
 ### Patch Changes

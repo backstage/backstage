@@ -1,5 +1,12 @@
 # @backstage/plugin-catalog-backend
 
+## 3.5.0-next.3
+
+### Patch Changes
+
+- a91bd1b: Improved catalog entity deletion so parent invalidation and deferred relation restitch scheduling are coordinated more safely.
+- 3644b72: Make the `search` foreign key catalog migration non-blocking on large tables by using batch deletes and PostgreSQL `NOT VALID`/`VALIDATE` to reduce lock duration
+
 ## 3.5.0-next.2
 
 ### Minor Changes
