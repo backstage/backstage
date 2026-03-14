@@ -120,7 +120,7 @@ const markdown =
   '\n' +
   'Per quem, nec formosior qui cum Peliden me interea **ornatos**! Te facit\n' +
   'instimulat sequentia in flumina exilium te vulnere, sola. Coetum nec amnes.\n' +
-  'Protinus nam Caras cava, *a* vocantem dicta inevitabile, nata nulla.\n' +
+  'Protinus name Caras cava, *a* vocantem dicta inevitable, nata nulla.\n' +
   '\n' +
   '## Piscem Iunoni maius\n' +
   '\n' +

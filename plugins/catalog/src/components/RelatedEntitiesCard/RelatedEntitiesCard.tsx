@@ -139,6 +139,6 @@ RelatedEntitiesCard.asResourceEntities = asResourceEntities;
 RelatedEntitiesCard.systemEntityColumns = systemEntityColumns;
 RelatedEntitiesCard.systemEntityHelpLink = systemEntityHelpLink;
 RelatedEntitiesCard.asSystemEntities = asSystemEntities;
-RelatedEntitiesCard.domainEntityColums = domainEntityColumns;
+RelatedEntitiesCard.domainEntityColumns = domainEntityColumns;
 RelatedEntitiesCard.domainEntityHelpLink = domainEntityHelpLink;
 RelatedEntitiesCard.asDomainEntities = asDomainEntities;
