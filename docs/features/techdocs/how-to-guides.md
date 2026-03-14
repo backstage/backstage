@@ -981,7 +981,7 @@ metadata:
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: example-platfrom
+  name: example-platform
   title: Example Application Platform
   namespace: default
   description: This is the child entity
