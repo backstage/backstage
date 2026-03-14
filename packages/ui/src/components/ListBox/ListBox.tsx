@@ -62,18 +62,24 @@ export const ListBoxItem = (props: ListBoxItemProps) => {
       className={classes.root}
       {...restProps}
     >
-      <div className={classes.check}>
-        <RiCheckLine />
-      </div>
-      {icon && <span className={classes.icon}>{icon}</span>}
-      <div className={classes.label}>
-        <Text slot="label">{children}</Text>
-        {description && (
-          <Text slot="description" className={classes.description}>
-            {description}
-          </Text>
-        )}
-      </div>
+      {({ isSelected }) => (
+        <>
+          {isSelected && (
+            <div className={classes.check}>
+              <RiCheckLine />
+            </div>
+          )}
+          {icon && <div className={classes.icon}>{icon}</div>}
+          <div className={classes.label}>
+            <Text slot="label">{children}</Text>
+            {description && (
+              <Text slot="description" className={classes.description}>
+                {description}
+              </Text>
+            )}
+          </div>
+        </>
+      )}
     </RAListBoxItem>
   );
 };

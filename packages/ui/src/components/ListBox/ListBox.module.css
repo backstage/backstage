@@ -50,12 +50,6 @@
       background-color: var(--bui-bg-neutral-2);
     }
 
-    &[data-selected] {
-      .bui-ListBoxItemCheck {
-        opacity: 1;
-      }
-    }
-
     &[data-disabled] {
       cursor: not-allowed;
       color: var(--bui-fg-disabled);
@@ -67,8 +61,6 @@
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    opacity: 0;
-    transition: opacity 0.2s ease-in-out;
     width: 1rem;
     height: 1rem;
 
@@ -83,6 +75,8 @@
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    width: 2rem;
+    height: 2rem;
     color: var(--bui-fg-secondary);
 
     & svg {
