@@ -87,7 +87,7 @@
     "@types/npm-packlist": "^3.0.0",
     "@types/shell-quote": "^1.7.5",
     "cross-spawn": "^7.0.6",
-    "rollup": "^4.59.0",
+    "rollup": "^4.27.3",
     "ts-morph": "^24.0.0"
   },
   "bin": "bin/cli-module-build"
