@@ -23,11 +23,11 @@ import {
 describe('extractTranslations', () => {
   it('extracts translation refs from the org plugin', () => {
     const project = createTranslationProject(
-      resolvePath(__dirname, '../../../../../../tsconfig.json'),
+      resolvePath(__dirname, '../../../../tsconfig.json'),
     );
 
     const sourceFile = project.addSourceFileAtPath(
-      resolvePath(__dirname, '../../../../../..', 'plugins/org/src/alpha.tsx'),
+      resolvePath(__dirname, '../../../..', 'plugins/org/src/alpha.tsx'),
     );
 
     const refs = extractTranslationRefsFromSourceFile(
@@ -59,12 +59,12 @@ describe('extractTranslations', () => {
 
   it('ignores non-TranslationRef exports', () => {
     const project = createTranslationProject(
-      resolvePath(__dirname, '../../../../../../tsconfig.json'),
+      resolvePath(__dirname, '../../../../tsconfig.json'),
     );
 
     // The main entry of org plugin exports components but no translation ref
     const sourceFile = project.addSourceFileAtPath(
-      resolvePath(__dirname, '../../../../../..', 'plugins/org/src/index.ts'),
+      resolvePath(__dirname, '../../../..', 'plugins/org/src/index.ts'),
     );
 
     const refs = extractTranslationRefsFromSourceFile(
@@ -78,13 +78,13 @@ describe('extractTranslations', () => {
 
   it('extracts from the test fixtures translation ref', () => {
     const project = createTranslationProject(
-      resolvePath(__dirname, '../../../../../../tsconfig.json'),
+      resolvePath(__dirname, '../../../../tsconfig.json'),
     );
 
     const sourceFile = project.addSourceFileAtPath(
       resolvePath(
         __dirname,
-        '../../../../../..',
+        '../../../..',
         'packages/frontend-plugin-api/src/translation/__fixtures__/refs.ts',
       ),
     );
