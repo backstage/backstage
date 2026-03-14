@@ -5,6 +5,7 @@
 ```ts
 import type { ButtonProps as ButtonProps_2 } from 'react-aria-components';
 import { CellProps as CellProps_2 } from 'react-aria-components';
+import type { CheckboxGroupProps as CheckboxGroupProps_2 } from 'react-aria-components';
 import type { CheckboxProps as CheckboxProps_2 } from 'react-aria-components';
 import { ColumnProps as ColumnProps_2 } from 'react-aria-components';
 import type { ColumnSize } from '@react-types/table';
@@ -332,7 +333,7 @@ export interface BgProviderProps {
   children: ReactNode;
 }
 
-// @public (undocumented)
+// @public
 export type Border = 'none' | 'base' | 'error' | 'warning' | 'selected';
 
 // @public (undocumented)
@@ -834,6 +835,45 @@ export const CheckboxDefinition: {
     readonly className: {};
   };
 };
+
+// @public
+export const CheckboxGroup: ForwardRefExoticComponent<
+  CheckboxGroupProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public
+export const CheckboxGroupDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-CheckboxGroup';
+    readonly content: 'bui-CheckboxGroupContent';
+  };
+  readonly propDefs: {
+    readonly className: {};
+    readonly children: {};
+    readonly label: {};
+    readonly secondaryLabel: {};
+    readonly description: {};
+    readonly isRequired: {};
+  };
+};
+
+// @public
+export type CheckboxGroupOwnProps = {
+  className?: string;
+  children?: ReactNode;
+  label?: FieldLabelProps['label'];
+  secondaryLabel?: FieldLabelProps['secondaryLabel'];
+  description?: FieldLabelProps['description'];
+  isRequired?: CheckboxGroupProps_2['isRequired'];
+};
+
+// @public
+export interface CheckboxGroupProps
+  extends Omit<CheckboxGroupProps_2, keyof CheckboxGroupOwnProps>,
+    CheckboxGroupOwnProps {}
 
 // @public (undocumented)
 export type CheckboxOwnProps = {
@@ -2933,33 +2973,20 @@ export interface UseTableResult<T extends TableItem, TFilter = unknown> {
   >;
 }
 
-// @public (undocumented)
+// @public
 export interface UtilityProps extends SpaceProps {
-  // (undocumented)
   alignItems?: Responsive<AlignItems>;
-  // (undocumented)
   border?: Responsive<Border>;
-  // (undocumented)
   borderRadius?: Responsive<BorderRadius>;
-  // (undocumented)
   colEnd?: Responsive<Columns | 'auto'>;
-  // (undocumented)
   colSpan?: Responsive<Columns | 'full'>;
-  // (undocumented)
   colStart?: Responsive<Columns | 'auto'>;
-  // (undocumented)
   columns?: Responsive<Columns>;
-  // (undocumented)
   display?: Responsive<Display>;
-  // (undocumented)
   flexDirection?: Responsive<FlexDirection>;
-  // (undocumented)
   flexWrap?: Responsive<FlexWrap>;
-  // (undocumented)
   gap?: Responsive<Space>;
-  // (undocumented)
   justifyContent?: Responsive<JustifyContent>;
-  // (undocumented)
   rowSpan?: Responsive<Columns | 'full'>;
 }
 
