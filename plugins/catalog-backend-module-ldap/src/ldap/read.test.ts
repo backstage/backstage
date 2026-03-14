@@ -137,7 +137,7 @@ describe('readLdapUsers', () => {
   it('override default vendor configs', async () => {
     const searchEntries: Entry[] = [
       {
-        dn: 'dn-vaule',
+        dn: 'dn-value',
         uid: 'uid-value',
         description: 'description-value',
         cn: 'cn-value',

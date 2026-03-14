@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { AzureBlobStorageIntergation } from './AzureBlobStorageIntegration';
+export { AzureBlobStorageIntegration } from './AzureBlobStorageIntegration';
 export {
   readAzureBlobStorageIntegrationConfig,
   readAzureBlobStorageIntegrationConfigs,

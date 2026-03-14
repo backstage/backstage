@@ -28,7 +28,7 @@ import { ScmIntegration, ScmIntegrationsGroup } from './types';
 import { ScmIntegrationRegistry } from './registry';
 import { GiteaIntegration } from './gitea';
 import { HarnessIntegration } from './harness/HarnessIntegration';
-import { AzureBlobStorageIntergation } from './azureBlobStorage';
+import { AzureBlobStorageIntegration } from './azureBlobStorage';
 import { GoogleGcsIntegration } from './googleGcs/GoogleGcsIntegration';
 
 /**
@@ -39,7 +39,7 @@ import { GoogleGcsIntegration } from './googleGcs/GoogleGcsIntegration';
 export interface IntegrationsByType {
   awsS3: ScmIntegrationsGroup<AwsS3Integration>;
   awsCodeCommit: ScmIntegrationsGroup<AwsCodeCommitIntegration>;
-  azureBlobStorage: ScmIntegrationsGroup<AzureBlobStorageIntergation>;
+  azureBlobStorage: ScmIntegrationsGroup<AzureBlobStorageIntegration>;
   azure: ScmIntegrationsGroup<AzureIntegration>;
   bitbucketCloud: ScmIntegrationsGroup<BitbucketCloudIntegration>;
   bitbucketServer: ScmIntegrationsGroup<BitbucketServerIntegration>;
@@ -63,7 +63,7 @@ export class ScmIntegrations implements ScmIntegrationRegistry {
     return new ScmIntegrations({
       awsS3: AwsS3Integration.factory({ config }),
       awsCodeCommit: AwsCodeCommitIntegration.factory({ config }),
-      azureBlobStorage: AzureBlobStorageIntergation.factory({ config }),
+      azureBlobStorage: AzureBlobStorageIntegration.factory({ config }),
       azure: AzureIntegration.factory({ config }),
       bitbucketCloud: BitbucketCloudIntegration.factory({ config }),
       bitbucketServer: BitbucketServerIntegration.factory({ config }),
@@ -88,7 +88,7 @@ export class ScmIntegrations implements ScmIntegrationRegistry {
     return this.byType.awsCodeCommit;
   }
 
-  get azureBlobStorage(): ScmIntegrationsGroup<AzureBlobStorageIntergation> {
+  get azureBlobStorage(): ScmIntegrationsGroup<AzureBlobStorageIntegration> {
     return this.byType.azureBlobStorage;
   }
 

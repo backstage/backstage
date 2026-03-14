@@ -124,7 +124,7 @@ export const WidgetSettingsOverlay = (props: WidgetSettingsOverlayProps) => {
       >
         {widget.settingsSchema && (
           <Grid item className="overlayGridItem">
-            <Tooltip title={t('widgetSettingsOverlay.editSettingsTooptip')}>
+            <Tooltip title={t('widgetSettingsOverlay.editSettingsTooltip')}>
               <IconButton
                 color="primary"
                 onClick={() => setSettingsDialogOpen(true)}

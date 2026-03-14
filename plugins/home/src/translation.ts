@@ -39,7 +39,7 @@ export const homeTranslationRef = createTranslationRef({
       noWidgets: "No widgets added. Start by clicking the 'Add widget' button.",
     },
     widgetSettingsOverlay: {
-      editSettingsTooptip: 'Edit settings',
+      editSettingsTooltip: 'Edit settings',
       deleteWidgetTooltip: 'Delete widget',
       submitButtonTitle: 'Submit',
       cancelButtonTitle: 'Cancel',

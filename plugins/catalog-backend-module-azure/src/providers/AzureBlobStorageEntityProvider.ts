@@ -35,7 +35,7 @@ import { LocationSpec } from '@backstage/plugin-catalog-common';
 import * as uuid from 'uuid';
 import { readAzureBlobStorageConfigs } from './config';
 import {
-  AzureBlobStorageIntergation,
+  AzureBlobStorageIntegration,
   DefaultAzureCredentialsManager,
   ScmIntegrations,
 } from '@backstage/integration';
@@ -106,12 +106,12 @@ export class AzureBlobStorageEntityProvider implements EntityProvider {
     });
   }
   private readonly config: AzureBlobStorageConfig;
-  private readonly integration: AzureBlobStorageIntergation;
+  private readonly integration: AzureBlobStorageIntegration;
   private readonly credentialsProvider: DefaultAzureCredentialsManager;
 
   private constructor(
     config: AzureBlobStorageConfig,
-    integration: AzureBlobStorageIntergation,
+    integration: AzureBlobStorageIntegration,
     credentialsProvider: DefaultAzureCredentialsManager,
     logger: LoggerService,
     schedule: SchedulerServiceTaskRunner,

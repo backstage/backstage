@@ -22,7 +22,7 @@ jest.mock('./migration');
 
 function getStarred(api: DefaultStarredEntitiesApi) {
   return new Promise((resolve, reject) => {
-    const subscription = api.starredEntitie$().subscribe({
+    const subscription = api.starredEntities$().subscribe({
       next(starred) {
         resolve(starred);
         subscription.unsubscribe();
@@ -59,7 +59,7 @@ describe('DefaultStarredEntitiesApi', () => {
     const api = new DefaultStarredEntitiesApi({ storageApi });
 
     const values = new Array<Set<string>>();
-    api.starredEntitie$().subscribe({
+    api.starredEntities$().subscribe({
       next: value => {
         values.push(value);
       },

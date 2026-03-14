@@ -33,7 +33,7 @@ describe('Auth origin filtering', () => {
   });
 
   it('Will explode, invalid origin domain', () => {
-    const origin = 'https://test-1234.examplee.net';
+    const origin = 'https://test-1234.example.net';
     expect(createOriginFilter(config)(origin)).toBeFalsy();
   });
 

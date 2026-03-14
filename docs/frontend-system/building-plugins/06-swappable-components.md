@@ -20,7 +20,7 @@ import { createSwappableComponent } from '@backstage/frontend-plugin-api';
 export const ExampleSwappableComponent = createSwappableComponent({
   name: 'example',
 
-  // This is a loader for loading the default implementation of the component when there's no overriden
+  // This is a loader for loading the default implementation of the component when there's no overridden
   // implementation created with `SwappableComponentBlueprint`.
   // It can be sync like below, but is can also be async like `loader: () => import('./DefaultImplementation').then(m => m.DefaultImplementation)`.
   loader: () => (props: { name: string }) =>
@@ -60,7 +60,7 @@ import appPlugin from '@backstage/plugin-app';
 
 const app = createApp({
   features: [
-    // Using a module to provide the extenion to the app
+    // Using a module to provide the extension to the app
     createFrontendModule({
       pluginId: 'app',
       extensions: [
@@ -74,7 +74,7 @@ const app = createApp({
         }),
       ],
     }),
-    // Core components that already ship with the app plugin can be overriden using getExtension()
+    // Core components that already ship with the app plugin can be overridden using getExtension()
     appPlugin.withOverrides({
       extensions: [
         appPlugin.getExtension('component:app/core-progress').override({

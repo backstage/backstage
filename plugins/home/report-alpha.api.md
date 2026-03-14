@@ -220,7 +220,7 @@ export const homeTranslationRef: TranslationRef<
     readonly 'customHomepageButtons.save': 'Save';
     readonly 'customHomepage.noWidgets': "No widgets added. Start by clicking the 'Add widget' button.";
     readonly 'widgetSettingsOverlay.cancelButtonTitle': 'Cancel';
-    readonly 'widgetSettingsOverlay.editSettingsTooptip': 'Edit settings';
+    readonly 'widgetSettingsOverlay.editSettingsTooltip': 'Edit settings';
     readonly 'widgetSettingsOverlay.deleteWidgetTooltip': 'Delete widget';
     readonly 'widgetSettingsOverlay.submitButtonTitle': 'Submit';
     readonly 'starredEntityListItem.removeFavoriteEntityTitle': 'Remove entity from favorites';

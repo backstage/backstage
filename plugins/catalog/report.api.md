@@ -285,7 +285,7 @@ export interface DefaultEntityPresentationApiRenderer {
 export class DefaultStarredEntitiesApi implements StarredEntitiesApi {
   constructor(opts: { storageApi: StorageApi });
   // (undocumented)
-  starredEntitie$(): Observable<Set<string>>;
+  starredEntities$(): Observable<Set<string>>;
   // (undocumented)
   toggleStarred(entityRef: string): Promise<void>;
 }

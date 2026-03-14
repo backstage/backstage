@@ -43,7 +43,7 @@ export function useStarredEntity(
   const [isStarredEntity, setIsStarredEntity] = useState(false);
 
   useEffect(() => {
-    const subscription = starredEntitiesApi.starredEntitie$().subscribe({
+    const subscription = starredEntitiesApi.starredEntities$().subscribe({
       next(starredEntities: Set<string>) {
         setIsStarredEntity(starredEntities.has(getEntityRef(entityOrRef)));
       },

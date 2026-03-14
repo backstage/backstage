@@ -22,7 +22,7 @@ describe('MockStarredEntitiesApi', () => {
 
     const updates1 = new Array<Set<string>>();
     const sub1 = api
-      .starredEntitie$()
+      .starredEntities$()
       .subscribe(entities => updates1.push(entities));
 
     api.toggleStarred('k:ns/e1');
@@ -37,7 +37,7 @@ describe('MockStarredEntitiesApi', () => {
 
     const updates2 = new Array<Set<string>>();
     const sub2 = api
-      .starredEntitie$()
+      .starredEntities$()
       .subscribe(entities => updates2.push(entities));
 
     api.toggleStarred('k:ns/e2');

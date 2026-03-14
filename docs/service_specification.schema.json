@@ -14,7 +14,7 @@
         "labels": {
           "product_name": "Random value Generator"
         },
-        "annnotations": {
+        "annotations": {
           "docs": "https://github.com/..../tree/develop/doc"
         },
         "teams": [
@@ -82,7 +82,7 @@
             }
           }
         },
-        "annnotations": {
+        "annotations": {
           "type": "object",
           "description": "Arbitrary non-identifying metadata attached to the entity, identical in use to kubernetes object annotations.",
           "additionalProperties": true,

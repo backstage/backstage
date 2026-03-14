@@ -110,7 +110,7 @@ describe('CardHeader', () => {
 
   it('should enable favoriting of the entity', async () => {
     const starredEntitiesApi = {
-      starredEntitie$: () => new Observable(() => {}),
+      starredEntities$: () => new Observable(() => {}),
       toggleStarred: jest.fn(async () => {}),
     };
 

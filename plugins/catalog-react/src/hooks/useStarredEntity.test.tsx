@@ -25,7 +25,7 @@ import { useStarredEntity } from './useStarredEntity';
 describe('useStarredEntity', () => {
   const mockStarredEntitiesApi: jest.Mocked<StarredEntitiesApi> = {
     toggleStarred: jest.fn(),
-    starredEntitie$: jest.fn(),
+    starredEntities$: jest.fn(),
   };
   let wrapper: ComponentType<PropsWithChildren<{}>>;
 
@@ -49,7 +49,9 @@ describe('useStarredEntity', () => {
   `('with $title', ({ entityOrRef }) => {
     describe('toggleStarredEntity', () => {
       it('should toggle starred entity', () => {
-        mockStarredEntitiesApi.starredEntitie$.mockReturnValue(Observable.of());
+        mockStarredEntitiesApi.starredEntities$.mockReturnValue(
+          Observable.of(),
+        );
         mockStarredEntitiesApi.toggleStarred.mockResolvedValue();
 
         const { result } = renderHook(() => useStarredEntity(entityOrRef), {
@@ -67,7 +69,9 @@ describe('useStarredEntity', () => {
 
     describe('isStarredEntity', () => {
       it('should return not starred entity', () => {
-        mockStarredEntitiesApi.starredEntitie$.mockReturnValue(Observable.of());
+        mockStarredEntitiesApi.starredEntities$.mockReturnValue(
+          Observable.of(),
+        );
         mockStarredEntitiesApi.toggleStarred.mockResolvedValue();
 
         const { result } = renderHook(() => useStarredEntity(entityOrRef), {
@@ -78,7 +82,7 @@ describe('useStarredEntity', () => {
       });
 
       it('should return starred entity', async () => {
-        mockStarredEntitiesApi.starredEntitie$.mockReturnValue(
+        mockStarredEntitiesApi.starredEntities$.mockReturnValue(
           Observable.of(new Set(['component:default/mock'])),
         );
         mockStarredEntitiesApi.toggleStarred.mockResolvedValue();

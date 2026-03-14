@@ -24,7 +24,7 @@ import { SelectProps } from '../Select/Select';
 import { coreComponentsTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
-export type TableFiltersClassKey = 'root' | 'value' | 'heder' | 'filters';
+export type TableFiltersClassKey = 'root' | 'value' | 'header' | 'filters';
 
 const useFilterStyles = makeStyles(
   theme => ({

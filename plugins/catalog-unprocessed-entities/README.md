@@ -93,7 +93,7 @@ import { useApi } from '@backstage/core-plugin-api';
 const catalogUnprocessedEntitiesApi = useApi(catalogUnprocessedEntitiesApiRef);
 ```
 
-Note that if you are not rendering the `CatalogUnprocessedEntitiesPage` in the `App.tsx` tree, you will need to export the `catalogUnproccessedEntitiesPlugin` from your `plugins.ts` file to setup the plugin otherwise you will receive an error like `No implementation available for apiRef{plugin.catalog-unprocessed-entities.service}`
+Note that if you are not rendering the `CatalogUnprocessedEntitiesPage` in the `App.tsx` tree, you will need to export the `catalogUnprocessedEntitiesPlugin` from your `plugins.ts` file to setup the plugin otherwise you will receive an error like `No implementation available for apiRef{plugin.catalog-unprocessed-entities.service}`
 
 ```typescript
 // In packages/app/src/plugins.ts
