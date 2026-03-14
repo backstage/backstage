@@ -28,6 +28,47 @@ Backstage comes with a number of catalog concepts out of the box:
 
 We'll list different possibilities for extending this below.
 
+## Working with Entity Types in TypeScript
+
+The `@backstage/catalog-model` package exports TypeScript types for each
+built-in entity kind. Each kind's type is a union of all known `apiVersion`
+variants for that kind. For example, `ApiEntity` is a union of
+`ApiEntityV1alpha1` and `ApiEntityV1alpha2`.
+
+Because `spec` fields can vary between versions, you should narrow on
+`apiVersion` before accessing version-specific fields:
+
+```ts
+import { ApiEntity } from '@backstage/catalog-model';
+
+function processApi(entity: ApiEntity) {
+  // Fields common to all versions are always available
+  entity.spec.type;
+  entity.spec.lifecycle;
+  entity.spec.owner;
+
+  // Version-specific fields require narrowing first
+  if (entity.apiVersion === 'backstage.io/v1alpha1') {
+    entity.spec.definition; // string — always present on v1alpha1
+  }
+
+  if (entity.apiVersion === 'backstage.io/v1alpha2') {
+    if (entity.spec.type === 'mcp-server') {
+      entity.spec.remotes; // MCP servers have remotes, not definition
+    } else {
+      entity.spec.definition; // other v1alpha2 types have definition
+    }
+  }
+}
+```
+
+The versioned types are also exported individually, e.g. `ApiEntityV1alpha1`
+and `ApiEntityV1alpha2`, for cases where you already know the exact version.
+
+This pattern applies to all entity kind types. When a kind introduces a new
+`apiVersion`, its type alias is updated to include the new version as part of
+the union.
+
 ## Adding a New `apiVersion` of an Existing Kind
 
 Example intents:

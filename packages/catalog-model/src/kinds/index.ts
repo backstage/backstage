@@ -14,11 +14,29 @@
  * limitations under the License.
  */
 
+import type { ApiEntityV1alpha1 } from './ApiEntityV1alpha1';
+import type { ApiEntityV1alpha2 } from './ApiEntityV1alpha2';
+
+/**
+ * Union of all known API entity versions.
+ *
+ * @remarks
+ *
+ * Consumers should narrow on `apiVersion` before accessing version-specific
+ * fields like `spec.definition` or `spec.remotes`. This pattern applies to
+ * all catalog entity types, not just API entities.
+ *
+ * @public
+ */
+export type ApiEntity = ApiEntityV1alpha1 | ApiEntityV1alpha2;
+
 export { apiEntityV1alpha1Validator } from './ApiEntityV1alpha1';
+export type { ApiEntityV1alpha1 } from './ApiEntityV1alpha1';
+export { apiEntityV1alpha2Validator } from './ApiEntityV1alpha2';
 export type {
-  ApiEntityV1alpha1 as ApiEntity,
-  ApiEntityV1alpha1,
-} from './ApiEntityV1alpha1';
+  ApiEntityV1alpha2,
+  ApiEntityV1alpha2Spec,
+} from './ApiEntityV1alpha2';
 export { componentEntityV1alpha1Validator } from './ComponentEntityV1alpha1';
 export type {
   ComponentEntityV1alpha1 as ComponentEntity,
