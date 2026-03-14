@@ -15,20 +15,22 @@ export const coreComponentsTranslationRef: TranslationRef<
     readonly 'table.body.emptyDataSourceMessage': 'No records to display';
     readonly 'table.header.actions': 'Actions';
     readonly 'table.toolbar.search': 'Filter';
-    readonly 'table.pagination.firstTooltip': 'First Page';
     readonly 'table.pagination.labelDisplayedRows': '{from}-{to} of {count}';
+    readonly 'table.pagination.firstTooltip': 'First Page';
     readonly 'table.pagination.labelRowsSelect': 'rows';
     readonly 'table.pagination.lastTooltip': 'Last Page';
     readonly 'table.pagination.nextTooltip': 'Next Page';
     readonly 'table.pagination.previousTooltip': 'Previous Page';
-    readonly 'dependencyGraph.fullscreenTooltip': 'Toggle fullscreen';
+    readonly 'emptyState.missingAnnotation.title': 'Missing Annotation';
+    readonly 'emptyState.missingAnnotation.actionTitle': 'Add the annotation to your component YAML as shown in the highlighted example below:';
+    readonly 'emptyState.missingAnnotation.readMore': 'Read more';
     readonly 'signIn.title': 'Sign In';
     readonly 'signIn.loginFailed': 'Login failed';
     readonly 'signIn.customProvider.title': 'Custom User';
-    readonly 'signIn.customProvider.continue': 'Continue';
     readonly 'signIn.customProvider.subtitle': 'Enter your own User ID and credentials.\n This selection will not be stored.';
     readonly 'signIn.customProvider.userId': 'User ID';
     readonly 'signIn.customProvider.tokenInvalid': 'Token is not a valid OpenID Connect JWT Token';
+    readonly 'signIn.customProvider.continue': 'Continue';
     readonly 'signIn.customProvider.idToken': 'ID Token (optional)';
     readonly 'signIn.guestProvider.title': 'Guest';
     readonly 'signIn.guestProvider.enter': 'Enter';
@@ -45,16 +47,13 @@ export const coreComponentsTranslationRef: TranslationRef<
     readonly 'errorPage.goBack': 'Go back';
     readonly 'errorPage.showMoreDetails': 'Show more details';
     readonly 'errorPage.showLessDetails': 'Show less details';
-    readonly 'emptyState.missingAnnotation.title': 'Missing Annotation';
-    readonly 'emptyState.missingAnnotation.actionTitle': 'Add the annotation to your component YAML as shown in the highlighted example below:';
-    readonly 'emptyState.missingAnnotation.readMore': 'Read more';
     readonly 'supportConfig.default.title': 'Support Not Configured';
     readonly 'supportConfig.default.linkTitle': 'Add `app.support` config key';
     readonly 'errorBoundary.title': 'Please contact {{slackChannel}} for help.';
     readonly 'oauthRequestDialog.message': 'Sign-in to allow {{appTitle}} access to {{provider}} APIs and identities.';
     readonly 'oauthRequestDialog.title': 'Login Required';
-    readonly 'oauthRequestDialog.login': 'Log in';
     readonly 'oauthRequestDialog.authRedirectTitle': 'This will trigger a http redirect to OAuth Login.';
+    readonly 'oauthRequestDialog.login': 'Log in';
     readonly 'oauthRequestDialog.rejectAll': 'Reject All';
     readonly 'supportButton.title': 'Support';
     readonly 'supportButton.close': 'Close';
@@ -62,9 +61,10 @@ export const coreComponentsTranslationRef: TranslationRef<
     readonly 'alertDisplay.message_other': '({{ count }} newer messages)';
     readonly 'autoLogout.stillTherePrompt.title': 'Logging out due to inactivity';
     readonly 'autoLogout.stillTherePrompt.buttonText': "Yes! Don't log me out";
+    readonly 'dependencyGraph.fullscreenTooltip': 'Toggle fullscreen';
     readonly 'proxiedSignInPage.title': 'You do not appear to be signed in. Please try reloading the browser page.';
-    readonly 'logViewer.downloadBtn.tooltip': 'Download logs';
     readonly 'logViewer.searchField.placeholder': 'Search';
+    readonly 'logViewer.downloadBtn.tooltip': 'Download logs';
   }
 >;
 

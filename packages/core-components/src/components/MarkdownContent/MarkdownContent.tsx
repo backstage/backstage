@@ -115,7 +115,7 @@ const gfmRehypePlugins: PluggableList = [
   [
     rehypeRaw,
     {
-      tagFilter: true,
+      tagfilter: true,
     },
   ],
   [
