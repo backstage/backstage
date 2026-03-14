@@ -155,6 +155,13 @@ type SignInRuntime = {
   requiresSignIn: boolean;
 };
 
+type FinalizationState = {
+  started: boolean;
+  promise: Promise<FinalizedSpecializedApp>;
+  resolve(app: FinalizedSpecializedApp): void;
+  reject(error: unknown): void;
+};
+
 type ExtensionPredicateContext = {
   featureFlags: string[];
   permissions: string[];
@@ -640,10 +647,9 @@ export function prepareSpecializedApp(
   let finalized: FinalizedSpecializedApp | undefined;
   let bootstrapApp: BootstrapSpecializedApp | undefined;
   let bootstrapError: Error | undefined;
-  let finalizedPromise: Promise<FinalizedSpecializedApp> | undefined;
+  let finalizationState: FinalizationState | undefined;
   let bootstrapErrorReporter: ((error: Error) => void) | undefined;
   let pendingBootstrapError: Error | undefined;
-  const finalizedCallbacks = new Set<(app: FinalizedSpecializedApp) => void>();
 
   function finalizeFromSessionState(
     finalizedSessionState: SpecializedAppSessionState,
@@ -667,16 +673,28 @@ export function prepareSpecializedApp(
     pendingBootstrapError = bootstrapFailure;
   }
 
-  function flushFinalizedCallbacks(finalizedApp: FinalizedSpecializedApp) {
-    if (finalizedCallbacks.size === 0) {
-      return;
+  function getFinalizationState(): FinalizationState {
+    if (finalizationState) {
+      return finalizationState;
     }
 
-    const callbacks = Array.from(finalizedCallbacks);
-    finalizedCallbacks.clear();
-    for (const callback of callbacks) {
-      callback(finalizedApp);
+    let resolve: ((app: FinalizedSpecializedApp) => void) | undefined;
+    let reject: ((error: unknown) => void) | undefined;
+    const promise = new Promise<FinalizedSpecializedApp>((res, rej) => {
+      resolve = res;
+      reject = rej;
+    });
+    if (!resolve || !reject) {
+      throw new Error('Failed to create finalization state');
     }
+
+    finalizationState = {
+      started: false,
+      promise,
+      resolve,
+      reject,
+    };
+    return finalizationState;
   }
 
   function beginFinalization(
@@ -685,27 +703,30 @@ export function prepareSpecializedApp(
     if (finalized) {
       return Promise.resolve(finalized);
     }
-    if (finalizedPromise) {
-      return finalizedPromise;
+    const state = getFinalizationState();
+    if (state.started) {
+      return state.promise;
     }
-    finalizedPromise = loader
+    state.started = true;
+
+    void loader
       .then(sessionState => {
         const finalizedApp = finalizeFromSessionState(sessionState);
-        flushFinalizedCallbacks(finalizedApp);
-        return finalizedApp;
+        state.resolve(finalizedApp);
       })
       .catch(error => {
-        finalizedPromise = undefined;
+        finalizationState = undefined;
 
         if (signInRuntime?.requiresSignIn) {
-          throw error;
+          state.reject(error);
+          return;
         }
 
         reportBootstrapFailure(error);
-        throw bootstrapError;
+        state.reject(bootstrapError);
       });
 
-    return finalizedPromise;
+    return state.promise;
   }
 
   function getBootstrapApp() {
@@ -757,8 +778,9 @@ export function prepareSpecializedApp(
     onFinalized(callback) {
       getBootstrapApp();
 
+      let subscribed = true;
+
       if (finalized) {
-        let subscribed = true;
         const finalizedApp = finalized;
         Promise.resolve().then(() => {
           if (subscribed) {
@@ -770,12 +792,19 @@ export function prepareSpecializedApp(
         };
       }
 
-      finalizedCallbacks.add(callback);
-      if (!signInRuntime?.requiresSignIn) {
-        void beginFinalization(getSessionState()).catch(() => {});
-      }
+      const finalizedAppPromise = signInRuntime?.requiresSignIn
+        ? getFinalizationState().promise
+        : beginFinalization(getSessionState());
+      void finalizedAppPromise
+        .then(finalizedApp => {
+          if (subscribed) {
+            callback(finalizedApp);
+          }
+        })
+        .catch(() => {});
+
       return () => {
-        finalizedCallbacks.delete(callback);
+        subscribed = false;
       };
     },
     finalize(sessionState?: SpecializedAppSessionState) {
@@ -803,7 +832,7 @@ export function prepareSpecializedApp(
 
       cachedSessionState = finalizedSessionState;
       finalized = finalizeWithSessionState(finalizedSessionState);
-      flushFinalizedCallbacks(finalized);
+      finalizationState?.resolve(finalized);
       return finalized;
     },
   };
