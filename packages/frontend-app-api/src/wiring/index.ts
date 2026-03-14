@@ -15,6 +15,8 @@
  */
 
 export {
+  prepareSpecializedApp,
+  type PreparedSpecializedApp,
   createSpecializedApp,
   type CreateSpecializedAppOptions,
 } from './createSpecializedApp';
