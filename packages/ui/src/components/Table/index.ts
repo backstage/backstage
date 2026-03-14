@@ -53,6 +53,7 @@ export type {
   NoPagination,
   PagePagination,
   TablePaginationType,
+  VirtualizedProp,
 } from './types';
 export type {
   UseTableOptions,

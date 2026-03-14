@@ -187,6 +187,12 @@ export interface TableSelection {
 }
 
 /** @public */
+export type VirtualizedProp =
+  | boolean
+  | { rowHeight: number }
+  | { estimatedRowHeight: number };
+
+/** @public */
 export interface TableProps<T extends TableItem> {
   columnConfig: readonly ColumnConfig<T>[];
   data: T[] | undefined;
@@ -200,4 +206,5 @@ export interface TableProps<T extends TableItem> {
   emptyState?: ReactNode;
   className?: string;
   style?: React.CSSProperties;
+  virtualized?: VirtualizedProp;
 }
