@@ -31,6 +31,7 @@ import {
 } from 'node:path';
 import { paths } from '../../../../lib/paths';
 import { publishPreflightCheck } from '../../lib/publishing';
+import { fixConfigSchema } from './fixConfigSchema';
 
 const SCRIPT_EXTS = ['.js', '.jsx', '.ts', '.tsx', '.json'];
 
@@ -497,7 +498,11 @@ export async function command(opts: OptionValues): Promise<void> {
   const packages = await readFixablePackages();
   const fixRepositoryField = createRepositoryFieldFixer();
 
-  const fixers: PackageFixer[] = [fixPackageExports, fixSideEffects];
+  const fixers: PackageFixer[] = [
+    fixPackageExports,
+    fixSideEffects,
+    fixConfigSchema,
+  ];
 
   // Fixers that only apply to repos that publish packages
   if (opts.publish) {
