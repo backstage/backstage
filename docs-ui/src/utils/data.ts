@@ -14,6 +14,11 @@ export const components: Page[] = [
     slug: 'alert',
   },
   {
+    title: 'Autocomplete',
+    slug: 'autocomplete',
+    status: 'new',
+  },
+  {
     title: 'Avatar',
     slug: 'avatar',
   },

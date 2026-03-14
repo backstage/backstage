@@ -1,0 +1,172 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { CodeBlock } from '@/components/CodeBlock';
+import { ReactAriaLink } from '@/components/ReactAriaLink';
+import {
+  Basic,
+  WithIcon,
+  Sizes,
+  WithDescription,
+  CustomValue,
+  Disabled,
+  Required,
+  MenuDisplay,
+  GridDisplay,
+  TagsDisplay,
+  TableDisplay,
+} from './components';
+import { autocompletePropDefs } from './props-definition';
+import {
+  autocompleteUsageSnippet,
+  basicSnippet,
+  withIconSnippet,
+  sizesSnippet,
+  withDescriptionSnippet,
+  customValueSnippet,
+  disabledSnippet,
+  requiredSnippet,
+  menuDisplaySnippet,
+  gridDisplaySnippet,
+  tagsDisplaySnippet,
+  tableDisplaySnippet,
+} from './snippets';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+import { AutocompleteDefinition } from '../../../utils/definitions';
+
+export const reactAriaUrls = {
+  autocomplete: 'https://react-aria.adobe.com/ComboBox',
+};
+
+<PageTitle
+  title="Autocomplete"
+  description="A text input with filtered dropdown suggestions for quick selection."
+/>
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<Basic />}
+  code={basicSnippet}
+/>
+
+## Usage
+
+<CodeBlock code={autocompleteUsageSnippet} />
+
+## API reference
+
+<PropsTable data={autocompletePropDefs} />
+
+<ReactAriaLink component="ComboBox" href={reactAriaUrls.autocomplete} />
+
+## Examples
+
+### With icon
+
+<Snippet
+  layout="side-by-side"
+  open
+  preview={<WithIcon />}
+  code={withIconSnippet}
+/>
+
+### Sizes
+
+<Snippet
+  layout="side-by-side"
+  open
+  preview={<Sizes />}
+  code={sizesSnippet}
+/>
+
+### With description
+
+<Snippet
+  layout="side-by-side"
+  open
+  preview={<WithDescription />}
+  code={withDescriptionSnippet}
+/>
+
+### Custom value
+
+Allow users to enter values not in the list.
+
+<Snippet
+  layout="side-by-side"
+  open
+  preview={<CustomValue />}
+  code={customValueSnippet}
+/>
+
+### Disabled
+
+<Snippet
+  layout="side-by-side"
+  open
+  preview={<Disabled />}
+  code={disabledSnippet}
+/>
+
+### Required
+
+<Snippet
+  layout="side-by-side"
+  open
+  preview={<Required />}
+  code={requiredSnippet}
+/>
+
+## Display Modes
+
+The Autocomplete component supports multiple display modes to match different use cases.
+
+### Menu display
+
+Display options in a menu-style layout with icons and descriptions.
+
+<Snippet
+  layout="side-by-side"
+  open
+  preview={<MenuDisplay />}
+  code={menuDisplaySnippet}
+/>
+
+### Grid display
+
+Display options in a grid layout, perfect for visual selection.
+
+<Snippet
+  layout="side-by-side"
+  open
+  preview={<GridDisplay />}
+  code={gridDisplaySnippet}
+/>
+
+### Tags display
+
+Display options as tags, great for compact selections.
+
+<Snippet
+  layout="side-by-side"
+  open
+  preview={<TagsDisplay />}
+  code={tagsDisplaySnippet}
+/>
+
+### Table display
+
+Display options in a table format with multiple columns.
+
+<Snippet
+  layout="side-by-side"
+  open
+  preview={<TableDisplay />}
+  code={tableDisplaySnippet}
+/>
+
+<Theming definition={AutocompleteDefinition} />
+
+<ChangelogComponent component="autocomplete" />

@@ -30,6 +30,7 @@ export * from './components/FullPage';
 // UI components
 export * from './components/Accordion';
 export * from './components/Alert';
+export * from './components/Autocomplete';
 export * from './components/Avatar';
 export * from './components/Button';
 export * from './components/Card';
