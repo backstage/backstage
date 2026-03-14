@@ -96,5 +96,6 @@ export default async ({ args }: CliCommandContext) => {
     process.exit(1);
   }
 
+  // eslint-disable-next-line @backstage/no-undeclared-imports
   await require('jest').run(args);
 };
