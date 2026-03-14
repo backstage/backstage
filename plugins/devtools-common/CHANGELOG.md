@@ -1,5 +1,11 @@
 # @backstage/plugin-devtools-common
 
+## 0.1.23-next.0
+
+### Patch Changes
+
+- f80195e: Added `cancelScheduledTask` to the DevTools API and a cancel button to the scheduled tasks UI.
+
 ## 0.1.22
 
 ### Patch Changes

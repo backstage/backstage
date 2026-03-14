@@ -1,5 +1,12 @@
 # @backstage/plugin-devtools-backend
 
+## 0.5.15-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-devtools-common@0.1.23-next.0
+
 ## 0.5.15-next.1
 
 ### Patch Changes

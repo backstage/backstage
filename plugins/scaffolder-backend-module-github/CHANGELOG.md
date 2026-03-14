@@ -1,5 +1,13 @@
 # @backstage/plugin-scaffolder-backend-module-github
 
+## 0.9.7-next.3
+
+### Patch Changes
+
+- a761a48: Added optional `returnWorkflowRunDetails` input to `github:actions:dispatch` action. When true, exposes `workflowRunId`, `workflowRunUrl`, and `workflowRunHtmlUrl` as outputs using the GitHub API `return_run_details` parameter.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.13.0-next.3
+
 ## 0.9.7-next.2
 
 ### Patch Changes
