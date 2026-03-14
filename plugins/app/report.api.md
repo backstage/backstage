@@ -146,7 +146,7 @@ const appPlugin: OverridableFrontendPlugin<
           ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
           {
             singleton: true;
-            optional: false;
+            optional: true;
             internal: false;
           }
         >;

@@ -16,8 +16,6 @@ import { FrontendFeature } from '@backstage/frontend-plugin-api';
 import { FrontendPlugin } from '@backstage/frontend-plugin-api';
 import { FrontendPluginInfo } from '@backstage/frontend-plugin-api';
 import { JsonObject } from '@backstage/types';
-import { ComponentType } from 'react';
-import { JSX as JSX_2 } from 'react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { SubRouteRef } from '@backstage/frontend-plugin-api';
 
@@ -159,6 +157,11 @@ export type AppErrorTypes = {
 };
 
 // @public
+export type BootstrapSpecializedApp = {
+  tree: AppTree;
+};
+
+// @public
 export type CreateAppRouteBinder = <
   TExternalRoutes extends {
     [name: string]: ExternalRouteRef;
@@ -172,32 +175,22 @@ export type CreateAppRouteBinder = <
 ) => void;
 
 // @public @deprecated
-export function createSpecializedApp(options?: CreateSpecializedAppOptions): FinalizedSpecializedApp;
-
-// @public
-export type BootstrapSpecializedApp = {
-  tree: AppTree;
-};
-
-// @public
-export type FinalizedSpecializedApp = {
-  sessionState: SpecializedAppSessionState;
-  tree: AppTree;
-  errors?: AppError[];
-};
+export function createSpecializedApp(
+  options?: CreateSpecializedAppOptions,
+): FinalizedSpecializedApp;
 
 // @public
 export type CreateSpecializedAppOptions = {
+  sessionState?: SpecializedAppSessionState;
   features?: FrontendFeature[];
   config?: ConfigApi;
   bindRoutes?(context: { bind: CreateAppRouteBinder }): void;
-  sessionState?: SpecializedAppSessionState;
   advanced?: {
+    sessionState?: SpecializedAppSessionState;
     extensionFactoryMiddleware?:
       | ExtensionFactoryMiddleware_2
       | ExtensionFactoryMiddleware_2[];
     pluginInfoResolver?: FrontendPluginInfoResolver;
-    sessionState?: SpecializedAppSessionState;
   };
 };
 
@@ -212,6 +205,13 @@ export type ExtensionFactoryMiddleware = (
     config?: JsonObject;
   },
 ) => Iterable<ExtensionDataValue<any, any>>;
+
+// @public
+export type FinalizedSpecializedApp = {
+  sessionState: SpecializedAppSessionState;
+  tree: AppTree;
+  errors?: AppError[];
+};
 
 // @public
 export type FrontendPluginInfoResolver = (ctx: {
@@ -235,12 +235,12 @@ export type PreparedSpecializedApp = {
 };
 
 // @public
-export type SpecializedAppSessionState = {
-  $$type: '@backstage/SpecializedAppSessionState';
-};
-
-// @public
 export function prepareSpecializedApp(
   options?: CreateSpecializedAppOptions,
 ): PreparedSpecializedApp;
+
+// @public
+export type SpecializedAppSessionState = {
+  $$type: '@backstage/SpecializedAppSessionState';
+};
 ```
