@@ -16,3 +16,4 @@
 
 export { BitbucketServerEntityProvider } from './BitbucketServerEntityProvider';
 export type { BitbucketServerLocationParser } from './BitbucketServerLocationParser';
+export type { BitbucketServerEntityProviderConfig } from './BitbucketServerEntityProviderConfig';

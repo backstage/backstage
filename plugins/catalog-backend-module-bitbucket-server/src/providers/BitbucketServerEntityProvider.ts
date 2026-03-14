@@ -292,6 +292,7 @@ export class BitbucketServerEntityProvider implements EntityProvider {
             target: `${repository.links.self[0].href}${this.config.catalogPath}`,
             presence: 'optional',
           },
+          config: this.config,
         })) {
           if (entity.metadata.annotations === undefined) {
             entity.metadata.annotations = {};
@@ -361,6 +362,7 @@ export class BitbucketServerEntityProvider implements EntityProvider {
           target: `${repository.links.self[0].href}${this.config.catalogPath}`,
           presence: 'optional',
         },
+        config: this.config,
       })) {
         entity.metadata.annotations![
           this.targetAnnotation
