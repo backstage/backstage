@@ -5910,7 +5910,6 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@backstage/types": "workspace:^"
     "@faker-js/faker": "npm:^10.0.0"
-    "@opentelemetry/api": "npm:^1.9.0"
     "@slack/bolt": "npm:^3.21.4"
     "@slack/types": "npm:^2.14.0"
     "@slack/web-api": "npm:^7.5.0"
