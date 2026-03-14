@@ -63,11 +63,63 @@ const defaultOpenApiOptions = {
   },
 } satisfies OpenApiPlugin.Options;
 
+const seoDescription =
+  'Backstage is an open source developer portal framework that centralizes your software catalog, unifies infrastructure tools, and helps teams ship high-quality code faster.';
+
+const seoKeywords = [
+  'Backstage',
+  'developer portal',
+  'internal developer platform',
+  'platform engineering',
+  'software catalog',
+  'software templates',
+  'TechDocs',
+  'developer experience',
+  'IDP',
+  'open source',
+];
+
 const config: Config = {
   title: 'Backstage Software Catalog and Developer Platform',
   tagline: 'An open source framework for building developer portals',
   url: 'https://backstage.io',
   baseUrl: '/',
+  headTags: [
+    {
+      tagName: 'link',
+      attributes: {
+        rel: 'preconnect',
+        href: 'https://fonts.googleapis.com',
+      },
+    },
+    {
+      tagName: 'link',
+      attributes: {
+        rel: 'preconnect',
+        href: 'https://fonts.gstatic.com',
+        crossOrigin: 'anonymous',
+      },
+    },
+    {
+      tagName: 'script',
+      attributes: {
+        type: 'application/ld+json',
+      },
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'WebSite',
+        name: 'Backstage',
+        url: 'https://backstage.io',
+        description: seoDescription,
+        image: 'https://backstage.io/img/sharing-opengraph.png',
+        publisher: {
+          '@type': 'Organization',
+          name: 'Spotify',
+          url: 'https://spotify.github.io/',
+        },
+      }),
+    },
+  ],
   organizationName: 'Spotify',
   projectName: 'backstage',
   scripts: [
@@ -330,6 +382,28 @@ const config: Config = {
   ],
   themes: ['docusaurus-theme-openapi-docs'],
   themeConfig: {
+    metadata: [
+      {
+        name: 'description',
+        content: seoDescription,
+      },
+      {
+        name: 'keywords',
+        content: seoKeywords.join(', '),
+      },
+      {
+        property: 'og:site_name',
+        content: 'Backstage',
+      },
+      {
+        property: 'og:type',
+        content: 'website',
+      },
+      {
+        name: 'twitter:card',
+        content: 'summary_large_image',
+      },
+    ],
     languageTabs: [
       {
         highlight: 'javascript',
