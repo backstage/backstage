@@ -24,6 +24,7 @@ import {
   appTreeApiRef,
   ConfigApi,
   configApiRef,
+  coreExtensionData,
   RouteRef,
   ExternalRouteRef,
   SubRouteRef,
@@ -53,7 +54,7 @@ import {
   OpaqueFrontendPlugin,
 } from '@internal/frontend';
 import { OpaqueType } from '@internal/opaque';
-import { ComponentType, ReactNode, useState } from 'react';
+import { ComponentType, ReactNode, useLayoutEffect, useState } from 'react';
 
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import {
@@ -312,8 +313,9 @@ export type CreateSpecializedAppOptions = {
   /**
    * A reusable specialized app session state to use.
    *
-   * This can be obtained from either {@link PreparedSpecializedApp.getFinalizedApp}
-   * or {@link PreparedSpecializedApp.finalize}, and reused in a future app
+   * This can be obtained from either the app passed to
+   * {@link PreparedSpecializedApp.onFinalized} or from
+   * {@link PreparedSpecializedApp.finalize}, and reused in a future app
    * instance to skip sign-in and session preparation.
    */
   sessionState?: SpecializedAppSessionState;
@@ -374,8 +376,7 @@ export type CreateSpecializedAppOptions = {
  */
 export type PreparedSpecializedApp = {
   getBootstrapApp(): BootstrapSpecializedApp;
-  subscribe(listener: () => void): () => void;
-  getFinalizedApp(): FinalizedSpecializedApp | undefined;
+  onFinalized(callback: (app: FinalizedSpecializedApp) => void): () => void;
   finalize(sessionState?: SpecializedAppSessionState): FinalizedSpecializedApp;
 };
 
@@ -639,47 +640,72 @@ export function prepareSpecializedApp(
   let finalized: FinalizedSpecializedApp | undefined;
   let bootstrapApp: BootstrapSpecializedApp | undefined;
   let bootstrapError: Error | undefined;
-  let bootstrapFinalizeStarted = false;
-  const listeners = new Set<() => void>();
-
-  function notifyListeners() {
-    for (const listener of listeners) {
-      listener();
-    }
-  }
+  let finalizedPromise: Promise<FinalizedSpecializedApp> | undefined;
+  let bootstrapErrorReporter: ((error: Error) => void) | undefined;
+  let pendingBootstrapError: Error | undefined;
+  const finalizedCallbacks = new Set<(app: FinalizedSpecializedApp) => void>();
 
   function finalizeFromSessionState(
     finalizedSessionState: SpecializedAppSessionState,
-  ) {
+  ): FinalizedSpecializedApp {
     cachedSessionState = finalizedSessionState;
     if (!finalized) {
       finalized = finalizeWithSessionState(finalizedSessionState);
     }
-    notifyListeners();
+
+    return finalized;
   }
 
-  function startBootstrapFinalize(input: {
-    loader: Promise<SpecializedAppSessionState>;
-    runtime?: SignInRuntime;
-  }) {
-    if (bootstrapFinalizeStarted) {
+  function reportBootstrapFailure(error: unknown) {
+    const bootstrapFailure = asError(error);
+    bootstrapError = bootstrapFailure;
+    if (bootstrapErrorReporter) {
+      bootstrapErrorReporter(bootstrapFailure);
       return;
     }
-    bootstrapFinalizeStarted = true;
 
-    void input.loader
+    pendingBootstrapError = bootstrapFailure;
+  }
+
+  function flushFinalizedCallbacks(finalizedApp: FinalizedSpecializedApp) {
+    if (finalizedCallbacks.size === 0) {
+      return;
+    }
+
+    const callbacks = Array.from(finalizedCallbacks);
+    finalizedCallbacks.clear();
+    for (const callback of callbacks) {
+      callback(finalizedApp);
+    }
+  }
+
+  function beginFinalization(
+    loader: Promise<SpecializedAppSessionState>,
+  ): Promise<FinalizedSpecializedApp> {
+    if (finalized) {
+      return Promise.resolve(finalized);
+    }
+    if (finalizedPromise) {
+      return finalizedPromise;
+    }
+    finalizedPromise = loader
       .then(sessionState => {
-        finalizeFromSessionState(sessionState);
+        const finalizedApp = finalizeFromSessionState(sessionState);
+        flushFinalizedCallbacks(finalizedApp);
+        return finalizedApp;
       })
       .catch(error => {
-        if (input.runtime?.requiresSignIn) {
-          input.runtime.error = error;
-          return;
+        finalizedPromise = undefined;
+
+        if (signInRuntime?.requiresSignIn) {
+          throw error;
         }
 
-        bootstrapError = asError(error);
-        notifyListeners();
+        reportBootstrapFailure(error);
+        throw bootstrapError;
       });
+
+    return finalizedPromise;
   }
 
   function getBootstrapApp() {
@@ -699,10 +725,23 @@ export function prepareSpecializedApp(
       appTreeApi: phase.appTreeApi,
       extensionFactoryMiddleware: mergedExtensionFactoryMiddleware,
       disableSignIn: Boolean(providedSessionState),
+      registerBootstrapErrorReporter(reporter) {
+        bootstrapErrorReporter = reporter;
+        if (pendingBootstrapError) {
+          reporter(pendingBootstrapError);
+          pendingBootstrapError = undefined;
+        }
+
+        return () => {
+          if (bootstrapErrorReporter === reporter) {
+            bootstrapErrorReporter = undefined;
+          }
+        };
+      },
       onSignInSuccess(identityApi) {
-        return startSignInFinalize(runtime, identityApi).then(sessionState => {
-          finalizeFromSessionState(sessionState);
-        });
+        return beginFinalization(
+          startSignInFinalize(runtime, identityApi),
+        ).then(() => {});
       },
     });
 
@@ -710,35 +749,34 @@ export function prepareSpecializedApp(
     signInRuntime = runtime;
     bootstrapApp = result.bootstrapApp;
 
-    if (!runtime.requiresSignIn) {
-      startBootstrapFinalize({ loader: getSessionState(), runtime });
-    }
-
     return bootstrapApp;
   }
 
   return {
     getBootstrapApp,
-    subscribe(listener) {
-      listeners.add(listener);
-      return () => {
-        listeners.delete(listener);
-      };
-    },
-    getFinalizedApp() {
+    onFinalized(callback) {
+      getBootstrapApp();
+
       if (finalized) {
-        return finalized;
+        let subscribed = true;
+        const finalizedApp = finalized;
+        Promise.resolve().then(() => {
+          if (subscribed) {
+            callback(finalizedApp);
+          }
+        });
+        return () => {
+          subscribed = false;
+        };
       }
 
-      if (bootstrapError) {
-        throw bootstrapError;
+      finalizedCallbacks.add(callback);
+      if (!signInRuntime?.requiresSignIn) {
+        void beginFinalization(getSessionState()).catch(() => {});
       }
-
-      if (signInRuntime?.error && !signInRuntime.requiresSignIn) {
-        throw signInRuntime.error;
-      }
-
-      return undefined;
+      return () => {
+        finalizedCallbacks.delete(callback);
+      };
     },
     finalize(sessionState?: SpecializedAppSessionState) {
       if (finalized) {
@@ -765,6 +803,7 @@ export function prepareSpecializedApp(
 
       cachedSessionState = finalizedSessionState;
       finalized = finalizeWithSessionState(finalizedSessionState);
+      flushFinalizedCallbacks(finalized);
       return finalized;
     },
   };
@@ -877,6 +916,7 @@ function createBootstrapApp(options: {
   appTreeApi: AppTreeApiProxy;
   extensionFactoryMiddleware?: ExtensionFactoryMiddleware;
   disableSignIn?: boolean;
+  registerBootstrapErrorReporter(reporter: (error: Error) => void): () => void;
   onSignInSuccess(identityApi: IdentityApi): Promise<void>;
 }): {
   bootstrapApp: BootstrapSpecializedApp;
@@ -907,6 +947,10 @@ function createBootstrapApp(options: {
     appTreeApi: options.appTreeApi,
     routeRefsById: options.routeRefsById,
     stopAtSessionBoundary: true,
+  });
+  prepareBootstrapErrorBoundary({
+    tree: options.tree,
+    registerBootstrapErrorReporter: options.registerBootstrapErrorReporter,
   });
 
   return {
@@ -1048,6 +1092,41 @@ function prepareFinalizedTree(options: { tree: AppTree }) {
   deleteAttachment(appRootNode, 'signInPage');
 }
 
+function prepareBootstrapErrorBoundary(options: {
+  tree: AppTree;
+  registerBootstrapErrorReporter(reporter: (error: Error) => void): () => void;
+}) {
+  const rootNode = options.tree.root;
+  const rootInstance = rootNode.instance;
+  if (!rootInstance) {
+    return;
+  }
+
+  const rootElement = rootInstance.getData(coreExtensionData.reactElement);
+  if (!rootElement) {
+    return;
+  }
+
+  function PreparedBootstrapRoot() {
+    const [bootstrapError, setBootstrapError] = useState<Error>();
+
+    useLayoutEffect(() => {
+      return options.registerBootstrapErrorReporter(setBootstrapError);
+    }, []);
+
+    if (bootstrapError) {
+      throw bootstrapError;
+    }
+
+    return rootElement;
+  }
+
+  setNodeInstance(
+    rootNode,
+    createReactElementOverrideInstance(rootInstance, <PreparedBootstrapRoot />),
+  );
+}
+
 function clearTreeInstances(tree: AppTree) {
   const nodes = new Set<AppNode>([...tree.nodes.values(), ...tree.orphans]);
   for (const node of nodes) {
@@ -1076,6 +1155,27 @@ function createSyntheticDataRefInstance<T>(
         return undefined;
       }
       return value as unknown as TValue;
+    },
+  };
+}
+
+function createReactElementOverrideInstance(
+  instance: AppNodeInstance,
+  value: ReactNode,
+): AppNodeInstance {
+  return {
+    getDataRefs() {
+      const refs = Array.from(instance.getDataRefs());
+      if (!refs.some(ref => ref.id === coreExtensionData.reactElement.id)) {
+        refs.push(coreExtensionData.reactElement);
+      }
+      return refs[Symbol.iterator]();
+    },
+    getData<TValue>(dataRef: ExtensionDataRef<TValue>) {
+      if (dataRef.id === coreExtensionData.reactElement.id) {
+        return value as TValue;
+      }
+      return instance.getData(dataRef);
     },
   };
 }

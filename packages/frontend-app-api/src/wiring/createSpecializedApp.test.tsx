@@ -31,7 +31,7 @@ import {
   analyticsApiRef,
   createExtensionDataRef,
 } from '@backstage/frontend-plugin-api';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import {
   createSpecializedApp,
   prepareSpecializedApp,
@@ -79,16 +79,9 @@ function renderPreparedBootstrap(preparedApp: PreparedSpecializedApp) {
 }
 
 async function waitForFinalizedApp(preparedApp: PreparedSpecializedApp) {
-  await waitFor(() => {
-    expect(preparedApp.getFinalizedApp()).toBeDefined();
+  return new Promise(resolve => {
+    preparedApp.onFinalized(resolve);
   });
-
-  const finalizedApp = preparedApp.getFinalizedApp();
-  if (!finalizedApp) {
-    throw new Error('Expected prepared app to finalize');
-  }
-
-  return finalizedApp;
 }
 
 describe('createSpecializedApp', () => {
@@ -1086,14 +1079,9 @@ describe('createSpecializedApp', () => {
         screen.findByText('Custom Sign In'),
       ).resolves.toBeInTheDocument();
 
-      await waitForFinalizedApp(preparedApp);
+      const finalizedApp = await waitForFinalizedApp(preparedApp);
       expect(featureFlagsApi.isActive).toHaveBeenCalledWith('test-flag');
       expect(featureFlagsApi.isActive).toHaveBeenCalledTimes(1);
-
-      const finalizedApp = preparedApp.getFinalizedApp();
-      if (!finalizedApp) {
-        throw new Error('Expected prepared app to finalize');
-      }
       render(
         finalizedApp.tree.root.instance!.getData(
           coreExtensionData.reactElement,

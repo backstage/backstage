@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { JSX, lazy, ReactNode, Suspense, useSyncExternalStore } from 'react';
+import { JSX, lazy, ReactNode, Suspense, useEffect, useState } from 'react';
 import {
   ConfigApi,
   coreExtensionData,
@@ -150,11 +150,14 @@ function PreparedAppRoot(props: {
   preparedApp: PreparedSpecializedApp;
 }): JSX.Element {
   const bootstrapApp = props.preparedApp.getBootstrapApp();
-  const finalizedApp: FinalizedSpecializedApp | undefined =
-    useSyncExternalStore(
-      props.preparedApp.subscribe,
-      props.preparedApp.getFinalizedApp,
-    );
+  const [finalizedApp, setFinalizedApp] = useState<
+    FinalizedSpecializedApp | undefined
+  >();
+
+  useEffect(
+    () => props.preparedApp.onFinalized(setFinalizedApp),
+    [props.preparedApp],
+  );
 
   if (!finalizedApp) {
     return bootstrapApp.tree.root.instance!.getData(
