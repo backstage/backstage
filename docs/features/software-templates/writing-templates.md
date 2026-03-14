@@ -767,6 +767,26 @@ output:
         **Entity URL:** `${{ steps['publish'].output.remoteUrl }}`
 ```
 
+Output `links` and `text` items support an optional `if` condition, using the same syntax as step conditions. Items where the condition evaluates to false are excluded from the output:
+
+```yaml
+output:
+  links:
+    - title: Repository
+      url: ${{ steps['publish'].output.remoteUrl }}
+    - if: ${{ parameters.enableCI === "Yes" }}
+      title: CI Dashboard
+      url: https://ci.example.com/${{ parameters.name }}
+  text:
+    - title: Summary
+      content: |
+        **Component:** `${{ parameters.name }}`
+    - if: ${{ parameters.showDetails }}
+      title: Details
+      content: |
+        **CI enabled:** ${{ parameters.enableCI }}
+```
+
 ## The templating syntax
 
 You might have noticed expressions wrapped in `${{ }}` in the examples. These are

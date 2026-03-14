@@ -136,6 +136,7 @@ export type ListTemplatingExtensionsResponse = {
 
 /** @public */
 export type ScaffolderOutputLink = {
+  if?: string | boolean;
   title?: string;
   icon?: string;
   url?: string;
@@ -144,6 +145,7 @@ export type ScaffolderOutputLink = {
 
 /** @public */
 export type ScaffolderOutputText = {
+  if?: string | boolean;
   title?: string;
   icon?: string;
   content?: string;
