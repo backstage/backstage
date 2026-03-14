@@ -26,6 +26,10 @@ export const opDeclareKindV1Schema = z.object({
    * The kind to declare, e.g. "Component".
    */
   kind: z.string(),
+  /**
+   * The apiVersion group of the kind, e.g. "backstage.io".
+   */
+  group: z.string(),
 
   /**
    * Properties that apply for this kind
@@ -48,3 +52,20 @@ export const opDeclareKindV1Schema = z.object({
 
 /** {@inheritDoc opDeclareKindV1Schema} */
 export type OpDeclareKindV1 = z.infer<typeof opDeclareKindV1Schema>;
+
+/**
+ * Creates a validated {@link OpDeclareKindV1} operation instance.
+ *
+ * @remarks
+ *
+ * The `op` field is filled in automatically. The input is verified against the
+ * schema before returning, ensuring that the resulting op is reliably valid.
+ *
+ * @param input - All fields of the op except `op` itself.
+ * @returns A fully validated {@link OpDeclareKindV1}.
+ */
+export function createDeclareKindOp(
+  input: Omit<OpDeclareKindV1, 'op'> & { op?: never },
+): OpDeclareKindV1 {
+  return opDeclareKindV1Schema.parse({ ...input, op: 'declareKind.v1' });
+}

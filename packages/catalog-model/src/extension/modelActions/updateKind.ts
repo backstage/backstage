@@ -15,6 +15,7 @@
  */
 
 import { CatalogModelOp } from '../operations';
+import { createUpdateKindOp } from '../operations/updateKind';
 
 /**
  * The definition of a catalog model kind, roughly resembling a JSON Schema.
@@ -57,15 +58,16 @@ export function opsFromCatalogModelUpdateKind(
   const ops: CatalogModelOp[] = [];
 
   if (kind.names.singular || kind.names.plural || kind.description) {
-    ops.push({
-      op: 'updateKind.v1',
-      kind: kind.names.kind,
-      properties: {
-        singular: kind.names.singular,
-        plural: kind.names.plural,
-        description: kind.description,
-      },
-    });
+    ops.push(
+      createUpdateKindOp({
+        kind: kind.names.kind,
+        properties: {
+          singular: kind.names.singular,
+          plural: kind.names.plural,
+          description: kind.description,
+        },
+      }),
+    );
   }
 
   // TODO: Can this same op update the schema too?

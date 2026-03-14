@@ -15,6 +15,7 @@
  */
 
 import { CatalogModelOp } from '../operations';
+import { createUpdateRelationOp } from '../operations/updateRelation';
 
 /**
  * The definition of a catalog model relation.
@@ -113,34 +114,36 @@ export function opsFromCatalogModelUpdateRelationPair(
   // Duplicate across kinds, and both directions
   for (const firstKind of [relationPair.fromKind].flat()) {
     for (const secondKind of [relationPair.toKind].flat()) {
-      ops.push({
-        op: 'updateRelation.v1',
-        fromKind: firstKind,
-        type: relationPair.forward.type,
-        toKind: secondKind,
-        properties: {
-          reverseType: relationPair.reverse.type,
-          singular: relationPair.forward.singular,
-          plural: relationPair.forward.plural,
-          comment: relationPair.comment,
-        },
-      });
-      // TODO(freben): This actually doesn't make much sense; the ability to
-      // only partially update the pair becomes weird since we don't know what
-      // the original type was. Well, the compile step will know, but still.
-      if (relationPair.reverse.type) {
-        ops.push({
-          op: 'updateRelation.v1',
-          fromKind: secondKind,
-          type: relationPair.reverse.type,
-          toKind: firstKind,
+      ops.push(
+        createUpdateRelationOp({
+          fromKind: firstKind,
+          type: relationPair.forward.type,
+          toKind: secondKind,
           properties: {
-            reverseType: relationPair.forward.type,
+            reverseType: relationPair.reverse.type,
             singular: relationPair.forward.singular,
             plural: relationPair.forward.plural,
             comment: relationPair.comment,
           },
-        });
+        }),
+      );
+      // TODO(freben): This actually doesn't make much sense; the ability to
+      // only partially update the pair becomes weird since we don't know what
+      // the original type was. Well, the compile step will know, but still.
+      if (relationPair.reverse.type) {
+        ops.push(
+          createUpdateRelationOp({
+            fromKind: secondKind,
+            type: relationPair.reverse.type,
+            toKind: firstKind,
+            properties: {
+              reverseType: relationPair.forward.type,
+              singular: relationPair.forward.singular,
+              plural: relationPair.forward.plural,
+              comment: relationPair.comment,
+            },
+          }),
+        );
       }
     }
   }

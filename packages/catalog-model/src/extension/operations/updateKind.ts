@@ -48,3 +48,20 @@ export const opUpdateKindV1Schema = z.object({
 
 /** {@inheritDoc opUpdateKindV1Schema} */
 export type OpUpdateKindV1 = z.infer<typeof opUpdateKindV1Schema>;
+
+/**
+ * Creates a validated {@link OpUpdateKindV1} operation instance.
+ *
+ * @remarks
+ *
+ * The `op` field is filled in automatically. The input is verified against the
+ * schema before returning, ensuring that the resulting op is reliably valid.
+ *
+ * @param input - All fields of the op except `op` itself.
+ * @returns A fully validated {@link OpUpdateKindV1}.
+ */
+export function createUpdateKindOp(
+  input: Omit<OpUpdateKindV1, 'op'> & { op?: never },
+): OpUpdateKindV1 {
+  return opUpdateKindV1Schema.parse({ ...input, op: 'updateKind.v1' });
+}

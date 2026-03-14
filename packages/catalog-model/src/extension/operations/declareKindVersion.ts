@@ -62,7 +62,7 @@ export const opDeclareKindVersionV1Schema = z.object({
    * The specific version name, e.g. "v1alpha1". This and the kind group form
    * the full apiVersion.
    */
-  versionName: z.string(),
+  name: z.string(),
   /**
    * The spec type that this version applies to, if any.
    *
@@ -79,6 +79,11 @@ export const opDeclareKindVersionV1Schema = z.object({
    * The properties that apply to this version.
    */
   properties: z.object({
+    /**
+     * A short description of this particular version (and type, where applicable).
+     */
+    description: z.string().optional(),
+
     /**
      * The fields that shall be used to generate relations, if any.
      */
@@ -97,3 +102,23 @@ export const opDeclareKindVersionV1Schema = z.object({
 export type OpDeclareKindVersionV1 = z.infer<
   typeof opDeclareKindVersionV1Schema
 >;
+
+/**
+ * Creates a validated {@link OpDeclareKindVersionV1} operation instance.
+ *
+ * @remarks
+ *
+ * The `op` field is filled in automatically. The input is verified against the
+ * schema before returning, ensuring that the resulting op is reliably valid.
+ *
+ * @param input - All fields of the op except `op` itself.
+ * @returns A fully validated {@link OpDeclareKindVersionV1}.
+ */
+export function createDeclareKindVersionOp(
+  input: Omit<OpDeclareKindVersionV1, 'op'> & { op?: never },
+): OpDeclareKindVersionV1 {
+  return opDeclareKindVersionV1Schema.parse({
+    ...input,
+    op: 'declareKindVersion.v1',
+  });
+}

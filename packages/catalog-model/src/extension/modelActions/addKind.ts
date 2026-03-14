@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import { CatalogModelOp } from '../operations';
 import { CatalogModelKindRootSchema } from '../jsonSchema/validateKindRootSchemaSemantics';
+import { CatalogModelOp } from '../operations';
+import { createDeclareKindOp } from '../operations/declareKind';
+import { createDeclareKindVersionOp } from '../operations/declareKindVersion';
 
 /**
  * The definition of a catalog model kind, roughly resembling a JSON Schema.
@@ -50,12 +52,19 @@ export interface CatalogModelKindDefinition {
 
   /**
    * A short description of the kind.
+   *
+   * @remarks
+   *
+   * For kinds that have wide applicability over for example several different
+   * spec types, this description should be a generic one and the types
+   * themselves can be more precise.
    */
   description: string;
 
   versions?: Array<{
     /**
-     * The specific version name, e.g. "v1alpha1". This and the kind group form the full apiVersion.
+     * The specific version name, e.g. "v1alpha1". This and the kind group form
+     * the full apiVersion.
      */
     name: string;
 
@@ -68,11 +77,22 @@ export interface CatalogModelKindDefinition {
      * unions. If you don't specify this, the schema will apply to a spec that
      * has no type given at all, or to those where the type is not among the set
      * of any other known declared spec types.
+     *
+     * TODO: Should this be more like `matcher: { [path: string]: string }`, or
+     * even a full JSON Schema that can be used in an "if"?
      */
     specTypes?: string[];
 
     /**
+     * A short description of this particular version (and type, where applicable).
+     */
+    description?: string;
+
+    /**
      * The fields that shall be used to generate relations, if any.
+     *
+     * TODO: Should this be not an array, to be more easily mergeable? Or should
+     * we just have a custom merge strategy for them
      */
     relationFields?: CatalogModelKindRelationFieldDefinition[];
 
@@ -116,18 +136,36 @@ export function opsFromCatalogModelKind(
 ): CatalogModelOp[] {
   const ops: CatalogModelOp[] = [];
 
-  ops.push({
-    op: 'declareKind.v1',
-    kind: kind.names.kind,
-    properties: {
-      singular: kind.names.singular,
-      plural: kind.names.plural,
-      description: kind.description,
-    },
-  });
+  ops.push(
+    createDeclareKindOp({
+      kind: kind.names.kind,
+      group: kind.group,
+      properties: {
+        singular: kind.names.singular,
+        plural: kind.names.plural,
+        description: kind.description,
+      },
+    }),
+  );
 
-  // TODO: apiVersion handling?
-  // TODO: Push the spec fields too
+  for (const version of kind.versions ?? []) {
+    for (const specType of version.specTypes ?? [undefined]) {
+      ops.push(
+        createDeclareKindVersionOp({
+          kind: kind.names.kind,
+          name: version.name,
+          specType: specType,
+          properties: {
+            description: version.description,
+            relationFields: version.relationFields,
+            schema: {
+              jsonSchema: version.schema.jsonSchema as any,
+            },
+          },
+        }),
+      );
+    }
+  }
 
   return ops;
 }

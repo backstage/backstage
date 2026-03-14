@@ -66,3 +66,23 @@ export const opDeclareRelationV1Schema = z.object({
 
 /** {@inheritDoc opDeclareRelationV1Schema} */
 export type OpDeclareRelationV1 = z.infer<typeof opDeclareRelationV1Schema>;
+
+/**
+ * Creates a validated {@link OpDeclareRelationV1} operation instance.
+ *
+ * @remarks
+ *
+ * The `op` field is filled in automatically. The input is verified against the
+ * schema before returning, ensuring that the resulting op is reliably valid.
+ *
+ * @param input - All fields of the op except `op` itself.
+ * @returns A fully validated {@link OpDeclareRelationV1}.
+ */
+export function createDeclareRelationOp(
+  input: Omit<OpDeclareRelationV1, 'op'> & { op?: never },
+): OpDeclareRelationV1 {
+  return opDeclareRelationV1Schema.parse({
+    ...input,
+    op: 'declareRelation.v1',
+  });
+}

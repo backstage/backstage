@@ -15,6 +15,7 @@
  */
 
 import { CatalogModelOp } from '../operations';
+import { createDeclareRelationOp } from '../operations/declareRelation';
 
 /**
  * The definition of a catalog model relation.
@@ -110,30 +111,32 @@ export function opsFromCatalogModelRelationPair(
   // Duplicate across kinds, and both directions
   for (const firstKind of [relationPair.fromKind].flat()) {
     for (const secondKind of [relationPair.toKind].flat()) {
-      ops.push({
-        op: 'declareRelation.v1',
-        fromKind: firstKind,
-        type: relationPair.forward.type,
-        toKind: secondKind,
-        properties: {
-          reverseType: relationPair.reverse.type,
-          singular: relationPair.forward.singular,
-          plural: relationPair.forward.plural,
-          comment: relationPair.comment,
-        },
-      });
-      ops.push({
-        op: 'declareRelation.v1',
-        fromKind: secondKind,
-        type: relationPair.reverse.type,
-        toKind: firstKind,
-        properties: {
-          reverseType: relationPair.forward.type,
-          singular: relationPair.forward.singular,
-          plural: relationPair.forward.plural,
-          comment: relationPair.comment,
-        },
-      });
+      ops.push(
+        createDeclareRelationOp({
+          fromKind: firstKind,
+          type: relationPair.forward.type,
+          toKind: secondKind,
+          properties: {
+            reverseType: relationPair.reverse.type,
+            singular: relationPair.forward.singular,
+            plural: relationPair.forward.plural,
+            comment: relationPair.comment,
+          },
+        }),
+      );
+      ops.push(
+        createDeclareRelationOp({
+          fromKind: secondKind,
+          type: relationPair.reverse.type,
+          toKind: firstKind,
+          properties: {
+            reverseType: relationPair.forward.type,
+            singular: relationPair.forward.singular,
+            plural: relationPair.forward.plural,
+            comment: relationPair.comment,
+          },
+        }),
+      );
     }
   }
 

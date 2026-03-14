@@ -107,3 +107,23 @@ export const opDeclareKindSpecFieldV1Schema = z.object({
 export type OpDeclareKindSpecFieldV1 = z.infer<
   typeof opDeclareKindSpecFieldV1Schema
 >;
+
+/**
+ * Creates a validated {@link OpDeclareKindSpecFieldV1} operation instance.
+ *
+ * @remarks
+ *
+ * The `op` field is filled in automatically. The input is verified against the
+ * schema before returning, ensuring that the resulting op is reliably valid.
+ *
+ * @param input - All fields of the op except `op` itself.
+ * @returns A fully validated {@link OpDeclareKindSpecFieldV1}.
+ */
+export function createDeclareKindSpecFieldOp(
+  input: Omit<OpDeclareKindSpecFieldV1, 'op'> & { op?: never },
+): OpDeclareKindSpecFieldV1 {
+  return opDeclareKindSpecFieldV1Schema.parse({
+    ...input,
+    op: 'declareKindSpecField.v1',
+  });
+}
