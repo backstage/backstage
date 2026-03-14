@@ -13,9 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+// @ts-check
+
 const pkg = require('./package.json');
 
-/** @type {import('eslint').ESLint.Plugin['rules']} */
+/** @type {import('eslint').Linter.RulesRecord} */
 const recommendedRules = {
   '@backstage/no-forbidden-package-imports': 'error',
   '@backstage/no-relative-monorepo-imports': 'error',
@@ -30,7 +33,14 @@ const plugin = {
     name: pkg.name,
     version: pkg.version,
   },
-  configs: {}, // Defined below
+  configs: {
+    // Legacy config format (ESLint v8 and earlier)
+    recommended: {
+      plugins: ['@backstage'],
+      rules: recommendedRules,
+    },
+    // Flat config defined below
+  },
   rules: {
     'no-forbidden-package-imports': require('./rules/no-forbidden-package-imports'),
     'no-relative-monorepo-imports': require('./rules/no-relative-monorepo-imports'),
@@ -43,22 +53,21 @@ const plugin = {
 
 // Assign configs here so we can reference `plugin` for flat config
 // cf https://eslint.org/docs/latest/extend/plugin-migration-flat-config#migrating-configs-for-flat-config
-Object.assign(plugin.configs, {
-  // Flat config format (ESLint v8.24+ / v9+)
-  // When using defineConfig(), this is used as fallback when `recommended` is not in flat config format
-  // cf https://eslint.org/docs/latest/extend/plugins#backwards-compatibility-for-legacy-configs
-  'flat/recommended': {
-    plugins: {
-      '@backstage': plugin,
+Object.assign(
+  /** @type {NonNullable<import('eslint').ESLint.Plugin['configs']>} */ (
+    plugin.configs
+  ),
+  {
+    // Flat config format (ESLint v8.24+ / v9+)
+    // When using defineConfig(), this is used as fallback when `recommended` is not in flat config format
+    // cf https://eslint.org/docs/latest/extend/plugins#backwards-compatibility-for-legacy-configs
+    'flat/recommended': {
+      plugins: {
+        '@backstage': plugin,
+      },
+      rules: recommendedRules,
     },
-    rules: recommendedRules,
   },
-
-  // Legacy config format (ESLint v8 and earlier)
-  recommended: {
-    plugins: ['@backstage'],
-    rules: recommendedRules,
-  },
-});
+);
 
 module.exports = plugin;
