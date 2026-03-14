@@ -407,6 +407,7 @@ export default {
           'integrations/google-cloud-storage/locations',
         ]),
         sidebarElementWithIndex({ label: 'LDAP' }, ['integrations/ldap/org']),
+        sidebarElementWithIndex({ label: 'Okta' }, ['integrations/okta/org']),
       ],
     ),
     sidebarElementWithIndex(
