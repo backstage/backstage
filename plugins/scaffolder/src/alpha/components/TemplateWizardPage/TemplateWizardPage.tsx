@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ComponentType, useCallback, useState } from 'react';
+import { ComponentType, useCallback, useEffect, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import useAsync from 'react-use/esm/useAsync';
 import {
-  stringifyEntityRef,
   ANNOTATION_EDIT_URL,
+  stringifyEntityRef,
 } from '@backstage/catalog-model';
 import {
   AnalyticsContext,
@@ -27,18 +27,18 @@ import {
   useRouteRefParams,
 } from '@backstage/core-plugin-api';
 import {
+  FieldExtensionOptions,
+  FormProps,
+  type LayoutOptions,
+  ReviewStepProps,
   scaffolderApiRef,
   useTemplateSecrets,
-  type LayoutOptions,
-  FormProps,
-  FieldExtensionOptions,
-  ReviewStepProps,
 } from '@backstage/plugin-scaffolder-react';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 
 import {
-  Workflow,
   useTemplateParameterSchema,
+  Workflow,
 } from '@backstage/plugin-scaffolder-react/alpha';
 import { JsonValue } from '@backstage/types';
 import { Header, Page, Progress } from '@backstage/core-components';
@@ -48,8 +48,6 @@ import {
   scaffolderTaskRouteRef,
   selectedTemplateRouteRef,
 } from '../../../routes';
-import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import { scaffolderTranslationRef } from '../../../translation';
 
 import { TemplateWizardPageContextMenu } from './TemplateWizardPageContextMenu';
 import { useFormDecorators } from '../../hooks';
@@ -71,6 +69,10 @@ export type TemplateWizardPageProps = {
   };
 };
 
+// Descriptions longer than this threshold are shown in a collapsible card
+// rather than inline in the page header subtitle, to avoid cluttering the header.
+const DESCRIPTION_LENGTH_THRESHOLD = 140;
+
 export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
   const rootRef = useRouteRef(rootRouteRef);
   const taskRoute = useRouteRef(scaffolderTaskRouteRef);
@@ -78,12 +80,12 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
   const scaffolderApi = useApi(scaffolderApiRef);
   const catalogApi = useApi(catalogApiRef);
   const [isCreating, setIsCreating] = useState(false);
+  const [description, setDescription] = useState<string | undefined>(undefined);
+  const [showDescription, setShowDescription] = useState(false);
   const navigate = useNavigate();
   const { templateName, namespace } = useRouteRefParams(
     selectedTemplateRouteRef,
   );
-  const { t } = useTranslationRef(scaffolderTranslationRef);
-
   const templateRef = stringifyEntityRef({
     kind: 'Template',
     namespace,
@@ -92,6 +94,7 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
 
   const { manifest } = useTemplateParameterSchema(templateRef);
   const decorators = useFormDecorators();
+  const title = manifest?.title ?? templateName;
 
   const { value: editUrl } = useAsync(async () => {
     const data = await catalogApi.getEntityByRef(templateRef);
@@ -134,6 +137,16 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
 
   const onError = useCallback(() => <Navigate to={rootRef()} />, [rootRef]);
 
+  useEffect(() => {
+    const desc = manifest?.description || undefined;
+    setDescription(desc);
+    setShowDescription(
+      !!desc &&
+        (manifest?.presentation?.showDescription ??
+          desc.length > DESCRIPTION_LENGTH_THRESHOLD),
+    );
+  }, [manifest?.description, manifest?.presentation?.showDescription]);
+
   return (
     <AnalyticsContext attributes={{ entityRef: templateRef }}>
       <Page themeId="website">
@@ -146,10 +159,22 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
               : t('templateWizardPage.pageTitle')
           }
           title={t('templateWizardPage.title')}
-          subtitle={t('templateWizardPage.subtitle')}
+          subtitle={
+            !showDescription &&
+            description !== undefined &&
+            description.length <= DESCRIPTION_LENGTH_THRESHOLD
+              ? description
+              : undefined
+          }
           {...props.headerOptions}
         >
-          <TemplateWizardPageContextMenu editUrl={editUrl} />
+          <TemplateWizardPageContextMenu
+            editUrl={editUrl}
+            hasDescription={!!description}
+            showDescription={showDescription}
+            onShowDescription={() => setShowDescription(true)}
+            onHideDescription={() => setShowDescription(false)}
+          />
         </Header>
         {isCreating && <Progress />}
         <Workflow
@@ -161,6 +186,10 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
           extensions={props.customFieldExtensions}
           formProps={props.formProps}
           layouts={props.layouts}
+          title={title}
+          description={description}
+          showDescription={showDescription}
+          onHideDescription={() => setShowDescription(false)}
         />
       </Page>
     </AnalyticsContext>

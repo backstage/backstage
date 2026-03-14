@@ -690,6 +690,8 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'templateWizardPage.pageTitle': 'Create a new component';
     readonly 'templateWizardPage.templateWithTitle': 'Create new {{templateTitle}}';
     readonly 'templateWizardPage.pageContextMenu.editConfigurationTitle': 'Edit Configuration';
+    readonly 'templateWizardPage.pageContextMenu.hideDescriptionTitle': 'Hide Description';
+    readonly 'templateWizardPage.pageContextMenu.showDescriptionTitle': 'Show Description';
     readonly 'templateEditorToolbar.customFieldExplorerTooltip': 'Custom Fields Explorer';
     readonly 'templateEditorToolbar.installedActionsDocumentationTooltip': 'Installed Actions Documentation';
     readonly 'templateEditorToolbar.templatingExtensionsDocumentationTooltip': 'Templating Extensions Documentation';

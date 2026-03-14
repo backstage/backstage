@@ -361,6 +361,8 @@ export const scaffolderTranslationRef = createTranslationRef({
       templateWithTitle: 'Create new {{templateTitle}}',
       pageContextMenu: {
         editConfigurationTitle: 'Edit Configuration',
+        hideDescriptionTitle: 'Hide Description',
+        showDescriptionTitle: 'Show Description',
       },
     },
     templateEditorToolbar: {

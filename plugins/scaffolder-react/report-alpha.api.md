@@ -310,6 +310,7 @@ export const scaffolderReactTranslationRef: TranslationRef<
   'scaffolder-react',
   {
     readonly 'workflow.noDescription': 'No description';
+    readonly 'workflow.hideDescriptionButtonTitle': 'Hide description';
     readonly 'stepper.backButtonText': 'Back';
     readonly 'stepper.nextButtonText': 'Next';
     readonly 'stepper.createButtonText': 'Create';
@@ -482,6 +483,8 @@ export type WorkflowProps = {
   description?: string;
   namespace: string;
   templateName: string;
+  showDescription?: boolean;
+  onHideDescription?: () => void;
   components?: {
     ReviewStepComponent?: ComponentType<ReviewStepProps>;
   };
