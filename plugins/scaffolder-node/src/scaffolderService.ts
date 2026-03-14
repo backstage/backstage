@@ -83,6 +83,7 @@ export interface ScaffolderService {
       createdBy?: string;
       limit?: number;
       offset?: number;
+      status?: ScaffolderTaskStatus | ScaffolderTaskStatus[];
     },
     options: ScaffolderServiceRequestOptions,
   ): Promise<{ items: ScaffolderTask[]; totalItems: number }>;
@@ -185,6 +186,7 @@ class DefaultScaffolderService implements ScaffolderService {
       createdBy?: string;
       limit?: number;
       offset?: number;
+      status?: ScaffolderTaskStatus | ScaffolderTaskStatus[];
     },
     options: ScaffolderServiceRequestOptions,
   ): Promise<{ items: ScaffolderTask[]; totalItems: number }> {
@@ -200,6 +202,11 @@ class DefaultScaffolderService implements ScaffolderService {
     }
     if (request.offset !== undefined) {
       params.set('offset', String(request.offset));
+    }
+    if (request.status !== undefined) {
+      for (const s of [request.status].flat()) {
+        params.append('status', s);
+      }
     }
 
     const query = params.toString();

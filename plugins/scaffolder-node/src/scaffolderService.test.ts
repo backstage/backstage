@@ -202,4 +202,61 @@ describe('scaffolderServiceRef', () => {
 
     expect(result).toEqual({ items: [], totalItems: 0 });
   });
+
+  it('should serialize a single status as a repeated query param for listTasks', async () => {
+    expect.assertions(1);
+
+    server.use(
+      rest.get('*/api/scaffolder/v2/tasks', (req, res, ctx) => {
+        expect(req.url.searchParams.getAll('status')).toEqual(['completed']);
+        return res(ctx.json({ tasks: [], totalTasks: 0 }));
+      }),
+    );
+
+    const tester = ServiceFactoryTester.from(
+      createServiceFactory({
+        service: createServiceRef<void>({ id: 'unused-dummy' }),
+        deps: {},
+        factory() {},
+      }),
+      { dependencies: [mockServices.discovery.factory()] },
+    );
+
+    const scaffolder = await tester.getService(scaffolderServiceRef);
+
+    await scaffolder.listTasks(
+      { status: 'completed' },
+      { credentials: mockCredentials.user() },
+    );
+  });
+
+  it('should serialize multiple statuses as repeated query params for listTasks', async () => {
+    expect.assertions(1);
+
+    server.use(
+      rest.get('*/api/scaffolder/v2/tasks', (req, res, ctx) => {
+        expect(req.url.searchParams.getAll('status')).toEqual([
+          'completed',
+          'failed',
+        ]);
+        return res(ctx.json({ tasks: [], totalTasks: 0 }));
+      }),
+    );
+
+    const tester = ServiceFactoryTester.from(
+      createServiceFactory({
+        service: createServiceRef<void>({ id: 'unused-dummy' }),
+        deps: {},
+        factory() {},
+      }),
+      { dependencies: [mockServices.discovery.factory()] },
+    );
+
+    const scaffolder = await tester.getService(scaffolderServiceRef);
+
+    await scaffolder.listTasks(
+      { status: ['completed', 'failed'] },
+      { credentials: mockCredentials.user() },
+    );
+  });
 });
