@@ -1092,6 +1092,155 @@ describe('Catalog Backend Integration', () => {
     });
   });
 
+  it('should take over weak-ownership entity while preserving strong-ownership entity from same provider', async () => {
+    const firstProvider = new TestProvider('first');
+    const secondProvider = new TestProvider('second');
+
+    const harness = await TestHarness.create({
+      db: await databases.init('SQLITE_3'),
+      additionalProviders: [firstProvider, secondProvider],
+    });
+
+    const baseAnnotations = {
+      'backstage.io/managed-by-location': 'url:.',
+      'backstage.io/managed-by-origin-location': 'url:.',
+    };
+
+    // First provider emits two entities:
+    //  - weak-entity with no location key (weak ownership)
+    //  - strong-entity with a location key (strong ownership)
+    await firstProvider.getConnection().applyMutation({
+      type: 'full',
+      entities: [
+        {
+          entity: {
+            apiVersion: 'backstage.io/v1alpha1',
+            kind: 'Component',
+            metadata: {
+              name: 'weak-entity',
+              annotations: baseAnnotations,
+            },
+            spec: { type: 'service', owner: 'first-provider' },
+          },
+        },
+        {
+          locationKey: 'first-provider-key',
+          entity: {
+            apiVersion: 'backstage.io/v1alpha1',
+            kind: 'Component',
+            metadata: {
+              name: 'strong-entity',
+              annotations: baseAnnotations,
+            },
+            spec: { type: 'service', owner: 'first-provider' },
+          },
+        },
+      ],
+    });
+
+    await expect(harness.process()).resolves.toEqual({});
+
+    await expect(harness.getRefreshStateReferences()).resolves.toEqual(
+      expect.arrayContaining([
+        {
+          sourceKey: 'first',
+          targetEntityRef: 'component:default/weak-entity',
+        },
+        {
+          sourceKey: 'first',
+          targetEntityRef: 'component:default/strong-entity',
+        },
+      ]),
+    );
+
+    // Second provider claims both entities with a location key (strong ownership).
+    // weak-entity should be taken over, strong-entity should NOT.
+    await secondProvider.getConnection().applyMutation({
+      type: 'full',
+      entities: [
+        {
+          locationKey: 'second-provider-key',
+          entity: {
+            apiVersion: 'backstage.io/v1alpha1',
+            kind: 'Component',
+            metadata: {
+              name: 'weak-entity',
+              annotations: baseAnnotations,
+            },
+            spec: { type: 'service', owner: 'second-provider' },
+          },
+        },
+        {
+          locationKey: 'second-provider-key',
+          entity: {
+            apiVersion: 'backstage.io/v1alpha1',
+            kind: 'Component',
+            metadata: {
+              name: 'strong-entity',
+              annotations: baseAnnotations,
+            },
+            spec: { type: 'service', owner: 'second-provider' },
+          },
+        },
+      ],
+    });
+
+    await expect(harness.process()).resolves.toEqual({});
+
+    // weak-entity should now be owned by the second provider
+    await expect(harness.getOutputEntities()).resolves.toEqual(
+      expect.objectContaining({
+        'component:default/weak-entity': expect.objectContaining({
+          spec: { type: 'service', owner: 'second-provider' },
+        }),
+      }),
+    );
+
+    // strong-entity should still be owned by the first provider
+    await expect(harness.getOutputEntities()).resolves.toEqual(
+      expect.objectContaining({
+        'component:default/strong-entity': expect.objectContaining({
+          spec: { type: 'service', owner: 'first-provider' },
+        }),
+      }),
+    );
+
+    // Verify references:
+    // - weak-entity: old reference from 'first' should be gone, new one from 'second'
+    // - strong-entity: reference from 'first' should still exist
+    const refs = await harness.getRefreshStateReferences();
+
+    expect(refs).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          sourceKey: 'second',
+          targetEntityRef: 'component:default/weak-entity',
+        }),
+        expect.objectContaining({
+          sourceKey: 'first',
+          targetEntityRef: 'component:default/strong-entity',
+        }),
+      ]),
+    );
+
+    expect(
+      refs.some(
+        r =>
+          r.sourceKey === 'first' &&
+          r.targetEntityRef === 'component:default/weak-entity',
+      ),
+    ).toBe(false);
+
+    // Verify refresh_state: strong-entity should retain the first provider's location key
+    const refreshState = await harness.getRefreshState();
+    expect(refreshState['component:default/weak-entity']).toEqual(
+      expect.objectContaining({ locationKey: 'second-provider-key' }),
+    );
+    expect(refreshState['component:default/strong-entity']).toEqual(
+      expect.objectContaining({ locationKey: 'first-provider-key' }),
+    );
+  });
+
   function withOutputFields(entity: Entity) {
     return {
       ...entity,

@@ -991,6 +991,146 @@ describe('DefaultProviderDatabase', () => {
         });
       },
     );
+
+    it.each(databases.eachSupportedId())(
+      'should delete all references when taking over an entity from null location key, but preserve references for entities with strong ownership, %p',
+      async databaseId => {
+        const fakeLogger = mockServices.logger.mock();
+        const { knex, db } = await createDatabase(databaseId, fakeLogger);
+
+        const weakEntity: Entity = {
+          apiVersion: '1',
+          kind: 'Component',
+          metadata: { namespace: 'default', name: 'weak-entity' },
+        };
+        const strongEntity: Entity = {
+          apiVersion: '1',
+          kind: 'Component',
+          metadata: { namespace: 'default', name: 'strong-entity' },
+        };
+
+        // Provider A owns weak-entity with null location key (weak ownership)
+        await insertRefreshStateRow(knex, {
+          entity_id: uuid.v4(),
+          entity_ref: stringifyEntityRef(weakEntity),
+          unprocessed_entity: JSON.stringify(weakEntity),
+          errors: '[]',
+          next_update_at: '2021-04-01 13:37:00',
+          last_discovery_at: '2021-04-01 13:37:00',
+        });
+        await insertRefRow(knex, {
+          source_key: 'provider-a',
+          target_entity_ref: stringifyEntityRef(weakEntity),
+        });
+
+        // Provider A owns strong-entity with a non-null location key (strong ownership)
+        await insertRefreshStateRow(knex, {
+          entity_id: uuid.v4(),
+          entity_ref: stringifyEntityRef(strongEntity),
+          unprocessed_entity: JSON.stringify(strongEntity),
+          errors: '[]',
+          next_update_at: '2021-04-01 13:37:00',
+          last_discovery_at: '2021-04-01 13:37:00',
+          location_key: 'provider-a-key',
+        });
+        await insertRefRow(knex, {
+          source_key: 'provider-a',
+          target_entity_ref: stringifyEntityRef(strongEntity),
+        });
+
+        // Provider B claims both entities with strong location keys
+        await db.transaction(async tx => {
+          await db.replaceUnprocessedEntities(tx, {
+            type: 'delta',
+            sourceKey: 'provider-b',
+            removed: [],
+            added: [
+              {
+                entity: {
+                  ...weakEntity,
+                  spec: { marker: 'taken-over' },
+                },
+                locationKey: 'provider-b-key',
+              },
+              {
+                entity: {
+                  ...strongEntity,
+                  spec: { marker: 'attempted-takeover' },
+                },
+                locationKey: 'provider-b-key',
+              },
+            ],
+          });
+        });
+
+        // weak-entity should have been taken over by provider B
+        const refreshState = await knex<DbRefreshStateRow>('refresh_state')
+          .select()
+          .orderBy('entity_ref');
+        expect(refreshState).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              entity_ref: stringifyEntityRef(weakEntity),
+              location_key: 'provider-b-key',
+              unprocessed_entity: expect.stringContaining('taken-over'),
+            }),
+          ]),
+        );
+
+        // strong-entity should NOT have been taken over - still has provider A's key
+        expect(refreshState).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              entity_ref: stringifyEntityRef(strongEntity),
+              location_key: 'provider-a-key',
+              unprocessed_entity: JSON.stringify(strongEntity),
+            }),
+          ]),
+        );
+
+        // Check references: weak-entity's old reference from provider-a should be
+        // deleted (because claimedFromNullLocationKey=true deletes ALL refs), and
+        // a new reference from provider-b should exist
+        const refs = await knex<DbRefreshStateReferencesRow>(
+          'refresh_state_references',
+        )
+          .select()
+          .orderBy(['target_entity_ref', 'source_key']);
+
+        expect(refs).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              source_key: 'provider-b',
+              target_entity_ref: stringifyEntityRef(weakEntity),
+            }),
+          ]),
+        );
+
+        // There should be NO leftover reference from provider-a to weak-entity
+        expect(
+          refs.some(
+            r =>
+              r.source_key === 'provider-a' &&
+              r.target_entity_ref === stringifyEntityRef(weakEntity),
+          ),
+        ).toBe(false);
+
+        // strong-entity's reference from provider-a should still be intact
+        expect(refs).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              source_key: 'provider-a',
+              target_entity_ref: stringifyEntityRef(strongEntity),
+            }),
+          ]),
+        );
+
+        // A conflict warning should have been logged for the strong entity
+        expect(fakeLogger.warn).toHaveBeenCalledWith(
+          expect.stringContaining(stringifyEntityRef(strongEntity)),
+        );
+      },
+    );
   });
 
   describe('listReferenceSourceKeys', () => {
