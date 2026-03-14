@@ -17,7 +17,7 @@
 import fs from 'fs-extra';
 import { resolve as resolvePath } from 'node:path';
 import yaml from 'yaml';
-import z from 'zod';
+import z from 'zod/v3';
 import { targetPaths } from '@backstage/cli-common';
 
 const yarnRcSchema = z.object({

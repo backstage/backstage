@@ -16,7 +16,7 @@
 
 import express, { Response } from 'express';
 import Router from 'express-promise-router';
-import { z } from 'zod';
+import { z } from 'zod/v3';
 import zodToJsonSchema from 'zod-to-json-schema';
 import { InputError } from '@backstage/errors';
 import {

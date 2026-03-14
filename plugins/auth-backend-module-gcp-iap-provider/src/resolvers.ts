@@ -19,7 +19,7 @@ import {
   SignInInfo,
 } from '@backstage/plugin-auth-node';
 import { GcpIapResult } from './types';
-import { z } from 'zod';
+import { z } from 'zod/v3';
 
 /**
  * Available sign-in resolvers for the Google auth provider.

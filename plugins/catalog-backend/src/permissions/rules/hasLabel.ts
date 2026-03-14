@@ -16,7 +16,7 @@
 
 import { catalogEntityPermissionResourceRef } from '@backstage/plugin-catalog-node/alpha';
 import { createPermissionRule } from '@backstage/plugin-permission-node';
-import { z } from 'zod';
+import { z } from 'zod/v3';
 
 /**
  * A catalog {@link @backstage/plugin-permission-node#PermissionRule} which

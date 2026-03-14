@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { z } from 'zod';
+import { z } from 'zod/v3';
 import { PackageRole, PackageRoleInfo } from './types';
 
 const packageRoleInfos: PackageRoleInfo[] = [

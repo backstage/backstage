@@ -16,7 +16,7 @@
 
 import { RELATION_OWNED_BY } from '@backstage/catalog-model';
 import { createPermissionRule } from '@backstage/plugin-permission-node';
-import { z } from 'zod';
+import { z } from 'zod/v3';
 import { catalogEntityPermissionResourceRef } from '@backstage/plugin-catalog-node/alpha';
 
 /**

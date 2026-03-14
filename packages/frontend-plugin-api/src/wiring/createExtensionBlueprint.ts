@@ -26,7 +26,7 @@ import {
   ctxParamsSymbol,
   VerifyExtensionAttachTo,
 } from './createExtension';
-import type { z } from 'zod';
+import type { z } from 'zod/v3';
 import { ExtensionInput } from './createExtensionInput';
 import { ExtensionDataRef, ExtensionDataValue } from './createExtensionDataRef';
 import { createExtensionDataContainer } from '@internal/frontend';

@@ -39,7 +39,7 @@
     "express": "^4.22.0",
     "passport": "^0.7.0",
     "passport-atlassian-oauth2": "^2.1.0",
-    "zod": "^3.25.76"
+    "zod": "^3.25.76 || ^4.0.0"
   },
   "devDependencies": {
     "@backstage/backend-defaults": "workspace:^",

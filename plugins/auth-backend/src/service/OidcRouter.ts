@@ -27,8 +27,8 @@ import { UserInfoDatabase } from '../database/UserInfoDatabase';
 import { OidcDatabase } from '../database/OidcDatabase';
 import { OfflineAccessService } from './OfflineAccessService';
 import { json } from 'express';
-import { z } from 'zod';
-import { fromZodError } from 'zod-validation-error';
+import { z } from 'zod/v4';
+import { fromZodError } from 'zod-validation-error/v4';
 import { OidcError } from './OidcError';
 
 function ensureTrailingSlash(url: string): string {

@@ -17,7 +17,7 @@
 import { InputError } from '@backstage/errors';
 import express, { Request } from 'express';
 import Router from 'express-promise-router';
-import { z } from 'zod';
+import { z } from 'zod/v3';
 import { UserSettingsStore } from '../database/UserSettingsStore';
 import { SignalsService } from '@backstage/plugin-signals-node';
 import {
