@@ -307,10 +307,17 @@ describe('Mcp Backend', () => {
     });
 
     it('should expose oauth-protected-resource when DCR is enabled', async () => {
+      const mockExternalBaseUrl = 'http://external.local:0/api';
+      const mockDiscovery = mockServices.discovery.mock({
+        getExternalBaseUrl: async pluginId =>
+          `${mockExternalBaseUrl}/${pluginId}`,
+      });
+
       const { server } = await startTestBackend({
         features: [
           mcpPlugin,
           mockPluginWithActions,
+          mockDiscovery.factory,
           mockServices.rootConfig.factory({
             data: {
               backend: {
@@ -335,6 +342,10 @@ describe('Mcp Backend', () => {
       expect(response.body.resource).toMatch(/\/api\/mcp-actions$/);
       expect(response.body.authorization_servers).toHaveLength(1);
       expect(response.body.authorization_servers[0]).toMatch(/\/api\/auth$/);
+      expect(response.body.resource).toContain(`${mockExternalBaseUrl}`);
+      expect(response.body.authorization_servers[0]).toContain(
+        `${mockExternalBaseUrl}/`,
+      );
     });
 
     it('should expose oauth-protected-resource when CIMD is enabled', async () => {
