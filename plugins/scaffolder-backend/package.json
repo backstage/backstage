@@ -111,7 +111,7 @@
     "@types/express": "^4.17.6",
     "@types/fs-extra": "^11.0.0",
     "@types/nunjucks": "^3.1.4",
-    "@types/supertest": "^2.0.8",
+    "@types/supertest": "^7.0.0",
     "@types/zen-observable": "^0.8.0",
     "esbuild": "^0.27.0",
     "strip-ansi": "^7.1.0",
