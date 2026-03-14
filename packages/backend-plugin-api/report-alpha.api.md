@@ -5,6 +5,7 @@
 ```ts
 import { AnyZodObject } from 'zod';
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
+import { BasicPermission } from '@backstage/plugin-permission-common';
 import { JsonObject } from '@backstage/types';
 import { JSONSchema7 } from 'json-schema';
 import { JsonValue } from '@backstage/types';
@@ -31,6 +32,7 @@ export type ActionsRegistryActionOptions<
     input: (zod: typeof z) => TInputSchema;
     output: (zod: typeof z) => TOutputSchema;
   };
+  visibilityPermission?: BasicPermission;
   attributes?: {
     destructive?: boolean;
     idempotent?: boolean;

@@ -65,6 +65,10 @@ backend:
         - 'scaffolder.internal.*'
 ```
 
+### Permissions
+
+Actions registered with a `visibilityPermission` field are automatically checked against the permissions framework. When listing actions, any actions denied by the active permission policy are filtered out of the results. When invoking a denied action, a `404 Not Found` error is returned. See the [Actions Registry Permissions](./actions-registry.md#permissions) documentation for how to configure permissions on actions.
+
 ## Using the Service
 
 ### Listing Available Actions
