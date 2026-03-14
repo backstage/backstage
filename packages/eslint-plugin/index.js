@@ -42,10 +42,10 @@ const plugin = {
 };
 
 // Assign configs here so we can reference `plugin` for flat config
-// cf https://eslint.org/docs/v8.x/extend/plugin-migration-flat-config#migrating-configs-for-flat-config
+// cf https://eslint.org/docs/latest/extend/plugin-migration-flat-config#migrating-configs-for-flat-config
 Object.assign(plugin.configs, {
   // Flat config format (ESLint v8.24+ / v9+)
-  // If flat config is enabled, this will be automatically used when `recommended` is loaded
+  // When using defineConfig(), this is used as fallback when `recommended` is not in flat config format
   // cf https://eslint.org/docs/latest/extend/plugins#backwards-compatibility-for-legacy-configs
   'flat/recommended': {
     plugins: {
