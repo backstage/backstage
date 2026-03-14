@@ -57,7 +57,7 @@
     "@backstage/cli": "workspace:^",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
-    "@types/use-sync-external-store": "^0.0.6",
+    "@types/use-sync-external-store": "^1.0.0",
     "eslint-plugin-storybook": "^10.3.0-alpha.1",
     "glob": "^11.0.1",
     "globals": "^17.0.0",
