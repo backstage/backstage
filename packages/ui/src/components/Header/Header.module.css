@@ -22,7 +22,6 @@
     flex-direction: column;
     gap: var(--bui-space-1);
     margin-top: var(--bui-space-6);
-    margin-bottom: var(--bui-space-6);
   }
 
   .bui-HeaderContent {
