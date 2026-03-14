@@ -302,8 +302,6 @@ export default {
             'features/software-templates/writing-custom-field-extensions',
             'features/software-templates/writing-custom-step-layouts',
             'features/software-templates/authorizing-scaffolder-template-details',
-            'features/software-templates/migrating-to-rjsf-v5',
-            'features/software-templates/migrating-from-v1beta2-to-v1beta3',
             'features/software-templates/dry-run-testing',
             'features/software-templates/experimental',
             'features/software-templates/templating-extensions',
