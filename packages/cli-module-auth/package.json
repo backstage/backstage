@@ -35,6 +35,7 @@
     "@backstage/cli-node": "workspace:^",
     "@backstage/errors": "workspace:^",
     "cleye": "^2.3.0",
+    "cross-fetch": "^4.0.0",
     "fs-extra": "^11.2.0",
     "glob": "^7.1.7",
     "inquirer": "^8.2.0",
@@ -46,8 +47,7 @@
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@types/fs-extra": "^11.0.0",
-    "@types/proper-lockfile": "^4",
-    "cross-fetch": "^4.0.0"
+    "@types/proper-lockfile": "^4"
   },
   "bin": "bin/cli-module-auth"
 }

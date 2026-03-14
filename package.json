@@ -26,7 +26,7 @@
     "build:all": "backstage-cli repo build --all",
     "build:api-docs": "LANG=en_EN yarn build:api-reports --docs --exclude 'plugins/@(api-docs|api-docs-module-protoc-gen-doc|app-visualizer|catalog-graph|catalog-import|catalog-unprocessed-entities|config-schema|example-todo-list|example-todo-list-backend)'",
     "build:api-reports": "yarn build:api-reports:only --tsc",
-    "build:api-reports:only": "LANG=en_US.UTF-8 NODE_OPTIONS=--max-old-space-size=8192 backstage-repo-tools api-reports --sql-reports --allow-warnings 'packages/backend-app-api,packages/core-components,plugins/+(catalog|catalog-import|kubernetes)' -o ae-undocumented,ae-wrong-input-file-type --validate-release-tags",
+    "build:api-reports:only": "LANG=en_US.UTF-8 NODE_OPTIONS=--max-old-space-size=8192 backstage-repo-tools api-reports --sql-reports --allow-warnings 'packages/backend-app-api,packages/cli-module-*,packages/core-components,plugins/+(catalog|catalog-import|kubernetes)' -o ae-undocumented,ae-wrong-input-file-type --validate-release-tags",
     "build:backend": "yarn workspace example-backend build",
     "build:knip-reports": "backstage-repo-tools knip-reports",
     "build:plugins-report": "node ./scripts/build-plugins-report",

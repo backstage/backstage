@@ -32,10 +32,28 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
-    "@backstage/cli-node": "workspace:^"
+    "@backstage/cli-common": "workspace:^",
+    "@backstage/cli-node": "workspace:^",
+    "@backstage/errors": "workspace:^",
+    "chalk": "^4.0.0",
+    "cleye": "^2.3.0",
+    "fs-extra": "^11.2.0",
+    "handlebars": "^4.7.3",
+    "inquirer": "^8.2.0",
+    "lodash": "^4.17.21",
+    "ora": "^5.3.0",
+    "recursive-readdir": "^2.2.2",
+    "semver": "^7.5.3",
+    "yaml": "^2.0.0",
+    "zod": "^3.25.76",
+    "zod-validation-error": "^4.0.2"
   },
   "devDependencies": {
-    "@backstage/cli": "workspace:^"
+    "@backstage/cli": "workspace:^",
+    "@types/fs-extra": "^11.0.0",
+    "@types/inquirer": "^8",
+    "@types/lodash": "^4.14.151",
+    "@types/recursive-readdir": "^2.2.4"
   },
   "bin": "bin/cli-module-new"
 }

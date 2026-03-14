@@ -32,10 +32,14 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
+    "@backstage/cli-common": "workspace:^",
     "@backstage/cli-node": "workspace:^"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^"
+  },
+  "peerDependencies": {
+    "jest-cli": "^29.0.0 || ^30.0.0"
   },
   "bin": "bin/cli-module-test-jest"
 }
