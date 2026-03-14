@@ -290,6 +290,11 @@ import {
   EntityNamespacePicker,
 } from '@backstage/plugin-catalog-react';
 
+// The EntityKindPicker supports an optional `allFilterEnabled` prop
+// which adds an “all” option. When selected the kind filter is cleared
+// entirely, allowing users to search across every kind without needing
+// to manually deselect or change the filter.
+
 <Route
   path="/catalog"
   element={

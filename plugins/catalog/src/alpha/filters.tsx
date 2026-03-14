@@ -33,6 +33,7 @@ const catalogKindCatalogFilter = CatalogFilterBlueprint.makeWithOverrides({
   config: {
     schema: {
       initialFilter: z => z.string().default('component'),
+      allFilterEnabled: z => z.boolean().optional(),
     },
   },
   factory(originalFactory, { config }) {
@@ -41,7 +42,12 @@ const catalogKindCatalogFilter = CatalogFilterBlueprint.makeWithOverrides({
         const { EntityKindPicker } = await import(
           '@backstage/plugin-catalog-react'
         );
-        return <EntityKindPicker initialFilter={config.initialFilter} />;
+        return (
+          <EntityKindPicker
+            initialFilter={config.initialFilter}
+            allFilterEnabled={config.allFilterEnabled}
+          />
+        );
       },
     });
   },
