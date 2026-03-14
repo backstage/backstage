@@ -27,13 +27,11 @@ import partition from 'lodash/partition';
 
 import { run, targetPaths } from '@backstage/cli-common';
 
-const {
-  dependencies: cliDependencies,
-  devDependencies: cliDevDependencies,
-} = require('../../../../package.json') as {
-  dependencies: Record<string, string>;
-  devDependencies: Record<string, string>;
-};
+const { dependencies: cliDependencies, devDependencies: cliDevDependencies } =
+  require('../../../../package.json') as {
+    dependencies: Record<string, string>;
+    devDependencies: Record<string, string>;
+  };
 import {
   BuildOptions,
   buildPackages,

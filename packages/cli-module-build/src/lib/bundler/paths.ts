@@ -50,9 +50,7 @@ export function resolveBundlingPaths(options: BundlingPathsOptions) {
     targetHtml = resolvePath(targetDir, `${entry}.html`);
     if (!fs.pathExistsSync(targetHtml)) {
       /* eslint-disable-next-line no-restricted-syntax */
-      targetHtml = require.resolve(
-        '@backstage/cli/templates/serve_index.html',
-      );
+      targetHtml = require.resolve('@backstage/cli/templates/serve_index.html');
     }
   }
 

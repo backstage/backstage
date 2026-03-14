@@ -47,9 +47,13 @@ const frontendPluginApi = v('../../../frontend-plugin-api/package.json');
 const frontendTestUtils = v('../../../frontend-test-utils/package.json');
 const testUtils = v('../../../test-utils/package.json');
 const scaffolderNode = v('../../../../plugins/scaffolder-node/package.json');
-const scaffolderNodeTestUtils = v('../../../../plugins/scaffolder-node-test-utils/package.json');
+const scaffolderNodeTestUtils = v(
+  '../../../../plugins/scaffolder-node-test-utils/package.json',
+);
 const authBackend = v('../../../../plugins/auth-backend/package.json');
-const authBackendModuleGuestProvider = v('../../../../plugins/auth-backend-module-guest-provider/package.json');
+const authBackendModuleGuestProvider = v(
+  '../../../../plugins/auth-backend-module-guest-provider/package.json',
+);
 const catalogNode = v('../../../../plugins/catalog-node/package.json');
 const theme = v('../../../theme/package.json');
 const types = v('../../../types/package.json');
