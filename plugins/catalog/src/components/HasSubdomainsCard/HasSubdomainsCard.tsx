@@ -14,48 +14,39 @@
  * limitations under the License.
  */
 
-import { DomainEntity, RELATION_HAS_PART } from '@backstage/catalog-model';
+import { RELATION_HAS_PART } from '@backstage/catalog-model';
+
 import {
-  InfoCardVariants,
-  TableColumn,
-  TableOptions,
-} from '@backstage/core-components';
-import {
-  asDomainEntities,
-  domainEntityColumns,
+  EntityRelationCard,
+  EntityColumnConfig,
+  domainColumnConfig,
   domainEntityHelpLink,
-  RelatedEntitiesCard,
-} from '../RelatedEntitiesCard';
+} from '@backstage/plugin-catalog-react';
 import { catalogTranslationRef } from '../../alpha/translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /** @public */
 export interface HasSubdomainsCardProps {
-  variant?: InfoCardVariants;
-  tableOptions?: TableOptions;
-  columns?: TableColumn<DomainEntity>[];
   title?: string;
+  columnConfig?: EntityColumnConfig[];
 }
 
 export function HasSubdomainsCard(props: HasSubdomainsCardProps) {
   const { t } = useTranslationRef(catalogTranslationRef);
   const {
-    variant = 'gridItem',
     title = t('hasSubdomainsCard.title'),
-    columns = domainEntityColumns,
-    tableOptions = {},
+    columnConfig = domainColumnConfig,
   } = props;
   return (
-    <RelatedEntitiesCard
-      variant={variant}
+    <EntityRelationCard
       title={title}
       entityKind="Domain"
       relationType={RELATION_HAS_PART}
-      columns={columns}
-      asRenderableEntities={asDomainEntities}
-      emptyMessage={t('hasSubdomainsCard.emptyMessage')}
-      emptyHelpLink={domainEntityHelpLink}
-      tableOptions={tableOptions}
+      columnConfig={columnConfig}
+      emptyState={{
+        message: t('hasSubdomainsCard.emptyMessage'),
+        helpLink: domainEntityHelpLink,
+      }}
     />
   );
 }

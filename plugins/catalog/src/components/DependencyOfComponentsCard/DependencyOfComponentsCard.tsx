@@ -14,30 +14,21 @@
  * limitations under the License.
  */
 
+import { RELATION_DEPENDENCY_OF } from '@backstage/catalog-model';
+
 import {
-  ComponentEntity,
-  RELATION_DEPENDENCY_OF,
-} from '@backstage/catalog-model';
-import {
-  InfoCardVariants,
-  TableColumn,
-  TableOptions,
-} from '@backstage/core-components';
-import {
-  asComponentEntities,
-  componentEntityColumns,
+  EntityRelationCard,
+  EntityColumnConfig,
+  componentColumnConfig,
   componentEntityHelpLink,
-  RelatedEntitiesCard,
-} from '../RelatedEntitiesCard';
+} from '@backstage/plugin-catalog-react';
 import { catalogTranslationRef } from '../../alpha/translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /** @public */
 export interface DependencyOfComponentsCardProps {
-  variant?: InfoCardVariants;
   title?: string;
-  columns?: TableColumn<ComponentEntity>[];
-  tableOptions?: TableOptions;
+  columnConfig?: EntityColumnConfig[];
 }
 
 export function DependencyOfComponentsCard(
@@ -45,22 +36,19 @@ export function DependencyOfComponentsCard(
 ) {
   const { t } = useTranslationRef(catalogTranslationRef);
   const {
-    variant = 'gridItem',
     title = t('dependencyOfComponentsCard.title'),
-    columns = componentEntityColumns,
-    tableOptions = {},
+    columnConfig = componentColumnConfig,
   } = props;
   return (
-    <RelatedEntitiesCard
-      variant={variant}
+    <EntityRelationCard
       title={title}
       entityKind="Component"
       relationType={RELATION_DEPENDENCY_OF}
-      columns={columns}
-      emptyMessage={t('dependencyOfComponentsCard.emptyMessage')}
-      emptyHelpLink={componentEntityHelpLink}
-      asRenderableEntities={asComponentEntities}
-      tableOptions={tableOptions}
+      columnConfig={columnConfig}
+      emptyState={{
+        message: t('dependencyOfComponentsCard.emptyMessage'),
+        helpLink: componentEntityHelpLink,
+      }}
     />
   );
 }

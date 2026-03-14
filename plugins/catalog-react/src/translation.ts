@@ -168,6 +168,9 @@ export const catalogReactTranslationRef = createTranslationRef({
       label: 'Label',
       domain: 'Domain',
     },
+    entityRelationCard: {
+      emptyHelpLinkTitle: 'Learn how to change this.',
+    },
     missingAnnotationEmptyState: {
       title: 'Missing Annotation',
       readMore: 'Read more',

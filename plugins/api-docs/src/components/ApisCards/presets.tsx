@@ -16,9 +16,13 @@
 
 import { ApiEntity } from '@backstage/catalog-model';
 import { TableColumn } from '@backstage/core-components';
-import { EntityTable } from '@backstage/plugin-catalog-react';
-import ExtensionIcon from '@material-ui/icons/Extension';
-import ToggleButton from '@material-ui/lab/ToggleButton';
+import {
+  EntityTable,
+  EntityColumnConfig,
+  entityDataTableColumns,
+} from '@backstage/plugin-catalog-react';
+import { ButtonIcon, Cell } from '@backstage/ui';
+import { RiPuzzleLine } from '@remixicon/react';
 import { useState } from 'react';
 import { ApiTypeTitle } from '../ApiDefinitionCard';
 import { ApiDefinitionDialog } from '../ApiDefinitionDialog';
@@ -43,13 +47,13 @@ const ApiDefinitionButton = ({ apiEntity }: { apiEntity: ApiEntity }) => {
   const { t } = useTranslationRef(apiDocsTranslationRef);
   return (
     <>
-      <ToggleButton
+      <ButtonIcon
         aria-label={t('apiDefinitionDialog.toggleButtonAriaLabel')}
-        onClick={() => setDialogOpen(!dialogOpen)}
-        value={dialogOpen}
-      >
-        <ExtensionIcon />
-      </ToggleButton>
+        onPress={() => setDialogOpen(!dialogOpen)}
+        variant="tertiary"
+        size="small"
+        icon={<RiPuzzleLine />}
+      />
       <ApiDefinitionDialog
         entity={apiEntity}
         open={dialogOpen}
@@ -81,3 +85,59 @@ export const getApiEntityColumns = (
     createApiDefinitionColumn(t),
   ];
 };
+
+// BUI column presets
+
+function createSpecApiTypeColumnConfig(
+  t: TranslationFunction<typeof apiDocsTranslationRef.T>,
+): EntityColumnConfig {
+  return {
+    id: 'apiType',
+    label: t('apiEntityColumns.typeTitle'),
+    cell: entity => (
+      <Cell>
+        <ApiTypeTitle apiEntity={entity as unknown as ApiEntity} />
+      </Cell>
+    ),
+  };
+}
+
+function createApiDefinitionColumnConfig(
+  t: TranslationFunction<typeof apiDocsTranslationRef.T>,
+): EntityColumnConfig {
+  return {
+    id: 'apiDefinition',
+    label: t('apiEntityColumns.apiDefinitionTitle'),
+    cell: entity => (
+      <Cell>
+        <ApiDefinitionButton apiEntity={entity as unknown as ApiEntity} />
+      </Cell>
+    ),
+  };
+}
+
+export function getApiEntityColumnConfig(
+  t: TranslationFunction<typeof apiDocsTranslationRef.T>,
+): EntityColumnConfig[] {
+  return [
+    entityDataTableColumns.createEntityRefColumn({ defaultKind: 'API' }),
+    entityDataTableColumns.createSystemColumn(),
+    entityDataTableColumns.createOwnerColumn(),
+    createSpecApiTypeColumnConfig(t),
+    entityDataTableColumns.createSpecLifecycleColumn(),
+    entityDataTableColumns.createMetadataDescriptionColumn(),
+    createApiDefinitionColumnConfig(t),
+  ];
+}
+
+export function getHasApisColumnConfig(
+  t: TranslationFunction<typeof apiDocsTranslationRef.T>,
+): EntityColumnConfig[] {
+  return [
+    entityDataTableColumns.createEntityRefColumn({ defaultKind: 'API' }),
+    entityDataTableColumns.createOwnerColumn(),
+    createSpecApiTypeColumnConfig(t),
+    entityDataTableColumns.createSpecLifecycleColumn(),
+    entityDataTableColumns.createMetadataDescriptionColumn(),
+  ];
+}

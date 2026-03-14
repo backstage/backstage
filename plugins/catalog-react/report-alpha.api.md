@@ -119,6 +119,7 @@ export const catalogReactTranslationRef: TranslationRef<
     readonly 'entityTableColumnTitle.owner': 'Owner';
     readonly 'entityTableColumnTitle.lifecycle': 'Lifecycle';
     readonly 'entityTableColumnTitle.targets': 'Targets';
+    readonly 'entityRelationCard.emptyHelpLinkTitle': 'Learn how to change this.';
     readonly 'missingAnnotationEmptyState.title': 'Missing Annotation';
     readonly 'missingAnnotationEmptyState.readMore': 'Read more';
     readonly 'missingAnnotationEmptyState.annotationYaml': 'Add the annotation to your {{entityKind}} YAML as shown in the highlighted example below:';

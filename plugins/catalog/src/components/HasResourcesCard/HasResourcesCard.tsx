@@ -14,48 +14,39 @@
  * limitations under the License.
  */
 
-import { RELATION_HAS_PART, ResourceEntity } from '@backstage/catalog-model';
+import { RELATION_HAS_PART } from '@backstage/catalog-model';
+
 import {
-  InfoCardVariants,
-  TableColumn,
-  TableOptions,
-} from '@backstage/core-components';
-import {
-  asResourceEntities,
-  RelatedEntitiesCard,
-  resourceEntityColumns,
+  EntityRelationCard,
+  EntityColumnConfig,
+  resourceColumnConfig,
   resourceEntityHelpLink,
-} from '../RelatedEntitiesCard';
+} from '@backstage/plugin-catalog-react';
 import { catalogTranslationRef } from '../../alpha/translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /** @public */
 export interface HasResourcesCardProps {
-  variant?: InfoCardVariants;
   title?: string;
-  columns?: TableColumn<ResourceEntity>[];
-  tableOptions?: TableOptions;
+  columnConfig?: EntityColumnConfig[];
 }
 
 export function HasResourcesCard(props: HasResourcesCardProps) {
   const { t } = useTranslationRef(catalogTranslationRef);
   const {
-    variant = 'gridItem',
     title = t('hasResourcesCard.title'),
-    columns = resourceEntityColumns,
-    tableOptions = {},
+    columnConfig = resourceColumnConfig,
   } = props;
   return (
-    <RelatedEntitiesCard
-      variant={variant}
+    <EntityRelationCard
       title={title}
       entityKind="Resource"
       relationType={RELATION_HAS_PART}
-      columns={columns}
-      asRenderableEntities={asResourceEntities}
-      emptyMessage={t('hasResourcesCard.emptyMessage')}
-      emptyHelpLink={resourceEntityHelpLink}
-      tableOptions={tableOptions}
+      columnConfig={columnConfig}
+      emptyState={{
+        message: t('hasResourcesCard.emptyMessage'),
+        helpLink: resourceEntityHelpLink,
+      }}
     />
   );
 }
