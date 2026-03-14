@@ -104,3 +104,5 @@ accessibility.
 [8]: https://v4.mui.com/customization/palette/#default-values
 [9]: https://v4.mui.com/customization/typography/
 [10]: https://backstage.io/docs/conf/user-interface
+[11]: https://v4.mui.com/customization/components/
+[12]: https://v4.mui.com/customization/default-theme/
