@@ -17,6 +17,7 @@
 
 import type { Meta } from '@storybook/react-vite';
 import { MemoryRouter } from 'react-router-dom';
+import { BUIProvider } from '../../../provider';
 import { CellText, type ColumnConfig } from '..';
 
 // Selection demo data
@@ -47,7 +48,9 @@ export const tableStoriesMeta = {
   decorators: [
     (Story: () => JSX.Element) => (
       <MemoryRouter>
-        <Story />
+        <BUIProvider>
+          <Story />
+        </BUIProvider>
       </MemoryRouter>
     ),
   ],

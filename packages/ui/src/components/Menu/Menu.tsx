@@ -62,16 +62,10 @@ import {
   RiCheckLine,
   RiCloseCircleLine,
 } from '@remixicon/react';
-import {
-  isInternalLink,
-  createRoutingRegistration,
-} from '../InternalLinkProvider';
+import { isInternalLink } from '../../utils/linkUtils';
 import { getNodeText } from '../../analytics/getNodeText';
 import { Box } from '../Box';
 import { BgReset } from '../../hooks/useBg';
-
-const { RoutingProvider, useRoutingRegistrationEffect } =
-  createRoutingRegistration();
 
 // The height will be used for virtualized menus. It should match the size set in CSS for each menu item.
 const rowHeight = 32;
@@ -110,26 +104,24 @@ export const Menu = (props: MenuProps<object>) => {
   );
 
   return (
-    <RoutingProvider>
-      <RAPopover className={classes.root} placement={placement}>
-        <BgReset>
-          <Box bg="neutral" className={classes.inner}>
-            {virtualized ? (
-              <Virtualizer
-                layout={ListLayout}
-                layoutOptions={{
-                  rowHeight,
-                }}
-              >
-                {menuContent}
-              </Virtualizer>
-            ) : (
-              menuContent
-            )}
-          </Box>
-        </BgReset>
-      </RAPopover>
-    </RoutingProvider>
+    <RAPopover className={classes.root} placement={placement}>
+      <BgReset>
+        <Box bg="neutral" className={classes.inner}>
+          {virtualized ? (
+            <Virtualizer
+              layout={ListLayout}
+              layoutOptions={{
+                rowHeight,
+              }}
+            >
+              {menuContent}
+            </Virtualizer>
+          ) : (
+            menuContent
+          )}
+        </Box>
+      </BgReset>
+    </RAPopover>
   );
 };
 
@@ -206,40 +198,38 @@ export const MenuAutocomplete = (props: MenuAutocompleteProps<object>) => {
   );
 
   return (
-    <RoutingProvider>
-      <RAPopover className={classes.root} placement={placement}>
-        <BgReset>
-          <Box bg="neutral" className={classes.inner}>
-            <RAAutocomplete filter={contains}>
-              <RASearchField
-                className={classes.searchField}
-                aria-label={placeholder || 'Search'}
+    <RAPopover className={classes.root} placement={placement}>
+      <BgReset>
+        <Box bg="neutral" className={classes.inner}>
+          <RAAutocomplete filter={contains}>
+            <RASearchField
+              className={classes.searchField}
+              aria-label={placeholder || 'Search'}
+            >
+              <RAInput
+                className={classes.searchFieldInput}
+                placeholder={placeholder || 'Search...'}
+              />
+              <RAButton className={classes.searchFieldClear}>
+                <RiCloseCircleLine />
+              </RAButton>
+            </RASearchField>
+            {virtualized ? (
+              <Virtualizer
+                layout={ListLayout}
+                layoutOptions={{
+                  rowHeight,
+                }}
               >
-                <RAInput
-                  className={classes.searchFieldInput}
-                  placeholder={placeholder || 'Search...'}
-                />
-                <RAButton className={classes.searchFieldClear}>
-                  <RiCloseCircleLine />
-                </RAButton>
-              </RASearchField>
-              {virtualized ? (
-                <Virtualizer
-                  layout={ListLayout}
-                  layoutOptions={{
-                    rowHeight,
-                  }}
-                >
-                  {menuContent}
-                </Virtualizer>
-              ) : (
-                menuContent
-              )}
-            </RAAutocomplete>
-          </Box>
-        </BgReset>
-      </RAPopover>
-    </RoutingProvider>
+                {menuContent}
+              </Virtualizer>
+            ) : (
+              menuContent
+            )}
+          </RAAutocomplete>
+        </Box>
+      </BgReset>
+    </RAPopover>
   );
 };
 
@@ -317,8 +307,6 @@ export const MenuItem = (props: MenuItemProps) => {
     props,
   );
   const { classes, iconStart, children, href } = ownProps;
-
-  useRoutingRegistrationEffect(href);
 
   const handleAction = () => {
     if (href) {

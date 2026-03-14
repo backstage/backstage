@@ -20,6 +20,7 @@ import { Link } from './Link';
 import { Flex } from '../Flex';
 import { Text } from '../Text';
 import { MemoryRouter } from 'react-router-dom';
+import { BUIProvider } from '../../provider';
 
 const meta = preview.meta({
   title: 'Backstage UI/Link',
@@ -30,7 +31,9 @@ const meta = preview.meta({
   decorators: [
     (Story: StoryFn) => (
       <MemoryRouter>
-        <Story />
+        <BUIProvider>
+          <Story />
+        </BUIProvider>
       </MemoryRouter>
     ),
   ],

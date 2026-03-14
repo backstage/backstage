@@ -14,10 +14,25 @@
  * limitations under the License.
  */
 
-export { useAnalytics } from './useAnalytics';
-export { getNodeText } from './getNodeText';
-export type {
-  AnalyticsTracker,
-  AnalyticsEventAttributes,
-  UseAnalyticsFn,
-} from './types';
+import type { ReactNode } from 'react';
+import { RouterProvider } from 'react-aria-components';
+import { useNavigate, useHref } from 'react-router-dom';
+
+/**
+ * Provides React Aria's RouterProvider for client-side navigation.
+ * Must be rendered within a React Router context.
+ *
+ * @public
+ */
+export function BUIRouterProvider({
+  children,
+}: {
+  children: ReactNode;
+}): JSX.Element {
+  const navigate = useNavigate();
+  return (
+    <RouterProvider navigate={navigate} useHref={useHref}>
+      {children}
+    </RouterProvider>
+  );
+}
