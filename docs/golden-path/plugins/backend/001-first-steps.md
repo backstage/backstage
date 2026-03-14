@@ -8,7 +8,15 @@ title: How to scaffold a new plugin?
 
 <!-- Talk through how to run the `backstage-cli create` command as well as what the output it creates is. This should touch on why we install this into `packages/backend`. -->
 
-## `yarn new`
+## Prerequisites
+
+Before scaffolding a backend plugin, make sure your Backstage repository dependencies are installed from the project root:
+
+```sh
+yarn install
+```
+
+## 1. Run `yarn new`
 
 A new, bare-bones backend plugin package can be created by issuing the following
 command in your Backstage repository's root directory and selecting `backend-plugin`:
@@ -49,6 +57,20 @@ Once the commands complete, you should see a new folder `plugins/todo-backend` w
 ```
 
 <!-- TODO: describe each of the above files -->
+
+## 2. Verify the plugin scaffold
+
+After scaffolding, verify these checks before moving on:
+
+- `plugins/todo-backend` exists and contains `src/plugin.ts` and `src/router.ts`
+- The plugin is wired into your backend app in `packages/backend/src/index.ts`
+- A backend route exposed by the plugin responds locally on `http://localhost:7007`
+
+Run TypeScript compilation from the repository root to confirm everything compiles:
+
+```sh
+yarn tsc
+```
 
 ### FAQs
 

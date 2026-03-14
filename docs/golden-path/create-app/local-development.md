@@ -3,6 +3,21 @@ id: local-development
 title: 002 - Local development
 ---
 
+## Prerequisites
+
+Before running the app, verify that ports `3000` and `7007` are available:
+
+```bash
+lsof -i :3000
+lsof -i :7007
+```
+
+If your machine has limited memory, set a higher Node.js memory limit before starting:
+
+```bash
+export NODE_OPTIONS="--max-old-space-size=4096"
+```
+
 Your Backstage app is fully installed and ready to be run! Now that the installation is complete, you can go to the application directory and start the app using the `yarn start` command. The `yarn start` command will run both the frontend and backend as separate processes (named `[0]` and `[1]`) in the same window.
 
 ```bash
