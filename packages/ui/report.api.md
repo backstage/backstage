@@ -1409,11 +1409,11 @@ export const HeaderDefinition: {
     readonly [key: string]: string;
   };
   readonly classNames: {
-    readonly root: 'bui-HeaderPage';
-    readonly content: 'bui-HeaderPageContent';
-    readonly breadcrumbs: 'bui-HeaderPageBreadcrumbs';
-    readonly tabsWrapper: 'bui-HeaderPageTabsWrapper';
-    readonly controls: 'bui-HeaderPageControls';
+    readonly root: 'bui-Header';
+    readonly content: 'bui-HeaderContent';
+    readonly breadcrumbs: 'bui-HeaderBreadcrumbs';
+    readonly tabsWrapper: 'bui-HeaderTabsWrapper';
+    readonly controls: 'bui-HeaderControls';
   };
   readonly propDefs: {
     readonly title: {};
@@ -1450,11 +1450,11 @@ export const HeaderPageDefinition: {
     readonly [key: string]: string;
   };
   readonly classNames: {
-    readonly root: 'bui-HeaderPage';
-    readonly content: 'bui-HeaderPageContent';
-    readonly breadcrumbs: 'bui-HeaderPageBreadcrumbs';
-    readonly tabsWrapper: 'bui-HeaderPageTabsWrapper';
-    readonly controls: 'bui-HeaderPageControls';
+    readonly root: 'bui-Header';
+    readonly content: 'bui-HeaderContent';
+    readonly breadcrumbs: 'bui-HeaderBreadcrumbs';
+    readonly tabsWrapper: 'bui-HeaderTabsWrapper';
+    readonly controls: 'bui-HeaderControls';
   };
   readonly propDefs: {
     readonly title: {};
