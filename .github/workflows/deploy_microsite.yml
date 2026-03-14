@@ -83,7 +83,7 @@ jobs:
         run: yarn backstage-repo-tools package-docs
 
       - name: upload API reference
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7
         with:
           name: stable-reference
           path: type-docs/
@@ -107,7 +107,7 @@ jobs:
         run: yarn docusaurus gen-api-docs all
 
       - name: upload OpenAPI API docs
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7
         with:
           name: stable-openapi-docs
           path: docs/**/api/**/*
@@ -156,7 +156,7 @@ jobs:
         run: yarn backstage-repo-tools package-docs
 
       - name: upload API reference
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7
         with:
           name: next-reference
           path: type-docs/
@@ -175,7 +175,7 @@ jobs:
         run: yarn build-storybook
 
       - name: Upload Storybook
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7
         with:
           name: storybook
           path: dist-storybook
@@ -191,7 +191,7 @@ jobs:
         run: yarn docusaurus gen-api-docs all
 
       - name: upload OpenAPI API docs
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7
         with:
           name: next-openapi-docs
           path: docs/**/api/**/*
@@ -240,7 +240,7 @@ jobs:
         working-directory: microsite
 
       - name: download stable OpenAPI API docs
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
           name: stable-openapi-docs
           path: docs
@@ -282,7 +282,7 @@ jobs:
         working-directory: microsite
 
       - name: download next OpenAPI API docs
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
           name: next-openapi-docs
           path: docs
@@ -291,17 +291,17 @@ jobs:
         run: yarn build
         working-directory: microsite
 
-      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
           name: storybook
           path: microsite/build/storybook
 
-      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
           name: stable-reference
           path: microsite/build/api/stable/
 
-      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
           name: next-reference
           path: microsite/build/api/next/
