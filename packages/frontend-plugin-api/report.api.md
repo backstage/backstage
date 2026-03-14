@@ -1712,6 +1712,7 @@ export interface OverridableFrontendPlugin<
   // (undocumented)
   withOverrides(options: {
     extensions?: Array<ExtensionDefinition>;
+    if?: FilterPredicate;
     title?: string;
     icon?: IconElement;
     info?: FrontendPluginInfoOptions;
