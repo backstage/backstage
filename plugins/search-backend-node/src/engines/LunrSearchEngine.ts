@@ -61,7 +61,7 @@ export class LunrSearchEngine implements SearchEngine {
   /** @deprecated Use docStores instead */
   protected get docStore(): Record<string, IndexableDocument> {
     return Object.values(this.docStores).reduce(
-      (acc, store) => ({ ...acc, ...store }),
+      (acc, store) => Object.assign(acc, store),
       {},
     );
   }

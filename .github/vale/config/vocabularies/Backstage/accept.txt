@@ -577,6 +577,7 @@ zod
 Zolotusky
 zoomable
 zsh
+reindexing
 resizable
 enums
 LLMs
