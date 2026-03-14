@@ -46,31 +46,7 @@ App feature discovery lets you automatically discover and install features provi
 
 Because feature discovery needs to interact with the compilation process, it is only available when using the `@backstage/cli` to build your app. It is hooked into the WebPack compilation process by scanning your app package for compatible dependencies, which are then made part of the app compilation bundle.
 
-To enable frontend feature discovery, add the following configuration to your `app-config.yaml`:
-
-```yaml
-app:
-  packages: all
-```
-
-This will cause all dependencies in your app package to be installed automatically. If this is not desired, you can use include or exclude filters to narrow down the set of packages:
-
-```yaml
-app:
-  packages:
-    # Only the following packages will be included
-    include:
-      - '@backstage/plugin-catalog'
-      - '@backstage/plugin-scaffolder'
----
-app:
-  packages:
-    # All but the following package will be included
-    exclude:
-      - '@backstage/plugin-catalog'
-```
-
-Note that you do not need to manually exclude packages that you also import explicitly in code, since plugin instances are deduplicated by the app. You will never end up with duplicate plugin installations except if they are in fact two different plugin instances with different IDs.
+For information on how to configure feature discovery and other installation options, see [Installing Plugins](../building-apps/05-installing-plugins.md).
 
 ## Plugin Info Resolution
 

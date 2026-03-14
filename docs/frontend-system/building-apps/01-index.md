@@ -63,13 +63,9 @@ Visit the [built-in extensions](#customize-or-override-built-in-extensions) sect
 
 Linking routes from different plugins requires this configuration. You can do this either through a configuration file or by coding, visit [this](https://backstage.io/docs/frontend-system/architecture/routes#binding-external-route-references) page for instructions.
 
-### Enable feature discovery
+### Install plugins
 
-Use this setting to enable experimental feature discovery when building your app with `@backstage/cli`. With this configuration your application tries to discover and install package extensions automatically, check [here](../architecture/10-app.md#feature-discovery) for more details.
-
-:::warning
-Remember that package extensions that are not auto-discovered must be manually added to the application when creating an app. See [features](#install-features-manually) for more details.
-:::
+Plugins are typically installed by adding them as dependencies of your app package and relying on feature discovery to automatically detect them. For details on how this works, including how to manually install plugins or control which packages are discovered, see [Installing Plugins](./05-installing-plugins.md).
 
 ### Configure extensions individually
 
@@ -83,7 +79,7 @@ Previously you would customize the application routes, components, apis, sidebar
 
 ### Install features manually
 
-A manual installation is required if your packages are not discovered automatically, either because you are not using `@backstage/cli` to build your application or because the features are defined in local modules in the app package. In order to manually install a feature, you must import it and pass it to the `createApp` function:
+Most plugins are installed automatically through [feature discovery](./05-installing-plugins.md#feature-discovery). Manual installation is needed if your packages are not discovered automatically, either because you are not using `@backstage/cli` to build your application or because the features are defined in local modules in the app package. In order to manually install a feature, you must import it and pass it to the `createApp` function:
 
 ```tsx title="packages/app/src/App.tsx"
 import { createApp } from '@backstage/frontend-defaults';
