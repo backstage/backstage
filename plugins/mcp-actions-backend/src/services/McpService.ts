@@ -13,7 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { BackstageCredentials } from '@backstage/backend-plugin-api';
+import {
+  AuditorService,
+  BackstageCredentials,
+} from '@backstage/backend-plugin-api';
+import type { Request } from 'express';
 import { Server as McpServer } from '@modelcontextprotocol/sdk/server/index.js';
 import {
   ListToolsRequestSchema,
@@ -36,15 +40,18 @@ import { FilterRule, McpServerConfig } from '../config';
 
 export class McpService {
   private readonly actions: ActionsService;
+  private readonly auditor: AuditorService;
   private readonly namespacedToolNames: boolean;
   private readonly operationDuration: MetricsServiceHistogram<McpServerOperationAttributes>;
 
   constructor(
     actions: ActionsService,
     metrics: MetricsService,
+    auditor: AuditorService,
     namespacedToolNames?: boolean,
   ) {
     this.actions = actions;
+    this.auditor = auditor;
     this.namespacedToolNames = namespacedToolNames ?? true;
     this.operationDuration =
       metrics.createHistogram<McpServerOperationAttributes>(
@@ -60,21 +67,25 @@ export class McpService {
   static async create({
     actions,
     metrics,
+    auditor,
     namespacedToolNames,
   }: {
     actions: ActionsService;
     metrics: MetricsService;
+    auditor: AuditorService;
     namespacedToolNames?: boolean;
   }) {
-    return new McpService(actions, metrics, namespacedToolNames);
+    return new McpService(actions, metrics, auditor, namespacedToolNames);
   }
 
   getServer({
     credentials,
     serverConfig,
+    req,
   }: {
     credentials: BackstageCredentials;
     serverConfig?: McpServerConfig;
+    req?: Request;
   }) {
     const serverName = serverConfig?.name ?? 'backstage';
 
@@ -91,6 +102,11 @@ export class McpService {
       const startTime = performance.now();
       let errorType: string | undefined;
 
+      const auditorEvent = await this.auditor.createEvent({
+        eventId: 'tool-discovery',
+        ...(req && { request: req }),
+      });
+
       try {
         const { actions: allActions } = await this.actions.list({
           credentials,
@@ -98,6 +114,8 @@ export class McpService {
         const actions = serverConfig
           ? this.filterActions(allActions, serverConfig)
           : allActions;
+
+        await auditorEvent.success({ meta: { toolCount: actions.length } });
 
         return {
           tools: actions.map(action => ({
@@ -118,6 +136,7 @@ export class McpService {
         };
       } catch (err) {
         errorType = err instanceof Error ? err.name : 'Error';
+        await auditorEvent.fail({ error: err as Error });
         throw err;
       } finally {
         const durationSeconds = (performance.now() - startTime) / 1000;
@@ -133,6 +152,13 @@ export class McpService {
       const startTime = performance.now();
       let errorType: string | undefined;
       let isError = false;
+
+      const auditorEvent = await this.auditor.createEvent({
+        eventId: 'tool-execution',
+        severityLevel: 'medium',
+        ...(req && { request: req }),
+        meta: { toolName: params.name },
+      });
 
       try {
         const result = await handleErrors(async () => {
@@ -171,9 +197,11 @@ export class McpService {
         });
 
         isError = !!(result as { isError?: boolean })?.isError;
+        await auditorEvent.success();
         return result;
       } catch (err) {
         errorType = err instanceof Error ? err.name : 'Error';
+        await auditorEvent.fail({ error: err as Error });
         throw err;
       } finally {
         const durationSeconds = (performance.now() - startTime) / 1000;
