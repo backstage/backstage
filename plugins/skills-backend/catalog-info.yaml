@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-skills-backend
+  title: '@backstage/plugin-skills-backend'
+  description: Backend plugin for managing agent skills
+spec:
+  lifecycle: experimental
+  type: backstage-backend-plugin
+  owner: maintainers
