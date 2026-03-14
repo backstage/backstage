@@ -720,6 +720,8 @@ export interface CreateFrontendModuleOptions<
   // (undocumented)
   featureFlags?: FeatureFlagConfig[];
   // (undocumented)
+  if?: FilterPredicate;
+  // (undocumented)
   pluginId: TPluginId;
 }
 
@@ -1878,6 +1880,8 @@ export interface PluginOptions<
   externalRoutes?: TExternalRoutes;
   // (undocumented)
   featureFlags?: FeatureFlagConfig[];
+  // (undocumented)
+  if?: FilterPredicate;
   icon?: IconElement;
   // (undocumented)
   info?: FrontendPluginInfoOptions;

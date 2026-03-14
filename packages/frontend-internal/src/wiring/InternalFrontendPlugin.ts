@@ -17,6 +17,7 @@
 import {
   Extension,
   FeatureFlagConfig,
+  FilterPredicate,
   IconElement,
   OverridableFrontendPlugin,
 } from '@backstage/frontend-plugin-api';
@@ -31,6 +32,7 @@ export const OpaqueFrontendPlugin = OpaqueType.create<{
     readonly icon?: IconElement;
     readonly extensions: Extension<unknown>[];
     readonly featureFlags: FeatureFlagConfig[];
+    readonly if?: FilterPredicate;
     readonly infoOptions?: {
       packageJson?: () => Promise<JsonObject>;
       manifest?: () => Promise<JsonObject>;

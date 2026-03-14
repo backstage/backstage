@@ -20,6 +20,7 @@ import {
   FrontendFeature,
   FrontendPlugin,
 } from '@backstage/frontend-plugin-api';
+import { FilterPredicate } from '@backstage/filter-predicates';
 import { ExtensionParameters } from './readAppExtensionsConfig';
 import { AppNodeSpec } from '@backstage/frontend-plugin-api';
 import { OpaqueFrontendPlugin } from '@internal/frontend';
@@ -38,6 +39,33 @@ function normalizePlugin(plugin: FrontendPlugin): FrontendPlugin {
     (plugin as any).pluginId = plugin.id;
   }
   return plugin;
+}
+
+function combinePredicates(
+  left: FilterPredicate | undefined,
+  right: FilterPredicate | undefined,
+) {
+  if (!left) {
+    return right;
+  }
+  if (!right) {
+    return left;
+  }
+
+  return { $all: [left, right] };
+}
+
+function getExtensionPredicate(options: {
+  extension: Extension<any, any>;
+  internalExtension: ReturnType<typeof toInternalExtension>;
+}) {
+  if (options.extension.version === 'v2') {
+    return options.extension.if;
+  }
+  if (options.internalExtension.version === 'v2') {
+    return options.internalExtension.if;
+  }
+  return undefined;
 }
 
 /** @internal */
@@ -79,26 +107,41 @@ export function resolveAppNodeSpecs(options: {
   };
 
   const pluginExtensions = plugins.flatMap(plugin => {
-    return OpaqueFrontendPlugin.toInternal(plugin)
-      .extensions.map(extension => ({
+    const internalPlugin = OpaqueFrontendPlugin.toInternal(plugin);
+    return internalPlugin.extensions
+      .map(extension => ({
         ...extension,
         plugin,
+        if: combinePredicates(
+          internalPlugin.if,
+          extension.version === 'v2' ? extension.if : undefined,
+        ),
       }))
       .filter(filterForbidden);
   });
-  const moduleExtensions = modules.flatMap(mod =>
-    toInternalFrontendModule(mod)
-      .extensions.flatMap(extension => {
+  const moduleExtensions = modules.flatMap(mod => {
+    const internalModule = toInternalFrontendModule(mod);
+    return internalModule.extensions
+      .flatMap(extension => {
         // Modules for plugins that are not installed are ignored
         const plugin = plugins.find(p => p.pluginId === mod.pluginId);
         if (!plugin) {
           return [];
         }
 
-        return [{ ...extension, plugin }];
+        return [
+          {
+            ...extension,
+            plugin,
+            if: combinePredicates(
+              internalModule.if,
+              extension.version === 'v2' ? extension.if : undefined,
+            ),
+          },
+        ];
       })
-      .filter(filterForbidden),
-  );
+      .filter(filterForbidden);
+  });
 
   const appPlugin =
     plugins.find(plugin => plugin.pluginId === 'app') ??
@@ -116,10 +159,7 @@ export function resolveAppNodeSpecs(options: {
           source: plugin,
           attachTo: internalExtension.attachTo,
           disabled: internalExtension.disabled,
-          if:
-            internalExtension.version === 'v2'
-              ? internalExtension.if
-              : undefined,
+          if: getExtensionPredicate({ extension, internalExtension }),
           config: undefined as unknown,
         },
       };
@@ -133,10 +173,7 @@ export function resolveAppNodeSpecs(options: {
           plugin: appPlugin,
           attachTo: internalExtension.attachTo,
           disabled: internalExtension.disabled,
-          if:
-            internalExtension.version === 'v2'
-              ? internalExtension.if
-              : undefined,
+          if: getExtensionPredicate({ extension, internalExtension }),
           config: undefined as unknown,
         },
       };
@@ -156,8 +193,10 @@ export function resolveAppNodeSpecs(options: {
       configuredExtensions[index].extension = internalExtension;
       configuredExtensions[index].params.attachTo = internalExtension.attachTo;
       configuredExtensions[index].params.disabled = internalExtension.disabled;
-      configuredExtensions[index].params.if =
-        internalExtension.version === 'v2' ? internalExtension.if : undefined;
+      configuredExtensions[index].params.if = getExtensionPredicate({
+        extension,
+        internalExtension,
+      });
     } else {
       // Add the extension as a new one when not overriding an existing one
       configuredExtensions.push({
@@ -167,10 +206,7 @@ export function resolveAppNodeSpecs(options: {
           source: extension.plugin,
           attachTo: internalExtension.attachTo,
           disabled: internalExtension.disabled,
-          if:
-            internalExtension.version === 'v2'
-              ? internalExtension.if
-              : undefined,
+          if: getExtensionPredicate({ extension, internalExtension }),
           config: undefined,
         },
       });
