@@ -114,7 +114,7 @@
     "luxon": "^3.0.0",
     "msw": "^2.0.0",
     "supertest": "^7.0.0",
-    "wait-for-expect": "^3.0.2",
+    "wait-for-expect": "^4.0.0",
     "winston": "^3.13.0"
   },
   "configSchema": "config.d.ts"

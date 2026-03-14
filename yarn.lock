@@ -2588,7 +2588,7 @@ __metadata:
     tar: "npm:^7.5.6"
     triple-beam: "npm:^1.4.1"
     uuid: "npm:^11.0.0"
-    wait-for-expect: "npm:^3.0.2"
+    wait-for-expect: "npm:^4.0.0"
     winston: "npm:^3.2.1"
     winston-transport: "npm:^4.5.0"
     yauzl: "npm:^3.0.0"
@@ -2651,7 +2651,7 @@ __metadata:
     fs-extra: "npm:^11.2.0"
     lodash: "npm:^4.17.21"
     triple-beam: "npm:^1.4.1"
-    wait-for-expect: "npm:^3.0.2"
+    wait-for-expect: "npm:^4.0.0"
     winston: "npm:^3.2.1"
   languageName: unknown
   linkType: soft
@@ -4878,7 +4878,7 @@ __metadata:
     prom-client: "npm:^15.0.0"
     supertest: "npm:^7.0.0"
     uuid: "npm:^11.0.0"
-    wait-for-expect: "npm:^3.0.2"
+    wait-for-expect: "npm:^4.0.0"
     winston: "npm:^3.13.0"
     yaml: "npm:^2.0.0"
     yn: "npm:^4.0.0"
@@ -5444,7 +5444,7 @@ __metadata:
     "@backstage/types": "workspace:^"
     "@google-cloud/pubsub": "npm:^4.10.0"
     "@opentelemetry/api": "npm:^1.9.0"
-    wait-for-expect: "npm:^3.0.2"
+    wait-for-expect: "npm:^4.0.0"
   languageName: unknown
   linkType: soft
 
@@ -5532,7 +5532,7 @@ __metadata:
     eventsource: "npm:^4.0.0"
     express: "npm:^4.22.0"
     http-proxy-middleware: "npm:^3.0.3"
-    wait-for-expect: "npm:^3.0.2"
+    wait-for-expect: "npm:^4.0.0"
   languageName: unknown
   linkType: soft
 
@@ -6557,7 +6557,7 @@ __metadata:
     supertest: "npm:^7.0.0"
     triple-beam: "npm:^1.4.1"
     uuid: "npm:^11.0.0"
-    wait-for-expect: "npm:^3.0.2"
+    wait-for-expect: "npm:^4.0.0"
     winston: "npm:^3.2.1"
     winston-transport: "npm:^4.7.0"
     yaml: "npm:^2.0.0"
@@ -7148,7 +7148,7 @@ __metadata:
     react-dom: "npm:^18.0.2"
     react-router-dom: "npm:^6.30.2"
     uuid: "npm:^11.0.0"
-    wait-for-expect: "npm:^3.0.2"
+    wait-for-expect: "npm:^4.0.0"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
@@ -50035,10 +50035,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"wait-for-expect@npm:^3.0.2":
-  version: 3.0.2
-  resolution: "wait-for-expect@npm:3.0.2"
-  checksum: 10/023333b36e962e23a56b4f4ce2ab7166bdba036f096a59f1c531fbfcf1341b43b102ad54f3b684b37a492a53c03ba92829276101070563940be6e29901a532e0
+"wait-for-expect@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "wait-for-expect@npm:4.0.0"
+  checksum: 10/f9a07b1cdc1dc203030bb9f24dfa6772839db825535519cc47263a497a5a8436dcb2e9a81934574ea6699c51e128c8512edf87cd873a9b611e8e09240853f927
   languageName: node
   linkType: hard
 
