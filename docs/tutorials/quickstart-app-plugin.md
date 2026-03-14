@@ -1,6 +1,7 @@
 ---
 id: quickstart-app-plugin
 title: Adding Custom Plugin to Existing Monorepo App
+description: Tutorial for adding a custom plugin to an existing Backstage monorepo application
 ---
 
 ###### September 15th 2020 - v0.1.1-alpha.21

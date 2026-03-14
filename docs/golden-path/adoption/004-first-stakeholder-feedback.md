@@ -2,6 +2,7 @@
 id: first-stakeholder-feedback
 sidebar_label: 004 - Stakeholder Feedback
 title: First round of stakeholder feedback
+description: How to gather and incorporate stakeholder feedback on your Backstage PoC
 ---
 
 Now that you have a PoC running, let's walk through how to get good feedback. You likely aren't the first person to hear about Backstage or maybe not even the first person to set up a PoC. There may be common pitfalls unique to your company that are worth knowing about - political, organizational or otherwise.

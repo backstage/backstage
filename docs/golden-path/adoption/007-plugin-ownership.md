@@ -2,6 +2,7 @@
 id: plugin-ownership
 sidebar_label: 007 - Plugin Ownership
 title: Plugin Ownership
+description: How to establish and manage plugin ownership across your organization
 ---
 
 You're now well on your way to a healthy Backstage instance! It's been launched to the whole company and you're loving the feedback developers are giving you. Some developers have even started broaching writing their own plugins.
