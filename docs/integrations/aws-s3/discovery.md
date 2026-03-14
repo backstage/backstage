@@ -31,6 +31,7 @@ catalog:
         bucketName: sample-bucket
         prefix: prefix/ # optional
         region: us-east-2 # optional, uses the default region otherwise
+        accountId: '123456789012' # optional, uses the main account otherwise
         schedule: # same options as in SchedulerServiceTaskScheduleDefinition
           # supports cron, ISO duration, "human duration" as used in code
           frequency: { minutes: 30 }
@@ -51,6 +52,7 @@ catalog:
       bucketName: sample-bucket
       prefix: prefix/ # optional
       region: us-east-2 # optional, uses the default region otherwise
+      accountId: '123456789012' # optional, uses the main account otherwise
       schedule: # same options as in SchedulerServiceTaskScheduleDefinition
         # supports cron, ISO duration, "human duration" as used in code
         frequency: { minutes: 30 }
