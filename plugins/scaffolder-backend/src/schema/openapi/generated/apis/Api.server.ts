@@ -116,7 +116,7 @@ export type Retry = {
     taskId: string;
   };
   body: RetryRequest;
-  response: Scaffold201Response;
+  response: Scaffold201Response | Scaffold400Response;
 };
 /**
  * @public

@@ -20,6 +20,7 @@ import type { DisclosureProps } from 'react-aria-components';
 import type { ElementType } from 'react';
 import { ForwardRefExoticComponent } from 'react';
 import type { HeadingProps } from 'react-aria-components';
+import type { HTMLAttributes } from 'react';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
 import type { LinkProps as LinkProps_2 } from 'react-aria-components';
 import type { ListBoxItemProps } from 'react-aria-components';
@@ -254,6 +255,23 @@ export interface AlertProps
 // @public (undocumented)
 export type AlignItems = 'stretch' | 'start' | 'center' | 'end';
 
+// @public
+export type AnalyticsEventAttributes = {
+  [key: string]: string | boolean | number;
+};
+
+// @public
+export type AnalyticsTracker = {
+  captureEvent: (
+    action: string,
+    subject: string,
+    options?: {
+      value?: number;
+      attributes?: AnalyticsEventAttributes;
+    },
+  ) => void;
+};
+
 // @public (undocumented)
 export const Avatar: ForwardRefExoticComponent<
   AvatarProps & RefAttributes<HTMLDivElement>
@@ -413,6 +431,15 @@ export type BoxUtilityProps = {
 export type Breakpoint = 'initial' | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
 // @public
+export function BUIProvider(props: BUIProviderProps): JSX_2.Element;
+
+// @public (undocumented)
+export type BUIProviderProps = {
+  useAnalytics?: UseAnalyticsFn;
+  children: ReactNode;
+};
+
+// @public
 export const Button: ForwardRefExoticComponent<
   ButtonProps & RefAttributes<HTMLButtonElement>
 >;
@@ -512,7 +539,9 @@ export const ButtonLinkDefinition: {
     readonly content: 'bui-ButtonLinkContent';
   };
   readonly bg: 'consumer';
+  readonly analytics: true;
   readonly propDefs: {
+    readonly noTrack: {};
     readonly size: {
       readonly dataAttribute: true;
       readonly default: 'small';
@@ -530,6 +559,7 @@ export const ButtonLinkDefinition: {
 
 // @public (undocumented)
 export type ButtonLinkOwnProps = {
+  noTrack?: boolean;
   size?: Responsive<'small' | 'medium'>;
   variant?: Responsive<'primary' | 'secondary' | 'tertiary'>;
   iconStart?: ReactElement;
@@ -565,6 +595,12 @@ export const Card: ForwardRefExoticComponent<
   CardProps & RefAttributes<HTMLDivElement>
 >;
 
+// @public (undocumented)
+export type CardBaseProps = {
+  children?: ReactNode;
+  className?: string;
+};
+
 // @public
 export const CardBody: ForwardRefExoticComponent<
   CardBodyProps & RefAttributes<HTMLDivElement>
@@ -595,6 +631,16 @@ export interface CardBodyProps
   extends CardBodyOwnProps,
     React.HTMLAttributes<HTMLDivElement> {}
 
+// @public (undocumented)
+export type CardButtonVariant = {
+  onPress: NonNullable<ButtonProps_2['onPress']>;
+  href?: never;
+  label: string;
+  target?: never;
+  rel?: never;
+  download?: never;
+};
+
 // @public
 export const CardDefinition: {
   readonly styles: {
@@ -602,10 +648,17 @@ export const CardDefinition: {
   };
   readonly classNames: {
     readonly root: 'bui-Card';
+    readonly trigger: 'bui-CardTrigger';
   };
   readonly propDefs: {
     readonly children: {};
     readonly className: {};
+    readonly onPress: {};
+    readonly href: {};
+    readonly label: {};
+    readonly target: {};
+    readonly rel: {};
+    readonly download: {};
   };
 };
 
@@ -670,15 +723,42 @@ export interface CardHeaderProps
     React.HTMLAttributes<HTMLDivElement> {}
 
 // @public (undocumented)
-export type CardOwnProps = {
-  children?: ReactNode;
-  className?: string;
+export type CardLinkVariant = {
+  href: string;
+  onPress?: never;
+  label: string;
+  target?: string;
+  rel?: string;
+  download?: boolean | string;
 };
 
 // @public
-export interface CardProps
-  extends CardOwnProps,
-    React.HTMLAttributes<HTMLDivElement> {}
+export type CardOwnProps = Pick<
+  CardBaseProps & (CardButtonVariant | CardLinkVariant | CardStaticVariant),
+  | 'children'
+  | 'className'
+  | 'onPress'
+  | 'href'
+  | 'label'
+  | 'target'
+  | 'rel'
+  | 'download'
+>;
+
+// @public
+export type CardProps = CardBaseProps &
+  Omit<React.HTMLAttributes<HTMLDivElement>, 'onClick'> &
+  (CardButtonVariant | CardLinkVariant | CardStaticVariant);
+
+// @public (undocumented)
+export type CardStaticVariant = {
+  onPress?: never;
+  href?: never;
+  label?: never;
+  target?: never;
+  rel?: never;
+  download?: never;
+};
 
 // @public (undocumented)
 export const Cell: {
@@ -750,12 +830,6 @@ export const CheckboxDefinition: {
     readonly indicator: 'bui-CheckboxIndicator';
   };
   readonly propDefs: {
-    readonly selected: {
-      readonly dataAttribute: true;
-    };
-    readonly indeterminate: {
-      readonly dataAttribute: true;
-    };
     readonly children: {};
     readonly className: {};
   };
@@ -763,8 +837,6 @@ export const CheckboxDefinition: {
 
 // @public (undocumented)
 export type CheckboxOwnProps = {
-  selected?: boolean;
-  indeterminate?: boolean;
   children: React.ReactNode;
   className?: string;
 };
@@ -1164,7 +1236,10 @@ export type FlexOwnProps = {
 };
 
 // @public (undocumented)
-export interface FlexProps extends SpaceProps, FlexOwnProps {
+export interface FlexProps
+  extends SpaceProps,
+    FlexOwnProps,
+    Omit<React.HTMLAttributes<HTMLDivElement>, 'children'> {
   // (undocumented)
   align?: Responsive<'start' | 'center' | 'end' | 'baseline' | 'stretch'>;
   // (undocumented)
@@ -1205,6 +1280,11 @@ export type FullPageOwnProps = {
 export interface FullPageProps
   extends Omit<ComponentPropsWithoutRef<'main'>, 'className'>,
     FullPageOwnProps {}
+
+// @public
+export function getNodeText(
+  node: ReactNode | ((...args: any[]) => ReactNode),
+): string | undefined;
 
 // @public (undocumented)
 export const Grid: {
@@ -1280,7 +1360,9 @@ export type GridItemOwnProps = {
 };
 
 // @public (undocumented)
-export interface GridItemProps extends GridItemOwnProps {
+export interface GridItemProps
+  extends GridItemOwnProps,
+    Omit<HTMLAttributes<HTMLDivElement>, 'children'> {
   // (undocumented)
   colEnd?: Responsive<Columns>;
   // (undocumented)
@@ -1300,7 +1382,10 @@ export type GridOwnProps = {
 };
 
 // @public (undocumented)
-export interface GridProps extends SpaceProps, GridOwnProps {
+export interface GridProps
+  extends SpaceProps,
+    GridOwnProps,
+    Omit<HTMLAttributes<HTMLDivElement>, 'children'> {
   // (undocumented)
   columns?: Responsive<Columns>;
   // (undocumented)
@@ -1308,10 +1393,10 @@ export interface GridProps extends SpaceProps, GridOwnProps {
 }
 
 // @public
-export const HeaderPage: (props: HeaderPageProps) => JSX_2.Element;
+export const Header: (props: HeaderProps) => JSX_2.Element;
 
 // @public
-export interface HeaderPageBreadcrumb {
+export interface HeaderBreadcrumb {
   // (undocumented)
   href: string;
   // (undocumented)
@@ -1319,7 +1404,7 @@ export interface HeaderPageBreadcrumb {
 }
 
 // @public
-export const HeaderPageDefinition: {
+export const HeaderDefinition: {
   readonly styles: {
     readonly [key: string]: string;
   };
@@ -1340,9 +1425,9 @@ export const HeaderPageDefinition: {
 };
 
 // @public
-export interface HeaderPageOwnProps {
+export interface HeaderOwnProps {
   // (undocumented)
-  breadcrumbs?: HeaderPageBreadcrumb[];
+  breadcrumbs?: HeaderBreadcrumb[];
   // (undocumented)
   className?: string;
   // (undocumented)
@@ -1353,8 +1438,41 @@ export interface HeaderPageOwnProps {
   title?: string;
 }
 
+// @public @deprecated (undocumented)
+export const HeaderPage: (props: HeaderProps) => JSX_2.Element;
+
+// @public @deprecated (undocumented)
+export type HeaderPageBreadcrumb = HeaderBreadcrumb;
+
+// @public @deprecated (undocumented)
+export const HeaderPageDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-HeaderPage';
+    readonly content: 'bui-HeaderPageContent';
+    readonly breadcrumbs: 'bui-HeaderPageBreadcrumbs';
+    readonly tabsWrapper: 'bui-HeaderPageTabsWrapper';
+    readonly controls: 'bui-HeaderPageControls';
+  };
+  readonly propDefs: {
+    readonly title: {};
+    readonly customActions: {};
+    readonly tabs: {};
+    readonly breadcrumbs: {};
+    readonly className: {};
+  };
+};
+
+// @public @deprecated (undocumented)
+export type HeaderPageOwnProps = HeaderOwnProps;
+
+// @public @deprecated (undocumented)
+export type HeaderPageProps = HeaderProps;
+
 // @public
-export interface HeaderPageProps extends HeaderPageOwnProps {}
+export interface HeaderProps extends HeaderOwnProps {}
 
 // @public
 export interface HeaderTab {
@@ -1389,7 +1507,9 @@ export const LinkDefinition: {
   readonly classNames: {
     readonly root: 'bui-Link';
   };
+  readonly analytics: true;
   readonly propDefs: {
+    readonly noTrack: {};
     readonly variant: {
       readonly dataAttribute: true;
       readonly default: 'body-medium';
@@ -1416,6 +1536,7 @@ export const LinkDefinition: {
 
 // @public (undocumented)
 export type LinkOwnProps = {
+  noTrack?: boolean;
   variant?: TextVariants | Partial<Record<Breakpoint, TextVariants>>;
   weight?: TextWeights | Partial<Record<Breakpoint, TextWeights>>;
   color?:
@@ -1519,6 +1640,7 @@ export type MenuItemOwnProps = {
   children: React.ReactNode;
   color?: 'primary' | 'danger';
   href?: MenuItemProps_2['href'];
+  noTrack?: boolean;
   className?: string;
 };
 
@@ -1938,6 +2060,7 @@ export type RowOwnProps<T = object> = {
   columns?: RowProps_2<T>['columns'];
   children?: RowProps_2<T>['children'];
   href?: string;
+  noTrack?: boolean;
 };
 
 // @public (undocumented)
@@ -2368,6 +2491,7 @@ export type TabOwnProps = {
   matchStrategy?: TabMatchStrategy;
   href?: TabProps_2['href'];
   id?: TabProps_2['id'];
+  noTrack?: boolean;
 };
 
 // @public
@@ -2463,6 +2587,7 @@ export type TagOwnProps = {
   href?: TagProps_2['href'];
   children?: TagProps_2['children'];
   className?: string;
+  noTrack?: boolean;
 };
 
 // @public
@@ -2719,6 +2844,12 @@ export interface TooltipProps
 export const TooltipTrigger: (
   props: TooltipTriggerComponentProps,
 ) => JSX_2.Element;
+
+// @public
+export function useAnalytics(): AnalyticsTracker;
+
+// @public
+export type UseAnalyticsFn = () => AnalyticsTracker;
 
 // @public
 export function useBgConsumer(): BgContextValue;

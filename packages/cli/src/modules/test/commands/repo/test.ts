@@ -16,12 +16,12 @@
 
 import os from 'node:os';
 import crypto from 'node:crypto';
+import { cli } from 'cleye';
 import yargs from 'yargs';
 // 'jest-cli' is included with jest and should be kept in sync with the installed jest version
 // eslint-disable-next-line @backstage/no-undeclared-imports
 import { run as runJest, yargsOptions as jestYargsOptions } from 'jest-cli';
 import { relative as relativePath } from 'node:path';
-import { Command, OptionValues } from 'commander';
 import { Lockfile, PackageGraph, SuccessCache } from '@backstage/cli-node';
 
 import {
@@ -31,6 +31,7 @@ import {
   findOwnPaths,
   isChildPath,
 } from '@backstage/cli-common';
+import type { CommandContext } from '../../../../wiring/types';
 
 type JestProject = {
   displayName: string;
@@ -130,36 +131,50 @@ export function createFlagFinder(args: string[]) {
   };
 }
 
-function removeOptionArg(args: string[], option: string, size: number = 2) {
-  let changed = false;
-  do {
-    changed = false;
-
-    const index = args.indexOf(option);
-    if (index >= 0) {
-      changed = true;
-      args.splice(index, size);
-    }
-    const indexEq = args.findIndex(arg => arg.startsWith(`${option}=`));
-    if (indexEq >= 0) {
-      changed = true;
-      args.splice(indexEq, 1);
-    }
-  } while (changed);
-}
-
-export async function command(opts: OptionValues, cmd: Command): Promise<void> {
+export default async ({ args, info }: CommandContext) => {
   const testGlobal = global as TestGlobal;
 
-  // all args are forwarded to jest
-  let parent = cmd;
-  while (parent.parent) {
-    parent = parent.parent;
+  for (const flag of ['successCache', 'successCacheDir', 'jestHelp']) {
+    if (args.some(a => a === `--${flag}` || a.startsWith(`--${flag}=`))) {
+      process.stderr.write(
+        `DEPRECATION WARNING: --${flag} is deprecated, use the kebab-case form instead\n`,
+      );
+    }
   }
-  const allArgs = parent.args as string[];
-  const args = allArgs.slice(allArgs.indexOf('test') + 1);
+
+  // Parse Backstage-specific flags; unknown flags and arguments are left in
+  // args so they can be forwarded to Jest.
+  const { flags: opts } = cli(
+    {
+      help: info,
+      booleanFlagNegation: true,
+      flags: {
+        since: {
+          type: String,
+          description:
+            'Only include test packages changed since the specified ref',
+        },
+        successCache: {
+          type: Boolean,
+          description: 'Cache and skip tests for unchanged packages',
+        },
+        successCacheDir: {
+          type: String,
+          description: 'Directory for the success cache',
+        },
+        jestHelp: {
+          type: Boolean,
+          description: "Show Jest's own help output",
+        },
+      },
+      ignoreArgv: type => type === 'unknown-flag' || type === 'argument',
+    },
+    undefined,
+    args,
+  );
 
   const hasFlags = createFlagFinder(args);
+  const sinceRef = opts.since || undefined;
 
   // Parse the args to ensure that no file filters are provided, in which case we refuse to run
   const { _: parsedArgs } = await yargs(args).options(jestYargsOptions).argv;
@@ -177,7 +192,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
   // Run in watch mode unless in CI, coverage mode, or running all tests
   let isSingleWatchMode = args.includes('--watch');
   if (
-    !opts.since &&
+    !sinceRef &&
     !process.env.CI &&
     !hasFlags('--coverage', '--watch', '--watchAll')
   ) {
@@ -246,10 +261,6 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
     args.push('--maxWorkers=2');
   }
 
-  if (opts.since) {
-    removeOptionArg(args, '--since');
-  }
-
   let packageGraph: PackageGraph | undefined;
   async function getPackageGraph() {
     if (packageGraph) {
@@ -261,10 +272,10 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
   }
 
   let selectedProjects: string[] | undefined = undefined;
-  if (opts.since && !hasFlags('--selectProjects')) {
+  if (sinceRef && !hasFlags('--selectProjects')) {
     const graph = await getPackageGraph();
     const changedPackages = await graph.listChangedPackages({
-      ref: opts.since,
+      ref: sinceRef,
       analyzeLockfile: true,
     });
 
@@ -304,17 +315,13 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
     }--no-node-snapshot`;
   }
 
-  if (args.includes('--jest-help')) {
-    removeOptionArg(args, '--jest-help');
+  if (opts.jestHelp) {
     args.push('--help');
   }
 
   // This code path is enabled by the --successCache flag, which is specific to
   // the `repo test` command in the Backstage CLI.
   if (opts.successCache) {
-    removeOptionArg(args, '--successCache', 1);
-    removeOptionArg(args, '--successCacheDir');
-
     // Refuse to run if file filters are provided
     if (parsedArgs.length > 0) {
       throw new Error(
@@ -439,4 +446,4 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
   }
 
   await runJest(args);
-}
+};

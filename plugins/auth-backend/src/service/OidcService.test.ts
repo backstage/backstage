@@ -283,6 +283,33 @@ describe('OidcService', () => {
         );
       });
 
+      it('should reject redirect URIs containing userinfo', async () => {
+        const { service } = await createOidcService({
+          databaseId,
+          config: {
+            auth: {
+              experimentalDynamicClientRegistration: {
+                allowedRedirectUriPatterns: ['http://localhost:*'],
+              },
+            },
+          },
+        });
+
+        await expect(
+          service.registerClient({
+            clientName: 'Evil Client',
+            redirectUris: ['http://localhost:3000@attacker.example/callback'],
+          }),
+        ).rejects.toThrow('Invalid redirect_uri');
+
+        await expect(
+          service.registerClient({
+            clientName: 'Evil Client',
+            redirectUris: ['http://user:pass@example.com/callback'],
+          }),
+        ).rejects.toThrow('Invalid redirect_uri');
+      });
+
       it('should create a client with default values', async () => {
         const { service } = await createOidcService({ databaseId });
 

@@ -17,7 +17,7 @@
 import { stringifyError } from '@backstage/errors';
 import { Knex } from 'knex';
 import { DateTime } from 'luxon';
-import { DbRefreshStateRow } from '../database/tables';
+import { DbStitchQueueRow } from '../database/tables';
 import { createCounterMetric } from '../util/metrics';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { MetricsService } from '@backstage/backend-plugin-api/alpha';
@@ -54,9 +54,9 @@ export function progressTracker(
     { description: 'Number of entities currently in the stitching queue' },
   );
   stitchingQueueCount.addCallback(async result => {
-    const total = await knex<DbRefreshStateRow>('refresh_state')
-      .count({ count: '*' })
-      .whereNotNull('next_stitch_at');
+    const total = await knex<DbStitchQueueRow>('stitch_queue').count({
+      count: '*',
+    });
     result.observe(Number(total[0].count));
   });
 

@@ -1023,6 +1023,25 @@ export const spec = {
               },
             },
           },
+          '400': {
+            description: 'Validation errors.',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    errors: {
+                      type: 'array',
+                      items: {
+                        $ref: '#/components/schemas/ValidationError',
+                      },
+                    },
+                  },
+                  required: ['errors'],
+                },
+              },
+            },
+          },
         },
         security: [
           {},

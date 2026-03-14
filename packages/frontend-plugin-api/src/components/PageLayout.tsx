@@ -22,12 +22,18 @@ import { createSwappableComponent } from './createSwappableComponent';
  * Tab configuration for page navigation
  * @public
  */
-export interface PageTab {
+export interface PageLayoutTab {
   id: string;
   label: string;
   icon?: IconElement;
   href: string;
 }
+
+/**
+ * @deprecated Use {@link PageLayoutTab} instead
+ * @public
+ */
+export type PageTab = PageLayoutTab;
 
 /**
  * Props for the PageLayout component
@@ -38,7 +44,7 @@ export interface PageLayoutProps {
   icon?: IconElement;
   noHeader?: boolean;
   headerActions?: Array<JSX.Element | null>;
-  tabs?: PageTab[];
+  tabs?: PageLayoutTab[];
   children?: ReactNode;
 }
 

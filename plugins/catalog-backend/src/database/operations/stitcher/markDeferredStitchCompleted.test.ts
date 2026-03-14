@@ -17,7 +17,7 @@
 import { TestDatabases } from '@backstage/backend-test-utils';
 import { applyDatabaseMigrations } from '../../migrations';
 import { markDeferredStitchCompleted } from './markDeferredStitchCompleted';
-import { DbRefreshStateRow } from '../../tables';
+import { DbStitchQueueRow } from '../../tables';
 
 jest.setTimeout(60_000);
 
@@ -30,44 +30,44 @@ describe('markDeferredStitchCompleted', () => {
       const knex = await databases.init(databaseId);
       await applyDatabaseMigrations(knex);
 
-      await knex<DbRefreshStateRow>('refresh_state').insert([
+      // Insert stitch_queue row
+      await knex<DbStitchQueueRow>('stitch_queue').insert([
         {
-          entity_id: '1',
           entity_ref: 'k:ns/n',
-          unprocessed_entity: '{}',
-          processed_entity: '{}',
-          errors: '[]',
-          next_update_at: knex.fn.now(),
-          last_discovery_at: knex.fn.now(),
+          stitch_ticket: 'the-ticket',
           next_stitch_at: '1971-01-01T00:00:00.000',
-          next_stitch_ticket: 'the-ticket',
         },
       ]);
 
       async function result() {
-        return knex<DbRefreshStateRow>('refresh_state').select(
+        return knex<DbStitchQueueRow>('stitch_queue').select(
+          'entity_ref',
           'next_stitch_at',
-          'next_stitch_ticket',
+          'stitch_ticket',
         );
       }
 
+      // Wrong ticket should not delete the row
       await markDeferredStitchCompleted({
         knex,
         entityRef: 'k:ns/n',
         stitchTicket: 'the-wrong-ticket',
       });
       await expect(result()).resolves.toEqual([
-        { next_stitch_at: expect.anything(), next_stitch_ticket: 'the-ticket' },
+        {
+          entity_ref: 'k:ns/n',
+          next_stitch_at: expect.anything(),
+          stitch_ticket: 'the-ticket',
+        },
       ]);
 
+      // Correct ticket should delete the row
       await markDeferredStitchCompleted({
         knex,
         entityRef: 'k:ns/n',
         stitchTicket: 'the-ticket',
       });
-      await expect(result()).resolves.toEqual([
-        { next_stitch_at: null, next_stitch_ticket: null },
-      ]);
+      await expect(result()).resolves.toEqual([]);
     },
   );
 });

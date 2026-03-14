@@ -31,9 +31,24 @@ import { Flex } from '../../Flex';
 
 /** @public */
 export function Row<T extends object>(props: RowProps<T>) {
-  const { ownProps, restProps } = useDefinition(RowDefinition, props);
+  const { ownProps, restProps, analytics } = useDefinition(
+    RowDefinition,
+    props,
+  );
   const { classes, columns, children, href } = ownProps;
   const hasInternalHref = !!href && !isExternalLink(href);
+  const hasInteraction = !!restProps.onAction || !!href;
+
+  const handlePress = hasInteraction
+    ? () => {
+        restProps.onAction?.();
+        if (href) {
+          analytics.captureEvent('click', href, {
+            attributes: { to: String(href) },
+          });
+        }
+      }
+    : undefined;
 
   let { selectionBehavior, selectionMode } = useTableOptions();
 
@@ -59,6 +74,7 @@ export function Row<T extends object>(props: RowProps<T>) {
         className={classes.root}
         data-react-aria-pressable={hasInternalHref ? 'true' : undefined}
         {...restProps}
+        onAction={handlePress}
       >
         {content}
       </ReactAriaRow>

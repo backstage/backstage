@@ -594,6 +594,10 @@ export class CatalogBuilder {
     const locationService = new AuthorizedLocationService(
       new DefaultLocationService(locationStore, orchestrator, {
         allowedLocationTypes: this.allowedLocationType,
+        defaultLocationConflictStrategy:
+          (config.getOptionalString(
+            'catalog.defaultLocationConflictStrategy',
+          ) as 'refresh' | 'reject') || 'reject',
       }),
       permissionsService,
     );

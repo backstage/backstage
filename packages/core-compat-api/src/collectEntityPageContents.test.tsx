@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ExtensionAttachToSpec } from '@backstage/frontend-plugin-api';
+import { ExtensionAttachTo } from '@backstage/frontend-plugin-api';
 import { EntityLayout, EntitySwitch, isKind } from '@backstage/plugin-catalog';
 import { JSX } from 'react';
 import { collectEntityPageContents } from './collectEntityPageContents';
@@ -73,7 +73,7 @@ const otherTestContent = (
 function collect(element: JSX.Element) {
   const result = new Array<{
     id: string;
-    attachTo: ExtensionAttachToSpec;
+    attachTo: ExtensionAttachTo;
   }>();
 
   collectEntityPageContents(element, {

@@ -124,19 +124,11 @@ describe('MemberTab Test', () => {
       },
     });
 
-    expect(screen.getByAltText('Tara MacGovern')).toHaveAttribute(
-      'src',
-      'https://example.com/staff/tara.jpeg',
-    );
+    expect(screen.getByText('Tara MacGovern')).toBeInTheDocument();
     expect(screen.getByText('tara-macgovern@example.com')).toBeInTheDocument();
-    expect(screen.getByText('Tara MacGovern').closest('a')).toHaveAttribute(
-      'href',
-      '/catalog/foo-bar/user/tara.macgovern',
-    );
-
     expect(screen.getByText('Super Awesome Developer')).toBeInTheDocument();
 
-    expect(screen.getByText('Members (1 of 1)')).toBeInTheDocument();
+    expect(screen.getByText('team-d members (1 of 1)')).toBeInTheDocument();
   });
 
   it('Can render different member display title', async () => {
@@ -205,8 +197,7 @@ describe('MemberTab Test', () => {
           },
         },
       );
-      const toggleSwitch = screen.queryByRole('checkbox');
-      expect(toggleSwitch).toBeNull();
+      expect(screen.queryByRole('switch')).not.toBeInTheDocument();
     });
 
     it('Shows the aggregate members toggle if the showAggregateMembersToggle prop is true', async () => {
@@ -233,8 +224,9 @@ describe('MemberTab Test', () => {
           },
         },
       );
-      expect(screen.queryByRole('checkbox')).toBeInTheDocument();
+      expect(screen.getByRole('switch')).toBeInTheDocument();
     });
+
     it('Shows only direct members if the showAggregateMembersToggle prop is undefined', async () => {
       await renderInTestApp(
         <TestApiProvider
@@ -259,10 +251,9 @@ describe('MemberTab Test', () => {
           },
         },
       );
-      const displayedMemberNames = screen.queryAllByTestId('user-link');
       const duplicatedUserText = screen.getByText('Duplicated User');
       const groupAUserOneText = screen.getByText('Group A User One');
-      expect(displayedMemberNames).toHaveLength(2);
+      expect(screen.getAllByRole('heading', { level: 4 })).toHaveLength(2);
       expect(duplicatedUserText).toBeInTheDocument();
       expect(groupAUserOneText).toBeInTheDocument();
       expect(
@@ -294,10 +285,9 @@ describe('MemberTab Test', () => {
           },
         },
       );
-      const displayedMemberNames = screen.queryAllByTestId('user-link');
       const duplicatedUserText = screen.getByText('Duplicated User');
       const groupAUserOneText = screen.getByText('Group A User One');
-      expect(displayedMemberNames).toHaveLength(2);
+      expect(screen.getAllByRole('heading', { level: 4 })).toHaveLength(2);
       expect(duplicatedUserText).toBeInTheDocument();
       expect(groupAUserOneText).toBeInTheDocument();
       expect(
@@ -331,18 +321,16 @@ describe('MemberTab Test', () => {
       );
 
       // Should show only direct users on initial load
-      const displayedMemberNamesBefore = screen.queryAllByTestId('user-link');
-      expect(displayedMemberNamesBefore).toHaveLength(2);
+      expect(screen.getAllByRole('heading', { level: 4 })).toHaveLength(2);
 
       // Click the toggle switch
-      await userEvent.click(screen.getByRole('checkbox'));
-      const displayedMemberNamesAfter = screen.queryAllByTestId('user-link');
+      await userEvent.click(screen.getByRole('switch'));
       const duplicatedUserText = screen.getByText('Duplicated User');
       const groupAUserOneText = screen.getByText('Group A User One');
       const groupBUserOneText = screen.getByText('Group B User One');
       const groupDUserOneText = screen.getByText('Group D User One');
       const groupEUserOneText = screen.getByText('Group E User One');
-      expect(displayedMemberNamesAfter).toHaveLength(5);
+      expect(screen.getAllByRole('heading', { level: 4 })).toHaveLength(5);
       expect(duplicatedUserText).toBeInTheDocument();
       expect(groupAUserOneText).toBeInTheDocument();
       expect(groupBUserOneText).toBeInTheDocument();
@@ -392,15 +380,13 @@ describe('MemberTab Test', () => {
     );
 
     // Should show aggregated users on initial load
-    const displayedMemberNamesBefore = screen.queryAllByTestId('user-link');
-    expect(displayedMemberNamesBefore).toHaveLength(5);
+    expect(screen.getAllByRole('heading', { level: 4 })).toHaveLength(5);
 
     // Click the toggle switch
-    await userEvent.click(screen.getByRole('checkbox'));
+    await userEvent.click(screen.getByRole('switch'));
 
     // Should now show only direct users
-    const displayedMemberNamesAfter = screen.queryAllByTestId('user-link');
-    expect(displayedMemberNamesAfter).toHaveLength(2);
+    expect(screen.getAllByRole('heading', { level: 4 })).toHaveLength(2);
   });
 
   it('Can show aggregated members without the aggregate members toggle', async () => {
@@ -428,12 +414,11 @@ describe('MemberTab Test', () => {
       },
     );
 
-    // aggregated relations checkbox should not be rendered
-    expect(screen.queryByRole('checkbox')).toBeNull();
+    // aggregated relations switch should not be rendered
+    expect(screen.queryByRole('switch')).not.toBeInTheDocument();
 
     // Should show all descendant users on load
-    const displayedMemberNames = screen.queryAllByTestId('user-link');
-    expect(displayedMemberNames).toHaveLength(5);
+    expect(screen.getAllByRole('heading', { level: 4 })).toHaveLength(5);
   });
 
   describe('Search', () => {
@@ -483,7 +468,7 @@ describe('MemberTab Test', () => {
       );
 
       expect(
-        screen.getByText(/This group has no members./i),
+        screen.getByText(/Found no members matching/i),
       ).toBeInTheDocument();
     });
   });

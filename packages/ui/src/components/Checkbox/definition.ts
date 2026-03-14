@@ -29,8 +29,6 @@ export const CheckboxDefinition = defineComponent<CheckboxOwnProps>()({
     indicator: 'bui-CheckboxIndicator',
   },
   propDefs: {
-    selected: { dataAttribute: true },
-    indeterminate: { dataAttribute: true },
     children: {},
     className: {},
   },

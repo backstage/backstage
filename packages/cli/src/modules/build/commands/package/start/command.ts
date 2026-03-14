@@ -14,22 +14,81 @@
  * limitations under the License.
  */
 
-import { OptionValues } from 'commander';
+import { cli } from 'cleye';
 import { startPackage } from './startPackage';
 import { resolveLinkedWorkspace } from './resolveLinkedWorkspace';
 import { findRoleFromCommand } from '../../../lib/role';
 import { targetPaths } from '@backstage/cli-common';
+import type { CommandContext } from '../../../../../wiring/types';
 
-export async function command(opts: OptionValues): Promise<void> {
+export default async ({ args, info }: CommandContext) => {
+  const {
+    flags: {
+      config,
+      role,
+      check,
+      require: requirePath,
+      link,
+      entrypoint,
+      inspect,
+      inspectBrk,
+    },
+  } = cli(
+    {
+      help: info,
+      booleanFlagNegation: true,
+      flags: {
+        config: {
+          type: [String],
+          description: 'Config files to load instead of app-config.yaml',
+          default: [],
+        },
+        role: {
+          type: String,
+          description: 'Run the command with an explicit package role',
+        },
+        check: {
+          type: Boolean,
+          description: 'Enable type checking and linting if available',
+        },
+        require: {
+          type: String,
+          description: 'Add a --require argument to the node process',
+        },
+        link: {
+          type: String,
+          description: 'Link an external workspace for module resolution',
+        },
+        entrypoint: {
+          type: String,
+          description:
+            'The entrypoint to start from, relative to the package root. Can point to either a file (without extension) or a directory (in which case the index file in that directory is used). Defaults to "dev"',
+        },
+        inspect: {
+          type: String,
+          description:
+            'Enable the Node.js inspector, optionally at a specific host:port',
+        },
+        inspectBrk: {
+          type: String,
+          description:
+            'Enable the Node.js inspector and break before user code starts',
+        },
+      },
+    },
+    undefined,
+    args,
+  );
+
   await startPackage({
-    role: await findRoleFromCommand(opts),
-    entrypoint: opts.entrypoint,
+    role: await findRoleFromCommand({ role }),
+    entrypoint,
     targetDir: targetPaths.dir,
-    configPaths: opts.config as string[],
-    checksEnabled: Boolean(opts.check),
-    linkedWorkspace: await resolveLinkedWorkspace(opts.link),
-    inspectEnabled: opts.inspect,
-    inspectBrkEnabled: opts.inspectBrk,
-    require: opts.require,
+    configPaths: config,
+    checksEnabled: Boolean(check),
+    linkedWorkspace: await resolveLinkedWorkspace(link),
+    inspectEnabled: inspect || (inspect === '' ? true : undefined),
+    inspectBrkEnabled: inspectBrk || (inspectBrk === '' ? true : undefined),
+    require: requirePath,
   });
-}
+};

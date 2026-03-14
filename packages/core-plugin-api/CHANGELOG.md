@@ -1,5 +1,14 @@
 # @backstage/core-plugin-api
 
+## 1.12.4-next.1
+
+### Patch Changes
+
+- 0452d02: Add optional `description` field to plugin-level feature flags.
+- fe848e0: Changed `useApiHolder` to return an empty `ApiHolder` instead of throwing when used outside of an API context.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.15.0-next.1
+
 ## 1.12.4-next.0
 
 ### Patch Changes

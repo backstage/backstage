@@ -30,6 +30,7 @@ export {
   commitAndPushRepo,
   commitAndPushBranch,
   addFiles,
+  removeFiles,
   createBranch,
   cloneRepo,
 } from './gitHelpers';

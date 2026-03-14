@@ -29,6 +29,18 @@ import matcher from 'matcher';
 import { OfflineAccessService } from './OfflineAccessService';
 import { validateCimdUrl, fetchCimdMetadata } from './CimdClient';
 
+function validateRedirectUri(
+  redirectUri: string,
+  allowedPatterns: string[],
+): void {
+  const parsed = new URL(redirectUri);
+  const normalized = `${parsed.protocol}//${parsed.host}${parsed.pathname}`;
+
+  if (!allowedPatterns.some(pattern => matcher.isMatch(normalized, pattern))) {
+    throw new InputError('Invalid redirect_uri');
+  }
+}
+
 export class OidcService {
   private readonly auth: AuthService;
   private readonly tokenIssuer: TokenIssuer;
@@ -162,13 +174,7 @@ export class OidcService {
     ) ?? ['*'];
 
     for (const redirectUri of opts.redirectUris ?? []) {
-      if (
-        !allowedRedirectUriPatterns.some(pattern =>
-          matcher.isMatch(redirectUri, pattern),
-        )
-      ) {
-        throw new InputError('Invalid redirect_uri');
-      }
+      validateRedirectUri(redirectUri, allowedRedirectUriPatterns);
     }
 
     return await this.oidc.createClient({
@@ -305,13 +311,7 @@ export class OidcService {
     });
 
     if (opts.redirectUri) {
-      if (
-        !cimd.allowedRedirectUriPatterns.some(pattern =>
-          matcher.isMatch(opts.redirectUri!, pattern),
-        )
-      ) {
-        throw new InputError('Invalid redirect_uri');
-      }
+      validateRedirectUri(opts.redirectUri, cimd.allowedRedirectUriPatterns);
 
       if (!cimdClient.redirectUris.includes(opts.redirectUri)) {
         throw new InputError('Redirect URI not registered');

@@ -606,6 +606,7 @@ export async function createRouter(
       .post('/locations', async (req, res) => {
         const location = await validateRequestBody(req, locationInput);
         const dryRun = yn(req.query.dryRun, { default: false });
+        const onConflict = req.query.onConflict;
 
         const auditorEvent = await auditor.createEvent({
           eventId: 'location-mutate',
@@ -629,6 +630,7 @@ export async function createRouter(
             location,
             dryRun,
             {
+              onConflict,
               credentials: await httpAuth.credentials(req),
             },
           );

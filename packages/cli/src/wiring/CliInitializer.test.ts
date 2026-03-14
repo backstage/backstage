@@ -92,6 +92,124 @@ describe('CliInitializer', () => {
     expect(process.exit).toHaveBeenCalledWith(0);
   });
 
+  it('should run experimental commands but exclude them from help output', async () => {
+    expect.assertions(3);
+    process.argv = ['node', 'cli', 'secret'];
+    const initializer = new CliInitializer();
+    initializer.add(
+      createCliPlugin({
+        pluginId: 'test',
+        init: async reg => {
+          reg.addCommand({
+            path: ['visible'],
+            description: 'A visible command',
+            execute: () => Promise.resolve(),
+          });
+          reg.addCommand({
+            path: ['secret'],
+            description: 'An experimental command',
+            experimental: true,
+            execute: ({ args }) => {
+              expect(args).toEqual([]);
+              return Promise.resolve();
+            },
+          });
+        },
+      }),
+    );
+    await initializer.run();
+    expect(process.exit).toHaveBeenCalledWith(0);
+
+    process.argv = ['node', 'cli', '--help'];
+    const writeSpy = jest.spyOn(process.stdout, 'write');
+    const initializer2 = new CliInitializer();
+    initializer2.add(
+      createCliPlugin({
+        pluginId: 'test',
+        init: async reg => {
+          reg.addCommand({
+            path: ['visible'],
+            description: 'A visible command',
+            execute: () => Promise.resolve(),
+          });
+          reg.addCommand({
+            path: ['secret'],
+            description: 'An experimental command',
+            experimental: true,
+            execute: () => Promise.resolve(),
+          });
+        },
+      }),
+    );
+    await initializer2.run();
+    const helpOutput = writeSpy.mock.calls.map(c => c[0]).join('');
+    expect(helpOutput).not.toContain('secret');
+    writeSpy.mockRestore();
+  });
+
+  it('should hide tree nodes when all children are experimental', async () => {
+    process.argv = ['node', 'cli', '--help'];
+    const writeSpy = jest.spyOn(process.stdout, 'write');
+    const initializer = new CliInitializer();
+    initializer.add(
+      createCliPlugin({
+        pluginId: 'test',
+        init: async reg => {
+          reg.addCommand({
+            path: ['visible'],
+            description: 'A visible command',
+            execute: () => Promise.resolve(),
+          });
+          reg.addCommand({
+            path: ['group', 'alpha'],
+            description: 'First experimental command',
+            experimental: true,
+            execute: () => Promise.resolve(),
+          });
+          reg.addCommand({
+            path: ['group', 'beta'],
+            description: 'Second experimental command',
+            experimental: true,
+            execute: () => Promise.resolve(),
+          });
+        },
+      }),
+    );
+    await initializer.run();
+    const helpOutput = writeSpy.mock.calls.map(c => c[0]).join('');
+    expect(helpOutput).toContain('visible');
+    expect(helpOutput).not.toContain('group');
+    writeSpy.mockRestore();
+  });
+
+  it('should show tree nodes when some children are visible', async () => {
+    process.argv = ['node', 'cli', '--help'];
+    const writeSpy = jest.spyOn(process.stdout, 'write');
+    const initializer = new CliInitializer();
+    initializer.add(
+      createCliPlugin({
+        pluginId: 'test',
+        init: async reg => {
+          reg.addCommand({
+            path: ['group', 'alpha'],
+            description: 'A visible nested command',
+            execute: () => Promise.resolve(),
+          });
+          reg.addCommand({
+            path: ['group', 'beta'],
+            description: 'An experimental nested command',
+            experimental: true,
+            execute: () => Promise.resolve(),
+          });
+        },
+      }),
+    );
+    await initializer.run();
+    const helpOutput = writeSpy.mock.calls.map(c => c[0]).join('');
+    expect(helpOutput).toContain('group');
+    writeSpy.mockRestore();
+  });
+
   it('should pass positional args to the subcommand if nested', async () => {
     expect.assertions(2);
     process.argv = [

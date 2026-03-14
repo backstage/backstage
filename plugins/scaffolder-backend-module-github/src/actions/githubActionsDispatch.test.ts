@@ -130,4 +130,64 @@ describe('github:actions:dispatch', () => {
       inputs: workflowInputs,
     });
   });
+
+  it('should call createWorkflowDispatch with return_run_details when returnWorkflowRunDetails is true', async () => {
+    mockOctokit.rest.actions.createWorkflowDispatch.mockResolvedValue({
+      data: {
+        workflow_run_id: 123,
+        run_url: 'https://api.github.com/repos/owner/repo/actions/runs/123',
+        html_url: 'https://github.com/owner/repo/actions/runs/123',
+      },
+    });
+
+    const ctx = Object.assign({}, mockContext, {
+      input: {
+        repoUrl: 'github.com?repo=repo&owner=owner',
+        workflowId: 'dispatch_workflow',
+        branchOrTagName: 'main',
+        returnWorkflowRunDetails: true,
+      },
+    });
+    await action.handler(ctx);
+
+    expect(
+      mockOctokit.rest.actions.createWorkflowDispatch,
+    ).toHaveBeenCalledWith(
+      expect.objectContaining({
+        owner: 'owner',
+        repo: 'repo',
+        workflow_id: 'dispatch_workflow',
+        ref: 'main',
+        return_run_details: true,
+      }),
+    );
+
+    expect(ctx.output).toHaveBeenCalledWith('workflowRunId', 123);
+    expect(ctx.output).toHaveBeenCalledWith(
+      'workflowRunUrl',
+      'https://api.github.com/repos/owner/repo/actions/runs/123',
+    );
+    expect(ctx.output).toHaveBeenCalledWith(
+      'workflowRunHtmlUrl',
+      'https://github.com/owner/repo/actions/runs/123',
+    );
+  });
+
+  it('should not set outputs when returnWorkflowRunDetails is false', async () => {
+    mockOctokit.rest.actions.createWorkflowDispatch.mockResolvedValue({
+      data: undefined,
+    });
+
+    const ctx = Object.assign({}, mockContext, {
+      input: {
+        repoUrl: 'github.com?repo=repo&owner=owner',
+        workflowId: 'dispatch_workflow',
+        branchOrTagName: 'main',
+        returnWorkflowRunDetails: false,
+      },
+    });
+    await action.handler(ctx);
+
+    expect(ctx.output).not.toHaveBeenCalled();
+  });
 });
