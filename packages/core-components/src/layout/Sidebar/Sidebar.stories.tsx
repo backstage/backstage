@@ -97,6 +97,12 @@ export const SampleScalableSidebar = () => (
                 },
               ]}
             />
+            <SidebarSubmenuItem
+              title="Start and End Components"
+              to="#"
+              startComponent={<div>⭐</div>}
+              endComponent={<div>🔥</div>}
+            />
           </SidebarSubmenu>
         </SidebarItem>
         <SidebarItem icon={HomeOutlinedIcon} to="#" text="Plugins" />
