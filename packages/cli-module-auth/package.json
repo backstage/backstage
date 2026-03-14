@@ -20,7 +20,8 @@
   "main": "src/index.ts",
   "types": "src/index.ts",
   "files": [
-    "dist"
+    "dist",
+    "bin"
   ],
   "scripts": {
     "build": "backstage-cli package build",
@@ -47,5 +48,6 @@
     "@types/fs-extra": "^11.0.0",
     "@types/proper-lockfile": "^4",
     "cross-fetch": "^4.0.0"
-  }
+  },
+  "bin": "bin/cli-module-auth"
 }

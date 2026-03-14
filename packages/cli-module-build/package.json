@@ -20,7 +20,8 @@
   "main": "src/index.ts",
   "types": "src/index.ts",
   "files": [
-    "dist"
+    "dist",
+    "bin"
   ],
   "scripts": {
     "build": "backstage-cli package build",
@@ -88,5 +89,6 @@
     "cross-spawn": "^7.0.6",
     "rollup": "^4.59.0",
     "ts-morph": "^24.0.0"
-  }
+  },
+  "bin": "bin/cli-module-build"
 }

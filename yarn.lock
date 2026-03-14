@@ -2819,6 +2819,8 @@ __metadata:
     proper-lockfile: "npm:^4.1.2"
     yaml: "npm:^2.0.0"
     zod: "npm:^3.25.76"
+  bin:
+    cli-module-auth: bin/cli-module-auth
   languageName: unknown
   linkType: soft
 
@@ -2881,6 +2883,8 @@ __metadata:
     webpack: "npm:^5.105.4"
     webpack-dev-server: "npm:^5.2.3"
     yn: "npm:^4.0.0"
+  bin:
+    cli-module-build: bin/cli-module-build
   languageName: unknown
   linkType: soft
 
@@ -2901,6 +2905,8 @@ __metadata:
     json-schema: "npm:^0.4.0"
     react-dev-utils: "npm:^12.0.0-next.60"
     yaml: "npm:^2.0.0"
+  bin:
+    cli-module-config: bin/cli-module-config
   languageName: unknown
   linkType: soft
 
@@ -2921,6 +2927,8 @@ __metadata:
     inquirer: "npm:^8.2.0"
     react-dev-utils: "npm:^12.0.0-next.60"
     yaml: "npm:^2.0.0"
+  bin:
+    cli-module-create-github-app: bin/cli-module-create-github-app
   languageName: unknown
   linkType: soft
 
@@ -2935,6 +2943,8 @@ __metadata:
     cleye: "npm:^2.3.0"
     fs-extra: "npm:^11.2.0"
     minimatch: "npm:^10.2.1"
+  bin:
+    cli-module-info: bin/cli-module-info
   languageName: unknown
   linkType: soft
 
@@ -2953,6 +2963,8 @@ __metadata:
     fs-extra: "npm:^11.2.0"
     globby: "npm:^11.0.0"
     shell-quote: "npm:^1.8.1"
+  bin:
+    cli-module-lint: bin/cli-module-lint
   languageName: unknown
   linkType: soft
 
@@ -2968,6 +2980,8 @@ __metadata:
     cleye: "npm:^2.3.0"
     eslint: "npm:^8.6.0"
     fs-extra: "npm:^11.2.0"
+  bin:
+    cli-module-maintenance: bin/cli-module-maintenance
   languageName: unknown
   linkType: soft
 
@@ -2986,6 +3000,8 @@ __metadata:
     cleye: "npm:^2.3.0"
     fs-extra: "npm:^11.2.0"
     msw: "npm:^1.0.0"
+  bin:
+    cli-module-migrate: bin/cli-module-migrate
   languageName: unknown
   linkType: soft
 
@@ -2995,6 +3011,8 @@ __metadata:
   dependencies:
     "@backstage/cli": "workspace:^"
     "@backstage/cli-node": "workspace:^"
+  bin:
+    cli-module-new: bin/cli-module-new
   languageName: unknown
   linkType: soft
 
@@ -3004,6 +3022,8 @@ __metadata:
   dependencies:
     "@backstage/cli": "workspace:^"
     "@backstage/cli-node": "workspace:^"
+  bin:
+    cli-module-test-jest: bin/cli-module-test-jest
   languageName: unknown
   linkType: soft
 
@@ -3013,6 +3033,8 @@ __metadata:
   dependencies:
     "@backstage/cli": "workspace:^"
     "@backstage/cli-node": "workspace:^"
+  bin:
+    cli-module-translations: bin/cli-module-translations
   languageName: unknown
   linkType: soft
 
