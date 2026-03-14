@@ -91,7 +91,7 @@ export function Row<T extends object>(props: RowProps<T>) {
         {...restProps}
         target={effectiveTarget}
         rel={effectiveRel}
-        className={classes.root}
+        className={clsx(classes.root, restProps.className)}
         data-react-aria-pressable={hasInternalHref ? 'true' : undefined}
         onAction={handlePress}
       >
