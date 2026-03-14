@@ -1,13 +1,59 @@
+[default]
+extend-ignore-re = [
+    # PEM-encoded key blocks in test fixtures
+    "(?s)-----BEGIN [A-Z ]+-----.*?-----END [A-Z ]+-----",
+]
+
 [default.extend-words]
+# Project-specific acronyms
 BUI = "BUI"
 Aks = "Aks"
 AKS = "AKS"
+# Words valid in specific contexts
+Hel = "Hel"           # truncated string literal in docs/plugins/testing.md code example
+requestors = "requestors"  # legal/formal variant used intentionally in glossary
+TYO = "TYO"           # Tokyo IATA code used as clock label in example apps
+Damon = "Damon"       # person's name (Damon Kaswell) in microsite blog post
+Phoen = "Phoen"       # GitHub username K-Phoen in plugin metadata
+Hashi = "Hashi"       # prefix of HashiCorp company name
+ba = "ba"             # Swedish word in comment in buildDocs.ts
+mosquitto = "mosquitto"  # correct spelling of the Eclipse Mosquitto MQTT broker
+Additiona = "Additiona" # deprecated field name getAdditionaRemoteInfo kept for backward compat
+ALLO = "ALLO"           # prefix of ALLOWs in AuthorizedSearchEngine.ts comment
+VALIDAT = "VALIDAT"     # prefix of VALIDATEs in catalog-backend migration comment
+styl = "styl"           # Stylus stylesheet file extension in jest.js regex pattern
 
 [files]
-extend-exclude = ["docs/releases/*", 
-"**/**/CHANGELOG.md", 
-"plugins/home/src/homePageComponents/WelcomeTitle/locales/goodMorning.locales.json", 
-"plugins/home/src/homePageComponents/WelcomeTitle/locales/goodAfternoon.locales.json",
-"plugins/home/src/homePageComponents/WelcomeTitle/locales/goodEvening.locales.json",
-"README-*.md",
-"ADOPTERS.md",]
+extend-exclude = [
+    # Release and changelog files
+    "README-*.md",
+    "ADOPTERS.md",
+    "docs/releases/*",
+    "**/**/CHANGELOG.md",
+    "docs-ui/src/utils/changelogs/",
+    # Binary and generated assets
+    "docs/assets/**/*.svg",
+    "plugins/bitbucket-cloud-common/bitbucket-cloud.oas.json",
+    "plugins/scaffolder-backend/assets/nunjucks.js.txt",
+    # Locale files with non-English content
+    "plugins/home/src/homePageComponents/WelcomeTitle/locales/*.json",
+    # Test files with intentional non-word data (hashes, base64 tokens, crypto keys, etc.)
+    "packages/backend-defaults/src/entrypoints/auth/authServiceFactory.test.ts",
+    "packages/backend-defaults/src/entrypoints/auth/external/jwks.test.ts",
+    "packages/config-loader/src/sources/EnvConfigSource.test.ts",
+    "packages/core-components/src/components/LogViewer/LogLine.test.tsx",
+    "packages/core-components/src/layout/ProxiedSignInPage/ProxiedSignInIdentity.test.ts",
+    "packages/eslint-plugin/src/no-undeclared-imports.test.ts",
+    "packages/frontend-plugin-api/src/translation/TranslationResource.test.ts",
+    "packages/frontend-plugin-api/src/translation/__fixtures__/",
+    "plugins/catalog-backend/src/database/operations/stitcher/buildEntitySearch.test.ts",
+    "plugins/catalog-backend/src/providers/DefaultLocationStore.test.ts",
+    "plugins/home/src/homePageComponents/HeaderWorldClock/HeaderWorldClock.test.tsx",
+    "plugins/scaffolder-backend-module-sentry/src/actions/createProject.examples.test.ts",
+    "plugins/scaffolder-backend-module-sentry/src/actions/createProject.examples.ts",  # fake auth token hashes
+    "plugins/scaffolder-backend-module-sentry/src/actions/fetchDSN.examples.test.ts",
+    "plugins/scaffolder-node/src/actions/util.test.ts",
+    "plugins/scaffolder-react/src/next/lib/schema.test.ts",
+    "plugins/scaffolder/src/components/RenderSchema/RenderSchema.test.tsx",
+    "plugins/search-backend-node/src/engines/LunrSearchEngine.test.ts",
+]
