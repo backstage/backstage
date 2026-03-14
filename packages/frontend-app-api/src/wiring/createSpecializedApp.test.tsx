@@ -139,6 +139,36 @@ describe('createSpecializedApp', () => {
     expect(screen.getByText('Test foo')).toBeInTheDocument();
   });
 
+  it('should warn and ignore bootstrap-visible if predicates', () => {
+    const app = createSpecializedApp({
+      features: [
+        createFrontendPlugin({
+          pluginId: 'test',
+          extensions: [
+            createExtension({
+              name: 'conditional-root',
+              attachTo: { id: 'root', input: 'app' },
+              if: { featureFlags: { $contains: 'test-flag' } },
+              output: [coreExtensionData.reactElement],
+              factory: () => [
+                coreExtensionData.reactElement(<div>Ignored Predicate</div>),
+              ],
+            }),
+          ],
+        }),
+      ],
+    });
+
+    render(app.tree.root.instance!.getData(coreExtensionData.reactElement));
+
+    expect(screen.getByText('Ignored Predicate')).toBeInTheDocument();
+    expect(app.errors).toEqual([
+      expect.objectContaining({
+        code: 'EXTENSION_BOOTSTRAP_PREDICATE_IGNORED',
+      }),
+    ]);
+  });
+
   it('should support APIs and feature flags', async () => {
     const flags = new Array<{ name: string; pluginId: string }>();
     const app = createSpecializedApp({
@@ -1091,23 +1121,201 @@ describe('createSpecializedApp', () => {
       expect(screen.getByText('Flagged Layout')).toBeInTheDocument();
     });
 
-    it('should reject bootstrap-visible extensions that use if predicates', () => {
-      expect(() =>
-        prepareSpecializedApp({
-          features: [
-            appPluginOriginal,
-            createFrontendModule({
-              pluginId: 'app',
-              extensions: [
-                appPluginOriginal.getExtension('sign-in-page:app').override({
-                  if: { featureFlags: { $contains: 'test-flag' } },
-                }),
-              ],
-            }),
-          ],
+    it('should defer conditional app root elements until finalize', async () => {
+      const identityApi = {
+        getProfileInfo: async () => ({ displayName: 'Test User' }),
+        getBackstageIdentity: async () => ({
+          type: 'user' as const,
+          userEntityRef: 'user:default/test-user',
+          ownershipEntityRefs: ['user:default/test-user'],
         }),
-      ).toThrow(
-        "Extension 'sign-in-page:app' uses 'if' before the session boundary at 'app/root.children'. Move it behind the session boundary or remove the predicate.",
+        getCredentials: async () => ({ token: 'token' }),
+        signOut: async () => {},
+      };
+      const featureFlagsApi = {
+        isActive: jest.fn((name: string) => name === 'test-flag'),
+        registerFlag: jest.fn(),
+        getRegisteredFlags: () => [],
+        save: jest.fn(),
+      } as unknown as typeof featureFlagsApiRef.T;
+
+      const preparedApp = prepareSpecializedApp({
+        features: [
+          appPluginOriginal,
+          createFrontendPlugin({
+            pluginId: 'test',
+            featureFlags: [{ name: 'test-flag' }],
+            extensions: [
+              createExtension({
+                name: 'bootstrap-element',
+                attachTo: { id: 'app/root', input: 'elements' },
+                output: [coreExtensionData.reactElement],
+                factory: () => [
+                  coreExtensionData.reactElement(<div>Bootstrap Element</div>),
+                ],
+              }),
+              createExtension({
+                name: 'deferred-element',
+                attachTo: { id: 'app/root', input: 'elements' },
+                if: { featureFlags: { $contains: 'test-flag' } },
+                output: [coreExtensionData.reactElement],
+                factory: () => [
+                  coreExtensionData.reactElement(<div>Deferred Element</div>),
+                ],
+              }),
+            ],
+          }),
+          createFrontendModule({
+            pluginId: 'app',
+            extensions: [
+              ApiBlueprint.make({
+                params: defineParams =>
+                  defineParams({
+                    api: featureFlagsApiRef,
+                    deps: {},
+                    factory: () => featureFlagsApi,
+                  }),
+              }),
+              appPluginOriginal.getExtension('sign-in-page:app').override({
+                factory: () => {
+                  function SignInPage(props: {
+                    onSignInSuccess(identity: IdentityApi): void;
+                  }) {
+                    useEffect(() => {
+                      props.onSignInSuccess(identityApi);
+                    }, [props]);
+                    return <div>Custom Sign In</div>;
+                  }
+
+                  return [signInPageComponentDataRef(SignInPage)];
+                },
+              }),
+            ],
+          }),
+        ],
+      });
+
+      renderPreparedBootstrap(preparedApp);
+      await expect(
+        screen.findByText('Bootstrap Element'),
+      ).resolves.toBeInTheDocument();
+      expect(screen.queryByText('Deferred Element')).not.toBeInTheDocument();
+
+      const finalizedApp = await waitForFinalizedApp(preparedApp);
+      render(
+        finalizedApp.tree.root.instance!.getData(
+          coreExtensionData.reactElement,
+        ),
+      );
+
+      await expect(
+        screen.findByText('Deferred Element'),
+      ).resolves.toBeInTheDocument();
+    });
+
+    it('should warn when bootstrap extensions access APIs that appear during finalization', async () => {
+      const identityApi = {
+        getProfileInfo: async () => ({ displayName: 'Test User' }),
+        getBackstageIdentity: async () => ({
+          type: 'user' as const,
+          userEntityRef: 'user:default/test-user',
+          ownershipEntityRefs: ['user:default/test-user'],
+        }),
+        getCredentials: async () => ({ token: 'token' }),
+        signOut: async () => {},
+      };
+      const delayedApiRef = createApiRef<{ value: string }>({
+        id: 'test.delayed-api',
+      });
+      const featureFlagsApi = {
+        isActive: jest.fn((name: string) => name === 'test-flag'),
+        registerFlag: jest.fn(),
+        getRegisteredFlags: () => [],
+        save: jest.fn(),
+      } as unknown as typeof featureFlagsApiRef.T;
+
+      const preparedApp = prepareSpecializedApp({
+        features: [
+          appPluginOriginal,
+          createFrontendPlugin({
+            pluginId: 'test',
+            featureFlags: [{ name: 'test-flag' }],
+            extensions: [
+              createExtension({
+                name: 'bootstrap-api-reader',
+                attachTo: { id: 'app/root', input: 'elements' },
+                output: [coreExtensionData.reactElement],
+                factory: ({ apis }) => {
+                  const delayedApi = apis.get(delayedApiRef);
+                  return [
+                    coreExtensionData.reactElement(
+                      <div>
+                        Bootstrap API:{' '}
+                        {delayedApi ? delayedApi.value : 'missing'}
+                      </div>,
+                    ),
+                  ];
+                },
+              }),
+              ApiBlueprint.make({
+                name: 'delayed-api',
+                params: defineParams =>
+                  defineParams({
+                    api: delayedApiRef,
+                    deps: {},
+                    factory: () => ({ value: 'ready' }),
+                  }),
+              }).override({
+                if: { featureFlags: { $contains: 'test-flag' } },
+              }),
+            ],
+          }),
+          createFrontendModule({
+            pluginId: 'app',
+            extensions: [
+              ApiBlueprint.make({
+                params: defineParams =>
+                  defineParams({
+                    api: featureFlagsApiRef,
+                    deps: {},
+                    factory: () => featureFlagsApi,
+                  }),
+              }),
+              appPluginOriginal.getExtension('sign-in-page:app').override({
+                factory: () => {
+                  function SignInPage(props: {
+                    onSignInSuccess(identity: IdentityApi): void;
+                  }) {
+                    useEffect(() => {
+                      props.onSignInSuccess(identityApi);
+                    }, [props]);
+                    return <div>Custom Sign In</div>;
+                  }
+
+                  return [signInPageComponentDataRef(SignInPage)];
+                },
+              }),
+            ],
+          }),
+        ],
+      });
+
+      renderPreparedBootstrap(preparedApp);
+      await expect(
+        screen.findByText('Bootstrap API: missing'),
+      ).resolves.toBeInTheDocument();
+
+      const finalizedApp = await waitForFinalizedApp(preparedApp);
+
+      expect(finalizedApp.errors).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            code: 'EXTENSION_BOOTSTRAP_API_UNAVAILABLE',
+            context: expect.objectContaining({
+              apiRefId: delayedApiRef.id,
+            }),
+          }),
+        ]),
       );
     });
 

@@ -460,25 +460,41 @@ export function prepareSpecializedApp(
     ? OpaqueSpecializedAppSessionState.toInternal(providedSessionState)
     : undefined;
   const providedApis = providedSessionData?.apis;
-  const bootstrapNodes = collectBootstrapVisibleNodes(tree);
-  assertNoBootstrapPredicates(bootstrapNodes);
+  const bootstrapClassification = classifyBootstrapTree({
+    tree,
+    collector,
+  });
   const predicateReferences = collectPredicateReferences(tree);
   const appApiRegistry = new FrontendApiRegistry();
   const internalStaticFactories =
     internalOptions?.__internal?.apiFactoryOverrides ?? [];
   const phaseStaticFactories = [...internalStaticFactories];
+  const bootstrapApiFactoryEntries: ApiFactoryEntry[] = [];
+  const bootstrapApiRefIds = new Set<string>();
+  const bootstrapMissingApiAccesses = new Map<
+    string,
+    { node: AppNode; apiRefId: string }
+  >();
   let treeInstancesNeedReset = false;
 
   if (providedApis) {
     registerFeatureFlagDeclarationsInHolder(providedApis, features);
   } else {
-    const apiFactories = collectApiFactories({
-      tree,
-      bootstrapNodes,
-      collector,
-      features,
-    });
+    bootstrapApiFactoryEntries.push(
+      ...collectApiFactoryEntries({
+        apiNodes: getApiNodes(tree).filter(
+          apiNode => !bootstrapClassification.deferredApiRoots.has(apiNode),
+        ),
+        collector,
+      }),
+    );
+    const apiFactories = bootstrapApiFactoryEntries.map(entry =>
+      wrapFeatureFlagApiFactory(entry.factory, features),
+    );
     appApiRegistry.registerAll(apiFactories);
+    for (const entry of bootstrapApiFactoryEntries) {
+      bootstrapApiRefIds.add(entry.factory.api.id);
+    }
     treeInstancesNeedReset = true;
   }
 
@@ -624,11 +640,24 @@ export function prepareSpecializedApp(
       finalizedSessionState,
     );
     updateIdentityApiTarget(sessionStateData.identityApi);
+    if (!providedApis) {
+      syncFinalApiFactories({
+        deferredApiNodes: bootstrapClassification.deferredApiRoots,
+        appApiRegistry,
+        apiResolver: phase.apis,
+        collector,
+        features,
+        bootstrapApiFactoryEntries,
+        bootstrapApiRefIds,
+        bootstrapMissingApiAccesses,
+        predicateContext: sessionStateData.predicateContext,
+      });
+    }
 
     prepareFinalizedTree({
       tree,
     });
-    clearTreeInstances(tree);
+    clearFinalizationBoundaryInstances(tree);
     instantiateAndInitializePhaseTree({
       tree,
       apis: phase.apis,
@@ -744,6 +773,15 @@ export function prepareSpecializedApp(
             bootstrapErrorReporter = undefined;
           }
         };
+      },
+      skipBootstrapChild({ child }) {
+        return bootstrapClassification.deferredRoots.has(child);
+      },
+      onMissingApi({ node, apiRefId }) {
+        bootstrapMissingApiAccesses.set(`${node.spec.id}:${apiRefId}`, {
+          node,
+          apiRefId,
+        });
       },
       onSignInSuccess(identityApi) {
         return beginFinalization(
@@ -901,7 +939,14 @@ function wrapFeatureFlagApiFactory(
 
 type ApiFactoryEntry = {
   node: AppNode;
+  pluginId: string;
   factory: AnyApiFactory;
+};
+
+type BootstrapClassification = {
+  deferredApiRoots: Set<AppNode>;
+  deferredElementRoots: Set<AppNode>;
+  deferredRoots: Set<AppNode>;
 };
 
 function extractSignInPageComponent(options: {
@@ -909,6 +954,7 @@ function extractSignInPageComponent(options: {
   apis: ApiHolder;
   collector: ErrorCollector;
   extensionFactoryMiddleware?: ExtensionFactoryMiddleware;
+  onMissingApi?(ctx: { node: AppNode; apiRefId: string }): void;
 }): ComponentType<SignInPageProps> | undefined {
   const appRootNode = options.tree.nodes.get('app/root');
   const signInPageNode = appRootNode?.edges.attachments.get('signInPage')?.[0];
@@ -921,6 +967,9 @@ function extractSignInPageComponent(options: {
     options.apis,
     options.collector,
     options.extensionFactoryMiddleware,
+    {
+      onMissingApi: options.onMissingApi,
+    },
   );
 
   return signInPageNode.instance?.getData(signInPageComponentDataRef);
@@ -936,6 +985,12 @@ function createBootstrapApp(options: {
   extensionFactoryMiddleware?: ExtensionFactoryMiddleware;
   disableSignIn?: boolean;
   registerBootstrapErrorReporter(reporter: (error: Error) => void): () => void;
+  skipBootstrapChild?(ctx: {
+    node: AppNode;
+    input: string;
+    child: AppNode;
+  }): boolean;
+  onMissingApi?(ctx: { node: AppNode; apiRefId: string }): void;
   onSignInSuccess(identityApi: IdentityApi): Promise<void>;
 }): {
   bootstrapApp: BootstrapSpecializedApp;
@@ -966,6 +1021,8 @@ function createBootstrapApp(options: {
     appTreeApi: options.appTreeApi,
     routeRefsById: options.routeRefsById,
     stopAtSessionBoundary: true,
+    skipChild: options.skipBootstrapChild,
+    onMissingApi: options.onMissingApi,
   });
   prepareBootstrapErrorBoundary({
     tree: options.tree,
@@ -1023,6 +1080,8 @@ function instantiateAndInitializePhaseTree(options: {
   appTreeApi: AppTreeApiProxy;
   routeRefsById: ReturnType<typeof collectRouteIds>;
   stopAtSessionBoundary?: boolean;
+  skipChild?(ctx: { node: AppNode; input: string; child: AppNode }): boolean;
+  onMissingApi?(ctx: { node: AppNode; apiRefId: string }): void;
   predicateContext?: ExtensionPredicateContext;
 }) {
   instantiateAppNodeTree(
@@ -1042,6 +1101,8 @@ function instantiateAndInitializePhaseTree(options: {
             }) => isSessionBoundaryAttachment(node, input),
           }
         : {}),
+      skipChild: options.skipChild,
+      onMissingApi: options.onMissingApi,
       predicateContext: options.predicateContext,
     },
   );
@@ -1103,12 +1164,9 @@ function prepareSignInTree(options: {
 }
 
 function prepareFinalizedTree(options: { tree: AppTree }) {
-  const appRootNode = getAppRootNode(options.tree);
-  if (!appRootNode) {
-    return;
+  for (const appRootNode of getFinalizationBoundaryNodes(options.tree)) {
+    deleteAttachment(appRootNode, 'signInPage');
   }
-
-  deleteAttachment(appRootNode, 'signInPage');
 }
 
 function prepareBootstrapErrorBoundary(options: {
@@ -1153,8 +1211,48 @@ function clearTreeInstances(tree: AppTree) {
   }
 }
 
+function clearFinalizationBoundaryInstances(tree: AppTree) {
+  clearNodeInstance(tree.root);
+
+  const visited = new Set<AppNode>();
+  function visit(node: AppNode) {
+    if (visited.has(node)) {
+      return;
+    }
+    visited.add(node);
+    clearNodeInstance(node);
+
+    for (const [input, children] of node.edges.attachments) {
+      if (node.spec.id === 'app/root' && input === 'elements') {
+        continue;
+      }
+
+      for (const child of children) {
+        visit(child);
+      }
+    }
+  }
+
+  for (const appRootNode of getFinalizationBoundaryNodes(tree)) {
+    visit(appRootNode);
+  }
+}
+
 function getAppRootNode(tree: AppTree) {
   return tree.nodes.get('app/root');
+}
+
+function getFinalizationBoundaryNodes(tree: AppTree): AppNode[] {
+  const nodes = new Set<AppNode>();
+  const appRootNode = getAppRootNode(tree);
+  if (appRootNode) {
+    nodes.add(appRootNode);
+  }
+  const attachedAppRootNode = tree.root.edges.attachments.get('app')?.[0];
+  if (attachedAppRootNode) {
+    nodes.add(attachedAppRootNode);
+  }
+  return Array.from(nodes);
 }
 
 function isSessionBoundaryAttachment(node: AppNode, input: string) {
@@ -1251,32 +1349,30 @@ const EMPTY_API_HOLDER: ApiHolder = {
   },
 };
 
-function collectApiFactories(options: {
-  tree: AppTree;
-  bootstrapNodes: Set<AppNode>;
-  collector: ErrorCollector;
-  features: FrontendFeature[];
-}): AnyApiFactory[] {
-  return collectApiFactoryEntries(options).map(entry =>
-    wrapFeatureFlagApiFactory(entry.factory, options.features),
-  );
-}
-
 function collectApiFactoryEntries(options: {
-  tree: AppTree;
-  bootstrapNodes: Set<AppNode>;
+  apiNodes: Iterable<AppNode>;
   collector: ErrorCollector;
+  predicateContext?: ExtensionPredicateContext;
+  existingEntries?: Iterable<ApiFactoryEntry>;
 }): ApiFactoryEntry[] {
-  const factoriesById = new Map<
-    string,
-    { pluginId: string; node: AppNode; factory: AnyApiFactory }
-  >();
+  const factoriesById = new Map<string, ApiFactoryEntry>();
 
-  for (const apiNode of options.tree.root.edges.attachments.get('apis') ?? []) {
-    if (!options.bootstrapNodes.has(apiNode)) {
-      continue;
-    }
-    if (!instantiateAppNodeTree(apiNode, EMPTY_API_HOLDER, options.collector)) {
+  for (const entry of options.existingEntries ?? []) {
+    factoriesById.set(entry.factory.api.id, entry);
+  }
+
+  for (const apiNode of options.apiNodes) {
+    if (
+      !instantiateAppNodeTree(
+        apiNode,
+        EMPTY_API_HOLDER,
+        options.collector,
+        undefined,
+        options.predicateContext
+          ? { predicateContext: options.predicateContext }
+          : undefined,
+      )
+    ) {
       continue;
     }
     const apiFactory = apiNode.instance?.getData(ApiBlueprint.dataRefs.factory);
@@ -1337,12 +1433,72 @@ function collectApiFactoryEntries(options: {
   }
 
   return Array.from(factoriesById.values(), entry => ({
+    pluginId: entry.pluginId,
     node: entry.node,
     factory: entry.factory,
   }));
 }
 
-function collectBootstrapVisibleNodes(tree: AppTree) {
+function syncFinalApiFactories(options: {
+  deferredApiNodes: Iterable<AppNode>;
+  appApiRegistry: FrontendApiRegistry;
+  apiResolver: FrontendApiResolver;
+  collector: ErrorCollector;
+  features: FrontendFeature[];
+  bootstrapApiFactoryEntries: ApiFactoryEntry[];
+  bootstrapApiRefIds: Set<string>;
+  bootstrapMissingApiAccesses: Map<string, { node: AppNode; apiRefId: string }>;
+  predicateContext: ExtensionPredicateContext;
+}) {
+  const finalApiEntries = collectApiFactoryEntries({
+    apiNodes: options.deferredApiNodes,
+    collector: options.collector,
+    predicateContext: options.predicateContext,
+    existingEntries: options.bootstrapApiFactoryEntries,
+  });
+  const changedEntries = finalApiEntries.filter(entry => {
+    const bootstrapEntry = options.bootstrapApiFactoryEntries.find(
+      candidate => candidate.factory.api.id === entry.factory.api.id,
+    );
+    return bootstrapEntry?.factory !== entry.factory;
+  });
+  const changedFactories = changedEntries.map(entry =>
+    wrapFeatureFlagApiFactory(entry.factory, options.features),
+  );
+  options.appApiRegistry.setAll(changedFactories);
+  options.apiResolver.invalidate(
+    changedFactories.map(factory => factory.api.id),
+  );
+
+  const finalApiRefIds = new Set(
+    finalApiEntries.map(apiEntry => apiEntry.factory.api.id),
+  );
+  for (const bootstrapAccess of options.bootstrapMissingApiAccesses.values()) {
+    if (
+      options.bootstrapApiRefIds.has(bootstrapAccess.apiRefId) ||
+      !finalApiRefIds.has(bootstrapAccess.apiRefId)
+    ) {
+      continue;
+    }
+
+    options.collector.report({
+      code: 'EXTENSION_BOOTSTRAP_API_UNAVAILABLE',
+      message:
+        `Extension '${bootstrapAccess.node.spec.id}' tried to access API ` +
+        `'${bootstrapAccess.apiRefId}' during bootstrap before it was available. ` +
+        'That API became available during finalization, so bootstrap-visible extensions must not depend on deferred APIs.',
+      context: {
+        node: bootstrapAccess.node,
+        apiRefId: bootstrapAccess.apiRefId,
+      },
+    });
+  }
+}
+
+function collectBootstrapVisibleNodes(
+  tree: AppTree,
+  options?: { deferredRoots?: Set<AppNode> },
+) {
   const visibleNodes = new Set<AppNode>();
 
   function visit(node: AppNode) {
@@ -1357,6 +1513,9 @@ function collectBootstrapVisibleNodes(tree: AppTree) {
       }
 
       for (const child of children) {
+        if (options?.deferredRoots?.has(child)) {
+          continue;
+        }
         visit(child);
       }
     }
@@ -1367,16 +1526,50 @@ function collectBootstrapVisibleNodes(tree: AppTree) {
   return visibleNodes;
 }
 
-function assertNoBootstrapPredicates(nodes: Iterable<AppNode>) {
-  for (const node of nodes) {
+function classifyBootstrapTree(options: {
+  tree: AppTree;
+  collector: ErrorCollector;
+}): BootstrapClassification {
+  const deferredApiRoots = new Set(
+    getApiNodes(options.tree).filter(apiNode =>
+      subtreeContainsPredicate(apiNode),
+    ),
+  );
+  const deferredElementRoots = new Set(
+    getAppRootElementNodes(options.tree).filter(elementNode =>
+      subtreeContainsPredicate(elementNode),
+    ),
+  );
+  const deferredRoots = new Set<AppNode>([
+    ...deferredApiRoots,
+    ...deferredElementRoots,
+  ]);
+  const bootstrapNodes = collectBootstrapVisibleNodes(options.tree, {
+    deferredRoots,
+  });
+
+  for (const node of bootstrapNodes) {
     if (node.spec.if === undefined) {
       continue;
     }
 
-    throw new Error(
-      `Extension '${node.spec.id}' uses 'if' before the session boundary at 'app/root.children'. Move it behind the session boundary or remove the predicate.`,
-    );
+    options.collector.report({
+      code: 'EXTENSION_BOOTSTRAP_PREDICATE_IGNORED',
+      message:
+        `Extension '${node.spec.id}' uses 'if' during bootstrap, so the predicate was ignored. ` +
+        "Move it behind 'app/root.children', onto a deferred 'app/root.elements' subtree, or into an API subtree.",
+      context: {
+        node,
+      },
+    });
+    setNodePredicate(node, undefined);
   }
+
+  return {
+    deferredApiRoots,
+    deferredElementRoots,
+    deferredRoots,
+  };
 }
 
 function collectPredicateReferences(tree: AppTree): ExtensionPredicateContext {
@@ -1400,6 +1593,48 @@ function collectPredicateReferences(tree: AppTree): ExtensionPredicateContext {
     featureFlags: Array.from(featureFlags),
     permissions: Array.from(permissions),
   };
+}
+
+function getApiNodes(tree: AppTree): AppNode[] {
+  return tree.root.edges.attachments.get('apis') ?? [];
+}
+
+function getAppRootElementNodes(tree: AppTree): AppNode[] {
+  return getAppRootNode(tree)?.edges.attachments.get('elements') ?? [];
+}
+
+function subtreeContainsPredicate(root: AppNode) {
+  const visited = new Set<AppNode>();
+
+  function visit(node: AppNode): boolean {
+    if (visited.has(node)) {
+      return false;
+    }
+    visited.add(node);
+
+    if (node.spec.if !== undefined) {
+      return true;
+    }
+
+    for (const children of node.edges.attachments.values()) {
+      for (const child of children) {
+        if (visit(child)) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  return visit(root);
+}
+
+function setNodePredicate(
+  node: AppNode,
+  predicate: FilterPredicate | undefined,
+) {
+  (node.spec as typeof node.spec & { if?: FilterPredicate }).if = predicate;
 }
 
 // TODO(Rugvip): It would be good if this was more explicit, but I think that

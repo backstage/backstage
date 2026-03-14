@@ -40,6 +40,16 @@ export class FrontendApiRegistry {
     }
   }
 
+  set(factory: AnyApiFactory) {
+    this.factories.set(factory.api.id, factory);
+  }
+
+  setAll(factories: Iterable<AnyApiFactory>) {
+    for (const factory of factories) {
+      this.set(factory);
+    }
+  }
+
   get<T>(
     api: ApiRef<T>,
   ): ApiFactory<T, T, { [name: string]: unknown }> | undefined {
@@ -78,6 +88,17 @@ export class FrontendApiResolver implements ApiHolder {
 
   get<T>(ref: ApiRef<T>): T | undefined {
     return this.load(ref);
+  }
+
+  invalidate(apiRefIds?: Iterable<string>) {
+    if (apiRefIds === undefined) {
+      this.apis.clear();
+      return;
+    }
+
+    for (const apiRefId of apiRefIds) {
+      this.apis.delete(apiRefId);
+    }
   }
 
   private load<T>(ref: ApiRef<T>, loading: AnyApiRef[] = []): T | undefined {
