@@ -1367,9 +1367,9 @@ export const all_groups_response: GitLabGroup[] = [
   },
   {
     id: 8,
-    name: 'awsome-group',
+    name: 'awesome-group',
     description: '',
-    full_path: 'awsome-group',
+    full_path: 'awesome-group',
   },
 ];
 

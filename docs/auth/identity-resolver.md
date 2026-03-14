@@ -540,6 +540,6 @@ This error can be caused by the following:
 
 The second common error is: "Failed to sign-in, unable to resolve user identity". Here is what this looks like for the GitHub Auth provider:
 
-![Failed to sign-in, unable to resolve user identity](../assets/auth/github-unable-to-reolve-identity.png)
+![Failed to sign-in, unable to resolve user identity](../assets/auth/github-unable-to-resolve-identity.png)
 
 This error is caused by the Sign-In Resolver you configured being unable to find a matching User in the Catalog. To fix this you need to import User, and Group, data from some source of truth for this data at your Organization. To do this you can use one of the existing Org Data providers like the ones for [Entra ID (Azure AD/MS Graph)](../integrations/azure/org.md), [GitHub](../integrations/github/org.md), [GitLab](../integrations/gitlab/org.md), etc. or if none of those fit your needs you can create a [Custom Entity Provider](../features/software-catalog/external-integrations.md#custom-entity-providers).

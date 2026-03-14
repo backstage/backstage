@@ -45,7 +45,7 @@ import { PageBlueprint } from '../blueprints/PageBlueprint';
  *
  * This function is primarily intended to enable the use of inferred type
  * parameters for blueprint params, but it can also be used to transoform the
- * params before they are handed ot the blueprint.
+ * params before they are handed to the blueprint.
  *
  * The function must return an object created with
  * {@link createExtensionBlueprintParams}.

@@ -147,7 +147,7 @@ export const isTaskOwner = createTaskPermissionRule({
     createdBy: z
       .array(z.string())
       .describe(
-        'List of creater entity refs; only tasks created by these users will be viewable',
+        'List of creator entity refs; only tasks created by these users will be viewable',
       ),
   }),
   apply: (resource, { createdBy }) => {

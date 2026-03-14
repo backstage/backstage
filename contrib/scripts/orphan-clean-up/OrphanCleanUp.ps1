@@ -1,6 +1,6 @@
 <#
 .DESCRIPTION
-Cleanes up orphaned entities for the provided Backstage URL, defaults to the local backend
+Cleans up orphaned entities for the provided Backstage URL, defaults to the local backend
 #>
 param(
     [string]$backstageUrl = "http://localhost:7007"
