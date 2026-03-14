@@ -169,12 +169,14 @@ export class SlackNotificationProcessor implements NotificationProcessor {
       'notifications.processors.slack.sent.count',
       {
         description: 'Number of messages sent to Slack successfully',
+        unit: '{message}',
       },
     );
     this.messagesFailed = metrics.createCounter(
       'notifications.processors.slack.error.count',
       {
         description: 'Number of messages that failed to send to Slack',
+        unit: '{message}',
       },
     );
 
