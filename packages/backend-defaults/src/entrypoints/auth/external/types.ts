@@ -30,8 +30,20 @@ export type AccessRestrictionsMap = Map<
 export interface ExternalTokenHandler<TContext> {
   type: string;
   initialize(ctx: { options: Config }): TContext;
+  /**
+   * Verifies the given token and returns the principal information if valid,
+   * or `undefined` if the token is not recognized by this handler.
+   *
+   * The returned `subject` is used as the service principal subject.
+   * The optional `tokenClaims` should contain the verified JWT payload claims
+   * (e.g. from `jwtVerify`) and will be exposed on the resulting
+   * `BackstageServicePrincipal`. Only return claims that have already been
+   * validated; do not pass through unverified data.
+   */
   verifyToken(
     token: string,
     ctx: TContext,
-  ): Promise<{ subject: string } | undefined>;
+  ): Promise<
+    { subject: string; tokenClaims?: Record<string, unknown> } | undefined
+  >;
 }

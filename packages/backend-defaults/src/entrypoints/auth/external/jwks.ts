@@ -61,20 +61,19 @@ export const jwksTokenHandler = createExternalTokenHandler<JWKSTokenContext>({
 
   async verifyToken(token: string, context: JWKSTokenContext) {
     try {
-      const {
-        payload: { sub },
-      } = await jwtVerify(token, context.jwks, {
+      const { payload } = await jwtVerify(token, context.jwks, {
         algorithms: context.algorithms,
         issuer: context.issuers,
         audience: context.audiences,
       });
 
-      if (sub) {
+      if (payload.sub) {
         const prefix = context.subjectPrefix
           ? `external:${context.subjectPrefix}:`
           : 'external:';
         return {
-          subject: `${prefix}${sub}`,
+          subject: `${prefix}${payload.sub}`,
+          tokenClaims: { ...payload } as Record<string, unknown>,
         };
       }
     } catch {

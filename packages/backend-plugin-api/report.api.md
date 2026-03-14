@@ -171,6 +171,7 @@ export type BackstageServicePrincipal = {
   type: 'service';
   subject: string;
   accessRestrictions?: BackstagePrincipalAccessRestrictions;
+  tokenClaims?: Record<string, unknown>;
 };
 
 // @public

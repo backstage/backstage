@@ -117,7 +117,14 @@ describe('JWKSHandler', () => {
 
     const result = await jwksTokenHandler.verifyToken(token, context);
 
-    expect(result).toEqual({ subject: `external:${mockSubject}` });
+    expect(result).toEqual({
+      subject: `external:${mockSubject}`,
+      tokenClaims: expect.objectContaining({
+        sub: mockSubject,
+        iss: mockBaseUrl,
+        aud: 'backstage',
+      }),
+    });
   });
 
   it('rejects bad config', () => {
@@ -165,6 +172,11 @@ describe('JWKSHandler', () => {
 
     expect(result).toEqual({
       subject: `external:${validEntry.options.subjectPrefix}:${mockSubject}`,
+      tokenClaims: expect.objectContaining({
+        sub: mockSubject,
+        iss: mockBaseUrl,
+        aud: 'backstage',
+      }),
     });
   });
 });

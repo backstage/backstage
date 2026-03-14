@@ -28,8 +28,13 @@ export function createCredentialsWithServicePrincipal(
   sub: string,
   token?: string,
   accessRestrictions?: BackstagePrincipalAccessRestrictions,
+  tokenClaims?: Record<string, unknown>,
 ): InternalBackstageCredentials<BackstageServicePrincipal> {
-  const principal = createServicePrincipal(sub, accessRestrictions);
+  const principal = createServicePrincipal(
+    sub,
+    accessRestrictions,
+    tokenClaims,
+  );
   const result = {
     $$type: '@backstage/BackstageCredentials',
     version: 'v1',
@@ -128,6 +133,7 @@ export function toInternalBackstageCredentials(
 function createServicePrincipal(
   sub: string,
   accessRestrictions?: BackstagePrincipalAccessRestrictions,
+  tokenClaims?: Record<string, unknown>,
 ): BackstageServicePrincipal {
   const result = {
     type: 'service',
@@ -135,6 +141,12 @@ function createServicePrincipal(
     accessRestrictions,
   } as const;
   Object.defineProperties(result, {
+    tokenClaims: {
+      enumerable: false,
+      configurable: true,
+      writable: true,
+      value: tokenClaims,
+    },
     toString: {
       enumerable: false,
       configurable: true,
