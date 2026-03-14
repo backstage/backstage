@@ -3,6 +3,7 @@ on:
   pull_request:
     branches: [master]
     paths:
+      - '.vale.ini'
       - '.github/workflows/verify_docs-quality.yml'
       - '**.md'
 
@@ -40,6 +41,11 @@ jobs:
           tar -xzf "$VALE_DIST_DIR/$VALE_ARCHIVE" -C "$HOME/.local/bin" vale
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
           vale --version
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Sync vale packages
+        run: vale sync
         env:
           GH_TOKEN: ${{ github.token }}
 
