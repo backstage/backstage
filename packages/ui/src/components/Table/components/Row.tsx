@@ -36,8 +36,25 @@ export function Row<T extends object>(props: RowProps<T>) {
     props,
   );
   const { classes, columns, children, href } = ownProps;
-  const hasInternalHref = !!href && !isExternalLink(href);
+  const isExternal = isExternalLink(href);
+  const hasInternalHref = !!href && !isExternal;
+  const hasExternalHref = !!href && isExternal;
   const hasInteraction = !!restProps.onAction || !!href;
+
+  // Derive the effective target, defaulting to _blank for external links.
+  const effectiveTarget = hasExternalHref ? '_blank' : restProps.target;
+  // Always include noopener noreferrer when target=_blank, merging any
+  // consumer-provided rel tokens to avoid reverse-tabnabbing risk.
+  const effectiveRel =
+    effectiveTarget === '_blank'
+      ? [
+          ...new Set([
+            'noopener',
+            'noreferrer',
+            ...(restProps.rel?.split(/\s+/).filter(Boolean) ?? []),
+          ]),
+        ].join(' ')
+      : restProps.rel;
 
   const handlePress = hasInteraction
     ? () => {
@@ -71,9 +88,11 @@ export function Row<T extends object>(props: RowProps<T>) {
     <InternalLinkProvider href={href}>
       <ReactAriaRow
         href={href}
-        className={classes.root}
-        data-react-aria-pressable={hasInternalHref ? 'true' : undefined}
         {...restProps}
+        target={effectiveTarget}
+        rel={effectiveRel}
+        className={clsx(classes.root, restProps.className)}
+        data-react-aria-pressable={hasInternalHref ? 'true' : undefined}
         onAction={handlePress}
       >
         {content}
