@@ -34,7 +34,7 @@ export const Header = (props: HeaderProps) => {
   const { classes, title, tabs, customActions, breadcrumbs } = ownProps;
 
   return (
-    <Container className={classes.root}>
+    <Container className={classes.root} mb="0">
       <div className={classes.content}>
         <div className={classes.breadcrumbs}>
           {breadcrumbs &&
