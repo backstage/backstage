@@ -15,9 +15,7 @@
  */
 
 import { cli } from 'cleye';
-const { version: cliVersion } = require('../../../package.json') as {
-  version: string;
-};
+import { version as infoModuleVersion } from '../../package.json';
 import os from 'node:os';
 import { runOutput, targetPaths, findOwnPaths } from '@backstage/cli-common';
 import {
@@ -101,12 +99,27 @@ export default async ({ args, info }: CliCommandContext) => {
       }
     }
 
-    // Build system info
+    // Try to resolve the CLI package version — it may not be installed
+    // when this module is executed standalone.
+    let cliVersion: string | undefined;
+    try {
+      cliVersion = (
+        require(require.resolve('@backstage/cli/package.json', {
+          paths: [process.cwd()],
+        })) as { version: string }
+      ).version;
+    } catch {
+      /* not available */
+    }
+
     const systemInfo = {
       os: `${os.type} ${os.release} - ${os.platform}/${os.arch}`,
       node: process.version,
       yarn: yarnVersion,
-      cli: { version: cliVersion, local: isLocal },
+      ...(cliVersion
+        ? { cli: { version: cliVersion, local: isLocal } }
+        : undefined),
+      infoModuleVersion,
       backstage: backstageVersion,
     };
 
@@ -210,8 +223,11 @@ export default async ({ args, info }: CliCommandContext) => {
     console.log(`OS:   ${systemInfo.os}`);
     console.log(`node: ${systemInfo.node}`);
     console.log(`yarn: ${systemInfo.yarn}`);
-    console.log(`cli:  ${cliVersion} (${isLocal ? 'local' : 'installed'})`);
-    console.log(`backstage:  ${backstageVersion}`);
+    if (cliVersion) {
+      console.log(`cli:  ${cliVersion} (${isLocal ? 'local' : 'installed'})`);
+    }
+    console.log(`info module: ${infoModuleVersion}`);
+    console.log(`backstage:   ${backstageVersion}`);
     console.log();
 
     // Print installed dependencies
