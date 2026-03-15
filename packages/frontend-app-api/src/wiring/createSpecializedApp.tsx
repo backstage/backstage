@@ -542,7 +542,7 @@ export function prepareSpecializedApp(
   } else {
     bootstrapApiFactoryEntries.push(
       ...collectApiFactoryEntries({
-        apiNodes: getApiNodes(tree).filter(
+        apiNodes: (tree.root.edges.attachments.get('apis') ?? []).filter(
           apiNode => !bootstrapClassification.deferredApiRoots.has(apiNode),
         ),
         collector,
@@ -1256,7 +1256,8 @@ function prepareSignInTree(options: {
 
 function prepareFinalizedTree(options: { tree: AppTree }) {
   for (const appRootNode of getFinalizationBoundaryNodes(options.tree)) {
-    deleteAttachment(appRootNode, 'signInPage');
+    const attachments = appRootNode.edges.attachments as Map<string, AppNode[]>;
+    attachments.delete('signInPage');
   }
 }
 
@@ -1621,15 +1622,14 @@ function classifyBootstrapTree(options: {
   tree: AppTree;
   collector: ErrorCollector;
 }): BootstrapClassification {
+  const apiNodes = options.tree.root.edges.attachments.get('apis') ?? [];
   const deferredApiRoots = new Set(
-    getApiNodes(options.tree).filter(apiNode =>
-      subtreeContainsPredicate(apiNode),
-    ),
+    apiNodes.filter(apiNode => subtreeContainsPredicate(apiNode)),
   );
+  const appRootElementNodes =
+    getAppRootNode(options.tree)?.edges.attachments.get('elements') ?? [];
   const deferredElementRoots = new Set(
-    getAppRootElementNodes(options.tree).filter(elementNode =>
-      subtreeContainsPredicate(elementNode),
-    ),
+    appRootElementNodes.filter(elementNode => subtreeContainsPredicate(elementNode)),
   );
   const deferredRoots = new Set<AppNode>([
     ...deferredApiRoots,
@@ -1653,7 +1653,7 @@ function classifyBootstrapTree(options: {
         node,
       },
     });
-    setNodePredicate(node, undefined);
+    (node.spec as typeof node.spec & { if?: FilterPredicate }).if = undefined;
   }
 
   return {
@@ -1686,14 +1686,6 @@ function collectPredicateReferences(tree: AppTree): ExtensionPredicateContext {
   };
 }
 
-function getApiNodes(tree: AppTree): AppNode[] {
-  return tree.root.edges.attachments.get('apis') ?? [];
-}
-
-function getAppRootElementNodes(tree: AppTree): AppNode[] {
-  return getAppRootNode(tree)?.edges.attachments.get('elements') ?? [];
-}
-
 function subtreeContainsPredicate(root: AppNode) {
   const visited = new Set<AppNode>();
 
@@ -1721,13 +1713,6 @@ function subtreeContainsPredicate(root: AppNode) {
   return visit(root);
 }
 
-function setNodePredicate(
-  node: AppNode,
-  predicate: FilterPredicate | undefined,
-) {
-  (node.spec as typeof node.spec & { if?: FilterPredicate }).if = predicate;
-}
-
 // TODO(Rugvip): It would be good if this was more explicit, but I think that
 //               might need to wait for some future update for API factories.
 function getApiOwnerId(apiRefId: string): string {
@@ -1742,10 +1727,6 @@ function getApiOwnerId(apiRefId: string): string {
     return rest[0];
   }
   return prefix;
-}
-
-function deleteAttachment(node: AppNode, input: string) {
-  (node.edges.attachments as Map<string, AppNode[]>).delete(input);
 }
 
 function mergeExtensionFactoryMiddleware(
