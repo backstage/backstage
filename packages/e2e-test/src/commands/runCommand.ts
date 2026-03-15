@@ -392,13 +392,7 @@ async function createPlugin(options: {
     });
 
     print('Waiting for plugin create script to be done');
-    try {
-      await child.waitForExit();
-    } catch (error) {
-      print(`stdout: ${stdout}`);
-      print(`stderr: ${stderr}`);
-      throw error;
-    }
+    await child.waitForExit();
 
     const pluginDir = resolvePath(
       appDir,
