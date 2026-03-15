@@ -198,7 +198,15 @@ export default app.createRoot();
 // const routes = (
 //   <FlatRoutes>
 //     {/* <Route path="/" element={<Navigate to="catalog" />} />
-//     <Route path="/catalog" element={<CatalogIndexPage />} />
+//     <Route
+//       path="/catalog"
+//       element={
+//        <CatalogIndexPage
+//          pagination={{ mode: 'offset', limit: 20 }}
+//          exportSettings={{ enableExport: true }}
+//        />
+//      }
+//    />
 //     <Route
 //       path="/catalog/:namespace/:kind/:name"
 //       element={<CatalogEntityPage />}

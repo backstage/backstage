@@ -5,6 +5,7 @@
 ```ts
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
+import type { ButtonProps } from '@material-ui/core/Button';
 import { CatalogApi } from '@backstage/plugin-catalog-react';
 import { ComponentEntity } from '@backstage/catalog-model';
 import { CompoundEntityRef } from '@backstage/catalog-model';
@@ -32,6 +33,7 @@ import { RouteRef } from '@backstage/core-plugin-api';
 import { SearchResultListItemExtensionProps } from '@backstage/plugin-search-react';
 import { StarredEntitiesApi } from '@backstage/plugin-catalog-react';
 import { StorageApi } from '@backstage/core-plugin-api';
+import type { StreamEntitiesRequest } from '@backstage/catalog-client';
 import { StyleRules } from '@material-ui/core/styles/withStyles';
 import { SystemEntity } from '@backstage/catalog-model';
 import { TableColumn } from '@backstage/core-components';
@@ -76,6 +78,29 @@ export type Breakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
 // @public (undocumented)
 export const CatalogEntityPage: () => JSX.Element;
+
+// @public
+export const CatalogExportButton: (input: {
+  settings?: CatalogExportSettings;
+}) => JSX_2.Element;
+
+// @public
+export interface CatalogExportSettings {
+  buttonProps?: ButtonProps;
+  columns?: ExportColumn[];
+  customExporters?: Record<string, CustomExporter>;
+  enableExport?: boolean;
+  onError?: (error: Error) => void;
+  onSuccess?: () => void;
+}
+
+// @public
+export enum CatalogExportType {
+  // (undocumented)
+  CSV = 'csv',
+  // (undocumented)
+  JSON = 'json',
+}
 
 // @public (undocumented)
 export const CatalogIndexPage: (props: DefaultCatalogPageProps) => JSX.Element;
@@ -218,6 +243,9 @@ export type CatalogTableToolbarClassKey = 'root' | 'text';
 export type ColumnBreakpoints = Record<Breakpoint, number>;
 
 // @public
+export type CustomExporter = StreamingExportOptions['customExporter'];
+
+// @public
 export interface DefaultCatalogPageProps {
   // (undocumented)
   actions?: TableProps<CatalogTableRow>['actions'];
@@ -225,6 +253,8 @@ export interface DefaultCatalogPageProps {
   columns?: TableColumn<CatalogTableRow>[] | CatalogTableColumnsFunc;
   // (undocumented)
   emptyContent?: ReactNode;
+  // (undocumented)
+  exportSettings?: CatalogExportSettings;
   // (undocumented)
   filters?: ReactNode;
   // (undocumented)
@@ -480,6 +510,14 @@ export interface EntitySwitchProps {
   renderMultipleMatches?: 'first' | 'all';
 }
 
+// @public (undocumented)
+export interface ExportColumn {
+  // (undocumented)
+  entityFilterKey: string;
+  // (undocumented)
+  title: string;
+}
+
 // @public @deprecated (undocumented)
 export const FilterContainer: (props: {
   children: ReactNode;
@@ -633,6 +671,34 @@ export type RelatedEntitiesCardProps<T extends Entity> = {
   asRenderableEntities: (entities: Entity[]) => T[];
   tableOptions?: TableOptions;
 };
+
+// @public
+export type StreamingCustomExporter = (
+  catalogApi: any,
+  columns: ExportColumn[],
+  streamRequest?: StreamEntitiesRequest,
+) => {
+  generator: AsyncGenerator<string, void, unknown>;
+  contentType: string;
+};
+
+// @public (undocumented)
+export interface StreamingExportOptions {
+  // (undocumented)
+  columns: ExportColumn[];
+  // (undocumented)
+  customExporter?: StreamingCustomExporter;
+  // (undocumented)
+  exportFormat: CatalogExportType | string;
+  // (undocumented)
+  filename: string;
+  // (undocumented)
+  onError?: (error: Error) => void;
+  // (undocumented)
+  onSuccess?: () => void;
+  // (undocumented)
+  streamRequest?: StreamEntitiesRequest;
+}
 
 // @public (undocumented)
 export type SystemDiagramCardClassKey =
