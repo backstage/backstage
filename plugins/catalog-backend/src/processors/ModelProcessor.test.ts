@@ -21,54 +21,63 @@ import {
   CatalogModelRelation,
   CatalogModelSchemaObjectType,
 } from '@backstage/catalog-model/alpha';
-import { CatalogProcessorResult } from '@backstage/plugin-catalog-node';
 import { ModelProcessor } from './ModelProcessor';
 
-const ownerRelationSchema = {
-  type: 'relation',
-  relation: 'ownedBy',
-  defaultKind: 'Group',
-  defaultNamespace: 'inherit',
-} as const;
-
-const dependsOnRelationSchema = {
-  type: 'relation',
-  relation: 'dependsOn',
-  defaultKind: 'Component',
-  defaultNamespace: 'default',
-} as const;
-
-const componentSpec = {
+const componentSpec: CatalogModelSchemaObjectType = {
   type: 'object',
   properties: {
     type: { type: 'string' },
     lifecycle: { type: 'string' },
-    owner: ownerRelationSchema,
+    owner: {
+      type: 'relation',
+      relation: 'ownedBy',
+      defaultKind: 'Group',
+      defaultNamespace: 'inherit',
+    },
     dependsOn: {
       type: 'array',
-      items: dependsOnRelationSchema,
+      items: {
+        type: 'relation',
+        relation: 'dependsOn',
+        defaultKind: 'Component',
+        defaultNamespace: 'default',
+      },
     },
   },
-} as const satisfies CatalogModelSchemaObjectType;
+};
 
-const componentKind = {
+const componentKind: CatalogModelKind = {
   apiVersions: ['backstage.io/v1alpha1'],
   names: { kind: 'Component', singular: 'component', plural: 'components' },
   spec: componentSpec,
+  relationFields: [
+    {
+      path: 'spec.owner',
+      relation: 'ownedBy',
+      defaultKind: 'Group',
+      defaultNamespace: 'inherit',
+      allowedKinds: ['Group', 'User'],
+    },
+    {
+      path: 'spec.dependsOn',
+      relation: 'dependsOn',
+      defaultKind: 'Component',
+      defaultNamespace: 'default',
+      allowedKinds: ['Component', 'Resource'],
+    },
+  ],
   jsonSchema: {},
-  TInput: null as any,
-  TOutput: null as any,
-} as const satisfies CatalogModelKind;
+};
 
-const ownedByRelation = {
+const ownedByRelation: CatalogModelRelation = {
   fromKind: ['Component'],
   toKind: ['Group', 'User'],
   comment: 'Ownership',
   forward: { type: 'ownedBy', singular: 'owner', plural: 'owners' },
   reverse: { type: 'ownerOf', singular: 'owns', plural: 'owns' },
-} as const satisfies CatalogModelRelation;
+};
 
-const dependsOnRelation = {
+const dependsOnRelation: CatalogModelRelation = {
   fromKind: ['Component'],
   toKind: ['Component', 'Resource'],
   comment: 'Dependency',
@@ -82,13 +91,14 @@ const dependsOnRelation = {
     singular: 'dependant',
     plural: 'dependants',
   },
-} as const satisfies CatalogModelRelation;
+};
 
 function createModel(overrides?: {
   getKind?: CatalogModel['getKind'];
   getRelations?: CatalogModel['getRelations'];
 }): CatalogModel {
   return {
+    ops: [],
     getKind: overrides?.getKind ?? (() => componentKind),
     getRelations:
       overrides?.getRelations ?? (() => [ownedByRelation, dependsOnRelation]),
@@ -121,16 +131,7 @@ describe('ModelProcessor', () => {
       expect(result).toBe(entity);
     });
 
-    it('returns the entity unchanged when relations are not found', async () => {
-      const processor = new ModelProcessor(
-        createModel({ getRelations: () => undefined }),
-      );
-      const entity = createEntity();
-      const result = await processor.preProcessEntity(entity);
-      expect(result).toBe(entity);
-    });
-
-    it('does not modify array relation fields during pre-processing', async () => {
+    it('sorts array relation fields in-place', async () => {
       const processor = new ModelProcessor(createModel());
       const entity = createEntity({
         type: 'service',
@@ -141,15 +142,14 @@ describe('ModelProcessor', () => {
 
       const result = await processor.preProcessEntity(entity);
 
-      // Individual string values are collected, not the array, so no sorting occurs
       expect((result.spec as any).dependsOn).toEqual([
-        'component:c',
         'component:a',
         'component:b',
+        'component:c',
       ]);
     });
 
-    it('does not sort scalar relation fields', async () => {
+    it('does not modify scalar relation fields', async () => {
       const processor = new ModelProcessor(createModel());
       const entity = createEntity({
         type: 'service',
@@ -171,19 +171,23 @@ describe('ModelProcessor', () => {
 
       expect(result).toBe(entity);
     });
+  });
 
-    it('handles entities with fields not in the schema gracefully', async () => {
+  describe('validateEntityKind', () => {
+    it('returns false when the kind is not found', async () => {
+      const processor = new ModelProcessor(
+        createModel({ getKind: () => undefined }),
+      );
+      const entity = createEntity();
+
+      expect(await processor.validateEntityKind(entity)).toBe(false);
+    });
+
+    it('returns true when the kind is found', async () => {
       const processor = new ModelProcessor(createModel());
-      const entity = createEntity({
-        type: 'service',
-        lifecycle: 'production',
-        owner: 'group:default/my-team',
-        unknownField: 'some-value',
-      });
+      const entity = createEntity();
 
-      const result = await processor.preProcessEntity(entity);
-
-      expect((result.spec as any).unknownField).toBe('some-value');
+      expect(await processor.validateEntityKind(entity)).toBe(true);
     });
   });
 
@@ -201,17 +205,29 @@ describe('ModelProcessor', () => {
       expect(emit).not.toHaveBeenCalled();
     });
 
-    it('returns the entity unchanged when relations are not found', async () => {
+    it('emits only forward relations when relation declarations are not found', async () => {
       const processor = new ModelProcessor(
         createModel({ getRelations: () => undefined }),
       );
       const emit = jest.fn();
-      const entity = createEntity();
+      const entity = createEntity({
+        type: 'service',
+        lifecycle: 'production',
+        owner: 'my-team',
+      });
 
-      const result = await processor.postProcessEntity(entity, location, emit);
+      await processor.postProcessEntity(entity, location, emit);
 
-      expect(result).toBe(entity);
-      expect(emit).not.toHaveBeenCalled();
+      expect(emit).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: 'relation',
+          relation: expect.objectContaining({ type: 'ownedBy' }),
+        }),
+      );
+      const reverseEmits = emit.mock.calls.filter(
+        ([r]: [any]) => r.type === 'relation' && r.relation.type === 'ownerOf',
+      );
+      expect(reverseEmits).toHaveLength(0);
     });
 
     it('emits forward and reverse relations for a scalar relation field', async () => {
@@ -270,7 +286,6 @@ describe('ModelProcessor', () => {
 
       await processor.postProcessEntity(entity, location, emit);
 
-      // Forward dependsOn for service-a
       expect(emit).toHaveBeenCalledWith(
         expect.objectContaining({
           type: 'relation',
@@ -289,7 +304,6 @@ describe('ModelProcessor', () => {
           },
         }),
       );
-      // Reverse dependencyOf for service-a
       expect(emit).toHaveBeenCalledWith(
         expect.objectContaining({
           type: 'relation',
@@ -308,7 +322,6 @@ describe('ModelProcessor', () => {
           },
         }),
       );
-      // Forward dependsOn for service-b
       expect(emit).toHaveBeenCalledWith(
         expect.objectContaining({
           type: 'relation',
@@ -329,7 +342,7 @@ describe('ModelProcessor', () => {
       );
     });
 
-    it('does not emit reverse relation when target kind does not match', async () => {
+    it('skips both forward and reverse when target kind is not in allowedKinds', async () => {
       const processor = new ModelProcessor(createModel());
       const emit = jest.fn();
       const entity = createEntity({
@@ -340,19 +353,46 @@ describe('ModelProcessor', () => {
 
       await processor.postProcessEntity(entity, location, emit);
 
-      // Forward relation is still emitted
+      const ownedByEmits = emit.mock.calls.filter(
+        ([r]: [any]) => r.type === 'relation' && r.relation.type === 'ownedBy',
+      );
+      expect(ownedByEmits).toHaveLength(0);
+      const ownerOfEmits = emit.mock.calls.filter(
+        ([r]: [any]) => r.type === 'relation' && r.relation.type === 'ownerOf',
+      );
+      expect(ownerOfEmits).toHaveLength(0);
+    });
+
+    it('allows any target kind when allowedKinds is not set', async () => {
+      const noAllowedKindsKind: CatalogModelKind = {
+        ...componentKind,
+        relationFields: [
+          {
+            path: 'spec.owner',
+            relation: 'ownedBy',
+            defaultKind: 'Group',
+            defaultNamespace: 'inherit',
+          },
+        ],
+      };
+      const processor = new ModelProcessor(
+        createModel({ getKind: () => noAllowedKindsKind }),
+      );
+      const emit = jest.fn();
+      const entity = createEntity({
+        type: 'service',
+        lifecycle: 'production',
+        owner: 'api:default/some-api',
+      });
+
+      await processor.postProcessEntity(entity, location, emit);
+
       expect(emit).toHaveBeenCalledWith(
         expect.objectContaining({
           type: 'relation',
           relation: expect.objectContaining({ type: 'ownedBy' }),
         }),
       );
-      // But no reverse since "api" is not in ownedByRelation.toKind
-      const reverseEmits = emit.mock.calls.filter(
-        ([r]: [CatalogProcessorResult]) =>
-          r.type === 'relation' && (r as any).relation.type === 'ownerOf',
-      );
-      expect(reverseEmits).toHaveLength(0);
     });
 
     it('uses defaultNamespace inherit to pick the entity namespace', async () => {
@@ -417,26 +457,17 @@ describe('ModelProcessor', () => {
       expect(emit).not.toHaveBeenCalled();
     });
 
-    it('handles nested object schemas with relation fields', async () => {
-      const nestedSpec: CatalogModelSchemaObjectType = {
-        type: 'object',
-        properties: {
-          nested: {
-            type: 'object',
-            properties: {
-              maintainer: {
-                type: 'relation' as const,
-                relation: 'ownedBy',
-                defaultKind: 'User',
-                defaultNamespace: 'default' as const,
-              },
-            },
-          },
-        },
-      };
+    it('handles nested relation fields via dot paths', async () => {
       const nestedKind: CatalogModelKind = {
         ...componentKind,
-        spec: nestedSpec,
+        relationFields: [
+          {
+            path: 'spec.nested.maintainer',
+            relation: 'ownedBy',
+            defaultKind: 'User',
+            defaultNamespace: 'default',
+          },
+        ],
       };
       const processor = new ModelProcessor(
         createModel({ getKind: () => nestedKind }),

@@ -28,7 +28,61 @@ import { OpUpdateRelationV1 } from './operations/updateRelation';
 import { CatalogModelExtension, OpaqueCatalogModelExtension } from './types';
 
 /**
+ * A relation field in a compiled catalog model schema.
+ *
+ * @alpha
+ */
+export interface CatalogModelSchemaRelationType {
+  type: 'relation';
+  relation: string;
+  defaultKind: string;
+  defaultNamespace: 'inherit' | 'default';
+}
+
+/**
+ * An object type in a compiled catalog model schema.
+ *
+ * @alpha
+ */
+export interface CatalogModelSchemaObjectType {
+  type: 'object';
+  properties: Record<string, CatalogModelSchemaType>;
+}
+
+/**
+ * An array type in a compiled catalog model schema.
+ *
+ * @alpha
+ */
+export interface CatalogModelSchemaArrayType {
+  type: 'array';
+  items: CatalogModelSchemaType;
+}
+
+/**
+ * A string type in a compiled catalog model schema.
+ *
+ * @alpha
+ */
+export interface CatalogModelSchemaStringType {
+  type: 'string';
+}
+
+/**
+ * A type in a compiled catalog model schema.
+ *
+ * @alpha
+ */
+export type CatalogModelSchemaType =
+  | CatalogModelSchemaObjectType
+  | CatalogModelSchemaArrayType
+  | CatalogModelSchemaRelationType
+  | CatalogModelSchemaStringType;
+
+/**
  * A compiled catalog model kind.
+ *
+ * @alpha
  */
 export interface CatalogModelKind {
   /**
@@ -58,6 +112,38 @@ export interface CatalogModelKind {
   };
 
   /**
+   * A typed representation of the spec schema, including relation metadata.
+   */
+  spec: CatalogModelSchemaObjectType;
+
+  /**
+   * The relation fields declared for this kind, with full dot-separated paths
+   * into the entity (e.g. "spec.owner").
+   */
+  relationFields: Array<{
+    /**
+     * The full dot-separated path to the field in the entity, e.g. "spec.owner".
+     */
+    path: string;
+    /**
+     * The relation type that this field generates, e.g. "ownedBy".
+     */
+    relation: string;
+    /**
+     * The default kind for parsing shorthand entity refs.
+     */
+    defaultKind?: string;
+    /**
+     * The default namespace for parsing shorthand entity refs.
+     */
+    defaultNamespace?: 'inherit' | 'default';
+    /**
+     * The kinds that are allowed as targets for this relation field.
+     */
+    allowedKinds?: string[];
+  }>;
+
+  /**
    * The JSON schema of the kind.
    *
    * @remarks
@@ -71,36 +157,38 @@ export interface CatalogModelKind {
 
 /**
  * A compiled catalog model relation.
+ *
+ * @alpha
  */
 export interface CatalogModelRelation {
   /**
-   * The kind that this relation originates from.
+   * The kinds that this relation can originate from.
    */
-  fromKind: string;
+  fromKind: string[];
   /**
-   * The technical type of the relation, e.g. "ownedBy".
+   * The kinds that this relation can point to.
    */
-  type: string;
-  /**
-   * The kind that this relation points to.
-   */
-  toKind: string;
-  /**
-   * The technical type of the reverse relation, e.g. "ownerOf".
-   */
-  reverseType: string;
-  /**
-   * The singular human readable form of the relation name.
-   */
-  singular: string;
-  /**
-   * The plural human readable form of the relation name.
-   */
-  plural: string;
+  toKind: string[];
   /**
    * A human-readable comment describing the relation.
    */
   comment: string;
+  /**
+   * The forward direction of this relation.
+   */
+  forward: {
+    type: string;
+    singular: string;
+    plural: string;
+  };
+  /**
+   * The reverse direction of this relation.
+   */
+  reverse: {
+    type: string;
+    singular: string;
+    plural: string;
+  };
 }
 
 /**
@@ -159,13 +247,11 @@ interface SpecTypeState {
 }
 
 interface RelationState {
-  fromKind: string;
-  type: string;
-  toKind: string;
-  reverseType: string;
-  singular: string;
-  plural: string;
+  fromKinds: Set<string>;
+  toKinds: Set<string>;
   comment: string;
+  forward: { type: string; singular: string; plural: string };
+  reverse: { type: string; singular: string; plural: string };
 }
 
 // #endregion
@@ -250,21 +336,27 @@ function applyDeclareRelation(
   relations: Map<string, RelationState>,
   op: OpDeclareRelationV1,
 ): void {
-  const key = `${op.fromKind}:${op.type}:${op.toKind}`;
-  if (relations.has(key)) {
-    throw new InputError(
-      `Relation "${op.type}" from "${op.fromKind}" to "${op.toKind}" is declared more than once`,
-    );
+  const existing = relations.get(op.type);
+  if (existing) {
+    existing.fromKinds.add(op.fromKind);
+    existing.toKinds.add(op.toKind);
+  } else {
+    relations.set(op.type, {
+      fromKinds: new Set([op.fromKind]),
+      toKinds: new Set([op.toKind]),
+      comment: op.properties.comment,
+      forward: {
+        type: op.type,
+        singular: op.properties.singular,
+        plural: op.properties.plural,
+      },
+      reverse: {
+        type: op.properties.reverseType,
+        singular: op.properties.singular,
+        plural: op.properties.plural,
+      },
+    });
   }
-  relations.set(key, {
-    fromKind: op.fromKind,
-    type: op.type,
-    toKind: op.toKind,
-    reverseType: op.properties.reverseType,
-    singular: op.properties.singular,
-    plural: op.properties.plural,
-    comment: op.properties.comment,
-  });
 }
 
 function applyUpdateKind(
@@ -332,25 +424,124 @@ function applyUpdateRelation(
   relations: Map<string, RelationState>,
   op: OpUpdateRelationV1,
 ): void {
-  const key = `${op.fromKind}:${op.type}:${op.toKind}`;
-  const relation = relations.get(key);
+  const relation = relations.get(op.type);
   if (!relation) {
-    throw new InputError(
-      `Cannot update undeclared relation "${op.type}" from "${op.fromKind}" to "${op.toKind}"`,
-    );
+    throw new InputError(`Cannot update undeclared relation "${op.type}"`);
   }
+  relation.fromKinds.add(op.fromKind);
+  relation.toKinds.add(op.toKind);
   if (op.properties.reverseType !== undefined) {
-    relation.reverseType = op.properties.reverseType;
+    relation.reverse.type = op.properties.reverseType;
   }
   if (op.properties.singular !== undefined) {
-    relation.singular = op.properties.singular;
+    relation.forward.singular = op.properties.singular;
+    relation.reverse.singular = op.properties.singular;
   }
   if (op.properties.plural !== undefined) {
-    relation.plural = op.properties.plural;
+    relation.forward.plural = op.properties.plural;
+    relation.reverse.plural = op.properties.plural;
   }
   if (op.properties.comment !== undefined) {
     relation.comment = op.properties.comment;
   }
+}
+
+/**
+ * Builds a typed spec schema from the compiled state. This walks the JSON
+ * schema's spec properties and overlays relation metadata from the relation
+ * field declarations.
+ */
+function buildSpecSchema(
+  specType: SpecTypeState,
+): CatalogModelSchemaObjectType {
+  const specSchema = (specType.jsonSchema as JsonObject).properties as
+    | JsonObject
+    | undefined;
+  const specObj = (specSchema?.spec as JsonObject | undefined) ?? {};
+  const specProperties = (specObj.properties as JsonObject | undefined) ?? {};
+
+  // Index relation fields by their path within spec (e.g. "owner" from "spec.owner")
+  const relationByPath = new Map<
+    string,
+    NonNullable<SpecTypeState['relationFields']>[number]
+  >();
+  for (const field of specType.relationFields ?? []) {
+    const path = field.selector.path;
+    const prefix = 'spec.';
+    if (path.startsWith(prefix)) {
+      relationByPath.set(path.slice(prefix.length), field);
+    }
+  }
+
+  return {
+    type: 'object',
+    properties: buildSchemaProperties(specProperties, relationByPath, ''),
+  };
+}
+
+function buildSchemaProperties(
+  properties: JsonObject,
+  relationByPath: Map<
+    string,
+    NonNullable<SpecTypeState['relationFields']>[number]
+  >,
+  pathPrefix: string,
+): Record<string, CatalogModelSchemaType> {
+  const result: Record<string, CatalogModelSchemaType> = {};
+
+  for (const [name, value] of Object.entries(properties)) {
+    const fullPath = pathPrefix ? `${pathPrefix}.${name}` : name;
+    const schema = value as JsonObject | undefined;
+    if (!schema) {
+      continue;
+    }
+
+    const relationField = relationByPath.get(fullPath);
+    if (relationField) {
+      result[name] = {
+        type: 'relation',
+        relation: relationField.selector.path,
+        defaultKind: relationField.defaultKind ?? '',
+        defaultNamespace: relationField.defaultNamespace ?? 'default',
+      };
+      continue;
+    }
+
+    const type = schema.type as string | undefined;
+    if (type === 'object') {
+      const nested = (schema.properties as JsonObject | undefined) ?? {};
+      result[name] = {
+        type: 'object',
+        properties: buildSchemaProperties(nested, relationByPath, fullPath),
+      };
+    } else if (type === 'array') {
+      const items = schema.items as JsonObject | undefined;
+      const itemPath = fullPath;
+      const itemRelation = relationByPath.get(itemPath);
+      if (itemRelation) {
+        result[name] = {
+          type: 'array',
+          items: {
+            type: 'relation',
+            relation: itemRelation.selector.path,
+            defaultKind: itemRelation.defaultKind ?? '',
+            defaultNamespace: itemRelation.defaultNamespace ?? 'default',
+          },
+        };
+      } else {
+        result[name] = {
+          type: 'array',
+          items: {
+            type: (items?.type as string) ?? 'string',
+          } as CatalogModelSchemaType,
+        };
+      }
+    } else {
+      result[name] = { type: (type ?? 'string') as 'string' };
+    }
+  }
+
+  return result;
 }
 
 // #endregion
@@ -448,6 +639,14 @@ export function compileCatalogModel(
           singular: kindState.singular,
           plural: kindState.plural,
         },
+        spec: buildSpecSchema(specType),
+        relationFields: (specType.relationFields ?? []).map(f => ({
+          path: f.selector.path,
+          relation: f.selector.path, // TODO: link to actual relation type
+          defaultKind: f.defaultKind,
+          defaultNamespace: f.defaultNamespace,
+          allowedKinds: f.allowedKinds,
+        })),
         jsonSchema: specType.jsonSchema,
       };
     },
@@ -456,7 +655,15 @@ export function compileCatalogModel(
       if (!kinds.has(kindName)) {
         return undefined;
       }
-      return [...relations.values()].filter(r => r.fromKind === kindName);
+      return [...relations.values()]
+        .filter(r => r.fromKinds.has(kindName))
+        .map(r => ({
+          fromKind: [...r.fromKinds],
+          toKind: [...r.toKinds],
+          comment: r.comment,
+          forward: r.forward,
+          reverse: r.reverse,
+        }));
     },
   };
 }
