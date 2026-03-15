@@ -45,14 +45,7 @@
               "type": "string",
               "description": "An entity reference to the owner of the resource.",
               "examples": ["artist-relations-team", "user:john.johnson"],
-              "minLength": 1,
-              "relation": {
-                "defaultKind": "Group",
-                "defaultNamespace": "inherit",
-                "allowedKinds": ["Group", "User"],
-                "outgoingType": "ownedBy",
-                "incomingType": "ownerOf"
-              }
+              "minLength": 1
             },
             "dependsOn": {
               "type": "array",
@@ -60,39 +53,12 @@
               "items": {
                 "type": "string",
                 "minLength": 1
-              },
-              "relation": {
-                "defaultNamespace": "inherit",
-                "allowedKinds": ["Component", "Resource"],
-                "outgoingType": "dependsOn",
-                "incomingType": "dependencyOf"
-              }
-            },
-            "dependencyOf": {
-              "type": "array",
-              "description": "An array of references to other entities that the resource is a dependency of.",
-              "items": {
-                "type": "string",
-                "minLength": 1
-              },
-              "relation": {
-                "defaultNamespace": "inherit",
-                "allowedKinds": ["Component", "Resource"],
-                "outgoingType": "dependencyOf",
-                "incomingType": "dependsOn"
               }
             },
             "system": {
               "type": "string",
               "description": "An entity reference to the system that the resource belongs to.",
-              "minLength": 1,
-              "relation": {
-                "defaultKind": "System",
-                "defaultNamespace": "inherit",
-                "allowedKinds": ["System"],
-                "outgoingType": "partOf",
-                "incomingType": "hasPart"
-              }
+              "minLength": 1
             }
           }
         }

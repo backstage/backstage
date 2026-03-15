@@ -94,14 +94,7 @@
             "owner": {
               "type": "string",
               "description": "The user (or group) owner of the template",
-              "minLength": 1,
-              "relation": {
-                "defaultKind": "Group",
-                "defaultNamespace": "inherit",
-                "allowedKinds": ["Group", "User"],
-                "outgoingType": "ownedBy",
-                "incomingType": "ownerOf"
-              }
+              "minLength": 1
             },
             "lifecycle": {
               "type": "string",

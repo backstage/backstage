@@ -76,14 +76,7 @@
               "type": "string",
               "description": "The immediate parent group in the hierarchy, if any. Not all groups must have a parent; the catalog supports multi-root hierarchies. Groups may however not have more than one parent. This field is an entity reference.",
               "examples": ["ops"],
-              "minLength": 1,
-              "relation": {
-                "defaultKind": "Group",
-                "defaultNamespace": "inherit",
-                "allowedKinds": ["Group"],
-                "outgoingType": "childOf",
-                "incomingType": "parentOf"
-              }
+              "minLength": 1
             },
             "children": {
               "type": "array",
@@ -92,13 +85,6 @@
                 "type": "string",
                 "examples": ["backstage", "other"],
                 "minLength": 1
-              },
-              "relation": {
-                "defaultKind": "Group",
-                "defaultNamespace": "inherit",
-                "allowedKinds": ["Group"],
-                "outgoingType": "parentOf",
-                "incomingType": "childOf"
               }
             },
             "members": {
@@ -108,13 +94,6 @@
                 "type": "string",
                 "examples": ["jdoe"],
                 "minLength": 1
-              },
-              "relation": {
-                "defaultKind": "User",
-                "defaultNamespace": "inherit",
-                "allowedKinds": ["User"],
-                "outgoingType": "hasMember",
-                "incomingType": "memberOf"
               }
             }
           }

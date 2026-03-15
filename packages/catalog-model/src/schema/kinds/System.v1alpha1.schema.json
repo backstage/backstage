@@ -39,27 +39,13 @@
               "type": "string",
               "description": "An entity reference to the owner of the component.",
               "examples": ["artist-relations-team", "user:john.johnson"],
-              "minLength": 1,
-              "relation": {
-                "defaultKind": "Group",
-                "defaultNamespace": "inherit",
-                "allowedKinds": ["Group", "User"],
-                "outgoingType": "ownedBy",
-                "incomingType": "ownerOf"
-              }
+              "minLength": 1
             },
             "domain": {
               "type": "string",
               "description": "An entity reference to the domain that the system belongs to.",
               "examples": ["artists"],
-              "minLength": 1,
-              "relation": {
-                "defaultKind": "Domain",
-                "defaultNamespace": "inherit",
-                "allowedKinds": ["Domain"],
-                "outgoingType": "partOf",
-                "incomingType": "hasPart"
-              }
+              "minLength": 1
             },
             "type": {
               "type": "string",

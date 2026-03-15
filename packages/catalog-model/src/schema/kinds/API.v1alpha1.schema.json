@@ -59,26 +59,12 @@
               "type": "string",
               "description": "An entity reference to the owner of the API.",
               "examples": ["artist-relations-team", "user:john.johnson"],
-              "minLength": 1,
-              "relation": {
-                "defaultKind": "Group",
-                "defaultNamespace": "inherit",
-                "allowedKinds": ["Group", "User"],
-                "outgoingType": "ownedBy",
-                "incomingType": "ownerOf"
-              }
+              "minLength": 1
             },
             "system": {
               "type": "string",
               "description": "An entity reference to the system that the API belongs to.",
-              "minLength": 1,
-              "relation": {
-                "defaultKind": "System",
-                "defaultNamespace": "inherit",
-                "allowedKinds": ["System"],
-                "outgoingType": "partOf",
-                "incomingType": "hasPart"
-              }
+              "minLength": 1
             },
             "definition": {
               "type": "string",
