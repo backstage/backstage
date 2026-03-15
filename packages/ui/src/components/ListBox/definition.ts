@@ -41,6 +41,7 @@ export const ListBoxDefinition = defineComponent<ListBoxOwnProps>()({
  */
 export const ListBoxItemDefinition = defineComponent<ListBoxItemOwnProps>()({
   styles,
+  bg: 'consumer',
   classNames: {
     root: 'bui-ListBoxItem',
     check: 'bui-ListBoxItemCheck',
@@ -53,6 +54,7 @@ export const ListBoxItemDefinition = defineComponent<ListBoxItemOwnProps>()({
     children: {},
     description: {},
     icon: {},
+    menuItems: {},
     customActions: {},
     className: {},
   },

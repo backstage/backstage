@@ -21,6 +21,14 @@
     box-sizing: border-box;
     overflow-y: auto;
     outline: none;
+    display: flex;
+    flex-direction: column;
+
+    gap: var(--bui-space-3);
+
+    &:has([data-selection-mode]) {
+      gap: 0;
+    }
 
     &:focus-visible {
       outline: none;
@@ -31,28 +39,93 @@
     box-sizing: border-box;
     display: flex;
     align-items: center;
-    gap: var(--bui-space-2);
-    padding-block: var(--bui-space-2);
-    padding-inline: var(--bui-space-3);
+    gap: var(--bui-space-3);
     border-radius: var(--bui-radius-2);
     font-size: var(--bui-font-size-3);
     font-family: var(--bui-font-regular);
     color: var(--bui-fg-primary);
-    cursor: pointer;
-    user-select: none;
     outline: none;
-
-    &[data-hovered] {
-      background-color: var(--bui-bg-neutral-2);
-    }
-
-    &[data-focus-visible] {
-      background-color: var(--bui-bg-neutral-2);
-    }
 
     &[data-disabled] {
       cursor: not-allowed;
       color: var(--bui-fg-disabled);
+    }
+
+    &[data-selection-mode] {
+      cursor: pointer;
+      padding-block: var(--bui-space-2);
+      padding-inline: var(--bui-space-2);
+
+      &[data-selected] {
+        &:has(+ [data-selected]) {
+          border-end-start-radius: 0;
+          border-end-end-radius: 0;
+        }
+
+        + [data-selected] {
+          border-start-start-radius: 0;
+          border-start-end-radius: 0;
+        }
+      }
+
+      &[data-hovered],
+      &[data-focus-visible] {
+        background-color: var(--bui-bg-neutral-1-hover);
+      }
+
+      &[data-pressed],
+      &[data-selected],
+      &[data-selected][data-hovered],
+      &[data-selected][data-focus-visible],
+      &[data-selected][data-pressed] {
+        background-color: var(--bui-bg-neutral-1-pressed);
+      }
+
+      &[data-on-bg='neutral-1'] {
+        &[data-hovered],
+        &[data-focus-visible] {
+          background-color: var(--bui-bg-neutral-2-hover);
+        }
+
+        &[data-pressed],
+        &[data-selected],
+        &[data-selected][data-hovered],
+        &[data-selected][data-focus-visible],
+        &[data-selected][data-pressed] {
+          background-color: var(--bui-bg-neutral-2-pressed);
+        }
+      }
+
+      &[data-on-bg='neutral-2'] {
+        &[data-hovered],
+        &[data-focus-visible] {
+          background-color: var(--bui-bg-neutral-3-hover);
+        }
+
+        &[data-pressed],
+        &[data-selected],
+        &[data-selected][data-hovered],
+        &[data-selected][data-focus-visible],
+        &[data-selected][data-pressed] {
+          background-color: var(--bui-bg-neutral-3-pressed);
+        }
+      }
+
+      &[data-on-bg='neutral-3'],
+      &[data-on-bg='neutral-4'] {
+        &[data-hovered],
+        &[data-focus-visible] {
+          background-color: var(--bui-bg-neutral-4-hover);
+        }
+
+        &[data-pressed],
+        &[data-selected],
+        &[data-selected][data-hovered],
+        &[data-selected][data-focus-visible],
+        &[data-selected][data-pressed] {
+          background-color: var(--bui-bg-neutral-4-pressed);
+        }
+      }
     }
   }
 
@@ -92,11 +165,21 @@
     flex-direction: column;
     gap: var(--bui-space-1);
     min-width: 0;
+    overflow: hidden;
+
+    & > * {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
   }
 
   .bui-ListBoxItemDescription {
     font-size: var(--bui-font-size-2);
     color: var(--bui-fg-secondary);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
 
   .bui-ListBoxItemActions {

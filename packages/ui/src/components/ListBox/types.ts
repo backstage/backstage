@@ -59,8 +59,14 @@ export type ListBoxItemOwnProps = {
    */
   icon?: React.ReactNode;
   /**
+   * Optional menu items rendered inside an automatically managed dropdown menu.
+   * Pass `MenuItem` nodes here and the component will render the trigger button
+   * and menu wrapper for you.
+   */
+  menuItems?: React.ReactNode;
+  /**
    * Optional actions rendered in a flex row on the right side of the item,
-   * e.g. a ButtonIcon with a dropdown menu, or a set of tags.
+   * e.g. a set of tags. For a dropdown menu, prefer `menuItems`.
    */
   customActions?: React.ReactNode;
   className?: string;

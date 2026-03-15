@@ -17,13 +17,11 @@
 import preview from '../../../../../.storybook/preview';
 import { useState } from 'react';
 import { ListBox, ListBoxItem } from './ListBox';
-import { ButtonIcon } from '../ButtonIcon';
-import { MenuTrigger, Menu, MenuItem } from '../Menu';
+import { MenuItem } from '../Menu';
 import { TagGroup, Tag } from '../TagGroup';
 import type { Selection } from 'react-aria-components';
 import {
   RiJavascriptLine,
-  RiMoreLine,
   RiReactjsLine,
   RiShipLine,
   RiTerminalLine,
@@ -159,6 +157,27 @@ export const SelectionModeSingle = meta.story({
   },
 });
 
+export const SelectionModeSingleWithIcons = meta.story({
+  render: args => {
+    const [selected, setSelected] = useState<Selection>(new Set(['react']));
+
+    return (
+      <ListBox
+        {...args}
+        selectionMode="single"
+        selectedKeys={selected}
+        onSelectionChange={setSelected}
+      >
+        {items.map(item => (
+          <ListBoxItem key={item.id} id={item.id} icon={itemIcons[item.id]}>
+            {item.label}
+          </ListBoxItem>
+        ))}
+      </ListBox>
+    );
+  },
+});
+
 export const SelectionModeMultiple = meta.story({
   render: args => {
     const [selected, setSelected] = useState<Selection>(
@@ -182,6 +201,29 @@ export const SelectionModeMultiple = meta.story({
   },
 });
 
+export const SelectionModeMultipleWithIcons = meta.story({
+  render: args => {
+    const [selected, setSelected] = useState<Selection>(
+      new Set(['react', 'typescript']),
+    );
+
+    return (
+      <ListBox
+        {...args}
+        selectionMode="multiple"
+        selectedKeys={selected}
+        onSelectionChange={setSelected}
+      >
+        {items.map(item => (
+          <ListBoxItem key={item.id} id={item.id} icon={itemIcons[item.id]}>
+            {item.label}
+          </ListBoxItem>
+        ))}
+      </ListBox>
+    );
+  },
+});
+
 export const Disabled = meta.story({
   render: args => (
     <ListBox {...args} disabledKeys={['typescript', 'rust']}>
@@ -195,6 +237,9 @@ export const Disabled = meta.story({
 });
 
 export const WithActionsMenu = meta.story({
+  args: {
+    style: { width: 420 },
+  },
   render: args => (
     <ListBox {...args}>
       {items.map(item => (
@@ -202,21 +247,14 @@ export const WithActionsMenu = meta.story({
           key={item.id}
           id={item.id}
           icon={itemIcons[item.id]}
-          customActions={
-            <MenuTrigger>
-              <ButtonIcon
-                icon={<RiMoreLine />}
-                size="small"
-                aria-label="More actions"
-              />
-              <Menu>
-                <MenuItem iconStart={<RiEdit2Line />}>Edit</MenuItem>
-                <MenuItem iconStart={<RiShareBoxLine />}>Share</MenuItem>
-                <MenuItem iconStart={<RiDeleteBinLine />} color="danger">
-                  Delete
-                </MenuItem>
-              </Menu>
-            </MenuTrigger>
+          menuItems={
+            <>
+              <MenuItem iconStart={<RiEdit2Line />}>Edit</MenuItem>
+              <MenuItem iconStart={<RiShareBoxLine />}>Share</MenuItem>
+              <MenuItem iconStart={<RiDeleteBinLine />} color="danger">
+                Delete
+              </MenuItem>
+            </>
           }
         >
           {item.label}
@@ -228,7 +266,7 @@ export const WithActionsMenu = meta.story({
 
 export const WithActionsTags = meta.story({
   args: {
-    style: { width: 380 },
+    style: { width: 420 },
   },
   render: args => {
     const tagMap: Record<string, string[]> = {
@@ -246,6 +284,51 @@ export const WithActionsTags = meta.story({
             key={item.id}
             id={item.id}
             icon={itemIcons[item.id]}
+            customActions={
+              <TagGroup aria-label={`Tags for ${item.label}`}>
+                {tagMap[item.id].map(tag => (
+                  <Tag key={tag}>{tag}</Tag>
+                ))}
+              </TagGroup>
+            }
+          >
+            {item.label}
+          </ListBoxItem>
+        ))}
+      </ListBox>
+    );
+  },
+});
+
+export const WithActionsMenuAndTags = meta.story({
+  args: {
+    style: { width: 420 },
+  },
+  render: args => {
+    const tagMap: Record<string, string[]> = {
+      react: ['frontend', 'ui'],
+      typescript: ['typed', 'js'],
+      javascript: ['web'],
+      rust: ['systems', 'fast'],
+      go: ['backend'],
+    };
+
+    return (
+      <ListBox {...args}>
+        {items.map(item => (
+          <ListBoxItem
+            key={item.id}
+            id={item.id}
+            icon={itemIcons[item.id]}
+            menuItems={
+              <>
+                <MenuItem iconStart={<RiEdit2Line />}>Edit</MenuItem>
+                <MenuItem iconStart={<RiShareBoxLine />}>Share</MenuItem>
+                <MenuItem iconStart={<RiDeleteBinLine />} color="danger">
+                  Delete
+                </MenuItem>
+              </>
+            }
             customActions={
               <TagGroup aria-label={`Tags for ${item.label}`}>
                 {tagMap[item.id].map(tag => (
