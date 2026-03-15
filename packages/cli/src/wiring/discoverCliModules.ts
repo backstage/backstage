@@ -23,8 +23,10 @@ import { resolve as resolvePath } from 'node:path';
  * Scans the target project root's package.json for dependencies that are CLI
  * modules (packages with `backstage.role === 'cli-module'`).
  *
- * Returns the names of discovered CLI module packages, or an empty array if
- * none are found or the project root cannot be read.
+ * Returns the resolved entry point paths of discovered CLI module packages,
+ * or an empty array if none are found or the project root cannot be read.
+ * The paths are resolved relative to the project root to ensure they can be
+ * imported regardless of where the CLI code itself is located.
  */
 export function discoverCliModules(): string[] {
   const rootDir = targetPaths.rootDir;
@@ -54,7 +56,8 @@ export function discoverCliModules(): string[] {
       });
       const depPkg = JSON.parse(fs.readFileSync(depPkgPath, 'utf8'));
       if (PackageRoles.getRoleFromPackage(depPkg) === 'cli-module') {
-        modules.push(depName);
+        const resolvedPath = require.resolve(depName, { paths: [rootDir] });
+        modules.push(resolvedPath);
       }
     } catch {
       // Skip packages that can't be resolved or read

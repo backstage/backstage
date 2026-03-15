@@ -24,8 +24,8 @@ import { discoverCliModules } from './wiring/discoverCliModules';
   const discoveredModules = discoverCliModules();
 
   if (discoveredModules.length > 0) {
-    for (const moduleName of discoveredModules) {
-      initializer.add(import(moduleName));
+    for (const resolvedPath of discoveredModules) {
+      initializer.add(import(resolvedPath));
     }
   } else {
     // No CLI modules found in the project root; fall back to the built-in
