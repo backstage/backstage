@@ -24,6 +24,7 @@ export const LAST_SEEN_ONLINE_STORAGE_KEY =
 export type UseLogoutDisconnectedUserEffectProps = {
   enableEffect: boolean;
   autologoutIsEnabled: boolean;
+  isLoggedIn: boolean | null;
   idleTimeoutSeconds: number;
   lastSeenOnlineStore: TimestampStore;
   identityApi: IdentityApi;
@@ -32,6 +33,7 @@ export type UseLogoutDisconnectedUserEffectProps = {
 export const useLogoutDisconnectedUserEffect = ({
   enableEffect,
   autologoutIsEnabled,
+  isLoggedIn,
   idleTimeoutSeconds,
   lastSeenOnlineStore,
   identityApi,
@@ -41,7 +43,12 @@ export const useLogoutDisconnectedUserEffect = ({
      * Considers disconnected users as inactive users.
      * If all Backstage tabs are closed and idleTimeoutMinutes are passed then logout the user anyway.
      */
-    if (autologoutIsEnabled && enableEffect) {
+    // Prevent lastSeen getting deleted before logged state is checked
+    if (isLoggedIn === null) {
+      return;
+    }
+
+    if (autologoutIsEnabled && isLoggedIn && enableEffect) {
       const lastSeenOnline = lastSeenOnlineStore.get();
       if (lastSeenOnline) {
         const now = new Date();
@@ -53,11 +60,6 @@ export const useLogoutDisconnectedUserEffect = ({
           identityApi.signOut();
         }
       }
-      /**
-       * save for the first time when app is loaded, so that
-       * if user logs in and does nothing we still have a
-       * lastSeenOnline value in store
-       */
       lastSeenOnlineStore.save(new Date());
     } else {
       lastSeenOnlineStore.delete();
@@ -65,6 +67,7 @@ export const useLogoutDisconnectedUserEffect = ({
   }, [
     autologoutIsEnabled,
     enableEffect,
+    isLoggedIn,
     identityApi,
     idleTimeoutSeconds,
     lastSeenOnlineStore,
