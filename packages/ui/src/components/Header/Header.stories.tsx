@@ -18,7 +18,7 @@ import preview from '../../../../../.storybook/preview';
 import type { StoryFn } from '@storybook/react-vite';
 import { Header } from './Header';
 import type { HeaderTab } from '../PluginHeader/types';
-import { MemoryRouter } from 'react-router-dom';
+import { TestMemoryRouterProvider } from '@backstage/frontend-test-utils';
 import {
   Button,
   Container,
@@ -87,9 +87,9 @@ const menuItems = [
 ];
 
 const withRouter = (Story: StoryFn) => (
-  <MemoryRouter>
+  <TestMemoryRouterProvider>
     <Story />
-  </MemoryRouter>
+  </TestMemoryRouterProvider>
 );
 
 // Extract layout decorator as a reusable constant
@@ -238,7 +238,7 @@ export const WithTabsMatchingStrategies = meta.story({
     ],
   },
   render: args => (
-    <MemoryRouter initialEntries={['/mentorship/events']}>
+    <TestMemoryRouterProvider initialEntries={['/mentorship/events']}>
       <Header {...args} />
       <Container>
         <Text>
@@ -265,7 +265,7 @@ export const WithTabsMatchingStrategies = meta.story({
           • <strong>Settings</strong>: exact matching (default) - not active
         </Text>
       </Container>
-    </MemoryRouter>
+    </TestMemoryRouterProvider>
   ),
 });
 
@@ -291,7 +291,7 @@ export const WithTabsExactMatching = meta.story({
     ],
   },
   render: args => (
-    <MemoryRouter initialEntries={['/mentorship/events']}>
+    <TestMemoryRouterProvider initialEntries={['/mentorship/events']}>
       <Header {...args} />
       <Container>
         <Text>
@@ -304,7 +304,7 @@ export const WithTabsExactMatching = meta.story({
           even though the URL is under /mentorship.
         </Text>
       </Container>
-    </MemoryRouter>
+    </TestMemoryRouterProvider>
   ),
 });
 
@@ -333,7 +333,7 @@ export const WithTabsPrefixMatchingDeep = meta.story({
     ],
   },
   render: args => (
-    <MemoryRouter initialEntries={['/catalog/users/john/details']}>
+    <TestMemoryRouterProvider initialEntries={['/catalog/users/john/details']}>
       <Header {...args} />
       <Container>
         <Text as="p">
@@ -361,6 +361,6 @@ export const WithTabsPrefixMatchingDeep = meta.story({
           This demonstrates how prefix matching works with deeply nested routes.
         </Text>
       </Container>
-    </MemoryRouter>
+    </TestMemoryRouterProvider>
   ),
 });

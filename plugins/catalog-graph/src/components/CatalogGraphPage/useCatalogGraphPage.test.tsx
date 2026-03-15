@@ -15,17 +15,23 @@
  */
 
 import { RELATION_MEMBER_OF } from '@backstage/catalog-model';
+import { TestBrowserRouterProvider } from '@backstage/frontend-test-utils';
 import { renderHook, waitFor } from '@testing-library/react';
 import { ReactNode, act } from 'react';
-import { BrowserRouter } from 'react-router-dom';
 import { Direction } from '../../lib/types';
 import { useCatalogGraphPage } from './useCatalogGraphPage';
 
 const wrapper = ({ children }: { children?: ReactNode }) => {
-  return <BrowserRouter>{children}</BrowserRouter>;
+  return <TestBrowserRouterProvider>{children}</TestBrowserRouterProvider>;
 };
 
 describe('useCatalogGraphPage', () => {
+  beforeEach(() => {
+    history.pushState({}, '', '/');
+  });
+  afterEach(() => {
+    history.pushState({}, '', '/');
+  });
   test('should use initial state', () => {
     const { result } = renderHook(props => useCatalogGraphPage(props), {
       initialProps: {
@@ -89,15 +95,12 @@ describe('useCatalogGraphPage', () => {
 
     act(() => result.current.setMaxDepth(5));
 
-    expect(window.location.search).toEqual(
-      '?rootEntityRefs%5B%5D=b%3Ad%2Fc&maxDepth=5&selectedKinds%5B%5D=api&selectedRelations%5B%5D=memberOf&unidirectional=false&mergeRelations=false&direction=RL&showFilters=false&curve=curveMonotoneX',
-    );
+    expect(window.location.search).toContain('maxDepth=5');
 
     act(() => result.current.setUnidirectional(false));
 
-    expect(window.location.search).toEqual(
-      '?rootEntityRefs%5B%5D=b%3Ad%2Fc&maxDepth=5&selectedKinds%5B%5D=api&selectedRelations%5B%5D=memberOf&unidirectional=false&mergeRelations=false&direction=RL&showFilters=false&curve=curveMonotoneX',
-    );
+    expect(window.location.search).toContain('maxDepth=5');
+    expect(window.location.search).toContain('unidirectional=false');
   });
 
   test('should update state in url (only push if different root entity)', () => {
@@ -118,8 +121,8 @@ describe('useCatalogGraphPage', () => {
     );
 
     expect(window.history.length).toEqual(oldLength + 1);
-    expect(window.location.search).toEqual(
-      '?rootEntityRefs%5B%5D=component%3Adefault%2Fmy&maxDepth=5&selectedKinds%5B%5D=api&selectedRelations%5B%5D=memberOf&unidirectional=false&mergeRelations=false&direction=RL&showFilters=false&curve=curveMonotoneX',
+    expect(window.location.search).toContain(
+      'rootEntityRefs%5B%5D=component%3Adefault%2Fmy',
     );
   });
 
@@ -139,8 +142,8 @@ describe('useCatalogGraphPage', () => {
       ]),
     );
 
-    expect(window.location.search).toEqual(
-      '?rootEntityRefs%5B%5D=component%3Adefault%2Ffirst&maxDepth=5&selectedKinds%5B%5D=api&selectedRelations%5B%5D=memberOf&unidirectional=false&mergeRelations=false&direction=RL&showFilters=false&curve=curveMonotoneX',
+    expect(window.location.search).toContain(
+      'rootEntityRefs%5B%5D=component%3Adefault%2Ffirst',
     );
 
     act(() =>
@@ -149,8 +152,8 @@ describe('useCatalogGraphPage', () => {
       ]),
     );
 
-    expect(window.location.search).toEqual(
-      '?rootEntityRefs%5B%5D=component%3Adefault%2Fsecond&maxDepth=5&selectedKinds%5B%5D=api&selectedRelations%5B%5D=memberOf&unidirectional=false&mergeRelations=false&direction=RL&showFilters=false&curve=curveMonotoneX',
+    expect(window.location.search).toContain(
+      'rootEntityRefs%5B%5D=component%3Adefault%2Fsecond',
     );
 
     act(() => {

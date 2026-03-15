@@ -12,7 +12,7 @@ import {
   MenuListBoxItem,
 } from '../../../../../packages/ui/src/components/Menu/Menu';
 import { Button } from '../../../../../packages/ui/src/components/Button/Button';
-import { MemoryRouter } from 'react-router-dom';
+import { DocsRouterProvider } from '@/utils/backstage-router-provider';
 import {
   RiChat1Line,
   RiFileLine,
@@ -23,7 +23,7 @@ import {
 } from '@remixicon/react';
 
 export const Preview = () => (
-  <MemoryRouter>
+  <DocsRouterProvider>
     <MenuTrigger>
       <Button aria-label="Menu">Menu</Button>
       <Menu>
@@ -44,11 +44,11 @@ export const Preview = () => (
         </SubmenuTrigger>
       </Menu>
     </MenuTrigger>
-  </MemoryRouter>
+  </DocsRouterProvider>
 );
 
 export const PreviewSubmenu = () => (
-  <MemoryRouter>
+  <DocsRouterProvider>
     <MenuTrigger>
       <Button variant="secondary">Menu</Button>
       <Menu>
@@ -63,11 +63,11 @@ export const PreviewSubmenu = () => (
         <MenuItem>Save</MenuItem>
       </Menu>
     </MenuTrigger>
-  </MemoryRouter>
+  </DocsRouterProvider>
 );
 
 export const PreviewIcons = () => (
-  <MemoryRouter>
+  <DocsRouterProvider>
     <MenuTrigger>
       <Button variant="secondary">Menu</Button>
       <Menu>
@@ -76,11 +76,11 @@ export const PreviewIcons = () => (
         <MenuItem iconStart={<RiImageLine />}>New Image</MenuItem>
       </Menu>
     </MenuTrigger>
-  </MemoryRouter>
+  </DocsRouterProvider>
 );
 
 export const PreviewLinks = () => (
-  <MemoryRouter>
+  <DocsRouterProvider>
     <MenuTrigger>
       <Button variant="secondary">Menu</Button>
       <Menu>
@@ -89,11 +89,11 @@ export const PreviewLinks = () => (
         <MenuItem href="/contact">Contact</MenuItem>
       </Menu>
     </MenuTrigger>
-  </MemoryRouter>
+  </DocsRouterProvider>
 );
 
 export const PreviewSections = () => (
-  <MemoryRouter>
+  <DocsRouterProvider>
     <MenuTrigger>
       <Button variant="secondary">Menu</Button>
       <Menu>
@@ -108,11 +108,11 @@ export const PreviewSections = () => (
         </MenuSection>
       </Menu>
     </MenuTrigger>
-  </MemoryRouter>
+  </DocsRouterProvider>
 );
 
 export const PreviewSeparators = () => (
-  <MemoryRouter>
+  <DocsRouterProvider>
     <MenuTrigger>
       <Button variant="secondary">Menu</Button>
       <Menu>
@@ -123,11 +123,11 @@ export const PreviewSeparators = () => (
         <MenuItem>Save As...</MenuItem>
       </Menu>
     </MenuTrigger>
-  </MemoryRouter>
+  </DocsRouterProvider>
 );
 
 export const PreviewAutocompleteMenu = () => (
-  <MemoryRouter>
+  <DocsRouterProvider>
     <MenuTrigger>
       <Button variant="secondary">Search</Button>
       <MenuAutocomplete placeholder="Type to search...">
@@ -136,11 +136,11 @@ export const PreviewAutocompleteMenu = () => (
         <MenuItem>Option 3</MenuItem>
       </MenuAutocomplete>
     </MenuTrigger>
-  </MemoryRouter>
+  </DocsRouterProvider>
 );
 
 export const PreviewAutocompleteListbox = () => (
-  <MemoryRouter>
+  <DocsRouterProvider>
     <MenuTrigger>
       <Button variant="secondary">Select</Button>
       <MenuAutocompleteListbox placeholder="Type to filter...">
@@ -149,11 +149,11 @@ export const PreviewAutocompleteListbox = () => (
         <MenuListBoxItem>Option 3</MenuListBoxItem>
       </MenuAutocompleteListbox>
     </MenuTrigger>
-  </MemoryRouter>
+  </DocsRouterProvider>
 );
 
 export const PreviewAutocompleteListboxMultiple = () => (
-  <MemoryRouter>
+  <DocsRouterProvider>
     <MenuTrigger>
       <Button variant="secondary">Multi-select</Button>
       <MenuAutocompleteListbox
@@ -165,5 +165,5 @@ export const PreviewAutocompleteListboxMultiple = () => (
         <MenuListBoxItem>Option 3</MenuListBoxItem>
       </MenuAutocompleteListbox>
     </MenuTrigger>
-  </MemoryRouter>
+  </DocsRouterProvider>
 );

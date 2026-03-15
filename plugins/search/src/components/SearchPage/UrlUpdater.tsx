@@ -17,7 +17,7 @@
 import { useEffect } from 'react';
 import usePrevious from 'react-use/esm/usePrevious';
 import qs from 'qs';
-import { useLocation } from 'react-router-dom';
+import { useLocation } from '@backstage/frontend-plugin-api';
 import { useSearch } from '@backstage/plugin-search-react';
 import { JsonObject } from '@backstage/types';
 

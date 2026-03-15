@@ -7,11 +7,11 @@ import {
   TabPanel,
 } from '../../../../../packages/ui/src/components/Tabs';
 import { Text } from '../../../../../packages/ui/src/components/Text/Text';
-import { MemoryRouter } from 'react-router-dom';
+import { DocsRouterProvider } from '@/utils/backstage-router-provider';
 
 export const Default = () => {
   return (
-    <MemoryRouter>
+    <DocsRouterProvider>
       <Tabs>
         <TabList>
           <Tab id="tab1">Tab 1</Tab>
@@ -28,13 +28,13 @@ export const Default = () => {
           <Text>Content for Tab 3</Text>
         </TabPanel>
       </Tabs>
-    </MemoryRouter>
+    </DocsRouterProvider>
   );
 };
 
 export const DefaultSelectedKey = () => {
   return (
-    <MemoryRouter>
+    <DocsRouterProvider>
       <Tabs defaultSelectedKey="tab2">
         <TabList>
           <Tab id="tab1">Tab 1</Tab>
@@ -51,13 +51,13 @@ export const DefaultSelectedKey = () => {
           <Text>Content for Tab 3</Text>
         </TabPanel>
       </Tabs>
-    </MemoryRouter>
+    </DocsRouterProvider>
   );
 };
 
 export const DisabledTabs = () => {
   return (
-    <MemoryRouter>
+    <DocsRouterProvider>
       <Tabs>
         <TabList>
           <Tab id="tab1">Tab 1</Tab>
@@ -76,13 +76,13 @@ export const DisabledTabs = () => {
           <Text>Content for Tab 3</Text>
         </TabPanel>
       </Tabs>
-    </MemoryRouter>
+    </DocsRouterProvider>
   );
 };
 
 export const Orientation = () => {
   return (
-    <MemoryRouter>
+    <DocsRouterProvider>
       <Tabs orientation="vertical">
         <TabList>
           <Tab id="tab1">Tab 1</Tab>
@@ -99,6 +99,6 @@ export const Orientation = () => {
           <Text>Content for Tab 3</Text>
         </TabPanel>
       </Tabs>
-    </MemoryRouter>
+    </DocsRouterProvider>
   );
 };

@@ -23,8 +23,8 @@ import { TECHDOCS_EXTERNAL_ANNOTATION } from '@backstage/plugin-techdocs-common'
 const mockNavigate = jest.fn();
 const mockViewTechdocLink = jest.fn(() => '/docs');
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+jest.mock('@backstage/frontend-plugin-api', () => ({
+  ...jest.requireActual('@backstage/frontend-plugin-api'),
   useNavigate: () => mockNavigate,
 }));
 

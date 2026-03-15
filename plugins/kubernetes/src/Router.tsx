@@ -19,7 +19,7 @@ import {
   useEntity,
   MissingAnnotationEmptyState,
 } from '@backstage/plugin-catalog-react';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes } from '@backstage/frontend-plugin-api';
 import { KubernetesContent } from './KubernetesContent';
 import Button from '@material-ui/core/Button';
 import {

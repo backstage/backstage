@@ -39,8 +39,8 @@ import {
 import { mockApis } from '@backstage/frontend-test-utils';
 import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import { EntityLayout } from './EntityLayout';
+import { Route, Routes } from '@backstage/frontend-plugin-api';
 import { rootRouteRef, unregisterRedirectRouteRef } from '../../routes';
-import { Route, Routes } from 'react-router-dom';
 
 describe('EntityLayout', () => {
   const mockEntity = {

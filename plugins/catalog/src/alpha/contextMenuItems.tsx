@@ -26,10 +26,11 @@ import { alertApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import {
   dialogApiRef,
   useTranslationRef,
+  useNavigate,
+  useSearchParams,
   type DialogApiDialog,
 } from '@backstage/frontend-plugin-api';
 import { catalogTranslationRef } from './translation';
-import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   UnregisterEntityDialog,
   useEntity,
@@ -81,7 +82,7 @@ export const inspectEntityContextMenuItem = EntityContextMenuItemBlueprint.make(
         return {
           title: t('entityContextMenu.inspectMenuTitle'),
           onClick: async () => {
-            setSearchParams('inspect');
+            setSearchParams(new URLSearchParams('inspect'));
           },
         };
       },

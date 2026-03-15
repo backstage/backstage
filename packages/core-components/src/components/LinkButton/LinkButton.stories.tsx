@@ -15,7 +15,7 @@
  */
 import { ComponentType, PropsWithChildren } from 'react';
 import { LinkButton } from './LinkButton';
-import { useLocation } from 'react-router-dom';
+import { useLocation } from '@backstage/frontend-plugin-api';
 import { createRouteRef, useRouteRef } from '@backstage/core-plugin-api';
 import Divider from '@material-ui/core/Divider';
 import List from '@material-ui/core/List';

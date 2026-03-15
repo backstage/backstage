@@ -38,7 +38,7 @@ import { GridItem, useStyles } from './styles';
 import { IdentityProviders, SignInProviderConfig } from './types';
 import { coreComponentsTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams } from '@backstage/frontend-plugin-api';
 
 type CommonSignInPageProps = SignInPageProps & {
   /**

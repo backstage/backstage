@@ -31,7 +31,7 @@ import { useMountEffect } from '@react-hookz/web';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import qs from 'qs';
 import { PropsWithChildren } from 'react';
-import { MemoryRouter } from 'react-router-dom';
+import { TestMemoryRouterProvider } from '@backstage/frontend-test-utils';
 import { catalogApiRef } from '../api';
 import { MockStarredEntitiesApi, starredEntitiesApiRef } from '../apis';
 import {
@@ -104,7 +104,7 @@ const createWrapper =
     };
 
     return (
-      <MemoryRouter initialEntries={[options.location ?? '']}>
+      <TestMemoryRouterProvider initialEntries={[options.location ?? '']}>
         <TestApiProvider
           apis={[
             [configApiRef, mockApis.config()],
@@ -121,7 +121,7 @@ const createWrapper =
             <InitialFiltersWrapper>{props.children}</InitialFiltersWrapper>
           </EntityListProvider>
         </TestApiProvider>
-      </MemoryRouter>
+      </TestMemoryRouterProvider>
     );
   };
 
@@ -1105,7 +1105,7 @@ describe('versioned context', () => {
         };
 
         return (
-          <MemoryRouter initialEntries={['/catalog']}>
+          <TestMemoryRouterProvider initialEntries={['/catalog']}>
             <TestApiProvider
               apis={[
                 [configApiRef, mockApis.config()],
@@ -1124,7 +1124,7 @@ describe('versioned context', () => {
                 <InitialFiltersWrapper>{children}</InitialFiltersWrapper>
               </NewEntityListContext.Provider>
             </TestApiProvider>
-          </MemoryRouter>
+          </TestMemoryRouterProvider>
         );
       },
     });

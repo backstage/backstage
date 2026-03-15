@@ -12,6 +12,7 @@ import { ApiRef } from '@backstage/frontend-plugin-api';
 import { AppNode } from '@backstage/frontend-plugin-api';
 import { AppNodeInstance } from '@backstage/frontend-plugin-api';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
+import { ComponentType } from 'react';
 import { Config } from '@backstage/config';
 import { ConfigApi } from '@backstage/core-plugin-api';
 import { ConfigApi as ConfigApi_2 } from '@backstage/frontend-plugin-api';
@@ -37,15 +38,25 @@ import { IdentityApi } from '@backstage/frontend-plugin-api';
 import { IdentityApi as IdentityApi_2 } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
+import { JSX as JSX_2 } from 'react/jsx-runtime';
+import type { Location as Location_2 } from '@backstage/frontend-plugin-api';
+import type { NavigateFunction } from '@backstage/frontend-plugin-api';
 import { Observable } from '@backstage/types';
+import type { Path } from '@backstage/frontend-plugin-api';
 import { PermissionApi } from '@backstage/plugin-permission-react';
+import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { registerMswTestHooks } from '@backstage/test-utils';
 import { RenderResult } from '@testing-library/react';
+import type { RouteMatch } from '@backstage/frontend-plugin-api';
+import type { RouteObject } from '@backstage/frontend-plugin-api';
+import type { RouterApi } from '@backstage/frontend-plugin-api';
 import { RouteRef } from '@backstage/frontend-plugin-api';
+import { SetURLSearchParams } from 'react-router-dom';
 import { StorageApi } from '@backstage/core-plugin-api';
 import { StorageApi as StorageApi_2 } from '@backstage/frontend-plugin-api';
 import { StorageValueSnapshot } from '@backstage/core-plugin-api';
+import type { To } from '@backstage/frontend-plugin-api';
 import { TranslationApi } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
 import { TranslationSnapshot } from '@backstage/frontend-plugin-api';
@@ -67,6 +78,56 @@ export function attachMockApiFactory<TApi, TImpl extends TApi = TApi>(
 ): TImpl & {
   [mockApiFactorySymbol]: ApiFactory<TApi, TApi, {}>;
 };
+
+// @public
+export class BaseReactRouterV6Api implements RouterApi {
+  // (undocumented)
+  generatePath(
+    path: string,
+    params?: Record<string, string | undefined>,
+  ): string;
+  // (undocumented)
+  Link: RouterApi['Link'];
+  // (undocumented)
+  matchRoutes<T extends RouteObject>(
+    routes: T[],
+    location: {
+      pathname: string;
+    },
+  ): RouteMatch<T>[] | null;
+  // (undocumented)
+  Navigate: RouterApi['Navigate'];
+  // (undocumented)
+  NavLink: RouterApi['NavLink'];
+  // (undocumented)
+  Outlet: RouterApi['Outlet'];
+  // (undocumented)
+  resolvePath(to: To, fromPathname?: string): Path;
+  // (undocumented)
+  Router: ComponentType<{
+    children: ReactNode;
+    basePath: string;
+  }>;
+  // (undocumented)
+  useHref(to: To): string;
+  // (undocumented)
+  useLocation(): Location_2;
+  // (undocumented)
+  useNavigate(): NavigateFunction;
+  // (undocumented)
+  useOutlet(context?: unknown): ReactElement | null;
+  // (undocumented)
+  useParams<T extends Record<string, string | undefined>>(): T;
+  // (undocumented)
+  useResolvedPath(to: To): Path;
+  // (undocumented)
+  useRoutes(
+    routes: RouteObject[],
+    location?: Partial<Location_2> | string,
+  ): ReactElement | null;
+  // (undocumented)
+  useSearchParams(): [URLSearchParams, SetURLSearchParams];
+}
 
 // @public
 export function createApiMock<TApi>(
@@ -272,6 +333,20 @@ export namespace mockApis {
   }
 }
 
+// @public
+export class MockBrowserRouterApi extends BaseReactRouterV6Api {
+  // (undocumented)
+  Router: ComponentType<{
+    children: ReactNode;
+    basePath: string;
+  }>;
+}
+
+// @public
+export interface MockBrowserRouterApiOptions {
+  basePath?: string;
+}
+
 // @public @deprecated
 export class MockConfigApi implements ConfigApi {
   constructor(input: { data: JsonObject });
@@ -366,6 +441,22 @@ export interface MockFetchApiOptions {
     | {
         discoveryApi: Pick<DiscoveryApi_2, 'getBaseUrl'>;
       };
+}
+
+// @public
+export class MockMemoryRouterApi extends BaseReactRouterV6Api {
+  constructor(options?: MockMemoryRouterApiOptions);
+  // (undocumented)
+  Router: ComponentType<{
+    children: ReactNode;
+    basePath: string;
+  }>;
+}
+
+// @public
+export interface MockMemoryRouterApiOptions {
+  initialEntries?: string[];
+  initialIndex?: number;
 }
 
 // @public @deprecated
@@ -480,6 +571,29 @@ export type TestAppOptions<TApiPairs extends any[] = any[]> = {
   initialRouteEntries?: string[];
   apis?: readonly [...TestApiPairs<TApiPairs>];
 };
+
+// @public
+export const TestBrowserRouterProvider: (
+  input: TestBrowserRouterProviderProps,
+) => JSX_2.Element;
+
+// @public
+export interface TestBrowserRouterProviderProps
+  extends MockBrowserRouterApiOptions {
+  children: ReactNode;
+}
+
+// @public
+export const TestMemoryRouterProvider: (
+  input: TestMemoryRouterProviderProps,
+) => JSX_2.Element;
+
+// @public
+export interface TestMemoryRouterProviderProps
+  extends MockMemoryRouterApiOptions {
+  basePath?: string;
+  children: ReactNode;
+}
 
 export { withLogCollector };
 ```

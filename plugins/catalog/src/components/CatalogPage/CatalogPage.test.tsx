@@ -16,11 +16,11 @@
 
 import { renderInTestApp } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
-import { useOutlet } from 'react-router-dom';
+import { useOutlet } from '@backstage/frontend-plugin-api';
 import { CatalogPage } from './CatalogPage';
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+jest.mock('@backstage/frontend-plugin-api', () => ({
+  ...jest.requireActual('@backstage/frontend-plugin-api'),
   useOutlet: jest.fn().mockReturnValue('Route Children'),
 }));
 

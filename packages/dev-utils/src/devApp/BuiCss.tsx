@@ -15,8 +15,8 @@
  */
 
 // This ensures that dev apps always have the BUI CSS loaded.
-// eslint-disable-next-line @backstage/no-ui-css-imports-in-non-frontend
-import '@backstage/ui/css/styles.css';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports, @backstage/no-ui-css-imports-in-non-frontend
+import '../../../ui/src/css/styles.css';
 
 /**
  * Placeholder component to allow lazy loading of the BUI CSS import. This

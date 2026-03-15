@@ -45,7 +45,7 @@ import { useRouteRef, configApiRef, useApi } from '@backstage/core-plugin-api';
 import capitalize from 'lodash/capitalize';
 
 import { rootRouteRef } from '../../../routes';
-import { useParams } from 'react-router-dom';
+import { useParams } from '@backstage/frontend-plugin-api';
 
 const skeleton = <Skeleton animation="wave" variant="text" height={40} />;
 

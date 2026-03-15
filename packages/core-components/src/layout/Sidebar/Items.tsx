@@ -34,7 +34,7 @@ import ArrowDropUp from '@material-ui/icons/ArrowDropUp';
 import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 import SearchIcon from '@material-ui/icons/Search';
 import classnames from 'classnames';
-import type { Location } from 'history';
+import type { Location, Path } from 'history';
 
 import {
   ComponentProps,
@@ -56,10 +56,11 @@ import {
 import {
   Link,
   NavLinkProps,
-  resolvePath,
   useLocation,
   useResolvedPath,
-} from 'react-router-dom';
+  useApi,
+  routerApiRef,
+} from '@backstage/frontend-plugin-api';
 
 import {
   SidebarConfig,
@@ -235,6 +236,7 @@ function useMemoStyles(sidebarConfig: SidebarConfig) {
 const useLocationMatch = (
   submenu: ReactElement<SidebarSubmenuProps>,
   location: Location,
+  routerApi: { resolvePath: (to: string) => Path },
 ): boolean =>
   useElementFilter(
     submenu.props.children,
@@ -253,12 +255,13 @@ const useLocationMatch = (
                 dropdownItems.forEach(
                   ({ to: _to }) =>
                     (active =
-                      active || isLocationMatch(location, resolvePath(_to))),
+                      active ||
+                      isLocationMatch(location, routerApi.resolvePath(_to))),
                 );
                 return;
               }
               if (to) {
-                active = isLocationMatch(location, resolvePath(to));
+                active = isLocationMatch(location, routerApi.resolvePath(to));
               }
             }
           },
@@ -313,15 +316,17 @@ function isButtonItem(
 
 const sidebarSubmenuType = createElement(SidebarSubmenu).type;
 
-// TODO(Rugvip): Remove this once NavLink is updated in react-router-dom.
-//               This is needed because react-router doesn't handle the path comparison
-//               properly yet, matching for example /foobar with /foo.
+// TODO(Rugvip): Remove this once NavLink/Link from RouterApi handles path comparison
+//               properly. This is needed because the RouterApi's underlying routing
+//               doesn't handle the path comparison properly yet, matching for example
+//               /foobar with /foo.
 export const WorkaroundNavLink = forwardRef<
   HTMLAnchorElement,
   NavLinkProps & {
     children?: ReactNode;
     activeStyle?: CSSProperties;
     activeClassName?: string;
+    caseSensitive?: boolean;
   }
 >(function WorkaroundNavLinkWithRef(
   {
@@ -356,8 +361,8 @@ export const WorkaroundNavLink = forwardRef<
   return (
     <Link
       {...rest}
-      to={to}
       ref={ref}
+      to={to}
       aria-current={ariaCurrent}
       style={{ ...style, ...(isActive ? activeStyle : undefined) }}
       className={classnames([
@@ -506,7 +511,8 @@ const SidebarItemWithSubmenu = ({
   const classes = useMemoStyles(sidebarConfig);
   const [isHoveredOn, setIsHoveredOn] = useState(false);
   const location = useLocation();
-  const isActive = useLocationMatch(children, location);
+  const routerApi = useApi(routerApiRef);
+  const isActive = useLocationMatch(children, location, routerApi);
   const isSmallScreen = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down('sm'),
   );

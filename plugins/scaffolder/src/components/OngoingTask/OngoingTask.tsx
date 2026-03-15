@@ -21,7 +21,7 @@ import {
   useState,
 } from 'react';
 import { Content, ErrorPanel, Header, Page } from '@backstage/core-components';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from '@backstage/frontend-plugin-api';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';

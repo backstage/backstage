@@ -15,7 +15,12 @@
  */
 
 import { useContext, useState } from 'react';
-import { resolvePath, useLocation, useResolvedPath } from 'react-router-dom';
+import {
+  useLocation,
+  useResolvedPath,
+  useApi,
+  routerApiRef,
+} from '@backstage/frontend-plugin-api';
 import { makeStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
@@ -158,6 +163,7 @@ export type SidebarSubmenuItemProps = {
 export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
   const { title, subtitle, to, icon: Icon, dropdownItems, exact } = props;
   const classes = useStyles();
+  const routerApi = useApi(routerApiRef);
   const { setIsHoveredOn } = useContext(SidebarItemWithSubmenuContext);
   const closeSubmenu = () => {
     setIsHoveredOn(false);
@@ -174,7 +180,7 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
   };
   if (dropdownItems !== undefined) {
     dropdownItems.some(item => {
-      const resolvedPath = resolvePath(item.to);
+      const resolvedPath = routerApi.resolvePath(item.to);
       isActive = isLocationMatch(currentLocation, resolvedPath, exact);
       return isActive;
     });

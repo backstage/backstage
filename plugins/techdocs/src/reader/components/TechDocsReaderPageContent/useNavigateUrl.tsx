@@ -15,7 +15,7 @@
  */
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import { useCallback, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@backstage/frontend-plugin-api';
 
 /**
  * Resolve a URL to a relative URL given a base URL that may or may not include subpaths.
@@ -40,14 +40,14 @@ export function resolveUrlToRelative(url: string, baseUrl: string) {
 
 /**
  * A helper hook that allows for full internal website urls to be processed through the navigate
- *  hook provided by `react-router-dom`.
+ *  hook provided by `@backstage/frontend-plugin-api` (RouterApi).
  *
  * NOTE: This does not support routing to external URLs. That should be done with a `Link` or `a`
  *  element instead, or just `window.location.href`.
  *
  * TODO: Update this to use `useRouteRef` instead of `useApi`.
  *
- * @returns Navigation function that is a wrapper over `react-router-dom`'s
+ * @returns Navigation function that is a wrapper over the RouterApi's useNavigate
  *  to support passing full URLs for navigation.
  *
  * @public

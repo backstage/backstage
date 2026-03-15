@@ -17,7 +17,7 @@
 import preview from '../../../../../.storybook/preview';
 import type { StoryFn } from '@storybook/react-vite';
 import { Tabs, TabList, Tab, TabPanel } from './Tabs';
-import { MemoryRouter } from 'react-router-dom';
+import { TestMemoryRouterProvider } from '@backstage/frontend-test-utils';
 import { Box } from '../Box';
 import { Text } from '../Text';
 
@@ -27,9 +27,9 @@ const meta = preview.meta({
 });
 
 const withRouter = (Story: StoryFn) => (
-  <MemoryRouter>
+  <TestMemoryRouterProvider>
     <Story />
-  </MemoryRouter>
+  </TestMemoryRouterProvider>
 );
 
 export const Default = meta.story({
@@ -78,7 +78,7 @@ export const WithMockedURLTab2 = meta.story({
     children: '',
   },
   render: () => (
-    <MemoryRouter initialEntries={['/tab2']}>
+    <TestMemoryRouterProvider initialEntries={['/tab2']}>
       <Tabs>
         <TabList>
           <Tab id="tab1" href="/tab1">
@@ -101,7 +101,7 @@ export const WithMockedURLTab2 = meta.story({
           matches the current path.
         </Text>
       </Box>
-    </MemoryRouter>
+    </TestMemoryRouterProvider>
   ),
 });
 
@@ -110,7 +110,7 @@ export const WithMockedURLTab3 = meta.story({
     children: '',
   },
   render: () => (
-    <MemoryRouter initialEntries={['/tab3']}>
+    <TestMemoryRouterProvider initialEntries={['/tab3']}>
       <Tabs>
         <TabList>
           <Tab id="tab1" href="/tab1">
@@ -133,7 +133,7 @@ export const WithMockedURLTab3 = meta.story({
           because it matches the current path.
         </Text>
       </Box>
-    </MemoryRouter>
+    </TestMemoryRouterProvider>
   ),
 });
 
@@ -142,7 +142,7 @@ export const WithMockedURLNoMatch = meta.story({
     children: '',
   },
   render: () => (
-    <MemoryRouter initialEntries={['/some-other-page']}>
+    <TestMemoryRouterProvider initialEntries={['/some-other-page']}>
       <Tabs>
         <TabList>
           <Tab id="tab1" href="/tab1">
@@ -169,7 +169,7 @@ export const WithMockedURLNoMatch = meta.story({
           fall back to React Aria's internal state.
         </Text>
       </Box>
-    </MemoryRouter>
+    </TestMemoryRouterProvider>
   ),
 });
 
@@ -180,7 +180,7 @@ export const ExactMatchingDefault = meta.story({
     children: '',
   },
   render: () => (
-    <MemoryRouter initialEntries={['/mentorship/events']}>
+    <TestMemoryRouterProvider initialEntries={['/mentorship/events']}>
       <Tabs>
         <TabList>
           <Tab id="mentorship" href="/mentorship">
@@ -207,7 +207,7 @@ export const ExactMatchingDefault = meta.story({
           "/mentorship".
         </Text>
       </Box>
-    </MemoryRouter>
+    </TestMemoryRouterProvider>
   ),
 });
 
@@ -216,7 +216,7 @@ export const PrefixMatchingForNestedRoutes = meta.story({
     children: '',
   },
   render: () => (
-    <MemoryRouter initialEntries={['/mentorship/events']}>
+    <TestMemoryRouterProvider initialEntries={['/mentorship/events']}>
       <Tabs>
         <TabList>
           <Tab id="mentorship" href="/mentorship" matchStrategy="prefix">
@@ -247,7 +247,7 @@ export const PrefixMatchingForNestedRoutes = meta.story({
           URL doesn't start with "/catalog".
         </Text>
       </Box>
-    </MemoryRouter>
+    </TestMemoryRouterProvider>
   ),
 });
 
@@ -256,7 +256,7 @@ export const PrefixMatchingDeepNesting = meta.story({
     children: '',
   },
   render: () => (
-    <MemoryRouter initialEntries={['/catalog/users/john/details']}>
+    <TestMemoryRouterProvider initialEntries={['/catalog/users/john/details']}>
       <Tabs>
         <TabList>
           <Tab id="home" href="/home">
@@ -282,7 +282,7 @@ export const PrefixMatchingDeepNesting = meta.story({
           This works for any level of nesting under "/catalog".
         </Text>
       </Box>
-    </MemoryRouter>
+    </TestMemoryRouterProvider>
   ),
 });
 
@@ -291,7 +291,7 @@ export const MixedMatchingStrategies = meta.story({
     children: '',
   },
   render: () => (
-    <MemoryRouter initialEntries={['/dashboard/analytics/reports']}>
+    <TestMemoryRouterProvider initialEntries={['/dashboard/analytics/reports']}>
       <Tabs>
         <TabList>
           <Tab id="overview" href="/dashboard">
@@ -333,7 +333,7 @@ export const MixedMatchingStrategies = meta.story({
           "/help")
         </Text>
       </Box>
-    </MemoryRouter>
+    </TestMemoryRouterProvider>
   ),
 });
 
@@ -342,7 +342,7 @@ export const PrefixMatchingEdgeCases = meta.story({
     children: '',
   },
   render: () => (
-    <MemoryRouter initialEntries={['/foobar']}>
+    <TestMemoryRouterProvider initialEntries={['/foobar']}>
       <Tabs>
         <TabList>
           <Tab id="foo" href="/foo" matchStrategy="prefix">
@@ -375,7 +375,7 @@ export const PrefixMatchingEdgeCases = meta.story({
           prevent false matches.
         </Text>
       </Box>
-    </MemoryRouter>
+    </TestMemoryRouterProvider>
   ),
 });
 
@@ -384,7 +384,7 @@ export const PrefixMatchingWithSlash = meta.story({
     children: '',
   },
   render: () => (
-    <MemoryRouter initialEntries={['/foo/bar']}>
+    <TestMemoryRouterProvider initialEntries={['/foo/bar']}>
       <Tabs>
         <TabList>
           <Tab id="foo" href="/foo" matchStrategy="prefix">
@@ -416,7 +416,7 @@ export const PrefixMatchingWithSlash = meta.story({
           This demonstrates proper prefix matching with the "/" separator.
         </Text>
       </Box>
-    </MemoryRouter>
+    </TestMemoryRouterProvider>
   ),
 });
 
@@ -425,7 +425,7 @@ export const RootPathMatching = meta.story({
     children: '',
   },
   render: () => (
-    <MemoryRouter initialEntries={['/']}>
+    <TestMemoryRouterProvider initialEntries={['/']}>
       <Tabs>
         <TabList>
           <Tab id="home" href="/">
@@ -452,7 +452,7 @@ export const RootPathMatching = meta.story({
           "/catalog"
         </Text>
       </Box>
-    </MemoryRouter>
+    </TestMemoryRouterProvider>
   ),
 });
 
@@ -461,7 +461,9 @@ export const HrefWithQueryParams = meta.story({
     children: '',
   },
   render: () => (
-    <MemoryRouter initialEntries={['/cost-insights/dashboard?group=bar']}>
+    <TestMemoryRouterProvider
+      initialEntries={['/cost-insights/dashboard?group=bar']}
+    >
       <Tabs>
         <TabList>
           <Tab
@@ -497,7 +499,7 @@ export const HrefWithQueryParams = meta.story({
           match /cost-insights/dashboard.
         </Text>
       </Box>
-    </MemoryRouter>
+    </TestMemoryRouterProvider>
   ),
 });
 
@@ -506,7 +508,7 @@ export const AutoSelectionOfTabs = meta.story({
     children: '',
   },
   render: () => (
-    <MemoryRouter initialEntries={['/random-page']}>
+    <TestMemoryRouterProvider initialEntries={['/random-page']}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
         <Text style={{ fontSize: '16px', color: '#666' }}>
           Current URL: <strong>/random-page</strong>
@@ -556,6 +558,6 @@ export const AutoSelectionOfTabs = meta.story({
           </TabList>
         </Tabs>
       </div>
-    </MemoryRouter>
+    </TestMemoryRouterProvider>
   ),
 });

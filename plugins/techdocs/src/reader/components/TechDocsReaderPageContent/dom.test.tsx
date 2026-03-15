@@ -15,14 +15,18 @@
  */
 import { render } from '@testing-library/react';
 
-// We need to mock react-router-dom hooks used by useInitialRedirect
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+// We need to mock @backstage/frontend-plugin-api hooks used by useInitialRedirect
+import {
+  useLocation,
+  useNavigate,
+  useParams,
+} from '@backstage/frontend-plugin-api';
 
 // Import the module from which the hook is defined
 import { useInitialRedirect } from './dom';
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+jest.mock('@backstage/frontend-plugin-api', () => ({
+  ...jest.requireActual('@backstage/frontend-plugin-api'),
   useLocation: jest.fn(),
   useNavigate: jest.fn(),
   useParams: jest.fn(),

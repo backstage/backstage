@@ -16,8 +16,24 @@
 import { PropsWithChildren } from 'react';
 import { act, renderHook } from '@testing-library/react';
 import { useSearchModal } from './useSearchModal';
-import { BrowserRouter, Router } from 'react-router-dom';
-import { createMemoryHistory } from 'history';
+import {
+  TestBrowserRouterProvider,
+  TestMemoryRouterProvider,
+} from '@backstage/frontend-test-utils';
+import {
+  useNavigate,
+  type NavigateFunction,
+} from '@backstage/frontend-plugin-api';
+
+const navigateRef: { current: NavigateFunction | null } = { current: null };
+const NavigateCapture = ({ children }: PropsWithChildren<{}>) => {
+  navigateRef.current = useNavigate();
+  return <>{children}</>;
+};
+
+const browserRouterWrapper = ({ children }: PropsWithChildren<{}>) => (
+  <TestBrowserRouterProvider>{children}</TestBrowserRouterProvider>
+);
 
 describe('useSearchModal', () => {
   it.each([
@@ -27,7 +43,7 @@ describe('useSearchModal', () => {
     'should return the correct state when initial state is %s',
     (initialState, result) => {
       const rendered = renderHook(() => useSearchModal(initialState), {
-        wrapper: BrowserRouter,
+        wrapper: browserRouterWrapper,
       });
 
       expect(rendered.result.current.state).toEqual(result);
@@ -36,7 +52,7 @@ describe('useSearchModal', () => {
 
   it('should keep open forever to true once modal is toggled', () => {
     const rendered = renderHook(() => useSearchModal(), {
-      wrapper: BrowserRouter,
+      wrapper: browserRouterWrapper,
     });
     act(() => rendered.result.current.toggleModal());
 
@@ -54,7 +70,7 @@ describe('useSearchModal', () => {
 
   it('should keep open to false if setOpen(false) is invoked on an initially closed modal', () => {
     const rendered = renderHook(() => useSearchModal(), {
-      wrapper: BrowserRouter,
+      wrapper: browserRouterWrapper,
     });
     act(() => rendered.result.current.setOpen(false));
     expect(rendered.result.current.state).toEqual({
@@ -65,7 +81,7 @@ describe('useSearchModal', () => {
 
   it('should keep open forever to true even when the modal transition from opened to closed', () => {
     const rendered = renderHook(() => useSearchModal(), {
-      wrapper: BrowserRouter,
+      wrapper: browserRouterWrapper,
     });
 
     act(() => rendered.result.current.setOpen(true));
@@ -82,18 +98,18 @@ describe('useSearchModal', () => {
   });
 
   it('should hide when location changes', () => {
-    const history = createMemoryHistory({ initialEntries: ['/'] });
+    const wrapper = ({ children }: PropsWithChildren<{}>) => (
+      <TestMemoryRouterProvider initialEntries={['/']}>
+        <NavigateCapture>{children}</NavigateCapture>
+      </TestMemoryRouterProvider>
+    );
 
     const rendered = renderHook(() => useSearchModal(true), {
-      wrapper: ({ children }: PropsWithChildren<{}>) => (
-        <Router location={history.location} navigator={history}>
-          {children}
-        </Router>
-      ),
+      wrapper,
     });
 
     expect(rendered.result.current.state.hidden).toBe(false);
-    act(() => history.push('/new/path'));
+    act(() => navigateRef.current?.('/new/path'));
     rendered.rerender();
     expect(rendered.result.current.state.hidden).toBe(true);
   });

@@ -55,6 +55,7 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
+    "@backstage/frontend-test-utils": "workspace:^",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
     "@types/use-sync-external-store": "^0.0.6",
@@ -63,14 +64,12 @@
     "globals": "^17.0.0",
     "react": "^18.0.2",
     "react-dom": "^18.0.2",
-    "react-router-dom": "^6.30.2",
     "storybook": "^10.3.0-alpha.1"
   },
   "peerDependencies": {
     "@types/react": "^17.0.0 || ^18.0.0",
     "react": "^17.0.0 || ^18.0.0",
-    "react-dom": "^17.0.0 || ^18.0.0",
-    "react-router-dom": "^6.30.2"
+    "react-dom": "^17.0.0 || ^18.0.0"
   },
   "peerDependenciesMeta": {
     "@types/react": {

@@ -43,6 +43,12 @@ When testing frontend components and extensions, you often need to provide mock 
 
 These are described in detail in [the main article](./05-testing.md).
 
+## Router API
+
+> For details, [see the main article](./05-router-api.md).
+
+The Router API abstracts routing operations in Backstage, providing hooks like `useLocation` and `useNavigate`, and components like `Link`, `Routes`, and `Route`. This abstraction allows the underlying router implementation to be swapped without affecting plugin code, enabling future migrations to newer routers.
+
 ## Migrating from the old frontend system
 
 If you want to learn how to migrate your own utility APIs from the old frontend system to the new one, that's described in the [Migrating APIs guide](../building-plugins/05-migrating.md#migrating-apis).

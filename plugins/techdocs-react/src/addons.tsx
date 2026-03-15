@@ -15,7 +15,7 @@
  */
 
 import { PropsWithChildren, ComponentType, useCallback } from 'react';
-import { useOutlet } from 'react-router-dom';
+import { useOutlet } from '@backstage/frontend-plugin-api';
 
 import {
   attachComponentData,

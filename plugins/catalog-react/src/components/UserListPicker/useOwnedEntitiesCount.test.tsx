@@ -24,7 +24,7 @@ import {
 } from '../../hooks';
 import { catalogApiRef } from '../../api';
 import { ApiRef, identityApiRef } from '@backstage/core-plugin-api';
-import { MemoryRouter } from 'react-router-dom';
+import { TestMemoryRouterProvider } from '@backstage/frontend-test-utils';
 import { useOwnedEntitiesCount } from './useOwnedEntitiesCount';
 import {
   EntityNamespaceFilter,
@@ -219,11 +219,11 @@ function createWrapperWithInitialFilters(
 
   return function Wrapper(props: PropsWithChildren<{}>) {
     return (
-      <MemoryRouter>
+      <TestMemoryRouterProvider>
         <EntityListProvider>
           <WrapFilters>{props.children}</WrapFilters>
         </EntityListProvider>
-      </MemoryRouter>
+      </TestMemoryRouterProvider>
     );
   };
 }

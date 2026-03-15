@@ -15,12 +15,12 @@
  */
 
 import { renderInTestApp } from '@backstage/test-utils';
-import { useLocation } from 'react-router-dom';
+import { useLocation } from '@backstage/frontend-plugin-api';
 import { useSearch } from '@backstage/plugin-search-react';
 import { SearchPage } from './SearchPage';
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+jest.mock('@backstage/frontend-plugin-api', () => ({
+  ...jest.requireActual('@backstage/frontend-plugin-api'),
   useLocation: jest.fn().mockReturnValue({
     search: '',
   }),

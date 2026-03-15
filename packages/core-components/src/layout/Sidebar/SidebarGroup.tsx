@@ -20,7 +20,7 @@ import BottomNavigationAction, {
 } from '@material-ui/core/BottomNavigationAction';
 import { Theme, makeStyles } from '@material-ui/core/styles';
 import { ReactNode, ChangeEvent, useContext } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation } from '@backstage/frontend-plugin-api';
 import { Link } from '../../components/Link/Link';
 import { SidebarConfig, SidebarConfigContext } from './config';
 import { MobileSidebarContext } from './MobileSidebarContext';

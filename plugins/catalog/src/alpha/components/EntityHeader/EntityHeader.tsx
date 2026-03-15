@@ -21,7 +21,6 @@ import {
   ComponentProps,
   ReactNode,
 } from 'react';
-import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import useAsync from 'react-use/esm/useAsync';
 
 import { makeStyles } from '@material-ui/core/styles';
@@ -33,7 +32,12 @@ import {
   useRouteRef,
   useRouteRefParams,
 } from '@backstage/core-plugin-api';
-import { IconComponent } from '@backstage/frontend-plugin-api';
+import {
+  IconComponent,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from '@backstage/frontend-plugin-api';
 
 import {
   Entity,
@@ -250,17 +254,18 @@ export function EntityHeader(props: {
   const selectedInspectEntityDialogTab = searchParams.get('inspect');
 
   const setInspectEntityDialogTab = useCallback(
-    (newTab: string) => setSearchParams(`inspect=${newTab}`),
+    (newTab: string) =>
+      setSearchParams(new URLSearchParams(`inspect=${newTab}`)),
     [setSearchParams],
   );
 
   const openInspectEntityDialog = useCallback(
-    () => setSearchParams('inspect'),
+    () => setSearchParams(new URLSearchParams('inspect')),
     [setSearchParams],
   );
 
   const closeInspectEntityDialog = useCallback(
-    () => setSearchParams(),
+    () => setSearchParams(new URLSearchParams()),
     [setSearchParams],
   );
 

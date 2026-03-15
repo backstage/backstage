@@ -31,8 +31,8 @@ import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { SWRConfig } from 'swr';
 import { entityPresentationApiRef } from '@backstage/plugin-catalog-react';
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+jest.mock('@backstage/frontend-plugin-api', () => ({
+  ...jest.requireActual('@backstage/frontend-plugin-api'),
   useParams: () => ({ taskId: 'my-task' }),
 }));
 

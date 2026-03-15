@@ -23,7 +23,11 @@ import {
   useState,
 } from 'react';
 import { RouterProvider } from 'react-aria-components';
-import { useNavigate, useHref } from 'react-router-dom';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import {
+  useNavigate,
+  useHref,
+} from '../../../../frontend-plugin-api/src/routing/hooks';
 import { isExternalLink } from '../../utils/isExternalLink';
 
 /**

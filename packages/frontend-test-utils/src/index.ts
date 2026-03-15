@@ -22,6 +22,7 @@
 
 export * from './apis';
 export * from './app';
+export * from './routing';
 
 export { withLogCollector } from '@backstage/test-utils';
 

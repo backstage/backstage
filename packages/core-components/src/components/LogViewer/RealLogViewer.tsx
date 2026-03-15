@@ -19,7 +19,7 @@ import IconButton from '@material-ui/core/IconButton';
 import CopyIcon from '@material-ui/icons/FileCopy';
 import classnames from 'classnames';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation } from '@backstage/frontend-plugin-api';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { FixedSizeList, VariableSizeList } from 'react-window';
 

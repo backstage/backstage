@@ -13,12 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  configApiRef,
-  useAnalytics,
-  useApi,
-  useApp,
-} from '@backstage/core-plugin-api';
+import { useAnalytics, useApi, useApp } from '@backstage/core-plugin-api';
 // eslint-disable-next-line no-restricted-imports
 import MaterialLink, {
   LinkProps as MaterialLinkProps,
@@ -26,7 +21,6 @@ import MaterialLink, {
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import classnames from 'classnames';
-import { trimEnd } from 'lodash';
 import {
   ReactNode,
   ReactElement,
@@ -35,17 +29,10 @@ import {
   forwardRef,
 } from 'react';
 import {
-  createRoutesFromChildren,
-  Link as RouterLink,
-  LinkProps as RouterLinkProps,
-  Route,
-} from 'react-router-dom';
+  routerApiRef,
+  type LinkProps as RouterLinkProps,
+} from '@backstage/frontend-plugin-api';
 import OpenInNew from '@material-ui/icons/OpenInNew';
-
-export function isReactRouterBeta(): boolean {
-  const [obj] = createRoutesFromChildren(<Route index element={<div />} />);
-  return !obj.index;
-}
 
 /** @public */
 export type LinkClassKey = 'visuallyHidden' | 'externalLink';
@@ -117,46 +104,6 @@ export type LinkProps = Omit<MaterialLinkProps, 'to'> &
   };
 
 /**
- * Returns the app base url that could be empty if the Config API is not properly implemented.
- * The only cases there would be no Config API are in tests and in storybook stories, and in those cases, it's unlikely that callers would rely on this subpath behavior.
- */
-const useBaseUrl = () => {
-  try {
-    const config = useApi(configApiRef);
-    return config.getOptionalString('app.baseUrl');
-  } catch {
-    return undefined;
-  }
-};
-
-/**
- * Get the app base path from the configured app baseUrl.
- * The returned path does not have a trailing slash.
- */
-const useBasePath = () => {
-  // baseUrl can be specified as just a path
-  const base = 'http://sample.dev';
-  const url = useBaseUrl() ?? '/';
-  const { pathname } = new URL(url, base);
-  return trimEnd(pathname, '/');
-};
-
-/** @deprecated Remove once we no longer support React Router v6 beta */
-export const useResolvedPath = (uri: LinkProps['to']) => {
-  let resolvedPath = String(uri);
-
-  const basePath = useBasePath();
-  const external = isExternalUri(resolvedPath);
-  const startsWithBasePath = resolvedPath.startsWith(basePath);
-
-  if (!external && !startsWithBasePath) {
-    resolvedPath = basePath.concat(resolvedPath);
-  }
-
-  return resolvedPath;
-};
-
-/**
  * Given a react node, try to retrieve its text content.
  */
 const getNodeText = (node: ReactNode): string => {
@@ -188,12 +135,9 @@ export const UnstyledLink = forwardRef<any, LinkProps>(
   ({ onClick, noTrack, externalLinkIcon, ...props }, ref) => {
     const classes = useStyles();
     const analytics = useAnalytics();
+    const { Link: RouterLink } = useApi(routerApiRef);
 
-    // Adding the base path to URLs breaks react-router v6 stable, so we only
-    // do it for beta. The react router version won't change at runtime so it is
-    // fine to ignore the rules of hooks.
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const to = isReactRouterBeta() ? useResolvedPath(props.to) : props.to;
+    const to = props.to;
     const linkText = getNodeText(props.children) || to;
     const external = isExternalUri(to);
     const newWindow = external && !!/^https?:/.exec(to);

@@ -18,7 +18,7 @@ import { useEffect } from 'react';
 import { useApi, configApiRef, useAnalytics } from '@backstage/core-plugin-api';
 import { ErrorPage } from '@backstage/core-components';
 import { useTechDocsReaderPage } from '@backstage/plugin-techdocs-react';
-import { useLocation } from 'react-router-dom';
+import { useLocation } from '@backstage/frontend-plugin-api';
 
 type Props = {
   errorMessage?: string;

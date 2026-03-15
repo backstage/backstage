@@ -17,7 +17,7 @@
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { PropsWithChildren } from 'react';
-import { MemoryRouter } from 'react-router-dom';
+import { TestMemoryRouterProvider } from '@backstage/frontend-test-utils';
 import { InfoCard, Props } from './InfoCard';
 
 export default {
@@ -43,13 +43,13 @@ const defaultProps = {
 };
 
 const Wrapper = ({ children }: PropsWithChildren<{}>) => (
-  <MemoryRouter>
+  <TestMemoryRouterProvider>
     <Grid container spacing={4}>
       <Grid item xs={4}>
         {children}
       </Grid>
     </Grid>
-  </MemoryRouter>
+  </TestMemoryRouterProvider>
 );
 
 export const Default = (args: Props) => (

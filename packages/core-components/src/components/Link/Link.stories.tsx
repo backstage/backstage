@@ -20,7 +20,7 @@ import {
   useLocation,
   NavLink as RouterNavLink,
   Routes,
-} from 'react-router-dom';
+} from '@backstage/frontend-plugin-api';
 import { createRouteRef, useRouteRef } from '@backstage/core-plugin-api';
 import { wrapInTestApp } from '@backstage/test-utils';
 

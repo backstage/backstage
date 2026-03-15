@@ -8,7 +8,7 @@ import {
   Menu,
   MenuItem,
 } from '../../../../../packages/ui/src/components/Menu/Menu';
-import { MemoryRouter } from 'react-router-dom';
+import { DocsRouterProvider } from '@/utils/backstage-router-provider';
 import { RiMore2Line } from '@remixicon/react';
 
 const tabs = [
@@ -30,7 +30,7 @@ const breadcrumbs = [
 ];
 
 export const WithEverything = () => (
-  <MemoryRouter>
+  <DocsRouterProvider>
     <Header
       title="Page Title"
       tabs={tabs.slice(0, 2)}
@@ -42,29 +42,29 @@ export const WithEverything = () => (
         </>
       }
     />
-  </MemoryRouter>
+  </DocsRouterProvider>
 );
 
 export const WithLongBreadcrumbs = () => (
-  <MemoryRouter>
+  <DocsRouterProvider>
     <Header title="Page Title" breadcrumbs={breadcrumbs.slice(0, 2)} />
-  </MemoryRouter>
+  </DocsRouterProvider>
 );
 
 export const WithTabs = () => (
-  <MemoryRouter>
+  <DocsRouterProvider>
     <Header title="Page Title" tabs={tabs.slice(0, 3)} />
-  </MemoryRouter>
+  </DocsRouterProvider>
 );
 
 export const WithCustomActions = () => (
-  <MemoryRouter>
+  <DocsRouterProvider>
     <Header title="Page Title" customActions={<Button>Custom action</Button>} />
-  </MemoryRouter>
+  </DocsRouterProvider>
 );
 
 export const WithMenu = () => (
-  <MemoryRouter>
+  <DocsRouterProvider>
     <Header
       title="Page Title"
       customActions={
@@ -77,5 +77,5 @@ export const WithMenu = () => (
         </MenuTrigger>
       }
     />
-  </MemoryRouter>
+  </DocsRouterProvider>
 );

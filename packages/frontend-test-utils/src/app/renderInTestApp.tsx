@@ -15,7 +15,7 @@
  */
 
 import { Fragment } from 'react';
-import { Link, MemoryRouter } from 'react-router-dom';
+import { TestMemoryRouterProvider } from '../routing/TestMemoryRouterProvider';
 import { createSpecializedApp } from '@backstage/frontend-app-api';
 import { RenderResult, render } from '@testing-library/react';
 import { ConfigReader } from '@backstage/config';
@@ -33,6 +33,7 @@ import {
   createFrontendModule,
   createApiFactory,
   type ApiRef,
+  Link,
 } from '@backstage/frontend-plugin-api';
 import { RouterBlueprint } from '@backstage/plugin-app-react';
 import appPlugin from '@backstage/plugin-app';
@@ -208,15 +209,11 @@ export function renderInTestApp<const TApiPairs extends any[] = any[]>(
         RouterBlueprint.make({
           params: {
             component: ({ children }) => (
-              <MemoryRouter
+              <TestMemoryRouterProvider
                 initialEntries={options?.initialRouteEntries}
-                future={{
-                  v7_relativeSplatPath: false,
-                  v7_startTransition: false,
-                }}
               >
                 {children}
-              </MemoryRouter>
+              </TestMemoryRouterProvider>
             ),
           },
         }),

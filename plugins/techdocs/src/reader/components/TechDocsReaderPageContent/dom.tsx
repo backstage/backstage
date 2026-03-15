@@ -54,7 +54,11 @@ import {
   addNavLinkKeyboardToggle,
 } from '../../transformers';
 import { useNavigateUrl } from './useNavigateUrl';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import {
+  useLocation,
+  useNavigate,
+  useParams,
+} from '@backstage/frontend-plugin-api';
 
 const MOBILE_MEDIA_QUERY = 'screen and (max-width: 76.1875em)';
 

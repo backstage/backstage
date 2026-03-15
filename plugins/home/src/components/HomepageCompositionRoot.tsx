@@ -15,7 +15,7 @@
  */
 
 import { ReactNode } from 'react';
-import { useOutlet } from 'react-router-dom';
+import { useOutlet } from '@backstage/frontend-plugin-api';
 
 export const HomepageCompositionRoot = (props: {
   title?: string;

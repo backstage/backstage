@@ -15,7 +15,12 @@
  */
 import { ReactElement, useMemo } from 'react';
 import { Helmet } from 'react-helmet';
-import { matchRoutes, useParams, useRoutes } from 'react-router-dom';
+import {
+  useParams,
+  useRoutes,
+  useApi,
+  routerApiRef,
+} from '@backstage/frontend-plugin-api';
 import { EntityTabsPanel } from './EntityTabsPanel';
 import { EntityTabsList } from './EntityTabsList';
 import { EntityContentGroupDefinitions } from '@backstage/plugin-catalog-react/alpha';
@@ -34,6 +39,7 @@ export function useSelectedSubRoute(subRoutes: SubRoute[]): {
   element?: JSX.Element;
 } {
   const params = useParams();
+  const routerApi = useApi(routerApiRef);
 
   const routes = subRoutes.map(({ path, children }) => ({
     caseSensitive: false,
@@ -57,7 +63,8 @@ export function useSelectedSubRoute(subRoutes: SubRoute[]): {
     currentRoute = `/${currentRoute}`;
   }
 
-  const [matchedRoute] = matchRoutes(sortedRoutes, currentRoute) ?? [];
+  const [matchedRoute] =
+    routerApi.matchRoutes(sortedRoutes, { pathname: currentRoute }) ?? [];
   const foundIndex = matchedRoute
     ? subRoutes.findIndex(t => `${t.path}/*` === matchedRoute.route.path)
     : 0;

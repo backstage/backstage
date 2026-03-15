@@ -15,7 +15,7 @@
  */
 
 import { ComponentType, createContext, useContext, ReactNode } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams } from '@backstage/frontend-plugin-api';
 import { useTechDocsReaderPage } from '@backstage/plugin-techdocs-react';
 
 import { useReaderState, ReaderState } from './useReaderState';

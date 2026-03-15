@@ -19,7 +19,7 @@ import { cloneElement, ReactElement } from 'react';
 // Shadow DOM support for the simple and complete DOM testing utilities
 // https://github.com/testing-library/dom-testing-library/issues/742#issuecomment-674987855
 import { screen } from 'shadow-dom-testing-library';
-import { Route } from 'react-router-dom';
+import { Route } from '@backstage/frontend-plugin-api';
 import { act, render } from '@testing-library/react';
 
 import { wrapInTestApp, TestApiProvider } from '@backstage/test-utils';

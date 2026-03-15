@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useParams } from 'react-router-dom';
-
 import {
   Alert,
   Box,
@@ -34,7 +32,11 @@ import {
   RiCloseCircleLine,
 } from '@remixicon/react';
 import { useConsentSession } from './useConsentSession';
-import { configApiRef, useApi } from '@backstage/frontend-plugin-api';
+import {
+  configApiRef,
+  useApi,
+  useParams,
+} from '@backstage/frontend-plugin-api';
 import styles from './ConsentPage.module.css';
 
 const ConsentPageLayout = ({ children }: { children: React.ReactNode }) => (

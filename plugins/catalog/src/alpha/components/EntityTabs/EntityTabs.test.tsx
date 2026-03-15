@@ -17,9 +17,12 @@
 import { screen } from '@testing-library/react';
 import { useSelectedSubRoute } from './EntityTabs';
 import { EntityTabsList } from './EntityTabsList';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import {
+  renderInTestApp,
+  TestMemoryRouterProvider,
+} from '@backstage/frontend-test-utils';
+import { Route, Routes } from '@backstage/frontend-plugin-api';
 import { render } from '@testing-library/react';
-import { renderInTestApp } from '@backstage/frontend-test-utils';
 
 function TestSubRouteHook(props: {
   subRoutes: Array<{
@@ -141,14 +144,14 @@ describe('EntityTabs', () => {
   describe('useSelectedSubRoute', () => {
     it('should render the first route at root path', () => {
       render(
-        <MemoryRouter initialEntries={['/']}>
+        <TestMemoryRouterProvider initialEntries={['/']}>
           <Routes>
             <Route
               path="/*"
               element={<TestSubRouteHook subRoutes={subRoutes} />}
             />
           </Routes>
-        </MemoryRouter>,
+        </TestMemoryRouterProvider>,
       );
 
       expect(screen.getByTestId('selected-index')).toHaveTextContent('0');
@@ -159,14 +162,14 @@ describe('EntityTabs', () => {
 
     it('should render a route at non-root path', () => {
       render(
-        <MemoryRouter initialEntries={['/details']}>
+        <TestMemoryRouterProvider initialEntries={['/details']}>
           <Routes>
             <Route
               path="/*"
               element={<TestSubRouteHook subRoutes={subRoutes} />}
             />
           </Routes>
-        </MemoryRouter>,
+        </TestMemoryRouterProvider>,
       );
 
       expect(screen.getByTestId('selected-index')).toHaveTextContent('1');
@@ -177,14 +180,14 @@ describe('EntityTabs', () => {
 
     it('should handle nested paths under a route (splat path behavior)', () => {
       render(
-        <MemoryRouter initialEntries={['/details/nested/path']}>
+        <TestMemoryRouterProvider initialEntries={['/details/nested/path']}>
           <Routes>
             <Route
               path="/*"
               element={<TestSubRouteHook subRoutes={subRoutes} />}
             />
           </Routes>
-        </MemoryRouter>,
+        </TestMemoryRouterProvider>,
       );
 
       expect(screen.getByTestId('selected-index')).toHaveTextContent('1');
@@ -195,14 +198,14 @@ describe('EntityTabs', () => {
 
     it('should render correct content for matched route', () => {
       render(
-        <MemoryRouter initialEntries={['/docs']}>
+        <TestMemoryRouterProvider initialEntries={['/docs']}>
           <Routes>
             <Route
               path="/*"
               element={<TestSubRouteHook subRoutes={subRoutes} />}
             />
           </Routes>
-        </MemoryRouter>,
+        </TestMemoryRouterProvider>,
       );
 
       expect(screen.getByTestId('element-container')).toHaveTextContent(
@@ -226,14 +229,14 @@ describe('EntityTabs', () => {
       ];
 
       render(
-        <MemoryRouter initialEntries={['/entity']}>
+        <TestMemoryRouterProvider initialEntries={['/entity']}>
           <Routes>
             <Route
               path="/*"
               element={<TestSubRouteHook subRoutes={routesWithRelativeLinks} />}
             />
           </Routes>
-        </MemoryRouter>,
+        </TestMemoryRouterProvider>,
       );
 
       expect(screen.getByText('Entity Content')).toBeInTheDocument();
@@ -260,14 +263,16 @@ describe('EntityTabs', () => {
       ];
 
       render(
-        <MemoryRouter initialEntries={['/catalog/entities/some-entity']}>
+        <TestMemoryRouterProvider
+          initialEntries={['/catalog/entities/some-entity']}
+        >
           <Routes>
             <Route
               path="/*"
               element={<TestSubRouteHook subRoutes={nestedPathRoutes} />}
             />
           </Routes>
-        </MemoryRouter>,
+        </TestMemoryRouterProvider>,
       );
 
       expect(screen.getByTestId('selected-index')).toHaveTextContent('0');
@@ -278,14 +283,14 @@ describe('EntityTabs', () => {
 
     it('should fall back to first route for unknown paths', () => {
       render(
-        <MemoryRouter initialEntries={['/unknown-path']}>
+        <TestMemoryRouterProvider initialEntries={['/unknown-path']}>
           <Routes>
             <Route
               path="/*"
               element={<TestSubRouteHook subRoutes={subRoutes} />}
             />
           </Routes>
-        </MemoryRouter>,
+        </TestMemoryRouterProvider>,
       );
 
       expect(screen.getByTestId('selected-index')).toHaveTextContent('0');

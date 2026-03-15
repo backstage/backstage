@@ -22,8 +22,9 @@ import {
   PageBlueprint,
   ExtensionDefinition,
   useApiHolder,
+  Routes,
+  Route,
 } from '@backstage/frontend-plugin-api';
-import { Routes, Route } from 'react-router-dom';
 import { EntityProvider } from '../hooks/useEntity';
 import {
   EntityCardBlueprint,

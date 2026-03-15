@@ -22,7 +22,7 @@ import {
 } from '../../../../../packages/ui/src/components/RadioGroup';
 import { data as rockBandData } from '../../../../../packages/ui/src/components/Table/stories/mocked-data4';
 import { data as catalogData } from '../../../../../packages/ui/src/components/Table/stories/mocked-data1';
-import { MemoryRouter } from 'react-router-dom';
+import { DocsRouterProvider } from '@/utils/backstage-router-provider';
 
 // =============================================================================
 // Types
@@ -73,9 +73,9 @@ export function HeroExample() {
   });
 
   return (
-    <MemoryRouter>
+    <DocsRouterProvider>
       <Table columnConfig={heroColumns} {...tableProps} />
-    </MemoryRouter>
+    </DocsRouterProvider>
   );
 }
 
@@ -135,9 +135,9 @@ export function SortingExample() {
   });
 
   return (
-    <MemoryRouter>
+    <DocsRouterProvider>
       <Table columnConfig={sortingColumns} {...tableProps} />
-    </MemoryRouter>
+    </DocsRouterProvider>
   );
 }
 
@@ -177,7 +177,7 @@ export function SearchExample() {
   });
 
   return (
-    <MemoryRouter>
+    <DocsRouterProvider>
       <Flex direction="column" gap="4">
         <SearchField
           aria-label="Search"
@@ -198,7 +198,7 @@ export function SearchExample() {
           {...tableProps}
         />
       </Flex>
-    </MemoryRouter>
+    </DocsRouterProvider>
   );
 }
 
@@ -238,7 +238,7 @@ export function SelectionExample() {
   });
 
   return (
-    <MemoryRouter>
+    <DocsRouterProvider>
       <Flex direction="column" gap="4">
         <Table
           columnConfig={selectionColumns}
@@ -287,7 +287,7 @@ export function SelectionExample() {
           </div>
         </Flex>
       </Flex>
-    </MemoryRouter>
+    </DocsRouterProvider>
   );
 }
 
@@ -306,7 +306,7 @@ export function RowActionsExample() {
   });
 
   return (
-    <MemoryRouter>
+    <DocsRouterProvider>
       <Table
         columnConfig={selectionColumns}
         rowConfig={{
@@ -320,7 +320,7 @@ export function RowActionsExample() {
         }}
         {...tableProps}
       />
-    </MemoryRouter>
+    </DocsRouterProvider>
   );
 }
 
@@ -352,13 +352,13 @@ export function EmptyStateExample() {
   });
 
   return (
-    <MemoryRouter>
+    <DocsRouterProvider>
       <Table
         columnConfig={emptyStateColumns}
         emptyState={<Text>No items yet. Create one to get started.</Text>}
         {...tableProps}
       />
-    </MemoryRouter>
+    </DocsRouterProvider>
   );
 }
 
@@ -438,7 +438,7 @@ export function CombinedExample() {
   });
 
   return (
-    <MemoryRouter>
+    <DocsRouterProvider>
       <Flex direction="column" gap="4">
         <SearchField
           aria-label="Search"
@@ -468,7 +468,7 @@ export function CombinedExample() {
           {...tableProps}
         />
       </Flex>
-    </MemoryRouter>
+    </DocsRouterProvider>
   );
 }
 
@@ -502,7 +502,7 @@ export function CustomRowExample() {
   });
 
   return (
-    <MemoryRouter>
+    <DocsRouterProvider>
       <Table
         columnConfig={customRowColumns}
         rowConfig={({ item }) => (
@@ -520,7 +520,7 @@ export function CustomRowExample() {
         )}
         {...tableProps}
       />
-    </MemoryRouter>
+    </DocsRouterProvider>
   );
 }
 
@@ -532,7 +532,7 @@ export function PrimitivesExample() {
   const items = catalogData.slice(0, 5);
 
   return (
-    <MemoryRouter>
+    <DocsRouterProvider>
       <TableRoot>
         <TableHeader>
           <Column isRowHeader>Name</Column>
@@ -549,6 +549,6 @@ export function PrimitivesExample() {
           ))}
         </TableBody>
       </TableRoot>
-    </MemoryRouter>
+    </DocsRouterProvider>
   );
 }

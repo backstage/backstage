@@ -63,7 +63,11 @@ import {
   ElementType,
   ReactNode,
 } from 'react';
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import {
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from '@backstage/frontend-plugin-api';
 import useAsync from 'react-use/esm/useAsync';
 import { catalogTranslationRef } from '../../alpha/translation';
 import { rootRouteRef, unregisterRedirectRouteRef } from '../../routes';

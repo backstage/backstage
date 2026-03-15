@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { ComponentType, useCallback, useState } from 'react';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from '@backstage/frontend-plugin-api';
 import useAsync from 'react-use/esm/useAsync';
 import {
   stringifyEntityRef,

@@ -5,7 +5,7 @@ import {
   Tag,
 } from '../../../../../packages/ui/src/components/TagGroup/TagGroup';
 import { Flex } from '../../../../../packages/ui/src/components/Flex/Flex';
-import { MemoryRouter } from 'react-router-dom';
+import { DocsRouterProvider } from '@/utils/backstage-router-provider';
 import { useState } from 'react';
 import { useListData } from 'react-stately';
 import type { Selection } from 'react-aria-components';
@@ -39,17 +39,17 @@ const initialList: ListItem[] = [
 ];
 
 export const Default = () => (
-  <MemoryRouter>
+  <DocsRouterProvider>
     <TagGroup aria-label="Tag Group">
       {initialList.map(item => (
         <Tag key={item.id}>{item.name}</Tag>
       ))}
     </TagGroup>
-  </MemoryRouter>
+  </DocsRouterProvider>
 );
 
 export const WithLink = () => (
-  <MemoryRouter>
+  <DocsRouterProvider>
     <TagGroup>
       {initialList.map(item => (
         <Tag key={item.id} href={`/items/${item.id}`}>
@@ -57,11 +57,11 @@ export const WithLink = () => (
         </Tag>
       ))}
     </TagGroup>
-  </MemoryRouter>
+  </DocsRouterProvider>
 );
 
 export const WithIcon = () => (
-  <MemoryRouter>
+  <DocsRouterProvider>
     <TagGroup aria-label="Tag Group">
       {initialList.map(item => (
         <Tag key={item.id} icon={item.icon ? item.icon : undefined}>
@@ -69,11 +69,11 @@ export const WithIcon = () => (
         </Tag>
       ))}
     </TagGroup>
-  </MemoryRouter>
+  </DocsRouterProvider>
 );
 
 export const Sizes = () => (
-  <MemoryRouter>
+  <DocsRouterProvider>
     <Flex direction="column">
       <TagGroup aria-label="Small Tags">
         {initialList.map(item => (
@@ -90,7 +90,7 @@ export const Sizes = () => (
         ))}
       </TagGroup>
     </Flex>
-  </MemoryRouter>
+  </DocsRouterProvider>
 );
 
 export const RemovingTags = () => {
@@ -100,7 +100,7 @@ export const RemovingTags = () => {
   });
 
   return (
-    <MemoryRouter>
+    <DocsRouterProvider>
       <TagGroup<ListItem>
         aria-label="Tag Group"
         items={list.items}
@@ -110,12 +110,12 @@ export const RemovingTags = () => {
       >
         {item => <Tag>{item.name}</Tag>}
       </TagGroup>
-    </MemoryRouter>
+    </DocsRouterProvider>
   );
 };
 
 export const Disabled = () => (
-  <MemoryRouter>
+  <DocsRouterProvider>
     <TagGroup>
       {initialList.map(item => (
         <Tag key={item.id} isDisabled={item.isDisabled}>
@@ -123,5 +123,5 @@ export const Disabled = () => (
         </Tag>
       ))}
     </TagGroup>
-  </MemoryRouter>
+  </DocsRouterProvider>
 );

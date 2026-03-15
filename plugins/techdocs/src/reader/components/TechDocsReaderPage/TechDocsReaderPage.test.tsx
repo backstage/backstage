@@ -35,7 +35,7 @@ import { rootRouteRef, rootDocsRouteRef } from '../../../routes';
 import { TECHDOCS_EXTERNAL_ANNOTATION } from '@backstage/plugin-techdocs-common';
 
 import { TechDocsReaderPage } from './TechDocsReaderPage';
-import { Route, useNavigate, useParams } from 'react-router-dom';
+import { Route, useNavigate, useParams } from '@backstage/frontend-plugin-api';
 import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
 import { ReportIssue } from '@backstage/plugin-techdocs-module-addons-contrib';
 import { FlatRoutes } from '@backstage/core-app-api';
@@ -119,8 +119,8 @@ jest.mock('@backstage/core-components', () => ({
   Page: jest.fn(),
 }));
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+jest.mock('@backstage/frontend-plugin-api', () => ({
+  ...jest.requireActual('@backstage/frontend-plugin-api'),
   useNavigate: jest.fn(),
 }));
 

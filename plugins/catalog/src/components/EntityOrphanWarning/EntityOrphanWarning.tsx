@@ -17,7 +17,7 @@
 import { Entity } from '@backstage/catalog-model';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@backstage/frontend-plugin-api';
 import { DeleteEntityDialog } from './DeleteEntityDialog';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { rootRouteRef } from '../../routes';
