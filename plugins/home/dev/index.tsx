@@ -32,6 +32,7 @@ import {
 import {
   HomePageWidgetBlueprint,
   HomePageLayoutBlueprint,
+  HomePageCardWidgetBlueprint,
 } from '@backstage/plugin-home-react/alpha';
 import { HeaderWorldClock, WelcomeTitle, type ClockConfig } from '../src';
 import homePlugin from '../src/alpha';
@@ -115,11 +116,11 @@ const homePageLayout = HomePageLayoutBlueprint.make({
   },
 });
 
-const homePageToolkitWidget = HomePageWidgetBlueprint.make({
-  name: 'home-toolkit',
+const homePageToolkitWidget = HomePageCardWidgetBlueprint.make({
+  name: 'custom-toolkit',
   params: {
     name: 'HomePageToolkit',
-    title: 'Toolkit',
+    title: 'My Toolkit',
     components: () =>
       import('../src/homePageComponents/Toolkit').then(m => ({
         Content: m.Content,
@@ -137,8 +138,8 @@ const homePageToolkitWidget = HomePageWidgetBlueprint.make({
   },
 });
 
-const homePageStarredEntitiesWidget = HomePageWidgetBlueprint.make({
-  name: 'home-starred-entities',
+const homePageStarredEntitiesWidget = HomePageCardWidgetBlueprint.make({
+  name: 'starred-entities',
   params: {
     name: 'HomePageStarredEntities',
     title: 'Your Starred Entities',
@@ -149,8 +150,8 @@ const homePageStarredEntitiesWidget = HomePageWidgetBlueprint.make({
   },
 });
 
-const homePageRandomJokeWidget = HomePageWidgetBlueprint.make({
-  name: 'home-random-joke',
+const homePageRandomJokeWidget = HomePageCardWidgetBlueprint.make({
+  name: 'random-joke', // overrides the widget coming from the plugin
   params: {
     name: 'HomePageRandomJoke',
     title: 'Random Joke',

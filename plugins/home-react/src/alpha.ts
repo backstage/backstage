@@ -35,6 +35,10 @@ export {
   type HomePageWidgetBlueprintParams,
 } from './alpha/blueprints/HomePageWidgetBlueprint';
 export {
+  HomePageCardWidgetBlueprint,
+  type HomePageCardWidgetBlueprintParams,
+} from './alpha/blueprints/HomePageCardWidgetBlueprint';
+export {
   HomePageLayoutBlueprint,
   type HomePageLayoutBlueprintParams,
 } from './alpha/blueprints/HomePageLayoutBlueprint';

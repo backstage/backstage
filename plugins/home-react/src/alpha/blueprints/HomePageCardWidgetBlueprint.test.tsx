@@ -19,31 +19,28 @@ import {
   createExtensionTester,
   renderInTestApp,
 } from '@backstage/frontend-test-utils';
-import { HomePageWidgetBlueprint } from './HomePageWidgetBlueprint';
+import { HomePageCardWidgetBlueprint } from './HomePageCardWidgetBlueprint';
 import { homePageWidgetDataRef } from '../dataRefs';
 
-describe('HomePageWidgetBlueprint', () => {
-  it('renders the component directly without InfoCard wrapping', async () => {
-    const widget = HomePageWidgetBlueprint.make({
-      name: 'search-bar',
+describe('HomePageCardWidgetBlueprint', () => {
+  it('renders the widget content wrapped in an InfoCard with the given title', async () => {
+    const widget = HomePageCardWidgetBlueprint.make({
+      name: 'card-widget',
       params: {
-        loader: async () =>
-          function SearchBar() {
-            return <div data-testid="bare-widget">Search Bar</div>;
-          },
-        title: 'Search',
-        description: 'A full-width search bar — should NOT be card-wrapped',
+        title: 'My Card Title',
+        components: async () => ({
+          Content: () => <div data-testid="card-content">Card Content</div>,
+        }),
       },
     });
 
     const data = createExtensionTester(widget).get(homePageWidgetDataRef);
     renderInTestApp(data.component);
 
-    // The bare component must appear in the DOM
-    expect(await screen.findByTestId('bare-widget')).toBeDefined();
+    // Widget content renders inside the card
+    expect(await screen.findByTestId('card-content')).toBeDefined();
 
-    // No card title heading should be rendered.
-    // queryByRole returns null without throwing when the element is absent.
-    expect(screen.queryByRole('heading', { name: 'Search' })).toBeNull();
+    // The InfoCard title heading is present — proves the card wrapper exists.
+    expect(await screen.findByText('My Card Title')).toBeDefined();
   });
 });
