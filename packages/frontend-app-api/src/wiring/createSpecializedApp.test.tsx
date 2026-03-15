@@ -69,9 +69,7 @@ function makeAppPlugin(label: string = 'Test') {
 
 function renderPreparedBootstrap(preparedApp: PreparedSpecializedApp) {
   const bootstrapApp = preparedApp.getBootstrapApp();
-  const bootstrapElement = bootstrapApp.tree.root.instance?.getData(
-    coreExtensionData.reactElement,
-  );
+  const bootstrapElement = bootstrapApp.element;
   if (!bootstrapElement) {
     throw new Error('Expected bootstrap tree to expose a root element');
   }
@@ -99,7 +97,7 @@ describe('createSpecializedApp', () => {
       features: [makeAppPlugin()],
     });
 
-    render(app.tree.root.instance!.getData(coreExtensionData.reactElement));
+    render(app.element);
 
     expect(screen.getByText('Test')).toBeInTheDocument();
   });
@@ -109,7 +107,7 @@ describe('createSpecializedApp', () => {
       features: [makeAppPlugin('Test 1'), makeAppPlugin('Test 2')],
     });
 
-    render(app.tree.root.instance!.getData(coreExtensionData.reactElement));
+    render(app.element);
 
     expect(screen.getByText('Test 2')).toBeInTheDocument();
   });
@@ -135,7 +133,7 @@ describe('createSpecializedApp', () => {
       ],
     });
 
-    render(app.tree.root.instance!.getData(coreExtensionData.reactElement));
+    render(app.element);
 
     expect(screen.getByText('Test foo')).toBeInTheDocument();
   });
@@ -160,7 +158,7 @@ describe('createSpecializedApp', () => {
       ],
     });
 
-    render(app.tree.root.instance!.getData(coreExtensionData.reactElement));
+    render(app.element);
 
     expect(screen.getByText('Ignored Predicate')).toBeInTheDocument();
     expect(app.errors).toEqual([
@@ -218,7 +216,7 @@ describe('createSpecializedApp', () => {
       ],
     });
 
-    render(app.tree.root.instance!.getData(coreExtensionData.reactElement));
+    render(app.element);
 
     expect(screen.getByText('flags:test=a,test=b')).toBeInTheDocument();
 
@@ -291,7 +289,7 @@ describe('createSpecializedApp', () => {
       ],
     });
 
-    render(app.tree.root.instance!.getData(coreExtensionData.reactElement));
+    render(app.element);
 
     expect(mockAnalyticsApi).toHaveBeenCalled();
   });
@@ -369,7 +367,7 @@ describe('createSpecializedApp', () => {
       }),
     ]);
 
-    render(app.tree.root.instance!.getData(coreExtensionData.reactElement));
+    render(app.element);
     expect(screen.getByText('Selected API: owner')).toBeInTheDocument();
   });
 
@@ -423,7 +421,7 @@ describe('createSpecializedApp', () => {
     });
 
     expect(app.errors).toBeUndefined();
-    render(app.tree.root.instance!.getData(coreExtensionData.reactElement));
+    render(app.element);
     expect(screen.getByText('Selected API: module')).toBeInTheDocument();
   });
 

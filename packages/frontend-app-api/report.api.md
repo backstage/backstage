@@ -158,6 +158,7 @@ export type AppErrorTypes = {
 
 // @public
 export type BootstrapSpecializedApp = {
+  element: JSX.Element;
   tree: AppTree;
 };
 
@@ -207,6 +208,7 @@ export type ExtensionFactoryMiddleware = (
 
 // @public
 export type FinalizedSpecializedApp = {
+  element: JSX.Element;
   sessionState: SpecializedAppSessionState;
   tree: AppTree;
   errors?: AppError[];

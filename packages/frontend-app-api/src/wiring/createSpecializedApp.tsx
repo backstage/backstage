@@ -135,6 +135,7 @@ type SignInPageProps = {
  * @public
  */
 export type BootstrapSpecializedApp = {
+  element: JSX.Element;
   tree: AppTree;
 };
 
@@ -144,6 +145,7 @@ export type BootstrapSpecializedApp = {
  * @public
  */
 export type FinalizedSpecializedApp = {
+  element: JSX.Element;
   sessionState: SpecializedAppSessionState;
   tree: AppTree;
   errors?: AppError[];
@@ -729,12 +731,19 @@ export function prepareSpecializedApp(
       predicateContext: sessionStateData.predicateContext,
     });
 
-    finalized = {
+    const element = tree.root.instance?.getData(coreExtensionData.reactElement);
+    if (!element) {
+      throw new Error('Expected finalized app tree to expose a root element');
+    }
+
+    const finalizedApp: FinalizedSpecializedApp = {
+      element,
       sessionState: finalizedSessionState,
       tree,
       errors: collector.collectErrors(),
     };
-    return finalized;
+    finalized = finalizedApp;
+    return finalizedApp;
   }
 
   function reportBootstrapFailure(error: unknown) {
@@ -1103,8 +1112,16 @@ function createBootstrapApp(options: {
     registerBootstrapErrorReporter: options.registerBootstrapErrorReporter,
   });
 
+  const element = options.tree.root.instance?.getData(coreExtensionData.reactElement);
+  if (!element) {
+    throw new Error('Expected bootstrap tree to expose a root element');
+  }
+
   return {
-    bootstrapApp: { tree: options.tree },
+    bootstrapApp: {
+      element,
+      tree: options.tree,
+    },
     requiresSignIn: Boolean(signInPageComponent),
   };
 }

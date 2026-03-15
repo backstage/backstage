@@ -17,7 +17,6 @@
 import { JSX, lazy, ReactNode, Suspense, useEffect, useState } from 'react';
 import {
   ConfigApi,
-  coreExtensionData,
   ExtensionFactoryMiddleware,
   FrontendFeature,
   FrontendFeatureLoader,
@@ -160,9 +159,7 @@ function PreparedAppRoot(props: {
   );
 
   if (!finalizedApp) {
-    return bootstrapApp.tree.root.instance!.getData(
-      coreExtensionData.reactElement,
-    )!;
+    return bootstrapApp.element;
   }
 
   const errorPage = maybeCreateErrorPage(finalizedApp);
@@ -170,7 +167,5 @@ function PreparedAppRoot(props: {
     return errorPage;
   }
 
-  return finalizedApp.tree.root.instance!.getData(
-    coreExtensionData.reactElement,
-  )!;
+  return finalizedApp.element;
 }
