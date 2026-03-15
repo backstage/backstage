@@ -312,11 +312,11 @@ class RouteResolutionApiProxy implements RouteResolutionApi {
 }
 
 /**
- * Options for {@link createSpecializedApp}.
+ * Options for {@link prepareSpecializedApp}.
  *
  * @public
  */
-export type CreateSpecializedAppOptions = {
+export type PrepareSpecializedAppOptions = {
   /**
    * A reusable specialized app session state to use.
    *
@@ -377,6 +377,62 @@ export type CreateSpecializedAppOptions = {
 };
 
 /**
+ * Options for {@link createSpecializedApp}.
+ *
+ * @deprecated Use {@link PrepareSpecializedAppOptions} with
+ * {@link prepareSpecializedApp} instead.
+ *
+ * @public
+ */
+export type CreateSpecializedAppOptions = {
+  /**
+   * The list of features to load.
+   */
+  features?: FrontendFeature[];
+
+  /**
+   * The config API implementation to use. For most normal apps, this should be
+   * specified.
+   *
+   * If none is given, a new _empty_ config will be used during startup. In
+   * later stages of the app lifecycle, the config API in the API holder will be
+   * used.
+   */
+  config?: ConfigApi;
+
+  /**
+   * Allows for the binding of plugins' external route refs within the app.
+   */
+  bindRoutes?(context: { bind: CreateAppRouteBinder }): void;
+
+  /**
+   * APIs to expose to the app during startup.
+   */
+  apis?: ApiHolder;
+
+  /**
+   * Advanced, more rarely used options.
+   */
+  advanced?: {
+    /**
+     * Applies one or more middleware on every extension, as they are added to
+     * the application.
+     *
+     * This is an advanced use case for modifying extension data on the fly as
+     * it gets emitted by extensions being instantiated.
+     */
+    extensionFactoryMiddleware?:
+      | ExtensionFactoryMiddleware
+      | ExtensionFactoryMiddleware[];
+
+    /**
+     * Allows for customizing how plugin info is retrieved.
+     */
+    pluginInfoResolver?: FrontendPluginInfoResolver;
+  };
+};
+
+/**
  * Result of {@link prepareSpecializedApp}.
  *
  * @public
@@ -402,7 +458,7 @@ const localPermissionApiRef = createApiRef<MinimalPermissionApi>({
 
 // Internal options type, not exported in the public API
 export interface CreateSpecializedAppInternalOptions
-  extends CreateSpecializedAppOptions {
+  extends PrepareSpecializedAppOptions {
   __internal?: {
     apiFactoryOverrides?: AnyApiFactory[];
   };
@@ -420,7 +476,7 @@ export interface CreateSpecializedAppInternalOptions
  * @public
  */
 export function prepareSpecializedApp(
-  options?: CreateSpecializedAppOptions,
+  options?: PrepareSpecializedAppOptions,
 ): PreparedSpecializedApp {
   const internalOptions = options as CreateSpecializedAppInternalOptions;
   const config = options?.config ?? new ConfigReader({}, 'empty-config');
@@ -882,7 +938,21 @@ export function prepareSpecializedApp(
 export function createSpecializedApp(
   options?: CreateSpecializedAppOptions,
 ): FinalizedSpecializedApp {
-  return prepareSpecializedApp(options).finalize();
+  const sessionState = options?.apis
+    ? OpaqueSpecializedAppSessionState.createInstance('v1', {
+        apis: options.apis,
+        identityApi: options.apis.get(identityApiRef),
+        predicateContext: EMPTY_PREDICATE_CONTEXT,
+      })
+    : undefined;
+
+  return prepareSpecializedApp({
+    features: options?.features,
+    config: options?.config,
+    bindRoutes: options?.bindRoutes,
+    sessionState,
+    advanced: options?.advanced,
+  }).finalize();
 }
 
 function registerFeatureFlagDeclarations(

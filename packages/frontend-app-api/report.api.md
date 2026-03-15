@@ -179,14 +179,13 @@ export function createSpecializedApp(
   options?: CreateSpecializedAppOptions,
 ): FinalizedSpecializedApp;
 
-// @public
+// @public @deprecated
 export type CreateSpecializedAppOptions = {
-  sessionState?: SpecializedAppSessionState;
   features?: FrontendFeature[];
   config?: ConfigApi;
   bindRoutes?(context: { bind: CreateAppRouteBinder }): void;
+  apis?: ApiHolder;
   advanced?: {
-    sessionState?: SpecializedAppSessionState;
     extensionFactoryMiddleware?:
       | ExtensionFactoryMiddleware_2
       | ExtensionFactoryMiddleware_2[];
@@ -194,7 +193,7 @@ export type CreateSpecializedAppOptions = {
   };
 };
 
-// @public (undocumented)
+// @public
 export type ExtensionFactoryMiddleware = (
   originalFactory: (contextOverrides?: {
     config?: JsonObject;
@@ -228,6 +227,21 @@ export type FrontendPluginInfoResolver = (ctx: {
 }>;
 
 // @public
+export type PrepareSpecializedAppOptions = {
+  sessionState?: SpecializedAppSessionState;
+  features?: FrontendFeature[];
+  config?: ConfigApi;
+  bindRoutes?(context: { bind: CreateAppRouteBinder }): void;
+  advanced?: {
+    sessionState?: SpecializedAppSessionState;
+    extensionFactoryMiddleware?:
+      | ExtensionFactoryMiddleware_2
+      | ExtensionFactoryMiddleware_2[];
+    pluginInfoResolver?: FrontendPluginInfoResolver;
+  };
+};
+
+// @public
 export type PreparedSpecializedApp = {
   getBootstrapApp(): BootstrapSpecializedApp;
   onFinalized(callback: (app: FinalizedSpecializedApp) => void): () => void;
@@ -238,7 +252,7 @@ export type PreparedSpecializedApp = {
 
 // @public
 export function prepareSpecializedApp(
-  options?: CreateSpecializedAppOptions,
+  options?: PrepareSpecializedAppOptions,
 ): PreparedSpecializedApp;
 
 // @public

@@ -38,7 +38,7 @@ import {
   prepareSpecializedApp,
   PreparedSpecializedApp,
 } from './createSpecializedApp';
-import { mockApis } from '@backstage/test-utils';
+import { mockApis, TestApiRegistry } from '@backstage/test-utils';
 import {
   configApiRef,
   featureFlagsApiRef,
@@ -427,35 +427,26 @@ describe('createSpecializedApp', () => {
     expect(screen.getByText('Selected API: module')).toBeInTheDocument();
   });
 
-  it('should reuse provided session state', async () => {
+  it('should reuse provided apis', async () => {
     const testApiRef = createApiRef<{ value: string }>({ id: 'test.api' });
-    const originalApp = createSpecializedApp({
-      config: new ConfigReader({ anything: 'config' }),
-      features: [makeAppPlugin()],
-    });
     const app = createSpecializedApp({
-      sessionState: originalApp.sessionState,
+      apis: TestApiRegistry.from(
+        [configApiRef, new ConfigReader({ anything: 'config' })],
+        [testApiRef, { value: 'from-apis' }],
+      ),
       features: [
         createFrontendPlugin({
           pluginId: 'test',
           extensions: [
-            ApiBlueprint.make({
-              params: defineParams =>
-                defineParams({
-                  api: testApiRef,
-                  deps: {},
-                  factory: () => ({ value: 'from-extension' }),
-                }),
-            }),
             createExtension({
               attachTo: { id: 'root', input: 'app' },
               output: [coreExtensionData.reactElement],
               factory: ({ apis }) => [
                 coreExtensionData.reactElement(
                   <div>
-                    reusedSession:
+                    reusedApis:
                     {apis.get(configApiRef)!.getString('anything')}:
-                    {String(Boolean(apis.get(testApiRef)))}
+                    {apis.get(testApiRef)!.value}
                   </div>,
                 ),
               ],
@@ -467,7 +458,7 @@ describe('createSpecializedApp', () => {
 
     render(app.tree.root.instance!.getData(coreExtensionData.reactElement));
 
-    expect(screen.getByText('reusedSession:config:false')).toBeInTheDocument();
+    expect(screen.getByText('reusedApis:config:from-apis')).toBeInTheDocument();
   });
 
   it('should make the app structure available through the AppTreeApi', async () => {
