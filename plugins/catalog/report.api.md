@@ -64,6 +64,12 @@ export interface AboutFieldProps {
   value?: string;
 }
 
+// @public
+export function applyColumnConfig(
+  columns: TableColumn<CatalogTableRow>[],
+  config: ColumnConfig | undefined,
+): TableColumn<CatalogTableRow>[];
+
 // @public (undocumented)
 export type BackstageOverrides = Overrides & {
   [Name in keyof PluginCatalogComponentsNameToClassKey]?: Partial<
@@ -73,6 +79,19 @@ export type BackstageOverrides = Overrides & {
 
 // @public (undocumented)
 export type Breakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+
+// @public
+export const BUILTIN_COLUMN_IDS: readonly [
+  'name',
+  'owner',
+  'type',
+  'lifecycle',
+  'description',
+  'tags',
+  'namespace',
+  'system',
+  'targets',
+];
 
 // @public (undocumented)
 export const CatalogEntityPage: () => JSX.Element;
@@ -187,6 +206,7 @@ export interface CatalogTableProps {
   actions?: TableProps<CatalogTableRow>['actions'];
   // (undocumented)
   columns?: TableColumn<CatalogTableRow>[] | CatalogTableColumnsFunc;
+  columnsConfig?: ColumnConfig;
   // (undocumented)
   emptyContent?: ReactNode;
   // (undocumented)
@@ -216,6 +236,32 @@ export type CatalogTableToolbarClassKey = 'root' | 'text';
 
 // @public (undocumented)
 export type ColumnBreakpoints = Record<Breakpoint, number>;
+
+// @public
+export interface ColumnConfig {
+  // (undocumented)
+  custom?: CustomColumnConfig[];
+  // (undocumented)
+  exclude?: string[];
+  // (undocumented)
+  include?: string[];
+}
+
+// @public
+export interface CustomColumnConfig {
+  // (undocumented)
+  defaultValue?: string;
+  // (undocumented)
+  field: string;
+  // (undocumented)
+  kind?: string | string[];
+  // (undocumented)
+  sortable?: boolean;
+  // (undocumented)
+  title: string;
+  // (undocumented)
+  width?: number;
+}
 
 // @public
 export interface DefaultCatalogPageProps {
@@ -633,6 +679,9 @@ export type RelatedEntitiesCardProps<T extends Entity> = {
   asRenderableEntities: (entities: Entity[]) => T[];
   tableOptions?: TableOptions;
 };
+
+// @public
+export function resolveFieldPath(entity: Entity, fieldPath: string): unknown;
 
 // @public (undocumented)
 export type SystemDiagramCardClassKey =
