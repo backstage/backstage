@@ -37,8 +37,9 @@
     "chalk": "^4.0.0",
     "cleye": "^2.3.0",
     "eslint": "^8.6.0",
+    "eslint-formatter-friendly": "^7.0.0",
     "fs-extra": "^11.2.0",
-    "globby": "^11.0.0",
+    "globby": "^11.1.0",
     "shell-quote": "^1.8.1"
   },
   "devDependencies": {

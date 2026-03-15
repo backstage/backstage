@@ -35,7 +35,7 @@
     "@backstage/cli-common": "workspace:^",
     "@backstage/cli-node": "workspace:^",
     "cleye": "^2.3.0",
-    "yargs": "^17.0.0"
+    "yargs": "^16.2.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^"

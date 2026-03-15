@@ -26,13 +26,10 @@ import * as tar from 'tar';
 import partition from 'lodash/partition';
 
 import { run, targetPaths } from '@backstage/cli-common';
-
-const { dependencies: cliDependencies, devDependencies: cliDevDependencies } =
-  require('../../../package.json') as {
-    dependencies: Record<string, string>;
-    devDependencies: Record<string, string>;
-  };
-
+import {
+  dependencies as cliDependencies,
+  devDependencies as cliDevDependencies,
+} from '../../../package.json';
 import {
   BuildOptions,
   buildPackages,

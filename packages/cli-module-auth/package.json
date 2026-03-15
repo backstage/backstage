@@ -49,5 +49,8 @@
     "@types/fs-extra": "^11.0.0",
     "@types/proper-lockfile": "^4"
   },
+  "optionalDependencies": {
+    "keytar": "^7.9.0"
+  },
   "bin": "bin/cli-module-auth"
 }
