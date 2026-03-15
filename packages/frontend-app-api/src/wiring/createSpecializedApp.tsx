@@ -384,7 +384,9 @@ export type CreateSpecializedAppOptions = {
 export type PreparedSpecializedApp = {
   getBootstrapApp(): BootstrapSpecializedApp;
   onFinalized(callback: (app: FinalizedSpecializedApp) => void): () => void;
-  finalize(sessionState?: SpecializedAppSessionState): FinalizedSpecializedApp;
+  finalize(options?: {
+    sessionState?: SpecializedAppSessionState;
+  }): FinalizedSpecializedApp;
 };
 
 // Minimal local permission API interface to avoid a dependency on @backstage/plugin-permission-react
@@ -833,7 +835,7 @@ export function prepareSpecializedApp(
         subscribed = false;
       };
     },
-    finalize(sessionState?: SpecializedAppSessionState) {
+    finalize(options?: { sessionState?: SpecializedAppSessionState }) {
       if (finalized) {
         return finalized;
       }
@@ -845,12 +847,12 @@ export function prepareSpecializedApp(
         throw signInRuntime.error;
       }
 
-      if (!sessionState && !cachedSessionState) {
+      if (!options?.sessionState && !cachedSessionState) {
         getBootstrapApp();
       }
 
       const finalizedSessionState =
-        sessionState ??
+        options?.sessionState ??
         cachedSessionState ??
         (signInRuntime?.requiresSignIn
           ? undefined

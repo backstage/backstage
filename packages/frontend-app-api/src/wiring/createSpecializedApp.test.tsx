@@ -905,6 +905,24 @@ describe('createSpecializedApp', () => {
   });
 
   describe('prepareSpecializedApp', () => {
+    it('should accept session state through finalize options', () => {
+      const originalApp = createSpecializedApp({
+        features: [makeAppPlugin('Original')],
+      });
+      const preparedApp = prepareSpecializedApp({
+        features: [makeAppPlugin('Prepared')],
+      });
+
+      preparedApp.getBootstrapApp();
+      const app = preparedApp.finalize({
+        sessionState: originalApp.sessionState,
+      });
+
+      render(app.tree.root.instance!.getData(coreExtensionData.reactElement));
+
+      expect(screen.getByText('Prepared')).toBeInTheDocument();
+    });
+
     it('should defer app root children until finalize', async () => {
       const identityApi = {
         getProfileInfo: async () => ({ displayName: 'Test User' }),
