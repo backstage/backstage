@@ -31,6 +31,15 @@ export const AccordionDefinition = defineComponent<AccordionOwnProps>()({
   styles,
   classNames: {
     root: 'bui-Accordion',
+    trigger: 'bui-AccordionTrigger',
+    triggerButton: 'bui-AccordionTriggerButton',
+    triggerTitle: 'bui-AccordionTriggerTitle',
+    triggerSubtitle: 'bui-AccordionTriggerSubtitle',
+    triggerIconStart: 'bui-AccordionTriggerIconStart',
+    triggerIconEnd: 'bui-AccordionTriggerIconEnd',
+    triggerIcon: 'bui-AccordionTriggerIcon',
+    panel: 'bui-AccordionPanel',
+    group: 'bui-AccordionGroup',
   },
   bg: 'provider',
   propDefs: {

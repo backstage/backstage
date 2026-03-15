@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import type { ReactNode } from 'react';
 import type {
   DisclosureProps as RADisclosureProps,
   HeadingProps as RAHeadingProps,
   DisclosurePanelProps as RADisclosurePanelProps,
   DisclosureGroupProps as RADisclosureGroupProps,
 } from 'react-aria-components';
+import type { ReactElement, ReactNode } from 'react';
 import type { ProviderBg } from '../../types';
 
 /**
@@ -50,6 +50,16 @@ export type AccordionTriggerOwnProps = {
   title?: string;
   subtitle?: string;
   children?: ReactNode;
+  /**
+   * Icon to display at the start of the trigger.
+   * @defaultValue undefined
+   */
+  iconStart?: ReactElement;
+  /**
+   * Icon to display at the end of the trigger.
+   * @defaultValue undefined
+   */
+  iconEnd?: ReactElement;
 };
 
 /**
