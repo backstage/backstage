@@ -808,6 +808,12 @@ export type UnregisterEntityDialogProps = {
 };
 
 // @public
+export function useAllEntitiesCount(): {
+  count: number | undefined;
+  loading: boolean;
+};
+
+// @public
 export function useAsyncEntity<
   TEntity extends Entity = Entity,
 >(): EntityLoadingStatus<TEntity>;
@@ -849,6 +855,14 @@ export function useEntityTypeFilter(): {
   availableTypes: string[];
   selectedTypes: string[];
   setSelectedTypes: (types: string[]) => void;
+};
+
+// @public
+export function useOwnedEntitiesCount(): {
+  count: number | undefined;
+  loading: boolean;
+  filter: EntityUserFilter;
+  ownershipEntityRefs: string[] | undefined;
 };
 
 // @public
@@ -908,6 +922,13 @@ export function useStarredEntities(): {
   isStarredEntity: (
     entityOrRef: Entity | CompoundEntityRef | string,
   ) => boolean;
+};
+
+// @public
+export function useStarredEntitiesCount(): {
+  count: number | undefined;
+  loading: boolean;
+  filter: EntityUserFilter;
 };
 
 // @public (undocumented)

@@ -22,6 +22,10 @@ import { catalogApiRef } from '../../api';
 import { useEntityList } from '../../hooks';
 import { reduceCatalogFilters } from '../../utils/filters';
 
+/**
+ * Hook that returns the count of all entities.
+ * @public
+ */
 export function useAllEntitiesCount() {
   const catalogApi = useApi(catalogApiRef);
   const { filters } = useEntityList();

@@ -25,6 +25,10 @@ import { EntityUserFilter } from '../../filters';
 import { useEntityList, useStarredEntities } from '../../hooks';
 import { reduceCatalogFilters } from '../../utils/filters';
 
+/**
+ * Hook that returns the count of starred entities.
+ * @public
+ */
 export function useStarredEntitiesCount() {
   const catalogApi = useApi(catalogApiRef);
   const { filters } = useEntityList();

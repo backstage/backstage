@@ -23,6 +23,7 @@ import {
 } from '@backstage/catalog-model';
 import {
   CodeSnippet,
+  FavoriteToggleIcon,
   Table,
   TableColumn,
   TableProps,
@@ -33,6 +34,9 @@ import {
   humanizeEntityRef,
   useEntityList,
   useStarredEntities,
+  useStarredEntitiesCount,
+  useOwnedEntitiesCount,
+  useAllEntitiesCount,
 } from '@backstage/plugin-catalog-react';
 import Typography from '@material-ui/core/Typography';
 import { visuallyHidden } from '@mui/utils';
@@ -40,7 +44,7 @@ import Edit from '@material-ui/icons/Edit';
 import OpenInNew from '@material-ui/icons/OpenInNew';
 import { capitalize } from 'lodash';
 import pluralize from 'pluralize';
-import { ReactNode, useMemo } from 'react';
+import { ReactElement, ReactNode, useMemo } from 'react';
 import { columnFactories } from './columns';
 import { CatalogTableColumnsFunc, CatalogTableRow } from './types';
 import { OffsetPaginatedCatalogTable } from './OffsetPaginatedCatalogTable';
@@ -48,7 +52,6 @@ import { CursorPaginatedCatalogTable } from './CursorPaginatedCatalogTable';
 import { defaultCatalogTableColumnsFunc } from './defaultCatalogTableColumnsFunc';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { catalogTranslationRef } from '../../alpha';
-import { FavoriteToggleIcon } from '@backstage/core-components';
 
 /**
  * Props for {@link CatalogTable}.
@@ -76,6 +79,24 @@ const refCompare = (a: Entity, b: Entity) => {
     });
 
   return toRef(a).localeCompare(toRef(b));
+};
+
+// Small internal components that each call only one count hook.
+// Conditionally mounting these (based on the active user filter) avoids making
+// unnecessary catalog API requests when a given filter type is not active.
+const StarredTitle = ({ prefix }: { prefix: string }) => {
+  const { count } = useStarredEntitiesCount();
+  return <>{count !== undefined ? `${prefix} (${count})` : prefix}</>;
+};
+
+const OwnedTitle = ({ prefix }: { prefix: string }) => {
+  const { count } = useOwnedEntitiesCount();
+  return <>{count !== undefined ? `${prefix} (${count})` : prefix}</>;
+};
+
+const AllTitle = ({ prefix }: { prefix: string }) => {
+  const { count } = useAllEntitiesCount();
+  return <>{count !== undefined ? `${prefix} (${count})` : prefix}</>;
 };
 
 /**
@@ -168,7 +189,8 @@ export const CatalogTable = (props: CatalogTableProps) => {
       };
     },
     ({ entity }) => {
-      const isStarred = isStarredEntity(entity);
+      const entityRefString = stringifyEntityRef(entity);
+      const isStarred = isStarredEntity(entityRefString);
       const title = isStarred
         ? t('catalogTable.unStarActionTitle')
         : t('catalogTable.starActionTitle');
@@ -177,23 +199,37 @@ export const CatalogTable = (props: CatalogTableProps) => {
         cellStyle: { paddingLeft: '1em' },
         icon: () => <FavoriteToggleIcon isFavorite={isStarred} />,
         tooltip: title,
-        onClick: () => toggleStarredEntity(entity),
+        onClick: () => toggleStarredEntity(entityRefString),
       };
     },
   ];
 
   const currentKind = filters.kind?.label || '';
   const currentType = filters.type?.value || '';
-  const currentCount = typeof totalItems === 'number' ? `(${totalItems})` : '';
+
   // TODO(timbonicus): remove the title from the CatalogTable once using EntitySearchBar
   const titlePreamble = capitalize(
     filters.user?.value ?? t('catalogTable.allFilters'),
   );
-  const title =
-    props.title ||
-    [titlePreamble, currentType, pluralize(currentKind), currentCount]
-      .filter(s => s)
-      .join(' ');
+
+  const userFilterValue = filters.user?.value;
+  const titlePrefix = [titlePreamble, currentType, pluralize(currentKind)]
+    .filter(s => s)
+    .join(' ');
+
+  let title: string | ReactElement;
+  if (props.title) {
+    title = props.title;
+  } else if (userFilterValue === 'starred') {
+    title = <StarredTitle prefix={titlePrefix} />;
+  } else if (userFilterValue === 'owned') {
+    title = <OwnedTitle prefix={titlePrefix} />;
+  } else if (userFilterValue === 'all') {
+    title = <AllTitle prefix={titlePrefix} />;
+  } else {
+    title =
+      totalItems !== undefined ? `${titlePrefix} (${totalItems})` : titlePrefix;
+  }
 
   const actions = props.actions || defaultActions;
   const options: TableProps['options'] = {
