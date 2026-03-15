@@ -68,6 +68,7 @@
     "@spotify/eslint-config-typescript": "^15.0.0",
     "@swc/core": "^1.15.6",
     "@swc/jest": "^0.2.39",
+    "@types/webpack-env": "^1.15.2",
     "@typescript-eslint/eslint-plugin": "^8.17.0",
     "@typescript-eslint/parser": "^8.16.0",
     "chalk": "^4.0.0",
