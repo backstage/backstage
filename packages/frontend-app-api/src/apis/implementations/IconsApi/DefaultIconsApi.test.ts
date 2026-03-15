@@ -59,6 +59,8 @@ describe('DefaultIconsApi', () => {
     expect(result).toBeTruthy();
     // @ts-expect-error accessing internal React element structure
     expect(result.type).toBe(MyIcon);
+    // @ts-expect-error accessing internal React element structure
+    expect(result.props.fontSize).toBe('inherit');
   });
 
   it('should wrap IconElement values in a component for getIcon()', () => {
@@ -69,8 +71,25 @@ describe('DefaultIconsApi', () => {
     expect(icon).toBeDefined();
     expect(typeof icon).toBe('function');
     // @ts-expect-error testing runtime behavior
-    expect(icon({})).toBe(element);
+    const result = icon({});
+    expect(result.type).toBe('span');
+    expect(result.props.style).toEqual({
+      display: 'inline-flex',
+      fontSize: '1.5rem',
+      lineHeight: 0,
+    });
+    expect(result.props.children).toBe(element);
     expect(api.getIcon('myIcon')).toBe(icon);
+  });
+
+  it('should honor fontSize for getIcon()', () => {
+    const element = createElement('svg');
+    const api = new DefaultIconsApi({ myIcon: element });
+    const icon = api.getIcon('myIcon');
+
+    // @ts-expect-error testing runtime behavior
+    const result = icon({ fontSize: 'small' });
+    expect(result.props.style.fontSize).toBe('1.25rem');
   });
 
   it('should wrap null IconElement in a component for getIcon()', () => {

@@ -59,7 +59,7 @@ export const catalogPage = PageBlueprint.makeWithOverrides({
     return originalFactory({
       path: '/catalog',
       routeRef: rootRouteRef,
-      icon: <CategoryIcon />,
+      icon: <CategoryIcon fontSize="inherit" />,
       title: 'Catalog',
       loader: async () => {
         const { BaseCatalogPage } = await import('../components/CatalogPage');
