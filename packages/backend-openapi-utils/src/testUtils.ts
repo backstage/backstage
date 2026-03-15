@@ -16,8 +16,9 @@
 import { Express } from 'express';
 import { Server } from 'node:http';
 import { Proxy } from './proxy/setup';
+import { randomUUID } from 'node:crypto';
 
-const proxiesToCleanup: Proxy[] = [];
+const proxiesToCleanup: Record<string, Proxy> = {};
 
 /**
  * !!! THIS CURRENTLY ONLY SUPPORTS SUPERTEST !!!
@@ -29,7 +30,8 @@ const proxiesToCleanup: Proxy[] = [];
  */
 export async function wrapServer(app: Express): Promise<Server> {
   const proxy = new Proxy();
-  proxiesToCleanup.push(proxy);
+  const proxyId = randomUUID();
+  proxiesToCleanup[proxyId] = proxy;
   await proxy.setup();
 
   const server = app.listen(proxy.forwardTo.port);
@@ -48,10 +50,11 @@ function registerHooks() {
   }
   registered = true;
 
-  afterAll(() => {
-    for (const proxy of proxiesToCleanup) {
-      proxy.stop();
-    }
+  afterAll(async () => {
+    const stopPromises = Object.entries(proxiesToCleanup).map(([key, proxy]) =>
+      proxy.stop().finally(() => delete proxiesToCleanup[key]),
+    );
+    await Promise.allSettled(stopPromises);
   });
 }
 
