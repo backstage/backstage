@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { CatalogModelKindRootSchema } from '../jsonSchema/validateKindRootSchemaSemantics';
+import {
+  CatalogModelKindRootSchema,
+  validateKindRootSchemaSemantics,
+} from '../jsonSchema/validateKindRootSchemaSemantics';
+import { validateMetaSchema } from '../jsonSchema/validateMetaSchema';
 import { CatalogModelOp } from '../operations';
 import { createDeclareKindOp } from '../operations/declareKind';
 import { createDeclareKindVersionOp } from '../operations/declareKindVersion';
@@ -149,6 +153,8 @@ export function opsFromCatalogModelKind(
   );
 
   for (const version of kind.versions ?? []) {
+    validateMetaSchema(version.schema.jsonSchema);
+    validateKindRootSchemaSemantics(version.schema.jsonSchema);
     for (const specType of version.specTypes ?? [undefined]) {
       ops.push(
         createDeclareKindVersionOp({

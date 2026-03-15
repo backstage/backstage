@@ -49,10 +49,10 @@ const relationFieldSchema = z.strictObject({
 });
 
 /**
- * Make a declaration about the version of a certain kind.
+ * Make an update to a pre-existing version of a certain kind.
  */
-export const opDeclareKindVersionV1Schema = z.strictObject({
-  op: z.literal('declareKindVersion.v1'),
+export const opUpdateKindVersionV1Schema = z.strictObject({
+  op: z.literal('updateKindVersion.v1'),
 
   /**
    * The kind that this version belongs to.
@@ -76,35 +76,43 @@ export const opDeclareKindVersionV1Schema = z.strictObject({
   specType: z.string().optional(),
 
   /**
-   * The properties that apply to this version.
+   * The properties that apply to this version update.
    */
   properties: z.strictObject({
     /**
-     * A short description of this particular version (and type, where applicable).
+     * A short description of this particular version (and type, where
+     * applicable). Specify this if you want to override the default value.
      */
     description: z.string().optional(),
 
     /**
-     * The fields that shall be used to generate relations, if any.
+     * The fields that shall be used to generate relations, if any. Specify this
+     * if you want to override the default value.
      */
     relationFields: z.array(relationFieldSchema).optional(),
 
     /**
-     * The JSON schema of the version.
+     * The JSON schema of the version. Specify this if you want to override the
+     * default value.
+     *
+     * @remarks
+     *
+     * This schema gets deep merged with the default one for this version. It
+     * can therefore be used for both amending and changing existing fields.
      */
-    schema: z.strictObject({
-      jsonSchema: z.record(z.string(), z.unknown()),
-    }),
+    schema: z
+      .strictObject({
+        jsonSchema: z.record(z.string(), z.unknown()),
+      })
+      .optional(),
   }),
 });
 
-/** {@inheritDoc opDeclareKindVersionV1Schema} */
-export type OpDeclareKindVersionV1 = z.infer<
-  typeof opDeclareKindVersionV1Schema
->;
+/** {@inheritDoc opUpdateKindVersionV1Schema} */
+export type OpUpdateKindVersionV1 = z.infer<typeof opUpdateKindVersionV1Schema>;
 
 /**
- * Creates a validated {@link OpDeclareKindVersionV1} operation instance.
+ * Creates a validated {@link OpUpdateKindVersionV1} operation instance.
  *
  * @remarks
  *
@@ -112,13 +120,13 @@ export type OpDeclareKindVersionV1 = z.infer<
  * schema before returning, ensuring that the resulting op is reliably valid.
  *
  * @param input - All fields of the op except `op` itself.
- * @returns A fully validated {@link OpDeclareKindVersionV1}.
+ * @returns A fully validated {@link OpUpdateKindVersionV1}.
  */
-export function createDeclareKindVersionOp(
-  input: Omit<OpDeclareKindVersionV1, 'op'> & { op?: never },
-): OpDeclareKindVersionV1 {
-  return opDeclareKindVersionV1Schema.parse({
+export function createUpdateKindVersionOp(
+  input: Omit<OpUpdateKindVersionV1, 'op'> & { op?: never },
+): OpUpdateKindVersionV1 {
+  return opUpdateKindVersionV1Schema.parse({
     ...input,
-    op: 'declareKindVersion.v1',
+    op: 'updateKindVersion.v1',
   });
 }

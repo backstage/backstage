@@ -26,7 +26,7 @@ import { z } from 'zod/v3';
  * that is a relation type - it updates the properties of a relation that was
  * generated between two kinds for any reason.
  */
-export const opUpdateRelationV1Schema = z.object({
+export const opUpdateRelationV1Schema = z.strictObject({
   op: z.literal('updateRelation.v1'),
 
   /**
@@ -45,7 +45,7 @@ export const opUpdateRelationV1Schema = z.object({
   /**
    * The properties that apply to this relation.
    */
-  properties: z.object({
+  properties: z.strictObject({
     /**
      * The technical type of the reverse relation, e.g. "ownerOf".
      */

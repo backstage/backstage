@@ -26,7 +26,7 @@ import { z } from 'zod/v3';
  * relation type - it declares that IF a relation was generated between two
  * kinds for any reason, then these properties apply to it.
  */
-export const opDeclareRelationV1Schema = z.object({
+export const opDeclareRelationV1Schema = z.strictObject({
   op: z.literal('declareRelation.v1'),
   /**
    * The kind that this relation originates from, e.g. "Component".
@@ -44,7 +44,7 @@ export const opDeclareRelationV1Schema = z.object({
   /**
    * The properties that apply to this relation.
    */
-  properties: z.object({
+  properties: z.strictObject({
     /**
      * The technical type of the reverse relation, e.g. "ownerOf".
      */

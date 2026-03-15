@@ -19,7 +19,7 @@ import { z } from 'zod/v3';
 /**
  * Make a declaration about the properties of a certain kind.
  */
-export const opUpdateKindV1Schema = z.object({
+export const opUpdateKindV1Schema = z.strictObject({
   op: z.literal('updateKind.v1'),
 
   /**
@@ -30,7 +30,7 @@ export const opUpdateKindV1Schema = z.object({
   /**
    * Updated properties that apply for this kind
    */
-  properties: z.object({
+  properties: z.strictObject({
     /**
      * The singular form of the human readable kind, e.g. "component".
      */

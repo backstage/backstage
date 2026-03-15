@@ -17,7 +17,7 @@
 import { InputError } from '@backstage/errors';
 import { isJsonObject } from './util';
 
-const FORBIDDEN_SCHEMA_ROOT_FIELDS = ['kind', 'apiVersion', 'metadata'];
+const FORBIDDEN_SCHEMA_ROOT_FIELDS = ['kind', 'apiVersion', 'metadata', '$ref'];
 const FORBIDDEN_SCHEMA_STRUCTURAL_FIELDS = [
   'allOf',
   'oneOf',
@@ -25,6 +25,7 @@ const FORBIDDEN_SCHEMA_STRUCTURAL_FIELDS = [
   'if',
   'else',
   'then',
+  '$ref',
 ];
 
 /**
@@ -41,29 +42,40 @@ export interface CatalogModelKindRootSchema {
   type: 'object';
 
   // NOTE: These should match the FORBIDDEN_SCHEMA_STRUCTURAL_FIELDS list above
-  allOf: never;
-  anyOf: never;
-  oneOf: never;
-  if: never;
-  then: never;
-  else: never;
+  allOf?: never;
+  anyOf?: never;
+  oneOf?: never;
+  if?: never;
+  then?: never;
+  else?: never;
+  $ref?: never;
 
-  properties: {
-    // NOTE: These should match the FORBIDDEN_SCHEMA_ROOT_FIELDS list above
-    kind: never;
-    apiVersion: never;
-    metadata: never;
+  properties:
+    | {
+        // NOTE: These should match the FORBIDDEN_SCHEMA_ROOT_FIELDS list above
+        kind?: never;
+        apiVersion?: never;
+        metadata?: never;
+        $ref?: never;
 
-    [key: string]: {
-      // NOTE: These should match the FORBIDDEN_SCHEMA_STRUCTURAL_FIELDS list above
-      allOf: never;
-      anyOf: never;
-      oneOf: never;
-      if: never;
-      then: never;
-      else: never;
-    };
-  };
+        [key: string]:
+          | undefined
+          | {
+              // NOTE: These should match the FORBIDDEN_SCHEMA_STRUCTURAL_FIELDS list above
+              allOf?: never;
+              anyOf?: never;
+              oneOf?: never;
+              if?: never;
+              then?: never;
+              else?: never;
+              $ref?: never;
+
+              [key: string]: unknown;
+            };
+      }
+    | undefined;
+
+  [key: string]: unknown | undefined;
 }
 
 /**

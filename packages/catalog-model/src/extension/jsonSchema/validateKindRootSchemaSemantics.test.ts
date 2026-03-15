@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { validateKindRootSchemaSemantics } from './validateKindRootSchemaSemantics';
+import {
+  CatalogModelKindRootSchema,
+  validateKindRootSchemaSemantics,
+} from './validateKindRootSchemaSemantics';
 
 describe('validateKindRootSchemaSemantics', () => {
   it('should accept a valid schema with custom properties', () => {
@@ -112,5 +115,27 @@ describe('validateKindRootSchemaSemantics', () => {
         `Schema for root field "spec" must not use "${keyword}" keyword`,
       );
     }
+  });
+
+  it('should accept arbitrary extra fields at all levels via the type', () => {
+    // This test is a compile-time check that CatalogModelKindRootSchema
+    // allows unknown properties at every level, not just the forbidden ones.
+    const schema: CatalogModelKindRootSchema = {
+      type: 'object',
+      foo: 'bar',
+      properties: {
+        spec: {
+          type: 'object',
+          foo: 'bar',
+          properties: {
+            owner: {
+              type: 'string',
+              foo: 'bar',
+            },
+          },
+        },
+      },
+    };
+    expect(schema).toBeDefined();
   });
 });
