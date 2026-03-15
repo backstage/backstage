@@ -68,6 +68,24 @@ describe('FileReaderProcessor', () => {
     );
   });
 
+  it('should not emit notFoundError when glob pattern matches zero files', async () => {
+    const processor = new FileReaderProcessor();
+
+    const emit = jest.fn();
+
+    await processor.readLocation(
+      {
+        type: 'file',
+        target: `${path.join(fixturesRoot, 'components', '*.yaml')}`,
+      },
+      false,
+      emit,
+      defaultEntityDataParser,
+    );
+
+    expect(emit).not.toHaveBeenCalled();
+  });
+
   it('should support globs', async () => {
     const processor = new FileReaderProcessor();
 
