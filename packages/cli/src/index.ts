@@ -35,22 +35,13 @@ import { discoverCliModules } from './wiring/discoverCliModules';
         `No CLI modules found in the project root dependencies. ` +
           `Falling back to the built-in set of modules.\n` +
           `This fallback will be removed in a future release. ` +
-          `Please add the CLI modules you need as devDependencies ` +
-          `in your root package.json.\n`,
+          `Please add @backstage/cli-defaults as a devDependency ` +
+          `in your root package.json, or install individual ` +
+          `@backstage/cli-module-* packages for fine-grained control.\n`,
       ),
     );
 
-    initializer.add(import('@backstage/cli-module-build'));
-    initializer.add(import('@backstage/cli-module-config'));
-    initializer.add(import('@backstage/cli-module-create-github-app'));
-    initializer.add(import('@backstage/cli-module-info'));
-    initializer.add(import('@backstage/cli-module-lint'));
-    initializer.add(import('@backstage/cli-module-maintenance'));
-    initializer.add(import('@backstage/cli-module-migrate'));
-    initializer.add(import('@backstage/cli-module-new'));
-    initializer.add(import('@backstage/cli-module-test-jest'));
-    initializer.add(import('@backstage/cli-module-translations'));
-    initializer.add(import('@backstage/cli-module-auth'));
+    initializer.add(import('@backstage/cli-defaults'));
   }
 
   await initializer.run();

@@ -2801,6 +2801,25 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/cli-defaults@workspace:^, @backstage/cli-defaults@workspace:packages/cli-defaults":
+  version: 0.0.0-use.local
+  resolution: "@backstage/cli-defaults@workspace:packages/cli-defaults"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@backstage/cli-module-auth": "workspace:^"
+    "@backstage/cli-module-build": "workspace:^"
+    "@backstage/cli-module-config": "workspace:^"
+    "@backstage/cli-module-create-github-app": "workspace:^"
+    "@backstage/cli-module-info": "workspace:^"
+    "@backstage/cli-module-lint": "workspace:^"
+    "@backstage/cli-module-maintenance": "workspace:^"
+    "@backstage/cli-module-migrate": "workspace:^"
+    "@backstage/cli-module-new": "workspace:^"
+    "@backstage/cli-module-test-jest": "workspace:^"
+    "@backstage/cli-module-translations": "workspace:^"
+  languageName: unknown
+  linkType: soft
+
 "@backstage/cli-module-auth@workspace:*, @backstage/cli-module-auth@workspace:^, @backstage/cli-module-auth@workspace:packages/cli-module-auth":
   version: 0.0.0-use.local
   resolution: "@backstage/cli-module-auth@workspace:packages/cli-module-auth"
@@ -3121,17 +3140,7 @@ __metadata:
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/catalog-client": "workspace:^"
     "@backstage/cli-common": "workspace:^"
-    "@backstage/cli-module-auth": "workspace:^"
-    "@backstage/cli-module-build": "workspace:^"
-    "@backstage/cli-module-config": "workspace:^"
-    "@backstage/cli-module-create-github-app": "workspace:^"
-    "@backstage/cli-module-info": "workspace:^"
-    "@backstage/cli-module-lint": "workspace:^"
-    "@backstage/cli-module-maintenance": "workspace:^"
-    "@backstage/cli-module-migrate": "workspace:^"
-    "@backstage/cli-module-new": "workspace:^"
-    "@backstage/cli-module-test-jest": "workspace:^"
-    "@backstage/cli-module-translations": "workspace:^"
+    "@backstage/cli-defaults": "workspace:^"
     "@backstage/cli-node": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/core-app-api": "workspace:^"

@@ -39,18 +39,23 @@ function isNodeHidden(node: CommandNode): boolean {
   return children.every(child => isNodeHidden(child));
 }
 
-type UninitializedFeature = CliModule | Promise<{ default: CliModule }>;
+type UninitializedFeature =
+  | CliModule
+  | CliModule[]
+  | Promise<{ default: CliModule | CliModule[] }>;
 
 export class CliInitializer {
   private graph = new CommandGraph();
   private commandRegistry = new CommandRegistry(this.graph);
-  #uninitiazedFeatures: Promise<CliModule>[] = [];
+  #uninitiazedFeatures: Promise<CliModule | CliModule[]>[] = [];
 
   add(feature: UninitializedFeature) {
     if (isPromise(feature)) {
       this.#uninitiazedFeatures.push(
         feature.then(f => unwrapFeature(f.default)),
       );
+    } else if (Array.isArray(feature)) {
+      this.#uninitiazedFeatures.push(Promise.resolve(feature));
     } else {
       this.#uninitiazedFeatures.push(Promise.resolve(feature));
     }
@@ -68,9 +73,14 @@ export class CliInitializer {
   }
 
   async #doInit() {
-    const features = await Promise.all(this.#uninitiazedFeatures);
-    for (const feature of features) {
-      await this.#register(feature);
+    const resolved = await Promise.all(this.#uninitiazedFeatures);
+    for (const featureOrArray of resolved) {
+      const features = Array.isArray(featureOrArray)
+        ? featureOrArray
+        : [featureOrArray];
+      for (const feature of features) {
+        await this.#register(feature);
+      }
     }
   }
 
@@ -186,8 +196,12 @@ export class CliInitializer {
 
 /** @internal */
 export function unwrapFeature(
-  feature: CliModule | { default: CliModule },
-): CliModule {
+  feature: CliModule | CliModule[] | { default: CliModule | CliModule[] },
+): CliModule | CliModule[] {
+  if (Array.isArray(feature)) {
+    return feature;
+  }
+
   if ('$$type' in feature) {
     return feature;
   }

@@ -50,6 +50,7 @@ jest.mock('./versions', () => ({
   packageVersions: {
     root: '1.2.3',
     '@backstage/cli': '1.0.0',
+    '@backstage/cli-defaults': '1.0.0',
     '@backstage/cli-module-auth': '1.0.0',
     '@backstage/cli-module-build': '1.0.0',
     '@backstage/cli-module-config': '1.0.0',

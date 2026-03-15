@@ -38,6 +38,7 @@ import { version as backendDefaults } from '../../../backend-defaults/package.js
 import { version as catalogClient } from '../../../catalog-client/package.json';
 import { version as catalogModel } from '../../../catalog-model/package.json';
 import { version as cli } from '../../../cli/package.json';
+import { version as cliDefaults } from '../../../cli-defaults/package.json';
 import { version as cliModuleAuth } from '../../../cli-module-auth/package.json';
 import { version as cliModuleBuild } from '../../../cli-module-build/package.json';
 import { version as cliModuleConfig } from '../../../cli-module-config/package.json';
@@ -118,6 +119,7 @@ export const packageVersions = {
   '@backstage/catalog-client': catalogClient,
   '@backstage/catalog-model': catalogModel,
   '@backstage/cli': cli,
+  '@backstage/cli-defaults': cliDefaults,
   '@backstage/cli-module-auth': cliModuleAuth,
   '@backstage/cli-module-build': cliModuleBuild,
   '@backstage/cli-module-config': cliModuleConfig,
