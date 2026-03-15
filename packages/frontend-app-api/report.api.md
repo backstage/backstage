@@ -244,7 +244,6 @@ export function prepareSpecializedApp(
 
 // @public
 export type PrepareSpecializedAppOptions = {
-  sessionState?: SpecializedAppSessionState;
   features?: FrontendFeature[];
   config?: ConfigApi;
   bindRoutes?(context: { bind: CreateAppRouteBinder }): void;
@@ -261,8 +260,4 @@ export type PrepareSpecializedAppOptions = {
 export type SpecializedAppSessionState = {
   $$type: '@backstage/SpecializedAppSessionState';
 };
-
-// Warnings were encountered during analysis:
-//
-// src/wiring/createSpecializedApp.d.ts:76:9 - (ae-unresolved-link) The @link reference could not be resolved: No member was found with name "sessionState"
 ```

@@ -894,6 +894,24 @@ describe('createSpecializedApp', () => {
   });
 
   describe('prepareSpecializedApp', () => {
+    it('should accept session state through advanced options', () => {
+      const originalApp = createSpecializedApp({
+        features: [makeAppPlugin('Original')],
+      });
+      const preparedApp = prepareSpecializedApp({
+        features: [makeAppPlugin('Prepared')],
+        advanced: {
+          sessionState: originalApp.sessionState,
+        },
+      });
+
+      const app = preparedApp.finalize();
+
+      render(app.tree.root.instance!.getData(coreExtensionData.reactElement));
+
+      expect(screen.getByText('Prepared')).toBeInTheDocument();
+    });
+
     it('should accept session state through finalize options', () => {
       const originalApp = createSpecializedApp({
         features: [makeAppPlugin('Original')],

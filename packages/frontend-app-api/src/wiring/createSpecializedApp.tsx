@@ -320,16 +320,6 @@ class RouteResolutionApiProxy implements RouteResolutionApi {
  */
 export type PrepareSpecializedAppOptions = {
   /**
-   * A reusable specialized app session state to use.
-   *
-   * This can be obtained from either the app passed to
-   * {@link PreparedSpecializedApp.onFinalized} or from
-   * {@link PreparedSpecializedApp.finalize}, and reused in a future app
-   * instance to skip sign-in and session preparation.
-   */
-  sessionState?: SpecializedAppSessionState;
-
-  /**
    * The list of features to load.
    */
   features?: FrontendFeature[];
@@ -354,9 +344,12 @@ export type PrepareSpecializedAppOptions = {
    */
   advanced?: {
     /**
-     * @deprecated Use {@link CreateSpecializedAppOptions.sessionState} instead.
-     *
      * A reusable specialized app session state to use.
+     *
+     * This can be obtained from either the app passed to
+     * {@link PreparedSpecializedApp.onFinalized} or from
+     * {@link PreparedSpecializedApp.finalize}, and reused in a future app
+     * instance to skip sign-in and session preparation.
      */
     sessionState?: SpecializedAppSessionState;
 
@@ -514,8 +507,7 @@ export function prepareSpecializedApp(
   const mergedExtensionFactoryMiddleware = mergeExtensionFactoryMiddleware(
     options?.advanced?.extensionFactoryMiddleware,
   );
-  const providedSessionState =
-    options?.sessionState ?? options?.advanced?.sessionState;
+  const providedSessionState = options?.advanced?.sessionState;
   const providedSessionData = providedSessionState
     ? OpaqueSpecializedAppSessionState.toInternal(providedSessionState)
     : undefined;
@@ -959,8 +951,10 @@ export function createSpecializedApp(
     features: options?.features,
     config: options?.config,
     bindRoutes: options?.bindRoutes,
-    sessionState,
-    advanced: options?.advanced,
+    advanced: {
+      ...options?.advanced,
+      sessionState,
+    },
   }).finalize();
 }
 
