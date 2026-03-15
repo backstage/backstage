@@ -4,15 +4,31 @@ import {
   ListBox,
   ListBoxItem,
 } from '../../../../../packages/ui/src/components/ListBox/ListBox';
+import { MenuItem } from '../../../../../packages/ui/src/components/Menu/Menu';
+import {
+  TagGroup,
+  Tag,
+} from '../../../../../packages/ui/src/components/TagGroup/TagGroup';
 import { useState } from 'react';
 import type { Selection } from 'react-aria-components';
 import {
   RiJavascriptLine,
   RiReactjsLine,
-  RiRustLine,
+  RiShipLine,
   RiTerminalLine,
   RiCodeLine,
+  RiDeleteBinLine,
+  RiEdit2Line,
+  RiShareBoxLine,
 } from '@remixicon/react';
+
+const itemTags: Record<string, string[]> = {
+  react: ['frontend', 'ui'],
+  typescript: ['typed', 'js'],
+  javascript: ['web'],
+  rust: ['systems', 'fast'],
+  go: ['backend'],
+};
 
 const items = [
   { id: 'react', label: 'React' },
@@ -54,14 +70,34 @@ const itemIcons: Record<string, React.ReactNode> = {
   react: <RiReactjsLine />,
   typescript: <RiCodeLine />,
   javascript: <RiJavascriptLine />,
-  rust: <RiRustLine />,
+  rust: <RiShipLine />,
   go: <RiTerminalLine />,
 };
 
 export const Default = () => (
-  <ListBox aria-label="Programming languages" style={{ width: 280 }}>
+  <ListBox aria-label="Programming languages" style={{ width: 380 }}>
     {items.map(item => (
-      <ListBoxItem key={item.id} id={item.id}>
+      <ListBoxItem
+        key={item.id}
+        id={item.id}
+        icon={itemIcons[item.id]}
+        menuItems={
+          <>
+            <MenuItem iconStart={<RiEdit2Line />}>Edit</MenuItem>
+            <MenuItem iconStart={<RiShareBoxLine />}>Share</MenuItem>
+            <MenuItem iconStart={<RiDeleteBinLine />} color="danger">
+              Delete
+            </MenuItem>
+          </>
+        }
+        customActions={
+          <TagGroup aria-label={`Tags for ${item.label}`}>
+            {itemTags[item.id].map(tag => (
+              <Tag key={tag}>{tag}</Tag>
+            ))}
+          </TagGroup>
+        }
+      >
         {item.label}
       </ListBoxItem>
     ))}
