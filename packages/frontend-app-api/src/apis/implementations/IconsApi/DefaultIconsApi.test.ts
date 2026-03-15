@@ -72,15 +72,12 @@ describe('DefaultIconsApi', () => {
     expect(typeof icon).toBe('function');
     // @ts-expect-error testing runtime behavior
     const result = icon({});
-    // @ts-expect-error accessing internal React element structure
     expect(result.type).toBe('span');
-    // @ts-expect-error accessing internal React element structure
     expect(result.props.style).toEqual({
       display: 'inline-flex',
       fontSize: '1.5rem',
       lineHeight: 0,
     });
-    // @ts-expect-error accessing internal React element structure
     expect(result.props.children).toBe(element);
     expect(api.getIcon('myIcon')).toBe(icon);
   });
@@ -92,7 +89,6 @@ describe('DefaultIconsApi', () => {
 
     // @ts-expect-error testing runtime behavior
     const result = icon({ fontSize: 'small' });
-    // @ts-expect-error accessing internal React element structure
     expect(result.props.style.fontSize).toBe('1.25rem');
   });
 
