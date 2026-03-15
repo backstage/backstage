@@ -38,6 +38,18 @@ import { version as backendDefaults } from '../../../backend-defaults/package.js
 import { version as catalogClient } from '../../../catalog-client/package.json';
 import { version as catalogModel } from '../../../catalog-model/package.json';
 import { version as cli } from '../../../cli/package.json';
+import { version as cliDefaults } from '../../../cli-defaults/package.json';
+import { version as cliModuleAuth } from '../../../cli-module-auth/package.json';
+import { version as cliModuleBuild } from '../../../cli-module-build/package.json';
+import { version as cliModuleConfig } from '../../../cli-module-config/package.json';
+import { version as cliModuleCreateGithubApp } from '../../../cli-module-create-github-app/package.json';
+import { version as cliModuleInfo } from '../../../cli-module-info/package.json';
+import { version as cliModuleLint } from '../../../cli-module-lint/package.json';
+import { version as cliModuleMaintenance } from '../../../cli-module-maintenance/package.json';
+import { version as cliModuleMigrate } from '../../../cli-module-migrate/package.json';
+import { version as cliModuleNew } from '../../../cli-module-new/package.json';
+import { version as cliModuleTestJest } from '../../../cli-module-test-jest/package.json';
+import { version as cliModuleTranslations } from '../../../cli-module-translations/package.json';
 import { version as config } from '../../../config/package.json';
 import { version as coreAppApi } from '../../../core-app-api/package.json';
 import { version as coreCompatApi } from '../../../core-compat-api/package.json';
@@ -107,6 +119,18 @@ export const packageVersions = {
   '@backstage/catalog-client': catalogClient,
   '@backstage/catalog-model': catalogModel,
   '@backstage/cli': cli,
+  '@backstage/cli-defaults': cliDefaults,
+  '@backstage/cli-module-auth': cliModuleAuth,
+  '@backstage/cli-module-build': cliModuleBuild,
+  '@backstage/cli-module-config': cliModuleConfig,
+  '@backstage/cli-module-create-github-app': cliModuleCreateGithubApp,
+  '@backstage/cli-module-info': cliModuleInfo,
+  '@backstage/cli-module-lint': cliModuleLint,
+  '@backstage/cli-module-maintenance': cliModuleMaintenance,
+  '@backstage/cli-module-migrate': cliModuleMigrate,
+  '@backstage/cli-module-new': cliModuleNew,
+  '@backstage/cli-module-test-jest': cliModuleTestJest,
+  '@backstage/cli-module-translations': cliModuleTranslations,
   '@backstage/config': config,
   '@backstage/core-app-api': coreAppApi,
   '@backstage/core-compat-api': coreCompatApi,

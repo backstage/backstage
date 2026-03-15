@@ -38,6 +38,7 @@ const FRONTEND_ROLES = [
 const NODE_ROLES = [
   'backend',
   'cli',
+  'cli-module',
   'node-library',
   'backend-plugin',
   'backend-plugin-module',

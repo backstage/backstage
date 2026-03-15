@@ -34,6 +34,11 @@ const packageRoleInfos: PackageRoleInfo[] = [
     output: ['cjs'],
   },
   {
+    role: 'cli-module',
+    platform: 'node',
+    output: ['types', 'cjs'],
+  },
+  {
     role: 'web-library',
     platform: 'web',
     output: ['types', 'esm'],

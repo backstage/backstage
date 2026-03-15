@@ -2801,6 +2801,314 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/cli-defaults@workspace:^, @backstage/cli-defaults@workspace:packages/cli-defaults":
+  version: 0.0.0-use.local
+  resolution: "@backstage/cli-defaults@workspace:packages/cli-defaults"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@backstage/cli-module-auth": "workspace:^"
+    "@backstage/cli-module-build": "workspace:^"
+    "@backstage/cli-module-config": "workspace:^"
+    "@backstage/cli-module-create-github-app": "workspace:^"
+    "@backstage/cli-module-info": "workspace:^"
+    "@backstage/cli-module-lint": "workspace:^"
+    "@backstage/cli-module-maintenance": "workspace:^"
+    "@backstage/cli-module-migrate": "workspace:^"
+    "@backstage/cli-module-new": "workspace:^"
+    "@backstage/cli-module-test-jest": "workspace:^"
+    "@backstage/cli-module-translations": "workspace:^"
+  languageName: unknown
+  linkType: soft
+
+"@backstage/cli-module-auth@workspace:*, @backstage/cli-module-auth@workspace:^, @backstage/cli-module-auth@workspace:packages/cli-module-auth":
+  version: 0.0.0-use.local
+  resolution: "@backstage/cli-module-auth@workspace:packages/cli-module-auth"
+  dependencies:
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/cli-node": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@types/fs-extra": "npm:^11.0.0"
+    "@types/proper-lockfile": "npm:^4"
+    cleye: "npm:^2.3.0"
+    cross-fetch: "npm:^4.0.0"
+    fs-extra: "npm:^11.2.0"
+    glob: "npm:^7.1.7"
+    inquirer: "npm:^8.2.0"
+    keytar: "npm:^7.9.0"
+    proper-lockfile: "npm:^4.1.2"
+    yaml: "npm:^2.0.0"
+    zod: "npm:^3.25.76"
+  dependenciesMeta:
+    keytar:
+      optional: true
+  bin:
+    cli-module-auth: bin/cli-module-auth
+  languageName: unknown
+  linkType: soft
+
+"@backstage/cli-module-build@workspace:*, @backstage/cli-module-build@workspace:^, @backstage/cli-module-build@workspace:packages/cli-module-build":
+  version: 0.0.0-use.local
+  resolution: "@backstage/cli-module-build@workspace:packages/cli-module-build"
+  dependencies:
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/cli-common": "workspace:^"
+    "@backstage/cli-node": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/config-loader": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@backstage/module-federation-common": "workspace:^"
+    "@manypkg/get-packages": "npm:^1.1.3"
+    "@module-federation/enhanced": "npm:^0.21.6"
+    "@pmmmwh/react-refresh-webpack-plugin": "npm:^0.6.0"
+    "@rollup/plugin-commonjs": "npm:^26.0.0"
+    "@rollup/plugin-json": "npm:^6.0.0"
+    "@rollup/plugin-node-resolve": "npm:^15.0.0"
+    "@rollup/plugin-yaml": "npm:^4.0.0"
+    "@rspack/core": "npm:^1.4.11"
+    "@rspack/dev-server": "npm:^1.1.4"
+    "@rspack/plugin-react-refresh": "npm:^1.4.3"
+    "@types/fs-extra": "npm:^11.0.0"
+    "@types/lodash": "npm:^4.14.151"
+    "@types/npm-packlist": "npm:^3.0.0"
+    "@types/shell-quote": "npm:^1.7.5"
+    bfj: "npm:^9.0.2"
+    buffer: "npm:^6.0.3"
+    chalk: "npm:^4.0.0"
+    chokidar: "npm:^3.3.1"
+    cleye: "npm:^2.3.0"
+    cross-spawn: "npm:^7.0.3"
+    css-loader: "npm:^6.5.1"
+    ctrlc-windows: "npm:^2.1.0"
+    esbuild-loader: "npm:^4.0.0"
+    eslint-rspack-plugin: "npm:^4.2.1"
+    eslint-webpack-plugin: "npm:^4.2.0"
+    fork-ts-checker-webpack-plugin: "npm:^9.0.0"
+    fs-extra: "npm:^11.2.0"
+    glob: "npm:^7.1.7"
+    html-webpack-plugin: "npm:^5.6.3"
+    lodash: "npm:^4.17.21"
+    mini-css-extract-plugin: "npm:^2.4.2"
+    node-stdlib-browser: "npm:^1.3.1"
+    npm-packlist: "npm:^5.0.0"
+    p-queue: "npm:^6.6.2"
+    postcss: "npm:^8.1.0"
+    postcss-import: "npm:^16.1.0"
+    process: "npm:^0.11.10"
+    raw-loader: "npm:^4.0.2"
+    react-dev-utils: "npm:^12.0.0-next.60"
+    react-refresh: "npm:^0.18.0"
+    rollup: "npm:^4.27.3"
+    rollup-plugin-dts: "npm:^6.1.0"
+    rollup-plugin-esbuild: "npm:^6.1.1"
+    rollup-plugin-postcss: "npm:^4.0.0"
+    rollup-pluginutils: "npm:^2.8.2"
+    shell-quote: "npm:^1.8.1"
+    style-loader: "npm:^3.3.1"
+    swc-loader: "npm:^0.2.3"
+    tar: "npm:^7.5.6"
+    ts-checker-rspack-plugin: "npm:^1.1.5"
+    ts-morph: "npm:^24.0.0"
+    util: "npm:^0.12.3"
+    webpack: "npm:~5.105.0"
+    webpack-dev-server: "npm:^5.0.0"
+    yml-loader: "npm:^2.1.0"
+    yn: "npm:^4.0.0"
+  bin:
+    cli-module-build: bin/cli-module-build
+  languageName: unknown
+  linkType: soft
+
+"@backstage/cli-module-config@workspace:*, @backstage/cli-module-config@workspace:^, @backstage/cli-module-config@workspace:packages/cli-module-config":
+  version: 0.0.0-use.local
+  resolution: "@backstage/cli-module-config@workspace:packages/cli-module-config"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@backstage/cli-common": "workspace:^"
+    "@backstage/cli-node": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/config-loader": "workspace:^"
+    "@backstage/types": "workspace:^"
+    "@manypkg/get-packages": "npm:^1.1.3"
+    "@types/json-schema": "npm:^7.0.6"
+    chalk: "npm:^4.0.0"
+    cleye: "npm:^2.3.0"
+    json-schema: "npm:^0.4.0"
+    react-dev-utils: "npm:^12.0.0-next.60"
+    yaml: "npm:^2.0.0"
+  bin:
+    cli-module-config: bin/cli-module-config
+  languageName: unknown
+  linkType: soft
+
+"@backstage/cli-module-create-github-app@workspace:*, @backstage/cli-module-create-github-app@workspace:^, @backstage/cli-module-create-github-app@workspace:packages/cli-module-create-github-app":
+  version: 0.0.0-use.local
+  resolution: "@backstage/cli-module-create-github-app@workspace:packages/cli-module-create-github-app"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@backstage/cli-common": "workspace:^"
+    "@backstage/cli-node": "workspace:^"
+    "@octokit/request": "npm:^8.0.0"
+    "@types/express": "npm:^4.17.6"
+    "@types/fs-extra": "npm:^11.0.0"
+    chalk: "npm:^4.0.0"
+    cleye: "npm:^2.3.0"
+    express: "npm:^4.22.0"
+    fs-extra: "npm:^11.2.0"
+    inquirer: "npm:^8.2.0"
+    react-dev-utils: "npm:^12.0.0-next.60"
+    yaml: "npm:^2.0.0"
+  bin:
+    cli-module-create-github-app: bin/cli-module-create-github-app
+  languageName: unknown
+  linkType: soft
+
+"@backstage/cli-module-info@workspace:*, @backstage/cli-module-info@workspace:^, @backstage/cli-module-info@workspace:packages/cli-module-info":
+  version: 0.0.0-use.local
+  resolution: "@backstage/cli-module-info@workspace:packages/cli-module-info"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@backstage/cli-common": "workspace:^"
+    "@backstage/cli-node": "workspace:^"
+    "@types/fs-extra": "npm:^11.0.0"
+    cleye: "npm:^2.3.0"
+    fs-extra: "npm:^11.2.0"
+    minimatch: "npm:^10.2.1"
+  bin:
+    cli-module-info: bin/cli-module-info
+  languageName: unknown
+  linkType: soft
+
+"@backstage/cli-module-lint@workspace:*, @backstage/cli-module-lint@workspace:^, @backstage/cli-module-lint@workspace:packages/cli-module-lint":
+  version: 0.0.0-use.local
+  resolution: "@backstage/cli-module-lint@workspace:packages/cli-module-lint"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@backstage/cli-common": "workspace:^"
+    "@backstage/cli-node": "workspace:^"
+    "@types/fs-extra": "npm:^11.0.0"
+    "@types/shell-quote": "npm:^1.7.5"
+    chalk: "npm:^4.0.0"
+    cleye: "npm:^2.3.0"
+    eslint: "npm:^8.6.0"
+    eslint-formatter-friendly: "npm:^7.0.0"
+    fs-extra: "npm:^11.2.0"
+    globby: "npm:^11.1.0"
+    shell-quote: "npm:^1.8.1"
+  bin:
+    cli-module-lint: bin/cli-module-lint
+  languageName: unknown
+  linkType: soft
+
+"@backstage/cli-module-maintenance@workspace:*, @backstage/cli-module-maintenance@workspace:^, @backstage/cli-module-maintenance@workspace:packages/cli-module-maintenance":
+  version: 0.0.0-use.local
+  resolution: "@backstage/cli-module-maintenance@workspace:packages/cli-module-maintenance"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@backstage/cli-common": "workspace:^"
+    "@backstage/cli-node": "workspace:^"
+    "@types/fs-extra": "npm:^11.0.0"
+    chalk: "npm:^4.0.0"
+    cleye: "npm:^2.3.0"
+    eslint: "npm:^8.6.0"
+    fs-extra: "npm:^11.2.0"
+  bin:
+    cli-module-maintenance: bin/cli-module-maintenance
+  languageName: unknown
+  linkType: soft
+
+"@backstage/cli-module-migrate@workspace:*, @backstage/cli-module-migrate@workspace:^, @backstage/cli-module-migrate@workspace:packages/cli-module-migrate":
+  version: 0.0.0-use.local
+  resolution: "@backstage/cli-module-migrate@workspace:packages/cli-module-migrate"
+  dependencies:
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/cli-common": "workspace:^"
+    "@backstage/cli-node": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@backstage/release-manifests": "workspace:^"
+    "@backstage/test-utils": "workspace:^"
+    "@manypkg/get-packages": "npm:^1.1.3"
+    "@types/fs-extra": "npm:^11.0.0"
+    "@types/semver": "npm:^7"
+    chalk: "npm:^4.0.0"
+    cleye: "npm:^2.3.0"
+    fs-extra: "npm:^11.2.0"
+    minimatch: "npm:^10.2.1"
+    msw: "npm:^1.0.0"
+    ora: "npm:^5.3.0"
+    replace-in-file: "npm:^7.1.0"
+    semver: "npm:^7.5.3"
+  bin:
+    cli-module-migrate: bin/cli-module-migrate
+  languageName: unknown
+  linkType: soft
+
+"@backstage/cli-module-new@workspace:*, @backstage/cli-module-new@workspace:^, @backstage/cli-module-new@workspace:packages/cli-module-new":
+  version: 0.0.0-use.local
+  resolution: "@backstage/cli-module-new@workspace:packages/cli-module-new"
+  dependencies:
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/cli-common": "workspace:^"
+    "@backstage/cli-node": "workspace:^"
+    "@backstage/core-plugin-api": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@backstage/test-utils": "workspace:^"
+    "@types/fs-extra": "npm:^11.0.0"
+    "@types/inquirer": "npm:^8.1.3"
+    "@types/lodash": "npm:^4.14.151"
+    "@types/recursive-readdir": "npm:^2.2.0"
+    chalk: "npm:^4.0.0"
+    cleye: "npm:^2.3.0"
+    fs-extra: "npm:^11.2.0"
+    handlebars: "npm:^4.7.3"
+    inquirer: "npm:^8.2.0"
+    lodash: "npm:^4.17.21"
+    ora: "npm:^5.3.0"
+    recursive-readdir: "npm:^2.2.2"
+    semver: "npm:^7.5.3"
+    yaml: "npm:^2.0.0"
+    zod: "npm:^3.25.76"
+    zod-validation-error: "npm:^4.0.2"
+  bin:
+    cli-module-new: bin/cli-module-new
+  languageName: unknown
+  linkType: soft
+
+"@backstage/cli-module-test-jest@workspace:*, @backstage/cli-module-test-jest@workspace:^, @backstage/cli-module-test-jest@workspace:packages/cli-module-test-jest":
+  version: 0.0.0-use.local
+  resolution: "@backstage/cli-module-test-jest@workspace:packages/cli-module-test-jest"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@backstage/cli-common": "workspace:^"
+    "@backstage/cli-node": "workspace:^"
+    cleye: "npm:^2.3.0"
+    yargs: "npm:^16.2.0"
+  peerDependencies:
+    jest-cli: ^29.0.0 || ^30.0.0
+  bin:
+    cli-module-test-jest: bin/cli-module-test-jest
+  languageName: unknown
+  linkType: soft
+
+"@backstage/cli-module-translations@workspace:*, @backstage/cli-module-translations@workspace:^, @backstage/cli-module-translations@workspace:packages/cli-module-translations":
+  version: 0.0.0-use.local
+  resolution: "@backstage/cli-module-translations@workspace:packages/cli-module-translations"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@backstage/cli-common": "workspace:^"
+    "@backstage/cli-node": "workspace:^"
+    "@types/fs-extra": "npm:^11.0.0"
+    cleye: "npm:^2.3.0"
+    fs-extra: "npm:^11.2.0"
+    ts-morph: "npm:^24.0.0"
+  bin:
+    cli-module-translations: bin/cli-module-translations
+  languageName: unknown
+  linkType: soft
+
 "@backstage/cli-node@workspace:^, @backstage/cli-node@workspace:packages/cli-node":
   version: 0.0.0-use.local
   resolution: "@backstage/cli-node@workspace:packages/cli-node"
@@ -2815,6 +3123,8 @@ __metadata:
     "@types/yarnpkg__lockfile": "npm:^1.1.4"
     "@yarnpkg/lockfile": "npm:^1.1.0"
     "@yarnpkg/parsers": "npm:^3.0.0"
+    chalk: "npm:^4.0.0"
+    commander: "npm:^12.0.0"
     fs-extra: "npm:^11.2.0"
     semver: "npm:^7.5.3"
     yaml: "npm:^2.0.0"
@@ -2829,82 +3139,41 @@ __metadata:
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/catalog-client": "workspace:^"
-    "@backstage/catalog-model": "workspace:^"
     "@backstage/cli-common": "workspace:^"
+    "@backstage/cli-defaults": "workspace:^"
     "@backstage/cli-node": "workspace:^"
     "@backstage/config": "workspace:^"
-    "@backstage/config-loader": "workspace:^"
     "@backstage/core-app-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/eslint-plugin": "workspace:^"
-    "@backstage/integration": "workspace:^"
-    "@backstage/module-federation-common": "workspace:^"
     "@backstage/plugin-auth-backend": "workspace:^"
     "@backstage/plugin-auth-backend-module-guest-provider": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
     "@backstage/plugin-scaffolder-node": "workspace:^"
     "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
-    "@backstage/release-manifests": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
-    "@backstage/types": "workspace:^"
     "@jest/environment-jsdom-abstract": "npm:^30.0.0"
     "@manypkg/get-packages": "npm:^1.1.3"
-    "@module-federation/enhanced": "npm:^0.21.6"
-    "@octokit/request": "npm:^8.0.0"
-    "@pmmmwh/react-refresh-webpack-plugin": "npm:^0.6.0"
-    "@rollup/plugin-commonjs": "npm:^26.0.0"
-    "@rollup/plugin-json": "npm:^6.0.0"
-    "@rollup/plugin-node-resolve": "npm:^15.0.0"
-    "@rollup/plugin-yaml": "npm:^4.0.0"
-    "@rspack/core": "npm:^1.4.11"
-    "@rspack/dev-server": "npm:^1.1.4"
-    "@rspack/plugin-react-refresh": "npm:^1.4.3"
     "@spotify/eslint-config-base": "npm:^15.0.0"
     "@spotify/eslint-config-react": "npm:^15.0.0"
     "@spotify/eslint-config-typescript": "npm:^15.0.0"
     "@swc/core": "npm:^1.15.6"
-    "@swc/helpers": "npm:^0.5.17"
     "@swc/jest": "npm:^0.2.39"
-    "@types/cross-spawn": "npm:^6.0.2"
-    "@types/ejs": "npm:^3.1.3"
-    "@types/express": "npm:^4.17.6"
     "@types/fs-extra": "npm:^11.0.0"
-    "@types/http-proxy": "npm:^1.17.4"
-    "@types/inquirer": "npm:^8.1.3"
     "@types/jest": "npm:^30.0.0"
     "@types/node": "npm:^22.13.14"
-    "@types/npm-packlist": "npm:^3.0.0"
-    "@types/proper-lockfile": "npm:^4"
-    "@types/recursive-readdir": "npm:^2.2.0"
-    "@types/rollup-plugin-peer-deps-external": "npm:^2.2.0"
-    "@types/rollup-plugin-postcss": "npm:^3.1.4"
-    "@types/shell-quote": "npm:^1.7.5"
-    "@types/svgo": "npm:^2.6.2"
-    "@types/terser-webpack-plugin": "npm:^5.0.4"
     "@types/webpack-env": "npm:^1.15.2"
-    "@types/webpack-sources": "npm:^3.2.3"
     "@typescript-eslint/eslint-plugin": "npm:^8.17.0"
     "@typescript-eslint/parser": "npm:^8.16.0"
-    bfj: "npm:^9.0.2"
-    buffer: "npm:^6.0.3"
     chalk: "npm:^4.0.0"
-    chokidar: "npm:^3.3.1"
-    cleye: "npm:^2.3.0"
     commander: "npm:^14.0.3"
     cross-fetch: "npm:^4.0.0"
-    cross-spawn: "npm:^7.0.3"
-    css-loader: "npm:^6.5.1"
-    ctrlc-windows: "npm:^2.1.0"
-    del: "npm:^8.0.0"
-    esbuild: "npm:^0.27.0"
-    esbuild-loader: "npm:^4.0.0"
     eslint: "npm:^8.6.0"
     eslint-config-prettier: "npm:^9.0.0"
-    eslint-formatter-friendly: "npm:^7.0.0"
     eslint-plugin-deprecation: "npm:^3.0.0"
     eslint-plugin-import: "npm:^2.31.0"
     eslint-plugin-jest: "npm:^28.9.0"
@@ -2912,107 +3181,27 @@ __metadata:
     eslint-plugin-react: "npm:^7.37.2"
     eslint-plugin-react-hooks: "npm:^5.0.0"
     eslint-plugin-unused-imports: "npm:^4.1.4"
-    eslint-rspack-plugin: "npm:^4.2.1"
-    eslint-webpack-plugin: "npm:^4.2.0"
-    express: "npm:^4.22.0"
-    fork-ts-checker-webpack-plugin: "npm:^9.0.0"
     fs-extra: "npm:^11.2.0"
-    git-url-parse: "npm:^15.0.0"
     glob: "npm:^7.1.7"
-    global-agent: "npm:^3.0.0"
-    globby: "npm:^11.1.0"
-    handlebars: "npm:^4.7.3"
-    html-webpack-plugin: "npm:^5.6.3"
-    inquirer: "npm:^8.2.0"
     jest: "npm:^30.2.0"
     jest-css-modules: "npm:^2.1.0"
     jsdom: "npm:^27.1.0"
-    json-schema: "npm:^0.4.0"
-    keytar: "npm:^7.9.0"
-    lodash: "npm:^4.17.21"
-    mini-css-extract-plugin: "npm:^2.4.2"
-    minimatch: "npm:^10.2.1"
-    msw: "npm:^1.0.0"
-    node-stdlib-browser: "npm:^1.3.1"
     nodemon: "npm:^3.0.1"
-    npm-packlist: "npm:^5.0.0"
-    ora: "npm:^5.3.0"
-    p-queue: "npm:^6.6.2"
     pirates: "npm:^4.0.6"
     postcss: "npm:^8.1.0"
-    postcss-import: "npm:^16.1.0"
-    process: "npm:^0.11.10"
-    proper-lockfile: "npm:^4.1.2"
-    raw-loader: "npm:^4.0.2"
-    react-dev-utils: "npm:^12.0.0-next.60"
-    react-refresh: "npm:^0.18.0"
-    recursive-readdir: "npm:^2.2.2"
-    replace-in-file: "npm:^7.1.0"
-    rollup: "npm:^4.27.3"
-    rollup-plugin-dts: "npm:^6.1.0"
-    rollup-plugin-esbuild: "npm:^6.1.1"
-    rollup-plugin-postcss: "npm:^4.0.0"
-    rollup-pluginutils: "npm:^2.8.2"
-    semver: "npm:^7.5.3"
-    shell-quote: "npm:^1.8.1"
-    style-loader: "npm:^3.3.1"
     sucrase: "npm:^3.20.2"
-    swc-loader: "npm:^0.2.3"
-    tar: "npm:^7.5.6"
-    terser-webpack-plugin: "npm:^5.1.3"
-    ts-checker-rspack-plugin: "npm:^1.1.5"
-    ts-morph: "npm:^24.0.0"
-    undici: "npm:^7.2.3"
-    util: "npm:^0.12.3"
-    webpack: "npm:~5.105.0"
-    webpack-dev-server: "npm:^5.0.0"
     yaml: "npm:^2.0.0"
-    yargs: "npm:^16.2.0"
-    yml-loader: "npm:^2.1.0"
-    yn: "npm:^4.0.0"
-    zod: "npm:^3.25.76"
-    zod-validation-error: "npm:^4.0.2"
   peerDependencies:
     "@jest/environment-jsdom-abstract": ^30.0.0
-    "@module-federation/enhanced": ^0.21.6
-    "@pmmmwh/react-refresh-webpack-plugin": ^0.6.0
-    esbuild-loader: ^4.0.0
-    eslint-webpack-plugin: ^4.2.0
-    fork-ts-checker-webpack-plugin: ^9.0.0
     jest: ^29.0.0 || ^30.0.0
     jest-environment-jsdom: "*"
     jsdom: ^27.1.0
-    mini-css-extract-plugin: ^2.4.2
-    terser-webpack-plugin: ^5.1.3
-    webpack: ~5.105.0
-    webpack-dev-server: ^5.0.0
-  dependenciesMeta:
-    keytar:
-      optional: true
   peerDependenciesMeta:
     "@jest/environment-jsdom-abstract":
-      optional: true
-    "@module-federation/enhanced":
-      optional: true
-    "@pmmmwh/react-refresh-webpack-plugin":
-      optional: true
-    esbuild-loader:
-      optional: true
-    eslint-webpack-plugin:
-      optional: true
-    fork-ts-checker-webpack-plugin:
       optional: true
     jest-environment-jsdom:
       optional: true
     jsdom:
-      optional: true
-    mini-css-extract-plugin:
-      optional: true
-    terser-webpack-plugin:
-      optional: true
-    webpack:
-      optional: true
-    webpack-dev-server:
       optional: true
   bin:
     backstage-cli: bin/backstage-cli
@@ -9669,6 +9858,15 @@ __metadata:
   checksum: 10/fd4c265f0ed03e8da7ae2972c4e6b81932f535d9dd1e039e9e52b027cb8b72ae3c3309a3383ba513a8d3ae626de7dd3634387775cbdcbd100155ecbcaa65a657
   languageName: node
   linkType: hard
+
+"@internal/cli@workspace:packages/cli-internal":
+  version: 0.0.0-use.local
+  resolution: "@internal/cli@workspace:packages/cli-internal"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@backstage/cli-node": "workspace:^"
+  languageName: unknown
+  linkType: soft
 
 "@internal/frontend@workspace:packages/frontend-internal":
   version: 0.0.0-use.local
@@ -18036,13 +18234,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sindresorhus/merge-streams@npm:^2.1.0":
-  version: 2.3.0
-  resolution: "@sindresorhus/merge-streams@npm:2.3.0"
-  checksum: 10/798bcb53cd1ace9df84fcdd1ba86afdc9e0cd84f5758d26ae9b1eefd8e8887e5fc30051132b9e74daf01bb41fa5a2faf1369361f83d76a3b3d7ee938058fd71c
-  languageName: node
-  linkType: hard
-
 "@sinonjs/commons@npm:^2.0.0":
   version: 2.0.0
   resolution: "@sinonjs/commons@npm:2.0.0"
@@ -20339,7 +20530,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@swc/helpers@npm:^0.5.0, @swc/helpers@npm:^0.5.17, @swc/helpers@npm:^0.5.8":
+"@swc/helpers@npm:^0.5.0, @swc/helpers@npm:^0.5.8":
   version: 0.5.19
   resolution: "@swc/helpers@npm:0.5.19"
   dependencies:
@@ -21140,13 +21331,6 @@ __metadata:
   dependencies:
     "@types/trusted-types": "npm:*"
   checksum: 10/e544b3ce53c41215cabff3d89256ff707c7ee8e0c9a1b5034b22014725d288b16e6942cdcdeeb4221c578c3421a6a4721aa0676431f55d7abd18c07368855c5e
-  languageName: node
-  linkType: hard
-
-"@types/ejs@npm:^3.1.3":
-  version: 3.1.5
-  resolution: "@types/ejs@npm:3.1.5"
-  checksum: 10/918898fd279108087722c1713e2ddb0c152ab839397946d164db8a18b5bbd732af9746373882a9bcf4843d35c6b191a8f569a7a4e51e90726d24501b39f40367
   languageName: node
   linkType: hard
 
@@ -22222,24 +22406,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/rollup-plugin-peer-deps-external@npm:^2.2.0":
-  version: 2.2.6
-  resolution: "@types/rollup-plugin-peer-deps-external@npm:2.2.6"
-  peerDependencies:
-    rollup: "*"
-  checksum: 10/9fcee30d60d9d8de0f4bbf7694c254a18798b0ff415563a60fb2ed8c6c46423c64e1a977e0344b8393c26221dbd6e74d9e872c2694b518fcf149ba85d94e7eac
-  languageName: node
-  linkType: hard
-
-"@types/rollup-plugin-postcss@npm:^3.1.4":
-  version: 3.1.4
-  resolution: "@types/rollup-plugin-postcss@npm:3.1.4"
-  dependencies:
-    rollup-plugin-postcss: "npm:*"
-  checksum: 10/a94119c43db77ad10a96f34a4190b678e87fe63bdedfb2b989b64a9c0e15680c034d728daa4ade9cfd31d2fdc48827c79ff69ad2599d0b323c2c321896866cf5
-  languageName: node
-  linkType: hard
-
 "@types/sarif@npm:^2.1.4":
   version: 2.1.5
   resolution: "@types/sarif@npm:2.1.5"
@@ -22254,10 +22420,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/semver@npm:^7.1.0":
-  version: 7.7.0
-  resolution: "@types/semver@npm:7.7.0"
-  checksum: 10/ee4514c6c852b1c38f951239db02f9edeea39f5310fad9396a00b51efa2a2d96b3dfca1ae84c88181ea5b7157c57d32d7ef94edacee36fbf975546396b85ba5b
+"@types/semver@npm:^7, @types/semver@npm:^7.1.0":
+  version: 7.7.1
+  resolution: "@types/semver@npm:7.7.1"
+  checksum: 10/8f09e7e6ca3ded67d78ba7a8f7535c8d9cf8ced83c52e7f3ac3c281fe8c689c3fe475d199d94390dc04fc681d51f2358b430bb7b2e21c62de24f2bee2c719068
   languageName: node
   linkType: hard
 
@@ -22341,13 +22507,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/source-list-map@npm:*":
-  version: 0.1.6
-  resolution: "@types/source-list-map@npm:0.1.6"
-  checksum: 10/9cd294c121f1562062de5d241fe4d10780b1131b01c57434845fe50968e9dcf67ede444591c2b1ad6d3f9b6bc646ac02cc8f51a3577c795f9c64cf4573dcc6b1
-  languageName: node
-  linkType: hard
-
 "@types/ssh2-streams@npm:*":
   version: 0.1.8
   resolution: "@types/ssh2-streams@npm:0.1.8"
@@ -22418,15 +22577,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/svgo@npm:^2.6.2":
-  version: 2.6.4
-  resolution: "@types/svgo@npm:2.6.4"
-  dependencies:
-    "@types/node": "npm:*"
-  checksum: 10/9632b350949677fa68d6f13b4d45495a4af3108bb5f020a7257ae5a883e20b9efc0fada3bc3e012f215be312fabe5a28485fffaff5afd6da4daa8cb4fe5b04a2
-  languageName: node
-  linkType: hard
-
 "@types/swagger-ui-react@npm:^5.0.0":
   version: 5.18.0
   resolution: "@types/swagger-ui-react@npm:5.18.0"
@@ -22451,15 +22601,6 @@ __metadata:
   dependencies:
     "@types/estree": "npm:*"
   checksum: 10/21bfd29588a8a4c8ad71dcb12576cd3724d4ac763c265116f7b6f5af1a5edd70b168e80e9105015584061cebee62ca20f1f93431f781baa4c62e2169e6370e2f
-  languageName: node
-  linkType: hard
-
-"@types/terser-webpack-plugin@npm:^5.0.4":
-  version: 5.2.0
-  resolution: "@types/terser-webpack-plugin@npm:5.2.0"
-  dependencies:
-    terser-webpack-plugin: "npm:*"
-  checksum: 10/475b0f160c9f83641255f6516b69d7908b9e3e8e8ab653f3a257690249f9614f9386c0897eba6e4e35182ec0d83f57454d62fb94b38ae7c171891641350072ee
   languageName: node
   linkType: hard
 
@@ -22542,17 +22683,6 @@ __metadata:
   version: 1.18.8
   resolution: "@types/webpack-env@npm:1.18.8"
   checksum: 10/f3932f3d6c2530f644cfc898eda1ab8182d6ae57f555c2f0179d813549b639078671b71e4041831fc306c5ebe61f5cdac794fe4ceae281fce8bf67e23661a488
-  languageName: node
-  linkType: hard
-
-"@types/webpack-sources@npm:^3.2.3":
-  version: 3.2.3
-  resolution: "@types/webpack-sources@npm:3.2.3"
-  dependencies:
-    "@types/node": "npm:*"
-    "@types/source-list-map": "npm:*"
-    source-map: "npm:^0.7.3"
-  checksum: 10/7b557f242efaa10e4e3e18cc4171a0c98e22898570caefdd4f7b076fe8534b5abfac92c953c6604658dcb7218507f970230352511840fe9fdea31a9af3b9a906
   languageName: node
   linkType: hard
 
@@ -27262,7 +27392,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"commander@npm:^12.1.0":
+"commander@npm:^12.0.0, commander@npm:^12.1.0":
   version: 12.1.0
   resolution: "commander@npm:12.1.0"
   checksum: 10/cdaeb672d979816853a4eed7f1310a9319e8b976172485c2a6b437ed0db0a389a44cfb222bfbde772781efa9f215bdd1b936f80d6b249485b465c6cb906e1f93
@@ -28740,21 +28870,6 @@ __metadata:
     escodegen: "npm:^2.1.0"
     esprima: "npm:^4.0.1"
   checksum: 10/a64fa39cdf6c2edd75188157d32338ee9de7193d7dbb2aeb4acb1eb30fa4a15ed80ba8dae9bd4d7b085472cf174a5baf81adb761aaa8e326771392c922084152
-  languageName: node
-  linkType: hard
-
-"del@npm:^8.0.0":
-  version: 8.0.1
-  resolution: "del@npm:8.0.1"
-  dependencies:
-    globby: "npm:^14.0.2"
-    is-glob: "npm:^4.0.3"
-    is-path-cwd: "npm:^3.0.0"
-    is-path-inside: "npm:^4.0.0"
-    p-map: "npm:^7.0.2"
-    presentable-error: "npm:^0.0.1"
-    slash: "npm:^5.1.0"
-  checksum: 10/53ed4a379a68c90e7d6d3bcce09c49229e77de9a946d0a5fc25f45b16c950cb8665986b7d0d0423416c03bfd43e0f31e528c5a19c558fe47449be9d6fae7f846
   languageName: node
   linkType: hard
 
@@ -32706,20 +32821,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"globby@npm:^14.0.2":
-  version: 14.0.2
-  resolution: "globby@npm:14.0.2"
-  dependencies:
-    "@sindresorhus/merge-streams": "npm:^2.1.0"
-    fast-glob: "npm:^3.3.2"
-    ignore: "npm:^5.2.4"
-    path-type: "npm:^5.0.0"
-    slash: "npm:^5.1.0"
-    unicorn-magic: "npm:^0.1.0"
-  checksum: 10/67660da70fc1223f7170c1a62ba6c373385e9e39765d952b6518606dec15ed8c7958e9dae6ba5752a31dbc1e9126f146938b830ad680fe794141734ffc3fbb75
-  languageName: node
-  linkType: hard
-
 "globrex@npm:^0.1.2":
   version: 0.1.2
   resolution: "globrex@npm:0.1.2"
@@ -33981,7 +34082,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ignore@npm:^5.1.4, ignore@npm:^5.2.0, ignore@npm:^5.2.4":
+"ignore@npm:^5.1.4, ignore@npm:^5.2.0":
   version: 5.3.2
   resolution: "ignore@npm:5.3.2"
   checksum: 10/cceb6a457000f8f6a50e1196429750d782afce5680dd878aa4221bd79972d68b3a55b4b1458fc682be978f4d3c6a249046aa0880637367216444ab7b014cfc98
@@ -34790,24 +34891,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"is-path-cwd@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "is-path-cwd@npm:3.0.0"
-  checksum: 10/bc34d13b6a03dfca4a3ab6a8a5ba78ae4b24f4f1db4b2b031d2760c60d0913bd16a4b980dcb4e590adfc906649d5f5132684079a3972bd219da49deebb9adea8
-  languageName: node
-  linkType: hard
-
 "is-path-inside@npm:^3.0.2, is-path-inside@npm:^3.0.3":
   version: 3.0.3
   resolution: "is-path-inside@npm:3.0.3"
   checksum: 10/abd50f06186a052b349c15e55b182326f1936c89a78bf6c8f2b707412517c097ce04bc49a0ca221787bc44e1049f51f09a2ffb63d22899051988d3a618ba13e9
-  languageName: node
-  linkType: hard
-
-"is-path-inside@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "is-path-inside@npm:4.0.0"
-  checksum: 10/8810fa11c58e6360b82c3e0d6cd7d9c7d0392d3ac9eb10f980b81f9839f40ac6d1d6d6f05d069db0d227759801228f0b072e1b6c343e4469b065ab5fe0b68fe5
   languageName: node
   linkType: hard
 
@@ -38817,14 +38904,14 @@ __metadata:
   linkType: hard
 
 "mini-css-extract-plugin@npm:^2.4.2":
-  version: 2.10.0
-  resolution: "mini-css-extract-plugin@npm:2.10.0"
+  version: 2.10.1
+  resolution: "mini-css-extract-plugin@npm:2.10.1"
   dependencies:
     schema-utils: "npm:^4.0.0"
     tapable: "npm:^2.2.1"
   peerDependencies:
     webpack: ^5.0.0
-  checksum: 10/bae5350ab82171c6c9a22a4397df14aa69280f5ff0e1ff4d2429ea841bc096927b1e27ba7b75a9c3dd77bd44bab449d6197bd748381f1326cbc8befcb10d1a9e
+  checksum: 10/2d0cecc3bea85cd7f9b1ce0974f1672976d610a9267e2988ff19f5d03b017bff12b32151a412de0f519a70be7d3b050b499b20101445fb21728cc2d35dd4041a
   languageName: node
   linkType: hard
 
@@ -41563,13 +41650,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"path-type@npm:^5.0.0":
-  version: 5.0.0
-  resolution: "path-type@npm:5.0.0"
-  checksum: 10/15ec24050e8932c2c98d085b72cfa0d6b4eeb4cbde151a0a05726d8afae85784fc5544f733d8dfc68536587d5143d29c0bd793623fad03d7e61cc00067291cd5
-  languageName: node
-  linkType: hard
-
 "pathe@npm:^2.0.3":
   version: 2.0.3
   resolution: "pathe@npm:2.0.3"
@@ -42592,13 +42672,6 @@ __metadata:
   version: 2.0.0
   resolution: "prepend-http@npm:2.0.0"
   checksum: 10/7694a9525405447662c1ffd352fcb41b6410c705b739b6f4e3a3e21cf5fdede8377890088e8934436b8b17ba55365a615f153960f30877bf0d0392f9e93503ea
-  languageName: node
-  linkType: hard
-
-"presentable-error@npm:^0.0.1":
-  version: 0.0.1
-  resolution: "presentable-error@npm:0.0.1"
-  checksum: 10/013809ee7a47ced847a8d860e9b89a56cdd8c4f1ad04ad8da1e58fd60843f77f497d204146bb15aaa9793d3b94ad8626eed01256fc9eb5839a545af2000a5fa4
   languageName: node
   linkType: hard
 
@@ -45126,7 +45199,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rollup-plugin-postcss@npm:*, rollup-plugin-postcss@npm:^4.0.0":
+"rollup-plugin-postcss@npm:^4.0.0":
   version: 4.0.2
   resolution: "rollup-plugin-postcss@npm:4.0.2"
   dependencies:
@@ -45271,6 +45344,17 @@ __metadata:
   resolution: "root@workspace:."
   dependencies:
     "@backstage/cli": "workspace:*"
+    "@backstage/cli-module-auth": "workspace:*"
+    "@backstage/cli-module-build": "workspace:*"
+    "@backstage/cli-module-config": "workspace:*"
+    "@backstage/cli-module-create-github-app": "workspace:*"
+    "@backstage/cli-module-info": "workspace:*"
+    "@backstage/cli-module-lint": "workspace:*"
+    "@backstage/cli-module-maintenance": "workspace:*"
+    "@backstage/cli-module-migrate": "workspace:*"
+    "@backstage/cli-module-new": "workspace:*"
+    "@backstage/cli-module-test-jest": "workspace:*"
+    "@backstage/cli-module-translations": "workspace:*"
     "@backstage/codemods": "workspace:*"
     "@backstage/create-app": "workspace:*"
     "@backstage/e2e-test-utils": "workspace:*"
@@ -46223,13 +46307,6 @@ __metadata:
   version: 3.0.0
   resolution: "slash@npm:3.0.0"
   checksum: 10/94a93fff615f25a999ad4b83c9d5e257a7280c90a32a7cb8b4a87996e4babf322e469c42b7f649fd5796edd8687652f3fb452a86dc97a816f01113183393f11c
-  languageName: node
-  linkType: hard
-
-"slash@npm:^5.1.0":
-  version: 5.1.0
-  resolution: "slash@npm:5.1.0"
-  checksum: 10/2c41ec6fb1414cd9bba0fa6b1dd00e8be739e3fe85d079c69d4b09ca5f2f86eafd18d9ce611c0c0f686428638a36c272a6ac14799146a8295f259c10cc45cde4
   languageName: node
   linkType: hard
 
@@ -47831,7 +47908,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"terser-webpack-plugin@npm:*, terser-webpack-plugin@npm:^5.1.3, terser-webpack-plugin@npm:^5.3.17":
+"terser-webpack-plugin@npm:^5.3.17":
   version: 5.3.17
   resolution: "terser-webpack-plugin@npm:5.3.17"
   dependencies:
@@ -49094,13 +49171,6 @@ __metadata:
   dependencies:
     type: "npm:^2.5.0"
   checksum: 10/df3e622f33fc62aa646d36fd226dd41a5bc76e68a5676b8c8da9f22d9f1b885b7e3ca794866676b055205c01abe8b9eb8365b5da685dc3fbfc9638a14df4d147
-  languageName: node
-  linkType: hard
-
-"unicorn-magic@npm:^0.1.0":
-  version: 0.1.0
-  resolution: "unicorn-magic@npm:0.1.0"
-  checksum: 10/9b4d0e9809807823dc91d0920a4a4c0cff2de3ebc54ee87ac1ee9bc75eafd609b09d1f14495e0173aef26e01118706196b6ab06a75fe0841028b3983a8af313f
   languageName: node
   linkType: hard
 

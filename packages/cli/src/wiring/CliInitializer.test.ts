@@ -15,7 +15,7 @@
  */
 
 import { CliInitializer } from './CliInitializer';
-import { createCliPlugin } from './factory';
+import { createCliModule } from './factory';
 
 process.exit = jest.fn() as any;
 
@@ -28,8 +28,8 @@ describe('CliInitializer', () => {
     process.argv = ['node', 'cli', 'test'];
     const initializer = new CliInitializer();
     initializer.add(
-      createCliPlugin({
-        pluginId: 'test',
+      createCliModule({
+        packageJson: { name: '@backstage/test' },
         init: async reg =>
           reg.addCommand({
             path: ['test'],
@@ -50,8 +50,8 @@ describe('CliInitializer', () => {
     process.argv = ['node', 'cli', 'test', '[positional]', '<arg>'];
     const initializer = new CliInitializer();
     initializer.add(
-      createCliPlugin({
-        pluginId: 'test',
+      createCliModule({
+        packageJson: { name: '@backstage/test' },
         init: async reg =>
           reg.addCommand({
             path: ['test'],
@@ -72,8 +72,8 @@ describe('CliInitializer', () => {
     process.argv = ['node', 'cli', 'test', '--verbose'];
     const initializer = new CliInitializer();
     initializer.add(
-      createCliPlugin({
-        pluginId: 'test',
+      createCliModule({
+        packageJson: { name: '@backstage/test' },
         init: async reg =>
           reg.addCommand({
             path: ['test'],
@@ -97,8 +97,8 @@ describe('CliInitializer', () => {
     process.argv = ['node', 'cli', 'secret'];
     const initializer = new CliInitializer();
     initializer.add(
-      createCliPlugin({
-        pluginId: 'test',
+      createCliModule({
+        packageJson: { name: '@backstage/test' },
         init: async reg => {
           reg.addCommand({
             path: ['visible'],
@@ -124,8 +124,8 @@ describe('CliInitializer', () => {
     const writeSpy = jest.spyOn(process.stdout, 'write');
     const initializer2 = new CliInitializer();
     initializer2.add(
-      createCliPlugin({
-        pluginId: 'test',
+      createCliModule({
+        packageJson: { name: '@backstage/test' },
         init: async reg => {
           reg.addCommand({
             path: ['visible'],
@@ -152,8 +152,8 @@ describe('CliInitializer', () => {
     const writeSpy = jest.spyOn(process.stdout, 'write');
     const initializer = new CliInitializer();
     initializer.add(
-      createCliPlugin({
-        pluginId: 'test',
+      createCliModule({
+        packageJson: { name: '@backstage/test' },
         init: async reg => {
           reg.addCommand({
             path: ['visible'],
@@ -187,8 +187,8 @@ describe('CliInitializer', () => {
     const writeSpy = jest.spyOn(process.stdout, 'write');
     const initializer = new CliInitializer();
     initializer.add(
-      createCliPlugin({
-        pluginId: 'test',
+      createCliModule({
+        packageJson: { name: '@backstage/test' },
         init: async reg => {
           reg.addCommand({
             path: ['group', 'alpha'],
@@ -223,8 +223,8 @@ describe('CliInitializer', () => {
     ];
     const initializer = new CliInitializer();
     initializer.add(
-      createCliPlugin({
-        pluginId: 'test',
+      createCliModule({
+        packageJson: { name: '@backstage/test' },
         init: async reg =>
           reg.addCommand({
             path: ['test', 'nested', 'command'],
