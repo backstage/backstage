@@ -892,9 +892,7 @@ export function prepareSpecializedApp(
         subscribed = false;
       };
     },
-    finalize(finalizeOptions?: {
-      sessionState?: SpecializedAppSessionState;
-    }) {
+    finalize(finalizeOptions?: { sessionState?: SpecializedAppSessionState }) {
       if (finalized) {
         return finalized;
       }
