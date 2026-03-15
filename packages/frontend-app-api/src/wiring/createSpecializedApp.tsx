@@ -581,7 +581,7 @@ export function prepareSpecializedApp(
     }
 
     setIdentityApiTarget({
-      apis: phase.apis,
+      identityApiProxy: phase.identityApiProxy,
       identityApi,
       signOutTargetUrl: appBasePath || '/',
     });
@@ -1159,7 +1159,7 @@ function createPhaseApis(options: {
     fallbackApis: options.fallbackApis,
   });
 
-  return { apis, routeResolutionApi, appTreeApi };
+  return { apis, routeResolutionApi, appTreeApi, identityApiProxy: identityProxy };
 }
 
 function instantiateAndInitializePhaseTree(options: {
@@ -1406,31 +1406,11 @@ function asError(error: unknown): Error {
 }
 
 function setIdentityApiTarget(options: {
-  apis: ApiHolder;
+  identityApiProxy: AppIdentityProxy;
   identityApi: IdentityApi;
   signOutTargetUrl: string;
 }) {
-  const existingIdentityApi = options.apis.get(identityApiRef);
-  if (!existingIdentityApi || !('setTarget' in existingIdentityApi)) {
-    return;
-  }
-
-  (
-    existingIdentityApi as IdentityApi & {
-      setTarget(
-        impl: IdentityApi & {
-          getUserId?(): string;
-          getIdToken?(): Promise<string | undefined>;
-          getProfile?(): {
-            displayName?: string;
-            email?: string;
-            picture?: string;
-          };
-        },
-        targetOptions: { signOutTargetUrl: string },
-      ): void;
-    }
-  ).setTarget(options.identityApi, {
+  options.identityApiProxy.setTarget(options.identityApi, {
     signOutTargetUrl: options.signOutTargetUrl,
   });
 }
