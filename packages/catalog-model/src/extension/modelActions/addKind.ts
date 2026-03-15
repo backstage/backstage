@@ -65,10 +65,13 @@ export interface CatalogModelKindDefinition {
    */
   description: string;
 
+  /**
+   * Declare one or more versions of the kind's actual schema shape.
+   */
   versions?: Array<{
     /**
-     * The specific version name, e.g. "v1alpha1". This and the kind group form
-     * the full apiVersion.
+     * The specific version name, e.g. "v1alpha1". The kind group and the
+     * version name form the full apiVersion, e.g. "backstage.io/v1alpha1".
      */
     name: string;
 

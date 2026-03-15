@@ -16,14 +16,14 @@
 
 import { createExtensionPoint } from '@backstage/backend-plugin-api';
 import { Entity, Validators } from '@backstage/catalog-model';
-import { CatalogModelExtension } from '@backstage/catalog-model/alpha';
+import { CatalogModel } from '@backstage/catalog-model/alpha';
 import {
   CatalogProcessor,
   CatalogProcessorParser,
   EntitiesSearchFilter,
   EntityProvider,
-  PlaceholderResolver,
   LocationAnalyzer,
+  PlaceholderResolver,
   ScmLocationAnalyzer,
 } from '@backstage/plugin-catalog-node';
 import {
@@ -121,7 +121,7 @@ export interface CatalogModelExtensionPoint {
    *
    * @param model - The model to use
    */
-  setModel(extension: CatalogModel): void;
+  setModel(model: CatalogModel): void;
 }
 
 /**

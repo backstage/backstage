@@ -19,37 +19,12 @@ import {
   CatalogModel,
   CatalogModelKind,
   CatalogModelRelation,
-  CatalogModelSchemaObjectType,
 } from '@backstage/catalog-model/alpha';
 import { ModelProcessor } from './ModelProcessor';
-
-const componentSpec: CatalogModelSchemaObjectType = {
-  type: 'object',
-  properties: {
-    type: { type: 'string' },
-    lifecycle: { type: 'string' },
-    owner: {
-      type: 'relation',
-      relation: 'ownedBy',
-      defaultKind: 'Group',
-      defaultNamespace: 'inherit',
-    },
-    dependsOn: {
-      type: 'array',
-      items: {
-        type: 'relation',
-        relation: 'dependsOn',
-        defaultKind: 'Component',
-        defaultNamespace: 'default',
-      },
-    },
-  },
-};
 
 const componentKind: CatalogModelKind = {
   apiVersions: ['backstage.io/v1alpha1'],
   names: { kind: 'Component', singular: 'component', plural: 'components' },
-  spec: componentSpec,
   relationFields: [
     {
       path: 'spec.owner',

@@ -15,15 +15,9 @@
  */
 
 export {
-  compileCatalogModel,
-  type CatalogModel,
-  type CatalogModelKind,
-  type CatalogModelRelation,
-} from './compileCatalogModel';
-export {
-  createCatalogModelExtensionBuilder,
-  type CatalogModelExtensionBuilder,
-} from './createCatalogModelExtensionBuilder';
-export * from './jsonSchema';
-export * from './modelActions';
-export type { CatalogModelExtension } from './types';
+  type CatalogModelKindDefinition,
+  type CatalogModelKindRelationFieldDefinition,
+} from './addKind';
+export { type CatalogModelRelationPairDefinition } from './addRelationPair';
+export { type CatalogModelUpdateKindDefinition } from './updateKind';
+export { type CatalogModelUpdateRelationPairDefinition } from './updateRelationPair';

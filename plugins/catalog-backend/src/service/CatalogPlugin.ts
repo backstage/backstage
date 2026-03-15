@@ -19,7 +19,7 @@ import {
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
 import { Entity, Validators } from '@backstage/catalog-model';
-import { CatalogModelExtension } from '@backstage/catalog-model/alpha';
+import { CatalogModel } from '@backstage/catalog-model/alpha';
 import { ForwardedError } from '@backstage/errors';
 import {
   CatalogProcessor,
@@ -55,7 +55,8 @@ import { createCatalogActions } from '../actions';
 import type { EntityProviderEntry } from '../processing/connectEntityProviders';
 
 class CatalogLocationsExtensionPointImpl
-  implements CatalogLocationsExtensionPoint {
+  implements CatalogLocationsExtensionPoint
+{
   #locationTypes: string[] | undefined;
 
   setAllowedLocationTypes(locationTypes: Array<string>) {
@@ -68,7 +69,8 @@ class CatalogLocationsExtensionPointImpl
 }
 
 class CatalogPermissionExtensionPointImpl
-  implements CatalogPermissionExtensionPoint {
+  implements CatalogPermissionExtensionPoint
+{
   #permissions = new Array<Permission>();
   #permissionRules = new Array<CatalogPermissionRuleInput>();
 
@@ -119,14 +121,14 @@ class CatalogModelExtensionPointImpl implements CatalogModelExtensionPoint {
     return this.#entityDataParser;
   }
 
-  #modelExtensions = new Array<CatalogModelExtension>();
+  #model?: CatalogModel;
 
-  addModelExtension(extension: CatalogModelExtension): void {
-    this.#modelExtensions.push(extension);
+  setModel(model: CatalogModel): void {
+    this.#model = model;
   }
 
-  get modelExtensions() {
-    return this.#modelExtensions;
+  get model() {
+    return this.#model;
   }
 }
 
@@ -142,9 +144,9 @@ export const catalogPlugin = createBackendPlugin({
     const placeholderResolvers: Record<string, PlaceholderResolver> = {};
     let onProcessingError:
       | ((event: {
-        unprocessedEntity: Entity;
-        errors: Error[];
-      }) => Promise<void> | void)
+          unprocessedEntity: Entity;
+          errors: Error[];
+        }) => Promise<void> | void)
       | undefined = undefined;
 
     env.registerExtensionPoint({
@@ -177,8 +179,8 @@ export const catalogPlugin = createBackendPlugin({
 
     let locationAnalyzerFactory:
       | ((options: {
-        scmLocationAnalyzers: ScmLocationAnalyzer[];
-      }) => Promise<{ locationAnalyzer: LocationAnalyzer }>)
+          scmLocationAnalyzers: ScmLocationAnalyzer[];
+        }) => Promise<{ locationAnalyzer: LocationAnalyzer }>)
       | undefined = undefined;
     const scmLocationAnalyzers = new Array<ScmLocationAnalyzer>();
     env.registerExtensionPoint(catalogAnalysisExtensionPoint, {

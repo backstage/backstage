@@ -4,7 +4,9 @@
 
 ```ts
 import { Entity } from '@backstage/catalog-model';
+import { JsonObject } from '@backstage/types';
 import { SerializedError } from '@backstage/errors';
+import { z } from 'zod/v3';
 
 // @alpha
 export interface AlphaEntity extends Entity {
@@ -12,8 +14,25 @@ export interface AlphaEntity extends Entity {
 }
 
 // @alpha
-export interface CatalogModelBuilder {
-  addJsonSchema(schema: unknown): void;
+export interface CatalogModel {
+  getKind(
+    options:
+      | {
+          kind: string;
+          apiVersion: string;
+          type?: string;
+        }
+      | {
+          kind: string;
+          apiVersion: string;
+          spec: {
+            type?: string;
+          };
+        },
+  ): CatalogModelKind | undefined;
+  getRelations(kind: string): CatalogModelRelation[] | undefined;
+  // Warning: (ae-forgotten-export) The symbol "CatalogModelOp" needs to be exported by the entry point alpha.d.ts
+  ops: ReadonlyArray<CatalogModelOp>;
 }
 
 // @alpha
@@ -21,14 +40,183 @@ export interface CatalogModelExtension {
   // (undocumented)
   readonly $$type: '@backstage/CatalogModelExtension';
   // (undocumented)
-  readonly modelName: string;
+  readonly modelName?: string;
+  // (undocumented)
+  readonly pluginId: string;
 }
 
 // @alpha
-export function createCatalogModelExtension(options: {
-  modelName: string;
-  factory: (model: CatalogModelBuilder) => void;
-}): CatalogModelExtension;
+export interface CatalogModelExtensionBuilder {
+  addKind(kind: CatalogModelKindDefinition): void;
+  addRelationPair(relation: CatalogModelRelationPairDefinition): void;
+  updateKind(kind: CatalogModelUpdateKindDefinition): void;
+  updateRelationPair(relation: CatalogModelUpdateRelationPairDefinition): void;
+}
+
+// @alpha
+export interface CatalogModelKind {
+  apiVersions: string[];
+  jsonSchema: JsonObject;
+  names: {
+    kind: string;
+    singular: string;
+    plural: string;
+  };
+  relationFields: Array<{
+    path: string;
+    relation: string;
+    defaultKind?: string;
+    defaultNamespace?: 'inherit' | 'default';
+    allowedKinds?: string[];
+  }>;
+}
+
+// @alpha
+export interface CatalogModelKindDefinition {
+  description: string;
+  group: string;
+  names: {
+    kind: string;
+    singular: string;
+    plural: string;
+  };
+  versions?: Array<{
+    name: string;
+    specTypes?: string[];
+    description?: string;
+    relationFields?: CatalogModelKindRelationFieldDefinition[];
+    schema: {
+      jsonSchema: CatalogModelKindRootSchema;
+    };
+  }>;
+}
+
+// @alpha (undocumented)
+export interface CatalogModelKindRelationFieldDefinition {
+  allowedKinds?: string[];
+  defaultKind?: string;
+  defaultNamespace?: 'default' | 'inherit';
+  selector: {
+    path: string;
+  };
+}
+
+// @alpha
+export interface CatalogModelKindRootSchema {
+  // (undocumented)
+  $ref?: never;
+  // (undocumented)
+  [key: string]: unknown | undefined;
+  // (undocumented)
+  allOf?: never;
+  // (undocumented)
+  anyOf?: never;
+  // (undocumented)
+  else?: never;
+  // (undocumented)
+  if?: never;
+  // (undocumented)
+  oneOf?: never;
+  // (undocumented)
+  properties:
+    | {
+        kind?: never;
+        apiVersion?: never;
+        metadata?: never;
+        $ref?: never;
+        [key: string]:
+          | undefined
+          | {
+              allOf?: never;
+              anyOf?: never;
+              oneOf?: never;
+              if?: never;
+              then?: never;
+              else?: never;
+              $ref?: never;
+              [key: string]: unknown;
+            };
+      }
+    | undefined;
+  // (undocumented)
+  then?: never;
+  // (undocumented)
+  type: 'object';
+}
+
+// @alpha
+export interface CatalogModelRelation {
+  comment: string;
+  forward: {
+    type: string;
+    singular: string;
+    plural: string;
+  };
+  fromKind: string[];
+  reverse: {
+    type: string;
+    singular: string;
+    plural: string;
+  };
+  toKind: string[];
+}
+
+// @alpha
+export interface CatalogModelRelationPairDefinition {
+  comment: string;
+  forward: {
+    type: string;
+    singular: string;
+    plural: string;
+  };
+  fromKind: string | string[];
+  reverse: {
+    type: string;
+    singular: string;
+    plural: string;
+  };
+  toKind: string | string[];
+}
+
+// @alpha
+export interface CatalogModelUpdateKindDefinition {
+  description?: string;
+  names: {
+    kind: string;
+    singular?: string;
+    plural?: string;
+  };
+}
+
+// @alpha
+export interface CatalogModelUpdateRelationPairDefinition {
+  comment?: string;
+  forward: {
+    type: string;
+    singular?: string;
+    plural?: string;
+  };
+  fromKind: string | string[];
+  reverse: {
+    type?: string;
+    singular?: string;
+    plural?: string;
+  };
+  toKind: string | string[];
+}
+
+// @alpha
+export function compileCatalogModel(
+  inputs: Iterable<CatalogModelExtension | CatalogModel>,
+): CatalogModel;
+
+// @alpha
+export function createCatalogModelExtensionBuilder(options: {
+  pluginId: string;
+  modelName?: string;
+}): CatalogModelExtensionBuilder & {
+  build(): CatalogModelExtension;
+};
 
 // @alpha
 export type EntityStatus = {

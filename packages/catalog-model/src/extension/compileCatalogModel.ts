@@ -28,58 +28,6 @@ import { OpUpdateRelationV1 } from './operations/updateRelation';
 import { CatalogModelExtension, OpaqueCatalogModelExtension } from './types';
 
 /**
- * A relation field in a compiled catalog model schema.
- *
- * @alpha
- */
-export interface CatalogModelSchemaRelationType {
-  type: 'relation';
-  relation: string;
-  defaultKind: string;
-  defaultNamespace: 'inherit' | 'default';
-}
-
-/**
- * An object type in a compiled catalog model schema.
- *
- * @alpha
- */
-export interface CatalogModelSchemaObjectType {
-  type: 'object';
-  properties: Record<string, CatalogModelSchemaType>;
-}
-
-/**
- * An array type in a compiled catalog model schema.
- *
- * @alpha
- */
-export interface CatalogModelSchemaArrayType {
-  type: 'array';
-  items: CatalogModelSchemaType;
-}
-
-/**
- * A string type in a compiled catalog model schema.
- *
- * @alpha
- */
-export interface CatalogModelSchemaStringType {
-  type: 'string';
-}
-
-/**
- * A type in a compiled catalog model schema.
- *
- * @alpha
- */
-export type CatalogModelSchemaType =
-  | CatalogModelSchemaObjectType
-  | CatalogModelSchemaArrayType
-  | CatalogModelSchemaRelationType
-  | CatalogModelSchemaStringType;
-
-/**
  * A compiled catalog model kind.
  *
  * @alpha
@@ -110,11 +58,6 @@ export interface CatalogModelKind {
      */
     plural: string;
   };
-
-  /**
-   * A typed representation of the spec schema, including relation metadata.
-   */
-  spec: CatalogModelSchemaObjectType;
 
   /**
    * The relation fields declared for this kind, with full dot-separated paths
@@ -258,13 +201,14 @@ interface RelationState {
 
 // #region Op sorting
 
-const OP_SORT_ORDER: Record<string, number> = {
+const OP_SORT_ORDER: { [K in CatalogModelOp['op']]: number } = {
   'declareKind.v1': 0,
   'declareKindVersion.v1': 1,
   'declareRelation.v1': 2,
   'updateKind.v1': 3,
   'updateKindVersion.v1': 4,
   'updateRelation.v1': 5,
+  'declareAnnotation.v1': 6,
 };
 
 /**
@@ -446,106 +390,6 @@ function applyUpdateRelation(
   }
 }
 
-/**
- * Builds a typed spec schema from the compiled state. This walks the JSON
- * schema's spec properties and overlays relation metadata from the relation
- * field declarations.
- */
-function buildSpecSchema(
-  specType: SpecTypeState,
-): CatalogModelSchemaObjectType {
-  const specSchema = (specType.jsonSchema as JsonObject).properties as
-    | JsonObject
-    | undefined;
-  const specObj = (specSchema?.spec as JsonObject | undefined) ?? {};
-  const specProperties = (specObj.properties as JsonObject | undefined) ?? {};
-
-  // Index relation fields by their path within spec (e.g. "owner" from "spec.owner")
-  const relationByPath = new Map<
-    string,
-    NonNullable<SpecTypeState['relationFields']>[number]
-  >();
-  for (const field of specType.relationFields ?? []) {
-    const path = field.selector.path;
-    const prefix = 'spec.';
-    if (path.startsWith(prefix)) {
-      relationByPath.set(path.slice(prefix.length), field);
-    }
-  }
-
-  return {
-    type: 'object',
-    properties: buildSchemaProperties(specProperties, relationByPath, ''),
-  };
-}
-
-function buildSchemaProperties(
-  properties: JsonObject,
-  relationByPath: Map<
-    string,
-    NonNullable<SpecTypeState['relationFields']>[number]
-  >,
-  pathPrefix: string,
-): Record<string, CatalogModelSchemaType> {
-  const result: Record<string, CatalogModelSchemaType> = {};
-
-  for (const [name, value] of Object.entries(properties)) {
-    const fullPath = pathPrefix ? `${pathPrefix}.${name}` : name;
-    const schema = value as JsonObject | undefined;
-    if (!schema) {
-      continue;
-    }
-
-    const relationField = relationByPath.get(fullPath);
-    if (relationField) {
-      result[name] = {
-        type: 'relation',
-        relation: relationField.selector.path,
-        defaultKind: relationField.defaultKind ?? '',
-        defaultNamespace: relationField.defaultNamespace ?? 'default',
-      };
-      continue;
-    }
-
-    const type = schema.type as string | undefined;
-    if (type === 'object') {
-      const nested = (schema.properties as JsonObject | undefined) ?? {};
-      result[name] = {
-        type: 'object',
-        properties: buildSchemaProperties(nested, relationByPath, fullPath),
-      };
-    } else if (type === 'array') {
-      const items = schema.items as JsonObject | undefined;
-      const itemPath = fullPath;
-      const itemRelation = relationByPath.get(itemPath);
-      if (itemRelation) {
-        result[name] = {
-          type: 'array',
-          items: {
-            type: 'relation',
-            relation: itemRelation.selector.path,
-            defaultKind: itemRelation.defaultKind ?? '',
-            defaultNamespace: itemRelation.defaultNamespace ?? 'default',
-          },
-        };
-      } else {
-        result[name] = {
-          type: 'array',
-          items: {
-            type: (items?.type as string) ?? 'string',
-          } as CatalogModelSchemaType,
-        };
-      }
-    } else {
-      result[name] = { type: (type ?? 'string') as 'string' };
-    }
-  }
-
-  return result;
-}
-
-// #endregion
-
 // #region Main compilation
 
 /**
@@ -639,7 +483,6 @@ export function compileCatalogModel(
           singular: kindState.singular,
           plural: kindState.plural,
         },
-        spec: buildSpecSchema(specType),
         relationFields: (specType.relationFields ?? []).map(f => ({
           path: f.selector.path,
           relation: f.selector.path, // TODO: link to actual relation type

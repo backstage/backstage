@@ -6,6 +6,7 @@
 import { CatalogAnalysisExtensionPoint as CatalogAnalysisExtensionPoint_2 } from '@backstage/plugin-catalog-node';
 import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogLocationsExtensionPoint as CatalogLocationsExtensionPoint_2 } from '@backstage/plugin-catalog-node';
+import { CatalogModel } from '@backstage/catalog-model/alpha';
 import { CatalogModelExtension } from '@backstage/catalog-model/alpha';
 import { CatalogProcessingExtensionPoint as CatalogProcessingExtensionPoint_2 } from '@backstage/plugin-catalog-node';
 import { CatalogProcessorParser } from '@backstage/plugin-catalog-node';
@@ -41,9 +42,9 @@ export const catalogLocationsExtensionPoint: ExtensionPoint<CatalogLocationsExte
 
 // @alpha (undocumented)
 export interface CatalogModelExtensionPoint {
-  addModelExtension(extension: CatalogModelExtension): void;
   setEntityDataParser(parser: CatalogProcessorParser): void;
   setFieldValidators(validators: Partial<Validators>): void;
+  setModel(model: CatalogModel): void;
 }
 
 // @alpha (undocumented)

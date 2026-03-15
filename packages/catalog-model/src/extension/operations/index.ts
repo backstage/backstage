@@ -14,26 +14,29 @@
  * limitations under the License.
  */
 
+import { OpDeclareAnnotationV1 } from './declareAnnotation';
 import { OpDeclareKindV1 } from './declareKind';
-import { OpDeclareRelationV1 } from './declareRelation';
 import { OpDeclareKindVersionV1 } from './declareKindVersion';
+import { OpDeclareRelationV1 } from './declareRelation';
 import { OpUpdateKindV1 } from './updateKind';
 import { OpUpdateKindVersionV1 } from './updateKindVersion';
 import { OpUpdateRelationV1 } from './updateRelation';
 
 export type {
+  OpDeclareAnnotationV1,
   OpDeclareKindV1,
-  OpDeclareRelationV1,
   OpDeclareKindVersionV1,
+  OpDeclareRelationV1,
   OpUpdateKindV1,
   OpUpdateKindVersionV1,
   OpUpdateRelationV1,
 };
 
 export type CatalogModelOp =
+  | OpDeclareAnnotationV1
   | OpDeclareKindV1
-  | OpDeclareRelationV1
   | OpDeclareKindVersionV1
+  | OpDeclareRelationV1
   | OpUpdateKindV1
   | OpUpdateKindVersionV1
   | OpUpdateRelationV1;

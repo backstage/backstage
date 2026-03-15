@@ -45,17 +45,19 @@ describe('catalogModelRegistryServiceRef', () => {
           async init({ modelRegistry }) {
             modelRegistry.registerModelExtension('my-model', model => {
               model.addKind({
-                apiVersions: ['example.com/v1'],
+                group: 'example.com',
                 names: {
                   kind: 'MyKind',
                   singular: 'mykind',
                   plural: 'mykinds',
                 },
                 description: 'A test kind',
-                spec: {
-                  type: 'object',
-                  properties: {},
-                },
+                versions: [
+                  {
+                    name: 'v1alpha1',
+                    schema: { jsonSchema: { type: 'object', properties: {} } },
+                  },
+                ],
               });
             });
           },
