@@ -16,7 +16,7 @@
 
 import { Fragment } from 'react';
 import { Link, MemoryRouter } from 'react-router-dom';
-import { createSpecializedApp } from '@backstage/frontend-app-api';
+import { prepareSpecializedApp } from '@backstage/frontend-app-api';
 import { RenderResult, render } from '@testing-library/react';
 import { ConfigReader } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
@@ -233,7 +233,7 @@ export function renderInTestApp<const TApiPairs extends any[] = any[]>(
     features.push(...options.features);
   }
 
-  const app = createSpecializedApp({
+  const app = prepareSpecializedApp({
     features,
     config: ConfigReader.fromConfigs([
       {
@@ -251,7 +251,7 @@ export function renderInTestApp<const TApiPairs extends any[] = any[]>(
         return createApiFactory(apiRef, implementation);
       }),
     },
-  } as CreateSpecializedAppInternalOptions);
+  } as CreateSpecializedAppInternalOptions).finalize();
 
   return render(
     app.tree.root.instance!.getData(coreExtensionData.reactElement),

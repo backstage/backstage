@@ -23,6 +23,7 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
+    "@backstage/filter-predicates": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/types": "workspace:^",
     "@backstage/version-bridge": "workspace:^"

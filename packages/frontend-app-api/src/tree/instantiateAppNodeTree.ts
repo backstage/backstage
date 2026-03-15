@@ -28,6 +28,7 @@ import { AppNode, AppNodeInstance } from '@backstage/frontend-plugin-api';
 import { toInternalExtension } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
 import { createExtensionDataContainer } from '@internal/frontend';
 import { ErrorCollector } from '../wiring/createErrorCollector';
+import { evaluateFilterPredicate } from '@backstage/filter-predicates';
 
 const INSTANTIATION_FAILED = new Error('Instantiation failed');
 
@@ -336,12 +337,28 @@ export function createAppNodeInstance(options: {
   apis: ApiHolder;
   attachments: ReadonlyMap<string, AppNode[]>;
   collector: ErrorCollector;
+  onMissingApi?(ctx: { node: AppNode; apiRefId: string }): void;
 }): AppNodeInstance | undefined {
   const { node, apis, attachments } = options;
   const collector = options.collector.child({ node });
   const { id, extension, config } = node.spec;
   const extensionData = new Map<string, unknown>();
   const extensionDataRefs = new Set<ExtensionDataRef<unknown>>();
+  const scopedApis: ApiHolder =
+    options.onMissingApi === undefined
+      ? apis
+      : {
+          get(apiRef) {
+            const api = apis.get(apiRef);
+            if (api === undefined) {
+              options.onMissingApi?.({
+                node,
+                apiRefId: apiRef.id,
+              });
+            }
+            return api;
+          },
+        };
 
   let parsedConfig: { [x: string]: any };
   try {
@@ -366,7 +383,7 @@ export function createAppNodeInstance(options: {
     if (internalExtension.version === 'v1') {
       const namedOutputs = internalExtension.factory({
         node,
-        apis,
+        apis: scopedApis,
         config: parsedConfig,
         inputs: resolveV1Inputs(internalExtension.inputs, attachments),
       });
@@ -387,7 +404,7 @@ export function createAppNodeInstance(options: {
     } else if (internalExtension.version === 'v2') {
       const context = {
         node,
-        apis,
+        apis: scopedApis,
         config: parsedConfig,
         inputs: resolveV2Inputs(
           internalExtension.inputs,
@@ -508,7 +525,35 @@ export function instantiateAppNodeTree(
   apis: ApiHolder,
   collector: ErrorCollector,
   extensionFactoryMiddleware?: ExtensionFactoryMiddleware,
+  optionsOrPredicateContext?:
+    | {
+        stopAtAttachment?(ctx: { node: AppNode; input: string }): boolean;
+        skipChild?(ctx: {
+          node: AppNode;
+          input: string;
+          child: AppNode;
+        }): boolean;
+        onMissingApi?(ctx: { node: AppNode; apiRefId: string }): void;
+        predicateContext?: Record<string, unknown>;
+      }
+    | Record<string, unknown>,
 ): boolean {
+  const options: {
+    stopAtAttachment?(ctx: { node: AppNode; input: string }): boolean;
+    skipChild?(ctx: { node: AppNode; input: string; child: AppNode }): boolean;
+    onMissingApi?(ctx: { node: AppNode; apiRefId: string }): void;
+    predicateContext?: Record<string, unknown>;
+  } =
+    optionsOrPredicateContext &&
+    ('stopAtAttachment' in optionsOrPredicateContext ||
+      'skipChild' in optionsOrPredicateContext ||
+      'onMissingApi' in optionsOrPredicateContext ||
+      'predicateContext' in optionsOrPredicateContext)
+      ? optionsOrPredicateContext
+      : {
+          predicateContext: optionsOrPredicateContext,
+        };
+
   function createInstance(node: AppNode): AppNodeInstance | undefined {
     if (node.instance) {
       return node.instance;
@@ -516,11 +561,24 @@ export function instantiateAppNodeTree(
     if (node.spec.disabled) {
       return undefined;
     }
+    if (
+      options?.predicateContext !== undefined &&
+      node.spec.if !== undefined &&
+      !evaluateFilterPredicate(node.spec.if, options.predicateContext)
+    ) {
+      return undefined;
+    }
 
     const instantiatedAttachments = new Map<string, AppNode[]>();
 
     for (const [input, children] of node.edges.attachments) {
+      if (options?.stopAtAttachment?.({ node, input })) {
+        continue;
+      }
       const instantiatedChildren = children.flatMap(child => {
+        if (options?.skipChild?.({ node, input, child })) {
+          return [];
+        }
         const childInstance = createInstance(child);
         if (!childInstance) {
           return [];
@@ -538,6 +596,7 @@ export function instantiateAppNodeTree(
       apis,
       attachments: instantiatedAttachments,
       collector,
+      onMissingApi: options?.onMissingApi,
     });
 
     return node.instance;

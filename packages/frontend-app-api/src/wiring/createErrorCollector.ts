@@ -82,6 +82,12 @@ export type AppErrorTypes = {
       existingPluginId: string;
     };
   };
+  EXTENSION_BOOTSTRAP_PREDICATE_IGNORED: {
+    context: { node: AppNode };
+  };
+  EXTENSION_BOOTSTRAP_API_UNAVAILABLE: {
+    context: { node: AppNode; apiRefId: string };
+  };
   // routing
   ROUTE_DUPLICATE: {
     context: { routeId: string };

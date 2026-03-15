@@ -32,6 +32,7 @@ import { JsonObject } from '@backstage/types';
 import { IconElement } from '../icons/types';
 import { RouteRef, SubRouteRef, ExternalRouteRef } from '../routing';
 import { ID_PATTERN } from './constants';
+import { FilterPredicate } from '@backstage/filter-predicates';
 
 /**
  * Information about the plugin.
@@ -116,6 +117,11 @@ export interface OverridableFrontendPlugin<
     extensions?: Array<ExtensionDefinition>;
 
     /**
+     * Overrides the shared condition that applies to all extensions in the plugin.
+     */
+    if?: FilterPredicate;
+
+    /**
      * Overrides the display title of the plugin.
      */
     title?: string;
@@ -191,6 +197,7 @@ export interface PluginOptions<
   externalRoutes?: TExternalRoutes;
   extensions?: TExtensions;
   featureFlags?: FeatureFlagConfig[];
+  if?: FilterPredicate;
   info?: FrontendPluginInfoOptions;
 }
 
@@ -284,6 +291,7 @@ export function createFrontendPlugin<
     routes: options.routes ?? ({} as TRoutes),
     externalRoutes: options.externalRoutes ?? ({} as TExternalRoutes),
     featureFlags: options.featureFlags ?? [],
+    if: options.if,
     extensions: extensions,
     infoOptions: options.info,
 
@@ -306,6 +314,10 @@ export function createFrontendPlugin<
       return `Plugin{id=${pluginId}}`;
     },
     withOverrides(overrides) {
+      let ifPredicate = options.if;
+      if ('if' in overrides) {
+        ifPredicate = overrides.if;
+      }
       const overrideExtensions = overrides.extensions ?? [];
       const overriddenExtensionIds = new Set(
         overrideExtensions.map(
@@ -321,6 +333,7 @@ export function createFrontendPlugin<
       return createFrontendPlugin({
         ...options,
         pluginId,
+        if: ifPredicate,
         title: overrides.title ?? options.title,
         icon: overrides.icon ?? options.icon,
         extensions: [...nonOverriddenExtensions, ...overrideExtensions],

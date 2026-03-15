@@ -57,6 +57,8 @@ Note that `createRoot` returns the root element that is rendered by React. The a
 
 Visit the [built-in extensions](#customize-or-override-built-in-extensions) section to see what is installed by default in a Backstage application.
 
+For advanced bootstrap flows that need access to the app tree before the full app is finalized, see [preparing an app in phases](../architecture/10-app.md#preparing-an-app-in-phases).
+
 ## Configure your app
 
 ### Bind external routes

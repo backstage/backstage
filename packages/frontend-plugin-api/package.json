@@ -45,6 +45,7 @@
   },
   "dependencies": {
     "@backstage/errors": "workspace:^",
+    "@backstage/filter-predicates": "workspace:^",
     "@backstage/types": "workspace:^",
     "@backstage/version-bridge": "workspace:^",
     "zod": "^3.25.76",

@@ -38,6 +38,8 @@ describe('TestApiProvider', () => {
         <div />
       </TestApiProvider>,
     );
+
+    expect(document.body).toBeInTheDocument();
   });
 
   it('should allow partial API implementations', () => {
@@ -46,6 +48,8 @@ describe('TestApiProvider', () => {
         <div />
       </TestApiProvider>,
     );
+
+    expect(document.body).toBeInTheDocument();
   });
 
   it('should reject mismatched types in tuple syntax', () => {
@@ -55,6 +59,8 @@ describe('TestApiProvider', () => {
         <div />
       </TestApiProvider>,
     );
+
+    expect(document.body).toBeInTheDocument();
   });
 
   it('should accept MockWithApiFactory entries', () => {
@@ -63,6 +69,8 @@ describe('TestApiProvider', () => {
         <div />
       </TestApiProvider>,
     );
+
+    expect(document.body).toBeInTheDocument();
   });
 
   it('should accept a mix of tuples and MockWithApiFactory entries', () => {
@@ -71,6 +79,8 @@ describe('TestApiProvider', () => {
         <div />
       </TestApiProvider>,
     );
+
+    expect(document.body).toBeInTheDocument();
   });
 
   it('should allow empty APIs', () => {
@@ -79,6 +89,8 @@ describe('TestApiProvider', () => {
         <div />
       </TestApiProvider>,
     );
+
+    expect(document.body).toBeInTheDocument();
   });
 
   it('should provide APIs at runtime', async () => {

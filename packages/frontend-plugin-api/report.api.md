@@ -14,6 +14,7 @@ import { ExtensionBlueprint as ExtensionBlueprint_2 } from '@backstage/frontend-
 import { ExtensionBlueprintParams as ExtensionBlueprintParams_2 } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef as ExtensionDataRef_2 } from '@backstage/frontend-plugin-api';
 import { ExtensionInput as ExtensionInput_2 } from '@backstage/frontend-plugin-api';
+import { FilterPredicate } from '@backstage/filter-predicates';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { JSX as JSX_2 } from 'react';
@@ -250,6 +251,8 @@ export interface AppNodeSpec {
   readonly extension: Extension<unknown, unknown>;
   // (undocumented)
   readonly id: string;
+  // (undocumented)
+  readonly if?: FilterPredicate;
   // (undocumented)
   readonly plugin: FrontendPlugin;
 }
@@ -541,6 +544,7 @@ export type CreateExtensionBlueprintOptions<
   attachTo: ExtensionDefinitionAttachTo<UParentInputs> &
     VerifyExtensionAttachTo<UOutput, UParentInputs>;
   disabled?: boolean;
+  if?: FilterPredicate;
   inputs?: TInputs;
   output: Array<UOutput>;
   config?: {
@@ -627,6 +631,7 @@ export type CreateExtensionOptions<
   attachTo: ExtensionDefinitionAttachTo<UParentInputs> &
     VerifyExtensionAttachTo<UOutput, UParentInputs>;
   disabled?: boolean;
+  if?: FilterPredicate;
   inputs?: TInputs;
   output: Array<UOutput>;
   config?: {
@@ -714,6 +719,8 @@ export interface CreateFrontendModuleOptions<
   extensions?: TExtensions;
   // (undocumented)
   featureFlags?: FeatureFlagConfig[];
+  // (undocumented)
+  if?: FilterPredicate;
   // (undocumented)
   pluginId: TPluginId;
 }
@@ -952,6 +959,7 @@ export interface ExtensionBlueprint<
     attachTo?: ExtensionDefinitionAttachTo<UParentInputs> &
       VerifyExtensionAttachTo<NonNullable<T['output']>, UParentInputs>;
     disabled?: boolean;
+    if?: FilterPredicate;
     params: TParamsInput extends ExtensionBlueprintDefineParams
       ? TParamsInput
       : T['params'] extends ExtensionBlueprintDefineParams
@@ -987,6 +995,7 @@ export interface ExtensionBlueprint<
         UParentInputs
       >;
     disabled?: boolean;
+    if?: FilterPredicate;
     inputs?: TExtraInputs & {
       [KName in keyof T['inputs']]?: `Error: Input '${KName &
         string}' is already defined in parent definition`;
@@ -1597,6 +1606,7 @@ export interface OverridableExtensionDefinition<
             UParentInputs
           >;
         disabled?: boolean;
+        if?: FilterPredicate;
         inputs?: TExtraInputs & {
           [KName in keyof T['inputs']]?: `Error: Input '${KName &
             string}' is already defined in parent definition`;
@@ -1702,6 +1712,7 @@ export interface OverridableFrontendPlugin<
   // (undocumented)
   withOverrides(options: {
     extensions?: Array<ExtensionDefinition>;
+    if?: FilterPredicate;
     title?: string;
     icon?: IconElement;
     info?: FrontendPluginInfoOptions;
@@ -1871,6 +1882,8 @@ export interface PluginOptions<
   // (undocumented)
   featureFlags?: FeatureFlagConfig[];
   icon?: IconElement;
+  // (undocumented)
+  if?: FilterPredicate;
   // (undocumented)
   info?: FrontendPluginInfoOptions;
   // (undocumented)
