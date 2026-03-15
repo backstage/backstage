@@ -14,18 +14,32 @@
  * limitations under the License.
  */
 
-module.exports = {
+// @ts-check
+
+const pkg = require('./package.json');
+
+/** @type {import('eslint').Linter.RulesRecord} */
+const recommendedRules = {
+  '@backstage/no-forbidden-package-imports': 'error',
+  '@backstage/no-relative-monorepo-imports': 'error',
+  '@backstage/no-undeclared-imports': 'error',
+  '@backstage/no-mixed-plugin-imports': 'warn',
+  '@backstage/no-ui-css-imports-in-non-frontend': 'error',
+};
+
+/** @type {import('eslint').ESLint.Plugin} */
+const plugin = {
+  meta: {
+    name: pkg.name,
+    version: pkg.version,
+  },
   configs: {
+    // Legacy config format (ESLint v8 and earlier)
     recommended: {
       plugins: ['@backstage'],
-      rules: {
-        '@backstage/no-forbidden-package-imports': 'error',
-        '@backstage/no-relative-monorepo-imports': 'error',
-        '@backstage/no-undeclared-imports': 'error',
-        '@backstage/no-mixed-plugin-imports': 'warn',
-        '@backstage/no-ui-css-imports-in-non-frontend': 'error',
-      },
+      rules: recommendedRules,
     },
+    // Flat config defined below
   },
   rules: {
     'no-forbidden-package-imports': require('./rules/no-forbidden-package-imports'),
@@ -36,3 +50,24 @@ module.exports = {
     'no-ui-css-imports-in-non-frontend': require('./rules/no-ui-css-imports-in-non-frontend'),
   },
 };
+
+// Assign configs here so we can reference `plugin` for flat config
+// cf https://eslint.org/docs/latest/extend/plugin-migration-flat-config#migrating-configs-for-flat-config
+Object.assign(
+  /** @type {NonNullable<import('eslint').ESLint.Plugin['configs']>} */ (
+    plugin.configs
+  ),
+  {
+    // Flat config format (ESLint v8.24+ / v9+)
+    // When using defineConfig(), this is used as fallback when `recommended` is not in flat config format
+    // cf https://eslint.org/docs/latest/extend/plugins#backwards-compatibility-for-legacy-configs
+    'flat/recommended': {
+      plugins: {
+        '@backstage': plugin,
+      },
+      rules: recommendedRules,
+    },
+  },
+);
+
+module.exports = plugin;
