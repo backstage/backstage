@@ -30,34 +30,29 @@ This does not create an actual dependency on these packages and does not bring i
 Rollup will extract the value of the version field in each package at build time without
 leaving any imports in place.
 */
-type Pkg = { version: string };
-const v = (path: string) => (require(path) as Pkg).version;
-const backendPluginApi = v('../../../backend-plugin-api/package.json');
-const backendTestUtils = v('../../../backend-test-utils/package.json');
-const catalogClient = v('../../../catalog-client/package.json');
-const cli = v('../../../cli/package.json');
-const config = v('../../../config/package.json');
-const coreAppApi = v('../../../core-app-api/package.json');
-const coreComponents = v('../../../core-components/package.json');
-const corePluginApi = v('../../../core-plugin-api/package.json');
-const devUtils = v('../../../dev-utils/package.json');
-const errors = v('../../../errors/package.json');
-const frontendDefaults = v('../../../frontend-defaults/package.json');
-const frontendPluginApi = v('../../../frontend-plugin-api/package.json');
-const frontendTestUtils = v('../../../frontend-test-utils/package.json');
-const testUtils = v('../../../test-utils/package.json');
-const scaffolderNode = v('../../../../plugins/scaffolder-node/package.json');
-const scaffolderNodeTestUtils = v(
-  '../../../../plugins/scaffolder-node-test-utils/package.json',
-);
-const authBackend = v('../../../../plugins/auth-backend/package.json');
-const authBackendModuleGuestProvider = v(
-  '../../../../plugins/auth-backend-module-guest-provider/package.json',
-);
-const catalogNode = v('../../../../plugins/catalog-node/package.json');
-const theme = v('../../../theme/package.json');
-const types = v('../../../types/package.json');
-const backendDefaults = v('../../../backend-defaults/package.json');
+
+import { version as backendDefaults } from '../../../backend-defaults/package.json';
+import { version as backendPluginApi } from '../../../backend-plugin-api/package.json';
+import { version as backendTestUtils } from '../../../backend-test-utils/package.json';
+import { version as catalogClient } from '../../../catalog-client/package.json';
+import { version as cli } from '../../../cli/package.json';
+import { version as config } from '../../../config/package.json';
+import { version as coreAppApi } from '../../../core-app-api/package.json';
+import { version as coreComponents } from '../../../core-components/package.json';
+import { version as corePluginApi } from '../../../core-plugin-api/package.json';
+import { version as devUtils } from '../../../dev-utils/package.json';
+import { version as errors } from '../../../errors/package.json';
+import { version as frontendDefaults } from '../../../frontend-defaults/package.json';
+import { version as frontendPluginApi } from '../../../frontend-plugin-api/package.json';
+import { version as frontendTestUtils } from '../../../frontend-test-utils/package.json';
+import { version as testUtils } from '../../../test-utils/package.json';
+import { version as theme } from '../../../theme/package.json';
+import { version as types } from '../../../types/package.json';
+import { version as authBackend } from '../../../../plugins/auth-backend/package.json';
+import { version as authBackendModuleGuestProvider } from '../../../../plugins/auth-backend-module-guest-provider/package.json';
+import { version as catalogNode } from '../../../../plugins/catalog-node/package.json';
+import { version as scaffolderNode } from '../../../../plugins/scaffolder-node/package.json';
+import { version as scaffolderNodeTestUtils } from '../../../../plugins/scaffolder-node-test-utils/package.json';
 
 export const packageVersions: Record<string, string> = {
   '@backstage/backend-defaults': backendDefaults,
