@@ -892,7 +892,9 @@ export function prepareSpecializedApp(
         subscribed = false;
       };
     },
-    finalize(options?: { sessionState?: SpecializedAppSessionState }) {
+    finalize(finalizeOptions?: {
+      sessionState?: SpecializedAppSessionState;
+    }) {
       if (finalized) {
         return finalized;
       }
@@ -904,12 +906,12 @@ export function prepareSpecializedApp(
         throw signInRuntime.error;
       }
 
-      if (!options?.sessionState && !cachedSessionState) {
+      if (!finalizeOptions?.sessionState && !cachedSessionState) {
         getBootstrapApp();
       }
 
       const finalizedSessionState =
-        options?.sessionState ??
+        finalizeOptions?.sessionState ??
         cachedSessionState ??
         (signInRuntime?.requiresSignIn
           ? undefined
