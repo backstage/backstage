@@ -15,25 +15,25 @@
  */
 
 import { OpDeclareKindV1 } from './declareKind';
-import { OpDeclareKindSpecFieldV1 } from './declareKindSpecField';
 import { OpDeclareRelationV1 } from './declareRelation';
 import { OpDeclareKindVersionV1 } from './declareKindVersion';
 import { OpUpdateKindV1 } from './updateKind';
+import { OpUpdateKindVersionV1 } from './updateKindVersion';
 import { OpUpdateRelationV1 } from './updateRelation';
 
 export type {
-  OpDeclareKindSpecFieldV1,
   OpDeclareKindV1,
   OpDeclareRelationV1,
   OpDeclareKindVersionV1,
   OpUpdateKindV1,
+  OpUpdateKindVersionV1,
   OpUpdateRelationV1,
 };
 
 export type CatalogModelOp =
   | OpDeclareKindV1
-  | OpDeclareKindSpecFieldV1
   | OpDeclareRelationV1
   | OpDeclareKindVersionV1
   | OpUpdateKindV1
+  | OpUpdateKindVersionV1
   | OpUpdateRelationV1;
