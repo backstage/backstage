@@ -18,6 +18,7 @@ import { targetPaths } from '@backstage/cli-common';
 import { PackageRoles } from '@backstage/cli-node';
 import fs from 'node:fs';
 import { resolve as resolvePath } from 'node:path';
+import { pathToFileURL } from 'node:url';
 
 /**
  * Scans the target project root's package.json for dependencies that are CLI
@@ -57,7 +58,7 @@ export function discoverCliModules(): string[] {
       const depPkg = JSON.parse(fs.readFileSync(depPkgPath, 'utf8'));
       if (PackageRoles.getRoleFromPackage(depPkg) === 'cli-module') {
         const resolvedPath = require.resolve(depName, { paths: [rootDir] });
-        modules.push(resolvedPath);
+        modules.push(pathToFileURL(resolvedPath).href);
       }
     } catch {
       // Skip packages that can't be resolved or read
