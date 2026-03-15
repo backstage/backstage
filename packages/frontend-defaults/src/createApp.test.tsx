@@ -830,7 +830,11 @@ describe('createApp', () => {
       screen.findByText('Permission Page'),
     ).resolves.toBeInTheDocument();
     expect(allowedPermissionApi.authorize).toHaveBeenCalledWith({
-      permission: { name: 'catalog.entity.create', type: 'basic', attributes: {} },
+      permission: {
+        name: 'catalog.entity.create',
+        type: 'basic',
+        attributes: {},
+      },
     });
   });
 
@@ -857,7 +861,9 @@ describe('createApp', () => {
           path: '/',
           loader: async () => (
             <div>
-              {inputs.cards.map(card => card.get(coreExtensionData.reactElement))}
+              {inputs.cards.map(card =>
+                card.get(coreExtensionData.reactElement),
+              )}
             </div>
           ),
         });
@@ -916,10 +922,10 @@ describe('createApp', () => {
       ],
     });
 
-    const hiddenCardsRender = await renderWithEffects(hiddenCardsApp.createRoot());
-    await expect(
-      screen.findByText('Public Card'),
-    ).resolves.toBeInTheDocument();
+    const hiddenCardsRender = await renderWithEffects(
+      hiddenCardsApp.createRoot(),
+    );
+    await expect(screen.findByText('Public Card')).resolves.toBeInTheDocument();
     await waitFor(() =>
       expect(screen.queryByText('Permission Card')).not.toBeInTheDocument(),
     );
@@ -943,8 +949,7 @@ describe('createApp', () => {
                 defineParams({
                   api: permissionApiRef,
                   deps: {},
-                  factory: () =>
-                    createPermissionApi(['catalog.entity.create']),
+                  factory: () => createPermissionApi(['catalog.entity.create']),
                 }),
             }),
             ApiBlueprint.make({

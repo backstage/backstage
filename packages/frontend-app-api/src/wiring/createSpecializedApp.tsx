@@ -1112,7 +1112,9 @@ function createBootstrapApp(options: {
     registerBootstrapErrorReporter: options.registerBootstrapErrorReporter,
   });
 
-  const element = options.tree.root.instance?.getData(coreExtensionData.reactElement);
+  const element = options.tree.root.instance?.getData(
+    coreExtensionData.reactElement,
+  );
   if (!element) {
     throw new Error('Expected bootstrap tree to expose a root element');
   }
@@ -1159,7 +1161,12 @@ function createPhaseApis(options: {
     fallbackApis: options.fallbackApis,
   });
 
-  return { apis, routeResolutionApi, appTreeApi, identityApiProxy: identityProxy };
+  return {
+    apis,
+    routeResolutionApi,
+    appTreeApi,
+    identityApiProxy: identityProxy,
+  };
 }
 
 function instantiateAndInitializePhaseTree(options: {
@@ -1609,7 +1616,9 @@ function classifyBootstrapTree(options: {
   const appRootElementNodes =
     getAppRootNode(options.tree)?.edges.attachments.get('elements') ?? [];
   const deferredElementRoots = new Set(
-    appRootElementNodes.filter(elementNode => subtreeContainsPredicate(elementNode)),
+    appRootElementNodes.filter(elementNode =>
+      subtreeContainsPredicate(elementNode),
+    ),
   );
   const deferredRoots = new Set<AppNode>([
     ...deferredApiRoots,
