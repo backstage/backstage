@@ -129,8 +129,9 @@
 ### Indices
 
 - `search_entity_id_idx` (`entity_id`)
+- `search_entity_key_value_idx` (`entity_id`, `key`, `value`)
 - `search_key_original_value_idx` (`key`, `original_value`)
-- `search_key_value_idx` (`key`, `value`)
+- `search_key_value_entity_idx` (`key`, `value`, `entity_id`)
 
 ## Table `stitch_queue`
 

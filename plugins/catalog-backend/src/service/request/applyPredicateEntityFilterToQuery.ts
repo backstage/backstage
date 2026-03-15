@@ -21,7 +21,6 @@ import {
 } from '@backstage/filter-predicates';
 import { InputError } from '@backstage/errors';
 import { Knex } from 'knex';
-import { DbSearchRow } from '../../database/tables';
 
 function isPrimitive(value: unknown): value is FilterPredicatePrimitive {
   return (
@@ -33,6 +32,20 @@ function isPrimitive(value: unknown): value is FilterPredicatePrimitive {
 
 function isObject(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+// Alias used for the search table in EXISTS subqueries, to avoid ambiguity
+// when the outer query is also on the search table (e.g. facets queries).
+const S = 'search_flt';
+
+/**
+ * Creates an EXISTS subquery base against the search table, correlated on
+ * entity_id with the outer query's entity id field.
+ */
+function searchExists(knex: Knex, onEntityIdField: string): Knex.QueryBuilder {
+  return knex(`search as ${S}`)
+    .select(knex.raw('1'))
+    .whereRaw('?? = ??', [`${S}.entity_id`, onEntityIdField]);
 }
 
 export function applyPredicateEntityFilterToQuery(options: {
@@ -128,44 +141,45 @@ function applyFieldCondition(options: {
   const { key, value, targetQuery, onEntityIdField, knex } = options;
 
   if (isPrimitive(value)) {
-    const matchQuery = knex<DbSearchRow>('search')
-      .select('search.entity_id')
-      .where({
-        key,
-        value: String(value).toLocaleLowerCase('en-US'),
-      });
-    return targetQuery.andWhere(onEntityIdField, 'in', matchQuery);
+    return targetQuery.whereExists(
+      searchExists(knex, onEntityIdField)
+        .where(`${S}.key`, key)
+        .where(`${S}.value`, String(value).toLocaleLowerCase('en-US')),
+    );
   }
 
   if (isObject(value)) {
     if ('$exists' in value) {
-      const existsQuery = knex<DbSearchRow>('search')
-        .select('search.entity_id')
-        .where({ key });
-      return targetQuery.andWhere(
-        onEntityIdField,
-        value.$exists ? 'in' : 'not in',
-        existsQuery,
+      const subquery = searchExists(knex, onEntityIdField).where(
+        `${S}.key`,
+        key,
       );
+      return value.$exists
+        ? targetQuery.whereExists(subquery)
+        : targetQuery.whereNotExists(subquery);
     }
 
     if ('$in' in value) {
       const values = value.$in.map(v => String(v).toLocaleLowerCase('en-US'));
-      const matchQuery = knex<DbSearchRow>('search')
-        .select('search.entity_id')
-        .where({ key })
-        .whereIn('value', values);
-      return targetQuery.andWhere(onEntityIdField, 'in', matchQuery);
+      return targetQuery.whereExists(
+        searchExists(knex, onEntityIdField)
+          .where(`${S}.key`, key)
+          .whereIn(`${S}.value`, values),
+      );
     }
 
     if ('$hasPrefix' in value) {
       const prefix = value.$hasPrefix.toLocaleLowerCase('en-US');
       const escaped = prefix.replace(/[%_\\]/g, c => `\\${c}`);
-      const matchQuery = knex<DbSearchRow>('search')
-        .select('search.entity_id')
-        .where({ key })
-        .andWhereRaw('?? like ? escape ?', ['value', `${escaped}%`, '\\']);
-      return targetQuery.andWhere(onEntityIdField, 'in', matchQuery);
+      return targetQuery.whereExists(
+        searchExists(knex, onEntityIdField)
+          .where(`${S}.key`, key)
+          .andWhereRaw('?? like ? escape ?', [
+            `${S}.value`,
+            `${escaped}%`,
+            '\\',
+          ]),
+      );
     }
 
     if ('$contains' in value) {
@@ -182,13 +196,11 @@ function applyFieldCondition(options: {
       // "b" key with a primitive value. We'll consider that an acceptable
       // tradeoff though.
       if (isPrimitive(target)) {
-        const matchQuery = knex<DbSearchRow>('search')
-          .select('search.entity_id')
-          .where({
-            key,
-            value: String(target).toLocaleLowerCase('en-US'),
-          });
-        return targetQuery.andWhere(onEntityIdField, 'in', matchQuery);
+        return targetQuery.whereExists(
+          searchExists(knex, onEntityIdField)
+            .where(`${S}.key`, key)
+            .where(`${S}.value`, String(target).toLocaleLowerCase('en-US')),
+        );
       }
 
       // Object form of $contains - currently only supports relation-style
@@ -317,13 +329,14 @@ function applyContainsRelation(options: {
     );
   }
 
-  const matchQuery = knex<DbSearchRow>('search')
-    .select('search.entity_id')
-    .where({ key: `relations.${type.toLocaleLowerCase('en-US')}` });
+  const subquery = searchExists(knex, onEntityIdField).where(
+    `${S}.key`,
+    `relations.${type.toLocaleLowerCase('en-US')}`,
+  );
 
   if (targetRef) {
-    matchQuery.whereIn('value', targetRef);
+    subquery.whereIn(`${S}.value`, targetRef);
   }
 
-  return targetQuery.andWhere(onEntityIdField, 'in', matchQuery);
+  return targetQuery.whereExists(subquery);
 }
