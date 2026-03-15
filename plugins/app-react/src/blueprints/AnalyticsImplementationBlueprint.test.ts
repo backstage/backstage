@@ -39,6 +39,7 @@ describe('AnalyticsBlueprint', () => {
         "configSchema": undefined,
         "disabled": false,
         "factory": [Function],
+        "if": undefined,
         "inputs": {},
         "kind": "analytics",
         "name": "test",
