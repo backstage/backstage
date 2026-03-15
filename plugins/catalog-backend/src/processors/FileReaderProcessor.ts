@@ -71,7 +71,7 @@ export class FileReaderProcessor implements CatalogProcessor {
             );
           }
         }
-      } else if (!optional) {
+      } else if (!optional && !g.hasMagic(location.target)) {
         const message = `${location.type} ${location.target} does not exist`;
         emit(processingResult.notFoundError(location, message));
       }
