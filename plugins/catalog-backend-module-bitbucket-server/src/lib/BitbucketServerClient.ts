@@ -68,13 +68,17 @@ export class BitbucketServerClient {
   async getFile(options: {
     projectKey: string;
     repo: string;
+    branch: string;
     path: string;
   }): Promise<Response> {
     const normalizedPath = options.path.startsWith('/')
       ? options.path.substring(1)
       : options.path;
+    const params = convertToParamsString({
+      at: options.branch,
+    });
     return fetch(
-      `${this.config.apiBaseUrl}/projects/${options.projectKey}/repos/${options.repo}/raw/${normalizedPath}`,
+      `${this.config.apiBaseUrl}/projects/${options.projectKey}/repos/${options.repo}/raw/${normalizedPath}${params}`,
       getBitbucketServerRequestOptions(this.config),
     );
   }
@@ -202,4 +206,12 @@ export async function* paginated(
       yield item;
     }
   } while (!res.isLastPage);
+}
+
+export function convertToParamsString(options: Record<string, string>): string {
+  const params = new URLSearchParams();
+  for (const [key, value] of Object.entries(options)) {
+    if (value) params.append(key, value);
+  }
+  return params.size === 0 ? '' : `?${params}`;
 }
