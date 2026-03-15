@@ -15,7 +15,7 @@
  */
 
 import { Fragment } from 'react';
-import { createSpecializedApp } from '@backstage/frontend-app-api';
+import { prepareSpecializedApp } from '@backstage/frontend-app-api';
 import {
   coreExtensionData,
   createApiFactory,
@@ -175,7 +175,7 @@ export function renderTestApp<const TApiPairs extends any[] = any[]>(
     features.push(...options.features);
   }
 
-  const app = createSpecializedApp({
+  const app = prepareSpecializedApp({
     features,
     config: ConfigReader.fromConfigs([
       {
@@ -193,7 +193,7 @@ export function renderTestApp<const TApiPairs extends any[] = any[]>(
         return createApiFactory(apiRef, implementation);
       }),
     },
-  } as CreateSpecializedAppInternalOptions);
+  } as CreateSpecializedAppInternalOptions).finalize();
 
   return render(
     app.tree.root.instance!.getData(coreExtensionData.reactElement),
