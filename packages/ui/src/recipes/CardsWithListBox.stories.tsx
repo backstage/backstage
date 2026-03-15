@@ -221,18 +221,18 @@ export const WithDescription = meta.story({
   args: {
     description: true,
   },
-  render: () => (
+  render: args => (
     <Container pt="4">
       <Grid.Root columns="2" gap="4">
         <ServiceListCard
           title="Frontend services"
           items={frontendServices}
-          description={true}
+          description={args.description}
         />
         <ServiceListCard
           title="Backend services"
           items={backendServices}
-          description={true}
+          description={args.description}
         />
       </Grid.Root>
     </Container>

@@ -67,6 +67,16 @@ export const listBoxItemPropDefs: Record<string, PropDef> = {
     type: 'boolean',
     description: 'Whether the item is disabled.',
   },
+  menuItems: {
+    type: 'enum',
+    values: ['Iterable<MenuItemConfig>'],
+    description: 'Menu items displayed for this list box item.',
+  },
+  customActions: {
+    type: 'enum',
+    values: ['ReactNode'],
+    description: 'Custom action elements displayed alongside the item.',
+  },
   ...childrenPropDefs,
   ...classNamePropDefs,
 };

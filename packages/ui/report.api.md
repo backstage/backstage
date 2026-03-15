@@ -23,8 +23,8 @@ import type { HeadingProps } from 'react-aria-components';
 import type { HTMLAttributes } from 'react';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
 import type { LinkProps as LinkProps_2 } from 'react-aria-components';
-import type { ListBoxItemProps } from 'react-aria-components';
-import type { ListBoxProps } from 'react-aria-components';
+import type { ListBoxItemProps as ListBoxItemProps_2 } from 'react-aria-components';
+import type { ListBoxProps as ListBoxProps_2 } from 'react-aria-components';
 import type { MenuItemProps as MenuItemProps_2 } from 'react-aria-components';
 import type { MenuProps as MenuProps_2 } from 'react-aria-components';
 import type { MenuSectionProps as MenuSectionProps_2 } from 'react-aria-components';
@@ -1555,6 +1555,82 @@ export interface LinkProps
   extends Omit<LinkProps_2, 'children' | 'className'>,
     LinkOwnProps {}
 
+// @public
+export const ListBox: <T extends object>(
+  props: ListBoxProps<T>,
+) => JSX_2.Element;
+
+// @public
+export const ListBoxDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-ListBox';
+  };
+  readonly propDefs: {
+    readonly items: {};
+    readonly children: {};
+    readonly renderEmptyState: {};
+    readonly className: {};
+  };
+};
+
+// @public
+export const ListBoxItem: (props: ListBoxItemProps) => JSX_2.Element;
+
+// @public
+export const ListBoxItemDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly bg: 'consumer';
+  readonly classNames: {
+    readonly root: 'bui-ListBoxItem';
+    readonly check: 'bui-ListBoxItemCheck';
+    readonly icon: 'bui-ListBoxItemIcon';
+    readonly label: 'bui-ListBoxItemLabel';
+    readonly description: 'bui-ListBoxItemDescription';
+    readonly actions: 'bui-ListBoxItemActions';
+  };
+  readonly propDefs: {
+    readonly children: {};
+    readonly description: {};
+    readonly icon: {};
+    readonly menuItems: {};
+    readonly customActions: {};
+    readonly className: {};
+  };
+};
+
+// @public
+export type ListBoxItemOwnProps = {
+  children?: React.ReactNode;
+  description?: string;
+  icon?: React.ReactNode;
+  menuItems?: React.ReactNode;
+  customActions?: React.ReactNode;
+  className?: string;
+};
+
+// @public
+export interface ListBoxItemProps
+  extends ListBoxItemOwnProps,
+    Omit<ListBoxItemProps_2, keyof ListBoxItemOwnProps> {}
+
+// @public
+export type ListBoxOwnProps<T = object> = {
+  items?: ListBoxProps_2<T>['items'];
+  children?: ListBoxProps_2<T>['children'];
+  renderEmptyState?: ListBoxProps_2<T>['renderEmptyState'];
+  className?: string;
+};
+
+// @public
+export interface ListBoxProps<T>
+  extends ListBoxOwnProps<T>,
+    Omit<ListBoxProps_2<T>, keyof ListBoxOwnProps<T>> {}
+
 // @public (undocumented)
 export interface MarginProps {
   // (undocumented)
@@ -1589,13 +1665,13 @@ export const MenuAutocompleteListbox: (
 // @public (undocumented)
 export type MenuAutocompleteListBoxOwnProps = MenuPopoverOwnProps & {
   placeholder?: string;
-  selectionMode?: ListBoxProps<object>['selectionMode'];
+  selectionMode?: ListBoxProps_2<object>['selectionMode'];
 };
 
 // @public (undocumented)
 export interface MenuAutocompleteListBoxProps<T>
   extends MenuAutocompleteListBoxOwnProps,
-    Omit<ListBoxProps<T>, keyof MenuAutocompleteListBoxOwnProps> {}
+    Omit<ListBoxProps_2<T>, keyof MenuAutocompleteListBoxOwnProps> {}
 
 // @public (undocumented)
 export type MenuAutocompleteOwnProps = MenuPopoverOwnProps & {
@@ -1664,17 +1740,17 @@ export type MenuListBoxItemOwnProps = {
 // @public (undocumented)
 export interface MenuListBoxItemProps
   extends MenuListBoxItemOwnProps,
-    Omit<ListBoxItemProps, keyof MenuListBoxItemOwnProps> {}
+    Omit<ListBoxItemProps_2, keyof MenuListBoxItemOwnProps> {}
 
 // @public (undocumented)
 export type MenuListBoxOwnProps = MenuPopoverOwnProps & {
-  selectionMode?: ListBoxProps<object>['selectionMode'];
+  selectionMode?: ListBoxProps_2<object>['selectionMode'];
 };
 
 // @public (undocumented)
 export interface MenuListBoxProps<T>
   extends MenuListBoxOwnProps,
-    Omit<ListBoxProps<T>, keyof MenuListBoxOwnProps> {}
+    Omit<ListBoxProps_2<T>, keyof MenuListBoxOwnProps> {}
 
 // @public (undocumented)
 export type MenuOwnProps = MenuPopoverOwnProps;
