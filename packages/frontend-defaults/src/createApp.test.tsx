@@ -22,6 +22,8 @@ import {
   createApiRef,
   createExtensionDataRef,
   createExtension,
+  createExtensionBlueprint,
+  createExtensionInput,
   PageBlueprint,
   createFrontendPlugin,
   createFrontendFeatureLoader,
@@ -40,6 +42,8 @@ import {
 } from '@backstage/core-plugin-api';
 import { default as appPluginOriginal } from '@backstage/plugin-app';
 import { ComponentType, useState, useEffect } from 'react';
+import { permissionApiRef } from '@backstage/plugin-permission-react';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
 const signInPageComponentDataRef = createExtensionDataRef<
   ComponentType<{ onSignInSuccess(identity: IdentityApi): void }>
@@ -53,6 +57,25 @@ describe('createApp', () => {
         .override({ disabled: true }),
     ],
   });
+
+  function createFeatureFlagsApi(activeFlags: string[]) {
+    return {
+      isActive: jest.fn((name: string) => activeFlags.includes(name)),
+      registerFlag: jest.fn(),
+      getRegisteredFlags: () => [],
+      save: jest.fn(),
+    } as unknown as typeof featureFlagsApiRef.T;
+  }
+
+  function createPermissionApi(allowedPermissions: string[]) {
+    return {
+      authorize: jest.fn(async request => ({
+        result: allowedPermissions.includes(request.permission.name)
+          ? AuthorizeResult.ALLOW
+          : AuthorizeResult.DENY,
+      })),
+    } as typeof permissionApiRef.T;
+  }
 
   it('should allow themes to be installed', async () => {
     const app = createApp({
@@ -514,6 +537,442 @@ describe('createApp', () => {
       screen.findByText('Flagged Page'),
     ).resolves.toBeInTheDocument();
     expect(featureFlagsApi.isActive).toHaveBeenCalledWith('test-flag');
+  });
+
+  it('should support $all feature flag predicates on pages', async () => {
+    const partialFlagsApi = createFeatureFlagsApi(['experimental-features']);
+    const partialFlagsApp = createApp({
+      advanced: {
+        configLoader: async () => ({ config: mockApis.config() }),
+      },
+      features: [
+        appPlugin,
+        createFrontendModule({
+          pluginId: 'app',
+          extensions: [
+            ApiBlueprint.make({
+              params: defineParams =>
+                defineParams({
+                  api: featureFlagsApiRef,
+                  deps: {},
+                  factory: () => partialFlagsApi,
+                }),
+            }),
+          ],
+        }),
+        createFrontendPlugin({
+          pluginId: 'test',
+          featureFlags: [
+            { name: 'experimental-features' },
+            { name: 'advanced-features' },
+          ],
+          extensions: [
+            PageBlueprint.make({
+              if: {
+                $all: [
+                  { featureFlags: { $contains: 'experimental-features' } },
+                  { featureFlags: { $contains: 'advanced-features' } },
+                ],
+              },
+              params: {
+                path: '/',
+                loader: async () => <div>All Flags Page</div>,
+              },
+            }),
+          ],
+        }),
+      ],
+    });
+
+    const partialRender = await renderWithEffects(partialFlagsApp.createRoot());
+    await waitFor(() =>
+      expect(screen.queryByText('All Flags Page')).not.toBeInTheDocument(),
+    );
+    partialRender.unmount();
+
+    const allFlagsApi = createFeatureFlagsApi([
+      'experimental-features',
+      'advanced-features',
+    ]);
+    const allFlagsApp = createApp({
+      advanced: {
+        configLoader: async () => ({ config: mockApis.config() }),
+      },
+      features: [
+        appPlugin,
+        createFrontendModule({
+          pluginId: 'app',
+          extensions: [
+            ApiBlueprint.make({
+              params: defineParams =>
+                defineParams({
+                  api: featureFlagsApiRef,
+                  deps: {},
+                  factory: () => allFlagsApi,
+                }),
+            }),
+          ],
+        }),
+        createFrontendPlugin({
+          pluginId: 'test',
+          featureFlags: [
+            { name: 'experimental-features' },
+            { name: 'advanced-features' },
+          ],
+          extensions: [
+            PageBlueprint.make({
+              if: {
+                $all: [
+                  { featureFlags: { $contains: 'experimental-features' } },
+                  { featureFlags: { $contains: 'advanced-features' } },
+                ],
+              },
+              params: {
+                path: '/',
+                loader: async () => <div>All Flags Page</div>,
+              },
+            }),
+          ],
+        }),
+      ],
+    });
+
+    await renderWithEffects(allFlagsApp.createRoot());
+    await expect(
+      screen.findByText('All Flags Page'),
+    ).resolves.toBeInTheDocument();
+    expect(allFlagsApi.isActive).toHaveBeenCalledWith('experimental-features');
+    expect(allFlagsApi.isActive).toHaveBeenCalledWith('advanced-features');
+  });
+
+  it('should support $any feature flag predicates on pages', async () => {
+    const noFlagsApi = createFeatureFlagsApi([]);
+    const noFlagsApp = createApp({
+      advanced: {
+        configLoader: async () => ({ config: mockApis.config() }),
+      },
+      features: [
+        appPlugin,
+        createFrontendModule({
+          pluginId: 'app',
+          extensions: [
+            ApiBlueprint.make({
+              params: defineParams =>
+                defineParams({
+                  api: featureFlagsApiRef,
+                  deps: {},
+                  factory: () => noFlagsApi,
+                }),
+            }),
+          ],
+        }),
+        createFrontendPlugin({
+          pluginId: 'test',
+          featureFlags: [
+            { name: 'experimental-features' },
+            { name: 'beta-access' },
+          ],
+          extensions: [
+            PageBlueprint.make({
+              if: {
+                $any: [
+                  { featureFlags: { $contains: 'experimental-features' } },
+                  { featureFlags: { $contains: 'beta-access' } },
+                ],
+              },
+              params: {
+                path: '/',
+                loader: async () => <div>Any Flag Page</div>,
+              },
+            }),
+          ],
+        }),
+      ],
+    });
+
+    const noFlagsRender = await renderWithEffects(noFlagsApp.createRoot());
+    await waitFor(() =>
+      expect(screen.queryByText('Any Flag Page')).not.toBeInTheDocument(),
+    );
+    noFlagsRender.unmount();
+
+    const oneFlagApi = createFeatureFlagsApi(['beta-access']);
+    const oneFlagApp = createApp({
+      advanced: {
+        configLoader: async () => ({ config: mockApis.config() }),
+      },
+      features: [
+        appPlugin,
+        createFrontendModule({
+          pluginId: 'app',
+          extensions: [
+            ApiBlueprint.make({
+              params: defineParams =>
+                defineParams({
+                  api: featureFlagsApiRef,
+                  deps: {},
+                  factory: () => oneFlagApi,
+                }),
+            }),
+          ],
+        }),
+        createFrontendPlugin({
+          pluginId: 'test',
+          featureFlags: [
+            { name: 'experimental-features' },
+            { name: 'beta-access' },
+          ],
+          extensions: [
+            PageBlueprint.make({
+              if: {
+                $any: [
+                  { featureFlags: { $contains: 'experimental-features' } },
+                  { featureFlags: { $contains: 'beta-access' } },
+                ],
+              },
+              params: {
+                path: '/',
+                loader: async () => <div>Any Flag Page</div>,
+              },
+            }),
+          ],
+        }),
+      ],
+    });
+
+    await renderWithEffects(oneFlagApp.createRoot());
+    await expect(
+      screen.findByText('Any Flag Page'),
+    ).resolves.toBeInTheDocument();
+    expect(oneFlagApi.isActive).toHaveBeenCalledWith('experimental-features');
+    expect(oneFlagApi.isActive).toHaveBeenCalledWith('beta-access');
+  });
+
+  it('should support permission predicates on pages', async () => {
+    const deniedPermissionApi = createPermissionApi([]);
+    const deniedApp = createApp({
+      advanced: {
+        configLoader: async () => ({ config: mockApis.config() }),
+      },
+      features: [
+        appPlugin,
+        createFrontendModule({
+          pluginId: 'app',
+          extensions: [
+            ApiBlueprint.make({
+              params: defineParams =>
+                defineParams({
+                  api: permissionApiRef,
+                  deps: {},
+                  factory: () => deniedPermissionApi,
+                }),
+            }),
+          ],
+        }),
+        createFrontendPlugin({
+          pluginId: 'test',
+          extensions: [
+            PageBlueprint.make({
+              if: { permissions: { $contains: 'catalog.entity.create' } },
+              params: {
+                path: '/',
+                loader: async () => <div>Permission Page</div>,
+              },
+            }),
+          ],
+        }),
+      ],
+    });
+
+    const deniedRender = await renderWithEffects(deniedApp.createRoot());
+    await waitFor(() =>
+      expect(screen.queryByText('Permission Page')).not.toBeInTheDocument(),
+    );
+    deniedRender.unmount();
+
+    const allowedPermissionApi = createPermissionApi(['catalog.entity.create']);
+    const allowedApp = createApp({
+      advanced: {
+        configLoader: async () => ({ config: mockApis.config() }),
+      },
+      features: [
+        appPlugin,
+        createFrontendModule({
+          pluginId: 'app',
+          extensions: [
+            ApiBlueprint.make({
+              params: defineParams =>
+                defineParams({
+                  api: permissionApiRef,
+                  deps: {},
+                  factory: () => allowedPermissionApi,
+                }),
+            }),
+          ],
+        }),
+        createFrontendPlugin({
+          pluginId: 'test',
+          extensions: [
+            PageBlueprint.make({
+              if: { permissions: { $contains: 'catalog.entity.create' } },
+              params: {
+                path: '/',
+                loader: async () => <div>Permission Page</div>,
+              },
+            }),
+          ],
+        }),
+      ],
+    });
+
+    await renderWithEffects(allowedApp.createRoot());
+    await expect(
+      screen.findByText('Permission Page'),
+    ).resolves.toBeInTheDocument();
+    expect(allowedPermissionApi.authorize).toHaveBeenCalledWith({
+      permission: { name: 'catalog.entity.create', type: 'basic', attributes: {} },
+    });
+  });
+
+  it('should support conditional child extensions attached to pages', async () => {
+    const CardBlueprint = createExtensionBlueprint({
+      kind: 'card',
+      attachTo: { id: 'page:test/card-page', input: 'cards' },
+      output: [coreExtensionData.reactElement],
+      *factory(params: { title: string }) {
+        yield coreExtensionData.reactElement(<div>{params.title}</div>);
+      },
+    });
+
+    const page = PageBlueprint.makeWithOverrides({
+      name: 'card-page',
+      inputs: {
+        cards: createExtensionInput([coreExtensionData.reactElement], {
+          optional: false,
+          singleton: false,
+        }),
+      },
+      factory(originalFactory, { inputs }) {
+        return originalFactory({
+          path: '/',
+          loader: async () => (
+            <div>
+              {inputs.cards.map(card => card.get(coreExtensionData.reactElement))}
+            </div>
+          ),
+        });
+      },
+    });
+
+    const publicCard = CardBlueprint.make({
+      name: 'public',
+      params: { title: 'Public Card' },
+    });
+    const permissionCard = CardBlueprint.make({
+      name: 'permission',
+      params: { title: 'Permission Card' },
+      if: { permissions: { $contains: 'catalog.entity.create' } },
+    });
+    const featureFlagCard = CardBlueprint.make({
+      name: 'feature-flag',
+      params: { title: 'Feature Flag Card' },
+      if: { featureFlags: { $contains: 'experimental-card' } },
+    });
+
+    const hiddenCardsApp = createApp({
+      advanced: {
+        configLoader: async () => ({ config: mockApis.config() }),
+      },
+      features: [
+        appPlugin,
+        createFrontendModule({
+          pluginId: 'app',
+          extensions: [
+            ApiBlueprint.make({
+              name: 'permission-api',
+              params: defineParams =>
+                defineParams({
+                  api: permissionApiRef,
+                  deps: {},
+                  factory: () => createPermissionApi([]),
+                }),
+            }),
+            ApiBlueprint.make({
+              name: 'feature-flags-api',
+              params: defineParams =>
+                defineParams({
+                  api: featureFlagsApiRef,
+                  deps: {},
+                  factory: () => createFeatureFlagsApi([]),
+                }),
+            }),
+          ],
+        }),
+        createFrontendPlugin({
+          pluginId: 'test',
+          featureFlags: [{ name: 'experimental-card' }],
+          extensions: [page, publicCard, permissionCard, featureFlagCard],
+        }),
+      ],
+    });
+
+    const hiddenCardsRender = await renderWithEffects(hiddenCardsApp.createRoot());
+    await expect(
+      screen.findByText('Public Card'),
+    ).resolves.toBeInTheDocument();
+    await waitFor(() =>
+      expect(screen.queryByText('Permission Card')).not.toBeInTheDocument(),
+    );
+    await waitFor(() =>
+      expect(screen.queryByText('Feature Flag Card')).not.toBeInTheDocument(),
+    );
+    hiddenCardsRender.unmount();
+
+    const visibleCardsApp = createApp({
+      advanced: {
+        configLoader: async () => ({ config: mockApis.config() }),
+      },
+      features: [
+        appPlugin,
+        createFrontendModule({
+          pluginId: 'app',
+          extensions: [
+            ApiBlueprint.make({
+              name: 'permission-api',
+              params: defineParams =>
+                defineParams({
+                  api: permissionApiRef,
+                  deps: {},
+                  factory: () =>
+                    createPermissionApi(['catalog.entity.create']),
+                }),
+            }),
+            ApiBlueprint.make({
+              name: 'feature-flags-api',
+              params: defineParams =>
+                defineParams({
+                  api: featureFlagsApiRef,
+                  deps: {},
+                  factory: () => createFeatureFlagsApi(['experimental-card']),
+                }),
+            }),
+          ],
+        }),
+        createFrontendPlugin({
+          pluginId: 'test',
+          featureFlags: [{ name: 'experimental-card' }],
+          extensions: [page, publicCard, permissionCard, featureFlagCard],
+        }),
+      ],
+    });
+
+    await renderWithEffects(visibleCardsApp.createRoot());
+    await expect(
+      screen.findByText('Permission Card'),
+    ).resolves.toBeInTheDocument();
+    await expect(
+      screen.findByText('Feature Flag Card'),
+    ).resolves.toBeInTheDocument();
   });
 
   it('should make the app structure available through the AppTreeApi', async () => {
