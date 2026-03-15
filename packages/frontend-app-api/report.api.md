@@ -194,7 +194,7 @@ export type CreateSpecializedAppOptions = {
   };
 };
 
-// @public
+// @public (undocumented)
 export type ExtensionFactoryMiddleware = (
   originalFactory: (contextOverrides?: {
     config?: JsonObject;
@@ -229,6 +229,20 @@ export type FrontendPluginInfoResolver = (ctx: {
 }>;
 
 // @public
+export type PreparedSpecializedApp = {
+  getBootstrapApp(): BootstrapSpecializedApp;
+  onFinalized(callback: (app: FinalizedSpecializedApp) => void): () => void;
+  finalize(options?: {
+    sessionState?: SpecializedAppSessionState;
+  }): FinalizedSpecializedApp;
+};
+
+// @public
+export function prepareSpecializedApp(
+  options?: PrepareSpecializedAppOptions,
+): PreparedSpecializedApp;
+
+// @public
 export type PrepareSpecializedAppOptions = {
   sessionState?: SpecializedAppSessionState;
   features?: FrontendFeature[];
@@ -244,21 +258,11 @@ export type PrepareSpecializedAppOptions = {
 };
 
 // @public
-export type PreparedSpecializedApp = {
-  getBootstrapApp(): BootstrapSpecializedApp;
-  onFinalized(callback: (app: FinalizedSpecializedApp) => void): () => void;
-  finalize(options?: {
-    sessionState?: SpecializedAppSessionState;
-  }): FinalizedSpecializedApp;
-};
-
-// @public
-export function prepareSpecializedApp(
-  options?: PrepareSpecializedAppOptions,
-): PreparedSpecializedApp;
-
-// @public
 export type SpecializedAppSessionState = {
   $$type: '@backstage/SpecializedAppSessionState';
 };
+
+// Warnings were encountered during analysis:
+//
+// src/wiring/createSpecializedApp.d.ts:76:9 - (ae-unresolved-link) The @link reference could not be resolved: No member was found with name "sessionState"
 ```
