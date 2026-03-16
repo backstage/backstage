@@ -17,12 +17,28 @@
 @layer tokens, base, components, utilities;
 
 @layer components {
+  .bui-TableWrapper {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .bui-TableResizableContainer {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+  }
+
   .bui-Table {
     width: 100%;
     caption-side: bottom;
     border-collapse: collapse;
     table-layout: fixed;
     transition: opacity 0.2s ease-in-out;
+    overflow: auto;
+    flex: 1;
+    min-height: 0;
 
     &[data-stale='true'],
     &[data-loading='true'] {
