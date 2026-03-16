@@ -71,12 +71,6 @@ export const AccordionDefinition: {
   };
   readonly classNames: {
     readonly root: 'bui-Accordion';
-    readonly trigger: 'bui-AccordionTrigger';
-    readonly triggerButton: 'bui-AccordionTriggerButton';
-    readonly triggerTitle: 'bui-AccordionTriggerTitle';
-    readonly triggerSubtitle: 'bui-AccordionTriggerSubtitle';
-    readonly panel: 'bui-AccordionPanel';
-    readonly group: 'bui-AccordionGroup';
   };
   readonly bg: 'provider';
   readonly propDefs: {
