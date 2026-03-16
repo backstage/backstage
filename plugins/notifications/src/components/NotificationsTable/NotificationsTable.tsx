@@ -97,7 +97,8 @@ export const NotificationsTable = ({
   page,
   pageSize,
   totalCount,
-  notificationDescriptionComponent: NotificationDescriptionComponent,
+  notificationDescriptionComponent:
+    NotificationDescriptionComponent = NotificationDescription,
 }: NotificationsTableProps) => {
   const { t } = useTranslationRef(notificationsTranslationRef);
   const classes = useStyles();
@@ -252,16 +253,11 @@ export const NotificationsTable = ({
                       notification.payload.title
                     )}
                   </Typography>
-                  {notification.payload.description &&
-                    (NotificationDescriptionComponent ? (
-                      <NotificationDescriptionComponent
-                        description={notification.payload.description}
-                      />
-                    ) : (
-                      <NotificationDescription
-                        description={notification.payload.description}
-                      />
-                    ))}
+                  {notification.payload.description ? (
+                    <NotificationDescriptionComponent
+                      description={notification.payload.description}
+                    />
+                  ) : null}
 
                   <Typography variant="caption">
                     {!notification.user && (
