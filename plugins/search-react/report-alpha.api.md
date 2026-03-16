@@ -134,10 +134,7 @@ export const SearchResultListItemBlueprint: ExtensionBlueprint<{
     {
       predicate?: SearchResultItemExtensionPredicate;
       component: SearchResultItemExtensionComponent;
-      icon?: JSX_2.Element
-      /**
-       * The icon of the result item.
-       */;
+      icon?: JSX_2.Element;
     },
     'search.search-result-list-item.item',
     {}
@@ -154,10 +151,7 @@ export const SearchResultListItemBlueprint: ExtensionBlueprint<{
       {
         predicate?: SearchResultItemExtensionPredicate;
         component: SearchResultItemExtensionComponent;
-        icon?: JSX_2.Element
-        /**
-         * The icon of the result item.
-         */;
+        icon?: JSX_2.Element;
       },
       'search.search-result-list-item.item',
       {}
