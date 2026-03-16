@@ -66,9 +66,8 @@ export type NotificationsPageProps = {
   type?: string;
   typeLink?: string;
   /**
-   * Optional custom component to render notification descriptions.
-   * If not provided, uses the default NotificationDescription component.
-   * Useful for custom formatting (e.g., markdown rendering, custom truncation).
+   * Optional custom component used to render the notification description cell.
+   * When provided, receives an object with a `description` string property.
    */
   notificationDescriptionComponent?: ComponentType<{ description: string }>;
 };

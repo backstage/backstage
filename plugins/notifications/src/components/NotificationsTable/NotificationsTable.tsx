@@ -72,6 +72,10 @@ export type NotificationsTableProps = Pick<
   onUpdate: () => void;
   setContainsText: (search: string) => void;
   pageSize: number;
+  /**
+   * Optional custom component used to render the notification description cell.
+   * When provided, receives an object with a `description` string property.
+   */
   notificationDescriptionComponent?: ComponentType<{ description: string }>;
 };
 
