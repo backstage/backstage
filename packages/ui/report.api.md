@@ -2523,6 +2523,8 @@ export interface TableProps<T extends TableItem> {
   sort?: SortState;
   // (undocumented)
   style?: React.CSSProperties;
+  // (undocumented)
+  virtualized?: VirtualizedProp;
 }
 
 // @public (undocumented)
@@ -3045,6 +3047,16 @@ export interface UtilityProps extends SpaceProps {
   // (undocumented)
   rowSpan?: Responsive<Columns | 'full'>;
 }
+
+// @public (undocumented)
+export type VirtualizedProp =
+  | boolean
+  | {
+      rowHeight: number;
+    }
+  | {
+      estimatedRowHeight: number;
+    };
 
 // @public
 export const VisuallyHidden: (props: VisuallyHiddenProps) => JSX_2.Element;
