@@ -1924,6 +1924,8 @@ export interface PageLayoutProps {
   tabs?: PageLayoutTab[];
   // (undocumented)
   title?: string;
+  // (undocumented)
+  titleLink?: string;
 }
 
 // @public
