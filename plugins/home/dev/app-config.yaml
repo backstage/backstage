@@ -1,0 +1,11 @@
+app:
+  title: Backstage Example App for Home Plugin
+  baseUrl: http://localhost:3000
+  packages: all # ✨
+  extensions:
+    - 'home-page-widget:home/top-visited': true
+
+
+backend:
+  baseUrl: http://localhost:7007
+

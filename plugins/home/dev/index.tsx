@@ -25,12 +25,8 @@ import { Fragment } from 'react';
 // eslint-disable-next-line @backstage/no-ui-css-imports-in-non-frontend
 import '@backstage/ui/css/styles.css';
 
+import { createFrontendModule } from '@backstage/frontend-plugin-api';
 import {
-  ApiBlueprint,
-  createFrontendModule,
-} from '@backstage/frontend-plugin-api';
-import {
-  HomePageWidgetBlueprint,
   HomePageLayoutBlueprint,
   HomePageCardWidgetBlueprint,
 } from '@backstage/plugin-home-react/alpha';
@@ -217,7 +213,7 @@ const catalogApi = catalogApiMock({ entities });
 const catalogPluginOverrides = createFrontendModule({
   pluginId: 'catalog',
   extensions: [
-    ApiBlueprint.make({
+    catalogPlugin.getExtension('api:catalog').override({
       params: defineParams =>
         defineParams({
           api: catalogApiRef,
