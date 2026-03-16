@@ -71,7 +71,11 @@ app:
   extensions:
     - api:home/visits: true
     - app-root-element:home/visit-listener: true
+    - card-widget:home/top-visited: true
+    - card-widget:home/recently-visited: true
 ```
+
+This will track user visits and enable the `HomePageTopVisited` and `HomePageRecentlyVisited` widgets, which display the most visited and recently visited pages on the homepage, respectively.
 
 ### 4. Customizing your homepage
 

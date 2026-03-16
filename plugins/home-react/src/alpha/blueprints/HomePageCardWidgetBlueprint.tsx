@@ -26,7 +26,6 @@ import {
   WidgetLayout,
   WidgetSettings,
   ComponentParts,
-  ComponentRenderer,
 } from '../../extensions';
 import { homePageWidgetDataRef } from '../dataRefs';
 
@@ -47,9 +46,13 @@ export type HomePageCardWidgetBlueprintParams = {
   /**
    * Async loader that returns the component parts rendered within the card.
    *
-   * The parts are wrapped in a `CardExtension` → `InfoCard`, giving the widget
+   * The parts are wrapped in a `InfoCard`, giving the widget
    * a title header, optional secondary action, settings popover, and a context
    * provider automatically.
+   * The `Content` part is required and renders the main body of the card.
+   * The `Actions` part is optional and renders a button in the card header next to the title.
+   * The `ContextProvider` is also optional and can be used to wrap the widget in a React context provider, allowing the `Content` and `Actions` components to consume shared context values.
+   * The `Settings` part is optional and renders the content of the settings modal when the user clicks the settings button in the card header.
    */
   components: () => Promise<ComponentParts>;
   /** Optional name for the widget. Defaults to the extension ID. */
@@ -74,7 +77,7 @@ const DEFAULT_WIDGET_ATTACH_POINT = {
 /**
  * Creates card-based widgets that can be installed into the home page grid.
  *
- * Each widget is wrapped in a `CardExtension` → `InfoCard`, providing a title
+ * Each widget is wrapped in an `InfoCard`, providing a title
  * header, optional secondary action, settings popover, and a context provider
  * out of the box.
  *
