@@ -30,6 +30,10 @@ const useStyles = makeStyles({
   root: {
     height: '100%',
   },
+  footer: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+  },
 });
 
 /** @public */
@@ -63,7 +67,9 @@ export function EntityInfoCard(props: EntityInfoCardProps) {
         </CardHeader>
       )}
       <CardBody>{children}</CardBody>
-      {footerActions && <CardFooter>{footerActions}</CardFooter>}
+      {footerActions && (
+        <CardFooter className={classes.footer}>{footerActions}</CardFooter>
+      )}
     </Card>
   );
 }

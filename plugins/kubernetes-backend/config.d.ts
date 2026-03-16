@@ -90,6 +90,13 @@ export interface Config {
           skipTLSVerify?: boolean;
           /** @visibility frontend */
           skipMetricsLookup?: boolean;
+          /**
+           * The type of endpoint to use for connecting to the cluster.
+           * 'public' uses the public IP endpoint (default).
+           * 'dns' uses the DNS-based control plane endpoint.
+           * @visibility frontend
+           */
+          endpointType?: 'public' | 'dns';
         }
     >;
     customResources?: Array<{

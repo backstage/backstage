@@ -23,6 +23,7 @@ import {
   SchedulerServiceTaskRunner,
   SchedulerServiceTaskScheduleDefinition,
 } from '@backstage/backend-plugin-api';
+import { ConflictError, NotFoundError } from '@backstage/errors';
 import { createDeferred, DeferredPromise } from '@backstage/types';
 
 export class MockSchedulerService implements SchedulerService {
@@ -95,10 +96,22 @@ export class MockSchedulerService implements SchedulerService {
     });
   }
 
+  async cancelTask(id: string): Promise<void> {
+    const task = this.#tasks.get(id);
+    if (!task) {
+      throw new NotFoundError(`Task ${id} not found`);
+    }
+    if (!this.#runningTasks.has(id)) {
+      throw new ConflictError(`Task ${id} is not running`);
+    }
+    task.abortControllers.abort();
+    task.abortControllers = new AbortController();
+  }
+
   async triggerTask(id: string): Promise<void> {
     const task = this.#tasks.get(id);
     if (!task) {
-      throw new Error(`Task ${id} not found`);
+      throw new NotFoundError(`Task ${id} not found`);
     }
     if (this.#runningTasks.has(id)) {
       return;

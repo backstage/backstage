@@ -54,9 +54,10 @@ export async function categorizePackageDirs(packageDirs: string[]) {
           if (pkgJson?.backstage?.inline) {
             return;
           }
-          if (role === 'cli') {
+          if (role === 'cli' || role === 'cli-module') {
             cliPackageDirs.push(dir);
-          } else if (role !== 'frontend' && role !== 'backend') {
+          }
+          if (role !== 'cli' && role !== 'frontend' && role !== 'backend') {
             tsPackageDirs.push(dir);
           }
         }

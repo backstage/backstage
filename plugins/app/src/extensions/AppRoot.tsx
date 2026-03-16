@@ -29,12 +29,15 @@ import {
   createExtension,
   createExtensionInput,
   routeResolutionApiRef,
+  pluginWrapperApiRef,
+  useAnalytics,
 } from '@backstage/frontend-plugin-api';
 import {
   AppRootWrapperBlueprint,
   RouterBlueprint,
   SignInPageBlueprint,
 } from '@backstage/plugin-app-react';
+import { BUIProvider } from '@backstage/ui';
 import {
   DiscoveryApi,
   ErrorApi,
@@ -111,6 +114,12 @@ export const AppRoot = createExtension({
       if (Component) {
         content = <Component>{content}</Component>;
       }
+    }
+
+    const pluginWrapperApi = apis.get(pluginWrapperApiRef);
+    const RootWrapper = pluginWrapperApi?.getRootWrapper();
+    if (RootWrapper) {
+      content = <RootWrapper>{content}</RootWrapper>;
     }
 
     return [
@@ -269,23 +278,27 @@ export function AppRouter(props: AppRouterProps) {
 
     return (
       <RouterComponent>
-        {...extraElements}
-        <RouteTracker routeObjects={routeObjects} />
-        {children}
+        <BUIProvider useAnalytics={useAnalytics}>
+          {...extraElements}
+          <RouteTracker routeObjects={routeObjects} />
+          {children}
+        </BUIProvider>
       </RouterComponent>
     );
   }
 
   return (
     <RouterComponent>
-      {...extraElements}
-      <RouteTracker routeObjects={routeObjects} />
-      <SignInPageWrapper
-        component={SignInPageComponent}
-        appIdentityProxy={appIdentityProxy}
-      >
-        {children}
-      </SignInPageWrapper>
+      <BUIProvider useAnalytics={useAnalytics}>
+        {...extraElements}
+        <RouteTracker routeObjects={routeObjects} />
+        <SignInPageWrapper
+          component={SignInPageComponent}
+          appIdentityProxy={appIdentityProxy}
+        >
+          {children}
+        </SignInPageWrapper>
+      </BUIProvider>
     </RouterComponent>
   );
 }

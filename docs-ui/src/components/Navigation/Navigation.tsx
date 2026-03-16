@@ -4,14 +4,14 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import clsx from 'clsx';
 import {
-  RiCollageLine,
+  RiCodeSSlashLine,
   RiFileHistoryLine,
   RiHazeLine,
   RiPaletteLine,
   RiServiceLine,
   RiStackLine,
 } from '@remixicon/react';
-import { components } from '@/utils/data';
+import { components, hooks } from '@/utils/data';
 import styles from './Navigation.module.css';
 
 interface NavigationProps {
@@ -66,7 +66,7 @@ export const Navigation = ({ onLinkClick }: NavigationProps) => {
         </ul>
       </nav>
       <div className={styles.sectionTitle}>
-        <RiCollageLine size={20} />
+        <RiCodeSSlashLine size={20} />
         <span>Components</span>
       </div>
       {components.map(item => {
@@ -79,6 +79,29 @@ export const Navigation = ({ onLinkClick }: NavigationProps) => {
             className={clsx(styles.line, {
               [styles.active]: isActive,
             })}
+            onClick={onLinkClick}
+          >
+            <div className={styles.lineTitle}>{item.title}</div>
+            <div className={styles.lineStatus}>
+              {item.status === 'alpha' && 'Alpha'}
+              {item.status === 'beta' && 'Beta'}
+              {item.status === 'inProgress' && 'In Progress'}
+              {item.status === 'stable' && 'Stable'}
+              {item.status === 'deprecated' && 'Deprecated'}
+            </div>
+          </Link>
+        );
+      })}
+      <div className={styles.sectionTitle}>
+        <RiCodeSSlashLine size={20} /> <span>Hooks</span>
+      </div>
+      {hooks.map(item => {
+        const isActive = pathname === `/hooks/${item.slug}`;
+        return (
+          <Link
+            href={`/hooks/${item.slug}`}
+            key={item.slug}
+            className={clsx(styles.line, { [styles.active]: isActive })}
             onClick={onLinkClick}
           >
             <div className={styles.lineTitle}>{item.title}</div>

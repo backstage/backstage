@@ -2,12 +2,12 @@
 id: index
 title: Backend System Architecture
 sidebar_label: Overview
-description: The structure and architecture of the new Backend System and its component parts
+description: The structure and architecture of the Backend System and its component parts
 ---
 
 ## Building Blocks
 
-This section introduces the high-level building blocks upon which this new
+This section introduces the high-level building blocks upon which this
 system is built. These are all concepts that exist in our current system in one
 way or another, but they have all been lifted up to be first class concerns in
 the new system. Regardless of whether you are setting up your own backstage

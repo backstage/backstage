@@ -1,0 +1,1 @@
+// Module Federation remote entry

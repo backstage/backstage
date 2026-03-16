@@ -62,15 +62,10 @@ import {
   RiCheckLine,
   RiCloseCircleLine,
 } from '@remixicon/react';
-import {
-  isInternalLink,
-  createRoutingRegistration,
-} from '../InternalLinkProvider';
+import { isInternalLink } from '../../utils/linkUtils';
+import { getNodeText } from '../../analytics/getNodeText';
 import { Box } from '../Box';
 import { BgReset } from '../../hooks/useBg';
-
-const { RoutingProvider, useRoutingRegistrationEffect } =
-  createRoutingRegistration();
 
 // The height will be used for virtualized menus. It should match the size set in CSS for each menu item.
 const rowHeight = 32;
@@ -109,26 +104,24 @@ export const Menu = (props: MenuProps<object>) => {
   );
 
   return (
-    <RoutingProvider>
-      <RAPopover className={classes.root} placement={placement}>
-        <BgReset>
-          <Box bg="neutral" className={classes.inner}>
-            {virtualized ? (
-              <Virtualizer
-                layout={ListLayout}
-                layoutOptions={{
-                  rowHeight,
-                }}
-              >
-                {menuContent}
-              </Virtualizer>
-            ) : (
-              menuContent
-            )}
-          </Box>
-        </BgReset>
-      </RAPopover>
-    </RoutingProvider>
+    <RAPopover className={classes.root} placement={placement}>
+      <BgReset>
+        <Box bg="neutral" className={classes.inner}>
+          {virtualized ? (
+            <Virtualizer
+              layout={ListLayout}
+              layoutOptions={{
+                rowHeight,
+              }}
+            >
+              {menuContent}
+            </Virtualizer>
+          ) : (
+            menuContent
+          )}
+        </Box>
+      </BgReset>
+    </RAPopover>
   );
 };
 
@@ -205,40 +198,38 @@ export const MenuAutocomplete = (props: MenuAutocompleteProps<object>) => {
   );
 
   return (
-    <RoutingProvider>
-      <RAPopover className={classes.root} placement={placement}>
-        <BgReset>
-          <Box bg="neutral" className={classes.inner}>
-            <RAAutocomplete filter={contains}>
-              <RASearchField
-                className={classes.searchField}
-                aria-label={placeholder || 'Search'}
+    <RAPopover className={classes.root} placement={placement}>
+      <BgReset>
+        <Box bg="neutral" className={classes.inner}>
+          <RAAutocomplete filter={contains}>
+            <RASearchField
+              className={classes.searchField}
+              aria-label={placeholder || 'Search'}
+            >
+              <RAInput
+                className={classes.searchFieldInput}
+                placeholder={placeholder || 'Search...'}
+              />
+              <RAButton className={classes.searchFieldClear}>
+                <RiCloseCircleLine />
+              </RAButton>
+            </RASearchField>
+            {virtualized ? (
+              <Virtualizer
+                layout={ListLayout}
+                layoutOptions={{
+                  rowHeight,
+                }}
               >
-                <RAInput
-                  className={classes.searchFieldInput}
-                  placeholder={placeholder || 'Search...'}
-                />
-                <RAButton className={classes.searchFieldClear}>
-                  <RiCloseCircleLine />
-                </RAButton>
-              </RASearchField>
-              {virtualized ? (
-                <Virtualizer
-                  layout={ListLayout}
-                  layoutOptions={{
-                    rowHeight,
-                  }}
-                >
-                  {menuContent}
-                </Virtualizer>
-              ) : (
-                menuContent
-              )}
-            </RAAutocomplete>
-          </Box>
-        </BgReset>
-      </RAPopover>
-    </RoutingProvider>
+                {menuContent}
+              </Virtualizer>
+            ) : (
+              menuContent
+            )}
+          </RAAutocomplete>
+        </Box>
+      </BgReset>
+    </RAPopover>
   );
 };
 
@@ -311,13 +302,21 @@ export const MenuAutocompleteListbox = (
 
 /** @public */
 export const MenuItem = (props: MenuItemProps) => {
-  const { ownProps, restProps, dataAttributes } = useDefinition(
+  const { ownProps, restProps, dataAttributes, analytics } = useDefinition(
     MenuItemDefinition,
     props,
   );
   const { classes, iconStart, children, href } = ownProps;
 
-  useRoutingRegistrationEffect(href);
+  const handleAction = () => {
+    if (href) {
+      const text =
+        restProps['aria-label'] ?? getNodeText(children) ?? String(href);
+      analytics.captureEvent('click', text, {
+        attributes: { to: String(href) },
+      });
+    }
+  };
 
   // External links open in new tab via window.open instead of client-side routing
   if (href && !isInternalLink(href)) {
@@ -326,8 +325,12 @@ export const MenuItem = (props: MenuItemProps) => {
         className={classes.root}
         {...dataAttributes}
         textValue={typeof children === 'string' ? children : undefined}
-        onAction={() => window.open(href, '_blank', 'noopener,noreferrer')}
         {...restProps}
+        onAction={() => {
+          restProps.onAction?.();
+          handleAction();
+          window.open(href, '_blank', 'noopener,noreferrer');
+        }}
       >
         <div className={classes.itemWrapper}>
           <div className={classes.itemContent}>
@@ -349,6 +352,10 @@ export const MenuItem = (props: MenuItemProps) => {
       href={href}
       textValue={typeof children === 'string' ? children : undefined}
       {...restProps}
+      onAction={() => {
+        restProps.onAction?.();
+        handleAction();
+      }}
     >
       <div className={classes.itemWrapper}>
         <div className={classes.itemContent}>

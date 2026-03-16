@@ -81,7 +81,7 @@ export type AnalyticsImplementation = {
   captureEvent(event: AnalyticsEvent): void;
 };
 
-// @public
+// @public @deprecated
 export const AnalyticsImplementationBlueprint: ExtensionBlueprint_2<{
   kind: 'analytics';
   params: <TDeps extends { [name in string]: unknown }>(
@@ -104,7 +104,7 @@ export const AnalyticsImplementationBlueprint: ExtensionBlueprint_2<{
   };
 }>;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type AnalyticsImplementationFactory<
   Deps extends {
     [name in string]: unknown;
@@ -137,9 +137,6 @@ export type AnyApiFactory = ApiFactory<
 
 // @public
 export type AnyApiRef = ApiRef<unknown>;
-
-// @public @deprecated (undocumented)
-export type AnyExtensionDataRef = ExtensionDataRef;
 
 // @public
 export type AnyRouteRefParams =
@@ -319,7 +316,7 @@ export const atlassianAuthApiRef: ApiRef<
 export type AuthProviderInfo = {
   id: string;
   title: string;
-  icon: IconComponent;
+  icon: IconComponent | IconElement;
   message?: string;
 };
 
@@ -866,7 +863,7 @@ export interface DialogApiDialog<TResult = void> {
   result(): Promise<TResult>;
   update(
     elementOrComponent:
-      | React.JSX.Element
+      | JSX.Element
       | ((props: { dialog: DialogApiDialog<TResult> }) => JSX.Element),
   ): void;
 }
@@ -924,7 +921,7 @@ export interface Extension<TConfig, TConfigInput = TConfig> {
   // (undocumented)
   $$type: '@backstage/Extension';
   // (undocumented)
-  readonly attachTo: ExtensionAttachToSpec;
+  readonly attachTo: ExtensionAttachTo;
   // (undocumented)
   readonly configSchema?: PortableSchema<TConfig, TConfigInput>;
   // (undocumented)
@@ -934,18 +931,10 @@ export interface Extension<TConfig, TConfigInput = TConfig> {
 }
 
 // @public (undocumented)
-export type ExtensionAttachTo =
-  | {
-      id: string;
-      input: string;
-    }
-  | Array<{
-      id: string;
-      input: string;
-    }>;
-
-// @public @deprecated (undocumented)
-export type ExtensionAttachToSpec = ExtensionAttachTo;
+export type ExtensionAttachTo = {
+  id: string;
+  input: string;
+};
 
 // @public (undocumented)
 export interface ExtensionBlueprint<
@@ -1168,12 +1157,6 @@ export type ExtensionDataRef<
 };
 
 // @public (undocumented)
-export type ExtensionDataRefToValue<TDataRef extends AnyExtensionDataRef> =
-  TDataRef extends ExtensionDataRef<infer IData, infer IId, any>
-    ? ExtensionDataValue<IData, IId>
-    : never;
-
-// @public (undocumented)
 export type ExtensionDataValue<TData, TId extends string> = {
   readonly $$type: '@backstage/ExtensionDataValue';
   readonly id: TId;
@@ -1226,7 +1209,7 @@ export type ExtensionDefinitionParameters = {
   params?: object | ExtensionBlueprintDefineParams;
 };
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type ExtensionFactoryMiddleware = (
   originalFactory: (contextOverrides?: {
     config?: JsonObject;
@@ -1290,6 +1273,7 @@ export type FeatureFlag = {
 // @public
 export type FeatureFlagConfig = {
   name: string;
+  description?: string;
 };
 
 // @public
@@ -1470,7 +1454,7 @@ export const microsoftAuthApiRef: ApiRef<
     SessionApi
 >;
 
-// @public
+// @public @deprecated
 export const NavItemBlueprint: ExtensionBlueprint_2<{
   kind: 'nav-item';
   params: {
@@ -1722,7 +1706,6 @@ export interface OverridableFrontendPlugin<
 export const PageBlueprint: ExtensionBlueprint_2<{
   kind: 'page';
   params: {
-    defaultPath?: [Error: `Use the 'path' param instead`];
     path: string;
     title?: string;
     icon?: IconElement;
@@ -1814,13 +1797,13 @@ export interface PageLayoutProps {
   // (undocumented)
   noHeader?: boolean;
   // (undocumented)
-  tabs?: PageTab[];
+  tabs?: PageLayoutTab[];
   // (undocumented)
   title?: string;
 }
 
 // @public
-export interface PageTab {
+export interface PageLayoutTab {
   // (undocumented)
   href: string;
   // (undocumented)
@@ -1830,6 +1813,9 @@ export interface PageTab {
   // (undocumented)
   label: string;
 }
+
+// @public @deprecated (undocumented)
+export type PageTab = PageLayoutTab;
 
 // @public
 export type PendingOAuthRequest = {
@@ -1888,6 +1874,55 @@ export interface PluginOptions<
   title?: string;
 }
 
+// @public
+export type PluginWrapperApi = {
+  getRootWrapper(): ComponentType<{
+    children: ReactNode;
+  }>;
+  getPluginWrapper(pluginId: string):
+    | ComponentType<{
+        children: ReactNode;
+      }>
+    | undefined;
+};
+
+// @public
+export const pluginWrapperApiRef: ApiRef_2<PluginWrapperApi>;
+
+// @public
+export const PluginWrapperBlueprint: ExtensionBlueprint_2<{
+  kind: 'plugin-wrapper';
+  params: <TValue = never>(params: {
+    loader: () => Promise<PluginWrapperDefinition<TValue>>;
+  }) => ExtensionBlueprintParams_2<{
+    loader: () => Promise<PluginWrapperDefinition>;
+  }>;
+  output: ExtensionDataRef_2<
+    () => Promise<PluginWrapperDefinition>,
+    'core.plugin-wrapper.loader',
+    {}
+  >;
+  inputs: {};
+  config: {};
+  configInput: {};
+  dataRefs: {
+    wrapper: ConfigurableExtensionDataRef_2<
+      () => Promise<PluginWrapperDefinition>,
+      'core.plugin-wrapper.loader',
+      {}
+    >;
+  };
+}>;
+
+// @public
+export type PluginWrapperDefinition<TValue = unknown | never> = {
+  useWrapperValue?: () => TValue;
+  component: ComponentType<{
+    children: ReactNode;
+    value: TValue;
+  }>;
+};
+
 // @public (undocumented)
 export type PortableSchema<TOutput, TInput = TOutput> = {
   parse: (input: TInput) => TOutput;
@@ -1914,14 +1949,6 @@ export const Progress: {
 
 // @public (undocumented)
 export type ProgressProps = {};
-
-// @public
-export type ResolvedExtensionInput<TExtensionInput extends ExtensionInput> =
-  TExtensionInput['extensionData'] extends Array<ExtensionDataRef>
-    ? {
-        node: AppNode;
-      } & ExtensionDataContainer<TExtensionInput['extensionData'][number]>
-    : never;
 
 // @public
 export type ResolvedExtensionInputs<
@@ -2313,7 +2340,7 @@ export const vmwareCloudAuthApiRef: ApiRef<
     SessionApi
 >;
 
-// @public
+// @public @deprecated
 export function withApis<T extends {}>(
   apis: TypesToApiRefs<T>,
 ): <TProps extends T>(

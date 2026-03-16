@@ -144,6 +144,10 @@ describe('ExtensionBoundary', () => {
     };
 
     const pluginWrapperApi: PluginWrapperApi = {
+      getRootWrapper:
+        () =>
+        ({ children }: { children: ReactNode }) =>
+          <>{children}</>,
       getPluginWrapper: jest.fn((pluginId: string) => {
         if (pluginId === 'app') {
           return WrapperComponent;
@@ -180,6 +184,10 @@ describe('ExtensionBoundary', () => {
     };
 
     const pluginWrapperApi: PluginWrapperApi = {
+      getRootWrapper:
+        () =>
+        ({ children }: { children: ReactNode }) =>
+          <>{children}</>,
       getPluginWrapper: jest.fn((pluginId: string) => {
         if (pluginId === 'app') {
           return ThrowingWrapper;

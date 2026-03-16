@@ -67,11 +67,12 @@ export const Dialog = forwardRef<React.ElementRef<typeof Modal>, DialogProps>(
           style={{
             ['--bui-dialog-min-width' as keyof React.CSSProperties]:
               typeof width === 'number' ? `${width}px` : width || '400px',
-            ['--bui-dialog-min-height' as keyof React.CSSProperties]: height
-              ? typeof height === 'number'
-                ? `${height}px`
-                : height
-              : 'auto',
+            ...(height
+              ? {
+                  ['--bui-dialog-height' as keyof React.CSSProperties]:
+                    typeof height === 'number' ? `${height}px` : height,
+                }
+              : {}),
             ...style,
           }}
         >

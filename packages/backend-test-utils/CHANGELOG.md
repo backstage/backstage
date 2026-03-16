@@ -1,5 +1,17 @@
 # @backstage/backend-test-utils
 
+## 1.11.1-next.2
+
+### Patch Changes
+
+- 164711a: Added `cancelTask` to `MockSchedulerService` and mock scheduler service factory.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0-next.1
+  - @backstage/backend-defaults@0.16.0-next.2
+  - @backstage/backend-app-api@1.6.0-next.1
+  - @backstage/plugin-auth-node@0.6.14-next.2
+  - @backstage/plugin-events-node@0.4.20-next.1
+
 ## 1.11.1-next.1
 
 ### Patch Changes

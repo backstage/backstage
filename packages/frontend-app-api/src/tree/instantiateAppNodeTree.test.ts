@@ -17,18 +17,17 @@
 import {
   AppNode,
   Extension,
+  ExtensionDataContainer,
   ExtensionDataRef,
   ExtensionDefinition,
-  ExtensionFactoryMiddleware,
-  ExtensionInput,
   PortableSchema,
-  ResolvedExtensionInput,
   createExtension,
   createExtensionBlueprint,
   createExtensionDataRef,
   createExtensionInput,
   createFrontendPlugin,
 } from '@backstage/frontend-plugin-api';
+import { ExtensionFactoryMiddleware } from '../wiring/types';
 import {
   createAppNodeInstance,
   instantiateAppNodeTree,
@@ -146,8 +145,8 @@ function mirrorInputs(ctx: {
   inputs: {
     [name in string]:
       | undefined
-      | ResolvedExtensionInput<ExtensionInput>
-      | Array<ResolvedExtensionInput<ExtensionInput>>;
+      | ({ node: AppNode } & ExtensionDataContainer<ExtensionDataRef>)
+      | Array<{ node: AppNode } & ExtensionDataContainer<ExtensionDataRef>>;
   };
 }) {
   return [

@@ -17,8 +17,6 @@
 import {
   PluginWrapperBlueprint,
   pluginWrapperApiRef,
-} from '@backstage/frontend-plugin-api/alpha';
-import {
   createExtensionInput,
   ApiBlueprint,
 } from '@backstage/frontend-plugin-api';

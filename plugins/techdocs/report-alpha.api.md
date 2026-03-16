@@ -348,7 +348,6 @@ const _default: OverridableFrontendPlugin<
         >;
       };
       params: {
-        defaultPath?: [Error: `Use the 'path' param instead`];
         path: string;
         title?: string;
         icon?: IconElement;
@@ -441,7 +440,6 @@ const _default: OverridableFrontendPlugin<
       kind: 'page';
       name: 'reader';
       params: {
-        defaultPath?: [Error: `Use the 'path' param instead`];
         path: string;
         title?: string;
         icon?: IconElement;

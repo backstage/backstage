@@ -192,6 +192,15 @@ export interface Config {
         };
 
     /**
+     * The strategy to use when there is a conflict with a location being registered.
+     *
+     * The default value is "reject".
+     *
+     * The "refresh" strategy will refresh the existing location instead of throwing a conflict error.
+     */
+    defaultLocationConflictStrategy?: 'refresh' | 'reject';
+
+    /**
      * The interval at which the catalog should process its entities.
      * @remarks
      *

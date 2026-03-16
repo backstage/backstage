@@ -20,10 +20,11 @@ import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
-import { useState } from 'react';
+import { createElement, isValidElement, useState } from 'react';
 import { isError } from '@backstage/errors';
 import {
   configApiRef,
+  IconComponent,
   PendingOAuthRequest,
   useApi,
 } from '@backstage/core-plugin-api';
@@ -68,7 +69,7 @@ const LoginRequestListItem = ({ request, busy, setBusy }: RowProps) => {
     }
   };
 
-  const IconComponent = request.provider.icon;
+  const providerIcon = request.provider.icon;
   const message =
     request.provider.message ??
     t('oauthRequestDialog.message', {
@@ -76,11 +77,14 @@ const LoginRequestListItem = ({ request, busy, setBusy }: RowProps) => {
       provider: request.provider.title,
     });
 
+  const iconElement =
+    providerIcon === null || isValidElement(providerIcon)
+      ? providerIcon
+      : createElement(providerIcon as IconComponent, { fontSize: 'large' });
+
   return (
     <ListItem disabled={busy} classes={{ root: classes.root }}>
-      <ListItemAvatar>
-        <IconComponent fontSize="large" />
-      </ListItemAvatar>
+      <ListItemAvatar>{iconElement ?? <></>}</ListItemAvatar>
       <Box display="flex" alignItems="center" flex={1}>
         <Box flex={1}>
           <ListItemText

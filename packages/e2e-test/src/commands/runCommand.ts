@@ -383,8 +383,12 @@ async function createPlugin(options: {
 
   try {
     let stdout = '';
+    let stderr = '';
     child.stdout?.on('data', (data: Buffer) => {
       stdout = stdout + data.toString('utf8');
+    });
+    child.stderr?.on('data', (data: Buffer) => {
+      stderr = stderr + data.toString('utf8');
     });
 
     print('Waiting for plugin create script to be done');

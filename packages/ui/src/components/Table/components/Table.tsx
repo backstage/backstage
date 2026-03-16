@@ -32,6 +32,7 @@ import type {
 import { useMemo } from 'react';
 import { VisuallyHidden } from '../../VisuallyHidden';
 import { Flex } from '../../Flex';
+import { TableBodySkeleton } from './TableBodySkeleton';
 
 function isRowRenderFn<T extends TableItem>(
   rowConfig: RowConfig<T> | RowRenderFn<T> | undefined,
@@ -61,8 +62,13 @@ function useDisabledRows<T extends TableItem>({
 function useLiveRegionLabel(
   pagination: TablePaginationType,
   isStale: boolean,
+  isLoading: boolean,
   hasData: boolean,
 ): string {
+  if (isLoading) {
+    return 'Loading table data.';
+  }
+
   if (!hasData || pagination.type === 'none') {
     return '';
   }
@@ -115,13 +121,7 @@ export function Table<T extends TableItem>({
     onSelectionChange,
   } = selection || {};
 
-  if (loading && !data) {
-    return (
-      <div className={className} style={style}>
-        Loading...
-      </div>
-    );
-  }
+  const isInitialLoading = loading && !data;
 
   if (error) {
     return (
@@ -134,6 +134,7 @@ export function Table<T extends TableItem>({
   const liveRegionLabel = useLiveRegionLabel(
     pagination,
     isStale,
+    isInitialLoading,
     data !== undefined,
   );
 
@@ -158,14 +159,19 @@ export function Table<T extends TableItem>({
       </VisuallyHidden>
       {wrapResizable(
         <TableRoot
-          selectionMode={selectionMode}
-          selectionBehavior={selectionBehavior}
-          selectedKeys={selectedKeys}
-          onSelectionChange={onSelectionChange}
+          {...(isInitialLoading
+            ? {}
+            : {
+                selectionMode,
+                selectionBehavior,
+                selectedKeys,
+                onSelectionChange,
+              })}
           sortDescriptor={sort?.descriptor ?? undefined}
           onSortChange={sort?.onSortChange}
           disabledKeys={disabledRows}
           stale={isStale}
+          loading={isInitialLoading}
           aria-describedby={liveRegionId}
         >
           <TableHeader columns={visibleColumns}>
@@ -187,39 +193,43 @@ export function Table<T extends TableItem>({
               )
             }
           </TableHeader>
-          <TableBody
-            items={data}
-            dependencies={[visibleColumns]}
-            renderEmptyState={
-              emptyState ? () => <Flex p="3">{emptyState}</Flex> : undefined
-            }
-          >
-            {item => {
-              const itemIndex = data?.indexOf(item) ?? -1;
-
-              if (isRowRenderFn(rowConfig)) {
-                return rowConfig({
-                  item,
-                  index: itemIndex,
-                });
+          {isInitialLoading ? (
+            <TableBodySkeleton columns={visibleColumns} />
+          ) : (
+            <TableBody
+              items={data}
+              dependencies={[visibleColumns]}
+              renderEmptyState={
+                emptyState ? () => <Flex p="3">{emptyState}</Flex> : undefined
               }
+            >
+              {item => {
+                const itemIndex = data?.indexOf(item) ?? -1;
 
-              return (
-                <Row
-                  id={String(item.id)}
-                  columns={visibleColumns}
-                  href={rowConfig?.getHref?.(item)}
-                  onAction={
-                    rowConfig?.onClick
-                      ? () => rowConfig?.onClick?.(item)
-                      : undefined
-                  }
-                >
-                  {column => column.cell(item)}
-                </Row>
-              );
-            }}
-          </TableBody>
+                if (isRowRenderFn(rowConfig)) {
+                  return rowConfig({
+                    item,
+                    index: itemIndex,
+                  });
+                }
+
+                return (
+                  <Row
+                    id={String(item.id)}
+                    columns={visibleColumns}
+                    href={rowConfig?.getHref?.(item)}
+                    onAction={
+                      rowConfig?.onClick
+                        ? () => rowConfig?.onClick?.(item)
+                        : undefined
+                    }
+                  >
+                    {column => column.cell(item)}
+                  </Row>
+                );
+              }}
+            </TableBody>
+          )}
         </TableRoot>,
       )}
       {pagination.type === 'page' && (

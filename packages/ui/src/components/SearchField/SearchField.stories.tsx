@@ -27,6 +27,7 @@ import { RiCactusLine, RiEBike2Line } from '@remixicon/react';
 import { Button } from '../Button';
 import { PluginHeader } from '../PluginHeader';
 import { MemoryRouter } from 'react-router-dom';
+import { BUIProvider } from '../../provider';
 
 const meta = preview.meta({
   title: 'Backstage UI/SearchField',
@@ -188,7 +189,9 @@ export const InHeader = meta.story({
   decorators: [
     Story => (
       <MemoryRouter>
-        <Story />
+        <BUIProvider>
+          <Story />
+        </BUIProvider>
       </MemoryRouter>
     ),
   ],
@@ -225,7 +228,9 @@ export const StartCollapsedInHeader = meta.story({
   decorators: [
     Story => (
       <MemoryRouter>
-        <Story />
+        <BUIProvider>
+          <Story />
+        </BUIProvider>
       </MemoryRouter>
     ),
   ],

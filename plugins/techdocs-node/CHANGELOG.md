@@ -1,5 +1,14 @@
 # @backstage/plugin-techdocs-node
 
+## 1.14.4-next.2
+
+### Patch Changes
+
+- e96f6d9: Removed `INHERIT` from the `ALLOWED_MKDOCS_KEYS` set to address a security concern with MkDocs configuration inheritance.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0-next.1
+  - @backstage/integration@2.0.0-next.2
+
 ## 1.14.3-next.1
 
 ### Patch Changes

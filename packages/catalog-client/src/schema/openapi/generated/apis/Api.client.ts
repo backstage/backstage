@@ -178,6 +178,7 @@ export type CreateLocation = {
   body: CreateLocationRequest;
   query: {
     dryRun?: string;
+    onConflict?: 'refresh' | 'reject';
   };
 };
 /**
@@ -592,6 +593,7 @@ export class DefaultApiClient {
    * Create a location for a given target.
    * @param createLocationRequest -
    * @param dryRun -
+   * @param onConflict - Behavior when the location already exists. \&#39;reject\&#39; (default) returns a 409 error, \&#39;refresh\&#39; triggers a refresh of the existing location entity and returns 201.
    */
   public async createLocation(
     // @ts-ignore
@@ -600,7 +602,7 @@ export class DefaultApiClient {
   ): Promise<TypedResponse<CreateLocation201Response>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
 
-    const uriTemplate = `/locations{?dryRun}`;
+    const uriTemplate = `/locations{?dryRun,onConflict}`;
 
     const uri = parser.parse(uriTemplate).expand({
       ...request.query,

@@ -19,10 +19,6 @@ This provider should only ever be enabled for `development`. To prevent unauthor
 
 ### Backend
 
-:::note
-This will only work with the new backend system. There is no support for this in the old backend.
-:::
-
 Add the `@backstage/plugin-auth-backend-module-guest-provider` to your backend installation.
 
 ```sh title="From your Backstage root directory"

@@ -19,6 +19,7 @@ import { JSX as JSX_2 } from 'react';
 import { NavContentComponent } from '@backstage/plugin-app-react';
 import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
+import { PluginWrapperDefinition } from '@backstage/frontend-plugin-api';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { SignInPageProps } from '@backstage/plugin-app-react';
@@ -620,11 +621,7 @@ const appPlugin: OverridableFrontendPlugin<
       inputs: {
         wrappers: ExtensionInput<
           ConfigurableExtensionDataRef<
-            () => Promise<{
-              component: ComponentType<{
-                children: ReactNode;
-              }>;
-            }>,
+            () => Promise<PluginWrapperDefinition>,
             'core.plugin-wrapper.loader',
             {}
           >,

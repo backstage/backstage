@@ -25,6 +25,9 @@ info:
     name: Apache-2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   contact: {}
+tags:
+  - name: Entity
+  - name: Locations
 servers:
   - url: /
 components:
@@ -1267,6 +1270,19 @@ paths:
           allowReserved: true
           schema:
             type: string
+        - in: query
+          name: onConflict
+          required: false
+          allowReserved: true
+          schema:
+            type: string
+            enum:
+              - refresh
+              - reject
+          description: >-
+            Behavior when the location already exists. 'reject' (default)
+            returns a 409 error, 'refresh' triggers a refresh of the
+            existing location entity and returns 201.
       requestBody:
         required: true
         content:

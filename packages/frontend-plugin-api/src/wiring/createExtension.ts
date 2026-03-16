@@ -43,11 +43,8 @@ import { FrontendModule } from './createFrontendModule';
  */
 export const ctxParamsSymbol = Symbol('params');
 
-/**
- * Convert a single extension input into a matching resolved input.
- * @public
- */
-export type ResolvedExtensionInput<TExtensionInput extends ExtensionInput> =
+/** @ignore */
+type ResolvedExtensionInput<TExtensionInput extends ExtensionInput> =
   TExtensionInput['extensionData'] extends Array<ExtensionDataRef>
     ? {
         node: AppNode;

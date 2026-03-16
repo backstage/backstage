@@ -318,6 +318,21 @@ export const parseRepoUrl: (
   project?: string;
 };
 
+// @public (undocumented)
+export function removeFiles(options: {
+  dir: string;
+  filepath: string;
+  auth:
+    | {
+        username: string;
+        password: string;
+      }
+    | {
+        token: string;
+      };
+  logger?: LoggerService | undefined;
+}): Promise<void>;
+
 // @public
 export interface ScaffolderActionsExtensionPoint {
   // (undocumented)

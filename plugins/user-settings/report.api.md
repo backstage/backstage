@@ -11,6 +11,7 @@ import { ElementType } from 'react';
 import { ErrorApi } from '@backstage/core-plugin-api';
 import { FetchApi } from '@backstage/core-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
+import { IconElement } from '@backstage/frontend-plugin-api';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { JsonValue } from '@backstage/types';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
@@ -35,7 +36,7 @@ export const DefaultProviderSettings: (props: {
 export const ProviderSettingsItem: (props: {
   title: string;
   description: string;
-  icon: IconComponent;
+  icon: IconComponent | IconElement;
   apiRef: ApiRef<ProfileInfoApi & SessionApi>;
 }) => JSX_2.Element;
 

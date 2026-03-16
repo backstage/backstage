@@ -23,9 +23,10 @@ import { ConfigApi } from '@backstage/core-plugin-api';
  * that can be used to mock configuration using a plain object.
  *
  * @public
+ * @deprecated Use `mockApis.config()` instead.
  * @example
  * ```tsx
- * const mockConfig = new MockConfigApi({
+ * const mockConfig = mockApis.config({
  *   data: { app: { baseUrl: 'https://example.com' } },
  * });
  *

@@ -62,6 +62,11 @@ export const buttonLinkPropDefs: Record<string, PropDef> = {
       </>
     ),
   },
+  noTrack: {
+    type: 'boolean',
+    description:
+      'Suppresses the automatic analytics click event, e.g. if you already have custom tracking.',
+  },
   onSurface: {
     type: 'enum',
     values: ['0', '1', '2', '3', 'danger', 'warning', 'success', 'auto'],

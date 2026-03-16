@@ -396,6 +396,12 @@ export type AddLocationRequest = {
    * contain the entities that match the given location.
    */
   dryRun?: boolean;
+  /**
+   * Behavior when the location already exists. If set to `'reject'` (the
+   * default), a conflict error is returned. If set to `'refresh'`, the
+   * existing location entity is marked for refresh and a 201 is returned.
+   */
+  onConflict?: 'refresh' | 'reject';
 };
 
 /**

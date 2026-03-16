@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-export { PluginWrapperBlueprint } from './blueprints/PluginWrapperBlueprint';
+// These exports are now available from the main entry point and are
+// re-exported here only for backwards compatibility.
+export {
+  PluginWrapperBlueprint,
+  type PluginWrapperDefinition,
+} from './blueprints/PluginWrapperBlueprint';
 export {
   type PluginWrapperApi,
   pluginWrapperApiRef,

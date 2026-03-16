@@ -15,7 +15,7 @@ export type Component =
   | 'flex'
   | 'grid'
   | 'plugin-header'
-  | 'header-page'
+  | 'header'
   | 'heading'
   | 'icon'
   | 'link'
@@ -23,6 +23,7 @@ export type Component =
   | 'password-field'
   | 'radio-group'
   | 'scrollarea'
+  | 'search-autocomplete'
   | 'searchfield'
   | 'select'
   | 'skeleton'
@@ -35,14 +36,22 @@ export type Component =
   | 'tooltip'
   | 'visually-hidden';
 
+export type Hook = 'use-breakpoint';
+
 export type Version = `${number}.${number}.${number}`;
 
-export interface ChangelogProps {
-  components: Component[];
+export type AtLeastOne<T, K extends keyof T = keyof T> = K extends string
+  ? Pick<T, K> & Partial<Omit<T, K>>
+  : never;
+
+export type ChangelogProps = {
   description: string;
   version: Version;
   prs: string[];
   breaking?: boolean;
   commitSha?: string;
   migration?: string;
-}
+} & AtLeastOne<{
+  components: Component[];
+  hooks: Hook[];
+}>;

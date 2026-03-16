@@ -1,5 +1,13 @@
 # @backstage/plugin-auth-backend-module-openshift-provider
 
+## 0.1.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0-next.1
+  - @backstage/plugin-auth-node@0.6.14-next.2
+
 ## 0.1.5-next.0
 
 ### Patch Changes

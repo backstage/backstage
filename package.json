@@ -1,6 +1,6 @@
 {
   "name": "root",
-  "version": "1.49.0-next.1",
+  "version": "1.49.0-next.2",
   "backstage": {
     "cli": {
       "new": {
@@ -21,8 +21,6 @@
     "plugins/*"
   ],
   "scripts": {
-    "build-storybook": "storybook build --output-dir dist-storybook",
-    "build-storybook:chromatic": "STORYBOOK_STORY_SET=chromatic storybook build --stats-json --output-dir dist-storybook",
     "build:all": "backstage-cli repo build --all",
     "build:api-docs": "LANG=en_EN yarn build:api-reports --docs --exclude 'plugins/@(api-docs|api-docs-module-protoc-gen-doc|app-visualizer|catalog-graph|catalog-import|catalog-unprocessed-entities|config-schema|example-todo-list|example-todo-list-backend)'",
     "build:api-reports": "yarn build:api-reports:only --tsc",
@@ -30,6 +28,8 @@
     "build:backend": "yarn workspace example-backend build",
     "build:knip-reports": "backstage-repo-tools knip-reports",
     "build:plugins-report": "node ./scripts/build-plugins-report",
+    "build-storybook": "storybook build --output-dir dist-storybook",
+    "build-storybook:chromatic": "STORYBOOK_STORY_SET=chromatic storybook build --stats-json --output-dir dist-storybook",
     "clean": "backstage-cli repo clean",
     "create-plugin": "echo \"use 'yarn new' instead\"",
     "dev": "echo \"use 'yarn start' instead\"",
@@ -52,10 +52,10 @@
     "snyk:test": "npx snyk test --yarn-workspaces --strict-out-of-sync=false",
     "snyk:test:package": "yarn snyk:test --include",
     "start": "backstage-cli repo start",
-    "start-backend": "echo \"Use 'yarn start example-backend' instead\"",
     "start:docker": "docker compose -f docker-compose.deps.yml up --wait && BACKSTAGE_ENV=docker yarn start",
     "start:legacy": "yarn start example-app-legacy example-backend",
     "start:microsite": "cd microsite/ && yarn start",
+    "start-backend": "echo \"Use 'yarn start example-backend' instead\"",
     "storybook": "storybook dev -p 6006",
     "sync-issue-templates": "node ./.github/ISSUE_TEMPLATE/sync.js",
     "techdocs-cli": "node scripts/techdocs-cli.js",
@@ -125,6 +125,7 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:*",
+    "@backstage/cli-defaults": "workspace:*",
     "@backstage/codemods": "workspace:*",
     "@backstage/create-app": "workspace:*",
     "@backstage/e2e-test-utils": "workspace:*",
@@ -138,7 +139,7 @@
     "@storybook/addon-a11y": "^10.3.0-alpha.1",
     "@storybook/addon-docs": "^10.3.0-alpha.1",
     "@storybook/addon-links": "^10.3.0-alpha.1",
-    "@storybook/addon-mcp": "^0.2.2",
+    "@storybook/addon-mcp": "^0.3.0",
     "@storybook/addon-themes": "^10.3.0-alpha.1",
     "@storybook/addon-vitest": "^10.3.0-alpha.1",
     "@storybook/react-vite": "^10.3.0-alpha.1",
@@ -163,7 +164,7 @@
     "jest": "^30",
     "js-yaml": "^4.1.1",
     "jsdom": "^27",
-    "lint-staged": "^15.0.0",
+    "lint-staged": "^16.0.0",
     "madge": "^8.0.0",
     "minimist": "^1.2.5",
     "node-gyp": "^10.0.0",
@@ -171,7 +172,7 @@
     "semver": "^7.5.3",
     "shx": "^0.4.0",
     "sloc": "^0.3.1",
-    "sort-package-json": "^2.8.0",
+    "sort-package-json": "^3.0.0",
     "storybook": "^10.3.0-alpha.1",
     "ts-morph": "^24.0.0",
     "typedoc": "^0.28.0",

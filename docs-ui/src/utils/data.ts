@@ -62,8 +62,8 @@ export const components: Page[] = [
     slug: 'plugin-header',
   },
   {
-    title: 'HeaderPage',
-    slug: 'header-page',
+    title: 'Header',
+    slug: 'header',
   },
   {
     title: 'Link',
@@ -84,6 +84,10 @@ export const components: Page[] = [
   {
     title: 'RadioGroup',
     slug: 'radio-group',
+  },
+  {
+    title: 'SearchAutocomplete',
+    slug: 'search-autocomplete',
   },
   {
     title: 'SearchField',
@@ -136,5 +140,12 @@ export const components: Page[] = [
   {
     title: 'VisuallyHidden',
     slug: 'visually-hidden',
+  },
+];
+
+export const hooks: Page[] = [
+  {
+    title: 'useBreakpoint',
+    slug: 'use-breakpoint',
   },
 ];

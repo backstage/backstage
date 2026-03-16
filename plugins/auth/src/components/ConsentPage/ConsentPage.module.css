@@ -1,0 +1,44 @@
+.card {
+  max-width: 600px;
+  margin: var(--bui-space-8) auto 0;
+}
+
+.appHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--bui-space-4);
+}
+
+.appIcon {
+  color: var(--bui-fg-secondary);
+}
+
+.divider {
+  border: none;
+  border-top: 1px solid var(--bui-border-1);
+  margin: 0;
+}
+
+.callbackUrl {
+  font-family: var(--bui-font-monospace);
+  background: var(--bui-bg-neutral-2);
+  padding: var(--bui-space-2);
+  border-radius: var(--bui-radius-2);
+  word-break: break-all;
+  font-size: var(--bui-font-size-3);
+  margin-top: var(--bui-space-2);
+}
+
+.completedIcon {
+  margin-bottom: var(--bui-space-4);
+}
+
+.completedIconSuccess {
+  composes: completedIcon;
+  color: var(--bui-fg-success);
+}
+
+.completedIconDanger {
+  composes: completedIcon;
+  color: var(--bui-fg-danger);
+}

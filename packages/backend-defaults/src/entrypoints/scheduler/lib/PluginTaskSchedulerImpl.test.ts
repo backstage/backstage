@@ -399,6 +399,100 @@ describe('PluginTaskManagerImpl', () => {
     );
   });
 
+  describe('cancelTask with local scope', () => {
+    it('can cancel a running task', async () => {
+      const { manager } = await init('SQLITE_3');
+
+      const promise = createDeferred();
+
+      await manager.scheduleTask({
+        id: 'task1',
+        timeout: Duration.fromMillis(5000),
+        frequency: Duration.fromObject({ years: 1 }),
+        fn: async () => {
+          promise.resolve();
+          await new Promise(r => setTimeout(r, 20000));
+        },
+        scope: 'local',
+      });
+
+      await promise;
+      await expect(manager.cancelTask('task1')).resolves.toBeUndefined();
+    }, 60_000);
+
+    it('cannot cancel a task that is not running', async () => {
+      const { manager } = await init('SQLITE_3');
+
+      const fn = jest.fn();
+      await manager.scheduleTask({
+        id: 'task1',
+        timeout: Duration.fromMillis(5000),
+        frequency: Duration.fromObject({ years: 1 }),
+        initialDelay: Duration.fromObject({ years: 1 }),
+        fn,
+        scope: 'local',
+      });
+
+      await expect(manager.cancelTask('task1')).rejects.toThrow(ConflictError);
+    }, 60_000);
+  });
+
+  describe('cancelTask with global scope', () => {
+    it.each(databases.eachSupportedId())(
+      'can cancel a running task, %p',
+      async databaseId => {
+        const { manager } = await init(databaseId);
+
+        const promise = createDeferred();
+
+        await manager.scheduleTask({
+          id: 'task1',
+          timeout: Duration.fromMillis(5000),
+          frequency: Duration.fromObject({ years: 1 }),
+          fn: async () => {
+            promise.resolve();
+            await new Promise(r => setTimeout(r, 20000));
+          },
+          scope: 'global',
+        });
+
+        await promise;
+        await expect(manager.cancelTask('task1')).resolves.toBeUndefined();
+      },
+    );
+
+    it.each(databases.eachSupportedId())(
+      'cannot cancel a non-existent task, %p',
+      async databaseId => {
+        const { manager } = await init(databaseId);
+
+        await expect(manager.cancelTask('nonexistent')).rejects.toThrow(
+          NotFoundError,
+        );
+      },
+    );
+
+    it.each(databases.eachSupportedId())(
+      'cannot cancel a task that is not running, %p',
+      async databaseId => {
+        const { manager } = await init(databaseId);
+
+        await manager.scheduleTask({
+          id: 'task1',
+          timeout: Duration.fromMillis(5000),
+          frequency: Duration.fromObject({ years: 1 }),
+          initialDelay: Duration.fromObject({ years: 1 }),
+          fn: jest.fn(),
+          scope: 'global',
+        });
+
+        await expect(manager.cancelTask('task1')).rejects.toThrow(
+          ConflictError,
+        );
+      },
+    );
+  });
+
   describe('parseDuration', () => {
     it('should parse durations', () => {
       expect(parseDuration({ milliseconds: 5000 })).toEqual('PT5S');

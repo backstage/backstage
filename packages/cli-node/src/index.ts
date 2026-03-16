@@ -21,6 +21,7 @@
  */
 
 export * from './cache';
+export * from './cli-module';
 export * from './concurrency';
 export * from './git';
 export * from './monorepo';

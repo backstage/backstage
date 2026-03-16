@@ -107,10 +107,11 @@ If your app uses the new frontend system, you can still use the public entry poi
 ```tsx title="in packages/app/src/index-public-experimental.tsx"
 import ReactDOM from 'react-dom/client';
 import { signInPageModule } from './overrides/SignInPage';
-import { createPublicSignInApp } from '@backstage/frontend-defaults';
+import { appModulePublicSignIn } from '@backstage/plugin-app/alpha';
+import { createApp } from '@backstage/frontend-defaults';
 
-const app = createPublicSignInApp({
-  features: [signInPageModule],
+const app = createApp({
+  features: [signInPageModule, appModulePublicSignIn],
 });
 
 ReactDOM.createRoot(document.getElementById('root')!).render(app.createRoot());

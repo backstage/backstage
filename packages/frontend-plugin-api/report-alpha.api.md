@@ -11,8 +11,11 @@ import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ReactNode } from 'react';
 
-// @alpha
+// @public
 export type PluginWrapperApi = {
+  getRootWrapper(): ComponentType<{
+    children: ReactNode;
+  }>;
   getPluginWrapper(pluginId: string):
     | ComponentType<{
         children: ReactNode;
@@ -20,31 +23,19 @@ export type PluginWrapperApi = {
     | undefined;
 };
 
-// @alpha
+// @public
 export const pluginWrapperApiRef: ApiRef<PluginWrapperApi>;
 
-// @alpha
+// @public
 export const PluginWrapperBlueprint: ExtensionBlueprint<{
   kind: 'plugin-wrapper';
-  params: (params: {
-    loader: () => Promise<{
-      component: ComponentType<{
-        children: ReactNode;
-      }>;
-    }>;
+  params: <TValue = never>(params: {
+    loader: () => Promise<PluginWrapperDefinition<TValue>>;
   }) => ExtensionBlueprintParams<{
-    loader: () => Promise<{
-      component: ComponentType<{
-        children: ReactNode;
-      }>;
-    }>;
+    loader: () => Promise<PluginWrapperDefinition>;
   }>;
   output: ExtensionDataRef<
-    () => Promise<{
-      component: ComponentType<{
-        children: ReactNode;
-      }>;
-    }>,
+    () => Promise<PluginWrapperDefinition>,
     'core.plugin-wrapper.loader',
     {}
   >;
@@ -53,16 +44,21 @@ export const PluginWrapperBlueprint: ExtensionBlueprint<{
   configInput: {};
   dataRefs: {
     wrapper: ConfigurableExtensionDataRef<
-      () => Promise<{
-        component: ComponentType<{
-          children: ReactNode;
-        }>;
-      }>,
+      () => Promise<PluginWrapperDefinition>,
       'core.plugin-wrapper.loader',
       {}
     >;
   };
 }>;
+
+// @public
+export type PluginWrapperDefinition<TValue = unknown | never> = {
+  useWrapperValue?: () => TValue;
+  component: ComponentType<{
+    children: ReactNode;
+    value: TValue;
+  }>;
+};
 
 // (No @packageDocumentation comment for this package)
 ```

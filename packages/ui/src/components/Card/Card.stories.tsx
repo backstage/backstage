@@ -377,6 +377,26 @@ export const InteractiveWithNestedButtons = meta.story({
   ),
 });
 
+export const InteractiveScrollable = meta.story({
+  render: () => (
+    <Card
+      style={{ width: '300px', height: '200px' }}
+      onPress={() => alert('Card pressed')}
+      label="View card details"
+    >
+      <CardHeader>
+        <Text weight="bold">Scrollable Interactive Card</Text>
+      </CardHeader>
+      <CardBody>{content}</CardBody>
+      <CardFooter>
+        <Text variant="body-small" color="secondary">
+          Card body scrolls while card remains clickable
+        </Text>
+      </CardFooter>
+    </Card>
+  ),
+});
+
 export const CustomCardWithBox = meta.story({
   render: () => (
     <Flex direction="column" gap="4">

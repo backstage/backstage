@@ -24,6 +24,7 @@ import {
   ClusterDetails,
   KubernetesClustersSupplier,
 } from '@backstage/plugin-kubernetes-node';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import packageinfo from '../../package.json';
 
 interface MatchResourceLabelEntry {
@@ -39,22 +40,28 @@ type GkeClusterLocatorOptions = {
   skipMetricsLookup?: boolean;
   exposeDashboard?: boolean;
   matchingResourceLabels?: MatchResourceLabelEntry[];
+  endpointType?: 'public' | 'dns';
 };
+
+const VALID_ENDPOINT_TYPES = ['public', 'dns'] as const;
 
 export class GkeClusterLocator implements KubernetesClustersSupplier {
   private readonly options: GkeClusterLocatorOptions;
   private readonly client: container.v1.ClusterManagerClient;
+  private readonly logger: LoggerService;
   private clusterDetails: ClusterDetails[] | undefined;
   private hasClusterDetails: boolean;
 
   constructor(
     options: GkeClusterLocatorOptions,
     client: container.v1.ClusterManagerClient,
+    logger: LoggerService,
     clusterDetails: ClusterDetails[] | undefined = undefined,
     hasClusterDetails: boolean = false,
   ) {
     this.options = options;
     this.client = client;
+    this.logger = logger;
     this.clusterDetails = clusterDetails;
     this.hasClusterDetails = hasClusterDetails;
   }
@@ -62,6 +69,7 @@ export class GkeClusterLocator implements KubernetesClustersSupplier {
   static fromConfigWithClient(
     config: Config,
     client: container.v1.ClusterManagerClient,
+    logger: LoggerService,
     refreshInterval?: Duration,
   ): GkeClusterLocator {
     const matchingResourceLabels: MatchResourceLabelEntry[] =
@@ -83,8 +91,9 @@ export class GkeClusterLocator implements KubernetesClustersSupplier {
         config.getOptionalBoolean('skipMetricsLookup') ?? false,
       exposeDashboard: config.getOptionalBoolean('exposeDashboard') ?? false,
       matchingResourceLabels,
+      endpointType: parseEndpointType(config.getOptionalString('endpointType')),
     };
-    const gkeClusterLocator = new GkeClusterLocator(options, client);
+    const gkeClusterLocator = new GkeClusterLocator(options, client, logger);
     if (refreshInterval) {
       runPeriodically(
         () => gkeClusterLocator.refreshClusters(),
@@ -97,6 +106,7 @@ export class GkeClusterLocator implements KubernetesClustersSupplier {
   // Added an `x-goog-api-client` header to API requests made by the GKE cluster locator to clearly identify API requests from this plugin.
   static fromConfig(
     config: Config,
+    logger: LoggerService,
     refreshInterval: Duration | undefined = undefined,
   ): GkeClusterLocator {
     return GkeClusterLocator.fromConfigWithClient(
@@ -105,6 +115,7 @@ export class GkeClusterLocator implements KubernetesClustersSupplier {
         libName: `backstage/kubernetes-backend.GkeClusterLocator`,
         libVersion: packageinfo.version,
       }),
+      logger,
       refreshInterval,
     );
   }
@@ -115,6 +126,24 @@ export class GkeClusterLocator implements KubernetesClustersSupplier {
       await this.refreshClusters();
     }
     return this.clusterDetails ?? [];
+  }
+
+  private getClusterUrl(
+    cluster: container.protos.google.container.v1.ICluster,
+  ): string {
+    if (this.options.endpointType === 'dns') {
+      const dnsEndpoint =
+        cluster.controlPlaneEndpointsConfig?.dnsEndpointConfig?.endpoint;
+      if (dnsEndpoint) {
+        return `https://${dnsEndpoint}`;
+      }
+      this.logger.info(
+        `Cluster '${
+          cluster.name ?? 'unknown'
+        }' has endpointType 'dns' configured but no DNS endpoint available, falling back to public IP`,
+      );
+    }
+    return `https://${cluster.endpoint ?? ''}`;
   }
 
   // TODO pass caData into the object
@@ -146,7 +175,7 @@ export class GkeClusterLocator implements KubernetesClustersSupplier {
         .map(r => ({
           // TODO filter out clusters which don't have name or endpoint
           name: r.name ?? 'unknown',
-          url: `https://${r.endpoint ?? ''}`,
+          url: this.getClusterUrl(r),
           authMetadata: { [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: authProvider },
           skipTLSVerify,
           skipMetricsLookup,
@@ -169,4 +198,26 @@ export class GkeClusterLocator implements KubernetesClustersSupplier {
       );
     }
   }
+}
+
+function isValidEndpointType(
+  value: string,
+): value is (typeof VALID_ENDPOINT_TYPES)[number] {
+  return VALID_ENDPOINT_TYPES.includes(
+    value as (typeof VALID_ENDPOINT_TYPES)[number],
+  );
+}
+
+function parseEndpointType(value: string | undefined): 'public' | 'dns' {
+  if (value === undefined) {
+    return 'public';
+  }
+  if (isValidEndpointType(value)) {
+    return value;
+  }
+  throw new Error(
+    `Invalid endpointType '${value}', must be one of: ${VALID_ENDPOINT_TYPES.join(
+      ', ',
+    )}`,
+  );
 }

@@ -1,5 +1,11 @@
 # @backstage/catalog-client
 
+## 1.14.0-next.2
+
+### Minor Changes
+
+- 5d95e8e: Add an `onConflict` option to location creation that can refresh an existing location instead of throwing a conflict error.
+
 ## 1.14.0-next.1
 
 ### Minor Changes

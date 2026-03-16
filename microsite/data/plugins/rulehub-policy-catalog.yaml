@@ -1,0 +1,10 @@
+title: RuleHub Policy Catalog
+author: Rulehub
+authorUrl: https://github.com/rulehub
+category: Security
+description: Backstage frontend plugin that displays a policy/compliance catalog from a static JSON index.
+documentation: https://github.com/rulehub/rulehub-backstage-plugin#readme
+iconUrl: https://github.com/rulehub.png
+npmPackageName: '@rulehub/rulehub-backstage-plugin'
+addedDate: '2026-03-06'
+status: active

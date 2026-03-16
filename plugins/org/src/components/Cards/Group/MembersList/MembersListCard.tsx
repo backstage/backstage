@@ -23,25 +23,14 @@ import {
 import {
   catalogApiRef,
   useEntity,
-  EntityRefLink,
+  EntityInfoCard,
+  useEntityRefLink,
 } from '@backstage/plugin-catalog-react';
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
-import Switch from '@material-ui/core/Switch';
-import Typography from '@material-ui/core/Typography';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import Pagination from '@material-ui/lab/Pagination';
-import { useState, useEffect, ChangeEvent } from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+import { useState, useEffect } from 'react';
 import useAsync from 'react-use/esm/useAsync';
 
-import {
-  Avatar,
-  InfoCard,
-  Progress,
-  ResponseErrorPanel,
-  Link,
-  OverflowTooltip,
-} from '@backstage/core-components';
+import { Progress, ResponseErrorPanel } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 import {
   getAllDesendantMembersForGroupEntity,
@@ -50,101 +39,107 @@ import {
 import { EntityRelationAggregation } from '../../types';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { orgTranslationRef } from '../../../../translation';
-import TextField from '@material-ui/core/TextField';
+import {
+  Avatar,
+  Box,
+  Card,
+  Flex,
+  Link,
+  SearchField,
+  Switch,
+  TablePagination,
+  Text,
+} from '@backstage/ui';
 
-/** @public */
-export type MemberComponentClassKey = 'card' | 'avatar';
-
-const useStyles = makeStyles(
-  (theme: Theme) =>
-    createStyles({
-      card: {
-        border: `1px solid ${theme.palette.divider}`,
-        boxShadow: theme.shadows[2],
-        borderRadius: '4px',
-        overflow: 'visible',
-        position: 'relative',
-        margin: theme.spacing(4, 1, 1),
-        flex: '1',
-        minWidth: '0px',
-      },
-      avatar: {
-        position: 'absolute',
-        top: '-2rem',
-      },
-    }),
-  { name: 'PluginOrgMemberComponent' },
-);
+const useMemberStyles = makeStyles({
+  card: {
+    display: 'flex',
+    gap: 'var(--bui-space-3)',
+    padding: 'var(--bui-space-3)',
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+    height: 140,
+    overflow: 'hidden',
+  },
+  avatar: {
+    flexShrink: 0,
+  },
+  cardTextContainer: {
+    overflow: 'hidden',
+  },
+  singlelineEllipsis: {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+  },
+  multilineEllipsis: {
+    display: '-webkit-box',
+    '-webkit-line-clamp': '3',
+    '-webkit-box-orient': 'vertical',
+    overflow: 'hidden',
+  },
+});
 
 const MemberComponent = (props: { member: UserEntity }) => {
-  const classes = useStyles();
+  const { t } = useTranslationRef(orgTranslationRef);
+  const classes = useMemberStyles();
   const {
     metadata: { name: metaName, description },
     spec: { profile },
   } = props.member;
   const displayName = profile?.displayName ?? metaName;
+  const entityLink = useEntityRefLink();
 
   return (
-    <Box className={classes.card}>
-      <Box
-        display="flex"
-        flexDirection="column"
-        m={3}
-        alignItems="center"
-        justifyContent="center"
-      >
-        <Avatar
-          displayName={displayName}
-          picture={profile?.picture}
-          classes={classes}
-        />
-        <Box
-          pt={2}
-          sx={{
-            width: '100%',
-          }}
-          textAlign="center"
-        >
-          <Typography variant="h6">
-            <EntityRefLink
-              data-testid="user-link"
-              entityRef={props.member}
-              title={displayName}
-            />
-          </Typography>
-          {profile?.email && (
-            <Link to={`mailto:${profile.email}`}>
-              <OverflowTooltip text={profile.email} />
-            </Link>
-          )}
-          {description && (
-            <Typography variant="subtitle2">
-              <OverflowTooltip text={description} line={5} />
-            </Typography>
-          )}
-        </Box>
-      </Box>
-    </Box>
+    <Card
+      className={classes.card}
+      href={entityLink(props.member)}
+      label={t('membersListCard.cardLabel', { memberName: displayName })}
+    >
+      <Avatar
+        className={classes.avatar}
+        name={displayName}
+        src={profile?.picture ?? ''}
+        purpose="decoration"
+        size="x-large"
+      />
+      <Flex className={classes.cardTextContainer} direction="column" gap="1">
+        <Text variant="body-large" as="h4">
+          {displayName}
+        </Text>
+        {profile?.email && (
+          <Link
+            className={classes.singlelineEllipsis}
+            href={`mailto:${profile.email}`}
+          >
+            {profile.email}
+          </Link>
+        )}
+        {description && (
+          <Text className={classes.multilineEllipsis}>{description}</Text>
+        )}
+      </Flex>
+    </Card>
   );
 };
 
 /** @public */
-export type MembersListCardClassKey = 'root' | 'cardContent' | 'memberList';
+export type MembersListCardClassKey = 'memberList';
 
 const useListStyles = makeStyles(
-  theme => ({
-    root: {
-      height: '100%',
-    },
-    cardContent: {
-      overflow: 'auto',
-    },
+  () => ({
     memberList: {
       display: 'grid',
-      gap: theme.spacing(1.5),
-      gridTemplateColumns: `repeat(auto-fit, minmax(auto, ${theme.spacing(
-        34,
-      )}px))`,
+      gap: 'var(--bui-space-3)',
+      gridTemplateColumns: `repeat(auto-fit, minmax(275px, 1fr))`,
+      gridAutoRows: '1fr',
+      margin: 0,
+      padding: 0,
+      paddingTop: 'var(--bui-space-3)',
+      listStyle: 'none',
+    },
+    memberListItem: {
+      display: 'contents',
     },
   }),
   { name: 'PluginOrgMembersListCardComponent' },
@@ -162,7 +157,7 @@ export const MembersListCard = (props: {
 }) => {
   const { t } = useTranslationRef(orgTranslationRef);
   const {
-    memberDisplayTitle = t('membersListCard.title'),
+    memberDisplayTitle,
     pageSize = 50,
     showAggregateMembersToggle,
     relationType = 'memberof',
@@ -179,13 +174,13 @@ export const MembersListCard = (props: {
   const catalogApi = useApi(catalogApiRef);
 
   const displayName = profile?.displayName ?? groupName;
+  const cardTitle =
+    memberDisplayTitle ??
+    t('membersListCard.title', { groupName: displayName });
 
   const groupNamespace = grpNamespace || DEFAULT_NAMESPACE;
 
-  const [page, setPage] = useState(1);
-  const pageChange = (_: ChangeEvent<unknown>, pageIndex: number) => {
-    setPage(pageIndex);
-  };
+  const [offset, setOffset] = useState(0);
 
   const [showAggregateMembers, setShowAggregateMembers] = useState(
     relationAggregation === 'aggregated',
@@ -194,8 +189,8 @@ export const MembersListCard = (props: {
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    setPage(1);
-  }, [searchTerm]);
+    setOffset(0);
+  }, [searchTerm, showAggregateMembers]);
 
   const { loading: loadingDescendantMembers, value: descendantMembers } =
     useAsync(async () => {
@@ -245,25 +240,6 @@ export const MembersListCard = (props: {
     return <ResponseErrorPanel error={error} />;
   }
 
-  const nbPages = Math.ceil((members?.length || 0) / pageSize);
-  const paginationLabel =
-    nbPages < 2
-      ? ''
-      : t('membersListCard.paginationLabel', {
-          page: String(page),
-          nbPages: String(nbPages),
-        });
-
-  const pagination = (
-    <Pagination
-      count={nbPages}
-      page={page}
-      onChange={pageChange}
-      showFirstButton
-      showLastButton
-    />
-  );
-
   const filteredMembers = members.filter(member => {
     const fields = [
       member.metadata.name,
@@ -279,72 +255,79 @@ export const MembersListCard = (props: {
   });
 
   const membersToRender = searchTerm ? filteredMembers : members;
+  const totalCount = membersToRender.length;
+  const hasNextPage = offset + pageSize < totalCount;
+  const hasPreviousPage = offset > 0;
+
+  const pagination =
+    totalCount > pageSize ? (
+      <TablePagination
+        showPageSizeOptions={false}
+        pageSizeOptions={[pageSize]}
+        pageSize={pageSize}
+        offset={offset}
+        totalCount={totalCount}
+        hasNextPage={hasNextPage}
+        hasPreviousPage={hasPreviousPage}
+        onNextPage={() => setOffset(prev => prev + pageSize)}
+        onPreviousPage={() => setOffset(prev => Math.max(0, prev - pageSize))}
+      />
+    ) : undefined;
 
   let memberList: JSX.Element;
-  if (membersToRender && membersToRender.length > 0) {
+  if (membersToRender.length > 0) {
     memberList = (
-      <Box className={classes.memberList}>
-        {membersToRender
-          .slice(pageSize * (page - 1), pageSize * page)
-          .map(member => (
-            <MemberComponent member={member} key={stringifyEntityRef(member)} />
-          ))}
-      </Box>
+      <ul className={classes.memberList}>
+        {membersToRender.slice(offset, offset + pageSize).map(member => (
+          <li
+            className={classes.memberListItem}
+            key={stringifyEntityRef(member)}
+          >
+            <MemberComponent member={member} />
+          </li>
+        ))}
+      </ul>
     );
   } else {
     memberList = (
-      <Box p={2}>
-        <Typography>{t('membersListCard.noMembersDescription')}</Typography>
+      <Box p="2">
+        <Text as="p">
+          {searchTerm
+            ? t('membersListCard.noSearchResult', { searchTerm })
+            : t('membersListCard.noMembersDescription')}
+        </Text>
       </Box>
     );
   }
 
   return (
-    <Grid item className={classes.root}>
-      <InfoCard
-        title={`${memberDisplayTitle} (${filteredMembers.length} of ${members.length}${paginationLabel})`}
-        subheader={t('membersListCard.subtitle', {
-          groupName: displayName,
-        })}
-        {...(nbPages <= 1 ? {} : { actions: pagination })}
-        className={classes.root}
-        cardClassName={classes.cardContent}
-      >
-        {showAggregateMembersToggle && (
-          <>
-            {t('membersListCard.aggregateMembersToggle.directMembers')}
-            <Switch
-              color="primary"
-              checked={showAggregateMembers}
-              onChange={() => {
-                setShowAggregateMembers(!showAggregateMembers);
-              }}
-              inputProps={{
-                'aria-label': t(
-                  'membersListCard.aggregateMembersToggle.ariaLabel',
-                ),
-              }}
-            />
-            {t('membersListCard.aggregateMembersToggle.aggregatedMembers')}
-          </>
-        )}
-        {showAggregateMembers && loadingDescendantMembers ? (
-          <Progress />
-        ) : (
-          <>
-            <TextField
-              fullWidth
-              margin="dense"
-              placeholder="Search members..."
-              value={searchTerm}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                setSearchTerm(e.target.value)
-              }
-            />
-            <Box sx={{ mt: 2 }}>{memberList}</Box>
-          </>
-        )}
-      </InfoCard>
-    </Grid>
+    <EntityInfoCard
+      title={`${cardTitle} (${filteredMembers.length} of ${members.length})`}
+      headerActions={
+        showAggregateMembersToggle && (
+          <Switch
+            isSelected={showAggregateMembers}
+            onChange={setShowAggregateMembers}
+            label={t('membersListCard.aggregateMembersToggle.label')}
+          />
+        )
+      }
+      footerActions={pagination}
+    >
+      {showAggregateMembers && loadingDescendantMembers ? (
+        <Progress />
+      ) : (
+        <>
+          <SearchField
+            aria-label="Search members"
+            placeholder="Search members..."
+            value={searchTerm}
+            onChange={setSearchTerm}
+            onClear={() => setSearchTerm('')}
+          />
+          {memberList}
+        </>
+      )}
+    </EntityInfoCard>
   );
 };

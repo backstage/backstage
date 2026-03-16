@@ -17,8 +17,6 @@ import type { CheckboxProps as RACheckboxProps } from 'react-aria-components';
 
 /** @public */
 export type CheckboxOwnProps = {
-  selected?: boolean;
-  indeterminate?: boolean;
   children: React.ReactNode;
   className?: string;
 };

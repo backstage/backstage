@@ -111,7 +111,7 @@ Wildcard characters will not match \`/\`. For example, to match tags that begin 
           z
             .number({
               description:
-                'The time to wait before creating or updating the environment (in milliseconds)',
+                'The time to wait before creating or updating the environment (in minutes)',
             })
             .optional(),
         preventSelfReview: z =>

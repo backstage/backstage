@@ -14,74 +14,14 @@
  * limitations under the License.
  */
 
-const { createHash } = require('node:crypto');
-const { transform } = require('sucrase');
-const sucrasePkg = require('sucrase/package.json');
-
-const ESM_REGEX = /\b(?:import|export)\b/;
-
-function createTransformer(config) {
-  const process = (source, filePath) => {
-    let transforms;
-
-    if (filePath.endsWith('.esm.js')) {
-      transforms = ['imports'];
-    } else if (filePath.endsWith('.js')) {
-      // This is a very rough filter to avoid transforming things that we quickly
-      // can be sure are definitely not ESM modules.
-      if (ESM_REGEX.test(source)) {
-        transforms = ['imports', 'jsx']; // JSX within .js is currently allowed
-      }
-    } else if (filePath.endsWith('.jsx')) {
-      transforms = ['jsx', 'imports'];
-    } else if (filePath.endsWith('.ts')) {
-      transforms = ['typescript', 'imports'];
-    } else if (filePath.endsWith('.tsx')) {
-      transforms = ['typescript', 'jsx', 'imports'];
-    }
-
-    // Only apply the jest transform to the test files themselves
-    if (transforms && filePath.includes('.test.')) {
-      transforms.push('jest');
-    }
-
-    if (transforms) {
-      const { code, sourceMap: map } = transform(source, {
-        transforms,
-        filePath,
-        disableESTransforms: true,
-        sourceMapOptions: {
-          compiledFilename: filePath,
-        },
-      });
-      if (config.enableSourceMaps) {
-        const b64 = Buffer.from(JSON.stringify(map), 'utf8').toString('base64');
-        const suffix = `//# sourceMappingURL=data:application/json;charset=utf-8;base64,${b64}`;
-        // Include both inline and object source maps, as inline source maps are
-        // needed for support of some editor integrations.
-        return { code: `${code}\n${suffix}`, map };
-      }
-      // We only return the `map` result if source maps are enabled, as they
-      // have a negative impact on the coverage accuracy.
-      return { code };
-    }
-
-    return { code: source };
-  };
-
-  const getCacheKey = sourceText => {
-    return createHash('sha256')
-      .update(sourceText)
-      .update(Buffer.alloc(1))
-      .update(sucrasePkg.version)
-      .update(Buffer.alloc(1))
-      .update(JSON.stringify(config))
-      .update(Buffer.alloc(1))
-      .update('1') // increment whenever the transform logic in this file changes
-      .digest('hex');
-  };
-
-  return { process, getCacheKey };
+try {
+  module.exports = require('@backstage/cli-module-test-jest/config/jestSucraseTransform');
+} catch (e) {
+  if (e.code === 'MODULE_NOT_FOUND') {
+    throw new Error(
+      '@backstage/cli-module-test-jest is required to use the jest Sucrase transform. ' +
+        'Please install it as a dependency.',
+    );
+  }
+  throw e;
 }
-
-module.exports = { createTransformer };

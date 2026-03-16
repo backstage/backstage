@@ -87,11 +87,51 @@ export interface BackstagePackageJson {
 }
 
 // @public
+export interface CliCommand {
+  deprecated?: boolean;
+  description: string;
+  execute:
+    | ((context: CliCommandContext) => Promise<void>)
+    | {
+        loader: () => Promise<{
+          default: (context: CliCommandContext) => Promise<void>;
+        }>;
+      };
+  experimental?: boolean;
+  path: string[];
+}
+
+// @public
+export interface CliCommandContext {
+  args: string[];
+  info: {
+    usage: string;
+    name: string;
+  };
+}
+
+// @public
+export interface CliModule {
+  // (undocumented)
+  readonly $$type: '@backstage/CliModule';
+}
+
+// @public
 export type ConcurrentTasksOptions<TItem> = {
   concurrencyFactor?: number;
   items: Iterable<TItem>;
   worker: (item: TItem) => Promise<void>;
 };
+
+// @public
+export function createCliModule(options: {
+  packageJson: {
+    name: string;
+  };
+  init: (registry: {
+    addCommand: (command: CliCommand) => void;
+  }) => Promise<void>;
+}): CliModule;
 
 // @public
 export class GitUtils {
@@ -187,6 +227,7 @@ export type PackageRole =
   | 'frontend'
   | 'backend'
   | 'cli'
+  | 'cli-module'
   | 'web-library'
   | 'node-library'
   | 'common-library'
@@ -211,6 +252,13 @@ export class PackageRoles {
   static getRoleFromPackage(pkgJson: unknown): PackageRole | undefined;
   static getRoleInfo(role: string): PackageRoleInfo;
 }
+
+// @public
+export function runCliModule(options: {
+  module: CliModule;
+  name: string;
+  version?: string;
+}): Promise<void>;
 
 // @public
 export function runConcurrentTasks<TItem>(

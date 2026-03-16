@@ -246,6 +246,7 @@ Levenshtein
 lightbox
 Lightsail
 limitranges
+liveness
 LocalStack
 lockdown
 lockfile

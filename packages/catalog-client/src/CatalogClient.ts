@@ -567,12 +567,15 @@ export class CatalogClient implements CatalogApi {
     request: AddLocationRequest,
     options?: CatalogRequestOptions,
   ): Promise<AddLocationResponse> {
-    const { type = 'url', target, dryRun } = request;
+    const { type = 'url', target, dryRun, onConflict } = request;
 
     const response = await this.apiClient.createLocation(
       {
         body: { type, target },
-        query: { dryRun: dryRun ? 'true' : undefined },
+        query: {
+          dryRun: dryRun ? 'true' : undefined,
+          onConflict,
+        },
       },
       options,
     );

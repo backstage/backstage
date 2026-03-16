@@ -42,6 +42,7 @@ export interface SortState {
 /** @public */
 export type TableRootOwnProps = {
   stale?: boolean;
+  loading?: boolean;
 };
 
 /** @public */
@@ -73,6 +74,7 @@ export type RowOwnProps<T = object> = {
   columns?: ReactAriaRowProps<T>['columns'];
   children?: ReactAriaRowProps<T>['children'];
   href?: string;
+  noTrack?: boolean;
 };
 
 /** @public */

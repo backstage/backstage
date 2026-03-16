@@ -14,11 +14,36 @@
  * limitations under the License.
  */
 
-import { PluginWrapperApi } from '@backstage/frontend-plugin-api/alpha';
-import { ComponentType, ReactNode, useEffect, useMemo, useState } from 'react';
+import {
+  PluginWrapperApi,
+  PluginWrapperDefinition,
+} from '@backstage/frontend-plugin-api';
+import {
+  ComponentType,
+  ReactNode,
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  useSyncExternalStore,
+} from 'react';
+
+interface HookStore {
+  getSnapshot: () => { value: unknown } | undefined;
+  subscribe: (listener: () => void) => () => void;
+}
+
+interface HookRegistryContextValue {
+  registerHook: (key: any, hook: () => unknown) => HookStore;
+}
+
+const HookRegistryContext = createContext<HookRegistryContextValue | undefined>(
+  undefined,
+);
 
 type WrapperInput = {
-  loader: () => Promise<{ component: ComponentType<{ children: ReactNode }> }>;
+  loader: () => Promise<PluginWrapperDefinition<any>>;
   pluginId: string;
 };
 
@@ -29,11 +54,16 @@ type WrapperInput = {
  */
 export class DefaultPluginWrapperApi implements PluginWrapperApi {
   constructor(
+    private readonly rootWrapper: ComponentType<{ children: ReactNode }>,
     private readonly pluginWrappers: Map<
       string,
       ComponentType<{ children: ReactNode }>
     >,
   ) {}
+
+  getRootWrapper(): ComponentType<{ children: ReactNode }> {
+    return this.rootWrapper;
+  }
 
   getPluginWrapper(
     pluginId: string,
@@ -44,9 +74,7 @@ export class DefaultPluginWrapperApi implements PluginWrapperApi {
   static fromWrappers(wrappers: Array<WrapperInput>): DefaultPluginWrapperApi {
     const loadersByPlugin = new Map<
       string,
-      Array<
-        () => Promise<{ component: ComponentType<{ children: ReactNode }> }>
-      >
+      Array<() => Promise<PluginWrapperDefinition<any>>>
     >();
 
     for (const wrapper of wrappers) {
@@ -68,6 +96,45 @@ export class DefaultPluginWrapperApi implements PluginWrapperApi {
         continue;
       }
 
+      const WrapperWithState = ({
+        loader,
+        component: WrapperComponent,
+        useWrapperValue,
+        children,
+      }: {
+        loader: () => Promise<PluginWrapperDefinition>;
+        component: ComponentType<{
+          children: ReactNode;
+          value: unknown;
+        }>;
+        useWrapperValue: () => unknown;
+        children: ReactNode;
+      }) => {
+        const hookContext = useContext(HookRegistryContext);
+        if (!hookContext) {
+          throw new Error(
+            'Attempted to render a wrapped plugin component without a root wrapper context',
+          );
+        }
+        const store = useMemo(() => {
+          return hookContext.registerHook(loader, useWrapperValue);
+        }, [hookContext, loader, useWrapperValue]);
+        const container = useSyncExternalStore(
+          store.subscribe,
+          store.getSnapshot,
+        );
+
+        if (!container) {
+          return null;
+        }
+
+        return (
+          <WrapperComponent value={container.value}>
+            {children}
+          </WrapperComponent>
+        );
+      };
+
       const ComposedWrapper = (props: { children: ReactNode }) => {
         const [loadedWrappers, setLoadedWrappers] = useState<
           Array<ComponentType<{ children: ReactNode }>> | undefined
@@ -77,7 +144,27 @@ export class DefaultPluginWrapperApi implements PluginWrapperApi {
         useEffect(() => {
           Promise.all(loaders.map(loader => loader()))
             .then(results => {
-              setLoadedWrappers(results.map(r => r.component));
+              const normalizedResults = results.map(
+                ({ component, useWrapperValue }, index) => {
+                  const loader = loaders[index];
+
+                  if (!useWrapperValue) {
+                    return component as ComponentType<{ children: ReactNode }>;
+                  }
+
+                  return ({ children }: { children: ReactNode }) => (
+                    <WrapperWithState
+                      loader={loader}
+                      component={component}
+                      useWrapperValue={useWrapperValue}
+                    >
+                      {children}
+                    </WrapperWithState>
+                  );
+                },
+              );
+
+              setLoadedWrappers(normalizedResults);
             })
             .catch(setError);
         }, []);
@@ -86,24 +173,107 @@ export class DefaultPluginWrapperApi implements PluginWrapperApi {
           throw error;
         }
 
-        return useMemo(() => {
-          if (!loadedWrappers) {
-            return null;
-          }
+        if (!loadedWrappers) {
+          return null;
+        }
 
-          let current = props.children;
+        let content = props.children;
 
-          for (const Wrapper of loadedWrappers) {
-            current = <Wrapper>{current}</Wrapper>;
-          }
+        for (const Wrapper of loadedWrappers) {
+          content = <Wrapper>{content}</Wrapper>;
+        }
 
-          return current;
-        }, [loadedWrappers, props.children]);
+        return <>{content}</>;
       };
 
       composedWrappers.set(pluginId, ComposedWrapper);
     }
 
-    return new DefaultPluginWrapperApi(composedWrappers);
+    return new DefaultPluginWrapperApi(
+      DefaultPluginWrapperApi.createRootWrapper(),
+      composedWrappers,
+    );
+  }
+
+  /**
+   * Creates the root wrapper component that is responsible for rendering and
+   * forwarding the values of the common `useWrapperValue` hooks.
+   */
+  static createRootWrapper() {
+    const renderers = new Map<any, HookStore>();
+    const renderUpdateListeners = new Set<() => void>();
+
+    let renderElements = new Array<JSX.Element>();
+
+    const createHookRenderer = (hook: () => unknown): HookStore => {
+      const listeners = new Set<() => void>();
+      let container: { value: unknown } | undefined = undefined;
+
+      const HookRenderer = () => {
+        container = { value: hook() };
+        useEffect(() => {
+          for (const listener of listeners) {
+            listener();
+          }
+        });
+        return null;
+      };
+
+      renderElements = [
+        ...renderElements,
+        <HookRenderer key={`hook-renderer-${renderElements.length + 1}`} />,
+      ];
+
+      return {
+        getSnapshot: () => container,
+        subscribe(listener: () => void) {
+          listeners.add(listener);
+          return () => listeners.delete(listener);
+        },
+      };
+    };
+
+    const registerHook = (key: any, hook: () => unknown) => {
+      let renderer = renderers.get(key);
+      if (!renderer) {
+        renderer = createHookRenderer(hook);
+        renderers.set(key, renderer);
+
+        queueMicrotask(() => {
+          for (const listener of renderUpdateListeners) {
+            listener();
+          }
+        });
+      }
+      return renderer;
+    };
+
+    const subscribeToRenderUpdates = (listener: () => void) => {
+      renderUpdateListeners.add(listener);
+      return () => renderUpdateListeners.delete(listener);
+    };
+    const getRenderElements = () => renderElements;
+
+    const RootWrapper = (props: { children: ReactNode }) => {
+      const elements = useSyncExternalStore(
+        subscribeToRenderUpdates,
+        getRenderElements,
+      );
+
+      return (
+        <>
+          <>{elements}</>
+          <HookRegistryContext.Provider
+            value={{
+              registerHook,
+            }}
+          >
+            {props.children}
+          </HookRegistryContext.Provider>
+        </>
+      );
+    };
+
+    return RootWrapper;
   }
 }
