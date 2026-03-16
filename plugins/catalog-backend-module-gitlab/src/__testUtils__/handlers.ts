@@ -304,20 +304,56 @@ const httpProjectFindByIdDynamic = all_projects_response.map(project => {
  * See https://docs.gitlab.com/api/repository_files/#get-file-from-repository
  */
 const httpProjectCatalogDynamic = all_projects_response.flatMap(project => {
-  return rest.head(
-    `${apiBaseUrl}/projects/${project.id.toString()}/repository/files/catalog-info.yaml`,
-    (req, res, ctx) => {
-      const branch = req.url.searchParams.get('ref');
-      if (
-        branch === project.default_branch ||
-        branch === 'main' ||
-        branch === 'develop'
-      ) {
-        return res(ctx.status(200));
-      }
-      return res(ctx.status(404, 'Not Found'));
-    },
-  );
+  return [
+    rest.head(
+      `${apiBaseUrl}/projects/${project.id.toString()}/repository/files/catalog-info.yaml`,
+      (req, res, ctx) => {
+        const branch = req.url.searchParams.get('ref');
+        if (
+          branch === project.default_branch ||
+          branch === 'main' ||
+          branch === 'develop'
+        ) {
+          return res(ctx.status(200));
+        }
+        return res(ctx.status(404, 'Not Found'));
+      },
+    ),
+    rest.get(
+      `${apiBaseUrl}/projects/${project.id.toString()}/repository/tree`,
+      (_, res, ctx) => {
+        return res(
+          ctx.set('x-next-page', ''),
+          ctx.json([
+            {
+              id: `root-${project.id}`,
+              name: 'catalog-info.yaml',
+              type: 'blob',
+              path: 'catalog-info.yaml',
+            },
+            {
+              id: `nested-${project.id}`,
+              name: 'catalog-info.yaml',
+              type: 'blob',
+              path: 'service/catalog-info.yaml',
+            },
+            {
+              id: `nested-yml-${project.id}`,
+              name: 'catalog-info.yml',
+              type: 'blob',
+              path: 'apps/catalog-info.yml',
+            },
+            {
+              id: `docs-${project.id}`,
+              name: 'README.md',
+              type: 'blob',
+              path: 'docs/README.md',
+            },
+          ]),
+        );
+      },
+    ),
+  ];
 });
 
 /**
