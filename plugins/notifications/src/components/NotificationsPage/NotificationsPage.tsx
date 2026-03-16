@@ -69,7 +69,7 @@ export type NotificationsPageProps = {
    * Optional custom component used to render the notification description cell.
    * When provided, receives an object with a `description` string property.
    */
-  notificationDescriptionComponent?: ComponentType<{ description: string }>;
+  NotificationDescriptionComponent?: ComponentType<{ description: string }>;
 };
 
 export const NotificationsPage = (props?: NotificationsPageProps) => {
@@ -82,7 +82,7 @@ export const NotificationsPage = (props?: NotificationsPageProps) => {
     type,
     typeLink,
     markAsReadOnLinkOpen,
-    notificationDescriptionComponent,
+    NotificationDescriptionComponent,
   } = props ?? {};
 
   const [refresh, setRefresh] = useState(false);
@@ -236,8 +236,8 @@ export const NotificationsPage = (props?: NotificationsPageProps) => {
                 page={pageNumber}
                 pageSize={pageSize}
                 totalCount={totalCount}
-                notificationDescriptionComponent={
-                  notificationDescriptionComponent
+                NotificationDescriptionComponent={
+                  NotificationDescriptionComponent
                 }
               />
             </Grid>

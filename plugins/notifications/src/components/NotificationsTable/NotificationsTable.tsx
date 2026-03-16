@@ -76,7 +76,7 @@ export type NotificationsTableProps = Pick<
    * Optional custom component used to render the notification description cell.
    * When provided, receives an object with a `description` string property.
    */
-  notificationDescriptionComponent?: ComponentType<{ description: string }>;
+  NotificationDescriptionComponent?: ComponentType<{ description: string }>;
 };
 
 /** @public */
@@ -93,8 +93,7 @@ export const NotificationsTable = ({
   page,
   pageSize,
   totalCount,
-  notificationDescriptionComponent:
-    NotificationDescriptionComponent = NotificationDescription,
+  NotificationDescriptionComponent = NotificationDescription,
 }: NotificationsTableProps) => {
   const { t } = useTranslationRef(notificationsTranslationRef);
   const classes = useStyles();
