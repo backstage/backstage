@@ -75,7 +75,7 @@ catalog:
         groupPattern: # Optional. Filters for groups based on a list of RegEx. Default, no filters.
           - '^somegroup$'
           - 'anothergroup'
-        entityFilename: catalog-info.yaml # Optional. Defaults to `catalog-info.yaml`
+        entityFilename: catalog-info.yaml # Optional. Defaults to `catalog-info.yaml`. Supports glob patterns like `**/catalog-info.yaml` and `**/catalog-info.y?(a)ml` (to match both `.yaml` and `.yml`)
         useSearch: false # Optional. Whether to use the GitLab group search API to find files. Requires Gitlab 'Premium' or 'Ultimate' licenses.  Defaults to `false`
         projectPattern: '[\s\S]*' # Optional. Filters found projects based on provided pattern. Defaults to `[\s\S]*`, which means to not filter anything
         excludeRepos: [] # Optional. A list of project paths that should be excluded from discovery, e.g. group/subgroup/repo. Should not start or end with a slash.
