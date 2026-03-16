@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import type { ComponentType } from 'react';
 import throttle from 'lodash/throttle';
 // @ts-ignore
 import RelativeTime from 'react-relative-time';
@@ -62,6 +63,11 @@ export type NotificationsTableProps = Pick<
   onUpdate: () => void;
   setContainsText: (search: string) => void;
   pageSize: number;
+  /**
+   * Optional custom component used to render the notification description cell.
+   * When provided, receives an object with a `description` string property.
+   */
+  NotificationDescriptionComponent?: ComponentType<{ description: string }>;
 };
 
 /** @public */
@@ -78,6 +84,7 @@ export const NotificationsTable = ({
   page,
   pageSize,
   totalCount,
+  NotificationDescriptionComponent = NotificationDescription,
 }: NotificationsTableProps) => {
   const { t } = useTranslationRef(notificationsTranslationRef);
   const notificationsApi = useApi(notificationsApiRef);
@@ -221,7 +228,7 @@ export const NotificationsTable = ({
                   )}
                 </Text>
                 {notification.payload.description ? (
-                  <NotificationDescription
+                  <NotificationDescriptionComponent
                     description={notification.payload.description}
                   />
                 ) : null}
@@ -290,6 +297,7 @@ export const NotificationsTable = ({
     onMarkAllRead,
     onNotificationsSelectChange,
     markAsReadOnLinkOpen,
+    NotificationDescriptionComponent,
   ]);
 
   return (

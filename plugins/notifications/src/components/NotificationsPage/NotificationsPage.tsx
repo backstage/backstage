@@ -15,6 +15,7 @@
  */
 
 import { useEffect, useMemo, useState } from 'react';
+import type { ComponentType } from 'react';
 import throttle from 'lodash/throttle';
 import {
   Content,
@@ -63,6 +64,11 @@ export type NotificationsPageProps = {
   tooltip?: string;
   type?: string;
   typeLink?: string;
+  /**
+   * Optional custom component used to render the notification description cell.
+   * When provided, receives an object with a `description` string property.
+   */
+  NotificationDescriptionComponent?: ComponentType<{ description: string }>;
 };
 
 function NotificationsPageContent(
@@ -78,6 +84,7 @@ function NotificationsPageContent(
     typeLink,
     markAsReadOnLinkOpen,
     headerVariant,
+    NotificationDescriptionComponent,
   } = props;
 
   const [refresh, setRefresh] = useState(false);
@@ -222,6 +229,9 @@ function NotificationsPageContent(
             page={pageNumber}
             pageSize={pageSize}
             totalCount={totalCount}
+            NotificationDescriptionComponent={
+              NotificationDescriptionComponent
+            }
           />
         </Grid.Item>
       </Grid.Root>
