@@ -132,7 +132,7 @@ export type NotificationsPageProps = {
   tooltip?: string;
   type?: string;
   typeLink?: string;
-  notificationDescriptionComponent?: ComponentType<{
+  NotificationDescriptionComponent?: ComponentType<{
     description: string;
   }>;
 };
@@ -189,7 +189,7 @@ export type NotificationsTableProps = Pick<
   onUpdate: () => void;
   setContainsText: (search: string) => void;
   pageSize: number;
-  notificationDescriptionComponent?: ComponentType<{
+  NotificationDescriptionComponent?: ComponentType<{
     description: string;
   }>;
 };
