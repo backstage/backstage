@@ -4581,6 +4581,7 @@ __metadata:
     "@gitbeaker/rest": "npm:^40.0.3"
     "@types/lodash": "npm:^4.14.151"
     lodash: "npm:^4.17.21"
+    minimatch: "npm:^10.2.1"
     msw: "npm:^1.0.0"
   languageName: unknown
   linkType: soft

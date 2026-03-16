@@ -26,6 +26,7 @@ import {
   GitLabGroup,
   GitLabGroupMembersResponse,
   GitLabProject,
+  GitLabRepositoryTreeItem,
   GitLabUser,
   PagedResponse,
 } from './types';
@@ -48,6 +49,12 @@ interface ListProjectOptions extends CommonListOptions {
 interface ListFilesOptions extends CommonListOptions {
   group?: string;
   search?: string;
+}
+
+interface ListProjectTreeOptions extends CommonListOptions {
+  ref?: string;
+  recursive?: boolean;
+  path?: string;
 }
 
 interface UserListOptions extends CommonListOptions {
@@ -212,6 +219,21 @@ export class GitLabClient {
     return {
       items: [],
     };
+  }
+
+  async listProjectTree(
+    projectIdentifier: string | number,
+    options?: ListProjectTreeOptions,
+  ): Promise<PagedResponse<GitLabRepositoryTreeItem>> {
+    const encodedProjectId =
+      typeof projectIdentifier === 'string'
+        ? encodeURIComponent(projectIdentifier)
+        : projectIdentifier;
+
+    return this.pagedRequest(
+      `/projects/${encodedProjectId}/repository/tree`,
+      options,
+    );
   }
 
   // https://docs.gitlab.com/ee/api/groups.html#list-group-details
