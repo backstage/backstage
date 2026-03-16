@@ -81,8 +81,8 @@ app:
     # Enable visit listener (disabled by default)
     - app-root-element:home/visit-listener: true
     # Enable visit tracking widgets (disabled by default)
-    - card-widget:home/top-visited: true
-    - card-widget:home/recently-visited: true
+    - home-page-widget:home/top-visited: true
+    - home-page-widget:home/recently-visited: true
 ```
 
 **Storage Strategy (when enabled):**
@@ -90,7 +90,7 @@ app:
 1. **Custom Storage API**: If you have `storageApiRef` configured (like database-backed `UserSettingsStorage`), visit data uses your custom storage
 2. **Browser Local Storage Fallback**: If no custom storage is configured, automatically falls back to browser local storage
 
-**Note**: Visit tracking extensions (`api:home/visits`, `app-root-element:home/visit-listener`, `card-widget:home/top-visited`, `card-widget:home/recently-visited`) are all disabled by default to give users control over data collection and storage.
+**Note**: Visit tracking extensions (`api:home/visits`, `app-root-element:home/visit-listener`, `home-page-widget:home/top-visited`, `home-page-widget:home/recently-visited`) are all disabled by default to give users control over data collection and storage.
 
 ## Creating Homepage Widgets
 
