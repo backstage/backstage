@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useMemo, useState } from 'react';
+import { ComponentType, useEffect, useMemo, useState } from 'react';
 import throttle from 'lodash/throttle';
 import {
   Content,
@@ -51,6 +51,7 @@ import {
   NotificationSeverity,
   NotificationStatus,
 } from '@backstage/plugin-notifications-common';
+import { NotificationDescriptionProps } from '../NotificationsTable/NotificationDescription';
 
 const ThrottleDelayMs = 2000;
 
@@ -64,6 +65,12 @@ export type NotificationsPageProps = {
   tooltip?: string;
   type?: string;
   typeLink?: string;
+  /**
+   * Optional custom component to render notification descriptions.
+   * If not provided, uses the default NotificationDescription component.
+   * Useful for custom formatting (e.g., markdown rendering, custom truncation).
+   */
+  notificationDescriptionComponent?: ComponentType<NotificationDescriptionProps>;
 };
 
 export const NotificationsPage = (props?: NotificationsPageProps) => {
@@ -76,6 +83,7 @@ export const NotificationsPage = (props?: NotificationsPageProps) => {
     type,
     typeLink,
     markAsReadOnLinkOpen,
+    notificationDescriptionComponent,
   } = props ?? {};
 
   const [refresh, setRefresh] = useState(false);
@@ -229,6 +237,9 @@ export const NotificationsPage = (props?: NotificationsPageProps) => {
                 page={pageNumber}
                 pageSize={pageSize}
                 totalCount={totalCount}
+                notificationDescriptionComponent={
+                  notificationDescriptionComponent
+                }
               />
             </Grid>
           </Grid>

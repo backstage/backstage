@@ -13,7 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  ComponentType,
+} from 'react';
 import throttle from 'lodash/throttle';
 // @ts-ignore
 import RelativeTime from 'react-relative-time';
@@ -39,7 +45,10 @@ import { notificationsApiRef } from '../../api';
 import { SelectAll } from './SelectAll';
 import { BulkActions } from './BulkActions';
 import { NotificationIcon } from './NotificationIcon';
-import { NotificationDescription } from './NotificationDescription';
+import {
+  NotificationDescription,
+  NotificationDescriptionProps,
+} from './NotificationDescription';
 
 const ThrottleDelayMs = 1000;
 
@@ -71,6 +80,7 @@ export type NotificationsTableProps = Pick<
   onUpdate: () => void;
   setContainsText: (search: string) => void;
   pageSize: number;
+  notificationDescriptionComponent?: ComponentType<NotificationDescriptionProps>;
 };
 
 /** @public */
@@ -87,6 +97,7 @@ export const NotificationsTable = ({
   page,
   pageSize,
   totalCount,
+  notificationDescriptionComponent: NotificationDescriptionComponent,
 }: NotificationsTableProps) => {
   const { t } = useTranslationRef(notificationsTranslationRef);
   const classes = useStyles();
@@ -241,11 +252,16 @@ export const NotificationsTable = ({
                       notification.payload.title
                     )}
                   </Typography>
-                  {notification.payload.description ? (
-                    <NotificationDescription
-                      description={notification.payload.description}
-                    />
-                  ) : null}
+                  {notification.payload.description &&
+                    (NotificationDescriptionComponent ? (
+                      <NotificationDescriptionComponent
+                        description={notification.payload.description}
+                      />
+                    ) : (
+                      <NotificationDescription
+                        description={notification.payload.description}
+                      />
+                    ))}
 
                   <Typography variant="caption">
                     {!notification.user && (
@@ -323,6 +339,7 @@ export const NotificationsTable = ({
     classes.broadcastIcon,
     classes.notificationInfoRow,
     markAsReadOnLinkOpen,
+    NotificationDescriptionComponent,
   ]);
 
   return (

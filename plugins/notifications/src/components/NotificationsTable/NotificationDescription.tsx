@@ -19,7 +19,13 @@ import { useState } from 'react';
 
 const MAX_LENGTH = 100;
 
-export const NotificationDescription = (props: { description: string }) => {
+export type NotificationDescriptionProps = {
+  description: string;
+};
+
+export const NotificationDescription = (
+  props: NotificationDescriptionProps,
+) => {
   const { description } = props;
   const [shown, setShown] = useState(false);
   const isLong = description.length > MAX_LENGTH;
