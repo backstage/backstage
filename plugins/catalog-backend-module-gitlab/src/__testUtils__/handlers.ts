@@ -311,20 +311,56 @@ const httpProjectFindByIdDynamic = all_projects_response.map(project => {
  * See https://docs.gitlab.com/api/repository_files/#get-file-from-repository
  */
 const httpProjectCatalogDynamic = all_projects_response.flatMap(project => {
-  return http.head(
-    `${apiBaseUrl}/projects/${project.id.toString()}/repository/files/catalog-info.yaml`,
-    ({ request }) => {
-      const branch = new URL(request.url).searchParams.get('ref');
-      if (
-        branch === project.default_branch ||
-        branch === 'main' ||
-        branch === 'develop'
-      ) {
-        return new HttpResponse(null, { status: 200 });
-      }
-      return new HttpResponse(null, { status: 404, statusText: 'Not Found' });
-    },
-  );
+  return [
+    http.head(
+      `${apiBaseUrl}/projects/${project.id.toString()}/repository/files/catalog-info.yaml`,
+      ({ request }) => {
+        const branch = new URL(request.url).searchParams.get('ref');
+        if (
+          branch === project.default_branch ||
+          branch === 'main' ||
+          branch === 'develop'
+        ) {
+          return new HttpResponse(null, { status: 200 });
+        }
+        return new HttpResponse(null, { status: 404, statusText: 'Not Found' });
+      },
+    ),
+    http.get(
+      `${apiBaseUrl}/projects/${project.id.toString()}/repository/tree`,
+      () => {
+        return HttpResponse.json(
+          [
+            {
+              id: `root-${project.id}`,
+              name: 'catalog-info.yaml',
+              type: 'blob',
+              path: 'catalog-info.yaml',
+            },
+            {
+              id: `nested-${project.id}`,
+              name: 'catalog-info.yaml',
+              type: 'blob',
+              path: 'service/catalog-info.yaml',
+            },
+            {
+              id: `nested-yml-${project.id}`,
+              name: 'catalog-info.yml',
+              type: 'blob',
+              path: 'apps/catalog-info.yml',
+            },
+            {
+              id: `docs-${project.id}`,
+              name: 'README.md',
+              type: 'blob',
+              path: 'docs/README.md',
+            },
+          ],
+          { headers: { 'x-next-page': '' } },
+        );
+      },
+    ),
+  ];
 });
 
 /**
