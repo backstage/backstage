@@ -47,11 +47,11 @@ export const accordionTriggerPropDefs: Record<string, PropDef> = {
   },
   iconStart: {
     type: 'enum',
-    values: ['ReactNode'],
+    values: ['ReactElement'],
   },
   iconEnd: {
     type: 'enum',
-    values: ['ReactNode'],
+    values: ['ReactElement'],
   },
   children: {
     type: 'enum',

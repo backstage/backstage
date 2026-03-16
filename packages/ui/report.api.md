@@ -75,9 +75,6 @@ export const AccordionDefinition: {
     readonly triggerButton: 'bui-AccordionTriggerButton';
     readonly triggerTitle: 'bui-AccordionTriggerTitle';
     readonly triggerSubtitle: 'bui-AccordionTriggerSubtitle';
-    readonly triggerIconStart: 'bui-AccordionTriggerIconStart';
-    readonly triggerIconEnd: 'bui-AccordionTriggerIconEnd';
-    readonly triggerIcon: 'bui-AccordionTriggerIcon';
     readonly panel: 'bui-AccordionPanel';
     readonly group: 'bui-AccordionGroup';
   };
@@ -180,12 +177,16 @@ export const AccordionTriggerDefinition: {
     readonly title: 'bui-AccordionTriggerTitle';
     readonly subtitle: 'bui-AccordionTriggerSubtitle';
     readonly icon: 'bui-AccordionTriggerIcon';
+    readonly iconStart: 'bui-AccordionTriggerIconStart';
+    readonly iconEnd: 'bui-AccordionTriggerIconEnd';
   };
   readonly propDefs: {
     readonly className: {};
     readonly title: {};
     readonly subtitle: {};
     readonly children: {};
+    readonly iconStart: {};
+    readonly iconEnd: {};
   };
 };
 

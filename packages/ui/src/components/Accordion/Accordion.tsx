@@ -72,7 +72,7 @@ export const AccordionTrigger = forwardRef(
       AccordionTriggerDefinition,
       props,
     );
-    const { classes, title, subtitle, children } = ownProps;
+    const { classes, title, subtitle, children, iconStart, iconEnd } = ownProps;
 
     return (
       <RAHeading
@@ -86,8 +86,12 @@ export const AccordionTrigger = forwardRef(
             children
           ) : (
             <Flex gap="2" align="center">
+              {iconStart && (
+                <span className={classes.iconStart}>{iconStart}</span>
+              )}
               <span className={classes.title}>{title}</span>
               {subtitle && <span className={classes.subtitle}>{subtitle}</span>}
+              {iconEnd && <span className={classes.iconEnd}>{iconEnd}</span>}
             </Flex>
           )}
 
