@@ -27,3 +27,4 @@ This is a (non-exhaustive) list of actions that are known to be part of the Acti
 - `scaffolder.dry-run-template` (Dry Run Scaffolder Template): Dry-runs a scaffolder template to validate it without making changes. Returns success with execution logs, or errors for validation failures.
 - `scaffolder.list-scaffolder-actions` (List Scaffolder Actions): Lists all installed Scaffolder actions.
 - `scaffolder.list-scaffolder-tasks` (List Scaffolder Tasks): This allows you to list scaffolder tasks that have been created.
+- `scaffolder.execute-template` (Execute Scaffolder Template): Executes a Scaffolder template with its template ref and input parameter values.
