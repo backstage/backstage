@@ -23,8 +23,9 @@ import {
   SignInPageProps,
   useApi,
   useApp,
+  useAnalytics,
 } from '@backstage/core-plugin-api';
-import { BUIRouterProvider } from '@backstage/ui';
+import { BUIProvider } from '@backstage/ui';
 import { InternalAppContext } from './InternalAppContext';
 import { isReactRouterBeta } from './isReactRouterBeta';
 import { RouteTracker } from '../routing/RouteTracker';
@@ -144,22 +145,22 @@ export function AppRouter(props: AppRouterProps) {
     if (isReactRouterBeta()) {
       return (
         <RouterComponent>
-          <BUIRouterProvider>
+          <BUIProvider useAnalytics={useAnalytics}>
             <RouteTracker routeObjects={routeObjects} />
             <Routes>
               <Route path={mountPath} element={<>{props.children}</>} />
             </Routes>
-          </BUIRouterProvider>
+          </BUIProvider>
         </RouterComponent>
       );
     }
 
     return (
       <RouterComponent basename={basePath}>
-        <BUIRouterProvider>
+        <BUIProvider useAnalytics={useAnalytics}>
           <RouteTracker routeObjects={routeObjects} />
           {props.children}
-        </BUIRouterProvider>
+        </BUIProvider>
       </RouterComponent>
     );
   }
@@ -167,7 +168,7 @@ export function AppRouter(props: AppRouterProps) {
   if (isReactRouterBeta()) {
     return (
       <RouterComponent>
-        <BUIRouterProvider>
+        <BUIProvider useAnalytics={useAnalytics}>
           <RouteTracker routeObjects={routeObjects} />
           <SignInPageWrapper
             component={SignInPageComponent}
@@ -177,14 +178,14 @@ export function AppRouter(props: AppRouterProps) {
               <Route path={mountPath} element={<>{props.children}</>} />
             </Routes>
           </SignInPageWrapper>
-        </BUIRouterProvider>
+        </BUIProvider>
       </RouterComponent>
     );
   }
 
   return (
     <RouterComponent basename={basePath}>
-      <BUIRouterProvider>
+      <BUIProvider useAnalytics={useAnalytics}>
         <RouteTracker routeObjects={routeObjects} />
         <SignInPageWrapper
           component={SignInPageComponent}
@@ -192,7 +193,7 @@ export function AppRouter(props: AppRouterProps) {
         >
           {props.children}
         </SignInPageWrapper>
-      </BUIRouterProvider>
+      </BUIProvider>
     </RouterComponent>
   );
 }

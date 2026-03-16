@@ -8,15 +8,15 @@
 
 This change requires updating `@backstage/plugin-app` and `@backstage/core-app-api` alongside `@backstage/ui`. If you only upgrade `@backstage/ui`, BUI components will fall back to full-page navigation.
 
-If you cannot upgrade all packages together, or if you have a custom app shell, add `BUIRouterProvider` inside your Router:
+If you cannot upgrade all packages together, or if you have a custom app shell, add a `BUIProvider` inside your Router:
 
 ```diff
-+ import { BUIRouterProvider } from '@backstage/ui';
++ import { BUIProvider } from '@backstage/ui';
 
   <BrowserRouter>
-+   <BUIRouterProvider>
++   <BUIProvider>
       <AppContent />
-+   </BUIRouterProvider>
++   </BUIProvider>
   </BrowserRouter>
 ```
 

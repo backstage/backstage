@@ -440,9 +440,6 @@ export type BUIProviderProps = {
 };
 
 // @public
-export function BUIRouterProvider(input: { children: ReactNode }): JSX.Element;
-
-// @public
 export const Button: ForwardRefExoticComponent<
   ButtonProps & RefAttributes<HTMLButtonElement>
 >;

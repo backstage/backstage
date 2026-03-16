@@ -68,9 +68,6 @@ export { useBreakpoint } from './hooks/useBreakpoint';
 export { useBgProvider, useBgConsumer, BgProvider } from './hooks/useBg';
 export type { BgContextValue, BgProviderProps } from './hooks/useBg';
 
-// Routing
-export { BUIRouterProvider } from './routing';
-
 // Provider
 export { BUIProvider } from './provider';
 export type { BUIProviderProps } from './provider';
