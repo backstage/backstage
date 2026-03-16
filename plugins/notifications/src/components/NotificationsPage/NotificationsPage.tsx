@@ -52,7 +52,6 @@ import {
   NotificationSeverity,
   NotificationStatus,
 } from '@backstage/plugin-notifications-common';
-import type { NotificationDescriptionProps } from '../NotificationsTable/NotificationDescription';
 
 const ThrottleDelayMs = 2000;
 
@@ -71,7 +70,7 @@ export type NotificationsPageProps = {
    * If not provided, uses the default NotificationDescription component.
    * Useful for custom formatting (e.g., markdown rendering, custom truncation).
    */
-  notificationDescriptionComponent?: ComponentType<NotificationDescriptionProps>;
+  notificationDescriptionComponent?: ComponentType<{ description: string }>;
 };
 
 export const NotificationsPage = (props?: NotificationsPageProps) => {

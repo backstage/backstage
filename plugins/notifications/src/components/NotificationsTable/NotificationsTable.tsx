@@ -41,7 +41,6 @@ import { SelectAll } from './SelectAll';
 import { BulkActions } from './BulkActions';
 import { NotificationIcon } from './NotificationIcon';
 import { NotificationDescription } from './NotificationDescription';
-import type { NotificationDescriptionProps } from './NotificationDescription';
 
 const ThrottleDelayMs = 1000;
 
@@ -73,7 +72,7 @@ export type NotificationsTableProps = Pick<
   onUpdate: () => void;
   setContainsText: (search: string) => void;
   pageSize: number;
-  notificationDescriptionComponent?: ComponentType<NotificationDescriptionProps>;
+  notificationDescriptionComponent?: ComponentType<{ description: string }>;
 };
 
 /** @public */
