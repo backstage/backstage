@@ -15,7 +15,9 @@
  */
 
 import fs from 'fs-extra';
+import os from 'os';
 import { resolve as resolvePath, join as joinPath } from 'node:path';
+import { Readable } from 'stream';
 import { TarArchiveResponse } from './TarArchiveResponse';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 import * as tar from 'tar';
@@ -200,6 +202,49 @@ describe('TarArchiveResponse', () => {
     await expect(fs.pathExists(sub)).resolves.toBe(false);
 
     mkdtemp.mockRestore();
+  });
+
+  it('should preserve the executable bit when extracting tar archives', async () => {
+    // Regression test: GitHub tarballs include correct mode bits (100755 for executable
+    // files), but without chmod:true in tar.extract() the OS umask can strip the execute
+    // bit, causing "Permission denied" at runtime.
+    const workDir = await fs.mkdtemp(
+      joinPath(os.tmpdir(), 'backstage-tar-mode-test-'),
+    );
+    try {
+      // Wrap the script in a top-level directory — TarArchiveResponse strips it by default
+      const archiveDir = joinPath(workDir, 'archive');
+      await fs.mkdirp(archiveDir);
+      await fs.writeFile(
+        joinPath(archiveDir, 'script.sh'),
+        '#!/bin/sh\necho hello\n',
+        {
+          mode: 0o755,
+        },
+      );
+
+      const tarBuffer = await new Promise<Buffer>((resolve, reject) => {
+        const chunks: Buffer[] = [];
+        const stream = tar.create({ cwd: workDir, gzip: false }, ['archive']);
+        stream.on('data', (chunk: Buffer) => chunks.push(chunk));
+        stream.on('end', () => resolve(Buffer.concat(chunks)));
+        stream.on('error', reject);
+      });
+
+      const res = new TarArchiveResponse(
+        Readable.from(tarBuffer),
+        '',
+        targetDir.path,
+        'etag',
+      );
+      const dir = await res.dir();
+
+      const stat = await fs.stat(resolvePath(dir, 'script.sh'));
+      // The executable bit must be preserved regardless of process umask
+      expect(stat.mode & 0o111).toBeTruthy();
+    } finally {
+      await fs.remove(workDir);
+    }
   });
 
   it('should leave directory in place if provided in the case of an error', async () => {
