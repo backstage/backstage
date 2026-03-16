@@ -237,9 +237,7 @@ export const NotificationsPage = (props?: NotificationsPageProps) => {
                 page={pageNumber}
                 pageSize={pageSize}
                 totalCount={totalCount}
-                notificationDescriptionComponent={
-                  notificationDescriptionComponent
-                }
+                notificationDescriptionComponent={notificationDescriptionComponent}
               />
             </Grid>
           </Grid>
