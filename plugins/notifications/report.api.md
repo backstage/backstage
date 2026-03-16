@@ -5,6 +5,7 @@
 ```ts
 import { ApiRef } from '@backstage/frontend-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
+import type { ComponentType } from 'react';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { FetchApi } from '@backstage/core-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
@@ -131,6 +132,9 @@ export type NotificationsPageProps = {
   tooltip?: string;
   type?: string;
   typeLink?: string;
+  notificationDescriptionComponent?: ComponentType<{
+    description: string;
+  }>;
 };
 
 // @public (undocumented)
@@ -185,6 +189,9 @@ export type NotificationsTableProps = Pick<
   onUpdate: () => void;
   setContainsText: (search: string) => void;
   pageSize: number;
+  notificationDescriptionComponent?: ComponentType<{
+    description: string;
+  }>;
 };
 
 // @public (undocumented)
