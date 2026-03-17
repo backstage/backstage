@@ -101,7 +101,7 @@ function registerCommands(
           hidden:
             !!internal.command.deprecated || !!internal.command.experimental,
         })
-        .description(internal.command.description)
+        .description(internal.command.name)
         .helpOption(false)
         .allowUnknownOption(true)
         .allowExcessArguments(true)

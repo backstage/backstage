@@ -34,7 +34,7 @@ import { CliCommand, CliModule } from './types';
  *   init: async reg => {
  *     reg.addCommand({
  *       path: ['repo', 'test'],
- *       description: 'Run tests across the repository',
+ *       name: 'Run tests across the repository',
  *       execute: { loader: () => import('./commands/test') },
  *     });
  *   },

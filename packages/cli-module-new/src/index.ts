@@ -22,14 +22,13 @@ export default createCliModule({
   init: async reg => {
     reg.addCommand({
       path: ['new'],
-      description:
-        'Open up an interactive guide to creating new things in your app',
+      name: 'Open up an interactive guide to creating new things in your app',
       execute: { loader: () => import('./commands/new') },
     });
 
     reg.addCommand({
       path: ['create'],
-      description: 'Create a new Backstage app',
+      name: 'Create a new Backstage app',
       deprecated: true,
       execute: async () => {
         throw new NotImplementedError(
@@ -39,7 +38,7 @@ export default createCliModule({
     });
     reg.addCommand({
       path: ['create-plugin'],
-      description: 'Create a new Backstage plugin',
+      name: 'Create a new Backstage plugin',
       deprecated: true,
       execute: async () => {
         throw new NotImplementedError(

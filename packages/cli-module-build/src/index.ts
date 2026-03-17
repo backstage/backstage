@@ -22,20 +22,19 @@ export default createCliModule({
   init: async reg => {
     reg.addCommand({
       path: ['package', 'build'],
-      description: 'Build a package for production deployment or publishing',
+      name: 'Build a package for production deployment or publishing',
       execute: { loader: () => import('./commands/package/build') },
     });
 
     reg.addCommand({
       path: ['repo', 'build'],
-      description:
-        'Build packages in the project, excluding bundled app and backend packages.',
+      name: 'Build packages in the project, excluding bundled app and backend packages.',
       execute: { loader: () => import('./commands/repo/build') },
     });
 
     reg.addCommand({
       path: ['package', 'bundle'],
-      description:
+      name:
         'Bundle a plugin for dynamic loading. Creates a self-contained plugin ' +
         'package that can be deployed and loaded dynamically by a Backstage application. ' +
         'Supports both backend and frontend plugins. Experimental.',
@@ -45,19 +44,19 @@ export default createCliModule({
 
     reg.addCommand({
       path: ['package', 'start'],
-      description: 'Start a package for local development',
+      name: 'Start a package for local development',
       execute: { loader: () => import('./commands/package/start') },
     });
 
     reg.addCommand({
       path: ['repo', 'start'],
-      description: 'Starts packages in the repo for local development',
+      name: 'Starts packages in the repo for local development',
       execute: { loader: () => import('./commands/repo/start') },
     });
 
     reg.addCommand({
       path: ['package', 'clean'],
-      description: 'Delete cache directories',
+      name: 'Delete cache directories',
       execute: {
         loader: () => import('./commands/package/clean'),
       },
@@ -65,7 +64,7 @@ export default createCliModule({
 
     reg.addCommand({
       path: ['package', 'prepack'],
-      description: 'Prepares a package for packaging before publishing',
+      name: 'Prepares a package for packaging before publishing',
       execute: {
         loader: () => import('./commands/package/prepack'),
       },
@@ -73,7 +72,7 @@ export default createCliModule({
 
     reg.addCommand({
       path: ['package', 'postpack'],
-      description: 'Restores the changes made by the prepack command',
+      name: 'Restores the changes made by the prepack command',
       execute: {
         loader: () => import('./commands/package/postpack'),
       },
@@ -81,7 +80,7 @@ export default createCliModule({
 
     reg.addCommand({
       path: ['repo', 'clean'],
-      description: 'Delete cache and output directories',
+      name: 'Delete cache and output directories',
       execute: {
         loader: () => import('./commands/repo/clean'),
       },
@@ -89,8 +88,7 @@ export default createCliModule({
 
     reg.addCommand({
       path: ['build-workspace'],
-      description:
-        'Builds a temporary dist workspace from the provided packages',
+      name: 'Builds a temporary dist workspace from the provided packages',
       execute: { loader: () => import('./commands/buildWorkspace') },
     });
   },

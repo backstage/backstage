@@ -21,13 +21,13 @@ export default createCliModule({
   init: async reg => {
     reg.addCommand({
       path: ['repo', 'fix'],
-      description: 'Automatically fix packages in the project',
+      name: 'Automatically fix packages in the project',
       execute: { loader: () => import('./commands/repo/fix') },
     });
 
     reg.addCommand({
       path: ['repo', 'list-deprecations'],
-      description: 'List deprecations',
+      name: 'List deprecations',
       execute: { loader: () => import('./commands/repo/list-deprecations') },
     });
   },

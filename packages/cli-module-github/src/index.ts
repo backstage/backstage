@@ -21,7 +21,7 @@ export default createCliModule({
   init: async reg => {
     reg.addCommand({
       path: ['create-github-app'],
-      description: 'Create new GitHub App in your organization.',
+      name: 'Create new GitHub App in your organization.',
       execute: { loader: () => import('./commands/create-github-app') },
     });
   },

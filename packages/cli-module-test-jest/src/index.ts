@@ -21,15 +21,13 @@ export default createCliModule({
   init: async reg => {
     reg.addCommand({
       path: ['repo', 'test'],
-      description:
-        'Run tests, forwarding args to Jest, defaulting to watch mode',
+      name: 'Run tests, forwarding args to Jest, defaulting to watch mode',
       execute: { loader: () => import('./commands/repo/test') },
     });
 
     reg.addCommand({
       path: ['package', 'test'],
-      description:
-        'Run tests, forwarding args to Jest, defaulting to watch mode',
+      name: 'Run tests, forwarding args to Jest, defaulting to watch mode',
       execute: { loader: () => import('./commands/package/test') },
     });
   },

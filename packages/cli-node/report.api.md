@@ -104,7 +104,6 @@ export interface CliAuthCreateOptions {
 // @public
 export interface CliCommand {
   deprecated?: boolean;
-  description: string;
   execute:
     | ((context: CliCommandContext) => Promise<void>)
     | {
@@ -113,6 +112,7 @@ export interface CliCommand {
         }>;
       };
   experimental?: boolean;
+  name: string;
   path: string[];
 }
 

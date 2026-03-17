@@ -21,15 +21,13 @@ export default createCliModule({
   init: async reg => {
     reg.addCommand({
       path: ['translations', 'export'],
-      description:
-        'Export translation messages from an app and all of its frontend plugins to JSON files',
+      name: 'Export translation messages from an app and all of its frontend plugins to JSON files',
       execute: { loader: () => import('./commands/export') },
     });
 
     reg.addCommand({
       path: ['translations', 'import'],
-      description:
-        'Generate translation resource wiring from translated JSON files',
+      name: 'Generate translation resource wiring from translated JSON files',
       execute: { loader: () => import('./commands/import') },
     });
   },

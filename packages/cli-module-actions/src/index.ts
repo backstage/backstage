@@ -22,27 +22,27 @@ export default createCliModule({
   init: async reg => {
     reg.addCommand({
       path: ['actions', 'list'],
-      description: 'List available actions from configured plugin sources',
+      name: 'List available actions from configured plugin sources',
       execute: { loader: () => import('./commands/list') },
     });
     reg.addCommand({
       path: ['actions', 'execute'],
-      description: 'Execute an action',
+      name: 'Execute an action',
       execute: { loader: () => import('./commands/execute') },
     });
     reg.addCommand({
       path: ['actions', 'sources', 'add'],
-      description: 'Add a plugin source for action discovery',
+      name: 'Add a plugin source for action discovery',
       execute: { loader: () => import('./commands/sourcesAdd') },
     });
     reg.addCommand({
       path: ['actions', 'sources', 'list'],
-      description: 'List configured plugin sources',
+      name: 'List configured plugin sources',
       execute: { loader: () => import('./commands/sourcesList') },
     });
     reg.addCommand({
       path: ['actions', 'sources', 'remove'],
-      description: 'Remove a plugin source',
+      name: 'Remove a plugin source',
       execute: { loader: () => import('./commands/sourcesRemove') },
     });
   },

@@ -21,7 +21,7 @@ export default createCliModule({
   init: async reg => {
     reg.addCommand({
       path: ['info'],
-      description: 'Show helpful information for debugging and reporting bugs',
+      name: 'Show helpful information for debugging and reporting bugs',
       execute: { loader: () => import('./commands/info') },
     });
   },
