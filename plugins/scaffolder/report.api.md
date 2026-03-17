@@ -528,7 +528,9 @@ export type RouterProps = {
 export type ScaffolderApi = ScaffolderApi_2;
 
 // @public @deprecated (undocumented)
-export const scaffolderApiRef: ApiRef<ScaffolderApi_2>;
+export const scaffolderApiRef: ApiRef<ScaffolderApi_2> & {
+  readonly $$type: '@backstage/ApiRef';
+};
 
 // @public @deprecated
 export class ScaffolderClient extends ScaffolderClient_2 {}

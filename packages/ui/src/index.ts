@@ -54,6 +54,7 @@ export * from './components/Popover';
 export * from './components/SearchAutocomplete';
 export * from './components/SearchField';
 export * from './components/Link';
+export * from './components/List';
 export * from './components/Select';
 export * from './components/Skeleton';
 export * from './components/Switch';

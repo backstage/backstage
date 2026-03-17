@@ -21,9 +21,14 @@ import {
   TableOptions,
 } from '@backstage/core-components';
 import {
+  EntityRelationCard,
+  EntityColumnConfig,
+  entityColumnPresets,
+} from '@backstage/plugin-catalog-react/alpha';
+import {
   asDomainEntities,
   domainEntityColumns,
-  domainEntityHelpLink,
+  domainEntityHelpLink as legacyHelpLink,
   RelatedEntitiesCard,
 } from '../RelatedEntitiesCard';
 import { catalogTranslationRef } from '../../alpha/translation';
@@ -31,31 +36,72 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /** @public */
 export interface HasSubdomainsCardProps {
-  variant?: InfoCardVariants;
-  tableOptions?: TableOptions;
-  columns?: TableColumn<DomainEntity>[];
   title?: string;
+  columnConfig?: EntityColumnConfig[];
 }
 
-export function HasSubdomainsCard(props: HasSubdomainsCardProps) {
+/**
+ * Props for the legacy MUI-based rendering.
+ * @deprecated Use {@link HasSubdomainsCardProps} instead.
+ * @public
+ */
+export interface HasSubdomainsCardLegacyProps {
+  title?: string;
+  /** @deprecated Use `columnConfig` instead. */
+  variant?: InfoCardVariants;
+  /** @deprecated Use `columnConfig` instead. */
+  tableOptions?: TableOptions;
+  /** @deprecated Use `columnConfig` instead. */
+  columns?: TableColumn<DomainEntity>[];
+}
+
+function isLegacyProps(
+  props: HasSubdomainsCardProps | HasSubdomainsCardLegacyProps,
+): props is HasSubdomainsCardLegacyProps {
+  return 'variant' in props || 'columns' in props || 'tableOptions' in props;
+}
+
+export function HasSubdomainsCard(
+  props: HasSubdomainsCardProps | HasSubdomainsCardLegacyProps,
+) {
   const { t } = useTranslationRef(catalogTranslationRef);
+
+  if (isLegacyProps(props)) {
+    const {
+      variant = 'gridItem',
+      title = t('hasSubdomainsCard.title'),
+      columns = domainEntityColumns,
+      tableOptions = {},
+    } = props;
+    return (
+      <RelatedEntitiesCard
+        variant={variant}
+        title={title}
+        entityKind="Domain"
+        relationType={RELATION_HAS_PART}
+        columns={columns}
+        asRenderableEntities={asDomainEntities}
+        emptyMessage={t('hasSubdomainsCard.emptyMessage')}
+        emptyHelpLink={legacyHelpLink}
+        tableOptions={tableOptions}
+      />
+    );
+  }
+
   const {
-    variant = 'gridItem',
     title = t('hasSubdomainsCard.title'),
-    columns = domainEntityColumns,
-    tableOptions = {},
+    columnConfig = entityColumnPresets.domain.columns,
   } = props;
   return (
-    <RelatedEntitiesCard
-      variant={variant}
+    <EntityRelationCard
       title={title}
       entityKind="Domain"
       relationType={RELATION_HAS_PART}
-      columns={columns}
-      asRenderableEntities={asDomainEntities}
-      emptyMessage={t('hasSubdomainsCard.emptyMessage')}
-      emptyHelpLink={domainEntityHelpLink}
-      tableOptions={tableOptions}
+      columnConfig={columnConfig}
+      emptyState={{
+        message: t('hasSubdomainsCard.emptyMessage'),
+        helpLink: entityColumnPresets.domain.helpLink,
+      }}
     />
   );
 }

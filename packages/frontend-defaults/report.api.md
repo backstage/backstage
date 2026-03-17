@@ -8,7 +8,7 @@ import { AppErrorTypes } from '@backstage/frontend-app-api';
 import { Config } from '@backstage/config';
 import { ConfigApi } from '@backstage/frontend-plugin-api';
 import { CreateAppRouteBinder } from '@backstage/frontend-app-api';
-import { ExtensionFactoryMiddleware } from '@backstage/frontend-app-api';
+import { ExtensionFactoryMiddleware } from '@backstage/frontend-plugin-api';
 import { FrontendFeature } from '@backstage/frontend-plugin-api';
 import { FrontendFeatureLoader } from '@backstage/frontend-plugin-api';
 import { FrontendPluginInfoResolver } from '@backstage/frontend-app-api';

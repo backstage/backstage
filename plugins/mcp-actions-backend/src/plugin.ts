@@ -87,9 +87,17 @@ export const mcpPlugin = createBackendPlugin({
             router.use(`/v1/${key}`, streamableRouter);
           }
         } else {
+          const serverConfig = {
+            name: config.getOptionalString('mcpActions.name') ?? 'backstage',
+            description: config.getOptionalString('mcpActions.description'),
+            includeRules: [],
+            excludeRules: [],
+          };
+
           const sseRouter = createSseRouter({
             mcpService,
             httpAuth,
+            serverConfig,
           });
 
           const streamableRouter = createStreamableRouter({
@@ -97,6 +105,7 @@ export const mcpPlugin = createBackendPlugin({
             httpAuth,
             logger,
             metrics,
+            serverConfig,
           });
 
           router.use('/v1/sse', sseRouter);

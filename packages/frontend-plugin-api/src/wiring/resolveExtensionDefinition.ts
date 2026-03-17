@@ -28,6 +28,7 @@ import {
   OpaqueExtensionDefinition,
   OpaqueExtensionInput,
 } from '@internal/frontend';
+import { FilterPredicate } from '@backstage/filter-predicates';
 
 /** @public */
 export type ExtensionAttachTo = { id: string; input: string };
@@ -74,6 +75,7 @@ export type InternalExtension<TConfig, TConfigInput> = Extension<
       }
     | {
         readonly version: 'v2';
+        readonly if?: FilterPredicate;
         readonly inputs: { [inputName in string]: ExtensionInput };
         readonly output: Array<ExtensionDataRef>;
         factory(options: {

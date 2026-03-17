@@ -52,3 +52,17 @@ export default createCliModule({
     });
   },
 });
+
+/** @public */
+export {
+  getSelectedInstance,
+  getInstanceConfig,
+  updateInstanceConfig,
+  type StoredInstance,
+} from './lib/storage';
+/** @public */
+export { accessTokenNeedsRefresh, refreshAccessToken } from './lib/auth';
+/** @public */
+export { getSecretStore, type SecretStore } from './lib/secretStore';
+/** @public */
+export { httpJson, type HttpInit } from './lib/http';

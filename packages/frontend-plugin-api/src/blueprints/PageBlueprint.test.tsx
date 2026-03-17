@@ -65,6 +65,7 @@ describe('PageBlueprint', () => {
         },
         "disabled": false,
         "factory": [Function],
+        "if": undefined,
         "inputs": {
           "pages": {
             "$$type": "@backstage/ExtensionInput",

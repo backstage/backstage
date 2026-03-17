@@ -22,6 +22,8 @@ import {
   getAllInstances,
   getSelectedInstance,
   getInstanceByName,
+  getInstanceConfig,
+  updateInstanceConfig,
   upsertInstance,
   removeInstance,
   setSelectedInstance,
@@ -354,6 +356,69 @@ describe('storage', () => {
       // Lock should still be released, allowing subsequent calls
       const callback2 = jest.fn().mockResolvedValue('result');
       await expect(withMetadataLock(callback2)).resolves.toBe('result');
+    });
+  });
+
+  describe('getInstanceConfig', () => {
+    it('should return undefined when no config set', async () => {
+      await upsertInstance(mockInstance1);
+
+      const result = await getInstanceConfig('production', 'someKey');
+      expect(result).toBeUndefined();
+    });
+
+    it('should return config value for a key', async () => {
+      await upsertInstance(mockInstance1);
+      await updateInstanceConfig('production', 'myKey', 'myValue');
+
+      const result = await getInstanceConfig('production', 'myKey');
+      expect(result).toBe('myValue');
+    });
+
+    it('should throw NotFoundError for unknown instance', async () => {
+      await expect(getInstanceConfig('nonexistent', 'key')).rejects.toThrow(
+        NotFoundError,
+      );
+    });
+  });
+
+  describe('updateInstanceConfig', () => {
+    it('should set a config value', async () => {
+      await upsertInstance(mockInstance1);
+      await updateInstanceConfig('production', 'key1', 'value1');
+
+      const result = await getInstanceConfig('production', 'key1');
+      expect(result).toBe('value1');
+    });
+
+    it('should preserve existing config keys', async () => {
+      await upsertInstance(mockInstance1);
+      await updateInstanceConfig('production', 'key1', 'value1');
+      await updateInstanceConfig('production', 'key2', 'value2');
+
+      const result1 = await getInstanceConfig('production', 'key1');
+      const result2 = await getInstanceConfig('production', 'key2');
+      expect(result1).toBe('value1');
+      expect(result2).toBe('value2');
+    });
+
+    it('should throw NotFoundError for unknown instance', async () => {
+      await expect(
+        updateInstanceConfig('nonexistent', 'key', 'value'),
+      ).rejects.toThrow(NotFoundError);
+    });
+
+    it('should remove instance along with its config', async () => {
+      await upsertInstance(mockInstance1);
+      await updateInstanceConfig('production', 'key1', 'value1');
+      await removeInstance('production');
+
+      const { instances } = await getAllInstances();
+      expect(instances.find(i => i.name === 'production')).toBeUndefined();
+
+      await upsertInstance(mockInstance1);
+      const result = await getInstanceConfig('production', 'key1');
+      expect(result).toBeUndefined();
     });
   });
 

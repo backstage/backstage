@@ -38,6 +38,13 @@ describe.each([
     },
   ],
   [
+    { role: 'cli-module', name: 'test' },
+    {
+      packageName: '@internal/cli-module-test',
+      packagePath: 'packages/cli-module-test',
+    },
+  ],
+  [
     { role: 'plugin-web-library', pluginId: 'test' },
     {
       packageName: '@internal/plugin-test-react',

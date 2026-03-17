@@ -100,7 +100,7 @@ export const catalogDependsOnComponentsEntityCard = EntityCardBlueprint.make({
     filter: { kind: 'component' },
     loader: async () =>
       import('../components/DependsOnComponentsCard').then(m => (
-        <m.DependsOnComponentsCard variant="gridItem" />
+        <m.DependsOnComponentsCard />
       )),
   },
 });
@@ -111,7 +111,7 @@ export const catalogDependsOnResourcesEntityCard = EntityCardBlueprint.make({
     filter: { kind: 'component' },
     loader: async () =>
       import('../components/DependsOnResourcesCard').then(m => (
-        <m.DependsOnResourcesCard variant="gridItem" />
+        <m.DependsOnResourcesCard />
       )),
   },
 });
@@ -122,7 +122,7 @@ export const catalogHasComponentsEntityCard = EntityCardBlueprint.make({
     filter: { kind: 'system' },
     loader: async () =>
       import('../components/HasComponentsCard').then(m => (
-        <m.HasComponentsCard variant="gridItem" />
+        <m.HasComponentsCard />
       )),
   },
 });
@@ -133,7 +133,7 @@ export const catalogHasResourcesEntityCard = EntityCardBlueprint.make({
     filter: { kind: 'system' },
     loader: async () =>
       import('../components/HasResourcesCard').then(m => (
-        <m.HasResourcesCard variant="gridItem" />
+        <m.HasResourcesCard />
       )),
   },
 });
@@ -144,7 +144,7 @@ export const catalogHasSubcomponentsEntityCard = EntityCardBlueprint.make({
     filter: { kind: 'component' },
     loader: async () =>
       import('../components/HasSubcomponentsCard').then(m => (
-        <m.HasSubcomponentsCard variant="gridItem" />
+        <m.HasSubcomponentsCard />
       )),
   },
 });
@@ -155,7 +155,7 @@ export const catalogHasSubdomainsEntityCard = EntityCardBlueprint.make({
     filter: { kind: 'domain' },
     loader: async () =>
       import('../components/HasSubdomainsCard').then(m => (
-        <m.HasSubdomainsCard variant="gridItem" />
+        <m.HasSubdomainsCard />
       )),
   },
 });
@@ -165,9 +165,7 @@ export const catalogHasSystemsEntityCard = EntityCardBlueprint.make({
   params: {
     filter: { kind: 'domain' },
     loader: async () =>
-      import('../components/HasSystemsCard').then(m => (
-        <m.HasSystemsCard variant="gridItem" />
-      )),
+      import('../components/HasSystemsCard').then(m => <m.HasSystemsCard />),
   },
 });
 

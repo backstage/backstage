@@ -147,7 +147,7 @@ const appPlugin: OverridableFrontendPlugin<
           ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
           {
             singleton: true;
-            optional: false;
+            optional: true;
             internal: false;
           }
         >;
@@ -712,6 +712,36 @@ const appPlugin: OverridableFrontendPlugin<
       };
       kind: 'api';
       name: 'swappable-components';
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
+    }>;
+    'api:app/toast': OverridableExtensionDefinition<{
+      kind: 'api';
+      name: 'toast';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+      inputs: {};
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
+    }>;
+    'api:app/toast-forwarder': OverridableExtensionDefinition<{
+      kind: 'api';
+      name: 'toast-forwarder';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+      inputs: {};
       params: <
         TApi,
         TImpl extends TApi,

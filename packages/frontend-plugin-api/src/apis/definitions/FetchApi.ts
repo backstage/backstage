@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ApiRef, createApiRef } from '../system';
+import { createApiRef } from '../system';
 
 /**
  * A wrapper for the fetch API, that has additional behaviors such as the
@@ -46,6 +46,7 @@ export type FetchApi = {
  *
  * @public
  */
-export const fetchApiRef: ApiRef<FetchApi> = createApiRef({
+export const fetchApiRef = createApiRef<FetchApi>().with({
   id: 'core.fetch',
+  pluginId: 'app',
 });

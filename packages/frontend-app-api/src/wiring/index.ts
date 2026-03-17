@@ -15,6 +15,14 @@
  */
 
 export {
+  type BootstrapSpecializedApp,
+  type FinalizedSpecializedApp,
+  prepareSpecializedApp,
+  type PrepareSpecializedAppOptions,
+  type PreparedSpecializedApp,
+  type SpecializedAppSessionState,
+} from './prepareSpecializedApp';
+export {
   createSpecializedApp,
   type CreateSpecializedAppOptions,
 } from './createSpecializedApp';

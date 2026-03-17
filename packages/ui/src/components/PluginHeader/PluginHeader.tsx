@@ -19,7 +19,7 @@ import { Tabs, TabList, Tab } from '../Tabs';
 import { useDefinition } from '../../hooks/useDefinition';
 import { PluginHeaderDefinition } from './definition';
 import { type NavigateOptions } from 'react-router-dom';
-import { useRef } from 'react';
+import { Children, useMemo, useRef } from 'react';
 import { useIsomorphicLayoutEffect } from '../../hooks/useIsomorphicLayoutEffect';
 import { Box } from '../Box';
 import { Link } from 'react-aria-components';
@@ -55,35 +55,70 @@ export const PluginHeader = (props: PluginHeaderProps) => {
   const toolbarWrapperRef = useRef<HTMLDivElement>(null);
   const toolbarContentRef = useRef<HTMLDivElement>(null);
   const toolbarControlsRef = useRef<HTMLDivElement>(null);
+  const animationFrameRef = useRef<number | undefined>(undefined);
+  const lastAppliedHeightRef = useRef<number | undefined>(undefined);
+
+  const actionChildren = useMemo(() => {
+    return Children.toArray(customActions);
+  }, [customActions]);
 
   useIsomorphicLayoutEffect(() => {
     const el = headerRef.current;
-    if (!el) return undefined;
+    if (!el) {
+      return undefined;
+    }
 
-    const updateHeight = () => {
-      const height = el.offsetHeight;
+    const cancelScheduledUpdate = () => {
+      if (animationFrameRef.current === undefined) {
+        return;
+      }
+
+      cancelAnimationFrame(animationFrameRef.current);
+      animationFrameRef.current = undefined;
+    };
+
+    const applyHeight = (height: number) => {
+      if (lastAppliedHeightRef.current === height) {
+        return;
+      }
+
+      lastAppliedHeightRef.current = height;
       document.documentElement.style.setProperty(
         '--bui-header-height',
         `${height}px`,
       );
     };
 
-    // Set height once immediately
-    updateHeight();
+    const scheduleHeightUpdate = () => {
+      cancelScheduledUpdate();
+      animationFrameRef.current = requestAnimationFrame(() => {
+        animationFrameRef.current = undefined;
+        applyHeight(el.offsetHeight);
+      });
+    };
+
+    // Set height once immediately so the initial layout is correct.
+    applyHeight(el.offsetHeight);
 
     // Observe for resize changes if ResizeObserver is available
     // (not present in Jest/jsdom by default)
     if (typeof ResizeObserver === 'undefined') {
       return () => {
+        cancelScheduledUpdate();
+        lastAppliedHeightRef.current = undefined;
         document.documentElement.style.removeProperty('--bui-header-height');
       };
     }
 
-    const observer = new ResizeObserver(updateHeight);
+    const observer = new ResizeObserver(() => {
+      scheduleHeightUpdate();
+    });
     observer.observe(el);
 
     return () => {
       observer.disconnect();
+      cancelScheduledUpdate();
+      lastAppliedHeightRef.current = undefined;
       document.documentElement.style.removeProperty('--bui-header-height');
     };
   }, []);
@@ -111,7 +146,7 @@ export const PluginHeader = (props: PluginHeaderProps) => {
             </Text>
           </div>
           <div className={classes.toolbarControls} ref={toolbarControlsRef}>
-            {customActions}
+            {actionChildren}
           </div>
         </div>
       </div>

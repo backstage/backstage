@@ -12,6 +12,7 @@ Options:
   -h, --help
 
 Commands:
+  actions [command]
   auth [command]
   build-workspace
   config [command]
@@ -29,6 +30,83 @@ Commands:
   translations [command]
   versions:bump
   versions:migrate
+```
+
+### `backstage-cli actions`
+
+```
+Usage: backstage-cli actions [options] [command] [command]
+
+Options:
+  -h, --help
+
+Commands:
+  execute
+  help [command]
+  list
+  sources [command]
+```
+
+### `backstage-cli actions execute`
+
+```
+Usage: backstage-cli actions execute
+
+Options:
+  --instance <string>
+  -h, --help
+```
+
+### `backstage-cli actions list`
+
+```
+Usage: backstage-cli actions list
+
+Options:
+  --instance <string>
+  -h, --help
+```
+
+### `backstage-cli actions sources`
+
+```
+Usage: backstage-cli actions sources [options] [command] [command]
+
+Options:
+  -h, --help
+
+Commands:
+  add
+  help [command]
+  list
+  remove
+```
+
+### `backstage-cli actions sources add`
+
+```
+Usage: backstage-cli actions sources add
+
+Options:
+  -h, --help
+```
+
+### `backstage-cli actions sources list`
+
+```
+Usage: backstage-cli actions sources list
+
+Options:
+  -h, --help
+```
+
+### `backstage-cli actions sources remove`
+
+```
+Usage: backstage-cli actions sources remove
+
+Options:
+  -h, --help
 ```
 
 ### `backstage-cli auth`

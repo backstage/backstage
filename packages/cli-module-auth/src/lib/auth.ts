@@ -31,10 +31,12 @@ const TokenResponseSchema = z.object({
   refresh_token: z.string().min(1).optional(),
 });
 
+/** @public */
 export function accessTokenNeedsRefresh(instance: StoredInstance): boolean {
   return instance.accessTokenExpiresAt <= Date.now() + 2 * 60_000; // 2 minutes before expiration
 }
 
+/** @public */
 export async function refreshAccessToken(
   instanceName: string,
 ): Promise<StoredInstance> {

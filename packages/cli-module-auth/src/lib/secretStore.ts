@@ -18,7 +18,8 @@ import fs from 'fs-extra';
 import os from 'node:os';
 import path from 'node:path';
 
-type SecretStore = {
+/** @public */
+export type SecretStore = {
   get(service: string, account: string): Promise<string | undefined>;
   set(service: string, account: string, secret: string): Promise<void>;
   delete(service: string, account: string): Promise<void>;
@@ -89,6 +90,7 @@ class FileSecretStore implements SecretStore {
 
 let singleton: SecretStore | undefined;
 
+/** @public */
 export async function getSecretStore(): Promise<SecretStore> {
   if (!singleton) {
     const keytar = await loadKeytar();

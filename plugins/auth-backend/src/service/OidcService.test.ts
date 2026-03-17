@@ -20,6 +20,7 @@ import {
 } from '@backstage/backend-test-utils';
 import { JsonObject } from '@backstage/types';
 import { OidcService } from './OidcService';
+import { OfflineAccessService } from './OfflineAccessService';
 import {
   BackstageCredentials,
   BackstageServicePrincipal,
@@ -53,10 +54,11 @@ describe('OidcService', () => {
   interface CreateOidcServiceOptions {
     databaseId: TestDatabaseId;
     config?: JsonObject;
+    offlineAccess?: OfflineAccessService;
   }
 
   async function createOidcService(options: CreateOidcServiceOptions) {
-    const { databaseId, config: configData = {} } = options;
+    const { databaseId, config: configData = {}, offlineAccess } = options;
 
     const knex = await databases.init(databaseId);
 
@@ -94,6 +96,8 @@ describe('OidcService', () => {
         userInfo: mockUserInfo,
         oidc: oidcDatabase,
         config,
+        logger: mockServices.logger.mock(),
+        offlineAccess,
       }),
       mocks: {
         auth: mockAuth,
@@ -835,6 +839,50 @@ describe('OidcService', () => {
             codeVerifier: 'invalid-verifier',
           }),
         ).rejects.toThrow('Invalid code verifier');
+      });
+
+      it('should still return access token when refresh token issuance fails', async () => {
+        const mockOfflineAccess = {
+          issueRefreshToken: jest
+            .fn()
+            .mockRejectedValue(new Error('DB constraint violation')),
+        } as unknown as OfflineAccessService;
+
+        const { service, mocks } = await createOidcService({
+          databaseId,
+          offlineAccess: mockOfflineAccess,
+        });
+        const mockToken = 'mock-jwt-token';
+        mocks.tokenIssuer.issueToken.mockResolvedValue({ token: mockToken });
+
+        const client = await service.registerClient({
+          clientName: 'Test Client',
+          redirectUris: ['https://example.com/callback'],
+        });
+
+        const authSession = await service.createAuthorizationSession({
+          clientId: client.clientId,
+          redirectUri: 'https://example.com/callback',
+          responseType: 'code',
+          scope: 'openid offline_access',
+        });
+
+        const authResult = await service.approveAuthorizationSession({
+          sessionId: authSession.id,
+          userEntityRef: 'user:default/test',
+        });
+
+        const code = new URL(authResult.redirectUrl).searchParams.get('code')!;
+
+        const tokenResult = await service.exchangeCodeForToken({
+          code,
+          redirectUri: 'https://example.com/callback',
+          grantType: 'authorization_code',
+        });
+
+        expect(tokenResult.accessToken).toBe(mockToken);
+        expect(tokenResult.refreshToken).toBeUndefined();
+        expect(mockOfflineAccess.issueRefreshToken).toHaveBeenCalledTimes(1);
       });
     });
 

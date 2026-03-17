@@ -204,6 +204,7 @@ describe('EntityContextMenuItemBlueprint', () => {
         },
         "disabled": false,
         "factory": [Function],
+        "if": undefined,
         "inputs": {},
         "kind": "entity-context-menu-item",
         "name": "test",

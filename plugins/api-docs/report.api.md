@@ -8,6 +8,7 @@ import { ApiRef } from '@backstage/frontend-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { CatalogTableRow } from '@backstage/plugin-catalog';
 import { ComponentEntity } from '@backstage/catalog-model';
+import { EntityColumnConfig } from '@backstage/plugin-catalog-react/alpha';
 import { EntityListPagination } from '@backstage/plugin-catalog-react';
 import { EntityOwnerPickerProps } from '@backstage/plugin-catalog-react';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
@@ -94,20 +95,54 @@ export type AsyncApiResolver = {
 };
 
 // @public (undocumented)
-export const ConsumedApisCard: (props: {
-  variant?: InfoCardVariants;
-  title?: string;
+export const ConsumedApisCard: (
+  props: ConsumedApisCardProps | ConsumedApisCardLegacyProps,
+) => JSX_2.Element;
+
+// @public @deprecated
+export interface ConsumedApisCardLegacyProps {
+  // @deprecated (undocumented)
   columns?: TableColumn<ApiEntity>[];
+  // @deprecated (undocumented)
   tableOptions?: TableOptions;
-}) => JSX_2.Element;
+  // (undocumented)
+  title?: string;
+  // @deprecated (undocumented)
+  variant?: InfoCardVariants;
+}
 
 // @public (undocumented)
-export const ConsumingComponentsCard: (props: {
-  variant?: InfoCardVariants;
+export interface ConsumedApisCardProps {
+  // (undocumented)
+  columnConfig?: EntityColumnConfig[];
+  // (undocumented)
   title?: string;
+}
+
+// @public (undocumented)
+export const ConsumingComponentsCard: (
+  props: ConsumingComponentsCardProps | ConsumingComponentsCardLegacyProps,
+) => JSX_2.Element;
+
+// @public @deprecated
+export interface ConsumingComponentsCardLegacyProps {
+  // @deprecated (undocumented)
   columns?: TableColumn<ComponentEntity>[];
+  // @deprecated (undocumented)
   tableOptions?: TableOptions;
-}) => JSX_2.Element;
+  // (undocumented)
+  title?: string;
+  // @deprecated (undocumented)
+  variant?: InfoCardVariants;
+}
+
+// @public (undocumented)
+export interface ConsumingComponentsCardProps {
+  // (undocumented)
+  columnConfig?: EntityColumnConfig[];
+  // (undocumented)
+  title?: string;
+}
 
 // @public
 export const DefaultApiExplorerPage: (
@@ -130,44 +165,29 @@ export function defaultDefinitionWidgets(): ApiDefinitionWidget[];
 export const EntityApiDefinitionCard: () => JSX_2.Element;
 
 // @public (undocumented)
-export const EntityConsumedApisCard: (props: {
-  variant?: InfoCardVariants;
-  title?: string;
-  columns?: TableColumn<ApiEntity>[];
-  tableOptions?: TableOptions;
-}) => JSX_2.Element;
+export const EntityConsumedApisCard: (
+  props: ConsumedApisCardProps | ConsumedApisCardLegacyProps,
+) => JSX_2.Element;
 
 // @public (undocumented)
-export const EntityConsumingComponentsCard: (props: {
-  variant?: InfoCardVariants;
-  title?: string;
-  columns?: TableColumn<ComponentEntity>[];
-  tableOptions?: TableOptions;
-}) => JSX_2.Element;
+export const EntityConsumingComponentsCard: (
+  props: ConsumingComponentsCardProps | ConsumingComponentsCardLegacyProps,
+) => JSX_2.Element;
 
 // @public (undocumented)
-export const EntityHasApisCard: (props: {
-  variant?: InfoCardVariants;
-  title?: string;
-  columns?: TableColumn<ApiEntity>[];
-  tableOptions?: TableOptions;
-}) => JSX_2.Element;
+export const EntityHasApisCard: (
+  props: HasApisCardProps | HasApisCardLegacyProps,
+) => JSX_2.Element;
 
 // @public (undocumented)
-export const EntityProvidedApisCard: (props: {
-  variant?: InfoCardVariants;
-  title?: string;
-  columns?: TableColumn<ApiEntity>[];
-  tableOptions?: TableOptions;
-}) => JSX_2.Element;
+export const EntityProvidedApisCard: (
+  props: ProvidedApisCardProps | ProvidedApisCardLegacyProps,
+) => JSX_2.Element;
 
 // @public (undocumented)
-export const EntityProvidingComponentsCard: (props: {
-  variant?: InfoCardVariants;
-  title?: string;
-  columns?: TableColumn<ComponentEntity>[];
-  tableOptions?: TableOptions;
-}) => JSX_2.Element;
+export const EntityProvidingComponentsCard: (
+  props: ProvidingComponentsCardProps | ProvidingComponentsCardLegacyProps,
+) => JSX_2.Element;
 
 // @public (undocumented)
 export const GraphQlDefinitionWidget: (
@@ -180,12 +200,29 @@ export type GraphQlDefinitionWidgetProps = {
 };
 
 // @public (undocumented)
-export const HasApisCard: (props: {
-  variant?: InfoCardVariants;
-  title?: string;
+export const HasApisCard: (
+  props: HasApisCardProps | HasApisCardLegacyProps,
+) => JSX_2.Element;
+
+// @public @deprecated
+export interface HasApisCardLegacyProps {
+  // @deprecated (undocumented)
   columns?: TableColumn<ApiEntity>[];
+  // @deprecated (undocumented)
   tableOptions?: TableOptions;
-}) => JSX_2.Element;
+  // (undocumented)
+  title?: string;
+  // @deprecated (undocumented)
+  variant?: InfoCardVariants;
+}
+
+// @public (undocumented)
+export interface HasApisCardProps {
+  // (undocumented)
+  columnConfig?: EntityColumnConfig[];
+  // (undocumented)
+  title?: string;
+}
 
 // @public (undocumented)
 export const OpenApiDefinitionWidget: (
@@ -211,20 +248,54 @@ export type PlainApiDefinitionWidgetProps = {
 };
 
 // @public (undocumented)
-export const ProvidedApisCard: (props: {
-  variant?: InfoCardVariants;
-  title?: string;
+export const ProvidedApisCard: (
+  props: ProvidedApisCardProps | ProvidedApisCardLegacyProps,
+) => JSX_2.Element;
+
+// @public @deprecated
+export interface ProvidedApisCardLegacyProps {
+  // @deprecated (undocumented)
   columns?: TableColumn<ApiEntity>[];
+  // @deprecated (undocumented)
   tableOptions?: TableOptions;
-}) => JSX_2.Element;
+  // (undocumented)
+  title?: string;
+  // @deprecated (undocumented)
+  variant?: InfoCardVariants;
+}
 
 // @public (undocumented)
-export const ProvidingComponentsCard: (props: {
-  variant?: InfoCardVariants;
+export interface ProvidedApisCardProps {
+  // (undocumented)
+  columnConfig?: EntityColumnConfig[];
+  // (undocumented)
   title?: string;
+}
+
+// @public (undocumented)
+export const ProvidingComponentsCard: (
+  props: ProvidingComponentsCardProps | ProvidingComponentsCardLegacyProps,
+) => JSX_2.Element;
+
+// @public @deprecated
+export interface ProvidingComponentsCardLegacyProps {
+  // @deprecated (undocumented)
   columns?: TableColumn<ComponentEntity>[];
+  // @deprecated (undocumented)
   tableOptions?: TableOptions;
-}) => JSX_2.Element;
+  // (undocumented)
+  title?: string;
+  // @deprecated (undocumented)
+  variant?: InfoCardVariants;
+}
+
+// @public (undocumented)
+export interface ProvidingComponentsCardProps {
+  // (undocumented)
+  columnConfig?: EntityColumnConfig[];
+  // (undocumented)
+  title?: string;
+}
 
 // @public (undocumented)
 export const TrpcApiDefinitionWidget: (

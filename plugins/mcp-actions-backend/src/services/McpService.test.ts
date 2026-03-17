@@ -96,7 +96,7 @@ describe('McpService', () => {
           required: ['input'],
           type: 'object',
         },
-        name: 'test:mock-action',
+        name: 'test.mock-action',
       },
     ]);
 
@@ -196,7 +196,7 @@ describe('McpService', () => {
     const result = await client.request(
       {
         method: 'tools/call',
-        params: { name: 'test:mock-action', arguments: { input: 'test' } },
+        params: { name: 'test.mock-action', arguments: { input: 'test' } },
       },
       CallToolResultSchema,
     );
@@ -226,7 +226,7 @@ describe('McpService', () => {
       expect.any(Number),
       expect.objectContaining({
         'mcp.method.name': 'tools/call',
-        'gen_ai.tool.name': 'test:mock-action',
+        'gen_ai.tool.name': 'test.mock-action',
         'gen_ai.operation.name': 'execute_tool',
       }),
     );
@@ -329,7 +329,7 @@ describe('McpService', () => {
       client.request(
         {
           method: 'tools/call',
-          params: { name: 'test:failing-action', arguments: {} },
+          params: { name: 'test.failing-action', arguments: {} },
         },
         CallToolResultSchema,
       ),
@@ -341,7 +341,7 @@ describe('McpService', () => {
       expect.any(Number),
       expect.objectContaining({
         'mcp.method.name': 'tools/call',
-        'gen_ai.tool.name': 'test:failing-action',
+        'gen_ai.tool.name': 'test.failing-action',
         'gen_ai.operation.name': 'execute_tool',
         'error.type': 'CustomError',
       }),
@@ -388,7 +388,7 @@ describe('McpService', () => {
     const result = await client.request(
       {
         method: 'tools/call',
-        params: { name: 'test:failing-action', arguments: { value: 'test' } },
+        params: { name: 'test.failing-action', arguments: { value: 'test' } },
       },
       CallToolResultSchema,
     );
@@ -444,7 +444,7 @@ describe('McpService', () => {
     const result = await client.request(
       {
         method: 'tools/call',
-        params: { name: 'test:not-found-action', arguments: { id: 'abc' } },
+        params: { name: 'test.not-found-action', arguments: { id: 'abc' } },
       },
       CallToolResultSchema,
     );
@@ -464,6 +464,7 @@ describe('McpService', () => {
     const fakeActions = [
       {
         id: 'catalog:get-entity',
+        pluginId: 'catalog',
         name: 'get-entity',
         title: 'Get Entity',
         description: 'Fetch an entity',
@@ -475,6 +476,7 @@ describe('McpService', () => {
       },
       {
         id: 'catalog:delete-entity',
+        pluginId: 'catalog',
         name: 'delete-entity',
         title: 'Delete Entity',
         description: 'Delete an entity',
@@ -486,6 +488,7 @@ describe('McpService', () => {
       },
       {
         id: 'scaffolder:create-app',
+        pluginId: 'scaffolder',
         name: 'create-app',
         title: 'Create App',
         description: 'Create an app',
@@ -571,8 +574,8 @@ describe('McpService', () => {
 
       expect(result.tools).toHaveLength(2);
       expect(result.tools.map(t => t.name)).toEqual([
-        'catalog:get-entity',
-        'catalog:delete-entity',
+        'catalog.get-entity',
+        'catalog.delete-entity',
       ]);
     });
 
@@ -611,7 +614,7 @@ describe('McpService', () => {
       );
 
       expect(result.tools).toHaveLength(1);
-      expect(result.tools[0].name).toBe('catalog:get-entity');
+      expect(result.tools[0].name).toBe('catalog.get-entity');
     });
 
     it('should apply include filter rules with glob patterns', async () => {
@@ -649,7 +652,7 @@ describe('McpService', () => {
       );
 
       expect(result.tools).toHaveLength(1);
-      expect(result.tools[0].name).toBe('catalog:get-entity');
+      expect(result.tools[0].name).toBe('catalog.get-entity');
     });
 
     it('should reject tool calls for actions outside the filtered set', async () => {
@@ -684,7 +687,7 @@ describe('McpService', () => {
       const result = await client.request(
         {
           method: 'tools/call',
-          params: { name: 'catalog:get-entity', arguments: {} },
+          params: { name: 'catalog.get-entity', arguments: {} },
         },
         CallToolResultSchema,
       );
@@ -694,12 +697,94 @@ describe('McpService', () => {
           {
             type: 'text',
             text: expect.stringContaining(
-              'Action "catalog:get-entity" not found',
+              'Action "catalog.get-entity" not found',
             ),
           },
         ],
         isError: true,
       });
+    });
+  });
+
+  describe('server name and description', () => {
+    it('should default server name to backstage when no config is provided', async () => {
+      const mcpService = await McpService.create({
+        actions: actionsRegistryServiceMock(),
+        metrics: metricsServiceMock.mock(),
+      });
+
+      const server = mcpService.getServer({
+        credentials: mockCredentials.user(),
+      });
+
+      const client = new Client({ name: 'test', version: '1.0' });
+      const [clientTransport, serverTransport] =
+        InMemoryTransport.createLinkedPair();
+      await Promise.all([
+        client.connect(clientTransport),
+        server.connect(serverTransport),
+      ]);
+
+      const serverInfo = client.getServerVersion();
+      expect(serverInfo?.name).toBe('backstage');
+      expect(serverInfo?.description).toBeUndefined();
+    });
+
+    it('should use name and description from server config', async () => {
+      const mcpService = await McpService.create({
+        actions: actionsRegistryServiceMock(),
+        metrics: metricsServiceMock.mock(),
+      });
+
+      const server = mcpService.getServer({
+        credentials: mockCredentials.user(),
+        serverConfig: {
+          name: 'My Custom Server',
+          description: 'A custom MCP server for testing',
+          includeRules: [],
+          excludeRules: [],
+        },
+      });
+
+      const client = new Client({ name: 'test', version: '1.0' });
+      const [clientTransport, serverTransport] =
+        InMemoryTransport.createLinkedPair();
+      await Promise.all([
+        client.connect(clientTransport),
+        server.connect(serverTransport),
+      ]);
+
+      const serverInfo = client.getServerVersion();
+      expect(serverInfo?.name).toBe('My Custom Server');
+      expect(serverInfo?.description).toBe('A custom MCP server for testing');
+    });
+
+    it('should omit description when not provided in config', async () => {
+      const mcpService = await McpService.create({
+        actions: actionsRegistryServiceMock(),
+        metrics: metricsServiceMock.mock(),
+      });
+
+      const server = mcpService.getServer({
+        credentials: mockCredentials.user(),
+        serverConfig: {
+          name: 'Named Server',
+          includeRules: [],
+          excludeRules: [],
+        },
+      });
+
+      const client = new Client({ name: 'test', version: '1.0' });
+      const [clientTransport, serverTransport] =
+        InMemoryTransport.createLinkedPair();
+      await Promise.all([
+        client.connect(clientTransport),
+        server.connect(serverTransport),
+      ]);
+
+      const serverInfo = client.getServerVersion();
+      expect(serverInfo?.name).toBe('Named Server');
+      expect(serverInfo?.description).toBeUndefined();
     });
   });
 
@@ -739,7 +824,7 @@ describe('McpService', () => {
         ListToolsResultSchema,
       );
 
-      expect(result.tools[0].name).toBe('test:mock-action');
+      expect(result.tools[0].name).toBe('test.mock-action');
     });
 
     it('should use short action name when namespacing is disabled', async () => {
@@ -814,7 +899,7 @@ describe('McpService', () => {
       const result = await client.request(
         {
           method: 'tools/call',
-          params: { name: 'test:mock-action', arguments: {} },
+          params: { name: 'test.mock-action', arguments: {} },
         },
         CallToolResultSchema,
       );

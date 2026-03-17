@@ -15,14 +15,15 @@
  */
 
 export const defaultTemplates = [
-  '@backstage/cli/templates/frontend-plugin',
-  '@backstage/cli/templates/backend-plugin',
-  '@backstage/cli/templates/backend-plugin-module',
-  '@backstage/cli/templates/plugin-web-library',
-  '@backstage/cli/templates/plugin-node-library',
-  '@backstage/cli/templates/plugin-common-library',
-  '@backstage/cli/templates/web-library',
-  '@backstage/cli/templates/node-library',
-  '@backstage/cli/templates/catalog-provider-module',
-  '@backstage/cli/templates/scaffolder-backend-module',
+  '@backstage/cli-module-new/templates/frontend-plugin',
+  '@backstage/cli-module-new/templates/backend-plugin',
+  '@backstage/cli-module-new/templates/backend-plugin-module',
+  '@backstage/cli-module-new/templates/plugin-web-library',
+  '@backstage/cli-module-new/templates/plugin-node-library',
+  '@backstage/cli-module-new/templates/plugin-common-library',
+  '@backstage/cli-module-new/templates/web-library',
+  '@backstage/cli-module-new/templates/node-library',
+  '@backstage/cli-module-new/templates/cli-module',
+  '@backstage/cli-module-new/templates/catalog-provider-module',
+  '@backstage/cli-module-new/templates/scaffolder-backend-module',
 ];

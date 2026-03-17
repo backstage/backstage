@@ -20,3 +20,5 @@ export { catalogReactTranslationRef } from '../translation';
 export { isOwnerOf } from '../utils/isOwnerOf';
 export { useEntityPermission } from '../hooks/useEntityPermission';
 export * from '../components/EntityTable/TitleColumn';
+export * from '../components/EntityDataTable';
+export * from '../components/EntityRelationCard';

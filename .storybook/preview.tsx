@@ -88,6 +88,7 @@ export default definePreview({
       storySort: {
         order: [
           'Backstage UI',
+          'Recipes',
           'Guidelines',
           'Plugins',
           'Layout',

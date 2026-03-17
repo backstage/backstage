@@ -208,7 +208,9 @@ export type ReviewStepProps = {
 export type ScaffolderApi = ScaffolderApi_2;
 
 // @public (undocumented)
-export const scaffolderApiRef: ApiRef<ScaffolderApi_2>;
+export const scaffolderApiRef: ApiRef<ScaffolderApi_2> & {
+  readonly $$type: '@backstage/ApiRef';
+};
 
 // @public @deprecated (undocumented)
 export type ScaffolderDryRunOptions = ScaffolderDryRunOptions_2;

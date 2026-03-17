@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import fetch from 'cross-fetch';
 import { httpJson } from './http';
 
-jest.mock('cross-fetch');
+const mockFetch = jest.fn() as jest.MockedFunction<typeof global.fetch>;
 
-const mockFetch = fetch as jest.MockedFunction<typeof fetch>;
+beforeEach(() => {
+  global.fetch = mockFetch;
+});
 
 describe('http', () => {
   beforeEach(() => {

@@ -22,7 +22,6 @@ export {
   type ExtensionDefinitionParameters,
   type CreateExtensionOptions,
   type OverridableExtensionDefinition,
-  type ResolvedExtensionInputs,
 } from './createExtension';
 export {
   createExtensionInput,
@@ -36,6 +35,7 @@ export {
 } from './createExtensionDataRef';
 export {
   createFrontendPlugin,
+  type CreateFrontendPluginOptions,
   type FrontendPlugin,
   type OverridableFrontendPlugin,
   type PluginOptions,

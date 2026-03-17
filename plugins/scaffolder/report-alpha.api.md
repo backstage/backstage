@@ -479,7 +479,9 @@ export const formDecoratorsApi: OverridableExtensionDefinition<{
 }>;
 
 // @alpha (undocumented)
-export const formDecoratorsApiRef: ApiRef<ScaffolderFormDecoratorsApi>;
+export const formDecoratorsApiRef: ApiRef<ScaffolderFormDecoratorsApi> & {
+  readonly $$type: '@backstage/ApiRef';
+};
 
 export { formFieldsApiRef };
 

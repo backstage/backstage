@@ -22,6 +22,7 @@ import {
   JSX,
 } from 'react';
 import {
+  ExtensionBoundary,
   coreExtensionData,
   discoveryApiRef,
   fetchApiRef,
@@ -73,6 +74,7 @@ export const AppRoot = createExtension({
     }),
     children: createExtensionInput([coreExtensionData.reactElement], {
       singleton: true,
+      optional: true,
     }),
     elements: createExtensionInput([coreExtensionData.reactElement]),
     wrappers: createExtensionInput(
@@ -83,7 +85,7 @@ export const AppRoot = createExtension({
     ),
   },
   output: [coreExtensionData.reactElement],
-  factory({ inputs, apis }) {
+  factory({ inputs, apis, node }) {
     if (isProtectedApp()) {
       const identityApi = apis.get(identityApiRef);
       if (!identityApi) {
@@ -105,9 +107,7 @@ export const AppRoot = createExtension({
       });
     }
 
-    let content: ReactNode = inputs.children.get(
-      coreExtensionData.reactElement,
-    );
+    let content = inputs.children?.get(coreExtensionData.reactElement);
 
     for (const wrapper of inputs.wrappers) {
       const Component = wrapper.get(AppRootWrapperBlueprint.dataRefs.component);
@@ -124,19 +124,21 @@ export const AppRoot = createExtension({
 
     return [
       coreExtensionData.reactElement(
-        <AppRouter
-          SignInPageComponent={inputs.signInPage?.get(
-            SignInPageBlueprint.dataRefs.component,
-          )}
-          RouterComponent={inputs.router?.get(
-            RouterBlueprint.dataRefs.component,
-          )}
-          extraElements={inputs.elements?.map(el =>
-            el.get(coreExtensionData.reactElement),
-          )}
-        >
-          {content}
-        </AppRouter>,
+        <ExtensionBoundary node={node}>
+          <AppRouter
+            SignInPageComponent={inputs.signInPage?.get(
+              SignInPageBlueprint.dataRefs.component,
+            )}
+            RouterComponent={inputs.router?.get(
+              RouterBlueprint.dataRefs.component,
+            )}
+            extraElements={inputs.elements?.map(el =>
+              el.get(coreExtensionData.reactElement),
+            )}
+          >
+            {content}
+          </AppRouter>
+        </ExtensionBoundary>,
       ),
     ];
   },
@@ -253,28 +255,30 @@ export function AppRouter(props: AppRouterProps) {
 
   // If the app hasn't configured a sign-in page, we just continue as guest.
   if (!SignInPageComponent) {
-    appIdentityProxy.setTarget(
-      {
-        getUserId: () => 'guest',
-        getIdToken: async () => undefined,
-        getProfile: () => ({
-          email: 'guest@example.com',
-          displayName: 'Guest',
-        }),
-        getProfileInfo: async () => ({
-          email: 'guest@example.com',
-          displayName: 'Guest',
-        }),
-        getBackstageIdentity: async () => ({
-          type: 'user',
-          userEntityRef: 'user:default/guest',
-          ownershipEntityRefs: ['user:default/guest'],
-        }),
-        getCredentials: async () => ({}),
-        signOut: async () => {},
-      },
-      { signOutTargetUrl: basePath || '/' },
-    );
+    if (!isProtectedApp()) {
+      appIdentityProxy.setTarget(
+        {
+          getUserId: () => 'guest',
+          getIdToken: async () => undefined,
+          getProfile: () => ({
+            email: 'guest@example.com',
+            displayName: 'Guest',
+          }),
+          getProfileInfo: async () => ({
+            email: 'guest@example.com',
+            displayName: 'Guest',
+          }),
+          getBackstageIdentity: async () => ({
+            type: 'user',
+            userEntityRef: 'user:default/guest',
+            ownershipEntityRefs: ['user:default/guest'],
+          }),
+          getCredentials: async () => ({}),
+          signOut: async () => {},
+        },
+        { signOutTargetUrl: basePath || '/' },
+      );
+    }
 
     return (
       <RouterComponent>

@@ -70,6 +70,10 @@ export const components: Page[] = [
     slug: 'link',
   },
   {
+    title: 'List',
+    slug: 'list',
+  },
+  {
     title: 'Menu',
     slug: 'menu',
   },

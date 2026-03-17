@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import actions from '@backstage/cli-module-actions';
 import auth from '@backstage/cli-module-auth';
 import build from '@backstage/cli-module-build';
 import config from '@backstage/cli-module-config';
@@ -31,6 +32,7 @@ import translations from '@backstage/cli-module-translations';
  * @public
  */
 export default [
+  actions,
   auth,
   build,
   config,

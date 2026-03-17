@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ConfigApi } from '@backstage/core-plugin-api';
+import { ConfigApi } from '@backstage/frontend-plugin-api';
 import {
   FrontendFeature,
   FrontendPluginInfo,

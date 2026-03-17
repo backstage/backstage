@@ -19,6 +19,8 @@ export type Component =
   | 'heading'
   | 'icon'
   | 'link'
+  | 'list'
+  | 'list-row'
   | 'menu'
   | 'password-field'
   | 'radio-group'

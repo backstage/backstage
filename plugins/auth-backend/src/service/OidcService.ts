@@ -13,7 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { AuthService, RootConfigService } from '@backstage/backend-plugin-api';
+import {
+  AuthService,
+  LoggerService,
+  RootConfigService,
+} from '@backstage/backend-plugin-api';
 import { TokenIssuer } from '../identity/types';
 import { UserInfoDatabase } from '../database/UserInfoDatabase';
 import {
@@ -48,6 +52,7 @@ export class OidcService {
   private readonly userInfo: UserInfoDatabase;
   private readonly oidc: OidcDatabase;
   private readonly config: RootConfigService;
+  private readonly logger: LoggerService;
   private readonly offlineAccess?: OfflineAccessService;
 
   private constructor(
@@ -57,6 +62,7 @@ export class OidcService {
     userInfo: UserInfoDatabase,
     oidc: OidcDatabase,
     config: RootConfigService,
+    logger: LoggerService,
     offlineAccess?: OfflineAccessService,
   ) {
     this.auth = auth;
@@ -65,6 +71,7 @@ export class OidcService {
     this.userInfo = userInfo;
     this.oidc = oidc;
     this.config = config;
+    this.logger = logger;
     this.offlineAccess = offlineAccess;
   }
 
@@ -75,6 +82,7 @@ export class OidcService {
     userInfo: UserInfoDatabase;
     oidc: OidcDatabase;
     config: RootConfigService;
+    logger: LoggerService;
     offlineAccess?: OfflineAccessService;
   }) {
     return new OidcService(
@@ -84,6 +92,7 @@ export class OidcService {
       options.userInfo,
       options.oidc,
       options.config,
+      options.logger,
       options.offlineAccess,
     );
   }
@@ -509,10 +518,18 @@ export class OidcService {
     let refreshToken: string | undefined;
     const scopes = session.scope?.split(' ') ?? [];
     if (scopes.includes('offline_access') && this.offlineAccess) {
-      refreshToken = await this.offlineAccess.issueRefreshToken({
-        userEntityRef: session.userEntityRef,
-        oidcClientId: session.clientId,
-      });
+      try {
+        refreshToken = await this.offlineAccess.issueRefreshToken({
+          userEntityRef: session.userEntityRef,
+          oidcClientId: session.clientId,
+        });
+      } catch (err) {
+        // Don't fail the entire token exchange if refresh token issuance fails.
+        // The access token is still valid and should be returned.
+        this.logger.warn(
+          `Failed to issue refresh token for user ${session.userEntityRef}, offline_access will not be available: ${err}`,
+        );
+      }
     }
 
     return {

@@ -157,6 +157,9 @@ export async function loadPortableTemplateConfig(
   };
 }
 
+const CLI_TEMPLATE_PREFIX = '@backstage/cli/templates/';
+const CLI_MODULE_NEW_TEMPLATE_PREFIX = '@backstage/cli-module-new/templates/';
+
 function resolveLocalTemplatePath(pointer: string, basePath: string): string {
   if (isAbsolute(pointer)) {
     throw new Error(`Template target may not be an absolute path`);
@@ -166,7 +169,14 @@ function resolveLocalTemplatePath(pointer: string, basePath: string): string {
     return resolvePath(basePath, pointer, TEMPLATE_FILE_NAME);
   }
 
-  return require.resolve(`${pointer}/${TEMPLATE_FILE_NAME}`, {
+  // Rewrite legacy @backstage/cli/templates/* paths to @backstage/cli-module-new/templates/*
+  const resolvedPointer = pointer.startsWith(CLI_TEMPLATE_PREFIX)
+    ? `${CLI_MODULE_NEW_TEMPLATE_PREFIX}${pointer.slice(
+        CLI_TEMPLATE_PREFIX.length,
+      )}`
+    : pointer;
+
+  return require.resolve(`${resolvedPointer}/${TEMPLATE_FILE_NAME}`, {
     paths: [basePath],
   });
 }

@@ -42,6 +42,7 @@ import { version as coreComponents } from '../../../core-components/package.json
 import { version as corePluginApi } from '../../../core-plugin-api/package.json';
 import { version as devUtils } from '../../../dev-utils/package.json';
 import { version as errors } from '../../../errors/package.json';
+import { version as frontendDevUtils } from '../../../frontend-dev-utils/package.json';
 import { version as frontendDefaults } from '../../../frontend-defaults/package.json';
 import { version as frontendPluginApi } from '../../../frontend-plugin-api/package.json';
 import { version as frontendTestUtils } from '../../../frontend-test-utils/package.json';
@@ -66,6 +67,7 @@ export const packageVersions: Record<string, string> = {
   '@backstage/core-plugin-api': corePluginApi,
   '@backstage/dev-utils': devUtils,
   '@backstage/errors': errors,
+  '@backstage/frontend-dev-utils': frontendDevUtils,
   '@backstage/frontend-defaults': frontendDefaults,
   '@backstage/frontend-plugin-api': frontendPluginApi,
   '@backstage/frontend-test-utils': frontendTestUtils,

@@ -109,6 +109,7 @@ describe('OidcRouter', () => {
       userInfo: userInfoDatabase,
       oidc: oidcDatabase,
       config: mockConfig,
+      logger: mockServices.logger.mock(),
     });
 
     const oidcRouter = OidcRouter.create({
@@ -194,6 +195,7 @@ describe('OidcRouter', () => {
       userInfo: userInfoDatabase,
       oidc: oidcDatabase,
       config: mockConfig,
+      logger: mockServices.logger.mock(),
       offlineAccess,
     });
 

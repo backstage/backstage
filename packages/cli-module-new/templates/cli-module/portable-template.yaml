@@ -1,0 +1,5 @@
+name: cli-module
+role: cli-module
+description: A CLI module that adds commands to the Backstage CLI
+values:
+  binName: 'backstage-cli-module-{{ name }}'

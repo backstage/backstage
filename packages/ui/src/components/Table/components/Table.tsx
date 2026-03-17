@@ -15,7 +15,14 @@
  */
 
 import { useId } from 'react-aria';
-import { type Key, ResizableTableContainer } from 'react-aria-components';
+import {
+  type Key,
+  ResizableTableContainer,
+  Virtualizer,
+} from 'react-aria-components';
+import { TableLayout } from '@react-stately/layout';
+import { useDefinition } from '../../../hooks/useDefinition';
+import { TableWrapperDefinition } from '../definition';
 import { TableRoot } from './TableRoot';
 import { TableHeader } from './TableHeader';
 import { TableBody } from './TableBody';
@@ -105,7 +112,11 @@ export function Table<T extends TableItem>({
   emptyState,
   className,
   style,
+  virtualized,
 }: TableProps<T>) {
+  const {
+    ownProps: { classes },
+  } = useDefinition(TableWrapperDefinition, { className });
   const liveRegionId = useId();
 
   const visibleColumns = useMemo(
@@ -125,7 +136,7 @@ export function Table<T extends TableItem>({
 
   if (error) {
     return (
-      <div className={className} style={style}>
+      <div className={classes.root} style={style}>
         Error: {error.message}
       </div>
     );
@@ -148,89 +159,105 @@ export function Table<T extends TableItem>({
 
   const wrapResizable = manualColumnSizing
     ? (elem: React.ReactNode) => (
-        <ResizableTableContainer>{elem}</ResizableTableContainer>
+        <ResizableTableContainer className={classes.resizableContainer}>
+          {elem}
+        </ResizableTableContainer>
       )
     : (elem: React.ReactNode) => <>{elem}</>;
 
+  const layoutOptions =
+    typeof virtualized === 'object' ? virtualized : undefined;
+
+  const wrapVirtualized = (elem: React.ReactNode) =>
+    virtualized ? (
+      <Virtualizer layout={TableLayout} layoutOptions={layoutOptions}>
+        {elem}
+      </Virtualizer>
+    ) : (
+      elem
+    );
+
   return (
-    <div className={className} style={style}>
+    <div className={classes.root} style={style}>
       <VisuallyHidden aria-live="polite" id={liveRegionId}>
         {liveRegionLabel}
       </VisuallyHidden>
       {wrapResizable(
-        <TableRoot
-          {...(isInitialLoading
-            ? {}
-            : {
-                selectionMode,
-                selectionBehavior,
-                selectedKeys,
-                onSelectionChange,
-              })}
-          sortDescriptor={sort?.descriptor ?? undefined}
-          onSortChange={sort?.onSortChange}
-          disabledKeys={disabledRows}
-          stale={isStale}
-          loading={isInitialLoading}
-          aria-describedby={liveRegionId}
-        >
-          <TableHeader columns={visibleColumns}>
-            {column =>
-              column.header ? (
-                column.header()
-              ) : (
-                <Column
-                  id={column.id}
-                  isRowHeader={column.isRowHeader}
-                  allowsSorting={column.isSortable}
-                  width={column.width}
-                  defaultWidth={column.defaultWidth}
-                  minWidth={column.minWidth}
-                  maxWidth={column.maxWidth}
-                >
-                  {column.label}
-                </Column>
-              )
-            }
-          </TableHeader>
-          {isInitialLoading ? (
-            <TableBodySkeleton columns={visibleColumns} />
-          ) : (
-            <TableBody
-              items={data}
-              dependencies={[visibleColumns]}
-              renderEmptyState={
-                emptyState ? () => <Flex p="3">{emptyState}</Flex> : undefined
-              }
-            >
-              {item => {
-                const itemIndex = data?.indexOf(item) ?? -1;
-
-                if (isRowRenderFn(rowConfig)) {
-                  return rowConfig({
-                    item,
-                    index: itemIndex,
-                  });
-                }
-
-                return (
-                  <Row
-                    id={String(item.id)}
-                    columns={visibleColumns}
-                    href={rowConfig?.getHref?.(item)}
-                    onAction={
-                      rowConfig?.onClick
-                        ? () => rowConfig?.onClick?.(item)
-                        : undefined
-                    }
+        wrapVirtualized(
+          <TableRoot
+            {...(isInitialLoading
+              ? {}
+              : {
+                  selectionMode,
+                  selectionBehavior,
+                  selectedKeys,
+                  onSelectionChange,
+                })}
+            sortDescriptor={sort?.descriptor ?? undefined}
+            onSortChange={sort?.onSortChange}
+            disabledKeys={disabledRows}
+            stale={isStale}
+            loading={isInitialLoading}
+            aria-describedby={liveRegionId}
+          >
+            <TableHeader columns={visibleColumns}>
+              {column =>
+                column.header ? (
+                  column.header()
+                ) : (
+                  <Column
+                    id={column.id}
+                    isRowHeader={column.isRowHeader}
+                    allowsSorting={column.isSortable}
+                    width={column.width}
+                    defaultWidth={column.defaultWidth}
+                    minWidth={column.minWidth}
+                    maxWidth={column.maxWidth}
                   >
-                    {column => column.cell(item)}
-                  </Row>
-                );
-              }}
-            </TableBody>
-          )}
-        </TableRoot>,
+                    {column.label}
+                  </Column>
+                )
+              }
+            </TableHeader>
+            {isInitialLoading ? (
+              <TableBodySkeleton columns={visibleColumns} />
+            ) : (
+              <TableBody
+                items={data}
+                dependencies={[visibleColumns]}
+                renderEmptyState={
+                  emptyState ? () => <Flex p="3">{emptyState}</Flex> : undefined
+                }
+              >
+                {item => {
+                  const itemIndex = data?.indexOf(item) ?? -1;
+
+                  if (isRowRenderFn(rowConfig)) {
+                    return rowConfig({
+                      item,
+                      index: itemIndex,
+                    });
+                  }
+
+                  return (
+                    <Row
+                      id={String(item.id)}
+                      columns={visibleColumns}
+                      href={rowConfig?.getHref?.(item)}
+                      onAction={
+                        rowConfig?.onClick
+                          ? () => rowConfig?.onClick?.(item)
+                          : undefined
+                      }
+                    >
+                      {column => column.cell(item)}
+                    </Row>
+                  );
+                }}
+              </TableBody>
+            )}
+          </TableRoot>,
+        ),
       )}
       {pagination.type === 'page' && (
         <TablePagination

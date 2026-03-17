@@ -40,6 +40,8 @@ export type PluginHeaderActionsApi = {
  *
  * @public
  */
-export const pluginHeaderActionsApiRef = createApiRef<PluginHeaderActionsApi>({
-  id: 'core.plugin-header-actions',
-});
+export const pluginHeaderActionsApiRef =
+  createApiRef<PluginHeaderActionsApi>().with({
+    id: 'core.plugin-header-actions',
+    pluginId: 'app',
+  });

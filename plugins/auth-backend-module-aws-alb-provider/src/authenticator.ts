@@ -98,7 +98,13 @@ export const awsAlbAuthenticator = createProxyAuthenticator({
         },
       };
     } catch (e) {
-      throw new Error(`Exception occurred during JWT processing: ${e}`);
+      if (e.name === 'AuthenticationError') {
+        throw e;
+      }
+      throw new AuthenticationError(
+        'Exception occurred during JWT processing',
+        e,
+      );
     }
   },
 });

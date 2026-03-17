@@ -135,7 +135,7 @@
     padding-block: var(--bui-space-1);
     padding-inline: var(--bui-space-1);
 
-    &:focus-visible {
+    &[data-focus-visible] {
       /* Remove default focus-visible outline because React Aria
        * triggers it on mouse click open of the list for some reason.
        * On keyboard use, the top item receives the focus style,

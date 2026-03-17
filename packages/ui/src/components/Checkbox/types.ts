@@ -17,7 +17,7 @@ import type { CheckboxProps as RACheckboxProps } from 'react-aria-components';
 
 /** @public */
 export type CheckboxOwnProps = {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   className?: string;
 };
 

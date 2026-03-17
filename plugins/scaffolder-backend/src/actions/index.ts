@@ -20,6 +20,7 @@ import { ScaffolderService } from '@backstage/plugin-scaffolder-node';
 import { createDryRunTemplateAction } from './createDryRunTemplateAction';
 import { createListScaffolderActionsAction } from './createListScaffolderActionsAction';
 import { createExecuteTemplateAction } from './createExecuteTemplateAction';
+import { createGetScaffolderTaskLogsAction } from './createGetScaffolderTaskLogsAction';
 
 export const createScaffolderActions = (options: {
   actionsRegistry: ActionsRegistryService;
@@ -34,4 +35,5 @@ export const createScaffolderActions = (options: {
   createDryRunTemplateAction(options);
   createListScaffolderActionsAction(options);
   createExecuteTemplateAction(options);
+  createGetScaffolderTaskLogsAction(options);
 };

@@ -11,6 +11,7 @@ import { CompoundEntityRef } from '@backstage/catalog-model';
 import { DomainEntity } from '@backstage/catalog-model';
 import { ElementType } from 'react';
 import { Entity } from '@backstage/catalog-model';
+import { EntityColumnConfig } from '@backstage/plugin-catalog-react/alpha';
 import { EntityListContextProps } from '@backstage/plugin-catalog-react';
 import { EntityListPagination } from '@backstage/plugin-catalog-react';
 import { EntityOwnerPickerProps } from '@backstage/plugin-catalog-react';
@@ -290,40 +291,64 @@ export class DefaultStarredEntitiesApi implements StarredEntitiesApi {
   toggleStarred(entityRef: string): Promise<void>;
 }
 
-// @public (undocumented)
-export interface DependencyOfComponentsCardProps {
-  // (undocumented)
+// @public @deprecated
+export interface DependencyOfComponentsCardLegacyProps {
+  // @deprecated (undocumented)
   columns?: TableColumn<ComponentEntity>[];
-  // (undocumented)
+  // @deprecated (undocumented)
   tableOptions?: TableOptions;
   // (undocumented)
   title?: string;
+  // @deprecated (undocumented)
+  variant?: InfoCardVariants;
+}
+
+// @public (undocumented)
+export interface DependencyOfComponentsCardProps {
   // (undocumented)
+  columnConfig?: EntityColumnConfig[];
+  // (undocumented)
+  title?: string;
+}
+
+// @public @deprecated
+export interface DependsOnComponentsCardLegacyProps {
+  // @deprecated (undocumented)
+  columns?: TableColumn<ComponentEntity>[];
+  // @deprecated (undocumented)
+  tableOptions?: TableOptions;
+  // (undocumented)
+  title?: string;
+  // @deprecated (undocumented)
   variant?: InfoCardVariants;
 }
 
 // @public (undocumented)
 export interface DependsOnComponentsCardProps {
   // (undocumented)
-  columns?: TableColumn<ComponentEntity>[];
+  columnConfig?: EntityColumnConfig[];
   // (undocumented)
+  title?: string;
+}
+
+// @public @deprecated
+export interface DependsOnResourcesCardLegacyProps {
+  // @deprecated (undocumented)
+  columns?: TableColumn<ResourceEntity>[];
+  // @deprecated (undocumented)
   tableOptions?: TableOptions;
   // (undocumented)
   title?: string;
-  // (undocumented)
+  // @deprecated (undocumented)
   variant?: InfoCardVariants;
 }
 
 // @public (undocumented)
 export interface DependsOnResourcesCardProps {
   // (undocumented)
-  columns?: TableColumn<ResourceEntity>[];
-  // (undocumented)
-  tableOptions?: TableOptions;
+  columnConfig?: EntityColumnConfig[];
   // (undocumented)
   title?: string;
-  // (undocumented)
-  variant?: InfoCardVariants;
 }
 
 // @public
@@ -502,16 +527,24 @@ export function hasCatalogProcessingErrors(
   },
 ): Promise<boolean>;
 
-// @public (undocumented)
-export interface HasComponentsCardProps {
-  // (undocumented)
+// @public @deprecated
+export interface HasComponentsCardLegacyProps {
+  // @deprecated (undocumented)
   columns?: TableColumn<ComponentEntity>[];
-  // (undocumented)
+  // @deprecated (undocumented)
   tableOptions?: TableOptions;
   // (undocumented)
   title?: string;
-  // (undocumented)
+  // @deprecated (undocumented)
   variant?: InfoCardVariants;
+}
+
+// @public (undocumented)
+export interface HasComponentsCardProps {
+  // (undocumented)
+  columnConfig?: EntityColumnConfig[];
+  // (undocumented)
+  title?: string;
 }
 
 // @public
@@ -525,54 +558,88 @@ export function hasRelationWarnings(
   },
 ): Promise<boolean>;
 
-// @public (undocumented)
-export interface HasResourcesCardProps {
-  // (undocumented)
+// @public @deprecated
+export interface HasResourcesCardLegacyProps {
+  // @deprecated (undocumented)
   columns?: TableColumn<ResourceEntity>[];
-  // (undocumented)
+  // @deprecated (undocumented)
   tableOptions?: TableOptions;
   // (undocumented)
   title?: string;
+  // @deprecated (undocumented)
+  variant?: InfoCardVariants;
+}
+
+// @public (undocumented)
+export interface HasResourcesCardProps {
   // (undocumented)
+  columnConfig?: EntityColumnConfig[];
+  // (undocumented)
+  title?: string;
+}
+
+// @public @deprecated
+export interface HasSubcomponentsCardLegacyProps {
+  // @deprecated (undocumented)
+  columns?: TableColumn<ComponentEntity>[];
+  // (undocumented)
+  kind?: string;
+  // @deprecated (undocumented)
+  tableOptions?: TableOptions;
+  // (undocumented)
+  title?: string;
+  // @deprecated (undocumented)
   variant?: InfoCardVariants;
 }
 
 // @public (undocumented)
 export interface HasSubcomponentsCardProps {
   // (undocumented)
-  columns?: TableColumn<ComponentEntity>[];
+  columnConfig?: EntityColumnConfig[];
   // (undocumented)
   kind?: string;
   // (undocumented)
+  title?: string;
+}
+
+// @public @deprecated
+export interface HasSubdomainsCardLegacyProps {
+  // @deprecated (undocumented)
+  columns?: TableColumn<DomainEntity>[];
+  // @deprecated (undocumented)
   tableOptions?: TableOptions;
   // (undocumented)
   title?: string;
-  // (undocumented)
+  // @deprecated (undocumented)
   variant?: InfoCardVariants;
 }
 
 // @public (undocumented)
 export interface HasSubdomainsCardProps {
   // (undocumented)
-  columns?: TableColumn<DomainEntity>[];
+  columnConfig?: EntityColumnConfig[];
   // (undocumented)
+  title?: string;
+}
+
+// @public @deprecated
+export interface HasSystemsCardLegacyProps {
+  // @deprecated (undocumented)
+  columns?: TableColumn<SystemEntity>[];
+  // @deprecated (undocumented)
   tableOptions?: TableOptions;
   // (undocumented)
   title?: string;
-  // (undocumented)
+  // @deprecated (undocumented)
   variant?: InfoCardVariants;
 }
 
 // @public (undocumented)
 export interface HasSystemsCardProps {
   // (undocumented)
-  columns?: TableColumn<SystemEntity>[];
-  // (undocumented)
-  tableOptions?: TableOptions;
+  columnConfig?: EntityColumnConfig[];
   // (undocumented)
   title?: string;
-  // (undocumented)
-  variant?: InfoCardVariants;
 }
 
 // @public

@@ -36,6 +36,7 @@ import {
 } from './createExtensionBlueprint';
 import { FrontendPlugin } from './createFrontendPlugin';
 import { FrontendModule } from './createFrontendModule';
+import { FilterPredicate } from '@backstage/filter-predicates';
 
 /**
  * This symbol is used to pass parameter overrides from the extension override to the blueprint factory
@@ -53,7 +54,8 @@ type ResolvedExtensionInput<TExtensionInput extends ExtensionInput> =
 
 /**
  * Converts an extension input map into a matching collection of resolved inputs.
- * @public
+ *
+ * @ignore
  */
 export type ResolvedExtensionInputs<
   TInputs extends {
@@ -173,6 +175,7 @@ export type CreateExtensionOptions<
   attachTo: ExtensionDefinitionAttachTo<UParentInputs> &
     VerifyExtensionAttachTo<UOutput, UParentInputs>;
   disabled?: boolean;
+  if?: FilterPredicate;
   inputs?: TInputs;
   output: Array<UOutput>;
   config?: {
@@ -254,6 +257,7 @@ export interface OverridableExtensionDefinition<
             UParentInputs
           >;
         disabled?: boolean;
+        if?: FilterPredicate;
         inputs?: TExtraInputs & {
           [KName in keyof T['inputs']]?: `Error: Input '${KName &
             string}' is already defined in parent definition`;
@@ -473,6 +477,7 @@ export function createExtension<
     name: options.name,
     attachTo: options.attachTo,
     disabled: options.disabled ?? false,
+    if: options.if,
     inputs: bindInputs(options.inputs, options.kind, options.name),
     output: options.output,
     configSchema,
@@ -544,12 +549,18 @@ export function createExtension<
         );
       }
 
+      let ifPredicate = options.if;
+      if ('if' in overrideOptions) {
+        ifPredicate = overrideOptions.if;
+      }
+
       return createExtension({
         kind: options.kind,
         name: options.name,
         attachTo: (overrideOptions.attachTo ??
           options.attachTo) as ExtensionDefinitionAttachTo,
         disabled: overrideOptions.disabled ?? options.disabled,
+        if: ifPredicate,
         inputs: bindInputs(
           {
             ...(options.inputs ?? {}),

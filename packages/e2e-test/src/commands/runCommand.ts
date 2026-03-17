@@ -34,7 +34,7 @@ import { findOwnPaths, runOutput, run } from '@backstage/cli-common';
 const ownPaths = findOwnPaths(__dirname);
 
 const templatePackagePaths = [
-  'packages/cli/templates/frontend-plugin/package.json.hbs',
+  'packages/cli-module-new/templates/frontend-plugin/package.json.hbs',
   'packages/create-app/templates/default-app/package.json.hbs',
   'packages/create-app/templates/default-app/packages/app/package.json.hbs',
   'packages/create-app/templates/default-app/packages/backend/package.json.hbs',

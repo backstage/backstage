@@ -50,6 +50,7 @@ export const TEMPLATE_ROLES = [
   'web-library',
   'node-library',
   'common-library',
+  'cli-module',
   'plugin-web-library',
   'plugin-node-library',
   'plugin-common-library',
@@ -80,7 +81,7 @@ export type PortableTemplateParams = {
 
 export type PortableTemplateInputRoleParams =
   | {
-      role: 'web-library' | 'node-library' | 'common-library';
+      role: 'web-library' | 'node-library' | 'common-library' | 'cli-module';
       name: string;
     }
   | {

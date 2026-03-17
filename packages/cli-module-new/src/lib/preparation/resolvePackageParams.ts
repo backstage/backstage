@@ -48,6 +48,8 @@ function getBaseNameForRole(
     case 'node-library':
     case 'common-library':
       return roleParams.name;
+    case 'cli-module':
+      return `cli-module-${roleParams.name}`;
     case 'plugin-web-library':
       return `${roleParams.pluginId}-react`;
     case 'plugin-node-library':

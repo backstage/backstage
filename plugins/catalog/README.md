@@ -15,12 +15,16 @@ To check if you already have the package, look under
 `@backstage/plugin-catalog`. The instructions below walk through restoring the
 plugin, if you previously removed it.
 
-### Install the package
-
 ```bash
 # From your Backstage root directory
 yarn --cwd packages/app add @backstage/plugin-catalog
 ```
+
+Once installed, the plugin is automatically available in your app through the default feature discovery. For more details and alternative installation methods, see [installing plugins](https://backstage.io/docs/frontend-system/building-apps/installing-plugins).
+
+## Old Frontend System
+
+If your Backstage app uses the old frontend system, you need to manually wire the plugin into your app as outlined in this section. If you are on the new frontend system, you can skip this.
 
 ### Add the plugin to your `packages/app`
 

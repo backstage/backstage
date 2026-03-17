@@ -6,8 +6,66 @@
 import { CliModule } from '@backstage/cli-node';
 
 // @public (undocumented)
+export function accessTokenNeedsRefresh(instance: StoredInstance): boolean;
+
+// @public (undocumented)
 const _default: CliModule;
 export default _default;
+
+// @public (undocumented)
+export function getInstanceConfig<T = unknown>(
+  instanceName: string,
+  key: string,
+): Promise<T | undefined>;
+
+// @public (undocumented)
+export function getSecretStore(): Promise<SecretStore>;
+
+// @public (undocumented)
+export function getSelectedInstance(
+  instanceName?: string,
+): Promise<StoredInstance>;
+
+// @public (undocumented)
+export type HttpInit = {
+  headers?: Record<string, string>;
+  method?: string;
+  body?: any;
+  signal?: AbortSignal;
+};
+
+// @public (undocumented)
+export function httpJson<T>(url: string, init?: HttpInit): Promise<T>;
+
+// @public (undocumented)
+export function refreshAccessToken(
+  instanceName: string,
+): Promise<StoredInstance>;
+
+// @public (undocumented)
+export type SecretStore = {
+  get(service: string, account: string): Promise<string | undefined>;
+  set(service: string, account: string, secret: string): Promise<void>;
+  delete(service: string, account: string): Promise<void>;
+};
+
+// @public (undocumented)
+export type StoredInstance = {
+  name: string;
+  baseUrl: string;
+  clientId: string;
+  issuedAt: number;
+  accessTokenExpiresAt: number;
+  selected?: boolean;
+  config?: Record<string, unknown>;
+};
+
+// @public (undocumented)
+export function updateInstanceConfig(
+  instanceName: string,
+  key: string,
+  value: unknown,
+): Promise<void>;
 
 // (No @packageDocumentation comment for this package)
 ```

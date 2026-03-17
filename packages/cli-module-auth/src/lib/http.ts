@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-import fetch from 'cross-fetch';
 import { ResponseError } from '@backstage/errors';
 
-type HttpInit = {
+/** @public */
+export type HttpInit = {
   headers?: Record<string, string>;
   method?: string;
   body?: any;
   signal?: AbortSignal;
 };
 
+/** @public */
 export async function httpJson<T>(url: string, init?: HttpInit): Promise<T> {
   const res = await fetch(url, {
     ...init,

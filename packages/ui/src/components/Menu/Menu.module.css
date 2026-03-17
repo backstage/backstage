@@ -78,7 +78,7 @@
     padding-inline: var(--bui-space-1);
     display: block;
 
-    &:focus-visible {
+    &[data-focus-visible] {
       outline: none;
     }
 

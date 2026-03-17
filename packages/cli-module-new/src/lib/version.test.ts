@@ -78,6 +78,9 @@ describe('createPackageVersionProvider', () => {
     expect(provider('@backstage/core-plugin-api')).toBe(
       `^${corePluginApiPkg.version}`,
     );
+    expect(provider('@backstage/frontend-dev-utils')).toBe(
+      `^${packageVersions['@backstage/frontend-dev-utils']}`,
+    );
   });
 
   describe('with backstage protocol options', () => {

@@ -11,6 +11,8 @@ An important customization point in the frontend system is the ability to overri
 
 In general, most features should have a good level of customization built into them, so that users do not have to leverage extension overrides to achieve common goals. A well written feature often has [configuration](../../conf/) settings, or uses extension inputs for extensibility where applicable. An example of this is the search plugin, which allows you to provide result renderers as inputs rather than replacing the result page wholesale just to tweak how results are shown. Adopters should take advantage of those when possible in order to reduce the need and size of extension overrides.
 
+Extension overrides can also replace or remove existing `if` predicates. This applies both to direct extension overrides through `.override(...)` and to plugin-level overrides through `plugin.withOverrides(...)`. Frontend modules can use the same extension override mechanism to adjust or clear the condition for an overridden extension.
+
 ## Overriding an extension
 
 Every extension created with `createExtension` comes with an `override` method, including those created from an [extension blueprint](./23-extension-blueprints.md). The `override` method **creates a new extension**, it does not mutate the existing extension. This new extension in created in such a way that if it is installed adjacent to the existing extension, it will take precedence and override the existing extension. While the `override` method does create new extension instances, it is not intended to be used as a way to create multiple new extensions from a base template, for that use-case you will want to use an [extension blueprint](./23-extension-blueprints.md) instead.
@@ -343,3 +345,5 @@ export default app.createRoot();
 ```
 
 You must define a `pluginId` when creating a frontend module, and the plugin must also be installed for the module to be loaded.
+
+Frontend modules also support an `if` option. Just like for plugins, that predicate is applied to every extension that comes from the module, and is combined with any extension-level `if` predicate using logical `AND`. This is useful when you want to enable or disable an entire override package based on a feature flag or permission.

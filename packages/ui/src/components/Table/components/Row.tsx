@@ -30,7 +30,7 @@ import { Flex } from '../../Flex';
 
 /** @public */
 export function Row<T extends object>(props: RowProps<T>) {
-  const { ownProps, restProps, analytics } = useDefinition(
+  const { ownProps, restProps, dataAttributes, analytics } = useDefinition(
     RowDefinition,
     props,
   );
@@ -73,9 +73,7 @@ export function Row<T extends object>(props: RowProps<T>) {
       {selectionBehavior === 'toggle' && selectionMode === 'multiple' && (
         <ReactAriaCell className={clsx(classes.cell, classes.cellSelection)}>
           <Flex justify="center" align="center">
-            <Checkbox slot="selection">
-              <></>
-            </Checkbox>
+            <Checkbox slot="selection" aria-label="Select row" />
           </Flex>
         </ReactAriaCell>
       )}
@@ -87,6 +85,7 @@ export function Row<T extends object>(props: RowProps<T>) {
     <ReactAriaRow
       href={href}
       {...restProps}
+      {...dataAttributes}
       target={effectiveTarget}
       rel={effectiveRel}
       className={clsx(classes.root, restProps.className)}

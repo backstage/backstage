@@ -160,6 +160,7 @@ export function getPromptsForRole(
     case 'web-library':
     case 'node-library':
     case 'common-library':
+    case 'cli-module':
       return [namePrompt()];
     case 'plugin-web-library':
     case 'plugin-node-library':

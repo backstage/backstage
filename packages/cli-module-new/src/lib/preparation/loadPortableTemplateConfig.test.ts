@@ -200,6 +200,72 @@ describe('loadPortableTemplateConfig', () => {
     });
   });
 
+  it('should rewrite legacy @backstage/cli/templates paths', async () => {
+    mockDir.setContent({
+      'package.json': JSON.stringify({
+        backstage: {
+          cli: {
+            new: {
+              templates: [
+                '@backstage/cli/templates/backend-plugin',
+                '@backstage/cli/templates/frontend-plugin',
+              ],
+            },
+          },
+        },
+      }),
+      node_modules: {
+        '@backstage': {
+          'cli-module-new': {
+            templates: {
+              'backend-plugin': {
+                [TEMPLATE_FILE_NAME]:
+                  'name: backend-plugin\nrole: backend-plugin\n',
+              },
+              'frontend-plugin': {
+                [TEMPLATE_FILE_NAME]:
+                  'name: frontend-plugin\nrole: frontend-plugin\n',
+              },
+            },
+          },
+        },
+      },
+    });
+
+    await expect(
+      loadPortableTemplateConfig({
+        packagePath: mockDir.resolve('package.json'),
+      }),
+    ).resolves.toEqual({
+      isUsingDefaultTemplates: false,
+      templatePointers: [
+        {
+          name: 'backend-plugin',
+          target: realpathSync(
+            mockDir.resolve(
+              'node_modules/@backstage/cli-module-new/templates/backend-plugin',
+              TEMPLATE_FILE_NAME,
+            ),
+          ),
+        },
+        {
+          name: 'frontend-plugin',
+          target: realpathSync(
+            mockDir.resolve(
+              'node_modules/@backstage/cli-module-new/templates/frontend-plugin',
+              TEMPLATE_FILE_NAME,
+            ),
+          ),
+        },
+      ],
+      license: 'Apache-2.0',
+      private: true,
+      version: '0.1.0',
+      packageNamePrefix: '@internal/',
+      packageNamePluginInfix: 'backstage-plugin-',
+    });
+  });
+
   it('should reject templates with conflicting names', async () => {
     mockDir.setContent({
       'package.json': JSON.stringify({

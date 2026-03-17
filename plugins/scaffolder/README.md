@@ -15,12 +15,71 @@ To check if you already have the package, look under
 `@backstage/plugin-scaffolder`. The instructions below walk through restoring
 the plugin, if you previously removed it.
 
-### Install the package
-
 ```bash
 # From your Backstage root directory
 yarn --cwd packages/app add @backstage/plugin-scaffolder
 ```
+
+Once installed, the plugin is automatically available in your app through the default feature discovery. For more details and alternative installation methods, see [installing plugins](https://backstage.io/docs/frontend-system/building-apps/installing-plugins).
+
+### Troubleshooting
+
+If you encounter [issues with early closure of the `EventStream`](https://github.com/backstage/backstage/issues/5535)
+used to auto-update logs during task execution, you can work around them by enabling
+long polling. To do so, update your `packages/app/src/apis.ts` file to register a
+`ScaffolderClient` with `useLongPollingLogs` set to `true`. By default, it is `false`.
+
+```typescript
+import {
+  AnyApiFactory,
+  createApiFactory,
+  discoveryApiRef,
+  fetchApiRef,
+  identityApiRef,
+} from '@backstage/core-plugin-api';
+import { scmIntegrationsApiRef } from '@backstage/integration-react';
+import {
+  scaffolderApiRef,
+  ScaffolderClient,
+} from '@backstage/plugin-scaffolder';
+
+export const apis: AnyApiFactory[] = [
+  createApiFactory({
+    api: scaffolderApiRef,
+    deps: {
+      discoveryApi: discoveryApiRef,
+      identityApi: identityApiRef,
+      scmIntegrationsApi: scmIntegrationsApiRef,
+      fetchApi: fetchApiRef,
+    },
+    factory: ({ scmIntegrationsApi, discoveryApi, identityApi, fetchApi }) =>
+      new ScaffolderClient({
+        discoveryApi,
+        identityApi,
+        scmIntegrationsApi,
+        fetchApi,
+        useLongPollingLogs: true,
+      }),
+  }),
+  // ... other factories
+];
+```
+
+This replaces the default implementation of the `scaffolderApiRef`.
+
+### Local development
+
+When you develop a new template, action or new `<ScaffolderFieldExtensions/>`, then we recommend
+to launch the plugin locally using the `createDevApp` of the `./dev/index.tsx` file for testing/Debugging purposes
+
+To play with it, open a terminal and run the command: `yarn start` within the `./plugins/scaffolder` folder
+
+**NOTE:** Don't forget to open a second terminal, start your Backstage backend there,
+and configure the template locations that you want to test.
+
+## Old Frontend System
+
+If your Backstage app uses the old frontend system, you need to manually wire the plugin into your app as outlined in this section. If you are on the new frontend system, you can skip this.
 
 ### Add the plugin to your `packages/app`
 
@@ -77,57 +136,6 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
       ...
     </Sidebar>
 ```
-
-### Troubleshooting
-
-If you encounter the [issue of closing EventStream](https://github.com/backstage/backstage/issues/5535)
-which auto-updates logs during task execution, you can enable long polling. To do so,
-update your `packages/app/src/apis.ts` file to register a `ScaffolderClient` with the
-`useLongPollingLogs` set to `true`. By default, it is `false`.
-
-```typescript
-import {
-  createApiFactory,
-  discoveryApiRef,
-  fetchApiRef,
-  identityApiRef,
-} from '@backstage/core-plugin-api';
-import {
-  scaffolderApiRef,
-  ScaffolderClient,
-} from '@backstage/plugin-scaffolder';
-
-export const apis: AnyApiFactory[] = [
-  createApiFactory({
-    api: scaffolderApiRef,
-    deps: {
-      discoveryApi: discoveryApiRef,
-      identityApi: identityApiRef,
-      scmIntegrationsApi: scmIntegrationsApiRef,
-      fetchApi: fetchApiRef,
-    },
-    factory: ({ scmIntegrationsApi, discoveryApi, identityApi, fetchApi }) =>
-      new ScaffolderClient({
-        discoveryApi,
-        identityApi,
-        scmIntegrationsApi,
-        fetchApi,
-        useLongPollingLogs: true,
-      }),
-  }),
-  // ... other factories
-```
-
-This replaces the default implementation of the `scaffolderApiRef`.
-
-### Local development
-
-When you develop a new template, action or new `<ScaffolderFieldExtensions/>`, then we recommend
-to launch the plugin locally using the `createDevApp` of the `./dev/index.tsx` file for testing/Debugging purposes
-
-To play with it, open a terminal and run the command: `yarn start` within the `./plugins/scaffolder` folder
-
-**NOTE:** Don't forget to open a second terminal and to launch the backend or [backend-next](../../docs/backend-system/index.md) there, using `yarn start` and to specify the locations of the templates to play with !
 
 ## Links
 

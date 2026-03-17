@@ -24,9 +24,11 @@ import {
   ExtensionDefinitionParameters,
   ExtensionInput,
   PortableSchema,
-  ResolvedExtensionInputs,
 } from '@backstage/frontend-plugin-api';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { ResolvedExtensionInputs } from '../../../frontend-plugin-api/src/wiring/createExtension';
 import { OpaqueType } from '@internal/opaque';
+import { FilterPredicate } from '@backstage/filter-predicates';
 
 export const OpaqueExtensionDefinition = OpaqueType.create<{
   public: OverridableExtensionDefinition<ExtensionDefinitionParameters>;
@@ -69,6 +71,7 @@ export const OpaqueExtensionDefinition = OpaqueType.create<{
         readonly name?: string;
         readonly attachTo: ExtensionDefinitionAttachTo;
         readonly disabled: boolean;
+        readonly if?: FilterPredicate;
         readonly configSchema?: PortableSchema<any, any>;
         readonly inputs: { [inputName in string]: ExtensionInput };
         readonly output: Array<ExtensionDataRef>;

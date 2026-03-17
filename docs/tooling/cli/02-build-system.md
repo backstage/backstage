@@ -294,6 +294,20 @@ will be set up that listens to the protocol, host and port set by `app.baseUrl`
 in the configuration. If needed it is also possible to override the listening
 options through the `app.listen` configuration.
 
+For frontend plugin packages using the new frontend system, the recommended way to
+set up the `dev/index` entry point is to use the `createDevApp` helper from
+`@backstage/frontend-dev-utils`. It creates and renders a minimal Backstage app
+with your plugin loaded:
+
+```tsx title="in dev/index.ts"
+import { createDevApp } from '@backstage/frontend-dev-utils';
+import myPlugin from '../src';
+
+createDevApp({ features: [myPlugin] });
+```
+
+For the legacy frontend system, the `@backstage/dev-utils` package provides equivalent helpers.
+
 The frontend development bundling is currently based on
 [Webpack](https://webpack.js.org/) and
 [Webpack Dev Server](https://webpack.js.org/configuration/dev-server/). The

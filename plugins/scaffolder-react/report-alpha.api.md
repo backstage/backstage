@@ -200,7 +200,9 @@ export type FormFieldExtensionData<
 };
 
 // @alpha (undocumented)
-export const formFieldsApiRef: ApiRef<ScaffolderFormFieldsApi>;
+export const formFieldsApiRef: ApiRef<ScaffolderFormFieldsApi> & {
+  readonly $$type: '@backstage/ApiRef';
+};
 
 // @alpha (undocumented)
 export type FormValidation = {

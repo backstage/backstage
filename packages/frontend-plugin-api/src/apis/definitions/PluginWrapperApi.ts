@@ -47,6 +47,7 @@ export type PluginWrapperApi = {
  *
  * @public
  */
-export const pluginWrapperApiRef = createApiRef<PluginWrapperApi>({
+export const pluginWrapperApiRef = createApiRef<PluginWrapperApi>().with({
   id: 'core.plugin-wrapper',
+  pluginId: 'app',
 });
