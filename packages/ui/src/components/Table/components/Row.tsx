@@ -30,7 +30,7 @@ import { Flex } from '../../Flex';
 
 /** @public */
 export function Row<T extends object>(props: RowProps<T>) {
-  const { ownProps, restProps, analytics } = useDefinition(
+  const { ownProps, restProps, dataAttributes, analytics } = useDefinition(
     RowDefinition,
     props,
   );
@@ -85,6 +85,7 @@ export function Row<T extends object>(props: RowProps<T>) {
     <ReactAriaRow
       href={href}
       {...restProps}
+      {...dataAttributes}
       target={effectiveTarget}
       rel={effectiveRel}
       className={clsx(classes.root, restProps.className)}

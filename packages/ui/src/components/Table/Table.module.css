@@ -105,6 +105,60 @@
       background-color: var(--bui-bg-neutral-1-pressed);
     }
 
+    &[data-on-bg='neutral-1'] {
+      &:hover {
+        background-color: var(--bui-bg-neutral-2-hover);
+      }
+
+      &[data-selected] {
+        background-color: var(--bui-bg-neutral-2-pressed);
+      }
+
+      &[data-pressed] {
+        background-color: var(--bui-bg-neutral-2-pressed);
+      }
+
+      &[data-disabled] {
+        background-color: var(--bui-bg-neutral-2-disabled);
+      }
+    }
+
+    &[data-on-bg='neutral-2'] {
+      &:hover {
+        background-color: var(--bui-bg-neutral-3-hover);
+      }
+
+      &[data-selected] {
+        background-color: var(--bui-bg-neutral-3-pressed);
+      }
+
+      &[data-pressed] {
+        background-color: var(--bui-bg-neutral-3-pressed);
+      }
+
+      &[data-disabled] {
+        background-color: var(--bui-bg-neutral-3-disabled);
+      }
+    }
+
+    &[data-on-bg='neutral-3'] {
+      &:hover {
+        background-color: var(--bui-bg-neutral-4-hover);
+      }
+
+      &[data-selected] {
+        background-color: var(--bui-bg-neutral-4-pressed);
+      }
+
+      &[data-pressed] {
+        background-color: var(--bui-bg-neutral-4-pressed);
+      }
+
+      &[data-disabled] {
+        background-color: var(--bui-bg-neutral-4-disabled);
+      }
+    }
+
     &[data-href],
     &[data-selection-mode],
     &[data-react-aria-pressable='true'] {
