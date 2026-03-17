@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { forwardRef } from 'react';
+import { forwardRef, useEffect } from 'react';
 import { Checkbox as RACheckbox } from 'react-aria-components';
 import type { CheckboxProps } from './types';
 import { useDefinition } from '../../hooks/useDefinition';
@@ -29,6 +29,16 @@ export const Checkbox = forwardRef<HTMLLabelElement, CheckboxProps>(
       props,
     );
     const { classes, children } = ownProps;
+    const ariaLabel = restProps['aria-label'];
+    const ariaLabelledBy = restProps['aria-labelledby'];
+
+    useEffect(() => {
+      if (!children && !ariaLabel && !ariaLabelledBy) {
+        console.warn(
+          'Checkbox requires either a visible label, aria-label, or aria-labelledby for accessibility',
+        );
+      }
+    }, [children, ariaLabel, ariaLabelledBy]);
 
     return (
       <RACheckbox
@@ -46,7 +56,7 @@ export const Checkbox = forwardRef<HTMLLabelElement, CheckboxProps>(
                 <RiCheckLine size={12} />
               )}
             </div>
-            <div>{children}</div>
+            {children != null && <div>{children}</div>}
           </>
         )}
       </RACheckbox>
