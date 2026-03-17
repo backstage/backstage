@@ -96,11 +96,14 @@ function createSpecApiTypeColumnConfig(
   return {
     id: 'apiType',
     label: t('apiEntityColumns.typeTitle'),
+    isSortable: true,
     cell: entity => (
       <Cell>
         <ApiTypeTitle apiEntity={entity as unknown as ApiEntity} />
       </Cell>
     ),
+    sortValue: entity =>
+      (entity.spec as Record<string, string> | undefined)?.type ?? '',
   };
 }
 
