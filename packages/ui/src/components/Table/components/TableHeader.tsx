@@ -43,9 +43,7 @@ export const TableHeader = <T extends object>(props: TableHeaderProps<T>) => {
           className={classes.headSelection}
         >
           <Flex justify="center" align="center">
-            <Checkbox slot="selection">
-              <></>
-            </Checkbox>
+            <Checkbox slot="selection" aria-label="Select all" />
           </Flex>
         </Column>
       )}

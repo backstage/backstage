@@ -73,9 +73,7 @@ export function Row<T extends object>(props: RowProps<T>) {
       {selectionBehavior === 'toggle' && selectionMode === 'multiple' && (
         <ReactAriaCell className={clsx(classes.cell, classes.cellSelection)}>
           <Flex justify="center" align="center">
-            <Checkbox slot="selection">
-              <></>
-            </Checkbox>
+            <Checkbox slot="selection" aria-label="Select row" />
           </Flex>
         </ReactAriaCell>
       )}
