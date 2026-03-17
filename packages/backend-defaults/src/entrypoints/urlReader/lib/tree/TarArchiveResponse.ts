@@ -176,7 +176,6 @@ export class TarArchiveResponse implements UrlReaderServiceReadTreeResponse {
         strip,
         cwd: dir,
         chmod: true,
-        processUmask: 0o22,
         filter: (path, stat) => {
           // Filter errors will short-circuit the rest of the filtering and then throw
           if (filterError) {
