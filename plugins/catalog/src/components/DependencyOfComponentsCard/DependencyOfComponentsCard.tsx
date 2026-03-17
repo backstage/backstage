@@ -14,27 +14,89 @@
  * limitations under the License.
  */
 
-import { RELATION_DEPENDENCY_OF } from '@backstage/catalog-model';
-
+import {
+  ComponentEntity,
+  RELATION_DEPENDENCY_OF,
+} from '@backstage/catalog-model';
+import {
+  InfoCardVariants,
+  TableColumn,
+  TableOptions,
+} from '@backstage/core-components';
 import {
   EntityRelationCard,
   EntityColumnConfig,
   componentColumnConfig,
   componentEntityHelpLink,
 } from '@backstage/plugin-catalog-react';
+import {
+  asComponentEntities,
+  componentEntityColumns,
+  componentEntityHelpLink as legacyHelpLink,
+  RelatedEntitiesCard,
+} from '../RelatedEntitiesCard';
 import { catalogTranslationRef } from '../../alpha/translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /** @public */
-export interface DependencyOfComponentsCardProps {
+export interface DependencyOfComponentsCardBaseProps {
   title?: string;
   columnConfig?: EntityColumnConfig[];
+}
+
+/**
+ * Props for the legacy MUI-based rendering.
+ * @deprecated Use {@link DependencyOfComponentsCardBaseProps} instead.
+ * @public
+ */
+export interface DependencyOfComponentsCardLegacyProps {
+  title?: string;
+  /** @deprecated Use `columnConfig` instead. */
+  variant?: InfoCardVariants;
+  /** @deprecated Use `columnConfig` instead. */
+  columns?: TableColumn<ComponentEntity>[];
+  /** @deprecated Use `columnConfig` instead. */
+  tableOptions?: TableOptions;
+}
+
+/** @public */
+export type DependencyOfComponentsCardProps =
+  | DependencyOfComponentsCardBaseProps
+  | DependencyOfComponentsCardLegacyProps;
+
+function isLegacyProps(
+  props: DependencyOfComponentsCardProps,
+): props is DependencyOfComponentsCardLegacyProps {
+  return 'variant' in props || 'columns' in props || 'tableOptions' in props;
 }
 
 export function DependencyOfComponentsCard(
   props: DependencyOfComponentsCardProps,
 ) {
   const { t } = useTranslationRef(catalogTranslationRef);
+
+  if (isLegacyProps(props)) {
+    const {
+      variant = 'gridItem',
+      title = t('dependencyOfComponentsCard.title'),
+      columns = componentEntityColumns,
+      tableOptions = {},
+    } = props;
+    return (
+      <RelatedEntitiesCard
+        variant={variant}
+        title={title}
+        entityKind="Component"
+        relationType={RELATION_DEPENDENCY_OF}
+        columns={columns}
+        emptyMessage={t('dependencyOfComponentsCard.emptyMessage')}
+        emptyHelpLink={legacyHelpLink}
+        asRenderableEntities={asComponentEntities}
+        tableOptions={tableOptions}
+      />
+    );
+  }
+
   const {
     title = t('dependencyOfComponentsCard.title'),
     columnConfig = componentColumnConfig,

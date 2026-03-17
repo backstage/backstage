@@ -14,25 +14,84 @@
  * limitations under the License.
  */
 
-import { RELATION_HAS_PART } from '@backstage/catalog-model';
-
+import { DomainEntity, RELATION_HAS_PART } from '@backstage/catalog-model';
+import {
+  InfoCardVariants,
+  TableColumn,
+  TableOptions,
+} from '@backstage/core-components';
 import {
   EntityRelationCard,
   EntityColumnConfig,
   domainColumnConfig,
   domainEntityHelpLink,
 } from '@backstage/plugin-catalog-react';
+import {
+  asDomainEntities,
+  domainEntityColumns,
+  domainEntityHelpLink as legacyHelpLink,
+  RelatedEntitiesCard,
+} from '../RelatedEntitiesCard';
 import { catalogTranslationRef } from '../../alpha/translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /** @public */
-export interface HasSubdomainsCardProps {
+export interface HasSubdomainsCardBaseProps {
   title?: string;
   columnConfig?: EntityColumnConfig[];
 }
 
+/**
+ * Props for the legacy MUI-based rendering.
+ * @deprecated Use {@link HasSubdomainsCardBaseProps} instead.
+ * @public
+ */
+export interface HasSubdomainsCardLegacyProps {
+  title?: string;
+  /** @deprecated Use `columnConfig` instead. */
+  variant?: InfoCardVariants;
+  /** @deprecated Use `columnConfig` instead. */
+  tableOptions?: TableOptions;
+  /** @deprecated Use `columnConfig` instead. */
+  columns?: TableColumn<DomainEntity>[];
+}
+
+/** @public */
+export type HasSubdomainsCardProps =
+  | HasSubdomainsCardBaseProps
+  | HasSubdomainsCardLegacyProps;
+
+function isLegacyProps(
+  props: HasSubdomainsCardProps,
+): props is HasSubdomainsCardLegacyProps {
+  return 'variant' in props || 'columns' in props || 'tableOptions' in props;
+}
+
 export function HasSubdomainsCard(props: HasSubdomainsCardProps) {
   const { t } = useTranslationRef(catalogTranslationRef);
+
+  if (isLegacyProps(props)) {
+    const {
+      variant = 'gridItem',
+      title = t('hasSubdomainsCard.title'),
+      columns = domainEntityColumns,
+      tableOptions = {},
+    } = props;
+    return (
+      <RelatedEntitiesCard
+        variant={variant}
+        title={title}
+        entityKind="Domain"
+        relationType={RELATION_HAS_PART}
+        columns={columns}
+        asRenderableEntities={asDomainEntities}
+        emptyMessage={t('hasSubdomainsCard.emptyMessage')}
+        emptyHelpLink={legacyHelpLink}
+        tableOptions={tableOptions}
+      />
+    );
+  }
+
   const {
     title = t('hasSubdomainsCard.title'),
     columnConfig = domainColumnConfig,

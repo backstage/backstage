@@ -14,25 +14,84 @@
  * limitations under the License.
  */
 
-import { RELATION_DEPENDS_ON } from '@backstage/catalog-model';
-
+import { RELATION_DEPENDS_ON, ResourceEntity } from '@backstage/catalog-model';
+import {
+  InfoCardVariants,
+  TableColumn,
+  TableOptions,
+} from '@backstage/core-components';
 import {
   EntityRelationCard,
   EntityColumnConfig,
   resourceColumnConfig,
   componentEntityHelpLink,
 } from '@backstage/plugin-catalog-react';
+import {
+  asResourceEntities,
+  componentEntityHelpLink as legacyHelpLink,
+  resourceEntityColumns,
+  RelatedEntitiesCard,
+} from '../RelatedEntitiesCard';
 import { catalogTranslationRef } from '../../alpha/translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /** @public */
-export interface DependsOnResourcesCardProps {
+export interface DependsOnResourcesCardBaseProps {
   title?: string;
   columnConfig?: EntityColumnConfig[];
 }
 
+/**
+ * Props for the legacy MUI-based rendering.
+ * @deprecated Use {@link DependsOnResourcesCardBaseProps} instead.
+ * @public
+ */
+export interface DependsOnResourcesCardLegacyProps {
+  title?: string;
+  /** @deprecated Use `columnConfig` instead. */
+  variant?: InfoCardVariants;
+  /** @deprecated Use `columnConfig` instead. */
+  columns?: TableColumn<ResourceEntity>[];
+  /** @deprecated Use `columnConfig` instead. */
+  tableOptions?: TableOptions;
+}
+
+/** @public */
+export type DependsOnResourcesCardProps =
+  | DependsOnResourcesCardBaseProps
+  | DependsOnResourcesCardLegacyProps;
+
+function isLegacyProps(
+  props: DependsOnResourcesCardProps,
+): props is DependsOnResourcesCardLegacyProps {
+  return 'variant' in props || 'columns' in props || 'tableOptions' in props;
+}
+
 export function DependsOnResourcesCard(props: DependsOnResourcesCardProps) {
   const { t } = useTranslationRef(catalogTranslationRef);
+
+  if (isLegacyProps(props)) {
+    const {
+      variant = 'gridItem',
+      title = t('dependsOnResourcesCard.title'),
+      columns = resourceEntityColumns,
+      tableOptions = {},
+    } = props;
+    return (
+      <RelatedEntitiesCard
+        variant={variant}
+        title={title}
+        entityKind="Resource"
+        relationType={RELATION_DEPENDS_ON}
+        columns={columns}
+        emptyMessage={t('dependsOnResourcesCard.emptyMessage')}
+        emptyHelpLink={legacyHelpLink}
+        asRenderableEntities={asResourceEntities}
+        tableOptions={tableOptions}
+      />
+    );
+  }
+
   const {
     title = t('dependsOnResourcesCard.title'),
     columnConfig = resourceColumnConfig,

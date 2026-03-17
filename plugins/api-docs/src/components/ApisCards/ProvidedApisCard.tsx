@@ -14,26 +14,133 @@
  * limitations under the License.
  */
 
-import { RELATION_PROVIDES_API } from '@backstage/catalog-model';
-
+import { ApiEntity, RELATION_PROVIDES_API } from '@backstage/catalog-model';
+import Typography from '@material-ui/core/Typography';
 import {
+  EntityTable,
+  useEntity,
+  useRelatedEntities,
   EntityRelationCard,
   EntityColumnConfig,
-  useEntity,
 } from '@backstage/plugin-catalog-react';
+import { getApiEntityColumns, getApiEntityColumnConfig } from './presets';
+import {
+  CodeSnippet,
+  InfoCard,
+  InfoCardVariants,
+  Link,
+  Progress,
+  TableColumn,
+  TableOptions,
+  WarningPanel,
+} from '@backstage/core-components';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { apiDocsTranslationRef } from '../../translation';
-import { getApiEntityColumnConfig } from './presets';
+
+/** @public */
+export interface ProvidedApisCardBaseProps {
+  title?: string;
+  columnConfig?: EntityColumnConfig[];
+}
+
+/**
+ * Props for the legacy MUI-based rendering.
+ * @deprecated Use {@link ProvidedApisCardBaseProps} instead.
+ * @public
+ */
+export interface ProvidedApisCardLegacyProps {
+  title?: string;
+  /** @deprecated Use `columnConfig` instead. */
+  variant?: InfoCardVariants;
+  /** @deprecated Use `columnConfig` instead. */
+  columns?: TableColumn<ApiEntity>[];
+  /** @deprecated Use `columnConfig` instead. */
+  tableOptions?: TableOptions;
+}
+
+/** @public */
+export type ProvidedApisCardProps =
+  | ProvidedApisCardBaseProps
+  | ProvidedApisCardLegacyProps;
+
+function isLegacyProps(
+  props: ProvidedApisCardProps,
+): props is ProvidedApisCardLegacyProps {
+  return 'variant' in props || 'columns' in props || 'tableOptions' in props;
+}
+
+function ProvidedApisCardLegacy(props: ProvidedApisCardLegacyProps) {
+  const { t } = useTranslationRef(apiDocsTranslationRef);
+  const {
+    variant = 'gridItem',
+    title = t('providedApisCard.title'),
+    columns = getApiEntityColumns(t),
+    tableOptions = {},
+  } = props;
+  const { entity } = useEntity();
+  const { entities, loading, error } = useRelatedEntities(entity, {
+    type: RELATION_PROVIDES_API,
+  });
+
+  if (loading) {
+    return (
+      <InfoCard variant={variant} title={title}>
+        <Progress />
+      </InfoCard>
+    );
+  }
+
+  if (error || !entities) {
+    return (
+      <InfoCard variant={variant} title={title}>
+        <WarningPanel
+          severity="error"
+          title={t('providedApisCard.error.title')}
+          message={<CodeSnippet text={`${error}`} language="text" />}
+        />
+      </InfoCard>
+    );
+  }
+
+  return (
+    <EntityTable
+      title={title}
+      variant={variant}
+      emptyContent={
+        <div style={{ textAlign: 'center' }}>
+          <Typography variant="body1">
+            {t('providedApisCard.emptyContent.title', {
+              entity: entity.kind.toLocaleLowerCase('en-US'),
+            })}
+          </Typography>
+          <Typography variant="body2">
+            <Link
+              to="https://backstage.io/docs/features/software-catalog/descriptor-format#specprovidesapis-optional"
+              externalLinkIcon
+            >
+              {t('apisCardHelpLinkTitle')}
+            </Link>
+          </Typography>
+        </div>
+      }
+      columns={columns}
+      tableOptions={tableOptions}
+      entities={entities as ApiEntity[]}
+    />
+  );
+}
 
 /**
  * @public
  */
-export const ProvidedApisCard = (props: {
-  title?: string;
-  columnConfig?: EntityColumnConfig[];
-}) => {
+export const ProvidedApisCard = (props: ProvidedApisCardProps) => {
   const { t } = useTranslationRef(apiDocsTranslationRef);
   const { entity } = useEntity();
+
+  if (isLegacyProps(props)) {
+    return <ProvidedApisCardLegacy {...props} />;
+  }
+
   const {
     title = t('providedApisCard.title'),
     columnConfig = getApiEntityColumnConfig(t),

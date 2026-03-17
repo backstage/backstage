@@ -6,7 +6,9 @@
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { CatalogApi } from '@backstage/plugin-catalog-react';
+import { ComponentEntity } from '@backstage/catalog-model';
 import { CompoundEntityRef } from '@backstage/catalog-model';
+import { DomainEntity } from '@backstage/catalog-model';
 import { ElementType } from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { EntityColumnConfig } from '@backstage/plugin-catalog-react';
@@ -25,12 +27,14 @@ import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { Observable } from '@backstage/types';
 import { Overrides } from '@material-ui/core/styles/overrides';
 import { ReactNode } from 'react';
+import { ResourceEntity } from '@backstage/catalog-model';
 import { ResultHighlight } from '@backstage/plugin-search-common';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { SearchResultListItemExtensionProps } from '@backstage/plugin-search-react';
 import { StarredEntitiesApi } from '@backstage/plugin-catalog-react';
 import { StorageApi } from '@backstage/core-plugin-api';
 import { StyleRules } from '@material-ui/core/styles/withStyles';
+import { SystemEntity } from '@backstage/catalog-model';
 import { TableColumn } from '@backstage/core-components';
 import { TableOptions } from '@backstage/core-components';
 import { TableProps } from '@backstage/core-components';
@@ -288,28 +292,79 @@ export class DefaultStarredEntitiesApi implements StarredEntitiesApi {
 }
 
 // @public (undocumented)
-export interface DependencyOfComponentsCardProps {
+export interface DependencyOfComponentsCardBaseProps {
   // (undocumented)
   columnConfig?: EntityColumnConfig[];
   // (undocumented)
   title?: string;
 }
 
+// @public @deprecated
+export interface DependencyOfComponentsCardLegacyProps {
+  // @deprecated (undocumented)
+  columns?: TableColumn<ComponentEntity>[];
+  // @deprecated (undocumented)
+  tableOptions?: TableOptions;
+  // (undocumented)
+  title?: string;
+  // @deprecated (undocumented)
+  variant?: InfoCardVariants;
+}
+
 // @public (undocumented)
-export interface DependsOnComponentsCardProps {
+export type DependencyOfComponentsCardProps =
+  | DependencyOfComponentsCardBaseProps
+  | DependencyOfComponentsCardLegacyProps;
+
+// @public (undocumented)
+export interface DependsOnComponentsCardBaseProps {
   // (undocumented)
   columnConfig?: EntityColumnConfig[];
   // (undocumented)
   title?: string;
 }
 
+// @public @deprecated
+export interface DependsOnComponentsCardLegacyProps {
+  // @deprecated (undocumented)
+  columns?: TableColumn<ComponentEntity>[];
+  // @deprecated (undocumented)
+  tableOptions?: TableOptions;
+  // (undocumented)
+  title?: string;
+  // @deprecated (undocumented)
+  variant?: InfoCardVariants;
+}
+
 // @public (undocumented)
-export interface DependsOnResourcesCardProps {
+export type DependsOnComponentsCardProps =
+  | DependsOnComponentsCardBaseProps
+  | DependsOnComponentsCardLegacyProps;
+
+// @public (undocumented)
+export interface DependsOnResourcesCardBaseProps {
   // (undocumented)
   columnConfig?: EntityColumnConfig[];
   // (undocumented)
   title?: string;
 }
+
+// @public @deprecated
+export interface DependsOnResourcesCardLegacyProps {
+  // @deprecated (undocumented)
+  columns?: TableColumn<ResourceEntity>[];
+  // @deprecated (undocumented)
+  tableOptions?: TableOptions;
+  // (undocumented)
+  title?: string;
+  // @deprecated (undocumented)
+  variant?: InfoCardVariants;
+}
+
+// @public (undocumented)
+export type DependsOnResourcesCardProps =
+  | DependsOnResourcesCardBaseProps
+  | DependsOnResourcesCardLegacyProps;
 
 // @public
 export const EntityAboutCard: () => JSX.Element;
@@ -488,12 +543,29 @@ export function hasCatalogProcessingErrors(
 ): Promise<boolean>;
 
 // @public (undocumented)
-export interface HasComponentsCardProps {
+export interface HasComponentsCardBaseProps {
   // (undocumented)
   columnConfig?: EntityColumnConfig[];
   // (undocumented)
   title?: string;
 }
+
+// @public @deprecated
+export interface HasComponentsCardLegacyProps {
+  // @deprecated (undocumented)
+  columns?: TableColumn<ComponentEntity>[];
+  // @deprecated (undocumented)
+  tableOptions?: TableOptions;
+  // (undocumented)
+  title?: string;
+  // @deprecated (undocumented)
+  variant?: InfoCardVariants;
+}
+
+// @public (undocumented)
+export type HasComponentsCardProps =
+  | HasComponentsCardBaseProps
+  | HasComponentsCardLegacyProps;
 
 // @public
 export function hasLabels(entity: Entity): boolean;
@@ -507,15 +579,32 @@ export function hasRelationWarnings(
 ): Promise<boolean>;
 
 // @public (undocumented)
-export interface HasResourcesCardProps {
+export interface HasResourcesCardBaseProps {
   // (undocumented)
   columnConfig?: EntityColumnConfig[];
   // (undocumented)
   title?: string;
 }
 
+// @public @deprecated
+export interface HasResourcesCardLegacyProps {
+  // @deprecated (undocumented)
+  columns?: TableColumn<ResourceEntity>[];
+  // @deprecated (undocumented)
+  tableOptions?: TableOptions;
+  // (undocumented)
+  title?: string;
+  // @deprecated (undocumented)
+  variant?: InfoCardVariants;
+}
+
 // @public (undocumented)
-export interface HasSubcomponentsCardProps {
+export type HasResourcesCardProps =
+  | HasResourcesCardBaseProps
+  | HasResourcesCardLegacyProps;
+
+// @public (undocumented)
+export interface HasSubcomponentsCardBaseProps {
   // (undocumented)
   columnConfig?: EntityColumnConfig[];
   // (undocumented)
@@ -524,21 +613,74 @@ export interface HasSubcomponentsCardProps {
   title?: string;
 }
 
+// @public @deprecated
+export interface HasSubcomponentsCardLegacyProps {
+  // @deprecated (undocumented)
+  columns?: TableColumn<ComponentEntity>[];
+  // (undocumented)
+  kind?: string;
+  // @deprecated (undocumented)
+  tableOptions?: TableOptions;
+  // (undocumented)
+  title?: string;
+  // @deprecated (undocumented)
+  variant?: InfoCardVariants;
+}
+
 // @public (undocumented)
-export interface HasSubdomainsCardProps {
+export type HasSubcomponentsCardProps =
+  | HasSubcomponentsCardBaseProps
+  | HasSubcomponentsCardLegacyProps;
+
+// @public (undocumented)
+export interface HasSubdomainsCardBaseProps {
   // (undocumented)
   columnConfig?: EntityColumnConfig[];
   // (undocumented)
   title?: string;
 }
 
+// @public @deprecated
+export interface HasSubdomainsCardLegacyProps {
+  // @deprecated (undocumented)
+  columns?: TableColumn<DomainEntity>[];
+  // @deprecated (undocumented)
+  tableOptions?: TableOptions;
+  // (undocumented)
+  title?: string;
+  // @deprecated (undocumented)
+  variant?: InfoCardVariants;
+}
+
 // @public (undocumented)
-export interface HasSystemsCardProps {
+export type HasSubdomainsCardProps =
+  | HasSubdomainsCardBaseProps
+  | HasSubdomainsCardLegacyProps;
+
+// @public (undocumented)
+export interface HasSystemsCardBaseProps {
   // (undocumented)
   columnConfig?: EntityColumnConfig[];
   // (undocumented)
   title?: string;
 }
+
+// @public @deprecated
+export interface HasSystemsCardLegacyProps {
+  // @deprecated (undocumented)
+  columns?: TableColumn<SystemEntity>[];
+  // @deprecated (undocumented)
+  tableOptions?: TableOptions;
+  // (undocumented)
+  title?: string;
+  // @deprecated (undocumented)
+  variant?: InfoCardVariants;
+}
+
+// @public (undocumented)
+export type HasSystemsCardProps =
+  | HasSystemsCardBaseProps
+  | HasSystemsCardLegacyProps;
 
 // @public
 export function isApiType(

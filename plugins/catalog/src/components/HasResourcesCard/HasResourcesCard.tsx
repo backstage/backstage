@@ -14,25 +14,84 @@
  * limitations under the License.
  */
 
-import { RELATION_HAS_PART } from '@backstage/catalog-model';
-
+import { RELATION_HAS_PART, ResourceEntity } from '@backstage/catalog-model';
+import {
+  InfoCardVariants,
+  TableColumn,
+  TableOptions,
+} from '@backstage/core-components';
 import {
   EntityRelationCard,
   EntityColumnConfig,
   resourceColumnConfig,
   resourceEntityHelpLink,
 } from '@backstage/plugin-catalog-react';
+import {
+  asResourceEntities,
+  resourceEntityColumns,
+  resourceEntityHelpLink as legacyHelpLink,
+  RelatedEntitiesCard,
+} from '../RelatedEntitiesCard';
 import { catalogTranslationRef } from '../../alpha/translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /** @public */
-export interface HasResourcesCardProps {
+export interface HasResourcesCardBaseProps {
   title?: string;
   columnConfig?: EntityColumnConfig[];
 }
 
+/**
+ * Props for the legacy MUI-based rendering.
+ * @deprecated Use {@link HasResourcesCardBaseProps} instead.
+ * @public
+ */
+export interface HasResourcesCardLegacyProps {
+  title?: string;
+  /** @deprecated Use `columnConfig` instead. */
+  variant?: InfoCardVariants;
+  /** @deprecated Use `columnConfig` instead. */
+  columns?: TableColumn<ResourceEntity>[];
+  /** @deprecated Use `columnConfig` instead. */
+  tableOptions?: TableOptions;
+}
+
+/** @public */
+export type HasResourcesCardProps =
+  | HasResourcesCardBaseProps
+  | HasResourcesCardLegacyProps;
+
+function isLegacyProps(
+  props: HasResourcesCardProps,
+): props is HasResourcesCardLegacyProps {
+  return 'variant' in props || 'columns' in props || 'tableOptions' in props;
+}
+
 export function HasResourcesCard(props: HasResourcesCardProps) {
   const { t } = useTranslationRef(catalogTranslationRef);
+
+  if (isLegacyProps(props)) {
+    const {
+      variant = 'gridItem',
+      title = t('hasResourcesCard.title'),
+      columns = resourceEntityColumns,
+      tableOptions = {},
+    } = props;
+    return (
+      <RelatedEntitiesCard
+        variant={variant}
+        title={title}
+        entityKind="Resource"
+        relationType={RELATION_HAS_PART}
+        columns={columns}
+        emptyMessage={t('hasResourcesCard.emptyMessage')}
+        emptyHelpLink={legacyHelpLink}
+        asRenderableEntities={asResourceEntities}
+        tableOptions={tableOptions}
+      />
+    );
+  }
+
   const {
     title = t('hasResourcesCard.title'),
     columnConfig = resourceColumnConfig,

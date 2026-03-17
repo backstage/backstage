@@ -15,4 +15,8 @@
  */
 
 export { HasResourcesCard } from './HasResourcesCard';
-export type { HasResourcesCardProps } from './HasResourcesCard';
+export type {
+  HasResourcesCardBaseProps,
+  HasResourcesCardLegacyProps,
+  HasResourcesCardProps,
+} from './HasResourcesCard';

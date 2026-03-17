@@ -32,6 +32,7 @@ import {
 } from '@backstage/core-plugin-api/alpha';
 import { apiDocsTranslationRef } from '../../translation';
 
+/** @deprecated Use `getApiEntityColumnConfig` instead. */
 export function createSpecApiTypeColumn(
   t: TranslationFunction<typeof apiDocsTranslationRef.T>,
 ): TableColumn<ApiEntity> {
@@ -72,6 +73,7 @@ function createApiDefinitionColumn(
   };
 }
 
+/** @deprecated Use `getApiEntityColumnConfig` instead. */
 export const getApiEntityColumns = (
   t: TranslationFunction<typeof apiDocsTranslationRef.T>,
 ): TableColumn<ApiEntity>[] => {
@@ -86,7 +88,7 @@ export const getApiEntityColumns = (
   ];
 };
 
-// BUI column presets
+// Column config presets
 
 function createSpecApiTypeColumnConfig(
   t: TranslationFunction<typeof apiDocsTranslationRef.T>,

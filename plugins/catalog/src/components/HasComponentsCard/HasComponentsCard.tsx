@@ -14,25 +14,84 @@
  * limitations under the License.
  */
 
-import { RELATION_HAS_PART } from '@backstage/catalog-model';
-
+import { ComponentEntity, RELATION_HAS_PART } from '@backstage/catalog-model';
+import {
+  InfoCardVariants,
+  TableColumn,
+  TableOptions,
+} from '@backstage/core-components';
 import {
   EntityRelationCard,
   EntityColumnConfig,
   componentColumnConfig,
   componentEntityHelpLink,
 } from '@backstage/plugin-catalog-react';
+import {
+  asComponentEntities,
+  componentEntityColumns,
+  componentEntityHelpLink as legacyHelpLink,
+  RelatedEntitiesCard,
+} from '../RelatedEntitiesCard';
 import { catalogTranslationRef } from '../../alpha/translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /** @public */
-export interface HasComponentsCardProps {
+export interface HasComponentsCardBaseProps {
   title?: string;
   columnConfig?: EntityColumnConfig[];
 }
 
+/**
+ * Props for the legacy MUI-based rendering.
+ * @deprecated Use {@link HasComponentsCardBaseProps} instead.
+ * @public
+ */
+export interface HasComponentsCardLegacyProps {
+  title?: string;
+  /** @deprecated Use `columnConfig` instead. */
+  variant?: InfoCardVariants;
+  /** @deprecated Use `columnConfig` instead. */
+  columns?: TableColumn<ComponentEntity>[];
+  /** @deprecated Use `columnConfig` instead. */
+  tableOptions?: TableOptions;
+}
+
+/** @public */
+export type HasComponentsCardProps =
+  | HasComponentsCardBaseProps
+  | HasComponentsCardLegacyProps;
+
+function isLegacyProps(
+  props: HasComponentsCardProps,
+): props is HasComponentsCardLegacyProps {
+  return 'variant' in props || 'columns' in props || 'tableOptions' in props;
+}
+
 export function HasComponentsCard(props: HasComponentsCardProps) {
   const { t } = useTranslationRef(catalogTranslationRef);
+
+  if (isLegacyProps(props)) {
+    const {
+      variant = 'gridItem',
+      title = t('hasComponentsCard.title'),
+      columns = componentEntityColumns,
+      tableOptions = {},
+    } = props;
+    return (
+      <RelatedEntitiesCard
+        variant={variant}
+        title={title}
+        entityKind="Component"
+        relationType={RELATION_HAS_PART}
+        columns={columns}
+        emptyMessage={t('hasComponentsCard.emptyMessage')}
+        emptyHelpLink={legacyHelpLink}
+        asRenderableEntities={asComponentEntities}
+        tableOptions={tableOptions}
+      />
+    );
+  }
+
   const {
     title = t('hasComponentsCard.title'),
     columnConfig = componentColumnConfig,
