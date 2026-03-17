@@ -438,12 +438,17 @@ const SidebarItemBase = forwardRef<
     );
   }
 
+  if (!props.to) {
+    throw new Error('SidebarItem: "to" is required when rendering as a link');
+  }
+
   return (
     <NavLink
       {...childProps}
-      to={props.to ? props.to : ''}
+      to={props.to}
       ref={ref}
       aria-label={text ? text : props.to}
+      end={(props as NavLinkProps).end ?? true}
       {...navLinkProps}
       className={({ isActive }) =>
         classnames(
