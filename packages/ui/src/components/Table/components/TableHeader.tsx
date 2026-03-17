@@ -42,7 +42,7 @@ export const TableHeader = <T extends object>(props: TableHeaderProps<T>) => {
           maxWidth={40}
           className={classes.headSelection}
         >
-          <Flex justify="center" align="center">
+          <Flex justify="center" align="center" aria-label="Row selection">
             <Checkbox slot="selection" aria-label="Select all" />
           </Flex>
         </Column>

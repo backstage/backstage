@@ -49,7 +49,7 @@ export const Checkbox = forwardRef<HTMLLabelElement, CheckboxProps>(
       >
         {({ isIndeterminate }) => (
           <>
-            <div className={classes.indicator}>
+            <div className={classes.indicator} aria-hidden="true">
               {isIndeterminate ? (
                 <RiSubtractLine size={12} />
               ) : (
