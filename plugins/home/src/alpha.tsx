@@ -192,35 +192,62 @@ const homePageRandomJokeWidget = HomePageCardWidgetBlueprint.make({
   },
 });
 
-const homePageTopVisitedWidget = HomePageCardWidgetBlueprint.make({
+const homePageTopVisitedWidget = HomePageCardWidgetBlueprint.makeWithOverrides({
   name: 'top-visited',
   disabled: true,
-  params: {
-    name: 'HomePageTopVisited',
-    title: 'Top Visited',
-    components: () =>
-      import('./homePageComponents/VisitedByType/TopVisited').then(m => ({
-        Content: m.Content,
-        Actions: m.Actions,
-        ContextProvider: m.ContextProvider,
-      })),
+  config: {
+    schema: {
+      numVisitsOpen: z => z.number().optional(),
+      numVisitsTotal: z => z.number().optional(),
+    },
+  },
+  factory(origFactory, { config }) {
+    return origFactory({
+      name: 'HomePageTopVisited',
+      title: 'Top Visited',
+      components: () =>
+        import('./homePageComponents/VisitedByType/TopVisited').then(m => ({
+          Content: m.Content,
+          Actions: m.Actions,
+          ContextProvider: m.ContextProvider,
+        })),
+      componentProps: {
+        numVisitsOpen: config.numVisitsOpen,
+        numVisitsTotal: config.numVisitsTotal,
+      },
+    });
   },
 });
 
-const homePageRecentlyVisitedWidget = HomePageCardWidgetBlueprint.make({
-  name: 'recently-visited',
-  disabled: true,
-  params: {
-    name: 'HomePageRecentlyVisited',
-    title: 'Recently Visited',
-    components: () =>
-      import('./homePageComponents/VisitedByType/RecentlyVisited').then(m => ({
-        Content: m.Content,
-        Actions: m.Actions,
-        ContextProvider: m.ContextProvider,
-      })),
-  },
-});
+const homePageRecentlyVisitedWidget =
+  HomePageCardWidgetBlueprint.makeWithOverrides({
+    name: 'recently-visited',
+    disabled: true,
+    config: {
+      schema: {
+        numVisitsOpen: z => z.number().optional(),
+        numVisitsTotal: z => z.number().optional(),
+      },
+    },
+    factory(origFactory, { config }) {
+      return origFactory({
+        name: 'HomePageRecentlyVisited',
+        title: 'Recently Visited',
+        components: () =>
+          import('./homePageComponents/VisitedByType/RecentlyVisited').then(
+            m => ({
+              Content: m.Content,
+              Actions: m.Actions,
+              ContextProvider: m.ContextProvider,
+            }),
+          ),
+        componentProps: {
+          numVisitsOpen: config.numVisitsOpen,
+          numVisitsTotal: config.numVisitsTotal,
+        },
+      });
+    },
+  });
 
 const homePageFeaturedDocsWidget =
   HomePageCardWidgetBlueprint.makeWithOverrides({
