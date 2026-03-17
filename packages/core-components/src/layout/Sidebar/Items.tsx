@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,6 @@ import type { Location } from 'history';
 import {
   ComponentProps,
   ComponentType,
-  CSSProperties,
   forwardRef,
   KeyboardEventHandler,
   ReactNode,
@@ -54,7 +53,7 @@ import {
 } from 'react';
 
 import {
-  Link,
+  NavLink,
   NavLinkProps,
   resolvePath,
   useLocation,
@@ -324,61 +323,6 @@ function isButtonItem(
 
 const sidebarSubmenuType = createElement(SidebarSubmenu).type;
 
-// TODO(Rugvip): Remove this once NavLink is updated in react-router-dom.
-//               This is needed because react-router doesn't handle the path comparison
-//               properly yet, matching for example /foobar with /foo.
-export const WorkaroundNavLink = forwardRef<
-  HTMLAnchorElement,
-  NavLinkProps & {
-    children?: ReactNode;
-    activeStyle?: CSSProperties;
-    activeClassName?: string;
-  }
->(function WorkaroundNavLinkWithRef(
-  {
-    to,
-    end,
-    style,
-    className,
-    activeStyle,
-    caseSensitive,
-    activeClassName = 'active',
-    'aria-current': ariaCurrentProp = 'page',
-    ...rest
-  },
-  ref,
-) {
-  let { pathname: locationPathname } = useLocation();
-  let { pathname: toPathname } = useResolvedPath(to);
-
-  if (!caseSensitive) {
-    locationPathname = locationPathname.toLocaleLowerCase('en-US');
-    toPathname = toPathname.toLocaleLowerCase('en-US');
-  }
-
-  let isActive = locationPathname === toPathname;
-  if (!isActive && !end) {
-    // This is the behavior that is different from the original NavLink
-    isActive = locationPathname.startsWith(`${toPathname}/`);
-  }
-
-  const ariaCurrent = isActive ? ariaCurrentProp : undefined;
-
-  return (
-    <Link
-      {...rest}
-      to={to}
-      ref={ref}
-      aria-current={ariaCurrent}
-      style={{ ...style, ...(isActive ? activeStyle : undefined) }}
-      className={classnames([
-        typeof className !== 'function' ? className : undefined,
-        isActive ? activeClassName : undefined,
-      ])}
-    />
-  );
-});
-
 /**
  * Common component used by SidebarItem & SidebarItemWithSubmenu
  */
@@ -495,17 +439,22 @@ const SidebarItemBase = forwardRef<
   }
 
   return (
-    <WorkaroundNavLink
+    <NavLink
       {...childProps}
-      activeClassName={classes.selected}
       to={props.to ? props.to : ''}
       ref={ref}
       aria-label={text ? text : props.to}
       {...navLinkProps}
+      className={({ isActive }) =>
+        classnames(
+          childProps.className,
+          isActive ? classes.selected : undefined,
+        )
+      }
       onClick={handleClick}
     >
       {content}
-    </WorkaroundNavLink>
+    </NavLink>
   );
 });
 
