@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -128,6 +128,23 @@ describe('Items', () => {
         await screen.findByRole('link', { name: /explore/i }),
       );
       expect(analyticsApiMock.captureEvent).not.toHaveBeenCalled();
+    });
+
+    it('should only highlight the exact matching nested route', async () => {
+      await renderInTestApp(
+        <Sidebar>
+          <SidebarItem to="/test" icon={HomeIcon} text="ParentRoute" />
+          <SidebarItem to="/test/again" icon={HomeIcon} text="ChildRoute" />
+        </Sidebar>,
+        { routeEntries: ['/test/again'] },
+      );
+
+      const parentLink = screen.getByRole('link', { name: /parentroute/i });
+      const childLink = screen.getByRole('link', { name: /childroute/i });
+
+      expect(childLink).toHaveAttribute('aria-current', 'page');
+
+      expect(parentLink).not.toHaveAttribute('aria-current');
     });
   });
 
