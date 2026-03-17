@@ -68,9 +68,9 @@ export interface CliCommand {
    */
   path: string[];
   /**
-   * A short description of the command, displayed in help output.
+   * A short name for the command, displayed in help output.
    */
-  description: string;
+  name: string;
   /**
    * If `true`, the command is deprecated and will be hidden from help output
    * but can still be invoked.

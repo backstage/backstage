@@ -21,13 +21,13 @@ export default createCliModule({
   init: async reg => {
     reg.addCommand({
       path: ['package', 'lint'],
-      description: 'Lint a package',
+      name: 'Lint a package',
       execute: { loader: () => import('./commands/package/lint') },
     });
 
     reg.addCommand({
       path: ['repo', 'lint'],
-      description: 'Lint a repository',
+      name: 'Lint a repository',
       execute: { loader: () => import('./commands/repo/lint') },
     });
   },

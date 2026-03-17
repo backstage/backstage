@@ -22,32 +22,32 @@ export default createCliModule({
   init: async reg => {
     reg.addCommand({
       path: ['auth', 'login'],
-      description: 'Log in the CLI to a Backstage instance',
+      name: 'Log in the CLI to a Backstage instance',
       execute: { loader: () => import('./commands/login') },
     });
     reg.addCommand({
       path: ['auth', 'logout'],
-      description: 'Log out the CLI and clear stored credentials',
+      name: 'Log out the CLI and clear stored credentials',
       execute: { loader: () => import('./commands/logout') },
     });
     reg.addCommand({
       path: ['auth', 'show'],
-      description: 'Show details of an authenticated instance',
+      name: 'Show details of an authenticated instance',
       execute: { loader: () => import('./commands/show') },
     });
     reg.addCommand({
       path: ['auth', 'list'],
-      description: 'List authenticated instances',
+      name: 'List authenticated instances',
       execute: { loader: () => import('./commands/list') },
     });
     reg.addCommand({
       path: ['auth', 'print-token'],
-      description: 'Print an access token to stdout (auto-refresh if needed)',
+      name: 'Print an access token to stdout (auto-refresh if needed)',
       execute: { loader: () => import('./commands/printToken') },
     });
     reg.addCommand({
       path: ['auth', 'select'],
-      description: 'Select the default instance',
+      name: 'Select the default instance',
       execute: { loader: () => import('./commands/select') },
     });
   },

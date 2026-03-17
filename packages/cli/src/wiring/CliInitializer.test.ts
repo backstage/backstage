@@ -51,7 +51,7 @@ describe('CliInitializer', () => {
         init: async reg =>
           reg.addCommand({
             path: ['test'],
-            description: 'test',
+            name: 'test',
             execute: ({ args }) => {
               expect(args).toEqual([]);
               return Promise.resolve();
@@ -73,7 +73,7 @@ describe('CliInitializer', () => {
         init: async reg =>
           reg.addCommand({
             path: ['test'],
-            description: 'test',
+            name: 'test',
             execute: ({ args }) => {
               expect(args).toEqual(['[positional]', '<arg>']);
               return Promise.resolve();
@@ -95,7 +95,7 @@ describe('CliInitializer', () => {
         init: async reg =>
           reg.addCommand({
             path: ['test'],
-            description: 'test',
+            name: 'test',
             execute: {
               loader: async () => ({
                 default: async ({ args }) => {
@@ -120,12 +120,12 @@ describe('CliInitializer', () => {
         init: async reg => {
           reg.addCommand({
             path: ['visible'],
-            description: 'A visible command',
+            name: 'A visible command',
             execute: () => Promise.resolve(),
           });
           reg.addCommand({
             path: ['secret'],
-            description: 'An experimental command',
+            name: 'An experimental command',
             experimental: true,
             execute: ({ args }) => {
               expect(args).toEqual([]);
@@ -147,12 +147,12 @@ describe('CliInitializer', () => {
         init: async reg => {
           reg.addCommand({
             path: ['visible'],
-            description: 'A visible command',
+            name: 'A visible command',
             execute: () => Promise.resolve(),
           });
           reg.addCommand({
             path: ['secret'],
-            description: 'An experimental command',
+            name: 'An experimental command',
             experimental: true,
             execute: () => Promise.resolve(),
           });
@@ -175,18 +175,18 @@ describe('CliInitializer', () => {
         init: async reg => {
           reg.addCommand({
             path: ['visible'],
-            description: 'A visible command',
+            name: 'A visible command',
             execute: () => Promise.resolve(),
           });
           reg.addCommand({
             path: ['group', 'alpha'],
-            description: 'First experimental command',
+            name: 'First experimental command',
             experimental: true,
             execute: () => Promise.resolve(),
           });
           reg.addCommand({
             path: ['group', 'beta'],
-            description: 'Second experimental command',
+            name: 'Second experimental command',
             experimental: true,
             execute: () => Promise.resolve(),
           });
@@ -210,12 +210,12 @@ describe('CliInitializer', () => {
         init: async reg => {
           reg.addCommand({
             path: ['group', 'alpha'],
-            description: 'A visible nested command',
+            name: 'A visible nested command',
             execute: () => Promise.resolve(),
           });
           reg.addCommand({
             path: ['group', 'beta'],
-            description: 'An experimental nested command',
+            name: 'An experimental nested command',
             experimental: true,
             execute: () => Promise.resolve(),
           });
@@ -246,7 +246,7 @@ describe('CliInitializer', () => {
         init: async reg =>
           reg.addCommand({
             path: ['test', 'nested', 'command'],
-            description: 'test',
+            name: 'test',
             execute: ({ args }) => {
               expect(args).toEqual(['[positional]', '<arg>']);
               return Promise.resolve();
@@ -268,7 +268,7 @@ describe('CliInitializer', () => {
       init: async reg =>
         reg.addCommand({
           path: ['test'],
-          description: 'individual test',
+          name: 'individual test',
           execute: ({ args }) => {
             expect(args).toEqual([]);
             return Promise.resolve();
@@ -281,7 +281,7 @@ describe('CliInitializer', () => {
       init: async reg =>
         reg.addCommand({
           path: ['test'],
-          description: 'array test (should be skipped)',
+          name: 'array test (should be skipped)',
           execute: () => Promise.resolve(),
         }),
     });
@@ -291,7 +291,7 @@ describe('CliInitializer', () => {
       init: async reg =>
         reg.addCommand({
           path: ['other'],
-          description: 'other command',
+          name: 'other command',
           execute: () => Promise.resolve(),
         }),
     });
@@ -320,7 +320,7 @@ describe('CliInitializer', () => {
         init: async reg =>
           reg.addCommand({
             path: ['conflicting'],
-            description: 'from module A',
+            name: 'from module A',
             execute: () => Promise.resolve(),
           }),
       }),
@@ -332,7 +332,7 @@ describe('CliInitializer', () => {
         init: async reg =>
           reg.addCommand({
             path: ['conflicting'],
-            description: 'from module B',
+            name: 'from module B',
             execute: () => Promise.resolve(),
           }),
       }),
@@ -351,7 +351,7 @@ describe('CliInitializer', () => {
       init: async reg =>
         reg.addCommand({
           path: ['shared'],
-          description: 'from array A',
+          name: 'from array A',
           execute: () => Promise.resolve(),
         }),
     });
@@ -361,7 +361,7 @@ describe('CliInitializer', () => {
       init: async reg =>
         reg.addCommand({
           path: ['shared'],
-          description: 'from array B',
+          name: 'from array B',
           execute: () => Promise.resolve(),
         }),
     });

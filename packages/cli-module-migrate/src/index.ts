@@ -21,20 +21,19 @@ export default createCliModule({
   init: async reg => {
     reg.addCommand({
       path: ['versions:migrate'],
-      description:
-        'Migrate any plugins that have been moved to the @backstage-community namespace automatically',
+      name: 'Migrate any plugins that have been moved to the @backstage-community namespace automatically',
       execute: { loader: () => import('./commands/versions/migrate') },
     });
 
     reg.addCommand({
       path: ['versions:bump'],
-      description: 'Bump Backstage packages to the latest versions',
+      name: 'Bump Backstage packages to the latest versions',
       execute: { loader: () => import('./commands/versions/bump') },
     });
 
     reg.addCommand({
       path: ['migrate', 'package-roles'],
-      description: `Add package role field to packages that don't have it`,
+      name: `Add package role field to packages that don't have it`,
       execute: {
         loader: () => import('./commands/packageRole'),
       },
@@ -42,7 +41,7 @@ export default createCliModule({
 
     reg.addCommand({
       path: ['migrate', 'package-scripts'],
-      description: 'Set package scripts according to each package role',
+      name: 'Set package scripts according to each package role',
       execute: {
         loader: () => import('./commands/packageScripts'),
       },
@@ -50,7 +49,7 @@ export default createCliModule({
 
     reg.addCommand({
       path: ['migrate', 'package-exports'],
-      description: 'Synchronize package subpath export definitions',
+      name: 'Synchronize package subpath export definitions',
       execute: {
         loader: () => import('./commands/packageExports'),
       },
@@ -58,8 +57,7 @@ export default createCliModule({
 
     reg.addCommand({
       path: ['migrate', 'package-lint-configs'],
-      description:
-        'Migrates all packages to use @backstage/cli/config/eslint-factory',
+      name: 'Migrates all packages to use @backstage/cli/config/eslint-factory',
       execute: {
         loader: () => import('./commands/packageLintConfigs'),
       },
@@ -67,8 +65,7 @@ export default createCliModule({
 
     reg.addCommand({
       path: ['migrate', 'react-router-deps'],
-      description:
-        'Migrates the react-router dependencies for all packages to be peer dependencies',
+      name: 'Migrates the react-router dependencies for all packages to be peer dependencies',
       execute: {
         loader: () => import('./commands/reactRouterDeps'),
       },

@@ -21,33 +21,32 @@ export default createCliModule({
   init: async reg => {
     reg.addCommand({
       path: ['config:docs'],
-      description: 'Browse the configuration reference documentation',
+      name: 'Browse the configuration reference documentation',
       execute: { loader: () => import('./commands/docs') },
     });
     reg.addCommand({
       path: ['config', 'docs'],
-      description: 'Browse the configuration reference documentation',
+      name: 'Browse the configuration reference documentation',
       execute: { loader: () => import('./commands/docs') },
     });
     reg.addCommand({
       path: ['config:print'],
-      description: 'Print the app configuration for the current package',
+      name: 'Print the app configuration for the current package',
       execute: { loader: () => import('./commands/print') },
     });
     reg.addCommand({
       path: ['config:check'],
-      description:
-        'Validate that the given configuration loads and matches schema',
+      name: 'Validate that the given configuration loads and matches schema',
       execute: { loader: () => import('./commands/validate') },
     });
     reg.addCommand({
       path: ['config:schema'],
-      description: 'Print the JSON schema for the given configuration',
+      name: 'Print the JSON schema for the given configuration',
       execute: { loader: () => import('./commands/schema') },
     });
     reg.addCommand({
       path: ['config', 'schema'],
-      description: 'Print the JSON schema for the given configuration',
+      name: 'Print the JSON schema for the given configuration',
       execute: { loader: () => import('./commands/schema') },
     });
   },
