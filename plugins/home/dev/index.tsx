@@ -36,6 +36,7 @@ import { CustomHomepageGrid } from '../src/components';
 import type { LayoutConfiguration } from '../src/components/CustomHomepage/types';
 
 import searchPlugin from '@backstage/plugin-search/alpha'; // For reference in the SearchBarWidget loader test
+import { Entity } from '@backstage/catalog-model';
 
 const clockConfigs: ClockConfig[] = [
   { label: 'NYC', timeZone: 'America/New_York' },
@@ -190,20 +191,102 @@ const homeDevModule = createFrontendModule({
   ],
 });
 
-const entities = [
+const entities: Entity[] = [
   {
     apiVersion: 'backstage.io/v1alpha1',
     kind: 'Component',
     metadata: {
-      name: 'example',
+      name: 'example-service',
+      description: 'An example backend service',
       annotations: {
         'backstage.io/managed-by-location': 'file:/path/to/catalog-info.yaml',
+        'backstage.io/techdocs-ref': 'dir:.',
       },
     },
     spec: {
       type: 'service',
       lifecycle: 'production',
       owner: 'guest',
+    },
+  },
+  {
+    apiVersion: 'backstage.io/v1alpha1',
+    kind: 'Component',
+    metadata: {
+      name: 'example-website',
+      description: 'An example frontend website',
+      annotations: {
+        'backstage.io/managed-by-location': 'file:/path/to/catalog-info.yaml',
+        'backstage.io/techdocs-ref': 'dir:.',
+      },
+    },
+    spec: {
+      type: 'website',
+      lifecycle: 'production',
+      owner: 'guest',
+    },
+  },
+  {
+    apiVersion: 'backstage.io/v1alpha1',
+    kind: 'Component',
+    metadata: {
+      name: 'example-library',
+      description: 'A shared utility library',
+      annotations: {
+        'backstage.io/managed-by-location': 'file:/path/to/catalog-info.yaml',
+        'backstage.io/techdocs-ref': 'dir:.',
+      },
+    },
+    spec: {
+      type: 'library',
+      lifecycle: 'experimental',
+      owner: 'guest',
+    },
+  },
+  {
+    apiVersion: 'backstage.io/v1alpha1',
+    kind: 'API',
+    metadata: {
+      name: 'example-api',
+      description: 'An example REST API',
+      annotations: {
+        'backstage.io/managed-by-location': 'file:/path/to/catalog-info.yaml',
+      },
+    },
+    spec: {
+      type: 'openapi',
+      lifecycle: 'production',
+      owner: 'guest',
+      definition: '{}',
+    },
+  },
+  {
+    apiVersion: 'backstage.io/v1alpha1',
+    kind: 'Group',
+    metadata: {
+      name: 'guest-team',
+      description: 'The guest team',
+      annotations: {
+        'backstage.io/managed-by-location': 'file:/path/to/catalog-info.yaml',
+      },
+    },
+    spec: {
+      type: 'team',
+      children: [],
+      members: ['guest'],
+    },
+  },
+  {
+    apiVersion: 'backstage.io/v1alpha1',
+    kind: 'User',
+    metadata: {
+      name: 'guest',
+      annotations: {
+        'backstage.io/managed-by-location': 'file:/path/to/catalog-info.yaml',
+      },
+    },
+    spec: {
+      memberOf: ['guest-team'],
     },
   },
 ];

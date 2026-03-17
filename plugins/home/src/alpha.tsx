@@ -222,29 +222,39 @@ const homePageRecentlyVisitedWidget = HomePageCardWidgetBlueprint.make({
   },
 });
 
-const homePageFeaturedDocsWidget = HomePageCardWidgetBlueprint.make({
-  name: 'featured-docs',
-  params: {
-    name: 'FeaturedDocsCard',
-    title: 'Featured Docs',
-    components: () =>
-      import('./homePageComponents/FeaturedDocsCard').then(m => ({
-        Content: m.Content,
-      })),
-  },
-});
-
-const homePageQuickStartWidget = HomePageCardWidgetBlueprint.make({
-  name: 'quick-start',
-  params: {
-    name: 'QuickStartCard',
-    title: 'Quick Start',
-    components: () =>
-      import('./homePageComponents/QuickStart').then(m => ({
-        Content: m.Content,
-      })),
-  },
-});
+const homePageFeaturedDocsWidget =
+  HomePageCardWidgetBlueprint.makeWithOverrides({
+    name: 'featured-docs',
+    config: {
+      schema: {
+        filter: z =>
+          z
+            .record(z.union([z.string(), z.array(z.string())]))
+            .describe(
+              'Catalog entity filter to select which docs are featured.',
+            ),
+        responseLimit: z => z.number().optional(),
+        linkDestination: z => z.string().optional(),
+        subLinkText: z => z.string().optional(),
+      },
+    },
+    factory(origFactory, { config }) {
+      return origFactory({
+        name: 'FeaturedDocsCard',
+        title: 'Featured Docs',
+        components: () =>
+          import('./homePageComponents/FeaturedDocsCard').then(m => ({
+            Content: m.Content,
+          })),
+        componentProps: {
+          filter: config.filter,
+          responseLimit: config.responseLimit,
+          linkDestination: config.linkDestination,
+          subLinkText: config.subLinkText,
+        },
+      });
+    },
+  });
 
 /**
  * Home plugin for the new frontend system.
@@ -269,7 +279,7 @@ export default createFrontendPlugin({
     homePageTopVisitedWidget,
     homePageRecentlyVisitedWidget,
     homePageFeaturedDocsWidget,
-    homePageQuickStartWidget,
+    // homePageQuickStartWidget,
   ],
   routes: {
     root: rootRouteRef,

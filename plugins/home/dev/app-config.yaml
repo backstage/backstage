@@ -4,6 +4,12 @@ app:
   packages: all # ✨
   extensions:
     - 'home-page-widget:home/top-visited': true
+    - home-page-widget:home/featured-docs:
+        config:
+          filter:
+            kind: Component
+          responseLimit: 2
+          subLinkText: Read the docs
 
 
 backend:
