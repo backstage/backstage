@@ -16,13 +16,11 @@
 
 export { ConsumingComponentsCard } from './ConsumingComponentsCard';
 export type {
-  ConsumingComponentsCardBaseProps,
   ConsumingComponentsCardLegacyProps,
   ConsumingComponentsCardProps,
 } from './ConsumingComponentsCard';
 export { ProvidingComponentsCard } from './ProvidingComponentsCard';
 export type {
-  ProvidingComponentsCardBaseProps,
   ProvidingComponentsCardLegacyProps,
   ProvidingComponentsCardProps,
 } from './ProvidingComponentsCard';

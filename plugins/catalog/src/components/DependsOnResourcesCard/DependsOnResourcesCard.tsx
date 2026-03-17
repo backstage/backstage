@@ -23,9 +23,8 @@ import {
 import {
   EntityRelationCard,
   EntityColumnConfig,
-  resourceColumnConfig,
-  componentEntityHelpLink,
-} from '@backstage/plugin-catalog-react';
+  entityColumnPresets,
+} from '@backstage/plugin-catalog-react/alpha';
 import {
   asResourceEntities,
   componentEntityHelpLink as legacyHelpLink,
@@ -36,14 +35,14 @@ import { catalogTranslationRef } from '../../alpha/translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /** @public */
-export interface DependsOnResourcesCardBaseProps {
+export interface DependsOnResourcesCardProps {
   title?: string;
   columnConfig?: EntityColumnConfig[];
 }
 
 /**
  * Props for the legacy MUI-based rendering.
- * @deprecated Use {@link DependsOnResourcesCardBaseProps} instead.
+ * @deprecated Use {@link DependsOnResourcesCardProps} instead.
  * @public
  */
 export interface DependsOnResourcesCardLegacyProps {
@@ -56,18 +55,15 @@ export interface DependsOnResourcesCardLegacyProps {
   tableOptions?: TableOptions;
 }
 
-/** @public */
-export type DependsOnResourcesCardProps =
-  | DependsOnResourcesCardBaseProps
-  | DependsOnResourcesCardLegacyProps;
-
 function isLegacyProps(
-  props: DependsOnResourcesCardProps,
+  props: DependsOnResourcesCardProps | DependsOnResourcesCardLegacyProps,
 ): props is DependsOnResourcesCardLegacyProps {
   return 'variant' in props || 'columns' in props || 'tableOptions' in props;
 }
 
-export function DependsOnResourcesCard(props: DependsOnResourcesCardProps) {
+export function DependsOnResourcesCard(
+  props: DependsOnResourcesCardProps | DependsOnResourcesCardLegacyProps,
+) {
   const { t } = useTranslationRef(catalogTranslationRef);
 
   if (isLegacyProps(props)) {
@@ -94,7 +90,7 @@ export function DependsOnResourcesCard(props: DependsOnResourcesCardProps) {
 
   const {
     title = t('dependsOnResourcesCard.title'),
-    columnConfig = resourceColumnConfig,
+    columnConfig = entityColumnPresets.resource.columns,
   } = props;
   return (
     <EntityRelationCard
@@ -104,7 +100,7 @@ export function DependsOnResourcesCard(props: DependsOnResourcesCardProps) {
       columnConfig={columnConfig}
       emptyState={{
         message: t('dependsOnResourcesCard.emptyMessage'),
-        helpLink: componentEntityHelpLink,
+        helpLink: entityColumnPresets.component.helpLink,
       }}
     />
   );

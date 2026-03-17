@@ -20,9 +20,11 @@ import {
   EntityTable,
   useEntity,
   useRelatedEntities,
+} from '@backstage/plugin-catalog-react';
+import {
   EntityRelationCard,
   EntityColumnConfig,
-} from '@backstage/plugin-catalog-react';
+} from '@backstage/plugin-catalog-react/alpha';
 import { useMemo } from 'react';
 import { createSpecApiTypeColumn, getHasApisColumnConfig } from './presets';
 import {
@@ -39,14 +41,14 @@ import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { apiDocsTranslationRef } from '../../translation';
 
 /** @public */
-export interface HasApisCardBaseProps {
+export interface HasApisCardProps {
   title?: string;
   columnConfig?: EntityColumnConfig[];
 }
 
 /**
  * Props for the legacy MUI-based rendering.
- * @deprecated Use {@link HasApisCardBaseProps} instead.
+ * @deprecated Use {@link HasApisCardProps} instead.
  * @public
  */
 export interface HasApisCardLegacyProps {
@@ -59,11 +61,8 @@ export interface HasApisCardLegacyProps {
   tableOptions?: TableOptions;
 }
 
-/** @public */
-export type HasApisCardProps = HasApisCardBaseProps | HasApisCardLegacyProps;
-
 function isLegacyProps(
-  props: HasApisCardProps,
+  props: HasApisCardProps | HasApisCardLegacyProps,
 ): props is HasApisCardLegacyProps {
   return 'variant' in props || 'columns' in props || 'tableOptions' in props;
 }
@@ -139,7 +138,9 @@ function HasApisCardLegacy(props: HasApisCardLegacyProps) {
 /**
  * @public
  */
-export const HasApisCard = (props: HasApisCardProps) => {
+export const HasApisCard = (
+  props: HasApisCardProps | HasApisCardLegacyProps,
+) => {
   const { t } = useTranslationRef(apiDocsTranslationRef);
   const { entity } = useEntity();
 

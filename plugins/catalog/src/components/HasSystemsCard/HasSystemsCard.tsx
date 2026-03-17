@@ -23,9 +23,8 @@ import {
 import {
   EntityRelationCard,
   EntityColumnConfig,
-  systemColumnConfig,
-  systemEntityHelpLink,
-} from '@backstage/plugin-catalog-react';
+  entityColumnPresets,
+} from '@backstage/plugin-catalog-react/alpha';
 import {
   asSystemEntities,
   systemEntityColumns,
@@ -36,14 +35,14 @@ import { catalogTranslationRef } from '../../alpha/translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /** @public */
-export interface HasSystemsCardBaseProps {
+export interface HasSystemsCardProps {
   title?: string;
   columnConfig?: EntityColumnConfig[];
 }
 
 /**
  * Props for the legacy MUI-based rendering.
- * @deprecated Use {@link HasSystemsCardBaseProps} instead.
+ * @deprecated Use {@link HasSystemsCardProps} instead.
  * @public
  */
 export interface HasSystemsCardLegacyProps {
@@ -56,18 +55,15 @@ export interface HasSystemsCardLegacyProps {
   tableOptions?: TableOptions;
 }
 
-/** @public */
-export type HasSystemsCardProps =
-  | HasSystemsCardBaseProps
-  | HasSystemsCardLegacyProps;
-
 function isLegacyProps(
-  props: HasSystemsCardProps,
+  props: HasSystemsCardProps | HasSystemsCardLegacyProps,
 ): props is HasSystemsCardLegacyProps {
   return 'variant' in props || 'columns' in props || 'tableOptions' in props;
 }
 
-export function HasSystemsCard(props: HasSystemsCardProps) {
+export function HasSystemsCard(
+  props: HasSystemsCardProps | HasSystemsCardLegacyProps,
+) {
   const { t } = useTranslationRef(catalogTranslationRef);
 
   if (isLegacyProps(props)) {
@@ -94,7 +90,7 @@ export function HasSystemsCard(props: HasSystemsCardProps) {
 
   const {
     title = t('hasSystemsCard.title'),
-    columnConfig = systemColumnConfig,
+    columnConfig = entityColumnPresets.system.columns,
   } = props;
   return (
     <EntityRelationCard
@@ -104,7 +100,7 @@ export function HasSystemsCard(props: HasSystemsCardProps) {
       columnConfig={columnConfig}
       emptyState={{
         message: t('hasSystemsCard.emptyMessage'),
-        helpLink: systemEntityHelpLink,
+        helpLink: entityColumnPresets.system.helpLink,
       }}
     />
   );

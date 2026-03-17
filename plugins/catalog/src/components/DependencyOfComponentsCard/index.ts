@@ -16,7 +16,6 @@
 
 export { DependencyOfComponentsCard } from './DependencyOfComponentsCard';
 export type {
-  DependencyOfComponentsCardBaseProps,
   DependencyOfComponentsCardLegacyProps,
   DependencyOfComponentsCardProps,
 } from './DependencyOfComponentsCard';

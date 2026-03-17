@@ -16,11 +16,11 @@
 
 import { ApiEntity } from '@backstage/catalog-model';
 import { TableColumn } from '@backstage/core-components';
+import { EntityTable } from '@backstage/plugin-catalog-react';
 import {
-  EntityTable,
   EntityColumnConfig,
   entityDataTableColumns,
-} from '@backstage/plugin-catalog-react';
+} from '@backstage/plugin-catalog-react/alpha';
 import { ButtonIcon, Cell } from '@backstage/ui';
 import { RiPuzzleLine } from '@remixicon/react';
 import { useState } from 'react';

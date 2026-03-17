@@ -24,7 +24,7 @@ import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
 import { ComponentType, PropsWithChildren, ReactNode } from 'react';
 import { EntityRelationCard } from './EntityRelationCard';
-import { componentColumnConfig } from '../EntityDataTable/presets';
+import { entityColumnPresets } from '../EntityDataTable/presets';
 import { catalogApiMock } from '../../testUtils/catalogApiMock';
 
 describe('<EntityRelationCard />', () => {
@@ -56,7 +56,7 @@ describe('<EntityRelationCard />', () => {
             title="Has components"
             relationType={RELATION_HAS_PART}
             entityKind="Component"
-            columnConfig={componentColumnConfig}
+            columnConfig={entityColumnPresets.component.columns}
           />
         </EntityProvider>
       </Wrapper>,
@@ -85,7 +85,7 @@ describe('<EntityRelationCard />', () => {
             title="Has components"
             relationType={RELATION_HAS_PART}
             entityKind="Component"
-            columnConfig={componentColumnConfig}
+            columnConfig={entityColumnPresets.component.columns}
             emptyState={{
               message: 'No component is part of this system.',
               helpLink: 'https://backstage.io/docs',
@@ -137,7 +137,7 @@ describe('<EntityRelationCard />', () => {
             title="Has components"
             relationType={RELATION_HAS_PART}
             entityKind="Component"
-            columnConfig={componentColumnConfig}
+            columnConfig={entityColumnPresets.component.columns}
           />
         </EntityProvider>
       </Wrapper>,
@@ -175,7 +175,7 @@ describe('<EntityRelationCard />', () => {
             title="Has components"
             relationType={RELATION_HAS_PART}
             entityKind="Component"
-            columnConfig={componentColumnConfig}
+            columnConfig={entityColumnPresets.component.columns}
           />
         </EntityProvider>
       </Wrapper>,

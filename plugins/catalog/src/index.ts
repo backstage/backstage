@@ -58,17 +58,14 @@ export {
 } from './plugin';
 
 export type {
-  DependencyOfComponentsCardBaseProps,
   DependencyOfComponentsCardLegacyProps,
   DependencyOfComponentsCardProps,
 } from './components/DependencyOfComponentsCard';
 export type {
-  DependsOnComponentsCardBaseProps,
   DependsOnComponentsCardLegacyProps,
   DependsOnComponentsCardProps,
 } from './components/DependsOnComponentsCard';
 export type {
-  DependsOnResourcesCardBaseProps,
   DependsOnResourcesCardLegacyProps,
   DependsOnResourcesCardProps,
 } from './components/DependsOnResourcesCard';
@@ -82,27 +79,22 @@ export type { SystemDiagramCardClassKey } from './components/SystemDiagramCard';
 export type { DefaultCatalogPageProps } from './components/CatalogPage';
 export type { EntityContextMenuClassKey } from './components/EntityContextMenu';
 export type {
-  HasComponentsCardBaseProps,
   HasComponentsCardLegacyProps,
   HasComponentsCardProps,
 } from './components/HasComponentsCard';
 export type {
-  HasResourcesCardBaseProps,
   HasResourcesCardLegacyProps,
   HasResourcesCardProps,
 } from './components/HasResourcesCard';
 export type {
-  HasSubcomponentsCardBaseProps,
   HasSubcomponentsCardLegacyProps,
   HasSubcomponentsCardProps,
 } from './components/HasSubcomponentsCard';
 export type {
-  HasSubdomainsCardBaseProps,
   HasSubdomainsCardLegacyProps,
   HasSubdomainsCardProps,
 } from './components/HasSubdomainsCard';
 export type {
-  HasSystemsCardBaseProps,
   HasSystemsCardLegacyProps,
   HasSystemsCardProps,
 } from './components/HasSystemsCard';

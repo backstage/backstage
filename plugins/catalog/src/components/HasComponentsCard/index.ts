@@ -16,7 +16,6 @@
 
 export { HasComponentsCard } from './HasComponentsCard';
 export type {
-  HasComponentsCardBaseProps,
   HasComponentsCardLegacyProps,
   HasComponentsCardProps,
 } from './HasComponentsCard';

@@ -26,9 +26,8 @@ import {
 import {
   EntityRelationCard,
   EntityColumnConfig,
-  componentColumnConfig,
-  componentEntityHelpLink,
-} from '@backstage/plugin-catalog-react';
+  entityColumnPresets,
+} from '@backstage/plugin-catalog-react/alpha';
 import {
   asComponentEntities,
   componentEntityColumns,
@@ -39,14 +38,14 @@ import { catalogTranslationRef } from '../../alpha/translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /** @public */
-export interface DependencyOfComponentsCardBaseProps {
+export interface DependencyOfComponentsCardProps {
   title?: string;
   columnConfig?: EntityColumnConfig[];
 }
 
 /**
  * Props for the legacy MUI-based rendering.
- * @deprecated Use {@link DependencyOfComponentsCardBaseProps} instead.
+ * @deprecated Use {@link DependencyOfComponentsCardProps} instead.
  * @public
  */
 export interface DependencyOfComponentsCardLegacyProps {
@@ -59,19 +58,18 @@ export interface DependencyOfComponentsCardLegacyProps {
   tableOptions?: TableOptions;
 }
 
-/** @public */
-export type DependencyOfComponentsCardProps =
-  | DependencyOfComponentsCardBaseProps
-  | DependencyOfComponentsCardLegacyProps;
-
 function isLegacyProps(
-  props: DependencyOfComponentsCardProps,
+  props:
+    | DependencyOfComponentsCardProps
+    | DependencyOfComponentsCardLegacyProps,
 ): props is DependencyOfComponentsCardLegacyProps {
   return 'variant' in props || 'columns' in props || 'tableOptions' in props;
 }
 
 export function DependencyOfComponentsCard(
-  props: DependencyOfComponentsCardProps,
+  props:
+    | DependencyOfComponentsCardProps
+    | DependencyOfComponentsCardLegacyProps,
 ) {
   const { t } = useTranslationRef(catalogTranslationRef);
 
@@ -99,7 +97,7 @@ export function DependencyOfComponentsCard(
 
   const {
     title = t('dependencyOfComponentsCard.title'),
-    columnConfig = componentColumnConfig,
+    columnConfig = entityColumnPresets.component.columns,
   } = props;
   return (
     <EntityRelationCard
@@ -109,7 +107,7 @@ export function DependencyOfComponentsCard(
       columnConfig={columnConfig}
       emptyState={{
         message: t('dependencyOfComponentsCard.emptyMessage'),
-        helpLink: componentEntityHelpLink,
+        helpLink: entityColumnPresets.component.helpLink,
       }}
     />
   );

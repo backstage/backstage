@@ -16,50 +16,46 @@
 
 import { columnFactories, EntityColumnConfig } from './columnFactories';
 
-/** @public */
-export const componentColumnConfig: EntityColumnConfig[] = [
-  columnFactories.createEntityRefColumn({ defaultKind: 'component' }),
-  columnFactories.createOwnerColumn(),
-  columnFactories.createSpecTypeColumn(),
-  columnFactories.createSpecLifecycleColumn(),
-  columnFactories.createMetadataDescriptionColumn(),
-];
-
-/** @public */
-export const resourceColumnConfig: EntityColumnConfig[] = [
-  columnFactories.createEntityRefColumn({ defaultKind: 'resource' }),
-  columnFactories.createOwnerColumn(),
-  columnFactories.createSpecTypeColumn(),
-  columnFactories.createSpecLifecycleColumn(),
-  columnFactories.createMetadataDescriptionColumn(),
-];
-
-/** @public */
-export const systemColumnConfig: EntityColumnConfig[] = [
-  columnFactories.createEntityRefColumn({ defaultKind: 'system' }),
-  columnFactories.createOwnerColumn(),
-  columnFactories.createMetadataDescriptionColumn(),
-];
-
-/** @public */
-export const domainColumnConfig: EntityColumnConfig[] = [
-  columnFactories.createEntityRefColumn({ defaultKind: 'domain' }),
-  columnFactories.createOwnerColumn(),
-  columnFactories.createMetadataDescriptionColumn(),
-];
-
-/** @public */
-export const componentEntityHelpLink =
-  'https://backstage.io/docs/features/software-catalog/descriptor-format#kind-component';
-
-/** @public */
-export const resourceEntityHelpLink =
-  'https://backstage.io/docs/features/software-catalog/descriptor-format#kind-resource';
-
-/** @public */
-export const systemEntityHelpLink =
-  'https://backstage.io/docs/features/software-catalog/descriptor-format#kind-system';
-
-/** @public */
-export const domainEntityHelpLink =
-  'https://backstage.io/docs/features/software-catalog/descriptor-format#kind-domain';
+/** @alpha */
+export const entityColumnPresets = {
+  component: {
+    columns: [
+      columnFactories.createEntityRefColumn({ defaultKind: 'component' }),
+      columnFactories.createOwnerColumn(),
+      columnFactories.createSpecTypeColumn(),
+      columnFactories.createSpecLifecycleColumn(),
+      columnFactories.createMetadataDescriptionColumn(),
+    ] as EntityColumnConfig[],
+    helpLink:
+      'https://backstage.io/docs/features/software-catalog/descriptor-format#kind-component',
+  },
+  resource: {
+    columns: [
+      columnFactories.createEntityRefColumn({ defaultKind: 'resource' }),
+      columnFactories.createOwnerColumn(),
+      columnFactories.createSpecTypeColumn(),
+      columnFactories.createSpecLifecycleColumn(),
+      columnFactories.createMetadataDescriptionColumn(),
+    ] as EntityColumnConfig[],
+    helpLink:
+      'https://backstage.io/docs/features/software-catalog/descriptor-format#kind-resource',
+  },
+  system: {
+    columns: [
+      columnFactories.createEntityRefColumn({ defaultKind: 'system' }),
+      columnFactories.createOwnerColumn(),
+      columnFactories.createMetadataDescriptionColumn(),
+    ] as EntityColumnConfig[],
+    helpLink:
+      'https://backstage.io/docs/features/software-catalog/descriptor-format#kind-system',
+  },
+  domain: {
+    columns: [
+      columnFactories.createEntityRefColumn({ defaultKind: 'domain' }),
+      columnFactories.createOwnerColumn(),
+      columnFactories.createMetadataDescriptionColumn(),
+    ] as EntityColumnConfig[],
+    helpLink:
+      'https://backstage.io/docs/features/software-catalog/descriptor-format#kind-domain',
+  },
+} as const;

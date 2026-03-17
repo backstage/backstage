@@ -23,9 +23,8 @@ import {
 import {
   EntityRelationCard,
   EntityColumnConfig,
-  resourceColumnConfig,
-  resourceEntityHelpLink,
-} from '@backstage/plugin-catalog-react';
+  entityColumnPresets,
+} from '@backstage/plugin-catalog-react/alpha';
 import {
   asResourceEntities,
   resourceEntityColumns,
@@ -36,14 +35,14 @@ import { catalogTranslationRef } from '../../alpha/translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /** @public */
-export interface HasResourcesCardBaseProps {
+export interface HasResourcesCardProps {
   title?: string;
   columnConfig?: EntityColumnConfig[];
 }
 
 /**
  * Props for the legacy MUI-based rendering.
- * @deprecated Use {@link HasResourcesCardBaseProps} instead.
+ * @deprecated Use {@link HasResourcesCardProps} instead.
  * @public
  */
 export interface HasResourcesCardLegacyProps {
@@ -56,18 +55,15 @@ export interface HasResourcesCardLegacyProps {
   tableOptions?: TableOptions;
 }
 
-/** @public */
-export type HasResourcesCardProps =
-  | HasResourcesCardBaseProps
-  | HasResourcesCardLegacyProps;
-
 function isLegacyProps(
-  props: HasResourcesCardProps,
+  props: HasResourcesCardProps | HasResourcesCardLegacyProps,
 ): props is HasResourcesCardLegacyProps {
   return 'variant' in props || 'columns' in props || 'tableOptions' in props;
 }
 
-export function HasResourcesCard(props: HasResourcesCardProps) {
+export function HasResourcesCard(
+  props: HasResourcesCardProps | HasResourcesCardLegacyProps,
+) {
   const { t } = useTranslationRef(catalogTranslationRef);
 
   if (isLegacyProps(props)) {
@@ -94,7 +90,7 @@ export function HasResourcesCard(props: HasResourcesCardProps) {
 
   const {
     title = t('hasResourcesCard.title'),
-    columnConfig = resourceColumnConfig,
+    columnConfig = entityColumnPresets.resource.columns,
   } = props;
   return (
     <EntityRelationCard
@@ -104,7 +100,7 @@ export function HasResourcesCard(props: HasResourcesCardProps) {
       columnConfig={columnConfig}
       emptyState={{
         message: t('hasResourcesCard.emptyMessage'),
-        helpLink: resourceEntityHelpLink,
+        helpLink: entityColumnPresets.resource.helpLink,
       }}
     />
   );

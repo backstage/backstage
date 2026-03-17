@@ -23,10 +23,12 @@ import {
   EntityTable,
   useEntity,
   useRelatedEntities,
+} from '@backstage/plugin-catalog-react';
+import {
   EntityRelationCard,
   EntityColumnConfig,
-  componentColumnConfig,
-} from '@backstage/plugin-catalog-react';
+  entityColumnPresets,
+} from '@backstage/plugin-catalog-react/alpha';
 import {
   CodeSnippet,
   InfoCard,
@@ -41,14 +43,14 @@ import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { apiDocsTranslationRef } from '../../translation';
 
 /** @public */
-export interface ConsumingComponentsCardBaseProps {
+export interface ConsumingComponentsCardProps {
   title?: string;
   columnConfig?: EntityColumnConfig[];
 }
 
 /**
  * Props for the legacy MUI-based rendering.
- * @deprecated Use {@link ConsumingComponentsCardBaseProps} instead.
+ * @deprecated Use {@link ConsumingComponentsCardProps} instead.
  * @public
  */
 export interface ConsumingComponentsCardLegacyProps {
@@ -61,13 +63,8 @@ export interface ConsumingComponentsCardLegacyProps {
   tableOptions?: TableOptions;
 }
 
-/** @public */
-export type ConsumingComponentsCardProps =
-  | ConsumingComponentsCardBaseProps
-  | ConsumingComponentsCardLegacyProps;
-
 function isLegacyProps(
-  props: ConsumingComponentsCardProps,
+  props: ConsumingComponentsCardProps | ConsumingComponentsCardLegacyProps,
 ): props is ConsumingComponentsCardLegacyProps {
   return 'variant' in props || 'columns' in props || 'tableOptions' in props;
 }
@@ -134,7 +131,7 @@ function ConsumingComponentsCardLegacy(
  * @public
  */
 export const ConsumingComponentsCard = (
-  props: ConsumingComponentsCardProps,
+  props: ConsumingComponentsCardProps | ConsumingComponentsCardLegacyProps,
 ) => {
   const { t } = useTranslationRef(apiDocsTranslationRef);
 
@@ -144,7 +141,7 @@ export const ConsumingComponentsCard = (
 
   const {
     title = t('consumingComponentsCard.title'),
-    columnConfig = componentColumnConfig,
+    columnConfig = entityColumnPresets.component.columns,
   } = props;
 
   return (

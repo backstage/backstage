@@ -23,9 +23,8 @@ import {
 import {
   EntityRelationCard,
   EntityColumnConfig,
-  domainColumnConfig,
-  domainEntityHelpLink,
-} from '@backstage/plugin-catalog-react';
+  entityColumnPresets,
+} from '@backstage/plugin-catalog-react/alpha';
 import {
   asDomainEntities,
   domainEntityColumns,
@@ -36,14 +35,14 @@ import { catalogTranslationRef } from '../../alpha/translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /** @public */
-export interface HasSubdomainsCardBaseProps {
+export interface HasSubdomainsCardProps {
   title?: string;
   columnConfig?: EntityColumnConfig[];
 }
 
 /**
  * Props for the legacy MUI-based rendering.
- * @deprecated Use {@link HasSubdomainsCardBaseProps} instead.
+ * @deprecated Use {@link HasSubdomainsCardProps} instead.
  * @public
  */
 export interface HasSubdomainsCardLegacyProps {
@@ -56,18 +55,15 @@ export interface HasSubdomainsCardLegacyProps {
   columns?: TableColumn<DomainEntity>[];
 }
 
-/** @public */
-export type HasSubdomainsCardProps =
-  | HasSubdomainsCardBaseProps
-  | HasSubdomainsCardLegacyProps;
-
 function isLegacyProps(
-  props: HasSubdomainsCardProps,
+  props: HasSubdomainsCardProps | HasSubdomainsCardLegacyProps,
 ): props is HasSubdomainsCardLegacyProps {
   return 'variant' in props || 'columns' in props || 'tableOptions' in props;
 }
 
-export function HasSubdomainsCard(props: HasSubdomainsCardProps) {
+export function HasSubdomainsCard(
+  props: HasSubdomainsCardProps | HasSubdomainsCardLegacyProps,
+) {
   const { t } = useTranslationRef(catalogTranslationRef);
 
   if (isLegacyProps(props)) {
@@ -94,7 +90,7 @@ export function HasSubdomainsCard(props: HasSubdomainsCardProps) {
 
   const {
     title = t('hasSubdomainsCard.title'),
-    columnConfig = domainColumnConfig,
+    columnConfig = entityColumnPresets.domain.columns,
   } = props;
   return (
     <EntityRelationCard
@@ -104,7 +100,7 @@ export function HasSubdomainsCard(props: HasSubdomainsCardProps) {
       columnConfig={columnConfig}
       emptyState={{
         message: t('hasSubdomainsCard.emptyMessage'),
-        helpLink: domainEntityHelpLink,
+        helpLink: entityColumnPresets.domain.helpLink,
       }}
     />
   );

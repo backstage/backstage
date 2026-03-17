@@ -8,7 +8,7 @@ import { ApiRef } from '@backstage/frontend-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { CatalogTableRow } from '@backstage/plugin-catalog';
 import { ComponentEntity } from '@backstage/catalog-model';
-import { EntityColumnConfig } from '@backstage/plugin-catalog-react';
+import { EntityColumnConfig } from '@backstage/plugin-catalog-react/alpha';
 import { EntityListPagination } from '@backstage/plugin-catalog-react';
 import { EntityOwnerPickerProps } from '@backstage/plugin-catalog-react';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
@@ -95,15 +95,9 @@ export type AsyncApiResolver = {
 };
 
 // @public (undocumented)
-export const ConsumedApisCard: (props: ConsumedApisCardProps) => JSX_2.Element;
-
-// @public (undocumented)
-export interface ConsumedApisCardBaseProps {
-  // (undocumented)
-  columnConfig?: EntityColumnConfig[];
-  // (undocumented)
-  title?: string;
-}
+export const ConsumedApisCard: (
+  props: ConsumedApisCardProps | ConsumedApisCardLegacyProps,
+) => JSX_2.Element;
 
 // @public @deprecated
 export interface ConsumedApisCardLegacyProps {
@@ -118,22 +112,17 @@ export interface ConsumedApisCardLegacyProps {
 }
 
 // @public (undocumented)
-export type ConsumedApisCardProps =
-  | ConsumedApisCardBaseProps
-  | ConsumedApisCardLegacyProps;
-
-// @public (undocumented)
-export const ConsumingComponentsCard: (
-  props: ConsumingComponentsCardProps,
-) => JSX_2.Element;
-
-// @public (undocumented)
-export interface ConsumingComponentsCardBaseProps {
+export interface ConsumedApisCardProps {
   // (undocumented)
   columnConfig?: EntityColumnConfig[];
   // (undocumented)
   title?: string;
 }
+
+// @public (undocumented)
+export const ConsumingComponentsCard: (
+  props: ConsumingComponentsCardProps | ConsumingComponentsCardLegacyProps,
+) => JSX_2.Element;
 
 // @public @deprecated
 export interface ConsumingComponentsCardLegacyProps {
@@ -148,9 +137,12 @@ export interface ConsumingComponentsCardLegacyProps {
 }
 
 // @public (undocumented)
-export type ConsumingComponentsCardProps =
-  | ConsumingComponentsCardBaseProps
-  | ConsumingComponentsCardLegacyProps;
+export interface ConsumingComponentsCardProps {
+  // (undocumented)
+  columnConfig?: EntityColumnConfig[];
+  // (undocumented)
+  title?: string;
+}
 
 // @public
 export const DefaultApiExplorerPage: (
@@ -174,25 +166,27 @@ export const EntityApiDefinitionCard: () => JSX_2.Element;
 
 // @public (undocumented)
 export const EntityConsumedApisCard: (
-  props: ConsumedApisCardProps,
+  props: ConsumedApisCardProps | ConsumedApisCardLegacyProps,
 ) => JSX_2.Element;
 
 // @public (undocumented)
 export const EntityConsumingComponentsCard: (
-  props: ConsumingComponentsCardProps,
+  props: ConsumingComponentsCardProps | ConsumingComponentsCardLegacyProps,
 ) => JSX_2.Element;
 
 // @public (undocumented)
-export const EntityHasApisCard: (props: HasApisCardProps) => JSX_2.Element;
+export const EntityHasApisCard: (
+  props: HasApisCardProps | HasApisCardLegacyProps,
+) => JSX_2.Element;
 
 // @public (undocumented)
 export const EntityProvidedApisCard: (
-  props: ProvidedApisCardProps,
+  props: ProvidedApisCardProps | ProvidedApisCardLegacyProps,
 ) => JSX_2.Element;
 
 // @public (undocumented)
 export const EntityProvidingComponentsCard: (
-  props: ProvidingComponentsCardProps,
+  props: ProvidingComponentsCardProps | ProvidingComponentsCardLegacyProps,
 ) => JSX_2.Element;
 
 // @public (undocumented)
@@ -206,15 +200,9 @@ export type GraphQlDefinitionWidgetProps = {
 };
 
 // @public (undocumented)
-export const HasApisCard: (props: HasApisCardProps) => JSX_2.Element;
-
-// @public (undocumented)
-export interface HasApisCardBaseProps {
-  // (undocumented)
-  columnConfig?: EntityColumnConfig[];
-  // (undocumented)
-  title?: string;
-}
+export const HasApisCard: (
+  props: HasApisCardProps | HasApisCardLegacyProps,
+) => JSX_2.Element;
 
 // @public @deprecated
 export interface HasApisCardLegacyProps {
@@ -229,7 +217,12 @@ export interface HasApisCardLegacyProps {
 }
 
 // @public (undocumented)
-export type HasApisCardProps = HasApisCardBaseProps | HasApisCardLegacyProps;
+export interface HasApisCardProps {
+  // (undocumented)
+  columnConfig?: EntityColumnConfig[];
+  // (undocumented)
+  title?: string;
+}
 
 // @public (undocumented)
 export const OpenApiDefinitionWidget: (
@@ -255,15 +248,9 @@ export type PlainApiDefinitionWidgetProps = {
 };
 
 // @public (undocumented)
-export const ProvidedApisCard: (props: ProvidedApisCardProps) => JSX_2.Element;
-
-// @public (undocumented)
-export interface ProvidedApisCardBaseProps {
-  // (undocumented)
-  columnConfig?: EntityColumnConfig[];
-  // (undocumented)
-  title?: string;
-}
+export const ProvidedApisCard: (
+  props: ProvidedApisCardProps | ProvidedApisCardLegacyProps,
+) => JSX_2.Element;
 
 // @public @deprecated
 export interface ProvidedApisCardLegacyProps {
@@ -278,22 +265,17 @@ export interface ProvidedApisCardLegacyProps {
 }
 
 // @public (undocumented)
-export type ProvidedApisCardProps =
-  | ProvidedApisCardBaseProps
-  | ProvidedApisCardLegacyProps;
-
-// @public (undocumented)
-export const ProvidingComponentsCard: (
-  props: ProvidingComponentsCardProps,
-) => JSX_2.Element;
-
-// @public (undocumented)
-export interface ProvidingComponentsCardBaseProps {
+export interface ProvidedApisCardProps {
   // (undocumented)
   columnConfig?: EntityColumnConfig[];
   // (undocumented)
   title?: string;
 }
+
+// @public (undocumented)
+export const ProvidingComponentsCard: (
+  props: ProvidingComponentsCardProps | ProvidingComponentsCardLegacyProps,
+) => JSX_2.Element;
 
 // @public @deprecated
 export interface ProvidingComponentsCardLegacyProps {
@@ -308,9 +290,12 @@ export interface ProvidingComponentsCardLegacyProps {
 }
 
 // @public (undocumented)
-export type ProvidingComponentsCardProps =
-  | ProvidingComponentsCardBaseProps
-  | ProvidingComponentsCardLegacyProps;
+export interface ProvidingComponentsCardProps {
+  // (undocumented)
+  columnConfig?: EntityColumnConfig[];
+  // (undocumented)
+  title?: string;
+}
 
 // @public (undocumented)
 export const TrpcApiDefinitionWidget: (

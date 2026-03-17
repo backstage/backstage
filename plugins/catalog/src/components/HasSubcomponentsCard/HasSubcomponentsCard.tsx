@@ -23,8 +23,8 @@ import {
 import {
   EntityRelationCard,
   EntityColumnConfig,
-  componentColumnConfig,
-} from '@backstage/plugin-catalog-react';
+  entityColumnPresets,
+} from '@backstage/plugin-catalog-react/alpha';
 import {
   asComponentEntities,
   componentEntityColumns,
@@ -34,7 +34,7 @@ import { catalogTranslationRef } from '../../alpha/translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /** @public */
-export interface HasSubcomponentsCardBaseProps {
+export interface HasSubcomponentsCardProps {
   title?: string;
   columnConfig?: EntityColumnConfig[];
   kind?: string;
@@ -42,7 +42,7 @@ export interface HasSubcomponentsCardBaseProps {
 
 /**
  * Props for the legacy MUI-based rendering.
- * @deprecated Use {@link HasSubcomponentsCardBaseProps} instead.
+ * @deprecated Use {@link HasSubcomponentsCardProps} instead.
  * @public
  */
 export interface HasSubcomponentsCardLegacyProps {
@@ -56,18 +56,15 @@ export interface HasSubcomponentsCardLegacyProps {
   kind?: string;
 }
 
-/** @public */
-export type HasSubcomponentsCardProps =
-  | HasSubcomponentsCardBaseProps
-  | HasSubcomponentsCardLegacyProps;
-
 function isLegacyProps(
-  props: HasSubcomponentsCardProps,
+  props: HasSubcomponentsCardProps | HasSubcomponentsCardLegacyProps,
 ): props is HasSubcomponentsCardLegacyProps {
   return 'variant' in props || 'columns' in props || 'tableOptions' in props;
 }
 
-export function HasSubcomponentsCard(props: HasSubcomponentsCardProps) {
+export function HasSubcomponentsCard(
+  props: HasSubcomponentsCardProps | HasSubcomponentsCardLegacyProps,
+) {
   const { t } = useTranslationRef(catalogTranslationRef);
 
   if (isLegacyProps(props)) {
@@ -95,7 +92,7 @@ export function HasSubcomponentsCard(props: HasSubcomponentsCardProps) {
 
   const {
     title = t('hasSubcomponentsCard.title'),
-    columnConfig = componentColumnConfig,
+    columnConfig = entityColumnPresets.component.columns,
     kind = 'Component',
   } = props;
   return (

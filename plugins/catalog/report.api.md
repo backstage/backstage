@@ -11,7 +11,7 @@ import { CompoundEntityRef } from '@backstage/catalog-model';
 import { DomainEntity } from '@backstage/catalog-model';
 import { ElementType } from 'react';
 import { Entity } from '@backstage/catalog-model';
-import { EntityColumnConfig } from '@backstage/plugin-catalog-react';
+import { EntityColumnConfig } from '@backstage/plugin-catalog-react/alpha';
 import { EntityListContextProps } from '@backstage/plugin-catalog-react';
 import { EntityListPagination } from '@backstage/plugin-catalog-react';
 import { EntityOwnerPickerProps } from '@backstage/plugin-catalog-react';
@@ -291,14 +291,6 @@ export class DefaultStarredEntitiesApi implements StarredEntitiesApi {
   toggleStarred(entityRef: string): Promise<void>;
 }
 
-// @public (undocumented)
-export interface DependencyOfComponentsCardBaseProps {
-  // (undocumented)
-  columnConfig?: EntityColumnConfig[];
-  // (undocumented)
-  title?: string;
-}
-
 // @public @deprecated
 export interface DependencyOfComponentsCardLegacyProps {
   // @deprecated (undocumented)
@@ -312,12 +304,7 @@ export interface DependencyOfComponentsCardLegacyProps {
 }
 
 // @public (undocumented)
-export type DependencyOfComponentsCardProps =
-  | DependencyOfComponentsCardBaseProps
-  | DependencyOfComponentsCardLegacyProps;
-
-// @public (undocumented)
-export interface DependsOnComponentsCardBaseProps {
+export interface DependencyOfComponentsCardProps {
   // (undocumented)
   columnConfig?: EntityColumnConfig[];
   // (undocumented)
@@ -337,12 +324,7 @@ export interface DependsOnComponentsCardLegacyProps {
 }
 
 // @public (undocumented)
-export type DependsOnComponentsCardProps =
-  | DependsOnComponentsCardBaseProps
-  | DependsOnComponentsCardLegacyProps;
-
-// @public (undocumented)
-export interface DependsOnResourcesCardBaseProps {
+export interface DependsOnComponentsCardProps {
   // (undocumented)
   columnConfig?: EntityColumnConfig[];
   // (undocumented)
@@ -362,9 +344,12 @@ export interface DependsOnResourcesCardLegacyProps {
 }
 
 // @public (undocumented)
-export type DependsOnResourcesCardProps =
-  | DependsOnResourcesCardBaseProps
-  | DependsOnResourcesCardLegacyProps;
+export interface DependsOnResourcesCardProps {
+  // (undocumented)
+  columnConfig?: EntityColumnConfig[];
+  // (undocumented)
+  title?: string;
+}
 
 // @public
 export const EntityAboutCard: () => JSX.Element;
@@ -542,14 +527,6 @@ export function hasCatalogProcessingErrors(
   },
 ): Promise<boolean>;
 
-// @public (undocumented)
-export interface HasComponentsCardBaseProps {
-  // (undocumented)
-  columnConfig?: EntityColumnConfig[];
-  // (undocumented)
-  title?: string;
-}
-
 // @public @deprecated
 export interface HasComponentsCardLegacyProps {
   // @deprecated (undocumented)
@@ -563,9 +540,12 @@ export interface HasComponentsCardLegacyProps {
 }
 
 // @public (undocumented)
-export type HasComponentsCardProps =
-  | HasComponentsCardBaseProps
-  | HasComponentsCardLegacyProps;
+export interface HasComponentsCardProps {
+  // (undocumented)
+  columnConfig?: EntityColumnConfig[];
+  // (undocumented)
+  title?: string;
+}
 
 // @public
 export function hasLabels(entity: Entity): boolean;
@@ -577,14 +557,6 @@ export function hasRelationWarnings(
     apis: ApiHolder;
   },
 ): Promise<boolean>;
-
-// @public (undocumented)
-export interface HasResourcesCardBaseProps {
-  // (undocumented)
-  columnConfig?: EntityColumnConfig[];
-  // (undocumented)
-  title?: string;
-}
 
 // @public @deprecated
 export interface HasResourcesCardLegacyProps {
@@ -599,16 +571,9 @@ export interface HasResourcesCardLegacyProps {
 }
 
 // @public (undocumented)
-export type HasResourcesCardProps =
-  | HasResourcesCardBaseProps
-  | HasResourcesCardLegacyProps;
-
-// @public (undocumented)
-export interface HasSubcomponentsCardBaseProps {
+export interface HasResourcesCardProps {
   // (undocumented)
   columnConfig?: EntityColumnConfig[];
-  // (undocumented)
-  kind?: string;
   // (undocumented)
   title?: string;
 }
@@ -628,14 +593,11 @@ export interface HasSubcomponentsCardLegacyProps {
 }
 
 // @public (undocumented)
-export type HasSubcomponentsCardProps =
-  | HasSubcomponentsCardBaseProps
-  | HasSubcomponentsCardLegacyProps;
-
-// @public (undocumented)
-export interface HasSubdomainsCardBaseProps {
+export interface HasSubcomponentsCardProps {
   // (undocumented)
   columnConfig?: EntityColumnConfig[];
+  // (undocumented)
+  kind?: string;
   // (undocumented)
   title?: string;
 }
@@ -653,12 +615,7 @@ export interface HasSubdomainsCardLegacyProps {
 }
 
 // @public (undocumented)
-export type HasSubdomainsCardProps =
-  | HasSubdomainsCardBaseProps
-  | HasSubdomainsCardLegacyProps;
-
-// @public (undocumented)
-export interface HasSystemsCardBaseProps {
+export interface HasSubdomainsCardProps {
   // (undocumented)
   columnConfig?: EntityColumnConfig[];
   // (undocumented)
@@ -678,9 +635,12 @@ export interface HasSystemsCardLegacyProps {
 }
 
 // @public (undocumented)
-export type HasSystemsCardProps =
-  | HasSystemsCardBaseProps
-  | HasSystemsCardLegacyProps;
+export interface HasSystemsCardProps {
+  // (undocumented)
+  columnConfig?: EntityColumnConfig[];
+  // (undocumented)
+  title?: string;
+}
 
 // @public
 export function isApiType(

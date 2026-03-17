@@ -23,9 +23,8 @@ import {
 import {
   EntityRelationCard,
   EntityColumnConfig,
-  componentColumnConfig,
-  componentEntityHelpLink,
-} from '@backstage/plugin-catalog-react';
+  entityColumnPresets,
+} from '@backstage/plugin-catalog-react/alpha';
 import {
   asComponentEntities,
   componentEntityColumns,
@@ -36,14 +35,14 @@ import { catalogTranslationRef } from '../../alpha/translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /** @public */
-export interface HasComponentsCardBaseProps {
+export interface HasComponentsCardProps {
   title?: string;
   columnConfig?: EntityColumnConfig[];
 }
 
 /**
  * Props for the legacy MUI-based rendering.
- * @deprecated Use {@link HasComponentsCardBaseProps} instead.
+ * @deprecated Use {@link HasComponentsCardProps} instead.
  * @public
  */
 export interface HasComponentsCardLegacyProps {
@@ -56,18 +55,15 @@ export interface HasComponentsCardLegacyProps {
   tableOptions?: TableOptions;
 }
 
-/** @public */
-export type HasComponentsCardProps =
-  | HasComponentsCardBaseProps
-  | HasComponentsCardLegacyProps;
-
 function isLegacyProps(
-  props: HasComponentsCardProps,
+  props: HasComponentsCardProps | HasComponentsCardLegacyProps,
 ): props is HasComponentsCardLegacyProps {
   return 'variant' in props || 'columns' in props || 'tableOptions' in props;
 }
 
-export function HasComponentsCard(props: HasComponentsCardProps) {
+export function HasComponentsCard(
+  props: HasComponentsCardProps | HasComponentsCardLegacyProps,
+) {
   const { t } = useTranslationRef(catalogTranslationRef);
 
   if (isLegacyProps(props)) {
@@ -94,7 +90,7 @@ export function HasComponentsCard(props: HasComponentsCardProps) {
 
   const {
     title = t('hasComponentsCard.title'),
-    columnConfig = componentColumnConfig,
+    columnConfig = entityColumnPresets.component.columns,
   } = props;
   return (
     <EntityRelationCard
@@ -104,7 +100,7 @@ export function HasComponentsCard(props: HasComponentsCardProps) {
       columnConfig={columnConfig}
       emptyState={{
         message: t('hasComponentsCard.emptyMessage'),
-        helpLink: componentEntityHelpLink,
+        helpLink: entityColumnPresets.component.helpLink,
       }}
     />
   );
