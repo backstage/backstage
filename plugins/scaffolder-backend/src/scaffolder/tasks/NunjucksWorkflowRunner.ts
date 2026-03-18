@@ -695,10 +695,10 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
 
       // Filter output links and text items based on their `if` condition
       if (Array.isArray(output?.links)) {
-        output.links = filterConditionalItems(output.links as JsonArray);
+        output.links = filterConditionalItems(output.links);
       }
       if (Array.isArray(output?.text)) {
-        output.text = filterConditionalItems(output.text as JsonArray);
+        output.text = filterConditionalItems(output.text);
       }
 
       await taskTrack.markSuccessful();
