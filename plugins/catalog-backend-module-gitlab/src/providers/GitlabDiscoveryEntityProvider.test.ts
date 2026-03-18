@@ -281,6 +281,52 @@ describe('GitlabDiscoveryEntityProvider - refresh', () => {
     );
   });
 
+  it('should continue discovery when one project tree scan fails', async () => {
+    const config = new ConfigReader(
+      mock.config_single_integration_wildcard_entity_filename,
+    );
+    const schedule = new PersistingTaskRunner();
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+    const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+    })[0];
+
+    const originalListProjectTree = (provider as any).gitLabClient
+      .listProjectTree;
+    (provider as any).gitLabClient.listProjectTree = jest
+      .fn()
+      .mockImplementation(async (projectId: number, options: unknown) => {
+        if (projectId === 1) {
+          throw new TypeError('fetch failed');
+        }
+
+        return originalListProjectTree.call(
+          (provider as any).gitLabClient,
+          projectId,
+          options,
+        );
+      });
+
+    await provider.connect(entityProviderConnection);
+    await expect(provider.refresh(logger)).resolves.toBeUndefined();
+
+    const mutationCalls = (entityProviderConnection.applyMutation as jest.Mock)
+      .mock.calls;
+    const lastCall = mutationCalls[mutationCalls.length - 1][0];
+    const targets = lastCall.entities.map(
+      (entity: any) => entity.entity.spec.target,
+    );
+
+    expect(targets.length).toBeGreaterThan(0);
+    expect(
+      targets.some((target: string) => target.includes('/test-repo1/')),
+    ).toBe(false);
+  });
+
   it('should filter fork projects', async () => {
     const config = new ConfigReader(mock.config_single_integration_skip_forks);
     const schedule = new PersistingTaskRunner();

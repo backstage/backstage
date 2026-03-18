@@ -414,10 +414,19 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
     for await (const project of projects) {
       res.scanned++;
 
-      const matchingFiles = await this.getProjectCatalogFiles(
-        project,
-        this.gitLabClient,
-      );
+      let matchingFiles: string[] = [];
+
+      try {
+        matchingFiles = await this.getProjectCatalogFiles(
+          project,
+          this.gitLabClient,
+        );
+      } catch (error) {
+        this.logger.warn(
+          `Skipping project ${project.path_with_namespace} due to error while scanning catalog files: ${error}`,
+        );
+        continue;
+      }
 
       for (const catalogFile of matchingFiles) {
         res.matches.push({ project, catalogFile });
@@ -704,20 +713,32 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
     }
 
     const matchingFiles: string[] = [];
-    const projectFiles = paginated<GitLabRepositoryTreeItem>(
-      options => client.listProjectTree(project.id, options),
-      {
-        page: 1,
-        per_page: 100,
-        ref: project_branch,
-        recursive: true,
-      },
-    );
+    try {
+      const projectFiles = paginated<GitLabRepositoryTreeItem>(
+        options => client.listProjectTree(project.id, options),
+        {
+          page: 1,
+          per_page: 100,
+          ref: project_branch,
+          recursive: true,
+        },
+      );
 
-    for await (const file of projectFiles) {
-      if (file.type === 'blob' && this.catalogFileMatcher.match(file.path)) {
-        matchingFiles.push(file.path);
+      for await (const file of projectFiles) {
+        if (file.type === 'blob' && this.catalogFileMatcher.match(file.path)) {
+          matchingFiles.push(file.path);
+        }
       }
+    } catch (error) {
+      const message = String(error);
+      if (message.includes('Expected 200 but got 404')) {
+        this.logger.debug(
+          `Skipping project ${project.path_with_namespace} while scanning repository tree at ref '${project_branch}' due to 404 response.`,
+        );
+        return [];
+      }
+
+      throw error;
     }
 
     return matchingFiles;
