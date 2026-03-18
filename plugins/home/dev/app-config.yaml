@@ -41,7 +41,5 @@ app:
               width: 4
               height: 6
 
-
 backend:
   baseUrl: http://localhost:7007
-
