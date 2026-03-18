@@ -26,10 +26,10 @@ import { CustomHomepageGrid } from '../components';
  * This is used when no custom layout extension is installed.
  */
 export function DefaultHomePageLayout(props: HomePageLayoutProps) {
-  const { widgets } = props;
+  const { widgets, layoutConfig } = props;
   return (
     <Content>
-      <CustomHomepageGrid>
+      <CustomHomepageGrid config={layoutConfig}>
         {widgets.map((widget, index) => (
           <Fragment key={widget.name ?? index}>{widget.component}</Fragment>
         ))}

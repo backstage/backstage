@@ -145,12 +145,17 @@ const convertConfigToDefaultWidgets = (
   const ret = config.map((conf, i) => {
     const c = LayoutConfigurationSchema.parse(conf);
     const name = isValidElement(c.component)
-      ? getComponentData(c.component, 'core.extensionName')
+      ? (getComponentData(c.component, 'core.extensionName') as string)
       : (c.component as unknown as string);
     if (!name) {
       return null;
     }
-    const widget = availableWidgets.find(w => w.name === name);
+    // Normalize shorthand without kind (e.g. 'home/toolkit' → 'home-page-widget:home/toolkit')
+    const extensionId = !name.includes(':') ? `home-page-widget:${name}` : name;
+
+    const widget = availableWidgets.find(
+      w => w.name === name || w.extensionId === extensionId,
+    );
     if (!widget) {
       return null;
     }
@@ -193,6 +198,7 @@ const availableWidgetsFilter = (elements: ElementCollection) => {
         WidgetSchema.parse({
           component: elem,
           name: getComponentData<string>(elem, 'core.extensionName'),
+          extensionId: getComponentData<string>(elem, 'core.extensionId'),
           title: getComponentData<string>(elem, 'title'),
           description: getComponentData<string>(elem, 'description'),
           settingsSchema: config?.settings?.schema,

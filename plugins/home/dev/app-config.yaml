@@ -10,6 +10,36 @@ app:
             kind: Component
           responseLimit: 2
           subLinkText: Read the docs
+    - home-page-widget:home/starred-entities:
+        config:
+          groupByKind: true
+    - home-page-widget:home/toolkit:
+        config:
+          tools:
+            - url: https://backstage.io
+              label: Backstage Docs
+              icon: techdocs
+            - url: https://backstage.io/docs
+              label: Documentation
+              icon: catalog
+    - page:home:
+        config:
+          layoutConfig:
+            - component: search
+              x: 2
+              y: 0
+              width: 8
+              height: 2
+            - component: home-page-widget:home/toolkit
+              x: 1
+              y: 1
+              width: 2
+              height: 6
+            - component: HomePageStarredEntities
+              x: 4
+              y: 1
+              width: 4
+              height: 6
 
 
 backend:

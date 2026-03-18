@@ -22,6 +22,7 @@ import {
 } from '@backstage/test-utils';
 import { homePlugin } from '../../plugin';
 import {
+  attachComponentData,
   createComponentExtension,
   storageApiRef,
 } from '@backstage/core-plugin-api';
@@ -54,6 +55,16 @@ const ComponentC = homePlugin.provide(
     },
   }),
 );
+
+const ComponentD = homePlugin.provide(
+  createComponentExtension({
+    name: 'D-by-name',
+    component: {
+      sync: () => <div>D</div>,
+    },
+  }),
+);
+attachComponentData(ComponentD, 'core.extensionId', 'home-page-widget:home/d');
 
 const defaultConfig: ComponentProps<typeof CustomHomepageGrid>['config'] = [
   {
@@ -124,6 +135,46 @@ describe('CustomHomepageGrid', () => {
       presence: 'present',
       value: expect.any(String),
     });
+  });
+
+  it('should match widgets by full extension ID in layoutConfig', async () => {
+    const mockStorage = mockApis.storage();
+
+    await renderInTestApp(
+      <TestApiProvider apis={[[storageApiRef, mockStorage]]}>
+        <CustomHomepageGrid
+          config={[
+            {
+              component: 'home-page-widget:home/d',
+              x: 0,
+              y: 0,
+              width: 10,
+              height: 10,
+            },
+          ]}
+        >
+          <ComponentD />
+        </CustomHomepageGrid>
+      </TestApiProvider>,
+    );
+
+    expect(screen.getByText('D')).toBeInTheDocument();
+  });
+
+  it('should match widgets by shorthand extension ID in layoutConfig', async () => {
+    const mockStorage = mockApis.storage();
+
+    await renderInTestApp(
+      <TestApiProvider apis={[[storageApiRef, mockStorage]]}>
+        <CustomHomepageGrid
+          config={[{ component: 'home/d', x: 0, y: 0, width: 10, height: 10 }]}
+        >
+          <ComponentD />
+        </CustomHomepageGrid>
+      </TestApiProvider>,
+    );
+
+    expect(screen.getByText('D')).toBeInTheDocument();
   });
 
   it('should cancel edits', async () => {

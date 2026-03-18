@@ -47,6 +47,7 @@ export {
   type HomePageWidgetData,
   homePageLayoutComponentDataRef,
   type HomePageLayoutProps,
+  type LayoutConfiguration,
 } from './alpha/dataRefs';
 export type {
   ComponentParts,

@@ -36,6 +36,8 @@ import {
   errorApiRef,
   ApiBlueprint,
   ExtensionBoundary,
+  useApi,
+  iconsApiRef,
 } from '@backstage/frontend-plugin-api';
 import { VisitListener } from './components/';
 import { visitsApiRef, VisitsStorageApi, VisitsWebStorageApi } from './api';
@@ -60,7 +62,33 @@ const homePage = PageBlueprint.makeWithOverrides({
       internal: true,
     }),
   },
-  factory(originalFactory, { node, inputs }) {
+  config: {
+    schema: {
+      layoutConfig: z =>
+        z
+          .array(
+            z.object({
+              component: z
+                .string()
+                .describe(
+                  'Widget name or extension ID to position (e.g. HomePageToolkit, home-page-widget:home/toolkit, or home/toolkit)',
+                ),
+              x: z.number().nonnegative(),
+              y: z.number().nonnegative(),
+              width: z.number().positive(),
+              height: z.number().positive(),
+              movable: z.boolean().optional(),
+              deletable: z.boolean().optional(),
+              resizable: z.boolean().optional(),
+            }),
+          )
+          .optional()
+          .describe(
+            'Default widget positions before the user customises the grid.',
+          ),
+    },
+  },
+  factory(originalFactory, { node, inputs, config }) {
     return originalFactory({
       path: '/home',
       noHeader: true,
@@ -89,7 +117,9 @@ const homePage = PageBlueprint.makeWithOverrides({
           node: widget.node,
         }));
 
-        return <Layout widgets={widgets} />;
+        return (
+          <Layout widgets={widgets} layoutConfig={config.layoutConfig as any} />
+        );
       },
     });
   },
@@ -124,39 +154,80 @@ const visitsApi = ApiBlueprint.make({
     }),
 });
 
-const homePageToolkitWidget = HomePageCardWidgetBlueprint.make({
+const homePageToolkitWidget = HomePageCardWidgetBlueprint.makeWithOverrides({
   name: 'toolkit',
-  params: {
-    name: 'HomePageToolkit',
-    title: 'Toolkit',
-    components: () =>
-      import('./homePageComponents/Toolkit').then(m => ({
-        Content: (props: any) => <m.Content {...props} />,
-        ContextProvider: m.ContextProvider,
-      })),
-    componentProps: {
-      tools: [
-        {
-          url: 'https://backstage.io',
-          label: 'Backstage Docs',
-          icon: <HomeIcon />,
-        },
-      ],
+  config: {
+    schema: {
+      tools: z =>
+        z
+          .array(
+            z.object({
+              url: z.string(),
+              label: z.string(),
+              icon: z.string().optional(),
+            }),
+          )
+          .optional(),
     },
+  },
+  factory(origFactory, { config }) {
+    return origFactory({
+      name: 'HomePageToolkit',
+      title: 'Toolkit',
+      components: () =>
+        import('./homePageComponents/Toolkit').then(m => {
+          const ToolkitContextProvider = (
+            props: Parameters<typeof m.ContextProvider>[0],
+          ) => {
+            const icons = useApi(iconsApiRef);
+            const tools = config.tools
+              ? config.tools.map(tool => {
+                  const Icon = tool.icon ? icons.icon(tool.icon) : undefined;
+                  return { ...tool, icon: Icon ? Icon : undefined };
+                })
+              : props.tools;
+            return <m.ContextProvider {...props} tools={tools} />;
+          };
+          return {
+            Content: (props: any) => <m.Content {...props} />,
+            ContextProvider: ToolkitContextProvider,
+          };
+        }),
+      componentProps: {
+        tools: [
+          {
+            url: 'https://backstage.io',
+            label: 'Backstage Docs',
+            icon: <HomeIcon />,
+          },
+        ],
+      },
+    });
   },
 });
 
-const homePageStarredEntitiesWidget = HomePageCardWidgetBlueprint.make({
-  name: 'starred-entities',
-  params: {
-    name: 'HomePageStarredEntities',
-    title: 'Your Starred Entities',
-    components: () =>
-      import('./homePageComponents/StarredEntities').then(m => ({
-        Content: m.Content,
-      })),
-  },
-});
+const homePageStarredEntitiesWidget =
+  HomePageCardWidgetBlueprint.makeWithOverrides({
+    name: 'starred-entities',
+    config: {
+      schema: {
+        groupByKind: z => z.boolean().optional(),
+      },
+    },
+    factory(origFactory, { config }) {
+      return origFactory({
+        name: 'HomePageStarredEntities',
+        title: 'Your Starred Entities',
+        components: () =>
+          import('./homePageComponents/StarredEntities').then(m => ({
+            Content: m.Content,
+          })),
+        componentProps: {
+          groupByKind: config.groupByKind,
+        },
+      });
+    },
+  });
 
 const homePageRandomJokeWidget = HomePageCardWidgetBlueprint.make({
   name: 'random-joke',

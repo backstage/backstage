@@ -96,6 +96,7 @@ export const HomePageWidgetBlueprint = createExtensionBlueprint({
     );
 
     attachComponentData(Widget, 'core.extensionName', widgetName);
+    attachComponentData(Widget, 'core.extensionId', node.spec.id);
     attachComponentData(Widget, 'title', params.title);
     attachComponentData(Widget, 'description', params.description);
     attachComponentData(Widget, 'home.widget.config', {

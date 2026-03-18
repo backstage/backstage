@@ -18,11 +18,25 @@ import { CSSProperties, ReactElement, ReactNode } from 'react';
 import { Layout } from 'react-grid-layout';
 import { z } from 'zod/v3';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
+import { LayoutConfiguration } from '@backstage/plugin-home-react/alpha';
+
+export type { LayoutConfiguration };
 
 const RSJFTypeSchema: z.ZodType<RJSFSchema> = z.any();
 const RSJFTypeUiSchema: z.ZodType<UiSchema> = z.any();
 const ReactElementSchema: z.ZodType<ReactElement> = z.any();
 const LayoutSchema: z.ZodType<Layout> = z.any();
+
+export const LayoutConfigurationSchema = z.object({
+  component: ReactElementSchema,
+  x: z.number().nonnegative('x must be positive number'),
+  y: z.number().nonnegative('y must be positive number'),
+  width: z.number().positive('width must be positive number'),
+  height: z.number().positive('height must be positive number'),
+  movable: z.boolean().optional(),
+  deletable: z.boolean().optional(),
+  resizable: z.boolean().optional(),
+});
 
 /**
  * Breakpoint options for <CustomHomepageGridProps/>
@@ -104,35 +118,9 @@ export type CustomHomepageGridProps = {
   preventCollision?: boolean;
 };
 
-export const LayoutConfigurationSchema = z.object({
-  component: ReactElementSchema,
-  x: z.number().nonnegative('x must be positive number'),
-  y: z.number().nonnegative('y must be positive number'),
-  width: z.number().positive('width must be positive number'),
-  height: z.number().positive('height must be positive number'),
-  movable: z.boolean().optional(),
-  deletable: z.boolean().optional(),
-  resizable: z.boolean().optional(),
-});
-
-/**
- * Layout configuration that can be passed to the custom home page.
- *
- * @public
- */
-export type LayoutConfiguration = {
-  component: ReactElement | string;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  movable?: boolean;
-  deletable?: boolean;
-  resizable?: boolean;
-};
-
 export const WidgetSchema = z.object({
   name: z.string(),
+  extensionId: z.string().optional(),
   title: z.string().optional(),
   description: z.string().optional(),
   component: ReactElementSchema,

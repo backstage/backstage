@@ -89,7 +89,7 @@ const defaultGridConfig: LayoutConfiguration[] = [
 const homePageLayout = HomePageLayoutBlueprint.make({
   params: {
     loader: async () =>
-      function CustomHomePageLayout({ widgets }) {
+      function CustomHomePageLayout({ widgets, layoutConfig }) {
         return (
           <Page themeId="home">
             <Header title={<WelcomeTitle />} pageTitleOverride="Home">
@@ -99,7 +99,7 @@ const homePageLayout = HomePageLayoutBlueprint.make({
               />
             </Header>
             <Content>
-              <CustomHomepageGrid config={defaultGridConfig}>
+              <CustomHomepageGrid config={layoutConfig ?? defaultGridConfig}>
                 {widgets.map((widget, index) => (
                   <Fragment key={widget.name ?? index}>
                     {widget.component}
@@ -132,18 +132,6 @@ const homePageToolkitWidget = HomePageCardWidgetBlueprint.make({
         },
       ],
     },
-  },
-});
-
-const homePageStarredEntitiesWidget = HomePageCardWidgetBlueprint.make({
-  name: 'starred-entities',
-  params: {
-    name: 'HomePageStarredEntities',
-    title: 'Your Starred Entities',
-    components: () =>
-      import('../src/homePageComponents/StarredEntities').then(m => ({
-        Content: m.Content,
-      })),
   },
 });
 
@@ -183,12 +171,7 @@ const homePageRandomJokeWidget = HomePageCardWidgetBlueprint.make({
 
 const homeDevModule = createFrontendModule({
   pluginId: 'home',
-  extensions: [
-    homePageLayout,
-    homePageToolkitWidget,
-    homePageStarredEntitiesWidget,
-    homePageRandomJokeWidget,
-  ],
+  extensions: [homePageLayout, homePageToolkitWidget, homePageRandomJokeWidget],
 });
 
 const entities: Entity[] = [

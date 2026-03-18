@@ -22,6 +22,22 @@ import { JSX, ReactElement } from 'react';
 import type { WidgetLayout, WidgetSettings } from '../extensions';
 
 /**
+ * Layout configuration that can be passed to the custom home page.
+ *
+ * @alpha
+ */
+export type LayoutConfiguration = {
+  component: ReactElement | string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  movable?: boolean;
+  deletable?: boolean;
+  resizable?: boolean;
+};
+
+/**
  * Extension data for homepage widgets, bundling the rendered component
  * with its metadata.
  *
@@ -82,6 +98,10 @@ export interface HomePageLayoutProps {
    * The list of widget elements and metadata to render on the home page.
    */
   widgets: Array<HomePageWidgetData>;
+  /**
+   * Optional default widget positions before the user customizes the grid.
+   */
+  layoutConfig?: LayoutConfiguration[];
 }
 
 /**
