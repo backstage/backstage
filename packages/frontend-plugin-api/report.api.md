@@ -781,7 +781,7 @@ export function createFrontendPlugin<
 ): OverridableFrontendPlugin<
   TRoutes,
   TExternalRoutes,
-  MakeSortedExtensionsMap<TExtensions[number], TId>
+  MakeSortedExtensionsMap<TExtensions, TId>
 >;
 
 // @public

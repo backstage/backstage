@@ -126,6 +126,8 @@ type ExtensionArrayToMap<
 // correctness or API stability point of view.
 /** @ignore */
 export type MakeSortedExtensionsMap<
-  UExtensions extends ExtensionDefinition,
+  TExtensions extends readonly ExtensionDefinition[],
   TId extends string,
-> = ExtensionArrayToMap<SortExtensions<UnionToArray<UExtensions>>, TId>;
+> = number extends TExtensions['length']
+  ? ExtensionArrayToMap<SortExtensions<UnionToArray<TExtensions[number]>>, TId>
+  : ExtensionArrayToMap<SortExtensions<[...TExtensions]>, TId>;
