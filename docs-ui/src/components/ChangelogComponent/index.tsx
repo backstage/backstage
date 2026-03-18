@@ -9,7 +9,7 @@ import {
 } from '../Changelog/utils';
 
 type ChangelogComponentProps = AtLeastOne<{
-  component: Component;
+  component: Component | Component[];
   hook: Hook;
 }>;
 
@@ -17,14 +17,18 @@ export const ChangelogComponent = ({
   component,
   hook,
 }: Readonly<ChangelogComponentProps>) => {
+  const components = Array.isArray(component) ? component : [component];
   const componentChangelog = changelog.filter(
-    c => c.components?.includes(component) || c.hooks?.includes(hook),
+    c =>
+      c.components?.some(cc => components.includes(cc)) ||
+      c.hooks?.includes(hook),
   );
 
   const content = `## Changelog
 
 ${generateChangelogMarkdown(componentChangelog, {
-  showComponentBadges: false,
+  showComponentBadges: components.length > 1,
+  componentBadgeFilter: components.length > 1 ? components : undefined,
   headingLevel: 3,
 })}`;
 
