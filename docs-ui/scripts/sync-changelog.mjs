@@ -650,6 +650,10 @@ function isDuplicate(entry, existingContent) {
  */
 function getGitHubAuth() {
   // 1. Try gh CLI (preferred - uses keyring auth)
+  if (process.env.GITHUB_TOKEN) {
+    console.log('Using GITHUB_TOKEN authentication');
+    return { method: 'token', token: process.env.GITHUB_TOKEN };
+  }
   try {
     // Check specifically for github.com authentication
     const output = execSync('gh auth status -h github.com 2>&1', {
@@ -661,12 +665,6 @@ function getGitHubAuth() {
     }
   } catch {
     // gh not installed or not authenticated to github.com
-  }
-
-  // 2. Try GITHUB_TOKEN env var
-  if (process.env.GITHUB_TOKEN) {
-    console.log('✓ Using GITHUB_TOKEN authentication');
-    return { method: 'token', token: process.env.GITHUB_TOKEN };
   }
 
   // 3. Fallback to unauthenticated (60 req/hour limit)

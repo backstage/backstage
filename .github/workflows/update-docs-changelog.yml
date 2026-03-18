@@ -1,0 +1,47 @@
+name: Update UI Changelog
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch: 
+
+jobs:
+  update-changelog:
+    name: Generate UI Changelog
+    runs-on: ubuntu-latest
+    
+    if: github.event_name == 'workflow_dispatch' || !contains(github.event.release.tag_name, 'next')
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: Run Changelog Script
+        env:
+          
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        
+        run: node docs-ui/scripts/sync-changelog.mjs
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "docs(ui): automate changelog update"
+          title: "docs(ui): automate changelog update for latest release"
+          body: |
+            Automated PR to update the `docs-ui` changelog following a new release.
+            Triggered by GitHub Actions.
+          branch: "automation/update-ui-changelog"
+          labels: "documentation"

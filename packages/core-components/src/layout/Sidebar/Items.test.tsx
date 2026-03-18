@@ -19,17 +19,13 @@ import {
   TestApiProvider,
   renderInTestApp,
 } from '@backstage/test-utils';
-import {
-  createEvent,
-  fireEvent,
-  screen,
-  renderHook,
-} from '@testing-library/react';
+import { createEvent, fireEvent, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import HomeIcon from '@material-ui/icons/Home';
 import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
 import { Sidebar } from './Bar';
 import { SidebarItem, SidebarSearchField, SidebarExpandButton } from './Items';
+import { renderHook } from '@testing-library/react';
 import { makeStyles } from '@material-ui/core/styles';
 import { analyticsApiRef } from '@backstage/core-plugin-api';
 
