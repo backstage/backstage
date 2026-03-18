@@ -18,7 +18,7 @@ import { ErrorApi } from '@backstage/core-plugin-api';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { JSX as JSX_3 } from 'react';
-import { ReactElement } from 'react';
+import { LayoutConfiguration } from '@backstage/plugin-home-react/alpha';
 import { ReactNode } from 'react';
 import { RendererProps as RendererProps_2 } from '@backstage/plugin-home-react';
 import { RouteRef } from '@backstage/core-plugin-api';
@@ -181,7 +181,6 @@ export const homePlugin: BackstagePlugin<
 export const homeTranslationRef: TranslationRef<
   'home',
   {
-    readonly 'starredEntities.noStarredEntitiesMessage': 'Click the star beside an entity name to add it to this list!';
     readonly 'addWidgetDialog.title': 'Add new widget to dashboard';
     readonly 'customHomepageButtons.cancel': 'Cancel';
     readonly 'customHomepageButtons.clearAll': 'Clear all';
@@ -190,11 +189,11 @@ export const homeTranslationRef: TranslationRef<
     readonly 'customHomepageButtons.addWidget': 'Add widget';
     readonly 'customHomepageButtons.save': 'Save';
     readonly 'customHomepage.noWidgets': "No widgets added. Start by clicking the 'Add widget' button.";
-    readonly 'widgetSettingsOverlay.cancelButtonTitle': 'Cancel';
     readonly 'widgetSettingsOverlay.editSettingsTooltip': 'Edit settings';
     readonly 'widgetSettingsOverlay.editSettingsTooptip': 'Edit settings';
     readonly 'widgetSettingsOverlay.deleteWidgetTooltip': 'Delete widget';
     readonly 'widgetSettingsOverlay.submitButtonTitle': 'Submit';
+    readonly 'widgetSettingsOverlay.cancelButtonTitle': 'Cancel';
     readonly 'starredEntityListItem.removeFavoriteEntityTitle': 'Remove entity from favorites';
     readonly 'visitList.empty.title': 'There are no visits to show yet.';
     readonly 'visitList.empty.description': 'Once you start using Backstage, your visits will appear here as a quick link to carry on where you left off.';
@@ -202,6 +201,7 @@ export const homeTranslationRef: TranslationRef<
     readonly 'quickStart.title': 'Onboarding';
     readonly 'quickStart.description': 'Get started with Backstage';
     readonly 'quickStart.learnMoreLinkTitle': 'Learn more';
+    readonly 'starredEntities.noStarredEntitiesMessage': 'Click the star beside an entity name to add it to this list!';
     readonly 'visitedByType.action.viewMore': 'View more';
     readonly 'visitedByType.action.viewLess': 'View less';
     readonly 'featuredDocsCard.empty.title': 'No documents to show';
@@ -214,17 +214,7 @@ export const homeTranslationRef: TranslationRef<
 // @public
 export const isOperator: (s: string) => s is Operators;
 
-// @public
-export type LayoutConfiguration = {
-  component: ReactElement | string;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  movable?: boolean;
-  deletable?: boolean;
-  resizable?: boolean;
-};
+export { LayoutConfiguration };
 
 // @public
 export type Operators = '<' | '<=' | '==' | '!=' | '>' | '>=' | 'contains';

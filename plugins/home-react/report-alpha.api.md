@@ -29,6 +29,34 @@ export type ComponentParts = {
 };
 
 // @alpha
+export const HomePageCardWidgetBlueprint: ExtensionBlueprint<{
+  kind: 'home-page-widget';
+  params: HomePageCardWidgetBlueprintParams;
+  output: ExtensionDataRef<HomePageWidgetData, 'home.widget.data', {}>;
+  inputs: {};
+  config: {};
+  configInput: {};
+  dataRefs: {
+    widget: ConfigurableExtensionDataRef<
+      HomePageWidgetData,
+      'home.widget.data',
+      {}
+    >;
+  };
+}>;
+
+// @alpha
+export type HomePageCardWidgetBlueprintParams = {
+  components: () => Promise<ComponentParts>;
+  name?: string;
+  title?: string;
+  description?: string;
+  layout?: WidgetLayout;
+  settings?: WidgetSettings;
+  componentProps?: Record<string, unknown>;
+};
+
+// @alpha
 export const HomePageLayoutBlueprint: ExtensionBlueprint<{
   kind: 'home-page-layout';
   params: HomePageLayoutBlueprintParams;
@@ -63,6 +91,7 @@ export const homePageLayoutComponentDataRef: ConfigurableExtensionDataRef<
 
 // @alpha
 export interface HomePageLayoutProps {
+  layoutConfig?: LayoutConfiguration[];
   widgets: Array<HomePageWidgetData>;
 }
 
@@ -84,26 +113,14 @@ export const HomePageWidgetBlueprint: ExtensionBlueprint<{
 }>;
 
 // @alpha
-export type HomePageWidgetBlueprintParams =
-  | {
-      components: () => Promise<ComponentParts>;
-      loader?: never;
-      name?: string;
-      title?: string;
-      description?: string;
-      layout?: WidgetLayout;
-      settings?: WidgetSettings;
-      componentProps?: Record<string, unknown>;
-    }
-  | {
-      loader: () => Promise<ComponentType<{}>>;
-      components?: never;
-      name?: string;
-      title?: string;
-      description?: string;
-      layout?: WidgetLayout;
-      settings?: WidgetSettings;
-    };
+export type HomePageWidgetBlueprintParams = {
+  loader: () => Promise<ComponentType<{}>>;
+  name?: string;
+  title?: string;
+  description?: string;
+  layout?: WidgetLayout;
+  settings?: WidgetSettings;
+};
 
 // @alpha
 export interface HomePageWidgetData {
@@ -133,7 +150,18 @@ export const homeReactTranslationRef: TranslationRef<
   }
 >;
 
-// (No @packageDocumentation comment for this package)
+// @alpha
+export type LayoutConfiguration = {
+  component: ReactElement | string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  movable?: boolean;
+  deletable?: boolean;
+  resizable?: boolean;
+};
+
 // @public
 export type WidgetLayout = {
   width?: {
@@ -153,4 +181,6 @@ export type WidgetSettings = {
   schema?: RJSFSchema;
   uiSchema?: UiSchema;
 };
+
+// (No @packageDocumentation comment for this package)
 ```

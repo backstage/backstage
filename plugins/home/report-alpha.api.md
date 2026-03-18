@@ -10,8 +10,8 @@ import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
+import { HomePageCardWidgetBlueprintParams } from '@backstage/plugin-home-react/alpha';
 import { HomePageLayoutProps } from '@backstage/plugin-home-react/alpha';
-import { HomePageWidgetBlueprintParams } from '@backstage/plugin-home-react/alpha';
 import { HomePageWidgetData } from '@backstage/plugin-home-react/alpha';
 import { IconElement } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
@@ -53,6 +53,25 @@ const _default: OverridableFrontendPlugin<
         element: JSX.Element;
       };
     }>;
+    'home-page-widget:home/featured-docs': OverridableExtensionDefinition<{
+      config: {
+        filter: Record<string, string | string[]>;
+        responseLimit: number | undefined;
+        linkDestination: string | undefined;
+        subLinkText: string | undefined;
+      };
+      configInput: {
+        filter: Record<string, string | string[]>;
+        linkDestination?: string | undefined;
+        responseLimit?: number | undefined;
+        subLinkText?: string | undefined;
+      };
+      output: ExtensionDataRef<HomePageWidgetData, 'home.widget.data', {}>;
+      inputs: {};
+      kind: 'home-page-widget';
+      name: 'featured-docs';
+      params: HomePageCardWidgetBlueprintParams;
+    }>;
     'home-page-widget:home/random-joke': OverridableExtensionDefinition<{
       kind: 'home-page-widget';
       name: 'random-joke';
@@ -60,32 +79,106 @@ const _default: OverridableFrontendPlugin<
       configInput: {};
       output: ExtensionDataRef<HomePageWidgetData, 'home.widget.data', {}>;
       inputs: {};
-      params: HomePageWidgetBlueprintParams;
+      params: HomePageCardWidgetBlueprintParams;
+    }>;
+    'home-page-widget:home/recently-visited': OverridableExtensionDefinition<{
+      config: {
+        numVisitsOpen: number | undefined;
+        numVisitsTotal: number | undefined;
+      };
+      configInput: {
+        numVisitsOpen?: number | undefined;
+        numVisitsTotal?: number | undefined;
+      };
+      output: ExtensionDataRef<HomePageWidgetData, 'home.widget.data', {}>;
+      inputs: {};
+      kind: 'home-page-widget';
+      name: 'recently-visited';
+      params: HomePageCardWidgetBlueprintParams;
     }>;
     'home-page-widget:home/starred-entities': OverridableExtensionDefinition<{
+      config: {
+        groupByKind: boolean | undefined;
+      };
+      configInput: {
+        groupByKind?: boolean | undefined;
+      };
+      output: ExtensionDataRef<HomePageWidgetData, 'home.widget.data', {}>;
+      inputs: {};
       kind: 'home-page-widget';
       name: 'starred-entities';
-      config: {};
-      configInput: {};
-      output: ExtensionDataRef<HomePageWidgetData, 'home.widget.data', {}>;
-      inputs: {};
-      params: HomePageWidgetBlueprintParams;
+      params: HomePageCardWidgetBlueprintParams;
     }>;
     'home-page-widget:home/toolkit': OverridableExtensionDefinition<{
-      kind: 'home-page-widget';
-      name: 'toolkit';
-      config: {};
-      configInput: {};
+      config: {
+        tools:
+          | {
+              url: string;
+              label: string;
+              icon?: string | undefined;
+            }[]
+          | undefined;
+      };
+      configInput: {
+        tools?:
+          | {
+              url: string;
+              label: string;
+              icon?: string | undefined;
+            }[]
+          | undefined;
+      };
       output: ExtensionDataRef<HomePageWidgetData, 'home.widget.data', {}>;
       inputs: {};
-      params: HomePageWidgetBlueprintParams;
+      kind: 'home-page-widget';
+      name: 'toolkit';
+      params: HomePageCardWidgetBlueprintParams;
+    }>;
+    'home-page-widget:home/top-visited': OverridableExtensionDefinition<{
+      config: {
+        numVisitsOpen: number | undefined;
+        numVisitsTotal: number | undefined;
+      };
+      configInput: {
+        numVisitsOpen?: number | undefined;
+        numVisitsTotal?: number | undefined;
+      };
+      output: ExtensionDataRef<HomePageWidgetData, 'home.widget.data', {}>;
+      inputs: {};
+      kind: 'home-page-widget';
+      name: 'top-visited';
+      params: HomePageCardWidgetBlueprintParams;
     }>;
     'page:home': OverridableExtensionDefinition<{
       config: {
+        layoutConfig:
+          | {
+              height: number;
+              width: number;
+              x: number;
+              y: number;
+              component: string;
+              resizable?: boolean | undefined;
+              deletable?: boolean | undefined;
+              movable?: boolean | undefined;
+            }[]
+          | undefined;
         path: string | undefined;
         title: string | undefined;
       };
       configInput: {
+        layoutConfig?:
+          | {
+              height: number;
+              width: number;
+              x: number;
+              y: number;
+              component: string;
+              resizable?: boolean | undefined;
+              deletable?: boolean | undefined;
+              movable?: boolean | undefined;
+            }[]
+          | undefined;
         path?: string | undefined;
         title?: string | undefined;
       };
@@ -188,7 +281,6 @@ export default _default;
 export const homeTranslationRef: TranslationRef<
   'home',
   {
-    readonly 'starredEntities.noStarredEntitiesMessage': 'Click the star beside an entity name to add it to this list!';
     readonly 'addWidgetDialog.title': 'Add new widget to dashboard';
     readonly 'customHomepageButtons.cancel': 'Cancel';
     readonly 'customHomepageButtons.clearAll': 'Clear all';
@@ -197,11 +289,11 @@ export const homeTranslationRef: TranslationRef<
     readonly 'customHomepageButtons.addWidget': 'Add widget';
     readonly 'customHomepageButtons.save': 'Save';
     readonly 'customHomepage.noWidgets': "No widgets added. Start by clicking the 'Add widget' button.";
-    readonly 'widgetSettingsOverlay.cancelButtonTitle': 'Cancel';
     readonly 'widgetSettingsOverlay.editSettingsTooltip': 'Edit settings';
     readonly 'widgetSettingsOverlay.editSettingsTooptip': 'Edit settings';
     readonly 'widgetSettingsOverlay.deleteWidgetTooltip': 'Delete widget';
     readonly 'widgetSettingsOverlay.submitButtonTitle': 'Submit';
+    readonly 'widgetSettingsOverlay.cancelButtonTitle': 'Cancel';
     readonly 'starredEntityListItem.removeFavoriteEntityTitle': 'Remove entity from favorites';
     readonly 'visitList.empty.title': 'There are no visits to show yet.';
     readonly 'visitList.empty.description': 'Once you start using Backstage, your visits will appear here as a quick link to carry on where you left off.';
@@ -209,6 +301,7 @@ export const homeTranslationRef: TranslationRef<
     readonly 'quickStart.title': 'Onboarding';
     readonly 'quickStart.description': 'Get started with Backstage';
     readonly 'quickStart.learnMoreLinkTitle': 'Learn more';
+    readonly 'starredEntities.noStarredEntitiesMessage': 'Click the star beside an entity name to add it to this list!';
     readonly 'visitedByType.action.viewMore': 'View more';
     readonly 'visitedByType.action.viewLess': 'View less';
     readonly 'featuredDocsCard.empty.title': 'No documents to show';
