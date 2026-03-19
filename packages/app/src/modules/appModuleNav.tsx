@@ -107,7 +107,7 @@ export const appModuleNav = createFrontendModule({
               text={item.title}
             />
           ));
-          // Skip these
+          // Consume without rendering — these are handled by dedicated sidebar groups
           nav.take('page:home');
           nav.take('page:search');
           return (

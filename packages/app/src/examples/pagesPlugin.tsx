@@ -36,11 +36,6 @@ export const externalPageXRouteRef = createExternalRouteRef({
   defaultTarget: 'pages.pageX',
 });
 export const pageXRouteRef = createRouteRef();
-// const page2RouteRef = createSubRouteRef({
-//   id: 'page2',
-//   parent: page1RouteRef,
-//   path: '/page2',
-// });
 
 function PluginInfo() {
   const node = useAppNode();
@@ -153,14 +148,12 @@ const Page1 = PageBlueprint.make({
       const Component = () => {
         const indexLink = useRouteRef(indexRouteRef);
         const xLink = useRouteRef(externalPageXRouteRef);
-        // const page2Link = useRouteRef(page2RouteRef);
 
         return (
           <div>
             <h1>This is page 1</h1>
             {indexLink && <Link to={indexLink()}>Go back</Link>}
             <Link to="./page2">Page 2</Link>
-            {/* <Link to={page2Link()}>Page 2</Link> */}
             {xLink && <Link to={xLink()}>Page X</Link>}
 
             <div>
@@ -188,7 +181,6 @@ const ExternalPage = PageBlueprint.make({
     loader: async () => {
       const Component = () => {
         const indexLink = useRouteRef(indexRouteRef);
-        // const pageXLink = useRouteRef(pageXRouteRef);
 
         return (
           <div>
@@ -468,13 +460,6 @@ const PermissionGatedPage = PageBlueprint.make({
 
 export const pagesPlugin = createFrontendPlugin({
   pluginId: 'pages',
-  // routes: {
-  //   index: indexRouteRef,
-  //   // reference in config:
-  //   //   'plugin.pages.routes.index'
-  //   //     OR
-  //   //   'page1'
-  // },
   info: {
     packageJson: () => import('../../package.json'),
     manifest: () => import('../../catalog-info.yaml'),
