@@ -29,8 +29,8 @@ const LayoutSchema: z.ZodType<Layout> = z.any();
 
 export const LayoutConfigurationSchema = z.object({
   component: ReactElementSchema,
-  x: z.number().nonnegative('x must be positive number'),
-  y: z.number().nonnegative('y must be positive number'),
+  x: z.number().nonnegative('x must be a non-negative number'),
+  y: z.number().nonnegative('y must be a non-negative number'),
   width: z.number().positive('width must be positive number'),
   height: z.number().positive('height must be positive number'),
   movable: z.boolean().optional(),

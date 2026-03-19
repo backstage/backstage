@@ -42,7 +42,6 @@ import {
 import { VisitListener } from './components/';
 import { visitsApiRef, VisitsStorageApi, VisitsWebStorageApi } from './api';
 import HomeIcon from '@material-ui/icons/Home';
-import {} from '@backstage/core-components';
 import {
   homePageWidgetDataRef,
   homePageLayoutComponentDataRef,
@@ -117,9 +116,7 @@ const homePage = PageBlueprint.makeWithOverrides({
           node: widget.node,
         }));
 
-        return (
-          <Layout widgets={widgets} layoutConfig={config.layoutConfig as any} />
-        );
+        return <Layout widgets={widgets} layoutConfig={config.layoutConfig} />;
       },
     });
   },
