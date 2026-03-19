@@ -29,6 +29,7 @@ import { createFrontendModule } from '@backstage/frontend-plugin-api';
 import {
   HomePageLayoutBlueprint,
   HomePageCardWidgetBlueprint,
+  HomePageWidgetBlueprint,
 } from '@backstage/plugin-home-react/alpha';
 import { HeaderWorldClock, WelcomeTitle, type ClockConfig } from '../src';
 import homePlugin from '../src/alpha';
@@ -168,10 +169,43 @@ const homePageRandomJokeWidget = HomePageCardWidgetBlueprint.make({
     },
   },
 });
+const simple = HomePageWidgetBlueprint.make({
+  name: 'simple-widget',
+  params: {
+    name: 'SimpleWidget',
+    title: 'Simple Widget',
+    loader: async () =>
+      function SimpleWidget({ exampleSetting }: { exampleSetting?: string }) {
+        return (
+          <div>
+            Current setting value: <strong>{exampleSetting ?? ''}</strong>
+          </div>
+        );
+      },
+    settings: {
+      schema: {
+        title: 'Simple Widget settings',
+        type: 'object',
+        properties: {
+          exampleSetting: {
+            title: 'Example Setting',
+            type: 'string',
+            default: 'default setting value',
+          },
+        },
+      },
+    },
+  },
+});
 
 const homeDevModule = createFrontendModule({
   pluginId: 'home',
-  extensions: [homePageLayout, homePageToolkitWidget, homePageRandomJokeWidget],
+  extensions: [
+    homePageLayout,
+    homePageToolkitWidget,
+    homePageRandomJokeWidget,
+    simple,
+  ],
 });
 
 const entities: Entity[] = [

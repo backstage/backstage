@@ -42,8 +42,9 @@ import { homePageWidgetDataRef } from '../dataRefs';
 export type HomePageWidgetBlueprintParams = {
   /**
    * Async loader that returns a self-contained React component.
+   * The component will receive any saved widget settings as props.
    */
-  loader: () => Promise<ComponentType<{}>>;
+  loader: () => Promise<ComponentType<Record<string, unknown>>>;
   /** Optional name for the widget. Defaults to the extension ID. */
   name?: string;
   /** Title for the widget (used for catalogue display, not rendered as a heading). */
@@ -86,12 +87,14 @@ export const HomePageWidgetBlueprint = createExtensionBlueprint({
     const widgetName = params.name ?? node.spec.id;
 
     const LazyComponent = lazy(() =>
-      params.loader().then(Component => ({ default: Component })),
+      params.loader().then(Component => ({
+        default: Component as ComponentType<Record<string, unknown>>,
+      })),
     );
 
-    const Widget = (): ReactElement => (
+    const Widget = (props: Record<string, unknown>): ReactElement => (
       <ExtensionBoundary node={node}>
-        <LazyComponent />
+        <LazyComponent {...props} />
       </ExtensionBoundary>
     );
 

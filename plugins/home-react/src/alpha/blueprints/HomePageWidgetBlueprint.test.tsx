@@ -32,7 +32,7 @@ describe('HomePageWidgetBlueprint', () => {
             return <div data-testid="bare-widget">Search Bar</div>;
           },
         title: 'Search',
-        description: 'A full-width search bar — should NOT be card-wrapped',
+        description: 'A full-width search bar',
       },
     });
 
@@ -45,5 +45,38 @@ describe('HomePageWidgetBlueprint', () => {
     // No card title heading should be rendered.
     // queryByRole returns null without throwing when the element is absent.
     expect(screen.queryByRole('heading', { name: 'Search' })).toBeNull();
+  });
+
+  it('forwards settings as props to the loaded component', async () => {
+    const widget = HomePageWidgetBlueprint.make({
+      name: 'greeting',
+      params: {
+        loader: async () =>
+          function Greeting({ message }: { message?: string }) {
+            return <div data-testid="greeting">{message ?? 'no message'}</div>;
+          },
+        settings: {
+          schema: {
+            title: 'Greeting settings',
+            type: 'object',
+            properties: {
+              message: { title: 'Message', type: 'string', default: 'hello' },
+            },
+          },
+        },
+      },
+    });
+
+    const data = createExtensionTester(widget).get(homePageWidgetDataRef);
+
+    // Simulate what the grid does: spread saved settings onto the component type
+    const WidgetType = data.component.type as React.ComponentType<
+      Record<string, unknown>
+    >;
+    renderInTestApp(<WidgetType message="hello from settings" />);
+
+    expect((await screen.findByTestId('greeting')).textContent).toBe(
+      'hello from settings',
+    );
   });
 });

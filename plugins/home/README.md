@@ -18,6 +18,28 @@ The plugin will automatically provide:
 - A homepage at `/home` with customizable widget grid
 - A "Home" navigation item in the sidebar
 
+### Configuring Default Widget Positions
+
+You can set the default grid positions for widgets via `app-config.yaml` without writing a custom layout. The `page:home` extension accepts a `layoutConfig` array where each entry pins a widget to a grid position. Users can still move and resize widgets after the defaults are applied.
+
+```yaml
+app:
+  extensions:
+    - page:home:
+        config:
+          layoutConfig:
+            - component: home-page-widget:home/toolkit
+              x: 0
+              y: 0
+              width: 12
+              height: 4
+            - component: HomePageStarredEntities
+              x: 0
+              y: 4
+              width: 6
+              height: 5
+```
+
 ## Creating Custom Homepage Layouts
 
 Use the `HomePageLayoutBlueprint` from `@backstage/plugin-home-react/alpha` to
@@ -34,12 +56,12 @@ import { Fragment } from 'react';
 const myHomePageLayout = HomePageLayoutBlueprint.make({
   params: {
     loader: async () =>
-      function MyHomePageLayout({ widgets }) {
+      function MyHomePageLayout({ widgets, layoutConfig }) {
         return (
           <Page themeId="home">
             <Header title="Welcome" />
             <Content>
-              <CustomHomepageGrid>
+              <CustomHomepageGrid config={layoutConfig}>
                 {widgets.map((widget, index) => (
                   <Fragment key={widget.name ?? index}>
                     {widget.component}
@@ -134,6 +156,119 @@ const myWidget = HomePageWidgetBlueprint.make({
 ```
 
 > **Example**: See [dev/index.tsx](dev/index.tsx) for a comprehensive example of creating multiple homepage widgets and layouts.
+
+## Included Widgets
+
+The home plugin ships with the following built-in widgets for the new frontend system. They can be configured via `app-config.yaml` using their extension IDs.
+
+### Toolkit (`home-page-widget:home/toolkit`)
+
+Shows a grid of quick-access tool links. The links can be provided through config, which overrides the default set of tools.
+
+| Config option   | Type              | Description                                                          |
+| --------------- | ----------------- | -------------------------------------------------------------------- |
+| `tools`         | array (optional)  | List of tool links to display. When set, replaces the default tools. |
+| `tools[].url`   | string            | URL the tool link points to.                                         |
+| `tools[].label` | string            | Display label for the tool.                                          |
+| `tools[].icon`  | string (optional) | Name of a registered app icon (e.g. `techdocs`, `catalog`).          |
+
+```yaml
+app:
+  extensions:
+    - home-page-widget:home/toolkit:
+        config:
+          tools:
+            - url: https://backstage.io
+              label: Backstage Docs
+              icon: techdocs
+            - url: https://github.com
+              label: GitHub
+              icon: catalog
+```
+
+### Starred Entities (`home-page-widget:home/starred-entities`)
+
+Shows the catalog entities the current user has starred.
+
+| Config option | Type               | Description                                                                    |
+| ------------- | ------------------ | ------------------------------------------------------------------------------ |
+| `groupByKind` | boolean (optional) | When `true`, starred entities are grouped by their kind (e.g. Component, API). |
+
+```yaml
+app:
+  extensions:
+    - home-page-widget:home/starred-entities:
+        config:
+          groupByKind: true
+```
+
+### Random Joke (`home-page-widget:home/random-joke`)
+
+Displays a random joke. Users can configure the category through the per-widget settings panel.
+
+| Setting           | Type   | Description                                                       |
+| ----------------- | ------ | ----------------------------------------------------------------- |
+| `defaultCategory` | string | Joke category: `any`, `programming`, or `dad`. Defaults to `any`. |
+
+### Top Visited (`home-page-widget:home/top-visited`)
+
+Shows the pages the user has visited most frequently. **Disabled by default** — requires the visits API to be enabled (see [Visit Tracking](#visit-tracking-optional)).
+
+| Config option    | Type              | Description                                              |
+| ---------------- | ----------------- | -------------------------------------------------------- |
+| `numVisitsOpen`  | number (optional) | Number of visits displayed before the list is collapsed. |
+| `numVisitsTotal` | number (optional) | Total number of visits to retrieve.                      |
+
+```yaml
+app:
+  extensions:
+    - home-page-widget:home/top-visited: true
+    - home-page-widget:home/top-visited:
+        config:
+          numVisitsOpen: 5
+          numVisitsTotal: 20
+```
+
+### Recently Visited (`home-page-widget:home/recently-visited`)
+
+Shows the pages the user has visited most recently. **Disabled by default** — requires the visits API to be enabled (see [Visit Tracking](#visit-tracking-optional)).
+
+| Config option    | Type              | Description                                              |
+| ---------------- | ----------------- | -------------------------------------------------------- |
+| `numVisitsOpen`  | number (optional) | Number of visits displayed before the list is collapsed. |
+| `numVisitsTotal` | number (optional) | Total number of visits to retrieve.                      |
+
+```yaml
+app:
+  extensions:
+    - home-page-widget:home/recently-visited: true
+    - home-page-widget:home/recently-visited:
+        config:
+          numVisitsOpen: 5
+          numVisitsTotal: 20
+```
+
+### Featured Docs (`home-page-widget:home/featured-docs`)
+
+Displays a curated list of documentation entries from the catalog, filtered by a configurable entity filter.
+
+| Config option     | Type              | Description                                                                              |
+| ----------------- | ----------------- | ---------------------------------------------------------------------------------------- |
+| `filter`          | object            | Catalog entity filter used to select which docs to display (e.g. `{ kind: Component }`). |
+| `responseLimit`   | number (optional) | Maximum number of docs entries to show.                                                  |
+| `linkDestination` | string (optional) | Custom URL for the card header link.                                                     |
+| `subLinkText`     | string (optional) | Custom label for the sub-link shown below each entry.                                    |
+
+```yaml
+app:
+  extensions:
+    - home-page-widget:home/featured-docs:
+        config:
+          filter:
+            kind: Component
+          responseLimit: 5
+          subLinkText: Read the docs
+```
 
 ## Contributing
 

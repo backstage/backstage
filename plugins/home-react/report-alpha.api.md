@@ -114,7 +114,7 @@ export const HomePageWidgetBlueprint: ExtensionBlueprint<{
 
 // @alpha
 export type HomePageWidgetBlueprintParams = {
-  loader: () => Promise<ComponentType<{}>>;
+  loader: () => Promise<ComponentType<Record<string, unknown>>>;
   name?: string;
   title?: string;
   description?: string;
