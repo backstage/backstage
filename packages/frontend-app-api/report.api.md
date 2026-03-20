@@ -167,6 +167,7 @@ export type AppErrorTypes = {
 
 // @public
 export type BootstrapSpecializedApp = {
+  apis: ApiHolder;
   element: JSX.Element;
   tree: AppTree;
 };
@@ -217,6 +218,7 @@ export type ExtensionFactoryMiddleware = (
 
 // @public
 export type FinalizedSpecializedApp = {
+  apis: ApiHolder;
   element: JSX.Element;
   sessionState: SpecializedAppSessionState;
   tree: AppTree;

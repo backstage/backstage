@@ -121,6 +121,7 @@ type SignInPageProps = {
  * @public
  */
 export type BootstrapSpecializedApp = {
+  apis: ApiHolder;
   element: JSX.Element;
   tree: AppTree;
 };
@@ -131,6 +132,7 @@ export type BootstrapSpecializedApp = {
  * @public
  */
 export type FinalizedSpecializedApp = {
+  apis: ApiHolder;
   element: JSX.Element;
   sessionState: SpecializedAppSessionState;
   tree: AppTree;
@@ -544,7 +546,7 @@ export function prepareSpecializedApp(
 
     runtime.requiresSignIn = result.requiresSignIn;
     signInRuntime = runtime;
-    bootstrapApp = result.bootstrapApp;
+    bootstrapApp = { ...result.bootstrapApp, apis: phase.apis };
 
     return bootstrapApp;
   }
@@ -704,6 +706,7 @@ function finalizeFromSessionState(options: {
   }
 
   return {
+    apis: options.phase.apis,
     element,
     sessionState: options.finalizedSessionState,
     tree: options.tree,
@@ -771,6 +774,7 @@ function finalizeFromBootstrapError(options: {
   }
 
   return {
+    apis: options.phase.apis,
     element,
     sessionState: finalizedSessionState,
     tree: options.tree,
