@@ -75,7 +75,15 @@ export const PageLayout = SwappableComponentBlueprint.make({
     define({
       component: SwappablePageLayout,
       loader: () => (props: PageLayoutProps) => {
-        const { title, icon, noHeader, headerActions, tabs, children } = props;
+        const {
+          title,
+          icon,
+          noHeader,
+          titleLink,
+          headerActions,
+          tabs,
+          children,
+        } = props;
         // TODO(Rugvip): Different solution to this path handling would be good
         const parentPath = useResolvedPath('.').pathname.replace(/\/$/, '');
         const resolvedTabs = useMemo(
@@ -99,6 +107,7 @@ export const PageLayout = SwappableComponentBlueprint.make({
             <PluginHeader
               title={title}
               icon={icon}
+              titleLink={titleLink}
               tabs={resolvedTabs}
               customActions={headerActions}
             />

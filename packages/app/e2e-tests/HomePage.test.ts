@@ -43,7 +43,9 @@ test('Should render the home page', async ({ page }) => {
   await enterButton.click();
 
   // Wait for sign-in to complete
-  await expect(page.getByRole('link', { name: 'Catalog' })).toBeVisible();
+  await expect(
+    page.getByRole('navigation').getByRole('link', { name: 'Catalog' }),
+  ).toBeVisible();
 
   await page.goto('/home');
   // The home page should render with the custom homepage grid
