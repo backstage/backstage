@@ -17,7 +17,7 @@
 import type { HeaderProps } from './types';
 import { Text } from '../Text';
 import { RiArrowRightSLine } from '@remixicon/react';
-import { Tabs, TabList, Tab } from '../Tabs';
+import { HeaderNav } from './HeaderNav';
 import { useDefinition } from '../../hooks/useDefinition';
 import { HeaderDefinition } from './definition';
 import { Container } from '../Container';
@@ -31,7 +31,8 @@ import { Fragment } from 'react/jsx-runtime';
  */
 export const Header = (props: HeaderProps) => {
   const { ownProps } = useDefinition(HeaderDefinition, props);
-  const { classes, title, tabs, customActions, breadcrumbs } = ownProps;
+  const { classes, title, tabs, activeTabId, customActions, breadcrumbs } =
+    ownProps;
 
   return (
     <Container className={classes.root}>
@@ -62,20 +63,7 @@ export const Header = (props: HeaderProps) => {
       </div>
       {tabs && (
         <div className={classes.tabsWrapper}>
-          <Tabs>
-            <TabList>
-              {tabs.map(tab => (
-                <Tab
-                  key={tab.id}
-                  id={tab.id}
-                  href={tab.href}
-                  matchStrategy={tab.matchStrategy}
-                >
-                  {tab.label}
-                </Tab>
-              ))}
-            </TabList>
-          </Tabs>
+          <HeaderNav tabs={tabs} activeTabId={activeTabId} />
         </div>
       )}
     </Container>

@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
+import { useMemo } from 'react';
 import preview from '../../../../.storybook/preview';
 import type { StoryFn } from '@storybook/react-vite';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, useLocation } from 'react-router-dom';
 import { BUIProvider } from '../provider';
+import type { HeaderNavTabItem } from '../components/Header/types';
 import {
   PluginHeader,
   Header,
@@ -31,7 +33,6 @@ import {
   MenuItem,
 } from '..';
 import {
-  RiBookOpenLine,
   RiBox3Line,
   RiCodeSSlashLine,
   RiDownloadLine,
@@ -41,9 +42,7 @@ import {
   RiPlayLine,
   RiRefreshLine,
   RiSettings4Line,
-  RiShieldCheckLine,
   RiShareBoxLine,
-  RiTerminalLine,
 } from '@remixicon/react';
 
 // ---------------------------------------------------------------------------
@@ -205,54 +204,70 @@ export const WithBreadcrumb = meta.story({
   ),
 });
 
+const subTabs: HeaderNavTabItem[] = [
+  { id: 'summary', label: 'Summary', href: '/summary' },
+  { id: 'steps', label: 'Steps', href: '/steps' },
+  { id: 'artifacts', label: 'Artifacts', href: '/artifacts' },
+  { id: 'logs', label: 'Logs', href: '/logs' },
+];
+
+function useActiveTabId(items: HeaderNavTabItem[]): string | undefined {
+  const location = useLocation();
+  return useMemo(() => {
+    for (const item of items) {
+      if ('href' in item && item.href === location.pathname) return item.id;
+    }
+    return undefined;
+  }, [items, location.pathname]);
+}
+
 export const WithSubTabs = meta.story({
   decorators: [withLayout],
-  render: () => (
-    <>
-      <PluginHeader
-        icon={<RiGitBranchLine />}
-        title="CI/CD"
-        titleLink="/"
-        tabs={[
-          { id: 'builds', label: 'Builds', href: '/builds' },
-          { id: 'pipelines', label: 'Pipelines', href: '/pipelines' },
-          { id: 'deployments', label: 'Deployments', href: '/deployments' },
-          { id: 'settings', label: 'Settings', href: '/settings' },
-        ]}
-        customActions={
-          <>
-            <ButtonIcon
-              variant="secondary"
-              icon={<RiRefreshLine />}
-              aria-label="Refresh"
-            />
-          </>
-        }
-      />
-      <Header
-        title="main · #842"
-        tabs={[
-          { id: 'summary', label: 'Summary', href: '/summary' },
-          { id: 'steps', label: 'Steps', href: '/steps' },
-          { id: 'artifacts', label: 'Artifacts', href: '/artifacts' },
-          { id: 'logs', label: 'Logs', href: '/logs' },
-        ]}
-        breadcrumbs={[
-          { label: 'Catalog', href: '/catalog' },
-          { label: 'Services', href: '/catalog?kind=Component' },
-        ]}
-        customActions={
-          <>
-            <Button variant="secondary" iconStart={<RiDownloadLine />}>
-              Download logs
-            </Button>
-            <Button variant="primary" iconStart={<RiPlayLine />}>
-              Re-run pipeline
-            </Button>
-          </>
-        }
-      />
-      <PageContent />
-    </>
-  ),
+  render: () => {
+    const activeTabId = useActiveTabId(subTabs);
+    return (
+      <>
+        <PluginHeader
+          icon={<RiGitBranchLine />}
+          title="CI/CD"
+          titleLink="/"
+          tabs={[
+            { id: 'builds', label: 'Builds', href: '/builds' },
+            { id: 'pipelines', label: 'Pipelines', href: '/pipelines' },
+            { id: 'deployments', label: 'Deployments', href: '/deployments' },
+            { id: 'settings', label: 'Settings', href: '/settings' },
+          ]}
+          customActions={
+            <>
+              <ButtonIcon
+                variant="secondary"
+                icon={<RiRefreshLine />}
+                aria-label="Refresh"
+              />
+            </>
+          }
+        />
+        <Header
+          title="main · #842"
+          activeTabId={activeTabId}
+          tabs={subTabs}
+          breadcrumbs={[
+            { label: 'Catalog', href: '/catalog' },
+            { label: 'Services', href: '/catalog?kind=Component' },
+          ]}
+          customActions={
+            <>
+              <Button variant="secondary" iconStart={<RiDownloadLine />}>
+                Download logs
+              </Button>
+              <Button variant="primary" iconStart={<RiPlayLine />}>
+                Re-run pipeline
+              </Button>
+            </>
+          }
+        />
+        <PageContent />
+      </>
+    );
+  },
 });

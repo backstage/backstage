@@ -1420,13 +1420,86 @@ export const HeaderDefinition: {
     readonly title: {};
     readonly customActions: {};
     readonly tabs: {};
+    readonly activeTabId: {};
     readonly breadcrumbs: {};
     readonly className: {};
   };
 };
 
+// @public (undocumented)
+export const HeaderNavDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-HeaderNav';
+    readonly list: 'bui-HeaderNavList';
+    readonly active: 'bui-HeaderNavActive';
+    readonly hovered: 'bui-HeaderNavHovered';
+  };
+  readonly analytics: true;
+  readonly propDefs: {
+    readonly noTrack: {};
+    readonly tabs: {};
+    readonly activeTabId: {};
+    readonly children: {};
+    readonly className: {};
+  };
+};
+
+// @public (undocumented)
+export const HeaderNavGroupDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-HeaderNavGroup';
+  };
+  readonly propDefs: {
+    readonly className: {};
+  };
+};
+
+// @public (undocumented)
+export const HeaderNavItemDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-HeaderNavItem';
+  };
+  readonly propDefs: {
+    readonly className: {};
+  };
+};
+
+// @public
+export interface HeaderNavTab {
+  // (undocumented)
+  href: string;
+  // (undocumented)
+  id: string;
+  // (undocumented)
+  label: string;
+}
+
+// @public
+export interface HeaderNavTabGroup {
+  // (undocumented)
+  id: string;
+  // (undocumented)
+  items: HeaderNavTab[];
+  // (undocumented)
+  label: string;
+}
+
+// @public
+export type HeaderNavTabItem = HeaderNavTab | HeaderNavTabGroup;
+
 // @public
 export interface HeaderOwnProps {
+  // (undocumented)
+  activeTabId?: string;
   // (undocumented)
   breadcrumbs?: HeaderBreadcrumb[];
   // (undocumented)
@@ -1434,7 +1507,7 @@ export interface HeaderOwnProps {
   // (undocumented)
   customActions?: React.ReactNode;
   // (undocumented)
-  tabs?: HeaderTab[];
+  tabs?: HeaderNavTabItem[];
   // (undocumented)
   title?: string;
 }
@@ -1461,6 +1534,7 @@ export const HeaderPageDefinition: {
     readonly title: {};
     readonly customActions: {};
     readonly tabs: {};
+    readonly activeTabId: {};
     readonly breadcrumbs: {};
     readonly className: {};
   };

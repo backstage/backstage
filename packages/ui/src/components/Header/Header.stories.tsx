@@ -14,21 +14,14 @@
  * limitations under the License.
  */
 
+import { useMemo } from 'react';
 import preview from '../../../../../.storybook/preview';
 import type { StoryFn } from '@storybook/react-vite';
 import { Header } from './Header';
-import type { HeaderTab } from '../PluginHeader/types';
-import { MemoryRouter } from 'react-router-dom';
+import type { HeaderNavTabItem } from './types';
+import { MemoryRouter, useLocation } from 'react-router-dom';
 import { BUIProvider } from '../../provider';
-import {
-  Button,
-  Container,
-  Text,
-  ButtonIcon,
-  MenuTrigger,
-  Menu,
-  MenuItem,
-} from '../../';
+import { Button, ButtonIcon, MenuTrigger, Menu, MenuItem } from '../../';
 import { RiMore2Line } from '@remixicon/react';
 
 const meta = preview.meta({
@@ -39,7 +32,7 @@ const meta = preview.meta({
   },
 });
 
-const tabs: HeaderTab[] = [
+const tabs: HeaderNavTabItem[] = [
   {
     id: 'overview',
     label: 'Overview',
@@ -88,12 +81,32 @@ const menuItems = [
 ];
 
 const withRouter = (Story: StoryFn) => (
-  <MemoryRouter>
+  <MemoryRouter initialEntries={['/overview']}>
     <BUIProvider>
       <Story />
     </BUIProvider>
   </MemoryRouter>
 );
+
+/**
+ * Derives activeTabId from the current router location by matching
+ * the pathname against all tab hrefs (including group children).
+ */
+function useActiveTabId(items: HeaderNavTabItem[]): string | undefined {
+  const location = useLocation();
+  return useMemo(() => {
+    for (const item of items) {
+      if ('items' in item) {
+        for (const child of item.items) {
+          if (child.href === location.pathname) return child.id;
+        }
+      } else if (item.href === location.pathname) {
+        return item.id;
+      }
+    }
+    return undefined;
+  }, [items, location.pathname]);
+}
 
 export const Default = meta.story({
   args: {
@@ -102,11 +115,11 @@ export const Default = meta.story({
 });
 
 export const WithTabs = meta.story({
-  args: {
-    ...Default.input.args,
-    tabs,
-  },
   decorators: [withRouter],
+  render: () => {
+    const activeTabId = useActiveTabId(tabs);
+    return <Header title="Page Title" tabs={tabs} activeTabId={activeTabId} />;
+  },
 });
 
 export const WithCustomActions = meta.story({
@@ -162,175 +175,47 @@ export const WithLongBreadcrumbs = meta.story({
 
 export const WithEverything = meta.story({
   decorators: [withRouter],
-  render: () => (
-    <Header
-      {...Default.input.args}
-      tabs={tabs}
-      customActions={<Button>Custom action</Button>}
-      breadcrumbs={[{ label: 'Home', href: '/' }]}
-    />
-  ),
+  render: () => {
+    const activeTabId = useActiveTabId(tabs);
+    return (
+      <Header
+        title="Page Title"
+        tabs={tabs}
+        activeTabId={activeTabId}
+        customActions={<Button>Custom action</Button>}
+        breadcrumbs={[{ label: 'Home', href: '/' }]}
+      />
+    );
+  },
 });
 
-export const WithTabsMatchingStrategies = meta.story({
-  args: {
-    title: 'Route Matching Demo',
-    tabs: [
-      {
-        id: 'home',
-        label: 'Home',
-        href: '/home',
-      },
-      {
-        id: 'mentorship',
-        label: 'Mentorship',
-        href: '/mentorship',
-        matchStrategy: 'prefix',
-      },
-      {
-        id: 'catalog',
-        label: 'Catalog',
-        href: '/catalog',
-        matchStrategy: 'prefix',
-      },
-      {
-        id: 'settings',
-        label: 'Settings',
-        href: '/settings',
-      },
+const groupedTabs: HeaderNavTabItem[] = [
+  { id: 'overview', label: 'Overview', href: '/overview' },
+  {
+    id: 'docs-group',
+    label: 'Documentation',
+    items: [
+      { id: 'docs', label: 'TechDocs', href: '/docs' },
+      { id: 'api-docs', label: 'API Reference', href: '/api-docs' },
     ],
   },
-  render: args => (
-    <MemoryRouter initialEntries={['/mentorship/events']}>
-      <BUIProvider>
-        <Header {...args} />
-        <Container>
-          <Text>
-            <strong>Current URL:</strong> /mentorship/events
-          </Text>
-          <br />
-          <Text>
-            Notice how the "Mentorship" tab is active even though we're on a
-            nested route. This is because it uses{' '}
-            <code>matchStrategy="prefix"</code>.
-          </Text>
-          <br />
-          <Text>
-            • <strong>Home</strong>: exact matching (default) - not active
-          </Text>
-          <Text>
-            • <strong>Mentorship</strong>: prefix matching - IS active (URL
-            starts with /mentorship)
-          </Text>
-          <Text>
-            • <strong>Catalog</strong>: prefix matching - not active
-          </Text>
-          <Text>
-            • <strong>Settings</strong>: exact matching (default) - not active
-          </Text>
-        </Container>
-      </BUIProvider>
-    </MemoryRouter>
-  ),
-});
+  { id: 'ci', label: 'CI/CD', href: '/ci' },
+];
 
-export const WithTabsExactMatching = meta.story({
-  args: {
-    title: 'Exact Matching Demo',
-    tabs: [
-      {
-        id: 'mentorship',
-        label: 'Mentorship',
-        href: '/mentorship',
-      },
-      {
-        id: 'events',
-        label: 'Events',
-        href: '/mentorship/events',
-      },
-      {
-        id: 'mentors',
-        label: 'Mentors',
-        href: '/mentorship/mentors',
-      },
-    ],
+export const WithGroupedTabs = meta.story({
+  decorators: [
+    (Story: StoryFn) => (
+      <MemoryRouter initialEntries={['/docs']}>
+        <BUIProvider>
+          <Story />
+        </BUIProvider>
+      </MemoryRouter>
+    ),
+  ],
+  render: () => {
+    const activeTabId = useActiveTabId(groupedTabs);
+    return (
+      <Header title="Page Title" tabs={groupedTabs} activeTabId={activeTabId} />
+    );
   },
-  render: args => (
-    <MemoryRouter initialEntries={['/mentorship/events']}>
-      <BUIProvider>
-        <Header {...args} />
-        <Container>
-          <Text>
-            <strong>Current URL:</strong> /mentorship/events
-          </Text>
-          <br />
-          <Text>
-            With default exact matching, only the "Events" tab is active because
-            it exactly matches the current URL. The "Mentorship" tab is not
-            active even though the URL is under /mentorship.
-          </Text>
-        </Container>
-      </BUIProvider>
-    </MemoryRouter>
-  ),
-});
-
-export const WithTabsPrefixMatchingDeep = meta.story({
-  args: {
-    title: 'Deep Nesting Demo',
-    tabs: [
-      {
-        id: 'catalog',
-        label: 'Catalog',
-        href: '/catalog',
-        matchStrategy: 'prefix',
-      },
-      {
-        id: 'users',
-        label: 'Users',
-        href: '/catalog/users',
-        matchStrategy: 'prefix',
-      },
-      {
-        id: 'components',
-        label: 'Components',
-        href: '/catalog/components',
-        matchStrategy: 'prefix',
-      },
-    ],
-  },
-  render: args => (
-    <MemoryRouter initialEntries={['/catalog/users/john/details']}>
-      <BUIProvider>
-        <Header {...args} />
-        <Container>
-          <Text as="p">
-            <strong>Current URL:</strong> /catalog/users/john/details
-          </Text>
-          <br />
-          <Text as="p">
-            Active tab is <strong>Users</strong> because:
-          </Text>
-          <ul>
-            <li>
-              <strong>Catalog</strong>: Matches since URL starts with /catalog
-            </li>
-            <li>
-              <strong>Users</strong>: Is active since URL starts with
-              /catalog/users, and is more specific (has more url segments) than
-              "Catalog"
-            </li>
-            <li>
-              <strong>Components</strong>: not active (URL doesn't start with
-              /catalog/components)
-            </li>
-          </ul>
-          <Text as="p">
-            This demonstrates how prefix matching works with deeply nested
-            routes.
-          </Text>
-        </Container>
-      </BUIProvider>
-    </MemoryRouter>
-  ),
 });

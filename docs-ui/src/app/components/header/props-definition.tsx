@@ -1,5 +1,4 @@
 import { classNamePropDefs, type PropDef } from '@/utils/propDefs';
-import { Chip } from '@/components/Chip';
 
 export const headerPagePropDefs: Record<string, PropDef> = {
   title: {
@@ -13,9 +12,9 @@ export const headerPagePropDefs: Record<string, PropDef> = {
   },
   tabs: {
     type: 'complex',
-    description: 'Navigation tabs displayed below the title.',
+    description: 'Navigation items displayed below the title.',
     complexType: {
-      name: 'HeaderTab[]',
+      name: 'HeaderNavTabItem[]',
       properties: {
         id: {
           type: 'string',
@@ -29,22 +28,23 @@ export const headerPagePropDefs: Record<string, PropDef> = {
         },
         href: {
           type: 'string',
-          required: true,
-          description: 'URL to navigate to when tab is clicked.',
-        },
-        matchStrategy: {
-          type: "'exact' | 'prefix'",
           required: false,
-          default: "'exact'",
-          description: (
-            <>
-              Route matching strategy. Use <Chip>exact</Chip> for exact path
-              match, <Chip>prefix</Chip> if pathname starts with href.
-            </>
-          ),
+          description:
+            'URL to navigate to when tab is clicked. Present on flat tabs, absent on groups.',
+        },
+        items: {
+          type: 'HeaderNavTab[]',
+          required: false,
+          description:
+            'Child tabs rendered as a dropdown menu. Present on groups, absent on flat tabs.',
         },
       },
     },
+  },
+  activeTabId: {
+    type: 'string',
+    description:
+      'ID of the currently active tab. Can be a flat tab ID or a child tab ID within a group.',
   },
   breadcrumbs: {
     type: 'complex',
