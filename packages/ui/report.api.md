@@ -2159,6 +2159,7 @@ export const SearchAutocompleteDefinition: {
   readonly styles: {
     readonly [key: string]: string;
   };
+  readonly bg: 'consumer';
   readonly classNames: {
     readonly root: 'bui-SearchAutocomplete';
     readonly searchField: 'bui-SearchAutocompleteSearchField';

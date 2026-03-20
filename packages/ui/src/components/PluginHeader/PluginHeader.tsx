@@ -125,7 +125,9 @@ export const PluginHeader = (props: PluginHeaderProps) => {
 
   const titleContent = (
     <>
-      <div className={classes.toolbarIcon}>{icon || <RiShapesLine />}</div>
+      <div className={classes.toolbarIcon} aria-hidden="true">
+        {icon || <RiShapesLine />}
+      </div>
       <Text variant="body-medium">{title || 'Your plugin'}</Text>
     </>
   );

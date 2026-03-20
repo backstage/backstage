@@ -38,6 +38,18 @@
       --search-autocomplete-item-height: 2.5rem;
       height: 2.5rem;
     }
+
+    &[data-on-bg='neutral-1'] {
+      background-color: var(--bui-bg-neutral-2);
+    }
+
+    &[data-on-bg='neutral-2'] {
+      background-color: var(--bui-bg-neutral-3);
+    }
+
+    &[data-on-bg='neutral-3'] {
+      background-color: var(--bui-bg-neutral-4);
+    }
   }
 
   .bui-SearchAutocompleteSearchField {

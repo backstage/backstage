@@ -14,30 +14,19 @@
  * limitations under the License.
  */
 
-import { useCallback, useEffect } from 'react';
-
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 
-import {
-  TechDocsShadowDom,
-  useShadowDomStylesLoading,
-  useShadowRootElements,
-  useTechDocsReaderPage,
-} from '@backstage/plugin-techdocs-react';
+import { TechDocsShadowDom } from '@backstage/plugin-techdocs-react';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Content, Progress } from '@backstage/core-components';
 
 import { TechDocsSearch } from '../../../search';
 import { TechDocsStateIndicator } from '../TechDocsStateIndicator';
 
-import { useTechDocsReaderDom } from './dom';
-import {
-  useTechDocsReader,
-  withTechDocsReaderProvider,
-} from '../TechDocsReaderProvider';
+import { withTechDocsReaderProvider } from '../TechDocsReaderProvider';
 import { TechDocsReaderPageContentAddons } from './TechDocsReaderPageContentAddons';
-import { useApp } from '@backstage/core-plugin-api';
+import { useTechDocsReaderContentData } from '../../../hooks/useTechDocsReaderContentData';
 
 const useStyles = makeStyles({
   search: {
@@ -89,52 +78,26 @@ export type TechDocsReaderPageContentProps = {
  */
 export const TechDocsReaderPageContent = withTechDocsReaderProvider(
   (props: TechDocsReaderPageContentProps) => {
-    const { withSearch = true, searchResultUrlMapper, onReady } = props;
+    const { withSearch = true, searchResultUrlMapper } = props;
     const classes = useStyles();
 
     const {
-      entityMetadata: { value: entityMetadata, loading: entityMetadataLoading },
       entityRef,
-      setShadowRoot,
-    } = useTechDocsReaderPage();
-    const { state } = useTechDocsReader();
-    const dom = useTechDocsReaderDom(entityRef, props.defaultPath);
-    const path = window.location.pathname;
-    const hash = window.location.hash;
-    const isStyleLoading = useShadowDomStylesLoading(dom);
-    const [hashElement] = useShadowRootElements([`[id="${hash.slice(1)}"]`]);
-    const app = useApp();
-    const { NotFoundErrorPage } = app.getComponents();
+      entityMetadata,
+      dom,
+      handleAppend,
+      isNotFound,
+      isDomReady,
+      showProgress,
+      NotFoundErrorPage,
+    } = useTechDocsReaderContentData({
+      defaultPath: props.defaultPath,
+      onReady: props.onReady,
+    });
 
-    useEffect(() => {
-      if (isStyleLoading) return;
+    if (isNotFound) return <NotFoundErrorPage />;
 
-      if (hash) {
-        if (hashElement) {
-          hashElement.scrollIntoView();
-        }
-      } else {
-        document?.querySelector('header')?.scrollIntoView();
-      }
-    }, [path, hash, hashElement, isStyleLoading]);
-
-    const handleAppend = useCallback(
-      (newShadowRoot: ShadowRoot) => {
-        setShadowRoot(newShadowRoot);
-        if (onReady instanceof Function) {
-          onReady();
-        }
-      },
-      [setShadowRoot, onReady],
-    );
-
-    // No entity metadata = 404. Don't render content at all.
-    if (entityMetadataLoading === false && !entityMetadata)
-      return <NotFoundErrorPage />;
-
-    // Do not return content until dom is ready; instead, render a state
-    // indicator, which handles progress and content errors on our behalf.
-    if (!dom) {
+    if (!isDomReady) {
       return (
         <Content>
           <Grid container>
@@ -162,10 +125,9 @@ export const TechDocsReaderPageContent = withTechDocsReaderProvider(
             </Grid>
           )}
           <Grid xs={12} item>
-            {/* Centers the styles loaded event to avoid having multiple locations setting the opacity style in Shadow Dom causing the screen to flash multiple times */}
-            {(state === 'CHECKING' || isStyleLoading) && <Progress />}
+            {showProgress && <Progress />}
 
-            <TechDocsShadowDom element={dom} onAppend={handleAppend}>
+            <TechDocsShadowDom element={dom!} onAppend={handleAppend}>
               <TechDocsReaderPageContentAddons />
             </TechDocsShadowDom>
           </Grid>

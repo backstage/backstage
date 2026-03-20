@@ -15,12 +15,13 @@
  */
 
 import { Suspense } from 'react';
-import LibraryBooks from '@material-ui/icons/LibraryBooks';
+import { RiArticleLine } from '@remixicon/react';
 import {
   createFrontendPlugin,
   ApiBlueprint,
   PageBlueprint,
   NavItemBlueprint,
+  PluginHeaderActionBlueprint,
   createExtensionInput,
   coreExtensionData,
   createExtension,
@@ -46,7 +47,7 @@ import {
   rootDocsRouteRef,
   rootRouteRef,
 } from '../routes';
-import { TechDocsReaderLayout } from '../reader';
+import { TechDocsReaderLayout } from './components/TechDocsReaderLayout';
 import {
   TechDocsAddons,
   techdocsApiRef,
@@ -54,7 +55,7 @@ import {
 } from '@backstage/plugin-techdocs-react';
 
 import { useTechdocsReaderIconLinkProps } from './hooks/useTechdocsReaderIconLinkProps';
-import { DocsIcon } from '@backstage/core-components';
+import { DocsIcon, SupportButton } from '@backstage/core-components';
 
 /** @alpha */
 const techdocsEntityIconLink = EntityIconLinkBlueprint.make({
@@ -140,8 +141,8 @@ const techDocsPage = PageBlueprint.make({
     path: '/docs',
     routeRef: rootRouteRef,
     loader: () =>
-      import('../home/components/TechDocsIndexPage').then(m => (
-        <m.TechDocsIndexPage />
+      import('./components/TechDocsIndexPageContent').then(m => (
+        <m.TechDocsIndexPageContent />
       )),
   },
 });
@@ -270,23 +271,33 @@ const techDocsEntityContentEmptyState = createExtension({
 /** @alpha */
 const techDocsNavItem = NavItemBlueprint.make({
   params: {
-    icon: LibraryBooks,
+    icon: () => <RiArticleLine />,
     title: 'Docs',
     routeRef: rootRouteRef,
   },
 });
 
+const techDocsSupportAction = PluginHeaderActionBlueprint.make({
+  params: defineParams =>
+    defineParams({
+      loader: async () => (
+        <SupportButton>Discover documentation in your ecosystem.</SupportButton>
+      ),
+    }),
+});
+
 /** @alpha */
 export default createFrontendPlugin({
   pluginId: 'techdocs',
-  title: 'Docs',
-  icon: <LibraryBooks fontSize="inherit" />,
+  title: 'Documentation',
+  icon: <RiArticleLine />,
   info: { packageJson: () => import('../../package.json') },
   extensions: [
     techDocsClientApi,
     techDocsStorageApi,
     TechDocsAddonsApiExtension,
     techDocsNavItem,
+    techDocsSupportAction,
     techDocsPage,
     techDocsReaderPage,
     techdocsEntityIconLink,

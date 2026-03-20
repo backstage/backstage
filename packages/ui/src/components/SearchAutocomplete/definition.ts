@@ -28,6 +28,7 @@ import styles from './SearchAutocomplete.module.css';
 export const SearchAutocompleteDefinition =
   defineComponent<SearchAutocompleteOwnProps>()({
     styles,
+    bg: 'consumer',
     classNames: {
       root: 'bui-SearchAutocomplete',
       searchField: 'bui-SearchAutocompleteSearchField',

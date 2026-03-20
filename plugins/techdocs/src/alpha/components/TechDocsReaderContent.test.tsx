@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,16 +25,23 @@ import {
   TechDocsReaderPageProvider,
   useShadowRootElements,
 } from '@backstage/plugin-techdocs-react';
-import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
+import {
+  renderInTestApp,
+  TestApiProvider,
+  mockApis,
+} from '@backstage/test-utils';
+import { configApiRef } from '@backstage/core-plugin-api';
 
 const useTechDocsReaderDom = jest.fn();
-jest.mock('./dom', () => ({
-  ...jest.requireActual('./dom'),
+jest.mock('../../reader/components/TechDocsReaderPageContent/dom', () => ({
+  ...jest.requireActual(
+    '../../reader/components/TechDocsReaderPageContent/dom',
+  ),
   useTechDocsReaderDom: (...args: any[]) => useTechDocsReaderDom(...args),
 }));
 const useReaderState = jest.fn();
-jest.mock('../useReaderState', () => ({
-  ...jest.requireActual('../useReaderState'),
+jest.mock('../../reader/components/useReaderState', () => ({
+  ...jest.requireActual('../../reader/components/useReaderState'),
   useReaderState: (...args: any[]) => useReaderState(...args),
 }));
 const useShadowDomStylesLoading = jest.fn().mockReturnValue(false);
@@ -45,7 +52,7 @@ jest.mock('@backstage/plugin-techdocs-react', () => ({
   useShadowRootElements: jest.fn(),
 }));
 
-import { TechDocsReaderPageContent } from './TechDocsReaderPageContent';
+import { TechDocsReaderContent } from './TechDocsReaderContent';
 
 const mockEntityMetadata = {
   locationMetadata: {
@@ -87,14 +94,19 @@ const Wrapper = ({
   entityRef?: CompoundEntityRef;
   children: ReactNode;
 }) => (
-  <TestApiProvider apis={[[techdocsApiRef, techdocsApiMock]]}>
+  <TestApiProvider
+    apis={[
+      [techdocsApiRef, techdocsApiMock],
+      [configApiRef, mockApis.config()],
+    ]}
+  >
     <TechDocsReaderPageProvider entityRef={entityRef}>
       {children}
     </TechDocsReaderPageProvider>
   </TestApiProvider>
 );
 
-describe('<TechDocsReaderPageContent />', () => {
+describe('<TechDocsReaderContent />', () => {
   const useShadowRootElementsMock = useShadowRootElements as jest.Mock;
 
   beforeEach(() => {
@@ -105,7 +117,7 @@ describe('<TechDocsReaderPageContent />', () => {
     jest.clearAllMocks();
   });
 
-  it('should render techdocs page content', async () => {
+  it('should render techdocs content', async () => {
     getEntityMetadata.mockResolvedValue(mockEntityMetadata);
     getTechDocsMetadata.mockResolvedValue(mockTechDocsMetadata);
     useTechDocsReaderDom.mockReturnValue(document.createElement('html'));
@@ -113,7 +125,7 @@ describe('<TechDocsReaderPageContent />', () => {
 
     const rendered = await renderInTestApp(
       <Wrapper>
-        <TechDocsReaderPageContent withSearch={false} />
+        <TechDocsReaderContent />
       </Wrapper>,
     );
 
@@ -124,7 +136,7 @@ describe('<TechDocsReaderPageContent />', () => {
     });
   });
 
-  it('should render techdocs page content with default path', async () => {
+  it('should render with default path', async () => {
     getEntityMetadata.mockResolvedValue(mockEntityMetadata);
     getTechDocsMetadata.mockResolvedValue(mockTechDocsMetadata);
     useTechDocsReaderDom.mockReturnValue(document.createElement('html'));
@@ -134,10 +146,7 @@ describe('<TechDocsReaderPageContent />', () => {
 
     const rendered = await renderInTestApp(
       <Wrapper>
-        <TechDocsReaderPageContent
-          withSearch={false}
-          defaultPath={defaultPath}
-        />
+        <TechDocsReaderContent defaultPath={defaultPath} />
       </Wrapper>,
     );
 
@@ -151,7 +160,7 @@ describe('<TechDocsReaderPageContent />', () => {
     expect(useTechDocsReaderDom).toHaveBeenCalledWith(entityRef, defaultPath);
   });
 
-  it('should not render techdocs content if entity metadata is missing', async () => {
+  it('should not render content if entity metadata is missing', async () => {
     getEntityMetadata.mockResolvedValue(undefined);
     useTechDocsReaderDom.mockReturnValue(document.createElement('html'));
     useReaderState.mockReturnValue({ state: 'cached' });
@@ -159,12 +168,11 @@ describe('<TechDocsReaderPageContent />', () => {
     await expect(
       renderInTestApp(
         <Wrapper>
-          <TechDocsReaderPageContent withSearch={false} />
+          <TechDocsReaderContent />
         </Wrapper>,
       ),
     ).rejects.toThrow('Reached NotFound Page');
 
-    // Check the global document for the absence of the shadow root
     const shadowRoot = document.querySelector(
       '[data-testid="techdocs-native-shadowroot"]',
     );
@@ -179,7 +187,7 @@ describe('<TechDocsReaderPageContent />', () => {
 
     const rendered = await renderInTestApp(
       <Wrapper>
-        <TechDocsReaderPageContent withSearch={false} />
+        <TechDocsReaderContent />
       </Wrapper>,
     );
 
@@ -193,64 +201,6 @@ describe('<TechDocsReaderPageContent />', () => {
     });
   });
 
-  it('should scroll to header if hash is not present in url', async () => {
-    jest.spyOn(document, 'querySelector');
-
-    getEntityMetadata.mockResolvedValue(mockEntityMetadata);
-    getTechDocsMetadata.mockResolvedValue(mockTechDocsMetadata);
-    useTechDocsReaderDom.mockReturnValue(document.createElement('html'));
-    useReaderState.mockReturnValue({ state: 'cached' });
-
-    const rendered = await renderInTestApp(
-      <Wrapper>
-        <TechDocsReaderPageContent withSearch={false} />
-      </Wrapper>,
-    );
-
-    await waitFor(() => {
-      expect(
-        rendered.getByTestId('techdocs-native-shadowroot'),
-      ).toBeInTheDocument();
-
-      expect(document.querySelector).toHaveBeenCalledWith('header');
-    });
-  });
-
-  it('should scroll to hash if hash is present in url', async () => {
-    jest.spyOn(document, 'querySelector');
-
-    const mockScrollIntoView = jest.fn();
-    const h2 = document.createElement('h2');
-    h2.innerText = 'emojis';
-    h2.id = 'emojis';
-    h2.scrollIntoView = mockScrollIntoView;
-    const mockTechDocsPage = document.createElement('html');
-    mockTechDocsPage.appendChild(h2);
-
-    useShadowRootElementsMock.mockReturnValue([h2]);
-    getEntityMetadata.mockResolvedValue(mockEntityMetadata);
-    getTechDocsMetadata.mockResolvedValue(mockTechDocsMetadata);
-    useTechDocsReaderDom.mockReturnValue(mockTechDocsPage);
-    useReaderState.mockReturnValue({ state: 'cached' });
-
-    const rendered = await renderInTestApp(
-      <Wrapper>
-        <TechDocsReaderPageContent withSearch={false} />
-      </Wrapper>,
-      {
-        routeEntries: ['/#emojis'],
-      },
-    );
-
-    await waitFor(() => {
-      expect(
-        rendered.getByTestId('techdocs-native-shadowroot'),
-      ).toBeInTheDocument();
-      expect(mockScrollIntoView).toHaveBeenCalled();
-      expect(document.querySelector).not.toHaveBeenCalledWith('header');
-    });
-  });
-
   it('should render progress bar when content is loading', async () => {
     getEntityMetadata.mockResolvedValue(mockEntityMetadata);
     getTechDocsMetadata.mockResolvedValue(mockTechDocsMetadata);
@@ -259,7 +209,7 @@ describe('<TechDocsReaderPageContent />', () => {
 
     const rendered = await renderInTestApp(
       <Wrapper>
-        <TechDocsReaderPageContent withSearch={false} />
+        <TechDocsReaderContent />
       </Wrapper>,
     );
 
@@ -277,7 +227,7 @@ describe('<TechDocsReaderPageContent />', () => {
 
     const rendered = await renderInTestApp(
       <Wrapper>
-        <TechDocsReaderPageContent withSearch={false} />
+        <TechDocsReaderContent />
       </Wrapper>,
     );
 

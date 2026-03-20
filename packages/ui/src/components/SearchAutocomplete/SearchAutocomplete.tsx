@@ -124,7 +124,7 @@ export function SearchAutocomplete(props: SearchAutocompleteProps) {
           <div
             ref={triggerRef}
             className={classes.root}
-            data-size={dataAttributes['data-size']}
+            {...dataAttributes}
             style={style}
           >
             <div aria-hidden="true">
