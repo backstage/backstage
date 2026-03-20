@@ -1,0 +1,1 @@
+Integrate unprocessed entities as a DevTools tab by default

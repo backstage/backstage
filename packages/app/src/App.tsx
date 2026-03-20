@@ -50,8 +50,6 @@ import { convertLegacyPageExtension } from '@backstage/core-compat-api';
 import { convertLegacyEntityContentExtension } from '@backstage/plugin-catalog-react/alpha';
 import { pluginInfoResolver } from './pluginInfoResolver';
 import { appModuleNav } from './modules/appModuleNav';
-import devtoolsPlugin from '@backstage/plugin-devtools/alpha';
-import { unprocessedEntitiesDevToolsContent } from '@backstage/plugin-catalog-unprocessed-entities/alpha';
 import catalogPlugin from '@backstage/plugin-catalog/alpha';
 import InfoIcon from '@material-ui/icons/Info';
 
@@ -155,11 +153,6 @@ const notFoundErrorPageModule = createFrontendModule({
   extensions: [notFoundErrorPage],
 });
 
-const devtoolsPluginUnprocessed = createFrontendModule({
-  pluginId: 'catalog-unprocessed-entities',
-  extensions: [unprocessedEntitiesDevToolsContent],
-});
-
 const collectedLegacyPlugins = convertLegacyAppRoot(
   <FlatRoutes>
     <Route path="/catalog-import" element={<CatalogImportPage />} />
@@ -178,8 +171,6 @@ const app = createApp({
     notFoundErrorPageModule,
     appModuleNav,
     customHomePageModule,
-    devtoolsPlugin,
-    devtoolsPluginUnprocessed,
     ...collectedLegacyPlugins,
   ],
   advanced: {

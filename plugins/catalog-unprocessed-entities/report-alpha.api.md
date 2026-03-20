@@ -137,49 +137,47 @@ const _default: OverridableFrontendPlugin<
         noHeader?: boolean;
       };
     }>;
+    'sub-page:catalog-unprocessed-entities': OverridableExtensionDefinition<{
+      kind: 'sub-page';
+      name: undefined;
+      config: {
+        path: string | undefined;
+        title: string | undefined;
+      };
+      configInput: {
+        title?: string | undefined;
+        path?: string | undefined;
+      };
+      output:
+        | ExtensionDataRef<string, 'core.routing.path', {}>
+        | ExtensionDataRef<
+            RouteRef_2<AnyRouteRefParams>,
+            'core.routing.ref',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ExtensionDataRef<string, 'core.title', {}>
+        | ExtensionDataRef<
+            IconElement,
+            'core.icon',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {};
+      params: {
+        path: string;
+        title: string;
+        icon?: IconElement;
+        loader: () => Promise<JSX.Element>;
+        routeRef?: RouteRef_2;
+      };
+    }>;
   }
 >;
 export default _default;
-
-// @alpha
-export const unprocessedEntitiesDevToolsContent: OverridableExtensionDefinition<{
-  kind: 'sub-page';
-  name: 'unprocessed-entities';
-  config: {
-    path: string | undefined;
-    title: string | undefined;
-  };
-  configInput: {
-    title?: string | undefined;
-    path?: string | undefined;
-  };
-  output:
-    | ExtensionDataRef<string, 'core.routing.path', {}>
-    | ExtensionDataRef<
-        RouteRef_2<AnyRouteRefParams>,
-        'core.routing.ref',
-        {
-          optional: true;
-        }
-      >
-    | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
-    | ExtensionDataRef<string, 'core.title', {}>
-    | ExtensionDataRef<
-        IconElement,
-        'core.icon',
-        {
-          optional: true;
-        }
-      >;
-  inputs: {};
-  params: {
-    path: string;
-    title: string;
-    icon?: IconElement;
-    loader: () => Promise<JSX.Element>;
-    routeRef?: RouteRef_2;
-  };
-}>;
 
 // (No @packageDocumentation comment for this package)
 ```
