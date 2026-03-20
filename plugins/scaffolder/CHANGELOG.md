@@ -1,5 +1,14 @@
 # @backstage/plugin-scaffolder
 
+## 1.36.1
+
+### Patch Changes
+
+- 1c07c52: Fixed the layout of the scaffolder plugin in the new frontend system to use the new page layout.
+- Updated dependencies
+  - @backstage/ui@0.13.1
+  - @backstage/frontend-plugin-api@0.15.1
+
 ## 1.36.0
 
 ### Minor Changes

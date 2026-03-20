@@ -1,5 +1,21 @@
 # @backstage/plugin-catalog-unprocessed-entities
 
+## 0.2.28
+
+### Patch Changes
+
+- 11b3043: The unprocessed entities view is now primarily intended for use as a tab within the DevTools plugin. The standalone page is still available but disabled by default. To re-enable it, add the following to your `app-config.yaml`:
+
+  ```yaml
+  app:
+    extensions:
+      - page:catalog-unprocessed-entities
+  ```
+
+- Updated dependencies
+  - @backstage/ui@0.13.1
+  - @backstage/frontend-plugin-api@0.15.1
+
 ## 0.2.27
 
 ### Patch Changes

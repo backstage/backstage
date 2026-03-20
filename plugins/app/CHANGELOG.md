@@ -1,5 +1,14 @@
 # @backstage/plugin-app
 
+## 0.4.2
+
+### Patch Changes
+
+- 6c12165: Updated the `PageLayout` swap to pass a clickable `titleLink` on the `PluginHeader`, resolved from the plugin's root route ref.
+- Updated dependencies
+  - @backstage/ui@0.13.1
+  - @backstage/frontend-plugin-api@0.15.1
+
 ## 0.4.1
 
 ### Patch Changes

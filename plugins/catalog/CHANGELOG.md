@@ -1,5 +1,14 @@
 # @backstage/plugin-catalog
 
+## 2.0.1
+
+### Patch Changes
+
+- 43e9fcf: Disabled the default page layout header for the catalog entity page in the new frontend system. The entity page already renders its own header through the `EntityHeader` extension, so the page layout header was redundant.
+- Updated dependencies
+  - @backstage/ui@0.13.1
+  - @backstage/frontend-plugin-api@0.15.1
+
 ## 2.0.0
 
 ### Major Changes

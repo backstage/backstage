@@ -1,5 +1,14 @@
 # @backstage/plugin-techdocs
 
+## 1.17.2
+
+### Patch Changes
+
+- fe008b2: Migrated the TechDocs alpha plugin pages to use BUI components. The index page and reader page now use BUI `Header` and `Container` instead of legacy `Page`/`Content`/`ContentHeader` wrappers. Added a `SupportButton` as a plugin header action. Changed plugin title to "Documentation" and icon to `RiArticleLine`.
+- Updated dependencies
+  - @backstage/ui@0.13.1
+  - @backstage/frontend-plugin-api@0.15.1
+
 ## 1.17.1
 
 ### Patch Changes

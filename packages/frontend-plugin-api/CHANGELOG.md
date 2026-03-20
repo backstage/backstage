@@ -1,5 +1,11 @@
 # @backstage/frontend-plugin-api
 
+## 0.15.1
+
+### Patch Changes
+
+- 6c12165: Added `titleLink` prop to `PageLayoutProps` so the plugin header title can link back to the plugin root.
+
 ## 0.15.0
 
 ### Minor Changes

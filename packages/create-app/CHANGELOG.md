@@ -1,5 +1,12 @@
 # @backstage/create-app
 
+## 0.8.1
+
+### Patch Changes
+
+- 8f9c3ea: Various fixes for the `create-app` template: reorganizing sidebar items, removing redundant config and code, and adding a documentation example.
+- 85c9ad3: Removed the unnecessary `@backstage/cli-module-new` dependency from the `next-app` template, since it is already included through `@backstage/cli-defaults`.
+
 ## 0.8.0
 
 ### Minor Changes

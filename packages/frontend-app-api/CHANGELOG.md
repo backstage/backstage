@@ -1,5 +1,13 @@
 # @backstage/frontend-app-api
 
+## 0.16.1
+
+### Patch Changes
+
+- 51dd4e9: Added `apis` to `BootstrapSpecializedApp` and `FinalizedSpecializedApp` types.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.15.1
+
 ## 0.16.0
 
 ### Minor Changes
