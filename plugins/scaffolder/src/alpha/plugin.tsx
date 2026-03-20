@@ -28,6 +28,7 @@ import {
   viewTechDocRouteRef,
 } from '../routes';
 import {
+  accordionFormField,
   entityNamePickerFormField,
   entityPickerFormField,
   entityTagsPickerFormField,
@@ -103,5 +104,6 @@ export default createFrontendPlugin({
     ownedEntityPickerFormField,
     repoBranchPickerFormField,
     repoOwnerPickerFormField,
+    accordionFormField,
   ],
 });
