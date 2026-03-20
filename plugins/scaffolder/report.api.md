@@ -691,6 +691,7 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'ongoingTask.contextMenu.cancel': 'Cancel';
     readonly 'ongoingTask.contextMenu.retry': 'Retry';
     readonly 'ongoingTask.contextMenu.startOver': 'Start Over';
+    readonly 'ongoingTask.contextMenu.moreOptions': 'More options';
     readonly 'ongoingTask.contextMenu.hideLogs': 'Hide Logs';
     readonly 'ongoingTask.contextMenu.showLogs': 'Show Logs';
     readonly 'ongoingTask.contextMenu.hideButtonBar': 'Hide Button Bar';

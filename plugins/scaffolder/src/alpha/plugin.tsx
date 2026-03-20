@@ -41,6 +41,11 @@ import {
   scaffolderApi,
   scaffolderNavItem,
   scaffolderPage,
+  scaffolderTemplatesSubPage,
+  scaffolderTasksSubPage,
+  scaffolderActionsSubPage,
+  scaffolderEditorSubPage,
+  scaffolderTemplatingExtensionsSubPage,
 } from './extensions';
 import { isTemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { formFieldsApi } from './formFieldsApi';
@@ -79,6 +84,11 @@ export default createFrontendPlugin({
   extensions: [
     scaffolderApi,
     scaffolderPage,
+    scaffolderTemplatesSubPage,
+    scaffolderTasksSubPage,
+    scaffolderActionsSubPage,
+    scaffolderEditorSubPage,
+    scaffolderTemplatingExtensionsSubPage,
     scaffolderNavItem,
     scaffolderEntityIconLink,
     formDecoratorsApi,

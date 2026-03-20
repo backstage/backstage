@@ -455,11 +455,9 @@ const _default: OverridableFrontendPlugin<
       configInput: {};
       output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
       inputs: {};
-      params: (params: {
+      params: {
         loader: () => Promise<JSX.Element>;
-      }) => ExtensionBlueprintParams<{
-        loader: () => Promise<JSX.Element>;
-      }>;
+      };
     }>;
     'search-result-list-item:techdocs': OverridableExtensionDefinition<{
       config: {
