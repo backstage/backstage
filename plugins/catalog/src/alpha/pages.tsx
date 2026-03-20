@@ -125,6 +125,7 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
   factory(originalFactory, { config, inputs }) {
     return originalFactory({
       path: '/catalog/:namespace/:kind/:name',
+      noHeader: true,
       title: 'Catalog Entity',
       // NOTE: The `convertLegacyRouteRef` call here ensures that this route ref
       // is mutated to support the new frontend system. Removing this conversion
