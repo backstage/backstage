@@ -1,0 +1,1 @@
+Removed the unnecessary `@backstage/cli-module-new` dependency from the default create-app template.
