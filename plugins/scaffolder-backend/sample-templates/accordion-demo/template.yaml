@@ -27,6 +27,9 @@ spec:
           ui:options:
             accordionTitle: '⚙️ Advanced Configuration'
             defaultExpanded: false
+          ui:order:
+            - enableMetrics
+            - '*'
           description: Expand to configure advanced options
           required:
             - replicas

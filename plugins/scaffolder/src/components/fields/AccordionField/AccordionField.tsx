@@ -58,6 +58,29 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+/** Orders property keys according to uiSchema's ui:order array.
+ *  A '*' entry acts as a wildcard placeholder for all unmentioned keys.
+ *  Keys listed in ui:order that are absent from properties are ignored. */
+function orderProperties(
+  properties: Record<string, object>,
+  uiOrder?: string[],
+): string[] {
+  const keys = Object.keys(properties);
+  if (!uiOrder || uiOrder.length === 0) return keys;
+
+  const wildcardPos = uiOrder.indexOf('*');
+  const explicitly = uiOrder.filter(k => k !== '*');
+  const rest = keys.filter(k => !explicitly.includes(k));
+
+  if (wildcardPos === -1) {
+    return [...explicitly.filter(k => k in properties), ...rest];
+  }
+
+  const before = uiOrder.slice(0, wildcardPos).filter(k => k in properties);
+  const after = uiOrder.slice(wildcardPos + 1).filter(k => k in properties);
+  return [...before, ...rest, ...after];
+}
+
 /** Returns true only when the errorSchema contains at least one non-empty
  *  __errors array. RJSF can produce keys with empty arrays (e.g. after
  *  merging extraErrors), so a simple Object.keys().length check would cause
@@ -144,6 +167,8 @@ export const AccordionField = (props: AccordionFieldProps) => {
 
   const { SchemaField } = registry.fields;
   const properties = schema.properties as Record<string, object> | undefined;
+  const uiOrder = (uiSchema as any)?.['ui:order'] as string[] | undefined;
+  const propertyKeys = properties ? orderProperties(properties, uiOrder) : [];
   const rootId = (idSchema as any)?.$id ?? 'root';
 
   return (
@@ -170,49 +195,48 @@ export const AccordionField = (props: AccordionFieldProps) => {
               on their inputs when any ancestor accordion is collapsed. */}
           <AccordionAncestorCollapsedContext.Provider value={effectivelyHidden}>
             <div style={expanded ? undefined : { display: 'none' }}>
-              {properties &&
-                Object.keys(properties).map(key => {
-                  const propertySchema = properties[key];
-                  const propertyUiSchema = (uiSchema as any)?.[key] ?? {};
-                  const propertyIdSchema = (idSchema as any)?.[key] ?? {
-                    $id: `${rootId}_${key}`,
-                  };
-                  const propertyErrorSchema = (errorSchema as any)?.[key] ?? {};
+              {propertyKeys.map(key => {
+                const propertySchema = properties![key];
+                const propertyUiSchema = (uiSchema as any)?.[key] ?? {};
+                const propertyIdSchema = (idSchema as any)?.[key] ?? {
+                  $id: `${rootId}_${key}`,
+                };
+                const propertyErrorSchema = (errorSchema as any)?.[key] ?? {};
 
-                  return (
-                    <SchemaField
-                      key={key}
-                      name={key}
-                      schema={propertySchema as any}
-                      uiSchema={propertyUiSchema}
-                      idSchema={propertyIdSchema}
-                      formData={(formData as any)?.[key]}
-                      errorSchema={propertyErrorSchema}
-                      onChange={(value: any) => {
-                        accumulatedRef.current = {
-                          ...accumulatedRef.current,
-                          [key]: value,
-                        };
-                        onChange(accumulatedRef.current);
-                      }}
-                      onBlur={onBlur}
-                      onFocus={onFocus}
-                      registry={registry}
-                      formContext={formContext}
-                      disabled={disabled}
-                      readonly={readonly}
-                      required={
-                        !effectivelyHidden &&
-                        (requiredFields?.includes(key) ?? false)
-                      }
-                      rawErrors={
-                        Object.keys(propertyErrorSchema).length > 0
-                          ? propertyErrorSchema.__errors ?? []
-                          : []
-                      }
-                    />
-                  );
-                })}
+                return (
+                  <SchemaField
+                    key={key}
+                    name={key}
+                    schema={propertySchema as any}
+                    uiSchema={propertyUiSchema}
+                    idSchema={propertyIdSchema}
+                    formData={(formData as any)?.[key]}
+                    errorSchema={propertyErrorSchema}
+                    onChange={(value: any) => {
+                      accumulatedRef.current = {
+                        ...accumulatedRef.current,
+                        [key]: value,
+                      };
+                      onChange(accumulatedRef.current);
+                    }}
+                    onBlur={onBlur}
+                    onFocus={onFocus}
+                    registry={registry}
+                    formContext={formContext}
+                    disabled={disabled}
+                    readonly={readonly}
+                    required={
+                      !effectivelyHidden &&
+                      (requiredFields?.includes(key) ?? false)
+                    }
+                    rawErrors={
+                      Object.keys(propertyErrorSchema).length > 0
+                        ? propertyErrorSchema.__errors ?? []
+                        : []
+                    }
+                  />
+                );
+              })}
             </div>
           </AccordionAncestorCollapsedContext.Provider>
         </AccordionDetails>
