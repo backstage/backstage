@@ -1,1 +1,0 @@
-Disable page layout header for the catalog entity page in the new frontend system

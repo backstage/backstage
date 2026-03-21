@@ -1,1 +1,0 @@
-Add `apis` to `BootstrapSpecializedApp` and `FinalizedSpecializedApp` types

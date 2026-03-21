@@ -1,1 +1,0 @@
-Migrates TechDocs alpha plugin pages to BUI header system, fixing double scrollbar issue with the new plugin header.

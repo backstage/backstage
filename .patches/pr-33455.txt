@@ -1,1 +1,0 @@
-Fix scaffolder plugin page layout in the new frontend system
