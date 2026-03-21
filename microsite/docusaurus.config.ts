@@ -128,6 +128,22 @@ const config: Config = {
     '/js/medium-zoom.js',
     '/js/dismissable-banner.js',
     '/js/scroll-nav-to-view-in-docs.js',
+    // Add Kapa.ai chatbot
+    ...(process.env.KAPA_WEBSITE_ID
+      ? [
+          {
+            src: 'https://widget.kapa.ai/kapa-widget.bundle.js',
+            'data-website-id': process.env.KAPA_WEBSITE_ID,
+            'data-project-name': 'Backstage',
+            'data-project-color': '#36BAA2',
+            'data-project-logo': 'https://backstage.io/img/logo.svg',
+            'data-modal-disclaimer':
+              'This is an AI assistant trained on Backstage documentation. Always verify answers against the official docs.',
+            'data-modal-ask-ai-input-placeholder': 'Ask about Backstage...',
+            async: true,
+          },
+        ]
+      : []),
   ],
   stylesheets: [
     'https://fonts.googleapis.com/css?family=IBM+Plex+Mono:500,700&display=swap',
