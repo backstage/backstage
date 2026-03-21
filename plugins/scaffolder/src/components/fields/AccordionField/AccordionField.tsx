@@ -58,6 +58,20 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+/** Returns true only when the errorSchema contains at least one non-empty
+ *  __errors array. RJSF can produce keys with empty arrays (e.g. after
+ *  merging extraErrors), so a simple Object.keys().length check would cause
+ *  false positives and expand the accordion when there are no real errors. */
+function hasNonEmptyErrors(schema: Record<string, any>): boolean {
+  if (Array.isArray(schema.__errors) && schema.__errors.length > 0) return true;
+  return Object.keys(schema)
+    .filter(
+      k =>
+        k !== '__errors' && schema[k] !== null && typeof schema[k] === 'object',
+    )
+    .some(k => hasNonEmptyErrors(schema[k]));
+}
+
 /**
  * A layout field that wraps child template fields inside a collapsible
  * Material-UI Accordion. Children are always mounted so that validation
@@ -101,12 +115,19 @@ export const AccordionField = (props: AccordionFieldProps) => {
   const accumulatedRef = useRef<Record<string, any>>(formData ?? {});
   accumulatedRef.current = formData ?? {};
 
-  // Initialise to {} on mount so RJSF can validate nested required fields.
-  // JSON Schema skips nested `required` checks when the object is absent
-  // (undefined) from the parent form data. We only call onChange({}) if no
-  // nested AccordionField has already populated data for us.
+  const requiredFields = schema.required as string[] | undefined;
+
+  // Initialise to {} on mount only when the schema declares required children,
+  // so AJV can validate them even when the accordion object is absent from the
+  // parent form data. Skipping this for fully-optional sections avoids emitting
+  // an empty {} into the final template parameters when the user never
+  // interacts with the accordion. We also skip if a nested AccordionField has
+  // already populated data via its own init (children's effects fire first).
   useEffect(() => {
+    const hasRequiredChildren =
+      Array.isArray(requiredFields) && requiredFields.length > 0;
     if (
+      hasRequiredChildren &&
       formData === undefined &&
       Object.keys(accumulatedRef.current).length === 0
     ) {
@@ -116,14 +137,13 @@ export const AccordionField = (props: AccordionFieldProps) => {
   }, []);
 
   useEffect(() => {
-    if (errorSchema !== undefined && Object.keys(errorSchema).length > 0) {
+    if (errorSchema !== undefined && hasNonEmptyErrors(errorSchema)) {
       setExpanded(true);
     }
   }, [errorSchema]);
 
   const { SchemaField } = registry.fields;
   const properties = schema.properties as Record<string, object> | undefined;
-  const requiredFields = schema.required as string[] | undefined;
   const rootId = (idSchema as any)?.$id ?? 'root';
 
   return (
@@ -141,7 +161,10 @@ export const AccordionField = (props: AccordionFieldProps) => {
         >
           <Typography className={classes.heading}>{accordionTitle}</Typography>
         </AccordionSummary>
-        <AccordionDetails className={classes.details}>
+        <AccordionDetails
+          id={`${rootId}-accordion-content`}
+          className={classes.details}
+        >
           {/* display:none provides visual hiding; effectivelyHidden cascades
               via context so nested AccordionFields also suppress `required`
               on their inputs when any ancestor accordion is collapsed. */}
