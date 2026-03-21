@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useState } from 'react';
+import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
@@ -22,6 +22,14 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { AccordionFieldProps } from './schema';
+
+/**
+ * Propagates whether any ancestor AccordionField is currently collapsed.
+ * When true, all descendant AccordionFields suppress the HTML `required`
+ * attribute on their inputs so browser constraint validation is not triggered
+ * on hidden (collapsed) form controls.
+ */
+const AccordionAncestorCollapsedContext = createContext(false);
 
 const useStyles = makeStyles(theme => ({
   accordion: {
@@ -81,6 +89,38 @@ export const AccordionField = (props: AccordionFieldProps) => {
 
   const [expanded, setExpanded] = useState<boolean>(defaultExpanded);
 
+  // True when any ancestor AccordionField is collapsed.
+  const ancestorCollapsed = useContext(AccordionAncestorCollapsedContext);
+  // This accordion's content is effectively hidden if it is collapsed OR any
+  // ancestor accordion is collapsed.
+  const effectivelyHidden = !expanded || ancestorCollapsed;
+
+  // Tracks the accumulated form data from this render cycle so that child
+  // AccordionField init callbacks (which fire before the parent's) are not
+  // overwritten when multiple nested accordions call onChange on mount.
+  const accumulatedRef = useRef<Record<string, any>>(formData ?? {});
+  accumulatedRef.current = formData ?? {};
+
+  // Initialise to {} on mount so RJSF can validate nested required fields.
+  // JSON Schema skips nested `required` checks when the object is absent
+  // (undefined) from the parent form data. We only call onChange({}) if no
+  // nested AccordionField has already populated data for us.
+  useEffect(() => {
+    if (
+      formData === undefined &&
+      Object.keys(accumulatedRef.current).length === 0
+    ) {
+      onChange({});
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (errorSchema !== undefined && Object.keys(errorSchema).length > 0) {
+      setExpanded(true);
+    }
+  }, [errorSchema]);
+
   const { SchemaField } = registry.fields;
   const properties = schema.properties as Record<string, object> | undefined;
   const requiredFields = schema.required as string[] | undefined;
@@ -102,42 +142,56 @@ export const AccordionField = (props: AccordionFieldProps) => {
           <Typography className={classes.heading}>{accordionTitle}</Typography>
         </AccordionSummary>
         <AccordionDetails className={classes.details}>
-          {properties &&
-            Object.keys(properties).map(key => {
-              const propertySchema = properties[key];
-              const propertyUiSchema = (uiSchema as any)?.[key] ?? {};
-              const propertyIdSchema = (idSchema as any)?.[key] ?? {
-                $id: `${rootId}_${key}`,
-              };
-              const propertyErrorSchema = (errorSchema as any)?.[key] ?? {};
+          {/* display:none provides visual hiding; effectivelyHidden cascades
+              via context so nested AccordionFields also suppress `required`
+              on their inputs when any ancestor accordion is collapsed. */}
+          <AccordionAncestorCollapsedContext.Provider value={effectivelyHidden}>
+            <div style={expanded ? undefined : { display: 'none' }}>
+              {properties &&
+                Object.keys(properties).map(key => {
+                  const propertySchema = properties[key];
+                  const propertyUiSchema = (uiSchema as any)?.[key] ?? {};
+                  const propertyIdSchema = (idSchema as any)?.[key] ?? {
+                    $id: `${rootId}_${key}`,
+                  };
+                  const propertyErrorSchema = (errorSchema as any)?.[key] ?? {};
 
-              return (
-                <SchemaField
-                  key={key}
-                  name={key}
-                  schema={propertySchema as any}
-                  uiSchema={propertyUiSchema}
-                  idSchema={propertyIdSchema}
-                  formData={(formData as any)?.[key]}
-                  errorSchema={propertyErrorSchema}
-                  onChange={(value: any) =>
-                    onChange({ ...(formData ?? {}), [key]: value })
-                  }
-                  onBlur={onBlur}
-                  onFocus={onFocus}
-                  registry={registry}
-                  formContext={formContext}
-                  disabled={disabled}
-                  readonly={readonly}
-                  required={requiredFields?.includes(key) ?? false}
-                  rawErrors={
-                    Object.keys(propertyErrorSchema).length > 0
-                      ? propertyErrorSchema.__errors ?? []
-                      : []
-                  }
-                />
-              );
-            })}
+                  return (
+                    <SchemaField
+                      key={key}
+                      name={key}
+                      schema={propertySchema as any}
+                      uiSchema={propertyUiSchema}
+                      idSchema={propertyIdSchema}
+                      formData={(formData as any)?.[key]}
+                      errorSchema={propertyErrorSchema}
+                      onChange={(value: any) => {
+                        accumulatedRef.current = {
+                          ...accumulatedRef.current,
+                          [key]: value,
+                        };
+                        onChange(accumulatedRef.current);
+                      }}
+                      onBlur={onBlur}
+                      onFocus={onFocus}
+                      registry={registry}
+                      formContext={formContext}
+                      disabled={disabled}
+                      readonly={readonly}
+                      required={
+                        !effectivelyHidden &&
+                        (requiredFields?.includes(key) ?? false)
+                      }
+                      rawErrors={
+                        Object.keys(propertyErrorSchema).length > 0
+                          ? propertyErrorSchema.__errors ?? []
+                          : []
+                      }
+                    />
+                  );
+                })}
+            </div>
+          </AccordionAncestorCollapsedContext.Provider>
         </AccordionDetails>
       </Accordion>
     </Box>

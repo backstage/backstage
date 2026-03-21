@@ -31,7 +31,6 @@ spec:
           required:
             - replicas
             - memoryLimit
-            - enableMetrics
           properties:
             replicas:
               title: Replica Count
@@ -56,7 +55,6 @@ spec:
               description: Nested accordion for networking options
               required:
                 - port
-                - ingressEnabled
               properties:
                 port:
                   title: Port
