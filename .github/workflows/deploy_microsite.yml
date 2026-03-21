@@ -212,6 +212,7 @@ jobs:
       CI: true
       NODE_OPTIONS: --max-old-space-size=16384
       DOCUSAURUS_SSR_CONCURRENCY: 5
+      KAPA_WEBSITE_ID: ${{ secrets.KAPA_WEBSITE_ID }}
 
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
