@@ -19,7 +19,7 @@ import {
   SignInInfo,
 } from '@backstage/plugin-auth-node';
 import { CloudflareAccessResult } from './types';
-import { z } from 'zod/v3';
+import * as z from 'zod/v4';
 
 /**
  * Available sign-in resolvers for the Cloudflare Access auth provider.
@@ -34,10 +34,12 @@ export namespace cloudflareAccessSignInResolvers {
     createSignInResolverFactory({
       optionsSchema: z
         .object({
-          dangerouslyAllowSignInWithoutUserInCatalog: z.boolean().optional(),
+          dangerouslyAllowSignInWithoutUserInCatalog: z
+            .boolean()
+            .prefault(false),
         })
-        .optional(),
-      create(options = {}) {
+        .prefault({}),
+      create({ dangerouslyAllowSignInWithoutUserInCatalog }) {
         return async (info: SignInInfo<CloudflareAccessResult>, ctx) => {
           const { profile } = info;
 
@@ -55,7 +57,7 @@ export namespace cloudflareAccessSignInResolvers {
             },
             {
               dangerousEntityRefFallback:
-                options?.dangerouslyAllowSignInWithoutUserInCatalog
+                dangerouslyAllowSignInWithoutUserInCatalog
                   ? { entityRef: { name: profile.email } }
                   : undefined,
             },

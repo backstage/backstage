@@ -20,7 +20,7 @@ import {
   PassportProfile,
   SignInInfo,
 } from '@backstage/plugin-auth-node';
-import { z } from 'zod/v3';
+import * as z from 'zod/v4';
 
 /**
  * Available sign-in resolvers for the Bitbucket auth provider.
@@ -35,10 +35,12 @@ export namespace bitbucketSignInResolvers {
     {
       optionsSchema: z
         .object({
-          dangerouslyAllowSignInWithoutUserInCatalog: z.boolean().optional(),
+          dangerouslyAllowSignInWithoutUserInCatalog: z
+            .boolean()
+            .prefault(false),
         })
-        .optional(),
-      create(options = {}) {
+        .prefault({}),
+      create({ dangerouslyAllowSignInWithoutUserInCatalog }) {
         return async (
           info: SignInInfo<OAuthAuthenticatorResult<PassportProfile>>,
           ctx,
@@ -58,7 +60,7 @@ export namespace bitbucketSignInResolvers {
             },
             {
               dangerousEntityRefFallback:
-                options?.dangerouslyAllowSignInWithoutUserInCatalog
+                dangerouslyAllowSignInWithoutUserInCatalog
                   ? { entityRef: { name: id } }
                   : undefined,
             },
@@ -75,10 +77,12 @@ export namespace bitbucketSignInResolvers {
     createSignInResolverFactory({
       optionsSchema: z
         .object({
-          dangerouslyAllowSignInWithoutUserInCatalog: z.boolean().optional(),
+          dangerouslyAllowSignInWithoutUserInCatalog: z
+            .boolean()
+            .prefault(false),
         })
-        .optional(),
-      create(options = {}) {
+        .prefault({}),
+      create({ dangerouslyAllowSignInWithoutUserInCatalog }) {
         return async (
           info: SignInInfo<OAuthAuthenticatorResult<PassportProfile>>,
           ctx,
@@ -100,7 +104,7 @@ export namespace bitbucketSignInResolvers {
             },
             {
               dangerousEntityRefFallback:
-                options?.dangerouslyAllowSignInWithoutUserInCatalog
+                dangerouslyAllowSignInWithoutUserInCatalog
                   ? { entityRef: { name: username } }
                   : undefined,
             },

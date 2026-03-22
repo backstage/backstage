@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { z } from 'zod/v3';
+import * as z from 'zod/v4';
 import { createSignInResolverFactory } from './createSignInResolverFactory';
 import { NotAllowedError } from '@backstage/errors';
 
@@ -38,16 +38,27 @@ export namespace commonSignInResolvers {
       optionsSchema: z
         .object({
           allowedDomains: z.array(z.string()).optional(),
-          dangerouslyAllowSignInWithoutUserInCatalog: z.boolean().optional(),
+          dangerouslyAllowSignInWithoutUserInCatalog: z
+            .boolean()
+            .prefault(false),
         })
-        .optional(),
-      create(options = {}) {
+        .prefault({}),
+      create({ allowedDomains, dangerouslyAllowSignInWithoutUserInCatalog }) {
         return async (info, ctx) => {
           const { profile } = info;
 
           if (!profile.email) {
             throw new Error(
               'Login failed, user profile does not contain an email',
+            );
+          }
+
+          const [localPart] = profile.email.split('@');
+          const emailDomain = profile.email.slice(localPart.length + 1);
+
+          if (allowedDomains && !allowedDomains.includes(emailDomain)) {
+            throw new NotAllowedError(
+              'Sign-in user email is not from an allowed domain',
             );
           }
 
@@ -73,7 +84,7 @@ export namespace commonSignInResolvers {
                   },
                   {
                     dangerousEntityRefFallback:
-                      options?.dangerouslyAllowSignInWithoutUserInCatalog
+                      dangerouslyAllowSignInWithoutUserInCatalog
                         ? { entityRef: { name: noPlusEmail } }
                         : undefined,
                   },
@@ -96,11 +107,12 @@ export namespace commonSignInResolvers {
       optionsSchema: z
         .object({
           allowedDomains: z.array(z.string()).optional(),
-          dangerouslyAllowSignInWithoutUserInCatalog: z.boolean().optional(),
+          dangerouslyAllowSignInWithoutUserInCatalog: z
+            .boolean()
+            .prefault(false),
         })
-        .optional(),
-      create(options = {}) {
-        const { allowedDomains } = options;
+        .prefault({}),
+      create({ allowedDomains, dangerouslyAllowSignInWithoutUserInCatalog }) {
         return async (info, ctx) => {
           const { profile } = info;
 
@@ -121,7 +133,7 @@ export namespace commonSignInResolvers {
             { entityRef: { name: localPart } },
             {
               dangerousEntityRefFallback:
-                options?.dangerouslyAllowSignInWithoutUserInCatalog
+                dangerouslyAllowSignInWithoutUserInCatalog
                   ? { entityRef: { name: localPart } }
                   : undefined,
             },

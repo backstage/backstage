@@ -33,9 +33,10 @@ export function createOAuthProviderFactory<TProfile>(options: {
   stateTransform?: OAuthStateTransform;
   profileTransform?: ProfileTransform<OAuthAuthenticatorResult<TProfile>>;
   signInResolver?: SignInResolver<OAuthAuthenticatorResult<TProfile>>;
-  signInResolverFactories?: {
-    [name in string]: SignInResolverFactory;
-  };
+  signInResolverFactories?: Record<
+    string,
+    SignInResolverFactory<OAuthAuthenticatorResult<TProfile>>
+  >;
 }): AuthProviderFactory {
   return ctx => {
     return OAuthEnvironmentHandler.mapConfig(ctx.config, envConfig => {

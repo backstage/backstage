@@ -19,17 +19,17 @@ import {
   SignInInfo,
 } from '@backstage/plugin-auth-node';
 import { AzureEasyAuthResult } from './types';
-import { z } from 'zod/v3';
+import * as z from 'zod/v4';
 
 /** @public */
 export namespace azureEasyAuthSignInResolvers {
   export const idMatchingUserEntityAnnotation = createSignInResolverFactory({
     optionsSchema: z
       .object({
-        dangerouslyAllowSignInWithoutUserInCatalog: z.boolean().optional(),
+        dangerouslyAllowSignInWithoutUserInCatalog: z.boolean().prefault(false),
       })
-      .optional(),
-    create(options = {}) {
+      .prefault({}),
+    create({ dangerouslyAllowSignInWithoutUserInCatalog }) {
       return async (info: SignInInfo<AzureEasyAuthResult>, ctx) => {
         const {
           fullProfile: { id },
@@ -46,7 +46,7 @@ export namespace azureEasyAuthSignInResolvers {
           },
           {
             dangerousEntityRefFallback:
-              options?.dangerouslyAllowSignInWithoutUserInCatalog
+              dangerouslyAllowSignInWithoutUserInCatalog
                 ? { entityRef: { name: id } }
                 : undefined,
           },

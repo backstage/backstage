@@ -19,7 +19,7 @@ import {
   OAuthAuthenticatorResult,
   SignInInfo,
 } from '@backstage/plugin-auth-node';
-import { z } from 'zod/v3';
+import * as z from 'zod/v4';
 
 import { GitlabProfile } from './authenticator';
 
@@ -35,10 +35,10 @@ export namespace gitlabSignInResolvers {
   export const usernameMatchingUserEntityName = createSignInResolverFactory({
     optionsSchema: z
       .object({
-        dangerouslyAllowSignInWithoutUserInCatalog: z.boolean().optional(),
+        dangerouslyAllowSignInWithoutUserInCatalog: z.boolean().prefault(false),
       })
-      .optional(),
-    create(options = {}) {
+      .prefault({}),
+    create({ dangerouslyAllowSignInWithoutUserInCatalog }) {
       return async (
         info: SignInInfo<OAuthAuthenticatorResult<GitlabProfile>>,
         ctx,
@@ -56,7 +56,7 @@ export namespace gitlabSignInResolvers {
           },
           {
             dangerousEntityRefFallback:
-              options?.dangerouslyAllowSignInWithoutUserInCatalog
+              dangerouslyAllowSignInWithoutUserInCatalog
                 ? { entityRef: { name: id } }
                 : undefined,
           },
@@ -72,10 +72,12 @@ export namespace gitlabSignInResolvers {
     {
       optionsSchema: z
         .object({
-          dangerouslyAllowSignInWithoutUserInCatalog: z.boolean().optional(),
+          dangerouslyAllowSignInWithoutUserInCatalog: z
+            .boolean()
+            .prefault(false),
         })
-        .optional(),
-      create(options = {}) {
+        .prefault({}),
+      create({ dangerouslyAllowSignInWithoutUserInCatalog }) {
         return async (
           info: SignInInfo<OAuthAuthenticatorResult<GitlabProfile>>,
           ctx,
@@ -102,7 +104,7 @@ export namespace gitlabSignInResolvers {
             },
             {
               dangerousEntityRefFallback:
-                options?.dangerouslyAllowSignInWithoutUserInCatalog
+                dangerouslyAllowSignInWithoutUserInCatalog
                   ? { entityRef: { name: userId } }
                   : undefined,
             },

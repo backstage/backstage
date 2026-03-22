@@ -19,7 +19,7 @@ import {
   SignInInfo,
 } from '@backstage/plugin-auth-node';
 import { GcpIapResult } from './types';
-import { z } from 'zod/v3';
+import * as z from 'zod/v4';
 
 /**
  * Available sign-in resolvers for the Google auth provider.
@@ -33,10 +33,10 @@ export namespace gcpIapSignInResolvers {
   export const emailMatchingUserEntityAnnotation = createSignInResolverFactory({
     optionsSchema: z
       .object({
-        dangerouslyAllowSignInWithoutUserInCatalog: z.boolean().optional(),
+        dangerouslyAllowSignInWithoutUserInCatalog: z.boolean().prefault(false),
       })
-      .optional(),
-    create(options = {}) {
+      .prefault({}),
+    create({ dangerouslyAllowSignInWithoutUserInCatalog }) {
       return async (info: SignInInfo<GcpIapResult>, ctx) => {
         const email = info.result.iapToken.email;
 
@@ -52,7 +52,7 @@ export namespace gcpIapSignInResolvers {
           },
           {
             dangerousEntityRefFallback:
-              options?.dangerouslyAllowSignInWithoutUserInCatalog
+              dangerouslyAllowSignInWithoutUserInCatalog
                 ? { entityRef: { name: email } }
                 : undefined,
           },
@@ -67,10 +67,10 @@ export namespace gcpIapSignInResolvers {
   export const idMatchingUserEntityAnnotation = createSignInResolverFactory({
     optionsSchema: z
       .object({
-        dangerouslyAllowSignInWithoutUserInCatalog: z.boolean().optional(),
+        dangerouslyAllowSignInWithoutUserInCatalog: z.boolean().prefault(false),
       })
-      .optional(),
-    create(options = {}) {
+      .prefault({}),
+    create({ dangerouslyAllowSignInWithoutUserInCatalog }) {
       return async (info: SignInInfo<GcpIapResult>, ctx) => {
         const userId = info.result.iapToken.sub.split(':')[1];
 
@@ -82,7 +82,7 @@ export namespace gcpIapSignInResolvers {
           },
           {
             dangerousEntityRefFallback:
-              options?.dangerouslyAllowSignInWithoutUserInCatalog
+              dangerouslyAllowSignInWithoutUserInCatalog
                 ? { entityRef: { name: userId } }
                 : undefined,
           },

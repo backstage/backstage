@@ -19,7 +19,7 @@ import {
   SignInInfo,
 } from '@backstage/plugin-auth-node';
 import { AwsAlbResult } from './types';
-import { z } from 'zod/v3';
+import * as z from 'zod/v4';
 
 /**
  * Available sign-in resolvers for the AWS ALB auth provider.
@@ -31,10 +31,12 @@ export namespace awsAlbSignInResolvers {
     createSignInResolverFactory({
       optionsSchema: z
         .object({
-          dangerouslyAllowSignInWithoutUserInCatalog: z.boolean().optional(),
+          dangerouslyAllowSignInWithoutUserInCatalog: z
+            .boolean()
+            .prefault(false),
         })
-        .optional(),
-      create(options = {}) {
+        .prefault({}),
+      create({ dangerouslyAllowSignInWithoutUserInCatalog }) {
         return async (info: SignInInfo<AwsAlbResult>, ctx) => {
           if (!info.result.fullProfile.emails) {
             throw new Error(
@@ -51,7 +53,7 @@ export namespace awsAlbSignInResolvers {
             },
             {
               dangerousEntityRefFallback:
-                options?.dangerouslyAllowSignInWithoutUserInCatalog
+                dangerouslyAllowSignInWithoutUserInCatalog
                   ? {
                       entityRef: {
                         name: info.result.fullProfile.emails[0].value,

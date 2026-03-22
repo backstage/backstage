@@ -31,7 +31,7 @@ export function createProxyAuthProviderFactory<TResult>(options: {
   authenticator: ProxyAuthenticator<unknown, TResult, unknown>;
   profileTransform?: ProfileTransform<TResult>;
   signInResolver?: SignInResolver<TResult>;
-  signInResolverFactories?: Record<string, SignInResolverFactory>;
+  signInResolverFactories?: Record<string, SignInResolverFactory<TResult>>;
 }): AuthProviderFactory {
   return ctx => {
     const signInResolver =

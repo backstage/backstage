@@ -25,16 +25,16 @@ import {
   DEFAULT_NAMESPACE,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import { z } from 'zod/v3';
+import * as z from 'zod/v4';
 
 export namespace openshiftSignInResolvers {
   export const displayNameMatchingUserEntityName = createSignInResolverFactory({
     optionsSchema: z
       .object({
-        dangerouslyAllowSignInWithoutUserInCatalog: z.boolean().optional(),
+        dangerouslyAllowSignInWithoutUserInCatalog: z.boolean().prefault(false),
       })
-      .optional(),
-    create(options = {}) {
+      .prefault({}),
+    create({ dangerouslyAllowSignInWithoutUserInCatalog }) {
       return async (
         info: SignInInfo<OAuthAuthenticatorResult<PassportProfile>>,
         ctx,
@@ -57,7 +57,7 @@ export namespace openshiftSignInResolvers {
           { entityRef: userRef },
           {
             dangerousEntityRefFallback:
-              options?.dangerouslyAllowSignInWithoutUserInCatalog
+              dangerouslyAllowSignInWithoutUserInCatalog
                 ? { entityRef: { name: displayName } }
                 : undefined,
           },

@@ -22,9 +22,7 @@ import { SignInResolverFactory } from './createSignInResolverFactory';
 /** @public */
 export interface ReadDeclarativeSignInResolverOptions<TAuthResult> {
   config: Config;
-  signInResolverFactories: {
-    [name in string]: SignInResolverFactory<TAuthResult, unknown>;
-  };
+  signInResolverFactories: Record<string, SignInResolverFactory<TAuthResult>>;
 }
 
 /** @public */

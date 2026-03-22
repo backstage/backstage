@@ -20,7 +20,7 @@ import {
   PassportProfile,
   SignInInfo,
 } from '@backstage/plugin-auth-node';
-import { z } from 'zod/v3';
+import * as z from 'zod/v4';
 
 /**
  * Available sign-in resolvers for the Okta auth provider.
@@ -35,10 +35,10 @@ export namespace oktaSignInResolvers {
   export const emailMatchingUserEntityAnnotation = createSignInResolverFactory({
     optionsSchema: z
       .object({
-        dangerouslyAllowSignInWithoutUserInCatalog: z.boolean().optional(),
+        dangerouslyAllowSignInWithoutUserInCatalog: z.boolean().prefault(false),
       })
-      .optional(),
-    create(options = {}) {
+      .prefault({}),
+    create({ dangerouslyAllowSignInWithoutUserInCatalog }) {
       return async (
         info: SignInInfo<OAuthAuthenticatorResult<PassportProfile>>,
         ctx,
@@ -57,7 +57,7 @@ export namespace oktaSignInResolvers {
           },
           {
             dangerousEntityRefFallback:
-              options?.dangerouslyAllowSignInWithoutUserInCatalog
+              dangerouslyAllowSignInWithoutUserInCatalog
                 ? { entityRef: { name: profile.email } }
                 : undefined,
           },

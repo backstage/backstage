@@ -4635,8 +4635,6 @@ __metadata:
     supertest: "npm:^7.0.0"
     uuid: "npm:^11.0.0"
     zod: "npm:^3.25.76 || ^4.0.0"
-    zod-to-json-schema: "npm:^3.25.1"
-    zod-validation-error: "npm:^4.0.2"
   languageName: unknown
   linkType: soft
 

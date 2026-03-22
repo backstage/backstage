@@ -16,8 +16,7 @@ import { Profile } from 'passport';
 import { Request as Request_2 } from 'express';
 import { Response as Response_2 } from 'express';
 import { Strategy } from 'passport';
-import type { ZodSchema } from 'zod/v3';
-import type { ZodTypeDef } from 'zod/v3';
+import * as z from 'zod/v4';
 
 // @public (undocumented)
 export interface AuthOwnershipResolutionExtensionPoint {
@@ -196,9 +195,10 @@ export function createOAuthProviderFactory<TProfile>(options: {
   stateTransform?: OAuthStateTransform;
   profileTransform?: ProfileTransform<OAuthAuthenticatorResult<TProfile>>;
   signInResolver?: SignInResolver<OAuthAuthenticatorResult<TProfile>>;
-  signInResolverFactories?: {
-    [name in string]: SignInResolverFactory;
-  };
+  signInResolverFactories?: Record<
+    string,
+    SignInResolverFactory<OAuthAuthenticatorResult<TProfile>>
+  >;
 }): AuthProviderFactory;
 
 // @public (undocumented)
@@ -216,7 +216,7 @@ export function createProxyAuthProviderFactory<TResult>(options: {
   authenticator: ProxyAuthenticator<unknown, TResult, unknown>;
   profileTransform?: ProfileTransform<TResult>;
   signInResolver?: SignInResolver<TResult>;
-  signInResolverFactories?: Record<string, SignInResolverFactory>;
+  signInResolverFactories?: Record<string, SignInResolverFactory<TResult>>;
 }): AuthProviderFactory;
 
 // @public (undocumented)
@@ -227,15 +227,10 @@ export function createProxyAuthRouteHandlers<TResult>(
 // @public (undocumented)
 export function createSignInResolverFactory<
   TAuthResult,
-  TOptionsOutput,
-  TOptionsInput,
+  TSchema extends z.ZodType = z.ZodUndefined,
 >(
-  options: SignInResolverFactoryOptions<
-    TAuthResult,
-    TOptionsOutput,
-    TOptionsInput
-  >,
-): SignInResolverFactory<TAuthResult, TOptionsInput>;
+  input: SignInResolverFactoryOptions<TAuthResult, TSchema>,
+): SignInResolverFactory<TAuthResult, z.input<TSchema>>;
 
 // @public (undocumented)
 export function decodeOAuthState(encodedState: string): OAuthState;
@@ -637,9 +632,7 @@ export interface ReadDeclarativeSignInResolverOptions<TAuthResult> {
   // (undocumented)
   config: Config;
   // (undocumented)
-  signInResolverFactories: {
-    [name in string]: SignInResolverFactory<TAuthResult, unknown>;
-  };
+  signInResolverFactories: Record<string, SignInResolverFactory<TAuthResult>>;
 }
 
 // @public (undocumented)
@@ -662,13 +655,12 @@ export type SignInResolver<TAuthResult> = (
 ) => Promise<BackstageSignInResult>;
 
 // @public (undocumented)
-export interface SignInResolverFactory<TAuthResult = any, TOptions = any> {
+export interface SignInResolverFactory<
+  TAuthResult = unknown,
+  _TOptions = unknown,
+> {
   // (undocumented)
-  (
-    ...options: undefined extends TOptions
-      ? [options?: TOptions]
-      : [options: TOptions]
-  ): SignInResolver<TAuthResult>;
+  (options?: unknown): SignInResolver<TAuthResult>;
   // (undocumented)
   optionsJsonSchema?: JsonObject;
 }
@@ -676,13 +668,12 @@ export interface SignInResolverFactory<TAuthResult = any, TOptions = any> {
 // @public (undocumented)
 export interface SignInResolverFactoryOptions<
   TAuthResult,
-  TOptionsOutput,
-  TOptionsInput,
+  TSchema extends z.ZodType = z.ZodUndefined,
 > {
   // (undocumented)
-  create(options: TOptionsOutput): SignInResolver<TAuthResult>;
+  create: (options: z.output<TSchema>) => SignInResolver<TAuthResult>;
   // (undocumented)
-  optionsSchema?: ZodSchema<TOptionsOutput, ZodTypeDef, TOptionsInput>;
+  optionsSchema?: TSchema;
 }
 
 // @public
