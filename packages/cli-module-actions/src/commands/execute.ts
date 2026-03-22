@@ -65,11 +65,11 @@ export default async ({ args, info }: CliCommandContext) => {
         help: info,
         parameters: ['<action-id>'],
         flags: {
+          ...actionSchemaFlags,
           instance: {
             type: String,
             description: 'Name of the instance to use',
           },
-          ...actionSchemaFlags,
         },
       },
       undefined,
@@ -78,7 +78,7 @@ export default async ({ args, info }: CliCommandContext) => {
     return;
   }
 
-  if (wantsHelp || !actionId) {
+  if (wantsHelp) {
     cli(
       {
         help: info,
@@ -91,9 +91,27 @@ export default async ({ args, info }: CliCommandContext) => {
         },
       },
       undefined,
-      wantsHelp ? args : ['--help', ...args],
+      args,
     );
     return;
+  }
+
+  if (!actionId) {
+    cli(
+      {
+        help: info,
+        parameters: ['<action-id>'],
+        flags: {
+          instance: {
+            type: String,
+            description: 'Name of the instance to use',
+          },
+        },
+      },
+      undefined,
+      ['--help', ...args],
+    );
+    throw new Error('Action ID is required');
   }
 
   const { accessToken, baseUrl } = await resolveAuth(instanceFlag);
@@ -116,11 +134,11 @@ export default async ({ args, info }: CliCommandContext) => {
     {
       help: info,
       flags: {
+        ...schemaFlags,
         instance: {
           type: String,
           description: 'Name of the instance to use',
         },
-        ...schemaFlags,
       },
     },
     undefined,
