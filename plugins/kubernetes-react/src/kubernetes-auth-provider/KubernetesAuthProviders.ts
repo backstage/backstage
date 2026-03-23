@@ -75,7 +75,6 @@ export class KubernetesAuthProviders implements KubernetesAuthProvidersApi {
           new OidcKubernetesAuthProvider(
             provider,
             options.oidcProviders![provider],
-            provider === 'microsoft' ? options.microsoftAuthApi : undefined,
           ),
         );
       });
