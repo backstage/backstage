@@ -118,7 +118,7 @@ describe('MicrosoftEntraIdStrategy tests', () => {
     expect(credential2).toEqual({ type: 'bearer token', token: 'MY_TOKEN_1' });
   });
 
-  it('should issue new token 15 minutes befory expiry', async () => {
+  it('should issue new token 15 minutes before expiry', async () => {
     jest.useFakeTimers();
 
     const strategy = new MicrosoftEntraIdStrategy(
