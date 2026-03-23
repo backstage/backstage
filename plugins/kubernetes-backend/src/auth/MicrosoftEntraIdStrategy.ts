@@ -129,9 +129,10 @@ export class MicrosoftEntraIdStrategy implements AuthenticationStrategy {
       if (this.tokenExpired(cached)) {
         throw err;
       }
+    } finally {
+      cached.newTokenPromise = undefined;
     }
 
-    cached.newTokenPromise = undefined;
     return cached.accessToken.token;
   }
 
