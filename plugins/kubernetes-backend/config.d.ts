@@ -134,20 +134,20 @@ export interface Config {
       statefulsets?: string;
       daemonsets?: string;
     } & { [pluralKind: string]: string };
-  };
-  auth?: {
-    providers?: {
-      /**
-       * Microsoft Entra Id configuration
-       */
-      microsoft?: {
-        [authEnv: string]: {
-          /**
-           * Microsoft Entra Id scope required to obtain the authentication token
-           *
-           * @visibility frontend
-           */
-          scope: string;
+    auth?: {
+      providers?: {
+        /**
+         * Microsoft Entra Id configuration
+         */
+        microsoft?: {
+          [authEnv: string]: {
+            /**
+             * Microsoft Entra Id scope required to obtain the authentication token
+             *
+             * @visibility frontend
+             */
+            scope: string;
+          };
         };
       };
     };
