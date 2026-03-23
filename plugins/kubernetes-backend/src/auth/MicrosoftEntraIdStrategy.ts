@@ -37,6 +37,9 @@ interface CachedToken {
 
 const env = process.env.NODE_ENV || 'development';
 
+/**
+ * @public
+ */
 export type MicrosoftEntraIdStrategyOptions = {
   config: Config;
 };

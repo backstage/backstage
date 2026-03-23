@@ -164,6 +164,29 @@ export type KubernetesProxyOptions = {
 };
 
 // @public (undocumented)
+export class MicrosoftEntraIdStrategy implements AuthenticationStrategy {
+  constructor(
+    logger: LoggerService,
+    options: MicrosoftEntraIdStrategyOptions,
+    tokenCredential?: TokenCredential,
+  );
+  // (undocumented)
+  getCredential(
+    clusterDetails: ClusterDetails,
+    _authConfig?: KubernetesRequestAuth,
+  ): Promise<KubernetesCredential>;
+  // (undocumented)
+  presentAuthMetadata(_authMetadata: AuthMetadata): AuthMetadata;
+  // (undocumented)
+  validateCluster(): Error[];
+}
+
+// @public (undocumented)
+export type MicrosoftEntraIdStrategyOptions = {
+  config: Config;
+};
+
+// @public (undocumented)
 export type ObjectsByEntityRequest = KubernetesRequestBody;
 
 // @public (undocumented)
