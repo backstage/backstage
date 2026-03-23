@@ -16,17 +16,23 @@
 
 import { JsonObject } from '@backstage/types';
 import { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
-import { OpenIdConnectApi } from '@backstage/core-plugin-api';
+import { OAuthApi, OpenIdConnectApi } from '@backstage/core-plugin-api';
 import { KubernetesAuthProvider } from './types';
 
 /** @public */
 export class OidcKubernetesAuthProvider implements KubernetesAuthProvider {
   providerName: string;
   authProvider: OpenIdConnectApi;
+  microsoftAuthApi: OAuthApi | undefined;
 
-  constructor(providerName: string, authProvider: OpenIdConnectApi) {
+  constructor(
+    providerName: string,
+    authProvider: OpenIdConnectApi,
+    microsoftAuthApi?: OAuthApi,
+  ) {
     this.providerName = providerName;
     this.authProvider = authProvider;
+    this.microsoftAuthApi = microsoftAuthApi;
   }
 
   async decorateRequestBodyForAuth(
@@ -44,8 +50,21 @@ export class OidcKubernetesAuthProvider implements KubernetesAuthProvider {
   }
 
   async getCredentials(): Promise<{ token: string }> {
+    if (this.microsoftAuthApi) {
+      // static scope to preserve compatibility with the AKS auth Provider
+      const token = await this.microsoftAuthApi.getAccessToken(
+        '67f5fed8-2d97-45fc-9f0e-cf1ef6fc1f03/user.read',
+      );
+
+      return {
+        token,
+      };
+    }
+
+    const token = await this.authProvider.getIdToken();
+
     return {
-      token: await this.authProvider.getIdToken(),
+      token,
     };
   }
 }
