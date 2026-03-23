@@ -23,9 +23,17 @@ import { Config } from '@backstage/config';
 import {
   AuthenticationStrategy,
   AuthMetadata,
+  ClusterDetails,
   KubernetesCredential,
 } from '@backstage/plugin-kubernetes-node';
+import { ANNOTATION_KUBERNETES_MICROSOFT_ENTRA_ID_SCOPE } from '@backstage/plugin-kubernetes-common';
+import type { KubernetesRequestAuth } from '@backstage/plugin-kubernetes-common';
 import { LoggerService } from '@backstage/backend-plugin-api';
+
+interface CachedToken {
+  accessToken: AccessToken;
+  newTokenPromise: Promise<string> | undefined;
+}
 
 const env = process.env.NODE_ENV || 'development';
 
@@ -38,8 +46,7 @@ export type MicrosoftEntraIdStrategyOptions = {
  * @public
  */
 export class MicrosoftEntraIdStrategy implements AuthenticationStrategy {
-  private accessToken: AccessToken = { token: '', expiresOnTimestamp: 0 };
-  private newTokenPromise: Promise<string> | undefined;
+  private tokenCache: Map<string, CachedToken> = new Map();
 
   constructor(
     private readonly logger: LoggerService,
@@ -51,17 +58,23 @@ export class MicrosoftEntraIdStrategy implements AuthenticationStrategy {
     ),
   ) {}
 
-  public async getCredential(): Promise<KubernetesCredential> {
-    if (!this.tokenRequiresRefresh()) {
-      return { type: 'bearer token', token: this.accessToken.token };
+  public async getCredential(
+    clusterDetails: ClusterDetails,
+    _authConfig?: KubernetesRequestAuth,
+  ): Promise<KubernetesCredential> {
+    const scope = this.resolveScope(clusterDetails);
+    const cached = this.getOrCreateCacheEntry(scope);
+
+    if (!this.tokenRequiresRefresh(cached)) {
+      return { type: 'bearer token', token: cached.accessToken.token };
     }
 
-    if (!this.newTokenPromise) {
-      this.newTokenPromise = this.fetchNewToken();
+    if (!cached.newTokenPromise) {
+      cached.newTokenPromise = this.fetchNewToken(scope, cached);
     }
 
-    return this.newTokenPromise
-      ? { type: 'bearer token', token: await this.newTokenPromise }
+    return cached.newTokenPromise
+      ? { type: 'bearer token', token: await cached.newTokenPromise }
       : { type: 'anonymous' };
   }
 
@@ -69,44 +82,67 @@ export class MicrosoftEntraIdStrategy implements AuthenticationStrategy {
     return [];
   }
 
-  private async fetchNewToken(): Promise<string> {
+  private resolveScope(clusterDetails: ClusterDetails): string {
+    const annotation =
+      clusterDetails.authMetadata[
+        ANNOTATION_KUBERNETES_MICROSOFT_ENTRA_ID_SCOPE
+      ];
+    if (annotation && annotation.length > 0) {
+      return annotation;
+    }
+    return this.options.config.getString(
+      `kubernetes.auth.providers.microsoft.${env}.scope`,
+    );
+  }
+
+  private getOrCreateCacheEntry(scope: string): CachedToken {
+    let cached = this.tokenCache.get(scope);
+    if (!cached) {
+      cached = {
+        accessToken: { token: '', expiresOnTimestamp: 0 },
+        newTokenPromise: undefined,
+      };
+      this.tokenCache.set(scope, cached);
+    }
+    return cached;
+  }
+
+  private async fetchNewToken(
+    scope: string,
+    cached: CachedToken,
+  ): Promise<string> {
     try {
       this.logger.info('Fetching new Microsoft Entra ID token');
 
-      const newAccessToken = await this.tokenCredential.getToken(
-        this.options.config.getString(
-          `kubernetes.auth.providers.microsoft.${env}.scope`,
-        ),
-        {
-          requestOptions: { timeout: 10_000 }, // 10 seconds
-        },
-      );
+      const newAccessToken = await this.tokenCredential.getToken(scope, {
+        requestOptions: { timeout: 10_000 }, // 10 seconds
+      });
       if (!newAccessToken) {
         throw new Error('AccessToken is null');
       }
 
-      this.accessToken = newAccessToken;
+      cached.accessToken = newAccessToken;
     } catch (err: any) {
       this.logger.error('Unable to fetch Microsoft Entra ID token', err);
 
       // only throw the error if the token has already expired, otherwise re-use existing until we're able to fetch a new token
-      if (this.tokenExpired()) {
+      if (this.tokenExpired(cached)) {
         throw err;
       }
     }
 
-    this.newTokenPromise = undefined;
-    return this.accessToken.token;
+    cached.newTokenPromise = undefined;
+    return cached.accessToken.token;
   }
 
-  private tokenRequiresRefresh(): boolean {
+  private tokenRequiresRefresh(cached: CachedToken): boolean {
     // Set tokens to expire 15 minutes before its actual expiry time
-    const expiresOn = this.accessToken.expiresOnTimestamp - 15 * 60 * 1000;
+    const expiresOn = cached.accessToken.expiresOnTimestamp - 15 * 60 * 1000;
     return Date.now() >= expiresOn;
   }
 
-  private tokenExpired(): boolean {
-    return Date.now() >= this.accessToken.expiresOnTimestamp;
+  private tokenExpired(cached: CachedToken): boolean {
+    return Date.now() >= cached.accessToken.expiresOnTimestamp;
   }
 
   public presentAuthMetadata(_authMetadata: AuthMetadata): AuthMetadata {
