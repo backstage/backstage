@@ -1,0 +1,38 @@
+.github/workflows/verify_microsite.yml
+  b13dd3531679a253 35,40-47,53-73,75-78,84
+.github/workflows/deploy_microsite.yml
+  b13dd3531679a253 30,35-42,48-68,70-73,79,255
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.17",
+  "base_commit_sha": "a3a39868973b5978a163878f7fd23161cade4b25",
+  "prompts": {
+    "b03dd906497e0fd4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1070d095-6d1d-4569-8f5b-0d6549af6556",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "aramissennyeydd <aramis.sennyey@doordash.com>",
+      "messages": [],
+      "total_additions": 5,
+      "total_deletions": 0,
+      "accepted_lines": 5,
+      "overriden_lines": 0
+    },
+    "b13dd3531679a253": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "37b113d0-a378-4445-84eb-d4274488942d",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "aramissennyeydd <aramis.sennyey@doordash.com>",
+      "messages": [],
+      "total_additions": 82,
+      "total_deletions": 44,
+      "accepted_lines": 77,
+      "overriden_lines": 0
+    }
+  }
+}
