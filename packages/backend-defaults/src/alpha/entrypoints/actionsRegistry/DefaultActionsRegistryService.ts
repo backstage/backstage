@@ -115,6 +115,7 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
             idempotent: action.attributes?.idempotent ?? false,
             readOnly: action.attributes?.readOnly ?? false,
           },
+          examples: action.examples,
           schema: {
             input: action.schema?.input
               ? zodToJsonSchema(action.schema.input(z))

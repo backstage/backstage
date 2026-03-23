@@ -286,6 +286,79 @@ describe('actionsRegistryServiceFactory', () => {
       });
     });
 
+    it('should return examples in the action list', async () => {
+      const pluginSubject = createBackendPlugin({
+        pluginId: 'my-plugin',
+        register(reg) {
+          reg.registerInit({
+            deps: {
+              actionsRegistry: actionsRegistryServiceRef,
+            },
+            async init({ actionsRegistry }) {
+              actionsRegistry.register({
+                name: 'test',
+                title: 'Test',
+                description: 'Test',
+                schema: {
+                  input: z =>
+                    z.object({
+                      name: z.string(),
+                    }),
+                  output: z =>
+                    z.object({
+                      ok: z.boolean(),
+                    }),
+                },
+                examples: [
+                  {
+                    title: 'Basic usage',
+                    description: 'A simple example',
+                    input: { name: 'world' },
+                    output: { ok: true },
+                  },
+                  {
+                    title: 'Without output',
+                    input: { name: 'test' },
+                  },
+                ],
+                action: async () => ({ output: { ok: true } }),
+              });
+            },
+          });
+        },
+      });
+
+      const { server } = await startTestBackend({
+        features: [pluginSubject, ...defaultServices],
+      });
+
+      const { body, status } = await request(server).get(
+        '/api/my-plugin/.backstage/actions/v1/actions',
+      );
+
+      expect(status).toBe(200);
+
+      expect(body).toMatchObject({
+        actions: [
+          {
+            name: 'test',
+            examples: [
+              {
+                title: 'Basic usage',
+                description: 'A simple example',
+                input: { name: 'world' },
+                output: { ok: true },
+              },
+              {
+                title: 'Without output',
+                input: { name: 'test' },
+              },
+            ],
+          },
+        ],
+      });
+    });
+
     it('should forces registration of input and output schema as objects', async () => {
       const pluginSubject = createBackendPlugin({
         pluginId: 'my-plugin',
