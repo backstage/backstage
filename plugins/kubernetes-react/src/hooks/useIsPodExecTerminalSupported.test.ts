@@ -65,7 +65,7 @@ describe('useIsPodExecTerminalSupported', () => {
     },
     {
       condition: 'AuthProvider is microsoft',
-      returnValue: true,
+      returnValue: false,
       testClusters: [{ authProvider: 'microsoft' }],
     },
   ])(
