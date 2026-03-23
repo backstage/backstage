@@ -133,7 +133,7 @@ export const ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID =
   'kubernetes.io/aws-external-id';
 
 /**
- * Annotation for specifying the microsoft authorization scope for Microsoft Entra Id
+ * Annotation for specifying the microsoft authorization scope for Microsoft Entra ID
  *
  * @public
  */
