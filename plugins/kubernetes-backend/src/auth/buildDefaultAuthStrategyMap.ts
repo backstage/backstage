@@ -21,6 +21,7 @@ import { AuthenticationStrategy } from '@backstage/plugin-kubernetes-node';
 import { AksStrategy } from './AksStrategy';
 import { AwsIamStrategy } from './AwsIamStrategy';
 import { AzureIdentityStrategy } from './AzureIdentityStrategy';
+import { MicrosoftEntraIdStrategy } from './MicrosoftEntraIdStrategy';
 import { GoogleStrategy } from './GoogleStrategy';
 import { GoogleServiceAccountStrategy } from './GoogleServiceAccountStrategy';
 import { AnonymousStrategy } from './AnonymousStrategy';
@@ -38,6 +39,7 @@ export const buildDefaultAuthStrategyMap = ({
     ['aks', new AksStrategy()],
     ['aws', new AwsIamStrategy({ config })],
     ['azure', new AzureIdentityStrategy(logger)],
+    ['microsoft', new MicrosoftEntraIdStrategy(logger, { config })],
     ['google', new GoogleStrategy()],
     ['googleServiceAccount', new GoogleServiceAccountStrategy({ config })],
     ['localKubectlProxy', new AnonymousStrategy()],

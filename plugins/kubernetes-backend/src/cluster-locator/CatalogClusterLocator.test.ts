@@ -19,6 +19,7 @@ import {
   ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE,
   ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID,
   ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER,
+  ANNOTATION_KUBERNETES_MICROSOFT_ENTRA_ID_SCOPE,
 } from '@backstage/plugin-kubernetes-common';
 import { CatalogClusterLocator } from './CatalogClusterLocator';
 import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
@@ -78,7 +79,7 @@ const entities: Entity[] = [
         'kubernetes.io/api-server-certificate-authority': 'caData',
         [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'microsoft',
         [ANNOTATION_KUBERNETES_MICROSOFT_ENTRA_ID_SCOPE]:
-          'microsoft-entra-id/scope.verb',
+          'some-custom-microsoft-entra-id-scope/user.role',
         'kubernetes.io/dashboard-url': 'my-url',
         'kubernetes.io/dashboard-app': 'my-app',
       },

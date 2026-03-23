@@ -15,11 +15,11 @@
  */
 import { readFile, writeFile, cp } from 'node:fs/promises';
 import globby from 'globby';
-import { dirname, join as joinPath, relative } from 'path';
-import crypto from 'crypto';
+import { dirname, join as joinPath, relative } from 'node:path';
+import crypto from 'node:crypto';
 import { Lockfile } from '@backstage/cli-node';
 import { exists, rm, mkdirp } from 'fs-extra';
-import { z } from 'zod';
+import { z } from 'zod/v3';
 import { CACHE_DIR, CACHE_FILE } from './constants';
 
 const version = '1';
@@ -47,10 +47,9 @@ export class PackageDocsCache {
   private readonly baseDirectory: string;
 
   constructor(
-    private readonly lockfile: Lockfile,
-    // A map of package directory to cache entry.
-    private readonly cache: Map<string, CacheEntry>,
-    private readonly baseDirectory: string,
+    lockfile: Lockfile,
+    cache: Map<string, CacheEntry>,
+    baseDirectory: string,
   ) {
     this.lockfile = lockfile;
     this.cache = cache;

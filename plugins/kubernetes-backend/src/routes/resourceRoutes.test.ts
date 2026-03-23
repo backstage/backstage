@@ -28,7 +28,18 @@ import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
 describe('resourcesRoutes', () => {
   let app: ExtendedHttpServer;
-
+  const auth = {
+    providers: {
+      microsoft: {
+        test: {
+          tenantId: 'microsoft-entra-id-enterprise-application-tenant-id',
+          clientId: 'microsoft-entra-id-enterprise-application-client-id',
+          clientSecret:
+            'microsoft-entra-id-enterprise-application-client-secret',
+        },
+      },
+    },
+  };
   const startPermissionDeniedTestServer = async () => {
     const { server } = await startTestBackend({
       features: [
@@ -38,6 +49,7 @@ describe('resourcesRoutes', () => {
               serviceLocatorMethod: { type: 'multiTenant' },
               clusterLocatorMethods: [],
             },
+            auth,
           },
         }),
         mockServices.permissions.factory({ result: AuthorizeResult.DENY }),
@@ -125,6 +137,7 @@ describe('resourcesRoutes', () => {
                 },
               ],
             },
+            auth,
           },
         }),
         import('@backstage/plugin-kubernetes-backend'),
