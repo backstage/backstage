@@ -136,7 +136,7 @@ describe('MicrosoftEntraIdStrategy tests', () => {
     expect(credential2).toEqual({ type: 'bearer token', token: 'MY_TOKEN_2' });
   });
 
-  it('should re-use existing token if there is afailure', async () => {
+  it('should re-use existing token if there is a failure', async () => {
     jest.useFakeTimers();
 
     const strategy = new MicrosoftEntraIdStrategy(
