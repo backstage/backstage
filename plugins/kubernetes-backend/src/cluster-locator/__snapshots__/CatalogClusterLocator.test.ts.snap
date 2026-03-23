@@ -56,7 +56,7 @@ exports[`CatalogClusterLocator returns the microsoft authenticated cluster detai
     "kubernetes.io/auth-provider": "microsoft",
     "kubernetes.io/dashboard-app": "my-app",
     "kubernetes.io/dashboard-url": "my-url",
-    "kubernetes.io/microsoft-entra-id-scope": "microsoft-entra-id/scope.verb",
+    "kubernetes.io/microsoft-entra-id-scope": "some-custom-microsoft-entra-id-scope/user.role",
   },
   "caData": "caData",
   "dashboardApp": "my-app",
