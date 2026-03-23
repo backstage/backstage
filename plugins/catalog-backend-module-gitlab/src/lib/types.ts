@@ -276,6 +276,13 @@ export type GitlabProviderConfig = {
   excludeRepos?: string[];
 
   /**
+   * List of groups to exclude from discovery, should be the full path to the group, e.g. `group/subgroup`
+   * All projects under the excluded groups and their subgroups will be skipped.
+   * Paths should not start or end with a slash.
+   */
+  excludeGroups?: string[];
+
+  /**
    * If true, users without a seat will be included in the catalog.
    * Group/Application Access Tokens are still filtered out but you might find service accounts or other users without a seat.
    * Defaults to `false`

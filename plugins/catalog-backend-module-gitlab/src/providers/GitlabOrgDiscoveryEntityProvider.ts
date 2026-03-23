@@ -801,6 +801,16 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
   }
 
   private shouldProcessGroup(group: GitLabGroup): boolean {
+    if (
+      this.config.excludeGroups?.some(
+        excludedGroup =>
+          group.full_path === excludedGroup ||
+          group.full_path.startsWith(`${excludedGroup}/`),
+      )
+    ) {
+      return false;
+    }
+
     return (
       this.groupPatterns.some(pattern => pattern.test(group.full_path)) &&
       (!this.config.group ||
