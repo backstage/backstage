@@ -51,9 +51,10 @@ export class OidcKubernetesAuthProvider implements KubernetesAuthProvider {
 
   async getCredentials(): Promise<{ token: string }> {
     if (this.microsoftAuthApi) {
-      // static scope to preserve compatibility with the AKS auth Provider
+      // static scope to preserve compatibility with the AKS auth Provider;
+      // this value must match the scope used by AksKubernetesAuthProvider
       const token = await this.microsoftAuthApi.getAccessToken(
-        '67f5fed8-2d97-45fc-9f0e-cf1ef6fc1f03/user.read',
+        '6dae42f8-4368-4678-94ff-3960e28e3630/user.read',
       );
 
       return {
