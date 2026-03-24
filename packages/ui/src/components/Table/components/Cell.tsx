@@ -36,9 +36,9 @@ const Cell = (props: CellProps) => {
 
   // When `textValue` is provided the collection system already has the
   // accessible text it needs, so we can safely wrap children in a component
-  // that skips rendering during the collection pass.  The children are still
-  // stored on the collection node (node.rendered) so that the real render
-  // pass can display them.
+  // that skips rendering during the collection pass. The children still
+  // participate in the table's logical structure and are rendered as usual
+  // during the normal DOM render pass.
   if (restProps.textValue != null && restProps.children != null) {
     const { children, ...rest } = restProps;
     return (

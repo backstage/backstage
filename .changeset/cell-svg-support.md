@@ -13,3 +13,5 @@ To render custom content inside a `Cell`, provide a `textValue` for accessibilit
   </svg>
 </Cell>
 ```
+
+**Affected components:** Cell
