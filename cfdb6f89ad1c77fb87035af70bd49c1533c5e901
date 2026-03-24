@@ -1,0 +1,27 @@
+docs/golden-path/plugins/frontend/002-poking-around.md
+  3c9d63a9ed5e107a 8
+docs/golden-path/plugins/frontend/003-dynamic-config.md
+  3c9d63a9ed5e107a 8,14,61
+docs/golden-path/plugins/frontend/001-first-steps.md
+  3c9d63a9ed5e107a 37,60-61
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.17",
+  "base_commit_sha": "cfdb6f89ad1c77fb87035af70bd49c1533c5e901",
+  "prompts": {
+    "3c9d63a9ed5e107a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "517b625b-3854-4b50-beb0-45eb4fe24c0d",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "aramissennyeydd <aramis.sennyey@doordash.com>",
+      "messages": [],
+      "total_additions": 12,
+      "total_deletions": 8,
+      "accepted_lines": 7,
+      "overriden_lines": 1
+    }
+  }
+}
