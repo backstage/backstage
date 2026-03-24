@@ -467,6 +467,19 @@ export class DatabaseTaskStore implements TaskStore {
     return { tasks };
   }
 
+  async listStaleWaitingTasks(options: { timeoutS: number }): Promise<{
+    tasks: { taskId: string }[];
+  }> {
+    const { timeoutS } = options;
+    const cutoff = intervalFromNowTill(timeoutS, this.db);
+    const rawRows = await this.db<RawDbTaskRow>('tasks')
+      .where('status', 'waiting')
+      .andWhere('last_heartbeat_at', '<=', cutoff);
+    return {
+      tasks: rawRows.map(row => ({ taskId: row.id })),
+    };
+  }
+
   async completeTask(options: {
     taskId: string;
     status: TaskStatus;

@@ -23,7 +23,7 @@ exports.up = async function up(knex) {
   await knex.schema.createTable('task_approvals', table => {
     table.text('id').primary().notNullable();
     table
-      .text('task_id')
+      .uuid('task_id')
       .notNullable()
       .references('id')
       .inTable('tasks')

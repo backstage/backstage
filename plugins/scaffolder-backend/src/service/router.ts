@@ -355,6 +355,44 @@ export async function createRouter(
         },
       });
     }
+    const approvalTimeoutMinutes = config.getOptionalNumber(
+      'scaffolder.approvalTimeoutMinutes',
+    );
+
+    if (scheduler && approvalTimeoutMinutes) {
+      await scheduler.scheduleTask({
+        id: 'close_stale_waiting_tasks',
+        frequency: { minutes: 5 },
+        timeout: { minutes: 15 },
+        fn: async () => {
+          const { tasks } = await databaseTaskStore.listStaleWaitingTasks({
+            timeoutS: approvalTimeoutMinutes * 60,
+          });
+
+          for (const task of tasks) {
+            try {
+              await databaseTaskStore.setTaskStatus({
+                taskId: task.taskId,
+                status: 'failed',
+                oldStatus: 'waiting',
+              });
+              await databaseTaskStore.emitLogEvent({
+                taskId: task.taskId,
+                body: {
+                  message: 'Task failed because the approval timed out',
+                  status: 'failed',
+                },
+              });
+              logger.info(`Timed out waiting task ${task.taskId}`);
+            } catch (error) {
+              logger.warn(
+                `Failed to timeout waiting task '${task.taskId}', ${error}`,
+              );
+            }
+          }
+        },
+      });
+    }
   } else {
     taskBroker = options.taskBroker;
   }

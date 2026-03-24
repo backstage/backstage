@@ -342,7 +342,8 @@ export type ScaffolderTaskStatus =
   | 'failed'
   | 'open'
   | 'processing'
-  | 'skipped';
+  | 'skipped'
+  | 'waiting';
 
 // @public
 export type ScaffolderUsageExample = {
@@ -384,6 +385,9 @@ export interface TaskSpecV1beta3 {
 // @public
 export interface TaskStep {
   action: string;
+  approval?: {
+    approvers: string[];
+  };
   each?: string | JsonArray;
   id: string;
   if?: string | boolean;

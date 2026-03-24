@@ -43,6 +43,9 @@ export const scaffolderTaskPermissions: (
 export const scaffolderTemplatePermissions: ResourcePermission<'scaffolder-template'>[];
 
 // @alpha
+export const taskApprovePermission: ResourcePermission<'scaffolder-task'>;
+
+// @alpha
 export const taskCancelPermission: ResourcePermission<'scaffolder-task'>;
 
 // @alpha

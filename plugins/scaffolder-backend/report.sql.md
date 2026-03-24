@@ -6,6 +6,23 @@
 
 - `task_events_id_seq` (bigint)
 
+## Table `task_approvals`
+
+| Column        | Type                       | Nullable | Max Length | Default             |
+| ------------- | -------------------------- | -------- | ---------- | ------------------- |
+| `approved_by` | `text`                     | true     | -          | -                   |
+| `approvers`   | `text`                     | false    | -          | -                   |
+| `created_at`  | `timestamp with time zone` | false    | -          | `CURRENT_TIMESTAMP` |
+| `id`          | `text`                     | false    | -          | -                   |
+| `resolved_at` | `timestamp with time zone` | true     | -          | -                   |
+| `status`      | `text`                     | false    | -          | `'pending'::text`   |
+| `step_id`     | `text`                     | false    | -          | -                   |
+| `task_id`     | `uuid`                     | false    | -          | -                   |
+
+### Indices
+
+- `task_approvals_pkey` (`id`) unique primary
+
 ## Table `task_events`
 
 | Column       | Type                       | Nullable | Max Length | Default                                   |
