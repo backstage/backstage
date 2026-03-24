@@ -35,8 +35,26 @@
   .bui-SelectTrigger {
     box-sizing: border-box;
     border-radius: var(--bui-radius-3);
-    border: 1px solid var(--bui-border-2);
+    border: none;
+    outline: none;
     background-color: var(--bui-bg-neutral-1);
+    transition: box-shadow 0.2s ease-in-out;
+
+    &[data-on-bg='neutral-1'] {
+      background-color: var(--bui-bg-neutral-2);
+    }
+
+    &[data-on-bg='neutral-2'] {
+      background-color: var(--bui-bg-neutral-3);
+    }
+
+    &[data-on-bg='neutral-3'] {
+      background-color: var(--bui-bg-neutral-4);
+    }
+
+    .bui-Select[data-focused] & {
+      box-shadow: inset 0 0 0 1px var(--bui-ring);
+    }
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -73,12 +91,7 @@
     }
 
     .bui-Select[data-invalid] & {
-      border-color: var(--bui-fg-danger);
-
-      &:focus-visible,
-      &:hover {
-        outline: 1px solid var(--bui-fg-danger);
-      }
+      box-shadow: inset 0 0 0 1px var(--bui-border-danger);
     }
 
     &[disabled] {
@@ -116,18 +129,24 @@
     }
   }
 
-  .bui-SelectList:focus-visible {
-    /* Remove default focus-visible outline because React Aria
-     * triggers it on mouse click open of the list for some reason.
-     * On keyboard use, the top item receives the focus style,
-     * so it's not needed anyway. */
-    outline: none;
+  .bui-SelectList {
+    overflow: auto;
+    min-height: 0;
+    padding-block: var(--bui-space-1);
+    padding-inline: var(--bui-space-1);
+
+    &[data-focus-visible] {
+      /* Remove default focus-visible outline because React Aria
+       * triggers it on mouse click open of the list for some reason.
+       * On keyboard use, the top item receives the focus style,
+       * so it's not needed anyway. */
+      outline: none;
+    }
   }
 
   .bui-SelectItem {
     box-sizing: border-box;
     position: relative;
-    width: var(--anchor-width);
     display: grid;
     grid-template-areas: 'icon text';
     grid-template-columns: 1rem 1fr;
@@ -142,20 +161,10 @@
     font-size: var(--bui-font-size-3);
     gap: var(--bui-space-2);
     outline: none;
+    border-radius: var(--bui-radius-2);
 
-    &[data-focus-visible] {
-      outline: 2px solid var(--bui-ring);
-      outline-offset: 2px;
-    }
-
-    &[data-focused]::before {
-      content: '';
-      position: absolute;
-      inset-block: 0;
-      inset-inline: var(--bui-space-1);
-      border-radius: var(--bui-radius-2);
-      background: var(--bui-bg-neutral-2);
-      z-index: -1;
+    &[data-focused] {
+      background-color: var(--bui-bg-neutral-2);
     }
 
     &[data-disabled] {

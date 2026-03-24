@@ -23,9 +23,26 @@ import {
   createExtensionBlueprint,
   createExtensionInput,
 } from '../wiring';
-import { ExtensionBoundary, PageLayout, PageTab } from '../components';
+import { ExtensionBoundary, PageLayout, PageLayoutTab } from '../components';
 import { useApi } from '../apis/system';
+import { routeResolutionApiRef } from '../apis/definitions/RouteResolutionApi';
 import { pluginHeaderActionsApiRef } from '../apis/definitions/PluginHeaderActionsApi';
+import { RouteResolutionApi } from '../apis/definitions/RouteResolutionApi';
+
+function resolveTitleLink(
+  routeResolutionApi: RouteResolutionApi,
+  routeRef: RouteRef | undefined,
+): string | undefined {
+  if (!routeRef) {
+    return undefined;
+  }
+  try {
+    return routeResolutionApi.resolve(routeRef)?.();
+  } catch {
+    // Route ref may require params not available in the current context
+    return undefined;
+  }
+}
 
 /**
  * Creates extensions that are routable React page components.
@@ -59,10 +76,6 @@ export const PageBlueprint = createExtensionBlueprint({
   },
   *factory(
     params: {
-      /**
-       * @deprecated Use the `path` param instead.
-       */
-      defaultPath?: [Error: `Use the 'path' param instead`];
       path: string;
       title?: string;
       icon?: IconElement;
@@ -79,19 +92,27 @@ export const PageBlueprint = createExtensionBlueprint({
     const icon = params.icon;
     const pluginId = node.spec.plugin.pluginId;
     const noHeader = params.noHeader ?? false;
+    const resolvedTitle =
+      title ?? node.spec.plugin.title ?? node.spec.plugin.pluginId;
+    const resolvedIcon = icon ?? node.spec.plugin.icon;
+    const titleRouteRef =
+      (node.spec.plugin.routes as { root?: RouteRef }).root ?? params.routeRef;
 
     yield coreExtensionData.routePath(config.path ?? params.path);
     if (params.loader) {
       const loader = params.loader;
       const PageContent = () => {
+        const routeResolutionApi = useApi(routeResolutionApiRef);
+        const titleLink = resolveTitleLink(routeResolutionApi, titleRouteRef);
         const headerActionsApi = useApi(pluginHeaderActionsApiRef);
         const headerActions = headerActionsApi.getPluginHeaderActions(pluginId);
 
         return (
           <PageLayout
-            title={title ?? node.spec.plugin.title ?? node.spec.plugin.pluginId}
-            icon={icon ?? node.spec.plugin.icon}
+            title={resolvedTitle}
+            icon={resolvedIcon}
             noHeader={noHeader}
+            titleLink={titleLink}
             headerActions={headerActions}
           >
             {ExtensionBoundary.lazy(node, loader)}
@@ -101,7 +122,7 @@ export const PageBlueprint = createExtensionBlueprint({
       yield coreExtensionData.reactElement(<PageContent />);
     } else if (inputs.pages.length > 0) {
       // Parent page with sub-pages - render header with tabs
-      const tabs: PageTab[] = inputs.pages.map(page => {
+      const tabs: PageLayoutTab[] = inputs.pages.map(page => {
         const path = page.get(coreExtensionData.routePath);
         const tabTitle = page.get(coreExtensionData.title);
         const tabIcon = page.get(coreExtensionData.icon);
@@ -115,15 +136,18 @@ export const PageBlueprint = createExtensionBlueprint({
 
       const PageContent = () => {
         const firstPagePath = inputs.pages[0]?.get(coreExtensionData.routePath);
+        const routeResolutionApi = useApi(routeResolutionApiRef);
+        const titleLink = resolveTitleLink(routeResolutionApi, titleRouteRef);
 
         const headerActionsApi = useApi(pluginHeaderActionsApiRef);
         const headerActions = headerActionsApi.getPluginHeaderActions(pluginId);
 
         return (
           <PageLayout
-            title={title}
-            icon={icon}
+            title={resolvedTitle}
+            icon={resolvedIcon}
             tabs={tabs}
+            titleLink={titleLink}
             headerActions={headerActions}
           >
             <Routes>
@@ -148,10 +172,17 @@ export const PageBlueprint = createExtensionBlueprint({
       yield coreExtensionData.reactElement(<PageContent />);
     } else {
       const PageContent = () => {
+        const routeResolutionApi = useApi(routeResolutionApiRef);
+        const titleLink = resolveTitleLink(routeResolutionApi, titleRouteRef);
         const headerActionsApi = useApi(pluginHeaderActionsApiRef);
         const headerActions = headerActionsApi.getPluginHeaderActions(pluginId);
         return (
-          <PageLayout title={title} icon={icon} headerActions={headerActions} />
+          <PageLayout
+            title={resolvedTitle}
+            icon={resolvedIcon}
+            titleLink={titleLink}
+            headerActions={headerActions}
+          />
         );
       };
       yield coreExtensionData.reactElement(<PageContent />);

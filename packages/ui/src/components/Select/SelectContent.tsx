@@ -22,11 +22,9 @@ import {
 } from 'react-aria-components';
 import { useFilter } from 'react-aria';
 import { RiCloseCircleLine } from '@remixicon/react';
-import clsx from 'clsx';
-import { useStyles } from '../../hooks/useStyles';
-import { SelectDefinition } from './definition';
+import { useDefinition } from '../../hooks/useDefinition';
+import { SelectContentDefinition } from './definition';
 import { SelectListBox } from './SelectListBox';
-import styles from './Select.module.css';
 import type { Option } from './types';
 
 interface SelectContentProps {
@@ -35,13 +33,10 @@ interface SelectContentProps {
   options?: Array<Option>;
 }
 
-export function SelectContent({
-  searchable,
-  searchPlaceholder = 'Search...',
-  options,
-}: SelectContentProps) {
+export function SelectContent(props: SelectContentProps) {
   const { contains } = useFilter({ sensitivity: 'base' });
-  const { classNames } = useStyles(SelectDefinition);
+  const { ownProps } = useDefinition(SelectContentDefinition, props);
+  const { classes, searchable, searchPlaceholder, options } = ownProps;
 
   if (!searchable) {
     return <SelectListBox options={options} />;
@@ -51,22 +46,11 @@ export function SelectContent({
     <Autocomplete filter={contains}>
       <SearchField
         autoFocus
-        className={clsx(
-          classNames.searchWrapper,
-          styles[classNames.searchWrapper],
-        )}
+        className={classes.root}
         aria-label={searchPlaceholder}
       >
-        <Input
-          placeholder={searchPlaceholder}
-          className={clsx(classNames.search, styles[classNames.search])}
-        />
-        <Button
-          className={clsx(
-            classNames.searchClear,
-            styles[classNames.searchClear],
-          )}
-        >
+        <Input placeholder={searchPlaceholder} className={classes.search} />
+        <Button className={classes.searchClear}>
           <RiCloseCircleLine />
         </Button>
       </SearchField>

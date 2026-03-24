@@ -15,20 +15,36 @@
  */
 
 import { InputError } from '@backstage/errors';
+import {
+  createZodV3FilterPredicateSchema,
+  FilterPredicate,
+} from '@backstage/filter-predicates';
 import { Request } from 'express';
-import { z } from 'zod';
+import { z } from 'zod/v3';
+import { fromZodError } from 'zod-validation-error/v3';
+
+const filterPredicateSchema = createZodV3FilterPredicateSchema(z);
 
 const schema = z.object({
   entityRefs: z.array(z.string()),
   fields: z.array(z.string()).optional(),
+  query: filterPredicateSchema.optional(),
 });
 
-export function entitiesBatchRequest(req: Request): z.infer<typeof schema> {
-  try {
-    return schema.parse(req.body);
-  } catch (error) {
+export interface ParsedEntitiesBatchRequest {
+  entityRefs: string[];
+  fields?: string[];
+  query?: FilterPredicate;
+}
+
+export function entitiesBatchRequest(req: Request): ParsedEntitiesBatchRequest {
+  const result = schema.safeParse(req.body);
+  if (!result.success) {
     throw new InputError(
-      `Malformed request body (did you remember to specify an application/json content type?), ${error.message}`,
+      `Malformed request body (did you remember to specify an application/json content type?), ${fromZodError(
+        result.error,
+      )}`,
     );
   }
+  return result.data;
 }

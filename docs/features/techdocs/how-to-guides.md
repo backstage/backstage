@@ -852,9 +852,9 @@ and publish the documentation for them. If the value of the `company.com/techdoc
 annotation is anything other than `'local'`, the user is responsible for publishing
 documentation to the appropriate location in the TechDocs external storage.
 
-### Hybrid build strategy using the New Backend System
+### Hybrid build strategy using the Backend System
 
-To setup a hybrid build strategy using the New Backend System you'll follow the same steps as above but for Step 4 you will need to do the following:
+To setup a hybrid build strategy using the Backend System you'll follow the same steps as above but for Step 4 you will need to do the following:
 
 ```ts title="packages/backend/src/index.ts"
 const backend = createBackend();

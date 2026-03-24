@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { JsonValue } from '@backstage/types';
-import { z } from 'zod';
+import { z } from 'zod/v3';
 import { ZodFunctionSchema } from '../types';
 
 export type { TemplateGlobal } from '../../types';

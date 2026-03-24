@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +26,5 @@ export interface Event {
    * The topic that the event is published on
    */
   topic: string;
-  /**
-   * The event payload
-   */
   payload: any | null;
 }

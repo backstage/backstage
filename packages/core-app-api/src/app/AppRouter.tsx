@@ -23,7 +23,9 @@ import {
   SignInPageProps,
   useApi,
   useApp,
+  useAnalytics,
 } from '@backstage/core-plugin-api';
+import { BUIProvider } from '@backstage/ui';
 import { InternalAppContext } from './InternalAppContext';
 import { isReactRouterBeta } from './isReactRouterBeta';
 import { RouteTracker } from '../routing/RouteTracker';
@@ -143,18 +145,22 @@ export function AppRouter(props: AppRouterProps) {
     if (isReactRouterBeta()) {
       return (
         <RouterComponent>
-          <RouteTracker routeObjects={routeObjects} />
-          <Routes>
-            <Route path={mountPath} element={<>{props.children}</>} />
-          </Routes>
+          <BUIProvider useAnalytics={useAnalytics}>
+            <RouteTracker routeObjects={routeObjects} />
+            <Routes>
+              <Route path={mountPath} element={<>{props.children}</>} />
+            </Routes>
+          </BUIProvider>
         </RouterComponent>
       );
     }
 
     return (
       <RouterComponent basename={basePath}>
-        <RouteTracker routeObjects={routeObjects} />
-        {props.children}
+        <BUIProvider useAnalytics={useAnalytics}>
+          <RouteTracker routeObjects={routeObjects} />
+          {props.children}
+        </BUIProvider>
       </RouterComponent>
     );
   }
@@ -162,28 +168,32 @@ export function AppRouter(props: AppRouterProps) {
   if (isReactRouterBeta()) {
     return (
       <RouterComponent>
-        <RouteTracker routeObjects={routeObjects} />
-        <SignInPageWrapper
-          component={SignInPageComponent}
-          appIdentityProxy={appIdentityProxy}
-        >
-          <Routes>
-            <Route path={mountPath} element={<>{props.children}</>} />
-          </Routes>
-        </SignInPageWrapper>
+        <BUIProvider useAnalytics={useAnalytics}>
+          <RouteTracker routeObjects={routeObjects} />
+          <SignInPageWrapper
+            component={SignInPageComponent}
+            appIdentityProxy={appIdentityProxy}
+          >
+            <Routes>
+              <Route path={mountPath} element={<>{props.children}</>} />
+            </Routes>
+          </SignInPageWrapper>
+        </BUIProvider>
       </RouterComponent>
     );
   }
 
   return (
     <RouterComponent basename={basePath}>
-      <RouteTracker routeObjects={routeObjects} />
-      <SignInPageWrapper
-        component={SignInPageComponent}
-        appIdentityProxy={appIdentityProxy}
-      >
-        {props.children}
-      </SignInPageWrapper>
+      <BUIProvider useAnalytics={useAnalytics}>
+        <RouteTracker routeObjects={routeObjects} />
+        <SignInPageWrapper
+          component={SignInPageComponent}
+          appIdentityProxy={appIdentityProxy}
+        >
+          {props.children}
+        </SignInPageWrapper>
+      </BUIProvider>
     </RouterComponent>
   );
 }

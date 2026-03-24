@@ -37,6 +37,9 @@ const scaffolderApiMock: jest.Mocked<ScaffolderApi> = {
   listActions: jest.fn(),
   listTasks: jest.fn(),
   autocomplete: jest.fn(),
+  retry: jest.fn(),
+  listTemplatingExtensions: jest.fn(),
+  dryRun: jest.fn(),
 };
 
 const catalogApi = catalogApiMock.mock();

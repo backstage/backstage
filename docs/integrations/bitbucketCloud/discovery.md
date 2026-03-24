@@ -39,9 +39,9 @@ package.
 yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-bitbucket-cloud
 ```
 
-### Installation with New Backend System
+Then add the following to your backend:
 
-```ts
+```ts title="packages/backend/src/index.ts"
 // optional if you want HTTP endpoints to receive external events
 // backend.add(import('@backstage/plugin-events-backend'));
 // optional if you want to use AWS SQS instead of HTTP endpoints to receive external events
@@ -62,59 +62,6 @@ Further documentation:
 - <https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md>
 - <https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-aws-sqs/README.md>
 - <https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-bitbucket-cloud/README.md>
-
-### Installation with Legacy Backend System
-
-Please follow the installation instructions at
-
-- <https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md>
-- <https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-bitbucket-cloud/README.md>
-
-Additionally, you need to decide how you want to receive events from external sources like
-
-- [via HTTP endpoint](https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md)
-- [via an AWS SQS queue](https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-aws-sqs/README.md)
-- [via Google Pub/Sub](https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-google-pubsub/README.md)
-- [via a Kafka topic](https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-kafka/README.md)
-
-Set up your provider
-
-```ts title="packages/backend/src/plugins/catalog.ts"
-import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
-/* highlight-add-start */
-import { BitbucketCloudEntityProvider } from '@backstage/plugin-catalog-backend-module-bitbucket-cloud';
-/* highlight-add-end */
-
-import { ScaffolderEntitiesProcessor } from '@backstage/plugin-scaffolder-backend';
-import { Router } from 'express';
-import { PluginEnvironment } from '../types';
-
-export default async function createPlugin(
-  env: PluginEnvironment,
-): Promise<Router> {
-  const builder = await CatalogBuilder.create(env);
-  /* highlight-add-start */
-  const bitbucketCloudProvider = BitbucketCloudEntityProvider.fromConfig(
-    env.config,
-    {
-      auth: env.auth,
-      catalogApi: new CatalogClient({ discoveryApi: env.discovery }),
-      events: env.events,
-      logger: env.logger,
-      scheduler: env.scheduler,
-    },
-  );
-  builder.addEntityProvider(bitbucketCloudProvider);
-  /* highlight-add-end */
-  const { processingEngine, router } = await builder.build();
-  await processingEngine.start();
-  return router;
-}
-```
-
-**Attention:**
-`catalogApi` and `tokenManager` are required at this variant
-compared to the one without events support.
 
 ## Configuration
 

@@ -15,28 +15,18 @@
  */
 
 import { forwardRef } from 'react';
-import {
-  FieldError as AriaFieldError,
-  type FieldErrorProps,
-} from 'react-aria-components';
-import clsx from 'clsx';
-import styles from './FieldError.module.css';
-import { useStyles } from '../../hooks/useStyles';
+import { FieldError as AriaFieldError } from 'react-aria-components';
+import type { FieldErrorProps } from './types';
+import { useDefinition } from '../../hooks/useDefinition';
 import { FieldErrorDefinition } from './definition';
 
 /** @public */
 export const FieldError = forwardRef<HTMLDivElement, FieldErrorProps>(
   (props: FieldErrorProps, ref) => {
-    const { classNames, cleanedProps } = useStyles(FieldErrorDefinition, props);
-    const { className, ...rest } = cleanedProps;
+    const { ownProps, restProps } = useDefinition(FieldErrorDefinition, props);
+    const { classes } = ownProps;
 
-    return (
-      <AriaFieldError
-        className={clsx(classNames.root, styles[classNames.root], className)}
-        ref={ref}
-        {...rest}
-      />
-    );
+    return <AriaFieldError className={classes.root} ref={ref} {...restProps} />;
   },
 );
 

@@ -2,6 +2,7 @@
 id: poking-around
 sidebar_label: 002 - Poking around
 title: 002 - Poking around
+description: Exploring the default backend plugin structure and functionality
 ---
 
 ## Default plugin functionality

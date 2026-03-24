@@ -19,6 +19,7 @@ import type { StoryFn } from '@storybook/react-vite';
 import { ButtonLink } from './ButtonLink';
 import { Flex } from '../Flex';
 import { MemoryRouter } from 'react-router-dom';
+import { BUIProvider } from '../../provider';
 import { RiArrowRightSLine, RiCloudLine } from '@remixicon/react';
 
 const meta = preview.meta({
@@ -27,7 +28,9 @@ const meta = preview.meta({
   decorators: [
     (Story: StoryFn) => (
       <MemoryRouter>
-        <Story />
+        <BUIProvider>
+          <Story />
+        </BUIProvider>
       </MemoryRouter>
     ),
   ],

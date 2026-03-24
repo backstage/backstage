@@ -206,6 +206,68 @@ describe('MockSchedulerService', () => {
     await expect(isDone()).resolves.toBe(true);
   });
 
+  it('should cancel a running task and allow re-triggering with a fresh signal', async () => {
+    const scheduler = new MockSchedulerService();
+    const signals: AbortSignal[] = [];
+
+    scheduler.scheduleTask({
+      ...baseOpts,
+      id: 'test',
+      fn: async signal => {
+        signals.push(signal);
+        // Simulate long-running work that respects cancellation
+        await new Promise<void>((resolve, reject) => {
+          if (signal.aborted) {
+            reject(new Error('aborted'));
+            return;
+          }
+          signal.addEventListener('abort', () => reject(new Error('aborted')));
+          setTimeout(1).then(resolve);
+        });
+      },
+    });
+
+    // First run completes normally
+    await scheduler.triggerTask('test');
+    expect(signals).toHaveLength(1);
+    expect(signals[0].aborted).toBe(false);
+
+    // Start a task that will block until cancelled
+    const blockingScheduler = new MockSchedulerService();
+    let resolveBlock: (() => void) | undefined;
+    blockingScheduler.scheduleTask({
+      ...baseOpts,
+      id: 'blocking',
+      fn: async signal => {
+        signals.push(signal);
+        await new Promise<void>((resolve, reject) => {
+          signal.addEventListener('abort', () => reject(new Error('aborted')));
+          resolveBlock = resolve;
+        });
+      },
+    });
+
+    const triggerPromise = blockingScheduler.triggerTask('blocking');
+    // Give the task fn time to start
+    await setTimeout(1);
+
+    await blockingScheduler.cancelTask('blocking');
+    await triggerPromise.catch(() => {});
+
+    expect(signals).toHaveLength(2);
+    expect(signals[1].aborted).toBe(true);
+
+    // Re-trigger should get a fresh non-aborted signal
+    resolveBlock = undefined;
+    const triggerPromise2 = blockingScheduler.triggerTask('blocking');
+    await setTimeout(1);
+    resolveBlock!();
+    await triggerPromise2;
+
+    expect(signals).toHaveLength(3);
+    expect(signals[2].aborted).toBe(false);
+  });
+
   it('should abort tasks when shutting down', async () => {
     let taskSignal: AbortSignal | undefined;
 

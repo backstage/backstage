@@ -71,4 +71,21 @@ export const examples: TemplateExample[] = [
       ],
     }),
   },
+  {
+    description: 'GitHub Action Workflow returning run details',
+    example: yaml.stringify({
+      steps: [
+        {
+          action: 'github:actions:dispatch',
+          name: 'Dispatch GitHub Action Workflow and get run ID',
+          input: {
+            repoUrl: 'github.com?repo=repo&owner=owner',
+            workflowId: 'WORKFLOW_ID',
+            branchOrTagName: 'main',
+            returnWorkflowRunDetails: true,
+          },
+        },
+      ],
+    }),
+  },
 ];

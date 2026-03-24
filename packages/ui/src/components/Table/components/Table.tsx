@@ -15,7 +15,14 @@
  */
 
 import { useId } from 'react-aria';
-import { type Key, ResizableTableContainer } from 'react-aria-components';
+import {
+  type Key,
+  ResizableTableContainer,
+  Virtualizer,
+} from 'react-aria-components';
+import { TableLayout } from '@react-stately/layout';
+import { useDefinition } from '../../../hooks/useDefinition';
+import { TableWrapperDefinition } from '../definition';
 import { TableRoot } from './TableRoot';
 import { TableHeader } from './TableHeader';
 import { TableBody } from './TableBody';
@@ -32,6 +39,7 @@ import type {
 import { useMemo } from 'react';
 import { VisuallyHidden } from '../../VisuallyHidden';
 import { Flex } from '../../Flex';
+import { TableBodySkeleton } from './TableBodySkeleton';
 
 function isRowRenderFn<T extends TableItem>(
   rowConfig: RowConfig<T> | RowRenderFn<T> | undefined,
@@ -61,8 +69,13 @@ function useDisabledRows<T extends TableItem>({
 function useLiveRegionLabel(
   pagination: TablePaginationType,
   isStale: boolean,
+  isLoading: boolean,
   hasData: boolean,
 ): string {
+  if (isLoading) {
+    return 'Loading table data.';
+  }
+
   if (!hasData || pagination.type === 'none') {
     return '';
   }
@@ -99,7 +112,11 @@ export function Table<T extends TableItem>({
   emptyState,
   className,
   style,
+  virtualized,
 }: TableProps<T>) {
+  const {
+    ownProps: { classes },
+  } = useDefinition(TableWrapperDefinition, { className });
   const liveRegionId = useId();
 
   const visibleColumns = useMemo(
@@ -115,17 +132,11 @@ export function Table<T extends TableItem>({
     onSelectionChange,
   } = selection || {};
 
-  if (loading && !data) {
-    return (
-      <div className={className} style={style}>
-        Loading...
-      </div>
-    );
-  }
+  const isInitialLoading = loading && !data;
 
   if (error) {
     return (
-      <div className={className} style={style}>
+      <div className={classes.root} style={style}>
         Error: {error.message}
       </div>
     );
@@ -134,6 +145,7 @@ export function Table<T extends TableItem>({
   const liveRegionLabel = useLiveRegionLabel(
     pagination,
     isStale,
+    isInitialLoading,
     data !== undefined,
   );
 
@@ -147,80 +159,105 @@ export function Table<T extends TableItem>({
 
   const wrapResizable = manualColumnSizing
     ? (elem: React.ReactNode) => (
-        <ResizableTableContainer>{elem}</ResizableTableContainer>
+        <ResizableTableContainer className={classes.resizableContainer}>
+          {elem}
+        </ResizableTableContainer>
       )
     : (elem: React.ReactNode) => <>{elem}</>;
 
+  const layoutOptions =
+    typeof virtualized === 'object' ? virtualized : undefined;
+
+  const wrapVirtualized = (elem: React.ReactNode) =>
+    virtualized ? (
+      <Virtualizer layout={TableLayout} layoutOptions={layoutOptions}>
+        {elem}
+      </Virtualizer>
+    ) : (
+      elem
+    );
+
   return (
-    <div className={className} style={style}>
+    <div className={classes.root} style={style}>
       <VisuallyHidden aria-live="polite" id={liveRegionId}>
         {liveRegionLabel}
       </VisuallyHidden>
       {wrapResizable(
-        <TableRoot
-          selectionMode={selectionMode}
-          selectionBehavior={selectionBehavior}
-          selectedKeys={selectedKeys}
-          onSelectionChange={onSelectionChange}
-          sortDescriptor={sort?.descriptor ?? undefined}
-          onSortChange={sort?.onSortChange}
-          disabledKeys={disabledRows}
-          stale={isStale}
-          aria-describedby={liveRegionId}
-        >
-          <TableHeader columns={visibleColumns}>
-            {column =>
-              column.header ? (
-                column.header()
-              ) : (
-                <Column
-                  id={column.id}
-                  isRowHeader={column.isRowHeader}
-                  allowsSorting={column.isSortable}
-                  width={column.width}
-                  defaultWidth={column.defaultWidth}
-                  minWidth={column.minWidth}
-                  maxWidth={column.maxWidth}
-                >
-                  {column.label}
-                </Column>
-              )
-            }
-          </TableHeader>
-          <TableBody
-            items={data}
-            dependencies={[visibleColumns]}
-            renderEmptyState={
-              emptyState ? () => <Flex p="3">{emptyState}</Flex> : undefined
-            }
+        wrapVirtualized(
+          <TableRoot
+            {...(isInitialLoading
+              ? {}
+              : {
+                  selectionMode,
+                  selectionBehavior,
+                  selectedKeys,
+                  onSelectionChange,
+                })}
+            sortDescriptor={sort?.descriptor ?? undefined}
+            onSortChange={sort?.onSortChange}
+            disabledKeys={disabledRows}
+            stale={isStale}
+            loading={isInitialLoading}
+            aria-describedby={liveRegionId}
           >
-            {item => {
-              const itemIndex = data?.indexOf(item) ?? -1;
-
-              if (isRowRenderFn(rowConfig)) {
-                return rowConfig({
-                  item,
-                  index: itemIndex,
-                });
+            <TableHeader columns={visibleColumns}>
+              {column =>
+                column.header ? (
+                  column.header()
+                ) : (
+                  <Column
+                    id={column.id}
+                    isRowHeader={column.isRowHeader}
+                    allowsSorting={column.isSortable}
+                    width={column.width}
+                    defaultWidth={column.defaultWidth}
+                    minWidth={column.minWidth}
+                    maxWidth={column.maxWidth}
+                  >
+                    {column.label}
+                  </Column>
+                )
               }
+            </TableHeader>
+            {isInitialLoading ? (
+              <TableBodySkeleton columns={visibleColumns} />
+            ) : (
+              <TableBody
+                items={data}
+                dependencies={[visibleColumns]}
+                renderEmptyState={
+                  emptyState ? () => <Flex p="3">{emptyState}</Flex> : undefined
+                }
+              >
+                {item => {
+                  const itemIndex = data?.indexOf(item) ?? -1;
 
-              return (
-                <Row
-                  id={String(item.id)}
-                  columns={visibleColumns}
-                  href={rowConfig?.getHref?.(item)}
-                  onAction={
-                    rowConfig?.onClick
-                      ? () => rowConfig?.onClick?.(item)
-                      : undefined
+                  if (isRowRenderFn(rowConfig)) {
+                    return rowConfig({
+                      item,
+                      index: itemIndex,
+                    });
                   }
-                >
-                  {column => column.cell(item)}
-                </Row>
-              );
-            }}
-          </TableBody>
-        </TableRoot>,
+
+                  return (
+                    <Row
+                      id={String(item.id)}
+                      columns={visibleColumns}
+                      href={rowConfig?.getHref?.(item)}
+                      onAction={
+                        rowConfig?.onClick
+                          ? () => rowConfig?.onClick?.(item)
+                          : undefined
+                      }
+                    >
+                      {column => column.cell(item)}
+                    </Row>
+                  );
+                }}
+              </TableBody>
+            )}
+          </TableRoot>,
+        ),
       )}
       {pagination.type === 'page' && (
         <TablePagination

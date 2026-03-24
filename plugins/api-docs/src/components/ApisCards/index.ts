@@ -15,5 +15,14 @@
  */
 
 export { ConsumedApisCard } from './ConsumedApisCard';
+export type {
+  ConsumedApisCardLegacyProps,
+  ConsumedApisCardProps,
+} from './ConsumedApisCard';
 export { HasApisCard } from './HasApisCard';
+export type { HasApisCardLegacyProps, HasApisCardProps } from './HasApisCard';
 export { ProvidedApisCard } from './ProvidedApisCard';
+export type {
+  ProvidedApisCardLegacyProps,
+  ProvidedApisCardProps,
+} from './ProvidedApisCard';

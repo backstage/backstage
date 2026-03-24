@@ -4,6 +4,12 @@ title: Composability System
 description: Documentation for the Backstage plugin composability APIs.
 ---
 
+:::caution Legacy Documentation
+
+This page describes the composability system for the **old frontend system**, including `createRoutableExtension`, `createComponentExtension`, `RouteRef`, `ExternalRouteRef`, and component data. For the new frontend system, see [Extensions](../frontend-system/architecture/20-extensions.md), [Extension Blueprints](../frontend-system/architecture/23-extension-blueprints.md), and [Routes](../frontend-system/architecture/36-routes.md).
+
+:::
+
 ## Summary
 
 This page describes the composability system that helps bring together content

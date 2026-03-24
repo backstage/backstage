@@ -1,4 +1,7 @@
-# Running the backend behind a Corporate Proxy
+# Legacy: Running the backend behind a Corporate Proxy
+
+> [!NOTE]
+> On Node.js 22.21.0 or later, you can use Node.js's built-in proxy support instead of the workarounds described here. See the [recommended proxy setup guide](../../../docs/tutorials/corporate-proxy.md) for details.
 
 This article helps you get your backend installation up and running making calls through corporate proxies.
 

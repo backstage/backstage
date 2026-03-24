@@ -5,13 +5,6 @@ sidebar_label: Bitbucket Server
 description: Adding Bitbucket Server OAuth as an authentication provider in Backstage
 ---
 
-:::info
-This documentation is written for [the new backend system](../../backend-system/index.md) which is the default since Backstage
-[version 1.24](../../releases/v1.24.0.md). If you are still on the old backend
-system, you may want to read [its own article](https://github.com/backstage/backstage/blob/v1.37.0/docs/auth/bitbucketServer/provider--old.md)
-instead, and [consider migrating](../../backend-system/building-backends/08-migrating.md)!
-:::
-
 The Backstage `core-plugin-api` package comes with a Bitbucket Server authentication provider that can authenticate
 users using Bitbucket Server. This does **NOT** work with Bitbucket Cloud.
 

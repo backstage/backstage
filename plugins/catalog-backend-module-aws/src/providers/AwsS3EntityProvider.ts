@@ -179,7 +179,7 @@ export class AwsS3EntityProvider implements EntityProvider {
       {
         Bucket: bucketName,
       },
-      ListObjectsV2Command,
+      ListObjectsV2Command as any,
       this.s3.config as unknown as Record<string, unknown>,
     );
     if (endpoint?.url)

@@ -16,4 +16,4 @@
 
 export { FullPage } from './FullPage';
 export { FullPageDefinition } from './definition';
-export type { FullPageProps } from './types';
+export type { FullPageOwnProps, FullPageProps } from './types';

@@ -2,6 +2,7 @@
 id: setting-up-a-poc
 sidebar_label: 003 - Setting up a PoC
 title: Setting up a PoC
+description: How to set up a proof of concept Backstage instance for your organization
 ---
 
 If you're non-technical, this section should be completed by your technical partner.

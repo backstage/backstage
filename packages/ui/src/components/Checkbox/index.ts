@@ -15,4 +15,4 @@
  */
 export { Checkbox } from './Checkbox';
 export { CheckboxDefinition } from './definition';
-export type { CheckboxProps } from './types';
+export type { CheckboxOwnProps, CheckboxProps } from './types';

@@ -34,6 +34,7 @@ import {
   useEntityList,
   useStarredEntities,
 } from '@backstage/plugin-catalog-react';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Typography from '@material-ui/core/Typography';
 import { visuallyHidden } from '@mui/utils';
 import Edit from '@material-ui/icons/Edit';
@@ -107,6 +108,14 @@ export const CatalogTable = (props: CatalogTableProps) => {
     totalItems,
     paginationMode,
   } = entityListContext;
+
+  // For non-paginated tables, only show the full loading indicator when
+  // there's no data yet (initial load). During filter changes we keep stale
+  // data visible and let the new results swap in seamlessly. For paginated
+  // tables we always show loading, since stale data from a different page
+  // would be misleading.
+  const isLoading =
+    paginationMode === 'none' ? loading && entities.length === 0 : loading;
 
   const tableColumns = useMemo(
     () =>
@@ -189,17 +198,28 @@ export const CatalogTable = (props: CatalogTableProps) => {
   const titlePreamble = capitalize(
     filters.user?.value ?? t('catalogTable.allFilters'),
   );
-  const title =
+  const titleText =
     props.title ||
     [titlePreamble, currentType, pluralize(currentKind), currentCount]
       .filter(s => s)
       .join(' ');
+  const title =
+    loading && !isLoading ? (
+      <span
+        style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5em' }}
+      >
+        {titleText}
+        <CircularProgress size="0.8em" data-testid="loading-indicator" />
+      </span>
+    ) : (
+      titleText
+    );
 
   const actions = props.actions || defaultActions;
   const options: TableProps['options'] = {
     actionsColumnIndex: -1,
     loadingType: 'linear' as const,
-    showEmptyDataSourceMessage: !loading,
+    showEmptyDataSourceMessage: !isLoading,
     padding: 'dense' as const,
     ...tableOptions,
   };
@@ -209,7 +229,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
       <CursorPaginatedCatalogTable
         columns={tableColumns}
         emptyContent={emptyContent}
-        isLoading={loading}
+        isLoading={isLoading}
         title={title}
         actions={actions}
         subtitle={subtitle}
@@ -224,7 +244,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
       <OffsetPaginatedCatalogTable
         columns={tableColumns}
         emptyContent={emptyContent}
-        isLoading={loading}
+        isLoading={isLoading}
         title={title}
         actions={actions}
         subtitle={subtitle}
@@ -240,7 +260,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
 
   return (
     <Table<CatalogTableRow>
-      isLoading={loading}
+      isLoading={isLoading}
       columns={tableColumns}
       options={{
         paging: showPagination,

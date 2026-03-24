@@ -72,11 +72,12 @@ export function useSelectedSubRoute(subRoutes: SubRoute[]): {
 type EntityTabsProps = {
   routes: SubRoute[];
   groupDefinitions: EntityContentGroupDefinitions;
+  defaultContentOrder?: 'title' | 'natural';
   showIcons?: boolean;
 };
 
 export function EntityTabs(props: EntityTabsProps) {
-  const { routes, groupDefinitions, showIcons } = props;
+  const { routes, groupDefinitions, defaultContentOrder, showIcons } = props;
 
   const { index, route, element } = useSelectedSubRoute(routes);
 
@@ -107,6 +108,7 @@ export function EntityTabs(props: EntityTabsProps) {
         selectedIndex={index}
         showIcons={showIcons}
         groupDefinitions={groupDefinitions}
+        defaultContentOrder={defaultContentOrder}
       />
       <EntityTabsPanel>
         <Helmet title={route?.title} />

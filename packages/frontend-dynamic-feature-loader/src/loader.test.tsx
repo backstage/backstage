@@ -165,7 +165,7 @@ describe('dynamicFrontendFeaturesLoader', () => {
       shareConfig: { singleton: true, requiredVersion: '*', eager: true },
     },
     {
-      name: '@mui/material/styles/',
+      name: '@mui/material/styles',
       version: '5.16.14',
       lib: async () => ({ default: {} }),
       shareConfig: { singleton: true, requiredVersion: '*', eager: true },

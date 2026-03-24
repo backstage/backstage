@@ -15,7 +15,7 @@
  */
 import { createTranslationRef } from '@backstage/core-plugin-api/alpha';
 
-/** @alpha */
+/** @public */
 export const scaffolderReactTranslationRef = createTranslationRef({
   id: 'scaffolder-react',
   messages: {

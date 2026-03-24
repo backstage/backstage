@@ -18,7 +18,7 @@ import {
   BackstageIdentityResponse,
   ProfileInfo,
 } from '@backstage/core-plugin-api';
-import { z } from 'zod';
+import { z } from 'zod/v3';
 
 /** @internal */
 export type SamlSession = {

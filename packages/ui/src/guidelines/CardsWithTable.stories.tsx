@@ -18,6 +18,7 @@
 
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { MemoryRouter } from 'react-router-dom';
+import { BUIProvider } from '../provider';
 import {
   Card,
   CardHeader,
@@ -32,7 +33,7 @@ import {
   useTable,
   type ColumnConfig,
   PluginHeader,
-  HeaderPage,
+  Header,
   Button,
 } from '..';
 
@@ -235,7 +236,7 @@ const CardsWithTableLayout = () => {
   return (
     <>
       <PluginHeader title="Plugin" />
-      <HeaderPage
+      <Header
         title="Page title"
         customActions={<Button>Custom action</Button>}
       />
@@ -265,7 +266,9 @@ const meta = {
   decorators: [
     (Story: () => JSX.Element) => (
       <MemoryRouter>
-        <Story />
+        <BUIProvider>
+          <Story />
+        </BUIProvider>
       </MemoryRouter>
     ),
   ],

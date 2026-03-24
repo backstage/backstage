@@ -20,7 +20,7 @@ import { join as joinPath, normalize as normalizePath } from 'node:path';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { TemplateActionOptions } from './createTemplateAction';
 import zodToJsonSchema from 'zod-to-json-schema';
-import { z } from 'zod';
+import { z } from 'zod/v3';
 import { Schema } from 'jsonschema';
 import { trim } from 'lodash';
 
@@ -84,10 +84,11 @@ export const parseRepoUrl = (
     ]),
   );
   switch (type) {
-    case 'bitbucket': {
-      if (host === 'www.bitbucket.org') {
-        checkRequiredParams(parsed, 'workspace');
-      }
+    case 'bitbucketCloud': {
+      checkRequiredParams(parsed, 'workspace', 'project', 'repo');
+      break;
+    }
+    case 'bitbucketServer': {
       checkRequiredParams(parsed, 'project', 'repo');
       break;
     }

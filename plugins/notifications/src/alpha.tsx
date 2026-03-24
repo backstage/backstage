@@ -30,7 +30,7 @@ const page = PageBlueprint.make({
     routeRef: rootRouteRef,
     loader: () =>
       import('./components/NotificationsPage').then(m => (
-        <m.NotificationsPage />
+        <m.NfsNotificationsPage />
       )),
   },
 });
@@ -56,4 +56,10 @@ export default createFrontendPlugin({
   extensions: [page, api],
 });
 
-export { notificationsTranslationRef } from './translation';
+import { notificationsTranslationRef as _notificationsTranslationRef } from './translation';
+
+/**
+ * @alpha
+ * @deprecated Import from `@backstage/plugin-notifications` instead.
+ */
+export const notificationsTranslationRef = _notificationsTranslationRef;

@@ -45,7 +45,21 @@ The scheduler exposes a REST API on top of each plugin's base URL, that lets you
 
 ### `GET <pluginBaseURL>/.backstage/scheduler/v1/tasks`
 
-Lists all tasks that the given plugin registered at startup, and their current states. The response shape is as follows:
+Lists all tasks that the given plugin registered at startup, and their current states.
+
+For example, to list all scheduled tasks for the Catalog plugin:
+
+```sh
+curl 'https://<instance-name>/api/catalog/.backstage/scheduler/v1/tasks'
+```
+
+You can try this out on the Backstage demo instance:
+
+```sh
+curl 'https://demo.backstage.io/api/catalog/.backstage/scheduler/v1/tasks'
+```
+
+The response shape is as follows:
 
 ```json
 {
@@ -118,6 +132,18 @@ The `workerState` shape is as follows:
 Schedules the given task ID for immediate execution, instead of waiting for its
 next scheduled time slot to arrive.
 
+For example, to trigger a specific Catalog task:
+
+```bash
+curl -X POST "https://<instance-name>/api/catalog/.backstage/scheduler/v1/tasks/InternalOpenApiDocumentationProvider:refresh/trigger"
+```
+
+A working example would be:
+
+```bash
+curl -X POST "https://demo.backstage.io/api/catalog/.backstage/scheduler/v1/tasks/InternalOpenApiDocumentationProvider:refresh/trigger"
+```
+
 Note that there can still be an additional small delay before a worker discovers
 that the task is due and actually picks it up. This typically takes less than a
 second, but it can vary.
@@ -129,6 +155,39 @@ Responds with
 - `200 OK` if successful
 - `404 Not Found` if there was no such registered task for this plugin
 - `409 Conflict` if the task was already in a running state
+
+### `POST <pluginBaseURL>/.backstage/scheduler/v1/tasks/<taskId>/cancel`
+
+Cancels the running task with the given task ID.
+
+Note that `<taskId>` must be URL-encoded so that it remains a single path segment
+in the URL (for example by using `encodeURIComponent` in JavaScript or standard
+percent-encoding).
+
+For example, to cancel a specific Catalog task:
+
+```bash
+curl -X POST "https://<instance-name>/api/catalog/.backstage/scheduler/v1/tasks/InternalOpenApiDocumentationProvider%3Arefresh/cancel"
+```
+
+A working example would be:
+
+```bash
+curl -X POST "https://demo.backstage.io/api/catalog/.backstage/scheduler/v1/tasks/InternalOpenApiDocumentationProvider%3Arefresh/cancel"
+```
+
+Note that there can still be an additional small delay before a worker discovers
+that the task is cancelled. This can take up to a few seconds. Note also that it
+is up to the task implementation to properly react to the abort signal that was
+passed into it.
+
+The request has no body.
+
+Responds with
+
+- `200 OK` if successful
+- `404 Not Found` if there was no such registered task for this plugin
+- `409 Conflict` if the task was not in a running state
 
 ## Testing
 

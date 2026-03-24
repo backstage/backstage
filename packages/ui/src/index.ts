@@ -36,7 +36,7 @@ export * from './components/Card';
 export * from './components/Dialog';
 export * from './components/FieldLabel';
 export * from './components/PluginHeader';
-export * from './components/HeaderPage';
+export * from './components/Header';
 export * from './components/ButtonIcon';
 export * from './components/ButtonLink';
 export * from './components/Checkbox';
@@ -51,8 +51,10 @@ export * from './components/PasswordField';
 export * from './components/Tooltip';
 export * from './components/Menu';
 export * from './components/Popover';
+export * from './components/SearchAutocomplete';
 export * from './components/SearchField';
 export * from './components/Link';
+export * from './components/List';
 export * from './components/Select';
 export * from './components/Skeleton';
 export * from './components/Switch';
@@ -67,3 +69,15 @@ export * from './types';
 export { useBreakpoint } from './hooks/useBreakpoint';
 export { useBgProvider, useBgConsumer, BgProvider } from './hooks/useBg';
 export type { BgContextValue, BgProviderProps } from './hooks/useBg';
+
+// Provider
+export { BUIProvider } from './provider';
+export type { BUIProviderProps } from './provider';
+
+// Analytics
+export { useAnalytics, getNodeText } from './analytics';
+export type {
+  AnalyticsTracker,
+  AnalyticsEventAttributes,
+  UseAnalyticsFn,
+} from './analytics';

@@ -16,6 +16,7 @@
 import { ChangeEvent, useState } from 'react';
 
 import { Page, Header, Content } from '@backstage/core-components';
+import { HeaderPage } from '@backstage/ui';
 import Tab from '@material-ui/core/Tab';
 import { makeStyles } from '@material-ui/core/styles';
 import TabContext from '@material-ui/lab/TabContext';
@@ -64,5 +65,16 @@ export const UnprocessedEntities = () => {
         <UnprocessedEntitiesContent />
       </Content>
     </Page>
+  );
+};
+
+export const NfsUnprocessedEntities = () => {
+  return (
+    <>
+      <HeaderPage title="Unprocessed Entities" />
+      <Content>
+        <UnprocessedEntitiesContent />
+      </Content>
+    </>
   );
 };

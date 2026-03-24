@@ -13,6 +13,7 @@ This website was created with [Docusaurus](https://docusaurus.io/).
 - [Editing Content](#editing-content)
 - [Adding Content](#adding-content)
 - [Full Documentation](#full-documentation)
+- [How to patch the stable docs](#patching-the-docs)
 
 # Getting Started
 
@@ -240,3 +241,7 @@ Full documentation can be found on the [Docusaurus website](https://docusaurus.i
 A feedback widget is provided by the `docusaurus-pushfeedback` plugin, which connects to the https://pushfeedback.com service. Styling of the button is configured in `microsite/src/theme/customTheme.scss`, while the plugin itself is configured in `microsite/docusaurus.config.js`.
 
 Feedback submissions are connected to an account owned by @Rugvip and are available on request, reach out to @Rugvip on [Discord](https://discord.gg/backstage-687207715902193673).
+
+# Patching the docs
+
+To patch the documentation for the stable version, you can submit a PR to the correct `patch/v<version>` branch. For example, if `1.48.0` is the stable version, you would submit a fix to the branch `patch/v1.48.0`. Once your fix is in, you can trigger the `deploy_microsite` GH action (or wait until the next run on master) and you should see the fix on the stable version at https://backstage.io/docs.

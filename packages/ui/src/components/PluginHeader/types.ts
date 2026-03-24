@@ -18,11 +18,11 @@ import { TabsProps } from 'react-aria-components';
 import { TabMatchStrategy } from '../Tabs';
 
 /**
- * Props for the {@link PluginHeader} component.
+ * Own props for the {@link PluginHeader} component.
  *
  * @public
  */
-export interface PluginHeaderProps {
+export interface PluginHeaderOwnProps {
   icon?: React.ReactNode;
   title?: string;
   titleLink?: string;
@@ -31,6 +31,13 @@ export interface PluginHeaderProps {
   onTabSelectionChange?: TabsProps['onSelectionChange'];
   className?: string;
 }
+
+/**
+ * Props for the {@link PluginHeader} component.
+ *
+ * @public
+ */
+export interface PluginHeaderProps extends PluginHeaderOwnProps {}
 
 /**
  * Represents a tab item in the header navigation.
@@ -47,18 +54,4 @@ export interface HeaderTab {
    * - 'prefix': Tab is active if current pathname starts with tab href
    */
   matchStrategy?: TabMatchStrategy;
-}
-
-/**
- * Props for the PluginHeaderToolbar component.
- *
- * @internal
- */
-export interface PluginHeaderToolbarProps {
-  icon?: PluginHeaderProps['icon'];
-  title?: PluginHeaderProps['title'];
-  titleLink?: PluginHeaderProps['titleLink'];
-  customActions?: PluginHeaderProps['customActions'];
-  hasTabs?: boolean;
-  className?: string;
 }

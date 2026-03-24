@@ -21,7 +21,11 @@ import {
   useEntity,
   useRelatedEntities,
 } from '@backstage/plugin-catalog-react';
-import { getApiEntityColumns } from './presets';
+import {
+  EntityRelationCard,
+  EntityColumnConfig,
+} from '@backstage/plugin-catalog-react/alpha';
+import { getApiEntityColumns, getApiEntityColumnConfig } from './presets';
 import {
   CodeSnippet,
   InfoCard,
@@ -35,15 +39,34 @@ import {
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { apiDocsTranslationRef } from '../../translation';
 
+/** @public */
+export interface ProvidedApisCardProps {
+  title?: string;
+  columnConfig?: EntityColumnConfig[];
+}
+
 /**
+ * Props for the legacy MUI-based rendering.
+ * @deprecated Use {@link ProvidedApisCardProps} instead.
  * @public
  */
-export const ProvidedApisCard = (props: {
-  variant?: InfoCardVariants;
+export interface ProvidedApisCardLegacyProps {
   title?: string;
+  /** @deprecated Use `columnConfig` instead. */
+  variant?: InfoCardVariants;
+  /** @deprecated Use `columnConfig` instead. */
   columns?: TableColumn<ApiEntity>[];
+  /** @deprecated Use `columnConfig` instead. */
   tableOptions?: TableOptions;
-}) => {
+}
+
+function isLegacyProps(
+  props: ProvidedApisCardProps | ProvidedApisCardLegacyProps,
+): props is ProvidedApisCardLegacyProps {
+  return 'variant' in props || 'columns' in props || 'tableOptions' in props;
+}
+
+function ProvidedApisCardLegacy(props: ProvidedApisCardLegacyProps) {
   const { t } = useTranslationRef(apiDocsTranslationRef);
   const {
     variant = 'gridItem',
@@ -100,6 +123,40 @@ export const ProvidedApisCard = (props: {
       columns={columns}
       tableOptions={tableOptions}
       entities={entities as ApiEntity[]}
+    />
+  );
+}
+
+/**
+ * @public
+ */
+export const ProvidedApisCard = (
+  props: ProvidedApisCardProps | ProvidedApisCardLegacyProps,
+) => {
+  const { t } = useTranslationRef(apiDocsTranslationRef);
+  const { entity } = useEntity();
+
+  if (isLegacyProps(props)) {
+    return <ProvidedApisCardLegacy {...props} />;
+  }
+
+  const {
+    title = t('providedApisCard.title'),
+    columnConfig = getApiEntityColumnConfig(t),
+  } = props;
+
+  return (
+    <EntityRelationCard
+      title={title}
+      relationType={RELATION_PROVIDES_API}
+      columnConfig={columnConfig}
+      emptyState={{
+        message: t('providedApisCard.emptyContent.title', {
+          entity: entity.kind.toLocaleLowerCase('en-US'),
+        }),
+        helpLink:
+          'https://backstage.io/docs/features/software-catalog/descriptor-format#specprovidesapis-optional',
+      }}
     />
   );
 };

@@ -18,7 +18,7 @@ import type {
   PermissionCriteria,
   PermissionRuleParams,
 } from '@backstage/plugin-permission-common';
-import { z } from 'zod';
+import { z } from 'zod/v3';
 
 /**
  * Prevent use of type parameter from contributing to type inference.

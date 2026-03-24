@@ -1,6 +1,6 @@
 {
   "name": "@backstage/core-components",
-  "version": "0.18.8-next.0",
+  "version": "0.18.9-next.0",
   "description": "Core components used by Backstage plugins and apps",
   "backstage": {
     "role": "web-library"
@@ -95,7 +95,7 @@
     "rehype-sanitize": "^5.0.0",
     "remark-gfm": "^3.0.1",
     "zen-observable": "^0.10.0",
-    "zod": "^3.25.76"
+    "zod": "^3.25.76 || ^4.0.0"
   },
   "devDependencies": {
     "@backstage/app-defaults": "workspace:^",

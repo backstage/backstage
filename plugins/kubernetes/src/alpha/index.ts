@@ -13,5 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { kubernetesTranslationRef } from './translation';
+import { kubernetesTranslationRef as _kubernetesTranslationRef } from './translation';
+
+/**
+ * @alpha
+ * @deprecated Import from `@backstage/plugin-kubernetes` instead.
+ */
+export const kubernetesTranslationRef = _kubernetesTranslationRef;
 export { default } from './plugin';

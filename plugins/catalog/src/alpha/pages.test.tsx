@@ -428,6 +428,186 @@ describe('Entity page', () => {
       expect(screen.getAllByRole('tab')[1]).toHaveTextContent('Overview');
     });
 
+    it('Should resolve group aliases', async () => {
+      const tester = createExtensionTester(
+        Object.assign({ namespace: 'catalog' }, catalogEntityPage),
+        {
+          config: {
+            groups: [
+              {
+                docs: { title: 'Docs', aliases: ['documentation'] },
+              },
+            ],
+          },
+        },
+      )
+        .add(techdocsEntityContent)
+        .add(apidocsEntityContent);
+
+      await renderInTestApp(tester.reactElement(), {
+        apis: [
+          [catalogApiRef, mockCatalogApi],
+          [starredEntitiesApiRef, mockStarredEntitiesApi],
+        ],
+        config: {
+          app: {
+            title: 'Custom app',
+          },
+          backend: { baseUrl: 'http://localhost:7000' },
+        },
+        mountedRoutes: {
+          '/catalog': convertLegacyRouteRef(rootRouteRef),
+          '/catalog/:namespace/:kind/:name':
+            convertLegacyRouteRef(entityRouteRef),
+        },
+      });
+
+      await waitFor(() =>
+        expect(screen.getByRole('tab', { name: /Docs/ })).toBeInTheDocument(),
+      );
+
+      await userEvent.click(screen.getByRole('tab', { name: /Docs/ }));
+
+      await waitFor(() =>
+        expect(
+          screen.getByRole('button', { name: /TechDocs/ }),
+        ).toHaveAttribute('href', '/techdocs'),
+      );
+
+      await waitFor(() =>
+        expect(screen.getByRole('button', { name: /ApiDocs/ })).toHaveAttribute(
+          'href',
+          '/apidocs',
+        ),
+      );
+    });
+
+    it('Should sort content by title by default', async () => {
+      const tester = createExtensionTester(
+        Object.assign({ namespace: 'catalog' }, catalogEntityPage),
+      )
+        .add(techdocsEntityContent)
+        .add(apidocsEntityContent);
+
+      await renderInTestApp(tester.reactElement(), {
+        apis: [
+          [catalogApiRef, mockCatalogApi],
+          [starredEntitiesApiRef, mockStarredEntitiesApi],
+        ],
+        config: {
+          app: {
+            title: 'Custom app',
+          },
+          backend: { baseUrl: 'http://localhost:7000' },
+        },
+        mountedRoutes: {
+          '/catalog': convertLegacyRouteRef(rootRouteRef),
+          '/catalog/:namespace/:kind/:name':
+            convertLegacyRouteRef(entityRouteRef),
+        },
+      });
+
+      await userEvent.click(
+        await screen.findByRole('tab', { name: /Documentation/ }),
+      );
+
+      const buttons = await screen.findAllByRole('button', {
+        name: /Docs/,
+      });
+      expect(buttons[0]).toHaveTextContent('ApiDocs');
+      expect(buttons[1]).toHaveTextContent('TechDocs');
+    });
+
+    it('Should preserve natural order when configured', async () => {
+      const tester = createExtensionTester(
+        Object.assign({ namespace: 'catalog' }, catalogEntityPage),
+        {
+          config: {
+            defaultContentOrder: 'natural',
+          },
+        },
+      )
+        .add(techdocsEntityContent)
+        .add(apidocsEntityContent);
+
+      await renderInTestApp(tester.reactElement(), {
+        apis: [
+          [catalogApiRef, mockCatalogApi],
+          [starredEntitiesApiRef, mockStarredEntitiesApi],
+        ],
+        config: {
+          app: {
+            title: 'Custom app',
+          },
+          backend: { baseUrl: 'http://localhost:7000' },
+        },
+        mountedRoutes: {
+          '/catalog': convertLegacyRouteRef(rootRouteRef),
+          '/catalog/:namespace/:kind/:name':
+            convertLegacyRouteRef(entityRouteRef),
+        },
+      });
+
+      await userEvent.click(
+        await screen.findByRole('tab', { name: /Documentation/ }),
+      );
+
+      const buttons = await screen.findAllByRole('button', {
+        name: /Docs/,
+      });
+      expect(buttons[0]).toHaveTextContent('TechDocs');
+      expect(buttons[1]).toHaveTextContent('ApiDocs');
+    });
+
+    it('Should support per-group content order override', async () => {
+      const tester = createExtensionTester(
+        Object.assign({ namespace: 'catalog' }, catalogEntityPage),
+        {
+          config: {
+            defaultContentOrder: 'title',
+            groups: [
+              {
+                documentation: {
+                  title: 'Documentation',
+                  contentOrder: 'natural',
+                },
+              },
+            ],
+          },
+        },
+      )
+        .add(techdocsEntityContent)
+        .add(apidocsEntityContent);
+
+      await renderInTestApp(tester.reactElement(), {
+        apis: [
+          [catalogApiRef, mockCatalogApi],
+          [starredEntitiesApiRef, mockStarredEntitiesApi],
+        ],
+        config: {
+          app: {
+            title: 'Custom app',
+          },
+          backend: { baseUrl: 'http://localhost:7000' },
+        },
+        mountedRoutes: {
+          '/catalog': convertLegacyRouteRef(rootRouteRef),
+          '/catalog/:namespace/:kind/:name':
+            convertLegacyRouteRef(entityRouteRef),
+        },
+      });
+
+      await userEvent.click(
+        await screen.findByRole('tab', { name: /Documentation/ }),
+      );
+
+      const buttons = await screen.findAllByRole('button', {
+        name: /Docs/,
+      });
+      expect(buttons[0]).toHaveTextContent('TechDocs');
+      expect(buttons[1]).toHaveTextContent('ApiDocs');
+    });
+
     it('Should render groups on the correct order', async () => {
       const tester = createExtensionTester(
         Object.assign({ namespace: 'catalog' }, catalogEntityPage),

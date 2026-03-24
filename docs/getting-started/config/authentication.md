@@ -4,6 +4,10 @@ title: Authentication
 description: How to setup authentication for your Backstage app
 ---
 
+:::info
+This documentation is written for [the new frontend system](../../frontend-system/index.md). If you are on the old frontend system you may want to read [its own article](./authentication--old.md) instead.
+:::
+
 Audience: Admins or Developers
 
 ## Summary
@@ -50,37 +54,63 @@ auth:
 
 The next step is to change the sign-in page. For this, you'll actually need to write some code.
 
-Open `packages/app/src/App.tsx` and below the last `import` line, add:
+First let's add the packages we need, do this from the root:
+
+```shell
+yarn --cwd packages/app add @backstage/core-plugin-api @backstage/plugin-app-react
+```
+
+Then open `packages/app/src/App.tsx` and below the last `import` line, add:
 
 ```typescript title="packages/app/src/App.tsx"
 import { githubAuthApiRef } from '@backstage/core-plugin-api';
+import { SignInPageBlueprint } from '@backstage/plugin-app-react';
+import { SignInPage } from '@backstage/core-components';
+import { createFrontendModule } from '@backstage/frontend-plugin-api';
 ```
 
-Search for `const app = createApp({` in this file, and replace:
+Now below this we are going to use the `SignInPageBlueprint` to create an extension, add this code block to do that:
+
+```tsx
+const signInPage = SignInPageBlueprint.make({
+  params: {
+    loader: async () => props =>
+      (
+        <SignInPage
+          {...props}
+          provider={{
+            id: 'github-auth-provider',
+            title: 'GitHub',
+            message: 'Sign in using GitHub',
+            apiRef: githubAuthApiRef,
+          }}
+        />
+      ),
+  },
+});
+```
+
+Search for the `createApp()` function call in this file, and replace:
 
 ```tsx title="packages/app/src/App.tsx"
-components: {
-  SignInPage: props => <SignInPage {...props} auto providers={['guest']} />,
-},
+export default createApp({
+  features: [catalogPlugin, navModule],
+});
 ```
 
 with
 
 ```tsx title="packages/app/src/App.tsx"
-components: {
-  SignInPage: props => (
-    <SignInPage
-      {...props}
-      auto
-      provider={{
-        id: 'github-auth-provider',
-        title: 'GitHub',
-        message: 'Sign in using GitHub',
-        apiRef: githubAuthApiRef,
-      }}
-    />
-  ),
-},
+export default createApp({
+  features: [
+    catalogPlugin,
+    navModule,
+    createFrontendModule({
+      pluginId: 'app',
+      extensions: [signInPage],
+    }),
+  ],
+});
 ```
 
 ## Add sign-in resolver(s)
@@ -107,7 +137,7 @@ auth:
         /* highlight-add-end */
 ```
 
-What this will do is take the user details provided by the auth provider and match that against a User in the Catalog. In this case - `usernameMatchingUserEntityName` - will match the GitHub user name with the `metadata.name` value of a User in the Catalog, if none is found you will get an "Failed to sign-in, unable to resolve user identity" message. We'll cover this in the next few sections.
+What this will do is take the user details provided by the auth provider and match that against a User in the Catalog. In this case - `usernameMatchingUserEntityName` - will match the GitHub user name with the `metadata.name` value of a User in the Catalog, if none is found you will get a "Failed to sign-in, unable to resolve user identity" message. We'll cover this in the next few sections.
 
 Learn more about this topic in the [Sign-in Resolvers](../../auth/identity-resolver.md#sign-in-resolvers) documentation.
 
@@ -140,7 +170,7 @@ Sometimes the frontend starts before the backend resulting in errors on the sign
 
 The recommended approach for adding Users, and Groups, into your Catalog is to use one of the existing Org Entity Providers - [like this one for GitHub](https://backstage.io/docs/integrations/github/org) - or if those don't work you may need to [create one](https://backstage.io/docs/features/software-catalog/external-integrations#custom-entity-providers) that fits your Organization's needs.
 
-For the sake of this guide we'll simply step you though adding a User to the `org.yaml` file that is included when you create a new Backstage instance. Let's do that:
+For the sake of this guide we'll simply step you through adding a User to the `org.yaml` file that is included when you create a new Backstage instance. Let's do that:
 
 1. First open the `/examples/org.yaml` file in your text editor of choice
 2. At the bottom we'll add the following YAML:

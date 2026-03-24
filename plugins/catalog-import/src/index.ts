@@ -27,3 +27,4 @@ export {
 } from './plugin';
 export * from './components';
 export * from './api';
+export { catalogImportTranslationRef } from './translation';

@@ -14,5 +14,6 @@
  * limitations under the License.
  */
 
-export * from './FieldError';
+export { FieldError } from './FieldError';
 export { FieldErrorDefinition } from './definition';
+export type { FieldErrorOwnProps, FieldErrorProps } from './types';

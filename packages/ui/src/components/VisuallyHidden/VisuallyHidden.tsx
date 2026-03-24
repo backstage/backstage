@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-import { useStyles } from '../../hooks/useStyles';
+import { useDefinition } from '../../hooks/useDefinition';
 import { VisuallyHiddenDefinition } from './definition';
 import { VisuallyHiddenProps } from './types';
-import styles from './VisuallyHidden.module.css';
-import clsx from 'clsx';
 
 /**
  * Visually hides content while keeping it accessible to screen readers.
@@ -30,16 +28,11 @@ import clsx from 'clsx';
  * @public
  */
 export const VisuallyHidden = (props: VisuallyHiddenProps) => {
-  const { classNames, cleanedProps } = useStyles(
+  const { ownProps, restProps } = useDefinition(
     VisuallyHiddenDefinition,
     props,
   );
-  const { className, ...rest } = cleanedProps;
+  const { classes } = ownProps;
 
-  return (
-    <div
-      className={clsx(classNames.root, styles[classNames.root], className)}
-      {...rest}
-    />
-  );
+  return <div className={classes.root} {...restProps} />;
 };

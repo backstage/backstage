@@ -17,7 +17,7 @@
 import { Entity, GroupEntity, UserEntity } from '@backstage/catalog-model';
 import { catalogApiRef, EntityProvider } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
-import { queryByText } from '@testing-library/react';
+import { queryByText, screen } from '@testing-library/react';
 import { catalogIndexRouteRef } from '../../../routes';
 import { OwnershipCard } from './OwnershipCard';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
@@ -275,7 +275,7 @@ describe('OwnershipCard', () => {
     it('shows relations toggle', async () => {
       const catalogApi = catalogApiMock({ entities: items });
 
-      const { getByTitle } = await renderInTestApp(
+      await renderInTestApp(
         <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
           <EntityProvider entity={groupEntity}>
             <OwnershipCard />
@@ -288,13 +288,15 @@ describe('OwnershipCard', () => {
         },
       );
 
-      expect(getByTitle('Direct Relations')).toBeInTheDocument();
+      expect(
+        screen.getByRole('switch', { name: 'Include indirect ownership' }),
+      ).toBeInTheDocument();
     });
 
     it('hides relations toggle', async () => {
       const catalogApi = catalogApiMock({ entities: items });
 
-      const rendered = await renderInTestApp(
+      await renderInTestApp(
         <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
           <EntityProvider entity={groupEntity}>
             <OwnershipCard hideRelationsToggle />
@@ -307,13 +309,13 @@ describe('OwnershipCard', () => {
         },
       );
 
-      expect(rendered.queryByText('Direct Relations')).toBeNull();
+      expect(screen.queryByRole('switch')).not.toBeInTheDocument();
     });
 
     it('overrides relation type', async () => {
       const catalogApi = catalogApiMock({ entities: items });
 
-      const { getByTitle } = await renderInTestApp(
+      await renderInTestApp(
         <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
           <EntityProvider entity={groupEntity}>
             <OwnershipCard relationsType="aggregated" />
@@ -326,13 +328,13 @@ describe('OwnershipCard', () => {
         },
       );
 
-      expect(getByTitle('Aggregated Relations')).toBeInTheDocument();
+      await expect(screen.findByRole('switch')).resolves.toBeChecked();
     });
 
     it('defaults to aggregated for User entity kind', async () => {
       const catalogApi = catalogApiMock({ entities: items });
 
-      const { getByLabelText } = await renderInTestApp(
+      await renderInTestApp(
         <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
           <EntityProvider entity={userEntity}>
             <OwnershipCard />
@@ -345,13 +347,13 @@ describe('OwnershipCard', () => {
         },
       );
 
-      expect(getByLabelText('Ownership Type Switch')).toBeChecked();
+      await expect(screen.findByRole('switch')).resolves.toBeChecked();
     });
 
     it('defaults to direct for all entity kinds except User', async () => {
       const catalogApi = catalogApiMock({ entities: items });
 
-      const { getByLabelText } = await renderInTestApp(
+      await renderInTestApp(
         <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
           <EntityProvider entity={groupEntity}>
             <OwnershipCard />
@@ -364,13 +366,13 @@ describe('OwnershipCard', () => {
         },
       );
 
-      expect(getByLabelText('Ownership Type Switch')).not.toBeChecked();
+      expect(screen.getByRole('switch')).not.toBeChecked();
     });
 
     it('defaults to provided relationsType', async () => {
       const catalogApi = catalogApiMock({ entities: items });
 
-      const { getByLabelText } = await renderInTestApp(
+      await renderInTestApp(
         <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
           <EntityProvider entity={userEntity}>
             <OwnershipCard relationsType="direct" />
@@ -383,7 +385,7 @@ describe('OwnershipCard', () => {
         },
       );
 
-      expect(getByLabelText('Ownership Type Switch')).not.toBeChecked();
+      expect(screen.getByRole('switch')).not.toBeChecked();
     });
   });
 });

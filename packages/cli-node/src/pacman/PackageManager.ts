@@ -49,12 +49,6 @@ export interface PackageManager {
   /** The file name of the lockfile used by the package manager. */
   lockfileName(): string;
 
-  /**
-   * If this repo is a monorepo, returns the patterns specified by the package
-   * manager's monorepo configuration. Does not attempt to resolve any globs.
-   */
-  getMonorepoPackages(): Promise<string[]>;
-
   /** Uses the package manager to run a command in the repo. */
   run(args: string[], options?: RunOptions): Promise<void>;
 

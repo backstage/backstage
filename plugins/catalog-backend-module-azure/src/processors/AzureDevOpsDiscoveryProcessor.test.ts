@@ -103,7 +103,12 @@ describe('AzureDevOpsDiscoveryProcessor', () => {
       const processor = AzureDevOpsDiscoveryProcessor.fromConfig(
         new ConfigReader({
           integrations: {
-            azure: [{ host: 'dev.azure.com', token: 'blob' }],
+            azure: [
+              {
+                host: 'dev.azure.com',
+                credentials: [{ personalAccessToken: 'token' }],
+              },
+            ],
           },
         }),
         { logger: mockServices.logger.mock() },
@@ -123,8 +128,14 @@ describe('AzureDevOpsDiscoveryProcessor', () => {
       new ConfigReader({
         integrations: {
           github: [
-            { host: 'dev.azure.com', token: 'blob' },
-            { host: 'azure.myorg.com', token: 'blob' },
+            {
+              host: 'dev.azure.com',
+              credentials: [{ personalAccessToken: 'token' }],
+            },
+            {
+              host: 'azure.myorg.com',
+              credentials: [{ personalAccessToken: 'token' }],
+            },
           ],
         },
       }),
@@ -145,7 +156,12 @@ describe('AzureDevOpsDiscoveryProcessor', () => {
     const processor = AzureDevOpsDiscoveryProcessor.fromConfig(
       new ConfigReader({
         integrations: {
-          github: [{ host: 'dev.azure.com', token: 'blob' }],
+          github: [
+            {
+              host: 'dev.azure.com',
+              credentials: [{ personalAccessToken: 'token' }],
+            },
+          ],
         },
       }),
       { logger: mockServices.logger.mock() },

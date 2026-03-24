@@ -14,58 +14,63 @@
  * limitations under the License.
  */
 
-import { spawn } from 'node:child_process';
-import os from 'node:os';
-import pLimit from 'p-limit';
+import { spawnSync } from 'node:child_process';
+import { randomUUID } from 'node:crypto';
+import { openSync, closeSync, readFileSync, unlinkSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
-// Some commands launch full node processes doing heavy work, which at high
-// concurrency levels risk exhausting system resources. Placing the limiter here
-// at the root level ensures that the concurrency boundary applies globally, not
-// just per-runner.
-const limiter = pLimit(os.cpus().length);
+// Matches ANSI SGR escape sequences (e.g. bold, color, reset)
+const ansiPattern = new RegExp(`${String.fromCharCode(0x1b)}\\[[0-9;]*m`, 'g');
 
+/**
+ * Redirect stdout to a temp file so that Node.js creates a SyncWriteStream
+ * (synchronous writes) in the child instead of an async pipe stream. This
+ * prevents data loss when child processes call process.exit() before the
+ * async stream buffer has been flushed.
+ *
+ * Uses spawnSync which blocks the event loop, so no concurrency limiter is
+ * needed — each call naturally runs sequentially.
+ */
 export function createBinRunner(cwd: string, path: string) {
-  return async (...command: string[]) =>
-    limiter(
-      () =>
-        new Promise<string>((resolve, reject) => {
-          // Handle the case where path is empty and the script path is the first command argument
-          const args = path ? [path, ...command] : command;
-          const child = spawn('node', args, {
-            cwd,
-            stdio: ['ignore', 'pipe', 'pipe'],
-          });
+  return async (...command: string[]) => {
+    const args = path ? [path, ...command] : command;
+    const outPath = join(tmpdir(), `backstage-cli-out-${randomUUID()}.txt`);
+    const outFd = openSync(outPath, 'w');
 
-          let stdout = '';
-          let stderr = '';
+    try {
+      const result = spawnSync('node', args, {
+        cwd,
+        env: { ...process.env, NO_COLOR: '1' },
+        stdio: ['ignore', outFd, 'pipe'],
+      });
 
-          child.stdout?.on('data', data => {
-            stdout += data.toString();
-          });
+      closeSync(outFd);
+      const stdout = readFileSync(outPath, 'utf8').replace(ansiPattern, '');
 
-          child.stderr?.on('data', data => {
-            stderr += data.toString();
-          });
+      if (result.error) {
+        throw new Error(`Process error: ${result.error.message}`);
+      }
 
-          child.on('error', err => {
-            reject(new Error(`Process error: ${err.message}`));
-          });
+      const stderr = result.stderr?.toString() ?? '';
 
-          child.on('close', (code, signal) => {
-            if (signal) {
-              reject(
-                new Error(
-                  `Process was killed with signal ${signal}\n${stderr}`,
-                ),
-              );
-            } else if (code !== 0) {
-              reject(new Error(`Process exited with code ${code}\n${stderr}`));
-            } else if (stderr.trim()) {
-              reject(new Error(`Command printed error output: ${stderr}`));
-            } else {
-              resolve(stdout);
-            }
-          });
-        }),
-    );
+      if (result.signal) {
+        throw new Error(
+          `Process was killed with signal ${result.signal}\n${stderr}`,
+        );
+      } else if (result.status !== 0) {
+        throw new Error(`Process exited with code ${result.status}\n${stderr}`);
+      } else if (stderr.trim()) {
+        throw new Error(`Command printed error output: ${stderr}`);
+      }
+
+      return stdout;
+    } finally {
+      try {
+        unlinkSync(outPath);
+      } catch {
+        /* ignore cleanup errors */
+      }
+    }
+  };
 }

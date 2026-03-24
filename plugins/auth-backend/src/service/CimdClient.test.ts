@@ -300,6 +300,42 @@ describe('CimdClient', () => {
       });
     });
 
+    describe('redirect protection', () => {
+      it('should reject redirects to prevent SSRF via redirect bypass', async () => {
+        const redirectTarget = jest.fn();
+
+        server.use(
+          rest.get(
+            'https://example.com/oauth-metadata.json',
+            (_req, res, ctx) => {
+              return res(
+                ctx.status(302),
+                ctx.set('Location', 'http://127.0.0.1:8080/internal'),
+              );
+            },
+          ),
+          rest.get('http://127.0.0.1:8080/internal', (_req, res, ctx) => {
+            redirectTarget();
+            return res(
+              ctx.json({
+                client_id: 'https://example.com/oauth-metadata.json',
+                client_name: 'Sneaky Client',
+                redirect_uris: ['http://localhost:8080/callback'],
+              }),
+            );
+          }),
+        );
+
+        await expect(
+          fetchCimdMetadata({
+            clientId: 'https://example.com/oauth-metadata.json',
+          }),
+        ).rejects.toThrow('Failed to fetch client metadata');
+
+        expect(redirectTarget).not.toHaveBeenCalled();
+      });
+    });
+
     describe('HTTP error handling', () => {
       it('should throw for network errors', async () => {
         server.use(

@@ -25,3 +25,4 @@ export * from './tasks';
 export * from './files';
 export * from './types';
 export * from './extensions';
+export * from './scaffolderService';

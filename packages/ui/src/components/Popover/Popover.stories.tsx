@@ -208,7 +208,7 @@ export const WithRichContent = Default.extend({
             This is a popover with rich content. It can contain multiple
             elements and formatted text.
           </Text>
-          <Box bg="neutral-auto" p="2">
+          <Box bg="neutral" p="2">
             <Text>You can also use the automatic bg system inside it.</Text>
           </Box>
           <Flex gap="2" justify="end">

@@ -15,5 +15,5 @@
  */
 
 export { Popover } from './Popover';
-export type { PopoverProps } from './types';
+export type { PopoverOwnProps, PopoverProps } from './types';
 export { PopoverDefinition } from './definition';

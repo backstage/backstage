@@ -14,20 +14,77 @@
  * limitations under the License.
  */
 
-import type { ComponentDefinition } from '../../types';
+import { defineComponent } from '../../hooks/useDefinition';
+import type {
+  DialogOwnProps,
+  DialogHeaderOwnProps,
+  DialogBodyOwnProps,
+  DialogFooterOwnProps,
+} from './types';
+import styles from './Dialog.module.css';
 
 /**
  * Component definition for Dialog
  * @public
  */
-export const DialogDefinition = {
+export const DialogDefinition = defineComponent<DialogOwnProps>()({
+  styles,
   classNames: {
-    overlay: 'bui-DialogOverlay',
+    root: 'bui-DialogOverlay',
     dialog: 'bui-Dialog',
     content: 'bui-DialogContent',
-    header: 'bui-DialogHeader',
-    headerTitle: 'bui-DialogHeaderTitle',
-    body: 'bui-DialogBody',
-    footer: 'bui-DialogFooter',
   },
-} as const satisfies ComponentDefinition;
+  propDefs: {
+    children: {},
+    className: {},
+    width: {},
+    height: {},
+    style: {},
+  },
+});
+
+/**
+ * Component definition for DialogHeader
+ * @public
+ */
+export const DialogHeaderDefinition = defineComponent<DialogHeaderOwnProps>()({
+  styles,
+  classNames: {
+    root: 'bui-DialogHeader',
+    title: 'bui-DialogHeaderTitle',
+  },
+  propDefs: {
+    children: {},
+    className: {},
+  },
+});
+
+/**
+ * Component definition for DialogBody
+ * @public
+ */
+export const DialogBodyDefinition = defineComponent<DialogBodyOwnProps>()({
+  styles,
+  classNames: {
+    root: 'bui-DialogBody',
+  },
+  propDefs: {
+    children: {},
+    className: {},
+  },
+});
+
+/**
+ * Component definition for DialogFooter
+ * @public
+ */
+export const DialogFooterDefinition = defineComponent<DialogFooterOwnProps>()({
+  styles,
+  classNames: {
+    root: 'bui-DialogFooter',
+  },
+  propDefs: {
+    children: {},
+    className: {},
+  },
+});

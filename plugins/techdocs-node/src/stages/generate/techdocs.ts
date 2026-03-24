@@ -115,7 +115,11 @@ export class TechdocsGenerator implements GeneratorBase {
     const docsDir = await validateMkdocsYaml(inputDir, content);
 
     // Remove unsupported configuration keys
-    await sanitizeMkdocsYml(mkdocsYmlPath, childLogger);
+    await sanitizeMkdocsYml(
+      mkdocsYmlPath,
+      childLogger,
+      this.options.dangerouslyAllowAdditionalKeys,
+    );
 
     // Validate that no symlinks in the docs directory point outside the input directory
     // This prevents path traversal attacks where malicious symlinks could leak host files
@@ -256,6 +260,9 @@ export function readGeneratorConfig(
     ),
     defaultPlugins: config.getOptionalStringArray(
       'techdocs.generator.mkdocs.defaultPlugins',
+    ),
+    dangerouslyAllowAdditionalKeys: config.getOptionalStringArray(
+      'techdocs.generator.mkdocs.dangerouslyAllowAdditionalKeys',
     ),
   };
 }

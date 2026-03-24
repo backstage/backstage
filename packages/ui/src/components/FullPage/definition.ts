@@ -14,14 +14,20 @@
  * limitations under the License.
  */
 
-import type { ComponentDefinition } from '../../types';
+import { defineComponent } from '../../hooks/useDefinition';
+import type { FullPageOwnProps } from './types';
+import styles from './FullPage.module.css';
 
 /**
  * Component definition for FullPage
  * @public
  */
-export const FullPageDefinition = {
+export const FullPageDefinition = defineComponent<FullPageOwnProps>()({
+  styles,
   classNames: {
     root: 'bui-FullPage',
   },
-} as const satisfies ComponentDefinition;
+  propDefs: {
+    className: {},
+  },
+});

@@ -15,7 +15,7 @@
  */
 
 import { ReactNode } from 'react';
-import { ApiRef, createApiRef } from '../system';
+import { createApiRef } from '../system';
 import { Observable } from '@backstage/types';
 
 /**
@@ -82,6 +82,7 @@ export type AppThemeApi = {
  *
  * @public
  */
-export const appThemeApiRef: ApiRef<AppThemeApi> = createApiRef({
+export const appThemeApiRef = createApiRef<AppThemeApi>().with({
   id: 'core.apptheme',
+  pluginId: 'app',
 });

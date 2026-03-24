@@ -16,4 +16,10 @@
 
 export { default } from './plugin';
 
-export * from './translation';
+import { catalogTranslationRef as _catalogTranslationRef } from './translation';
+
+/**
+ * @alpha
+ * @deprecated Import from `@backstage/plugin-catalog` instead.
+ */
+export const catalogTranslationRef = _catalogTranslationRef;

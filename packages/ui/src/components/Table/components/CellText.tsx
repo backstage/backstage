@@ -14,48 +14,23 @@
  * limitations under the License.
  */
 
-import clsx from 'clsx';
 import { Text } from '../../Text';
 import { Link } from '../../Link';
 import { Cell as ReactAriaCell } from 'react-aria-components';
 import type { CellTextProps } from '../types';
-import { useStyles } from '../../../hooks/useStyles';
-import { TableDefinition } from '../definition';
-import styles from '../Table.module.css';
+import { useDefinition } from '../../../hooks/useDefinition';
+import { CellTextDefinition } from '../definition';
 
 /** @public */
 const CellText = (props: CellTextProps) => {
-  const { classNames, cleanedProps } = useStyles(TableDefinition, {
-    color: 'primary' as const,
-    ...props,
-  });
-  const { className, title, description, color, leadingIcon, href, ...rest } =
-    cleanedProps;
+  const { ownProps, restProps } = useDefinition(CellTextDefinition, props);
+  const { classes, title, description, color, leadingIcon, href } = ownProps;
 
   return (
-    <ReactAriaCell
-      className={clsx(classNames.cell, styles[classNames.cell], className)}
-      {...rest}
-    >
-      <div
-        className={clsx(
-          classNames.cellContentWrapper,
-          styles[classNames.cellContentWrapper],
-        )}
-      >
-        {leadingIcon && (
-          <div
-            className={clsx(classNames.cellIcon, styles[classNames.cellIcon])}
-          >
-            {leadingIcon}
-          </div>
-        )}
-        <div
-          className={clsx(
-            classNames.cellContent,
-            styles[classNames.cellContent],
-          )}
-        >
+    <ReactAriaCell className={classes.root} {...restProps}>
+      <div className={classes.cellContentWrapper}>
+        {leadingIcon && <div className={classes.cellIcon}>{leadingIcon}</div>}
+        <div className={classes.cellContent}>
           {href ? (
             <Link
               href={href}

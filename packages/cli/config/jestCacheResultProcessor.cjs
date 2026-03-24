@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
-module.exports = async results => {
-  const cache = global.__backstageCli_jestSuccessCache;
-  if (cache) {
-    await cache.reportResults(results);
+try {
+  module.exports = require('@backstage/cli-module-test-jest/config/jestCacheResultProcessor.cjs');
+} catch (e) {
+  if (e.code === 'MODULE_NOT_FOUND') {
+    throw new Error(
+      '@backstage/cli-module-test-jest is required to use the jest cache result processor. ' +
+        'Please install it as a dependency.',
+    );
   }
-  return results;
-};
+  throw e;
+}

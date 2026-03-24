@@ -2,6 +2,7 @@
 id: leadership-buy-in
 sidebar_label: 002 - Leadership buy-in
 title: Getting leadership buy-in
+description: How to build a case for Backstage adoption and secure leadership support
 ---
 
 ## Summary

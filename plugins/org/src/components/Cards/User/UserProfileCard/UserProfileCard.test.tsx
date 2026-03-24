@@ -51,7 +51,7 @@ describe('UserSummary Test', () => {
   it('Display Profile Card', async () => {
     await renderInTestApp(
       <EntityProvider entity={userEntity}>
-        <UserProfileCard variant="gridItem" />
+        <UserProfileCard />
       </EntityProvider>,
       {
         mountedRoutes: {
@@ -61,10 +61,10 @@ describe('UserSummary Test', () => {
     );
 
     expect(screen.getByText('calum-leavy@example.com')).toBeInTheDocument();
-    expect(screen.getByAltText('Calum Leavy')).toHaveAttribute(
-      'src',
-      'https://example.com/staff/calum.jpeg',
-    );
+    // BUI Avatar is decorative (aria-hidden), because the name is
+    // present as text right beside it.
+    expect(screen.getByRole('img', { hidden: true })).toBeInTheDocument();
+    expect(screen.getByText('Calum Leavy')).toBeInTheDocument();
     expect(screen.getByText('examplegroup').closest('a')).toHaveAttribute(
       'href',
       '/catalog/default/group/examplegroup',
@@ -87,7 +87,7 @@ describe('UserSummary Test', () => {
     it('Should limit the number of displayed groups in the card', async () => {
       await renderInTestApp(
         <EntityProvider entity={entity}>
-          <UserProfileCard variant="gridItem" maxRelations={3} />
+          <UserProfileCard maxRelations={3} />
         </EntityProvider>,
         {
           mountedRoutes: {
@@ -109,7 +109,7 @@ describe('UserSummary Test', () => {
     it('Show more groups button when there are more user relations than the maximum', async () => {
       await renderInTestApp(
         <EntityProvider entity={entity}>
-          <UserProfileCard variant="gridItem" maxRelations={3} />
+          <UserProfileCard maxRelations={3} />
         </EntityProvider>,
         {
           mountedRoutes: {
@@ -128,7 +128,7 @@ describe('UserSummary Test', () => {
     it('Hide more groups button when limit value is less than or equal to user relations', async () => {
       await renderInTestApp(
         <EntityProvider entity={entity}>
-          <UserProfileCard variant="gridItem" maxRelations={5} />
+          <UserProfileCard maxRelations={5} />
         </EntityProvider>,
         {
           mountedRoutes: {
@@ -148,7 +148,7 @@ describe('UserSummary Test', () => {
     it('Hide all groups when max relations is equals to zero', async () => {
       await renderInTestApp(
         <EntityProvider entity={entity}>
-          <UserProfileCard variant="gridItem" maxRelations={0} />
+          <UserProfileCard maxRelations={0} />
         </EntityProvider>,
         {
           mountedRoutes: {
@@ -193,7 +193,7 @@ describe('Edit Button', () => {
 
     await renderInTestApp(
       <EntityProvider entity={userEntity}>
-        <UserProfileCard variant="gridItem" />
+        <UserProfileCard />
       </EntityProvider>,
       {
         mountedRoutes: {
@@ -234,7 +234,7 @@ describe('Edit Button', () => {
 
     await renderInTestApp(
       <EntityProvider entity={userEntity}>
-        <UserProfileCard variant="gridItem" />
+        <UserProfileCard />
       </EntityProvider>,
       {
         mountedRoutes: {
@@ -285,7 +285,7 @@ describe('Edit Button', () => {
 
     await renderInTestApp(
       <EntityProvider entity={userEntity}>
-        <UserProfileCard variant="gridItem" />
+        <UserProfileCard />
       </EntityProvider>,
       {
         mountedRoutes: {
@@ -337,7 +337,7 @@ describe('Edit Button', () => {
 
     await renderInTestApp(
       <EntityProvider entity={userEntity}>
-        <UserProfileCard showLinks variant="gridItem" />
+        <UserProfileCard showLinks />
       </EntityProvider>,
       {
         mountedRoutes: {

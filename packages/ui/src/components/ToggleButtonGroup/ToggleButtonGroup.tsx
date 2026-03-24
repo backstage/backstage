@@ -14,33 +14,23 @@
  * limitations under the License.
  */
 
-import clsx from 'clsx';
 import { forwardRef, Ref } from 'react';
 import { ToggleButtonGroup as AriaToggleButtonGroup } from 'react-aria-components';
 import type { ToggleButtonGroupProps } from './types';
-import { useStyles } from '../../hooks/useStyles';
+import { useDefinition } from '../../hooks/useDefinition';
 import { ToggleButtonGroupDefinition } from './definition';
-import styles from './ToggleButtonGroup.module.css';
 
 /** @public */
 export const ToggleButtonGroup = forwardRef(
   (props: ToggleButtonGroupProps, ref: Ref<HTMLDivElement>) => {
-    const { classNames, dataAttributes, cleanedProps } = useStyles(
+    const { ownProps, restProps } = useDefinition(
       ToggleButtonGroupDefinition,
-      {
-        ...props,
-      },
+      props,
     );
-
-    const { className, children, ...rest } = cleanedProps;
+    const { classes, children } = ownProps;
 
     return (
-      <AriaToggleButtonGroup
-        className={clsx(classNames.root, styles[classNames.root], className)}
-        ref={ref}
-        {...dataAttributes}
-        {...rest}
-      >
+      <AriaToggleButtonGroup className={classes.root} ref={ref} {...restProps}>
         {children}
       </AriaToggleButtonGroup>
     );

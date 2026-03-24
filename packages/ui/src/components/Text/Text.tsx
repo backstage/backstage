@@ -15,35 +15,27 @@
  */
 
 import { forwardRef } from 'react';
-import clsx from 'clsx';
 import type { ElementType } from 'react';
 import type { TextProps } from './types';
-import { useStyles } from '../../hooks/useStyles';
-import styles from './Text.module.css';
+import { useDefinition } from '../../hooks/useDefinition';
 import { TextDefinition } from './definition';
 
 function TextComponent<T extends ElementType = 'span'>(
   props: TextProps<T>,
   ref: React.Ref<any>,
 ) {
-  const Component = props.as || 'span';
-
-  const { classNames, dataAttributes, cleanedProps } = useStyles(
+  const { ownProps, restProps, dataAttributes } = useDefinition(
     TextDefinition,
-    {
-      variant: 'body-medium',
-      weight: 'regular',
-      color: 'primary',
-      ...props,
-    },
+    props,
   );
+  const { classes, as } = ownProps;
 
-  const { className, truncate, ...restProps } = cleanedProps;
+  const Component = as;
 
   return (
     <Component
       ref={ref}
-      className={clsx(classNames.root, styles[classNames.root], className)}
+      className={classes.root}
       {...dataAttributes}
       {...restProps}
     />

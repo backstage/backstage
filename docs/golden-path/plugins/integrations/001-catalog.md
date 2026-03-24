@@ -2,6 +2,7 @@
 id: catalog
 sidebar_label: 001 - Catalog
 title: Integrating with Catalog
+description: How to integrate your plugin with the Backstage Software Catalog
 ---
 
 ## Software Catalog

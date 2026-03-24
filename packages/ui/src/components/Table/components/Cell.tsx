@@ -14,29 +14,16 @@
  * limitations under the License.
  */
 
-import clsx from 'clsx';
 import { Cell as ReactAriaCell } from 'react-aria-components';
 import type { CellProps } from '../types';
-import { useStyles } from '../../../hooks/useStyles';
-import { TableDefinition } from '../definition';
-import styles from '../Table.module.css';
+import { useDefinition } from '../../../hooks/useDefinition';
+import { CellDefinition } from '../definition';
 
 /** @public */
 const Cell = (props: CellProps) => {
-  const { classNames, cleanedProps } = useStyles(TableDefinition, {
-    color: 'primary' as const,
-    ...props,
-  });
-  const { className, children, ...rest } = cleanedProps;
+  const { ownProps, restProps } = useDefinition(CellDefinition, props);
 
-  return (
-    <ReactAriaCell
-      className={clsx(classNames.cell, styles[classNames.cell], className)}
-      {...rest}
-    >
-      {children}
-    </ReactAriaCell>
-  );
+  return <ReactAriaCell className={ownProps.classes.root} {...restProps} />;
 };
 
 Cell.displayName = 'Cell';

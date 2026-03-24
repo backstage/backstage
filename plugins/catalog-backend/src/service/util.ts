@@ -18,7 +18,7 @@ import { InputError, NotAllowedError } from '@backstage/errors';
 import { createZodV3FilterPredicateSchema } from '@backstage/filter-predicates';
 import { Request } from 'express';
 import lodash from 'lodash';
-import { z } from 'zod';
+import { z } from 'zod/v3';
 import {
   Cursor,
   QueryEntitiesCursorRequest,

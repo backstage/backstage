@@ -50,39 +50,8 @@ import { convertLegacyPageExtension } from '@backstage/core-compat-api';
 import { convertLegacyEntityContentExtension } from '@backstage/plugin-catalog-react/alpha';
 import { pluginInfoResolver } from './pluginInfoResolver';
 import { appModuleNav } from './modules/appModuleNav';
-import devtoolsPlugin from '@backstage/plugin-devtools/alpha';
-import { unprocessedEntitiesDevToolsContent } from '@backstage/plugin-catalog-unprocessed-entities/alpha';
 import catalogPlugin from '@backstage/plugin-catalog/alpha';
 import InfoIcon from '@material-ui/icons/Info';
-
-/*
-
-# Notes
-
-TODO:
- - proper createApp
- - connect extensions and plugins, provide method?
- - higher level API for creating standard extensions + higher order framework API for creating those?
- - extension config schema + validation
- - figure out how to resolve configured extension ref to runtime value, e.g. '@backstage/plugin-graphiql#GraphiqlPage'
- - make sure all shorthands work + tests
- - figure out package structure / how to ship, frontend-plugin-api/frontend-app-api
- - figure out routing, useRouteRef in the new system
- - Legacy plugins / interop
- - dynamic updates, runtime API
-
-*/
-
-/* core */
-
-// const discoverPackages = async () => {
-//   // stub for now, deferring package discovery til later
-//   return ['@backstage/plugin-graphiql'];
-// };
-
-/* graphiql package */
-
-/* app.tsx */
 
 /**
  * TechDocs does support the new frontend system so this conversion is not
@@ -91,7 +60,6 @@ TODO:
  */
 const convertedTechdocsPlugin = convertLegacyPlugin(techdocsPlugin, {
   extensions: [
-    // TODO: We likely also need a way to convert an entire <Route> tree similar to collectLegacyRoutes
     convertLegacyPageExtension(TechDocsIndexPage, {
       name: 'index',
       path: '/docs',
@@ -155,11 +123,6 @@ const notFoundErrorPageModule = createFrontendModule({
   extensions: [notFoundErrorPage],
 });
 
-const devtoolsPluginUnprocessed = createFrontendModule({
-  pluginId: 'catalog-unprocessed-entities',
-  extensions: [unprocessedEntitiesDevToolsContent],
-});
-
 const collectedLegacyPlugins = convertLegacyAppRoot(
   <FlatRoutes>
     <Route path="/catalog-import" element={<CatalogImportPage />} />
@@ -178,67 +141,11 @@ const app = createApp({
     notFoundErrorPageModule,
     appModuleNav,
     customHomePageModule,
-    devtoolsPlugin,
-    devtoolsPluginUnprocessed,
     ...collectedLegacyPlugins,
   ],
   advanced: {
     pluginInfoResolver,
   },
-  /* Handled through config instead */
-  // bindRoutes({ bind }) {
-  //   bind(pagesPlugin.externalRoutes, { pageX: pagesPlugin.routes.pageX });
-  // },
 });
 
-// const legacyApp = createLegacyApp({ plugins: [legacyGraphiqlPlugin] });
-
 export default app.createRoot();
-
-// const routes = (
-//   <FlatRoutes>
-//     {/* <Route path="/" element={<Navigate to="catalog" />} />
-//     <Route path="/catalog" element={<CatalogIndexPage />} />
-//     <Route
-//       path="/catalog/:namespace/:kind/:name"
-//       element={<CatalogEntityPage />}
-//     >
-//       <EntityLayout>
-//         <EntityLayout.Route path="/" title="Overview">
-//           <Grid container spacing={3} alignItems="stretch">
-//             <Grid item md={6} xs={12}>
-//               <EntityAboutCard variant="gridItem" />
-//             </Grid>
-
-//             <Grid item md={4} xs={12}>
-//               <EntityLinksCard />
-//             </Grid>
-//           </Grid>
-//         </EntityLayout.Route>
-
-//         <EntityLayout.Route path="/todos" title="TODOs">
-//           <EntityTodoContent />
-//         </EntityLayout.Route>
-//       </EntityLayout>
-//     </Route>
-//     <Route
-//       path="/catalog-import"
-//       element={
-//           <CatalogImportPage />
-//       }
-//     /> */}
-//     {/* <Route
-//       path="/tech-radar"
-//       element={<TechRadarPage width={1500} height={800} />}
-//     /> */}
-//     <Route path="/graphiql" element={<GraphiQLPage />} />
-//   </FlatRoutes>
-// );
-
-// export default app.createRoot(
-//   <>
-//     {/* <AlertDisplay transientTimeoutMs={2500} />
-//     <OAuthRequestDialog /> */}
-//     <AppRouter>{routes}</AppRouter>
-//   </>,
-// );

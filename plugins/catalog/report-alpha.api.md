@@ -32,7 +32,7 @@ import { SearchResultItemExtensionPredicate } from '@backstage/plugin-search-rea
 import { SearchResultListItemBlueprintParams } from '@backstage/plugin-search-react/alpha';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
 
-// @alpha (undocumented)
+// @alpha @deprecated (undocumented)
 export const catalogTranslationRef: TranslationRef<
   'catalog',
   {
@@ -83,11 +83,11 @@ export const catalogTranslationRef: TranslationRef<
     readonly 'catalogTable.starActionTitle': 'Add to favorites';
     readonly 'catalogTable.unStarActionTitle': 'Remove from favorites';
     readonly 'dependencyOfComponentsCard.title': 'Dependency of components';
-    readonly 'dependencyOfComponentsCard.emptyMessage': 'No component depends on this component';
+    readonly 'dependencyOfComponentsCard.emptyMessage': 'No component depends on this component.';
     readonly 'dependsOnComponentsCard.title': 'Depends on components';
-    readonly 'dependsOnComponentsCard.emptyMessage': 'No component is a dependency of this component';
+    readonly 'dependsOnComponentsCard.emptyMessage': 'No component is a dependency of this component.';
     readonly 'dependsOnResourcesCard.title': 'Depends on resources';
-    readonly 'dependsOnResourcesCard.emptyMessage': 'No resource is a dependency of this component';
+    readonly 'dependsOnResourcesCard.emptyMessage': 'No resource is a dependency of this component.';
     readonly 'entityContextMenu.copiedMessage': 'Copied!';
     readonly 'entityContextMenu.moreButtonTitle': 'More';
     readonly 'entityContextMenu.inspectMenuTitle': 'Inspect entity';
@@ -96,6 +96,8 @@ export const catalogTranslationRef: TranslationRef<
     readonly 'entityContextMenu.moreButtonAriaLabel': 'more';
     readonly 'entityLabelsCard.title': 'Labels';
     readonly 'entityLabelsCard.readMoreButtonTitle': 'Read more';
+    readonly 'entityLabelsCard.columnKeyLabel': 'Label';
+    readonly 'entityLabelsCard.columnValueLabel': 'Value';
     readonly 'entityLabelsCard.emptyDescription': 'No labels defined for this entity. You can add labels to your entity YAML as shown in the highlighted example below:';
     readonly 'entityLabels.ownerLabel': 'Owner';
     readonly 'entityLabels.warningPanelTitle': 'Entity not found';
@@ -110,16 +112,16 @@ export const catalogTranslationRef: TranslationRef<
     readonly entityProcessingErrorsDescription: 'The error below originates from';
     readonly entityRelationWarningDescription: "This entity has relations to other entities, which can't be found in the catalog.\n Entities not found are: ";
     readonly 'hasComponentsCard.title': 'Has components';
-    readonly 'hasComponentsCard.emptyMessage': 'No component is part of this system';
+    readonly 'hasComponentsCard.emptyMessage': 'No component is part of this system.';
     readonly 'hasResourcesCard.title': 'Has resources';
-    readonly 'hasResourcesCard.emptyMessage': 'No resource is part of this system';
+    readonly 'hasResourcesCard.emptyMessage': 'No resource is part of this system.';
     readonly 'hasSubcomponentsCard.title': 'Has subcomponents';
-    readonly 'hasSubcomponentsCard.emptyMessage': 'No subcomponent is part of this component';
+    readonly 'hasSubcomponentsCard.emptyMessage': 'No subcomponent is part of this component.';
     readonly 'hasSubdomainsCard.title': 'Has subdomains';
-    readonly 'hasSubdomainsCard.emptyMessage': 'No subdomain is part of this domain';
+    readonly 'hasSubdomainsCard.emptyMessage': 'No subdomain is part of this domain.';
     readonly 'hasSystemsCard.title': 'Has systems';
-    readonly 'hasSystemsCard.emptyMessage': 'No system is part of this domain';
-    readonly 'relatedEntitiesCard.emptyHelpLinkTitle': 'Learn how to change this';
+    readonly 'hasSystemsCard.emptyMessage': 'No system is part of this domain.';
+    readonly 'relatedEntitiesCard.emptyHelpLinkTitle': 'Learn how to change this.';
     readonly 'systemDiagramCard.title': 'System Diagram';
     readonly 'systemDiagramCard.description': 'Use pinch & zoom to move around the diagram.';
     readonly 'systemDiagramCard.edgeLabels.dependsOn': 'depends on';
@@ -1080,7 +1082,6 @@ const _default: OverridableFrontendPlugin<
       kind: 'page';
       name: undefined;
       params: {
-        defaultPath?: [Error: `Use the 'path' param instead`];
         path: string;
         title?: string;
         icon?: IconElement;
@@ -1097,9 +1098,12 @@ const _default: OverridableFrontendPlugin<
               {
                 title: string;
                 icon?: string | undefined;
+                aliases?: string[] | undefined;
+                contentOrder?: 'title' | 'natural' | undefined;
               }
             >[]
           | undefined;
+        defaultContentOrder: 'title' | 'natural';
         showNavItemIcons: boolean;
         path: string | undefined;
         title: string | undefined;
@@ -1111,9 +1115,12 @@ const _default: OverridableFrontendPlugin<
               {
                 title: string;
                 icon?: string | undefined;
+                aliases?: string[] | undefined;
+                contentOrder?: 'title' | 'natural' | undefined;
               }
             >[]
           | undefined;
+        defaultContentOrder?: 'title' | 'natural' | undefined;
         showNavItemIcons?: boolean | undefined;
         title?: string | undefined;
         path?: string | undefined;
@@ -1262,7 +1269,6 @@ const _default: OverridableFrontendPlugin<
       kind: 'page';
       name: 'entity';
       params: {
-        defaultPath?: [Error: `Use the 'path' param instead`];
         path: string;
         title?: string;
         icon?: IconElement;

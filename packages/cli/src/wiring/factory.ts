@@ -14,18 +14,4 @@
  * limitations under the License.
  */
 
-import { describeParentCallSite } from './describeParentCallSite';
-import { BackstageCommand, CliPlugin, OpaqueCliPlugin } from './types';
-
-export function createCliPlugin(options: {
-  pluginId: string;
-  init: (registry: {
-    addCommand: (command: BackstageCommand) => void;
-  }) => Promise<void>;
-}): CliPlugin {
-  return OpaqueCliPlugin.createInstance('v1', {
-    pluginId: options.pluginId,
-    init: options.init,
-    description: `created at '${describeParentCallSite()}'`,
-  });
-}
+export { createCliModule } from '@backstage/cli-node';

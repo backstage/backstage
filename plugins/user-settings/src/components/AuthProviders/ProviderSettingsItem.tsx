@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useState } from 'react';
+import { createElement, isValidElement, useEffect, useState } from 'react';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import ListItem from '@material-ui/core/ListItem';
@@ -33,6 +33,7 @@ import {
   errorApiRef,
   IconComponent,
 } from '@backstage/core-plugin-api';
+import { IconElement } from '@backstage/frontend-plugin-api';
 import { ProviderSettingsAvatar } from './ProviderSettingsAvatar';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { userSettingsTranslationRef } from '../../translation';
@@ -43,10 +44,10 @@ const emptyProfile: ProfileInfo = {};
 export const ProviderSettingsItem = (props: {
   title: string;
   description: string;
-  icon: IconComponent;
+  icon: IconComponent | IconElement;
   apiRef: ApiRef<ProfileInfoApi & SessionApi>;
 }) => {
-  const { title, description, icon: Icon, apiRef } = props;
+  const { title, description, icon, apiRef } = props;
 
   const api = useApi(apiRef);
   const errorApi = useApi(errorApiRef);
@@ -86,11 +87,14 @@ export const ProviderSettingsItem = (props: {
     };
   }, [api]);
 
+  const iconElement =
+    icon === null || isValidElement(icon)
+      ? icon
+      : createElement(icon as IconComponent);
+
   return (
     <ListItem>
-      <ListItemIcon>
-        <Icon />
-      </ListItemIcon>
+      <ListItemIcon>{iconElement}</ListItemIcon>
       <ListItemText
         primary={title}
         secondary={

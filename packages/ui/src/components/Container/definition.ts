@@ -14,15 +14,23 @@
  * limitations under the License.
  */
 
-import type { ComponentDefinition } from '../../types';
+import { defineComponent } from '../../hooks/useDefinition';
+import type { ContainerOwnProps } from './types';
+import styles from './Container.module.css';
 
 /**
  * Component definition for Container
  * @public
  */
-export const ContainerDefinition = {
+export const ContainerDefinition = defineComponent<ContainerOwnProps>()({
+  styles,
   classNames: {
     root: 'bui-Container',
   },
+  propDefs: {
+    children: {},
+    className: {},
+    style: {},
+  },
   utilityProps: ['my', 'mt', 'mb', 'py', 'pt', 'pb', 'display'],
-} as const satisfies ComponentDefinition;
+});

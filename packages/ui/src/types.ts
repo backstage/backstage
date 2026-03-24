@@ -154,34 +154,7 @@ export interface UtilityProps extends SpaceProps {
 }
 
 /**
- * Base type for the component styles structure
- * @public
- */
-export type ClassNamesMap = Record<string, string>;
-
-/**
- * Base type for the component styles structure
- * @public
- */
-export type DataAttributeValues = readonly (string | number | boolean)[];
-
-/**
- * Base type for the component styles structure
- * @public
- */
-export type DataAttributesMap = Record<string, DataAttributeValues>;
-
-/**
- * Base type for the component styles structure
- * @public
- */
-export interface ComponentDefinition {
-  classNames: ClassNamesMap;
-  dataAttributes?: DataAttributesMap;
-  utilityProps?: string[];
-}
-
-/**
+ * Resolved background level stored in context and applied as `data-bg` on DOM elements.
  * Background type for the neutral bg system.
  *
  * Supports neutral levels ('neutral-1' through 'neutral-3') and
@@ -189,6 +162,9 @@ export interface ComponentDefinition {
  *
  * The 'neutral-4' level is not exposed as a prop value -- it is reserved
  * for leaf component CSS (e.g. Button on a 'neutral-3' surface).
+ *
+ * This is the resolved/internal representation used by the bg context system.
+ * For the prop type accepted by container components, use `ProviderBg` instead.
  *
  * @public
  */
@@ -201,11 +177,13 @@ export type ContainerBg =
   | 'success';
 
 /**
- * Background values accepted by provider components.
+ * Background values accepted by provider components (Box, Flex, Grid, Card, etc.).
  *
- * Includes all `ContainerBg` values plus `'neutral-auto'` which
- * automatically increments the neutral level from the parent context.
+ * - `'neutral'` — automatically increments the neutral level from the parent context,
+ *   capping at the maximum level. This is always incremental; explicit levels cannot
+ *   be set directly.
+ * - `'danger'` | `'warning'` | `'success'` — intent backgrounds used as-is.
  *
  * @public
  */
-export type ProviderBg = ContainerBg | 'neutral-auto';
+export type ProviderBg = 'neutral' | 'danger' | 'warning' | 'success';

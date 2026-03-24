@@ -87,11 +87,10 @@ export async function createRouter(
     database,
   });
 
-  const omitClaimsFromToken = config.getOptionalBoolean(
-    'auth.omitIdentityTokenOwnershipClaim',
-  )
-    ? ['ent']
-    : [];
+  const omitClaimsFromToken =
+    config.getOptionalBoolean('auth.omitIdentityTokenOwnershipClaim') ?? true
+      ? ['ent']
+      : [];
 
   let tokenIssuer: TokenIssuer;
   if (keyStore instanceof StaticKeyStore) {

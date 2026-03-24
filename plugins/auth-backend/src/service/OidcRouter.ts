@@ -27,8 +27,8 @@ import { UserInfoDatabase } from '../database/UserInfoDatabase';
 import { OidcDatabase } from '../database/OidcDatabase';
 import { OfflineAccessService } from './OfflineAccessService';
 import { json } from 'express';
-import { z } from 'zod';
-import { fromZodError } from 'zod-validation-error';
+import { z } from 'zod/v4';
+import { fromZodError } from 'zod-validation-error/v4';
 import { OidcError } from './OidcError';
 
 function ensureTrailingSlash(url: string): string {
@@ -145,6 +145,7 @@ export class OidcRouter {
   private readonly appUrl: string;
   private readonly httpAuth: HttpAuthService;
   private readonly config: RootConfigService;
+  private readonly baseUrl: string;
 
   private constructor(
     oidc: OidcService,
@@ -153,6 +154,7 @@ export class OidcRouter {
     appUrl: string,
     httpAuth: HttpAuthService,
     config: RootConfigService,
+    baseUrl: string,
   ) {
     this.oidc = oidc;
     this.logger = logger;
@@ -160,6 +162,7 @@ export class OidcRouter {
     this.appUrl = appUrl;
     this.httpAuth = httpAuth;
     this.config = config;
+    this.baseUrl = baseUrl;
   }
 
   static create(options: {
@@ -181,6 +184,7 @@ export class OidcRouter {
       options.appUrl,
       options.httpAuth,
       options.config,
+      options.baseUrl,
     );
   }
 
@@ -202,6 +206,32 @@ export class OidcRouter {
     router.get('/.well-known/jwks.json', async (_req, res) => {
       const { keys } = await this.oidc.listPublicKeys();
       res.json({ keys });
+    });
+
+    // CIMD metadata endpoint for the Backstage CLI
+    // Automatically available when CIMD is enabled
+    router.get('/.well-known/oauth-client/cli.json', (_req, res) => {
+      const cimdEnabled = this.config.getOptionalBoolean(
+        'auth.experimentalClientIdMetadataDocuments.enabled',
+      );
+
+      if (!cimdEnabled) {
+        res.status(404).json({
+          error: 'not_found',
+          error_description: 'Client ID metadata documents not enabled',
+        });
+        return;
+      }
+
+      res.json({
+        client_id: `${this.baseUrl}/.well-known/oauth-client/cli.json`,
+        client_name: 'Backstage CLI',
+        redirect_uris: ['http://127.0.0.1:8055/callback'],
+        response_types: ['code'],
+        grant_types: ['authorization_code'],
+        token_endpoint_auth_method: 'none',
+        scope: 'openid offline_access',
+      });
     });
 
     // UserInfo endpoint

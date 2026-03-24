@@ -98,7 +98,6 @@ describe.each(databases.eachSupportedId())(
         entity_ref: entityRef,
         final_entity: entityJson,
         hash: 'h',
-        stitch_ticket: '',
       });
 
       const search = await buildEntitySearch(id, entity);

@@ -15,7 +15,7 @@
  */
 
 import express from 'express';
-import { z } from 'zod';
+import { z } from 'zod/v3';
 import { InputError } from '@backstage/errors';
 import { Config } from '@backstage/config';
 import { JsonObject, JsonValue } from '@backstage/types';

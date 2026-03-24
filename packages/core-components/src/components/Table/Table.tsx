@@ -178,7 +178,7 @@ const StyledMTableToolbar = withStyles(
 )(MTableToolbar);
 
 /** @public */
-export type FiltersContainerClassKey = 'root' | 'title';
+export type FiltersContainerClassKey = 'root' | 'filterControls' | 'title';
 
 const useFilterStyles = makeStyles(
   theme => ({
@@ -187,6 +187,10 @@ const useFilterStyles = makeStyles(
       alignItems: 'center',
       justifyContent: 'space-between',
       flexWrap: 'wrap',
+    },
+    filterControls: {
+      display: 'flex',
+      alignItems: 'center',
     },
     title: {
       fontWeight: theme.typography.fontWeightBold,
@@ -316,7 +320,7 @@ export function TableToolbar(toolbarProps: {
   if (hasFilters) {
     return (
       <Box className={filtersClasses.root}>
-        <Box className={filtersClasses.root}>
+        <Box className={filtersClasses.filterControls}>
           <IconButton onClick={toggleFilters} aria-label="filter list">
             <FilterList />
           </IconButton>

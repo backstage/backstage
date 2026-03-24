@@ -34,7 +34,13 @@ import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { RequirePermission } from '@backstage/plugin-permission-react';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
 
-export * from './translation';
+import { catalogImportTranslationRef as _catalogImportTranslationRef } from './translation';
+
+/**
+ * @alpha
+ * @deprecated Import from `@backstage/plugin-catalog-import` instead.
+ */
+export const catalogImportTranslationRef = _catalogImportTranslationRef;
 
 // TODO: It's currently possible to override the import page with a custom one. We need to decide
 //       whether this type of override is typically done with an input or by overriding the entire extension.
@@ -91,5 +97,3 @@ export default createFrontendPlugin({
     importPage: rootRouteRef,
   },
 });
-
-export { catalogImportTranslationRef } from './translation';

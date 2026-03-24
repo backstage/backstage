@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { InputError } from '@backstage/errors';
+import { assertError, InputError } from '@backstage/errors';
 import {
   GithubCredentialsProvider,
   ScmIntegrations,
@@ -62,7 +62,14 @@ export function createGithubActionsDispatchAction(options: {
           z
             .record(z.string(), {
               description:
-                'Inputs keys and values to send to GitHub Action configured on the workflow file. The maximum number of properties is 10.',
+                'Inputs keys and values to send to GitHub Action configured on the workflow file. The maximum number of properties is 25.',
+            })
+            .optional(),
+        returnWorkflowRunDetails: z =>
+          z
+            .boolean({
+              description:
+                'If true, returns the workflow run ID and URLs as action outputs.',
             })
             .optional(),
         token: z =>
@@ -73,6 +80,14 @@ export function createGithubActionsDispatchAction(options: {
             })
             .optional(),
       },
+      output: {
+        workflowRunId: z =>
+          z.number({ description: 'The triggered workflow run ID' }).optional(),
+        workflowRunUrl: z =>
+          z.string({ description: 'API URL of the workflow run' }).optional(),
+        workflowRunHtmlUrl: z =>
+          z.string({ description: 'HTML URL of the workflow run' }).optional(),
+      },
     },
     async handler(ctx) {
       const {
@@ -80,6 +95,7 @@ export function createGithubActionsDispatchAction(options: {
         workflowId,
         branchOrTagName,
         workflowInputs,
+        returnWorkflowRunDetails,
         token: providedToken,
       } = ctx.input;
 
@@ -106,20 +122,65 @@ export function createGithubActionsDispatchAction(options: {
         log: ctx.logger,
       });
 
-      await ctx.checkpoint({
-        key: `create.workflow.dispatch.${owner}.${repo}.${workflowId}`,
-        fn: async () => {
-          await client.rest.actions.createWorkflowDispatch({
-            owner,
-            repo,
-            workflow_id: workflowId,
-            ref: branchOrTagName,
-            inputs: workflowInputs,
-          });
+      try {
+        const runDetails = await ctx.checkpoint({
+          key: `create.workflow.dispatch.${owner}.${repo}.${workflowId}`,
+          fn: async () => {
+            const dispatchParams = {
+              owner,
+              repo,
+              workflow_id: workflowId,
+              ref: branchOrTagName,
+              inputs: workflowInputs,
+              ...(returnWorkflowRunDetails ? { return_run_details: true } : {}),
+            };
+            const response = await client.rest.actions.createWorkflowDispatch(
+              dispatchParams,
+            );
 
-          ctx.logger.info(`Workflow ${workflowId} dispatched successfully`);
-        },
-      });
+            ctx.logger.info(`Workflow ${workflowId} dispatched successfully`);
+
+            if (returnWorkflowRunDetails && response.data) {
+              // GitHub's API returns 200 with run details when return_run_details is true.
+              // @octokit/openapi-types still types this as OctokitResponse<never, 204> because
+              // it hasn't picked up the updated GitHub OpenAPI spec yet.
+              // See: https://github.blog/changelog/2026-02-19-workflow-dispatch-api-now-returns-run-ids/
+              // This cast can be removed once @octokit/openapi-types includes the updated spec.
+              // Note: only supported on GitHub.com and GitHub Enterprise Cloud, not GitHub Enterprise Server
+              const data = response.data as unknown as {
+                workflow_run_id: number;
+                run_url: string;
+                html_url: string;
+              };
+
+              return {
+                workflowRunId: data.workflow_run_id,
+                workflowRunUrl: data.run_url,
+                workflowRunHtmlUrl: data.html_url,
+              };
+            }
+            return null;
+          },
+        });
+
+        if (runDetails) {
+          ctx.output('workflowRunId', runDetails.workflowRunId);
+          ctx.output('workflowRunUrl', runDetails.workflowRunUrl);
+          ctx.output('workflowRunHtmlUrl', runDetails.workflowRunHtmlUrl);
+
+          if (runDetails.workflowRunHtmlUrl) {
+            ctx.logger.info(
+              `Workflow run url: ${runDetails.workflowRunHtmlUrl}`,
+            );
+          }
+        }
+      } catch (e) {
+        assertError(e);
+        ctx.logger.warn(
+          `Failed: dispatching workflow '${workflowId}' on repo: '${repo}', ${e.message}`,
+        );
+        throw e;
+      }
     },
   });
 }

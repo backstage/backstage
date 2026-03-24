@@ -14,9 +14,18 @@
  * limitations under the License.
  */
 
+import type { ComponentPropsWithoutRef } from 'react';
+
+/** @public */
+export type FullPageOwnProps = {
+  className?: string;
+};
+
 /**
  * Props for the FullPage component.
  *
  * @public
  */
-export interface FullPageProps extends React.ComponentPropsWithoutRef<'main'> {}
+export interface FullPageProps
+  extends Omit<ComponentPropsWithoutRef<'main'>, 'className'>,
+    FullPageOwnProps {}

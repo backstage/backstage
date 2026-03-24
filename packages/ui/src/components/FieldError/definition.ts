@@ -14,14 +14,20 @@
  * limitations under the License.
  */
 
-import type { ComponentDefinition } from '../../types';
+import { defineComponent } from '../../hooks/useDefinition';
+import type { FieldErrorOwnProps } from './types';
+import styles from './FieldError.module.css';
 
 /**
  * Component definition for FieldError
  * @public
  */
-export const FieldErrorDefinition = {
+export const FieldErrorDefinition = defineComponent<FieldErrorOwnProps>()({
+  styles,
   classNames: {
     root: 'bui-FieldError',
   },
-} as const satisfies ComponentDefinition;
+  propDefs: {
+    className: {},
+  },
+});

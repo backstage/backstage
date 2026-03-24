@@ -33,7 +33,7 @@ import { InputError, serializeError } from '@backstage/errors';
 import { LocationAnalyzer } from '@backstage/plugin-catalog-node';
 import express from 'express';
 import yn from 'yn';
-import { z } from 'zod';
+import { z } from 'zod/v3';
 import { Cursor, EntitiesCatalog } from '../catalog/types';
 import { CatalogProcessingOrchestrator } from '../processing/types';
 import { validateEntityEnvelope } from '../processing/util';
@@ -47,6 +47,7 @@ import {
   parseQueryEntitiesParams,
 } from './request';
 import { parseEntityFacetParams } from './request/parseEntityFacetParams';
+import { parseEntityFacetsQuery } from './request/parseEntityFacetsQuery';
 import { parseEntityOrderParams } from './request/parseEntityOrderParams';
 import { parseEntityPaginationParams } from './request/parseEntityPaginationParams';
 import {
@@ -524,6 +525,7 @@ export async function createRouter(
           const { items } = await entitiesCatalog.entitiesBatch({
             entityRefs: request.entityRefs,
             filter: parseEntityFilterParams(req.query),
+            query: request.query,
             fields: parseEntityTransformParams(req.query, request.fields),
             credentials: await httpAuth.credentials(req),
           });
@@ -571,6 +573,31 @@ export async function createRouter(
           });
           throw err;
         }
+      })
+      .post('/entity-facets', async (req, res) => {
+        const auditorEvent = await auditor.createEvent({
+          eventId: 'entity-facets',
+          request: req,
+        });
+
+        try {
+          const { facets, query } = parseEntityFacetsQuery(req.body ?? {});
+
+          const response = await entitiesCatalog.facets({
+            query,
+            facets,
+            credentials: await httpAuth.credentials(req),
+          });
+
+          await auditorEvent?.success();
+
+          res.status(200).json(response);
+        } catch (err) {
+          await auditorEvent?.fail({
+            error: err,
+          });
+          throw err;
+        }
       });
   }
 
@@ -579,6 +606,7 @@ export async function createRouter(
       .post('/locations', async (req, res) => {
         const location = await validateRequestBody(req, locationInput);
         const dryRun = yn(req.query.dryRun, { default: false });
+        const onConflict = req.query.onConflict;
 
         const auditorEvent = await auditor.createEvent({
           eventId: 'location-mutate',
@@ -602,6 +630,7 @@ export async function createRouter(
             location,
             dryRun,
             {
+              onConflict,
               credentials: await httpAuth.credentials(req),
             },
           );

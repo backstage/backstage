@@ -28,7 +28,6 @@ import { ComponentType } from 'react';
 import { ConfigApi } from '@backstage/frontend-plugin-api';
 import { configApiRef } from '@backstage/frontend-plugin-api';
 import { createApiFactory } from '@backstage/frontend-plugin-api';
-import { createApiRef } from '@backstage/frontend-plugin-api';
 import { DiscoveryApi } from '@backstage/frontend-plugin-api';
 import { discoveryApiRef } from '@backstage/frontend-plugin-api';
 import { ErrorApi } from '@backstage/frontend-plugin-api';
@@ -256,7 +255,8 @@ export { configApiRef };
 
 export { createApiFactory };
 
-export { createApiRef };
+// @public
+export function createApiRef<T>(config: ApiRefConfig): ApiRef<T>;
 
 // @public
 export function createComponentExtension<
@@ -500,6 +500,7 @@ export type PluginConfig<
 // @public
 export type PluginFeatureFlagConfig = {
   name: string;
+  description?: string;
 };
 
 export { ProfileInfo };

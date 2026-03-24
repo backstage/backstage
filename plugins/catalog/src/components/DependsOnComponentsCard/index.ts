@@ -15,4 +15,7 @@
  */
 
 export { DependsOnComponentsCard } from './DependsOnComponentsCard';
-export type { DependsOnComponentsCardProps } from './DependsOnComponentsCard';
+export type {
+  DependsOnComponentsCardLegacyProps,
+  DependsOnComponentsCardProps,
+} from './DependsOnComponentsCard';

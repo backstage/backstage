@@ -13,9 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { CheckboxProps as RACheckboxProps } from 'react-aria-components';
+import type { CheckboxProps as RACheckboxProps } from 'react-aria-components';
 
 /** @public */
-export interface CheckboxProps extends RACheckboxProps {
-  children: React.ReactNode;
-}
+export type CheckboxOwnProps = {
+  children?: React.ReactNode;
+  className?: string;
+};
+
+/** @public */
+export interface CheckboxProps
+  extends Omit<RACheckboxProps, 'children' | 'className'>,
+    CheckboxOwnProps {}

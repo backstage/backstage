@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ApiRef, createApiRef } from '../system';
+import { createApiRef } from '../system';
 
 /**
  * The discovery API is used to provide a mechanism for plugins to
@@ -50,6 +50,7 @@ export type DiscoveryApi = {
  *
  * @public
  */
-export const discoveryApiRef: ApiRef<DiscoveryApi> = createApiRef({
+export const discoveryApiRef = createApiRef<DiscoveryApi>().with({
   id: 'core.discovery',
+  pluginId: 'app',
 });

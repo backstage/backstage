@@ -16,4 +16,4 @@
 
 export { Link } from './Link';
 export { LinkDefinition } from './definition';
-export type { LinkProps } from './types';
+export type { LinkOwnProps, LinkProps } from './types';

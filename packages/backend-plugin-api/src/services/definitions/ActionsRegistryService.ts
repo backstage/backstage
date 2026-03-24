@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { z, AnyZodObject } from 'zod';
+import { z, AnyZodObject } from 'zod/v3';
+import { BasicPermission } from '@backstage/plugin-permission-common';
 import { LoggerService } from './LoggerService';
 import { BackstageCredentials } from './AuthService';
 
@@ -40,6 +41,7 @@ export type ActionsRegistryActionOptions<
     input: (zod: typeof z) => TInputSchema;
     output: (zod: typeof z) => TOutputSchema;
   };
+  visibilityPermission?: BasicPermission;
   attributes?: {
     destructive?: boolean;
     idempotent?: boolean;

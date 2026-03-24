@@ -54,6 +54,7 @@ export function getOpenApiSpecRoute(baseUrl: string) {
 /**
  * Create a router with validation middleware. This is used by typing methods to create an
  *  "OpenAPI router" with all of the expected validation + metadata.
+ * Only supports OpenAPI 3.1 specifications.
  * @param spec - Your OpenAPI spec imported as a JSON object.
  * @param validatorOptions - `openapi-express-validator` options to override the defaults.
  * @returns A new express router with validation middleware.
@@ -115,6 +116,7 @@ function createRouterWithValidation(
 
 /**
  * Create a new OpenAPI router with some default middleware.
+ * Only supports OpenAPI 3.1 specifications.
  * @param spec - Your OpenAPI spec imported as a JSON object.
  * @param validatorOptions - `openapi-express-validator` options to override the defaults.
  * @returns A new express router with validation middleware.
@@ -132,6 +134,7 @@ export function createValidatedOpenApiRouter<T extends RequiredDoc>(
 
 /**
  * Create a new OpenAPI router with some default middleware.
+ * Only supports OpenAPI 3.1 specifications.
  * @param spec - Your OpenAPI spec imported as a JSON object.
  * @param validatorOptions - `openapi-express-validator` options to override the defaults.
  * @returns A new express router with validation middleware.

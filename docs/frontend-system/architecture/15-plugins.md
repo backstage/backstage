@@ -76,6 +76,20 @@ These are the routes that the plugin exposes to the app. The `routes` option dec
 
 This is a list of feature flag declarations that your plugin provides to the app. This makes sure that the feature flags are correctly registered and can be toggled in the app. To read a feature flag you can use the feature flags [Utility API](../architecture/33-utility-apis.md), accessible via `featureFlagsApiRef`.
 
+### `if` option
+
+The `if` option lets you apply a shared condition to all extensions that are provided by a plugin instance. This is useful when you want to gate an entire plugin behind a feature flag or permission without repeating the same predicate on every individual extension.
+
+```tsx
+export default createFrontendPlugin({
+  pluginId: 'my-plugin',
+  if: { featureFlags: { $contains: 'my-plugin-enabled' } },
+  extensions: [...],
+});
+```
+
+This predicate is applied to every extension from that plugin instance. If any extension already has its own `if` predicate, the two are combined using logical `AND`.
+
 ### `info` option
 
 This options is used to provide loaders for different sources of information about the plugin that may be useful to users and admins. The two available loaders are `packageJson` and `manifest`, and a plugin can use either or both as needed. The resulting information is available via the `info()` method on the plugin instance once it is installed in an app, but it is up to each app to decide how to derive the information from the provided sources.

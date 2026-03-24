@@ -14,15 +14,22 @@
  * limitations under the License.
  */
 
-import type { ComponentDefinition } from '../../types';
+import { defineComponent } from '../../hooks/useDefinition';
+import type { SwitchOwnProps } from './types';
+import styles from './Switch.module.css';
 
 /**
  * Component definition for Switch
  * @public
  */
-export const SwitchDefinition = {
+export const SwitchDefinition = defineComponent<SwitchOwnProps>()({
+  styles,
   classNames: {
     root: 'bui-Switch',
     indicator: 'bui-SwitchIndicator',
   },
-} as const satisfies ComponentDefinition;
+  propDefs: {
+    label: {},
+    className: {},
+  },
+});

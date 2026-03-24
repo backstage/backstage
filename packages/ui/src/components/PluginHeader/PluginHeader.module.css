@@ -17,35 +17,15 @@
 @layer tokens, base, components, utilities;
 
 @layer components {
-  .bui-PluginHeader {
-    display: block;
-  }
-
   .bui-PluginHeaderToolbar {
-    &::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0px;
-      right: 0px;
-      height: 16px;
-      background-color: var(--bui-bg-app);
-      z-index: 0;
-    }
-  }
-
-  .bui-PluginHeaderToolbarWrapper {
-    position: relative;
-    z-index: 1;
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    background-color: var(--bui-bg-neutral-1);
     padding-inline: var(--bui-space-5);
-    border-bottom: 1px solid var(--bui-border-1);
     color: var(--bui-fg-primary);
     height: 52px;
+    border-bottom: 1px solid var(--bui-border-1);
   }
 
   .bui-PluginHeaderToolbarContent {
@@ -66,21 +46,22 @@
   }
 
   .bui-PluginHeaderToolbarIcon {
-    width: 16px;
-    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 2rem;
+    height: 2rem;
+    border-radius: var(--bui-radius-2);
     color: var(--bui-fg-primary);
 
     & svg {
-      width: 100%;
-      height: 100%;
+      width: 1rem;
+      height: 1rem;
     }
   }
 
   .bui-PluginHeaderToolbarControls {
-    position: absolute;
-    right: var(--bui-space-5);
-    top: 50%;
-    transform: translateY(-50%);
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -90,6 +71,5 @@
   .bui-PluginHeaderTabsWrapper {
     padding-inline: var(--bui-space-3);
     border-bottom: 1px solid var(--bui-border-1);
-    background-color: var(--bui-bg-neutral-1);
   }
 }

@@ -71,6 +71,64 @@ export const myPlugin = createBackendPlugin({
 });
 ```
 
+### Namespaced Tool Names
+
+By default, MCP tool names include the plugin ID prefix to avoid collisions across plugins. For example, an action registered as `greet-user` by `my-custom-plugin` is exposed as `my-custom-plugin.greet-user`.
+
+You can disable this if you need the short names for backward compatibility:
+
+```yaml
+mcpActions:
+  namespacedToolNames: false
+```
+
+### Multiple MCP Servers
+
+By default, the plugin serves a single MCP server at `/api/mcp-actions/v1` that exposes all available actions. You can split actions into multiple focused servers by configuring `mcpActions.servers`, where each key becomes a separate MCP server endpoint.
+
+```yaml
+mcpActions:
+  servers:
+    catalog:
+      name: 'Backstage Catalog'
+      description: 'Tools for interacting with the software catalog'
+      filter:
+        include:
+          - id: 'catalog:*'
+    scaffolder:
+      name: 'Backstage Scaffolder'
+      description: 'Tools for creating new software from templates'
+      filter:
+        include:
+          - id: 'scaffolder:*'
+```
+
+This creates two MCP server endpoints:
+
+- `http://localhost:7007/api/mcp-actions/v1/catalog`
+- `http://localhost:7007/api/mcp-actions/v1/scaffolder`
+
+Each server uses include filter rules with glob patterns on action IDs to control which actions are exposed. For example, `id: 'catalog:*'` matches all actions registered by the catalog plugin.
+
+When `mcpActions.servers` is not configured, the plugin behaves exactly as before with a single server at `/api/mcp-actions/v1`.
+
+#### Filter Rules
+
+Include and exclude filter rules support glob patterns on action IDs and attribute matching. Exclude rules take precedence over include rules. When include rules are specified, actions must match at least one include rule to be exposed.
+
+```yaml
+mcpActions:
+  servers:
+    catalog:
+      name: 'Backstage Catalog'
+      filter:
+        include:
+          - id: 'catalog:*'
+        exclude:
+          - attributes:
+              destructive: true
+```
+
 ### Error Handling
 
 When errors are thrown from MCP actions, the backend will handle and surface error message for any error from `@backstage/errors`. Unknown errors will be handled by `@modelcontextprotocol/sdk`'s default error handling, which may result in a generic `500 Server Error` being returned. As a result, we recommend using errors from `@backstage/errors` when applicable.
@@ -159,17 +217,42 @@ The MCP server supports both Server-Sent Events (SSE) and Streamable HTTP protoc
 
 The SSE protocol is deprecated, and should be avoided as it will be removed in a future release.
 
+### Single Server (default)
+
 - `Streamable HTTP`: `http://localhost:7007/api/mcp-actions/v1`
 - `SSE`: `http://localhost:7007/api/mcp-actions/v1/sse`
-
-There's a few different ways to configure MCP tools, but here's a snippet of the most common.
 
 ```json
 {
   "mcpServers": {
     "backstage-actions": {
-      // you can also replace this with the public / internal URL of the deployed backend.
       "url": "http://localhost:7007/api/mcp-actions/v1",
+      "headers": {
+        "Authorization": "Bearer ${MCP_TOKEN}"
+      }
+    }
+  }
+}
+```
+
+### Multiple Servers
+
+When `mcpActions.servers` is configured, each server key becomes part of the URL. For example, with servers named `catalog` and `scaffolder`:
+
+- `http://localhost:7007/api/mcp-actions/v1/catalog`
+- `http://localhost:7007/api/mcp-actions/v1/scaffolder`
+
+```json
+{
+  "mcpServers": {
+    "backstage-catalog": {
+      "url": "http://localhost:7007/api/mcp-actions/v1/catalog",
+      "headers": {
+        "Authorization": "Bearer ${MCP_TOKEN}"
+      }
+    },
+    "backstage-scaffolder": {
+      "url": "http://localhost:7007/api/mcp-actions/v1/scaffolder",
       "headers": {
         "Authorization": "Bearer ${MCP_TOKEN}"
       }

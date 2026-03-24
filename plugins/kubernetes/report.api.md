@@ -7,6 +7,7 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { RouteRef } from '@backstage/core-plugin-api';
+import { TranslationRef } from '@backstage/frontend-plugin-api';
 
 // Warning: (ae-missing-release-tag) "EntityKubernetesContent" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -36,6 +37,19 @@ const kubernetesPlugin: BackstagePlugin<
 >;
 export { kubernetesPlugin };
 export { kubernetesPlugin as plugin };
+
+// @public (undocumented)
+export const kubernetesTranslationRef: TranslationRef<
+  'kubernetes',
+  {
+    readonly 'entityContent.title': 'Kubernetes';
+    readonly 'kubernetesContentPage.title': 'Your Clusters';
+    readonly 'kubernetesContentPage.emptyState.title': 'No Kubernetes resources';
+    readonly 'kubernetesContentPage.emptyState.description': 'No resources on any known clusters for {{entityName}}';
+    readonly 'kubernetesContentPage.permissionAlert.message': "To view Kubernetes objects, contact your portal administrator to give you the 'kubernetes.clusters.read' and 'kubernetes.resources.read' permission.";
+    readonly 'kubernetesContentPage.permissionAlert.title': 'Permission required';
+  }
+>;
 
 // Warning: (ae-missing-release-tag) "Router" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

@@ -42,6 +42,7 @@ describe('convertLegacyPlugin', () => {
         "getExtension": [Function],
         "icon": undefined,
         "id": "test",
+        "if": undefined,
         "info": [Function],
         "infoOptions": undefined,
         "pluginId": "test",

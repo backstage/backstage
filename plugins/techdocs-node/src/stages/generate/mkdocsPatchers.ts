@@ -198,15 +198,28 @@ export const patchMkdocsYmlWithPlugins = async (
  *
  * @param mkdocsYmlPath - Absolute path to mkdocs.yml or equivalent of a docs site
  * @param logger - A logger instance
+ * @param additionalAllowedKeys - Optional array of additional keys to allow beyond the default allowlist
  */
 export const sanitizeMkdocsYml = async (
   mkdocsYmlPath: string,
   logger: LoggerService,
+  additionalAllowedKeys?: string[],
 ) => {
   await patchMkdocsFile(mkdocsYmlPath, logger, mkdocsYml => {
+    // Combine default allowed keys with additional keys
+    const allowedKeys = new Set(ALLOWED_MKDOCS_KEYS);
+    if (additionalAllowedKeys && additionalAllowedKeys.length > 0) {
+      logger.warn(
+        `DANGEROUS: Allowing additional MkDocs configuration keys beyond the default safe allowlist: ${additionalAllowedKeys.join(
+          ', ',
+        )}. This may introduce security vulnerabilities. Only use in trusted environments.`,
+      );
+      additionalAllowedKeys.forEach(key => allowedKeys.add(key));
+    }
+
     // Identify keys that will be removed for logging
     const removedKeys = Object.keys(mkdocsYml).filter(
-      key => !ALLOWED_MKDOCS_KEYS.has(key),
+      key => !allowedKeys.has(key),
     );
 
     if (removedKeys.length > 0) {
@@ -220,7 +233,7 @@ export const sanitizeMkdocsYml = async (
 
     // Build a new object with only allowed keys
     const sanitized: Record<string, unknown> = {};
-    for (const key of ALLOWED_MKDOCS_KEYS) {
+    for (const key of allowedKeys) {
       if (key in mkdocsYml) {
         sanitized[key] = (mkdocsYml as Record<string, unknown>)[key];
       }

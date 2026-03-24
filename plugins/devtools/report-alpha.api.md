@@ -125,34 +125,130 @@ const _default: OverridableFrontendPlugin<
             internal: false;
           }
         >;
-        contents: ExtensionInput<
-          | ConfigurableExtensionDataRef<string, 'core.title', {}>
-          | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
-          | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
-          | ConfigurableExtensionDataRef<
-              RouteRef_2<AnyRouteRefParams>,
-              'core.routing.ref',
-              {
-                optional: true;
-              }
-            >,
-          {
-            singleton: false;
-            optional: true;
-            internal: false;
-          }
-        >;
       };
       kind: 'page';
       name: undefined;
       params: {
-        defaultPath?: [Error: `Use the 'path' param instead`];
         path: string;
         title?: string;
         icon?: IconElement;
         loader?: () => Promise<JSX_2.Element>;
         routeRef?: RouteRef_2;
         noHeader?: boolean;
+      };
+    }>;
+    'sub-page:devtools/config': OverridableExtensionDefinition<{
+      kind: 'sub-page';
+      name: 'config';
+      config: {
+        path: string | undefined;
+        title: string | undefined;
+      };
+      configInput: {
+        title?: string | undefined;
+        path?: string | undefined;
+      };
+      output:
+        | ExtensionDataRef<string, 'core.routing.path', {}>
+        | ExtensionDataRef<
+            RouteRef_2<AnyRouteRefParams>,
+            'core.routing.ref',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ExtensionDataRef<string, 'core.title', {}>
+        | ExtensionDataRef<
+            IconElement,
+            'core.icon',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {};
+      params: {
+        path: string;
+        title: string;
+        icon?: IconElement;
+        loader: () => Promise<JSX.Element>;
+        routeRef?: RouteRef_2;
+      };
+    }>;
+    'sub-page:devtools/info': OverridableExtensionDefinition<{
+      kind: 'sub-page';
+      name: 'info';
+      config: {
+        path: string | undefined;
+        title: string | undefined;
+      };
+      configInput: {
+        title?: string | undefined;
+        path?: string | undefined;
+      };
+      output:
+        | ExtensionDataRef<string, 'core.routing.path', {}>
+        | ExtensionDataRef<
+            RouteRef_2<AnyRouteRefParams>,
+            'core.routing.ref',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ExtensionDataRef<string, 'core.title', {}>
+        | ExtensionDataRef<
+            IconElement,
+            'core.icon',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {};
+      params: {
+        path: string;
+        title: string;
+        icon?: IconElement;
+        loader: () => Promise<JSX.Element>;
+        routeRef?: RouteRef_2;
+      };
+    }>;
+    'sub-page:devtools/scheduled-tasks': OverridableExtensionDefinition<{
+      kind: 'sub-page';
+      name: 'scheduled-tasks';
+      config: {
+        path: string | undefined;
+        title: string | undefined;
+      };
+      configInput: {
+        title?: string | undefined;
+        path?: string | undefined;
+      };
+      output:
+        | ExtensionDataRef<string, 'core.routing.path', {}>
+        | ExtensionDataRef<
+            RouteRef_2<AnyRouteRefParams>,
+            'core.routing.ref',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ExtensionDataRef<string, 'core.title', {}>
+        | ExtensionDataRef<
+            IconElement,
+            'core.icon',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {};
+      params: {
+        path: string;
+        title: string;
+        icon?: IconElement;
+        loader: () => Promise<JSX.Element>;
+        routeRef?: RouteRef_2;
       };
     }>;
   }

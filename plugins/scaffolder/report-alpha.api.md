@@ -17,6 +17,7 @@ import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { FieldExtensionOptions } from '@backstage/plugin-scaffolder-react';
 import { FilterPredicate } from '@backstage/filter-predicates';
 import { FormField } from '@backstage/plugin-scaffolder-react/alpha';
+import { formFieldsApiRef } from '@backstage/plugin-scaffolder-react/alpha';
 import type { FormProps as FormProps_2 } from '@rjsf/core';
 import { FormProps as FormProps_3 } from '@backstage/plugin-scaffolder-react';
 import { IconComponent } from '@backstage/frontend-plugin-api';
@@ -31,6 +32,7 @@ import { ReviewStepProps } from '@backstage/plugin-scaffolder-react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { RouteRef as RouteRef_2 } from '@backstage/frontend-plugin-api';
 import { ScaffolderFormDecorator } from '@backstage/plugin-scaffolder-react/alpha';
+import { ScaffolderFormFieldsApi } from '@backstage/plugin-scaffolder-react/alpha';
 import { SubRouteRef } from '@backstage/core-plugin-api';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateGroupFilter } from '@backstage/plugin-scaffolder-react';
@@ -272,7 +274,6 @@ const _default: OverridableFrontendPlugin<
       kind: 'page';
       name: undefined;
       params: {
-        defaultPath?: [Error: `Use the 'path' param instead`];
         path: string;
         title?: string;
         icon?: IconElement;
@@ -431,6 +432,196 @@ const _default: OverridableFrontendPlugin<
         field: () => Promise<FormField>;
       };
     }>;
+    'sub-page:scaffolder/actions': OverridableExtensionDefinition<{
+      kind: 'sub-page';
+      name: 'actions';
+      config: {
+        path: string | undefined;
+        title: string | undefined;
+      };
+      configInput: {
+        title?: string | undefined;
+        path?: string | undefined;
+      };
+      output:
+        | ExtensionDataRef<string, 'core.routing.path', {}>
+        | ExtensionDataRef<
+            RouteRef_2<AnyRouteRefParams>,
+            'core.routing.ref',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ExtensionDataRef<string, 'core.title', {}>
+        | ExtensionDataRef<
+            IconElement,
+            'core.icon',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {};
+      params: {
+        path: string;
+        title: string;
+        icon?: IconElement;
+        loader: () => Promise<JSX.Element>;
+        routeRef?: RouteRef_2;
+      };
+    }>;
+    'sub-page:scaffolder/editor': OverridableExtensionDefinition<{
+      kind: 'sub-page';
+      name: 'editor';
+      config: {
+        path: string | undefined;
+        title: string | undefined;
+      };
+      configInput: {
+        title?: string | undefined;
+        path?: string | undefined;
+      };
+      output:
+        | ExtensionDataRef<string, 'core.routing.path', {}>
+        | ExtensionDataRef<
+            RouteRef_2<AnyRouteRefParams>,
+            'core.routing.ref',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ExtensionDataRef<string, 'core.title', {}>
+        | ExtensionDataRef<
+            IconElement,
+            'core.icon',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {};
+      params: {
+        path: string;
+        title: string;
+        icon?: IconElement;
+        loader: () => Promise<JSX.Element>;
+        routeRef?: RouteRef_2;
+      };
+    }>;
+    'sub-page:scaffolder/tasks': OverridableExtensionDefinition<{
+      kind: 'sub-page';
+      name: 'tasks';
+      config: {
+        path: string | undefined;
+        title: string | undefined;
+      };
+      configInput: {
+        title?: string | undefined;
+        path?: string | undefined;
+      };
+      output:
+        | ExtensionDataRef<string, 'core.routing.path', {}>
+        | ExtensionDataRef<
+            RouteRef_2<AnyRouteRefParams>,
+            'core.routing.ref',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ExtensionDataRef<string, 'core.title', {}>
+        | ExtensionDataRef<
+            IconElement,
+            'core.icon',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {};
+      params: {
+        path: string;
+        title: string;
+        icon?: IconElement;
+        loader: () => Promise<JSX.Element>;
+        routeRef?: RouteRef_2;
+      };
+    }>;
+    'sub-page:scaffolder/templates': OverridableExtensionDefinition<{
+      config: {
+        path: string | undefined;
+        title: string | undefined;
+      };
+      configInput: {
+        title?: string | undefined;
+        path?: string | undefined;
+      };
+      output:
+        | ExtensionDataRef<string, 'core.routing.path', {}>
+        | ExtensionDataRef<
+            RouteRef_2<AnyRouteRefParams>,
+            'core.routing.ref',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ExtensionDataRef<string, 'core.title', {}>
+        | ExtensionDataRef<
+            IconElement,
+            'core.icon',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {};
+      kind: 'sub-page';
+      name: 'templates';
+      params: {
+        path: string;
+        title: string;
+        icon?: IconElement;
+        loader: () => Promise<JSX.Element>;
+        routeRef?: RouteRef_2;
+      };
+    }>;
+    'sub-page:scaffolder/templating-extensions': OverridableExtensionDefinition<{
+      kind: 'sub-page';
+      name: 'templating-extensions';
+      config: {
+        path: string | undefined;
+        title: string | undefined;
+      };
+      configInput: {
+        title?: string | undefined;
+        path?: string | undefined;
+      };
+      output:
+        | ExtensionDataRef<string, 'core.routing.path', {}>
+        | ExtensionDataRef<
+            RouteRef_2<AnyRouteRefParams>,
+            'core.routing.ref',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ExtensionDataRef<string, 'core.title', {}>
+        | ExtensionDataRef<
+            IconElement,
+            'core.icon',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {};
+      params: {
+        path: string;
+        title: string;
+        icon?: IconElement;
+        loader: () => Promise<JSX.Element>;
+        routeRef?: RouteRef_2;
+      };
+    }>;
   }
 >;
 export default _default;
@@ -478,10 +669,11 @@ export const formDecoratorsApi: OverridableExtensionDefinition<{
 }>;
 
 // @alpha (undocumented)
-export const formDecoratorsApiRef: ApiRef<ScaffolderFormDecoratorsApi>;
+export const formDecoratorsApiRef: ApiRef<ScaffolderFormDecoratorsApi> & {
+  readonly $$type: '@backstage/ApiRef';
+};
 
-// @alpha (undocumented)
-export const formFieldsApiRef: ApiRef<ScaffolderFormFieldsApi>;
+export { formFieldsApiRef };
 
 // @alpha @deprecated
 export type FormProps = Pick<
@@ -502,11 +694,7 @@ export interface ScaffolderFormDecoratorsApi {
   getFormDecorators(): Promise<ScaffolderFormDecorator[]>;
 }
 
-// @alpha (undocumented)
-export interface ScaffolderFormFieldsApi {
-  // (undocumented)
-  loadFormFields(): Promise<FormField[]>;
-}
+export { ScaffolderFormFieldsApi };
 
 // @public (undocumented)
 export type ScaffolderTemplateEditorClassKey =
@@ -525,7 +713,7 @@ export type ScaffolderTemplateFormPreviewerClassKey =
   | 'textArea'
   | 'preview';
 
-// @alpha (undocumented)
+// @alpha @deprecated (undocumented)
 export const scaffolderTranslationRef: TranslationRef<
   'scaffolder',
   {
@@ -601,6 +789,7 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'ongoingTask.contextMenu.cancel': 'Cancel';
     readonly 'ongoingTask.contextMenu.retry': 'Retry';
     readonly 'ongoingTask.contextMenu.startOver': 'Start Over';
+    readonly 'ongoingTask.contextMenu.moreOptions': 'More options';
     readonly 'ongoingTask.contextMenu.hideLogs': 'Hide Logs';
     readonly 'ongoingTask.contextMenu.showLogs': 'Show Logs';
     readonly 'ongoingTask.contextMenu.hideButtonBar': 'Hide Button Bar';
@@ -621,6 +810,8 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'renderSchema.tableCell.description': 'Description';
     readonly 'templatingExtensions.content.values.title': 'Values';
     readonly 'templatingExtensions.content.values.notAvailable': 'There are no global template values defined.';
+    readonly 'templatingExtensions.content.emptyState.title': 'No information to display';
+    readonly 'templatingExtensions.content.emptyState.description': 'There are no templating extensions available or there was an issue communicating with the backend.';
     readonly 'templatingExtensions.content.filters.title': 'Filters';
     readonly 'templatingExtensions.content.filters.schema.input': 'Input';
     readonly 'templatingExtensions.content.filters.schema.output': 'Output';
@@ -628,8 +819,6 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'templatingExtensions.content.filters.examples': 'Examples';
     readonly 'templatingExtensions.content.filters.notAvailable': 'There are no template filters defined.';
     readonly 'templatingExtensions.content.filters.metadataAbsent': 'Filter metadata unavailable';
-    readonly 'templatingExtensions.content.emptyState.title': 'No information to display';
-    readonly 'templatingExtensions.content.emptyState.description': 'There are no templating extensions available or there was an issue communicating with the backend.';
     readonly 'templatingExtensions.content.functions.title': 'Functions';
     readonly 'templatingExtensions.content.functions.schema.output': 'Output';
     readonly 'templatingExtensions.content.functions.schema.arguments': 'Arguments';

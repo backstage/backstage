@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ApiRef, createApiRef } from '../system';
+import { createApiRef } from '../system';
 import { Observable } from '@backstage/types';
 
 /**
@@ -86,6 +86,7 @@ export type ErrorApi = {
  *
  * @public
  */
-export const errorApiRef: ApiRef<ErrorApi> = createApiRef({
+export const errorApiRef = createApiRef<ErrorApi>().with({
   id: 'core.error',
+  pluginId: 'app',
 });
