@@ -90,6 +90,9 @@ function useTableProps<T extends TableItem>(
       onNextPageCallback,
       onPreviousPageCallback,
       onPageSizeChangeCallback,
+      showPageSizeOptions,
+      getLabel,
+      showPaginationLabel,
     ],
   );
 
@@ -108,9 +111,6 @@ function useTableProps<T extends TableItem>(
       isStale,
       paginationResult.error,
       pagination,
-      showPageSizeOptions,
-      getLabel,
-      showPaginationLabel,
       sortState,
     ],
   );
