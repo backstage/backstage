@@ -1800,4 +1800,275 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
       });
     });
   });
+
+  describe('approval endpoints', () => {
+    const createApprovalTestRouter = async () => {
+      const logger = mockServices.logger.mock({
+        child: () => logger,
+      });
+
+      const database = createDatabase();
+
+      const databaseTaskStore = await DatabaseTaskStore.create({
+        database,
+      });
+
+      const catalog = catalogServiceMock.mock();
+      const permissions = mockServices.permissions();
+      const auth = mockServices.auth();
+      const httpAuth = mockServices.httpAuth();
+      const events = mockServices.events();
+
+      catalog.getEntityByRef.mockImplementation(async ref => {
+        const { kind } = parseEntityRef(ref);
+
+        if (kind.toLocaleLowerCase() === 'template') {
+          return generateMockTemplate();
+        }
+
+        if (kind.toLocaleLowerCase() === 'user') {
+          return {
+            ...mockUser,
+            relations: [
+              {
+                type: 'memberOf',
+                targetRef: 'group:default/team-a',
+              },
+            ],
+          };
+        }
+
+        throw new Error(`no mock found for kind: ${kind}`);
+      });
+
+      const router = await createRouter({
+        logger,
+        config: new ConfigReader({}),
+        database,
+        catalog,
+        permissions,
+        auth,
+        httpAuth,
+        events,
+        actions: [createDebugLogAction()],
+        actionsRegistry: actionsRegistryServiceMock(),
+      });
+
+      router.use(mockErrorHandler());
+      return {
+        router,
+        databaseTaskStore,
+        catalog,
+      };
+    };
+
+    async function createWaitingTask(
+      databaseTaskStore: DatabaseTaskStore,
+    ): Promise<string> {
+      const { taskId } = await databaseTaskStore.createTask({
+        spec: {
+          apiVersion: 'scaffolder.backstage.io/v1beta3',
+          steps: [
+            {
+              id: 'step-one',
+              name: 'First log',
+              action: 'debug:log',
+              input: { message: 'hello' },
+            },
+          ],
+          output: {},
+          parameters: {},
+        },
+        createdBy: 'user:default/guest',
+      });
+
+      await databaseTaskStore.setTaskStatus({
+        taskId,
+        status: 'waiting',
+        oldStatus: 'open',
+      });
+
+      await databaseTaskStore.createApproval({
+        taskId,
+        stepId: 'step-one',
+        approvers: ['user:default/guest', 'group:default/team-a'],
+      });
+
+      return taskId;
+    }
+
+    describe('POST /v2/tasks/:taskId/approve', () => {
+      it('allows a valid approver to approve a waiting task', async () => {
+        const { router, databaseTaskStore } = await createApprovalTestRouter();
+        const taskId = await createWaitingTask(databaseTaskStore);
+
+        const response = await request(router)
+          .post(`/v2/tasks/${taskId}/approve`)
+          .send();
+
+        expect(response.status).toEqual(200);
+        expect(response.body).toEqual({ status: 'approved' });
+
+        const approval = await databaseTaskStore.getApproval({ taskId });
+        expect(approval?.status).toEqual('approved');
+      });
+
+      it('returns 409 when task is not in waiting state', async () => {
+        const { router, databaseTaskStore } = await createApprovalTestRouter();
+
+        const { taskId } = await databaseTaskStore.createTask({
+          spec: {
+            apiVersion: 'scaffolder.backstage.io/v1beta3',
+            steps: [
+              {
+                id: 'step-one',
+                name: 'First log',
+                action: 'debug:log',
+                input: { message: 'hello' },
+              },
+            ],
+            output: {},
+            parameters: {},
+          },
+          createdBy: 'user:default/guest',
+        });
+
+        const response = await request(router)
+          .post(`/v2/tasks/${taskId}/approve`)
+          .send();
+
+        expect(response.status).toEqual(409);
+      });
+
+      it('returns 403 when user is not in approvers list', async () => {
+        const { router, databaseTaskStore, catalog } =
+          await createApprovalTestRouter();
+
+        const { taskId } = await databaseTaskStore.createTask({
+          spec: {
+            apiVersion: 'scaffolder.backstage.io/v1beta3',
+            steps: [
+              {
+                id: 'step-one',
+                name: 'First log',
+                action: 'debug:log',
+                input: { message: 'hello' },
+              },
+            ],
+            output: {},
+            parameters: {},
+          },
+          createdBy: 'user:default/guest',
+        });
+
+        await databaseTaskStore.setTaskStatus({
+          taskId,
+          status: 'waiting',
+          oldStatus: 'open',
+        });
+
+        await databaseTaskStore.createApproval({
+          taskId,
+          stepId: 'step-one',
+          approvers: ['user:default/other-user'],
+        });
+
+        catalog.getEntityByRef.mockImplementation(async ref => {
+          const { kind } = parseEntityRef(ref);
+          if (kind.toLocaleLowerCase() === 'user') {
+            return { ...mockUser, relations: [] };
+          }
+          throw new Error(`no mock found for kind: ${kind}`);
+        });
+
+        const response = await request(router)
+          .post(`/v2/tasks/${taskId}/approve`)
+          .send();
+
+        expect(response.status).toEqual(403);
+      });
+    });
+
+    describe('POST /v2/tasks/:taskId/reject', () => {
+      it('allows a valid approver to reject a waiting task', async () => {
+        const { router, databaseTaskStore } = await createApprovalTestRouter();
+        const taskId = await createWaitingTask(databaseTaskStore);
+
+        const response = await request(router)
+          .post(`/v2/tasks/${taskId}/reject`)
+          .send({ reason: 'Not ready yet' });
+
+        expect(response.status).toEqual(200);
+        expect(response.body).toEqual({ status: 'rejected' });
+
+        const task = await databaseTaskStore.getTask(taskId);
+        expect(task.status).toEqual('failed');
+
+        const approval = await databaseTaskStore.getApproval({ taskId });
+        expect(approval?.status).toEqual('rejected');
+      });
+
+      it('allows rejection without a reason', async () => {
+        const { router, databaseTaskStore } = await createApprovalTestRouter();
+        const taskId = await createWaitingTask(databaseTaskStore);
+
+        const response = await request(router)
+          .post(`/v2/tasks/${taskId}/reject`)
+          .send();
+
+        expect(response.status).toEqual(200);
+        expect(response.body).toEqual({ status: 'rejected' });
+      });
+    });
+
+    describe('GET /v2/tasks/:taskId/approvals', () => {
+      it('returns approvals for a task with a pending approval', async () => {
+        const { router, databaseTaskStore } = await createApprovalTestRouter();
+        const taskId = await createWaitingTask(databaseTaskStore);
+
+        const response = await request(router)
+          .get(`/v2/tasks/${taskId}/approvals`)
+          .send();
+
+        expect(response.status).toEqual(200);
+        expect(response.body.approvals).toHaveLength(1);
+        expect(response.body.approvals[0]).toEqual(
+          expect.objectContaining({
+            taskId,
+            stepId: 'step-one',
+            status: 'pending',
+            approvers: ['user:default/guest', 'group:default/team-a'],
+          }),
+        );
+      });
+
+      it('returns empty array when task has no approvals', async () => {
+        const { router, databaseTaskStore } = await createApprovalTestRouter();
+
+        const { taskId } = await databaseTaskStore.createTask({
+          spec: {
+            apiVersion: 'scaffolder.backstage.io/v1beta3',
+            steps: [
+              {
+                id: 'step-one',
+                name: 'First log',
+                action: 'debug:log',
+                input: { message: 'hello' },
+              },
+            ],
+            output: {},
+            parameters: {},
+          },
+          createdBy: 'user:default/guest',
+        });
+
+        const response = await request(router)
+          .get(`/v2/tasks/${taskId}/approvals`)
+          .send();
+
+        expect(response.status).toEqual(200);
+        expect(response.body).toEqual({ approvals: [] });
+      });
+    });
+  });
 });

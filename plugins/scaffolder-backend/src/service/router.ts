@@ -33,11 +33,17 @@ import {
   CompoundEntityRef,
   Entity,
   parseEntityRef,
+  RELATION_MEMBER_OF,
   stringifyEntityRef,
   UserEntity,
 } from '@backstage/catalog-model';
 import { Config, readDurationFromConfig } from '@backstage/config';
-import { InputError, NotFoundError } from '@backstage/errors';
+import {
+  ConflictError,
+  InputError,
+  NotAllowedError,
+  NotFoundError,
+} from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 
 import { EventsService } from '@backstage/plugin-events-node';
@@ -56,6 +62,7 @@ import {
   scaffolderActionPermissions,
   scaffolderTaskPermissions,
   scaffolderTemplatePermissions,
+  taskApprovePermission,
   taskCancelPermission,
   taskCreatePermission,
   taskReadPermission,
@@ -228,6 +235,36 @@ async function validateSecrets(options: {
     errors: formatSecretsValidationErrors(result),
   });
   return false;
+}
+
+async function isUserInApproversList(
+  userEntityRef: string,
+  approvers: string[],
+  catalogClient: CatalogService,
+  credentials: BackstageCredentials,
+): Promise<boolean> {
+  if (approvers.includes(userEntityRef)) {
+    return true;
+  }
+
+  const groupApprovers = approvers.filter(ref => ref.startsWith('group:'));
+  if (groupApprovers.length === 0) {
+    return false;
+  }
+
+  const userEntity = await catalogClient.getEntityByRef(userEntityRef, {
+    credentials,
+  });
+
+  if (!userEntity) {
+    return false;
+  }
+
+  const memberOfRelations = (userEntity.relations ?? [])
+    .filter(r => r.type === RELATION_MEMBER_OF)
+    .map(r => r.targetRef);
+
+  return groupApprovers.some(group => memberOfRelations.includes(group));
 }
 
 /**
@@ -619,6 +656,36 @@ export async function createRouter(
           },
         };
 
+        for (const step of taskSpec.steps) {
+          if (step.approval) {
+            if (
+              !Array.isArray(step.approval.approvers) ||
+              step.approval.approvers.length === 0
+            ) {
+              throw new InputError(
+                `Step '${step.id}' has an approval block with no approvers`,
+              );
+            }
+            for (const approver of step.approval.approvers) {
+              try {
+                const parsed = parseEntityRef(approver);
+                if (parsed.kind !== 'user' && parsed.kind !== 'group') {
+                  throw new InputError(
+                    `Step '${step.id}' has an invalid approver '${approver}': only user and group kinds are allowed`,
+                  );
+                }
+              } catch (e) {
+                if (e instanceof InputError) {
+                  throw e;
+                }
+                throw new InputError(
+                  `Step '${step.id}' has an invalid approver reference '${approver}'`,
+                );
+              }
+            }
+          }
+        }
+
         const secrets: InternalTaskSecrets = {
           ...req.body.secrets,
           backstageToken: (credentials as any).token,
@@ -772,6 +839,22 @@ export async function createRouter(
           isTaskAuthorized,
         });
 
+        if (task.status === 'waiting') {
+          const userEntityRef = auth.isPrincipal(credentials, 'user')
+            ? credentials.principal.userEntityRef
+            : undefined;
+
+          await (taskBroker as StorageTaskBroker).reject({
+            taskId,
+            rejectedBy: userEntityRef ?? 'system',
+            reason: 'Task cancelled',
+          });
+
+          await auditorEvent?.success();
+          res.status(200).json({ status: 'cancelled' });
+          return;
+        }
+
         await taskBroker.cancel?.(taskId);
 
         await auditorEvent?.success();
@@ -858,6 +941,194 @@ export async function createRouter(
       } catch (err) {
         await auditorEvent?.fail({ error: err });
         throw err;
+      }
+    });
+  (router as express.Router)
+    .post('/v2/tasks/:taskId/approve', async (req, res, next) => {
+      const { taskId } = req.params;
+
+      const auditorEvent = await auditor?.createEvent({
+        eventId: 'task',
+        severityLevel: 'medium',
+        request: req,
+        meta: { actionType: 'approve', taskId },
+      });
+
+      try {
+        const credentials = await httpAuth.credentials(req);
+        const task = await taskBroker.get(taskId);
+
+        await checkTaskPermission({
+          credentials,
+          permissions: [taskApprovePermission],
+          permissionService: permissions,
+          task,
+          isTaskAuthorized,
+        });
+
+        const userEntityRef = auth.isPrincipal(credentials, 'user')
+          ? credentials.principal.userEntityRef
+          : undefined;
+
+        if (!userEntityRef) {
+          throw new NotAllowedError('Only users can approve tasks');
+        }
+
+        if (task.status !== 'waiting') {
+          throw new ConflictError(
+            `Task '${taskId}' is not waiting for approval (status: ${task.status})`,
+          );
+        }
+
+        if (!taskStore) {
+          throw new Error(
+            'Task approvals are not supported with custom task brokers',
+          );
+        }
+
+        const approval = await taskStore.getApproval({ taskId });
+        if (!approval || approval.status !== 'pending') {
+          throw new ConflictError(`No pending approval for task '${taskId}'`);
+        }
+
+        const isApprover = await isUserInApproversList(
+          userEntityRef,
+          approval.approvers,
+          catalog,
+          credentials,
+        );
+
+        if (!isApprover) {
+          throw new NotAllowedError(
+            `User '${userEntityRef}' is not in the approvers list for this task`,
+          );
+        }
+
+        const { token } = await auth.getPluginRequestToken({
+          onBehalfOf: credentials,
+          targetPluginId: 'catalog',
+        });
+
+        const secrets: InternalTaskSecrets = {
+          backstageToken: token,
+          __initiatorCredentials: JSON.stringify({
+            ...credentials,
+            token: (credentials as any).token,
+          }),
+        };
+
+        await (taskBroker as StorageTaskBroker).approve({
+          taskId,
+          approvedBy: userEntityRef,
+          secrets,
+        });
+
+        await auditorEvent?.success();
+        res.status(200).json({ status: 'approved' });
+      } catch (err) {
+        await auditorEvent?.fail({ error: err });
+        next(err);
+      }
+    })
+    .post('/v2/tasks/:taskId/reject', async (req, res, next) => {
+      const { taskId } = req.params;
+      const { reason } = req.body as { reason?: string };
+
+      const auditorEvent = await auditor?.createEvent({
+        eventId: 'task',
+        severityLevel: 'medium',
+        request: req,
+        meta: { actionType: 'reject', taskId },
+      });
+
+      try {
+        const credentials = await httpAuth.credentials(req);
+        const task = await taskBroker.get(taskId);
+
+        await checkTaskPermission({
+          credentials,
+          permissions: [taskApprovePermission],
+          permissionService: permissions,
+          task,
+          isTaskAuthorized,
+        });
+
+        const userEntityRef = auth.isPrincipal(credentials, 'user')
+          ? credentials.principal.userEntityRef
+          : undefined;
+
+        if (!userEntityRef) {
+          throw new NotAllowedError('Only users can reject tasks');
+        }
+
+        if (task.status !== 'waiting') {
+          throw new ConflictError(
+            `Task '${taskId}' is not waiting for approval (status: ${task.status})`,
+          );
+        }
+
+        if (!taskStore) {
+          throw new Error(
+            'Task approvals are not supported with custom task brokers',
+          );
+        }
+
+        const approval = await taskStore.getApproval({ taskId });
+        if (!approval || approval.status !== 'pending') {
+          throw new ConflictError(`No pending approval for task '${taskId}'`);
+        }
+
+        const isApprover = await isUserInApproversList(
+          userEntityRef,
+          approval.approvers,
+          catalog,
+          credentials,
+        );
+
+        if (!isApprover) {
+          throw new NotAllowedError(
+            `User '${userEntityRef}' is not in the approvers list for this task`,
+          );
+        }
+
+        await (taskBroker as StorageTaskBroker).reject({
+          taskId,
+          rejectedBy: userEntityRef,
+          reason,
+        });
+
+        await auditorEvent?.success();
+        res.status(200).json({ status: 'rejected' });
+      } catch (err) {
+        await auditorEvent?.fail({ error: err });
+        next(err);
+      }
+    })
+    .get('/v2/tasks/:taskId/approvals', async (req, res, next) => {
+      const { taskId } = req.params;
+
+      try {
+        const credentials = await httpAuth.credentials(req);
+        const task = await taskBroker.get(taskId);
+
+        await checkTaskPermission({
+          credentials,
+          permissions: [taskReadPermission],
+          permissionService: permissions,
+          task,
+          isTaskAuthorized,
+        });
+
+        if (!taskStore) {
+          throw new Error(
+            'Task approvals are not supported with custom task brokers',
+          );
+        }
+
+        const approval = await taskStore.getApproval({ taskId });
+        res.status(200).json({ approvals: approval ? [approval] : [] });
+      } catch (err) {
+        next(err);
       }
     });
   (router as express.Router).get(
