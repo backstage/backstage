@@ -1,0 +1,38 @@
+CONTRIBUTING.md
+  d686e5833afe39f8 173-175
+AGENTS.md
+  d686e5833afe39f8 12
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.17",
+  "base_commit_sha": "b713ad74be75e04f4312ee5f357ef8daa35192d3",
+  "prompts": {
+    "0476fb4389828a0e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e2a72227-927c-484b-8775-1bd606a8804c",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "aramissennyeydd <aramis.sennyey@doordash.com>",
+      "messages": [],
+      "total_additions": 863,
+      "total_deletions": 65,
+      "accepted_lines": 798,
+      "overriden_lines": 0
+    },
+    "d686e5833afe39f8": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "dda64399-ba47-4888-a303-6ffc5f32dbfb",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "aramissennyeydd <aramis.sennyey@doordash.com>",
+      "messages": [],
+      "total_additions": 4,
+      "total_deletions": 2,
+      "accepted_lines": 4,
+      "overriden_lines": 0
+    }
+  }
+}
