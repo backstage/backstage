@@ -98,7 +98,7 @@ notifications:
       password: ${SMTP_PASSWORD}
 ```
 
-Apart from STMP, the email processor also supports the following transmissions:
+Apart from SMTP, the email processor also supports the following transmissions:
 
 - SES
 - sendmail
