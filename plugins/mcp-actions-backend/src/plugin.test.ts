@@ -307,10 +307,15 @@ describe('Mcp Backend', () => {
     });
 
     it('should expose oauth-protected-resource when DCR is enabled', async () => {
+      const discoveryMock = mockServices.discovery.mock();
+      discoveryMock.getExternalBaseUrl.mockImplementation(
+        async pluginId => `http://localhost:7777/api/${pluginId}`,
+      );
       const { server } = await startTestBackend({
         features: [
           mcpPlugin,
           mockPluginWithActions,
+          discoveryMock.factory,
           mockServices.rootConfig.factory({
             data: {
               backend: {
@@ -332,16 +337,25 @@ describe('Mcp Backend', () => {
         '/.well-known/oauth-protected-resource',
       );
       expect(response.status).toBe(200);
-      expect(response.body.resource).toMatch(/\/api\/mcp-actions$/);
+      expect(response.body.resource).toEqual(
+        'http://localhost:7777/api/mcp-actions',
+      );
       expect(response.body.authorization_servers).toHaveLength(1);
-      expect(response.body.authorization_servers[0]).toMatch(/\/api\/auth$/);
+      expect(response.body.authorization_servers[0]).toEqual(
+        'http://localhost:7777/api/auth',
+      );
     });
 
     it('should expose oauth-protected-resource when CIMD is enabled', async () => {
+      const discoveryMock = mockServices.discovery.mock();
+      discoveryMock.getExternalBaseUrl.mockImplementation(
+        async pluginId => `http://localhost:7777/api/${pluginId}`,
+      );
       const { server } = await startTestBackend({
         features: [
           mcpPlugin,
           mockPluginWithActions,
+          discoveryMock.factory,
           mockServices.rootConfig.factory({
             data: {
               backend: {
@@ -363,9 +377,13 @@ describe('Mcp Backend', () => {
         '/.well-known/oauth-protected-resource',
       );
       expect(response.status).toBe(200);
-      expect(response.body.resource).toMatch(/\/api\/mcp-actions$/);
+      expect(response.body.resource).toEqual(
+        'http://localhost:7777/api/mcp-actions',
+      );
       expect(response.body.authorization_servers).toHaveLength(1);
-      expect(response.body.authorization_servers[0]).toMatch(/\/api\/auth$/);
+      expect(response.body.authorization_servers[0]).toEqual(
+        'http://localhost:7777/api/auth',
+      );
     });
   });
 });
