@@ -27,6 +27,17 @@ import {
 } from '@backstage/plugin-scaffolder-node';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
 
+export type TaskApprovalRow = {
+  id: string;
+  taskId: string;
+  stepId: string;
+  approvers: string[];
+  status: 'pending' | 'approved' | 'rejected';
+  approvedBy?: string;
+  createdAt: string;
+  resolvedAt?: string;
+};
+
 /**
  * TaskStoreEmitOptions
  *
@@ -153,6 +164,29 @@ export interface TaskStore {
   }: {
     path: string;
     taskId: string;
+  }): Promise<void>;
+
+  createApproval(options: {
+    taskId: string;
+    stepId: string;
+    approvers: string[];
+  }): Promise<{ approvalId: string }>;
+
+  getApproval(options: {
+    taskId: string;
+  }): Promise<TaskApprovalRow | undefined>;
+
+  resolveApproval(options: {
+    approvalId: string;
+    status: 'approved' | 'rejected';
+    resolvedBy: string;
+  }): Promise<boolean>;
+
+  setTaskStatus(options: {
+    taskId: string;
+    status: TaskStatus;
+    oldStatus: TaskStatus;
+    secrets?: TaskSecrets | null;
   }): Promise<void>;
 }
 

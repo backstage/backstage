@@ -23,6 +23,7 @@ import { ConflictError, NotFoundError } from '@backstage/errors';
 import { Knex } from 'knex';
 import { randomUUID as uuid } from 'node:crypto';
 import {
+  TaskApprovalRow,
   TaskStore,
   TaskStoreCreateTaskOptions,
   TaskStoreCreateTaskResult,
@@ -81,6 +82,17 @@ export type RawDbTaskEventRow = {
   body: string;
   event_type: TaskEventType;
   created_at: string;
+};
+
+type RawDbTaskApprovalRow = {
+  id: string;
+  task_id: string;
+  step_id: string;
+  approvers: string;
+  status: string;
+  approved_by: string | null;
+  created_at: string;
+  resolved_at: string | null;
 };
 
 /**
@@ -693,6 +705,96 @@ export class DatabaseTaskStore implements TaskStore {
           workspace,
         });
     }
+  }
+
+  async createApproval(options: {
+    taskId: string;
+    stepId: string;
+    approvers: string[];
+  }): Promise<{ approvalId: string }> {
+    const { taskId, stepId, approvers } = options;
+    const id = uuid();
+    await this.db<RawDbTaskApprovalRow>('task_approvals').insert({
+      id,
+      task_id: taskId,
+      step_id: stepId,
+      approvers: JSON.stringify(approvers),
+      status: 'pending',
+      approved_by: null,
+      created_at: this.db.fn.now() as unknown as string,
+      resolved_at: null,
+    });
+    return { approvalId: id };
+  }
+
+  async getApproval(options: {
+    taskId: string;
+  }): Promise<TaskApprovalRow | undefined> {
+    const [row] = await this.db<RawDbTaskApprovalRow>('task_approvals')
+      .where({ task_id: options.taskId })
+      .orderBy('created_at', 'desc')
+      .limit(1)
+      .select();
+
+    if (!row) return undefined;
+
+    return {
+      id: row.id,
+      taskId: row.task_id,
+      stepId: row.step_id,
+      approvers: JSON.parse(row.approvers),
+      status: row.status as 'pending' | 'approved' | 'rejected',
+      approvedBy: row.approved_by ?? undefined,
+      createdAt: parseSqlDateToIsoString(row.created_at) as string,
+      resolvedAt: row.resolved_at
+        ? (parseSqlDateToIsoString(row.resolved_at) as string)
+        : undefined,
+    };
+  }
+
+  async resolveApproval(options: {
+    approvalId: string;
+    status: 'approved' | 'rejected';
+    resolvedBy: string;
+  }): Promise<boolean> {
+    const { approvalId, status, resolvedBy } = options;
+    const updateCount = await this.db<RawDbTaskApprovalRow>('task_approvals')
+      .where({ id: approvalId, status: 'pending' })
+      .update({
+        status,
+        approved_by: resolvedBy,
+        resolved_at: this.db.fn.now() as unknown as string,
+      });
+    return updateCount > 0;
+  }
+
+  async setTaskStatus(options: {
+    taskId: string;
+    status: TaskStatus;
+    oldStatus: TaskStatus;
+    secrets?: TaskSecrets | null;
+  }): Promise<void> {
+    const { taskId, status, oldStatus, secrets } = options;
+
+    const update: Record<string, unknown> = { status };
+    if (secrets !== undefined) {
+      update.secrets = secrets ? JSON.stringify(secrets) : null;
+    }
+
+    const updateCount = await this.db<RawDbTaskRow>('tasks')
+      .where({ id: taskId, status: oldStatus })
+      .update(update);
+
+    if (updateCount !== 1) {
+      throw new ConflictError(
+        `Failed to update task '${taskId}' from '${oldStatus}' to '${status}'`,
+      );
+    }
+
+    this.events?.publish({
+      topic: 'scaffolder.task',
+      eventPayload: { id: taskId, status },
+    });
   }
 
   async cancelTask(

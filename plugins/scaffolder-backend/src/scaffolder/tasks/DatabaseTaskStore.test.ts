@@ -587,4 +587,138 @@ describe('DatabaseTaskStore', () => {
     await store.rehydrateWorkspace({ targetPath: workspaceDir.path, taskId });
     expect(fs.existsSync(`${workspaceDir.path}/app-config.yaml`)).toBeTruthy();
   });
+
+  describe('approvals', () => {
+    it('should create and retrieve an approval for a task', async () => {
+      const { store } = await createStore();
+
+      const { taskId } = await store.createTask({
+        spec: {} as TaskSpec,
+        createdBy: 'user:default/test',
+      });
+
+      const { approvalId } = await store.createApproval({
+        taskId,
+        stepId: 'step-1',
+        approvers: ['user:default/alice', 'group:default/team-a'],
+      });
+
+      expect(approvalId).toBeDefined();
+
+      const approval = await store.getApproval({ taskId });
+      expect(approval).toMatchObject({
+        id: approvalId,
+        taskId,
+        stepId: 'step-1',
+        approvers: ['user:default/alice', 'group:default/team-a'],
+        status: 'pending',
+      });
+    });
+
+    it('should resolve an approval as approved', async () => {
+      const { store } = await createStore();
+
+      const { taskId } = await store.createTask({
+        spec: {} as TaskSpec,
+        createdBy: 'user:default/test',
+      });
+
+      const { approvalId } = await store.createApproval({
+        taskId,
+        stepId: 'step-1',
+        approvers: ['user:default/alice'],
+      });
+
+      const resolved = await store.resolveApproval({
+        approvalId,
+        status: 'approved',
+        resolvedBy: 'user:default/alice',
+      });
+
+      expect(resolved).toBe(true);
+
+      const approval = await store.getApproval({ taskId });
+      expect(approval).toMatchObject({
+        status: 'approved',
+        approvedBy: 'user:default/alice',
+      });
+      expect(approval?.resolvedAt).toBeDefined();
+    });
+
+    it('should return false when resolving an already resolved approval', async () => {
+      const { store } = await createStore();
+
+      const { taskId } = await store.createTask({
+        spec: {} as TaskSpec,
+        createdBy: 'user:default/test',
+      });
+
+      const { approvalId } = await store.createApproval({
+        taskId,
+        stepId: 'step-1',
+        approvers: ['user:default/alice'],
+      });
+
+      await store.resolveApproval({
+        approvalId,
+        status: 'approved',
+        resolvedBy: 'user:default/alice',
+      });
+
+      const secondResolve = await store.resolveApproval({
+        approvalId,
+        status: 'rejected',
+        resolvedBy: 'user:default/bob',
+      });
+
+      expect(secondResolve).toBe(false);
+    });
+
+    it('should return undefined for a task with no approvals', async () => {
+      const { store } = await createStore();
+
+      const { taskId } = await store.createTask({
+        spec: {} as TaskSpec,
+        createdBy: 'user:default/test',
+      });
+
+      const approval = await store.getApproval({ taskId });
+      expect(approval).toBeUndefined();
+    });
+
+    it('should set task status with optimistic locking', async () => {
+      const { store } = await createStore();
+
+      const { taskId } = await store.createTask({
+        spec: {} as TaskSpec,
+        createdBy: 'user:default/test',
+      });
+
+      await store.setTaskStatus({
+        taskId,
+        status: 'waiting',
+        oldStatus: 'open',
+      });
+
+      const task = await store.getTask(taskId);
+      expect(task.status).toBe('waiting');
+    });
+
+    it('should throw ConflictError when old status does not match', async () => {
+      const { store } = await createStore();
+
+      const { taskId } = await store.createTask({
+        spec: {} as TaskSpec,
+        createdBy: 'user:default/test',
+      });
+
+      await expect(
+        store.setTaskStatus({
+          taskId,
+          status: 'waiting',
+          oldStatus: 'processing',
+        }),
+      ).rejects.toThrow(/Failed to update task/);
+    });
+  });
 });
