@@ -50,7 +50,8 @@ export const useTableOptionsPropDefs: Record<string, PropDef> = {
     description: (
       <>
         Pagination configuration including <Chip>pageSize</Chip>,{' '}
-        <Chip>pageSizeOptions</Chip>, and <Chip>initialOffset</Chip>.
+        <Chip>pageSizeOptions</Chip>, <Chip>initialOffset</Chip>, and{' '}
+        <Chip>showPaginationLabel</Chip>.
       </>
     ),
   },
@@ -412,6 +413,12 @@ export const tablePaginationPropDefs: Record<string, PropDef> = {
     type: 'enum',
     values: ['(props) => string'],
     description: 'Custom function to generate the pagination label text.',
+  },
+  showPaginationLabel: {
+    type: 'boolean',
+    default: 'true',
+    description:
+      'Whether to display the pagination label (e.g., "1 - 20 of 150"). When false, only navigation controls are shown.',
   },
 };
 
