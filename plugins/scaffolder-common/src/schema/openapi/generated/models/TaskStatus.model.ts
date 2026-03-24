@@ -27,4 +27,5 @@ export type TaskStatus =
   | 'failed'
   | 'open'
   | 'processing'
-  | 'skipped';
+  | 'skipped'
+  | 'waiting';

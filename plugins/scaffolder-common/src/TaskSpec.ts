@@ -98,6 +98,12 @@ export interface TaskStep {
    * Run step repeatedly
    */
   each?: string | JsonArray;
+  /**
+   * When set, the step will wait for approval from one of the listed approvers before executing.
+   */
+  approval?: {
+    approvers: string[];
+  };
 }
 
 /**

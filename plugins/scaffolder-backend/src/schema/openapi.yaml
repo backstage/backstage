@@ -397,6 +397,7 @@ components:
         - open
         - processing
         - skipped
+        - waiting
       description: The status of each step of the Task
     TemplateGlobalFunction:
       type: object

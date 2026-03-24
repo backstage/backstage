@@ -123,6 +123,18 @@ export const taskCancelPermission = createPermission({
 });
 
 /**
+ * This permission is used to authorize actions that involve approving or rejecting
+ * tasks that are waiting for approval in the scaffolder.
+ *
+ * @alpha
+ */
+export const taskApprovePermission = createPermission({
+  name: 'scaffolder.task.approve',
+  attributes: {},
+  resourceType: RESOURCE_TYPE_SCAFFOLDER_TASK,
+});
+
+/**
  * This permission is used to authorize template management features.
  *
  * @alpha
@@ -152,6 +164,7 @@ export const scaffolderActionPermissions = [actionExecutePermission];
  * @alpha
  */
 export const scaffolderTaskPermissions = [
+  taskApprovePermission,
   taskCancelPermission,
   taskCreatePermission,
   taskReadPermission,

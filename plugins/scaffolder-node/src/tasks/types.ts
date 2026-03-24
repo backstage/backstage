@@ -42,7 +42,8 @@ export type TaskStatus =
   | 'failed'
   | 'open'
   | 'processing'
-  | 'skipped';
+  | 'skipped'
+  | 'waiting';
 
 /**
  * The state of a completed task.
