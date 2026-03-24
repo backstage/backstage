@@ -313,4 +313,73 @@ describe('StorageTaskBroker', () => {
       },
     });
   });
+
+  describe('approve', () => {
+    it('should approve a waiting task and make it claimable', async () => {
+      const broker = new StorageTaskBroker(storage, logger);
+
+      const { taskId } = await broker.dispatch({
+        spec: { steps: [] } as unknown as TaskSpec,
+        createdBy: 'user:default/test',
+      });
+
+      await storage.setTaskStatus({
+        taskId,
+        status: 'waiting',
+        oldStatus: 'open',
+      });
+
+      await storage.createApproval({
+        taskId,
+        stepId: 'step-1',
+        approvers: ['user:default/alice'],
+      });
+
+      await broker.approve({
+        taskId,
+        approvedBy: 'user:default/alice',
+      });
+
+      const task = await broker.get(taskId);
+      expect(task.status).toBe('open');
+
+      const approval = await storage.getApproval({ taskId });
+      expect(approval?.status).toBe('approved');
+    });
+  });
+
+  describe('reject', () => {
+    it('should reject a waiting task and set it to failed', async () => {
+      const broker = new StorageTaskBroker(storage, logger);
+
+      const { taskId } = await broker.dispatch({
+        spec: { steps: [] } as unknown as TaskSpec,
+        createdBy: 'user:default/test',
+      });
+
+      await storage.setTaskStatus({
+        taskId,
+        status: 'waiting',
+        oldStatus: 'open',
+      });
+
+      await storage.createApproval({
+        taskId,
+        stepId: 'step-1',
+        approvers: ['user:default/alice'],
+      });
+
+      await broker.reject({
+        taskId,
+        rejectedBy: 'user:default/alice',
+        reason: 'Not ready yet',
+      });
+
+      const task = await broker.get(taskId);
+      expect(task.status).toBe('failed');
+
+      const approval = await storage.getApproval({ taskId });
+      expect(approval?.status).toBe('rejected');
+    });
+  });
 });

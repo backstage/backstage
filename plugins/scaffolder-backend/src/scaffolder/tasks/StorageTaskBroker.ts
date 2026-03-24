@@ -20,6 +20,7 @@ import {
   BackstageCredentials,
   LoggerService,
 } from '@backstage/backend-plugin-api';
+import { ConflictError } from '@backstage/errors';
 import { Config } from '@backstage/config';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import {
@@ -520,5 +521,108 @@ export class StorageTaskBroker implements TaskBroker {
   }): Promise<void> {
     await this.storage.retryTask?.(options);
     this.signalDispatch();
+  }
+
+  async approve(options: {
+    taskId: string;
+    approvedBy: string;
+    secrets?: TaskSecrets;
+  }): Promise<void> {
+    const { taskId, approvedBy, secrets } = options;
+
+    const approval = await this.storage.getApproval({ taskId });
+    if (!approval || approval.status !== 'pending') {
+      throw new ConflictError(`No pending approval found for task '${taskId}'`);
+    }
+
+    const resolved = await this.storage.resolveApproval({
+      approvalId: approval.id,
+      status: 'approved',
+      resolvedBy: approvedBy,
+    });
+
+    if (!resolved) {
+      throw new ConflictError(
+        `Approval for task '${taskId}' was already resolved`,
+      );
+    }
+
+    const taskState = await this.storage.getTaskState({ taskId });
+    const currentState = taskState?.state as
+      | Record<string, unknown>
+      | undefined;
+    await this.storage.saveTaskState({
+      taskId,
+      state: {
+        ...currentState,
+        checkpoints: {
+          ...((currentState?.checkpoints as Record<string, unknown>) ?? {}),
+          approval: {
+            status: 'approved_and_resuming',
+            ...(((currentState?.checkpoints as Record<string, unknown>)
+              ?.approval as Record<string, unknown>) ?? {}),
+          },
+        },
+      },
+    });
+
+    await this.storage.setTaskStatus({
+      taskId,
+      status: 'open',
+      oldStatus: 'waiting',
+      secrets: secrets ?? null,
+    });
+
+    await this.storage.emitLogEvent({
+      taskId,
+      body: {
+        message: `Task approved by ${approvedBy}`,
+        stepId: approval.stepId,
+      },
+    });
+
+    this.signalDispatch();
+  }
+
+  async reject(options: {
+    taskId: string;
+    rejectedBy: string;
+    reason?: string;
+  }): Promise<void> {
+    const { taskId, rejectedBy, reason } = options;
+
+    const approval = await this.storage.getApproval({ taskId });
+    if (!approval || approval.status !== 'pending') {
+      throw new ConflictError(`No pending approval found for task '${taskId}'`);
+    }
+
+    const resolved = await this.storage.resolveApproval({
+      approvalId: approval.id,
+      status: 'rejected',
+      resolvedBy: rejectedBy,
+    });
+
+    if (!resolved) {
+      throw new ConflictError(
+        `Approval for task '${taskId}' was already resolved`,
+      );
+    }
+
+    await this.storage.setTaskStatus({
+      taskId,
+      status: 'failed',
+      oldStatus: 'waiting',
+    });
+
+    await this.storage.emitLogEvent({
+      taskId,
+      body: {
+        message: reason
+          ? `Task rejected by ${rejectedBy}: ${reason}`
+          : `Task rejected by ${rejectedBy}`,
+        stepId: approval.stepId,
+        status: 'failed',
+      },
+    });
   }
 }

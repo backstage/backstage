@@ -234,4 +234,16 @@ export interface TaskBroker {
     order?: { order: 'asc' | 'desc'; field: string }[];
     permissionFilters?: PermissionCriteria<TaskFilters>;
   }): Promise<{ tasks: SerializedTask[]; totalTasks?: number }>;
+
+  approve?(options: {
+    taskId: string;
+    approvedBy: string;
+    secrets?: TaskSecrets;
+  }): Promise<void>;
+
+  reject?(options: {
+    taskId: string;
+    rejectedBy: string;
+    reason?: string;
+  }): Promise<void>;
 }
