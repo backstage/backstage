@@ -56,6 +56,7 @@ export interface PaginationOptions
       | 'onPreviousPage'
       | 'showPageSizeOptions'
       | 'getLabel'
+      | 'showPaginationLabel'
     >
   > {
   initialOffset?: number;
