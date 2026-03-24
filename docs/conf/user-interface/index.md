@@ -120,8 +120,8 @@ Once you have the generated CSS from the converter, add it to your app:
 ```tsx title="packages/app/src/App.tsx"
 /* highlight-add-start */
 import { lightTheme, darkTheme } from './themes'; // MUI themes
-import './bui-themes/light-theme.css'; // Generated BUI light theme
-import './bui-themes/dark-theme.css'; // Generated BUI dark theme
+import './themes/light-theme.css'; // Generated BUI light theme
+import './themes/dark-theme.css'; // Generated BUI dark theme
 /* highlight-add-end */
 
 const app = createApp({
@@ -152,17 +152,17 @@ const app = createApp({
 });
 ```
 
-The generated CSS is applied to BUI components based on the active theme mode (`variant`). Light-mode styles are scoped to `:root` and dark-mode styles to `[data-theme-mode="dark"]`, so they automatically follow the user’s light/dark preference.
+The generated CSS is applied to BUI components based on the active theme mode (`variant`). Light-mode styles are scoped to `:root` and dark-mode styles to `[data-theme-mode='dark']`, so they automatically follow the user’s light/dark preference.
 
 :::note
 If you define multiple themes that share the same variant (for example, two light themes), you’ll need additional CSS scoping if you want their BUI styles to differ.
 :::
-| Name       | Description                                                                                                                                                                                                                              |
+| Name | Description |
 | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `id`       | Each theme has a unique `id`                                                                                                                                                                                                             |
-| `title`    | This will be shown in the settings page to select the right theme.                                                                                                                                                                       |
-| `variant`  | This can be either `light` or `dark`. This is also referred to as `mode`. On the `body` of your app we are inserting a data attribute to set the theme based on this value: `data-theme-mode="light"`.                                   |
-| `icon`     | This will be shown in the settings page as a visual element to complement the title.                                                                                                                                                     |
+| `id` | Each theme has a unique `id` |
+| `title` | This will be shown in the settings page to select the right theme. |
+| `variant` | This can be either `light` or `dark`. This is also referred to as `mode`. On the `body` of your app we are inserting a data attribute to set the theme based on this value: `data-theme-mode="light"`. |
+| `icon` | This will be shown in the settings page as a visual element to complement the title. |
 | `Provider` | This is needed to set the legacy theme with MUI only. This will be become redundant later on when we fully replace with BUI but for now you need to have it for MUI to work. BUI is based on CSS and don't rely on any global providers. |
 
 :::note
