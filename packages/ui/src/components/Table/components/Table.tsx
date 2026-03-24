@@ -272,6 +272,7 @@ export function Table<T extends TableItem>({
           onPageSizeChange={pagination.onPageSizeChange}
           showPageSizeOptions={pagination.showPageSizeOptions}
           getLabel={pagination.getLabel}
+          showPaginationLabel={pagination.showPaginationLabel}
         />
       )}
     </div>
