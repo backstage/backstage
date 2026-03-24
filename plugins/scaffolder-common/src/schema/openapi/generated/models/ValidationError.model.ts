@@ -31,5 +31,5 @@ export interface ValidationError {
   instance: any;
   name: string;
   argument: ValidationErrorArgument;
-  stack: string;
+  stack?: string;
 }

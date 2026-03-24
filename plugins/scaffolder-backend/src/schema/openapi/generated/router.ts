@@ -33,6 +33,23 @@ export const spec = {
     },
     contact: {},
   },
+  tags: [
+    {
+      name: 'Templates',
+    },
+    {
+      name: 'Tasks',
+    },
+    {
+      name: 'Actions',
+    },
+    {
+      name: 'Autocomplete',
+    },
+    {
+      name: 'Templating Extensions',
+    },
+  ],
   servers: [
     {
       url: '/',
@@ -736,9 +753,20 @@ export const spec = {
           'instance',
           'name',
           'argument',
-          'stack',
         ],
         additionalProperties: {},
+      },
+      ValidationErrorResponse: {
+        type: 'object',
+        properties: {
+          errors: {
+            type: 'array',
+            items: {
+              $ref: '#/components/schemas/ValidationError',
+            },
+          },
+        },
+        required: ['errors'],
       },
     },
     securitySchemes: {
@@ -753,6 +781,7 @@ export const spec = {
     '/v2/templates/{namespace}/{kind}/{name}/parameter-schema': {
       get: {
         operationId: 'GetTemplateParameterSchema',
+        tags: ['Templates'],
         description: 'Get template parameter schema.',
         responses: {
           '200': {
@@ -794,6 +823,7 @@ export const spec = {
     '/v2/actions': {
       get: {
         operationId: 'ListActions',
+        tags: ['Actions'],
         description: 'Returns a list of all installed actions.',
         responses: {
           '200': {
@@ -819,6 +849,7 @@ export const spec = {
     '/v2/tasks': {
       get: {
         operationId: 'ListTasks',
+        tags: ['Tasks'],
         description:
           'Returns a list of tasks, filtering by ownership and/or status if given.',
         responses: {
@@ -859,6 +890,7 @@ export const spec = {
       },
       post: {
         operationId: 'Scaffold',
+        tags: ['Tasks'],
         description:
           'Executes the scaffolding of a component, given a template and its\nparameter values.',
         requestBody: {
@@ -893,16 +925,7 @@ export const spec = {
             content: {
               'application/json': {
                 schema: {
-                  type: 'object',
-                  properties: {
-                    errors: {
-                      type: 'array',
-                      items: {
-                        $ref: '#/components/schemas/ValidationError',
-                      },
-                    },
-                  },
-                  required: ['errors'],
+                  $ref: '#/components/schemas/ValidationErrorResponse',
                 },
               },
             },
@@ -920,6 +943,7 @@ export const spec = {
     '/v2/tasks/{taskId}': {
       get: {
         operationId: 'GetTask',
+        tags: ['Tasks'],
         description: 'Get a task by ID.',
         responses: {
           '200': {
@@ -952,6 +976,7 @@ export const spec = {
     '/v2/tasks/{taskId}/cancel': {
       post: {
         operationId: 'CancelTask',
+        tags: ['Tasks'],
         description:
           'Sends a signal to a task broker to cancel the running task by taskId.',
         responses: {
@@ -987,6 +1012,7 @@ export const spec = {
     '/v2/tasks/{taskId}/retry': {
       post: {
         operationId: 'Retry',
+        tags: ['Tasks'],
         description: 'Starts the task again from the point where it failed.',
         requestBody: {
           required: false,
@@ -1028,16 +1054,7 @@ export const spec = {
             content: {
               'application/json': {
                 schema: {
-                  type: 'object',
-                  properties: {
-                    errors: {
-                      type: 'array',
-                      items: {
-                        $ref: '#/components/schemas/ValidationError',
-                      },
-                    },
-                  },
-                  required: ['errors'],
+                  $ref: '#/components/schemas/ValidationErrorResponse',
                 },
               },
             },
@@ -1059,6 +1076,7 @@ export const spec = {
     '/v2/tasks/{taskId}/events': {
       get: {
         operationId: 'StreamLogsPolling',
+        tags: ['Tasks'],
         description: 'Get events for a task by ID.',
         responses: {
           '200': {
@@ -1091,6 +1109,7 @@ export const spec = {
     '/v2/dry-run': {
       post: {
         operationId: 'DryRun',
+        tags: ['Tasks'],
         description: 'Perform a dry-run of a template',
         requestBody: {
           required: true,
@@ -1194,16 +1213,7 @@ export const spec = {
             content: {
               'application/json': {
                 schema: {
-                  type: 'object',
-                  properties: {
-                    errors: {
-                      type: 'array',
-                      items: {
-                        $ref: '#/components/schemas/ValidationError',
-                      },
-                    },
-                  },
-                  required: ['errors'],
+                  $ref: '#/components/schemas/ValidationErrorResponse',
                 },
               },
             },
@@ -1215,6 +1225,7 @@ export const spec = {
     '/v2/autocomplete/{provider}/{resource}': {
       post: {
         operationId: 'Autocomplete',
+        tags: ['Autocomplete'],
         description:
           'Perform an autocomplete for the given provider and resource.',
         requestBody: {
@@ -1310,6 +1321,7 @@ export const spec = {
     '/v2/templating-extensions': {
       get: {
         operationId: 'ListTemplatingExtensions',
+        tags: ['Templating Extensions'],
         description:
           'Returns a structure describing the available templating extensions.',
         responses: {
