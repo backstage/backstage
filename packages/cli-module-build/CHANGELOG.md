@@ -1,5 +1,17 @@
 # @backstage/cli-module-build
 
+## 0.1.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.2.1-next.0
+  - @backstage/cli-node@0.3.1-next.0
+  - @backstage/config-loader@1.10.10-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/module-federation-common@0.1.2
+
 ## 0.1.0
 
 ### Minor Changes

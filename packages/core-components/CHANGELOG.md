@@ -1,5 +1,17 @@
 # @backstage/core-components
 
+## 0.18.9-next.0
+
+### Patch Changes
+
+- 320eed3: Resolved DOM nesting warning in OAuthRequestDialog by rendering secondary text as block-level spans.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.5-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.7.2
+  - @backstage/version-bridge@1.0.12
+
 ## 0.18.8
 
 ### Patch Changes

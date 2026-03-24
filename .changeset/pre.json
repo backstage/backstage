@@ -224,5 +224,37 @@
     "@backstage/plugin-user-settings-backend": "0.4.1",
     "@backstage/plugin-user-settings-common": "0.1.0"
   },
-  "changesets": []
+  "changesets": [
+    "catalog-entity-page-no-header",
+    "chatty-cups-create",
+    "dependabot-03b295a",
+    "dependabot-cc35625",
+    "drop-react-17-packages-ui",
+    "easy-pens-judge",
+    "fix-catalog-filter-flicker",
+    "fix-catalog-refresh-state-deadlock",
+    "fix-catalog-table-loading-flash",
+    "fix-sidebar-settings-nav",
+    "fuzzy-mangos-design",
+    "happy-masks-allow",
+    "hot-yaks-crash",
+    "lazy-jars-shake",
+    "loopback-redirect-uri-port",
+    "lucky-things-write",
+    "olive-ravens-smell",
+    "plugin-header-remove-toolbar-wrapper",
+    "remove-cli-module-new-dep",
+    "remove-plugin-header-action-define-params",
+    "remove-type-fest-github",
+    "renovate-ced70c0",
+    "repo-tools-peer-deps-react18",
+    "scaffolder-nfs-page-layout",
+    "shy-doors-repair",
+    "specialized-app-apis",
+    "swift-lizards-bathe",
+    "ui-menu-item-style-refactor",
+    "ui-react-aria-deps",
+    "unprocessed-entities-devtools",
+    "update-app-visualizer-header-action"
+  ]
 }

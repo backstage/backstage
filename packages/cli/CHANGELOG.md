@@ -1,5 +1,18 @@
 # @backstage/cli
 
+## 0.36.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.2.1-next.0
+  - @backstage/cli-module-build@0.1.1-next.0
+  - @backstage/cli-module-test-jest@0.1.1-next.0
+  - @backstage/cli-node@0.3.1-next.0
+  - @backstage/cli-defaults@0.1.1-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/eslint-plugin@0.2.2
+
 ## 0.36.0
 
 ### Minor Changes

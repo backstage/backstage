@@ -1,5 +1,17 @@
 # @backstage/frontend-plugin-api
 
+## 0.15.2-next.0
+
+### Patch Changes
+
+- d66a3ec: Added `titleLink` prop to `PageLayoutProps` so the plugin header title can link back to the plugin root.
+- e220589: Removed the unnecessary need to use `defineParams` callback from `PluginHeaderActionBlueprint`. It still works, but is no longer required.
+- Updated dependencies
+  - @backstage/errors@1.2.7
+  - @backstage/filter-predicates@0.1.1
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.12
+
 ## 0.15.0
 
 ### Minor Changes

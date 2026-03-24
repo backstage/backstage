@@ -1,5 +1,18 @@
 # @backstage/plugin-signals
 
+## 0.0.30-next.0
+
+### Patch Changes
+
+- 79453c0: Updated dependency `wait-for-expect` to `^4.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.18.9-next.0
+  - @backstage/frontend-plugin-api@0.15.2-next.0
+  - @backstage/core-plugin-api@1.12.5-next.0
+  - @backstage/theme@0.7.2
+  - @backstage/types@1.2.2
+  - @backstage/plugin-signals-react@0.0.21-next.0
+
 ## 0.0.29
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/core-app-api",
-  "version": "1.19.6",
+  "version": "1.19.7-next.0",
   "description": "Core app API used by Backstage apps",
   "backstage": {
     "role": "web-library"

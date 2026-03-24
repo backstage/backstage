@@ -1,5 +1,31 @@
 # @backstage/backend-dynamic-feature-service
 
+## 0.8.1-next.0
+
+### Patch Changes
+
+- 79453c0: Updated dependency `wait-for-expect` to `^4.0.0`.
+- Updated dependencies
+  - @backstage/cli-common@0.2.1-next.0
+  - @backstage/plugin-catalog-backend@3.5.1-next.0
+  - @backstage/backend-defaults@0.16.1-next.0
+  - @backstage/backend-plugin-api@1.8.1-next.0
+  - @backstage/cli-node@0.3.1-next.0
+  - @backstage/config-loader@1.10.10-next.0
+  - @backstage/plugin-auth-node@0.6.15-next.0
+  - @backstage/plugin-events-backend@0.6.1-next.0
+  - @backstage/plugin-permission-node@0.10.12-next.0
+  - @backstage/plugin-search-backend-node@1.4.3-next.0
+  - @backstage/backend-openapi-utils@0.6.8-next.0
+  - @backstage/plugin-app-node@0.1.44-next.0
+  - @backstage/plugin-events-node@0.4.21-next.0
+  - @backstage/plugin-scaffolder-node@0.13.1-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-permission-common@0.9.7
+  - @backstage/plugin-search-common@1.2.22
+
 ## 0.8.0
 
 ### Minor Changes

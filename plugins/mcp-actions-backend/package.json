@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-mcp-actions-backend",
-  "version": "0.1.10",
+  "version": "0.1.11-next.0",
   "backstage": {
     "role": "backend-plugin",
     "pluginId": "mcp-actions",

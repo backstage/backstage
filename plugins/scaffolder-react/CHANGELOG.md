@@ -1,5 +1,24 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.20.1-next.0
+
+### Patch Changes
+
+- bdbbf00: build(deps): bump `flatted` from 3.4.1 to 3.4.2
+- Updated dependencies
+  - @backstage/plugin-catalog-react@2.1.1-next.0
+  - @backstage/core-components@0.18.9-next.0
+  - @backstage/frontend-plugin-api@0.15.2-next.0
+  - @backstage/frontend-test-utils@0.5.2-next.0
+  - @backstage/core-plugin-api@1.12.5-next.0
+  - @backstage/catalog-client@1.14.0
+  - @backstage/catalog-model@1.7.7
+  - @backstage/theme@0.7.2
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.12
+  - @backstage/plugin-permission-react@0.4.42-next.0
+  - @backstage/plugin-scaffolder-common@2.0.0
+
 ## 1.20.0
 
 ### Minor Changes

@@ -1,5 +1,13 @@
 # @backstage/cli-common
 
+## 0.2.1-next.0
+
+### Patch Changes
+
+- e928e73: chore(deps): bump `undici` from 7.22.0 to 7.24.0
+- Updated dependencies
+  - @backstage/errors@1.2.7
+
 ## 0.2.0
 
 ### Minor Changes

@@ -1,5 +1,18 @@
 # @backstage/repo-tools
 
+## 0.17.1-next.0
+
+### Patch Changes
+
+- 270efef: Added support for packages that only support React 18+ in the `peer-deps` command.
+- Updated dependencies
+  - @backstage/cli-common@0.2.1-next.0
+  - @backstage/backend-plugin-api@1.8.1-next.0
+  - @backstage/cli-node@0.3.1-next.0
+  - @backstage/config-loader@1.10.10-next.0
+  - @backstage/catalog-model@1.7.7
+  - @backstage/errors@1.2.7
+
 ## 0.17.0
 
 ### Minor Changes
