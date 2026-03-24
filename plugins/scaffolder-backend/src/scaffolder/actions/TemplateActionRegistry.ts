@@ -93,8 +93,6 @@ export class DefaultTemplateActionRegistry implements TemplateActionRegistry {
       ret.set(action.id, {
         id: action.id,
         description: action.description,
-        // TODO: pass through action.examples once scaffolder example types are aligned
-        examples: [],
         supportsDryRun:
           action.attributes?.readOnly === true &&
           action.attributes?.destructive === false,
