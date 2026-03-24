@@ -14,6 +14,8 @@ Read more on the TechDocs Architecture documentation page.
 
 On this page you can read how to enable them.
 
+<!-- Note: Ensure your cloud storage bucket and IAM permissions are configured before starting the TechDocs backend. -->
+
 ## Configuring Google GCS Bucket with TechDocs
 
 Follow the
