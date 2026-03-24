@@ -370,6 +370,8 @@ export interface DefaultCatalogPageProps {
   // (undocumented)
   columns?: TableColumn<CatalogTableRow>[] | CatalogTableColumnsFunc;
   // (undocumented)
+  columnsConfig?: ColumnConfig;
+  // (undocumented)
   emptyContent?: ReactNode;
   // (undocumented)
   filters?: ReactNode;
