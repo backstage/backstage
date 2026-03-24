@@ -66,6 +66,7 @@ export function TablePagination(props: TablePaginationProps) {
     onPageSizeChange,
     showPageSizeOptions,
     getLabel,
+    showPaginationLabel,
   } = ownProps;
 
   const labelId = useId();
@@ -89,6 +90,8 @@ export function TablePagination(props: TablePaginationProps) {
   }, [pageSize, pageSizeOptions]);
 
   const hasItems = totalCount !== undefined && totalCount !== 0;
+
+  const showLabel = hasItems && showPaginationLabel !== false;
 
   let label = `${totalCount} items`;
   if (getLabel) {
@@ -121,7 +124,7 @@ export function TablePagination(props: TablePaginationProps) {
         )}
       </div>
       <div className={classes.right}>
-        {hasItems && (
+        {showLabel && (
           <Text as="p" variant="body-medium" id={labelId}>
             {label}
           </Text>
@@ -133,7 +136,7 @@ export function TablePagination(props: TablePaginationProps) {
           isDisabled={!hasPreviousPage}
           icon={<RiArrowLeftSLine />}
           aria-label="Previous table page"
-          aria-describedby={hasItems ? labelId : undefined}
+          aria-describedby={showLabel ? labelId : undefined}
         />
         <ButtonIcon
           variant="secondary"
@@ -142,7 +145,7 @@ export function TablePagination(props: TablePaginationProps) {
           isDisabled={!hasNextPage}
           icon={<RiArrowRightSLine />}
           aria-label="Next table page"
-          aria-describedby={hasItems ? labelId : undefined}
+          aria-describedby={showLabel ? labelId : undefined}
         />
       </div>
     </div>
