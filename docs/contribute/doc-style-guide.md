@@ -148,6 +148,15 @@ Use `:::note` for supplementary information, `:::tip` for helpful suggestions,
 `:::caution` for potential pitfalls, and `:::danger` for actions that could
 cause data loss or security issues.
 
+Keep admonitions short and focused. Each admonition should contain a single,
+clear point. If you find yourself writing multiple paragraphs inside an
+admonition, consider whether the content belongs in the main text instead.
+
+Avoid stacking multiple admonitions in a row. Too many callouts on a page
+dilute their impact and make the content harder to read. If a section has
+more than two admonitions, restructure the content so that most of the
+information is in regular paragraphs.
+
 ## Markdown elements
 
 ### Line breaks
@@ -196,6 +205,21 @@ For large amounts of structured data, consider using a list or separate
 subsections instead.
 
 ## Content best practices
+
+### Spell out acronyms on first use
+
+When using an acronym, spell it out in full on first use followed by the
+acronym in parentheses. After that, you can use the acronym alone.
+
+| Do                                                      | Don't                                 |
+| :------------------------------------------------------ | :------------------------------------ |
+| Software Development Kit (SDK)                          | SDK (without ever defining it)        |
+| Role-Based Access Control (RBAC) ... configure RBAC ... | RBAC ... configure RBAC ...           |
+| Hyper Text Markup Language (HTML)                       | HTML (on first use without expansion) |
+
+Exception: Universally understood acronyms like URL, API, or HTML do not
+need to be spelled out if they are common knowledge for the target audience
+of software developers.
 
 ### Use present tense
 
@@ -297,15 +321,14 @@ words do not add value.
 A list of Backstage-specific terms and words to be used consistently across
 the site.
 
-| Term                | Usage                                                                                                                                  |
-| :------------------ | :------------------------------------------------------------------------------------------------------------------------------------- |
-| Backstage           | Always capitalized.                                                                                                                    |
-| plugin              | Lowercase when referring to the concept. Use code style when referring to a specific package, for example `@backstage/plugin-catalog`. |
-| Software Catalog    | Capitalized as a product name. Use "catalog" (lowercase) when referring to the concept generically.                                    |
-| Software Templates  | Capitalized as a product name.                                                                                                         |
-| TechDocs            | One word, camel case.                                                                                                                  |
-| Scaffolder          | Capitalized as a product name.                                                                                                         |
-| app-config          | Use code style: `app-config.yaml`.                                                                                                     |
-| open source         | Two words, lowercase (unless starting a sentence).                                                                                     |
-| backend system      | Lowercase when referring to the Backstage backend framework.                                                                           |
-| new frontend system | Lowercase. Acceptable to abbreviate as "NFS" after first use.                                                                          |
+| Term               | Usage                                                                                                                                  |
+| :----------------- | :------------------------------------------------------------------------------------------------------------------------------------- | --- |
+| Backstage          | Always capitalized.                                                                                                                    |
+| plugin             | Lowercase when referring to the concept. Use code style when referring to a specific package, for example `@backstage/plugin-catalog`. |
+| Software Catalog   | Capitalized as a product name. Use "catalog" (lowercase) when referring to the concept generically.                                    |
+| Software Templates | Capitalized as a product name.                                                                                                         |
+| TechDocs           | One word, camel case.                                                                                                                  |
+| Scaffolder         | Capitalized as a product name.                                                                                                         |
+| app-config         | Use code style: `app-config.yaml`.                                                                                                     |
+| open source        | Two words, lowercase (unless starting a sentence).                                                                                     |
+| backend system     | Lowercase when referring to the Backstage backend framework.                                                                           |     |

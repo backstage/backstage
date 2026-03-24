@@ -9,7 +9,7 @@ Backstage is an open platform for building developer portals. This is a TypeScri
 - `/packages/backend`: Example backend for local development
 - `/docs`: Documentation files
 
-Packages prefixed with `core-` (e.g., `@backstage/core-plugin-api`) are part of the old frontend system. Packages prefixed with `frontend-` (e.g., `@backstage/frontend-plugin-api`) are part of the new frontend system (NFS). Packages prefixed with `backend-` (e.g., `@backstage/backend-plugin-api`) are part of the backend system.
+Packages prefixed with `core-` (e.g., `@backstage/core-plugin-api`) are part of the old frontend system. Packages prefixed with `frontend-` (e.g., `@backstage/frontend-plugin-api`) are part of the new frontend system. Packages prefixed with `backend-` (e.g., `@backstage/backend-plugin-api`) are part of the backend system.
 
 ## Writing Standards
 
