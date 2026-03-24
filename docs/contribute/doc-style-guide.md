@@ -72,11 +72,15 @@ who is new to the topic but not new to software development.
 
 ### Use code style for package names and API references
 
+<!-- vale off -->
+
 | Do                                                               | Don't                                                            |
 | :--------------------------------------------------------------- | :--------------------------------------------------------------- |
 | Install the `@backstage/core-plugin-api` package.                | Install the @backstage/core-plugin-api package.                  |
 | The `createRouter` function creates a new router.                | The createRouter function creates a new router.                  |
 | Set the value of the `backend.baseUrl` field in the config file. | Set the value of the "backend.baseUrl" field in the config file. |
+
+<!-- vale on -->
 
 ### Use angle brackets for placeholders
 
