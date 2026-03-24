@@ -1959,6 +1959,7 @@ export interface PaginationOptions
       | 'onPreviousPage'
       | 'showPageSizeOptions'
       | 'getLabel'
+      | 'showPaginationLabel'
     >
   > {
   // (undocumented)
@@ -2618,6 +2619,9 @@ export const TablePaginationDefinition: {
       readonly default: true;
     };
     readonly getLabel: {};
+    readonly showPaginationLabel: {
+      readonly default: true;
+    };
   };
 };
 
@@ -2638,6 +2642,7 @@ export type TablePaginationOwnProps = {
     offset?: number;
     totalCount?: number;
   }) => string;
+  showPaginationLabel?: boolean;
 };
 
 // @public (undocumented)
