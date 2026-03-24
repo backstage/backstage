@@ -153,8 +153,11 @@ const app = createApp({
 });
 ```
 
-The generated CSS is applied to BUI components based on the active theme mode (`variant`): light-mode styles are scoped to `:root` and dark-mode styles to `[data-theme-mode="dark"]`, so they automatically follow the user’s light/dark preference. If you define multiple themes that share the same variant (for example, two light themes), you’ll need additional CSS scoping if you want their BUI styles to differ.
+The generated CSS is applied to BUI components based on the active theme mode (`variant`). Light-mode styles are scoped to `:root` and dark-mode styles to `[data-theme-mode="dark"]`, so they automatically follow the user’s light/dark preference.
 
+:::note
+If you define multiple themes that share the same variant (for example, two light themes), you’ll need additional CSS scoping if you want their BUI styles to differ.
+:::
 | Name       | Description                                                                                                                                                                                                                              |
 | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `id`       | Each theme has a unique `id`                                                                                                                                                                                                             |
