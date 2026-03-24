@@ -111,6 +111,57 @@ describe('actionsRegistryServiceFactory', () => {
 
       expect(true).toBe(true);
     });
+
+    it('should enforce types on example input and output', () => {
+      createBackendPlugin({
+        pluginId: 'my-plugin',
+        register(reg) {
+          reg.registerInit({
+            deps: {
+              actionsRegistry: actionsRegistryServiceRef,
+            },
+            async init({ actionsRegistry }) {
+              actionsRegistry.register({
+                name: 'test',
+                title: 'Test',
+                description: 'Test',
+                schema: {
+                  input: z =>
+                    z.object({
+                      name: z.string(),
+                    }),
+                  output: z =>
+                    z.object({
+                      ok: z.boolean(),
+                    }),
+                },
+                examples: [
+                  {
+                    title: 'Valid example',
+                    input: { name: 'test' },
+                    output: { ok: true },
+                  },
+                  {
+                    title: 'Bad input',
+                    // @ts-expect-error - name must be a string
+                    input: { name: 123 },
+                  },
+                  {
+                    title: 'Bad output',
+                    input: { name: 'test' },
+                    // @ts-expect-error - ok must be a boolean
+                    output: { ok: 'yes' },
+                  },
+                ],
+                action: async () => ({ output: { ok: true } }),
+              });
+            },
+          });
+        },
+      });
+
+      expect(true).toBe(true);
+    });
   });
 
   describe('/.backstage/actions/v1/actions', () => {
