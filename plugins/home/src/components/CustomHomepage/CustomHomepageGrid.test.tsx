@@ -166,4 +166,52 @@ describe('CustomHomepageGrid', () => {
       expect.objectContaining({ presence: 'absent', value: undefined }),
     );
   });
+
+  it('should allow resizing widgets when re-entering edit mode after save', async () => {
+    const resizableConfig: ComponentProps<typeof CustomHomepageGrid>['config'] =
+      defaultConfig!.map(c => ({ ...c, resizable: true }));
+    const mockStorage = mockApis.storage();
+
+    const { unmount } = await renderInTestApp(
+      <TestApiProvider apis={[[storageApiRef, mockStorage]]}>
+        <CustomHomepageGrid config={resizableConfig}>
+          <ComponentA />
+          <ComponentB />
+          <ComponentC />
+        </CustomHomepageGrid>
+      </TestApiProvider>,
+    );
+
+    // Enter edit mode and save to persist the layout
+    await userEvent.click(screen.getByRole('button', { name: 'Edit' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Save' }));
+
+    // Verify layout was persisted
+    const snapshot = mockStorage
+      .forBucket('home.customHomepage')
+      .snapshot('home');
+    expect(snapshot.presence).toBe('present');
+
+    // Unmount and re-render to simulate a page reload with persisted layout
+    unmount();
+    await renderInTestApp(
+      <TestApiProvider apis={[[storageApiRef, mockStorage]]}>
+        <CustomHomepageGrid config={resizableConfig}>
+          <ComponentA />
+          <ComponentB />
+          <ComponentC />
+        </CustomHomepageGrid>
+      </TestApiProvider>,
+    );
+
+    expect(screen.getByText('A')).toBeInTheDocument();
+
+    // Re-enter edit mode — widgets should be resizable
+    await userEvent.click(screen.getByRole('button', { name: 'Edit' }));
+
+    // react-grid-layout renders span elements with class "react-resizable-handle"
+    // for each resizable grid item when isResizable is true
+    const resizeHandles = document.querySelectorAll('.react-resizable-handle');
+    expect(resizeHandles.length).toBeGreaterThan(0);
+  });
 });

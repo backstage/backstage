@@ -302,16 +302,19 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
   const changeEditMode = (mode: boolean) => {
     setEditMode(mode);
 
+    const newWidgets = widgets.map(w => {
+      const resizable = w.resizable === false ? false : mode;
+      const movable = w.movable === false ? false : mode;
+      return {
+        ...w,
+        layout: { ...w.layout, isDraggable: movable, isResizable: resizable },
+      };
+    });
+
     if (!mode) {
-      const newWidgets = widgets.map(w => {
-        const resizable = w.resizable === false ? false : mode;
-        const movable = w.movable === false ? false : mode;
-        return {
-          ...w,
-          layout: { ...w.layout, isDraggable: movable, isResizable: resizable },
-        };
-      });
       storeWidgets(newWidgets);
+    } else {
+      setWidgets(newWidgets);
     }
   };
 
