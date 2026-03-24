@@ -2642,6 +2642,113 @@ describe('NunjucksWorkflowRunner', () => {
       expect(taskLogCalls).toContain(
         'Finished step Should run with template always after error',
       );
+  describe('approval', () => {
+    it('should pause execution when hitting a step with approval', async () => {
+      const mockSerializeWorkspace = jest.fn();
+      const mockUpdateCheckpoint = jest.fn();
+
+      const task = {
+        ...createMockTaskWithSpec({
+          steps: [
+            { id: 'step1', name: 'First Step', action: 'jest-mock-action' },
+            {
+              id: 'step2',
+              name: 'Approval Step',
+              action: 'jest-mock-action',
+              approval: { approvers: ['group:default/approvers'] },
+            },
+            { id: 'step3', name: 'Final Step', action: 'jest-mock-action' },
+          ],
+        }),
+        serializeWorkspace: mockSerializeWorkspace,
+        updateCheckpoint: mockUpdateCheckpoint,
+      };
+
+      const result = await runner.execute(task);
+
+      expect(result.waitingForApproval).toBe(true);
+      expect(result.output).toEqual({});
+      expect(fakeActionHandler).toHaveBeenCalledTimes(1);
+      expect(mockSerializeWorkspace).toHaveBeenCalled();
+      expect(mockUpdateCheckpoint).toHaveBeenCalledWith(
+        expect.objectContaining({
+          key: 'approval',
+          status: 'success',
+          value: expect.objectContaining({
+            currentStepIndex: 1,
+            stepId: 'step2',
+          }),
+        }),
+      );
+    });
+
+    it('should resume from checkpoint and skip completed steps', async () => {
+      const task = {
+        ...createMockTaskWithSpec({
+          steps: [
+            { id: 'step1', name: 'First Step', action: 'jest-mock-action' },
+            {
+              id: 'step2',
+              name: 'Approval Step',
+              action: 'jest-mock-action',
+              approval: { approvers: ['group:default/approvers'] },
+            },
+            { id: 'step3', name: 'Final Step', action: 'jest-mock-action' },
+          ],
+          output: {
+            step1Result: '${{steps.step1.output.mock}}',
+          },
+        }),
+        getTaskState: () =>
+          Promise.resolve({
+            state: {
+              checkpoints: {
+                approval: {
+                  status: 'approved_and_resuming',
+                  currentStepIndex: 1,
+                  completedStepOutputs: {
+                    step1: { output: { mock: 'from-step1' } },
+                  },
+                },
+              },
+            },
+          }),
+      };
+
+      const result = await runner.execute(task);
+
+      expect(result.waitingForApproval).toBeFalsy();
+      expect(fakeActionHandler).toHaveBeenCalledTimes(2);
+      expect(result.output.step1Result).toEqual('from-step1');
+    });
+
+    it('should not pause for approval steps during dry run', async () => {
+      const mockUpdateCheckpoint = jest.fn();
+
+      const task = {
+        ...createMockTaskWithSpec(
+          {
+            steps: [
+              { id: 'step1', name: 'First Step', action: 'jest-mock-action' },
+              {
+                id: 'step2',
+                name: 'Approval Step',
+                action: 'jest-mock-action',
+                approval: { approvers: ['group:default/approvers'] },
+              },
+              { id: 'step3', name: 'Final Step', action: 'jest-mock-action' },
+            ],
+          },
+          undefined,
+          true,
+        ),
+        updateCheckpoint: mockUpdateCheckpoint,
+      };
+
+      const result = await runner.execute(task);
+
+      expect(result.waitingForApproval).toBeFalsy();
+      expect(mockUpdateCheckpoint).not.toHaveBeenCalled();
     });
   });
 });

@@ -28,7 +28,7 @@ import {
 import PQueue from 'p-queue';
 import { TemplateActionRegistry } from '../actions/TemplateActionRegistry';
 import { NunjucksWorkflowRunner } from './NunjucksWorkflowRunner';
-import { WorkflowRunner } from './types';
+import { TaskStore, WorkflowRunner } from './types';
 import { setTimeout } from 'node:timers/promises';
 import { JsonObject } from '@backstage/types';
 import { Config } from '@backstage/config';
@@ -49,6 +49,7 @@ export type TaskWorkerOptions = {
   auditor?: AuditorService;
   config?: Config;
   gracefulShutdown?: boolean;
+  taskStore?: TaskStore;
 };
 
 /**
@@ -80,6 +81,7 @@ export type CreateWorkerOptions = {
   permissions?: PermissionEvaluator;
   gracefulShutdown?: boolean;
   metrics: MetricsService;
+  taskStore?: TaskStore;
 };
 
 /**
@@ -126,6 +128,7 @@ export class TaskWorker {
       permissions,
       gracefulShutdown,
       metrics,
+      taskStore,
     } = options;
 
     const workflowRunner = new NunjucksWorkflowRunner({
@@ -149,6 +152,7 @@ export class TaskWorker {
       auditor,
       config,
       gracefulShutdown,
+      taskStore,
       parameterAuditTransform: createParameterTruncator(config),
     });
   }
@@ -221,12 +225,40 @@ export class TaskWorker {
         );
       }
 
-      const { output } = await this.options.runners.workflowRunner.execute(
-        task,
-      );
+      const result = await this.options.runners.workflowRunner.execute(task);
 
-      await task.complete('completed', { output });
-      await auditorEvent?.success();
+      if (result.waitingForApproval) {
+        const taskStore = this.options.taskStore;
+        if (taskStore) {
+          const taskState = await task.getTaskState?.();
+          const checkpoint = (
+            taskState?.state as
+              | { checkpoints?: { approval?: { value?: JsonObject } } }
+              | undefined
+          )?.checkpoints?.approval?.value as { stepId?: string } | undefined;
+
+          if (checkpoint?.stepId && task.spec.steps) {
+            const step = task.spec.steps.find(s => s.id === checkpoint.stepId);
+            if (step?.approval) {
+              await taskStore.createApproval({
+                taskId: task.taskId!,
+                stepId: step.id,
+                approvers: step.approval.approvers,
+              });
+            }
+          }
+
+          await taskStore.setTaskStatus({
+            taskId: task.taskId!,
+            status: 'waiting',
+            oldStatus: 'processing',
+          });
+        }
+        await auditorEvent?.success();
+      } else {
+        await task.complete('completed', { output: result.output });
+        await auditorEvent?.success();
+      }
     } catch (error) {
       const err = toError(error);
       await auditorEvent?.fail({

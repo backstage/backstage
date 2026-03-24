@@ -190,7 +190,10 @@ export interface TaskStore {
   }): Promise<void>;
 }
 
-export type WorkflowResponse = { output: { [key: string]: JsonValue } };
+export type WorkflowResponse = {
+  output: { [key: string]: JsonValue };
+  waitingForApproval?: boolean;
+};
 
 export interface WorkflowRunner {
   execute(task: TaskContext): Promise<WorkflowResponse>;

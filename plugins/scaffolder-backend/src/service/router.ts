@@ -93,7 +93,7 @@ import {
 } from '../scaffolder';
 import { createDryRunner } from '../scaffolder/dryrun';
 import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
-import { InternalTaskSecrets } from '../scaffolder/tasks/types';
+import { InternalTaskSecrets, TaskStore } from '../scaffolder/tasks/types';
 import { createOpenApiRouter } from '../schema/openapi';
 import {
   checkPermission,
@@ -275,11 +275,13 @@ export async function createRouter(
   const integrations = ScmIntegrations.fromConfig(config);
 
   let taskBroker: TaskBroker;
+  let taskStore: TaskStore | undefined;
   if (!options.taskBroker) {
     const databaseTaskStore = await DatabaseTaskStore.create({
       database,
       events: eventsService,
     });
+    taskStore = databaseTaskStore;
     taskBroker = new StorageTaskBroker(
       databaseTaskStore,
       logger,
@@ -342,6 +344,7 @@ export async function createRouter(
 
     const worker = await TaskWorker.create({
       taskBroker,
+      taskStore,
       actionRegistry,
       integrations,
       logger,
