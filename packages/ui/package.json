@@ -47,6 +47,7 @@
   },
   "dependencies": {
     "@backstage/version-bridge": "workspace:^",
+    "@react-aria/collections": "^3.0.3",
     "@react-aria/interactions": "^3.27.1",
     "@react-stately/layout": "^4.6.0",
     "@react-stately/overlays": "^3.6.23",

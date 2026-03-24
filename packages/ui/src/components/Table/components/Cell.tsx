@@ -15,13 +15,38 @@
  */
 
 import { Cell as ReactAriaCell } from 'react-aria-components';
+import { useIsHidden } from '@react-aria/collections';
 import type { CellProps } from '../types';
+import type { ReactNode } from 'react';
 import { useDefinition } from '../../../hooks/useDefinition';
 import { CellDefinition } from '../definition';
+
+/**
+ * Wrapper that suppresses its children during the React Aria collection pass
+ * (where they would be rendered into a fake Document that lacks
+ * `createElementNS`) and renders them normally in the real DOM pass.
+ */
+function SafeContent({ children }: { children: ReactNode }) {
+  return useIsHidden() ? null : <>{children}</>;
+}
 
 /** @public */
 const Cell = (props: CellProps) => {
   const { ownProps, restProps } = useDefinition(CellDefinition, props);
+
+  // When `textValue` is provided the collection system already has the
+  // accessible text it needs, so we can safely wrap children in a component
+  // that skips rendering during the collection pass.  The children are still
+  // stored on the collection node (node.rendered) so that the real render
+  // pass can display them.
+  if (restProps.textValue != null && restProps.children != null) {
+    const { children, ...rest } = restProps;
+    return (
+      <ReactAriaCell className={ownProps.classes.root} {...rest}>
+        <SafeContent>{children}</SafeContent>
+      </ReactAriaCell>
+    );
+  }
 
   return <ReactAriaCell className={ownProps.classes.root} {...restProps} />;
 };

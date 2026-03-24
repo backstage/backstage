@@ -24,6 +24,7 @@ import {
   TableBody,
   Column,
   Row,
+  Cell,
   CellText,
   CellProfile,
   useTable,
@@ -1113,5 +1114,91 @@ export const ComprehensiveServerSide: Story = {
         />
       </Flex>
     );
+  },
+};
+
+interface SparklineItem {
+  id: string;
+  name: string;
+  values: number[];
+}
+
+const sparklineData: SparklineItem[] = [
+  { id: '1', name: 'api-gateway', values: [2, 5, 3, 8, 6, 9, 4, 7, 10, 6] },
+  { id: '2', name: 'auth-service', values: [1, 3, 2, 4, 6, 5, 7, 8, 9, 10] },
+  { id: '3', name: 'user-service', values: [10, 8, 6, 4, 5, 3, 2, 4, 6, 8] },
+  { id: '4', name: 'search-index', values: [5, 5, 6, 7, 6, 5, 4, 3, 2, 1] },
+  { id: '5', name: 'event-bus', values: [3, 6, 9, 6, 3, 6, 9, 6, 3, 6] },
+];
+
+function Sparkline({ values, color }: { values: number[]; color: string }) {
+  const max = Math.max(...values);
+  const width = 120;
+  const height = 24;
+  const padding = 2;
+  const points = values
+    .map((v, i) => {
+      const x = (i / (values.length - 1)) * (width - padding * 2) + padding;
+      const y = height - padding - (v / max) * (height - padding * 2);
+      return `${x},${y}`;
+    })
+    .join(' ');
+
+  return (
+    <svg
+      width={width}
+      height={height}
+      viewBox={`0 0 ${width} ${height}`}
+      role="img"
+      aria-label={`Sparkline: ${values.join(', ')}`}
+    >
+      <polyline
+        points={points}
+        fill="none"
+        stroke={color}
+        strokeWidth={1.5}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+export const SvgCellContent: Story = {
+  render: () => {
+    const columns: ColumnConfig<SparklineItem>[] = [
+      {
+        id: 'name',
+        label: 'Service',
+        isRowHeader: true,
+        defaultWidth: '2fr',
+        cell: item => <CellText title={item.name} />,
+      },
+      {
+        id: 'trend',
+        label: 'Request trend',
+        defaultWidth: '1fr',
+        cell: item => (
+          <Cell textValue={`Trend for ${item.name}`}>
+            <Sparkline values={item.values} color="#1976d2" />
+          </Cell>
+        ),
+      },
+      {
+        id: 'latest',
+        label: 'Latest',
+        defaultWidth: '1fr',
+        cell: item => (
+          <CellText title={String(item.values[item.values.length - 1])} />
+        ),
+      },
+    ];
+
+    const { tableProps } = useTable({
+      mode: 'complete',
+      data: sparklineData,
+    });
+
+    return <Table columnConfig={columns} {...tableProps} />;
   },
 };

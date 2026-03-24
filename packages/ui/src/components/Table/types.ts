@@ -111,6 +111,20 @@ export type CellOwnProps = {
  * `CellProfile`) at the top level. Returning bare text or other elements
  * without a cell wrapper will break the table layout.
  *
+ * When placing non-text content inside `Cell` (SVG elements, canvas, or
+ * third-party charting components), you **must** also provide `textValue`
+ * so the cell has an accessible text representation and the content is
+ * safely skipped during the internal collection pass.
+ *
+ * @example
+ * ```tsx
+ * <Cell textValue="sparkline chart">
+ *   <svg width={100} height={20}>
+ *     <rect x={0} y={0} width={100} height={20} fill="blue" />
+ *   </svg>
+ * </Cell>
+ * ```
+ *
  * @public
  */
 export interface CellProps
