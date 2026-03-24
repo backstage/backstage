@@ -81,7 +81,10 @@ export const App = () => (
 
 **New frontend system**:
 
-If feature discovery is enabled, the plugin is picked up automatically after installation. Otherwise, register it as a feature:
+If feature discovery is enabled, the plugin is picked up automatically after installation. Otherwise, register it as a feature.
+
+For more details, see the feature discovery documentation:
+https://backstage.io/docs/frontend-system/architecture/app#feature-discovery
 
 ```tsx title="packages/app/src/App.tsx"
 import { createApp } from '@backstage/frontend-defaults';
