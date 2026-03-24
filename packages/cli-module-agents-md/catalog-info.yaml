@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-cli-module-agents-md
+  title: '@backstage/cli-module-agents-md'
+  description: CLI module for generating AI agent documentation indexes
+spec:
+  lifecycle: experimental
+  type: backstage-cli-module
+  owner: tooling-maintainers

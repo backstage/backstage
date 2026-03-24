@@ -2838,6 +2838,23 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/cli-module-agents-md@workspace:packages/cli-module-agents-md":
+  version: 0.0.0-use.local
+  resolution: "@backstage/cli-module-agents-md@workspace:packages/cli-module-agents-md"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@backstage/cli-common": "workspace:^"
+    "@backstage/cli-node": "workspace:^"
+    "@types/fs-extra": "npm:^11.0.0"
+    chalk: "npm:^4.0.0"
+    cleye: "npm:^2.3.0"
+    fs-extra: "npm:^11.2.0"
+    ora: "npm:^5.3.0"
+  bin:
+    cli-module-agents-md: bin/backstage-cli-module-agents-md
+  languageName: unknown
+  linkType: soft
+
 "@backstage/cli-module-auth@workspace:^, @backstage/cli-module-auth@workspace:packages/cli-module-auth":
   version: 0.0.0-use.local
   resolution: "@backstage/cli-module-auth@workspace:packages/cli-module-auth"
