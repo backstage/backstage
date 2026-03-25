@@ -148,7 +148,12 @@ The metadata includes information about the site structure, navigation, and othe
           clearTimeout(timeoutId);
 
           if (!response.ok) {
-            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            if (response.status === 404) {
+              throw new NotFoundError(
+                `No TechDocs metadata found for entity ${entityRef}`,
+              );
+            }
+            throw await ResponseError.fromResponse(response);
           }
 
           const contentLength = response.headers.get('content-length');
@@ -162,9 +167,10 @@ The metadata includes information about the site structure, navigation, and othe
           }
 
           const text = await response.text();
-          if (text.length > MAX_METADATA_SIZE) {
+          const textByteLength = Buffer.byteLength(text, 'utf8');
+          if (textByteLength > MAX_METADATA_SIZE) {
             throw new InputError(
-              `Metadata too large: ${text.length} bytes exceeds limit of ${MAX_METADATA_SIZE} bytes`,
+              `Metadata too large: ${textByteLength} bytes exceeds limit of ${MAX_METADATA_SIZE} bytes`,
             );
           }
 

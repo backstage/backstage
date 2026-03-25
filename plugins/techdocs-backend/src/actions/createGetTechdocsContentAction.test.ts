@@ -17,6 +17,7 @@ import { createGetTechdocsContentAction } from './createGetTechdocsContentAction
 import { actionsRegistryServiceMock } from '@backstage/backend-test-utils/alpha';
 import { mockServices, mockCredentials } from '@backstage/backend-test-utils';
 
+const originalFetch = global.fetch;
 global.fetch = jest.fn();
 
 describe('createGetTechdocsContentAction', () => {
@@ -24,6 +25,10 @@ describe('createGetTechdocsContentAction', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+  });
+
+  afterAll(() => {
+    global.fetch = originalFetch;
   });
 
   const createMockServices = () => {

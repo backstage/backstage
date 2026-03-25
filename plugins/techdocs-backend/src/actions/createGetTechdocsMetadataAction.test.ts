@@ -17,6 +17,7 @@ import { createGetTechdocsMetadataAction } from './createGetTechdocsMetadataActi
 import { actionsRegistryServiceMock } from '@backstage/backend-test-utils/alpha';
 import { mockServices, mockCredentials } from '@backstage/backend-test-utils';
 
+const originalFetch = global.fetch;
 global.fetch = jest.fn();
 
 describe('createGetTechdocsMetadataAction', () => {
@@ -24,6 +25,10 @@ describe('createGetTechdocsMetadataAction', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+  });
+
+  afterAll(() => {
+    global.fetch = originalFetch;
   });
 
   const createMockServices = () => {
@@ -280,6 +285,55 @@ describe('createGetTechdocsMetadataAction', () => {
       'assets/style.css',
       'api/reference.html',
     ]);
+  });
+
+  it('should filter pages to only include text-based extensions', async () => {
+    const mockActionsRegistry = actionsRegistryServiceMock();
+    const { auth, discovery } = createMockServices();
+    const mockMetadata = {
+      site_name: 'Test Docs',
+      site_description: 'Test',
+      etag: 'abc',
+      build_timestamp: 123,
+      pages: {
+        'index.html': { title: 'Home' },
+        'guide.md': { title: 'Guide' },
+        'data.json': { title: 'Data' },
+        'config.yaml': { title: 'Config' },
+        'image.png': { title: 'Image' },
+        'style.css': { title: 'Style' },
+        'script.js': { title: 'Script' },
+        'doc.pdf': { title: 'PDF' },
+      },
+    };
+
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      headers: new Headers(),
+      text: async () => JSON.stringify(mockMetadata),
+    } as unknown as Response);
+
+    createGetTechdocsMetadataAction({
+      actionsRegistry: mockActionsRegistry,
+      auth,
+      discovery,
+    });
+
+    const result = await mockActionsRegistry.invoke({
+      id: 'test:get-techdocs-metadata',
+      input: {
+        name: 'test-component',
+      },
+      credentials: mockCredentials.service(),
+    });
+
+    // Only text-based extensions should be returned
+    expect((result.output as Record<string, unknown>).pages).toEqual({
+      'index.html': { title: 'Home' },
+      'guide.md': { title: 'Guide' },
+      'data.json': { title: 'Data' },
+      'config.yaml': { title: 'Config' },
+    });
   });
 
   describe('memory optimization', () => {

@@ -28,12 +28,14 @@ const MAX_CONTENT_SIZE = 10 * 1024 * 1024;
 const FETCH_TIMEOUT = 30000;
 
 function sanitizePath(inputPath: string): string {
-  const normalized = path.normalize(inputPath);
+  // Normalize using POSIX semantics and forward slashes so the result
+  // is safe for use in URLs
+  const posixInput = inputPath.replace(/\\/g, '/');
+  const normalized = path.posix.normalize(posixInput);
   if (
     normalized.startsWith('..') ||
-    normalized.includes(`${path.sep}..${path.sep}`) ||
-    normalized.includes(`${path.sep}..`) ||
-    path.isAbsolute(normalized)
+    normalized.includes('/..') ||
+    path.posix.isAbsolute(normalized)
   ) {
     throw new InputError(`Invalid path: ${inputPath}`);
   }
@@ -124,12 +126,16 @@ Only HTML files are supported - binary files like images are not returned.
         const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT);
 
         try {
+          const encodedSafePath = safePath
+            .split('/')
+            .map(segment => encodeURIComponent(segment))
+            .join('/');
           const response = await fetch(
             `${baseUrl}/static/docs/${encodeURIComponent(
               input.namespace,
             )}/${encodeURIComponent(input.kind)}/${encodeURIComponent(
               input.name,
-            )}/${safePath}`,
+            )}/${encodedSafePath}`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -141,7 +147,7 @@ Only HTML files are supported - binary files like images are not returned.
           clearTimeout(timeoutId);
 
           if (!response.ok) {
-            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            throw await ResponseError.fromResponse(response);
           }
 
           const contentLength = response.headers.get('content-length');
