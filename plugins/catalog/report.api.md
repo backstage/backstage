@@ -251,6 +251,7 @@ export const catalogTranslationRef: TranslationRef<
     readonly 'aboutCard.systemField.label': 'System';
     readonly 'aboutCard.parentComponentField.value': 'No Parent Component';
     readonly 'aboutCard.parentComponentField.label': 'Parent Component';
+    readonly 'aboutCard.kindField.label': 'Kind';
     readonly 'aboutCard.typeField.label': 'Type';
     readonly 'aboutCard.lifecycleField.label': 'Lifecycle';
     readonly 'aboutCard.tagsField.value': 'No Tags';

@@ -61,6 +61,9 @@ export const catalogTranslationRef = createTranslationRef({
         label: 'Parent Component',
         value: 'No Parent Component',
       },
+      kindField: {
+        label: 'Kind',
+      },
       typeField: {
         label: 'Type',
       },
