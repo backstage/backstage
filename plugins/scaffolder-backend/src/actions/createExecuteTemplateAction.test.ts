@@ -54,9 +54,42 @@ describe('createExecuteTemplateAction', () => {
     );
   });
 
-  it('should pass the caller credentials to the scaffolder service', async () => {
+  it('should forward empty values and pass secrets to the scaffolder service', async () => {
     const mockActionsRegistry = actionsRegistryServiceMock();
-    mockScaffolderService.scaffold.mockResolvedValue({ taskId: 'task-xyz' });
+    mockScaffolderService.scaffold.mockResolvedValue({
+      taskId: 'task-with-secrets',
+    });
+
+    createExecuteTemplateAction({
+      actionsRegistry: mockActionsRegistry,
+      scaffolderService: mockScaffolderService,
+    });
+
+    const result = await mockActionsRegistry.invoke({
+      id: 'test:execute-template',
+      input: {
+        templateRef: 'template:default/secret-template',
+        values: {},
+        secrets: { apiKey: 'super-secret' },
+      },
+    });
+
+    expect(result.output).toEqual({ taskId: 'task-with-secrets' });
+    expect(mockScaffolderService.scaffold).toHaveBeenCalledWith(
+      {
+        templateRef: 'template:default/secret-template',
+        values: {},
+        secrets: { apiKey: 'super-secret' },
+      },
+      { credentials: expect.anything() },
+    );
+  });
+
+  it('should not include secrets when not provided', async () => {
+    const mockActionsRegistry = actionsRegistryServiceMock();
+    mockScaffolderService.scaffold.mockResolvedValue({
+      taskId: 'task-no-secrets',
+    });
 
     createExecuteTemplateAction({
       actionsRegistry: mockActionsRegistry,
@@ -67,41 +100,12 @@ describe('createExecuteTemplateAction', () => {
       id: 'test:execute-template',
       input: {
         templateRef: 'template:default/my-template',
-        values: {},
+        values: { name: 'my-app' },
       },
     });
 
-    expect(mockScaffolderService.scaffold).toHaveBeenCalledWith(
-      expect.anything(),
-      { credentials: expect.anything() },
-    );
-  });
-
-  it('should forward empty values to the scaffolder service', async () => {
-    const mockActionsRegistry = actionsRegistryServiceMock();
-    mockScaffolderService.scaffold.mockResolvedValue({ taskId: 'task-empty' });
-
-    createExecuteTemplateAction({
-      actionsRegistry: mockActionsRegistry,
-      scaffolderService: mockScaffolderService,
-    });
-
-    const result = await mockActionsRegistry.invoke({
-      id: 'test:execute-template',
-      input: {
-        templateRef: 'template:default/empty-template',
-        values: {},
-      },
-    });
-
-    expect(result.output).toEqual({ taskId: 'task-empty' });
-    expect(mockScaffolderService.scaffold).toHaveBeenCalledWith(
-      {
-        templateRef: 'template:default/empty-template',
-        values: {},
-      },
-      { credentials: expect.anything() },
-    );
+    const scaffoldCall = mockScaffolderService.scaffold.mock.calls[0][0];
+    expect(scaffoldCall).not.toHaveProperty('secrets');
   });
 
   it('should propagate errors from the scaffolder service', async () => {

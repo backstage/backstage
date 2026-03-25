@@ -34,7 +34,8 @@ export const createExecuteTemplateAction = ({
     },
     description: `Executes a Scaffolder template with its template ref and input parameter values.
 The template is run using the credentials provided to this action, and respects any RBAC permissions associated with those credentials.
-Returns a taskId that can be used to track execution progress.`,
+Returns a taskId that can be used to track execution progress.
+Use the catalog.get-catalog-entity action to fetch the Template entity and discover its parameter schema and secrets definition before calling this action.`,
     schema: {
       input: z =>
         z.object({
@@ -44,24 +45,16 @@ Returns a taskId that can be used to track execution progress.`,
               'The template entity reference to execute, e.g. "template:default/my-template"',
             ),
           values: z
-            .record(
-              z.string(),
-              z.union([
-                z.string(),
-                z.number(),
-                z.boolean(),
-                z.null(),
-                z.array(z.unknown()),
-                z.record(z.unknown()),
-              ]),
-            )
+            .record(z.unknown())
             .describe(
-              'Input parameter values required by the template. Collect all required template parameters from the user before calling this action. e.g. { "repoUrl": "github.com?owner=my-org&repo=my-repo", "description": "My new service" }',
+              'Input parameter values required by the template. Use catalog.get-catalog-entity to discover the required parameters for the template.',
             ),
           secrets: z
             .record(z.string())
             .optional()
-            .describe('Optional secrets to pass to the template execution.'),
+            .describe(
+              'Optional secrets to pass to the template execution. Use catalog.get-catalog-entity to discover the secrets definition on the Template entity.',
+            ),
         }),
       output: z =>
         z.object({

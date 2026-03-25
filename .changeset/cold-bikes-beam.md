@@ -2,4 +2,4 @@
 '@backstage/plugin-scaffolder-backend': minor
 ---
 
-create a new `execute-template` action to start a task that execute a template with provided values.
+Added a new `execute-template` actions registry action that executes a scaffolder template with provided input values and returns a task ID for tracking progress.
