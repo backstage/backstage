@@ -85,7 +85,7 @@
     "material-ui-popup-state": "^5.3.6",
     "qs": "^6.9.4",
     "react-use": "^17.2.4",
-    "yaml": "^2.0.0",
+    "yaml": "^2.8.3",
     "zen-observable": "^0.10.0"
   },
   "devDependencies": {

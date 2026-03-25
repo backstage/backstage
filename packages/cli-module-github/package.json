@@ -41,7 +41,7 @@
     "fs-extra": "^11.2.0",
     "inquirer": "^8.2.0",
     "react-dev-utils": "^12.0.0-next.60",
-    "yaml": "^2.0.0"
+    "yaml": "^2.8.3"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

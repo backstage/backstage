@@ -54,7 +54,7 @@
     "libsodium-wrappers": "^0.8.0",
     "octokit": "^3.0.0",
     "octokit-plugin-create-pull-request": "^5.0.0",
-    "yaml": "^2.0.0",
+    "yaml": "^2.8.3",
     "zod": "^3.25.76 || ^4.0.0"
   },
   "devDependencies": {

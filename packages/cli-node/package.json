@@ -44,7 +44,7 @@
     "pirates": "^4.0.6",
     "proper-lockfile": "^4.1.2",
     "semver": "^7.5.3",
-    "yaml": "^2.0.0",
+    "yaml": "^2.8.3",
     "zod": "^3.25.76 || ^4.0.0"
   },
   "devDependencies": {

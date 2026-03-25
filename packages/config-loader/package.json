@@ -50,7 +50,7 @@
     "lodash": "^4.17.21",
     "minimist": "^1.2.5",
     "typescript-json-schema": "^0.67.0",
-    "yaml": "^2.0.0"
+    "yaml": "^2.8.3"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",

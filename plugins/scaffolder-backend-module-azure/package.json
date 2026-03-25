@@ -48,7 +48,7 @@
     "@backstage/integration": "workspace:^",
     "@backstage/plugin-scaffolder-node": "workspace:^",
     "azure-devops-node-api": "^14.0.0",
-    "yaml": "^2.0.0"
+    "yaml": "^2.8.3"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

@@ -46,7 +46,7 @@
     "ora": "^5.3.0",
     "recursive-readdir": "^2.2.2",
     "semver": "^7.5.3",
-    "yaml": "^2.0.0",
+    "yaml": "^2.8.3",
     "zod": "^3.25.76",
     "zod-validation-error": "^4.0.2"
   },

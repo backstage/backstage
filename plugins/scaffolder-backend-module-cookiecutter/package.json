@@ -53,7 +53,7 @@
     "command-exists": "^1.2.9",
     "fs-extra": "^11.2.0",
     "winston": "^3.2.1",
-    "yaml": "^2.0.0",
+    "yaml": "^2.8.3",
     "yn": "^4.0.0"
   },
   "devDependencies": {

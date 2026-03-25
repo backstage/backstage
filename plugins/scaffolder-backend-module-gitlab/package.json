@@ -54,7 +54,7 @@
     "@gitbeaker/requester-utils": "^43.8.0",
     "@gitbeaker/rest": "^43.8.0",
     "luxon": "^3.0.0",
-    "yaml": "^2.0.0",
+    "yaml": "^2.8.3",
     "zod": "^3.25.76 || ^4.0.0"
   },
   "devDependencies": {

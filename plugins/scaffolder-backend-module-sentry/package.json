@@ -47,7 +47,7 @@
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/plugin-scaffolder-node": "workspace:^",
-    "yaml": "^2.3.3"
+    "yaml": "^2.8.3"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",
