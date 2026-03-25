@@ -138,5 +138,6 @@ export const UserProfileCard: (props: {
 export type UserProfileCardClassKey =
   | 'closeButton'
   | 'moreButton'
-  | 'dialogPaper';
+  | 'dialogPaper'
+  | 'list';
 ```

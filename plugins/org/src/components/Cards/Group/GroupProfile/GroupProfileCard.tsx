@@ -64,6 +64,7 @@ const useStyles = makeStyles(theme => ({
   list: {
     padding: 0,
     marginLeft: theme.spacing(0.5),
+    overflowWrap: 'anywhere',
   },
 }));
 
