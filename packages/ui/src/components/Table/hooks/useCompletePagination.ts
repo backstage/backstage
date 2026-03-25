@@ -52,6 +52,10 @@ export function useCompletePagination<T extends TableItem, TFilter>(
   const [offset, setOffset] = useState(initialOffset);
   const [pageSize, setPageSize] = useState(defaultPageSize);
 
+  useEffect(() => {
+    setPageSize(defaultPageSize);
+  }, [defaultPageSize]);
+
   // Load data on mount and when loadCount changes (reload trigger)
   useEffect(() => {
     if (data) {
