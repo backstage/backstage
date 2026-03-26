@@ -40,7 +40,7 @@
     "chalk": "^4.0.0",
     "cleye": "^2.3.0",
     "fs-extra": "^11.2.0",
-    "handlebars": "^4.7.3",
+    "handlebars": "^4.7.9",
     "inquirer": "^8.2.0",
     "lodash": "^4.17.21",
     "ora": "^5.3.0",

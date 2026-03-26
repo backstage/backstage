@@ -39,7 +39,7 @@
     "commander": "^14.0.3",
     "cross-fetch": "^4.0.0",
     "fs-extra": "^11.2.0",
-    "handlebars": "^4.7.3",
+    "handlebars": "^4.7.9",
     "mysql2": "^3.0.0",
     "pgtools": "^1.0.0",
     "tree-kill": "^1.2.2"
