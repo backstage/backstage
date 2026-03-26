@@ -605,6 +605,30 @@ export const config_userPattern_integration: MockObject = {
   },
 };
 
+export const config_org_excludeGroups_integration: MockObject = {
+  integrations: {
+    gitlab: [
+      {
+        host: 'example.com',
+        apiBaseUrl: 'https://example.com/api/v4',
+        token: '1234',
+      },
+    ],
+  },
+  catalog: {
+    providers: {
+      gitlab: {
+        'test-id': {
+          host: 'example.com',
+          groupPattern: '^group.*',
+          orgEnabled: true,
+          excludeGroups: ['group1/subgroup1'],
+        },
+      },
+    },
+  },
+};
+
 export const config_org_integration_saas: MockObject = {
   integrations: {
     gitlab: [
@@ -2500,6 +2524,135 @@ export const expected_full_org_scan_entities: MockObject[] = [
         children: [],
         profile: {
           displayName: 'subgroup1',
+        },
+        type: 'team',
+      },
+    },
+    locationKey: 'GitlabOrgDiscoveryEntityProvider:test-id',
+  },
+];
+
+export const expected_org_excludeGroups_entities: MockObject[] = [
+  {
+    entity: {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'User',
+      metadata: {
+        annotations: {
+          'backstage.io/managed-by-location': 'url:https://example.com/JohnDoe',
+          'backstage.io/managed-by-origin-location':
+            'url:https://example.com/JohnDoe',
+          'example.com/user-login': 'https://gitlab.example/john_doe',
+          'example.com/user-id': '1',
+        },
+        name: 'JohnDoe',
+      },
+      spec: {
+        memberOf: ['group1'],
+        profile: {
+          displayName: 'John Doe',
+          email: 'john.doe@company.com',
+          picture: 'https://secure.gravatar.com/',
+        },
+      },
+    },
+    locationKey: 'GitlabOrgDiscoveryEntityProvider:test-id',
+  },
+  {
+    entity: {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'User',
+      metadata: {
+        annotations: {
+          'backstage.io/managed-by-location': 'url:https://example.com/JaneDoe',
+          'backstage.io/managed-by-origin-location':
+            'url:https://example.com/JaneDoe',
+          'example.com/user-login': 'https://gitlab.example/jane_doe',
+          'example.com/user-id': '2',
+        },
+        name: 'JaneDoe',
+      },
+      spec: {
+        memberOf: [],
+        profile: {
+          displayName: 'Jane Doe',
+          email: 'jane.doe@company.com',
+          picture: 'https://secure.gravatar.com/',
+        },
+      },
+    },
+    locationKey: 'GitlabOrgDiscoveryEntityProvider:test-id',
+  },
+  {
+    entity: {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'User',
+      metadata: {
+        annotations: {
+          'backstage.io/managed-by-location':
+            'url:https://example.com/MarySmith',
+          'backstage.io/managed-by-origin-location':
+            'url:https://example.com/MarySmith',
+          'example.com/user-login': 'https://gitlab.example/mary_smith',
+          'example.com/user-id': '3',
+        },
+        name: 'MarySmith',
+      },
+      spec: {
+        memberOf: [],
+        profile: {
+          displayName: 'Mary Smith',
+          email: 'mary.smith@company.com',
+          picture: 'https://secure.gravatar.com/',
+        },
+      },
+    },
+    locationKey: 'GitlabOrgDiscoveryEntityProvider:test-id',
+  },
+  {
+    entity: {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'User',
+      metadata: {
+        annotations: {
+          'backstage.io/managed-by-location':
+            'url:https://example.com/MarioMario',
+          'backstage.io/managed-by-origin-location':
+            'url:https://example.com/MarioMario',
+          'example.com/user-login': 'https://gitlab.example/mario_mario',
+          'example.com/user-id': '5',
+        },
+        name: 'MarioMario',
+      },
+      spec: {
+        memberOf: [],
+        profile: {
+          displayName: 'Mario Mario',
+          email: 'mario.mario-company.com',
+          picture: 'https://secure.gravatar.com/',
+        },
+      },
+    },
+    locationKey: 'GitlabOrgDiscoveryEntityProvider:test-id',
+  },
+  {
+    entity: {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Group',
+      metadata: {
+        annotations: {
+          'backstage.io/managed-by-location': 'url:https://example.com/group1',
+          'backstage.io/managed-by-origin-location':
+            'url:https://example.com/group1',
+          'example.com/team-path': 'group1',
+        },
+        description: 'description1',
+        name: 'group1',
+      },
+      spec: {
+        children: [],
+        profile: {
+          displayName: 'group1',
         },
         type: 'team',
       },

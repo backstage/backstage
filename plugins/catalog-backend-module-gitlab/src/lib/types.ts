@@ -277,8 +277,9 @@ export type GitlabProviderConfig = {
 
   /**
    * List of groups to exclude from discovery, should be the full path to the group, e.g. `group/subgroup`
-   * All projects under the excluded groups and their subgroups will be skipped.
-   * Paths should not start or end with a slash.
+   * All projects under the excluded groups and their subgroups will be skipped by the GitlabDiscoveryEntityProvider.
+   * When organization discovery is enabled (GitlabOrgDiscoveryEntityProvider), the corresponding groups and their users
+   * will also be skipped. Paths should not start or end with a slash.
    */
   excludeGroups?: string[];
 

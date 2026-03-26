@@ -829,3 +829,46 @@ describe('GitlabOrgDiscoveryEntityProvider with events support', () => {
     });
   });
 });
+
+describe('GitlabOrgDiscoveryEntityProvider - excludeGroups', () => {
+  it('should exclude groups and their subgroups from org discovery', async () => {
+    const config = new ConfigReader(mock.config_org_excludeGroups_integration);
+    const schedule = new PersistingTaskRunner();
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+    const provider = GitlabOrgDiscoveryEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+    })[0];
+    expect(provider.getProviderName()).toEqual(
+      'GitlabOrgDiscoveryEntityProvider:test-id',
+    );
+
+    await provider.connect(entityProviderConnection);
+
+    const taskDef = schedule.getTasks()[0];
+    expect(taskDef.id).toEqual(
+      'GitlabOrgDiscoveryEntityProvider:test-id:refresh',
+    );
+    await (taskDef.fn as () => Promise<void>)();
+
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+      type: 'full',
+      entities: mock.expected_org_excludeGroups_entities,
+    });
+    // Verify the excluded subgroup entity is not present
+    const mutationCall = (entityProviderConnection.applyMutation as jest.Mock)
+      .mock.calls[0][0];
+    const groupEntities = mutationCall.entities.filter(
+      (e: any) => e.entity.kind === 'Group',
+    );
+    expect(
+      groupEntities.some(
+        (e: any) => e.entity.metadata.name === 'group1-subgroup1',
+      ),
+    ).toBe(false);
+  });
+});
