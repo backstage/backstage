@@ -64,8 +64,7 @@ export function EntityDataTable(props: EntityDataTableProps) {
     // FIX: Using Number.MAX_SAFE_INTEGER prevents the table pageSize from
     // locking to 1 during the initial render when tableData is empty.
     paginationOptions: {
-      pageSize:
-        tableData.length > 0 ? tableData.length : Number.MAX_SAFE_INTEGER,
+      pageSize: Number.MAX_SAFE_INTEGER,
     },
   });
 
