@@ -48,10 +48,12 @@ export const accordionTriggerPropDefs: Record<string, PropDef> = {
   iconStart: {
     type: 'enum',
     values: ['ReactElement'],
+    description: 'Icon element to display at the start of the trigger.',
   },
   iconEnd: {
     type: 'enum',
     values: ['ReactElement'],
+    description: 'Icon element to display at the end of the trigger.',
   },
   children: {
     type: 'enum',
