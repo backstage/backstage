@@ -146,7 +146,7 @@ export type TextWeights = 'regular' | 'bold';
  * @public
  */
 export interface UtilityProps extends SpaceProps {
-  /** Aligns children on the cross axis in flex layouts. */
+  /** Aligns children on the cross axis in flex and grid layouts. */
   alignItems?: Responsive<AlignItems>;
   /** Applies a semantic border variant. */
   border?: Responsive<Border>;
@@ -168,7 +168,7 @@ export interface UtilityProps extends SpaceProps {
   flexWrap?: Responsive<FlexWrap>;
   /** Sets spacing between children in flex and grid layouts. */
   gap?: Responsive<Space>;
-  /** Aligns children on the main axis in flex layouts. */
+  /** Aligns children on the main axis in flex and grid layouts. */
   justifyContent?: Responsive<JustifyContent>;
   /** Sets the number of grid rows to span. */
   rowSpan?: Responsive<Columns | 'full'>;

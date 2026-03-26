@@ -58,3 +58,135 @@ export const Controlled = meta.story({
     );
   },
 });
+
+export const Horizontal = meta.story({
+  args: {
+    ...Default.input.args,
+    orientation: 'horizontal',
+  },
+  render: args => (
+    <CheckboxGroup {...args}>
+      <Checkbox value="github">GitHub</Checkbox>
+      <Checkbox value="slack">Slack</Checkbox>
+      <Checkbox value="email">Email</Checkbox>
+    </CheckboxGroup>
+  ),
+});
+
+export const Disabled = meta.story({
+  args: {
+    ...Default.input.args,
+    isDisabled: true,
+  },
+  render: args => (
+    <CheckboxGroup {...args}>
+      <Checkbox value="github">GitHub</Checkbox>
+      <Checkbox value="slack">Slack</Checkbox>
+      <Checkbox value="email">Email</Checkbox>
+    </CheckboxGroup>
+  ),
+});
+
+export const DisabledSingle = meta.story({
+  args: {
+    ...Default.input.args,
+  },
+  render: args => (
+    <CheckboxGroup {...args}>
+      <Checkbox value="github">GitHub</Checkbox>
+      <Checkbox value="slack" isDisabled>
+        Slack
+      </Checkbox>
+      <Checkbox value="email">Email</Checkbox>
+    </CheckboxGroup>
+  ),
+});
+
+export const DisabledAndSelected = meta.story({
+  args: {
+    ...Default.input.args,
+    defaultValue: ['slack'],
+  },
+  render: args => (
+    <CheckboxGroup {...args}>
+      <Checkbox value="github">GitHub</Checkbox>
+      <Checkbox value="slack" isDisabled>
+        Slack
+      </Checkbox>
+      <Checkbox value="email">Email</Checkbox>
+    </CheckboxGroup>
+  ),
+});
+
+export const Invalid = meta.story({
+  args: {
+    ...Default.input.args,
+    isInvalid: true,
+  },
+  render: args => (
+    <CheckboxGroup {...args}>
+      <Checkbox value="github">GitHub</Checkbox>
+      <Checkbox value="slack">Slack</Checkbox>
+      <Checkbox value="email">Email</Checkbox>
+    </CheckboxGroup>
+  ),
+});
+
+export const ReadOnly = meta.story({
+  args: {
+    ...Default.input.args,
+    isReadOnly: true,
+    defaultValue: ['github'],
+  },
+  render: args => (
+    <CheckboxGroup {...args}>
+      <Checkbox value="github">GitHub</Checkbox>
+      <Checkbox value="slack">Slack</Checkbox>
+      <Checkbox value="email">Email</Checkbox>
+    </CheckboxGroup>
+  ),
+});
+
+export const WithDescription = meta.story({
+  args: {
+    ...Default.input.args,
+    description: 'Select all channels where you want to receive notifications.',
+  },
+  render: args => (
+    <CheckboxGroup {...args}>
+      <Checkbox value="github">GitHub</Checkbox>
+      <Checkbox value="slack">Slack</Checkbox>
+      <Checkbox value="email">Email</Checkbox>
+    </CheckboxGroup>
+  ),
+});
+
+export const Required = meta.story({
+  args: {
+    ...Default.input.args,
+    isRequired: true,
+  },
+  render: args => (
+    <CheckboxGroup {...args}>
+      <Checkbox value="github">GitHub</Checkbox>
+      <Checkbox value="slack">Slack</Checkbox>
+      <Checkbox value="email">Email</Checkbox>
+    </CheckboxGroup>
+  ),
+});
+
+export const Validation = meta.story({
+  args: {
+    ...Default.input.args,
+    validationBehavior: 'aria',
+    validate: (value: string[]) =>
+      value.includes('slack') ? 'Slack is not available in your region.' : null,
+  },
+  render: args => (
+    <CheckboxGroup {...args}>
+      <Checkbox value="github">GitHub</Checkbox>
+      <Checkbox value="slack">Slack</Checkbox>
+      <Checkbox value="email">Email</Checkbox>
+    </CheckboxGroup>
+  ),
+});
