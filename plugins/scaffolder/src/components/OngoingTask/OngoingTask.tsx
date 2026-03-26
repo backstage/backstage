@@ -49,6 +49,7 @@ import {
 import { useAsync } from '@react-hookz/web';
 import { usePermission } from '@backstage/plugin-permission-react';
 import {
+  taskApprovePermission,
   taskCancelPermission,
   taskCreatePermission,
   taskReadPermission,
@@ -77,6 +78,12 @@ const useStyles = makeStyles(theme => ({
     marginRight: theme.spacing(1),
   },
   logsVisibilityButton: {
+    marginRight: theme.spacing(1),
+  },
+  approveButton: {
+    marginRight: theme.spacing(1),
+  },
+  rejectButton: {
     marginRight: theme.spacing(1),
   },
 }));
@@ -159,7 +166,14 @@ export function OngoingTaskBody(props: {
     taskStream.task?.spec.EXPERIMENTAL_recovery?.EXPERIMENTAL_strategy ===
     'startOver';
 
+  const { allowed: canApproveTask } = usePermission({
+    permission: taskApprovePermission,
+    resourceRef: taskId,
+  });
+
   const canRetry = canReadTask && canCreateTask && isRetryableTask;
+
+  const isWaitingForApproval = taskStream.task?.status === 'waiting';
 
   const cancelEnabled = !(taskStream.cancelled || taskStream.completed);
   const isCancelButtonDisabled = !cancelEnabled || !canCancelTask;
@@ -517,6 +531,24 @@ function OngoingTaskContent(props: {
     },
   );
 
+  const [{ status: approveStatus }, { execute: triggerApprove }] = useAsync(
+    async () => {
+      if (taskId) {
+        analytics.captureEvent('approved', 'Task has been approved');
+        await scaffolderApi.approveTask?.(taskId);
+      }
+    },
+  );
+
+  const [{ status: rejectStatus }, { execute: triggerReject }] = useAsync(
+    async () => {
+      if (taskId) {
+        analytics.captureEvent('rejected', 'Task has been rejected');
+        await scaffolderApi.rejectTask?.(taskId);
+      }
+    },
+  );
+
   const Outputs = props.TemplateOutputsComponent ?? DefaultTemplateOutputs;
 
   const cancelEnabled = !(taskStream.cancelled || taskStream.completed);
@@ -549,6 +581,37 @@ function OngoingTaskContent(props: {
           <Paper>
             <Box padding={2}>
               <div className={classes.buttonBar}>
+                {isWaitingForApproval && (
+                  <>
+                    <Button
+                      className={classes.approveButton}
+                      variant="contained"
+                      color="primary"
+                      disabled={
+                        !canApproveTask ||
+                        approveStatus === 'loading' ||
+                        rejectStatus === 'loading'
+                      }
+                      onClick={triggerApprove}
+                      data-testid="approve-button"
+                    >
+                      Approve
+                    </Button>
+                    <Button
+                      className={classes.rejectButton}
+                      variant="outlined"
+                      disabled={
+                        !canApproveTask ||
+                        approveStatus === 'loading' ||
+                        rejectStatus === 'loading'
+                      }
+                      onClick={triggerReject}
+                      data-testid="reject-button"
+                    >
+                      Reject
+                    </Button>
+                  </>
+                )}
                 <Button
                   className={classes.cancelButton}
                   disabled={

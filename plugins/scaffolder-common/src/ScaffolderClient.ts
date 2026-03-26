@@ -383,6 +383,49 @@ export class ScaffolderClient implements ScaffolderApi {
     );
   }
 
+  async approveTask(
+    taskId: string,
+    options?: ScaffolderRequestOptions,
+  ): Promise<{ status: string }> {
+    const baseUrl = await this.discoveryApi.getBaseUrl('scaffolder');
+    const response = await this.fetchApi.fetch(
+      `${baseUrl}/v2/tasks/${encodeURIComponent(taskId)}/approve`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(options?.token && { Authorization: `Bearer ${options.token}` }),
+        },
+      },
+    );
+    if (!response.ok) {
+      throw await ResponseError.fromResponse(response);
+    }
+    return await response.json();
+  }
+
+  async rejectTask(
+    taskId: string,
+    options?: ScaffolderRequestOptions & { reason?: string },
+  ): Promise<{ status: string }> {
+    const baseUrl = await this.discoveryApi.getBaseUrl('scaffolder');
+    const response = await this.fetchApi.fetch(
+      `${baseUrl}/v2/tasks/${encodeURIComponent(taskId)}/reject`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(options?.token && { Authorization: `Bearer ${options.token}` }),
+        },
+        body: JSON.stringify({ reason: options?.reason }),
+      },
+    );
+    if (!response.ok) {
+      throw await ResponseError.fromResponse(response);
+    }
+    return await response.json();
+  }
+
   /**
    * {@inheritdoc ScaffolderApi.retry}
    */
