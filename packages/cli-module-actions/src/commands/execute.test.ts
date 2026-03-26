@@ -204,6 +204,49 @@ describe('execute command', () => {
     );
   });
 
+  it('parses valid JSON for complex flag values and passes to execute', async () => {
+    const actionWithObject = {
+      ...testAction,
+      schema: {
+        input: {
+          properties: {
+            ...testAction.schema.input.properties,
+            metadata: { type: 'object', description: 'Entity metadata' },
+          },
+          required: ['entityRef'],
+        },
+        output: {},
+      },
+    };
+    mockResolveAuth.mockResolvedValue(authResponse());
+    mockListForPlugin.mockResolvedValue([actionWithObject]);
+    mockExecute.mockResolvedValue({ ok: true });
+    (mockCli as jest.Mock).mockReturnValue({
+      flags: {
+        entityRef: 'component:default/foo',
+        metadata: '{"name":"bar"}',
+        instance: undefined,
+        help: undefined,
+      },
+    });
+
+    await executeCommand({
+      ...baseContext,
+      args: [
+        'catalog:refresh',
+        '--entityRef',
+        'component:default/foo',
+        '--metadata',
+        '{"name":"bar"}',
+      ],
+    });
+
+    expect(mockExecute).toHaveBeenCalledWith('catalog:refresh', {
+      entityRef: 'component:default/foo',
+      metadata: { name: 'bar' },
+    });
+  });
+
   it('throws on invalid JSON for complex flag values', async () => {
     const actionWithObject = {
       ...testAction,

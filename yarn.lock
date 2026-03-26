@@ -2835,6 +2835,7 @@ __metadata:
     cleye: "npm:^2.3.0"
     marked: "npm:^15.0.12"
     marked-terminal: "npm:^7.3.0"
+    strip-ansi: "npm:^7.1.0"
     zod: "npm:^3.25.76 || ^4.0.0"
   bin:
     cli-module-actions: bin/backstage-cli-module-actions

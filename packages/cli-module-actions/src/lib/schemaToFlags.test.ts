@@ -179,7 +179,20 @@ describe('schemaToFlags', () => {
     expect(flags.env.description).toBe('Target env [dev, prod] (required)');
   });
 
-  it('getComplexKeys returns keys for object, array, anyOf, and oneOf types', () => {
+  it('maps allOf properties to String flags with JSON hint', () => {
+    const flags = schemaToFlags({
+      properties: {
+        combined: { allOf: [{}, {}], description: 'Combined schema' },
+      },
+    });
+
+    expect(flags.combined).toEqual({
+      type: String,
+      description: 'Combined schema (JSON)',
+    });
+  });
+
+  it('getComplexKeys returns keys for object, array, anyOf, oneOf, and allOf types', () => {
     const keys = getComplexKeys({
       properties: {
         name: { type: 'string' },
@@ -187,11 +200,14 @@ describe('schemaToFlags', () => {
         fields: { type: 'array' },
         order: { anyOf: [{}, {}] },
         filter: { oneOf: [{}, {}] },
+        combined: { allOf: [{}, {}] },
         count: { type: 'number' },
       },
     });
 
-    expect(keys).toEqual(new Set(['query', 'fields', 'order', 'filter']));
+    expect(keys).toEqual(
+      new Set(['query', 'fields', 'order', 'filter', 'combined']),
+    );
   });
 
   it('preserves camelCase property names as flag keys', () => {

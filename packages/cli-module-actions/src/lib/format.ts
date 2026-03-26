@@ -17,23 +17,14 @@
 import chalk from 'chalk';
 import type { GroupedActions } from './ActionsClient';
 
-function stripAnsiEscapes(text: string): string {
-  const esc = String.fromCharCode(0x1b);
-  const csi = String.fromCharCode(0x9b);
-  const bel = String.fromCharCode(0x07);
-  const csiPattern = `[${esc}${csi}][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><~]`;
-  const oscPattern = `[${esc}${csi}][\\]P^_][^${bel}${esc}]*(?:${bel}|${esc}\\\\)?`;
-  const pattern = new RegExp(`${csiPattern}|${oscPattern}`, 'g');
-  return text.replace(pattern, '');
-}
-
-// Called per invocation because memoizing across dynamic imports breaks test isolation.
 async function renderMarkdown(text: string): Promise<string> {
-  const { marked } = await import('marked');
+  const { Marked } = await import('marked');
   const { markedTerminal } = await import('marked-terminal');
-  marked.use(markedTerminal());
-  const sanitized = stripAnsiEscapes(text);
-  return marked.parse(sanitized) as string;
+  const stripAnsi = (await import('strip-ansi')).default;
+
+  const instance = new Marked(markedTerminal());
+  const sanitized = stripAnsi(text);
+  return instance.parse(sanitized) as string;
 }
 
 function dedent(text: string): string {

@@ -116,6 +116,7 @@ export default async ({ args, info }: CliCommandContext) => {
   }
 
   if (!actionId) {
+    // Inject --help so cleye renders its help output before we throw.
     showGenericHelp(info, ['--help', ...args]);
     throw new Error('Action ID is required');
   }

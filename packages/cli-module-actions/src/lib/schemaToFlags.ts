@@ -21,6 +21,7 @@ type JsonSchemaProperty = {
   default?: unknown;
   anyOf?: unknown[];
   oneOf?: unknown[];
+  allOf?: unknown[];
 };
 
 type JsonSchemaObject = {
@@ -35,7 +36,7 @@ type CleyeFlag = {
 };
 
 function isComplexType(prop: JsonSchemaProperty): boolean {
-  if (prop.anyOf || prop.oneOf) {
+  if (prop.anyOf || prop.oneOf || prop.allOf) {
     return true;
   }
   const rawType = Array.isArray(prop.type) ? prop.type[0] : prop.type;
