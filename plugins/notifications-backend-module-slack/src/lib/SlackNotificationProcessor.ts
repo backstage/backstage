@@ -16,9 +16,14 @@
 
 import { AuthService, LoggerService } from '@backstage/backend-plugin-api';
 import {
+  MetricsService,
+  MetricsServiceCounter,
+} from '@backstage/backend-plugin-api/alpha';
+import {
   Entity,
   isUserEntity,
   parseEntityRef,
+  stringifyEntityRef,
   UserEntity,
 } from '@backstage/catalog-model';
 import { Config, readDurationFromConfig } from '@backstage/config';
@@ -29,7 +34,6 @@ import {
   NotificationSendOptions,
 } from '@backstage/plugin-notifications-node';
 import { durationToMilliseconds } from '@backstage/types';
-import { Counter, metrics } from '@opentelemetry/api';
 import { ChatPostMessageArguments, WebClient } from '@slack/web-api';
 import DataLoader from 'dataloader';
 import pThrottle from 'p-throttle';
@@ -47,8 +51,8 @@ export class SlackNotificationProcessor implements NotificationProcessor {
   private readonly sendNotifications: (
     opts: ChatPostMessageArguments[],
   ) => Promise<void>;
-  private readonly messagesSent: Counter;
-  private readonly messagesFailed: Counter;
+  private readonly messagesSent: MetricsServiceCounter;
+  private readonly messagesFailed: MetricsServiceCounter;
   private readonly broadcastChannels?: string[];
   private readonly broadcastRoutes?: BroadcastRoute[];
   private readonly entityLoader: DataLoader<string, Entity | undefined>;
@@ -63,6 +67,7 @@ export class SlackNotificationProcessor implements NotificationProcessor {
       auth: AuthService;
       logger: LoggerService;
       catalog: CatalogService;
+      metrics: MetricsService;
       slack?: WebClient;
       broadcastChannels?: string[];
       blockKitRenderer?: SlackBlockKitRenderer;
@@ -102,6 +107,7 @@ export class SlackNotificationProcessor implements NotificationProcessor {
     auth: AuthService;
     logger: LoggerService;
     catalog: CatalogService;
+    metrics: MetricsService;
     broadcastChannels?: string[];
     broadcastRoutes?: BroadcastRoute[];
     username?: string;
@@ -113,6 +119,7 @@ export class SlackNotificationProcessor implements NotificationProcessor {
       auth,
       catalog,
       logger,
+      metrics,
       slack,
       broadcastChannels,
       broadcastRoutes,
@@ -158,17 +165,18 @@ export class SlackNotificationProcessor implements NotificationProcessor {
       },
     );
 
-    const meter = metrics.getMeter('default');
-    this.messagesSent = meter.createCounter(
+    this.messagesSent = metrics.createCounter(
       'notifications.processors.slack.sent.count',
       {
         description: 'Number of messages sent to Slack successfully',
+        unit: '{message}',
       },
     );
-    this.messagesFailed = meter.createCounter(
+    this.messagesFailed = metrics.createCounter(
       'notifications.processors.slack.error.count',
       {
         description: 'Number of messages that failed to send to Slack',
+        unit: '{message}',
       },
     );
 
@@ -280,8 +288,15 @@ export class SlackNotificationProcessor implements NotificationProcessor {
     } else if (options.recipients.type === 'entity') {
       // Handle user-specific notification
       const entityRefs = [options.recipients.entityRef].flat();
-      if (entityRefs.some(e => parseEntityRef(e).kind === 'group')) {
-        // We've already dispatched a slack channel message, so let's not send a DM.
+      const explicitUserEntityRefs = entityRefs
+        .filter(entityRef => parseEntityRef(entityRef).kind === 'user')
+        .map(entityRef => stringifyEntityRef(parseEntityRef(entityRef)));
+      const normalizedUserRef = stringifyEntityRef(
+        parseEntityRef(notification.user),
+      );
+
+      if (!explicitUserEntityRefs.includes(normalizedUserRef)) {
+        // This user was resolved from a non-user entity. Skip sending a DM.
         return;
       }
 

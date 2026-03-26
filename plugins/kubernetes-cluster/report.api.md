@@ -5,6 +5,7 @@
 ```ts
 import { Entity } from '@backstage/catalog-model';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
+import { TranslationRef } from '@backstage/frontend-plugin-api';
 
 // @public
 export const EntityKubernetesClusterContent: (
@@ -16,6 +17,15 @@ export type EntityKubernetesClusterContentProps = {};
 
 // @public (undocumented)
 export const isKubernetesClusterAvailable: (entity: Entity) => boolean;
+
+// @public (undocumented)
+export const kubernetesClusterTranslationRef: TranslationRef<
+  'kubernetes-cluster',
+  {
+    readonly 'kubernetesClusterContentPage.permissionAlert.message': "To view Kubernetes objects, contact your portal administrator to give you the 'kubernetes.clusters.read' permission.";
+    readonly 'kubernetesClusterContentPage.permissionAlert.title': 'Permission required';
+  }
+>;
 
 // @public (undocumented)
 export const Router: () => JSX_2.Element;

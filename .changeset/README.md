@@ -26,7 +26,7 @@ Optional description with code examples.
 
 Migration instructions (breaking changes only).
 
-**Affected components:** button, card
+**Affected components:** Button, Card
 ```
 
 **Required:**
@@ -40,7 +40,7 @@ Migration instructions (breaking changes only).
 ```markdown
 Fixed button hover state
 
-**Affected components:** button
+**Affected components:** Button
 ```
 
 ````markdown
@@ -56,7 +56,7 @@ Update imports:
 ```
 ````
 
-**Affected components:** table
+**Affected components:** Table
 
 ```
 

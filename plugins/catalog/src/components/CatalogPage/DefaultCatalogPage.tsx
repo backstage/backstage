@@ -24,6 +24,7 @@ import {
   TableProps,
 } from '@backstage/core-components';
 import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
+import { HeaderPage } from '@backstage/ui';
 import {
   CatalogFilterLayout,
   DefaultFilters,
@@ -48,9 +49,51 @@ export type BaseCatalogPageProps = {
   pagination?: EntityListPagination;
 };
 
+function CatalogPageContent(props: BaseCatalogPageProps) {
+  const { filters, content = <CatalogTable />, pagination } = props;
+
+  return (
+    <EntityListProvider pagination={pagination}>
+      <CatalogFilterLayout>
+        <CatalogFilterLayout.Filters>{filters}</CatalogFilterLayout.Filters>
+        <CatalogFilterLayout.Content>{content}</CatalogFilterLayout.Content>
+      </CatalogFilterLayout>
+    </EntityListProvider>
+  );
+}
+
 /** @internal */
 export function BaseCatalogPage(props: BaseCatalogPageProps) {
-  const { filters, content = <CatalogTable />, pagination } = props;
+  const orgName =
+    useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
+  const createComponentLink = useRouteRef(createComponentRouteRef);
+  const { t } = useTranslationRef(catalogTranslationRef);
+  const { allowed } = usePermission({
+    permission: catalogEntityCreatePermission,
+  });
+  const headerActions = (
+    <>
+      {allowed && (
+        <CreateButton
+          title={t('indexPage.createButtonTitle')}
+          to={createComponentLink && createComponentLink()}
+        />
+      )}
+      <SupportButton>{t('indexPage.supportButtonContent')}</SupportButton>
+    </>
+  );
+
+  return (
+    <PageWithHeader title={t('indexPage.title', { orgName })} themeId="home">
+      <Content>
+        <ContentHeader title="">{headerActions}</ContentHeader>
+        <CatalogPageContent {...props} />
+      </Content>
+    </PageWithHeader>
+  );
+}
+
+function NfsBaseCatalogPage(props: BaseCatalogPageProps) {
   const orgName =
     useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
   const createComponentLink = useRouteRef(createComponentRouteRef);
@@ -60,25 +103,25 @@ export function BaseCatalogPage(props: BaseCatalogPageProps) {
   });
 
   return (
-    <PageWithHeader title={t('indexPage.title', { orgName })} themeId="home">
+    <>
+      <HeaderPage
+        title={t('indexPage.title', { orgName })}
+        customActions={
+          <>
+            {allowed && (
+              <CreateButton
+                title={t('indexPage.createButtonTitle')}
+                to={createComponentLink && createComponentLink()}
+              />
+            )}
+            <SupportButton>{t('indexPage.supportButtonContent')}</SupportButton>
+          </>
+        }
+      />
       <Content>
-        <ContentHeader title="">
-          {allowed && (
-            <CreateButton
-              title={t('indexPage.createButtonTitle')}
-              to={createComponentLink && createComponentLink()}
-            />
-          )}
-          <SupportButton>{t('indexPage.supportButtonContent')}</SupportButton>
-        </ContentHeader>
-        <EntityListProvider pagination={pagination}>
-          <CatalogFilterLayout>
-            <CatalogFilterLayout.Filters>{filters}</CatalogFilterLayout.Filters>
-            <CatalogFilterLayout.Content>{content}</CatalogFilterLayout.Content>
-          </CatalogFilterLayout>
-        </EntityListProvider>
+        <CatalogPageContent {...props} />
       </Content>
-    </PageWithHeader>
+    </>
   );
 }
 
@@ -116,6 +159,45 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
 
   return (
     <BaseCatalogPage
+      filters={
+        filters ?? (
+          <DefaultFilters
+            initialKind={initialKind}
+            initiallySelectedFilter={initiallySelectedFilter}
+            ownerPickerMode={ownerPickerMode}
+            initiallySelectedNamespaces={initiallySelectedNamespaces}
+          />
+        )
+      }
+      content={
+        <CatalogTable
+          columns={columns}
+          actions={actions}
+          tableOptions={tableOptions}
+          emptyContent={emptyContent}
+        />
+      }
+      pagination={pagination}
+    />
+  );
+}
+
+export function NfsDefaultCatalogPage(props: DefaultCatalogPageProps) {
+  const {
+    columns,
+    actions,
+    initiallySelectedFilter = 'owned',
+    initialKind = 'component',
+    tableOptions = {},
+    emptyContent,
+    pagination,
+    ownerPickerMode,
+    filters,
+    initiallySelectedNamespaces,
+  } = props;
+
+  return (
+    <NfsBaseCatalogPage
       filters={
         filters ?? (
           <DefaultFilters

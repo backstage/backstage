@@ -454,30 +454,36 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
     [paginationMode],
   );
 
+  // Use resolvedValue directly when available to avoid an extra render cycle.
+  // Without this, there's a render where loading has flipped back to false but
+  // outputState hasn't been updated yet (it syncs via useEffect), causing a
+  // flash of stale data between the loading state and the new results.
+  const latestOutput = resolvedValue ?? outputState;
+
   const pageInfo = useMemo(() => {
     if (paginationMode !== 'cursor') {
       return undefined;
     }
 
-    const prevCursor = outputState.pageInfo?.prevCursor;
-    const nextCursor = outputState.pageInfo?.nextCursor;
+    const prevCursor = latestOutput.pageInfo?.prevCursor;
+    const nextCursor = latestOutput.pageInfo?.nextCursor;
     return {
       prev: prevCursor ? () => setCursor(prevCursor) : undefined,
       next: nextCursor ? () => setCursor(nextCursor) : undefined,
     };
-  }, [paginationMode, outputState.pageInfo]);
+  }, [paginationMode, latestOutput.pageInfo]);
 
   const value = useMemo(
     () => ({
-      filters: outputState.appliedFilters,
-      entities: outputState.entities,
-      backendEntities: outputState.backendEntities,
+      filters: latestOutput.appliedFilters,
+      entities: latestOutput.entities,
+      backendEntities: latestOutput.backendEntities,
       updateFilters,
       queryParameters,
       loading,
       error,
       pageInfo,
-      totalItems: outputState.totalItems,
+      totalItems: latestOutput.totalItems,
       limit,
       offset,
       setLimit,
@@ -485,7 +491,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
       paginationMode,
     }),
     [
-      outputState,
+      latestOutput,
       updateFilters,
       queryParameters,
       loading,

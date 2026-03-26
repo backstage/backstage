@@ -16,8 +16,8 @@ import { Profile } from 'passport';
 import { Request as Request_2 } from 'express';
 import { Response as Response_2 } from 'express';
 import { Strategy } from 'passport';
-import { ZodSchema } from 'zod';
-import { ZodTypeDef } from 'zod';
+import type { z } from 'zod/v3';
+import type { ZodType } from 'zod/v3';
 
 // @public (undocumented)
 export interface AuthOwnershipResolutionExtensionPoint {
@@ -227,15 +227,10 @@ export function createProxyAuthRouteHandlers<TResult>(
 // @public (undocumented)
 export function createSignInResolverFactory<
   TAuthResult,
-  TOptionsOutput,
-  TOptionsInput,
+  TSchema extends ZodType = ZodType<unknown>,
 >(
-  options: SignInResolverFactoryOptions<
-    TAuthResult,
-    TOptionsOutput,
-    TOptionsInput
-  >,
-): SignInResolverFactory<TAuthResult, TOptionsInput>;
+  options: SignInResolverFactoryOptions<TAuthResult, TSchema>,
+): SignInResolverFactory<TAuthResult, z.input<TSchema>>;
 
 // @public (undocumented)
 export function decodeOAuthState(encodedState: string): OAuthState;
@@ -676,13 +671,12 @@ export interface SignInResolverFactory<TAuthResult = any, TOptions = any> {
 // @public (undocumented)
 export interface SignInResolverFactoryOptions<
   TAuthResult,
-  TOptionsOutput,
-  TOptionsInput,
+  TSchema extends ZodType = ZodType<unknown>,
 > {
   // (undocumented)
-  create(options: TOptionsOutput): SignInResolver<TAuthResult>;
+  create(options: z.output<TSchema>): SignInResolver<TAuthResult>;
   // (undocumented)
-  optionsSchema?: ZodSchema<TOptionsOutput, ZodTypeDef, TOptionsInput>;
+  optionsSchema?: TSchema;
 }
 
 // @public

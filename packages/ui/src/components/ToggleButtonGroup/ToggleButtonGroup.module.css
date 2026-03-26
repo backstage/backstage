@@ -102,7 +102,7 @@
   }
 
   /* Focus ring on group surface */
-  .bui-ToggleButtonGroup:focus-visible {
+  .bui-ToggleButtonGroup[data-focus-visible] {
     outline: 2px solid var(--bui-ring);
     outline-offset: 2px;
   }

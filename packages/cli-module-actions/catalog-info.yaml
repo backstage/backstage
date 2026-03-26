@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-cli-module-actions
+  title: '@backstage/cli-module-actions'
+  description: CLI module for executing distributed actions
+spec:
+  lifecycle: experimental
+  type: backstage-cli-module
+  owner: tooling-maintainers

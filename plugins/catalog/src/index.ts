@@ -23,7 +23,6 @@
 export * from './apis';
 
 export type {
-  AboutCardProps,
   AboutContentProps,
   AboutFieldProps,
 } from './components/AboutCard';
@@ -58,9 +57,18 @@ export {
   CatalogSearchResultListItem,
 } from './plugin';
 
-export type { DependencyOfComponentsCardProps } from './components/DependencyOfComponentsCard';
-export type { DependsOnComponentsCardProps } from './components/DependsOnComponentsCard';
-export type { DependsOnResourcesCardProps } from './components/DependsOnResourcesCard';
+export type {
+  DependencyOfComponentsCardLegacyProps,
+  DependencyOfComponentsCardProps,
+} from './components/DependencyOfComponentsCard';
+export type {
+  DependsOnComponentsCardLegacyProps,
+  DependsOnComponentsCardProps,
+} from './components/DependsOnComponentsCard';
+export type {
+  DependsOnResourcesCardLegacyProps,
+  DependsOnResourcesCardProps,
+} from './components/DependsOnResourcesCard';
 export type {
   EntityLinksEmptyStateClassKey,
   EntityLinksCardProps,
@@ -70,10 +78,26 @@ export type {
 export type { SystemDiagramCardClassKey } from './components/SystemDiagramCard';
 export type { DefaultCatalogPageProps } from './components/CatalogPage';
 export type { EntityContextMenuClassKey } from './components/EntityContextMenu';
-export type { HasComponentsCardProps } from './components/HasComponentsCard';
-export type { HasResourcesCardProps } from './components/HasResourcesCard';
-export type { HasSubcomponentsCardProps } from './components/HasSubcomponentsCard';
-export type { HasSubdomainsCardProps } from './components/HasSubdomainsCard';
-export type { HasSystemsCardProps } from './components/HasSystemsCard';
+export type {
+  HasComponentsCardLegacyProps,
+  HasComponentsCardProps,
+} from './components/HasComponentsCard';
+export type {
+  HasResourcesCardLegacyProps,
+  HasResourcesCardProps,
+} from './components/HasResourcesCard';
+export type {
+  HasSubcomponentsCardLegacyProps,
+  HasSubcomponentsCardProps,
+} from './components/HasSubcomponentsCard';
+export type {
+  HasSubdomainsCardLegacyProps,
+  HasSubdomainsCardProps,
+} from './components/HasSubdomainsCard';
+export type {
+  HasSystemsCardLegacyProps,
+  HasSystemsCardProps,
+} from './components/HasSystemsCard';
 export type { RelatedEntitiesCardProps } from './components/RelatedEntitiesCard';
 export type { CatalogSearchResultListItemProps } from './components/CatalogSearchResultListItem';
+export { catalogTranslationRef } from './alpha/translation';

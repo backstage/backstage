@@ -40,7 +40,7 @@ catalog:
           timeout: PT15M
 ```
 
-Finally, updated your backend by adding the following line:
+Finally, update your backend by adding the following line:
 
 ```ts title="packages/backend/src/index.ts"
 backend.add(import('@backstage/plugin-catalog-backend'));

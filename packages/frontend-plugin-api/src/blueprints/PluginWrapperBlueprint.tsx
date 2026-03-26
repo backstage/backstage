@@ -21,14 +21,42 @@ import {
   createExtensionDataRef,
 } from '../wiring';
 
+/**
+ * Defines the structure of a plugin wrapper, optionally including a shared
+ * hook value.
+ *
+ * @remarks
+ *
+ * When `useWrapperValue` is provided, the hook is called in a single location
+ * in the app and the resulting value is forwarded as the `value` prop to the
+ * component. The hook obeys the rules of React hooks and is not called until a
+ * component from the plugin is rendered.
+ *
+ * @public
+ */
+export type PluginWrapperDefinition<TValue = unknown | never> = {
+  /**
+   * Creates a shared value that is forwarded as the `value` prop to the
+   * component.
+   *
+   * @remarks
+   *
+   * This function obeys the rules of React hooks and is only invoked in a
+   * single location in the app. Note that the hook will not be called until a
+   * component from the plugin is rendered.
+   */
+  useWrapperValue?: () => TValue;
+  component: ComponentType<{ children: ReactNode; value: TValue }>;
+};
+
 const wrapperDataRef = createExtensionDataRef<
-  () => Promise<{ component: ComponentType<{ children: ReactNode }> }>
+  () => Promise<PluginWrapperDefinition>
 >().with({ id: 'core.plugin-wrapper.loader' });
 
 /**
  * Creates extensions that wrap plugin extensions with providers.
  *
- * @alpha
+ * @public
  */
 export const PluginWrapperBlueprint = createExtensionBlueprint({
   kind: 'plugin-wrapper',
@@ -37,12 +65,12 @@ export const PluginWrapperBlueprint = createExtensionBlueprint({
   dataRefs: {
     wrapper: wrapperDataRef,
   },
-  defineParams(params: {
-    loader: () => Promise<{
-      component: ComponentType<{ children: ReactNode }>;
-    }>;
+  defineParams<TValue = never>(params: {
+    loader: () => Promise<PluginWrapperDefinition<TValue>>;
   }) {
-    return createExtensionBlueprintParams(params);
+    return createExtensionBlueprintParams(
+      params as { loader: () => Promise<PluginWrapperDefinition> },
+    );
   },
   *factory(params) {
     yield wrapperDataRef(params.loader);

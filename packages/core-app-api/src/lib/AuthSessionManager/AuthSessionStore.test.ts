@@ -15,7 +15,7 @@
  */
 
 import { withLogCollector } from '@backstage/test-utils';
-import { z } from 'zod';
+import { z } from 'zod/v3';
 import { AuthSessionStore } from './AuthSessionStore';
 import { SessionManager } from './types';
 

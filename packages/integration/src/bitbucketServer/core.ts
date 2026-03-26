@@ -16,6 +16,7 @@
 
 import fetch from 'cross-fetch';
 import parseGitUrl from 'git-url-parse';
+import { parseGitUrlSafe } from '../helpers';
 import { BitbucketServerIntegrationConfig } from './config';
 
 /**
@@ -74,7 +75,12 @@ export async function getBitbucketServerDownloadUrl(
   url: string,
   config: BitbucketServerIntegrationConfig,
 ): Promise<string> {
-  const { name: repoName, owner: project, ref, filepath } = parseGitUrl(url);
+  const {
+    name: repoName,
+    owner: project,
+    ref,
+    filepath,
+  } = parseGitUrlSafe(url);
 
   let branch = ref;
   if (!branch) {
@@ -108,7 +114,7 @@ export function getBitbucketServerFileFetchUrl(
   config: BitbucketServerIntegrationConfig,
 ): string {
   try {
-    const { owner, name, ref, filepathtype, filepath } = parseGitUrl(url);
+    const { owner, name, ref, filepathtype, filepath } = parseGitUrlSafe(url);
     if (
       !owner ||
       !name ||

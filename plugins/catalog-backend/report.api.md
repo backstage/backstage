@@ -31,7 +31,7 @@ export class AnnotateLocationEntityProcessor implements CatalogProcessor {
   ): Promise<Entity>;
 }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export class AnnotateScmSlugEntityProcessor implements CatalogProcessor {
   constructor(opts: {
     scmIntegrationRegistry: ScmIntegrationRegistry;
@@ -76,7 +76,7 @@ export const CATALOG_ERRORS_TOPIC = 'experimental.catalog.errors';
 const catalogPlugin: BackendFeature;
 export default catalogPlugin;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export class CodeOwnersProcessor implements CatalogProcessor {
   constructor(options: {
     integrations: ScmIntegrationRegistry;

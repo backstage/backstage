@@ -14,36 +14,14 @@
  * limitations under the License.
  */
 
-function getJestMajorVersion() {
-  const jestVersion = require('jest/package.json').version;
-  const majorVersion = parseInt(jestVersion.split('.')[0], 10);
-  return majorVersion;
-}
-
-function getJestEnvironment() {
-  const majorVersion = getJestMajorVersion();
-
-  if (majorVersion >= 30) {
-    try {
-      require.resolve('@jest/environment-jsdom-abstract');
-      require.resolve('jsdom');
-    } catch {
-      throw new Error(
-        'Jest 30+ requires @jest/environment-jsdom-abstract and jsdom. ' +
-          'Please install them as dev dependencies.',
-      );
-    }
-    return require.resolve('./jest-environment-jsdom');
-  }
-  try {
-    require.resolve('jest-environment-jsdom');
-  } catch {
+try {
+  module.exports = require('@backstage/cli-module-test-jest/config/getJestEnvironment');
+} catch (e) {
+  if (e.code === 'MODULE_NOT_FOUND') {
     throw new Error(
-      'Jest 29 requires jest-environment-jsdom. ' +
-        'Please install it as a dev dependency.',
+      '@backstage/cli-module-test-jest is required to use the jest environment configuration. ' +
+        'Please install it as a dependency.',
     );
   }
-  return require.resolve('jest-environment-jsdom');
+  throw e;
 }
-
-module.exports = { getJestMajorVersion, getJestEnvironment };

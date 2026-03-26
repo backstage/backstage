@@ -30,6 +30,7 @@ import {
   type DiscoveryApi,
   type ErrorApi,
   type FetchApi,
+  type FeatureFlagState,
   type IdentityApi,
   type StorageApi,
   type TranslationApi,
@@ -44,13 +45,10 @@ import {
   EvaluatePermissionRequest,
 } from '@backstage/plugin-permission-common';
 import { MockAlertApi } from './AlertApi';
-import {
-  MockFeatureFlagsApi,
-  MockFeatureFlagsApiOptions,
-} from './FeatureFlagsApi';
+import { MockFeatureFlagsApi } from './FeatureFlagsApi';
 import { MockAnalyticsApi } from './AnalyticsApi';
 import { MockConfigApi } from './ConfigApi';
-import { MockErrorApi, MockErrorApiOptions } from './ErrorApi';
+import { MockErrorApi } from './ErrorApi';
 import { MockFetchApi, MockFetchApiOptions } from './FetchApi';
 import { MockStorageApi } from './StorageApi';
 import { MockPermissionApi } from './PermissionApi';
@@ -114,7 +112,6 @@ export namespace mockApis {
   /**
    * Mock helpers for {@link @backstage/frontend-plugin-api#AlertApi}.
    *
-   * @see {@link @backstage/frontend-plugin-api#mockApis.alert}
    * @public
    */
   export namespace alert {
@@ -145,9 +142,9 @@ export namespace mockApis {
    * expect(featureFlagsApi.isActive('my-feature')).toBe(true);
    * ```
    */
-  export function featureFlags(
-    options?: MockFeatureFlagsApiOptions,
-  ): MockWithApiFactory<MockFeatureFlagsApi> {
+  export function featureFlags(options?: {
+    initialStates?: Record<string, FeatureFlagState>;
+  }): MockWithApiFactory<MockFeatureFlagsApi> {
     const instance = new MockFeatureFlagsApi(options);
     return mockWithApiFactory(
       featureFlagsApiRef,
@@ -157,7 +154,6 @@ export namespace mockApis {
   /**
    * Mock helpers for {@link @backstage/frontend-plugin-api#FeatureFlagsApi}.
    *
-   * @see {@link @backstage/frontend-plugin-api#mockApis.featureFlags}
    * @public
    */
   export namespace featureFlags {
@@ -218,7 +214,6 @@ export namespace mockApis {
   /**
    * Mock helpers for {@link @backstage/frontend-plugin-api#TranslationApi}.
    *
-   * @see {@link @backstage/frontend-plugin-api#mockApis.translation}
    * @public
    */
   export namespace translation {
@@ -419,9 +414,9 @@ export namespace mockApis {
    *
    * @public
    */
-  export function error(
-    options?: MockErrorApiOptions,
-  ): MockErrorApi & MockWithApiFactory<ErrorApi> {
+  export function error(options?: {
+    collect?: boolean;
+  }): MockErrorApi & MockWithApiFactory<ErrorApi> {
     const instance = new MockErrorApi(options);
     return mockWithApiFactory(errorApiRef, instance) as MockErrorApi &
       MockWithApiFactory<ErrorApi>;

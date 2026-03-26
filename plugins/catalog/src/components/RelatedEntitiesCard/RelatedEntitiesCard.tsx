@@ -70,6 +70,7 @@ export type RelatedEntitiesCardProps<T extends Entity> = {
  * this card as its implementation with some of the props set to the appropriate
  * values.
  *
+ * @deprecated Use {@link @backstage/plugin-catalog-react/alpha#EntityRelationCard} instead.
  * @public
  */
 export const RelatedEntitiesCard = <T extends Entity>(

@@ -233,12 +233,13 @@ describe('<TechDocsReaderPageContent />', () => {
     useTechDocsReaderDom.mockReturnValue(mockTechDocsPage);
     useReaderState.mockReturnValue({ state: 'cached' });
 
-    window.location.hash = '#emojis';
-
     const rendered = await renderInTestApp(
       <Wrapper>
         <TechDocsReaderPageContent withSearch={false} />
       </Wrapper>,
+      {
+        routeEntries: ['/#emojis'],
+      },
     );
 
     await waitFor(() => {
@@ -248,8 +249,6 @@ describe('<TechDocsReaderPageContent />', () => {
       expect(mockScrollIntoView).toHaveBeenCalled();
       expect(document.querySelector).not.toHaveBeenCalledWith('header');
     });
-
-    window.location.hash = '';
   });
 
   it('should render progress bar when content is loading', async () => {

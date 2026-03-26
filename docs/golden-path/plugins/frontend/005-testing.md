@@ -2,6 +2,7 @@
 id: testing
 sidebar_label: 005 - Testing
 title: 005 - Testing
+description: How to write tests for your Backstage frontend plugin components
 ---
 
 Everyone's favorite part! Let's make sure our components continue to work even when we're not able to validate the changes.

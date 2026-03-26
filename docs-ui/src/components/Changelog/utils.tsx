@@ -1,4 +1,4 @@
-import type { ChangelogProps } from '@/utils/types';
+import type { ChangelogProps, Component } from '@/utils/types';
 
 // Badge Components
 export const Badge = ({
@@ -83,15 +83,22 @@ export const formatPRLinks = (prs: string[]): string => {
 
 export const generateEntryMarkdown = (
   entry: ChangelogProps,
-  options: { showComponentBadges?: boolean } = {},
+  options: {
+    showComponentBadges?: boolean;
+    componentBadgeFilter?: Component[];
+  } = {},
 ): string => {
-  const { showComponentBadges = true } = options;
+  const { showComponentBadges = true, componentBadgeFilter } = options;
   const prs = formatPRLinks(entry.prs);
 
   // Prepend component names as badges if available and requested
+  const entryComponents = entry.components ?? [];
+  const badgeComponents = componentBadgeFilter
+    ? entryComponents.filter(c => componentBadgeFilter.includes(c))
+    : entryComponents;
   const componentBadges =
-    showComponentBadges && entry.components.length > 0
-      ? entry.components
+    showComponentBadges && badgeComponents.length > 0
+      ? badgeComponents
           .map(c => `<Badge variant="gray">${toTitleCase(c)}</Badge>`)
           .join(' ') + ' '
       : '';
@@ -120,6 +127,7 @@ export const generateEntryMarkdown = (
 
 export interface GenerateChangelogOptions {
   showComponentBadges?: boolean;
+  componentBadgeFilter?: Component[];
   headingLevel?: number;
 }
 
@@ -127,7 +135,11 @@ export const generateChangelogMarkdown = (
   entries: ChangelogProps[],
   options: GenerateChangelogOptions = {},
 ): string => {
-  const { showComponentBadges = true, headingLevel = 2 } = options;
+  const {
+    showComponentBadges = true,
+    componentBadgeFilter,
+    headingLevel = 2,
+  } = options;
 
   // Group changelog entries by version
   const groupedChangelog = groupByVersion(entries);
@@ -168,7 +180,12 @@ export const generateChangelogMarkdown = (
       const bumpSections = sections
         .map(({ title, entries: sectionEntries }) => {
           const entriesMarkdown = sectionEntries
-            .map(e => generateEntryMarkdown(e, { showComponentBadges }))
+            .map(e =>
+              generateEntryMarkdown(e, {
+                showComponentBadges,
+                componentBadgeFilter,
+              }),
+            )
             .join('\n\n');
 
           return `${sectionHeading} ${title}\n\n${entriesMarkdown}`;

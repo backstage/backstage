@@ -19,7 +19,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { InputError, NotFoundError } from '@backstage/errors';
 import { JsonObject, JsonValue } from '@backstage/types';
-import { z, AnyZodObject } from 'zod';
+import { z, AnyZodObject } from 'zod/v3';
 import zodToJsonSchema from 'zod-to-json-schema';
 import { mockCredentials } from '../../services';
 import {
@@ -82,6 +82,7 @@ export class MockActionsRegistry
     return {
       actions: Array.from(this.actions.entries()).map(([id, action]) => ({
         id,
+        pluginId: 'test',
         name: action.name,
         title: action.title,
         description: action.description,
@@ -90,6 +91,7 @@ export class MockActionsRegistry
           idempotent: action.attributes?.idempotent ?? false,
           readOnly: action.attributes?.readOnly ?? false,
         },
+        examples: action.examples,
         schema: {
           input: action.schema?.input
             ? zodToJsonSchema(action.schema.input(z))

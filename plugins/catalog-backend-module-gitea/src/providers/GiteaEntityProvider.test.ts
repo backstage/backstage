@@ -34,6 +34,7 @@ describe('GiteaEntityProvider', () => {
     triggerTask: jest.fn(),
     scheduleTask: jest.fn(),
     getScheduledTasks: jest.fn(),
+    cancelTask: jest.fn(),
   };
   const mockTaskRunner = {
     run: jest.fn(),

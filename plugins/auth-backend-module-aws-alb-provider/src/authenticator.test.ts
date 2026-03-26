@@ -136,14 +136,15 @@ describe('AwsAlbProvider', () => {
     });
 
     it('JWT is invalid', async () => {
-      await expect(
-        awsAlbAuthenticator.authenticate(
+      const err = await awsAlbAuthenticator
+        .authenticate(
           { req: mockRequestWithInvalidJwt },
           { issuer: 'ISSUER_URL', signer: 'SIGNER_ARN', getKey: jest.fn() },
-        ),
-      ).rejects.toThrow(
-        'Exception occurred during JWT processing: JWSInvalid: Invalid Compact JWS',
-      );
+        )
+        .catch(e => e);
+      expect(err).toBeInstanceOf(AuthenticationError);
+      expect(err.message).toContain('Exception occurred during JWT processing');
+      expect(err.cause).toBeDefined();
     });
 
     it('Email is missing', async () => {
@@ -160,18 +161,19 @@ describe('AwsAlbProvider', () => {
           return undefined;
         }),
       } as unknown as express.Request;
-      await expect(
-        awsAlbAuthenticator.authenticate(
+
+      const err = await awsAlbAuthenticator
+        .authenticate(
           { req },
           {
             issuer: 'ISSUER_URL',
             signer: undefined,
             getKey: jest.fn().mockResolvedValue(signingKey),
           },
-        ),
-      ).rejects.toThrow(
-        'Exception occurred during JWT processing: AuthenticationError: Missing email in the JWT token',
-      );
+        )
+        .catch(e => e);
+      expect(err).toBeInstanceOf(AuthenticationError);
+      expect(err.message).toContain('Missing email in the JWT token');
     });
 
     it('issuer is missing', async () => {
@@ -189,18 +191,18 @@ describe('AwsAlbProvider', () => {
         }),
       } as unknown as express.Request;
 
-      await expect(
-        awsAlbAuthenticator.authenticate(
+      const err = await awsAlbAuthenticator
+        .authenticate(
           { req },
           {
             issuer: 'ISSUER_URL',
             signer: undefined,
             getKey: jest.fn().mockResolvedValue(signingKey),
           },
-        ),
-      ).rejects.toThrow(
-        'Exception occurred during JWT processing: AuthenticationError: Issuer mismatch on JWT token',
-      );
+        )
+        .catch(e => e);
+      expect(err).toBeInstanceOf(AuthenticationError);
+      expect(err.message).toContain('Issuer mismatch on JWT token');
     });
 
     it('issuer is invalid', async () => {
@@ -218,18 +220,18 @@ describe('AwsAlbProvider', () => {
         }),
       } as unknown as express.Request;
 
-      await expect(
-        awsAlbAuthenticator.authenticate(
+      const err = await awsAlbAuthenticator
+        .authenticate(
           { req },
           {
             issuer: 'ISSUER_URL',
             signer: 'SIGNER_ARN',
             getKey: jest.fn().mockResolvedValue(signingKey),
           },
-        ),
-      ).rejects.toThrow(
-        'Exception occurred during JWT processing: AuthenticationError: Issuer mismatch on JWT token',
-      );
+        )
+        .catch(e => e);
+      expect(err).toBeInstanceOf(AuthenticationError);
+      expect(err.message).toContain('Issuer mismatch on JWT token');
     });
 
     it('signer is invalid', async () => {
@@ -247,18 +249,18 @@ describe('AwsAlbProvider', () => {
         }),
       } as unknown as express.Request;
 
-      await expect(
-        awsAlbAuthenticator.authenticate(
+      const err = await awsAlbAuthenticator
+        .authenticate(
           { req },
           {
             issuer: 'ISSUER_URL',
             signer: 'SIGNER_ARN',
             getKey: jest.fn().mockResolvedValue(signingKey),
           },
-        ),
-      ).rejects.toThrow(
-        'Exception occurred during JWT processing: AuthenticationError: Issuer mismatch on JWT token',
-      );
+        )
+        .catch(e => e);
+      expect(err).toBeInstanceOf(AuthenticationError);
+      expect(err.message).toContain('Issuer mismatch on JWT token');
     });
   });
 

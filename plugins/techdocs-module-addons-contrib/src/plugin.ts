@@ -211,6 +211,8 @@ export const TextSize = techdocsModuleAddonsContribPlugin.provide(
  * @remarks
  * The image size of the lightbox image is the same as the image size on the document page.
  *
+ * Images that are wrapped in links are ignored to avoid blocking navigation.
+ *
  * @example
  * Here's a simple example:
  * ```

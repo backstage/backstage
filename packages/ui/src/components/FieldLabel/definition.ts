@@ -36,6 +36,7 @@ export const FieldLabelDefinition = defineComponent<FieldLabelOwnProps>()({
     description: {},
     htmlFor: {},
     id: {},
+    descriptionId: {},
     className: {},
   },
 });

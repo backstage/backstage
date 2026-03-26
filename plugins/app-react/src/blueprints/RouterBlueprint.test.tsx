@@ -42,6 +42,7 @@ describe('RouterBlueprint', () => {
         "configSchema": undefined,
         "disabled": false,
         "factory": [Function],
+        "if": undefined,
         "inputs": {},
         "kind": "app-router-component",
         "name": undefined,

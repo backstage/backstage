@@ -25,6 +25,11 @@ import {
   useRelatedEntities,
 } from '@backstage/plugin-catalog-react';
 import {
+  EntityRelationCard,
+  EntityColumnConfig,
+  entityColumnPresets,
+} from '@backstage/plugin-catalog-react/alpha';
+import {
   CodeSnippet,
   InfoCard,
   InfoCardVariants,
@@ -38,12 +43,35 @@ import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { apiDocsTranslationRef } from '../../translation';
 
 /** @public */
-export const ProvidingComponentsCard = (props: {
-  variant?: InfoCardVariants;
+export interface ProvidingComponentsCardProps {
   title?: string;
+  columnConfig?: EntityColumnConfig[];
+}
+
+/**
+ * Props for the legacy MUI-based rendering.
+ * @deprecated Use {@link ProvidingComponentsCardProps} instead.
+ * @public
+ */
+export interface ProvidingComponentsCardLegacyProps {
+  title?: string;
+  /** @deprecated Use `columnConfig` instead. */
+  variant?: InfoCardVariants;
+  /** @deprecated Use `columnConfig` instead. */
   columns?: TableColumn<ComponentEntity>[];
+  /** @deprecated Use `columnConfig` instead. */
   tableOptions?: TableOptions;
-}) => {
+}
+
+function isLegacyProps(
+  props: ProvidingComponentsCardProps | ProvidingComponentsCardLegacyProps,
+): props is ProvidingComponentsCardLegacyProps {
+  return 'variant' in props || 'columns' in props || 'tableOptions' in props;
+}
+
+function ProvidingComponentsCardLegacy(
+  props: ProvidingComponentsCardLegacyProps,
+) {
   const { t } = useTranslationRef(apiDocsTranslationRef);
   const {
     variant = 'gridItem',
@@ -95,6 +123,35 @@ export const ProvidingComponentsCard = (props: {
       columns={columns}
       tableOptions={tableOptions}
       entities={entities as ComponentEntity[]}
+    />
+  );
+}
+
+/** @public */
+export const ProvidingComponentsCard = (
+  props: ProvidingComponentsCardProps | ProvidingComponentsCardLegacyProps,
+) => {
+  const { t } = useTranslationRef(apiDocsTranslationRef);
+
+  if (isLegacyProps(props)) {
+    return <ProvidingComponentsCardLegacy {...props} />;
+  }
+
+  const {
+    title = t('providingComponentsCard.title'),
+    columnConfig = entityColumnPresets.component.columns,
+  } = props;
+
+  return (
+    <EntityRelationCard
+      title={title}
+      relationType={RELATION_API_PROVIDED_BY}
+      columnConfig={columnConfig}
+      emptyState={{
+        message: t('providingComponentsCard.emptyContent.title'),
+        helpLink:
+          'https://backstage.io/docs/features/software-catalog/descriptor-format#specprovidesapis-optional',
+      }}
     />
   );
 };

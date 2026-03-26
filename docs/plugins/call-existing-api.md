@@ -4,6 +4,12 @@ title: Call Existing API
 description: Describes the various options that Backstage frontend plugins have, in communicating with service APIs that already exist
 ---
 
+:::caution Legacy Documentation
+
+This section is part of the legacy plugins documentation. The frontend code examples on this page use the old frontend system APIs (`discoveryApiRef`, `fetchApiRef` from `@backstage/core-plugin-api`). The same APIs are available in the new frontend system via `@backstage/frontend-plugin-api`. The general guidance on when to use direct requests vs. the proxy vs. a backend plugin remains valid for both systems.
+
+:::
+
 This article describes the various options that Backstage frontend plugins have,
 in communicating with service APIs that already exist. Each section below
 describes a possible choice, and the circumstances under which it fits.

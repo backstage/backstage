@@ -27,6 +27,7 @@ export const LightBoxAddon = () => {
 
   useEffect(() => {
     let dataSourceImages: DataSource | null = null;
+    const lightboxImages = images.filter(image => !image.closest('a'));
 
     let lightbox: PhotoSwipeLightbox | null = new PhotoSwipeLightbox({
       pswpModule: PhotoSwipe,
@@ -57,10 +58,10 @@ export const LightBoxAddon = () => {
         </svg>`,
     });
 
-    images.forEach((image, index) => {
+    lightboxImages.forEach((image, index) => {
       image.onclick = () => {
         if (dataSourceImages === null) {
-          dataSourceImages = images.map(dataSourceImage => {
+          dataSourceImages = lightboxImages.map(dataSourceImage => {
             return {
               element: dataSourceImage,
               src: dataSourceImage.src,

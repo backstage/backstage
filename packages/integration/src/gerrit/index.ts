@@ -19,7 +19,6 @@ export {
   readGerritIntegrationConfigs,
 } from './config';
 export {
-  buildGerritGitilesArchiveUrl,
   buildGerritGitilesArchiveUrlFromLocation,
   getGitilesAuthenticationUrl,
   getGerritBranchApiUrl,
@@ -28,7 +27,6 @@ export {
   getGerritProjectsApiUrl,
   getGerritRequestOptions,
   parseGerritJsonResponse,
-  parseGerritGitilesUrl,
   parseGitilesUrlRef,
 } from './core';
 

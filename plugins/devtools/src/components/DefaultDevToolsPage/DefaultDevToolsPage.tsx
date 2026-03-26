@@ -21,7 +21,7 @@ import {
 
 import { ConfigContent } from '../Content';
 import { devToolsTaskSchedulerReadPermission } from '@backstage/plugin-devtools-common/alpha';
-import { DevToolsLayout } from '../DevToolsLayout';
+import { DevToolsLayout } from '../DevToolsLayout/DevToolsLayout';
 import { InfoContent } from '../Content';
 import { RequirePermission } from '@backstage/plugin-permission-react';
 import { ScheduledTasksContent } from '../Content/ScheduledTasksContent';

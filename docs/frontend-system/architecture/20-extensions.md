@@ -41,6 +41,43 @@ Each extension in the app can be disabled, meaning it will not be instantiated a
 
 The ordering of extensions is sometimes very important, as it may for example affect in which order they show up in the UI. When an extension is toggled from disabled to enabled through configuration it resets the ordering of the extension, pushing it to the end of the list. It is generally recommended to leave extensions as disabled by default if their order is important, allowing for the order in which their are enabled in the configuration to determine their order in the app.
 
+### Conditions
+
+Extensions can also be conditionally enabled by providing an `if` predicate. This is available both on `createExtension(...)` directly and when creating extensions from blueprints.
+
+The predicate uses the same `FilterPredicate` syntax as elsewhere in Backstage, but in the frontend system it is evaluated against app-level data such as `featureFlags` and `permissions`. For example, the following page is only installed when the `experimental-features` flag is active:
+
+```tsx
+const examplePage = PageBlueprint.make({
+  params: {
+    path: '/example',
+    loader: () => import('./ExamplePage').then(m => <m.ExamplePage />),
+  },
+  if: { featureFlags: { $contains: 'experimental-features' } },
+});
+```
+
+You can also combine conditions using logical operators such as `$all`, `$any`, and `$not`:
+
+```tsx
+const guardedCard = CardBlueprint.make({
+  params: {
+    title: 'Guarded Card',
+    loader: () => import('./GuardedCard').then(m => <m.GuardedCard />),
+  },
+  if: {
+    $all: [
+      { featureFlags: { $contains: 'experimental-features' } },
+      { permissions: { $contains: 'catalog.entity.create' } },
+    ],
+  },
+});
+```
+
+Conditions are evaluated when the app tree is prepared, not continuously while the app is running. If the underlying feature flags or permissions change, the app needs to be prepared again in order for the extension tree to change, which in practice typically means reloading the app.
+
+If a plugin or module also provides an `if` predicate, it is combined with the extension-level predicate using logical `AND`. See the [plugin `if` option](./15-plugins.md#if-option) and [frontend modules](./25-extension-overrides.md#creating-a-frontend-module) sections for more details.
+
 ### Configuration & configuration schema
 
 Each extension can define a configuration schema that describes the configuration that it accepts. This schema is used to validate the configuration provided by integrators, but also to fill in default configuration values. The configuration itself is provided by integrators in order to customize the extension. It is not possible to provide a default configuration of an extension, this must instead be done through defaults in the configuration schema. This allows for a simpler configuration logic where multiple configurations of the same extension completely replace each other rather than being merged.

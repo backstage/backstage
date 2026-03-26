@@ -465,6 +465,45 @@ Require stack:
     });
   });
 
+  it('should load a backend plugin that bundles its own @backstage/backend-plugin-api', async () => {
+    const dynamicPluginsLister = new DynamicPluginLister();
+    const dynamicPluginsRootForBundled = resolvePath(
+      __dirname,
+      '__fixtures__/dynamic-plugins-root-for-bundled',
+    );
+    await startTestBackend({
+      features: [
+        mockServices.rootConfig.factory({
+          data: {
+            dynamicPlugins: {
+              rootDirectory: dynamicPluginsRootForBundled,
+            },
+            backend: {
+              baseUrl: `http://localhost:0`,
+            },
+          },
+        }),
+        dynamicPluginsFeatureLoader({
+          moduleLoader: logger =>
+            jestFreeTypescriptAwareModuleLoader({ logger }),
+        }),
+        dynamicPluginsLister.feature(),
+      ],
+    });
+
+    expect(dynamicPluginsLister.loadedPlugins).toMatchObject([
+      {
+        installer: {
+          kind: 'new',
+        },
+        name: 'plugin-test-backend-bundled-dynamic',
+        platform: 'node',
+        role: 'backend-plugin',
+        version: '0.0.0',
+      },
+    ]);
+  });
+
   describe('module federation support', () => {
     const createRemoteProviderPlugin = (
       provider: FrontendRemoteResolverProvider,

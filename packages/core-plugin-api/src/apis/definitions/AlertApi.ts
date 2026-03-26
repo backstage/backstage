@@ -14,6 +14,23 @@
  * limitations under the License.
  */
 
+/**
+ * @deprecated AlertApi is deprecated. Use ToastApi from `@backstage/frontend-plugin-api` instead.
+ *
+ * ToastApi provides richer notification features including title/description,
+ * action links, custom icons, per-toast timeout control, and programmatic dismiss.
+ *
+ * @example
+ * ```typescript
+ * // Before (AlertApi)
+ * import { alertApiRef } from '@backstage/core-plugin-api';
+ * alertApi.post({ message: 'Saved!', severity: 'success', display: 'transient' });
+ *
+ * // After (ToastApi)
+ * import { toastApiRef } from '@backstage/frontend-plugin-api';
+ * toastApi.post({ title: 'Saved!', status: 'success', timeout: 5000 });
+ * ```
+ */
 export {
   type AlertApi,
   type AlertMessage,

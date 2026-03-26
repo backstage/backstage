@@ -13,7 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { AuthService, RootConfigService } from '@backstage/backend-plugin-api';
+import {
+  AuthService,
+  LoggerService,
+  RootConfigService,
+} from '@backstage/backend-plugin-api';
 import { TokenIssuer } from '../identity/types';
 import { UserInfoDatabase } from '../database/UserInfoDatabase';
 import {
@@ -29,6 +33,51 @@ import matcher from 'matcher';
 import { OfflineAccessService } from './OfflineAccessService';
 import { validateCimdUrl, fetchCimdMetadata } from './CimdClient';
 
+function validateRedirectUri(
+  redirectUri: string,
+  allowedPatterns: string[],
+): void {
+  const parsed = new URL(redirectUri);
+  const normalized = `${parsed.protocol}//${parsed.host}${parsed.pathname}`;
+
+  if (!allowedPatterns.some(pattern => matcher.isMatch(normalized, pattern))) {
+    throw new InputError('Invalid redirect_uri');
+  }
+}
+
+const LOOPBACK_HOSTS = ['localhost', '127.0.0.1', '[::1]'];
+
+/**
+ * RFC 8252 Section 7.3: For loopback redirect URIs, the authorization server
+ * MUST allow any port to be specified at the time of the request. This matches
+ * redirect URIs by scheme, hostname, and path only, ignoring the port.
+ */
+function matchesRedirectUri(
+  requestUri: string,
+  registeredUris: string[],
+): boolean {
+  const requested = new URL(requestUri);
+
+  if (!LOOPBACK_HOSTS.includes(requested.hostname)) {
+    return registeredUris.includes(requestUri);
+  }
+
+  return registeredUris.some(registered => {
+    let reg: URL;
+    try {
+      reg = new URL(registered);
+    } catch {
+      return false;
+    }
+    return (
+      LOOPBACK_HOSTS.includes(reg.hostname) &&
+      reg.protocol === requested.protocol &&
+      reg.hostname === requested.hostname &&
+      reg.pathname === requested.pathname
+    );
+  });
+}
+
 export class OidcService {
   private readonly auth: AuthService;
   private readonly tokenIssuer: TokenIssuer;
@@ -36,6 +85,7 @@ export class OidcService {
   private readonly userInfo: UserInfoDatabase;
   private readonly oidc: OidcDatabase;
   private readonly config: RootConfigService;
+  private readonly logger: LoggerService;
   private readonly offlineAccess?: OfflineAccessService;
 
   private constructor(
@@ -45,6 +95,7 @@ export class OidcService {
     userInfo: UserInfoDatabase,
     oidc: OidcDatabase,
     config: RootConfigService,
+    logger: LoggerService,
     offlineAccess?: OfflineAccessService,
   ) {
     this.auth = auth;
@@ -53,6 +104,7 @@ export class OidcService {
     this.userInfo = userInfo;
     this.oidc = oidc;
     this.config = config;
+    this.logger = logger;
     this.offlineAccess = offlineAccess;
   }
 
@@ -63,6 +115,7 @@ export class OidcService {
     userInfo: UserInfoDatabase;
     oidc: OidcDatabase;
     config: RootConfigService;
+    logger: LoggerService;
     offlineAccess?: OfflineAccessService;
   }) {
     return new OidcService(
@@ -72,6 +125,7 @@ export class OidcService {
       options.userInfo,
       options.oidc,
       options.config,
+      options.logger,
       options.offlineAccess,
     );
   }
@@ -162,13 +216,7 @@ export class OidcService {
     ) ?? ['*'];
 
     for (const redirectUri of opts.redirectUris ?? []) {
-      if (
-        !allowedRedirectUriPatterns.some(pattern =>
-          matcher.isMatch(redirectUri, pattern),
-        )
-      ) {
-        throw new InputError('Invalid redirect_uri');
-      }
+      validateRedirectUri(redirectUri, allowedRedirectUriPatterns);
     }
 
     return await this.oidc.createClient({
@@ -305,15 +353,9 @@ export class OidcService {
     });
 
     if (opts.redirectUri) {
-      if (
-        !cimd.allowedRedirectUriPatterns.some(pattern =>
-          matcher.isMatch(opts.redirectUri!, pattern),
-        )
-      ) {
-        throw new InputError('Invalid redirect_uri');
-      }
+      validateRedirectUri(opts.redirectUri, cimd.allowedRedirectUriPatterns);
 
-      if (!cimdClient.redirectUris.includes(opts.redirectUri)) {
+      if (!matchesRedirectUri(opts.redirectUri, cimdClient.redirectUris)) {
         throw new InputError('Redirect URI not registered');
       }
     }
@@ -509,10 +551,18 @@ export class OidcService {
     let refreshToken: string | undefined;
     const scopes = session.scope?.split(' ') ?? [];
     if (scopes.includes('offline_access') && this.offlineAccess) {
-      refreshToken = await this.offlineAccess.issueRefreshToken({
-        userEntityRef: session.userEntityRef,
-        oidcClientId: session.clientId,
-      });
+      try {
+        refreshToken = await this.offlineAccess.issueRefreshToken({
+          userEntityRef: session.userEntityRef,
+          oidcClientId: session.clientId,
+        });
+      } catch (err) {
+        // Don't fail the entire token exchange if refresh token issuance fails.
+        // The access token is still valid and should be returned.
+        this.logger.warn(
+          `Failed to issue refresh token for user ${session.userEntityRef}, offline_access will not be available: ${err}`,
+        );
+      }
     }
 
     return {

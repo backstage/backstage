@@ -14,4 +14,10 @@
  * limitations under the License.
  */
 export * from './blueprints';
-export { searchReactTranslationRef } from '../translation';
+import { searchReactTranslationRef as _searchReactTranslationRef } from '../translation';
+
+/**
+ * @alpha
+ * @deprecated Import from `@backstage/plugin-search-react` instead.
+ */
+export const searchReactTranslationRef = _searchReactTranslationRef;

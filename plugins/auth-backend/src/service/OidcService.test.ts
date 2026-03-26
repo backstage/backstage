@@ -20,6 +20,7 @@ import {
 } from '@backstage/backend-test-utils';
 import { JsonObject } from '@backstage/types';
 import { OidcService } from './OidcService';
+import { OfflineAccessService } from './OfflineAccessService';
 import {
   BackstageCredentials,
   BackstageServicePrincipal,
@@ -53,10 +54,11 @@ describe('OidcService', () => {
   interface CreateOidcServiceOptions {
     databaseId: TestDatabaseId;
     config?: JsonObject;
+    offlineAccess?: OfflineAccessService;
   }
 
   async function createOidcService(options: CreateOidcServiceOptions) {
-    const { databaseId, config: configData = {} } = options;
+    const { databaseId, config: configData = {}, offlineAccess } = options;
 
     const knex = await databases.init(databaseId);
 
@@ -94,6 +96,8 @@ describe('OidcService', () => {
         userInfo: mockUserInfo,
         oidc: oidcDatabase,
         config,
+        logger: mockServices.logger.mock(),
+        offlineAccess,
       }),
       mocks: {
         auth: mockAuth,
@@ -281,6 +285,33 @@ describe('OidcService', () => {
             redirectUris: ['cursor://callback/asd?asd=asd'],
           }),
         );
+      });
+
+      it('should reject redirect URIs containing userinfo', async () => {
+        const { service } = await createOidcService({
+          databaseId,
+          config: {
+            auth: {
+              experimentalDynamicClientRegistration: {
+                allowedRedirectUriPatterns: ['http://localhost:*'],
+              },
+            },
+          },
+        });
+
+        await expect(
+          service.registerClient({
+            clientName: 'Evil Client',
+            redirectUris: ['http://localhost:3000@attacker.example/callback'],
+          }),
+        ).rejects.toThrow('Invalid redirect_uri');
+
+        await expect(
+          service.registerClient({
+            clientName: 'Evil Client',
+            redirectUris: ['http://user:pass@example.com/callback'],
+          }),
+        ).rejects.toThrow('Invalid redirect_uri');
       });
 
       it('should create a client with default values', async () => {
@@ -809,6 +840,50 @@ describe('OidcService', () => {
           }),
         ).rejects.toThrow('Invalid code verifier');
       });
+
+      it('should still return access token when refresh token issuance fails', async () => {
+        const mockOfflineAccess = {
+          issueRefreshToken: jest
+            .fn()
+            .mockRejectedValue(new Error('DB constraint violation')),
+        } as unknown as OfflineAccessService;
+
+        const { service, mocks } = await createOidcService({
+          databaseId,
+          offlineAccess: mockOfflineAccess,
+        });
+        const mockToken = 'mock-jwt-token';
+        mocks.tokenIssuer.issueToken.mockResolvedValue({ token: mockToken });
+
+        const client = await service.registerClient({
+          clientName: 'Test Client',
+          redirectUris: ['https://example.com/callback'],
+        });
+
+        const authSession = await service.createAuthorizationSession({
+          clientId: client.clientId,
+          redirectUri: 'https://example.com/callback',
+          responseType: 'code',
+          scope: 'openid offline_access',
+        });
+
+        const authResult = await service.approveAuthorizationSession({
+          sessionId: authSession.id,
+          userEntityRef: 'user:default/test',
+        });
+
+        const code = new URL(authResult.redirectUrl).searchParams.get('code')!;
+
+        const tokenResult = await service.exchangeCodeForToken({
+          code,
+          redirectUri: 'https://example.com/callback',
+          grantType: 'authorization_code',
+        });
+
+        expect(tokenResult.accessToken).toBe(mockToken);
+        expect(tokenResult.refreshToken).toBeUndefined();
+        expect(mockOfflineAccess.issueRefreshToken).toHaveBeenCalledTimes(1);
+      });
     });
 
     describe('CIMD (Client ID Metadata Document) support', () => {
@@ -1013,6 +1088,62 @@ describe('OidcService', () => {
               responseType: 'code',
             }),
           ).rejects.toThrow('Invalid redirect_uri');
+        });
+
+        it('should accept loopback redirect_uri with a different port per RFC 8252', async () => {
+          mockFetchCimdMetadata.mockResolvedValue({
+            ...cimdMetadata,
+            redirectUris: ['http://localhost/callback'],
+          });
+
+          const { service } = await createOidcService({
+            databaseId,
+            config: {
+              auth: {
+                experimentalClientIdMetadataDocuments: { enabled: true },
+              },
+            },
+          });
+
+          const authSession = await service.createAuthorizationSession({
+            clientId: cimdClientId,
+            redirectUri: 'http://localhost:60056/callback',
+            responseType: 'code',
+            scope: 'openid',
+            ...pkceParams,
+          });
+
+          expect(authSession).toEqual({
+            id: expect.any(String),
+            clientName: 'CIMD Test Client',
+            scope: 'openid',
+            redirectUri: 'http://localhost:60056/callback',
+          });
+        });
+
+        it('should reject non-loopback redirect_uri with a different port', async () => {
+          mockFetchCimdMetadata.mockResolvedValue({
+            ...cimdMetadata,
+            redirectUris: ['https://example.com/callback'],
+          });
+
+          const { service } = await createOidcService({
+            databaseId,
+            config: {
+              auth: {
+                experimentalClientIdMetadataDocuments: { enabled: true },
+              },
+            },
+          });
+
+          await expect(
+            service.createAuthorizationSession({
+              clientId: cimdClientId,
+              redirectUri: 'https://example.com:9999/callback',
+              responseType: 'code',
+              ...pkceParams,
+            }),
+          ).rejects.toThrow('Redirect URI not registered');
         });
 
         it('should reject redirect_uri when CIMD metadata uses wildcard patterns', async () => {

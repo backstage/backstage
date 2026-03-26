@@ -25,10 +25,7 @@ import { forwardRef, type ReactNode } from 'react';
 import { RiCloseCircleLine } from '@remixicon/react';
 import { useDefinition } from '../../hooks/useDefinition';
 import { TagGroupDefinition, TagDefinition } from './definition';
-import { createRoutingRegistration } from '../InternalLinkProvider';
-
-const { RoutingProvider, useRoutingRegistrationEffect } =
-  createRoutingRegistration();
+import { getNodeText } from '../../analytics/getNodeText';
 
 /**
  * A component that renders a list of tags.
@@ -40,17 +37,15 @@ export const TagGroup = <T extends object>(props: TagGroupProps<T>) => {
   const { classes, items, children, renderEmptyState } = ownProps;
 
   return (
-    <RoutingProvider>
-      <ReactAriaTagGroup className={classes.root} {...restProps}>
-        <ReactAriaTagList
-          className={classes.list}
-          items={items}
-          renderEmptyState={renderEmptyState}
-        >
-          {children}
-        </ReactAriaTagList>
-      </ReactAriaTagGroup>
-    </RoutingProvider>
+    <ReactAriaTagGroup className={classes.root} {...restProps}>
+      <ReactAriaTagList
+        className={classes.list}
+        items={items}
+        renderEmptyState={renderEmptyState}
+      >
+        {children}
+      </ReactAriaTagList>
+    </ReactAriaTagGroup>
   );
 };
 
@@ -60,14 +55,25 @@ export const TagGroup = <T extends object>(props: TagGroupProps<T>) => {
  * @public
  */
 export const Tag = forwardRef<HTMLDivElement, TagProps>((props, ref) => {
-  const { ownProps, restProps, dataAttributes } = useDefinition(
+  const { ownProps, restProps, dataAttributes, analytics } = useDefinition(
     TagDefinition,
     props,
   );
   const { classes, children, icon, href } = ownProps;
   const textValue = typeof children === 'string' ? children : undefined;
 
-  useRoutingRegistrationEffect(href);
+  const handlePress = () => {
+    if (href) {
+      const text =
+        (props as React.AriaAttributes)['aria-label'] ??
+        textValue ??
+        getNodeText(children) ??
+        String(href);
+      analytics.captureEvent('click', text, {
+        attributes: { to: String(href) },
+      });
+    }
+  };
 
   return (
     <ReactAriaTag
@@ -77,6 +83,10 @@ export const Tag = forwardRef<HTMLDivElement, TagProps>((props, ref) => {
       href={href}
       {...dataAttributes}
       {...restProps}
+      onPress={e => {
+        restProps.onPress?.(e);
+        handlePress();
+      }}
     >
       {({ allowsRemoving }) => (
         <>

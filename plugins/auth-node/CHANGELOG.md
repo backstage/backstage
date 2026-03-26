@@ -1,5 +1,47 @@
 # @backstage/plugin-auth-node
 
+## 0.6.15-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.1-next.0
+  - @backstage/catalog-client@1.14.0
+  - @backstage/catalog-model@1.7.7
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 0.6.14
+
+### Patch Changes
+
+- a49a40d: Updated dependency `zod` to `^3.25.76 || ^4.0.0` & migrated to `/v3` or `/v4` imports.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0
+  - @backstage/catalog-client@1.14.0
+  - @backstage/catalog-model@1.7.7
+
+## 0.6.14-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0-next.1
+  - @backstage/catalog-client@1.14.0-next.2
+
+## 0.6.14-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.14.0-next.1
+  - @backstage/backend-plugin-api@1.7.1-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
 ## 0.6.14-next.0
 
 ### Patch Changes

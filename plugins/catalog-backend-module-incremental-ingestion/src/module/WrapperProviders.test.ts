@@ -16,6 +16,7 @@
 
 import { SchedulerService } from '@backstage/backend-plugin-api';
 import { TestDatabases, mockServices } from '@backstage/backend-test-utils';
+import { metricsServiceMock } from '@backstage/backend-test-utils/alpha';
 import { ConfigReader } from '@backstage/config';
 import { IncrementalEntityProvider } from '../types';
 import { WrapperProviders } from './WrapperProviders';
@@ -69,6 +70,7 @@ describe('WrapperProviders', () => {
         scheduler: scheduler as Partial<SchedulerService> as SchedulerService,
         applyDatabaseMigrations,
         events: mockServices.events.mock(),
+        metrics: metricsServiceMock.mock(),
       });
       const wrapped1 = providers.wrap(provider1, {
         burstInterval: { seconds: 1 },

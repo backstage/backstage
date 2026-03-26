@@ -13,5 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { TemplateWizardPage } from './TemplateWizardPage';
+export {
+  TemplateWizardPage,
+  TemplateWizardPageContent,
+} from './TemplateWizardPage';
 export type { TemplateWizardPageProps } from './TemplateWizardPage';

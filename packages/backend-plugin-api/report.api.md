@@ -644,6 +644,7 @@ export interface RootServiceFactoryOptions<
 
 // @public
 export interface SchedulerService {
+  cancelTask(id: string): Promise<void>;
   createScheduledTaskRunner(
     schedule: SchedulerServiceTaskScheduleDefinition,
   ): SchedulerServiceTaskRunner;

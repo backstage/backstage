@@ -24,7 +24,9 @@ import {
   AuthProviderFactory,
   authProvidersExtensionPoint,
 } from '@backstage/plugin-auth-node';
+import { actionsRegistryServiceRef } from '@backstage/backend-plugin-api/alpha';
 import { catalogServiceRef } from '@backstage/plugin-catalog-node';
+import { createAuthActions } from './actions';
 import { createRouter } from './service/router';
 import { OfflineAccessService } from './service/OfflineAccessService';
 
@@ -70,6 +72,8 @@ export const authPlugin = createBackendPlugin({
         httpAuth: coreServices.httpAuth,
         lifecycle: coreServices.lifecycle,
         catalog: catalogServiceRef,
+        actionsRegistry: actionsRegistryServiceRef,
+        userInfo: coreServices.userInfo,
       },
       async init({
         httpRouter,
@@ -81,6 +85,8 @@ export const authPlugin = createBackendPlugin({
         httpAuth,
         lifecycle,
         catalog,
+        actionsRegistry,
+        userInfo,
       }) {
         const refreshTokensEnabled = config.getOptionalBoolean(
           'auth.experimentalRefreshToken.enabled',
@@ -112,6 +118,8 @@ export const authPlugin = createBackendPlugin({
           allow: 'unauthenticated',
         });
         httpRouter.use(router);
+
+        createAuthActions({ auth, catalog, userInfo, actionsRegistry });
       },
     });
   },

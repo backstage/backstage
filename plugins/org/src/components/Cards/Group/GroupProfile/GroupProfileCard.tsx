@@ -22,13 +22,7 @@ import {
   RELATION_PARENT_OF,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import {
-  Avatar,
-  InfoCard,
-  InfoCardVariants,
-  Link,
-} from '@backstage/core-components';
-import Box from '@material-ui/core/Box';
+import { Link } from '@backstage/core-components';
 import IconButton from '@material-ui/core/IconButton';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -36,6 +30,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Tooltip from '@material-ui/core/Tooltip';
 import {
+  EntityInfoCard,
   EntityRefLinks,
   catalogApiRef,
   getEntityRelations,
@@ -57,6 +52,7 @@ import { catalogEntityRefreshPermission } from '@backstage/plugin-catalog-common
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { orgTranslationRef } from '../../../../translation';
 import { makeStyles } from '@material-ui/core/styles';
+import { Avatar, Flex, Box, Text } from '@backstage/ui';
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -68,21 +64,25 @@ const useStyles = makeStyles(theme => ({
   list: {
     padding: 0,
     marginLeft: theme.spacing(0.5),
+    overflowWrap: 'anywhere',
   },
 }));
 
-const CardTitle = (props: { title: string }) => (
-  <Box display="flex" alignItems="center">
-    <GroupIcon fontSize="inherit" />
-    <Box ml={1}>{props.title}</Box>
-  </Box>
+const CardTitle = (props: { title: string; pictureSrc?: string }) => (
+  <Flex align="center" gap="2">
+    <Avatar
+      size="small"
+      purpose="decoration"
+      name={props.title}
+      src={props.pictureSrc || ''}
+    />
+    {props.title}
+  </Flex>
 );
 
 /** @public */
-export const GroupProfileCard = (props: {
-  variant?: InfoCardVariants;
-  showLinks?: boolean;
-}) => {
+export const GroupProfileCard = (props: { showLinks?: boolean }) => {
+  const { showLinks } = props;
   const catalogApi = useApi(catalogApiRef);
   const alertApi = useApi(alertApiRef);
   const { entity: group } = useEntity<GroupEntity>();
@@ -148,11 +148,9 @@ export const GroupProfileCard = (props: {
   );
 
   return (
-    <InfoCard
-      title={<CardTitle title={displayName} />}
-      subheader={description}
-      variant={props.variant}
-      action={
+    <EntityInfoCard
+      title={<CardTitle title={displayName} pictureSrc={profile?.picture} />}
+      headerActions={
         <>
           {allowRefresh && canRefresh && (
             <IconButton
@@ -167,8 +165,8 @@ export const GroupProfileCard = (props: {
         </>
       }
     >
-      <Box className={classes.container}>
-        <Avatar displayName={displayName} picture={profile?.picture} />
+      {description && <Text color="secondary">{description}</Text>}
+      <Box p="2">
         <List className={classes.list}>
           <ListItem>
             <ListItemIcon>
@@ -234,9 +232,9 @@ export const GroupProfileCard = (props: {
               secondary={t('groupProfileCard.listItemTitle.childGroups')}
             />
           </ListItem>
-          {props?.showLinks && <LinksGroup links={links} />}
+          {showLinks && <LinksGroup links={links} />}
         </List>
       </Box>
-    </InfoCard>
+    </EntityInfoCard>
   );
 };

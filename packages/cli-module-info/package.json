@@ -1,0 +1,46 @@
+{
+  "name": "@backstage/cli-module-info",
+  "version": "0.1.1-next.0",
+  "description": "CLI module for Backstage CLI",
+  "backstage": {
+    "role": "cli-module"
+  },
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.cjs.js",
+    "types": "dist/index.d.ts"
+  },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "packages/cli-module-info"
+  },
+  "license": "Apache-2.0",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "files": [
+    "dist",
+    "bin"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "test": "backstage-cli package test"
+  },
+  "dependencies": {
+    "@backstage/cli-common": "workspace:^",
+    "@backstage/cli-node": "workspace:^",
+    "cleye": "^2.3.0",
+    "fs-extra": "^11.2.0",
+    "minimatch": "^10.2.1"
+  },
+  "devDependencies": {
+    "@backstage/cli": "workspace:^",
+    "@types/fs-extra": "^11.0.0"
+  },
+  "bin": "bin/backstage-cli-module-info"
+}

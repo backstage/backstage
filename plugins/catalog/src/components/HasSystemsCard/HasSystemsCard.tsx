@@ -21,41 +21,87 @@ import {
   TableOptions,
 } from '@backstage/core-components';
 import {
+  EntityRelationCard,
+  EntityColumnConfig,
+  entityColumnPresets,
+} from '@backstage/plugin-catalog-react/alpha';
+import {
   asSystemEntities,
-  RelatedEntitiesCard,
   systemEntityColumns,
-  systemEntityHelpLink,
+  systemEntityHelpLink as legacyHelpLink,
+  RelatedEntitiesCard,
 } from '../RelatedEntitiesCard';
 import { catalogTranslationRef } from '../../alpha/translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /** @public */
 export interface HasSystemsCardProps {
-  variant?: InfoCardVariants;
   title?: string;
+  columnConfig?: EntityColumnConfig[];
+}
+
+/**
+ * Props for the legacy MUI-based rendering.
+ * @deprecated Use {@link HasSystemsCardProps} instead.
+ * @public
+ */
+export interface HasSystemsCardLegacyProps {
+  title?: string;
+  /** @deprecated Use `columnConfig` instead. */
+  variant?: InfoCardVariants;
+  /** @deprecated Use `columnConfig` instead. */
   columns?: TableColumn<SystemEntity>[];
+  /** @deprecated Use `columnConfig` instead. */
   tableOptions?: TableOptions;
 }
 
-export function HasSystemsCard(props: HasSystemsCardProps) {
+function isLegacyProps(
+  props: HasSystemsCardProps | HasSystemsCardLegacyProps,
+): props is HasSystemsCardLegacyProps {
+  return 'variant' in props || 'columns' in props || 'tableOptions' in props;
+}
+
+export function HasSystemsCard(
+  props: HasSystemsCardProps | HasSystemsCardLegacyProps,
+) {
   const { t } = useTranslationRef(catalogTranslationRef);
+
+  if (isLegacyProps(props)) {
+    const {
+      variant = 'gridItem',
+      title = t('hasSystemsCard.title'),
+      columns = systemEntityColumns,
+      tableOptions = {},
+    } = props;
+    return (
+      <RelatedEntitiesCard
+        variant={variant}
+        title={title}
+        entityKind="System"
+        relationType={RELATION_HAS_PART}
+        columns={columns}
+        asRenderableEntities={asSystemEntities}
+        emptyMessage={t('hasSystemsCard.emptyMessage')}
+        emptyHelpLink={legacyHelpLink}
+        tableOptions={tableOptions}
+      />
+    );
+  }
+
   const {
-    variant = 'gridItem',
     title = t('hasSystemsCard.title'),
-    columns = systemEntityColumns,
-    tableOptions = {},
+    columnConfig = entityColumnPresets.system.columns,
   } = props;
   return (
-    <RelatedEntitiesCard
-      variant={variant}
+    <EntityRelationCard
       title={title}
       entityKind="System"
       relationType={RELATION_HAS_PART}
-      columns={columns}
-      asRenderableEntities={asSystemEntities}
-      emptyMessage={t('hasSystemsCard.emptyMessage')}
-      emptyHelpLink={systemEntityHelpLink}
-      tableOptions={tableOptions}
+      columnConfig={columnConfig}
+      emptyState={{
+        message: t('hasSystemsCard.emptyMessage'),
+        helpLink: entityColumnPresets.system.helpLink,
+      }}
     />
   );
 }

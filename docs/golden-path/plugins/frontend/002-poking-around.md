@@ -2,6 +2,7 @@
 id: poking-around
 sidebar_label: 002 - Poking around
 title: 002 - Poking around
+description: Exploring the default frontend plugin structure and components
 ---
 
 Our frontend TODO plugin is a bit more simplistic than the backend one. We need to implement a new UI to replace the example components we have.

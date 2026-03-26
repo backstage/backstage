@@ -27,6 +27,7 @@ import {
   actionsServiceRef,
   metricsServiceRef,
 } from '@backstage/backend-plugin-api/alpha';
+import { parseServerConfigs } from './config';
 
 /**
  * mcpPlugin backend plugin
@@ -59,28 +60,57 @@ export const mcpPlugin = createBackendPlugin({
         config,
         metrics,
       }) {
+        const serverConfigs = parseServerConfigs(config);
+        const namespacedToolNames = config.getOptionalBoolean(
+          'mcpActions.namespacedToolNames',
+        );
+
         const mcpService = await McpService.create({
           actions,
           metrics,
-        });
-
-        const sseRouter = createSseRouter({
-          mcpService,
-          httpAuth,
-        });
-
-        const streamableRouter = createStreamableRouter({
-          mcpService,
-          httpAuth,
-          logger,
-          metrics,
+          namespacedToolNames,
         });
 
         const router = Router();
         router.use(json());
 
-        router.use('/v1/sse', sseRouter);
-        router.use('/v1', streamableRouter);
+        if (serverConfigs && serverConfigs.size > 0) {
+          for (const [key, serverConfig] of serverConfigs) {
+            const streamableRouter = createStreamableRouter({
+              mcpService,
+              httpAuth,
+              logger,
+              metrics,
+              serverConfig,
+            });
+
+            router.use(`/v1/${key}`, streamableRouter);
+          }
+        } else {
+          const serverConfig = {
+            name: config.getOptionalString('mcpActions.name') ?? 'backstage',
+            description: config.getOptionalString('mcpActions.description'),
+            includeRules: [],
+            excludeRules: [],
+          };
+
+          const sseRouter = createSseRouter({
+            mcpService,
+            httpAuth,
+            serverConfig,
+          });
+
+          const streamableRouter = createStreamableRouter({
+            mcpService,
+            httpAuth,
+            logger,
+            metrics,
+            serverConfig,
+          });
+
+          router.use('/v1/sse', sseRouter);
+          router.use('/v1', streamableRouter);
+        }
 
         httpRouter.use(router);
 

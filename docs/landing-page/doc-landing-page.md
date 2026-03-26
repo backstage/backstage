@@ -115,7 +115,7 @@ description: Documentation landing page.
       <ul>
         <li><a href='https://backstage.io/docs/contribute/'>Contributor's Guide</a></li>
         <li><a href='https://backstage.io/docs/contribute/getting-involved'>Getting Involved</a></li>
-        <li><a href=https://backstage.io/docs/contribute/project-structure'>Backstage Project Structure</a></li>
+        <li><a href='https://backstage.io/docs/contribute/project-structure'>Backstage Project Structure</a></li>
       </ul>
     </td>
   </tr>

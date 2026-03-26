@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,27 +14,14 @@
  * limitations under the License.
  */
 
-const yaml = require('yaml');
-const crypto = require('node:crypto');
-
-function createTransformer(config) {
-  const process = source => {
-    const json = JSON.stringify(yaml.parse(source), null, 2);
-    return { code: `module.exports = ${json}`, map: null };
-  };
-
-  const getCacheKey = sourceText => {
-    return crypto
-      .createHash('sha256')
-      .update(sourceText)
-      .update(Buffer.alloc(1))
-      .update(JSON.stringify(config))
-      .update(Buffer.alloc(1))
-      .update('1') // increment whenever the transform logic in this file changes
-      .digest('hex');
-  };
-
-  return { process, getCacheKey };
+try {
+  module.exports = require('@backstage/cli-module-test-jest/config/jestYamlTransform');
+} catch (e) {
+  if (e.code === 'MODULE_NOT_FOUND') {
+    throw new Error(
+      '@backstage/cli-module-test-jest is required to use the jest YAML transform. ' +
+        'Please install it as a dependency.',
+    );
+  }
+  throw e;
 }
-
-module.exports = { createTransformer };

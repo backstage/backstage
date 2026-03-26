@@ -15,16 +15,16 @@
  */
 
 import { JsonObject } from '@backstage/types';
-import { z, type ZodSchema, type ZodTypeDef } from 'zod';
+import { z, type ZodIssue, type ZodType } from 'zod/v3';
 import zodToJsonSchema from 'zod-to-json-schema';
 import { PortableSchema } from './types';
 
 /**
  * @internal
  */
-export function createSchemaFromZod<TOutput, TInput>(
-  schemaCreator: (zImpl: typeof z) => ZodSchema<TOutput, ZodTypeDef, TInput>,
-): PortableSchema<TOutput, TInput> {
+export function createSchemaFromZod<TSchema extends ZodType>(
+  schemaCreator: (zImpl: typeof z) => TSchema,
+): PortableSchema<z.output<TSchema>, z.input<TSchema>> {
   const schema = schemaCreator(z);
   return {
     // TODO: Types allow z.array etc here but it will break stuff
@@ -41,7 +41,7 @@ export function createSchemaFromZod<TOutput, TInput>(
   };
 }
 
-function formatIssue(issue: z.ZodIssue): string {
+function formatIssue(issue: ZodIssue): string {
   if (issue.code === 'invalid_union') {
     return formatIssue(issue.unionErrors[0].issues[0]);
   }

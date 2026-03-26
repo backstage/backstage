@@ -107,4 +107,10 @@ export default createFrontendPlugin({
   extensions: [CatalogGraphPage, CatalogGraphEntityCard, CatalogGraphApi],
 });
 
-export { catalogGraphTranslationRef } from './translation';
+import { catalogGraphTranslationRef as _catalogGraphTranslationRef } from './translation';
+
+/**
+ * @alpha
+ * @deprecated Import from `@backstage/plugin-catalog-graph` instead.
+ */
+export const catalogGraphTranslationRef = _catalogGraphTranslationRef;

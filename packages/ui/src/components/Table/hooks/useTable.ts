@@ -41,6 +41,7 @@ function useTableProps<T extends TableItem>(
     onNextPage: onNextPageCallback,
     onPreviousPage: onPreviousPageCallback,
     getLabel,
+    showPaginationLabel,
   } = paginationOptions;
 
   const previousDataRef = useRef(paginationResult.data);
@@ -74,6 +75,7 @@ function useTableProps<T extends TableItem>(
       },
       showPageSizeOptions,
       getLabel,
+      showPaginationLabel,
     }),
     [
       paginationResult.pageSize,
@@ -88,6 +90,9 @@ function useTableProps<T extends TableItem>(
       onNextPageCallback,
       onPreviousPageCallback,
       onPageSizeChangeCallback,
+      showPageSizeOptions,
+      getLabel,
+      showPaginationLabel,
     ],
   );
 
@@ -106,8 +111,6 @@ function useTableProps<T extends TableItem>(
       isStale,
       paginationResult.error,
       pagination,
-      showPageSizeOptions,
-      getLabel,
       sortState,
     ],
   );

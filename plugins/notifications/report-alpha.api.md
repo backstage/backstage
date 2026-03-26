@@ -108,7 +108,6 @@ const _default: OverridableFrontendPlugin<
         >;
       };
       params: {
-        defaultPath?: [Error: `Use the 'path' param instead`];
         path: string;
         title?: string;
         icon?: IconElement;
@@ -121,7 +120,7 @@ const _default: OverridableFrontendPlugin<
 >;
 export default _default;
 
-// @alpha (undocumented)
+// @alpha @deprecated (undocumented)
 export const notificationsTranslationRef: TranslationRef<
   'plugin.notifications',
   {

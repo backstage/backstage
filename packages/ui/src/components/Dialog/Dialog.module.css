@@ -50,9 +50,11 @@
     border: 1px solid var(--bui-border-1);
     color: var(--bui-fg-primary);
     position: relative;
+    display: flex;
+    flex-direction: column;
     width: min(var(--bui-dialog-min-width, 400px), calc(100vw - 3rem));
     max-width: calc(100vw - 3rem);
-    height: min(var(--bui-dialog-min-height, auto), calc(100vh - 3rem));
+    height: var(--bui-dialog-height, auto);
     max-height: calc(100vh - 3rem);
     outline: none;
   }
@@ -61,7 +63,9 @@
     display: flex;
     flex-direction: column;
     border-radius: var(--dialog-border-radius);
-    height: 100%;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
   }
 
   /* Dialog entering animation */
@@ -102,6 +106,7 @@
   .bui-DialogBody {
     padding: var(--bui-space-3);
     flex: 1;
+    min-height: 0;
     overflow-y: auto;
   }
 

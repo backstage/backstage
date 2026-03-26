@@ -4,6 +4,12 @@ title: Proxying
 description: Documentation on Proxying
 ---
 
+:::caution Legacy Documentation
+
+This section is part of the legacy plugins documentation. The proxy configuration and usage described here applies to both the old and new backend systems. For creating backend plugins and modules, see [Building Backend Plugins and Modules](../backend-system/building-plugins-and-modules/01-index.md).
+
+:::
+
 This page describes how to configure and use the built-in HTTP proxy functionality in your Backstage backend.
 
 ## Overview

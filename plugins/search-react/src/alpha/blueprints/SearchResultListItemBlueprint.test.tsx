@@ -60,6 +60,7 @@ describe('SearchResultListItemBlueprint', () => {
         },
         "disabled": false,
         "factory": [Function],
+        "if": undefined,
         "inputs": {},
         "kind": "search-result-list-item",
         "name": "test",

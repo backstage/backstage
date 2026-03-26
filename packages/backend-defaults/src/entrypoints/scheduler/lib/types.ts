@@ -17,7 +17,7 @@
 import { JsonObject } from '@backstage/types';
 import { CronTime } from 'cron';
 import { Duration } from 'luxon';
-import { z } from 'zod';
+import { z } from 'zod/v3';
 
 function isValidOptionalDurationString(d: string | undefined): boolean {
   try {

@@ -46,31 +46,53 @@ App feature discovery lets you automatically discover and install features provi
 
 Because feature discovery needs to interact with the compilation process, it is only available when using the `@backstage/cli` to build your app. It is hooked into the WebPack compilation process by scanning your app package for compatible dependencies, which are then made part of the app compilation bundle.
 
-To enable frontend feature discovery, add the following configuration to your `app-config.yaml`:
+For information on how to configure feature discovery and other installation options, see [Installing Plugins](../building-apps/05-installing-plugins.md).
 
-```yaml
-app:
-  packages: all
+## Preparing an App in Phases
+
+Most apps should use `createApp` from `@backstage/frontend-defaults`, which takes care of all app preparation internally. For more advanced use cases there is also a lower-level `prepareSpecializedApp` API in `@backstage/frontend-app-api`.
+
+This API is useful when you need to render a bootstrap tree before the full app can be finalized, for example while waiting for sign-in or other session-dependent state. It gives you access to a bootstrap app tree immediately, lets you either subscribe to finalization with `onFinalized()` or finalize synchronously with `finalize()`, and lets you reuse a prepared session in a later app instance.
+
+```tsx
+import {
+  FinalizedSpecializedApp,
+  prepareSpecializedApp,
+} from '@backstage/frontend-app-api';
+
+const preparedApp = prepareSpecializedApp({
+  config,
+  features: [appPlugin, ...features],
+});
+
+const bootstrapApp = preparedApp.getBootstrapApp();
+
+const unsubscribe = preparedApp.onFinalized(
+  (finalizedApp: FinalizedSpecializedApp) => {
+    console.log(finalizedApp.sessionState);
+  },
+);
 ```
 
-This will cause all dependencies in your app package to be installed automatically. If this is not desired, you can use include or exclude filters to narrow down the set of packages:
+The `getBootstrapApp()` method exposes the partial app tree that is available during bootstrap. If you call `onFinalized()`, you are subscribing to the bootstrap-owned finalization flow. In the sign-in case, the sign-in page receives an `onSignInSuccess` callback, and once it provides an identity through that callback the full app is finalized and `onFinalized()` subscribers are notified.
 
-```yaml
-app:
-  packages:
-    # Only the following packages will be included
-    include:
-      - '@backstage/plugin-catalog'
-      - '@backstage/plugin-scaffolder'
----
-app:
-  packages:
-    # All but the following package will be included
-    exclude:
-      - '@backstage/plugin-catalog'
+If you instead call `finalize()`, you are taking ownership of finalization yourself. This only works when the app can be finalized synchronously, for example when all predicate context is already available or when you passed a reusable session state to `prepareSpecializedApp()` up front:
+
+```tsx
+const preparedApp = prepareSpecializedApp({
+  config,
+  features: [appPlugin, ...features],
+  advanced: {
+    sessionState,
+  },
+});
+
+const app = preparedApp.finalize();
 ```
 
-Note that you do not need to manually exclude packages that you also import explicitly in code, since plugin instances are deduplicated by the app. You will never end up with duplicate plugin installations except if they are in fact two different plugin instances with different IDs.
+When using phased app preparation, `app/root.children` acts as the main session boundary. Conditional extensions behind that boundary are evaluated during finalization. Conditional `app/root.elements` and API branches are also deferred until finalization, while other bootstrap-visible predicates are ignored and reported as warnings.
+
+Utility APIs that are first materialized during bootstrap are frozen for the lifetime of that app instance. Finalization may still add new APIs and may override existing API refs that were not materialized during bootstrap, but any deferred override of an already materialized bootstrap API is ignored and reported as an app error.
 
 ## Plugin Info Resolution
 

@@ -22,8 +22,6 @@ export {
   type ExtensionDefinitionParameters,
   type CreateExtensionOptions,
   type OverridableExtensionDefinition,
-  type ResolvedExtensionInput,
-  type ResolvedExtensionInputs,
 } from './createExtension';
 export {
   createExtensionInput,
@@ -31,14 +29,13 @@ export {
 } from './createExtensionInput';
 export {
   createExtensionDataRef,
-  type AnyExtensionDataRef,
   type ExtensionDataRef,
-  type ExtensionDataRefToValue,
   type ExtensionDataValue,
   type ConfigurableExtensionDataRef,
 } from './createExtensionDataRef';
 export {
   createFrontendPlugin,
+  type CreateFrontendPluginOptions,
   type FrontendPlugin,
   type OverridableFrontendPlugin,
   type PluginOptions,
@@ -58,7 +55,6 @@ export {
 export {
   type Extension,
   type ExtensionAttachTo,
-  type ExtensionAttachToSpec,
 } from './resolveExtensionDefinition';
 export {
   type ExtensionDataContainer,

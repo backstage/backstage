@@ -50,7 +50,8 @@ export const useTableOptionsPropDefs: Record<string, PropDef> = {
     description: (
       <>
         Pagination configuration including <Chip>pageSize</Chip>,{' '}
-        <Chip>pageSizeOptions</Chip>, and <Chip>initialOffset</Chip>.
+        <Chip>pageSizeOptions</Chip>, <Chip>initialOffset</Chip>, and{' '}
+        <Chip>showPaginationLabel</Chip>.
       </>
     ),
   },
@@ -413,6 +414,12 @@ export const tablePaginationPropDefs: Record<string, PropDef> = {
     values: ['(props) => string'],
     description: 'Custom function to generate the pagination label text.',
   },
+  showPaginationLabel: {
+    type: 'boolean',
+    default: 'true',
+    description:
+      'Whether to display the pagination label (e.g., "1 - 20 of 150"). When false, only navigation controls are shown.',
+  },
 };
 
 // =============================================================================
@@ -427,6 +434,17 @@ export const tableRootPropDefs: Record<string, PropDef> = {
       <>
         Whether the table data is stale (e.g., while fetching new data). Adds{' '}
         <Chip>aria-busy</Chip> attribute.
+      </>
+    ),
+  },
+  loading: {
+    type: 'boolean',
+    default: 'false',
+    description: (
+      <>
+        Whether the table is in a loading state (e.g., initial data fetch). Adds{' '}
+        <Chip>aria-busy</Chip> attribute and <Chip>data-loading</Chip> data
+        attribute for styling.
       </>
     ),
   },
@@ -455,6 +473,11 @@ export const rowPropDefs: Record<string, PropDef> = {
     values: ['ReactNode | ((column) => ReactNode)'],
     description:
       'Row content. Can be a render function receiving column config.',
+  },
+  noTrack: {
+    type: 'boolean',
+    description:
+      'Suppresses the automatic analytics click event, e.g. if you already have custom tracking.',
   },
   ...classNamePropDefs,
   ...stylePropDefs,

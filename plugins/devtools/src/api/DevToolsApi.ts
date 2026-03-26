@@ -38,4 +38,5 @@ export interface DevToolsApi {
     plugin: string,
     taskId: string,
   ): Promise<TriggerScheduledTask>;
+  cancelScheduledTask(plugin: string, taskId: string): Promise<void>;
 }

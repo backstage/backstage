@@ -39,6 +39,16 @@ const peerDependencies = {
   'react-router-dom': '^6.30.2',
 };
 
+// Packages that have dropped React 17 support and only support React 18+
+const peerDependenciesReact18Only = {
+  '@types/react': '^18.0.0',
+  react: '^18.0.0',
+  'react-dom': '^18.0.0',
+  'react-router-dom': '^6.30.2',
+};
+
+const react18OnlyPackages = new Set(['@backstage/ui']);
+
 const groupsOfPeerDependencies = [['@types/react', 'react', 'react-dom']];
 
 const optionalPeerDependencies = new Set(['@types/react']);
@@ -79,14 +89,21 @@ const matchesDependency = (dep: string, packageJson: ExtendedPackageJSON) => {
   );
 };
 
+const getExpectedPeerDependencies = (packageJson: ExtendedPackageJSON) => {
+  if (react18OnlyPackages.has(packageJson.name!)) {
+    return peerDependenciesReact18Only;
+  }
+  return peerDependencies;
+};
+
 const matchesPeerDependency = (
   dep: string,
   packageJson: ExtendedPackageJSON,
 ) => {
+  const expected = getExpectedPeerDependencies(packageJson);
   return (
     packageJson.peerDependencies &&
-    packageJson.peerDependencies[dep] ===
-      peerDependencies[dep as keyof typeof peerDependencies]
+    packageJson.peerDependencies[dep] === expected[dep as keyof typeof expected]
   );
 };
 
@@ -125,6 +142,7 @@ export default async ({ fix }: { fix: boolean }) => {
 
   for (const pkg of packagesWithRelevantDependencies) {
     const packageJson = pkg.packageJson as ExtendedPackageJSON;
+    const expectedPeerDeps = getExpectedPeerDependencies(packageJson);
     for (const dep of Object.keys(peerDependencies)) {
       // Validate that the peer dependencies are present.
       if (isPeerDependency(dep, packageJson)) {
@@ -182,7 +200,7 @@ export default async ({ fix }: { fix: boolean }) => {
                   packageJson.peerDependencies =
                     packageJson.peerDependencies || {};
                   packageJson.peerDependencies[groupDep] =
-                    peerDependencies[groupDep as keyof typeof peerDependencies];
+                    expectedPeerDeps[groupDep as keyof typeof expectedPeerDeps];
                 });
               }
             }
@@ -209,7 +227,7 @@ export default async ({ fix }: { fix: boolean }) => {
           attemptToApplyFix(() => {
             packageJson.peerDependencies = packageJson.peerDependencies || {};
             packageJson.peerDependencies[dep] =
-              peerDependencies[dep as keyof typeof peerDependencies];
+              expectedPeerDeps[dep as keyof typeof expectedPeerDeps];
           });
         }
       } else {
@@ -219,7 +237,7 @@ export default async ({ fix }: { fix: boolean }) => {
         attemptToApplyFix(() => {
           packageJson.peerDependencies = packageJson.peerDependencies || {};
           packageJson.peerDependencies[dep] =
-            peerDependencies[dep as keyof typeof peerDependencies];
+            expectedPeerDeps[dep as keyof typeof expectedPeerDeps];
         });
       }
     }

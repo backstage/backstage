@@ -1,8 +1,5 @@
 # catalog-graph
 
-> Disclaimer:
-> If you are looking for documentation on the experimental new frontend system support, please go [here](./README-alpha.md).
-
 Welcome to the catalog graph plugin! The catalog graph visualizes the relations
 between entities, like ownership, grouping or API relationships.
 
@@ -23,58 +20,25 @@ The plugin comes with these features:
 - `EntityRelationsGraph`:
   A react component that can be used to build own customized entity relation graphs.
 
-## Usage
+## Installation
 
-To use the catalog graph plugin, you have to add some things to your Backstage app:
+```sh
+# From your Backstage root directory
+yarn --cwd packages/app add @backstage/plugin-catalog-graph
+```
 
-1. Add a dependency to your `packages/app/package.json`:
-   ```sh
-   # From your Backstage root directory
-   yarn --cwd packages/app add @backstage/plugin-catalog-graph
-   ```
-2. Add the `CatalogGraphPage` to your `packages/app/src/App.tsx`:
+Once installed, the plugin is automatically available in your app through the default feature discovery. For more details and alternative installation methods, see [installing plugins](https://backstage.io/docs/frontend-system/building-apps/installing-plugins).
 
-   ```typescript
-   <FlatRoutes>
-     …
-     <Route path="/catalog-graph" element={<CatalogGraphPage />} />…
-   </FlatRoutes>
-   ```
+To enable the entity relations graph card on the catalog entity page, add the following configuration:
 
-   You can configure the page to open with some initial filters:
+```yaml
+# app-config.yaml
+app:
+  extensions:
+    - entity-card:catalog-graph/relations
+```
 
-   ```typescript
-   <Route
-     path="/catalog-graph"
-     element={
-       <CatalogGraphPage
-         initialState={{
-           selectedKinds: ['component', 'domain', 'system', 'api', 'group'],
-         }}
-       />
-     }
-   />
-   ```
-
-3. Bind the external routes of the `catalogGraphPlugin` in your `packages/app/src/App.tsx`:
-
-   ```typescript
-   bindRoutes({ bind }) {
-     …
-     bind(catalogGraphPlugin.externalRoutes, {
-       catalogEntity: catalogPlugin.routes.catalogEntity,
-     });
-     …
-   }
-   ```
-
-4. Add `EntityCatalogGraphCard` to any entity page that you want in your `packages/app/src/components/catalog/EntityPage.tsx`:
-
-   ```typescript
-   <Grid item md={6} xs={12}>
-     <EntityCatalogGraphCard variant="gridItem" height={400} />
-   </Grid>
-   ```
+For the full list of available extensions and their configuration options, see the [README-alpha.md](./README-alpha.md).
 
 ### Customizing the UI
 
@@ -176,6 +140,54 @@ import {
       }),
   }),
 ```
+
+## Old Frontend System
+
+If your Backstage app uses the old frontend system, you need to manually wire the plugin into your app as outlined in this section. If you are on the new frontend system, you can skip this.
+
+1. Add the `CatalogGraphPage` to your `packages/app/src/App.tsx`:
+
+   ```typescript
+   <FlatRoutes>
+     …
+     <Route path="/catalog-graph" element={<CatalogGraphPage />} />…
+   </FlatRoutes>
+   ```
+
+   You can configure the page to open with some initial filters:
+
+   ```typescript
+   <Route
+     path="/catalog-graph"
+     element={
+       <CatalogGraphPage
+         initialState={{
+           selectedKinds: ['component', 'domain', 'system', 'api', 'group'],
+         }}
+       />
+     }
+   />
+   ```
+
+2. Bind the external routes of the `catalogGraphPlugin` in your `packages/app/src/App.tsx`:
+
+   ```typescript
+   bindRoutes({ bind }) {
+     …
+     bind(catalogGraphPlugin.externalRoutes, {
+       catalogEntity: catalogPlugin.routes.catalogEntity,
+     });
+     …
+   }
+   ```
+
+3. Add `EntityCatalogGraphCard` to any entity page that you want in your `packages/app/src/components/catalog/EntityPage.tsx`:
+
+   ```typescript
+   <Grid item md={6} xs={12}>
+     <EntityCatalogGraphCard variant="gridItem" height={400} />
+   </Grid>
+   ```
 
 ## Development
 

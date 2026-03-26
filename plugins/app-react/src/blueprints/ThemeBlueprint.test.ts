@@ -39,6 +39,7 @@ describe('ThemeBlueprint', () => {
         "configSchema": undefined,
         "disabled": false,
         "factory": [Function],
+        "if": undefined,
         "inputs": {},
         "kind": "theme",
         "name": "light",

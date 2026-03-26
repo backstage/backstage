@@ -109,6 +109,7 @@ describe('OidcRouter', () => {
       userInfo: userInfoDatabase,
       oidc: oidcDatabase,
       config: mockConfig,
+      logger: mockServices.logger.mock(),
     });
 
     const oidcRouter = OidcRouter.create({
@@ -194,6 +195,7 @@ describe('OidcRouter', () => {
       userInfo: userInfoDatabase,
       oidc: oidcDatabase,
       config: mockConfig,
+      logger: mockServices.logger.mock(),
       offlineAccess,
     });
 
@@ -1117,6 +1119,124 @@ describe('OidcRouter', () => {
             refresh_token: originalRefreshToken,
           })
           .expect(400);
+      });
+    });
+
+    describe('CIMD metadata endpoint', () => {
+      it('should return 404 when CIMD is not enabled', async () => {
+        const { router } = await createRouter(databaseId);
+
+        const { server } = await startTestBackend({
+          features: [
+            createBackendPlugin({
+              pluginId: 'auth',
+              register(reg) {
+                reg.registerInit({
+                  deps: { httpRouter: coreServices.httpRouter },
+                  async init({ httpRouter }) {
+                    httpRouter.use(router.getRouter());
+                    httpRouter.addAuthPolicy({
+                      path: '/',
+                      allow: 'unauthenticated',
+                    });
+                  },
+                });
+              },
+            }),
+          ],
+        });
+
+        const response = await request(server)
+          .get('/api/auth/.well-known/oauth-client/cli.json')
+          .expect(404);
+
+        expect(response.body).toEqual({
+          error: 'not_found',
+          error_description: 'Client ID metadata documents not enabled',
+        });
+      });
+
+      it('should return CIMD document when enabled', async () => {
+        const knex = await databases.init(databaseId);
+
+        await knex.migrate.latest({
+          directory: resolvePackagePath(
+            '@backstage/plugin-auth-backend',
+            'migrations',
+          ),
+        });
+
+        const authDatabase = AuthDatabase.create({
+          getClient: async () => knex,
+        });
+
+        const oidcDatabase = await OidcDatabase.create({
+          database: authDatabase,
+        });
+
+        const userInfoDatabase = await UserInfoDatabase.create({
+          database: authDatabase,
+        });
+
+        const mockTokenIssuer = {
+          issueToken: jest.fn(),
+          listPublicKeys: jest.fn(),
+        } as unknown as jest.Mocked<TokenIssuer>;
+
+        const oidcRouter = OidcRouter.create({
+          auth: mockServices.auth.mock(),
+          tokenIssuer: mockTokenIssuer,
+          baseUrl: 'http://localhost:7007/api/auth',
+          appUrl: 'http://localhost:3000',
+          logger: mockServices.logger.mock(),
+          userInfo: userInfoDatabase,
+          oidc: oidcDatabase,
+          httpAuth: mockServices.httpAuth.mock(),
+          config: mockServices.rootConfig({
+            data: {
+              auth: {
+                experimentalClientIdMetadataDocuments: {
+                  enabled: true,
+                },
+              },
+            },
+          }),
+        });
+
+        const { server } = await startTestBackend({
+          features: [
+            createBackendPlugin({
+              pluginId: 'auth',
+              register(reg) {
+                reg.registerInit({
+                  deps: { httpRouter: coreServices.httpRouter },
+                  async init({ httpRouter }) {
+                    httpRouter.use(oidcRouter.getRouter());
+                    httpRouter.addAuthPolicy({
+                      path: '/',
+                      allow: 'unauthenticated',
+                    });
+                  },
+                });
+              },
+            }),
+          ],
+        });
+
+        const response = await request(server)
+          .get('/api/auth/.well-known/oauth-client/cli.json')
+          .expect(200);
+
+        expect(response.body).toEqual({
+          client_id:
+            'http://localhost:7007/api/auth/.well-known/oauth-client/cli.json',
+          client_name: 'Backstage CLI',
+          redirect_uris: ['http://127.0.0.1:8055/callback'],
+          response_types: ['code'],
+          grant_types: ['authorization_code'],
+          token_endpoint_auth_method: 'none',
+          scope: 'openid offline_access',
+        });
       });
     });
 

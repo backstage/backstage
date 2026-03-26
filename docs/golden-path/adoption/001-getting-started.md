@@ -2,6 +2,7 @@
 id: getting-started
 sidebar_label: 001 - Getting started
 title: Getting started with Backstage
+description: An introduction to the Backstage adoption journey and what to expect
 ---
 
 The adoption journey is a bit different than the other Golden Paths. The goal of this guide is to prepare you for a successful implementation of Backstage in your organization. A technical understanding of Backstage is not needed for this Golden Path, just a desire to help the technical team that will be owning your Backstage instance.

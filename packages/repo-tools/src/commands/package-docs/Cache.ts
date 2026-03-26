@@ -19,7 +19,7 @@ import { dirname, join as joinPath, relative } from 'node:path';
 import crypto from 'node:crypto';
 import { Lockfile } from '@backstage/cli-node';
 import { exists, rm, mkdirp } from 'fs-extra';
-import { z } from 'zod';
+import { z } from 'zod/v3';
 import { CACHE_DIR, CACHE_FILE } from './constants';
 
 const version = '1';

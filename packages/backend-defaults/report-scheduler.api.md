@@ -6,6 +6,7 @@
 import { DatabaseService } from '@backstage/backend-plugin-api';
 import { HttpRouterService } from '@backstage/backend-plugin-api';
 import { LoggerService } from '@backstage/backend-plugin-api';
+import { MetricsService } from '@backstage/backend-plugin-api/alpha';
 import { PluginMetadataService } from '@backstage/backend-plugin-api';
 import { RootLifecycleService } from '@backstage/backend-plugin-api';
 import { SchedulerService } from '@backstage/backend-plugin-api';
@@ -17,6 +18,7 @@ export class DefaultSchedulerService {
   static create(options: {
     database: DatabaseService;
     logger: LoggerService;
+    metrics: MetricsService;
     rootLifecycle: RootLifecycleService;
     httpRouter: HttpRouterService;
     pluginMetadata: PluginMetadataService;

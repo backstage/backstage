@@ -21,7 +21,7 @@ import { createValidatedOpenApiRouterFromGeneratedEndpointMap } from '@backstage
 import { EndpointMap } from './apis';
 
 export const spec = {
-  openapi: '3.0.3',
+  openapi: '3.1.0',
   info: {
     title: 'catalog',
     version: '1',
@@ -33,6 +33,14 @@ export const spec = {
     },
     contact: {},
   },
+  tags: [
+    {
+      name: 'Entity',
+    },
+    {
+      name: 'Locations',
+    },
+  ],
   servers: [
     {
       url: '/',
@@ -46,7 +54,6 @@ export const spec = {
         name: 'kind',
         in: 'path',
         required: true,
-        allowReserved: true,
         schema: {
           type: 'string',
         },
@@ -55,7 +62,6 @@ export const spec = {
         name: 'namespace',
         in: 'path',
         required: true,
-        allowReserved: true,
         schema: {
           type: 'string',
         },
@@ -64,7 +70,6 @@ export const spec = {
         name: 'name',
         in: 'path',
         required: true,
-        allowReserved: true,
         schema: {
           type: 'string',
         },
@@ -73,7 +78,6 @@ export const spec = {
         name: 'uid',
         in: 'path',
         required: true,
-        allowReserved: true,
         schema: {
           type: 'string',
         },
@@ -404,36 +408,42 @@ export const spec = {
           "The parts of the format that's common to all versions/kinds of entity.",
       },
       NullableEntity: {
-        type: 'object',
-        properties: {
-          relations: {
-            type: 'array',
-            items: {
-              $ref: '#/components/schemas/EntityRelation',
+        anyOf: [
+          {
+            type: 'object',
+            properties: {
+              relations: {
+                type: 'array',
+                items: {
+                  $ref: '#/components/schemas/EntityRelation',
+                },
+                description:
+                  'The relations that this entity has with other entities.',
+              },
+              spec: {
+                $ref: '#/components/schemas/JsonObject',
+              },
+              metadata: {
+                $ref: '#/components/schemas/EntityMeta',
+              },
+              kind: {
+                type: 'string',
+                description: 'The high level entity type being described.',
+              },
+              apiVersion: {
+                type: 'string',
+                description:
+                  'The version of specification format for this particular entity that\nthis is written against.',
+              },
             },
+            required: ['metadata', 'kind', 'apiVersion'],
             description:
-              'The relations that this entity has with other entities.',
+              "The parts of the format that's common to all versions/kinds of entity.",
           },
-          spec: {
-            $ref: '#/components/schemas/JsonObject',
+          {
+            type: 'null',
           },
-          metadata: {
-            $ref: '#/components/schemas/EntityMeta',
-          },
-          kind: {
-            type: 'string',
-            description: 'The high level entity type being described.',
-          },
-          apiVersion: {
-            type: 'string',
-            description:
-              'The version of specification format for this particular entity that\nthis is written against.',
-          },
-        },
-        required: ['metadata', 'kind', 'apiVersion'],
-        description:
-          "The parts of the format that's common to all versions/kinds of entity.",
-        nullable: true,
+        ],
       },
       EntityAncestryResponse: {
         type: 'object',
@@ -703,8 +713,14 @@ export const spec = {
               'A text to show to the user to inform about the choices made. Like, it could say\n"Found a CODEOWNERS file that covers this target, so we suggest leaving this\nfield empty; which would currently make it owned by X" where X is taken from the\ncodeowners file.',
           },
           value: {
-            type: 'string',
-            nullable: true,
+            oneOf: [
+              {
+                type: 'string',
+              },
+              {
+                type: 'null',
+              },
+            ],
           },
           state: {
             type: 'string',
@@ -1482,6 +1498,18 @@ export const spec = {
               type: 'string',
             },
           },
+          {
+            in: 'query',
+            name: 'onConflict',
+            required: false,
+            allowReserved: true,
+            schema: {
+              type: 'string',
+              enum: ['refresh', 'reject'],
+            },
+            description:
+              "Behavior when the location already exists. 'reject' (default) returns a 409 error, 'refresh' triggers a refresh of the existing location entity and returns 201.",
+          },
         ],
         requestBody: {
           required: true,
@@ -1620,7 +1648,6 @@ export const spec = {
             in: 'path',
             name: 'id',
             required: true,
-            allowReserved: true,
             schema: {
               type: 'string',
             },
@@ -1653,7 +1680,6 @@ export const spec = {
             in: 'path',
             name: 'id',
             required: true,
-            allowReserved: true,
             schema: {
               type: 'string',
             },
@@ -1692,7 +1718,6 @@ export const spec = {
             in: 'path',
             name: 'kind',
             required: true,
-            allowReserved: true,
             schema: {
               type: 'string',
             },
@@ -1701,7 +1726,6 @@ export const spec = {
             in: 'path',
             name: 'namespace',
             required: true,
-            allowReserved: true,
             schema: {
               type: 'string',
             },
@@ -1710,7 +1734,6 @@ export const spec = {
             in: 'path',
             name: 'name',
             required: true,
-            allowReserved: true,
             schema: {
               type: 'string',
             },

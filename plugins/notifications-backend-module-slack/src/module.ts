@@ -17,6 +17,7 @@ import {
   coreServices,
   createBackendModule,
 } from '@backstage/backend-plugin-api';
+import { metricsServiceRef } from '@backstage/backend-plugin-api/alpha';
 import { notificationsProcessingExtensionPoint } from '@backstage/plugin-notifications-node';
 import { SlackNotificationProcessor } from './lib/SlackNotificationProcessor';
 import { catalogServiceRef } from '@backstage/plugin-catalog-node';
@@ -52,13 +53,15 @@ export const notificationsModuleSlack = createBackendModule({
         logger: coreServices.logger,
         catalog: catalogServiceRef,
         notifications: notificationsProcessingExtensionPoint,
+        metrics: metricsServiceRef,
       },
-      async init({ auth, config, logger, catalog, notifications }) {
+      async init({ auth, config, logger, catalog, notifications, metrics }) {
         notifications.addProcessor(
           SlackNotificationProcessor.fromConfig(config, {
             auth,
             logger,
             catalog,
+            metrics,
             blockKitRenderer,
           }),
         );

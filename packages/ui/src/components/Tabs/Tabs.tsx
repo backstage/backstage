@@ -50,13 +50,8 @@ import {
   TabDefinition,
   TabPanelDefinition,
 } from './definition';
-import {
-  isInternalLink,
-  createRoutingRegistration,
-} from '../InternalLinkProvider';
-
-const { RoutingProvider, useRoutingRegistrationEffect } =
-  createRoutingRegistration();
+import { isInternalLink } from '../../utils/linkUtils';
+import { getNodeText } from '../../analytics/getNodeText';
 
 const TabsContext = createContext<TabsContextValue | undefined>(undefined);
 
@@ -80,6 +75,12 @@ const TabSelectionContext = createContext<TabSelectionContextValue | null>(
 );
 
 /**
+ * Strips query params and hash from a href, leaving only the pathname.
+ * Tab matching always compares against location.pathname which never includes them.
+ */
+const hrefPathname = (href: string) => href.split('?')[0].split('#')[0];
+
+/**
  * Utility function to determine if a tab should be active based on the matching strategy.
  * This follows the pattern used in WorkaroundNavLink from the sidebar.
  */
@@ -88,18 +89,20 @@ const isTabActive = (
   currentPathname: string,
   matchStrategy: 'exact' | 'prefix',
 ): boolean => {
+  const pathname = hrefPathname(tabHref);
+
   if (matchStrategy === 'exact') {
-    return tabHref === currentPathname;
+    return pathname === currentPathname;
   }
 
   // Prefix matching - similar to WorkaroundNavLink behavior
-  if (tabHref === currentPathname) {
+  if (pathname === currentPathname) {
     return true;
   }
 
   // Check if current path starts with tab href followed by a slash
   // This prevents /foo matching /foobar
-  return currentPathname.startsWith(`${tabHref}/`);
+  return currentPathname.startsWith(`${pathname}/`);
 };
 
 /**
@@ -144,7 +147,7 @@ export const Tabs = (props: TabsProps) => {
       return '';
     }
 
-    let selectedId: string | null = null;
+    let selectedId: string | undefined;
     let maxSegments = -1;
 
     activeTabs.forEach((segmentCount, id) => {
@@ -209,21 +212,19 @@ export const Tabs = (props: TabsProps) => {
   );
 
   return (
-    <RoutingProvider>
-      <TabsContext.Provider value={tabsContextValue}>
-        <TabSelectionContext.Provider value={selectionContextValue}>
-          <AriaTabs
-            className={classes.root}
-            keyboardActivation="manual"
-            selectedKey={selectedTabId}
-            ref={tabsRef}
-            {...restProps}
-          >
-            {children as ReactNode}
-          </AriaTabs>
-        </TabSelectionContext.Provider>
-      </TabsContext.Provider>
-    </RoutingProvider>
+    <TabsContext.Provider value={tabsContextValue}>
+      <TabSelectionContext.Provider value={selectionContextValue}>
+        <AriaTabs
+          className={classes.root}
+          keyboardActivation="manual"
+          selectedKey={selectedTabId}
+          ref={tabsRef}
+          {...restProps}
+        >
+          {children as ReactNode}
+        </AriaTabs>
+      </TabSelectionContext.Provider>
+    </TabsContext.Provider>
   );
 };
 
@@ -290,9 +291,6 @@ function RoutedTabEffects({
   const selectionCtx = useContext(TabSelectionContext);
   const location = useLocation();
 
-  // Register with RoutingProvider for conditional RouterProvider wrapping
-  useRoutingRegistrationEffect(href);
-
   // Register as a routed tab (for controlled vs uncontrolled mode)
   useEffect(() => {
     if (selectionCtx) {
@@ -304,7 +302,7 @@ function RoutedTabEffects({
 
   // Register as active tab when URL matches (for tab selection)
   const isActive = isTabActive(href, location.pathname, matchStrategy);
-  const segmentCount = href.split('/').filter(Boolean).length;
+  const segmentCount = hrefPathname(href).split('/').filter(Boolean).length;
 
   useEffect(() => {
     if (isActive && selectionCtx) {
@@ -323,9 +321,24 @@ function RoutedTabEffects({
  * @public
  */
 export const Tab = (props: TabProps) => {
-  const { ownProps, restProps } = useDefinition(TabDefinition, props);
+  const { ownProps, restProps, analytics } = useDefinition(
+    TabDefinition,
+    props,
+  );
   const { classes, matchStrategy, href, id } = ownProps;
   const { setTabRef } = useTabsContext();
+
+  const handlePress = () => {
+    if (href) {
+      const text =
+        restProps['aria-label'] ??
+        getNodeText(restProps.children) ??
+        String(href);
+      analytics.captureEvent('click', text, {
+        attributes: { to: String(href) },
+      });
+    }
+  };
 
   return (
     <>
@@ -342,6 +355,10 @@ export const Tab = (props: TabProps) => {
         ref={el => setTabRef(id as string, el as HTMLDivElement)}
         href={href}
         {...restProps}
+        onPress={e => {
+          restProps.onPress?.(e);
+          handlePress();
+        }}
       />
     </>
   );

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/filter-predicates",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A library for expressing filter predicates and evaluating them against values",
   "backstage": {
     "role": "common-library"
@@ -39,7 +39,7 @@
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/types": "workspace:^",
-    "zod": "^3.25.76",
+    "zod": "^3.25.76 || ^4.0.0",
     "zod-validation-error": "^4.0.2"
   },
   "devDependencies": {

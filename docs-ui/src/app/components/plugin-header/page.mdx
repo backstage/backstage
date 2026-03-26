@@ -4,7 +4,7 @@ import { Snippet } from '@/components/Snippet';
 import {
   WithAllOptionsAndTabs,
   WithAllOptions,
-  WithHeaderPage,
+  WithHeader,
 } from './components';
 import { headerPropDefs } from './props-definition';
 import {
@@ -12,7 +12,7 @@ import {
   simple,
   defaultSnippet,
   withTabs,
-  withHeaderPage,
+  withHeader,
 } from './snippets';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
@@ -46,11 +46,11 @@ Tabs use React Router and highlight automatically based on the current route.
 
 <Snippet preview={<WithAllOptionsAndTabs />} code={withTabs} open />
 
-### Plugin header with HeaderPage
+### Plugin header with Header
 
-Combine with [HeaderPage](/components/header-page) for multi-level navigation.
+Combine with [Header](/components/header) for multi-level navigation.
 
-<Snippet preview={<WithHeaderPage />} code={withHeaderPage} open />
+<Snippet preview={<WithHeader />} code={withHeader} open />
 
 <Theming definition={PluginHeaderDefinition} />
 

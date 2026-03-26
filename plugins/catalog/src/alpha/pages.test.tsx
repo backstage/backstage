@@ -523,7 +523,7 @@ describe('Entity page', () => {
         Object.assign({ namespace: 'catalog' }, catalogEntityPage),
         {
           config: {
-            contentOrder: 'natural',
+            defaultContentOrder: 'natural',
           },
         },
       )
@@ -564,7 +564,7 @@ describe('Entity page', () => {
         Object.assign({ namespace: 'catalog' }, catalogEntityPage),
         {
           config: {
-            contentOrder: 'title',
+            defaultContentOrder: 'title',
             groups: [
               {
                 documentation: {

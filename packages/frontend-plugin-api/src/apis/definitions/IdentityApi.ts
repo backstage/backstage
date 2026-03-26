@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ApiRef, createApiRef } from '../system';
+import { createApiRef } from '../system';
 import { BackstageUserIdentity, ProfileInfo } from './auth';
 
 /**
@@ -51,6 +51,7 @@ export type IdentityApi = {
  *
  * @public
  */
-export const identityApiRef: ApiRef<IdentityApi> = createApiRef({
+export const identityApiRef = createApiRef<IdentityApi>().with({
   id: 'core.identity',
+  pluginId: 'app',
 });

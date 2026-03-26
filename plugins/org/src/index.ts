@@ -29,3 +29,4 @@ export {
   EntityUserProfileCard,
 } from './plugin';
 export * from './components';
+export { orgTranslationRef } from './translation';

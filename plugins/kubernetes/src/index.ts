@@ -29,3 +29,4 @@ export type { EntityKubernetesContentProps } from './plugin';
 export { Router, isKubernetesAvailable } from './Router';
 // TODO remove this re-export as a breaking change after a couple of releases
 export * from '@backstage/plugin-kubernetes-react';
+export { kubernetesTranslationRef } from './alpha/translation';

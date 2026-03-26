@@ -16,7 +16,7 @@
 
 import { useApi } from '@backstage/core-plugin-api';
 import { appThemeApiRef } from '@backstage/core-plugin-api';
-import { Box, Card, Container, Flex, HeaderPage, Text } from '@backstage/ui';
+import { Box, Card, Container, Flex, Header, Text } from '@backstage/ui';
 import { ThemeContent } from './ThemeContent';
 import { MuiThemeExtractor } from './MuiThemeExtractor';
 
@@ -26,7 +26,7 @@ export const BuiThemerPage = () => {
 
   return (
     <Container>
-      <HeaderPage title="BUI Theme Converter" />
+      <Header title="BUI Theme Converter" />
       <Box m="4">
         <Text variant="body-medium" color="secondary">
           Convert your MUI v5 theme into BUI CSS variables. Pick a theme to view

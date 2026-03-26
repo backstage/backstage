@@ -44,7 +44,9 @@ export const TagDefinition = defineComponent<TagOwnProps>()({
     icon: 'bui-TagIcon',
     removeButton: 'bui-TagRemoveButton',
   },
+  analytics: true,
   propDefs: {
+    noTrack: {},
     icon: {},
     size: { dataAttribute: true, default: 'small' },
     href: {},

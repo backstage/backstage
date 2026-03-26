@@ -207,6 +207,27 @@ export async function addFiles(options: {
 /**
  * @public
  */
+export async function removeFiles(options: {
+  dir: string;
+  filepath: string;
+  // For use cases where token has to be used with Basic Auth
+  // it has to be provided as password together with a username
+  // which may be a fixed value defined by the provider.
+  auth: { username: string; password: string } | { token: string };
+  logger?: LoggerService | undefined;
+}): Promise<void> {
+  const { dir, filepath, auth, logger } = options;
+  const git = Git.fromAuth({
+    ...auth,
+    logger,
+  });
+
+  await git.remove({ dir, filepath });
+}
+
+/**
+ * @public
+ */
 export async function commitAndPushBranch(options: {
   dir: string;
   // For use cases where token has to be used with Basic Auth

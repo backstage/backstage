@@ -6,26 +6,25 @@ import {
   SidebarScrollWrapper,
   SidebarSpace,
 } from '@backstage/core-components';
-import { compatWrapper } from '@backstage/core-compat-api';
 import { NavContentBlueprint } from '@backstage/plugin-app-react';
 import { SidebarLogo } from './SidebarLogo';
 import MenuIcon from '@material-ui/icons/Menu';
 import SearchIcon from '@material-ui/icons/Search';
 import { SidebarSearchModal } from '@backstage/plugin-search';
-import { UserSettingsSignInAvatar, Settings as SidebarSettings } from '@backstage/plugin-user-settings';
+import { UserSettingsSignInAvatar } from '@backstage/plugin-user-settings';
 import { NotificationsSidebarItem } from '@backstage/plugin-notifications';
 
 export const SidebarContent = NavContentBlueprint.make({
   params: {
     component: ({ navItems }) => {
       const nav = navItems.withComponent(item => (
-        <SidebarItem
-          icon={() => item.icon}
-          to={item.href}
-          text={item.title}
-        />
+        <SidebarItem icon={() => item.icon} to={item.href} text={item.title} />
       ));
-      return compatWrapper(
+
+      // Skipped items
+      nav.take('page:search'); // Using search modal instead
+
+      return (
         <Sidebar>
           <SidebarLogo />
           <SidebarGroup label="Search" icon={<SearchIcon />} to="/search">
@@ -49,9 +48,10 @@ export const SidebarContent = NavContentBlueprint.make({
             icon={<UserSettingsSignInAvatar />}
             to="/settings"
           >
-            <SidebarSettings />
+            {nav.take('page:app-visualizer')}
+            {nav.take('page:user-settings')}
           </SidebarGroup>
-        </Sidebar>,
+        </Sidebar>
       );
     },
   },

@@ -15,6 +15,7 @@
  */
 import {
   ComponentType,
+  ReactNode,
   useCallback,
   useEffect,
   useMemo,
@@ -57,6 +58,7 @@ import { scaffolderTranslationRef } from '../../translation';
 import { entityPresentationApiRef } from '@backstage/plugin-catalog-react';
 import { default as reactUseAsync } from 'react-use/esm/useAsync';
 import { stringifyEntityRef } from '@backstage/catalog-model';
+import { OngoingTaskContextMenu } from './OngoingTaskContextMenu';
 
 const useStyles = makeStyles(theme => ({
   contentWrapper: {
@@ -79,15 +81,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-/**
- * @public
- */
-export const OngoingTask = (props: {
-  TemplateOutputsComponent?: ComponentType<{
-    output?: ScaffolderTaskOutput;
-  }>;
-}) => {
-  // todo(blam): check that task Id actually exists, and that it's valid. otherwise redirect to something more useful.
+function OngoingTaskAnalyticsContext(props: { children: ReactNode }) {
   const { taskId } = useParams();
   const taskStream = useTaskEventStream(taskId!);
   const { namespace, name } =
@@ -106,34 +100,42 @@ export const OngoingTask = (props: {
         taskId,
       }}
     >
-      <Page themeId="website">
-        <OngoingTaskContent {...props} />
-      </Page>
+      {props.children}
     </AnalyticsContext>
+  );
+}
+
+/**
+ * @public
+ */
+export const OngoingTask = (props: {
+  TemplateOutputsComponent?: ComponentType<{
+    output?: ScaffolderTaskOutput;
+  }>;
+}) => {
+  return (
+    <OngoingTaskAnalyticsContext>
+      <Page themeId="website">
+        <OngoingTaskChrome {...props} />
+      </Page>
+    </OngoingTaskAnalyticsContext>
   );
 };
 
-function OngoingTaskContent(props: {
+/**
+ * Content-only version of the ongoing task, for use within the NFS page layout
+ * where the header is provided by the framework.
+ *
+ * @internal
+ */
+export function OngoingTaskBody(props: {
   TemplateOutputsComponent?: ComponentType<{
     output?: ScaffolderTaskOutput;
   }>;
 }) {
   const { taskId } = useParams();
-  const templateRouteRef = useRouteRef(selectedTemplateRouteRef);
-  const navigate = useNavigate();
-  const analytics = useAnalytics();
-  const scaffolderApi = useApi(scaffolderApiRef);
-  const entityPresentationApi = useApi(entityPresentationApiRef);
   const taskStream = useTaskEventStream(taskId!);
-  const classes = useStyles();
-  const steps = useMemo(
-    () =>
-      taskStream.task?.spec.steps.map(step => ({
-        ...step,
-        ...taskStream?.steps?.[step.id],
-      })) ?? [],
-    [taskStream],
-  );
+  const entityPresentationApi = useApi(entityPresentationApiRef);
   const { t } = useTranslationRef(scaffolderTranslationRef);
 
   const [logsVisible, setLogVisibleState] = useState(false);
@@ -153,21 +155,14 @@ function OngoingTaskContent(props: {
     permission: taskCreatePermission,
   });
 
-  // Start Over endpoint requires user to have both read (to grab parameters) and create (to create new task) permissions
-  const canStartOver = canReadTask && canCreateTask;
+  const isRetryableTask =
+    taskStream.task?.spec.EXPERIMENTAL_recovery?.EXPERIMENTAL_strategy ===
+    'startOver';
 
-  useEffect(() => {
-    if (taskStream.error) {
-      setLogVisibleState(true);
-    }
-  }, [taskStream.error]);
+  const canRetry = canReadTask && canCreateTask && isRetryableTask;
 
-  useEffect(() => {
-    if (taskStream.completed && !taskStream.error) {
-      setLogVisibleState(true);
-      setButtonBarVisibleState(false);
-    }
-  }, [taskStream.error, taskStream.completed]);
+  const cancelEnabled = !(taskStream.cancelled || taskStream.completed);
+  const isCancelButtonDisabled = !cancelEnabled || !canCancelTask;
 
   const { value: presentation } = reactUseAsync(async () => {
     const templateEntityRef = taskStream.task?.spec.templateInfo?.entityRef;
@@ -176,6 +171,292 @@ function OngoingTaskContent(props: {
     }
     return entityPresentationApi.forEntity(templateEntityRef).promise;
   }, [entityPresentationApi, taskStream.task?.spec.templateInfo?.entityRef]);
+
+  const templateRouteRef = useRouteRef(selectedTemplateRouteRef);
+  const navigate = useNavigate();
+  const analytics = useAnalytics();
+  const scaffolderApi = useApi(scaffolderApiRef);
+
+  const startOver = useCallback(() => {
+    const { namespace, name } =
+      taskStream.task?.spec.templateInfo?.entity?.metadata ?? {};
+
+    const formData = taskStream.task?.spec.parameters ?? {};
+
+    if (!namespace || !name) {
+      return;
+    }
+
+    analytics.captureEvent('click', `Task has been started over`);
+
+    navigate({
+      pathname: templateRouteRef({
+        namespace,
+        templateName: name,
+      }),
+      search: `?${qs.stringify({ formData: JSON.stringify(formData) })}`,
+    });
+  }, [
+    analytics,
+    navigate,
+    taskStream.task?.spec.parameters,
+    taskStream.task?.spec.templateInfo?.entity?.metadata,
+    templateRouteRef,
+  ]);
+
+  const [, { execute: triggerRetry }] = useAsync(async () => {
+    if (taskId) {
+      analytics.captureEvent('retried', 'Template has been retried');
+      await scaffolderApi.retry?.(taskId);
+    }
+  });
+
+  const [{ status: cancelStatus }, { execute: triggerCancel }] = useAsync(
+    async () => {
+      if (taskId) {
+        analytics.captureEvent('cancelled', 'Template has been cancelled');
+        await scaffolderApi.cancelTask(taskId);
+      }
+    },
+  );
+
+  return (
+    <OngoingTaskAnalyticsContext>
+      <OngoingTaskContextMenu
+        title={presentation?.primaryTitle ?? t('ongoingTask.title')}
+        cancelEnabled={cancelEnabled}
+        canRetry={canRetry}
+        isRetryableTask={isRetryableTask}
+        logsVisible={logsVisible}
+        buttonBarVisible={buttonBarVisible}
+        onStartOver={startOver}
+        onRetry={triggerRetry}
+        onToggleLogs={setLogVisibleState}
+        onToggleButtonBar={setButtonBarVisibleState}
+        taskId={taskId}
+        onCancel={triggerCancel}
+        isCancelButtonDisabled={
+          isCancelButtonDisabled || cancelStatus !== 'not-executed'
+        }
+      />
+      <OngoingTaskContent
+        {...props}
+        logsVisibleOverride={logsVisible}
+        buttonBarVisibleOverride={buttonBarVisible}
+        onToggleLogs={setLogVisibleState}
+        onToggleButtonBar={setButtonBarVisibleState}
+      />
+    </OngoingTaskAnalyticsContext>
+  );
+}
+
+function OngoingTaskChrome(props: {
+  TemplateOutputsComponent?: ComponentType<{
+    output?: ScaffolderTaskOutput;
+  }>;
+}) {
+  const { taskId } = useParams();
+  const taskStream = useTaskEventStream(taskId!);
+  const entityPresentationApi = useApi(entityPresentationApiRef);
+  const { t } = useTranslationRef(scaffolderTranslationRef);
+
+  const [logsVisible, setLogVisibleState] = useState(false);
+  const [buttonBarVisible, setButtonBarVisibleState] = useState(true);
+
+  const { allowed: canCancelTask } = usePermission({
+    permission: taskCancelPermission,
+    resourceRef: taskId,
+  });
+
+  const { allowed: canReadTask } = usePermission({
+    permission: taskReadPermission,
+    resourceRef: taskId,
+  });
+
+  const { allowed: canCreateTask } = usePermission({
+    permission: taskCreatePermission,
+  });
+
+  const isRetryableTask =
+    taskStream.task?.spec.EXPERIMENTAL_recovery?.EXPERIMENTAL_strategy ===
+    'startOver';
+
+  const canRetry = canReadTask && canCreateTask && isRetryableTask;
+
+  const cancelEnabled = !(taskStream.cancelled || taskStream.completed);
+  const isCancelButtonDisabled = !cancelEnabled || !canCancelTask;
+
+  const { value: presentation } = reactUseAsync(async () => {
+    const templateEntityRef = taskStream.task?.spec.templateInfo?.entityRef;
+    if (!templateEntityRef) {
+      return undefined;
+    }
+    return entityPresentationApi.forEntity(templateEntityRef).promise;
+  }, [entityPresentationApi, taskStream.task?.spec.templateInfo?.entityRef]);
+
+  const templateRouteRef = useRouteRef(selectedTemplateRouteRef);
+  const navigate = useNavigate();
+  const analytics = useAnalytics();
+  const scaffolderApi = useApi(scaffolderApiRef);
+
+  const startOver = useCallback(() => {
+    const { namespace, name } =
+      taskStream.task?.spec.templateInfo?.entity?.metadata ?? {};
+
+    const formData = taskStream.task?.spec.parameters ?? {};
+
+    if (!namespace || !name) {
+      return;
+    }
+
+    analytics.captureEvent('click', `Task has been started over`);
+
+    navigate({
+      pathname: templateRouteRef({
+        namespace,
+        templateName: name,
+      }),
+      search: `?${qs.stringify({ formData: JSON.stringify(formData) })}`,
+    });
+  }, [
+    analytics,
+    navigate,
+    taskStream.task?.spec.parameters,
+    taskStream.task?.spec.templateInfo?.entity?.metadata,
+    templateRouteRef,
+  ]);
+
+  const [, { execute: triggerRetry }] = useAsync(async () => {
+    if (taskId) {
+      analytics.captureEvent('retried', 'Template has been retried');
+      await scaffolderApi.retry?.(taskId);
+    }
+  });
+
+  const [{ status: cancelStatus }, { execute: triggerCancel }] = useAsync(
+    async () => {
+      if (taskId) {
+        analytics.captureEvent('cancelled', 'Template has been cancelled');
+        await scaffolderApi.cancelTask(taskId);
+      }
+    },
+  );
+
+  return (
+    <>
+      <Header
+        pageTitleOverride={
+          presentation
+            ? t('ongoingTask.pageTitle.hasTemplateName', {
+                templateName: presentation.primaryTitle,
+              })
+            : t('ongoingTask.pageTitle.noTemplateName')
+        }
+        title={
+          <div>
+            {t('ongoingTask.title')}{' '}
+            <code>{presentation ? presentation.primaryTitle : ''}</code>
+          </div>
+        }
+        subtitle={t('ongoingTask.subtitle', { taskId: taskId as string })}
+      >
+        <ContextMenu
+          cancelEnabled={cancelEnabled}
+          canRetry={canRetry}
+          isRetryableTask={isRetryableTask}
+          logsVisible={logsVisible}
+          buttonBarVisible={buttonBarVisible}
+          onStartOver={startOver}
+          onRetry={triggerRetry}
+          onToggleLogs={setLogVisibleState}
+          onToggleButtonBar={setButtonBarVisibleState}
+          taskId={taskId}
+          onCancel={triggerCancel}
+          isCancelButtonDisabled={
+            isCancelButtonDisabled || cancelStatus !== 'not-executed'
+          }
+        />
+      </Header>
+      <OngoingTaskContent
+        {...props}
+        logsVisibleOverride={logsVisible}
+        buttonBarVisibleOverride={buttonBarVisible}
+        onToggleLogs={setLogVisibleState}
+        onToggleButtonBar={setButtonBarVisibleState}
+      />
+    </>
+  );
+}
+
+function OngoingTaskContent(props: {
+  TemplateOutputsComponent?: ComponentType<{
+    output?: ScaffolderTaskOutput;
+  }>;
+  logsVisibleOverride?: boolean;
+  buttonBarVisibleOverride?: boolean;
+  onToggleLogs?: (state: boolean) => void;
+  onToggleButtonBar?: (state: boolean) => void;
+}) {
+  const { taskId } = useParams();
+  const templateRouteRef = useRouteRef(selectedTemplateRouteRef);
+  const navigate = useNavigate();
+  const analytics = useAnalytics();
+  const scaffolderApi = useApi(scaffolderApiRef);
+  const taskStream = useTaskEventStream(taskId!);
+  const classes = useStyles();
+  const steps = useMemo(
+    () =>
+      taskStream.task?.spec.steps.map(step => ({
+        ...step,
+        ...taskStream?.steps?.[step.id],
+      })) ?? [],
+    [taskStream],
+  );
+  const { t } = useTranslationRef(scaffolderTranslationRef);
+
+  const [logsVisibleLocal, setLogVisibleStateLocal] = useState(false);
+  const [buttonBarVisibleLocal, setButtonBarVisibleStateLocal] = useState(true);
+
+  const logsVisible = props.logsVisibleOverride ?? logsVisibleLocal;
+  const setLogVisibleState = props.onToggleLogs ?? setLogVisibleStateLocal;
+  const buttonBarVisible =
+    props.buttonBarVisibleOverride ?? buttonBarVisibleLocal;
+  const setButtonBarVisibleState =
+    props.onToggleButtonBar ?? setButtonBarVisibleStateLocal;
+
+  const { allowed: canCancelTask } = usePermission({
+    permission: taskCancelPermission,
+    resourceRef: taskId,
+  });
+
+  const { allowed: canReadTask } = usePermission({
+    permission: taskReadPermission,
+    resourceRef: taskId,
+  });
+
+  const { allowed: canCreateTask } = usePermission({
+    permission: taskCreatePermission,
+  });
+
+  const canStartOver = canReadTask && canCreateTask;
+
+  useEffect(() => {
+    if (taskStream.error) {
+      setLogVisibleState(true);
+    }
+  }, [taskStream.error, setLogVisibleState]);
+
+  useEffect(() => {
+    if (taskStream.completed && !taskStream.error) {
+      setLogVisibleState(true);
+      setButtonBarVisibleState(false);
+    }
+  }, [
+    taskStream.error,
+    taskStream.completed,
+    setLogVisibleState,
+    setButtonBarVisibleState,
+  ]);
 
   const activeStep = useMemo(() => {
     for (let i = steps.length - 1; i >= 0; i--) {
@@ -239,124 +520,89 @@ function OngoingTaskContent(props: {
   const Outputs = props.TemplateOutputsComponent ?? DefaultTemplateOutputs;
 
   const cancelEnabled = !(taskStream.cancelled || taskStream.completed);
-  const isCancelButtonDisabled =
-    !cancelEnabled || cancelStatus !== 'not-executed' || !canCancelTask;
 
   return (
-    <>
-      <Header
-        pageTitleOverride={
-          presentation
-            ? t('ongoingTask.pageTitle.hasTemplateName', {
-                templateName: presentation.primaryTitle,
-              })
-            : t('ongoingTask.pageTitle.noTemplateName')
-        }
-        title={
-          <div>
-            {t('ongoingTask.title')}{' '}
-            <code>{presentation ? presentation.primaryTitle : ''}</code>
-          </div>
-        }
-        subtitle={t('ongoingTask.subtitle', { taskId: taskId as string })}
-      >
-        <ContextMenu
-          cancelEnabled={cancelEnabled}
-          canRetry={canRetry}
-          isRetryableTask={isRetryableTask}
-          logsVisible={logsVisible}
-          buttonBarVisible={buttonBarVisible}
-          onStartOver={startOver}
-          onRetry={triggerRetry}
-          onToggleLogs={setLogVisibleState}
-          onToggleButtonBar={setButtonBarVisibleState}
-          taskId={taskId}
-          onCancel={triggerCancel}
-          isCancelButtonDisabled={isCancelButtonDisabled}
-        />
-      </Header>
-      <Content className={classes.contentWrapper}>
-        {taskStream.error ? (
-          <Box paddingBottom={2}>
-            <ErrorPanel
-              error={taskStream.error}
-              titleFormat="markdown"
-              title={taskStream.error.message}
-            />
-          </Box>
-        ) : null}
-
+    <Content className={classes.contentWrapper}>
+      {taskStream.error ? (
         <Box paddingBottom={2}>
-          <TaskSteps
-            steps={steps}
-            activeStep={activeStep}
-            isComplete={taskStream.completed}
-            isError={Boolean(taskStream.error)}
+          <ErrorPanel
+            error={taskStream.error}
+            titleFormat="markdown"
+            title={taskStream.error.message}
           />
         </Box>
+      ) : null}
 
-        <Outputs output={taskStream.output} />
+      <Box paddingBottom={2}>
+        <TaskSteps
+          steps={steps}
+          activeStep={activeStep}
+          isComplete={taskStream.completed}
+          isError={Boolean(taskStream.error)}
+        />
+      </Box>
 
-        {buttonBarVisible ? (
-          <Box paddingBottom={2}>
-            <Paper>
-              <Box padding={2}>
-                <div className={classes.buttonBar}>
-                  <Button
-                    className={classes.cancelButton}
-                    disabled={
-                      !cancelEnabled ||
-                      (cancelStatus !== 'not-executed' && !isRetryableTask) ||
-                      !canCancelTask
-                    }
-                    onClick={triggerCancel}
-                    data-testid="cancel-button"
-                  >
-                    {t('ongoingTask.cancelButtonTitle')}
-                  </Button>
-                  {isRetryableTask && (
-                    <Button
-                      className={classes.retryButton}
-                      disabled={cancelEnabled || !canRetry}
-                      onClick={triggerRetry}
-                      data-testid="retry-button"
-                    >
-                      {t('ongoingTask.retryButtonTitle')}
-                    </Button>
-                  )}
-                  <Button
-                    className={classes.logsVisibilityButton}
-                    color="primary"
-                    variant="outlined"
-                    onClick={() => setLogVisibleState(!logsVisible)}
-                  >
-                    {logsVisible
-                      ? t('ongoingTask.hideLogsButtonTitle')
-                      : t('ongoingTask.showLogsButtonTitle')}
-                  </Button>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    disabled={cancelEnabled || !canStartOver}
-                    onClick={startOver}
-                    data-testid="start-over-button"
-                  >
-                    {t('ongoingTask.startOverButtonTitle')}
-                  </Button>
-                </div>
-              </Box>
-            </Paper>
-          </Box>
-        ) : null}
+      <Outputs output={taskStream.output} />
 
-        {logsVisible ? (
-          <Paper style={{ height: '100%' }}>
-            <Box padding={2} height="100%">
-              <TaskLogStream logs={taskStream.stepLogs} />
+      {buttonBarVisible ? (
+        <Box paddingBottom={2}>
+          <Paper>
+            <Box padding={2}>
+              <div className={classes.buttonBar}>
+                <Button
+                  className={classes.cancelButton}
+                  disabled={
+                    !cancelEnabled ||
+                    (cancelStatus !== 'not-executed' && !isRetryableTask) ||
+                    !canCancelTask
+                  }
+                  onClick={triggerCancel}
+                  data-testid="cancel-button"
+                >
+                  {t('ongoingTask.cancelButtonTitle')}
+                </Button>
+                {isRetryableTask && (
+                  <Button
+                    className={classes.retryButton}
+                    disabled={cancelEnabled || !canRetry}
+                    onClick={triggerRetry}
+                    data-testid="retry-button"
+                  >
+                    {t('ongoingTask.retryButtonTitle')}
+                  </Button>
+                )}
+                <Button
+                  className={classes.logsVisibilityButton}
+                  color="primary"
+                  variant="outlined"
+                  onClick={() => setLogVisibleState(!logsVisible)}
+                >
+                  {logsVisible
+                    ? t('ongoingTask.hideLogsButtonTitle')
+                    : t('ongoingTask.showLogsButtonTitle')}
+                </Button>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  disabled={cancelEnabled || !canStartOver}
+                  onClick={startOver}
+                  data-testid="start-over-button"
+                >
+                  {t('ongoingTask.startOverButtonTitle')}
+                </Button>
+              </div>
             </Box>
           </Paper>
-        ) : null}
-      </Content>
-    </>
+        </Box>
+      ) : null}
+
+      {logsVisible ? (
+        <Paper style={{ height: '100%' }}>
+          <Box padding={2} height="100%">
+            <TaskLogStream logs={taskStream.stepLogs} />
+          </Box>
+        </Paper>
+      ) : null}
+    </Content>
   );
 }

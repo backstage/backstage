@@ -17,6 +17,8 @@ import preview from '../../../../../.storybook/preview';
 import { TextField } from './TextField';
 import { Form } from 'react-aria-components';
 import { Flex } from '../Flex';
+import { Box } from '../Box';
+import { Text } from '../Text';
 import { FieldLabel } from '../FieldLabel';
 import { RiEyeLine, RiSparklingLine } from '@remixicon/react';
 
@@ -143,5 +145,48 @@ export const CustomField = meta.story({
         defaultValue="Custom Field"
       />
     </>
+  ),
+});
+
+export const AutoBg = meta.story({
+  render: () => (
+    <Flex direction="column" gap="4">
+      <div style={{ maxWidth: '600px' }}>
+        TextField automatically detects its parent bg context and increments the
+        neutral level by 1. No prop is needed — it's fully automatic.
+      </div>
+      <Box bg="neutral" p="4">
+        <Text>Neutral 1 container</Text>
+        <Flex mt="2" style={{ maxWidth: '300px' }}>
+          <TextField aria-label="Text" placeholder="Enter text" size="small" />
+        </Flex>
+      </Box>
+      <Box bg="neutral">
+        <Box bg="neutral" p="4">
+          <Text>Neutral 2 container</Text>
+          <Flex mt="2" style={{ maxWidth: '300px' }}>
+            <TextField
+              aria-label="Text"
+              placeholder="Enter text"
+              size="small"
+            />
+          </Flex>
+        </Box>
+      </Box>
+      <Box bg="neutral">
+        <Box bg="neutral">
+          <Box bg="neutral" p="4">
+            <Text>Neutral 3 container</Text>
+            <Flex mt="2" style={{ maxWidth: '300px' }}>
+              <TextField
+                aria-label="Text"
+                placeholder="Enter text"
+                size="small"
+              />
+            </Flex>
+          </Box>
+        </Box>
+      </Box>
+    </Flex>
   ),
 });

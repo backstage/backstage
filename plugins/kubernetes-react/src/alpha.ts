@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
-import { kubernetesReactTranslationRef } from './translation';
+import { kubernetesReactTranslationRef as _kubernetesReactTranslationRef } from './translation';
 
-export { kubernetesReactTranslationRef };
+/**
+ * @alpha
+ * @deprecated Import from `@backstage/plugin-kubernetes-react` instead.
+ */
+export const kubernetesReactTranslationRef = _kubernetesReactTranslationRef;

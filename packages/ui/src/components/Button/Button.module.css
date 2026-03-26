@@ -73,7 +73,7 @@
       --fg: var(--bui-fg-solid-disabled);
     }
 
-    &:focus-visible {
+    &[data-focus-visible] {
       outline: 2px solid var(--bui-ring);
       outline-offset: 2px;
     }
@@ -106,7 +106,7 @@
       --bg-active: var(--bg-solid-danger-disabled);
     }
 
-    &:focus-visible {
+    &[data-focus-visible] {
       outline: 2px solid var(--bui-border-danger);
       outline-offset: 2px;
     }
@@ -143,7 +143,7 @@
       --fg: var(--bui-fg-disabled);
     }
 
-    &:focus-visible {
+    &[data-focus-visible] {
       outline: none;
       transition: none;
       box-shadow: inset 0 0 0 2px var(--bui-ring);
@@ -172,7 +172,7 @@
       --fg: var(--bui-fg-disabled);
     }
 
-    &:focus-visible {
+    &[data-focus-visible] {
       box-shadow: inset 0 0 0 2px var(--bui-border-danger);
     }
   }
@@ -204,7 +204,7 @@
       --fg: var(--bui-fg-disabled);
     }
 
-    &:focus-visible {
+    &[data-focus-visible] {
       outline: none;
       transition: none;
       box-shadow: inset 0 0 0 2px var(--bui-ring);
@@ -232,7 +232,7 @@
       --fg: var(--bui-fg-disabled);
     }
 
-    &:focus-visible {
+    &[data-focus-visible] {
       box-shadow: inset 0 0 0 2px var(--bui-border-danger);
     }
   }

@@ -23,9 +23,10 @@ import ObservableImpl from 'zen-observable';
  * Mock implementation of {@link @backstage/frontend-plugin-api#AlertApi} for testing alert behavior.
  *
  * @public
+ * @deprecated Use `mockApis.alert()` instead.
  * @example
  * ```ts
- * const alertApi = new MockAlertApi();
+ * const alertApi = mockApis.alert();
  * alertApi.post({ message: 'Test alert' });
  * expect(alertApi.getAlerts()).toHaveLength(1);
  * ```

@@ -34,3 +34,4 @@ export type {
   SearchContextState,
   SearchContextValue,
 } from './context';
+export { searchReactTranslationRef } from './translation';

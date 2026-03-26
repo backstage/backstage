@@ -1,0 +1,24 @@
+{
+  "skills": [
+    {
+      "name": "mui-to-bui-migration",
+      "description": "Migrate Backstage plugins from Material-UI (MUI) to Backstage UI (BUI). Use this skill when migrating components, updating imports, replacing styling patterns, or converting MUI components to their BUI equivalents.",
+      "files": ["SKILL.md"]
+    },
+    {
+      "name": "app-frontend-system-migration",
+      "description": "Migrate a Backstage app from the old frontend system to the new one. Use this skill when converting an app to use the new extension-based frontend system, including the hybrid migration phase and the full migration of routes, sidebar, plugins, APIs, themes, and other app-level concerns.",
+      "files": ["SKILL.md"]
+    },
+    {
+      "name": "plugin-new-frontend-system-support",
+      "description": "Add new frontend system support to an existing Backstage plugin while keeping the old system working. Use this skill for published or shared plugins that need to work in both old and new frontend system apps.",
+      "files": ["SKILL.md"]
+    },
+    {
+      "name": "plugin-full-frontend-system-migration",
+      "description": "Fully migrate a Backstage plugin to the new frontend system, dropping all old system support. Use this skill for internal plugins that only need to run in a single app, or when you are ready to remove backward compatibility entirely.",
+      "files": ["SKILL.md"]
+    }
+  ]
+}

@@ -16,7 +16,7 @@
 
 import type { Config } from '@backstage/config';
 import { InputError } from '@backstage/errors';
-import { z } from 'zod';
+import { z } from 'zod/v3';
 import { CONFIG_ROOT_KEY, severityLogLevelMappingsSchema } from './types';
 
 /**

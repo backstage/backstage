@@ -1,6 +1,7 @@
 ---
 id: index
 title: 'Creating your first Backstage app'
+description: A guided walkthrough for creating and setting up your first Backstage application
 ---
 
 ### Prerequisites

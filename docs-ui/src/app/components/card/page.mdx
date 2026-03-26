@@ -12,8 +12,18 @@ import {
   defaultSnippet,
   headerAndBodySnippet,
   withLongBodySnippet,
+  interactiveButtonSnippet,
+  interactiveLinkSnippet,
+  interactiveWithNestedButtonsSnippet,
 } from './snippets';
-import { Default, HeaderAndBody, WithLongBody } from './components';
+import {
+  Default,
+  HeaderAndBody,
+  WithLongBody,
+  InteractiveButton,
+  InteractiveLink,
+  InteractiveWithNestedButtons,
+} from './components';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
 import { CardDefinition } from '../../../utils/definitions';
@@ -81,6 +91,51 @@ When body content exceeds the available height, CardBody scrolls while header an
   code={withLongBodySnippet}
 />
 
+## Interactive cards
+
+Cards can be made interactive without wrapping the entire card in a button or link — which would conflict with any interactive elements inside. Instead, a transparent overlay covers the card surface, and nested buttons and links remain independently clickable above it.
+
+### Button
+
+Pass `onPress` and a `label` (used as the accessible name for screen readers) to make the whole card surface pressable.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  layout="side-by-side"
+  preview={<InteractiveButton />}
+  code={interactiveButtonSnippet}
+/>
+
+### Link
+
+Pass `href` to make the card surface navigate to a URL. `label` is required — it provides the accessible name for the invisible overlay link read by screen readers.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  layout="side-by-side"
+  preview={<InteractiveLink />}
+  code={interactiveLinkSnippet}
+/>
+
+### With nested buttons
+
+Buttons and links inside the card remain independently interactive. Clicking them does not trigger the card's `onPress` handler.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  layout="side-by-side"
+  preview={<InteractiveWithNestedButtons />}
+  code={interactiveWithNestedButtonsSnippet}
+/>
+
 <Theming definition={CardDefinition} />
 
-<ChangelogComponent component="card" />
+<ChangelogComponent
+  component={['card', 'card-header', 'card-body', 'card-footer']}
+/>

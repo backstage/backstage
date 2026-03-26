@@ -16,7 +16,15 @@
 
 export * from './blueprints';
 export * from './converters';
-export { catalogReactTranslationRef } from '../translation';
+import { catalogReactTranslationRef as _catalogReactTranslationRef } from '../translation';
+
+/**
+ * @alpha
+ * @deprecated Import from `@backstage/plugin-catalog-react` instead.
+ */
+export const catalogReactTranslationRef = _catalogReactTranslationRef;
 export { isOwnerOf } from '../utils/isOwnerOf';
 export { useEntityPermission } from '../hooks/useEntityPermission';
 export * from '../components/EntityTable/TitleColumn';
+export * from '../components/EntityDataTable';
+export * from '../components/EntityRelationCard';

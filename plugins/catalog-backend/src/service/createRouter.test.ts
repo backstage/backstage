@@ -41,7 +41,7 @@ import {
 import express from 'express';
 import { Server } from 'node:http';
 import request from 'supertest';
-import { z } from 'zod';
+import { z } from 'zod/v3';
 import { Cursor, EntitiesCatalog } from '../catalog/types';
 import { applyDatabaseMigrations } from '../database/migrations';
 import { DbLocationsRow } from '../database/tables';
@@ -1685,7 +1685,10 @@ describe('POST /locations/by-query works end to end', () => {
     const locationService = new DefaultLocationService(
       store,
       { process: jest.fn() },
-      { allowedLocationTypes: ['url'] },
+      {
+        allowedLocationTypes: ['url'],
+        defaultLocationConflictStrategy: 'reject',
+      },
     );
 
     const router = await createRouter({

@@ -224,6 +224,7 @@ export async function fetchCimdMetadata(opts: {
       method: 'GET',
       headers: { Accept: 'application/json' },
       signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+      redirect: 'error',
     });
   } catch {
     throw new InputError('Failed to fetch client metadata');

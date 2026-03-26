@@ -18,7 +18,7 @@ import { Config } from '@backstage/config';
 import { ResponseError } from '@backstage/errors';
 import fetch from 'cross-fetch';
 import * as uuid from 'uuid';
-import { z } from 'zod';
+import { z } from 'zod/v3';
 import {
   AuthorizeResult,
   PermissionMessageBatch,

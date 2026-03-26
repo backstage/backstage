@@ -42,6 +42,7 @@ describe('AppRootElementBlueprint', () => {
         "configSchema": undefined,
         "disabled": false,
         "factory": [Function],
+        "if": undefined,
         "inputs": {},
         "kind": "app-root-element",
         "name": undefined,

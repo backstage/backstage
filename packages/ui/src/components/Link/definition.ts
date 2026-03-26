@@ -27,7 +27,9 @@ export const LinkDefinition = defineComponent<LinkOwnProps>()({
   classNames: {
     root: 'bui-Link',
   },
+  analytics: true,
   propDefs: {
+    noTrack: {},
     variant: { dataAttribute: true, default: 'body-medium' },
     weight: { dataAttribute: true, default: 'regular' },
     color: { dataAttribute: true, default: 'primary' },

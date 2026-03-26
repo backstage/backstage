@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ApiRef, createApiRef } from '../system';
+import { createApiRef } from '../system';
 import { Expand, ExpandRecursive, Observable } from '@backstage/types';
 import { TranslationRef } from '../../translation';
 import { JSX } from 'react';
@@ -358,6 +358,7 @@ export type TranslationApi = {
 /**
  * @public
  */
-export const translationApiRef: ApiRef<TranslationApi> = createApiRef({
+export const translationApiRef = createApiRef<TranslationApi>().with({
   id: 'core.translation',
+  pluginId: 'app',
 });

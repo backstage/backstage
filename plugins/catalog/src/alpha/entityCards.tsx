@@ -66,9 +66,7 @@ export const catalogAboutEntityCard = EntityCardBlueprint.makeWithOverrides({
         const { InternalAboutCard } = await import(
           '../components/AboutCard/AboutCard'
         );
-        return (
-          <InternalAboutCard variant="gridItem" subheader={<Subheader />} />
-        );
+        return <InternalAboutCard iconLinks={<Subheader />} />;
       },
     });
   },
@@ -80,9 +78,7 @@ export const catalogLinksEntityCard = EntityCardBlueprint.make({
     type: 'info',
     filter: { 'metadata.links': { $exists: true } },
     loader: async () =>
-      import('../components/EntityLinksCard').then(m => (
-        <m.EntityLinksCard variant="gridItem" />
-      )),
+      import('../components/EntityLinksCard').then(m => <m.EntityLinksCard />),
   },
 });
 
@@ -93,7 +89,7 @@ export const catalogLabelsEntityCard = EntityCardBlueprint.make({
     filter: { 'metadata.labels': { $exists: true } },
     loader: async () =>
       import('../components/EntityLabelsCard').then(m => (
-        <m.EntityLabelsCard variant="gridItem" />
+        <m.EntityLabelsCard />
       )),
   },
 });
@@ -104,7 +100,7 @@ export const catalogDependsOnComponentsEntityCard = EntityCardBlueprint.make({
     filter: { kind: 'component' },
     loader: async () =>
       import('../components/DependsOnComponentsCard').then(m => (
-        <m.DependsOnComponentsCard variant="gridItem" />
+        <m.DependsOnComponentsCard />
       )),
   },
 });
@@ -115,7 +111,7 @@ export const catalogDependsOnResourcesEntityCard = EntityCardBlueprint.make({
     filter: { kind: 'component' },
     loader: async () =>
       import('../components/DependsOnResourcesCard').then(m => (
-        <m.DependsOnResourcesCard variant="gridItem" />
+        <m.DependsOnResourcesCard />
       )),
   },
 });
@@ -126,7 +122,7 @@ export const catalogHasComponentsEntityCard = EntityCardBlueprint.make({
     filter: { kind: 'system' },
     loader: async () =>
       import('../components/HasComponentsCard').then(m => (
-        <m.HasComponentsCard variant="gridItem" />
+        <m.HasComponentsCard />
       )),
   },
 });
@@ -137,7 +133,7 @@ export const catalogHasResourcesEntityCard = EntityCardBlueprint.make({
     filter: { kind: 'system' },
     loader: async () =>
       import('../components/HasResourcesCard').then(m => (
-        <m.HasResourcesCard variant="gridItem" />
+        <m.HasResourcesCard />
       )),
   },
 });
@@ -148,7 +144,7 @@ export const catalogHasSubcomponentsEntityCard = EntityCardBlueprint.make({
     filter: { kind: 'component' },
     loader: async () =>
       import('../components/HasSubcomponentsCard').then(m => (
-        <m.HasSubcomponentsCard variant="gridItem" />
+        <m.HasSubcomponentsCard />
       )),
   },
 });
@@ -159,7 +155,7 @@ export const catalogHasSubdomainsEntityCard = EntityCardBlueprint.make({
     filter: { kind: 'domain' },
     loader: async () =>
       import('../components/HasSubdomainsCard').then(m => (
-        <m.HasSubdomainsCard variant="gridItem" />
+        <m.HasSubdomainsCard />
       )),
   },
 });
@@ -169,9 +165,7 @@ export const catalogHasSystemsEntityCard = EntityCardBlueprint.make({
   params: {
     filter: { kind: 'domain' },
     loader: async () =>
-      import('../components/HasSystemsCard').then(m => (
-        <m.HasSystemsCard variant="gridItem" />
-      )),
+      import('../components/HasSystemsCard').then(m => <m.HasSystemsCard />),
   },
 });
 

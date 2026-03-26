@@ -52,5 +52,6 @@ export const TablePaginationDefinition =
       onPageSizeChange: {},
       showPageSizeOptions: { default: true },
       getLabel: {},
+      showPaginationLabel: { default: true },
     },
   });

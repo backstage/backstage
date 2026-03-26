@@ -15,4 +15,7 @@
  */
 
 export { DependsOnResourcesCard } from './DependsOnResourcesCard';
-export type { DependsOnResourcesCardProps } from './DependsOnResourcesCard';
+export type {
+  DependsOnResourcesCardLegacyProps,
+  DependsOnResourcesCardProps,
+} from './DependsOnResourcesCard';

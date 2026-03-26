@@ -13,4 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { ListTasksPage } from './ListTasksPage';
+export { ListTasksPage, ListTaskPageContent } from './ListTasksPage';

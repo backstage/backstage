@@ -22,11 +22,12 @@ The frontend feature loader provided in this package works hand-in-hand with the
 
 Adding a frontend plugin (with new frontend system support, possibly in alpha support), is straightforward and consists in:
 
-- building the frontend plugin with the `frontend-dynamic-container` role, which enables the module federation support, and packages the plugin as a module remote
-- copying the frontend package folder, with the `dist` folder generated during the build, to the dynamic plugins root folder of the Backstage installation (defined by the `dynamicPlugins.rootDirectory` configuration value, which is usually set as `dynamic-plugins-root`).
+- bundling the frontend plugin with the [`backstage-cli package bundle`](../../docs/tooling/cli/03-commands.md#package-bundle) command, thus producing a self-contained bundle based on Module Federation.
+- copying the bundle folder into the Backstage installation dynamic plugins root folder for dynamic loading.
 
-So from a frontend plugin package folder, you would use the following command:
+So from a `my-backstage-plugin` frontend plugin package folder, you would use the following command:
 
 ```bash
-yarn build --role frontend-dynamic-container && cp -R $(pwd) <target backstage>/dynamic-plugins-root/
+yarn backstage-cli package bundle --output-destination /path/to/dynamic-plugins-root
+# Creates a self-contained bundle in the /path/to/dynamic-plugins-root/my-backstage-plugin/ sub-folder
 ```

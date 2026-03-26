@@ -51,7 +51,6 @@ export * from '../models/QueryEntitiesByPredicateRequestOrderByInner.model';
 export * from '../models/QueryEntityFacetsByPredicateRequest.model';
 export * from '../models/RecursivePartialEntity.model';
 export * from '../models/RecursivePartialEntityMeta.model';
-export * from '../models/RecursivePartialEntityMetaAllOf.model';
 export * from '../models/RecursivePartialEntityRelation.model';
 export * from '../models/RefreshEntityRequest.model';
 export * from '../models/ValidateEntity400Response.model';

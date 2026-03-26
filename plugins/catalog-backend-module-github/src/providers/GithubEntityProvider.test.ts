@@ -35,7 +35,14 @@ import {
   RepositoryEvent,
   RepositoryRenamedEvent,
 } from '@octokit/webhooks-types';
-import type { PartialDeep } from 'type-fest';
+
+type PartialDeep<T> = T extends (...args: unknown[]) => unknown
+  ? T
+  : T extends Array<infer U>
+  ? Array<PartialDeep<U>>
+  : T extends object
+  ? { [K in keyof T]?: PartialDeep<T[K]> }
+  : T;
 
 jest.mock('../lib/github', () => {
   return {

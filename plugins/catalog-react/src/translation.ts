@@ -16,7 +16,7 @@
 
 import { createTranslationRef } from '@backstage/core-plugin-api/alpha';
 
-/** @alpha */
+/** @public */
 export const catalogReactTranslationRef = createTranslationRef({
   id: 'catalog-react',
   messages: {
@@ -167,6 +167,9 @@ export const catalogReactTranslationRef = createTranslationRef({
       title: 'Title',
       label: 'Label',
       domain: 'Domain',
+    },
+    entityRelationCard: {
+      emptyHelpLinkTitle: 'Learn how to change this.',
     },
     missingAnnotationEmptyState: {
       title: 'Missing Annotation',

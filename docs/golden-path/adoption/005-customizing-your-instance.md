@@ -2,6 +2,7 @@
 id: customize-your-instance
 sidebar_label: 005 - Customizing your instance
 title: Customizing your instance
+description: How to customize your Backstage instance based on user feedback
 ---
 
 You now have the knowledge of what your users want and the go from leadership to continue investing in Backstage. Your job now is to customize your instance for your users to really get the value from. Let's dive in!
