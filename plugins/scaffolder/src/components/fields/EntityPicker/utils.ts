@@ -48,6 +48,21 @@ function convertSchemaFiltersToQuery(
   return query;
 }
 
+/**
+ * Builds an {@link EntityFilterQuery} from a `catalogFilter` value provided
+ * via `ui:options` in a scaffolder field schema.
+ *
+ * Filter values are converted as follows:
+ * - `string` values are passed through as-is.
+ * - `string[]` values are passed through as-is (multi-value match).
+ * - `{ exists: true }` is replaced with the `CATALOG_FILTER_EXISTS` symbol.
+ * - `{ exists: false }`, `{}`, and `null` values are silently omitted from
+ *   the resulting query (they carry no meaningful filter semantics and would
+ *   otherwise produce invalid filter entries).
+ *
+ * Accepts a single filter object, an array of filter objects (OR semantics),
+ * or `undefined`. Returns `undefined` when the input is falsy.
+ */
 export function buildCatalogFilter(
   catalogFilter:
     | Record<string, FilterQueryValue>
