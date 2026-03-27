@@ -34,7 +34,10 @@ import {
   useTable,
   type ColumnConfig,
 } from '@backstage/ui';
-import { ExternalDependency } from '@backstage/plugin-devtools-common';
+import {
+  ExternalDependency,
+  ExternalDependencyStatus,
+} from '@backstage/plugin-devtools-common';
 import { useExternalDependencies } from '../../../hooks';
 
 type ExternalDependencyRow = ExternalDependency & { id: string };
@@ -44,13 +47,13 @@ export const getExternalDependencyStatus = (
   result: Partial<ExternalDependency> | undefined,
 ) => {
   switch (result?.status) {
-    case 'Healthy':
+    case ExternalDependencyStatus.healthy:
       return (
         <Text as="span" color="success">
           <StatusOK /> {result.status}
         </Text>
       );
-    case 'Unhealthy':
+    case ExternalDependencyStatus.unhealthy:
       return (
         <Text as="span" color="danger">
           <StatusError /> {result.status}
