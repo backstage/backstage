@@ -27,6 +27,7 @@ import {
   IncrementalEntityProvider,
   IncrementalEntityProviderOptions,
 } from '../types';
+import { applyDatabaseMigrations } from '../database/migrations';
 
 /**
  * @public
@@ -122,6 +123,7 @@ export const catalogModuleIncrementalIngestionEntityProvider =
           metrics,
         }) {
           const client = await database.getClient();
+          await applyDatabaseMigrations(client);
 
           const providers = new WrapperProviders({
             config,
