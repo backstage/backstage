@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 import {
-  type EntityFilterQuery,
-  CATALOG_FILTER_EXISTS,
-} from '@backstage/catalog-client';
-import {
   Entity,
   parseEntityRef,
   stringifyEntityRef,
@@ -37,12 +33,8 @@ import Autocomplete, {
 import { useCallback, useEffect, useState } from 'react';
 import useAsync from 'react-use/esm/useAsync';
 import { FieldValidation } from '@rjsf/utils';
-import {
-  MultiEntityPickerFilterQueryValue,
-  MultiEntityPickerProps,
-  MultiEntityPickerUiOptions,
-  MultiEntityPickerFilterQuery,
-} from './schema';
+import { MultiEntityPickerProps } from './schema';
+import { buildCatalogFilter } from '../EntityPicker/utils';
 import { VirtualizedListbox } from '../VirtualizedListbox';
 import { ScaffolderField } from '@backstage/plugin-scaffolder-react/alpha';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
@@ -76,7 +68,9 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
     errors,
   } = props;
 
-  const catalogFilter = buildCatalogFilter(uiSchema);
+  const catalogFilter = buildCatalogFilter(
+    uiSchema['ui:options']?.catalogFilter,
+  );
   const defaultKind = uiSchema['ui:options']?.defaultKind;
   const defaultNamespace =
     uiSchema['ui:options']?.defaultNamespace || undefined;
@@ -238,67 +232,3 @@ export const validateMultiEntityPickerValidation = (
     }
   });
 };
-
-/**
- * Converts a special `{exists: true}` value to the `CATALOG_FILTER_EXISTS` symbol.
- *
- * @param value - The value to convert.
- * @returns The converted value.
- */
-function convertOpsValues(
-  value: Exclude<MultiEntityPickerFilterQueryValue, Array<any>>,
-): string | symbol {
-  if (typeof value === 'object' && value.exists) {
-    return CATALOG_FILTER_EXISTS;
-  }
-  return value?.toString();
-}
-
-/**
- * Converts schema filters to entity filter query, replacing `{exists:true}` values
- * with the constant `CATALOG_FILTER_EXISTS`.
- *
- * @param schemaFilters - An object containing schema filters with keys as filter names
- * and values as filter values.
- * @returns An object with the same keys as the input object, but with `{exists:true}` values
- * transformed to `CATALOG_FILTER_EXISTS` symbol.
- */
-function convertSchemaFiltersToQuery(
-  schemaFilters: MultiEntityPickerFilterQuery,
-): Exclude<EntityFilterQuery, Array<any>> {
-  const query: EntityFilterQuery = {};
-
-  for (const [key, value] of Object.entries(schemaFilters)) {
-    if (Array.isArray(value)) {
-      query[key] = value;
-    } else {
-      query[key] = convertOpsValues(value);
-    }
-  }
-
-  return query;
-}
-
-/**
- * Builds an `EntityFilterQuery` based on the `uiSchema` passed in.
- * If `catalogFilter` is specified in the `uiSchema`, it is converted to a `EntityFilterQuery`.
- *
- * @param uiSchema The `uiSchema` of an `EntityPicker` component.
- * @returns An `EntityFilterQuery` based on the `uiSchema`, or `undefined` if `catalogFilter` is not specified in the `uiSchema`.
- */
-function buildCatalogFilter(
-  uiSchema: MultiEntityPickerProps['uiSchema'],
-): EntityFilterQuery | undefined {
-  const catalogFilter: MultiEntityPickerUiOptions['catalogFilter'] | undefined =
-    uiSchema['ui:options']?.catalogFilter;
-
-  if (!catalogFilter) {
-    return undefined;
-  }
-
-  if (Array.isArray(catalogFilter)) {
-    return catalogFilter.map(convertSchemaFiltersToQuery);
-  }
-
-  return convertSchemaFiltersToQuery(catalogFilter);
-}

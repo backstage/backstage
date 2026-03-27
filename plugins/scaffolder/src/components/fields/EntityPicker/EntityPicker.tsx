@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 import {
-  type EntityFilterQuery,
-  CATALOG_FILTER_EXISTS,
-} from '@backstage/catalog-client';
-import {
   Entity,
   parseEntityRef,
   stringifyEntityRef,
@@ -36,13 +32,9 @@ import Autocomplete, {
 } from '@material-ui/lab/Autocomplete';
 import { useCallback, useEffect } from 'react';
 import useAsync from 'react-use/esm/useAsync';
-import {
-  EntityPickerFilterQueryValue,
-  EntityPickerProps,
-  EntityPickerUiOptions,
-  EntityPickerFilterQuery,
-} from './schema';
+import { EntityPickerProps } from './schema';
 import { VirtualizedListbox } from '../VirtualizedListbox';
+import { buildCatalogFilter } from './utils';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../../translation';
 import { ScaffolderField } from '@backstage/plugin-scaffolder-react/alpha';
@@ -70,7 +62,11 @@ export const EntityPicker = (props: EntityPickerProps) => {
     idSchema,
     errors,
   } = props;
-  const catalogFilter = buildCatalogFilter(uiSchema);
+  const allowedKinds = uiSchema['ui:options']?.allowedKinds;
+  const catalogFilter = buildCatalogFilter(
+    uiSchema['ui:options']?.catalogFilter ||
+      (allowedKinds && { kind: allowedKinds }),
+  );
   const defaultKind = uiSchema['ui:options']?.defaultKind;
   const defaultNamespace =
     uiSchema['ui:options']?.defaultNamespace || undefined;
@@ -234,71 +230,3 @@ export const EntityPicker = (props: EntityPickerProps) => {
     </ScaffolderField>
   );
 };
-
-/**
- * Converts a especial `{exists: true}` value to the `CATALOG_FILTER_EXISTS` symbol.
- *
- * @param value - The value to convert.
- * @returns The converted value.
- */
-function convertOpsValues(
-  value: Exclude<EntityPickerFilterQueryValue, Array<any>>,
-): string | symbol {
-  if (typeof value === 'object' && value.exists) {
-    return CATALOG_FILTER_EXISTS;
-  }
-  return value?.toString();
-}
-
-/**
- * Converts schema filters to entity filter query, replacing `{exists:true}` values
- * with the constant `CATALOG_FILTER_EXISTS`.
- *
- * @param schemaFilters - An object containing schema filters with keys as filter names
- * and values as filter values.
- * @returns An object with the same keys as the input object, but with `{exists:true}` values
- * transformed to `CATALOG_FILTER_EXISTS` symbol.
- */
-function convertSchemaFiltersToQuery(
-  schemaFilters: EntityPickerFilterQuery,
-): Exclude<EntityFilterQuery, Array<any>> {
-  const query: EntityFilterQuery = {};
-
-  for (const [key, value] of Object.entries(schemaFilters)) {
-    if (Array.isArray(value)) {
-      query[key] = value;
-    } else {
-      query[key] = convertOpsValues(value);
-    }
-  }
-
-  return query;
-}
-
-/**
- * Builds an `EntityFilterQuery` based on the `uiSchema` passed in.
- * If `catalogFilter` is specified in the `uiSchema`, it is converted to a `EntityFilterQuery`.
- * If `allowedKinds` is specified in the `uiSchema` will support the legacy `allowedKinds` option.
- *
- * @param uiSchema The `uiSchema` of an `EntityPicker` component.
- * @returns An `EntityFilterQuery` based on the `uiSchema`, or `undefined` if `catalogFilter` is not specified in the `uiSchema`.
- */
-function buildCatalogFilter(
-  uiSchema: EntityPickerProps['uiSchema'],
-): EntityFilterQuery | undefined {
-  const allowedKinds = uiSchema['ui:options']?.allowedKinds;
-
-  const catalogFilter: EntityPickerUiOptions['catalogFilter'] | undefined =
-    uiSchema['ui:options']?.catalogFilter ||
-    (allowedKinds && { kind: allowedKinds });
-
-  if (!catalogFilter) {
-    return undefined;
-  }
-
-  if (Array.isArray(catalogFilter)) {
-    return catalogFilter.map(convertSchemaFiltersToQuery);
-  }
-
-  return convertSchemaFiltersToQuery(catalogFilter);
-}
