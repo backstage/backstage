@@ -6755,7 +6755,7 @@ __metadata:
     "@types/node": "npm:^22.13.14"
     command-exists: "npm:^1.2.9"
     fs-extra: "npm:^11.0.0"
-    jest-when: "npm:^3.1.0"
+    jest-when: "npm:^4.0.0"
     yaml: "npm:^2.0.0"
   languageName: unknown
   linkType: soft
@@ -35664,12 +35664,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest-when@npm:^3.1.0":
-  version: 3.7.0
-  resolution: "jest-when@npm:3.7.0"
+"jest-when@npm:^4.0.0":
+  version: 4.0.1
+  resolution: "jest-when@npm:4.0.1"
   peerDependencies:
-    jest: ">= 25"
-  checksum: 10/b5b88d077ed467aab220c71c885dbc5f448604f06e68f761ce9f479c99bb74e0dbf553d1cc980751d88401b034a578e1c44eec5e4095743b7586f02bb7c6313d
+    jest: ">= 27"
+  checksum: 10/726895fb0fd6d589a3753d89c97cdd0e631c41db0599f90bc294d282f23409af6d55e95e784d2136eb3bafe5b95506e91e1184f5c7bd57a507638411c747060a
   languageName: node
   linkType: hard
 
