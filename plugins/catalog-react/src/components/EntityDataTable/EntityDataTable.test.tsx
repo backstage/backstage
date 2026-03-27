@@ -132,6 +132,24 @@ describe('<EntityDataTable />', () => {
     expect(rows()[1]).toHaveTextContent('alpha');
   });
 
+  it('shows all rows after loading completes', async () => {
+    const { rerender } = await renderInTestApp(
+      <EntityDataTable columnConfig={columns} data={[]} loading />,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
+    );
+
+    rerender(<EntityDataTable columnConfig={columns} data={entities} />);
+
+    const rows = screen.getAllByRole('row').slice(1);
+    expect(rows).toHaveLength(2);
+    expect(rows[0]).toHaveTextContent('bravo');
+    expect(rows[1]).toHaveTextContent('alpha');
+  });
+
   it('does not sort when column has no sortValue', async () => {
     const unsortableColumns: EntityColumnConfig[] = [
       {

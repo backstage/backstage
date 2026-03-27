@@ -61,7 +61,7 @@ export function EntityDataTable(props: EntityDataTableProps) {
     mode: 'complete',
     data: tableData,
     sortFn,
-    paginationOptions: { pageSize: tableData.length || 1 },
+    paginationOptions: { type: 'none' },
   });
 
   return (
@@ -71,7 +71,6 @@ export function EntityDataTable(props: EntityDataTableProps) {
       loading={loading}
       error={error}
       emptyState={emptyState}
-      pagination={{ type: 'none' }}
     />
   );
 }
