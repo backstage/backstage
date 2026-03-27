@@ -315,7 +315,7 @@ That file shows a complete backend module example, including provider registrati
 If you copy that example module into `packages/backend/src/extensions/catalogCustomIncrementalIngestion.ts`, then add it to `packages/backend/src/index.ts`:
 
 ```diff
-+ import { catalogModuleCustomIncrementalIngestionProvider } from './catalogCustomIncrementalIngestion';
++ import { catalogModuleCustomIncrementalIngestionProvider } from './extensions/catalogCustomIncrementalIngestion';
 
 
 const backend = createBackend();

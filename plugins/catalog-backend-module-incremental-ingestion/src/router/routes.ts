@@ -17,18 +17,50 @@
 import express from 'express';
 import Router from 'express-promise-router';
 import { IncrementalIngestionDatabaseManager } from '../database/IncrementalIngestionDatabaseManager';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import {
+  HttpAuthService,
+  LoggerService,
+  PermissionsService,
+} from '@backstage/backend-plugin-api';
+import {
+  catalogIncrementalIngestionAdminPermission,
+  catalogIncrementalIngestionReadPermission,
+} from '@backstage/plugin-catalog-common/alpha';
+import {
+  AuthorizeResult,
+  BasicPermission,
+} from '@backstage/plugin-permission-common';
+import { NotAllowedError } from '@backstage/errors';
 
 export class IncrementalProviderRouter {
   private manager: IncrementalIngestionDatabaseManager;
   private logger: LoggerService;
+  private permissions: PermissionsService;
+  private httpAuth: HttpAuthService;
 
   constructor(
     manager: IncrementalIngestionDatabaseManager,
     logger: LoggerService,
+    permissions: PermissionsService,
+    httpAuth: HttpAuthService,
   ) {
     this.manager = manager;
     this.logger = logger;
+    this.permissions = permissions;
+    this.httpAuth = httpAuth;
+  }
+
+  private async assertAuthorized(
+    req: express.Request,
+    permission: BasicPermission,
+  ): Promise<void> {
+    const [decision] = await this.permissions.authorize([{ permission }], {
+      credentials: await this.httpAuth.credentials(req),
+    });
+
+    if (decision.result === AuthorizeResult.DENY) {
+      throw new NotAllowedError('Unauthorized');
+    }
   }
 
   createRouter(): express.Router {
@@ -36,7 +68,11 @@ export class IncrementalProviderRouter {
     router.use(express.json());
 
     // Get the overall health of all incremental providers
-    router.get('/incremental/health', async (_, res) => {
+    router.get('/incremental/health', async (req, res) => {
+      await this.assertAuthorized(
+        req,
+        catalogIncrementalIngestionReadPermission,
+      );
       const records = await this.manager.healthcheck();
       const providers = records.map(record => record.provider_name);
       const duplicates = [
@@ -51,13 +87,21 @@ export class IncrementalProviderRouter {
     });
 
     // Clean up and pause all providers
-    router.post('/incremental/cleanup', async (_, res) => {
+    router.post('/incremental/cleanup', async (req, res) => {
+      await this.assertAuthorized(
+        req,
+        catalogIncrementalIngestionAdminPermission,
+      );
       const result = await this.manager.cleanupProviders();
       res.json(result);
     });
 
     // Get basic status of the provider
     router.get('/incremental/providers/:provider', async (req, res) => {
+      await this.assertAuthorized(
+        req,
+        catalogIncrementalIngestionReadPermission,
+      );
       const { provider } = req.params;
       const record = await this.manager.getCurrentIngestionRecord(provider);
       if (record) {
@@ -95,6 +139,10 @@ export class IncrementalProviderRouter {
     router.post(
       `/incremental/providers/:provider/trigger`,
       async (req, res) => {
+        await this.assertAuthorized(
+          req,
+          catalogIncrementalIngestionAdminPermission,
+        );
         const { provider } = req.params;
         const record = await this.manager.getCurrentIngestionRecord(provider);
         if (record) {
@@ -124,6 +172,10 @@ export class IncrementalProviderRouter {
     // Start a brand-new ingestion cycle for the provider.
     // (Cancel's the current run if active, or marks it complete if resting)
     router.post(`/incremental/providers/:provider/start`, async (req, res) => {
+      await this.assertAuthorized(
+        req,
+        catalogIncrementalIngestionAdminPermission,
+      );
       const { provider } = req.params;
 
       const record = await this.manager.getCurrentIngestionRecord(provider);
@@ -155,7 +207,11 @@ export class IncrementalProviderRouter {
       }
     });
 
-    router.get(`/incremental/providers`, async (_req, res) => {
+    router.get(`/incremental/providers`, async (req, res) => {
+      await this.assertAuthorized(
+        req,
+        catalogIncrementalIngestionReadPermission,
+      );
       const providers = await this.manager.listProviders();
 
       res.json({
@@ -166,6 +222,10 @@ export class IncrementalProviderRouter {
 
     // Stop the provider and pause it for 24 hours
     router.post(`/incremental/providers/:provider/cancel`, async (req, res) => {
+      await this.assertAuthorized(
+        req,
+        catalogIncrementalIngestionAdminPermission,
+      );
       const { provider } = req.params;
       const record = await this.manager.getCurrentIngestionRecord(provider);
       if (record) {
@@ -200,6 +260,10 @@ export class IncrementalProviderRouter {
 
     // Wipe out all ingestion records for the provider and pause for 24 hours
     router.delete('/incremental/providers/:provider', async (req, res) => {
+      await this.assertAuthorized(
+        req,
+        catalogIncrementalIngestionAdminPermission,
+      );
       const { provider } = req.params;
       const result = await this.manager.purgeAndResetProvider(provider);
       res.json(result);
@@ -207,6 +271,10 @@ export class IncrementalProviderRouter {
 
     // Get the ingestion marks for the current cycle
     router.get(`/incremental/providers/:provider/marks`, async (req, res) => {
+      await this.assertAuthorized(
+        req,
+        catalogIncrementalIngestionReadPermission,
+      );
       const { provider } = req.params;
       const record = await this.manager.getCurrentIngestionRecord(provider);
       if (record) {
@@ -237,6 +305,10 @@ export class IncrementalProviderRouter {
     router.delete(
       `/incremental/providers/:provider/marks`,
       async (req, res) => {
+        await this.assertAuthorized(
+          req,
+          catalogIncrementalIngestionAdminPermission,
+        );
         const { provider } = req.params;
         const deletions = await this.manager.clearFinishedIngestions(provider);
 

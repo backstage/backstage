@@ -15,10 +15,12 @@
  */
 
 import { Content } from '@backstage/core-components';
+import { catalogIncrementalIngestionAdminPermission } from '@backstage/plugin-catalog-common/alpha';
 import {
   createFrontendPlugin,
   SubPageBlueprint,
 } from '@backstage/frontend-plugin-api';
+import { RequirePermission } from '@backstage/plugin-permission-react';
 import AutorenewIcon from '@material-ui/icons/Autorenew';
 
 /** @alpha */
@@ -29,9 +31,13 @@ export const incrementalIngestionDevToolsContent = SubPageBlueprint.make({
     title: 'Incremental Ingestion',
     loader: () =>
       import('../components/IncrementalIngestionDevtoolsContent').then(m => (
-        <Content>
-          <m.IncrementalIngestionDevtoolsContent />
-        </Content>
+        <RequirePermission
+          permission={catalogIncrementalIngestionAdminPermission}
+        >
+          <Content>
+            <m.IncrementalIngestionDevtoolsContent />
+          </Content>
+        </RequirePermission>
       )),
   },
 });

@@ -367,6 +367,10 @@ export const IncrementalIngestionDevtoolsContent = () => {
     provider: string,
     action: ProviderAction,
   ): Promise<void> => {
+    if (pendingAction) {
+      return;
+    }
+
     if (action.confirmMessage) {
       setPendingAction({ provider, action });
       return;
@@ -440,6 +444,8 @@ export const IncrementalIngestionDevtoolsContent = () => {
       field: 'provider',
       render: row => {
         const availableActionKeys = getAvailableActionKeys(row.currentAction);
+        const isActionBlocked =
+          Boolean(busyActionKey) || Boolean(pendingAction);
 
         return (
           <Box display="flex" justifyContent="center">
@@ -453,7 +459,7 @@ export const IncrementalIngestionDevtoolsContent = () => {
                   <Box component="span">
                     <IconButton
                       aria-label={action.label}
-                      disabled={!isAvailable || Boolean(busyActionKey)}
+                      disabled={!isAvailable || isActionBlocked}
                       onClick={() => runProviderAction(row.provider, action)}
                     >
                       {isBusy ? (
@@ -480,7 +486,7 @@ export const IncrementalIngestionDevtoolsContent = () => {
                       aria-label={
                         kind === 'status' ? 'Status Raw' : 'Marks Raw'
                       }
-                      disabled={Boolean(busyActionKey)}
+                      disabled={isActionBlocked}
                       onClick={() => openRawDialog(row.provider, kind)}
                     >
                       {isBusy ? (

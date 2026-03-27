@@ -23,3 +23,12 @@ const app = createApp({
 ```
 
 The DevTools tab becomes available automatically once the backend admin routes are enabled.
+
+## Permissions
+
+The DevTools tab is guarded by the `catalog.incremental-ingestion.admin`
+permission. Backend incremental ingestion admin routes also enforce catalog
+incremental ingestion permissions:
+
+- `catalog.incremental-ingestion.read` for read-only status endpoints
+- `catalog.incremental-ingestion.admin` for mutating admin actions

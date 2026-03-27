@@ -71,6 +71,8 @@ describe('WrapperProviders', () => {
         applyDatabaseMigrations,
         events: mockServices.events.mock(),
         metrics: metricsServiceMock.mock(),
+        permissions: mockServices.permissions.mock(),
+        httpAuth: mockServices.httpAuth.mock(),
       });
       const wrapped1 = providers.wrap(provider1, {
         burstInterval: { seconds: 1 },

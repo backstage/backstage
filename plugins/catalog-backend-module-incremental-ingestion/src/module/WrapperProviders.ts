@@ -15,7 +15,9 @@
  */
 
 import {
+  HttpAuthService,
   LoggerService,
+  PermissionsService,
   RootConfigService,
   SchedulerService,
 } from '@backstage/backend-plugin-api';
@@ -57,6 +59,8 @@ export class WrapperProviders {
       applyDatabaseMigrations?: typeof applyDatabaseMigrations;
       events: EventsService;
       metrics: MetricsService;
+      permissions: PermissionsService;
+      httpAuth: HttpAuthService;
     },
   ) {}
 
@@ -81,6 +85,8 @@ export class WrapperProviders {
     return new IncrementalProviderRouter(
       new IncrementalIngestionDatabaseManager({ client: this.options.client }),
       this.options.logger,
+      this.options.permissions,
+      this.options.httpAuth,
     ).createRouter();
   }
 

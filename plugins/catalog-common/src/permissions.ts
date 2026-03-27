@@ -149,6 +149,30 @@ export const catalogLocationDeletePermission = createPermission({
 });
 
 /**
+ * This permission is used to authorize read access to incremental ingestion
+ * admin status and diagnostics endpoints.
+ * @alpha
+ */
+export const catalogIncrementalIngestionReadPermission = createPermission({
+  name: 'catalog.incremental-ingestion.read',
+  attributes: {
+    action: 'read',
+  },
+});
+
+/**
+ * This permission is used to authorize administrative actions for incremental
+ * ingestion providers, such as trigger and cleanup operations.
+ * @alpha
+ */
+export const catalogIncrementalIngestionAdminPermission = createPermission({
+  name: 'catalog.incremental-ingestion.admin',
+  attributes: {
+    action: 'update',
+  },
+});
+
+/**
  * List of all catalog permissions.
  * @alpha
  */
@@ -162,4 +186,6 @@ export const catalogPermissions = [
   catalogLocationCreatePermission,
   catalogLocationDeletePermission,
   catalogLocationAnalyzePermission,
+  catalogIncrementalIngestionReadPermission,
+  catalogIncrementalIngestionAdminPermission,
 ];
