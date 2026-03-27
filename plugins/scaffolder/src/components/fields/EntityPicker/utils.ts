@@ -22,9 +22,9 @@ type FilterQueryValue = string | { exists?: boolean } | string[];
 
 function convertOpsValues(
   value: Exclude<FilterQueryValue, Array<any>>,
-): string | symbol {
-  if (value !== null && typeof value === 'object' && value.exists) {
-    return CATALOG_FILTER_EXISTS;
+): string | symbol | undefined {
+  if (value !== null && typeof value === 'object') {
+    return value.exists ? CATALOG_FILTER_EXISTS : undefined;
   }
   return value?.toString();
 }
@@ -38,7 +38,10 @@ function convertSchemaFiltersToQuery(
     if (Array.isArray(value)) {
       query[key] = value;
     } else {
-      query[key] = convertOpsValues(value);
+      const converted = convertOpsValues(value);
+      if (converted !== undefined) {
+        query[key] = converted;
+      }
     }
   }
 
