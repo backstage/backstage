@@ -56,9 +56,11 @@ function convertSchemaFiltersToQuery(
  * - `string` values are passed through as-is.
  * - `string[]` values are passed through as-is (multi-value match).
  * - `{ exists: true }` is replaced with the `CATALOG_FILTER_EXISTS` symbol.
- * - `{ exists: false }`, `{}`, and `null` values are silently omitted from
- *   the resulting query (they carry no meaningful filter semantics and would
- *   otherwise produce invalid filter entries).
+ * - `{ exists: false }` and `{}` are omitted from the resulting query since
+ *   they carry no meaningful filter semantics.
+ *
+ * Invalid values such as `null` (which can arise from malformed YAML
+ * templates) are defensively ignored rather than causing a runtime crash.
  *
  * Accepts a single filter object, an array of filter objects (OR semantics),
  * or `undefined`. Returns `undefined` when the input is falsy.

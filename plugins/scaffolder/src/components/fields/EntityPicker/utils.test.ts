@@ -59,7 +59,7 @@ describe('buildCatalogFilter', () => {
     ).toEqual({ kind: 'Component' });
   });
 
-  it('does not crash when a filter value is null', () => {
+  it('ignores invalid null filter values from malformed templates', () => {
     expect(
       buildCatalogFilter({
         kind: 'User',
