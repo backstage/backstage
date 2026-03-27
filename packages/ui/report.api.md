@@ -907,6 +907,12 @@ export type Columns =
   | 'auto';
 
 // @public (undocumented)
+export interface CompletePaginationOptions extends PaginationOptions {
+  // (undocumented)
+  type?: 'page' | 'none';
+}
+
+// @public (undocumented)
 export const Container: ForwardRefExoticComponent<
   ContainerProps & RefAttributes<HTMLDivElement>
 >;
@@ -3162,7 +3168,17 @@ export const useBreakpoint: () => {
 
 // @public (undocumented)
 export function useTable<T extends TableItem, TFilter = unknown>(
-  options: UseTableOptions<T, TFilter>,
+  options: UseTableCompleteOptions<T, TFilter>,
+): UseTableResult<T, TFilter>;
+
+// @public (undocumented)
+export function useTable<T extends TableItem, TFilter = unknown>(
+  options: UseTableOffsetOptions<T, TFilter>,
+): UseTableResult<T, TFilter>;
+
+// @public (undocumented)
+export function useTable<T extends TableItem, TFilter = unknown>(
+  options: UseTableCursorOptions<T, TFilter>,
 ): UseTableResult<T, TFilter>;
 
 // @public (undocumented)
@@ -3171,7 +3187,7 @@ export type UseTableCompleteOptions<
   TFilter = unknown,
 > = QueryOptions<TFilter> & {
   mode: 'complete';
-  paginationOptions?: PaginationOptions;
+  paginationOptions?: CompletePaginationOptions;
   sortFn?: (data: T[], sort: SortDescriptor) => T[];
   filterFn?: (data: T[], filter: TFilter) => T[];
   searchFn?: (data: T[], search: string) => T[];

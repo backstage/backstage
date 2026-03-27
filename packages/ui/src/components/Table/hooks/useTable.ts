@@ -16,8 +16,10 @@
 import { useMemo, useRef } from 'react';
 import type { SortState, TableItem, TableProps } from '../types';
 import type {
-  PaginationOptions,
   PaginationResult,
+  UseTableCompleteOptions,
+  UseTableCursorOptions,
+  UseTableOffsetOptions,
   UseTableOptions,
   UseTableResult,
 } from './types';
@@ -29,7 +31,7 @@ import { useOffsetPagination } from './useOffsetPagination';
 function useTableProps<T extends TableItem>(
   paginationResult: PaginationResult<T>,
   sortState: SortState,
-  paginationOptions: PaginationOptions = {},
+  paginationOptions: UseTableCompleteOptions<T>['paginationOptions'] = {},
 ): Omit<
   TableProps<T>,
   'columnConfig' | 'rowConfig' | 'selection' | 'emptyState'
@@ -52,8 +54,11 @@ function useTableProps<T extends TableItem>(
   const displayData = paginationResult.data ?? previousDataRef.current;
   const isStale = paginationResult.loading && displayData !== undefined;
 
-  const pagination = useMemo(
-    () => ({
+  const pagination = useMemo(() => {
+    if (paginationOptions.type === 'none') {
+      return { type: 'none' as const };
+    }
+    return {
       type: 'page' as const,
       pageSize: paginationResult.pageSize,
       pageSizeOptions,
@@ -76,25 +81,25 @@ function useTableProps<T extends TableItem>(
       showPageSizeOptions,
       getLabel,
       showPaginationLabel,
-    }),
-    [
-      paginationResult.pageSize,
-      pageSizeOptions,
-      paginationResult.offset,
-      paginationResult.totalCount,
-      paginationResult.hasNextPage,
-      paginationResult.hasPreviousPage,
-      paginationResult.onNextPage,
-      paginationResult.onPreviousPage,
-      paginationResult.onPageSizeChange,
-      onNextPageCallback,
-      onPreviousPageCallback,
-      onPageSizeChangeCallback,
-      showPageSizeOptions,
-      getLabel,
-      showPaginationLabel,
-    ],
-  );
+    };
+  }, [
+    paginationOptions.type,
+    paginationResult.pageSize,
+    pageSizeOptions,
+    paginationResult.offset,
+    paginationResult.totalCount,
+    paginationResult.hasNextPage,
+    paginationResult.hasPreviousPage,
+    paginationResult.onNextPage,
+    paginationResult.onPreviousPage,
+    paginationResult.onPageSizeChange,
+    onNextPageCallback,
+    onPreviousPageCallback,
+    onPageSizeChangeCallback,
+    showPageSizeOptions,
+    getLabel,
+    showPaginationLabel,
+  ]);
 
   return useMemo(
     () => ({
@@ -117,6 +122,17 @@ function useTableProps<T extends TableItem>(
 }
 
 /** @public */
+export function useTable<T extends TableItem, TFilter = unknown>(
+  options: UseTableCompleteOptions<T, TFilter>,
+): UseTableResult<T, TFilter>;
+/** @public */
+export function useTable<T extends TableItem, TFilter = unknown>(
+  options: UseTableOffsetOptions<T, TFilter>,
+): UseTableResult<T, TFilter>;
+/** @public */
+export function useTable<T extends TableItem, TFilter = unknown>(
+  options: UseTableCursorOptions<T, TFilter>,
+): UseTableResult<T, TFilter>;
 export function useTable<T extends TableItem, TFilter = unknown>(
   options: UseTableOptions<T, TFilter>,
 ): UseTableResult<T, TFilter> {

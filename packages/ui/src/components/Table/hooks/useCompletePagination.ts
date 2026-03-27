@@ -38,8 +38,11 @@ export function useCompletePagination<T extends TableItem, TFilter>(
     searchFn,
   } = options;
   const hasGetData = 'getData' in options;
+  const noPagination = paginationOptions.type === 'none';
   const { initialOffset = 0 } = paginationOptions;
-  const defaultPageSize = getEffectivePageSize(paginationOptions);
+  const defaultPageSize = noPagination
+    ? Infinity
+    : getEffectivePageSize(paginationOptions);
 
   const getData = useStableCallback(getDataProp);
   const { sort, filter, search } = query;
@@ -51,6 +54,12 @@ export function useCompletePagination<T extends TableItem, TFilter>(
 
   const [offset, setOffset] = useState(initialOffset);
   const [pageSize, setPageSize] = useState(defaultPageSize);
+
+  // Sync pageSize when the caller changes paginationOptions.pageSize
+  useEffect(() => {
+    setPageSize(defaultPageSize);
+    setOffset(0);
+  }, [defaultPageSize]);
 
   // Load data on mount and when loadCount changes (reload trigger)
   useEffect(() => {
@@ -121,12 +130,15 @@ export function useCompletePagination<T extends TableItem, TFilter>(
 
   // Paginate the processed data
   const paginatedData = useMemo(
-    () => processedData?.slice(offset, offset + pageSize),
-    [processedData, offset, pageSize],
+    () =>
+      noPagination
+        ? processedData
+        : processedData?.slice(offset, offset + pageSize),
+    [processedData, offset, pageSize, noPagination],
   );
 
-  const hasNextPage = offset + pageSize < totalCount;
-  const hasPreviousPage = offset > 0;
+  const hasNextPage = !noPagination && offset + pageSize < totalCount;
+  const hasPreviousPage = !noPagination && offset > 0;
 
   const onNextPage = useCallback(() => {
     if (offset + pageSize < totalCount) {

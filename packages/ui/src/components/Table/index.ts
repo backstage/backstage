@@ -69,6 +69,7 @@ export type {
   SearchState,
   QueryOptions,
   PaginationOptions,
+  CompletePaginationOptions,
 } from './hooks/types';
 
 export { TableDefinition } from './definition';
