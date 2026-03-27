@@ -70,6 +70,7 @@ const columns: ColumnConfig<ExternalDependencyRow>[] = [
   {
     id: 'name',
     label: 'Name',
+    isRowHeader: true,
     cell: item => <CellText title={item.name} />,
   },
   {
@@ -102,9 +103,9 @@ export const ExternalDependenciesContent = () => {
 
   const data = useMemo(
     () =>
-      externalDependencies?.map(dep => ({
+      externalDependencies?.map((dep, index) => ({
         ...dep,
-        id: `${dep.name}-${dep.type}-${dep.target}`,
+        id: `${dep.name}-${dep.type}-${dep.target}-${index}`,
       })),
     [externalDependencies],
   );
@@ -112,7 +113,7 @@ export const ExternalDependenciesContent = () => {
   if (loading) {
     return <Progress />;
   } else if (error) {
-    return <Alert status="danger" icon title={error.message} />;
+    return <Alert status="danger" icon title={error.message} role="alert" />;
   }
 
   if (!data || data.length === 0) {
