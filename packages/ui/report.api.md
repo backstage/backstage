@@ -2648,6 +2648,9 @@ export const TextDefinition: {
       readonly dataAttribute: true;
     };
     readonly className: {};
+    readonly copyable: {};
+    readonly disabled: {};
+    readonly children: {};
   };
 };
 
@@ -2726,6 +2729,7 @@ export type TextOwnProps = {
     | Partial<Record<Breakpoint, TextColors | TextColorStatus>>;
   truncate?: boolean;
   className?: string;
+  disabled?: boolean;
 };
 
 // @public (undocumented)

@@ -49,6 +49,7 @@ export type TextOwnProps = {
   truncate?: boolean;
   className?: string;
   disabled?: boolean;
+  copyable?: boolean;
 };
 
 /** @public */
