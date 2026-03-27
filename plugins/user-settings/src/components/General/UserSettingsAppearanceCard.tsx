@@ -15,7 +15,6 @@
  */
 
 import { InfoCard, useSidebarPinState } from '@backstage/core-components';
-import List from '@material-ui/core/List';
 import { UserSettingsPinToggle } from './UserSettingsPinToggle';
 import { UserSettingsThemeToggle } from './UserSettingsThemeToggle';
 import { UserSettingsLanguageToggle } from './UserSettingsLanguageToggle';
@@ -29,11 +28,11 @@ export const UserSettingsAppearanceCard = () => {
 
   return (
     <InfoCard title={t('appearanceCard.title')} variant="gridItem">
-      <List dense>
+      <div className="space-y-1">
         <UserSettingsThemeToggle />
         <UserSettingsLanguageToggle />
         {!isMobile && <UserSettingsPinToggle />}
-      </List>
+      </div>
     </InfoCard>
   );
 };

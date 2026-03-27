@@ -15,7 +15,6 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import Typography from '@material-ui/core/Typography';
 import {
   EntityTable,
   useEntity,
@@ -114,13 +113,13 @@ export const RelatedEntitiesCard = <T extends Entity>(
       title={title}
       variant={variant}
       emptyContent={
-        <div style={{ textAlign: 'center' }}>
-          <Typography variant="body1">{emptyMessage}</Typography>
-          <Typography variant="body2">
+        <div className="text-center">
+          <p className="text-base text-foreground">{emptyMessage}</p>
+          <p className="text-sm text-muted-foreground">
             <Link to={emptyHelpLink} externalLinkIcon>
               {t('relatedEntitiesCard.emptyHelpLinkTitle')}
             </Link>
-          </Typography>
+          </p>
         </div>
       }
       columns={columns}

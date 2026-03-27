@@ -23,16 +23,8 @@ import {
   SearchResultPager,
 } from '@backstage/plugin-search-react';
 import { TestApiProvider, wrapInTestApp } from '@backstage/test-utils';
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Grid from '@material-ui/core/Grid';
-import IconButton from '@material-ui/core/IconButton';
-import List from '@material-ui/core/List';
-import { makeStyles } from '@material-ui/core/styles';
-import CloseIcon from '@material-ui/icons/Close';
+import { ShadcnButton as Button } from '@backstage/core-components';
+import { X } from 'lucide-react';
 import { ComponentType, PropsWithChildren } from 'react';
 import { rootRouteRef } from '../../plugin';
 import { SearchType } from '../SearchType';
@@ -93,50 +85,35 @@ export const Default = () => {
 
   return (
     <>
-      <Button variant="contained" color="primary" onClick={toggleModal}>
-        Toggle Search Modal
-      </Button>
+      <Button onClick={toggleModal}>Toggle Search Modal</Button>
       <SearchModal {...state} toggleModal={toggleModal} />
     </>
   );
 };
 
-const useStyles = makeStyles(theme => ({
-  titleContainer: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: theme.spacing(1),
-  },
-  input: {
-    flex: 1,
-  },
-  dialogActionsContainer: { padding: theme.spacing(1, 3) },
-}));
-
 export const CustomModal = () => {
-  const classes = useStyles();
   const { state, toggleModal } = useSearchModal();
 
   return (
     <>
-      <Button variant="contained" color="primary" onClick={toggleModal}>
-        Toggle Custom Search Modal
-      </Button>
+      <Button onClick={toggleModal}>Toggle Custom Search Modal</Button>
       <SearchModal {...state} toggleModal={toggleModal}>
         {() => (
           <>
-            <DialogTitle>
-              <Box className={classes.titleContainer}>
-                <SearchBar className={classes.input} />
-
-                <IconButton aria-label="close" onClick={toggleModal}>
-                  <CloseIcon />
-                </IconButton>
-              </Box>
-            </DialogTitle>
-            <DialogContent>
-              <Grid container direction="column">
-                <Grid item>
+            <div className="grid items-center grid-cols-[1fr_auto] gap-2 p-6 pb-0">
+              <SearchBar className="flex-1" />
+              <Button
+                variant="ghost"
+                size="icon"
+                aria-label="close"
+                onClick={toggleModal}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+            <div className="flex-1 overflow-y-auto px-6">
+              <div className="flex flex-col gap-4">
+                <div>
                   <SearchType.Tabs
                     defaultValue=""
                     types={[
@@ -150,11 +127,11 @@ export const CustomModal = () => {
                       },
                     ]}
                   />
-                </Grid>
-                <Grid item>
+                </div>
+                <div>
                   <SearchResult>
                     {({ results }) => (
-                      <List>
+                      <ul className="divide-y divide-border">
                         {results.map(({ document }) => (
                           <div
                             role="button"
@@ -169,19 +146,17 @@ export const CustomModal = () => {
                             />
                           </div>
                         ))}
-                      </List>
+                      </ul>
                     )}
                   </SearchResult>
-                </Grid>
-              </Grid>
-            </DialogContent>
-            <DialogActions className={classes.dialogActionsContainer}>
-              <Grid container direction="row">
-                <Grid item xs={12}>
-                  <SearchResultPager />
-                </Grid>
-              </Grid>
-            </DialogActions>
+                </div>
+              </div>
+            </div>
+            <div className="px-6 py-2">
+              <div className="w-full">
+                <SearchResultPager />
+              </div>
+            </div>
           </>
         )}
       </SearchModal>

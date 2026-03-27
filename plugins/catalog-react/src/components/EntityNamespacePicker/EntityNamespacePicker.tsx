@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { makeStyles } from '@material-ui/core/styles';
+import { cn } from '@backstage/core-components';
 
 import { EntityNamespaceFilter } from '../../filters';
 import { EntityAutocompletePicker } from '../EntityAutocompletePicker';
@@ -23,15 +23,6 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /** @public */
 export type CatalogReactEntityNamespacePickerClassKey = 'input';
-
-const useStyles = makeStyles(
-  {
-    input: {},
-  },
-  {
-    name: 'CatalogReactEntityNamespacePicker',
-  },
-);
 
 /**
  * Props for {@link EntityNamespacePicker}.
@@ -45,7 +36,6 @@ export interface EntityNamespacePickerProps {
 /** @public */
 export const EntityNamespacePicker = (props: EntityNamespacePickerProps) => {
   const { initiallySelectedNamespaces } = props;
-  const classes = useStyles();
   const { t } = useTranslationRef(catalogReactTranslationRef);
 
   return (
@@ -54,7 +44,7 @@ export const EntityNamespacePicker = (props: EntityNamespacePickerProps) => {
       name="namespace"
       path="metadata.namespace"
       Filter={EntityNamespaceFilter}
-      InputProps={{ className: classes.input }}
+      InputProps={{ className: cn() }}
       initialSelectedOptions={initiallySelectedNamespaces}
     />
   );

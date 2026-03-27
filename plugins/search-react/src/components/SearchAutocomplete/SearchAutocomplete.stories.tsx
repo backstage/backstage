@@ -16,8 +16,7 @@
 
 import { ComponentType, PropsWithChildren } from 'react';
 
-import Grid from '@material-ui/core/Grid';
-import LabelIcon from '@material-ui/icons/Label';
+import { Tag } from 'lucide-react';
 
 import { TestApiProvider, wrapInTestApp } from '@backstage/test-utils';
 
@@ -35,11 +34,11 @@ export default {
       wrapInTestApp(
         <TestApiProvider apis={[[searchApiRef, new MockSearchApi()]]}>
           <SearchContextProvider>
-            <Grid container direction="row">
-              <Grid item xs={12}>
+            <div className="grid gap-4">
+              <div className="col-span-full">
                 <Story />
-              </Grid>
-            </Grid>
+              </div>
+            </div>
           </SearchContextProvider>
         </TestApiProvider>,
       ),
@@ -85,7 +84,7 @@ export const RenderingCustomOptions = () => {
       options={options}
       renderOption={option => (
         <SearchAutocompleteDefaultOption
-          icon={<LabelIcon titleAccess="Option icon" />}
+          icon={<Tag aria-label="Option icon" />}
           primaryText={option.title}
           secondaryText={option.text}
         />

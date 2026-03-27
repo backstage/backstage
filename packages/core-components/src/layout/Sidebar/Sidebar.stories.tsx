@@ -13,16 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createRouteRef } from '@backstage/core-plugin-api';
+import { createRouteRef, IconComponent } from '@backstage/core-plugin-api';
 import { wrapInTestApp } from '@backstage/test-utils';
-import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
-import HomeOutlinedIcon from '@material-ui/icons/HomeOutlined';
-import MenuIcon from '@material-ui/icons/Menu';
-import BuildRoundedIcon from '@material-ui/icons/BuildRounded';
-import MenuBookIcon from '@material-ui/icons/MenuBook';
-import CloudQueueIcon from '@material-ui/icons/CloudQueue';
-import AcUnitIcon from '@material-ui/icons/AcUnit';
-import AppsIcon from '@material-ui/icons/Apps';
+import {
+  PlusCircle,
+  Home,
+  Menu,
+  Wrench,
+  BookOpen,
+  Cloud,
+  Snowflake,
+  LayoutGrid,
+} from 'lucide-react';
 import { ComponentType, PropsWithChildren } from 'react';
 import { SidebarPage } from './Page';
 import { Sidebar } from './Bar';
@@ -36,6 +38,19 @@ import {
 } from './Items';
 import { SidebarSubmenu } from './SidebarSubmenu';
 import { SidebarSubmenuItem } from './SidebarSubmenuItem';
+
+// Alias lucide-react icons to original MUI icon names with IconComponent type
+// assertion for Backstage SidebarItem/SidebarSubmenuItem prop compatibility.
+// Lucide icons are functionally equivalent SVG components but have a wider prop
+// interface than Backstage's IconComponent, requiring the type bridge.
+const AddCircleOutlineIcon = PlusCircle as unknown as IconComponent;
+const HomeOutlinedIcon = Home as unknown as IconComponent;
+const MenuIcon = Menu as unknown as IconComponent;
+const BuildRoundedIcon = Wrench as unknown as IconComponent;
+const MenuBookIcon = BookOpen as unknown as IconComponent;
+const CloudQueueIcon = Cloud as unknown as IconComponent;
+const AcUnitIcon = Snowflake as unknown as IconComponent;
+const AppsIcon = LayoutGrid as unknown as IconComponent;
 
 const routeRef = createRouteRef({
   id: 'storybook.test-route',

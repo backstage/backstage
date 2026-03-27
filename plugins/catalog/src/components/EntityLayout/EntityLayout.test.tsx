@@ -38,6 +38,7 @@ import {
 } from '@backstage/test-utils';
 import { mockApis } from '@backstage/frontend-test-utils';
 import { act, fireEvent, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { EntityLayout } from './EntityLayout';
 import { rootRouteRef, unregisterRedirectRouteRef } from '../../routes';
 import { Route, Routes } from 'react-router-dom';
@@ -383,11 +384,13 @@ describe('EntityLayout - CleanUpAfterRemoval', () => {
     );
 
     const menuButton = screen.queryAllByTestId('menu-button')[0];
-    fireEvent.click(menuButton);
-    const listItemUnregister = screen.queryAllByRole('menuitem', {
+    // Radix DropdownMenu requires userEvent (full pointer interaction) to open
+    await userEvent.click(menuButton);
+    // Wait for Radix DropdownMenu portal to render menu items
+    const listItemUnregister = await screen.findByRole('menuitem', {
       name: /Unregister entity/i,
-    })[0];
-    fireEvent.click(listItemUnregister);
+    });
+    await userEvent.click(listItemUnregister);
     await waitFor(() => {
       const deleteEntityButton = screen.getByRole('button', {
         name: /Delete Entity/i,
@@ -433,11 +436,13 @@ describe('EntityLayout - CleanUpAfterRemoval', () => {
     );
 
     const menuButton = screen.queryAllByTestId('menu-button')[0];
-    fireEvent.click(menuButton);
-    const listItemUnregister = screen.queryAllByRole('menuitem', {
+    // Radix DropdownMenu requires userEvent (full pointer interaction) to open
+    await userEvent.click(menuButton);
+    // Wait for Radix DropdownMenu portal to render menu items
+    const listItemUnregister = await screen.findByRole('menuitem', {
       name: /Unregister entity/i,
-    })[0];
-    fireEvent.click(listItemUnregister);
+    });
+    await userEvent.click(listItemUnregister);
     await waitFor(() => {
       const deleteEntityButton = screen.getByRole('button', {
         name: /Delete Entity/i,

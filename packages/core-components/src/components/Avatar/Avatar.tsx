@@ -13,34 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import MaterialAvatar from '@material-ui/core/Avatar';
-import { makeStyles, Theme } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
 import { CSSProperties } from 'react';
 
+import { ShadcnAvatar, AvatarImage, AvatarFallback } from '../ui/avatar';
+import { cn } from '../../lib/utils';
 import { extractInitials, stringToColor } from './utils';
-import classNames from 'classnames';
 
 /** @public */
 export type AvatarClassKey = 'avatar';
-
-const useStyles = makeStyles(
-  (theme: Theme) => ({
-    avatar: {
-      width: '4rem',
-      height: '4rem',
-      color: theme.palette.common.white,
-      backgroundColor: (props: { backgroundColor?: string }) =>
-        props.backgroundColor,
-    },
-    avatarText: {
-      fontWeight: theme.typography.fontWeightBold,
-      letterSpacing: '1px',
-      textTransform: 'uppercase',
-    },
-  }),
-  { name: 'BackstageAvatar' },
-);
 
 /**
  * Properties for {@link Avatar}.
@@ -74,50 +54,48 @@ export interface AvatarProps {
  * @public
  * @remarks
  *
- * Based on https://v4.mui.com/components/avatars/#avatar with some styling adjustment and two-letter initials
+ * Renders a circular avatar with image support and initials fallback.
+ * Uses Radix Avatar primitives via shadcn/ui for accessible image loading with fallback.
  */
 export function Avatar(props: AvatarProps) {
   const { displayName, picture, customStyles } = props;
   const styles = { ...customStyles };
 
-  // TODO: Remove this with the customStyles deprecation
-  const fontStyles = {
-    fontFamily: styles.fontFamily,
-    fontSize: styles.fontSize,
-    fontWeight: styles.fontWeight,
-  };
-
-  // We only calculate the background color if there's not an avatar
-  // picture. If there is a picture, it might have a transparent
-  // background and we don't know whether the calculated background
-  // color will clash.
-  const classes = useStyles(
-    !picture ? { backgroundColor: stringToColor(displayName || '') } : {},
-  );
-
-  const avatarClassNames = classNames(props.classes?.avatar, classes.avatar);
-  const avatarTextClassNames = classNames(
-    props.classes?.avatarText,
-    classes.avatarText,
-  );
+  // Calculate deterministic background color from display name when no picture.
+  // If there is a picture, it might have a transparent background and we don't
+  // know whether the calculated background color will clash.
+  const backgroundColor = !picture
+    ? stringToColor(displayName || '')
+    : undefined;
 
   return (
-    <MaterialAvatar
-      alt={displayName}
-      src={picture}
-      className={avatarClassNames}
-      style={styles}
+    <ShadcnAvatar
+      className={cn('h-16 w-16 text-white', props.classes?.avatar)}
+      style={{
+        ...styles,
+        ...(backgroundColor ? { backgroundColor } : {}),
+      }}
     >
+      {picture && <AvatarImage src={picture} alt={displayName} />}
       {displayName && (
-        <Typography
-          variant="h6"
-          component="span"
-          className={avatarTextClassNames}
-          style={fontStyles}
+        <AvatarFallback
+          className={cn(
+            'flex h-full w-full items-center justify-center rounded-full font-bold uppercase tracking-wider',
+            props.classes?.avatarText,
+          )}
+          style={{
+            ...(backgroundColor ? { backgroundColor } : {}),
+            fontFamily: styles.fontFamily,
+            fontSize: styles.fontSize,
+            fontWeight: styles.fontWeight,
+          }}
         >
           {extractInitials(displayName)}
-        </Typography>
+        </AvatarFallback>
       )}
-    </MaterialAvatar>
+      {!displayName && !picture && (
+        <AvatarFallback className="flex h-full w-full items-center justify-center rounded-full bg-muted" />
+      )}
+    </ShadcnAvatar>
   );
 }

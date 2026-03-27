@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
-import { makeStyles, Theme } from '@material-ui/core/styles';
-import SearchIcon from '@material-ui/icons/Search';
+import { Search } from 'lucide-react';
 
 import {
   CatalogIcon,
@@ -41,6 +38,7 @@ import {
   NavItemBlueprint,
   configApiRef,
 } from '@backstage/frontend-plugin-api';
+import type { IconComponent } from '@backstage/frontend-plugin-api';
 
 import {
   catalogApiRef,
@@ -70,6 +68,22 @@ import { SearchClient } from './apis';
 import { SearchType } from './components/SearchType';
 import { UrlUpdater } from './components/SearchPage/SearchPage';
 
+/** Map MUI-style fontSize values to Lucide pixel sizes */
+const ICON_SIZE_MAP: Record<string, number> = {
+  small: 20,
+  medium: 24,
+  large: 35,
+  inherit: 24,
+};
+
+/**
+ * Wrapper bridging lucide-react's ForwardRefExoticComponent to Backstage's
+ * IconComponent type which expects ComponentType<{ fontSize?: ... }>.
+ */
+const SearchIcon: IconComponent = ({ fontSize = 'medium', ...rest }) => (
+  <Search size={ICON_SIZE_MAP[fontSize] ?? 24} {...rest} />
+);
+
 /** @alpha */
 export const searchApi = ApiBlueprint.make({
   params: defineParams =>
@@ -80,18 +94,6 @@ export const searchApi = ApiBlueprint.make({
         new SearchClient({ discoveryApi, fetchApi }),
     }),
 });
-
-const useSearchPageStyles = makeStyles((theme: Theme) => ({
-  filter: {
-    '& + &': {
-      marginTop: theme.spacing(2.5),
-    },
-  },
-  filters: {
-    padding: theme.spacing(2),
-    marginTop: theme.spacing(2),
-  },
-}));
 
 /** @alpha */
 export const searchPage = PageBlueprint.makeWithOverrides({
@@ -136,7 +138,6 @@ export const searchPage = PageBlueprint.makeWithOverrides({
         );
 
         const Component = () => {
-          const classes = useSearchPageStyles();
           const { isMobile } = useSidebarPinState();
           const { types } = useSearch();
           const catalogApi = useApi(catalogApiRef);
@@ -146,12 +147,12 @@ export const searchPage = PageBlueprint.makeWithOverrides({
             <Page themeId="home">
               {!isMobile && <Header title="Search" />}
               <Content>
-                <Grid container direction="row">
-                  <Grid item xs={12}>
+                <div className="grid grid-cols-12 gap-4">
+                  <div className="col-span-12">
                     <SearchBar debounceTime={100} />
-                  </Grid>
+                  </div>
                   {!isMobile && (
-                    <Grid item xs={3}>
+                    <div className="col-span-3">
                       <SearchType.Accordion
                         name="Result Type"
                         defaultValue={configApi.getOptionalString(
@@ -171,10 +172,10 @@ export const searchPage = PageBlueprint.makeWithOverrides({
                           },
                         ].concat(resultTypes)}
                       />
-                      <Paper className={classes.filters}>
+                      <div className="rounded-lg border border-border bg-card p-4 mt-4">
                         {types.includes('techdocs') && (
                           <SearchFilter.Select
-                            className={classes.filter}
+                            className="[&+&]:mt-5"
                             label="Entity"
                             name="name"
                             values={async () => {
@@ -196,7 +197,7 @@ export const searchPage = PageBlueprint.makeWithOverrides({
                           />
                         )}
                         <SearchFilter.Select
-                          className={classes.filter}
+                          className="[&+&]:mt-5"
                           label="Kind"
                           name="kind"
                           values={[
@@ -212,18 +213,18 @@ export const searchPage = PageBlueprint.makeWithOverrides({
                           ]}
                         />
                         <SearchFilter.Checkbox
-                          className={classes.filter}
+                          className="[&+&]:mt-5"
                           label="Lifecycle"
                           name="lifecycle"
                           values={['experimental', 'production']}
                         />
                         {additionalSearchFilters.map(SearchFilterComponent => (
-                          <SearchFilterComponent className={classes.filter} />
+                          <SearchFilterComponent className="[&+&]:mt-5" />
                         ))}
-                      </Paper>
-                    </Grid>
+                      </div>
+                    </div>
                   )}
-                  <Grid item xs>
+                  <div className={!isMobile ? 'col-span-9' : 'col-span-12'}>
                     <SearchPagination />
                     <SearchResults>
                       {({ results }) => (
@@ -246,8 +247,8 @@ export const searchPage = PageBlueprint.makeWithOverrides({
                       )}
                     </SearchResults>
                     <SearchResultPager />
-                  </Grid>
-                </Grid>
+                  </div>
+                </div>
               </Content>
             </Page>
           );

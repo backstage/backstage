@@ -100,10 +100,17 @@ describe('OngoingTask', () => {
     const cancelOptionLabel = 'Cancel';
     const { getByTestId } = rendered;
 
+    // Radix DropdownMenu triggers open on pointerDown, not click
     await act(async () => {
-      fireEvent.click(getByTestId('menu-button'));
+      fireEvent.pointerDown(getByTestId('menu-button'), {
+        button: 0,
+        ctrlKey: false,
+      });
     });
-    expect(getByTestId('cancel-task')).not.toHaveClass('Mui-disabled');
+    expect(getByTestId('cancel-task')).not.toHaveAttribute(
+      'aria-disabled',
+      'true',
+    );
 
     await act(async () => {
       const element = getByTestId('cancel-task');
@@ -112,11 +119,14 @@ describe('OngoingTask', () => {
 
     expect(mockScaffolderApi.cancelTask).toHaveBeenCalled();
     await act(async () => {
-      fireEvent.click(getByTestId('menu-button'));
+      fireEvent.pointerDown(getByTestId('menu-button'), {
+        button: 0,
+        ctrlKey: false,
+      });
     });
 
     await waitFor(() => {
-      expect(getByTestId('cancel-task')).toHaveClass('Mui-disabled');
+      expect(getByTestId('cancel-task')).toHaveAttribute('aria-disabled');
     });
   });
 
@@ -129,7 +139,7 @@ describe('OngoingTask', () => {
     await act(async () => {
       fireEvent.click(getByTestId('menu-button'));
     });
-    expect(getByTestId('cancel-button')).not.toHaveClass('Mui-disabled');
+    expect(getByTestId('cancel-button')).not.toBeDisabled();
 
     await act(async () => {
       const element = getByTestId('cancel-button');
@@ -142,7 +152,7 @@ describe('OngoingTask', () => {
     });
 
     await waitFor(() => {
-      expect(getByTestId('cancel-button')).toHaveClass('Mui-disabled');
+      expect(getByTestId('cancel-button')).toBeDisabled();
     });
   });
 
@@ -173,12 +183,16 @@ describe('OngoingTask', () => {
     const rendered = await render(permissionApi);
 
     const { getByTestId } = rendered;
-    expect(getByTestId('cancel-button')).toHaveClass('Mui-disabled');
+    expect(getByTestId('cancel-button')).toBeDisabled();
 
+    // Radix DropdownMenu triggers open on pointerDown, not click
     await act(async () => {
-      fireEvent.click(getByTestId('menu-button'));
+      fireEvent.pointerDown(getByTestId('menu-button'), {
+        button: 0,
+        ctrlKey: false,
+      });
     });
-    expect(getByTestId('cancel-task')).toHaveClass('Mui-disabled');
+    expect(getByTestId('cancel-task')).toHaveAttribute('aria-disabled');
   });
 
   it('should have start over button be disabled when user has read permission but lacks create permission', async () => {
@@ -193,11 +207,11 @@ describe('OngoingTask', () => {
     const rendered = await render(permissionApi);
 
     const { getByTestId } = rendered;
-    expect(getByTestId('start-over-button')).toHaveClass('Mui-disabled');
+    expect(getByTestId('start-over-button')).toBeDisabled();
 
     await act(async () => {
       fireEvent.click(getByTestId('menu-button'));
     });
-    expect(getByTestId('start-over-button')).toHaveClass('Mui-disabled');
+    expect(getByTestId('start-over-button')).toBeDisabled();
   });
 });

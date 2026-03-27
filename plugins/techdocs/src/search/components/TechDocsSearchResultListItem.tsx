@@ -15,23 +15,9 @@
  */
 
 import { PropsWithChildren, ReactNode } from 'react';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
 import { Link } from '@backstage/core-components';
 import { ResultHighlight } from '@backstage/plugin-search-common';
 import { HighlightedSearchResultText } from '@backstage/plugin-search-react';
-
-const useStyles = makeStyles({
-  flexContainer: {
-    flexWrap: 'wrap',
-  },
-  itemText: {
-    width: '100%',
-    marginBottom: '1rem',
-  },
-});
 
 /**
  * Props for {@link TechDocsSearchResultListItem}.
@@ -66,7 +52,6 @@ export const TechDocsSearchResultListItem = (
     title,
     icon,
   } = props;
-  const classes = useStyles();
 
   const LinkWrapper = ({ children }: PropsWithChildren<{}>) =>
     asLink ? (
@@ -111,10 +96,8 @@ export const TechDocsSearchResultListItem = (
     if (!result) return null;
 
     return (
-      <ListItemText
-        className={classes.itemText}
-        primaryTypographyProps={{ variant: 'h6' }}
-        primary={
+      <div className="w-full mb-4">
+        <div className="text-lg font-semibold">
           <LinkWrapper>
             {title ? (
               title
@@ -124,31 +107,27 @@ export const TechDocsSearchResultListItem = (
               </>
             )}
           </LinkWrapper>
-        }
-        secondary={
-          <Typography
-            component="span"
-            style={{
-              display: '-webkit-box',
-              WebkitBoxOrient: 'vertical',
-              WebkitLineClamp: lineClamp,
-              overflow: 'hidden',
-            }}
-            color="textSecondary"
-            variant="body2"
-          >
-            {highlight?.fields.text ? (
-              <HighlightedSearchResultText
-                text={highlight.fields.text}
-                preTag={highlight.preTag}
-                postTag={highlight.postTag}
-              />
-            ) : (
-              result.text
-            )}
-          </Typography>
-        }
-      />
+        </div>
+        <span
+          className="text-sm text-muted-foreground"
+          style={{
+            display: '-webkit-box',
+            WebkitBoxOrient: 'vertical',
+            WebkitLineClamp: lineClamp,
+            overflow: 'hidden',
+          }}
+        >
+          {highlight?.fields.text ? (
+            <HighlightedSearchResultText
+              text={highlight.fields.text}
+              preTag={highlight.preTag}
+              postTag={highlight.postTag}
+            />
+          ) : (
+            result.text
+          )}
+        </span>
+      </div>
     );
   };
 
@@ -156,11 +135,11 @@ export const TechDocsSearchResultListItem = (
     asListItem ? (
       <>
         {icon && (
-          <ListItemIcon>
+          <span className="flex-shrink-0 mr-3 flex items-center">
             {typeof icon === 'function' ? icon(result) : icon}
-          </ListItemIcon>
+          </span>
         )}
-        <div className={classes.flexContainer}>{children}</div>
+        <div className="flex flex-wrap">{children}</div>
       </>
     ) : (
       <>{children}</>

@@ -15,9 +15,13 @@
  */
 
 import { CompoundEntityRef, Entity } from '@backstage/catalog-model';
-import Box from '@material-ui/core/Box';
-import Tooltip from '@material-ui/core/Tooltip';
-import { Theme, makeStyles } from '@material-ui/core/styles';
+import {
+  cn,
+  ShadcnTooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
+} from '@backstage/core-components';
 import { useEntityPresentation } from '../../apis';
 
 /**
@@ -27,24 +31,6 @@ import { useEntityPresentation } from '../../apis';
  * @public
  */
 export type CatalogReactEntityDisplayNameClassKey = 'root' | 'icon';
-
-const useStyles = makeStyles(
-  (theme: Theme) => ({
-    root: {
-      display: 'inline-flex',
-      alignItems: 'center',
-      textDecoration: 'inherit',
-    },
-    icon: {
-      marginRight: theme.spacing(0.5),
-      color: theme.palette.text.secondary,
-      '& svg': {
-        verticalAlign: 'middle',
-      },
-    },
-  }),
-  { name: 'CatalogReactEntityDisplayName' },
-);
 
 /**
  * Props for {@link EntityDisplayName}.
@@ -70,7 +56,6 @@ export const EntityDisplayName = (
   const { entityRef, hideIcon, disableTooltip, defaultKind, defaultNamespace } =
     props;
 
-  const classes = useStyles();
   const { primaryTitle, secondaryTitle, Icon } = useEntityPresentation(
     entityRef,
     { defaultKind, defaultNamespace },
@@ -80,22 +65,25 @@ export const EntityDisplayName = (
   let content = <>{primaryTitle}</>;
   // Optionally an icon, and wrapper around them both
   content = (
-    <Box component="span" className={classes.root}>
+    <span className={cn('inline-flex items-center [text-decoration:inherit]')}>
       {Icon && !hideIcon ? (
-        <Box component="span" className={classes.icon}>
+        <span className={cn('mr-1 text-muted-foreground [&_svg]:align-middle')}>
           <Icon fontSize="inherit" />
-        </Box>
+        </span>
       ) : null}
       {content}
-    </Box>
+    </span>
   );
 
   // Optionally, a tooltip as the outermost layer
   if (secondaryTitle && !disableTooltip) {
     content = (
-      <Tooltip enterDelay={1500} title={secondaryTitle}>
-        {content}
-      </Tooltip>
+      <TooltipProvider>
+        <ShadcnTooltip delayDuration={1500}>
+          <TooltipTrigger asChild>{content}</TooltipTrigger>
+          <TooltipContent>{secondaryTitle}</TooltipContent>
+        </ShadcnTooltip>
+      </TooltipProvider>
     );
   }
 

@@ -15,6 +15,7 @@
  */
 
 import { renderInTestApp } from '@backstage/test-utils';
+import { act } from '@testing-library/react';
 
 import { Progress } from './Progress';
 
@@ -22,5 +23,22 @@ describe('<Progress />', () => {
   it('renders without exploding', async () => {
     const { queryByTestId } = await renderInTestApp(<Progress />);
     expect(queryByTestId('progress')).toBeInTheDocument();
+  });
+
+  it('shows progress indicator after delay', async () => {
+    jest.useFakeTimers();
+    const { queryByTestId } = await renderInTestApp(<Progress />);
+
+    // Initially rendered but hidden during the delay period
+    const element = queryByTestId('progress');
+    expect(element).toBeInTheDocument();
+
+    // After delay, the progress indicator becomes visible
+    act(() => {
+      jest.advanceTimersByTime(300); // exceed the 250ms default delay
+    });
+
+    expect(queryByTestId('progress')).toBeInTheDocument();
+    jest.useRealTimers();
   });
 });

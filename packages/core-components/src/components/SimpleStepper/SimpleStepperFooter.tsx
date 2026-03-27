@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import { makeStyles } from '@material-ui/core/styles';
 import { PropsWithChildren, ReactNode, useContext } from 'react';
+
+import { Button } from '../ui/button';
 
 import { VerticalStepperContext } from './SimpleStepper';
 import { StepActions } from './types';
@@ -24,18 +23,6 @@ import { coreComponentsTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 export type SimpleStepperFooterClassKey = 'root';
-
-const useStyles = makeStyles(
-  theme => ({
-    root: {
-      marginTop: theme.spacing(3),
-      '& button': {
-        marginRight: theme.spacing(1),
-      },
-    },
-  }),
-  { name: 'BackstageSimpleStepperFooter' },
-);
 
 interface CommonBtnProps {
   text?: string;
@@ -60,7 +47,9 @@ interface BackBtnProps extends CommonBtnProps {
 export const RestartBtn = ({ text, handleClick }: RestartBtnProps) => {
   const { t } = useTranslationRef(coreComponentsTranslationRef);
   return (
-    <Button onClick={handleClick}>{text || t('simpleStepper.reset')}</Button>
+    <Button variant="outline" onClick={handleClick}>
+      {text || t('simpleStepper.reset')}
+    </Button>
   );
 };
 
@@ -74,8 +63,6 @@ const NextBtn = ({
   const { t } = useTranslationRef(coreComponentsTranslationRef);
   return (
     <Button
-      variant="contained"
-      color="primary"
       disabled={disabled}
       data-testid={`nextButton-${stepIndex}`}
       onClick={handleClick}
@@ -89,8 +76,7 @@ const SkipBtn = ({ text, handleClick, disabled, stepIndex }: SkipBtnProps) => {
   const { t } = useTranslationRef(coreComponentsTranslationRef);
   return (
     <Button
-      variant="outlined"
-      color="primary"
+      variant="outline"
       disabled={disabled}
       data-testid={`skipButton-${stepIndex}`}
       onClick={handleClick}
@@ -104,6 +90,7 @@ const BackBtn = ({ text, handleClick, disabled, stepIndex }: BackBtnProps) => {
   const { t } = useTranslationRef(coreComponentsTranslationRef);
   return (
     <Button
+      variant="ghost"
       onClick={handleClick}
       data-testid={`backButton-${stepIndex}`}
       disabled={disabled}
@@ -122,7 +109,6 @@ export const SimpleStepperFooter = ({
   actions = {},
   children,
 }: PropsWithChildren<SimpleStepperFooterProps>) => {
-  const classes = useStyles();
   const {
     stepperLength,
     stepIndex,
@@ -161,7 +147,7 @@ export const SimpleStepperFooter = ({
   };
 
   return (
-    <Box className={classes.root}>
+    <div className="mt-6 flex flex-wrap gap-2">
       {[undefined, true].includes(actions.showBack) && stepIndex !== 0 && (
         <BackBtn
           text={actions.backText}
@@ -200,6 +186,6 @@ export const SimpleStepperFooter = ({
         />
       )}
       {children}
-    </Box>
+    </div>
   );
 };

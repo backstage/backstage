@@ -14,19 +14,20 @@
  * limitations under the License.
  */
 
-import Divider from '@material-ui/core/Divider';
-import FileCopyTwoToneIcon from '@material-ui/icons/FileCopyTwoTone';
-import IconButton from '@material-ui/core/IconButton';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import MenuItem from '@material-ui/core/MenuItem';
-import MenuList from '@material-ui/core/MenuList';
-import Popover from '@material-ui/core/Popover';
-import Tooltip from '@material-ui/core/Tooltip';
-import { Theme, makeStyles } from '@material-ui/core/styles';
-import BugReportIcon from '@material-ui/icons/BugReport';
-import MoreVert from '@material-ui/icons/MoreVert';
-import { SyntheticEvent, useEffect, useState } from 'react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+  ShadcnButton,
+  ShadcnTooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@backstage/core-components';
+import { Bug, Copy, MoreVertical } from 'lucide-react';
+import { Fragment, useEffect, useState } from 'react';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { useEntityPermission } from '@backstage/plugin-catalog-react/alpha';
 import { catalogEntityDeletePermission } from '@backstage/plugin-catalog-common/alpha';
@@ -39,17 +40,6 @@ import { EntityContextMenuProvider } from '../../context';
 
 /** @public */
 export type EntityContextMenuClassKey = 'button';
-
-const useStyles = makeStyles(
-  (theme: Theme) => {
-    return {
-      button: {
-        color: theme.page.fontColor,
-      },
-    };
-  },
-  { name: 'PluginCatalogEntityContextMenu' },
-);
 
 // NOTE(freben): Intentionally not exported at this point, since it's part of
 // the unstable extra context menu items concept below
@@ -76,19 +66,14 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
     onInspectEntity,
   } = props;
   const { t } = useTranslationRef(catalogTranslationRef);
-  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>();
-  const classes = useStyles();
+  const [open, setOpen] = useState(false);
   const unregisterPermission = useEntityPermission(
     catalogEntityDeletePermission,
   );
   const isAllowed = unregisterPermission.allowed;
 
-  const onOpen = (event: SyntheticEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
   const onClose = () => {
-    setAnchorEl(undefined);
+    setOpen(false);
   };
 
   const alertApi = useApi(alertApiRef);
@@ -106,20 +91,18 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
   const extraItems = UNSTABLE_extraContextMenuItems?.length
     ? [
         ...UNSTABLE_extraContextMenuItems.map(item => (
-          <MenuItem
+          <DropdownMenuItem
             key={item.title}
             onClick={() => {
               onClose();
               item.onClick();
             }}
           >
-            <ListItemIcon>
-              <item.Icon fontSize="small" />
-            </ListItemIcon>
-            <ListItemText primary={item.title} />
-          </MenuItem>
+            <item.Icon />
+            <span>{item.title}</span>
+          </DropdownMenuItem>
         )),
-        <Divider key="the divider is here!" />,
+        <DropdownMenuSeparator key="the divider is here!" />,
       ]
     : null;
 
@@ -131,71 +114,63 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
       onClose={onClose}
       key="unregister-entity"
     />,
-    <MenuItem
+    <DropdownMenuItem
       onClick={() => {
         onClose();
         onInspectEntity();
       }}
       key="inspect-entity"
     >
-      <ListItemIcon>
-        <BugReportIcon fontSize="small" />
-      </ListItemIcon>
-      <ListItemText primary={t('entityContextMenu.inspectMenuTitle')} />
-    </MenuItem>,
-    <MenuItem
+      <Bug className="h-4 w-4" />
+      <span>{t('entityContextMenu.inspectMenuTitle')}</span>
+    </DropdownMenuItem>,
+    <DropdownMenuItem
       onClick={() => {
         onClose();
         copyToClipboard(window.location.toString());
       }}
       key="copy-url"
     >
-      <ListItemIcon>
-        <FileCopyTwoToneIcon fontSize="small" />
-      </ListItemIcon>
-      <ListItemText primary={t('entityContextMenu.copyURLMenuTitle')} />
-    </MenuItem>,
+      <Copy className="h-4 w-4" />
+      <span>{t('entityContextMenu.copyURLMenuTitle')}</span>
+    </DropdownMenuItem>,
   ];
 
   return (
-    <>
-      <Tooltip title={t('entityContextMenu.moreButtonTitle')} arrow>
-        <IconButton
-          aria-label={t('entityContextMenu.moreButtonAriaLabel')}
-          aria-controls="long-menu"
-          aria-haspopup="true"
-          aria-expanded={!!anchorEl}
-          role="button"
-          onClick={onOpen}
-          data-testid="menu-button"
-          className={classes.button}
-          id="long-menu"
-        >
-          <MoreVert />
-        </IconButton>
-      </Tooltip>
-      <Popover
-        open={Boolean(anchorEl)}
-        onClose={onClose}
-        anchorEl={anchorEl}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-        aria-labelledby="long-menu"
-        PaperProps={{
-          style: { minWidth: 200 },
-        }}
-      >
-        <MenuList autoFocusItem={Boolean(anchorEl)}>
-          {extraItems}
-          {contextMenuItems === undefined ? (
-            defaultMenuItems
-          ) : (
-            <EntityContextMenuProvider onMenuClose={onClose}>
-              {contextMenuItems}
-            </EntityContextMenuProvider>
-          )}
-        </MenuList>
-      </Popover>
-    </>
+    <DropdownMenu open={open} onOpenChange={setOpen}>
+      <TooltipProvider>
+        <ShadcnTooltip>
+          <TooltipTrigger asChild>
+            <DropdownMenuTrigger asChild>
+              <ShadcnButton
+                variant="ghost"
+                size="icon"
+                aria-label={t('entityContextMenu.moreButtonAriaLabel')}
+                data-testid="menu-button"
+                className="text-foreground"
+              >
+                <MoreVertical className="h-4 w-4" />
+              </ShadcnButton>
+            </DropdownMenuTrigger>
+          </TooltipTrigger>
+          <TooltipContent>
+            {t('entityContextMenu.moreButtonTitle')}
+          </TooltipContent>
+        </ShadcnTooltip>
+      </TooltipProvider>
+      <DropdownMenuContent align="end" className="min-w-[200px]">
+        {extraItems}
+        {contextMenuItems === undefined ? (
+          defaultMenuItems
+        ) : (
+          <EntityContextMenuProvider onMenuClose={onClose}>
+            {contextMenuItems.map((item, index) => (
+              // eslint-disable-next-line react/no-array-index-key
+              <Fragment key={index}>{item}</Fragment>
+            ))}
+          </EntityContextMenuProvider>
+        )}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

@@ -14,6 +14,15 @@
  * limitations under the License.
  */
 
+/*
+ * SupportButton test suite — validated against the shadcn/ui Popover
+ * (Radix-based) migration. The underlying SupportButton component now uses
+ * shadcn/ui Popover, Button, and Tailwind CSS styling instead of MUI Popover,
+ * IconButton, MenuList, and makeStyles. All data-testid selectors are preserved
+ * so existing test queries remain stable. Radix Portal renders popover content
+ * to document.body, which is within testing-library's render scope.
+ */
+
 import { configApiRef } from '@backstage/core-plugin-api';
 import {
   mockApis,

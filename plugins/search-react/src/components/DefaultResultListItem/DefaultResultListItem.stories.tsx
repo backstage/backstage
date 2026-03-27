@@ -15,12 +15,7 @@
  */
 
 import { LinkButton } from '@backstage/core-components';
-import { lightTheme } from '@backstage/theme';
-import Grid from '@material-ui/core/Grid';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import { ThemeProvider } from '@material-ui/core/styles';
-import FindInPageIcon from '@material-ui/icons/FindInPage';
-import GroupIcon from '@material-ui/icons/Group';
+import { FileSearch, Users } from 'lucide-react';
 import { MemoryRouter } from 'react-router-dom';
 import { DefaultResultListItem } from './DefaultResultListItem';
 
@@ -30,11 +25,9 @@ export default {
   decorators: [
     (Story: () => JSX.Element) => (
       <MemoryRouter>
-        <Grid container direction="row">
-          <Grid item xs={12}>
-            <Story />
-          </Grid>
-        </Grid>
+        <div className="grid grid-cols-1 gap-4 w-full">
+          <Story />
+        </div>
       </MemoryRouter>
     ),
   ],
@@ -56,7 +49,7 @@ export const WithIcon = () => {
   return (
     <DefaultResultListItem
       result={mockSearchResult}
-      icon={<FindInPageIcon color="primary" />}
+      icon={<FileSearch className="text-primary" />}
     />
   );
 };
@@ -68,12 +61,12 @@ export const WithSecondaryAction = () => {
       secondaryAction={
         <LinkButton
           to="#"
-          size="small"
+          size="sm"
           aria-label="owner"
-          variant="text"
-          startIcon={<GroupIcon />}
+          variant="ghost"
           style={{ textTransform: 'lowercase' }}
         >
+          <Users className="mr-1 h-4 w-4" />
           {mockSearchResult.owner}
         </LinkButton>
       }
@@ -94,33 +87,16 @@ export const WithHighlightedResults = () => {
 };
 
 export const WithCustomHighlightedResults = () => {
-  const customTheme = {
-    ...lightTheme,
-    overrides: {
-      ...lightTheme.overrides,
-      BackstageHighlightedSearchResultText: {
-        highlight: {
-          color: 'inherit',
-          backgroundColor: 'inherit',
-          fontWeight: 'bold',
-          textDecoration: 'underline',
-        },
-      },
-    },
-  };
-
   return (
-    <ThemeProvider theme={customTheme}>
-      <CssBaseline>
-        <DefaultResultListItem
-          result={mockSearchResult}
-          highlight={{
-            preTag: '<tag>',
-            postTag: '</tag>',
-            fields: { text: 'some <tag>text</tag> from the search result' },
-          }}
-        />
-      </CssBaseline>
-    </ThemeProvider>
+    <div className="[&_mark]:text-inherit [&_mark]:bg-inherit [&_mark]:font-bold [&_mark]:underline">
+      <DefaultResultListItem
+        result={mockSearchResult}
+        highlight={{
+          preTag: '<tag>',
+          postTag: '</tag>',
+          fields: { text: 'some <tag>text</tag> from the search result' },
+        }}
+      />
+    </div>
   );
 };

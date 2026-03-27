@@ -64,8 +64,9 @@ referencing Figma documents to share specs and prototypes with the community.
 | External or internal contributors make a pull request for their entity on backstage/backstage GitHub for review. | Platform designers and devs review the entity and submit feedback or approval on backstage/backstage GitHub. | External or internal contributors make the changes, pull request is approved and the entity is merged. It’s live on Backstage! 🎉 | If the entity happens to be or include a UX component, it’s added to Backstage Storybook as well. |
 
 The following diagram shows the relationship between the Backstage Design System
-and our foundation, which comprises of [Material UI](https://material-ui.com/)
-that is shaped by user experience and user interface decisions made by our
+and our foundation, which comprises of [shadcn/ui](https://ui.shadcn.com/) —
+accessible, composable components built on Radix UI primitives and styled with
+Tailwind CSS — shaped by user experience and user interface decisions made by our
 Backstage Design Team. Also note, we encourage you to take the core experience
 we’ve crafted and add custom theming to better represent your organization!
 

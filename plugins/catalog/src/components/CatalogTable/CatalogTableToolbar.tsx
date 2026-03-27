@@ -15,41 +15,17 @@
  */
 import { ReactElement } from 'react';
 import { EntitySearchBar } from '@backstage/plugin-catalog-react';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
 
 /** @public */
 export type CatalogTableToolbarClassKey = 'root' | 'text';
 
-const useToolbarStyles = makeStyles(
-  theme => ({
-    root: {
-      paddingTop: theme.spacing(1.25),
-      paddingLeft: theme.spacing(2.5),
-      paddingBottom: theme.spacing(0.75),
-      display: 'flex',
-      justifyContent: 'space-between',
-    },
-    text: {
-      whiteSpace: 'nowrap',
-      overflow: 'hidden',
-      textOverflow: 'ellipsis',
-    },
-  }),
-  { name: 'PluginCatalogTableToolbar' },
-);
-
 export function CatalogTableToolbar(props: {
   title?: string | ReactElement<any>;
 }) {
-  const styles = useToolbarStyles();
   return (
-    <Toolbar className={styles.root}>
-      <Typography variant="h5" className={styles.text}>
-        {props.title}
-      </Typography>
+    <div className="flex items-center justify-between pt-2.5 pl-5 pb-1.5 pr-4">
+      <h5 className="truncate text-lg font-medium">{props.title}</h5>
       <EntitySearchBar />
-    </Toolbar>
+    </div>
   );
 }

@@ -17,23 +17,81 @@ import { TaskBorder } from './TaskBorder';
 import { render } from '@testing-library/react';
 
 describe('TaskBorder', () => {
-  it('should render a pending linear progress if the task is not complete', () => {
-    const { getByRole } = render(
+  it('should render an indeterminate progress bar if the task is not complete', () => {
+    const { getByRole, getByTestId } = render(
       <TaskBorder isComplete={false} isError={false} />,
     );
 
     const progressBar = getByRole('progressbar');
-
     expect(progressBar).toBeInTheDocument();
-    expect(progressBar).toHaveClass('MuiLinearProgress-indeterminate');
+    expect(progressBar).toHaveClass(
+      'relative',
+      'h-1',
+      'w-full',
+      'overflow-hidden',
+    );
+
+    // Indeterminate state: identified by data-testid and has animation
+    expect(getByTestId('task-border-indeterminate')).toBeInTheDocument();
+
+    // Indeterminate bar has an animated child with inline animation style
+    const animatedBar = progressBar.querySelector('[style]');
+    expect(animatedBar).toBeInTheDocument();
+    expect(animatedBar?.getAttribute('style')).toContain(
+      'backstage-indeterminate',
+    );
+
+    // Indeterminate progress bar should NOT have aria-valuenow
+    expect(progressBar).not.toHaveAttribute('aria-valuenow');
   });
 
-  it('should render a determinate progress bar if the task is complete', () => {
-    const { getByRole } = render(<TaskBorder isComplete isError />);
+  it('should render a determinate progress bar with error color when complete with error', () => {
+    const { getByRole, getByTestId } = render(
+      <TaskBorder isComplete isError />,
+    );
 
     const progressBar = getByRole('progressbar');
-
     expect(progressBar).toBeInTheDocument();
-    expect(progressBar).toHaveClass('MuiLinearProgress-determinate');
+    expect(progressBar).toHaveClass(
+      'relative',
+      'h-1',
+      'w-full',
+      'overflow-hidden',
+    );
+
+    // Determinate state: identified by data-testid
+    expect(getByTestId('task-border-determinate')).toBeInTheDocument();
+
+    // Determinate progress bar reports full completion
+    expect(progressBar).toHaveAttribute('aria-valuenow', '100');
+    expect(progressBar).toHaveAttribute('aria-valuemin', '0');
+    expect(progressBar).toHaveAttribute('aria-valuemax', '100');
+
+    // Error state: fill uses --destructive token color
+    const fillBar = progressBar.querySelector('.h-full');
+    expect(fillBar).toBeInTheDocument();
+    expect(fillBar).toHaveStyle({
+      backgroundColor: 'var(--destructive)',
+    });
+  });
+
+  it('should render a determinate progress bar with success color when complete without error', () => {
+    const { getByRole, getByTestId } = render(
+      <TaskBorder isComplete isError={false} />,
+    );
+
+    const progressBar = getByRole('progressbar');
+    expect(progressBar).toBeInTheDocument();
+
+    // Determinate state
+    expect(getByTestId('task-border-determinate')).toBeInTheDocument();
+    expect(progressBar).toHaveAttribute('aria-valuenow', '100');
+
+    // Success state: fill uses --status-ok token color
+    const fillBar = progressBar.querySelector('.h-full');
+    expect(fillBar).toBeInTheDocument();
+    expect(fillBar).toHaveStyle({
+      backgroundColor: 'var(--status-ok)',
+    });
   });
 });

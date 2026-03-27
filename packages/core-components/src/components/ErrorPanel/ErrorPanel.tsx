@@ -14,31 +14,16 @@
  * limitations under the License.
  */
 
-import { makeStyles } from '@material-ui/core/styles';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
 import { PropsWithChildren } from 'react';
+import { cn } from '../../lib/utils';
 import { CopyTextButton } from '../CopyTextButton';
 import { WarningPanel } from '../WarningPanel';
 
 /** @public */
 export type ErrorPanelClassKey = 'text' | 'divider';
 
-const useStyles = makeStyles(
-  theme => ({
-    text: {
-      fontFamily: 'monospace',
-      whiteSpace: 'pre',
-      overflowX: 'auto',
-      marginRight: theme.spacing(2),
-    },
-    divider: {
-      margin: theme.spacing(2),
-    },
-  }),
-  { name: 'BackstageErrorPanel' },
-);
+/** Tailwind utility classes replacing the MUI makeStyles 'text' class */
+const textClasses = 'font-mono whitespace-pre overflow-x-auto mr-4';
 
 type ErrorListProps = {
   error: string;
@@ -54,41 +39,42 @@ const ErrorList = ({
   stack,
   children,
 }: PropsWithChildren<ErrorListProps>) => {
-  const classes = useStyles();
-
   return (
-    <List dense>
-      <ListItem alignItems="flex-start">
-        <ListItemText
-          classes={{ secondary: classes.text }}
-          primary="Error"
-          secondary={error}
-        />
+    <div className="space-y-2">
+      <div className="flex items-start gap-2">
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-medium text-foreground">Error</p>
+          <p className={cn('text-sm text-muted-foreground', textClasses)}>
+            {error}
+          </p>
+        </div>
         <CopyTextButton text={error} />
-      </ListItem>
+      </div>
 
-      <ListItem alignItems="flex-start">
-        <ListItemText
-          classes={{ secondary: classes.text }}
-          primary="Message"
-          secondary={message}
-        />
+      <div className="flex items-start gap-2">
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-medium text-foreground">Message</p>
+          <p className={cn('text-sm text-muted-foreground', textClasses)}>
+            {message}
+          </p>
+        </div>
         <CopyTextButton text={message} />
-      </ListItem>
+      </div>
 
       {stack && (
-        <ListItem alignItems="flex-start">
-          <ListItemText
-            classes={{ secondary: classes.text }}
-            primary="Stack Trace"
-            secondary={stack}
-          />
+        <div className="flex items-start gap-2">
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-foreground">Stack Trace</p>
+            <p className={cn('text-sm text-muted-foreground', textClasses)}>
+              {stack}
+            </p>
+          </div>
           <CopyTextButton text={stack} />
-        </ListItem>
+        </div>
       )}
 
       {children}
-    </List>
+    </div>
   );
 };
 

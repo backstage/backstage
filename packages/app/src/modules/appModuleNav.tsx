@@ -25,10 +25,10 @@ import {
   SidebarSpace,
   useSidebarOpenState,
 } from '@backstage/core-components';
-import SearchIcon from '@material-ui/icons/Search';
-import MenuIcon from '@material-ui/icons/Menu';
-import BuildIcon from '@material-ui/icons/Build';
+import { Search, Menu, Wrench } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { createFrontendModule } from '@backstage/frontend-plugin-api';
+import type { IconComponent } from '@backstage/frontend-plugin-api';
 import { NavContentBlueprint } from '@backstage/plugin-app-react';
 import { SidebarSearchModal } from '@backstage/plugin-search';
 import { NotificationsSidebarItem } from '@backstage/plugin-notifications';
@@ -36,30 +36,41 @@ import {
   Settings,
   UserSettingsSignInAvatar,
 } from '@backstage/plugin-user-settings';
-import { makeStyles } from '@material-ui/core/styles';
 
-const useSidebarLogoStyles = makeStyles({
-  root: {
-    width: sidebarConfig.drawerWidthClosed,
-    height: 3 * sidebarConfig.logoHeight,
-    display: 'flex',
-    flexFlow: 'row nowrap',
-    alignItems: 'center',
-    marginBottom: -14,
-  },
-  link: {
-    width: sidebarConfig.drawerWidthClosed,
-    marginLeft: 24,
-  },
-});
+/**
+ * Wraps a Lucide icon component to satisfy the Backstage IconComponent type contract.
+ */
+const wrapIcon = (Icon: LucideIcon): IconComponent => {
+  const Wrapped = (props: {
+    fontSize?: 'medium' | 'large' | 'small' | 'inherit';
+  }) => <Icon {...props} />;
+  return Wrapped;
+};
+
+const WrenchIcon = wrapIcon(Wrench);
 
 const SidebarLogo = () => {
-  const classes = useSidebarLogoStyles();
   const { isOpen } = useSidebarOpenState();
 
   return (
-    <div className={classes.root}>
-      <Link to="/" underline="none" className={classes.link} aria-label="Home">
+    <div
+      className="flex flex-row flex-nowrap items-center -mb-3.5"
+      style={{
+        width: sidebarConfig.drawerWidthClosed,
+        height: 3 * sidebarConfig.logoHeight,
+      }}
+    >
+      <Link
+        to="/"
+        className="ml-6 no-underline hover:no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset rounded"
+        style={
+          {
+            width: sidebarConfig.drawerWidthClosed,
+            '--tw-ring-color': '#fff',
+          } as React.CSSProperties
+        }
+        aria-label="Home"
+      >
         {isOpen ? (
           <svg
             style={{
@@ -111,15 +122,16 @@ export const appModuleNav = createFrontendModule({
               text={item.title}
             />
           ));
-          nav.take('page:home'); // Skip home
+          nav.take('page:home'); // Skip home — rendered as SidebarLogo
+          nav.take('page:devtools'); // Take DevTools to prevent duplicate in nav.rest()
           return (
             <Sidebar>
               <SidebarLogo />
-              <SidebarGroup label="Search" icon={<SearchIcon />} to="/search">
+              <SidebarGroup label="Search" icon={<Search />} to="/search">
                 <SidebarSearchModal />
               </SidebarGroup>
               <SidebarDivider />
-              <SidebarGroup label="Menu" icon={<MenuIcon />}>
+              <SidebarGroup label="Menu" icon={<Menu />}>
                 {nav.take('page:catalog')}
                 {nav.take('page:scaffolder')}
                 <SidebarDivider />
@@ -136,7 +148,7 @@ export const appModuleNav = createFrontendModule({
                 to="/settings"
               >
                 <NotificationsSidebarItem />
-                <SidebarItem icon={BuildIcon} to="devtools" text="DevTools" />
+                <SidebarItem icon={WrenchIcon} to="devtools" text="DevTools" />
                 <Settings />
               </SidebarGroup>
             </Sidebar>

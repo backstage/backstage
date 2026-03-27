@@ -19,6 +19,19 @@ export default {
   title: 'Layout/HeaderActionMenu',
   component: HeaderActionMenu,
   tags: ['!manifest'],
+  decorators: [
+    (Story: () => JSX.Element) => (
+      <div
+        style={{
+          background: 'var(--primary, #1f5493)',
+          padding: '1rem',
+          display: 'inline-block',
+        }}
+      >
+        <Story />
+      </div>
+    ),
+  ],
 };
 
 export const Default = (args: HeaderActionMenuProps) => (

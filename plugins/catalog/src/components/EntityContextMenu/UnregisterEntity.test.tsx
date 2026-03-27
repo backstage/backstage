@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from '@backstage/core-components';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { permissionApiRef } from '@backstage/plugin-permission-react';
 import {
@@ -30,7 +35,12 @@ function render(children: ReactNode) {
     <TestApiProvider apis={[[permissionApiRef, mockApis.permission()]]}>
       <EntityProvider
         entity={{ apiVersion: 'a', kind: 'b', metadata: { name: 'c' } }}
-        children={children}
+        children={
+          <DropdownMenu open onOpenChange={() => {}}>
+            <DropdownMenuTrigger>Open</DropdownMenuTrigger>
+            <DropdownMenuContent>{children}</DropdownMenuContent>
+          </DropdownMenu>
+        }
       />
     </TestApiProvider>,
   );
@@ -71,8 +81,9 @@ describe('ComponentContextMenu', () => {
     expect(unregister).toBeInTheDocument();
 
     const unregisterSpanItem = screen.getByText(/Unregister entity/);
-    const unregisterMenuListItem =
-      unregisterSpanItem?.parentElement?.parentElement;
+    // With Radix DropdownMenuItem, the <span> text is a direct child of the
+    // <div role="menuitem"> element that carries the aria-disabled attribute.
+    const unregisterMenuListItem = unregisterSpanItem?.parentElement;
     expect(unregisterMenuListItem).toHaveAttribute('aria-disabled');
   });
 });

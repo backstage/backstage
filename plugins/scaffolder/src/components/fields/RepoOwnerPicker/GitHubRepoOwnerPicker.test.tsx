@@ -21,7 +21,56 @@ import {
 import { GitHubRepoOwnerPicker } from './GitHubRepoOwnerPicker';
 import { act, fireEvent, waitFor, screen } from '@testing-library/react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
-import userEvent from '@testing-library/user-event';
+
+/*
+ * Browser API polyfills for jsdom environment.
+ * Radix UI primitives (Popover) and cmdk rely on browser APIs
+ * that are not available in jsdom.
+ */
+
+// cmdk uses ResizeObserver for measuring list dimensions.
+if (typeof globalThis.ResizeObserver === 'undefined') {
+  (globalThis as any).ResizeObserver = class {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  };
+}
+
+// Radix scrolls the selected item into view when opening.
+if (!Element.prototype.scrollIntoView) {
+  Element.prototype.scrollIntoView = function scrollIntoView() {};
+}
+
+// Radix uses pointer capture APIs for pointer event management.
+if (!Element.prototype.hasPointerCapture) {
+  Element.prototype.hasPointerCapture = function () {
+    return false;
+  };
+}
+if (!Element.prototype.setPointerCapture) {
+  Element.prototype.setPointerCapture = function () {};
+}
+if (!Element.prototype.releasePointerCapture) {
+  Element.prototype.releasePointerCapture = function () {};
+}
+
+// DOMRect.fromRect is used by Radix for collision-aware positioning.
+if (typeof DOMRect === 'undefined' || !DOMRect.fromRect) {
+  (globalThis as any).DOMRect = {
+    fromRect: () => ({
+      top: 0,
+      left: 0,
+      bottom: 0,
+      right: 0,
+      width: 0,
+      height: 0,
+      x: 0,
+      y: 0,
+      toJSON: () => ({}),
+    }),
+  };
+}
 
 describe('GitHubRepoOwnerPicker', () => {
   const scaffolderApiMock: Partial<ScaffolderApi> = {
@@ -107,17 +156,19 @@ describe('GitHubRepoOwnerPicker', () => {
       </TestApiProvider>,
     );
 
-    // Open the Autocomplete dropdown
-    const input = getByRole('textbox');
-    await userEvent.click(input);
+    // Open the Popover+Command dropdown via the combobox trigger button
+    const combobox = getByRole('combobox');
+    fireEvent.click(combobox);
 
-    // Verify that the available owners are shown
+    // Verify that the available owners are shown in the Command list
     await waitFor(() => expect(getByText('owner1')).toBeInTheDocument());
 
     // Verify that selecting an option calls onChange
-    await userEvent.click(getByText('owner1'));
-    expect(onChange).toHaveBeenCalledWith({
-      owner: 'owner1',
+    fireEvent.click(getByText('owner1'));
+    await waitFor(() => {
+      expect(onChange).toHaveBeenCalledWith({
+        owner: 'owner1',
+      });
     });
   });
 
@@ -138,9 +189,9 @@ describe('GitHubRepoOwnerPicker', () => {
       </TestApiProvider>,
     );
 
-    // Open the Autocomplete dropdown
-    const input = getByRole('textbox');
-    await userEvent.click(input);
+    // Open the Popover+Command dropdown via the combobox trigger button
+    const combobox = getByRole('combobox');
+    fireEvent.click(combobox);
 
     // Verify that the excluded owners are not shown
     await waitFor(() => expect(getByText('owner2')).toBeInTheDocument());

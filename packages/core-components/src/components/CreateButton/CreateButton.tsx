@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { Link as RouterLink, LinkProps } from 'react-router-dom';
-import AddCircleOutline from '@material-ui/icons/AddCircleOutline';
-import { Theme } from '@material-ui/core/styles';
+import { Plus } from 'lucide-react';
+import { Button } from '../ui/button';
+import { cn } from '../../lib/utils';
 
 /**
  * Properties for {@link CreateButton}
@@ -37,27 +35,23 @@ export type CreateButtonProps = {
  */
 export function CreateButton(props: CreateButtonProps) {
   const { title, to } = props;
-  const isXSScreen = useMediaQuery<Theme>(theme =>
-    theme.breakpoints.down('xs'),
-  );
 
   if (!to) {
     return null;
   }
 
-  return isXSScreen ? (
-    <IconButton
-      component={RouterLink}
-      color="primary"
-      title={title}
-      size="small"
-      to={to}
-    >
-      <AddCircleOutline />
-    </IconButton>
-  ) : (
-    <Button component={RouterLink} variant="contained" color="primary" to={to}>
-      {title}
-    </Button>
+  return (
+    <>
+      {/* Mobile: icon-only button (visible below sm breakpoint) */}
+      <Button asChild variant="ghost" size="icon" className={cn('sm:hidden')}>
+        <RouterLink to={to} title={title}>
+          <Plus />
+        </RouterLink>
+      </Button>
+      {/* Desktop: full text button (visible at sm breakpoint and above) */}
+      <Button asChild className={cn('hidden sm:inline-flex')}>
+        <RouterLink to={to}>{title}</RouterLink>
+      </Button>
+    </>
   );
 }

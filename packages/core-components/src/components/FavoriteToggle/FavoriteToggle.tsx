@@ -13,28 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ComponentProps } from 'react';
-import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
-import { Theme, makeStyles } from '@material-ui/core/styles';
-import { StarIcon, UnstarredIcon } from '../../icons';
-
-const useStyles = makeStyles<Theme>(
-  () => ({
-    icon: {
-      color: '#f3ba37',
-      cursor: 'pointer',
-      display: 'inline-flex',
-    },
-    iconBorder: {
-      color: 'inherit',
-      cursor: 'pointer',
-      display: 'inline-flex',
-    },
-  }),
-  { name: 'BackstageFavoriteToggleIcon' },
-);
+import { Star } from 'lucide-react';
+import { Button, type ButtonProps } from '../ui/button';
+import {
+  ShadcnTooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
+} from '../ui/tooltip';
+import { cn } from '../../lib/utils';
 
 /**
  * @public
@@ -44,21 +31,23 @@ export type FavoriteToggleIconClassKey = 'icon' | 'iconBorder';
 /**
  * Icon used in FavoriteToggle component.
  *
- * Can be used independently, useful when used as {@link @material-table/core#MaterialTableProps.actions} in {@link @material-table/core#MaterialTable}
+ * Can be used independently, useful when used as an action in data tables.
  *
  * @public
  */
 export function FavoriteToggleIcon(props: { isFavorite: boolean }) {
   const { isFavorite } = props;
-  const classes = useStyles();
-
   return (
-    <Typography
-      component="span"
-      className={isFavorite ? classes.icon : classes.iconBorder}
+    <span
+      className={cn(
+        'inline-flex cursor-pointer',
+        isFavorite ? 'text-[#f3ba37]' : 'text-inherit',
+      )}
     >
-      {isFavorite ? <StarIcon /> : <UnstarredIcon />}
-    </Typography>
+      <Star
+        className={cn('h-5 w-5', isFavorite ? 'fill-current' : 'fill-none')}
+      />
+    </span>
   );
 }
 
@@ -67,7 +56,7 @@ export function FavoriteToggleIcon(props: { isFavorite: boolean }) {
  *
  * @public
  */
-export type FavoriteToggleProps = ComponentProps<typeof IconButton> & {
+export type FavoriteToggleProps = ButtonProps & {
   id: string;
   title: string;
   isFavorite: boolean;
@@ -88,19 +77,25 @@ export function FavoriteToggle(props: FavoriteToggleProps) {
     title,
     isFavorite: value,
     onToggle: onChange,
-    ...iconButtonProps
+    ...buttonProps
   } = props;
   return (
-    <Tooltip id={id} title={title}>
-      <IconButton
-        aria-label={title}
-        id={id}
-        onClick={() => onChange(!value)}
-        color="inherit"
-        {...iconButtonProps}
-      >
-        <FavoriteToggleIcon isFavorite={value} />
-      </IconButton>
-    </Tooltip>
+    <TooltipProvider>
+      <ShadcnTooltip>
+        <TooltipTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label={title}
+            id={id}
+            onClick={() => onChange(!value)}
+            {...buttonProps}
+          >
+            <FavoriteToggleIcon isFavorite={value} />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>{title}</TooltipContent>
+      </ShadcnTooltip>
+    </TooltipProvider>
   );
 }

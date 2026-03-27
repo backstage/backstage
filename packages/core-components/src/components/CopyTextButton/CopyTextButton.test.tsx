@@ -14,22 +14,11 @@
  * limitations under the License.
  */
 
-import { act, fireEvent } from '@testing-library/react';
+import { act, fireEvent, screen } from '@testing-library/react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { CopyTextButton } from './CopyTextButton';
 import { errorApiRef } from '@backstage/core-plugin-api';
 import { default as useCopyToClipboardUnmocked } from 'react-use/esm/useCopyToClipboard';
-
-jest.mock('popper.js', () => {
-  const PopperJS = jest.requireActual('popper.js');
-
-  return class {
-    static placements = PopperJS.placements;
-    update() {}
-    destroy() {}
-    scheduleUpdate() {}
-  };
-});
 
 const useCopyToClipboard = jest.mocked(useCopyToClipboardUnmocked);
 jest.mock('react-use/esm/useCopyToClipboard', () =>
@@ -50,12 +39,12 @@ const apis = [[errorApiRef, mockErrorApi] as const] as const;
 
 describe('<CopyTextButton />', () => {
   it('renders without exploding', async () => {
-    const { getByTitle, queryByText, getByLabelText } = await renderInTestApp(
+    const { getByRole, queryByText, getByLabelText } = await renderInTestApp(
       <TestApiProvider apis={apis}>
         <CopyTextButton {...props} />
       </TestApiProvider>,
     );
-    expect(getByTitle('mockTooltip')).toBeInTheDocument();
+    expect(getByRole('button', { name: 'Copy text' })).toBeInTheDocument();
     expect(queryByText('mockTooltip')).not.toBeInTheDocument();
     expect(getByLabelText('Copy text')).toBeInTheDocument();
   });
@@ -72,13 +61,16 @@ describe('<CopyTextButton />', () => {
         <CopyTextButton {...props} />
       </TestApiProvider>,
     );
-    const button = rendered.getByTitle('mockTooltip');
+    const button = rendered.getByRole('button', { name: 'Copy text' });
     fireEvent.click(button);
+    expect(copy).toHaveBeenCalledWith('mockText');
+    // Assert tooltip visible before timers fire the close setTimeout.
+    // Radix Tooltip renders content in both a visible element and a
+    // screen-reader-accessible <span role="tooltip">, so use getAllByText.
+    expect(screen.getAllByText('mockTooltip').length).toBeGreaterThanOrEqual(1);
     act(() => {
       jest.runAllTimers();
     });
-    expect(copy).toHaveBeenCalledWith('mockText');
-    rendered.getByText('mockTooltip');
     jest.useRealTimers();
   });
 

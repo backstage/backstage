@@ -106,7 +106,11 @@ describe('SearchModal', () => {
 
     expect(screen.getByRole('dialog')).toBeInTheDocument();
 
-    const input = screen.getByLabelText<HTMLInputElement>('Search');
+    // Use getByRole('textbox') to avoid matching the Radix Dialog element
+    // which is also labeled "Search" via the visually-hidden DialogTitle.
+    const input = screen.getByRole<HTMLInputElement>('textbox', {
+      name: 'Search',
+    });
     await userEvent.type(input, 'text');
 
     await waitFor(() => {
@@ -156,7 +160,7 @@ describe('SearchModal', () => {
   });
 
   it('should render SearchModal hiding its content', async () => {
-    const { getByTestId } = await renderInTestApp(
+    await renderInTestApp(
       <ApiProvider apis={apiRegistry}>
         <SearchModal open hidden toggleModal={toggleModal} />
       </ApiProvider>,
@@ -167,8 +171,9 @@ describe('SearchModal', () => {
       },
     );
 
-    expect(getByTestId('search-bar-next')).toBeInTheDocument();
-    expect(getByTestId('search-bar-next')).not.toBeVisible();
+    // When hidden=true, the search bar is rendered in the DOM but not visible
+    expect(screen.getByTestId('search-bar-next')).toBeInTheDocument();
+    expect(screen.getByTestId('search-bar-next')).not.toBeVisible();
   });
 
   it('should focus on its search bar when opened', async () => {
@@ -183,7 +188,9 @@ describe('SearchModal', () => {
       },
     );
 
-    expect(screen.getByLabelText('Search')).toHaveFocus();
+    // Use getByRole('textbox') to avoid matching the Radix Dialog element
+    // which is also labeled "Search" via the visually-hidden DialogTitle.
+    expect(screen.getByRole('textbox', { name: 'Search' })).toHaveFocus();
   });
 
   it("Don't wait query debounce time when enter is pressed", async () => {
@@ -212,7 +219,11 @@ describe('SearchModal', () => {
       { signal: expect.any(AbortSignal) },
     );
 
-    const input = screen.getByLabelText<HTMLInputElement>('Search');
+    // Use getByRole('textbox') to avoid matching the Radix Dialog element
+    // which is also labeled "Search" via the visually-hidden DialogTitle.
+    const input = screen.getByRole<HTMLInputElement>('textbox', {
+      name: 'Search',
+    });
     await userEvent.clear(input);
     await userEvent.type(input, 'new term{enter}');
 

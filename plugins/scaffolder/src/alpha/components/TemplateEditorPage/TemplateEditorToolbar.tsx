@@ -16,21 +16,23 @@
 
 import { ReactNode, useState } from 'react';
 
-import { makeStyles } from '@material-ui/core/styles';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Tooltip from '@material-ui/core/Tooltip';
-import ButtonGroup from '@material-ui/core/ButtonGroup';
-import Button from '@material-ui/core/Button';
-import Drawer from '@material-ui/core/Drawer';
-import Dialog from '@material-ui/core/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogActions from '@material-ui/core/DialogActions';
-import ExtensionIcon from '@material-ui/icons/Extension';
-import DescriptionIcon from '@material-ui/icons/Description';
-import FunctionsIcon from '@material-ui/icons/Functions';
+import {
+  cn,
+  ShadcnButton as Button,
+  ShadcnTooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
+  Sheet,
+  SheetContent,
+  ShadcnDialog,
+  ShadcnDialogContent,
+  DialogHeader,
+  ShadcnDialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from '@backstage/core-components';
+import { Puzzle, FileText, FunctionSquare } from 'lucide-react';
 
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { FieldExtensionOptions } from '@backstage/plugin-scaffolder-react';
@@ -40,48 +42,11 @@ import { scaffolderTranslationRef } from '../../../translation';
 import { CustomFieldPlayground } from './CustomFieldPlayground';
 import { TemplatingExtensionsPageContent } from '../../../components/TemplatingExtensionsPage/TemplatingExtensionsPage';
 
-const useStyles = makeStyles(
-  theme => ({
-    paper: {
-      width: '90%',
-      padding: theme.spacing(2),
-      backgroundColor: theme.palette.background.default,
-      [theme.breakpoints.up('sm')]: {
-        width: '70%',
-      },
-      [theme.breakpoints.up('md')]: {
-        width: '50%',
-      },
-    },
-    appbar: {
-      zIndex: 1,
-    },
-    toolbar: {
-      display: 'grid',
-      gridTemplateColumns: 'auto 1fr',
-      gridGap: theme.spacing(1),
-      padding: theme.spacing(0, 1),
-      backgroundColor: theme.palette.background.paper,
-    },
-    toolbarCustomActions: {
-      display: 'grid',
-      alignItems: 'center',
-      gridAutoFlow: 'Column',
-      gridGap: theme.spacing(1),
-    },
-    toolbarDefaultActions: {
-      justifySelf: 'end',
-    },
-  }),
-  { name: 'ScaffolderTemplateEditorToolbar' },
-);
-
 export function TemplateEditorToolbar(props: {
   children?: ReactNode;
   fieldExtensions?: FieldExtensionOptions<any, any>[];
 }) {
   const { children, fieldExtensions } = props;
-  const classes = useStyles();
   const { t } = useTranslationRef(scaffolderTranslationRef);
   const [showFieldsDrawer, setShowFieldsDrawer] = useState(false);
   const [showActionsDrawer, setShowActionsDrawer] = useState(false);
@@ -89,103 +54,142 @@ export function TemplateEditorToolbar(props: {
   const [showPublishModal, setShowPublishModal] = useState(false);
 
   return (
-    <AppBar className={classes.appbar} position="relative">
-      <Toolbar className={classes.toolbar}>
-        <div className={classes.toolbarCustomActions}>{children}</div>
-        <ButtonGroup className={classes.toolbarDefaultActions} variant="text">
-          <Tooltip
-            title={t('templateEditorToolbar.customFieldExplorerTooltip')}
-          >
-            <Button onClick={() => setShowFieldsDrawer(true)}>
-              <ExtensionIcon />
-            </Button>
-          </Tooltip>
-          <Tooltip
-            title={t(
-              'templateEditorToolbar.installedActionsDocumentationTooltip',
-            )}
-          >
-            <Button onClick={() => setShowActionsDrawer(true)}>
-              <DescriptionIcon />
-            </Button>
-          </Tooltip>
-          <Tooltip
-            title={t(
-              'templateEditorToolbar.templatingExtensionsDocumentationTooltip',
-            )}
-          >
-            <Button onClick={() => setShowExtensionsDrawer(true)}>
-              <FunctionsIcon />
-            </Button>
-          </Tooltip>
-          <Button onClick={() => setShowPublishModal(true)}>
+    <header className={cn('relative z-[1]')}>
+      <div className={cn('grid grid-cols-[auto_1fr] gap-2 px-2 bg-card')}>
+        <div className={cn('grid items-center grid-flow-col gap-2')}>
+          {children}
+        </div>
+        <div className={cn('justify-self-end flex gap-1')}>
+          <TooltipProvider>
+            <ShadcnTooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  aria-label={t(
+                    'templateEditorToolbar.customFieldExplorerTooltip',
+                  )}
+                  onClick={() => setShowFieldsDrawer(true)}
+                >
+                  <Puzzle className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                {t('templateEditorToolbar.customFieldExplorerTooltip')}
+              </TooltipContent>
+            </ShadcnTooltip>
+            <ShadcnTooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  aria-label={t(
+                    'templateEditorToolbar.installedActionsDocumentationTooltip',
+                  )}
+                  onClick={() => setShowActionsDrawer(true)}
+                >
+                  <FileText className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                {t(
+                  'templateEditorToolbar.installedActionsDocumentationTooltip',
+                )}
+              </TooltipContent>
+            </ShadcnTooltip>
+            <ShadcnTooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  aria-label={t(
+                    'templateEditorToolbar.templatingExtensionsDocumentationTooltip',
+                  )}
+                  onClick={() => setShowExtensionsDrawer(true)}
+                >
+                  <FunctionSquare className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                {t(
+                  'templateEditorToolbar.templatingExtensionsDocumentationTooltip',
+                )}
+              </TooltipContent>
+            </ShadcnTooltip>
+          </TooltipProvider>
+          <Button variant="ghost" onClick={() => setShowPublishModal(true)}>
             {t('templateEditorToolbar.addToCatalogButton')}
           </Button>
-        </ButtonGroup>
-        <Drawer
-          classes={{ paper: classes.paper }}
-          anchor="right"
-          open={showFieldsDrawer}
-          onClose={() => setShowFieldsDrawer(false)}
-        >
-          <CustomFieldPlayground fieldExtensions={fieldExtensions} />
-        </Drawer>
-        <Drawer
-          classes={{ paper: classes.paper }}
-          anchor="right"
-          open={showActionsDrawer}
-          onClose={() => setShowActionsDrawer(false)}
-        >
-          <ActionPageContent />
-        </Drawer>
-        <Drawer
-          classes={{ paper: classes.paper }}
-          anchor="right"
+        </div>
+        <Sheet open={showFieldsDrawer} onOpenChange={setShowFieldsDrawer}>
+          <SheetContent
+            side="right"
+            className="w-[90%] p-4 bg-background sm:w-[70%] md:w-[50%]"
+          >
+            <CustomFieldPlayground fieldExtensions={fieldExtensions} />
+          </SheetContent>
+        </Sheet>
+        <Sheet open={showActionsDrawer} onOpenChange={setShowActionsDrawer}>
+          <SheetContent
+            side="right"
+            className="w-[90%] p-4 bg-background sm:w-[70%] md:w-[50%]"
+          >
+            <ActionPageContent />
+          </SheetContent>
+        </Sheet>
+        <Sheet
           open={showExtensionsDrawer}
-          onClose={() => setShowExtensionsDrawer(false)}
+          onOpenChange={setShowExtensionsDrawer}
         >
-          <TemplatingExtensionsPageContent />
-        </Drawer>
-        <Dialog
-          onClose={() => setShowPublishModal(false)}
+          <SheetContent
+            side="right"
+            className="w-[90%] p-4 bg-background sm:w-[70%] md:w-[50%]"
+          >
+            <TemplatingExtensionsPageContent />
+          </SheetContent>
+        </Sheet>
+        <ShadcnDialog
           open={showPublishModal}
-          aria-labelledby="publish-dialog-title"
-          aria-describedby="publish-dialog-description"
+          onOpenChange={setShowPublishModal}
         >
-          <DialogTitle id="publish-dialog-title">
-            {t('templateEditorToolbar.addToCatalogDialogTitle')}
-          </DialogTitle>
-          <DialogContent dividers>
-            <DialogContentText id="publish-dialog-slide-description">
-              {t(
-                'templateEditorToolbar.addToCatalogDialogContent.stepsIntroduction',
-              )}
-              <ul>
+          <ShadcnDialogContent>
+            <DialogHeader>
+              <ShadcnDialogTitle>
+                {t('templateEditorToolbar.addToCatalogDialogTitle')}
+              </ShadcnDialogTitle>
+              <DialogDescription>
                 {t(
-                  'templateEditorToolbar.addToCatalogDialogContent.stepsListItems',
-                )
-                  .split('\n')
-                  .map((step, index) => (
-                    <li key={index}>{step}</li>
-                  ))}
-              </ul>
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button
-              color="primary"
-              href={t(
-                'templateEditorToolbar.addToCatalogDialogActions.documentationUrl',
-              )}
-              target="_blank"
-            >
-              {t(
-                'templateEditorToolbar.addToCatalogDialogActions.documentationButton',
-              )}
-            </Button>
-          </DialogActions>
-        </Dialog>
-      </Toolbar>
-    </AppBar>
+                  'templateEditorToolbar.addToCatalogDialogContent.stepsIntroduction',
+                )}
+                <ul className="list-disc pl-4 mt-2">
+                  {t(
+                    'templateEditorToolbar.addToCatalogDialogContent.stepsListItems',
+                  )
+                    .split('\n')
+                    .map((step, index) => (
+                      <li key={index}>{step}</li>
+                    ))}
+                </ul>
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button asChild>
+                <a
+                  href={t(
+                    'templateEditorToolbar.addToCatalogDialogActions.documentationUrl',
+                  )}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {t(
+                    'templateEditorToolbar.addToCatalogDialogActions.documentationButton',
+                  )}
+                </a>
+              </Button>
+            </DialogFooter>
+          </ShadcnDialogContent>
+        </ShadcnDialog>
+      </div>
+    </header>
   );
 }

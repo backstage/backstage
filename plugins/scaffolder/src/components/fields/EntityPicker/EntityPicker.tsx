@@ -17,11 +17,7 @@ import {
   type EntityFilterQuery,
   CATALOG_FILTER_EXISTS,
 } from '@backstage/catalog-client';
-import {
-  Entity,
-  parseEntityRef,
-  stringifyEntityRef,
-} from '@backstage/catalog-model';
+import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
 import {
   EntityDisplayName,
@@ -29,12 +25,21 @@ import {
   catalogApiRef,
   entityPresentationApiRef,
 } from '@backstage/plugin-catalog-react';
-import TextField from '@material-ui/core/TextField';
-import Autocomplete, {
-  AutocompleteChangeReason,
-  createFilterOptions,
-} from '@material-ui/lab/Autocomplete';
-import { useCallback, useEffect } from 'react';
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  Command,
+  CommandInput,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+  CommandList,
+  ShadcnButton as Button,
+  cn,
+} from '@backstage/core-components';
+import { ChevronsUpDown, Check } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import useAsync from 'react-use/esm/useAsync';
 import {
   EntityPickerFilterQueryValue,
@@ -42,12 +47,21 @@ import {
   EntityPickerUiOptions,
   EntityPickerFilterQuery,
 } from './schema';
-import { VirtualizedListbox } from '../VirtualizedListbox';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../../translation';
 import { ScaffolderField } from '@backstage/plugin-scaffolder-react/alpha';
 
 export { EntityPickerSchema } from './schema';
+
+/**
+ * Maximum number of entity items rendered in the Command list at once.
+ * Prevents performance degradation for catalogs with thousands of entities.
+ * Users can narrow results using the search/filter input. The cmdk library
+ * handles filtering efficiently, but rendering thousands of DOM nodes
+ * simultaneously causes layout thrashing. This limit ensures smooth
+ * interaction even for very large catalogs.
+ */
+const MAX_RENDERED_ITEMS = 200;
 
 /**
  * The underlying component that is rendered in the form for the `EntityPicker`
@@ -74,8 +88,11 @@ export const EntityPicker = (props: EntityPickerProps) => {
   const defaultKind = uiSchema['ui:options']?.defaultKind;
   const defaultNamespace =
     uiSchema['ui:options']?.defaultNamespace || undefined;
-  const autoSelect = uiSchema?.['ui:options']?.autoSelect ?? true;
+  const autoSelect = uiSchema['ui:options']?.autoSelect ?? false;
   const isDisabled = uiSchema?.['ui:disabled'] ?? false;
+  const [open, setOpen] = useState(false);
+  const [inputValue, setInputValue] = useState('');
+  const autoSelectApplied = useRef(false);
 
   const catalogApi = useApi(catalogApiRef);
   const entityPresentationApi = useApi(entityPresentationApiRef);
@@ -135,33 +152,52 @@ export const EntityPicker = (props: EntityPickerProps) => {
     [defaultKind, defaultNamespace],
   );
 
-  const onSelect = useCallback(
-    (_: any, ref: string | Entity | null, reason: AutocompleteChangeReason) => {
-      // ref can either be a string from free solo entry or
-      if (typeof ref !== 'string') {
-        // if ref does not exist: pass 'undefined' to trigger validation for required value
-        onChange(ref ? stringifyEntityRef(ref as Entity) : undefined);
-      } else {
-        if (reason === 'blur' || reason === 'create-option') {
-          // Add in default namespace, etc.
-          let entityRef = ref;
-          try {
-            // Attempt to parse the entity ref into it's full form.
-            entityRef = stringifyEntityRef(
-              parseEntityRef(ref as string, {
-                defaultKind,
-                defaultNamespace,
-              }),
-            );
-          } catch (err) {
-            // If the passed in value isn't an entity ref, do nothing.
-          }
-          // We need to check against formData here as that's the previous value for this field.
-          if (formData !== ref || allowArbitraryValues) {
-            onChange(entityRef);
-          }
+  const onSelectEntity = useCallback(
+    (entityRef: string) => {
+      // Find the actual entity from the catalog results
+      const entity = entities?.catalogEntities.find(
+        e => stringifyEntityRef(e) === entityRef,
+      );
+      if (entity) {
+        onChange(stringifyEntityRef(entity));
+      } else if (allowArbitraryValues) {
+        // Free solo: user typed a value that doesn't match an entity
+        let resolvedRef = entityRef;
+        try {
+          resolvedRef = stringifyEntityRef(
+            parseEntityRef(entityRef, { defaultKind, defaultNamespace }),
+          );
+        } catch (err) {
+          // If not a valid entity ref, use as-is
         }
+        onChange(resolvedRef);
       }
+      setOpen(false);
+    },
+    [onChange, entities, defaultKind, defaultNamespace, allowArbitraryValues],
+  );
+
+  const onClear = useCallback(() => {
+    onChange(undefined);
+    setOpen(false);
+  }, [onChange]);
+
+  // Handle free-solo submission when user types a value not in the entity list
+  const handleFreeSoloSubmit = useCallback(
+    (value: string) => {
+      if (!value) return;
+      let entityRef = value;
+      try {
+        entityRef = stringifyEntityRef(
+          parseEntityRef(value, { defaultKind, defaultNamespace }),
+        );
+      } catch (err) {
+        // Not a valid entity ref, use as-is
+      }
+      if (formData !== value || allowArbitraryValues) {
+        onChange(entityRef);
+      }
+      setOpen(false);
     },
     [onChange, formData, defaultKind, defaultNamespace, allowArbitraryValues],
   );
@@ -183,6 +219,35 @@ export const EntityPicker = (props: EntityPickerProps) => {
     }
   }, [entities, onChange, selectedEntity, required, allowArbitraryValues]);
 
+  // autoSelect support: automatically selects the first matching entity when
+  // the entity list loads and the field has no current value. This restores
+  // the behavior of MUI Autocomplete's autoSelect option for the cmdk combobox.
+  useEffect(() => {
+    if (
+      autoSelect &&
+      !autoSelectApplied.current &&
+      !formData &&
+      entities?.catalogEntities &&
+      entities.catalogEntities.length > 0
+    ) {
+      autoSelectApplied.current = true;
+      onChange(stringifyEntityRef(entities.catalogEntities[0]));
+    }
+  }, [autoSelect, formData, entities, onChange]);
+
+  // Limit the rendered items to MAX_RENDERED_ITEMS to prevent performance
+  // degradation for very large catalogs. The cmdk search filter still operates
+  // over the full dataset — only DOM rendering is capped.
+  const catalogEntities = useMemo(
+    () => entities?.catalogEntities ?? [],
+    [entities?.catalogEntities],
+  );
+  const renderedEntities = useMemo(
+    () => catalogEntities.slice(0, MAX_RENDERED_ITEMS),
+    [catalogEntities],
+  );
+  const isTruncated = catalogEntities.length > MAX_RENDERED_ITEMS;
+
   return (
     <ScaffolderField
       rawErrors={rawErrors}
@@ -191,46 +256,110 @@ export const EntityPicker = (props: EntityPickerProps) => {
       disabled={isDisabled}
       errors={errors}
     >
-      <Autocomplete
-        disabled={
-          isDisabled ||
-          (required &&
-            !allowArbitraryValues &&
-            entities?.catalogEntities.length === 1)
-        }
-        id={idSchema?.$id}
-        value={selectedEntity}
-        loading={loading}
-        onChange={onSelect}
-        options={entities?.catalogEntities || []}
-        getOptionLabel={option =>
-          // option can be a string due to freeSolo.
-          typeof option === 'string'
-            ? option
-            : entities?.entityRefToPresentation.get(stringifyEntityRef(option))
-                ?.entityRef!
-        }
-        autoSelect={autoSelect}
-        freeSolo={allowArbitraryValues}
-        renderInput={params => (
-          <TextField
-            {...params}
-            label={title}
-            margin="dense"
-            variant="outlined"
-            required={required}
-            disabled={isDisabled}
-            InputProps={params.InputProps}
-          />
-        )}
-        renderOption={option => <EntityDisplayName entityRef={option} />}
-        filterOptions={createFilterOptions<Entity>({
-          stringify: option =>
-            entities?.entityRefToPresentation.get(stringifyEntityRef(option))
-              ?.primaryTitle!,
-        })}
-        ListboxComponent={VirtualizedListbox}
-      />
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            role="combobox"
+            aria-expanded={open}
+            aria-label={title}
+            disabled={
+              isDisabled ||
+              (required &&
+                !allowArbitraryValues &&
+                entities?.catalogEntities.length === 1)
+            }
+            className={cn(
+              'w-full justify-between font-normal',
+              !formData && 'text-muted-foreground',
+            )}
+            id={idSchema?.$id}
+          >
+            {formData
+              ? entities?.entityRefToPresentation.get(formData)?.entityRef ??
+                formData
+              : title}
+            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent
+          className="w-[--radix-popover-trigger-width] p-0"
+          align="start"
+        >
+          <Command
+            filter={(value, search) => {
+              // Use entity presentation title for filtering
+              const presentation = entities?.entityRefToPresentation.get(value);
+              const label = presentation?.primaryTitle ?? value;
+              return label.toLowerCase().includes(search.toLowerCase()) ? 1 : 0;
+            }}
+          >
+            <CommandInput
+              placeholder={`Search ${title?.toLowerCase() ?? 'entities'}...`}
+              value={inputValue}
+              onValueChange={setInputValue}
+            />
+            <CommandList>
+              <CommandEmpty>
+                {loading ? 'Loading...' : 'No entities found.'}
+              </CommandEmpty>
+              <CommandGroup>
+                {renderedEntities.map(entity => {
+                  const ref = stringifyEntityRef(entity);
+                  return (
+                    <CommandItem
+                      key={ref}
+                      value={ref}
+                      onSelect={onSelectEntity}
+                    >
+                      <Check
+                        className={cn(
+                          'mr-2 h-4 w-4',
+                          formData === ref ? 'opacity-100' : 'opacity-0',
+                        )}
+                      />
+                      <EntityDisplayName entityRef={entity} />
+                    </CommandItem>
+                  );
+                })}
+                {isTruncated && (
+                  <div className="px-2 py-1.5 text-xs text-muted-foreground">
+                    Showing {MAX_RENDERED_ITEMS} of {catalogEntities.length}{' '}
+                    entities — type to filter
+                  </div>
+                )}
+              </CommandGroup>
+            </CommandList>
+            {/* Free solo submission: if allowArbitraryValues and inputValue doesn't match any entity */}
+            {allowArbitraryValues && inputValue && (
+              <div className="border-t border-border p-1">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="w-full justify-start font-normal"
+                  onClick={() => handleFreeSoloSubmit(inputValue)}
+                >
+                  Use &quot;{inputValue}&quot;
+                </Button>
+              </div>
+            )}
+          </Command>
+        </PopoverContent>
+      </Popover>
+      {/* Clear button when value is set */}
+      {formData && !isDisabled && (
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          aria-label="Clear"
+          onClick={onClear}
+          className="mt-1 h-auto p-0 text-xs text-muted-foreground hover:text-foreground"
+        >
+          Clear
+        </Button>
+      )}
     </ScaffolderField>
   );
 };

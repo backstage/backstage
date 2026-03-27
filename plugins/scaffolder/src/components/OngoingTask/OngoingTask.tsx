@@ -20,12 +20,15 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { Content, ErrorPanel, Header, Page } from '@backstage/core-components';
+import {
+  ShadcnButton as Button,
+  Content,
+  ErrorPanel,
+  Header,
+  Page,
+} from '@backstage/core-components';
 import { useNavigate, useParams } from 'react-router-dom';
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import Paper from '@material-ui/core/Paper';
-import { makeStyles } from '@material-ui/core/styles';
+
 import {
   scaffolderApiRef,
   ScaffolderTaskOutput,
@@ -57,27 +60,6 @@ import { scaffolderTranslationRef } from '../../translation';
 import { entityPresentationApiRef } from '@backstage/plugin-catalog-react';
 import { default as reactUseAsync } from 'react-use/esm/useAsync';
 import { stringifyEntityRef } from '@backstage/catalog-model';
-
-const useStyles = makeStyles(theme => ({
-  contentWrapper: {
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  buttonBar: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'right',
-  },
-  cancelButton: {
-    marginRight: theme.spacing(1),
-  },
-  retryButton: {
-    marginRight: theme.spacing(1),
-  },
-  logsVisibilityButton: {
-    marginRight: theme.spacing(1),
-  },
-}));
 
 /**
  * @public
@@ -125,7 +107,6 @@ function OngoingTaskContent(props: {
   const scaffolderApi = useApi(scaffolderApiRef);
   const entityPresentationApi = useApi(entityPresentationApiRef);
   const taskStream = useTaskEventStream(taskId!);
-  const classes = useStyles();
   const steps = useMemo(
     () =>
       taskStream.task?.spec.steps.map(step => ({
@@ -275,35 +256,36 @@ function OngoingTaskContent(props: {
           isCancelButtonDisabled={isCancelButtonDisabled}
         />
       </Header>
-      <Content className={classes.contentWrapper}>
+      <Content className="flex flex-col">
         {taskStream.error ? (
-          <Box paddingBottom={2}>
+          <div className="pb-4">
             <ErrorPanel
               error={taskStream.error}
               titleFormat="markdown"
               title={taskStream.error.message}
             />
-          </Box>
+          </div>
         ) : null}
 
-        <Box paddingBottom={2}>
+        <div className="pb-4">
           <TaskSteps
             steps={steps}
             activeStep={activeStep}
             isComplete={taskStream.completed}
             isError={Boolean(taskStream.error)}
           />
-        </Box>
+        </div>
 
         <Outputs output={taskStream.output} />
 
         {buttonBarVisible ? (
-          <Box paddingBottom={2}>
-            <Paper>
-              <Box padding={2}>
-                <div className={classes.buttonBar}>
+          <div className="pb-4">
+            <div className="rounded-xl border border-border bg-card text-card-foreground shadow">
+              <div className="p-4">
+                <div className="flex flex-row justify-end">
                   <Button
-                    className={classes.cancelButton}
+                    variant="outline"
+                    className="mr-2"
                     disabled={
                       !cancelEnabled ||
                       (cancelStatus !== 'not-executed' && !isRetryableTask) ||
@@ -316,7 +298,8 @@ function OngoingTaskContent(props: {
                   </Button>
                   {isRetryableTask && (
                     <Button
-                      className={classes.retryButton}
+                      variant="outline"
+                      className="mr-2"
                       disabled={cancelEnabled || !canRetry}
                       onClick={triggerRetry}
                       data-testid="retry-button"
@@ -325,9 +308,8 @@ function OngoingTaskContent(props: {
                     </Button>
                   )}
                   <Button
-                    className={classes.logsVisibilityButton}
-                    color="primary"
-                    variant="outlined"
+                    variant="outline"
+                    className="mr-2"
                     onClick={() => setLogVisibleState(!logsVisible)}
                   >
                     {logsVisible
@@ -335,8 +317,7 @@ function OngoingTaskContent(props: {
                       : t('ongoingTask.showLogsButtonTitle')}
                   </Button>
                   <Button
-                    variant="contained"
-                    color="primary"
+                    variant="default"
                     disabled={cancelEnabled || !canStartOver}
                     onClick={startOver}
                     data-testid="start-over-button"
@@ -344,17 +325,17 @@ function OngoingTaskContent(props: {
                     {t('ongoingTask.startOverButtonTitle')}
                   </Button>
                 </div>
-              </Box>
-            </Paper>
-          </Box>
+              </div>
+            </div>
+          </div>
         ) : null}
 
         {logsVisible ? (
-          <Paper style={{ height: '100%' }}>
-            <Box padding={2} height="100%">
+          <div className="rounded-xl border border-border bg-card text-card-foreground shadow h-full">
+            <div className="p-4 h-full">
               <TaskLogStream logs={taskStream.stepLogs} />
-            </Box>
-          </Paper>
+            </div>
+          </div>
         ) : null}
       </Content>
     </>

@@ -14,7 +14,101 @@
  * limitations under the License.
  */
 
-import { Theme } from '@material-ui/core/styles';
+/**
+ * A theme type that captures all properties accessed by TechDocs style rules.
+ * Replaces the MUI Theme dependency with a focused, self-contained type.
+ */
+export type TechDocsTheme = {
+  palette: {
+    type: 'light' | 'dark';
+    divider: string;
+    text: {
+      primary: string;
+      secondary: string;
+    };
+    background: {
+      default: string;
+      paper: string;
+    };
+    primary: {
+      main: string;
+      light: string;
+      dark: string;
+      contrastText: string;
+    };
+    secondary: {
+      light: string;
+      dark: string;
+    };
+    success: {
+      main: string;
+      light: string;
+      dark: string;
+    };
+    error: {
+      light: string;
+      dark: string;
+    };
+    warning: {
+      main: string;
+      light: string;
+      dark: string;
+    };
+    action: {
+      hover: string;
+      disabledBackground: string;
+    };
+    link?: string;
+    code?: {
+      background?: string;
+    };
+  };
+  shadows: string[];
+  typography: {
+    fontFamily: string;
+    h1: {
+      fontSize: string | number;
+      fontWeight?: number;
+      lineHeight?: number;
+      fontFamily?: string;
+    };
+    h2: {
+      fontSize: string | number;
+      fontWeight?: number;
+      lineHeight?: number;
+      fontFamily?: string;
+    };
+    h3: {
+      fontSize: string | number;
+      fontWeight?: number;
+      lineHeight?: number;
+      fontFamily?: string;
+    };
+    h4: {
+      fontSize: string | number;
+      fontWeight?: number;
+      lineHeight?: number;
+      fontFamily?: string;
+    };
+    h5: {
+      fontSize: string | number;
+      fontWeight?: number;
+      lineHeight?: number;
+      fontFamily?: string;
+    };
+    h6: {
+      fontSize: string | number;
+      fontWeight?: number;
+      lineHeight?: number;
+      fontFamily?: string;
+    };
+    htmlFontSize?: number;
+  };
+  shape: {
+    borderRadius: number;
+  };
+  spacing: (factor: number) => string;
+};
 
 /**
  * A Backstage sidebar object that contains properties such as its pin state.
@@ -29,9 +123,9 @@ type BackstageSidebar = {
  */
 export type RuleOptions = {
   /**
-   * A Backstage theme object that contains the application's design tokens.
+   * A TechDocs theme object that contains the application's design tokens.
    */
-  theme: Theme;
+  theme: TechDocsTheme;
   /**
    * A Backstage sidebar, see {@link BackstageSidebar} for more details.
    */

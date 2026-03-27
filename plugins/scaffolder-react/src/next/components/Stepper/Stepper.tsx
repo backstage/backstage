@@ -23,12 +23,8 @@ import {
   TemplateParameterSchema,
 } from '@backstage/plugin-scaffolder-react';
 import { JsonValue } from '@backstage/types';
-import Button from '@material-ui/core/Button';
-import LinearProgress from '@material-ui/core/LinearProgress';
-import MuiStep from '@material-ui/core/Step';
-import MuiStepLabel from '@material-ui/core/StepLabel';
-import MuiStepper from '@material-ui/core/Stepper';
-import { makeStyles } from '@material-ui/core/styles';
+import { ShadcnButton as Button, cn } from '@backstage/core-components';
+import { Check } from 'lucide-react';
 import { type IChangeEvent } from '@rjsf/core';
 import { ErrorSchema } from '@rjsf/utils';
 import { customizeValidator } from '@rjsf/validator-ajv8';
@@ -65,24 +61,6 @@ export type BackstageTemplateStepperClassKey =
   | 'backButton'
   | 'footer'
   | 'formWrapper';
-
-const useStyles = makeStyles(
-  theme => ({
-    backButton: {
-      marginRight: theme.spacing(1),
-    },
-    footer: {
-      display: 'flex',
-      flexDirection: 'row',
-      justifyContent: 'right',
-      marginTop: theme.spacing(2),
-    },
-    formWrapper: {
-      padding: theme.spacing(2),
-    },
-  }),
-  { name: 'BackstageTemplateStepper' },
-);
 
 /**
  * The Props for {@link Stepper} component
@@ -134,7 +112,6 @@ export const Stepper = (stepperProps: StepperProps) => {
     useState<Record<string, JsonValue>>(initialState);
 
   const [errors, setErrors] = useState<undefined | FormValidation>();
-  const styles = useStyles();
 
   const backLabel =
     presentation?.buttonLabels?.backButtonText ?? backButtonText;
@@ -242,34 +219,100 @@ export const Stepper = (stepperProps: StepperProps) => {
 
   return (
     <>
-      {isValidating && <LinearProgress variant="indeterminate" />}
-      <MuiStepper
-        activeStep={activeStep}
-        alternativeLabel
-        variant="elevation"
-        style={{ overflowX: 'auto' }}
-      >
-        {steps.map((step, index) => {
-          const isAllowedLabelClick = activeStep > index;
-          return (
-            <MuiStep key={index}>
-              <MuiStepLabel
-                aria-label={t('stepper.stepIndexLabel', { index: index + 1 })}
-                style={{ cursor: isAllowedLabelClick ? 'pointer' : 'default' }}
-                onClick={() => {
-                  if (isAllowedLabelClick) setActiveStep(index);
-                }}
+      {isValidating && (
+        <div
+          role="progressbar"
+          aria-label="Validating"
+          className="h-1 w-full overflow-hidden rounded-full bg-primary/20"
+        >
+          <div className="h-full w-1/3 animate-[backstage-indeterminate_1.5s_ease-in-out_infinite] rounded-full bg-primary" />
+        </div>
+      )}
+      <nav aria-label="Template steps" className="overflow-x-auto py-6">
+        <ol className="flex w-full items-center">
+          {steps.map((step, index) => {
+            const isCompleted = activeStep > index;
+            const isActive = activeStep === index;
+            const isClickable = isCompleted;
+            return (
+              <li
+                key={index}
+                className="flex flex-1 flex-col items-center gap-2"
               >
-                {step.title}
-              </MuiStepLabel>
-            </MuiStep>
-          );
-        })}
-        <MuiStep>
-          <MuiStepLabel>{reviewLabel}</MuiStepLabel>
-        </MuiStep>
-      </MuiStepper>
-      <div className={styles.formWrapper}>
+                {/* Step indicator circle */}
+                <button
+                  type="button"
+                  aria-label={t('stepper.stepIndexLabel', {
+                    index: index + 1,
+                  })}
+                  className={cn(
+                    'flex h-8 w-8 items-center justify-center rounded-full border-2 text-sm font-medium transition-colors',
+                    isCompleted &&
+                      'cursor-pointer border-primary bg-primary text-primary-foreground',
+                    isActive && 'border-primary bg-background text-primary',
+                    !isCompleted &&
+                      !isActive &&
+                      'border-muted text-muted-foreground',
+                  )}
+                  onClick={() => {
+                    if (isClickable) setActiveStep(index);
+                  }}
+                  disabled={!isClickable}
+                >
+                  {isCompleted ? <Check className="h-4 w-4" /> : index + 1}
+                </button>
+                {/* Step label */}
+                <span
+                  className={cn(
+                    'text-center text-sm',
+                    isActive && 'font-medium text-foreground',
+                    isCompleted && 'cursor-pointer text-foreground',
+                    !isCompleted && !isActive && 'text-muted-foreground',
+                  )}
+                  role="button"
+                  tabIndex={isClickable ? 0 : -1}
+                  onClick={() => {
+                    if (isClickable) setActiveStep(index);
+                  }}
+                  onKeyDown={e => {
+                    if (isClickable && (e.key === 'Enter' || e.key === ' ')) {
+                      e.preventDefault();
+                      setActiveStep(index);
+                    }
+                  }}
+                >
+                  {step.title}
+                </span>
+              </li>
+            );
+          })}
+          {/* Review step */}
+          <li className="flex flex-1 flex-col items-center gap-2">
+            <div
+              className={cn(
+                'flex h-8 w-8 items-center justify-center rounded-full border-2 text-sm font-medium',
+                activeStep === steps.length &&
+                  'border-primary bg-primary text-primary-foreground',
+                activeStep < steps.length &&
+                  'border-muted text-muted-foreground',
+              )}
+            >
+              {steps.length + 1}
+            </div>
+            <span
+              className={cn(
+                'text-center text-sm',
+                activeStep === steps.length
+                  ? 'font-medium text-foreground'
+                  : 'text-muted-foreground',
+              )}
+            >
+              {reviewLabel}
+            </span>
+          </li>
+        </ol>
+      </nav>
+      <div className="p-4">
         {/* eslint-disable-next-line no-nested-ternary */}
         {activeStep < steps.length ? (
           <Form
@@ -291,20 +334,16 @@ export const Stepper = (stepperProps: StepperProps) => {
             }}
             {...restFormProps}
           >
-            <div className={styles.footer}>
+            <div className="flex flex-row justify-end mt-4">
               <Button
+                variant="outline"
                 onClick={handleBack}
-                className={styles.backButton}
+                className="mr-2"
                 disabled={activeStep < 1 || isValidating}
               >
                 {backLabel}
               </Button>
-              <Button
-                variant="contained"
-                color="primary"
-                type="submit"
-                disabled={isValidating}
-              >
+              <Button type="submit" disabled={isValidating}>
                 {activeStep === steps.length - 1
                   ? reviewLabel
                   : t('stepper.nextButtonText')}
@@ -324,20 +363,16 @@ export const Stepper = (stepperProps: StepperProps) => {
         ) : (
           <>
             <ReviewStateComponent formState={stepsState} schemas={steps} />
-            <div className={styles.footer}>
+            <div className="flex flex-row justify-end mt-4">
               <Button
+                variant="outline"
                 onClick={handleBack}
-                className={styles.backButton}
+                className="mr-2"
                 disabled={activeStep < 1}
               >
                 {backLabel}
               </Button>
-              <Button
-                disabled={isCreating}
-                variant="contained"
-                color="primary"
-                onClick={handleCreate}
-              >
+              <Button disabled={isCreating} onClick={handleCreate}>
                 {createLabel}
               </Button>
             </div>

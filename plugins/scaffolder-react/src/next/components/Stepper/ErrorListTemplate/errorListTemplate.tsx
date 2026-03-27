@@ -14,25 +14,8 @@
  * limitations under the License.
  */
 import { ErrorListProps, RJSFValidationError } from '@rjsf/utils';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import Paper from '@material-ui/core/Paper';
-import { Theme, createStyles, makeStyles } from '@material-ui/core/styles';
-import ErrorIcon from '@material-ui/icons/Error';
+import { AlertCircle } from 'lucide-react';
 import startCase from 'lodash/startCase';
-
-const useStyles = makeStyles((_theme: Theme) =>
-  createStyles({
-    list: {
-      width: '100%',
-    },
-    text: {
-      textWrap: 'wrap',
-    },
-  }),
-);
 
 /**
  * Shows a list of errors found in the form
@@ -40,8 +23,6 @@ const useStyles = makeStyles((_theme: Theme) =>
  * @public
  */
 export const ErrorListTemplate = ({ errors, schema }: ErrorListProps) => {
-  const classes = useStyles();
-
   function formatErrorMessage(error: RJSFValidationError) {
     if (error.property && error.message) {
       const propertyName = error.property.startsWith('.')
@@ -62,20 +43,17 @@ export const ErrorListTemplate = ({ errors, schema }: ErrorListProps) => {
   }
 
   return (
-    <Paper>
-      <List dense className={classes.list}>
+    <div className="rounded-lg border bg-card p-0">
+      <ul className="w-full">
         {errors.map((error, index) => (
-          <ListItem key={index}>
-            <ListItemIcon>
-              <ErrorIcon color="error" />
-            </ListItemIcon>
-            <ListItemText
-              classes={{ primary: classes.text }}
-              primary={formatErrorMessage(error)}
-            />
-          </ListItem>
+          <li key={index} className="flex items-center gap-3 px-4 py-2">
+            <AlertCircle className="h-5 w-5 text-destructive shrink-0" />
+            <span className="text-sm text-wrap">
+              {formatErrorMessage(error)}
+            </span>
+          </li>
         ))}
-      </List>
-    </Paper>
+      </ul>
+    </div>
   );
 };

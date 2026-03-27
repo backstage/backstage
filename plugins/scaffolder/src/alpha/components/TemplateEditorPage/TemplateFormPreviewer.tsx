@@ -19,7 +19,7 @@ import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAsync from 'react-use/esm/useAsync';
 
-import { makeStyles } from '@material-ui/core/styles';
+import { cn } from '@backstage/core-components';
 
 import { alertApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import {
@@ -97,32 +97,24 @@ export type ScaffolderTemplateFormPreviewerClassKey =
   | 'textArea'
   | 'preview';
 
-const useStyles = makeStyles(
-  theme => ({
-    root: {
-      height: '100%',
-      gridArea: 'pageContent',
-      display: 'grid',
-      gridTemplateAreas: `
-      "toolbar"
-      "textArea"
-      "preview"
-    `,
-      [theme.breakpoints.up('md')]: {
-        gridTemplateAreas: `
-      "toolbar toolbar"
-      "textArea preview"
-    `,
-        gridTemplateRows: 'auto 1fr',
-        gridTemplateColumns: '1fr',
-      },
-    },
-    files: {
-      gridArea: 'textArea',
-    },
-  }),
-  { name: 'ScaffolderTemplateFormPreviewer' },
+/**
+ * Tailwind class overrides for the TemplateFormPreviewer grid layout.
+ *
+ * These classes are passed to TemplateEditorLayout and TemplateEditorLayoutFiles
+ * via their `classes` prop to override the default grid-template-areas. The
+ * form previewer uses a simpler two-region layout (toolbar + textArea/preview)
+ * instead of the full five-region editor layout.
+ *
+ * Mobile: single column — toolbar, textArea, preview stacked vertically.
+ * md+: two-column — toolbar spans full width; textArea and preview side-by-side.
+ */
+const previewerRootClasses = cn(
+  "[grid-template-areas:'toolbar'_'textArea'_'preview']",
+  "md:[grid-template-areas:'toolbar_toolbar'_'textArea_preview']",
+  'md:grid-rows-[auto_1fr] md:grid-cols-[1fr]',
 );
+
+const previewerFilesClasses = '[grid-area:textArea]';
 
 export const TemplateFormPreviewer = ({
   defaultPreviewTemplate = EXAMPLE_TEMPLATE_PARAMS_YAML,
@@ -136,7 +128,6 @@ export const TemplateFormPreviewer = ({
   layouts?: LayoutOptions[];
   formProps?: FormProps;
 }) => {
-  const classes = useStyles();
   const alertApi = useApi(alertApiRef);
   const catalogApi = useApi(catalogApiRef);
   const navigate = useNavigate();
@@ -195,7 +186,7 @@ export const TemplateFormPreviewer = ({
   );
 
   return (
-    <TemplateEditorLayout classes={{ root: classes.root }}>
+    <TemplateEditorLayout classes={{ root: previewerRootClasses }}>
       <TemplateEditorLayoutToolbar>
         <TemplateEditorToolbar fieldExtensions={customFieldExtensions}>
           <TemplateEditorToolbarFileMenu
@@ -211,7 +202,7 @@ export const TemplateFormPreviewer = ({
       <TemplateEditorPanels
         autoSaveId="template-form-previewer"
         files={
-          <TemplateEditorLayoutFiles classes={{ root: classes.files }}>
+          <TemplateEditorLayoutFiles classes={{ root: previewerFilesClasses }}>
             <TemplateEditorTextArea
               content={templateYaml}
               onUpdate={setTemplateYaml}

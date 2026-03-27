@@ -16,6 +16,7 @@
 
 jest.mock('./useUnregisterEntityDialogState');
 
+import { TooltipProvider } from '@backstage/core-components';
 import userEvent from '@testing-library/user-event';
 import { ReactNode } from 'react';
 import { UnregisterEntityDialog } from './UnregisterEntityDialog';
@@ -46,14 +47,16 @@ describe('UnregisterEntityDialog', () => {
   };
 
   const Wrapper = (props: { children?: ReactNode }) => (
-    <TestApiProvider
-      apis={[
-        [catalogApiRef, catalogApiMock()],
-        [alertApiRef, alertApi],
-      ]}
-    >
-      {props.children}
-    </TestApiProvider>
+    <TooltipProvider>
+      <TestApiProvider
+        apis={[
+          [catalogApiRef, catalogApiMock()],
+          [alertApiRef, alertApi],
+        ]}
+      >
+        {props.children}
+      </TestApiProvider>
+    </TooltipProvider>
   );
 
   const stateSpy = jest.spyOn(state, 'useUnregisterEntityDialogState');

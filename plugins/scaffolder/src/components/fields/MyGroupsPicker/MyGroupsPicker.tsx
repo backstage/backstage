@@ -14,17 +14,27 @@
  * limitations under the License.
  */
 
-import { ChangeEvent, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   errorApiRef,
   identityApiRef,
   useApi,
 } from '@backstage/core-plugin-api';
-import TextField from '@material-ui/core/TextField';
+import {
+  cn,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  Command,
+  CommandInput,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+  CommandList,
+  ShadcnButton as Button,
+} from '@backstage/core-components';
+import { ChevronsUpDown, Check } from 'lucide-react';
 import { MyGroupsPickerProps, MyGroupsPickerSchema } from './schema';
-import Autocomplete, {
-  createFilterOptions,
-} from '@material-ui/lab/Autocomplete';
 import {
   catalogApiRef,
   EntityDisplayName,
@@ -33,8 +43,7 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { NotFoundError } from '@backstage/errors';
 import useAsync from 'react-use/esm/useAsync';
-import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
-import { VirtualizedListbox } from '../VirtualizedListbox';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../../translation';
 import { ScaffolderField } from '@backstage/plugin-scaffolder-react/alpha';
@@ -61,6 +70,8 @@ export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
   const errorApi = useApi(errorApiRef);
   const entityPresentationApi = useApi(entityPresentationApiRef);
   const isDisabled = uiSchema?.['ui:disabled'] ?? false;
+
+  const [open, setOpen] = useState(false);
 
   const { value: groups, loading } = useAsync(async () => {
     const { userEntityRef } = await identityApi.getBackstageIdentity();
@@ -96,8 +107,10 @@ export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
     return { catalogEntities: items, entityRefToPresentation };
   });
 
-  const updateChange = (_: ChangeEvent<{}>, value: Entity | null) => {
-    onChange(value ? stringifyEntityRef(value) : '');
+  /** Handles item selection from the Command list — toggles off if re-selected */
+  const handleSelect = (entityRef: string) => {
+    onChange(entityRef === formData ? '' : entityRef);
+    setOpen(false);
   };
 
   const selectedEntity =
@@ -118,37 +131,61 @@ export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
       disabled={isDisabled}
       errors={errors}
     >
-      <Autocomplete
-        disabled={required && groups?.catalogEntities.length === 1}
-        id="OwnershipEntityRefPicker-dropdown"
-        options={groups?.catalogEntities || []}
-        value={selectedEntity}
-        loading={loading}
-        onChange={updateChange}
-        getOptionLabel={option =>
-          groups?.entityRefToPresentation.get(stringifyEntityRef(option))
-            ?.primaryTitle!
-        }
-        autoSelect
-        renderInput={params => (
-          <TextField
-            {...params}
-            label={title}
-            margin="dense"
-            FormHelperTextProps={{ margin: 'dense', style: { marginLeft: 0 } }}
-            variant="outlined"
-            required={required}
-            InputProps={params.InputProps}
-          />
-        )}
-        renderOption={option => <EntityDisplayName entityRef={option} />}
-        filterOptions={createFilterOptions<Entity>({
-          stringify: option =>
-            groups?.entityRefToPresentation.get(stringifyEntityRef(option))
-              ?.primaryTitle!,
-        })}
-        ListboxComponent={VirtualizedListbox}
-      />
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            role="combobox"
+            aria-expanded={open}
+            aria-label={title}
+            disabled={
+              isDisabled || (required && groups?.catalogEntities.length === 1)
+            }
+            className={cn(
+              'w-full justify-between font-normal',
+              !selectedEntity && 'text-muted-foreground',
+            )}
+          >
+            {selectedEntity
+              ? groups?.entityRefToPresentation.get(
+                  stringifyEntityRef(selectedEntity),
+                )?.primaryTitle
+              : title}
+            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-full p-0" align="start">
+          <Command>
+            <CommandInput placeholder={`Search ${title?.toLowerCase()}...`} />
+            <CommandList>
+              <CommandEmpty>
+                {loading ? 'Loading groups…' : 'No groups found.'}
+              </CommandEmpty>
+              <CommandGroup>
+                {(groups?.catalogEntities || []).map(entity => {
+                  const ref = stringifyEntityRef(entity);
+                  const presentation = groups?.entityRefToPresentation.get(ref);
+                  return (
+                    <CommandItem
+                      key={ref}
+                      value={presentation?.primaryTitle ?? ref}
+                      onSelect={() => handleSelect(ref)}
+                    >
+                      <Check
+                        className={cn(
+                          'mr-2 h-4 w-4',
+                          formData === ref ? 'opacity-100' : 'opacity-0',
+                        )}
+                      />
+                      <EntityDisplayName entityRef={entity} />
+                    </CommandItem>
+                  );
+                })}
+              </CommandGroup>
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
     </ScaffolderField>
   );
 };

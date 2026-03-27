@@ -15,7 +15,6 @@
  */
 
 import { JSX } from 'react';
-import { ListItemProps } from '@material-ui/core/ListItem';
 import { SearchDocument, SearchResult } from '@backstage/plugin-search-common';
 import { createExtensionDataRef } from '@backstage/frontend-plugin-api';
 
@@ -24,7 +23,7 @@ export type BaseSearchResultListItemProps<T = {}> = T & {
   rank?: number;
   result?: SearchDocument;
   icon?: JSX.Element;
-} & Omit<ListItemProps, 'button'>;
+} & React.LiHTMLAttributes<HTMLLIElement>;
 
 /** @alpha */
 export type SearchResultItemExtensionComponent = <

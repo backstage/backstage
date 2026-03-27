@@ -16,9 +16,6 @@
 
 import { useCallback, useEffect } from 'react';
 
-import Grid from '@material-ui/core/Grid';
-import { makeStyles } from '@material-ui/core/styles';
-
 import {
   TechDocsShadowDom,
   useShadowDomStylesLoading,
@@ -38,19 +35,6 @@ import {
 } from '../TechDocsReaderProvider';
 import { TechDocsReaderPageContentAddons } from './TechDocsReaderPageContentAddons';
 import { useApp } from '@backstage/core-plugin-api';
-
-const useStyles = makeStyles({
-  search: {
-    width: '100%',
-    '@media (min-width: 76.1875em)': {
-      width: 'calc(100% - 34.4rem)',
-      margin: '0 auto',
-    },
-    '@media print': {
-      display: 'none',
-    },
-  },
-});
 
 /**
  * Props for {@link TechDocsReaderPageContent}
@@ -90,7 +74,6 @@ export type TechDocsReaderPageContentProps = {
 export const TechDocsReaderPageContent = withTechDocsReaderProvider(
   (props: TechDocsReaderPageContentProps) => {
     const { withSearch = true, searchResultUrlMapper, onReady } = props;
-    const classes = useStyles();
 
     const {
       entityMetadata: { value: entityMetadata, loading: entityMetadataLoading },
@@ -137,39 +120,39 @@ export const TechDocsReaderPageContent = withTechDocsReaderProvider(
     if (!dom) {
       return (
         <Content>
-          <Grid container>
-            <Grid xs={12} item>
+          <div>
+            <div className="w-full">
               <TechDocsStateIndicator />
-            </Grid>
-          </Grid>
+            </div>
+          </div>
         </Content>
       );
     }
 
     return (
       <Content>
-        <Grid container>
-          <Grid xs={12} item>
+        <div>
+          <div className="w-full">
             <TechDocsStateIndicator />
-          </Grid>
+          </div>
           {withSearch && (
-            <Grid className={classes.search} xs="auto" item>
+            <div className="w-full [@media(min-width:76.1875em)]:w-[calc(100%-34.4rem)] [@media(min-width:76.1875em)]:mx-auto print:hidden">
               <TechDocsSearch
                 entityId={entityRef}
                 entityTitle={entityMetadata?.metadata?.title}
                 searchResultUrlMapper={searchResultUrlMapper}
               />
-            </Grid>
+            </div>
           )}
-          <Grid xs={12} item>
+          <div className="w-full">
             {/* Centers the styles loaded event to avoid having multiple locations setting the opacity style in Shadow Dom causing the screen to flash multiple times */}
             {(state === 'CHECKING' || isStyleLoading) && <Progress />}
 
             <TechDocsShadowDom element={dom} onAppend={handleAppend}>
               <TechDocsReaderPageContentAddons />
             </TechDocsShadowDom>
-          </Grid>
-        </Grid>
+          </div>
+        </div>
       </Content>
     );
   },

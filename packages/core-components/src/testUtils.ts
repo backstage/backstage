@@ -14,20 +14,24 @@
  * limitations under the License.
  */
 
-import { Breakpoint } from '@material-ui/core/styles/createBreakpoints';
 import { act } from '@testing-library/react';
+
+/**
+ * Responsive breakpoint keys matching the standard breakpoint scale.
+ * Preserved for backward compatibility with existing tests.
+ * @public
+ */
+export type Breakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
 const originalMatchMedia = window.matchMedia;
 
 /**
  *  This is a mocking method suggested in the Jest docs, as it is not implemented in JSDOM yet.
- *  It can be used to mock values for the Material UI `useMediaQuery` hook if it is used in a tested component.
+ *  It can be used to mock values for the `useMediaQuery` hook or Tailwind responsive breakpoints
+ *  if they are used in a tested component.
  *
  *  For issues checkout the documentation:
  *  https://jestjs.io/docs/manual-mocks#mocking-methods-which-are-not-implemented-in-jsdom
- *
- *  If there are any updates from Material UI React on testing `useMediaQuery` this mock should be replaced
- *  https://mui.com/material-ui/react-use-media-query/#testing
  *
  * @public
  *
@@ -40,13 +44,11 @@ const originalMatchMedia = window.matchMedia;
 export function mockBreakpoint(options: { matches: boolean }): void;
 /**
  *  This is a mocking method suggested in the Jest docs, as it is not implemented in JSDOM yet.
- *  It can be used to mock values for the Material UI `useMediaQuery` hook if it is used in a tested component.
+ *  It can be used to mock values for the `useMediaQuery` hook or Tailwind responsive breakpoints
+ *  if they are used in a tested component.
  *
  *  For issues checkout the documentation:
  *  https://jestjs.io/docs/manual-mocks#mocking-methods-which-are-not-implemented-in-jsdom
- *
- *  If there are any updates from Material UI React on testing `useMediaQuery` this mock should be replaced
- *  https://mui.com/material-ui/react-use-media-query/#testing
  *
  * @public
  *

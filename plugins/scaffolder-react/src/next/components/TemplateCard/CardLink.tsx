@@ -16,7 +16,6 @@
 
 import { IconComponent } from '@backstage/core-plugin-api';
 import { Link } from '@backstage/core-components';
-import { makeStyles } from '@material-ui/core/styles';
 
 export interface CardLinkProps {
   icon: IconComponent;
@@ -24,20 +23,11 @@ export interface CardLinkProps {
   url: string;
 }
 
-const useStyles = makeStyles(() => ({
-  linkText: {
-    display: 'inline-flex',
-    alignItems: 'center',
-  },
-}));
-
 export const CardLink = ({ icon: Icon, text, url }: CardLinkProps) => {
-  const styles = useStyles();
-
   return (
-    <div className={styles.linkText}>
+    <div className="inline-flex items-center">
       <Icon fontSize="small" />
-      <Link style={{ marginLeft: '8px' }} to={url}>
+      <Link className="ml-2" to={url}>
         {text || url}
       </Link>
     </div>

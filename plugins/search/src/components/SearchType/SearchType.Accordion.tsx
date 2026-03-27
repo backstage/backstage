@@ -17,53 +17,18 @@
 import { cloneElement, Fragment, useEffect, useRef, useState } from 'react';
 import { useApi } from '@backstage/core-plugin-api';
 import { searchApiRef, useSearch } from '@backstage/plugin-search-react';
-import Accordion from '@material-ui/core/Accordion';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
-import Box from '@material-ui/core/Box';
-import Divider from '@material-ui/core/Divider';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import { makeStyles } from '@material-ui/core/styles';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import Typography from '@material-ui/core/Typography';
-import AllIcon from '@material-ui/icons/FontDownload';
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from '@backstage/core-components';
+import { Separator } from '@backstage/core-components';
+import { cn } from '@backstage/core-components';
+import { Type as TypeIcon } from 'lucide-react';
 import useAsync from 'react-use/esm/useAsync';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { searchTranslationRef } from '../../translation';
-
-const useStyles = makeStyles(theme => ({
-  icon: {
-    color: theme.palette.text.primary,
-  },
-  list: {
-    width: '100%',
-  },
-  listItemIcon: {
-    width: '24px',
-    height: '24px',
-  },
-  accordion: {
-    backgroundColor: theme.palette.background.paper,
-  },
-  accordionSummary: {
-    minHeight: 'auto',
-    '&.Mui-expanded': {
-      minHeight: 'auto',
-    },
-  },
-  accordionSummaryContent: {
-    margin: theme.spacing(2, 0),
-    '&.Mui-expanded': {
-      margin: theme.spacing(2, 0),
-    },
-  },
-  accordionDetails: {
-    padding: theme.spacing(0, 0, 1),
-  },
-}));
 
 /**
  * @public
@@ -80,7 +45,6 @@ export type SearchTypeAccordionProps = {
 };
 
 export const SearchTypeAccordion = (props: SearchTypeAccordionProps) => {
-  const classes = useStyles();
   const { filters, setPageCursor, setTypes, term, types } = useSearch();
   const searchApi = useApi(searchApiRef);
   const [expanded, setExpanded] = useState(true);
@@ -88,7 +52,6 @@ export const SearchTypeAccordion = (props: SearchTypeAccordionProps) => {
   const { t } = useTranslationRef(searchTranslationRef);
   const abortControllerRef = useRef<AbortController | null>(null);
 
-  const toggleExpanded = () => setExpanded(prevState => !prevState);
   const handleClick = (type: string) => {
     return () => {
       setTypes(type !== '' ? [type] : []);
@@ -108,7 +71,7 @@ export const SearchTypeAccordion = (props: SearchTypeAccordionProps) => {
     {
       value: '',
       name: t('searchType.accordion.allTitle'),
-      icon: <AllIcon />,
+      icon: <TypeIcon />,
     },
     ...givenTypes,
   ];
@@ -166,61 +129,56 @@ export const SearchTypeAccordion = (props: SearchTypeAccordionProps) => {
   }, []);
 
   return (
-    <Box>
-      <Typography variant="body2" component="h2">
-        {name}
-      </Typography>
+    <div>
+      <h2 className="text-sm text-foreground">{name}</h2>
       <Accordion
-        className={classes.accordion}
-        expanded={expanded}
-        onChange={toggleExpanded}
+        type="single"
+        collapsible
+        value={expanded ? 'search-types' : ''}
+        onValueChange={val => setExpanded(val === 'search-types')}
+        className="bg-card"
       >
-        <AccordionSummary
-          classes={{
-            root: classes.accordionSummary,
-            content: classes.accordionSummaryContent,
-          }}
-          expandIcon={<ExpandMoreIcon className={classes.icon} />}
-          IconButtonProps={{ size: 'small' }}
-        >
-          {expanded
-            ? t('searchType.accordion.collapse')
-            : definedTypes.filter(type => type.value === selected)[0]!.name}
-        </AccordionSummary>
-        <AccordionDetails classes={{ root: classes.accordionDetails }}>
-          <List
-            className={classes.list}
-            component="nav"
-            aria-label="filter by type"
-            disablePadding
-            dense
-          >
-            {definedTypes.map(type => (
-              <Fragment key={type.value}>
-                <Divider />
-                <ListItem
-                  selected={
-                    types[0] === type.value ||
-                    (types.length === 0 && type.value === '')
-                  }
-                  onClick={handleClick(type.value)}
-                  button
-                >
-                  <ListItemIcon>
-                    {cloneElement(type.icon, {
-                      className: classes.listItemIcon,
-                    })}
-                  </ListItemIcon>
-                  <ListItemText
-                    primary={type.name}
-                    secondary={resultCounts && resultCounts[type.value]}
-                  />
-                </ListItem>
-              </Fragment>
-            ))}
-          </List>
-        </AccordionDetails>
+        <AccordionItem value="search-types" className="border-b-0">
+          <AccordionTrigger className="py-2 text-sm">
+            {expanded
+              ? t('searchType.accordion.collapse')
+              : definedTypes.filter(type => type.value === selected)[0]!.name}
+          </AccordionTrigger>
+          <AccordionContent className="pb-1 pt-0">
+            <nav aria-label="filter by type" className="w-full">
+              {definedTypes.map(type => (
+                <Fragment key={type.value}>
+                  <Separator />
+                  <button
+                    type="button"
+                    className={cn(
+                      'flex w-full items-center gap-2 px-4 py-2 text-left text-sm rounded-sm transition-colors hover:bg-accent',
+                      (types[0] === type.value ||
+                        (types.length === 0 && type.value === '')) &&
+                        'bg-accent text-accent-foreground',
+                    )}
+                    onClick={handleClick(type.value)}
+                  >
+                    <span className="flex shrink-0 items-center justify-center h-6 w-6">
+                      {cloneElement(type.icon, {
+                        className: 'h-6 w-6 text-foreground',
+                      })}
+                    </span>
+                    <span className="flex-1">
+                      <span className="block">{type.name}</span>
+                      {resultCounts && resultCounts[type.value] && (
+                        <span className="block text-xs text-muted-foreground">
+                          {resultCounts[type.value]}
+                        </span>
+                      )}
+                    </span>
+                  </button>
+                </Fragment>
+              ))}
+            </nav>
+          </AccordionContent>
+        </AccordionItem>
       </Accordion>
-    </Box>
+    </div>
   );
 };

@@ -17,12 +17,10 @@
 import { ReactNode, useMemo } from 'react';
 import { useApi, storageApiRef } from '@backstage/core-plugin-api';
 import useObservable from 'react-use/esm/useObservable';
-import classNames from 'classnames';
-import { makeStyles } from '@material-ui/core/styles';
-import Snackbar from '@material-ui/core/Snackbar';
-import SnackbarContent from '@material-ui/core/SnackbarContent';
-import IconButton from '@material-ui/core/IconButton';
-import Close from '@material-ui/icons/Close';
+import { X } from 'lucide-react';
+import { cn } from '../../lib/utils';
+import { Alert } from '../ui/alert';
+import { Button } from '../ui/button';
 
 /** @public */
 export type DismissableBannerClassKey =
@@ -40,55 +38,6 @@ export type DismissableBannerClassKey =
  */
 export type DismissbleBannerClassKey = DismissableBannerClassKey;
 
-const useStyles = makeStyles(
-  theme => ({
-    root: {
-      padding: theme.spacing(0),
-      marginBottom: theme.spacing(0),
-      marginTop: theme.spacing(0),
-      display: 'flex',
-      flexFlow: 'row nowrap',
-    },
-    // showing on top
-    topPosition: {
-      position: 'relative',
-      marginBottom: theme.spacing(6),
-      marginTop: -theme.spacing(3),
-      zIndex: 'unset',
-    },
-    icon: {
-      fontSize: theme.typography.h6.fontSize,
-    },
-    content: {
-      width: '100%',
-      maxWidth: 'inherit',
-      flexWrap: 'nowrap',
-      color: theme.palette.banner.text,
-    },
-    message: {
-      display: 'flex',
-      alignItems: 'center',
-      '& a': {
-        color: theme.palette.banner.link,
-      },
-    },
-    button: {
-      color: theme.palette.banner.closeButtonColor ?? 'inherit',
-    },
-    info: {
-      backgroundColor: theme.palette.banner.info,
-    },
-    error: {
-      backgroundColor: theme.palette.banner.error,
-    },
-    warning: {
-      backgroundColor:
-        theme.palette.banner.warning ?? theme.palette.banner.error,
-    },
-  }),
-  { name: 'BackstageDismissableBanner' },
-);
-
 export type Props = {
   variant: 'info' | 'error' | 'warning';
   message: ReactNode;
@@ -99,7 +48,6 @@ export type Props = {
 /** @public */
 export const DismissableBanner = (props: Props) => {
   const { variant, message, id, fixed = false } = props;
-  const classes = useStyles();
   const storageApi = useApi(storageApiRef);
   const notificationsStore = storageApi.forBucket('notifications');
   const observedItems = useObservable(
@@ -118,35 +66,42 @@ export const DismissableBanner = (props: Props) => {
     notificationsStore.set('dismissedBanners', [...dismissedBanners, id]);
   };
 
+  // Map component variant to shadcn Alert variant — 'error' maps to 'destructive',
+  // while 'info' and 'warning' have direct matches in the Alert variant system
+  const alertVariant = variant === 'error' ? 'destructive' : variant;
+
+  // Don't render if settings are still loading or the banner has been dismissed
+  if (loadingSettings || dismissedBanners.has(id)) {
+    return null;
+  }
+
   return (
-    <Snackbar
-      anchorOrigin={
-        fixed
-          ? { vertical: 'bottom', horizontal: 'center' }
-          : { vertical: 'top', horizontal: 'center' }
-      }
-      open={!loadingSettings && !dismissedBanners.has(id)}
-      classes={{
-        root: classNames(classes.root, !fixed && classes.topPosition),
-      }}
+    <div
+      className={cn(
+        'flex w-full flex-row flex-nowrap p-0',
+        !fixed && 'relative mb-6 -mt-3 z-auto',
+        fixed && 'fixed bottom-0 left-1/2 -translate-x-1/2 z-50',
+      )}
     >
-      <SnackbarContent
-        classes={{
-          root: classNames(classes.content, classes[variant]),
-          message: classes.message,
-        }}
-        message={message}
-        action={[
-          <IconButton
-            key="dismiss"
-            title="Permanently dismiss this message"
-            className={classes.button}
-            onClick={handleClick}
-          >
-            <Close className={classes.icon} />
-          </IconButton>,
-        ]}
-      />
-    </Snackbar>
+      <Alert
+        variant={alertVariant}
+        className={cn(
+          'w-full max-w-none flex-nowrap',
+          'flex items-center justify-between',
+          '[&>a]:text-[var(--banner-link,inherit)]',
+        )}
+      >
+        <div className="flex items-center [&>a]:text-inherit">{message}</div>
+        <Button
+          variant="ghost"
+          size="icon"
+          title="Permanently dismiss this message"
+          onClick={handleClick}
+          className="shrink-0 text-current hover:text-current/80"
+        >
+          <X className="h-4 w-4" />
+        </Button>
+      </Alert>
+    </div>
   );
 };

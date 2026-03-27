@@ -15,9 +15,18 @@ browser APIs or by depending on external modules to do the work.
 
 - Consider writing plugins in `TypeScript`.
 - Plan the directory structure of your plugin so that it becomes easy to manage.
-- Prefer using the [Backstage components](https://backstage.io/storybook),
-  otherwise go with [Material UI](https://material-ui.com/).
+- Prefer using the [Backstage core components](https://backstage.io/storybook)
+  built on [shadcn/ui](https://ui.shadcn.com/) (Radix UI primitives + Tailwind CSS)
+  from `@backstage/core-components`. Use Tailwind CSS utility classes with the
+  `cn()` helper for styling, and [Lucide icons](https://lucide.dev/) (`lucide-react`)
+  for iconography.
 - Check out the shared Backstage APIs before building a new one.
+
+> **Note:** Community plugins that still use Material UI internally will continue
+> to function without modification. The `UnifiedThemeProvider` from
+> `@backstage/theme` continues to supply MUI v4 and v5 theme contexts for
+> backward compatibility. However, new plugin development should use the shadcn/ui
+> components from `@backstage/core-components`.
 
 ## Plugin concepts / API
 

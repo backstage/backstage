@@ -15,11 +15,6 @@
  */
 import { StreamLanguage } from '@codemirror/language';
 import { yaml as yamlSupport } from '@codemirror/legacy-modes/mode/yaml';
-import Button from '@material-ui/core/Button';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import CardHeader from '@material-ui/core/CardHeader';
-import { makeStyles } from '@material-ui/core/styles';
 import CodeMirror from '@uiw/react-codemirror';
 import { useCallback, useMemo, useState } from 'react';
 import yaml from 'yaml';
@@ -29,10 +24,24 @@ import validator from '@rjsf/validator-ajv8';
 import { FieldExtensionOptions } from '@backstage/plugin-scaffolder-react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../../translation';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import TextField from '@material-ui/core/TextField';
-import SearchIcon from '@material-ui/icons/Search';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import {
+  cn,
+  ShadcnButton as Button,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  Command,
+  CommandInput,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+  CommandList,
+} from '@backstage/core-components';
+import { Search } from 'lucide-react';
 
 /** @public */
 export type ScaffolderCustomFieldExplorerClassKey =
@@ -41,56 +50,18 @@ export type ScaffolderCustomFieldExplorerClassKey =
   | 'fieldForm'
   | 'preview';
 
-const useStyles = makeStyles(
-  theme => ({
-    root: {
-      gridArea: 'pageContent',
-      display: 'grid',
-      gridGap: theme.spacing(2),
-      gridTemplateAreas: `
-      "controls"
-      "fieldForm"
-      "preview"
-    `,
-      [theme.breakpoints.up('md')]: {
-        gridTemplateAreas: `
-      "controls controls"
-      "fieldForm preview"
-    `,
-        gridTemplateRows: 'auto 1fr',
-        gridTemplateColumns: '1fr 1fr',
-      },
-    },
-    controls: {
-      gridArea: 'controls',
-      display: 'flex',
-      flexFlow: 'row nowrap',
-      alignItems: 'center',
-    },
-    fieldForm: {
-      gridArea: 'fieldForm',
-    },
-    preview: {
-      gridArea: 'preview',
-      display: 'grid',
-      gridGap: theme.spacing(2),
-      alignContent: 'start',
-    },
-  }),
-  { name: 'ScaffolderCustomFieldExplorer' },
-);
-
 export const CustomFieldExplorer = ({
   customFieldExtensions = [],
 }: {
   customFieldExtensions?: FieldExtensionOptions<any, any>[];
 }) => {
-  const classes = useStyles();
   const { t } = useTranslationRef(scaffolderTranslationRef);
+  const [open, setOpen] = useState(false);
   const fieldOptions = customFieldExtensions.filter(field => !!field.schema);
   const [selectedField, setSelectedField] = useState(fieldOptions?.[0]);
   const [fieldFormState, setFieldFormState] = useState({});
   const [refreshKey, setRefreshKey] = useState(Date.now());
+  const [errorText, setErrorText] = useState<string>();
   const sampleFieldTemplate = useMemo(() => {
     if (!selectedField) {
       return '';
@@ -121,6 +92,7 @@ export const CustomFieldExplorer = ({
     (selection: FieldExtensionOptions) => {
       setSelectedField(selection);
       setFieldFormState({});
+      setErrorText(undefined);
     },
     [setFieldFormState, setSelectedField],
   );
@@ -136,47 +108,66 @@ export const CustomFieldExplorer = ({
   );
 
   return (
-    <main className={classes.root}>
-      <div className={classes.controls}>
-        <Autocomplete
-          id="custom-fields-autocomplete"
-          value={selectedField}
-          options={fieldOptions}
-          getOptionLabel={option => option.name}
-          renderInput={params => (
-            <TextField
-              {...params}
+    <main
+      className={cn(
+        'grid grid-cols-1 gap-4',
+        'md:[grid-template-areas:_"controls_controls"_"fieldForm_preview"] md:grid-rows-[auto_1fr] md:grid-cols-2',
+        '[grid-template-areas:_"controls"_"fieldForm"_"preview"]',
+      )}
+      style={{ gridArea: 'pageContent' }}
+    >
+      <div className="[grid-area:controls] flex flex-row flex-nowrap items-center">
+        <Popover open={open} onOpenChange={setOpen}>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              role="combobox"
+              aria-expanded={open}
               aria-label={t(
                 'templateEditorPage.customFieldExplorer.selectFieldLabel',
               )}
-              placeholder={t(
-                'templateEditorPage.customFieldExplorer.selectFieldLabel',
-              )}
-              variant="outlined"
-              InputProps={{
-                ...params.InputProps,
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon />
-                  </InputAdornment>
-                ),
-              }}
-            />
-          )}
-          onChange={(_event, option) => {
-            if (option) {
-              handleSelectionChange(option);
-            }
-          }}
-          disableClearable
-          fullWidth
-        />
+              className="w-full justify-between"
+            >
+              <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
+              {selectedField?.name ??
+                t('templateEditorPage.customFieldExplorer.selectFieldLabel')}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-full p-0" align="start">
+            <Command>
+              <CommandInput
+                placeholder={t(
+                  'templateEditorPage.customFieldExplorer.selectFieldLabel',
+                )}
+              />
+              <CommandList>
+                <CommandEmpty>No field found.</CommandEmpty>
+                <CommandGroup>
+                  {fieldOptions.map(option => (
+                    <CommandItem
+                      key={option.name}
+                      value={option.name}
+                      onSelect={() => {
+                        handleSelectionChange(option);
+                        setOpen(false);
+                      }}
+                    >
+                      {option.name}
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
       </div>
-      <div className={classes.fieldForm}>
+      <div className="[grid-area:fieldForm]">
         <Card>
-          <CardHeader
-            title={t('templateEditorPage.customFieldExplorer.fieldForm.title')}
-          />
+          <CardHeader>
+            <CardTitle>
+              {t('templateEditorPage.customFieldExplorer.fieldForm.title')}
+            </CardTitle>
+          </CardHeader>
           <CardContent>
             <Form
               showErrorList={false}
@@ -192,8 +183,6 @@ export const CustomFieldExplorer = ({
               }}
             >
               <Button
-                variant="contained"
-                color="primary"
                 type="submit"
                 disabled={!selectedField?.schema?.uiOptions}
               >
@@ -205,11 +194,13 @@ export const CustomFieldExplorer = ({
           </CardContent>
         </Card>
       </div>
-      <div className={classes.preview}>
+      <div className="[grid-area:preview] grid gap-4 content-start">
         <Card>
-          <CardHeader
-            title={t('templateEditorPage.customFieldExplorer.preview.title')}
-          />
+          <CardHeader>
+            <CardTitle>
+              {t('templateEditorPage.customFieldExplorer.preview.title')}
+            </CardTitle>
+          </CardHeader>
           <CardContent>
             <CodeMirror
               readOnly
@@ -225,8 +216,17 @@ export const CustomFieldExplorer = ({
           content={sampleFieldTemplate}
           contentIsSpec
           fieldExtensions={customFieldExtensions}
-          setErrorText={() => null}
+          setErrorText={setErrorText}
         />
+        {errorText && (
+          <div
+            role="alert"
+            className="rounded-md border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm text-destructive"
+          >
+            <p className="font-medium">Field preview error</p>
+            <p className="mt-1">{errorText}</p>
+          </div>
+        )}
       </div>
     </main>
   );

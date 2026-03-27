@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
 
 import { join, dirname, posix } from 'path';
+import tailwindcss from '@tailwindcss/vite';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -59,6 +60,11 @@ export default defineMain({
     experimentalCodeExamples: true, // optional
   },
   viteFinal: async (config, { configType }) => {
+    // Add Tailwind CSS support for shadcn/ui styled components in stories.
+    // @tailwindcss/vite provides native Vite integration for Tailwind CSS v4,
+    // processing utility classes in all story component files.
+    config.plugins = [...(config.plugins || []), tailwindcss()];
+
     // Add Node.js polyfills for browser compatibility
     //
     // When upgrading from Storybook 8 to 9 with the react-vite framework,

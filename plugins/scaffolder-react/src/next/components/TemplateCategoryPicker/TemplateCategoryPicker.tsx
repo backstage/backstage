@@ -14,50 +14,58 @@
  * limitations under the License.
  */
 
-import { Progress } from '@backstage/core-components';
+import { useState } from 'react';
+import {
+  cn,
+  Checkbox,
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+  Progress,
+  ShadcnButton as Button,
+} from '@backstage/core-components';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { useEntityTypeFilter } from '@backstage/plugin-catalog-react';
-import Box from '@material-ui/core/Box';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
-import CheckBoxIcon from '@material-ui/icons/CheckBox';
-import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import { ChevronDown } from 'lucide-react';
 import capitalize from 'lodash/capitalize';
-import { ReactNode } from 'react';
 
 import { scaffolderReactTranslationRef } from '../../../translation';
-
-const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
-const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
 /** @alpha */
 export type ScaffolderReactTemplateCategoryPickerClassKey = 'root' | 'label';
 
-const useStyles = makeStyles(
-  {
-    root: {},
-    label: {},
-  },
-  { name: 'ScaffolderReactTemplateCategoryPicker' },
-);
-
 /**
  * The Category Picker that is rendered on the left side for picking
  * categories and filtering the template list.
+ *
+ * Renders a combobox trigger (shadcn/ui Button) that opens a Popover
+ * containing a searchable, keyboard-navigable Command list with
+ * multi-select checkboxes for each available template category.
+ *
  * @alpha
  */
 export const TemplateCategoryPicker = () => {
   const { t } = useTranslationRef(scaffolderReactTranslationRef);
-  const classes = useStyles();
   const alertApi = useApi(alertApiRef);
   const { error, loading, availableTypes, selectedTypes, setSelectedTypes } =
     useEntityTypeFilter();
+  const [open, setOpen] = useState(false);
+
+  /*
+   * Local state tracks selections when the hook does not provide
+   * selectedTypes (uncontrolled mode). This mirrors the previous
+   * MUI Autocomplete behaviour where internal state accumulated
+   * selections independently of the external value prop.
+   */
+  const [localSelected, setLocalSelected] = useState<string[]>([]);
+  const effectiveSelected = selectedTypes ?? localSelected;
 
   if (loading) return <Progress />;
 
@@ -71,41 +79,75 @@ export const TemplateCategoryPicker = () => {
 
   if (!availableTypes) return null;
 
+  /** Toggle a single category in or out of the selection set. */
+  const handleToggle = (type: string) => {
+    const current = effectiveSelected;
+    let next: string[];
+    if (current.includes(type)) {
+      next = current.filter(item => item !== type);
+    } else {
+      next = [...current, type];
+    }
+    setLocalSelected(next);
+    setSelectedTypes(next);
+  };
+
   return (
-    <Box className={classes.root} pb={1} pt={1}>
-      <Typography
-        className={classes.label}
-        variant="button"
-        component="label"
+    <div className={cn('pb-1 pt-1')}>
+      <label
+        className={cn(
+          'text-sm font-medium uppercase tracking-wider text-muted-foreground',
+        )}
         htmlFor="categories-picker"
       >
         {t('templateCategoryPicker.title')}
-      </Typography>
-      <Autocomplete<string, true>
-        PopperComponent={popperProps => (
-          <div {...popperProps}>{popperProps.children as ReactNode}</div>
-        )}
-        multiple
-        id="categories-picker"
-        options={availableTypes}
-        value={selectedTypes}
-        onChange={(_: object, value: string[]) => setSelectedTypes(value)}
-        renderOption={(option, { selected }) => (
-          <FormControlLabel
-            control={
-              <Checkbox
-                icon={icon}
-                checkedIcon={checkedIcon}
-                checked={selected}
-              />
-            }
-            label={capitalize(option)}
-          />
-        )}
-        size="small"
-        popupIcon={<ExpandMoreIcon />}
-        renderInput={params => <TextField {...params} variant="outlined" />}
-      />
-    </Box>
+      </label>
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            id="categories-picker"
+            variant="outline"
+            size="sm"
+            aria-label="Open"
+            className={cn(
+              'mt-1 w-full justify-between text-sm font-normal',
+              !effectiveSelected.length && 'text-muted-foreground',
+            )}
+          >
+            {effectiveSelected.length
+              ? effectiveSelected.map(item => capitalize(item)).join(', ')
+              : 'Select categories...'}
+            <ChevronDown className="ml-auto h-4 w-4 shrink-0 opacity-50" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-full p-0" align="start">
+          <Command>
+            <CommandInput placeholder="Search categories..." />
+            <CommandList>
+              <CommandEmpty>No categories found.</CommandEmpty>
+              <CommandGroup>
+                {availableTypes.map(type => {
+                  const isSelected = effectiveSelected.includes(type);
+                  return (
+                    <CommandItem
+                      key={type}
+                      value={type}
+                      onSelect={() => handleToggle(type)}
+                    >
+                      <Checkbox
+                        checked={isSelected}
+                        className="mr-2"
+                        aria-label={capitalize(type)}
+                      />
+                      {capitalize(type)}
+                    </CommandItem>
+                  );
+                })}
+              </CommandGroup>
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
+    </div>
   );
 };

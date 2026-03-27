@@ -15,24 +15,17 @@
  */
 import { IconComponent, useApp, useRouteRef } from '@backstage/core-plugin-api';
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
-import Button from '@material-ui/core/Button';
-import { makeStyles } from '@material-ui/core/styles';
-import LinkIcon from '@material-ui/icons/Link';
+
 import { parseEntityRef } from '@backstage/catalog-model';
-import { Link } from '@backstage/core-components';
+import { Link, ShadcnButton as Button } from '@backstage/core-components';
+import { Link as LucideLinkIcon } from 'lucide-react';
 import { ScaffolderTaskOutput } from '../../../api';
 
-const useStyles = makeStyles({
-  root: {
-    '&:hover': {
-      textDecoration: 'none',
-    },
-  },
-});
+/** Wrap lucide Link icon to satisfy Backstage's IconComponent contract */
+const LinkIcon: IconComponent = () => <LucideLinkIcon />;
 
 export const LinkOutputs = (props: { output: ScaffolderTaskOutput }) => {
   const { links = [] } = props.output;
-  const classes = useStyles();
   const app = useApp();
   const entityRoute = useRouteRef(entityRouteRef);
 
@@ -54,9 +47,12 @@ export const LinkOutputs = (props: { output: ScaffolderTaskOutput }) => {
         .map(({ url, title, icon }, i) => {
           const Icon = iconResolver(icon);
           return (
-            <Link to={url} key={i} classes={{ root: classes.root }}>
-              <Button startIcon={<Icon />} component="div" color="primary">
-                {title}
+            <Link to={url} key={i} className="no-underline hover:no-underline">
+              <Button variant="default" asChild>
+                <span>
+                  <Icon />
+                  {title}
+                </span>
               </Button>
             </Link>
           );

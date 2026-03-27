@@ -15,16 +15,10 @@
  */
 
 import { useElementFilter } from '@backstage/core-plugin-api';
-import BottomNavigation from '@material-ui/core/BottomNavigation';
-import Box from '@material-ui/core/Box';
-import IconButton from '@material-ui/core/IconButton';
-import { Theme, makeStyles } from '@material-ui/core/styles';
-import Drawer from '@material-ui/core/Drawer';
-import Typography from '@material-ui/core/Typography';
-import CloseIcon from '@material-ui/icons/Close';
-import MenuIcon from '@material-ui/icons/Menu';
+import { X as CloseIcon, Menu as MenuIcon } from 'lucide-react';
 import { orderBy } from 'lodash';
 import {
+  cloneElement,
   useEffect,
   useState,
   useContext,
@@ -33,9 +27,10 @@ import {
   createElement,
 } from 'react';
 import { useLocation } from 'react-router-dom';
+import { cn } from '../../lib/utils';
 import { SidebarOpenStateProvider } from './SidebarOpenStateContext';
 import { SidebarGroup } from './SidebarGroup';
-import { SidebarConfigContext, SidebarConfig } from './config';
+import { SidebarConfigContext } from './config';
 import { MobileSidebarContext } from './MobileSidebarContext';
 
 /**
@@ -57,50 +52,6 @@ type OverlayMenuProps = {
   children?: ReactNode;
 };
 
-const useStyles = makeStyles<Theme, { sidebarConfig: SidebarConfig }>(
-  theme => ({
-    root: {
-      position: 'fixed',
-      backgroundColor: theme.palette.navigation.background,
-      color: theme.palette.navigation.color,
-      bottom: 0,
-      left: 0,
-      right: 0,
-      zIndex: theme.zIndex.snackbar,
-      // SidebarDivider color
-      borderTop: '1px solid #383838',
-      '@media print': {
-        display: 'none',
-      },
-    },
-
-    overlay: props => ({
-      background: theme.palette.navigation.background,
-      width: '100%',
-      bottom: `${props.sidebarConfig.mobileSidebarHeight}px`,
-      height: `calc(100% - ${props.sidebarConfig.mobileSidebarHeight}px)`,
-      flex: '0 1 auto',
-      overflow: 'auto',
-    }),
-
-    overlayHeader: {
-      display: 'flex',
-      color: theme.palette.navigation.color,
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      padding: theme.spacing(2, 3),
-    },
-
-    overlayHeaderClose: {
-      color: theme.palette.navigation.color,
-    },
-
-    marginMobileSidebar: props => ({
-      marginBottom: `${props.sidebarConfig.mobileSidebarHeight}px`,
-    }),
-  }),
-);
-
 const sortSidebarGroupsForPriority = (children: ReactElement[]) =>
   orderBy(
     children,
@@ -117,32 +68,53 @@ const OverlayMenu = ({
   onClose,
 }: OverlayMenuProps) => {
   const { sidebarConfig } = useContext(SidebarConfigContext);
-  const classes = useStyles({ sidebarConfig });
+
+  if (!open) return null;
 
   return (
-    <Drawer
-      anchor="bottom"
-      open={open}
-      onClose={onClose}
-      ModalProps={{
-        BackdropProps: { classes: { root: classes.marginMobileSidebar } },
-      }}
-      classes={{
-        root: classes.marginMobileSidebar,
-        paperAnchorBottom: classes.overlay,
-      }}
-    >
-      <Box className={classes.overlayHeader}>
-        <Typography variant="h3">{label}</Typography>
-        <IconButton
-          onClick={onClose}
-          classes={{ root: classes.overlayHeaderClose }}
+    <>
+      {/* Backdrop — covers area above the bottom nav bar */}
+      <div
+        className={cn('fixed inset-0 z-[1300] bg-black/50')}
+        style={{ marginBottom: `${sidebarConfig.mobileSidebarHeight}px` }}
+        onClick={onClose}
+        role="presentation"
+      />
+      {/* Overlay content panel — slides up from above the bottom nav */}
+      <div
+        className={cn(
+          'fixed left-0 right-0 z-[1400] overflow-auto',
+          'bg-[var(--sidebar-nav-bg,#171717)]',
+        )}
+        style={{
+          bottom: `${sidebarConfig.mobileSidebarHeight}px`,
+          height: `calc(100% - ${sidebarConfig.mobileSidebarHeight}px)`,
+        }}
+        role="dialog"
+      >
+        <div
+          className={cn(
+            'flex items-center justify-between px-3 py-2',
+            'text-[var(--sidebar-nav-color,#b5b5b5)]',
+          )}
         >
-          <CloseIcon />
-        </IconButton>
-      </Box>
-      <Box component="nav">{children}</Box>
-    </Drawer>
+          <h3 className="text-lg font-semibold">{label}</h3>
+          <button
+            type="button"
+            onClick={onClose}
+            className={cn(
+              'rounded-full p-2',
+              'text-[var(--sidebar-nav-color,#b5b5b5)]',
+              'hover:bg-white/10',
+            )}
+            aria-label="Close menu"
+          >
+            <CloseIcon size={24} />
+          </button>
+        </div>
+        <nav>{children}</nav>
+      </div>
+    </>
   );
 };
 
@@ -159,7 +131,6 @@ const OverlayMenu = ({
 export const MobileSidebar = (props: MobileSidebarProps) => {
   const { sidebarConfig } = useContext(SidebarConfigContext);
   const { children } = props;
-  const classes = useStyles({ sidebarConfig });
   const location = useLocation();
   const [selectedMenuItemIndex, setSelectedMenuItemIndex] =
     useState<number>(-1);
@@ -214,13 +185,24 @@ export const MobileSidebar = (props: MobileSidebarProps) => {
           {sidebarGroups[selectedMenuItemIndex] &&
             (sidebarGroups[selectedMenuItemIndex].props.children as ReactNode)}
         </OverlayMenu>
-        <BottomNavigation
-          className={classes.root}
+        <nav
+          className={cn(
+            'fixed bottom-0 left-0 right-0 z-[1400] flex justify-around',
+            'border-t border-[#383838]',
+            'bg-[var(--sidebar-nav-bg,#171717)]',
+            'text-[var(--sidebar-nav-color,#b5b5b5)]',
+            'print:hidden',
+          )}
+          style={{ height: `${sidebarConfig.mobileSidebarHeight}px` }}
           data-testid="mobile-sidebar-root"
-          component="nav"
         >
-          {sidebarGroups}
-        </BottomNavigation>
+          {/* Inject the value (index) prop into each SidebarGroup so that
+              MobileSidebarGroup knows its position — replicates the behavior
+              that MUI BottomNavigation provided via React.cloneElement. */}
+          {sidebarGroups.map((group, index) =>
+            cloneElement(group, { value: index, key: group.key ?? index }),
+          )}
+        </nav>
       </MobileSidebarContext.Provider>
     </SidebarOpenStateProvider>
   );

@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-import Box from '@material-ui/core/Box';
-import CircularProgress from '@material-ui/core/CircularProgress';
-
 /**
  * @internal
  */
@@ -25,17 +22,13 @@ export function TableLoadingBody(props: { colSpan?: number }) {
     <tbody data-testid="loading-indicator">
       <tr>
         <td colSpan={props.colSpan}>
-          <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              width: '100%',
-              minHeight: '15rem',
-            }}
-          >
-            <CircularProgress size="5rem" />
-          </Box>
+          <div className="flex w-full items-center justify-center min-h-[15rem]">
+            <div
+              className="h-20 w-20 animate-spin rounded-full border-4 border-muted border-t-primary"
+              role="status"
+              aria-label="Loading"
+            />
+          </div>
         </td>
       </tr>
     </tbody>

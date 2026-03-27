@@ -17,56 +17,21 @@
 import { StreamLanguage } from '@codemirror/language';
 import { yaml as yamlSupport } from '@codemirror/legacy-modes/mode/yaml';
 import { showPanel } from '@codemirror/view';
-import IconButton from '@material-ui/core/IconButton';
-import Paper from '@material-ui/core/Paper';
-import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
-import RefreshIcon from '@material-ui/icons/Refresh';
-import SaveIcon from '@material-ui/icons/Save';
+import {
+  ShadcnButton as Button,
+  Card,
+  ShadcnTooltip,
+  TooltipTrigger,
+  TooltipContent,
+  cn,
+} from '@backstage/core-components';
+import { RefreshCw, Save } from 'lucide-react';
 import { useKeyboardEvent } from '@react-hookz/web';
 import CodeMirror from '@uiw/react-codemirror';
 import { useMemo } from 'react';
 import { useDirectoryEditor } from './DirectoryEditorContext';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../../translation';
-
-const useStyles = makeStyles(theme => ({
-  container: {
-    position: 'relative',
-    width: '100%',
-    height: '100%',
-  },
-  typography: {
-    padding: theme.spacing(1.5),
-  },
-  button: {
-    verticalAlign: 'top',
-  },
-  codeMirror: {
-    height: '100%',
-    [theme.breakpoints.up('md')]: {
-      position: 'absolute',
-      top: 0,
-      bottom: 0,
-      left: 0,
-      right: 0,
-    },
-  },
-  errorPanel: {
-    color: theme.palette.error.main,
-    lineHeight: 2,
-    margin: theme.spacing(0, 1),
-  },
-  floatingButtons: {
-    position: 'absolute',
-    top: theme.spacing(1),
-    right: theme.spacing(3),
-  },
-  floatingButton: {
-    padding: theme.spacing(1),
-  },
-}));
 
 /** A wrapper around CodeMirror with an error panel and extra actions available */
 export function TemplateEditorTextArea(props: {
@@ -77,7 +42,6 @@ export function TemplateEditorTextArea(props: {
   onReload?: () => void;
 }) {
   const { errorText } = props;
-  const classes = useStyles();
   const { t } = useTranslationRef(scaffolderTranslationRef);
 
   const panelExtension = useMemo(() => {
@@ -86,10 +50,10 @@ export function TemplateEditorTextArea(props: {
     }
 
     const dom = document.createElement('div');
-    dom.classList.add(classes.errorPanel);
+    dom.className = cn('text-destructive leading-8 mx-2');
     dom.textContent = errorText;
     return showPanel.of(() => ({ dom, bottom: true }));
-  }, [classes, errorText]);
+  }, [errorText]);
 
   useKeyboardEvent(
     e => e.key === 's' && (e.ctrlKey || e.metaKey),
@@ -102,9 +66,9 @@ export function TemplateEditorTextArea(props: {
   );
 
   return (
-    <div className={classes.container}>
+    <div className="relative w-full h-full">
       <CodeMirror
-        className={classes.codeMirror}
+        className="h-full md:absolute md:inset-0"
         theme="dark"
         height="100%"
         extensions={[StreamLanguage.define(yamlSupport), panelExtension]}
@@ -112,37 +76,47 @@ export function TemplateEditorTextArea(props: {
         onChange={props.onUpdate}
       />
       {(props.onSave || props.onReload) && (
-        <div className={classes.floatingButtons}>
-          <Paper>
+        <div className="absolute top-2 right-6">
+          <Card className="flex">
             {props.onSave && (
-              <Tooltip
-                title={t(
-                  'templateEditorPage.templateEditorTextArea.saveIconTooltip',
-                )}
-              >
-                <IconButton
-                  className={classes.floatingButton}
-                  onClick={() => props.onSave?.()}
-                >
-                  <SaveIcon />
-                </IconButton>
-              </Tooltip>
+              <ShadcnTooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="p-2"
+                    onClick={() => props.onSave?.()}
+                  >
+                    <Save className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  {t(
+                    'templateEditorPage.templateEditorTextArea.saveIconTooltip',
+                  )}
+                </TooltipContent>
+              </ShadcnTooltip>
             )}
             {props.onReload && (
-              <Tooltip
-                title={t(
-                  'templateEditorPage.templateEditorTextArea.refreshIconTooltip',
-                )}
-              >
-                <IconButton
-                  className={classes.floatingButton}
-                  onClick={() => props.onReload?.()}
-                >
-                  <RefreshIcon />
-                </IconButton>
-              </Tooltip>
+              <ShadcnTooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="p-2"
+                    onClick={() => props.onReload?.()}
+                  >
+                    <RefreshCw className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  {t(
+                    'templateEditorPage.templateEditorTextArea.refreshIconTooltip',
+                  )}
+                </TooltipContent>
+              </ShadcnTooltip>
             )}
-          </Paper>
+          </Card>
         </div>
       )}
     </div>
@@ -153,19 +127,14 @@ export function TemplateEditorTextArea(props: {
 export function TemplateEditorDirectoryEditorTextArea(props: {
   errorText?: string;
 }) {
-  const classes = useStyles();
   const directoryEditor = useDirectoryEditor();
   const { t } = useTranslationRef(scaffolderTranslationRef);
 
   if (!directoryEditor) {
     return (
-      <Typography
-        className={classes.typography}
-        color="textSecondary"
-        align="center"
-      >
+      <p className="p-3 text-muted-foreground text-center">
         {t('templateEditorPage.templateEditorTextArea.emptyStateParagraph')}
-      </Typography>
+      </p>
     );
   }
 

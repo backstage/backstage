@@ -19,54 +19,16 @@ import {
   useTranslationRef,
   appLanguageApiRef,
 } from '@backstage/core-plugin-api/alpha';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import { makeStyles } from '@material-ui/core/styles';
 import { userSettingsTranslationRef } from '../../translation';
 import { useApi } from '@backstage/core-plugin-api';
 import useObservable from 'react-use/esm/useObservable';
 import { Select } from '@backstage/core-components';
-
-const useStyles = makeStyles(theme => ({
-  container: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    width: '100%',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingBottom: 8,
-    paddingRight: 16,
-  },
-  list: {
-    width: 'initial',
-    [theme.breakpoints.down('xs')]: {
-      width: '100%',
-      padding: `0 0 12px`,
-    },
-  },
-  listItemText: {
-    paddingRight: 0,
-    paddingLeft: 0,
-  },
-  listItemSecondaryAction: {
-    position: 'relative',
-    transform: 'unset',
-    top: 'auto',
-    right: 'auto',
-    paddingLeft: 16,
-    [theme.breakpoints.down('xs')]: {
-      paddingLeft: 0,
-    },
-  },
-}));
 
 const capitalize = (s: string) =>
   s.charAt(0).toLocaleUpperCase('en-US') + s.slice(1);
 
 /** @public */
 export const UserSettingsLanguageToggle = () => {
-  const classes = useStyles();
   const languageApi = useApi(appLanguageApiRef);
   const { t } = useTranslationRef(userSettingsTranslationRef);
 
@@ -99,18 +61,18 @@ export const UserSettingsLanguageToggle = () => {
   };
 
   return (
-    <ListItem
-      className={classes.list}
-      classes={{ container: classes.container }}
-    >
-      <ListItemText
-        className={classes.listItemText}
-        primary={t('languageToggle.title')}
-        secondary={t('languageToggle.description')}
-      />
-      <ListItemSecondaryAction className={classes.listItemSecondaryAction}>
+    <div className="flex flex-wrap w-full justify-between items-center pb-2 pr-4 sm:w-auto sm:pb-0">
+      <div className="px-0">
+        <p className="text-sm font-medium text-foreground">
+          {t('languageToggle.title')}
+        </p>
+        <p className="text-xs text-muted-foreground">
+          {t('languageToggle.description')}
+        </p>
+      </div>
+      <div className="relative pl-4 sm:pl-0">
         <Select
-          label=""
+          label="Select language"
           selected={currentLanguage}
           items={languages.map(language => ({
             label: getLanguageDisplayName(language),
@@ -118,7 +80,7 @@ export const UserSettingsLanguageToggle = () => {
           }))}
           onChange={selectedItems => handleSetLanguage(selectedItems as string)}
         />
-      </ListItemSecondaryAction>
-    </ListItem>
+      </div>
+    </div>
   );
 };

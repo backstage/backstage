@@ -13,36 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Box from '@material-ui/core/Box';
-import {
-  createStyles,
-  makeStyles,
-  Theme,
-  WithStyles,
-} from '@material-ui/core/styles';
 import { ReactNode } from 'react';
+import { cn } from '../../lib/utils';
 
 /** @public */
 export type ItemCardGridClassKey = 'root';
 
-const styles = (theme: Theme) =>
-  createStyles({
-    root: {
-      display: 'grid',
-      gridTemplateColumns: 'repeat(auto-fill, minmax(22em, 1fr))',
-      gridAutoRows: '1fr',
-      gridGap: theme.spacing(2),
-    },
-  });
-
-const useStyles = makeStyles(styles, { name: 'BackstageItemCardGrid' });
-
 /** @public */
-export type ItemCardGridProps = Partial<WithStyles<typeof styles>> & {
+export type ItemCardGridProps = {
   /**
    * The Card items of the grid.
    */
   children?: ReactNode;
+  /**
+   * Override or extend the styles applied to the component.
+   * The key 'root' applies to the grid container element.
+   */
+  classes?: Partial<Record<ItemCardGridClassKey, string>>;
+  /**
+   * Additional CSS class name for the grid container.
+   */
+  className?: string;
+  /**
+   * Pass-through HTML attributes for the grid container div.
+   */
+  [key: string]: unknown;
 };
 
 /**
@@ -50,7 +45,7 @@ export type ItemCardGridProps = Partial<WithStyles<typeof styles>> & {
  * select among several options.
  *
  * @remarks
- * The immediate children are expected to be Material UI Card components.
+ * The immediate children are expected to be Card components.
  *
  * Styles for the grid can be overridden using the `classes` prop, e.g.:
  *
@@ -62,11 +57,17 @@ export type ItemCardGridProps = Partial<WithStyles<typeof styles>> & {
  * @public
  */
 export function ItemCardGrid(props: ItemCardGridProps) {
-  const { children, ...otherProps } = props;
-  const classes = useStyles(otherProps);
+  const { children, classes, className, ...otherProps } = props;
   return (
-    <Box className={classes.root} {...otherProps}>
+    <div
+      className={cn(
+        'grid grid-cols-[repeat(auto-fill,minmax(22em,1fr))] auto-rows-fr gap-4',
+        classes?.root,
+        className,
+      )}
+      {...otherProps}
+    >
       {children}
-    </Box>
+    </div>
   );
 }

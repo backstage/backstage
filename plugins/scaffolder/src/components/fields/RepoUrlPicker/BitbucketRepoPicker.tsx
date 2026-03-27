@@ -13,14 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Select, SelectItem } from '@backstage/core-components';
+import {
+  Select,
+  SelectItem,
+  Input,
+  Label,
+  ShadcnButton as Button,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  Command,
+  CommandInput,
+  CommandList,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+  cn,
+} from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
-import FormControl from '@material-ui/core/FormControl';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import TextField from '@material-ui/core/TextField';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import { ChevronsUpDown, Check } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import useDebounce from 'react-use/esm/useDebounce';
 import { scaffolderTranslationRef } from '../../../translation';
@@ -71,6 +84,8 @@ export const BitbucketRepoPicker = (
 
   const [availableWorkspaces, setAvailableWorkspaces] = useState<string[]>([]);
   const [availableProjects, setAvailableProjects] = useState<string[]>([]);
+  const [workspaceOpen, setWorkspaceOpen] = useState(false);
+  const [projectOpen, setProjectOpen] = useState(false);
 
   // Update available workspaces when client is available
   const updateAvailableWorkspaces = useCallback(() => {
@@ -163,90 +178,235 @@ export const BitbucketRepoPicker = (
 
   useDebounce(updateAvailableRepositories, 500, [updateAvailableRepositories]);
 
+  // Determine which workspace field variant to render based on available data.
+  // Branch 1: allowedOwners provided → Backstage Select dropdown
+  // Branch 2: availableWorkspaces populated via API → Popover + Command combobox
+  // Branch 3: fallback → plain text Input
+  let workspaceField: JSX.Element;
+  if (allowedOwners?.length) {
+    workspaceField = (
+      <>
+        <Select
+          native
+          label={t('fields.bitbucketRepoPicker.workspaces.title')}
+          onChange={s =>
+            onChange({
+              workspace: String(Array.isArray(s) ? s[0] : s),
+            })
+          }
+          disabled={isDisabled || allowedOwners.length === 1}
+          selected={workspace}
+          items={ownerItems}
+        />
+        {/* eslint-disable-next-line react/forbid-elements -- migrating from MUI Typography to native elements with Tailwind */}
+        <p className="mt-1 text-sm text-muted-foreground">
+          {t('fields.bitbucketRepoPicker.workspaces.description')}
+        </p>
+      </>
+    );
+  } else if (availableWorkspaces?.length) {
+    workspaceField = (
+      <div className="space-y-2">
+        <Label>{t('fields.bitbucketRepoPicker.workspaces.inputTitle')}</Label>
+        <Popover open={workspaceOpen} onOpenChange={setWorkspaceOpen}>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              role="combobox"
+              aria-expanded={workspaceOpen}
+              disabled={isDisabled}
+              className="w-full justify-between font-normal"
+            >
+              {workspace ||
+                t('fields.bitbucketRepoPicker.workspaces.inputTitle')}
+              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-full p-0" align="start">
+            <Command>
+              <CommandInput
+                placeholder={t(
+                  'fields.bitbucketRepoPicker.workspaces.inputTitle',
+                )}
+                onValueChange={val => {
+                  onChange({ workspace: val });
+                }}
+              />
+              <CommandList>
+                <CommandEmpty>No workspace found.</CommandEmpty>
+                <CommandGroup>
+                  {availableWorkspaces.map(ws => (
+                    <CommandItem
+                      key={ws}
+                      value={ws}
+                      onSelect={currentValue => {
+                        onChange({ workspace: currentValue });
+                        setWorkspaceOpen(false);
+                      }}
+                    >
+                      <Check
+                        className={cn(
+                          'mr-2 h-4 w-4',
+                          workspace === ws ? 'opacity-100' : 'opacity-0',
+                        )}
+                      />
+                      {ws}
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
+        {/* eslint-disable-next-line react/forbid-elements -- migrating from MUI Typography to native elements with Tailwind */}
+        <p className="text-sm text-muted-foreground">
+          {t('fields.bitbucketRepoPicker.workspaces.description')}
+        </p>
+      </div>
+    );
+  } else {
+    workspaceField = (
+      <div className="space-y-2">
+        <Label htmlFor="workspaceInput">
+          {t('fields.bitbucketRepoPicker.workspaces.inputTitle')}
+        </Label>
+        <Input
+          id="workspaceInput"
+          onChange={e => onChange({ workspace: e.target.value })}
+          disabled={isDisabled}
+          value={workspace}
+        />
+        {/* eslint-disable-next-line react/forbid-elements -- migrating from MUI Typography to native elements with Tailwind */}
+        <p className="text-sm text-muted-foreground">
+          {t('fields.bitbucketRepoPicker.workspaces.description')}
+        </p>
+      </div>
+    );
+  }
+
+  // Determine which project field variant to render based on available data.
+  // Branch 1: allowedProjects provided → Backstage Select dropdown
+  // Branch 2: availableProjects populated via API → Popover + Command combobox
+  // Branch 3: fallback → plain text Input
+  let projectField: JSX.Element;
+  if (allowedProjects?.length) {
+    projectField = (
+      <>
+        <Select
+          native
+          label={t('fields.bitbucketRepoPicker.project.title')}
+          onChange={s =>
+            onChange({
+              project: String(Array.isArray(s) ? s[0] : s),
+            })
+          }
+          disabled={isDisabled || allowedProjects.length === 1}
+          selected={project}
+          items={projectItems}
+        />
+        {/* eslint-disable-next-line react/forbid-elements -- migrating from MUI Typography to native elements with Tailwind */}
+        <p className="mt-1 text-sm text-muted-foreground">
+          {t('fields.bitbucketRepoPicker.project.description')}
+        </p>
+      </>
+    );
+  } else if (availableProjects?.length) {
+    projectField = (
+      <div className="space-y-2">
+        <Label>{t('fields.bitbucketRepoPicker.project.inputTitle')}</Label>
+        <Popover open={projectOpen} onOpenChange={setProjectOpen}>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              role="combobox"
+              aria-expanded={projectOpen}
+              disabled={isDisabled}
+              className="w-full justify-between font-normal"
+            >
+              {project || t('fields.bitbucketRepoPicker.project.inputTitle')}
+              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-full p-0" align="start">
+            <Command>
+              <CommandInput
+                placeholder={t('fields.bitbucketRepoPicker.project.inputTitle')}
+                onValueChange={val => {
+                  onChange({ project: val });
+                }}
+              />
+              <CommandList>
+                <CommandEmpty>No project found.</CommandEmpty>
+                <CommandGroup>
+                  {availableProjects.map(p => (
+                    <CommandItem
+                      key={p}
+                      value={p}
+                      onSelect={currentValue => {
+                        onChange({ project: currentValue });
+                        setProjectOpen(false);
+                      }}
+                    >
+                      <Check
+                        className={cn(
+                          'mr-2 h-4 w-4',
+                          project === p ? 'opacity-100' : 'opacity-0',
+                        )}
+                      />
+                      {p}
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
+        {/* eslint-disable-next-line react/forbid-elements -- migrating from MUI Typography to native elements with Tailwind */}
+        <p className="text-sm text-muted-foreground">
+          {t('fields.bitbucketRepoPicker.project.description')}
+        </p>
+      </div>
+    );
+  } else {
+    projectField = (
+      <div className="space-y-2">
+        <Label htmlFor="projectInput">
+          {t('fields.bitbucketRepoPicker.project.inputTitle')}
+        </Label>
+        <Input
+          id="projectInput"
+          onChange={e => onChange({ project: e.target.value })}
+          disabled={isDisabled}
+          value={project}
+        />
+        {/* eslint-disable-next-line react/forbid-elements -- migrating from MUI Typography to native elements with Tailwind */}
+        <p className="text-sm text-muted-foreground">
+          {t('fields.bitbucketRepoPicker.project.description')}
+        </p>
+      </div>
+    );
+  }
+
   return (
     <>
       {host === 'bitbucket.org' && (
-        <FormControl
-          margin="normal"
-          required
-          error={rawErrors?.length > 0 && !workspace}
-        >
-          {allowedOwners?.length ? (
-            <Select
-              native
-              label={t('fields.bitbucketRepoPicker.workspaces.title')}
-              onChange={s =>
-                onChange({ workspace: String(Array.isArray(s) ? s[0] : s) })
-              }
-              disabled={isDisabled || allowedOwners.length === 1}
-              selected={workspace}
-              items={ownerItems}
-            />
-          ) : (
-            <Autocomplete
-              value={workspace}
-              onChange={(_, newValue) => {
-                onChange({ workspace: newValue || '' });
-              }}
-              options={availableWorkspaces}
-              renderInput={params => (
-                <TextField
-                  {...params}
-                  label={t('fields.bitbucketRepoPicker.workspaces.inputTitle')}
-                  disabled={isDisabled}
-                  required
-                />
-              )}
-              disabled={isDisabled}
-              freeSolo
-              autoSelect
-            />
+        <div
+          className={cn(
+            'mt-4 mb-2',
+            rawErrors?.length > 0 && !workspace && 'text-destructive',
           )}
-          <FormHelperText>
-            {t('fields.bitbucketRepoPicker.workspaces.description')}
-          </FormHelperText>
-        </FormControl>
+        >
+          {workspaceField}
+        </div>
       )}
-      <FormControl
-        margin="normal"
-        required
-        error={rawErrors?.length > 0 && !project}
-      >
-        {allowedProjects?.length ? (
-          <Select
-            native
-            label={t('fields.bitbucketRepoPicker.project.title')}
-            onChange={s =>
-              onChange({ project: String(Array.isArray(s) ? s[0] : s) })
-            }
-            disabled={isDisabled || allowedProjects.length === 1}
-            selected={project}
-            items={projectItems}
-          />
-        ) : (
-          <Autocomplete
-            value={project}
-            onChange={(_, newValue) => {
-              onChange({ project: newValue || '' });
-            }}
-            options={availableProjects}
-            disabled={isDisabled}
-            renderInput={params => (
-              <TextField
-                {...params}
-                label={t('fields.bitbucketRepoPicker.project.inputTitle')}
-                disabled={isDisabled}
-                required
-              />
-            )}
-            freeSolo
-            autoSelect
-          />
+      <div
+        className={cn(
+          'mt-4 mb-2',
+          rawErrors?.length > 0 && !project && 'text-destructive',
         )}
-        <FormHelperText>
-          {t('fields.bitbucketRepoPicker.project.description')}
-        </FormHelperText>
-      </FormControl>
+      >
+        {projectField}
+      </div>
     </>
   );
 };

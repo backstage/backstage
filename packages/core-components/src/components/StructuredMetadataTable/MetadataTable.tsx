@@ -13,68 +13,71 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import {
-  createStyles,
-  Theme,
-  WithStyles,
-  withStyles,
-} from '@material-ui/core/styles';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableRow from '@material-ui/core/TableRow';
-import { ReactNode } from 'react';
+import { type ReactNode, type TdHTMLAttributes } from 'react';
+import { ShadcnTable, TableBody, TableRow, TableCell } from '../ui/table';
+import { cn } from '../../lib/utils';
 
 export type MetadataTableTitleCellClassKey = 'root';
 
-const tableTitleCellStyles = (theme: Theme) =>
-  createStyles({
-    root: {
-      fontWeight: theme.typography.fontWeightBold,
-      whiteSpace: 'nowrap',
-      paddingRight: theme.spacing(4),
-      border: '0',
-      verticalAlign: 'top',
-    },
-  });
-
 export type MetadataTableCellClassKey = 'root';
-
-const tableContentCellStyles = {
-  root: {
-    border: '0',
-    verticalAlign: 'top',
-  },
-};
 
 export type MetadataTableListClassKey = 'root';
 
-const listStyles = (theme: Theme) =>
-  createStyles({
-    root: {
-      margin: theme.spacing(0, 0, -1, 0),
-    },
-  });
-
 export type MetadataTableListItemClassKey = 'root' | 'random';
 
-const listItemStyles = (theme: Theme) =>
-  createStyles({
-    root: {
-      padding: theme.spacing(0, 0, 1, 0),
-    },
-    random: {},
-  });
+/**
+ * Styled table cell for metadata title/key column.
+ * Renders bold, non-wrapping text with right padding and top alignment.
+ *
+ * Tailwind class mapping from MUI tableTitleCellStyles:
+ * - fontWeight: theme.typography.fontWeightBold → font-bold (700)
+ * - whiteSpace: 'nowrap' → whitespace-nowrap
+ * - paddingRight: theme.spacing(4) → pr-8 (32px = 2rem)
+ * - border: '0' → border-0
+ * - verticalAlign: 'top' → align-top
+ */
+const TitleCell = ({
+  children,
+  className,
+  ...props
+}: TdHTMLAttributes<HTMLTableCellElement>) => (
+  <TableCell
+    className={cn(
+      'font-bold whitespace-nowrap pr-8 border-0 align-top',
+      className,
+    )}
+    {...props}
+  >
+    {children}
+  </TableCell>
+);
 
-const TitleCell = withStyles(tableTitleCellStyles, {
-  name: 'BackstageMetadataTableTitleCell',
-})(TableCell);
-const ContentCell = withStyles(tableContentCellStyles, {
-  name: 'BackstageMetadataTableCell',
-})(TableCell);
+/**
+ * Styled table cell for metadata content/value column.
+ * Renders with no border and top vertical alignment.
+ *
+ * Tailwind class mapping from MUI tableContentCellStyles:
+ * - border: '0' → border-0
+ * - verticalAlign: 'top' → align-top
+ */
+const ContentCell = ({
+  children,
+  className,
+  ...props
+}: TdHTMLAttributes<HTMLTableCellElement>) => (
+  <TableCell className={cn('border-0 align-top', className)} {...props}>
+    {children}
+  </TableCell>
+);
 
+/**
+ * Renders a metadata key-value table with optional density toggle.
+ * Uses shadcn/ui ShadcnTable as the root table element with a TableBody.
+ *
+ * ShadcnTable applies `text-sm` by default (matching MUI Table size="small").
+ * When `dense` is false, overrides to `text-base` for standard density
+ * (matching MUI Table size="medium").
+ */
 export const MetadataTable = ({
   dense,
   children,
@@ -82,11 +85,15 @@ export const MetadataTable = ({
   dense?: boolean;
   children: ReactNode;
 }) => (
-  <Table size={dense ? 'small' : 'medium'}>
+  <ShadcnTable className={cn(!dense && 'text-base')}>
     <TableBody>{children}</TableBody>
-  </Table>
+  </ShadcnTable>
 );
 
+/**
+ * A single row in the MetadataTable, displaying a title cell and content cell.
+ * When no title is provided, the content cell spans both columns via colSpan.
+ */
 export const MetadataTableItem = ({
   title,
   children,
@@ -103,20 +110,34 @@ export const MetadataTableItem = ({
   </TableRow>
 );
 
-interface StyleProps extends WithStyles {
+/**
+ * A semantic list for displaying metadata values, rendered as an unstyled `<ul>`.
+ * Accepts a `className` prop for consumer customization.
+ *
+ * Tailwind class mapping from MUI listStyles:
+ * - List disablePadding → list-none p-0
+ * - margin: theme.spacing(0, 0, -1, 0) → -mb-2 (margin-bottom: -8px = -0.5rem)
+ */
+export const MetadataList = ({
+  children,
+  className,
+}: {
   children?: ReactNode;
-}
+  className?: string;
+}) => <ul className={cn('list-none p-0 -mb-2', className)}>{children}</ul>;
 
-export const MetadataList = withStyles(listStyles, {
-  name: 'BackstageMetadataTableList',
-})(({ classes, children }: StyleProps) => (
-  <List disablePadding className={classes.root}>
-    {children}
-  </List>
-));
-
-export const MetadataListItem = withStyles(listItemStyles, {
-  name: 'BackstageMetadataTableListItem',
-})(({ classes, children }: StyleProps) => (
-  <ListItem className={classes.root}>{children}</ListItem>
-));
+/**
+ * A single item within the MetadataList, rendered as a `<li>`.
+ * Applies bottom padding matching the original MUI ListItem spacing.
+ *
+ * Tailwind class mapping from MUI listItemStyles:
+ * - padding: theme.spacing(0, 0, 1, 0) → pb-2 (padding-bottom: 8px = 0.5rem)
+ *   with px-0 pt-0 for explicit zero padding on other sides
+ */
+export const MetadataListItem = ({
+  children,
+  className,
+}: {
+  children?: ReactNode;
+  className?: string;
+}) => <li className={cn('pb-2 px-0 pt-0', className)}>{children}</li>;

@@ -13,11 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Box from '@material-ui/core/Box';
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import {
+import { cn } from '../../lib/utils';
+import React, {
   PropsWithChildren,
   useCallback,
   useEffect,
@@ -40,58 +37,21 @@ export type FeatureCalloutCircleClassKey =
   | 'pulseCircle'
   | 'text';
 
-const useStyles = makeStyles(
-  theme => ({
-    '@keyframes pulsateSlightly': {
-      '0%': { transform: 'scale(1.0)' },
-      '100%': { transform: 'scale(1.1)' },
-    },
-    '@keyframes pulsateAndFade': {
-      '0%': { transform: 'scale(1.0)', opacity: 0.9 },
-      '100%': { transform: 'scale(1.5)', opacity: 0 },
-    },
-    featureWrapper: {
-      position: 'relative',
-    },
-    backdrop: {
-      zIndex: 2000,
-      position: 'fixed',
-      overflow: 'hidden',
-      left: 0,
-      right: 0,
-      top: 0,
-      bottom: 0,
-    },
-    dot: {
-      position: 'absolute',
-      backgroundColor: 'transparent',
-      borderRadius: '100%',
-      border: '1px solid rgba(103, 146, 180, 0.98)',
-      boxShadow: '0px 0px 0px 20000px rgba(0, 0, 0, 0.5)',
-      zIndex: 2001,
-      transformOrigin: 'center center',
-      animation:
-        '$pulsateSlightly 1744ms 1.2s cubic-bezier(0.4, 0, 0.2, 1) alternate infinite',
-    },
-    pulseCircle: {
-      width: '100%',
-      height: '100%',
-      backgroundColor: 'transparent',
-      borderRadius: '100%',
-      border: `2px solid ${theme.palette.common.white}`,
-      zIndex: 2001,
-      transformOrigin: 'center center',
-      animation:
-        '$pulsateAndFade 872ms 1.2s cubic-bezier(0.4, 0, 0.2, 1) infinite',
-    },
-    text: {
-      position: 'absolute',
-      color: theme.palette.common.white,
-      zIndex: 2003,
-    },
-  }),
-  { name: 'BackstageFeatureCalloutCircular' },
-);
+/**
+ * Component-specific keyframe animations for the circular callout.
+ * Rendered via an inline `<style>` tag within the portal to avoid
+ * polluting global CSS and to keep animations scoped to this component.
+ */
+const keyframeStyles = `
+  @keyframes pulsateSlightly {
+    0% { transform: scale(1.0); }
+    100% { transform: scale(1.1); }
+  }
+  @keyframes pulsateAndFade {
+    0% { transform: scale(1.0); opacity: 0.9; }
+    100% { transform: scale(1.5); opacity: 0; }
+  }
+`;
 
 export type Props = {
   featureId: string;
@@ -121,7 +81,6 @@ export function FeatureCalloutCircular(props: PropsWithChildren<Props>) {
   const portalElement = usePortal('core.callout');
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [placement, setPlacement] = useState<Placement | undefined>();
-  const classes = useStyles();
 
   const update = useCallback(() => {
     if (wrapperRef.current) {
@@ -169,47 +128,68 @@ export function FeatureCalloutCircular(props: PropsWithChildren<Props>) {
 
   return (
     <>
-      <Box className={classes.featureWrapper} {...{ ref: wrapperRef }}>
+      <div ref={wrapperRef} className="relative">
         {children}
-      </Box>
+      </div>
       {createPortal(
-        <Box className={classes.backdrop}>
-          <ClickAwayListener onClickAway={hide}>
-            <>
-              <Box
-                className={classes.dot}
-                data-testid="dot"
-                style={{
-                  left: placement?.dotLeft,
-                  top: placement?.dotTop,
-                  width: placement?.dotSize,
-                  height: placement?.dotSize,
-                  borderWidth: placement?.borderWidth,
-                }}
-                onClick={hide}
-                onKeyDown={hide}
-                role="button"
-                tabIndex={0}
-              >
-                <Box className={classes.pulseCircle} />
-              </Box>
-              <Box
-                className={classes.text}
-                data-testid="text"
-                style={{
-                  left: placement?.textLeft,
-                  top: placement?.textTop,
-                  width: placement?.textWidth,
-                }}
-              >
-                <Typography variant="h2" paragraph>
-                  {title}
-                </Typography>
-                <Typography>{description}</Typography>
-              </Box>
-            </>
-          </ClickAwayListener>
-        </Box>,
+        <div
+          className={cn('fixed inset-0 z-[2000] overflow-hidden')}
+          onClick={hide}
+          onKeyDown={(e: React.KeyboardEvent) => {
+            if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') {
+              hide();
+            }
+          }}
+          role="button"
+          tabIndex={-1}
+          aria-label="Dismiss feature callout"
+        >
+          {/* Scoped keyframe definitions for pulsate animations */}
+          <style>{keyframeStyles}</style>
+          <div
+            className={cn(
+              'absolute rounded-full bg-transparent',
+              'border border-[rgba(103,146,180,0.98)]',
+              'shadow-[0px_0px_0px_20000px_rgba(0,0,0,0.5)]',
+              'z-[2001] origin-center',
+            )}
+            data-testid="dot"
+            style={{
+              left: placement?.dotLeft,
+              top: placement?.dotTop,
+              width: placement?.dotSize,
+              height: placement?.dotSize,
+              borderWidth: placement?.borderWidth,
+              animation:
+                'pulsateSlightly 1744ms 1.2s cubic-bezier(0.4, 0, 0.2, 1) alternate infinite',
+            }}
+            onClick={hide}
+            onKeyDown={hide}
+            role="button"
+            tabIndex={0}
+          >
+            <div
+              className="h-full w-full rounded-full bg-transparent border-2 border-white z-[2001] origin-center"
+              style={{
+                animation:
+                  'pulsateAndFade 872ms 1.2s cubic-bezier(0.4, 0, 0.2, 1) infinite',
+              }}
+            />
+          </div>
+          <div
+            className={cn('absolute text-white z-[2003]')}
+            data-testid="text"
+            style={{
+              left: placement?.textLeft,
+              top: placement?.textTop,
+              width: placement?.textWidth,
+            }}
+          >
+            <h2 className="mb-4 text-3xl font-bold tracking-tight">{title}</h2>
+            {/* eslint-disable-next-line react/forbid-elements -- Semantic HTML replaces MUI Typography in shadcn/ui migration */}
+            <p className="text-base leading-relaxed">{description}</p>
+          </div>
+        </div>,
         portalElement,
       )}
     </>

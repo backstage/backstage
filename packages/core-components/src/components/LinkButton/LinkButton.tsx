@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-import MaterialButton, {
-  ButtonProps as MaterialButtonProps,
-} from '@material-ui/core/Button';
 import { forwardRef } from 'react';
+import { Button as ShadcnButton, type ButtonProps as ShadcnButtonProps } from '../ui/button';
 import { UnstyledLink, LinkProps } from '../Link/Link';
+import { cn } from '../../lib/utils';
 
 /**
  * Properties for {@link LinkButton}
@@ -26,27 +25,38 @@ import { UnstyledLink, LinkProps } from '../Link/Link';
  * @public
  * @remarks
  *
- * See {@link https://v4.mui.com/api/button/#props | Material UI Button Props} for all properties
+ * See {@link https://ui.shadcn.com/docs/components/button | shadcn/ui Button} for button properties
  */
-export type LinkButtonProps = MaterialButtonProps &
+export type LinkButtonProps = Omit<ShadcnButtonProps, 'asChild'> &
   Omit<LinkProps, 'variant' | 'color'>;
 
 /**
- * This wrapper is here to reset the color of the Link and make typescript happy.
+ * This wrapper forwards all props to UnstyledLink for router-aware navigation.
  */
 const LinkWrapper = forwardRef<any, LinkProps>((props, ref) => (
-  <UnstyledLink ref={ref} {...props} color="initial" />
+  <UnstyledLink ref={ref} {...props} />
 ));
 
 /**
- * Thin wrapper on top of material-ui's {@link https://v4.mui.com/components/buttons/ | Button} component
+ * Router-aware button component built on shadcn/ui Button with Radix Slot render delegation.
+ * Uses the `asChild` pattern to compose button styling with React Router Link navigation.
  *
  * @public
  * @remarks
  */
-export const LinkButton = forwardRef<any, LinkButtonProps>((props, ref) => (
-  <MaterialButton ref={ref} component={LinkWrapper} {...props} />
-)) as (props: LinkButtonProps) => JSX.Element;
+export const LinkButton = forwardRef<any, LinkButtonProps>(
+  ({ className, variant, size, disabled, ...linkProps }, ref) => (
+    <ShadcnButton
+      variant={variant}
+      size={size}
+      disabled={disabled}
+      className={cn(className)}
+      asChild
+    >
+      <LinkWrapper ref={ref} {...(linkProps as LinkProps)} />
+    </ShadcnButton>
+  ),
+) as (props: LinkButtonProps) => JSX.Element;
 
 /**
  * @public

@@ -15,8 +15,7 @@
  */
 
 import { entityRouteRef } from '../../../routes';
-import IconButton from '@material-ui/core/IconButton';
-import InfoIcon from '@material-ui/icons/Info';
+import { Info } from 'lucide-react';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { Entity, getCompoundEntityRef } from '@backstage/catalog-model';
 import { Link } from '@backstage/core-components';
@@ -33,13 +32,13 @@ export const EntityCardActions = (props: { entity: Entity }) => {
   const { t } = useTranslationRef(catalogReactTranslationRef);
 
   return (
-    <IconButton
-      component={Link}
+    <Link
+      to={entityRoute(getCompoundEntityRef(props.entity))}
       aria-label={t('entityPeekAheadPopover.entityCardActionsAriaLabel')}
       title={t('entityPeekAheadPopover.entityCardActionsTitle')}
-      to={entityRoute(getCompoundEntityRef(props.entity))}
+      className="inline-flex items-center justify-center rounded-md w-9 h-9 hover:bg-accent hover:text-accent-foreground transition-colors"
     >
-      <InfoIcon />
-    </IconButton>
+      <Info className="h-4 w-4" />
+    </Link>
   );
 };

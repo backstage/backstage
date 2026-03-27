@@ -14,6 +14,19 @@
  * limitations under the License.
  */
 
+// Polyfill ResizeObserver for JSDOM — required by cmdk's Command component
+if (typeof globalThis.ResizeObserver === 'undefined') {
+  globalThis.ResizeObserver = class ResizeObserver {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  } as unknown as typeof globalThis.ResizeObserver;
+}
+// Polyfill scrollIntoView for JSDOM — required by cmdk
+if (!Element.prototype.scrollIntoView) {
+  Element.prototype.scrollIntoView = function () {};
+}
+
 import { waitFor } from '@testing-library/react';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { MyGroupsPicker } from './MyGroupsPicker';
@@ -38,6 +51,7 @@ import { DefaultEntityPresentationApi } from '@backstage/plugin-catalog';
 import { ComponentType, PropsWithChildren, ReactNode } from 'react';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { scaffolderTranslationRef } from '../../../translation';
+import { TooltipProvider } from '@backstage/core-components';
 
 const mockIdentityApi = mockApis.identity({
   userEntityRef: 'user:default/bob',
@@ -117,7 +131,9 @@ describe('<MyGroupsPicker />', () => {
           ],
         ]}
       >
-        <MyGroupsPicker {...props} />
+        <TooltipProvider>
+          <MyGroupsPicker {...props} />
+        </TooltipProvider>
       </TestApiProvider>,
     );
 
@@ -194,7 +210,9 @@ describe('<MyGroupsPicker />', () => {
           ],
         ]}
       >
-        <MyGroupsPicker {...props} />
+        <TooltipProvider>
+          <MyGroupsPicker {...props} />
+        </TooltipProvider>
       </TestApiProvider>,
     );
 
@@ -202,10 +220,16 @@ describe('<MyGroupsPicker />', () => {
       expect(catalogApi.getEntities).toHaveBeenCalledTimes(1),
     );
 
-    // Simulate user input
-    const inputField = getByRole('combobox');
-    await userEvent.click(inputField);
-    await userEvent.type(inputField, 'group');
+    // Open the combobox popover by clicking the trigger button
+    const comboboxButton = getByRole('combobox');
+    await userEvent.click(comboboxButton);
+
+    // Type into the Command search input inside the popover
+    const searchInput = document.querySelector(
+      '[cmdk-input]',
+    ) as HTMLInputElement;
+    expect(searchInput).toBeTruthy();
+    await userEvent.type(searchInput, 'group');
 
     // Wait for the dropdown elements to appear
     await waitFor(() => {
@@ -256,7 +280,9 @@ describe('<MyGroupsPicker />', () => {
           ],
         ]}
       >
-        <MyGroupsPicker {...props} />
+        <TooltipProvider>
+          <MyGroupsPicker {...props} />
+        </TooltipProvider>
       </TestApiProvider>,
     );
 
@@ -264,9 +290,16 @@ describe('<MyGroupsPicker />', () => {
       expect(catalogApi.getEntities).toHaveBeenCalledTimes(1),
     );
 
-    const inputField = getByRole('combobox');
-    await userEvent.click(inputField);
-    await userEvent.type(inputField, 'group');
+    // Open the combobox popover by clicking the trigger button
+    const comboboxButton = getByRole('combobox');
+    await userEvent.click(comboboxButton);
+
+    // Type into the Command search input inside the popover
+    const searchInput = document.querySelector(
+      '[cmdk-input]',
+    ) as HTMLInputElement;
+    expect(searchInput).toBeTruthy();
+    await userEvent.type(searchInput, 'group');
 
     await waitFor(() => {
       expect(
@@ -321,7 +354,9 @@ describe('<MyGroupsPicker />', () => {
           ],
         ]}
       >
-        <MyGroupsPicker {...props} />
+        <TooltipProvider>
+          <MyGroupsPicker {...props} />
+        </TooltipProvider>
       </TestApiProvider>,
     );
 
@@ -329,10 +364,11 @@ describe('<MyGroupsPicker />', () => {
       expect(catalogApi.getEntities).toHaveBeenCalledTimes(1),
     );
 
-    const inputField = getByRole('combobox');
-    const inputFieldValue = inputField?.querySelector('input')?.value;
-
-    expect(inputFieldValue).toEqual(userGroups[0].metadata.title);
+    // The combobox trigger button displays the selected entity's presentation title
+    const comboboxButton = getByRole('combobox');
+    await waitFor(() => {
+      expect(comboboxButton).toHaveTextContent(userGroups[0].metadata.title!);
+    });
   });
 
   describe('MyGroupsPicker description', () => {
@@ -359,7 +395,7 @@ describe('<MyGroupsPicker />', () => {
               ],
             ]}
           >
-            {children}
+            <TooltipProvider>{children}</TooltipProvider>
           </TestApiProvider>
         );
       };

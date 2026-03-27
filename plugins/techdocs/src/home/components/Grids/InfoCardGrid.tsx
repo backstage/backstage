@@ -27,24 +27,11 @@ import {
   EntityRefPresentationSnapshot,
   entityPresentationApiRef,
 } from '@backstage/plugin-catalog-react';
-import { makeStyles } from '@material-ui/core/styles';
 import { rootDocsRouteRef } from '../../../routes';
 import { toLowerMaybe } from '../../../helpers';
 
 /** @public */
 export type InfoCardGridClassKey = 'linkSpacer' | 'readMoreLink';
-
-const useStyles = makeStyles(
-  theme => ({
-    linkSpacer: {
-      paddingTop: theme.spacing(0.2),
-    },
-    readMoreLink: {
-      paddingTop: theme.spacing(0.2),
-    },
-  }),
-  { name: 'BackstageInfoCardGrid' },
-);
 
 /**
  * Props for {@link InfoCardGrid}
@@ -64,7 +51,6 @@ export type InfoCardGridProps = {
  */
 export const InfoCardGrid = (props: InfoCardGridProps) => {
   const { entities, linkContent, linkDestination } = props;
-  const classes = useStyles();
   const getRouteToReaderPageFor = useRouteRef(rootDocsRouteRef);
   const config = useApi(configApiRef);
   const linkRoute = (entity: Entity) => {
@@ -109,10 +95,10 @@ export const InfoCardGrid = (props: InfoCardGridProps) => {
           }
         >
           <div>{entity?.metadata?.description}</div>
-          <div className={classes.linkSpacer} />
+          <div className="pt-0.5" />
           <Link
             to={linkRoute(entity)}
-            className={classes.readMoreLink}
+            className="pt-0.5"
             data-testid="read-docs-link"
           >
             {linkContent || 'Read Docs'}

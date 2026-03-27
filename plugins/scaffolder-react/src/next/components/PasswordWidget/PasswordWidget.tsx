@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-import { MarkdownContent } from '@backstage/core-components';
+import { Input, MarkdownContent } from '@backstage/core-components';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import TextField from '@material-ui/core/TextField';
 import { WidgetProps } from '@rjsf/utils';
 
 import { scaffolderReactTranslationRef } from '../../../translation';
@@ -35,19 +33,28 @@ export const PasswordWidget = (
 
   return (
     <>
-      <TextField
-        id={title}
-        label={title}
-        aria-describedby={title}
-        onChange={e => {
-          onChange(e.target.value);
-        }}
-        value={value}
-        autoComplete="off"
-      />
-      <FormHelperText error>
+      <div className="space-y-2">
+        <label
+          htmlFor={title}
+          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        >
+          {title}
+        </label>
+        <Input
+          id={title}
+          type="password"
+          aria-describedby={title}
+          onChange={e => {
+            onChange(e.target.value);
+          }}
+          value={value ?? ''}
+          autoComplete="off"
+        />
+      </div>
+      {/* eslint-disable-next-line react/forbid-elements -- MUI Typography replaced by native element in shadcn/ui migration */}
+      <p className="text-sm text-destructive">
         <MarkdownContent content={t('passwordWidget.content')} />
-      </FormHelperText>
+      </p>
     </>
   );
 };

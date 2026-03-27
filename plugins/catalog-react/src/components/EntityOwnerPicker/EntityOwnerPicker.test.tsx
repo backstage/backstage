@@ -317,10 +317,10 @@ describe('<EntityOwnerPicker mode="all" />', () => {
     fireEvent.click(screen.getByTestId('owner-picker-expand'));
 
     await waitFor(() =>
-      expect(screen.getByLabelText('some-owner')).toBeChecked(),
+      expect(screen.getByText('some-owner')).toBeInTheDocument(),
     );
 
-    fireEvent.click(screen.getByLabelText('some-owner'));
+    fireEvent.click(screen.getByText('some-owner'));
     expect(updateFilters).toHaveBeenLastCalledWith({
       owner: undefined,
     });
@@ -413,7 +413,7 @@ describe('<EntityOwnerPicker mode="all" />', () => {
       owners: undefined,
     });
 
-    const input = screen.getByRole('textbox');
+    const input = screen.getByRole('combobox');
     fireEvent.change(input, { target: { value: 'Some-Owner' } });
 
     await waitFor(() =>
@@ -569,10 +569,10 @@ describe('<EntityOwnerPicker mode="owners-only" />', () => {
     fireEvent.click(screen.getByTestId('owner-picker-expand'));
 
     await waitFor(() =>
-      expect(screen.getByLabelText('some-owner')).toBeChecked(),
+      expect(screen.getByText('some-owner')).toBeInTheDocument(),
     );
 
-    fireEvent.click(screen.getByLabelText('some-owner'));
+    fireEvent.click(screen.getByText('some-owner'));
     expect(updateFilters).toHaveBeenLastCalledWith({
       owner: undefined,
     });

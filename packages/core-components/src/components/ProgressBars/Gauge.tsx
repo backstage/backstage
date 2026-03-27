@@ -15,11 +15,10 @@
  */
 
 import { BackstagePalette } from '@backstage/theme';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { Circle } from 'rc-progress';
 import { ReactNode, useEffect, useState } from 'react';
-import Box from '@material-ui/core/Box';
-import classNames from 'classnames';
+
+import { cn } from '../../lib/utils';
 
 /** @public */
 export type GaugeClassKey =
@@ -29,41 +28,21 @@ export type GaugeClassKey =
   | 'circle'
   | 'colorUnknown';
 
-const useStyles = makeStyles(
-  theme => ({
-    root: {
-      position: 'relative',
-      lineHeight: 0,
-    },
-    overlay: {
-      position: 'absolute',
-      top: '50%',
-      left: '50%',
-      transform: 'translate(-50%, -60%)',
-      fontSize: theme.typography.pxToRem(45),
-      fontWeight: theme.typography.fontWeightBold,
-      color: theme.palette.textContrast,
-    },
-    overlaySmall: {
-      fontSize: theme.typography.pxToRem(25),
-    },
-    description: {
-      fontSize: '100%',
-      top: '50%',
-      left: '50%',
-      transform: 'translate(-50%, -50%)',
-      position: 'absolute',
-      wordBreak: 'break-all',
-      display: 'inline-block',
-    },
-    circle: {
-      width: '80%',
-      transform: 'translate(10%, 0)',
-    },
-    colorUnknown: {},
-  }),
-  { name: 'BackstageGauge' },
-);
+/**
+ * CSS custom property-based palette for gauge color resolution.
+ * Replaces MUI useTheme() palette. CSS variable values are passed to
+ * rc-progress's strokeColor as inline styles, resolved by the browser.
+ */
+const defaultCssVarPalette = {
+  status: {
+    error: 'var(--destructive)',
+    warning: 'var(--warning)',
+    ok: 'var(--success)',
+    pending: 'var(--muted)',
+    running: 'var(--primary)',
+    aborted: 'var(--muted-foreground)',
+  },
+} as unknown as BackstagePalette;
 
 /** @public */
 export type GaugeProps = {
@@ -130,8 +109,7 @@ export const getProgressColor: GaugePropsGetColor = ({
 export function Gauge(props: GaugeProps) {
   const [hoverRef, setHoverRef] = useState<HTMLDivElement | null>(null);
   const { getColor = getProgressColor, size = 'normal' } = props;
-  const classes = useStyles(props);
-  const { palette } = useTheme();
+  const palette = defaultCssVarPalette;
   const {
     value,
     fractional,
@@ -184,7 +162,7 @@ export function Gauge(props: GaugeProps) {
   }, [description, hoverRef]);
 
   return (
-    <Box {...{ ref: setHoverRef }} className={classes.root}>
+    <div ref={setHoverRef} className="relative leading-[0]">
       <Circle
         strokeLinecap="butt"
         percent={asPercentage}
@@ -196,19 +174,22 @@ export function Gauge(props: GaugeProps) {
           inverse,
           max: relativeToMax ? 100 : max,
         })}
-        className={classes.circle}
+        className="w-[80%] translate-x-[10%]"
       />
       {description && isHovering ? (
-        <Box className={classes.description}>{description}</Box>
+        <div className="text-[100%] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 break-all inline-block">
+          {description}
+        </div>
       ) : (
-        <Box
-          className={classNames(classes.overlay, {
-            [classes.overlaySmall]: size === 'small',
-          })}
+        <div
+          className={cn(
+            'absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[60%] text-[2.8125rem] font-bold text-[var(--foreground)]',
+            size === 'small' && 'text-[1.5625rem]',
+          )}
         >
           {isNaN(value) ? 'N/A' : `${asDisplay}${unit}`}
-        </Box>
+        </div>
       )}
-    </Box>
+    </div>
   );
 }

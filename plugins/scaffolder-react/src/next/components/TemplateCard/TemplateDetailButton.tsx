@@ -13,11 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Tooltip from '@material-ui/core/Tooltip';
-import IconButton from '@material-ui/core/IconButton';
-import Typography from '@material-ui/core/Typography';
-import DescriptionIcon from '@material-ui/icons/Description';
-import { Link } from '@backstage/core-components';
+import { FileText } from 'lucide-react';
+import {
+  Link,
+  ShadcnButton,
+  ShadcnTooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
+} from '@backstage/core-components';
 import {
   entityRouteParams,
   entityRouteRef,
@@ -41,24 +45,32 @@ export const TemplateDetailButton = ({
   const entityRef = stringifyEntityRef(template);
 
   const app = useApp();
-  const TemplateIcon = app.getSystemIcon('kind:template') || DescriptionIcon;
+  const TemplateIcon = app.getSystemIcon('kind:template') || FileText;
 
   return (
-    <Tooltip id={`tooltip-${entityRef}`} title={t('cardHeader.detailBtnTitle')}>
-      <IconButton
-        aria-label={t('cardHeader.detailBtnTitle')}
-        id={`viewDetail-${entityRef}`}
-        style={{ padding: 0 }}
-      >
-        <Typography component="span">
-          <Link
-            to={catalogEntityRoute(entityRouteParams(template))}
-            style={{ display: 'flex', alignItems: 'center' }}
+    <TooltipProvider>
+      <ShadcnTooltip>
+        <TooltipTrigger asChild>
+          <ShadcnButton
+            variant="ghost"
+            size="icon"
+            aria-label={t('cardHeader.detailBtnTitle')}
+            id={`viewDetail-${entityRef}`}
+            className="p-0"
+            asChild
           >
-            <TemplateIcon className={className} />
-          </Link>
-        </Typography>
-      </IconButton>
-    </Tooltip>
+            <Link
+              to={catalogEntityRoute(entityRouteParams(template))}
+              className="flex items-center"
+            >
+              <TemplateIcon className={className} />
+            </Link>
+          </ShadcnButton>
+        </TooltipTrigger>
+        <TooltipContent id={`tooltip-${entityRef}`}>
+          {t('cardHeader.detailBtnTitle')}
+        </TooltipContent>
+      </ShadcnTooltip>
+    </TooltipProvider>
   );
 };

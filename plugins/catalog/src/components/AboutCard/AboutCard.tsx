@@ -16,16 +16,7 @@
 
 import { useCallback } from 'react';
 
-import { makeStyles } from '@material-ui/core/styles';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import CardHeader from '@material-ui/core/CardHeader';
-import Divider from '@material-ui/core/Divider';
-import IconButton from '@material-ui/core/IconButton';
-import CachedIcon from '@material-ui/icons/Cached';
-import EditIcon from '@material-ui/icons/Edit';
-import DocsIcon from '@material-ui/icons/Description';
-import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
+import { RefreshCw, Pencil, FileText, PlusCircle } from 'lucide-react';
 
 import {
   AppIcon,
@@ -33,6 +24,13 @@ import {
   IconLinkVerticalProps,
   InfoCardVariants,
   Link,
+  cn,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  Separator,
+  ShadcnButton as Button,
 } from '@backstage/core-components';
 import {
   alertApiRef,
@@ -108,7 +106,7 @@ function useTechdocsReaderIconLinkProps(): IconLinkVerticalProps {
         entity.metadata.annotations?.[TECHDOCS_ANNOTATION] ||
         entity.metadata.annotations?.[TECHDOCS_EXTERNAL_ANNOTATION]
       ) || !viewTechdocLink,
-    icon: <DocsIcon />,
+    icon: <FileText className="h-5 w-5" />,
     href: buildTechDocsURL(entity, viewTechdocLink),
   };
 }
@@ -120,7 +118,7 @@ function useScaffolderTemplateIconLinkProps(): IconLinkVerticalProps {
   const { entity } = useEntity();
   const templateRoute = useRouteRef(createFromTemplateRouteRef);
   const { t } = useTranslationRef(catalogTranslationRef);
-  const Icon = app.getSystemIcon('scaffolder') ?? CreateComponentIcon;
+  const Icon = app.getSystemIcon('scaffolder') ?? PlusCircle;
   const { allowed: canCreateTemplateTask } = usePermission({
     permission: taskCreatePermission,
   });
@@ -152,26 +150,6 @@ function DefaultAboutCardSubheader() {
   return <HeaderIconLinkRow links={links} />;
 }
 
-const useStyles = makeStyles({
-  gridItemCard: {
-    display: 'flex',
-    flexDirection: 'column',
-    height: 'calc(100% - 10px)', // for pages without content header
-    marginBottom: '10px',
-  },
-  fullHeightCard: {
-    display: 'flex',
-    flexDirection: 'column',
-    height: '100%',
-  },
-  gridItemCardContent: {
-    flex: 1,
-  },
-  fullHeightCardContent: {
-    flex: 1,
-  },
-});
-
 /**
  * Props for {@link EntityAboutCard}.
  *
@@ -187,7 +165,6 @@ export interface InternalAboutCardProps extends AboutCardProps {
 
 export function InternalAboutCard(props: InternalAboutCardProps) {
   const { variant, subheader } = props;
-  const classes = useStyles();
   const { entity } = useEntity();
   const catalogApi = useApi(catalogApiRef);
   const alertApi = useApi(alertApiRef);
@@ -202,19 +179,13 @@ export function InternalAboutCard(props: InternalAboutCardProps) {
   const entityMetadataEditUrl =
     entity.metadata.annotations?.[ANNOTATION_EDIT_URL];
 
-  let cardClass = '';
-  if (variant === 'gridItem') {
-    cardClass = classes.gridItemCard;
-  } else if (variant === 'fullHeight') {
-    cardClass = classes.fullHeightCard;
-  }
-
-  let cardContentClass = '';
-  if (variant === 'gridItem') {
-    cardContentClass = classes.gridItemCardContent;
-  } else if (variant === 'fullHeight') {
-    cardContentClass = classes.fullHeightCardContent;
-  }
+  const cardClass = cn(
+    variant === 'gridItem' && 'flex flex-col h-[calc(100%-10px)] mb-2.5',
+    variant === 'fullHeight' && 'flex flex-col h-full',
+  );
+  const cardContentClass = cn(
+    (variant === 'gridItem' || variant === 'fullHeight') && 'flex-1',
+  );
 
   const entityLocation = entity.metadata.annotations?.[ANNOTATION_LOCATION];
   // Limiting the ability to manually refresh to the less expensive locations
@@ -235,45 +206,61 @@ export function InternalAboutCard(props: InternalAboutCardProps) {
 
   return (
     <Card className={cardClass}>
-      <CardHeader
-        title={t('aboutCard.title')}
-        action={
-          <>
-            {allowRefresh && canRefresh && (
-              <IconButton
-                aria-label={t('aboutCard.refreshButtonAriaLabel')}
-                title={t('aboutCard.refreshButtonTitle')}
-                onClick={refreshEntity}
-              >
-                <CachedIcon />
-              </IconButton>
-            )}
-            <IconButton
-              component={Link}
-              aria-label={t('aboutCard.editButtonAriaLabel')}
-              disabled={!entityMetadataEditUrl}
-              title={t('aboutCard.editButtonTitle')}
-              to={entityMetadataEditUrl ?? '#'}
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardTitle className="text-base font-semibold">
+          {t('aboutCard.title')}
+        </CardTitle>
+        <div className="flex items-center gap-1">
+          {allowRefresh && canRefresh && (
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label={t('aboutCard.refreshButtonAriaLabel')}
+              title={t('aboutCard.refreshButtonTitle')}
+              onClick={refreshEntity}
             >
-              <EditIcon />
-            </IconButton>
-            {sourceTemplateRef && templateRoute && (
-              <IconButton
-                component={Link}
-                title={t('aboutCard.createSimilarButtonTitle')}
+              <RefreshCw className="h-4 w-4" />
+            </Button>
+          )}
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label={t('aboutCard.editButtonAriaLabel')}
+            title={t('aboutCard.editButtonTitle')}
+            disabled={!entityMetadataEditUrl}
+            asChild={!!entityMetadataEditUrl}
+          >
+            {entityMetadataEditUrl ? (
+              <Link to={entityMetadataEditUrl}>
+                <Pencil className="h-4 w-4" />
+              </Link>
+            ) : (
+              <span>
+                <Pencil className="h-4 w-4" />
+              </span>
+            )}
+          </Button>
+          {sourceTemplateRef && templateRoute && (
+            <Button
+              variant="ghost"
+              size="icon"
+              title={t('aboutCard.createSimilarButtonTitle')}
+              asChild
+            >
+              <Link
                 to={templateRoute({
                   namespace: sourceTemplateRef.namespace,
                   templateName: sourceTemplateRef.name,
                 })}
               >
                 <AppIcon id="scaffolder" />
-              </IconButton>
-            )}
-          </>
-        }
-        subheader={subheader ?? <DefaultAboutCardSubheader />}
-      />
-      <Divider />
+              </Link>
+            </Button>
+          )}
+        </div>
+      </CardHeader>
+      {subheader !== undefined ? subheader : <DefaultAboutCardSubheader />}
+      <Separator />
       <CardContent className={cardContentClass}>
         <AboutContent entity={entity} />
       </CardContent>

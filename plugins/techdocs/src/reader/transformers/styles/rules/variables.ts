@@ -14,7 +14,50 @@
  * limitations under the License.
  */
 
-import { alpha, lighten } from '@material-ui/core/styles';
+/**
+ * Creates an rgba color value with the given opacity from a hex or rgb color string.
+ * Replaces MUI's alpha() utility for CSS template literal injection.
+ */
+function alpha(color: string, opacity: number): string {
+  if (color.startsWith('#')) {
+    const hex = color.slice(1);
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+    return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+  }
+  if (color.startsWith('rgb')) {
+    const match = color.match(/[\d.]+/g);
+    if (match && match.length >= 3) {
+      return `rgba(${match[0]}, ${match[1]}, ${match[2]}, ${opacity})`;
+    }
+  }
+  return `color-mix(in srgb, ${color} ${Math.round(
+    opacity * 100,
+  )}%, transparent)`;
+}
+
+/**
+ * Lightens a color by mixing it with white by the given coefficient.
+ * Replaces MUI's lighten() utility for CSS template literal injection.
+ */
+function lighten(color: string, coefficient: number): string {
+  if (color.startsWith('#')) {
+    const hex = color.slice(1);
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+    const lightenChannel = (c: number) =>
+      Math.round(c + (255 - c) * coefficient);
+    return `rgb(${lightenChannel(r)}, ${lightenChannel(g)}, ${lightenChannel(
+      b,
+    )})`;
+  }
+  return `color-mix(in srgb, ${color}, white ${Math.round(
+    coefficient * 100,
+  )}%)`;
+}
+
 import { RuleOptions } from './types';
 
 export default ({ theme }: RuleOptions) => `

@@ -22,9 +22,8 @@ import {
   useApi,
 } from '@backstage/core-plugin-api';
 import { UserIdentity } from './UserIdentity';
-import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
+import { Button } from '../../components/ui/button';
+import { cn } from '../../lib/utils';
 import { ComponentType, ReactNode, useState } from 'react';
 import { useMountEffect } from '@react-hookz/web';
 import { Progress } from '../../components/Progress';
@@ -34,7 +33,7 @@ import { Header } from '../Header';
 import { InfoCard } from '../InfoCard';
 import { Page } from '../Page';
 import { getSignInProviders, useSignInProviders } from './providers';
-import { GridItem, useStyles } from './styles';
+import { GridItem } from './styles';
 import { IdentityProviders, SignInProviderConfig } from './types';
 import { coreComponentsTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
@@ -70,7 +69,6 @@ export const MultiSignInPage = ({
   align = 'left',
 }: MultiSignInPageProps) => {
   const configApi = useApi(configApiRef);
-  const classes = useStyles();
 
   const signInProviders = getSignInProviders(providers);
   const [loading, providerElements] = useSignInProviders(
@@ -93,15 +91,14 @@ export const MultiSignInPage = ({
             textAlign={align}
           />
         )}
-        <Grid
-          container
-          justifyContent={align === 'center' ? align : 'flex-start'}
-          spacing={2}
-          component="ul"
-          classes={classes}
+        <ul
+          className={cn(
+            'flex flex-wrap gap-4 p-0 list-none',
+            align === 'center' ? 'justify-center' : 'justify-start',
+          )}
         >
           {providerElements}
-        </Grid>
+        </ul>
       </Content>
     </Page>
   );
@@ -113,7 +110,6 @@ export const SingleSignInPage = ({
   onSignInSuccess,
   ErrorComponent,
 }: SingleSignInPageProps) => {
-  const classes = useStyles();
   const authApi = useApi(provider.apiRef);
   const configApi = useApi(configApiRef);
   const { t } = useTranslationRef(coreComponentsTranslationRef);
@@ -188,21 +184,14 @@ export const SingleSignInPage = ({
     <Page themeId="home">
       <Header title={configApi.getString('app.title')} />
       <Content>
-        <Grid
-          container
-          justifyContent="center"
-          spacing={2}
-          component="ul"
-          classes={classes}
-        >
+        <ul className="flex flex-wrap gap-4 p-0 list-none justify-center">
           <GridItem>
             <InfoCard
               variant="fullHeight"
               title={provider.title}
               actions={
                 <Button
-                  color="primary"
-                  variant="outlined"
+                  variant="outline"
                   onClick={() => {
                     login({ showPopup: true });
                   }}
@@ -211,19 +200,17 @@ export const SingleSignInPage = ({
                 </Button>
               }
             >
-              <Typography variant="body1">{provider.message}</Typography>
+              <p className="text-base text-foreground">{provider.message}</p>
               {error &&
                 error.name !== 'PopupRejectedError' &&
                 (ErrorComponent ? (
                   <ErrorComponent error={error} />
                 ) : (
-                  <Typography variant="body1" color="error">
-                    {error.message}
-                  </Typography>
+                  <p className="text-base text-destructive">{error.message}</p>
                 ))}
             </InfoCard>
           </GridItem>
-        </Grid>
+        </ul>
       </Content>
     </Page>
   ) : (

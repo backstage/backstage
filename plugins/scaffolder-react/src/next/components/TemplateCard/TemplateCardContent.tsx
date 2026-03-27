@@ -17,27 +17,8 @@
 import { MarkdownContent } from '@backstage/core-components';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import type { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
-import { makeStyles } from '@material-ui/core/styles';
 
 import { scaffolderReactTranslationRef } from '../../../translation';
-
-const useStyles = makeStyles(() => ({
-  box: {
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    display: '-webkit-box',
-    '-webkit-line-clamp': 10,
-    '-webkit-box-orient': 'vertical',
-  },
-  markdown: {
-    /** to make the styles for React Markdown not leak into the description */
-    '& :first-child': {
-      margin: 0,
-    },
-  },
-}));
 
 /**
  * The Props for the {@link TemplateCardContent} component
@@ -48,17 +29,19 @@ export interface TemplateCardContentProps {
 }
 export const TemplateCardContent = ({ template }: TemplateCardContentProps) => {
   const { t } = useTranslationRef(scaffolderReactTranslationRef);
-  const styles = useStyles();
   return (
-    <Grid item xs={12} data-testid="template-card-content-grid">
-      <Box className={styles.box} data-testid="template-card-content-container">
+    <div className="col-span-full" data-testid="template-card-content-grid">
+      <div
+        className="line-clamp-[10]"
+        data-testid="template-card-content-container"
+      >
         <MarkdownContent
-          className={styles.markdown}
+          className="[&>:first-child]:m-0"
           content={
             template.metadata.description ?? t('templateCard.noDescription')
           }
         />
-      </Box>
-    </Grid>
+      </div>
+    </div>
   );
 };

@@ -23,37 +23,37 @@ import {
   templatingExtensionsRouteRef,
 } from '../../routes';
 
-import { makeStyles } from '@material-ui/core/styles';
-
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../translation';
 
 import {
+  cn,
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+  CommandList,
   Content,
   EmptyState,
   ErrorPanel,
   Header,
+  Input,
   Link,
   Page,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
   Progress,
+  ShadcnTabs,
+  TabsList,
+  TabsTrigger,
 } from '@backstage/core-components';
 import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
 import {
   ScaffolderPageContextMenu,
   ScaffolderPageContextMenuProps,
 } from '@backstage/plugin-scaffolder-react/alpha';
-import Box from '@material-ui/core/Box';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import ListItemText from '@material-ui/core/ListItemText';
-import Tab from '@material-ui/core/Tab';
-import Tabs from '@material-ui/core/Tabs';
-import TextField from '@material-ui/core/TextField';
-import AllInclusiveIcon from '@material-ui/icons/AllInclusive';
-import FilterListIcon from '@material-ui/icons/FilterList';
-import FunctionsIcon from '@material-ui/icons/Functions';
-import LinkIcon from '@material-ui/icons/Link';
-import SearchIcon from '@material-ui/icons/Search';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import { Infinity, Filter, FunctionSquare, Link2, Search } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAsync from 'react-use/esm/useAsync';
@@ -69,58 +69,23 @@ import {
   TemplateGlobalValues,
 } from './TemplateGlobals';
 
-const useStyles = makeStyles(theme => ({
-  code: {
-    fontFamily: 'Menlo, monospace',
-    padding: theme.spacing(1),
-    backgroundColor:
-      theme.palette.type === 'dark'
-        ? theme.palette.grey[700]
-        : theme.palette.grey[300],
-    display: 'inline-block',
-    borderRadius: 5,
-    border: `1px solid ${theme.palette.grey[500]}`,
-    position: 'relative',
-  },
-
-  codeRequired: {
-    '&::after': {
-      position: 'absolute',
-      content: '"*"',
-      top: 0,
-      right: theme.spacing(0.5),
-      fontWeight: 'bolder',
-      color: theme.palette.error.light,
-    },
-  },
-
-  argRequired: {
-    position: 'relative',
-    '& > *': {
-      display: 'inline',
-      position: 'relative',
-      '&::after': {
-        position: 'absolute',
-        content: '"*"',
-        top: 0,
-        right: theme.spacing(-1),
-        fontWeight: 'bolder',
-        color: theme.palette.error.light,
-      },
-    },
-  },
-
-  link: {
-    paddingLeft: theme.spacing(1),
-    cursor: 'pointer',
-  },
-
-  tabs: {
-    display: 'block',
-    minHeight: 'initial',
-    overflow: 'initial',
-  },
-}));
+/**
+ * Tailwind CSS class definitions replacing MUI makeStyles.
+ * These classes are passed as a Record<string, string> to child components
+ * (TemplateFilters, TemplateGlobalFunctions, TemplateGlobalValues) for
+ * consistent code/required/link styling throughout the page.
+ */
+const tailwindClasses: Record<
+  'code' | 'codeRequired' | 'argRequired' | 'link',
+  string
+> = {
+  code: 'font-mono p-2 bg-muted inline-block rounded border border-border relative',
+  codeRequired:
+    "after:content-['*'] after:absolute after:top-0 after:right-1 after:font-bold after:text-destructive",
+  argRequired:
+    "relative [&>*]:inline [&>*]:relative [&>*]:after:content-['*'] [&>*]:after:absolute [&>*]:after:top-0 [&>*]:after:-right-2 [&>*]:after:font-bold [&>*]:after:text-destructive",
+  link: 'pl-2 cursor-pointer',
+};
 
 export const TemplatingExtensionsPageContent = ({
   linkLocal,
@@ -128,7 +93,7 @@ export const TemplatingExtensionsPageContent = ({
   linkLocal?: boolean;
 }) => {
   const api = useApi(scaffolderApiRef);
-  const classes = useStyles();
+  const classes = tailwindClasses;
   const { t } = useTranslationRef(scaffolderTranslationRef);
 
   const { loading, value, error } = useAsync(async () => {
@@ -148,8 +113,10 @@ export const TemplatingExtensionsPageContent = ({
   const [tab, selectTab] = useState<ExtensionKind>('filter');
   const [selectedItem, setSelectedItem] = useState<Extension | null>(null);
   const [input, setInput] = useState<string>('');
+  const [comboboxOpen, setComboboxOpen] = useState(false);
 
-  const handleTab = (_event: any, kind: ExtensionKind) => {
+  const handleTab = (tabValue: string) => {
+    const kind = tabValue as ExtensionKind;
     if (selectedItem?.kind !== kind) {
       setSelectedItem(null);
       setInput('');
@@ -178,15 +145,15 @@ export const TemplatingExtensionsPageContent = ({
   const extensionKinds = useMemo(
     () => ({
       filter: {
-        icon: <FilterListIcon />,
+        icon: <Filter className="h-4 w-4" />,
         label: t('templatingExtensions.content.filters.title'),
       },
       function: {
-        icon: <FunctionsIcon />,
+        icon: <FunctionSquare className="h-4 w-4" />,
         label: t('templatingExtensions.content.functions.title'),
       },
       value: {
-        icon: <AllInclusiveIcon />,
+        icon: <Infinity className="h-4 w-4" />,
         label: t('templatingExtensions.content.values.title'),
       },
     }),
@@ -214,69 +181,109 @@ export const TemplatingExtensionsPageContent = ({
 
   const baseLink = (
     <Link
-      className={classes.link}
+      className={cn(classes.link)}
       to={templatingExtensionsLink()}
       {...(linkLocal ? {} : { target: '_blank', rel: 'noopener noreferrer' })}
     >
-      <LinkIcon />
+      <Link2 className="h-4 w-4" />
     </Link>
   );
 
   return (
     <>
-      <Autocomplete
-        renderInput={params => (
-          <TextField
-            {...params}
-            aria-label={t(
-              'templatingExtensions.content.searchFieldPlaceholder',
-            )}
-            placeholder={t(
-              'templatingExtensions.content.searchFieldPlaceholder',
-            )}
-            variant="outlined"
-            InputProps={{
-              ...params.InputProps,
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon />
-                </InputAdornment>
-              ),
-            }}
-          />
-        )}
-        getOptionLabel={option => option.name}
-        getOptionSelected={(lhs, rhs) => lhs === rhs}
-        options={listTemplatingExtensions(value)}
-        groupBy={option => option.kind}
-        renderGroup={params => (
-          <>
-            <Box display="flex" alignItems="center">
-              {extensionKinds[params.group as ExtensionKind].icon}
-              <Box sx={{ ml: 1 }}>
-                {extensionKinds[params.group as ExtensionKind].label}
-              </Box>
-            </Box>
-            <ul>{params.children}</ul>
-          </>
-        )}
-        renderOption={(option: Extension) => (
-          <ListItemText primary={option.name} />
-        )}
-        onChange={(_event: any, option: Extension | null) => {
-          selectItem(option);
-        }}
-        inputValue={input}
-        onInputChange={(_event: any, s: string) => setInput(s)}
-        loading={loading}
-        fullWidth
-        clearOnEscape
-      />
-      <Tabs value={tab} onChange={handleTab} centered className={classes.tabs}>
-        {Object.entries(extensionKinds).map(([k, v]) => (
-          <Tab key={k} value={k} {...v} />
-        ))}
-      </Tabs>
+      <Popover open={comboboxOpen} onOpenChange={setComboboxOpen}>
+        <PopoverTrigger asChild>
+          <div className="relative w-full">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              id="templating-extensions-search"
+              name="templating-extensions-search"
+              aria-label={t(
+                'templatingExtensions.content.searchFieldPlaceholder',
+              )}
+              placeholder={t(
+                'templatingExtensions.content.searchFieldPlaceholder',
+              )}
+              value={input}
+              onChange={e => setInput(e.target.value)}
+              onFocus={() => setComboboxOpen(true)}
+              onKeyDown={e => {
+                if (e.key === 'Escape') {
+                  setInput('');
+                  setComboboxOpen(false);
+                }
+              }}
+              className="pl-10 w-full"
+            />
+          </div>
+        </PopoverTrigger>
+        <PopoverContent
+          className="w-[var(--radix-popover-trigger-width)] p-0"
+          align="start"
+          onOpenAutoFocus={e => e.preventDefault()}
+        >
+          <Command shouldFilter={false}>
+            <CommandList>
+              {Object.entries(
+                listTemplatingExtensions(value)
+                  .filter(ext =>
+                    ext.name.toLowerCase().includes(input.toLowerCase()),
+                  )
+                  .reduce((groups, ext) => {
+                    const group = ext.kind;
+                    if (!groups[group]) {
+                      groups[group] = [];
+                    }
+                    groups[group].push(ext);
+                    return groups;
+                  }, {} as Record<string, Extension[]>),
+              ).map(([group, items]) => (
+                <CommandGroup
+                  key={group}
+                  heading={
+                    <div className="flex items-center gap-2">
+                      {extensionKinds[group as ExtensionKind].icon}
+                      {extensionKinds[group as ExtensionKind].label}
+                    </div>
+                  }
+                >
+                  {items.map(option => (
+                    <CommandItem
+                      key={`${option.kind}_${option.name}`}
+                      value={`${option.kind}_${option.name}`}
+                      onSelect={() => {
+                        selectItem(option);
+                        setInput(option.name);
+                        setComboboxOpen(false);
+                      }}
+                    >
+                      <span className="text-sm">{option.name}</span>
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              ))}
+              <CommandEmpty>
+                {t('templatingExtensions.content.emptyState.title')}
+              </CommandEmpty>
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
+      <ShadcnTabs value={tab} onValueChange={handleTab}>
+        <TabsList className="flex justify-center">
+          {Object.entries(extensionKinds).map(([k, v]) => (
+            <TabsTrigger
+              key={k}
+              value={k}
+              className="flex items-center gap-1.5"
+              onClick={() => handleTab(k)}
+            >
+              {v.icon}
+              {v.label}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+      </ShadcnTabs>
       {tab === 'filter' && (
         <TemplateFilters {...{ baseLink, t, classes, filters, selectedItem }} />
       )}

@@ -14,11 +14,18 @@
  * limitations under the License.
  */
 
+import { type SVGProps } from 'react';
 import { parseEntityRef } from '@backstage/catalog-model';
 import { useApp } from '@backstage/core-plugin-api';
-import SvgIcon from '@material-ui/core/SvgIcon';
 
-const DEFAULT_ICON = SvgIcon;
+/**
+ * Fallback icon component that renders an empty SVG element.
+ * Accepts x, y, width, height, and className props for compatibility
+ * with nested SVG contexts (e.g., AncestryPage's CustomNode component).
+ */
+const DEFAULT_ICON = (props: SVGProps<SVGSVGElement>) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" {...props} />
+);
 
 function getKind(
   kind: string | undefined,

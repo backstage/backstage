@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
+import {
+  ShadcnDialog,
+  ShadcnDialogContent,
+  ShadcnDialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+} from '../ui/dialog';
+import { Button } from '../ui/button';
 import { useEffect } from 'react';
 import { IIdleTimer } from 'react-idle-timer';
 import { coreComponentsTranslationRef } from '../../translation';
@@ -67,27 +70,26 @@ export const StillTherePrompt = (props: StillTherePromptProps) => {
   const seconds = timeTillPrompt > 1 ? 'seconds' : 'second';
 
   return (
-    <Dialog open={open} data-testid="inactivity-prompt-dialog">
-      <DialogTitle>{t('autoLogout.stillTherePrompt.title')}</DialogTitle>
-      <DialogContent>
-        <DialogContentText>
+    <ShadcnDialog open={open}>
+      <ShadcnDialogContent data-testid="inactivity-prompt-dialog">
+        <DialogHeader>
+          <ShadcnDialogTitle>
+            {t('autoLogout.stillTherePrompt.title')}
+          </ShadcnDialogTitle>
+        </DialogHeader>
+        <DialogDescription>
           You are about to be disconnected in{' '}
           <b>
             {Math.ceil(remainingTime / 1000)} {seconds}
           </b>
           . Are you still there?
-        </DialogContentText>
-      </DialogContent>
-      <DialogActions>
-        <Button
-          onClick={handleStillHere}
-          color="secondary"
-          variant="contained"
-          size="small"
-        >
-          {t('autoLogout.stillTherePrompt.buttonText')}
-        </Button>
-      </DialogActions>
-    </Dialog>
+        </DialogDescription>
+        <DialogFooter>
+          <Button onClick={handleStillHere} variant="secondary" size="sm">
+            {t('autoLogout.stillTherePrompt.buttonText')}
+          </Button>
+        </DialogFooter>
+      </ShadcnDialogContent>
+    </ShadcnDialog>
   );
 };

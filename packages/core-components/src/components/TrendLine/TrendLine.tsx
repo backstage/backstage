@@ -20,27 +20,34 @@ import {
   SparklinesLineProps,
   SparklinesProps,
 } from 'react-sparklines';
-import { Theme, useTheme } from '@material-ui/core/styles';
+import { cn } from '../../lib/utils';
 
-function color(data: number[], theme: Theme): string | undefined {
+/**
+ * Derives a CSS custom property color value based on the last data point.
+ * Uses shadcn/ui token system variables for theme-aware status colors:
+ * - `--success-foreground` (>=0.9) — green success indicator
+ * - `--warning` (>=0.5) — amber warning indicator
+ * - `--destructive` (<0.5) — red error/destructive indicator
+ */
+function getStatusColor(data: number[]): string | undefined {
   const lastNum = data[data.length - 1];
   if (!lastNum) return undefined;
-  if (lastNum >= 0.9) return theme.palette.status.ok;
-  if (lastNum >= 0.5) return theme.palette.status.warning;
-  return theme.palette.status.error;
+  if (lastNum >= 0.9) return 'var(--success-foreground)';
+  if (lastNum >= 0.5) return 'var(--warning)';
+  return 'var(--destructive)';
 }
 
 export function TrendLine(
   props: SparklinesProps &
-    Pick<SparklinesLineProps, 'color'> & { title?: string },
+    Pick<SparklinesLineProps, 'color'> & { title?: string; className?: string },
 ) {
-  const theme = useTheme();
-
   if (!props.data) return null;
   return (
-    <Sparklines width={120} height={30} min={0} max={1} {...props}>
-      {props.title && <title>{props.title}</title>}
-      <SparklinesLine color={props.color ?? color(props.data, theme)} />
-    </Sparklines>
+    <div className={cn('inline-flex items-center', props.className)}>
+      <Sparklines width={120} height={30} min={0} max={1} {...props}>
+        {props.title && <title>{props.title}</title>}
+        <SparklinesLine color={props.color ?? getStatusColor(props.data)} />
+      </Sparklines>
+    </div>
   );
 }

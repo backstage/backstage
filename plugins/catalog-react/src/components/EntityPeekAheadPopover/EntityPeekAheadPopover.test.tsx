@@ -21,7 +21,6 @@ import { ApiProvider } from '@backstage/core-app-api';
 import { TestApiRegistry, renderInTestApp } from '@backstage/test-utils';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { catalogApiRef } from '../../api';
-import Button from '@material-ui/core/Button';
 import { entityRouteRef } from '../../routes';
 
 const catalogApi = catalogApiMock({
@@ -47,10 +46,10 @@ describe('<EntityPeekAheadPopover/>', () => {
     await renderInTestApp(
       <ApiProvider apis={apis}>
         <EntityPeekAheadPopover entityRef="component:default/service1">
-          <Button data-testid="popover1">s1</Button>
+          <button data-testid="popover1">s1</button>
         </EntityPeekAheadPopover>
         <EntityPeekAheadPopover entityRef="component:default/service2">
-          <Button data-testid="popover2">s2</Button>
+          <button data-testid="popover2">s2</button>
         </EntityPeekAheadPopover>
       </ApiProvider>,
       {

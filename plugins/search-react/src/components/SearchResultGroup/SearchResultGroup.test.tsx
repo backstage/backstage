@@ -17,8 +17,8 @@
 import { screen, waitFor, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import MenuItem from '@material-ui/core/MenuItem';
-import DocsIcon from '@material-ui/icons/InsertDriveFile';
+import { FileText } from 'lucide-react';
+import { ShadcnSelectItem } from '@backstage/core-components';
 
 import {
   renderInTestApp,
@@ -40,6 +40,14 @@ import {
 const query = jest.fn().mockResolvedValue({ results: [] });
 const searchApiMock = { query };
 const analyticsApiMock = mockApis.analytics();
+
+// Mock DOM APIs not available in jsdom that Radix UI primitives require
+beforeAll(() => {
+  window.HTMLElement.prototype.scrollIntoView = jest.fn();
+  window.HTMLElement.prototype.hasPointerCapture = jest.fn();
+  window.HTMLElement.prototype.setPointerCapture = jest.fn();
+  window.HTMLElement.prototype.releasePointerCapture = jest.fn();
+});
 
 describe('SearchResultGroup', () => {
   const results = [
@@ -79,13 +87,13 @@ describe('SearchResultGroup', () => {
       >
         <SearchResultGroup
           query={{ types: ['techdocs'] }}
-          icon={<DocsIcon titleAccess="Docs icon" />}
+          icon={<FileText aria-label="Docs icon" />}
           title="Documentation"
         />
       </TestApiProvider>,
     );
 
-    expect(screen.getByTitle('Docs icon')).toBeInTheDocument();
+    expect(screen.getByLabelText('Docs icon')).toBeInTheDocument();
     expect(screen.getByText('Documentation')).toBeInTheDocument();
     expect(query).toHaveBeenCalledWith({
       filters: {},
@@ -111,7 +119,7 @@ describe('SearchResultGroup', () => {
           initialState={{ term: '', filters: {}, types: ['techdocs'] }}
         >
           <SearchResultGroup
-            icon={<DocsIcon titleAccess="Docs icon" />}
+            icon={<FileText aria-label="Docs icon" />}
             title="Documentation"
           />
         </SearchContextProvider>
@@ -152,7 +160,7 @@ describe('SearchResultGroup', () => {
       >
         <SearchResultGroup
           query={{ types: ['techdocs'] }}
-          icon={<DocsIcon titleAccess="Docs icon" />}
+          icon={<FileText aria-label="Docs icon" />}
           title="Documentation"
         >
           <SearchResultGroupItemExtension />
@@ -181,7 +189,7 @@ describe('SearchResultGroup', () => {
       >
         <SearchResultGroup
           query={{ types: ['techdocs'] }}
-          icon={<DocsIcon titleAccess="Docs icon" />}
+          icon={<FileText aria-label="Docs icon" />}
           title="Documentation"
         />
       </TestApiProvider>,
@@ -205,7 +213,7 @@ describe('SearchResultGroup', () => {
       >
         <SearchResultGroup
           query={{ types: ['techdocs'] }}
-          icon={<DocsIcon titleAccess="Docs icon" />}
+          icon={<FileText aria-label="Docs icon" />}
           title="Documentation"
         />
       </TestApiProvider>,
@@ -236,7 +244,7 @@ describe('SearchResultGroup', () => {
       >
         <SearchResultGroup
           query={{ types: ['techdocs'] }}
-          icon={<DocsIcon titleAccess="Docs icon" />}
+          icon={<FileText aria-label="Docs icon" />}
           title="Documentation"
         />
       </TestApiProvider>,
@@ -261,7 +269,7 @@ describe('SearchResultGroup', () => {
       >
         <SearchResultGroup
           query={{ types: ['techdocs'] }}
-          icon={<DocsIcon titleAccess="Docs icon" />}
+          icon={<FileText aria-label="Docs icon" />}
           title="Documentation"
           filterOptions={['lifecycle', 'owner']}
         />
@@ -297,7 +305,7 @@ describe('SearchResultGroup', () => {
             types: ['techdocs'],
             filters: { owner: null },
           }}
-          icon={<DocsIcon titleAccess="Docs icon" />}
+          icon={<FileText aria-label="Docs icon" />}
           title="Documentation"
           filterOptions={['owner']}
           renderFilterField={(key: string) =>
@@ -348,7 +356,7 @@ describe('SearchResultGroup', () => {
             types: ['techdocs'],
             filters: { lifecycle: null },
           }}
-          icon={<DocsIcon titleAccess="Docs icon" />}
+          icon={<FileText aria-label="Docs icon" />}
           title="Documentation"
           filterOptions={['lifecycle']}
           renderFilterField={(key: string) =>
@@ -359,8 +367,8 @@ describe('SearchResultGroup', () => {
                 onChange={handleFilterChange}
                 onDelete={handleFilterDelete}
               >
-                <MenuItem value="production">Production</MenuItem>
-                <MenuItem value="experimental">Experimental</MenuItem>
+                <ShadcnSelectItem value="production">Production</ShadcnSelectItem>
+                <ShadcnSelectItem value="experimental">Experimental</ShadcnSelectItem>
               </SearchResultGroupSelectFilterField>
             ) : null
           }
@@ -372,9 +380,15 @@ describe('SearchResultGroup', () => {
 
     await userEvent.click(screen.getByText('lifecycle'));
 
-    await userEvent.click(screen.getByText('None'));
+    // Radix Select uses pointer events; open the select via its combobox trigger
+    const selectTrigger = screen.getByRole('combobox');
+    fireEvent.pointerDown(selectTrigger, { pointerType: 'mouse', button: 0 });
 
-    await userEvent.click(screen.getByText('Experimental'));
+    await waitFor(() => {
+      expect(screen.getByRole('option', { name: 'Experimental' })).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole('option', { name: 'Experimental' }));
 
     await waitFor(() => {
       expect(handleFilterChange).toHaveBeenCalledWith('experimental');
@@ -392,7 +406,7 @@ describe('SearchResultGroup', () => {
       >
         <SearchResultGroup
           query={{ types: ['techdocs'] }}
-          icon={<DocsIcon titleAccess="Docs icon" />}
+          icon={<FileText aria-label="Docs icon" />}
           title="Documentation"
         />
       </TestApiProvider>,
@@ -414,7 +428,7 @@ describe('SearchResultGroup', () => {
       >
         <SearchResultGroup
           query={{ types: ['techdocs'] }}
-          icon={<DocsIcon titleAccess="Docs icon" />}
+          icon={<FileText aria-label="Docs icon" />}
           title="Documentation"
           disableRenderingWithNoResults
         />
@@ -437,7 +451,7 @@ describe('SearchResultGroup', () => {
       >
         <SearchResultGroup
           query={{ types: ['techdocs'] }}
-          icon={<DocsIcon titleAccess="Docs icon" />}
+          icon={<FileText aria-label="Docs icon" />}
           title="Documentation"
           noResultsComponent="No results were found"
         />
@@ -460,7 +474,7 @@ describe('SearchResultGroup', () => {
       >
         <SearchResultGroup
           query={{ types: ['techdocs'] }}
-          icon={<DocsIcon titleAccess="Docs icon" />}
+          icon={<FileText aria-label="Docs icon" />}
           title="Documentation"
         />
       </TestApiProvider>,

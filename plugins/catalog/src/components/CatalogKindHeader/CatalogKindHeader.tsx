@@ -15,24 +15,19 @@
  */
 
 import { useEffect, useState, useMemo } from 'react';
-import InputBase from '@material-ui/core/InputBase';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import {
+  ShadcnSelect,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  ShadcnSelectItem,
+} from '@backstage/core-components';
 import {
   EntityKindFilter,
   useEntityList,
 } from '@backstage/plugin-catalog-react';
 import pluralize from 'pluralize';
 import { filterKinds, useAllKinds } from './kindFilterUtils';
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      ...theme.typography.h4,
-    },
-  }),
-);
 
 /**
  * Props for {@link CatalogKindHeader}.
@@ -58,7 +53,6 @@ export interface CatalogKindHeaderProps {
  */
 export function CatalogKindHeader(props: CatalogKindHeaderProps) {
   const { initialFilter = 'component', allowedKinds } = props;
-  const classes = useStyles();
   const { allKinds } = useAllKinds();
   const {
     filters,
@@ -105,17 +99,20 @@ export function CatalogKindHeader(props: CatalogKindHeaderProps) {
   const options = filterKinds(allKinds, allowedKinds, selectedKind);
 
   return (
-    <Select
-      input={<InputBase />}
+    <ShadcnSelect
       value={selectedKind.toLocaleLowerCase('en-US')}
-      onChange={e => setSelectedKind(e.target.value as string)}
-      classes={classes}
+      onValueChange={value => setSelectedKind(value)}
     >
-      {[...options.keys()].map(kind => (
-        <MenuItem value={kind} key={kind}>
-          {`${pluralize(options.get(kind) || kind)}`}
-        </MenuItem>
-      ))}
-    </Select>
+      <SelectTrigger className="text-4xl font-normal border-none shadow-none h-auto bg-transparent focus:ring-0 px-0 w-auto inline-flex gap-2">
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        {[...options.keys()].map(kind => (
+          <ShadcnSelectItem value={kind} key={kind}>
+            {`${pluralize(options.get(kind) || kind)}`}
+          </ShadcnSelectItem>
+        ))}
+      </SelectContent>
+    </ShadcnSelect>
   );
 }

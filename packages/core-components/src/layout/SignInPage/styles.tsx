@@ -13,35 +13,48 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { makeStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
+import { cn } from '../../lib/utils';
 
+/** Style class keys for the BackstageSignInPage component. */
 export type SignInPageClassKey = 'container' | 'item';
 
-export const useStyles = makeStyles(
-  {
-    container: {
-      padding: 0,
-      listStyle: 'none',
-    },
-    item: {
-      display: 'flex',
-      flexDirection: 'column',
-      width: '100%',
-      maxWidth: '400px',
-      margin: 0,
-      padding: 0,
-    },
-  },
-  { name: 'BackstageSignInPage' },
-);
+/**
+ * Returns Tailwind CSS utility class strings for the SignInPage layout.
+ *
+ * @remarks
+ * Previously a MUI `makeStyles` hook; now returns static Tailwind CSS class
+ * name strings so consuming code can assign them via the `className` prop or
+ * pass them through a `classes` object. Retained for backward compatibility
+ * with any consumers that reference `useStyles`.
+ *
+ * @deprecated Use Tailwind utility classes directly instead of this hook.
+ * @public
+ */
+export const useStyles = () => ({
+  container: cn('p-0', 'list-none'),
+  item: cn('flex', 'flex-col', 'w-full', 'max-w-[400px]', 'm-0', 'p-0'),
+});
 
+/**
+ * Grid item wrapper for SignInPage provider tiles.
+ *
+ * Renders a semantic `<li>` element with a constrained flex-column layout
+ * (max-width 400 px) so each sign-in provider tile is consistently sized
+ * within the parent grid.
+ */
 export const GridItem = ({ children }: { children: JSX.Element }) => {
-  const classes = useStyles();
-
   return (
-    <Grid component="li" item classes={classes}>
+    <li
+      className={cn(
+        'flex',
+        'flex-col',
+        'w-full',
+        'max-w-[400px]',
+        'm-0',
+        'p-0',
+      )}
+    >
       {children}
-    </Grid>
+    </li>
   );
 };

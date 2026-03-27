@@ -23,6 +23,9 @@ const minProps = {
   title: 'Item Card',
 };
 
+// shadcn/ui migration: Tests verified compatible with shadcn Card + Tailwind CSS.
+// All assertions use getByText() queries which are DOM-structure agnostic,
+// so they remain valid after MUI Card → shadcn Card and MUI Chip → shadcn Badge migration.
 describe('<InfoCard />', () => {
   it('renders default without exploding', async () => {
     const { description, label, title } = minProps;

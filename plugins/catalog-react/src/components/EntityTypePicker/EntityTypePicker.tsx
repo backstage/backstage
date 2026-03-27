@@ -15,11 +15,16 @@
  */
 
 import { useEffect } from 'react';
-import Box from '@material-ui/core/Box';
 import { useEntityTypeFilter } from '../../hooks/useEntityTypeFilter';
 
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
-import { Select } from '@backstage/core-components';
+import {
+  ShadcnSelect,
+  SelectTrigger,
+  SelectContent,
+  ShadcnSelectItem,
+  SelectValue,
+} from '@backstage/core-components';
 import { catalogReactTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
@@ -68,15 +73,27 @@ export const EntityTypePicker = (props: EntityTypePickerProps) => {
   ];
 
   return hidden ? null : (
-    <Box pb={1} pt={1}>
-      <Select
-        label={t('entityTypePicker.title')}
-        items={items}
-        selected={(items.length > 1 ? selectedTypes[0] : undefined) ?? 'all'}
-        onChange={value =>
+    <div className="py-2">
+      <label className="text-sm font-medium text-muted-foreground mb-1 block">
+        {t('entityTypePicker.title')}
+      </label>
+      <ShadcnSelect
+        value={(items.length > 1 ? selectedTypes[0] : undefined) ?? 'all'}
+        onValueChange={value =>
           setSelectedTypes(value === 'all' ? [] : [String(value)])
         }
-      />
-    </Box>
+      >
+        <SelectTrigger className="w-full">
+          <SelectValue placeholder={t('entityTypePicker.title')} />
+        </SelectTrigger>
+        <SelectContent>
+          {items.map(item => (
+            <ShadcnSelectItem key={item.value} value={item.value}>
+              {item.label}
+            </ShadcnSelectItem>
+          ))}
+        </SelectContent>
+      </ShadcnSelect>
+    </div>
   );
 };

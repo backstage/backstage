@@ -15,9 +15,15 @@
  */
 
 import { errorApiRef, useApi } from '@backstage/core-plugin-api';
-import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
-import CopyIcon from '@material-ui/icons/FileCopy';
+import { Button } from '../ui/button';
+import {
+  ShadcnTooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
+} from '../ui/tooltip';
+import { Copy, Check } from 'lucide-react';
+import { cn } from '../../lib/utils';
 import { MouseEventHandler, useEffect, useState } from 'react';
 import useCopyToClipboard from 'react-use/esm/useCopyToClipboard';
 import { coreComponentsTranslationRef } from '../../translation';
@@ -101,22 +107,33 @@ export function CopyTextButton(props: CopyTextButtonProps) {
     e.stopPropagation();
     setOpen(true);
     copyToClipboard(text);
+    setTimeout(() => {
+      setOpen(false);
+    }, tooltipDelay);
   };
 
   return (
-    <>
-      <Tooltip
-        id="copy-test-tooltip"
-        title={tooltipText}
-        placement="top"
-        leaveDelay={tooltipDelay}
-        onClose={() => setOpen(false)}
-        open={open}
-      >
-        <IconButton onClick={handleCopyClick} aria-label={ariaLabel}>
-          <CopyIcon />
-        </IconButton>
-      </Tooltip>
-    </>
+    <TooltipProvider>
+      <ShadcnTooltip open={open} onOpenChange={setOpen}>
+        <TooltipTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleCopyClick}
+            aria-label={ariaLabel}
+            className={cn('h-8 w-8')}
+          >
+            {open ? (
+              <Check className="h-4 w-4 text-green-600" />
+            ) : (
+              <Copy className="h-4 w-4" />
+            )}
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent side="top">
+          <p>{tooltipText}</p>
+        </TooltipContent>
+      </ShadcnTooltip>
+    </TooltipProvider>
   );
 }

@@ -19,23 +19,66 @@ import {
   scaffolderApiRef,
 } from '@backstage/plugin-scaffolder-react';
 import { BitbucketRepoBranchPicker } from './BitbucketRepoBranchPicker';
-import {
-  act,
-  fireEvent,
-  render,
-  waitFor,
-  screen,
-} from '@testing-library/react';
-import { TestApiProvider } from '@backstage/test-utils';
-import userEvent from '@testing-library/user-event';
+import { act, fireEvent, waitFor, screen } from '@testing-library/react';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
+
+/*
+ * Browser API polyfills for jsdom environment.
+ * Radix UI primitives (Popover) and cmdk rely on browser APIs
+ * that are not available in jsdom.
+ */
+
+// cmdk uses ResizeObserver for measuring list dimensions.
+if (typeof globalThis.ResizeObserver === 'undefined') {
+  (globalThis as any).ResizeObserver = class {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  };
+}
+
+// Radix scrolls the selected item into view when opening.
+if (!Element.prototype.scrollIntoView) {
+  Element.prototype.scrollIntoView = function scrollIntoView() {};
+}
+
+// Radix uses pointer capture APIs for pointer event management.
+if (!Element.prototype.hasPointerCapture) {
+  Element.prototype.hasPointerCapture = function () {
+    return false;
+  };
+}
+if (!Element.prototype.setPointerCapture) {
+  Element.prototype.setPointerCapture = function () {};
+}
+if (!Element.prototype.releasePointerCapture) {
+  Element.prototype.releasePointerCapture = function () {};
+}
+
+// DOMRect.fromRect is used by Radix for collision-aware positioning.
+if (typeof DOMRect === 'undefined' || !DOMRect.fromRect) {
+  (globalThis as any).DOMRect = {
+    fromRect: () => ({
+      top: 0,
+      left: 0,
+      bottom: 0,
+      right: 0,
+      width: 0,
+      height: 0,
+      x: 0,
+      y: 0,
+      toJSON: () => ({}),
+    }),
+  };
+}
 
 describe('BitbucketRepoBranchPicker', () => {
   const scaffolderApiMock: Partial<ScaffolderApi> = {
     autocomplete: jest.fn().mockResolvedValue({ results: [{ id: 'branch1' }] }),
   };
 
-  it('renders an input field', () => {
-    const { getByRole } = render(
+  it('renders an input field', async () => {
+    const { getByRole } = await renderInTestApp(
       <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
         <BitbucketRepoBranchPicker
           onChange={jest.fn()}
@@ -49,8 +92,8 @@ describe('BitbucketRepoBranchPicker', () => {
     expect(getByRole('textbox')).toHaveValue('main');
   });
 
-  it('input field disabled', () => {
-    render(
+  it('input field disabled', async () => {
+    await renderInTestApp(
       <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
         <BitbucketRepoBranchPicker
           onChange={jest.fn()}
@@ -68,10 +111,10 @@ describe('BitbucketRepoBranchPicker', () => {
     expect(input).toHaveValue('main');
   });
 
-  it('calls onChange when the input field changes', () => {
+  it('calls onChange when the input field changes', async () => {
     const onChange = jest.fn();
 
-    const { getByRole } = render(
+    const { getByRole } = await renderInTestApp(
       <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
         <BitbucketRepoBranchPicker
           onChange={onChange}
@@ -97,7 +140,7 @@ describe('BitbucketRepoBranchPicker', () => {
   it('should populate branches', async () => {
     const onChange = jest.fn();
 
-    const { getByRole, getByText } = render(
+    const { getByRole, getByText } = await renderInTestApp(
       <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
         <BitbucketRepoBranchPicker
           onChange={onChange}
@@ -113,17 +156,19 @@ describe('BitbucketRepoBranchPicker', () => {
       </TestApiProvider>,
     );
 
-    // Open the Autocomplete dropdown
-    const input = getByRole('textbox');
-    await userEvent.click(input);
+    // Open the Popover+Command dropdown via the combobox trigger button
+    const combobox = getByRole('combobox');
+    fireEvent.click(combobox);
 
-    // Verify that the available workspaces are shown
+    // Verify that the available branches are shown in the Command list
     await waitFor(() => expect(getByText('branch1')).toBeInTheDocument());
 
     // Verify that selecting an option calls onChange
-    await userEvent.click(getByText('branch1'));
-    expect(onChange).toHaveBeenCalledWith({
-      branch: 'branch1',
+    fireEvent.click(getByText('branch1'));
+    await waitFor(() => {
+      expect(onChange).toHaveBeenCalledWith({
+        branch: 'branch1',
+      });
     });
   });
 });

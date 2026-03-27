@@ -14,27 +14,11 @@
  * limitations under the License.
  */
 
-import { ChangeEvent, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useSearch } from '@backstage/plugin-search-react';
-import Tab from '@material-ui/core/Tab';
-import Tabs from '@material-ui/core/Tabs';
-import { makeStyles } from '@material-ui/core/styles';
-import { Theme } from '@material-ui/core/styles';
+import { ShadcnTabs, TabsList, TabsTrigger } from '@backstage/core-components';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { searchTranslationRef } from '../../translation';
-
-const useStyles = makeStyles((theme: Theme) => ({
-  tabs: {
-    borderBottom: `1px solid ${theme.palette.textVerySubtle}`,
-  },
-  tab: {
-    height: '50px',
-    fontWeight: theme.typography.fontWeightBold,
-    fontSize: theme.typography.pxToRem(13),
-    color: theme.palette.text.primary,
-    minWidth: '130px',
-  },
-}));
 
 /**
  * @public
@@ -48,14 +32,24 @@ export type SearchTypeTabsProps = {
 };
 
 export const SearchTypeTabs = (props: SearchTypeTabsProps) => {
-  const classes = useStyles();
   const { setPageCursor, setTypes, types } = useSearch();
   const { defaultValue, types: givenTypes } = props;
   const { t } = useTranslationRef(searchTranslationRef);
 
-  const changeTab = (_: ChangeEvent<{}>, newType: string) => {
+  const changeTab = (newType: string) => {
     setTypes(newType !== '' ? [newType] : []);
     setPageCursor(undefined);
+  };
+
+  // Radix Tabs only fires onValueChange when the value actually changes,
+  // unlike MUI which fires onChange on every click (including re-clicking
+  // the active tab). This handler preserves the MUI behavior by calling
+  // changeTab when re-clicking the already-active trigger.
+  const handleTriggerClick = (triggerValue: string) => {
+    const currentValue = types.length === 0 ? '' : types[0];
+    if (triggerValue === currentValue) {
+      changeTab(triggerValue);
+    }
   };
 
   // Handle any provided defaultValue
@@ -75,21 +69,26 @@ export const SearchTypeTabs = (props: SearchTypeTabsProps) => {
   ];
 
   return (
-    <Tabs
-      aria-label="List of search types tabs"
-      className={classes.tabs}
-      indicatorColor="primary"
+    <ShadcnTabs
       value={types.length === 0 ? '' : types[0]}
-      onChange={changeTab}
+      onValueChange={changeTab}
+      className="border-b border-border"
     >
-      {definedTypes.map((type, idx) => (
-        <Tab
-          key={idx}
-          className={classes.tab}
-          label={type.name}
-          value={type.value}
-        />
-      ))}
-    </Tabs>
+      <TabsList
+        aria-label="List of search types tabs"
+        className="h-auto bg-transparent p-0 rounded-none"
+      >
+        {definedTypes.map((type, idx) => (
+          <TabsTrigger
+            key={idx}
+            value={type.value}
+            onClick={() => handleTriggerClick(type.value)}
+            className="h-[50px] min-w-[130px] rounded-none border-b-2 border-transparent font-bold text-[13px] text-foreground data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none"
+          >
+            {type.name}
+          </TabsTrigger>
+        ))}
+      </TabsList>
+    </ShadcnTabs>
   );
 };

@@ -14,24 +14,23 @@
  * limitations under the License.
  */
 
-import { MouseEvent, useState, useRef, Fragment, ReactElement } from 'react';
-import IconButton from '@material-ui/core/IconButton';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText, {
-  ListItemTextProps,
-} from '@material-ui/core/ListItemText';
-import Popover from '@material-ui/core/Popover';
-import MoreVert from '@material-ui/icons/MoreVert';
-import { useTheme } from '@material-ui/core/styles';
+import { MouseEvent, ReactElement, ReactNode } from 'react';
+import { MoreVertical } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from '../../components/ui/dropdown-menu';
+import { Button } from '../../components/ui/button';
+import { cn } from '../../lib/utils';
 
 /**
  * @public
  */
 export type HeaderActionMenuItem = {
-  label?: ListItemTextProps['primary'];
-  secondaryLabel?: ListItemTextProps['secondary'];
+  label?: ReactNode;
+  secondaryLabel?: ReactNode;
   icon?: ReactElement;
   disabled?: boolean;
   onClick?: (event: MouseEvent<HTMLElement>) => void;
@@ -45,21 +44,43 @@ const ActionItem = ({
   onClick,
 }: HeaderActionMenuItem) => {
   return (
-    <Fragment>
-      <ListItem
-        data-testid="header-action-item"
-        disabled={disabled}
-        button
-        onClick={event => {
-          if (onClick) {
-            onClick(event);
-          }
-        }}
-      >
-        {icon && <ListItemIcon>{icon}</ListItemIcon>}
-        <ListItemText primary={label} secondary={secondaryLabel} />
-      </ListItem>
-    </Fragment>
+    <DropdownMenuItem
+      data-testid="header-action-item"
+      disabled={disabled}
+      onSelect={event => {
+        // Prevent menu from closing on click to match original behavior
+        event.preventDefault();
+        if (onClick) {
+          /* Radix onSelect provides a native Event; the legacy prop expects
+             React.MouseEvent<HTMLElement>. Create a minimal adapter that
+             satisfies the caller rather than an unsafe double-cast. */
+          const syntheticEvent = {
+            ...event,
+            currentTarget: event.currentTarget as HTMLElement,
+            target: event.target as HTMLElement,
+          } as unknown as MouseEvent<HTMLElement>;
+          onClick(syntheticEvent);
+        }
+      }}
+      className={cn(
+        'flex items-center gap-2 px-4 py-2 cursor-pointer',
+        disabled && 'opacity-50 cursor-not-allowed',
+      )}
+    >
+      {icon && (
+        <span className="flex-shrink-0 w-6 h-6 flex items-center justify-center">
+          {icon}
+        </span>
+      )}
+      <div className="flex flex-col">
+        {label && <span className="text-sm">{label}</span>}
+        {secondaryLabel && (
+          <span className="text-xs text-muted-foreground">
+            {secondaryLabel}
+          </span>
+        )}
+      </div>
+    </DropdownMenuItem>
   );
 };
 
@@ -74,46 +95,28 @@ export type HeaderActionMenuProps = {
  * @public
  */
 export function HeaderActionMenu(props: HeaderActionMenuProps) {
-  const {
-    palette: {
-      common: { white },
-    },
-  } = useTheme();
   const { actionItems } = props;
-  const [open, setOpen] = useState(false);
-  const anchorElRef = useRef(null);
 
   return (
-    <Fragment>
-      <IconButton
-        onClick={() => setOpen(true)}
-        data-testid="header-action-menu"
-        ref={anchorElRef}
-        style={{
-          color: white,
-          height: 56,
-          width: 56,
-          marginRight: -4,
-          padding: 0,
-        }}
-      >
-        <MoreVert />
-      </IconButton>
-      <Popover
-        open={open}
-        anchorEl={anchorElRef.current}
-        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-        onClose={() => setOpen(false)}
-      >
-        <List>
-          {actionItems.map((actionItem, i) => {
-            return (
-              <ActionItem key={`header-action-menu-${i}`} {...actionItem} />
-            );
-          })}
-        </List>
-      </Popover>
-    </Fragment>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon"
+          data-testid="header-action-menu"
+          className={cn(
+            'text-inherit h-14 w-14 -mr-1 p-0',
+            'hover:bg-white/10 focus-visible:ring-white/50',
+          )}
+        >
+          <MoreVertical className="h-6 w-6" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="min-w-[200px]">
+        {actionItems.map((actionItem, i) => (
+          <ActionItem key={`header-action-menu-${i}`} {...actionItem} />
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

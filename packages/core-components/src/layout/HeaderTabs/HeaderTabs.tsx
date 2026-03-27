@@ -13,13 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Box from '@material-ui/core/Box';
-import { makeStyles } from '@material-ui/core/styles';
-import TabUI, { TabProps } from '@material-ui/core/Tab';
-import Tabs from '@material-ui/core/Tabs';
+
 import {
-  ElementType,
-  ChangeEvent,
+  ShadcnTabs as Tabs,
+  TabsList,
+  TabsTrigger,
+} from '../../components/ui/tabs';
+import { cn } from '../../lib/utils';
+import {
+  ComponentPropsWithoutRef,
   useCallback,
   useEffect,
   useState,
@@ -35,38 +37,23 @@ export type HeaderTabsClassKey =
   | 'selected'
   | 'tabRoot';
 
-const useStyles = makeStyles(
-  theme => ({
-    tabsWrapper: {
-      gridArea: 'pageSubheader',
-      backgroundColor: theme.palette.background.paper,
-      paddingLeft: theme.spacing(3),
-      minWidth: 0,
-    },
-    defaultTab: {
-      ...theme.typography.caption,
-      padding: theme.spacing(3, 3),
-      textTransform: 'uppercase',
-      fontWeight: theme.typography.fontWeightBold,
-      color: theme.palette.text.secondary,
-    },
-    selected: {
-      color: theme.palette.text.primary,
-    },
-    tabRoot: {
-      '&:hover': {
-        backgroundColor: theme.palette.background.default,
-        color: theme.palette.text.primary,
-      },
-    },
-  }),
-  { name: 'BackstageHeaderTabs' },
-);
-
+/**
+ * Describes a single tab entry for the {@link HeaderTabs} component.
+ *
+ * @remarks
+ * The `tabProps` field accepts standard HTML button attributes plus Radix UI's
+ * `asChild` prop, which replaces the former MUI `component` prop pattern.
+ * When `asChild` is `true`, the `TabsTrigger` merges its accessibility
+ * attributes into the first child element instead of rendering its own button.
+ *
+ * @public
+ */
 export type Tab = {
   id: string;
   label: string;
-  tabProps?: TabProps<ElementType, { component?: ElementType }>;
+  tabProps?: Omit<ComponentPropsWithoutRef<'button'>, 'value'> & {
+    asChild?: boolean;
+  };
 };
 
 type HeaderTabsProps = {
@@ -78,22 +65,37 @@ type HeaderTabsProps = {
 /**
  * Horizontal Tabs component
  *
- * @public
+ * @remarks
+ * Migrated from MUI Tabs/Tab/makeStyles to shadcn/Radix Tabs primitives
+ * with Tailwind CSS utility classes. The external API is preserved:
+ * `tabs[]` array with string IDs, numeric `onChange(index)` callback,
+ * and optional `selectedIndex` for controlled mode.
  *
+ * Radix Tabs uses a string-based `value` internally, so the component
+ * bridges between the numeric index API (for backward compatibility)
+ * and the string-based tab ID that Radix expects.
+ *
+ * @public
  */
 export function HeaderTabs(props: HeaderTabsProps) {
   const { tabs, onChange, selectedIndex } = props;
   const [selectedTab, setSelectedTab] = useState<number>(selectedIndex ?? 0);
-  const styles = useStyles();
 
-  const handleChange = useCallback(
-    (_: ChangeEvent<{}>, index: number) => {
+  /**
+   * Bridges Radix's string-based `onValueChange` callback to the numeric
+   * index API that consumers expect from `onChange(index)`. Looks up the
+   * tab ID in the `tabs` array to find the corresponding numeric index.
+   */
+  const handleValueChange = useCallback(
+    (value: string) => {
+      const index = tabs.findIndex(tab => tab.id === value);
+      if (index === -1) return;
       if (selectedIndex === undefined) {
         setSelectedTab(index);
       }
       if (onChange) onChange(index);
     },
-    [selectedIndex, onChange],
+    [tabs, selectedIndex, onChange],
   );
 
   useEffect(() => {
@@ -102,29 +104,61 @@ export function HeaderTabs(props: HeaderTabsProps) {
     }
   }, [selectedIndex]);
 
+  const currentTabId = tabs[selectedTab]?.id ?? tabs[0]?.id ?? '';
+
   return (
-    <Box className={styles.tabsWrapper}>
-      <Tabs
-        indicatorColor="primary"
-        textColor="inherit"
-        variant="scrollable"
-        scrollButtons="auto"
-        aria-label="tabs"
-        onChange={handleChange}
-        value={selectedTab}
-      >
-        {tabs.map((tab, index) => (
-          <TabUI
-            data-testid={`header-tab-${index}`}
-            label={tab.label}
-            key={tab.id}
-            value={index}
-            className={styles.defaultTab}
-            classes={{ selected: styles.selected, root: styles.tabRoot }}
-            {...tab.tabProps}
-          />
-        ))}
+    <div
+      className={cn(
+        '[grid-area:pageSubheader]',
+        'bg-background',
+        'pl-6',
+        'min-w-0',
+      )}
+    >
+      <Tabs value={currentTabId} onValueChange={handleValueChange}>
+        <TabsList
+          className={cn(
+            'bg-transparent',
+            'h-auto',
+            'w-full',
+            'justify-start',
+            'rounded-none',
+            'border-b',
+            'border-border',
+            'p-0',
+          )}
+        >
+          {tabs.map((tab, index) => (
+            <TabsTrigger
+              key={tab.id}
+              value={tab.id}
+              data-testid={`header-tab-${index}`}
+              className={cn(
+                'text-xs',
+                'uppercase',
+                'font-bold',
+                'px-3',
+                'py-3',
+                'text-muted-foreground',
+                'rounded-none',
+                'border-b-2',
+                'border-transparent',
+                'shadow-none',
+                'transition-colors',
+                'data-[state=active]:text-foreground',
+                'data-[state=active]:border-primary',
+                'data-[state=active]:bg-transparent',
+                'data-[state=active]:shadow-none',
+                'hover:bg-accent',
+                'hover:text-foreground',
+              )}
+              {...tab.tabProps}
+            >
+              {tab.label}
+            </TabsTrigger>
+          ))}
+        </TabsList>
       </Tabs>
-    </Box>
+    </div>
   );
 }

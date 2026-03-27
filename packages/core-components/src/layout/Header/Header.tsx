@@ -15,13 +15,20 @@
  */
 
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
-import { makeStyles } from '@material-ui/core/styles';
-import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
-import { CSSProperties, PropsWithChildren, ReactNode } from 'react';
+import {
+  CSSProperties,
+  type MutableRefObject,
+  PropsWithChildren,
+  ReactNode,
+} from 'react';
 import { Helmet } from 'react-helmet';
+import { cn } from '../../lib/utils';
+import {
+  ShadcnTooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '../../components/ui/tooltip';
 import { Link } from '../../components/Link';
 import { Breadcrumbs } from '../Breadcrumbs';
 import { useContent } from '../Sidebar';
@@ -38,72 +45,54 @@ export type HeaderClassKey =
   | 'breadcrumbType'
   | 'breadcrumbTitle';
 
-const useStyles = makeStyles(
-  theme => ({
-    header: {
-      gridArea: 'pageHeader',
-      padding: theme.spacing(3),
-      width: '100%',
-      boxShadow: theme.shadows[4],
-      position: 'relative',
-      zIndex: 100,
-      display: 'flex',
-      flexDirection: 'row',
-      alignItems: 'center',
-      backgroundImage: theme.page.backgroundImage,
-      backgroundPosition: 'center',
-      backgroundSize: 'cover',
-      [theme.breakpoints.down('sm')]: {
-        flexWrap: 'wrap',
-      },
-    },
-    leftItemsBox: {
-      maxWidth: '100%',
-      flexGrow: 1,
-    },
-    rightItemsBox: {
-      width: 'auto',
-      alignItems: 'center',
-    },
-    title: {
-      color: theme.page.fontColor,
-      wordBreak: 'break-word',
-      fontSize: theme.typography.h3.fontSize,
-      marginBottom: 0,
-    },
-    subtitle: {
-      color: theme.page.fontColor,
-      opacity: 0.8,
-      display: 'inline-block', // prevents margin collapse of adjacent siblings
-      marginTop: theme.spacing(1),
-      maxWidth: '75ch',
-    },
-    type: {
-      textTransform: 'uppercase',
-      fontSize: 11,
-      opacity: 0.8,
-      marginBottom: theme.spacing(1),
-      color: theme.page.fontColor,
-    },
-    breadcrumb: {
-      color: theme.page.fontColor,
-    },
-    breadcrumbType: {
-      fontSize: 'inherit',
-      opacity: 0.7,
-      marginRight: -theme.spacing(0.3),
-      marginBottom: theme.spacing(0.3),
-    },
-    breadcrumbTitle: {
-      fontSize: 'inherit',
-      marginLeft: -theme.spacing(0.3),
-      marginBottom: theme.spacing(0.3),
-    },
-  }),
-  { name: 'BackstageHeader' },
-);
+/**
+ * Tailwind CSS class mapping for Header component styles.
+ *
+ * @remarks
+ * Replaces the former MUI `makeStyles` theme callback. Visual tokens that
+ * previously came from the MUI theme object are now resolved through CSS
+ * custom properties set by the parent `Page` component:
+ *
+ * - `--page-font-color` — header text color (default `#ffffff`)
+ * - `--page-background-image` — gradient / image background (default `none`)
+ *
+ * Shadow depth (`shadow-md`) approximates MUI `theme.shadows[4]`.
+ * Padding `p-6` = 1.5rem ≈ MUI `theme.spacing(3)` (24 px).
+ * Font size `text-2xl` = 1.5rem matches MUI `theme.typography.h3.fontSize`.
+ *
+ * **Note on CSS variable fallbacks:** The `#ffffff` hex fallback in
+ * `var(--page-font-color, #ffffff)` is intentional — it serves as a last-resort
+ * default when the Page component does not set `--page-font-color`. This is
+ * safe because the Header is always rendered on a dark gradient background
+ * where white text is the correct default.
+ */
+const headerClasses = {
+  header: cn(
+    '[grid-area:pageHeader] p-6 w-full shadow-md',
+    'relative z-[100] flex flex-row items-center',
+    'bg-cover bg-center',
+    'max-sm:flex-wrap',
+  ),
+  leftItemsBox: 'max-w-full grow',
+  rightItemsBox: 'w-auto flex items-center gap-4',
+  title: cn(
+    'text-[var(--page-font-color,#ffffff)]',
+    'break-words text-2xl font-bold mb-0',
+  ),
+  subtitle: cn(
+    'text-[var(--page-font-color,#ffffff)] opacity-80',
+    'inline-block mt-2 max-w-[75ch]',
+  ),
+  type: cn(
+    'uppercase text-[11px] opacity-80',
+    'mb-2 text-[var(--page-font-color,#ffffff)]',
+  ),
+  breadcrumb: 'text-[var(--page-font-color,#ffffff)]',
+  breadcrumbType: 'text-[inherit] opacity-70 -mr-[2.4px] mb-[2.4px]',
+  breadcrumbTitle: 'text-[inherit] -ml-[2.4px] mb-[2.4px]',
+};
 
-type HeaderStyles = ReturnType<typeof useStyles>;
+type HeaderStyles = typeof headerClasses;
 
 type Props = {
   component?: ReactNode;
@@ -145,13 +134,13 @@ const TypeFragment = ({
   }
 
   if (!typeLink) {
-    return <Typography className={classes.type}>{type}</Typography>;
+    return <span className={classes.type}>{type}</span>;
   }
 
   return (
     <Breadcrumbs className={classes.breadcrumb}>
       <Link to={typeLink}>{type}</Link>
-      <Typography>{pageTitle}</Typography>
+      <span>{pageTitle}</span>
     </Breadcrumbs>
   );
 };
@@ -160,14 +149,13 @@ const TitleFragment = ({ pageTitle, classes, tooltip }: TitleFragmentProps) => {
   const { contentRef } = useContent();
 
   const FinalTitle = (
-    <Typography
-      ref={contentRef}
+    <h1
+      ref={contentRef as MutableRefObject<HTMLHeadingElement | null>}
       tabIndex={-1}
       className={classes.title}
-      variant="h1"
     >
       {pageTitle}
-    </Typography>
+    </h1>
   );
 
   if (!tooltip) {
@@ -175,9 +163,14 @@ const TitleFragment = ({ pageTitle, classes, tooltip }: TitleFragmentProps) => {
   }
 
   return (
-    <Tooltip title={tooltip} placement="top-start">
-      {FinalTitle}
-    </Tooltip>
+    <TooltipProvider>
+      <ShadcnTooltip>
+        <TooltipTrigger asChild>{FinalTitle}</TooltipTrigger>
+        <TooltipContent side="top" align="start">
+          {tooltip}
+        </TooltipContent>
+      </ShadcnTooltip>
+    </TooltipProvider>
   );
 };
 
@@ -190,15 +183,7 @@ const SubtitleFragment = ({ classes, subtitle }: SubtitleFragmentProps) => {
     return <>{subtitle}</>;
   }
 
-  return (
-    <Typography
-      className={classes.subtitle}
-      variant="subtitle2"
-      component="span"
-    >
-      {subtitle}
-    </Typography>
-  );
+  return <span className={cn(classes.subtitle, 'text-sm')}>{subtitle}</span>;
 };
 /**
  * Backstage main header with abstract color background in multiple variants
@@ -217,7 +202,7 @@ export function Header(props: PropsWithChildren<Props>) {
     type,
     typeLink,
   } = props;
-  const classes = useStyles();
+  const classes = headerClasses;
   const configApi = useApi(configApiRef);
   const appTitle = configApi.getOptionalString('app.title') || 'Backstage';
   const documentTitle = pageTitleOverride || title;
@@ -228,8 +213,14 @@ export function Header(props: PropsWithChildren<Props>) {
   return (
     <>
       <Helmet titleTemplate={titleTemplate} defaultTitle={defaultTitle} />
-      <header style={style} className={classes.header}>
-        <Box className={classes.leftItemsBox}>
+      <header
+        style={{
+          ...style,
+          backgroundImage: 'var(--page-background-image, none)',
+        }}
+        className={classes.header}
+      >
+        <div className={classes.leftItemsBox}>
           <TypeFragment
             classes={classes}
             type={type}
@@ -242,10 +233,8 @@ export function Header(props: PropsWithChildren<Props>) {
             tooltip={tooltip}
           />
           <SubtitleFragment classes={classes} subtitle={subtitle} />
-        </Box>
-        <Grid container className={classes.rightItemsBox} spacing={4}>
-          {children}
-        </Grid>
+        </div>
+        <div className={classes.rightItemsBox}>{children}</div>
       </header>
     </>
   );

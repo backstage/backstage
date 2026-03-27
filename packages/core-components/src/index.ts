@@ -15,7 +15,17 @@
  */
 
 /**
- * Core components used by Backstage plugins and apps
+ * Core components used by Backstage plugins and apps.
+ *
+ * This package provides both Backstage-specific composite components
+ * (AlertDisplay, Table, Sidebar, InfoCard, etc.) and a full set of
+ * shadcn/ui primitive components built on Radix UI and Tailwind CSS
+ * (Accordion, Alert, Avatar, Badge, Button, Card, Checkbox, Command,
+ * DataTable, Dialog, DropdownMenu, Input, Label, NavigationMenu,
+ * Popover, Progress, ScrollArea, Select, Separator, Sheet, Skeleton,
+ * Switch, Table, Tabs, Textarea, Toast, Tooltip, VisuallyHidden).
+ *
+ * The `cn()` utility is also exported for Tailwind CSS class composition.
  *
  * @packageDocumentation
  */
@@ -25,3 +35,6 @@ export * from './hooks';
 export * from './icons';
 export * from './layout';
 export * from './overridableComponents';
+
+/* Tailwind utility helper for className composition */
+export { cn } from './lib/utils';

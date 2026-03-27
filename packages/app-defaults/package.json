@@ -41,8 +41,7 @@
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/plugin-permission-react": "workspace:^",
     "@backstage/theme": "workspace:^",
-    "@material-ui/core": "^4.12.2",
-    "@material-ui/icons": "^4.9.1"
+    "lucide-react": "^0.575.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

@@ -13,6 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+/*
+ * FavoriteToggle test suite — validated against the shadcn/ui migration.
+ * The underlying FavoriteToggle component now uses shadcn/ui Button
+ * (variant="ghost", size="icon") and Radix Tooltip instead of MUI
+ * IconButton, Tooltip, and makeStyles. All role-based selectors are
+ * preserved: shadcn Button renders a standard <button> element and
+ * Radix Tooltip renders content with role="tooltip", matching MUI's
+ * accessible roles. The Lucide Star icon replaces the legacy StarIcon
+ * and UnstarredIcon from @material-ui/icons.
+ */
+
 import { renderInTestApp } from '@backstage/test-utils';
 import { FavoriteToggle } from './FavoriteToggle';
 import userEvent from '@testing-library/user-event';
@@ -34,6 +46,7 @@ describe('<FavoriteToggle />', () => {
   it('renders with valid props', async () => {
     const { getByRole } = await renderInTestApp(<FavoriteToggle {...props} />);
 
+    // shadcn Button renders <button> with aria-label forwarded from FavoriteToggle
     expect(getByRole('button', { name: props.title })).toBeInTheDocument();
   });
 
@@ -51,6 +64,7 @@ describe('<FavoriteToggle />', () => {
 
     await userEvent.hover(getByRole('button', { name: props.title }));
 
+    // Radix Tooltip renders content with role="tooltip", same as MUI Tooltip
     expect(await findByRole('tooltip')).toHaveTextContent(props.title);
   });
 });

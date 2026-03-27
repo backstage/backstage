@@ -28,6 +28,7 @@ describe('<ErrorPage/>', () => {
     expect(
       getByText(/looks like someone dropped the mic!/i),
     ).toBeInTheDocument();
+    expect(getByTestId('error')).toBeInTheDocument();
     expect(getByTestId('go-back-link')).toBeInTheDocument();
   });
 
@@ -108,5 +109,14 @@ describe('<ErrorPage/>', () => {
       />,
     );
     expect(getByText(/Show more details/i)).toBeInTheDocument();
+  });
+
+  it('should render mic drop image with accessible alt text', async () => {
+    const { getByAltText } = await renderInTestApp(
+      <ErrorPage status="404" statusMessage="PAGE NOT FOUND" />,
+    );
+    expect(
+      getByAltText('Girl dropping mic from her hands'),
+    ).toBeInTheDocument();
   });
 });

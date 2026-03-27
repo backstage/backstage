@@ -13,11 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Typography from '@material-ui/core/Typography';
+
+/**
+ * StackDetails — migrated from MUI Typography/makeStyles to Tailwind utility
+ * classes. The responsive padding and font-size adjustments previously handled
+ * by MUI theme breakpoints are now expressed via Tailwind responsive prefixes.
+ */
+
 import { useState } from 'react';
+import { cn } from '../../lib/utils';
 import { Link } from '../../components/Link';
 import { CodeSnippet } from '../../components';
-import { makeStyles } from '@material-ui/core/styles';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { coreComponentsTranslationRef } from '../../translation';
 
@@ -28,19 +34,6 @@ interface IStackDetailsProps {
 /** @public */
 export type StackDetailsClassKey = 'title';
 
-const useStyles = makeStyles(
-  theme => ({
-    title: {
-      paddingBottom: theme.spacing(5),
-      [theme.breakpoints.down('xs')]: {
-        paddingBottom: theme.spacing(4),
-        fontSize: theme.typography.h3.fontSize,
-      },
-    },
-  }),
-  { name: 'BackstageErrorPageStackDetails' },
-);
-
 /**
  * Error page details with stack trace
  *
@@ -49,28 +42,35 @@ const useStyles = makeStyles(
  */
 export function StackDetails(props: IStackDetailsProps) {
   const { stack } = props;
-  const classes = useStyles();
   const { t } = useTranslationRef(coreComponentsTranslationRef);
 
   const [detailsOpen, setDetailsOpen] = useState<boolean>(false);
 
   if (!detailsOpen) {
     return (
-      <Typography variant="h6" className={classes.title}>
+      <h6
+        className={cn(
+          'text-base font-semibold pb-10 max-sm:pb-8 max-sm:text-2xl',
+        )}
+      >
         <Link to="#" onClick={() => setDetailsOpen(true)}>
           {t('errorPage.showMoreDetails')}
         </Link>
-      </Typography>
+      </h6>
     );
   }
 
   return (
     <>
-      <Typography variant="h6" className={classes.title}>
+      <h6
+        className={cn(
+          'text-base font-semibold pb-10 max-sm:pb-8 max-sm:text-2xl',
+        )}
+      >
         <Link to="#" onClick={() => setDetailsOpen(false)}>
           {t('errorPage.showLessDetails')}
         </Link>
-      </Typography>
+      </h6>
       <CodeSnippet
         text={stack}
         language="text"

@@ -14,16 +14,6 @@
  * limitations under the License.
  */
 import { LogViewer } from '@backstage/core-components';
-import { makeStyles } from '@material-ui/core/styles';
-
-const useStyles = makeStyles({
-  root: {
-    width: '100%',
-    height: '100%',
-    position: 'relative',
-    minHeight: 240,
-  },
-});
 
 /**
  * The text of the event stream
@@ -31,9 +21,8 @@ const useStyles = makeStyles({
  * @alpha
  */
 export const TaskLogStream = (props: { logs: { [k: string]: string[] } }) => {
-  const styles = useStyles();
   return (
-    <div className={styles.root}>
+    <div className="w-full h-full relative min-h-[240px]">
       <LogViewer
         text={Object.values(props.logs)
           .map(l => l.join('\n'))

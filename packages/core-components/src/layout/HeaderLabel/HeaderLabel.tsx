@@ -14,36 +14,12 @@
  * limitations under the License.
  */
 
-import Grid from '@material-ui/core/Grid';
-import { alpha, makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
 import { ReactNode, PropsWithChildren } from 'react';
+import { cn } from '../../lib/utils';
 import { Link } from '../../components/Link';
 
 /** @public */
 export type HeaderLabelClassKey = 'root' | 'label' | 'value';
-
-const useStyles = makeStyles(
-  theme => ({
-    root: {
-      textAlign: 'left',
-    },
-    label: {
-      color: theme.page.fontColor,
-      fontWeight: theme.typography.fontWeightBold,
-      letterSpacing: 0,
-      fontSize: theme.typography.fontSize,
-      marginBottom: theme.spacing(1) / 2,
-      lineHeight: 1,
-    },
-    value: {
-      color: alpha(theme.page.fontColor, 0.8),
-      fontSize: theme.typography.fontSize,
-      lineHeight: 1,
-    },
-  }),
-  { name: 'BackstageHeaderLabel' },
-);
 
 type HeaderLabelContentProps = PropsWithChildren<{
   value: ReactNode;
@@ -56,16 +32,9 @@ const HeaderLabelContent = ({
   className,
   typographyRootComponent,
 }: HeaderLabelContentProps) => {
-  return (
-    <Typography
-      component={
-        typographyRootComponent ?? (typeof value === 'string' ? 'p' : 'span')
-      }
-      className={className}
-    >
-      {value}
-    </Typography>
-  );
+  const Component =
+    typographyRootComponent ?? (typeof value === 'string' ? 'p' : 'span');
+  return <Component className={className}>{value}</Component>;
 };
 
 type HeaderLabelProps = {
@@ -83,20 +52,25 @@ type HeaderLabelProps = {
  */
 export function HeaderLabel(props: HeaderLabelProps) {
   const { label, value, url, contentTypograpyRootComponent } = props;
-  const classes = useStyles();
   const content = (
     <HeaderLabelContent
-      className={classes.value}
+      className={cn('text-sm leading-none text-current opacity-80')}
       value={value || '<Unknown>'}
       typographyRootComponent={contentTypograpyRootComponent}
     />
   );
   return (
-    <Grid item>
-      <Typography component="span" className={classes.root}>
-        <Typography className={classes.label}>{label}</Typography>
+    <div>
+      <span className={cn('text-left')}>
+        <span
+          className={cn(
+            'block text-sm font-bold tracking-normal leading-none mb-1 text-current',
+          )}
+        >
+          {label}
+        </span>
         {url ? <Link to={url}>{content}</Link> : content}
-      </Typography>
-    </Grid>
+      </span>
+    </div>
   );
 }

@@ -15,9 +15,7 @@
  */
 
 import { ReactElement, useMemo } from 'react';
-import Box from '@material-ui/core/Box';
-import Tabs from '@material-ui/core/Tabs';
-import { makeStyles } from '@material-ui/core/styles';
+import { cn } from '@backstage/core-components';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { EntityContentGroupDefinitions } from '@backstage/plugin-catalog-react/alpha';
 
@@ -30,34 +28,6 @@ export type HeaderTabsClassKey =
   | 'defaultTab'
   | 'selected'
   | 'tabRoot';
-
-const useStyles = makeStyles(
-  theme => ({
-    tabsWrapper: {
-      gridArea: 'pageSubheader',
-      backgroundColor: theme.palette.background.paper,
-      paddingLeft: theme.spacing(3),
-      minWidth: 0,
-    },
-    defaultTab: {
-      ...theme.typography.caption,
-      padding: theme.spacing(3, 3),
-      textTransform: 'uppercase',
-      fontWeight: theme.typography.fontWeightBold,
-      color: theme.palette.text.secondary,
-    },
-    selected: {
-      color: theme.palette.text.primary,
-    },
-    tabRoot: {
-      '&:hover': {
-        backgroundColor: theme.palette.background.default,
-        color: theme.palette.text.primary,
-      },
-    },
-  }),
-  { name: 'BackstageHeaderTabs' },
-);
 
 type Tab = {
   id: string;
@@ -83,7 +53,6 @@ type EntityTabsListProps = {
 };
 
 export function EntityTabsList(props: EntityTabsListProps) {
-  const styles = useStyles();
   const { t } = useTranslationRef(catalogTranslationRef);
 
   const { tabs: items, selectedIndex = 0, showIcons, groupDefinitions } = props;
@@ -105,21 +74,20 @@ export function EntityTabsList(props: EntityTabsListProps) {
 
   const selectedItem = items[selectedIndex];
   return (
-    <Box className={styles.tabsWrapper}>
-      <Tabs
-        selectionFollowsFocus
-        indicatorColor="primary"
-        textColor="inherit"
-        variant="scrollable"
-        scrollButtons="auto"
+    <div className={cn('[grid-area:pageSubheader] bg-background pl-6 min-w-0')}>
+      <div
+        role="tablist"
         aria-label={t('entityTabs.tabsAriaLabel')}
-        value={selectedItem?.group ?? selectedItem?.id}
+        className="flex overflow-x-auto"
       >
         {Object.entries(groups).map(([id, tabGroup]) => (
           <EntityTabsGroup
             data-testid={`header-tab-${id}`}
-            className={styles.defaultTab}
-            classes={{ selected: styles.selected, root: styles.tabRoot }}
+            className="text-xs p-6 uppercase font-bold text-muted-foreground"
+            classes={{
+              selected: 'text-foreground',
+              root: 'hover:bg-muted hover:text-foreground',
+            }}
             key={id}
             label={tabGroup.group?.title}
             icon={tabGroup.group?.icon}
@@ -129,7 +97,7 @@ export function EntityTabsList(props: EntityTabsListProps) {
             showIcons={showIcons}
           />
         ))}
-      </Tabs>
-    </Box>
+      </div>
+    </div>
   );
 }

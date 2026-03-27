@@ -22,9 +22,6 @@ import {
   useState,
 } from 'react';
 
-import useMediaQuery from '@material-ui/core/useMediaQuery';
-import { useTheme } from '@material-ui/core/styles';
-
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { configApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
@@ -56,6 +53,34 @@ import {
 import { useNavigateUrl } from './useNavigateUrl';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
+/**
+ * Custom hook that replaces MUI's useMediaQuery with native window.matchMedia.
+ * Returns a boolean indicating whether the media query matches.
+ * Falls back to false when matchMedia is unavailable (SSR / JSDOM).
+ */
+const useNativeMediaQuery = (query: string): boolean => {
+  const [matches, setMatches] = useState(() =>
+    typeof window !== 'undefined' && typeof window.matchMedia === 'function'
+      ? window.matchMedia(query).matches
+      : false,
+  );
+
+  useEffect(() => {
+    if (
+      typeof window === 'undefined' ||
+      typeof window.matchMedia !== 'function'
+    ) {
+      return undefined;
+    }
+    const mql = window.matchMedia(query);
+    const handler = (e: MediaQueryListEvent) => setMatches(e.matches);
+    mql.addEventListener('change', handler);
+    return () => mql.removeEventListener('change', handler);
+  }, [query]);
+
+  return matches;
+};
+
 const MOBILE_MEDIA_QUERY = 'screen and (max-width: 76.1875em)';
 
 // If a defaultPath is specified then we should navigate to that path replacing the
@@ -83,8 +108,7 @@ export const useTechDocsReaderDom = (
   defaultPath?: string,
 ): Element | null => {
   const navigate = useNavigateUrl();
-  const theme = useTheme();
-  const isMobileMedia = useMediaQuery(MOBILE_MEDIA_QUERY);
+  const isMobileMedia = useNativeMediaQuery(MOBILE_MEDIA_QUERY);
   const sanitizerTransformer = useSanitizerTransformer();
   const stylesTransformer = useStylesTransformer();
   const analytics = useAnalytics();
@@ -217,7 +241,7 @@ export const useTechDocsReaderDom = (
       transformer(transformedElement, [
         handleMetaRedirects(navigate, entityRef.name),
         scrollIntoNavigation(),
-        copyToClipboard(theme),
+        copyToClipboard(),
         addLinkClickListener({
           baseUrl:
             configApi.getOptionalString('app.baseUrl') ||
@@ -294,7 +318,7 @@ export const useTechDocsReaderDom = (
         }),
         addNavLinkKeyboardToggle(),
       ]),
-    [theme, navigate, analytics, entityRef.name, configApi],
+    [navigate, analytics, entityRef.name, configApi],
   );
 
   useEffect(() => {

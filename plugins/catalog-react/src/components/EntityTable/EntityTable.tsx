@@ -15,7 +15,6 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { makeStyles } from '@material-ui/core/styles';
 import { CSSProperties, ReactNode } from 'react';
 import { columnFactories } from './columns';
 import { componentEntityColumns, systemEntityColumns } from './presets';
@@ -40,14 +39,6 @@ export interface EntityTableProps<T extends Entity> {
   tableOptions?: TableOptions;
 }
 
-const useStyles = makeStyles(theme => ({
-  empty: {
-    padding: theme.spacing(2),
-    display: 'flex',
-    justifyContent: 'center',
-  },
-}));
-
 /**
  * A general entity table component, that can be used for composing more
  * specific entity tables.
@@ -64,7 +55,6 @@ export const EntityTable = <T extends Entity>(props: EntityTableProps<T>) => {
     tableOptions = {},
   } = props;
 
-  const classes = useStyles();
   const tableStyle: CSSProperties = {
     minWidth: '0',
     width: '100%',
@@ -80,7 +70,9 @@ export const EntityTable = <T extends Entity>(props: EntityTableProps<T>) => {
       title={title}
       style={tableStyle}
       emptyContent={
-        emptyContent && <div className={classes.empty}>{emptyContent}</div>
+        emptyContent && (
+          <div className="flex justify-center p-4">{emptyContent}</div>
+        )
       }
       options={{
         // TODO: Toolbar padding if off compared to other cards, should be: padding: 16px 24px;

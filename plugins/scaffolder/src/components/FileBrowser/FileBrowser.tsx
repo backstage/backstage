@@ -14,20 +14,9 @@
  * limitations under the License.
  */
 
-import { useMemo } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import TreeView from '@material-ui/lab/TreeView';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import TreeItem from '@material-ui/lab/TreeItem';
-
-const useStyles = makeStyles(theme => ({
-  root: {
-    whiteSpace: 'nowrap',
-    overflowY: 'auto',
-    padding: theme.spacing(1),
-  },
-}));
+import { useMemo, useState, useCallback } from 'react';
+import { ChevronDown, ChevronRight, File, Folder } from 'lucide-react';
+import { cn } from '@backstage/core-components';
 
 export type FileEntry =
   | {
@@ -94,17 +83,70 @@ export function parseFileEntries(paths: string[]): FileEntry[] {
   return root.children;
 }
 
-function FileTreeItem({ entry }: { entry: FileEntry }) {
+function FileTreeItem({
+  entry,
+  selected,
+  onSelect,
+  level = 0,
+}: {
+  entry: FileEntry;
+  selected?: string;
+  onSelect?: (path: string) => void;
+  level?: number;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+
   if (entry.type === 'file') {
-    return <TreeItem nodeId={entry.path} label={entry.name} />;
+    return (
+      <button
+        type="button"
+        className={cn(
+          'flex w-full items-center gap-1.5 rounded-sm px-1.5 py-1 text-sm transition-colors hover:bg-accent hover:text-accent-foreground',
+          selected === entry.path &&
+            'bg-accent text-accent-foreground font-medium',
+        )}
+        style={{ paddingInlineStart: `${level * 12 + 6}px` }}
+        onClick={() => onSelect?.(entry.path)}
+        data-path={entry.path}
+      >
+        <File className="h-4 w-4 shrink-0 text-muted-foreground" />
+        <span className="truncate">{entry.name}</span>
+      </button>
+    );
   }
 
   return (
-    <TreeItem nodeId={entry.path} label={entry.name}>
-      {entry.children.map(child => (
-        <FileTreeItem key={child.path} entry={child} />
-      ))}
-    </TreeItem>
+    <div>
+      <button
+        type="button"
+        className="flex w-full items-center gap-1.5 rounded-sm px-1.5 py-1 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
+        style={{ paddingInlineStart: `${level * 12 + 6}px` }}
+        onClick={() => setIsOpen(prev => !prev)}
+        data-path={entry.path}
+        data-state={isOpen ? 'open' : 'closed'}
+      >
+        {isOpen ? (
+          <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" />
+        ) : (
+          <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
+        )}
+        <Folder className="h-4 w-4 shrink-0 text-muted-foreground" />
+        <span className="truncate">{entry.name}</span>
+      </button>
+      {isOpen && (
+        <div role="group">
+          {entry.children.map(child => (
+            <FileTreeItem
+              key={child.path}
+              entry={child}
+              selected={selected}
+              onSelect={onSelect}
+              level={level + 1}
+            />
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -119,28 +161,33 @@ interface FileBrowserProps {
 
 /** A simple file browser that allows you to select individual files */
 export function FileBrowser(props: FileBrowserProps) {
-  const classes = useStyles();
+  const { filePaths, selected, onSelect } = props;
 
-  const fileTree = useMemo(
-    () => parseFileEntries(props.filePaths),
-    [props.filePaths],
+  const fileTree = useMemo(() => parseFileEntries(filePaths), [filePaths]);
+
+  const handleSelect = useCallback(
+    (filePath: string) => {
+      if (onSelect && filePaths.includes(filePath)) {
+        onSelect(filePath);
+      }
+    },
+    [onSelect, filePaths],
   );
 
   return (
-    <TreeView
-      selected={props.selected}
-      className={classes.root}
-      defaultCollapseIcon={<ExpandMoreIcon />}
-      defaultExpandIcon={<ChevronRightIcon />}
-      onNodeSelect={(_e: unknown, nodeId: string) => {
-        if (props.onSelect && props.filePaths.includes(nodeId)) {
-          props.onSelect(nodeId);
-        }
-      }}
+    <div
+      className={cn('whitespace-nowrap overflow-y-auto p-2 text-sm')}
+      role="tree"
+      aria-label="File browser"
     >
       {fileTree.map(entry => (
-        <FileTreeItem key={entry.path} entry={entry} />
+        <FileTreeItem
+          key={entry.path}
+          entry={entry}
+          selected={selected}
+          onSelect={handleSelect}
+        />
       ))}
-    </TreeView>
+    </div>
   );
 }

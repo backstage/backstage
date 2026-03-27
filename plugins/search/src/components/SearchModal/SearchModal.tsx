@@ -13,7 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useContent } from '@backstage/core-components';
+import {
+  useContent,
+  ShadcnDialog,
+  ShadcnDialogContent,
+  ShadcnDialogTitle,
+  ShadcnButton,
+  Separator,
+  VisuallyHidden,
+  cn,
+} from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import {
   SearchBar,
@@ -21,19 +30,7 @@ import {
   SearchResult,
   SearchResultPager,
 } from '@backstage/plugin-search-react';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Divider from '@material-ui/core/Divider';
-import Grid from '@material-ui/core/Grid';
-import { useTheme } from '@material-ui/core/styles';
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import { makeStyles } from '@material-ui/core/styles';
-import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
-import CloseIcon from '@material-ui/icons/Close';
+import { ArrowRight, X } from 'lucide-react';
 import { ReactNode, useCallback, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -91,37 +88,11 @@ export interface SearchModalProps {
   resultItemComponents?: SearchModalChildrenProps['resultItemComponents'];
 }
 
-const useStyles = makeStyles(theme => ({
-  dialogTitle: {
-    gap: theme.spacing(1),
-    display: 'grid',
-    alignItems: 'center',
-    gridTemplateColumns: '1fr auto',
-    '&> button': {
-      marginTop: theme.spacing(1),
-    },
-  },
-  input: {
-    flex: 1,
-  },
-  button: {
-    '&:hover': {
-      background: 'none',
-    },
-  },
-  // Reduces default height of the modal, keeping a gap of 128px between the top and bottom of the page.
-  paperFullWidth: { height: 'calc(100% - 128px)' },
-  dialogActionsContainer: { padding: theme.spacing(1, 3) },
-  viewResultsLink: { verticalAlign: '0.5em' },
-}));
-
 export const Modal = ({
   toggleModal,
   resultItemComponents,
 }: SearchModalChildrenProps) => {
-  const classes = useStyles();
   const navigate = useNavigate();
-  const { transitions } = useTheme();
   const { focusContent } = useContent();
   const { t } = useTranslationRef(searchTranslationRef);
 
@@ -133,8 +104,9 @@ export const Modal = ({
   });
 
   const handleSearchResultClick = useCallback(() => {
-    setTimeout(focusContent, transitions.duration.leavingScreen);
-  }, [focusContent, transitions]);
+    // 195ms matches MUI's default leavingScreen transition duration
+    setTimeout(focusContent, 195);
+  }, [focusContent]);
 
   // This handler is called when "enter" is pressed
   const handleSearchBarSubmit = useCallback(() => {
@@ -146,53 +118,45 @@ export const Modal = ({
 
   return (
     <>
-      <DialogTitle>
-        <Box className={classes.dialogTitle}>
-          <SearchBar
-            className={classes.input}
-            inputProps={{ ref: searchBarRef }}
-            onSubmit={handleSearchBarSubmit}
-          />
-
-          <IconButton aria-label="close" onClick={toggleModal}>
-            <CloseIcon />
-          </IconButton>
-        </Box>
-      </DialogTitle>
-      <DialogContent>
-        <Grid
-          container
-          direction="row-reverse"
-          justifyContent="flex-start"
-          alignItems="center"
+      <div className="grid items-center grid-cols-[1fr_auto] gap-2 p-6 pb-2 [&>button]:mt-2">
+        <SearchBar
+          className="flex-1"
+          ref={searchBarRef}
+          onSubmit={handleSearchBarSubmit}
+        />
+        <ShadcnButton
+          variant="ghost"
+          size="icon"
+          aria-label="close"
+          onClick={toggleModal}
         >
-          <Grid item>
-            <Button
-              className={classes.button}
-              color="primary"
-              endIcon={<ArrowForwardIcon />}
-              onClick={handleSearchBarSubmit}
-              disableRipple
-            >
-              {t('searchModal.viewFullResults')}
-            </Button>
-          </Grid>
-        </Grid>
-        <Divider />
+          <X className="h-4 w-4" />
+        </ShadcnButton>
+      </div>
+      <div className="flex-1 overflow-y-auto px-6">
+        <div className="flex flex-row-reverse justify-start items-center">
+          <ShadcnButton
+            variant="ghost"
+            className="hover:bg-transparent"
+            onClick={handleSearchBarSubmit}
+          >
+            {t('searchModal.viewFullResults')}
+            <ArrowRight className="ml-2 h-4 w-4" />
+          </ShadcnButton>
+        </div>
+        <Separator />
         <SearchResult
           onClick={handleSearchResultClick}
           onKeyDown={handleSearchResultClick}
         >
           {resultItemComponents}
         </SearchResult>
-      </DialogContent>
-      <DialogActions className={classes.dialogActionsContainer}>
-        <Grid container direction="row">
-          <Grid item xs={12}>
-            <SearchResultPager />
-          </Grid>
-        </Grid>
-      </DialogActions>
+      </div>
+      <div className="px-6 py-2">
+        <div className="w-full">
+          <SearchResultPager />
+        </div>
+      </div>
     </>
   );
 };
@@ -209,35 +173,67 @@ export const SearchModal = (props: SearchModalProps) => {
     resultItemComponents,
   } = props;
 
-  const classes = useStyles();
+  // Bind Ctrl+K / Cmd+K global keyboard shortcut to open the search modal.
+  // Per AAP §0.4.2 the Command dialog should be activated by Cmd/Ctrl+K,
+  // providing the Discord/Linear-style search experience.
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key === 'k') {
+        event.preventDefault();
+        toggleModal();
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [toggleModal]);
+
+  const content = open ? (
+    <SearchContextProvider inheritParentContextIfAvailable>
+      {(children &&
+        children({
+          toggleModal,
+          resultItemComponents: resultItemComponents || [],
+        })) ?? (
+        <Modal
+          toggleModal={toggleModal}
+          resultItemComponents={resultItemComponents}
+        />
+      )}
+    </SearchContextProvider>
+  ) : null;
+
+  // When hidden is true, render content in a hidden container to maintain DOM
+  // presence for backward compatibility (e.g., tests expecting search bar to
+  // be in the document but not visible). This avoids rendering the overlay
+  // backdrop when the dialog content should not be shown.
+  if (hidden) {
+    return <div hidden>{content}</div>;
+  }
 
   return (
-    <Dialog
-      classes={{
-        paperFullWidth: classes.paperFullWidth,
-      }}
-      onClose={toggleModal}
-      aria-label="Search Modal"
-      aria-modal="true"
-      fullWidth
-      maxWidth="lg"
+    <ShadcnDialog
       open={open}
-      hidden={hidden}
+      onOpenChange={isOpen => {
+        if (!isOpen) toggleModal();
+      }}
     >
-      {open && (
-        <SearchContextProvider inheritParentContextIfAvailable>
-          {(children &&
-            children({
-              toggleModal,
-              resultItemComponents: resultItemComponents || [],
-            })) ?? (
-            <Modal
-              toggleModal={toggleModal}
-              resultItemComponents={resultItemComponents}
-            />
-          )}
-        </SearchContextProvider>
-      )}
-    </Dialog>
+      <ShadcnDialogContent
+        className={cn(
+          'max-w-4xl h-[calc(100%-128px)] flex flex-col p-0',
+          '[&>button.absolute]:hidden',
+        )}
+        aria-label="Search Modal"
+      >
+        {/* Visually hidden DialogTitle required by Radix Dialog for screen
+            reader accessibility (Issue #5). Without this, Radix emits a
+            console warning about a missing DialogTitle. */}
+        <VisuallyHidden>
+          <ShadcnDialogTitle>Search</ShadcnDialogTitle>
+        </VisuallyHidden>
+        {content}
+      </ShadcnDialogContent>
+    </ShadcnDialog>
   );
 };

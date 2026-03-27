@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import Star from '@material-ui/icons/Star';
+import { Star as LucideStar } from 'lucide-react';
 import { ProviderSettingsItem } from './ProviderSettingsItem';
 import {
   githubAuthApiRef,
@@ -30,6 +30,9 @@ import {
 } from '@backstage/core-plugin-api';
 import { userSettingsTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
+
+// Wrap lucide-react icon for compatibility with Backstage's IconComponent type
+const Star = () => <LucideStar />;
 
 /** @public */
 export const DefaultProviderSettings = (props: {

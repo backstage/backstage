@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { renderInTestApp, withLogCollector } from '@backstage/test-utils';
-import { act, fireEvent } from '@testing-library/react';
+import { act, fireEvent, waitFor } from '@testing-library/react';
 import { TabbedLayout } from './TabbedLayout';
 import { Link, Route, Routes } from 'react-router-dom';
 
@@ -67,19 +67,36 @@ describe('TabbedLayout', () => {
 
   it('navigates when user clicks different tab', async () => {
     const { getByText, queryByText, queryAllByRole } = await renderInTestApp(
-      <TabbedLayout>
-        <TabbedLayout.Route path="/" title="tabbed-test-title">
-          <div>tabbed-test-content</div>
-        </TabbedLayout.Route>
-        <TabbedLayout.Route path="/some-other-path" title="tabbed-test-title-2">
-          <div>tabbed-test-content-2</div>
-        </TabbedLayout.Route>
-      </TabbedLayout>,
+      <Routes>
+        <Route
+          path="/*"
+          element={
+            <TabbedLayout>
+              <TabbedLayout.Route path="/" title="tabbed-test-title">
+                <div>tabbed-test-content</div>
+              </TabbedLayout.Route>
+              <TabbedLayout.Route
+                path="/some-other-path"
+                title="tabbed-test-title-2"
+              >
+                <div>tabbed-test-content-2</div>
+              </TabbedLayout.Route>
+            </TabbedLayout>
+          }
+        />
+      </Routes>,
     );
 
     const secondTab = queryAllByRole('tab')[1];
     act(() => {
       fireEvent.click(secondTab);
+    });
+
+    // Verify Radix Tabs data-state attributes reflect active tab switch
+    await waitFor(() => {
+      const allTabsAfterClick = queryAllByRole('tab');
+      expect(allTabsAfterClick[0]).toHaveAttribute('data-state', 'inactive');
+      expect(allTabsAfterClick[1]).toHaveAttribute('data-state', 'active');
     });
 
     expect(getByText('tabbed-test-title')).toBeInTheDocument();
@@ -91,25 +108,35 @@ describe('TabbedLayout', () => {
 
   it('navigates when user clicks the same tab', async () => {
     const { getByText, queryByText, queryAllByRole } = await renderInTestApp(
-      <TabbedLayout>
-        <TabbedLayout.Route path="/" title="tabbed-test-title">
-          <div>
-            tabbed-test-content
-            <div>
-              <Link to="test">tabbed-test-sub-link</Link>
-              <Routes>
-                <Route
-                  path="test"
-                  element={<div>tabbed-test-sub-content</div>}
-                />
-              </Routes>
-            </div>
-          </div>
-        </TabbedLayout.Route>
-        <TabbedLayout.Route path="/some-other-path" title="tabbed-test-title-2">
-          <div>tabbed-test-content-2</div>
-        </TabbedLayout.Route>
-      </TabbedLayout>,
+      <Routes>
+        <Route
+          path="/*"
+          element={
+            <TabbedLayout>
+              <TabbedLayout.Route path="/" title="tabbed-test-title">
+                <div>
+                  tabbed-test-content
+                  <div>
+                    <Link to="test">tabbed-test-sub-link</Link>
+                    <Routes>
+                      <Route
+                        path="test"
+                        element={<div>tabbed-test-sub-content</div>}
+                      />
+                    </Routes>
+                  </div>
+                </div>
+              </TabbedLayout.Route>
+              <TabbedLayout.Route
+                path="/some-other-path"
+                title="tabbed-test-title-2"
+              >
+                <div>tabbed-test-content-2</div>
+              </TabbedLayout.Route>
+            </TabbedLayout>
+          }
+        />
+      </Routes>,
     );
 
     const subLink = getByText('tabbed-test-sub-link');
@@ -123,6 +150,10 @@ describe('TabbedLayout', () => {
     act(() => {
       fireEvent.click(firstTab);
     });
+
+    // Verify Radix Tabs data-state attribute on active tab after same-tab click
+    expect(firstTab).toHaveAttribute('data-state', 'active');
+
     expect(queryByText('tabbed-test-sub-content')).not.toBeInTheDocument();
   });
 });

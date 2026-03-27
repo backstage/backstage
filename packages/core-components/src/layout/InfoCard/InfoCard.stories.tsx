@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
 import { PropsWithChildren } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { InfoCard, Props } from './InfoCard';
@@ -27,14 +25,14 @@ export default {
 };
 
 const text = (
-  <Typography paragraph>
+  <p className="mb-4 text-sm text-muted-foreground">
     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
     tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
     quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
     consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
     cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat
     non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-  </Typography>
+  </p>
 );
 
 const defaultProps = {
@@ -44,11 +42,9 @@ const defaultProps = {
 
 const Wrapper = ({ children }: PropsWithChildren<{}>) => (
   <MemoryRouter>
-    <Grid container spacing={4}>
-      <Grid item xs={4}>
-        {children}
-      </Grid>
-    </Grid>
+    <div className="grid grid-cols-3 gap-4">
+      <div>{children}</div>
+    </div>
   </MemoryRouter>
 );
 
@@ -69,4 +65,63 @@ export const LinkInFooter = (args: Props) => (
 LinkInFooter.args = {
   ...defaultProps,
   deepLink: { title: 'Go to XYZ Location', link: '#' },
+};
+
+export const WithActions = (args: Props) => (
+  <Wrapper>
+    <InfoCard {...args}>{text}</InfoCard>
+  </Wrapper>
+);
+
+WithActions.args = {
+  ...defaultProps,
+  actions: (
+    <button className="text-sm text-primary hover:underline">Action</button>
+  ),
+};
+
+export const NoPadding = (args: Props) => (
+  <Wrapper>
+    <InfoCard {...args}>{text}</InfoCard>
+  </Wrapper>
+);
+
+NoPadding.args = {
+  ...defaultProps,
+  noPadding: true,
+};
+
+export const FullHeight = (args: Props) => (
+  <Wrapper>
+    <InfoCard {...args}>{text}</InfoCard>
+  </Wrapper>
+);
+
+FullHeight.args = {
+  ...defaultProps,
+  variant: 'fullHeight',
+};
+
+export const WithActionsTopRight = (args: Props) => (
+  <Wrapper>
+    <InfoCard {...args}>{text}</InfoCard>
+  </Wrapper>
+);
+
+WithActionsTopRight.args = {
+  ...defaultProps,
+  actionsTopRight: (
+    <button className="text-sm text-primary hover:underline">Top Right</button>
+  ),
+};
+
+export const NoDivider = (args: Props) => (
+  <Wrapper>
+    <InfoCard {...args}>{text}</InfoCard>
+  </Wrapper>
+);
+
+NoDivider.args = {
+  ...defaultProps,
+  divider: false,
 };

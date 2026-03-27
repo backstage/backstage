@@ -75,6 +75,13 @@ Selected.args = {
   selected: 'test_2',
 };
 
+/**
+ * The `native` prop was originally supported by MUI Select to render native
+ * `<option>` elements. With the migration to shadcn/ui (Radix Select), native
+ * mode is not supported — the component always renders the Radix-based
+ * dropdown. The `native` prop is retained in SelectProps for backward
+ * compatibility but may be ignored at render time.
+ */
 export const Native = (args: SelectProps) => <Select {...args} />;
 
 Native.args = {
@@ -86,6 +93,11 @@ Native.args = {
   native: true,
 };
 
+/**
+ * The `margin` prop controls vertical spacing around the select control.
+ * With the migration to shadcn/ui, the 'dense' value maps to tighter
+ * Tailwind spacing classes internally (e.g. `my-1` instead of `my-2`).
+ */
 export const MarginDense = (args: SelectProps) => <Select {...args} />;
 
 MarginDense.args = {

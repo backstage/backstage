@@ -16,11 +16,6 @@
 
 import { ComponentType, useState, PropsWithChildren } from 'react';
 
-import Grid from '@material-ui/core/Grid';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-
 import { CatalogIcon, Link } from '@backstage/core-components';
 import { TestApiProvider, wrapInTestApp } from '@backstage/test-utils';
 import { createPlugin, createRouteRef } from '@backstage/core-plugin-api';
@@ -65,11 +60,11 @@ export default {
     (Story: ComponentType<PropsWithChildren<{}>>) =>
       wrapInTestApp(
         <TestApiProvider apis={[[searchApiRef, searchApiMock]]}>
-          <Grid container direction="row">
-            <Grid item xs={12}>
+          <div className="grid gap-4">
+            <div>
               <Story />
-            </Grid>
-          </Grid>
+            </div>
+          </div>
         </TestApiProvider>,
         { mountedRoutes: { '/': routeRef } },
       ),
@@ -154,7 +149,11 @@ export const WithCustomNoResultsComponent = () => {
     <TestApiProvider apis={[[searchApiRef, new MockSearchApi()]]}>
       <SearchResultList
         query={query}
-        noResultsComponent={<ListItemText primary="No results were found" />}
+        noResultsComponent={
+          <div className="flex flex-col min-w-0">
+            <span className="text-sm font-medium">No results were found</span>
+          </div>
+        }
       />
     </TestApiProvider>
   );
@@ -165,14 +164,13 @@ const CustomResultListItem = (props: any) => {
 
   return (
     <Link to={result.location}>
-      <ListItem alignItems="flex-start" divider>
-        {icon && <ListItemIcon>{icon}</ListItemIcon>}
-        <ListItemText
-          primary={result.title}
-          primaryTypographyProps={{ variant: 'h6' }}
-          secondary={result.text}
-        />
-      </ListItem>
+      <li className="flex items-start py-3 border-b border-border">
+        {icon && <div className="mr-4 mt-1 flex-shrink-0">{icon}</div>}
+        <div className="flex flex-col min-w-0">
+          <span className="text-base font-semibold">{result.title}</span>
+          <span className="text-xs text-muted-foreground">{result.text}</span>
+        </div>
+      </li>
     </Link>
   );
 };

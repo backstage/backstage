@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { makeStyles } from '@material-ui/core/styles';
 import { ReactNode } from 'react';
+
+import { cn } from '../../lib/utils';
 import { Link } from '../Link';
 import { SubvalueCell } from './SubvalueCell';
 import { Table, TableColumn, TableFilter } from './Table';
@@ -25,17 +26,6 @@ export default {
   component: Table,
   tags: ['!manifest'],
 };
-
-const useStyles = makeStyles(theme => ({
-  container: {
-    width: 850,
-  },
-  empty: {
-    padding: theme.spacing(2),
-    display: 'flex',
-    justifyContent: 'center',
-  },
-}));
 
 const generateTestData: (number: number) => Array<{}> = (rows = 10) => {
   const data: Array<{}> = [];
@@ -55,7 +45,6 @@ const generateTestData: (number: number) => Array<{}> = (rows = 10) => {
 const testData10 = generateTestData(10);
 
 export const DefaultTable = () => {
-  const classes = useStyles();
   const columns: TableColumn[] = [
     {
       title: 'Column 1',
@@ -79,7 +68,7 @@ export const DefaultTable = () => {
   ];
 
   return (
-    <div className={classes.container}>
+    <div className={cn('w-[850px]')}>
       <Table
         options={{ paging: false }}
         data={testData10}
@@ -91,7 +80,6 @@ export const DefaultTable = () => {
 };
 
 export const LoadingTable = () => {
-  const classes = useStyles();
   const columns: TableColumn[] = [
     {
       title: 'Column 1',
@@ -115,7 +103,7 @@ export const LoadingTable = () => {
   ];
 
   return (
-    <div className={classes.container}>
+    <div className={cn('w-[850px]')}>
       <Table
         options={{ paging: false }}
         data={[]}
@@ -128,7 +116,6 @@ export const LoadingTable = () => {
 };
 
 export const EmptyTable = () => {
-  const classes = useStyles();
   const columns: TableColumn[] = [
     {
       title: 'Column 1',
@@ -152,13 +139,13 @@ export const EmptyTable = () => {
   ];
 
   return (
-    <div className={classes.container}>
+    <div className={cn('w-[850px]')}>
       <Table
         options={{ paging: false }}
         data={[]}
         columns={columns}
         emptyContent={
-          <div className={classes.empty}>
+          <div className={cn('p-4 flex justify-center')}>
             No data was added yet,&nbsp;
             <Link to="http://backstage.io/">learn how to add data</Link>.
           </div>
@@ -170,7 +157,6 @@ export const EmptyTable = () => {
 };
 
 export const SubtitleTable = () => {
-  const classes = useStyles();
   const columns: TableColumn[] = [
     {
       title: 'Column 1',
@@ -194,7 +180,7 @@ export const SubtitleTable = () => {
   ];
 
   return (
-    <div className={classes.container}>
+    <div className={cn('w-[850px]')}>
       <Table
         options={{ paging: false }}
         data={testData10}
@@ -207,7 +193,6 @@ export const SubtitleTable = () => {
 };
 
 export const HiddenSearchTable = () => {
-  const classes = useStyles();
   const columns: TableColumn[] = [
     {
       title: 'Column 1',
@@ -231,7 +216,7 @@ export const HiddenSearchTable = () => {
   ];
 
   return (
-    <div className={classes.container}>
+    <div className={cn('w-[850px]')}>
       <Table
         options={{ paging: false, search: false }}
         data={testData10}
@@ -242,7 +227,6 @@ export const HiddenSearchTable = () => {
 };
 
 export const SubvalueTable = () => {
-  const classes = useStyles();
   const columns: TableColumn[] = [
     {
       title: 'Column 1',
@@ -276,14 +260,13 @@ export const SubvalueTable = () => {
   ];
 
   return (
-    <div className={classes.container}>
+    <div className={cn('w-[850px]')}>
       <Table options={{ paging: false }} data={testData10} columns={columns} />
     </div>
   );
 };
 
 export const DenseTable = () => {
-  const classes = useStyles();
   const columns: TableColumn[] = [
     {
       title: 'Column 1',
@@ -307,7 +290,7 @@ export const DenseTable = () => {
   ];
 
   return (
-    <div className={classes.container}>
+    <div className={cn('w-[850px]')}>
       <Table
         options={{ paging: false, padding: 'dense' }}
         data={testData10}
@@ -319,7 +302,6 @@ export const DenseTable = () => {
 };
 
 export const FilterTable = () => {
-  const classes = useStyles();
   const columns: TableColumn[] = [
     {
       title: 'Column 1',
@@ -354,7 +336,7 @@ export const FilterTable = () => {
   ];
 
   return (
-    <div className={classes.container}>
+    <div className={cn('w-[850px]')}>
       <Table
         options={{ paging: false, padding: 'dense' }}
         data={testData10}
@@ -366,14 +348,17 @@ export const FilterTable = () => {
 };
 
 export const StyledTable = () => {
-  const classes = useStyles();
   const columns: TableColumn[] = [
     {
       title: 'Column 1',
       field: 'col1',
       highlight: true,
-      cellStyle: (_, rowData: any & { tableData: { id: number } }) => {
-        return rowData.tableData.id % 2 === 0
+      cellStyle: (_: any, rowData: any) => {
+        // Use the row's position within the dataset for even/odd styling.
+        // The legacy @material-table/core provided rowData.tableData.id;
+        // @tanstack/react-table passes the original data object directly.
+        const idx = testData10.indexOf(rowData);
+        return idx % 2 === 0
           ? {
               color: '#6CD75F',
             }
@@ -400,7 +385,7 @@ export const StyledTable = () => {
   ];
 
   return (
-    <div className={classes.container}>
+    <div className={cn('w-[850px]')}>
       <Table
         options={{ paging: false }}
         data={testData10}

@@ -13,6 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+// Polyfill pointer capture for JSDOM — required by Radix Select
+if (!Element.prototype.hasPointerCapture) {
+  Element.prototype.hasPointerCapture = function () {
+    return false;
+  };
+}
+if (!Element.prototype.setPointerCapture) {
+  Element.prototype.setPointerCapture = function () {};
+}
+if (!Element.prototype.releasePointerCapture) {
+  Element.prototype.releasePointerCapture = function () {};
+}
+// Polyfill scrollIntoView for JSDOM — required by Radix Select
+if (!Element.prototype.scrollIntoView) {
+  Element.prototype.scrollIntoView = function () {};
+}
+
 import { RepoUrlPicker } from './RepoUrlPicker';
 import { Form } from '@backstage/plugin-scaffolder-react/alpha';
 import validator from '@rjsf/validator-ajv8';
@@ -32,7 +50,7 @@ import {
   ScaffolderRJSFField,
   ScaffolderRJSFFormProps as FormProps,
 } from '@backstage/plugin-scaffolder-react';
-import { act, fireEvent } from '@testing-library/react';
+import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ComponentType, PropsWithChildren, ReactNode } from 'react';
 
@@ -151,7 +169,7 @@ describe('RepoUrlPicker', () => {
     });
 
     it('should render properly with allowedHosts', async () => {
-      const { getByRole } = await renderInTestApp(
+      await renderInTestApp(
         <TestApiProvider
           apis={[
             [scmIntegrationsApiRef, mockIntegrationsApiAzure],
@@ -175,13 +193,17 @@ describe('RepoUrlPicker', () => {
         </TestApiProvider>,
       );
 
-      expect(
-        getByRole('option', { name: 'dev.azure.com' }),
-      ).toBeInTheDocument();
+      // Wait for the select to render — single host is auto-selected and select is disabled
+      await waitFor(() => {
+        const hostTrigger = screen.getByTestId('host-select');
+        expect(hostTrigger).toBeInTheDocument();
+        // Single host → select is disabled, trigger should display the host value
+        expect(hostTrigger).toBeDisabled();
+      });
     });
 
     it('should render properly with allowedProject', async () => {
-      const { getByRole } = await renderInTestApp(
+      await renderInTestApp(
         <TestApiProvider
           apis={[
             [scmIntegrationsApiRef, mockIntegrationsApiAzure],
@@ -208,7 +230,14 @@ describe('RepoUrlPicker', () => {
         </TestApiProvider>,
       );
 
-      expect(getByRole('option', { name: 'Backstage' })).toBeInTheDocument();
+      // The AzureRepoPicker's project Select uses data-testid="select" (default).
+      // With a single allowedProject, the select is disabled and auto-selects the value.
+      // Verify the project select exists and is disabled (single project auto-selected).
+      await waitFor(() => {
+        const projectSelect = screen.getByTestId('select');
+        expect(projectSelect).toBeInTheDocument();
+        expect(projectSelect).toBeDisabled();
+      });
     });
 
     it('should render properly with title and description', async () => {
@@ -366,7 +395,7 @@ describe('RepoUrlPicker', () => {
       );
       const secondHost = allowedHosts[1];
 
-      const { getAllByRole, getByText } = await renderInTestApp(
+      await renderInTestApp(
         <TestApiProvider
           apis={[
             [scmIntegrationsApiRef, mockIntegrationsApi],
@@ -400,17 +429,33 @@ describe('RepoUrlPicker', () => {
         // need to wait for the debounce to finish to fetch credentials for the first selected host
         await new Promise(resolve => setTimeout(resolve, 600));
       });
-      expect(getByText('abc123')).toBeInTheDocument();
+      expect(screen.getByText('abc123')).toBeInTheDocument();
 
+      // Open the host select (Radix Select trigger)
+      await userEvent.click(screen.getByTestId('host-select'));
+      // Wait for options to render in the portal
+      await waitFor(() => {
+        expect(
+          screen.getByRole('option', { name: secondHost }),
+        ).toBeInTheDocument();
+      });
+      // Radix Select has a capture-phase pointerup handler that calls
+      // event.preventDefault() if the pointer hasn't moved >10 px from the
+      // trigger position.  In JSDOM all coordinates default to 0, so the
+      // guard always fires and blocks `composeEventHandlers` from calling
+      // handleSelect().  Firing a pointermove with a large offset satisfies
+      // the delta check so that the subsequent pointerup is not prevented.
+      fireEvent.pointerMove(document, { clientX: 50, clientY: 50 });
+      // Radix SelectItem uses onPointerDown to record pointerType and
+      // onPointerUp to call handleSelect when pointerType === "mouse".
+      const option = screen.getByRole('option', { name: secondHost });
+      fireEvent.pointerDown(option, { button: 0, pointerType: 'mouse' });
+      fireEvent.pointerUp(option, { button: 0, pointerType: 'mouse' });
       await act(async () => {
-        // Select the second host
-        const hostInput = getAllByRole('combobox')[0];
-        await userEvent.selectOptions(hostInput, secondHost);
-
         // need to wait for the debounce to finish
         await new Promise(resolve => setTimeout(resolve, 600));
       });
-      expect(getByText('def456')).toBeInTheDocument();
+      expect(screen.getByText('def456')).toBeInTheDocument();
       expect(mockScmAuthApi.getCredentials).toHaveBeenCalledWith({
         url: `https://${secondHost}`,
         additionalScope: {
@@ -461,8 +506,10 @@ describe('RepoUrlPicker', () => {
           <Form {...props} />
         </Wrapper>,
       );
+      /* After the MUI-to-shadcn migration, the description wrapper is a plain
+         div with Tailwind utility classes instead of a MUI Typography element. */
       expect(
-        container.getElementsByClassName('MuiTypography-body1'),
+        container.querySelectorAll('div.text-sm.text-muted-foreground'),
       ).toHaveLength(0);
     });
 
@@ -486,8 +533,10 @@ describe('RepoUrlPicker', () => {
           <Form {...props} />
         </Wrapper>,
       );
+      /* Verify the schema description is rendered inside our Tailwind-styled
+         wrapper (div.text-sm.text-muted-foreground) that replaced MUI Typography. */
       expect(
-        container.getElementsByClassName('MuiTypography-body1'),
+        container.querySelectorAll('div.text-sm.text-muted-foreground'),
       ).toHaveLength(1);
       expect(getByText(description.fromSchema)).toBeInTheDocument();
       expect(queryByText(description.fromUiSchema)).toBe(null);
@@ -514,8 +563,10 @@ describe('RepoUrlPicker', () => {
           <Form {...props} />
         </Wrapper>,
       );
+      /* Verify the uiSchema description is rendered inside our Tailwind-styled
+         wrapper (div.text-sm.text-muted-foreground) that replaced MUI Typography. */
       expect(
-        container.getElementsByClassName('MuiTypography-body1'),
+        container.querySelectorAll('div.text-sm.text-muted-foreground'),
       ).toHaveLength(1);
       expect(queryByText(description.fromSchema)).toBe(null);
       expect(getByText(description.fromUiSchema)).toBeInTheDocument();

@@ -14,12 +14,6 @@
  * limitations under the License.
  */
 
-import { makeStyles } from '@material-ui/core/styles';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import ListItemText from '@material-ui/core/ListItemText';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
 import { useState } from 'react';
 import { isError } from '@backstage/errors';
 import {
@@ -29,21 +23,10 @@ import {
 } from '@backstage/core-plugin-api';
 import { coreComponentsTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import Box from '@material-ui/core/Box';
+import { Button } from '../ui/button';
+import { cn } from '../../lib/utils';
 
 export type LoginRequestListItemClassKey = 'root';
-
-const useItemStyles = makeStyles(
-  theme => ({
-    root: {
-      paddingLeft: theme.spacing(2),
-    },
-    button: {
-      marginLeft: theme.spacing(2),
-    },
-  }),
-  { name: 'BackstageLoginRequestListItem' },
-);
 
 type RowProps = {
   request: PendingOAuthRequest;
@@ -52,7 +35,6 @@ type RowProps = {
 };
 
 const LoginRequestListItem = ({ request, busy, setBusy }: RowProps) => {
-  const classes = useItemStyles();
   const [error, setError] = useState<string>();
   const { t } = useTranslationRef(coreComponentsTranslationRef);
   const configApi = useApi(configApiRef);
@@ -77,36 +59,41 @@ const LoginRequestListItem = ({ request, busy, setBusy }: RowProps) => {
     });
 
   return (
-    <ListItem disabled={busy} classes={{ root: classes.root }}>
-      <ListItemAvatar>
+    <li
+      className={cn(
+        'flex items-center gap-3 pl-4 pr-4 py-3',
+        busy && 'opacity-50 pointer-events-none',
+      )}
+      data-disabled={busy || undefined}
+    >
+      <div className="flex-shrink-0">
         <IconComponent fontSize="large" />
-      </ListItemAvatar>
-      <Box display="flex" alignItems="center" flex={1}>
-        <Box flex={1}>
-          <ListItemText
-            primary={request.provider.title}
-            secondary={
-              <>
-                {message && (
-                  <Typography variant="subtitle2" color="textSecondary">
-                    {message}
-                  </Typography>
-                )}
-                {error && <Typography color="error">{error}</Typography>}
-              </>
-            }
-          />
-        </Box>
+      </div>
+      <div className="flex items-center flex-1 min-w-0">
+        <div className="flex-1 min-w-0">
+          <span className="block text-sm font-medium text-foreground">
+            {request.provider.title}
+          </span>
+          {message && (
+            <span className="block text-sm text-muted-foreground">
+              {message}
+            </span>
+          )}
+          {error && (
+            <span className="block text-sm text-destructive">{error}</span>
+          )}
+        </div>
         <Button
-          color="primary"
-          variant="contained"
+          variant="default"
+          size="sm"
           onClick={handleContinue}
-          className={classes.button}
+          disabled={busy}
+          className="ml-4 shrink-0"
         >
           {t('oauthRequestDialog.login')}
         </Button>
-      </Box>
-    </ListItem>
+      </div>
+    </li>
   );
 };
 

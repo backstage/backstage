@@ -15,8 +15,6 @@
  */
 
 import { ComponentType, PropsWithChildren } from 'react';
-import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
 
 import { TestApiProvider } from '@backstage/test-utils';
 
@@ -31,11 +29,11 @@ export default {
     (Story: ComponentType<PropsWithChildren<{}>>) => (
       <TestApiProvider apis={[[searchApiRef, new MockSearchApi()]]}>
         <SearchContextProvider>
-          <Grid container direction="row">
-            <Grid item xs={4}>
+          <div className="grid grid-cols-3 gap-4">
+            <div>
               <Story />
-            </Grid>
-          </Grid>
+            </div>
+          </div>
         </SearchContextProvider>
       </TestApiProvider>
     ),
@@ -45,30 +43,30 @@ export default {
 
 export const CheckBoxFilter = () => {
   return (
-    <Paper style={{ padding: 10 }}>
+    <div className="rounded-lg border border-border bg-card p-2.5">
       <SearchFilter.Checkbox
         name="Search Checkbox Filter"
         values={['value1', 'value2']}
       />
-    </Paper>
+    </div>
   );
 };
 
 export const SelectFilter = () => {
   return (
-    <Paper style={{ padding: 10 }}>
+    <div className="rounded-lg border border-border bg-card p-2.5">
       <SearchFilter.Select
         label="Search Select Filter"
         name="select_filter"
         values={['value1', 'value2']}
       />
-    </Paper>
+    </div>
   );
 };
 
 export const AsyncSelectFilter = () => {
   return (
-    <Paper style={{ padding: 10 }}>
+    <div className="rounded-lg border border-border bg-card p-2.5">
       <SearchFilter.Select
         label="Asynchronous Values"
         name="async_values"
@@ -79,38 +77,38 @@ export const AsyncSelectFilter = () => {
           return json.results.map(r => r.name);
         }}
       />
-    </Paper>
+    </div>
   );
 };
 
 export const Autocomplete = () => {
   return (
-    <Paper style={{ padding: 10 }}>
+    <div className="rounded-lg border border-border bg-card p-2.5">
       <SearchFilter.Autocomplete
         name="autocomplete"
         label="Single-Select Autocomplete Filter"
         values={['value1', 'value2']}
       />
-    </Paper>
+    </div>
   );
 };
 
 export const MultiSelectAutocomplete = () => {
   return (
-    <Paper style={{ padding: 10 }}>
+    <div className="rounded-lg border border-border bg-card p-2.5">
       <SearchFilter.Autocomplete
         multiple
         name="autocomplete"
         label="Multi-Select Autocomplete Filter"
         values={['value1', 'value2']}
       />
-    </Paper>
+    </div>
   );
 };
 
 export const AsyncMultiSelectAutocomplete = () => {
   return (
-    <Paper style={{ padding: 10 }}>
+    <div className="rounded-lg border border-border bg-card p-2.5">
       <SearchFilter.Autocomplete
         multiple
         name="starwarsPerson"
@@ -127,6 +125,6 @@ export const AsyncMultiSelectAutocomplete = () => {
           return json.results.map(r => r.name);
         }}
       />
-    </Paper>
+    </div>
   );
 };

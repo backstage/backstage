@@ -15,68 +15,34 @@
  */
 
 import { MouseEventHandler } from 'react';
-import Card from '@material-ui/core/Card';
-import CardActionArea from '@material-ui/core/CardActionArea';
-import CardContent from '@material-ui/core/CardContent';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
+import {
+  Card,
+  CardContent,
+  ShadcnTooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
+  cn,
+} from '@backstage/core-components';
 import { WebFileSystemAccess } from '../../../lib/filesystem';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../../translation';
-import CreateNewFolderIcon from '@material-ui/icons/CreateNewFolder';
-import ListAltIcon from '@material-ui/icons/ListAlt';
-import FormatListBulletedIcon from '@material-ui/icons/FormatListBulleted';
-import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
-import CardMedia from '@material-ui/core/CardMedia';
-import PublishIcon from '@material-ui/icons/Publish';
-import SvgIcon from '@material-ui/core/SvgIcon';
-import Tooltip from '@material-ui/core/Tooltip';
+import {
+  FolderPlus,
+  ListOrdered,
+  List,
+  Info,
+  Upload,
+  type LucideIcon,
+} from 'lucide-react';
 
-const useStyles = makeStyles(theme => ({
-  gridRoot: {
-    display: 'flex',
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  cardGrid: {
-    maxWidth: 1000,
-    display: 'grid',
-    gridGap: theme.spacing(2),
-    gridAutoFlow: 'row',
-    [theme.breakpoints.up('md')]: {
-      gridTemplateRows: '1fr 1fr',
-      gridTemplateColumns: '1fr 1fr',
-    },
-  },
-  card: {
-    display: 'grid',
-    gridTemplateColumns: 'auto 1fr',
-    gridTemplateRows: '1fr',
-    alignItems: 'center',
-    margin: theme.spacing(0, 1),
-    marginTop: theme.spacing(2),
-    padding: theme.spacing(2),
-  },
-  icon: {
-    justifySelf: 'center',
-    paddingTop: theme.spacing(1),
-    fontSize: 48,
-  },
-  introText: {
-    textAlign: 'center',
-    marginTop: theme.spacing(2),
-  },
-  infoIcon: {
-    position: 'absolute',
-    top: theme.spacing(1),
-    right: theme.spacing(1),
-  },
-  cardContent: {
-    padding: theme.spacing(1),
-  },
-}));
-
+/**
+ * Props for the TemplateEditorIntro component.
+ *
+ * @remarks
+ * `style` allows parent layout to pass inline styles (e.g. flex sizing).
+ * `onSelect` fires when the user chooses one of the four editor actions.
+ */
 interface EditorIntroProps {
   style?: JSX.IntrinsicElements['div']['style'];
   onSelect?: (
@@ -84,10 +50,18 @@ interface EditorIntroProps {
   ) => void;
 }
 
+/**
+ * Internal action card used in the TemplateEditorIntro grid.
+ *
+ * Renders a clickable card with an icon, title, and description.
+ * When `requireLoad` is true and the browser does not support the
+ * File System Access API, the card shows a tooltip warning and
+ * renders in a muted style.
+ */
 function ActionCard(props: {
   title: string;
   description: string;
-  Icon: typeof SvgIcon;
+  Icon: LucideIcon;
   action?: MouseEventHandler;
   requireLoad?: boolean;
 }) {
@@ -95,64 +69,73 @@ function ActionCard(props: {
     ? WebFileSystemAccess.isSupported()
     : true;
   const { t } = useTranslationRef(scaffolderTranslationRef);
-
-  const classes = useStyles();
   const { Icon, title, description, action } = props;
-  return (
-    <Card className={classes.card}>
-      {!supportsLoad && (
-        <Tooltip
-          placement="top"
-          title={t(
-            'templateEditorPage.templateEditorIntro.loadLocal.unsupportedTooltip',
-          )}
-        >
-          <InfoOutlinedIcon />
-        </Tooltip>
-      )}
 
-      <CardActionArea onClick={action}>
-        <CardMedia>
+  return (
+    <Card className="relative grid grid-cols-[auto_1fr] grid-rows-1 items-center mx-2 mt-4 p-4">
+      {!supportsLoad && (
+        <TooltipProvider>
+          <ShadcnTooltip>
+            <TooltipTrigger asChild>
+              <span className="absolute top-2 right-2 cursor-help">
+                <Info className="h-5 w-5 text-muted-foreground" />
+              </span>
+            </TooltipTrigger>
+            <TooltipContent>
+              {t(
+                'templateEditorPage.templateEditorIntro.loadLocal.unsupportedTooltip',
+              )}
+            </TooltipContent>
+          </ShadcnTooltip>
+        </TooltipProvider>
+      )}
+      <button
+        type="button"
+        onClick={action}
+        className="col-span-2 grid grid-cols-subgrid cursor-pointer bg-transparent border-0 p-0 text-left w-full hover:opacity-80 transition-opacity focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2 rounded-md"
+      >
+        <div className="justify-self-center pt-2">
           <Icon
-            className={classes.icon}
-            color={supportsLoad ? undefined : 'disabled'}
+            size={48}
+            className={cn(
+              supportsLoad ? 'text-foreground' : 'text-muted-foreground',
+            )}
           />
-        </CardMedia>
-        <CardContent className={classes.cardContent}>
-          <Typography
-            gutterBottom
-            variant="h5"
-            component="h2"
-            color={supportsLoad ? undefined : 'textSecondary'}
+        </div>
+        <CardContent className="p-2">
+          <h2
+            className={cn(
+              'text-xl font-semibold mb-1',
+              supportsLoad ? 'text-foreground' : 'text-muted-foreground',
+            )}
           >
             {title}
-          </Typography>
-          <Typography variant="body2" color="textSecondary" component="p">
-            {description}
-          </Typography>
+          </h2>
+          <p className="text-sm text-muted-foreground">{description}</p>
         </CardContent>
-      </CardActionArea>
+      </button>
     </Card>
   );
 }
+
+/** Introduction screen for the template editor with four action cards. */
 export function TemplateEditorIntro(props: EditorIntroProps) {
-  const classes = useStyles();
   const { t } = useTranslationRef(scaffolderTranslationRef);
 
   return (
     <div style={props.style}>
-      <Typography variant="h4" component="h2" className={classes.introText}>
+      <h2 className="text-2xl font-bold text-center mt-4">
         {t('templateEditorPage.templateEditorIntro.title')}
-      </Typography>
-      <div className={classes.gridRoot}>
-        <div className={classes.cardGrid}>
+      </h2>
+      <div className="flex flex-1 items-center justify-center">
+        <div className="max-w-[1000px] grid gap-4 grid-flow-row md:grid-rows-2 md:grid-cols-2">
           <ActionCard
             title={t('templateEditorPage.templateEditorIntro.loadLocal.title')}
             description={t(
               'templateEditorPage.templateEditorIntro.loadLocal.description',
             )}
             requireLoad
-            Icon={PublishIcon}
+            Icon={Upload}
             action={() => props.onSelect?.('local')}
           />
           <ActionCard
@@ -164,7 +147,7 @@ export function TemplateEditorIntro(props: EditorIntroProps) {
             )}
             requireLoad
             action={() => props.onSelect?.('create-template')}
-            Icon={CreateNewFolderIcon}
+            Icon={FolderPlus}
           />
 
           <ActionCard
@@ -172,7 +155,7 @@ export function TemplateEditorIntro(props: EditorIntroProps) {
             description={t(
               'templateEditorPage.templateEditorIntro.formEditor.description',
             )}
-            Icon={ListAltIcon}
+            Icon={ListOrdered}
             action={() => props.onSelect?.('form')}
           />
 
@@ -183,7 +166,7 @@ export function TemplateEditorIntro(props: EditorIntroProps) {
             description={t(
               'templateEditorPage.templateEditorIntro.fieldExplorer.description',
             )}
-            Icon={FormatListBulletedIcon}
+            Icon={List}
             action={() => props.onSelect?.('field-explorer')}
           />
         </div>

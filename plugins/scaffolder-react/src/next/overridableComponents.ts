@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { Overrides } from '@material-ui/core/styles/overrides';
-import { StyleRules } from '@material-ui/core/styles/withStyles';
 import { ScaffolderReactTemplateCategoryPickerClassKey } from './components/TemplateCategoryPicker/TemplateCategoryPicker';
 import { BackstageTemplateStepperClassKey } from './components/Stepper/Stepper';
 
@@ -26,9 +24,9 @@ export type ScaffolderReactComponentsNameToClassKey = {
 };
 
 /** @alpha */
-export type BackstageOverrides = Overrides & {
+export type BackstageOverrides = {
   [Name in keyof ScaffolderReactComponentsNameToClassKey]?: Partial<
-    StyleRules<ScaffolderReactComponentsNameToClassKey[Name]>
+    Record<ScaffolderReactComponentsNameToClassKey[Name], string>
   >;
 };
 

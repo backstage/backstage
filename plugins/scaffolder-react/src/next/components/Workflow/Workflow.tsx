@@ -25,7 +25,6 @@ import { errorApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { ReviewStepProps } from '@backstage/plugin-scaffolder-react';
 import { JsonValue } from '@backstage/types';
-import { makeStyles } from '@material-ui/core/styles';
 import { ComponentType, useCallback, useEffect } from 'react';
 
 import { SecretsContextProvider } from '../../../secrets/SecretsContext';
@@ -34,18 +33,6 @@ import { useFilteredSchemaProperties } from '../../hooks/useFilteredSchemaProper
 import { useTemplateParameterSchema } from '../../hooks/useTemplateParameterSchema';
 import { useTemplateTimeSavedMinutes } from '../../hooks/useTemplateTimeSaved';
 import { Stepper, type StepperProps } from '../Stepper/Stepper';
-
-const useStyles = makeStyles({
-  markdown: {
-    /** to make the styles for React Markdown not leak into the description */
-    '& :first-child': {
-      marginTop: 0,
-    },
-    '& :last-child': {
-      marginBottom: 0,
-    },
-  },
-});
 
 /**
  * @alpha
@@ -78,7 +65,6 @@ export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
     workflowProps;
 
   const analytics = useAnalytics();
-  const styles = useStyles();
   const templateRef = stringifyEntityRef({
     kind: 'Template',
     namespace: namespace,
@@ -125,7 +111,7 @@ export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
           title={title ?? sortedManifest.title}
           subheader={
             <MarkdownContent
-              className={styles.markdown}
+              className="[&_:first-child]:mt-0 [&_:last-child]:mb-0"
               linkTarget="_blank"
               content={
                 description ??

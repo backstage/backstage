@@ -19,16 +19,8 @@ import {
   IconComponent,
   useApi,
 } from '@backstage/core-plugin-api';
-import Card from '@material-ui/core/Card';
-import List from '@material-ui/core/List';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import MenuItem from '@material-ui/core/MenuItem';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
-import SettingsIcon from '@material-ui/icons/Settings';
-import { StarIcon } from '@backstage/core-components';
+import { cn, StarIcon } from '@backstage/core-components';
+import { Settings } from 'lucide-react';
 import { Fragment, useEffect, useMemo, useState } from 'react';
 import { EntityUserFilter } from '../../filters';
 import { useEntityList } from '../../hooks';
@@ -50,32 +42,20 @@ export type CatalogReactUserListPickerClassKey =
   | 'menuItem'
   | 'groupWrapper';
 
-const useStyles = makeStyles(
-  theme => ({
-    root: {
-      backgroundColor: 'rgba(0, 0, 0, .11)',
-      boxShadow: 'none',
-      margin: theme.spacing(1, 0, 1, 0),
-    },
-    title: {
-      margin: theme.spacing(1, 0, 0, 1),
-      textTransform: 'uppercase',
-      fontSize: 12,
-      fontWeight: 'bold',
-    },
-    listIcon: {
-      minWidth: 30,
-      color: theme.palette.text.primary,
-    },
-    menuItem: {
-      minHeight: theme.spacing(6),
-    },
-    groupWrapper: {
-      margin: theme.spacing(1, 1, 2, 1),
-    },
-  }),
-  { name: 'CatalogReactUserListPicker' },
-);
+/**
+ * Wrapper adapting the Lucide Settings icon to Backstage's IconComponent
+ * interface, which expects an optional fontSize prop rather than size.
+ */
+const SettingsIcon: IconComponent = props => {
+  const sizeMap: Record<string, number> = {
+    small: 16,
+    medium: 24,
+    large: 32,
+    inherit: 24,
+  };
+  const size = props.fontSize ? sizeMap[props.fontSize] ?? 24 : 24;
+  return <Settings size={size} />;
+};
 
 export type ButtonGroup = {
   name: string;
@@ -129,7 +109,6 @@ export type UserListPickerProps = {
 /** @public */
 export const UserListPicker = (props: UserListPickerProps) => {
   const { initialFilter, availableFilters, hidden, alwaysKeepFilters } = props;
-  const classes = useStyles();
   const configApi = useApi(configApiRef);
   const { t } = useTranslationRef(catalogReactTranslationRef);
   const orgName =
@@ -243,48 +222,69 @@ export const UserListPicker = (props: UserListPickerProps) => {
   ]);
 
   return hidden ? null : (
-    <Card className={classes.root}>
+    <div className={cn('rounded-md bg-black/[0.11] shadow-none my-2')}>
       {filterGroups.map(group => (
         <Fragment key={group.name}>
-          <Typography
-            variant="subtitle2"
-            component="span"
-            className={classes.title}
+          <span
+            className={cn(
+              'block mt-2 ml-2 uppercase text-xs font-bold text-foreground',
+            )}
           >
             {group.name}
-          </Typography>
-          <Card className={classes.groupWrapper}>
-            <List disablePadding dense role="menu" aria-label={group.name}>
+          </span>
+          <div className={cn('rounded-md bg-background m-2 mb-4')}>
+            <ul
+              role="menu"
+              aria-label={group.name}
+              className="list-none p-0 m-0"
+            >
               {group.items.map((item, index) => (
-                <MenuItem
-                  role="none presentation"
+                <li
+                  role="menuitem"
                   key={item.id}
-                  divider={index !== group.items.length - 1}
-                  onClick={() => setSelectedUserFilter(item.id)}
-                  selected={item.id === filters.user?.value}
-                  className={classes.menuItem}
-                  disabled={filterCounts[item.id] === 0}
+                  onClick={() => {
+                    if (filterCounts[item.id] !== 0) {
+                      setSelectedUserFilter(item.id);
+                    }
+                  }}
+                  onKeyDown={e => {
+                    if (
+                      (e.key === 'Enter' || e.key === ' ') &&
+                      filterCounts[item.id] !== 0
+                    ) {
+                      e.preventDefault();
+                      setSelectedUserFilter(item.id);
+                    }
+                  }}
+                  className={cn(
+                    'flex items-center min-h-[48px] px-4 py-1.5 cursor-pointer select-none',
+                    'hover:bg-accent/50 transition-colors',
+                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset',
+                    item.id === filters.user?.value && 'bg-accent font-medium',
+                    filterCounts[item.id] === 0 &&
+                      'opacity-50 pointer-events-none',
+                    index !== group.items.length - 1 &&
+                      'border-b border-border',
+                  )}
                   data-testid={`user-picker-${item.id}`}
                   tabIndex={0}
-                  ContainerProps={{ role: 'menuitem' }}
+                  aria-disabled={filterCounts[item.id] === 0}
                 >
                   {item.icon && (
-                    <ListItemIcon className={classes.listIcon}>
+                    <span className="inline-flex items-center justify-center min-w-[30px] mr-2 text-foreground">
                       <item.icon fontSize="small" />
-                    </ListItemIcon>
+                    </span>
                   )}
-                  <ListItemText>
-                    <Typography variant="body1">{item.label} </Typography>
-                  </ListItemText>
-                  <ListItemSecondaryAction>
+                  <span className="flex-1 text-sm">{item.label} </span>
+                  <span className="ml-auto text-xs text-muted-foreground tabular-nums">
                     {filterCounts[item.id] ?? '-'}
-                  </ListItemSecondaryAction>
-                </MenuItem>
+                  </span>
+                </li>
               ))}
-            </List>
-          </Card>
+            </ul>
+          </div>
         </Fragment>
       ))}
-    </Card>
+    </div>
   );
 };

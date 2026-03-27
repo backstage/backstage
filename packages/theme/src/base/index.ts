@@ -17,10 +17,11 @@
 export {
   createBaseThemeOptions,
   defaultTypography,
+  generateTypographyTokens,
 } from './createBaseThemeOptions';
 export type { BaseThemeOptionsInput } from './createBaseThemeOptions';
 export { colorVariants, genPageTheme, pageTheme, shapes } from './pageTheme';
-export { palettes } from './palettes';
+export { palettes, generatePaletteTokens } from './palettes';
 export type {
   BackstageThemeAdditions,
   BackstagePaletteAdditions,

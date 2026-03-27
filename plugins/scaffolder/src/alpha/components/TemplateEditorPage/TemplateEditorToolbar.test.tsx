@@ -22,6 +22,7 @@ import {
   scaffolderApiRef,
 } from '@backstage/plugin-scaffolder-react';
 import { ApiProvider } from '@backstage/core-app-api';
+import { TooltipProvider } from '@backstage/core-components';
 import { DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS } from '../../../extensions/default';
 import { TemplateEditorToolbar } from './TemplateEditorToolbar';
 
@@ -66,7 +67,11 @@ describe('TemplateEditorToolbar', () => {
   });
 
   it('should show instructions for publishing changes', async () => {
-    await renderInTestApp(<TemplateEditorToolbar />);
+    await renderInTestApp(
+      <TooltipProvider>
+        <TemplateEditorToolbar />
+      </TooltipProvider>,
+    );
     await userEvent.click(screen.getByRole('button', { name: 'Publish' }));
     expect(
       screen.getByRole('heading', { name: 'Publish changes' }),
@@ -80,14 +85,20 @@ describe('TemplateEditorToolbar', () => {
 
   it('should open the custom fields explorer', async () => {
     await renderInTestApp(
-      <TemplateEditorToolbar fieldExtensions={fieldExtensions} />,
+      <TooltipProvider>
+        <TemplateEditorToolbar fieldExtensions={fieldExtensions} />
+      </TooltipProvider>,
     );
     await userEvent.click(
       screen.getByRole('button', { name: 'Custom Fields Explorer' }),
     );
-    expect(
-      screen.getByPlaceholderText('Choose Custom Field Extension'),
-    ).toHaveValue('EntityPicker');
+    // The field selector is now a combobox (Popover + Command) instead of MUI Autocomplete.
+    // The selected field name is displayed in the combobox trigger button text.
+    const combobox = screen.getByRole('combobox', {
+      name: 'Choose Custom Field Extension',
+    });
+    expect(combobox).toBeInTheDocument();
+    expect(combobox).toHaveTextContent('EntityPicker');
     expect(
       screen.getByRole('heading', { name: 'Template Spec' }),
     ).toBeInTheDocument();
@@ -101,9 +112,11 @@ describe('TemplateEditorToolbar', () => {
 
   it('should open the installed actions documentation', async () => {
     await renderInTestApp(
-      <ApiProvider apis={apis}>
-        <TemplateEditorToolbar />
-      </ApiProvider>,
+      <TooltipProvider>
+        <ApiProvider apis={apis}>
+          <TemplateEditorToolbar />
+        </ApiProvider>
+      </TooltipProvider>,
     );
     await userEvent.click(
       screen.getByRole('button', { name: 'Installed Actions Documentation' }),
@@ -117,9 +130,11 @@ describe('TemplateEditorToolbar', () => {
 
   it('should accept custom toolbar actions', async () => {
     await renderInTestApp(
-      <TemplateEditorToolbar>
-        <button>Custom action</button>
-      </TemplateEditorToolbar>,
+      <TooltipProvider>
+        <TemplateEditorToolbar>
+          <button>Custom action</button>
+        </TemplateEditorToolbar>
+      </TooltipProvider>,
     );
 
     expect(

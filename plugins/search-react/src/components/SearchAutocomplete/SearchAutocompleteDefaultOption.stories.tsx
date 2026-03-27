@@ -16,9 +16,7 @@
 
 import { ComponentType, PropsWithChildren } from 'react';
 
-import Grid from '@material-ui/core/Grid';
-import ListItem from '@material-ui/core/ListItem';
-import LabelIcon from '@material-ui/icons/Label';
+import { Tag } from 'lucide-react';
 
 import { TestApiProvider } from '@backstage/test-utils';
 
@@ -34,13 +32,13 @@ export default {
     (Story: ComponentType<PropsWithChildren<{}>>) => (
       <TestApiProvider apis={[[searchApiRef, new MockSearchApi()]]}>
         <SearchContextProvider>
-          <Grid container direction="row">
-            <Grid item xs={12}>
-              <ListItem>
+          <div className="grid gap-4">
+            <div className="col-span-full">
+              <li className="flex items-center gap-3 px-2 py-2">
                 <Story />
-              </ListItem>
-            </Grid>
-          </Grid>
+              </li>
+            </div>
+          </div>
         </SearchContextProvider>
       </TestApiProvider>
     ),
@@ -54,7 +52,7 @@ export const Default = () => (
 
 export const Icon = () => (
   <SearchAutocompleteDefaultOption
-    icon={<LabelIcon />}
+    icon={<Tag className="h-5 w-5" />}
     primaryText="hello-world"
   />
 );
@@ -68,7 +66,7 @@ export const SecondaryText = () => (
 
 export const AllCombined = () => (
   <SearchAutocompleteDefaultOption
-    icon={<LabelIcon />}
+    icon={<Tag className="h-5 w-5" />}
     primaryText="hello-world"
     secondaryText="Hello World example for gRPC"
   />
@@ -76,11 +74,11 @@ export const AllCombined = () => (
 
 export const CustomTextTypographies = () => (
   <SearchAutocompleteDefaultOption
-    icon={<LabelIcon />}
+    icon={<Tag className="h-5 w-5" />}
     primaryText="hello-world"
-    primaryTextTypographyProps={{ color: 'primary' }}
+    primaryTextTypographyProps={{ className: 'text-primary' }}
     secondaryText="Hello World example for gRPC"
-    secondaryTextTypographyProps={{ color: 'secondary' }}
+    secondaryTextTypographyProps={{ className: 'text-muted-foreground' }}
   />
 );
 
@@ -95,7 +93,7 @@ const CustomSecondaryText = ({ children }: PropsWithChildren<{}>) => (
 export const CustomTextComponents = () => (
   <dl>
     <SearchAutocompleteDefaultOption
-      icon={<LabelIcon />}
+      icon={<Tag className="h-5 w-5" />}
       primaryText={<CustomPrimaryText>hello-world</CustomPrimaryText>}
       secondaryText={
         <CustomSecondaryText>Hello World example for gRPC</CustomSecondaryText>

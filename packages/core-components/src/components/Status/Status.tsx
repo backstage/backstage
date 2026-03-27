@@ -14,17 +14,26 @@
  * limitations under the License.
  */
 
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import CheckCircleOutline from '@material-ui/icons/CheckCircleOutline';
-import WarningOutline from '@material-ui/icons/ReportProblemOutlined';
-import ErrorOutline from '@material-ui/icons/ErrorOutline';
-import classNames from 'classnames';
+import { cn } from '../../lib/utils';
+import {
+  CheckCircle,
+  AlertTriangle,
+  XCircle,
+  Clock,
+  X,
+  Play,
+} from 'lucide-react';
 import { PropsWithChildren } from 'react';
-import { PendingIcon } from './icons/PendingIcon';
-import { RunningIcon } from './icons/RunningIcon';
-import { AbortedIcon } from './icons/AbortedIcon';
 
+/**
+ * CSS class keys for status indicator styling.
+ *
+ * @remarks
+ * Preserved for backward compatibility with the overridable components system.
+ * Consumers may reference these keys for custom CSS overrides via CSS custom properties.
+ *
+ * @public
+ */
 export type StatusClassKey =
   | 'status'
   | 'ok'
@@ -34,189 +43,198 @@ export type StatusClassKey =
   | 'running'
   | 'aborted';
 
-const useStyles = makeStyles(
-  theme => ({
-    status: {
-      fontWeight: theme.typography.fontWeightMedium,
-      alignItems: 'baseline',
-      display: 'flex',
-    },
-    statusIcon: {
-      flexShrink: 0,
-      position: 'relative',
-      top: '0.125em',
-      marginRight: theme.spacing(1),
-    },
-    statusIconSize: {
-      width: '0.8em',
-      height: '0.8em',
-    },
-    statusIconSizeForImg: {
-      width: '1.2em',
-      height: '1.2em',
-    },
-    ok: {
-      fill: theme.palette.status.ok || '#3E8635',
-    },
-    warning: {
-      fill: theme.palette.status.warning || '#F0AB00',
-    },
-    error: {
-      fill: theme.palette.status.error || '#C9190B',
-    },
-    pending: {
-      fill: theme.palette.status.aborted || '#6A6E73',
-    },
-    running: {
-      fill: theme.palette.status.aborted || '#6A6E73',
-    },
-    aborted: {
-      fill: theme.palette.status.aborted || '#6A6E73',
-    },
-  }),
-  { name: 'BackstageStatus' },
-);
+/** Common Tailwind classes for the status wrapper span */
+const statusBaseClasses = 'inline-flex items-baseline font-medium';
 
+/**
+ * Common Tailwind classes for status icons.
+ * Applies flex-shrink-0, relative positioning with a small top offset
+ * for baseline alignment, right margin, and consistent icon sizing.
+ */
+const statusIconClasses =
+  'shrink-0 relative top-[0.125em] mr-2 w-[0.8em] h-[0.8em]';
+
+/**
+ * Displays a green check-circle icon indicating a successful or healthy status.
+ *
+ * @remarks
+ * Uses the CheckCircle (circle with checkmark) shape as a color-blind-friendly
+ * indicator that visually distinguishes OK from other states regardless of color
+ * perception. Color is applied via the `--success-foreground` CSS custom property.
+ *
+ * @public
+ */
 export function StatusOK(props: PropsWithChildren<{}>) {
   const { children, ...otherProps } = props;
-  const classes = useStyles(otherProps);
   return (
-    <Typography
-      component="span"
-      className={classNames(classes.status)}
+    <span
+      className={cn(statusBaseClasses)}
       aria-label="Status ok"
       aria-hidden="true"
       {...otherProps}
     >
-      <CheckCircleOutline
+      <CheckCircle
         data-testid="status-ok"
-        className={classNames(
-          classes.ok,
-          classes.statusIconSize,
-          classes.statusIcon,
+        className={cn(
+          statusIconClasses,
+          'text-[var(--success-foreground,#3E8635)]',
         )}
       />
       {children}
-    </Typography>
+    </span>
   );
 }
 
+/**
+ * Displays an amber triangle icon indicating a warning status.
+ *
+ * @remarks
+ * Uses the AlertTriangle (triangle) shape as a color-blind-friendly indicator
+ * that visually distinguishes warnings from OK (circle) and Error (X-circle)
+ * states. Color is applied via the `--warning-foreground` CSS custom property.
+ *
+ * @public
+ */
 export function StatusWarning(props: PropsWithChildren<{}>) {
   const { children, ...otherProps } = props;
-  const classes = useStyles(otherProps);
   return (
-    <Typography
-      component="span"
-      className={classNames(classes.status)}
+    <span
+      className={cn(statusBaseClasses)}
       aria-label="Status warning"
       aria-hidden="true"
       {...otherProps}
     >
-      <WarningOutline
+      <AlertTriangle
         data-testid="status-warning"
-        className={classNames(
-          classes.warning,
-          classes.statusIconSize,
-          classes.statusIcon,
+        className={cn(
+          statusIconClasses,
+          'text-[var(--warning-foreground,#F0AB00)]',
         )}
       />
       {children}
-    </Typography>
+    </span>
   );
 }
 
+/**
+ * Displays a red X-circle icon indicating an error or failure status.
+ *
+ * @remarks
+ * Uses the XCircle (circle with X) shape as a color-blind-friendly indicator
+ * that visually distinguishes errors from OK (checkmark circle) and Warning
+ * (triangle) states. Color is applied via the `--destructive` CSS custom property.
+ *
+ * @public
+ */
 export function StatusError(props: PropsWithChildren<{}>) {
   const { children, ...otherProps } = props;
-  const classes = useStyles(otherProps);
   return (
-    <Typography
-      component="span"
-      className={classNames(classes.status)}
+    <span
+      className={cn(statusBaseClasses)}
       aria-label="Status error"
       aria-hidden="true"
       {...otherProps}
     >
-      <ErrorOutline
+      <XCircle
         data-testid="status-error"
-        className={classNames(
-          classes.error,
-          classes.statusIconSize,
-          classes.statusIcon,
-        )}
+        className={cn(statusIconClasses, 'text-[var(--destructive,#C9190B)]')}
       />
       {children}
-    </Typography>
+    </span>
   );
 }
 
+/**
+ * Displays a gray clock icon indicating a pending or queued status.
+ *
+ * @remarks
+ * Uses the Clock (clock face) shape as a color-blind-friendly indicator
+ * that visually distinguishes pending from aborted (plain X) and other
+ * states. Color is applied via the `--muted-foreground` CSS custom property.
+ *
+ * @public
+ */
 export function StatusPending(props: PropsWithChildren<{}>) {
   const { children, ...otherProps } = props;
-  const classes = useStyles(otherProps);
   return (
-    <Typography
-      component="span"
-      className={classNames(classes.status)}
+    <span
+      className={cn(statusBaseClasses)}
       aria-label="Status pending"
       aria-hidden="true"
       {...otherProps}
     >
-      <PendingIcon
-        dataTestId="status-pending"
-        className={classNames(
-          classes.pending,
-          classes.statusIconSizeForImg,
-          classes.statusIcon,
+      <Clock
+        data-testid="status-pending"
+        className={cn(
+          statusIconClasses,
+          'text-[var(--muted-foreground,#6A6E73)]',
         )}
       />
       {children}
-    </Typography>
+    </span>
   );
 }
 
+/**
+ * Displays a play-triangle icon indicating an active/running status.
+ *
+ * @remarks
+ * Uses the Play (filled triangle) shape to provide a color-blind-friendly
+ * distinction from StatusOK (which uses CheckCircle). This ensures status
+ * indicators rely on shape differentiation alongside color, meeting AAP
+ * accessibility requirements. Color is applied via the `--status-running`
+ * CSS custom property.
+ *
+ * @public
+ */
 export function StatusRunning(props: PropsWithChildren<{}>) {
   const { children, ...otherProps } = props;
-  const classes = useStyles(otherProps);
   return (
-    <Typography
-      component="span"
-      className={classNames(classes.status)}
+    <span
+      className={cn(statusBaseClasses)}
       aria-label="Status running"
       aria-hidden="true"
       {...otherProps}
     >
-      <RunningIcon
-        dataTestId="status-running"
-        className={classNames(
-          classes.running,
-          classes.statusIcon,
-          classes.statusIconSizeForImg,
+      <Play
+        data-testid="status-running"
+        className={cn(
+          statusIconClasses,
+          'text-[var(--status-running,#1F5493)]',
         )}
       />
       {children}
-    </Typography>
+    </span>
   );
 }
 
+/**
+ * Displays a gray X (cross) icon indicating an aborted or cancelled status.
+ *
+ * @remarks
+ * Uses the X (plain cross) shape as a color-blind-friendly indicator
+ * that visually distinguishes aborted from pending (clock) and error
+ * (X-circle) states. Color is applied via the `--muted-foreground` CSS custom property.
+ *
+ * @public
+ */
 export function StatusAborted(props: PropsWithChildren<{}>) {
   const { children, ...otherProps } = props;
-  const classes = useStyles(otherProps);
   return (
-    <Typography
-      component="span"
-      className={classNames(classes.status)}
+    <span
+      className={cn(statusBaseClasses)}
       aria-label="Status aborted"
       aria-hidden="true"
       {...otherProps}
     >
-      <AbortedIcon
-        dataTestId="status-aborted"
-        className={classNames(
-          classes.aborted,
-          classes.statusIcon,
-          classes.statusIconSizeForImg,
+      <X
+        data-testid="status-aborted"
+        className={cn(
+          statusIconClasses,
+          'text-[var(--muted-foreground,#6A6E73)]',
         )}
       />
       {children}
-    </Typography>
+    </span>
   );
 }

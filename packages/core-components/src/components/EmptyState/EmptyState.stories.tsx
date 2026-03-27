@@ -15,7 +15,7 @@
  */
 
 import { EmptyState } from './EmptyState';
-import Button from '@material-ui/core/Button';
+import { Button } from '../ui/button';
 import { MissingAnnotationEmptyState } from './MissingAnnotationEmptyState';
 
 export default {
@@ -71,7 +71,7 @@ export const WithAction = () => (
       title="Your plugin is missing an annotation"
       description="Click the docs to learn more."
       action={
-        <Button color="primary" href="#" onClick={() => {}} variant="contained">
+        <Button variant="default" onClick={() => {}}>
           DOCS
         </Button>
       }

@@ -14,24 +14,33 @@
  * limitations under the License.
  */
 
-import Avatar from '@material-ui/core/Avatar';
-import { makeStyles, Theme } from '@material-ui/core/styles';
-import { sidebarConfig } from '@backstage/core-components';
-
-const useStyles = makeStyles<Theme, { size: number }>(theme => ({
-  avatar: {
-    width: ({ size }) => size,
-    height: ({ size }) => size,
-    fontSize: ({ size }) => size * 0.7,
-    border: `1px solid ${theme.palette.textSubtle}`,
-  },
-}));
+import {
+  ShadcnAvatar,
+  AvatarImage,
+  AvatarFallback,
+  sidebarConfig,
+} from '@backstage/core-components';
 
 type Props = { size?: number; picture: string | undefined };
 
+/** Renders a profile avatar for an authentication provider settings item. */
 export const ProviderSettingsAvatar = ({ size, picture }: Props) => {
   const { iconSize } = sidebarConfig;
-  const classes = useStyles(size ? { size } : { size: iconSize });
+  const resolvedSize = size ?? iconSize;
 
-  return <Avatar src={picture} className={classes.avatar} />;
+  return (
+    <ShadcnAvatar
+      className="shrink-0 border border-border"
+      style={{ width: resolvedSize, height: resolvedSize }}
+    >
+      {picture ? (
+        <AvatarImage src={picture} alt="" />
+      ) : (
+        <AvatarFallback
+          className="text-xs text-muted-foreground"
+          style={{ fontSize: resolvedSize * 0.7 }}
+        />
+      )}
+    </ShadcnAvatar>
+  );
 };

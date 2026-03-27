@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import { makeStyles, Theme } from '@material-ui/core/styles';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
-import classnames from 'classnames';
-import { ReactNode, useContext, useRef, useState } from 'react';
+import { cn } from '../../lib/utils';
+import { ReactNode, useContext, useEffect, useRef, useState } from 'react';
 
 import {
   makeSidebarConfig,
@@ -39,63 +35,38 @@ import { coreComponentsTranslationRef } from '../../translation';
 
 /** @public */
 export type SidebarClassKey = 'drawer' | 'drawerOpen';
-const useStyles = makeStyles<Theme, { sidebarConfig: SidebarConfig }>(
-  theme => ({
-    root: {
-      left: 0,
-      top: 0,
-      bottom: 0,
-      zIndex: theme.zIndex.appBar,
-      position: 'fixed',
-    },
-    drawer: {
-      display: 'flex',
-      flexFlow: 'column nowrap',
-      alignItems: 'flex-start',
-      left: 0,
-      top: 0,
-      bottom: 0,
-      position: 'absolute',
-      background: theme.palette.navigation.background,
-      overflowX: 'hidden',
-      msOverflowStyle: 'none',
-      scrollbarWidth: 'none',
-      transition: theme.transitions.create('width', {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.shortest,
-      }),
-      '& > *': {
-        flexShrink: 0,
-      },
-      '&::-webkit-scrollbar': {
-        display: 'none',
-      },
-      '@media print': {
-        display: 'none',
-      },
-    },
-    drawerWidth: props => ({
-      width: props.sidebarConfig.drawerWidthClosed,
-    }),
-    drawerOpen: props => ({
-      width: props.sidebarConfig.drawerWidthOpen,
-      transition: theme.transitions.create('width', {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.shorter,
-      }),
-    }),
-    visuallyHidden: {
-      top: 0,
-      position: 'absolute',
-      zIndex: 1000,
-      transform: 'translateY(-200%)',
-      '&:focus': {
-        transform: 'translateY(5px)',
-      },
-    },
-  }),
-  { name: 'BackstageSidebar' },
-);
+/**
+ * Returns Tailwind CSS class sets for the sidebar root, drawer, and
+ * visually-hidden skip-to-content button. Replaces the former MUI
+ * `makeStyles` call with zero-runtime utility classes.
+ *
+ * @remarks
+ * Dynamic drawer widths (open/closed) are applied via inline `style`
+ * props in the consuming components because they depend on the runtime
+ * `sidebarConfig` values. Transition timing for the open state
+ * (`duration-[250ms]`) is toggled at the call site with `cn()`.
+ */
+function getSidebarClasses(_sidebarConfig: SidebarConfig) {
+  return {
+    root: 'fixed left-0 top-0 bottom-0 z-[1100]',
+    drawer: cn(
+      'flex flex-col items-start',
+      'fixed left-0 top-0 bottom-0',
+      'bg-[var(--sidebar-nav-bg,#171717)]',
+      'overflow-x-hidden',
+      '[scrollbar-width:none] [-ms-overflow-style:none]',
+      'transition-[width] duration-200 ease-[cubic-bezier(0.4,0,0.6,1)]',
+      '[&>*]:shrink-0',
+      '[&::-webkit-scrollbar]:hidden',
+      'print:hidden',
+    ),
+    visuallyHidden: cn(
+      'absolute top-0 z-[1000]',
+      '-translate-y-[200%]',
+      'focus:translate-y-[5px]',
+    ),
+  };
+}
 
 const State = {
   Closed: 0,
@@ -139,11 +110,26 @@ const DesktopSidebar = (props: DesktopSidebarProps) => {
     children,
   } = props;
 
-  const classes = useStyles({ sidebarConfig });
-  const isSmallScreen = useMediaQuery<Theme>(
-    theme => theme.breakpoints.down('md'),
-    { noSsr: true },
-  );
+  const classes = getSidebarClasses(sidebarConfig);
+
+  // Replaces MUI useMediaQuery — MUI's `breakpoints.down('md')` resolves to
+  // `(max-width: 959.95px)`. The `noSsr: true` option is preserved by
+  // initialising state to `false` and updating on mount via useEffect.
+  // Guard against environments where matchMedia is unavailable (JSDOM/SSR).
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
+  useEffect(() => {
+    if (
+      typeof window === 'undefined' ||
+      typeof window.matchMedia !== 'function'
+    ) {
+      return undefined;
+    }
+    const mql = window.matchMedia('(max-width: 959.95px)');
+    setIsSmallScreen(mql.matches);
+    const handler = (e: MediaQueryListEvent) => setIsSmallScreen(e.matches);
+    mql.addEventListener('change', handler);
+    return () => mql.removeEventListener('change', handler);
+  }, []);
   const [state, setState] = useState<(typeof State)[keyof typeof State]>(
     State.Closed,
   );
@@ -202,10 +188,23 @@ const DesktopSidebar = (props: DesktopSidebarProps) => {
   };
 
   return (
-    <nav style={{}} aria-label="sidebar nav">
+    <nav
+      style={
+        {
+          /* Force white focus ring on all sidebar descendants.
+             The sidebar always uses a dark surface (#171717) regardless
+             of theme mode, so white ring provides WCAG 2.4.7 / 2.4.11
+             compliant ≥3:1 contrast.  The custom property is inherited
+             by all children and consumed by Tailwind's ring-* utilities
+             via var(--tw-ring-color, currentcolor). */
+          '--tw-ring-color': '#fff',
+        } as React.CSSProperties
+      }
+      aria-label="sidebar nav"
+    >
       <A11ySkipSidebar />
       <SidebarOpenStateProvider value={{ isOpen, setOpen }}>
-        <Box
+        <div
           className={classes.root}
           data-testid="sidebar-root"
           onMouseEnter={disableExpandOnHover ? () => {} : handleOpen}
@@ -213,14 +212,17 @@ const DesktopSidebar = (props: DesktopSidebarProps) => {
           onMouseLeave={disableExpandOnHover ? () => {} : handleClose}
           onBlur={disableExpandOnHover ? () => {} : handleClose}
         >
-          <Box
-            className={classnames(classes.drawer, classes.drawerWidth, {
-              [classes.drawerOpen]: isOpen,
-            })}
+          <div
+            className={cn(classes.drawer, isOpen && 'duration-[250ms]')}
+            style={{
+              width: isOpen
+                ? sidebarConfig.drawerWidthOpen
+                : sidebarConfig.drawerWidthClosed,
+            }}
           >
             {children}
-          </Box>
-        </Box>
+          </div>
+        </div>
       </SidebarOpenStateProvider>
     </nav>
   );
@@ -259,19 +261,38 @@ export const Sidebar = (props: SidebarProps) => {
 function A11ySkipSidebar() {
   const { sidebarConfig } = useContext(SidebarConfigContext);
   const { focusContent, contentRef } = useContent();
-  const classes = useStyles({ sidebarConfig });
+  const classes = getSidebarClasses(sidebarConfig);
   const { t } = useTranslationRef(coreComponentsTranslationRef);
 
-  if (!contentRef?.current) {
-    return null;
-  }
+  /**
+   * Always render the skip-to-content button for WCAG 2.4.1 compliance.
+   * When contentRef is available, focus it directly. Otherwise, fall back
+   * to the first <main> element in the document.
+   */
+  const handleSkip = () => {
+    if (contentRef?.current) {
+      focusContent();
+    } else {
+      const mainEl = document.querySelector('main');
+      if (mainEl) {
+        if (!mainEl.hasAttribute('tabindex')) {
+          mainEl.setAttribute('tabindex', '-1');
+        }
+        mainEl.focus();
+      }
+    }
+  };
+
   return (
-    <Button
-      onClick={focusContent}
-      variant="contained"
-      className={classnames(classes.visuallyHidden)}
+    <button
+      onClick={handleSkip}
+      className={cn(
+        classes.visuallyHidden,
+        'px-4 py-2 bg-[var(--primary,#1f5493)] text-[var(--primary-foreground,#fff)] rounded shadow-md',
+        'focus-visible:ring-2 focus-visible:ring-[var(--sidebar-primary,#fff)]',
+      )}
     >
       {t('skipToContent')}
-    </Button>
+    </button>
   );
 }

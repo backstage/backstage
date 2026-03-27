@@ -20,8 +20,25 @@ import {
   PageBlueprint,
   NavItemBlueprint,
 } from '@backstage/frontend-plugin-api';
-import SettingsIcon from '@material-ui/icons/Settings';
+import type { IconComponent } from '@backstage/frontend-plugin-api';
+import { Settings } from 'lucide-react';
 import { settingsRouteRef } from './plugin';
+
+/** Map MUI-style fontSize values to Lucide pixel sizes */
+const ICON_SIZE_MAP: Record<string, number> = {
+  small: 20,
+  medium: 24,
+  large: 35,
+  inherit: 24,
+};
+
+/**
+ * Wrapper bridging lucide-react's ForwardRefExoticComponent to Backstage's
+ * IconComponent type which expects ComponentType<{ fontSize?: ... }>.
+ */
+const SettingsIcon: IconComponent = ({ fontSize = 'medium', ...rest }) => (
+  <Settings size={ICON_SIZE_MAP[fontSize] ?? 24} {...rest} />
+);
 
 export * from './translation';
 

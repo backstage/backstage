@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-import { FC, useState } from 'react';
+import { type CSSProperties, FC, useState } from 'react';
 import useAsync from 'react-use/esm/useAsync';
-import { makeStyles } from '@material-ui/core/styles';
-import { CSSProperties } from '@material-ui/styles/withStyles';
 import {
   CATALOG_FILTER_EXISTS,
   catalogApiRef,
@@ -120,13 +118,6 @@ export const CustomDocsPanel = ({
   entities: Entity[];
   index: number;
 }) => {
-  const useStyles = makeStyles({
-    panelContainer: {
-      marginBottom: '2rem',
-      ...(config.panelCSS ? config.panelCSS : {}),
-    },
-  });
-  const classes = useStyles();
   const { loading: loadingOwnership, isOwnedEntity } = useEntityOwnership();
 
   const Panel = panels[config.panelType];
@@ -160,7 +151,7 @@ export const CustomDocsPanel = ({
   return (
     <>
       <Header />
-      <div className={classes.panelContainer}>
+      <div className="mb-8" style={config.panelCSS || undefined}>
         <EntityListProvider>
           <Panel
             data-testid="techdocs-custom-panel"

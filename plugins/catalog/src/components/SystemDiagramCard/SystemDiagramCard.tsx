@@ -29,10 +29,7 @@ import {
   getEntityRelations,
   useEntity,
 } from '@backstage/plugin-catalog-react';
-import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
-import ZoomOutMap from '@material-ui/icons/ZoomOutMap';
+import { Maximize2 } from 'lucide-react';
 import useAsync from 'react-use/esm/useAsync';
 
 import {
@@ -56,31 +53,18 @@ export type SystemDiagramCardClassKey =
   | 'apiNode'
   | 'resourceNode';
 
-const useStyles = makeStyles(
-  theme => ({
-    domainNode: {
-      fill: theme.palette.primary.main,
-      stroke: theme.palette.border,
-    },
-    systemNode: {
-      fill: 'coral',
-      stroke: theme.palette.border,
-    },
-    componentNode: {
-      fill: 'yellowgreen',
-      stroke: theme.palette.border,
-    },
-    apiNode: {
-      fill: theme.palette.gold,
-      stroke: theme.palette.border,
-    },
-    resourceNode: {
-      fill: 'grey',
-      stroke: theme.palette.border,
-    },
-  }),
-  { name: 'PluginCatalogSystemDiagramCard' },
-);
+/**
+ * Tailwind CSS class mappings for diagram node styling per entity kind.
+ * Uses CSS custom properties for theme-aware colors; named CSS colors
+ * (coral, yellowgreen, grey) are retained as they are not theme-dependent.
+ */
+const nodeStyles: Record<string, string> = {
+  domainNode: 'fill-[var(--primary)] stroke-[var(--border)]',
+  systemNode: 'fill-[coral] stroke-[var(--border)]',
+  componentNode: 'fill-[yellowgreen] stroke-[var(--border)]',
+  apiNode: 'fill-[var(--gold)] stroke-[var(--border)]',
+  resourceNode: 'fill-[grey] stroke-[var(--border)]',
+};
 
 // Simplifies the diagram output by hiding the default namespace and kind
 function readableEntityName(
@@ -99,7 +83,6 @@ function readableEntityName(
 }
 
 function RenderNode(props: DependencyGraphTypes.RenderNodeProps<any>) {
-  const classes = useStyles();
   const catalogEntityRoute = useRouteRef(entityRouteRef);
   const kind = props.node.kind || 'Component';
   const ref = parseEntityRef(props.node.id);
@@ -108,26 +91,26 @@ function RenderNode(props: DependencyGraphTypes.RenderNodeProps<any>) {
     props.node.name.length < MAX_NAME_LENGTH
       ? props.node.name
       : `${props.node.name.slice(0, MAX_NAME_LENGTH)}...`;
-  let nodeClass = classes.componentNode;
 
+  let nodeClass: string;
   switch (kind) {
     case 'Domain':
-      nodeClass = classes.domainNode;
+      nodeClass = nodeStyles.domainNode;
       break;
     case 'System':
-      nodeClass = classes.systemNode;
+      nodeClass = nodeStyles.systemNode;
       break;
     case 'Component':
-      nodeClass = classes.componentNode;
+      nodeClass = nodeStyles.componentNode;
       break;
     case 'API':
-      nodeClass = classes.apiNode;
+      nodeClass = nodeStyles.apiNode;
       break;
     case 'Resource':
-      nodeClass = classes.resourceNode;
+      nodeClass = nodeStyles.resourceNode;
       break;
     default:
-      nodeClass = classes.componentNode;
+      nodeClass = nodeStyles.componentNode;
   }
 
   return (
@@ -164,7 +147,6 @@ function RenderNode(props: DependencyGraphTypes.RenderNodeProps<any>) {
  */
 export function SystemDiagramCard() {
   const { entity } = useEntity();
-  const theme = useTheme();
   const { t } = useTranslationRef(catalogTranslationRef);
   const currentSystemName = entity.metadata.name;
   const currentSystemNode = stringifyEntityRef(entity);
@@ -281,17 +263,14 @@ export function SystemDiagramCard() {
         nodeMargin={10}
         direction={DependencyGraphTypes.Direction.BOTTOM_TOP}
         renderNode={RenderNode}
-        paddingX={theme.spacing(4)}
-        paddingY={theme.spacing(4)}
+        paddingX={32}
+        paddingY={32}
       />
-      <Box m={1} />
-      <Typography
-        variant="caption"
-        style={{ display: 'block', textAlign: 'right' }}
-      >
-        <ZoomOutMap style={{ verticalAlign: 'bottom' }} />
+      <div className="mt-2" />
+      <p className="block text-right text-xs text-muted-foreground">
+        <Maximize2 className="inline-block h-4 w-4 align-bottom" />
         {t('systemDiagramCard.description')}
-      </Typography>
+      </p>
     </InfoCard>
   );
 }

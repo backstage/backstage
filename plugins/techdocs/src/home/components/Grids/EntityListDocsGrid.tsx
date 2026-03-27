@@ -28,7 +28,6 @@ import {
   useEntityList,
   useEntityOwnership,
 } from '@backstage/plugin-catalog-react';
-import Typography from '@material-ui/core/Typography';
 import { ReactNode } from 'react';
 
 /**
@@ -122,13 +121,13 @@ export const EntityListDocsGrid = (props: EntityListDocsGridPageProps) => {
   if (entities.length === 0) {
     return (
       <div data-testid="doc-not-found">
-        <Typography variant="body2">
+        <p className="text-sm text-muted-foreground">
           No documentation found that match your filter. Learn more about{' '}
           <Link to="https://backstage.io/docs/features/techdocs/creating-and-publishing">
             publishing documentation
           </Link>
           .
-        </Typography>
+        </p>
       </div>
     );
   }

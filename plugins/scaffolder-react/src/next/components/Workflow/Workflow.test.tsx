@@ -27,6 +27,24 @@ import { ScaffolderApi, scaffolderApiRef } from '../../../api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 
+/**
+ * Helper to find RJSF form inputs by their field name.
+ * RJSF generates input ids in the format "root_fieldName".
+ * Needed because the headless RJSF widgets (withTheme({})) render
+ * plain HTML inputs without associated <label> elements, so
+ * getByRole('textbox', { name }) cannot resolve the accessible name.
+ */
+function getFormInput(
+  container: HTMLElement,
+  fieldName: string,
+): HTMLInputElement {
+  const el = container.querySelector<HTMLInputElement>(`#root_${fieldName}`);
+  if (!el) {
+    throw new Error(`Could not find form input with id "root_${fieldName}"`);
+  }
+  return el;
+}
+
 const scaffolderApiMock: jest.Mocked<ScaffolderApi> = {
   cancelTask: jest.fn(),
   scaffold: jest.fn(),
@@ -80,7 +98,7 @@ describe('<Workflow />', () => {
       title: 'React JSON Schema Form Test',
     });
 
-    const { getByRole, getAllByRole, getByText } = await renderInTestApp(
+    const { getByRole, getByText, container } = await renderInTestApp(
       <ApiProvider apis={apis}>
         <Workflow
           title="Different title than template"
@@ -113,9 +131,7 @@ describe('<Workflow />', () => {
       'Different title than template',
     );
 
-    const nameInput = getByRole('textbox', {
-      name: 'name',
-    }) as HTMLInputElement;
+    const nameInput = getFormInput(container, 'name');
 
     expect(nameInput).toBeInTheDocument();
 
@@ -125,7 +141,7 @@ describe('<Workflow />', () => {
       fireEvent.click(getByRole('button', { name: 'Next' }));
     });
 
-    const ageInput = getByRole('textbox', { name: 'age' }) as HTMLInputElement;
+    const ageInput = getFormInput(container, 'age');
 
     expect(ageInput.value).toBe('53');
 
@@ -137,8 +153,10 @@ describe('<Workflow />', () => {
       getByText('This is a different wrapper for the review page'),
     ).toBeDefined();
 
+    // Target the Create button by its accessible name instead of index —
+    // the shadcn Stepper introduces step indicator buttons that shift indices.
     await act(async () => {
-      fireEvent.click(getAllByRole('button')[1] as HTMLButtonElement);
+      fireEvent.click(getByRole('button', { name: 'Make' }));
     });
 
     expect(onCreate).toHaveBeenCalledWith({

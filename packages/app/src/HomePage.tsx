@@ -27,7 +27,7 @@ import {
   WelcomeTitle,
 } from '@backstage/plugin-home';
 import { Content, Header, Page } from '@backstage/core-components';
-import HomeIcon from '@material-ui/icons/Home';
+import { Home } from 'lucide-react';
 
 const clockConfigs: ClockConfig[] = [
   {
@@ -90,23 +90,25 @@ export const homePage = (
       />
     </Header>
     <Content>
-      <CustomHomepageGrid config={defaultConfig}>
-        <HomePageRandomJoke />
-        <HomePageStarredEntities />
-        <HomePageCompanyLogo />
-        <WelcomeTitle />
-        <HomePageToolkit
-          tools={[
-            {
-              url: 'https://backstage.io',
-              label: 'Backstage Homepage',
-              icon: <HomeIcon />,
-            },
-          ]}
-        />
-        <HomePageTopVisited />
-        <HomePageRecentlyVisited />
-      </CustomHomepageGrid>
+      <div className="max-w-full overflow-x-hidden break-words">
+        <CustomHomepageGrid config={defaultConfig}>
+          <HomePageRandomJoke />
+          <HomePageStarredEntities />
+          <HomePageCompanyLogo />
+          <WelcomeTitle />
+          <HomePageToolkit
+            tools={[
+              {
+                url: 'https://backstage.io',
+                label: 'Backstage Homepage',
+                icon: <Home />,
+              },
+            ]}
+          />
+          <HomePageTopVisited />
+          <HomePageRecentlyVisited />
+        </CustomHomepageGrid>
+      </div>
     </Content>
   </Page>
 );

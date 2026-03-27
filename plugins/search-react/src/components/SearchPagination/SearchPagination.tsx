@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
+import { ReactNode, useCallback, useMemo } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import {
-  ReactNode,
-  ChangeEvent,
-  MouseEvent,
-  useCallback,
-  useMemo,
-} from 'react';
-import TablePagination from '@material-ui/core/TablePagination';
+  ShadcnButton as Button,
+  ShadcnSelect,
+  SelectTrigger,
+  SelectContent,
+  ShadcnSelectItem as SelectItem,
+  SelectValue,
+  cn,
+} from '@backstage/core-components';
 import { useSearch } from '../../context';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { searchReactTranslationRef } from '../../translation';
@@ -120,6 +123,9 @@ export type SearchPaginationBaseProps = {
  * @param props - See {@link SearchPaginationBaseProps}.
  * @public
  */
+/** Default rows-per-page options matching previous MUI TablePagination defaults. */
+const DEFAULT_ROWS_PER_PAGE_OPTIONS: number[] = [10, 25, 50, 100];
+
 export const SearchPaginationBase = (props: SearchPaginationBaseProps) => {
   const { t } = useTranslationRef(searchReactTranslationRef);
   const {
@@ -140,37 +146,84 @@ export const SearchPaginationBase = (props: SearchPaginationBaseProps) => {
 
   const page = useMemo(() => decodePageCursor(pageCursor), [pageCursor]);
 
+  /** Resolve options with the default set if none were provided. */
+  const resolvedOptions = rowsPerPageOptions ?? DEFAULT_ROWS_PER_PAGE_OPTIONS;
+
   const handlePageChange = useCallback(
-    (_: MouseEvent<HTMLButtonElement> | null, newValue: number) => {
+    (newValue: number) => {
       onPageCursorChange?.(encodePageCursor(newValue));
     },
     [onPageCursorChange],
   );
 
-  const handleRowsPerPageChange = useCallback(
-    (e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
-      const newValue = e.target.value;
-      onPageLimitChange?.(parseInt(newValue, 10));
-    },
-    [onPageLimitChange],
-  );
-
   return (
-    <TablePagination
-      {...rest}
-      component="div"
-      count={count}
-      page={page}
-      nextIconButtonProps={{
-        ...(hasNextPage !== undefined && { disabled: !hasNextPage }),
-      }}
-      onPageChange={handlePageChange}
-      rowsPerPage={rowsPerPage}
-      labelRowsPerPage={labelRowsPerPage}
-      labelDisplayedRows={labelDisplayedRows}
-      rowsPerPageOptions={rowsPerPageOptions}
-      onRowsPerPageChange={handleRowsPerPageChange}
-    />
+    <div
+      className={cn(
+        'flex items-center justify-between px-2 py-4',
+        rest.className,
+      )}
+    >
+      {/* Rows-per-page selector */}
+      <div className="flex items-center gap-2">
+        <span className="text-sm text-muted-foreground">
+          {labelRowsPerPage}
+        </span>
+        {resolvedOptions.length >= 2 && (
+          <ShadcnSelect
+            value={String(rowsPerPage)}
+            onValueChange={(v: string) => onPageLimitChange?.(parseInt(v, 10))}
+          >
+            <SelectTrigger className="h-8 w-[70px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {resolvedOptions.map(size => (
+                <SelectItem key={size} value={String(size)}>
+                  {size}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </ShadcnSelect>
+        )}
+      </div>
+
+      {/* Range display and page navigation buttons */}
+      <div className="flex items-center gap-2">
+        <span className="text-sm text-muted-foreground">
+          {labelDisplayedRows({
+            from: page * rowsPerPage + 1,
+            to: Math.min(
+              (page + 1) * rowsPerPage,
+              count > 0 ? count : (page + 1) * rowsPerPage,
+            ),
+            page,
+            count,
+          })}
+        </span>
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => handlePageChange(page - 1)}
+          disabled={page === 0}
+          aria-label="Previous page"
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => handlePageChange(page + 1)}
+          disabled={
+            hasNextPage !== undefined
+              ? !hasNextPage
+              : count > 0 && (page + 1) * rowsPerPage >= count
+          }
+          aria-label="Next page"
+        >
+          <ChevronRight className="h-4 w-4" />
+        </Button>
+      </div>
+    </div>
   );
 };
 

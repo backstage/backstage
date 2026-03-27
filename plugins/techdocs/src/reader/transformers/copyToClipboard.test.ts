@@ -16,7 +16,6 @@
 
 import { createTestShadowDom } from '../../test-utils';
 import { copyToClipboard } from './copyToClipboard';
-import { lightTheme } from '@backstage/theme';
 import { act, waitFor } from '@testing-library/react';
 import { default as useCopyToClipboardUnmocked } from 'react-use/esm/useCopyToClipboard';
 
@@ -54,7 +53,7 @@ describe('copyToClipboard', () => {
     `,
         {
           preTransformers: [],
-          postTransformers: [copyToClipboard(lightTheme)],
+          postTransformers: [copyToClipboard()],
         },
       );
     });
@@ -68,8 +67,10 @@ describe('copyToClipboard', () => {
     });
 
     await waitFor(() => {
-      const tooltip = document.querySelector('[role="tooltip"]');
-      expect(tooltip).toHaveTextContent('Copied to clipboard');
+      // After clicking, CopyFeedback renders a span with "Copied to clipboard" text
+      const feedback = shadowDom.querySelector('span');
+      expect(feedback).not.toBe(null);
+      expect(feedback).toHaveTextContent('Copied to clipboard');
     });
 
     expect(copy).toHaveBeenCalledWith(expectedClipboard);
@@ -88,7 +89,7 @@ describe('copyToClipboard', () => {
     `,
       {
         preTransformers: [],
-        postTransformers: [copyToClipboard(lightTheme)],
+        postTransformers: [copyToClipboard()],
       },
     );
 

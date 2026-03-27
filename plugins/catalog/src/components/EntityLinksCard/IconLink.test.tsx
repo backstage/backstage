@@ -15,14 +15,19 @@
  */
 
 import { renderInTestApp } from '@backstage/test-utils';
-import CloudIcon from '@material-ui/icons/Cloud';
+import { Cloud } from 'lucide-react';
+import { IconComponent } from '@backstage/core-plugin-api';
 import { screen } from '@testing-library/react';
 import { IconLink } from './IconLink';
 
 describe('IconLink', () => {
   it('should render an icon link', async () => {
     await renderInTestApp(
-      <IconLink href="https://example.com" text="I am Link" Icon={CloudIcon} />,
+      <IconLink
+        href="https://example.com"
+        text="I am Link"
+        Icon={Cloud as unknown as IconComponent}
+      />,
     );
 
     expect(screen.getByText('I am Link')).toBeInTheDocument();

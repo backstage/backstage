@@ -15,7 +15,6 @@
  */
 import { PropsWithChildren } from 'react';
 import { InfoCard } from '../../layout/InfoCard';
-import Grid from '@material-ui/core/Grid';
 import { StructuredMetadataTable } from './StructuredMetadataTable';
 
 const cardContentStyle = { heightX: 200, width: 500 };
@@ -45,9 +44,9 @@ export default {
 };
 
 const Wrapper = ({ children }: PropsWithChildren<{}>) => (
-  <Grid container spacing={4}>
-    <Grid item>{children}</Grid>
-  </Grid>
+  <div className="grid gap-4">
+    <div>{children}</div>
+  </div>
 );
 
 export const Default = () => (

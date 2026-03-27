@@ -19,13 +19,8 @@ import {
   useApi,
   useApp,
 } from '@backstage/core-plugin-api';
-// eslint-disable-next-line no-restricted-imports
-import MaterialLink, {
-  LinkProps as MaterialLinkProps,
-} from '@material-ui/core/Link';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import classnames from 'classnames';
+import { cn } from '../../lib/utils';
+import { ExternalLink as ExternalLinkLucide } from 'lucide-react';
 import { trimEnd } from 'lodash';
 import {
   ReactNode,
@@ -33,6 +28,7 @@ import {
   MouseEvent as ReactMouseEvent,
   ElementType,
   forwardRef,
+  AnchorHTMLAttributes,
 } from 'react';
 import {
   createRoutesFromChildren,
@@ -40,7 +36,6 @@ import {
   LinkProps as RouterLinkProps,
   Route,
 } from 'react-router-dom';
-import OpenInNew from '@material-ui/icons/OpenInNew';
 
 export function isReactRouterBeta(): boolean {
   const [obj] = createRoutesFromChildren(<Route index element={<div />} />);
@@ -50,34 +45,10 @@ export function isReactRouterBeta(): boolean {
 /** @public */
 export type LinkClassKey = 'visuallyHidden' | 'externalLink';
 
-const useStyles = makeStyles(
-  theme => ({
-    visuallyHidden: {
-      clip: 'rect(0 0 0 0)',
-      clipPath: 'inset(50%)',
-      overflow: 'hidden',
-      position: 'absolute',
-      userSelect: 'none',
-      whiteSpace: 'nowrap',
-      height: 1,
-      width: 1,
-    },
-    externalLink: {
-      position: 'relative',
-    },
-    externalLinkIcon: {
-      verticalAlign: 'bottom',
-      marginLeft: theme.spacing(0.5),
-    },
-  }),
-  { name: 'Link' },
-);
-
 const ExternalLinkIcon = () => {
   const app = useApp();
-  const Icon = app.getSystemIcon('externalLink') || OpenInNew;
-  const classes = useStyles();
-  return <Icon className={classes.externalLinkIcon} />;
+  const Icon = app.getSystemIcon('externalLink') || ExternalLinkLucide;
+  return <Icon className="align-bottom ml-1 h-4 w-4 inline-block" />;
 };
 
 export const isExternalUri = (uri: string) => /^([a-z+.-]+):/.test(uri);
@@ -108,8 +79,8 @@ if (originalWindowOpen && !originalWindowOpen.__backstage) {
   window.open = newOpen;
 }
 
-export type LinkProps = Omit<MaterialLinkProps, 'to'> &
-  Omit<RouterLinkProps, 'to'> & {
+export type LinkProps = Omit<RouterLinkProps, 'to'> &
+  AnchorHTMLAttributes<HTMLAnchorElement> & {
     to: string;
     component?: ElementType<any>;
     noTrack?: boolean;
@@ -186,7 +157,6 @@ const getNodeText = (node: ReactNode): string => {
  */
 export const UnstyledLink = forwardRef<any, LinkProps>(
   ({ onClick, noTrack, externalLinkIcon, ...props }, ref) => {
-    const classes = useStyles();
     const analytics = useAnalytics();
 
     // Adding the base path to URLs breaks react-router v6 stable, so we only
@@ -222,13 +192,11 @@ export const UnstyledLink = forwardRef<any, LinkProps>(
         ref={ref}
         href={to}
         onClick={handleClick}
-        className={classnames(classes.externalLink, props.className)}
+        className={cn('relative', props.className)}
       >
         {props.children}
         {externalLinkIcon && <ExternalLinkIcon />}
-        <Typography component="span" className={classes.visuallyHidden}>
-          , Opens in a new window
-        </Typography>
+        <span className="sr-only">, Opens in a new window</span>
       </a>
     ) : (
       // Interact with React Router for internal links
@@ -238,8 +206,20 @@ export const UnstyledLink = forwardRef<any, LinkProps>(
 );
 
 /**
- * Thin wrapper combining UnstyledLink with material-ui's Link component.
+ * Styled link component using Tailwind CSS utility classes.
+ * Delegates routing, analytics, and security handling to UnstyledLink.
  */
-export const Link = forwardRef<any, LinkProps>((props, ref) => {
-  return <MaterialLink {...props} ref={ref} component={UnstyledLink} />;
-}) as (props: LinkProps) => JSX.Element;
+export const Link = forwardRef<HTMLAnchorElement, LinkProps>(
+  ({ className, ...props }, ref) => {
+    return (
+      <UnstyledLink
+        {...props}
+        ref={ref}
+        className={cn(
+          'text-primary underline underline-offset-4 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring',
+          className,
+        )}
+      />
+    );
+  },
+);

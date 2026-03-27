@@ -13,35 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Box from '@material-ui/core/Box';
-import { makeStyles } from '@material-ui/core/styles';
-import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
+import { ChevronsLeft } from 'lucide-react';
 
-const useStyles = makeStyles({
-  iconContainer: {
-    display: 'flex',
-    position: 'relative',
-    width: '100%',
-  },
-  arrow1: {
-    right: '6px',
-    position: 'absolute',
-  },
-});
-
-const DoubleArrowLeft = () => {
-  const classes = useStyles();
-
-  return (
-    <Box className={classes.iconContainer}>
-      <Box className={classes.arrow1}>
-        <ArrowBackIosIcon style={{ fontSize: '12px' }} />
-      </Box>
-      <Box>
-        <ArrowBackIosIcon style={{ fontSize: '12px' }} />
-      </Box>
-    </Box>
-  );
-};
+/** Double-left-chevron icon for the sidebar collapse affordance. */
+const DoubleArrowLeft = () => <ChevronsLeft size={16} />;
 
 export default DoubleArrowLeft;

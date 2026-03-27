@@ -14,14 +14,8 @@
  * limitations under the License.
  */
 
-import FormControl from '@material-ui/core/FormControl';
-import IconButton from '@material-ui/core/IconButton';
-import Input from '@material-ui/core/Input';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import Toolbar from '@material-ui/core/Toolbar';
-import { makeStyles } from '@material-ui/core/styles';
-import Clear from '@material-ui/icons/Clear';
-import Search from '@material-ui/icons/Search';
+import { Search, X } from 'lucide-react';
+import { cn } from '@backstage/core-components';
 import { useEffect, useMemo, useState } from 'react';
 import useDebounce from 'react-use/lib/useDebounce';
 import { useEntityList } from '../../hooks/useEntityListProvider';
@@ -32,23 +26,11 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 /** @public */
 export type CatalogReactEntitySearchBarClassKey = 'searchToolbar' | 'input';
 
-const useStyles = makeStyles(
-  _theme => ({
-    searchToolbar: {
-      paddingLeft: 0,
-      paddingRight: 0,
-    },
-    input: {},
-  }),
-  { name: 'CatalogReactEntitySearchBar' },
-);
-
 /**
  * Renders search bar for filtering the entity list.
  * @public
  */
 export const EntitySearchBar = () => {
-  const classes = useStyles();
   const { t } = useTranslationRef(catalogReactTranslationRef);
 
   const {
@@ -80,35 +62,39 @@ export const EntitySearchBar = () => {
   }, [queryParamTextFilter]);
 
   return (
-    <Toolbar className={classes.searchToolbar}>
-      <FormControl>
-        <Input
+    <div className={cn('flex items-center px-0 py-0')}>
+      <div className="relative w-full">
+        <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+        <input
           aria-label="search"
           id="input-with-icon-adornment"
-          className={classes.input}
+          className={cn(
+            'flex h-9 w-full rounded-md border border-input bg-transparent py-1 text-base shadow-sm transition-colors',
+            'pl-8 pr-8',
+            'placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring',
+            'disabled:cursor-not-allowed disabled:opacity-50 md:text-sm',
+          )}
           placeholder={t('entitySearchBar.placeholder')}
           autoComplete="off"
           onChange={event => setSearch(event.target.value)}
           value={search}
-          startAdornment={
-            <InputAdornment position="start">
-              <Search />
-            </InputAdornment>
-          }
-          endAdornment={
-            <InputAdornment position="end">
-              <IconButton
-                aria-label="clear search"
-                onClick={() => setSearch('')}
-                edge="end"
-                disabled={search.length === 0}
-              >
-                <Clear />
-              </IconButton>
-            </InputAdornment>
-          }
         />
-      </FormControl>
-    </Toolbar>
+        <button
+          type="button"
+          aria-label="clear search"
+          className={cn(
+            'absolute right-1 top-1/2 -translate-y-1/2 inline-flex items-center justify-center',
+            'h-7 w-7 rounded-md transition-colors',
+            'hover:bg-accent hover:text-accent-foreground',
+            'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring',
+            search.length === 0 && 'pointer-events-none opacity-50',
+          )}
+          onClick={() => setSearch('')}
+          disabled={search.length === 0}
+        >
+          <X className="h-4 w-4" />
+        </button>
+      </div>
+    </div>
   );
 };

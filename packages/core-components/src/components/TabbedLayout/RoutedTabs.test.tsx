@@ -15,7 +15,7 @@
  */
 
 import { renderInTestApp } from '@backstage/test-utils';
-import { act, fireEvent } from '@testing-library/react';
+import { act, fireEvent, waitFor } from '@testing-library/react';
 import { Route, Routes } from 'react-router-dom';
 import { RoutedTabs } from './RoutedTabs';
 
@@ -61,6 +61,13 @@ describe('RoutedTabs', () => {
       fireEvent.click(secondTab);
     });
 
+    // Verify Radix Tabs data-state attributes reflect active tab after clicking second tab
+    const tabsAfterSecondClick = rendered.queryAllByRole('tab');
+    await waitFor(() => {
+      expect(tabsAfterSecondClick[0]).toHaveAttribute('data-state', 'inactive');
+      expect(tabsAfterSecondClick[1]).toHaveAttribute('data-state', 'active');
+    });
+
     expect(rendered.getByText('tabbed-test-title')).toBeInTheDocument();
     expect(rendered.queryByText('tabbed-test-content')).not.toBeInTheDocument();
 
@@ -71,6 +78,14 @@ describe('RoutedTabs', () => {
     act(() => {
       fireEvent.click(thirdTab);
     });
+
+    // Verify Radix Tabs data-state attributes reflect active tab after clicking third tab
+    const tabsAfterThirdClick = rendered.queryAllByRole('tab');
+    await waitFor(() => {
+      expect(tabsAfterThirdClick[1]).toHaveAttribute('data-state', 'inactive');
+      expect(tabsAfterThirdClick[2]).toHaveAttribute('data-state', 'active');
+    });
+
     expect(rendered.getByText('tabbed-test-title-3')).toBeInTheDocument();
     expect(rendered.getByText('tabbed-test-content-3')).toBeInTheDocument();
   });
@@ -137,6 +152,11 @@ describe('RoutedTabs', () => {
       <RoutedTabs routes={[testRoute1, testRoute2]} />,
       { routeEntries: ['/some-other-path'] },
     );
+
+    // Verify Radix Tabs data-state attributes are present on tab elements
+    const tabs = rendered.queryAllByRole('tab');
+    expect(tabs[0]).toHaveAttribute('data-state');
+    expect(tabs[1]).toHaveAttribute('data-state');
 
     expect(rendered.getByText('tabbed-test-title')).toBeInTheDocument();
     expect(rendered.queryByText('tabbed-test-content')).not.toBeInTheDocument();

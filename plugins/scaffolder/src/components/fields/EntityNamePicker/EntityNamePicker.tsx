@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { EntityNamePickerProps } from './schema';
-import TextField from '@material-ui/core/TextField';
+import { Input, Label, cn } from '@backstage/core-components';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../../translation';
 
@@ -40,18 +40,29 @@ export const EntityNamePicker = (props: EntityNamePickerProps) => {
   } = props;
 
   return (
-    <TextField
-      id={idSchema?.$id}
-      label={title}
-      placeholder={placeholder}
-      helperText={description}
-      required={required}
-      value={formData ?? ''}
-      onChange={({ target: { value } }) => onChange(value)}
-      margin="normal"
-      error={rawErrors?.length > 0 && !formData}
-      inputProps={{ autoFocus }}
-      FormHelperTextProps={{ margin: 'dense', style: { marginLeft: 0 } }}
-    />
+    <div className="mt-4">
+      <Label htmlFor={idSchema?.$id}>
+        {title}
+        {required && <span className="text-destructive ml-1">*</span>}
+      </Label>
+      <Input
+        id={idSchema?.$id}
+        placeholder={placeholder}
+        required={required}
+        value={formData ?? ''}
+        onChange={({ target: { value } }) => onChange(value)}
+        // eslint-disable-next-line jsx-a11y/no-autofocus -- preserves original ui:autofocus behavior from MUI TextField inputProps
+        autoFocus={autoFocus}
+        className={cn(
+          'mt-1',
+          rawErrors?.length > 0 &&
+            !formData &&
+            'border-destructive focus-visible:ring-destructive',
+        )}
+      />
+      {description && (
+        <p className="text-sm text-muted-foreground mt-1">{description}</p>
+      )}
+    </div>
   );
 };

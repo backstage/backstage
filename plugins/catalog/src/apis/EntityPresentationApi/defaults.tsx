@@ -17,31 +17,46 @@
 import { IconComponent } from '@backstage/core-plugin-api';
 import { defaultEntityPresentation } from '@backstage/plugin-catalog-react';
 import { HumanDuration } from '@backstage/types';
-import ApartmentIcon from '@material-ui/icons/Apartment';
-import CategoryIcon from '@material-ui/icons/Category';
-import ExtensionIcon from '@material-ui/icons/Extension';
-import FeaturedPlayListIcon from '@material-ui/icons/FeaturedPlayList';
-import LocationOnIcon from '@material-ui/icons/LocationOn';
-import MemoryIcon from '@material-ui/icons/Memory';
-import PeopleIcon from '@material-ui/icons/People';
-import PersonIcon from '@material-ui/icons/Person';
-import StorageIcon from '@material-ui/icons/Storage';
+import {
+  Building2,
+  LayoutGrid,
+  Puzzle,
+  List,
+  MapPin,
+  Cpu,
+  Users,
+  User,
+  Database,
+} from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { DefaultEntityPresentationApiRenderer } from './DefaultEntityPresentationApi';
+
+/**
+ * Wraps a Lucide icon component to satisfy the Backstage IconComponent type contract.
+ * LucideIcon accepts SVGProps (fontSize?: string | number) while IconComponent
+ * restricts fontSize to 'medium' | 'large' | 'small' | 'inherit'.
+ */
+const wrapIcon = (Icon: LucideIcon): IconComponent => {
+  const Wrapped = (props: {
+    fontSize?: 'medium' | 'large' | 'small' | 'inherit';
+  }) => <Icon {...props} />;
+  return Wrapped;
+};
 
 export const DEFAULT_CACHE_TTL: HumanDuration = { seconds: 10 };
 
 export const DEFAULT_BATCH_DELAY: HumanDuration = { milliseconds: 50 };
 
 export const DEFAULT_ICONS: Record<string, IconComponent> = {
-  api: ExtensionIcon,
-  component: MemoryIcon,
-  system: CategoryIcon,
-  resource: StorageIcon,
-  domain: ApartmentIcon,
-  location: LocationOnIcon,
-  user: PersonIcon,
-  group: PeopleIcon,
-  template: FeaturedPlayListIcon,
+  api: wrapIcon(Puzzle),
+  component: wrapIcon(Cpu),
+  system: wrapIcon(LayoutGrid),
+  resource: wrapIcon(Database),
+  domain: wrapIcon(Building2),
+  location: wrapIcon(MapPin),
+  user: wrapIcon(User),
+  group: wrapIcon(Users),
+  template: wrapIcon(List),
 };
 
 export function createDefaultRenderer(options: {

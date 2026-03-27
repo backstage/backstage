@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
-import CardContent from '@material-ui/core/CardContent';
-import CardHeader, { CardHeaderProps } from '@material-ui/core/CardHeader';
-import Divider from '@material-ui/core/Divider';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
-import classNames from 'classnames';
-import { ReactNode } from 'react';
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  CardFooter,
+} from '../../components/ui/card';
+import { Separator } from '../../components/ui/separator';
+import { cn } from '../../lib/utils';
+import { createElement, type ReactNode, useMemo } from 'react';
 import { BottomLink, BottomLinkProps } from '../BottomLink';
 import { ErrorBoundary, ErrorBoundaryProps } from '../ErrorBoundary';
 
@@ -35,82 +37,26 @@ export type InfoCardClassKey =
   | 'headerAction'
   | 'headerContent';
 
-const useStyles = makeStyles(
-  theme => ({
-    noPadding: {
-      padding: 0,
-      '&:last-child': {
-        paddingBottom: 0,
-      },
-    },
-    contentAlignBottom: {
-      display: 'flex',
-      alignItems: 'self-end',
-    },
-    header: {
-      padding: theme.spacing(2, 2, 2, 2.5),
-    },
-    headerTitle: {
-      fontWeight: theme.typography.fontWeightBold,
-    },
-    headerSubheader: {
-      paddingTop: theme.spacing(1),
-    },
-    headerAvatar: {},
-    headerAction: {},
-    headerContent: {},
-    subheader: {
-      display: 'flex',
-    },
-  }),
-  { name: 'BackstageInfoCard' },
-);
-
 /** @public */
 export type CardActionsTopRightClassKey = 'root';
 
-const CardActionsTopRight = withStyles(
-  theme => ({
-    root: {
-      display: 'inline-block',
-      padding: theme.spacing(8, 8, 0, 0),
-      float: 'right',
-    },
-  }),
-  { name: 'BackstageInfoCardCardActionsTopRight' },
-)(CardActions);
-
+/**
+ * Tailwind class-string equivalents of the previous MUI inline-style variant
+ * objects.  Each key in `card` maps to classes applied on the outermost
+ * `<Card>` element, while `cardContent` keys are applied on `<CardContent>`.
+ */
 const VARIANT_STYLES = {
   card: {
-    flex: {
-      display: 'flex',
-      flexDirection: 'column',
-    },
-    fullHeight: {
-      display: 'flex',
-      flexDirection: 'column',
-      height: '100%',
-    },
-    gridItem: {
-      display: 'flex',
-      flexDirection: 'column',
-      height: 'calc(100% - 10px)', // for pages without content header
-      marginBottom: '10px',
-      breakInside: 'avoid-page',
-      '@media print': {
-        height: 'auto',
-      },
-    },
+    flex: 'flex flex-col',
+    fullHeight: 'flex flex-col h-full',
+    gridItem:
+      'flex flex-col h-[calc(100%-10px)] mb-2.5 break-inside-avoid-page print:h-auto',
   },
   cardContent: {
-    fullHeight: {
-      flex: 1,
-    },
-    gridItem: {
-      flex: 1,
-    },
+    fullHeight: 'flex-1',
+    gridItem: 'flex-1',
   },
-};
+} as const;
 
 /** @public */
 export type InfoCardVariants = 'flex' | 'fullHeight' | 'gridItem';
@@ -119,7 +65,7 @@ export type InfoCardVariants = 'flex' | 'fullHeight' | 'gridItem';
  * InfoCard is used to display a paper-styled block on the screen, similar to a panel.
  *
  * You can custom style an InfoCard with the 'className' (outer container) and 'cardClassName' (inner container)
- * props. This is typically used with the material-ui makeStyles mechanism.
+ * props. This is typically used with Tailwind CSS utility classes or the cn() helper.
  *
  * The InfoCard serves as an error boundary. As a result, if you provide an 'errorBoundaryProps' property this
  * specifies the extra information to display in the error component that is displayed if an error occurs
@@ -145,7 +91,15 @@ export type Props = {
   alignContent?: 'normal' | 'bottom';
   children?: ReactNode;
   headerStyle?: object;
-  headerProps?: CardHeaderProps;
+  /**
+   * Additional props forwarded to the card header `<div>` element.
+   *
+   * @remarks
+   * Previously typed as MUI `CardHeaderProps`. Now accepts any valid HTML
+   * div attributes. Use `Record<string, unknown>` for maximum backward
+   * compatibility with existing call sites.
+   */
+  headerProps?: Record<string, unknown>;
   icon?: ReactNode;
   action?: ReactNode;
   actionsClassName?: string;
@@ -159,10 +113,9 @@ export type Props = {
 };
 
 /**
- * Material-ui card with header , content and actions footer
+ * Card layout primitive with header, content and actions footer.
  *
  * @public
- *
  */
 export function InfoCard(props: Props): JSX.Element {
   const {
@@ -188,82 +141,152 @@ export function InfoCard(props: Props): JSX.Element {
     titleTypographyProps,
     subheaderTypographyProps,
   } = props;
-  const classes = useStyles();
-  /**
-   * If variant is specified, we build up styles for that particular variant for both
-   * the Card and the CardContent (since these need to be synced)
+
+  /*
+   * If variant is specified, we build up Tailwind class strings for that
+   * particular variant for both the Card and the CardContent (since these
+   * need to be synced).
    */
-  let calculatedStyle = {};
-  let calculatedCardStyle = {};
+  let variantCardClasses = '';
+  let variantContentClasses = '';
   if (variant) {
     const variants = variant.split(/[\s]+/g);
     variants.forEach(name => {
-      calculatedStyle = {
-        ...calculatedStyle,
-        ...VARIANT_STYLES.card[name as keyof (typeof VARIANT_STYLES)['card']],
-      };
-      calculatedCardStyle = {
-        ...calculatedCardStyle,
-        ...VARIANT_STYLES.cardContent[
-          name as keyof (typeof VARIANT_STYLES)['cardContent']
-        ],
-      };
+      const cardVariant =
+        VARIANT_STYLES.card[name as keyof typeof VARIANT_STYLES.card];
+      if (cardVariant) {
+        variantCardClasses = cn(variantCardClasses, cardVariant);
+      }
+      const contentVariant =
+        VARIANT_STYLES.cardContent[
+          name as keyof typeof VARIANT_STYLES.cardContent
+        ];
+      if (contentVariant) {
+        variantContentClasses = cn(variantContentClasses, contentVariant);
+      }
     });
   }
 
-  const cardSubTitle = () => {
+  /**
+   * Renders the subtitle region containing the subheader text and/or icon.
+   * Returns null when neither is provided so the container div is omitted.
+   * Memoized to avoid duplicate calls per render cycle.
+   */
+  const subTitleContent = useMemo(() => {
     if (!subheader && !icon) {
       return null;
     }
 
     return (
       <div data-testid="info-card-subheader">
-        {subheader && <div className={classes.subheader}>{subheader}</div>}
+        {subheader && <div className="flex">{subheader}</div>}
         {icon}
       </div>
     );
-  };
+  }, [subheader, icon]);
+
+  /**
+   * Extract style overrides from typography props for backward compatibility.
+   * shadcn CardTitle / CardDescription do not accept MUI-style typography prop
+   * objects directly, so we map `style`, `className`, and common props into
+   * the rendered elements as inline styles / className strings.
+   */
+  const titleStyleProps = useMemo(() => {
+    if (!titleTypographyProps) return {} as Record<string, any>;
+    const {
+      style,
+      className: cls,
+      component,
+      ...rest
+    } = titleTypographyProps as Record<string, any>;
+    return { style, className: cls, component, extra: rest };
+  }, [titleTypographyProps]);
+
+  const subheaderStyleProps = useMemo(() => {
+    if (!subheaderTypographyProps) return {} as Record<string, any>;
+    const {
+      style,
+      className: cls,
+      component,
+      ...rest
+    } = subheaderTypographyProps as Record<string, any>;
+    return { style, className: cls, component, extra: rest };
+  }, [subheaderTypographyProps]);
 
   const errProps: ErrorBoundaryProps =
     errorBoundaryProps || (slackChannel ? { slackChannel } : {});
 
   return (
-    <Card style={calculatedStyle} className={className}>
+    <Card className={cn(variantCardClasses, className)}>
       <ErrorBoundary {...errProps}>
         {title && (
           <CardHeader
-            classes={{
-              root: classNames(classes.header),
-              title: classes.headerTitle,
-              subheader: classes.headerSubheader,
-              avatar: classes.headerAvatar,
-              action: classes.headerAction,
-              content: classes.headerContent,
-            }}
-            title={title}
-            subheader={cardSubTitle()}
-            action={action}
-            style={{ ...headerStyle }}
-            titleTypographyProps={titleTypographyProps}
-            subheaderTypographyProps={subheaderTypographyProps}
-            {...headerProps}
-          />
+            className={cn('p-4 pl-5')}
+            style={headerStyle ? { ...headerStyle } : undefined}
+            {...(headerProps as React.HTMLAttributes<HTMLDivElement>)}
+          >
+            <div className="flex items-start justify-between">
+              <div>
+                {titleStyleProps.component ? (
+                  createElement(
+                    titleStyleProps.component,
+                    {
+                      className: cn(
+                        'font-semibold leading-none tracking-tight font-bold',
+                        titleStyleProps.className,
+                      ),
+                      style: titleStyleProps.style,
+                      'data-slot': 'card-title',
+                    },
+                    title,
+                  )
+                ) : (
+                  <CardTitle
+                    className={cn('font-bold', titleStyleProps.className)}
+                    style={titleStyleProps.style}
+                  >
+                    {title}
+                  </CardTitle>
+                )}
+                {subTitleContent &&
+                  (subheaderStyleProps.component ? (
+                    createElement(
+                      subheaderStyleProps.component,
+                      {
+                        className: cn('pt-2', subheaderStyleProps.className),
+                        style: subheaderStyleProps.style,
+                      },
+                      subTitleContent,
+                    )
+                  ) : (
+                    <div
+                      className={cn('pt-2', subheaderStyleProps.className)}
+                      style={subheaderStyleProps.style}
+                    >
+                      {subTitleContent}
+                    </div>
+                  ))}
+              </div>
+              {action && <div className="ml-auto">{action}</div>}
+            </div>
+          </CardHeader>
         )}
         {actionsTopRight && (
-          <CardActionsTopRight>{actionsTopRight}</CardActionsTopRight>
+          <div className="flex justify-end pt-4 pr-4">{actionsTopRight}</div>
         )}
-        {divider && <Divider />}
+        {divider && <Separator />}
         <CardContent
-          className={classNames(cardClassName, {
-            [classes.noPadding]: noPadding,
-            [classes.contentAlignBottom]: alignContent === 'bottom',
-          })}
-          style={calculatedCardStyle}
+          className={cn(
+            variantContentClasses,
+            cardClassName,
+            noPadding && 'p-0 [&:last-child]:pb-0',
+            alignContent === 'bottom' && 'flex items-end',
+          )}
         >
           {children}
         </CardContent>
         {actions && (
-          <CardActions className={actionsClassName}>{actions}</CardActions>
+          <CardFooter className={actionsClassName}>{actions}</CardFooter>
         )}
         {deepLink && <BottomLink {...deepLink} />}
       </ErrorBoundary>

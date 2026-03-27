@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import MenuItem from '@material-ui/core/MenuItem';
-import CancelIcon from '@material-ui/icons/Cancel';
+import { DropdownMenuItem } from '@backstage/core-components';
+import { XCircle } from 'lucide-react';
 import { catalogTranslationRef } from '../../alpha/translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { forwardRef } from 'react';
@@ -37,7 +35,7 @@ interface UnregisterEntityProps {
 
 // TODO: When Backstage supports only React 19+, remove the forwardRef
 export const UnregisterEntity = forwardRef<
-  HTMLLIElement,
+  HTMLDivElement,
   UnregisterEntityProps
 >((props, ref) => {
   const {
@@ -58,22 +56,30 @@ export const UnregisterEntity = forwardRef<
         : unregisterEntityOptions?.disableUnregister === 'disable')) ??
     false;
 
+  /* Forward remaining props (data-testid, className, etc.) for backward
+     compatibility — the original MUI MenuItem spread all extra props. */
+  const {
+    unregisterEntityOptions: _ueo,
+    isUnregisterAllowed: _ira,
+    onUnregisterEntity: _oue,
+    onClose: _oc,
+    ...restProps
+  } = props;
+
   if (unregisterEntityOptions?.disableUnregister !== 'hidden') {
     return (
-      <MenuItem
+      <DropdownMenuItem
         ref={ref}
         onClick={() => {
           onClose();
           onUnregisterEntity();
         }}
         disabled={isDisabled}
-        {...props}
+        {...restProps}
       >
-        <ListItemIcon>
-          <CancelIcon fontSize="small" />
-        </ListItemIcon>
-        <ListItemText primary={t('entityContextMenu.unregisterMenuTitle')} />
-      </MenuItem>
+        <XCircle className="h-4 w-4" />
+        <span>{t('entityContextMenu.unregisterMenuTitle')}</span>
+      </DropdownMenuItem>
     );
   }
 

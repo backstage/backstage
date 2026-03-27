@@ -21,6 +21,7 @@ import { EntityContextMenuItemBlueprint } from './EntityContextMenuItemBlueprint
 import { screen, waitFor } from '@testing-library/react';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { Entity } from '@backstage/catalog-model';
+import { DropdownMenu as DropdownMenuPrimitive } from 'radix-ui';
 
 jest.mock('../../hooks/useEntityContextMenu', () => ({
   useEntityContextMenu: () => ({
@@ -246,7 +247,11 @@ describe('EntityContextMenuItemBlueprint', () => {
           metadata: { name: 'test' },
         }}
       >
-        <ul>{createExtensionTester(extension).reactElement()}</ul>
+        <DropdownMenuPrimitive.Root open modal={false}>
+          <DropdownMenuPrimitive.Content>
+            {createExtensionTester(extension).reactElement()}
+          </DropdownMenuPrimitive.Content>
+        </DropdownMenuPrimitive.Root>
       </EntityProvider>,
     );
 

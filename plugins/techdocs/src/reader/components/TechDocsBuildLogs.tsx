@@ -14,37 +14,14 @@
  * limitations under the License.
  */
 
-import { LogViewer } from '@backstage/core-components';
-import Button from '@material-ui/core/Button';
-import Drawer from '@material-ui/core/Drawer';
-import Grid from '@material-ui/core/Grid';
-import IconButton from '@material-ui/core/IconButton';
-import Typography from '@material-ui/core/Typography';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import Close from '@material-ui/icons/Close';
+import {
+  LogViewer,
+  ShadcnButton as Button,
+  Sheet,
+  SheetContent,
+} from '@backstage/core-components';
+import { X } from 'lucide-react';
 import { useState } from 'react';
-
-const useDrawerStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    paper: {
-      width: '100%',
-      [theme.breakpoints.up('sm')]: {
-        width: '75%',
-      },
-      [theme.breakpoints.up('md')]: {
-        width: '50%',
-      },
-      padding: theme.spacing(2.5),
-    },
-    root: {
-      height: '100%',
-      overflow: 'hidden',
-    },
-    logs: {
-      background: theme.palette.background.default,
-    },
-  }),
-);
 
 export const TechDocsBuildLogsDrawerContent = ({
   buildLog,
@@ -53,62 +30,47 @@ export const TechDocsBuildLogsDrawerContent = ({
   buildLog: string[];
   onClose: () => void;
 }) => {
-  const classes = useDrawerStyles();
   const logText =
     buildLog.length === 0 ? 'Waiting for logs...' : buildLog.join('\n');
   return (
-    <Grid
-      container
-      direction="column"
-      className={classes.root}
-      spacing={0}
-      wrap="nowrap"
-    >
-      <Grid
-        item
-        container
-        justifyContent="space-between"
-        alignItems="center"
-        spacing={0}
-        wrap="nowrap"
-      >
-        <Typography variant="h5">Build Details</Typography>
-        <IconButton
-          key="dismiss"
+    <div className="flex flex-col h-full overflow-hidden">
+      <div className="flex items-center justify-between flex-shrink-0">
+        <h2 className="text-xl font-semibold">Build Details</h2>
+        <Button
+          variant="ghost"
+          size="icon"
           title="Close the drawer"
           onClick={onClose}
-          color="inherit"
         >
-          <Close />
-        </IconButton>
-      </Grid>
-      <Grid item xs>
-        <LogViewer text={logText} classes={{ root: classes.logs }} />
-      </Grid>
-    </Grid>
+          <X className="h-4 w-4" />
+        </Button>
+      </div>
+      <div className="flex-1 min-h-0">
+        <LogViewer text={logText} classes={{ root: 'bg-background' }} />
+      </div>
+    </div>
   );
 };
 
 export const TechDocsBuildLogs = ({ buildLog }: { buildLog: string[] }) => {
-  const classes = useDrawerStyles();
   const [open, setOpen] = useState(false);
 
   return (
     <>
-      <Button color="inherit" onClick={() => setOpen(true)}>
+      <Button variant="ghost" onClick={() => setOpen(true)}>
         Show Build Logs
       </Button>
-      <Drawer
-        classes={{ paper: classes.paper }}
-        anchor="right"
-        open={open}
-        onClose={() => setOpen(false)}
-      >
-        <TechDocsBuildLogsDrawerContent
-          buildLog={buildLog}
-          onClose={() => setOpen(false)}
-        />
-      </Drawer>
+      <Sheet open={open} onOpenChange={setOpen}>
+        <SheetContent
+          side="right"
+          className="w-full sm:w-3/4 sm:max-w-none md:w-1/2 p-5"
+        >
+          <TechDocsBuildLogsDrawerContent
+            buildLog={buildLog}
+            onClose={() => setOpen(false)}
+          />
+        </SheetContent>
+      </Sheet>
     </>
   );
 };

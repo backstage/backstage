@@ -14,38 +14,11 @@
  * limitations under the License.
  */
 
-import classNames from 'classnames';
 import { PropsWithChildren } from 'react';
-import { makeStyles, Theme } from '@material-ui/core/styles';
+import { cn } from '@backstage/core-components';
 
 /** @public */
 export type EntityTabsPanelClassKey = 'root' | 'stretch' | 'noPadding';
-
-const useStyles = makeStyles(
-  (theme: Theme) => ({
-    root: {
-      gridArea: 'pageContent',
-      minWidth: 0,
-      paddingTop: theme.spacing(3),
-      paddingBottom: theme.spacing(3),
-      paddingLeft: theme.spacing(2),
-      paddingRight: theme.spacing(2),
-      [theme.breakpoints.up('sm')]: {
-        paddingLeft: theme.spacing(3),
-        paddingRight: theme.spacing(3),
-      },
-    },
-    stretch: {
-      display: 'flex',
-      flexDirection: 'column',
-      flexGrow: 1,
-    },
-    noPadding: {
-      padding: 0,
-    },
-  }),
-  { name: 'EntityTabsPanel' },
-);
 
 type EntityTabsPanelProps = PropsWithChildren<{
   stretch?: boolean;
@@ -56,14 +29,15 @@ type EntityTabsPanelProps = PropsWithChildren<{
 export function EntityTabsPanel(props: EntityTabsPanelProps) {
   const { className, stretch, noPadding, children, ...restProps } = props;
 
-  const classes = useStyles();
   return (
     <article
       {...restProps}
-      className={classNames(classes.root, className, {
-        [classes.stretch]: stretch,
-        [classes.noPadding]: noPadding,
-      })}
+      className={cn(
+        '[grid-area:pageContent] min-w-0 pt-6 pb-6 px-4 sm:px-6',
+        stretch && 'flex flex-col flex-grow',
+        noPadding && '!p-0',
+        className,
+      )}
     >
       {children}
     </article>

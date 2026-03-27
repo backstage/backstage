@@ -108,3 +108,60 @@ export function createBaseThemeOptions<PaletteOptions>(
       pageTheme[themeId] ?? pageTheme[defaultPageTheme],
   };
 }
+
+/**
+ * Generates CSS custom property token declarations from Backstage typography settings.
+ *
+ * Converts Backstage typography configuration into shadcn/ui-compatible CSS custom
+ * properties for font families, sizes, and weights. Supports a dual-font system:
+ * proportional fonts for prose/navigation and monospace for identifiers/metadata.
+ *
+ * @public
+ * @param typography - Optional Backstage typography override. Falls back to {@link defaultTypography}.
+ * @returns A Record mapping CSS custom property names to their values
+ */
+export function generateTypographyTokens(
+  typography?: BackstageTypography,
+): Record<string, string> {
+  const typo = typography ?? defaultTypography;
+
+  return {
+    // Font families — dual-font system per AAP Section 0.8.2
+    '--font-sans': typo.fontFamily ?? DEFAULT_FONT_FAMILY,
+    '--font-mono':
+      "ui-monospace, 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', monospace",
+
+    // Base font size
+    '--html-font-size': `${typo.htmlFontSize ?? DEFAULT_HTML_FONT_SIZE}px`,
+
+    // Heading font size scale
+    '--font-size-h1':
+      typeof typo.h1.fontSize === 'number'
+        ? `${typo.h1.fontSize}px`
+        : String(typo.h1.fontSize),
+    '--font-size-h2':
+      typeof typo.h2.fontSize === 'number'
+        ? `${typo.h2.fontSize}px`
+        : String(typo.h2.fontSize),
+    '--font-size-h3':
+      typeof typo.h3.fontSize === 'number'
+        ? `${typo.h3.fontSize}px`
+        : String(typo.h3.fontSize),
+    '--font-size-h4':
+      typeof typo.h4.fontSize === 'number'
+        ? `${typo.h4.fontSize}px`
+        : String(typo.h4.fontSize),
+    '--font-size-h5':
+      typeof typo.h5.fontSize === 'number'
+        ? `${typo.h5.fontSize}px`
+        : String(typo.h5.fontSize),
+    '--font-size-h6':
+      typeof typo.h6.fontSize === 'number'
+        ? `${typo.h6.fontSize}px`
+        : String(typo.h6.fontSize),
+
+    // Font weights — aligned with BUI --bui-font-weight-regular (400) and --bui-font-weight-bold (600)
+    '--font-weight-regular': '400',
+    '--font-weight-bold': '600',
+  };
+}

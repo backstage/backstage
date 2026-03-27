@@ -22,7 +22,56 @@ import {
   ScaffolderApi,
   scaffolderApiRef,
 } from '@backstage/plugin-scaffolder-react';
-import userEvent from '@testing-library/user-event';
+
+/*
+ * Browser API polyfills for jsdom environment.
+ * Radix UI primitives (Select, Popover) and cmdk rely on browser APIs
+ * that are not available in jsdom.
+ */
+
+// cmdk uses ResizeObserver for measuring list dimensions.
+if (typeof globalThis.ResizeObserver === 'undefined') {
+  (globalThis as any).ResizeObserver = class {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  };
+}
+
+// Radix Select scrolls the selected item into view when opening.
+if (!Element.prototype.scrollIntoView) {
+  Element.prototype.scrollIntoView = function scrollIntoView() {};
+}
+
+// Radix uses pointer capture APIs for pointer event management.
+if (!Element.prototype.hasPointerCapture) {
+  Element.prototype.hasPointerCapture = function () {
+    return false;
+  };
+}
+if (!Element.prototype.setPointerCapture) {
+  Element.prototype.setPointerCapture = function () {};
+}
+if (!Element.prototype.releasePointerCapture) {
+  Element.prototype.releasePointerCapture = function () {};
+}
+
+// DOMRect.fromRect is used by Radix for collision-aware positioning.
+if (typeof DOMRect === 'undefined' || !DOMRect.fromRect) {
+  (globalThis as any).DOMRect = {
+    fromRect: () => ({
+      top: 0,
+      left: 0,
+      bottom: 0,
+      right: 0,
+      width: 0,
+      height: 0,
+      x: 0,
+      y: 0,
+      toJSON: () => ({}),
+    }),
+  };
+}
 
 describe('GithubRepoPicker', () => {
   const scaffolderApiMock: Partial<ScaffolderApi> = {
@@ -42,7 +91,7 @@ describe('GithubRepoPicker', () => {
   describe('owner field', () => {
     it('renders a select if there is a list of allowed owners', async () => {
       const allowedOwners = ['owner1', 'owner2'];
-      const { findByText } = await renderInTestApp(
+      const { getByRole, findByText } = await renderInTestApp(
         <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
           <GithubRepoPicker
             onChange={jest.fn()}
@@ -53,6 +102,9 @@ describe('GithubRepoPicker', () => {
         </TestApiProvider>,
       );
 
+      // Open the Radix Select dropdown to render options in the portal
+      fireEvent.click(getByRole('combobox'));
+
       expect(await findByText('owner1')).toBeInTheDocument();
       expect(await findByText('owner2')).toBeInTheDocument();
     });
@@ -60,7 +112,7 @@ describe('GithubRepoPicker', () => {
     it('calls onChange when the owner is changed to a different owner', async () => {
       const onChange = jest.fn();
       const allowedOwners = ['owner1', 'owner2'];
-      const { getByRole } = await renderInTestApp(
+      const { getByRole, findByText } = await renderInTestApp(
         <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
           <GithubRepoPicker
             onChange={onChange}
@@ -71,11 +123,16 @@ describe('GithubRepoPicker', () => {
         </TestApiProvider>,
       );
 
-      await fireEvent.change(getByRole('combobox'), {
-        target: { value: 'owner2' },
-      });
+      // Open the Radix Select dropdown
+      fireEvent.click(getByRole('combobox'));
 
-      expect(onChange).toHaveBeenCalledWith({ owner: 'owner2' });
+      // Click the 'owner2' option in the portal-rendered list
+      const option = await findByText('owner2');
+      fireEvent.click(option);
+
+      await waitFor(() => {
+        expect(onChange).toHaveBeenCalledWith({ owner: 'owner2' });
+      });
     });
 
     it('is disabled picked when only one allowed owner', async () => {
@@ -121,7 +178,7 @@ describe('GithubRepoPicker', () => {
     it('should populate owners if accessToken is provided', async () => {
       const onChange = jest.fn();
 
-      const { getAllByRole, getByText } = await renderInTestApp(
+      const { findByRole, getByText } = await renderInTestApp(
         <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
           <GithubRepoPicker
             onChange={onChange}
@@ -132,17 +189,22 @@ describe('GithubRepoPicker', () => {
         </TestApiProvider>,
       );
 
-      // Open the Autocomplete dropdown
-      const ownerInput = getAllByRole('textbox')[0];
-      await userEvent.click(ownerInput);
+      // Wait for the combobox button to appear (indicates availableOwners are populated
+      // and the component switched from the plain Input branch to the Popover+Command branch)
+      const combobox = await findByRole('combobox', {}, { timeout: 1500 });
 
-      // Verify that the available owners are shown
+      // Open the Popover+Command dropdown
+      fireEvent.click(combobox);
+
+      // Verify that the available owners are shown in the Command list
       await waitFor(() => expect(getByText('spotify')).toBeInTheDocument());
 
       // Verify that selecting an option calls onChange
-      await userEvent.click(getByText('spotify'));
-      expect(onChange).toHaveBeenCalledWith({
-        owner: 'spotify',
+      fireEvent.click(getByText('spotify'));
+      await waitFor(() => {
+        expect(onChange).toHaveBeenCalledWith({
+          owner: 'spotify',
+        });
       });
     });
 

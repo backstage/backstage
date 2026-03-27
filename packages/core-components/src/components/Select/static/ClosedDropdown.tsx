@@ -13,38 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { makeStyles, createStyles } from '@material-ui/core/styles';
-import SvgIcon from '@material-ui/core/SvgIcon';
+import { cn } from '../../../lib/utils';
 
 /** @public */
 export type ClosedDropdownClassKey = 'icon';
 
-const useStyles = makeStyles(
-  theme =>
-    createStyles({
-      icon: {
-        position: 'absolute',
-        right: theme.spacing(0.5),
-        pointerEvents: 'none',
-        color: '#616161',
-      },
-    }),
-  { name: 'BackstageClosedDropdown' },
-);
-
 const ClosedDropdown = () => {
-  const classes = useStyles();
   return (
-    <SvgIcon
-      className={classes.icon}
+    <svg
+      className={cn(
+        'absolute right-0.5 pointer-events-none text-muted-foreground',
+        'h-6 w-6',
+      )}
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
     >
       <path
         d="M7.5 8L6 9.5L12.0703 15.5703L18.1406 9.5L16.6406 8L12.0703 12.5703L7.5 8Z"
         fill="currentColor"
       />
-    </SvgIcon>
+    </svg>
   );
 };
 

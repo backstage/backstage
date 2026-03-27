@@ -19,21 +19,8 @@ import {
   useAnalytics,
   useElementFilter,
 } from '@backstage/core-plugin-api';
-import Badge from '@material-ui/core/Badge';
-import Box from '@material-ui/core/Box';
-import { makeStyles, styled, Theme } from '@material-ui/core/styles';
-import {
-  CreateCSSProperties,
-  StyledComponentProps,
-} from '@material-ui/core/styles/withStyles';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
-import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
-import ArrowDropUp from '@material-ui/icons/ArrowDropUp';
-import ArrowRightIcon from '@material-ui/icons/ArrowRight';
-import SearchIcon from '@material-ui/icons/Search';
-import classnames from 'classnames';
+import { ChevronDown, ChevronUp, ChevronRight, Search } from 'lucide-react';
+import { cn } from '../../lib/utils';
 import type { Location } from 'history';
 
 import {
@@ -45,6 +32,7 @@ import {
   ReactNode,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
   MouseEvent,
@@ -72,7 +60,6 @@ import { useSidebarOpenState } from './SidebarOpenStateContext';
 import { SidebarSubmenu, SidebarSubmenuProps } from './SidebarSubmenu';
 import { SidebarSubmenuItemProps } from './SidebarSubmenuItem';
 import { isLocationMatch } from './utils';
-import Button from '@material-ui/core/Button';
 
 /** @public */
 export type SidebarItemClassKey =
@@ -95,133 +82,48 @@ export type SidebarItemClassKey =
   | 'arrows'
   | 'selected';
 
-const makeSidebarStyles = (sidebarConfig: SidebarConfig) =>
-  makeStyles(
-    theme => ({
-      root: {
-        color: theme.palette.navigation.color,
-        display: 'flex',
-        flexFlow: 'row nowrap',
-        alignItems: 'center',
-        height: 48,
-        cursor: 'pointer',
-      },
-      buttonItem: {
-        background: 'none',
-        border: 'none',
-        width: '100%',
-        margin: 0,
-        padding: 0,
-        textAlign: 'inherit',
-        font: 'inherit',
-        textTransform: 'none',
-      },
-      closed: {
-        width: sidebarConfig.drawerWidthClosed,
-        justifyContent: 'center',
-      },
-      open: {
-        [theme.breakpoints.up('sm')]: {
-          width: sidebarConfig.drawerWidthOpen,
-        },
-      },
-      highlightable: {
-        '&:hover': {
-          background:
-            theme.palette.navigation.navItem?.hoverBackground ?? '#404040',
-        },
-      },
-      highlighted: {
-        background:
-          theme.palette.navigation.navItem?.hoverBackground ?? '#404040',
-      },
-      label: {
-        // XXX (@koroeskohr): I can't seem to achieve the desired font-weight from the designs
-        fontWeight: 'bold',
-        whiteSpace: 'nowrap',
-        lineHeight: 'auto',
-        flex: '3 1 auto',
-        width: '110px',
-        overflow: 'hidden',
-        'text-overflow': 'ellipsis',
-      },
-      iconContainer: {
-        boxSizing: 'border-box',
-        height: '100%',
-        width: sidebarConfig.iconContainerWidth,
-        marginRight: -theme.spacing(2),
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        lineHeight: '0',
-      },
-      searchRoot: {
-        marginBottom: 12,
-      },
-      searchField: {
-        color: '#b5b5b5',
-        fontWeight: theme.typography.fontWeightBold,
-        fontSize: theme.typography.fontSize,
-      },
-      searchFieldHTMLInput: {
-        padding: theme.spacing(2, 0, 2),
-      },
-      searchContainer: {
-        width: sidebarConfig.drawerWidthOpen - sidebarConfig.iconContainerWidth,
-      },
-      secondaryAction: {
-        width: theme.spacing(6),
-        textAlign: 'center',
-        marginRight: theme.spacing(1),
-      },
-      closedItemIcon: {
-        width: '100%',
-        justifyContent: 'center',
-      },
-      submenuArrow: {
-        display: 'flex',
-      },
-      expandButton: {
-        background: 'none',
-        border: 'none',
-        color: theme.palette.navigation.color,
-        width: '100%',
-        cursor: 'pointer',
-        position: 'relative',
-        height: 48,
-      },
-      arrows: {
-        position: 'absolute',
-        right: 10,
-      },
-      selected: {
-        '&$root': {
-          borderLeft: `solid ${sidebarConfig.selectedIndicatorWidth}px ${theme.palette.navigation.indicator}`,
-          color: theme.palette.navigation.selectedColor,
-        },
-        '&$closed': {
-          width: sidebarConfig.drawerWidthClosed,
-        },
-        '& $closedItemIcon': {
-          paddingRight: sidebarConfig.selectedIndicatorWidth,
-        },
-        '& $iconContainer': {
-          marginLeft: -sidebarConfig.selectedIndicatorWidth,
-        },
-      },
-    }),
-    { name: 'BackstageSidebarItem' },
-  );
+/**
+ * Returns Tailwind class names for sidebar item states.
+ * Replaces the MUI makeStyles block. Dynamic widths that depend on
+ * sidebarConfig values are applied via inline `style` at the call site.
+ */
+function getSidebarItemClasses(_sidebarConfig: SidebarConfig) {
+  return {
+    root: 'flex flex-row flex-nowrap items-center h-12 cursor-pointer text-[var(--sidebar-nav-color,#b5b5b5)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--sidebar-primary,#fff)] focus-visible:ring-inset',
+    buttonItem:
+      'bg-transparent border-none w-full m-0 p-0 text-left font-inherit normal-case',
+    closed: 'justify-center',
+    open: '',
+    highlightable: 'hover:bg-[var(--sidebar-nav-hover-bg,#404040)]',
+    highlighted: 'bg-[var(--sidebar-nav-hover-bg,#404040)]',
+    label:
+      'font-bold whitespace-nowrap leading-none flex-[3_1_auto] w-[110px] overflow-hidden text-ellipsis',
+    iconContainer:
+      'box-border h-full flex items-center justify-center leading-none',
+    searchRoot: 'mb-3',
+    searchField: 'text-[#b5b5b5] font-bold text-sm',
+    searchFieldHTMLInput: 'py-4 px-0',
+    searchContainer: '',
+    secondaryAction: 'w-12 text-center mr-2',
+    closedItemIcon: 'w-full justify-center',
+    submenuArrow: 'flex',
+    expandButton:
+      'bg-transparent border-none text-[var(--sidebar-nav-color,#b5b5b5)] w-full cursor-pointer relative h-12 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--sidebar-primary,#fff)] focus-visible:ring-inset',
+    arrows: 'absolute right-2.5',
+    /** Marker class + Tailwind color for the selected (active link) state.
+     *  Border-left is applied via inline style because selectedIndicatorWidth
+     *  is dynamic. Child offset adjustments (iconContainer marginLeft,
+     *  closedItemIcon paddingRight) are also applied via inline style. */
+    selected:
+      'sidebar-item-selected text-[var(--sidebar-nav-selected-color,#fff)]',
+  };
+}
 
-// This is a workaround for this issue https://github.com/mui/material-ui/issues/15511
-// The styling of the `selected` elements doesn't work as expected when using a prop callback.
-// Don't use this pattern unless needed
-function useMemoStyles(sidebarConfig: SidebarConfig) {
-  const useStyles = useMemo(
-    () => makeSidebarStyles(sidebarConfig),
-    [sidebarConfig],
-  );
-  return useStyles();
+/**
+ * Memoised wrapper around getSidebarItemClasses – replaces MUI useMemoStyles.
+ */
+function useSidebarClasses(sidebarConfig: SidebarConfig) {
+  return useMemo(() => getSidebarItemClasses(sidebarConfig), [sidebarConfig]);
 }
 
 /**
@@ -360,10 +262,10 @@ export const WorkaroundNavLink = forwardRef<
       ref={ref}
       aria-current={ariaCurrent}
       style={{ ...style, ...(isActive ? activeStyle : undefined) }}
-      className={classnames([
+      className={cn(
         typeof className !== 'function' ? className : undefined,
         isActive ? activeClassName : undefined,
-      ])}
+      )}
     />
   );
 });
@@ -388,96 +290,138 @@ const SidebarItemBase = forwardRef<
     ...navLinkProps
   } = props;
   const { sidebarConfig } = useContext(SidebarConfigContext);
-  const classes = useMemoStyles(sidebarConfig);
+  const classes = useSidebarClasses(sidebarConfig);
   // XXX (@koroeskohr): unsure this is optimal. But I just really didn't want to have the item component
   // depend on the current location, and at least have it being optionally forced to selected.
   // Still waiting on a Q answered to fine tune the implementation
   const { isOpen } = useSidebarOpenState();
 
-  const divStyle =
+  const analyticsApi = useAnalytics();
+  const resolvedPathObj = useResolvedPath(
+    !isButtonItem(props) && props.to ? props.to : '',
+  );
+  const location = useLocation();
+
+  // Detect selected state to adjust child element offsets (compensating for
+  // the border-left that appears when an item is active).
+  const isSelected = useMemo(() => {
+    if (isButtonItem(props)) {
+      // For button items the parent (SidebarItemWithSubmenu) passes the
+      // selected marker via className.
+      return className?.includes('sidebar-item-selected') ?? false;
+    }
+    // For link items replicate WorkaroundNavLink's isActive logic.
+    const locPath = location.pathname.toLocaleLowerCase('en-US');
+    const toPath = resolvedPathObj.pathname.toLocaleLowerCase('en-US');
+    if (locPath === toPath) return true;
+    if (!(props as SidebarItemLinkProps).end) {
+      return locPath.startsWith(`${toPath}/`);
+    }
+    return false;
+  }, [location.pathname, resolvedPathObj.pathname, className, props]);
+
+  // Determine the root width — dynamic from sidebarConfig
+  const rootWidth = isOpen
+    ? sidebarConfig.drawerWidthOpen
+    : sidebarConfig.drawerWidthClosed;
+
+  const divStyle: CSSProperties =
     !isOpen && hasSubmenu
       ? { display: 'flex', marginLeft: '20px' }
       : { lineHeight: '0' };
 
   const displayItemIcon = (
-    <Box style={divStyle}>
+    <div style={divStyle}>
       <Icon fontSize="small" />
-      {!isOpen && hasSubmenu ? <ArrowRightIcon fontSize="small" /> : <></>}
-    </Box>
+      {!isOpen && hasSubmenu ? <ChevronRight size={16} /> : <></>}
+    </div>
   );
 
+  // Notification badge — replaces MUI Badge with a custom dot indicator
   const itemIcon = (
-    <Badge
-      color="secondary"
-      variant="dot"
-      overlap="circular"
-      invisible={!hasNotifications}
-      className={classnames({ [classes.closedItemIcon]: !isOpen })}
+    <div
+      className={cn('relative', !isOpen && classes.closedItemIcon)}
+      style={
+        isSelected && !isOpen
+          ? { paddingRight: sidebarConfig.selectedIndicatorWidth }
+          : undefined
+      }
     >
       {displayItemIcon}
-    </Badge>
+      {hasNotifications && (
+        <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-[var(--sidebar-nav-bg,#171717)]" />
+      )}
+    </div>
   );
 
   const openContent = (
     <>
-      <Box data-testid="login-button" className={classes.iconContainer}>
+      <div
+        data-testid="login-button"
+        className={classes.iconContainer}
+        style={{
+          width: sidebarConfig.iconContainerWidth,
+          marginRight: -16,
+          ...(isSelected && {
+            marginLeft: -sidebarConfig.selectedIndicatorWidth,
+          }),
+        }}
+      >
         {itemIcon}
-      </Box>
-      {text && (
-        <Typography
-          variant="subtitle2"
-          component="span"
-          className={classes.label}
-        >
-          {text}
-        </Typography>
-      )}
+      </div>
+      {text && <span className={classes.label}>{text}</span>}
       <div className={classes.secondaryAction}>{children}</div>
     </>
   );
 
   const content = isOpen ? openContent : itemIcon;
 
+  // Selected border applied inline — width depends on dynamic sidebarConfig
+  const selectedBorderStyle: CSSProperties = isSelected
+    ? {
+        borderLeft: `solid ${sidebarConfig.selectedIndicatorWidth}px var(--sidebar-nav-indicator, #9BF0E1)`,
+      }
+    : {};
+
   const childProps = {
     onClick,
-    className: classnames(
+    className: cn(
       className,
       classes.root,
       isOpen ? classes.open : classes.closed,
       isButtonItem(props) && classes.buttonItem,
       { [classes.highlightable]: !disableHighlight },
     ),
+    style: {
+      width: rootWidth,
+      ...(isButtonItem(props) ? selectedBorderStyle : {}),
+      /* Sidebar always uses a dark surface — force white focus ring for
+         WCAG 2.4.7 / 2.4.11 compliant contrast.  Tailwind's universal
+         reset prevents inheritance of --tw-ring-color from parent <nav>. */
+      '--tw-ring-color': '#fff',
+    } as CSSProperties,
   };
-
-  const analyticsApi = useAnalytics();
-  const { pathname: to } = useResolvedPath(
-    !isButtonItem(props) && props.to ? props.to : '',
-  );
 
   const handleClick = useCallback(
     (event: MouseEvent<HTMLAnchorElement | HTMLButtonElement>) => {
       if (!noTrack) {
         const action = 'click';
         const subject = text ?? 'Sidebar Item';
-        const options = to ? { attributes: { to } } : undefined;
+        const options = resolvedPathObj.pathname
+          ? { attributes: { to: resolvedPathObj.pathname } }
+          : undefined;
         analyticsApi.captureEvent(action, subject, options);
       }
       onClick?.(event);
     },
-    [analyticsApi, text, to, noTrack, onClick],
+    [analyticsApi, text, resolvedPathObj.pathname, noTrack, onClick],
   );
 
   if (isButtonItem(props)) {
     return (
-      <Button
-        role="button"
-        aria-label={text}
-        {...childProps}
-        ref={ref}
-        onClick={handleClick}
-      >
+      <button aria-label={text} {...childProps} ref={ref} onClick={handleClick}>
         {content}
-      </Button>
+      </button>
     );
   }
 
@@ -485,6 +429,9 @@ const SidebarItemBase = forwardRef<
     <WorkaroundNavLink
       {...childProps}
       activeClassName={classes.selected}
+      activeStyle={{
+        borderLeft: `solid ${sidebarConfig.selectedIndicatorWidth}px var(--sidebar-nav-indicator, #9BF0E1)`,
+      }}
       to={props.to ? props.to : ''}
       ref={ref}
       aria-label={text ? text : props.to}
@@ -503,13 +450,25 @@ const SidebarItemWithSubmenu = ({
   children: ReactElement<SidebarSubmenuProps>;
 }) => {
   const { sidebarConfig } = useContext(SidebarConfigContext);
-  const classes = useMemoStyles(sidebarConfig);
+  const classes = useSidebarClasses(sidebarConfig);
   const [isHoveredOn, setIsHoveredOn] = useState(false);
   const location = useLocation();
   const isActive = useLocationMatch(children, location);
-  const isSmallScreen = useMediaQuery((theme: Theme) =>
-    theme.breakpoints.down('sm'),
-  );
+
+  // Replaces MUI useMediaQuery — small screen detection (max-width: 599.95px)
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
+  useEffect(() => {
+    if (
+      typeof window === 'undefined' ||
+      typeof window.matchMedia !== 'function'
+    )
+      return undefined;
+    const mql = window.matchMedia('(max-width: 599.95px)');
+    setIsSmallScreen(mql.matches);
+    const handler = (e: MediaQueryListEvent) => setIsSmallScreen(e.matches);
+    mql.addEventListener('change', handler);
+    return () => mql.removeEventListener('change', handler);
+  }, []);
 
   const handleMouseEnter = () => {
     setIsHoveredOn(true);
@@ -521,14 +480,14 @@ const SidebarItemWithSubmenu = ({
   const arrowIcon = () => {
     if (isSmallScreen) {
       return isHoveredOn ? (
-        <ArrowDropUp fontSize="small" className={classes.submenuArrow} />
+        <ChevronUp size={16} className={classes.submenuArrow} />
       ) : (
-        <ArrowDropDown fontSize="small" className={classes.submenuArrow} />
+        <ChevronDown size={16} className={classes.submenuArrow} />
       );
     }
     return (
       !isHoveredOn && (
-        <ArrowRightIcon fontSize="small" className={classes.submenuArrow} />
+        <ChevronRight size={16} className={classes.submenuArrow} />
       )
     );
   };
@@ -545,7 +504,7 @@ const SidebarItemWithSubmenu = ({
         onMouseLeave={handleMouseLeave}
         onTouchStart={isHoveredOn ? handleMouseLeave : handleMouseEnter}
         onMouseEnter={handleMouseEnter}
-        className={classnames(isHoveredOn && classes.highlighted)}
+        className={cn(isHoveredOn && classes.highlighted)}
       >
         <SidebarItemBase
           hasSubmenu
@@ -596,11 +555,26 @@ type SidebarSearchFieldProps = {
   icon?: IconComponent;
 };
 
+/**
+ * Default search icon adapter — wraps the lucide-react Search icon to
+ * conform to Backstage's IconComponent interface (fontSize prop mapping).
+ */
+const searchIconSizeMap: Record<string, number> = {
+  small: 16,
+  large: 32,
+  medium: 24,
+  inherit: 24,
+};
+const DefaultSearchIcon: IconComponent = ({ fontSize }) => {
+  const size = searchIconSizeMap[fontSize ?? 'medium'] ?? 24;
+  return <Search size={size} />;
+};
+
 export function SidebarSearchField(props: SidebarSearchFieldProps) {
   const { sidebarConfig } = useContext(SidebarConfigContext);
   const [input, setInput] = useState('');
-  const classes = useMemoStyles(sidebarConfig);
-  const Icon = props.icon ? props.icon : SearchIcon;
+  const classes = useSidebarClasses(sidebarConfig);
+  const Icon = props.icon ? props.icon : DefaultSearchIcon;
 
   const search = () => {
     props.onSearch(input);
@@ -631,91 +605,94 @@ export function SidebarSearchField(props: SidebarSearchFieldProps) {
   };
 
   return (
-    <Box className={classes.searchRoot}>
+    <div className={classes.searchRoot}>
       <SidebarItem
         icon={Icon}
         to={props.to}
         onClick={handleItemClick}
         disableHighlight
       >
-        <TextField
+        <input
+          type="text"
           placeholder="Search"
           value={input}
           onClick={handleInputClick}
           onChange={handleInput}
           onKeyDown={handleEnter}
-          className={classes.searchContainer}
-          InputProps={{
-            disableUnderline: true,
-            className: classes.searchField,
-          }}
-          inputProps={{
-            className: classes.searchFieldHTMLInput,
+          className={cn(
+            classes.searchField,
+            classes.searchFieldHTMLInput,
+            'bg-transparent border-none outline-none',
+          )}
+          style={{
+            width:
+              sidebarConfig.drawerWidthOpen - sidebarConfig.iconContainerWidth,
           }}
         />
       </SidebarItem>
-    </Box>
+    </div>
   );
 }
 
 export type SidebarSpaceClassKey = 'root';
 
-export const SidebarSpace = styled('div')(
-  {
-    flex: 1,
-  },
-  { name: 'BackstageSidebarSpace' },
-) as ComponentType<ComponentProps<'div'> & StyledComponentProps<'root'>>;
+export const SidebarSpace = forwardRef<HTMLDivElement, ComponentProps<'div'>>(
+  ({ className: spClassName, ...spProps }, spRef) => (
+    <div ref={spRef} className={cn('flex-1', spClassName)} {...spProps} />
+  ),
+) as ComponentType<ComponentProps<'div'>>;
 
 export type SidebarSpacerClassKey = 'root';
 
-export const SidebarSpacer = styled('div')(
-  {
-    height: 8,
-  },
-  { name: 'BackstageSidebarSpacer' },
-) as ComponentType<ComponentProps<'div'> & StyledComponentProps<'root'>>;
+export const SidebarSpacer = forwardRef<HTMLDivElement, ComponentProps<'div'>>(
+  ({ className: spacerClassName, ...spacerProps }, spacerRef) => (
+    <div
+      ref={spacerRef}
+      className={cn('h-2', spacerClassName)}
+      {...spacerProps}
+    />
+  ),
+) as ComponentType<ComponentProps<'div'>>;
 
 export type SidebarDividerClassKey = 'root';
 
-export const SidebarDivider = styled('hr')(
-  ({ theme }) => ({
-    height: 1,
-    width: '100%',
-    background: '#383838',
-    border: 'none',
-    margin: theme.spacing(1.2, 0),
-  }),
-  { name: 'BackstageSidebarDivider' },
-) as ComponentType<ComponentProps<'hr'> & StyledComponentProps<'root'>>;
+export const SidebarDivider = forwardRef<HTMLHRElement, ComponentProps<'hr'>>(
+  ({ className: dividerClassName, ...dividerProps }, dividerRef) => (
+    <hr
+      ref={dividerRef}
+      className={cn(
+        'h-px w-full bg-[#383838] border-none my-[9.6px]',
+        dividerClassName,
+      )}
+      {...dividerProps}
+    />
+  ),
+) as ComponentType<ComponentProps<'hr'>>;
 
-const styledScrollbar = (theme: Theme): CreateCSSProperties => ({
-  overflowY: 'auto',
-  '&::-webkit-scrollbar': {
-    backgroundColor: theme.palette.background.default,
-    width: '5px',
-    borderRadius: '5px',
-  },
-  '&::-webkit-scrollbar-thumb': {
-    backgroundColor: theme.palette.text.secondary,
-    borderRadius: '5px',
-  },
-});
-
-export const SidebarScrollWrapper = styled('div')(({ theme }) => {
-  const scrollbarStyles = styledScrollbar(theme);
-  return {
-    flex: '0 1 auto',
-    overflowX: 'hidden',
-    width: '100%',
-    // Display at least one item in the container
-    // Question: Can this be a config/theme variable - if so, which? :/
-    minHeight: '48px',
-    overflowY: 'hidden',
-    '@media (hover: none)': scrollbarStyles,
-    '&:hover': scrollbarStyles,
-  };
-}) as ComponentType<ComponentProps<'div'> & StyledComponentProps<'root'>>;
+/**
+ * Scrollable wrapper for sidebar content with custom scrollbar styling.
+ * On hover-capable devices the scrollbar appears only on hover; on touch
+ * devices it is always visible.
+ */
+export const SidebarScrollWrapper = forwardRef<
+  HTMLDivElement,
+  ComponentProps<'div'>
+>(({ className: scrollClassName, ...scrollProps }, scrollRef) => (
+  <div
+    ref={scrollRef}
+    className={cn(
+      'flex-[0_1_auto] overflow-x-hidden w-full min-h-[48px] overflow-y-hidden',
+      'hover:overflow-y-auto',
+      'hover:[&::-webkit-scrollbar]:w-[5px] hover:[&::-webkit-scrollbar]:rounded-[5px] hover:[&::-webkit-scrollbar]:bg-[var(--background,#f8f8f8)]',
+      'hover:[&::-webkit-scrollbar-thumb]:rounded-[5px] hover:[&::-webkit-scrollbar-thumb]:bg-[var(--muted-foreground,#6b7280)]',
+      '[@media(hover:none)]:overflow-y-auto',
+      '[@media(hover:none)]:[&::-webkit-scrollbar]:w-[5px] [@media(hover:none)]:[&::-webkit-scrollbar]:rounded-[5px] [@media(hover:none)]:[&::-webkit-scrollbar]:bg-[var(--background,#f8f8f8)]',
+      '[@media(hover:none)]:[&::-webkit-scrollbar-thumb]:rounded-[5px] [@media(hover:none)]:[&::-webkit-scrollbar-thumb]:bg-[var(--muted-foreground,#6b7280)]',
+      scrollClassName,
+    )}
+    {...scrollProps}
+  />
+)) as ComponentType<ComponentProps<'div'>>;
 
 /**
  * A button which allows you to expand the sidebar when clicked.
@@ -729,12 +706,24 @@ export const SidebarScrollWrapper = styled('div')(({ theme }) => {
  */
 export const SidebarExpandButton = () => {
   const { sidebarConfig } = useContext(SidebarConfigContext);
-  const classes = useMemoStyles(sidebarConfig);
+  const classes = useSidebarClasses(sidebarConfig);
   const { isOpen, setOpen } = useSidebarOpenState();
-  const isSmallScreen = useMediaQuery<Theme>(
-    theme => theme.breakpoints.down('md'),
-    { noSsr: true },
-  );
+
+  // Replaces MUI useMediaQuery — medium screen detection (max-width: 959.95px).
+  // Defaults to false on mount (equivalent to noSsr: true in MUI).
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
+  useEffect(() => {
+    if (
+      typeof window === 'undefined' ||
+      typeof window.matchMedia !== 'function'
+    )
+      return undefined;
+    const mql = window.matchMedia('(max-width: 959.95px)');
+    setIsSmallScreen(mql.matches);
+    const handler = (e: MediaQueryListEvent) => setIsSmallScreen(e.matches);
+    mql.addEventListener('change', handler);
+    return () => mql.removeEventListener('change', handler);
+  }, []);
 
   if (isSmallScreen) {
     return null;
@@ -745,16 +734,16 @@ export const SidebarExpandButton = () => {
   };
 
   return (
-    <Button
-      role="button"
+    <button
       onClick={handleClick}
       className={classes.expandButton}
+      style={{ '--tw-ring-color': '#fff' } as CSSProperties}
       aria-label="Expand Sidebar"
       data-testid="sidebar-expand-button"
     >
-      <Box className={classes.arrows}>
+      <div className={classes.arrows}>
         {isOpen ? <DoubleArrowLeft /> : <DoubleArrowRight />}
-      </Box>
-    </Button>
+      </div>
+    </button>
   );
 };

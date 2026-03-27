@@ -14,70 +14,75 @@
  * limitations under the License.
  */
 
-import Box from '@material-ui/core/Box';
-import MaterialBreadcrumbs from '@material-ui/core/Breadcrumbs';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import Popover from '@material-ui/core/Popover';
-import { withStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
+import { Children, ReactNode, useState } from 'react';
 import {
-  MouseEvent,
-  useState,
-  Children,
-  ComponentProps,
-  Fragment,
-} from 'react';
-
-type Props = ComponentProps<typeof MaterialBreadcrumbs>;
-
-/** @public */
-export type BreadcrumbsClickableTextClassKey = 'root';
-
-const ClickableText = withStyles(
-  {
-    root: {
-      textDecoration: 'underline',
-      cursor: 'pointer',
-    },
-  },
-  { name: 'BackstageBreadcrumbsClickableText' },
-)(Typography);
-
-/** @public */
-export type BreadcrumbsStyledBoxClassKey = 'root';
-
-const StyledBox = withStyles(
-  {
-    root: {
-      textDecoration: 'underline',
-      color: 'inherit',
-    },
-  },
-  { name: 'BackstageBreadcrumbsStyledBox' },
-)(Box);
-
-/** @public */
-export type BreadcrumbsCurrentPageClassKey = 'root';
-
-const BreadcrumbsCurrentPage = withStyles(
-  {
-    root: {
-      fontStyle: 'italic',
-    },
-  },
-  { name: 'BreadcrumbsCurrentPage' },
-)(Box);
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbSeparator,
+} from '../../components/ui/breadcrumb';
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from '../../components/ui/popover';
+import { cn } from '../../lib/utils';
 
 /**
- * Breadcrumbs component to show navigation hierarchical structure
+ * Props for the Backstage Breadcrumbs component.
  *
  * @public
- *
  */
-export function Breadcrumbs(props: Props) {
-  const { children, ...restProps } = props;
-  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+export interface BackstageBreadcrumbsProps {
+  /** Custom CSS class name applied to the breadcrumb nav container */
+  className?: string;
+  /** Breadcrumb child elements (Links and current page indicators) */
+  children?: ReactNode;
+}
+
+/**
+ * Class key type preserved for backward compatibility with theme override
+ * consumers that referenced the MUI withStyles ClickableText component.
+ *
+ * @public
+ */
+export type BreadcrumbsClickableTextClassKey = 'root';
+
+/**
+ * Class key type preserved for backward compatibility with theme override
+ * consumers that referenced the MUI withStyles StyledBox component.
+ *
+ * @public
+ */
+export type BreadcrumbsStyledBoxClassKey = 'root';
+
+/**
+ * Class key type preserved for backward compatibility with theme override
+ * consumers that referenced the MUI withStyles BreadcrumbsCurrentPage component.
+ *
+ * @public
+ */
+export type BreadcrumbsCurrentPageClassKey = 'root';
+
+/**
+ * Breadcrumbs component to show navigation hierarchical structure.
+ *
+ * @remarks
+ * Renders an accessible breadcrumb trail using shadcn/ui Breadcrumb
+ * primitives built on Radix UI. When more than three breadcrumb items
+ * are provided, intermediate items are collapsed behind an ellipsis
+ * trigger that opens a Radix Popover listing the hidden items.
+ *
+ * The component preserves the first page, second page, and current
+ * page while collapsing all intermediate pages into the overflow
+ * popover.
+ *
+ * @public
+ */
+export function Breadcrumbs(props: BackstageBreadcrumbsProps) {
+  const { children, className } = props;
+  const [popoverOpen, setPopoverOpen] = useState(false);
 
   const childrenArray = Children.toArray(children);
 
@@ -87,46 +92,70 @@ export function Breadcrumbs(props: Props) {
     : childrenArray[childrenArray.length - 1];
   const hasHiddenBreadcrumbs = childrenArray.length > 3;
 
-  const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const open = Boolean(anchorEl);
   return (
-    <Fragment>
-      <MaterialBreadcrumbs aria-label="breadcrumb" {...restProps}>
-        {childrenArray.length > 1 && <StyledBox clone>{firstPage}</StyledBox>}
-        {childrenArray.length > 2 && <StyledBox clone>{secondPage}</StyledBox>}
-        {hasHiddenBreadcrumbs && (
-          <ClickableText onClick={handleClick}>...</ClickableText>
+    <Breadcrumb className={className}>
+      <BreadcrumbList>
+        {childrenArray.length > 1 && (
+          <>
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <span className={cn('underline text-inherit')}>
+                  {firstPage}
+                </span>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+          </>
         )}
-        <BreadcrumbsCurrentPage>{currentPage}</BreadcrumbsCurrentPage>
-      </MaterialBreadcrumbs>
-      <Popover
-        open={open}
-        anchorEl={anchorEl}
-        onClose={handleClose}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'left',
-        }}
-      >
-        <List>
-          {expandablePages.map((pageLink, index) => (
-            <ListItem key={index} button>
-              <StyledBox clone>{pageLink}</StyledBox>
-            </ListItem>
-          ))}
-        </List>
-      </Popover>
-    </Fragment>
+        {childrenArray.length > 2 && (
+          <>
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <span className={cn('underline text-inherit')}>
+                  {secondPage}
+                </span>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+          </>
+        )}
+        {hasHiddenBreadcrumbs && (
+          <>
+            <BreadcrumbItem>
+              <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+                <PopoverTrigger asChild>
+                  <button
+                    className={cn(
+                      'underline cursor-pointer text-current hover:text-foreground/80',
+                    )}
+                    type="button"
+                  >
+                    ...
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent align="start" className="w-auto p-1">
+                  <div className="flex flex-col">
+                    {expandablePages.map((pageLink, index) => (
+                      <div
+                        key={index}
+                        className={cn(
+                          'px-3 py-1.5 underline text-inherit cursor-pointer hover:bg-accent rounded-sm',
+                        )}
+                      >
+                        {pageLink}
+                      </div>
+                    ))}
+                  </div>
+                </PopoverContent>
+              </Popover>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+          </>
+        )}
+        <BreadcrumbItem>
+          <span className={cn('italic')}>{currentPage}</span>
+        </BreadcrumbItem>
+      </BreadcrumbList>
+    </Breadcrumb>
   );
 }

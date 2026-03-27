@@ -19,6 +19,19 @@ export default {
   title: 'Layout/HeaderLabel',
   component: HeaderLabel,
   tags: ['!manifest'],
+  decorators: [
+    (Story: () => JSX.Element) => (
+      <div
+        style={{
+          background: 'var(--primary, #1f5493)',
+          color: 'var(--primary-foreground, #ffffff)',
+          padding: '1rem',
+        }}
+      >
+        <Story />
+      </div>
+    ),
+  ],
 };
 
 type HeaderLabelProps = {

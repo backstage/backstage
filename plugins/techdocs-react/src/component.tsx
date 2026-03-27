@@ -16,10 +16,6 @@
 
 import { PropsWithChildren, useState, useEffect, useCallback } from 'react';
 
-import { create } from 'jss';
-import StylesProvider from '@material-ui/styles/StylesProvider';
-import jssPreset from '@material-ui/styles/jssPreset';
-
 /**
  * Name for the event dispatched when ShadowRoot styles are loaded.
  * @public
@@ -138,9 +134,8 @@ export const useShadowDomStylesLoading = (element: Element | null) => {
  * Props for {@link TechDocsShadowDom}.
  *
  * @remarks
- * If you want to use portals to render Material UI components in the Shadow DOM,
- * you must render these portals as children because this component wraps its children in a Material UI StylesProvider
- * to ensure that Material UI styles are applied.
+ * If you want to use portals to render components in the Shadow DOM,
+ * you must render these portals as children of this component.
  *
  * @public
  */
@@ -198,28 +193,28 @@ export type TechDocsShadowDomProps = PropsWithChildren<{
  * @param props - see {@link TechDocsShadowDomProps}.
  * @public
  */
+/*
+ * TRANSITIONAL NOTE (shadcn/ui migration):
+ *
+ * The JSS `StylesProvider` with shadow DOM `insertionPoint` was removed
+ * as part of the MUI-to-shadcn/ui migration. During the transitional period
+ * before `plugins/techdocs/` completes its own migration, MUI components
+ * rendered inside this shadow DOM will not have their JSS-based styles
+ * injected into the shadow root. This is expected and will resolve once
+ * the techdocs plugin migration is completed in a subsequent checkpoint.
+ *
+ * Shadow DOM CSS isolation (`attachShadow({ mode: 'open' })`) remains
+ * intact and continues to prevent style bleed between TechDocs content
+ * and the host application.
+ */
 export const TechDocsShadowDom = (props: TechDocsShadowDomProps) => {
   const { element, onAppend, children } = props;
-
-  const [jss, setJss] = useState(
-    create({
-      ...jssPreset(),
-      insertionPoint: undefined,
-    }),
-  );
 
   useShadowDomStylesEvents(element);
 
   const ref = useCallback(
     (shadowHost: HTMLDivElement) => {
       if (!element || !shadowHost) return;
-
-      setJss(
-        create({
-          ...jssPreset(),
-          insertionPoint: element.querySelector('head') || undefined,
-        }),
-      );
 
       let shadowRoot = shadowHost.shadowRoot;
 
@@ -238,11 +233,8 @@ export const TechDocsShadowDom = (props: TechDocsShadowDomProps) => {
 
   return (
     <>
-      {/* The sheetsManager={new Map()} is needed in order to deduplicate the injection of CSS in the page. */}
-      <StylesProvider jss={jss} sheetsManager={new Map()}>
-        <div ref={ref} data-testid="techdocs-native-shadowroot" />
-        {children}
-      </StylesProvider>
+      <div ref={ref} data-testid="techdocs-native-shadowroot" />
+      {children}
     </>
   );
 };

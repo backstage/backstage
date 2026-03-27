@@ -53,7 +53,7 @@ import { appModuleNav } from './modules/appModuleNav';
 import devtoolsPlugin from '@backstage/plugin-devtools/alpha';
 import { unprocessedEntitiesDevToolsContent } from '@backstage/plugin-catalog-unprocessed-entities/alpha';
 import catalogPlugin from '@backstage/plugin-catalog/alpha';
-import InfoIcon from '@material-ui/icons/Info';
+import { Info } from 'lucide-react';
 
 /*
 
@@ -88,16 +88,22 @@ TODO:
  * TechDocs does support the new frontend system so this conversion is not
  * strictly necessary, but it's left here to provide a demo of the utilities for
  * converting legacy plugins.
+ *
+ * Both TechDocsIndexPage and TechDocsReaderPage are registered as independent
+ * page extensions.  The reader path omits the trailing wildcard because the
+ * AppRoutes extension already appends "/*" to every route path — including a
+ * duplicate wildcard would produce an invalid double-star pattern that React
+ * Router v6 cannot match correctly.
  */
 const convertedTechdocsPlugin = convertLegacyPlugin(techdocsPlugin, {
   extensions: [
-    // TODO: We likely also need a way to convert an entire <Route> tree similar to collectLegacyRoutes
     convertLegacyPageExtension(TechDocsIndexPage, {
       name: 'index',
       path: '/docs',
     }),
     convertLegacyPageExtension(TechDocsReaderPage, {
-      path: '/docs/:namespace/:kind/:name/*',
+      name: 'reader',
+      path: '/docs/:namespace/:kind/:name',
     }),
     convertLegacyEntityContentExtension(EntityTechdocsContent),
   ],
@@ -123,13 +129,15 @@ const customHomePageModule = createFrontendModule({
                   <HeaderWorldClock clockConfigs={clockConfigs} />
                 </Header>
                 <Content>
-                  <CustomHomepageGrid>
-                    {widgets.map((widget, index) => (
-                      <Fragment key={widget.name ?? index}>
-                        {widget.component}
-                      </Fragment>
-                    ))}
-                  </CustomHomepageGrid>
+                  <div className="max-w-full overflow-x-hidden [&_pre]:overflow-x-auto [&_pre]:max-w-full">
+                    <CustomHomepageGrid>
+                      {widgets.map((widget, index) => (
+                        <Fragment key={widget.name ?? index}>
+                          {widget.component}
+                        </Fragment>
+                      ))}
+                    </CustomHomepageGrid>
+                  </div>
                 </Content>
               </Page>
             );
@@ -144,7 +152,7 @@ const customizedCatalog = catalogPlugin.withOverrides({
   extensions: [
     catalogPlugin.getExtension('entity-content:catalog/overview').override({
       params: {
-        icon: <InfoIcon />,
+        icon: <Info />,
       },
     }),
   ],

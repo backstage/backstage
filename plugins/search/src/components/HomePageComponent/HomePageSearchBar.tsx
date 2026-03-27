@@ -15,22 +15,12 @@
  */
 
 import { useCallback, useRef, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { cn } from '@backstage/core-components';
 import {
   SearchBarBase,
   SearchBarBaseProps,
 } from '@backstage/plugin-search-react';
 import { useNavigateToQuery } from '../util';
-
-const useStyles = makeStyles({
-  searchBarRoot: {
-    fontSize: '1.5em',
-  },
-  searchBarOutline: {
-    border: '1px solid #555',
-    borderRadius: '6px',
-  },
-});
 
 /**
  * Props for {@link HomePageSearchBar}.
@@ -45,7 +35,6 @@ export type HomePageSearchBarProps = Partial<
  * The search bar created specifically for the composable home page.
  */
 export const HomePageSearchBar = (props: HomePageSearchBarProps) => {
-  const classes = useStyles(props);
   const [query, setQuery] = useState('');
   const ref = useRef<HTMLInputElement | null>(null);
 
@@ -57,21 +46,16 @@ export const HomePageSearchBar = (props: HomePageSearchBarProps) => {
     handleSearch({ query: ref.current?.value ?? '' });
   }, [handleSearch]);
 
+  const { className, ...restProps } = props;
+
   return (
     <SearchBarBase
+      {...restProps}
       value={query}
       onSubmit={handleSubmit}
       onChange={setQuery}
-      inputProps={{ ref }}
-      InputProps={{
-        ...props.InputProps,
-        classes: {
-          root: classes.searchBarRoot,
-          notchedOutline: classes.searchBarOutline,
-          ...props.InputProps?.classes,
-        },
-      }}
-      {...props}
+      ref={ref}
+      className={cn('text-2xl border border-border rounded-md', className)}
     />
   );
 };

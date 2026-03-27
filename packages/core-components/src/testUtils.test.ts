@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { Breakpoint } from '@material-ui/core/styles/createBreakpoints';
-import { mockBreakpoint } from './testUtils';
+import { Breakpoint, mockBreakpoint } from './testUtils';
 
 describe('mockBreakpoint', () => {
   const originalMatchMedia = window.matchMedia;

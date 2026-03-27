@@ -14,34 +14,14 @@
  * limitations under the License.
  */
 
-import Box from '@material-ui/core/Box';
-import {
-  createStyles,
-  makeStyles,
-  Theme,
-  WithStyles,
-} from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
 import { ReactNode } from 'react';
+import { cn } from '../../lib/utils';
 
 /** @public */
 export type ItemCardHeaderClassKey = 'root';
 
-const styles = (theme: Theme) =>
-  createStyles({
-    root: {
-      color: theme.getPageTheme({ themeId: 'card' }).fontColor,
-      padding: theme.spacing(2, 2, 3),
-      backgroundImage: theme.getPageTheme({ themeId: 'card' }).backgroundImage,
-      backgroundPosition: 0,
-      backgroundSize: 'inherit',
-    },
-  });
-
-const useStyles = makeStyles(styles, { name: 'BackstageItemCardHeader' });
-
 /** @public */
-export type ItemCardHeaderProps = Partial<WithStyles<typeof styles>> & {
+export type ItemCardHeaderProps = {
   /**
    * A large title to show in the header, providing the main heading.
    *
@@ -63,6 +43,15 @@ export type ItemCardHeaderProps = Partial<WithStyles<typeof styles>> & {
    * those.
    */
   children?: ReactNode;
+  /**
+   * Override or extend the styles applied to the component.
+   * The key 'root' applies to the header container element.
+   */
+  classes?: Partial<Record<ItemCardHeaderClassKey, string>>;
+  /**
+   * Additional CSS class name for the header container.
+   */
+  className?: string;
 };
 
 /**
@@ -70,8 +59,6 @@ export type ItemCardHeaderProps = Partial<WithStyles<typeof styles>> & {
  * are arranged in a grid for users to select among several options.
  *
  * @remarks
- * This component expects to be placed within a Material UI `<CardMedia>`.
- *
  * Styles for the header can be overridden using the `classes` prop, e.g.:
  *
  * `<ItemCardHeader title="Hello" classes={{ root: myClassName }} />`
@@ -79,21 +66,20 @@ export type ItemCardHeaderProps = Partial<WithStyles<typeof styles>> & {
  * @public
  */
 export function ItemCardHeader(props: ItemCardHeaderProps) {
-  const { title, subtitle, children } = props;
-  const classes = useStyles(props);
+  const { title, subtitle, children, classes, className } = props;
   return (
-    <Box className={classes.root}>
+    <div
+      className={cn(
+        'bg-primary text-primary-foreground px-4 pt-4 pb-6 bg-cover bg-[position:0]',
+        classes?.root,
+        className,
+      )}
+    >
       {subtitle && (
-        <Typography variant="subtitle2" component="h3">
-          {subtitle}
-        </Typography>
+        <h3 className="text-sm font-medium opacity-80">{subtitle}</h3>
       )}
-      {title && (
-        <Typography variant="h6" component="h4">
-          {title}
-        </Typography>
-      )}
+      {title && <h4 className="text-lg font-semibold">{title}</h4>}
       {children}
-    </Box>
+    </div>
   );
 }

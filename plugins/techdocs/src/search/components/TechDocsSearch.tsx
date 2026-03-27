@@ -117,11 +117,10 @@ const TechDocsSearchBar = (props: TechDocsSearchProps) => {
   return (
     <SearchAutocomplete
       data-testid="techdocs-search-bar"
-      size="small"
       open={open && Boolean(term)}
       getOptionLabel={() => ''}
       filterOptions={x => {
-        return x; // This is needed to get renderOption to be called after options change. Bug in material-ui?
+        return x;
       }}
       onClose={() => {
         setOpen(false);
@@ -130,8 +129,6 @@ const TechDocsSearchBar = (props: TechDocsSearchProps) => {
         setOpen(true);
       }}
       onChange={handleSelection}
-      blurOnSelect
-      noOptionsText="No results found"
       value={null}
       options={options}
       renderOption={({ document, highlight }) => (

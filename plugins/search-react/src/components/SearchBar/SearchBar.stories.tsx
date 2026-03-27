@@ -15,8 +15,6 @@
  */
 
 import { ComponentType, PropsWithChildren } from 'react';
-import Grid from '@material-ui/core/Grid';
-import { makeStyles } from '@material-ui/core/styles';
 
 import { TestApiProvider, wrapInTestApp } from '@backstage/test-utils';
 
@@ -36,11 +34,11 @@ export default {
       wrapInTestApp(
         <TestApiProvider apis={[[searchApiRef, new MockSearchApi()]]}>
           <SearchContextProvider>
-            <Grid container direction="row">
-              <Grid item xs={12}>
+            <div className="grid gap-4 w-full">
+              <div>
                 <Story />
-              </Grid>
-            </Grid>
+              </div>
+            </div>
           </SearchContextProvider>
         </TestApiProvider>,
       ),
@@ -72,28 +70,8 @@ export const WithoutClearButton = () => {
   return <SearchBar clearButton={false} />;
 };
 
-const useStyles = makeStyles(theme => ({
-  searchBarRoot: {
-    padding: '8px 16px',
-    background: theme.palette.background.paper,
-    boxShadow: theme.shadows[1],
-    borderRadius: '50px',
-  },
-  searchBarOutline: {
-    borderStyle: 'none',
-  },
-}));
-
 export const CustomStyles = () => {
-  const classes = useStyles();
   return (
-    <SearchBar
-      InputProps={{
-        classes: {
-          root: classes.searchBarRoot,
-          notchedOutline: classes.searchBarOutline,
-        },
-      }}
-    />
+    <SearchBar className="rounded-full bg-background px-4 py-2 shadow-sm border-none" />
   );
 };

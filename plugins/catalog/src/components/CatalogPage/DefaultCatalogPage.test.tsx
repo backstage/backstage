@@ -30,7 +30,7 @@ import {
   mockApis,
   renderInTestApp,
 } from '@backstage/test-utils';
-import DashboardIcon from '@material-ui/icons/Dashboard';
+import { LayoutDashboard } from 'lucide-react';
 import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { ReactNode } from 'react';
 import { createComponentRouteRef } from '../../routes';
@@ -193,10 +193,10 @@ describe('DefaultCatalogPage', () => {
   it('should render the default column of the grid', async () => {
     await renderWrapped(<DefaultCatalogPage />);
 
-    const columnHeader = screen
-      .getAllByRole('button')
-      .filter(c => c.tagName === 'SPAN');
-    const columnHeaderLabels = columnHeader.map(c => c.textContent);
+    const columnHeaders = screen.getAllByRole('columnheader');
+    const columnHeaderLabels = columnHeaders.map(c =>
+      (c.textContent ?? '').trim(),
+    );
 
     expect(columnHeaderLabels).toEqual([
       'Name',
@@ -218,10 +218,10 @@ describe('DefaultCatalogPage', () => {
     ];
     await renderWrapped(<DefaultCatalogPage columns={columns} />);
 
-    const columnHeader = screen
-      .getAllByRole('button')
-      .filter(c => c.tagName === 'SPAN');
-    const columnHeaderLabels = columnHeader.map(c => c.textContent);
+    const columnHeaders = screen.getAllByRole('columnheader');
+    const columnHeaderLabels = columnHeaders.map(c =>
+      (c.textContent ?? '').trim(),
+    );
     expect(columnHeaderLabels).toEqual(['Foo', 'Bar', 'Baz', 'Actions']);
   }, 20_000);
 
@@ -237,11 +237,15 @@ describe('DefaultCatalogPage', () => {
     };
     await renderWrapped(<DefaultCatalogPage columns={columns} />);
 
-    const columnHeader = screen
-      .getAllByRole('button')
-      .filter(c => c.tagName === 'SPAN');
-    const columnHeaderLabels = columnHeader.map(c => c.textContent);
-    expect(columnHeaderLabels).toEqual(['Foo', 'Bar', 'Baz', 'Actions']);
+    // The column function depends on entities being loaded asynchronously;
+    // wait for the DataTable to re-render with the resolved columns.
+    await waitFor(() => {
+      const columnHeaders = screen.getAllByRole('columnheader');
+      const columnHeaderLabels = columnHeaders.map(c =>
+        (c.textContent ?? '').trim(),
+      );
+      expect(columnHeaderLabels).toEqual(['Foo', 'Bar', 'Baz', 'Actions']);
+    });
   }, 20_000);
 
   it('should render the default actions of an item in the grid', async () => {
@@ -263,7 +267,7 @@ describe('DefaultCatalogPage', () => {
     const actions: TableProps<CatalogTableRow>['actions'] = [
       () => {
         return {
-          icon: () => <DashboardIcon fontSize="small" />,
+          icon: () => <LayoutDashboard size={16} />,
           tooltip: 'Foo Action',
           disabled: false,
           onClick: () => jest.fn(),
@@ -271,7 +275,7 @@ describe('DefaultCatalogPage', () => {
       },
       () => {
         return {
-          icon: () => <DashboardIcon fontSize="small" />,
+          icon: () => <LayoutDashboard size={16} />,
           tooltip: 'Bar Action',
           disabled: true,
           onClick: () => jest.fn(),
@@ -288,9 +292,7 @@ describe('DefaultCatalogPage', () => {
     ).resolves.toBeInTheDocument();
     await expect(screen.findByTitle(/Foo Action/)).resolves.toBeInTheDocument();
     await expect(screen.findByTitle(/Bar Action/)).resolves.toBeInTheDocument();
-    await expect(
-      screen.findByTitle(/Bar Action/).then(e => e.firstChild),
-    ).resolves.toBeDisabled();
+    await expect(screen.findByTitle(/Bar Action/)).resolves.toBeDisabled();
   }, 20_000);
 
   // this test right now causes some red lines in the log output when running tests
@@ -360,10 +362,10 @@ describe('DefaultCatalogPage', () => {
     mockBreakpoint({ matches: true });
     await renderWrapped(<DefaultCatalogPage />);
     const button = screen.getByRole('button', { name: 'Filters' });
-    expect(
-      screen.getByRole('presentation', { hidden: true }),
-    ).toBeInTheDocument();
+    // shadcn Sheet (Radix Dialog) does not render content when closed
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     fireEvent.click(button);
-    expect(screen.getByRole('presentation')).toBeVisible();
+    // After opening, the Sheet renders with role="dialog"
+    expect(screen.getByRole('dialog')).toBeVisible();
   }, 20_000);
 });

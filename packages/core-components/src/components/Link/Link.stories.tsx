@@ -15,12 +15,7 @@
  */
 import { ComponentType, PropsWithChildren } from 'react';
 import { Link } from './Link';
-import {
-  Route,
-  useLocation,
-  NavLink as RouterNavLink,
-  Routes,
-} from 'react-router-dom';
+import { Route, useLocation, Routes } from 'react-router-dom';
 import { createRouteRef, useRouteRef } from '@backstage/core-plugin-api';
 import { wrapInTestApp } from '@backstage/test-utils';
 
@@ -72,15 +67,13 @@ export const PassProps = () => {
     <>
       <Link
         to={link()}
-        /** react-router-dom related prop */
-        component={RouterNavLink}
-        /** material-ui related prop */
-        color="secondary"
+        className="text-secondary-foreground underline"
+        externalLinkIcon
       >
         This link
       </Link>
-      &nbsp;has props for both material-ui's component as well as for
-      react-router-dom's
+      &nbsp;demonstrates Tailwind className-based styling and react-router-dom
+      navigation
       <Routes>
         <Route path={link()} element={<h1>Hi there!</h1>} />
       </Routes>
@@ -88,5 +81,5 @@ export const PassProps = () => {
   );
 };
 PassProps.story = {
-  name: `Accepts material-ui Link's and react-router-dom Link's props`,
+  name: `Accepts Tailwind className and react-router-dom Link's props`,
 };

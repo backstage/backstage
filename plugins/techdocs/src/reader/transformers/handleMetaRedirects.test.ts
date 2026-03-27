@@ -16,7 +16,30 @@
 
 import { handleMetaRedirects } from './handleMetaRedirects';
 import { createTestShadowDom } from '../../test-utils';
-import { screen } from '@testing-library/react';
+
+// Mock sonner's toast function — TechDocsRedirectNotification now uses
+// imperative toast() instead of rendering DOM, so we verify toast calls
+// rather than querying for rendered text.
+const mockToast = jest.fn();
+jest.mock('sonner', () => ({
+  toast: (...args: any[]) => mockToast(...args),
+}));
+
+/**
+ * Waits for the toast mock to be called by polling. renderReactElement uses
+ * an async dynamic import (ReactDOMPromise.then) which schedules React rendering
+ * asynchronously. The component then fires toast() inside useEffect after mount.
+ * We use polling with real timers to reliably wait for this async chain to complete.
+ */
+const waitForToast = async (mock: jest.Mock, timeout = 2000): Promise<void> => {
+  const start = Date.now();
+  while (Date.now() - start < timeout) {
+    if (mock.mock.calls.length > 0) return;
+    await new Promise(resolve =>
+      jest.requireActual('timers').setTimeout(resolve, 10),
+    );
+  }
+};
 
 describe('handleMetaRedirects', () => {
   const navigate = jest.fn();
@@ -49,11 +72,19 @@ describe('handleMetaRedirects', () => {
       'http://localhost/docs/default/component/testEntity/subpath',
     );
 
-    expect(
-      await screen.findByText(
-        'This TechDocs page is no longer maintained. Will automatically redirect to the designated replacement.',
-      ),
-    ).toBeInTheDocument();
+    // Wait for async React rendering and useEffect toast() call to complete
+    await waitForToast(mockToast);
+
+    // Verify the toast notification was fired with the correct message
+    expect(mockToast).toHaveBeenCalledWith(
+      'This TechDocs page is no longer maintained. Will automatically redirect to the designated replacement.',
+      expect.objectContaining({
+        duration: expect.any(Number),
+        action: expect.objectContaining({
+          label: 'Redirect now',
+        }),
+      }),
+    );
     jest.runAllTimers();
     expect(navigate).toHaveBeenCalledWith(
       'http://localhost/docs/default/component/testEntity/anotherPage',
@@ -66,11 +97,19 @@ describe('handleMetaRedirects', () => {
       'http://localhost/docs/default/component/testEntity/subpath',
     );
 
-    expect(
-      await screen.findByText(
-        'This TechDocs page is no longer maintained. Will automatically redirect to the designated replacement.',
-      ),
-    ).toBeInTheDocument();
+    // Wait for async React rendering and useEffect toast() call to complete
+    await waitForToast(mockToast);
+
+    // Verify the toast notification was fired with the correct message
+    expect(mockToast).toHaveBeenCalledWith(
+      'This TechDocs page is no longer maintained. Will automatically redirect to the designated replacement.',
+      expect.objectContaining({
+        duration: expect.any(Number),
+        action: expect.objectContaining({
+          label: 'Redirect now',
+        }),
+      }),
+    );
     jest.runAllTimers();
     expect(navigate).toHaveBeenCalledWith(
       'http://localhost/docs/default/component/testEntity',
@@ -83,11 +122,19 @@ describe('handleMetaRedirects', () => {
       'http://localhost/docs/default/component/testEntity/subpath',
     );
 
-    expect(
-      await screen.findByText(
-        'This TechDocs page is no longer maintained. Will automatically redirect to the designated replacement.',
-      ),
-    ).toBeInTheDocument();
+    // Wait for async React rendering and useEffect toast() call to complete
+    await waitForToast(mockToast);
+
+    // Verify the toast notification was fired with the correct message
+    expect(mockToast).toHaveBeenCalledWith(
+      'This TechDocs page is no longer maintained. Will automatically redirect to the designated replacement.',
+      expect.objectContaining({
+        duration: expect.any(Number),
+        action: expect.objectContaining({
+          label: 'Redirect now',
+        }),
+      }),
+    );
     jest.runAllTimers();
     expect(navigate).toHaveBeenCalledWith('http://localhost/test');
   });

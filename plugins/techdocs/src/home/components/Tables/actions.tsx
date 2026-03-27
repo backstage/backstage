@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import ShareIcon from '@material-ui/icons/Share';
+import { Share } from 'lucide-react';
 import { DocsTableRow } from './types';
 import { FavoriteToggleIcon } from '@backstage/core-components';
 
@@ -27,7 +27,7 @@ export const actionFactories = {
   createCopyDocsUrlAction(copyToClipboard: Function) {
     return (row: DocsTableRow) => {
       return {
-        icon: () => <ShareIcon fontSize="small" />,
+        icon: () => <Share className="h-4 w-4" />,
         tooltip: 'Click to copy documentation link to clipboard',
         onClick: () =>
           copyToClipboard(`${window.location.origin}${row.resolved.docsUrl}`),

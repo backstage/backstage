@@ -18,11 +18,12 @@ import {
   createContext,
   Children,
   isValidElement,
+  cloneElement,
   useState,
   useEffect,
   PropsWithChildren,
 } from 'react';
-import MuiStepper from '@material-ui/core/Stepper';
+import { cn } from '../../lib/utils';
 
 type InternalState = {
   stepperLength: number;
@@ -93,13 +94,28 @@ export function SimpleStepper(props: PropsWithChildren<StepperProps>) {
           stepperLength: Children.count(children),
         }}
       >
-        <MuiStepper
-          activeStep={stepIndex}
-          orientation="vertical"
-          elevation={elevated ? 2 : 0}
+        {/* Custom vertical stepper replacing MUI Stepper — uses semantic
+            ordered list with step indicators, labels, and collapsible content.
+            Elevated variant applies card background and shadow matching the
+            former MUI elevation={2} behavior. */}
+        <div
+          className={cn(
+            'relative',
+            elevated && 'rounded-lg bg-card shadow-md p-6',
+          )}
         >
-          {steps}
-        </MuiStepper>
+          <ol className="relative space-y-0">
+            {Children.map(steps, (child, index) => {
+              if (isValidElement(child)) {
+                return cloneElement(child, {
+                  _index: index,
+                  _activeIndex: stepIndex,
+                } as any);
+              }
+              return child;
+            })}
+          </ol>
+        </div>
       </VerticalStepperContext.Provider>
       {stepIndex >= Children.count(children) - 1 && endStep}
     </>

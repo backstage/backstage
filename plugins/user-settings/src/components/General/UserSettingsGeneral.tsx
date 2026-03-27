@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import Grid from '@material-ui/core/Grid';
 import { UserSettingsProfileCard } from './UserSettingsProfileCard';
 import { UserSettingsAppearanceCard } from './UserSettingsAppearanceCard';
 import { UserSettingsIdentityCard } from './UserSettingsIdentityCard';
@@ -22,16 +21,16 @@ import { UserSettingsIdentityCard } from './UserSettingsIdentityCard';
 /** @public */
 export const UserSettingsGeneral = () => {
   return (
-    <Grid container direction="row" spacing={3}>
-      <Grid item xs={12} md={6}>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
         <UserSettingsProfileCard />
-      </Grid>
-      <Grid item xs={12} md={6}>
+      </div>
+      <div>
         <UserSettingsAppearanceCard />
-      </Grid>
-      <Grid item xs={12} md={6}>
+      </div>
+      <div>
         <UserSettingsIdentityCard />
-      </Grid>
-    </Grid>
+      </div>
+    </div>
   );
 };

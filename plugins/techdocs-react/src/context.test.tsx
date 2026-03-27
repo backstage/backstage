@@ -17,9 +17,6 @@
 import { ReactNode } from 'react';
 import { renderHook, act, waitFor } from '@testing-library/react';
 
-import { ThemeProvider } from '@material-ui/core/styles';
-
-import { lightTheme } from '@backstage/theme';
 import { mockApis, TestApiProvider } from '@backstage/test-utils';
 import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
 import {
@@ -77,19 +74,17 @@ const wrapper = ({
   config?: JsonObject;
   children: ReactNode;
 }) => (
-  <ThemeProvider theme={lightTheme}>
-    <TestApiProvider
-      apis={[
-        [analyticsApiRef, analyticsApiMock],
-        [configApiRef, mockApis.config({ data: config ?? {} })],
-        [techdocsApiRef, techdocsApiMock],
-      ]}
-    >
-      <TechDocsReaderPageProvider entityRef={entityRef}>
-        {children}
-      </TechDocsReaderPageProvider>
-    </TestApiProvider>
-  </ThemeProvider>
+  <TestApiProvider
+    apis={[
+      [analyticsApiRef, analyticsApiMock],
+      [configApiRef, mockApis.config({ data: config ?? {} })],
+      [techdocsApiRef, techdocsApiMock],
+    ]}
+  >
+    <TechDocsReaderPageProvider entityRef={entityRef}>
+      {children}
+    </TechDocsReaderPageProvider>
+  </TestApiProvider>
 );
 
 describe('useTechDocsReaderPage', () => {

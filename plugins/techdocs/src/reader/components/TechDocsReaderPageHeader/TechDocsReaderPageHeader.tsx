@@ -17,9 +17,7 @@
 import { PropsWithChildren, useEffect } from 'react';
 import Helmet from 'react-helmet';
 
-import Grid from '@material-ui/core/Grid';
-import Skeleton from '@material-ui/lab/Skeleton';
-import CodeIcon from '@material-ui/icons/Code';
+import { Code } from 'lucide-react';
 
 import {
   TechDocsAddonLocations as locations,
@@ -47,7 +45,7 @@ import capitalize from 'lodash/capitalize';
 import { rootRouteRef } from '../../../routes';
 import { useParams } from 'react-router-dom';
 
-const skeleton = <Skeleton animation="wave" variant="text" height={40} />;
+const skeleton = <div className="animate-pulse bg-muted rounded h-10 w-full" />;
 
 /**
  * Props for {@link TechDocsReaderPageHeader}
@@ -144,14 +142,12 @@ export const TechDocsReaderPageHeader = (
         <HeaderLabel
           label=""
           value={
-            <Grid container direction="column" alignItems="center">
-              <Grid style={{ padding: 0 }} item>
-                <CodeIcon style={{ marginTop: '-25px' }} />
-              </Grid>
-              <Grid style={{ padding: 0 }} item>
-                Source
-              </Grid>
-            </Grid>
+            <div className="flex flex-col items-center">
+              <div className="p-0">
+                <Code className="-mt-6 h-5 w-5" />
+              </div>
+              <div className="p-0">Source</div>
+            </div>
           }
           url={locationMetadata.target}
         />

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { CatalogAutocomplete } from './CatalogAutocomplete';
 
@@ -30,7 +30,7 @@ describe('CatalogAutocomplete', () => {
         label="Test Label"
       />,
     );
-    expect(screen.getByRole('textbox')).toBeInTheDocument();
+    expect(screen.getByRole('combobox')).toBeInTheDocument();
   });
 
   it('renders the expand icon', () => {
@@ -54,12 +54,12 @@ describe('CatalogAutocomplete', () => {
       />,
     );
 
-    const input = screen.getByRole('textbox');
+    const input = screen.getByRole('combobox');
     await user.click(input);
 
-    mockOptions.forEach(option => {
-      expect(screen.getByText(option)).toBeInTheDocument();
-    });
+    for (const option of mockOptions) {
+      expect(await screen.findByText(option)).toBeInTheDocument();
+    }
   });
 
   it('supports required input', () => {
@@ -72,7 +72,7 @@ describe('CatalogAutocomplete', () => {
       />,
     );
 
-    const input = screen.getByRole('textbox');
+    const input = screen.getByRole('combobox');
     expect(input).toBeRequired();
   });
 
@@ -94,7 +94,7 @@ describe('CatalogAutocomplete', () => {
       <CatalogAutocomplete name="test-autocomplete" options={mockOptions} />,
     );
 
-    const input = screen.getByRole('textbox');
+    const input = screen.getByRole('combobox');
     expect(input).toBeInTheDocument();
   });
 
@@ -107,12 +107,14 @@ describe('CatalogAutocomplete', () => {
       />,
     );
 
-    const input = screen.getByRole('textbox');
+    const input = screen.getByRole('combobox');
     await user.click(input);
 
-    const optionToSelect = screen.getByText('Option 1');
+    const optionToSelect = await screen.findByText('Option 1');
     await user.click(optionToSelect);
 
-    expect(input).toHaveValue('Option 1');
+    await waitFor(() => {
+      expect(input).toHaveValue('Option 1');
+    });
   });
 });

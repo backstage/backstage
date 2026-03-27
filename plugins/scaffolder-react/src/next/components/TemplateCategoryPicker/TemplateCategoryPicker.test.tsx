@@ -124,8 +124,8 @@ describe('TemplateCategoryPicker', () => {
 
     expect(mockSetSelectedTypes).toHaveBeenCalledWith(['foo']);
 
-    await fireEvent(openButton, new MouseEvent('click', { bubbles: true }));
-
+    // Popover stays open after selecting an item (Radix portal behavior),
+    // so bar checkbox is still accessible without re-toggling the trigger.
     const barCheckbox = getByRole('checkbox', { name: 'Bar' });
     await fireEvent(barCheckbox, new MouseEvent('click', { bubbles: true }));
 

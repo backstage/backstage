@@ -17,8 +17,6 @@
 import { rootRouteRef, HomePageSearchBar } from '../../plugin';
 import { searchApiRef } from '@backstage/plugin-search-react';
 import { wrapInTestApp, TestApiProvider } from '@backstage/test-utils';
-import Grid from '@material-ui/core/Grid';
-import { makeStyles } from '@material-ui/core/styles';
 import { ComponentType, PropsWithChildren } from 'react';
 
 export default {
@@ -45,41 +43,23 @@ export default {
 
 export const Default = () => {
   return (
-    <Grid container justifyContent="center" spacing={6}>
-      <Grid container item xs={12} alignItems="center" direction="row">
+    <div className="grid place-items-center gap-6">
+      <div className="flex w-full items-center">
         <HomePageSearchBar placeholder="Search" />
-      </Grid>
-    </Grid>
+      </div>
+    </div>
   );
 };
 
-const useStyles = makeStyles(theme => ({
-  searchBar: {
-    display: 'flex',
-    maxWidth: '60vw',
-    backgroundColor: theme.palette.background.paper,
-    boxShadow: theme.shadows[1],
-    padding: '8px 0',
-    borderRadius: '50px',
-    margin: 'auto',
-  },
-  searchBarOutline: {
-    borderStyle: 'none',
-  },
-}));
-
 export const CustomStyles = () => {
-  const classes = useStyles();
-
   return (
-    <Grid container justifyContent="center" spacing={6}>
-      <Grid container item xs={12} alignItems="center" direction="row">
+    <div className="grid place-items-center gap-6">
+      <div className="flex w-full items-center">
         <HomePageSearchBar
-          classes={{ root: classes.searchBar }}
-          InputProps={{ classes: { notchedOutline: classes.searchBarOutline } }}
+          className="flex max-w-[60vw] bg-[var(--background)] shadow-sm py-2 rounded-full mx-auto border-none"
           placeholder="Search"
         />
-      </Grid>
-    </Grid>
+      </div>
+    </div>
   );
 };

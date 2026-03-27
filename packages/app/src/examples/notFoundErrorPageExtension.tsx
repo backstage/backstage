@@ -16,35 +16,20 @@
 
 import { NotFoundErrorPage } from '@backstage/frontend-plugin-api';
 import { SwappableComponentBlueprint } from '@backstage/plugin-app-react';
-import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
 import { Button } from '@backstage/core-components';
 
 function CustomNotFoundErrorPage() {
   return (
-    <Box
-      component="article"
-      width="100%"
-      height="100vh"
-      display="grid"
-      textAlign="center"
-      alignContent="center"
-      justifyContent="center"
-      justifyItems="center"
-    >
-      <Typography variant="h1">404</Typography>
-      <Typography color="textSecondary" paragraph style={{ width: 300 }}>
+    <article className="w-full h-screen grid text-center content-center justify-center justify-items-center">
+      <h1 className="text-6xl font-bold tracking-tight">404</h1>
+      <p className="text-muted-foreground w-[300px]">
         Unable to locate this page. Please contact your support team if this
         page used to exist.
-      </Typography>
-      <Button
-        variant="contained"
-        to="/"
-        style={{ marginTop: '1rem', width: 200 }}
-      >
+      </p>
+      <Button variant="default" to="/" className="mt-4 w-[200px]">
         Go home
       </Button>
-    </Box>
+    </article>
   );
 }
 

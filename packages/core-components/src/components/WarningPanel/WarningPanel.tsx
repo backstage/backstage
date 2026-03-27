@@ -14,119 +14,55 @@
  * limitations under the License.
  */
 
-import { makeStyles, darken, lighten, Theme } from '@material-ui/core/styles';
-import Accordion from '@material-ui/core/Accordion';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import ErrorOutline from '@material-ui/icons/ErrorOutline';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { ReactNode } from 'react';
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from '../ui/accordion';
+import { AlertTriangle } from 'lucide-react';
+import { cn } from '../../lib/utils';
 import { MarkdownContent } from '../MarkdownContent';
 
-const getWarningTextColor = (
-  severity: NonNullable<WarningProps['severity']>,
-  theme: Theme,
-) => {
-  const getColor = theme.palette.type === 'light' ? darken : lighten;
-  return getColor(theme.palette[severity].light, 0.6);
-};
-
-const getWarningBackgroundColor = (
-  severity: NonNullable<WarningProps['severity']>,
-  theme: Theme,
-) => {
-  const getBackgroundColor = theme.palette.type === 'light' ? lighten : darken;
-  return getBackgroundColor(theme.palette[severity].light, 0.9);
-};
-
-const useErrorOutlineStyles = makeStyles(theme => ({
-  root: {
-    marginRight: theme.spacing(1),
-    fill: ({ severity }: WarningProps) =>
-      getWarningTextColor(
-        severity as NonNullable<WarningProps['severity']>,
-        theme,
-      ),
+/**
+ * Severity-specific Tailwind CSS class mappings for the WarningPanel.
+ * Uses CSS custom property tokens for consistent theming in light and dark modes.
+ * The `/10` opacity modifier produces the light background effect that replaces
+ * the original MUI `lighten(palette.light, 0.9)` pattern.
+ */
+const severityStyles = {
+  warning: {
+    container: 'border-warning bg-warning/10 text-warning-foreground',
+    icon: 'text-warning-foreground',
+    title: 'text-warning-foreground font-bold',
+    message: 'text-warning-foreground bg-warning/10',
   },
-}));
+  error: {
+    container: 'border-destructive bg-destructive/10 text-foreground',
+    icon: 'text-destructive',
+    title: 'text-foreground font-bold',
+    message: 'text-foreground bg-destructive/10',
+  },
+  info: {
+    container: 'border-info bg-info/10 text-info-foreground',
+    icon: 'text-info-foreground',
+    title: 'text-info-foreground font-bold',
+    message: 'text-info-foreground bg-info/10',
+  },
+} as const;
 
-const ErrorOutlineStyled = ({ severity }: Pick<WarningProps, 'severity'>) => {
-  const classes = useErrorOutlineStyles({ severity });
-  return <ErrorOutline classes={classes} />;
-};
-const ExpandMoreIconStyled = ({ severity }: Pick<WarningProps, 'severity'>) => {
-  const classes = useErrorOutlineStyles({ severity });
-  return <ExpandMoreIcon classes={classes} />;
-};
-
+/**
+ * Backward-compatible class key type for the WarningPanel component.
+ * Retained for consumers using the overridableComponents.ts theming system.
+ * @public
+ */
 export type WarningPanelClassKey =
   | 'panel'
   | 'summary'
   | 'summaryText'
   | 'message'
   | 'details';
-
-const useStyles = makeStyles(
-  theme => ({
-    panel: {
-      backgroundColor: ({ severity }: WarningProps) =>
-        getWarningBackgroundColor(
-          severity as NonNullable<WarningProps['severity']>,
-          theme,
-        ),
-      color: ({ severity }: WarningProps) =>
-        getWarningTextColor(
-          severity as NonNullable<WarningProps['severity']>,
-          theme,
-        ),
-      verticalAlign: 'middle',
-    },
-    summary: {
-      display: 'flex',
-      flexDirection: 'row',
-    },
-    summaryText: {
-      color: ({ severity }: WarningProps) =>
-        getWarningTextColor(
-          severity as NonNullable<WarningProps['severity']>,
-          theme,
-        ),
-      fontWeight: theme.typography.fontWeightBold,
-    },
-    markdownContent: {
-      wordBreak: 'break-word',
-      '& p': {
-        display: 'inline',
-      },
-    },
-    message: {
-      width: '100%',
-      display: 'block',
-      color: ({ severity }: WarningProps) =>
-        getWarningTextColor(
-          severity as NonNullable<WarningProps['severity']>,
-          theme,
-        ),
-      backgroundColor: ({ severity }: WarningProps) =>
-        getWarningBackgroundColor(
-          severity as NonNullable<WarningProps['severity']>,
-          theme,
-        ),
-    },
-    details: {
-      width: '100%',
-      display: 'block',
-      color: theme.palette.textContrast,
-      backgroundColor: theme.palette.background.default,
-      border: `1px solid ${theme.palette.border}`,
-      padding: theme.spacing(2.0),
-      fontFamily: 'sans-serif',
-    },
-  }),
-  { name: 'BackstageWarningPanel' },
-);
 
 export type WarningProps = {
   title?: string;
@@ -164,51 +100,58 @@ export function WarningPanel(props: WarningProps) {
     children,
     defaultExpanded,
   } = props;
-  const classes = useStyles({ severity });
+
+  const styles = severityStyles[severity];
 
   // If no severity or title provided, the heading will read simply "Warning"
   const subTitle = capitalize(severity) + (title ? `: ${title}` : '');
 
   return (
     <Accordion
-      defaultExpanded={defaultExpanded ?? false}
-      className={classes.panel}
+      type="single"
+      collapsible
+      defaultValue={defaultExpanded ? 'warning-item' : undefined}
+      className={cn('rounded-md border', styles.container)}
       role="alert"
     >
-      <AccordionSummary
-        expandIcon={<ExpandMoreIconStyled severity={severity} />}
-        className={classes.summary}
-      >
-        <ErrorOutlineStyled severity={severity} />
-        <Typography className={classes.summaryText} variant="subtitle1">
-          {titleFormat === 'markdown' ? (
-            <MarkdownContent
-              content={subTitle}
-              className={classes.markdownContent}
-            />
-          ) : (
-            subTitle
+      <AccordionItem value="warning-item" className="border-b-0">
+        <AccordionTrigger
+          className={cn(
+            'flex flex-row items-center gap-2 px-4 py-3 hover:no-underline',
+            styles.title,
           )}
-        </Typography>
-      </AccordionSummary>
-      {(message || children) && (
-        <AccordionDetails>
-          <Grid container>
-            {message && (
-              <Grid item xs={12}>
-                <Typography className={classes.message} variant="body1">
+        >
+          <div className="flex items-center gap-2">
+            <AlertTriangle className={cn('h-5 w-5 shrink-0', styles.icon)} />
+            <span className="text-sm font-bold">
+              {titleFormat === 'markdown' ? (
+                <MarkdownContent
+                  content={subTitle}
+                  className="break-words [&_p]:inline"
+                />
+              ) : (
+                subTitle
+              )}
+            </span>
+          </div>
+        </AccordionTrigger>
+        {(message || children) && (
+          <AccordionContent forceMount className="px-4 pb-4">
+            <div className="flex flex-col gap-2">
+              {message && (
+                <div className={cn('w-full text-sm', styles.message)}>
                   {message}
-                </Typography>
-              </Grid>
-            )}
-            {children && (
-              <Grid item xs={12} className={classes.details}>
-                {children}
-              </Grid>
-            )}
-          </Grid>
-        </AccordionDetails>
-      )}
+                </div>
+              )}
+              {children && (
+                <div className="w-full rounded border border-border bg-background p-4 font-sans text-sm text-foreground">
+                  {children}
+                </div>
+              )}
+            </div>
+          </AccordionContent>
+        )}
+      </AccordionItem>
     </Accordion>
   );
 }

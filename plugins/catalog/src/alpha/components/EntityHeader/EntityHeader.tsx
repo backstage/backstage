@@ -24,9 +24,6 @@ import {
 import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import useAsync from 'react-use/esm/useAsync';
 
-import { makeStyles } from '@material-ui/core/styles';
-import Box from '@material-ui/core/Box';
-
 import { Header, Breadcrumbs } from '@backstage/core-components';
 import {
   useApi,
@@ -97,43 +94,22 @@ function findParentRelation(
   return null;
 }
 
-const useStyles = makeStyles(theme => ({
-  breadcrumbs: {
-    color: theme.page.fontColor,
-    fontSize: theme.typography.caption.fontSize,
-    textTransform: 'uppercase',
-    marginTop: theme.spacing(1),
-    opacity: 0.8,
-    '& span ': {
-      color: theme.page.fontColor,
-      textDecoration: 'underline',
-      textUnderlineOffset: '3px',
-    },
-  },
-}));
-
 function EntityHeaderTitle() {
   const { entity } = useAsyncEntity();
   const { kind, namespace, name } = useRouteRefParams(entityRouteRef);
   const { headerTitle: title } = headerProps(kind, namespace, name, entity);
   return (
-    <Box display="inline-flex" alignItems="center" height="1em" maxWidth="100%">
-      <Box
-        component="span"
-        textOverflow="ellipsis"
-        whiteSpace="nowrap"
-        overflow="hidden"
-      >
+    <div className="inline-flex items-center h-[1em] max-w-full">
+      <span className="overflow-hidden text-ellipsis whitespace-nowrap">
         {entity ? <EntityDisplayName entityRef={entity} hideIcon /> : title}
-      </Box>
+      </span>
       {entity && <FavoriteEntity entity={entity} />}
-    </Box>
+    </div>
   );
 }
 
 function EntityHeaderSubtitle(props: { parentEntityRelations?: string[] }) {
   const { parentEntityRelations } = props;
-  const classes = useStyles();
   const { entity } = useAsyncEntity();
   const { name } = useRouteRefParams(entityRouteRef);
   const parentEntity = findParentRelation(
@@ -154,7 +130,7 @@ function EntityHeaderSubtitle(props: { parentEntityRelations?: string[] }) {
   }, [parentEntity, catalogApi]);
 
   return parentEntity ? (
-    <Breadcrumbs separator=">" className={classes.breadcrumbs}>
+    <Breadcrumbs className="text-xs uppercase mt-2 opacity-80 [&_span]:underline [&_span]:underline-offset-[3px]">
       {ancestorEntity && (
         <EntityRefLink entityRef={ancestorEntity.targetRef} disableTooltip />
       )}

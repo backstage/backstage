@@ -18,7 +18,7 @@ import { DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import { useApp, useRouteRef } from '@backstage/core-plugin-api';
 import { useEntity } from '@backstage/plugin-catalog-react';
 
-import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
+import { PlusCircle } from 'lucide-react';
 import { taskCreatePermission } from '@backstage/plugin-scaffolder-common/alpha';
 import { usePermission } from '@backstage/plugin-permission-react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
@@ -34,7 +34,7 @@ export function useScaffolderTemplateIconLinkProps() {
   const { entity } = useEntity();
   const templateRoute = useRouteRef(selectedTemplateRouteRef);
   const { t } = useTranslationRef(scaffolderTranslationRef);
-  const Icon = app.getSystemIcon('scaffolder') ?? CreateComponentIcon;
+  const Icon = app.getSystemIcon('scaffolder') ?? PlusCircle;
   const { allowed: canCreateTemplateTask } = usePermission({
     permission: taskCreatePermission,
   });

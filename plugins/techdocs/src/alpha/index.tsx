@@ -15,7 +15,7 @@
  */
 
 import { Suspense } from 'react';
-import LibraryBooks from '@material-ui/icons/LibraryBooks';
+import { BookOpen } from 'lucide-react';
 import {
   createFrontendPlugin,
   ApiBlueprint,
@@ -25,6 +25,7 @@ import {
   coreExtensionData,
   createExtension,
 } from '@backstage/frontend-plugin-api';
+import type { IconComponent } from '@backstage/frontend-plugin-api';
 import {
   configApiRef,
   discoveryApiRef,
@@ -55,6 +56,12 @@ import {
 
 import { useTechdocsReaderIconLinkProps } from './hooks/useTechdocsReaderIconLinkProps';
 import { DocsIcon } from '@backstage/core-components';
+
+/**
+ * Wrapper bridging lucide-react's ForwardRefExoticComponent to Backstage's
+ * IconComponent type which expects ComponentType<{ fontSize?: ... }>.
+ */
+const TechDocsIcon: IconComponent = props => <BookOpen {...props} />;
 
 /** @alpha */
 const techdocsEntityIconLink = EntityIconLinkBlueprint.make({
@@ -269,7 +276,7 @@ const techDocsEntityContentEmptyState = createExtension({
 /** @alpha */
 const techDocsNavItem = NavItemBlueprint.make({
   params: {
-    icon: LibraryBooks,
+    icon: TechDocsIcon,
     title: 'Docs',
     routeRef: rootRouteRef,
   },
@@ -279,7 +286,7 @@ const techDocsNavItem = NavItemBlueprint.make({
 export default createFrontendPlugin({
   pluginId: 'techdocs',
   title: 'Docs',
-  icon: <LibraryBooks />,
+  icon: <TechDocsIcon />,
   info: { packageJson: () => import('../../package.json') },
   extensions: [
     techDocsClientApi,

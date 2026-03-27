@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import FormControl from '@material-ui/core/FormControl';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import TextField from '@material-ui/core/TextField';
+import { Input, Label, cn } from '@backstage/core-components';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 import { BaseRepoOwnerPickerProps } from './types';
@@ -42,21 +40,32 @@ export const DefaultRepoOwnerPicker = ({
   const { t } = useTranslationRef(scaffolderTranslationRef);
 
   return (
-    <FormControl
-      margin="normal"
-      required={required}
-      error={rawErrors?.length > 0 && !owner}
-    >
-      <TextField
+    <div className="space-y-2">
+      <Label
+        htmlFor="ownerInput"
+        className={cn(rawErrors?.length > 0 && !owner && 'text-destructive')}
+      >
+        {schema?.title ?? t('fields.repoOwnerPicker.title')}
+        {required && <span className="text-destructive ml-1">*</span>}
+      </Label>
+      <Input
         id="ownerInput"
-        label={schema?.title ?? t('fields.repoOwnerPicker.title')}
         disabled={isDisabled}
         onChange={e => onChange({ owner: e.target.value })}
-        value={owner}
+        value={owner ?? ''}
+        required={required}
+        className={cn(rawErrors?.length > 0 && !owner && 'border-destructive')}
       />
-      <FormHelperText>
+      <p
+        className={cn(
+          'text-sm',
+          rawErrors?.length > 0 && !owner
+            ? 'text-destructive'
+            : 'text-muted-foreground',
+        )}
+      >
         {schema?.description ?? t('fields.repoOwnerPicker.description')}
-      </FormHelperText>
-    </FormControl>
+      </p>
+    </div>
   );
 };

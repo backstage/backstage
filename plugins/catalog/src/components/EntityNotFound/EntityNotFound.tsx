@@ -14,58 +14,43 @@
  * limitations under the License.
  */
 
-import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
+import { ShadcnButton } from '@backstage/core-components';
 import { Illo } from './Illo';
 import { catalogTranslationRef } from '../../alpha/translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
-const useStyles = makeStyles(theme => ({
-  container: {
-    paddingTop: theme.spacing(24),
-    paddingLeft: theme.spacing(8),
-    [theme.breakpoints.down('xs')]: {
-      padding: theme.spacing(2),
-    },
-  },
-  title: {
-    paddingBottom: theme.spacing(2),
-    [theme.breakpoints.down('xs')]: {
-      fontSize: 32,
-    },
-  },
-  body: {
-    paddingBottom: theme.spacing(6),
-    [theme.breakpoints.down('xs')]: {
-      paddingBottom: theme.spacing(5),
-    },
-  },
-}));
-
+/**
+ * Renders a fallback page when a catalog entity cannot be found.
+ *
+ * @remarks
+ * Displays an illustration, a translated title and description, and a
+ * primary-action link to the Backstage documentation. Layout uses Tailwind CSS
+ * utility classes with mobile-first responsive breakpoints.
+ *
+ * Spacing is mapped from the former MUI theme.spacing scale (1 unit = 8 px):
+ * - Container: 16 px padding (mobile) → 192 px top / 64 px left (desktop)
+ * - Title bottom padding: 16 px
+ * - Body bottom padding: 40 px (mobile) → 48 px (desktop)
+ */
 export function EntityNotFound() {
-  const classes = useStyles();
   const { t } = useTranslationRef(catalogTranslationRef);
 
   return (
-    <Grid container spacing={0} className={classes.container}>
+    <div className="relative p-4 sm:p-0 sm:pt-48 sm:pl-16">
       <Illo />
-      <Grid item xs={12} sm={6}>
-        <Typography variant="h2" className={classes.title}>
+      <div className="w-full sm:w-1/2">
+        <h2 className="text-[2rem] font-light leading-[1.2] tracking-tight pb-4 sm:text-[3.75rem]">
           {t('entityNotFound.title')}
-        </Typography>
-        <Typography variant="body1" className={classes.body}>
+        </h2>
+        <p className="text-base leading-normal pb-10 sm:pb-12">
           {t('entityNotFound.description')}
-        </Typography>
-        <Button
-          variant="contained"
-          color="primary"
-          href="https://backstage.io/docs"
-        >
-          {t('entityNotFound.docButtonTitle')}
-        </Button>
-      </Grid>
-    </Grid>
+        </p>
+        <ShadcnButton asChild>
+          <a href="https://backstage.io/docs">
+            {t('entityNotFound.docButtonTitle')}
+          </a>
+        </ShadcnButton>
+      </div>
+    </div>
   );
 }

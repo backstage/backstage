@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
-import FormControl from '@material-ui/core/FormControl';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import TextField from '@material-ui/core/TextField';
 import { BaseRepoUrlPickerProps } from './types';
-import { Select, SelectItem } from '@backstage/core-components';
+import {
+  Select,
+  SelectItem,
+  Input,
+  Label,
+  cn,
+} from '@backstage/core-components';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../../translation';
 
@@ -50,10 +53,11 @@ export const AzureRepoPicker = (
 
   return (
     <>
-      <FormControl
-        margin="normal"
-        required
-        error={rawErrors?.length > 0 && !organization}
+      <div
+        className={cn(
+          'mt-4 mb-2',
+          rawErrors?.length > 0 && !organization && 'text-destructive',
+        )}
       >
         {allowedOrganizations?.length ? (
           <>
@@ -67,25 +71,32 @@ export const AzureRepoPicker = (
               selected={organization}
               items={organizationItems}
             />
-            <FormHelperText>
+            <p className="mt-1 text-sm text-muted-foreground">
               {t('fields.azureRepoPicker.organization.description')}
-            </FormHelperText>
+            </p>
           </>
         ) : (
-          <TextField
-            id="orgInput"
-            label={t('fields.azureRepoPicker.organization.title')}
-            onChange={e => onChange({ organization: e.target.value })}
-            helperText={t('fields.azureRepoPicker.organization.description')}
-            disabled={isDisabled}
-            value={organization}
-          />
+          <div className="space-y-2">
+            <Label htmlFor="orgInput">
+              {t('fields.azureRepoPicker.organization.title')}
+            </Label>
+            <Input
+              id="orgInput"
+              onChange={e => onChange({ organization: e.target.value })}
+              disabled={isDisabled}
+              value={organization}
+            />
+            <p className="text-sm text-muted-foreground">
+              {t('fields.azureRepoPicker.organization.description')}
+            </p>
+          </div>
         )}
-      </FormControl>
-      <FormControl
-        margin="normal"
-        required
-        error={rawErrors?.length > 0 && !project}
+      </div>
+      <div
+        className={cn(
+          'mt-4 mb-2',
+          rawErrors?.length > 0 && !project && 'text-destructive',
+        )}
       >
         {allowedProject?.length ? (
           <>
@@ -99,21 +110,27 @@ export const AzureRepoPicker = (
               selected={project}
               items={projectItems}
             />
-            <FormHelperText>
+            <p className="mt-1 text-sm text-muted-foreground">
               {t('fields.azureRepoPicker.project.description')}
-            </FormHelperText>
+            </p>
           </>
         ) : (
-          <TextField
-            id="projectInput"
-            label={t('fields.azureRepoPicker.project.title')}
-            onChange={e => onChange({ project: e.target.value })}
-            value={project}
-            disabled={isDisabled}
-            helperText={t('fields.azureRepoPicker.project.description')}
-          />
+          <div className="space-y-2">
+            <Label htmlFor="projectInput">
+              {t('fields.azureRepoPicker.project.title')}
+            </Label>
+            <Input
+              id="projectInput"
+              onChange={e => onChange({ project: e.target.value })}
+              disabled={isDisabled}
+              value={project}
+            />
+            <p className="text-sm text-muted-foreground">
+              {t('fields.azureRepoPicker.project.description')}
+            </p>
+          </div>
         )}
-      </FormControl>
+      </div>
     </>
   );
 };

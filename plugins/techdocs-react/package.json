@@ -65,9 +65,6 @@
     "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/plugin-techdocs-common": "workspace:^",
     "@backstage/version-bridge": "workspace:^",
-    "@material-ui/core": "^4.12.2",
-    "@material-ui/styles": "^4.11.0",
-    "jss": "~10.10.0",
     "lodash": "^4.17.21",
     "react-helmet": "6.1.0",
     "react-use": "^17.2.4"

@@ -16,10 +16,21 @@
 
 import { useApi } from '@backstage/core-plugin-api';
 import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
-import FormControl from '@material-ui/core/FormControl';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import TextField from '@material-ui/core/TextField';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import {
+  ShadcnButton as Button,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  Command,
+  CommandInput,
+  CommandList,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+  Input,
+  cn,
+} from '@backstage/core-components';
+import { ChevronsUpDown, Check } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import useDebounce from 'react-use/esm/useDebounce';
 import { BaseRepoBranchPickerProps } from './types';
@@ -44,6 +55,7 @@ export const GitHubRepoBranchPicker = ({
   const { host, owner, repository, branch } = state;
 
   const [availableBranches, setAvailableBranches] = useState<string[]>([]);
+  const [open, setOpen] = useState(false);
 
   const scaffolderApi = useApi(scaffolderApiRef);
 
@@ -77,30 +89,72 @@ export const GitHubRepoBranchPicker = ({
   useDebounce(updateAvailableBranches, 500, [updateAvailableBranches]);
 
   return (
-    <FormControl
-      margin="normal"
-      required={required}
-      error={rawErrors?.length > 0 && !branch}
-    >
-      <Autocomplete
-        value={branch}
-        onChange={(_, newValue) => {
-          onChange({ branch: newValue || '' });
-        }}
-        disabled={isDisabled}
-        options={availableBranches}
-        renderInput={params => (
-          <TextField
-            {...params}
-            label="Branch"
+    <div className="mt-4 space-y-2">
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            role="combobox"
+            aria-expanded={open}
             disabled={isDisabled}
-            required={required}
-          />
-        )}
-        freeSolo
-        autoSelect
+            className={cn(
+              'w-full justify-between font-normal',
+              !branch && 'text-muted-foreground',
+              rawErrors?.length > 0 && !branch && 'border-destructive',
+            )}
+          >
+            {branch || 'Select branch...'}
+            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-full p-0" align="start">
+          <Command>
+            <CommandInput placeholder="Search or type branch..." />
+            <CommandList>
+              <CommandEmpty>No branches found.</CommandEmpty>
+              <CommandGroup>
+                {availableBranches.map(b => (
+                  <CommandItem
+                    key={b}
+                    value={b}
+                    onSelect={currentValue => {
+                      onChange({ branch: currentValue });
+                      setOpen(false);
+                    }}
+                  >
+                    <Check
+                      className={cn(
+                        'mr-2 h-4 w-4',
+                        branch === b ? 'opacity-100' : 'opacity-0',
+                      )}
+                    />
+                    {b}
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
+      {/* Allow free-form input for freeSolo behavior */}
+      <Input
+        placeholder="Or type a branch name..."
+        value={branch}
+        onChange={e => onChange({ branch: e.target.value })}
+        disabled={isDisabled}
+        required={required}
+        className={cn(rawErrors?.length > 0 && !branch && 'border-destructive')}
       />
-      <FormHelperText>The branch of the repository</FormHelperText>
-    </FormControl>
+      <p
+        className={cn(
+          'text-sm',
+          rawErrors?.length > 0 && !branch
+            ? 'text-destructive'
+            : 'text-muted-foreground',
+        )}
+      >
+        The branch of the repository
+      </p>
+    </div>
   );
 };

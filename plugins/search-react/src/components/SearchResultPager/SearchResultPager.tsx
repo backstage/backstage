@@ -14,30 +14,18 @@
  * limitations under the License.
  */
 
-import Button from '@material-ui/core/Button';
-import { makeStyles } from '@material-ui/core/styles';
-import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
-import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ShadcnButton as Button } from '@backstage/core-components';
 
 import { useSearch } from '../../context';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { searchReactTranslationRef } from '../../translation';
-
-const useStyles = makeStyles(theme => ({
-  root: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    gap: theme.spacing(2),
-    margin: theme.spacing(2, 0),
-  },
-}));
 
 /**
  * @public
  */
 export const SearchResultPager = () => {
   const { fetchNextPage, fetchPreviousPage } = useSearch();
-  const classes = useStyles();
   const { t } = useTranslationRef(searchReactTranslationRef);
 
   if (!fetchNextPage && !fetchPreviousPage) {
@@ -45,23 +33,29 @@ export const SearchResultPager = () => {
   }
 
   return (
-    <nav aria-label="pagination navigation" className={classes.root}>
+    <nav
+      aria-label="pagination navigation"
+      className="flex justify-between gap-4 my-4"
+    >
       <Button
+        variant="ghost"
         aria-label="previous page"
         disabled={!fetchPreviousPage}
         onClick={fetchPreviousPage}
-        startIcon={<ArrowBackIosIcon />}
       >
+        <ChevronLeft className="h-4 w-4 mr-2" />
         {t('searchResultPager.previous')}
       </Button>
 
       <Button
+        variant="ghost"
         aria-label="next page"
         disabled={!fetchNextPage}
         onClick={fetchNextPage}
-        endIcon={<ArrowForwardIosIcon />}
+        className="ml-auto"
       >
         {t('searchResultPager.next')}
+        <ChevronRight className="h-4 w-4 ml-2" />
       </Button>
     </nav>
   );

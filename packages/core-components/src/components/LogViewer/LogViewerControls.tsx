@@ -16,12 +16,10 @@
 
 import { KeyboardEvent } from 'react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import IconButton from '@material-ui/core/IconButton';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import FilterListIcon from '@material-ui/icons/FilterList';
+import { ChevronLeft, ChevronRight, ListFilter } from 'lucide-react';
+import { Button } from '../ui/button';
+import { Input } from '../ui/input';
+import { cn } from '../../lib/utils';
 import { coreComponentsTranslationRef } from '../../translation';
 import { LogViewerSearch } from './useLogViewerSearch';
 
@@ -46,32 +44,47 @@ export function LogViewerControls(props: LogViewerControlsProps) {
     <>
       {resultCount !== undefined && (
         <>
-          <IconButton size="small" onClick={() => resultIndexStep(true)}>
-            <ChevronLeftIcon />
-          </IconButton>
-          <Typography>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7"
+            onClick={() => resultIndexStep(true)}
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <span className="text-sm font-mono tabular-nums">
             {Math.min(resultIndex + 1, resultCount)}/{resultCount}
-          </Typography>
-          <IconButton size="small" onClick={() => resultIndexStep()}>
-            <ChevronRightIcon />
-          </IconButton>
+          </span>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7"
+            onClick={() => resultIndexStep()}
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
         </>
       )}
-      <TextField
-        size="small"
-        variant="standard"
+      <Input
+        className="h-7 w-48 text-sm"
         placeholder={t('logViewer.searchField.placeholder')}
         value={props.searchInput}
         onKeyPress={handleKeyPress}
         onChange={e => props.setSearchInput(e.target.value)}
       />
-      <IconButton size="small" onClick={toggleShouldFilter}>
-        {props.shouldFilter ? (
-          <FilterListIcon color="primary" />
-        ) : (
-          <FilterListIcon color="disabled" />
-        )}
-      </IconButton>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="h-7 w-7"
+        onClick={toggleShouldFilter}
+      >
+        <ListFilter
+          className={cn(
+            'h-4 w-4',
+            props.shouldFilter ? 'text-primary' : 'text-muted-foreground',
+          )}
+        />
+      </Button>
     </>
   );
 }

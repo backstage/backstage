@@ -21,17 +21,24 @@ import CodeMirror from '@uiw/react-codemirror';
 import { StreamLanguage } from '@codemirror/language';
 import { yaml as yamlSupport } from '@codemirror/legacy-modes/mode/yaml';
 
-import { makeStyles } from '@material-ui/core/styles';
-import Accordion from '@material-ui/core/Accordion';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import Typography from '@material-ui/core/Typography';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import SearchIcon from '@material-ui/icons/Search';
+import {
+  cn,
+  ShadcnButton as Button,
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  Command,
+  CommandInput,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+  CommandList,
+} from '@backstage/core-components';
+import { Search } from 'lucide-react';
 
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { Form } from '@backstage/plugin-scaffolder-react/alpha';
@@ -40,34 +47,18 @@ import { FieldExtensionOptions } from '@backstage/plugin-scaffolder-react';
 import { scaffolderTranslationRef } from '../../../translation';
 import { TemplateEditorForm } from './TemplateEditorForm';
 
-const useStyles = makeStyles(
-  theme => ({
-    root: {
-      gridArea: 'pageContent',
-      display: 'grid',
-      gridTemplateRows: 'auto 1fr',
-    },
-    controls: {
-      marginBottom: theme.spacing(3),
-    },
-    code: {
-      width: '100%',
-    },
-  }),
-  { name: 'ScaffolderCustomFieldExtensionsPlaygroud' },
-);
-
 export const CustomFieldPlayground = ({
   fieldExtensions = [],
 }: {
   fieldExtensions?: FieldExtensionOptions<any, any>[];
 }) => {
-  const classes = useStyles();
   const { t } = useTranslationRef(scaffolderTranslationRef);
   const fieldOptions = fieldExtensions.filter(field => !!field.schema);
   const [refreshKey, setRefreshKey] = useState(Date.now());
   const [fieldFormState, setFieldFormState] = useState({});
   const [selectedField, setSelectedField] = useState(fieldOptions[0]);
+  const [open, setOpen] = useState(false);
+  const [errorText, setErrorText] = useState<string>();
   const sampleFieldTemplate = useMemo(
     () =>
       yaml.stringify({
@@ -97,6 +88,7 @@ export const CustomFieldPlayground = ({
     (selection: FieldExtensionOptions) => {
       setSelectedField(selection);
       setFieldFormState({});
+      setErrorText(undefined);
     },
     [setFieldFormState, setSelectedField],
   );
@@ -112,122 +104,134 @@ export const CustomFieldPlayground = ({
   );
 
   return (
-    <main className={classes.root}>
-      <div className={classes.controls}>
-        <Autocomplete
-          id="custom-fields-autocomplete"
-          value={selectedField}
-          options={fieldOptions}
-          getOptionLabel={option => option.name}
-          renderInput={params => (
-            <TextField
-              {...params}
+    <main
+      className={cn('grid grid-rows-[auto_1fr]', '[grid-area:pageContent]')}
+    >
+      <div className="mb-6">
+        <Popover open={open} onOpenChange={setOpen}>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              role="combobox"
+              aria-expanded={open}
               aria-label={t(
                 'templateEditorPage.customFieldExplorer.selectFieldLabel',
               )}
-              placeholder={t(
-                'templateEditorPage.customFieldExplorer.selectFieldLabel',
-              )}
-              variant="outlined"
-              InputProps={{
-                ...params.InputProps,
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon />
-                  </InputAdornment>
-                ),
-              }}
-            />
-          )}
-          onChange={(_event, option) => {
-            if (option) {
-              handleSelectionChange(option);
-            }
-          }}
-          disableClearable
-          fullWidth
-        />
+              className="w-full justify-between"
+            >
+              <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
+              {selectedField?.name ??
+                t('templateEditorPage.customFieldExplorer.selectFieldLabel')}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-full p-0" align="start">
+            <Command>
+              <CommandInput
+                placeholder={t(
+                  'templateEditorPage.customFieldExplorer.selectFieldLabel',
+                )}
+              />
+              <CommandList>
+                <CommandEmpty>No field found.</CommandEmpty>
+                <CommandGroup>
+                  {fieldOptions.map(option => (
+                    <CommandItem
+                      key={option.name}
+                      value={option.name}
+                      onSelect={() => {
+                        handleSelectionChange(option);
+                        setOpen(false);
+                      }}
+                    >
+                      {option.name}
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
       </div>
       <div>
-        <Accordion defaultExpanded>
-          <AccordionSummary
-            expandIcon={<ExpandMoreIcon />}
-            aria-controls="panel-code-content"
-            id="panel-code-header"
-          >
-            <Typography variant="h6">
-              {t('templateEditorPage.customFieldExplorer.preview.title')}
-            </Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <div className={classes.code}>
-              <CodeMirror
-                readOnly
-                theme="dark"
-                height="100%"
-                width="100%"
-                extensions={[StreamLanguage.define(yamlSupport)]}
-                value={sampleFieldTemplate}
+        <Accordion
+          type="multiple"
+          defaultValue={['code', 'preview', 'options']}
+        >
+          <AccordionItem value="code">
+            <AccordionTrigger>
+              <span className="text-lg font-semibold">
+                {t('templateEditorPage.customFieldExplorer.preview.title')}
+              </span>
+            </AccordionTrigger>
+            <AccordionContent>
+              <div className="w-full">
+                <CodeMirror
+                  readOnly
+                  theme="dark"
+                  height="100%"
+                  width="100%"
+                  extensions={[StreamLanguage.define(yamlSupport)]}
+                  value={sampleFieldTemplate}
+                />
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+          <AccordionItem value="preview">
+            <AccordionTrigger>
+              <span className="text-lg font-semibold">
+                {t('templateEditorPage.customFieldExplorer.fieldPreview.title')}
+              </span>
+            </AccordionTrigger>
+            <AccordionContent>
+              <TemplateEditorForm
+                key={refreshKey}
+                content={sampleFieldTemplate}
+                contentIsSpec
+                fieldExtensions={fieldExtensions}
+                setErrorText={setErrorText}
               />
-            </div>
-          </AccordionDetails>
-        </Accordion>
-        <Accordion defaultExpanded>
-          <AccordionSummary
-            expandIcon={<ExpandMoreIcon />}
-            aria-controls="panel-preview-content"
-            id="panel-preview-header"
-          >
-            <Typography variant="h6">
-              {t('templateEditorPage.customFieldExplorer.fieldPreview.title')}
-            </Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <TemplateEditorForm
-              key={refreshKey}
-              content={sampleFieldTemplate}
-              contentIsSpec
-              fieldExtensions={fieldExtensions}
-              setErrorText={() => null}
-            />
-          </AccordionDetails>
-        </Accordion>
-        <Accordion defaultExpanded>
-          <AccordionSummary
-            expandIcon={<ExpandMoreIcon />}
-            aria-controls="panel-options-content"
-            id="panel-options-header"
-          >
-            <Typography variant="h6">
-              {t('templateEditorPage.customFieldExplorer.fieldForm.title')}
-            </Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <Form
-              showErrorList={false}
-              fields={{ ...fieldComponents }}
-              noHtml5Validate
-              formData={fieldFormState}
-              formContext={{ fieldFormState }}
-              onSubmit={e => handleFieldConfigChange(e.formData)}
-              validator={validator}
-              schema={selectedField.schema?.uiOptions || {}}
-              experimental_defaultFormStateBehavior={{
-                allOf: 'populateDefaults',
-              }}
-            >
-              <Button
-                variant="contained"
-                color="primary"
-                type="submit"
-                disabled={!selectedField.schema?.uiOptions}
+              {errorText && (
+                <div
+                  role="alert"
+                  className="mt-2 rounded-md border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm text-destructive"
+                >
+                  <p className="font-medium">Field preview error</p>
+                  <p className="mt-1">{errorText}</p>
+                </div>
+              )}
+            </AccordionContent>
+          </AccordionItem>
+          <AccordionItem value="options">
+            <AccordionTrigger>
+              <span className="text-lg font-semibold">
+                {t('templateEditorPage.customFieldExplorer.fieldForm.title')}
+              </span>
+            </AccordionTrigger>
+            <AccordionContent>
+              <Form
+                showErrorList={false}
+                fields={{ ...fieldComponents }}
+                noHtml5Validate
+                formData={fieldFormState}
+                formContext={{ fieldFormState }}
+                onSubmit={e => handleFieldConfigChange(e.formData)}
+                validator={validator}
+                schema={selectedField.schema?.uiOptions || {}}
+                experimental_defaultFormStateBehavior={{
+                  allOf: 'populateDefaults',
+                }}
               >
-                {t(
-                  'templateEditorPage.customFieldExplorer.fieldForm.applyButtonTitle',
-                )}
-              </Button>
-            </Form>
-          </AccordionDetails>
+                <Button
+                  type="submit"
+                  disabled={!selectedField.schema?.uiOptions}
+                >
+                  {t(
+                    'templateEditorPage.customFieldExplorer.fieldForm.applyButtonTitle',
+                  )}
+                </Button>
+              </Form>
+            </AccordionContent>
+          </AccordionItem>
         </Accordion>
       </div>
     </main>

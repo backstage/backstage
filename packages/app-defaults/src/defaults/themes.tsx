@@ -18,9 +18,18 @@ import {
   UnifiedThemeProvider,
   themes as builtinThemes,
 } from '@backstage/theme';
-import DarkIcon from '@material-ui/icons/Brightness2';
-import LightIcon from '@material-ui/icons/WbSunny';
+import { Moon, Sun } from 'lucide-react';
 import { AppTheme } from '@backstage/core-plugin-api';
+
+/** Props accepted by the lucide-react icon wrappers used in theme definitions. */
+interface ThemeIconProps {
+  fontSize?: 'small' | 'medium' | 'large' | 'inherit';
+  className?: string;
+}
+
+// Wrap lucide-react icons for Backstage AppTheme icon compatibility
+const DarkIcon = (props: ThemeIconProps) => <Moon {...props} />;
+const LightIcon = (props: ThemeIconProps) => <Sun {...props} />;
 
 export const themes: AppTheme[] = [
   {

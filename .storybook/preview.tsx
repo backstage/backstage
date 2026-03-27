@@ -14,6 +14,12 @@ import { allModes } from './modes';
 // Default Backstage theme CSS (from packages/ui)
 import '../packages/ui/src/css/styles.css';
 
+// shadcn/ui global CSS custom property token system (light & dark mode)
+import '../packages/core-components/src/styles/globals.css';
+
+// Tailwind CSS base/components/utilities directives
+import '../packages/core-components/src/styles/tailwind.css';
+
 // Custom Storybook chrome/styles
 import './storybook.css';
 

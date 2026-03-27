@@ -14,30 +14,19 @@
  * limitations under the License.
  */
 
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Button from '@material-ui/core/Button';
-import { makeStyles } from '@material-ui/core/styles';
-import Alert from '@material-ui/lab/Alert';
+import { Loader2 } from 'lucide-react';
+import {
+  Alert,
+  AlertDescription,
+  ShadcnButton as Button,
+} from '@backstage/core-components';
 
 import { TechDocsBuildLogs } from './TechDocsBuildLogs';
 import { TechDocsNotFound } from './TechDocsNotFound';
 import { useTechDocsReader } from './TechDocsReaderProvider';
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    marginBottom: theme.spacing(2),
-  },
-  message: {
-    // `word-break: break-word` is deprecated, but gives legacy support to browsers not supporting `overflow-wrap` yet
-    // https://developer.mozilla.org/en-US/docs/Web/CSS/word-break
-    wordBreak: 'break-word',
-    overflowWrap: 'anywhere',
-  },
-}));
-
 export const TechDocsStateIndicator = () => {
   let StateAlert: JSX.Element | null = null;
-  const classes = useStyles();
 
   const {
     state,
@@ -49,62 +38,72 @@ export const TechDocsStateIndicator = () => {
 
   if (state === 'INITIAL_BUILD') {
     StateAlert = (
-      <Alert
-        classes={{ root: classes.root }}
-        variant="outlined"
-        severity="info"
-        icon={<CircularProgress size="24px" />}
-        action={<TechDocsBuildLogs buildLog={buildLog} />}
-      >
-        Documentation is accessed for the first time and is being prepared. The
-        subsequent loads are much faster.
+      <Alert variant="info" className="mb-4">
+        <div className="flex items-start gap-3">
+          <div className="mt-0.5 shrink-0">
+            <Loader2 className="h-6 w-6 animate-spin" />
+          </div>
+          <AlertDescription className="flex-1 break-words [overflow-wrap:anywhere]">
+            Documentation is accessed for the first time and is being prepared.
+            The subsequent loads are much faster.
+          </AlertDescription>
+          <div className="ml-auto shrink-0">
+            <TechDocsBuildLogs buildLog={buildLog} />
+          </div>
+        </div>
       </Alert>
     );
   }
 
   if (state === 'CONTENT_STALE_REFRESHING') {
     StateAlert = (
-      <Alert
-        variant="outlined"
-        severity="info"
-        icon={<CircularProgress size="24px" />}
-        action={<TechDocsBuildLogs buildLog={buildLog} />}
-        classes={{ root: classes.root }}
-      >
-        A newer version of this documentation is being prepared and will be
-        available shortly.
+      <Alert variant="info" className="mb-4">
+        <div className="flex items-start gap-3">
+          <div className="mt-0.5 shrink-0">
+            <Loader2 className="h-6 w-6 animate-spin" />
+          </div>
+          <AlertDescription className="flex-1 break-words [overflow-wrap:anywhere]">
+            A newer version of this documentation is being prepared and will be
+            available shortly.
+          </AlertDescription>
+          <div className="ml-auto shrink-0">
+            <TechDocsBuildLogs buildLog={buildLog} />
+          </div>
+        </div>
       </Alert>
     );
   }
 
   if (state === 'CONTENT_STALE_READY') {
     StateAlert = (
-      <Alert
-        variant="outlined"
-        severity="success"
-        action={
-          <Button color="inherit" onClick={() => contentReload()}>
-            Refresh
-          </Button>
-        }
-        classes={{ root: classes.root }}
-      >
-        A newer version of this documentation is now available, please refresh
-        to view.
+      <Alert variant="success" className="mb-4">
+        <div className="flex items-start gap-3">
+          <AlertDescription className="flex-1 break-words [overflow-wrap:anywhere]">
+            A newer version of this documentation is now available, please
+            refresh to view.
+          </AlertDescription>
+          <div className="ml-auto shrink-0">
+            <Button variant="ghost" onClick={() => contentReload()}>
+              Refresh
+            </Button>
+          </div>
+        </div>
       </Alert>
     );
   }
 
   if (state === 'CONTENT_STALE_ERROR') {
     StateAlert = (
-      <Alert
-        variant="outlined"
-        severity="error"
-        action={<TechDocsBuildLogs buildLog={buildLog} />}
-        classes={{ root: classes.root, message: classes.message }}
-      >
-        Building a newer version of this documentation failed.{' '}
-        {syncErrorMessage}
+      <Alert variant="destructive" className="mb-4">
+        <div className="flex items-start gap-3">
+          <AlertDescription className="flex-1 break-words [overflow-wrap:anywhere]">
+            Building a newer version of this documentation failed.{' '}
+            {syncErrorMessage}
+          </AlertDescription>
+          <div className="ml-auto shrink-0">
+            <TechDocsBuildLogs buildLog={buildLog} />
+          </div>
+        </div>
       </Alert>
     );
   }
@@ -113,14 +112,16 @@ export const TechDocsStateIndicator = () => {
     StateAlert = (
       <>
         {syncErrorMessage && (
-          <Alert
-            variant="outlined"
-            severity="error"
-            action={<TechDocsBuildLogs buildLog={buildLog} />}
-            classes={{ root: classes.root, message: classes.message }}
-          >
-            Building a newer version of this documentation failed.{' '}
-            {syncErrorMessage}
+          <Alert variant="destructive" className="mb-4">
+            <div className="flex items-start gap-3">
+              <AlertDescription className="flex-1 break-words [overflow-wrap:anywhere]">
+                Building a newer version of this documentation failed.{' '}
+                {syncErrorMessage}
+              </AlertDescription>
+              <div className="ml-auto shrink-0">
+                <TechDocsBuildLogs buildLog={buildLog} />
+              </div>
+            </div>
           </Alert>
         )}
         <TechDocsNotFound errorMessage={contentErrorMessage} />

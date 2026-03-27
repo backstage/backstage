@@ -15,28 +15,13 @@
  */
 
 import { useState, useRef, useLayoutEffect } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import { DependencyGraphTypes as Types } from './types';
 
 /** @public */
 export type DependencyGraphDefaultNodeClassKey = 'node' | 'text';
 
-const useStyles = makeStyles(
-  theme => ({
-    node: {
-      fill: theme.palette.primary.light,
-      stroke: theme.palette.primary.light,
-    },
-    text: {
-      fill: theme.palette.primary.contrastText,
-    },
-  }),
-  { name: 'BackstageDependencyGraphDefaultNode' },
-);
-
 /** @public */
 export function DefaultNode({ node: { id } }: Types.RenderNodeProps) {
-  const classes = useStyles();
   const [width, setWidth] = useState(0);
   const [height, setHeight] = useState(0);
   const idRef = useRef<SVGTextElement | null>(null);
@@ -63,14 +48,14 @@ export function DefaultNode({ node: { id } }: Types.RenderNodeProps) {
   return (
     <g>
       <rect
-        className={classes.node}
+        style={{ fill: 'var(--primary)', stroke: 'var(--primary)' }}
         width={paddedWidth}
         height={paddedHeight}
         rx={10}
       />
       <text
         ref={idRef}
-        className={classes.text}
+        style={{ fill: 'var(--primary-foreground)' }}
         y={paddedHeight / 2}
         x={paddedWidth / 2}
         textAnchor="middle"

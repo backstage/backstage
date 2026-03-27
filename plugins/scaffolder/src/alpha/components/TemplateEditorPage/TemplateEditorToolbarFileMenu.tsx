@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-import { MouseEvent, useCallback, useState } from 'react';
-
-import Button from '@material-ui/core/Button';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import {
+  ShadcnButton as Button,
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from '@backstage/core-components';
 
 import { scaffolderTranslationRef } from '../../../translation';
 
@@ -31,72 +33,35 @@ export function TemplateEditorToolbarFileMenu(props: {
 }) {
   const { onOpenDirectory, onCreateDirectory, onCloseDirectory } = props;
   const { t } = useTranslationRef(scaffolderTranslationRef);
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-
-  const handleOpenMenu = useCallback(
-    (event: MouseEvent<HTMLButtonElement>) => {
-      setAnchorEl(event.currentTarget);
-    },
-    [setAnchorEl],
-  );
-
-  const handleCloseMenu = useCallback(() => {
-    setAnchorEl(null);
-  }, [setAnchorEl]);
-
-  const handleOpenDirectory = useCallback(() => {
-    handleCloseMenu();
-    onOpenDirectory?.();
-  }, [handleCloseMenu, onOpenDirectory]);
-
-  const handleCreateDirectory = useCallback(() => {
-    handleCloseMenu();
-    onCreateDirectory?.();
-  }, [handleCloseMenu, onCreateDirectory]);
-
-  const handleCloseEditor = useCallback(() => {
-    handleCloseMenu();
-    onCloseDirectory?.();
-  }, [handleCloseMenu, onCloseDirectory]);
 
   return (
-    <>
-      <Button
-        aria-controls="file-menu"
-        aria-haspopup="true"
-        onClick={handleOpenMenu}
-      >
-        {t('templateEditorToolbarFileMenu.button')}
-      </Button>
-      <Menu
-        id="file-menu"
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={handleCloseMenu}
-        getContentAnchorEl={null}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'left',
-        }}
-      >
-        <MenuItem onClick={handleOpenDirectory} disabled={!onOpenDirectory}>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost">
+          {t('templateEditorToolbarFileMenu.button')}
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="start">
+        <DropdownMenuItem
+          disabled={!onOpenDirectory}
+          onSelect={() => onOpenDirectory?.()}
+        >
           {t('templateEditorToolbarFileMenu.options.openDirectory')}
-        </MenuItem>
-        <MenuItem
-          onClick={handleCreateDirectory}
+        </DropdownMenuItem>
+        <DropdownMenuItem
           disabled={!onCreateDirectory}
-          divider
+          onSelect={() => onCreateDirectory?.()}
         >
           {t('templateEditorToolbarFileMenu.options.createDirectory')}
-        </MenuItem>
-        <MenuItem onClick={handleCloseEditor} disabled={!onCloseDirectory}>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          disabled={!onCloseDirectory}
+          onSelect={() => onCloseDirectory?.()}
+        >
           {t('templateEditorToolbarFileMenu.options.closeEditor')}
-        </MenuItem>
-      </Menu>
-    </>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

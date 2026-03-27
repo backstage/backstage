@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-import { MouseEvent, useState, useCallback } from 'react';
+import type { HTMLAttributes } from 'react';
 
-import { makeStyles } from '@material-ui/core/styles';
-import IconButton from '@material-ui/core/IconButton';
-import Toolbar from '@material-ui/core/Toolbar';
-import { ToolbarProps } from '@material-ui/core/Toolbar';
-import Tooltip from '@material-ui/core/Tooltip';
-import Menu from '@material-ui/core/Menu';
-import Box from '@material-ui/core/Box';
-import SettingsIcon from '@material-ui/icons/Settings';
+import { Settings } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  ShadcnButton as Button,
+} from '@backstage/core-components';
 
 import {
   TechDocsAddonLocations as locations,
@@ -31,17 +30,14 @@ import {
   useTechDocsReaderPage,
 } from '@backstage/plugin-techdocs-react';
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    gridArea: 'pageSubheader',
-    flexDirection: 'column',
-    minHeight: 'auto',
-    padding: theme.spacing(3, 3, 0),
-    '@media print': {
-      display: 'none',
-    },
-  },
-}));
+/**
+ * Props type for the subheader toolbar container.
+ * Replaces the former MUI `ToolbarProps` dependency with standard
+ * `HTMLAttributes<HTMLDivElement>` for the underlying div element.
+ *
+ * @public
+ */
+export type TechDocsSubheaderToolbarProps = HTMLAttributes<HTMLDivElement>;
 
 /**
  * Renders the reader page subheader.
@@ -49,19 +45,8 @@ const useStyles = makeStyles(theme => ({
  * @public
  */
 export const TechDocsReaderPageSubheader = (props: {
-  toolbarProps?: ToolbarProps;
+  toolbarProps?: TechDocsSubheaderToolbarProps;
 }) => {
-  const classes = useStyles();
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-
-  const handleClick = useCallback((event: MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  }, []);
-
-  const handleClose = useCallback(() => {
-    setAnchorEl(null);
-  }, []);
-
   const {
     entityMetadata: { value: entityMetadata, loading: entityMetadataLoading },
   } = useTechDocsReaderPage();
@@ -80,39 +65,26 @@ export const TechDocsReaderPageSubheader = (props: {
   if (entityMetadataLoading === false && !entityMetadata) return null;
 
   return (
-    <Toolbar classes={classes} {...props.toolbarProps}>
-      <Box
-        display="flex"
-        justifyContent="flex-end"
-        width="100%"
-        flexWrap="wrap"
-      >
+    <div
+      role="toolbar"
+      className="[grid-area:pageSubheader] flex flex-col min-h-0 px-6 pt-6 print:hidden"
+      {...props.toolbarProps}
+    >
+      <div className="flex justify-end w-full flex-wrap">
         {subheaderAddons}
         {settingsAddons ? (
-          <>
-            <Tooltip title="Settings">
-              <IconButton
-                aria-controls="tech-docs-reader-page-settings"
-                aria-haspopup="true"
-                onClick={handleClick}
-              >
-                <SettingsIcon />
-              </IconButton>
-            </Tooltip>
-            <Menu
-              id="tech-docs-reader-page-settings"
-              getContentAnchorEl={null}
-              anchorEl={anchorEl}
-              anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-              open={Boolean(anchorEl)}
-              onClose={handleClose}
-              keepMounted
-            >
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" aria-label="Settings">
+                <Settings className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
               <div>{settingsAddons}</div>
-            </Menu>
-          </>
+            </DropdownMenuContent>
+          </DropdownMenu>
         ) : null}
-      </Box>
-    </Toolbar>
+      </div>
+    </div>
   );
 };

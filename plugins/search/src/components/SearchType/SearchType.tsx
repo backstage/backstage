@@ -13,15 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Checkbox from '@material-ui/core/Checkbox';
-import Chip from '@material-ui/core/Chip';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import ListItemText from '@material-ui/core/ListItemText';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import { makeStyles } from '@material-ui/core/styles';
-import { ChangeEvent } from 'react';
+
+/* shadcn/ui primitives from @backstage/core-components */
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from '@backstage/core-components';
+import { Checkbox } from '@backstage/core-components';
+import { Badge } from '@backstage/core-components';
+import { ShadcnButton as Button } from '@backstage/core-components';
+import { Label } from '@backstage/core-components';
+import { cn } from '@backstage/core-components';
+
+/* Lucide icons replacing @material-ui/icons */
+import { ChevronsUpDown, X } from 'lucide-react';
+
+import { useState } from 'react';
 import useEffectOnce from 'react-use/esm/useEffectOnce';
 import {
   SearchTypeAccordion,
@@ -31,20 +39,6 @@ import { SearchTypeTabs, SearchTypeTabsProps } from './SearchType.Tabs';
 import { useSearch } from '@backstage/plugin-search-react';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { searchTranslationRef } from '../../translation';
-
-const useStyles = makeStyles(theme => ({
-  label: {
-    textTransform: 'capitalize',
-  },
-  chips: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    marginTop: theme.spacing(1),
-  },
-  chip: {
-    margin: 2,
-  },
-}));
 
 /**
  * Props for {@link SearchType}.
@@ -59,14 +53,25 @@ export type SearchTypeProps = {
 };
 
 /**
+ * A multi-select search type filter component implemented with a Popover +
+ * Checkbox list pattern (standard shadcn/ui approach for multi-select,
+ * since Radix Select does not support multi-select natively).
+ *
+ * Replaces the former MUI Select multiple + Chip renderValue pattern.
+ * Selected types are displayed as Badge pills below the trigger with
+ * individual remove buttons.
+ *
  * @public
  */
 const SearchType = (props: SearchTypeProps) => {
   const { className, defaultValue, name, values = [] } = props;
-  const classes = useStyles();
   const { types, setTypes } = useSearch();
   const { t } = useTranslationRef(searchTranslationRef);
 
+  /* Controls popover open/close state */
+  const [open, setOpen] = useState(false);
+
+  /* Seed default value on first mount if no types are set */
   useEffectOnce(() => {
     if (!types.length) {
       if (defaultValue && Array.isArray(defaultValue)) {
@@ -77,48 +82,110 @@ const SearchType = (props: SearchTypeProps) => {
     }
   });
 
-  const handleChange = (e: ChangeEvent<{ value: unknown }>) => {
-    const value = e.target.value as string[];
-    setTypes(value as string[]);
+  /**
+   * Toggle a type value on or off in the selected types list.
+   * This replaces the MUI Select onChange handler which received
+   * event.target.value as the full new array.
+   */
+  const handleToggle = (typeValue: string) => {
+    const isSelected = types.includes(typeValue);
+    const newTypes = isSelected
+      ? types.filter(t2 => t2 !== typeValue)
+      : [...types, typeValue];
+    setTypes(newTypes);
+  };
+
+  /**
+   * Remove a specific type from the selection via the Badge X button.
+   */
+  const handleRemove = (typeValue: string) => {
+    const newTypes = types.filter(t2 => t2 !== typeValue);
+    setTypes(newTypes);
   };
 
   return (
-    <FormControl
-      className={className}
-      variant="filled"
-      fullWidth
+    <div
+      className={cn('w-full space-y-1.5', className)}
       data-testid="search-typefilter-next"
     >
-      <InputLabel className={classes.label} margin="dense">
-        {name}
-      </InputLabel>
-      <Select
-        multiple
-        variant="outlined"
-        value={types}
-        onChange={handleChange}
-        placeholder={t('searchType.allResults')}
-        renderValue={selected => (
-          <div className={classes.chips}>
-            {(selected as string[]).map(value => (
-              <Chip
-                key={value}
-                label={value}
-                className={classes.chip}
-                size="small"
-              />
-            ))}
+      <Label className="capitalize text-sm">{name}</Label>
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            aria-expanded={open}
+            aria-haspopup="listbox"
+            data-testid="search-type-trigger"
+            className="w-full justify-between font-normal"
+          >
+            <span className="truncate">
+              {types.length === 0
+                ? t('searchType.allResults')
+                : `${types.length} selected`}
+            </span>
+            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-full p-0" align="start">
+          {/* Accessible listbox container with option items */}
+          <div className="max-h-60 overflow-auto p-1" role="listbox">
+            {values.map((type: string) => {
+              const isChecked = types.includes(type);
+              return (
+                <div
+                  key={type}
+                  role="option"
+                  aria-selected={isChecked}
+                  tabIndex={0}
+                  className={cn(
+                    'flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm cursor-pointer',
+                    'hover:bg-accent focus-visible:bg-accent focus-visible:outline-none',
+                    isChecked && 'bg-accent/50',
+                  )}
+                  onClick={() => handleToggle(type)}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      handleToggle(type);
+                    }
+                  }}
+                >
+                  <Checkbox
+                    checked={isChecked}
+                    onCheckedChange={() => handleToggle(type)}
+                    className="h-4 w-4"
+                    tabIndex={-1}
+                    aria-hidden
+                  />
+                  <span>{type}</span>
+                </div>
+              );
+            })}
           </div>
-        )}
-      >
-        {values.map((value: string) => (
-          <MenuItem key={value} value={value}>
-            <Checkbox checked={types.indexOf(value) > -1} />
-            <ListItemText primary={value} />
-          </MenuItem>
-        ))}
-      </Select>
-    </FormControl>
+        </PopoverContent>
+      </Popover>
+      {/* Selected type badges below trigger (replaces MUI Chip renderValue) */}
+      {types.length > 0 && (
+        <div className="flex flex-wrap gap-1 mt-2">
+          {types.map(value => (
+            <Badge key={value} variant="secondary" className="gap-1">
+              {value}
+              <button
+                type="button"
+                className="ml-1 rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                onClick={e => {
+                  e.stopPropagation();
+                  handleRemove(value);
+                }}
+                aria-label={`Remove ${value}`}
+              >
+                <X className="h-3 w-3" />
+              </button>
+            </Badge>
+          ))}
+        </div>
+      )}
+    </div>
   );
 };
 

@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-import { ReactNode } from 'react';
-
-import List, { ListProps } from '@material-ui/core/List';
+import { type HTMLAttributes, ReactNode } from 'react';
 
 import {
   Progress,
   EmptyState,
   ResponseErrorPanel,
+  cn,
 } from '@backstage/core-components';
 import { AnalyticsContext } from '@backstage/core-plugin-api';
 import { SearchResult } from '@backstage/plugin-search-common';
@@ -37,7 +36,7 @@ import { searchReactTranslationRef } from '../../translation';
  * Props for {@link SearchResultListLayout}
  * @public
  */
-export type SearchResultListLayoutProps = ListProps & {
+export type SearchResultListLayoutProps = HTMLAttributes<HTMLUListElement> & {
   /**
    * If defined, will render a default error panel.
    */
@@ -109,7 +108,11 @@ export const SearchResultListLayout = (props: SearchResultListLayoutProps) => {
     return <>{noResultsComponent}</>;
   }
 
-  return <List {...rest}>{resultItems.map(renderResultItem)}</List>;
+  return (
+    <ul {...rest} className={cn('list-none p-0 m-0', rest.className)}>
+      {resultItems.map(renderResultItem)}
+    </ul>
+  );
 };
 
 /**

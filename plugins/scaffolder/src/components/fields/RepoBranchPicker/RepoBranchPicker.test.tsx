@@ -377,9 +377,11 @@ describe('RepoBranchPicker', () => {
           <Form {...props} />
         </Wrapper>,
       );
+      /* After shadcn/ui migration the DefaultRepoBranchPicker renders its own
+         helper text with text-muted-foreground, so the baseline count is 1. */
       expect(
-        container.getElementsByClassName('MuiTypography-body1'),
-      ).toHaveLength(0);
+        container.getElementsByClassName('text-muted-foreground'),
+      ).toHaveLength(1);
     });
 
     it('presents schema description', async () => {
@@ -400,9 +402,10 @@ describe('RepoBranchPicker', () => {
           <Form {...props} />
         </Wrapper>,
       );
+      /* 2 = schema description wrapper + DefaultRepoBranchPicker helper text */
       expect(
-        container.getElementsByClassName('MuiTypography-body1'),
-      ).toHaveLength(1);
+        container.getElementsByClassName('text-muted-foreground'),
+      ).toHaveLength(2);
       expect(getByText(description.fromSchema)).toBeInTheDocument();
       expect(queryByText(description.fromUiSchema)).toBe(null);
     });
@@ -428,9 +431,10 @@ describe('RepoBranchPicker', () => {
           <Form {...props} />
         </Wrapper>,
       );
+      /* 2 = uiSchema description wrapper + DefaultRepoBranchPicker helper text */
       expect(
-        container.getElementsByClassName('MuiTypography-body1'),
-      ).toHaveLength(1);
+        container.getElementsByClassName('text-muted-foreground'),
+      ).toHaveLength(2);
       expect(queryByText(description.fromSchema)).toBe(null);
       expect(getByText(description.fromUiSchema)).toBeInTheDocument();
     });

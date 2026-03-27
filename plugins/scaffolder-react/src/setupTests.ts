@@ -14,3 +14,30 @@
  * limitations under the License.
  */
 import '@testing-library/jest-dom';
+
+// Polyfill ResizeObserver for jsdom — required by cmdk (used in category picker combobox)
+if (typeof globalThis.ResizeObserver === 'undefined') {
+  globalThis.ResizeObserver = class ResizeObserver {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  } as unknown as typeof globalThis.ResizeObserver;
+}
+
+// Polyfill Element.scrollIntoView for jsdom — required by cmdk scroll-to-selected behavior
+if (typeof Element.prototype.scrollIntoView === 'undefined') {
+  Element.prototype.scrollIntoView = function () {};
+}
+
+// Polyfill pointer capture methods for jsdom — required by Radix UI Popover/Select
+if (typeof Element.prototype.hasPointerCapture === 'undefined') {
+  Element.prototype.hasPointerCapture = function () {
+    return false;
+  };
+}
+if (typeof Element.prototype.setPointerCapture === 'undefined') {
+  Element.prototype.setPointerCapture = function () {};
+}
+if (typeof Element.prototype.releasePointerCapture === 'undefined') {
+  Element.prototype.releasePointerCapture = function () {};
+}

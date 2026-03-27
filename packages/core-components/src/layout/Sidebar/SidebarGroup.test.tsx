@@ -16,14 +16,18 @@
 
 import { mockBreakpoint } from '@backstage/core-components/testUtils';
 import { renderInTestApp } from '@backstage/test-utils';
-import HomeIcon from '@material-ui/icons/Home';
-import LayersIcon from '@material-ui/icons/Layers';
-import LibraryBooks from '@material-ui/icons/LibraryBooks';
+import { IconComponent } from '@backstage/core-plugin-api';
+import { Home, Layers, BookOpen } from 'lucide-react';
 import { fireEvent } from '@testing-library/react';
 import { SidebarItem } from './Items';
 import { MobileSidebarContext } from './MobileSidebarContext';
 import { SidebarPage } from './Page';
 import { SidebarGroup } from './SidebarGroup';
+
+// Bridge lucide-react icons to Backstage's IconComponent type interface
+const HomeIcon = Home as unknown as IconComponent;
+const LayersIcon = Layers as unknown as IconComponent;
+const LibraryBooks = BookOpen as unknown as IconComponent;
 
 const SidebarGroupWithItems = () => (
   <SidebarPage>

@@ -15,7 +15,6 @@
  */
 import { DateTime } from 'luxon';
 import { FC } from 'react';
-import Typography from '@material-ui/core/Typography';
 
 interface CreatedAtColumnProps {
   createdAt: string;
@@ -34,5 +33,5 @@ export const CreatedAtColumn: FC<CreatedAtColumnProps> = ({
     ...DateTime.DATETIME_SHORT_WITH_SECONDS,
   });
 
-  return <Typography paragraph>{formatted}</Typography>;
+  return <p className="text-sm text-muted-foreground mb-4">{formatted}</p>;
 };

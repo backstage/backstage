@@ -15,7 +15,6 @@
  */
 
 import { DismissableBanner, Props } from './DismissableBanner';
-import Typography from '@material-ui/core/Typography';
 import { WebStorage } from '@backstage/core-app-api';
 import { storageApiRef, StorageApi } from '@backstage/core-plugin-api';
 import { TestApiProvider, MockErrorApi } from '@backstage/test-utils';
@@ -62,12 +61,10 @@ export const WithLink = (args: Props) => (
       <DismissableBanner
         {...args}
         message={
-          <Typography>
+          <span className="text-sm">
             This is a dismissable banner with a link:{' '}
-            <Link to="http://example.com" color="textPrimary">
-              example.com
-            </Link>
-          </Typography>
+            <Link to="http://example.com">example.com</Link>
+          </span>
         }
         id="linked_dismissable"
       />

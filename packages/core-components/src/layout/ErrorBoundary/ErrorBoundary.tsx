@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import Typography from '@material-ui/core/Typography';
 import { PropsWithChildren, ComponentClass, Component, ErrorInfo } from 'react';
 import { LinkButton } from '../../components/LinkButton';
 import { ErrorPanel } from '../../components/ErrorPanel';
@@ -45,20 +44,22 @@ const SlackLink = (props: { slackChannel?: string | SlackChannel }) => {
     return null;
   } else if (typeof slackChannel === 'string') {
     return (
-      <Typography>{t('errorBoundary.title', { slackChannel })}</Typography>
+      <p className="text-sm text-muted-foreground">
+        {t('errorBoundary.title', { slackChannel })}
+      </p>
     );
   } else if (!slackChannel.href) {
     return (
-      <Typography>
+      <p className="text-sm text-muted-foreground">
         {t('errorBoundary.title', {
           slackChannel: slackChannel.name,
         })}
-      </Typography>
+      </p>
     );
   }
 
   return (
-    <LinkButton to={slackChannel.href} variant="contained">
+    <LinkButton to={slackChannel.href} variant="default">
       {slackChannel.name}
     </LinkButton>
   );

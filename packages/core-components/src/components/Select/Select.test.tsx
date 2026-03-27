@@ -14,7 +14,15 @@
  * limitations under the License.
  */
 
-import { fireEvent, render, within } from '@testing-library/react';
+/*
+ * Select component test suite.
+ *
+ * Tests updated for the shadcn/ui migration (Radix Select + Popover-based
+ * multi-select). Selectors now target Radix roles (role="combobox" for single
+ * select trigger, role="button" for multi-select Popover trigger).
+ */
+
+import { fireEvent, render } from '@testing-library/react';
 import { SelectComponent as Select } from './Select';
 
 const SELECT_ITEMS = [
@@ -41,17 +49,18 @@ describe('<Select />', () => {
 
     expect(getByText('Default')).toBeInTheDocument();
     const input = getByTestId('select');
-    expect(input.textContent).toBe('All results');
+    // Radix SelectTrigger shows the placeholder text via SelectValue
+    expect(input).toHaveTextContent('All results');
 
-    // Simulate click on input
-    fireEvent.mouseDown(within(input).getByRole('button'));
+    // Radix SelectTrigger has role="combobox"; click it directly to open
+    fireEvent.click(input);
 
     expect(getByText('test 1')).toBeInTheDocument();
     const option = getByText('test 1');
 
-    // Simulate click on option
+    // Simulate click on option to select it
     fireEvent.click(option);
-    expect(input.textContent).toBe('test 1');
+    expect(input).toHaveTextContent('test 1');
   });
 
   it('display nothing when placeholder is empty string and items updated to none', () => {
@@ -142,10 +151,10 @@ describe('<Select />', () => {
 
     // Verify we can still open the dropdown with a click on the select
     const selectInput = getByTestId('select');
-    expect(selectInput.textContent).toBe('All results');
+    expect(selectInput).toHaveTextContent('All results');
 
-    // Simulate click on select
-    fireEvent.mouseDown(within(selectInput).getByRole('button'));
+    // Multi-select uses a Popover trigger; click it directly to open
+    fireEvent.click(selectInput);
 
     // Now dropdown should be open
     expect(queryByText('test 2')).toBeInTheDocument();

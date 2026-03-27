@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+// Migration note: SystemDiagramCard was migrated from MUI (makeStyles, useTheme,
+// Box, Typography, ZoomOutMap) to Tailwind CSS + lucide-react (Maximize2).
+// These tests remain valid because all assertions use element-agnostic
+// screen.getByText() / screen.queryByText() queries on rendered text content,
+// which is unchanged by the styling migration.
+
 import {
   catalogApiRef,
   EntityProvider,

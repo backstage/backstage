@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
-import { CodeSnippet, EmptyState } from '@backstage/core-components';
+import { Button, CodeSnippet, EmptyState } from '@backstage/core-components';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { userSettingsTranslationRef } from '../../translation';
 
@@ -38,9 +36,9 @@ export const EmptyFlags = () => {
       description={t('featureFlags.emptyFlags.description')}
       action={
         <>
-          <Typography variant="body1">
+          <p className="text-sm text-foreground">
             {t('featureFlags.emptyFlags.action.title')}
-          </Typography>
+          </p>
           <CodeSnippet
             text={EXAMPLE}
             language="typescript"
@@ -49,9 +47,8 @@ export const EmptyFlags = () => {
             customStyle={{ background: 'inherit', fontSize: '115%' }}
           />
           <Button
-            variant="contained"
-            color="primary"
-            href="https://backstage.io/docs/api/utility-apis"
+            variant="default"
+            to="https://backstage.io/docs/api/utility-apis"
           >
             {t('featureFlags.emptyFlags.action.readMoreButtonTitle')}
           </Button>

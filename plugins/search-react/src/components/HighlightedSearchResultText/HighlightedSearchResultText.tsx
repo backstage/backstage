@@ -15,17 +15,9 @@
  */
 
 import { useMemo } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 
 /** @public */
 export type HighlightedSearchResultTextClassKey = 'highlight';
-
-const useStyles = makeStyles(
-  () => ({
-    highlight: {},
-  }),
-  { name: 'BackstageHighlightedSearchResultText' },
-);
 
 /**
  * Props for {@link HighlightedSearchResultText}.
@@ -46,23 +38,25 @@ export const HighlightedSearchResultText = (
 ) => {
   const { text, preTag, postTag } = props;
 
-  const classes = useStyles();
   const terms = useMemo(
     () => text.split(new RegExp(`(${preTag}.+?${postTag})`)),
     [postTag, preTag, text],
   );
 
   return (
-    <>
+    <span
+      data-testid="highlighted-search-result-text"
+      data-component="BackstageHighlightedSearchResultText"
+    >
       {terms.map((t, idx) =>
         t.includes(preTag) ? (
-          <mark className={classes.highlight} key={idx}>
+          <mark className="bg-transparent font-bold text-inherit" key={idx}>
             {t.replace(new RegExp(`${preTag}|${postTag}`, 'g'), '')}
           </mark>
         ) : (
-          t
+          <span key={idx}>{t}</span>
         ),
       )}
-    </>
+    </span>
   );
 };

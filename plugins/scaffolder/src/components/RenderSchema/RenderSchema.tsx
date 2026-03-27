@@ -13,35 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { MarkdownContent } from '@backstage/core-components';
+import {
+  MarkdownContent,
+  ShadcnTable,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+  Badge,
+  ShadcnButton,
+  Card,
+  cn,
+} from '@backstage/core-components';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import Box from '@material-ui/core/Box';
-import Chip from '@material-ui/core/Chip';
-import Collapse from '@material-ui/core/Collapse';
-import IconButton from '@material-ui/core/IconButton';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import Paper from '@material-ui/core/Paper';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
-import { ClassNameMap } from '@material-ui/core/styles/withStyles';
-import ExpandLessIcon from '@material-ui/icons/ExpandLess';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import WrapText from '@material-ui/icons/WrapText';
-import classNames from 'classnames';
+import { ChevronUp, ChevronDown, WrapText } from 'lucide-react';
 import {
   JSONSchema7,
   JSONSchema7Definition,
   JSONSchema7Type,
 } from 'json-schema';
-import { FC, JSX, cloneElement, Fragment, ReactElement } from 'react';
+import { FC, JSX, cloneElement, Fragment, ReactElement, useState } from 'react';
 import { scaffolderTranslationRef } from '../../translation';
 import { SchemaRenderContext, SchemaRenderStrategy } from './types';
 import { TranslationMessages } from '../TemplatingExtensionsPage/types';
@@ -131,19 +123,11 @@ const getSubschemas = (schema: JSONSchema7Definition): subSchemasType => {
   );
 };
 
-const useColumnStyles = makeStyles({
-  description: {
-    width: '40%',
-    whiteSpace: 'normal',
-    wordWrap: 'break-word',
-    '&.MuiTableCell-root': {
-      whiteSpace: 'normal',
-    },
-  },
-  standard: {
-    whiteSpace: 'normal',
-  },
-});
+/** Tailwind class strings replacing MUI makeStyles for table column widths */
+const columnStyles = {
+  description: 'w-[40%] whitespace-normal break-words',
+  standard: 'whitespace-normal',
+} as const;
 
 type SchemaRenderElement = {
   schema: JSONSchema7Definition;
@@ -160,7 +144,7 @@ type Column = {
   key: string;
   title: (t: TranslationMessages<typeof scaffolderTranslationRef>) => string;
   render: RenderColumn;
-  className?: keyof ReturnType<typeof useColumnStyles>;
+  className?: keyof typeof columnStyles;
 };
 
 const generateId = (
@@ -176,9 +160,10 @@ const nameColumn = {
   render: (element: SchemaRenderElement, context: SchemaRenderContext) => {
     return (
       <div
-        className={classNames(context.classes.code, {
-          [context.classes.codeRequired]: element.required,
-        })}
+        className={cn(
+          context.classes.code,
+          element.required && context.classes.codeRequired,
+        )}
       >
         {element.key}
       </div>
@@ -247,7 +232,7 @@ const typeColumn = {
   title: t => t('renderSchema.tableCell.type'),
   render: (element: SchemaRenderElement, context: SchemaRenderContext) => {
     if (typeof element.schema === 'boolean') {
-      return <Typography>{element.schema ? 'any' : 'none'}</Typography>;
+      return <span className="text-sm">{element.schema ? 'any' : 'none'}</span>;
     }
     const types = getTypes(element.schema);
     const [isExpanded, setIsExpanded] = context.expanded;
@@ -257,23 +242,29 @@ const typeColumn = {
       <>
         {types?.map((type, index) =>
           info.canSubschema || (info.hasEnum && index === 0) ? (
-            <Chip
+            <Badge
               data-testid={`expand_${id}`}
-              label={type}
               key={type}
-              icon={isExpanded[id] ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-              variant="outlined"
+              variant="outline"
+              className="cursor-pointer gap-1"
               onClick={() =>
-                setIsExpanded(prevState => {
-                  return {
-                    ...prevState,
-                    [id]: !!!prevState[id],
-                  };
-                })
+                setIsExpanded(prevState => ({
+                  ...prevState,
+                  [id]: !prevState[id],
+                }))
               }
-            />
+            >
+              {isExpanded[id] ? (
+                <ChevronUp className="h-3 w-3" />
+              ) : (
+                <ChevronDown className="h-3 w-3" />
+              )}
+              {type}
+            </Badge>
           ) : (
-            <Chip label={type} key={type} variant="outlined" />
+            <Badge key={type} variant="outline">
+              {type}
+            </Badge>
           ),
         )}
       </>
@@ -281,9 +272,52 @@ const typeColumn = {
   },
 } as Column;
 
+/**
+ * Inline tooltip for complex enum values — renders pretty-printed JSON on hover.
+ * Uses shadcn/ui Button styling for the trigger and Tailwind classes for the
+ * tooltip content, avoiding Radix Tooltip's animation-based mount/unmount
+ * lifecycle which is incompatible with JSDOM test environments.
+ */
+const EnumValueTooltip = ({
+  value,
+  index,
+  classes,
+}: {
+  value: JSONSchema7Type;
+  index: number;
+  classes: Record<string, string>;
+}) => {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <ShadcnButton
+        variant="ghost"
+        size="icon"
+        data-testid={`wrap-text_${index}`}
+        className="h-8 w-8"
+        onMouseEnter={() => setOpen(true)}
+        onMouseLeave={() => setOpen(false)}
+      >
+        <WrapText className="h-4 w-4" />
+      </ShadcnButton>
+      {open && (
+        <span
+          data-testid={`pretty_${index}`}
+          className={cn(
+            classes.code,
+            'whitespace-pre-wrap absolute z-50 rounded-md bg-primary px-3 py-1.5 text-xs text-primary-foreground',
+          )}
+        >
+          {JSON.stringify(value, undefined, 2)}
+        </span>
+      )}
+    </>
+  );
+};
+
 export const RenderEnum: FC<{
   e: JSONSchema7Type[];
-  classes: ClassNameMap;
+  classes: Record<string, string>;
   [key: string]: any;
 }> = ({
   e,
@@ -291,57 +325,37 @@ export const RenderEnum: FC<{
   ...props
 }: {
   e: JSONSchema7Type[];
-  classes: ClassNameMap;
+  classes: Record<string, string>;
 }) => {
   return (
-    <List {...props}>
+    <ul className="list-none p-0 m-0" {...props}>
       {e.map((v, i) => {
         let inner: JSX.Element = (
-          <Typography
-            data-testid={`enum_el${i}`}
-            className={classNames(classes.code)}
-          >
+          <span data-testid={`enum_el${i}`} className={cn(classes.code)}>
             {JSON.stringify(v)}
-          </Typography>
+          </span>
         );
         if (v !== null && ['object', 'array'].includes(typeof v)) {
           inner = (
             <>
               {inner}
-              <Tooltip
-                title={
-                  <Typography
-                    data-testid={`pretty_${i}`}
-                    className={classNames(classes.code)}
-                    style={{ whiteSpace: 'pre-wrap' }}
-                  >
-                    {JSON.stringify(v, undefined, 2)}
-                  </Typography>
-                }
-              >
-                <IconButton data-testid={`wrap-text_${i}`}>
-                  <WrapText />
-                </IconButton>
-              </Tooltip>
+              <EnumValueTooltip value={v} index={i} classes={classes} />
             </>
           );
         }
-        return <ListItem key={i}>{inner}</ListItem>;
+        return (
+          <li key={i} className="py-1">
+            {inner}
+          </li>
+        );
       })}
-    </List>
+    </ul>
   );
 };
 
-const useTableStyles = makeStyles({
-  schema: {
-    width: '100%',
-    overflowX: 'hidden',
-    '& table': {
-      width: '100%',
-      tableLayout: 'fixed',
-    },
-  },
-});
+/** Tailwind class string replacing MUI makeStyles for the schema table container */
+const tableSchemaClass =
+  'w-full overflow-x-hidden [&_table]:w-full [&_table]:table-fixed';
 
 export const RenderSchema = ({
   strategy,
@@ -353,8 +367,6 @@ export const RenderSchema = ({
   schema?: JSONSchema7Definition;
 }) => {
   const { t } = useTranslationRef(scaffolderTranslationRef);
-  const tableStyles = useTableStyles();
-  const columnStyles = useColumnStyles();
   const result = (() => {
     if (typeof schema === 'object') {
       const subschemas = getSubschemas(schema);
@@ -386,29 +398,29 @@ export const RenderSchema = ({
       return (
         <>
           {columns && elements && (
-            <TableContainer component={Paper} className={tableStyles.schema}>
-              <Table
-                data-testid={`${strategy}_${context.parentId}`}
-                size="small"
-              >
-                <TableHead>
+            <Card className={tableSchemaClass}>
+              <ShadcnTable data-testid={`${strategy}_${context.parentId}`}>
+                <TableHeader>
                   <TableRow>
                     {columns.map((col, index) => (
-                      <TableCell
+                      <TableHead
                         key={index}
                         className={columnStyles[col.className ?? 'standard']}
                       >
                         {col.title(t)}
-                      </TableCell>
+                      </TableHead>
                     ))}
                   </TableRow>
-                </TableHead>
+                </TableHeader>
                 <TableBody>
                   {elements.map(el => {
                     const id = generateId(el, context);
                     const info = inspectSchema(el.schema);
                     const rows = [
-                      <TableRow data-testid={`${strategy}-row_${id}`}>
+                      <TableRow
+                        key={`${id}-main`}
+                        data-testid={`${strategy}-row_${id}`}
+                      >
                         {columns!.map(col => (
                           <TableCell
                             key={col.key}
@@ -426,7 +438,7 @@ export const RenderSchema = ({
                       (info.canSubschema || info.hasEnum)
                     ) {
                       let details: ReactElement = (
-                        <Box data-testid={`expansion_${id}`} sx={{ margin: 1 }}>
+                        <div data-testid={`expansion_${id}`} className="m-2">
                           {info.canSubschema && (
                             <RenderSchema
                               strategy="properties"
@@ -456,25 +468,14 @@ export const RenderSchema = ({
                               />
                             </>
                           )}
-                        </Box>
+                        </div>
                       );
                       if (getTypes(el.schema)) {
-                        details = (
-                          <Collapse
-                            in={isExpanded[id]}
-                            timeout="auto"
-                            unmountOnExit
-                          >
-                            {details}
-                          </Collapse>
-                        );
+                        details = isExpanded[id] ? details : null!;
                       }
                       rows.push(
-                        <TableRow>
-                          <TableCell
-                            style={{ paddingBottom: 0, paddingTop: 0 }}
-                            colSpan={columns!.length}
-                          >
+                        <TableRow key={`${id}-details`}>
+                          <TableCell className="p-0" colSpan={columns!.length}>
                             {details}
                           </TableCell>
                         </TableRow>,
@@ -483,8 +484,8 @@ export const RenderSchema = ({
                     return <Fragment key={id}>{rows}</Fragment>;
                   })}
                 </TableBody>
-              </Table>
-            </TableContainer>
+              </ShadcnTable>
+            </Card>
           )}
           {(Object.keys(subschemas) as Array<keyof subSchemasType>).map(sk => (
             <Fragment key={sk}>
@@ -513,5 +514,7 @@ export const RenderSchema = ({
     }
     return undefined;
   })();
-  return result ?? <Typography>No schema defined</Typography>;
+  return (
+    result ?? <p className="text-sm text-muted-foreground">No schema defined</p>
+  );
 };

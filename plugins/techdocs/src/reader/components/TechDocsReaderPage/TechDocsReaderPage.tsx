@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Children, ReactElement, ReactNode, useMemo } from 'react';
+import React, { Children, ReactElement, ReactNode, useMemo } from 'react';
 import { useOutlet } from 'react-router-dom';
 import { Page, Progress } from '@backstage/core-components';
 import { CompoundEntityRef } from '@backstage/catalog-model';
@@ -33,13 +33,6 @@ import {
   useRouteRefParams,
 } from '@backstage/core-plugin-api';
 import { CookieAuthRefreshProvider } from '@backstage/plugin-auth-react';
-import {
-  createTheme,
-  styled,
-  ThemeOptions,
-  ThemeProvider,
-  useTheme,
-} from '@material-ui/core/styles';
 import { useExternalRedirect } from './useExternalRedirect';
 
 /* An explanation for the multiple ways of customizing the TechDocs reader page
@@ -150,21 +143,85 @@ export const TechDocsReaderLayout = (props: TechDocsReaderLayoutProps) => {
 };
 
 /**
+ * @deprecated Use CSS custom properties to customize the reader theme instead of MUI ThemeOptions.
+ */
+type ReaderThemeOptions = Record<string, unknown>;
+
+/**
  * @public
  */
 export type TechDocsReaderPageProps = {
   entityRef?: CompoundEntityRef;
   children?: TechDocsReaderPageRenderFunction | ReactNode;
-  overrideThemeOptions?: Partial<ThemeOptions>;
+  /** @deprecated Use CSS custom properties to customize the reader theme. */
+  overrideThemeOptions?: Partial<ReaderThemeOptions>;
 };
 
 /**
- * Styled Backstage Page that fills available vertical space
+ * CSS class name for styled techdocs reader page overrides.
+ * Overrides the default Page component's height (100vh) and overflow (auto)
+ * so that the reader page fills its parent's height and allows visible overflow.
  */
-const StyledPage = styled(Page)({
-  height: 'inherit',
-  overflowY: 'visible',
-});
+const STYLED_PAGE_CLASS = 'techdocs-reader-page-styled';
+
+/**
+ * Ensures the styled page CSS is injected into the document head exactly once.
+ * Replaces the previous MUI styled(Page)() pattern with a minimal runtime injection.
+ */
+let styledPageCssInjected = false;
+function ensureStyledPageCss(): void {
+  if (styledPageCssInjected || typeof document === 'undefined') return;
+  const style = document.createElement('style');
+  style.setAttribute('data-techdocs', 'styled-page');
+  style.textContent = `.${STYLED_PAGE_CLASS} { height: inherit !important; overflow-y: visible !important; }`;
+  document.head.appendChild(style);
+  styledPageCssInjected = true;
+}
+
+/**
+ * Styled Backstage Page that fills available vertical space.
+ * Replaces the previous MUI styled(Page)() with a className-based approach
+ * that injects minimal CSS at runtime to override Page's default height and overflow.
+ */
+const StyledPage = ({
+  className,
+  ...props
+}: React.ComponentProps<typeof Page>) => {
+  ensureStyledPageCss();
+  return (
+    <Page
+      {...props}
+      className={[STYLED_PAGE_CLASS, className].filter(Boolean).join(' ')}
+    />
+  );
+};
+
+/**
+ * Converts deprecated MUI ThemeOptions overrides to inline CSS properties.
+ * Supports common overrides: typography.fontFamily, typography.fontSize.
+ */
+function themeOptionsToStyle(
+  options?: Partial<ReaderThemeOptions>,
+): React.CSSProperties {
+  if (!options || Object.keys(options).length === 0) return {};
+
+  const style: React.CSSProperties = {};
+  const typography = options.typography as Record<string, unknown> | undefined;
+
+  if (typography) {
+    if (typeof typography.fontFamily === 'string') {
+      style.fontFamily = typography.fontFamily;
+    }
+    if (
+      typeof typography.fontSize === 'number' ||
+      typeof typography.fontSize === 'string'
+    ) {
+      style.fontSize = typography.fontSize as string | number;
+    }
+  }
+
+  return style;
+}
 
 /**
  * An addon-aware implementation of the TechDocsReaderPage.
@@ -172,16 +229,19 @@ const StyledPage = styled(Page)({
  * @public
  */
 export const TechDocsReaderPage = (props: TechDocsReaderPageProps) => {
-  const currentTheme = useTheme();
-
-  const readerPageTheme = useMemo(
-    () =>
-      createTheme({
-        ...currentTheme,
-        ...(props.overrideThemeOptions || {}),
-      }),
-    [currentTheme, props.overrideThemeOptions],
-  );
+  const readerPageStyle = useMemo(() => {
+    if (
+      props.overrideThemeOptions &&
+      Object.keys(props.overrideThemeOptions).length > 0
+    ) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        'TechDocsReaderPage: overrideThemeOptions is deprecated. ' +
+          'Use CSS custom properties to customize the TechDocs reader theme instead.',
+      );
+    }
+    return themeOptionsToStyle(props.overrideThemeOptions);
+  }, [props.overrideThemeOptions]);
 
   const { kind, name, namespace } = useRouteRefParams(rootDocsRouteRef);
   const { children, entityRef = { kind, name, namespace } } = props;
@@ -227,19 +287,19 @@ export const TechDocsReaderPage = (props: TechDocsReaderPageProps) => {
   // As explained above, "page" is configuration 4 and <TechDocsReaderLayout> is 1
   if (!children) {
     return (
-      <ThemeProvider theme={readerPageTheme}>
+      <div style={readerPageStyle}>
         <CookieAuthRefreshProvider pluginId="techdocs">
           <TechDocsReaderPageProvider entityRef={memoizedEntityRef}>
             {(page as JSX.Element) || <TechDocsReaderLayout />}
           </TechDocsReaderPageProvider>
         </CookieAuthRefreshProvider>
-      </ThemeProvider>
+      </div>
     );
   }
 
   // As explained above, a render function is configuration 3 and React element is 2
   return (
-    <ThemeProvider theme={readerPageTheme}>
+    <div style={readerPageStyle}>
       <CookieAuthRefreshProvider pluginId="techdocs">
         <TechDocsReaderPageProvider entityRef={memoizedEntityRef}>
           {({ metadata, entityMetadata, onReady }) => (
@@ -259,6 +319,6 @@ export const TechDocsReaderPage = (props: TechDocsReaderPageProps) => {
           )}
         </TechDocsReaderPageProvider>
       </CookieAuthRefreshProvider>
-    </ThemeProvider>
+    </div>
   );
 };

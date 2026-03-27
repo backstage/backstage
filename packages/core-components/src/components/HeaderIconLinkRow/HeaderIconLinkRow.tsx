@@ -13,25 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { makeStyles } from '@material-ui/core/styles';
+import { cn } from '../../lib/utils';
 import { IconLinkVertical, IconLinkVerticalProps } from './IconLinkVertical';
 
 /** @public */
 export type HeaderIconLinkRowClassKey = 'links';
-
-const useStyles = makeStyles(
-  theme => ({
-    links: {
-      margin: theme.spacing(2, 0),
-      display: 'grid',
-      gridAutoFlow: 'column',
-      gridAutoColumns: 'min-content',
-      gridGap: theme.spacing(3),
-      wordBreak: 'keep-all',
-    },
-  }),
-  { name: 'BackstageHeaderIconLinkRow' },
-);
 
 type Props = {
   links: IconLinkVerticalProps[];
@@ -45,9 +31,10 @@ type Props = {
  */
 export function HeaderIconLinkRow(props: Props) {
   const { links } = props;
-  const classes = useStyles();
   return (
-    <nav className={classes.links}>
+    <nav
+      className={cn('my-4 grid grid-flow-col auto-cols-min gap-6 break-keep')}
+    >
       {links.map((link, index) => (
         <IconLinkVertical key={index + 1} {...link} />
       ))}

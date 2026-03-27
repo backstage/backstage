@@ -21,26 +21,25 @@ import {
 } from '@backstage/test-utils';
 import { createEvent, fireEvent, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import HomeIcon from '@material-ui/icons/Home';
-import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
+import { IconComponent } from '@backstage/core-plugin-api';
+import { Home, PlusCircle } from 'lucide-react';
+
+/**
+ * lucide-react icon type (ForwardRefExoticComponent) is not directly assignable
+ * to Backstage's IconComponent type. Cast through unknown for test compatibility.
+ */
+const HomeIcon = Home as unknown as IconComponent;
+const CreateComponentIcon = PlusCircle as unknown as IconComponent;
 import { Sidebar } from './Bar';
 import { SidebarItem, SidebarSearchField, SidebarExpandButton } from './Items';
-import { renderHook } from '@testing-library/react';
-import { makeStyles } from '@material-ui/core/styles';
 import { analyticsApiRef } from '@backstage/core-plugin-api';
 
-const useStyles = makeStyles({
-  spotlight: {
-    backgroundColor: '#2b2a2a',
-  },
-});
+const spotlightClassName = 'bg-[#2b2a2a]';
 
 const handleSidebarItemClick = jest.fn();
 const analyticsApiMock = mockApis.analytics();
 
 async function renderSidebar() {
-  const { result } = renderHook(() => useStyles());
-
   await renderInTestApp(
     <TestApiProvider apis={[[analyticsApiRef, analyticsApiMock]]}>
       <Sidebar>
@@ -50,21 +49,21 @@ async function renderSidebar() {
           icon={CreateComponentIcon}
           onClick={handleSidebarItemClick}
           text="Create..."
-          className={result.current.spotlight}
+          className={spotlightClassName}
         />
         <SidebarItem
           icon={CreateComponentIcon}
           to="/docs"
           onClick={handleSidebarItemClick}
           text="Docs"
-          className={result.current.spotlight}
+          className={spotlightClassName}
         />
         <SidebarItem
           icon={CreateComponentIcon}
           to="/explore"
           onClick={handleSidebarItemClick}
           text="Explore"
-          className={result.current.spotlight}
+          className={spotlightClassName}
           noTrack
         />
         <SidebarExpandButton />

@@ -16,7 +16,7 @@
 
 import { attachComponentData } from '@backstage/core-plugin-api';
 import {
-  ElementType,
+  ComponentPropsWithoutRef,
   Children,
   Fragment,
   isValidElement,
@@ -24,13 +24,12 @@ import {
   ReactNode,
 } from 'react';
 import { RoutedTabs } from './RoutedTabs';
-import { TabProps } from '@material-ui/core/Tab';
 
 type SubRoute = {
   path: string;
   title: string;
   children: JSX.Element;
-  tabProps?: TabProps<ElementType, { component?: ElementType }>;
+  tabProps?: ComponentPropsWithoutRef<'button'> & { asChild?: boolean };
 };
 
 const Route: (props: SubRoute) => null = () => null;

@@ -26,4 +26,16 @@ describe('<BottomLink />', () => {
     const rendered = await renderInTestApp(<BottomLink {...minProps} />);
     expect(rendered.getByText('A deepLink title')).toBeInTheDocument();
   });
+
+  it('renders a navigable link', async () => {
+    const rendered = await renderInTestApp(<BottomLink {...minProps} />);
+    const link = rendered.getByRole('link');
+    expect(link).toBeInTheDocument();
+  });
+
+  it('renders an arrow icon', async () => {
+    const { container } = await renderInTestApp(<BottomLink {...minProps} />);
+    const svg = container.querySelector('svg');
+    expect(svg).toBeInTheDocument();
+  });
 });

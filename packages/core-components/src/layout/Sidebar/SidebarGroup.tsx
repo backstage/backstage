@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-shadow */
 /*
  * Copyright 2020 The Backstage Authors
  *
@@ -15,14 +14,11 @@
  * limitations under the License.
  */
 
-import BottomNavigationAction, {
-  BottomNavigationActionProps,
-} from '@material-ui/core/BottomNavigationAction';
-import { Theme, makeStyles } from '@material-ui/core/styles';
-import { ReactNode, ChangeEvent, useContext } from 'react';
+import { ReactNode, useContext } from 'react';
 import { useLocation } from 'react-router-dom';
+import { cn } from '../../lib/utils';
 import { Link } from '../../components/Link/Link';
-import { SidebarConfig, SidebarConfigContext } from './config';
+import { SidebarConfigContext } from './config';
 import { MobileSidebarContext } from './MobileSidebarContext';
 import { useSidebarPinState } from './SidebarPinStateContext';
 
@@ -31,7 +27,7 @@ import { useSidebarPinState } from './SidebarPinStateContext';
  *
  * @public
  */
-export interface SidebarGroupProps extends BottomNavigationActionProps {
+export interface SidebarGroupProps {
   /**
    * If the `SidebarGroup` should be a `Link`, `to` should be a pathname to that location
    */
@@ -45,30 +41,22 @@ export interface SidebarGroupProps extends BottomNavigationActionProps {
    * React children
    */
   children?: ReactNode;
+  /**
+   * Label for the bottom nav action
+   */
+  label?: string;
+  /**
+   * Icon to display in the mobile bottom navigation
+   */
+  icon?: ReactNode;
+  /**
+   * Value identifier for selection state in the mobile bottom navigation
+   */
+  value?: number;
 }
 
-const useStyles = makeStyles<Theme, { sidebarConfig: SidebarConfig }>(
-  theme => ({
-    root: {
-      flexGrow: 0,
-      margin: theme.spacing(0, 2),
-      color: theme.palette.navigation.color,
-    },
-
-    selected: props => ({
-      color: `${theme.palette.navigation.selectedColor}!important`,
-      borderTop: `solid ${props.sidebarConfig.selectedIndicatorWidth}px ${theme.palette.navigation.indicator}`,
-      marginTop: '-1px',
-    }),
-
-    label: {
-      display: 'none',
-    },
-  }),
-);
-
 /**
- * Returns a Material UI `BottomNavigationAction`, which is aware of the current location & the selected item in the `BottomNavigation`,
+ * Returns a Tailwind-styled Link, which is aware of the current location & the selected item in the mobile sidebar,
  * such that it will highlight a `MobileSidebarGroup` either on location change or if the selected item changes.
  *
  * @param props `to`: pathname of link; `value`: index of the selected item
@@ -77,16 +65,22 @@ const useStyles = makeStyles<Theme, { sidebarConfig: SidebarConfig }>(
 const MobileSidebarGroup = (props: SidebarGroupProps) => {
   const { to, label, icon, value } = props;
   const { sidebarConfig } = useContext(SidebarConfigContext);
-  const classes = useStyles({ sidebarConfig });
   const location = useLocation();
   const { selectedMenuItemIndex, setSelectedMenuItemIndex } =
     useContext(MobileSidebarContext);
 
-  const onChange = (_: ChangeEvent<{}>, value: number) => {
-    if (value === selectedMenuItemIndex) {
+  const handleClick = (e: { preventDefault: () => void }) => {
+    // Overlay-type groups (no `to` prop) should not trigger link navigation —
+    // they only toggle the overlay menu open/closed. Prevent default to stop
+    // React Router from processing a navigation that resets component state.
+    if (!to) {
+      e.preventDefault();
+    }
+    const numValue = value as number;
+    if (numValue === selectedMenuItemIndex) {
       setSelectedMenuItemIndex(-1);
     } else {
-      setSelectedMenuItemIndex(value);
+      setSelectedMenuItemIndex(numValue);
     }
   };
 
@@ -97,18 +91,32 @@ const MobileSidebarGroup = (props: SidebarGroupProps) => {
       to === location.pathname);
 
   return (
-    // Material UI issue: https://github.com/mui-org/material-ui/issues/27820
-    <BottomNavigationAction
+    <Link
+      to={(to ? to : location.pathname) as string}
+      role="button"
       aria-label={label}
-      label={label}
-      icon={icon}
-      component={Link as any}
-      to={(to ? to : location.pathname) as any}
-      onChange={onChange}
-      value={value}
-      selected={selected}
-      classes={classes}
-    />
+      onClick={handleClick}
+      className={cn(
+        'flex flex-col items-center justify-center grow-0 mx-2 py-1.5 min-w-0 no-underline',
+        selected
+          ? 'text-[var(--sidebar-nav-selected-color,#fff)] -mt-px'
+          : 'text-[var(--sidebar-nav-color,#b5b5b5)]',
+      )}
+      // The borderTopWidth uses a runtime config value (sidebarConfig.selectedIndicatorWidth)
+      // which cannot be expressed as a static Tailwind class; inline style is required here.
+      style={
+        selected
+          ? {
+              borderTopWidth: sidebarConfig.selectedIndicatorWidth,
+              borderTopStyle: 'solid',
+              borderTopColor: 'var(--sidebar-nav-indicator, #9BF0E1)',
+            }
+          : undefined
+      }
+    >
+      {icon}
+      <span className="text-xs truncate max-w-full">{label}</span>
+    </Link>
   );
 };
 

@@ -16,15 +16,26 @@
 
 import { render } from '@testing-library/react';
 import { OverflowTooltip } from './OverflowTooltip';
+import { TooltipProvider } from '../ui/tooltip';
 
 describe('<OverflowTooltip />', () => {
   it('renders without exploding', async () => {
     expect(
-      render(<OverflowTooltip text="Text that may overflow" />),
+      render(
+        <TooltipProvider>
+          <OverflowTooltip text="Text that may overflow" />
+        </TooltipProvider>,
+      ),
     ).toBeTruthy();
   });
 
   it('renders without exploding when the text prop is missing', async () => {
-    expect(render(<OverflowTooltip text={undefined} />)).toBeTruthy();
+    expect(
+      render(
+        <TooltipProvider>
+          <OverflowTooltip text={undefined} />
+        </TooltipProvider>,
+      ),
+    ).toBeTruthy();
   });
 });

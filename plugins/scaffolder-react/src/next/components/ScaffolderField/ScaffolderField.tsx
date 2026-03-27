@@ -15,21 +15,18 @@
  */
 import { PropsWithChildren, ReactElement } from 'react';
 
-import { MarkdownContent } from '@backstage/core-components';
-import FormControl from '@material-ui/core/FormControl';
-import { makeStyles } from '@material-ui/core/styles';
+import { MarkdownContent, cn } from '@backstage/core-components';
 
-const useStyles = makeStyles(theme => ({
-  markdownDescription: {
-    fontSize: theme.typography.caption.fontSize,
-    margin: 0,
-    color: theme.palette.text.secondary,
-    '& :first-child': {
-      margin: 0,
-      marginTop: '3px', // to keep the standard browser padding
-    },
-  },
-}));
+/**
+ * Tailwind classes replacing the former MUI makeStyles markdownDescription:
+ * - text-xs: caption-size font (~0.75rem / 12px)
+ * - text-muted-foreground: secondary text color via --muted-foreground token
+ * - [&>:first-child]:mt-[3px]: preserves the 3px top margin on first child for browser consistency
+ * - [&>:first-child]:mb-0: zeroes bottom margin on first child
+ * - [&>p]:m-0: zeroes paragraph margins
+ */
+const markdownDescriptionClasses =
+  'text-xs text-muted-foreground [&>:first-child]:mt-[3px] [&>:first-child]:mb-0 [&>p]:m-0';
 
 /**
  * Props for the {@link ScaffolderField} component
@@ -61,27 +58,31 @@ export const ScaffolderField = (
     errors,
     help,
     rawDescription,
-    required,
+    required: _required,
     disabled,
   } = props;
-  const classes = useStyles();
+
   return (
-    <FormControl
-      fullWidth
-      error={rawErrors.length ? true : false}
-      required={required}
-      disabled={disabled}
+    <div
+      className={cn(
+        'flex flex-col gap-1.5 w-full',
+        rawErrors.length > 0 && 'text-destructive',
+        disabled && 'opacity-50 pointer-events-none',
+      )}
+      role="group"
+      aria-invalid={rawErrors.length > 0 || undefined}
+      aria-disabled={disabled || undefined}
     >
       {children}
       {displayLabel && rawDescription ? (
         <MarkdownContent
           content={rawDescription}
           linkTarget="_blank"
-          className={classes.markdownDescription}
+          className={markdownDescriptionClasses}
         />
       ) : null}
       {errors}
       {help}
-    </FormControl>
+    </div>
   );
 };

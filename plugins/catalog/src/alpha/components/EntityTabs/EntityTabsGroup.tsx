@@ -17,129 +17,25 @@ import {
   ReactNode,
   forwardRef,
   useState,
-  MouseEvent,
   MouseEventHandler,
   ReactElement,
 } from 'react';
 import { Link } from 'react-router-dom';
-import classnames from 'classnames';
-
-import Typography from '@material-ui/core/Typography';
-import Popover from '@material-ui/core/Popover';
-import { TabProps, TabClassKey } from '@material-ui/core/Tab';
-import { capitalize } from '@material-ui/core/utils';
-import { createStyles, Theme, withStyles } from '@material-ui/core/styles';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import Button from '@material-ui/core/Button';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import List from '@material-ui/core/List';
+import {
+  cn,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from '@backstage/core-components';
+import { ShadcnButton as Button } from '@backstage/core-components';
+import { ChevronDown } from 'lucide-react';
 import { useApi } from '@backstage/core-plugin-api';
 import { IconsApi, iconsApiRef } from '@backstage/frontend-plugin-api';
 
-const styles = (theme: Theme) =>
-  createStyles({
-    /* Styles applied to the root element. */
-    root: {
-      ...theme.typography.button,
-      maxWidth: 264,
-      minWidth: 72,
-      position: 'relative',
-      boxSizing: 'border-box',
-      minHeight: 48,
-      flexShrink: 0,
-      padding: '6px 12px',
-      [theme.breakpoints.up('sm')]: {
-        padding: '6px 24px',
-      },
-      overflow: 'hidden',
-      whiteSpace: 'normal',
-      textAlign: 'center',
-      [theme.breakpoints.up('sm')]: {
-        minWidth: 160,
-      },
-    },
-    defaultTab: {
-      ...theme.typography.caption,
-      padding: theme.spacing(3, 3),
-      textTransform: 'uppercase',
-      fontWeight: theme.typography.fontWeightBold,
-      color: theme.palette.text.secondary,
-    },
-    /* Styles applied to the root element if both `icon` and `label` are provided. */
-    labelIcon: {
-      minHeight: 72,
-      paddingTop: 9,
-      '& $wrapper > *:first-child': {
-        marginBottom: 6,
-      },
-    },
-    /* Styles applied to the root element if the parent [`Tabs`](/api/tabs/) has `textColor="inherit"`. */
-    textColorInherit: {
-      color: 'inherit',
-      opacity: 0.7,
-      '&$selected': {
-        opacity: 1,
-      },
-      '&$disabled': {
-        opacity: 0.5,
-      },
-    },
-    selectedButton: {
-      color: `${theme.palette.text.primary}`,
-      opacity: `${1}`,
-    },
-    unselectedButton: {
-      color: `${theme.palette.text.secondary}`,
-      opacity: `${0.7}`,
-    },
-    /* Styles applied to the root element if the parent [`Tabs`](/api/tabs/) has `textColor="primary"`. */
-    textColorPrimary: {
-      color: theme.palette.text.secondary,
-      '&$selected': {
-        color: theme.palette.primary.main,
-      },
-      '&$disabled': {
-        color: theme.palette.text.disabled,
-      },
-    },
-    /* Styles applied to the root element if the parent [`Tabs`](/api/tabs/) has `textColor="secondary"`. */
-    textColorSecondary: {
-      color: theme.palette.text.secondary,
-      '&$selected': {
-        color: theme.palette.secondary.main,
-      },
-      '&$disabled': {
-        color: theme.palette.text.disabled,
-      },
-    },
-    /* Pseudo-class applied to the root element if `selected={true}` (controlled by the Tabs component). */
-    selected: {},
-    /* Pseudo-class applied to the root element if `disabled={true}` (controlled by the Tabs component). */
-    disabled: {},
-    /* Styles applied to the root element if `fullWidth={true}` (controlled by the Tabs component). */
-    fullWidth: {
-      flexShrink: 1,
-      flexGrow: 1,
-      flexBasis: 0,
-      maxWidth: 'none',
-    },
-    /* Styles applied to the root element if `wrapped={true}`. */
-    wrapped: {
-      fontSize: theme.typography.pxToRem(12),
-      lineHeight: 1.5,
-    },
-    /* Styles applied to the `icon` and `label`'s wrapper element. */
-    wrapper: {
-      display: 'inline-flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      width: '100%',
-      flexDirection: 'row',
-    },
-  });
-
+/**
+ * Represents a single navigable item within an entity tab group.
+ * Each item maps to a route path and optional icon for display.
+ */
 type EntityTabsGroupItem = {
   id: string;
   label: string;
@@ -147,15 +43,51 @@ type EntityTabsGroupItem = {
   icon?: string | ReactElement;
 };
 
-type EntityTabsGroupProps = TabProps & {
-  classes?: Partial<ReturnType<typeof styles>>;
+/**
+ * Props for the EntityTabsGroup component.
+ *
+ * @remarks
+ * Replaces the previous MUI TabProps + HOC styling pattern with
+ * explicit props and Tailwind CSS class-based customization via the
+ * `classes` and `className` props.
+ */
+type EntityTabsGroupProps = {
+  /** Additional CSS class names applied to the root tab button element. */
+  className?: string;
+  /**
+   * Optional Tailwind CSS class name overrides for specific states.
+   * Accepted keys: `root` (base styles), `selected` (active tab),
+   * `disabled` (disabled tab). Values are Tailwind class strings.
+   */
+  classes?: Record<string, string | undefined>;
+  /** Whether the tab is disabled and non-interactive. */
+  disabled?: boolean;
+  /** Whether this tab is currently selected/active. */
+  selected?: boolean;
+  /** Label displayed on the tab trigger (used for multi-item groups). */
+  label?: ReactNode;
+  /** Icon identifier or React element displayed alongside the label. */
+  icon?: string | ReactElement;
+  /** Value identifier for this tab group (used by parent tab list). */
+  value?: string;
+  /** Optional indicator element rendered after the tab label (e.g., badge). */
   indicator?: ReactNode;
+  /** ID of the currently highlighted/selected sub-item within the group. */
   highlightedButton?: string;
+  /** Array of navigable tab items within this group. */
   items: EntityTabsGroupItem[];
+  /** Callback invoked when a tab item link is clicked. */
   onSelectTab?: MouseEventHandler<HTMLAnchorElement>;
+  /** Whether to resolve and display icons for each tab item. */
   showIcons?: boolean;
+  /** Test identifier forwarded to the root tab button element. */
+  'data-testid'?: string | false;
 };
 
+/**
+ * Resolves an icon from either a string identifier (via Backstage IconsApi)
+ * or a React element. Returns undefined when icons are disabled or not found.
+ */
 function resolveIcon(
   icon: string | ReactElement | undefined,
   iconsApi: IconsApi,
@@ -174,26 +106,37 @@ function resolveIcon(
   return icon;
 }
 
-const Tab = forwardRef(function Tab(props: EntityTabsGroupProps, ref: any) {
-  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+/**
+ * A tab group component that renders either a single navigable tab button
+ * or a multi-item tab with a popover dropdown menu. Used by EntityTabsList
+ * to display grouped entity content tabs.
+ *
+ * @remarks
+ * - Single item: renders a shadcn Button (ghost variant) composed with
+ *   React Router Link via asChild for direct navigation.
+ * - Multiple items: renders a popover trigger button with a ChevronDown
+ *   indicator and a dropdown list of navigable sub-items.
+ * - Supports ref forwarding for parent focus management.
+ * - Uses Backstage IconsApi for string-based icon resolution.
+ *
+ * @public
+ */
+export const EntityTabsGroup = forwardRef(function EntityTabsGroup(
+  props: EntityTabsGroupProps,
+  ref: any,
+) {
+  const [open, setOpen] = useState(false);
   const iconsApi = useApi(iconsApiRef);
-
-  const open = Boolean(anchorEl);
-  const submenuId = open ? 'tabbed-submenu' : undefined;
 
   const {
     classes,
     className,
     disabled = false,
-    disableFocusRipple = false,
     items,
-    fullWidth,
     indicator,
     label,
     onSelectTab,
     selected,
-    textColor = 'inherit',
-    wrapped = false,
     highlightedButton,
     showIcons = false,
   } = props;
@@ -202,128 +145,110 @@ const Tab = forwardRef(function Tab(props: EntityTabsGroupProps, ref: any) {
   const testId = 'data-testid' in props && props['data-testid'];
 
   const handleMenuClose = () => {
-    setAnchorEl(null);
+    setOpen(false);
   };
 
-  const handleMenuClick = (event: MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const classArray = [
+  /* Compose base tab button classes from Tailwind utilities, merging
+     any consumer-provided class overrides for root, selected, and
+     disabled states via the classes prop. */
+  const tabBaseClasses = cn(
+    'relative max-w-[264px] min-w-[72px] min-h-[48px] shrink-0 px-3 py-1.5 sm:px-6 sm:min-w-[160px] overflow-hidden whitespace-normal text-center',
     classes?.root,
-    classes?.[`textColor${capitalize(textColor)}` as TabClassKey],
-    classes && {
-      [classes.disabled!]: disabled,
-      [classes.selected!]: selected,
-      [classes.labelIcon!]: label && groupIcon,
-      [classes.fullWidth!]: fullWidth,
-      [classes.wrapped!]: wrapped,
-    },
+    selected && 'text-foreground opacity-100',
+    selected && classes?.selected,
+    !selected && 'text-muted-foreground opacity-70',
+    disabled && 'opacity-50 pointer-events-none',
+    disabled && classes?.disabled,
     className,
-  ];
+  );
 
+  /* Single-item tab: render as a direct navigation link styled as a
+     ghost button, using asChild to compose Button with React Router Link. */
   if (items.length === 1) {
+    const itemIcon = resolveIcon(items[0].icon, iconsApi, showIcons);
     return (
       <Button
-        focusRipple={!disableFocusRipple}
-        data-testid={testId}
-        className={classnames(
-          classArray,
-          classes && {
-            [classes.labelIcon!]: label && (items[0].icon ?? groupIcon),
-          },
-        )}
+        variant="ghost"
+        data-testid={testId || undefined}
+        className={tabBaseClasses}
         ref={ref}
         role="tab"
         aria-selected={selected}
         disabled={disabled}
-        component={Link}
-        onClick={onSelectTab}
-        to={items[0]?.path}
-        startIcon={resolveIcon(items[0].icon, iconsApi, showIcons)}
+        asChild
       >
-        <Typography className={classes?.wrapper} variant="button">
-          {items[0].label}
-        </Typography>
-        {indicator}
+        <Link to={items[0]?.path} onClick={onSelectTab}>
+          {itemIcon && <span className="mr-2">{itemIcon}</span>}
+          <span className="inline-flex items-center justify-center w-full flex-row text-sm font-medium uppercase">
+            {items[0].label}
+          </span>
+          {indicator}
+        </Link>
       </Button>
     );
   }
+
+  /* Multi-item tab group: render a popover trigger button with a dropdown
+     list of navigable sub-items. Radix Popover handles open/close state,
+     keyboard navigation, and collision-aware positioning. */
   const hasIcons = showIcons && items.some(i => i.icon);
   return (
-    <>
-      <Button
-        data-testid={testId}
-        focusRipple={!disableFocusRipple}
-        className={classnames(classArray)}
-        ref={ref}
-        role="tab"
-        aria-selected={selected}
-        disabled={disabled}
-        onClick={handleMenuClick}
-        startIcon={groupIcon}
-      >
-        <Typography className={classes?.wrapper} variant="button">
-          {label}
-        </Typography>
-        <ExpandMoreIcon />
-      </Button>
-      <Popover
-        id={submenuId}
-        open={open}
-        anchorEl={anchorEl}
-        onClose={handleMenuClose}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'center',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'center',
-        }}
-      >
-        <List component="nav">
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant="ghost"
+          data-testid={testId || undefined}
+          className={tabBaseClasses}
+          ref={ref}
+          role="tab"
+          aria-selected={selected}
+          disabled={disabled}
+        >
+          {groupIcon && <span className="mr-2">{groupIcon}</span>}
+          <span className="inline-flex items-center justify-center w-full flex-row text-sm font-medium uppercase">
+            {label}
+          </span>
+          <ChevronDown className="h-4 w-4 ml-1 shrink-0" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent align="center" className="w-auto p-0">
+        <ul role="listbox" className="py-1">
           {items.map(i => {
             const itemIcon = resolveIcon(i.icon, iconsApi, showIcons);
             return (
-              <ListItem
-                key={`popover_item_${i.id}`}
-                button
-                focusRipple={!disableFocusRipple}
-                classes={{
-                  selected: classnames(classes?.selectedButton),
-                  default: classnames(classes?.unselectedButton),
-                  disabled: classnames(classes?.disabled),
-                }}
-                ref={ref}
-                aria-selected={selected}
-                disabled={disabled}
-                selected={highlightedButton === i.id}
-                component={Link}
-                onClick={e => {
-                  handleMenuClose();
-                  onSelectTab?.(e);
-                }}
-                to={i.path}
-              >
-                {itemIcon && <ListItemIcon>{itemIcon}</ListItemIcon>}
-                <ListItemText
-                  inset={!itemIcon && hasIcons}
-                  primary={
-                    <>
-                      <Typography variant="button">{i.label}</Typography>
-                      {indicator}
-                    </>
-                  }
-                />
-              </ListItem>
+              <li key={`popover_item_${i.id}`}>
+                <Link
+                  to={i.path}
+                  onClick={e => {
+                    handleMenuClose();
+                    onSelectTab?.(e);
+                  }}
+                  className={cn(
+                    'flex items-center gap-2 px-3 py-2 text-sm transition-colors hover:bg-accent hover:text-accent-foreground',
+                    highlightedButton === i.id &&
+                      'bg-accent text-accent-foreground font-medium',
+                    disabled && 'opacity-50 pointer-events-none',
+                  )}
+                  aria-selected={highlightedButton === i.id}
+                >
+                  {itemIcon && (
+                    <span className="shrink-0 w-5 h-5 flex items-center justify-center">
+                      {itemIcon}
+                    </span>
+                  )}
+                  {!itemIcon && hasIcons && (
+                    <span className="shrink-0 w-5 h-5" />
+                  )}
+                  <span className="text-sm font-medium uppercase">
+                    {i.label}
+                  </span>
+                  {indicator}
+                </Link>
+              </li>
             );
           })}
-        </List>
-      </Popover>
-    </>
+        </ul>
+      </PopoverContent>
+    </Popover>
   );
 });
-
-// @ts-ignore
-export const EntityTabsGroup = withStyles(styles, { name: 'MuiTab' })(Tab);

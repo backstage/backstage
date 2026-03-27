@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import FormControl from '@material-ui/core/FormControl';
-import TextField from '@material-ui/core/TextField';
+import { Input, Label, cn } from '@backstage/core-components';
 import { BaseRepoUrlPickerProps } from './types';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../../translation';
@@ -25,30 +24,44 @@ export const GerritRepoPicker = (props: BaseRepoUrlPickerProps) => {
   const { workspace, owner } = state;
   return (
     <>
-      <FormControl margin="normal" error={rawErrors?.length > 0 && !workspace}>
-        <TextField
-          id="ownerInput"
-          label={t('fields.gerritRepoPicker.owner.title')}
-          onChange={e => onChange({ owner: e.target.value })}
-          helperText={t('fields.gerritRepoPicker.owner.description')}
-          disabled={isDisabled}
-          value={owner}
-        />
-      </FormControl>
-      <FormControl
-        margin="normal"
-        required
-        error={rawErrors?.length > 0 && !workspace}
+      <div
+        className={cn(
+          'mt-4 mb-2 space-y-2',
+          rawErrors?.length > 0 && !owner && 'text-destructive',
+        )}
       >
-        <TextField
-          id="parentInput"
-          label={t('fields.gerritRepoPicker.parent.title')}
-          onChange={e => onChange({ workspace: e.target.value })}
+        <Label htmlFor="ownerInput">
+          {t('fields.gerritRepoPicker.owner.title')}
+        </Label>
+        <Input
+          id="ownerInput"
+          onChange={e => onChange({ owner: e.target.value })}
+          value={owner}
           disabled={isDisabled}
-          value={workspace}
-          helperText={t('fields.gerritRepoPicker.parent.description')}
         />
-      </FormControl>
+        <p className="text-sm text-muted-foreground">
+          {t('fields.gerritRepoPicker.owner.description')}
+        </p>
+      </div>
+      <div
+        className={cn(
+          'mt-4 mb-2 space-y-2',
+          rawErrors?.length > 0 && !workspace && 'text-destructive',
+        )}
+      >
+        <Label htmlFor="parentInput">
+          {t('fields.gerritRepoPicker.parent.title')}
+        </Label>
+        <Input
+          id="parentInput"
+          onChange={e => onChange({ workspace: e.target.value })}
+          value={workspace}
+          disabled={isDisabled}
+        />
+        <p className="text-sm text-muted-foreground">
+          {t('fields.gerritRepoPicker.parent.description')}
+        </p>
+      </div>
     </>
   );
 };

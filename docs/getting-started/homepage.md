@@ -170,7 +170,7 @@ Let's make the following changes
 
 ```tsx title="packages/app/src/components/Root/Root.tsx"
 /* highlight-add-next-line */
-import CategoryIcon from '@material-ui/icons/Category';
+import { LayoutGrid } from 'lucide-react';
 
 export const Root = ({ children }: PropsWithChildren<{}>) => (
   <SidebarPage>
@@ -183,7 +183,7 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
         <SidebarItem icon={HomeIcon} to="catalog" text="Home" />
         {/* highlight-add-start */}
         <SidebarItem icon={HomeIcon} to="/" text="Home" />
-        <SidebarItem icon={CategoryIcon} to="catalog" text="Catalog" />
+        <SidebarItem icon={LayoutGrid} to="catalog" text="Catalog" />
         {/* highlight-add-end */}
         <SidebarItem icon={ExtensionIcon} to="api-docs" text="APIs" />
         <SidebarItem icon={LibraryBooks} to="docs" text="Docs" />
@@ -230,14 +230,13 @@ contribute, check the
 > [Contributing documentation](https://github.com/backstage/backstage/blob/master/plugins/home/README.md#contributing)
 
 ```tsx
-import Grid from '@material-ui/core/Grid';
 import { HomePageCompanyLogo } from '@backstage/plugin-home';
 
 export const HomePage = () => (
-  <Grid container spacing={3}>
-    <Grid item xs={12} md={4}>
+  <div className="grid grid-cols-12 gap-6">
+    <div className="col-span-12 md:col-span-4">
       <HomePageCompanyLogo />
-    </Grid>
-  </Grid>
+    </div>
+  </div>
 );
 ```

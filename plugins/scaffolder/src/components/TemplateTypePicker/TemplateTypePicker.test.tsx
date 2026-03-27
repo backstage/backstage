@@ -29,6 +29,56 @@ import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import { mockApis } from '@backstage/frontend-test-utils';
 import { GetEntityFacetsResponse } from '@backstage/catalog-client';
 
+/*
+ * Browser API polyfills for jsdom environment.
+ * Radix UI primitives (Popover, Checkbox) and cmdk rely on browser APIs
+ * that are not available in jsdom.
+ */
+
+// cmdk uses ResizeObserver for measuring list dimensions.
+if (typeof globalThis.ResizeObserver === 'undefined') {
+  (globalThis as any).ResizeObserver = class {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  };
+}
+
+// Radix scrolls selected items into view when opening.
+if (!Element.prototype.scrollIntoView) {
+  Element.prototype.scrollIntoView = function scrollIntoView() {};
+}
+
+// Radix uses pointer capture APIs for pointer event management.
+if (!Element.prototype.hasPointerCapture) {
+  Element.prototype.hasPointerCapture = function () {
+    return false;
+  };
+}
+if (!Element.prototype.setPointerCapture) {
+  Element.prototype.setPointerCapture = function () {};
+}
+if (!Element.prototype.releasePointerCapture) {
+  Element.prototype.releasePointerCapture = function () {};
+}
+
+// DOMRect.fromRect is used by Radix for collision-aware positioning.
+if (typeof DOMRect === 'undefined' || !DOMRect.fromRect) {
+  (globalThis as any).DOMRect = {
+    fromRect: () => ({
+      top: 0,
+      left: 0,
+      bottom: 0,
+      right: 0,
+      width: 0,
+      height: 0,
+      x: 0,
+      y: 0,
+      toJSON: () => ({}),
+    }),
+  };
+}
+
 const entities: Entity[] = [
   {
     apiVersion: '1',

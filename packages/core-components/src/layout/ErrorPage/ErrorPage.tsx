@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-import Grid from '@material-ui/core/Grid';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
 import { ReactNode } from 'react';
+import { cn } from '../../lib/utils';
 import { useNavigate } from 'react-router-dom';
 import { Link } from '../../components/Link';
 import { useSupportConfig } from '../../hooks';
@@ -37,28 +35,6 @@ interface IErrorPageProps {
 /** @public */
 export type ErrorPageClassKey = 'container' | 'title' | 'subtitle';
 
-const useStyles = makeStyles(
-  theme => ({
-    container: {
-      padding: theme.spacing(8),
-      [theme.breakpoints.down('xs')]: {
-        padding: theme.spacing(2),
-      },
-    },
-    title: {
-      paddingBottom: theme.spacing(5),
-      [theme.breakpoints.down('xs')]: {
-        paddingBottom: theme.spacing(4),
-        fontSize: theme.typography.h3.fontSize,
-      },
-    },
-    subtitle: {
-      color: theme.palette.textSubtle,
-    },
-  }),
-  { name: 'BackstageErrorPage' },
-);
-
 /**
  * Error page with status and description
  *
@@ -73,38 +49,37 @@ export function ErrorPage(props: IErrorPageProps) {
     supportUrl,
     stack,
   } = props;
-  const classes = useStyles();
   const navigate = useNavigate();
   const support = useSupportConfig();
   const { t } = useTranslationRef(coreComponentsTranslationRef);
 
   return (
-    <Grid container className={classes.container}>
-      <Grid item xs={12} sm={8} md={4}>
-        <Typography
-          data-testid="error"
-          variant="body1"
-          className={classes.subtitle}
-        >
+    <div className={cn('p-16 max-sm:p-4 flex flex-col sm:flex-row flex-wrap')}>
+      <div className="w-full sm:w-2/3 md:w-1/3">
+        <p data-testid="error" className="text-muted-foreground">
           {t('errorPage.subtitle', { status, statusMessage })}
-        </Typography>
-        <Typography variant="body1" className={classes.subtitle}>
-          {additionalInfo}
-        </Typography>
-        <Typography variant="h2" className={classes.title}>
+        </p>
+        <p className="text-muted-foreground">{additionalInfo}</p>
+        <h2
+          className={cn('text-4xl font-bold pb-10 max-sm:pb-8 max-sm:text-2xl')}
+        >
           {t('errorPage.title')}
-        </Typography>
-        <Typography variant="h6" className={classes.title}>
+        </h2>
+        <h6
+          className={cn(
+            'text-base font-semibold pb-10 max-sm:pb-8 max-sm:text-2xl',
+          )}
+        >
           <Link to="#" data-testid="go-back-link" onClick={() => navigate(-1)}>
             {t('errorPage.goBack')}
           </Link>
           ... or please{' '}
           <Link to={supportUrl || support.url}>contact support</Link> if you
           think this is a bug.
-        </Typography>
+        </h6>
         {stack && <StackDetails stack={stack} />}
-      </Grid>
+      </div>
       <MicDrop />
-    </Grid>
+    </div>
   );
 }

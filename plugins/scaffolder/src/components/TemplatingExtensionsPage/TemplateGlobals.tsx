@@ -13,19 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { CodeSnippet, Link, MarkdownContent } from '@backstage/core-components';
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+  cn,
+  CodeSnippet,
+  Link,
+  MarkdownContent,
+} from '@backstage/core-components';
 import {
   ListTemplatingExtensionsResponse,
   TemplateGlobalFunction,
 } from '@backstage/plugin-scaffolder-react';
-import Accordion from '@material-ui/core/Accordion';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import Box from '@material-ui/core/Box';
-import { ClassNameMap } from '@material-ui/core/styles/withStyles';
-import Typography from '@material-ui/core/Typography';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import classNames from 'classnames';
 import { cloneElement, Fragment, ReactElement, useState } from 'react';
 import { scaffolderTranslationRef } from '../../translation';
 import { Expanded, RenderSchema, SchemaRenderContext } from '../RenderSchema';
@@ -40,7 +41,7 @@ const FunctionDetailContent = ({
   fn,
   t,
 }: {
-  classes: ClassNameMap;
+  classes: Record<string, string>;
   name: string;
   fn: TemplateGlobalFunction;
   t: TranslationMessages<typeof scaffolderTranslationRef>;
@@ -48,59 +49,59 @@ const FunctionDetailContent = ({
   const expanded = useState<Expanded>({});
   if (!Object.keys(fn).length) {
     return (
-      <Typography
-        style={{ fontStyle: 'italic' }}
+      // eslint-disable-next-line react/forbid-elements
+      <p
+        className="italic text-muted-foreground"
         data-testid={`${name}.metadataAbsent`}
       >
         {t('templatingExtensions.content.functions.metadataAbsent')}
-      </Typography>
+      </p>
     );
   }
   const schema = fn.schema;
   const partialSchemaRenderContext: Omit<SchemaRenderContext, 'parentId'> = {
     classes,
     expanded,
-    headings: [<Typography variant="h6" component="h4" />],
+    // Heading templates are cloned with content by RenderSchema via cloneElement
+    // eslint-disable-next-line jsx-a11y/heading-has-content
+    headings: [<h4 className="text-base font-semibold" />],
   };
   return (
     <Fragment key={`${name}.detail`}>
       {fn.description && <MarkdownContent content={fn.description} />}
       {schema?.arguments?.length && (
-        <Box key={`${name}.args`} pb={2}>
-          <Typography variant="h5" component="h3">
+        <div key={`${name}.args`} className="pb-4">
+          <h3 className="text-lg font-semibold">
             {t('templatingExtensions.content.functions.schema.arguments')}
-          </Typography>
+          </h3>
           {schema.arguments.map((arg, i) => {
             const [argSchema, required] = inspectFunctionArgSchema(arg);
 
             return (
               <Fragment key={i}>
-                <div
-                  className={classNames({ [classes.argRequired]: required })}
-                >
-                  <Typography
-                    variant="h6"
-                    component="h4"
-                  >{`[${i}]`}</Typography>
+                <div className={cn({ [classes.argRequired]: required })}>
+                  <h4 className="text-base font-semibold">{`[${i}]`}</h4>
                 </div>
                 <RenderSchema
                   strategy="root"
                   context={{
                     parentId: `${name}.arg${i}`,
                     ...partialSchemaRenderContext,
-                    headings: [<Typography variant="h6" component="h5" />],
+                    // Heading template cloned with content by RenderSchema
+                    // eslint-disable-next-line jsx-a11y/heading-has-content
+                    headings: [<h5 className="text-sm font-semibold" />],
                   }}
                   schema={argSchema}
                 />
               </Fragment>
             );
           })}
-        </Box>
+        </div>
       )}
-      <Box pb={2}>
-        <Typography variant="h5" component="h3">
+      <div className="pb-4">
+        <h3 className="text-lg font-semibold">
           {t('templatingExtensions.content.functions.schema.output')}
-        </Typography>
+        </h3>
         <RenderSchema
           strategy="root"
           context={{
@@ -109,19 +110,21 @@ const FunctionDetailContent = ({
           }}
           schema={schema?.output ?? {}}
         />
-      </Box>
+      </div>
       {fn.examples && (
-        <Accordion>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography variant="h5" component="h3">
-              {t('templatingExtensions.content.functions.examples')}
-            </Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <Box pb={2}>
-              <ScaffolderUsageExamplesTable examples={fn.examples} />
-            </Box>
-          </AccordionDetails>
+        <Accordion type="single" collapsible>
+          <AccordionItem value="examples">
+            <AccordionTrigger>
+              <h3 className="text-lg font-semibold">
+                {t('templatingExtensions.content.functions.examples')}
+              </h3>
+            </AccordionTrigger>
+            <AccordionContent forceMount>
+              <div className="pb-4">
+                <ScaffolderUsageExamplesTable examples={fn.examples} />
+              </div>
+            </AccordionContent>
+          </AccordionItem>
         </Accordion>
       )}
     </Fragment>
@@ -135,7 +138,7 @@ export const TemplateGlobalFunctions = ({
   baseLink,
   selectedItem,
 }: {
-  classes: ClassNameMap;
+  classes: Record<string, string>;
   functions: ListTemplatingExtensionsResponse['globals']['functions'];
   t: TranslationMessages<typeof scaffolderTranslationRef>;
   baseLink: ReactElement<Parameters<typeof Link>[0]>;
@@ -160,20 +163,15 @@ export const TemplateGlobalFunctions = ({
       ).map(([name, fn]) => {
         const fragment = renderFragment({ kind: 'function', name });
         return (
-          <Box pb={4} key={name} data-testid={name}>
-            <Typography
-              id={fragment}
-              variant="h4"
-              component="h2"
-              className={classes.code}
-            >
+          <div className="pb-8" key={name} data-testid={name}>
+            <h2 id={fragment} className={cn('text-xl font-bold', classes.code)}>
               {name}
-            </Typography>
+            </h2>
             {cloneElement(baseLink, {
               to: `${baseLink.props.to}#${fragment}`,
             })}
             <FunctionDetailContent {...{ classes, name, fn, t }} />
-          </Box>
+          </div>
         );
       })}
     </div>
@@ -187,7 +185,7 @@ export const TemplateGlobalValues = ({
   baseLink,
   selectedItem,
 }: {
-  classes: ClassNameMap;
+  classes: Record<string, string>;
   t: TranslationMessages<typeof scaffolderTranslationRef>;
   values: ListTemplatingExtensionsResponse['globals']['values'];
   baseLink: ReactElement<Parameters<typeof Link>[0]>;
@@ -212,27 +210,22 @@ export const TemplateGlobalValues = ({
       ).map(([name, gv]) => {
         const fragment = renderFragment({ kind: 'value', name });
         return (
-          <Box pb={4} key={name} data-testid={name}>
-            <Typography
-              id={fragment}
-              variant="h4"
-              component="h2"
-              className={classes.code}
-            >
+          <div className="pb-8" key={name} data-testid={name}>
+            <h2 id={fragment} className={cn('text-xl font-bold', classes.code)}>
               {name}
-            </Typography>
+            </h2>
             {cloneElement(baseLink, {
               to: `${baseLink.props.to}#${fragment}`,
             })}
             {gv.description && <MarkdownContent content={gv.description} />}
-            <Box padding={1} data-testid={`${name}.value`}>
+            <div className="p-2" data-testid={`${name}.value`}>
               <CodeSnippet
                 text={JSON.stringify(gv.value, null, 2)}
                 showCopyCodeButton
                 language="json"
               />
-            </Box>
-          </Box>
+            </div>
+          </div>
         );
       })}
     </div>

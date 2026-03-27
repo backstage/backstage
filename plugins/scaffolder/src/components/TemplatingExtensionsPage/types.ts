@@ -17,10 +17,10 @@ import {
   TranslationFunction,
   TranslationRef,
 } from '@backstage/core-plugin-api/alpha';
-import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 
-export type StyleClasses = ClassNameMap<
-  'code' | 'codeRequired' | 'argRequired' | 'link'
+export type StyleClasses = Record<
+  'code' | 'codeRequired' | 'argRequired' | 'link',
+  string
 >;
 
 export type TranslationMessages<R> = R extends TranslationRef<any, infer M>

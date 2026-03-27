@@ -14,12 +14,30 @@
  * limitations under the License.
  */
 
-import { useTheme } from '@material-ui/core/styles';
-import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
 import { Line } from 'rc-progress';
 
+import {
+  ShadcnTooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
+} from '../ui/tooltip';
 import { GaugePropsGetColor, getProgressColor } from './Gauge';
+
+/**
+ * CSS custom property–based palette adapter that supplies color values
+ * compatible with the BackstagePalette interface used by getProgressColor.
+ *
+ * rc-progress sets strokeColor via inline SVG style, so CSS custom
+ * property references (var(--*)) are resolved by the browser at render time.
+ */
+const defaultPalette = {
+  status: {
+    error: 'var(--destructive)',
+    warning: 'var(--warning)',
+    ok: 'var(--success)',
+  },
+} as any;
 
 type Props = {
   /**
@@ -30,33 +48,50 @@ type Props = {
   getColor?: GaugePropsGetColor;
 };
 
+/**
+ * Horizontal linear gauge built on rc-progress's Line component.
+ * Replaces MUI Tooltip + Typography with shadcn/ui Tooltip + Tailwind span.
+ * @public
+ */
 export function LinearGauge(props: Props) {
   const { value, getColor = getProgressColor, width = 'thick' } = props;
-  const { palette } = useTheme();
+
   if (isNaN(value)) {
     return null;
   }
+
   let percent = Math.round(value * 100 * 100) / 100;
   if (percent > 100) {
     percent = 100;
   }
+
   const lineWidth = width === 'thick' ? 4 : 1;
   const strokeColor = getColor({
-    palette,
+    palette: defaultPalette,
     value: percent,
     inverse: false,
     max: 100,
   });
+
   return (
-    <Tooltip title={`${percent}%`}>
-      <Typography component="span">
-        <Line
-          percent={percent}
-          strokeWidth={lineWidth}
-          trailWidth={lineWidth}
-          strokeColor={strokeColor}
-        />
-      </Typography>
-    </Tooltip>
+    <TooltipProvider>
+      <ShadcnTooltip>
+        <TooltipTrigger asChild>
+          <span
+            className="inline-block w-full"
+            title={`${percent}%`}
+            aria-label={`${percent}%`}
+          >
+            <Line
+              percent={percent}
+              strokeWidth={lineWidth}
+              trailWidth={lineWidth}
+              strokeColor={strokeColor}
+            />
+          </span>
+        </TooltipTrigger>
+        <TooltipContent>{`${percent}%`}</TooltipContent>
+      </ShadcnTooltip>
+    </TooltipProvider>
   );
 }

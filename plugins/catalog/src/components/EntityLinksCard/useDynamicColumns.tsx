@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import useMediaQuery from '@material-ui/core/useMediaQuery';
-import { Theme } from '@material-ui/core/styles';
+import { useState, useEffect } from 'react';
 import { Breakpoint, ColumnBreakpoints } from './types';
 
 const colDefaults: ColumnBreakpoints = {
@@ -26,15 +25,57 @@ const colDefaults: ColumnBreakpoints = {
   xl: 3,
 };
 
+/** Backstage default breakpoint values (matching MUI v4 defaults) */
+const breakpointValues: Record<Breakpoint, number> = {
+  xs: 0,
+  sm: 600,
+  md: 960,
+  lg: 1280,
+  xl: 1920,
+};
+
+/**
+ * Returns true when window.matchMedia is available (browser environment).
+ * Returns false in SSR or JSDOM test environments where matchMedia is not implemented.
+ */
+function hasMatchMedia(): boolean {
+  return (
+    typeof window !== 'undefined' && typeof window.matchMedia === 'function'
+  );
+}
+
+/**
+ * SSR-safe hook that listens to a CSS media query using native window.matchMedia.
+ * Replaces MUI's useMediaQuery to remove the @material-ui/core dependency.
+ * Gracefully returns false in environments where matchMedia is unavailable (SSR, JSDOM).
+ */
+function useMatchMedia(query: string): boolean {
+  const [matches, setMatches] = useState(() => {
+    if (!hasMatchMedia()) return false;
+    return window.matchMedia(query).matches;
+  });
+
+  useEffect(() => {
+    if (!hasMatchMedia()) return undefined;
+    const mql = window.matchMedia(query);
+    const handler = (event: MediaQueryListEvent) => setMatches(event.matches);
+    mql.addEventListener('change', handler);
+    setMatches(mql.matches);
+    return () => mql.removeEventListener('change', handler);
+  }, [query]);
+
+  return matches;
+}
+
 export function useDynamicColumns(
   cols: ColumnBreakpoints | number | undefined,
 ): number {
   const matches: (Breakpoint | null)[] = [
-    useMediaQuery((theme: Theme) => theme.breakpoints.up('xl')) ? 'xl' : null,
-    useMediaQuery((theme: Theme) => theme.breakpoints.up('lg')) ? 'lg' : null,
-    useMediaQuery((theme: Theme) => theme.breakpoints.up('md')) ? 'md' : null,
-    useMediaQuery((theme: Theme) => theme.breakpoints.up('sm')) ? 'sm' : null,
-    useMediaQuery((theme: Theme) => theme.breakpoints.up('xs')) ? 'xs' : null,
+    useMatchMedia(`(min-width: ${breakpointValues.xl}px)`) ? 'xl' : null,
+    useMatchMedia(`(min-width: ${breakpointValues.lg}px)`) ? 'lg' : null,
+    useMatchMedia(`(min-width: ${breakpointValues.md}px)`) ? 'md' : null,
+    useMatchMedia(`(min-width: ${breakpointValues.sm}px)`) ? 'sm' : null,
+    useMatchMedia(`(min-width: ${breakpointValues.xs}px)`) ? 'xs' : null,
   ];
 
   let numOfCols = 1;

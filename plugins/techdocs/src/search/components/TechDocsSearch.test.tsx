@@ -15,9 +15,9 @@
  */
 
 import { ApiProvider } from '@backstage/core-app-api';
+import { ShadcnButton as Button } from '@backstage/core-components';
 import { searchApiRef } from '@backstage/plugin-search-react';
 import { TestApiRegistry, renderInTestApp } from '@backstage/test-utils';
-import Button from '@material-ui/core/Button';
 import {
   fireEvent,
   screen,

@@ -25,20 +25,11 @@ import {
   getEntityRelations,
 } from '@backstage/plugin-catalog-react';
 import { JsonArray } from '@backstage/types';
-import Chip from '@material-ui/core/Chip';
-import Grid from '@material-ui/core/Grid';
-import { makeStyles } from '@material-ui/core/styles';
-import { MarkdownContent } from '@backstage/core-components';
+import { MarkdownContent, cn, Badge } from '@backstage/core-components';
 import { AboutField } from './AboutField';
 import { LinksGridList } from '../EntityLinksCard/LinksGridList';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { catalogTranslationRef } from '../../alpha/translation';
-
-const useStyles = makeStyles({
-  description: {
-    wordBreak: 'break-word',
-  },
-});
 
 /**
  * Props for {@link AboutContent}.
@@ -76,7 +67,6 @@ function getLocationTargetHref(
 /** @public */
 export function AboutContent(props: AboutContentProps) {
   const { entity } = props;
-  const classes = useStyles();
   const { t } = useTranslationRef(catalogTranslationRef);
 
   const isSystem = entity.kind.toLocaleLowerCase('en-US') === 'system';
@@ -115,13 +105,13 @@ export function AboutContent(props: AboutContentProps) {
   }
 
   return (
-    <Grid container>
+    <div className="grid grid-cols-12 gap-0">
       <AboutField
         label={t('aboutCard.descriptionField.label')}
         gridSizes={{ xs: 12 }}
       >
         <MarkdownContent
-          className={classes.description}
+          className={cn('break-words')}
           content={
             entity?.metadata?.description ||
             t('aboutCard.descriptionField.value')
@@ -131,7 +121,7 @@ export function AboutContent(props: AboutContentProps) {
       <AboutField
         label={t('aboutCard.ownerField.label')}
         value={t('aboutCard.ownerField.value')}
-        className={classes.description}
+        className={cn('break-words')}
         gridSizes={{ xs: 12, sm: 6, lg: 4 }}
       >
         {ownedByRelations.length > 0 && (
@@ -209,7 +199,9 @@ export function AboutContent(props: AboutContentProps) {
         gridSizes={{ xs: 12, sm: 6, lg: 4 }}
       >
         {(entity?.metadata?.tags || []).map(tag => (
-          <Chip key={tag} size="small" label={tag} />
+          <Badge key={tag} variant="secondary" className="text-xs">
+            {tag}
+          </Badge>
         ))}
       </AboutField>
       {isLocation && (entity?.spec?.targets || entity?.spec?.target) && (
@@ -232,6 +224,6 @@ export function AboutContent(props: AboutContentProps) {
           />
         </AboutField>
       )}
-    </Grid>
+    </div>
   );
 }

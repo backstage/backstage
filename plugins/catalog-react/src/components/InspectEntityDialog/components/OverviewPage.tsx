@@ -15,14 +15,6 @@
  */
 
 import { AlphaEntity } from '@backstage/catalog-model/alpha';
-import Box from '@material-ui/core/Box';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
 import groupBy from 'lodash/groupBy';
 import sortBy from 'lodash/sortBy';
 import { EntityRefLink } from '../../EntityRefLink';
@@ -38,15 +30,7 @@ import { CopyTextButton } from '@backstage/core-components';
 import { catalogReactTranslationRef } from '../../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
-const useStyles = makeStyles({
-  root: {
-    display: 'flex',
-    flexDirection: 'column',
-  },
-});
-
 export function OverviewPage(props: { entity: AlphaEntity }) {
-  const classes = useStyles();
   const {
     apiVersion,
     kind,
@@ -65,97 +49,94 @@ export function OverviewPage(props: { entity: AlphaEntity }) {
   const entityRef = stringifyEntityRef(props.entity);
   return (
     <>
-      <DialogContentText variant="h2">
+      <h2 className="text-2xl font-semibold">
         {t('inspectEntityDialog.overviewPage.title')}
-      </DialogContentText>
-      <div className={classes.root}>
+      </h2>
+      <div className="flex flex-col">
         <Container title={t('inspectEntityDialog.overviewPage.identity.title')}>
-          <List dense>
-            <ListItem>
+          <ul className="space-y-1">
+            <li className="px-2 py-1 flex items-center">
               <ListItemText primary="apiVersion" secondary={apiVersion} />
-            </ListItem>
-            <ListItem>
+            </li>
+            <li className="px-2 py-1 flex items-center">
               <ListItemText primary="kind" secondary={kind} />
-            </ListItem>
+            </li>
             {spec?.type && (
-              <ListItem>
+              <li className="px-2 py-1 flex items-center">
                 <ListItemText
                   primary="spec.type"
                   secondary={spec.type?.toString()}
                 />
-              </ListItem>
+              </li>
             )}
             {metadata.uid && (
-              <ListItem>
+              <li className="px-2 py-1 flex items-center">
                 <ListItemText primary="uid" secondary={metadata.uid} />
-                <ListItemSecondaryAction>
+                <div className="ml-auto">
                   <CopyTextButton text={metadata.uid} />
-                </ListItemSecondaryAction>
-              </ListItem>
+                </div>
+              </li>
             )}
             {metadata.etag && (
-              <ListItem>
+              <li className="px-2 py-1 flex items-center">
                 <ListItemText primary="etag" secondary={metadata.etag} />
-                <ListItemSecondaryAction>
+                <div className="ml-auto">
                   <CopyTextButton text={metadata.etag} />
-                </ListItemSecondaryAction>
-              </ListItem>
+                </div>
+              </li>
             )}
-            <ListItem>
+            <li className="px-2 py-1 flex items-center">
               <ListItemText primary="entityRef" secondary={entityRef} />
-              <ListItemSecondaryAction>
+              <div className="ml-auto">
                 <CopyTextButton text={entityRef} />
-              </ListItemSecondaryAction>
-            </ListItem>
-          </List>
+              </div>
+            </li>
+          </ul>
         </Container>
 
         <Container title={t('inspectEntityDialog.overviewPage.metadata.title')}>
           {!!Object.keys(metadata.annotations || {}).length && (
-            <List
-              dense
-              subheader={
-                <ListSubheader>
-                  {t('inspectEntityDialog.overviewPage.annotations')}
-                  <HelpIcon to="https://backstage.io/docs/features/software-catalog/well-known-annotations" />
-                </ListSubheader>
-              }
-            >
-              {Object.entries(metadata.annotations!).map(entry => (
-                <KeyValueListItem key={entry[0]} indent entry={entry} />
-              ))}
-            </List>
+            <div>
+              <ListSubheader>
+                {t('inspectEntityDialog.overviewPage.annotations')}
+                <HelpIcon to="https://backstage.io/docs/features/software-catalog/well-known-annotations" />
+              </ListSubheader>
+              <ul className="space-y-1">
+                {Object.entries(metadata.annotations!).map(entry => (
+                  <KeyValueListItem key={entry[0]} indent entry={entry} />
+                ))}
+              </ul>
+            </div>
           )}
           {!!Object.keys(metadata.labels || {}).length && (
-            <List
-              dense
-              subheader={
-                <ListSubheader>
-                  {t('inspectEntityDialog.overviewPage.labels')}
-                </ListSubheader>
-              }
-            >
-              {Object.entries(metadata.labels!).map(entry => (
-                <KeyValueListItem key={entry[0]} indent entry={entry} />
-              ))}
-            </List>
+            <div>
+              <ListSubheader>
+                {t('inspectEntityDialog.overviewPage.labels')}
+              </ListSubheader>
+              <ul className="space-y-1">
+                {Object.entries(metadata.labels!).map(entry => (
+                  <KeyValueListItem key={entry[0]} indent entry={entry} />
+                ))}
+              </ul>
+            </div>
           )}
           {!!metadata.tags?.length && (
-            <List
-              dense
-              subheader={
-                <ListSubheader>
-                  {t('inspectEntityDialog.overviewPage.tags')}
-                </ListSubheader>
-              }
-            >
-              {metadata.tags.map((tag, index) => (
-                <ListItem key={`${tag}-${index}`}>
-                  <ListItemIcon />
-                  <ListItemText primary={tag} />
-                </ListItem>
-              ))}
-            </List>
+            <div>
+              <ListSubheader>
+                {t('inspectEntityDialog.overviewPage.tags')}
+              </ListSubheader>
+              <ul className="space-y-1">
+                {metadata.tags.map((tag, index) => (
+                  <li
+                    key={`${tag}-${index}`}
+                    className="px-2 py-1 flex items-center"
+                  >
+                    <span className="mr-2 w-6 shrink-0" />
+                    <ListItemText primary={tag} />
+                  </li>
+                ))}
+              </ul>
+            </div>
           )}
         </Container>
 
@@ -167,17 +148,21 @@ export function OverviewPage(props: { entity: AlphaEntity }) {
             {Object.entries(groupedRelations).map(
               ([type, groupRelations], index) => (
                 <div key={index}>
-                  <List dense subheader={<ListSubheader>{type}</ListSubheader>}>
+                  <ListSubheader>{type}</ListSubheader>
+                  <ul className="space-y-1">
                     {groupRelations.map(group => (
-                      <ListItem key={group.targetRef}>
+                      <li
+                        key={group.targetRef}
+                        className="px-2 py-1 flex items-center"
+                      >
                         <ListItemText
                           primary={
                             <EntityRefLink entityRef={group.targetRef} />
                           }
                         />
-                      </ListItem>
+                      </li>
                     ))}
-                  </List>
+                  </ul>
                 </div>
               ),
             )}
@@ -191,10 +176,10 @@ export function OverviewPage(props: { entity: AlphaEntity }) {
           >
             {status.items.map((item, index) => (
               <div key={index}>
-                <Typography>
+                <p className="text-sm font-medium">
                   {item.level}: {item.type}
-                </Typography>
-                <Box ml={2}>{item.message}</Box>
+                </p>
+                <div className="ml-2">{item.message}</div>
               </div>
             ))}
           </Container>

@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Box from '@material-ui/core/Box';
-import { makeStyles } from '@material-ui/core/styles';
 import { ReactNode } from 'react';
 
+import { cn } from '../../lib/utils';
 import { BottomLinkProps } from '../../layout/BottomLink';
 import { InfoCard, InfoCardVariants } from '../../layout/InfoCard';
 import { Gauge, GaugePropsGetColor } from './Gauge';
@@ -39,20 +38,6 @@ type Props = {
 /** @public */
 export type GaugeCardClassKey = 'root';
 
-const useStyles = makeStyles(
-  {
-    root: {
-      height: '100%',
-      width: 250,
-    },
-    rootSmall: {
-      height: '100%',
-      width: 160,
-    },
-  },
-  { name: 'BackstageGaugeCard' },
-);
-
 /**
  * {@link Gauge} with header, subheader and footer
  *
@@ -60,7 +45,6 @@ const useStyles = makeStyles(
  *
  */
 export function GaugeCard(props: Props) {
-  const classes = useStyles(props);
   const {
     title,
     subheader,
@@ -83,7 +67,7 @@ export function GaugeCard(props: Props) {
   };
 
   return (
-    <Box className={size === 'small' ? classes.rootSmall : classes.root}>
+    <div className={cn('h-full', size === 'small' ? 'w-[160px]' : 'w-[250px]')}>
       <InfoCard
         title={title}
         subheader={subheader}
@@ -100,6 +84,6 @@ export function GaugeCard(props: Props) {
       >
         <Gauge {...gaugeProps} size={size} />
       </InfoCard>
-    </Box>
+    </div>
   );
 }

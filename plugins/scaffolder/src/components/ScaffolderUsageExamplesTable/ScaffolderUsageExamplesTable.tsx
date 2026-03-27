@@ -15,41 +15,45 @@
  */
 import { CodeSnippet, MarkdownContent } from '@backstage/core-components';
 import { ScaffolderUsageExample } from '@backstage/plugin-scaffolder-react';
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
 import { Fragment } from 'react';
 
 export const ScaffolderUsageExamplesTable = (props: {
   examples: ScaffolderUsageExample[];
 }) => {
   return (
-    <Grid data-testid="examples" container>
+    <div data-testid="examples" className="grid grid-cols-12">
       {props.examples.map((example, index) => {
         return (
           <Fragment key={`example-${index}`}>
-            <Grid data-testid={`example_desc${index}`} item lg={3}>
-              <Box padding={1} style={{ overflowX: 'auto' }}>
+            <div
+              data-testid={`example_desc${index}`}
+              className="col-span-12 lg:col-span-3"
+            >
+              <div className="p-2 overflow-x-auto">
                 {example.description && (
                   <MarkdownContent content={example.description} />
                 )}
                 {example.notes?.length && (
                   <MarkdownContent content={example.notes} />
                 )}
-              </Box>
-            </Grid>
-            <Grid data-testid={`example_code${index}`} item lg={9}>
-              <Box padding={1}>
+              </div>
+            </div>
+            <div
+              data-testid={`example_code${index}`}
+              className="col-span-12 lg:col-span-9"
+            >
+              <div className="p-2">
                 <CodeSnippet
                   text={example.example?.trim()}
                   showLineNumbers
                   showCopyCodeButton
                   language="yaml"
                 />
-              </Box>
-            </Grid>
+              </div>
+            </div>
           </Fragment>
         );
       })}
-    </Grid>
+    </div>
   );
 };

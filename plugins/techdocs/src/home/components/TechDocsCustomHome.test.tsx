@@ -19,10 +19,15 @@ import {
   starredEntitiesApiRef,
   MockStarredEntitiesApi,
 } from '@backstage/plugin-catalog-react';
-import { ContentHeader, PageWithHeader } from '@backstage/core-components';
+import {
+  ContentHeader,
+  PageWithHeader,
+  TooltipProvider,
+} from '@backstage/core-components';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { PropsWithChildren } from 'react';
 import { TechDocsCustomHome, PanelType } from './TechDocsCustomHome';
 import { ApiProvider } from '@backstage/core-app-api';
@@ -74,9 +79,11 @@ describe('TechDocsCustomHome', () => {
     ];
 
     await renderInTestApp(
-      <ApiProvider apis={apiRegistry}>
-        <TechDocsCustomHome tabsConfig={tabsConfig} />
-      </ApiProvider>,
+      <TooltipProvider>
+        <ApiProvider apis={apiRegistry}>
+          <TechDocsCustomHome tabsConfig={tabsConfig} />
+        </ApiProvider>
+      </TooltipProvider>,
       {
         mountedRoutes: {
           '/docs/:namespace/:kind/:name/*': rootDocsRouteRef,
@@ -99,7 +106,8 @@ describe('TechDocsCustomHome', () => {
     expect(
       await screen.findByText('First Tab Description'),
     ).toBeInTheDocument();
-    (await screen.findByText('Second Tab')).click();
+    const user = userEvent.setup();
+    await user.click(await screen.findByText('Second Tab'));
     expect(
       await screen.findByText('Second Tab Description'),
     ).toBeInTheDocument();

@@ -1,0 +1,90 @@
+/*
+ * Copyright 2024 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/*
+ * Tailwind CSS v4 entry point for @backstage/core-components.
+ *
+ * This file serves as the single CSS import that bootstraps Tailwind's
+ * generated utility classes and theme tokens for all shadcn/ui-based
+ * components in the core-components package.
+ *
+ * Tailwind CSS v4 uses a CSS-first configuration approach where the
+ * entry point uses `@import "tailwindcss"` (or sub-module imports)
+ * instead of the v3-era `@tailwind base/components/utilities` directives.
+ * The `@config` directive points to the package-level Tailwind config
+ * that defines the Backstage design token integration layer.
+ *
+ * Preflight (Tailwind's CSS reset) is intentionally EXCLUDED by importing
+ * only the `tailwindcss/theme` and `tailwindcss/utilities` sub-modules
+ * instead of the full `tailwindcss` entry point. This prevents Tailwind
+ * from overriding baseline styles in community plugins that still render
+ * MUI components internally. Any required reset styles for shadcn/ui
+ * components are applied selectively via `@layer base` in globals.css.
+ *
+ * Import ordering:
+ *   1. Tailwind theme layer (design token integration, custom properties)
+ *   2. Tailwind utilities layer (utility-first class generation)
+ *   3. @config directive (links to tailwind.config.ts for theme extensions)
+ *   4. globals.css token system (shadcn/ui CSS custom properties)
+ *
+ * See also:
+ *   - packages/ui/src/css/styles.css (BUI's equivalent orchestration file)
+ *   - packages/core-components/src/styles/globals.css (token definitions)
+ *   - packages/core-components/tailwind.config.ts (theme extensions)
+ */
+
+/*
+ * Tailwind theme layer — design token definitions and custom property
+ * generation. This layer provides the mapping between Tailwind's utility
+ * class names and the CSS custom property values defined in the theme
+ * configuration.
+ */
+@import "tailwindcss/theme" layer(theme);
+
+/*
+ * Tailwind utilities layer — the core utility-first class generation engine.
+ * Scans source files (via content paths in tailwind.config.ts) for Tailwind
+ * class usage and generates corresponding CSS rules. These have the highest
+ * priority within Tailwind's layer system, ensuring utility overrides always
+ * win over base and component styles.
+ */
+@import "tailwindcss/utilities" layer(utilities);
+
+/*
+ * Link to the package-level Tailwind configuration file that defines
+ * Backstage-specific theme extensions: semantic color tokens mapped to CSS
+ * custom properties, border radius scale, dual-font typography system,
+ * accordion animation keyframes, and responsive breakpoints.
+ *
+ * The relative path resolves from this file's location
+ * (packages/core-components/src/styles/) up to the package root
+ * (packages/core-components/) where tailwind.config.ts resides.
+ */
+@config "../../tailwind.config.ts";
+
+/* ================================================================
+ * shadcn/ui CSS custom property token system (light & dark mode)
+ *
+ * Imports the complete design token definitions that all shadcn/ui
+ * components and migrated Backstage components consume. Token values
+ * are mapped from the BUI token system (packages/ui/src/css/tokens.css)
+ * to ensure visual consistency across the platform.
+ *
+ * This import comes after the Tailwind layer imports so that the CSS
+ * custom property tokens are available to all Tailwind-generated
+ * styles and component classes.
+ * ================================================================ */
+@import './globals.css';

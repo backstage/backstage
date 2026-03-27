@@ -17,14 +17,10 @@ import { ComponentType, PropsWithChildren } from 'react';
 import { LinkButton } from './LinkButton';
 import { useLocation } from 'react-router-dom';
 import { createRouteRef, useRouteRef } from '@backstage/core-plugin-api';
-import Divider from '@material-ui/core/Divider';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import Typography from '@material-ui/core/Typography';
-import MaterialButton from '@material-ui/core/Button';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { Link } from '../Link';
+import { Separator } from '../ui/separator';
+import { Button } from '../ui/button';
 
 const routeRef = createRouteRef({
   id: 'storybook.test-route',
@@ -42,16 +38,16 @@ export default {
     (Story: ComponentType<PropsWithChildren<{}>>) =>
       wrapInTestApp(
         <>
-          <Typography>
+          <p className="text-sm text-muted-foreground">
             A collection of buttons that should be used in the Backstage
             interface. These leverage the properties inherited from{' '}
-            <Link to="https://material-ui.com/components/buttons/">
-              Material UI Button
+            <Link to="https://ui.shadcn.com/docs/components/button">
+              shadcn/ui Button
             </Link>
             , but include an opinionated set that align to the Backstage design.
-          </Typography>
+          </p>
 
-          <Divider />
+          <Separator />
 
           <div>
             <div>
@@ -69,49 +65,55 @@ export default {
 export const Default = () => {
   const link = useRouteRef(routeRef);
   // Design Permutations:
-  // color   = default | primary | secondary
-  // variant = contained | outlined | text
+  // variant = default | secondary | outline | destructive | ghost | link
   return (
-    <List>
-      <ListItem>
-        <ListItemText>
-          <Typography variant="h6">Default Button:</Typography>
-          This is the default button design which should be used in most cases.
-          <br />
-          <pre>color="primary" variant="contained"</pre>
-        </ListItemText>
-
-        <LinkButton to={link()} color="primary" variant="contained">
+    <div className="space-y-4">
+      <div className="flex items-center justify-between gap-4 border-b border-border pb-4">
+        <div>
+          <h6 className="text-base font-semibold">Default Button:</h6>
+          <p className="text-sm text-muted-foreground">
+            This is the default button design which should be used in most
+            cases.
+          </p>
+          <pre className="text-xs text-muted-foreground mt-1">
+            variant="default"
+          </pre>
+        </div>
+        <LinkButton to={link()} variant="default">
           Register Component
         </LinkButton>
-      </ListItem>
-      <ListItem>
-        <ListItemText>
-          <Typography variant="h6">Secondary Button:</Typography>
-          Used for actions that cancel, skip, and in general perform negative
-          functions, etc.
-          <br />
-          <pre>color="secondary" variant="contained"</pre>
-        </ListItemText>
-
-        <LinkButton to={link()} color="secondary" variant="contained">
+      </div>
+      <div className="flex items-center justify-between gap-4 border-b border-border pb-4">
+        <div>
+          <h6 className="text-base font-semibold">Secondary Button:</h6>
+          <p className="text-sm text-muted-foreground">
+            Used for actions that cancel, skip, and in general perform negative
+            functions, etc.
+          </p>
+          <pre className="text-xs text-muted-foreground mt-1">
+            variant="secondary"
+          </pre>
+        </div>
+        <LinkButton to={link()} variant="secondary">
           Cancel
         </LinkButton>
-      </ListItem>
-      <ListItem>
-        <ListItemText>
-          <Typography variant="h6">Tertiary Button:</Typography>
-          Used commonly in a ButtonGroup and when the button function itself is
-          not a primary function on a page.
-          <br />
-          <pre>color="default" variant="outlined"</pre>
-        </ListItemText>
-
-        <LinkButton to={link()} color="default" variant="outlined">
+      </div>
+      <div className="flex items-center justify-between gap-4 pb-4">
+        <div>
+          <h6 className="text-base font-semibold">Tertiary Button:</h6>
+          <p className="text-sm text-muted-foreground">
+            Used commonly in a ButtonGroup and when the button function itself
+            is not a primary function on a page.
+          </p>
+          <pre className="text-xs text-muted-foreground mt-1">
+            variant="outline"
+          </pre>
+        </div>
+        <LinkButton to={link()} variant="outline">
           View Details
         </LinkButton>
-      </ListItem>
-    </List>
+      </div>
+    </div>
   );
 };
 
@@ -123,49 +125,44 @@ export const ButtonLinks = () => {
   };
 
   return (
-    <>
-      <List>
-        {
-          // TODO: Refactor to use new routing mechanisms
-        }
-        <ListItem>
-          <LinkButton to={link()} color="default" variant="outlined">
-            Route Ref
-          </LinkButton>
-          &nbsp; has props for both Material UI's component as well as for
-          react-router-dom's Route object.
-        </ListItem>
+    <div className="space-y-4">
+      <div className="flex items-center gap-4 border-b border-border pb-4">
+        <LinkButton to={link()} variant="outline">
+          Route Ref
+        </LinkButton>
+        <span className="text-sm text-muted-foreground">
+          has props for both shadcn/ui Button as well as for react-router-dom's
+          Route object.
+        </span>
+      </div>
 
-        <ListItem>
-          <LinkButton to="/staticpath" color="default" variant="outlined">
-            Static Path
-          </LinkButton>
-          &nbsp; links to a statically defined route. In general, this should be
+      <div className="flex items-center gap-4 border-b border-border pb-4">
+        <LinkButton to="/staticpath" variant="outline">
+          Static Path
+        </LinkButton>
+        <span className="text-sm text-muted-foreground">
+          links to a statically defined route. In general, this should be
           avoided.
-        </ListItem>
+        </span>
+      </div>
 
-        <ListItem>
-          <MaterialButton
-            href="https://backstage.io"
-            color="default"
-            variant="outlined"
-          >
-            View URL
-          </MaterialButton>
-          &nbsp; links to a defined URL using Material UI's Button.
-        </ListItem>
+      <div className="flex items-center gap-4 border-b border-border pb-4">
+        <Button variant="outline" asChild>
+          <a href="https://backstage.io">View URL</a>
+        </Button>
+        <span className="text-sm text-muted-foreground">
+          links to a defined URL using shadcn/ui Button.
+        </span>
+      </div>
 
-        <ListItem>
-          <MaterialButton
-            onClick={handleClick}
-            color="default"
-            variant="outlined"
-          >
-            Trigger Event
-          </MaterialButton>
-          &nbsp; triggers an onClick event using Material UI's Button.
-        </ListItem>
-      </List>
-    </>
+      <div className="flex items-center gap-4 pb-4">
+        <Button variant="outline" onClick={handleClick}>
+          Trigger Event
+        </Button>
+        <span className="text-sm text-muted-foreground">
+          triggers an onClick event using shadcn/ui Button.
+        </span>
+      </div>
+    </div>
   );
 };

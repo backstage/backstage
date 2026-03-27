@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import { ReactNode } from 'react';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText, {
-  ListItemTextProps,
-} from '@material-ui/core/ListItemText';
+import React, { ReactNode } from 'react';
 
 /**
  * Props for {@link SearchAutocompleteDefaultOption}.
@@ -27,11 +23,11 @@ import ListItemText, {
  */
 export type SearchAutocompleteDefaultOptionProps = {
   icon?: ReactNode;
-  primaryText: ListItemTextProps['primary'];
-  primaryTextTypographyProps?: ListItemTextProps['primaryTypographyProps'];
-  secondaryText?: ListItemTextProps['secondary'];
-  secondaryTextTypographyProps?: ListItemTextProps['secondaryTypographyProps'];
-  disableTextTypography?: ListItemTextProps['disableTypography'];
+  primaryText: ReactNode;
+  primaryTextTypographyProps?: React.HTMLAttributes<HTMLSpanElement>;
+  secondaryText?: ReactNode;
+  secondaryTextTypographyProps?: React.HTMLAttributes<HTMLSpanElement>;
+  disableTextTypography?: boolean;
 };
 
 /**
@@ -53,14 +49,32 @@ export const SearchAutocompleteDefaultOption = (
 
   return (
     <>
-      {icon ? <ListItemIcon>{icon}</ListItemIcon> : null}
-      <ListItemText
-        primary={primaryText}
-        primaryTypographyProps={primaryTextTypographyProps}
-        secondary={secondaryText}
-        secondaryTypographyProps={secondaryTextTypographyProps}
-        disableTypography={disableTextTypography}
-      />
+      {icon ? (
+        <div className="mr-3 flex-shrink-0 text-muted-foreground">{icon}</div>
+      ) : null}
+      <div className="flex flex-col min-w-0">
+        {disableTextTypography ? (
+          primaryText
+        ) : (
+          <span
+            className="text-sm font-medium truncate"
+            {...primaryTextTypographyProps}
+          >
+            {primaryText}
+          </span>
+        )}
+        {secondaryText &&
+          (disableTextTypography ? (
+            secondaryText
+          ) : (
+            <span
+              className="text-xs text-muted-foreground truncate"
+              {...secondaryTextTypographyProps}
+            >
+              {secondaryText}
+            </span>
+          ))}
+      </div>
     </>
   );
 };

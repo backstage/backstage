@@ -22,16 +22,13 @@ import {
 import { useEffect, useState, useCallback } from 'react';
 import useDebounce from 'react-use/esm/useDebounce';
 import { useTemplateSecrets } from '@backstage/plugin-scaffolder-react';
-import Box from '@material-ui/core/Box';
-import Divider from '@material-ui/core/Divider';
-import Typography from '@material-ui/core/Typography';
 
 import { RepoBranchPickerProps } from './schema';
 import { RepoBranchPickerState } from './types';
 import { BitbucketRepoBranchPicker } from './BitbucketRepoBranchPicker';
 import { DefaultRepoBranchPicker } from './DefaultRepoBranchPicker';
 import { GitHubRepoBranchPicker } from './GitHubRepoBranchPicker';
-import { MarkdownContent } from '@backstage/core-components';
+import { MarkdownContent, Separator, cn } from '@backstage/core-components';
 
 /**
  * The underlying component that is rendered in the form for the `RepoBranchPicker`
@@ -168,19 +165,21 @@ export const RepoBranchPicker = (props: RepoBranchPickerProps) => {
   const description = uiSchema['ui:description'] ?? schema.description;
 
   return (
-    <>
+    <div className={cn('space-y-4')}>
       {schema.title && (
-        <Box my={1}>
-          <Typography variant="h5">{schema.title}</Typography>
-          <Divider />
-        </Box>
+        <div className="my-2">
+          <h3 className="text-lg font-semibold tracking-tight">
+            {schema.title}
+          </h3>
+          <Separator className="mt-2" />
+        </div>
       )}
       {description && (
-        <Typography variant="body1">
+        <div className="text-sm text-muted-foreground">
           <MarkdownContent content={description} />
-        </Typography>
+        </div>
       )}
       {renderRepoBranchPicker()}
-    </>
+    </div>
   );
 };

@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-import Box from '@material-ui/core/Box';
-import { makeStyles, Theme } from '@material-ui/core/styles';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
 import {
   ReactNode,
   MutableRefObject,
@@ -29,44 +26,13 @@ import {
   useState,
 } from 'react';
 
-import { SidebarConfig, SidebarConfigContext } from './config';
+import { cn } from '../../lib/utils';
+
+import { SidebarConfigContext } from './config';
 import { LocalStorage } from './localStorage';
 import { SidebarPinStateProvider } from './SidebarPinStateContext';
 
 export type SidebarPageClassKey = 'root';
-
-type StyleProps = { sidebarConfig: SidebarConfig; isPinned: boolean };
-
-const useStyles = makeStyles<Theme, StyleProps>(
-  theme => ({
-    root: {
-      width: '100%',
-      transition: 'padding-left 0.1s ease-out',
-      isolation: 'isolate',
-      [theme.breakpoints.up('sm')]: {
-        paddingLeft: (props: StyleProps) =>
-          props.isPinned
-            ? props.sidebarConfig.drawerWidthOpen
-            : props.sidebarConfig.drawerWidthClosed,
-      },
-      [theme.breakpoints.down('xs')]: {
-        paddingBottom: (props: StyleProps) =>
-          props.sidebarConfig.mobileSidebarHeight,
-      },
-      '@media print': {
-        padding: '0px !important',
-      },
-    },
-    content: {
-      zIndex: 0,
-      isolation: 'isolate',
-      '&:focus': {
-        outline: 0,
-      },
-    },
-  }),
-  { name: 'BackstageSidebarPage' },
-);
 
 /**
  * Props for SidebarPage
@@ -109,13 +75,21 @@ export function SidebarPage(props: SidebarPageProps) {
     LocalStorage.setSidebarPinState(isPinned);
   }, [isPinned]);
 
-  const isMobile = useMediaQuery<Theme>(theme => theme.breakpoints.down('xs'), {
-    noSsr: true,
-  });
+  // Replace MUI useMediaQuery with native window.matchMedia
+  // MUI breakpoints.down('xs') = max-width: 599.95px; noSsr: true means initially false
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    if (typeof window.matchMedia !== 'function') {
+      return undefined;
+    }
+    const mql = window.matchMedia('(max-width: 599.95px)');
+    setIsMobile(mql.matches);
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mql.addEventListener('change', handler);
+    return () => mql.removeEventListener('change', handler);
+  }, []);
 
   const toggleSidebarPinState = () => setIsPinned(!isPinned);
-
-  const classes = useStyles({ isPinned, sidebarConfig });
 
   return (
     <SidebarPinStateProvider
@@ -126,7 +100,24 @@ export function SidebarPage(props: SidebarPageProps) {
       }}
     >
       <PageContext.Provider value={pageContext}>
-        <Box className={classes.root}>{props.children}</Box>
+        <div
+          className={cn(
+            'w-full transition-[padding-left] duration-100 ease-out isolate',
+            'overflow-x-hidden',
+            'print:!p-0',
+          )}
+          style={
+            isMobile
+              ? { paddingBottom: sidebarConfig.mobileSidebarHeight }
+              : {
+                  paddingLeft: isPinned
+                    ? sidebarConfig.drawerWidthOpen
+                    : sidebarConfig.drawerWidthClosed,
+                }
+          }
+        >
+          {props.children}
+        </div>
       </PageContext.Provider>
     </SidebarPinStateProvider>
   );

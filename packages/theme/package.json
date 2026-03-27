@@ -38,7 +38,10 @@
   "dependencies": {
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
-    "@mui/material": "^5.12.2"
+    "@mui/material": "^5.12.2",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^3.0.2",
+    "tailwindcss": "^4.2.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

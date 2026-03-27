@@ -31,8 +31,12 @@ function customTitle(entity: Entity): string {
 export const columnFactories = {
   createTitleColumn(options?: { hidden?: boolean }): TableColumn<DocsTableRow> {
     const nameCol = columnFactories.createNameColumn();
+    // Omit defaultSort and customSort from spread — when hidden, this column must
+    // not claim a default sort because the new @tanstack/react-table implementation
+    // filters hidden columns from its model, making the sort ID unreachable.
+    const { defaultSort: _ds, customSort: _cs, ...rest } = nameCol;
     return {
-      ...nameCol,
+      ...rest,
       field: 'entity.metadata.title',
       hidden: options?.hidden,
     };

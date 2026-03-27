@@ -13,15 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ChangeEvent, useState } from 'react';
+import { useState } from 'react';
 import useAsync from 'react-use/esm/useAsync';
 import useEffectOnce from 'react-use/esm/useEffectOnce';
 import { GetEntityFacetsRequest } from '@backstage/catalog-client';
 import { makeValidator } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
-import TextField from '@material-ui/core/TextField';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+
+/* shadcn/ui primitives from @backstage/core-components */
+import {
+  cn,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  Command,
+  CommandInput,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+  CommandList,
+  Badge,
+  ShadcnButton as Button,
+} from '@backstage/core-components';
+
+/* Lucide icons replacing @material-ui/icons */
+import { X, ChevronsUpDown, Check } from 'lucide-react';
+
 import { EntityTagsPickerProps } from './schema';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../../translation';
@@ -53,6 +71,7 @@ export const EntityTagsPicker = (props: EntityTagsPickerProps) => {
   const [tagOptions, setTagOptions] = useState<string[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [inputError, setInputError] = useState(false);
+  const [open, setOpen] = useState(false);
   const tagValidator = makeValidator().isValidTag;
   const kinds = uiSchema['ui:options']?.kinds;
   const showCounts = uiSchema['ui:options']?.showCounts;
@@ -81,26 +100,37 @@ export const EntityTagsPicker = (props: EntityTagsPickerProps) => {
     return tagFacets;
   });
 
-  const setTags = (_: ChangeEvent<{}>, values: string[] | null) => {
-    // Reset error state in case all tags were removed
-    let hasError = false;
-    let addDuplicate = false;
+  /** Toggle an existing tag option on or off from the dropdown list */
+  const handleSelectTag = (tag: string) => {
     const currentTags = formData || [];
-
-    // If adding a new tag
-    if (values?.length && currentTags.length < values.length) {
-      const newTag = (values[values.length - 1] = values[values.length - 1]
-        .toLocaleLowerCase('en-US')
-        .trim());
-      hasError = !tagValidator(newTag);
-      addDuplicate = currentTags.indexOf(newTag) !== -1;
+    if (currentTags.includes(tag)) {
+      onChange(currentTags.filter((item: string) => item !== tag));
+    } else {
+      onChange([...currentTags, tag]);
     }
+  };
+
+  /** Add a custom (freeSolo) tag typed by the user, applying validation and normalization */
+  const handleAddCustomTag = (value: string) => {
+    const newTag = value.toLocaleLowerCase('en-US').trim();
+    if (!newTag) return;
+
+    const currentTags = formData || [];
+    const hasError = !tagValidator(newTag);
+    const addDuplicate = currentTags.indexOf(newTag) !== -1;
 
     setInputError(hasError);
     setInputValue(!hasError ? '' : inputValue);
+
     if (!hasError && !addDuplicate) {
-      onChange(values || []);
+      onChange([...currentTags, newTag]);
     }
+  };
+
+  /** Remove a selected tag via the dismiss button on its Badge */
+  const handleRemoveTag = (tagToRemove: string) => {
+    const currentTags = formData || [];
+    onChange(currentTags.filter((item: string) => item !== tagToRemove));
   };
 
   // Initialize field to always return an array
@@ -114,31 +144,109 @@ export const EntityTagsPicker = (props: EntityTagsPickerProps) => {
       disabled={isDisabled}
       errors={errors}
     >
-      <Autocomplete
-        multiple
-        freeSolo
-        filterSelectedOptions
-        onChange={setTags}
-        disabled={isDisabled}
-        value={formData || []}
-        inputValue={inputValue}
-        loading={loading}
-        options={tagOptions}
-        ChipProps={{ size: 'small' }}
-        renderOption={option =>
-          showCounts ? `${option} (${existingTags?.[option]})` : option
-        }
-        renderInput={params => (
-          <TextField
-            {...params}
-            label={title}
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            role="combobox"
+            aria-expanded={open}
             disabled={isDisabled}
-            onChange={e => setInputValue(e.target.value)}
-            error={inputError}
-            FormHelperTextProps={{ margin: 'dense', style: { marginLeft: 0 } }}
-          />
-        )}
-      />
+            className={cn(
+              'w-full justify-between min-h-[2.5rem] h-auto',
+              !formData?.length && 'text-muted-foreground',
+            )}
+          >
+            <div className="flex flex-wrap gap-1 flex-1">
+              {formData?.length ? (
+                formData.map((tag: string) => (
+                  <Badge key={tag} variant="secondary" className="text-xs">
+                    {tag}
+                    {/* eslint-disable-next-line react/forbid-elements -- native button required inside Badge for shadcn/ui combobox pattern */}
+                    <button
+                      type="button"
+                      className="ml-1 rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                      onKeyDown={e => {
+                        if (e.key === 'Enter') {
+                          handleRemoveTag(tag);
+                        }
+                      }}
+                      onMouseDown={e => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                      }}
+                      onClick={() => handleRemoveTag(tag)}
+                    >
+                      <X className="h-3 w-3 text-muted-foreground hover:text-foreground" />
+                    </button>
+                  </Badge>
+                ))
+              ) : (
+                // eslint-disable-next-line react/forbid-elements -- plain span for combobox placeholder text per shadcn/ui migration
+                <span>{title}</span>
+              )}
+            </div>
+            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-full p-0" align="start">
+          <Command shouldFilter>
+            <CommandInput
+              placeholder={`Search ${title?.toLowerCase() ?? 'tags'}...`}
+              value={inputValue}
+              onValueChange={setInputValue}
+              onKeyDown={e => {
+                if (e.key === 'Enter' && inputValue) {
+                  e.preventDefault();
+                  handleAddCustomTag(inputValue);
+                }
+              }}
+            />
+            <CommandList>
+              <CommandEmpty>
+                {inputValue ? (
+                  // eslint-disable-next-line react/forbid-elements -- native button for freeSolo add action per shadcn/ui migration
+                  <button
+                    type="button"
+                    className="w-full text-left px-2 py-1.5 text-sm cursor-pointer hover:bg-accent hover:text-accent-foreground rounded-sm"
+                    onClick={() => handleAddCustomTag(inputValue)}
+                  >
+                    Add &quot;{inputValue}&quot;
+                  </button>
+                ) : (
+                  'No tags found.'
+                )}
+              </CommandEmpty>
+              <CommandGroup>
+                {loading && <CommandItem disabled>Loading tags...</CommandItem>}
+                {tagOptions.map(option => {
+                  const isSelected = (formData || []).includes(option);
+                  return (
+                    <CommandItem
+                      key={option}
+                      value={option}
+                      onSelect={() => handleSelectTag(option)}
+                    >
+                      <Check
+                        className={cn(
+                          'mr-2 h-4 w-4',
+                          isSelected ? 'opacity-100' : 'opacity-0',
+                        )}
+                      />
+                      {showCounts
+                        ? `${option} (${existingTags?.[option]})`
+                        : option}
+                    </CommandItem>
+                  );
+                })}
+              </CommandGroup>
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
+      {inputError && (
+        // eslint-disable-next-line react/forbid-elements -- native p for error message per shadcn/ui migration
+        <p className="text-sm text-destructive mt-1">Invalid tag format</p>
+      )}
     </ScaffolderField>
   );
 };

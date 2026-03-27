@@ -21,7 +21,10 @@ import {
   RELATION_OWNED_BY,
 } from '@backstage/catalog-model';
 import {
+  Alert,
+  AlertDescription,
   Breadcrumbs,
+  cn,
   Content,
   Header,
   HeaderLabel,
@@ -52,15 +55,11 @@ import {
   UnregisterEntityDialog,
   useAsyncEntity,
 } from '@backstage/plugin-catalog-react';
-import Box from '@material-ui/core/Box';
-import { makeStyles } from '@material-ui/core/styles';
-import { TabProps } from '@material-ui/core/Tab';
-import Alert from '@material-ui/lab/Alert';
 import {
   ComponentProps,
+  ComponentPropsWithoutRef,
   useEffect,
   useState,
-  ElementType,
   ReactNode,
 } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
@@ -75,7 +74,7 @@ export type EntityLayoutRouteProps = {
   title: string;
   children: JSX.Element;
   if?: (entity: Entity) => boolean;
-  tabProps?: TabProps<ElementType, { component?: ElementType }>;
+  tabProps?: ComponentPropsWithoutRef<'button'> & { asChild?: boolean };
 };
 
 const dataKey = 'plugin.catalog.entityLayoutRoute';
@@ -90,17 +89,12 @@ function EntityLayoutTitle(props: {
 }) {
   const { entity, title } = props;
   return (
-    <Box display="inline-flex" alignItems="center" height="1em" maxWidth="100%">
-      <Box
-        component="span"
-        textOverflow="ellipsis"
-        whiteSpace="nowrap"
-        overflow="hidden"
-      >
+    <div className="inline-flex items-center h-[1em] max-w-full">
+      <span className="overflow-hidden text-ellipsis whitespace-nowrap">
         {entity ? <EntityDisplayName entityRef={entity} hideIcon /> : title}
-      </Box>
+      </span>
       {entity && <FavoriteEntity entity={entity} />}
-    </Box>
+    </div>
   );
 }
 
@@ -209,21 +203,6 @@ function findParentRelation(
   return null;
 }
 
-const useStyles = makeStyles(theme => ({
-  breadcrumbs: {
-    color: theme.page.fontColor,
-    fontSize: theme.typography.caption.fontSize,
-    textTransform: 'uppercase',
-    marginTop: theme.spacing(1),
-    opacity: 0.8,
-    '& span ': {
-      color: theme.page.fontColor,
-      textDecoration: 'underline',
-      textUnderlineOffset: '3px',
-    },
-  },
-}));
-
 /**
  * EntityLayout is a compound component, which allows you to define a layout for
  * entities using a sub-navigation mechanism.
@@ -249,7 +228,6 @@ export const EntityLayout = (props: EntityLayoutProps) => {
     NotFoundComponent,
     parentEntityRelations,
   } = props;
-  const classes = useStyles();
   const { kind, namespace, name } = useRouteRefParams(entityRouteRef);
   const { entity, loading, error } = useAsyncEntity();
   const location = useLocation();
@@ -338,7 +316,13 @@ export const EntityLayout = (props: EntityLayoutProps) => {
         type={headerType}
         subtitle={
           parentEntity && (
-            <Breadcrumbs separator=">" className={classes.breadcrumbs}>
+            <Breadcrumbs
+              className={cn(
+                'text-xs uppercase mt-2 opacity-80',
+                'text-inherit',
+                '[&_span]:text-inherit [&_span]:underline [&_span]:underline-offset-[3px]',
+              )}
+            >
               {ancestorEntity && (
                 <EntityRefLink
                   entityRef={ancestorEntity.targetRef}
@@ -379,7 +363,9 @@ export const EntityLayout = (props: EntityLayoutProps) => {
 
       {error && (
         <Content>
-          <Alert severity="error">{error.toString()}</Alert>
+          <Alert variant="destructive">
+            <AlertDescription>{error.toString()}</AlertDescription>
+          </Alert>
         </Content>
       )}
 

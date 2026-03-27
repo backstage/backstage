@@ -11,3 +11,5 @@
 **/templates/**
 **/sample-templates/**
 playwright.config.ts
+tailwind.config.ts
+**/*.css

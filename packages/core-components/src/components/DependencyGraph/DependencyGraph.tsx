@@ -23,43 +23,27 @@ import {
   useState,
 } from 'react';
 import useMeasure from 'react-use/esm/useMeasure';
-import classNames from 'classnames';
 import { once } from 'lodash';
 import * as d3Zoom from 'd3-zoom';
 import * as d3Selection from 'd3-selection';
-import useTheme from '@material-ui/core/styles/useTheme';
 import dagre from '@dagrejs/dagre';
 import debounce from 'lodash/debounce';
+import { Maximize, Minimize } from 'lucide-react';
 import { DependencyGraphTypes as Types } from './types';
 import { Node } from './Node';
 import { Edge, GraphEdge } from './Edge';
 import { ARROW_MARKER_ID } from './constants';
-import IconButton from '@material-ui/core/IconButton';
-import FullscreenIcon from '@material-ui/icons/Fullscreen';
-import FullscreenExitIcon from '@material-ui/icons/FullscreenExit';
 import { FullScreen, useFullScreenHandle } from 'react-full-screen';
-import { makeStyles, Theme } from '@material-ui/core/styles';
-import Tooltip from '@material-ui/core/Tooltip';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { coreComponentsTranslationRef } from '../../translation';
-
-const useStyles = makeStyles((theme: Theme) => ({
-  fullscreenButton: {
-    position: 'absolute',
-    right: 0,
-  },
-  root: {
-    overflow: 'hidden',
-    minHeight: '100%',
-    minWidth: '100%',
-  },
-  fixedHeight: {
-    maxHeight: '100%',
-  },
-  fullscreen: {
-    backgroundColor: theme.palette.background.paper,
-  },
-}));
+import { cn } from '../../lib/utils';
+import { Button } from '../ui/button';
+import {
+  ShadcnTooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
+} from '../ui/tooltip';
 
 /**
  * Properties of {@link DependencyGraph}
@@ -262,11 +246,9 @@ export function DependencyGraph<NodeData, EdgeData>(
     allowFullscreen = true,
     ...svgProps
   } = props;
-  const theme = useTheme();
   const [containerWidth, setContainerWidth] = useState<number>(100);
   const [containerHeight, setContainerHeight] = useState<number>(100);
   const fullScreenHandle = useFullScreenHandle();
-  const styles = useStyles();
   const { t } = useTranslationRef(coreComponentsTranslationRef);
 
   const graph = useRef<dagre.graphlib.Graph<Types.DependencyNode<NodeData>>>(
@@ -478,27 +460,38 @@ export function DependencyGraph<NodeData, EdgeData>(
   return (
     <FullScreen
       handle={fullScreenHandle}
-      className={classNames(
-        fullScreenHandle.active ? styles.fullscreen : styles.root,
+      className={cn(
+        fullScreenHandle.active
+          ? 'bg-card'
+          : 'overflow-hidden min-h-full min-w-full',
       )}
     >
       {allowFullscreen && (
-        <Tooltip title={t('dependencyGraph.fullscreenTooltip')}>
-          <IconButton
-            className={styles.fullscreenButton}
-            onClick={
-              fullScreenHandle.active
-                ? fullScreenHandle.exit
-                : fullScreenHandle.enter
-            }
-          >
-            {fullScreenHandle.active ? (
-              <FullscreenExitIcon />
-            ) : (
-              <FullscreenIcon />
-            )}
-          </IconButton>
-        </Tooltip>
+        <TooltipProvider>
+          <ShadcnTooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute right-0 z-10"
+                onClick={
+                  fullScreenHandle.active
+                    ? fullScreenHandle.exit
+                    : fullScreenHandle.enter
+                }
+              >
+                {fullScreenHandle.active ? (
+                  <Minimize className="h-4 w-4" />
+                ) : (
+                  <Maximize className="h-4 w-4" />
+                )}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              {t('dependencyGraph.fullscreenTooltip')}
+            </TooltipContent>
+          </ShadcnTooltip>
+        </TooltipProvider>
       )}
 
       <div ref={containerRef} style={{ width: '100%', height: '100%' }}>
@@ -521,7 +514,7 @@ export function DependencyGraph<NodeData, EdgeData>(
               markerUnits="strokeWidth"
             >
               <path
-                fill={theme.palette.textSubtle}
+                fill="var(--muted-foreground)"
                 d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"
               />
             </marker>

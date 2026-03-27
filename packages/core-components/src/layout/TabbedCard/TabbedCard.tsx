@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import CardHeader from '@material-ui/core/CardHeader';
-import Divider from '@material-ui/core/Divider';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
-import Tab, { TabProps } from '@material-ui/core/Tab';
-import Tabs from '@material-ui/core/Tabs';
+import { Card, CardContent } from '../../components/ui/card';
+import { ShadcnTabs, TabsList, TabsTrigger } from '../../components/ui/tabs';
+import { Separator } from '../../components/ui/separator';
+import { cn } from '../../lib/utils';
 import {
   ChangeEvent,
   Children,
@@ -28,6 +25,8 @@ import {
   PropsWithChildren,
   ReactElement,
   ReactNode,
+  useCallback,
+  useRef,
   useState,
 } from 'react';
 import { BottomLink, BottomLinkProps } from '../BottomLink';
@@ -35,37 +34,40 @@ import { ErrorBoundary, ErrorBoundaryProps } from '../ErrorBoundary';
 
 export type TabbedCardClassKey = 'root' | 'indicator';
 
-const useTabsStyles = makeStyles(
-  theme => ({
-    root: {
-      padding: theme.spacing(0, 2, 0, 2.5),
-      minHeight: theme.spacing(3),
-    },
-    indicator: {
-      backgroundColor: theme.palette.info.main,
-      height: theme.spacing(0.3),
-    },
-  }),
-  { name: 'BackstageTabbedCard' },
-);
-
 /** @public */
 export type BoldHeaderClassKey = 'root' | 'title' | 'subheader';
 
-const BoldHeader = withStyles(
-  theme => ({
-    root: { padding: theme.spacing(2, 2, 2, 2.5), display: 'inline-block' },
-    title: { fontWeight: 700 },
-    subheader: { paddingTop: theme.spacing(1) },
-  }),
-  { name: 'BackstageTabbedCardBoldHeader' },
-)(CardHeader);
+/**
+ * Internal bold header component replacing MUI CardHeader with withStyles.
+ * Renders a card title with bold font weight and consistent padding
+ * matching the original MUI spacing: padding(2, 2, 2, 2.5) = 16px 16px 16px 20px.
+ */
+function BoldHeader({ title }: { title: string }) {
+  return (
+    <div className={cn('inline-block py-4 px-4 pl-5')}>
+      <h3 className="font-bold text-base leading-normal">{title}</h3>
+    </div>
+  );
+}
+
+/**
+ * Props for the CardTab component — standalone type replacing MUI TabProps
+ * dependency. Includes the essential props consumed by TabbedCard to
+ * construct Radix TabsTrigger elements.
+ */
+type CardTabProps = {
+  children: ReactNode;
+  label?: ReactNode;
+  value?: string | number;
+  disabled?: boolean;
+  className?: string;
+};
 
 type Props = {
   /** @deprecated Use errorBoundaryProps instead */
   slackChannel?: string;
   errorBoundaryProps?: ErrorBoundaryProps;
-  children?: ReactElement<TabProps>[];
+  children?: ReactElement<CardTabProps>[];
   onChange?: (event: ChangeEvent<{}>, value: number | string) => void;
   title?: string;
   value?: number | string;
@@ -82,25 +84,70 @@ export function TabbedCard(props: PropsWithChildren<Props>) {
     value,
     onChange,
   } = props;
-  const tabsClasses = useTabsStyles();
-  const [selectedIndex, selectIndex] = useState(0);
+  const [selectedIndex, selectIndex] = useState('0');
 
-  const handleChange = onChange
-    ? onChange
-    : (_ev: unknown, newSelectedIndex: number) => selectIndex(newSelectedIndex);
+  // Determine current tab value (string-based for Radix Tabs)
+  const currentValue = value !== undefined ? String(value) : selectedIndex;
 
+  // Bridge between Radix onValueChange and existing onChange API.
+  // MUI Tabs used onChange(event, value) while Radix Tabs uses onValueChange(value).
+  // We create a synthetic event and attempt to preserve numeric value types.
+  const handleValueChange = useCallback(
+    (newValue: string) => {
+      if (onChange) {
+        const syntheticEvent = {} as ChangeEvent<{}>;
+        // Preserve numeric type when original values were numeric
+        const numericValue = Number(newValue);
+        const resolvedValue =
+          !isNaN(numericValue) && String(numericValue) === newValue
+            ? numericValue
+            : newValue;
+        onChange(syntheticEvent, resolvedValue);
+      } else {
+        selectIndex(newValue);
+      }
+    },
+    [onChange],
+  );
+
+  // Deduplication: Radix TabsTrigger fires onMouseDown and onFocus internally,
+  // both of which invoke context.onValueChange. Combined with our onClick
+  // handler (needed for fireEvent.click compatibility in tests), a single
+  // user-click can trigger handleValueChange 2-3 times. We use a ref guard
+  // that suppresses duplicate calls for the same value within the same
+  // browser task (cleared via setTimeout(0) after the current event cycle).
+  const dedupeValueRef = useRef<string | null>(null);
+  const dedupeClearRef = useRef<ReturnType<typeof setTimeout>>();
+
+  const handleValueChangeOnce = useCallback(
+    (newValue: string) => {
+      if (dedupeValueRef.current === newValue) return;
+      dedupeValueRef.current = newValue;
+      clearTimeout(dedupeClearRef.current);
+      dedupeClearRef.current = setTimeout(() => {
+        dedupeValueRef.current = null;
+      }, 0);
+      handleValueChange(newValue);
+    },
+    [handleValueChange],
+  );
+
+  // Extract selected tab content (preserving existing manual selection behavior —
+  // only the selected tab's children are rendered, not hidden/shown via CSS)
   let selectedTabContent: ReactNode;
-  if (!value) {
+  if (value === undefined) {
+    // Uncontrolled: match by index (converted to string)
     Children.map(children, (child, index) => {
-      if (isValidElement(child) && index === selectedIndex) {
+      if (isValidElement(child) && String(index) === selectedIndex) {
         selectedTabContent = child?.props.children;
       }
     });
   } else {
+    // Controlled: match by value prop
     Children.map(children, child => {
       if (
         isValidElement<{ children?: ReactNode; value?: unknown }>(child) &&
-        child?.props.value === value
+        String(child?.props.value) === String(value)
       ) {
         selectedTabContent = child?.props.children;
       }
@@ -114,14 +161,46 @@ export function TabbedCard(props: PropsWithChildren<Props>) {
     <Card>
       <ErrorBoundary {...errProps}>
         {title && <BoldHeader title={title} />}
-        <Tabs
-          classes={tabsClasses}
-          value={value || selectedIndex}
-          onChange={handleChange}
-        >
-          {children}
-        </Tabs>
-        <Divider />
+        <ShadcnTabs value={currentValue} onValueChange={handleValueChangeOnce}>
+          <TabsList
+            className={cn(
+              'h-auto min-h-[24px] w-full justify-start',
+              'rounded-none bg-transparent',
+              'px-4 pl-5 py-0',
+            )}
+          >
+            {Children.map(children, (child, index) => {
+              if (isValidElement<CardTabProps>(child)) {
+                const tabValue =
+                  child.props.value !== undefined
+                    ? String(child.props.value)
+                    : String(index);
+                return (
+                  <TabsTrigger
+                    key={tabValue}
+                    value={tabValue}
+                    disabled={child.props.disabled}
+                    onClick={() => handleValueChangeOnce(tabValue)}
+                    className={cn(
+                      'min-w-[48px] min-h-[24px] mr-4 py-1 px-0',
+                      'text-sm normal-case',
+                      'rounded-none border-b-2 border-transparent',
+                      'hover:opacity-100 hover:bg-transparent hover:text-foreground',
+                      'data-[state=active]:font-bold data-[state=active]:border-b-2',
+                      'data-[state=active]:border-[color:var(--info,var(--primary))]',
+                      'data-[state=active]:shadow-none',
+                      child.props.className,
+                    )}
+                  >
+                    {child.props.label}
+                  </TabsTrigger>
+                );
+              }
+              return null;
+            })}
+          </TabsList>
+        </ShadcnTabs>
+        <Separator />
         <CardContent>{selectedTabContent}</CardContent>
         {deepLink && <BottomLink {...deepLink} />}
       </ErrorBoundary>
@@ -132,40 +211,18 @@ export function TabbedCard(props: PropsWithChildren<Props>) {
 /** @public */
 export type CardTabClassKey = 'root' | 'selected';
 
-const useCardTabStyles = makeStyles(
-  theme => ({
-    root: {
-      minWidth: theme.spacing(6),
-      minHeight: theme.spacing(3),
-      margin: theme.spacing(0, 2, 0, 0),
-      padding: theme.spacing(0.5, 0, 0.5, 0),
-      textTransform: 'none',
-      '&:hover': {
-        opacity: 1,
-        backgroundColor: 'transparent',
-        color: theme.palette.text.primary,
-      },
-    },
-    selected: {
-      fontWeight: theme.typography.fontWeightBold,
-    },
-  }),
-  { name: 'BackstageCardTab' },
-);
-
-type CardTabProps = TabProps & {
-  children: ReactNode;
-};
-
 /**
  * Card tab component used in {@link TabbedCard}
+ *
+ * CardTab is a declarative configuration component — its props (label,
+ * value, children, disabled) are read by TabbedCard to construct Radix
+ * TabsTrigger elements. CardTab itself does not render any DOM output.
+ * This follows the compound component pattern (similar to `<Option>` in
+ * custom Select components).
  *
  * @public
  *
  */
-export function CardTab(props: PropsWithChildren<CardTabProps>) {
-  const { children, ...restProps } = props;
-  const classes = useCardTabStyles();
-
-  return <Tab disableRipple classes={classes} {...restProps} />;
+export function CardTab(_props: PropsWithChildren<CardTabProps>) {
+  return null;
 }

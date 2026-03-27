@@ -13,10 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import FormControl from '@material-ui/core/FormControl';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import TextField from '@material-ui/core/TextField';
-import { Select, SelectItem } from '@backstage/core-components';
+import {
+  Select,
+  SelectItem,
+  Input,
+  Label,
+  cn,
+} from '@backstage/core-components';
 import { BaseRepoUrlPickerProps } from './types';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../../translation';
@@ -37,10 +40,11 @@ export const GiteaRepoPicker = (
 
   return (
     <>
-      <FormControl
-        margin="normal"
-        required
-        error={rawErrors?.length > 0 && !owner}
+      <div
+        className={cn(
+          'mt-4 mb-2',
+          rawErrors?.length > 0 && !owner && 'text-destructive',
+        )}
       >
         {allowedOwners?.length ? (
           <>
@@ -58,23 +62,27 @@ export const GiteaRepoPicker = (
               selected={owner}
               items={ownerItems}
             />
-            <FormHelperText>
+            <p className="mt-1 text-sm text-muted-foreground">
               {t('fields.giteaRepoPicker.owner.description')}
-            </FormHelperText>
+            </p>
           </>
         ) : (
-          <>
-            <TextField
+          <div className="space-y-2">
+            <Label htmlFor="ownerInput">
+              {t('fields.giteaRepoPicker.owner.inputTitle')}
+            </Label>
+            <Input
               id="ownerInput"
-              label={t('fields.giteaRepoPicker.owner.inputTitle')}
               onChange={e => onChange({ owner: e.target.value })}
-              helperText={t('fields.giteaRepoPicker.owner.description')}
               disabled={isDisabled}
               value={owner}
             />
-          </>
+            <p className="text-sm text-muted-foreground">
+              {t('fields.giteaRepoPicker.owner.description')}
+            </p>
+          </div>
         )}
-      </FormControl>
+      </div>
     </>
   );
 };

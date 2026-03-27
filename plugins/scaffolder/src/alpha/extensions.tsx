@@ -23,13 +23,29 @@ import {
   NavItemBlueprint,
   PageBlueprint,
 } from '@backstage/frontend-plugin-api';
+import type { IconComponent } from '@backstage/frontend-plugin-api';
 import { rootRouteRef } from '../routes';
-import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
+import { PlusCircle } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { FormFieldBlueprint } from '@backstage/plugin-scaffolder-react/alpha';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
 import { ScaffolderClient } from '../api';
 import { formFieldsApiRef } from './formFieldsApi';
+
+/**
+ * Wraps a Lucide icon component to satisfy the Backstage IconComponent type contract.
+ * LucideIcon accepts SVGProps (fontSize?: string | number) while IconComponent
+ * restricts fontSize to 'medium' | 'large' | 'small' | 'inherit'.
+ */
+const wrapIcon = (Icon: LucideIcon): IconComponent => {
+  const Wrapped = (props: {
+    fontSize?: 'medium' | 'large' | 'small' | 'inherit';
+  }) => <Icon {...props} />;
+  return Wrapped;
+};
+
+const CreateComponentIcon = wrapIcon(PlusCircle);
 
 export const scaffolderPage = PageBlueprint.makeWithOverrides({
   inputs: {

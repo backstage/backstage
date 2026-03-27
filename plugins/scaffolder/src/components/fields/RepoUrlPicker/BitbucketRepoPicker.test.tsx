@@ -20,9 +20,58 @@ import {
 } from '@backstage/plugin-scaffolder-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { fireEvent, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { act } from 'react-dom/test-utils';
+import { act } from 'react';
 import { BitbucketRepoPicker } from './BitbucketRepoPicker';
+
+/*
+ * Browser API polyfills for jsdom environment.
+ * Radix UI primitives (Select, Popover) and cmdk rely on browser APIs
+ * that are not available in jsdom.
+ */
+
+// cmdk uses ResizeObserver for measuring list dimensions.
+if (typeof globalThis.ResizeObserver === 'undefined') {
+  (globalThis as any).ResizeObserver = class {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  };
+}
+
+// Radix Select scrolls the selected item into view when opening.
+if (!Element.prototype.scrollIntoView) {
+  Element.prototype.scrollIntoView = function scrollIntoView() {};
+}
+
+// Radix uses pointer capture APIs for pointer event management.
+if (!Element.prototype.hasPointerCapture) {
+  Element.prototype.hasPointerCapture = function hasPointerCapture() {
+    return false;
+  };
+}
+if (!Element.prototype.setPointerCapture) {
+  Element.prototype.setPointerCapture = function setPointerCapture() {};
+}
+if (!Element.prototype.releasePointerCapture) {
+  Element.prototype.releasePointerCapture = function releasePointerCapture() {};
+}
+
+// DOMRect.fromRect is used by Radix for collision-aware positioning.
+if (typeof DOMRect === 'undefined' || !DOMRect.fromRect) {
+  (globalThis as any).DOMRect = {
+    fromRect: () => ({
+      top: 0,
+      left: 0,
+      bottom: 0,
+      right: 0,
+      width: 0,
+      height: 0,
+      x: 0,
+      y: 0,
+      toJSON: () => ({}),
+    }),
+  };
+}
 
 describe('BitbucketRepoPicker', () => {
   const scaffolderApiMock: Partial<ScaffolderApi> = {
@@ -35,7 +84,7 @@ describe('BitbucketRepoPicker', () => {
 
   it('renders a select if there is a list of allowed owners', async () => {
     const allowedOwners = ['owner1', 'owner2'];
-    const { findByText } = await renderInTestApp(
+    const { getByRole, findByText } = await renderInTestApp(
       <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
         <BitbucketRepoPicker
           onChange={jest.fn()}
@@ -45,6 +94,9 @@ describe('BitbucketRepoPicker', () => {
         />
       </TestApiProvider>,
     );
+
+    // Open the Radix Select dropdown to render options in the portal
+    fireEvent.click(getByRole('combobox'));
 
     expect(await findByText('owner1')).toBeInTheDocument();
     expect(await findByText('owner2')).toBeInTheDocument();
@@ -169,7 +221,7 @@ describe('BitbucketRepoPicker', () => {
 
     it('Does render a select if there is a list of allowed projects', async () => {
       const allowedProjects = ['project1', 'project2'];
-      const { findByText } = await renderInTestApp(
+      const { getByRole, findByText } = await renderInTestApp(
         <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
           <BitbucketRepoPicker
             onChange={jest.fn()}
@@ -180,6 +232,9 @@ describe('BitbucketRepoPicker', () => {
         </TestApiProvider>,
       );
 
+      // Open the Radix Select dropdown to render options in the portal
+      fireEvent.click(getByRole('combobox'));
+
       expect(await findByText('project1')).toBeInTheDocument();
       expect(await findByText('project2')).toBeInTheDocument();
     });
@@ -189,7 +244,7 @@ describe('BitbucketRepoPicker', () => {
     it('should populate workspaces if host is set and accessToken is provided', async () => {
       const onChange = jest.fn();
 
-      const { getAllByRole, getByText } = await renderInTestApp(
+      const { findByRole, getByText } = await renderInTestApp(
         <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
           <BitbucketRepoPicker
             onChange={onChange}
@@ -200,26 +255,31 @@ describe('BitbucketRepoPicker', () => {
         </TestApiProvider>,
       );
 
-      // Open the Autocomplete dropdown
-      const workspaceInput = getAllByRole('textbox')[0];
-      await userEvent.click(workspaceInput);
+      // Wait for the combobox button to appear (indicates availableWorkspaces are populated
+      // and the component switched from the plain Input branch to the Popover+Command branch)
+      const combobox = await findByRole('combobox', {}, { timeout: 1500 });
 
-      // Verify that the available workspaces are shown
+      // Open the Popover+Command dropdown
+      fireEvent.click(combobox);
+
+      // Verify that the available workspaces are shown in the Command list
       await waitFor(() =>
         expect(getByText('workspaces_example')).toBeInTheDocument(),
       );
 
       // Verify that selecting an option calls onChange
-      await userEvent.click(getByText('workspaces_example'));
-      expect(onChange).toHaveBeenCalledWith({
-        workspace: 'workspaces_example',
+      fireEvent.click(getByText('workspaces_example'));
+      await waitFor(() => {
+        expect(onChange).toHaveBeenCalledWith({
+          workspace: 'workspaces_example',
+        });
       });
     });
 
     it('should populate projects if host and workspace are set and accessToken is provided', async () => {
       const onChange = jest.fn();
 
-      const { getAllByRole, getByText } = await renderInTestApp(
+      const { findAllByRole, getByText } = await renderInTestApp(
         <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
           <BitbucketRepoPicker
             onChange={onChange}
@@ -230,18 +290,25 @@ describe('BitbucketRepoPicker', () => {
         </TestApiProvider>,
       );
 
-      // Open the Autocomplete dropdown
-      const projectInput = getAllByRole('textbox')[1];
-      await userEvent.click(projectInput);
+      // Wait for combobox buttons to appear (both workspace and project populate)
+      const comboboxes = await findAllByRole('combobox', {}, { timeout: 1500 });
 
-      // Verify that the available projects are shown
+      // The second combobox is the project field
+      const projectCombobox = comboboxes[comboboxes.length - 1];
+
+      // Open the project Popover+Command dropdown
+      fireEvent.click(projectCombobox);
+
+      // Verify that the available projects are shown in the Command list
       await waitFor(() =>
         expect(getByText('projects_example')).toBeInTheDocument(),
       );
 
       // Verify that selecting an option calls onChange
-      await userEvent.click(getByText('projects_example'));
-      expect(onChange).toHaveBeenCalledWith({ project: 'projects_example' });
+      fireEvent.click(getByText('projects_example'));
+      await waitFor(() => {
+        expect(onChange).toHaveBeenCalledWith({ project: 'projects_example' });
+      });
     });
 
     it('should populate repositories if host, workspace and project are set and accessToken is provided', async () => {
@@ -263,10 +330,12 @@ describe('BitbucketRepoPicker', () => {
       );
 
       // Verify that the available repos are updated
-      await waitFor(() =>
-        expect(onChange).toHaveBeenCalledWith({
-          availableRepos: [{ name: 'repositories_example' }],
-        }),
+      await waitFor(
+        () =>
+          expect(onChange).toHaveBeenCalledWith({
+            availableRepos: [{ name: 'repositories_example' }],
+          }),
+        { timeout: 1500 },
       );
     });
   });

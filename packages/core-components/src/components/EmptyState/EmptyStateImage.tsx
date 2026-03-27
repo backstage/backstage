@@ -18,7 +18,7 @@ import missingAnnotation from './assets/missingAnnotation.svg';
 import noInformation from './assets/noInformation.svg';
 import createComponent from './assets/createComponent.svg';
 import noBuild from './assets/noBuild.svg';
-import { makeStyles } from '@material-ui/core/styles';
+import { cn } from '../../lib/utils';
 
 type Props = {
   missing: 'field' | 'info' | 'content' | 'data';
@@ -27,29 +27,19 @@ type Props = {
 /** @public */
 export type EmptyStateImageClassKey = 'generalImg';
 
-const useStyles = makeStyles(
-  {
-    generalImg: {
-      width: '95%',
-      zIndex: 2,
-      position: 'relative',
-      left: '50%',
-      top: '50%',
-      transform: 'translate(-50%, 15%)',
-    },
-  },
-  { name: 'BackstageEmptyStateImage' },
+const generalImgClasses = cn(
+  'w-[95%] z-[2] relative left-1/2 top-1/2',
+  '-translate-x-1/2 translate-y-[15%]',
 );
 
 /** @public */
 export const EmptyStateImage = ({ missing }: Props) => {
-  const classes = useStyles();
   switch (missing) {
     case 'field':
       return (
         <img
           src={missingAnnotation}
-          className={classes.generalImg}
+          className={generalImgClasses}
           alt="annotation is missing"
         />
       );
@@ -58,7 +48,7 @@ export const EmptyStateImage = ({ missing }: Props) => {
         <img
           src={noInformation}
           alt="no Information"
-          className={classes.generalImg}
+          className={generalImgClasses}
         />
       );
     case 'content':
@@ -66,13 +56,11 @@ export const EmptyStateImage = ({ missing }: Props) => {
         <img
           src={createComponent}
           alt="create Component"
-          className={classes.generalImg}
+          className={generalImgClasses}
         />
       );
     case 'data':
-      return (
-        <img src={noBuild} alt="no Build" className={classes.generalImg} />
-      );
+      return <img src={noBuild} alt="no Build" className={generalImgClasses} />;
     default:
       return null;
   }

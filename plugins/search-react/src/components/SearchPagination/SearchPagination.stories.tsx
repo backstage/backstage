@@ -15,7 +15,6 @@
  */
 
 import { ComponentType, PropsWithChildren } from 'react';
-import Grid from '@material-ui/core/Grid';
 
 import { TestApiProvider } from '@backstage/test-utils';
 
@@ -31,11 +30,9 @@ export default {
     (Story: ComponentType<PropsWithChildren<{}>>) => (
       <TestApiProvider apis={[[searchApiRef, new MockSearchApi()]]}>
         <SearchContextProvider>
-          <Grid container direction="row">
-            <Grid item xs={12}>
-              <Story />
-            </Grid>
-          </Grid>
+          <div className="grid gap-4">
+            <Story />
+          </div>
         </SearchContextProvider>
       </TestApiProvider>
     ),

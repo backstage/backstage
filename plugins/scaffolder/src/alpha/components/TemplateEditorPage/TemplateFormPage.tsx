@@ -17,8 +17,6 @@
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { makeStyles } from '@material-ui/core/styles';
-
 import { Page, Header, Content } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
@@ -33,12 +31,6 @@ import { scaffolderTranslationRef } from '../../../translation';
 
 import { TemplateFormPreviewer } from './TemplateFormPreviewer';
 
-const useStyles = makeStyles({
-  root: {
-    padding: 0,
-  },
-});
-
 interface TemplateFormPageProps {
   layouts?: LayoutOptions[];
   formProps?: FormProps;
@@ -47,7 +39,6 @@ interface TemplateFormPageProps {
 }
 
 export function TemplateFormPage(props: TemplateFormPageProps) {
-  const classes = useStyles();
   const navigate = useNavigate();
   const editLink = useRouteRef(editRouteRef);
   const { t } = useTranslationRef(scaffolderTranslationRef);
@@ -64,7 +55,7 @@ export function TemplateFormPage(props: TemplateFormPageProps) {
         type={t('templateIntroPage.title')}
         typeLink={editLink()}
       />
-      <Content className={classes.root}>
+      <Content className="p-0">
         <TemplateFormPreviewer
           layouts={props.layouts}
           formProps={props.formProps}

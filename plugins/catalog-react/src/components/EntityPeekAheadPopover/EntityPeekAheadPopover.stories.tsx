@@ -19,7 +19,6 @@ import {
   EntityPeekAheadPopover,
   EntityPeekAheadPopoverProps,
 } from './EntityPeekAheadPopover';
-import Button from '@material-ui/core/Button';
 import { wrapInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { catalogApiRef } from '../../api';
 import {
@@ -94,14 +93,14 @@ export default {
 
 export const Default = (args: EntityPeekAheadPopoverProps) => (
   <EntityPeekAheadPopover {...args}>
-    <Button>Hover over me to see details about this component</Button>
+    <button>Hover over me to see details about this component</button>
   </EntityPeekAheadPopover>
 );
 Default.args = defaultArgs;
 
 export const User = (args: EntityPeekAheadPopoverProps) => (
   <EntityPeekAheadPopover {...args}>
-    <Button>Hover over me to see details about this user</Button>
+    <button>Hover over me to see details about this user</button>
   </EntityPeekAheadPopover>
 );
 User.args = {
@@ -110,7 +109,7 @@ User.args = {
 
 export const NotFound = (args: EntityPeekAheadPopoverProps) => (
   <EntityPeekAheadPopover {...args}>
-    <Button>Hover over me to see details about this not found entity</Button>
+    <button>Hover over me to see details about this not found entity</button>
   </EntityPeekAheadPopover>
 );
 NotFound.args = {
@@ -119,7 +118,7 @@ NotFound.args = {
 
 export const SlowCatalogItem = (args: EntityPeekAheadPopoverProps) => (
   <EntityPeekAheadPopover {...args}>
-    <Button>Hover over me to see details about this slow entity</Button>
+    <button>Hover over me to see details about this slow entity</button>
   </EntityPeekAheadPopover>
 );
 SlowCatalogItem.args = {

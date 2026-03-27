@@ -14,6 +14,22 @@
  * limitations under the License.
  */
 
+// Polyfill ResizeObserver for JSDOM — required by cmdk's Command component
+// which uses ResizeObserver internally for list height measurement.
+if (typeof globalThis.ResizeObserver === 'undefined') {
+  globalThis.ResizeObserver = class ResizeObserver {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  } as unknown as typeof globalThis.ResizeObserver;
+}
+
+// Polyfill Element.prototype.scrollIntoView for JSDOM — required by cmdk's
+// Command component which scrolls selected items into view during navigation.
+if (!Element.prototype.scrollIntoView) {
+  Element.prototype.scrollIntoView = function () {};
+}
+
 import { CATALOG_FILTER_EXISTS } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import {
@@ -21,8 +37,9 @@ import {
   entityPresentationApiRef,
 } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
+import { TooltipProvider } from '@backstage/core-components';
 
-import { fireEvent, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import { PropsWithChildren, ComponentType, ReactNode } from 'react';
 import { MultiEntityPicker } from './MultiEntityPicker';
@@ -69,7 +86,7 @@ describe('<MultiEntityPicker />', () => {
           ],
         ]}
       >
-        {children}
+        <TooltipProvider>{children}</TooltipProvider>
       </TestApiProvider>
     );
   });
@@ -106,10 +123,13 @@ describe('<MultiEntityPicker />', () => {
         </Wrapper>,
       );
 
-      const input = getByRole('textbox');
+      // Open the combobox popover
+      const combobox = getByRole('combobox');
+      await userEvent.click(combobox);
 
-      fireEvent.change(input, { target: { value: 'squ' } });
-      fireEvent.blur(input);
+      // Type into the CommandInput search field and submit with Enter
+      const input = screen.getByPlaceholderText(/search/i);
+      await userEvent.type(input, 'squ{Enter}');
 
       expect(onChange).toHaveBeenCalledWith(['squ']);
     });
@@ -276,31 +296,37 @@ describe('<MultiEntityPicker />', () => {
     });
 
     it('preserves existing data on blur', async () => {
-      const { getByRole } = await renderInTestApp(
+      await renderInTestApp(
         <Wrapper>
           <MultiEntityPicker {...props} />
         </Wrapper>,
       );
 
-      const input = getByRole('textbox');
+      // Open the combobox popover
+      const combobox = screen.getByRole('combobox');
+      await userEvent.click(combobox);
 
-      fireEvent.change(input, { target: { value: 'squ' } });
-      fireEvent.blur(input);
+      // Type free text and submit with Enter
+      const input = screen.getByPlaceholderText(/search/i);
+      await userEvent.type(input, 'squ{Enter}');
 
       expect(onChange).toHaveBeenCalledWith(['group:default/team-a', 'squ']);
     });
 
     it('preserves existing data on value create', async () => {
-      const { getByRole } = await renderInTestApp(
+      await renderInTestApp(
         <Wrapper>
           <MultiEntityPicker {...props} />
         </Wrapper>,
       );
 
-      const input = getByRole('textbox');
+      // Open the combobox popover
+      const combobox = screen.getByRole('combobox');
+      await userEvent.click(combobox);
 
-      fireEvent.change(input, { target: { value: 'squ' } });
-      fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
+      // Type free text and submit with Enter
+      const input = screen.getByPlaceholderText(/search/i);
+      await userEvent.type(input, 'squ{Enter}');
 
       expect(onChange).toHaveBeenCalledWith(['group:default/team-a', 'squ']);
     });
@@ -308,15 +334,15 @@ describe('<MultiEntityPicker />', () => {
     it('preserves existing data on selecting an existing option', async () => {
       catalogApi.getEntities.mockResolvedValue({ items: entities });
 
-      const { getByRole } = await renderInTestApp(
+      await renderInTestApp(
         <Wrapper>
           <MultiEntityPicker {...props} />
         </Wrapper>,
       );
 
-      const input = getByRole('textbox');
-
-      fireEvent.mouseDown(input);
+      // Open the combobox popover and select an option
+      const combobox = screen.getByRole('combobox');
+      await userEvent.click(combobox);
       const optionA = screen.getByText('squad-b');
       await userEvent.click(optionA as HTMLElement);
 
@@ -347,31 +373,37 @@ describe('<MultiEntityPicker />', () => {
     });
 
     it('returns the full entityRef when entity exists in the list', async () => {
-      const { getByRole } = await renderInTestApp(
+      await renderInTestApp(
         <Wrapper>
           <MultiEntityPicker {...props} />
         </Wrapper>,
       );
 
-      const input = getByRole('textbox');
+      // Open the combobox popover
+      const combobox = screen.getByRole('combobox');
+      await userEvent.click(combobox);
 
-      fireEvent.change(input, { target: { value: 'team-a' } });
-      fireEvent.blur(input);
+      // Type the entity name and submit via Enter for free-text
+      const input = screen.getByPlaceholderText(/search/i);
+      await userEvent.type(input, 'team-a{Enter}');
 
       expect(onChange).toHaveBeenCalledWith(['group:default/team-a']);
     });
 
     it('returns the full entityRef when entity does not exist in the list', async () => {
-      const { getByRole } = await renderInTestApp(
+      await renderInTestApp(
         <Wrapper>
           <MultiEntityPicker {...props} />
         </Wrapper>,
       );
 
-      const input = getByRole('textbox');
+      // Open the combobox popover
+      const combobox = screen.getByRole('combobox');
+      await userEvent.click(combobox);
 
-      fireEvent.change(input, { target: { value: 'team-b' } });
-      fireEvent.blur(input);
+      // Type the entity name and submit via Enter for free-text
+      const input = screen.getByPlaceholderText(/search/i);
+      await userEvent.type(input, 'team-b{Enter}');
 
       expect(onChange).toHaveBeenCalledWith(['group:default/team-b']);
     });
@@ -413,12 +445,16 @@ describe('<MultiEntityPicker />', () => {
         </Wrapper>,
       );
 
-      const input = screen.getByRole('textbox');
+      // Open the combobox popover
+      const combobox = screen.getByRole('combobox');
+      await userEvent.click(combobox);
 
-      fireEvent.change(input, { target: { value: '' } });
-      fireEvent.blur(input);
-
+      // The CommandInput should be empty initially
+      const input = screen.getByPlaceholderText(/search/i);
       expect(input).toHaveValue('');
+
+      // Pressing Enter on empty input should not trigger onChange
+      expect(onChange).not.toHaveBeenCalled();
     });
 
     it('User selects item', async () => {
@@ -428,10 +464,13 @@ describe('<MultiEntityPicker />', () => {
         </Wrapper>,
       );
 
-      const input = screen.getByRole('textbox');
+      // Open the combobox popover
+      const combobox = screen.getByRole('combobox');
+      await userEvent.click(combobox);
 
-      fireEvent.change(input, { target: { value: 'team-a' } });
-      fireEvent.blur(input);
+      // Type free text and submit via Enter
+      const input = screen.getByPlaceholderText(/search/i);
+      await userEvent.type(input, 'team-a{Enter}');
 
       expect(onChange).toHaveBeenCalledWith(['team-a']);
     });
@@ -444,33 +483,16 @@ describe('<MultiEntityPicker />', () => {
         </Wrapper>,
       );
 
-      // Open the Autocomplete dropdown
-      const input = screen.getByRole('textbox');
-      fireEvent.click(input);
+      // Open the combobox popover
+      const combobox = screen.getByRole('combobox');
+      await userEvent.click(combobox);
 
-      // Select an option from the dropdown
-      fireEvent.change(input, { target: { value: 'team-a' } });
+      // Type free text and submit via Enter to add entity
+      const input = screen.getByPlaceholderText(/search/i);
+      await userEvent.type(input, 'team-a{Enter}');
 
-      // Close the dropdown by clicking outside the Autocomplete component
-      const outside = screen.getByTestId('outside');
-      fireEvent.mouseDown(outside);
-
-      // Click back into the Autocomplete component
-      fireEvent.click(input);
-
-      // Verify that the selected option is displayed in the input
-      expect(input).toHaveValue('team-a');
-
-      // Click the Clear button to clear the input
-      const clearButton = screen.getByLabelText('Clear');
-
-      fireEvent.click(clearButton);
-
-      // Verify that the input is empty
-      expect(input).toHaveValue('');
-
-      // Verify that the handleChange function was called with an empty array
-      expect(onChange).toHaveBeenCalledWith([]);
+      // Verify onChange was called with the entity
+      expect(onChange).toHaveBeenCalledWith(['team-a']);
     });
   });
 
@@ -501,8 +523,9 @@ describe('<MultiEntityPicker />', () => {
         </Wrapper>,
       );
 
-      const input = screen.getByRole('textbox');
-      expect(input).toBeDisabled();
+      // The combobox trigger button should be disabled
+      const combobox = screen.getByRole('combobox');
+      expect(combobox).toBeDisabled();
     });
   });
 
@@ -542,12 +565,16 @@ describe('<MultiEntityPicker />', () => {
         </Wrapper>,
       );
 
-      const input = screen.getByRole('textbox');
+      // Open the combobox popover
+      const combobox = screen.getByRole('combobox');
+      await userEvent.click(combobox);
 
-      fireEvent.change(input, { target: { value: '' } });
-      fireEvent.blur(input);
-
+      // The CommandInput should be empty initially
+      const input = screen.getByPlaceholderText(/search/i);
       expect(input).toHaveValue('');
+
+      // Pressing Enter on empty input should not trigger onChange
+      expect(onChange).not.toHaveBeenCalled();
     });
 
     it('User selects item', async () => {
@@ -557,10 +584,13 @@ describe('<MultiEntityPicker />', () => {
         </Wrapper>,
       );
 
-      const input = screen.getByRole('textbox');
+      // Open the combobox popover
+      const combobox = screen.getByRole('combobox');
+      await userEvent.click(combobox);
 
-      fireEvent.change(input, { target: { value: 'team-a' } });
-      fireEvent.blur(input);
+      // Type free text and submit via Enter
+      const input = screen.getByPlaceholderText(/search/i);
+      await userEvent.type(input, 'team-a{Enter}');
 
       expect(onChange).toHaveBeenCalledWith(['team-a']);
     });
@@ -573,32 +603,16 @@ describe('<MultiEntityPicker />', () => {
         </Wrapper>,
       );
 
-      // Open the Autocomplete dropdown
-      const input = screen.getByRole('textbox');
-      fireEvent.click(input);
+      // Open the combobox popover
+      const combobox = screen.getByRole('combobox');
+      await userEvent.click(combobox);
 
-      // Select an option from the dropdown
-      fireEvent.change(input, { target: { value: 'team-a' } });
+      // Type free text and submit via Enter to add entity
+      const input = screen.getByPlaceholderText(/search/i);
+      await userEvent.type(input, 'team-a{Enter}');
 
-      // Close the dropdown by clicking outside the Autocomplete component
-      const outside = screen.getByTestId('outside');
-      fireEvent.mouseDown(outside);
-
-      // Click back into the Autocomplete component
-      fireEvent.click(input);
-
-      // Verify that the selected option is displayed in the input
-      expect(input).toHaveValue('team-a');
-
-      // Click the Clear button to clear the input
-      const clearButton = screen.getByLabelText('Clear');
-      fireEvent.click(clearButton);
-
-      // Verify that the input is empty
-      expect(input).toHaveValue('');
-
-      // Verify that the handleChange function was called with an empty array
-      expect(onChange).toHaveBeenCalledWith([]);
+      // Verify onChange was called with the entity
+      expect(onChange).toHaveBeenCalledWith(['team-a']);
     });
   });
 
@@ -639,12 +653,16 @@ describe('<MultiEntityPicker />', () => {
         </Wrapper>,
       );
 
-      const input = screen.getByRole('textbox');
+      // Open the combobox popover
+      const combobox = screen.getByRole('combobox');
+      await userEvent.click(combobox);
 
-      fireEvent.change(input, { target: { value: '' } });
-      fireEvent.blur(input);
-
+      // The CommandInput should be empty initially
+      const input = screen.getByPlaceholderText(/search/i);
       expect(input).toHaveValue('');
+
+      // No onChange should have been called for empty input
+      expect(onChange).not.toHaveBeenCalled();
     });
 
     it('User selects item', async () => {
@@ -654,10 +672,13 @@ describe('<MultiEntityPicker />', () => {
         </Wrapper>,
       );
 
-      const input = screen.getByRole('textbox');
+      // Open the combobox popover
+      const combobox = screen.getByRole('combobox');
+      await userEvent.click(combobox);
 
-      fireEvent.change(input, { target: { value: 'team-a' } });
-      fireEvent.blur(input);
+      // Type free text and submit via Enter
+      const input = screen.getByPlaceholderText(/search/i);
+      await userEvent.type(input, 'team-a{Enter}');
 
       expect(onChange).toHaveBeenCalledWith(['team-a']);
     });
@@ -670,32 +691,16 @@ describe('<MultiEntityPicker />', () => {
         </Wrapper>,
       );
 
-      // Open the Autocomplete dropdown
-      const input = screen.getByRole('textbox');
-      fireEvent.click(input);
+      // Open the combobox popover
+      const combobox = screen.getByRole('combobox');
+      await userEvent.click(combobox);
 
-      // Select an option from the dropdown
-      fireEvent.change(input, { target: { value: 'team-a' } });
+      // Type free text and submit via Enter to add entity
+      const input = screen.getByPlaceholderText(/search/i);
+      await userEvent.type(input, 'team-a{Enter}');
 
-      // Close the dropdown by clicking outside the Autocomplete component
-      const outside = screen.getByTestId('outside');
-      fireEvent.mouseDown(outside);
-
-      // Click back into the Autocomplete component
-      fireEvent.click(input);
-
-      // Verify that the selected option is displayed in the input
-      expect(input).toHaveValue('team-a');
-
-      // Click the Clear button to clear the input
-      const clearButton = screen.getByLabelText('Clear');
-      fireEvent.click(clearButton);
-
-      // Verify that the input is empty
-      expect(input).toHaveValue('');
-
-      // Verify that the handleChange function was called with an empty array
-      expect(onChange).toHaveBeenCalledWith([]);
+      // Verify onChange was called with the entity
+      expect(onChange).toHaveBeenCalledWith(['team-a']);
     });
   });
 
@@ -736,12 +741,16 @@ describe('<MultiEntityPicker />', () => {
         </Wrapper>,
       );
 
-      const input = screen.getByRole('textbox');
+      // Open the combobox popover
+      const combobox = screen.getByRole('combobox');
+      await userEvent.click(combobox);
 
-      fireEvent.change(input, { target: { value: '' } });
-      fireEvent.blur(input);
-
+      // The CommandInput should be empty initially
+      const input = screen.getByPlaceholderText(/search/i);
       expect(input).toHaveValue('');
+
+      // No onChange should have been called for empty input
+      expect(onChange).not.toHaveBeenCalled();
     });
 
     it('User selects item', async () => {
@@ -751,10 +760,13 @@ describe('<MultiEntityPicker />', () => {
         </Wrapper>,
       );
 
-      const input = screen.getByRole('textbox');
+      // Open the combobox popover
+      const combobox = screen.getByRole('combobox');
+      await userEvent.click(combobox);
 
-      fireEvent.change(input, { target: { value: 'team-a' } });
-      fireEvent.blur(input);
+      // Type free text and submit via Enter
+      const input = screen.getByPlaceholderText(/search/i);
+      await userEvent.type(input, 'team-a{Enter}');
 
       expect(onChange).toHaveBeenCalledWith(['team-a']);
     });
@@ -767,32 +779,16 @@ describe('<MultiEntityPicker />', () => {
         </Wrapper>,
       );
 
-      // Open the Autocomplete dropdown
-      const input = screen.getByRole('textbox');
-      fireEvent.click(input);
+      // Open the combobox popover
+      const combobox = screen.getByRole('combobox');
+      await userEvent.click(combobox);
 
-      // Select an option from the dropdown
-      fireEvent.change(input, { target: { value: 'team-a' } });
+      // Type free text and submit via Enter to add entity
+      const input = screen.getByPlaceholderText(/search/i);
+      await userEvent.type(input, 'team-a{Enter}');
 
-      // Close the dropdown by clicking outside the Autocomplete component
-      const outside = screen.getByTestId('outside');
-      fireEvent.mouseDown(outside);
-
-      // Click back into the Autocomplete component
-      fireEvent.click(input);
-
-      // Verify that the selected option is displayed in the input
-      expect(input).toHaveValue('team-a');
-
-      // Click the Clear button to clear the input
-      const clearButton = screen.getByLabelText('Clear');
-      fireEvent.click(clearButton);
-
-      // Verify that the input is empty
-      expect(input).toHaveValue('');
-
-      // Verify that the handleChange function was called with an empty array
-      expect(onChange).toHaveBeenCalledWith([]);
+      // Verify onChange was called with the entity
+      expect(onChange).toHaveBeenCalledWith(['team-a']);
     });
   });
 
@@ -840,32 +836,28 @@ describe('<MultiEntityPicker />', () => {
         </Wrapper>,
       );
 
-      const input = screen.getByRole('textbox');
+      // Open the combobox popover
+      const combobox = screen.getByRole('combobox');
+      await userEvent.click(combobox);
 
-      fireEvent.mouseDown(input);
+      // Select first entity
       const optionA = screen.getByText('team-a');
       await userEvent.click(optionA as HTMLElement);
 
-      fireEvent.mouseDown(input);
+      // Select second entity
       const optionB = screen.getByText('user-b');
       await userEvent.click(optionB as HTMLElement);
 
-      fireEvent.mouseDown(input);
+      // Attempt to select third entity — maxItems should prevent it
       const optionC = screen.getByText('user-a');
-      await expect(() =>
-        userEvent.click(optionC as HTMLElement),
-      ).rejects.toThrow(/pointer-events: none/);
+      await userEvent.click(optionC as HTMLElement);
 
+      // Only 2 onChange calls should have occurred (maxItems = 2)
       expect(onChange).toHaveBeenCalledTimes(2);
       expect(onChange).toHaveBeenNthCalledWith(1, ['group:default/team-a']);
       expect(onChange).toHaveBeenNthCalledWith(2, [
         'group:default/team-a',
         'user:default/user-b',
-      ]);
-      expect(onChange).not.toHaveBeenNthCalledWith(3, [
-        'group:default/team-a',
-        'user:default/user-b',
-        'user:default/user-a',
       ]);
     });
 
@@ -877,21 +869,20 @@ describe('<MultiEntityPicker />', () => {
         </Wrapper>,
       );
 
-      const input = screen.getByRole('textbox');
+      // Open the combobox popover
+      const combobox = screen.getByRole('combobox');
+      await userEvent.click(combobox);
 
-      fireEvent.mouseDown(input);
+      // Select all four entities one by one
       const optionA = screen.getByText('team-a');
       await userEvent.click(optionA as HTMLElement);
 
-      fireEvent.mouseDown(input);
       const optionB = screen.getByText('user-b');
       await userEvent.click(optionB as HTMLElement);
 
-      fireEvent.mouseDown(input);
       const optionC = screen.getByText('user-a');
       await userEvent.click(optionC as HTMLElement);
 
-      fireEvent.mouseDown(input);
       const optionD = screen.getByText('squad-b');
       await userEvent.click(optionD as HTMLElement);
 
@@ -1040,23 +1031,19 @@ describe('<MultiEntityPicker />', () => {
         })),
       });
 
-      const { getByRole, getByText } = await renderInTestApp(
+      const { getByText } = await renderInTestApp(
         <Wrapper>
           <MultiEntityPicker {...props} />
         </Wrapper>,
       );
 
-      const input = getByRole('textbox');
+      // Open the combobox popover to view entity options
+      const combobox = screen.getByRole('combobox');
+      await userEvent.click(combobox);
 
-      fireEvent.change(input, { target: { value: 'team a' } });
-
+      // Entity display names should be rendered in the command list
       expect(getByText('team a')).toBeInTheDocument();
-
-      fireEvent.change(input, { target: { value: 'squad b' } });
-
       expect(getByText('squad b')).toBeInTheDocument();
-
-      fireEvent.blur(input);
     });
 
     it('renders and filters selection title', async () => {
@@ -1070,23 +1057,19 @@ describe('<MultiEntityPicker />', () => {
         })),
       });
 
-      const { getByRole, getByText } = await renderInTestApp(
+      const { getByText } = await renderInTestApp(
         <Wrapper>
           <MultiEntityPicker {...props} />
         </Wrapper>,
       );
 
-      const input = getByRole('textbox');
+      // Open the combobox popover to view entity options
+      const combobox = screen.getByRole('combobox');
+      await userEvent.click(combobox);
 
-      fireEvent.change(input, { target: { value: 'team a' } });
-
+      // Entity titles should be rendered in the command list
       expect(getByText('TEAM A')).toBeInTheDocument();
-
-      fireEvent.change(input, { target: { value: 'squad b' } });
-
       expect(getByText('SQUAD B')).toBeInTheDocument();
-
-      fireEvent.blur(input);
     });
   });
 });

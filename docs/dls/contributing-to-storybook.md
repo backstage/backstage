@@ -13,10 +13,11 @@ on.
 You'll find our storybook at
 [http://backstage.io/storybook](http://backstage.io/storybook).
 
-As noted in the [design introduction](design.md), Backstage's design is based
-off of [Material UI](https://material-ui.com/). Much of the UI elements use
-direct Material UI, while we've also extended and written custom ones to provide
-specific functionality.
+As noted in the [design introduction](design.md), Backstage's design is built
+on [shadcn/ui](https://ui.shadcn.com/) — a collection of accessible, composable UI
+components built with Radix UI primitives and styled with Tailwind CSS. Components are
+distributed as first-party code within the `@backstage/core-components` package, and
+we've extended them with custom components to provide Backstage-specific functionality.
 
 ![Storybook Page](../assets/dls/storybook-page.png)
 
@@ -27,15 +28,16 @@ copied.
 When custom Backstage components are created, they are placed in the
 `@backstage/core-components` package and added to the Storybook.
 
-There may be times where an existing Material UI component (in
-`@material-ui/core`) is sufficient and doesn't need to be wrapped or duplicated.
+There may be times where an existing shadcn/ui primitive component (in
+`@backstage/core-components/src/components/ui/`) is sufficient and doesn't need
+to be wrapped or duplicated.
 However, we may want to identify an _opinionated_ way to use that component
 inside of Backstage. In these cases, stories showing how to use those existing
-components will also be put into our storybook.
+shadcn/ui components will also be put into our storybook.
 
-When a story example using Material UI becomes more complex, requiring a
-specific set of colors, variants, parameters, etc., it may become a candidate to
-be refactored to become a full Backstage core component.
+When a story example using a shadcn/ui primitive becomes more complex, requiring
+a specific set of colors, variants, parameters, etc., it may become a candidate
+to be refactored to become a full Backstage core component.
 
 ## Creating a new Story
 
@@ -73,3 +75,10 @@ _You should see a log like the image above._
 If everything worked out, your server will be running on **port 6006**, go to
 your browser and navigate to `http://localhost:6006/`. You should be able to
 navigate and see the Storybook page.
+
+## Storybook and Tailwind CSS
+
+The `.storybook/main.ts` configuration includes Tailwind CSS support via the
+`@tailwindcss/vite` plugin. Stories render with shadcn/ui styles and Tailwind CSS
+utility classes automatically, so you can use Tailwind utility classes directly in
+your story source code.

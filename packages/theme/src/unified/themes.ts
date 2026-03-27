@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { palettes } from '../base';
+import {
+  palettes,
+  generatePaletteTokens,
+  generateTypographyTokens,
+} from '../base';
 import { createUnifiedTheme } from './UnifiedTheme';
 
 /**
@@ -26,3 +30,42 @@ export const themes = {
   light: createUnifiedTheme({ palette: palettes.light }),
   dark: createUnifiedTheme({ palette: palettes.dark }),
 };
+
+/**
+ * Generates a complete set of shadcn/ui CSS custom property token declarations
+ * by combining palette-derived color tokens with typography tokens.
+ *
+ * This is the primary entry point for programmatic token generation. It merges
+ * the output of {@link generatePaletteTokens} (color, border, status, sidebar
+ * tokens) and {@link generateTypographyTokens} (font family, font size tokens)
+ * into a single record suitable for injection as CSS custom properties.
+ *
+ * @example
+ * ```ts
+ * import { generateShadcnTokens, palettes } from '@backstage/theme';
+ *
+ * const lightTokens = generateShadcnTokens(palettes.light);
+ * // Result: { '--background': '248 248 248', '--foreground': '0 0 0', '--font-sans': '...', ... }
+ *
+ * // Apply to document root:
+ * Object.entries(lightTokens).forEach(([prop, value]) => {
+ *   document.documentElement.style.setProperty(prop, value);
+ * });
+ * ```
+ *
+ * @param palette - A Backstage palette object (e.g., `palettes.light` or `palettes.dark`)
+ * @param typography - Optional Backstage typography override. Falls back to default typography.
+ * @returns A merged Record mapping CSS custom property names to their values,
+ *          combining color tokens from the palette and typography tokens.
+ *
+ * @public
+ */
+export function generateShadcnTokens(
+  palette: typeof palettes.light | typeof palettes.dark,
+  typography?: Parameters<typeof generateTypographyTokens>[0],
+): Record<string, string> {
+  return {
+    ...generatePaletteTokens(palette),
+    ...generateTypographyTokens(typography),
+  };
+}

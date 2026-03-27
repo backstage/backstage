@@ -16,22 +16,16 @@
 
 import { AppTheme, appThemeApiRef } from '@backstage/core-plugin-api';
 import { TestApiRegistry, renderInTestApp } from '@backstage/test-utils';
-import { lightTheme } from '@backstage/theme';
-import { ThemeProvider } from '@material-ui/core/styles';
-import CssBaseline from '@material-ui/core/CssBaseline';
 import { fireEvent, screen } from '@testing-library/react';
 import { UserSettingsThemeToggle } from './UserSettingsThemeToggle';
 import { ApiProvider, AppThemeSelector } from '@backstage/core-app-api';
+import { TooltipProvider } from '@backstage/core-components';
 
 const mockTheme: AppTheme = {
   id: 'light-theme',
   title: 'Mock Theme',
   variant: 'light',
-  Provider: ({ children }) => (
-    <ThemeProvider theme={lightTheme}>
-      <CssBaseline>{children}</CssBaseline>
-    </ThemeProvider>
-  ),
+  Provider: ({ children }) => <>{children}</>,
 };
 
 const apiRegistry = TestApiRegistry.from([
@@ -45,7 +39,9 @@ describe('<UserSettingsThemeToggle />', () => {
 
     await renderInTestApp(
       <ApiProvider apis={apiRegistry}>
-        <UserSettingsThemeToggle />
+        <TooltipProvider>
+          <UserSettingsThemeToggle />
+        </TooltipProvider>
       </ApiProvider>,
     );
 

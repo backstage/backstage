@@ -16,7 +16,6 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { CodeSnippet } from '@backstage/core-components';
-import DialogContentText from '@material-ui/core/DialogContentText';
 import { sortKeys } from './util';
 import { catalogReactTranslationRef } from '../../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
@@ -25,13 +24,13 @@ export function JsonPage(props: { entity: Entity }) {
   const { t } = useTranslationRef(catalogReactTranslationRef);
   return (
     <>
-      <DialogContentText variant="h2">
+      <h2 className="text-2xl font-semibold">
         {t('inspectEntityDialog.jsonPage.title')}
-      </DialogContentText>
-      <DialogContentText>
+      </h2>
+      <p className="text-muted-foreground">
         {t('inspectEntityDialog.jsonPage.description')}
-      </DialogContentText>
-      <DialogContentText>
+      </p>
+      <div>
         <div style={{ fontSize: '75%' }} data-testid="code-snippet">
           <CodeSnippet
             text={JSON.stringify(sortKeys(props.entity), undefined, 2)}
@@ -39,7 +38,7 @@ export function JsonPage(props: { entity: Entity }) {
             showCopyCodeButton
           />
         </div>
-      </DialogContentText>
+      </div>
     </>
   );
 }

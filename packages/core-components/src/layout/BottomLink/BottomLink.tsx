@@ -14,33 +14,14 @@
  * limitations under the License.
  */
 
-import Box from '@material-ui/core/Box';
-import Divider from '@material-ui/core/Divider';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import ArrowIcon from '@material-ui/icons/ArrowForward';
+import { ArrowRight } from 'lucide-react';
 import { MouseEvent } from 'react';
 import { Link } from '../../components/Link';
+import { cn } from '../../lib/utils';
+import { Separator } from '../../components/ui/separator';
 
 /** @public */
 export type BottomLinkClassKey = 'root' | 'boxTitle' | 'arrow';
-
-const useStyles = makeStyles(
-  theme => ({
-    root: {
-      maxWidth: 'fit-content',
-      padding: theme.spacing(2, 2, 2, 2.5),
-    },
-    boxTitle: {
-      margin: 0,
-      color: theme.palette.textSubtle,
-    },
-    arrow: {
-      color: theme.palette.textSubtle,
-    },
-  }),
-  { name: 'BackstageBottomLink' },
-);
 
 /** @public */
 export type BottomLinkProps = {
@@ -57,21 +38,22 @@ export type BottomLinkProps = {
  */
 export function BottomLink(props: BottomLinkProps) {
   const { link, title, onClick } = props;
-  const classes = useStyles();
 
   return (
-    <Box>
-      <Divider />
-      <Link to={link} onClick={onClick} underline="none">
-        <Box display="flex" alignItems="center" className={classes.root}>
-          <Box className={classes.boxTitle} fontWeight="fontWeightBold" m={1}>
-            <Typography>
-              <strong>{title}</strong>
-            </Typography>
-          </Box>
-          <ArrowIcon className={classes.arrow} />
-        </Box>
+    <div>
+      <Separator />
+      <Link
+        to={link}
+        onClick={onClick}
+        className={cn('no-underline hover:no-underline')}
+      >
+        <div className={cn('flex items-center w-fit py-4 pr-4 pl-5')}>
+          <div className={cn('m-2 text-muted-foreground')}>
+            <strong>{title}</strong>
+          </div>
+          <ArrowRight className={cn('text-muted-foreground')} size={20} />
+        </div>
       </Link>
-    </Box>
+    </div>
   );
 }

@@ -14,29 +14,11 @@
  * limitations under the License.
  */
 
-import Grid from '@material-ui/core/Grid';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
+import { cn } from '../../lib/utils';
 import { EmptyStateImage } from './EmptyStateImage';
 
 /** @public */
 export type EmptyStateClassKey = 'root' | 'action' | 'imageContainer';
-
-const useStyles = makeStyles(
-  theme => ({
-    root: {
-      backgroundColor: theme.palette.background.default,
-      padding: theme.spacing(2, 0, 0, 0),
-    },
-    action: {
-      marginTop: theme.spacing(2),
-    },
-    imageContainer: {
-      position: 'relative',
-    },
-  }),
-  { name: 'BackstageEmptyState' },
-);
 
 type Props = {
   title: string;
@@ -53,36 +35,29 @@ type Props = {
  */
 export function EmptyState(props: Props) {
   const { title, description, missing, action } = props;
-  const classes = useStyles();
   return (
-    <Grid
-      container
-      direction="row"
-      justifyContent="space-around"
-      alignItems="flex-start"
-      className={classes.root}
-      spacing={2}
+    <div
+      className={cn(
+        'grid grid-cols-1 md:grid-cols-2 gap-4 items-start justify-around',
+        'bg-background pt-4',
+      )}
     >
-      <Grid item xs={12} md={6}>
-        <Grid container direction="column">
-          <Grid item xs>
-            <Typography variant="h5">{title}</Typography>
-          </Grid>
-          <Grid item xs>
-            <Typography variant="body1">{description}</Typography>
-          </Grid>
-          <Grid item xs className={classes.action}>
-            {action}
-          </Grid>
-        </Grid>
-      </Grid>
-      <Grid item xs={12} md={6} className={classes.imageContainer}>
+      <div className="flex flex-col gap-2">
+        <h2 className="text-xl font-semibold tracking-tight text-foreground">
+          {title}
+        </h2>
+        {description && (
+          <p className="text-base text-muted-foreground">{description}</p>
+        )}
+        {action && <div className="mt-4">{action}</div>}
+      </div>
+      <div className="relative">
         {typeof missing === 'string' ? (
           <EmptyStateImage missing={missing} />
         ) : (
           missing.customImage
         )}
-      </Grid>
-    </Grid>
+      </div>
+    </div>
   );
 }

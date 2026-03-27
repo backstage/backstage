@@ -20,6 +20,7 @@ import {
   RELATION_PART_OF,
   SystemEntity,
 } from '@backstage/catalog-model';
+import { TooltipProvider } from '@backstage/core-components';
 import { renderInTestApp } from '@backstage/test-utils';
 import { waitFor, screen } from '@testing-library/react';
 import { entityRouteRef } from '../../routes';
@@ -54,12 +55,14 @@ describe('systemEntityColumns', () => {
     ];
 
     await renderInTestApp(
-      <EntityTable
-        title="My Systems"
-        entities={entities}
-        emptyContent={<div>EMPTY</div>}
-        columns={systemEntityColumns}
-      />,
+      <TooltipProvider>
+        <EntityTable
+          title="My Systems"
+          entities={entities}
+          emptyContent={<div>EMPTY</div>}
+          columns={systemEntityColumns}
+        />
+      </TooltipProvider>,
       {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name/*': entityRouteRef,
@@ -106,12 +109,14 @@ describe('componentEntityColumns', () => {
     ];
 
     await renderInTestApp(
-      <EntityTable
-        title="My Components"
-        entities={entities}
-        emptyContent={<div>EMPTY</div>}
-        columns={componentEntityColumns}
-      />,
+      <TooltipProvider>
+        <EntityTable
+          title="My Components"
+          entities={entities}
+          emptyContent={<div>EMPTY</div>}
+          columns={componentEntityColumns}
+        />
+      </TooltipProvider>,
       {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name/*': entityRouteRef,
