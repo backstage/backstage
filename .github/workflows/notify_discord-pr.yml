@@ -1,0 +1,67 @@
+name: Discord PR notification
+
+on:
+  pull_request_target:
+    types: [opened, ready_for_review]
+
+permissions:
+  actions: none
+  checks: none
+  contents: none
+  deployments: none
+  issues: none
+  packages: none
+  pages: none
+  pull-requests: none
+  repository-projects: none
+  security-events: none
+  statuses: none
+
+jobs:
+  notify:
+    # Only run for non-draft PRs in the main repo
+    if: github.repository == 'backstage/backstage' && github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@58077d3c7e43986b6b15fba718e8ea69e387dfcc # v2.15.1
+        with:
+          egress-policy: audit
+
+      - name: Send Discord notification
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        env:
+          DISCORD_PULL_REQUESTS_WEBHOOK: ${{ secrets.DISCORD_PULL_REQUESTS_WEBHOOK }}
+        with:
+          script: |
+            const { pull_request: pr, action } = context.payload;
+
+            let description = (pr.body || '').slice(0, 300);
+            if ((pr.body || '').length > 300) {
+              description += '...';
+            }
+
+            const isOpened = action === 'opened';
+            const color = isOpened ? 5763719 : 3447003; // green : blue
+            const footer = isOpened ? 'New pull request' : 'Ready for review';
+
+            const payload = {
+              embeds: [{
+                title: `#${pr.number}: ${pr.title}`,
+                url: pr.html_url,
+                description,
+                color,
+                author: {
+                  name: pr.user.login,
+                  url: pr.user.html_url,
+                  icon_url: pr.user.avatar_url,
+                },
+                footer: { text: footer },
+              }],
+            };
+
+            await fetch(process.env.DISCORD_PULL_REQUESTS_WEBHOOK, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload),
+            });
