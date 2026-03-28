@@ -36,7 +36,10 @@ export interface OAuthAuthenticatorScopeOptions {
   transform?: (options: {
     /** Scopes requested by the client */
     requested: Iterable<string>;
-    /** Scopes which have already been granted */
+    /**
+     * Scopes persisted from a prior session (cookie). Empty when building a
+     * new authorization request; populated when refreshing tokens.
+     */
     granted: Iterable<string>;
     /** Scopes that are required for the authenticator to function */
     required: Iterable<string>;

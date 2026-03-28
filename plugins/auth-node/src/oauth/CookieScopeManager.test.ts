@@ -142,15 +142,15 @@ describe('CookieScopeManager', () => {
     });
 
     await expect(manager.start(makeReq())).resolves.toEqual({
-      scope: 'g',
+      scope: '',
       scopeState: {
-        scope: 'g',
+        scope: '',
       },
     });
     await expect(manager.start(makeReq('x'))).resolves.toEqual({
-      scope: 'x g',
+      scope: 'x',
       scopeState: {
-        scope: 'x g',
+        scope: 'x',
       },
     });
 
@@ -159,13 +159,13 @@ describe('CookieScopeManager', () => {
       manager.handleCallback(makeReq(), {
         // The state is prioritized even if scope is present in the result
         result: { session: { scope: 'x,y' } } as OAuthAuthenticatorResult<any>,
-        state: { scope: 'x g' } as OAuthState,
+        state: { scope: 'x' } as OAuthState,
         origin: 'https://other.example.com',
       }),
-    ).resolves.toEqual('x g');
+    ).resolves.toEqual('x');
     expect(setGrantedScopes).toHaveBeenCalledWith(
       expect.anything(),
-      'x g',
+      'x',
       'https://other.example.com',
     );
     setGrantedScopes.mockClear();
@@ -265,15 +265,15 @@ describe('CookieScopeManager', () => {
     });
 
     await expect(manager.start(makeReq())).resolves.toEqual({
-      scope: 'granted-g required-a additional-b',
+      scope: 'required-a additional-b',
       scopeState: {
-        scope: 'granted-g required-a additional-b',
+        scope: 'required-a additional-b',
       },
     });
     await expect(manager.start(makeReq('x'))).resolves.toEqual({
-      scope: 'requested-x granted-g required-a additional-b',
+      scope: 'requested-x required-a additional-b',
       scopeState: {
-        scope: 'requested-x granted-g required-a additional-b',
+        scope: 'requested-x required-a additional-b',
       },
     });
 

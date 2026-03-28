@@ -222,6 +222,51 @@ describe('createOAuthRouteHandlers', () => {
       );
     });
 
+    it('should not merge stale granted-scope cookie into authorization request', async () => {
+      const agent = request.agent(
+        wrapInApp(
+          createOAuthRouteHandlers({
+            ...baseConfig,
+            authenticator: {
+              ...mockAuthenticator,
+              shouldPersistScopes: true,
+            },
+          }),
+        ),
+      );
+
+      agent.jar.setCookie(
+        'my-provider-granted-scope=stale-scope',
+        '127.0.0.1',
+        '/my-provider',
+      );
+
+      mockAuthenticator.start.mockResolvedValue({
+        url: 'https://example.com/redirect',
+      });
+
+      const res = await agent.get('/my-provider/start').query({
+        env: 'development',
+        scope: 'my-scope',
+      });
+
+      const { value: nonce } = getNonceCookie(agent);
+
+      expect(res.status).toBe(302);
+      expect(mockAuthenticator.start).toHaveBeenCalledWith(
+        {
+          req: expect.anything(),
+          scope: 'my-scope',
+          state: encodeOAuthState({
+            nonce: decodeURIComponent(nonce),
+            env: 'development',
+            scope: 'my-scope',
+          }),
+        },
+        { ctx: 'authenticator' },
+      );
+    });
+
     it('should start with additional parameters, transform state, and persist scopes', async () => {
       const agent = request.agent(
         wrapInApp(

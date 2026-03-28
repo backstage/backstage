@@ -99,9 +99,7 @@ export class CookieScopeManager {
     req: express.Request,
   ): Promise<{ scopeState?: Partial<OAuthState>; scope: string }> {
     const requestScope = splitScope(req.query.scope?.toString());
-    const grantedScope = splitScope(this.cookieManager?.getGrantedScopes(req));
-
-    const scope = this.scopeTransform(requestScope, grantedScope);
+    const scope = this.scopeTransform(requestScope, []);
 
     if (this.cookieManager) {
       // If scopes are persisted then we pass them through the state so that we
