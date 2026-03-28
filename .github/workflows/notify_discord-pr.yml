@@ -34,6 +34,10 @@ jobs:
           DISCORD_PULL_REQUESTS_WEBHOOK: ${{ secrets.DISCORD_PULL_REQUESTS_WEBHOOK }}
         with:
           script: |
+            if (!process.env.DISCORD_PULL_REQUESTS_WEBHOOK) {
+              throw new Error('DISCORD_PULL_REQUESTS_WEBHOOK secret is not set');
+            }
+
             const { pull_request: pr, action } = context.payload;
 
             let description = (pr.body || '').slice(0, 300);
@@ -58,10 +62,16 @@ jobs:
                 },
                 footer: { text: footer },
               }],
+              allowed_mentions: { parse: [] },
             };
 
-            await fetch(process.env.DISCORD_PULL_REQUESTS_WEBHOOK, {
+            const response = await fetch(process.env.DISCORD_PULL_REQUESTS_WEBHOOK, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify(payload),
             });
+
+            if (!response.ok) {
+              const body = await response.text().catch(() => '');
+              throw new Error(`Discord webhook failed: ${response.status} ${response.statusText} - ${body}`);
+            }
