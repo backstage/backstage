@@ -29,7 +29,7 @@ jobs:
           egress-policy: audit
 
       - name: Send Discord notification
-        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
         env:
           DISCORD_PULL_REQUESTS_WEBHOOK: ${{ secrets.DISCORD_PULL_REQUESTS_WEBHOOK }}
         with:
@@ -45,13 +45,21 @@ jobs:
               description += '...';
             }
 
+            // Discord embed titles are limited to 256 characters
+            const titlePrefix = `#${pr.number}: `;
+            const maxTitleLength = 256 - titlePrefix.length;
+            let prTitle = pr.title || '';
+            if (prTitle.length > maxTitleLength) {
+              prTitle = prTitle.slice(0, maxTitleLength - 3) + '...';
+            }
+
             const isOpened = action === 'opened';
             const color = isOpened ? 5763719 : 3447003; // green : blue
             const footer = isOpened ? 'New pull request' : 'Ready for review';
 
             const payload = {
               embeds: [{
-                title: `#${pr.number}: ${pr.title}`,
+                title: `${titlePrefix}${prTitle}`,
                 url: pr.html_url,
                 description,
                 color,
