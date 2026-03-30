@@ -1,7 +1,3 @@
 {
-  "$schema": "./node_modules/@openapitools/openapi-generator-cli/config.schema.json",
-  "spaces": 2,
-  "generator-cli": {
-    "version": "7.21.0"
-  }
+  "//": "Deprecated: this plugin uses the OpenAPI generator configuration from @backstage/repo-tools. Do not add config here."
 }
