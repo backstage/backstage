@@ -60,12 +60,7 @@ export class ActionsClient {
     private readonly accessToken: string,
   ) {}
 
-  async list(pluginSources: string[]): Promise<ActionDef[]> {
-    const grouped = await this.listGrouped(pluginSources);
-    return grouped.flatMap(g => g.actions);
-  }
-
-  async listGrouped(pluginSources: string[]): Promise<GroupedActions> {
+  async list(pluginSources: string[]): Promise<GroupedActions> {
     return Promise.all(
       pluginSources.map(async pluginId => {
         const url = pluginActionsUrl(this.baseUrl, pluginId);
@@ -80,7 +75,8 @@ export class ActionsClient {
 
   async listForPlugin(actionId: string): Promise<ActionDef[]> {
     const pluginId = extractPluginId(actionId);
-    return this.list([pluginId]);
+    const grouped = await this.list([pluginId]);
+    return grouped.flatMap(g => g.actions);
   }
 
   async execute(actionId: string, input?: unknown): Promise<unknown> {

@@ -49,7 +49,7 @@ export default async ({ args, info }: CliCommandContext) => {
   }
 
   const client = new ActionsClient(baseUrl, accessToken);
-  const grouped = await client.listGrouped(pluginSources);
+  const grouped = await client.list(pluginSources);
 
   const hasActions = grouped.some(g => g.actions.length > 0);
   if (!hasActions) {
