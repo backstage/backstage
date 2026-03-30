@@ -24,7 +24,6 @@ import { WrapperProviders } from './WrapperProviders';
 jest.setTimeout(60_000);
 
 describe('WrapperProviders', () => {
-  const applyDatabaseMigrations = jest.fn();
   const databases = TestDatabases.create({
     ids: ['POSTGRES_18', 'POSTGRES_14', 'SQLITE_3', 'MYSQL_8'],
   });
@@ -68,7 +67,6 @@ describe('WrapperProviders', () => {
         logger,
         client,
         scheduler: scheduler as Partial<SchedulerService> as SchedulerService,
-        applyDatabaseMigrations,
         events: mockServices.events.mock(),
         metrics: metricsServiceMock.mock(),
         permissions: mockServices.permissions.mock(),
@@ -90,14 +88,12 @@ describe('WrapperProviders', () => {
         resolved = true;
       });
 
-      expect(applyDatabaseMigrations).toHaveBeenCalledTimes(0);
       expect(resolved).toBe(false);
       expect(scheduler.scheduleTask).not.toHaveBeenCalled();
 
       await wrapped1.connect({} as any); // simulates the catalog engine
 
       expect(resolved).toBe(false);
-      expect(applyDatabaseMigrations).toHaveBeenCalledTimes(1);
       expect(scheduler.scheduleTask).toHaveBeenLastCalledWith(
         expect.objectContaining({
           id: 'provider1',
@@ -107,7 +103,6 @@ describe('WrapperProviders', () => {
       await wrapped2.connect({} as any);
 
       expect(resolved).toBe(true);
-      expect(applyDatabaseMigrations).toHaveBeenCalledTimes(1);
       expect(scheduler.scheduleTask).toHaveBeenLastCalledWith(
         expect.objectContaining({
           id: 'provider2',

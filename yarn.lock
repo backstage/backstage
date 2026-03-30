@@ -4964,7 +4964,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-catalog-backend-module-incremental-ingestion@workspace:^, @backstage/plugin-catalog-backend-module-incremental-ingestion@workspace:plugins/catalog-backend-module-incremental-ingestion":
+"@backstage/plugin-catalog-backend-module-incremental-ingestion@workspace:plugins/catalog-backend-module-incremental-ingestion":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog-backend-module-incremental-ingestion@workspace:plugins/catalog-backend-module-incremental-ingestion"
   dependencies:
@@ -5278,7 +5278,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-catalog-incremental-ingestion@workspace:^, @backstage/plugin-catalog-incremental-ingestion@workspace:plugins/catalog-incremental-ingestion":
+"@backstage/plugin-catalog-incremental-ingestion@workspace:plugins/catalog-incremental-ingestion":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog-incremental-ingestion@workspace:plugins/catalog-incremental-ingestion"
   dependencies:
@@ -30650,7 +30650,6 @@ __metadata:
     "@backstage/plugin-catalog-common": "workspace:^"
     "@backstage/plugin-catalog-graph": "workspace:^"
     "@backstage/plugin-catalog-import": "workspace:^"
-    "@backstage/plugin-catalog-incremental-ingestion": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/plugin-catalog-unprocessed-entities": "workspace:^"
     "@backstage/plugin-devtools": "workspace:^"
@@ -30714,7 +30713,6 @@ __metadata:
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/plugin-catalog-backend": "workspace:^"
     "@backstage/plugin-catalog-backend-module-backstage-openapi": "workspace:^"
-    "@backstage/plugin-catalog-backend-module-incremental-ingestion": "workspace:^"
     "@backstage/plugin-catalog-backend-module-logs": "workspace:^"
     "@backstage/plugin-catalog-backend-module-openapi": "workspace:^"
     "@backstage/plugin-catalog-backend-module-scaffolder-entity-model": "workspace:^"

@@ -32,7 +32,6 @@ import express from 'express';
 import { Knex } from 'knex';
 import { Duration } from 'luxon';
 import { IncrementalIngestionDatabaseManager } from '../database/IncrementalIngestionDatabaseManager';
-import { applyDatabaseMigrations } from '../database/migrations';
 import { IncrementalIngestionEngine } from '../engine/IncrementalIngestionEngine';
 import { IncrementalProviderRouter } from '../router/routes';
 import {
@@ -46,7 +45,6 @@ import { EventsService } from '@backstage/plugin-events-node';
  * incremental ones.
  */
 export class WrapperProviders {
-  private migrate: Promise<void> | undefined;
   private numberOfProvidersToConnect = 0;
   private readonly readySignal = createDeferred();
 
@@ -56,7 +54,6 @@ export class WrapperProviders {
       logger: LoggerService;
       client: Knex;
       scheduler: SchedulerService;
-      applyDatabaseMigrations?: typeof applyDatabaseMigrations;
       events: EventsService;
       metrics: MetricsService;
       permissions: PermissionsService;
@@ -100,16 +97,6 @@ export class WrapperProviders {
     });
 
     try {
-      if (!this.migrate) {
-        this.migrate = Promise.resolve().then(async () => {
-          const apply =
-            this.options.applyDatabaseMigrations ?? applyDatabaseMigrations;
-          await apply(this.options.client);
-        });
-      }
-
-      await this.migrate;
-
       const { burstInterval, burstLength, restLength } = providerOptions;
 
       logger.info(`Connecting`);

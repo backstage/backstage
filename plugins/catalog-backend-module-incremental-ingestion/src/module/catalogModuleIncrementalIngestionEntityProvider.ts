@@ -133,7 +133,9 @@ export const catalogModuleIncrementalIngestionEntityProvider =
           httpAuth,
         }) {
           const client = await database.getClient();
-          await applyDatabaseMigrations(client);
+          if (!database.migrations?.skip) {
+            await applyDatabaseMigrations(client);
+          }
 
           const providers = new WrapperProviders({
             config,
