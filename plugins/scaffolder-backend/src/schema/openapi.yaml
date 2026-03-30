@@ -7,6 +7,12 @@ info:
     name: Apache-2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   contact: {}
+tags:
+  - name: Actions
+  - name: Tasks
+  - name: Templates
+  - name: Templating
+  - name: Utilities
 servers:
   - url: /
 components:
@@ -522,6 +528,8 @@ paths:
   /v2/templates/{namespace}/{kind}/{name}/parameter-schema:
     get:
       operationId: GetTemplateParameterSchema
+      tags:
+        - Templates
       description: Get template parameter schema.
       responses:
         '200':
@@ -545,6 +553,8 @@ paths:
   /v2/actions:
     get:
       operationId: ListActions
+      tags:
+        - Actions
       description: Returns a list of all installed actions.
       responses:
         '200':
@@ -561,6 +571,8 @@ paths:
   /v2/tasks:
     get:
       operationId: ListTasks
+      tags:
+        - Tasks
       description: Returns a list of tasks, filtering by ownership and/or status if given.
       responses:
         '200':
@@ -580,6 +592,8 @@ paths:
         - $ref: '#/components/parameters/status'
     post:
       operationId: Scaffold
+      tags:
+        - Tasks
       description: |-
         Executes the scaffolding of a component, given a template and its
         parameter values.
@@ -622,6 +636,8 @@ paths:
   /v2/tasks/{taskId}:
     get:
       operationId: GetTask
+      tags:
+        - Tasks
       description: Get a task by ID.
       responses:
         '200':
@@ -641,6 +657,8 @@ paths:
   /v2/tasks/{taskId}/cancel:
     post:
       operationId: CancelTask
+      tags:
+        - Tasks
       description: Sends a signal to a task broker to cancel the running task by taskId.
       responses:
         '200':
@@ -661,6 +679,8 @@ paths:
   /v2/tasks/{taskId}/retry:
     post:
       operationId: Retry
+      tags:
+        - Tasks
       description: Starts the task again from the point where it failed.
       requestBody:
         # this should probably be marked as required, but for legacy reasons we're not.
@@ -708,6 +728,8 @@ paths:
   /v2/tasks/{taskId}/events:
     get:
       operationId: StreamLogsPolling
+      tags:
+        - Tasks
       description: Get events for a task by ID.
       responses:
         '200':
@@ -727,6 +749,8 @@ paths:
   /v2/dry-run:
     post:
       operationId: DryRun
+      tags:
+        - Utilities
       description: Perform a dry-run of a template
       requestBody:
         required: true
@@ -816,6 +840,8 @@ paths:
   /v2/autocomplete/{provider}/{resource}:
     post:
       operationId: Autocomplete
+      tags:
+        - Utilities
       description: Perform an autocomplete for the given provider and resource.
       requestBody:
         required: true
@@ -880,6 +906,8 @@ paths:
   /v2/templating-extensions:
     get:
       operationId: ListTemplatingExtensions
+      tags:
+        - Templating
       description: Returns a structure describing the available templating extensions.
       responses:
         '200':
