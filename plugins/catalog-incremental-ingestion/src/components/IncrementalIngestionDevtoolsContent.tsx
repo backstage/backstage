@@ -262,7 +262,7 @@ const getActionIcon = (actionKey: string) => {
  *
  * @public
  */
-export const IncrementalIngestionDevtoolsContent = () => {
+export function IncrementalIngestionDevtoolsContent() {
   const discoveryApi = useApi(discoveryApiRef);
   const { fetch } = useApi(fetchApiRef);
   const alertApi = useApi(alertApiRef);
@@ -586,4 +586,4 @@ export const IncrementalIngestionDevtoolsContent = () => {
       />
     </>
   );
-};
+}

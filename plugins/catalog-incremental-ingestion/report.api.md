@@ -6,5 +6,5 @@
 import { JSX as JSX_2 } from 'react/jsx-runtime';
 
 // @public
-export const IncrementalIngestionDevtoolsContent: () => JSX_2.Element;
+export function IncrementalIngestionDevtoolsContent(): JSX_2.Element;
 ```
