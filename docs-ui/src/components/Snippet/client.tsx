@@ -38,7 +38,7 @@ export const SnippetClient = ({
             className={`${styles.previewContent} ${styles[align]}`}
             style={{
               paddingTop: `${py}rem`,
-              paddingBottom: `calc(${py}rem + 3rem)`,
+              paddingBottom: `${py}rem`,
               paddingLeft: `${px}rem`,
               paddingRight: `${px}rem`,
             }}
