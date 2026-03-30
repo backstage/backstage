@@ -15,6 +15,7 @@
 .previewContent {
   width: 100%;
   height: 100%;
+  padding-bottom: 3rem;
   background-image: radial-gradient(rgba(0, 0, 0, 0.08) 1px, transparent 0);
   background-position: calc((8px / 2) * -1) calc((8px / 2) * -1);
   background-size: 8px 8px;

@@ -36,7 +36,12 @@ export const SnippetClient = ({
         <div className={styles.sideBySidePreview} style={{ height }}>
           <div
             className={`${styles.previewContent} ${styles[align]}`}
-            style={{ padding: `${py}rem ${px}rem` }}
+            style={{
+              paddingTop: `${py}rem`,
+              paddingBottom: `calc(${py}rem + 3rem)`,
+              paddingLeft: `${px}rem`,
+              paddingRight: `${px}rem`,
+            }}
           >
             {preview}
           </div>
@@ -55,7 +60,12 @@ export const SnippetClient = ({
       <div className={styles.preview} style={{ height }}>
         <div
           className={`${styles.previewContent} ${styles[align]}`}
-          style={{ padding: `${py}rem ${px}rem` }}
+          style={{
+            paddingTop: `${py}rem`,
+            paddingBottom: `calc(${py}rem + 3rem)`,
+            paddingLeft: `${px}rem`,
+            paddingRight: `${px}rem`,
+          }}
         >
           {preview}
         </div>
