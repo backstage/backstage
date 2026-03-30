@@ -30,5 +30,18 @@ export interface Config {
      * will never be disabled, even if the events backend returns a 404.
      */
     useEventBus?: 'never' | 'always' | 'auto';
+
+    metrics?: {
+      /**
+       * Whether to include the `events.topic` attribute in published metrics.
+       *
+       * This is disabled by default to avoid high-cardinality metric series in
+       * installations with many distinct topics. Enable this if your installation
+       * has a known, bounded set of topics.
+       *
+       * @default false
+       */
+      reportTopics?: boolean;
+    };
   };
 }

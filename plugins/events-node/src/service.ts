@@ -19,6 +19,7 @@ import {
   createServiceFactory,
   createServiceRef,
 } from '@backstage/backend-plugin-api';
+import { metricsServiceRef } from '@backstage/backend-plugin-api/alpha';
 import { EventsService, DefaultEventsService } from './api';
 
 /**
@@ -43,12 +44,13 @@ export const eventsServiceFactory = createServiceFactory({
     lifecycle: coreServices.lifecycle,
     auth: coreServices.auth,
     config: coreServices.rootConfig,
+    metrics: metricsServiceRef,
   },
   async createRootContext({ rootLogger, config }) {
     return DefaultEventsService.create({ logger: rootLogger, config });
   },
   async factory(
-    { pluginMetadata, discovery, logger, lifecycle, auth },
+    { pluginMetadata, discovery, logger, lifecycle, auth, metrics },
     eventsService,
   ) {
     return eventsService.forPlugin(pluginMetadata.getId(), {
@@ -56,6 +58,7 @@ export const eventsServiceFactory = createServiceFactory({
       logger,
       lifecycle,
       auth,
+      metrics,
     });
   },
 });

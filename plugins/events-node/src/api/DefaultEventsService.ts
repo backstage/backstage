@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { performance } from 'node:perf_hooks';
 import {
   AuthService,
   DiscoveryService,
@@ -21,6 +22,10 @@ import {
   LoggerService,
   RootConfigService,
 } from '@backstage/backend-plugin-api';
+import {
+  MetricsService,
+  MetricsServiceHistogram,
+} from '@backstage/backend-plugin-api/alpha';
 import { EventParams } from './EventParams';
 import {
   EVENTS_NOTIFY_TIMEOUT_HEADER,
@@ -28,7 +33,13 @@ import {
   EventsServiceSubscribeOptions,
 } from './EventsService';
 import { DefaultApiClient } from '../generated';
-import { ResponseError } from '@backstage/errors';
+import { isError, ResponseError } from '@backstage/errors';
+
+/** @internal */
+type EventsDurationAttributes = {
+  'events.topic'?: string;
+  'error.type'?: string;
+};
 
 const POLL_BACKOFF_START_MS = 1_000;
 const POLL_BACKOFF_MAX_MS = 60_000;
@@ -121,14 +132,19 @@ class PluginEventsService implements EventsService {
   private readonly mode: EventBusMode;
   private client?: DefaultApiClient;
   private readonly auth?: AuthService;
+  private readonly publishDuration?: MetricsServiceHistogram<EventsDurationAttributes>;
+  private readonly subscribeDuration?: MetricsServiceHistogram<EventsDurationAttributes>;
+  private readonly reportTopics: boolean;
 
   constructor(
     pluginId: string,
     localBus: LocalEventBus,
     logger: LoggerService,
     mode: EventBusMode,
+    reportTopics: boolean,
     client?: DefaultApiClient,
     auth?: AuthService,
+    metrics?: MetricsService,
   ) {
     this.pluginId = pluginId;
     this.localBus = localBus;
@@ -136,6 +152,26 @@ class PluginEventsService implements EventsService {
     this.mode = mode;
     this.client = client;
     this.auth = auth;
+    this.reportTopics = reportTopics;
+
+    if (metrics) {
+      this.publishDuration = metrics.createHistogram<EventsDurationAttributes>(
+        'events.publish.duration',
+        {
+          description: 'Duration of event publish operations',
+          unit: 's',
+        },
+      );
+      this.subscribeDuration =
+        metrics.createHistogram<EventsDurationAttributes>(
+          'events.subscribe.process.duration',
+          {
+            description:
+              'Duration of individual subscriber event handler invocations',
+            unit: 's',
+          },
+        );
+    }
   }
 
   async publish(params: EventParams): Promise<void> {
@@ -143,56 +179,107 @@ class PluginEventsService implements EventsService {
     if (!lock) {
       throw new Error('Service is shutting down');
     }
+    const startTime = performance.now();
     try {
       const { notifiedSubscribers } = await this.localBus.publish(params);
 
       const client = this.client;
-      if (!client) {
-        return;
-      }
-      const token = await this.#getToken();
-      if (!token) {
-        return;
-      }
-      const res = await client.postEvent(
-        {
-          body: {
-            event: { payload: params.eventPayload, topic: params.topic },
-            notifiedSubscribers,
-          },
-        },
-        { token },
-      );
+      const token = client ? await this.#getToken() : undefined;
 
-      if (!res.ok) {
-        if (res.status === 404 && this.mode !== 'always') {
-          this.logger.warn(
-            `Event publish request failed with status 404, events backend not found. Future events will not be persisted.`,
-          );
-          delete this.client;
-          return;
+      if (client && token) {
+        const res = await client.postEvent(
+          {
+            body: {
+              event: { payload: params.eventPayload, topic: params.topic },
+              notifiedSubscribers,
+            },
+          },
+          { token },
+        );
+
+        if (!res.ok) {
+          if (res.status === 404 && this.mode !== 'always') {
+            this.logger.warn(
+              `Event publish request failed with status 404, events backend not found. Future events will not be persisted.`,
+            );
+            delete this.client;
+          } else {
+            throw await ResponseError.fromResponse(res);
+          }
         }
-        throw await ResponseError.fromResponse(res);
       }
+
+      this.#recordPublishDuration(startTime, params.topic);
+    } catch (error) {
+      this.#recordPublishDuration(startTime, params.topic, error);
+      throw error;
     } finally {
       lock.release();
     }
   }
 
+  #recordPublishDuration(
+    startTime: number,
+    topic: string,
+    error?: unknown,
+  ): void {
+    if (!this.publishDuration) {
+      return;
+    }
+    const attrs: EventsDurationAttributes = {};
+    if (this.reportTopics) {
+      attrs['events.topic'] = topic;
+    }
+    if (error) {
+      attrs['error.type'] = isError(error) ? error.name : 'UnknownError';
+    }
+    this.publishDuration.record((performance.now() - startTime) / 1000, attrs);
+  }
+
   async subscribe(options: EventsServiceSubscribeOptions): Promise<void> {
     const subscriptionId = `${this.pluginId}.${options.id}`;
+
+    const wrappedOnEvent: EventsServiceSubscribeOptions['onEvent'] = this
+      .subscribeDuration
+      ? async (event: EventParams) => {
+          const startTime = performance.now();
+          try {
+            await options.onEvent(event);
+            const attrs: EventsDurationAttributes = {};
+            if (this.reportTopics) {
+              attrs['events.topic'] = event.topic;
+            }
+            this.subscribeDuration!.record(
+              (performance.now() - startTime) / 1000,
+              attrs,
+            );
+          } catch (error) {
+            const attrs: EventsDurationAttributes = {
+              'error.type': isError(error) ? error.name : 'UnknownError',
+            };
+            if (this.reportTopics) {
+              attrs['events.topic'] = event.topic;
+            }
+            this.subscribeDuration!.record(
+              (performance.now() - startTime) / 1000,
+              attrs,
+            );
+            throw error;
+          }
+        }
+      : options.onEvent;
 
     await this.localBus.subscribe({
       id: subscriptionId,
       topics: options.topics,
-      onEvent: options.onEvent,
+      onEvent: wrappedOnEvent,
     });
 
     if (!this.client) {
       return;
     }
 
-    this.#startPolling(subscriptionId, options.topics, options.onEvent);
+    this.#startPolling(subscriptionId, options.topics, wrappedOnEvent);
   }
 
   #startPolling(
@@ -394,20 +481,22 @@ class PluginEventsService implements EventsService {
  *
  * @public
  */
-// TODO(pjungermann): add opentelemetry? (see plugins/catalog-backend/src/util/opentelemetry.ts, etc.)
 export class DefaultEventsService implements EventsService {
   private readonly logger: LoggerService;
   private readonly localBus: LocalEventBus;
   private readonly mode: EventBusMode;
+  private readonly reportTopics: boolean;
 
   private constructor(
     logger: LoggerService,
     localBus: LocalEventBus,
     mode: EventBusMode,
+    reportTopics: boolean,
   ) {
     this.logger = logger;
     this.localBus = localBus;
     this.mode = mode;
+    this.reportTopics = reportTopics;
   }
 
   static create(options: {
@@ -427,10 +516,15 @@ export class DefaultEventsService implements EventsService {
       );
     }
 
+    const reportTopics =
+      options.config?.getOptionalBoolean('events.metrics.reportTopics') ??
+      false;
+
     return new DefaultEventsService(
       options.logger,
       new LocalEventBus(options.logger),
       eventBusMode,
+      reportTopics,
     );
   }
 
@@ -447,6 +541,7 @@ export class DefaultEventsService implements EventsService {
       logger: LoggerService;
       auth: AuthService;
       lifecycle: LifecycleService;
+      metrics?: MetricsService;
     },
   ): EventsService {
     const client =
@@ -462,8 +557,10 @@ export class DefaultEventsService implements EventsService {
       this.localBus,
       logger,
       this.mode,
+      this.reportTopics,
       client,
       options?.auth,
+      options?.metrics,
     );
     options?.lifecycle.addShutdownHook(async () => {
       await service.shutdown();

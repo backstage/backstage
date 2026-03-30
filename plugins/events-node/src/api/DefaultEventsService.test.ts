@@ -23,6 +23,7 @@ import {
   mockServices,
   registerMswTestHooks,
 } from '@backstage/backend-test-utils';
+import { metricsServiceMock } from '@backstage/backend-test-utils/alpha';
 
 describe('DefaultEventsService', () => {
   it('passes events to interested subscribers', async () => {
@@ -115,6 +116,119 @@ describe('DefaultEventsService', () => {
     );
   });
 
+  describe('metrics', () => {
+    function createHistogramRecord() {
+      return jest.fn();
+    }
+
+    function createMetricsMock() {
+      const histograms = new Map<string, { record: jest.Mock }>();
+      const metrics = metricsServiceMock.mock({
+        createHistogram: jest.fn((name: string) => {
+          const histogram = { record: createHistogramRecord() };
+          histograms.set(name, histogram);
+          return histogram;
+        }),
+      });
+      return { metrics, histograms };
+    }
+
+    function createService(options?: { reportTopics?: boolean }) {
+      const logger = mockServices.logger.mock();
+      const lifecycle = mockServices.lifecycle.mock();
+      const { metrics, histograms } = createMetricsMock();
+      const service = DefaultEventsService.create({
+        logger,
+        useEventBus: 'never',
+        ...(options?.reportTopics && {
+          config: mockServices.rootConfig({
+            data: { events: { metrics: { reportTopics: true } } },
+          }),
+        }),
+      }).forPlugin('test', {
+        auth: mockServices.auth(),
+        logger,
+        discovery: mockServices.discovery(),
+        lifecycle,
+        metrics,
+      });
+      return { service, histograms, lifecycle };
+    }
+
+    it('records duration metrics for publish and subscribe', async () => {
+      const { service, histograms, lifecycle } = createService();
+
+      await service.subscribe({
+        id: 'handler1',
+        topics: ['topicA'],
+        onEvent: async () => {},
+      });
+      await service.publish({
+        topic: 'topicA',
+        eventPayload: { test: true },
+      });
+
+      expect(
+        histograms.get('events.publish.duration')!.record,
+      ).toHaveBeenCalledWith(expect.any(Number), {});
+      expect(
+        histograms.get('events.subscribe.process.duration')!.record,
+      ).toHaveBeenCalledWith(expect.any(Number), {});
+
+      await lifecycle.addShutdownHook.mock.calls[0][0]();
+    });
+
+    it('includes events.topic only when reportTopics is enabled', async () => {
+      const { service, histograms, lifecycle } = createService({
+        reportTopics: true,
+      });
+
+      await service.subscribe({
+        id: 'handler1',
+        topics: ['topicA'],
+        onEvent: async () => {},
+      });
+      await service.publish({
+        topic: 'topicA',
+        eventPayload: { test: true },
+      });
+
+      expect(
+        histograms.get('events.publish.duration')!.record,
+      ).toHaveBeenCalledWith(
+        expect.any(Number),
+        expect.objectContaining({ 'events.topic': 'topicA' }),
+      );
+
+      await lifecycle.addShutdownHook.mock.calls[0][0]();
+    });
+
+    it('records error.type when a subscriber handler throws', async () => {
+      const { service, histograms, lifecycle } = createService();
+
+      await service.subscribe({
+        id: 'handler1',
+        topics: ['topicA'],
+        onEvent: async () => {
+          throw new TypeError('test error');
+        },
+      });
+      await service.publish({
+        topic: 'topicA',
+        eventPayload: { test: true },
+      });
+
+      expect(
+        histograms.get('events.subscribe.process.duration')!.record,
+      ).toHaveBeenCalledWith(
+        expect.any(Number),
+        expect.objectContaining({ 'error.type': 'TypeError' }),
+      );
+
+      await lifecycle.addShutdownHook.mock.calls[0][0]();
+    });
+  });
+
   describe('with event bus', () => {
     const mswServer = setupServer();
     registerMswTestHooks(mswServer);
@@ -126,6 +240,7 @@ describe('DefaultEventsService', () => {
         logger,
         discovery: mockServices.discovery(),
         lifecycle: mockServices.lifecycle.mock(),
+        metrics: metricsServiceMock.mock(),
       });
 
       mswServer.use(
@@ -168,6 +283,7 @@ describe('DefaultEventsService', () => {
         logger,
         discovery: mockServices.discovery(),
         lifecycle: mockServices.lifecycle.mock(),
+        metrics: metricsServiceMock.mock(),
       });
 
       let callCount = 0;
@@ -254,6 +370,7 @@ describe('DefaultEventsService', () => {
         logger,
         discovery: mockServices.discovery(),
         lifecycle: mockServices.lifecycle.mock(),
+        metrics: metricsServiceMock.mock(),
       });
 
       let callCount = 0;
@@ -349,6 +466,7 @@ describe('DefaultEventsService', () => {
         logger,
         discovery: mockServices.discovery(),
         lifecycle: mockServices.lifecycle.mock(),
+        metrics: metricsServiceMock.mock(),
       });
 
       let calledApi = false;
@@ -385,6 +503,7 @@ describe('DefaultEventsService', () => {
         logger,
         discovery: mockServices.discovery(),
         lifecycle: mockServices.lifecycle.mock(),
+        metrics: metricsServiceMock.mock(),
       });
 
       mswServer.use(
@@ -424,6 +543,7 @@ describe('DefaultEventsService', () => {
         logger,
         discovery: mockServices.discovery(),
         lifecycle: mockServices.lifecycle.mock(),
+        metrics: metricsServiceMock.mock(),
       });
 
       mswServer.use(

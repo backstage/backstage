@@ -7,6 +7,7 @@ import { AuthService } from '@backstage/backend-plugin-api';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { LifecycleService } from '@backstage/backend-plugin-api';
 import { LoggerService } from '@backstage/backend-plugin-api';
+import { MetricsService } from '@backstage/backend-plugin-api/alpha';
 import { ParsedMediaType } from 'content-type';
 import { Request as Request_2 } from 'express';
 import { RootConfigService } from '@backstage/backend-plugin-api';
@@ -28,6 +29,7 @@ export class DefaultEventsService implements EventsService {
       logger: LoggerService;
       auth: AuthService;
       lifecycle: LifecycleService;
+      metrics?: MetricsService;
     },
   ): EventsService;
   // (undocumented)
