@@ -25,7 +25,9 @@ import {
 import { IncrementalProviderRouter } from './routes';
 
 describe('IncrementalProviderRouter', () => {
-  const createApp = (authorizeResult: AuthorizeResult) => {
+  const createApp = (
+    authorizeResult: AuthorizeResult.ALLOW | AuthorizeResult.DENY,
+  ) => {
     const manager = {
       healthcheck: jest.fn().mockResolvedValue([]),
       listProviders: jest.fn().mockResolvedValue([]),
