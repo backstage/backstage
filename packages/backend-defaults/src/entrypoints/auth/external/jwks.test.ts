@@ -119,7 +119,7 @@ describe('JWKSHandler', () => {
 
     expect(result).toEqual({
       subject: `external:${mockSubject}`,
-      tokenClaims: expect.objectContaining({
+      tokenData: expect.objectContaining({
         sub: mockSubject,
         iss: mockBaseUrl,
         aud: 'backstage',
@@ -172,7 +172,7 @@ describe('JWKSHandler', () => {
 
     expect(result).toEqual({
       subject: `external:${validEntry.options.subjectPrefix}:${mockSubject}`,
-      tokenClaims: expect.objectContaining({
+      tokenData: expect.objectContaining({
         sub: mockSubject,
         iss: mockBaseUrl,
         aud: 'backstage',

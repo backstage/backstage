@@ -21,6 +21,7 @@ import {
   RootConfigService,
 } from '@backstage/backend-plugin-api';
 import { NotAllowedError } from '@backstage/errors';
+import { JsonObject } from '@backstage/types';
 import { legacyTokenHandler } from './legacy';
 import { staticTokenHandler } from './static';
 import { jwksTokenHandler } from './jwks';
@@ -163,7 +164,7 @@ export class ExternalAuthTokenHandler {
     | {
         subject: string;
         accessRestrictions?: BackstagePrincipalAccessRestrictions;
-        tokenClaims?: Record<string, unknown>;
+        tokenData?: JsonObject;
       }
     | undefined
   > {

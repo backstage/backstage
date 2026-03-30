@@ -232,7 +232,7 @@ describe('ExternalTokenHandler', () => {
     await expect(handler.verifyToken(jwksToken)).resolves.toEqual({
       subject: 'external:custom-prefix:jwks-subject',
       accessRestrictions: { permissionNames: ['catalog.entity.read'] },
-      tokenClaims: expect.objectContaining({
+      tokenData: expect.objectContaining({
         sub: 'jwks-subject',
         iss: 'blah',
         aud: 'backstage',

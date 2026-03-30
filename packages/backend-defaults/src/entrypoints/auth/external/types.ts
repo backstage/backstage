@@ -16,6 +16,7 @@
 
 import { BackstagePrincipalAccessRestrictions } from '@backstage/backend-plugin-api';
 import type { Config } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
 
 export type AccessRestrictionsMap = Map<
   string, // plugin ID
@@ -25,7 +26,8 @@ export type AccessRestrictionsMap = Map<
 /**
  * @public
  * This interface is used to handle external tokens.
- * It is used by the auth service to verify tokens and extract the subject.
+ * It is used by the auth service to verify tokens, extract the subject, and
+ * optionally forward additional token data to the resulting service principal.
  */
 export interface ExternalTokenHandler<TContext> {
   type: string;
@@ -35,15 +37,13 @@ export interface ExternalTokenHandler<TContext> {
    * or `undefined` if the token is not recognized by this handler.
    *
    * The returned `subject` is used as the service principal subject.
-   * The optional `tokenClaims` should contain the verified JWT payload claims
-   * (e.g. from `jwtVerify`) and will be exposed on the resulting
-   * `BackstageServicePrincipal`. Only return claims that have already been
-   * validated; do not pass through unverified data.
+   * The optional `tokenData` is arbitrary data forwarded from the token handler
+   * and will be exposed on the resulting `BackstageServicePrincipal`. Only
+   * return data that has already been validated; do not pass through unverified
+   * data.
    */
   verifyToken(
     token: string,
     ctx: TContext,
-  ): Promise<
-    { subject: string; tokenClaims?: Record<string, unknown> } | undefined
-  >;
+  ): Promise<{ subject: string; tokenData?: JsonObject } | undefined>;
 }

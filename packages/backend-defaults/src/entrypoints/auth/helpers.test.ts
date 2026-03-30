@@ -68,7 +68,7 @@ describe('credentials', () => {
     });
   });
 
-  it('should preserve tokenClaims on the principal but not in serialized output', () => {
+  it('should preserve tokenData on the principal but not in serialized output', () => {
     const claims = {
       upn: 'user@example.com',
       oid: 'abc-123',
@@ -81,8 +81,8 @@ describe('credentials', () => {
       claims,
     );
 
-    // Claims are accessible directly on the principal
-    expect(credentials.principal.tokenClaims).toEqual(claims);
+    // Data is accessible directly on the principal
+    expect(credentials.principal.tokenData).toEqual(claims);
 
     // Non-enumerable: toEqual ignores it, and JSON.stringify omits it
     expect(credentials).toEqual({

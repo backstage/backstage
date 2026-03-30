@@ -5,6 +5,7 @@
 ```ts
 import { AuthService } from '@backstage/backend-plugin-api';
 import type { Config } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 import { ServiceRef } from '@backstage/backend-plugin-api';
 
@@ -32,7 +33,7 @@ export interface ExternalTokenHandler<TContext> {
   ): Promise<
     | {
         subject: string;
-        tokenClaims?: Record<string, unknown>;
+        tokenData?: JsonObject;
       }
     | undefined
   >;

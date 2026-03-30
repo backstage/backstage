@@ -21,6 +21,7 @@ import {
   BackstageServicePrincipal,
   BackstageUserPrincipal,
 } from '@backstage/backend-plugin-api';
+import { JsonObject } from '@backstage/types';
 import { InternalBackstageCredentials } from './types';
 import { createHash } from 'node:crypto';
 
@@ -28,13 +29,9 @@ export function createCredentialsWithServicePrincipal(
   sub: string,
   token?: string,
   accessRestrictions?: BackstagePrincipalAccessRestrictions,
-  tokenClaims?: Record<string, unknown>,
+  tokenData?: JsonObject,
 ): InternalBackstageCredentials<BackstageServicePrincipal> {
-  const principal = createServicePrincipal(
-    sub,
-    accessRestrictions,
-    tokenClaims,
-  );
+  const principal = createServicePrincipal(sub, accessRestrictions, tokenData);
   const result = {
     $$type: '@backstage/BackstageCredentials',
     version: 'v1',
@@ -133,7 +130,7 @@ export function toInternalBackstageCredentials(
 function createServicePrincipal(
   sub: string,
   accessRestrictions?: BackstagePrincipalAccessRestrictions,
-  tokenClaims?: Record<string, unknown>,
+  tokenData?: JsonObject,
 ): BackstageServicePrincipal {
   const result = {
     type: 'service',
@@ -141,11 +138,11 @@ function createServicePrincipal(
     accessRestrictions,
   } as const;
   Object.defineProperties(result, {
-    tokenClaims: {
+    tokenData: {
       enumerable: false,
       configurable: true,
       writable: true,
-      value: tokenClaims,
+      value: tokenData,
     },
     toString: {
       enumerable: false,

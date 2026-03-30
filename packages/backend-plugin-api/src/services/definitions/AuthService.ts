@@ -89,19 +89,29 @@ export type BackstageServicePrincipal = {
   accessRestrictions?: BackstagePrincipalAccessRestrictions;
 
   /**
-   * The JWT payload claims from the token that was used to authenticate this
-   * principal.
+   * Optional data forwarded from the external token handler that authenticated
+   * this request.
    *
    * @remarks
    *
    * This field is populated when the authenticating mechanism provides
-   * verified JWT claims (for example, an external access method of type
-   * `jwks`). It contains the raw claims from the JWT payload, such as `upn`,
-   * `name`, `oid`, `appid`, etc. Standard JWT validations (signature, issuer,
-   * audience) have been applied by the token handler; time-based claims such
-   * as `exp` and `nbf` are checked when present.
+   * additional data (for example, an external access method of type `jwks`
+   * populates this with the raw claims from the verified JWT payload, such as
+   * `upn`, `name`, `oid`, `appid`, etc.). Standard JWT validations (signature,
+   * issuer, audience) have been applied by the token handler; time-based
+   * claims such as `exp` and `nbf` are checked when present.
+   *
+   * In the default implementations provided by Backstage, this property is
+   * configured as non-enumerable so that it does not appear in
+   * `JSON.stringify` output or common logging/serialization patterns, to
+   * reduce the risk of accidentally persisting or emitting token contents.
+   * Custom implementations are encouraged to follow the same pattern.
+   *
+   * The data may contain sensitive information and PII. Callers should treat
+   * this as confidential and avoid logging, storing, or otherwise exposing it
+   * except where strictly necessary.
    */
-  tokenClaims?: Record<string, unknown>;
+  tokenData?: JsonObject;
 };
 
 /**

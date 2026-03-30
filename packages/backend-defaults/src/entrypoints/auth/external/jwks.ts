@@ -21,6 +21,7 @@ import {
   readStringOrStringArrayFromConfig,
 } from './helpers';
 import { AccessRestrictionsMap } from './types';
+import { JsonObject } from '@backstage/types';
 
 type JWKSTokenContext = {
   algorithms?: string[];
@@ -73,7 +74,7 @@ export const jwksTokenHandler = createExternalTokenHandler<JWKSTokenContext>({
           : 'external:';
         return {
           subject: `${prefix}${payload.sub}`,
-          tokenClaims: { ...payload } as Record<string, unknown>,
+          tokenData: { ...payload } as JsonObject,
         };
       }
     } catch {
