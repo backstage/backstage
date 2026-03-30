@@ -85,14 +85,16 @@ If you want to manage your incremental entity providers via REST endpoints, the 
 | GET    | `/api/catalog/incremental/providers`                   | Get a list of all known incremental entity providers                                                                        |
 | GET    | `/api/catalog/incremental/providers/:provider`         | Checks the status of an incremental provider (resting, interstitial, etc).                                                  |
 | POST   | `/api/catalog/incremental/providers/:provider/trigger` | Triggers a provider's next action immediately. E.g., if it's currently interstitial, it will trigger the next burst.        |
-| POST   | `/api/catalog/incremental/providers/:provider/start`   | End the current open cycle so a new one can start on a later tick.                                                          |
-| POST   | `/api/catalog/incremental/providers/:provider/cancel`  | Pause the provider for 24 hours by marking the current cycle as resting.                                                    |
+| POST   | `/api/catalog/incremental/providers/:provider/start`   | Stop the current ingestion cycle and start a new one immediately.                                                           |
+| POST   | `/api/catalog/incremental/providers/:provider/cancel`  | Stop the current ingestion cycle and start a new one in 24 hours.                                                           |
 | DELETE | `/api/catalog/incremental/providers/:provider`         | Completely remove all records for the provider and schedule it to start again in 24 hours.                                  |
 | GET    | `/api/catalog/incremental/providers/:provider/marks`   | Retrieve a list of all ingestion marks for the current ingestion cycle.                                                     |
 | DELETE | `/api/catalog/incremental/providers/:provider/marks`   | Remove all ingestion marks for the current ingestion cycle.                                                                 |
 | POST   | `/api/catalog/incremental/cleanup`                     | Completely remove all records for ALL providers and schedule them to start again in 24 hours. (CAUTION! Can cause orphans!) |
 
 In all cases, `:provider` is the name of the incremental entity provider.
+
+All endpoints require authentication. Read endpoints require the `catalog.incremental-ingestion.read` permission; mutating endpoints require `catalog.incremental-ingestion.admin`.
 
 ## Writing an Incremental Entity Provider
 

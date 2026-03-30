@@ -5,8 +5,15 @@ Frontend support for the catalog incremental ingestion module.
 ## Features
 
 - Adds an `Incremental Ingestion` tab to DevTools in apps using the new frontend system
-- Shows provider health, current state, next action timing, and stored marks
+- Shows provider health, current state, next action timing, and last error per provider
 - Supports admin actions such as `trigger` and mark cleanup through the catalog backend admin routes
+- Provides raw JSON views of provider status and ingestion marks for debugging
+
+## Screenshots
+
+![Incremental Ingestion DevTools tab showing the providers table](docs/catalog-incremental-ingestion-devtool.png)
+
+![Raw marks JSON dialog for a provider](docs/catalog-incremental-ingestion-devtool-raw.png)
 
 ## Setup
 
