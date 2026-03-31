@@ -22,7 +22,7 @@ import styles from './HeaderNav.module.css';
 export const HeaderNavDefinition = defineComponent<{
   noTrack?: boolean;
   tabs: HeaderNavTabItem[];
-  activeTabId?: string;
+  activeTabId?: string | null;
   children?: React.ReactNode;
   className?: string;
 }>()({

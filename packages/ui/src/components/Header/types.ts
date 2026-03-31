@@ -52,7 +52,7 @@ export interface HeaderOwnProps {
   title?: string;
   customActions?: React.ReactNode;
   tabs?: HeaderNavTabItem[];
-  activeTabId?: string;
+  activeTabId?: string | null;
   breadcrumbs?: HeaderBreadcrumb[];
   className?: string;
 }

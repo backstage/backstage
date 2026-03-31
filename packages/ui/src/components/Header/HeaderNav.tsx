@@ -136,7 +136,7 @@ function HeaderNavGroupItem(props: HeaderNavGroupItemProps) {
 
 interface HeaderNavProps {
   tabs: HeaderNavTabItem[];
-  activeTabId?: string;
+  activeTabId?: string | null;
 }
 
 /** @internal */
