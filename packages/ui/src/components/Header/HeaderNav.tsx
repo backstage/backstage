@@ -16,6 +16,13 @@
 
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useFocusVisible, useHover, useLink } from 'react-aria';
+import {
+  matchRoutes,
+  resolvePath,
+  useInRouterContext,
+  useLocation,
+  useResolvedPath,
+} from 'react-router-dom';
 import { Button as RAButton } from 'react-aria-components';
 import { RiArrowDownSLine } from '@remixicon/react';
 import { useDefinition } from '../../hooks/useDefinition';
@@ -139,8 +146,27 @@ interface HeaderNavProps {
   activeTabId?: string | null;
 }
 
-/** @internal */
-export function HeaderNav(props: HeaderNavProps) {
+function useAutoActiveTabId(tabs: HeaderNavTabItem[]): string | undefined {
+  const basePath = useResolvedPath('.').pathname;
+  const { pathname } = useLocation();
+
+  return useMemo(() => {
+    const allTabs = tabs.flatMap(tab => (isTabGroup(tab) ? tab.items : [tab]));
+    const routeObjects = allTabs.map(tab => ({
+      path: `${resolvePath(tab.href, basePath).pathname}/*`,
+      id: tab.id,
+    }));
+    const matches = matchRoutes(routeObjects, pathname);
+    return matches?.[0]?.route.id;
+  }, [tabs, basePath, pathname]);
+}
+
+function HeaderNavAutoDetect(props: { tabs: HeaderNavTabItem[] }) {
+  const activeTabId = useAutoActiveTabId(props.tabs);
+  return <HeaderNavInner tabs={props.tabs} activeTabId={activeTabId} />;
+}
+
+function HeaderNavInner(props: HeaderNavProps) {
   const { tabs, activeTabId } = props;
   const { ownProps, analytics } = useDefinition(HeaderNavDefinition, {
     tabs,
@@ -217,4 +243,15 @@ export function HeaderNav(props: HeaderNavProps) {
       />
     </nav>
   );
+}
+
+/** @internal */
+export function HeaderNav(props: HeaderNavProps) {
+  const inRouter = useInRouterContext();
+
+  if (props.activeTabId === undefined && inRouter) {
+    return <HeaderNavAutoDetect tabs={props.tabs} />;
+  }
+
+  return <HeaderNavInner tabs={props.tabs} activeTabId={props.activeTabId} />;
 }
