@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-notifications': minor
+'@backstage/plugin-notifications': patch
 ---
 
 Added a new optional prop to the notifications page, allowing developers to override the component used to render notification descriptions within the notifications table.
