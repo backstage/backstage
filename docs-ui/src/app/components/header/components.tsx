@@ -30,7 +30,7 @@ const breadcrumbs = [
 ];
 
 export const WithEverything = () => (
-  <MemoryRouter>
+  <MemoryRouter initialEntries={['/overview']}>
     <Header
       title="Page Title"
       tabs={tabs.slice(0, 2)}
@@ -52,7 +52,7 @@ export const WithLongBreadcrumbs = () => (
 );
 
 export const WithTabs = () => (
-  <MemoryRouter>
+  <MemoryRouter initialEntries={['/overview']}>
     <Header title="Page Title" tabs={tabs.slice(0, 3)} />
   </MemoryRouter>
 );
