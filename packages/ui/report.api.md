@@ -1510,7 +1510,7 @@ export type HeaderNavTabItem = HeaderNavTab | HeaderNavTabGroup;
 // @public
 export interface HeaderOwnProps {
   // (undocumented)
-  activeTabId?: string;
+  activeTabId?: string | null;
   // (undocumented)
   breadcrumbs?: HeaderBreadcrumb[];
   // (undocumented)
