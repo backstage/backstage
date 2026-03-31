@@ -1,0 +1,29 @@
+packages/create-app/templates/next-app/.yarnrc.yml.hbs
+  ad994c9601b48448 2,4
+packages/create-app/templates/next-app/package.json.hbs
+  ad994c9601b48448 65
+packages/create-app/templates/default-app/.yarnrc.yml.hbs
+  ad994c9601b48448 2,4
+packages/create-app/templates/default-app/package.json.hbs
+  ad994c9601b48448 78
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.17",
+  "base_commit_sha": "91a347763cfbf9bfdceaccd1db6a51dfb6478a8f",
+  "prompts": {
+    "ad994c9601b48448": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "34fa09df-81da-4954-9480-c570fd8cdaf0",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "aramissennyeydd <aramis.sennyey@doordash.com>",
+      "messages": [],
+      "total_additions": 6,
+      "total_deletions": 4,
+      "accepted_lines": 6,
+      "overriden_lines": 0
+    }
+  }
+}
