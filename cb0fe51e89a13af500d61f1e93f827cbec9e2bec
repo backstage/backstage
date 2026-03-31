@@ -1,0 +1,31 @@
+docs/golden-path/plugins/frontend/002-poking-around.md
+  c00dba7dc56e466a 8,61-62,87
+docs/golden-path/plugins/frontend/003-dynamic-config.md
+  c00dba7dc56e466a 53
+docs/golden-path/plugins/frontend/001-first-steps.md
+  c00dba7dc56e466a 22-23,28,33-34,57,78-81,83
+docs/golden-path/plugins/frontend/005-testing.md
+  c00dba7dc56e466a 71-72,105
+packages/cli-module-new/templates/frontend-plugin/src/components/TodoPage/TodoPage.tsx.hbs
+  c00dba7dc56e466a 7,49
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.3",
+  "base_commit_sha": "cb0fe51e89a13af500d61f1e93f827cbec9e2bec",
+  "prompts": {
+    "c00dba7dc56e466a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "05e37aae-e09b-4895-b9c4-2c717943a850",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "aramissennyeydd",
+      "messages": [],
+      "total_additions": 24,
+      "total_deletions": 30,
+      "accepted_lines": 21,
+      "overriden_lines": 0
+    }
+  }
+}
