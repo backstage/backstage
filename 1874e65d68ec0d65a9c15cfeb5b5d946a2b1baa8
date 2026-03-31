@@ -1,0 +1,25 @@
+packages/cli-module-new/templates/frontend-plugin/src/components/TodoPage/TodoPage.tsx.hbs
+  3c06e077ca04afc1 1,12-15,51
+packages/cli-module-new/templates/frontend-plugin/src/components/TodoPage/TodoPage.test.tsx.hbs
+  3c06e077ca04afc1 32,41
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.17",
+  "base_commit_sha": "1874e65d68ec0d65a9c15cfeb5b5d946a2b1baa8",
+  "prompts": {
+    "3c06e077ca04afc1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "8e0c4c56-8649-4dda-b416-a9d78e8487af",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "aramissennyeydd <aramis.sennyey@doordash.com>",
+      "messages": [],
+      "total_additions": 18,
+      "total_deletions": 22,
+      "accepted_lines": 18,
+      "overriden_lines": 0
+    }
+  }
+}
