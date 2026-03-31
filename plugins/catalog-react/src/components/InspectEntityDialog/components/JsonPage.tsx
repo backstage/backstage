@@ -16,7 +16,7 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { CodeSnippet } from '@backstage/core-components';
-import DialogContentText from '@material-ui/core/DialogContentText';
+import { Text } from '@backstage/ui';
 import { sortKeys } from './util';
 import { catalogReactTranslationRef } from '../../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
@@ -25,21 +25,14 @@ export function JsonPage(props: { entity: Entity }) {
   const { t } = useTranslationRef(catalogReactTranslationRef);
   return (
     <>
-      <DialogContentText variant="h2">
-        {t('inspectEntityDialog.jsonPage.title')}
-      </DialogContentText>
-      <DialogContentText>
-        {t('inspectEntityDialog.jsonPage.description')}
-      </DialogContentText>
-      <DialogContentText>
-        <div style={{ fontSize: '75%' }} data-testid="code-snippet">
-          <CodeSnippet
-            text={JSON.stringify(sortKeys(props.entity), undefined, 2)}
-            language="json"
-            showCopyCodeButton
-          />
-        </div>
-      </DialogContentText>
+      <Text as="p">{t('inspectEntityDialog.jsonPage.description')}</Text>
+      <div data-testid="code-snippet">
+        <CodeSnippet
+          text={JSON.stringify(sortKeys(props.entity), undefined, 2)}
+          language="json"
+          showCopyCodeButton
+        />
+      </div>
     </>
   );
 }

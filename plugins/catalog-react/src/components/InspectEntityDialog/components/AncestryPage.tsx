@@ -27,8 +27,7 @@ import {
   ResponseErrorPanel,
 } from '@backstage/core-components';
 import { useApi, useApp, useRouteRef } from '@backstage/core-plugin-api';
-import Box from '@material-ui/core/Box';
-import DialogContentText from '@material-ui/core/DialogContentText';
+import { Text, Box } from '@backstage/ui';
 import { makeStyles } from '@material-ui/core/styles';
 import classNames from 'classnames';
 import { useLayoutEffect, useRef, useState } from 'react';
@@ -209,19 +208,18 @@ export function AncestryPage(props: { entity: Entity }) {
 
   return (
     <>
-      <DialogContentText variant="h2">
-        {t('inspectEntityDialog.ancestryPage.title')}
-      </DialogContentText>
-      <DialogContentText gutterBottom>
-        {t('inspectEntityDialog.ancestryPage.description', {
-          processorsLink: (
-            <Link to="https://backstage.io/docs/features/software-catalog/life-of-an-entity">
-              {t('inspectEntityDialog.ancestryPage.processorsLink')}
-            </Link>
-          ),
-        })}
-      </DialogContentText>
-      <Box mt={4}>
+      <Box mb="2">
+        <Text as="p">
+          {t('inspectEntityDialog.ancestryPage.description', {
+            processorsLink: (
+              <Link to="https://backstage.io/docs/features/software-catalog/life-of-an-entity">
+                {t('inspectEntityDialog.ancestryPage.processorsLink')}
+              </Link>
+            ),
+          })}
+        </Text>
+      </Box>
+      <Box mt="8">
         <DependencyGraph
           nodes={nodes}
           edges={edges}
