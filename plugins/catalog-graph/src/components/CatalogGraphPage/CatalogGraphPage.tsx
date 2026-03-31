@@ -131,7 +131,7 @@ export const CatalogGraphPage = (
     };
   } & Partial<EntityRelationsGraphProps>,
 ) => {
-  const { relationPairs, initialState, entityFilter } = props;
+  const { relationPairs, initialState, entityFilter, showArrowHeads } = props;
   const { t } = useTranslationRef(catalogGraphTranslationRef);
   const navigate = useNavigate();
   const classes = useStyles();
@@ -260,6 +260,7 @@ export const CatalogGraphPage = (
                 }
                 mergeRelations={mergeRelations}
                 unidirectional={unidirectional}
+                showArrowHeads={showArrowHeads}
                 onNodeClick={onNodeClick}
                 direction={direction}
                 relationPairs={relationPairs}
