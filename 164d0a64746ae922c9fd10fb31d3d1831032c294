@@ -1,0 +1,25 @@
+packages/create-app/templates/next-app/.yarnrc.yml.hbs
+  e1f3a54e4a772a1b 2-4
+packages/create-app/templates/default-app/.yarnrc.yml.hbs
+  e1f3a54e4a772a1b 2-4
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.2",
+  "base_commit_sha": "164d0a64746ae922c9fd10fb31d3d1831032c294",
+  "prompts": {
+    "e1f3a54e4a772a1b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "aa9ac81c-5b7b-4638-8875-a1ece67d6923",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "aramissennyeydd",
+      "messages": [],
+      "total_additions": 8,
+      "total_deletions": 2,
+      "accepted_lines": 6,
+      "overriden_lines": 0
+    }
+  }
+}
