@@ -28,7 +28,10 @@ import {
   DbSearchRow,
 } from '../database/tables';
 import { DefaultLocationStore } from './DefaultLocationStore';
-import { locationSpecToLocationEntity } from '../util/conversion';
+import {
+  locationSpecToEntityRef,
+  locationSpecToLocationEntity,
+} from '../util/conversion';
 import { CatalogScmEventsServiceSubscriber } from '@backstage/plugin-catalog-node/alpha';
 import waitFor from 'wait-for-expect';
 
@@ -285,6 +288,7 @@ describe('DefaultLocationStore', () => {
           id: locationId,
           type: 'url',
           target: 'https://example.com',
+          entity_ref: 'location:default/generated-test',
         });
 
         await expect(
@@ -293,6 +297,7 @@ describe('DefaultLocationStore', () => {
           id: locationId,
           type: 'url',
           target: 'https://example.com',
+          entityRef: expect.any(String),
         });
 
         await expect(
@@ -336,11 +341,13 @@ describe('DefaultLocationStore', () => {
           ).resolves.toEqual([
             {
               id: expect.any(String),
+              entity_ref: expect.any(String),
               type: 'url',
               target: matchTarget,
             },
             {
               id: expect.any(String),
+              entity_ref: expect.any(String),
               type: 'url',
               target: otherTarget,
             },
@@ -394,7 +401,12 @@ describe('DefaultLocationStore', () => {
               .where('type', 'url')
               .orderBy('target', 'asc'),
           ).resolves.toEqual([
-            { id: expect.any(String), type: 'url', target: otherTarget },
+            {
+              id: expect.any(String),
+              entity_ref: expect.any(String),
+              type: 'url',
+              target: otherTarget,
+            },
           ]);
 
           expect(connection.applyMutation).toHaveBeenLastCalledWith({
@@ -446,11 +458,13 @@ describe('DefaultLocationStore', () => {
           ).resolves.toEqual([
             {
               id: expect.any(String),
+              entity_ref: expect.any(String),
               type: 'url',
               target: matchTarget,
             },
             {
               id: expect.any(String),
+              entity_ref: expect.any(String),
               type: 'url',
               target: otherTarget,
             },
@@ -511,11 +525,17 @@ describe('DefaultLocationStore', () => {
           ).resolves.toEqual([
             {
               id: expect.any(String),
+              entity_ref: expect.any(String),
               type: 'url',
               target:
                 'https://github.com/backstage/freben/blob/master/catalog-info.yaml',
             },
-            { id: expect.any(String), type: 'url', target: otherTarget },
+            {
+              id: expect.any(String),
+              entity_ref: expect.any(String),
+              type: 'url',
+              target: otherTarget,
+            },
           ]);
 
           expect(connection.applyMutation).toHaveBeenLastCalledWith({
@@ -577,11 +597,13 @@ describe('DefaultLocationStore', () => {
           ).resolves.toEqual([
             {
               id: expect.any(String),
+              entity_ref: expect.any(String),
               type: 'url',
               target: matchTarget,
             },
             {
               id: expect.any(String),
+              entity_ref: expect.any(String),
               type: 'url',
               target: otherTarget,
             },
@@ -635,7 +657,12 @@ describe('DefaultLocationStore', () => {
               .where('type', 'url')
               .orderBy('target', 'asc'),
           ).resolves.toEqual([
-            { id: expect.any(String), type: 'url', target: otherTarget },
+            {
+              id: expect.any(String),
+              entity_ref: expect.any(String),
+              type: 'url',
+              target: otherTarget,
+            },
           ]);
 
           expect(connection.applyMutation).toHaveBeenLastCalledWith({
@@ -687,11 +714,13 @@ describe('DefaultLocationStore', () => {
           ).resolves.toEqual([
             {
               id: expect.any(String),
+              entity_ref: expect.any(String),
               type: 'url',
               target: matchTarget,
             },
             {
               id: expect.any(String),
+              entity_ref: expect.any(String),
               type: 'url',
               target: otherTarget,
             },
@@ -749,9 +778,15 @@ describe('DefaultLocationStore', () => {
               .where('type', 'url')
               .orderBy('target', 'asc'),
           ).resolves.toEqual([
-            { id: expect.any(String), type: 'url', target: otherTarget },
             {
               id: expect.any(String),
+              entity_ref: expect.any(String),
+              type: 'url',
+              target: otherTarget,
+            },
+            {
+              id: expect.any(String),
+              entity_ref: expect.any(String),
               type: 'url',
               target:
                 'https://github.com/freben/demo-renamed/blob/master/folder/catalog-info.yaml',
@@ -785,29 +820,42 @@ describe('DefaultLocationStore', () => {
   });
 
   describe('queryLocations', () => {
-    const l1 = {
+    function loc(row: Omit<DbLocationsRow, 'entity_ref'>): DbLocationsRow {
+      return { ...row, entity_ref: locationSpecToEntityRef(row) };
+    }
+
+    const l1 = loc({
       id: '00000000-0000-0000-0000-000000000001',
       type: 'url',
       target:
         'https://github.com/backstage/backstage/blob/master/packages/catalog-model/catalog-info.yaml',
-    };
-    const l2 = {
+    });
+    const l2 = loc({
       id: '00000000-0000-0000-0000-000000000002',
       type: 'url',
       target:
         'https://github.com/backstage/backstage/blob/master/plugins/catalog/catalog-info.yaml',
-    };
-    const l3 = {
+    });
+    const l3 = loc({
       id: '00000000-0000-0000-0000-000000000003',
       type: 'url',
       target:
         'https://github.com/backstage/backstage/blob/master/plugins/scaffolder/catalog-info.yaml',
-    };
-    const l4 = {
+    });
+    const l4 = loc({
       id: '00000000-0000-0000-0000-000000000004',
       type: 'file',
       target: '/tmp/catalog-info.yaml',
-    };
+    });
+
+    function withRef(location: DbLocationsRow) {
+      return {
+        id: location.id,
+        type: location.type,
+        target: location.target,
+        entityRef: location.entity_ref,
+      };
+    }
 
     it.each(databases.eachSupportedId())(
       'queries locations correctly, %p',
@@ -827,7 +875,7 @@ describe('DefaultLocationStore', () => {
             limit: 10,
           }),
         ).resolves.toEqual({
-          items: [l1, l2, l3, l4],
+          items: [withRef(l1), withRef(l2), withRef(l3), withRef(l4)],
           totalItems: 4,
         });
 
@@ -837,7 +885,7 @@ describe('DefaultLocationStore', () => {
             query: { type: 'url' },
           }),
         ).resolves.toEqual({
-          items: [l1, l2, l3],
+          items: [withRef(l1), withRef(l2), withRef(l3)],
           totalItems: 3,
         });
 
@@ -851,7 +899,7 @@ describe('DefaultLocationStore', () => {
             },
           }),
         ).resolves.toEqual({
-          items: [l2],
+          items: [withRef(l2)],
           totalItems: 1,
         });
 
@@ -861,7 +909,7 @@ describe('DefaultLocationStore', () => {
             query: { Type: 'urL' },
           }),
         ).resolves.toEqual({
-          items: [l1, l2, l3],
+          items: [withRef(l1), withRef(l2), withRef(l3)],
           totalItems: 3,
         });
 
@@ -871,7 +919,7 @@ describe('DefaultLocationStore', () => {
             query: { type: 'url' },
           }),
         ).resolves.toEqual({
-          items: [l1, l2],
+          items: [withRef(l1), withRef(l2)],
           totalItems: 3,
         });
 
@@ -881,7 +929,7 @@ describe('DefaultLocationStore', () => {
             query: { type: 'file' },
           }),
         ).resolves.toEqual({
-          items: [l4],
+          items: [withRef(l4)],
           totalItems: 1,
         });
 
@@ -901,7 +949,7 @@ describe('DefaultLocationStore', () => {
             },
           }),
         ).resolves.toEqual({
-          items: [l1],
+          items: [withRef(l1)],
           totalItems: 1,
         });
 
@@ -941,7 +989,7 @@ describe('DefaultLocationStore', () => {
             },
           }),
         ).resolves.toEqual({
-          items: [l1, l4],
+          items: [withRef(l1), withRef(l4)],
           totalItems: 2,
         });
 
@@ -953,7 +1001,7 @@ describe('DefaultLocationStore', () => {
             },
           }),
         ).resolves.toEqual({
-          items: [l1, l2, l3],
+          items: [withRef(l1), withRef(l2), withRef(l3)],
           totalItems: 3,
         });
 
@@ -970,7 +1018,7 @@ describe('DefaultLocationStore', () => {
             },
           }),
         ).resolves.toEqual({
-          items: [l2],
+          items: [withRef(l2)],
           totalItems: 1,
         });
 
@@ -982,7 +1030,7 @@ describe('DefaultLocationStore', () => {
             },
           }),
         ).resolves.toEqual({
-          items: [l1],
+          items: [withRef(l1)],
           totalItems: 3,
         });
 
@@ -994,7 +1042,7 @@ describe('DefaultLocationStore', () => {
             },
           }),
         ).resolves.toEqual({
-          items: [l1, l2, l3],
+          items: [withRef(l1), withRef(l2), withRef(l3)],
           totalItems: 3,
         });
 
@@ -1018,7 +1066,7 @@ describe('DefaultLocationStore', () => {
             },
           }),
         ).resolves.toEqual({
-          items: [l1, l2, l3, l4],
+          items: [withRef(l1), withRef(l2), withRef(l3), withRef(l4)],
           totalItems: 4,
         });
 
@@ -1041,6 +1089,28 @@ describe('DefaultLocationStore', () => {
         ).resolves.toEqual({
           items: [],
           totalItems: 0,
+        });
+
+        await expect(
+          store.queryLocations({
+            limit: 10,
+            query: { entityRef: l1.entity_ref },
+          }),
+        ).resolves.toEqual({
+          items: [withRef(l1)],
+          totalItems: 1,
+        });
+
+        await expect(
+          store.queryLocations({
+            limit: 10,
+            query: {
+              entityRef: { $hasPrefix: 'location:default/generated-' },
+            },
+          }),
+        ).resolves.toEqual({
+          items: [withRef(l1), withRef(l2), withRef(l3), withRef(l4)],
+          totalItems: 4,
         });
       },
     );

@@ -1107,6 +1107,7 @@ describe('CatalogClient', () => {
           id: '42',
           type: 'url',
           target: 'https://example.com',
+          entityRef: 'location:default/generated-test',
         },
       },
       {
@@ -1114,6 +1115,7 @@ describe('CatalogClient', () => {
           id: '43',
           type: 'url',
           target: 'https://example.com',
+          entityRef: 'location:default/generated-test',
         },
       },
     ] satisfies GetLocations200ResponseInner[];
@@ -1134,11 +1136,13 @@ describe('CatalogClient', () => {
             id: '42',
             type: 'url',
             target: 'https://example.com',
+            entityRef: 'location:default/generated-test',
           },
           {
             id: '43',
             type: 'url',
             target: 'https://example.com',
+            entityRef: 'location:default/generated-test',
           },
         ],
       });

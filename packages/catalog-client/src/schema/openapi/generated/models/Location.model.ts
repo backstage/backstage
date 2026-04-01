@@ -26,4 +26,5 @@ export interface Location {
   target: string;
   type: string;
   id: string;
+  entityRef: string;
 }

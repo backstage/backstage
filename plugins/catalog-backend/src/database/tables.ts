@@ -27,6 +27,7 @@ export type DbLocationsRow = {
   id: string;
   type: string;
   target: string;
+  entity_ref: string;
 };
 
 /**

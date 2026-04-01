@@ -62,6 +62,7 @@ import {
   locationInput,
   validateRequestBody,
 } from './util';
+import { locationSpecToEntityRef } from '../util/conversion';
 import {
   encodeLocationQueryCursor,
   parseLocationQuery,
@@ -601,6 +602,12 @@ export async function createRouter(
       });
   }
 
+  function withEntityRef<T extends { type: string; target: string }>(
+    location: T,
+  ): T & { entityRef: string } {
+    return { ...location, entityRef: locationSpecToEntityRef(location) };
+  }
+
   if (locationService) {
     router
       .post('/locations', async (req, res) => {
@@ -641,7 +648,9 @@ export async function createRouter(
             },
           });
 
-          res.status(201).json(output);
+          res
+            .status(201)
+            .json({ ...output, location: withEntityRef(output.location) });
         } catch (err) {
           await auditorEvent?.fail({
             error: err,
@@ -669,7 +678,9 @@ export async function createRouter(
 
           await auditorEvent?.success();
 
-          res.status(200).json(locations.map(l => ({ data: l })));
+          res
+            .status(200)
+            .json(locations.map(l => ({ data: withEntityRef(l) })));
         } catch (err) {
           await auditorEvent?.fail({
             error: err,
@@ -710,7 +721,7 @@ export async function createRouter(
           await auditorEvent?.success();
 
           res.status(200).json({
-            items,
+            items: items.map(withEntityRef),
             totalItems: result.totalItems,
             pageInfo: {
               nextCursor,
@@ -745,7 +756,7 @@ export async function createRouter(
             },
           });
 
-          res.status(200).json(output);
+          res.status(200).json(withEntityRef(output));
         } catch (err) {
           await auditorEvent?.fail({
             error: err,
@@ -808,7 +819,7 @@ export async function createRouter(
             },
           });
 
-          res.status(200).json(output);
+          res.status(200).json(withEntityRef(output));
         } catch (err) {
           await auditorEvent?.fail({
             error: err,

@@ -529,8 +529,11 @@ export const spec = {
           id: {
             type: 'string',
           },
+          entityRef: {
+            type: 'string',
+          },
         },
-        required: ['target', 'type', 'id'],
+        required: ['target', 'type', 'id', 'entityRef'],
         description: 'Entity location for a specific entity.',
         additionalProperties: false,
       },

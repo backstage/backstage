@@ -25,7 +25,10 @@ import {
 import { Location } from '@backstage/catalog-client';
 import { CatalogProcessingOrchestrator } from '../processing/types';
 import { LocationInput, LocationService, LocationStore } from './types';
-import { locationSpecToMetadataName } from '../util/conversion';
+import {
+  locationSpecToEntityRef,
+  locationSpecToMetadataName,
+} from '../util/conversion';
 import { InputError } from '@backstage/errors';
 import { DeferredEntity } from '@backstage/plugin-catalog-node';
 import { FilterPredicate } from '@backstage/filter-predicates';
@@ -182,7 +185,11 @@ export class DefaultLocationService implements LocationService {
 
     return {
       exists: await existsPromise,
-      location: { ...spec, id: `${spec.type}:${spec.target}` },
+      location: {
+        ...spec,
+        id: `${spec.type}:${spec.target}`,
+        entityRef: locationSpecToEntityRef(spec),
+      },
       entities,
     };
   }

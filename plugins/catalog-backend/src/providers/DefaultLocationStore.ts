@@ -28,7 +28,10 @@ import {
   EntityProvider,
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
-import { locationSpecToLocationEntity } from '../util/conversion';
+import {
+  locationSpecToEntityRef,
+  locationSpecToLocationEntity,
+} from '../util/conversion';
 import { LocationInput, LocationStore } from '../service/types';
 import {
   ANNOTATION_ORIGIN_LOCATION,
@@ -47,6 +50,15 @@ import {
   FilterPredicate,
   FilterPredicateValue,
 } from '@backstage/filter-predicates';
+
+function toLocation(row: DbLocationsRow): Location {
+  return {
+    id: row.id,
+    type: row.type,
+    target: row.target,
+    entityRef: row.entity_ref ?? locationSpecToEntityRef(row),
+  };
+}
 
 export class DefaultLocationStore implements LocationStore, EntityProvider {
   private _connection: EntityProviderConnection | undefined;
@@ -98,6 +110,7 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
         id: uuid(),
         type: input.type,
         target: input.target,
+        entity_ref: locationSpecToEntityRef(input),
       };
 
       await tx<DbLocationsRow>('locations').insert(inner);
@@ -126,11 +139,12 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
         });
     }
 
-    return location;
+    return toLocation(location);
   }
 
   async listLocations(): Promise<Location[]> {
-    return await this.locations();
+    const locations = await this.locations();
+    return locations.map(toLocation);
   }
 
   async queryLocations(options: {
@@ -164,11 +178,7 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
     const [items, [{ count }]] = await Promise.all([itemsQuery, countQuery]);
 
     return {
-      items: items.map(item => ({
-        id: item.id,
-        target: item.target,
-        type: item.type,
-      })),
+      items: items.map(toLocation),
       totalItems: Number(count),
     };
   }
@@ -181,7 +191,7 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
     if (!items.length) {
       throw new NotFoundError(`Found no location with ID ${id}`);
     }
-    return items[0];
+    return toLocation(items[0]);
   }
 
   async deleteLocation(id: string): Promise<void> {
@@ -245,7 +255,7 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
       );
     }
 
-    return locationRow;
+    return toLocation(locationRow);
   }
 
   private get connection(): EntityProviderConnection {
@@ -286,11 +296,6 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
         // TODO(blam): We should create a mutation to remove this location for everyone
         // eventually when it's all done and dusted
         .filter(({ type }) => type !== 'bootstrap')
-        .map(item => ({
-          id: item.id,
-          target: item.target,
-          type: item.type,
-        }))
     );
   }
 
@@ -380,7 +385,12 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
 
       const newLocations = batch
         .filter(url => !existingUrls.has(url))
-        .map(url => ({ id: uuid(), type: 'url', target: url }));
+        .map(url => ({
+          id: uuid(),
+          type: 'url',
+          target: url,
+          entity_ref: locationSpecToEntityRef({ type: 'url', target: url }),
+        }));
 
       if (newLocations.length) {
         await this.db<DbLocationsRow>('locations').insert(newLocations);
@@ -659,13 +669,14 @@ function applyLocationFilterToQuery(
 
   for (const [keyAnyCase, value] of entries) {
     const key = keyAnyCase.toLocaleLowerCase('en-US');
-    if (!['id', 'type', 'target'].includes(key)) {
+    if (!['id', 'type', 'target', 'entityref'].includes(key)) {
       throw new InputError(
-        `Invalid filter predicate, expected key to be 'id', 'type', or 'target', got '${keyAnyCase}'`,
+        `Invalid filter predicate, expected key to be 'id', 'type', 'target', or 'entityRef', got '${keyAnyCase}'`,
       );
     }
 
-    result = applyFilterValueToQuery(clientType, result, key, value);
+    const column = key === 'entityref' ? 'entity_ref' : key;
+    result = applyFilterValueToQuery(clientType, result, column, value);
   }
 
   return result;

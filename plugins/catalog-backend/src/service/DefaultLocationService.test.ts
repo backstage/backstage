@@ -144,7 +144,11 @@ describe('DefaultLocationServiceTest', () => {
       });
 
       store.listLocations.mockResolvedValueOnce([
-        { id: '137', ...locationSpec },
+        {
+          id: '137',
+          ...locationSpec,
+          entityRef: 'location:default/generated-test',
+        },
       ]);
 
       const result = await locationService.createLocation(
@@ -226,7 +230,12 @@ describe('DefaultLocationServiceTest', () => {
       });
 
       store.listLocations.mockResolvedValueOnce([
-        { id: '987', type: 'url', target: 'https://example.com' },
+        {
+          id: '987',
+          type: 'url',
+          target: 'https://example.com',
+          entityRef: 'location:default/generated-test',
+        },
       ]);
 
       const result = await locationService.createLocation(
@@ -245,6 +254,7 @@ describe('DefaultLocationServiceTest', () => {
       store.createLocation.mockResolvedValue({
         ...locationSpec,
         id: '123',
+        entityRef: 'location:default/generated-test',
       });
 
       await expect(
@@ -255,6 +265,7 @@ describe('DefaultLocationServiceTest', () => {
           id: '123',
           target: 'https://backstage.io/catalog-info.yaml',
           type: 'url',
+          entityRef: 'location:default/generated-test',
         },
       });
       expect(store.createLocation).toHaveBeenCalledWith(
@@ -275,6 +286,7 @@ describe('DefaultLocationServiceTest', () => {
       store.createLocation.mockResolvedValue({
         ...locationSpec,
         id: '123',
+        entityRef: 'location:default/generated-test',
       });
 
       const locationServiceAllowingUnknownType = new DefaultLocationService(
@@ -293,6 +305,7 @@ describe('DefaultLocationServiceTest', () => {
           id: '123',
           target: 'https://backstage.io/catalog-info.yaml',
           type: 'unknown',
+          entityRef: 'location:default/generated-test',
         },
       });
       expect(store.createLocation).toHaveBeenCalledWith(
@@ -325,6 +338,7 @@ describe('DefaultLocationServiceTest', () => {
       store.createLocation.mockResolvedValueOnce({
         id: 'existing-id',
         ...locationSpec,
+        entityRef: 'location:default/generated-test',
       });
 
       const result = await locationService.createLocation(locationSpec, false, {
@@ -333,7 +347,11 @@ describe('DefaultLocationServiceTest', () => {
       });
 
       expect(result).toEqual({
-        location: { id: 'existing-id', ...locationSpec },
+        location: {
+          id: 'existing-id',
+          ...locationSpec,
+          entityRef: 'location:default/generated-test',
+        },
         entities: [],
       });
       expect(store.createLocation).toHaveBeenCalledWith(locationSpec, {

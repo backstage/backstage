@@ -307,6 +307,7 @@ type Location_2 = {
   id: string;
   type: string;
   target: string;
+  entityRef: string;
 };
 export { Location_2 as Location };
 

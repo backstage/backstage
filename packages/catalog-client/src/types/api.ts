@@ -372,6 +372,7 @@ export type Location = {
   id: string;
   type: string;
   target: string;
+  entityRef: string;
 };
 
 /**
