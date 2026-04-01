@@ -36,17 +36,24 @@ function headingToSlug(headingText) {
     return explicitId[1];
   }
 
+  let slug = headingText
+    .toLowerCase()
+    // Remove inline code backticks
+    .replace(/`/g, '')
+    // Remove markdown bold/italic markers
+    .replace(/[*_]/g, '')
+    // Remove markdown links, keep link text
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1');
+
+  // Remove HTML tags in a loop to handle nested fragments like <scr<script>ipt>
+  let previous;
+  do {
+    previous = slug;
+    slug = slug.replace(/<[^>]+>/g, '');
+  } while (slug !== previous);
+
   return (
-    headingText
-      .toLowerCase()
-      // Remove inline code backticks
-      .replace(/`/g, '')
-      // Remove markdown bold/italic markers
-      .replace(/[*_]/g, '')
-      // Remove markdown links, keep link text
-      .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
-      // Remove HTML tags
-      .replace(/<[^>]+>/g, '')
+    slug
       // Replace special characters with hyphens (keeping alphanumeric, hyphens, spaces)
       .replace(/[^\w\s-]/g, '')
       .trim()
