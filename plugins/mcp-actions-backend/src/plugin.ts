@@ -144,11 +144,11 @@ export const mcpPlugin = createBackendPlugin({
             '/.well-known/oauth-protected-resource',
             async (_, res) => {
               const [authBaseUrl, mcpBaseUrl] = await Promise.all([
-                discovery.getBaseUrl('auth'),
-                discovery.getBaseUrl('mcp-actions'),
+                discovery.getExternalBaseUrl('auth'),
+                discovery.getExternalBaseUrl('mcp-actions'),
               ]);
               res.json({
-                resource: mcpBaseUrl,
+                resource: `${mcpBaseUrl}/v1`,
                 authorization_servers: [authBaseUrl],
               });
             },
