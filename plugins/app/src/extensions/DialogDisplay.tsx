@@ -23,7 +23,7 @@ import {
 } from '@backstage/frontend-plugin-api';
 import { createDeferred } from '@backstage/types';
 import { OnShowDialog } from '../apis/DefaultDialogApi';
-import Dialog from '@material-ui/core/Dialog';
+import { Dialog } from '@backstage/ui';
 
 let dialogId = 0;
 function getDialogId() {
@@ -88,9 +88,11 @@ function DialogDisplay({
     const lastDialog = dialogs[dialogs.length - 1];
     return (
       <Dialog
-        open
-        onClose={() => {
-          if (!lastDialog.dialog.modal) {
+        isOpen
+        isDismissable={!lastDialog.dialog.modal}
+        isKeyboardDismissDisabled={lastDialog.dialog.modal}
+        onOpenChange={isOpen => {
+          if (!isOpen && !lastDialog.dialog.modal) {
             lastDialog.dialog.close();
           }
         }}

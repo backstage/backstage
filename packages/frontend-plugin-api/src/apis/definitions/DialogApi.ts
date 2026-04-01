@@ -76,14 +76,16 @@ export interface DialogApi {
    *
    * ### Example with inline dialog content
    * ```tsx
+   * import { DialogHeader, DialogFooter, Button } from '@backstage/ui';
+   *
    * const dialog = dialogApi.show<boolean>(
-   *   <DialogContent>
-   *     <DialogTitle>Are you sure?</DialogTitle>
-   *     <DialogActions>
-   *       <Button onClick={() => dialog.close(true)}>Yes</Button>
-   *       <Button onClick={() => dialog.close(false)}>No</Button>
-   *     </DialogActions>
-   *   </DialogContent>
+   *   <>
+   *     <DialogHeader>Are you sure?</DialogHeader>
+   *     <DialogFooter>
+   *       <Button variant="secondary" onClick={() => dialog.close(false)}>No</Button>
+   *       <Button variant="primary" onClick={() => dialog.close(true)}>Yes</Button>
+   *     </DialogFooter>
+   *   </>
    * );
    * const result = await dialog.result();
    * ```
@@ -92,16 +94,18 @@ export interface DialogApi {
    *
    * ### Example with separate dialog component
    * ```tsx
+   * import { DialogHeader, DialogFooter, Button } from '@backstage/ui';
+   *
    * function CustomDialog({ dialog }: { dialog: DialogApiDialog<boolean | undefined> }) {
    *   return (
-   *     <DialogContent>
-   *       <DialogTitle>Are you sure?</DialogTitle>
-   *       <DialogActions>
-   *         <Button onClick={() => dialog.close(true)}>Yes</Button>
-   *         <Button onClick={() => dialog.close(false)}>No</Button>
-   *       </DialogActions>
-   *     </DialogContent>
-   *   )
+   *     <>
+   *       <DialogHeader>Are you sure?</DialogHeader>
+   *       <DialogFooter>
+   *         <Button variant="secondary" onClick={() => dialog.close(false)}>No</Button>
+   *         <Button variant="primary" onClick={() => dialog.close(true)}>Yes</Button>
+   *       </DialogFooter>
+   *     </>
+   *   );
    * }
    * const result = await dialogApi.show(CustomDialog).result();
    * ```
@@ -128,14 +132,16 @@ export interface DialogApi {
    *
    * ### Example with inline dialog content
    * ```tsx
+   * import { DialogHeader, DialogFooter, Button } from '@backstage/ui';
+   *
    * const dialog = dialogApi.showModal<boolean>(
-   *   <DialogContent>
-   *     <DialogTitle>Are you sure?</DialogTitle>
-   *     <DialogActions>
-   *       <Button onClick={() => dialog.close(true)}>Yes</Button>
-   *       <Button onClick={() => dialog.close(false)}>No</Button>
-   *     </DialogActions>
-   *   </DialogContent>
+   *   <>
+   *     <DialogHeader>Are you sure?</DialogHeader>
+   *     <DialogFooter>
+   *       <Button variant="secondary" onClick={() => dialog.close(false)}>No</Button>
+   *       <Button variant="primary" onClick={() => dialog.close(true)}>Yes</Button>
+   *     </DialogFooter>
+   *   </>
    * );
    * const result = await dialog.result();
    * ```
@@ -144,16 +150,18 @@ export interface DialogApi {
    *
    * ### Example with separate dialog component
    * ```tsx
+   * import { DialogHeader, DialogFooter, Button } from '@backstage/ui';
+   *
    * function CustomDialog({ dialog }: { dialog: DialogApiDialog<boolean> }) {
    *   return (
-   *     <DialogContent>
-   *       <DialogTitle>Are you sure?</DialogTitle>
-   *       <DialogActions>
-   *         <Button onClick={() => dialog.close(true)}>Yes</Button>
-   *         <Button onClick={() => dialog.close(false)}>No</Button>
-   *       </DialogActions>
-   *     </DialogContent>
-   *   )
+   *     <>
+   *       <DialogHeader>Are you sure?</DialogHeader>
+   *       <DialogFooter>
+   *         <Button variant="secondary" onClick={() => dialog.close(false)}>No</Button>
+   *         <Button variant="primary" onClick={() => dialog.close(true)}>Yes</Button>
+   *       </DialogFooter>
+   *     </>
+   *   );
    * }
    * const result = await dialogApi.showModal(CustomDialog).result();
    * ```

@@ -24,6 +24,11 @@ import {
 } from '@backstage/frontend-plugin-api';
 import { createDeferred } from '@backstage/types';
 import userEvent from '@testing-library/user-event';
+import { screen } from '@testing-library/react';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import DialogActions from '@material-ui/core/DialogActions';
+import Button from '@material-ui/core/Button';
 
 async function withDialogApi<T>(
   callback: (dialogApi: DialogApi) => Promise<T>,
@@ -171,5 +176,29 @@ describe('DialogDisplay', () => {
     });
 
     expect(result).toBe('test');
+  });
+
+  it('should render MUI DialogContent/DialogTitle/DialogActions inside the dialog', async () => {
+    const result = await withDialogApi(async dialogApi => {
+      const dialog = dialogApi.show<boolean>(
+        <DialogContent>
+          <DialogTitle>Are you sure?</DialogTitle>
+          <DialogActions>
+            <Button onClick={() => dialog.close(true)}>Yes</Button>
+            <Button onClick={() => dialog.close(false)}>No</Button>
+          </DialogActions>
+        </DialogContent>,
+      );
+
+      setTimeout(async () => {
+        await userEvent.click(
+          await screen.findByRole('button', { name: 'Yes' }),
+        );
+      }, 100);
+
+      return dialog.result();
+    });
+
+    expect(result).toBe(true);
   });
 });
