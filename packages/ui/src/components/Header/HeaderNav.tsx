@@ -33,9 +33,8 @@ import {
 } from './HeaderNavDefinition';
 import { HeaderNavIndicators } from './HeaderNavIndicators';
 import { MenuTrigger, Menu, MenuItem } from '../Menu';
-import type { AnalyticsTracker } from '../../analytics/types';
 import type {
-  HeaderNavTab,
+  HeaderNavLinkProps,
   HeaderNavTabGroup,
   HeaderNavTabItem,
 } from './types';
@@ -44,29 +43,21 @@ function isTabGroup(tab: HeaderNavTabItem): tab is HeaderNavTabGroup {
   return 'items' in tab;
 }
 
-interface HeaderNavLinkProps {
-  tab: HeaderNavTab;
-  active: boolean;
-  analytics: AnalyticsTracker;
-  registerRef: (key: string, el: HTMLElement | null) => void;
-  onHighlight: (key: string | null) => void;
-}
-
 function HeaderNavLink(props: HeaderNavLinkProps) {
-  const { tab, active, analytics, registerRef, onHighlight } = props;
-  const { ownProps } = useDefinition(HeaderNavItemDefinition, {});
+  const { ownProps, analytics } = useDefinition(HeaderNavItemDefinition, props);
+  const { id, label, href, active, registerRef, onHighlight } = ownProps;
 
   const linkRef = useRef<HTMLAnchorElement>(null);
-  const { linkProps } = useLink({ href: tab.href }, linkRef);
+  const { linkProps } = useLink({ href }, linkRef);
   const { hoverProps } = useHover({
-    onHoverStart: () => onHighlight(tab.id),
+    onHoverStart: () => onHighlight(id),
     onHoverEnd: () => onHighlight(null),
   });
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     linkProps.onClick?.(e);
-    analytics.captureEvent('click', tab.label, {
-      attributes: { to: tab.href },
+    analytics.captureEvent('click', label, {
+      attributes: { to: href },
     });
   };
 
@@ -79,16 +70,16 @@ function HeaderNavLink(props: HeaderNavLinkProps) {
           (
             linkRef as React.MutableRefObject<HTMLAnchorElement | null>
           ).current = el;
-          registerRef(tab.id, el);
+          registerRef(id, el);
         }}
-        href={tab.href}
+        href={href}
         className={ownProps.classes.root}
         aria-current={active ? 'page' : undefined}
         onClick={handleClick}
-        onFocus={() => onHighlight(tab.id)}
+        onFocus={() => onHighlight(id)}
         onBlur={() => onHighlight(null)}
       >
-        {tab.label}
+        {label}
       </a>
     </li>
   );
@@ -168,7 +159,7 @@ function HeaderNavAutoDetect(props: { tabs: HeaderNavTabItem[] }) {
 
 function HeaderNavInner(props: HeaderNavProps) {
   const { tabs, activeTabId } = props;
-  const { ownProps, analytics } = useDefinition(HeaderNavDefinition, {
+  const { ownProps } = useDefinition(HeaderNavDefinition, {
     tabs,
     activeTabId,
   });
@@ -225,9 +216,10 @@ function HeaderNavInner(props: HeaderNavProps) {
           ) : (
             <HeaderNavLink
               key={item.id}
-              tab={item}
+              id={item.id}
+              label={item.label}
+              href={item.href}
               active={activeKey === item.id}
-              analytics={analytics}
               registerRef={registerRef}
               onHighlight={setHighlightedKey}
             />
