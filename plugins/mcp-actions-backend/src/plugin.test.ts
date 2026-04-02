@@ -367,5 +367,48 @@ describe('Mcp Backend', () => {
       expect(response.body.authorization_servers).toHaveLength(1);
       expect(response.body.authorization_servers[0]).toMatch(/\/api\/auth$/);
     });
+
+    it('should use external base URLs in oauth-protected-resource for external deployments', async () => {
+      const discoveryMock = mockServices.discovery.mock({
+        getBaseUrl: async (plugin: string) =>
+          `http://internal-host:7007/api/${plugin}`,
+        getExternalBaseUrl: async (plugin: string) =>
+          `https://external.example.com/api/${plugin}`,
+      });
+
+      const { server } = await startTestBackend({
+        features: [
+          mcpPlugin,
+          mockPluginWithActions,
+          discoveryMock.factory,
+          mockServices.rootConfig.factory({
+            data: {
+              backend: {
+                actions: {
+                  pluginSources: ['local'],
+                },
+              },
+              auth: {
+                experimentalDynamicClientRegistration: {
+                  enabled: true,
+                },
+              },
+            },
+          }),
+        ],
+      });
+
+      const response = await request(server).get(
+        '/.well-known/oauth-protected-resource',
+      );
+      expect(response.status).toBe(200);
+      expect(response.body.resource).toBe(
+        'https://external.example.com/api/mcp-actions/v1',
+      );
+      expect(response.body.authorization_servers).toHaveLength(1);
+      expect(response.body.authorization_servers[0]).toBe(
+        'https://external.example.com/api/auth',
+      );
+    });
   });
 });
