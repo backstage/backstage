@@ -23,6 +23,7 @@ export { Row } from './components/Row';
 export { Cell } from './components/Cell';
 export { CellText } from './components/CellText';
 export { CellProfile } from './components/CellProfile';
+export { TableBodySkeleton } from './components/TableBodySkeleton';
 export { useTable } from './hooks/useTable';
 
 export type {

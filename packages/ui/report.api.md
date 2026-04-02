@@ -2613,6 +2613,13 @@ export interface TableBodyProps<T extends object>
     Omit<TableBodyProps_2<T>, keyof TableBodyOwnProps> {}
 
 // @public
+export function TableBodySkeleton<
+  T extends {
+    id: string;
+  },
+>(input: { columns: readonly T[] }): JSX_2.Element;
+
+// @public
 export const TableDefinition: {
   readonly styles: {
     readonly [key: string]: string;
