@@ -1,0 +1,23 @@
+packages/e2e-test/src/commands/runCommand.ts
+  95406a7c96eb18f4 389-392,394-400
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.4",
+  "base_commit_sha": "3f33dd4a9cfd25b5c1d9cfcbc66b88e09e33a6d0",
+  "prompts": {
+    "95406a7c96eb18f4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d3188fd6-50ff-495d-b9a0-a3c4bdf74afe",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "aramissennyeydd",
+      "messages": [],
+      "total_additions": 12,
+      "total_deletions": 0,
+      "accepted_lines": 11,
+      "overriden_lines": 1
+    }
+  }
+}
