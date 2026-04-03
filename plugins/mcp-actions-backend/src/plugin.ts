@@ -16,6 +16,12 @@
 import {
   coreServices,
   createBackendPlugin,
+  type DiscoveryService,
+  type HttpAuthService,
+  type HttpRouterService,
+  type LoggerService,
+  type RootConfigService,
+  type RootHttpRouterService,
 } from '@backstage/backend-plugin-api';
 import { json } from 'express';
 import Router from 'express-promise-router';
@@ -26,6 +32,61 @@ import {
   actionsRegistryServiceRef,
   actionsServiceRef,
 } from '@backstage/backend-plugin-api/alpha';
+
+function registerMcpHttpRouters(options: {
+  httpRouter: HttpRouterService;
+  mcpService: McpService;
+  httpAuth: HttpAuthService;
+  logger: LoggerService;
+}) {
+  const { httpRouter, mcpService, httpAuth, logger } = options;
+
+  const sseRouter = createSseRouter({
+    mcpService,
+    httpAuth,
+  });
+
+  const streamableRouter = createStreamableRouter({
+    mcpService,
+    httpAuth,
+    logger,
+  });
+
+  const router = Router();
+  router.use(json());
+
+  router.use('/v1/sse', sseRouter);
+  router.use('/v1', streamableRouter);
+
+  httpRouter.use(router);
+}
+
+function registerOidcDiscoveryRouteIfEnabled(options: {
+  config: RootConfigService;
+  rootRouter: RootHttpRouterService;
+  discovery: DiscoveryService;
+}) {
+  const { config, rootRouter, discovery } = options;
+
+  if (
+    !config.getOptionalBoolean(
+      'auth.experimentalDynamicClientRegistration.enabled',
+    )
+  ) {
+    return;
+  }
+
+  // This should be replaced with throwing a WWW-Authenticate header, but that doesn't seem to be supported by
+  // many of the MCP client as of yet. So this seems to be the oldest version of the spec thats implemented.
+  rootRouter.use('/.well-known/oauth-authorization-server', async (_, res) => {
+    const authBaseUrl = await discovery.getBaseUrl('auth');
+    const oidcResponse = await fetch(
+      `${authBaseUrl}/.well-known/openid-configuration`,
+    );
+
+    res.json(await oidcResponse.json());
+  });
+}
 
 /**
  * mcpPlugin backend plugin
@@ -60,44 +121,18 @@ export const mcpPlugin = createBackendPlugin({
           actions,
         });
 
-        const sseRouter = createSseRouter({
-          mcpService,
-          httpAuth,
-        });
-
-        const streamableRouter = createStreamableRouter({
+        registerMcpHttpRouters({
+          httpRouter,
           mcpService,
           httpAuth,
           logger,
         });
 
-        const router = Router();
-        router.use(json());
-
-        router.use('/v1/sse', sseRouter);
-        router.use('/v1', streamableRouter);
-
-        httpRouter.use(router);
-
-        if (
-          config.getOptionalBoolean(
-            'auth.experimentalDynamicClientRegistration.enabled',
-          )
-        ) {
-          // This should be replaced with throwing a WWW-Authenticate header, but that doesn't seem to be supported by
-          // many of the MCP client as of yet. So this seems to be the oldest version of the spec thats implemented.
-          rootRouter.use(
-            '/.well-known/oauth-authorization-server',
-            async (_, res) => {
-              const authBaseUrl = await discovery.getBaseUrl('auth');
-              const oidcResponse = await fetch(
-                `${authBaseUrl}/.well-known/openid-configuration`,
-              );
-
-              res.json(await oidcResponse.json());
-            },
-          );
-        }
+        registerOidcDiscoveryRouteIfEnabled({
+          config,
+          rootRouter,
+          discovery,
+        });
       },
     });
   },

@@ -196,4 +196,64 @@ describe('Mcp Backend', () => {
       'Actions must be invoked by a service, not a user',
     );
   });
+
+  it('registers /.well-known/oauth-authorization-server when dynamic client registration is enabled', async () => {
+    const openIdDocument = {
+      issuer: 'http://mock-issuer',
+      authorization_endpoint: 'http://mock-issuer/auth',
+    };
+    const originalFetch = global.fetch.bind(global);
+    const fetchMock = jest
+      .spyOn(global, 'fetch')
+      .mockImplementation(async (input, init) => {
+        const url = typeof input === 'string' ? input : input.toString();
+        if (url.includes('/.well-known/openid-configuration')) {
+          return {
+            ok: true,
+            json: async () => openIdDocument,
+          } as Response;
+        }
+        return originalFetch(input, init);
+      });
+
+    try {
+      const { server } = await startTestBackend({
+        features: [
+          mcpPlugin,
+          mockPluginWithActions,
+          mockServices.rootConfig.factory({
+            data: {
+              backend: {
+                actions: {
+                  pluginSources: ['local'],
+                },
+              },
+              auth: {
+                experimentalDynamicClientRegistration: {
+                  enabled: true,
+                },
+              },
+            },
+          }),
+        ],
+      });
+
+      const address = server.address();
+      if (typeof address !== 'object' || !('port' in address!)) {
+        throw new Error('server broke');
+      }
+
+      const res = await fetch(
+        `http://localhost:${address.port}/.well-known/oauth-authorization-server`,
+      );
+      expect(res.ok).toBe(true);
+      await expect(res.json()).resolves.toEqual(openIdDocument);
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        expect.stringMatching(/\.well-known\/openid-configuration$/),
+      );
+    } finally {
+      fetchMock.mockRestore();
+    }
+  });
 });
