@@ -46,7 +46,6 @@ import {
   ConditionTransformer,
   createConditionAuthorizer,
   createConditionTransformer,
-  createPermissionIntegrationRouter,
 } from '@backstage/plugin-permission-node';
 import {
   TaskSpec,
@@ -54,11 +53,7 @@ import {
   templateEntityV1beta3Validator,
 } from '@backstage/plugin-scaffolder-common';
 import {
-  RESOURCE_TYPE_SCAFFOLDER_ACTION,
-  RESOURCE_TYPE_SCAFFOLDER_TASK,
-  RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
   scaffolderActionPermissions,
-  scaffolderPermissions,
   scaffolderTaskPermissions,
   scaffolderTemplatePermissions,
   taskCancelPermission,
@@ -166,7 +161,7 @@ export interface RouterOptions {
     | CreatedTemplateGlobal[];
   additionalWorkspaceProviders?: Record<string, WorkspaceProvider>;
   permissions?: PermissionsService;
-  permissionsRegistry?: PermissionsRegistryService;
+  permissionsRegistry: PermissionsRegistryService;
   permissionRules?: Array<ScaffolderPermissionRuleInput>;
   auth: AuthService;
   httpAuth: HttpAuthService;
@@ -409,91 +404,43 @@ export async function createRouter(
     taskRules.push(...permissionRules.filter(isTaskPermissionRuleInput));
   }
 
-  const isTemplateAuthorized = permissionsRegistry
-    ? createConditionAuthorizer(
-        permissionsRegistry.getPermissionRuleset(
-          scaffolderTemplatePermissionResourceRef,
-        ),
-      )
-    : createConditionAuthorizer(Object.values(templateRules));
-  const isTaskAuthorized = permissionsRegistry
-    ? createConditionAuthorizer(
-        permissionsRegistry.getPermissionRuleset(
-          scaffolderTaskPermissionResourceRef,
-        ),
-      )
-    : createConditionAuthorizer(Object.values(taskRules));
+  const isTemplateAuthorized = createConditionAuthorizer(
+    Object.values(templateRules),
+  );
+  const isTaskAuthorized = createConditionAuthorizer(Object.values(taskRules));
 
   const taskTransformConditions: ConditionTransformer<TaskFilters> =
-    permissionsRegistry
-      ? createConditionTransformer(
-          permissionsRegistry.getPermissionRuleset(
-            scaffolderTaskPermissionResourceRef,
-          ),
-        )
-      : createConditionTransformer(Object.values(taskRules));
+    createConditionTransformer(Object.values(taskRules));
 
-  if (permissionsRegistry) {
-    permissionsRegistry.addResourceType({
-      resourceRef: scaffolderTemplatePermissionResourceRef,
-      permissions: scaffolderTemplatePermissions,
-      rules: templateRules,
-    });
+  permissionsRegistry.addResourceType({
+    resourceRef: scaffolderTemplatePermissionResourceRef,
+    permissions: scaffolderTemplatePermissions,
+    rules: templateRules,
+  });
 
-    permissionsRegistry.addResourceType({
-      resourceRef: scaffolderActionPermissionResourceRef,
-      permissions: scaffolderActionPermissions,
-      rules: actionRules,
-    });
+  permissionsRegistry.addResourceType({
+    resourceRef: scaffolderActionPermissionResourceRef,
+    permissions: scaffolderActionPermissions,
+    rules: actionRules,
+  });
 
-    permissionsRegistry.addResourceType({
-      resourceRef: scaffolderTaskPermissionResourceRef,
-      permissions: scaffolderTaskPermissions,
-      rules: taskRules,
-      getResources: async resourceRefs => {
-        return Promise.all(
-          resourceRefs.map(async taskId => {
-            return await taskBroker.get(taskId);
-          }),
-        );
-      },
-    });
+  permissionsRegistry.addResourceType({
+    resourceRef: scaffolderTaskPermissionResourceRef,
+    permissions: scaffolderTaskPermissions,
+    rules: taskRules,
+    getResources: async resourceRefs => {
+      return Promise.all(
+        resourceRefs.map(async taskId => {
+          return await taskBroker.get(taskId);
+        }),
+      );
+    },
+  });
 
-    permissionsRegistry.addPermissions([
-      taskCreatePermission,
-      templateManagementPermission,
-    ]);
-  } else {
-    const permissionIntegrationRouter = createPermissionIntegrationRouter({
-      resources: [
-        {
-          resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
-          permissions: scaffolderTemplatePermissions,
-          rules: templateRules,
-        },
-        {
-          resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
-          permissions: scaffolderActionPermissions,
-          rules: actionRules,
-        },
-        {
-          resourceType: RESOURCE_TYPE_SCAFFOLDER_TASK,
-          permissions: scaffolderTaskPermissions,
-          rules: taskRules,
-          getResources: async resourceRefs => {
-            return Promise.all(
-              resourceRefs.map(async taskId => {
-                return await taskBroker.get(taskId);
-              }),
-            );
-          },
-        },
-      ],
-      permissions: scaffolderPermissions,
-    });
-
-    router.use(permissionIntegrationRouter);
-  }
+  permissionsRegistry.addPermissions([
+    taskCreatePermission,
+    templateManagementPermission,
+  ]);
 
   router
     .get(

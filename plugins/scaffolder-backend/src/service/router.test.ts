@@ -204,6 +204,7 @@ const createTestRouter = async (
   const httpAuth = mockServices.httpAuth();
   const events = mockServices.events();
 
+  const permissionsRegistry = mockServices.permissionsRegistry.mock();
   const router = await createRouter({
     logger,
     config: new ConfigReader({}),
@@ -211,6 +212,7 @@ const createTestRouter = async (
     catalog,
     taskBroker,
     permissions,
+    permissionsRegistry,
     auth,
     httpAuth,
     events,
