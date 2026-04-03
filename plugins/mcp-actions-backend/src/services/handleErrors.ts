@@ -23,17 +23,19 @@ import {
 
 import { Server as McpServer } from '@modelcontextprotocol/sdk/server/index.js';
 
-const knownErrors = new Set([
-  'InputError',
-  'AuthenticationError',
-  'NotAllowedError',
-  'NotFoundError',
-  'ConflictError',
-  'NotModifiedError',
-  'NotImplementedError',
-  'ResponseError',
-  'ServiceUnavailableError',
-]);
+type ErrorMessageFormatter = (message: string) => string;
+
+const errorMessagePolicy: Record<string, ErrorMessageFormatter> = {
+  InputError: message => `InputError: ${message}`,
+  AuthenticationError: message => `AuthenticationError: ${message}`,
+  NotAllowedError: message => `NotAllowedError: ${message}`,
+  NotFoundError: message => `NotFoundError: ${message}`,
+  ConflictError: message => `ConflictError: ${message}`,
+  NotModifiedError: message => `NotModifiedError: ${message}`,
+  NotImplementedError: message => `NotImplementedError: ${message}`,
+  ResponseError: message => `ResponseError: ${message}`,
+  ServiceUnavailableError: message => `ServiceUnavailableError: ${message}`,
+};
 
 // Extracts the cause error, if the provided error is `ResponseError` or
 // `ForwardedError` with a cause.
@@ -58,9 +60,10 @@ function describeError(err: unknown): string {
     const serialized = serializeError(err);
 
     const { name, message } = extractCause(serialized);
+    const formatter = errorMessagePolicy[name];
 
-    if (knownErrors.has(name)) {
-      return `${name}: ${message}`;
+    if (formatter) {
+      return formatter(message);
     }
   }
 
