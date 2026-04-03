@@ -50,16 +50,33 @@ export type MicrosoftEntraIdStrategyOptions = {
  */
 export class MicrosoftEntraIdStrategy implements AuthenticationStrategy {
   private tokenCache: Map<string, CachedToken> = new Map();
+  private lazyTokenCredential: TokenCredential | undefined;
 
   constructor(
     private readonly logger: LoggerService,
     private readonly options: MicrosoftEntraIdStrategyOptions,
-    private readonly tokenCredential: TokenCredential = new ClientSecretCredential(
-      options.config.getString(`auth.providers.microsoft.${env}.tenantId`),
-      options.config.getString(`auth.providers.microsoft.${env}.clientId`),
-      options.config.getString(`auth.providers.microsoft.${env}.clientSecret`),
-    ),
+    private readonly explicitTokenCredential?: TokenCredential,
   ) {}
+
+  private getTokenCredential(): TokenCredential {
+    if (this.explicitTokenCredential) {
+      return this.explicitTokenCredential;
+    }
+    if (!this.lazyTokenCredential) {
+      this.lazyTokenCredential = new ClientSecretCredential(
+        this.options.config.getString(
+          `auth.providers.microsoft.${env}.tenantId`,
+        ),
+        this.options.config.getString(
+          `auth.providers.microsoft.${env}.clientId`,
+        ),
+        this.options.config.getString(
+          `auth.providers.microsoft.${env}.clientSecret`,
+        ),
+      );
+    }
+    return this.lazyTokenCredential;
+  }
 
   public async getCredential(
     clusterDetails: ClusterDetails,
@@ -117,7 +134,7 @@ export class MicrosoftEntraIdStrategy implements AuthenticationStrategy {
     try {
       this.logger.info('Fetching new Microsoft Entra ID token');
 
-      const newAccessToken = await this.tokenCredential.getToken(scope, {
+      const newAccessToken = await this.getTokenCredential().getToken(scope, {
         requestOptions: { timeout: 10_000 }, // 10 seconds
       });
       if (!newAccessToken) {
