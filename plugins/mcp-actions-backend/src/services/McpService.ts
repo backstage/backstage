@@ -47,6 +47,16 @@ export class McpService {
       { capabilities: { tools: {} } },
     );
 
+    this.registerListToolsHandler(server, credentials);
+    this.registerCallToolHandler(server, credentials);
+
+    return server;
+  }
+
+  private registerListToolsHandler(
+    server: McpServer,
+    credentials: BackstageCredentials,
+  ) {
     server.setRequestHandler(ListToolsRequestSchema, async () => {
       // TODO: switch this to be configuration based later
       const { actions } = await this.actions.list({ credentials });
@@ -69,38 +79,49 @@ export class McpService {
         })),
       };
     });
+  }
 
+  private registerCallToolHandler(
+    server: McpServer,
+    credentials: BackstageCredentials,
+  ) {
     server.setRequestHandler(CallToolRequestSchema, async ({ params }) => {
-      return handleErrors(async () => {
-        const { actions } = await this.actions.list({ credentials });
-        const action = actions.find(a => a.name === params.name);
+      return handleErrors(async () =>
+        this.invokeRegisteredAction({ credentials, params }),
+      );
+    });
+  }
 
-        if (!action) {
-          throw new NotFoundError(`Action "${params.name}" not found`);
-        }
+  private async invokeRegisteredAction({
+    credentials,
+    params,
+  }: {
+    credentials: BackstageCredentials;
+    params: { name: string; arguments?: Record<string, unknown> };
+  }) {
+    const { actions } = await this.actions.list({ credentials });
+    const action = actions.find(a => a.name === params.name);
 
-        const { output } = await this.actions.invoke({
-          id: action.id,
-          input: params.arguments as JsonObject,
-          credentials,
-        });
+    if (!action) {
+      throw new NotFoundError(`Action "${params.name}" not found`);
+    }
 
-        return {
-          // todo(blam): unfortunately structuredContent is not supported by most clients yet.
-          // so the validation for the output happens in the default actions registry
-          // and we return it as json text instead for now.
-          content: [
-            {
-              type: 'text',
-              text: ['```json', JSON.stringify(output, null, 2), '```'].join(
-                '\n',
-              ),
-            },
-          ],
-        };
-      });
+    const { output } = await this.actions.invoke({
+      id: action.id,
+      input: params.arguments as JsonObject,
+      credentials,
     });
 
-    return server;
+    return {
+      // todo(blam): unfortunately structuredContent is not supported by most clients yet.
+      // so the validation for the output happens in the default actions registry
+      // and we return it as json text instead for now.
+      content: [
+        {
+          type: 'text',
+          text: ['```json', JSON.stringify(output, null, 2), '```'].join('\n'),
+        },
+      ],
+    };
   }
 }
