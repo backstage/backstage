@@ -577,11 +577,11 @@ export const kubernetesReactTranslationRef: TranslationRef<
     readonly 'podsTable.columns.name': 'name';
     readonly 'podsTable.columns.id': 'ID';
     readonly 'podsTable.columns.status': 'status';
+    readonly 'podsTable.columns.memoryUsage': 'Memory usage %';
     readonly 'podsTable.columns.phase': 'phase';
     readonly 'podsTable.columns.containersReady': 'containers ready';
     readonly 'podsTable.columns.totalRestarts': 'total restarts';
     readonly 'podsTable.columns.cpuUsage': 'CPU usage %';
-    readonly 'podsTable.columns.memoryUsage': 'Memory usage %';
     readonly 'podsTable.unknown': 'unknown';
     readonly 'podsTable.status.running': 'Running';
     readonly 'podsTable.status.ok': 'OK';
@@ -618,8 +618,8 @@ export const kubernetesReactTranslationRef: TranslationRef<
     readonly 'errorReporting.columns.name': 'name';
     readonly 'errorReporting.columns.cluster': 'cluster';
     readonly 'errorReporting.columns.kind': 'kind';
-    readonly 'errorReporting.columns.namespace': 'namespace';
     readonly 'errorReporting.columns.messages': 'messages';
+    readonly 'errorReporting.columns.namespace': 'namespace';
     readonly 'errorReporting.title': 'Error Reporting';
     readonly 'podLogs.title': 'No logs emitted';
     readonly 'podLogs.description': 'No logs were emitted by the container';
