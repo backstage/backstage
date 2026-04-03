@@ -168,7 +168,7 @@ export class MicrosoftEntraIdStrategy implements AuthenticationStrategy {
   constructor(
     logger: LoggerService,
     options: MicrosoftEntraIdStrategyOptions,
-    tokenCredential?: TokenCredential,
+    explicitTokenCredential?: TokenCredential | undefined,
   );
   // (undocumented)
   getCredential(
