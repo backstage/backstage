@@ -4,11 +4,41 @@ import {
   stylePropDefs,
   type PropDef,
 } from '@/utils/propDefs';
+import { Chip } from '@/components/Chip';
 
 export const checkboxGroupPropDefs: Record<string, PropDef> = {
   label: {
     type: 'string',
     description: 'The visible label for the checkbox group.',
+  },
+  'aria-label': {
+    type: 'string',
+    description:
+      'Accessible label when a visible label is not provided. Either label, aria-label, or aria-labelledby is required.',
+  },
+  'aria-labelledby': {
+    type: 'string',
+    description:
+      'ID of an element that labels the checkbox group. Either label, aria-label, or aria-labelledby is required.',
+  },
+  secondaryLabel: {
+    type: 'string',
+    description: (
+      <>
+        Secondary label text. Defaults to <Chip>Required</Chip> when isRequired
+        is true.
+      </>
+    ),
+  },
+  description: {
+    type: 'string',
+    description: 'Helper text displayed below the label.',
+  },
+  orientation: {
+    type: 'enum',
+    values: ['horizontal', 'vertical'],
+    default: 'vertical',
+    description: 'The axis the checkboxes should align with.',
   },
   value: {
     type: 'enum',
@@ -37,6 +67,10 @@ export const checkboxGroupPropDefs: Record<string, PropDef> = {
     type: 'boolean',
     description:
       'Whether at least one selection is required for form submission.',
+  },
+  isInvalid: {
+    type: 'boolean',
+    description: 'Whether the checkbox group is in an invalid state.',
   },
   name: {
     type: 'string',

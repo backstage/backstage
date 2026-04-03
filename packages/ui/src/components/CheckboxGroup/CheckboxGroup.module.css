@@ -4,7 +4,6 @@
   .bui-CheckboxGroup {
     display: flex;
     flex-direction: column;
-    color: var(--bui-fg-primary);
   }
 
   .bui-CheckboxGroup[data-orientation='horizontal'] .bui-CheckboxGroupContent {

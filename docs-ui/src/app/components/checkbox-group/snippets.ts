@@ -12,18 +12,6 @@ export const defaultSnippet = `<CheckboxGroup label="Choose platforms for notifi
   <Checkbox value="email">Email</Checkbox>
 </CheckboxGroup>`;
 
-export const controlledSnippet = `const [values, setValues] = useState<string[]>(['email']);
-
-<CheckboxGroup
-  label="Choose platforms for notifications"
-  value={values}
-  onChange={setValues}
->
-  <Checkbox value="github">GitHub</Checkbox>
-  <Checkbox value="slack">Slack</Checkbox>
-  <Checkbox value="email">Email</Checkbox>
-</CheckboxGroup>`;
-
 export const horizontalSnippet = `<CheckboxGroup
   label="Choose platforms for notifications"
   defaultValue={['github']}
@@ -55,7 +43,7 @@ export const disabledSingleSnippet = `<CheckboxGroup
 
 export const validationSnippet = `<CheckboxGroup
   label="Choose platforms for notifications"
-  defaultValue={['github']}
+  defaultValue={['github', 'slack']}
   validationBehavior="aria"
   validate={value =>
     value.includes('slack') ? 'Slack is not available in your region.' : null

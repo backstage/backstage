@@ -29,6 +29,7 @@ export type CheckboxGroupOwnProps = {
   secondaryLabel?: FieldLabelProps['secondaryLabel'];
   description?: FieldLabelProps['description'];
   isRequired?: RACheckboxGroupProps['isRequired'];
+  orientation?: 'horizontal' | 'vertical';
 };
 
 /**

@@ -36,6 +36,7 @@ export const CheckboxGroupDefinition = defineComponent<CheckboxGroupOwnProps>()(
       secondaryLabel: {},
       description: {},
       isRequired: {},
+      orientation: {},
     },
   },
 );

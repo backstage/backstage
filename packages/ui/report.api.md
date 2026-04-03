@@ -863,6 +863,7 @@ export const CheckboxGroupDefinition: {
     readonly secondaryLabel: {};
     readonly description: {};
     readonly isRequired: {};
+    readonly orientation: {};
   };
 };
 
@@ -874,6 +875,7 @@ export type CheckboxGroupOwnProps = {
   secondaryLabel?: FieldLabelProps['secondaryLabel'];
   description?: FieldLabelProps['description'];
   isRequired?: CheckboxGroupProps_2['isRequired'];
+  orientation?: 'horizontal' | 'vertical';
 };
 
 // @public

@@ -38,6 +38,7 @@ export const CheckboxGroup = forwardRef<HTMLDivElement, CheckboxGroupProps>(
       secondaryLabel,
       description,
       isRequired,
+      orientation,
       children,
     } = ownProps;
 
@@ -56,7 +57,13 @@ export const CheckboxGroup = forwardRef<HTMLDivElement, CheckboxGroupProps>(
       secondaryLabel || (isRequired ? 'Required' : null);
 
     return (
-      <RACheckboxGroup ref={ref} className={classes.root} {...restProps}>
+      <RACheckboxGroup
+        ref={ref}
+        className={classes.root}
+        isRequired={isRequired}
+        data-orientation={orientation}
+        {...restProps}
+      >
         <FieldLabel
           label={label}
           secondaryLabel={secondaryLabelText}

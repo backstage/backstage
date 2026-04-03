@@ -178,6 +178,7 @@ export const Required = meta.story({
 export const Validation = meta.story({
   args: {
     ...Default.input.args,
+    defaultValue: ['github', 'slack'],
     validationBehavior: 'aria',
     validate: (value: string[]) =>
       value.includes('slack') ? 'Slack is not available in your region.' : null,
