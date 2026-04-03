@@ -133,7 +133,7 @@ page for the cluster resource, go to `Overview` > `Properties` tab >
 
 ### Microsoft
 
-The Microsoft provider addresses the topology where a custom Microsoft Entra App and [OpenID Connect][9] is used to authenticate to Kubernetes clusters hosted on-premise or in any alternative cloud provider to Azure (e.g. [Amazon EKS][10]);
+The Microsoft provider addresses the topology where a Microsoft Entra App and [OpenID Connect][9] are used to authenticate to clusters hosted on-premise or at cloud provider other than Azure (e.g. [Amazon EKS][10]);
 
 :::tip
 AKS users should generally find the [Azure provider](#azure) more suitable.
@@ -162,6 +162,58 @@ auth:
 ```
 
 The configuration of the [Microsoft Azure authentication provider](../../auth/microsoft/provider.md) is required as the Enterprise Application created for Backstage will be used to get users authorized against the Kubernetes clusters.
+
+#### Alternativative configuration
+
+When relying on the `catalog` cluster locator methods, the `kubernetes.io/microsoft-entra-id-scope` annotation have to be added to the `kubernetes-cluster` resource.
+
+```yaml
+kubernetes:
+  clusterLocatorMethods:
+    - type: 'catalog'
+```
+
+```yaml
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  namespace: default
+  annotations:
+    kubernetes.io/auth-provider: microsoft
+    kubernetes.io/microsoft-entra-id-scope: my-custom-scope/role.permission
+  name: on-prem-cluster0
+```
+
+#### Scope resolution
+
+The Microsoft provider needs an OAuth scope to request a token for the
+Kubernetes cluster. The scope is resolved in the following order:
+
+1. The `kubernetes.io/microsoft-entra-id-scope` annotation on the cluster
+   (shown in the YAML examples above).
+2. If the annotation is not present, the provider falls back to the
+   `kubernetes.auth.providers.microsoft.<env>.scope` config key, where
+   `<env>` is the current `NODE_ENV` (defaults to `development`).
+
+There is no built-in default scope. If neither the annotation nor the config
+key is set, the provider throws an error at runtime. You must provide a
+scope through at least one of these two options.
+
+When every cluster uses the same scope, the config key avoids repeating the
+annotation on each cluster entry:
+
+```yaml
+kubernetes:
+  auth:
+    providers:
+      microsoft:
+        development:
+          scope: ${KUBERNETES_ENTERPRISE_APP_SCOPE}
+```
+
+When clusters require different scopes, set the
+`kubernetes.io/microsoft-entra-id-scope` annotation per cluster instead.
+The annotation always takes precedence over the config key.
 
 ## Client Side Providers
 
