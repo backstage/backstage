@@ -15,7 +15,11 @@
  */
 
 import { mockCredentials } from '@backstage/backend-test-utils';
-import { McpService } from './McpService';
+import {
+  createCallToolHandler,
+  createListToolsHandler,
+  McpService,
+} from './McpService';
 import { actionsRegistryServiceMock } from '@backstage/backend-test-utils/alpha';
 import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
@@ -23,6 +27,125 @@ import {
   CallToolResultSchema,
   ListToolsResultSchema,
 } from '@modelcontextprotocol/sdk/types.js';
+
+describe('createListToolsHandler', () => {
+  it('lists registered actions as MCP tools', async () => {
+    const mockActionsRegistry = actionsRegistryServiceMock();
+    mockActionsRegistry.register({
+      name: 'mock-action',
+      title: 'Test',
+      description: 'Test',
+      schema: {
+        input: z => z.object({ input: z.string() }),
+        output: z => z.object({ output: z.string() }),
+      },
+      action: async () => ({ output: { output: 'test' } }),
+    });
+
+    const credentials = mockCredentials.user();
+    const handler = createListToolsHandler({
+      actions: mockActionsRegistry,
+      credentials,
+    });
+
+    const result = await handler();
+
+    expect(result.tools).toEqual([
+      {
+        annotations: {
+          destructiveHint: true,
+          idempotentHint: false,
+          openWorldHint: false,
+          readOnlyHint: false,
+          title: 'Test',
+        },
+        description: 'Test',
+        inputSchema: {
+          $schema: 'http://json-schema.org/draft-07/schema#',
+          additionalProperties: false,
+          properties: {
+            input: {
+              type: 'string',
+            },
+          },
+          required: ['input'],
+          type: 'object',
+        },
+        name: 'mock-action',
+      },
+    ]);
+  });
+});
+
+describe('createCallToolHandler', () => {
+  it('invokes a registered action and formats JSON output', async () => {
+    const mockActionsRegistry = actionsRegistryServiceMock();
+    const mockAction = jest.fn(async () => ({ output: { output: 'test' } }));
+
+    mockActionsRegistry.register({
+      name: 'mock-action',
+      title: 'Test',
+      description: 'Test',
+      schema: {
+        input: z => z.object({ input: z.string() }),
+        output: z => z.object({ output: z.string() }),
+      },
+      action: mockAction,
+    });
+
+    const credentials = mockCredentials.user();
+    const handler = createCallToolHandler({
+      actions: mockActionsRegistry,
+      credentials,
+    });
+
+    const result = await handler({
+      params: { name: 'mock-action', arguments: { input: 'test' } },
+    });
+
+    expect(mockAction).toHaveBeenCalledWith(
+      expect.objectContaining({
+        credentials,
+        input: { input: 'test' },
+        logger: expect.anything(),
+      }),
+    );
+
+    expect(result.content).toEqual([
+      {
+        type: 'text',
+        text: [
+          '```json',
+          JSON.stringify({ output: 'test' }, null, 2),
+          '```',
+        ].join('\n'),
+      },
+    ]);
+  });
+
+  it('returns MCP error content when the action is missing', async () => {
+    const mockActionsRegistry = actionsRegistryServiceMock();
+    const credentials = mockCredentials.user();
+    const handler = createCallToolHandler({
+      actions: mockActionsRegistry,
+      credentials,
+    });
+
+    const result = await handler({
+      params: { name: 'mock-action', arguments: { input: 'test' } },
+    });
+
+    expect(result).toEqual({
+      content: [
+        {
+          text: expect.stringMatching('Action "mock-action" not found'),
+          type: 'text',
+        },
+      ],
+      isError: true,
+    });
+  });
+});
 
 describe('McpService', () => {
   it('should list the available actions as tools in the mcp backend', async () => {

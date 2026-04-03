@@ -26,6 +26,86 @@ import { NotFoundError } from '@backstage/errors';
 
 import { handleErrors } from './handleErrors';
 
+type CallToolParams = { name: string; arguments?: Record<string, unknown> };
+
+async function invokeRegisteredAction(
+  actions: ActionsService,
+  credentials: BackstageCredentials,
+  params: CallToolParams,
+) {
+  const { actions: listed } = await actions.list({ credentials });
+  const action = listed.find(a => a.name === params.name);
+
+  if (!action) {
+    throw new NotFoundError(`Action "${params.name}" not found`);
+  }
+
+  const { output } = await actions.invoke({
+    id: action.id,
+    input: params.arguments as JsonObject,
+    credentials,
+  });
+
+  return {
+    // todo(blam): unfortunately structuredContent is not supported by most clients yet.
+    // so the validation for the output happens in the default actions registry
+    // and we return it as json text instead for now.
+    content: [
+      {
+        type: 'text',
+        text: ['```json', JSON.stringify(output, null, 2), '```'].join('\n'),
+      },
+    ],
+  };
+}
+
+/**
+ * Factory for the MCP `tools/list` handler, backed by Backstage actions.
+ */
+export function createListToolsHandler(deps: {
+  actions: ActionsService;
+  credentials: BackstageCredentials;
+}) {
+  const { actions, credentials } = deps;
+  return async () => {
+    // TODO: switch this to be configuration based later
+    const { actions: listed } = await actions.list({ credentials });
+
+    return {
+      tools: listed.map(action => ({
+        inputSchema: action.schema.input,
+        // todo(blam): this is unfortunately not supported by most clients yet.
+        // When this is provided you need to provide structuredContent instead.
+        // outputSchema: action.schema.output,
+        name: action.name,
+        description: action.description,
+        annotations: {
+          title: action.title,
+          destructiveHint: action.attributes.destructive,
+          idempotentHint: action.attributes.idempotent,
+          readOnlyHint: action.attributes.readOnly,
+          openWorldHint: false,
+        },
+      })),
+    };
+  };
+}
+
+/**
+ * Factory for the MCP `tools/call` handler; inner work is wrapped with {@link handleErrors}.
+ */
+export function createCallToolHandler(deps: {
+  actions: ActionsService;
+  credentials: BackstageCredentials;
+}) {
+  const { actions, credentials } = deps;
+  return async ({ params }: { params: CallToolParams }) => {
+    return handleErrors(async () =>
+      invokeRegisteredAction(actions, credentials, params),
+    );
+  };
+}
+
 export class McpService {
   private readonly actions: ActionsService;
 
@@ -47,81 +127,22 @@ export class McpService {
       { capabilities: { tools: {} } },
     );
 
-    this.registerListToolsHandler(server, credentials);
-    this.registerCallToolHandler(server, credentials);
+    server.setRequestHandler(
+      ListToolsRequestSchema,
+      createListToolsHandler({
+        actions: this.actions,
+        credentials,
+      }),
+    );
+
+    server.setRequestHandler(
+      CallToolRequestSchema,
+      createCallToolHandler({
+        actions: this.actions,
+        credentials,
+      }),
+    );
 
     return server;
-  }
-
-  private registerListToolsHandler(
-    server: McpServer,
-    credentials: BackstageCredentials,
-  ) {
-    server.setRequestHandler(ListToolsRequestSchema, async () => {
-      // TODO: switch this to be configuration based later
-      const { actions } = await this.actions.list({ credentials });
-
-      return {
-        tools: actions.map(action => ({
-          inputSchema: action.schema.input,
-          // todo(blam): this is unfortunately not supported by most clients yet.
-          // When this is provided you need to provide structuredContent instead.
-          // outputSchema: action.schema.output,
-          name: action.name,
-          description: action.description,
-          annotations: {
-            title: action.title,
-            destructiveHint: action.attributes.destructive,
-            idempotentHint: action.attributes.idempotent,
-            readOnlyHint: action.attributes.readOnly,
-            openWorldHint: false,
-          },
-        })),
-      };
-    });
-  }
-
-  private registerCallToolHandler(
-    server: McpServer,
-    credentials: BackstageCredentials,
-  ) {
-    server.setRequestHandler(CallToolRequestSchema, async ({ params }) => {
-      return handleErrors(async () =>
-        this.invokeRegisteredAction({ credentials, params }),
-      );
-    });
-  }
-
-  private async invokeRegisteredAction({
-    credentials,
-    params,
-  }: {
-    credentials: BackstageCredentials;
-    params: { name: string; arguments?: Record<string, unknown> };
-  }) {
-    const { actions } = await this.actions.list({ credentials });
-    const action = actions.find(a => a.name === params.name);
-
-    if (!action) {
-      throw new NotFoundError(`Action "${params.name}" not found`);
-    }
-
-    const { output } = await this.actions.invoke({
-      id: action.id,
-      input: params.arguments as JsonObject,
-      credentials,
-    });
-
-    return {
-      // todo(blam): unfortunately structuredContent is not supported by most clients yet.
-      // so the validation for the output happens in the default actions registry
-      // and we return it as json text instead for now.
-      content: [
-        {
-          type: 'text',
-          text: ['```json', JSON.stringify(output, null, 2), '```'].join('\n'),
-        },
-      ],
-    };
   }
 }
