@@ -163,7 +163,7 @@ auth:
 
 The configuration of the [Microsoft Azure authentication provider](../../auth/microsoft/provider.md) is required as the Enterprise Application created for Backstage will be used to get users authorized against the Kubernetes clusters.
 
-#### Alternativative configuration
+#### Alternative configuration
 
 When relying on the `catalog` cluster locator methods, the `kubernetes.io/microsoft-entra-id-scope` annotation have to be added to the `kubernetes-cluster` resource.
 
