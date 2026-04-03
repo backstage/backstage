@@ -60,6 +60,18 @@ function toLocation(row: DbLocationsRow): Location {
   };
 }
 
+function metadataNameFromEntityRef(entityRef: string): string {
+  const lastSlash = entityRef.lastIndexOf('/');
+  return lastSlash >= 0 ? entityRef.substring(lastSlash + 1) : entityRef;
+}
+
+function toLocationEntity(row: DbLocationsRow) {
+  const metadataName = row.entity_ref
+    ? metadataNameFromEntityRef(row.entity_ref)
+    : undefined;
+  return locationSpecToLocationEntity({ location: row, metadataName });
+}
+
 export class DefaultLocationStore implements LocationStore, EntityProvider {
   private _connection: EntityProviderConnection | undefined;
   private readonly db: Knex;
@@ -120,7 +132,7 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
 
     // Always upsert the entity, even if the location already existed, to
     // recover from cases where the entity was inadvertently deleted.
-    const entity = locationSpecToLocationEntity({ location });
+    const entity = toLocationEntity(location);
     await this.connection.applyMutation({
       type: 'delta',
       added: [{ entity, locationKey: getEntityLocationRef(entity) }],
@@ -211,7 +223,7 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
       await tx<DbLocationsRow>('locations').where({ id }).del();
       return location;
     });
-    const entity = locationSpecToLocationEntity({ location: deleted });
+    const entity = toLocationEntity(deleted);
     await this.connection.applyMutation({
       type: 'delta',
       added: [],
@@ -272,7 +284,7 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
     const locations = await this.locations();
 
     const entities = locations.map(location => {
-      const entity = locationSpecToLocationEntity({ location });
+      const entity = toLocationEntity(location);
       return { entity, locationKey: getEntityLocationRef(entity) };
     });
 
@@ -398,7 +410,7 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
         await this.connection.applyMutation({
           type: 'delta',
           added: newLocations.map(location => {
-            const entity = locationSpecToLocationEntity({ location });
+            const entity = toLocationEntity(location);
             return { entity, locationKey: getEntityLocationRef(entity) };
           }),
           removed: [],
@@ -432,7 +444,7 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
           type: 'delta',
           added: [],
           removed: rows.map(row => ({
-            entity: locationSpecToLocationEntity({ location: row }),
+            entity: toLocationEntity(row),
           })),
         });
 
@@ -511,7 +523,7 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
       type: 'delta',
       added: [],
       removed: rows.map(l => ({
-        entity: locationSpecToLocationEntity({ location: l }),
+        entity: toLocationEntity(l),
       })),
     });
   }

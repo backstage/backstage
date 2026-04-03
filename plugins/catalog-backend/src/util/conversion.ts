@@ -39,6 +39,7 @@ export function locationSpecToEntityRef(location: LocationSpec): string {
 export function locationSpecToLocationEntity(opts: {
   location: LocationSpec;
   parentEntity?: Entity;
+  metadataName?: string;
 }): LocationEntityV1alpha1 {
   const location = opts.location;
   const parentEntity = opts.parentEntity;
@@ -79,7 +80,7 @@ export function locationSpecToLocationEntity(opts: {
     apiVersion: 'backstage.io/v1alpha1',
     kind: 'Location',
     metadata: {
-      name: locationSpecToMetadataName(location),
+      name: opts.metadataName ?? locationSpecToMetadataName(location),
       annotations: {
         [ANNOTATION_LOCATION]: ownLocation,
         [ANNOTATION_ORIGIN_LOCATION]: originLocation,
