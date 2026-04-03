@@ -165,7 +165,7 @@ The configuration of the [Microsoft Azure authentication provider](../../auth/mi
 
 #### Alternative configuration
 
-When relying on the `catalog` cluster locator methods, the `kubernetes.io/microsoft-entra-id-scope` annotation have to be added to the `kubernetes-cluster` resource.
+When relying on the `catalog` cluster locator methods, the `kubernetes.io/microsoft-entra-id-scope` annotation has to be added to the `kubernetes-cluster` resource.
 
 ```yaml
 kubernetes:
