@@ -47,24 +47,31 @@ function extractCause(err: ErrorLike): ErrorLike {
   return err;
 }
 
+export type DescribeBackstageErrorForMcpResult =
+  | { handled: true; description: string }
+  | { handled: false; error: unknown };
+
 /**
- * Takes a value expected to be an object, and returns a description of the
- * error to return to the MCP client, if the error is a known Backstage error.
+ * Maps a thrown value to either a stable MCP-facing description (for known
+ * Backstage error names) or marks it as unhandled so callers can rethrow.
  *
- * Re-throws the original error otherwise
+ * This function does not throw; {@link handleErrors} propagates unhandled
+ * errors unchanged.
  */
-function describeError(err: unknown): string {
+export function describeBackstageErrorForMcp(
+  err: unknown,
+): DescribeBackstageErrorForMcpResult {
   if (err instanceof Error) {
     const serialized = serializeError(err);
 
     const { name, message } = extractCause(serialized);
 
     if (knownErrors.has(name)) {
-      return `${name}: ${message}`;
+      return { handled: true, description: `${name}: ${message}` };
     }
   }
 
-  throw err;
+  return { handled: false, error: err };
 }
 
 type RequestResultType = ReturnType<
@@ -81,10 +88,12 @@ export async function handleErrors(
   try {
     return await fn();
   } catch (err) {
-    // This will rethrow if the error is not a known Backstage error
-    const description = describeError(err);
+    const outcome = describeBackstageErrorForMcp(err);
+    if (!outcome.handled) {
+      throw outcome.error;
+    }
     return {
-      content: [{ type: 'text', text: description }],
+      content: [{ type: 'text', text: outcome.description }],
       isError: true,
     };
   }
