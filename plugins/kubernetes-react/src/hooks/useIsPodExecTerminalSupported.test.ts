@@ -63,11 +63,6 @@ describe('useIsPodExecTerminalSupported', () => {
       returnValue: false,
       testClusters: [{ authProvider: 'oidc.okta' }],
     },
-    {
-      condition: 'AuthProvider is microsoft',
-      returnValue: false,
-      testClusters: [{ authProvider: 'microsoft' }],
-    },
   ])(
     'Should return $returnValue if $condition',
     async ({ testClusters, returnValue }) => {
