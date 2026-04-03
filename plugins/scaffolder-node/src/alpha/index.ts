@@ -165,7 +165,10 @@ import type {
   TemplateParametersV1beta3,
 } from '@backstage/plugin-scaffolder-common';
 import type { JsonObject } from '@backstage/types';
-import type { SerializedTask, TaskFilter } from '@backstage/plugin-scaffolder-node';
+import type {
+  SerializedTask,
+  TaskFilter,
+} from '@backstage/plugin-scaffolder-node';
 
 /**
  * Permission resource ref for scaffolder templates.
@@ -194,8 +197,10 @@ export const scaffolderActionPermissionResourceRef =
  * Permission resource ref for scaffolder tasks.
  * @alpha
  */
-export const scaffolderTaskPermissionResourceRef =
-  createPermissionResourceRef<SerializedTask, TaskFilter>().with({
-    pluginId: 'scaffolder',
-    resourceType: RESOURCE_TYPE_SCAFFOLDER_TASK,
-  });
+export const scaffolderTaskPermissionResourceRef = createPermissionResourceRef<
+  SerializedTask,
+  TaskFilter
+>().with({
+  pluginId: 'scaffolder',
+  resourceType: RESOURCE_TYPE_SCAFFOLDER_TASK,
+});
