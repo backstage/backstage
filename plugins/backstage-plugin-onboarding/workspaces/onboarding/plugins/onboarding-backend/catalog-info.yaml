@@ -1,0 +1,15 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-onboarding-backend
+  title: Onboarding Backend Plugin
+  description: Backend for the Backstage onboarding checklist plugin
+  annotations:
+    backstage.io/source-location: url:https://github.com/Estehsan/backstage-plugin-onboarding/tree/main/workspaces/onboarding/plugins/onboarding-backend
+  links:
+    - title: npm
+      url: https://www.npmjs.com/package/@estehsaan/backstage-plugin-onboarding-backend
+spec:
+  type: backstage-plugin
+  lifecycle: experimental
+  owner: user:default/estehsan

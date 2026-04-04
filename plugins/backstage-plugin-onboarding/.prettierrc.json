@@ -1,0 +1,16 @@
+{
+  "printWidth": 80,
+  "semi": true,
+  "singleQuote": true,
+  "trailingComma": "all",
+  "bracketSpacing": true,
+  "arrowParens": "avoid",
+  "overrides": [
+    {
+      "files": "*.{yaml,yml}",
+      "options": {
+        "singleQuote": false
+      }
+    }
+  ]
+}

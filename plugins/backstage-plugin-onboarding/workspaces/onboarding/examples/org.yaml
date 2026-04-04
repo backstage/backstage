@@ -1,0 +1,86 @@
+---
+apiVersion: backstage.io/v1alpha1
+kind: User
+metadata:
+  name: jane.doe
+  title: Jane Doe
+spec:
+  profile:
+    displayName: Jane Doe
+    email: jane.doe@example.com
+    role: backend-engineer
+  memberOf:
+    - platform
+---
+apiVersion: backstage.io/v1alpha1
+kind: User
+metadata:
+  name: alex.chen
+  title: Alex Chen
+spec:
+  profile:
+    displayName: Alex Chen
+    email: alex.chen@example.com
+    role: frontend-engineer
+  memberOf:
+    - design-systems
+---
+apiVersion: backstage.io/v1alpha1
+kind: User
+metadata:
+  name: sam.wilson
+  title: Sam Wilson
+spec:
+  profile:
+    displayName: Sam Wilson
+    email: sam.wilson@example.com
+    role: sre
+  memberOf:
+    - infrastructure
+---
+apiVersion: backstage.io/v1alpha1
+kind: User
+metadata:
+  name: taylor.kim
+  title: Taylor Kim
+spec:
+  profile:
+    displayName: Taylor Kim
+    email: taylor.kim@example.com
+    role: backend-engineer
+  memberOf:
+    - platform
+---
+apiVersion: backstage.io/v1alpha1
+kind: Group
+metadata:
+  name: platform
+  title: Platform Team
+spec:
+  type: team
+  children: []
+  members:
+    - jane.doe
+    - taylor.kim
+---
+apiVersion: backstage.io/v1alpha1
+kind: Group
+metadata:
+  name: design-systems
+  title: Design Systems Team
+spec:
+  type: team
+  children: []
+  members:
+    - alex.chen
+---
+apiVersion: backstage.io/v1alpha1
+kind: Group
+metadata:
+  name: infrastructure
+  title: Infrastructure Team
+spec:
+  type: team
+  children: []
+  members:
+    - sam.wilson

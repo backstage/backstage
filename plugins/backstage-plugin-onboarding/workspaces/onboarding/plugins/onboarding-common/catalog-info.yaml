@@ -1,0 +1,15 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-onboarding-common
+  title: Onboarding Common Library
+  description: Shared types and permissions for the Backstage onboarding plugin
+  annotations:
+    backstage.io/source-location: url:https://github.com/Estehsan/backstage-plugin-onboarding/tree/main/workspaces/onboarding/plugins/onboarding-common
+  links:
+    - title: npm
+      url: https://www.npmjs.com/package/@estehsaan/backstage-plugin-onboarding-common
+spec:
+  type: backstage-plugin
+  lifecycle: experimental
+  owner: user:default/estehsan

@@ -1,0 +1,42 @@
+app:
+  title: Backstage Onboarding Example
+  baseUrl: http://localhost:3000
+
+backend:
+  baseUrl: http://localhost:7007
+  listen:
+    port: 7007
+  database:
+    client: better-sqlite3
+    connection: ":memory:"
+
+catalog:
+  locations:
+    - type: file
+      target: ./examples/backend-engineer-template.yaml
+      rules:
+        - allow: [OnboardingTemplate]
+    - type: file
+      target: ./examples/frontend-engineer-template.yaml
+      rules:
+        - allow: [OnboardingTemplate]
+    - type: file
+      target: ./examples/sre-template.yaml
+      rules:
+        - allow: [OnboardingTemplate]
+    - type: file
+      target: ./examples/org.yaml
+      rules:
+        - allow: [User, Group]
+
+onboarding:
+  seedDemoData: true
+  templates:
+    - type: catalog
+  azureAd:
+    enabled: true # Set to true when Azure AD users are synced via catalog-backend-module-msgraph.
+  #                  # Replaces the manual entity ref text input with a searchable user picker.
+  defaults:
+    activeJoinerWindowDays: 90
+    buddy:
+      autoAssign: true

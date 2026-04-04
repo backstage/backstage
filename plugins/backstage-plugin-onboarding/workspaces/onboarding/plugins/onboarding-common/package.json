@@ -1,0 +1,54 @@
+{
+  "name": "@estehsaan/backstage-plugin-onboarding-common",
+  "version": "0.1.1",
+  "description": "Shared types and permissions for the Backstage onboarding plugin",
+  "backstage": {
+    "role": "common-library",
+    "pluginId": "onboarding",
+    "pluginPackages": [
+      "@estehsaan/backstage-plugin-onboarding",
+      "@estehsaan/backstage-plugin-onboarding-backend",
+      "@estehsaan/backstage-plugin-onboarding-common"
+    ]
+  },
+  "keywords": [
+    "backstage",
+    "backstage-plugin",
+    "onboarding"
+  ],
+  "homepage": "https://github.com/Estehsan/backstage-plugin-onboarding/tree/main/workspaces/onboarding/plugins/onboarding-common#readme",
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.cjs.js",
+    "types": "dist/index.d.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Estehsan/backstage-plugin-onboarding",
+    "directory": "workspaces/onboarding/plugins/onboarding-common"
+  },
+  "license": "Apache-2.0",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "test": "backstage-cli package test"
+  },
+  "dependencies": {
+    "@backstage/plugin-permission-common": "^0.9.6"
+  },
+  "devDependencies": {
+    "@backstage/cli": "^0.36.0"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist"
+  ]
+}

@@ -1,0 +1,335 @@
+apiVersion: backstage.io/v1alpha1
+kind: OnboardingTemplate
+metadata:
+  name: backend-engineer-platform
+  title: Backend Engineer — Platform Team
+  description: Standard onboarding for backend engineers joining the platform team
+spec:
+  role: backend-engineer
+  team: platform
+  phases:
+    - id: day1
+      tasks:
+        - id: setup-laptop
+          phase: day1
+          title: Set up laptop & dev environment
+          description: Run the bootstrap script and verify your local stack starts correctly.
+          type: automated
+          automationRef: setup-dev-environment
+          assignee: self
+          duePhase: day1
+          estimatedMinutes: 60
+          link:
+            label: Open setup guide
+            url: https://docs.example.com/setup
+          documentation: |
+            1. Open Terminal and clone the monorepo: `git clone git@github.com:example/platform.git`
+            2. Run the bootstrap script: `./scripts/bootstrap.sh` — this installs Homebrew deps, Node.js, Docker, and configures your shell
+            3. Copy the template env file: `cp .env.example .env.local` and fill in your OAuth client ID (ask your buddy)
+            4. Start the local stack: `yarn dev` — you should see the frontend on localhost:3000 and API on localhost:7007
+            5. Verify by opening http://localhost:3000 in your browser and confirming the catalog loads
+            6. If anything fails, check the troubleshooting section in the setup guide or ask in #platform-help
+          resources:
+            - type: video
+              title: "Dev Environment Setup Walkthrough"
+              url: https://www.youtube.com/watch?v=example-setup
+              duration: "12 min"
+            - type: doc
+              title: "Platform Engineering Handbook — Local Development"
+              url: https://docs.example.com/handbook/local-dev
+            - type: doc
+              title: "Troubleshooting Common Setup Issues"
+              url: https://docs.example.com/setup/troubleshooting
+          recommendations:
+            - "Use the recommended VS Code extensions — they're listed in .vscode/extensions.json in the repo."
+            - "If Docker is slow on macOS, allocate at least 8 GB of RAM in Docker Desktop settings."
+            - "Bookmark the #platform-help Slack channel — it's the fastest way to unblock setup issues."
+
+        - id: meet-buddy
+          phase: day1
+          title: Meet your onboarding buddy
+          description: 30-min intro call with your assigned buddy to go over team norms.
+          type: manual
+          assignee: buddy
+          duePhase: day1
+          estimatedMinutes: 30
+          documentation: |
+            1. Check your calendar for the buddy intro meeting (your manager set it up before your start date)
+            2. Come prepared with questions — your buddy has been on the team 6+ months and knows the ropes
+            3. Topics to cover: team rituals (standups, retros, demos), code review norms, how to ask for help
+            4. Exchange contact info and agree on a check-in cadence (daily for the first week is recommended)
+            5. Your buddy will also walk you through the team's Confluence space and key documents
+          resources:
+            - type: doc
+              title: "New Joiner FAQ — Platform Team"
+              url: https://docs.example.com/platform/new-joiner-faq
+            - type: article
+              title: "What Makes a Great Onboarding Buddy"
+              url: https://docs.example.com/blog/onboarding-buddy-guide
+          recommendations:
+            - "Don't be afraid to ask 'obvious' questions — your buddy expects them and wants to help."
+            - "Take notes during the call; you'll reference them a lot during week 1."
+
+        - id: slack-channels
+          phase: day1
+          title: Join team Slack channels
+          description: "Join: #platform-team, #incidents, #dev-announcements, #random"
+          type: manual
+          assignee: self
+          duePhase: day1
+          estimatedMinutes: 10
+          link:
+            label: Channel list
+            url: https://docs.example.com/channels
+          documentation: |
+            1. Open Slack and search for each channel listed below
+            2. Join #platform-team — this is the team's primary channel for discussions, questions, and updates
+            3. Join #incidents — all production incidents are coordinated here; mute notifications but keep it visible
+            4. Join #dev-announcements — company-wide engineering updates (deploy freezes, infra changes, etc.)
+            5. Join #random — the social channel for memes, off-topic chat, and team bonding
+            6. Optional but recommended: #backend-guild, #observability, #architecture
+          resources:
+            - type: doc
+              title: "Slack Etiquette & Channel Guide"
+              url: https://docs.example.com/handbook/slack-guide
+          recommendations:
+            - "Set up Slack notification schedules so you're not disturbed outside work hours."
+            - "Star #platform-team and #incidents so they stay pinned in your sidebar."
+
+    - id: week1
+      tasks:
+        - id: security-training
+          phase: week1
+          title: Complete security & compliance training
+          description: Required before production access. Takes ~45 minutes.
+          type: manual
+          assignee: self
+          duePhase: week1
+          estimatedMinutes: 45
+          link:
+            label: Start training
+            url: https://training.example.com/security
+          documentation: |
+            1. Go to training.example.com/security and log in with your SSO credentials
+            2. Complete Module 1: Data Classification — learn how we categorize PII, financial, and public data
+            3. Complete Module 2: Secure Coding Practices — covers injection prevention, auth patterns, and secrets management
+            4. Complete Module 3: Incident Response — what to do if you discover a vulnerability or data breach
+            5. Take the final quiz (must score 85% or higher to pass)
+            6. Your completion certificate auto-syncs — no need to send it to anyone
+          resources:
+            - type: course
+              title: "Security & Compliance Training Portal"
+              url: https://training.example.com/security
+              duration: "45 min"
+            - type: video
+              title: "OWASP Top 10 for Backend Engineers"
+              url: https://www.youtube.com/watch?v=example-owasp
+              duration: "20 min"
+            - type: article
+              title: "Our Secrets Management Guide (Vault + AWS Secrets Manager)"
+              url: https://docs.example.com/security/secrets
+            - type: doc
+              title: "Security Incident Response Playbook"
+              url: https://docs.example.com/security/incident-response
+          recommendations:
+            - "Watch the OWASP Top 10 video before the training — it'll make the quiz much easier."
+            - "Bookmark the secrets management guide; you'll need it when setting up service credentials."
+
+        - id: repo-tour
+          phase: week1
+          title: Repository walkthrough with buddy
+          description: Go through the main repo structure, CI/CD pipeline, and deployment flow.
+          type: manual
+          assignee: buddy
+          duePhase: week1
+          estimatedMinutes: 60
+          documentation: |
+            1. Schedule a screen-share session with your buddy (60 minutes)
+            2. Walk through the monorepo structure: packages/, plugins/, services/
+            3. Understand the CI/CD pipeline: GitHub Actions → build → test → deploy staging → deploy prod
+            4. Review how config is managed: app-config.yaml (local), app-config.production.yaml (prod)
+            5. Look at a recent PR together — see the review process, changeset requirements, and merge flow
+            6. Check out the deployment dashboard and learn how to monitor a deploy
+          resources:
+            - type: video
+              title: "Platform Monorepo Architecture Tour"
+              url: https://www.youtube.com/watch?v=example-repo-tour
+              duration: "25 min"
+            - type: doc
+              title: "CI/CD Pipeline Documentation"
+              url: https://docs.example.com/cicd/overview
+            - type: doc
+              title: "Deployment Runbook"
+              url: https://docs.example.com/deploy/runbook
+            - type: repo
+              title: "Main Platform Repository"
+              url: https://github.com/example/platform
+          recommendations:
+            - "Record the session (with buddy's permission) so you can revisit it later."
+            - "Ask your buddy to show you a failed deploy and how they debugged it — real examples teach more than docs."
+
+        - id: oncall-shadow
+          phase: week1
+          title: Shadow an on-call shift
+          description: Join the current on-call engineer for one full shift to learn incident response.
+          type: manual
+          assignee: buddy
+          dependsOn:
+            - security-training
+          duePhase: week1
+          estimatedMinutes: 240
+          documentation: |
+            1. Check the on-call schedule in PagerDuty and coordinate with the current primary on-call
+            2. Ask them to add you as a shadow in PagerDuty for their next shift
+            3. During the shadow shift, stay available on Slack and watch how they handle pages
+            4. If an incident occurs, observe the triage process: acknowledge → assess severity → communicate → mitigate
+            5. After any incident, attend the post-mortem and review the timeline
+            6. Write a brief summary of what you observed and share it with your buddy
+          resources:
+            - type: video
+              title: "Incident Response at Scale — How We Handle Pages"
+              url: https://www.youtube.com/watch?v=example-incident-response
+              duration: "18 min"
+            - type: doc
+              title: "On-Call Handbook"
+              url: https://docs.example.com/oncall/handbook
+            - type: tool
+              title: "PagerDuty Dashboard"
+              url: https://example.pagerduty.com
+            - type: doc
+              title: "Post-Mortem Template"
+              url: https://docs.example.com/oncall/postmortem-template
+          recommendations:
+            - "Don't stress about knowing all the answers — shadowing is about observing, not fixing."
+            - "Keep a list of services and alerts you didn't understand; go through them with your buddy afterward."
+            - "Even if no incidents happen, review 2–3 recent post-mortems to see real examples."
+
+    - id: week2
+      tasks:
+        - id: first-pr
+          phase: week2
+          title: Submit your first pull request
+          description: Pick any "good first issue" from the team backlog and ship it.
+          type: manual
+          assignee: self
+          duePhase: week2
+          estimatedMinutes: 180
+          link:
+            label: Good first issues
+            url: https://github.example.com/issues?label=good-first-issue
+          documentation: |
+            1. Browse issues labeled "good first issue" and pick one that interests you
+            2. Read the issue description carefully and ask clarifying questions in the issue comments
+            3. Create a feature branch: `git checkout -b <your-name>/<issue-number>-short-description`
+            4. Write your implementation following the coding style of the surrounding code
+            5. Add or update tests — aim for the same coverage patterns you see in adjacent test files
+            6. Create a changeset: add a markdown file to .changeset/ describing your change
+            7. Push and open a PR using the template; request review from your buddy
+            8. Address review feedback and iterate until approved
+            9. Merge and celebrate your first contribution!
+          resources:
+            - type: doc
+              title: "Contributing Guide (PR conventions, changeset format)"
+              url: https://docs.example.com/contributing
+            - type: video
+              title: "How We Write Pull Requests — Code Review Culture"
+              url: https://www.youtube.com/watch?v=example-pr-culture
+              duration: "15 min"
+            - type: article
+              title: "Writing Good Commit Messages"
+              url: https://cbea.ms/git-commit/
+            - type: doc
+              title: "Code Style Guide"
+              url: https://docs.example.com/style-guide
+          recommendations:
+            - "Pick a small, well-scoped issue for your first PR — shipping fast builds confidence."
+            - "Don't over-engineer; match the patterns already in the codebase."
+            - "If you're stuck for more than 30 minutes, ask in #platform-team — speed of learning > independence."
+
+        - id: architecture-review
+          phase: week2
+          title: Attend architecture review meeting
+          description: Weekly architecture review — present a 5-min summary of what you've learned.
+          type: manual
+          assignee: self
+          dependsOn:
+            - repo-tour
+          duePhase: week2
+          estimatedMinutes: 60
+          documentation: |
+            1. The architecture review is every Thursday at 2pm — check your calendar for the invite
+            2. Before attending, review this week's agenda (pinned in #architecture-review Slack channel)
+            3. Prepare a short (5-minute) summary of what you've learned in your first two weeks
+            4. Focus on: what surprised you, what was confusing, and what you think could be improved
+            5. Present during the "new joiner spotlight" slot
+            6. Take notes on other presentations — they're great context for understanding system history
+          resources:
+            - type: video
+              title: "Platform Architecture Overview (recorded talk)"
+              url: https://www.youtube.com/watch?v=example-arch-overview
+              duration: "30 min"
+            - type: doc
+              title: "Architecture Decision Records (ADRs)"
+              url: https://docs.example.com/adrs
+            - type: doc
+              title: "System Context Diagram"
+              url: https://docs.example.com/architecture/context-diagram
+          recommendations:
+            - "Watch the recorded architecture overview before attending — it covers 80% of what you need to know."
+            - "Your presentation doesn't need to be polished; authenticity and fresh-eyes insights are valued."
+
+    - id: month1
+      tasks:
+        - id: 30-day-checkin
+          phase: month1
+          title: Complete 30-day check-in with manager
+          description: Structured conversation covering experience, feedback, and 90-day goals.
+          type: manual
+          assignee: manager
+          duePhase: month1
+          estimatedMinutes: 45
+          documentation: |
+            1. Your manager will schedule the 30-day check-in — if they haven't, send a gentle reminder
+            2. Before the meeting, reflect on: What went well? What was harder than expected? What do you need?
+            3. Prepare 2-3 specific goals for your next 60 days (your manager will help refine them)
+            4. Topics to discuss: team dynamics, workload, learning velocity, any concerns
+            5. This is also a good time to give feedback on the onboarding process itself
+          resources:
+            - type: doc
+              title: "30-Day Check-in Template"
+              url: https://docs.example.com/templates/30-day-checkin
+            - type: article
+              title: "Making the Most of Your First 90 Days"
+              url: https://docs.example.com/blog/first-90-days
+          recommendations:
+            - "Be honest about challenges — your manager wants to remove blockers, not judge you."
+            - "Write down your goals after the meeting and share them in a follow-up message."
+
+        - id: production-access
+          phase: month1
+          title: Request production access
+          description: Submit access request after completing security training and on-call shadow.
+          type: automated
+          automationRef: request-prod-access
+          assignee: self
+          dependsOn:
+            - security-training
+            - oncall-shadow
+          duePhase: month1
+          estimatedMinutes: 15
+          documentation: |
+            1. This step is automated — clicking "Start" triggers the access request scaffolder
+            2. The scaffolder creates a PR to add your user to the production RBAC config
+            3. The PR requires approval from your manager and the security team
+            4. Once merged, access propagates within ~15 minutes
+            5. Verify by logging into the production dashboard and confirming read access
+          resources:
+            - type: doc
+              title: "Production Access Policy"
+              url: https://docs.example.com/security/prod-access-policy
+            - type: doc
+              title: "RBAC Configuration Guide"
+              url: https://docs.example.com/infra/rbac
+          recommendations:
+            - "Don't use production access for debugging until you're comfortable with the systems — use staging first."
+            - "Review the production access policy so you understand the audit trail and expectations."

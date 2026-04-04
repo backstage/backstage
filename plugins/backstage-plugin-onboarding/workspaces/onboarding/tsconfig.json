@@ -1,0 +1,19 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "dist-types",
+    "rootDir": "."
+  },
+  "include": [
+    "plugins/*/src/**/*",
+    "plugins/*/config.d.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "dist-types",
+    "**/*.test.*",
+    "**/*.spec.*",
+    "**/setupTests.*"
+  ]
+}
