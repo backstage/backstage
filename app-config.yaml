@@ -69,6 +69,7 @@ app:
     - nav-item:api-docs
     - nav-item:scaffolder
     - nav-item:app-visualizer
+    - nav-item:onboarding
 
     # Pages
     - page:catalog/entity:
@@ -277,6 +278,7 @@ catalog:
         - System
         - Domain
         - Location
+        - OnboardingTemplate
   providers:
     azureBlob:
       accountName: ${ACCOUNT_NAME}
@@ -320,6 +322,23 @@ catalog:
       target: ../../plugins/scaffolder-backend/sample-templates/all-templates.yaml
       rules:
         - allow: [Template]
+    # Onboarding plugin example templates
+    - type: file
+      target: ../../plugins/backstage-plugin-onboarding/workspaces/onboarding/examples/backend-engineer-template.yaml
+      rules:
+        - allow: [OnboardingTemplate]
+    - type: file
+      target: ../../plugins/backstage-plugin-onboarding/workspaces/onboarding/examples/frontend-engineer-template.yaml
+      rules:
+        - allow: [OnboardingTemplate]
+    - type: file
+      target: ../../plugins/backstage-plugin-onboarding/workspaces/onboarding/examples/sre-template.yaml
+      rules:
+        - allow: [OnboardingTemplate]
+    - type: file
+      target: ../../plugins/backstage-plugin-onboarding/workspaces/onboarding/examples/org.yaml
+      rules:
+        - allow: [User, Group]
 
 scaffolder:
   auditor:
@@ -335,6 +354,15 @@ scaffolder:
       region: eu-west-1
     secrets:
       environment: ${NODE_ENV}
+
+onboarding:
+  seedDemoData: true
+  templates:
+    - type: catalog
+  defaults:
+    activeJoinerWindowDays: 90
+    buddy:
+      autoAssign: true
 
 auth:
   experimentalDynamicClientRegistration:

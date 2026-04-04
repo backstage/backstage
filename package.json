@@ -18,7 +18,8 @@
   },
   "workspaces": [
     "packages/*",
-    "plugins/*"
+    "plugins/*",
+    "plugins/backstage-plugin-onboarding/workspaces/onboarding/plugins/*"
   ],
   "scripts": {
     "build:all": "backstage-cli repo build --all",

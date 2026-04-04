@@ -32,7 +32,6 @@ const searchLoader = createBackendFeatureLoader({
   *loader({ config }) {
     yield import('@backstage/plugin-search-backend');
     yield import('@backstage/plugin-search-backend-module-catalog');
-    yield import('@backstage/plugin-search-backend-module-explore');
     yield import('@backstage/plugin-search-backend-module-techdocs');
     if (config.has('search.elasticsearch')) {
       yield import('@backstage/plugin-search-backend-module-elasticsearch');
@@ -43,6 +42,7 @@ const searchLoader = createBackendFeatureLoader({
 backend.add(import('@backstage/plugin-auth-backend'));
 backend.add(import('./authModuleGithubProvider'));
 backend.add(import('@backstage/plugin-auth-backend-module-guest-provider'));
+backend.add(import('@backstage/plugin-auth-backend-module-microsoft-provider'));
 backend.add(import('@backstage/plugin-auth-backend-module-openshift-provider'));
 backend.add(import('@backstage/plugin-app-backend'));
 backend.add(import('@backstage/plugin-catalog-backend-module-unprocessed'));
@@ -50,6 +50,7 @@ backend.add(
   import('@backstage/plugin-catalog-backend-module-scaffolder-entity-model'),
 );
 backend.add(import('@backstage/plugin-catalog-backend'));
+backend.add(import('@backstage/plugin-catalog-backend-module-msgraph'));
 backend.add(import('@backstage/plugin-events-backend'));
 backend.add(import('@backstage/plugin-devtools-backend'));
 backend.add(import('@backstage/plugin-kubernetes-backend'));
@@ -74,4 +75,9 @@ backend.add(rootSystemMetadataServiceFactory);
 
 backend.add(import('@backstage/plugin-events-backend-module-google-pubsub'));
 backend.add(import('@backstage/plugin-mcp-actions-backend'));
+
+// Onboarding plugin
+backend.add(import('@estehsaan/backstage-plugin-onboarding-backend'));
+backend.add(import('@estehsaan/backstage-plugin-onboarding-backend/alpha'));
+
 backend.start();

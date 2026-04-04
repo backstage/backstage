@@ -45,6 +45,7 @@ import { FlatRoutes } from '@backstage/core-app-api';
 import { Route } from 'react-router';
 import { CatalogImportPage } from '@backstage/plugin-catalog-import';
 import kubernetesPlugin from '@backstage/plugin-kubernetes/alpha';
+// import { OnboardingPage } from '@estehsaan/backstage-plugin-onboarding';
 import { convertLegacyPlugin } from '@backstage/core-compat-api';
 import { convertLegacyPageExtension } from '@backstage/core-compat-api';
 import { convertLegacyEntityContentExtension } from '@backstage/plugin-catalog-react/alpha';
@@ -163,6 +164,7 @@ const devtoolsPluginUnprocessed = createFrontendModule({
 const collectedLegacyPlugins = convertLegacyAppRoot(
   <FlatRoutes>
     <Route path="/catalog-import" element={<CatalogImportPage />} />
+    {/* <Route path="/onboarding" element={<OnboardingPage />} /> */}
   </FlatRoutes>,
 );
 
