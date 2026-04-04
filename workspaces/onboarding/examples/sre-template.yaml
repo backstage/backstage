@@ -1,0 +1,284 @@
+apiVersion: backstage.io/v1alpha1
+kind: OnboardingTemplate
+metadata:
+  name: sre-infrastructure
+  title: SRE — Infrastructure Team
+  description: Onboarding checklist for SREs joining the infrastructure team
+spec:
+  role: sre
+  team: infrastructure
+  phases:
+    - id: day1
+      tasks:
+        - id: sre-setup
+          phase: day1
+          title: Provision SRE workstation
+          description: Run the SRE bootstrap script for monitoring tools, kubectl, and cloud CLI.
+          type: automated
+          automationRef: setup-sre-workstation
+          assignee: self
+          duePhase: day1
+          estimatedMinutes: 45
+          documentation: |
+            1. Run the SRE bootstrap script: `./scripts/sre-bootstrap.sh`
+            2. This installs: kubectl, helm, terraform, AWS CLI, gcloud, k9s, and our internal CLI tools
+            3. Configure kubectl contexts for staging and production: `./scripts/configure-kube.sh`
+            4. Verify staging access: `kubectl --context staging get pods -n platform` should return a pod list
+            5. Set up Grafana access: go to grafana.example.com, log in with SSO, and bookmark key dashboards
+            6. Install the PagerDuty desktop app and log in with your corporate account
+          resources:
+            - type: video
+              title: "SRE Workstation Setup — Everything You Need"
+              url: https://www.youtube.com/watch?v=example-sre-setup
+              duration: "15 min"
+            - type: doc
+              title: "SRE Toolchain Documentation"
+              url: https://docs.example.com/sre/toolchain
+            - type: tool
+              title: "k9s — Kubernetes CLI Dashboard"
+              url: https://k9scli.io
+            - type: tool
+              title: "Grafana Dashboards"
+              url: https://grafana.example.com
+          recommendations:
+            - "Set up kubectl aliases early: `alias k=kubectl`, `alias kgp='kubectl get pods'` — your wrists will thank you."
+            - "Bookmark the 'SRE Golden Signals' dashboard in Grafana — you'll use it daily."
+
+        - id: sre-meet-buddy
+          phase: day1
+          title: Meet your SRE buddy
+          description: Intro call covering on-call rotation, runbooks, and escalation paths.
+          type: manual
+          assignee: buddy
+          duePhase: day1
+          estimatedMinutes: 45
+          documentation: |
+            1. Your SRE buddy has been on the infrastructure team for 6+ months
+            2. Topics to cover: on-call rotation and expectations, escalation paths, key services and owners
+            3. Ask about the team's SLO/SLA targets and how they're measured
+            4. Discuss the runbook structure and how to find the right runbook during an incident
+            5. Get access to the team's private Slack channels and PagerDuty services
+          resources:
+            - type: doc
+              title: "SRE Team Onboarding Handbook"
+              url: https://docs.example.com/sre/onboarding-handbook
+            - type: doc
+              title: "Escalation Matrix"
+              url: https://docs.example.com/sre/escalation-matrix
+          recommendations:
+            - "Write down every acronym and service name your buddy mentions — you'll look them up later."
+            - "Ask your buddy what their first on-call shift was like. It normalizes the nervousness."
+
+    - id: week1
+      tasks:
+        - id: sre-incident-training
+          phase: week1
+          title: Complete incident management training
+          description: "Learn the incident process: detection, triage, mitigation, post-mortem."
+          type: manual
+          assignee: self
+          duePhase: week1
+          estimatedMinutes: 120
+          link:
+            label: Incident playbook
+            url: https://docs.example.com/incidents
+          documentation: |
+            1. Read the Incident Management Playbook cover-to-cover (~30 min read)
+            2. Complete the online incident training course at training.example.com/incidents
+            3. Module 1: Detection — how alerts flow from Prometheus → Alertmanager → PagerDuty
+            4. Module 2: Triage — severity classification (SEV1-SEV4) and who to page
+            5. Module 3: Communication — using #incidents channel, status page updates, stakeholder emails
+            6. Module 4: Mitigation — common rollback procedures, feature flagging, capacity scaling
+            7. Module 5: Post-Mortem — blameless culture, timeline construction, action item tracking
+            8. Review 3 recent post-mortems from the post-mortem archive to see real examples
+          resources:
+            - type: course
+              title: "Incident Management Training"
+              url: https://training.example.com/incidents
+              duration: "60 min"
+            - type: video
+              title: "Blameless Post-Mortems — Google SRE Talk"
+              url: https://www.youtube.com/watch?v=example-postmortem
+              duration: "25 min"
+            - type: doc
+              title: "Incident Management Playbook"
+              url: https://docs.example.com/incidents/playbook
+            - type: doc
+              title: "Post-Mortem Archive"
+              url: https://docs.example.com/incidents/postmortems
+            - type: article
+              title: "SRE Book Chapter 14 — Managing Incidents"
+              url: https://sre.google/sre-book/managing-incidents/
+          recommendations:
+            - "The post-mortem archive is gold — reading real incidents teaches more than any training."
+            - "Bookmark the severity classification table; you'll reference it during every incident."
+            - "Watch the blameless post-mortem video. It sets the cultural tone for how we handle failure."
+
+        - id: sre-monitoring-tour
+          phase: week1
+          title: Monitoring stack walkthrough
+          description: Review Grafana dashboards, Prometheus alerts, and PagerDuty integration.
+          type: manual
+          assignee: buddy
+          duePhase: week1
+          estimatedMinutes: 90
+          documentation: |
+            1. Schedule 90 minutes with your buddy for a live walkthrough of the monitoring stack
+            2. Start with the "SRE Golden Signals" Grafana dashboard — understand latency, traffic, errors, saturation
+            3. Walk through Prometheus alert rules: where they're defined, how thresholds are set, how they fire
+            4. Review the Alertmanager routing: which alerts go to Slack vs. PagerDuty vs. email
+            5. Check PagerDuty service configuration: on-call schedules, escalation policies, notification rules
+            6. Review 2-3 recently fired alerts: what triggered them, how they were resolved
+            7. Understand the logging stack: how to query logs in Loki/Elasticsearch for debugging
+          resources:
+            - type: video
+              title: "Monitoring Stack Deep Dive — From Metrics to Pages"
+              url: https://www.youtube.com/watch?v=example-monitoring
+              duration: "30 min"
+            - type: doc
+              title: "Grafana Dashboard Catalog"
+              url: https://docs.example.com/sre/dashboards
+            - type: doc
+              title: "Alert Runbook Index"
+              url: https://docs.example.com/sre/alert-runbooks
+            - type: tool
+              title: "Prometheus Expression Browser"
+              url: https://prometheus.example.com
+            - type: article
+              title: "Google SRE — Monitoring Distributed Systems"
+              url: https://sre.google/sre-book/monitoring-distributed-systems/
+          recommendations:
+            - "After the walkthrough, spend 30 minutes exploring Grafana on your own. Click everything."
+            - "Set up your personal PagerDuty notification preferences BEFORE your first on-call shadow."
+
+        - id: sre-oncall-shadow
+          phase: week1
+          title: Shadow on-call for 48 hours
+          description: Shadow the primary on-call for a full rotation to learn real incidents.
+          type: manual
+          assignee: buddy
+          dependsOn:
+            - sre-incident-training
+          duePhase: week1
+          estimatedMinutes: 480
+          documentation: |
+            1. Coordinate with the current primary on-call to shadow their next 48-hour shift
+            2. Get added as a shadow in PagerDuty (you'll see all pages but won't be primary responder)
+            3. When a page comes in, observe: How does the on-call acknowledge? How do they triage?
+            4. Follow them through the entire incident lifecycle — from alert to resolution
+            5. During quiet periods, review open alerts and dashboards together
+            6. After the shadow, write a 1-page summary: what happened, what you learned, what confused you
+            7. Share the summary with your buddy and manager
+          resources:
+            - type: doc
+              title: "On-Call Handbook"
+              url: https://docs.example.com/sre/oncall-handbook
+            - type: doc
+              title: "Common Alert Runbooks"
+              url: https://docs.example.com/sre/alert-runbooks
+            - type: video
+              title: "A Day in the Life of an SRE On-Call"
+              url: https://www.youtube.com/watch?v=example-oncall-day
+              duration: "12 min"
+            - type: article
+              title: "Being on Call — PagerDuty Best Practices"
+              url: https://response.pagerduty.com/oncall/being_oncall/
+          recommendations:
+            - "Don't just passively watch — ask the on-call to explain their thought process at each step."
+            - "If nothing alerts during your shadow, manufacture a learning opportunity by reviewing past incidents together."
+            - "Keep a running list of 'things I didn't understand' and go through it with your buddy afterward."
+
+    - id: week2
+      tasks:
+        - id: sre-runbook-update
+          phase: week2
+          title: Update or create a runbook
+          description: Pick a service with outdated or missing runbooks and improve it.
+          type: manual
+          assignee: self
+          dependsOn:
+            - sre-monitoring-tour
+          duePhase: week2
+          estimatedMinutes: 180
+          documentation: |
+            1. Browse the runbook index and find a service with missing, outdated, or incomplete runbooks
+            2. Talk to the service owner to understand the most common issues and how they're resolved
+            3. Follow the runbook template: Title, Service Overview, Prerequisites, Steps, Escalation, Verification
+            4. Write or update the runbook, including exact commands and expected outputs
+            5. Have the service owner and your buddy review the runbook
+            6. Submit a PR to the runbook repository and get it merged
+          resources:
+            - type: doc
+              title: "Runbook Template"
+              url: https://docs.example.com/sre/runbook-template
+            - type: doc
+              title: "Runbook Writing Guide"
+              url: https://docs.example.com/sre/writing-runbooks
+            - type: video
+              title: "Writing Runbooks That Actually Get Used"
+              url: https://www.youtube.com/watch?v=example-runbooks
+              duration: "18 min"
+          recommendations:
+            - "Your fresh eyes are an asset — if something's confusing to you, it'll be confusing during an incident at 3am."
+            - "Include screenshots and command outputs in the runbook. Visuals save time under pressure."
+            - "Test your runbook by following it step by step in staging before submitting."
+
+    - id: month1
+      tasks:
+        - id: sre-primary-oncall
+          phase: month1
+          title: First primary on-call shift
+          description: Your first on-call shift as primary (with buddy as secondary backup).
+          type: manual
+          assignee: self
+          dependsOn:
+            - sre-oncall-shadow
+            - sre-runbook-update
+          duePhase: month1
+          estimatedMinutes: 480
+          documentation: |
+            1. Confirm your on-call shift in PagerDuty — your buddy should be listed as secondary/backup
+            2. Before your shift: review the alert runbook index, bookmark key dashboards, charge your laptop
+            3. Set up PagerDuty notifications on your phone (push + phone call for high urgency)
+            4. During the shift: acknowledge alerts promptly, triage using the severity guide, follow runbooks
+            5. If you're unsure about anything, escalate to your buddy (secondary) — that's what they're there for
+            6. After the shift: write a brief summary of any incidents and share in #sre-oncall-handoff
+          resources:
+            - type: doc
+              title: "On-Call Preparation Checklist"
+              url: https://docs.example.com/sre/oncall-prep
+            - type: doc
+              title: "Severity Classification Guide"
+              url: https://docs.example.com/sre/severity-guide
+            - type: tool
+              title: "PagerDuty Mobile App"
+              url: https://support.pagerduty.com/docs/mobile-app
+          recommendations:
+            - "It's normal to be nervous. Having a buddy as backup means you're never truly alone."
+            - "Pre-cook meals and keep snacks nearby — on-call goes smoother when you're not hungry."
+            - "After your shift, take a proper rest. On-call recovery time is part of the job."
+
+        - id: sre-30-day-checkin
+          phase: month1
+          title: 30-day check-in with manager
+          description: Review first month, discuss comfort level with on-call, and set goals.
+          type: manual
+          assignee: manager
+          duePhase: month1
+          estimatedMinutes: 45
+          documentation: |
+            1. Your manager will schedule the check-in — nudge if it hasn't happened by day 25
+            2. Prepare: What systems do you feel confident about? Where do you need more exposure?
+            3. Discuss your on-call experience: Were the runbooks helpful? Any gaps you noticed?
+            4. Set goals for the next 60 days: own a service, improve monitoring for an area, contribute to SLO refinement
+            5. Give feedback on the onboarding process — your input improves it for the next SRE
+          resources:
+            - type: doc
+              title: "30-Day SRE Check-in Template"
+              url: https://docs.example.com/templates/sre-30-day-checkin
+            - type: article
+              title: "Growing as an SRE — From Reactive to Proactive"
+              url: https://docs.example.com/blog/growing-sre
+          recommendations:
+            - "Bring your on-call summary notes to the meeting — they're concrete evidence of your progress."
+            - "Ask your manager which reliability project would be a good 'first ownership' area for you."

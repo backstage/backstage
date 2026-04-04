@@ -1,0 +1,60 @@
+# Dependencies
+node_modules/
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
+
+# Build outputs
+dist/
+dist-types/
+
+# Local files
+.env
+.env.local
+*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test coverage
+coverage/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Turbo
+.turbo
+
+# Non-codebase: Local AI/Agent customization, framework skills, and tool config
+# These are user-specific and should not be committed to the repository
+
+# GitHub-specific local customization (not workflows/config)
+.github/skills/
+
+# Claude AI agent customization (user-specific instructions)
+.claude/
+
+# Copilot configuration (user-specific)
+.copilot/
+
+# Agent-related local files
+.agents/
+
+# Packed tarballs
+*.tgz
+
+# CLAUDE md file
+CLAUDE.md
+

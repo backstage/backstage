@@ -1,0 +1,241 @@
+apiVersion: backstage.io/v1alpha1
+kind: OnboardingTemplate
+metadata:
+  name: frontend-engineer-design-systems
+  title: Frontend Engineer — Design Systems
+  description: Onboarding for frontend engineers joining the design systems team
+spec:
+  role: frontend-engineer
+  team: design-systems
+  phases:
+    - id: day1
+      tasks:
+        - id: fe-setup-laptop
+          phase: day1
+          title: Set up dev environment & Storybook
+          description: Clone the design-system repo, install deps, and verify Storybook runs.
+          type: automated
+          automationRef: setup-frontend-env
+          assignee: self
+          duePhase: day1
+          estimatedMinutes: 45
+          link:
+            label: Setup docs
+            url: https://docs.example.com/frontend-setup
+          documentation: |
+            1. Clone the design-system repo: `git clone git@github.com:example/design-system.git`
+            2. Install dependencies: `yarn install` (we use Yarn 4 with PnP)
+            3. Start Storybook: `yarn storybook` — opens on localhost:6006
+            4. Verify components render correctly by browsing through the sidebar categories
+            5. Run the test suite: `yarn test` — all tests should pass on a fresh clone
+            6. Check the Chromatic integration: `yarn chromatic` (optional on day 1, but good to know)
+          resources:
+            - type: video
+              title: "Design System Dev Setup — Step by Step"
+              url: https://www.youtube.com/watch?v=example-ds-setup
+              duration: "10 min"
+            - type: doc
+              title: "Storybook Documentation"
+              url: https://storybook.js.org/docs
+            - type: repo
+              title: "Design System Repository"
+              url: https://github.com/example/design-system
+          recommendations:
+            - "Install the 'Storybook' VS Code extension for inline component previews."
+            - "If Storybook is slow to start, check that you're using Node 20+ (run `node -v`)."
+
+        - id: fe-meet-buddy
+          phase: day1
+          title: Meet your onboarding buddy
+          description: 30-min intro call with your design systems buddy.
+          type: manual
+          assignee: buddy
+          duePhase: day1
+          estimatedMinutes: 30
+          documentation: |
+            1. Your buddy is a senior member of the design systems team — check your calendar for the intro call
+            2. Topics to cover: how the design system is structured, contribution workflow, design-eng handoff process
+            3. Ask about the upcoming roadmap — what components are planned, what's being deprecated
+            4. Discuss the team's approach to accessibility (it's a first-class concern, not an afterthought)
+            5. Agree on a daily sync cadence for your first week
+          resources:
+            - type: doc
+              title: "Design Systems Team Wiki"
+              url: https://docs.example.com/design-systems/wiki
+            - type: article
+              title: "How We Build Components — Our Process"
+              url: https://docs.example.com/blog/component-process
+          recommendations:
+            - "Ask your buddy to share their 'top 5 gotchas' — things they wish they'd known on day 1."
+
+        - id: fe-figma-access
+          phase: day1
+          title: Get Figma access & review tokens
+          description: Request access to the Figma org and review design token structure.
+          type: manual
+          assignee: self
+          duePhase: day1
+          estimatedMinutes: 20
+          link:
+            label: Figma workspace
+            url: https://figma.com/example
+          documentation: |
+            1. Request Figma org access via IT self-service portal (or ask your buddy to invite you)
+            2. Once added, open the Design System project in Figma
+            3. Review the Foundations page — this documents our color, typography, and spacing tokens
+            4. Compare the Figma tokens with the code in `packages/tokens/src/` to understand the mapping
+            5. Note: token changes in Figma are synced to code via the Tokens Studio plugin
+          resources:
+            - type: video
+              title: "Design Tokens Deep Dive — From Figma to Code"
+              url: https://www.youtube.com/watch?v=example-tokens
+              duration: "22 min"
+            - type: tool
+              title: "Tokens Studio for Figma"
+              url: https://tokens.studio
+            - type: doc
+              title: "Token Architecture Documentation"
+              url: https://docs.example.com/design-systems/tokens
+          recommendations:
+            - "Spend 15 minutes clicking around the Figma library before diving into code — it builds crucial context."
+            - "The token naming convention follows `{category}-{property}-{variant}` — learn it early."
+
+    - id: week1
+      tasks:
+        - id: fe-a11y-training
+          phase: week1
+          title: Complete accessibility training
+          description: Required a11y course covering WCAG 2.1 AA compliance standards.
+          type: manual
+          assignee: self
+          duePhase: week1
+          estimatedMinutes: 90
+          link:
+            label: Start course
+            url: https://training.example.com/a11y
+          documentation: |
+            1. Go to training.example.com/a11y and enroll in "Accessibility for Engineers"
+            2. Module 1: Semantic HTML & ARIA — when to use roles, labels, and live regions
+            3. Module 2: Keyboard Navigation — focus management, tab order, skip links
+            4. Module 3: Color Contrast & Motion — WCAG 2.1 AA requirements, prefers-reduced-motion
+            5. Module 4: Testing for Accessibility — axe-core, manual screen reader testing, CI integration
+            6. Complete the hands-on exercise: fix 5 accessibility violations in a sample component
+            7. Pass the final assessment (80% required)
+          resources:
+            - type: course
+              title: "Accessibility for Engineers — Full Course"
+              url: https://training.example.com/a11y
+              duration: "90 min"
+            - type: video
+              title: "Screen Reader Demo — How Blind Users Navigate the Web"
+              url: https://www.youtube.com/watch?v=example-screen-reader
+              duration: "15 min"
+            - type: doc
+              title: "WCAG 2.1 Quick Reference"
+              url: https://www.w3.org/WAI/WCAG21/quickref/
+            - type: tool
+              title: "axe DevTools Browser Extension"
+              url: https://www.deque.com/axe/devtools/
+            - type: article
+              title: "Our Accessibility Testing Checklist"
+              url: https://docs.example.com/a11y/checklist
+          recommendations:
+            - "Install the axe DevTools extension NOW — you'll use it every day."
+            - "Try navigating our Storybook using only a keyboard. It's eye-opening."
+            - "Watch the screen reader demo before starting the course — it makes the guidelines feel real."
+
+        - id: fe-component-tour
+          phase: week1
+          title: Component library walkthrough
+          description: Pair session reviewing existing components, patterns, and contribution guide.
+          type: manual
+          assignee: buddy
+          duePhase: week1
+          estimatedMinutes: 60
+          documentation: |
+            1. Schedule 60 minutes with your buddy for a live pairing session
+            2. Tour the component directory structure: atoms → molecules → organisms → templates
+            3. Review a simple component (e.g., Button) end to end: Figma design → tokens → code → tests → Storybook story
+            4. Review a complex component (e.g., DataTable) to see composition patterns and context usage
+            5. Understand the PR workflow: branch → implement → a11y test → visual regression → Chromatic review → merge
+            6. Check the contribution guide for naming conventions, file structure, and test requirements
+          resources:
+            - type: video
+              title: "Component Architecture — Atomic Design in Practice"
+              url: https://www.youtube.com/watch?v=example-atomic-design
+              duration: "20 min"
+            - type: doc
+              title: "Component Contribution Guide"
+              url: https://docs.example.com/design-systems/contributing
+            - type: doc
+              title: "Storybook Best Practices"
+              url: https://storybook.js.org/docs/writing-stories
+          recommendations:
+            - "After the tour, pick one simple component and read its code + tests carefully. Understanding one well is better than skimming ten."
+            - "Pay attention to how props are typed — our TypeScript patterns are intentional."
+
+    - id: week2
+      tasks:
+        - id: fe-first-component
+          phase: week2
+          title: Build your first component
+          description: Pick an open component request and implement it following team patterns.
+          type: manual
+          assignee: self
+          dependsOn:
+            - fe-component-tour
+            - fe-a11y-training
+          duePhase: week2
+          estimatedMinutes: 360
+          documentation: |
+            1. Browse issues labeled "good first component" in the design-system repo
+            2. Pick one and assign it to yourself — comment on the issue to let the team know
+            3. Start from the Figma specs: review the design, note all variants & states
+            4. Create files following the naming convention: `ComponentName/ComponentName.tsx`, `ComponentName.test.tsx`, `ComponentName.stories.tsx`
+            5. Implement the component using existing tokens and patterns (reference similar components)
+            6. Write unit tests covering all variants, states, and edge cases
+            7. Write Storybook stories with controls for each prop
+            8. Run accessibility checks: `yarn test:a11y` and fix any violations
+            9. Open a PR, request review from your buddy, and iterate on feedback
+          resources:
+            - type: video
+              title: "Building a Component from Scratch — Live Coding Session"
+              url: https://www.youtube.com/watch?v=example-build-component
+              duration: "40 min"
+            - type: doc
+              title: "Component Spec Template"
+              url: https://docs.example.com/design-systems/component-spec-template
+            - type: doc
+              title: "Testing Patterns for UI Components"
+              url: https://docs.example.com/design-systems/testing-patterns
+          recommendations:
+            - "Start with the simplest variant first, get it working, then add complexity."
+            - "Use React Testing Library's screen queries and findBy* — avoid test IDs when possible."
+            - "Your first component PR will likely get a lot of feedback. That's normal and good — embrace it."
+
+    - id: month1
+      tasks:
+        - id: fe-30-day-checkin
+          phase: month1
+          title: 30-day check-in with manager
+          description: Review first month progress and set Q1 goals.
+          type: manual
+          assignee: manager
+          duePhase: month1
+          estimatedMinutes: 45
+          documentation: |
+            1. Your manager will schedule this — if not done by day 25, send a reminder
+            2. Prepare: What went well? What was challenging? What do you want to focus on next?
+            3. Bring specific examples of components or PRs you're proud of
+            4. Discuss Q1 goals — typically: ship N components, contribute to design token improvements, or own a subsystem
+            5. Give feedback on the onboarding experience — what would you improve for the next person?
+          resources:
+            - type: doc
+              title: "30-Day Check-in Template"
+              url: https://docs.example.com/templates/30-day-checkin
+            - type: article
+              title: "Setting Goals as a New Frontend Engineer"
+              url: https://docs.example.com/blog/frontend-goals
+          recommendations:
+            - "Be specific about what you want to learn next — your manager can connect you with the right people."
+            - "If you're feeling behind, say so. The whole point of this check-in is to recalibrate."
