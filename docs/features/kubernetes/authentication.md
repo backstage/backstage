@@ -207,7 +207,7 @@ kubernetes:
   auth:
     providers:
       microsoft:
-        development:
+        <env>:
           scope: ${KUBERNETES_ENTERPRISE_APP_SCOPE}
 ```
 
