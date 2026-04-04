@@ -15,6 +15,7 @@
  */
 
 import { CatalogFilterBlueprint } from '@backstage/plugin-catalog-react/alpha';
+import { z } from 'zod';
 
 const catalogTagCatalogFilter = CatalogFilterBlueprint.make({
   name: 'tag',
@@ -32,7 +33,8 @@ const catalogKindCatalogFilter = CatalogFilterBlueprint.makeWithOverrides({
   name: 'kind',
   config: {
     schema: {
-      initialFilter: z => z.string().default('component'),
+      initialFilter: zod => zod.string().default('component'),
+      allFilterEnabled: zod => zod.boolean().optional(),
     },
   },
   factory(originalFactory, { config }) {
@@ -41,7 +43,12 @@ const catalogKindCatalogFilter = CatalogFilterBlueprint.makeWithOverrides({
         const { EntityKindPicker } = await import(
           '@backstage/plugin-catalog-react'
         );
-        return <EntityKindPicker initialFilter={config.initialFilter} />;
+        return (
+          <EntityKindPicker
+            initialFilter={config.initialFilter}
+            allFilterEnabled={config.allFilterEnabled}
+          />
+        );
       },
     });
   },
@@ -63,7 +70,7 @@ const catalogModeCatalogFilter = CatalogFilterBlueprint.makeWithOverrides({
   name: 'mode',
   config: {
     schema: {
-      mode: z => z.enum(['owners-only', 'all']).optional(),
+      mode: zod => zod.enum(['owners-only', 'all']).optional(),
     },
   },
   factory(originalFactory, { config }) {
@@ -118,7 +125,8 @@ const catalogListCatalogFilter = CatalogFilterBlueprint.makeWithOverrides({
   name: 'list',
   config: {
     schema: {
-      initialFilter: z => z.enum(['owned', 'starred', 'all']).default('owned'),
+      initialFilter: zod =>
+        zod.enum(['owned', 'starred', 'all']).default('owned'),
     },
   },
   factory(originalFactory, { config }) {

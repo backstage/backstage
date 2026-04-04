@@ -179,6 +179,70 @@ describe('<EntityKindPicker/>', () => {
     ).not.toBeInTheDocument();
   });
 
+  it('shows an all option when enabled and clears filter', async () => {
+    const updateFilters = jest.fn();
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <MockEntityListContextProvider
+          value={{
+            filters: { kind: new EntityKindFilter('component', 'Component') },
+            updateFilters,
+          }}
+        >
+          <EntityKindPicker allFilterEnabled />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+    );
+
+    const input = screen.getByTestId('select');
+    fireEvent.mouseDown(within(input).getByRole('button'));
+
+    // 'All Kinds' option should be first
+    expect(
+      screen.getByRole('option', { name: 'All Kinds' }),
+    ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('option', { name: 'All Kinds' }));
+    expect(updateFilters).toHaveBeenLastCalledWith({ kind: undefined });
+  });
+
+  it('accepts all as initial filter and query parameter', async () => {
+    const updateFilters = jest.fn();
+    const queryParameters = { kind: 'all' };
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <MockEntityListContextProvider
+          value={{
+            updateFilters,
+            queryParameters,
+          }}
+        >
+          <EntityKindPicker initialFilter="all" allFilterEnabled hidden />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+    );
+
+    expect(updateFilters).toHaveBeenLastCalledWith({ kind: undefined });
+  });
+
+  it('treats kind=all query parameter as clearing a non-all initialFilter', async () => {
+    const updateFilters = jest.fn();
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <MockEntityListContextProvider
+          value={{
+            updateFilters,
+            queryParameters: { kind: 'all' },
+          }}
+        >
+          <EntityKindPicker initialFilter="component" allFilterEnabled hidden />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+    );
+
+    expect(updateFilters).toHaveBeenLastCalledWith({ kind: undefined });
+  });
+
   it('renders kind from the query parameter even when not in allowedKinds', async () => {
     await renderInTestApp(
       <ApiProvider apis={apis}>
@@ -195,5 +259,105 @@ describe('<EntityKindPicker/>', () => {
     const input = screen.getByTestId('select');
     fireEvent.mouseDown(within(input).getByRole('button'));
     expect(screen.getByRole('option', { name: 'Domain' })).toBeInTheDocument();
+  });
+
+  it('shows "all" option when allFilterEnabled is true', async () => {
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <MockEntityListContextProvider>
+          <EntityKindPicker allFilterEnabled />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+    );
+
+    const input = screen.getByTestId('select');
+    fireEvent.mouseDown(within(input).getByRole('button'));
+
+    await waitFor(() => screen.getByRole('option', { name: 'All Kinds' }));
+    expect(
+      screen.getByRole('option', { name: 'All Kinds' }),
+    ).toBeInTheDocument();
+  });
+
+  it('clears kind filter when "all" is selected with allFilterEnabled', async () => {
+    const updateFilters = jest.fn();
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <MockEntityListContextProvider
+          value={{
+            filters: { kind: new EntityKindFilter('component', 'Component') },
+            updateFilters,
+          }}
+        >
+          <EntityKindPicker allFilterEnabled />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+    );
+
+    const input = screen.getByTestId('select');
+    fireEvent.mouseDown(within(input).getByRole('button'));
+
+    await waitFor(() => screen.getByRole('option', { name: 'All Kinds' }));
+    fireEvent.click(screen.getByRole('option', { name: 'All Kinds' }));
+
+    expect(updateFilters).toHaveBeenLastCalledWith({
+      kind: undefined,
+    });
+  });
+
+  it('handles "all" query parameter correctly when allFilterEnabled is true', async () => {
+    const updateFilters = jest.fn();
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <MockEntityListContextProvider
+          value={{
+            updateFilters,
+            queryParameters: { kind: 'all' },
+          }}
+        >
+          <EntityKindPicker allFilterEnabled />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+    );
+
+    expect(updateFilters).toHaveBeenLastCalledWith({
+      kind: undefined,
+    });
+  });
+
+  it('initializes with no filter when initialFilter is "all" and allFilterEnabled is true', async () => {
+    const updateFilters = jest.fn();
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <MockEntityListContextProvider value={{ updateFilters }}>
+          <EntityKindPicker initialFilter="all" allFilterEnabled />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+    );
+
+    expect(updateFilters).toHaveBeenLastCalledWith({
+      kind: undefined,
+    });
+  });
+
+  it('handles undefined selectedKind correctly when allFilterEnabled is false', async () => {
+    const updateFilters = jest.fn();
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <MockEntityListContextProvider
+          value={{
+            filters: {},
+            updateFilters,
+          }}
+        >
+          <EntityKindPicker allFilterEnabled={false} />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+    );
+
+    const input = screen.getByTestId('select');
+    expect(input).toBeInTheDocument();
+    // Should not show 'all' as selected when allFilterEnabled is false
+    expect(input).not.toHaveValue('all');
   });
 });

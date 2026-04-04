@@ -88,7 +88,8 @@
     "pluralize": "^8.0.0",
     "react-helmet": "6.1.0",
     "react-use": "^17.2.4",
-    "zen-observable": "^0.10.0"
+    "zen-observable": "^0.10.0",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

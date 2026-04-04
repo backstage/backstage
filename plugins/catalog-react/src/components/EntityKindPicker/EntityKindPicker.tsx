@@ -24,12 +24,15 @@ import { filterKinds, useAllKinds } from './kindFilterUtils';
 import { catalogReactTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
-function useEntityKindFilter(opts: { initialFilter: string }): {
+function useEntityKindFilter(opts: {
+  initialFilter: string;
+  allFilterEnabled?: boolean;
+}): {
   loading: boolean;
   error?: Error;
   allKinds: Map<string, string>;
-  selectedKind: string;
-  setSelectedKind: (kind: string) => void;
+  selectedKind?: string;
+  setSelectedKind: (kind?: string) => void;
 } {
   const {
     filters,
@@ -37,41 +40,78 @@ function useEntityKindFilter(opts: { initialFilter: string }): {
     updateFilters,
   } = useEntityList();
 
-  const queryParamKind = useMemo(
+  const queryParamKindRaw = useMemo(
     () => [kindParameter].flat()[0],
     [kindParameter],
   );
 
-  const [selectedKind, setSelectedKind] = useState(
-    queryParamKind ?? filters.kind?.value ?? opts.initialFilter,
-  );
+  // When allFilterEnabled and kind=all, treat as "no filter" (undefined).
+  // Track whether the raw param was explicitly set to 'all' so we can
+  // distinguish "param present and means all" from "param absent".
+  const kindParamIsAll = opts.allFilterEnabled && queryParamKindRaw === 'all';
+  const queryParamKind = kindParamIsAll ? undefined : queryParamKindRaw;
+
+  const [selectedKind, setSelectedKind] = useState<string | undefined>(() => {
+    // If kind=all is explicitly in the URL, honour it and clear the filter
+    // regardless of initialFilter or existing filter state.
+    if (kindParamIsAll) return undefined;
+    return (
+      queryParamKind ??
+      filters.kind?.value ??
+      (opts.allFilterEnabled && opts.initialFilter === 'all'
+        ? undefined
+        : opts.initialFilter)
+    );
+  });
 
   // Set selected kinds on query parameter updates; this happens at initial page load and from
   // external updates to the page location.
   useEffect(() => {
-    if (queryParamKind) {
+    if (kindParamIsAll) {
+      // kind=all explicitly present — clear the filter
+      setSelectedKind(undefined);
+    } else if (queryParamKind !== undefined) {
       setSelectedKind(queryParamKind);
+    } else if (queryParamKindRaw === undefined) {
+      // Parameter was removed entirely — fall back to configured default
+      setSelectedKind(
+        opts.allFilterEnabled && opts.initialFilter === 'all'
+          ? undefined
+          : opts.initialFilter,
+      );
     }
-  }, [queryParamKind]);
+  }, [
+    kindParamIsAll,
+    queryParamKind,
+    queryParamKindRaw,
+    opts.allFilterEnabled,
+    opts.initialFilter,
+  ]);
 
   // Set selected kind from filters; this happens when the kind filter is
   // updated from another component
   useEffect(() => {
     if (filters.kind?.value) {
-      setSelectedKind(filters.kind?.value);
+      setSelectedKind(filters.kind.value);
+    } else if (filters.kind && !filters.kind.value) {
+      // Handle case where filter exists but has no value (should be undefined)
+      setSelectedKind(undefined);
     }
   }, [filters.kind]);
 
   const { allKinds, loading, error } = useAllKinds();
-  const selectedKindLabel = allKinds.get(selectedKind) || selectedKind;
+  const selectedKindLabel = selectedKind
+    ? allKinds.get(selectedKind) || selectedKind
+    : '';
 
   useEffect(() => {
     updateFilters({
-      kind: selectedKind
-        ? new EntityKindFilter(selectedKind, selectedKindLabel)
-        : undefined,
+      kind:
+        selectedKind && (!opts.allFilterEnabled || selectedKind !== 'all')
+          ? new EntityKindFilter(selectedKind, selectedKindLabel)
+          : undefined,
     });
-  }, [selectedKind, selectedKindLabel, updateFilters]);
+  }, [selectedKind, selectedKindLabel, opts.allFilterEnabled, updateFilters]);
 
   return {
     loading,
@@ -93,20 +133,43 @@ export interface EntityKindPickerProps {
    * displayed.
    */
   allowedKinds?: string[];
+  /**
+   * If provided, the picker will start with this value selected. When
+   * `allFilterEnabled` is `true`, the special value `'all'` can be used to
+   * indicate that no kind filter should be applied. The default is
+   * `'component'`.
+   */
   initialFilter?: string;
+  /**
+   * Hide the picker completely (useful when the filter is controlled externally).
+   */
   hidden?: boolean;
+  /**
+   * When true, the dropdown will include an "all" option. Selecting it will
+   * clear the kind filter (the underlying `EntityKindFilter` becomes
+   * `undefined` and the `kind` query parameter is removed). This is a
+   * non-breaking opt-in feature; the default is `false` so existing callers
+   * are unaffected.
+   */
+  allFilterEnabled?: boolean;
 }
 
 /** @public */
 export const EntityKindPicker = (props: EntityKindPickerProps) => {
-  const { allowedKinds, hidden, initialFilter = 'component' } = props;
+  const {
+    allowedKinds,
+    hidden,
+    initialFilter = 'component',
+    allFilterEnabled = false,
+  } = props;
   const { t } = useTranslationRef(catalogReactTranslationRef);
 
   const alertApi = useApi(alertApiRef);
 
   const { error, allKinds, selectedKind, setSelectedKind } =
     useEntityKindFilter({
-      initialFilter: initialFilter,
+      initialFilter,
+      allFilterEnabled,
     });
 
   useEffect(() => {
@@ -127,13 +190,36 @@ export const EntityKindPicker = (props: EntityKindPickerProps) => {
     value: key,
   }));
 
+  if (allFilterEnabled) {
+    items.unshift({
+      value: 'all',
+      label: t('entityKindPicker.optionAllTitle'),
+    });
+  }
+
+  let displayValue: string;
+  if (allFilterEnabled) {
+    displayValue = selectedKind
+      ? selectedKind.toLocaleLowerCase('en-US')
+      : 'all';
+  } else {
+    displayValue = selectedKind ? selectedKind.toLocaleLowerCase('en-US') : '';
+  }
+
   return hidden ? null : (
     <Box pb={1} pt={1}>
       <Select
         label={t('entityKindPicker.title')}
         items={items}
-        selected={selectedKind.toLocaleLowerCase('en-US')}
-        onChange={value => setSelectedKind(String(value))}
+        selected={displayValue}
+        onChange={value =>
+          setSelectedKind(
+            allFilterEnabled && String(value) === 'all'
+              ? undefined
+              : String(value),
+          )
+        }
+        aria-label={t('entityKindPicker.title')}
       />
     </Box>
   );
