@@ -93,7 +93,7 @@ describe('MicrosoftEntraIdStrategy tests', () => {
 
   const config = new ConfigReader(mockConfig);
 
-  it('should get Azure token', async () => {
+  it('should get Microsoft Entra ID token', async () => {
     const strategy = new MicrosoftEntraIdStrategy(
       logger,
       { config: config },
