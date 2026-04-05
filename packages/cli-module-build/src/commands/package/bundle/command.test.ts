@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type Mock} from 'vitest';
+import { vi, type Mock } from 'vitest';
 
 /* eslint jest/expect-expect: ["warn", { "assertFunctionNames": ["expect", "expectPathExists"] }] */
 
@@ -44,8 +44,8 @@ const mockCreateRequire = vi.fn();
 
 // Mock external dependencies
 
-vi.mock('@backstage/cli-common', () => ({
-  ...vi.importActual('@backstage/cli-common'),
+vi.mock('@backstage/cli-common', async () => ({
+  ...(await vi.importActual('@backstage/cli-common')),
   targetPaths: {
     dir: '',
     rootDir: '',
@@ -55,8 +55,8 @@ vi.mock('@backstage/cli-common', () => ({
   runOutput: (...args: unknown[]) => mockRunOutput(...args),
 }));
 
-vi.mock('../../../lib/packager', () => ({
-  ...vi.importActual('../../../lib/packager'),
+vi.mock('../../../lib/packager', async () => ({
+  ...(await vi.importActual('../../../lib/packager')),
   createDistWorkspace: (...args: unknown[]) => mockCreateDistWorkspace(...args),
   packToDirectory: (...args: unknown[]) => mockPackToDirectory(...args),
 }));
@@ -65,8 +65,8 @@ vi.mock('../../../lib/buildFrontend', () => ({
   buildFrontend: (...args: unknown[]) => mockBuildFrontend(...args),
 }));
 
-vi.mock('@backstage/cli-node', () => {
-  const actual = vi.importActual('@backstage/cli-node');
+vi.mock('@backstage/cli-node', async () => {
+  const actual = await vi.importActual<any>('@backstage/cli-node');
   return {
     ...actual,
     PackageGraph: Object.assign(actual.PackageGraph, {
@@ -80,8 +80,8 @@ vi.mock('@backstage/config-loader', () => ({
   loadConfigSchema: (...args: unknown[]) => mockLoadConfigSchema(...args),
 }));
 
-vi.mock('node:module', () => ({
-  ...vi.importActual('node:module'),
+vi.mock('node:module', async () => ({
+  ...(await vi.importActual('node:module')),
   createRequire: (...args: unknown[]) => mockCreateRequire(...args),
 }));
 
@@ -172,11 +172,12 @@ describe('postProcessBundlePackageJson', () => {
 describe('filterBundleConfigSchemas', () => {
   const mockDir = createMockDirectory();
 
-  beforeEach(() => {
+  beforeEach(async () => {
+    const nodeModule = await vi.importActual<typeof import('node:module')>(
+      'node:module',
+    );
     mockCreateRequire.mockImplementation((p: string) =>
-      jest
-        .requireActual<typeof import('node:module')>('node:module')
-        .createRequire(p),
+      nodeModule.createRequire(p),
     );
   });
 
@@ -407,7 +408,7 @@ describe('bundle command', () => {
     );
   }
 
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks();
     vi.spyOn(os, 'tmpdir').mockReturnValue(joinPath(mockDir.path, 'tmp'));
     mockLoadConfigSchema.mockResolvedValue({
@@ -415,19 +416,21 @@ describe('bundle command', () => {
     });
     mockRunOutput.mockResolvedValue('/mock-cache');
     setupRunMock();
-    mockCreateRequire.mockImplementation((path: string) =>
-      vi.importActual('node:module').createRequire(path),
+    const nodeModule = await vi.importActual<typeof import('node:module')>(
+      'node:module',
     );
-    vi.spyOn(console, 'log').mockImplementation();
-    vi.spyOn(console, 'warn').mockImplementation();
-    vi.spyOn(console, 'error').mockImplementation();
+    mockCreateRequire.mockImplementation((path: string) =>
+      nodeModule.createRequire(path),
+    );
+    vi.spyOn(console, 'log').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    vi.spyOn(console, 'error').mockImplementation(() => {});
   });
 
-  afterEach(() => {
-    // Clear native Node module cache for files under mockDir to prevent
-    // cross-test contamination when real createRequire loads dist/index.js.
-    const nativeModule =
-      vi.importActual<typeof import('node:module')>('node:module');
+  afterEach(async () => {
+    const nativeModule = await vi.importActual<typeof import('node:module')>(
+      'node:module',
+    );
     const nativeRequire = nativeModule.createRequire(__filename);
     for (const key of Object.keys(nativeRequire.cache ?? {})) {
       if (key.includes(mockDir.path)) {

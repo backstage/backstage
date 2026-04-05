@@ -144,9 +144,9 @@ describe('postgres', () => {
     });
 
     it('should default to using default azure credentials when type is azure with no credentials', async () => {
-      const { DefaultAzureCredential } = vi.importMock(
+      const { DefaultAzureCredential } = (await vi.importMock(
         '@azure/identity',
-      ) as Mocked<typeof import('@azure/identity')>;
+      )) as Mocked<typeof import('@azure/identity')>;
 
       const tokenExpirationTimestamp = new Date(
         '2025-01-01T12:34:56.789',
@@ -190,9 +190,9 @@ describe('postgres', () => {
     });
 
     it('uses the correct config when using azure managed identity', async () => {
-      const { ManagedIdentityCredential } = vi.importMock(
+      const { ManagedIdentityCredential } = (await vi.importMock(
         '@azure/identity',
-      ) as Mocked<typeof import('@azure/identity')>;
+      )) as Mocked<typeof import('@azure/identity')>;
 
       const tokenExpirationTimestamp = new Date(
         '2025-01-01T12:34:56.789',
@@ -238,9 +238,9 @@ describe('postgres', () => {
     });
 
     it('uses the correct config when using azure client secret credentials', async () => {
-      const { ClientSecretCredential } = vi.importMock(
+      const { ClientSecretCredential } = (await vi.importMock(
         '@azure/identity',
-      ) as Mocked<typeof import('@azure/identity')>;
+      )) as Mocked<typeof import('@azure/identity')>;
 
       const tokenExpirationTimestamp = new Date(
         '2025-01-01T12:34:56.789',
@@ -292,9 +292,9 @@ describe('postgres', () => {
     });
 
     it('removes tokenCredential from the final connection', async () => {
-      const { DefaultAzureCredential } = vi.importMock(
+      const { DefaultAzureCredential } = (await vi.importMock(
         '@azure/identity',
-      ) as Mocked<typeof import('@azure/identity')>;
+      )) as Mocked<typeof import('@azure/identity')>;
       DefaultAzureCredential.prototype.getToken.mockResolvedValue({
         token: 't',
         expiresOnTimestamp: Date.now() + 1000,
@@ -316,9 +316,9 @@ describe('postgres', () => {
     });
 
     it('instructs knex to get a new connection object when the old azure token expires', async () => {
-      const { DefaultAzureCredential } = vi.importMock(
+      const { DefaultAzureCredential } = (await vi.importMock(
         '@azure/identity',
-      ) as Mocked<typeof import('@azure/identity')>;
+      )) as Mocked<typeof import('@azure/identity')>;
 
       const tokenExpirationTimestamp = new Date(
         '2025-01-01T12:34:56.789',
@@ -386,9 +386,9 @@ describe('postgres', () => {
     });
 
     it('throws an error when Azure token acquisition fails', async () => {
-      const { DefaultAzureCredential } = vi.importMock(
+      const { DefaultAzureCredential } = (await vi.importMock(
         '@azure/identity',
-      ) as Mocked<typeof import('@azure/identity')>;
+      )) as Mocked<typeof import('@azure/identity')>;
 
       DefaultAzureCredential.prototype.getToken.mockResolvedValue(null as any);
 
@@ -459,9 +459,9 @@ describe('postgres', () => {
     });
 
     it('adds the settings from cloud-sql-connector', async () => {
-      const { Connector } = vi.importMock(
+      const { Connector } = (await vi.importMock(
         '@google-cloud/cloud-sql-connector',
-      ) as Mocked<typeof import('@google-cloud/cloud-sql-connector')>;
+      )) as Mocked<typeof import('@google-cloud/cloud-sql-connector')>;
 
       const mockStream = (): any => {};
       Connector.prototype.getOptions.mockResolvedValue({ stream: mockStream });
@@ -492,9 +492,9 @@ describe('postgres', () => {
     });
 
     it('passes default settings to cloud-sql-connector', async () => {
-      const { Connector } = vi.importMock(
+      const { Connector } = (await vi.importMock(
         '@google-cloud/cloud-sql-connector',
-      ) as Mocked<typeof import('@google-cloud/cloud-sql-connector')>;
+      )) as Mocked<typeof import('@google-cloud/cloud-sql-connector')>;
 
       const mockStream = (): any => {};
       Connector.prototype.getOptions.mockResolvedValue({ stream: mockStream });
@@ -520,9 +520,9 @@ describe('postgres', () => {
     });
 
     it('passes configured ipType to connector.getOptions', async () => {
-      const { Connector } = vi.importMock(
+      const { Connector } = (await vi.importMock(
         '@google-cloud/cloud-sql-connector',
-      ) as Mocked<typeof import('@google-cloud/cloud-sql-connector')>;
+      )) as Mocked<typeof import('@google-cloud/cloud-sql-connector')>;
 
       const mockStream = (): any => {};
       Connector.prototype.getOptions.mockResolvedValue({ stream: mockStream });
@@ -561,9 +561,9 @@ describe('postgres', () => {
     });
 
     it('passes ip settings to cloud-sql-connector', async () => {
-      const { Connector } = vi.importMock(
+      const { Connector } = (await vi.importMock(
         '@google-cloud/cloud-sql-connector',
-      ) as Mocked<typeof import('@google-cloud/cloud-sql-connector')>;
+      )) as Mocked<typeof import('@google-cloud/cloud-sql-connector')>;
 
       const mockStream = (): any => {};
       Connector.prototype.getOptions.mockResolvedValue({ stream: mockStream });

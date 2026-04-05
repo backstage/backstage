@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type Mock} from 'vitest';
+import { vi } from 'vitest';
 
 import * as AzureStorage from '@azure/storage-blob';
 import { ConfigReader } from '@backstage/config';
@@ -48,12 +48,10 @@ class MockBlobServiceClient {
   getContainerClient = vi.fn(() => new MockContainerClient());
 }
 
-jest
-  .spyOn(AzureStorage, 'BlobServiceClient')
-  .mockReturnValue(new MockBlobServiceClient() as any);
-jest
-  .spyOn(AzureStorage, 'StorageSharedKeyCredential')
-  .mockReturnValue({} as any);
+vi.spyOn(AzureStorage, 'BlobServiceClient').mockReturnValue(
+  new MockBlobServiceClient() as any,
+);
+vi.spyOn(AzureStorage, 'StorageSharedKeyCredential').mockReturnValue({} as any);
 
 const treeResponseFactory = DefaultReadTreeResponseFactory.create({
   config: new ConfigReader({}),
