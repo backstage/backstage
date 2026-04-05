@@ -444,3 +444,25 @@ devTools:
   scheduledTasks:
     plugins:
       - catalog
+
+operationalZones:
+  schedules:
+    - operationId: backstage-upgrades
+      defaultLevel: green
+      windows:
+        - level: red
+          cron: '0 8 * * 1-5'
+          durationMinutes: 600
+        - level: green
+          cron: '0 2 * * 6'
+          durationMinutes: 360
+
+    - operationId: integration-tests
+      defaultLevel: yellow
+      windows:
+        - level: green
+          cron: '0 1 * * *'
+          durationMinutes: 120
+        - level: red
+          cron: '0 9 * * 1'
+          durationMinutes: 60
