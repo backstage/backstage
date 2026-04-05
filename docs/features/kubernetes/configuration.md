@@ -124,9 +124,9 @@ Valid values are:
 - `multiTenant` - This configuration assumes that all components run on all the
   provided clusters.
 
-- `singleTenant` - This configuration assumes that current component run on one cluster in provided clusters.
+- `singleTenant` - This configuration assumes the current component runs on one of the provided clusters.
 
-- `catalogRelation` - This configuration assumes that the current component runs only on all clusters it is dependant on.
+- `catalogRelation` - This configuration assumes that the current component runs only on all clusters it is dependent on.
 
 ### `clusterLocatorMethods`
 
@@ -257,7 +257,7 @@ cluster. Valid values are:
 | ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `aks`                  | This will use a user's AKS access token from the [Microsoft auth provider](https://backstage.io/docs/auth/microsoft/provider) to access the Kubernetes API on AKS clusters.                                                                                                                                                               |
 | `aws`                  | This will use AWS credentials to access resources in EKS clusters                                                                                                                                                                                                                                                                         |
-| `azure`                | This will use [Azure Identity](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview) to access resources in clusters                                                                                                                                                                       |
+| `azure`                | This will use [Azure Identity](https://learn.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview) to access resources in clusters                                                                                                                                                                       |
 | `google`               | This will use a user's Google access token from the [Google auth provider](https://backstage.io/docs/auth/google/provider) to access the Kubernetes API on GKE clusters.                                                                                                                                                                  |
 | `googleServiceAccount` | This will use the Google Cloud service account credentials to access resources in clusters                                                                                                                                                                                                                                                |
 | `oidc`                 | This will use [Oidc Tokens](https://kubernetes.io/docs/reference/access-authn-authz/authentication/#openid-connect-tokens) to authenticate to the Kubernetes API. When this is used the `oidcTokenProvider` field should also be set. Please note the cluster must support OIDC, at the time of writing AKS clusters do not support OIDC. |

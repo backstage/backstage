@@ -145,8 +145,8 @@ The providers available as client side are:
 - `google`
 - `oidc`
 
-[1]: https://docs.microsoft.com/en-us/azure/aks/managed-aad
-[2]: https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest
+[1]: https://learn.microsoft.com/en-us/azure/aks/managed-aad
+[2]: https://learn.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest
 [3]: https://docs.aws.amazon.com/IAM/latest/UserGuide/when-to-use-iam.html
 [4]: https://github.com/backstage/backstage/blob/master/packages/integration-aws-node/README.md
 [5]: https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html

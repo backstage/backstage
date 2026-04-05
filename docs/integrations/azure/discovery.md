@@ -76,7 +76,7 @@ The parameters available are:
 
 :::note Note
 
-- The path parameter follows the same rules as the search on Azure DevOps web interface. For more details visit the [official search documentation](https://docs.microsoft.com/en-us/azure/devops/project/search/get-started-search?view=azure-devops).
+- The path parameter follows the same rules as the search on Azure DevOps web interface. For more details visit the [official search documentation](https://learn.microsoft.com/en-us/azure/devops/project/search/get-started-search?view=azure-devops).
 - To use branch parameters, it is necessary that the desired branch be added to the "Searchable branches" list within Azure DevOps Repositories. To do this, follow the instructions below:
 
 1. Access your Azure DevOps and open the repository in which you want to add the branch.

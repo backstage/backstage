@@ -27,7 +27,7 @@ To be clear, this is not a production-ready installation, and it does not contai
 This guide also assumes a basic understanding of working on a Linux based operating system and have some experience with the terminal, specifically, these commands: `npm`, `yarn`.
 
 - Access to a Unix-based operating system, such as Linux, macOS or
-  [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/)
+  [Windows Subsystem for Linux](https://learn.microsoft.com/en-us/windows/wsl/)
 - A GNU-like build environment available at the command line.
   For example, on Debian/Ubuntu you will want to have the `make` and `build-essential` packages installed.
   On macOS, you will want to have run `xcode-select --install` to get the XCode command line build tooling in place.

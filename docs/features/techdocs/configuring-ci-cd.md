@@ -61,7 +61,7 @@ On GitHub Actions, you can add a step
 [`- uses: actions@checkout@v3`](https://github.com/actions/checkout).
 
 On CircleCI, you can add a special
-[`checkout`](https://circleci.com/docs/2.0/configuration-reference/#checkout)
+[`checkout`](https://circleci.com/docs/configuration-reference/#checkout)
 step.
 
 Eventually we are trying to do a `git clone <https://path/to/docs-repository/>`.

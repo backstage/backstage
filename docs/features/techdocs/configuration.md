@@ -475,11 +475,11 @@ techdocs:
 
 (Required) An account name to write to a storage blob container.
 
-https://docs.microsoft.com/en-us/rest/api/storageservices/authorize-with-shared-key
+https://learn.microsoft.com/en-us/rest/api/storageservices/authorize-with-shared-key
 
 (Optional) An account key is required to write to a storage container. If missing, `AZURE_TENANT_ID`, `AZURE_CLIENT_ID`, `AZURE_CLIENT_SECRET` environment variables will be used.
 
-https://docs.microsoft.com/en-us/azure/storage/common/storage-auth?toc=/azure/storage/blobs/toc.json
+https://learn.microsoft.com/en-us/azure/storage/common/storage-auth?toc=/azure/storage/blobs/toc.json
 
 **Example:**
 

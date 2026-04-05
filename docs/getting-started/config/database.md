@@ -17,7 +17,7 @@ By the end of this tutorial, you will have a working PostgreSQL database hooked 
 This guide assumes a basic understanding of working on a Linux based operating system and have some experience with the terminal, specifically, these commands: `apt-get`, `psql`, `yarn`.
 
 - Access to a Linux-based operating system, such as Linux, MacOS or
-  [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/)
+  [Windows Subsystem for Linux](https://learn.microsoft.com/en-us/windows/wsl/)
 - An account with elevated rights to install prerequisites on your operating
   system
 - If the database is not hosted on the same server as the Backstage app, the

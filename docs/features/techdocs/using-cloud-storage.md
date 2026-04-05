@@ -360,7 +360,7 @@ you should be able to see
 ## Configuring Azure Blob Storage Container with TechDocs
 
 Follow the
-[official Azure Blob Storage documentation](https://docs.microsoft.com/en-us/azure/storage/common/storage-auth?toc=/azure/storage/blobs/toc.json)
+[official Azure Blob Storage documentation](https://learn.microsoft.com/en-us/azure/storage/common/storage-auth?toc=/azure/storage/blobs/toc.json)
 for the latest instructions on the following steps involving Azure Blob Storage.
 
 **1. Set `techdocs.publisher.type` config in your `app-config.yaml`**
@@ -376,7 +376,7 @@ techdocs:
 **2. Create an Azure Blob Storage Container**
 
 Create a dedicated container for TechDocs sites.
-[Refer to the official documentation](https://docs.microsoft.com/en-us/azure/storage/blobs/storage-quickstart-blobs-portal).
+[Refer to the official documentation](https://learn.microsoft.com/en-us/azure/storage/blobs/storage-quickstart-blobs-portal).
 
 TechDocs will publish documentation to this container and will fetch files from
 here to serve documentation in Backstage. Note that the container names are
@@ -410,7 +410,7 @@ If running in Azure Virtual Machines or Azure Kubernetes Service (AKS) with mana
 identity, no additional configuration apart from the `accountName` and
 `containerName` may be needed.
 For other scenarios, you can use a
-[service principal](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-create-service-principal-portal)
+[service principal](https://learn.microsoft.com/en-us/azure/active-directory/develop/howto-create-service-principal-portal)
 by setting:
 
 - `AZURE_CLIENT_ID`
@@ -446,7 +446,7 @@ follow these steps.
 
 To get credentials, access the Azure Portal and go to "Settings > Access Keys",
 and get your Storage account name and Primary Key.
-https://docs.microsoft.com/en-us/rest/api/storageservices/authorize-with-shared-key
+https://learn.microsoft.com/en-us/rest/api/storageservices/authorize-with-shared-key
 for more details.
 
 ```yaml

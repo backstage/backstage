@@ -82,7 +82,7 @@ integrations:
         - personalAccessToken: ${PERSONAL_ACCESS_TOKEN}
 ```
 
-See the Azure DevOps documentation on how to create a [personal access token](https://docs.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate)
+See the Azure DevOps documentation on how to create a [personal access token](https://learn.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate)
 
 ### Using a service principal with a managed identity to generate the client assertion
 
