@@ -45,7 +45,9 @@ vi.mock('./NunjucksWorkflowRunner');
 const MockedNunjucksWorkflowRunner = NunjucksWorkflowRunner as unknown as Mock<
   (...args: any[]) => NunjucksWorkflowRunner
 >;
-MockedNunjucksWorkflowRunner.mockImplementation(() => {});
+MockedNunjucksWorkflowRunner.mockImplementation((() => {}) as unknown as (
+  ...args: any[]
+) => NunjucksWorkflowRunner);
 
 async function createStore(): Promise<DatabaseTaskStore> {
   const manager = DatabaseManager.fromConfig(

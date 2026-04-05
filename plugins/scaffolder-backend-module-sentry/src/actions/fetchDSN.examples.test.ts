@@ -38,14 +38,16 @@ describe('sentry:fetch:dsn action', () => {
       },
     }),
   });
-  const getActionContext = (
+  const getActionContext = async (
     authToken: string | null,
-  ): ActionContext<{
-    organizationSlug: string;
-    projectSlug: string;
-    authToken?: string;
-    apiBaseUrl?: string;
-  }> =>
+  ): Promise<
+    ActionContext<{
+      organizationSlug: string;
+      projectSlug: string;
+      authToken?: string;
+      apiBaseUrl?: string;
+    }>
+  > =>
     createMockActionContext({
       workspacePath: './dev/proj',
       logger: await vi.importMock('winston'),
@@ -120,7 +122,7 @@ describe('sentry:fetch:dsn action', () => {
           },
         }),
       );
-      const actionContext = getActionContext(input.authToken);
+      const actionContext = await getActionContext(input.authToken);
 
       worker.use(
         http.get(
@@ -162,7 +164,7 @@ describe('sentry:fetch:dsn action', () => {
     }
 
     const action = createSentryFetchDSNAction(createScaffolderConfig());
-    const actionContext = getActionContext(null);
+    const actionContext = await getActionContext(null);
 
     worker.use(
       http.get(

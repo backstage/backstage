@@ -31,12 +31,12 @@ const clientWrapper = ElasticSearchClientWrapper.fromClientOptions({
 
 describe('ElasticSearchSearchEngineIndexer', () => {
   let indexer: ElasticSearchSearchEngineIndexer;
-  let bulkSpy: ReturnType<typeof vi.fn>;
-  let getSpy: ReturnType<typeof vi.fn>;
-  let createSpy: ReturnType<typeof vi.fn>;
-  let aliasesSpy: ReturnType<typeof vi.fn>;
-  let deleteSpy: ReturnType<typeof vi.fn>;
-  let refreshSpy: ReturnType<typeof vi.fn>;
+  let bulkSpy: any;
+  let getSpy: any;
+  let createSpy: any;
+  let aliasesSpy: any;
+  let deleteSpy: any;
+  let refreshSpy: any;
 
   beforeEach(() => {
     // Instantiate the indexer to be tested.

@@ -28,7 +28,7 @@ const lunrBuilderPipelineAddSpy = vi.fn();
 const lunrBuilderSearchPipelineAddSpy = vi.fn();
 
 vi.mock('lunr', async () => {
-  const actualLunr = await vi.importActual('lunr');
+  const actualLunr = await vi.importActual<typeof import('lunr')>('lunr');
   return {
     ...actualLunr,
     Builder: vi.fn().mockImplementation(() => {

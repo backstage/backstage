@@ -25,15 +25,16 @@ import { DocsCardGrid } from './DocsCardGrid';
 // Hacky way to mock a specific boolean config value.
 const getOptionalBooleanMock = vi.fn().mockReturnValue(false);
 vi.mock('@backstage/core-plugin-api', async () => {
-  const actual = await vi.importActual('@backstage/core-plugin-api');
+  const actual = await vi.importActual<
+    typeof import('@backstage/core-plugin-api')
+  >('@backstage/core-plugin-api');
   return {
     ...actual,
     useApi: (apiRef: any) => {
       const actualApi = actual.useApi(apiRef);
       if (apiRef === configApiRef) {
-        const configReader = actualApi;
-        configReader.getOptionalBoolean = getOptionalBooleanMock;
-        return configReader;
+        (actualApi as any).getOptionalBoolean = getOptionalBooleanMock;
+        return actualApi;
       }
 
       return actualApi;

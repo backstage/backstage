@@ -14,16 +14,13 @@
  * limitations under the License.
  */
 
-import { vi, vi, type Mocked} from 'vitest';
+import { vi, type Mocked } from 'vitest';
 import { ConfigReader } from '@backstage/config';
 import { Readable } from 'node:stream';
 import { NewlineDelimitedJsonCollatorFactory } from './NewlineDelimitedJsonCollatorFactory';
 import { TestPipeline } from '../test-utils';
 import { mockServices } from '@backstage/backend-test-utils';
-import {
-  UrlReaderService,
-  UrlReaderServiceReadUrlResponse,
-} from '@backstage/backend-plugin-api';
+import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { UrlReaders } from '@backstage/backend-defaults/urlReader';
 
 describe('DefaultCatalogCollatorFactory', () => {
@@ -42,11 +39,7 @@ describe('DefaultCatalogCollatorFactory', () => {
 
   describe('getCollator', () => {
     let readable: Readable;
-    let reader: Mocked<
-      UrlReaderService & {
-        readUrl: Mock<Promise<UrlReaderServiceReadUrlResponse>>;
-      }
-    >;
+    let reader: Mocked<UrlReaderService>;
     let factory: NewlineDelimitedJsonCollatorFactory;
 
     beforeEach(async () => {
@@ -58,7 +51,7 @@ describe('DefaultCatalogCollatorFactory', () => {
         search: vi.fn(),
         readTree: vi.fn(),
         readUrl: vi.fn(),
-      };
+      } as unknown as Mocked<UrlReaderService>;
       factory = NewlineDelimitedJsonCollatorFactory.fromConfig(config, {
         type: 'expected-type',
         searchPattern: 'test://folder/prefix-*',

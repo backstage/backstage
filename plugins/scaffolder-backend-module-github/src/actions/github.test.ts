@@ -100,9 +100,7 @@ describe('publish:github', () => {
     },
   });
 
-  const { entityRefToName: realFamiliarizeEntityName } = await vi.importActual(
-    './gitHelpers',
-  );
+  let realFamiliarizeEntityName: typeof entityRefToName;
   const integrations = ScmIntegrations.fromConfig(config);
   let githubCredentialsProvider: GithubCredentialsProvider;
   let action: TemplateAction<any, any, any>;
@@ -114,6 +112,13 @@ describe('publish:github', () => {
       repoVisibility: 'private' as const,
       access: 'owner/blam',
     },
+  });
+
+  beforeAll(async () => {
+    const actual = await vi.importActual<typeof import('./gitHelpers')>(
+      './gitHelpers',
+    );
+    realFamiliarizeEntityName = actual.entityRefToName;
   });
 
   beforeEach(() => {
@@ -129,7 +134,6 @@ describe('publish:github', () => {
       githubCredentialsProvider,
     });
 
-    // restore real implementation
     (entityRefToName as Mock).mockImplementation(realFamiliarizeEntityName);
     mockOctokit.rest.actions.getRepoPublicKey.mockResolvedValue({
       data: {

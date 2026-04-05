@@ -108,7 +108,7 @@ describe('KubernetesProxy', () => {
             return '';
           }
         }
-      }),
+      }) as any,
     });
 
     return req;

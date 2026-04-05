@@ -40,15 +40,17 @@ describe('sentry:project:create action', () => {
     }),
   });
 
-  const getActionContext = (): ActionContext<{
-    organizationSlug: string;
-    teamSlug: string;
-    name: string;
-    slug?: string;
-    platform?: string;
-    authToken?: string;
-    apiBaseUrl?: string;
-  }> =>
+  const getActionContext = async (): Promise<
+    ActionContext<{
+      organizationSlug: string;
+      teamSlug: string;
+      name: string;
+      slug?: string;
+      platform?: string;
+      authToken?: string;
+      apiBaseUrl?: string;
+    }>
+  > =>
     createMockActionContext({
       workspacePath: './dev/proj',
       logger: await vi.importMock('winston'),
@@ -73,7 +75,7 @@ describe('sentry:project:create action', () => {
     }
 
     const action = createSentryCreateProjectAction(createScaffolderConfig());
-    const actionContext = getActionContext();
+    const actionContext = await getActionContext();
 
     worker.use(
       http.post(
@@ -116,7 +118,7 @@ describe('sentry:project:create action', () => {
     }
 
     const action = createSentryCreateProjectAction(createScaffolderConfig());
-    const actionContext = getActionContext();
+    const actionContext = await getActionContext();
     actionContext.input = { ...actionContext.input, slug: 'project-slug' };
 
     worker.use(
@@ -161,7 +163,7 @@ describe('sentry:project:create action', () => {
     }
 
     const action = createSentryCreateProjectAction(createScaffolderConfig());
-    const actionContext = getActionContext();
+    const actionContext = await getActionContext();
     actionContext.input = { ...actionContext.input, platform: 'platform-a' };
 
     worker.use(
@@ -211,7 +213,7 @@ describe('sentry:project:create action', () => {
         },
       }),
     );
-    const actionContext = getActionContext();
+    const actionContext = await getActionContext();
     actionContext.input.authToken = undefined;
 
     worker.use(
@@ -253,7 +255,7 @@ describe('sentry:project:create action', () => {
     }
 
     const action = createSentryCreateProjectAction(createScaffolderConfig());
-    const actionContext = getActionContext();
+    const actionContext = await getActionContext();
 
     worker.use(
       http.post(
@@ -294,7 +296,7 @@ describe('sentry:project:create action', () => {
     }
 
     const action = createSentryCreateProjectAction(createScaffolderConfig());
-    const actionContext = getActionContext();
+    const actionContext = await getActionContext();
 
     worker.use(
       http.post(

@@ -140,8 +140,14 @@ describe('createRouter with static fallback handler', () => {
 
 describe('createRouter config schema test', () => {
   const libConfigs = require('../lib/config');
-  const libConfigsActual = await vi.importActual('../lib/config');
+  let libConfigsActual: typeof import('../lib/config');
   const readFrontendConfigMock: Mock = libConfigs.readFrontendConfig;
+
+  beforeAll(async () => {
+    libConfigsActual = await vi.importActual<typeof import('../lib/config')>(
+      '../lib/config',
+    );
+  });
 
   beforeEach(() => {
     vi.resetAllMocks();

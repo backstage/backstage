@@ -46,11 +46,11 @@ vi.mock('@backstage/integration', () => ({
 
 describe('GithubMultiOrgEntityProvider', () => {
   describe('read', () => {
-    let mockClient: Mock<any>;
+    let mockClient: Mock;
     let entityProviderConnection: EntityProviderConnection;
     let logger: LoggerService;
     let gitHubConfig: { host: string };
-    let mockGetCredentials: Mock<any>;
+    let mockGetCredentials: Mock;
     let entityProvider: GithubMultiOrgEntityProvider;
 
     beforeEach(() => {

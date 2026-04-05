@@ -36,9 +36,7 @@ import { catalogGraphApiRef, DefaultCatalogGraphApi } from '../../api';
 
 vi.mock('./useEntityRelationGraph');
 
-const useEntityRelationGraph = useEntityRelationGraphMocked as Mock<
-  typeof useEntityRelationGraphMocked
->;
+const useEntityRelationGraph = useEntityRelationGraphMocked as unknown as Mock;
 
 /*
   This is the full test graph:
