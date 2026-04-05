@@ -153,7 +153,7 @@ export const AutocompleteFilter = (props: SearchAutocompleteFilterProps) => {
         }
       }}
       getOptionLabel={option => option.label}
-      getOptionSelected={(option, value) => option.value === value.value}
+      getOptionSelected={(option, value) => !!value && option.value === value.value}
       renderInput={renderInput}
       renderTags={renderTags}
     />
