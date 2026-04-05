@@ -56,7 +56,7 @@ const executeCommand = (
 
 const timeout = 25000;
 
-vi.setConfig({ testTimeout: timeout * 2 });
+jest.setTimeout(timeout * 2);
 
 describe('end-to-end', () => {
   const cwd = path.resolve(__dirname, '../src/example-docs');
@@ -117,7 +117,7 @@ describe('end-to-end', () => {
   });
 
   it('can serve in backstage', async () => {
-    vi.setConfig({ testTimeout: 30000 });
+    jest.setTimeout(30000);
     const proc = await executeCommand(entryPoint, ['serve', '--no-docker'], {
       cwd,
       timeout,

@@ -14,20 +14,18 @@
  * limitations under the License.
  */
 
-import { vi } from 'vitest';
-
 import { runMkdocsServer } from './mkdocsServer';
 import { run } from '@backstage/cli-common';
 
-vi.mock('@backstage/cli-common', () => {
+jest.mock('@backstage/cli-common', () => {
   return {
-    run: vi.fn(),
+    run: jest.fn(),
   };
 });
 
 describe('runMkdocsServer', () => {
   beforeEach(() => {
-    vi.resetAllMocks();
+    jest.resetAllMocks();
   });
 
   describe('docker', () => {

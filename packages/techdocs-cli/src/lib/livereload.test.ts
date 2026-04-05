@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { vi , type Mock} from 'vitest';
-
 import http from 'node:http';
 import {
   injectLivereloadParameters,
@@ -25,18 +23,18 @@ import {
 
 // Note: This mock returns a singleton proxy object so tests can access the
 // registered event handlers (e.g. `proxyRes`) from code under test.
-vi.mock('http-proxy', () => {
+jest.mock('http-proxy', () => {
   const handlers: Record<string, Function> = {};
   const fakeProxy = {
-    on: vi.fn((event: string, cb: Function) => {
+    on: jest.fn((event: string, cb: Function) => {
       handlers[event] = cb;
     }),
-    web: vi.fn((_req: unknown, _res: unknown) => {
+    web: jest.fn((_req: unknown, _res: unknown) => {
       // no-op; tests will manually trigger handlers['proxyRes'] when needed
     }),
     __handlers: handlers,
   };
-  const create = vi.fn(() => fakeProxy);
+  const create = jest.fn(() => fakeProxy);
   return {
     __esModule: true,
     default: { createProxyServer: create },
@@ -65,7 +63,7 @@ describe('livereload helpers', () => {
 
   describe('proxyHtmlWithLivereloadInjection', () => {
     it('injects parameters into HTML responses and sets CORS headers', () => {
-      const { createProxyServer } = vi.importMock('http-proxy') as any;
+      const { createProxyServer } = jest.requireMock('http-proxy') as any;
       const proxy = createProxyServer();
 
       const req = {
@@ -76,7 +74,7 @@ describe('livereload helpers', () => {
         setHeader: (k: string, v: any) => {
           headers[k] = String(v);
         },
-        end: vi.fn(),
+        end: jest.fn(),
       } as unknown as http.ServerResponse;
 
       proxyHtmlWithLivereloadInjection({
@@ -98,13 +96,13 @@ describe('livereload helpers', () => {
             cb();
           }
         },
-        pipe: vi.fn(),
+        pipe: jest.fn(),
       };
 
       (proxy as any).__handlers.proxyRes(proxyRes, {} as any, res);
 
       expect(res.end).toHaveBeenCalled();
-      const injectedHtml = (res.end as Mock).mock.calls[0][0] as string;
+      const injectedHtml = (res.end as jest.Mock).mock.calls[0][0] as string;
       expect(injectedHtml).toContain('<live-reload');
       expect(headers['Access-Control-Allow-Origin']).toBe('*');
       expect(headers['Access-Control-Allow-Methods']).toBe('GET, OPTIONS');
@@ -113,7 +111,7 @@ describe('livereload helpers', () => {
     });
 
     it('passes through non-HTML responses without injection', () => {
-      const { createProxyServer } = vi.importMock('http-proxy') as any;
+      const { createProxyServer } = jest.requireMock('http-proxy') as any;
       const proxy = createProxyServer();
 
       const req = {
@@ -124,7 +122,7 @@ describe('livereload helpers', () => {
         setHeader: (k: string, v: any) => {
           headers[k] = String(v);
         },
-        end: vi.fn(),
+        end: jest.fn(),
       } as unknown as http.ServerResponse;
 
       proxyHtmlWithLivereloadInjection({
@@ -137,8 +135,8 @@ describe('livereload helpers', () => {
 
       const proxyRes: any = {
         headers: { 'content-type': 'text/css' },
-        on: vi.fn(),
-        pipe: vi.fn(),
+        on: jest.fn(),
+        pipe: jest.fn(),
       };
 
       (proxy as any).__handlers.proxyRes(proxyRes, {} as any, res);
@@ -152,7 +150,7 @@ describe('livereload helpers', () => {
 
   describe('proxyMkdocsLivereload', () => {
     it('rewrites path and sets CORS headers', () => {
-      const { createProxyServer } = vi.importMock('http-proxy') as any;
+      const { createProxyServer } = jest.requireMock('http-proxy') as any;
       const proxy = createProxyServer();
 
       const req = {
