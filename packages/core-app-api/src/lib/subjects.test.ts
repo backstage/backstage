@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { PublishSubject, BehaviorSubject } from './subjects';
 
 function observerSpy() {
   return {
-    next: jest.fn(),
-    error: jest.fn(),
-    complete: jest.fn(),
+    next: vi.fn(),
+    error: vi.fn(),
+    complete: vi.fn(),
   };
 }
 
@@ -103,8 +105,8 @@ describe('BehaviorSubject', () => {
     const subj = new BehaviorSubject(0);
     subj.complete();
 
-    const next = jest.fn();
-    const complete = jest.fn();
+    const next = vi.fn();
+    const complete = vi.fn();
     subj.subscribe({ next, complete });
     await 'a tick';
 
@@ -120,8 +122,8 @@ describe('BehaviorSubject', () => {
   it('should forward values to all subscribers', async () => {
     const subj = new BehaviorSubject(0);
 
-    const obs1 = jest.fn();
-    const obs2 = jest.fn();
+    const obs1 = vi.fn();
+    const obs2 = vi.fn();
     subj.subscribe(obs1);
     const sub = subj.subscribe(obs2);
     await 'a tick';

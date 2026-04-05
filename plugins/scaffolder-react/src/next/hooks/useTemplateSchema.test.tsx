@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import { useTemplateSchema } from './useTemplateSchema';
 import { renderHook } from '@testing-library/react';
 import { TestApiProvider } from '@backstage/frontend-test-utils';
@@ -50,7 +52,7 @@ describe('useTemplateSchema', () => {
     };
 
     const mockFeatureFlagsApi = mockApis.featureFlags.mock({
-      isActive: jest.fn(() => false),
+      isActive: vi.fn(() => false),
     });
 
     const { result } = renderHook(() => useTemplateSchema(manifest), {
@@ -122,7 +124,7 @@ describe('useTemplateSchema', () => {
         wrapper: ({ children }: PropsWithChildren<{}>) => (
           <TestApiProvider
             apis={[
-              mockApis.featureFlags.mock({ isActive: jest.fn(() => false) }),
+              mockApis.featureFlags.mock({ isActive: vi.fn(() => false) }),
             ]}
           >
             {children}
@@ -168,7 +170,7 @@ describe('useTemplateSchema', () => {
         wrapper: ({ children }: PropsWithChildren<{}>) => (
           <TestApiProvider
             apis={[
-              mockApis.featureFlags.mock({ isActive: jest.fn(() => true) }),
+              mockApis.featureFlags.mock({ isActive: vi.fn(() => true) }),
             ]}
           >
             {children}
@@ -221,7 +223,7 @@ describe('useTemplateSchema', () => {
         wrapper: ({ children }: PropsWithChildren<{}>) => (
           <TestApiProvider
             apis={[
-              mockApis.featureFlags.mock({ isActive: jest.fn(() => false) }),
+              mockApis.featureFlags.mock({ isActive: vi.fn(() => false) }),
             ]}
           >
             {children}
@@ -261,7 +263,7 @@ describe('useTemplateSchema', () => {
         wrapper: ({ children }: PropsWithChildren<{}>) => (
           <TestApiProvider
             apis={[
-              mockApis.featureFlags.mock({ isActive: jest.fn(() => false) }),
+              mockApis.featureFlags.mock({ isActive: vi.fn(() => false) }),
             ]}
           >
             {children}
@@ -367,7 +369,7 @@ describe('useTemplateSchema', () => {
         wrapper: ({ children }: PropsWithChildren<{}>) => (
           <TestApiProvider
             apis={[
-              mockApis.featureFlags.mock({ isActive: jest.fn(() => false) }),
+              mockApis.featureFlags.mock({ isActive: vi.fn(() => false) }),
             ]}
           >
             {children}

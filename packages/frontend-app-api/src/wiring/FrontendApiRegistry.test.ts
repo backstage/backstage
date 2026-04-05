@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   type AnyApiFactory,
   createApiRef,
@@ -26,7 +28,7 @@ import {
 describe('FrontendApiResolver', () => {
   it('should cache falsy API values', () => {
     const falseApiRef = createApiRef<boolean>({ id: 'test.false' });
-    const falseFactoryFn = jest.fn(() => false);
+    const falseFactoryFn = vi.fn(() => false);
     const registry = new FrontendApiRegistry();
 
     registry.register({
@@ -45,8 +47,8 @@ describe('FrontendApiResolver', () => {
   it('should resolve falsy dependencies', () => {
     const falseApiRef = createApiRef<boolean>({ id: 'test.false' });
     const dependentApiRef = createApiRef<string>({ id: 'test.dependent' });
-    const falseFactoryFn = jest.fn(() => false);
-    const dependentFactoryFn = jest.fn((deps: { falseDependency: boolean }) =>
+    const falseFactoryFn = vi.fn(() => false);
+    const dependentFactoryFn = vi.fn((deps: { falseDependency: boolean }) =>
       deps.falseDependency === false ? 'resolved' : 'unexpected',
     );
     const registry = new FrontendApiRegistry();

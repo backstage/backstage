@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { Entity } from '@backstage/catalog-model';
 import {
   AsyncEntityProvider,
@@ -501,7 +503,7 @@ describe('EntitySwitch', () => {
   it('should switch with async condition that throws', async () => {
     const entity = { metadata: { name: 'mock' }, kind: 'component' } as Entity;
 
-    const shouldRender = jest.fn().mockRejectedValue(undefined);
+    const shouldRender = vi.fn().mockRejectedValue(undefined);
     render(
       <Wrapper>
         <EntityProvider entity={entity}>

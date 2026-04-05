@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi , type Mock} from 'vitest';
 import { mockServices } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
@@ -22,27 +24,27 @@ import { readGiteaConfigs } from './config';
 import { getGiteaApiUrl } from './core';
 import { GiteaIntegration } from '@backstage/integration';
 
-jest.mock('./config');
-jest.mock('./core');
-jest.mock('uuid');
+vi.mock('./config');
+vi.mock('./core');
+vi.mock('uuid');
 
 describe('GiteaEntityProvider', () => {
   const logger = mockServices.logger.mock();
 
   const mockScheduler = {
-    createScheduledTaskRunner: jest.fn(),
-    triggerTask: jest.fn(),
-    scheduleTask: jest.fn(),
-    getScheduledTasks: jest.fn(),
-    cancelTask: jest.fn(),
+    createScheduledTaskRunner: vi.fn(),
+    triggerTask: vi.fn(),
+    scheduleTask: vi.fn(),
+    getScheduledTasks: vi.fn(),
+    cancelTask: vi.fn(),
   };
   const mockTaskRunner = {
-    run: jest.fn(),
+    run: vi.fn(),
   };
 
   beforeEach(() => {
-    jest.resetAllMocks();
-    (readGiteaConfigs as jest.Mock).mockReturnValue([
+    vi.resetAllMocks();
+    (readGiteaConfigs as Mock).mockReturnValue([
       {
         id: 'test-provider',
         host: 'gitea.example.com',
@@ -55,18 +57,18 @@ describe('GiteaEntityProvider', () => {
         },
       },
     ]);
-    (getGiteaApiUrl as jest.Mock).mockReturnValue(
+    (getGiteaApiUrl as Mock).mockReturnValue(
       'https://gitea.example.com/api/v1/',
     );
     mockScheduler.createScheduledTaskRunner.mockReturnValue(mockTaskRunner);
-    (uuid.v4 as jest.Mock).mockReturnValue('test-uuid');
+    (uuid.v4 as Mock).mockReturnValue('test-uuid');
 
     // Mock global fetch
-    global.fetch = jest.fn();
+    global.fetch = vi.fn();
   });
 
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   describe('fromConfig', () => {
@@ -187,7 +189,7 @@ describe('GiteaEntityProvider', () => {
         },
       });
 
-      (readGiteaConfigs as jest.Mock).mockReturnValue([
+      (readGiteaConfigs as Mock).mockReturnValue([
         {
           id: 'test-provider',
           host: 'gitea.example.com',
@@ -246,8 +248,8 @@ describe('GiteaEntityProvider', () => {
   describe('connect', () => {
     let provider: GiteaEntityProvider;
     const mockConnection: EntityProviderConnection = {
-      applyMutation: jest.fn(),
-      refresh: jest.fn(),
+      applyMutation: vi.fn(),
+      refresh: vi.fn(),
     };
 
     beforeEach(() => {
@@ -292,8 +294,8 @@ describe('GiteaEntityProvider', () => {
     let provider: GiteaEntityProvider;
     let integration: GiteaIntegration;
     const mockConnection: EntityProviderConnection = {
-      applyMutation: jest.fn(),
-      refresh: jest.fn(),
+      applyMutation: vi.fn(),
+      refresh: vi.fn(),
     };
 
     beforeEach(() => {
@@ -329,7 +331,7 @@ describe('GiteaEntityProvider', () => {
     it('should handle API errors gracefully', async () => {
       await provider.connect(mockConnection);
 
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
+      (global.fetch as Mock).mockResolvedValueOnce({
         ok: false,
         status: 500,
       });
@@ -342,7 +344,7 @@ describe('GiteaEntityProvider', () => {
     it('should handle empty results', async () => {
       await provider.connect(mockConnection);
 
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
+      (global.fetch as Mock).mockResolvedValueOnce({
         ok: true,
         json: async () => [],
       });
@@ -359,7 +361,7 @@ describe('GiteaEntityProvider', () => {
       await provider.connect(mockConnection);
 
       // Page 1 response
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
+      (global.fetch as Mock).mockResolvedValueOnce({
         ok: true,
         json: async () => [
           {
@@ -381,7 +383,7 @@ describe('GiteaEntityProvider', () => {
       });
 
       // Page 2 response
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
+      (global.fetch as Mock).mockResolvedValueOnce({
         ok: true,
         json: async () => [
           {
@@ -393,23 +395,23 @@ describe('GiteaEntityProvider', () => {
       });
 
       // Empty page 3 to terminate pagination
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
+      (global.fetch as Mock).mockResolvedValueOnce({
         ok: true,
         json: async () => [],
       });
 
       // Catalog check for repo1 - has catalog file
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
+      (global.fetch as Mock).mockResolvedValueOnce({
         ok: true,
       });
 
       // Catalog check for repo2 - no catalog file
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
+      (global.fetch as Mock).mockResolvedValueOnce({
         ok: false,
       });
 
       // Catalog check for repo3 - has catalog file
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
+      (global.fetch as Mock).mockResolvedValueOnce({
         ok: true,
       });
 
@@ -437,7 +439,7 @@ describe('GiteaEntityProvider', () => {
       await provider.connect(mockConnection);
 
       // Mock repository data
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
+      (global.fetch as Mock).mockResolvedValueOnce({
         ok: true,
         json: async () => [
           {
@@ -449,18 +451,18 @@ describe('GiteaEntityProvider', () => {
       });
 
       // Empty page 2
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
+      (global.fetch as Mock).mockResolvedValueOnce({
         ok: true,
         json: async () => [],
       });
 
       // Catalog check - has catalog file
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
+      (global.fetch as Mock).mockResolvedValueOnce({
         ok: true,
       });
 
       // Mock mutation failure
-      (mockConnection.applyMutation as jest.Mock).mockRejectedValueOnce(
+      (mockConnection.applyMutation as Mock).mockRejectedValueOnce(
         new Error('Mutation failed'),
       );
 

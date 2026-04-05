@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { PackageGraph } from '@backstage/cli-node';
 import { findTargetPackages } from './start';
 import { overrideTargetPaths } from '@backstage/cli-common/testUtils';
@@ -97,7 +99,7 @@ const mocks = {
 
 describe('findTargetPackages', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should select default packages', async () => {

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import * as util from './util';
 import { Gitlab, GroupSchema } from '@gitbeaker/rest';
 import { InputError } from '@backstage/errors';
@@ -21,17 +23,17 @@ import { InputError } from '@backstage/errors';
 // Mock the Gitlab client and its methods
 const mockGitlabClient = {
   Groups: {
-    show: jest.fn(),
+    show: vi.fn(),
   },
   Projects: {
-    show: jest.fn(),
+    show: vi.fn(),
   },
   Epics: {
-    all: jest.fn(),
+    all: vi.fn(),
   },
 };
 
-jest.mock('@gitbeaker/rest', () => ({
+vi.mock('@gitbeaker/rest', () => ({
   Gitlab: class {
     constructor() {
       return mockGitlabClient;
@@ -53,7 +55,7 @@ const mockConfig = {
   ],
 };
 describe('getTopLevelParentGroup', () => {
-  afterEach(() => jest.resetAllMocks());
+  afterEach(() => vi.resetAllMocks());
 
   // Mocked nested groups
   const mockGroups: GroupSchema[] = [
@@ -152,7 +154,7 @@ describe('getTopLevelParentGroup', () => {
       token: mockConfig.gitlab[0].token!,
     });
 
-    const showSpy = jest.spyOn(mockGitlabClient.Groups, 'show');
+    const showSpy = vi.spyOn(mockGitlabClient.Groups, 'show');
 
     // Mock implementation of Groups.show
     showSpy.mockImplementation(
@@ -177,7 +179,7 @@ describe('getTopLevelParentGroup', () => {
       token: mockConfig.gitlab[0].token!,
     });
 
-    const showSpy = jest.spyOn(mockGitlabClient.Groups, 'show');
+    const showSpy = vi.spyOn(mockGitlabClient.Groups, 'show');
 
     // Mock implementation of Groups.show
     showSpy.mockImplementation(
@@ -197,7 +199,7 @@ describe('getTopLevelParentGroup', () => {
 });
 
 describe('checkEpicScope', () => {
-  afterEach(() => jest.resetAllMocks());
+  afterEach(() => vi.resetAllMocks());
 
   it('should return true if the project is inside the epic scope', async () => {
     const apiClient = new Gitlab({

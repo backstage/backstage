@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { DefaultTimestampStore, TimestampStore } from './timestampStore';
 
 const mockLocalStorage: any = {
   __STORE__: {},
-  getItem: jest.fn(key => mockLocalStorage.__STORE__[key] || null),
-  setItem: jest.fn((key, value) => {
+  getItem: vi.fn(key => mockLocalStorage.__STORE__[key] || null),
+  setItem: vi.fn((key, value) => {
     mockLocalStorage.__STORE__[key] = value;
   }),
-  removeItem: jest.fn(key => {
+  removeItem: vi.fn(key => {
     delete mockLocalStorage.__STORE__[key];
   }),
-  clear: jest.fn(() => {
+  clear: vi.fn(() => {
     mockLocalStorage.__STORE__ = {};
   }),
 };

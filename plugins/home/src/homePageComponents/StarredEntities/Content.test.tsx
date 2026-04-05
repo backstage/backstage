@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import {
   catalogApiRef,
@@ -50,7 +52,7 @@ describe('StarredEntitiesContent', () => {
     mockedApi.toggleStarred('component:default/mock-starred-entity-3');
 
     const mockCatalogApi = catalogApiMock.mock({
-      getEntitiesByRefs: jest.fn().mockImplementation(async ({ fields }) => {
+      getEntitiesByRefs: vi.fn().mockImplementation(async ({ fields }) => {
         const expectedFields = [
           'kind',
           'metadata.namespace',

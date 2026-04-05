@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import { DefaultAwsCredentialsManager } from './DefaultAwsCredentialsManager';
 import { mockClient, AwsClientStub } from 'aws-sdk-client-mock';
 import 'aws-sdk-client-mock-jest';
@@ -32,19 +34,19 @@ let stsMock: AwsClientStub<STSClient>;
 let config: Config;
 let tmpDir: string;
 
-jest.mock('@aws-sdk/credential-providers', () => {
-  const originalModule = jest.requireActual('@aws-sdk/credential-providers');
+vi.mock('@aws-sdk/credential-providers', () => {
+  const originalModule = vi.importActual('@aws-sdk/credential-providers');
   return {
     ...originalModule,
-    fromNodeProviderChain: jest.fn(),
-    fromTemporaryCredentials: jest.fn(),
+    fromNodeProviderChain: vi.fn(),
+    fromTemporaryCredentials: vi.fn(),
   };
 });
 
 describe('DefaultAwsCredentialsManager', () => {
   beforeEach(() => {
     process.env = { ...env };
-    jest.resetAllMocks();
+    vi.resetAllMocks();
 
     stsMock = mockClient(STSClient);
 
@@ -136,7 +138,7 @@ describe('DefaultAwsCredentialsManager', () => {
         expiration: new Date('2022-01-09'),
       },
     };
-    (fromTemporaryCredentials as jest.Mock).mockImplementation(opts => {
+    (fromTemporaryCredentials as Mock).mockImplementation(opts => {
       const creds = assumeRoleCredentials[opts.params.RoleArn];
       if (!creds) {
         throw new Error(`Unexpected RoleArn: ${opts.params.RoleArn}`);
@@ -152,8 +154,8 @@ describe('DefaultAwsCredentialsManager', () => {
     process.env.AWS_CREDENTIAL_EXPIRATION = testDate.toISOString();
 
     // Return creds from env
-    (fromNodeProviderChain as jest.Mock).mockImplementation(
-      jest.requireActual('@aws-sdk/credential-providers').fromNodeProviderChain,
+    (fromNodeProviderChain as Mock).mockImplementation(
+      vi.importActual('@aws-sdk/credential-providers').fromNodeProviderChain,
     );
 
     // Write a temporary AWS credentials file and point the SDK at it

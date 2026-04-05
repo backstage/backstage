@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { fireEvent, screen, waitFor } from '@testing-library/react';
 import {
   MockEntityListContextProvider,
@@ -78,7 +80,7 @@ describe('<EntityNamespacePicker/>', () => {
   });
 
   it('respects the query parameter filter value', async () => {
-    const updateFilters = jest.fn();
+    const updateFilters = vi.fn();
     const queryParameters = { namespace: ['namespace-1'] };
     await renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
@@ -101,7 +103,7 @@ describe('<EntityNamespacePicker/>', () => {
   });
 
   it('adds namespaces to filters', async () => {
-    const updateFilters = jest.fn();
+    const updateFilters = vi.fn();
     await renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
         <MockEntityListContextProvider
@@ -125,7 +127,7 @@ describe('<EntityNamespacePicker/>', () => {
   });
 
   it('removes namespaces from filters', async () => {
-    const updateFilters = jest.fn();
+    const updateFilters = vi.fn();
     await renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
         <MockEntityListContextProvider
@@ -154,7 +156,7 @@ describe('<EntityNamespacePicker/>', () => {
   });
 
   it('responds to external queryParameters changes', async () => {
-    const updateFilters = jest.fn();
+    const updateFilters = vi.fn();
     const rendered = await renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
         <MockEntityListContextProvider
@@ -189,7 +191,7 @@ describe('<EntityNamespacePicker/>', () => {
     });
   });
   it('removes namespaces from filters if there are no available namespaces', async () => {
-    const updateFilters = jest.fn();
+    const updateFilters = vi.fn();
     const mockCatalogApiRefNoNamespace = catalogApiMock.mock({
       getEntityFacets: async () => ({
         facets: {

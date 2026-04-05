@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
+import { vi, type Mocked } from 'vitest';
+
 import { Entity } from '@backstage/catalog-model';
 import { useApi as useApiMocked } from '@backstage/core-plugin-api';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { useEntityStore } from './useEntityStore';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 
-jest.mock('@backstage/core-plugin-api');
+vi.mock('@backstage/core-plugin-api');
 
-const useApi = useApiMocked as jest.Mocked<any>;
+const useApi = useApiMocked as Mocked<any>;
 
 describe('useEntityStore', () => {
   const catalogApi = catalogApiMock.mock();
@@ -31,7 +33,7 @@ describe('useEntityStore', () => {
     useApi.mockReturnValue(catalogApi);
   });
 
-  afterEach(() => jest.resetAllMocks());
+  afterEach(() => vi.resetAllMocks());
 
   test('request nothing', () => {
     const { result } = renderHook(() => useEntityStore());

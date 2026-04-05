@@ -14,20 +14,22 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { withLogCollector } from '@backstage/test-utils';
 import { startCookieAuthRefresh } from './startCookieAuthRefresh';
 
 describe('startCookieAuthRefresh', () => {
   const discoveryApiMock = {
-    getBaseUrl: jest.fn().mockResolvedValue('http://localhost:7000/app/api'),
+    getBaseUrl: vi.fn().mockResolvedValue('http://localhost:7000/app/api'),
   };
 
   const tenMinutesInMilliseconds = 10 * 60 * 1000;
 
   const fetchApiMock = {
-    fetch: jest.fn().mockResolvedValue({
+    fetch: vi.fn().mockResolvedValue({
       ok: true,
-      json: jest.fn().mockImplementation(async () => ({
+      json: vi.fn().mockImplementation(async () => ({
         expiresAt: new Date(
           Date.now() + tenMinutesInMilliseconds,
         ).toISOString(),
@@ -36,8 +38,8 @@ describe('startCookieAuthRefresh', () => {
   };
 
   const errorApiMock = {
-    post: jest.fn(),
-    error$: jest.fn(),
+    post: vi.fn(),
+    error$: vi.fn(),
   };
 
   const mockOptions = {
@@ -47,17 +49,17 @@ describe('startCookieAuthRefresh', () => {
   };
 
   beforeEach(() => {
-    jest.useFakeTimers({ now: 0 });
-    jest.clearAllMocks();
+    vi.useFakeTimers({ now: 0 });
+    vi.clearAllMocks();
   });
 
   afterEach(() => {
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 
   it('should refresh cookie', async () => {
-    const postMessage = jest.fn();
-    global.BroadcastChannel = jest.fn().mockImplementation(() => ({
+    const postMessage = vi.fn();
+    global.BroadcastChannel = vi.fn().mockImplementation(() => ({
       postMessage,
       addEventListener() {},
       removeEventListener() {},
@@ -66,7 +68,7 @@ describe('startCookieAuthRefresh', () => {
 
     const stop = startCookieAuthRefresh(mockOptions);
 
-    await jest.advanceTimersByTimeAsync(0);
+    await vi.advanceTimersByTimeAsync(0);
 
     expect(fetchApiMock.fetch).toHaveBeenCalledTimes(1);
     expect(fetchApiMock.fetch).toHaveBeenCalledWith(
@@ -81,13 +83,13 @@ describe('startCookieAuthRefresh', () => {
     });
 
     // Should never refresh within the first 5 minutes
-    await jest.advanceTimersByTimeAsync(tenMinutesInMilliseconds / 2);
+    await vi.advanceTimersByTimeAsync(tenMinutesInMilliseconds / 2);
 
     expect(fetchApiMock.fetch).toHaveBeenCalledTimes(1);
     expect(postMessage).toHaveBeenCalledTimes(1);
 
     // Should always refresh within the next 5
-    await jest.advanceTimersByTimeAsync(tenMinutesInMilliseconds / 2);
+    await vi.advanceTimersByTimeAsync(tenMinutesInMilliseconds / 2);
 
     expect(fetchApiMock.fetch).toHaveBeenCalledTimes(2);
     expect(postMessage).toHaveBeenCalledTimes(2);
@@ -97,9 +99,9 @@ describe('startCookieAuthRefresh', () => {
 
   it('should bump refresh when receiving a broadcast message', async () => {
     let messageListener: undefined | ((params: any) => void) = undefined;
-    global.BroadcastChannel = jest.fn().mockImplementation(() => ({
+    global.BroadcastChannel = vi.fn().mockImplementation(() => ({
       postMessage() {},
-      addEventListener: jest.fn().mockImplementation((type, listener) => {
+      addEventListener: vi.fn().mockImplementation((type, listener) => {
         expect(type).toBe('message');
         messageListener = listener;
       }),
@@ -108,7 +110,7 @@ describe('startCookieAuthRefresh', () => {
     }));
     const stop = startCookieAuthRefresh(mockOptions);
 
-    await jest.advanceTimersByTimeAsync(0);
+    await vi.advanceTimersByTimeAsync(0);
 
     expect(fetchApiMock.fetch).toHaveBeenCalledTimes(1);
     expect(fetchApiMock.fetch).toHaveBeenCalledWith(
@@ -126,10 +128,10 @@ describe('startCookieAuthRefresh', () => {
     });
 
     // Usually the refresh would happen after 10 minutes, but now we need to wait 20 instead
-    await jest.advanceTimersByTimeAsync(tenMinutesInMilliseconds);
+    await vi.advanceTimersByTimeAsync(tenMinutesInMilliseconds);
     expect(fetchApiMock.fetch).toHaveBeenCalledTimes(1);
 
-    await jest.advanceTimersByTimeAsync(tenMinutesInMilliseconds);
+    await vi.advanceTimersByTimeAsync(tenMinutesInMilliseconds);
     expect(fetchApiMock.fetch).toHaveBeenCalledTimes(2);
 
     stop();
@@ -155,7 +157,7 @@ describe('startCookieAuthRefresh', () => {
       );
 
       // Backoff time for first error
-      await jest.advanceTimersByTimeAsync(5000);
+      await vi.advanceTimersByTimeAsync(5000);
 
       expect(fetchApiMock.fetch).toHaveBeenCalledTimes(2);
       expect(errorApiMock.post).toHaveBeenCalledTimes(1);

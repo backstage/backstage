@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi, type Mocked } from 'vitest';
+
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
 import merge from 'lodash/merge';
 import { GroupMember, MicrosoftGraphClient } from './client';
@@ -59,17 +61,17 @@ function group(data: Partial<GroupEntity>): GroupEntity {
 }
 
 describe('read microsoft graph', () => {
-  const client: jest.Mocked<MicrosoftGraphClient> = {
-    getUsers: jest.fn(),
-    getGroups: jest.fn(),
-    getGroupMembers: jest.fn(),
-    getGroupUserMembers: jest.fn(),
-    getUserPhotoWithSizeLimit: jest.fn(),
-    getGroupPhotoWithSizeLimit: jest.fn(),
-    getOrganization: jest.fn(),
+  const client: Mocked<MicrosoftGraphClient> = {
+    getUsers: vi.fn(),
+    getGroups: vi.fn(),
+    getGroupMembers: vi.fn(),
+    getGroupUserMembers: vi.fn(),
+    getUserPhotoWithSizeLimit: vi.fn(),
+    getGroupPhotoWithSizeLimit: vi.fn(),
+    getOrganization: vi.fn(),
   } as any;
 
-  afterEach(() => jest.resetAllMocks());
+  afterEach(() => vi.resetAllMocks());
 
   async function* getExampleUsers() {
     yield {

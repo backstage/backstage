@@ -14,27 +14,29 @@
  * limitations under the License.
  */
 
+import { vi, type Mocked } from 'vitest';
+
 import { DefaultLocationService } from './DefaultLocationService';
 import { CatalogProcessingOrchestrator } from '../processing/types';
 import { LocationStore } from './types';
 import { InputError } from '@backstage/errors';
 
 describe('DefaultLocationServiceTest', () => {
-  const orchestrator: jest.Mocked<CatalogProcessingOrchestrator> = {
-    process: jest.fn(),
+  const orchestrator: Mocked<CatalogProcessingOrchestrator> = {
+    process: vi.fn(),
   };
-  const store: jest.Mocked<LocationStore> = {
-    deleteLocation: jest.fn(),
-    createLocation: jest.fn(),
-    listLocations: jest.fn(),
-    queryLocations: jest.fn(),
-    getLocation: jest.fn(),
-    getLocationByEntity: jest.fn(),
+  const store: Mocked<LocationStore> = {
+    deleteLocation: vi.fn(),
+    createLocation: vi.fn(),
+    listLocations: vi.fn(),
+    queryLocations: vi.fn(),
+    getLocation: vi.fn(),
+    getLocationByEntity: vi.fn(),
   };
   const locationService = new DefaultLocationService(store, orchestrator);
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   describe('createLocation', () => {

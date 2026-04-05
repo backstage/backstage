@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { screen, waitFor, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
@@ -37,7 +39,7 @@ import {
   SearchResultGroupTextFilterField,
 } from './SearchResultGroup';
 
-const query = jest.fn().mockResolvedValue({ results: [] });
+const query = vi.fn().mockResolvedValue({ results: [] });
 const searchApiMock = { query };
 const analyticsApiMock = mockApis.analytics();
 
@@ -62,7 +64,7 @@ describe('SearchResultGroup', () => {
   ];
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('Renders without exploding', async () => {
@@ -282,8 +284,8 @@ describe('SearchResultGroup', () => {
       results,
     });
 
-    const handleFilterChange = jest.fn();
-    const handleFilterDelete = jest.fn();
+    const handleFilterChange = vi.fn();
+    const handleFilterDelete = vi.fn();
 
     await renderInTestApp(
       <TestApiProvider
@@ -333,8 +335,8 @@ describe('SearchResultGroup', () => {
       results,
     });
 
-    const handleFilterChange = jest.fn();
-    const handleFilterDelete = jest.fn();
+    const handleFilterChange = vi.fn();
+    const handleFilterDelete = vi.fn();
 
     await renderInTestApp(
       <TestApiProvider

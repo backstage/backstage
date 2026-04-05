@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { ConfigReader } from '@backstage/config';
 import {
   BitbucketServerIntegration,
@@ -280,7 +282,7 @@ describe('BitbucketServerUrlReader', () => {
     });
 
     it('should work for exact URLs by using readUrl directly', async () => {
-      reader.readUrl = jest.fn().mockResolvedValue({
+      reader.readUrl = vi.fn().mockResolvedValue({
         buffer: async () => Buffer.from('content'),
         etag: 'etag',
       } as UrlReaderServiceReadUrlResponse);

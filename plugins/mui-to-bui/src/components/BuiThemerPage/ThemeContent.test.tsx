@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { ThemeContent } from './ThemeContent';
 import { createTheme } from '@mui/material/styles';
 import { renderInTestApp } from '@backstage/test-utils';
 
-jest.mock('./convertMuiToBuiTheme', () => ({
+vi.mock('./convertMuiToBuiTheme', () => ({
   convertMuiToBuiTheme: () => ({
     css: ':root { --bui-color: #000; }',
     styleObject: { '--bui-color': '#000' },
@@ -50,7 +52,7 @@ describe('ThemeContent', () => {
   });
 
   it('handles Copy CSS click', async () => {
-    const writeText = jest.fn();
+    const writeText = vi.fn();
     Object.assign(window.navigator, { clipboard: { writeText } });
 
     await renderInTestApp(

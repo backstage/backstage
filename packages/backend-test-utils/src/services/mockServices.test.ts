@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { coreServices } from '@backstage/backend-plugin-api';
 import { mockServices } from './mockServices';
 
@@ -37,8 +39,8 @@ describe('mockServices.rootConfig()', () => {
 
     const fooConfig = config.getConfig('foo');
 
-    const rootListener = jest.fn();
-    const fooListener = jest.fn();
+    const rootListener = vi.fn();
+    const fooListener = vi.fn();
 
     config.subscribe?.(rootListener);
     fooConfig.subscribe?.(fooListener);

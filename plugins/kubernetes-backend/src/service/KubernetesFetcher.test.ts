@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type MockInstance} from 'vitest';
+
 import { ANNOTATION_KUBERNETES_AUTH_PROVIDER } from '@backstage/plugin-kubernetes-common';
 import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
 import { ObjectToFetch } from '@backstage/plugin-kubernetes-node';
@@ -467,7 +469,7 @@ describe('KubernetesFetcher', () => {
       );
     });
     it('should return pods and unauthorized error, logging a warning', async () => {
-      const warn = jest.spyOn(logger, 'warn');
+      const warn = vi.spyOn(logger, 'warn');
       worker.use(
         rest.get('http://localhost:9999/api/v1/pods', (req, res, ctx) =>
           res(
@@ -649,10 +651,10 @@ describe('KubernetesFetcher', () => {
       });
     });
     describe('when server uses TLS', () => {
-      let httpsRequest: jest.SpyInstance;
+      let httpsRequest: MockInstance;
       const initialCAPath = process.env.KUBERNETES_CA_FILE_PATH;
       beforeAll(() => {
-        httpsRequest = jest.spyOn(
+        httpsRequest = vi.spyOn(
           // this is pretty egregious reverse engineering of msw.
           // If the SetupServerApi constructor was exported, we wouldn't need
           // to be quite so hacky here

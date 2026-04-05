@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   SchedulerServiceTaskRunner,
   SchedulerServiceTaskInvocationDefinition,
@@ -78,7 +80,7 @@ describe('IndexBuilder', () => {
   describe('addCollator', () => {
     it('adds a collator', async () => {
       const testCollatorFactory = new TestDocumentCollatorFactory();
-      const collatorSpy = jest.spyOn(testCollatorFactory, 'getCollator');
+      const collatorSpy = vi.spyOn(testCollatorFactory, 'getCollator');
 
       // Add a collator.
       testIndexBuilder.addCollator({
@@ -97,7 +99,7 @@ describe('IndexBuilder', () => {
     it('adds a decorator', async () => {
       const testCollatorFactory = new TestDocumentCollatorFactory();
       const testDecoratorFactory = new TestDocumentDecoratorFactory();
-      const decoratorSpy = jest.spyOn(testDecoratorFactory, 'getDecorator');
+      const decoratorSpy = vi.spyOn(testDecoratorFactory, 'getDecorator');
 
       // Add a collator.
       testIndexBuilder.addCollator({
@@ -121,8 +123,8 @@ describe('IndexBuilder', () => {
     it('adds a type-specific decorator', async () => {
       const testCollatorFactory = new TypedDocumentCollatorFactory();
       const testDecoratorFactory = new TypedDocumentDecoratorFactory();
-      jest.spyOn(testCollatorFactory, 'getCollator');
-      const decoratorSpy = jest.spyOn(testDecoratorFactory, 'getDecorator');
+      vi.spyOn(testCollatorFactory, 'getCollator');
+      const decoratorSpy = vi.spyOn(testDecoratorFactory, 'getDecorator');
 
       // Add a collator.
       testIndexBuilder.addCollator({
@@ -147,8 +149,8 @@ describe('IndexBuilder', () => {
       const testCollatorFactory = new TestDocumentCollatorFactory();
       const testDecoratorFactory =
         new DifferentlyTypedDocumentDecoratorFactory();
-      const collatorSpy = jest.spyOn(testCollatorFactory, 'getCollator');
-      const decoratorSpy = jest.spyOn(testDecoratorFactory, 'getDecorator');
+      const collatorSpy = vi.spyOn(testCollatorFactory, 'getCollator');
+      const decoratorSpy = vi.spyOn(testDecoratorFactory, 'getDecorator');
 
       // Add a collator.
       testIndexBuilder.addCollator({

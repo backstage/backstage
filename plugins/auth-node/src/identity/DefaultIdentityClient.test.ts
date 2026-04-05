@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   decodeProtectedHeader,
   exportJWK,
@@ -244,7 +246,7 @@ describe('DefaultIdentityClient', () => {
         const token = await factory.issueToken({
           claims: { sub: 'foo' },
         });
-        jest.spyOn(Date, 'now').mockImplementation(() => fixedTime);
+        vi.spyOn(Date, 'now').mockImplementation(() => fixedTime);
         await client.authenticate(token);
       }).rejects.toThrow();
     });

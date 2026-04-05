@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { ConfigReader } from '@backstage/config';
 import { TestEventsService } from '@backstage/plugin-events-backend-test-utils';
 import express from 'express';
@@ -392,7 +394,7 @@ describe('HttpPostIngressEventPublisher', () => {
     const router = Router();
     const app = express().use(router);
     const events = new TestEventsService();
-    const customParse = jest.fn();
+    const customParse = vi.fn();
 
     const bodyParser: HttpBodyParser = async (
       req,

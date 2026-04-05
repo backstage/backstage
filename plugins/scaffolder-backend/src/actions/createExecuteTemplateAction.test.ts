@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import { createExecuteTemplateAction } from './createExecuteTemplateAction';
 import { actionsRegistryServiceMock } from '@backstage/backend-test-utils/alpha';
 import { scaffolderServiceMock } from '@backstage/plugin-scaffolder-node/testUtils';
@@ -21,7 +23,7 @@ describe('createExecuteTemplateAction', () => {
   const mockScaffolderService = scaffolderServiceMock.mock();
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('should scaffold a template and return the taskId', async () => {

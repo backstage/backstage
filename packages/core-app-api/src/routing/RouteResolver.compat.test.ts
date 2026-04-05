@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   createRouteRef,
   createSubRouteRef,
@@ -69,23 +71,23 @@ const externalRef4 = createExternalRouteRef({
 
 describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
   beforeAll(() => {
-    jest.doMock('react-router', () =>
+    vi.doMock('react-router', () =>
       rrVersion === 'beta'
-        ? jest.requireActual('react-router-beta')
-        : jest.requireActual('react-router-stable'),
+        ? vi.importActual('react-router-beta')
+        : vi.importActual('react-router-stable'),
     );
-    jest.doMock('react-router-dom', () =>
+    vi.doMock('react-router-dom', () =>
       rrVersion === 'beta'
-        ? jest.requireActual('react-router-dom-beta')
-        : jest.requireActual('react-router-dom-stable'),
+        ? vi.importActual('react-router-dom-beta')
+        : vi.importActual('react-router-dom-stable'),
     );
   });
 
   afterAll(() => {
-    jest.resetModules();
-    jest.resetAllMocks();
-    jest.restoreAllMocks();
-    jest.clearAllMocks();
+    vi.resetModules();
+    vi.resetAllMocks();
+    vi.restoreAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should not resolve anything with an empty resolver', () => {

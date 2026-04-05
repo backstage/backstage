@@ -13,30 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import { KafkaConsumingEventPublisher } from './KafkaConsumingEventPublisher';
 import { Kafka } from 'kafkajs';
 import { ConfigReader } from '@backstage/config';
 import { mockServices } from '@backstage/backend-test-utils';
 
-jest.mock('kafkajs');
+vi.mock('kafkajs');
 
 describe('KafkaConsumingEventPublisher', () => {
   const mockLogger = mockServices.logger.mock();
   const mockEvents = mockServices.events.mock();
 
   const mockConsumer = {
-    connect: jest.fn(),
-    disconnect: jest.fn(),
-    subscribe: jest.fn(),
-    run: jest.fn(),
-    commitOffsets: jest.fn(),
+    connect: vi.fn(),
+    disconnect: vi.fn(),
+    subscribe: vi.fn(),
+    run: vi.fn(),
+    commitOffsets: vi.fn(),
   };
 
   const mockKafkaClient = {
-    consumer: jest.fn().mockReturnValue(mockConsumer),
+    consumer: vi.fn().mockReturnValue(mockConsumer),
   } as unknown as Kafka;
 
-  jest.mocked(Kafka).mockImplementation(() => mockKafkaClient);
+  vi.mocked(Kafka).mockImplementation(() => mockKafkaClient);
 
   const mockConfig = new ConfigReader({
     events: {
@@ -63,7 +65,7 @@ describe('KafkaConsumingEventPublisher', () => {
   });
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should create instances from config', () => {
@@ -208,8 +210,8 @@ describe('KafkaConsumingEventPublisher', () => {
               'custom-header': Buffer.from('header-value'),
             },
           },
-          heartbeat: jest.fn(),
-          pause: jest.fn(),
+          heartbeat: vi.fn(),
+          pause: vi.fn(),
         });
       });
 
@@ -269,8 +271,8 @@ describe('KafkaConsumingEventPublisher', () => {
             value: Buffer.from(JSON.stringify({ data: 'test-data' })),
             offset: '12345',
           },
-          heartbeat: jest.fn(),
-          pause: jest.fn(),
+          heartbeat: vi.fn(),
+          pause: vi.fn(),
         });
       });
 
@@ -281,10 +283,10 @@ describe('KafkaConsumingEventPublisher', () => {
     });
 
     it('should not commit offset when message processing fails and pauseOnError is true', async () => {
-      const pauseMock = jest.fn();
+      const pauseMock = vi.fn();
       const failingEvents = {
         ...mockEvents,
-        publish: jest.fn().mockRejectedValue(new Error('Processing failed')),
+        publish: vi.fn().mockRejectedValue(new Error('Processing failed')),
       };
 
       const configWithPauseOnError = new ConfigReader({
@@ -328,7 +330,7 @@ describe('KafkaConsumingEventPublisher', () => {
               value: Buffer.from(JSON.stringify({ data: 'test-data' })),
               offset: '12345',
             },
-            heartbeat: jest.fn(),
+            heartbeat: vi.fn(),
             pause: pauseMock,
           }),
         ).rejects.toThrow('Processing failed');
@@ -341,10 +343,10 @@ describe('KafkaConsumingEventPublisher', () => {
     });
 
     it('should skip failed message and commit offset when pauseOnError is false and autoCommit is false', async () => {
-      const pauseMock = jest.fn();
+      const pauseMock = vi.fn();
       const failingEvents = {
         ...mockEvents,
-        publish: jest.fn().mockRejectedValue(new Error('Processing failed')),
+        publish: vi.fn().mockRejectedValue(new Error('Processing failed')),
       };
 
       const configWithSkipOnError = new ConfigReader({
@@ -387,7 +389,7 @@ describe('KafkaConsumingEventPublisher', () => {
             value: Buffer.from(JSON.stringify({ data: 'test-data' })),
             offset: '12345',
           },
-          heartbeat: jest.fn(),
+          heartbeat: vi.fn(),
           pause: pauseMock,
         });
       });
@@ -402,10 +404,10 @@ describe('KafkaConsumingEventPublisher', () => {
     });
 
     it('should skip failed message without committing when pauseOnError is false and autoCommit is true', async () => {
-      const pauseMock = jest.fn();
+      const pauseMock = vi.fn();
       const failingEvents = {
         ...mockEvents,
-        publish: jest.fn().mockRejectedValue(new Error('Processing failed')),
+        publish: vi.fn().mockRejectedValue(new Error('Processing failed')),
       };
 
       const configWithAutoCommitSkipOnError = new ConfigReader({
@@ -448,7 +450,7 @@ describe('KafkaConsumingEventPublisher', () => {
             value: Buffer.from(JSON.stringify({ data: 'test-data' })),
             offset: '12345',
           },
-          heartbeat: jest.fn(),
+          heartbeat: vi.fn(),
           pause: pauseMock,
         });
       });

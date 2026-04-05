@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { VisitsStorageApi } from './VisitsStorageApi';
 import { mockApis } from '@backstage/test-utils';
 import { Visit, VisitsApi } from './VisitsApi';
@@ -31,12 +33,12 @@ describe('VisitsStorageApi.create', () => {
 
   beforeEach(() => {
     window.crypto.randomUUID = mockRandomUUID;
-    jest.useFakeTimers();
+    vi.useFakeTimers();
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
-    jest.useRealTimers();
+    vi.clearAllMocks();
+    vi.useRealTimers();
     window.localStorage.clear();
   });
 
@@ -78,21 +80,21 @@ describe('VisitsStorageApi.create', () => {
         entityRef: 'component:default/playback-order',
         name: 'Playback Order',
       };
-      jest.setSystemTime(baseDate);
+      vi.setSystemTime(baseDate);
       await api.save({ visit: visit1 });
       const visit2 = {
         pathname: '/catalog/default/component/playback-order-2',
         entityRef: 'component:default/playback-order',
         name: 'Playback Order',
       };
-      jest.setSystemTime(baseDate + 360_000);
+      vi.setSystemTime(baseDate + 360_000);
       await api.save({ visit: visit2 });
       const visit3 = {
         pathname: '/catalog/default/component/playback-order-3',
         entityRef: 'component:default/playback-order',
         name: 'Playback Order',
       };
-      jest.setSystemTime(baseDate + 360_000 * 2);
+      vi.setSystemTime(baseDate + 360_000 * 2);
       await api.save({ visit: visit3 });
       const visits = await api.list();
       expect(visits).toHaveLength(2);
@@ -135,7 +137,7 @@ describe('VisitsStorageApi.create', () => {
       return visitsToSave.reduce(
         (acc, visit, index) =>
           acc.then(() => {
-            jest.setSystemTime(baseDate + 360_000 * index);
+            vi.setSystemTime(baseDate + 360_000 * index);
             return api.save({ visit });
           }),
         Promise.resolve({}),

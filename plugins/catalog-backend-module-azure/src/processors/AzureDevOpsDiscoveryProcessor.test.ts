@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type MockedFunction} from 'vitest';
+
 import { ConfigReader } from '@backstage/config';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
 import {
@@ -23,8 +25,8 @@ import {
 import { codeSearch } from '../lib';
 import { mockServices } from '@backstage/backend-test-utils';
 
-jest.mock('../lib');
-const mockCodeSearch = codeSearch as jest.MockedFunction<typeof codeSearch>;
+vi.mock('../lib');
+const mockCodeSearch = codeSearch as MockedFunction<typeof codeSearch>;
 
 describe('AzureDevOpsDiscoveryProcessor', () => {
   describe('parseUrl', () => {
@@ -198,7 +200,7 @@ describe('AzureDevOpsDiscoveryProcessor', () => {
           },
         },
       ]);
-      const emitter = jest.fn();
+      const emitter = vi.fn();
 
       await processor.readLocation(location, false, emitter);
 
@@ -249,7 +251,7 @@ describe('AzureDevOpsDiscoveryProcessor', () => {
           },
         },
       ]);
-      const emitter = jest.fn();
+      const emitter = vi.fn();
 
       await processor.readLocation(location, false, emitter);
 
@@ -292,7 +294,7 @@ describe('AzureDevOpsDiscoveryProcessor', () => {
           },
         },
       ]);
-      const emitter = jest.fn();
+      const emitter = vi.fn();
 
       await processor.readLocation(location, false, emitter);
 
@@ -335,7 +337,7 @@ describe('AzureDevOpsDiscoveryProcessor', () => {
           },
         },
       ]);
-      const emitter = jest.fn();
+      const emitter = vi.fn();
 
       await processor.readLocation(location, false, emitter);
 
@@ -366,7 +368,7 @@ describe('AzureDevOpsDiscoveryProcessor', () => {
         target: 'https://dev.azure.com/shopify/engineering/_git/backstage',
       };
       mockCodeSearch.mockResolvedValueOnce([]);
-      const emitter = jest.fn();
+      const emitter = vi.fn();
 
       await processor.readLocation(location, false, emitter);
 

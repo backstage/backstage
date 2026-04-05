@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { renderInTestApp } from '@backstage/test-utils';
 import { WelcomeTitle } from './WelcomeTitle';
 
 describe('<WelcomeTitle>', () => {
-  afterEach(() => jest.resetAllMocks());
+  afterEach(() => vi.resetAllMocks());
 
   test('should greet user', async () => {
     jest

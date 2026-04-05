@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import yaml from 'yaml';
 
 import { resolve as resolvePath } from 'node:path';
@@ -25,9 +27,9 @@ import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-
 import { examples } from './plain.examples';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 
-jest.mock('@backstage/plugin-scaffolder-node', () => ({
-  ...jest.requireActual('@backstage/plugin-scaffolder-node'),
-  fetchContents: jest.fn(),
+vi.mock('@backstage/plugin-scaffolder-node', () => ({
+  ...vi.importActual('@backstage/plugin-scaffolder-node'),
+  fetchContents: vi.fn(),
 }));
 
 describe('fetch:plain examples', () => {
@@ -39,13 +41,13 @@ describe('fetch:plain examples', () => {
     }),
   );
   const reader: UrlReaderService = {
-    readUrl: jest.fn(),
-    readTree: jest.fn(),
-    search: jest.fn(),
+    readUrl: vi.fn(),
+    readTree: vi.fn(),
+    search: vi.fn(),
   };
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   const action = createFetchPlainAction({ integrations, reader });

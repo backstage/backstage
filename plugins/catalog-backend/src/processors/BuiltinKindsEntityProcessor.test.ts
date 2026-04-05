@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   ApiEntity,
   ComponentEntity,
@@ -28,7 +30,7 @@ import { BuiltinKindsEntityProcessor } from './BuiltinKindsEntityProcessor';
 describe('BuiltinKindsEntityProcessor', () => {
   describe('preProcessEntity', () => {
     const processor = new BuiltinKindsEntityProcessor();
-    afterEach(() => jest.resetAllMocks());
+    afterEach(() => vi.resetAllMocks());
 
     it('should order relation fields correctly', async () => {
       const entity: ComponentEntity = {
@@ -72,9 +74,9 @@ describe('BuiltinKindsEntityProcessor', () => {
   describe('postProcessEntity', () => {
     const processor = new BuiltinKindsEntityProcessor();
     const location = { type: 'a', target: 'b' };
-    const emit = jest.fn();
+    const emit = vi.fn();
 
-    afterEach(() => jest.resetAllMocks());
+    afterEach(() => vi.resetAllMocks());
 
     it('generates relations for component entities', async () => {
       const entity: ComponentEntity = {

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import express from 'express';
 import {
   safelyEncodeURIComponent,
@@ -33,8 +35,8 @@ describe('oauth helpers', () => {
     const appOrigin = 'http://localhost:3000';
     it('should post a message back with payload success', () => {
       const mockResponse = {
-        end: jest.fn().mockReturnThis(),
-        setHeader: jest.fn().mockReturnThis(),
+        end: vi.fn().mockReturnThis(),
+        setHeader: vi.fn().mockReturnThis(),
       } as unknown as express.Response;
 
       const data: WebMessageResponse = {
@@ -71,8 +73,8 @@ describe('oauth helpers', () => {
 
     it('should post a message back with payload error', () => {
       const mockResponse = {
-        end: jest.fn().mockReturnThis(),
-        setHeader: jest.fn().mockReturnThis(),
+        end: vi.fn().mockReturnThis(),
+        setHeader: vi.fn().mockReturnThis(),
       } as unknown as express.Response;
 
       const data: WebMessageResponse = {
@@ -98,11 +100,11 @@ describe('oauth helpers', () => {
       let responseBody = '';
 
       const mockResponse = {
-        end: jest.fn(body => {
+        end: vi.fn(body => {
           responseBody = body;
           return this;
         }),
-        setHeader: jest.fn().mockReturnThis(),
+        setHeader: vi.fn().mockReturnThis(),
       } as unknown as express.Response;
 
       const data: WebMessageResponse = {
@@ -155,8 +157,8 @@ describe('oauth helpers', () => {
 
     it('handles single quotes and unicode chars safely', () => {
       const mockResponse = {
-        end: jest.fn().mockReturnThis(),
-        setHeader: jest.fn().mockReturnThis(),
+        end: vi.fn().mockReturnThis(),
+        setHeader: vi.fn().mockReturnThis(),
       } as unknown as express.Response;
 
       const data: WebMessageResponse = {

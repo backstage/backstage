@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import {
   SchedulerService,
   SchedulerServiceTaskRunner,
@@ -33,7 +35,7 @@ import { GitlabDiscoveryEntityProvider } from './GitlabDiscoveryEntityProvider';
 
 const server = setupServer(...handlers);
 registerMswTestHooks(server);
-afterEach(() => jest.clearAllMocks());
+afterEach(() => vi.clearAllMocks());
 
 class PersistingTaskRunner implements SchedulerServiceTaskRunner {
   private tasks: SchedulerServiceTaskInvocationDefinition[] = [];
@@ -74,7 +76,7 @@ describe('GitlabDiscoveryEntityProvider - configuration', () => {
 
   it('should fail with scheduler but no schedule config', () => {
     const scheduler = {
-      createScheduledTaskRunner: (_: any) => jest.fn(),
+      createScheduledTaskRunner: (_: any) => vi.fn(),
     } as unknown as SchedulerService;
     const config = new ConfigReader(mock.config_no_schedule_integration);
 
@@ -136,8 +138,8 @@ describe('GitlabDiscoveryEntityProvider - refresh', () => {
     const config = new ConfigReader(mock.config_no_org_integration);
     const schedule = new PersistingTaskRunner();
     const entityProviderConnection: EntityProviderConnection = {
-      applyMutation: jest.fn(),
-      refresh: jest.fn(),
+      applyMutation: vi.fn(),
+      refresh: vi.fn(),
     };
     const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
       logger,
@@ -149,7 +151,7 @@ describe('GitlabDiscoveryEntityProvider - refresh', () => {
 
     // Mock the GitLabClient listProjects method to verify default parameters
     const originalListProjects = (provider as any).gitLabClient.listProjects;
-    const mockListProjects = jest.fn().mockImplementation(async options => {
+    const mockListProjects = vi.fn().mockImplementation(async options => {
       // Verify default parameters: archived=false and simple=true (since skipForkedRepos=false by default)
       expect(options).toMatchObject({
         group: 'group1',
@@ -186,8 +188,8 @@ describe('GitlabDiscoveryEntityProvider - refresh', () => {
     );
     const schedule = new PersistingTaskRunner();
     const entityProviderConnection: EntityProviderConnection = {
-      applyMutation: jest.fn(),
-      refresh: jest.fn(),
+      applyMutation: vi.fn(),
+      refresh: vi.fn(),
     };
     const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
       logger,
@@ -221,8 +223,8 @@ describe('GitlabDiscoveryEntityProvider - refresh', () => {
     const config = new ConfigReader(mock.config_single_integration_skip_forks);
     const schedule = new PersistingTaskRunner();
     const entityProviderConnection: EntityProviderConnection = {
-      applyMutation: jest.fn(),
-      refresh: jest.fn(),
+      applyMutation: vi.fn(),
+      refresh: vi.fn(),
     };
     const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
       logger,
@@ -253,8 +255,8 @@ describe('GitlabDiscoveryEntityProvider - refresh', () => {
     );
     const schedule = new PersistingTaskRunner();
     const entityProviderConnection: EntityProviderConnection = {
-      applyMutation: jest.fn(),
-      refresh: jest.fn(),
+      applyMutation: vi.fn(),
+      refresh: vi.fn(),
     };
     const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
       logger,
@@ -282,8 +284,8 @@ describe('GitlabDiscoveryEntityProvider - refresh', () => {
     );
     const schedule = new PersistingTaskRunner();
     const entityProviderConnection: EntityProviderConnection = {
-      applyMutation: jest.fn(),
-      refresh: jest.fn(),
+      applyMutation: vi.fn(),
+      refresh: vi.fn(),
     };
     const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
       logger,
@@ -313,8 +315,8 @@ describe('GitlabDiscoveryEntityProvider - refresh', () => {
     const config = new ConfigReader(mock.config_single_integration);
     const schedule = new PersistingTaskRunner();
     const entityProviderConnection: EntityProviderConnection = {
-      applyMutation: jest.fn(),
-      refresh: jest.fn(),
+      applyMutation: vi.fn(),
+      refresh: vi.fn(),
     };
     const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
       logger,
@@ -341,8 +343,8 @@ describe('GitlabDiscoveryEntityProvider - refresh', () => {
     const config = new ConfigReader(mock.config_single_integration_with_search);
     const schedule = new PersistingTaskRunner();
     const entityProviderConnection: EntityProviderConnection = {
-      applyMutation: jest.fn(),
-      refresh: jest.fn(),
+      applyMutation: vi.fn(),
+      refresh: vi.fn(),
     };
     const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
       logger,
@@ -368,8 +370,8 @@ describe('GitlabDiscoveryEntityProvider - refresh', () => {
     );
     const schedule = new PersistingTaskRunner();
     const entityProviderConnection: EntityProviderConnection = {
-      applyMutation: jest.fn(),
-      refresh: jest.fn(),
+      applyMutation: vi.fn(),
+      refresh: vi.fn(),
     };
     const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
       logger,
@@ -396,8 +398,8 @@ describe('GitlabDiscoveryEntityProvider - refresh', () => {
     const config = new ConfigReader(mock.config_fallbackBranch_branch);
     const schedule = new PersistingTaskRunner();
     const entityProviderConnection: EntityProviderConnection = {
-      applyMutation: jest.fn(),
-      refresh: jest.fn(),
+      applyMutation: vi.fn(),
+      refresh: vi.fn(),
     };
     const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
       logger,
@@ -423,8 +425,8 @@ describe('GitlabDiscoveryEntityProvider - refresh', () => {
     const config = new ConfigReader(mock.config_single_integration_group);
     const schedule = new PersistingTaskRunner();
     const entityProviderConnection: EntityProviderConnection = {
-      applyMutation: jest.fn(),
-      refresh: jest.fn(),
+      applyMutation: vi.fn(),
+      refresh: vi.fn(),
     };
     const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
       logger,
@@ -457,8 +459,8 @@ describe('GitlabDiscoveryEntityProvider - events', () => {
     const events = DefaultEventsService.create({ logger });
 
     const entityProviderConnection: EntityProviderConnection = {
-      applyMutation: jest.fn(),
-      refresh: jest.fn(),
+      applyMutation: vi.fn(),
+      refresh: vi.fn(),
     };
     const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
       logger,
@@ -478,8 +480,8 @@ describe('GitlabDiscoveryEntityProvider - events', () => {
     const schedule = new PersistingTaskRunner();
     const events = DefaultEventsService.create({ logger });
     const entityProviderConnection: EntityProviderConnection = {
-      applyMutation: jest.fn(),
-      refresh: jest.fn(),
+      applyMutation: vi.fn(),
+      refresh: vi.fn(),
     };
     const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
       logger,
@@ -500,8 +502,8 @@ describe('GitlabDiscoveryEntityProvider - events', () => {
     const schedule = new PersistingTaskRunner();
     const events = DefaultEventsService.create({ logger });
     const entityProviderConnection: EntityProviderConnection = {
-      applyMutation: jest.fn(),
-      refresh: jest.fn(),
+      applyMutation: vi.fn(),
+      refresh: vi.fn(),
     };
     const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
       logger,
@@ -521,8 +523,8 @@ describe('GitlabDiscoveryEntityProvider - events', () => {
     const schedule = new PersistingTaskRunner();
     const events = DefaultEventsService.create({ logger });
     const entityProviderConnection: EntityProviderConnection = {
-      applyMutation: jest.fn(),
-      refresh: jest.fn(),
+      applyMutation: vi.fn(),
+      refresh: vi.fn(),
     };
     const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
       logger,
@@ -547,8 +549,8 @@ describe('GitlabDiscoveryEntityProvider - events', () => {
     const schedule = new PersistingTaskRunner();
     const events = DefaultEventsService.create({ logger });
     const entityProviderConnection: EntityProviderConnection = {
-      applyMutation: jest.fn(),
-      refresh: jest.fn(),
+      applyMutation: vi.fn(),
+      refresh: vi.fn(),
     };
     const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
       logger,
@@ -573,8 +575,8 @@ describe('GitlabDiscoveryEntityProvider - events', () => {
     const schedule = new PersistingTaskRunner();
     const events = DefaultEventsService.create({ logger });
     const entityProviderConnection: EntityProviderConnection = {
-      applyMutation: jest.fn(),
-      refresh: jest.fn(),
+      applyMutation: vi.fn(),
+      refresh: vi.fn(),
     };
     const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
       logger,
@@ -603,8 +605,8 @@ describe('GitlabDiscoveryEntityProvider - events', () => {
 
     const schedule = new PersistingTaskRunner();
     const entityProviderConnection: EntityProviderConnection = {
-      applyMutation: jest.fn(),
-      refresh: jest.fn(),
+      applyMutation: vi.fn(),
+      refresh: vi.fn(),
     };
     const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
       logger,
@@ -628,8 +630,8 @@ describe('GitlabDiscoveryEntityProvider - events', () => {
 
     const schedule = new PersistingTaskRunner();
     const entityProviderConnection: EntityProviderConnection = {
-      applyMutation: jest.fn(),
-      refresh: jest.fn(),
+      applyMutation: vi.fn(),
+      refresh: vi.fn(),
     };
     const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
       logger,
@@ -658,8 +660,8 @@ describe('GitlabDiscoveryEntityProvider - events', () => {
 
     const schedule = new PersistingTaskRunner();
     const entityProviderConnection: EntityProviderConnection = {
-      applyMutation: jest.fn(),
-      refresh: jest.fn(),
+      applyMutation: vi.fn(),
+      refresh: vi.fn(),
     };
     const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
       logger,
@@ -691,8 +693,8 @@ describe('GitlabDiscoveryEntityProvider - events', () => {
 
     const schedule = new PersistingTaskRunner();
     const entityProviderConnection: EntityProviderConnection = {
-      applyMutation: jest.fn(),
-      refresh: jest.fn(),
+      applyMutation: vi.fn(),
+      refresh: vi.fn(),
     };
     const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
       logger,
@@ -743,8 +745,8 @@ describe('GitlabDiscoveryEntityProvider - simple parameter', () => {
 
     const schedule = new PersistingTaskRunner();
     const entityProviderConnection: EntityProviderConnection = {
-      applyMutation: jest.fn(),
-      refresh: jest.fn(),
+      applyMutation: vi.fn(),
+      refresh: vi.fn(),
     };
 
     const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
@@ -753,7 +755,7 @@ describe('GitlabDiscoveryEntityProvider - simple parameter', () => {
     })[0];
 
     // Mock the GitLabClient listProjects method to verify parameters
-    const mockListProjects = jest.fn().mockResolvedValue({
+    const mockListProjects = vi.fn().mockResolvedValue({
       items: [],
       nextPage: undefined,
     });
@@ -798,8 +800,8 @@ describe('GitlabDiscoveryEntityProvider - simple parameter', () => {
 
     const schedule = new PersistingTaskRunner();
     const entityProviderConnection: EntityProviderConnection = {
-      applyMutation: jest.fn(),
-      refresh: jest.fn(),
+      applyMutation: vi.fn(),
+      refresh: vi.fn(),
     };
 
     const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
@@ -808,7 +810,7 @@ describe('GitlabDiscoveryEntityProvider - simple parameter', () => {
     })[0];
 
     // Mock the GitLabClient listProjects method to verify parameters
-    const mockListProjects = jest.fn().mockResolvedValue({
+    const mockListProjects = vi.fn().mockResolvedValue({
       items: [],
       nextPage: undefined,
     });

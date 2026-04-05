@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   DynamicPluginManager,
   dynamicPluginsServiceFactoryWithOptions,
@@ -48,7 +50,7 @@ describe('backend-dynamic-feature-service', () => {
 
   describe('loadPlugins', () => {
     afterEach(() => {
-      jest.resetModules();
+      vi.resetModules();
     });
 
     type TestCase = {
@@ -947,7 +949,7 @@ describe('backend-dynamic-feature-service', () => {
     afterEach(() => {
       mockDir.clear();
       otherMockDir.clear();
-      jest.resetModules();
+      vi.resetModules();
     });
 
     it('should call PluginManager.fromConfig', async () => {
@@ -966,7 +968,7 @@ describe('backend-dynamic-feature-service', () => {
         'a-dynamic-plugin': {},
       });
 
-      const fromConfigSpier = jest.spyOn(DynamicPluginManager, 'create');
+      const fromConfigSpier = vi.spyOn(DynamicPluginManager, 'create');
       const applyConfigSpier = jest
         .spyOn(PluginScanner.prototype as any, 'applyConfig')
         .mockImplementation(() => {});
@@ -991,8 +993,8 @@ describe('backend-dynamic-feature-service', () => {
         }));
       const mockedModuleLoader = {
         logger,
-        bootstrap: jest.fn(),
-        load: jest.fn(),
+        bootstrap: vi.fn(),
+        load: vi.fn(),
       };
 
       const backend = createSpecializedBackend({

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
@@ -24,15 +26,15 @@ import { rootRouteRef } from '../../plugin';
 
 import { HomePageSearchBar } from './HomePageSearchBar';
 
-const navigate = jest.fn();
+const navigate = vi.fn();
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+vi.mock('react-router-dom', () => ({
+  ...vi.importActual('react-router-dom'),
   useNavigate: () => navigate,
 }));
 
 describe('<HomePageSearchBar/>', () => {
-  const searchApiMock = { query: jest.fn().mockResolvedValue({ results: [] }) };
+  const searchApiMock = { query: vi.fn().mockResolvedValue({ results: [] }) };
 
   it("Don't wait query debounce time when enter is pressed", async () => {
     await renderInTestApp(

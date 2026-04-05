@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi, type Mocked } from 'vitest';
+
 import { DatabaseManager } from '@backstage/backend-defaults/database';
 import { ConfigReader } from '@backstage/config';
 import express from 'express';
@@ -188,14 +190,14 @@ const createTestRouter = async (
 
   const taskBroker = new StorageTaskBroker(databaseTaskStore, logger, config);
 
-  jest.spyOn(taskBroker, 'dispatch');
-  jest.spyOn(taskBroker, 'claim');
-  jest.spyOn(taskBroker, 'cancel');
-  jest.spyOn(taskBroker, 'retry');
-  jest.spyOn(taskBroker, 'list');
-  jest.spyOn(taskBroker, 'get');
-  jest.spyOn(taskBroker, 'vacuumTasks');
-  jest.spyOn(taskBroker, 'event$');
+  vi.spyOn(taskBroker, 'dispatch');
+  vi.spyOn(taskBroker, 'claim');
+  vi.spyOn(taskBroker, 'cancel');
+  vi.spyOn(taskBroker, 'retry');
+  vi.spyOn(taskBroker, 'list');
+  vi.spyOn(taskBroker, 'get');
+  vi.spyOn(taskBroker, 'vacuumTasks');
+  vi.spyOn(taskBroker, 'event$');
 
   const entities = overrides.entities ?? [generateMockTemplate(), mockUser];
   const catalog = catalogServiceMock({ entities });
@@ -251,7 +253,7 @@ describe('scaffolder router', () => {
   const credentials = mockCredentials.user();
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('GET /v2/actions', () => {
@@ -739,7 +741,7 @@ describe('scaffolder router', () => {
       const { router, taskBroker } = await createTestRouter({
         entities: [templateWithSecrets, mockUser],
       });
-      const broker = taskBroker.dispatch as jest.Mocked<TaskBroker>['dispatch'];
+      const broker = taskBroker.dispatch as Mocked<TaskBroker>['dispatch'];
 
       broker.mockResolvedValue({
         taskId: 'a-random-id',
@@ -767,7 +769,7 @@ describe('scaffolder router', () => {
 
     it('return the template id', async () => {
       const { router, taskBroker } = await createTestRouter();
-      const broker = taskBroker.dispatch as jest.Mocked<TaskBroker>['dispatch'];
+      const broker = taskBroker.dispatch as Mocked<TaskBroker>['dispatch'];
 
       broker.mockResolvedValue({
         taskId: 'a-random-id',
@@ -792,7 +794,7 @@ describe('scaffolder router', () => {
 
     it('should call the broker with a correct spec', async () => {
       const { router, taskBroker } = await createTestRouter();
-      const broker = taskBroker.dispatch as jest.Mocked<TaskBroker>['dispatch'];
+      const broker = taskBroker.dispatch as Mocked<TaskBroker>['dispatch'];
       const mockToken = mockCredentials.user.token();
       const mockTemplate = generateMockTemplate();
 
@@ -893,7 +895,7 @@ describe('scaffolder router', () => {
           },
         ]);
 
-      const broker = taskBroker.dispatch as jest.Mocked<TaskBroker>['dispatch'];
+      const broker = taskBroker.dispatch as Mocked<TaskBroker>['dispatch'];
       const mockTemplate = generateMockTemplate();
 
       await request(router)
@@ -967,7 +969,7 @@ describe('scaffolder router', () => {
           },
         ]);
 
-      const broker = taskBroker.dispatch as jest.Mocked<TaskBroker>['dispatch'];
+      const broker = taskBroker.dispatch as Mocked<TaskBroker>['dispatch'];
       const mockTemplate = generateMockTemplate();
       await request(router)
         .post('/v2/tasks')
@@ -1037,7 +1039,7 @@ describe('scaffolder router', () => {
     it('return all tasks', async () => {
       const { router, taskBroker } = await createTestRouter();
       (
-        taskBroker.list as jest.Mocked<Required<TaskBroker>>['list']
+        taskBroker.list as Mocked<Required<TaskBroker>>['list']
       ).mockResolvedValue({
         tasks: [
           {
@@ -1074,7 +1076,7 @@ describe('scaffolder router', () => {
     it('return filtered tasks', async () => {
       const { router, taskBroker } = await createTestRouter();
       (
-        taskBroker.list as jest.Mocked<Required<TaskBroker>>['list']
+        taskBroker.list as Mocked<Required<TaskBroker>>['list']
       ).mockResolvedValue({
         tasks: [
           {
@@ -1152,7 +1154,7 @@ describe('scaffolder router', () => {
   describe('GET /v2/tasks/:taskId', () => {
     it('does not divulge secrets', async () => {
       const { router, taskBroker } = await createTestRouter();
-      (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
+      (taskBroker.get as Mocked<TaskBroker>['get']).mockResolvedValue({
         id: 'a-random-id',
         spec: {} as TaskSpec,
         status: 'completed',
@@ -1184,7 +1186,7 @@ describe('scaffolder router', () => {
             result: AuthorizeResult.CONDITIONAL,
           },
         ]);
-      (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
+      (taskBroker.get as Mocked<TaskBroker>['get']).mockResolvedValue({
         id: 'a-random-id',
         spec: {} as any,
         status: 'completed',
@@ -1219,7 +1221,7 @@ describe('scaffolder router', () => {
         entities: [templateWithSecrets, mockUser],
       });
 
-      (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
+      (taskBroker.get as Mocked<TaskBroker>['get']).mockResolvedValue({
         id: 'a-random-id',
         spec: {
           templateInfo: {
@@ -1265,7 +1267,7 @@ describe('scaffolder router', () => {
         entities: [templateWithSecrets, mockUser],
       });
 
-      (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
+      (taskBroker.get as Mocked<TaskBroker>['get']).mockResolvedValue({
         id: 'a-random-id',
         spec: {
           templateInfo: {
@@ -1295,7 +1297,7 @@ describe('scaffolder router', () => {
   describe('GET /v2/tasks/:taskId/eventstream', () => {
     it('should return log messages', async () => {
       const { unwrappedRouter: router, taskBroker } = await createTestRouter();
-      (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
+      (taskBroker.get as Mocked<TaskBroker>['get']).mockResolvedValue({
         id: 'a-random-id',
         spec: {} as any,
         status: 'completed',
@@ -1309,7 +1311,7 @@ describe('scaffolder router', () => {
         events: SerializedTaskEvent[];
       }>;
       (
-        taskBroker.event$ as jest.Mocked<TaskBroker>['event$']
+        taskBroker.event$ as Mocked<TaskBroker>['event$']
       ).mockImplementation(({ taskId }) => {
         return new ObservableImpl(observer => {
           subscriber = observer;
@@ -1343,7 +1345,7 @@ describe('scaffolder router', () => {
 
       let statusCode: number | undefined = undefined;
       let headers: Record<string, string> = {};
-      const responseDataFn = jest.fn();
+      const responseDataFn = vi.fn();
 
       const req = request(router)
         .get('/v2/tasks/a-random-id/eventstream')
@@ -1390,7 +1392,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
 
     it('should return log messages with after query', async () => {
       const { unwrappedRouter: router, taskBroker } = await createTestRouter();
-      (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
+      (taskBroker.get as Mocked<TaskBroker>['get']).mockResolvedValue({
         id: 'a-random-id',
         spec: {} as any,
         status: 'completed',
@@ -1404,7 +1406,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
         events: SerializedTaskEvent[];
       }>;
       (
-        taskBroker.event$ as jest.Mocked<TaskBroker>['event$']
+        taskBroker.event$ as Mocked<TaskBroker>['event$']
       ).mockImplementation(({ taskId }) => {
         return new ObservableImpl(observer => {
           subscriber = observer;
@@ -1464,7 +1466,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
   describe('GET /v2/tasks/:taskId/events', () => {
     it('should return log messages', async () => {
       const { router, taskBroker } = await createTestRouter();
-      (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
+      (taskBroker.get as Mocked<TaskBroker>['get']).mockResolvedValue({
         id: 'a-random-id',
         spec: {} as any,
         status: 'completed',
@@ -1478,7 +1480,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
         events: SerializedTaskEvent[];
       }>;
       (
-        taskBroker.event$ as jest.Mocked<TaskBroker>['event$']
+        taskBroker.event$ as Mocked<TaskBroker>['event$']
       ).mockImplementation(({ taskId }) => {
         return new ObservableImpl(observer => {
           subscriber = observer;
@@ -1534,7 +1536,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
 
     it('should return log messages with after query', async () => {
       const { router, taskBroker } = await createTestRouter();
-      (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
+      (taskBroker.get as Mocked<TaskBroker>['get']).mockResolvedValue({
         id: 'a-random-id',
         spec: {} as any,
         status: 'completed',
@@ -1548,7 +1550,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
         events: SerializedTaskEvent[];
       }>;
       (
-        taskBroker.event$ as jest.Mocked<TaskBroker>['event$']
+        taskBroker.event$ as Mocked<TaskBroker>['event$']
       ).mockImplementation(() => {
         return new ObservableImpl(observer => {
           subscriber = observer;
@@ -1587,7 +1589,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
             result: AuthorizeResult.CONDITIONAL,
           },
         ]);
-      (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
+      (taskBroker.get as Mocked<TaskBroker>['get']).mockResolvedValue({
         id: 'a-random-id',
         spec: {} as any,
         status: 'completed',
@@ -1613,7 +1615,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
       const mockTemplate = generateMockTemplate();
 
       // Spy on the catalog method to verify it's called correctly
-      const getEntityByRefSpy = jest.spyOn(catalog, 'getEntityByRef');
+      const getEntityByRefSpy = vi.spyOn(catalog, 'getEntityByRef');
 
       await request(router)
         .post('/v2/dry-run')
@@ -1698,7 +1700,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
 
   describe('GET /v2/autocomplete/:provider/:resource', () => {
     it('should throw an error when the provider is not registered', async () => {
-      const handleAutocompleteRequest = jest.fn().mockResolvedValue({
+      const handleAutocompleteRequest = vi.fn().mockResolvedValue({
         results: [{ title: 'blob' }],
       });
       const { router } = await createTestRouter({
@@ -1726,7 +1728,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
     });
 
     it('should call the autocomplete handler', async () => {
-      const handleAutocompleteRequest = jest.fn().mockResolvedValue({
+      const handleAutocompleteRequest = vi.fn().mockResolvedValue({
         results: [{ id: 'a-random-id', title: 'blob' }],
       });
 

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   TestDatabases,
   mockCredentials,
@@ -21,7 +23,7 @@ import {
 } from '@backstage/backend-test-utils';
 import { DatabaseEventBusStore } from './DatabaseEventBusStore';
 
-jest.setTimeout(60_000);
+vi.setConfig({ testTimeout: 60_000 });
 
 const logger = mockServices.logger.mock();
 

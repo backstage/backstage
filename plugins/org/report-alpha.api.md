@@ -25,11 +25,11 @@ const _default: OverridableFrontendPlugin<
       name: 'group-profile';
       config: {
         filter: FilterPredicate | undefined;
-        type: 'content' | 'info' | undefined;
+        type: 'info' | 'content' | undefined;
       };
       configInput: {
         filter?: FilterPredicate | undefined;
-        type?: 'content' | 'info' | undefined;
+        type?: 'info' | 'content' | undefined;
       };
       output:
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -66,13 +66,13 @@ const _default: OverridableFrontendPlugin<
         initialRelationAggregation: 'direct' | 'aggregated' | undefined;
         showAggregateMembersToggle: boolean | undefined;
         filter: FilterPredicate | undefined;
-        type: 'content' | 'info' | undefined;
+        type: 'info' | 'content' | undefined;
       };
       configInput: {
         showAggregateMembersToggle?: boolean | undefined;
         initialRelationAggregation?: 'direct' | 'aggregated' | undefined;
         filter?: FilterPredicate | undefined;
-        type?: 'content' | 'info' | undefined;
+        type?: 'info' | 'content' | undefined;
       };
       output:
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -112,14 +112,14 @@ const _default: OverridableFrontendPlugin<
         showAggregateMembersToggle: boolean | undefined;
         ownedKinds: string[] | undefined;
         filter: FilterPredicate | undefined;
-        type: 'content' | 'info' | undefined;
+        type: 'info' | 'content' | undefined;
       };
       configInput: {
         showAggregateMembersToggle?: boolean | undefined;
         initialRelationAggregation?: 'direct' | 'aggregated' | undefined;
         ownedKinds?: string[] | undefined;
         filter?: FilterPredicate | undefined;
-        type?: 'content' | 'info' | undefined;
+        type?: 'info' | 'content' | undefined;
       };
       output:
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -158,13 +158,13 @@ const _default: OverridableFrontendPlugin<
         maxRelations: number | undefined;
         hideIcons: boolean;
         filter: FilterPredicate | undefined;
-        type: 'content' | 'info' | undefined;
+        type: 'info' | 'content' | undefined;
       };
       configInput: {
         hideIcons?: boolean | undefined;
         maxRelations?: number | undefined;
         filter?: FilterPredicate | undefined;
-        type?: 'content' | 'info' | undefined;
+        type?: 'info' | 'content' | undefined;
       };
       output:
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>

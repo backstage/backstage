@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   DeleteObjectCommand,
   GetObjectCommand,
@@ -44,7 +46,7 @@ import {
   mockServices,
 } from '@backstage/backend-test-utils';
 
-jest.setTimeout(30_000);
+vi.setConfig({ testTimeout: 30_000 });
 
 const env = process.env;
 let s3Mock: AwsClientStub<S3Client>;
@@ -62,7 +64,7 @@ function getMockCredentialProvider(): Promise<AwsCredentialProvider> {
     },
   });
 }
-const getCredProviderMock = jest.spyOn(
+const getCredProviderMock = vi.spyOn(
   DefaultAwsCredentialsManager.prototype,
   'getCredentialProvider',
 );
@@ -94,8 +96,8 @@ class ErrorReadable extends Readable {
 }
 
 const logger = mockServices.logger.mock();
-const loggerInfoSpy = jest.spyOn(logger, 'info');
-const loggerErrorSpy = jest.spyOn(logger, 'error');
+const loggerInfoSpy = vi.spyOn(logger, 'info');
+const loggerErrorSpy = vi.spyOn(logger, 'error');
 
 const createPublisherFromConfig = async ({
   bucketName = 'bucketName',
@@ -184,7 +186,7 @@ describe('AwsS3Publish', () => {
     process.env = { ...env };
     process.env.AWS_REGION = 'us-west-2';
 
-    jest.resetAllMocks();
+    vi.resetAllMocks();
     getCredProviderMock.mockImplementation((_?: AwsCredentialProviderOptions) =>
       getMockCredentialProvider(),
     );
@@ -281,10 +283,10 @@ describe('AwsS3Publish', () => {
     });
 
     it('should use aws.accounts over integrations.awsS3 if both are provided', async () => {
-      await jest.isolateModulesAsync(async () => {
-        jest.doMock('@aws-sdk/client-s3', () => ({
-          ...jest.requireActual('@aws-sdk/client-s3'),
-          S3Client: jest.fn(),
+      await vi.hoistedAsync(async () => {
+        vi.doMock('@aws-sdk/client-s3', () => ({
+          ...vi.importActual('@aws-sdk/client-s3'),
+          S3Client: vi.fn(),
         }));
 
         const { S3Client: MockS3Client } = require('@aws-sdk/client-s3');
@@ -334,10 +336,10 @@ describe('AwsS3Publish', () => {
     });
 
     it('should use awsS3.credentials if they are provided', async () => {
-      await jest.isolateModulesAsync(async () => {
-        jest.doMock('@aws-sdk/client-s3', () => ({
-          ...jest.requireActual('@aws-sdk/client-s3'),
-          S3Client: jest.fn(),
+      await vi.hoistedAsync(async () => {
+        vi.doMock('@aws-sdk/client-s3', () => ({
+          ...vi.importActual('@aws-sdk/client-s3'),
+          S3Client: vi.fn(),
         }));
 
         const { S3Client: MockS3Client } = require('@aws-sdk/client-s3');
@@ -381,10 +383,10 @@ describe('AwsS3Publish', () => {
     });
 
     it('should use credentials from integrations if awsS3.credentials is not provided', async () => {
-      await jest.isolateModulesAsync(async () => {
-        jest.doMock('@aws-sdk/client-s3', () => ({
-          ...jest.requireActual('@aws-sdk/client-s3'),
-          S3Client: jest.fn(),
+      await vi.hoistedAsync(async () => {
+        vi.doMock('@aws-sdk/client-s3', () => ({
+          ...vi.importActual('@aws-sdk/client-s3'),
+          S3Client: vi.fn(),
         }));
 
         const { S3Client: MockS3Client } = require('@aws-sdk/client-s3');
@@ -456,10 +458,10 @@ describe('AwsS3Publish', () => {
     });
 
     it('should retrieve the target integration if multiple integrations are provided and credentials are not provided', async () => {
-      await jest.isolateModulesAsync(async () => {
-        jest.doMock('@aws-sdk/client-s3', () => ({
-          ...jest.requireActual('@aws-sdk/client-s3'),
-          S3Client: jest.fn(),
+      await vi.hoistedAsync(async () => {
+        vi.doMock('@aws-sdk/client-s3', () => ({
+          ...vi.importActual('@aws-sdk/client-s3'),
+          S3Client: vi.fn(),
         }));
 
         const { S3Client: MockS3Client } = require('@aws-sdk/client-s3');
@@ -510,7 +512,7 @@ describe('AwsS3Publish', () => {
   describe('retry mechanism', () => {
     it('should retry with custom retry strategy', async () => {
       const publisher = await createPublisherFromConfig();
-      const customRetryStrategy = jest.fn(error => {
+      const customRetryStrategy = vi.fn(error => {
         return error.name === 'NetworkingError';
       });
 

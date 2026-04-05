@@ -13,16 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import yaml from 'yaml';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 
-jest.mock('@backstage/plugin-scaffolder-node', () => {
+vi.mock('@backstage/plugin-scaffolder-node', () => {
   return {
-    ...jest.requireActual('@backstage/plugin-scaffolder-node'),
-    initRepoAndPush: jest.fn().mockResolvedValue({
+    ...vi.importActual('@backstage/plugin-scaffolder-node'),
+    initRepoAndPush: vi.fn().mockResolvedValue({
       commitHash: '220f19cc36b551763d157f1b5e4a4b446165dbd6',
     }),
-    commitAndPushRepo: jest.fn().mockResolvedValue({
+    commitAndPushRepo: vi.fn().mockResolvedValue({
       commitHash: '220f19cc36b551763d157f1b5e4a4b446165dbd6',
     }),
   };
@@ -36,22 +38,22 @@ import { examples } from './gitlab.examples';
 
 const mockGitlabClient = {
   Namespaces: {
-    show: jest.fn(),
+    show: vi.fn(),
   },
   Groups: {
-    allProjects: jest.fn(),
+    allProjects: vi.fn(),
   },
   Projects: {
-    create: jest.fn(),
+    create: vi.fn(),
   },
   Users: {
-    showCurrentUser: jest.fn(),
+    showCurrentUser: vi.fn(),
   },
   ProjectMembers: {
-    add: jest.fn(),
+    add: vi.fn(),
   },
 };
-jest.mock('@gitbeaker/rest', () => ({
+vi.mock('@gitbeaker/rest', () => ({
   Gitlab: class {
     constructor() {
       return mockGitlabClient;
@@ -85,7 +87,7 @@ describe('publish:gitlab', () => {
   });
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('should call initRepoAndPush with the correct values', async () => {

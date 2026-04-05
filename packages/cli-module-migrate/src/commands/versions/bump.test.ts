@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import fs from 'fs-extra';
 import * as runObj from '@backstage/cli-common';
 import { overrideTargetPaths } from '@backstage/cli-common/testUtils';
@@ -25,16 +27,16 @@ import { NotFoundError } from '@backstage/errors';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 
 // Avoid mutating the global agents used in other tests
-jest.mock('global-agent', () => ({
-  bootstrap: jest.fn(),
+vi.mock('global-agent', () => ({
+  bootstrap: vi.fn(),
 }));
-jest.mock('undici', () => ({
-  setGlobalDispatcher: jest.fn(),
+vi.mock('undici', () => ({
+  setGlobalDispatcher: vi.fn(),
   EnvHttpProxyAgent: class {},
 }));
 
 // Remove log coloring to simplify log matching
-jest.mock('chalk', () => ({
+vi.mock('chalk', () => ({
   bold: (str: string) => str,
   red: (str: string) => str,
   blue: (str: string) => str,
@@ -44,7 +46,7 @@ jest.mock('chalk', () => ({
   yellow: (str: string) => str,
 }));
 
-jest.mock('ora', () => ({
+vi.mock('ora', () => ({
   __esModule: true,
   default({ prefixText }: any) {
     console.log(prefixText);
@@ -56,20 +58,20 @@ jest.mock('ora', () => ({
   },
 }));
 
-jest.mock('@backstage/cli-common', () => {
-  const actual = jest.requireActual('@backstage/cli-common');
+vi.mock('@backstage/cli-common', () => {
+  const actual = vi.importActual('@backstage/cli-common');
   return {
     ...actual,
-    run: jest.fn().mockReturnValue({
+    run: vi.fn().mockReturnValue({
       exitCode: null,
-      waitForExit: jest.fn().mockResolvedValue(undefined),
+      waitForExit: vi.fn().mockResolvedValue(undefined),
     }),
   };
 });
 
-const mockFetchPackageInfo = jest.fn();
-jest.mock('../../lib/versioning/packages', () => {
-  const actual = jest.requireActual('../../lib/versioning/packages');
+const mockFetchPackageInfo = vi.fn();
+vi.mock('../../lib/versioning/packages', () => {
+  const actual = vi.importActual('../../lib/versioning/packages');
   return {
     ...actual,
     fetchPackageInfo: (name: string) => mockFetchPackageInfo(name),
@@ -141,7 +143,7 @@ describe('bump', () => {
   });
 
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   const worker = setupServer();
@@ -174,9 +176,9 @@ describe('bump', () => {
       },
     });
 
-    jest.spyOn(runObj, 'run').mockReturnValue({
+    vi.spyOn(runObj, 'run').mockReturnValue({
       exitCode: null,
-      waitForExit: jest.fn().mockResolvedValue(undefined),
+      waitForExit: vi.fn().mockResolvedValue(undefined),
     } as any);
     worker.use(
       rest.get(
@@ -267,9 +269,9 @@ describe('bump', () => {
       },
     });
 
-    jest.spyOn(runObj, 'run').mockReturnValue({
+    vi.spyOn(runObj, 'run').mockReturnValue({
       exitCode: null,
-      waitForExit: jest.fn().mockResolvedValue(undefined),
+      waitForExit: vi.fn().mockResolvedValue(undefined),
     } as any);
     worker.use(
       rest.get(
@@ -359,9 +361,9 @@ describe('bump', () => {
       },
     });
 
-    jest.spyOn(runObj, 'run').mockReturnValue({
+    vi.spyOn(runObj, 'run').mockReturnValue({
       exitCode: null,
-      waitForExit: jest.fn().mockResolvedValue(undefined),
+      waitForExit: vi.fn().mockResolvedValue(undefined),
     } as any);
     worker.use(
       rest.get(
@@ -463,9 +465,9 @@ describe('bump', () => {
       },
     });
 
-    jest.spyOn(runObj, 'run').mockReturnValue({
+    vi.spyOn(runObj, 'run').mockReturnValue({
       exitCode: null,
-      waitForExit: jest.fn().mockResolvedValue(undefined),
+      waitForExit: vi.fn().mockResolvedValue(undefined),
     } as any);
     worker.use(
       rest.get(
@@ -574,9 +576,9 @@ describe('bump', () => {
       },
     });
 
-    jest.spyOn(runObj, 'run').mockReturnValue({
+    vi.spyOn(runObj, 'run').mockReturnValue({
       exitCode: null,
-      waitForExit: jest.fn().mockResolvedValue(undefined),
+      waitForExit: vi.fn().mockResolvedValue(undefined),
     } as any);
     worker.use(
       rest.get(
@@ -644,9 +646,9 @@ describe('bump', () => {
       },
     });
 
-    jest.spyOn(runObj, 'run').mockReturnValue({
+    vi.spyOn(runObj, 'run').mockReturnValue({
       exitCode: null,
-      waitForExit: jest.fn().mockResolvedValue(undefined),
+      waitForExit: vi.fn().mockResolvedValue(undefined),
     } as any);
     worker.use(
       rest.get(
@@ -752,9 +754,9 @@ describe('bump', () => {
       },
     });
 
-    jest.spyOn(runObj, 'run').mockReturnValue({
+    vi.spyOn(runObj, 'run').mockReturnValue({
       exitCode: null,
-      waitForExit: jest.fn().mockResolvedValue(undefined),
+      waitForExit: vi.fn().mockResolvedValue(undefined),
     } as any);
     worker.use(
       rest.get(
@@ -867,9 +869,9 @@ describe('bump', () => {
     });
 
     mockFetchPackageInfo.mockRejectedValue(new NotFoundError('Nope'));
-    jest.spyOn(runObj, 'run').mockReturnValue({
+    vi.spyOn(runObj, 'run').mockReturnValue({
       exitCode: null,
-      waitForExit: jest.fn().mockResolvedValue(undefined),
+      waitForExit: vi.fn().mockResolvedValue(undefined),
     } as any);
     worker.use(
       rest.get(
@@ -927,7 +929,7 @@ describe('bumpBackstageJsonVersion', () => {
   });
 
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('should bump version in backstage.json', async () => {
@@ -1073,7 +1075,7 @@ describe('environment variables', () => {
   });
 
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   afterAll(() => {
@@ -1099,9 +1101,9 @@ describe('environment variables', () => {
       },
     });
 
-    jest.spyOn(runObj, 'run').mockReturnValue({
+    vi.spyOn(runObj, 'run').mockReturnValue({
       exitCode: null,
-      waitForExit: jest.fn().mockResolvedValue(undefined),
+      waitForExit: vi.fn().mockResolvedValue(undefined),
     } as any);
     worker.use(
       rest.get(
@@ -1191,9 +1193,9 @@ describe('environment variables', () => {
       },
     });
 
-    jest.spyOn(runObj, 'run').mockReturnValue({
+    vi.spyOn(runObj, 'run').mockReturnValue({
       exitCode: null,
-      waitForExit: jest.fn().mockResolvedValue(undefined),
+      waitForExit: vi.fn().mockResolvedValue(undefined),
     } as any);
 
     const { log: logs } = await withLogCollector(['log', 'warn'], async () => {
@@ -1258,9 +1260,9 @@ describe('environment variables', () => {
       },
     });
 
-    jest.spyOn(runObj, 'run').mockReturnValue({
+    vi.spyOn(runObj, 'run').mockReturnValue({
       exitCode: null,
-      waitForExit: jest.fn().mockResolvedValue(undefined),
+      waitForExit: vi.fn().mockResolvedValue(undefined),
     } as any);
     worker.use(
       rest.get(

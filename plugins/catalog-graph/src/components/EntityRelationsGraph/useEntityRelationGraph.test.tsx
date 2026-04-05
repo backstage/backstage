@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi , type Mock} from 'vitest';
 import { PropsWithChildren } from 'react';
 import { ApiProvider } from '@backstage/core-app-api';
 import {
@@ -28,9 +30,9 @@ import { useEntityRelationGraph } from './useEntityRelationGraph';
 import { useEntityStore as useEntityStoreMocked } from './useEntityStore';
 import { catalogGraphApiRef, DefaultCatalogGraphApi } from '../../api';
 
-jest.mock('./useEntityStore');
+vi.mock('./useEntityStore');
 
-const useEntityStore = useEntityStoreMocked as jest.Mock<
+const useEntityStore = useEntityStoreMocked as Mock<
   ReturnType<typeof useEntityStoreMocked>
 >;
 
@@ -48,7 +50,7 @@ function GraphContext(props: PropsWithChildren<{}>) {
 }
 
 describe('useEntityRelationGraph', () => {
-  const requestEntities = jest.fn();
+  const requestEntities = vi.fn();
 
   beforeEach(() => {
     const entities = {
@@ -178,7 +180,7 @@ describe('useEntityRelationGraph', () => {
     }));
   });
 
-  afterEach(() => jest.resetAllMocks());
+  afterEach(() => vi.resetAllMocks());
 
   test('should return no entities for empty root entity refs', async () => {
     useEntityStore.mockReturnValue({

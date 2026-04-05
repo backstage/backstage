@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   createMockDirectory,
   mockServices,
@@ -88,7 +90,7 @@ describe.skip('GerritUrlReader', () => {
   });
 
   afterAll(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('reader factory', () => {
@@ -277,7 +279,7 @@ describe.skip('GerritUrlReader', () => {
         'repo/mkdocs.yml': mkdocsContent,
         'repo/docs/first.md': mdContent,
       });
-      const spy = jest.spyOn(fs, 'mkdtemp');
+      const spy = vi.spyOn(fs, 'mkdtemp');
       spy.mockImplementation(() => mockDir.path);
 
       worker.use(
@@ -324,7 +326,7 @@ describe.skip('GerritUrlReader', () => {
     });
 
     afterEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
     });
 
     it('reads the wanted files correctly using gitiles.', async () => {
@@ -482,7 +484,7 @@ describe.skip('GerritUrlReader', () => {
     });
 
     afterEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
     });
 
     it('should return a single file when given an exact URL', async () => {

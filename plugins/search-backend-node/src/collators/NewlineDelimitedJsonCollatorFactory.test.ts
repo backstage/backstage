@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi, vi, type Mocked} from 'vitest';
 import { ConfigReader } from '@backstage/config';
 import { Readable } from 'node:stream';
 import { NewlineDelimitedJsonCollatorFactory } from './NewlineDelimitedJsonCollatorFactory';
@@ -40,22 +42,22 @@ describe('DefaultCatalogCollatorFactory', () => {
 
   describe('getCollator', () => {
     let readable: Readable;
-    let reader: jest.Mocked<
+    let reader: Mocked<
       UrlReaderService & {
-        readUrl: jest.Mock<Promise<UrlReaderServiceReadUrlResponse>>;
+        readUrl: Mock<Promise<UrlReaderServiceReadUrlResponse>>;
       }
     >;
     let factory: NewlineDelimitedJsonCollatorFactory;
 
     beforeEach(async () => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
 
       readable = new Readable();
       readable._read = () => {};
       reader = {
-        search: jest.fn(),
-        readTree: jest.fn(),
-        readUrl: jest.fn(),
+        search: vi.fn(),
+        readTree: vi.fn(),
+        readUrl: vi.fn(),
       };
       factory = NewlineDelimitedJsonCollatorFactory.fromConfig(config, {
         type: 'expected-type',
@@ -87,12 +89,12 @@ describe('DefaultCatalogCollatorFactory', () => {
 
     it('throws if matching file is not .ndjson', async () => {
       reader.search.mockResolvedValue({
-        files: [{ url: 'test://folder/prefix-1.avro', content: jest.fn() }],
+        files: [{ url: 'test://folder/prefix-1.avro', content: vi.fn() }],
         etag: '',
       });
       reader.readUrl.mockResolvedValue({
-        buffer: jest.fn(),
-        stream: jest.fn().mockReturnValue(readable),
+        buffer: vi.fn(),
+        stream: vi.fn().mockReturnValue(readable),
       });
 
       await expect(() => factory.getCollator()).rejects.toThrow(
@@ -103,14 +105,14 @@ describe('DefaultCatalogCollatorFactory', () => {
     it('gets stream using latest matched url', async () => {
       reader.search.mockResolvedValue({
         files: [
-          { url: 'test://folder/prefix-1.ndjson', content: jest.fn() },
-          { url: 'test://folder/prefix-2.ndjson', content: jest.fn() },
+          { url: 'test://folder/prefix-1.ndjson', content: vi.fn() },
+          { url: 'test://folder/prefix-2.ndjson', content: vi.fn() },
         ],
         etag: '',
       });
       reader.readUrl.mockResolvedValue({
-        buffer: jest.fn(),
-        stream: jest.fn().mockReturnValue(readable),
+        buffer: vi.fn(),
+        stream: vi.fn().mockReturnValue(readable),
       });
 
       await factory.getCollator();
@@ -127,11 +129,11 @@ describe('DefaultCatalogCollatorFactory', () => {
 
     it('transforms newline delimited json into readable stream of documents', async () => {
       reader.search.mockResolvedValue({
-        files: [{ url: 'test://folder/prefix-1.ndjson', content: jest.fn() }],
+        files: [{ url: 'test://folder/prefix-1.ndjson', content: vi.fn() }],
         etag: '',
       });
       reader.readUrl.mockResolvedValue({
-        buffer: jest.fn(),
+        buffer: vi.fn(),
         stream: jest
           .fn()
           .mockReturnValue(

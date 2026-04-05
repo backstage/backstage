@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { registerMswTestHooks } from '@backstage/test-utils';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
@@ -29,8 +31,8 @@ const validBackstageToken =
 
 describe('ProxiedSignInIdentity', () => {
   describe('tokenToExpiry', () => {
-    beforeEach(() => jest.useFakeTimers());
-    afterEach(() => jest.useRealTimers());
+    beforeEach(() => vi.useFakeTimers());
+    afterEach(() => vi.useRealTimers());
 
     it('handles undefined', async () => {
       expect(tokenToExpiry(undefined)).toEqual(
@@ -56,15 +58,15 @@ describe('ProxiedSignInIdentity', () => {
   });
 
   describe('ProxiedSignInIdentity', () => {
-    beforeEach(() => jest.useFakeTimers());
-    afterEach(() => jest.useRealTimers());
+    beforeEach(() => vi.useFakeTimers());
+    afterEach(() => vi.useRealTimers());
 
     const worker = setupServer();
     registerMswTestHooks(worker);
 
     it('runs the happy path', async () => {
-      const getBaseUrl = jest.fn();
-      const serverCalled = jest.fn();
+      const getBaseUrl = vi.fn();
+      const serverCalled = vi.fn();
 
       function makeToken() {
         const iat = Math.floor(Date.now() / 1000);
@@ -153,13 +155,13 @@ describe('ProxiedSignInIdentity', () => {
 
       // Use a fairly large margin (1000) since the iat and exp are clamped to
       // full seconds, but the "local current time" isn't
-      jest.advanceTimersByTime(
+      vi.advanceTimersByTime(
         3600 * 1000 - DEFAULTS.tokenExpiryMarginMillis - 1000,
       );
       await identity.getSessionAsync(); // still no need to fetch again
       expect(serverCalled).toHaveBeenCalledTimes(1);
 
-      jest.advanceTimersByTime(1001);
+      vi.advanceTimersByTime(1001);
       await identity.getSessionAsync(); // now the expiry has passed
       expect(serverCalled).toHaveBeenCalledTimes(2);
     });
@@ -180,8 +182,8 @@ describe('ProxiedSignInIdentity', () => {
 
     it('handles headers passed as a promise', async () => {
       let req1: Request;
-      const getBaseUrl = jest.fn();
-      const serverCalled = jest.fn().mockImplementation(req => {
+      const getBaseUrl = vi.fn();
+      const serverCalled = vi.fn().mockImplementation(req => {
         req1 = req;
       });
 
@@ -196,7 +198,7 @@ describe('ProxiedSignInIdentity', () => {
         ),
       );
 
-      const getHeaders = jest.fn().mockResolvedValue({ 'x-foo': 'bars' });
+      const getHeaders = vi.fn().mockResolvedValue({ 'x-foo': 'bars' });
       const identity = new ProxiedSignInIdentity({
         provider: 'foo',
         discoveryApi: { getBaseUrl },
@@ -220,8 +222,8 @@ describe('ProxiedSignInIdentity', () => {
 
     it('handles headers passed as an object', async () => {
       let req1: Request;
-      const getBaseUrl = jest.fn();
-      const serverCalled = jest.fn().mockImplementation(req => {
+      const getBaseUrl = vi.fn();
+      const serverCalled = vi.fn().mockImplementation(req => {
         req1 = req;
       });
 
@@ -258,8 +260,8 @@ describe('ProxiedSignInIdentity', () => {
 
     it('handles headers passed as a function', async () => {
       let req1: Request;
-      const getBaseUrl = jest.fn();
-      const serverCalled = jest.fn().mockImplementation(req => {
+      const getBaseUrl = vi.fn();
+      const serverCalled = vi.fn().mockImplementation(req => {
         req1 = req;
       });
 
@@ -274,7 +276,7 @@ describe('ProxiedSignInIdentity', () => {
         ),
       );
 
-      const getHeaders = jest.fn().mockReturnValue({ 'x-foo': 'bars' });
+      const getHeaders = vi.fn().mockReturnValue({ 'x-foo': 'bars' });
       const identity = new ProxiedSignInIdentity({
         provider: 'foo',
         discoveryApi: { getBaseUrl },

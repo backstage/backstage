@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import { WebStorage } from './WebStorage';
 import {
   ErrorApi,
@@ -24,7 +26,7 @@ import { buckets } from './WebStorage';
 import { JsonValue } from '@backstage/types';
 
 describe('WebStorage Storage API', () => {
-  const mockErrorApi = { post: jest.fn(), error$: jest.fn() };
+  const mockErrorApi = { post: vi.fn(), error$: vi.fn() };
   const createWebStorage = (
     args?: Partial<{
       errorApi: ErrorApi;
@@ -99,8 +101,8 @@ describe('WebStorage Storage API', () => {
   it('should subscribe to key changes when setting a new value', async () => {
     const storage = createWebStorage();
 
-    const wrongKeyNextHandler = jest.fn();
-    const selectedKeyNextHandler = jest.fn();
+    const wrongKeyNextHandler = vi.fn();
+    const selectedKeyNextHandler = vi.fn();
     const mockData = { hello: 'im a great new value' };
 
     await new Promise<void>(resolve => {
@@ -130,8 +132,8 @@ describe('WebStorage Storage API', () => {
   it('should subscribe to key changes when deleting a value', async () => {
     const storage = createWebStorage();
 
-    const wrongKeyNextHandler = jest.fn();
-    const selectedKeyNextHandler = jest.fn();
+    const wrongKeyNextHandler = vi.fn();
+    const selectedKeyNextHandler = vi.fn();
     const mockData = { hello: 'im a great new value' };
 
     storage.set('correctKey', mockData);

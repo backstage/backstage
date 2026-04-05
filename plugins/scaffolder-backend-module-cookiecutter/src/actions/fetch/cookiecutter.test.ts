@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi, type Mocked } from 'vitest';
+
 import { JsonObject } from '@backstage/types';
 import { ScmIntegrations } from '@backstage/integration';
 import {
@@ -28,17 +30,17 @@ import { Writable } from 'node:stream';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { ContainerRunner } from './ContainerRunner';
 
-const executeShellCommand = jest.fn();
-const commandExists = jest.fn();
-const fetchContents = jest.fn();
+const executeShellCommand = vi.fn();
+const commandExists = vi.fn();
+const fetchContents = vi.fn();
 
-jest.mock('@backstage/plugin-scaffolder-node', () => ({
-  ...jest.requireActual('@backstage/plugin-scaffolder-node'),
+vi.mock('@backstage/plugin-scaffolder-node', () => ({
+  ...vi.importActual('@backstage/plugin-scaffolder-node'),
   fetchContents: (...args: any[]) => fetchContents(...args),
   executeShellCommand: (...args: any[]) => executeShellCommand(...args),
 }));
 
-jest.mock(
+vi.mock(
   'command-exists',
   () =>
     (...args: any[]) =>
@@ -60,14 +62,14 @@ describe('fetch:cookiecutter', () => {
     imageName?: string;
   }>;
 
-  const containerRunner: jest.Mocked<ContainerRunner> = {
-    runContainer: jest.fn(),
+  const containerRunner: Mocked<ContainerRunner> = {
+    runContainer: vi.fn(),
   };
 
   const mockReader: UrlReaderService = {
-    readUrl: jest.fn(),
-    readTree: jest.fn(),
-    search: jest.fn(),
+    readUrl: vi.fn(),
+    readTree: vi.fn(),
+    search: vi.fn(),
   };
 
   const action = createFetchCookiecutterAction({
@@ -77,7 +79,7 @@ describe('fetch:cookiecutter', () => {
   });
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
 
     mockContext = createMockActionContext({
       input: {

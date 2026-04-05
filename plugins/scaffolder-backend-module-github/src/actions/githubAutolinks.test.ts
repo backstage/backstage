@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import { ConfigReader } from '@backstage/config';
 import {
   DefaultGithubCredentialsProvider,
@@ -27,16 +29,16 @@ import { createGithubAutolinksAction } from './githubAutolinks';
 
 import { Octokit } from 'octokit';
 
-const octokitMock = Octokit as unknown as jest.Mock;
+const octokitMock = Octokit as unknown as Mock;
 const mockOctokit = {
   rest: {
     repos: {
-      createAutolink: jest.fn(),
+      createAutolink: vi.fn(),
     },
   },
 };
-jest.mock('octokit', () => ({
-  Octokit: jest.fn(),
+vi.mock('octokit', () => ({
+  Octokit: vi.fn(),
 }));
 
 describe('github:autolinks:create', () => {

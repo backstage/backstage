@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import { TestApiProvider, renderInTestApp } from '@backstage/test-utils';
 import { Visit, visitsApiRef } from '../api';
 import { VisitListener } from './VisitListener';
@@ -44,12 +46,12 @@ const visits: Array<Visit> = [
 ];
 
 const mockVisitsApi = {
-  save: jest.fn(async () => visits[0]),
-  list: jest.fn(async () => visits),
+  save: vi.fn(async () => visits[0]),
+  list: vi.fn(async () => visits),
 };
 
 describe('<VisitListener/>', () => {
-  afterEach(jest.resetAllMocks);
+  afterEach(vi.resetAllMocks);
 
   it('registers a visit', async () => {
     const pathname = '/catalog/default/component/playback-order';

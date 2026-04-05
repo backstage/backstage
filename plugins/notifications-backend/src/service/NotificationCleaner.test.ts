@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import { LoggerService, SchedulerService } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { mockServices } from '@backstage/backend-test-utils';
@@ -30,18 +32,18 @@ describe('NotificationCleaner', () => {
     mockScheduler = mockServices.scheduler.mock();
     mockLogger = mockServices.logger.mock();
     mockDatabase = {
-      clearNotifications: jest.fn(),
+      clearNotifications: vi.fn(),
     } as unknown as NotificationsStore;
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('initNotificationCleaner', () => {
     it('should initialize the notification cleaner with the correct schedule', async () => {
       const mockTaskRunner = {
-        run: jest.fn(),
+        run: vi.fn(),
       };
       mockScheduler.createScheduledTaskRunner = jest
         .fn()
@@ -90,7 +92,7 @@ describe('NotificationCleaner', () => {
         .fn()
         .mockResolvedValue({ deletedCount: 1 });
       const mockTaskRunner = {
-        run: jest.fn().mockImplementation(({ fn }) => fn()),
+        run: vi.fn().mockImplementation(({ fn }) => fn()),
       };
       mockScheduler.createScheduledTaskRunner = jest
         .fn()

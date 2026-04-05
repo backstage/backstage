@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi, type Mocked } from 'vitest';
+
 import { Entity, RELATION_PROVIDES_API } from '@backstage/catalog-model';
 import {
   catalogApiRef,
@@ -28,8 +30,8 @@ import { ProvidedApisCard } from './ProvidedApisCard';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 
 describe('<ProvidedApisCard />', () => {
-  const apiDocsConfig: jest.Mocked<ApiDocsConfig> = {
-    getApiDefinitionWidget: jest.fn(),
+  const apiDocsConfig: Mocked<ApiDocsConfig> = {
+    getApiDefinitionWidget: vi.fn(),
   } as any;
   const catalogApi = catalogApiMock.mock();
   let Wrapper: ComponentType<PropsWithChildren<{}>>;
@@ -47,7 +49,7 @@ describe('<ProvidedApisCard />', () => {
     );
   });
 
-  afterEach(() => jest.resetAllMocks());
+  afterEach(() => vi.resetAllMocks());
 
   it('shows empty list if no relations', async () => {
     const entity: Entity = {

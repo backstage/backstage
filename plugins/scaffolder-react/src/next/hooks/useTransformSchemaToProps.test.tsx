@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import { PropsWithChildren } from 'react';
 import { renderHook } from '@testing-library/react';
 import { TestApiProvider } from '@backstage/test-utils';
@@ -21,7 +23,7 @@ import { useTransformSchemaToProps } from './useTransformSchemaToProps';
 
 describe('useTransformSchemaToProps', () => {
   it('should replace ui:ObjectFieldTemplate with actual component', () => {
-    const layouts = [{ name: 'TwoColumn', component: jest.fn() }];
+    const layouts = [{ name: 'TwoColumn', component: vi.fn() }];
 
     const step: ParsedTemplateSchema = {
       title: 'Fill in some steps',

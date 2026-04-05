@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type MockedFunction} from 'vitest';
+
 import { npath, ppath, xfs } from '@yarnpkg/fslib';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 import { memoize } from './memoize';
@@ -23,11 +25,11 @@ import { getCurrentBackstageVersion } from './getCurrentBackstageVersion';
  * Disable memoization to allow testing behavior under a variety of
  * circumstances.
  */
-jest.mock('./memoize', () => {
-  const memoizeMock: jest.MockedFn<typeof memoize> & {
+vi.mock('./memoize', () => {
+  const memoizeMock: MockedFunction<typeof memoize> & {
     memoizationEnabled?: boolean;
-  } = jest.fn(fn => {
-    const memoized = jest.requireActual('./memoize').memoize(fn);
+  } = vi.fn(fn => {
+    const memoized = vi.importActual('./memoize').memoize(fn);
 
     return () => {
       if (memoizeMock.memoizationEnabled) {
@@ -41,7 +43,7 @@ jest.mock('./memoize', () => {
   return { memoize: memoizeMock };
 });
 
-const memoizeMock = memoize as jest.MockedFunction<typeof memoize> & {
+const memoizeMock = memoize as MockedFunction<typeof memoize> & {
   memoizationEnabled?: boolean;
 };
 
@@ -93,7 +95,7 @@ describe('getCurrentBackstageVersion', () => {
 
     memoizeMock.memoizationEnabled = true;
 
-    const readJsonSyncSpy = jest.spyOn(xfs, 'readJsonSync');
+    const readJsonSyncSpy = vi.spyOn(xfs, 'readJsonSync');
 
     expect(readJsonSyncSpy).toHaveBeenCalledTimes(0);
 

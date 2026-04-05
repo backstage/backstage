@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi , type Mock} from 'vitest';
 import { ReactNode } from 'react';
 import { waitFor } from '@testing-library/react';
 
@@ -32,24 +34,24 @@ import {
 } from '@backstage/test-utils';
 import { configApiRef } from '@backstage/core-plugin-api';
 
-const useTechDocsReaderDom = jest.fn();
-jest.mock('../../reader/components/TechDocsReaderPageContent/dom', () => ({
-  ...jest.requireActual(
+const useTechDocsReaderDom = vi.fn();
+vi.mock('../../reader/components/TechDocsReaderPageContent/dom', () => ({
+  ...vi.importActual(
     '../../reader/components/TechDocsReaderPageContent/dom',
   ),
   useTechDocsReaderDom: (...args: any[]) => useTechDocsReaderDom(...args),
 }));
-const useReaderState = jest.fn();
-jest.mock('../../reader/components/useReaderState', () => ({
-  ...jest.requireActual('../../reader/components/useReaderState'),
+const useReaderState = vi.fn();
+vi.mock('../../reader/components/useReaderState', () => ({
+  ...vi.importActual('../../reader/components/useReaderState'),
   useReaderState: (...args: any[]) => useReaderState(...args),
 }));
-const useShadowDomStylesLoading = jest.fn().mockReturnValue(false);
-jest.mock('@backstage/plugin-techdocs-react', () => ({
-  ...jest.requireActual('@backstage/plugin-techdocs-react'),
+const useShadowDomStylesLoading = vi.fn().mockReturnValue(false);
+vi.mock('@backstage/plugin-techdocs-react', () => ({
+  ...vi.importActual('@backstage/plugin-techdocs-react'),
   useShadowDomStylesLoading: (...args: any[]) =>
     useShadowDomStylesLoading(...args),
-  useShadowRootElements: jest.fn(),
+  useShadowRootElements: vi.fn(),
 }));
 
 import { TechDocsReaderContent } from './TechDocsReaderContent';
@@ -75,8 +77,8 @@ const mockTechDocsMetadata = {
   site_description: 'test-site-desc',
 };
 
-const getEntityMetadata = jest.fn();
-const getTechDocsMetadata = jest.fn();
+const getEntityMetadata = vi.fn();
+const getTechDocsMetadata = vi.fn();
 
 const techdocsApiMock = {
   getEntityMetadata,
@@ -107,14 +109,14 @@ const Wrapper = ({
 );
 
 describe('<TechDocsReaderContent />', () => {
-  const useShadowRootElementsMock = useShadowRootElements as jest.Mock;
+  const useShadowRootElementsMock = useShadowRootElements as Mock;
 
   beforeEach(() => {
     useShadowRootElementsMock.mockReturnValue([]);
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should render techdocs content', async () => {

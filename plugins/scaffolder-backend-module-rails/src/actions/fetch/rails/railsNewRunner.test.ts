@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-const executeShellCommand = jest.fn();
-const commandExists = jest.fn();
+import { vi, type Mocked } from 'vitest';
 
-jest.mock('@backstage/plugin-scaffolder-node', () => ({
+const executeShellCommand = vi.fn();
+const commandExists = vi.fn();
+
+vi.mock('@backstage/plugin-scaffolder-node', () => ({
   executeShellCommand: (...args: any[]) => executeShellCommand(...args),
 }));
-jest.mock(
+vi.mock(
   'command-exists',
   () =>
     (...args: any[]) =>
@@ -34,14 +36,14 @@ import { createMockDirectory } from '@backstage/backend-test-utils';
 import { ContainerRunner } from './ContainerRunner';
 
 describe('Rails Templater', () => {
-  const containerRunner: jest.Mocked<ContainerRunner> = {
-    runContainer: jest.fn(),
+  const containerRunner: Mocked<ContainerRunner> = {
+    runContainer: vi.fn(),
   };
 
   const mockDir = createMockDirectory();
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     mockDir.clear();
   });
 

@@ -43,12 +43,12 @@ describe('readStringOrStringArrayFromConfig', () => {
     expect(() =>
       readStringOrStringArrayFromConfig(config, 'wrongType'),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid type in config for key 'wrongType' in 'mock-config', got number, wanted string"`,
+      `[TypeError: Invalid type in config for key 'wrongType' in 'mock-config', got number, wanted string]`,
     );
     expect(() =>
       readStringOrStringArrayFromConfig(config, 'wrongTypeInArray'),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid type in config for key 'wrongTypeInArray[0]' in 'mock-config', got number, wanted string-array"`,
+      `[TypeError: Invalid type in config for key 'wrongTypeInArray[0]' in 'mock-config', got number, wanted string-array]`,
     );
     expect(readStringOrStringArrayFromConfig(config, 'singleString')).toEqual([
       'a',
@@ -65,7 +65,7 @@ describe('readStringOrStringArrayFromConfig', () => {
     expect(() =>
       readStringOrStringArrayFromConfig(config, 'emptyString'),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid type in config for key 'emptyString' in 'mock-config', got empty-string, wanted string"`,
+      `[TypeError: Invalid type in config for key 'emptyString' in 'mock-config', got empty-string, wanted string]`,
     );
     expect(
       readStringOrStringArrayFromConfig(config, 'emptyArray'),
@@ -98,37 +98,37 @@ describe('readAccessRestrictionsFromConfig', () => {
     expect(() =>
       r({ accessRestrictions: 7 }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid type in config for key 'accessRestrictions' in 'mock-config', got number, wanted object-array"`,
+      `[TypeError: Invalid type in config for key 'accessRestrictions' in 'mock-config', got number, wanted object-array]`,
     );
     expect(() =>
       r({ accessRestrictions: ['hello'] }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid type in config for key 'accessRestrictions[0]' in 'mock-config', got string, wanted object-array"`,
+      `[TypeError: Invalid type in config for key 'accessRestrictions[0]' in 'mock-config', got string, wanted object-array]`,
     );
     expect(() =>
       r({ accessRestrictions: [{ unknown: {} }] }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid key 'unknown' in 'accessRestrictions' config, expected one of 'plugin', 'permission', 'permissionAttribute'"`,
+      `[Error: Invalid key 'unknown' in 'accessRestrictions' config, expected one of 'plugin', 'permission', 'permissionAttribute']`,
     );
     expect(() =>
       r({ accessRestrictions: [{ plugin: 7 }] }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid type in config for key 'accessRestrictions[0].plugin' in 'mock-config', got number, wanted string"`,
+      `[TypeError: Invalid type in config for key 'accessRestrictions[0].plugin' in 'mock-config', got number, wanted string]`,
     );
     expect(() =>
       r({ accessRestrictions: [{ plugin: 'valid', permission: 7 }] }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid type in config for key 'accessRestrictions[0].permission' in 'mock-config', got number, wanted string"`,
+      `[TypeError: Invalid type in config for key 'accessRestrictions[0].permission' in 'mock-config', got number, wanted string]`,
     );
     expect(() =>
       r({ accessRestrictions: [{ plugin: 'valid', permission: [7] }] }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid type in config for key 'accessRestrictions[0].permission[0]' in 'mock-config', got number, wanted string-array"`,
+      `[TypeError: Invalid type in config for key 'accessRestrictions[0].permission[0]' in 'mock-config', got number, wanted string-array]`,
     );
     expect(() =>
       r({ accessRestrictions: [{ plugin: 'valid', permissionAttribute: 7 }] }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid type in config for key 'accessRestrictions[0].permissionAttribute' in 'mock-config', got number, wanted object"`,
+      `[TypeError: Invalid type in config for key 'accessRestrictions[0].permissionAttribute' in 'mock-config', got number, wanted object]`,
     );
     expect(() =>
       r({
@@ -137,7 +137,7 @@ describe('readAccessRestrictionsFromConfig', () => {
         ],
       }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid key 'a' in 'permissionAttribute' config, expected 'action'"`,
+      `[Error: Invalid key 'a' in 'permissionAttribute' config, expected 'action']`,
     );
     expect(() =>
       r({
@@ -146,7 +146,7 @@ describe('readAccessRestrictionsFromConfig', () => {
         ],
       }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid type in config for key 'accessRestrictions[0].permissionAttribute.action' in 'mock-config', got number, wanted string"`,
+      `[TypeError: Invalid type in config for key 'accessRestrictions[0].permissionAttribute.action' in 'mock-config', got number, wanted string]`,
     );
     expect(() =>
       r({
@@ -155,7 +155,7 @@ describe('readAccessRestrictionsFromConfig', () => {
         ],
       }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid value 'wrong' at 'action' in 'permissionAttributes' config, valid values are 'create', 'read', 'update', 'delete'"`,
+      `[Error: Invalid value 'wrong' at 'action' in 'permissionAttributes' config, valid values are 'create', 'read', 'update', 'delete']`,
     );
   });
 

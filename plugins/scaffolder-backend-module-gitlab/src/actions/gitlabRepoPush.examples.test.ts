@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
@@ -25,25 +27,25 @@ import yaml from 'yaml';
 
 const mockGitlabClient = {
   Projects: {
-    create: jest.fn(),
-    show: jest.fn(async (_: any) => {
+    create: vi.fn(),
+    show: vi.fn(async (_: any) => {
       return {
         default_branch: 'main',
       };
     }),
   },
   Branches: {
-    create: jest.fn(),
-    show: jest.fn(),
+    create: vi.fn(),
+    show: vi.fn(),
   },
   Commits: {
-    create: jest.fn(async (_: any) => ({
+    create: vi.fn(async (_: any) => ({
       id: 'f8a2c9bd4e2915b0792b43235c779e82ddad54af',
     })),
   },
 };
 
-jest.mock('@gitbeaker/rest', () => ({
+vi.mock('@gitbeaker/rest', () => ({
   Gitlab: class {
     constructor() {
       return mockGitlabClient;

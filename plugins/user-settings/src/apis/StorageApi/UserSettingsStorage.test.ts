@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import {
   DiscoveryApi,
   ErrorApi,
@@ -35,7 +37,7 @@ describe('Persistent Storage API', () => {
   registerMswTestHooks(server);
 
   const mockBaseUrl = 'http://backstage:9191/api';
-  const mockErrorApi = { post: jest.fn(), error$: jest.fn() };
+  const mockErrorApi = { post: vi.fn(), error$: vi.fn() };
   const mockDiscoveryApi = {
     getBaseUrl: async () => mockBaseUrl,
   };
@@ -77,7 +79,7 @@ describe('Persistent Storage API', () => {
     // DataLoader delay is 10ms, so this should be plenty.
     await new Promise(resolve => setTimeout(resolve, 100));
 
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     server.resetHandlers();
   });
 
@@ -141,7 +143,7 @@ describe('Persistent Storage API', () => {
       namespace: 'not-logged-in',
     });
 
-    const selectedKeyNextHandler = jest.fn();
+    const selectedKeyNextHandler = vi.fn();
     const dummyValue = 'my-value';
 
     await new Promise<void>(resolve => {
@@ -168,8 +170,8 @@ describe('Persistent Storage API', () => {
   it('should subscribe to key changes when setting a new value', async () => {
     const storage = createPersistentStorage({ namespace: 'key-change-set' });
 
-    const wrongKeyNextHandler = jest.fn();
-    const selectedKeyNextHandler = jest.fn();
+    const wrongKeyNextHandler = vi.fn();
+    const selectedKeyNextHandler = vi.fn();
     const mockData = { hello: 'im a great new value' };
 
     const serverCall = createDeferred();
@@ -220,8 +222,8 @@ describe('Persistent Storage API', () => {
   it('should subscribe to key changes when deleting a value', async () => {
     const storage = createPersistentStorage({ namespace: 'key-change-delete' });
 
-    const wrongKeyNextHandler = jest.fn();
-    const selectedKeyNextHandler = jest.fn();
+    const wrongKeyNextHandler = vi.fn();
+    const selectedKeyNextHandler = vi.fn();
 
     const serverCall = createDeferred();
 
@@ -266,7 +268,7 @@ describe('Persistent Storage API', () => {
 
   it('should not clash with other namespaces when creating buckets', async () => {
     const rootStorage = createPersistentStorage({ namespace: 'clash' });
-    const selectedKeyNextHandler = jest.fn();
+    const selectedKeyNextHandler = vi.fn();
 
     server.use(
       rest.put(
@@ -324,7 +326,7 @@ describe('Persistent Storage API', () => {
   });
 
   it('should silently treat the value as absent when the json can not be parsed', async () => {
-    const selectedKeyNextHandler = jest.fn();
+    const selectedKeyNextHandler = vi.fn();
     const rootStorage = createPersistentStorage({
       namespace: 'Test.Mock.Thing',
     });
@@ -361,7 +363,7 @@ describe('Persistent Storage API', () => {
 
   it('should freeze the snapshot value', async () => {
     const storage = createPersistentStorage({ namespace: 'freeze' });
-    const selectedKeyNextHandler = jest.fn();
+    const selectedKeyNextHandler = vi.fn();
     const data = { foo: 'bar', baz: [{ foo: 'bar' }] };
 
     server.use(
@@ -403,8 +405,8 @@ describe('Persistent Storage API', () => {
 
   it('should batch multiple calls into one', async () => {
     const storage = createPersistentStorage({ namespace: 'multiget' });
-    const selectedKeyNextHandler = jest.fn();
-    const selectedKeyNextHandlerCached = jest.fn();
+    const selectedKeyNextHandler = vi.fn();
+    const selectedKeyNextHandlerCached = vi.fn();
     const data1 = { foo: 'bar1', baz: [{ foo: 'bar1' }] };
     const data2 = { foo: 'bar2', baz: [{ foo: 'bar2' }] };
 

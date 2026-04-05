@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { ScmIntegrations } from '@backstage/integration';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { createGitlabGroupAccessAction } from './gitlabGroupAccessAction';
@@ -22,17 +24,17 @@ import { mockServices } from '@backstage/backend-test-utils';
 
 const mockGitlabClient = {
   GroupMembers: {
-    add: jest.fn(),
-    edit: jest.fn(),
-    remove: jest.fn(),
+    add: vi.fn(),
+    edit: vi.fn(),
+    remove: vi.fn(),
   },
   Groups: {
-    share: jest.fn(),
-    unshare: jest.fn(),
+    share: vi.fn(),
+    unshare: vi.fn(),
   },
 };
 
-jest.mock('@gitbeaker/rest', () => ({
+vi.mock('@gitbeaker/rest', () => ({
   Gitlab: class {
     constructor() {
       return mockGitlabClient;
@@ -40,14 +42,14 @@ jest.mock('@gitbeaker/rest', () => ({
   },
 }));
 
-jest.mock('../util', () => ({
-  getClient: jest.fn().mockImplementation(() => mockGitlabClient),
+vi.mock('../util', () => ({
+  getClient: vi.fn().mockImplementation(() => mockGitlabClient),
   parseRepoHost: (repoUrl: string) => repoUrl,
 }));
 
 describe('gitlab:group:access', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   const config = mockServices.rootConfig({

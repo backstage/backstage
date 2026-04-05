@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   ScaffolderApi,
   scaffolderApiRef,
@@ -24,7 +26,7 @@ import { GitlabRepoPicker } from './GitlabRepoPicker';
 
 describe('GitlabRepoPicker', () => {
   const scaffolderApiMock: Partial<ScaffolderApi> = {
-    autocomplete: jest.fn().mockImplementation(opts =>
+    autocomplete: vi.fn().mockImplementation(opts =>
       Promise.resolve({
         results: [{ title: `${opts.resource}_example` }],
       }),
@@ -36,7 +38,7 @@ describe('GitlabRepoPicker', () => {
       const { getByRole } = await renderInTestApp(
         <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
           <GitlabRepoPicker
-            onChange={jest.fn()}
+            onChange={vi.fn()}
             rawErrors={[]}
             state={{ repoName: 'repo' }}
             isDisabled
@@ -51,7 +53,7 @@ describe('GitlabRepoPicker', () => {
       const { getByRole } = await renderInTestApp(
         <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
           <GitlabRepoPicker
-            onChange={jest.fn()}
+            onChange={vi.fn()}
             rawErrors={[]}
             state={{ repoName: 'repo' }}
             isDisabled={false}
@@ -67,7 +69,7 @@ describe('GitlabRepoPicker', () => {
       const { getByRole } = await renderInTestApp(
         <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
           <GitlabRepoPicker
-            onChange={jest.fn()}
+            onChange={vi.fn()}
             rawErrors={[]}
             state={{ repoName: 'repo' }}
             allowedOwners={allowedOwners}
@@ -84,7 +86,7 @@ describe('GitlabRepoPicker', () => {
       const { getByRole } = await renderInTestApp(
         <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
           <GitlabRepoPicker
-            onChange={jest.fn()}
+            onChange={vi.fn()}
             rawErrors={[]}
             state={{ repoName: 'repo' }}
             allowedOwners={allowedOwners}
@@ -103,7 +105,7 @@ describe('GitlabRepoPicker', () => {
       const { findByText } = await renderInTestApp(
         <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
           <GitlabRepoPicker
-            onChange={jest.fn()}
+            onChange={vi.fn()}
             rawErrors={[]}
             state={{ repoName: 'repo' }}
             allowedOwners={allowedOwners}
@@ -117,7 +119,7 @@ describe('GitlabRepoPicker', () => {
     });
 
     it('calls onChange when the owner is changed to a different owner', async () => {
-      const onChange = jest.fn();
+      const onChange = vi.fn();
       const allowedOwners = ['owner1', 'owner2'];
       const { getByRole } = await renderInTestApp(
         <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
@@ -139,7 +141,7 @@ describe('GitlabRepoPicker', () => {
     });
 
     it('is disabled picked when only one allowed owner', async () => {
-      const onChange = jest.fn();
+      const onChange = vi.fn();
       const allowedOwners = ['owner1'];
       const { getByRole } = await renderInTestApp(
         <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
@@ -157,7 +159,7 @@ describe('GitlabRepoPicker', () => {
     });
 
     it('should display free text if no allowed owners are passed', async () => {
-      const onChange = jest.fn();
+      const onChange = vi.fn();
       const { getAllByRole } = await renderInTestApp(
         <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
           <GitlabRepoPicker
@@ -181,7 +183,7 @@ describe('GitlabRepoPicker', () => {
       const { findByText } = await renderInTestApp(
         <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
           <GitlabRepoPicker
-            onChange={jest.fn()}
+            onChange={vi.fn()}
             rawErrors={[]}
             state={{ repoName: 'repo' }}
             allowedOwners={['owner1']}
@@ -200,7 +202,7 @@ describe('GitlabRepoPicker', () => {
       const { findByText } = await renderInTestApp(
         <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
           <GitlabRepoPicker
-            onChange={jest.fn()}
+            onChange={vi.fn()}
             rawErrors={[]}
             state={{ repoName: 'repo' }}
           />

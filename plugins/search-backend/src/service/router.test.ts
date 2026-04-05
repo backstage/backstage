@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi, type Mocked } from 'vitest';
+
 import { ConfigReader } from '@backstage/config';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import {
@@ -43,7 +45,7 @@ const mockPermissionEvaluator: PermissionEvaluator = {
 
 describe('createRouter', () => {
   let app: express.Express | Server;
-  let mockSearchEngine: jest.Mocked<SearchEngine>;
+  let mockSearchEngine: Mocked<SearchEngine>;
 
   const mockBaseUrl = 'http://backstage:9191/api/proxy';
   const discovery: DiscoveryService = {
@@ -58,9 +60,9 @@ describe('createRouter', () => {
   beforeAll(async () => {
     const logger = mockServices.logger.mock();
     mockSearchEngine = {
-      getIndexer: jest.fn(),
-      setTranslator: jest.fn(),
-      query: jest.fn().mockResolvedValue({
+      getIndexer: vi.fn(),
+      setTranslator: vi.fn(),
+      query: vi.fn().mockResolvedValue({
         results: [],
         nextPageCursor: '',
         previousPageCursor: '',
@@ -91,7 +93,7 @@ describe('createRouter', () => {
   });
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('GET /query', () => {
@@ -262,9 +264,9 @@ describe('createRouter', () => {
       beforeAll(async () => {
         const logger = mockServices.logger.mock();
         mockSearchEngine = {
-          getIndexer: jest.fn(),
-          setTranslator: jest.fn(),
-          query: jest.fn(),
+          getIndexer: vi.fn(),
+          setTranslator: vi.fn(),
+          query: vi.fn(),
         };
         const indexBuilder = new IndexBuilder({
           logger,

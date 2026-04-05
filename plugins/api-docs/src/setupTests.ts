@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
 import '@testing-library/jest-dom';
 
 Object.defineProperty(global, 'TextEncoder', {
@@ -25,4 +26,4 @@ Object.defineProperty(global, 'TextDecoder', {
 });
 
 // Use a 15s timeout to accommodate the slowest API docs rendering tests under concurrency.
-jest.setTimeout(15_000);
+vi.setConfig({ testTimeout: 15_000 });

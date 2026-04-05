@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   RELATION_MEMBER_OF,
   UserEntityV1alpha1,
@@ -25,7 +27,7 @@ import { mockServices } from '@backstage/backend-test-utils';
 describe('CatalogIdentityClient', () => {
   const auth = mockServices.auth({ pluginId: 'auth' });
 
-  afterEach(() => jest.resetAllMocks());
+  afterEach(() => vi.resetAllMocks());
 
   it('findUser passes through the correct search params', async () => {
     const catalog = catalogServiceMock({
@@ -42,7 +44,7 @@ describe('CatalogIdentityClient', () => {
         },
       ],
     });
-    jest.spyOn(catalog, 'getEntities');
+    vi.spyOn(catalog, 'getEntities');
 
     const client = new CatalogIdentityClient({
       catalog,
@@ -101,7 +103,7 @@ describe('CatalogIdentityClient', () => {
       },
     ];
     const catalog = catalogServiceMock({ entities: mockUsers });
-    jest.spyOn(catalog, 'getEntities');
+    vi.spyOn(catalog, 'getEntities');
 
     const client = new CatalogIdentityClient({
       catalog,

@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { getBitbucketClient } from './helpers';
 import { Bitbucket } from 'bitbucket';
 
-jest.mock('bitbucket', () => ({
-  Bitbucket: jest.fn(),
+vi.mock('bitbucket', () => ({
+  Bitbucket: vi.fn(),
 }));
 
 describe('bitbucketCloud:branchRestriction:create', () => {

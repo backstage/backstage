@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { fireEvent } from '@testing-library/react';
 import { capitalize } from 'lodash';
 import { Entity } from '@backstage/catalog-model';
@@ -66,7 +68,7 @@ const apis = TestApiRegistry.from(
   [
     catalogApiRef,
     {
-      getEntityFacets: jest.fn().mockResolvedValue({
+      getEntityFacets: vi.fn().mockResolvedValue({
         facets: {
           'spec.type': entities.map(e => ({
             value: (e.spec as any).type,

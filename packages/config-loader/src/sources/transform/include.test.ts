@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import * as os from 'node:os';
 import { resolve as resolvePath } from 'node:path';
 import { createIncludeTransform } from './include';
@@ -23,7 +25,7 @@ const root = os.platform() === 'win32' ? 'C:\\' : '/';
 const substituteMe = '${MY_SUBSTITUTION}';
 const mySubstitution = 'fooSubstitution';
 
-const env = jest.fn(async (name: string) => {
+const env = vi.fn(async (name: string) => {
   return (
     {
       SECRET: 'my-secret',
@@ -45,7 +47,7 @@ const substitute: TransformFunc = async value => {
   return { applied: false };
 };
 
-const readFile = jest.fn(async (path: string) => {
+const readFile = vi.fn(async (path: string) => {
   const content = (
     {
       [resolvePath(root, 'my-secret')]: 'secret',

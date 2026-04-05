@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   SchedulerService,
   SchedulerServiceTaskRunner,
@@ -223,7 +225,7 @@ const createLocationEntity = (
 describe('BitbucketServerEntityProvider', () => {
   registerMswTestHooks(server);
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('no provider config', () => {
@@ -349,8 +351,8 @@ describe('BitbucketServerEntityProvider', () => {
     });
     const schedule = new PersistingTaskRunner();
     const entityProviderConnection: EntityProviderConnection = {
-      applyMutation: jest.fn(),
-      refresh: jest.fn(),
+      applyMutation: vi.fn(),
+      refresh: vi.fn(),
     };
     const provider = BitbucketServerEntityProvider.fromConfig(config, {
       logger,
@@ -432,8 +434,8 @@ describe('BitbucketServerEntityProvider', () => {
     });
     const schedule = new PersistingTaskRunner();
     const entityProviderConnection: EntityProviderConnection = {
-      applyMutation: jest.fn(),
-      refresh: jest.fn(),
+      applyMutation: vi.fn(),
+      refresh: vi.fn(),
     };
     const provider = BitbucketServerEntityProvider.fromConfig(config, {
       logger,
@@ -534,7 +536,7 @@ describe('BitbucketServerEntityProvider', () => {
 
   it('fail with scheduler but no schedule config', () => {
     const scheduler = {
-      createScheduledTaskRunner: (_: any) => jest.fn(),
+      createScheduledTaskRunner: (_: any) => vi.fn(),
     } as unknown as SchedulerService;
     const config = new ConfigReader({
       catalog: {
@@ -593,8 +595,8 @@ describe('BitbucketServerEntityProvider', () => {
       createScheduledTaskRunner: (_: any) => schedule,
     } as unknown as SchedulerService;
     const entityProviderConnection: EntityProviderConnection = {
-      applyMutation: jest.fn(),
-      refresh: jest.fn(),
+      applyMutation: vi.fn(),
+      refresh: vi.fn(),
     };
     const provider = BitbucketServerEntityProvider.fromConfig(config, {
       logger,
@@ -704,8 +706,8 @@ describe('BitbucketServerEntityProvider', () => {
     });
     const schedule = new PersistingTaskRunner();
     const entityProviderConnection: EntityProviderConnection = {
-      applyMutation: jest.fn(),
-      refresh: jest.fn(),
+      applyMutation: vi.fn(),
+      refresh: vi.fn(),
     };
     const provider = BitbucketServerEntityProvider.fromConfig(config, {
       logger,
@@ -852,8 +854,8 @@ describe('BitbucketServerEntityProvider', () => {
       'master',
     );
     const entityProviderConnection: EntityProviderConnection = {
-      applyMutation: jest.fn(),
-      refresh: jest.fn(),
+      applyMutation: vi.fn(),
+      refresh: vi.fn(),
     };
 
     setupRepositoryReqHandler('master');
@@ -928,8 +930,8 @@ describe('BitbucketServerEntityProvider', () => {
       'main',
     );
     const entityProviderConnection: EntityProviderConnection = {
-      applyMutation: jest.fn(),
-      refresh: jest.fn(),
+      applyMutation: vi.fn(),
+      refresh: vi.fn(),
     };
 
     setupRepositoryReqHandler('main');
@@ -1003,8 +1005,8 @@ describe('BitbucketServerEntityProvider', () => {
     );
 
     const entityProviderConnection: EntityProviderConnection = {
-      applyMutation: jest.fn(),
-      refresh: jest.fn(),
+      applyMutation: vi.fn(),
+      refresh: vi.fn(),
     };
 
     const config = new ConfigReader({
@@ -1064,8 +1066,8 @@ describe('BitbucketServerEntityProvider', () => {
     setupRepositoryReqHandler('main');
 
     const entityProviderConnection: EntityProviderConnection = {
-      applyMutation: jest.fn(),
-      refresh: jest.fn(),
+      applyMutation: vi.fn(),
+      refresh: vi.fn(),
     };
 
     const config = new ConfigReader({

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi, type Mocked } from 'vitest';
+
 import {
   ANNOTATION_LOCATION,
   ANNOTATION_ORIGIN_LOCATION,
@@ -192,7 +194,7 @@ describe('DefaultCatalogProcessingOrchestrator', () => {
     });
 
     it('runs all processor validations', async () => {
-      const validate = jest.fn(async () => true);
+      const validate = vi.fn(async () => true);
       const processor1: CatalogProcessor = {
         getProcessorName: () => 'processor1',
         validateEntityKind: validate,
@@ -268,17 +270,17 @@ describe('DefaultCatalogProcessingOrchestrator', () => {
 
     it('enforces catalog rules', async () => {
       const integrations = ScmIntegrations.fromConfig(new ConfigReader({}));
-      const processor: jest.Mocked<CatalogProcessor> = {
-        getProcessorName: jest.fn(),
-        validateEntityKind: jest.fn(async () => true),
-        readLocation: jest.fn(async (_l, _o, emit) => {
+      const processor: Mocked<CatalogProcessor> = {
+        getProcessorName: vi.fn(),
+        validateEntityKind: vi.fn(async () => true),
+        readLocation: vi.fn(async (_l, _o, emit) => {
           emit(processingResult.entity({ type: 't', target: 't' }, child));
           return true;
         }),
       };
-      const parser: CatalogProcessorParser = jest.fn();
-      const rulesEnforcer: jest.Mocked<CatalogRulesEnforcer> = {
-        isAllowed: jest.fn(),
+      const parser: CatalogProcessorParser = vi.fn();
+      const rulesEnforcer: Mocked<CatalogRulesEnforcer> = {
+        isAllowed: vi.fn(),
       };
 
       const orchestrator = new DefaultCatalogProcessingOrchestrator({
@@ -303,17 +305,17 @@ describe('DefaultCatalogProcessingOrchestrator', () => {
 
     it('includes entity ref within error', async () => {
       const integrations = ScmIntegrations.fromConfig(new ConfigReader({}));
-      const processor: jest.Mocked<CatalogProcessor> = {
-        getProcessorName: jest.fn(),
-        validateEntityKind: jest.fn(async () => true),
-        readLocation: jest.fn(async (_l, _o, emit) => {
+      const processor: Mocked<CatalogProcessor> = {
+        getProcessorName: vi.fn(),
+        validateEntityKind: vi.fn(async () => true),
+        readLocation: vi.fn(async (_l, _o, emit) => {
           emit(processingResult.entity({ type: 't', target: 't' }, child));
           return true;
         }),
       };
-      const parser: CatalogProcessorParser = jest.fn();
-      const rulesEnforcer: jest.Mocked<CatalogRulesEnforcer> = {
-        isAllowed: jest.fn(),
+      const parser: CatalogProcessorParser = vi.fn();
+      const rulesEnforcer: Mocked<CatalogRulesEnforcer> = {
+        isAllowed: vi.fn(),
       };
 
       class FailingEntityPolicy implements EntityPolicy {

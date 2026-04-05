@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { getTimeBasedGreeting } from './timeUtil';
 
 describe('getTimeBasedGreeting', () => {
-  afterEach(() => jest.resetAllMocks());
+  afterEach(() => vi.resetAllMocks());
 
   it('has greeting and language', () => {
     const greeting = getTimeBasedGreeting();

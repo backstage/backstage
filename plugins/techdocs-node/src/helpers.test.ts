@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import { Entity, getEntitySourceLocation } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
@@ -35,9 +37,9 @@ import {
   UrlReaderServiceReadTreeResponse,
 } from '@backstage/backend-plugin-api';
 
-jest.mock('@backstage/catalog-model', () => ({
-  ...jest.requireActual('@backstage/catalog-model'),
-  getEntitySourceLocation: jest.fn(),
+vi.mock('@backstage/catalog-model', () => ({
+  ...vi.importActual('@backstage/catalog-model'),
+  getEntitySourceLocation: vi.fn(),
 }));
 
 const rootDir = os.platform() === 'win32' ? 'C:\\rootDir' : '/rootDir';
@@ -98,7 +100,7 @@ const mockEntityWithBadAnnotation: Entity = {
 
 const scmIntegrations = ScmIntegrations.fromConfig(new ConfigReader({}));
 
-afterEach(() => jest.resetAllMocks());
+afterEach(() => vi.resetAllMocks());
 
 describe('parseReferenceAnnotation', () => {
   it('should parse annotation', () => {
@@ -139,7 +141,7 @@ describe('transformDirLocation', () => {
   `(
     'should transform "$techdocsRef" for url type locations',
     ({ techdocsRef, target }) => {
-      (getEntitySourceLocation as jest.Mock).mockReturnValue({
+      (getEntitySourceLocation as Mock).mockReturnValue({
         type: 'url',
         target: 'https://my-url/folder/',
       });
@@ -172,7 +174,7 @@ describe('transformDirLocation', () => {
   `(
     'should transform "$techdocsRef" for file type locations',
     ({ techdocsRef, target }) => {
-      (getEntitySourceLocation as jest.Mock).mockReturnValue({
+      (getEntitySourceLocation as Mock).mockReturnValue({
         type: 'file',
         target: path.join(rootDir, 'working-copy', 'catalog-info.yaml'),
       });
@@ -199,7 +201,7 @@ describe('transformDirLocation', () => {
   );
 
   it('should reject unsafe file location', () => {
-    (getEntitySourceLocation as jest.Mock).mockReturnValue({
+    (getEntitySourceLocation as Mock).mockReturnValue({
       type: 'file',
       target: '/tmp/catalog-info.yaml',
     });
@@ -227,7 +229,7 @@ describe('transformDirLocation', () => {
   });
 
   it('should reject other location types', () => {
-    (getEntitySourceLocation as jest.Mock).mockReturnValue({
+    (getEntitySourceLocation as Mock).mockReturnValue({
       type: 'other',
       target: '/',
     });
@@ -255,7 +257,7 @@ describe('transformDirLocation', () => {
 
 describe('getLocationForEntity', () => {
   it('should handle dir locations', () => {
-    (getEntitySourceLocation as jest.Mock).mockReturnValue({
+    (getEntitySourceLocation as Mock).mockReturnValue({
       type: 'url',
       target: 'https://my-url/folder/',
     });

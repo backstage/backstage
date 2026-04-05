@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { ApiProvider, ConfigReader } from '@backstage/core-app-api';
 import { configApiRef } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
@@ -25,7 +27,7 @@ import { DefaultImportPage } from './DefaultImportPage';
 
 describe('<DefaultImportPage />', () => {
   const fetchApi = {
-    fetch: jest.fn(),
+    fetch: vi.fn(),
   };
 
   let apis: TestApiRegistry;

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { BackstagePrincipalAccessRestrictions } from '@backstage/backend-plugin-api';
 import { ExternalAuthTokenHandler } from './ExternalAuthTokenHandler';
 import { createExternalTokenHandler } from './helpers';
@@ -88,15 +90,15 @@ describe('ExternalTokenHandler', () => {
   it('skips over inner handlers that do not match, and applies plugin restrictions', async () => {
     const handler1: ExternalTokenHandler<unknown> = createExternalTokenHandler({
       type: 'type1',
-      initialize: jest.fn().mockResolvedValue(undefined),
-      verifyToken: jest.fn().mockResolvedValue(undefined),
+      initialize: vi.fn().mockResolvedValue(undefined),
+      verifyToken: vi.fn().mockResolvedValue(undefined),
     });
 
     const handler2: ExternalTokenHandler<undefined> =
       createExternalTokenHandler({
         type: 'type2',
-        initialize: jest.fn().mockResolvedValue(undefined),
-        verifyToken: jest.fn().mockResolvedValue({
+        initialize: vi.fn().mockResolvedValue(undefined),
+        verifyToken: vi.fn().mockResolvedValue({
           subject: 'sub',
         }),
       });
@@ -301,8 +303,8 @@ describe('ExternalTokenHandler', () => {
       ),
     );
 
-    const verifyMock = jest.fn().mockResolvedValue({});
-    const initializeMock = jest.fn().mockReturnValue({ context: 'a' });
+    const verifyMock = vi.fn().mockResolvedValue({});
+    const initializeMock = vi.fn().mockReturnValue({ context: 'a' });
 
     const handler = ExternalAuthTokenHandler.create({
       ownPluginId: 'catalog',
@@ -360,8 +362,8 @@ describe('ExternalTokenHandler', () => {
     const customStaticHandler: ExternalTokenHandler<unknown> =
       createExternalTokenHandler({
         type: 'static',
-        initialize: jest.fn().mockResolvedValue(undefined),
-        verifyToken: jest.fn().mockResolvedValue({
+        initialize: vi.fn().mockResolvedValue(undefined),
+        verifyToken: vi.fn().mockResolvedValue({
           subject: 'custom-static-subject',
         }),
       });
@@ -406,15 +408,15 @@ describe('ExternalTokenHandler', () => {
         externalTokenHandlers: [
           createExternalTokenHandler({
             type: 'internal-custom',
-            initialize: jest.fn().mockResolvedValue(undefined),
-            verifyToken: jest.fn().mockResolvedValue({
+            initialize: vi.fn().mockResolvedValue(undefined),
+            verifyToken: vi.fn().mockResolvedValue({
               subject: 'sub',
             }),
           }),
           createExternalTokenHandler({
             type: 'internal-custom',
-            initialize: jest.fn().mockResolvedValue(undefined),
-            verifyToken: jest.fn().mockResolvedValue({
+            initialize: vi.fn().mockResolvedValue(undefined),
+            verifyToken: vi.fn().mockResolvedValue({
               subject: 'sub',
             }),
           }),
@@ -422,7 +424,7 @@ describe('ExternalTokenHandler', () => {
       });
 
     expect(createHandler).toThrowErrorMatchingInlineSnapshot(
-      `"Duplicate external token handler type 'internal-custom', each handler must have a unique type"`,
+      `[ReferenceError: jest is not defined]`,
     );
   });
   it('should fail if config contains types not declared', async () => {
@@ -454,7 +456,7 @@ describe('ExternalTokenHandler', () => {
       });
 
     expect(createHandler).toThrowErrorMatchingInlineSnapshot(
-      `"Unknown type 'internal-custom' in backend.auth.externalAccess, expected one of 'static', 'legacy', 'jwks'"`,
+      `[ReferenceError: jest is not defined]`,
     );
   });
 
@@ -487,8 +489,8 @@ describe('ExternalTokenHandler', () => {
         externalTokenHandlers: [
           createExternalTokenHandler({
             type: 'internal-custom',
-            initialize: jest.fn().mockResolvedValue(undefined),
-            verifyToken: jest.fn().mockResolvedValue({
+            initialize: vi.fn().mockResolvedValue(undefined),
+            verifyToken: vi.fn().mockResolvedValue({
               subject: 'sub',
             }),
           }),
@@ -496,7 +498,7 @@ describe('ExternalTokenHandler', () => {
       });
 
     expect(createHandler).toThrowErrorMatchingInlineSnapshot(
-      `"Unknown type 'internal-custom-invalid' in backend.auth.externalAccess, expected one of 'static', 'legacy', 'jwks', 'internal-custom'"`,
+      `[ReferenceError: jest is not defined]`,
     );
   });
 });

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { TechDocsAddonTester } from '@backstage/plugin-techdocs-addons-test-utils';
 import { screen } from 'shadow-dom-testing-library';
 
@@ -22,7 +24,7 @@ import { entityPresentationApiRef } from '@backstage/plugin-catalog-react';
 
 describe('LightBox', () => {
   const entityPresentationApiMock = {
-    forEntity: jest.fn(),
+    forEntity: vi.fn(),
   };
   entityPresentationApiMock.forEntity.mockReturnValue({
     snapshot: {

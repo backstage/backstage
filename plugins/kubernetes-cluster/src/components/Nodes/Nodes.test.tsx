@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import { renderInTestApp } from '@backstage/test-utils';
 import { Nodes } from './Nodes';
 import '@testing-library/jest-dom';
 
-jest.mock('@backstage/plugin-catalog-react', () => ({
+vi.mock('@backstage/plugin-catalog-react', () => ({
   useEntity: () => {
     return {
       entity: {
@@ -29,8 +31,8 @@ jest.mock('@backstage/plugin-catalog-react', () => ({
   },
 }));
 
-jest.mock('./useNodes', () => ({
-  useNodes: jest.fn().mockReturnValue({
+vi.mock('./useNodes', () => ({
+  useNodes: vi.fn().mockReturnValue({
     loading: false,
     value: {
       items: [
@@ -78,7 +80,7 @@ jest.mock('./useNodes', () => ({
 
 describe('Nodes', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
   it('displays nodes table - ready schedulable node', async () => {
     const { getByText } = await renderInTestApp(<Nodes />);

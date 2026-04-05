@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi, type Mocked , type MockedFunction} from 'vitest';
+
 import {
   coreServices,
   createBackendPlugin,
@@ -37,22 +39,22 @@ import { TokenIssuer } from '../identity/types';
 import { OfflineAccessService } from './OfflineAccessService';
 import { CimdClientInfo, isCimdUrl } from './CimdClient';
 
-jest.mock('./CimdClient', () => {
-  const actual = jest.requireActual('./CimdClient');
+vi.mock('./CimdClient', () => {
+  const actual = vi.importActual('./CimdClient');
   return {
     ...actual,
-    fetchCimdMetadata: jest.fn(),
+    fetchCimdMetadata: vi.fn(),
   };
 });
 
 import * as CimdClient from './CimdClient';
 
 const mockFetchCimdMetadata =
-  CimdClient.fetchCimdMetadata as jest.MockedFunction<
+  CimdClient.fetchCimdMetadata as MockedFunction<
     typeof CimdClient.fetchCimdMetadata
   >;
 
-jest.setTimeout(60_000);
+vi.setConfig({ testTimeout: 60_000 });
 
 describe('OidcRouter', () => {
   const MOCK_USER_TOKEN = 'mock-user-token';
@@ -86,9 +88,9 @@ describe('OidcRouter', () => {
     });
 
     const mockTokenIssuer = {
-      issueToken: jest.fn(),
-      listPublicKeys: jest.fn(),
-    } as unknown as jest.Mocked<TokenIssuer>;
+      issueToken: vi.fn(),
+      listPublicKeys: vi.fn(),
+    } as unknown as Mocked<TokenIssuer>;
 
     const mockAuth = mockServices.auth.mock();
     const mockHttpAuth = mockServices.httpAuth.mock();
@@ -160,9 +162,9 @@ describe('OidcRouter', () => {
     });
 
     const mockTokenIssuer = {
-      issueToken: jest.fn(),
-      listPublicKeys: jest.fn(),
-    } as unknown as jest.Mocked<TokenIssuer>;
+      issueToken: vi.fn(),
+      listPublicKeys: vi.fn(),
+    } as unknown as Mocked<TokenIssuer>;
 
     const mockAuth = mockServices.auth.mock();
     const mockHttpAuth = mockServices.httpAuth.mock();
@@ -1179,9 +1181,9 @@ describe('OidcRouter', () => {
         });
 
         const mockTokenIssuer = {
-          issueToken: jest.fn(),
-          listPublicKeys: jest.fn(),
-        } as unknown as jest.Mocked<TokenIssuer>;
+          issueToken: vi.fn(),
+          listPublicKeys: vi.fn(),
+        } as unknown as Mocked<TokenIssuer>;
 
         const oidcRouter = OidcRouter.create({
           auth: mockServices.auth.mock(),
@@ -1278,9 +1280,9 @@ describe('OidcRouter', () => {
         });
 
         const mockTokenIssuer = {
-          issueToken: jest.fn(),
-          listPublicKeys: jest.fn(),
-        } as unknown as jest.Mocked<TokenIssuer>;
+          issueToken: vi.fn(),
+          listPublicKeys: vi.fn(),
+        } as unknown as Mocked<TokenIssuer>;
 
         const mockAuth = mockServices.auth.mock();
         const mockHttpAuth = mockServices.httpAuth.mock();

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { SecureTemplater } from './SecureTemplater';
 
 describe('SecureTemplater', () => {
@@ -64,13 +66,13 @@ describe('SecureTemplater', () => {
   });
 
   it('should make parseRepoUrl available when requested', async () => {
-    const parseRepoUrl = jest.fn(() => ({
+    const parseRepoUrl = vi.fn(() => ({
       repo: 'my-repo',
       owner: 'my-owner',
       host: 'my-host.com',
     }));
 
-    const projectSlug = jest.fn(() => 'my-owner/my-repo');
+    const projectSlug = vi.fn(() => 'my-owner/my-repo');
 
     const renderWith = await SecureTemplater.loadRenderer({
       templateFilters: { parseRepoUrl, projectSlug },
@@ -104,10 +106,10 @@ describe('SecureTemplater', () => {
   });
 
   it('should make additional filters available when requested', async () => {
-    const mockFilter1 = jest.fn(() => 'filtered text');
-    const mockFilter2 = jest.fn((var1, var2) => `${var1} ${var2}`);
-    const mockFilter3 = jest.fn((var1, var2) => ({ var1, var2 }));
-    const mockFilter4 = jest.fn(() => undefined);
+    const mockFilter1 = vi.fn(() => 'filtered text');
+    const mockFilter2 = vi.fn((var1, var2) => `${var1} ${var2}`);
+    const mockFilter3 = vi.fn((var1, var2) => ({ var1, var2 }));
+    const mockFilter4 = vi.fn(() => undefined);
     const renderWith = await SecureTemplater.loadRenderer({
       templateFilters: { mockFilter1, mockFilter2, mockFilter3, mockFilter4 },
     });
@@ -151,10 +153,10 @@ describe('SecureTemplater', () => {
     ]);
   });
   it('should make additional globals available when requested', async () => {
-    const mockGlobal1 = jest.fn(() => 'awesome global function');
+    const mockGlobal1 = vi.fn(() => 'awesome global function');
     const mockGlobal2 = 'foo';
     const mockGlobal3 = 123456;
-    const mockGlobal4 = jest.fn(() => undefined);
+    const mockGlobal4 = vi.fn(() => undefined);
     const renderWith = await SecureTemplater.loadRenderer({
       templateGlobals: { mockGlobal1, mockGlobal2, mockGlobal3, mockGlobal4 },
     });

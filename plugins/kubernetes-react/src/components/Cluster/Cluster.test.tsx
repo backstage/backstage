@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { screen } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { Cluster } from './Cluster';
 
-jest.mock('../../hooks');
+vi.mock('../../hooks');
 import * as oneDeployment from '../../__fixtures__/1-deployments.json';
 
 describe('Cluster', () => {

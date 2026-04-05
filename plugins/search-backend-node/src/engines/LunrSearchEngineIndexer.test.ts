@@ -14,22 +14,24 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import lunr from 'lunr';
 import { range } from 'lodash';
 import { TestPipeline } from '../test-utils';
 import { LunrSearchEngineIndexer } from './LunrSearchEngineIndexer';
 
-const lunrBuilderAddSpy = jest.fn();
-const lunrBuilderRefSpy = jest.fn();
-const lunrBuilderFieldSpy = jest.fn();
-const lunrBuilderPipelineAddSpy = jest.fn();
-const lunrBuilderSearchPipelineAddSpy = jest.fn();
+const lunrBuilderAddSpy = vi.fn();
+const lunrBuilderRefSpy = vi.fn();
+const lunrBuilderFieldSpy = vi.fn();
+const lunrBuilderPipelineAddSpy = vi.fn();
+const lunrBuilderSearchPipelineAddSpy = vi.fn();
 
-jest.mock('lunr', () => {
-  const actualLunr = jest.requireActual('lunr');
+vi.mock('lunr', () => {
+  const actualLunr = vi.importActual('lunr');
   return {
     ...actualLunr,
-    Builder: jest.fn().mockImplementation(() => {
+    Builder: vi.fn().mockImplementation(() => {
       const actualBuilder = new actualLunr.Builder();
       actualBuilder.add = lunrBuilderAddSpy;
       actualBuilder.ref = lunrBuilderRefSpy;
@@ -45,7 +47,7 @@ describe('LunrSearchEngineIndexer', () => {
   let indexer: LunrSearchEngineIndexer;
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     indexer = new LunrSearchEngineIndexer();
   });
 

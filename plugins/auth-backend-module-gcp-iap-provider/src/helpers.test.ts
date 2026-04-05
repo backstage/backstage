@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { OAuth2Client } from 'google-auth-library';
 import { createTokenValidator } from './helpers';
 
 const mockJwt = 'a.b.c';
 
 beforeEach(() => {
-  jest.clearAllMocks();
+  vi.clearAllMocks();
 });
 
 describe('helpers', () => {

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import { waitFor } from '@testing-library/react';
 import { TechDocsStorageApi } from '../../api';
 import { createTestShadowDom } from '../../test-utils';
@@ -23,14 +25,14 @@ const DOC_STORAGE_URL = 'https://example-host.storage.googleapis.com';
 const API_ORIGIN_URL = 'https://backstage.example.com/api/techdocs';
 
 const techdocsStorageApi: TechDocsStorageApi = {
-  getBaseUrl: jest.fn(o =>
+  getBaseUrl: vi.fn(o =>
     Promise.resolve(new URL(o, DOC_STORAGE_URL).toString()),
   ),
   getEntityDocs: () => new Promise(resolve => resolve('yes!')),
   syncEntityDocs: () => new Promise(resolve => resolve('updated')),
-  getApiOrigin: jest.fn(() => new Promise(resolve => resolve(API_ORIGIN_URL))),
-  getBuilder: jest.fn(),
-  getStorageUrl: jest.fn(),
+  getApiOrigin: vi.fn(() => new Promise(resolve => resolve(API_ORIGIN_URL))),
+  getBuilder: vi.fn(),
+  getStorageUrl: vi.fn(),
 };
 
 const fixture = `
@@ -59,7 +61,7 @@ describe('addBaseUrl', () => {
   const originalFetch = global.fetch;
 
   beforeEach(() => {
-    global.fetch = jest.fn();
+    global.fetch = vi.fn();
   });
 
   afterEach(() => {
@@ -116,8 +118,8 @@ describe('addBaseUrl', () => {
       svgContent,
     ).toString('base64')}`;
 
-    (global.fetch as jest.Mock).mockReturnValue({
-      text: jest.fn().mockResolvedValue(svgContent),
+    (global.fetch as Mock).mockReturnValue({
+      text: vi.fn().mockResolvedValue(svgContent),
     });
 
     const root = await createTestShadowDom('<img id="x" src="test.svg" />', {
@@ -143,8 +145,8 @@ describe('addBaseUrl', () => {
       svgContent,
     ).toString('base64')}`;
 
-    (global.fetch as jest.Mock).mockReturnValue({
-      text: jest.fn().mockResolvedValue(svgContent),
+    (global.fetch as Mock).mockReturnValue({
+      text: vi.fn().mockResolvedValue(svgContent),
     });
 
     const root = await createTestShadowDom(
@@ -173,8 +175,8 @@ describe('addBaseUrl', () => {
       svgContent,
     ).toString('base64')}`;
 
-    (global.fetch as jest.Mock).mockReturnValue({
-      text: jest.fn().mockResolvedValue(svgContent),
+    (global.fetch as Mock).mockReturnValue({
+      text: vi.fn().mockResolvedValue(svgContent),
     });
 
     const root = await createTestShadowDom(

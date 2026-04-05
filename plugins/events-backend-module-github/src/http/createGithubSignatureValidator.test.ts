@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { ConfigReader } from '@backstage/config';
 import {
   RequestDetails,
@@ -37,7 +39,7 @@ class TestContext implements RequestValidationContext {
 }
 
 const octokitProvider = {
-  getOctokit: jest.fn(),
+  getOctokit: vi.fn(),
 } satisfies OctokitProviderService;
 
 describe('createGithubSignatureValidator', () => {

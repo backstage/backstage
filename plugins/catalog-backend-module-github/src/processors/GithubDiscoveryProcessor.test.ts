@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type MockedFunction} from 'vitest';
+
 import { ConfigReader } from '@backstage/config';
 import {
   DefaultGithubCredentialsProvider,
@@ -24,9 +26,9 @@ import { GithubDiscoveryProcessor, parseUrl } from './GithubDiscoveryProcessor';
 import { getOrganizationRepositories } from '../lib';
 import { mockServices } from '@backstage/backend-test-utils';
 
-jest.mock('../lib');
+vi.mock('../lib');
 const mockGetOrganizationRepositories =
-  getOrganizationRepositories as jest.MockedFunction<
+  getOrganizationRepositories as MockedFunction<
     typeof getOrganizationRepositories
   >;
 
@@ -171,7 +173,7 @@ describe('GithubDiscoveryProcessor', () => {
           },
         ],
       });
-      const emitter = jest.fn();
+      const emitter = vi.fn();
 
       await processor.readLocation(location, false, emitter);
 
@@ -215,7 +217,7 @@ describe('GithubDiscoveryProcessor', () => {
           },
         ],
       });
-      const emitter = jest.fn();
+      const emitter = vi.fn();
 
       await processor.readLocation(location, false, emitter);
 
@@ -249,7 +251,7 @@ describe('GithubDiscoveryProcessor', () => {
           },
         ],
       });
-      const emitter = jest.fn();
+      const emitter = vi.fn();
 
       await processor.readLocation(location, false, emitter);
 
@@ -277,7 +279,7 @@ describe('GithubDiscoveryProcessor', () => {
           },
         ],
       });
-      const emitter = jest.fn();
+      const emitter = vi.fn();
 
       await processor.readLocation(location, false, emitter);
 
@@ -348,7 +350,7 @@ describe('GithubDiscoveryProcessor', () => {
           },
         ],
       });
-      const emitter = jest.fn();
+      const emitter = vi.fn();
 
       await processor.readLocation(location, false, emitter);
 
@@ -429,7 +431,7 @@ describe('GithubDiscoveryProcessor', () => {
           },
         ],
       });
-      const emitter = jest.fn();
+      const emitter = vi.fn();
 
       await processor.readLocation(location, false, emitter);
 

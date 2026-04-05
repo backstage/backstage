@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { PropsWithChildren } from 'react';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { renderHook, waitFor } from '@testing-library/react';
@@ -39,10 +41,10 @@ const mockIdentityApi = mockApis.identity({
   ownershipEntityRefs: ['user:default/spiderman', 'user:group/a-group'],
   userEntityRef: 'user:default/spiderman',
 });
-jest.spyOn(mockIdentityApi, 'getBackstageIdentity');
+vi.spyOn(mockIdentityApi, 'getBackstageIdentity');
 
-jest.mock('@backstage/core-plugin-api', () => {
-  const actual = jest.requireActual('@backstage/core-plugin-api');
+vi.mock('@backstage/core-plugin-api', () => {
+  const actual = vi.importActual('@backstage/core-plugin-api');
   return {
     ...actual,
     useApi: (ref: ApiRef<any>) => {
@@ -58,7 +60,7 @@ jest.mock('@backstage/core-plugin-api', () => {
 
 describe('useOwnedEntitiesCount', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it(`shouldn't invoke queryEntities when filters are loading`, async () => {

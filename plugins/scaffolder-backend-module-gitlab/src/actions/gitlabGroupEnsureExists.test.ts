@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { ScmIntegrations } from '@backstage/integration';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { createGitlabGroupEnsureExistsAction } from './gitlabGroupEnsureExists';
@@ -22,12 +24,12 @@ import { mockServices } from '@backstage/backend-test-utils';
 
 const mockGitlabClient = {
   Groups: {
-    show: jest.fn(),
-    create: jest.fn(),
+    show: vi.fn(),
+    create: vi.fn(),
   },
 };
 
-jest.mock('@gitbeaker/rest', () => ({
+vi.mock('@gitbeaker/rest', () => ({
   Gitlab: class {
     constructor() {
       return mockGitlabClient;
@@ -35,14 +37,14 @@ jest.mock('@gitbeaker/rest', () => ({
   },
 }));
 
-jest.mock('../util', () => ({
-  getClient: jest.fn().mockImplementation(() => mockGitlabClient),
+vi.mock('../util', () => ({
+  getClient: vi.fn().mockImplementation(() => mockGitlabClient),
   parseRepoUrl: () => ({ host: 'gitlab.com', owner: 'owner', repo: 'repo' }),
 }));
 
 describe('gitlab:group:ensureExists', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   const config = mockServices.rootConfig({

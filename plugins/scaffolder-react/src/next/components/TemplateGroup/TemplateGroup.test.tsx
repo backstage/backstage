@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-jest.mock('../TemplateCard', () => ({ TemplateCard: jest.fn(() => null) }));
+
+import { vi } from 'vitest';
+vi.mock('../TemplateCard', () => ({ TemplateCard: vi.fn(() => null) }));
 
 import { TemplateGroup } from './TemplateGroup';
 import { render } from '@testing-library/react';
@@ -22,7 +24,7 @@ import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 
 describe('TemplateGroup', () => {
   it('should render a card for each template with the template being passed as a prop', () => {
-    const mockOnSelected = jest.fn();
+    const mockOnSelected = vi.fn();
     const mockTemplates: { template: TemplateEntityV1beta3 }[] = [
       {
         template: {
@@ -69,8 +71,8 @@ describe('TemplateGroup', () => {
   });
 
   it('should use the passed in TemplateCard prop to render the template card', () => {
-    const mockTemplateCardComponent = jest.fn(() => null);
-    const mockOnSelected = jest.fn();
+    const mockTemplateCardComponent = vi.fn(() => null);
+    const mockOnSelected = vi.fn();
     const mockTemplates: { template: TemplateEntityV1beta3 }[] = [
       {
         template: {
@@ -133,7 +135,7 @@ describe('TemplateGroup', () => {
 
     const { getByText } = render(
       <TemplateGroup
-        onSelected={jest.fn()}
+        onSelected={vi.fn()}
         title="Test"
         templates={mockTemplates}
       />,
@@ -156,7 +158,7 @@ describe('TemplateGroup', () => {
     ];
     const { getByText } = render(
       <TemplateGroup
-        onSelected={jest.fn()}
+        onSelected={vi.fn()}
         templates={mockTemplates}
         title={TitleComponent}
       />,

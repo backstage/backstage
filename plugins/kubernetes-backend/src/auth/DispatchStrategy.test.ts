@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi, type Mocked } from 'vitest';
+
 import {
   ANNOTATION_KUBERNETES_AUTH_PROVIDER,
   KubernetesRequestAuth,
@@ -26,14 +28,14 @@ import {
 
 describe('getCredential', () => {
   let strategy: DispatchStrategy;
-  let mockStrategy: jest.Mocked<AuthenticationStrategy>;
+  let mockStrategy: Mocked<AuthenticationStrategy>;
   const authObject: KubernetesRequestAuth = {};
 
   beforeEach(() => {
     mockStrategy = {
-      getCredential: jest.fn(),
-      validateCluster: jest.fn(),
-      presentAuthMetadata: jest.fn(),
+      getCredential: vi.fn(),
+      validateCluster: vi.fn(),
+      presentAuthMetadata: vi.fn(),
     };
     strategy = new DispatchStrategy({
       authStrategyMap: { google: mockStrategy },

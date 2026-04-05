@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { createElement, memo, forwardRef } from 'react';
 import { DefaultIconsApi } from './DefaultIconsApi';
 
 describe('DefaultIconsApi', () => {
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   it('should return undefined for unknown keys', () => {
@@ -29,7 +31,7 @@ describe('DefaultIconsApi', () => {
   });
 
   it('should list all registered icon keys', () => {
-    jest.spyOn(console, 'warn').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
     const api = new DefaultIconsApi({
       a: createElement('span'),
       b: () => createElement('span'),
@@ -51,7 +53,7 @@ describe('DefaultIconsApi', () => {
   });
 
   it('should convert IconComponent values to elements for icon()', () => {
-    jest.spyOn(console, 'warn').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
     const MyIcon = () => createElement('span', null, 'rendered');
     const api = new DefaultIconsApi({ myIcon: MyIcon });
 
@@ -119,7 +121,7 @@ describe('DefaultIconsApi', () => {
   });
 
   it('should log a single warning listing all IconComponent keys', () => {
-    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
     void new DefaultIconsApi({
       a: () => createElement('span'),
@@ -133,7 +135,7 @@ describe('DefaultIconsApi', () => {
   });
 
   it('should not warn when only IconElement values are provided', () => {
-    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
     void new DefaultIconsApi({
       element: createElement('span'),
@@ -144,7 +146,7 @@ describe('DefaultIconsApi', () => {
   });
 
   it('should treat React.memo components as IconComponent', () => {
-    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
     const MemoIcon = memo(() => createElement('svg'));
     const api = new DefaultIconsApi({ myIcon: MemoIcon });
 
@@ -157,7 +159,7 @@ describe('DefaultIconsApi', () => {
   });
 
   it('should treat React.forwardRef components as IconComponent', () => {
-    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
     const RefIcon = forwardRef(() => createElement('svg'));
     // @ts-expect-error forwardRef is not strictly IconComponent but should be handled
     const api = new DefaultIconsApi({ myIcon: RefIcon });

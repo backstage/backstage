@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   Configuration,
   Manifest,
@@ -47,7 +49,7 @@ describe('beforeWorkspacePacking', () => {
       .spyOn(process, 'cwd')
       .mockReturnValue(npath.toPortablePath(mockDir.path));
 
-    jest.spyOn(httpUtils, 'get').mockResolvedValue({
+    vi.spyOn(httpUtils, 'get').mockResolvedValue({
       releaseVersion: '1.23.45',
       packages: [
         {
@@ -78,7 +80,7 @@ describe('beforeWorkspacePacking', () => {
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   describe.each`

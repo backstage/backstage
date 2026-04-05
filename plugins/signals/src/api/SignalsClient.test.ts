@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { mockApis } from '@backstage/test-utils';
 import WS from 'jest-websocket-mock';
 import { SignalClient } from './SignalClient';
@@ -26,7 +28,7 @@ describe('SignalClient', () => {
   let server: WS;
 
   beforeEach(async () => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     server = new WS('ws://localhost:1234/api/signals', {
       jsonProtocol: true,
     });
@@ -37,7 +39,7 @@ describe('SignalClient', () => {
   });
 
   it('should handle single subscription correctly', async () => {
-    const messageMock = jest.fn();
+    const messageMock = vi.fn();
     const client = SignalClient.create({ discoveryApi, identity });
     const { unsubscribe } = client.subscribe('channel', messageMock);
     await server.connected;
@@ -58,8 +60,8 @@ describe('SignalClient', () => {
   });
 
   it('should handle multiple subscription correctly', async () => {
-    const messageMock1 = jest.fn();
-    const messageMock2 = jest.fn();
+    const messageMock1 = vi.fn();
+    const messageMock2 = vi.fn();
     const client1 = SignalClient.create({ discoveryApi, identity });
     const client2 = SignalClient.create({ discoveryApi, identity });
     const { unsubscribe: unsubscribe1 } = client1.subscribe(
@@ -121,7 +123,7 @@ describe('SignalClient', () => {
   });
 
   it('should reconnect on error', async () => {
-    const messageMock = jest.fn();
+    const messageMock = vi.fn();
     const client = SignalClient.create({
       discoveryApi,
       identity,

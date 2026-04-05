@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { scrollIntoNavigation } from './scrollIntoNavigation';
 import { createTestShadowDom, FIXTURES } from '../../test-utils';
 
-jest.useFakeTimers();
+vi.useFakeTimers();
 
 describe('scrollIntoNavigation', () => {
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('scroll to active navigation item', async () => {
@@ -32,10 +34,10 @@ describe('scrollIntoNavigation', () => {
 
     // jsdom does not implement scrollIntoView so we attach a function to the
     // prototype to be able to test the expected behaviour.
-    const scrollNavIntoView = jest.fn();
+    const scrollNavIntoView = vi.fn();
     window.HTMLElement.prototype.scrollIntoView = scrollNavIntoView;
 
-    jest.advanceTimersByTime(200);
+    vi.advanceTimersByTime(200);
 
     expect(scrollNavIntoView).toHaveBeenCalledWith();
   });
@@ -53,10 +55,10 @@ describe('scrollIntoNavigation', () => {
     // support the behaviour.
     window.HTMLElement.prototype.scrollIntoView = () => {};
 
-    const click = jest.fn();
+    const click = vi.fn();
     shadowDom.addEventListener('click', click);
 
-    jest.advanceTimersByTime(200);
+    vi.advanceTimersByTime(200);
 
     expect(click).toHaveBeenCalled();
   });
@@ -74,10 +76,10 @@ describe('scrollIntoNavigation', () => {
     // support the behaviour.
     window.HTMLElement.prototype.scrollIntoView = () => {};
 
-    const click = jest.fn();
+    const click = vi.fn();
     shadowDom.addEventListener('click', click);
 
-    jest.advanceTimersByTime(200);
+    vi.advanceTimersByTime(200);
 
     expect(click).not.toHaveBeenCalled();
   });

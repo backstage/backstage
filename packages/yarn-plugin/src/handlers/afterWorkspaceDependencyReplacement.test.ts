@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import {
   Descriptor,
   DescriptorHash,
@@ -39,9 +41,9 @@ describe('afterWorkspaceDependencyReplacement.test', () => {
     .mockImplementation(() => {});
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
 
-    jest.spyOn(httpUtils, 'get').mockResolvedValue({
+    vi.spyOn(httpUtils, 'get').mockResolvedValue({
       releaseVersion: '1.23.45',
       packages: [
         {

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
@@ -23,10 +25,10 @@ import { examples } from './gitlabProjectVariableCreate.examples';
 
 const mockGitlabClient = {
   ProjectVariables: {
-    create: jest.fn(),
+    create: vi.fn(),
   },
 };
-jest.mock('@gitbeaker/rest', () => ({
+vi.mock('@gitbeaker/rest', () => ({
   Gitlab: class {
     constructor() {
       return mockGitlabClient;
@@ -64,7 +66,7 @@ describe('gitlab:projectVariableAction: create examples', () => {
   });
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it(`Should ${examples[0].description}`, async () => {

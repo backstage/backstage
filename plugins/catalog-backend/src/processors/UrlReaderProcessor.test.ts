@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi, type Mocked } from 'vitest';
+
 import {
   mockServices,
   registerMswTestHooks,
@@ -33,15 +35,15 @@ import { UrlReaders } from '@backstage/backend-defaults/urlReader';
 
 describe('UrlReaderProcessor', () => {
   const mockApiOrigin = 'http://localhost';
-  const mockCache: jest.Mocked<CatalogProcessorCache> = {
-    get: jest.fn(),
-    set: jest.fn(),
+  const mockCache: Mocked<CatalogProcessorCache> = {
+    get: vi.fn(),
+    set: vi.fn(),
   };
   const server = setupServer();
   registerMswTestHooks(server);
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('should load from url', async () => {
@@ -199,12 +201,12 @@ describe('UrlReaderProcessor', () => {
     const logger = mockServices.logger.mock();
 
     const reader = mockServices.urlReader.mock({
-      search: jest.fn().mockResolvedValue([]),
+      search: vi.fn().mockResolvedValue([]),
     });
 
     const processor = new UrlReaderProcessor({ reader, logger });
 
-    const emit = jest.fn();
+    const emit = vi.fn();
 
     await processor.readLocation(
       { type: 'url', target: 'https://github.com/a/b/blob/x/b.yaml' },

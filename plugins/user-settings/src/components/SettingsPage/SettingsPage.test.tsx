@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { SettingsPage } from './SettingsPage';
 import { UserSettingsTab } from '../UserSettingsTab';
@@ -24,16 +26,16 @@ import userEvent from '@testing-library/user-event';
 import { catalogApiRef, entityRouteRef } from '@backstage/plugin-catalog-react';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useOutlet: jest.fn().mockReturnValue(undefined),
+vi.mock('react-router-dom', () => ({
+  ...vi.importActual('react-router-dom'),
+  useOutlet: vi.fn().mockReturnValue(undefined),
 }));
 
 const catalogApi = catalogApiMock();
 
 describe('<SettingsPage />', () => {
   beforeEach(() => {
-    (useOutlet as jest.Mock).mockReset();
+    (useOutlet as Mock).mockReset();
   });
 
   it('should render the default settings page with 3 tabs', async () => {
@@ -56,7 +58,7 @@ describe('<SettingsPage />', () => {
         <div>Advanced settings</div>
       </UserSettingsTab>
     );
-    (useOutlet as jest.Mock).mockReturnValue(advancedTabRoute);
+    (useOutlet as Mock).mockReturnValue(advancedTabRoute);
     const { container } = await renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
         <SettingsPage />
@@ -77,7 +79,7 @@ describe('<SettingsPage />', () => {
         <div>Advanced settings</div>
       </SettingsLayout.Route>
     );
-    (useOutlet as jest.Mock).mockReturnValue(advancedTabRoute);
+    (useOutlet as Mock).mockReturnValue(advancedTabRoute);
     const { container } = await renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
         <SettingsPage />
@@ -107,7 +109,7 @@ describe('<SettingsPage />', () => {
         </SettingsLayout.Route>
       </SettingsLayout>
     );
-    (useOutlet as jest.Mock).mockReturnValue(customLayout);
+    (useOutlet as Mock).mockReturnValue(customLayout);
     const { container } = await renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
         <SettingsPage />

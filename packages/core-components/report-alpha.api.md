@@ -12,8 +12,8 @@ export const coreComponentsTranslationRef: TranslationRef<
     readonly 'table.filter.title': 'Filters';
     readonly 'table.filter.placeholder': 'All results';
     readonly 'table.filter.clearAll': 'Clear all';
-    readonly 'table.body.emptyDataSourceMessage': 'No records to display';
     readonly 'table.header.actions': 'Actions';
+    readonly 'table.body.emptyDataSourceMessage': 'No records to display';
     readonly 'table.toolbar.search': 'Filter';
     readonly 'table.pagination.labelDisplayedRows': '{from}-{to} of {count}';
     readonly 'table.pagination.firstTooltip': 'First Page';
@@ -37,9 +37,9 @@ export const coreComponentsTranslationRef: TranslationRef<
     readonly 'signIn.guestProvider.subtitle': 'Enter as a Guest User.\n You will not have a verified identity, meaning some features might be unavailable.';
     readonly skipToContent: 'Skip to content';
     readonly 'copyTextButton.tooltipText': 'Text copied to clipboard';
-    readonly 'simpleStepper.finish': 'Finish';
     readonly 'simpleStepper.reset': 'Reset';
     readonly 'simpleStepper.next': 'Next';
+    readonly 'simpleStepper.finish': 'Finish';
     readonly 'simpleStepper.skip': 'Skip';
     readonly 'simpleStepper.back': 'Back';
     readonly 'errorPage.title': 'Looks like someone dropped the mic!';

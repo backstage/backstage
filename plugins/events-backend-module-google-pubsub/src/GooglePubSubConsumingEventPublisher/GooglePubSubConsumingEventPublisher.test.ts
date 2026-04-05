@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { mockServices } from '@backstage/backend-test-utils';
 import { metricsServiceMock } from '@backstage/backend-test-utils/alpha';
 import { Message, PubSub } from '@google-cloud/pubsub';
@@ -28,8 +30,8 @@ function makeMessage(
   const message: Partial<Message> = {
     attributes,
     data: Buffer.from(JSON.stringify(data), 'utf-8'),
-    ack: jest.fn(),
-    nack: jest.fn(),
+    ack: vi.fn(),
+    nack: vi.fn(),
   };
   return message as Message;
 }
@@ -41,8 +43,8 @@ describe('GooglePubSubConsumingEventPublisher', () => {
 
   let onMessage: undefined | ((message: Message) => void);
   const subscription = {
-    close: jest.fn(),
-    on: jest.fn((event, fn) => {
+    close: vi.fn(),
+    on: vi.fn((event, fn) => {
       if (event === 'message') {
         onMessage = fn;
       }
@@ -50,14 +52,14 @@ describe('GooglePubSubConsumingEventPublisher', () => {
   };
 
   const pubSub = {
-    close: jest.fn(),
-    subscription: jest.fn(() => subscription),
+    close: vi.fn(),
+    subscription: vi.fn(() => subscription),
   };
-  const pubSubFactory = jest.fn(() => pubSub as unknown as PubSub);
+  const pubSubFactory = vi.fn(() => pubSub as unknown as PubSub);
 
   beforeEach(() => {
     onMessage = undefined;
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should go though the expected registration and flows', async () => {

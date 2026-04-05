@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi, type Mocked } from 'vitest';
+
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { createDebugLogAction } from './log';
 import { join } from 'node:path';
@@ -24,8 +26,8 @@ import { Logger } from 'winston';
 
 describe('debug:log examples', () => {
   const logger = {
-    info: jest.fn(),
-  } as unknown as jest.Mocked<Logger>;
+    info: vi.fn(),
+  } as unknown as Mocked<Logger>;
 
   const mockDir = createMockDirectory();
   const workspacePath = mockDir.resolve('workspace');
@@ -42,7 +44,7 @@ describe('debug:log examples', () => {
       [`${workspacePath}/README.md`]: '',
       [`${workspacePath}/a-directory/index.md`]: '',
     });
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('should log message', async () => {

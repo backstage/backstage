@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type MockedFunction} from 'vitest';
+
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { EntityListProvider, useStarredEntities } from '../../hooks';
 import { catalogApiRef } from '../../api';
@@ -24,7 +26,7 @@ import { renderHook, waitFor } from '@testing-library/react';
 
 const mockCatalogApi = catalogApiMock.mock();
 
-const mockStarredEntities: jest.MockedFn<() => Set<string>> = jest.fn();
+const mockStarredEntities: MockedFunction<() => Set<string>> = vi.fn();
 
 const mockUseStarredEntities: ReturnType<typeof useStarredEntities> = {
   get starredEntities() {
@@ -32,13 +34,13 @@ const mockUseStarredEntities: ReturnType<typeof useStarredEntities> = {
   },
 } as ReturnType<typeof useStarredEntities>;
 
-jest.mock('../../hooks', () => {
-  const actual = jest.requireActual('../../hooks');
+vi.mock('../../hooks', () => {
+  const actual = vi.importActual('../../hooks');
   return { ...actual, useStarredEntities: () => mockUseStarredEntities };
 });
 
-jest.mock('@backstage/core-plugin-api', () => {
-  const actual = jest.requireActual('@backstage/core-plugin-api');
+vi.mock('@backstage/core-plugin-api', () => {
+  const actual = vi.importActual('@backstage/core-plugin-api');
   return {
     ...actual,
     useApi: (ref: ApiRef<any>) =>
@@ -48,7 +50,7 @@ jest.mock('@backstage/core-plugin-api', () => {
 
 describe('useStarredEntitiesCount', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should return the count', async () => {

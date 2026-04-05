@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import {
   OAuthAuthenticatorAuthenticateInput,
   OAuthAuthenticatorRefreshInput,
@@ -85,8 +87,8 @@ describe('pinnipedAuthenticator', () => {
   });
 
   beforeEach(() => {
-    jest.clearAllMocks();
-    jest.restoreAllMocks();
+    vi.clearAllMocks();
+    vi.restoreAllMocks();
 
     mswServer.use(
       rest.get(
@@ -352,7 +354,7 @@ describe('pinnipedAuthenticator', () => {
       // we start with 1 because the supervisor was called once already when we initialize.
       let supervisorCalls: number = 1;
       const fixedTime = DateTime.local();
-      jest.spyOn(DateTime, 'local').mockImplementation(() => fixedTime);
+      vi.spyOn(DateTime, 'local').mockImplementation(() => fixedTime);
 
       mswServer.use(
         rest.get(
@@ -638,7 +640,7 @@ describe('pinnipedAuthenticator', () => {
     it('refreshes oidc metadata when current one in cache expires', async () => {
       let supervisorCalls: number = 0;
       const fixedTime = DateTime.local();
-      jest.spyOn(DateTime, 'local').mockImplementation(() => fixedTime);
+      vi.spyOn(DateTime, 'local').mockImplementation(() => fixedTime);
 
       mswServer.use(
         rest.get(
@@ -791,7 +793,7 @@ describe('pinnipedAuthenticator', () => {
     it('refreshes oidc metadata when current one in cache expires', async () => {
       let supervisorCalls: number = 1;
       const fixedTime = DateTime.local();
-      jest.spyOn(DateTime, 'local').mockImplementation(() => fixedTime);
+      vi.spyOn(DateTime, 'local').mockImplementation(() => fixedTime);
 
       mswServer.use(
         rest.get(

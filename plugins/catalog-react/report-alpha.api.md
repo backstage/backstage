@@ -64,29 +64,29 @@ export const catalogReactTranslationRef: TranslationRef<
     readonly 'inspectEntityDialog.title': 'Entity Inspector';
     readonly 'inspectEntityDialog.closeButtonTitle': 'Close';
     readonly 'inspectEntityDialog.tabsAriaLabel': 'Inspector options';
-    readonly 'inspectEntityDialog.ancestryPage.title': 'Ancestry';
     readonly 'inspectEntityDialog.ancestryPage.description': 'This is the ancestry of entities above the current one - as in, the chain(s) of entities down to the current one, where {{processorsLink}} child entities that ultimately led to the current one existing. Note that this is a completely different mechanism from relations.';
+    readonly 'inspectEntityDialog.ancestryPage.title': 'Ancestry';
     readonly 'inspectEntityDialog.ancestryPage.processorsLink': 'processors emitted';
-    readonly 'inspectEntityDialog.colocatedPage.title': 'Colocated';
     readonly 'inspectEntityDialog.colocatedPage.description': 'These are the entities that are colocated with this entity - as in, they originated from the same data source (e.g. came from the same YAML file), or from the same origin (e.g. the originally registered URL).';
+    readonly 'inspectEntityDialog.colocatedPage.title': 'Colocated';
     readonly 'inspectEntityDialog.colocatedPage.alertNoLocation': 'Entity had no location information.';
     readonly 'inspectEntityDialog.colocatedPage.alertNoEntity': 'There were no other entities on this location.';
     readonly 'inspectEntityDialog.colocatedPage.locationHeader': 'At the same location';
     readonly 'inspectEntityDialog.colocatedPage.originHeader': 'At the same origin';
-    readonly 'inspectEntityDialog.jsonPage.title': 'Entity as JSON';
     readonly 'inspectEntityDialog.jsonPage.description': 'This is the raw entity data as received from the catalog, on JSON form.';
-    readonly 'inspectEntityDialog.overviewPage.title': 'Overview';
-    readonly 'inspectEntityDialog.overviewPage.metadata.title': 'Metadata';
-    readonly 'inspectEntityDialog.overviewPage.labels': 'Labels';
+    readonly 'inspectEntityDialog.jsonPage.title': 'Entity as JSON';
     readonly 'inspectEntityDialog.overviewPage.status.title': 'Status';
+    readonly 'inspectEntityDialog.overviewPage.title': 'Overview';
     readonly 'inspectEntityDialog.overviewPage.identity.title': 'Identity';
+    readonly 'inspectEntityDialog.overviewPage.metadata.title': 'Metadata';
     readonly 'inspectEntityDialog.overviewPage.annotations': 'Annotations';
     readonly 'inspectEntityDialog.overviewPage.tags': 'Tags';
+    readonly 'inspectEntityDialog.overviewPage.labels': 'Labels';
     readonly 'inspectEntityDialog.overviewPage.relation.title': 'Relations';
-    readonly 'inspectEntityDialog.yamlPage.title': 'Entity as YAML';
     readonly 'inspectEntityDialog.yamlPage.description': 'This is the raw entity data as received from the catalog, on YAML form.';
-    readonly 'inspectEntityDialog.tabNames.json': 'Raw JSON';
+    readonly 'inspectEntityDialog.yamlPage.title': 'Entity as YAML';
     readonly 'inspectEntityDialog.tabNames.yaml': 'Raw YAML';
+    readonly 'inspectEntityDialog.tabNames.json': 'Raw JSON';
     readonly 'inspectEntityDialog.tabNames.overview': 'Overview';
     readonly 'inspectEntityDialog.tabNames.ancestry': 'Ancestry';
     readonly 'inspectEntityDialog.tabNames.colocated': 'Colocated';
@@ -99,8 +99,8 @@ export const catalogReactTranslationRef: TranslationRef<
     readonly 'unregisterEntityDialog.bootstrapState.title': 'You cannot unregister this entity, since it originates from a protected Backstage configuration (location "{{location}}"). If you believe this is in error, please contact the {{appTitle}} integrator.';
     readonly 'unregisterEntityDialog.bootstrapState.advancedDescription': 'You have the option to delete the entity itself from the catalog. Note that this should only be done if you know that the catalog file has been deleted at, or moved from, its origin location. If that is not the case, the entity will reappear shortly as the next refresh round is performed by the catalog.';
     readonly 'unregisterEntityDialog.bootstrapState.advancedOptions': 'Advanced Options';
-    readonly 'unregisterEntityDialog.unregisterState.title': 'This action will unregister the following entities:';
     readonly 'unregisterEntityDialog.unregisterState.description': 'To undo, just re-register the entity in {{appTitle}}.';
+    readonly 'unregisterEntityDialog.unregisterState.title': 'This action will unregister the following entities:';
     readonly 'unregisterEntityDialog.unregisterState.subTitle': 'Located at the following location:';
     readonly 'unregisterEntityDialog.unregisterState.advancedDescription': 'You also have the option to delete the entity itself from the catalog. Note that this should only be done if you know that the catalog file has been deleted at, or moved from, its origin location. If that is not the case, the entity will reappear shortly as the next refresh round is performed by the catalog.';
     readonly 'unregisterEntityDialog.unregisterState.advancedOptions': 'Advanced Options';
@@ -111,17 +111,17 @@ export const catalogReactTranslationRef: TranslationRef<
     readonly 'userListPicker.personalFilter.ownedLabel': 'Owned';
     readonly 'userListPicker.personalFilter.starredLabel': 'Starred';
     readonly 'entityTableColumnTitle.name': 'Name';
-    readonly 'entityTableColumnTitle.type': 'Type';
-    readonly 'entityTableColumnTitle.label': 'Label';
-    readonly 'entityTableColumnTitle.title': 'Title';
     readonly 'entityTableColumnTitle.description': 'Description';
-    readonly 'entityTableColumnTitle.system': 'System';
+    readonly 'entityTableColumnTitle.type': 'Type';
     readonly 'entityTableColumnTitle.namespace': 'Namespace';
-    readonly 'entityTableColumnTitle.domain': 'Domain';
+    readonly 'entityTableColumnTitle.title': 'Title';
+    readonly 'entityTableColumnTitle.label': 'Label';
     readonly 'entityTableColumnTitle.tags': 'Tags';
     readonly 'entityTableColumnTitle.owner': 'Owner';
     readonly 'entityTableColumnTitle.lifecycle': 'Lifecycle';
+    readonly 'entityTableColumnTitle.system': 'System';
     readonly 'entityTableColumnTitle.targets': 'Targets';
+    readonly 'entityTableColumnTitle.domain': 'Domain';
     readonly 'entityRelationCard.emptyHelpLinkTitle': 'Learn how to change this.';
     readonly 'missingAnnotationEmptyState.title': 'Missing Annotation';
     readonly 'missingAnnotationEmptyState.readMore': 'Read more';
@@ -217,11 +217,11 @@ export const EntityCardBlueprint: ExtensionBlueprint<{
   inputs: {};
   config: {
     filter: FilterPredicate | undefined;
-    type: 'content' | 'info' | undefined;
+    type: 'info' | 'content' | undefined;
   };
   configInput: {
     filter?: FilterPredicate | undefined;
-    type?: 'content' | 'info' | undefined;
+    type?: 'info' | 'content' | undefined;
   };
   dataRefs: {
     filterFunction: ConfigurableExtensionDataRef<
@@ -335,10 +335,10 @@ export const EntityContentBlueprint: ExtensionBlueprint<{
   };
   configInput: {
     filter?: FilterPredicate | undefined;
-    title?: string | undefined;
     path?: string | undefined;
-    group?: string | false | undefined;
+    title?: string | undefined;
     icon?: string | undefined;
+    group?: string | false | undefined;
   };
   dataRefs: {
     title: ConfigurableExtensionDataRef<
@@ -605,8 +605,8 @@ export const EntityIconLinkBlueprint: ExtensionBlueprint<{
   };
   configInput: {
     filter?: FilterPredicate | undefined;
-    label?: string | undefined;
     title?: string | undefined;
+    label?: string | undefined;
   };
   dataRefs: {
     useProps: ConfigurableExtensionDataRef<
@@ -658,9 +658,8 @@ export type EntityRow = Entity & TableItem;
 export const EntityTableColumnTitle: (
   input: EntityTableColumnTitleProps,
 ) =>
-  | 'System'
-  | 'Title'
   | 'Domain'
+  | 'System'
   | 'Lifecycle'
   | 'Namespace'
   | 'Owner'
@@ -669,6 +668,7 @@ export const EntityTableColumnTitle: (
   | 'Name'
   | 'Description'
   | 'Targets'
+  | 'Title'
   | 'Label';
 
 // @alpha (undocumented)

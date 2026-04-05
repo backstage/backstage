@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi, type Mocked } from 'vitest';
+
 import {
   ANNOTATION_KUBERNETES_AUTH_PROVIDER,
   ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE,
@@ -57,7 +59,7 @@ import { ExtendedHttpServer } from '@backstage/backend-defaults/rootHttpRouter';
 
 describe('API integration tests', () => {
   let app: ExtendedHttpServer;
-  let objectsProviderMock: jest.Mocked<KubernetesObjectsProvider>;
+  let objectsProviderMock: Mocked<KubernetesObjectsProvider>;
   const happyK8SResult = {
     items: [{ clusterOne: { pods: [{ metadata: { name: 'pod1' } }] } }],
   };
@@ -78,7 +80,7 @@ describe('API integration tests', () => {
           deps: { extension: kubernetesClusterSupplierExtensionPoint },
           async init({ extension }) {
             extension.addClusterSupplier({
-              getClusters: jest.fn().mockResolvedValue(clusters),
+              getClusters: vi.fn().mockResolvedValue(clusters),
             });
           },
         });
@@ -96,16 +98,16 @@ describe('API integration tests', () => {
   };
 
   beforeEach(async () => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
 
     objectsProviderMock = {
-      getKubernetesObjectsByEntity: jest.fn().mockResolvedValue(happyK8SResult),
-      getCustomResourcesByEntity: jest.fn().mockResolvedValue(happyK8SResult),
+      getKubernetesObjectsByEntity: vi.fn().mockResolvedValue(happyK8SResult),
+      getCustomResourcesByEntity: vi.fn().mockResolvedValue(happyK8SResult),
     };
 
-    jest.mock('@backstage/catalog-client', () => ({
-      CatalogClient: jest.fn().mockReturnValue({
-        getEntityByRef: jest.fn().mockImplementation(async entityRef => {
+    vi.mock('@backstage/catalog-client', () => ({
+      CatalogClient: vi.fn().mockReturnValue({
+        getEntityByRef: vi.fn().mockImplementation(async entityRef => {
           if (entityRef.name === 'noentity') {
             return undefined;
           }
@@ -232,7 +234,7 @@ describe('API integration tests', () => {
                         type: 'bearer token',
                         token: requestAuth.custom as string,
                       })),
-                    validateCluster: jest.fn().mockReturnValue([]),
+                    validateCluster: vi.fn().mockReturnValue([]),
                     presentAuthMetadata: (
                       authMetadata: AuthMetadata,
                     ): AuthMetadata => {
@@ -366,17 +368,17 @@ describe('API integration tests', () => {
 
       const pod = { metadata: { name: 'pod1' } };
 
-      const mockServiceLocator: jest.Mocked<KubernetesServiceLocator> = {
-        getClustersByEntity: jest.fn().mockResolvedValue({
+      const mockServiceLocator: Mocked<KubernetesServiceLocator> = {
+        getClustersByEntity: vi.fn().mockResolvedValue({
           clusters: [someCluster],
         }),
       };
 
-      const mockFetcher: jest.Mocked<KubernetesFetcher> = {
+      const mockFetcher: Mocked<KubernetesFetcher> = {
         fetchPodMetricsByNamespaces: jest
           .fn()
           .mockResolvedValue({ errors: [], responses: [] }),
-        fetchObjectsForService: jest.fn().mockResolvedValue({
+        fetchObjectsForService: vi.fn().mockResolvedValue({
           errors: [],
           responses: [{ type: 'pods', resources: [pod] }],
         }),
@@ -437,7 +439,7 @@ describe('API integration tests', () => {
         fetchPodMetricsByNamespaces: jest
           .fn()
           .mockResolvedValue({ errors: [], responses: [] }),
-        fetchObjectsForService: jest.fn().mockResolvedValue({
+        fetchObjectsForService: vi.fn().mockResolvedValue({
           errors: [],
           responses: [
             { type: 'pods', resources: [{ metadata: { name: 'pod1' } }] },
@@ -475,8 +477,8 @@ describe('API integration tests', () => {
                         type: 'bearer token',
                         token: requestAuth.custom as string,
                       })),
-                    validateCluster: jest.fn().mockReturnValue([]),
-                    presentAuthMetadata: jest.fn().mockReturnValue({}),
+                    validateCluster: vi.fn().mockReturnValue([]),
+                    presentAuthMetadata: vi.fn().mockReturnValue({}),
                   });
                 },
               });
@@ -641,8 +643,8 @@ metadata:
                         [ClusterDetails, KubernetesRequestAuth]
                       >()
                       .mockResolvedValue({ type: 'anonymous' }),
-                    validateCluster: jest.fn().mockReturnValue([]),
-                    presentAuthMetadata: jest.fn().mockReturnValue({}),
+                    validateCluster: vi.fn().mockReturnValue([]),
+                    presentAuthMetadata: vi.fn().mockReturnValue({}),
                   });
                 },
               });
@@ -663,9 +665,9 @@ metadata:
 
     it('reads custom auth metadata from config', async () => {
       const authStrategy = {
-        getCredential: jest.fn().mockResolvedValue({ type: 'anonymous' }),
-        validateCluster: jest.fn().mockReturnValue([]),
-        presentAuthMetadata: jest.fn().mockReturnValue({}),
+        getCredential: vi.fn().mockResolvedValue({ type: 'anonymous' }),
+        validateCluster: vi.fn().mockReturnValue([]),
+        presentAuthMetadata: vi.fn().mockReturnValue({}),
       };
       worker.use(
         rest.get('http://my.cluster/api', (_req, res, ctx) =>
@@ -761,8 +763,8 @@ metadata:
                         [ClusterDetails, KubernetesRequestAuth]
                       >()
                       .mockResolvedValue({ type: 'anonymous' }),
-                    validateCluster: jest.fn().mockReturnValue([]),
-                    presentAuthMetadata: jest.fn().mockReturnValue({}),
+                    validateCluster: vi.fn().mockReturnValue([]),
+                    presentAuthMetadata: vi.fn().mockReturnValue({}),
                   });
                 },
               });

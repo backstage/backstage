@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { renderHook } from '@testing-library/react';
 import { createVersionedContextForTesting } from '@backstage/version-bridge';
 import { createApiRef } from './ApiRef';
@@ -27,7 +29,7 @@ describe('useApi', () => {
   });
 
   it('should resolve routes', () => {
-    const get = jest.fn(() => 'my-api-impl');
+    const get = vi.fn(() => 'my-api-impl');
     context.set({ 1: { get } });
 
     const apiRef = createApiRef<string>({ id: 'x' });

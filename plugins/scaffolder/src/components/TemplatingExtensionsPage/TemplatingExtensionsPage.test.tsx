@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi, type Mocked } from 'vitest';
 import { ApiProvider } from '@backstage/core-app-api';
 import { permissionApiRef } from '@backstage/plugin-permission-react';
 import {
@@ -27,24 +29,24 @@ import { rootRouteRef } from '../../routes';
 import { TemplatingExtensionsPage } from './TemplatingExtensionsPage';
 import { ExtensionKind } from './navigation';
 
-const listTemplatingExtensions = jest.fn();
+const listTemplatingExtensions = vi.fn();
 
-const scaffolderApiMock: jest.Mocked<ScaffolderApi> = {
-  scaffold: jest.fn(),
-  cancelTask: jest.fn(),
-  getTemplateParameterSchema: jest.fn(),
-  getIntegrationsList: jest.fn(),
-  getTask: jest.fn(),
-  streamLogs: jest.fn(),
-  listActions: jest.fn(),
+const scaffolderApiMock: Mocked<ScaffolderApi> = {
+  scaffold: vi.fn(),
+  cancelTask: vi.fn(),
+  getTemplateParameterSchema: vi.fn(),
+  getIntegrationsList: vi.fn(),
+  getTask: vi.fn(),
+  streamLogs: vi.fn(),
+  listActions: vi.fn(),
   listTemplatingExtensions,
-  listTasks: jest.fn(),
-  autocomplete: jest.fn(),
-  retry: jest.fn(),
-  dryRun: jest.fn(),
+  listTasks: vi.fn(),
+  autocomplete: vi.fn(),
+  retry: vi.fn(),
+  dryRun: vi.fn(),
 };
 
-const mockPermissionApi = { authorize: jest.fn() };
+const mockPermissionApi = { authorize: vi.fn() };
 const apis = TestApiRegistry.from(
   [scaffolderApiRef, scaffolderApiMock],
   [permissionApiRef, mockPermissionApi],

@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { createSubstitutionTransform } from './substitution';
 
-const env = jest.fn(async (name: string) => {
+const env = vi.fn(async (name: string) => {
   return (
     {
       SECRET: 'my-secret',

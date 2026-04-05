@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import { renderInTestApp } from '@backstage/test-utils';
 import { useOutlet } from 'react-router-dom';
 import { TechDocsIndexPage } from './TechDocsIndexPage';
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useOutlet: jest.fn().mockReturnValue('Route Children'),
+vi.mock('react-router-dom', () => ({
+  ...vi.importActual('react-router-dom'),
+  useOutlet: vi.fn().mockReturnValue('Route Children'),
 }));
 
-jest.mock('./DefaultTechDocsHome', () => ({
-  DefaultTechDocsHome: jest.fn().mockReturnValue('DefaultTechDocsHomeMock'),
+vi.mock('./DefaultTechDocsHome', () => ({
+  DefaultTechDocsHome: vi.fn().mockReturnValue('DefaultTechDocsHomeMock'),
 }));
 
 describe('TechDocsIndexPage', () => {
@@ -35,7 +37,7 @@ describe('TechDocsIndexPage', () => {
   });
 
   it('renders DefaultTechDocsHome when no router children are provided', async () => {
-    (useOutlet as jest.Mock).mockReturnValueOnce(null);
+    (useOutlet as Mock).mockReturnValueOnce(null);
     const { getByText } = await renderInTestApp(<TechDocsIndexPage />);
 
     expect(getByText('DefaultTechDocsHomeMock')).toBeInTheDocument();

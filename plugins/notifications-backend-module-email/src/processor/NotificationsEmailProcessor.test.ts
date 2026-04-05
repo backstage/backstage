@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import { mockServices } from '@backstage/backend-test-utils';
 import { NotificationsEmailProcessor } from './NotificationsEmailProcessor';
 import { ConfigReader } from '@backstage/config';
@@ -22,13 +24,13 @@ import { createTransport } from 'nodemailer';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 import { Entity } from '@backstage/catalog-model';
 
-const sendmailMock = jest.fn();
+const sendmailMock = vi.fn();
 const mockTransport = {
   sendMail: sendmailMock,
 };
-jest.mock('nodemailer', () => ({
-  ...jest.requireActual('nodemailer'),
-  createTransport: jest.fn(),
+vi.mock('nodemailer', () => ({
+  ...vi.importActual('nodemailer'),
+  createTransport: vi.fn(),
 }));
 
 const DEFAULT_ENTITIES_RESPONSE = {
@@ -70,7 +72,7 @@ describe('NotificationsEmailProcessor', () => {
   const auth = mockServices.auth();
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('should create smtp transport', async () => {
@@ -115,7 +117,7 @@ describe('NotificationsEmailProcessor', () => {
     );
 
     expect(processor).toBeInstanceOf(NotificationsEmailProcessor);
-    expect(createTransport as jest.Mock).toHaveBeenCalledWith({
+    expect(createTransport as Mock).toHaveBeenCalledWith({
       host: 'localhost',
       port: 465,
       requireTLS: false,
@@ -162,7 +164,7 @@ describe('NotificationsEmailProcessor', () => {
     );
 
     expect(processor).toBeInstanceOf(NotificationsEmailProcessor);
-    expect(createTransport as jest.Mock).toHaveBeenCalledWith({
+    expect(createTransport as Mock).toHaveBeenCalledWith({
       SES: expect.anything(),
     });
   });
@@ -206,7 +208,7 @@ describe('NotificationsEmailProcessor', () => {
     );
 
     expect(processor).toBeInstanceOf(NotificationsEmailProcessor);
-    expect(createTransport as jest.Mock).toHaveBeenCalledWith({
+    expect(createTransport as Mock).toHaveBeenCalledWith({
       sendmail: true,
       path: '/usr/local/bin/sendmail',
       newline: 'unix',
@@ -214,7 +216,7 @@ describe('NotificationsEmailProcessor', () => {
   });
 
   it('should send user email', async () => {
-    (createTransport as jest.Mock).mockReturnValue(mockTransport);
+    (createTransport as Mock).mockReturnValue(mockTransport);
     const processor = new NotificationsEmailProcessor(
       logger,
       mockServices.rootConfig({ data: DEFAULT_SENDMAIL_CONFIG }),
@@ -247,7 +249,7 @@ describe('NotificationsEmailProcessor', () => {
   });
 
   it('should send email to all', async () => {
-    (createTransport as jest.Mock).mockReturnValue(mockTransport);
+    (createTransport as Mock).mockReturnValue(mockTransport);
     const processor = new NotificationsEmailProcessor(
       logger,
       mockServices.rootConfig({
@@ -294,7 +296,7 @@ describe('NotificationsEmailProcessor', () => {
   });
 
   it('should send email to configured addresses', async () => {
-    (createTransport as jest.Mock).mockReturnValue(mockTransport);
+    (createTransport as Mock).mockReturnValue(mockTransport);
     const processor = new NotificationsEmailProcessor(
       logger,
       mockServices.rootConfig({
@@ -342,7 +344,7 @@ describe('NotificationsEmailProcessor', () => {
   });
 
   it('should send email with relative link to given address', async () => {
-    (createTransport as jest.Mock).mockReturnValue(mockTransport);
+    (createTransport as Mock).mockReturnValue(mockTransport);
     const processor = new NotificationsEmailProcessor(
       logger,
       mockServices.rootConfig({
@@ -406,7 +408,7 @@ describe('NotificationsEmailProcessor', () => {
   });
 
   it('should send email with absolute link to given address', async () => {
-    (createTransport as jest.Mock).mockReturnValue(mockTransport);
+    (createTransport as Mock).mockReturnValue(mockTransport);
     const processor = new NotificationsEmailProcessor(
       logger,
       mockServices.rootConfig({
@@ -467,7 +469,7 @@ describe('NotificationsEmailProcessor', () => {
         },
       },
     };
-    (createTransport as jest.Mock).mockReturnValue(mockTransport);
+    (createTransport as Mock).mockReturnValue(mockTransport);
     const processor = new NotificationsEmailProcessor(
       logger,
       mockServices.rootConfig({ data: SES_SENDMAIL_CONFIG }),

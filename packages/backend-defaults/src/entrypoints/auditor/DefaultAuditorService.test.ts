@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { mockServices } from '@backstage/backend-test-utils';
 import { DefaultAuditorService } from './DefaultAuditorService';
 
@@ -27,12 +29,12 @@ const mockDeps = {
 
 describe('DefaultAuditorService', () => {
   it('creates a auditor instance with default options', () => {
-    const auditor = DefaultAuditorService.create(jest.fn(), mockDeps);
+    const auditor = DefaultAuditorService.create(vi.fn(), mockDeps);
     expect(auditor).toBeInstanceOf(DefaultAuditorService);
   });
 
   it('should log a status "initiated" using createEvent', async () => {
-    const logFn = jest.fn();
+    const logFn = vi.fn();
     const auditor = DefaultAuditorService.create(logFn, mockDeps);
 
     await auditor.createEvent({
@@ -49,7 +51,7 @@ describe('DefaultAuditorService', () => {
   });
 
   it('should log a status "succeeded" using createEvent', async () => {
-    const logFn = jest.fn();
+    const logFn = vi.fn();
     const auditor = DefaultAuditorService.create(logFn, mockDeps);
 
     const auditorEvent = await auditor.createEvent({
@@ -69,7 +71,7 @@ describe('DefaultAuditorService', () => {
   });
 
   it('should log a status "failed"', async () => {
-    const logFn = jest.fn();
+    const logFn = vi.fn();
     const auditor = DefaultAuditorService.create(logFn, mockDeps);
 
     const auditorEvent = await auditor.createEvent({
@@ -91,7 +93,7 @@ describe('DefaultAuditorService', () => {
   });
 
   it('should use root meta', async () => {
-    const logFn = jest.fn();
+    const logFn = vi.fn();
     const auditor = DefaultAuditorService.create(logFn, mockDeps);
 
     const auditorEvent = await auditor.createEvent({

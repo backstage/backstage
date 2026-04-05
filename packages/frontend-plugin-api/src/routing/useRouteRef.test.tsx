@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { renderHook } from '@testing-library/react';
 import { PropsWithChildren } from 'react';
 import { MemoryRouter, Router } from 'react-router-dom';
@@ -32,7 +34,7 @@ describe('v1 consumer', () => {
   });
 
   it('should resolve routes', () => {
-    const resolve = jest.fn(() => () => '/hello');
+    const resolve = vi.fn(() => () => '/hello');
 
     const routeRef = createRouteRef();
 
@@ -72,7 +74,7 @@ describe('v1 consumer', () => {
   });
 
   it('re-resolves the routeFunc when the search parameters change', () => {
-    const resolve = jest.fn(() => () => '/hello');
+    const resolve = vi.fn(() => () => '/hello');
 
     const routeRef = createRouteRef();
     const history = createBrowserHistory();
@@ -99,7 +101,7 @@ describe('v1 consumer', () => {
   });
 
   it('does not re-resolve the routeFunc the location pathname does not change', () => {
-    const resolve = jest.fn(() => () => '/hello');
+    const resolve = vi.fn(() => () => '/hello');
     const api = { resolve };
 
     const routeRef = createRouteRef();
@@ -127,7 +129,7 @@ describe('v1 consumer', () => {
   });
 
   it('does not re-resolve the routeFunc when the search parameter changes', () => {
-    const resolve = jest.fn(() => () => '/hello');
+    const resolve = vi.fn(() => () => '/hello');
     const api = { resolve };
 
     const routeRef = createRouteRef();
@@ -155,7 +157,7 @@ describe('v1 consumer', () => {
   });
 
   it('does not re-resolve the routeFunc when the hash parameter changes', () => {
-    const resolve = jest.fn(() => () => '/hello');
+    const resolve = vi.fn(() => () => '/hello');
     const api = { resolve };
 
     const routeRef = createRouteRef();

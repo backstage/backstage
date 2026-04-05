@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import { renderInTestApp } from '@backstage/test-utils';
 import { useOutlet } from 'react-router-dom';
 import { ApiExplorerPage } from './ApiExplorerPage';
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useOutlet: jest.fn().mockReturnValue('Route Children'),
+vi.mock('react-router-dom', () => ({
+  ...vi.importActual('react-router-dom'),
+  useOutlet: vi.fn().mockReturnValue('Route Children'),
 }));
 
-jest.mock('./DefaultApiExplorerPage', () => ({
-  DefaultApiExplorerPage: jest.fn().mockReturnValue('DefaultApiExplorerPage'),
+vi.mock('./DefaultApiExplorerPage', () => ({
+  DefaultApiExplorerPage: vi.fn().mockReturnValue('DefaultApiExplorerPage'),
 }));
 
 describe('ApiExplorerPage', () => {
@@ -35,7 +37,7 @@ describe('ApiExplorerPage', () => {
   });
 
   it('renders DefaultApiExplorerPage home when no router children are provided', async () => {
-    (useOutlet as jest.Mock).mockReturnValueOnce(null);
+    (useOutlet as Mock).mockReturnValueOnce(null);
     const { getByText } = await renderInTestApp(<ApiExplorerPage />);
 
     expect(getByText('DefaultApiExplorerPage')).toBeInTheDocument();

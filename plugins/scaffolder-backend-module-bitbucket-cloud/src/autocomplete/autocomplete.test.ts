@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { InputError } from '@backstage/errors';
 import { BitbucketCloudClient } from '@backstage/plugin-bitbucket-cloud-common';
 import { handleAutocompleteRequest } from './autocomplete';
 
 describe('handleAutocompleteRequest', () => {
   const client: Partial<BitbucketCloudClient> = {
-    listWorkspaces: jest.fn().mockReturnValue({
-      iteratePages: jest.fn().mockReturnValue([
+    listWorkspaces: vi.fn().mockReturnValue({
+      iteratePages: vi.fn().mockReturnValue([
         {
           values: [
             {
@@ -31,15 +33,15 @@ describe('handleAutocompleteRequest', () => {
         },
       ]),
     }),
-    listProjectsByWorkspace: jest.fn().mockReturnValue({
-      iteratePages: jest.fn().mockReturnValue([
+    listProjectsByWorkspace: vi.fn().mockReturnValue({
+      iteratePages: vi.fn().mockReturnValue([
         {
           values: [{ key: 'project1' }],
         },
       ]),
     }),
-    listRepositoriesByWorkspace: jest.fn().mockReturnValue({
-      iteratePages: jest.fn().mockReturnValue([
+    listRepositoriesByWorkspace: vi.fn().mockReturnValue({
+      iteratePages: vi.fn().mockReturnValue([
         {
           values: [
             {
@@ -49,7 +51,7 @@ describe('handleAutocompleteRequest', () => {
         },
       ]),
     }),
-    listBranchesByRepository: jest.fn().mockReturnValue({
+    listBranchesByRepository: vi.fn().mockReturnValue({
       iteratePages: jest
         .fn()
         .mockReturnValue([{ values: [{ name: 'branch1' }] }]),

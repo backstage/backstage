@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { SchedulerServiceTaskScheduleDefinition } from '@backstage/backend-plugin-api';
 import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
 import { createServiceFactory } from '@backstage/backend-plugin-api';
@@ -42,8 +44,8 @@ describe('catalogModuleBitbucketServerEntityProvider', () => {
         addedProviders = providers;
       },
     };
-    const connection = jest.fn() as unknown as EntityProviderConnection;
-    const runner = jest.fn();
+    const connection = vi.fn() as unknown as EntityProviderConnection;
+    const runner = vi.fn();
     const scheduler = mockServices.scheduler.mock({
       createScheduledTaskRunner(schedule) {
         usedSchedule = schedule;

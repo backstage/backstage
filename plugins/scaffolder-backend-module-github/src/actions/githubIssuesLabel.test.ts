@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import { createGithubIssuesLabelAction } from './githubIssuesLabel';
 import {
   ScmIntegrations,
@@ -25,24 +27,24 @@ import { ConfigReader } from '@backstage/config';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { getOctokitOptions } from '../util';
 
-jest.mock('../util', () => {
+vi.mock('../util', () => {
   return {
-    getOctokitOptions: jest.fn(),
+    getOctokitOptions: vi.fn(),
   };
 });
 
 import { Octokit } from 'octokit';
 
-const octokitMock = Octokit as unknown as jest.Mock;
+const octokitMock = Octokit as unknown as Mock;
 const mockOctokit = {
   rest: {
     issues: {
-      addLabels: jest.fn(),
+      addLabels: vi.fn(),
     },
   },
 };
-jest.mock('octokit', () => ({
-  Octokit: jest.fn(),
+vi.mock('octokit', () => ({
+  Octokit: vi.fn(),
 }));
 
 describe('github:issues:label', () => {
@@ -55,7 +57,7 @@ describe('github:issues:label', () => {
     },
   });
 
-  const getOctokitOptionsMock = getOctokitOptions as jest.Mock;
+  const getOctokitOptionsMock = getOctokitOptions as Mock;
   const integrations = ScmIntegrations.fromConfig(config);
   let githubCredentialsProvider: GithubCredentialsProvider;
   let action: TemplateAction<any, any, any>;
@@ -69,7 +71,7 @@ describe('github:issues:label', () => {
   });
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
     octokitMock.mockImplementation(() => mockOctokit);
     githubCredentialsProvider =
       DefaultGithubCredentialsProvider.fromIntegrations(integrations);

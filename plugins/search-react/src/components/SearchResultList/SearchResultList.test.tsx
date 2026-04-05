@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { screen, waitFor } from '@testing-library/react';
 
 import {
@@ -28,7 +30,7 @@ import { createSearchResultListItemExtension } from '../../extensions';
 
 import { SearchResultList } from './SearchResultList';
 
-const query = jest.fn().mockResolvedValue({ results: [] });
+const query = vi.fn().mockResolvedValue({ results: [] });
 const searchApiMock = { query };
 const analyticsApiMock = mockApis.analytics();
 
@@ -53,7 +55,7 @@ describe('SearchResultList', () => {
   ];
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('Renders without exploding', async () => {

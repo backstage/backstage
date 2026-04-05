@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi, type Mocked } from 'vitest';
+
 import { Hash } from 'node:crypto';
 import { DateTime } from 'luxon';
 import waitForExpect from 'wait-for-expect';
@@ -27,26 +29,26 @@ import { metricsServiceMock } from '@backstage/backend-test-utils/alpha';
 
 describe('DefaultCatalogProcessingEngine', () => {
   const db = {
-    transaction: jest.fn(),
-    getProcessableEntities: jest.fn(),
-    updateProcessedEntity: jest.fn(),
-    updateEntityCache: jest.fn(),
-    listParents: jest.fn(),
-    setRefreshKeys: jest.fn(),
-  } as unknown as jest.Mocked<DefaultProcessingDatabase>;
-  const orchestrator: jest.Mocked<CatalogProcessingOrchestrator> = {
-    process: jest.fn(),
+    transaction: vi.fn(),
+    getProcessableEntities: vi.fn(),
+    updateProcessedEntity: vi.fn(),
+    updateEntityCache: vi.fn(),
+    listParents: vi.fn(),
+    setRefreshKeys: vi.fn(),
+  } as unknown as Mocked<DefaultProcessingDatabase>;
+  const orchestrator: Mocked<CatalogProcessingOrchestrator> = {
+    process: vi.fn(),
   };
   const stitcher = {
-    stitch: jest.fn(),
-  } as unknown as jest.Mocked<Stitcher>;
+    stitch: vi.fn(),
+  } as unknown as Mocked<Stitcher>;
   const hash = {
     update: () => hash,
-    digest: jest.fn(),
-  } as unknown as jest.Mocked<Hash>;
+    digest: vi.fn(),
+  } as unknown as Mocked<Hash>;
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('should process stuff', async () => {

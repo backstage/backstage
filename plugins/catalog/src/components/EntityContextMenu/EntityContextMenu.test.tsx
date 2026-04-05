@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { permissionApiRef } from '@backstage/plugin-permission-react';
 import {
@@ -39,7 +41,7 @@ function render(children: ReactNode) {
 
 describe('ComponentContextMenu', () => {
   it('should call onUnregisterEntity on button click', async () => {
-    const mockCallback = jest.fn();
+    const mockCallback = vi.fn();
     await render(
       <EntityContextMenu
         onUnregisterEntity={mockCallback}
@@ -59,7 +61,7 @@ describe('ComponentContextMenu', () => {
   });
 
   it('check Unregister entity button is disabled', async () => {
-    const mockCallback = jest.fn();
+    const mockCallback = vi.fn();
 
     await render(
       <EntityContextMenu
@@ -83,7 +85,7 @@ describe('ComponentContextMenu', () => {
   });
 
   it('should call onInspectEntity on button click', async () => {
-    const mockCallback = jest.fn();
+    const mockCallback = vi.fn();
 
     await render(
       <EntityContextMenu
@@ -107,13 +109,13 @@ describe('ComponentContextMenu', () => {
     const extra = {
       title: 'HELLO',
       Icon: SearchIcon,
-      onClick: jest.fn(),
+      onClick: vi.fn(),
     };
 
     await render(
       <EntityContextMenu
-        onUnregisterEntity={jest.fn()}
-        onInspectEntity={jest.fn()}
+        onUnregisterEntity={vi.fn()}
+        onInspectEntity={vi.fn()}
         UNSTABLE_extraContextMenuItems={[extra]}
       />,
     );

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import {
   AuthorizeResult,
   createPermission,
@@ -83,14 +85,14 @@ const testRule3 = createPermissionRule({
 const defaultMockedGetResources1: CreatePermissionIntegrationRouterResourceOptions<
   string,
   { id: string }
->['getResources'] = jest.fn(async resourceRefs =>
+>['getResources'] = vi.fn(async resourceRefs =>
   resourceRefs.map(resourceRef => ({ id: resourceRef })),
 );
 
 const defaultMockedGetResources2: CreatePermissionIntegrationRouterResourceOptions<
   string,
   { id: string }
->['getResources'] = jest.fn(async resourceRefs =>
+>['getResources'] = vi.fn(async resourceRefs =>
   resourceRefs.map(resourceRef => ({ id: resourceRef })),
 );
 
@@ -134,7 +136,7 @@ const createApp = (
 
 describe('createPermissionIntegrationRouter', () => {
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('POST /.well-known/backstage/permissions/apply-conditions', () => {
@@ -234,7 +236,7 @@ describe('createPermissionIntegrationRouter', () => {
       expect(defaultMockedGetResources1).toHaveBeenCalled();
       expect(mockTestRule3Apply).not.toHaveBeenCalled();
 
-      (defaultMockedGetResources1 as jest.Mock).mockClear();
+      (defaultMockedGetResources1 as Mock).mockClear();
 
       const app = express().use(
         createPermissionIntegrationRouter(mockedOptionResources),
@@ -716,7 +718,7 @@ describe('createPermissionIntegrationRouter', () => {
       const mockedGetResources: CreatePermissionIntegrationRouterResourceOptions<
         string,
         { id: string }
-      >['getResources'] = jest.fn(async resourceRefs =>
+      >['getResources'] = vi.fn(async resourceRefs =>
         resourceRefs.map(() => undefined),
       );
 
@@ -752,7 +754,7 @@ describe('createPermissionIntegrationRouter', () => {
       const mockedGetResources: CreatePermissionIntegrationRouterResourceOptions<
         string,
         { id: string }
-      >['getResources'] = jest.fn(async resourceRefs =>
+      >['getResources'] = vi.fn(async resourceRefs =>
         resourceRefs.map(resourceRef =>
           resourceRef === 'default:test/missing-resource'
             ? undefined
@@ -1173,7 +1175,7 @@ describe('createPermissionIntegrationRouter', () => {
 
 describe('createConditionAuthorizer', () => {
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should return true in case of allowed decision', () => {

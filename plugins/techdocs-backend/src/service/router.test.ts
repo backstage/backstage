@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi, type Mocked , type MockedClass} from 'vitest';
+
 import { ConfigReader } from '@backstage/config';
 import {
   DocsBuildStrategy,
@@ -29,21 +31,21 @@ import { createEventStream, createRouter, RouterOptions } from './router';
 import { TechDocsCache } from '../cache';
 import { mockErrorHandler, mockServices } from '@backstage/backend-test-utils';
 
-jest.mock('@backstage/catalog-client');
-jest.mock('./CachedEntityLoader');
-jest.mock('./DocsSynchronizer');
-jest.mock('../cache/TechDocsCache');
+vi.mock('@backstage/catalog-client');
+vi.mock('./CachedEntityLoader');
+vi.mock('./DocsSynchronizer');
+vi.mock('../cache/TechDocsCache');
 
-const MockDocsSynchronizer = DocsSynchronizer as jest.MockedClass<
+const MockDocsSynchronizer = DocsSynchronizer as MockedClass<
   typeof DocsSynchronizer
 >;
-const MockCachedEntityLoader = CachedEntityLoader as jest.MockedClass<
+const MockCachedEntityLoader = CachedEntityLoader as MockedClass<
   typeof CachedEntityLoader
 >;
 const MockTechDocsCache = {
-  get: jest.fn(),
-  set: jest.fn(),
-} as unknown as jest.Mocked<TechDocsCache>;
+  get: vi.fn(),
+  set: vi.fn(),
+} as unknown as Mocked<TechDocsCache>;
 TechDocsCache.fromConfig = () => MockTechDocsCache;
 
 const getMockHttpResponseFor = (content: string): Buffer => {
@@ -87,25 +89,25 @@ describe('createRouter', () => {
     },
   };
 
-  const preparers: jest.Mocked<PreparerBuilder> = {
-    register: jest.fn(),
-    get: jest.fn(),
+  const preparers: Mocked<PreparerBuilder> = {
+    register: vi.fn(),
+    get: vi.fn(),
   };
-  const generators: jest.Mocked<GeneratorBuilder> = {
-    register: jest.fn(),
-    get: jest.fn(),
+  const generators: Mocked<GeneratorBuilder> = {
+    register: vi.fn(),
+    get: vi.fn(),
   };
-  const publisher: jest.Mocked<PublisherBase> = {
-    docsRouter: jest.fn(),
-    fetchTechDocsMetadata: jest.fn(),
-    getReadiness: jest.fn(),
-    hasDocsBeenGenerated: jest.fn(),
-    publish: jest.fn(),
+  const publisher: Mocked<PublisherBase> = {
+    docsRouter: vi.fn(),
+    fetchTechDocsMetadata: vi.fn(),
+    getReadiness: vi.fn(),
+    hasDocsBeenGenerated: vi.fn(),
+    publish: vi.fn(),
   };
   const discovery = mockServices.discovery.mock();
 
-  const docsBuildStrategy: jest.Mocked<DocsBuildStrategy> = {
-    shouldBuild: jest.fn(),
+  const docsBuildStrategy: Mocked<DocsBuildStrategy> = {
+    shouldBuild: vi.fn(),
   };
   const outOfTheBoxOptions = {
     preparers,
@@ -137,7 +139,7 @@ describe('createRouter', () => {
   };
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   beforeEach(async () => {
@@ -296,7 +298,7 @@ data: {"updated":true}
 
   describe('GET /static/docs', () => {
     it('should delegate to the publisher handler', async () => {
-      const docsRouter = jest.fn((_req, res) => res.sendStatus(200));
+      const docsRouter = vi.fn((_req, res) => res.sendStatus(200));
       publisher.docsRouter.mockReturnValue(docsRouter);
 
       const app = await createApp(outOfTheBoxOptions);
@@ -325,7 +327,7 @@ data: {"updated":true}
     });
 
     it('should check entity access when permissions are enabled', async () => {
-      const docsRouter = jest.fn((_req, res) => res.sendStatus(200));
+      const docsRouter = vi.fn((_req, res) => res.sendStatus(200));
       publisher.docsRouter.mockReturnValue(docsRouter);
 
       const app = await createApp({
@@ -369,10 +371,10 @@ data: {"updated":true}
 });
 
 describe('createEventStream', () => {
-  const res: jest.Mocked<Response> = {
-    writeHead: jest.fn(),
-    write: jest.fn(),
-    end: jest.fn(),
+  const res: Mocked<Response> = {
+    writeHead: vi.fn(),
+    write: vi.fn(),
+    end: vi.fn(),
   } as any;
 
   let handlers: DocsSynchronizerSyncOpts;
@@ -381,7 +383,7 @@ describe('createEventStream', () => {
     handlers = createEventStream(res);
   });
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('should return correct event stream', async () => {
@@ -396,7 +398,7 @@ describe('createEventStream', () => {
   });
 
   it('should flush after write if defined', async () => {
-    res.flush = jest.fn();
+    res.flush = vi.fn();
 
     handlers.log('A Message');
 

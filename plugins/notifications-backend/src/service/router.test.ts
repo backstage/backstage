@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi, vi, type Mocked} from 'vitest';
+
 import express from 'express';
 import request from 'supertest';
 import { createRouter } from './router';
@@ -49,8 +51,8 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
   let app: express.Express;
   let database: DatabaseService;
 
-  const signalService: jest.Mocked<SignalsService> = {
-    publish: jest.fn(),
+  const signalService: Mocked<SignalsService> = {
+    publish: vi.fn(),
   };
 
   const userInfo = mockServices.userInfo();
@@ -141,7 +143,7 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
     });
 
     beforeEach(async () => {
-      jest.resetAllMocks();
+      vi.resetAllMocks();
       const client = await database.getClient();
       await client('notification').del();
       await client('broadcast').del();
@@ -740,7 +742,7 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
       defaultCredentials: mockCredentials.service(),
     });
 
-    const resolveFn = jest.fn();
+    const resolveFn = vi.fn();
     const recipientResolver: NotificationRecipientResolver = {
       resolveNotificationRecipients: resolveFn,
     };
@@ -761,7 +763,7 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
     });
 
     beforeEach(async () => {
-      jest.resetAllMocks();
+      vi.resetAllMocks();
       const client = await database.getClient();
       await client('notification').del();
       await client('broadcast').del();
@@ -835,23 +837,23 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
 
     const customProcessor: NotificationProcessor = {
       getName: () => 'customProcessor',
-      processOptions: jest.fn(),
-      preProcess: jest.fn(),
-      postProcess: jest.fn(),
-      getNotificationFilters: jest.fn(),
+      processOptions: vi.fn(),
+      preProcess: vi.fn(),
+      postProcess: vi.fn(),
+      getNotificationFilters: vi.fn(),
     };
 
     beforeEach(async () => {
-      jest.resetAllMocks();
+      vi.resetAllMocks();
       const client = await database.getClient();
       await client('notification').del();
       await client('broadcast').del();
       await client('user_settings').del();
 
-      (customProcessor.processOptions as jest.Mock).mockImplementation(
+      (customProcessor.processOptions as Mock).mockImplementation(
         opts => opts,
       );
-      (customProcessor.preProcess as jest.Mock).mockImplementation(
+      (customProcessor.preProcess as Mock).mockImplementation(
         (notification, _options) => notification,
       );
 
@@ -877,7 +879,7 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
         .set('Accept', 'application/json');
 
     it('should not call processor preProcess if topic is excluded', async () => {
-      (customProcessor.getNotificationFilters as jest.Mock).mockReturnValue({
+      (customProcessor.getNotificationFilters as Mock).mockReturnValue({
         excludedTopics: ['topic1'],
       });
       // Should be processed
@@ -904,7 +906,7 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
     });
 
     it('should not call processor preProcess if topic is not included', async () => {
-      (customProcessor.getNotificationFilters as jest.Mock).mockReturnValue({
+      (customProcessor.getNotificationFilters as Mock).mockReturnValue({
         includedTopics: ['topic1'],
       });
       // Should not be processed, not included topic
@@ -960,7 +962,7 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
     });
 
     beforeEach(async () => {
-      jest.resetAllMocks();
+      vi.resetAllMocks();
       const client = await database.getClient();
       await client('notification').del();
       await client('broadcast').del();
@@ -1050,7 +1052,7 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
     });
 
     beforeEach(async () => {
-      jest.resetAllMocks();
+      vi.resetAllMocks();
       const client = await database.getClient();
       await client('user_settings').del();
       await client('notification').del();
@@ -1381,7 +1383,7 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
     });
 
     beforeEach(async () => {
-      jest.resetAllMocks();
+      vi.resetAllMocks();
       const client = await database.getClient();
       await client('user_settings').del();
     });

@@ -14,22 +14,24 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { mockServices } from '@backstage/backend-test-utils';
 import { DatabasePluginKeySource } from './DatabasePluginKeySource';
 
 describe('DatabasePluginKeySource', () => {
   beforeEach(() => {
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 
   it('issues token with correct expiration of token and generated key', async () => {
-    jest.useFakeTimers({
+    vi.useFakeTimers({
       now: new Date(0),
     });
 
     const keyStore = {
-      addKey: jest.fn(),
-      listKeys: jest.fn(),
+      addKey: vi.fn(),
+      listKeys: vi.fn(),
     };
 
     const source = new DatabasePluginKeySource(
@@ -52,13 +54,13 @@ describe('DatabasePluginKeySource', () => {
       expiresAt: new Date(30_000),
     });
 
-    jest.advanceTimersByTime(5_000);
+    vi.advanceTimersByTime(5_000);
 
     let newKey = await source.getPrivateSigningKey();
     expect(keyStore.addKey).toHaveBeenCalledTimes(1);
     expect(newKey).toBe(key);
 
-    jest.advanceTimersByTime(10_000);
+    vi.advanceTimersByTime(10_000);
 
     newKey = await source.getPrivateSigningKey();
     expect(keyStore.addKey).toHaveBeenCalledTimes(2);

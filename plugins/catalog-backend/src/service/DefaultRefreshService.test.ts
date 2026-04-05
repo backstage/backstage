@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   mockCredentials,
   mockServices,
@@ -40,7 +42,7 @@ import { DefaultStitcher } from '../stitching/DefaultStitcher';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { metricsServiceMock } from '@backstage/backend-test-utils/alpha';
 
-jest.setTimeout(60_000);
+vi.setConfig({ testTimeout: 60_000 });
 
 describe('DefaultRefreshService', () => {
   const defaultLogger = mockServices.logger.mock();

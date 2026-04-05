@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi, vi, type Mocked , type MockedClass} from 'vitest';
+
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import {
@@ -33,44 +35,44 @@ import {
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 
-jest.mock('../DocsBuilder');
-jest.useFakeTimers();
+vi.mock('../DocsBuilder');
+vi.useFakeTimers();
 
-const MockedDocsBuilder = DocsBuilder as jest.MockedClass<typeof DocsBuilder>;
+const MockedDocsBuilder = DocsBuilder as MockedClass<typeof DocsBuilder>;
 
 describe('DocsSynchronizer', () => {
   const worker = setupServer();
   registerMswTestHooks(worker);
 
-  const preparers: jest.Mocked<PreparerBuilder> = {
-    register: jest.fn(),
-    get: jest.fn(),
+  const preparers: Mocked<PreparerBuilder> = {
+    register: vi.fn(),
+    get: vi.fn(),
   };
-  const generators: jest.Mocked<GeneratorBuilder> = {
-    register: jest.fn(),
-    get: jest.fn(),
+  const generators: Mocked<GeneratorBuilder> = {
+    register: vi.fn(),
+    get: vi.fn(),
   };
-  const publisher: jest.Mocked<PublisherBase> = {
-    docsRouter: jest.fn(),
-    fetchTechDocsMetadata: jest.fn(),
-    getReadiness: jest.fn(),
-    hasDocsBeenGenerated: jest.fn(),
-    publish: jest.fn(),
+  const publisher: Mocked<PublisherBase> = {
+    docsRouter: vi.fn(),
+    fetchTechDocsMetadata: vi.fn(),
+    getReadiness: vi.fn(),
+    hasDocsBeenGenerated: vi.fn(),
+    publish: vi.fn(),
   };
   const discovery = mockServices.discovery.mock();
-  const cache: jest.Mocked<TechDocsCache> = {
-    get: jest.fn(),
-    set: jest.fn(),
-    invalidate: jest.fn(),
-    invalidateMultiple: jest.fn(),
-  } as unknown as jest.Mocked<TechDocsCache>;
+  const cache: Mocked<TechDocsCache> = {
+    get: vi.fn(),
+    set: vi.fn(),
+    invalidate: vi.fn(),
+    invalidateMultiple: vi.fn(),
+  } as unknown as Mocked<TechDocsCache>;
 
   let docsSynchronizer: DocsSynchronizer;
 
-  const mockResponseHandler: jest.Mocked<DocsSynchronizerSyncOpts> = {
-    log: jest.fn(),
-    finish: jest.fn(),
-    error: jest.fn(),
+  const mockResponseHandler: Mocked<DocsSynchronizerSyncOpts> = {
+    log: vi.fn(),
+    finish: vi.fn(),
+    error: vi.fn(),
   };
 
   const mockBuildLogTransport = new winston.transports.Stream({
@@ -101,12 +103,12 @@ describe('DocsSynchronizer', () => {
   });
 
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   describe('doSync', () => {
     it('should execute an update', async () => {
-      (shouldCheckForUpdate as jest.Mock).mockReturnValue(true);
+      (shouldCheckForUpdate as Mock).mockReturnValue(true);
 
       const entity = {
         apiVersion: 'backstage.io/v1alpha1',
@@ -127,7 +129,7 @@ describe('DocsSynchronizer', () => {
 
         const logger = MockedDocsBuilder.mock.calls[0][0].logger;
 
-        jest.advanceTimersByTime(10001);
+        vi.advanceTimersByTime(10001);
 
         logger.info('Some more log');
 
@@ -171,7 +173,7 @@ describe('DocsSynchronizer', () => {
       MockedDocsBuilder.prototype.build.mockImplementation(
         () => new Promise(() => {}),
       );
-      (shouldCheckForUpdate as jest.Mock).mockReturnValue(true);
+      (shouldCheckForUpdate as Mock).mockReturnValue(true);
       const entity = {
         apiVersion: 'backstage.io/v1alpha1',
         kind: 'Component',
@@ -198,7 +200,7 @@ describe('DocsSynchronizer', () => {
     });
 
     it('should not check for an update too often', async () => {
-      (shouldCheckForUpdate as jest.Mock).mockReturnValue(false);
+      (shouldCheckForUpdate as Mock).mockReturnValue(false);
 
       const entity = {
         apiVersion: 'backstage.io/v1alpha1',
@@ -229,7 +231,7 @@ describe('DocsSynchronizer', () => {
     });
 
     it('should forward build errors', async () => {
-      (shouldCheckForUpdate as jest.Mock).mockReturnValue(true);
+      (shouldCheckForUpdate as Mock).mockReturnValue(true);
 
       const entity = {
         apiVersion: 'backstage.io/v1alpha1',
@@ -275,7 +277,7 @@ describe('DocsSynchronizer', () => {
     };
 
     it('should not check metadata too often', async () => {
-      (shouldCheckForUpdate as jest.Mock).mockReturnValue(false);
+      (shouldCheckForUpdate as Mock).mockReturnValue(false);
 
       await docsSynchronizer.doCacheSync({
         responseHandler: mockResponseHandler,
@@ -291,8 +293,8 @@ describe('DocsSynchronizer', () => {
     });
 
     it('should do nothing if source/cached metadata matches', async () => {
-      (shouldCheckForUpdate as jest.Mock).mockReturnValue(true);
-      (publisher.fetchTechDocsMetadata as jest.Mock).mockResolvedValue({
+      (shouldCheckForUpdate as Mock).mockReturnValue(true);
+      (publisher.fetchTechDocsMetadata as Mock).mockResolvedValue({
         build_timestamp: 123,
       });
 
@@ -309,8 +311,8 @@ describe('DocsSynchronizer', () => {
     });
 
     it('should invalidate expected files when source/cached metadata differ', async () => {
-      (shouldCheckForUpdate as jest.Mock).mockReturnValue(true);
-      (publisher.fetchTechDocsMetadata as jest.Mock).mockResolvedValue({
+      (shouldCheckForUpdate as Mock).mockReturnValue(true);
+      (publisher.fetchTechDocsMetadata as Mock).mockResolvedValue({
         build_timestamp: 456,
         files: ['index.html'],
       });
@@ -331,8 +333,8 @@ describe('DocsSynchronizer', () => {
     });
 
     it('should invalidate expected files when source/cached metadata differ with legacy casing', async () => {
-      (shouldCheckForUpdate as jest.Mock).mockReturnValue(true);
-      (publisher.fetchTechDocsMetadata as jest.Mock).mockResolvedValue({
+      (shouldCheckForUpdate as Mock).mockReturnValue(true);
+      (publisher.fetchTechDocsMetadata as Mock).mockResolvedValue({
         build_timestamp: 456,
         files: ['index.html'],
       });
@@ -366,8 +368,8 @@ describe('DocsSynchronizer', () => {
     });
 
     it('should gracefully handle errors', async () => {
-      (shouldCheckForUpdate as jest.Mock).mockReturnValue(true);
-      (publisher.fetchTechDocsMetadata as jest.Mock).mockRejectedValue(
+      (shouldCheckForUpdate as Mock).mockReturnValue(true);
+      (publisher.fetchTechDocsMetadata as Mock).mockRejectedValue(
         new Error(),
       );
 

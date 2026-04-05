@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import { ConfigReader } from '@backstage/config';
 import {
   ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE,
@@ -29,26 +31,26 @@ const credsManager = {
   }),
 };
 
-jest.mock('@backstage/integration-aws-node', () => ({
+vi.mock('@backstage/integration-aws-node', () => ({
   DefaultAwsCredentialsManager: {
     fromConfig: () => credsManager,
   },
 }));
 
 const signer = {
-  presign: jest.fn().mockResolvedValue({
+  presign: vi.fn().mockResolvedValue({
     hostname: 'https://example.com',
     query: {},
     path: '/asdf',
   }),
 };
 
-jest.mock('@smithy/signature-v4', () => ({
-  SignatureV4: jest.fn().mockImplementation(() => signer),
+vi.mock('@smithy/signature-v4', () => ({
+  SignatureV4: vi.fn().mockImplementation(() => signer),
 }));
 
-const fromTemporaryCredentials = jest.fn();
-jest.mock('@aws-sdk/credential-providers', () => ({
+const fromTemporaryCredentials = vi.fn();
+vi.mock('@aws-sdk/credential-providers', () => ({
   fromTemporaryCredentials: (opts: any) => {
     return fromTemporaryCredentials(opts);
   },

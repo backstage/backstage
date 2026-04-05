@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import { createBackend } from '@backstage/backend-defaults';
 import { Backend } from '@backstage/backend-app-api';
 import { mockServices } from '@backstage/backend-test-utils';
@@ -195,8 +197,8 @@ describe('gateway', () => {
       'http://localhost:7777/api/external-plugin/endpoint-sse',
     );
 
-    const mockOnMessage = jest.fn();
-    const mockOnError = jest.fn();
+    const mockOnMessage = vi.fn();
+    const mockOnError = vi.fn();
     eventSource.addEventListener('message', mockOnMessage);
     eventSource.addEventListener('error', mockOnError);
 

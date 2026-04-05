@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { mockApis, registerMswTestHooks } from '@backstage/test-utils';
 import { dynamicFrontendFeaturesLoader } from './loader';
 import { rest } from 'msw';
@@ -48,7 +50,7 @@ function mockDefaultConfig(): Config {
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { BACKSTAGE_RUNTIME_SHARED_DEPENDENCIES_GLOBAL } from '../../module-federation-common/src/types';
 
-const globalSpy = jest.fn();
+const globalSpy = vi.fn();
 Object.defineProperty(global, BACKSTAGE_RUNTIME_SHARED_DEPENDENCIES_GLOBAL, {
   get: globalSpy,
 });
@@ -58,14 +60,14 @@ describe('dynamicFrontendFeaturesLoader', () => {
   registerMswTestHooks(server);
   const mocks = {
     console: {
-      error: jest.spyOn(console, 'error').mockImplementation(() => {}),
-      warn: jest.spyOn(console, 'warn').mockImplementation(() => {}),
-      info: jest.spyOn(console, 'info').mockImplementation(() => {}),
-      debug: jest.spyOn(console, 'debug').mockImplementation(() => {}),
+      error: vi.spyOn(console, 'error').mockImplementation(() => {}),
+      warn: vi.spyOn(console, 'warn').mockImplementation(() => {}),
+      info: vi.spyOn(console, 'info').mockImplementation(() => {}),
+      debug: vi.spyOn(console, 'debug').mockImplementation(() => {}),
     },
     federation: {
-      get: jest.fn((_: { name: string; id: string }): Module => ({})),
-      onLoad: jest.fn(() => {}),
+      get: vi.fn((_: { name: string; id: string }): Module => ({})),
+      onLoad: vi.fn(() => {}),
     },
   };
 
@@ -1123,7 +1125,7 @@ describe('dynamicFrontendFeaturesLoader', () => {
       ),
     );
 
-    const spyInit = jest.fn();
+    const spyInit = vi.fn();
     await (
       dynamicFrontendFeaturesLoader({
         moduleFederation: {
@@ -1172,7 +1174,7 @@ describe('dynamicFrontendFeaturesLoader', () => {
       ),
     );
 
-    const spyInit = jest.fn();
+    const spyInit = vi.fn();
     await (
       dynamicFrontendFeaturesLoader({
         moduleFederation: {

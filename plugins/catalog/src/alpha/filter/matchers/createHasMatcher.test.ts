@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { Entity } from '@backstage/catalog-model';
 import { createHasMatcher } from './createHasMatcher';
 
@@ -36,10 +38,10 @@ describe('createHasMatcher', () => {
     metadata: { links: [{}] },
   } as unknown as Entity;
 
-  const err = jest.fn();
+  const err = vi.fn();
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('supports valid parameters', () => {

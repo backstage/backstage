@@ -56,7 +56,7 @@ describe('parseLocationQuery', () => {
       expect(() =>
         parseLocationQuery({ limit: 0 }),
       ).toThrowErrorMatchingInlineSnapshot(
-        `"Limit must be a positive integer >= 1"`,
+        `[InputError: Limit must be a positive integer >= 1]`,
       );
     });
 
@@ -64,7 +64,7 @@ describe('parseLocationQuery', () => {
       expect(() =>
         parseLocationQuery({ limit: -5 }),
       ).toThrowErrorMatchingInlineSnapshot(
-        `"Limit must be a positive integer >= 1"`,
+        `[InputError: Limit must be a positive integer >= 1]`,
       );
     });
 
@@ -72,7 +72,7 @@ describe('parseLocationQuery', () => {
       expect(() =>
         parseLocationQuery({ limit: 1.5 }),
       ).toThrowErrorMatchingInlineSnapshot(
-        `"Limit must be a positive integer >= 1"`,
+        `[InputError: Limit must be a positive integer >= 1]`,
       );
     });
 
@@ -80,7 +80,7 @@ describe('parseLocationQuery', () => {
       expect(() =>
         parseLocationQuery({ query: { $invalid: true } as any }),
       ).toThrowErrorMatchingInlineSnapshot(
-        `"Invalid query: Validation error: Invalid at "$invalid""`,
+        `[InputError: Invalid query: Validation error: Invalid at "$invalid"]`,
       );
     });
   });
@@ -125,7 +125,7 @@ describe('parseLocationQuery', () => {
       expect(() =>
         parseLocationQuery({ cursor: '!!not-base64!!' }),
       ).toThrowErrorMatchingInlineSnapshot(
-        `"Malformed cursor, unknown encoding"`,
+        `[InputError: Malformed cursor, unknown encoding]`,
       );
     });
 
@@ -134,7 +134,7 @@ describe('parseLocationQuery', () => {
       expect(() =>
         parseLocationQuery({ cursor }),
       ).toThrowErrorMatchingInlineSnapshot(
-        `"Malformed cursor, unknown encoding"`,
+        `[InputError: Malformed cursor, unknown encoding]`,
       );
     });
 
@@ -143,7 +143,7 @@ describe('parseLocationQuery', () => {
       expect(() =>
         parseLocationQuery({ cursor }),
       ).toThrowErrorMatchingInlineSnapshot(
-        `"Malformed cursor: Validation error: Required at "limit""`,
+        `[InputError: Malformed cursor: Validation error: Required at "limit"]`,
       );
     });
 
@@ -152,7 +152,7 @@ describe('parseLocationQuery', () => {
       expect(() =>
         parseLocationQuery({ cursor }),
       ).toThrowErrorMatchingInlineSnapshot(
-        `"Malformed cursor: Validation error: Number must be greater than or equal to 1 at "limit""`,
+        `[InputError: Malformed cursor: Validation error: Number must be greater than or equal to 1 at "limit"]`,
       );
     });
 
@@ -161,7 +161,7 @@ describe('parseLocationQuery', () => {
       expect(() =>
         parseLocationQuery({ cursor }),
       ).toThrowErrorMatchingInlineSnapshot(
-        `"Malformed cursor: Validation error: Expected integer, received float at "limit""`,
+        `[InputError: Malformed cursor: Validation error: Expected integer, received float at "limit"]`,
       );
     });
 
@@ -170,7 +170,7 @@ describe('parseLocationQuery', () => {
       expect(() =>
         parseLocationQuery({ cursor }),
       ).toThrowErrorMatchingInlineSnapshot(
-        `"Malformed cursor: Validation error: Invalid at "query.$invalid""`,
+        `[InputError: Malformed cursor: Validation error: Invalid at "query.$invalid"]`,
       );
     });
   });

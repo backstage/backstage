@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { GetEntityFacetsResponse } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
@@ -67,7 +69,7 @@ const apis = TestApiRegistry.from(
   [
     catalogApiRef,
     {
-      getEntityFacets: jest.fn().mockResolvedValue({
+      getEntityFacets: vi.fn().mockResolvedValue({
         facets: {
           kind: [
             { value: 'Component', count: 2 },
@@ -116,7 +118,7 @@ describe('<CatalogKindHeader />', () => {
   });
 
   it('updates the kind filter', async () => {
-    const updateFilters = jest.fn();
+    const updateFilters = vi.fn();
     await renderWithEffects(
       <ApiProvider apis={apis}>
         <MockEntityListContextProvider value={{ updateFilters }}>
@@ -137,7 +139,7 @@ describe('<CatalogKindHeader />', () => {
   });
 
   it('responds to external queryParameters changes', async () => {
-    const updateFilters = jest.fn();
+    const updateFilters = vi.fn();
     const rendered = await renderWithEffects(
       <ApiProvider apis={apis}>
         <MockEntityListContextProvider

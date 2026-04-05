@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { mockClient } from 'aws-sdk-client-mock';
 import 'aws-sdk-client-mock-jest';
 import { AwsOrganizationCloudAccountProcessor } from './AwsOrganizationCloudAccountProcessor';
@@ -28,11 +30,11 @@ describe('AwsOrganizationCloudAccountProcessor', () => {
       provider: {},
     });
     const location = { type: 'aws-cloud-accounts', target: '' };
-    const emit = jest.fn();
+    const emit = vi.fn();
     const mock = mockClient(OrganizationsClient);
 
     afterEach(() => {
-      jest.resetAllMocks();
+      vi.resetAllMocks();
     });
 
     it('generates component entities for accounts', async () => {

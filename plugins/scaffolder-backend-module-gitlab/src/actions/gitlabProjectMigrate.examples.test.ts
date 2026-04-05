@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
@@ -24,13 +26,13 @@ import yaml from 'yaml';
 
 const mockGitlabClient = {
   Migrations: {
-    create: jest.fn(() => ({
+    create: vi.fn(() => ({
       id: 0,
     })),
   },
 };
 
-jest.mock('@gitbeaker/rest', () => ({
+vi.mock('@gitbeaker/rest', () => ({
   Gitlab: class {
     constructor() {
       return mockGitlabClient;
@@ -42,7 +44,7 @@ describe('gitlab:group:migrate', () => {
   let instance: TemplateAction<any, any, any>;
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
 
     const config = new ConfigReader({
       integrations: {

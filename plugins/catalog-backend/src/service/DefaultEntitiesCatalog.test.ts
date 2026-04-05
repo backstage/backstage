@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   TestDatabaseId,
   TestDatabases,
@@ -40,7 +42,7 @@ import { EntitiesRequest } from '../catalog/types';
 import { buildEntitySearch } from '../database/operations/stitcher/buildEntitySearch';
 import { entitiesResponseToObjects } from './response';
 
-jest.setTimeout(60_000);
+vi.setConfig({ testTimeout: 60_000 });
 
 describe('DefaultEntitiesCatalog', () => {
   let knex: Knex;
@@ -50,7 +52,7 @@ describe('DefaultEntitiesCatalog', () => {
   });
 
   const databases = TestDatabases.create();
-  const stitch = jest.fn();
+  const stitch = vi.fn();
   const stitcher: Stitcher = { stitch } as any;
 
   async function createDatabase(databaseId: TestDatabaseId) {
@@ -130,7 +132,7 @@ describe('DefaultEntitiesCatalog', () => {
   }
 
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   describe('entityAncestry', () => {

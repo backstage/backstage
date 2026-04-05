@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import { createGithubWebhookAction } from './githubWebhook';
 import {
   ScmIntegrations,
@@ -26,16 +28,16 @@ import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 
 import { Octokit } from 'octokit';
 
-const octokitMock = Octokit as unknown as jest.Mock;
+const octokitMock = Octokit as unknown as Mock;
 const mockOctokit = {
   rest: {
     repos: {
-      createWebhook: jest.fn(),
+      createWebhook: vi.fn(),
     },
   },
 };
-jest.mock('octokit', () => ({
-  Octokit: jest.fn(),
+vi.mock('octokit', () => ({
+  Octokit: vi.fn(),
 }));
 
 describe('github:repository:webhook:create', () => {
@@ -54,7 +56,7 @@ describe('github:repository:webhook:create', () => {
   let action: TemplateAction<any, any, any>;
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
     octokitMock.mockImplementation(() => mockOctokit);
     githubCredentialsProvider =
       DefaultGithubCredentialsProvider.fromIntegrations(integrations);

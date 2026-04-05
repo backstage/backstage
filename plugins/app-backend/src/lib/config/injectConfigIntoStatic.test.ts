@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   createMockDirectory,
   mockServices,
@@ -35,7 +37,7 @@ describe('injectConfigIntoStatic', () => {
   });
 
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('should inject without config', async () => {

@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
+import { vi , type MockedFunction} from 'vitest';
+
 import { httpJson } from './http';
 
-const mockFetch = jest.fn() as jest.MockedFunction<typeof global.fetch>;
+const mockFetch = vi.fn() as MockedFunction<typeof global.fetch>;
 
 beforeEach(() => {
   global.fetch = mockFetch;
@@ -24,14 +26,14 @@ beforeEach(() => {
 
 describe('http', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('httpJson', () => {
     it('should make successful GET request and parse JSON', async () => {
       const mockResponse = {
         ok: true,
-        json: jest.fn().mockResolvedValue({ data: 'test' }),
+        json: vi.fn().mockResolvedValue({ data: 'test' }),
       };
       mockFetch.mockResolvedValue(mockResponse as any);
 
@@ -49,7 +51,7 @@ describe('http', () => {
     it('should make POST request with JSON body', async () => {
       const mockResponse = {
         ok: true,
-        json: jest.fn().mockResolvedValue({ success: true }),
+        json: vi.fn().mockResolvedValue({ success: true }),
       };
       mockFetch.mockResolvedValue(mockResponse as any);
 
@@ -75,7 +77,7 @@ describe('http', () => {
     it('should include and merge custom headers', async () => {
       const mockResponse = {
         ok: true,
-        json: jest.fn().mockResolvedValue({ data: 'test' }),
+        json: vi.fn().mockResolvedValue({ data: 'test' }),
       };
       mockFetch.mockResolvedValue(mockResponse as any);
 
@@ -130,7 +132,7 @@ describe('http', () => {
           status,
           statusText,
           url: 'https://example.com/api',
-          text: jest.fn().mockResolvedValue('Error'),
+          text: vi.fn().mockResolvedValue('Error'),
         };
         mockFetch.mockResolvedValue(mockResponse as any);
 
@@ -171,7 +173,7 @@ describe('http', () => {
     it('should handle JSON parsing errors gracefully', async () => {
       const mockResponse = {
         ok: true,
-        json: jest.fn().mockRejectedValue(new Error('Invalid JSON')),
+        json: vi.fn().mockRejectedValue(new Error('Invalid JSON')),
       };
       mockFetch.mockResolvedValue(mockResponse as any);
 
@@ -183,7 +185,7 @@ describe('http', () => {
     it('should support different HTTP methods', async () => {
       const mockResponse = {
         ok: true,
-        json: jest.fn().mockResolvedValue({ success: true }),
+        json: vi.fn().mockResolvedValue({ success: true }),
       };
 
       for (const method of ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']) {
@@ -210,7 +212,7 @@ describe('http', () => {
       for (const { body, expected } of testCases) {
         const mockResponse = {
           ok: true,
-          json: jest.fn().mockResolvedValue(body),
+          json: vi.fn().mockResolvedValue(body),
         };
         mockFetch.mockResolvedValue(mockResponse as any);
 
@@ -231,7 +233,7 @@ describe('http', () => {
     it('should use custom abort signal if provided', async () => {
       const mockResponse = {
         ok: true,
-        json: jest.fn().mockResolvedValue({ data: 'test' }),
+        json: vi.fn().mockResolvedValue({ data: 'test' }),
       };
       mockFetch.mockResolvedValue(mockResponse as any);
 
@@ -259,7 +261,7 @@ describe('http', () => {
       const largeData = { items: Array(10000).fill({ data: 'x'.repeat(100) }) };
       const mockResponse = {
         ok: true,
-        json: jest.fn().mockResolvedValue(largeData),
+        json: vi.fn().mockResolvedValue(largeData),
       };
       mockFetch.mockResolvedValue(mockResponse as any);
 

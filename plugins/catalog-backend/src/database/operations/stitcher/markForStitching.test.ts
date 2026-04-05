@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { TestDatabases } from '@backstage/backend-test-utils';
 import { applyDatabaseMigrations } from '../../migrations';
 import { markForStitching } from './markForStitching';
@@ -23,7 +25,7 @@ import {
   DbStitchQueueRow,
 } from '../../tables';
 
-jest.setTimeout(60_000);
+vi.setConfig({ testTimeout: 60_000 });
 
 describe('markForStitching', () => {
   const databases = TestDatabases.create();

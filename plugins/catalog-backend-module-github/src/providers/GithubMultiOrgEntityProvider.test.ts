@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import { GithubCredentialsProvider } from '@backstage/integration';
@@ -30,11 +32,11 @@ import {
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { mockServices } from '@backstage/backend-test-utils';
 
-jest.mock('@octokit/graphql');
+vi.mock('@octokit/graphql');
 
-const getAllInstallationsMock = jest.fn();
-jest.mock('@backstage/integration', () => ({
-  ...jest.requireActual('@backstage/integration'),
+const getAllInstallationsMock = vi.fn();
+vi.mock('@backstage/integration', () => ({
+  ...vi.importActual('@backstage/integration'),
   GithubAppCredentialsMux: function mockGithubAppCredentialsMux() {
     return {
       getAllInstallations: getAllInstallationsMock,
@@ -44,33 +46,33 @@ jest.mock('@backstage/integration', () => ({
 
 describe('GithubMultiOrgEntityProvider', () => {
   describe('read', () => {
-    let mockClient: jest.Mock<any, any, any>;
+    let mockClient: Mock<any, any, any>;
     let entityProviderConnection: EntityProviderConnection;
     let logger: LoggerService;
     let gitHubConfig: { host: string };
-    let mockGetCredentials: jest.Mock<any, any, any>;
+    let mockGetCredentials: Mock<any, any, any>;
     let entityProvider: GithubMultiOrgEntityProvider;
 
     beforeEach(() => {
-      mockClient = jest.fn();
-      (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+      mockClient = vi.fn();
+      (graphql.defaults as Mock).mockReturnValue(mockClient);
 
       entityProviderConnection = {
-        applyMutation: jest.fn(),
-        refresh: jest.fn(),
+        applyMutation: vi.fn(),
+        refresh: vi.fn(),
       };
 
       logger = mockServices.logger.mock();
 
       gitHubConfig = { host: 'github.com' };
 
-      mockGetCredentials = jest.fn().mockReturnValue({
+      mockGetCredentials = vi.fn().mockReturnValue({
         headers: { token: 'blah' },
         type: 'app',
       });
     });
 
-    afterEach(() => jest.resetAllMocks());
+    afterEach(() => vi.resetAllMocks());
 
     it('should read specified orgs', async () => {
       entityProvider = new GithubMultiOrgEntityProvider({
@@ -200,7 +202,7 @@ describe('GithubMultiOrgEntityProvider', () => {
           },
         });
 
-      (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+      (graphql.defaults as Mock).mockReturnValue(mockClient);
 
       await entityProvider.read();
 
@@ -500,7 +502,7 @@ describe('GithubMultiOrgEntityProvider', () => {
           },
         });
 
-      (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+      (graphql.defaults as Mock).mockReturnValue(mockClient);
 
       const githubCredentialsProvider: GithubCredentialsProvider = {
         getCredentials: mockGetCredentials,
@@ -786,7 +788,7 @@ describe('GithubMultiOrgEntityProvider', () => {
           },
         });
 
-      (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+      (graphql.defaults as Mock).mockReturnValue(mockClient);
 
       entityProvider = new GithubMultiOrgEntityProvider({
         id: 'my-id',
@@ -1047,8 +1049,8 @@ describe('GithubMultiOrgEntityProvider', () => {
     let events: EventsService;
 
     const entityProviderConnection: EntityProviderConnection = {
-      applyMutation: jest.fn(),
-      refresh: jest.fn(),
+      applyMutation: vi.fn(),
+      refresh: vi.fn(),
     };
 
     beforeEach(async () => {
@@ -1064,7 +1066,7 @@ describe('GithubMultiOrgEntityProvider', () => {
         },
       });
 
-      const mockGetCredentials = jest.fn().mockReturnValue({
+      const mockGetCredentials = vi.fn().mockReturnValue({
         headers: { token: 'blah' },
         type: 'app',
       });
@@ -1085,7 +1087,7 @@ describe('GithubMultiOrgEntityProvider', () => {
       await entityProvider.connect(entityProviderConnection);
     });
 
-    afterEach(() => jest.resetAllMocks());
+    afterEach(() => vi.resetAllMocks());
 
     it('should ignore events from non-applicable orgs', async () => {
       await events.publish({
@@ -1125,7 +1127,7 @@ describe('GithubMultiOrgEntityProvider', () => {
 
     describe('installation', () => {
       it('adds users and groups from new org', async () => {
-        const mockClient = jest.fn();
+        const mockClient = vi.fn();
 
         mockClient
           .mockResolvedValueOnce({
@@ -1221,7 +1223,7 @@ describe('GithubMultiOrgEntityProvider', () => {
             },
           });
 
-        (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+        (graphql.defaults as Mock).mockReturnValue(mockClient);
 
         await events.publish({
           topic: 'github.installation',
@@ -1303,7 +1305,7 @@ describe('GithubMultiOrgEntityProvider', () => {
 
     describe('organization', () => {
       it('should add a new user', async () => {
-        const mockClient = jest.fn();
+        const mockClient = vi.fn();
 
         mockClient
           .mockResolvedValueOnce({
@@ -1354,7 +1356,7 @@ describe('GithubMultiOrgEntityProvider', () => {
             },
           });
 
-        (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+        (graphql.defaults as Mock).mockReturnValue(mockClient);
 
         await events.publish({
           topic: 'github.organization',
@@ -1411,7 +1413,7 @@ describe('GithubMultiOrgEntityProvider', () => {
       });
 
       it('should remove a user', async () => {
-        const mockClient = jest.fn();
+        const mockClient = vi.fn();
 
         mockClient.mockResolvedValueOnce({
           user: {
@@ -1426,7 +1428,7 @@ describe('GithubMultiOrgEntityProvider', () => {
           },
         });
 
-        (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+        (graphql.defaults as Mock).mockReturnValue(mockClient);
 
         await events.publish({
           topic: 'github.organization',
@@ -1483,7 +1485,7 @@ describe('GithubMultiOrgEntityProvider', () => {
       });
 
       it('should only update group memberships of a user that still belongs to an applicable org', async () => {
-        const mockClient = jest.fn();
+        const mockClient = vi.fn();
 
         mockClient
           .mockResolvedValueOnce({
@@ -1523,7 +1525,7 @@ describe('GithubMultiOrgEntityProvider', () => {
             },
           });
 
-        (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+        (graphql.defaults as Mock).mockReturnValue(mockClient);
 
         await events.publish({
           topic: 'github.organization',
@@ -1756,7 +1758,7 @@ describe('GithubMultiOrgEntityProvider', () => {
       });
 
       it('should update group and user entities when a team is edited', async () => {
-        const mockClient = jest.fn();
+        const mockClient = vi.fn();
 
         mockClient
           .mockResolvedValueOnce({
@@ -1852,7 +1854,7 @@ describe('GithubMultiOrgEntityProvider', () => {
             },
           });
 
-        (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+        (graphql.defaults as Mock).mockReturnValue(mockClient);
 
         await events.publish({
           topic: 'github.team',
@@ -1974,7 +1976,7 @@ describe('GithubMultiOrgEntityProvider', () => {
       });
 
       it('should update group without parent', async () => {
-        const mockClient = jest.fn();
+        const mockClient = vi.fn();
 
         mockClient
           .mockResolvedValueOnce({
@@ -2047,7 +2049,7 @@ describe('GithubMultiOrgEntityProvider', () => {
             },
           });
 
-        (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+        (graphql.defaults as Mock).mockReturnValue(mockClient);
 
         await events.publish({
           topic: 'github.team',
@@ -2140,7 +2142,7 @@ describe('GithubMultiOrgEntityProvider', () => {
 
     describe('membership', () => {
       it('should update group and user entities when a member is added', async () => {
-        const mockClient = jest.fn();
+        const mockClient = vi.fn();
 
         mockClient
           .mockResolvedValueOnce({
@@ -2226,7 +2228,7 @@ describe('GithubMultiOrgEntityProvider', () => {
             },
           });
 
-        (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+        (graphql.defaults as Mock).mockReturnValue(mockClient);
 
         await events.publish({
           topic: 'github.membership',
@@ -2314,7 +2316,7 @@ describe('GithubMultiOrgEntityProvider', () => {
       });
 
       it('should update group and user entities when a member is removed', async () => {
-        const mockClient = jest.fn();
+        const mockClient = vi.fn();
 
         mockClient
           .mockResolvedValueOnce({
@@ -2384,7 +2386,7 @@ describe('GithubMultiOrgEntityProvider', () => {
             },
           });
 
-        (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+        (graphql.defaults as Mock).mockReturnValue(mockClient);
 
         await events.publish({
           topic: 'github.membership',

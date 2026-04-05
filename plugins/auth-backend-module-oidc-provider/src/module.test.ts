@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import request from 'supertest';
 import { decodeOAuthState } from '@backstage/plugin-auth-node';
 import { setupServer } from 'msw/node';
@@ -58,7 +60,7 @@ describe('authModuleOidcProvider', () => {
   };
 
   beforeEach(async () => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
 
     mswServer.use(
       rest.get(

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { Entity, RELATION_HAS_PART } from '@backstage/catalog-model';
 import {
   catalogApiRef,
@@ -39,7 +41,7 @@ describe('<EntityRelationCard />', () => {
     );
   });
 
-  afterEach(() => jest.resetAllMocks());
+  afterEach(() => vi.resetAllMocks());
 
   it('renders the card title', async () => {
     const entity: Entity = {

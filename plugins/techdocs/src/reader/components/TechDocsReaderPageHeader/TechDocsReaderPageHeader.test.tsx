@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import { ReactNode } from 'react';
 
 import { CompoundEntityRef } from '@backstage/catalog-model';
@@ -53,22 +55,22 @@ const mockTechDocsMetadata = {
 };
 
 let useParamsPath = '/';
-jest.mock('react-router-dom', () => {
+vi.mock('react-router-dom', () => {
   return {
-    ...(jest.requireActual('react-router-dom') as any),
+    ...(vi.importActual('react-router-dom') as any),
     useParams: () => ({ '*': useParamsPath }),
   };
 });
 
-const getEntityMetadata = jest.fn();
-const getTechDocsMetadata = jest.fn();
+const getEntityMetadata = vi.fn();
+const getTechDocsMetadata = vi.fn();
 
 const techdocsApiMock = {
   getEntityMetadata,
   getTechDocsMetadata,
 };
 
-const forEntity = jest.fn();
+const forEntity = vi.fn();
 
 forEntity.mockReturnValue({
   snapshot: {

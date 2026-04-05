@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { act } from 'react';
 import { GithubRepoPicker } from './GithubRepoPicker';
 import { fireEvent, waitFor } from '@testing-library/react';
@@ -26,7 +28,7 @@ import userEvent from '@testing-library/user-event';
 
 describe('GithubRepoPicker', () => {
   const scaffolderApiMock: Partial<ScaffolderApi> = {
-    autocomplete: jest.fn().mockImplementation(opts =>
+    autocomplete: vi.fn().mockImplementation(opts =>
       Promise.resolve({
         results: [
           {
@@ -45,7 +47,7 @@ describe('GithubRepoPicker', () => {
       const { findByText } = await renderInTestApp(
         <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
           <GithubRepoPicker
-            onChange={jest.fn()}
+            onChange={vi.fn()}
             rawErrors={[]}
             state={{ repoName: 'repo' }}
             allowedOwners={allowedOwners}
@@ -58,7 +60,7 @@ describe('GithubRepoPicker', () => {
     });
 
     it('calls onChange when the owner is changed to a different owner', async () => {
-      const onChange = jest.fn();
+      const onChange = vi.fn();
       const allowedOwners = ['owner1', 'owner2'];
       const { getByRole } = await renderInTestApp(
         <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
@@ -79,7 +81,7 @@ describe('GithubRepoPicker', () => {
     });
 
     it('is disabled picked when only one allowed owner', async () => {
-      const onChange = jest.fn();
+      const onChange = vi.fn();
       const allowedOwners = ['owner1'];
       const { getByRole } = await renderInTestApp(
         <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
@@ -96,7 +98,7 @@ describe('GithubRepoPicker', () => {
     });
 
     it('should display free text if no allowed owners are passed', async () => {
-      const onChange = jest.fn();
+      const onChange = vi.fn();
       const { getAllByRole } = await renderInTestApp(
         <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
           <GithubRepoPicker
@@ -119,7 +121,7 @@ describe('GithubRepoPicker', () => {
 
   describe('autocompletion', () => {
     it('should populate owners if accessToken is provided', async () => {
-      const onChange = jest.fn();
+      const onChange = vi.fn();
 
       const { getAllByRole, getByText } = await renderInTestApp(
         <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
@@ -147,7 +149,7 @@ describe('GithubRepoPicker', () => {
     });
 
     it('should populate repositories if owner and accessToken are provided', async () => {
-      const onChange = jest.fn();
+      const onChange = vi.fn();
 
       await renderInTestApp(
         <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
@@ -176,7 +178,7 @@ describe('GithubRepoPicker', () => {
       const { getByLabelText } = await renderInTestApp(
         <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
           <GithubRepoPicker
-            onChange={jest.fn()}
+            onChange={vi.fn()}
             rawErrors={[]}
             state={{ repoName: 'repo' }}
             isDisabled
@@ -192,7 +194,7 @@ describe('GithubRepoPicker', () => {
       const { getByLabelText } = await renderInTestApp(
         <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
           <GithubRepoPicker
-            onChange={jest.fn()}
+            onChange={vi.fn()}
             rawErrors={[]}
             state={{ repoName: 'repo' }}
             isDisabled={false}

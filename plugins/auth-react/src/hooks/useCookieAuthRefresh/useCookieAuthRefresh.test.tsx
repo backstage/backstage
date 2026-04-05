@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { renderHook, waitFor } from '@testing-library/react';
 import { fetchApiRef, discoveryApiRef } from '@backstage/core-plugin-api';
 import { TestApiProvider, mockApis } from '@backstage/test-utils';
@@ -28,19 +30,19 @@ describe('useCookieAuthRefresh', () => {
   const expiresAt = new Date(tenMinutesFromNowInMilliseconds).toISOString();
 
   const fetchApiMock = {
-    fetch: jest.fn().mockResolvedValue({
+    fetch: vi.fn().mockResolvedValue({
       ok: true,
-      json: jest.fn().mockResolvedValue({ expiresAt }),
+      json: vi.fn().mockResolvedValue({ expiresAt }),
     }),
   };
 
   beforeEach(() => {
-    jest.useFakeTimers({ now });
-    jest.clearAllMocks();
+    vi.useFakeTimers({ now });
+    vi.clearAllMocks();
   });
 
   afterEach(() => {
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 
   it('should return a loading status when the refresh is in progress first time', () => {
@@ -55,7 +57,7 @@ describe('useCookieAuthRefresh', () => {
               [
                 fetchApiRef,
                 {
-                  fetch: jest.fn().mockRejectedValue(error),
+                  fetch: vi.fn().mockRejectedValue(error),
                 },
               ],
               [discoveryApiRef, discoveryApiMock],
@@ -134,7 +136,7 @@ describe('useCookieAuthRefresh', () => {
                     .fn()
                     .mockResolvedValueOnce({
                       ok: true,
-                      json: jest.fn().mockResolvedValue({ expiresAt }),
+                      json: vi.fn().mockResolvedValue({ expiresAt }),
                     })
                     .mockRejectedValueOnce(error)
                     .mockReturnValue(new Promise(() => {})),
@@ -158,7 +160,7 @@ describe('useCookieAuthRefresh', () => {
       }),
     );
 
-    jest.advanceTimersByTime(tenMinutesInMilliseconds);
+    vi.advanceTimersByTime(tenMinutesInMilliseconds);
 
     await waitFor(() =>
       expect(result.current).toStrictEqual({
@@ -191,7 +193,7 @@ describe('useCookieAuthRefresh', () => {
               [
                 fetchApiRef,
                 {
-                  fetch: jest.fn().mockRejectedValue(error),
+                  fetch: vi.fn().mockRejectedValue(error),
                 },
               ],
               [discoveryApiRef, discoveryApiMock],
@@ -222,7 +224,7 @@ describe('useCookieAuthRefresh', () => {
               [
                 fetchApiRef,
                 {
-                  fetch: jest.fn().mockResolvedValue({
+                  fetch: vi.fn().mockResolvedValue({
                     ok: false,
                     status: 404,
                   }),
@@ -307,13 +309,13 @@ describe('useCookieAuthRefresh', () => {
     });
 
     // advance the timers in 10 minutes to match the old expires at
-    jest.advanceTimersByTime(tenMinutesInMilliseconds);
+    vi.advanceTimersByTime(tenMinutesInMilliseconds);
 
     // should not call the api
     await waitFor(() => expect(fetchApiMock.fetch).toHaveBeenCalledTimes(1));
 
     // advance the timers in more 10 minutes to match the new expires at
-    jest.advanceTimersByTime(tenMinutesInMilliseconds - 1000);
+    vi.advanceTimersByTime(tenMinutesInMilliseconds - 1000);
 
     // should call the api
     await waitFor(() => expect(fetchApiMock.fetch).toHaveBeenCalledTimes(2));
@@ -348,7 +350,7 @@ describe('useCookieAuthRefresh', () => {
     unmount();
 
     // advance the timers to ensure that the refresh is not called
-    jest.advanceTimersByTime(tenMinutesInMilliseconds);
+    vi.advanceTimersByTime(tenMinutesInMilliseconds);
 
     // should not call the api after unmount
     await waitFor(() =>
@@ -373,7 +375,7 @@ describe('useCookieAuthRefresh', () => {
     await waitFor(() => expect(fetchApiMock.fetch).toHaveBeenCalledTimes(1));
 
     // advance the timers to the expiration date
-    jest.advanceTimersByTime(tenMinutesInMilliseconds - 1000);
+    vi.advanceTimersByTime(tenMinutesInMilliseconds - 1000);
 
     // should call the api
     await waitFor(() => expect(fetchApiMock.fetch).toHaveBeenCalledTimes(2));

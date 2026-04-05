@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import fs from 'fs-extra';
 import {
   NormalizedOutputOptions,
@@ -56,7 +58,7 @@ describe('forwardFileImports', () => {
 
   it('should call through to original external option', async () => {
     const plugin = forwardFileImports({ include: /\.png$/ });
-    const external = jest.fn((id: string) => id.endsWith('external'));
+    const external = vi.fn((id: string) => id.endsWith('external'));
 
     const options = (await plugin.options?.call(context, { external }))!;
     if (typeof options.external !== 'function') {

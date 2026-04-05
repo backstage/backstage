@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { renderInTestApp } from '@backstage/test-utils';
 import { GraphQlDefinition } from './GraphQlDefinition';
 
@@ -38,13 +40,13 @@ type Film {
     document.createRange = () => {
       const range = new Range();
 
-      range.getBoundingClientRect = jest.fn();
+      range.getBoundingClientRect = vi.fn();
 
       range.getClientRects = () => {
         return {
           item: () => null,
           length: 0,
-          [Symbol.iterator]: jest.fn(),
+          [Symbol.iterator]: vi.fn(),
         };
       };
 

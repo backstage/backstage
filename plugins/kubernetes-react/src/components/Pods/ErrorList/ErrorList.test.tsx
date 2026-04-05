@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import { render } from '@testing-library/react';
 
 import { ErrorList } from './ErrorList';
@@ -23,7 +25,7 @@ import { errorApiRef } from '@backstage/core-plugin-api';
 
 describe('ErrorList', () => {
   const translationApi = mockApis.translation();
-  const errorApi = { post: jest.fn(), error$: jest.fn() };
+  const errorApi = { post: vi.fn(), error$: vi.fn() };
 
   it('error highlight should render', () => {
     const { getByText } = render(

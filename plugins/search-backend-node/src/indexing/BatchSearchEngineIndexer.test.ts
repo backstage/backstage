@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { IndexableDocument } from '@backstage/plugin-search-common';
 import { BatchSearchEngineIndexer } from './BatchSearchEngineIndexer';
 import { TestPipeline } from '../test-utils';
 
-const indexSpy = jest.fn().mockResolvedValue(undefined);
-const initializeSpy = jest.fn().mockResolvedValue(undefined);
-const finalizeSpy = jest.fn().mockResolvedValue(undefined);
+const indexSpy = vi.fn().mockResolvedValue(undefined);
+const initializeSpy = vi.fn().mockResolvedValue(undefined);
+const finalizeSpy = vi.fn().mockResolvedValue(undefined);
 
 class ConcreteBatchIndexer extends BatchSearchEngineIndexer {
   async index(documents: IndexableDocument[]): Promise<void> {
@@ -41,7 +43,7 @@ describe('BatchSearchEngineIndexer', () => {
     location: '/some/location',
   };
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('should work end-to-end', async () => {

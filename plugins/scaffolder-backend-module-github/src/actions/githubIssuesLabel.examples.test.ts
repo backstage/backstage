@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { ConfigReader } from '@backstage/config';
@@ -27,20 +29,20 @@ import yaml from 'yaml';
 import { examples } from './githubIssuesLabel.examples';
 import { getOctokitOptions } from '../util';
 
-jest.mock('../util', () => {
+vi.mock('../util', () => {
   return {
-    getOctokitOptions: jest.fn(),
+    getOctokitOptions: vi.fn(),
   };
 });
 
 const mockOctokit = {
   rest: {
     issues: {
-      addLabels: jest.fn(),
+      addLabels: vi.fn(),
     },
   },
 };
-jest.mock('octokit', () => ({
+vi.mock('octokit', () => ({
   Octokit: class {
     constructor() {
       return mockOctokit;
@@ -58,7 +60,7 @@ describe('github:issues:label examples', () => {
     },
   });
 
-  const getOctokitOptionsMock = getOctokitOptions as jest.Mock;
+  const getOctokitOptionsMock = getOctokitOptions as Mock;
   const integrations = ScmIntegrations.fromConfig(config);
   let githubCredentialsProvider: GithubCredentialsProvider;
   let action: TemplateAction<any, any, any>;
@@ -66,7 +68,7 @@ describe('github:issues:label examples', () => {
   const mockContext = createMockActionContext();
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
     githubCredentialsProvider =
       DefaultGithubCredentialsProvider.fromIntegrations(integrations);
     action = createGithubIssuesLabelAction({
@@ -75,7 +77,7 @@ describe('github:issues:label examples', () => {
     });
   });
 
-  afterEach(jest.resetAllMocks);
+  afterEach(vi.resetAllMocks);
 
   it('should call the githubApi for adding labels without token', async () => {
     await action.handler({

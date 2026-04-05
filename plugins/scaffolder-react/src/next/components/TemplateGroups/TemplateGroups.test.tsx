@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-jest.mock('@backstage/plugin-catalog-react', () => ({
-  useEntityList: jest.fn(),
+import { vi , type Mock} from 'vitest';
+
+vi.mock('@backstage/plugin-catalog-react', () => ({
+  useEntityList: vi.fn(),
 }));
 
-jest.mock('../TemplateGroup/TemplateGroup', () => ({
-  TemplateGroup: jest.fn(() => null),
+vi.mock('../TemplateGroup/TemplateGroup', () => ({
+  TemplateGroup: vi.fn(() => null),
 }));
 
 import { useEntityList } from '@backstage/plugin-catalog-react';
@@ -29,10 +31,10 @@ import { errorApiRef } from '@backstage/core-plugin-api';
 import { TemplateGroup } from '../TemplateGroup/TemplateGroup';
 
 describe('TemplateGroups', () => {
-  beforeEach(() => jest.clearAllMocks());
+  beforeEach(() => vi.clearAllMocks());
 
   it('should return progress if the hook is loading', async () => {
-    (useEntityList as jest.Mock).mockReturnValue({ loading: true });
+    (useEntityList as Mock).mockReturnValue({ loading: true });
 
     const { findByTestId } = await renderInTestApp(
       <TestApiProvider apis={[[errorApiRef, {}]]}>
@@ -45,11 +47,11 @@ describe('TemplateGroups', () => {
 
   it('should use the error api if there is an error with the retrieval of entitylist', async () => {
     const mockError = new Error('things went poop');
-    (useEntityList as jest.Mock).mockReturnValue({
+    (useEntityList as Mock).mockReturnValue({
       error: mockError,
     });
     const errorApi = {
-      post: jest.fn(),
+      post: vi.fn(),
     };
     await renderInTestApp(
       <TestApiProvider apis={[[errorApiRef, errorApi]]}>
@@ -61,7 +63,7 @@ describe('TemplateGroups', () => {
   });
 
   it('should return a no templates message if entities is unset', async () => {
-    (useEntityList as jest.Mock).mockReturnValue({
+    (useEntityList as Mock).mockReturnValue({
       entities: null,
       loading: false,
       error: null,
@@ -77,7 +79,7 @@ describe('TemplateGroups', () => {
   });
 
   it('should return a no templates message if entities has no values in it', async () => {
-    (useEntityList as jest.Mock).mockReturnValue({
+    (useEntityList as Mock).mockReturnValue({
       entities: [],
       loading: false,
       error: null,
@@ -112,7 +114,7 @@ describe('TemplateGroups', () => {
       },
     ];
 
-    (useEntityList as jest.Mock).mockReturnValue({
+    (useEntityList as Mock).mockReturnValue({
       entities: mockEntities,
       loading: false,
       error: null,
@@ -154,7 +156,7 @@ describe('TemplateGroups', () => {
       },
     ];
 
-    (useEntityList as jest.Mock).mockReturnValue({
+    (useEntityList as Mock).mockReturnValue({
       entities: mockEntities,
       loading: false,
       error: null,
@@ -196,7 +198,7 @@ describe('TemplateGroups', () => {
       },
     ];
 
-    (useEntityList as jest.Mock).mockReturnValue({
+    (useEntityList as Mock).mockReturnValue({
       entities: mockEntities,
       loading: false,
       error: null,

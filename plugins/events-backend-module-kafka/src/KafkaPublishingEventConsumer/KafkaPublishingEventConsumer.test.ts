@@ -13,28 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import { KafkaPublishingEventConsumer } from './KafkaPublishingEventConsumer';
 import { Kafka } from 'kafkajs';
 import { mockServices } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 
-jest.mock('kafkajs');
+vi.mock('kafkajs');
 
 describe('KafkaPublishingEventConsumer', () => {
   const mockLogger = mockServices.logger.mock();
   const mockEvents = mockServices.events.mock();
 
   const mockProducer = {
-    connect: jest.fn(),
-    disconnect: jest.fn(),
-    send: jest.fn(),
+    connect: vi.fn(),
+    disconnect: vi.fn(),
+    send: vi.fn(),
   };
 
   const mockKafkaClient = {
-    producer: jest.fn().mockReturnValue(mockProducer),
+    producer: vi.fn().mockReturnValue(mockProducer),
   } as unknown as Kafka;
 
-  jest.mocked(Kafka).mockImplementation(() => mockKafkaClient);
+  vi.mocked(Kafka).mockImplementation(() => mockKafkaClient);
 
   const mockConfig = new ConfigReader({
     events: {
@@ -61,7 +63,7 @@ describe('KafkaPublishingEventConsumer', () => {
   });
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should create instances from config', () => {

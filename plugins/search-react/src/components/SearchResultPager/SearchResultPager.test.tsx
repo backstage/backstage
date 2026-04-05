@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import { renderInTestApp } from '@backstage/test-utils';
 import { waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -21,18 +23,18 @@ import userEvent from '@testing-library/user-event';
 import { useSearch } from '../../context';
 import { SearchResultPager } from './SearchResultPager';
 
-jest.mock('../../context', () => ({
-  ...jest.requireActual('../../context'),
-  useSearch: jest.fn().mockReturnValue({
+vi.mock('../../context', () => ({
+  ...vi.importActual('../../context'),
+  useSearch: vi.fn().mockReturnValue({
     result: {},
   }),
 }));
 
 describe('SearchResultPager', () => {
   it('renders pager buttons', async () => {
-    const fetchNextPage = jest.fn();
-    const fetchPreviousPage = jest.fn();
-    (useSearch as jest.Mock).mockReturnValue({
+    const fetchNextPage = vi.fn();
+    const fetchPreviousPage = vi.fn();
+    (useSearch as Mock).mockReturnValue({
       result: { loading: false, value: [] },
       fetchNextPage,
       fetchPreviousPage,

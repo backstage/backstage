@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 /* eslint-disable no-restricted-syntax */
 import { resolve as resolvePath } from 'node:path';
 import { findPaths, findRootPath, findOwnRootDir, findOwnPaths } from './paths';
 
 describe('paths', () => {
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   it('findOwnPaths and findOwnRootDir should find own paths', () => {
@@ -50,7 +52,7 @@ describe('paths', () => {
     const dir = resolvePath(__dirname, '..');
     const root = resolvePath(__dirname, '../../..');
 
-    jest.spyOn(process, 'cwd').mockReturnValue(dir);
+    vi.spyOn(process, 'cwd').mockReturnValue(dir);
 
     const paths = findPaths(__dirname);
 
@@ -75,7 +77,7 @@ describe('paths', () => {
     const mockDir = resolvePath(__dirname, '../../cli');
     const root = resolvePath(__dirname, '../../..');
 
-    jest.spyOn(process, 'cwd').mockReturnValue(mockCwd);
+    vi.spyOn(process, 'cwd').mockReturnValue(mockCwd);
 
     const paths = findPaths(resolvePath(mockDir, 'src/lib'));
 
@@ -101,7 +103,7 @@ describe('paths', () => {
     jest
       .spyOn(JSON, 'parse')
       .mockReturnValue({ workspaces: { packages: ['packages/*'] } });
-    jest.spyOn(process, 'cwd').mockReturnValue(__dirname);
+    vi.spyOn(process, 'cwd').mockReturnValue(__dirname);
 
     const paths = findPaths(__dirname);
 
@@ -112,8 +114,8 @@ describe('paths', () => {
   });
 
   it('findPaths should find workspace root with array', () => {
-    jest.spyOn(JSON, 'parse').mockReturnValue({ workspaces: ['packages/*'] });
-    jest.spyOn(process, 'cwd').mockReturnValue(__dirname);
+    vi.spyOn(JSON, 'parse').mockReturnValue({ workspaces: ['packages/*'] });
+    vi.spyOn(process, 'cwd').mockReturnValue(__dirname);
 
     const paths = findPaths(__dirname);
 

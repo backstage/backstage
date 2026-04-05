@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { LocalStorageFeatureFlags } from '../apis';
 import {
   mockApis,
@@ -349,7 +351,7 @@ describe('Integration Test', () => {
 
   it('should wait for the config to load before calling feature flags', async () => {
     const storageFlags = new LocalStorageFeatureFlags();
-    jest.spyOn(storageFlags, 'registerFlag');
+    vi.spyOn(storageFlags, 'registerFlag');
 
     const apis = [
       noOpAnalyticsApi,
@@ -405,7 +407,7 @@ describe('Integration Test', () => {
 
   it('getFeatureFlags should return feature flags', async () => {
     const storageFlags = new LocalStorageFeatureFlags();
-    jest.spyOn(storageFlags, 'registerFlag');
+    vi.spyOn(storageFlags, 'registerFlag');
 
     const apis = [
       noOpAnalyticsApi,
@@ -846,7 +848,7 @@ describe('Integration Test', () => {
   });
 
   it('should clear app cookie when the user logs out', async () => {
-    const logoutSignal = jest.fn();
+    const logoutSignal = vi.fn();
     server.use(
       rest.delete(
         'http://localhost:7007/app/.backstage/auth/v1/cookie',
@@ -863,9 +865,9 @@ describe('Integration Test', () => {
     global.document.head.appendChild(meta);
 
     const fetchApiMock = {
-      fetch: jest.fn().mockResolvedValue({
+      fetch: vi.fn().mockResolvedValue({
         ok: true,
-        json: jest.fn().mockResolvedValue({
+        json: vi.fn().mockResolvedValue({
           expiresAt: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
         }),
       }),

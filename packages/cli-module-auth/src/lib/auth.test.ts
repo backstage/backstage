@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
+import { vi, type Mocked } from 'vitest';
+
 import { accessTokenNeedsRefresh, refreshAccessToken } from './auth';
 import * as storage from './storage';
 import * as internalCli from '@internal/cli';
 import * as http from './http';
 
-jest.mock('./storage');
-jest.mock('@internal/cli');
-jest.mock('./http');
+vi.mock('./storage');
+vi.mock('@internal/cli');
+vi.mock('./http');
 
-const mockStorage = storage as jest.Mocked<typeof storage>;
-const mockInternalCli = internalCli as jest.Mocked<typeof internalCli>;
-const mockHttp = http as jest.Mocked<typeof http>;
+const mockStorage = storage as Mocked<typeof storage>;
+const mockInternalCli = internalCli as Mocked<typeof internalCli>;
+const mockHttp = http as Mocked<typeof http>;
 
 describe('auth', () => {
   describe('accessTokenNeedsRefresh', () => {
@@ -88,13 +90,13 @@ describe('auth', () => {
 
   describe('refreshAccessToken', () => {
     const mockSecretStoreInstance = {
-      get: jest.fn(),
-      set: jest.fn(),
-      delete: jest.fn(),
+      get: vi.fn(),
+      set: vi.fn(),
+      delete: vi.fn(),
     };
 
     beforeEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
       mockInternalCli.getSecretStore.mockResolvedValue(mockSecretStoreInstance);
       mockInternalCli.getAuthInstanceService.mockImplementation(
         (name: string) => `backstage-cli:auth-instance:${name}`,

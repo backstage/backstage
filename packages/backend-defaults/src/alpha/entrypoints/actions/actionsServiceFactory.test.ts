@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import {
   mockCredentials,
   mockServices,
@@ -41,8 +43,8 @@ const server = setupServer();
 describe('actionsServiceFactory', () => {
   describe('client', () => {
     registerMswTestHooks(server);
-    const mockActionsListEndpoint = jest.fn();
-    const mockNotFoundActionsListEndpoint = jest.fn();
+    const mockActionsListEndpoint = vi.fn();
+    const mockNotFoundActionsListEndpoint = vi.fn();
 
     const defaultServices = [
       mockServices.rootConfig.factory({

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { createFilesystemReadDirAction } from './read';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { resolve as resolvePath } from 'node:path';
@@ -41,7 +43,7 @@ describe('fs:readdir examples', () => {
   const workspacePath = resolvePath(mockDir.path, 'workspace');
 
   beforeEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   it('should be able to read workspace root', async () => {

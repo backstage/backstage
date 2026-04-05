@@ -14,28 +14,30 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { default as React } from 'react';
 import tlr, { render } from '@testing-library/react';
 
 describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
   beforeAll(() => {
-    jest.doMock('react', () => React);
+    vi.doMock('react', () => React);
     // This has some side effects, so need this to be stable to avoid re-require
-    jest.doMock('@testing-library/react', () => tlr);
-    jest.doMock('react-router', () =>
+    vi.doMock('@testing-library/react', () => tlr);
+    vi.doMock('react-router', () =>
       rrVersion === 'beta'
-        ? jest.requireActual('react-router-beta')
-        : jest.requireActual('react-router-stable'),
+        ? vi.importActual('react-router-beta')
+        : vi.importActual('react-router-stable'),
     );
-    jest.doMock('react-router-dom', () =>
+    vi.doMock('react-router-dom', () =>
       rrVersion === 'beta'
-        ? jest.requireActual('react-router-dom-beta')
-        : jest.requireActual('react-router-dom-stable'),
+        ? vi.importActual('react-router-dom-beta')
+        : vi.importActual('react-router-dom-stable'),
     );
   });
 
   afterAll(() => {
-    jest.resetModules();
+    vi.resetModules();
   });
 
   function requireDeps() {

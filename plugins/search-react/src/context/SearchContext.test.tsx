@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { analyticsApiRef, configApiRef } from '@backstage/core-plugin-api';
 import {
   render,
@@ -32,7 +34,7 @@ import { searchApiRef } from '../api';
 
 describe('SearchContext', () => {
   const searchApiMock = {
-    query: jest.fn().mockResolvedValue({}),
+    query: vi.fn().mockResolvedValue({}),
   } satisfies typeof searchApiRef.T;
 
   const wrapper = ({ children, initialState, config = {} }: any) => {
@@ -58,7 +60,7 @@ describe('SearchContext', () => {
   };
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('Passes children', async () => {

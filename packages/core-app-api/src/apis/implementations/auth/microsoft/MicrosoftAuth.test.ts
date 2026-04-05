@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import MicrosoftAuth from './MicrosoftAuth';
 import MockOAuthApi from '../../OAuthRequestApi/MockOAuthApi';
 import { UrlPatternDiscovery } from '../../DiscoveryApi';
@@ -92,16 +94,16 @@ describe('MicrosoftAuth', () => {
   });
 
   describe('without a refresh token', () => {
-    let mockRequester: jest.Mock;
+    let mockRequester: Mock;
     let sut: typeof microsoftAuthApiRef.T;
 
     beforeEach(() => {
-      mockRequester = jest.fn();
+      mockRequester = vi.fn();
       sut = MicrosoftAuth.create({
         configApi: new ConfigReader(undefined),
         oauthRequestApi: {
-          createAuthRequester: jest.fn().mockReturnValue(mockRequester),
-          authRequest$: jest.fn(),
+          createAuthRequester: vi.fn().mockReturnValue(mockRequester),
+          authRequest$: vi.fn(),
         },
         discoveryApi: UrlPatternDiscovery.compile(
           'http://backstage.test/api/{{ pluginId }}',

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
@@ -41,7 +43,7 @@ describe('SearchPagination', () => {
   });
 
   const searchApiMock = {
-    query: jest.fn().mockResolvedValue({
+    query: vi.fn().mockResolvedValue({
       results: [],
       nextPageCursor: 'Mg==',
       previousPageCursor: 'MA==',
@@ -49,7 +51,7 @@ describe('SearchPagination', () => {
   };
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('Renders without exploding', async () => {

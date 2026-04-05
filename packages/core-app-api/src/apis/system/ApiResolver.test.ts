@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { createApiRef } from '@backstage/core-plugin-api';
 import { ApiResolver } from './ApiResolver';
 import { ApiFactoryRegistry } from './ApiFactoryRegistry';
@@ -244,7 +246,7 @@ describe('ApiResolver', () => {
 
   it('should only call factory func once', () => {
     const registry = new ApiFactoryRegistry();
-    const factory = jest.fn().mockReturnValue(2);
+    const factory = vi.fn().mockReturnValue(2);
     registry.register('default', {
       api: aRef,
       deps: {},

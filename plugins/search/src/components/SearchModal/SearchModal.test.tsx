@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import { screen, waitFor } from '@testing-library/react';
 import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import userEvent from '@testing-library/user-event';
@@ -27,16 +29,16 @@ import {
 
 import { SearchModal } from './SearchModal';
 
-const navigate = jest.fn();
+const navigate = vi.fn();
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+vi.mock('react-router-dom', () => ({
+  ...vi.importActual('react-router-dom'),
   useNavigate: () => navigate,
 }));
 
 describe('SearchModal', () => {
   const configApiMock = new ConfigReader({ app: { title: 'Mock app' } });
-  const searchApiMock = { query: jest.fn().mockResolvedValue({ results: [] }) };
+  const searchApiMock = { query: vi.fn().mockResolvedValue({ results: [] }) };
 
   const apiRegistry = TestApiRegistry.from(
     [configApiRef, configApiMock],
@@ -48,7 +50,7 @@ describe('SearchModal', () => {
     searchApiMock.query.mockClear();
   });
 
-  const toggleModal = jest.fn();
+  const toggleModal = vi.fn();
 
   it('Should render the Modal correctly', async () => {
     await renderInTestApp(

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi, type Mocked } from 'vitest';
+
 import { Config, ConfigReader } from '@backstage/config';
 import {
   buildPgDatabaseConfig,
@@ -24,8 +26,8 @@ import {
 } from './postgres';
 import { type Knex } from 'knex';
 
-jest.mock('@google-cloud/cloud-sql-connector');
-jest.mock('@azure/identity');
+vi.mock('@google-cloud/cloud-sql-connector');
+vi.mock('@azure/identity');
 
 describe('postgres', () => {
   const createMockConnection = () => ({
@@ -142,9 +144,9 @@ describe('postgres', () => {
     });
 
     it('should default to using default azure credentials when type is azure with no credentials', async () => {
-      const { DefaultAzureCredential } = jest.requireMock(
+      const { DefaultAzureCredential } = vi.importMock(
         '@azure/identity',
-      ) as jest.Mocked<typeof import('@azure/identity')>;
+      ) as Mocked<typeof import('@azure/identity')>;
 
       const tokenExpirationTimestamp = new Date(
         '2025-01-01T12:34:56.789',
@@ -188,9 +190,9 @@ describe('postgres', () => {
     });
 
     it('uses the correct config when using azure managed identity', async () => {
-      const { ManagedIdentityCredential } = jest.requireMock(
+      const { ManagedIdentityCredential } = vi.importMock(
         '@azure/identity',
-      ) as jest.Mocked<typeof import('@azure/identity')>;
+      ) as Mocked<typeof import('@azure/identity')>;
 
       const tokenExpirationTimestamp = new Date(
         '2025-01-01T12:34:56.789',
@@ -236,9 +238,9 @@ describe('postgres', () => {
     });
 
     it('uses the correct config when using azure client secret credentials', async () => {
-      const { ClientSecretCredential } = jest.requireMock(
+      const { ClientSecretCredential } = vi.importMock(
         '@azure/identity',
-      ) as jest.Mocked<typeof import('@azure/identity')>;
+      ) as Mocked<typeof import('@azure/identity')>;
 
       const tokenExpirationTimestamp = new Date(
         '2025-01-01T12:34:56.789',
@@ -290,9 +292,9 @@ describe('postgres', () => {
     });
 
     it('removes tokenCredential from the final connection', async () => {
-      const { DefaultAzureCredential } = jest.requireMock(
+      const { DefaultAzureCredential } = vi.importMock(
         '@azure/identity',
-      ) as jest.Mocked<typeof import('@azure/identity')>;
+      ) as Mocked<typeof import('@azure/identity')>;
       DefaultAzureCredential.prototype.getToken.mockResolvedValue({
         token: 't',
         expiresOnTimestamp: Date.now() + 1000,
@@ -314,9 +316,9 @@ describe('postgres', () => {
     });
 
     it('instructs knex to get a new connection object when the old azure token expires', async () => {
-      const { DefaultAzureCredential } = jest.requireMock(
+      const { DefaultAzureCredential } = vi.importMock(
         '@azure/identity',
-      ) as jest.Mocked<typeof import('@azure/identity')>;
+      ) as Mocked<typeof import('@azure/identity')>;
 
       const tokenExpirationTimestamp = new Date(
         '2025-01-01T12:34:56.789',
@@ -344,15 +346,15 @@ describe('postgres', () => {
 
       let connectionResult = await configResult.connection();
 
-      jest.useFakeTimers({ now: tokenExpirationTimestamp - 90_000 });
+      vi.useFakeTimers({ now: tokenExpirationTimestamp - 90_000 });
       let expirationResult = await connectionResult.expirationChecker();
       expect(expirationResult).toBe(false);
 
-      jest.useFakeTimers({ now: tokenExpirationTimestamp - 60_000 });
+      vi.useFakeTimers({ now: tokenExpirationTimestamp - 60_000 });
       expirationResult = await connectionResult.expirationChecker();
       expect(expirationResult).toBe(true);
 
-      jest.useFakeTimers({ now: tokenExpirationTimestamp });
+      vi.useFakeTimers({ now: tokenExpirationTimestamp });
       expirationResult = await connectionResult.expirationChecker();
       expect(expirationResult).toBe(true);
 
@@ -370,23 +372,23 @@ describe('postgres', () => {
       );
 
       connectionResult = await configResult.connection();
-      jest.useFakeTimers({ now: tokenExpirationTimestamp - 450_000 });
+      vi.useFakeTimers({ now: tokenExpirationTimestamp - 450_000 });
       expirationResult = await connectionResult.expirationChecker();
       expect(expirationResult).toBe(false);
 
-      jest.useFakeTimers({ now: tokenExpirationTimestamp - 300_000 });
+      vi.useFakeTimers({ now: tokenExpirationTimestamp - 300_000 });
       expirationResult = await connectionResult.expirationChecker();
       expect(expirationResult).toBe(true);
 
-      jest.useFakeTimers({ now: tokenExpirationTimestamp });
+      vi.useFakeTimers({ now: tokenExpirationTimestamp });
       expirationResult = await connectionResult.expirationChecker();
       expect(expirationResult).toBe(true);
     });
 
     it('throws an error when Azure token acquisition fails', async () => {
-      const { DefaultAzureCredential } = jest.requireMock(
+      const { DefaultAzureCredential } = vi.importMock(
         '@azure/identity',
-      ) as jest.Mocked<typeof import('@azure/identity')>;
+      ) as Mocked<typeof import('@azure/identity')>;
 
       DefaultAzureCredential.prototype.getToken.mockResolvedValue(null as any);
 
@@ -457,9 +459,9 @@ describe('postgres', () => {
     });
 
     it('adds the settings from cloud-sql-connector', async () => {
-      const { Connector } = jest.requireMock(
+      const { Connector } = vi.importMock(
         '@google-cloud/cloud-sql-connector',
-      ) as jest.Mocked<typeof import('@google-cloud/cloud-sql-connector')>;
+      ) as Mocked<typeof import('@google-cloud/cloud-sql-connector')>;
 
       const mockStream = (): any => {};
       Connector.prototype.getOptions.mockResolvedValue({ stream: mockStream });
@@ -490,9 +492,9 @@ describe('postgres', () => {
     });
 
     it('passes default settings to cloud-sql-connector', async () => {
-      const { Connector } = jest.requireMock(
+      const { Connector } = vi.importMock(
         '@google-cloud/cloud-sql-connector',
-      ) as jest.Mocked<typeof import('@google-cloud/cloud-sql-connector')>;
+      ) as Mocked<typeof import('@google-cloud/cloud-sql-connector')>;
 
       const mockStream = (): any => {};
       Connector.prototype.getOptions.mockResolvedValue({ stream: mockStream });
@@ -518,9 +520,9 @@ describe('postgres', () => {
     });
 
     it('passes configured ipType to connector.getOptions', async () => {
-      const { Connector } = jest.requireMock(
+      const { Connector } = vi.importMock(
         '@google-cloud/cloud-sql-connector',
-      ) as jest.Mocked<typeof import('@google-cloud/cloud-sql-connector')>;
+      ) as Mocked<typeof import('@google-cloud/cloud-sql-connector')>;
 
       const mockStream = (): any => {};
       Connector.prototype.getOptions.mockResolvedValue({ stream: mockStream });
@@ -559,9 +561,9 @@ describe('postgres', () => {
     });
 
     it('passes ip settings to cloud-sql-connector', async () => {
-      const { Connector } = jest.requireMock(
+      const { Connector } = vi.importMock(
         '@google-cloud/cloud-sql-connector',
-      ) as jest.Mocked<typeof import('@google-cloud/cloud-sql-connector')>;
+      ) as Mocked<typeof import('@google-cloud/cloud-sql-connector')>;
 
       const mockStream = (): any => {};
       Connector.prototype.getOptions.mockResolvedValue({ stream: mockStream });

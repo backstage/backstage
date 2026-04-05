@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { ConfigReader } from '@backstage/config';
 import { readCorsOptions } from './readCorsOptions';
 
@@ -25,7 +27,7 @@ describe('readCorsOptions', () => {
   });
 
   it('reads single string', () => {
-    const mockCallback = jest.fn();
+    const mockCallback = vi.fn();
     const config = new ConfigReader({ cors: { origin: 'https://*.value*' } });
     const cors = readCorsOptions(config);
     expect(cors).toEqual(
@@ -47,7 +49,7 @@ describe('readCorsOptions', () => {
   });
 
   it('reads string array', () => {
-    const mockCallback = jest.fn();
+    const mockCallback = vi.fn();
     const config = new ConfigReader({
       cors: {
         origin: ['http?(s)://*.value?(-+([0-9])).com', 'http://*.value'],

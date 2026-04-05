@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { getPackages } from '@manypkg/get-packages';
 import { PackageGraph } from './PackageGraph';
 import { Lockfile } from './Lockfile';
 import { GitUtils } from '../git';
 import { overrideTargetPaths } from '@backstage/cli-common/testUtils';
 
-const mockListChangedFiles = jest.spyOn(GitUtils, 'listChangedFiles');
-const mockReadFileAtRef = jest.spyOn(GitUtils, 'readFileAtRef');
+const mockListChangedFiles = vi.spyOn(GitUtils, 'listChangedFiles');
+const mockReadFileAtRef = vi.spyOn(GitUtils, 'readFileAtRef');
 
 overrideTargetPaths('/');
 
@@ -192,7 +194,7 @@ c-dep@^2:
   version: "2.0.0"
   integrity: sha512-xyz
 `);
-    jest.spyOn(Lockfile, 'load').mockResolvedValueOnce(
+    vi.spyOn(Lockfile, 'load').mockResolvedValueOnce(
       Lockfile.parse(`
 a@^1:
   version: "1.0.0"

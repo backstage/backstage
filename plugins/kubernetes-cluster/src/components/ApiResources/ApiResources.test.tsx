@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import { renderInTestApp } from '@backstage/test-utils';
 import { ApiResources } from './ApiResources';
 import '@testing-library/jest-dom';
 
-jest.mock('@backstage/plugin-catalog-react', () => ({
+vi.mock('@backstage/plugin-catalog-react', () => ({
   useEntity: () => {
     return {
       entity: {
@@ -29,8 +31,8 @@ jest.mock('@backstage/plugin-catalog-react', () => ({
   },
 }));
 
-jest.mock('./useApiResources', () => ({
-  useApiResources: jest.fn().mockReturnValue({
+vi.mock('./useApiResources', () => ({
+  useApiResources: vi.fn().mockReturnValue({
     loading: false,
     value: {
       groups: [
@@ -47,7 +49,7 @@ jest.mock('./useApiResources', () => ({
 
 describe('ApiResources', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
   it('displays ApiResources', async () => {
     const { getByText } = await renderInTestApp(<ApiResources />);

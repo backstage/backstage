@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi, type Mocked } from 'vitest';
+
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { Logger } from 'winston';
 import { createDebugLogAction } from './log';
@@ -24,8 +26,8 @@ import fs from 'fs-extra';
 
 describe('debug:log', () => {
   const logger = {
-    info: jest.fn(),
-  } as unknown as jest.Mocked<Logger>;
+    info: vi.fn(),
+  } as unknown as Mocked<Logger>;
 
   const mockDir = createMockDirectory();
   const workspacePath = mockDir.resolve('workspace');
@@ -40,7 +42,7 @@ describe('debug:log', () => {
       [`${mockContext.workspacePath}/a-directory/index.md`]:
         'This is a markdown file',
     });
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('should log the workspace content, if active', async () => {

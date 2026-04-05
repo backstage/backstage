@@ -14,21 +14,23 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { UrlReaderPredicateMux } from './UrlReaderPredicateMux';
 
 describe('UrlReaderPredicateMux', () => {
   it('forwards methods based on predicate', async () => {
     const fooReader = {
-      read: jest.fn(),
-      readUrl: jest.fn(),
-      readTree: jest.fn(),
-      search: jest.fn(),
+      read: vi.fn(),
+      readUrl: vi.fn(),
+      readTree: vi.fn(),
+      search: vi.fn(),
     };
     const barReader = {
-      read: jest.fn(),
-      readUrl: jest.fn(),
-      readTree: jest.fn(),
-      search: jest.fn(),
+      read: vi.fn(),
+      readUrl: vi.fn(),
+      readTree: vi.fn(),
+      search: vi.fn(),
     };
 
     const mux = new UrlReaderPredicateMux();
@@ -70,9 +72,9 @@ describe('UrlReaderPredicateMux', () => {
     mux.register({
       predicate: url => url.hostname === 'foo',
       reader: {
-        readUrl: jest.fn(),
-        readTree: jest.fn(),
-        search: jest.fn(),
+        readUrl: vi.fn(),
+        readTree: vi.fn(),
+        search: vi.fn(),
       },
     });
 

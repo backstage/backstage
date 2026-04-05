@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import { Knex } from 'knex';
 import { retryOnDeadlock } from './util';
 
-jest.mock('node:timers/promises', () => ({
-  setTimeout: jest.fn(),
+vi.mock('node:timers/promises', () => ({
+  setTimeout: vi.fn(),
 }));
 
 function mockKnex(client: string): Knex {
@@ -33,11 +35,11 @@ function pgDeadlockError(): Error & { code: string } {
 
 describe('retryOnDeadlock', () => {
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('returns the result on success', async () => {
-    const fn = jest.fn().mockResolvedValue('ok');
+    const fn = vi.fn().mockResolvedValue('ok');
     const result = await retryOnDeadlock(fn, mockKnex('pg'), 3, 1);
     expect(result).toBe('ok');
     expect(fn).toHaveBeenCalledTimes(1);
@@ -56,7 +58,7 @@ describe('retryOnDeadlock', () => {
   });
 
   it('throws after exhausting all retries', async () => {
-    const fn = jest.fn().mockRejectedValue(pgDeadlockError());
+    const fn = vi.fn().mockRejectedValue(pgDeadlockError());
 
     await expect(retryOnDeadlock(fn, mockKnex('pg'), 3, 1)).rejects.toThrow(
       'deadlock detected',
@@ -67,7 +69,7 @@ describe('retryOnDeadlock', () => {
 
   it('does not retry non-deadlock errors on PostgreSQL', async () => {
     const err = new Error('something else');
-    const fn = jest.fn().mockRejectedValue(err);
+    const fn = vi.fn().mockRejectedValue(err);
 
     await expect(retryOnDeadlock(fn, mockKnex('pg'), 3, 1)).rejects.toThrow(
       'something else',
@@ -76,7 +78,7 @@ describe('retryOnDeadlock', () => {
   });
 
   it('does not retry deadlock-like errors on non-PostgreSQL engines', async () => {
-    const fn = jest.fn().mockRejectedValue(pgDeadlockError());
+    const fn = vi.fn().mockRejectedValue(pgDeadlockError());
 
     await expect(
       retryOnDeadlock(fn, mockKnex('better-sqlite3'), 3, 1),
@@ -85,8 +87,8 @@ describe('retryOnDeadlock', () => {
   });
 
   it('applies exponential backoff between retries', async () => {
-    const { setTimeout: sleep } = jest.requireMock<{
-      setTimeout: jest.Mock;
+    const { setTimeout: sleep } = vi.importMock<{
+      setTimeout: Mock;
     }>('node:timers/promises');
 
     const fnCallsAtSleep: number[] = [];
@@ -115,7 +117,7 @@ describe('retryOnDeadlock', () => {
   });
 
   it('defaults to 3 retries when not specified', async () => {
-    const fn = jest.fn().mockRejectedValue(pgDeadlockError());
+    const fn = vi.fn().mockRejectedValue(pgDeadlockError());
 
     await expect(retryOnDeadlock(fn, mockKnex('pg'))).rejects.toThrow(
       'deadlock detected',

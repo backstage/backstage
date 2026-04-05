@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { createWaitAction } from './wait';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 
@@ -23,7 +25,7 @@ describe('debug:wait', () => {
   const mockContext = createMockActionContext();
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('should wait for specified period of time', async () => {

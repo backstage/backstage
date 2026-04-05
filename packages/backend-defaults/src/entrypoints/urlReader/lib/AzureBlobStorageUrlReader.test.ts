@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import * as AzureStorage from '@azure/storage-blob';
 import { ConfigReader } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
@@ -31,11 +33,11 @@ import { mockServices } from '@backstage/backend-test-utils';
 import { Readable } from 'node:stream';
 
 // Mock Azure Blob Storage SDK
-const mockBlobDownload = jest.fn();
-const mockGetBlobClient = jest.fn(() => ({
+const mockBlobDownload = vi.fn();
+const mockGetBlobClient = vi.fn(() => ({
   download: mockBlobDownload,
 }));
-const mockListBlobsFlat = jest.fn();
+const mockListBlobsFlat = vi.fn();
 
 class MockContainerClient {
   getBlobClient = mockGetBlobClient;
@@ -43,7 +45,7 @@ class MockContainerClient {
 }
 
 class MockBlobServiceClient {
-  getContainerClient = jest.fn(() => new MockContainerClient());
+  getContainerClient = vi.fn(() => new MockContainerClient());
 }
 
 jest
@@ -208,7 +210,7 @@ describe('AzureBlobStorageUrlReader', () => {
     });
 
     beforeEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
     });
 
     it('returns contents of a blob via buffer', async () => {
@@ -254,7 +256,7 @@ describe('AzureBlobStorageUrlReader', () => {
     });
 
     beforeEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
       const mockBlobs = [
         {
           name: 'prefix/file1.yaml',
@@ -310,7 +312,7 @@ describe('AzureBlobStorageUrlReader', () => {
     });
 
     beforeEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
     });
 
     it('should return a file when given an exact valid url', async () => {

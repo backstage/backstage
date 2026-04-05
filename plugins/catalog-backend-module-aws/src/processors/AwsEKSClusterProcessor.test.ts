@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { AwsEKSClusterProcessor } from './AwsEKSClusterProcessor';
 import { mockClient } from 'aws-sdk-client-mock';
 import {
@@ -28,7 +30,7 @@ describe('AwsEKSClusterProcessor', () => {
   describe('readLocation', () => {
     const processor = new (AwsEKSClusterProcessor as any)({});
     const location = { type: 'aws-eks', target: '957140518395/us-west-2' };
-    const emit = jest.fn();
+    const emit = vi.fn();
 
     it('generates cluster correctly', async () => {
       const clusters: ListClustersResponse = {

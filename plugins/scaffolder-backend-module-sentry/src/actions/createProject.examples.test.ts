@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { registerMswTestHooks } from '@backstage/backend-test-utils';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { ConfigReader } from '@backstage/config';
@@ -49,7 +51,7 @@ describe('sentry:project:create action', () => {
   }> =>
     createMockActionContext({
       workspacePath: './dev/proj',
-      logger: jest.createMockFromModule('winston'),
+      logger: vi.importMock('winston'),
       input: {
         organizationSlug: 'org',
         teamSlug: 'team',

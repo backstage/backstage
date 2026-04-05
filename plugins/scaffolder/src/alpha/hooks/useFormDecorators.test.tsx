@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import { DefaultScaffolderFormDecoratorsApi } from '../api/FormDecoratorsApi';
 import { createScaffolderFormDecorator } from '@backstage/plugin-scaffolder-react/alpha';
 import { createApiRef, errorApiRef } from '@backstage/core-plugin-api';
@@ -28,7 +30,7 @@ describe('useFormDecorators', () => {
     test: (input: string) => void;
   }>({ id: 'test' });
 
-  const mockApiImplementation = { test: jest.fn() };
+  const mockApiImplementation = { test: vi.fn() };
 
   const mockDecorator = createScaffolderFormDecorator({
     id: 'test',

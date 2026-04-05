@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   createBackendModule,
   createExtensionPoint,
@@ -119,7 +121,7 @@ describe('TestBackend', () => {
 
   it('should start the test backend', async () => {
     const testRef = createServiceRef<(v: string) => void>({ id: 'test' });
-    const testFn = jest.fn();
+    const testFn = vi.fn();
 
     const sf = createServiceFactory({
       deps: {},
@@ -152,7 +154,7 @@ describe('TestBackend', () => {
   });
 
   it('should stop the test backend', async () => {
-    const shutdownSpy = jest.fn();
+    const shutdownSpy = vi.fn();
 
     const testModule = createBackendModule({
       pluginId: 'test',

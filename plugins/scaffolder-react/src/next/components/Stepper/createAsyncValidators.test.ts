@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import { JsonObject } from '@backstage/types';
 import { CustomFieldValidator } from '../../../extensions';
 import { createAsyncValidators } from './createAsyncValidators';
@@ -47,10 +49,10 @@ describe('createAsyncValidators', () => {
       },
     };
 
-    const validators = { NameField: jest.fn(), AddressField: jest.fn() };
+    const validators = { NameField: vi.fn(), AddressField: vi.fn() };
 
     const validate = createAsyncValidators(schema, validators, {
-      apiHolder: { get: jest.fn() },
+      apiHolder: { get: vi.fn() },
     });
 
     await validate({
@@ -89,10 +91,10 @@ describe('createAsyncValidators', () => {
       },
     };
 
-    const validators = { NameField: jest.fn(), AddressField: jest.fn() };
+    const validators = { NameField: vi.fn(), AddressField: vi.fn() };
 
     const validate = createAsyncValidators(schema, validators, {
-      apiHolder: { get: jest.fn() },
+      apiHolder: { get: vi.fn() },
     });
 
     await validate({
@@ -190,7 +192,7 @@ describe('createAsyncValidators', () => {
         AddressField: AddressField as CustomFieldValidator<unknown>,
       },
       {
-        apiHolder: { get: jest.fn() },
+        apiHolder: { get: vi.fn() },
       },
     );
 
@@ -326,7 +328,7 @@ describe('createAsyncValidators', () => {
     };
 
     const validate = createAsyncValidators(schema, validators, {
-      apiHolder: { get: jest.fn() },
+      apiHolder: { get: vi.fn() },
     });
 
     await expect(
@@ -367,10 +369,10 @@ describe('createAsyncValidators', () => {
       },
     };
 
-    const validators = { TagField: jest.fn() };
+    const validators = { TagField: vi.fn() };
 
     const validate = createAsyncValidators(schema, validators, {
-      apiHolder: { get: jest.fn() },
+      apiHolder: { get: vi.fn() },
     });
 
     await validate({
@@ -394,10 +396,10 @@ describe('createAsyncValidators', () => {
       },
     };
 
-    const validators = { TagField: jest.fn() };
+    const validators = { TagField: vi.fn() };
 
     const validate = createAsyncValidators(schema, validators, {
-      apiHolder: { get: jest.fn() },
+      apiHolder: { get: vi.fn() },
     });
 
     await validate({
@@ -451,7 +453,7 @@ describe('createAsyncValidators', () => {
     };
 
     const validate = createAsyncValidators(schema, validators, {
-      apiHolder: { get: jest.fn() },
+      apiHolder: { get: vi.fn() },
     });
 
     await validate({
@@ -501,13 +503,13 @@ describe('createAsyncValidators', () => {
       },
     };
 
-    const validatorsForChoice1 = { ValidateKebabCase: jest.fn() };
+    const validatorsForChoice1 = { ValidateKebabCase: vi.fn() };
 
     const validateChoice1 = createAsyncValidators(
       schema,
       validatorsForChoice1,
       {
-        apiHolder: { get: jest.fn() },
+        apiHolder: { get: vi.fn() },
       },
     );
 
@@ -517,13 +519,13 @@ describe('createAsyncValidators', () => {
 
     expect(validatorsForChoice1.ValidateKebabCase).not.toHaveBeenCalled();
 
-    const validatorsForChoice2 = { ValidateKebabCase: jest.fn() };
+    const validatorsForChoice2 = { ValidateKebabCase: vi.fn() };
 
     const validateChoice2 = createAsyncValidators(
       schema,
       validatorsForChoice2,
       {
-        apiHolder: { get: jest.fn() },
+        apiHolder: { get: vi.fn() },
       },
     );
 

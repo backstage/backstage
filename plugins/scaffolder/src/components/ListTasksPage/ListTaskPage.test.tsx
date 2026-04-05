@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi, type Mocked } from 'vitest';
+
 import { Entity } from '@backstage/catalog-model';
 import {
   renderInTestApp,
@@ -37,13 +39,13 @@ describe('<ListTasksPage />', () => {
 
   const identityApi = mockApis.identity();
 
-  const scaffolderApiMock: jest.Mocked<Required<ScaffolderApi>> = {
-    scaffold: jest.fn(),
-    getTemplateParameterSchema: jest.fn(),
-    listTasks: jest.fn(),
+  const scaffolderApiMock: Mocked<Required<ScaffolderApi>> = {
+    scaffold: vi.fn(),
+    getTemplateParameterSchema: vi.fn(),
+    listTasks: vi.fn(),
   } as any;
 
-  const mockPermissionApi = { authorize: jest.fn() };
+  const mockPermissionApi = { authorize: vi.fn() };
 
   it('should render the page', async () => {
     const entity: Entity = {

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import MockOAuthApi from './MockOAuthApi';
 
 describe('MockOAuthApi', () => {
@@ -21,13 +23,13 @@ describe('MockOAuthApi', () => {
     const authResult = { is: 'done' };
     const mock = new MockOAuthApi();
 
-    const authHandler1 = jest.fn().mockImplementation(() => authResult);
+    const authHandler1 = vi.fn().mockImplementation(() => authResult);
     const requester1 = mock.createAuthRequester({
       provider: { icon: () => null, title: 'Test', id: 'test-provider' },
       onAuthRequest: authHandler1,
     });
 
-    const authHandler2 = jest.fn().mockResolvedValue('other');
+    const authHandler2 = vi.fn().mockResolvedValue('other');
     const requester2 = mock.createAuthRequester({
       provider: { icon: () => null, title: 'Test', id: 'test-provider' },
       onAuthRequest: authHandler2,
@@ -64,13 +66,13 @@ describe('MockOAuthApi', () => {
   it('should reject all requests', async () => {
     const mock = new MockOAuthApi();
 
-    const authHandler1 = jest.fn();
+    const authHandler1 = vi.fn();
     const requester1 = mock.createAuthRequester({
       provider: { icon: () => null, title: 'Test', id: 'test-provider' },
       onAuthRequest: authHandler1,
     });
 
-    const authHandler2 = jest.fn();
+    const authHandler2 = vi.fn();
     const requester2 = mock.createAuthRequester({
       provider: { icon: () => null, title: 'Test', id: 'test-provider' },
       onAuthRequest: authHandler2,

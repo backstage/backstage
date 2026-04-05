@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { run, runOutput, runCheck } from './run';
 import { ExitCodeError } from './errors';
 
@@ -30,7 +32,7 @@ describe('run', () => {
       }
     });
     activeChildren.length = 0;
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   describe('run', () => {
@@ -171,7 +173,7 @@ describe('run', () => {
     it('should kill child process on SIGINT', async () => {
       const child = run(['node', '--eval', 'setTimeout(() => {}, 10000)']);
       activeChildren.push(child);
-      const killSpy = jest.spyOn(child, 'kill');
+      const killSpy = vi.spyOn(child, 'kill');
       // Start waiting (this registers signal handlers)
       const waitPromise = child.waitForExit();
       // Simulate SIGINT
@@ -196,7 +198,7 @@ describe('run', () => {
     it('should kill child process on SIGTERM', async () => {
       const child = run(['node', '--eval', 'setTimeout(() => {}, 10000)']);
       activeChildren.push(child);
-      const killSpy = jest.spyOn(child, 'kill');
+      const killSpy = vi.spyOn(child, 'kill');
       // Start waiting (this registers signal handlers)
       const waitPromise = child.waitForExit();
       // Simulate SIGTERM
@@ -222,7 +224,7 @@ describe('run', () => {
       const child = run(['node', '--version']);
       activeChildren.push(child);
       await child.waitForExit();
-      const killSpy = jest.spyOn(child, 'kill');
+      const killSpy = vi.spyOn(child, 'kill');
       // Simulate SIGINT after process has exited
       process.emit('SIGINT' as any, 'SIGINT');
       await new Promise(resolve => setTimeout(resolve, 100));
@@ -340,8 +342,8 @@ describe('run', () => {
     });
 
     it('should not leak stdout or stderr from the child process', async () => {
-      const stdoutSpy = jest.spyOn(process.stdout, 'write');
-      const stderrSpy = jest.spyOn(process.stderr, 'write');
+      const stdoutSpy = vi.spyOn(process.stdout, 'write');
+      const stderrSpy = vi.spyOn(process.stderr, 'write');
       const stdoutBefore = stdoutSpy.mock.calls.length;
       const stderrBefore = stderrSpy.mock.calls.length;
 

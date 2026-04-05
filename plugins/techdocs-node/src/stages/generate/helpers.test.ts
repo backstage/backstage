@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import {
@@ -113,7 +115,7 @@ const mkdocsYmlWithDuplicateMergeHooks = fs.readFileSync(
   ),
 );
 const mockLogger = mockServices.logger.mock();
-const warn = jest.spyOn(mockLogger, 'warn');
+const warn = vi.spyOn(mockLogger, 'warn');
 
 const scmIntegrations = ScmIntegrations.fromConfig(new ConfigReader({}));
 
@@ -654,7 +656,7 @@ describe('helpers', () => {
       const options = {
         name: 'Default Test site name',
       };
-      const mockPathExists = jest.spyOn(fs, 'pathExists');
+      const mockPathExists = vi.spyOn(fs, 'pathExists');
       mockPathExists.mockImplementation(() => Promise.resolve(false));
       mockDir.setContent({ 'mkdocs.yml': mkdocsDefaultYml });
       const {

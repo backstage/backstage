@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { Header } from './Header';
 import { ConfigReader } from '@backstage/core-app-api';
 import { configApiRef } from '@backstage/core-plugin-api';
 
-jest.mock('react-helmet', () => {
+vi.mock('react-helmet', () => {
   return {
     Helmet: ({ defaultTitle }: any) => <div>defaultTitle: {defaultTitle}</div>,
   };

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   SchedulerService,
   SchedulerServiceTaskRunner,
@@ -79,7 +81,7 @@ describe('AwsS3EntityProvider', () => {
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     process.env.AWS_REGION = undefined;
   });
 
@@ -110,8 +112,8 @@ describe('AwsS3EntityProvider', () => {
       : `${expectedBaseUrl}/`;
     const schedule = new PersistingTaskRunner();
     const entityProviderConnection: EntityProviderConnection = {
-      applyMutation: jest.fn(),
-      refresh: jest.fn(),
+      applyMutation: vi.fn(),
+      refresh: vi.fn(),
     };
 
     if (scheduleInConfig) {
@@ -391,7 +393,7 @@ describe('AwsS3EntityProvider', () => {
 
   it('fail with scheduler but no schedule config', () => {
     const scheduler = {
-      createScheduledTaskRunner: (_: any) => jest.fn(),
+      createScheduledTaskRunner: (_: any) => vi.fn(),
     } as unknown as SchedulerService;
     const config = new ConfigReader({
       catalog: {

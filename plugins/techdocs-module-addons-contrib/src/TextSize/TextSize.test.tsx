@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import { TechDocsAddonTester } from '@backstage/plugin-techdocs-addons-test-utils';
 import { act, fireEvent, waitFor } from '@testing-library/react';
 import { screen } from 'shadow-dom-testing-library';
@@ -21,16 +23,16 @@ import { TextSize } from '../plugin';
 import { useShadowRootElements } from '@backstage/plugin-techdocs-react';
 import { entityPresentationApiRef } from '@backstage/plugin-catalog-react';
 
-jest.mock('@backstage/plugin-techdocs-react', () => ({
-  ...jest.requireActual('@backstage/plugin-techdocs-react'),
-  useShadowRootElements: jest.fn(),
+vi.mock('@backstage/plugin-techdocs-react', () => ({
+  ...vi.importActual('@backstage/plugin-techdocs-react'),
+  useShadowRootElements: vi.fn(),
 }));
 
 describe('TextSize', () => {
-  const useShadowRootElementsMock = useShadowRootElements as jest.Mock;
+  const useShadowRootElementsMock = useShadowRootElements as Mock;
 
   const entityPresentationApiMock = {
-    forEntity: jest.fn(),
+    forEntity: vi.fn(),
   };
   entityPresentationApiMock.forEntity.mockReturnValue({
     snapshot: {

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { join as joinPath } from 'node:path';
 import { spawn, SpawnOptionsWithoutStdio } from 'node:child_process';
 import fs from 'fs-extra';
@@ -22,7 +24,7 @@ import { buildDepTreeFromFiles } from 'snyk-nodejs-lockfile-parser';
 import { targetPaths } from '@backstage/cli-common';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 
-jest.setTimeout(30_000);
+vi.setConfig({ testTimeout: 30_000 });
 
 const mockDir = createMockDirectory();
 

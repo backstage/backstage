@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   ServiceFactoryTester,
   mockServices,
@@ -205,9 +207,9 @@ describe('rootHttpRouterServiceFactory', () => {
   });
 
   it('should wait the server to shutdown', async () => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
 
-    const serverStopMock = jest.fn();
+    const serverStopMock = vi.fn();
 
     let app: Express | undefined = undefined;
     const lifecycleMock = new BackendLifecycleImpl(mockServices.rootLogger());
@@ -289,7 +291,7 @@ describe('rootHttpRouterServiceFactory', () => {
       status: 'error',
     });
 
-    jest.advanceTimersByTime(29999);
+    vi.advanceTimersByTime(29999);
 
     // Still accepting requests 1 ms before shutdown
     await request(app!).get('/test').expect(200, {
@@ -305,7 +307,7 @@ describe('rootHttpRouterServiceFactory', () => {
       status: 'error',
     });
 
-    jest.advanceTimersByTime(1);
+    vi.advanceTimersByTime(1);
 
     await request(app)
       .get('/.backstage/health/v1/liveness')
@@ -319,7 +321,7 @@ describe('rootHttpRouterServiceFactory', () => {
     return expect(
       beforeShutdownPromise.then(() => {
         expect(serverStopMock).toHaveBeenCalled();
-        jest.useRealTimers();
+        vi.useRealTimers();
       }),
     ).resolves.toBeUndefined();
   });

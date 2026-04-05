@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { AppLanguageSelector } from './AppLanguageSelector';
 
 const baseOptions = {
@@ -32,7 +34,7 @@ describe('AppLanguageSelector', () => {
       languages: ['en', 'de'],
     });
 
-    const subFn = jest.fn();
+    const subFn = vi.fn();
     selector.language$().subscribe(subFn);
     expect(selector.getLanguage()).toEqual({ language: 'en' });
     await 'wait a tick';
@@ -105,7 +107,7 @@ describe('AppLanguageSelector', () => {
   });
 
   it('should sync with storage', async () => {
-    const addListenerSpy = jest.spyOn(window, 'addEventListener');
+    const addListenerSpy = vi.spyOn(window, 'addEventListener');
     const selector = AppLanguageSelector.createWithStorage(baseOptions);
 
     expect(addListenerSpy).toHaveBeenCalledTimes(1);

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import {
   mockServices,
   registerMswTestHooks,
@@ -43,10 +45,10 @@ import { Octokit } from '@octokit/core';
 import { throttling } from '@octokit/plugin-throttling';
 import { retry } from '@octokit/plugin-retry';
 
-jest.mock('@octokit/core', () => ({
-  ...jest.requireActual('@octokit/core'),
+vi.mock('@octokit/core', () => ({
+  ...vi.importActual('@octokit/core'),
   Octokit: {
-    plugin: jest.fn().mockReturnValue({ defaults: jest.fn() }),
+    plugin: vi.fn().mockReturnValue({ defaults: vi.fn() }),
   },
 }));
 
@@ -86,7 +88,7 @@ describe('github', () => {
         ),
       );
 
-      const mockTransformer = jest.fn().mockImplementation(async team => ({
+      const mockTransformer = vi.fn().mockImplementation(async team => ({
         kind: 'Group',
         metadata: { name: team.slug },
       }));
@@ -117,7 +119,7 @@ describe('github', () => {
           }),
         ),
       );
-      const mockTransformer = jest.fn().mockResolvedValue(undefined);
+      const mockTransformer = vi.fn().mockResolvedValue(undefined);
       const { teams } = await getOrganizationTeamsForUser(
         graphql as any,
         org,
@@ -991,15 +993,15 @@ describe('github', () => {
 
     const logger = mockServices.rootLogger();
 
-    const mockClient = jest.fn().mockImplementation();
+    const mockClient = vi.fn().mockImplementation();
 
-    const graphqlDefaults = jest.fn().mockReturnValue(mockClient);
-    const mockedOctokit = jest.fn().mockImplementation(() => ({
+    const graphqlDefaults = vi.fn().mockReturnValue(mockClient);
+    const mockedOctokit = vi.fn().mockImplementation(() => ({
       graphql: {
         defaults: graphqlDefaults,
       },
     }));
-    (Octokit.plugin as jest.Mock).mockReturnValue(mockedOctokit);
+    (Octokit.plugin as Mock).mockReturnValue(mockedOctokit);
 
     const rateLimitOptions = {
       method: 'POST',

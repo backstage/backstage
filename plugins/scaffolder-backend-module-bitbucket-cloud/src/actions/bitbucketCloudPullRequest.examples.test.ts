@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-jest.mock('@backstage/plugin-scaffolder-node', () => {
+import { vi } from 'vitest';
+
+vi.mock('@backstage/plugin-scaffolder-node', () => {
   return {
-    ...jest.requireActual('@backstage/plugin-scaffolder-node'),
-    initRepoAndPush: jest.fn().mockResolvedValue({
+    ...vi.importActual('@backstage/plugin-scaffolder-node'),
+    initRepoAndPush: vi.fn().mockResolvedValue({
       commitHash: '220f19cc36b551763d157f1b5e4a4b446165dbd6',
     }),
-    commitAndPushRepo: jest.fn().mockResolvedValue({
+    commitAndPushRepo: vi.fn().mockResolvedValue({
       commitHash: '220f19cc36b551763d157f1b5e4a4b446165dbd6',
     }),
   };
@@ -229,7 +231,7 @@ describe('publish:bitbucketCloud:pull-request', () => {
   registerMswTestHooks(server);
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it(`should ${examples[0].description}`, async () => {

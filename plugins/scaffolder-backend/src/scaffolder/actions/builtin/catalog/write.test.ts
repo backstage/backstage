@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
+import { vi, type Mocked } from 'vitest';
+
 import fs from 'fs-extra';
 
-jest.mock('fs-extra');
+vi.mock('fs-extra');
 
-const fsMock = fs as jest.Mocked<typeof fs>;
+const fsMock = fs as Mocked<typeof fs>;
 
 import os from 'node:os';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
@@ -31,7 +33,7 @@ describe('catalog:write', () => {
   const action = createCatalogWriteAction();
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   const mockContext = createMockActionContext({

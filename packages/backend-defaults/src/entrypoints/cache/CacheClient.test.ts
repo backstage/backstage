@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import { DefaultCacheClient } from './CacheClient';
 import Keyv from 'keyv';
 
@@ -23,12 +25,12 @@ describe('CacheClient', () => {
 
   beforeEach(() => {
     client = new Keyv();
-    client.get = jest.fn();
-    client.set = jest.fn();
-    client.delete = jest.fn();
+    client.get = vi.fn();
+    client.set = vi.fn();
+    client.delete = vi.fn();
   });
 
-  afterEach(() => jest.resetAllMocks());
+  afterEach(() => vi.resetAllMocks());
 
   describe('CacheClient.get', () => {
     it('calls client with normalized key', async () => {
@@ -46,7 +48,7 @@ describe('CacheClient', () => {
 
       await sut.get(key);
 
-      const spy = client.get as jest.Mock;
+      const spy = client.get as Mock;
       const actualKey = spy.mock.calls[0][0];
       expect(actualKey).not.toEqual(b64(key));
       expect(actualKey.length).toBeLessThan(250);
@@ -55,7 +57,7 @@ describe('CacheClient', () => {
     it('rejects on underlying error', async () => {
       const sut = new DefaultCacheClient(client, () => client, {});
       const expectedError = new Error('Some runtime error');
-      client.get = jest.fn().mockRejectedValue(expectedError);
+      client.get = vi.fn().mockRejectedValue(expectedError);
 
       return expect(sut.get('someKey')).rejects.toEqual(expectedError);
     });
@@ -63,7 +65,7 @@ describe('CacheClient', () => {
     it('resolves what underlying client resolves', async () => {
       const sut = new DefaultCacheClient(client, () => client, {});
       const expectedValue = 'some value';
-      client.get = jest.fn().mockResolvedValue(expectedValue);
+      client.get = vi.fn().mockResolvedValue(expectedValue);
 
       const actualValue = await sut.get('someKey');
 
@@ -78,7 +80,7 @@ describe('CacheClient', () => {
 
       await sut.set(key, {});
 
-      const spy = client.set as jest.Mock;
+      const spy = client.set as Mock;
       const actualKey = spy.mock.calls[0][0];
       expect(actualKey).toEqual(b64(key));
     });
@@ -89,7 +91,7 @@ describe('CacheClient', () => {
 
       await sut.set('someKey', {}, { ttl: expectedTtl });
 
-      const spy = client.set as jest.Mock;
+      const spy = client.set as Mock;
       const actualTtl = spy.mock.calls[0][2];
       expect(actualTtl).toEqual(expectedTtl);
     });
@@ -97,7 +99,7 @@ describe('CacheClient', () => {
     it('rejects on underlying error if configured', async () => {
       const sut = new DefaultCacheClient(client, () => client, {});
       const expectedError = new Error('Some runtime error');
-      client.set = jest.fn().mockRejectedValue(expectedError);
+      client.set = vi.fn().mockRejectedValue(expectedError);
 
       return expect(sut.set('someKey', {})).rejects.toEqual(expectedError);
     });
@@ -110,7 +112,7 @@ describe('CacheClient', () => {
 
       await sut.delete(key);
 
-      const spy = client.delete as jest.Mock;
+      const spy = client.delete as Mock;
       const actualKey = spy.mock.calls[0][0];
       expect(actualKey).toEqual(b64(key));
     });
@@ -118,7 +120,7 @@ describe('CacheClient', () => {
     it('rejects on underlying error if configured', async () => {
       const sut = new DefaultCacheClient(client, () => client, {});
       const expectedError = new Error('Some runtime error');
-      client.delete = jest.fn().mockRejectedValue(expectedError);
+      client.delete = vi.fn().mockRejectedValue(expectedError);
 
       return expect(sut.delete('someKey')).rejects.toEqual(expectedError);
     });
@@ -126,7 +128,7 @@ describe('CacheClient', () => {
 
   describe('CacheClient.withOptions', () => {
     it('merges together options to create a new instance', async () => {
-      const factory = jest.fn();
+      const factory = vi.fn();
       const sut = new DefaultCacheClient(client, factory, { foo: 1 } as any);
       expect(factory).not.toHaveBeenCalled();
 

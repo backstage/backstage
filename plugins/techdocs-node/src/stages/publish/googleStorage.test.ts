@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { Entity, DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import express from 'express';
@@ -32,7 +34,7 @@ const mockDir = createMockDirectory();
 
 let createdStorageOptions: Array<StorageOptions | undefined> = [];
 
-jest.mock('@google-cloud/storage', () => {
+vi.mock('@google-cloud/storage', () => {
   class GCSFile {
     private readonly filePath: string;
 

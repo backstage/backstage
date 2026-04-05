@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { AppTheme } from '@backstage/core-plugin-api';
 import { AppThemeSelector } from './AppThemeSelector';
 
@@ -23,7 +25,7 @@ describe('AppThemeSelector', () => {
 
     expect(selector.getInstalledThemes()).toEqual([]);
 
-    const subFn = jest.fn();
+    const subFn = vi.fn();
     selector.activeThemeId$().subscribe(subFn);
     expect(selector.getActiveThemeId()).toBe(undefined);
     await 'wait a tick';
@@ -57,7 +59,7 @@ describe('AppThemeSelector', () => {
       undefined,
     );
 
-    const addListenerSpy = jest.spyOn(window, 'addEventListener');
+    const addListenerSpy = vi.spyOn(window, 'addEventListener');
     const selector = AppThemeSelector.createWithStorage([]);
 
     expect(addListenerSpy).toHaveBeenCalledTimes(1);

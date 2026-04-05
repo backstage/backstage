@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { TestDatabases, mockServices } from '@backstage/backend-test-utils';
 import { Knex } from 'knex';
 import { applyDatabaseMigrations } from '../../database/migrations';
@@ -23,7 +25,7 @@ import { DeferredEntity } from '@backstage/plugin-catalog-node';
 
 // #region Helpers
 
-jest.setTimeout(600_000);
+vi.setConfig({ testTimeout: 600_000 });
 
 const databases = TestDatabases.create({
   ids: [/* 'MYSQL_8', */ 'POSTGRES_18', /* 'POSTGRES_14',*/ 'SQLITE_3'],

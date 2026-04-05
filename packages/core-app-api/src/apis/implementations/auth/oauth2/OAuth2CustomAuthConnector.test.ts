@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import OAuth2 from './OAuth2';
 import {
   OAuth2Session,
@@ -79,10 +81,10 @@ describe('OAuth2CustomAuthConnector', () => {
   it('should use custom auth connector', async () => {
     const popupMock = { closed: false };
 
-    jest.spyOn(window, 'open').mockReturnValue(popupMock as Window);
+    vi.spyOn(window, 'open').mockReturnValue(popupMock as Window);
 
-    const addEventListenerSpy = jest.spyOn(window, 'addEventListener');
-    jest.spyOn(window, 'removeEventListener');
+    const addEventListenerSpy = vi.spyOn(window, 'addEventListener');
+    vi.spyOn(window, 'removeEventListener');
 
     const customAuthConnector = new CustomAuthConnector({
       sessionTransform(res: OAuth2Response): OAuth2Session {

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { Entity, EntityPolicy } from '@backstage/catalog-model';
 import { transformLegacyPolicyToProcessor } from './transformLegacyPolicyToProcessor';
 import { clone } from 'lodash';
@@ -38,7 +40,7 @@ describe('transformLegacyPolicyToProcessor', () => {
     const entity = await processor.preProcessEntity?.(
       clonedEntity,
       {} as any,
-      jest.fn(),
+      vi.fn(),
       {} as any,
       {} as any,
     );
@@ -59,7 +61,7 @@ describe('transformLegacyPolicyToProcessor', () => {
     const entity = await processor.preProcessEntity?.(
       clonedEntity,
       {} as any,
-      jest.fn(),
+      vi.fn(),
       {} as any,
       {} as any,
     );
@@ -81,7 +83,7 @@ describe('transformLegacyPolicyToProcessor', () => {
       processor.preProcessEntity?.(
         clonedEntity,
         {} as any,
-        jest.fn(),
+        vi.fn(),
         {} as any,
         {} as any,
       ),

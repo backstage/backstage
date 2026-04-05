@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { TestDatabases, mockServices } from '@backstage/backend-test-utils';
 import { Knex } from 'knex';
 import { Duration } from 'luxon';
@@ -47,10 +49,10 @@ describe('PluginTaskSchedulerJanitor', () => {
   });
   const testScopedSignal = createTestScopedSignal();
 
-  jest.setTimeout(60_000);
+  vi.setConfig({ testTimeout: 60_000 });
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it.each(databases.eachSupportedId())(

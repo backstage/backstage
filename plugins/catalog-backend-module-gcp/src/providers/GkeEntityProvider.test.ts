@@ -14,41 +14,43 @@
  * limitations under the License.
  */
 
+import { vi , type MockedClass} from 'vitest';
+
 import { GkeEntityProvider } from './GkeEntityProvider';
 import { SchedulerServiceTaskRunner } from '@backstage/backend-plugin-api';
 import * as container from '@google-cloud/container';
 import { ConfigReader } from '@backstage/config';
 
 // Mock the container module
-jest.mock('@google-cloud/container', () => ({
+vi.mock('@google-cloud/container', () => ({
   v1: {
-    ClusterManagerClient: jest.fn(),
+    ClusterManagerClient: vi.fn(),
   },
 }));
 
 describe('GkeEntityProvider', () => {
   const clusterManagerClientMock = {
-    listClusters: jest.fn(),
+    listClusters: vi.fn(),
   };
   const connectionMock = {
-    applyMutation: jest.fn(),
-    refresh: jest.fn(),
+    applyMutation: vi.fn(),
+    refresh: vi.fn(),
   };
   const taskRunner = {
-    createScheduleFn: jest.fn(),
-    run: jest.fn(),
+    createScheduleFn: vi.fn(),
+    run: vi.fn(),
   } as SchedulerServiceTaskRunner;
   const schedulerMock = {
-    createScheduledTaskRunner: jest.fn(),
+    createScheduledTaskRunner: vi.fn(),
   } as any;
   const logger = {
-    info: jest.fn(),
-    error: jest.fn(),
+    info: vi.fn(),
+    error: vi.fn(),
   };
   let gkeEntityProvider: GkeEntityProvider;
 
   beforeEach(async () => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
     schedulerMock.createScheduledTaskRunner.mockReturnValue(taskRunner);
     gkeEntityProvider = GkeEntityProvider.fromConfigWithClient({
       logger: logger as any,
@@ -476,12 +478,12 @@ describe('GkeEntityProvider', () => {
 
   describe('credentials support', () => {
     const MockedClusterManagerClient = container.v1
-      .ClusterManagerClient as jest.MockedClass<
+      .ClusterManagerClient as MockedClass<
       typeof container.v1.ClusterManagerClient
     >;
 
     beforeEach(() => {
-      jest.resetAllMocks();
+      vi.resetAllMocks();
       MockedClusterManagerClient.mockClear();
       schedulerMock.createScheduledTaskRunner.mockReturnValue(taskRunner);
     });

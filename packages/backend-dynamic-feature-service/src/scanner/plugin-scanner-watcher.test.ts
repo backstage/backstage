@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { PluginScanner } from './plugin-scanner';
 import { LogContent, Logs, MockedLogger } from '../__testUtils__/testUtils';
 import { Config, ConfigReader } from '@backstage/config';
@@ -54,10 +56,10 @@ describe('plugin-scanner', () => {
           rootDirectory: 'first-dir',
         },
       });
-      const getOptional = jest.spyOn(config, 'getOptional');
+      const getOptional = vi.spyOn(config, 'getOptional');
 
       let onConfigChange: (() => Promise<void>) | undefined;
-      const configUnsubscribe = jest.fn();
+      const configUnsubscribe = vi.fn();
       config.subscribe = onChange => {
         onConfigChange = onChange as any;
         return {
@@ -79,7 +81,7 @@ describe('plugin-scanner', () => {
       ).packages;
       expect(scannedPlugins).toEqual([]);
 
-      const rootDirectorySubscriber = jest.fn(async () => {
+      const rootDirectorySubscriber = vi.fn(async () => {
         scannedPlugins = (await pluginScanner.scanRoot()).packages;
       });
       pluginScanner.subscribeToRootDirectoryChange(rootDirectorySubscriber);
@@ -229,8 +231,8 @@ describe('plugin-scanner', () => {
       });
       logger.logs = {};
 
-      const debug = jest.spyOn(logger, 'debug');
-      const info = jest.spyOn(logger, 'info');
+      const debug = vi.spyOn(logger, 'debug');
+      const info = vi.spyOn(logger, 'info');
 
       // Check that not all file changes trigger a new scan of plugins
       await mkdir(

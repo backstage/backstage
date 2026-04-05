@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import '@testing-library/jest-dom';
 
 // Patch jsdom to add feature used by CodeMirror
@@ -23,7 +25,7 @@ document.createRange = () => {
   range.getClientRects = () => ({
     item: () => null,
     length: 0,
-    [Symbol.iterator]: jest.fn(),
+    [Symbol.iterator]: vi.fn(),
   });
 
   return range;

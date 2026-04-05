@@ -14,24 +14,26 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
 import { MicrosoftGraphClient, readMicrosoftGraphOrg } from '../microsoftGraph';
 import { MicrosoftGraphOrgReaderProcessor } from './MicrosoftGraphOrgReaderProcessor';
 import { mockServices } from '@backstage/backend-test-utils';
 
-jest.mock('../microsoftGraph', () => {
+vi.mock('../microsoftGraph', () => {
   return {
-    ...jest.requireActual('../microsoftGraph'),
-    readMicrosoftGraphOrg: jest.fn(),
+    ...vi.importActual('../microsoftGraph'),
+    readMicrosoftGraphOrg: vi.fn(),
   };
 });
 
-const readMicrosoftGraphOrgMocked = readMicrosoftGraphOrg as jest.Mock<
+const readMicrosoftGraphOrgMocked = readMicrosoftGraphOrg as Mock<
   Promise<{ users: UserEntity[]; groups: GroupEntity[] }>
 >;
 
 describe('MicrosoftGraphOrgReaderProcessor', () => {
-  const emit = jest.fn();
+  const emit = vi.fn();
   let processor: MicrosoftGraphOrgReaderProcessor;
 
   beforeEach(() => {
@@ -53,7 +55,7 @@ describe('MicrosoftGraphOrgReaderProcessor', () => {
       .mockReturnValue({} as unknown as MicrosoftGraphClient);
   });
 
-  afterEach(() => jest.resetAllMocks());
+  afterEach(() => vi.resetAllMocks());
 
   it('should process microsoft-graph-org locations', async () => {
     const location = {

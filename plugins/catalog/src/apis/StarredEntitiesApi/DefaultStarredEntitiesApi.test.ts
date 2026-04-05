@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import { mockApis } from '@backstage/test-utils';
 import { DefaultStarredEntitiesApi } from './DefaultStarredEntitiesApi';
 import { performMigrationToTheNewBucket } from './migration';
 
-jest.mock('./migration');
+vi.mock('./migration');
 
 function getStarred(api: DefaultStarredEntitiesApi) {
   return new Promise((resolve, reject) => {
@@ -34,11 +36,11 @@ function getStarred(api: DefaultStarredEntitiesApi) {
 
 describe('DefaultStarredEntitiesApi', () => {
   beforeEach(() => {
-    (performMigrationToTheNewBucket as jest.Mock).mockResolvedValue(undefined);
+    (performMigrationToTheNewBucket as Mock).mockResolvedValue(undefined);
   });
 
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   describe('constructor', () => {

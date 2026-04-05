@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   Entity,
   EntityPolicies,
@@ -547,7 +549,7 @@ describe('Catalog Backend Integration', () => {
       logger: mockServices.logger.mock(),
     });
     const error = new Error('NOPE');
-    const reportFailure = jest.fn();
+    const reportFailure = vi.fn();
     const provider: EntityProvider = {
       getProviderName: () => 'failing',
       async connect() {
@@ -1119,7 +1121,7 @@ describe('Catalog Backend Integration', () => {
     const entityB = merge({ metadata: { name: 'b' } }, baseEntity);
     const entityBOverride = merge({ metadata: { override: true } }, entityB);
 
-    const processEntity = jest.fn(
+    const processEntity = vi.fn(
       async (
         entity: Entity,
         _location: LocationSpec,
@@ -1245,7 +1247,7 @@ describe('Catalog Backend Integration', () => {
     const entityB = merge({ metadata: { name: 'b' } }, baseEntity);
     const entityBOverride = merge({ metadata: { override: true } }, entityB);
 
-    const processEntity = jest.fn(
+    const processEntity = vi.fn(
       async (
         entity: Entity,
         _location: LocationSpec,
@@ -1305,7 +1307,7 @@ describe('Catalog Backend Integration', () => {
     const entityB = merge({ metadata: { name: 'b' } }, baseEntity);
     const entityBOverride = merge({ metadata: { override: true } }, entityB);
 
-    const processEntity = jest.fn(
+    const processEntity = vi.fn(
       async (
         entity: Entity,
         _location: LocationSpec,

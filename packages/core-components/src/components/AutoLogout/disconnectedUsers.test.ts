@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import { renderHook } from '@testing-library/react';
 import { act } from 'react-dom/test-utils';
 
@@ -22,16 +24,16 @@ import {
 } from './disconnectedUsers';
 
 const mockIdentityApi = {
-  signOut: jest.fn(),
-  getProfileInfo: jest.fn(),
-  getBackstageIdentity: jest.fn(),
-  getCredentials: jest.fn(),
+  signOut: vi.fn(),
+  getProfileInfo: vi.fn(),
+  getBackstageIdentity: vi.fn(),
+  getCredentials: vi.fn(),
 };
 
 const mockTimestampStore = {
-  get: jest.fn(),
-  save: jest.fn(),
-  delete: jest.fn(),
+  get: vi.fn(),
+  save: vi.fn(),
+  delete: vi.fn(),
 };
 
 describe('useLogoutDisconnectedUserEffect', () => {
@@ -65,7 +67,7 @@ describe('useLogoutDisconnectedUserEffect', () => {
   });
 
   it('should call signOut if idle timeout passed', () => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
 
     const props: UseLogoutDisconnectedUserEffectProps = {
       enableEffect: true,
@@ -73,7 +75,7 @@ describe('useLogoutDisconnectedUserEffect', () => {
       idleTimeoutSeconds: 1,
       lastSeenOnlineStore: {
         ...mockTimestampStore,
-        get: jest.fn().mockReturnValue(new Date(Date.now() - 2000)), // 2 seconds before now
+        get: vi.fn().mockReturnValue(new Date(Date.now() - 2000)), // 2 seconds before now
       },
       identityApi: mockIdentityApi,
     };
@@ -81,12 +83,12 @@ describe('useLogoutDisconnectedUserEffect', () => {
     renderHook(() => useLogoutDisconnectedUserEffect(props));
 
     act(() => {
-      jest.advanceTimersByTime(2000);
+      vi.advanceTimersByTime(2000);
     });
 
     expect(mockIdentityApi.signOut).toHaveBeenCalled();
 
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 
   it('should save the current time to the store when app is loaded', () => {
@@ -105,6 +107,6 @@ describe('useLogoutDisconnectedUserEffect', () => {
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 });

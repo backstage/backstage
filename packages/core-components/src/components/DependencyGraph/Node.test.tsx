@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import dagre from '@dagrejs/dagre';
 import { render } from '@testing-library/react';
 import { Node } from './Node';
 import { DependencyGraphTypes as Types } from './types';
 
 const node = { id: 'abc', x: 0, y: 0, width: 0, height: 0 };
-const setNode = jest.fn(() => new dagre.graphlib.Graph());
-const renderElement = jest.fn((props: Types.RenderNodeProps) => (
+const setNode = vi.fn(() => new dagre.graphlib.Graph());
+const renderElement = vi.fn((props: Types.RenderNodeProps) => (
   <div>{props.node.id}</div>
 ));
 
@@ -39,7 +41,7 @@ describe('<Node />', () => {
     });
   });
 
-  afterEach(jest.clearAllMocks);
+  afterEach(vi.clearAllMocks);
 
   it('renders the supplied element', () => {
     const { getByText } = render(

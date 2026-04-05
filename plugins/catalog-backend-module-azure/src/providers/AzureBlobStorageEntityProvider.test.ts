@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import {
   SchedulerService,
   SchedulerServiceTaskRunner,
@@ -43,13 +45,13 @@ const createBlobList = (blobsArray: string[]) => {
   }));
 };
 // Mocking Azure Storage Blob Library
-jest.mock('@azure/storage-blob', () => {
+vi.mock('@azure/storage-blob', () => {
   return {
-    BlobServiceClient: jest.fn().mockImplementation(() => ({
+    BlobServiceClient: vi.fn().mockImplementation(() => ({
       url: 'https://myaccount.blob.core.windows.net/',
-      getContainerClient: jest.fn().mockImplementation(() => ({
+      getContainerClient: vi.fn().mockImplementation(() => ({
         // eslint-disable-next-line func-names
-        listBlobsFlat: jest.fn(async function* () {
+        listBlobsFlat: vi.fn(async function* () {
           yield* createBlobList(blobs);
         }),
       })),
@@ -88,8 +90,8 @@ describe('AzureBlobStorageEntityProvider', () => {
       : `${expectedBaseUrl}/`;
     const schedule = new PersistingTaskRunner();
     const entityProviderConnection: EntityProviderConnection = {
-      applyMutation: jest.fn(),
-      refresh: jest.fn(),
+      applyMutation: vi.fn(),
+      refresh: vi.fn(),
     };
 
     if (scheduleInConfig) {
@@ -210,7 +212,7 @@ describe('AzureBlobStorageEntityProvider', () => {
 
   it('fail with scheduler but no schedule config', () => {
     const scheduler = {
-      createScheduledTaskRunner: (_: any) => jest.fn(),
+      createScheduledTaskRunner: (_: any) => vi.fn(),
     } as unknown as SchedulerService;
     const config = new ConfigReader({
       catalog: {

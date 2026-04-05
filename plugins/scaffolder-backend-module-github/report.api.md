@@ -67,14 +67,14 @@ export function createGithubBranchProtectionAction(options: {
     bypassPullRequestAllowances?:
       | {
           apps?: string[] | undefined;
-          teams?: string[] | undefined;
           users?: string[] | undefined;
+          teams?: string[] | undefined;
         }
       | undefined;
     restrictions?:
       | {
-          teams: string[];
           users: string[];
+          teams: string[];
           apps?: string[] | undefined;
         }
       | undefined;
@@ -242,8 +242,8 @@ export function createGithubRepoCreateAction(options: {
     bypassPullRequestAllowances?:
       | {
           apps?: string[] | undefined;
-          teams?: string[] | undefined;
           users?: string[] | undefined;
+          teams?: string[] | undefined;
         }
       | undefined;
     collaborators?:
@@ -279,7 +279,7 @@ export function createGithubRepoCreateAction(options: {
     protectDefaultBranch?: boolean | undefined;
     protectEnforceAdmins?: boolean | undefined;
     repoVariables?: Record<string, string> | undefined;
-    repoVisibility?: 'internal' | 'private' | 'public' | undefined;
+    repoVisibility?: 'public' | 'internal' | 'private' | undefined;
     requireBranchesToBeUpToDate?: boolean | undefined;
     requireCodeOwnerReviews?: boolean | undefined;
     requiredApprovingReviewCount?: number | undefined;
@@ -290,8 +290,8 @@ export function createGithubRepoCreateAction(options: {
     requireLastPushApproval?: boolean | undefined;
     restrictions?:
       | {
-          teams: string[];
           users: string[];
+          teams: string[];
           apps?: string[] | undefined;
         }
       | undefined;
@@ -306,7 +306,7 @@ export function createGithubRepoCreateAction(options: {
     subscribe?: boolean | undefined;
     token?: string | undefined;
     topics?: string[] | undefined;
-    workflowAccess?: 'none' | 'organization' | 'user' | undefined;
+    workflowAccess?: 'none' | 'user' | 'organization' | undefined;
   },
   {
     remoteUrl: string;
@@ -329,15 +329,15 @@ export function createGithubRepoPushAction(options: {
     bypassPullRequestAllowances?:
       | {
           apps?: string[] | undefined;
-          teams?: string[] | undefined;
           users?: string[] | undefined;
+          teams?: string[] | undefined;
         }
       | undefined;
     requiredApprovingReviewCount?: number | undefined;
     restrictions?:
       | {
-          teams: string[];
           users: string[];
+          teams: string[];
           apps?: string[] | undefined;
         }
       | undefined;
@@ -399,15 +399,15 @@ export function createPublishGithubAction(options: {
     bypassPullRequestAllowances?:
       | {
           apps?: string[] | undefined;
-          teams?: string[] | undefined;
           users?: string[] | undefined;
+          teams?: string[] | undefined;
         }
       | undefined;
     requiredApprovingReviewCount?: number | undefined;
     restrictions?:
       | {
-          teams: string[];
           users: string[];
+          teams: string[];
           apps?: string[] | undefined;
         }
       | undefined;
@@ -417,7 +417,7 @@ export function createPublishGithubAction(options: {
     requireBranchesToBeUpToDate?: boolean | undefined;
     requiredConversationResolution?: boolean | undefined;
     requireLastPushApproval?: boolean | undefined;
-    repoVisibility?: 'internal' | 'private' | 'public' | undefined;
+    repoVisibility?: 'public' | 'internal' | 'private' | undefined;
     defaultBranch?: string | undefined;
     protectDefaultBranch?: boolean | undefined;
     protectEnforceAdmins?: boolean | undefined;

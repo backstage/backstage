@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { DefaultStarredEntitiesApi } from '@backstage/plugin-catalog';
 import {
   entityRouteRef,
@@ -382,7 +384,7 @@ describe('TemplateCard', () => {
         type: 'service',
       },
     };
-    const mockOnSelected = jest.fn();
+    const mockOnSelected = vi.fn();
 
     const { getByRole } = await renderInTestApp(
       <TestApiProvider
@@ -417,7 +419,7 @@ describe('TemplateCard', () => {
         type: 'service',
       },
     };
-    const mockOnSelected = jest.fn();
+    const mockOnSelected = vi.fn();
     // SWR used by the usePermission hook needs cache to be reset for each test
     const { queryByText } = await renderInTestApp(
       <SWRConfig value={{ provider: () => new Map() }}>

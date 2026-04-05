@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi, type Mocked } from 'vitest';
+
 import {
   ClusterDetails,
   CustomResource,
@@ -45,9 +47,9 @@ import { Entity } from '@backstage/catalog-model';
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
 
 describe('KubernetesFanOutHandler', () => {
-  const fetchObjectsForService = jest.fn();
-  const fetchPodMetricsByNamespaces = jest.fn();
-  const getClustersByEntity = jest.fn<
+  const fetchObjectsForService = vi.fn();
+  const fetchPodMetricsByNamespaces = vi.fn();
+  const getClustersByEntity = vi.fn<
     Promise<{ clusters: ClusterDetails[] }>,
     [Entity]
   >();
@@ -216,8 +218,8 @@ describe('KubernetesFanOutHandler', () => {
             [ClusterDetails, KubernetesRequestAuth]
           >()
           .mockResolvedValue({ type: 'anonymous' }),
-        validateCluster: jest.fn().mockReturnValue([]),
-        presentAuthMetadata: jest.fn(),
+        validateCluster: vi.fn().mockReturnValue([]),
+        presentAuthMetadata: vi.fn(),
       },
       config,
     });
@@ -333,7 +335,7 @@ describe('KubernetesFanOutHandler', () => {
   });
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
 
     fetchObjectsForService.mockImplementation((params: ObjectFetchParams) =>
       Promise.resolve(
@@ -1231,7 +1233,7 @@ describe('KubernetesFanOutHandler', () => {
           ),
         );
 
-        const fleet: jest.Mocked<KubernetesServiceLocator> = {
+        const fleet: Mocked<KubernetesServiceLocator> = {
           getClustersByEntity: jest
             .fn<
               Promise<{ clusters: ClusterDetails[] }>,
@@ -1281,8 +1283,8 @@ describe('KubernetesFanOutHandler', () => {
                 [ClusterDetails, KubernetesRequestAuth]
               >()
               .mockResolvedValue({ type: 'bearer token', token: 'token' }),
-            validateCluster: jest.fn().mockReturnValue([]),
-            presentAuthMetadata: jest.fn(),
+            validateCluster: vi.fn().mockReturnValue([]),
+            presentAuthMetadata: vi.fn(),
           },
           config,
         });

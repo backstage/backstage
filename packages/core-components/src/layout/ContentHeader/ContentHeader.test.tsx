@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { ContentHeader } from './ContentHeader';
 import { renderInTestApp } from '@backstage/test-utils';
 import _ from 'lodash';
 
-jest.mock('react-helmet', () => {
+vi.mock('react-helmet', () => {
   return {
     Helmet: ({ defaultTitle }: any) => <div>defaultTitle: {defaultTitle}</div>,
   };

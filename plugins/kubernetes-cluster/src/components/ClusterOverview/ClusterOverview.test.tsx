@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import { renderInTestApp } from '@backstage/test-utils';
 import { ClusterOverview } from './ClusterOverview';
 import '@testing-library/jest-dom';
 
-jest.mock('@backstage/plugin-catalog-react', () => ({
+vi.mock('@backstage/plugin-catalog-react', () => ({
   useEntity: () => {
     return {
       entity: {
@@ -29,8 +31,8 @@ jest.mock('@backstage/plugin-catalog-react', () => ({
   },
 }));
 
-jest.mock('./useCluster', () => ({
-  useCluster: jest.fn().mockReturnValue({
+vi.mock('./useCluster', () => ({
+  useCluster: vi.fn().mockReturnValue({
     loading: false,
     value: {
       name: 'some-cluster',
@@ -41,7 +43,7 @@ jest.mock('./useCluster', () => ({
 
 describe('ClusterOverview', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
   it('displays ClusterOverview', async () => {
     const { getByText, queryAllByText } = await renderInTestApp(

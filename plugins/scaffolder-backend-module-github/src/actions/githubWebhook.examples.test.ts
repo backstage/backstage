@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { ConfigReader } from '@backstage/config';
@@ -28,11 +30,11 @@ import { examples } from './githubWebhook.examples';
 const mockOctokit = {
   rest: {
     repos: {
-      createWebhook: jest.fn(),
+      createWebhook: vi.fn(),
     },
   },
 };
-jest.mock('octokit', () => ({
+vi.mock('octokit', () => ({
   Octokit: class {
     constructor() {
       return mockOctokit;
@@ -58,7 +60,7 @@ describe('github:webhook examples', () => {
   const mockContext = createMockActionContext();
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
     githubCredentialsProvider =
       DefaultGithubCredentialsProvider.fromIntegrations(integrations);
     action = createGithubWebhookAction({

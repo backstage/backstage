@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { createBackendModule } from '@backstage/backend-plugin-api';
 import {
   TestDatabases,
@@ -37,7 +39,7 @@ import { describePerformanceTest, performanceTraceEnabled } from './lib/env';
 
 // #region Helpers
 
-jest.setTimeout(600_000);
+vi.setConfig({ testTimeout: 600_000 });
 
 const databases = TestDatabases.create({
   ids: [/* 'MYSQL_8', */ 'POSTGRES_18', /* 'POSTGRES_14',*/ 'SQLITE_3'],

@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import MockOAuthApi from '../../OAuthRequestApi/MockOAuthApi';
 import { UrlPatternDiscovery } from '../../DiscoveryApi';
 import BitbucketServerAuth from './BitbucketServerAuth';
 import { mockApis } from '@backstage/test-utils';
 
-const getSession = jest.fn();
+const getSession = vi.fn();
 
-jest.mock('../../../../lib/AuthSessionManager', () => ({
-  ...(jest.requireActual('../../../../lib/AuthSessionManager') as any),
+vi.mock('../../../../lib/AuthSessionManager', () => ({
+  ...(vi.importActual('../../../../lib/AuthSessionManager') as any),
   RefreshingAuthSessionManager: class {
     getSession = getSession;
   },
@@ -30,7 +32,7 @@ jest.mock('../../../../lib/AuthSessionManager', () => ({
 
 describe('BitbucketServerAuth', () => {
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it.each([

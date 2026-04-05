@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   TestDatabaseId,
   TestDatabases,
@@ -34,7 +36,7 @@ const testKey2 = {
   n: 'test',
 };
 
-jest.setTimeout(60_000);
+vi.setConfig({ testTimeout: 60_000 });
 
 describe('DatabaseKeyStore', () => {
   const databases = TestDatabases.create();

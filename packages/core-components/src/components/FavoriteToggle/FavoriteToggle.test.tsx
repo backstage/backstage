@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import { renderInTestApp } from '@backstage/test-utils';
 import { FavoriteToggle } from './FavoriteToggle';
 import userEvent from '@testing-library/user-event';
 
 describe('<FavoriteToggle />', () => {
-  const onToggle = jest.fn();
+  const onToggle = vi.fn();
 
   const props = {
     title: 'Favorite this thing',
@@ -28,7 +30,7 @@ describe('<FavoriteToggle />', () => {
   };
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('renders with valid props', async () => {

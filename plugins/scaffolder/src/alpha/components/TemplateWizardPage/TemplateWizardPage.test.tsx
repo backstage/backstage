@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi, type Mocked } from 'vitest';
+
 import { ApiProvider } from '@backstage/core-app-api';
 import { analyticsApiRef } from '@backstage/core-plugin-api';
 import {
@@ -35,32 +37,32 @@ import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { ScaffolderFormDecoratorsApi } from '../../api/types';
 import { formDecoratorsApiRef } from '../../api/ref';
 
-jest.mock('react-router-dom', () => {
+vi.mock('react-router-dom', () => {
   return {
-    ...(jest.requireActual('react-router-dom') as any),
+    ...(vi.importActual('react-router-dom') as any),
     useParams: () => ({
       templateName: 'test',
     }),
   };
 });
 
-const scaffolderApiMock: jest.Mocked<ScaffolderApi> = {
-  cancelTask: jest.fn(),
-  scaffold: jest.fn(),
-  getTemplateParameterSchema: jest.fn(),
-  getIntegrationsList: jest.fn(),
-  getTask: jest.fn(),
-  streamLogs: jest.fn(),
-  listActions: jest.fn(),
-  listTasks: jest.fn(),
-  autocomplete: jest.fn(),
-  retry: jest.fn(),
-  listTemplatingExtensions: jest.fn(),
-  dryRun: jest.fn(),
+const scaffolderApiMock: Mocked<ScaffolderApi> = {
+  cancelTask: vi.fn(),
+  scaffold: vi.fn(),
+  getTemplateParameterSchema: vi.fn(),
+  getIntegrationsList: vi.fn(),
+  getTask: vi.fn(),
+  streamLogs: vi.fn(),
+  listActions: vi.fn(),
+  listTasks: vi.fn(),
+  autocomplete: vi.fn(),
+  retry: vi.fn(),
+  listTemplatingExtensions: vi.fn(),
+  dryRun: vi.fn(),
 };
 
-const scaffolderDecoratorsMock: jest.Mocked<ScaffolderFormDecoratorsApi> = {
-  getFormDecorators: jest.fn().mockResolvedValue([]),
+const scaffolderDecoratorsMock: Mocked<ScaffolderFormDecoratorsApi> = {
+  getFormDecorators: vi.fn().mockResolvedValue([]),
 };
 
 const catalogApi = catalogApiMock.mock();

@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import { EventsContent } from './Events';
 import { render } from '@testing-library/react';
 import { Event } from 'kubernetes-models/v1';
@@ -24,7 +26,7 @@ import { errorApiRef } from '@backstage/core-plugin-api';
 describe('EventsContent', () => {
   const oneHourAgo = DateTime.now().minus({ hours: 1 }).toISO();
   const translationApi = mockApis.translation();
-  const errorApi = { post: jest.fn(), error$: jest.fn() };
+  const errorApi = { post: vi.fn(), error$: vi.fn() };
 
   it('should show info events', () => {
     const { getByText } = render(

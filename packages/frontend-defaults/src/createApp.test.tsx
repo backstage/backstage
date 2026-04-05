@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   AppTreeApi,
   ApiBlueprint,
@@ -60,16 +62,16 @@ describe('createApp', () => {
 
   function createFeatureFlagsApi(activeFlags: string[]) {
     return {
-      isActive: jest.fn((name: string) => activeFlags.includes(name)),
-      registerFlag: jest.fn(),
+      isActive: vi.fn((name: string) => activeFlags.includes(name)),
+      registerFlag: vi.fn(),
       getRegisteredFlags: () => [],
-      save: jest.fn(),
+      save: vi.fn(),
     } as unknown as typeof featureFlagsApiRef.T;
   }
 
   function createPermissionApi(allowedPermissions: string[]) {
     return {
-      authorize: jest.fn(async request => ({
+      authorize: vi.fn(async request => ({
         result: allowedPermissions.includes(request.permission.name)
           ? AuthorizeResult.ALLOW
           : AuthorizeResult.DENY,
@@ -222,12 +224,12 @@ describe('createApp', () => {
       signOut: async () => {},
     };
     const featureFlagsApi = {
-      isActive: jest.fn(() => {
+      isActive: vi.fn(() => {
         throw new Error('sign-in bootstrap failed');
       }),
-      registerFlag: jest.fn(),
+      registerFlag: vi.fn(),
       getRegisteredFlags: () => [],
-      save: jest.fn(),
+      save: vi.fn(),
     } as unknown as typeof featureFlagsApiRef.T;
     let onSignInSuccess: ((identity: IdentityApi) => void) | undefined;
 
@@ -497,10 +499,10 @@ describe('createApp', () => {
 
   it('should evaluate extension if predicates before rendering apps without sign-in', async () => {
     const featureFlagsApi = {
-      isActive: jest.fn((name: string) => name === 'test-flag'),
-      registerFlag: jest.fn(),
+      isActive: vi.fn((name: string) => name === 'test-flag'),
+      registerFlag: vi.fn(),
       getRegisteredFlags: () => [],
-      save: jest.fn(),
+      save: vi.fn(),
     } as unknown as typeof featureFlagsApiRef.T;
     const app = createApp({
       advanced: {

@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
   it('should return the correct value for the different version', () => {
-    jest.isolateModules(() => {
-      jest.doMock('react-router', () =>
+    vi.hoisted(() => {
+      vi.doMock('react-router', () =>
         rrVersion === 'beta'
-          ? jest.requireActual('react-router-beta')
-          : jest.requireActual('react-router-stable'),
+          ? vi.importActual('react-router-beta')
+          : vi.importActual('react-router-stable'),
       );
-      jest.doMock('react-router-dom', () =>
+      vi.doMock('react-router-dom', () =>
         rrVersion === 'beta'
-          ? jest.requireActual('react-router-dom-beta')
-          : jest.requireActual('react-router-dom-stable'),
+          ? vi.importActual('react-router-dom-beta')
+          : vi.importActual('react-router-dom-stable'),
       );
 
       const { isReactRouterBeta } = require('./isReactRouterBeta');

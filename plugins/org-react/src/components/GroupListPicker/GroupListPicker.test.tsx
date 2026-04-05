@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import userEvent from '@testing-library/user-event';
 import { ApiProvider } from '@backstage/core-app-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
@@ -56,7 +58,7 @@ const mockGroups: GroupEntity[] = [
 ];
 
 const mockCatalogApi = catalogApiMock.mock({
-  getEntities: jest.fn(() => Promise.resolve({ items: mockGroups })),
+  getEntities: vi.fn(() => Promise.resolve({ items: mockGroups })),
 });
 
 const apis = TestApiRegistry.from([catalogApiRef, mockCatalogApi]);

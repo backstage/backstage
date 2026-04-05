@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   catalogApiRef,
   EntityProvider,
@@ -33,7 +35,7 @@ describe('<SystemDiagramCard />', () => {
     });
   });
 
-  afterEach(() => jest.resetAllMocks());
+  afterEach(() => vi.resetAllMocks());
 
   it('shows empty list if no relations', async () => {
     const catalogApi = catalogApiMock();

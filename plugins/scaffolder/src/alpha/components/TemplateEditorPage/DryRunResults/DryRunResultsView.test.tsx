@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { screen, waitFor } from '@testing-library/react';
@@ -28,7 +30,7 @@ import { DryRunResultsView } from './DryRunResultsView';
 import { formDecoratorsApiRef } from '../../../api';
 
 // The <AutoSizer> inside <LogViewer> needs mocking to render in jsdom
-jest.mock('react-virtualized-auto-sizer', () => ({
+vi.mock('react-virtualized-auto-sizer', () => ({
   __esModule: true,
   default: (props: {
     children: (size: { width: number; height: number }) => ReactNode;

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { AddressInfo } from 'node:net';
 import { Server } from 'node:http';
 import express, { Router, RequestHandler } from 'express';
@@ -51,7 +53,7 @@ describe('PermissionIntegrationClient', () => {
       },
     };
 
-    const mockApplyConditionsHandler = jest.fn(
+    const mockApplyConditionsHandler = vi.fn(
       (_req, res, { json }: RestContext) => {
         return res(
           json({ items: [{ id: '123', result: AuthorizeResult.ALLOW }] }),
@@ -90,7 +92,7 @@ describe('PermissionIntegrationClient', () => {
     afterAll(() => server.close());
 
     afterEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
     });
 
     it('should make a POST request to the correct endpoint', async () => {
@@ -318,7 +320,7 @@ describe('PermissionIntegrationClient', () => {
 
       const app = express();
 
-      routerSpy = jest.fn(router);
+      routerSpy = vi.fn(router);
 
       app.use('/plugin-1', routerSpy);
 
@@ -351,7 +353,7 @@ describe('PermissionIntegrationClient', () => {
     );
 
     afterEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
     });
 
     it('works for simple conditions', async () => {

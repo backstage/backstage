@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi , type Mock} from 'vitest';
 import { renderInTestApp } from '@backstage/test-utils';
 import { JsonValue } from '@backstage/types';
 import type { RJSFValidationError } from '@rjsf/utils';
@@ -37,7 +39,7 @@ describe('Stepper', () => {
 
     const { getByText } = await renderInTestApp(
       <SecretsContextProvider>
-        <Stepper manifest={manifest} extensions={[]} onCreate={jest.fn()} />
+        <Stepper manifest={manifest} extensions={[]} onCreate={vi.fn()} />
       </SecretsContextProvider>,
     );
 
@@ -57,7 +59,7 @@ describe('Stepper', () => {
 
     const { getByRole } = await renderInTestApp(
       <SecretsContextProvider>
-        <Stepper manifest={manifest} extensions={[]} onCreate={jest.fn()} />
+        <Stepper manifest={manifest} extensions={[]} onCreate={vi.fn()} />
       </SecretsContextProvider>,
     );
 
@@ -99,7 +101,7 @@ describe('Stepper', () => {
 
     const { getByRole } = await renderInTestApp(
       <SecretsContextProvider>
-        <Stepper manifest={manifest} extensions={[]} onCreate={jest.fn()} />
+        <Stepper manifest={manifest} extensions={[]} onCreate={vi.fn()} />
       </SecretsContextProvider>,
     );
 
@@ -148,7 +150,7 @@ describe('Stepper', () => {
 
     const { getByRole, getByLabelText } = await renderInTestApp(
       <SecretsContextProvider>
-        <Stepper manifest={manifest} extensions={[]} onCreate={jest.fn()} />
+        <Stepper manifest={manifest} extensions={[]} onCreate={vi.fn()} />
       </SecretsContextProvider>,
     );
 
@@ -216,7 +218,7 @@ describe('Stepper', () => {
       ],
     };
 
-    const onCreate = jest.fn();
+    const onCreate = vi.fn();
 
     const { getByRole, queryByRole } = await renderInTestApp(
       <SecretsContextProvider>
@@ -294,7 +296,7 @@ describe('Stepper', () => {
       title: 'React JSON Schema Form Test',
     };
 
-    const onCreate = jest.fn();
+    const onCreate = vi.fn();
 
     const { getByRole } = await renderInTestApp(
       <SecretsContextProvider>
@@ -356,7 +358,7 @@ describe('Stepper', () => {
         <Stepper
           manifest={manifest}
           extensions={[{ name: 'Mock', component: MockComponent }]}
-          onCreate={jest.fn()}
+          onCreate={vi.fn()}
         />
       </SecretsContextProvider>,
     );
@@ -397,7 +399,7 @@ describe('Stepper', () => {
               validation: async () => new Promise(r => setTimeout(r, 1000)),
             },
           ]}
-          onCreate={jest.fn()}
+          onCreate={vi.fn()}
         />
       </SecretsContextProvider>,
     );
@@ -439,7 +441,7 @@ describe('Stepper', () => {
         <Stepper
           manifest={manifest}
           extensions={[]}
-          onCreate={jest.fn()}
+          onCreate={vi.fn()}
           formProps={{ transformErrors }}
         />
       </SecretsContextProvider>,
@@ -480,7 +482,7 @@ describe('Stepper', () => {
 
     const { getByText, getByRole } = await renderInTestApp(
       <SecretsContextProvider>
-        <Stepper manifest={manifest} extensions={[]} onCreate={jest.fn()} />
+        <Stepper manifest={manifest} extensions={[]} onCreate={vi.fn()} />
       </SecretsContextProvider>,
     );
 
@@ -523,7 +525,7 @@ describe('Stepper', () => {
 
     const { getByRole } = await renderInTestApp(
       <SecretsContextProvider>
-        <Stepper manifest={manifest} extensions={[]} onCreate={jest.fn()} />
+        <Stepper manifest={manifest} extensions={[]} onCreate={vi.fn()} />
       </SecretsContextProvider>,
     );
 
@@ -547,7 +549,7 @@ describe('Stepper', () => {
       title: 'initialize formData',
     };
 
-    const onCreate = jest.fn(async (values: Record<string, JsonValue>) => {
+    const onCreate = vi.fn(async (values: Record<string, JsonValue>) => {
       expect(values).toHaveProperty('firstName');
     });
 
@@ -592,7 +594,7 @@ describe('Stepper', () => {
       <SecretsContextProvider>
         <Stepper
           manifest={manifest}
-          onCreate={jest.fn()}
+          onCreate={vi.fn()}
           extensions={[]}
           components={{
             createButtonText: <b>Make</b>,
@@ -650,7 +652,7 @@ describe('Stepper', () => {
       <SecretsContextProvider>
         <Stepper
           manifest={manifest}
-          onCreate={jest.fn()}
+          onCreate={vi.fn()}
           extensions={[]}
           formProps={{ uiSchema, formContext }}
           initialState={{ name: 'Some Name', age: 40 }}
@@ -685,13 +687,13 @@ describe('Stepper', () => {
     // Render a main element in the document for the Stepper to find
     const main = document.createElement('main');
     document.body.appendChild(main);
-    const scrollToMock = jest.fn();
+    const scrollToMock = vi.fn();
     main.scrollTo = scrollToMock;
 
     // Render Stepper as usual (do not pass container)
     const { getByRole, unmount } = await renderInTestApp(
       <SecretsContextProvider>
-        <Stepper manifest={manifest} extensions={[]} onCreate={jest.fn()} />
+        <Stepper manifest={manifest} extensions={[]} onCreate={vi.fn()} />
       </SecretsContextProvider>,
     );
 
@@ -741,7 +743,7 @@ describe('Stepper', () => {
           <Stepper
             manifest={manifest}
             extensions={[]}
-            onCreate={jest.fn()}
+            onCreate={vi.fn()}
             layouts={[{ name: 'Layout', component: ScaffolderLayout }]}
           />
         </SecretsContextProvider>,
@@ -797,7 +799,7 @@ describe('Stepper', () => {
       };
 
       // `onCreate` must be async to mock the submit button disabled behavior
-      const onCreate = jest.fn(
+      const onCreate = vi.fn(
         () => new Promise<void>(resolve => setTimeout(resolve, 0)),
       );
 

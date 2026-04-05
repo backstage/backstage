@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { fireEvent } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { HorizontalScrollGrid } from './HorizontalScrollGrid';
@@ -21,15 +23,15 @@ import Grid from '@material-ui/core/Grid';
 
 describe('<HorizontalScrollGrid />', () => {
   beforeEach(() => {
-    jest.spyOn(window.performance, 'now').mockReturnValue(5);
-    jest.spyOn(window, 'requestAnimationFrame').mockImplementation(cb => {
+    vi.spyOn(window.performance, 'now').mockReturnValue(5);
+    vi.spyOn(window, 'requestAnimationFrame').mockImplementation(cb => {
       cb(20);
       return 1;
     });
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   it('renders without exploding', async () => {

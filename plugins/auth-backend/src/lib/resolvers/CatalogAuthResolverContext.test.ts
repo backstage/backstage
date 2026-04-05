@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi, type Mocked } from 'vitest';
+
 import { CatalogAuthResolverContext } from './CatalogAuthResolverContext';
 import { mockServices } from '@backstage/backend-test-utils';
 import { TokenIssuer } from '../../identity/types';
@@ -23,21 +25,21 @@ import { UserInfoDatabase } from '../../database/UserInfoDatabase';
 
 describe('CatalogAuthResolverContext', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   const catalog = catalogServiceMock();
-  jest.spyOn(catalog, 'getEntities');
+  vi.spyOn(catalog, 'getEntities');
 
   const mockUserInfo = {
-    addUserInfo: jest.fn().mockResolvedValue(undefined),
-    getUserInfo: jest.fn().mockResolvedValue({
+    addUserInfo: vi.fn().mockResolvedValue(undefined),
+    getUserInfo: vi.fn().mockResolvedValue({
       claims: {
         sub: 'user:default/user',
         ent: ['user:default/user'],
       },
     }),
-  } as unknown as jest.Mocked<UserInfoDatabase>;
+  } as unknown as Mocked<UserInfoDatabase>;
 
   it('adds kind to filter when missing', async () => {
     const auth = mockServices.auth();

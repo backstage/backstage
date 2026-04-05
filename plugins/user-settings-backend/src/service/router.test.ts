@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi, type Mocked } from 'vitest';
+
 import express from 'express';
 import request from 'supertest';
 import { UserSettingsStore } from '../database/UserSettingsStore';
@@ -27,14 +29,14 @@ import {
 import { JsonValue } from '@backstage/types';
 
 describe('createRouter', () => {
-  const userSettingsStore: jest.Mocked<UserSettingsStore> = {
-    multiget: jest.fn(),
-    get: jest.fn(),
-    set: jest.fn(),
-    delete: jest.fn(),
+  const userSettingsStore: Mocked<UserSettingsStore> = {
+    multiget: vi.fn(),
+    get: vi.fn(),
+    set: vi.fn(),
+    delete: vi.fn(),
   };
-  const signalService: jest.Mocked<SignalsService> = {
-    publish: jest.fn(),
+  const signalService: Mocked<SignalsService> = {
+    publish: vi.fn(),
   };
 
   let app: express.Express;
@@ -50,7 +52,7 @@ describe('createRouter', () => {
   });
 
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   const mockUserRef = mockCredentials.user().principal.userEntityRef;

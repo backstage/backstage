@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type MockedClass} from 'vitest';
+
 import {
   AccessToken,
   ClientSecretCredential,
@@ -25,11 +27,11 @@ import { DefaultAzureCredentialsManager } from './DefaultAzureCredentialsProvide
 import { ScmIntegrations } from '../ScmIntegrations';
 import { DateTime } from 'luxon';
 
-const MockedClientSecretCredential = ClientSecretCredential as jest.MockedClass<
+const MockedClientSecretCredential = ClientSecretCredential as MockedClass<
   typeof ClientSecretCredential
 >;
 
-jest.mock('@azure/identity');
+vi.mock('@azure/identity');
 
 describe('DefaultAzureCredentialsManager', () => {
   let mockIntegration: ScmIntegrationRegistry;
@@ -48,7 +50,7 @@ describe('DefaultAzureCredentialsManager', () => {
   beforeEach(() => {
     mockIntegration = {
       azureBlobStorage: {
-        list: jest.fn().mockReturnValue([
+        list: vi.fn().mockReturnValue([
           {
             config: {
               accountName: 'testaccount',

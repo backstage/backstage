@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { SchedulerServiceTaskScheduleDefinition } from '@backstage/backend-plugin-api';
 import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
@@ -33,7 +35,7 @@ describe('catalogModuleAzureDevOpsEntityProvider', () => {
         addedProviders = providers;
       },
     };
-    const runner = jest.fn();
+    const runner = vi.fn();
     const scheduler = mockServices.scheduler.mock({
       createScheduledTaskRunner(schedule) {
         usedSchedule = schedule;
@@ -86,7 +88,7 @@ describe('catalogModuleAzureDevOpsEntityProvider', () => {
         addedProviders = providers;
       },
     };
-    const runner = jest.fn();
+    const runner = vi.fn();
     const scheduler = mockServices.scheduler.mock({
       createScheduledTaskRunner(schedule) {
         usedSchedule = schedule;

@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi, type Mocked , type MockedFunction} from 'vitest';
 import {
   mockServices,
   TestDatabaseId,
@@ -34,19 +36,19 @@ import crypto from 'node:crypto';
 import { AnyJWK, TokenIssuer } from '../identity/types';
 import { CimdClientInfo } from './CimdClient';
 
-jest.mock('./CimdClient', () => ({
-  ...jest.requireActual('./CimdClient'),
-  fetchCimdMetadata: jest.fn(),
+vi.mock('./CimdClient', () => ({
+  ...vi.importActual('./CimdClient'),
+  fetchCimdMetadata: vi.fn(),
 }));
 
 import * as CimdClient from './CimdClient';
 
 const mockFetchCimdMetadata =
-  CimdClient.fetchCimdMetadata as jest.MockedFunction<
+  CimdClient.fetchCimdMetadata as MockedFunction<
     typeof CimdClient.fetchCimdMetadata
   >;
 
-jest.setTimeout(60_000);
+vi.setConfig({ testTimeout: 60_000 });
 
 describe('OidcService', () => {
   const databases = TestDatabases.create();
@@ -77,14 +79,14 @@ describe('OidcService', () => {
 
     const mockAuth = mockServices.auth.mock();
     const mockTokenIssuer = {
-      issueToken: jest.fn(),
-      listPublicKeys: jest.fn(),
-    } as jest.Mocked<TokenIssuer>;
+      issueToken: vi.fn(),
+      listPublicKeys: vi.fn(),
+    } as Mocked<TokenIssuer>;
 
     const mockUserInfo = {
-      addUserInfo: jest.fn(),
-      getUserInfo: jest.fn(),
-    } as unknown as jest.Mocked<UserInfoDatabase>;
+      addUserInfo: vi.fn(),
+      getUserInfo: vi.fn(),
+    } as unknown as Mocked<UserInfoDatabase>;
 
     const config = mockServices.rootConfig({ data: configData });
 

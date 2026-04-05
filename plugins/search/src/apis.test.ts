@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { MockFetchApi } from '@backstage/test-utils';
 import { SearchClient } from './apis';
 
@@ -25,16 +27,16 @@ describe('apis', () => {
   };
 
   const baseUrl = 'https://base-url.com/';
-  const getBaseUrl = jest.fn().mockResolvedValue(baseUrl);
+  const getBaseUrl = vi.fn().mockResolvedValue(baseUrl);
 
   const identityApi = {
-    getCredentials: jest.fn(),
-    getProfileInfo: jest.fn(),
-    getBackstageIdentity: jest.fn(),
-    signOut: jest.fn(),
+    getCredentials: vi.fn(),
+    getProfileInfo: vi.fn(),
+    getBackstageIdentity: vi.fn(),
+    signOut: vi.fn(),
   };
-  const json = jest.fn();
-  const mockFetch = jest.fn().mockResolvedValue({
+  const json = vi.fn();
+  const mockFetch = vi.fn().mockResolvedValue({
     ok: true,
     json,
   });

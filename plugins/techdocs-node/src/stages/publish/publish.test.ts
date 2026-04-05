@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { ConfigReader } from '@backstage/config';
 import { Publisher } from './publish';
 import { LocalPublish } from './local';
@@ -29,14 +31,14 @@ const discovery = mockServices.discovery.mock({
   getBaseUrl: async () => 'http://localhost:7007',
 });
 
-jest.mock('@azure/identity', () => ({
+vi.mock('@azure/identity', () => ({
   __esModule: true,
   DefaultAzureCredential: class {},
 }));
 
 describe('Publisher', () => {
   beforeEach(() => {
-    jest.resetModules(); // clear the cache
+    vi.resetModules(); // clear the cache
   });
 
   it('should create local publisher by default', async () => {
@@ -186,7 +188,7 @@ describe('Publisher', () => {
     const mockConfig = new ConfigReader({});
 
     const customPublisher = {
-      publish: jest.fn(),
+      publish: vi.fn(),
     } as unknown as PublisherBase;
 
     const publisher = await Publisher.fromConfig(mockConfig, {

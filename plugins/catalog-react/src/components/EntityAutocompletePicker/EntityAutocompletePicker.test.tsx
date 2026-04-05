@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import {
   catalogApiMock,
@@ -53,7 +55,7 @@ class EntityOptionFilter implements EntityFilter {
 
 function makeMockCatalogApi(opts: string[] = defaultOptions) {
   return catalogApiMock.mock({
-    getEntityFacets: jest.fn().mockResolvedValue({
+    getEntityFacets: vi.fn().mockResolvedValue({
       facets: {
         'spec.options': opts.map((value, idx) => ({ value, count: idx })),
       },
@@ -63,7 +65,7 @@ function makeMockCatalogApi(opts: string[] = defaultOptions) {
 
 describe('<EntityAutocompletePicker/>', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('renders all options', async () => {
@@ -193,7 +195,7 @@ describe('<EntityAutocompletePicker/>', () => {
 
   it('respects the query parameter filter value', async () => {
     const mockCatalogApi = makeMockCatalogApi();
-    const updateFilters = jest.fn();
+    const updateFilters = vi.fn();
     const queryParameters = { options: ['option3'] };
     render(
       <TestApiProvider apis={[[catalogApiRef, mockCatalogApi]]}>
@@ -222,7 +224,7 @@ describe('<EntityAutocompletePicker/>', () => {
 
   it('adds options to filters', async () => {
     const mockCatalogApi = makeMockCatalogApi();
-    const updateFilters = jest.fn();
+    const updateFilters = vi.fn();
     render(
       <TestApiProvider apis={[[catalogApiRef, mockCatalogApi]]}>
         <MockEntityListContextProvider
@@ -252,7 +254,7 @@ describe('<EntityAutocompletePicker/>', () => {
 
   it('removes options from filters', async () => {
     const mockCatalogApi = makeMockCatalogApi();
-    const updateFilters = jest.fn();
+    const updateFilters = vi.fn();
     render(
       <TestApiProvider apis={[[catalogApiRef, mockCatalogApi]]}>
         <MockEntityListContextProvider<EntityFilters>

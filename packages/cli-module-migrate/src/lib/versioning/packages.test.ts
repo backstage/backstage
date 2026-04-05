@@ -14,36 +14,38 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import * as runObj from '@backstage/cli-common';
 import * as yarn from './yarn';
 import { fetchPackageInfo, mapDependencies } from './packages';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 import { NotFoundError } from '@backstage/errors';
 
-jest.mock('@backstage/cli-common', () => {
-  const actual = jest.requireActual('@backstage/cli-common');
+vi.mock('@backstage/cli-common', () => {
+  const actual = vi.importActual('@backstage/cli-common');
   return {
     ...actual,
-    runOutput: jest.fn(),
+    runOutput: vi.fn(),
   };
 });
 
-jest.mock('./yarn', () => {
+vi.mock('./yarn', () => {
   return {
-    detectYarnVersion: jest.fn(),
+    detectYarnVersion: vi.fn(),
   };
 });
 
 describe('fetchPackageInfo', () => {
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('should forward info for yarn classic', async () => {
     jest
       .spyOn(runObj, 'runOutput')
       .mockResolvedValue(`{"type":"inspect","data":{"the":"data"}}`);
-    jest.spyOn(yarn, 'detectYarnVersion').mockResolvedValue('classic');
+    vi.spyOn(yarn, 'detectYarnVersion').mockResolvedValue('classic');
 
     await expect(fetchPackageInfo('my-package')).resolves.toEqual({
       the: 'data',
@@ -57,8 +59,8 @@ describe('fetchPackageInfo', () => {
   });
 
   it('should forward info for yarn berry', async () => {
-    jest.spyOn(runObj, 'runOutput').mockResolvedValue(`{"the":"data"}`);
-    jest.spyOn(yarn, 'detectYarnVersion').mockResolvedValue('berry');
+    vi.spyOn(runObj, 'runOutput').mockResolvedValue(`{"the":"data"}`);
+    vi.spyOn(yarn, 'detectYarnVersion').mockResolvedValue('berry');
 
     await expect(fetchPackageInfo('my-package')).resolves.toEqual({
       the: 'data',
@@ -73,8 +75,8 @@ describe('fetchPackageInfo', () => {
   });
 
   it('should throw if no info with yarn classic', async () => {
-    jest.spyOn(runObj, 'runOutput').mockResolvedValue('');
-    jest.spyOn(yarn, 'detectYarnVersion').mockResolvedValue('classic');
+    vi.spyOn(runObj, 'runOutput').mockResolvedValue('');
+    vi.spyOn(yarn, 'detectYarnVersion').mockResolvedValue('classic');
 
     await expect(fetchPackageInfo('my-package')).rejects.toThrow(
       new NotFoundError(`No package information found for package my-package`),
@@ -85,8 +87,8 @@ describe('fetchPackageInfo', () => {
     const error = new Error('Command failed');
     (error as Error & { stdout?: string }).stdout =
       'bla bla bla Response Code: 404 bla bla';
-    jest.spyOn(runObj, 'runOutput').mockRejectedValue(error);
-    jest.spyOn(yarn, 'detectYarnVersion').mockResolvedValue('berry');
+    vi.spyOn(runObj, 'runOutput').mockRejectedValue(error);
+    vi.spyOn(yarn, 'detectYarnVersion').mockResolvedValue('berry');
 
     await expect(fetchPackageInfo('my-package')).rejects.toThrow(
       new NotFoundError(`No package information found for package my-package`),
@@ -98,7 +100,7 @@ describe('mapDependencies', () => {
   const mockDir = createMockDirectory();
 
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('should read dependencies', async () => {

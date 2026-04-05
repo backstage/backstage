@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { OAuthApi, OpenIdConnectApi } from '@backstage/core-plugin-api';
 import { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
 import { KubernetesAuthProviders } from './KubernetesAuthProviders';
@@ -25,11 +27,11 @@ class MockAuthApi implements OAuthApi, OpenIdConnectApi {
     this.token = token;
   }
 
-  getAccessToken = jest.fn(async () => {
+  getAccessToken = vi.fn(async () => {
     return this.token;
   });
 
-  getIdToken = jest.fn(async () => {
+  getIdToken = vi.fn(async () => {
     return this.token;
   });
 }

@@ -13,28 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import { bootstrapEnvProxyAgents } from './proxyBootstrap';
 
 // Avoid mutating the global agents used in other tests
-jest.mock('global-agent', () => ({
-  bootstrap: jest.fn(),
+vi.mock('global-agent', () => ({
+  bootstrap: vi.fn(),
 }));
-jest.mock('undici', () => ({
-  setGlobalDispatcher: jest.fn(),
-  EnvHttpProxyAgent: jest.fn(),
+vi.mock('undici', () => ({
+  setGlobalDispatcher: vi.fn(),
+  EnvHttpProxyAgent: vi.fn(),
 }));
 
 describe('bootstrapEnvProxyAgents', () => {
   const originalEnv = process.env;
 
   beforeEach(() => {
-    jest.resetModules();
+    vi.resetModules();
     process.env = { ...originalEnv };
   });
 
   afterEach(() => {
     process.env = originalEnv;
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should bootstrap global-agent if GLOBAL_AGENT_HTTP_PROXY is set', () => {

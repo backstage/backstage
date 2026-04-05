@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { fireEvent } from '@testing-library/react';
 import { CardHeader } from './CardHeader';
 import { ThemeProvider } from '@material-ui/core/styles';
@@ -44,7 +46,7 @@ describe('CardHeader', () => {
     // But we can check that we call the getPage theme with the right type of template at least.
     const mockTheme = {
       ...lightTheme,
-      getPageTheme: jest.fn(lightTheme.getPageTheme),
+      getPageTheme: vi.fn(lightTheme.getPageTheme),
     };
 
     await renderInTestApp(
@@ -111,7 +113,7 @@ describe('CardHeader', () => {
   it('should enable favoriting of the entity', async () => {
     const starredEntitiesApi = {
       starredEntitie$: () => new Observable(() => {}),
-      toggleStarred: jest.fn(async () => {}),
+      toggleStarred: vi.fn(async () => {}),
     };
 
     const mockTemplate: TemplateEntityV1beta3 = {

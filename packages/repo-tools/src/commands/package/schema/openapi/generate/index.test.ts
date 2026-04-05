@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { createMockDirectory } from '@backstage/backend-test-utils';
 import path from 'node:path';
 
-jest.mock(
+vi.mock(
   'lodash',
   () =>
     ({
-      ...jest.requireActual('lodash'),
+      ...vi.importActual('lodash'),
       debounce: (fn: any) => fn,
     } as any as typeof import('lodash')),
 );
@@ -48,21 +50,21 @@ describe('generateOpenApiSchema', () => {
                     description: OK
         `,
     });
-    jest.mock('../../../../../lib/openapi/helpers', () => ({
-      getPathToCurrentOpenApiSpec: jest.fn(() =>
+    vi.mock('../../../../../lib/openapi/helpers', () => ({
+      getPathToCurrentOpenApiSpec: vi.fn(() =>
         Promise.resolve(path.join(inputDir.path, 'openapi.yaml')),
       ),
-      loadAndValidateOpenApiYaml: jest.fn(),
+      loadAndValidateOpenApiYaml: vi.fn(),
     }));
   });
   it('should handle watch mode', async () => {
-    const generateClientMock = jest.fn();
-    const generateServerMock = jest.fn();
-    jest.doMock('./client', () => ({ command: generateClientMock }));
-    jest.doMock('./server', () => ({ command: generateServerMock }));
+    const generateClientMock = vi.fn();
+    const generateServerMock = vi.fn();
+    vi.doMock('./client', () => ({ command: generateClientMock }));
+    vi.doMock('./server', () => ({ command: generateServerMock }));
 
-    const mockWatch = jest.fn();
-    jest.mock('chokidar', () => ({
+    const mockWatch = vi.fn();
+    vi.mock('chokidar', () => ({
       watch: mockWatch,
     }));
     let resolve: (val?: any) => void;
@@ -70,13 +72,13 @@ describe('generateOpenApiSchema', () => {
       new Promise(res => {
         resolve = res;
       });
-    jest.mock('../../../../../lib/runner', () => ({
+    vi.mock('../../../../../lib/runner', () => ({
       block,
     }));
 
     const mockOn: Record<string, any> = {};
     mockWatch.mockReturnValue({
-      on: jest.fn((event, cb) => {
+      on: vi.fn((event, cb) => {
         console.log(event);
         mockOn[event] = cb;
       }),

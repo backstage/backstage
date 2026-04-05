@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import {
   getBitbucketClient,
   getAuthorizationHeader,
@@ -21,18 +23,18 @@ import {
 } from './helpers';
 import { getBitbucketCloudOAuthToken } from '@backstage/integration';
 
-jest.mock('@backstage/integration', () => ({
-  getBitbucketCloudOAuthToken: jest.fn(),
+vi.mock('@backstage/integration', () => ({
+  getBitbucketCloudOAuthToken: vi.fn(),
 }));
 
 describe('helpers', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('getBitbucketClient', () => {
     it('should create client with OAuth token', async () => {
-      (getBitbucketCloudOAuthToken as jest.Mock).mockResolvedValue(
+      (getBitbucketCloudOAuthToken as Mock).mockResolvedValue(
         'oauth-token-123',
       );
 
@@ -83,7 +85,7 @@ describe('helpers', () => {
 
   describe('getAuthorizationHeader', () => {
     it('should return Bearer token for OAuth credentials', async () => {
-      (getBitbucketCloudOAuthToken as jest.Mock).mockResolvedValue(
+      (getBitbucketCloudOAuthToken as Mock).mockResolvedValue(
         'oauth-token-123',
       );
 
@@ -154,7 +156,7 @@ describe('helpers', () => {
 
   describe('getGitAuth', () => {
     it('should return x-token-auth for OAuth credentials', async () => {
-      (getBitbucketCloudOAuthToken as jest.Mock).mockResolvedValue(
+      (getBitbucketCloudOAuthToken as Mock).mockResolvedValue(
         'oauth-token-123',
       );
 

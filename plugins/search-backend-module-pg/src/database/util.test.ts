@@ -13,10 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import { TestDatabases } from '@backstage/backend-test-utils';
 import { queryPostgresMajorVersion } from './util';
 
-jest.setTimeout(60_000);
+vi.setConfig({ testTimeout: 60_000 });
 
 describe('util', () => {
   describe('unsupported', () => {

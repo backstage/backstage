@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { isDockerDisabledForTests } from '../util/isDockerDisabledForTests';
 import { v4 as uuid } from 'uuid';
 import { startValkeyContainer } from './valkey';
 
 const itIfDocker = isDockerDisabledForTests() ? it.skip : it;
 
-jest.setTimeout(60_000);
+vi.setConfig({ testTimeout: 60_000 });
 
 describe('startValkeyContainer', () => {
   itIfDocker('successfully launches the container', async () => {

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { DefaultSettingsPage } from './DefaultSettingsPage';
 import { UserSettingsTab } from '../UserSettingsTab';
@@ -22,16 +24,16 @@ import { SettingsLayout } from '../SettingsLayout';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useOutlet: jest.fn().mockReturnValue(undefined),
+vi.mock('react-router-dom', () => ({
+  ...vi.importActual('react-router-dom'),
+  useOutlet: vi.fn().mockReturnValue(undefined),
 }));
 
 const catalogApi = catalogApiMock();
 
 describe('<DefaultSettingsPage />', () => {
   beforeEach(() => {
-    (useOutlet as jest.Mock).mockReset();
+    (useOutlet as Mock).mockReset();
   });
 
   it('should render the settings page with 3 tabs', async () => {

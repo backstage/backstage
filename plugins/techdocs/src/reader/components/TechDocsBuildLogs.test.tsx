@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { ReactNode } from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
 import {
@@ -23,7 +25,7 @@ import {
 import { userEvent } from '@testing-library/user-event';
 
 // The <AutoSizer> inside <LogViewer> needs mocking to render in jsdom
-jest.mock('react-virtualized-auto-sizer', () => ({
+vi.mock('react-virtualized-auto-sizer', () => ({
   __esModule: true,
   default: (props: {
     children: (size: { width: number; height: number }) => ReactNode;
@@ -46,7 +48,7 @@ describe('<TechDocsBuildLogs />', () => {
 
 describe('<TechDocsBuildLogsDrawerContent />', () => {
   it('should render with empty log', async () => {
-    const onClose = jest.fn();
+    const onClose = vi.fn();
     const rendered = await renderInTestApp(
       <TechDocsBuildLogsDrawerContent buildLog={[]} onClose={onClose} />,
     );
@@ -59,7 +61,7 @@ describe('<TechDocsBuildLogsDrawerContent />', () => {
   });
 
   it('should render logs', async () => {
-    const onClose = jest.fn();
+    const onClose = vi.fn();
     const rendered = await renderInTestApp(
       <TechDocsBuildLogsDrawerContent
         buildLog={['Line 1', 'Line 2']}
@@ -74,7 +76,7 @@ describe('<TechDocsBuildLogsDrawerContent />', () => {
   });
 
   it('should call onClose', async () => {
-    const onClose = jest.fn();
+    const onClose = vi.fn();
     const rendered = await renderInTestApp(
       <TechDocsBuildLogsDrawerContent buildLog={[]} onClose={onClose} />,
     );

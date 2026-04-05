@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { TestApiProvider, renderInTestApp } from '@backstage/test-utils';
 import { act, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -63,7 +65,7 @@ describe('<StepPrepareSelectLocations />', () => {
   let Wrapper: ComponentType<PropsWithChildren<{}>>;
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
     Wrapper = ({ children }: { children?: ReactNode }) => (
       <TestApiProvider
         apis={[
@@ -222,7 +224,7 @@ describe('<StepPrepareSelectLocations />', () => {
   });
 
   it('should go back', async () => {
-    const onGoBack = jest.fn();
+    const onGoBack = vi.fn();
 
     await renderInTestApp(
       <Wrapper>
@@ -242,7 +244,7 @@ describe('<StepPrepareSelectLocations />', () => {
   });
 
   it('should submit', async () => {
-    const onPrepare = jest.fn();
+    const onPrepare = vi.fn();
 
     await renderInTestApp(
       <Wrapper>

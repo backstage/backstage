@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { permissionApiRef } from '@backstage/plugin-permission-react';
 import {
@@ -38,7 +40,7 @@ function render(children: ReactNode) {
 
 describe('ComponentContextMenu', () => {
   it('should call onUnregisterEntity on button click', async () => {
-    const mockCallback = jest.fn();
+    const mockCallback = vi.fn();
     await render(
       <UnregisterEntity
         unregisterEntityOptions={{ disableUnregister: 'visible' }}
@@ -56,7 +58,7 @@ describe('ComponentContextMenu', () => {
   });
 
   it('check Unregister entity button is disabled', async () => {
-    const mockCallback = jest.fn();
+    const mockCallback = vi.fn();
 
     await render(
       <UnregisterEntity

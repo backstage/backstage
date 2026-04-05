@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { ToastApiForwarder } from './ToastApiForwarder';
 
 describe('ToastApiForwarder', () => {
@@ -77,7 +79,7 @@ describe('ToastApiForwarder', () => {
 
   describe('close', () => {
     it('should notify onClose listeners when close() is called', () => {
-      const onCloseFn = jest.fn();
+      const onCloseFn = vi.fn();
 
       const received: Array<{ onClose: (cb: () => void) => void }> = [];
       forwarder.toast$().subscribe(toast => {
@@ -92,7 +94,7 @@ describe('ToastApiForwarder', () => {
     });
 
     it('should only close once even if called multiple times', () => {
-      const onCloseFn = jest.fn();
+      const onCloseFn = vi.fn();
 
       const received: Array<{ onClose: (cb: () => void) => void }> = [];
       forwarder.toast$().subscribe(toast => {
@@ -121,7 +123,7 @@ describe('ToastApiForwarder', () => {
     });
 
     it('should immediately call onClose callback if already closed', () => {
-      const onCloseFn = jest.fn();
+      const onCloseFn = vi.fn();
 
       const received: Array<{ onClose: (cb: () => void) => void }> = [];
       forwarder.toast$().subscribe(toast => {

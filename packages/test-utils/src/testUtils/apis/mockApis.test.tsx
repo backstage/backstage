@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   AuthorizeResult,
   createPermission,
@@ -334,8 +336,8 @@ describe('mockApis', () => {
       it('should subscribe to key changes when setting a new value', async () => {
         const storage = mockApis.storage();
 
-        const wrongKeyNextHandler = jest.fn();
-        const selectedKeyNextHandler = jest.fn();
+        const wrongKeyNextHandler = vi.fn();
+        const selectedKeyNextHandler = vi.fn();
         const mockData = { hello: 'im a great new value' };
 
         await new Promise<void>(resolve => {
@@ -363,8 +365,8 @@ describe('mockApis', () => {
       it('should subscribe to key changes when deleting a value', async () => {
         const storage = mockApis.storage();
 
-        const wrongKeyNextHandler = jest.fn();
-        const selectedKeyNextHandler = jest.fn();
+        const wrongKeyNextHandler = vi.fn();
+        const selectedKeyNextHandler = vi.fn();
         const mockData = { hello: 'im a great new value' };
 
         storage.set('correctKey', mockData);

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   ScaffolderApi,
   scaffolderApiRef,
@@ -31,14 +33,14 @@ import userEvent from '@testing-library/user-event';
 
 describe('GitHubRepoBranchPicker', () => {
   const scaffolderApiMock: Partial<ScaffolderApi> = {
-    autocomplete: jest.fn().mockResolvedValue({ results: [{ id: 'branch1' }] }),
+    autocomplete: vi.fn().mockResolvedValue({ results: [{ id: 'branch1' }] }),
   };
 
   it('renders an input field', () => {
     const { getByRole } = render(
       <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
         <GitHubRepoBranchPicker
-          onChange={jest.fn()}
+          onChange={vi.fn()}
           state={{ branch: 'main' }}
           rawErrors={[]}
         />
@@ -53,7 +55,7 @@ describe('GitHubRepoBranchPicker', () => {
     render(
       <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
         <GitHubRepoBranchPicker
-          onChange={jest.fn()}
+          onChange={vi.fn()}
           isDisabled
           state={{ branch: 'main' }}
           rawErrors={[]}
@@ -69,7 +71,7 @@ describe('GitHubRepoBranchPicker', () => {
   });
 
   it('calls onChange when the input field changes', () => {
-    const onChange = jest.fn();
+    const onChange = vi.fn();
 
     const { getByRole } = render(
       <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
@@ -95,7 +97,7 @@ describe('GitHubRepoBranchPicker', () => {
   });
 
   it('should populate branches', async () => {
-    const onChange = jest.fn();
+    const onChange = vi.fn();
 
     const { getByRole, getByText } = render(
       <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>

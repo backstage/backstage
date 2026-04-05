@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import { CreatedAtColumn } from './CreatedAtColumn';
 import { renderInTestApp } from '@backstage/test-utils';
 
@@ -20,11 +22,11 @@ describe('<CreatedAtColumn />', () => {
   const testDate = '2024-09-22T13:30:00Z';
 
   const mockNavigatorLanguage = (language: string) => {
-    jest.spyOn(window.navigator, 'language', 'get').mockReturnValue(language);
+    vi.spyOn(window.navigator, 'language', 'get').mockReturnValue(language);
   };
 
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   it('should render the column using mocked locale (de-DE)', async () => {

@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import {
   mockServices,
   TestDatabaseId,
@@ -26,7 +28,7 @@ import {
   NotificationSeverity,
 } from '@backstage/plugin-notifications-common';
 
-jest.setTimeout(60_000);
+vi.setConfig({ testTimeout: 60_000 });
 
 const databases = TestDatabases.create();
 
@@ -187,7 +189,7 @@ describe.each(databases.eachSupportedId())(
     });
 
     afterEach(async () => {
-      jest.resetAllMocks();
+      vi.resetAllMocks();
       await knex('notification').del();
       await knex('broadcast').del();
     });

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   Entity,
   RELATION_HAS_PART,
@@ -32,10 +34,10 @@ import userEvent from '@testing-library/user-event';
 import { CatalogGraphPage } from './CatalogGraphPage';
 import { GetEntitiesByRefsRequest } from '@backstage/catalog-client';
 
-const navigate = jest.fn();
+const navigate = vi.fn();
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+vi.mock('react-router-dom', () => ({
+  ...vi.importActual('react-router-dom'),
   useNavigate: () => navigate,
 }));
 
@@ -136,7 +138,7 @@ describe.skip('<CatalogGraphPage/>', () => {
     );
   });
 
-  afterEach(() => jest.resetAllMocks());
+  afterEach(() => vi.resetAllMocks());
 
   test('should render without exploding', async () => {
     catalog.getEntitiesByRefs.mockImplementation(

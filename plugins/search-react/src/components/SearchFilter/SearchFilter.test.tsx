@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
@@ -50,10 +52,10 @@ describe('SearchFilter', () => {
     },
   });
 
-  const searchApiMock = { query: jest.fn().mockResolvedValue({ results: [] }) };
+  const searchApiMock = { query: vi.fn().mockResolvedValue({ results: [] }) };
 
   afterAll(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('Check that element was rendered and received props', async () => {

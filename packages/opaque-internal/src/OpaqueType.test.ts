@@ -71,55 +71,55 @@ describe('OpaqueType', () => {
     expect(() =>
       OpaqueMyType.toInternal('hello'),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid opaque type, expected 'my-type', but got '<string>'"`,
+      `[TypeError: Invalid opaque type, expected 'my-type', but got '<string>']`,
     );
     expect(() => OpaqueMyType.toInternal(3)).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid opaque type, expected 'my-type', but got '<number>'"`,
+      `[TypeError: Invalid opaque type, expected 'my-type', but got '<number>']`,
     );
     expect(() =>
       OpaqueMyType.toInternal(undefined),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid opaque type, expected 'my-type', but got '<undefined>'"`,
+      `[TypeError: Invalid opaque type, expected 'my-type', but got '<undefined>']`,
     );
     expect(() =>
       OpaqueMyType.toInternal(Symbol('wat')),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid opaque type, expected 'my-type', but got '<symbol>'"`,
+      `[TypeError: Invalid opaque type, expected 'my-type', but got '<symbol>']`,
     );
     expect(() =>
       OpaqueMyType.toInternal(null),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid opaque type, expected 'my-type', but got '<null>'"`,
+      `[TypeError: Invalid opaque type, expected 'my-type', but got '<null>']`,
     );
     expect(() =>
       OpaqueMyType.toInternal(() => {}),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid opaque type, expected 'my-type', but got '<function>'"`,
+      `[TypeError: Invalid opaque type, expected 'my-type', but got '<function>']`,
     );
     expect(() =>
       OpaqueMyType.toInternal({ $$type: 'some-other-type' }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid opaque type, expected 'my-type', but got 'some-other-type'"`,
+      `[TypeError: Invalid opaque type, expected 'my-type', but got 'some-other-type']`,
     );
     expect(() =>
       OpaqueMyType.toInternal({ an: 'object' }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid opaque type, expected 'my-type', but got '[object Object]'"`,
+      `[TypeError: Invalid opaque type, expected 'my-type', but got '[object Object]']`,
     );
     expect(() =>
       OpaqueMyType.toInternal({ $$type: 'my-type' }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid opaque type instance, got version undefined, expected 'v1'"`,
+      `[TypeError: Invalid opaque type instance, got version undefined, expected 'v1']`,
     );
     expect(() =>
       OpaqueMyType.toInternal({ $$type: 'my-type', version: 'v0' }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid opaque type instance, got version 'v0', expected 'v1'"`,
+      `[TypeError: Invalid opaque type instance, got version 'v0', expected 'v1']`,
     );
     expect(() =>
       OpaqueMyType.toInternal({ $$type: 'my-type', version: { foo: 'bar' } }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid opaque type instance, got version '[object Object]', expected 'v1'"`,
+      `[TypeError: Invalid opaque type instance, got version '[object Object]', expected 'v1']`,
     );
   });
 
@@ -218,12 +218,12 @@ describe('OpaqueType', () => {
     expect(() =>
       OpaqueMyType.toInternal({ $$type: 'my-type' }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid opaque type instance, got version undefined, expected 'v1', 'v2', or 'v3'"`,
+      `[TypeError: Invalid opaque type instance, got version undefined, expected 'v1', 'v2', or 'v3']`,
     );
     expect(() =>
       OpaqueMyType.toInternal({ $$type: 'my-type', version: 'v0' }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid opaque type instance, got version 'v0', expected 'v1', 'v2', or 'v3'"`,
+      `[TypeError: Invalid opaque type instance, got version 'v0', expected 'v1', 'v2', or 'v3']`,
     );
   });
 
@@ -280,7 +280,7 @@ describe('OpaqueType', () => {
     expect(() =>
       OpaqueMyType.toInternal({ $$type: 'my-type', version: 'v0' }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid opaque type instance, got version 'v0', expected undefined"`,
+      `[TypeError: Invalid opaque type instance, got version 'v0', expected undefined]`,
     );
   });
 
@@ -376,7 +376,7 @@ describe('OpaqueType', () => {
     expect(() =>
       OpaqueMyType.toInternal({ $$type: 'my-type', version: 'v3' }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid opaque type instance, got version 'v3', expected undefined or 'v1'"`,
+      `[TypeError: Invalid opaque type instance, got version 'v3', expected undefined or 'v1']`,
     );
   });
 

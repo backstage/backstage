@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type MockedFunction} from 'vitest';
+
 import { ScmIntegrations } from '@backstage/integration';
 import {
   MockFetchApi,
@@ -25,8 +27,8 @@ import { setupServer } from 'msw/node';
 import { ScaffolderClient } from './ScaffolderClient';
 import { fetchEventSource } from '@microsoft/fetch-event-source';
 
-jest.mock('@microsoft/fetch-event-source');
-const mockFetchEventSource = fetchEventSource as jest.MockedFunction<
+vi.mock('@microsoft/fetch-event-source');
+const mockFetchEventSource = fetchEventSource as MockedFunction<
   typeof fetchEventSource
 >;
 
@@ -50,10 +52,10 @@ describe('api', () => {
   const discoveryApi = { getBaseUrl: async () => mockBaseUrl };
   const fetchApi = new MockFetchApi();
   const identityApi = {
-    getBackstageIdentity: jest.fn(),
-    getProfileInfo: jest.fn(),
-    getCredentials: jest.fn(),
-    signOut: jest.fn(),
+    getBackstageIdentity: vi.fn(),
+    getProfileInfo: vi.fn(),
+    getCredentials: vi.fn(),
+    signOut: vi.fn(),
   };
 
   const scmIntegrationsApi = ScmIntegrations.fromConfig(
@@ -69,7 +71,7 @@ describe('api', () => {
       identityApi,
     });
 
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
     identityApi.getBackstageIdentity.mockReturnValue({});
   });
 
@@ -110,7 +112,7 @@ describe('api', () => {
           });
         });
 
-        const next = jest.fn();
+        const next = vi.fn();
 
         await new Promise<void>(complete => {
           apiClient
@@ -198,7 +200,7 @@ describe('api', () => {
           ),
         );
 
-        const next = jest.fn();
+        const next = vi.fn();
 
         await new Promise<void>(complete =>
           apiClient
@@ -256,7 +258,7 @@ describe('api', () => {
           ),
         );
 
-        const next = jest.fn();
+        const next = vi.fn();
 
         await new Promise<void>(complete => {
           const subscription = apiClient
@@ -281,7 +283,7 @@ describe('api', () => {
       });
 
       it('should continue after error', async () => {
-        const called = jest.fn();
+        const called = vi.fn();
 
         server.use(
           rest.get(
@@ -308,7 +310,7 @@ describe('api', () => {
           ),
         );
 
-        const next = jest.fn();
+        const next = vi.fn();
 
         await new Promise<void>(complete =>
           apiClient

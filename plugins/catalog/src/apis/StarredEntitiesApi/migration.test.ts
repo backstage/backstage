@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { StorageApi } from '@backstage/core-plugin-api';
 import { mockApis } from '@backstage/test-utils';
 import { performMigrationToTheNewBucket } from './migration';
@@ -26,7 +28,7 @@ describe('performMigrationToTheNewBucket', () => {
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should migrate', async () => {

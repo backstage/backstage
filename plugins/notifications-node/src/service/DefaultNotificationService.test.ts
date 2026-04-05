@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { registerMswTestHooks } from '@backstage/test-utils';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
@@ -35,7 +37,7 @@ describe('DefaultNotificationService', () => {
   registerMswTestHooks(server);
 
   const discovery = mockServices.discovery.mock({
-    getBaseUrl: jest.fn().mockResolvedValue('http://example.com'),
+    getBaseUrl: vi.fn().mockResolvedValue('http://example.com'),
   });
   const auth = mockServices.auth();
 

@@ -98,7 +98,7 @@ describe('StaticConfigPluginKeySource', () => {
         keyDuration: { hours: 1 },
       }),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"At least one key pair must be provided in static.keys, when the static key store type is used"`,
+      `[Error: At least one key pair must be provided in static.keys, when the static key store type is used]`,
     );
 
     await expect(
@@ -118,7 +118,7 @@ describe('StaticConfigPluginKeySource', () => {
         keyDuration: { hours: 1 },
       }),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"Private key for signing must be provided in the first key pair in static.keys, when the static key store type is used"`,
+      `[Error: Private key for signing must be provided in the first key pair in static.keys, when the static key store type is used]`,
     );
   });
 });

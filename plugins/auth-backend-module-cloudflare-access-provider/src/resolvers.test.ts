@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { AuthResolverContext, SignInInfo } from '@backstage/plugin-auth-node';
 import { cloudflareAccessSignInResolvers } from './resolvers';
 import { CloudflareAccessResult } from './types';
@@ -33,7 +35,7 @@ describe('resolvers', () => {
     };
 
     const context = {
-      signInWithCatalogUser: jest.fn().mockResolvedValue(undefined),
+      signInWithCatalogUser: vi.fn().mockResolvedValue(undefined),
     } satisfies Partial<AuthResolverContext>;
 
     await resolver(info, context as any);

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { render, RenderResult } from '@testing-library/react';
 import { ReactNode } from 'react';
 import { MemoryRouter, Route, Routes, useOutlet } from 'react-router-dom';
@@ -24,9 +26,9 @@ import { AppContextProvider } from '../app/AppContext';
 import { FlatRoutes } from './FlatRoutes';
 import { TestApiProvider } from '@backstage/test-utils';
 
-jest.mock('react-router', () => jest.requireActual('react-router-beta'));
-jest.mock('react-router-dom', () =>
-  jest.requireActual('react-router-dom-beta'),
+vi.mock('react-router', () => vi.importActual('react-router-beta'));
+vi.mock('react-router-dom', () =>
+  vi.importActual('react-router-dom-beta'),
 );
 
 const mockFeatureFlagsApi = new LocalStorageFeatureFlags();

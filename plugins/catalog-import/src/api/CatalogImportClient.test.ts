@@ -14,22 +14,24 @@
  * limitations under the License.
  */
 
+import { vi, vi, type Mocked} from 'vitest';
+
 const octokit = {
   repos: {
     get: () => Promise.resolve({ data: { default_branch: 'main' } }),
-    createOrUpdateFileContents: jest.fn(async () => {}),
+    createOrUpdateFileContents: vi.fn(async () => {}),
   },
   search: {
-    code: jest.fn(),
+    code: vi.fn(),
   },
   git: {
     getRef: async () => ({
       data: { object: { sha: 'any' } },
     }),
-    createRef: jest.fn(async () => {}),
+    createRef: vi.fn(async () => {}),
   },
   pulls: {
-    create: jest.fn(async () => ({
+    create: vi.fn(async () => ({
       data: {
         html_url: 'http://pull/request/0',
       },
@@ -37,7 +39,7 @@ const octokit = {
   },
 };
 
-jest.mock('@octokit/rest', () => {
+vi.mock('@octokit/rest', () => {
   class Octokit {
     constructor() {
       return octokit;
@@ -47,9 +49,9 @@ jest.mock('@octokit/rest', () => {
   return { Octokit };
 });
 
-jest.mock('./AzureRepoApiClient', () => {
+vi.mock('./AzureRepoApiClient', () => {
   return {
-    createAzurePullRequest: jest.fn(),
+    createAzurePullRequest: vi.fn(),
   };
 });
 
@@ -75,8 +77,8 @@ describe('CatalogImportClient', () => {
   const mockBaseUrl = 'http://backstage:9191/api/catalog';
   const discoveryApi = UrlPatternDiscovery.compile(mockBaseUrl);
 
-  const scmAuthApi: jest.Mocked<ScmAuthApi> = {
-    getCredentials: jest.fn().mockResolvedValue({ token: 'token' }),
+  const scmAuthApi: Mocked<ScmAuthApi> = {
+    getCredentials: vi.fn().mockResolvedValue({ token: 'token' }),
   };
   const fetchApi = new MockFetchApi();
 
@@ -114,7 +116,7 @@ describe('CatalogImportClient', () => {
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('analyzeUrl', () => {
@@ -287,7 +289,7 @@ describe('CatalogImportClient', () => {
     });
 
     it('should find locations from github', async () => {
-      (new Octokit().search.code as any as jest.Mock).mockResolvedValueOnce({
+      (new Octokit().search.code as any as Mock).mockResolvedValueOnce({
         data: {
           total_count: 3,
           items: [
@@ -394,7 +396,7 @@ describe('CatalogImportClient', () => {
     });
 
     it('should find repository from github', async () => {
-      (new Octokit().search.code as any as jest.Mock).mockResolvedValueOnce({
+      (new Octokit().search.code as any as Mock).mockResolvedValueOnce({
         data: { total_count: 0, items: [] },
       });
 
@@ -460,7 +462,7 @@ describe('CatalogImportClient', () => {
         }),
       });
 
-      (new Octokit().search.code as any as jest.Mock).mockImplementationOnce(
+      (new Octokit().search.code as any as Mock).mockImplementationOnce(
         async params => ({
           data: {
             total_count: 1,
@@ -582,7 +584,7 @@ describe('CatalogImportClient', () => {
       });
       expect(catalogApi.validateEntity).toHaveBeenCalledTimes(1);
       expect(
-        (new Octokit().git.createRef as any as jest.Mock).mock.calls[0][0],
+        (new Octokit().git.createRef as any as Mock).mock.calls[0][0],
       ).toEqual({
         owner: 'backstage',
         repo: 'backstage',
@@ -590,7 +592,7 @@ describe('CatalogImportClient', () => {
         sha: 'any',
       });
       expect(
-        (new Octokit().repos.createOrUpdateFileContents as any as jest.Mock)
+        (new Octokit().repos.createOrUpdateFileContents as any as Mock)
           .mock.calls[0][0],
       ).toEqual({
         owner: 'backstage',
@@ -602,7 +604,7 @@ describe('CatalogImportClient', () => {
         branch: 'backstage-integration',
       });
       expect(
-        (new Octokit().pulls.create as any as jest.Mock).mock.calls[0][0],
+        (new Octokit().pulls.create as any as Mock).mock.calls[0][0],
       ).toEqual({
         owner: 'backstage',
         repo: 'backstage',
@@ -616,7 +618,7 @@ describe('CatalogImportClient', () => {
       catalogApi.validateEntity.mockResolvedValueOnce({
         valid: true,
       });
-      const azureMock = createAzurePullRequest as jest.Mock;
+      const azureMock = createAzurePullRequest as Mock;
       azureMock.mockResolvedValueOnce({
         repository: {
           name: 'backstage',
@@ -750,7 +752,7 @@ describe('CatalogImportClient', () => {
       );
 
       expect(
-        (new Octokit().git.createRef as any as jest.Mock).mock.calls[0][0],
+        (new Octokit().git.createRef as any as Mock).mock.calls[0][0],
       ).toEqual(
         expect.objectContaining({
           ref: `refs/heads/${pullRequestBranchName}`,
@@ -758,7 +760,7 @@ describe('CatalogImportClient', () => {
       );
 
       expect(
-        (new Octokit().repos.createOrUpdateFileContents as any as jest.Mock)
+        (new Octokit().repos.createOrUpdateFileContents as any as Mock)
           .mock.calls[0][0],
       ).toEqual(
         expect.objectContaining({
@@ -768,7 +770,7 @@ describe('CatalogImportClient', () => {
       );
 
       expect(
-        (new Octokit().pulls.create as any as jest.Mock).mock.calls[0][0],
+        (new Octokit().pulls.create as any as Mock).mock.calls[0][0],
       ).toEqual(
         expect.objectContaining({
           head: pullRequestBranchName,
@@ -814,7 +816,7 @@ spec:
       });
       expect(catalogApi.validateEntity).toHaveBeenCalledTimes(2);
       expect(
-        (new Octokit().git.createRef as any as jest.Mock).mock.calls[0][0],
+        (new Octokit().git.createRef as any as Mock).mock.calls[0][0],
       ).toEqual({
         owner: 'backstage',
         repo: 'backstage',
@@ -822,7 +824,7 @@ spec:
         sha: 'any',
       });
       expect(
-        (new Octokit().repos.createOrUpdateFileContents as any as jest.Mock)
+        (new Octokit().repos.createOrUpdateFileContents as any as Mock)
           .mock.calls[0][0],
       ).toEqual({
         owner: 'backstage',
@@ -834,7 +836,7 @@ spec:
         branch: 'backstage-integration',
       });
       expect(
-        (new Octokit().pulls.create as any as jest.Mock).mock.calls[0][0],
+        (new Octokit().pulls.create as any as Mock).mock.calls[0][0],
       ).toEqual({
         owner: 'backstage',
         repo: 'backstage',

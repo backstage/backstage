@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi , type Mock} from 'vitest';
 import { render } from '@testing-library/react';
 
 // We need to mock react-router-dom hooks used by useInitialRedirect
@@ -21,25 +23,25 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 // Import the module from which the hook is defined
 import { useInitialRedirect } from './dom';
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useLocation: jest.fn(),
-  useNavigate: jest.fn(),
-  useParams: jest.fn(),
+vi.mock('react-router-dom', () => ({
+  ...vi.importActual('react-router-dom'),
+  useLocation: vi.fn(),
+  useNavigate: vi.fn(),
+  useParams: vi.fn(),
 }));
 
 describe('useInitialRedirect', () => {
-  const mockNavigate = jest.fn();
+  const mockNavigate = vi.fn();
 
   beforeEach(() => {
     // Reset mocks before each test
     mockNavigate.mockReset();
-    (useNavigate as jest.Mock).mockReturnValue(mockNavigate);
-    (useLocation as jest.Mock).mockReturnValue({
+    (useNavigate as Mock).mockReturnValue(mockNavigate);
+    (useLocation as Mock).mockReturnValue({
       pathname: '/docs/default/Component/backstage-demo',
     });
     // Simulate that no current path is provided
-    (useParams as jest.Mock).mockReturnValue({ '*': '' });
+    (useParams as Mock).mockReturnValue({ '*': '' });
   });
 
   const TestComponent: React.FC<{ defaultPath?: string }> = ({
@@ -65,7 +67,7 @@ describe('useInitialRedirect', () => {
 
   it('should not navigate if currPath is non-empty', () => {
     // Override useParams to simulate a non-empty currPath
-    (useParams as jest.Mock).mockReturnValue({ '*': 'existing-path' });
+    (useParams as Mock).mockReturnValue({ '*': 'existing-path' });
     render(<TestComponent defaultPath={undefined} />);
     expect(mockNavigate).not.toHaveBeenCalled();
   });

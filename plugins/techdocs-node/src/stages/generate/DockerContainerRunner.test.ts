@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import fs from 'fs-extra';
 import Stream, { PassThrough } from 'node:stream';
 import { DockerContainerRunner, UserOptions } from './DockerContainerRunner';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 
-const mockPull = jest.fn();
-const mockRun = jest.fn();
-const mockPing = jest.fn();
+const mockPull = vi.fn();
+const mockRun = vi.fn();
+const mockPing = vi.fn();
 
-jest.mock(
+vi.mock(
   'dockerode',
   () =>
     function MockDocker() {
@@ -63,7 +65,7 @@ describe('DockerContainerRunner', () => {
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   const imageName = 'dockerorg/image';

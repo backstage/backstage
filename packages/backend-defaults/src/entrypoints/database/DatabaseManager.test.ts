@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { ConfigReader } from '@backstage/config';
 import { DatabaseManagerImpl } from './DatabaseManager';
 import { Connector } from './types';
@@ -21,7 +23,7 @@ import { mockServices } from '@backstage/backend-test-utils';
 
 describe('DatabaseManagerImpl', () => {
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   const deps = {
@@ -31,10 +33,10 @@ describe('DatabaseManagerImpl', () => {
 
   it('calls the right connector, only once per plugin id', async () => {
     const connector1 = {
-      getClient: jest.fn(),
+      getClient: vi.fn(),
     } satisfies Connector;
     const connector2 = {
-      getClient: jest.fn(),
+      getClient: vi.fn(),
     } satisfies Connector;
 
     const impl = new DatabaseManagerImpl(
@@ -65,10 +67,10 @@ describe('DatabaseManagerImpl', () => {
 
   it('respects per-plugin overridden connectors', async () => {
     const connector1 = {
-      getClient: jest.fn(),
+      getClient: vi.fn(),
     } satisfies Connector;
     const connector2 = {
-      getClient: jest.fn(),
+      getClient: vi.fn(),
     } satisfies Connector;
 
     const impl = new DatabaseManagerImpl(
@@ -100,7 +102,7 @@ describe('DatabaseManagerImpl', () => {
 
   it('migration skip options take precedence over config', async () => {
     const connector = {
-      getClient: jest.fn(),
+      getClient: vi.fn(),
     } satisfies Connector;
 
     const impl = new DatabaseManagerImpl(
@@ -129,7 +131,7 @@ describe('DatabaseManagerImpl', () => {
 
   it('plugin can skip migrations using config', async () => {
     const connector = {
-      getClient: jest.fn(),
+      getClient: vi.fn(),
     } satisfies Connector;
 
     const impl = new DatabaseManagerImpl(
@@ -169,8 +171,8 @@ describe('DatabaseManagerImpl', () => {
 
   it('registers a shutdown hook if root lifecycle service is provided', async () => {
     // Given a database manager that is provided a rootLifecycle service
-    const rootLifecycle = { addShutdownHook: jest.fn() } as unknown as any;
-    const destroy = jest.fn();
+    const rootLifecycle = { addShutdownHook: vi.fn() } as unknown as any;
+    const destroy = vi.fn();
     const connector1 = {
       getClient: jest
         .fn()
@@ -202,14 +204,14 @@ describe('DatabaseManagerImpl', () => {
 
   it('does not attempt to destroy connection when using SQLite', async () => {
     // Same us the previous test, but with SQLite
-    const rootLifecycle = { addShutdownHook: jest.fn() } as unknown as any;
+    const rootLifecycle = { addShutdownHook: vi.fn() } as unknown as any;
 
     // Make sure we're actually checking the client, since we're ignoring errors
-    const getConfig = jest.fn().mockReturnValue('sqlite3');
+    const getConfig = vi.fn().mockReturnValue('sqlite3');
 
-    const destroy = jest.fn();
+    const destroy = vi.fn();
     const connector1 = {
-      getClient: jest.fn().mockResolvedValue({
+      getClient: vi.fn().mockResolvedValue({
         destroy,
         client: {
           get config() {

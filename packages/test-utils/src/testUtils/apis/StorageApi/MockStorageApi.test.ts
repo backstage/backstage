@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { StorageApi } from '@backstage/core-plugin-api';
 import { MockStorageApi } from './MockStorageApi';
 
@@ -81,8 +83,8 @@ describe('WebStorage Storage API', () => {
   it('should subscribe to key changes when setting a new value', async () => {
     const storage = createMockStorage();
 
-    const wrongKeyNextHandler = jest.fn();
-    const selectedKeyNextHandler = jest.fn();
+    const wrongKeyNextHandler = vi.fn();
+    const selectedKeyNextHandler = vi.fn();
     const mockData = { hello: 'im a great new value' };
 
     await new Promise<void>(resolve => {
@@ -110,8 +112,8 @@ describe('WebStorage Storage API', () => {
   it('should subscribe to key changes when deleting a value', async () => {
     const storage = createMockStorage();
 
-    const wrongKeyNextHandler = jest.fn();
-    const selectedKeyNextHandler = jest.fn();
+    const wrongKeyNextHandler = vi.fn();
+    const selectedKeyNextHandler = vi.fn();
     const mockData = { hello: 'im a great new value' };
 
     storage.set('correctKey', mockData);

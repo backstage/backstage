@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { Entity, RELATION_DEPENDS_ON } from '@backstage/catalog-model';
 import {
   catalogApiRef,
@@ -38,7 +40,7 @@ describe('<DependsOnResourcesCard />', () => {
     );
   });
 
-  afterEach(() => jest.resetAllMocks());
+  afterEach(() => vi.resetAllMocks());
 
   it('shows empty list if no dependencies', async () => {
     const entity: Entity = {

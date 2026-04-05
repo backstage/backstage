@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import knexFactory, { Knex } from 'knex';
 import { isDockerDisabledForTests } from '../util/isDockerDisabledForTests';
 import { startPostgresContainer, PostgresEngine } from './postgres';
@@ -24,7 +26,7 @@ const ourDatabaseIds = Object.entries(allDatabases)
   .filter(([, properties]) => properties.driver === 'pg')
   .map(([id]) => id as TestDatabaseId);
 
-jest.setTimeout(60_000);
+vi.setConfig({ testTimeout: 60_000 });
 
 describe('startPostgresContainer', () => {
   itIfDocker(
@@ -50,7 +52,7 @@ describe('PostgresEngine', () => {
   const OLD_ENV = process.env;
 
   beforeEach(() => {
-    jest.resetModules();
+    vi.resetModules();
     process.env = { ...OLD_ENV };
   });
 

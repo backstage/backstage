@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { AnyParams, ExternalRouteRef } from './types';
 import { createExternalRouteRef } from './ExternalRouteRef';
 import { RouteResolutionApi, RouteFunc } from '@backstage/frontend-plugin-api';
@@ -114,7 +116,7 @@ describe('ExternalRouteRef', () => {
   });
 
   describe('with new frontend system', () => {
-    const routeResolutionApi = { resolve: jest.fn() } as RouteResolutionApi;
+    const routeResolutionApi = { resolve: vi.fn() } as RouteResolutionApi;
 
     function expectType<T>(): <U>(
       v: U,

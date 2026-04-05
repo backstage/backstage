@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import { createBackendPlugin } from '@backstage/backend-plugin-api';
 import {
   mockCredentials,
@@ -464,7 +466,7 @@ describe('actionsRegistryServiceFactory', () => {
   });
 
   describe('/.backstage/actions/v1/actions/:actionId/invoke', () => {
-    const mockAction = jest.fn();
+    const mockAction = vi.fn();
 
     beforeEach(() => {
       mockAction.mockResolvedValue({ output: { ok: true } });
@@ -847,7 +849,7 @@ describe('actionsRegistryServiceFactory', () => {
     });
 
     it('should allow invoking an action when permission is granted', async () => {
-      const mockAction = jest.fn().mockResolvedValue({ output: { ok: true } });
+      const mockAction = vi.fn().mockResolvedValue({ output: { ok: true } });
 
       const pluginSubject = createBackendPlugin({
         pluginId: 'my-plugin',

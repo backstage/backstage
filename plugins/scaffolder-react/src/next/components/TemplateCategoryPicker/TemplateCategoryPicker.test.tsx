@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import { useEntityTypeFilter } from '@backstage/plugin-catalog-react';
 import { TemplateCategoryPicker } from './TemplateCategoryPicker';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
@@ -22,8 +24,8 @@ import { alertApiRef } from '@backstage/core-plugin-api';
 import { fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-jest.mock('@backstage/plugin-catalog-react', () => ({
-  useEntityTypeFilter: jest.fn(),
+vi.mock('@backstage/plugin-catalog-react', () => ({
+  useEntityTypeFilter: vi.fn(),
 }));
 
 describe('TemplateCategoryPicker', () => {
@@ -34,7 +36,7 @@ describe('TemplateCategoryPicker', () => {
   });
 
   it('should post the error to errorApi if an errors is returned', async () => {
-    (useEntityTypeFilter as jest.Mock).mockReturnValue({
+    (useEntityTypeFilter as Mock).mockReturnValue({
       error: new Error('something broked'),
     });
 
@@ -54,7 +56,7 @@ describe('TemplateCategoryPicker', () => {
   });
 
   it('should render loading if the hook is loading', async () => {
-    (useEntityTypeFilter as jest.Mock).mockReturnValue({
+    (useEntityTypeFilter as Mock).mockReturnValue({
       loading: true,
     });
 
@@ -68,7 +70,7 @@ describe('TemplateCategoryPicker', () => {
   });
 
   it('should not render if there is no available types', async () => {
-    (useEntityTypeFilter as jest.Mock).mockReturnValue({
+    (useEntityTypeFilter as Mock).mockReturnValue({
       availableTypes: null,
     });
 
@@ -84,7 +86,7 @@ describe('TemplateCategoryPicker', () => {
   it('renders the autocomplete with the availableTypes', async () => {
     const mockAvailableTypes = ['foo', 'bar'];
 
-    (useEntityTypeFilter as jest.Mock).mockReturnValue({
+    (useEntityTypeFilter as Mock).mockReturnValue({
       availableTypes: mockAvailableTypes,
     });
 
@@ -103,9 +105,9 @@ describe('TemplateCategoryPicker', () => {
 
   it('should call setSelectedTypes when one of the options are called', async () => {
     const mockAvailableTypes = ['foo', 'bar'];
-    const mockSetSelectedTypes = jest.fn();
+    const mockSetSelectedTypes = vi.fn();
 
-    (useEntityTypeFilter as jest.Mock).mockReturnValue({
+    (useEntityTypeFilter as Mock).mockReturnValue({
       availableTypes: mockAvailableTypes,
       setSelectedTypes: mockSetSelectedTypes,
     });
@@ -136,7 +138,7 @@ describe('TemplateCategoryPicker', () => {
     const mockAvailableTypes = ['foo', 'bar'];
     const mockSelectedTypes = ['foo'];
 
-    (useEntityTypeFilter as jest.Mock).mockReturnValue({
+    (useEntityTypeFilter as Mock).mockReturnValue({
       availableTypes: mockAvailableTypes,
       selectedTypes: mockSelectedTypes,
     });

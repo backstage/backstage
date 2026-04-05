@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { mockServices } from '@backstage/backend-test-utils';
 import { Request } from 'express';
 import { gcpIapAuthenticator } from './authenticator';
 
 beforeEach(() => {
-  jest.clearAllMocks();
+  vi.clearAllMocks();
 });
-jest.mock('./helpers', () => ({
+vi.mock('./helpers', () => ({
   createTokenValidator() {
     return async () => ({ sub: 's', email: 'e' });
   },

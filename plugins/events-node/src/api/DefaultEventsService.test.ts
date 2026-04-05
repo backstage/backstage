@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { DefaultEventsService } from './DefaultEventsService';
 import { EventParams } from './EventParams';
 import { EVENTS_NOTIFY_TIMEOUT_HEADER } from './EventsService';
@@ -76,7 +78,7 @@ describe('DefaultEventsService', () => {
     const topic = 'testTopic';
 
     const logger = mockServices.logger.mock();
-    const warnSpy = jest.spyOn(logger, 'warn');
+    const warnSpy = vi.spyOn(logger, 'warn');
     const events = DefaultEventsService.create({ logger });
 
     await events.subscribe({

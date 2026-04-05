@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import { Entity, DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import {
   getStaleFiles,
@@ -293,7 +295,7 @@ describe('bulkStorageOperation', () => {
   });
 
   it('should wait for all promises be resolved', async () => {
-    const callback = jest.fn();
+    const callback = vi.fn();
     const operation = createConcurrentRequestCounter(callback);
     await bulkStorageOperation(operation, args);
     expect(callback).toHaveBeenCalledTimes(length);
@@ -301,7 +303,7 @@ describe('bulkStorageOperation', () => {
 
   it('should call operation with the correct argument', async () => {
     const files = ['file1.txt', 'file2.txt'];
-    const fn = jest.fn();
+    const fn = vi.fn();
     await bulkStorageOperation(fn, files);
     expect(fn).toHaveBeenCalledTimes(2);
     expect(fn).toHaveBeenNthCalledWith(1, files[0]);

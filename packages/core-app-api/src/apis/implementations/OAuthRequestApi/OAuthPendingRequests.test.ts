@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { waitFor } from '@testing-library/react';
 import { OAuthPendingRequests } from './OAuthPendingRequests';
 
 describe('OAuthPendingRequests', () => {
   it('notifies new observers about current state', async () => {
     const target = new OAuthPendingRequests<string>();
-    const next = jest.fn();
-    const error = jest.fn();
+    const next = vi.fn();
+    const error = vi.fn();
 
     const input = new Set(['a', 'b']);
     target.pending().subscribe({ next, error });
@@ -35,8 +37,8 @@ describe('OAuthPendingRequests', () => {
 
   it('resolves requests and notifies observers', async () => {
     const target = new OAuthPendingRequests<string>();
-    const next = jest.fn();
-    const error = jest.fn();
+    const next = vi.fn();
+    const error = vi.fn();
 
     const request1 = target.request(new Set(['a']));
     const request2 = target.request(new Set(['a']));
@@ -52,8 +54,8 @@ describe('OAuthPendingRequests', () => {
 
   it('can resolve through the observable', async () => {
     const target = new OAuthPendingRequests<string>();
-    const next = jest.fn(pendingRequest => pendingRequest.resolve('done'));
-    const error = jest.fn();
+    const next = vi.fn(pendingRequest => pendingRequest.resolve('done'));
+    const error = vi.fn();
 
     const request1 = target.request(new Set(['a']));
     target.pending().subscribe({ next, error });
@@ -65,8 +67,8 @@ describe('OAuthPendingRequests', () => {
 
   it('rejects requests and notifies observers only once', async () => {
     const target = new OAuthPendingRequests<string>();
-    const next = jest.fn();
-    const error = jest.fn();
+    const next = vi.fn();
+    const error = vi.fn();
     const rejection = new Error('eek');
 
     const request1 = target.request(new Set(['a']));
@@ -84,8 +86,8 @@ describe('OAuthPendingRequests', () => {
   it('can reject through the observable', async () => {
     const target = new OAuthPendingRequests<string>();
     const rejection = new Error('nope');
-    const next = jest.fn(pendingRequest => pendingRequest.reject(rejection));
-    const error = jest.fn();
+    const next = vi.fn(pendingRequest => pendingRequest.reject(rejection));
+    const error = vi.fn();
 
     const request1 = target.request(new Set(['a']));
     target.pending().subscribe({ next, error });

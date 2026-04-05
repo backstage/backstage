@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { Location } from '@backstage/catalog-client';
 import { Entity, ANNOTATION_ORIGIN_LOCATION } from '@backstage/catalog-model';
 import { catalogApiRef } from '../../api';
@@ -38,7 +40,7 @@ describe('useUnregisterEntityDialogState', () => {
   let resolveColocatedEntities: (entities: Entity[]) => void;
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
 
     const deferredLocation = createDeferred<Location | undefined>();
     const deferredColocatedEntities = createDeferred<Entity[]>();

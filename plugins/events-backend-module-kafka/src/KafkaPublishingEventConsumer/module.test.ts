@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import { createServiceFactory } from '@backstage/backend-plugin-api';
 import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
@@ -20,7 +22,7 @@ import { TestEventsService } from '@backstage/plugin-events-backend-test-utils';
 import { eventsModuleKafkaPublishingEventConsumer } from './module';
 import { KafkaPublishingEventConsumer } from './KafkaPublishingEventConsumer';
 
-jest.mock('./KafkaPublishingEventConsumer');
+vi.mock('./KafkaPublishingEventConsumer');
 
 describe('eventsModuleKafkaPublishingEventConsumer', () => {
   it('should be correctly wired and set up', async () => {
@@ -34,8 +36,8 @@ describe('eventsModuleKafkaPublishingEventConsumer', () => {
     });
 
     const mockKafkaPublishingEventConsumer = {
-      start: jest.fn(),
-      shutdown: jest.fn(),
+      start: vi.fn(),
+      shutdown: vi.fn(),
     } as unknown as KafkaPublishingEventConsumer;
 
     jest
@@ -96,7 +98,7 @@ describe('eventsModuleKafkaPublishingEventConsumer', () => {
       },
     });
 
-    jest.mocked(KafkaPublishingEventConsumer.fromConfig).mockReturnValue([]);
+    vi.mocked(KafkaPublishingEventConsumer.fromConfig).mockReturnValue([]);
 
     await startTestBackend({
       features: [

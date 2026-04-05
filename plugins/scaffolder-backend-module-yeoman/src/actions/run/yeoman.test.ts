@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { yeomanRun } from './yeomanRun';
 
-jest.mock('./yeomanRun');
+vi.mock('./yeomanRun');
 
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import os from 'node:os';
@@ -36,7 +38,7 @@ describe('run:yeoman', () => {
   const action = createRunYeomanAction();
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('should call yeomanRun with the correct variables', async () => {

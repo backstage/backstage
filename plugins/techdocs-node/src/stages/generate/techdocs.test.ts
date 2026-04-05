@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { ConfigReader } from '@backstage/config';
 import { readGeneratorConfig } from './techdocs';
 
 const mockLogger = {
-  warn: jest.fn(),
+  warn: vi.fn(),
 };
 
 describe('readGeneratorConfig', () => {
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   const logger = mockLogger as any;

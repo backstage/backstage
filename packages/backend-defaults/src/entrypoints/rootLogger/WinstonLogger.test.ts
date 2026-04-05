@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { format } from 'logform';
 import { WinstonLogger } from './WinstonLogger';
 import Transport from 'winston-transport';
@@ -33,8 +35,8 @@ describe('WinstonLogger', () => {
 
   it('should redact and escape regex', () => {
     const mockTransport = new Transport({
-      log: jest.fn(),
-      logv: jest.fn(),
+      log: vi.fn(),
+      logv: vi.fn(),
     });
 
     const logger = WinstonLogger.create({
@@ -59,8 +61,8 @@ describe('WinstonLogger', () => {
 
   it('should redact nested object', () => {
     const mockTransport = new Transport({
-      log: jest.fn(),
-      logv: jest.fn(),
+      log: vi.fn(),
+      logv: vi.fn(),
     });
 
     const logger = WinstonLogger.create({
@@ -95,7 +97,7 @@ describe('WinstonLogger', () => {
   });
 
   it('gracefully handles fields that contain deeper object structures', () => {
-    const log = jest.fn();
+    const log = vi.fn();
     const mockTransport = new Transport({ log });
 
     const logger = WinstonLogger.create({
@@ -121,8 +123,8 @@ describe('WinstonLogger', () => {
 
   it('should filter logs below the default log level', () => {
     const mockTransport = new Transport({
-      log: jest.fn(),
-      logv: jest.fn(),
+      log: vi.fn(),
+      logv: vi.fn(),
     });
 
     const logger = WinstonLogger.create({
@@ -138,8 +140,8 @@ describe('WinstonLogger', () => {
 
   it('should not filter logs below the default log level with an override', () => {
     const mockTransport = new Transport({
-      log: jest.fn(),
-      logv: jest.fn(),
+      log: vi.fn(),
+      logv: vi.fn(),
     });
 
     const logger = WinstonLogger.create({
@@ -173,8 +175,8 @@ describe('WinstonLogger', () => {
 
   it('should filter logs above the default log level with an override', () => {
     const mockTransport = new Transport({
-      log: jest.fn(),
-      logv: jest.fn(),
+      log: vi.fn(),
+      logv: vi.fn(),
     });
 
     const logger = WinstonLogger.create({

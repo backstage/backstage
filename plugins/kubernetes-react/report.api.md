@@ -574,6 +574,9 @@ export const kubernetesReactTranslationRef: TranslationRef<
     readonly 'cluster.noPodsWithErrors': 'No pods with errors';
     readonly 'pods.pods_one': '{{count}} pod';
     readonly 'pods.pods_other': '{{count}} pods';
+    readonly 'podsTable.unknown': 'unknown';
+    readonly 'podsTable.status.running': 'Running';
+    readonly 'podsTable.status.ok': 'OK';
     readonly 'podsTable.columns.name': 'name';
     readonly 'podsTable.columns.id': 'ID';
     readonly 'podsTable.columns.status': 'status';
@@ -582,9 +585,6 @@ export const kubernetesReactTranslationRef: TranslationRef<
     readonly 'podsTable.columns.totalRestarts': 'total restarts';
     readonly 'podsTable.columns.cpuUsage': 'CPU usage %';
     readonly 'podsTable.columns.memoryUsage': 'Memory usage %';
-    readonly 'podsTable.unknown': 'unknown';
-    readonly 'podsTable.status.running': 'Running';
-    readonly 'podsTable.status.ok': 'OK';
     readonly 'errorPanel.message': 'There was a problem retrieving some Kubernetes resources for the entity: {{entityName}}. This could mean that the Error Reporting card is not completely accurate.';
     readonly 'errorPanel.title': 'There was a problem retrieving Kubernetes objects';
     readonly 'errorPanel.errorsLabel': 'Errors';
@@ -615,14 +615,14 @@ export const kubernetesReactTranslationRef: TranslationRef<
     readonly 'hpa.currentCpuUsageLabel': 'current CPU usage: {{value}}%';
     readonly 'hpa.targetCpuUsage': 'target CPU usage:';
     readonly 'hpa.targetCpuUsageLabel': 'target CPU usage: {{value}}%';
+    readonly 'errorReporting.title': 'Error Reporting';
     readonly 'errorReporting.columns.name': 'name';
     readonly 'errorReporting.columns.kind': 'kind';
     readonly 'errorReporting.columns.namespace': 'namespace';
     readonly 'errorReporting.columns.messages': 'messages';
     readonly 'errorReporting.columns.cluster': 'cluster';
-    readonly 'errorReporting.title': 'Error Reporting';
-    readonly 'podLogs.title': 'No logs emitted';
     readonly 'podLogs.description': 'No logs were emitted by the container';
+    readonly 'podLogs.title': 'No logs emitted';
     readonly 'podLogs.buttonText': 'Logs';
     readonly 'podLogs.titleTemplate': '{{podName}} - {{containerName}} logs on cluster {{clusterName}}';
     readonly 'podLogs.buttonAriaLabel': 'get logs';

@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import { useApi } from '@backstage/core-plugin-api';
 import { renderHook, waitFor } from '@testing-library/react';
 
 import { useIsPodExecTerminalSupported } from './useIsPodExecTerminalSupported';
 
-jest.mock('@backstage/core-plugin-api');
+vi.mock('@backstage/core-plugin-api');
 
 describe('useIsPodExecTerminalSupported', () => {
   let clusters: { authProvider: string }[] = [];
@@ -30,7 +32,7 @@ describe('useIsPodExecTerminalSupported', () => {
   });
 
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it.each([

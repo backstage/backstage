@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { createTestShadowDom } from '../../test-utils';
 import { addLinkClickListener } from './addLinkClickListener';
 
 describe('addLinkClickListener', () => {
   it('calls onClick when a link has been clicked', async () => {
-    const fn = jest.fn();
+    const fn = vi.fn();
     const shadowDom = await createTestShadowDom(
       `
       <!DOCTYPE html>
@@ -46,7 +48,7 @@ describe('addLinkClickListener', () => {
   });
 
   it('does not call onClick when a link links to another baseUrl', async () => {
-    const fn = jest.fn();
+    const fn = vi.fn();
     const shadowDom = await createTestShadowDom(
       `
       <!DOCTYPE html>
@@ -73,7 +75,7 @@ describe('addLinkClickListener', () => {
   });
 
   it('does not call onClick when a link has a download attribute', async () => {
-    const fn = jest.fn();
+    const fn = vi.fn();
     const shadowDom = await createTestShadowDom(
       `
       <!DOCTYPE html>

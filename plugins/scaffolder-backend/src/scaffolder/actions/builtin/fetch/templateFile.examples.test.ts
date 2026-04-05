@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type MockedFunction} from 'vitest';
+
 import { join as joinPath } from 'node:path';
 import fs from 'fs-extra';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
@@ -29,9 +31,9 @@ import { examples } from './templateFile.examples';
 import yaml from 'yaml';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 
-jest.mock('@backstage/plugin-scaffolder-node', () => ({
-  ...jest.requireActual('@backstage/plugin-scaffolder-node'),
-  fetchFile: jest.fn(),
+vi.mock('@backstage/plugin-scaffolder-node', () => ({
+  ...vi.importActual('@backstage/plugin-scaffolder-node'),
+  fetchFile: vi.fn(),
 }));
 
 type FetchTemplateInput = ReturnType<
@@ -40,7 +42,7 @@ type FetchTemplateInput = ReturnType<
   ? U
   : never;
 
-const mockFetchFile = fetchFile as jest.MockedFunction<typeof fetchFile>;
+const mockFetchFile = fetchFile as MockedFunction<typeof fetchFile>;
 
 describe('fetch:template:file examples', () => {
   let action: TemplateAction<any>;

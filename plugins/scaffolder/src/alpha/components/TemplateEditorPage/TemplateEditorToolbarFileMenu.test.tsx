@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderInTestApp } from '@backstage/test-utils';
@@ -76,7 +78,7 @@ describe('TemplateEditorToolbarFileMenu', () => {
   });
 
   it('should have an option to open the directory', async () => {
-    const onOpenDirectory = jest.fn();
+    const onOpenDirectory = vi.fn();
 
     await renderInTestApp(
       <TemplateEditorToolbarFileMenu onOpenDirectory={onOpenDirectory} />,
@@ -101,7 +103,7 @@ describe('TemplateEditorToolbarFileMenu', () => {
   });
 
   it('should have an option to create the directory', async () => {
-    const onCreateDirectory = jest.fn();
+    const onCreateDirectory = vi.fn();
 
     await renderInTestApp(
       <TemplateEditorToolbarFileMenu onCreateDirectory={onCreateDirectory} />,
@@ -126,7 +128,7 @@ describe('TemplateEditorToolbarFileMenu', () => {
   });
 
   it('should have an option to close the editor', async () => {
-    const onCloseDirectory = jest.fn();
+    const onCloseDirectory = vi.fn();
 
     await renderInTestApp(
       <TemplateEditorToolbarFileMenu onCloseDirectory={onCloseDirectory} />,

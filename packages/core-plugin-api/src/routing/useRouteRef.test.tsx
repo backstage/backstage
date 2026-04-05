@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { renderHook } from '@testing-library/react';
 import { PropsWithChildren } from 'react';
 import { MemoryRouter, Router } from 'react-router-dom';
@@ -38,7 +40,7 @@ describe('useRouteRef', () => {
     });
 
     it('should resolve routes', () => {
-      const resolve = jest.fn(() => () => '/hello');
+      const resolve = vi.fn(() => () => '/hello');
       context.set({ 1: { resolve } });
 
       const routeRef = createRouteRef({ id: 'ref1' });
@@ -60,7 +62,7 @@ describe('useRouteRef', () => {
     });
 
     it('re-resolves the routeFunc when the search parameters change', () => {
-      const resolve = jest.fn(() => () => '/hello');
+      const resolve = vi.fn(() => () => '/hello');
       context.set({ 1: { resolve } });
 
       const routeRef = createRouteRef({ id: 'ref1' });
@@ -86,7 +88,7 @@ describe('useRouteRef', () => {
     });
 
     it('does not re-resolve the routeFunc the location pathname does not change', () => {
-      const resolve = jest.fn(() => () => '/hello');
+      const resolve = vi.fn(() => () => '/hello');
       context.set({ 1: { resolve } });
 
       const routeRef = createRouteRef({ id: 'ref1' });
@@ -112,7 +114,7 @@ describe('useRouteRef', () => {
     });
 
     it('does not re-resolve the routeFunc when the search parameter changes', () => {
-      const resolve = jest.fn(() => () => '/hello');
+      const resolve = vi.fn(() => () => '/hello');
       context.set({ 1: { resolve } });
 
       const routeRef = createRouteRef({ id: 'ref1' });
@@ -138,7 +140,7 @@ describe('useRouteRef', () => {
     });
 
     it('does not re-resolve the routeFunc when the hash parameter changes', () => {
-      const resolve = jest.fn(() => () => '/hello');
+      const resolve = vi.fn(() => () => '/hello');
       context.set({ 1: { resolve } });
 
       const routeRef = createRouteRef({ id: 'ref1' });
@@ -167,10 +169,10 @@ describe('useRouteRef', () => {
   describe('new app system', () => {
     it('should resolve routes using routeResolutionApi', () => {
       const routeRef = createRouteRef({ id: 'ref1' });
-      const mockRouteFunc: RouteFunc<any> = jest.fn(() => '/new-route');
+      const mockRouteFunc: RouteFunc<any> = vi.fn(() => '/new-route');
 
       const mockRouteResolutionApi: RouteResolutionApi = {
-        resolve: jest.fn(() => mockRouteFunc),
+        resolve: vi.fn(() => mockRouteFunc),
       };
 
       const wrapper = ({ children }: PropsWithChildren<{}>) => (
@@ -199,7 +201,7 @@ describe('useRouteRef', () => {
       });
 
       const mockRouteResolutionApi: RouteResolutionApi = {
-        resolve: jest.fn(() => undefined),
+        resolve: vi.fn(() => undefined),
       };
 
       const wrapper = ({ children }: PropsWithChildren<{}>) => (

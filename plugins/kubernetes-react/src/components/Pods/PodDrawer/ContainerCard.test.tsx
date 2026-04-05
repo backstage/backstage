@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import { screen } from '@testing-library/react';
 
 import '@testing-library/jest-dom';
@@ -20,7 +22,7 @@ import { renderInTestApp } from '@backstage/test-utils';
 import { ContainerCard } from './ContainerCard';
 import { DateTime } from 'luxon';
 
-jest.mock('../../../hooks/useIsPodExecTerminalSupported');
+vi.mock('../../../hooks/useIsPodExecTerminalSupported');
 
 const now = DateTime.now();
 const oneHourAgo = now.minus({ hours: 1 }).toISO();

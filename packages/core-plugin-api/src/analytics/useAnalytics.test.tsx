@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import { renderHook } from '@testing-library/react';
 import { useAnalytics } from './useAnalytics';
 import { useApi } from '@backstage/frontend-plugin-api';
 
-jest.mock('@backstage/frontend-plugin-api', () => ({
-  ...jest.requireActual('@backstage/frontend-plugin-api'),
-  useApi: jest.fn(),
+vi.mock('@backstage/frontend-plugin-api', () => ({
+  ...vi.importActual('@backstage/frontend-plugin-api'),
+  useApi: vi.fn(),
 }));
 
-const mocked = (f: Function) => f as jest.Mock;
+const mocked = (f: Function) => f as Mock;
 
 describe('useAnalytics', () => {
   it('returns tracker with no implementation defined', () => {
@@ -38,7 +40,7 @@ describe('useAnalytics', () => {
   });
 
   it('returns tracker from defined analytics api', () => {
-    const captureEvent = jest.fn();
+    const captureEvent = vi.fn();
 
     // Simulate useApi returning a valid tracker.
     mocked(useApi).mockReturnValue({ captureEvent });

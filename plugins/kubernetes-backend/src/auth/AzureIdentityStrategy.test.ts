@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { AccessToken, TokenCredential } from '@azure/identity';
 import { AzureIdentityStrategy } from './AzureIdentityStrategy';
 import { mockServices } from '@backstage/backend-test-utils';
@@ -44,7 +46,7 @@ class StaticTokenCredential implements TokenCredential {
 
 describe('AzureIdentityStrategy tests', () => {
   afterEach(() => {
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 
   it('should get Azure token', async () => {
@@ -71,7 +73,7 @@ describe('AzureIdentityStrategy tests', () => {
   });
 
   it('should issue new token 15 minutes befory expiry', async () => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
 
     const strategy = new AzureIdentityStrategy(
       logger,
@@ -81,14 +83,14 @@ describe('AzureIdentityStrategy tests', () => {
     const credential = await strategy.getCredential();
     expect(credential).toEqual({ type: 'bearer token', token: 'MY_TOKEN_1' });
 
-    jest.setSystemTime(Date.now() + 2 * 60 * 1000); // advance time by 2mins
+    vi.setSystemTime(Date.now() + 2 * 60 * 1000); // advance time by 2mins
 
     const credential2 = await strategy.getCredential();
     expect(credential2).toEqual({ type: 'bearer token', token: 'MY_TOKEN_2' });
   });
 
   it('should re-use existing token if there is afailure', async () => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
 
     const strategy = new AzureIdentityStrategy(
       logger,
@@ -98,12 +100,12 @@ describe('AzureIdentityStrategy tests', () => {
     const credential = await strategy.getCredential();
     expect(credential).toEqual({ type: 'bearer token', token: 'MY_TOKEN_1' });
 
-    jest.setSystemTime(Date.now() + 2 * 60 * 1000); // advance time by 2min
+    vi.setSystemTime(Date.now() + 2 * 60 * 1000); // advance time by 2min
 
     const credential2 = await strategy.getCredential();
     expect(credential2).toEqual({ type: 'bearer token', token: 'MY_TOKEN_2' });
 
-    jest.setSystemTime(Date.now() + 2 * 60 * 1000); // advance time by 2min
+    vi.setSystemTime(Date.now() + 2 * 60 * 1000); // advance time by 2min
 
     const credential3 = await strategy.getCredential();
     expect(credential3).toEqual({ type: 'bearer token', token: 'MY_TOKEN_2' });
@@ -113,7 +115,7 @@ describe('AzureIdentityStrategy tests', () => {
   });
 
   it('should throw if existing token expired and failed to fetch a new one', async () => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
 
     const strategy = new AzureIdentityStrategy(
       logger,
@@ -123,12 +125,12 @@ describe('AzureIdentityStrategy tests', () => {
     const credential = await strategy.getCredential();
     expect(credential).toEqual({ type: 'bearer token', token: 'MY_TOKEN_1' });
 
-    jest.setSystemTime(Date.now() + 2 * 60 * 1000); // advance time by 2min
+    vi.setSystemTime(Date.now() + 2 * 60 * 1000); // advance time by 2min
 
     const credential2 = await strategy.getCredential();
     expect(credential2).toEqual({ type: 'bearer token', token: 'MY_TOKEN_2' });
 
-    jest.setSystemTime(Date.now() + 17 * 60 * 1000); // advance time by 17min
+    vi.setSystemTime(Date.now() + 17 * 60 * 1000); // advance time by 17min
 
     await expect(strategy.getCredential()).rejects.toThrow();
   });

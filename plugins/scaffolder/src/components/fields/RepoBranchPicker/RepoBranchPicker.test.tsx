@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { Form } from '@backstage/plugin-scaffolder-react/alpha';
 import validator from '@rjsf/validator-ajv8';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
@@ -44,13 +46,13 @@ describe('RepoBranchPicker', () => {
 
   beforeEach(() => {
     mockScmAuthApi = {
-      getCredentials: jest.fn().mockResolvedValue({ token: 'abc123' }),
+      getCredentials: vi.fn().mockResolvedValue({ token: 'abc123' }),
     };
   });
 
   describe('happy path rendering', () => {
     it('should render the repo branch picker with minimal props', async () => {
-      const onSubmit = jest.fn();
+      const onSubmit = vi.fn();
 
       const { getByRole } = await renderInTestApp(
         <TestApiProvider
@@ -94,7 +96,7 @@ describe('RepoBranchPicker', () => {
     });
 
     it('should disable the picker when ui:disabled', async () => {
-      const onSubmit = jest.fn();
+      const onSubmit = vi.fn();
 
       await renderInTestApp(
         <TestApiProvider

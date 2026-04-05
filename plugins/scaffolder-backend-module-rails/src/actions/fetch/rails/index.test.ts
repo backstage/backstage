@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-const mockRailsTemplater = { run: jest.fn() };
-jest.mock('@backstage/plugin-scaffolder-node', () => ({
-  ...jest.requireActual('@backstage/plugin-scaffolder-node'),
-  fetchContents: jest.fn(),
+import { vi } from 'vitest';
+
+const mockRailsTemplater = { run: vi.fn() };
+vi.mock('@backstage/plugin-scaffolder-node', () => ({
+  ...vi.importActual('@backstage/plugin-scaffolder-node'),
+  fetchContents: vi.fn(),
 }));
-jest.mock('./railsNewRunner', () => {
+vi.mock('./railsNewRunner', () => {
   return {
-    RailsNewRunner: jest.fn().mockImplementation(() => {
+    RailsNewRunner: vi.fn().mockImplementation(() => {
       return mockRailsTemplater;
     }),
   };
@@ -62,12 +64,12 @@ describe('fetch:rails', () => {
   });
 
   const mockReader: UrlReaderService = {
-    readUrl: jest.fn(),
-    readTree: jest.fn(),
-    search: jest.fn(),
+    readUrl: vi.fn(),
+    readTree: vi.fn(),
+    search: vi.fn(),
   };
   const containerRunner: ContainerRunner = {
-    runContainer: jest.fn(),
+    runContainer: vi.fn(),
   };
 
   const action = createFetchRailsAction({
@@ -81,7 +83,7 @@ describe('fetch:rails', () => {
     mockDir.setContent({
       result: '{}',
     });
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should call fetchContents with the correct values', async () => {

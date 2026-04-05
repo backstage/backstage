@@ -14,26 +14,28 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import { catalogEntityDeletePermission } from '@backstage/plugin-catalog-common/alpha';
 import { renderHook } from '@testing-library/react';
 import { useEntityPermission } from './useEntityPermission';
 import { useAsyncEntity } from './useEntity';
 import { usePermission } from '@backstage/plugin-permission-react';
 
-jest.mock('./useEntity', () => ({
-  ...jest.requireActual('./useEntity'),
-  useAsyncEntity: jest.fn(),
+vi.mock('./useEntity', () => ({
+  ...vi.importActual('./useEntity'),
+  useAsyncEntity: vi.fn(),
 }));
-jest.mock('@backstage/plugin-permission-react', () => ({
-  ...jest.requireActual('@backstage/plugin-permission-react'),
-  usePermission: jest.fn(),
+vi.mock('@backstage/plugin-permission-react', () => ({
+  ...vi.importActual('@backstage/plugin-permission-react'),
+  usePermission: vi.fn(),
 }));
-const useEntityMock = useAsyncEntity as jest.Mock;
-const usePermissionMock = usePermission as jest.Mock;
+const useEntityMock = useAsyncEntity as Mock;
+const usePermissionMock = usePermission as Mock;
 
 describe('useEntityPermission', () => {
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('returns loading when entity is loading', () => {

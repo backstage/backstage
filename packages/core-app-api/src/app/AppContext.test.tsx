@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { PropsWithChildren } from 'react';
 import { renderHook } from '@testing-library/react';
 import { useVersionedContext } from '@backstage/version-bridge';
@@ -33,10 +35,10 @@ describe('v1 consumer', () => {
 
   it('should provide an app context', () => {
     const mockContext: AppContextV1 = {
-      getPlugins: jest.fn(),
-      getComponents: jest.fn(),
-      getSystemIcon: jest.fn(),
-      getSystemIcons: jest.fn(),
+      getPlugins: vi.fn(),
+      getComponents: vi.fn(),
+      getSystemIcon: vi.fn(),
+      getSystemIcons: vi.fn(),
     };
 
     const renderedHook = renderHook(() => useMockAppV1(), {

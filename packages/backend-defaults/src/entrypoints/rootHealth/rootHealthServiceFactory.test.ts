@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { mockServices } from '@backstage/backend-test-utils';
 import { DefaultRootHealthService } from './rootHealthServiceFactory';
 
@@ -36,7 +38,7 @@ describe('DefaultRootHealthService', () => {
       let mockServerStartedFn = () => {};
 
       const lifecycle = mockServices.rootLifecycle.mock({
-        addStartupHook: jest.fn(fn => (mockServerStartedFn = fn)),
+        addStartupHook: vi.fn(fn => (mockServerStartedFn = fn)),
       });
 
       const service = new DefaultRootHealthService({
@@ -56,8 +58,8 @@ describe('DefaultRootHealthService', () => {
       let mockServerBeforeStoppedFn = () => {};
 
       const lifecycle = mockServices.rootLifecycle.mock({
-        addStartupHook: jest.fn(fn => (mockServerStartedFn = fn)),
-        addBeforeShutdownHook: jest.fn(fn => (mockServerBeforeStoppedFn = fn)),
+        addStartupHook: vi.fn(fn => (mockServerStartedFn = fn)),
+        addBeforeShutdownHook: vi.fn(fn => (mockServerBeforeStoppedFn = fn)),
       });
 
       const service = new DefaultRootHealthService({

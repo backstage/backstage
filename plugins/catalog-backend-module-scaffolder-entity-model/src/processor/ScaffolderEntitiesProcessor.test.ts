@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { ScaffolderEntitiesProcessor } from './ScaffolderEntitiesProcessor';
 
@@ -54,7 +56,7 @@ describe('ScaffolderEntitiesProcessor', () => {
     it('generates relations for component entities', async () => {
       const processor = new ScaffolderEntitiesProcessor();
 
-      const emit = jest.fn();
+      const emit = vi.fn();
 
       await processor.postProcessEntity(mockEntity, mockLocation, emit);
 

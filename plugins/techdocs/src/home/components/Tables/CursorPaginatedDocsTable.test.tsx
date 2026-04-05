@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { ReactNode } from 'react';
 import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { CursorPaginatedDocsTable } from './CursorPaginatedDocsTable';
@@ -89,7 +91,7 @@ describe('CursorPaginatedDocsTable', () => {
       screen.queryAllByRole('button', { name: 'Next Page' })[0],
     ).toBeDisabled();
 
-    const fn = jest.fn();
+    const fn = vi.fn();
 
     rerender(
       wrapInContext(
@@ -121,7 +123,7 @@ describe('CursorPaginatedDocsTable', () => {
       screen.queryAllByRole('button', { name: 'Next Page' })[0],
     ).toBeDisabled();
 
-    const fn = jest.fn();
+    const fn = vi.fn();
 
     rerender(
       wrapInContext(

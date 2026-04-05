@@ -14,30 +14,32 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import { renderInTestApp } from '@backstage/test-utils';
 import { useLocation } from 'react-router-dom';
 import { useSearch } from '@backstage/plugin-search-react';
 import { SearchPage } from './SearchPage';
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useLocation: jest.fn().mockReturnValue({
+vi.mock('react-router-dom', () => ({
+  ...vi.importActual('react-router-dom'),
+  useLocation: vi.fn().mockReturnValue({
     search: '',
   }),
-  useOutlet: jest.fn().mockReturnValue('Route Children'),
+  useOutlet: vi.fn().mockReturnValue('Route Children'),
 }));
 
-const setTermMock = jest.fn();
-const setTypesMock = jest.fn();
-const setFiltersMock = jest.fn();
-const setPageCursorMock = jest.fn();
+const setTermMock = vi.fn();
+const setTypesMock = vi.fn();
+const setFiltersMock = vi.fn();
+const setPageCursorMock = vi.fn();
 
-jest.mock('@backstage/plugin-search-react', () => ({
-  ...jest.requireActual('@backstage/plugin-search-react'),
+vi.mock('@backstage/plugin-search-react', () => ({
+  ...vi.importActual('@backstage/plugin-search-react'),
   SearchContextProvider: jest
     .fn()
     .mockImplementation(({ children }) => children),
-  useSearch: jest.fn().mockReturnValue({
+  useSearch: vi.fn().mockReturnValue({
     term: '',
     setTerm: (term: any) => setTermMock(term),
     types: [],
@@ -53,7 +55,7 @@ describe('SearchPage', () => {
   const origReplaceState = window.history.replaceState;
 
   beforeEach(() => {
-    window.history.replaceState = jest.fn();
+    window.history.replaceState = vi.fn();
   });
 
   afterEach(() => {
@@ -70,7 +72,7 @@ describe('SearchPage', () => {
     const expectedPageCursor = 'SOMEPAGE';
 
     // e.g. ?query=petstore&pageCursor=SOMEPAGE&filters[lifecycle][]=experimental&filters[kind]=Component
-    (useLocation as jest.Mock).mockReturnValue({
+    (useLocation as Mock).mockReturnValue({
       search: `?query=${expectedTerm}&types[]=${expectedTypes[0]}&filters[${expectedFilterField}]=${expectedFilterValue}&pageCursor=${expectedPageCursor}`,
     });
 
@@ -91,7 +93,7 @@ describe('SearchPage', () => {
   });
 
   it('replaces window history with expected query parameters', async () => {
-    (useSearch as jest.Mock).mockReturnValueOnce({
+    (useSearch as Mock).mockReturnValueOnce({
       term: 'bieber',
       types: ['software-catalog'],
       pageCursor: 'SOMEPAGE',
@@ -107,7 +109,7 @@ describe('SearchPage', () => {
 
     await renderInTestApp(<SearchPage />);
 
-    const calls = (window.history.replaceState as jest.Mock).mock.calls[0];
+    const calls = (window.history.replaceState as Mock).mock.calls[0];
     expect(calls[2]).toContain(expectedLocation);
   });
 });

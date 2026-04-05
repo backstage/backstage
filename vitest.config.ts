@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,21 +14,18 @@
  * limitations under the License.
  */
 
-import { vi } from 'vitest';
+import { defineConfig } from 'vitest/config';
 
-import { Transformer, transform } from './transformer';
-
-describe('transform', () => {
-  it('calls the transformers', async () => {
-    const fn = vi.fn();
-    const mockTransformer = (): Transformer => (dom: Element) => {
-      fn(dom);
-      return dom;
-    };
-
-    await transform('<html></html>', [mockTransformer()]);
-
-    expect(fn).toHaveBeenCalledTimes(1);
-    expect(fn).toHaveBeenCalledWith(expect.any(Element));
-  });
+export default defineConfig({
+  test: {
+    globals: true,
+    include: ['**/src/**/*.test.{ts,tsx,js,jsx,mts,cts,mjs,cjs}'],
+    passWithNoTests: true,
+    css: { modules: { classNameStrategy: 'non-scoped' } },
+    coverage: {
+      provider: 'v8',
+      include: ['**/*.{js,jsx,ts,tsx,mjs,cjs}'],
+      exclude: ['**/*.d.ts'],
+    },
+  },
 });

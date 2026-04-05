@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { ReactNode } from 'react';
 import userEvent from '@testing-library/user-event';
 import { renderInTestApp } from '@backstage/test-utils';
@@ -22,13 +24,13 @@ import { RealLogViewer } from './RealLogViewer';
 import copyToClipboard from 'copy-to-clipboard';
 
 // Used by useCopyToClipboard
-jest.mock('copy-to-clipboard', () => ({
+vi.mock('copy-to-clipboard', () => ({
   __esModule: true,
-  default: jest.fn(),
+  default: vi.fn(),
 }));
 
 // The <AutoSizer> inside <LogViewer> needs mocking to render in jsdom
-jest.mock('react-virtualized-auto-sizer', () => ({
+vi.mock('react-virtualized-auto-sizer', () => ({
   __esModule: true,
   default: (props: {
     children: (size: { width: number; height: number }) => ReactNode;
@@ -77,7 +79,7 @@ describe('RealLogViewer', () => {
   });
 
   it('should render download button when showDownloadButton is true', async () => {
-    const onDownloadLog = jest.fn();
+    const onDownloadLog = vi.fn();
     const rendered = await renderInTestApp(
       <RealLogViewer
         text={testText}

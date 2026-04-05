@@ -46,24 +46,24 @@ describe('createPatternResolver', () => {
     expect(() =>
       createPatternResolver('{{a.b}}')({ a: { b: [7] } }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Expected string or number value for selector 'a.b', got object"`,
+      `[InputError: Expected string or number value for selector 'a.b', got object]`,
     );
     expect(() =>
       createPatternResolver('{{a.b}}')({ a: {} }),
-    ).toThrowErrorMatchingInlineSnapshot(`"No value for selector 'a.b'"`);
+    ).toThrowErrorMatchingInlineSnapshot(`[InputError: No value for selector 'a.b']`);
     expect(() =>
       createPatternResolver("-{{ a.b['length'] }}-")({
         a: { b: ['first', 'second'] },
       }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"No value for selector 'a.b['length']'"`,
+      `[InputError: No value for selector 'a.b['length']']`,
     );
     expect(() =>
       createPatternResolver('-{{ a.b.length }}-')({
         a: { b: ['first', 'second'] },
       }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"No value for selector 'a.b.length'"`,
+      `[InputError: No value for selector 'a.b.length']`,
     );
   });
 
@@ -78,12 +78,12 @@ describe('createPatternResolver', () => {
     expect(() =>
       createPatternResolver('{{a.constructor}}')({ a: { b: 'test' } }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"No value for selector 'a.constructor'"`,
+      `[InputError: No value for selector 'a.constructor']`,
     );
     expect(() =>
       createPatternResolver('{{a.__proto__}}')({ a: { b: 'test' } }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"No value for selector 'a.__proto__'"`,
+      `[InputError: No value for selector 'a.__proto__']`,
     );
   });
 });

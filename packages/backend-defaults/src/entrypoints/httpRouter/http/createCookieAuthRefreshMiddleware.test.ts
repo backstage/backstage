@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import express from 'express';
 import request from 'supertest';
 import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
@@ -30,7 +32,7 @@ describe('createCookieAuthRefreshMiddleware', () => {
   });
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('should issue the user cookie', async () => {

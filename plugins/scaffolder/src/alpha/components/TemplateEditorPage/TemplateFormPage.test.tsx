@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { screen } from '@testing-library/react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { TemplateFormPage } from './TemplateFormPage';
@@ -21,7 +23,7 @@ import { rootRouteRef } from '../../../routes';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 
 describe('TemplateFormPage', () => {
-  const catalogApiMock = { getEntities: jest.fn().mockResolvedValue([]) };
+  const catalogApiMock = { getEntities: vi.fn().mockResolvedValue([]) };
 
   it('Should render without exploding', async () => {
     await renderInTestApp(

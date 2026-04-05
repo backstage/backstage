@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   AuthenticationError,
   ConflictError,
@@ -29,7 +31,7 @@ import request from 'supertest';
 import { MiddlewareFactory } from './MiddlewareFactory';
 import { mockServices } from '@backstage/backend-test-utils';
 
-jest.useFakeTimers({ now: new Date('2024-11-20T00:00:00Z') });
+vi.useFakeTimers({ now: new Date('2024-11-20T00:00:00Z') });
 
 describe('MiddlewareFactory', () => {
   describe('middleware.error', () => {
@@ -42,7 +44,7 @@ describe('MiddlewareFactory', () => {
     });
 
     beforeEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
     });
 
     it('gives default code and message', async () => {
@@ -67,7 +69,7 @@ describe('MiddlewareFactory', () => {
 
     it('does not try to send the response again if its already been sent', async () => {
       const app = express();
-      const mockSend = jest.fn();
+      const mockSend = vi.fn();
 
       app.use('/works_with_async_fail', (_, res) => {
         res.status(200).send('hello');

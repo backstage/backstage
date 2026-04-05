@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   coreServices,
   createBackendPlugin,
@@ -33,7 +35,7 @@ describe('MockSchedulerService', () => {
     const scheduler = new MockSchedulerService();
     expect(scheduler).toBeDefined();
 
-    const taskFn = jest.fn();
+    const taskFn = vi.fn();
     scheduler.scheduleTask({
       ...baseOpts,
       id: 'test',
@@ -48,10 +50,10 @@ describe('MockSchedulerService', () => {
   });
 
   it('should run tasks on startup', async () => {
-    const testFnPlain = jest.fn();
-    const testFnInitialDelay = jest.fn();
-    const testFnManual = jest.fn();
-    const testFnLocal = jest.fn();
+    const testFnPlain = vi.fn();
+    const testFnInitialDelay = vi.fn();
+    const testFnManual = vi.fn();
+    const testFnLocal = vi.fn();
 
     // Relying on the fact that the mock scheduler service is used by default
     await startTestBackend({
@@ -101,7 +103,7 @@ describe('MockSchedulerService', () => {
   });
 
   it('should not run tasks on startup if skipped', async () => {
-    const testFnPlain = jest.fn();
+    const testFnPlain = vi.fn();
 
     await startTestBackend({
       features: [
@@ -128,10 +130,10 @@ describe('MockSchedulerService', () => {
   });
 
   it('should run all tasks on startup if configured', async () => {
-    const testFnPlain = jest.fn();
-    const testFnInitialDelay = jest.fn();
-    const testFnManual = jest.fn();
-    const testFnLocal = jest.fn();
+    const testFnPlain = vi.fn();
+    const testFnInitialDelay = vi.fn();
+    const testFnManual = vi.fn();
+    const testFnLocal = vi.fn();
 
     await startTestBackend({
       features: [
@@ -185,7 +187,7 @@ describe('MockSchedulerService', () => {
 
   it('should wait for a specific task to complete', async () => {
     const scheduler = new MockSchedulerService();
-    const taskFn = jest.fn();
+    const taskFn = vi.fn();
     scheduler.scheduleTask({
       ...baseOpts,
       id: 'test',

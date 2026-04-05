@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi, vi, type Mocked} from 'vitest';
+
 import lunr from 'lunr';
 import { IndexableDocument } from '@backstage/plugin-search-common';
 import {
@@ -53,18 +55,18 @@ class LunrSearchEngineForTests extends LunrSearchEngine {
 }
 
 const indexerMock = {
-  on: jest.fn(),
-  buildIndex: jest.fn(),
-  getDocumentStore: jest.fn(),
+  on: vi.fn(),
+  buildIndex: vi.fn(),
+  getDocumentStore: vi.fn(),
 };
-jest.mock('./LunrSearchEngineIndexer', () => ({
-  LunrSearchEngineIndexer: jest.fn().mockImplementation(() => indexerMock),
+vi.mock('./LunrSearchEngineIndexer', () => ({
+  LunrSearchEngineIndexer: vi.fn().mockImplementation(() => indexerMock),
 }));
 
 const getActualIndexer = (engine: SearchEngine, index: string) => {
-  (LunrSearchEngineIndexer as unknown as jest.Mock).mockImplementationOnce(
+  (LunrSearchEngineIndexer as unknown as Mock).mockImplementationOnce(
     () => {
-      const ActualIndexer = jest.requireActual(
+      const ActualIndexer = vi.importActual(
         './LunrSearchEngineIndexer',
       ).LunrSearchEngineIndexer;
       return new ActualIndexer();
@@ -80,13 +82,13 @@ describe('LunrSearchEngine', () => {
     testLunrSearchEngine = new LunrSearchEngine({
       logger: mockServices.logger.mock(),
     });
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('translator', () => {
     it('query translator invoked', async () => {
       // Given: Set a translator spy on the search engine.
-      const translatorSpy = jest.fn().mockReturnValue({
+      const translatorSpy = vi.fn().mockReturnValue({
         lunrQueryString: '',
         documentTypes: [],
       });
@@ -124,11 +126,11 @@ describe('LunrSearchEngine', () => {
         pageSize: 25,
       });
 
-      const query: jest.Mocked<lunr.Query> = {
+      const query: Mocked<lunr.Query> = {
         allFields: [],
         clauses: [],
-        term: jest.fn(),
-        clause: jest.fn(),
+        term: vi.fn(),
+        clause: vi.fn(),
       };
 
       actualTranslatedQuery.lunrQueryBuilder.bind(query)(query);
@@ -165,11 +167,11 @@ describe('LunrSearchEngine', () => {
         pageSize: 25,
       });
 
-      const query: jest.Mocked<lunr.Query> = {
+      const query: Mocked<lunr.Query> = {
         allFields: [],
         clauses: [],
-        term: jest.fn(),
-        clause: jest.fn(),
+        term: vi.fn(),
+        clause: vi.fn(),
       };
 
       actualTranslatedQuery.lunrQueryBuilder.bind(query)(query);
@@ -206,11 +208,11 @@ describe('LunrSearchEngine', () => {
         lunrQueryBuilder: expect.any(Function),
       });
 
-      const query: jest.Mocked<lunr.Query> = {
+      const query: Mocked<lunr.Query> = {
         allFields: ['kind'],
         clauses: [],
-        term: jest.fn(),
-        clause: jest.fn(),
+        term: vi.fn(),
+        clause: vi.fn(),
       };
 
       actualTranslatedQuery.lunrQueryBuilder.bind(query)(query);
@@ -251,11 +253,11 @@ describe('LunrSearchEngine', () => {
         lunrQueryBuilder: expect.any(Function),
       });
 
-      const query: jest.Mocked<lunr.Query> = {
+      const query: Mocked<lunr.Query> = {
         allFields: ['kind'],
         clauses: [],
-        term: jest.fn(),
-        clause: jest.fn(),
+        term: vi.fn(),
+        clause: vi.fn(),
       };
 
       actualTranslatedQuery.lunrQueryBuilder.bind(query)(query);
@@ -282,11 +284,11 @@ describe('LunrSearchEngine', () => {
         lunrQueryBuilder: expect.any(Function),
       });
 
-      const query: jest.Mocked<lunr.Query> = {
+      const query: Mocked<lunr.Query> = {
         allFields: ['kind', 'namespace'],
         clauses: [],
-        term: jest.fn(),
-        clause: jest.fn(),
+        term: vi.fn(),
+        clause: vi.fn(),
       };
 
       actualTranslatedQuery.lunrQueryBuilder.bind(query)(query);
@@ -331,11 +333,11 @@ describe('LunrSearchEngine', () => {
         lunrQueryBuilder: expect.any(Function),
       });
 
-      const query: jest.Mocked<lunr.Query> = {
+      const query: Mocked<lunr.Query> = {
         allFields: [],
         clauses: [],
-        term: jest.fn(),
-        clause: jest.fn(),
+        term: vi.fn(),
+        clause: vi.fn(),
       };
 
       expect(() =>
@@ -346,7 +348,7 @@ describe('LunrSearchEngine', () => {
 
   describe('query', () => {
     it('should perform search query and return 0 results on empty index', async () => {
-      const querySpy = jest.spyOn(testLunrSearchEngine, 'query');
+      const querySpy = vi.spyOn(testLunrSearchEngine, 'query');
 
       // Perform search query and ensure the query func was invoked.
       const mockedSearchResult = await testLunrSearchEngine.query({
@@ -1183,7 +1185,7 @@ describe('stopword testing', () => {
     testLunrSearchEngine = new LunrSearchEngine({
       logger: mockServices.logger.mock(),
     });
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('test with stopword in title', async () => {

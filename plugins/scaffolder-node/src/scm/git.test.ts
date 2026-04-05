@@ -13,13 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-jest.mock('isomorphic-git');
-jest.mock('isomorphic-git/http/node');
-jest.mock('fs-extra');
-jest.mock('@isomorphic-git/pgp-plugin', () => ({
-  ...jest.requireActual('@isomorphic-git/pgp-plugin'),
+
+import { vi , type Mock} from 'vitest';
+vi.mock('isomorphic-git');
+vi.mock('isomorphic-git/http/node');
+vi.mock('fs-extra');
+vi.mock('@isomorphic-git/pgp-plugin', () => ({
+  ...vi.importActual('@isomorphic-git/pgp-plugin'),
   pgp: {
-    sign: jest.fn().mockResolvedValue({ signature: 'sign' }),
+    sign: vi.fn().mockResolvedValue({ signature: 'sign' }),
   },
 }));
 
@@ -30,7 +32,7 @@ import fs from 'fs-extra';
 
 describe('Git', () => {
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   describe('add', () => {
@@ -227,7 +229,7 @@ describe('Git', () => {
       await git.clone({ url, dir });
 
       const { onAuth } = (
-        isomorphic.clone as unknown as jest.Mock<(typeof isomorphic)['clone']>
+        isomorphic.clone as unknown as Mock<(typeof isomorphic)['clone']>
       ).mock.calls[0][0]!;
 
       expect(onAuth()).toEqual(auth);
@@ -246,7 +248,7 @@ describe('Git', () => {
       await git.clone({ url, dir });
 
       const { onAuth } = (
-        isomorphic.clone as unknown as jest.Mock<(typeof isomorphic)['clone']>
+        isomorphic.clone as unknown as Mock<(typeof isomorphic)['clone']>
       ).mock.calls[0][0]!;
 
       expect(onAuth()).toEqual(auth);
@@ -261,7 +263,7 @@ describe('Git', () => {
       };
       const git = Git.fromAuth(auth);
 
-      (isomorphic.clone as jest.Mock).mockImplementation(() => {
+      (isomorphic.clone as Mock).mockImplementation(() => {
         const error: Error & { data?: unknown } = new Error('mock error');
         error.data = { some: 'more information here' };
 
@@ -361,7 +363,7 @@ describe('Git', () => {
       await git.fetch({ remote, dir });
 
       const { onAuth } = (
-        isomorphic.fetch as unknown as jest.Mock<(typeof isomorphic)['fetch']>
+        isomorphic.fetch as unknown as Mock<(typeof isomorphic)['fetch']>
       ).mock.calls[0][0]!;
 
       expect(onAuth()).toEqual(auth);
@@ -376,7 +378,7 @@ describe('Git', () => {
       };
       const git = Git.fromAuth(auth);
 
-      (isomorphic.fetch as jest.Mock).mockImplementation(() => {
+      (isomorphic.fetch as Mock).mockImplementation(() => {
         const error: Error & { data?: unknown } = new Error('mock error');
         error.data = { some: 'more information here' };
 
@@ -538,7 +540,7 @@ describe('Git', () => {
       await git.push({ remote, dir, remoteRef, force });
 
       const { onAuth } = (
-        isomorphic.push as unknown as jest.Mock<(typeof isomorphic)['push']>
+        isomorphic.push as unknown as Mock<(typeof isomorphic)['push']>
       ).mock.calls[0][0]!;
 
       expect(onAuth()).toEqual(auth);
@@ -555,7 +557,7 @@ describe('Git', () => {
       const remoteRef = 'master';
       const force = true;
 
-      (isomorphic.push as jest.Mock).mockImplementation(() => {
+      (isomorphic.push as Mock).mockImplementation(() => {
         const error: Error & { data?: unknown } = new Error('mock error');
         error.data = { some: 'more information here' };
 

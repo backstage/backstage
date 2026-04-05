@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import { ReactNode } from 'react';
 
 import { CompoundEntityRef, RELATION_OWNED_BY } from '@backstage/catalog-model';
@@ -56,8 +58,8 @@ const mockTechDocsMetadata = {
   site_description: 'test-site-desc',
 };
 
-const getEntityMetadata = jest.fn();
-const getTechDocsMetadata = jest.fn();
+const getEntityMetadata = vi.fn();
+const getTechDocsMetadata = vi.fn();
 
 const techdocsApiMock = {
   getEntityMetadata,
@@ -94,7 +96,7 @@ const mountedRoutes = {
 
 describe('<TechDocsReaderEntityCard />', () => {
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should render entity kind, owner, and lifecycle', async () => {

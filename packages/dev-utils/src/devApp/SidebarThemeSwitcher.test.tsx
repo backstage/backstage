@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi, type Mocked } from 'vitest';
+
 import { AppThemeApi, appThemeApiRef } from '@backstage/core-plugin-api';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import userEvent from '@testing-library/user-event';
@@ -21,14 +23,14 @@ import ObservableImpl from 'zen-observable';
 import { SidebarThemeSwitcher } from './SidebarThemeSwitcher';
 
 describe('SidebarThemeSwitcher', () => {
-  let appThemeApi: jest.Mocked<AppThemeApi>;
+  let appThemeApi: Mocked<AppThemeApi>;
 
   beforeEach(() => {
     appThemeApi = {
-      activeThemeId$: jest.fn(),
-      getActiveThemeId: jest.fn(),
-      getInstalledThemes: jest.fn(),
-      setActiveThemeId: jest.fn(),
+      activeThemeId$: vi.fn(),
+      getActiveThemeId: vi.fn(),
+      getInstalledThemes: vi.fn(),
+      setActiveThemeId: vi.fn(),
     };
 
     appThemeApi.activeThemeId$.mockReturnValue(
@@ -39,13 +41,13 @@ describe('SidebarThemeSwitcher', () => {
         id: 'dark',
         title: 'Dark Theme',
         variant: 'dark',
-        Provider: jest.fn(),
+        Provider: vi.fn(),
       },
       {
         id: 'light',
         title: 'Light Theme',
         variant: 'light',
-        Provider: jest.fn(),
+        Provider: vi.fn(),
       },
     ]);
   });

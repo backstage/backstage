@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import { ConfigReader } from '@backstage/config';
 import { errors } from '@elastic/elasticsearch';
 import Mock from '@elastic/elasticsearch-mock';
@@ -27,7 +29,7 @@ import {
 import { ElasticSearchSearchEngineIndexer } from './ElasticSearchSearchEngineIndexer';
 import { mockServices } from '@backstage/backend-test-utils';
 
-jest.mock('uuid', () => ({ v4: () => 'tag' }));
+vi.mock('uuid', () => ({ v4: () => 'tag' }));
 
 class ElasticSearchSearchEngineForTranslatorTests extends ElasticSearchSearchEngine {
   getTranslator() {
@@ -42,10 +44,10 @@ const options = {
 };
 
 const indexerMock = {
-  on: jest.fn(),
+  on: vi.fn(),
   indexName: 'expected-index-name',
 };
-jest.mock('./ElasticSearchSearchEngineIndexer', () => ({
+vi.mock('./ElasticSearchSearchEngineIndexer', () => ({
   ElasticSearchSearchEngineIndexer: jest
     .fn()
     .mockImplementation(() => indexerMock),
@@ -71,7 +73,7 @@ const customIndexTemplate = {
 const advanceTimersByNTimes = async (n = 1, time = 1000) => {
   for (let i = 0; i < n; i++) {
     await Promise.resolve();
-    jest.advanceTimersByTime(time);
+    vi.advanceTimersByTime(time);
     await Promise.resolve();
   }
 };
@@ -102,7 +104,7 @@ describe('ElasticSearchSearchEngine', () => {
 
   describe('custom index template', () => {
     it('should set custom index template', async () => {
-      const indexTemplateSpy = jest.fn().mockReturnValue(customIndexTemplate);
+      const indexTemplateSpy = vi.fn().mockReturnValue(customIndexTemplate);
       mock.add(
         { method: 'PUT', path: '/_index_template/custom-index-template' },
         indexTemplateSpy,
@@ -131,7 +133,7 @@ describe('ElasticSearchSearchEngine', () => {
       );
     });
     it('should invoke the query translator', async () => {
-      const translatorSpy = jest.fn().mockReturnValue({
+      const translatorSpy = vi.fn().mockReturnValue({
         elasticSearchQuery: () => ({
           toJSON: () =>
             JSON.stringify({
@@ -748,7 +750,7 @@ describe('ElasticSearchSearchEngine', () => {
     });
 
     it('should handle index/search type filtering correctly', async () => {
-      const elasticSearchQuerySpy = jest.spyOn(clientWrapper, 'search');
+      const elasticSearchQuerySpy = vi.spyOn(clientWrapper, 'search');
       await testSearchEngine.query({
         term: 'testTerm',
         filters: {},
@@ -787,7 +789,7 @@ describe('ElasticSearchSearchEngine', () => {
     });
 
     it('should create matchAll query if no term defined', async () => {
-      const elasticSearchQuerySpy = jest.spyOn(clientWrapper, 'search');
+      const elasticSearchQuerySpy = vi.spyOn(clientWrapper, 'search');
       await testSearchEngine.query({
         term: '',
         filters: {},
@@ -821,7 +823,7 @@ describe('ElasticSearchSearchEngine', () => {
     });
 
     it('should query only specified indices if defined', async () => {
-      const elasticSearchQuerySpy = jest.spyOn(clientWrapper, 'search');
+      const elasticSearchQuerySpy = vi.spyOn(clientWrapper, 'search');
       await testSearchEngine.query({
         term: '',
         filters: {},
@@ -856,7 +858,7 @@ describe('ElasticSearchSearchEngine', () => {
     });
 
     it('should throws missing index error', async () => {
-      jest.spyOn(clientWrapper, 'search').mockRejectedValue({
+      vi.spyOn(clientWrapper, 'search').mockRejectedValue({
         meta: {
           body: {
             error: {
@@ -914,7 +916,7 @@ describe('ElasticSearchSearchEngine', () => {
       });
 
       it('should check for and delete expected index', async () => {
-        const deleteSpy = jest.fn().mockReturnValue({});
+        const deleteSpy = vi.fn().mockReturnValue({});
         mock.add({ method: 'DELETE', path: '/expected-index-name' }, deleteSpy);
 
         await errorHandler(error);
@@ -925,7 +927,7 @@ describe('ElasticSearchSearchEngine', () => {
 
       it('should retry delete index up to 5 times', async () => {
         // Delete call returns 404
-        const deleteSpy = jest.fn().mockReturnValue(
+        const deleteSpy = vi.fn().mockReturnValue(
           new errors.ResponseError({
             statusCode: 404,
             body: { status: 404 },
@@ -934,10 +936,10 @@ describe('ElasticSearchSearchEngine', () => {
         mock.add({ method: 'DELETE', path: '/expected-index-name' }, deleteSpy);
 
         // Call the error handler and advance timers
-        jest.useFakeTimers();
+        vi.useFakeTimers();
         errorHandler(error);
         await advanceTimersByNTimes(10);
-        jest.useRealTimers();
+        vi.useRealTimers();
 
         // Check request was made 5 times
         expect(deleteSpy).toHaveBeenCalledTimes(5);
@@ -961,9 +963,9 @@ describe('ElasticSearchSearchEngine', () => {
 
       const config = new ConfigReader({});
       const esConfig = new ConfigReader(esOptions);
-      jest.spyOn(config, 'getConfig').mockImplementation(() => esConfig);
-      const getOptionalConfig = jest.spyOn(esConfig, 'getOptionalConfig');
-      const getOptional = jest.spyOn(config, 'getOptional');
+      vi.spyOn(config, 'getConfig').mockImplementation(() => esConfig);
+      const getOptionalConfig = vi.spyOn(esConfig, 'getOptionalConfig');
+      const getOptional = vi.spyOn(config, 'getOptional');
 
       await ElasticSearchSearchEngine.fromConfig({
         logger: mockServices.logger.mock(),

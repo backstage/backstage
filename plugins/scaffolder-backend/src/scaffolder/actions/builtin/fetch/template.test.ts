@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-jest.mock('@backstage/plugin-scaffolder-node', () => {
-  const actual = jest.requireActual('@backstage/plugin-scaffolder-node');
-  return { ...actual, fetchContents: jest.fn() };
+import { vi , type MockedFunction} from 'vitest';
+
+vi.mock('@backstage/plugin-scaffolder-node', () => {
+  const actual = vi.importActual('@backstage/plugin-scaffolder-node');
+  return { ...actual, fetchContents: vi.fn() };
 });
 
 import { join as joinPath, sep as pathSep } from 'node:path';
@@ -48,7 +50,7 @@ const aBinaryFile = fs.readFileSync(
   ),
 );
 
-const mockFetchContents = fetchContents as jest.MockedFunction<
+const mockFetchContents = fetchContents as MockedFunction<
   typeof fetchContents
 >;
 

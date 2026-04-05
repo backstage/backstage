@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi , type Mock} from 'vitest';
 import { ReactNode } from 'react';
 import { waitFor } from '@testing-library/react';
 
@@ -27,22 +29,22 @@ import {
 } from '@backstage/plugin-techdocs-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 
-const useTechDocsReaderDom = jest.fn();
-jest.mock('./dom', () => ({
-  ...jest.requireActual('./dom'),
+const useTechDocsReaderDom = vi.fn();
+vi.mock('./dom', () => ({
+  ...vi.importActual('./dom'),
   useTechDocsReaderDom: (...args: any[]) => useTechDocsReaderDom(...args),
 }));
-const useReaderState = jest.fn();
-jest.mock('../useReaderState', () => ({
-  ...jest.requireActual('../useReaderState'),
+const useReaderState = vi.fn();
+vi.mock('../useReaderState', () => ({
+  ...vi.importActual('../useReaderState'),
   useReaderState: (...args: any[]) => useReaderState(...args),
 }));
-const useShadowDomStylesLoading = jest.fn().mockReturnValue(false);
-jest.mock('@backstage/plugin-techdocs-react', () => ({
-  ...jest.requireActual('@backstage/plugin-techdocs-react'),
+const useShadowDomStylesLoading = vi.fn().mockReturnValue(false);
+vi.mock('@backstage/plugin-techdocs-react', () => ({
+  ...vi.importActual('@backstage/plugin-techdocs-react'),
   useShadowDomStylesLoading: (...args: any[]) =>
     useShadowDomStylesLoading(...args),
-  useShadowRootElements: jest.fn(),
+  useShadowRootElements: vi.fn(),
 }));
 
 import { TechDocsReaderPageContent } from './TechDocsReaderPageContent';
@@ -68,8 +70,8 @@ const mockTechDocsMetadata = {
   site_description: 'test-site-desc',
 };
 
-const getEntityMetadata = jest.fn();
-const getTechDocsMetadata = jest.fn();
+const getEntityMetadata = vi.fn();
+const getTechDocsMetadata = vi.fn();
 
 const techdocsApiMock = {
   getEntityMetadata,
@@ -95,14 +97,14 @@ const Wrapper = ({
 );
 
 describe('<TechDocsReaderPageContent />', () => {
-  const useShadowRootElementsMock = useShadowRootElements as jest.Mock;
+  const useShadowRootElementsMock = useShadowRootElements as Mock;
 
   beforeEach(() => {
     useShadowRootElementsMock.mockReturnValue([]);
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should render techdocs page content', async () => {
@@ -194,7 +196,7 @@ describe('<TechDocsReaderPageContent />', () => {
   });
 
   it('should scroll to header if hash is not present in url', async () => {
-    jest.spyOn(document, 'querySelector');
+    vi.spyOn(document, 'querySelector');
 
     getEntityMetadata.mockResolvedValue(mockEntityMetadata);
     getTechDocsMetadata.mockResolvedValue(mockTechDocsMetadata);
@@ -217,9 +219,9 @@ describe('<TechDocsReaderPageContent />', () => {
   });
 
   it('should scroll to hash if hash is present in url', async () => {
-    jest.spyOn(document, 'querySelector');
+    vi.spyOn(document, 'querySelector');
 
-    const mockScrollIntoView = jest.fn();
+    const mockScrollIntoView = vi.fn();
     const h2 = document.createElement('h2');
     h2.innerText = 'emojis';
     h2.id = 'emojis';

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi, type Mocked } from 'vitest';
+
 import { TestApiProvider } from '@backstage/test-utils';
 import { useEffect } from 'react';
 import { BackstageRouteObject } from './types';
@@ -76,12 +78,12 @@ describe('RouteTracker', () => {
     },
   ];
 
-  const mockedAnalytics: jest.Mocked<AnalyticsApi> = {
-    captureEvent: jest.fn(),
+  const mockedAnalytics: Mocked<AnalyticsApi> = {
+    captureEvent: vi.fn(),
   };
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should capture the navigate event on load', async () => {

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { DateTime } from 'luxon';
 import { AuthDatabase } from '../database/AuthDatabase';
 import { DatabaseKeyStore } from './DatabaseKeyStore';
@@ -25,7 +27,7 @@ const keyBase = {
   alg: 'Base64',
 } as const;
 
-jest.setTimeout(60_000);
+vi.setConfig({ testTimeout: 60_000 });
 
 describe('DatabaseKeyStore', () => {
   const databases = TestDatabases.create();

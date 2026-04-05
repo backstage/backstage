@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { Content } from './Content';
 import {
   TestApiProvider,
@@ -55,7 +57,7 @@ describe('<Content kind="recent"/>', () => {
     };
   });
 
-  afterEach(() => jest.resetAllMocks());
+  afterEach(() => vi.resetAllMocks());
 
   it('renders', async () => {
     const { getByText } = await renderInTestApp(
@@ -153,7 +155,7 @@ describe('<Content kind="recent"/>', () => {
       },
     });
 
-    const listSpy = jest.spyOn(mockVisitsApi, 'list');
+    const listSpy = vi.spyOn(mockVisitsApi, 'list');
 
     await renderInTestApp(
       <TestApiProvider
@@ -182,7 +184,7 @@ describe('<Content kind="recent"/>', () => {
   });
 
   it('shows all recent items when there is no filtering in the config', async () => {
-    const listSpy = jest.spyOn(mockVisitsApi, 'list');
+    const listSpy = vi.spyOn(mockVisitsApi, 'list');
 
     await renderInTestApp(
       <TestApiProvider apis={[[visitsApiRef, mockVisitsApi]]}>
@@ -227,7 +229,7 @@ describe('<Content kind="recent"/>', () => {
       },
     });
 
-    const listSpy = jest.spyOn(mockVisitsApi, 'list');
+    const listSpy = vi.spyOn(mockVisitsApi, 'list');
 
     await renderInTestApp(
       <TestApiProvider
@@ -270,7 +272,7 @@ describe('<Content kind="top"/>', () => {
     };
   });
 
-  afterEach(() => jest.resetAllMocks());
+  afterEach(() => vi.resetAllMocks());
 
   it('renders', async () => {
     const { getByText } = await renderInTestApp(
@@ -302,7 +304,7 @@ describe('<Content kind="top"/>', () => {
       },
     });
 
-    const listSpy = jest.spyOn(mockVisitsApi, 'list');
+    const listSpy = vi.spyOn(mockVisitsApi, 'list');
 
     await renderInTestApp(
       <TestApiProvider
@@ -332,7 +334,7 @@ describe('<Content kind="top"/>', () => {
   });
 
   it('shows all top items when there is no filtering in the config', async () => {
-    const listSpy = jest.spyOn(mockVisitsApi, 'list');
+    const listSpy = vi.spyOn(mockVisitsApi, 'list');
 
     await renderInTestApp(
       <TestApiProvider apis={[[visitsApiRef, mockVisitsApi]]}>

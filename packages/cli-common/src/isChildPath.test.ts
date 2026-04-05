@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { posix, win32 } from 'node:path';
 
 describe('isChildPath', () => {
   it('should check child posix paths', () => {
-    jest.isolateModules(() => {
-      jest.setMock('path', posix);
+    vi.hoisted(() => {
+      vi.doMock('path', posix);
       const { isChildPath } = require('./isChildPath');
 
       expect(isChildPath('/', '/')).toBe(true);
@@ -39,13 +41,13 @@ describe('isChildPath', () => {
       expect(isChildPath('/ yz', '/')).toBe(false);
       expect(isChildPath('/x', '/')).toBe(false);
 
-      jest.dontMock('path');
+      vi.unmock('path');
     });
   });
 
   it('should check child win32 paths', () => {
-    jest.isolateModules(() => {
-      jest.setMock('path', win32);
+    vi.hoisted(() => {
+      vi.doMock('path', win32);
       const { isChildPath } = require('./isChildPath');
 
       expect(isChildPath('/x', '/x')).toBe(true);
@@ -68,7 +70,7 @@ describe('isChildPath', () => {
       expect(isChildPath('D:/x', 'CD:/x')).toBe(false);
       expect(isChildPath('D:/x', 'D:/y')).toBe(false);
 
-      jest.dontMock('path');
+      vi.unmock('path');
     });
   });
 });

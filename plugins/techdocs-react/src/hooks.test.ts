@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi, type Mocked } from 'vitest';
+
 import {
   useShadowRoot,
   useShadowRootElements,
@@ -29,7 +31,7 @@ const fireSelectionChangeEvent = (window: Window) => {
   fireEvent(window.document, selectionChangeEvent);
 };
 
-const getSelection = jest.fn();
+const getSelection = vi.fn();
 
 const mockShadowRoot = () => {
   const div = document.createElement('div');
@@ -42,7 +44,7 @@ const mockShadowRoot = () => {
 
 const shadowRoot = mockShadowRoot();
 
-jest.mock('./context', () => {
+vi.mock('./context', () => {
   return {
     useTechDocsReaderPage: () => ({ shadowRoot }),
   };
@@ -102,10 +104,10 @@ describe('hooks', () => {
     });
 
     describe('mutation observer', () => {
-      const observer: jest.Mocked<MutationObserver> = {
-        observe: jest.fn(),
-        disconnect: jest.fn(),
-        takeRecords: jest.fn(),
+      const observer: Mocked<MutationObserver> = {
+        observe: vi.fn(),
+        disconnect: vi.fn(),
+        takeRecords: vi.fn(),
       };
 
       beforeEach(() => {
@@ -115,7 +117,7 @@ describe('hooks', () => {
       });
 
       afterEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
       });
 
       it('should observe shadow root changes', async () => {

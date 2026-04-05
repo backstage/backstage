@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import {
   mockServices,
   registerMswTestHooks,
@@ -220,7 +222,7 @@ describe('GitLabClient', () => {
       });
 
       // Mock the pagedRequest method to verify parameters
-      const mockPagedRequest = jest.fn().mockResolvedValue({
+      const mockPagedRequest = vi.fn().mockResolvedValue({
         items: [],
         nextPage: undefined,
       });
@@ -244,7 +246,7 @@ describe('GitLabClient', () => {
       });
 
       // Mock the pagedRequest method to verify parameters
-      const mockPagedRequest = jest.fn().mockResolvedValue({
+      const mockPagedRequest = vi.fn().mockResolvedValue({
         items: [],
         nextPage: undefined,
       });
@@ -320,7 +322,7 @@ describe('GitLabClient', () => {
         logger: mockServices.logger.mock(),
       });
 
-      const pagedRequestSpy = jest.spyOn(client as any, 'pagedRequest');
+      const pagedRequestSpy = vi.spyOn(client as any, 'pagedRequest');
 
       await client.listFiles({
         group: 'group1',

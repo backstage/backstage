@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { TestApiRegistry, renderInTestApp } from '@backstage/test-utils';
 import { fireEvent, screen } from '@testing-library/react';
 import { UserSettingsAuthProviders } from './UserSettingsAuthProviders';
@@ -21,10 +23,10 @@ import { UserSettingsAuthProviders } from './UserSettingsAuthProviders';
 import { ApiProvider, ConfigReader } from '@backstage/core-app-api';
 import { configApiRef, googleAuthApiRef } from '@backstage/core-plugin-api';
 
-const mockSignInHandler = jest.fn().mockReturnValue(Promise.resolve());
+const mockSignInHandler = vi.fn().mockReturnValue(Promise.resolve());
 const mockGoogleAuth = {
   sessionState$: () => ({
-    [Symbol.observable]: jest.fn(),
+    [Symbol.observable]: vi.fn(),
     subscribe: () => ({
       closed: false,
       unsubscribe: () => null,

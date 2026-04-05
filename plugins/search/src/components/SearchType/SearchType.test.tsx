@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { configApiRef } from '@backstage/core-plugin-api';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -49,10 +51,10 @@ describe('SearchType', () => {
     },
   });
 
-  const searchApiMock = { query: jest.fn().mockResolvedValue({ results: [] }) };
+  const searchApiMock = { query: vi.fn().mockResolvedValue({ results: [] }) };
 
   afterAll(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   describe('Type Filter', () => {

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import * as GoogleCloud from '@google-cloud/storage';
 import { ConfigReader } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
@@ -25,7 +27,7 @@ import { mockServices } from '@backstage/backend-test-utils';
 import { UrlReaderServiceReadUrlResponse } from '@backstage/backend-plugin-api';
 import { Readable } from 'node:stream';
 
-const bucketGetFilesMock = jest.fn();
+const bucketGetFilesMock = vi.fn();
 class Bucket {
   getFiles(query: any) {
     return bucketGetFilesMock(query);
@@ -41,7 +43,7 @@ class Storage {
     return new Bucket();
   }
 }
-jest.spyOn(GoogleCloud, 'Storage').mockReturnValue(new Storage() as any);
+vi.spyOn(GoogleCloud, 'Storage').mockReturnValue(new Storage() as any);
 
 describe('GcsUrlReader', () => {
   const createReader = (config: JsonObject): UrlReaderPredicateTuple[] => {
@@ -85,9 +87,9 @@ describe('GcsUrlReader', () => {
     const getStorage: any = {
       userAgent: `backstage/backend-defaults.GoogleGcsUrlReader/${packageinfo.version}`,
     };
-    jest.mock('@google-cloud/storage', () => {
+    vi.mock('@google-cloud/storage', () => {
       return {
-        Storage: jest.fn(() => getStorage),
+        Storage: vi.fn(() => getStorage),
       };
     });
     const getUserAgent = getStorage.userAgent.toString();
@@ -133,7 +135,7 @@ describe('GcsUrlReader', () => {
     const { reader } = createReader({ integrations: { googleGcs: {} } })[0];
 
     beforeEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
     });
 
     it('throws if search url does not end with *', async () => {
@@ -176,7 +178,7 @@ describe('GcsUrlReader', () => {
     });
 
     it('returns single file if there is no wildcard', async () => {
-      reader.readUrl = jest.fn().mockResolvedValue({
+      reader.readUrl = vi.fn().mockResolvedValue({
         buffer: async () => Buffer.from('content'),
         etag: 'etag',
       } as UrlReaderServiceReadUrlResponse);
@@ -197,7 +199,7 @@ describe('GcsUrlReader', () => {
     const { reader } = createReader({ integrations: { googleGcs: {} } })[0];
 
     beforeEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
     });
 
     it('returns files with relative paths', async () => {

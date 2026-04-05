@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi, type Mocked } from 'vitest';
+
 import { ApiEntity } from '@backstage/catalog-model';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
@@ -27,8 +29,8 @@ import { ApiDefinitionCard } from './ApiDefinitionCard';
 import '../OpenApiDefinitionWidget/OpenApiDefinition';
 
 describe('<ApiDefinitionCard />', () => {
-  const apiDocsConfig: jest.Mocked<ApiDocsConfig> = {
-    getApiDefinitionWidget: jest.fn(),
+  const apiDocsConfig: Mocked<ApiDocsConfig> = {
+    getApiDefinitionWidget: vi.fn(),
   } as any;
   let Wrapper: ComponentType<PropsWithChildren<{}>>;
 
@@ -40,7 +42,7 @@ describe('<ApiDefinitionCard />', () => {
     );
   });
 
-  afterEach(() => jest.resetAllMocks());
+  afterEach(() => vi.resetAllMocks());
 
   it('renders API', async () => {
     const definition = `

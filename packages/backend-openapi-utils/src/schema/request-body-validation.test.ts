@@ -68,8 +68,8 @@ describe('request body', () => {
     };
     await expect(parser.parse(toRequest(requestBody))).rejects
       .toThrowErrorMatchingInlineSnapshot(`
-      "["POST /api/search"] Request body validation failed.
-       - "/query" should be of type string"
+      [Error: ["POST /api/search"] Request body validation failed.
+       - "/query" should be of type string]
     `);
   });
 
@@ -81,7 +81,7 @@ describe('request body', () => {
     await expect(
       parser.parse(toRequest()),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"["POST /api/search"] No request body found for /api/search"`,
+      `[Error: ["POST /api/search"] No request body found for /api/search]`,
     );
   });
 
@@ -90,7 +90,7 @@ describe('request body', () => {
     await expect(
       parser.parse(request),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"["POST /api/search"] Content type is not application/json"`,
+      `[Error: ["POST /api/search"] Content type is not application/json]`,
     );
   });
 

@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { createNewPackage } from '../lib/createNewPackage';
 import { default as newCommand } from './new';
 import type { CliCommandContext } from '@backstage/cli-node';
 
-jest.mock('../lib/createNewPackage');
+vi.mock('../lib/createNewPackage');
 
 describe.each([
   [undefined, undefined, undefined],
@@ -31,7 +33,7 @@ describe.each([
   ['acme-backstage-plugins', '@acme-backstage-plugins/', 'plugin-'],
 ])('new', (scope, prefix, infix) => {
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it(`should generate naming options for --scope=${scope}`, async () => {

@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import {
   SecretsContextProvider,
   useTemplateSecrets,
@@ -34,7 +36,7 @@ describe('<SecretInput />', () => {
 
   it('should set the secret value to the unmasked value', async () => {
     const mockSecret = 'backstage';
-    const onSubmit = jest.fn();
+    const onSubmit = vi.fn();
 
     const { getByLabelText, getByTestId } = await renderInTestApp(
       <SecretsContextProvider>

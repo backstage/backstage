@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import { ConfigReader } from '@backstage/config';
 import { GoogleServiceAccountStrategy } from './GoogleServiceAccountStrategy';
 
 // Mock the @google-cloud/container module
-const mockGetAccessToken = jest.fn();
+const mockGetAccessToken = vi.fn();
 
-jest.mock('@google-cloud/container', () => {
-  const mockClusterManagerClient = jest.fn().mockImplementation(() => ({
+vi.mock('@google-cloud/container', () => {
+  const mockClusterManagerClient = vi.fn().mockImplementation(() => ({
     auth: {
       getAccessToken: mockGetAccessToken,
     },
@@ -37,11 +39,11 @@ jest.mock('@google-cloud/container', () => {
 // Get reference to the mocked constructor for use in tests
 const {
   v1: { ClusterManagerClient: MockedClusterManagerClient },
-} = jest.mocked(require('@google-cloud/container'));
+} = vi.mocked(require('@google-cloud/container'));
 
 describe('GoogleServiceAccountStrategy', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('constructor', () => {

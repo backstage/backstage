@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { PropsWithChildren } from 'react';
 import { ApiProvider } from '@backstage/core-app-api';
 import {
@@ -58,7 +60,7 @@ describe('<SelectedRelationsFilter/>', () => {
   });
 
   test('should select value', async () => {
-    const onChange = jest.fn();
+    const onChange = vi.fn();
     await renderInTestApp(
       <GraphContext>
         <SelectedRelationsFilter
@@ -87,7 +89,7 @@ describe('<SelectedRelationsFilter/>', () => {
   });
 
   test('should return all known relations if all values are selected', async () => {
-    const onChange = jest.fn();
+    const onChange = vi.fn();
     await renderInTestApp(
       <GraphContext>
         <SelectedRelationsFilter
@@ -118,7 +120,7 @@ describe('<SelectedRelationsFilter/>', () => {
   });
 
   test('should return all values when cleared', async () => {
-    const onChange = jest.fn();
+    const onChange = vi.fn();
     await renderInTestApp(
       <GraphContext>
         <SelectedRelationsFilter

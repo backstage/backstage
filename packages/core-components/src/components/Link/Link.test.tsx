@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { PropsWithChildren, ComponentType } from 'react';
 import { fireEvent, waitFor, screen, renderHook } from '@testing-library/react';
 import {
@@ -73,7 +75,7 @@ describe('<Link />', () => {
   it('captures click using analytics api', async () => {
     const linkText = 'Navigate!';
     const analyticsApi = mockApis.analytics();
-    const customOnClick = jest.fn();
+    const customOnClick = vi.fn();
 
     await renderInTestApp(
       <TestApiProvider apis={[[analyticsApiRef, analyticsApi]]}>
@@ -105,7 +107,7 @@ describe('<Link />', () => {
   it('does not capture click when noTrack is set', async () => {
     const linkText = 'Navigate!';
     const analyticsApi = mockApis.analytics();
-    const customOnClick = jest.fn();
+    const customOnClick = vi.fn();
 
     await renderInTestApp(
       <TestApiProvider apis={[[analyticsApiRef, analyticsApi]]}>

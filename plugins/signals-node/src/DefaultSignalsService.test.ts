@@ -13,13 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import { DefaultSignalsService } from './DefaultSignalsService';
 import { SignalPayload } from './types';
 
 describe('DefaultSignalsService', () => {
   const mockEvents = {
-    publish: jest.fn(),
-    subscribe: jest.fn(),
+    publish: vi.fn(),
+    subscribe: vi.fn(),
   };
 
   const service = DefaultSignalsService.create({ events: mockEvents });

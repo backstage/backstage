@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
@@ -25,33 +27,33 @@ import yaml from 'yaml';
 
 const mockGitlabClient = {
   Namespaces: {
-    show: jest.fn(),
+    show: vi.fn(),
   },
   Branches: {
-    create: jest.fn(),
+    create: vi.fn(),
   },
   Commits: {
-    create: jest.fn(() => ({ id: 'mockId' })),
+    create: vi.fn(() => ({ id: 'mockId' })),
   },
   MergeRequests: {
-    create: jest.fn(async (_: any) => {
+    create: vi.fn(async (_: any) => {
       return {
         default_branch: 'main',
       };
     }),
-    show: jest.fn(async (_: any) => {
+    show: vi.fn(async (_: any) => {
       return {
         default_branch: 'main',
       };
     }),
-    edit: jest.fn(async (_: any) => {
+    edit: vi.fn(async (_: any) => {
       return {
         default_branch: 'main',
       };
     }),
   },
   MergeRequestApprovals: {
-    allApprovalRules: jest.fn(async (_: any) => {
+    allApprovalRules: vi.fn(async (_: any) => {
       return [
         {
           id: 123,
@@ -93,16 +95,16 @@ const mockGitlabClient = {
     }),
   },
   Projects: {
-    create: jest.fn(),
-    show: jest.fn(async (_: any) => {
+    create: vi.fn(),
+    show: vi.fn(async (_: any) => {
       return {
         default_branch: 'main',
       };
     }),
   },
   Users: {
-    current: jest.fn(),
-    all: jest.fn(async (userOptions: { username: string }) => {
+    current: vi.fn(),
+    all: vi.fn(async (userOptions: { username: string }) => {
       const users: string[] = ['John Smith', 'my-assignee'];
       if (!users.includes(userOptions.username))
         throw new Error('user does not exist');
@@ -116,7 +118,7 @@ const mockGitlabClient = {
   },
 };
 
-jest.mock('@gitbeaker/rest', () => ({
+vi.mock('@gitbeaker/rest', () => ({
   Gitlab: class {
     constructor() {
       return mockGitlabClient;
@@ -131,7 +133,7 @@ describe('createGitLabMergeRequest', () => {
   const workspacePath = mockDir.resolve('workspace');
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
 
     mockDir.clear();
 

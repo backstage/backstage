@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { openLoginPopup } from './loginPopup';
 
 describe('openLoginPopup', () => {
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('should open an auth popup', async () => {
@@ -26,8 +28,8 @@ describe('openLoginPopup', () => {
     const openSpy = jest
       .spyOn(window, 'open')
       .mockReturnValue(popupMock as Window);
-    const addEventListenerSpy = jest.spyOn(window, 'addEventListener');
-    const removeEventListenerSpy = jest.spyOn(window, 'removeEventListener');
+    const addEventListenerSpy = vi.spyOn(window, 'addEventListener');
+    const removeEventListenerSpy = vi.spyOn(window, 'removeEventListener');
 
     const payloadPromise = openLoginPopup({
       url: 'http://my-origin/api/backend/auth/start?scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fa%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fb',
@@ -97,8 +99,8 @@ describe('openLoginPopup', () => {
     const openSpy = jest
       .spyOn(window, 'open')
       .mockReturnValue(popupMock as Window);
-    const addEventListenerSpy = jest.spyOn(window, 'addEventListener');
-    const removeEventListenerSpy = jest.spyOn(window, 'removeEventListener');
+    const addEventListenerSpy = vi.spyOn(window, 'addEventListener');
+    const removeEventListenerSpy = vi.spyOn(window, 'removeEventListener');
 
     const payloadPromise = openLoginPopup({
       url: 'http://my-origin',
@@ -137,8 +139,8 @@ describe('openLoginPopup', () => {
     const openSpy = jest
       .spyOn(window, 'open')
       .mockReturnValue({ closed: false } as Window);
-    const addEventListenerSpy = jest.spyOn(window, 'addEventListener');
-    const removeEventListenerSpy = jest.spyOn(window, 'removeEventListener');
+    const addEventListenerSpy = vi.spyOn(window, 'addEventListener');
+    const removeEventListenerSpy = vi.spyOn(window, 'removeEventListener');
     const popupMock = { closed: false };
 
     openSpy.mockReturnValue(popupMock as Window);
@@ -178,8 +180,8 @@ describe('openLoginPopup', () => {
     const openSpy = jest
       .spyOn(window, 'open')
       .mockReturnValue({ closed: false } as Window);
-    const addEventListenerSpy = jest.spyOn(window, 'addEventListener');
-    const removeEventListenerSpy = jest.spyOn(window, 'removeEventListener');
+    const addEventListenerSpy = vi.spyOn(window, 'addEventListener');
+    const removeEventListenerSpy = vi.spyOn(window, 'removeEventListener');
     const popupMock = { closed: false };
 
     openSpy.mockReturnValue(popupMock as Window);

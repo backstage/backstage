@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { CATALOG_FILTER_EXISTS } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import {
@@ -44,7 +46,7 @@ describe('<MultiEntityPicker />', () => {
     makeEntity('Group', 'default', 'team-a'),
     makeEntity('Group', 'default', 'squad-b'),
   ];
-  const onChange = jest.fn();
+  const onChange = vi.fn();
   const schema = { type: 'array', items: { type: 'string' } };
   const required = false;
   let uiSchema: MultiEntityPickerProps['uiSchema'];
@@ -54,7 +56,7 @@ describe('<MultiEntityPicker />', () => {
   let props: FieldProps<string[]>;
 
   const catalogApi = catalogApiMock.mock({
-    getEntities: jest.fn(async () => ({ items: entities })),
+    getEntities: vi.fn(async () => ({ items: entities })),
   });
   let Wrapper: ComponentType<PropsWithChildren<{}>>;
 
@@ -74,7 +76,7 @@ describe('<MultiEntityPicker />', () => {
     );
   });
 
-  afterEach(() => jest.resetAllMocks());
+  afterEach(() => vi.resetAllMocks());
 
   describe('without allowedKinds and catalogFilter', () => {
     beforeEach(() => {

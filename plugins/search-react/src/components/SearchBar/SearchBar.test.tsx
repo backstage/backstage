@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import { screen, waitFor, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { configApiRef } from '@backstage/core-plugin-api';
@@ -53,10 +55,10 @@ describe('SearchBar', () => {
     },
   });
 
-  const searchApiMock = { query: jest.fn().mockResolvedValue({ results: [] }) };
+  const searchApiMock = { query: vi.fn().mockResolvedValue({ results: [] }) };
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('Renders without exploding', async () => {
@@ -142,7 +144,7 @@ describe('SearchBar', () => {
   });
 
   it('Updates term state when text is entered', async () => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
 
     await renderInTestApp(
       <TestApiProvider
@@ -164,7 +166,7 @@ describe('SearchBar', () => {
     await user.type(textbox, value);
 
     act(() => {
-      jest.advanceTimersByTime(200);
+      vi.advanceTimersByTime(200);
     });
 
     await waitFor(() => expect(textbox).toHaveValue(value));
@@ -176,8 +178,8 @@ describe('SearchBar', () => {
       },
     );
 
-    jest.runAllTimers();
-    jest.useRealTimers();
+    vi.runAllTimers();
+    vi.useRealTimers();
   });
 
   it('Clear button clears term state', async () => {
@@ -234,7 +236,7 @@ describe('SearchBar', () => {
   });
 
   it('Adheres to provided debounceTime', async () => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
 
     const debounceTime = 100;
 
@@ -267,7 +269,7 @@ describe('SearchBar', () => {
     );
 
     act(() => {
-      jest.advanceTimersByTime(debounceTime);
+      vi.advanceTimersByTime(debounceTime);
     });
 
     await waitFor(() => expect(textbox).toHaveValue(value));
@@ -279,8 +281,8 @@ describe('SearchBar', () => {
       },
     );
 
-    jest.runAllTimers();
-    jest.useRealTimers();
+    vi.runAllTimers();
+    vi.useRealTimers();
   });
 
   it('Does not capture analytics event if not enabled in app', async () => {

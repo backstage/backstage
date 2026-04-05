@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import express from 'express';
 import { SignJWT } from 'jose';
 import {
@@ -39,7 +41,7 @@ describe('AwsAlbProvider', () => {
   const signingKey = new TextEncoder().encode('signingKey');
   let mockJwt: string;
   const mockRequest = {
-    header: jest.fn(name => {
+    header: vi.fn(name => {
       if (name === ALB_JWT_HEADER) {
         return mockJwt;
       } else if (name === ALB_ACCESS_TOKEN_HEADER) {
@@ -49,7 +51,7 @@ describe('AwsAlbProvider', () => {
     }),
   } as unknown as express.Request;
   const mockRequestWithInvalidJwt = {
-    header: jest.fn(name => {
+    header: vi.fn(name => {
       if (name === ALB_JWT_HEADER) {
         return 'invalid.jwt';
       } else if (name === ALB_ACCESS_TOKEN_HEADER) {
@@ -59,7 +61,7 @@ describe('AwsAlbProvider', () => {
     }),
   } as unknown as express.Request;
   const mockRequestWithoutJwt = {
-    header: jest.fn(name => {
+    header: vi.fn(name => {
       if (name === ALB_ACCESS_TOKEN_HEADER) {
         return mockAccessToken;
       }
@@ -67,7 +69,7 @@ describe('AwsAlbProvider', () => {
     }),
   } as unknown as express.Request;
   const mockRequestWithoutAccessToken = {
-    header: jest.fn(name => {
+    header: vi.fn(name => {
       if (name === ALB_JWT_HEADER) {
         return mockJwt;
       }
@@ -88,7 +90,7 @@ describe('AwsAlbProvider', () => {
         {
           issuer: 'ISSUER_URL',
           signer: 'SIGNER_ARN',
-          getKey: jest.fn().mockResolvedValue(signingKey),
+          getKey: vi.fn().mockResolvedValue(signingKey),
         },
       );
       expect(response).toEqual({
@@ -121,7 +123,7 @@ describe('AwsAlbProvider', () => {
       await expect(
         awsAlbAuthenticator.authenticate(
           { req: mockRequestWithoutAccessToken },
-          { issuer: 'ISSUER_URL', signer: 'SIGNER_ARN', getKey: jest.fn() },
+          { issuer: 'ISSUER_URL', signer: 'SIGNER_ARN', getKey: vi.fn() },
         ),
       ).rejects.toThrow(AuthenticationError);
     });
@@ -130,7 +132,7 @@ describe('AwsAlbProvider', () => {
       await expect(
         awsAlbAuthenticator.authenticate(
           { req: mockRequestWithoutJwt },
-          { issuer: 'ISSUER_URL', signer: 'SIGNER_ARN', getKey: jest.fn() },
+          { issuer: 'ISSUER_URL', signer: 'SIGNER_ARN', getKey: vi.fn() },
         ),
       ).rejects.toThrow(AuthenticationError);
     });
@@ -139,7 +141,7 @@ describe('AwsAlbProvider', () => {
       const err = await awsAlbAuthenticator
         .authenticate(
           { req: mockRequestWithInvalidJwt },
-          { issuer: 'ISSUER_URL', signer: 'SIGNER_ARN', getKey: jest.fn() },
+          { issuer: 'ISSUER_URL', signer: 'SIGNER_ARN', getKey: vi.fn() },
         )
         .catch(e => e);
       expect(err).toBeInstanceOf(AuthenticationError);
@@ -152,7 +154,7 @@ describe('AwsAlbProvider', () => {
         .setProtectedHeader({ alg: 'HS256', signer: 'SIGNER_ARN' })
         .sign(signingKey);
       const req = {
-        header: jest.fn(name => {
+        header: vi.fn(name => {
           if (name === ALB_JWT_HEADER) {
             return jwt;
           } else if (name === ALB_ACCESS_TOKEN_HEADER) {
@@ -168,7 +170,7 @@ describe('AwsAlbProvider', () => {
           {
             issuer: 'ISSUER_URL',
             signer: undefined,
-            getKey: jest.fn().mockResolvedValue(signingKey),
+            getKey: vi.fn().mockResolvedValue(signingKey),
           },
         )
         .catch(e => e);
@@ -181,7 +183,7 @@ describe('AwsAlbProvider', () => {
         .setProtectedHeader({ alg: 'HS256' })
         .sign(signingKey);
       const req = {
-        header: jest.fn(name => {
+        header: vi.fn(name => {
           if (name === ALB_JWT_HEADER) {
             return jwt;
           } else if (name === ALB_ACCESS_TOKEN_HEADER) {
@@ -197,7 +199,7 @@ describe('AwsAlbProvider', () => {
           {
             issuer: 'ISSUER_URL',
             signer: undefined,
-            getKey: jest.fn().mockResolvedValue(signingKey),
+            getKey: vi.fn().mockResolvedValue(signingKey),
           },
         )
         .catch(e => e);
@@ -210,7 +212,7 @@ describe('AwsAlbProvider', () => {
         .setProtectedHeader({ alg: 'HS256' })
         .sign(signingKey);
       const req = {
-        header: jest.fn(name => {
+        header: vi.fn(name => {
           if (name === ALB_JWT_HEADER) {
             return jwt;
           } else if (name === ALB_ACCESS_TOKEN_HEADER) {
@@ -226,7 +228,7 @@ describe('AwsAlbProvider', () => {
           {
             issuer: 'ISSUER_URL',
             signer: 'SIGNER_ARN',
-            getKey: jest.fn().mockResolvedValue(signingKey),
+            getKey: vi.fn().mockResolvedValue(signingKey),
           },
         )
         .catch(e => e);
@@ -239,7 +241,7 @@ describe('AwsAlbProvider', () => {
         .setProtectedHeader({ alg: 'HS256', signer: 'INVALID_SIGNER_ARN' })
         .sign(signingKey);
       const req = {
-        header: jest.fn(name => {
+        header: vi.fn(name => {
           if (name === ALB_JWT_HEADER) {
             return jwt;
           } else if (name === ALB_ACCESS_TOKEN_HEADER) {
@@ -255,7 +257,7 @@ describe('AwsAlbProvider', () => {
           {
             issuer: 'ISSUER_URL',
             signer: 'SIGNER_ARN',
-            getKey: jest.fn().mockResolvedValue(signingKey),
+            getKey: vi.fn().mockResolvedValue(signingKey),
           },
         )
         .catch(e => e);

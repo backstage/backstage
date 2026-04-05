@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { ConfigReader } from '@backstage/config';
 import { IdentityAuthInjectorFetchMiddleware } from './IdentityAuthInjectorFetchMiddleware';
 import { mockApis } from '@backstage/test-utils';
@@ -66,7 +68,7 @@ describe('IdentityAuthInjectorFetchMiddleware', () => {
       'Authorization',
       token => `Bearer ${token}`,
     );
-    const inner = jest.fn();
+    const inner = vi.fn();
     const outer = middleware.apply(inner);
 
     // No token available
@@ -96,7 +98,7 @@ describe('IdentityAuthInjectorFetchMiddleware', () => {
       'Authorization',
       token => `Bearer ${token}`,
     );
-    const inner = jest.fn();
+    const inner = vi.fn();
     const outer = middleware.apply(inner);
 
     // No token available

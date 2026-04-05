@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { readPuppetNodes } from './read';
 import {
   DEFAULT_PROVIDER_ID,
@@ -30,7 +32,7 @@ describe('readPuppetNodes', () => {
   registerMswTestHooks(worker);
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('where no query is specified', () => {

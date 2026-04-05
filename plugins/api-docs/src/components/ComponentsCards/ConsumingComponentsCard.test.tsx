@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { Entity, RELATION_API_CONSUMED_BY } from '@backstage/catalog-model';
 import {
   catalogApiRef,
@@ -38,7 +40,7 @@ describe('<ConsumingComponentsCard />', () => {
     );
   });
 
-  afterEach(() => jest.resetAllMocks());
+  afterEach(() => vi.resetAllMocks());
 
   it('shows empty list if no relations', async () => {
     const entity: Entity = {

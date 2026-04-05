@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { ConfigReader } from '@backstage/config';
 import path from 'node:path';
 import { ConfigLocationEntityProvider } from './ConfigLocationEntityProvider';
@@ -31,7 +33,7 @@ describe('ConfigLocationEntityProvider', () => {
     });
 
     const mockConnection = {
-      applyMutation: jest.fn(),
+      applyMutation: vi.fn(),
     } as unknown as EntityProviderConnection;
     const locationProvider = new ConfigLocationEntityProvider(mockConfig);
 
@@ -84,7 +86,7 @@ describe('ConfigLocationEntityProvider', () => {
     });
 
     const mockConnection = {
-      applyMutation: jest.fn(),
+      applyMutation: vi.fn(),
     } as unknown as EntityProviderConnection;
     const locationProvider = new ConfigLocationEntityProvider(mockConfig);
 

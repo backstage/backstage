@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { renderInTestApp } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
 import { DefaultRenderNode } from './DefaultRenderNode';
@@ -77,7 +79,7 @@ describe('<CustomNode />', () => {
   });
 
   test('renders node with onClick', async () => {
-    const onClick = jest.fn();
+    const onClick = vi.fn();
     await renderInTestApp(
       <svg xmlns="http://www.w3.org/2000/svg">
         <DefaultRenderNode

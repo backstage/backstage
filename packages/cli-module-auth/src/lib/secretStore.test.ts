@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-jest.mock('keytar', () => {
+import { vi } from 'vitest';
+
+vi.mock('keytar', () => {
   throw new Error('keytar not available');
 });
 

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
@@ -21,10 +23,10 @@ import { createGitlabProjectDeployTokenAction } from './gitlabProjectDeployToken
 
 const mockGitlabClient = {
   DeployTokens: {
-    create: jest.fn(),
+    create: vi.fn(),
   },
 };
-jest.mock('@gitbeaker/rest', () => ({
+vi.mock('@gitbeaker/rest', () => ({
   Gitlab: class {
     constructor() {
       return mockGitlabClient;
@@ -62,7 +64,7 @@ describe('gitlab:create-deploy-token', () => {
   });
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('should work when there is a token provided through ctx.input', async () => {

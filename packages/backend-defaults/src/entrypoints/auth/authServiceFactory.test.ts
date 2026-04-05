@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   ServiceFactoryTester,
   mockServices,
@@ -72,7 +74,7 @@ describe('authServiceFactory', () => {
   registerMswTestHooks(server);
 
   afterEach(() => {
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 
   it('should not support tokens issued with legacy auth', async () => {
@@ -219,7 +221,7 @@ describe('authServiceFactory', () => {
     const expectedIssuedAt = 1712071714;
     const expectedExpiresAt = 1712075314;
 
-    jest.useFakeTimers({
+    vi.useFakeTimers({
       now: expectedIssuedAt * 1000 + 600_000,
     });
 
@@ -342,7 +344,7 @@ describe('authServiceFactory', () => {
     const expectedIssuedAt = 1712071714;
     const expectedExpiresAt = 1712075314;
 
-    jest.useFakeTimers({
+    vi.useFakeTimers({
       now: expectedIssuedAt * 1000 + 600_000,
     });
 
@@ -412,7 +414,7 @@ describe('authServiceFactory', () => {
     await expect(
       scaffolderAuth.authenticate('limited-static-token'),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"This token's access is restricted to plugin(s) 'catalog'"`,
+      `[NotAllowedError: This token's access is restricted to plugin(s) 'catalog']`,
     );
 
     await expect(
@@ -424,7 +426,7 @@ describe('authServiceFactory', () => {
 
   describe('decorate PluginTokenHandler', () => {
     it('should allow custom logic to be injected into the plugin token handler', async () => {
-      const customLogic = jest.fn();
+      const customLogic = vi.fn();
       const customPluginTokenHandler = createServiceFactory({
         service: pluginTokenHandlerDecoratorServiceRef,
         deps: {},
@@ -459,8 +461,8 @@ describe('authServiceFactory', () => {
   });
   describe('add custom  ExternalTokenHandler', () => {
     it('should allow custom logic to be injected into the plugin token handler', async () => {
-      const customLogic = jest.fn();
-      const customConfig = jest.fn();
+      const customLogic = vi.fn();
+      const customConfig = vi.fn();
       const deps = [
         discoveryServiceFactory,
         mockServices.rootConfig.factory({

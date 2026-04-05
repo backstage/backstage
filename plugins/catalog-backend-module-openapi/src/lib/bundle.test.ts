@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import { bundleFileWithRefs, BundlerRead, BundlerResolveUrl } from './bundle';
 import { mockServices } from '@backstage/backend-test-utils';
 import { ScmIntegrations } from '@backstage/integration';
@@ -73,11 +75,11 @@ paths:
 `;
 
 describe('bundleFileWithRefs', () => {
-  const read = jest.fn();
-  const resolveUrl = jest.fn();
+  const read = vi.fn();
+  const resolveUrl = vi.fn();
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should return the bundled specification', async () => {
@@ -379,18 +381,18 @@ components:
 
 describe('bundleFileWithRefs - Testing getRelativePath scenarios', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   const scmIntegrations = ScmIntegrations.fromConfig(mockServices.rootConfig());
 
-  const resolveUrl: BundlerResolveUrl = jest.fn(
+  const resolveUrl: BundlerResolveUrl = vi.fn(
     (url: string, base: string): string => {
       return scmIntegrations.resolveUrl({ url, base });
     },
   );
 
-  const read: BundlerRead = jest.fn(async (url: string) => {
+  const read: BundlerRead = vi.fn(async (url: string) => {
     return Buffer.from(url);
   });
 

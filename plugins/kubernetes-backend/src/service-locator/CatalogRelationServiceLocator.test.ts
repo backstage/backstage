@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi , type Mock} from 'vitest';
 import { Entity } from '@backstage/catalog-model';
 import { ServiceLocatorRequestContext } from '@backstage/plugin-kubernetes-node';
 import { CatalogRelationServiceLocator } from './CatalogRelationServiceLocator';
@@ -23,7 +25,7 @@ describe('CatalogRelationServiceLocator', () => {
   beforeEach(() => {
     // Mock the KubernetesClustersSupplier dependency
     const clusterSupplier = {
-      getClusters: jest.fn().mockResolvedValue([
+      getClusters: vi.fn().mockResolvedValue([
         {
           name: 'cluster1',
           url: 'http://localhost:8080',

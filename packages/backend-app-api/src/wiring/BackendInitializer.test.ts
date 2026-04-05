@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   createServiceRef,
   createServiceFactory,
@@ -37,7 +39,7 @@ const baseFactories = [
 ];
 
 function mkNoopFactory(ref: ServiceRef<{}, 'plugin'>) {
-  const fn = jest.fn().mockReturnValue({});
+  const fn = vi.fn().mockReturnValue({});
   return Object.assign(
     fn,
     createServiceFactory({
@@ -108,9 +110,9 @@ describe('BackendInitializer', () => {
       id: '3',
       scope: 'root',
     });
-    const factory1 = jest.fn();
-    const factory2 = jest.fn();
-    const factory3 = jest.fn();
+    const factory1 = vi.fn();
+    const factory2 = vi.fn();
+    const factory3 = vi.fn();
 
     const services = [
       ...baseFactories,
@@ -150,11 +152,11 @@ describe('BackendInitializer', () => {
       id: '2',
       scope: 'plugin',
     });
-    const factory1 = jest.fn();
-    const factory2 = jest.fn();
+    const factory1 = vi.fn();
+    const factory2 = vi.fn();
 
-    const pluginInit = jest.fn(async () => {});
-    const moduleInit = jest.fn(async () => {});
+    const pluginInit = vi.fn(async () => {});
+    const moduleInit = vi.fn(async () => {});
 
     const init = new BackendInitializer(baseFactories);
     init.add(
@@ -367,7 +369,7 @@ describe('BackendInitializer', () => {
           yield createServiceFactory({
             service: ref1,
             deps: {},
-            factory: jest.fn(),
+            factory: vi.fn(),
           });
         },
       }),
@@ -398,7 +400,7 @@ describe('BackendInitializer', () => {
           yield createServiceFactory({
             service: ref1,
             deps: {},
-            factory: jest.fn(),
+            factory: vi.fn(),
           });
         },
       }),
@@ -418,9 +420,9 @@ describe('BackendInitializer', () => {
     const ref3 = createServiceRef<{ x: number }>({
       id: '3',
     });
-    const factory1 = jest.fn();
-    const factory2 = jest.fn();
-    const factory3 = jest.fn();
+    const factory1 = vi.fn();
+    const factory2 = vi.fn();
+    const factory3 = vi.fn();
 
     const services = [
       ...baseFactories,
@@ -985,7 +987,7 @@ describe('BackendInitializer', () => {
   });
 
   it('should allow other plugins to continue when one has a registration error', async () => {
-    const pluginAInit = jest.fn(async () => {});
+    const pluginAInit = vi.fn(async () => {});
     const init = new BackendInitializer(baseFactories);
     init.add(
       createBackendPlugin({
@@ -1477,7 +1479,7 @@ describe('BackendInitializer', () => {
       pluginId: 'test',
       moduleId: 'producer',
       register(reg) {
-        const hello = jest.fn();
+        const hello = vi.fn();
         reg.registerExtensionPoint(ext, { hello });
         reg.registerInit({
           deps: {},

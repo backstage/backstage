@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi , type Mock} from 'vitest';
 import { rest } from 'msw';
 import {
   AzurePrOptions,
@@ -303,14 +305,14 @@ describe('RepoApiClient', () => {
 });
 describe('createAzurePullRequest', () => {
   let client: RepoApiClient;
-  let clientMock: Record<keyof RepoApiClient, jest.Mock>;
+  let clientMock: Record<keyof RepoApiClient, Mock>;
 
   beforeEach(() => {
     clientMock = {
-      createPullRequest: jest.fn(),
-      pushNewBranch: jest.fn(),
-      getRepository: jest.fn(),
-      getDefaultBranch: jest.fn(),
+      createPullRequest: vi.fn(),
+      pushNewBranch: vi.fn(),
+      getRepository: vi.fn(),
+      getDefaultBranch: vi.fn(),
     };
     client = clientMock as any as RepoApiClient;
   });

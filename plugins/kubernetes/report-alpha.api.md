@@ -102,10 +102,10 @@ const _default: OverridableFrontendPlugin<
       };
       configInput: {
         filter?: FilterPredicate | undefined;
-        title?: string | undefined;
         path?: string | undefined;
-        group?: string | false | undefined;
+        title?: string | undefined;
         icon?: string | undefined;
+        group?: string | false | undefined;
       };
       output:
         | ExtensionDataRef<string, 'core.routing.path', {}>
@@ -168,8 +168,8 @@ const _default: OverridableFrontendPlugin<
         title: string | undefined;
       };
       configInput: {
-        title?: string | undefined;
         path?: string | undefined;
+        title?: string | undefined;
       };
       output:
         | ExtensionDataRef<string, 'core.routing.path', {}>
@@ -246,8 +246,8 @@ export const kubernetesTranslationRef: TranslationRef<
   {
     readonly 'entityContent.title': 'Kubernetes';
     readonly 'kubernetesContentPage.title': 'Your Clusters';
-    readonly 'kubernetesContentPage.emptyState.title': 'No Kubernetes resources';
     readonly 'kubernetesContentPage.emptyState.description': 'No resources on any known clusters for {{entityName}}';
+    readonly 'kubernetesContentPage.emptyState.title': 'No Kubernetes resources';
     readonly 'kubernetesContentPage.permissionAlert.message': "To view Kubernetes objects, contact your portal administrator to give you the 'kubernetes.clusters.read' and 'kubernetes.resources.read' permission.";
     readonly 'kubernetesContentPage.permissionAlert.title': 'Permission required';
   }

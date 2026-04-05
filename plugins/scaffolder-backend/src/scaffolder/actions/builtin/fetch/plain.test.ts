@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-jest.mock('@backstage/plugin-scaffolder-node', () => {
-  const actual = jest.requireActual('@backstage/plugin-scaffolder-node');
-  return { ...actual, fetchContents: jest.fn() };
+import { vi } from 'vitest';
+
+vi.mock('@backstage/plugin-scaffolder-node', () => {
+  const actual = vi.importActual('@backstage/plugin-scaffolder-node');
+  return { ...actual, fetchContents: vi.fn() };
 });
 
 import { resolve as resolvePath } from 'node:path';
@@ -36,13 +38,13 @@ describe('fetch:plain', () => {
     }),
   );
   const reader: UrlReaderService = {
-    readUrl: jest.fn(),
-    readTree: jest.fn(),
-    search: jest.fn(),
+    readUrl: vi.fn(),
+    readTree: vi.fn(),
+    search: vi.fn(),
   };
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   const action = createFetchPlainAction({ integrations, reader });

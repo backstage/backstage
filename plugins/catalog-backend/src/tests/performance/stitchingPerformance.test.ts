@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { createBackendModule } from '@backstage/backend-plugin-api';
 import {
   TestDatabases,
@@ -33,7 +35,7 @@ import {
 } from './lib/catalogModuleSyntheticLoadEntities';
 import { describePerformanceTest, performanceTraceEnabled } from './lib/env';
 
-jest.setTimeout(600_000);
+vi.setConfig({ testTimeout: 600_000 });
 
 const traceLog: typeof console.log = performanceTraceEnabled
   ? console.log

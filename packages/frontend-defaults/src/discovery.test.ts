@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   createFrontendFeatureLoader,
   createFrontendPlugin,
@@ -21,7 +23,7 @@ import {
 import { discoverAvailableFeatures } from './discovery';
 import { ConfigReader } from '@backstage/config';
 
-const globalSpy = jest.fn();
+const globalSpy = vi.fn();
 Object.defineProperty(global, '__@backstage/discovered__', {
   get: globalSpy,
 });
@@ -31,7 +33,7 @@ const config = new ConfigReader({
 });
 
 describe('discoverAvailableFeatures', () => {
-  afterEach(jest.resetAllMocks);
+  afterEach(vi.resetAllMocks);
 
   it('should discover nothing with undefined global', () => {
     expect(discoverAvailableFeatures(config)).toEqual({ features: [] });

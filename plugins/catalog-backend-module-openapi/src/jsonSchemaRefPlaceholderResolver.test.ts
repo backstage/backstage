@@ -14,21 +14,23 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { PlaceholderResolverParams } from '@backstage/plugin-catalog-node';
 import { jsonSchemaRefPlaceholderResolver } from './jsonSchemaRefPlaceholderResolver';
 import { bundleFileWithRefs } from './lib';
 
-jest.mock('./lib', () => ({
-  bundleFileWithRefs: jest.fn(),
+vi.mock('./lib', () => ({
+  bundleFileWithRefs: vi.fn(),
 }));
 
 const bundled = '<bundled-specification>';
 
 describe('jsonSchemaRefPlaceholderResolver', () => {
-  const mockResolveUrl = jest.fn();
+  const mockResolveUrl = vi.fn();
   mockResolveUrl.mockReturnValue('mockUrl');
 
-  const mockRead = jest.fn();
+  const mockRead = vi.fn();
   mockRead.mockResolvedValue(Buffer.from('mockData'));
 
   const params: PlaceholderResolverParams = {
@@ -37,7 +39,7 @@ describe('jsonSchemaRefPlaceholderResolver', () => {
     baseUrl: 'https://github.com/owner/repo/blob/main/catalog-info.yaml',
     resolveUrl: mockResolveUrl,
     read: mockRead,
-    emit: jest.fn(),
+    emit: vi.fn(),
   };
 
   beforeEach(() => {
@@ -45,7 +47,7 @@ describe('jsonSchemaRefPlaceholderResolver', () => {
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should throw error if unable to bundle the OpenAPI specification', async () => {

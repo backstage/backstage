@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
+import { vi , type MockedFunction} from 'vitest';
+
 import { FieldValidation } from '@rjsf/utils';
 import { KubernetesValidatorFunctions } from '@backstage/catalog-model';
 import { entityNamePickerValidation } from './validation';
 
-jest.mock('@backstage/catalog-model', () => ({
+vi.mock('@backstage/catalog-model', () => ({
   KubernetesValidatorFunctions: {
-    isValidObjectName: jest.fn(),
+    isValidObjectName: vi.fn(),
   },
 }));
 
 const mockIsValidObjectName =
-  KubernetesValidatorFunctions.isValidObjectName as jest.MockedFunction<
+  KubernetesValidatorFunctions.isValidObjectName as MockedFunction<
     typeof KubernetesValidatorFunctions.isValidObjectName
   >;
 
@@ -34,7 +36,7 @@ describe('EntityNamePicker Validation', () => {
 
   beforeEach(() => {
     mockFieldValidation = {
-      addError: jest.fn(),
+      addError: vi.fn(),
     } as unknown as FieldValidation;
   });
 

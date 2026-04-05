@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { InputError } from '@backstage/errors';
 import { createHandleAutocompleteRequest } from './autocomplete';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 
-jest.mock('../util', () => {
+vi.mock('../util', () => {
   return {
-    getOctokitOptions: jest.fn(),
+    getOctokitOptions: vi.fn(),
   };
 });
 
@@ -28,15 +30,15 @@ const mockOctokit = {
   paginate: async (fn: any) => (await fn()).data,
   rest: {
     repos: {
-      listForAuthenticatedUser: jest.fn(),
-      listBranches: jest.fn(),
+      listForAuthenticatedUser: vi.fn(),
+      listBranches: vi.fn(),
     },
     orgs: {
-      listForAuthenticatedUser: jest.fn(),
+      listForAuthenticatedUser: vi.fn(),
     },
   },
 };
-jest.mock('octokit', () => ({
+vi.mock('octokit', () => ({
   Octokit: class {
     constructor() {
       return mockOctokit;

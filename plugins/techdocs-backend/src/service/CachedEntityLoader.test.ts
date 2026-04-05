@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { CachedEntityLoader } from './CachedEntityLoader';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { mockServices } from '@backstage/backend-test-utils';
@@ -58,7 +60,7 @@ describe('CachedEntityLoader', () => {
   };
 
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('writes entities to cache for user credentials', async () => {
@@ -79,7 +81,7 @@ describe('CachedEntityLoader', () => {
 
   it('returns entities from cache', async () => {
     const catalog = catalogServiceMock();
-    jest.spyOn(catalog, 'getEntityByRef');
+    vi.spyOn(catalog, 'getEntityByRef');
     cache.get.mockResolvedValue(entity);
     auth.isPrincipal.mockReturnValue(true);
 

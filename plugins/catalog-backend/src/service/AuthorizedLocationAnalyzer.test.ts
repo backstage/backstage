@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { NotAllowedError } from '@backstage/errors';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { AuthorizedLocationAnalyzer } from './AuthorizedLocationAnalyzer';
@@ -22,14 +24,14 @@ import { mockCredentials } from '@backstage/backend-test-utils';
 
 describe('AuthorizedLocationAnalyzer', () => {
   const locationAnalyzerService = {
-    analyzeLocation: jest.fn(),
+    analyzeLocation: vi.fn(),
   };
   const permissionApi = {
-    authorize: jest.fn(),
+    authorize: vi.fn(),
   };
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('throws Authorization Error on deny', async () => {

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   mockApis,
   renderInTestApp,
@@ -22,9 +24,9 @@ import {
 import { resolveUrlToRelative, useNavigateUrl } from './useNavigateUrl';
 import { configApiRef } from '@backstage/core-plugin-api';
 
-const navigate = jest.fn();
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+const navigate = vi.fn();
+vi.mock('react-router-dom', () => ({
+  ...vi.importActual('react-router-dom'),
   useNavigate: () => navigate,
 }));
 

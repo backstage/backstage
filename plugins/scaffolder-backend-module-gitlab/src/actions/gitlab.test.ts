@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-jest.mock('@backstage/plugin-scaffolder-node', () => {
+import { vi } from 'vitest';
+
+vi.mock('@backstage/plugin-scaffolder-node', () => {
   return {
-    ...jest.requireActual('@backstage/plugin-scaffolder-node'),
-    initRepoAndPush: jest.fn().mockResolvedValue({
+    ...vi.importActual('@backstage/plugin-scaffolder-node'),
+    initRepoAndPush: vi.fn().mockResolvedValue({
       commitHash: '220f19cc36b551763d157f1b5e4a4b446165dbd6',
     }),
-    commitAndPushRepo: jest.fn().mockResolvedValue({
+    commitAndPushRepo: vi.fn().mockResolvedValue({
       commitHash: '220f19cc36b551763d157f1b5e4a4b446165dbd6',
     }),
   };
@@ -34,33 +36,33 @@ import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-
 
 const mockGitlabClient = {
   Namespaces: {
-    show: jest.fn(),
+    show: vi.fn(),
   },
   Groups: {
-    allProjects: jest.fn(),
+    allProjects: vi.fn(),
   },
   Projects: {
-    create: jest.fn(),
+    create: vi.fn(),
   },
   Users: {
-    showCurrentUser: jest.fn(),
-    allProjects: jest.fn(),
-    all: jest.fn(),
+    showCurrentUser: vi.fn(),
+    allProjects: vi.fn(),
+    all: vi.fn(),
   },
   ProjectMembers: {
-    add: jest.fn(),
+    add: vi.fn(),
   },
   Branches: {
-    create: jest.fn(),
+    create: vi.fn(),
   },
   ProtectedBranches: {
-    protect: jest.fn(),
+    protect: vi.fn(),
   },
   ProjectVariables: {
-    create: jest.fn(),
+    create: vi.fn(),
   },
 };
-jest.mock('@gitbeaker/rest', () => ({
+vi.mock('@gitbeaker/rest', () => ({
   Gitlab: class {
     constructor() {
       return mockGitlabClient;
@@ -162,7 +164,7 @@ describe('publish:gitlab', () => {
   });
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('should throw an error when the repoUrl is not well formed', async () => {
@@ -888,7 +890,7 @@ describe('publish:gitlab', () => {
         ownerUsername: 'unknown-user',
       },
     };
-    ctx.logger.warn = jest.fn();
+    ctx.logger.warn = vi.fn();
 
     await action.handler(ctx);
 
@@ -924,7 +926,7 @@ describe('publish:gitlab', () => {
         ownerUsername: 'target-owner',
       },
     };
-    ctx.logger.warn = jest.fn();
+    ctx.logger.warn = vi.fn();
 
     await action.handler(ctx);
 

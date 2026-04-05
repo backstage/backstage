@@ -14,24 +14,26 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { GithubCredentialsProvider } from './types';
 
 const octokit = {
   paginate: async (fn: any) => (await fn()).data,
   apps: {
-    listInstallations: jest.fn(),
-    listReposAccessibleToInstallation: jest.fn(),
-    createInstallationAccessToken: jest.fn(),
+    listInstallations: vi.fn(),
+    listReposAccessibleToInstallation: vi.fn(),
+    createInstallationAccessToken: vi.fn(),
   },
 };
 
-const mockCreateAppAuth = jest.fn();
+const mockCreateAppAuth = vi.fn();
 
-jest.mock('@octokit/auth-app', () => ({
+vi.mock('@octokit/auth-app', () => ({
   createAppAuth: (...args: any[]) => mockCreateAppAuth(...args),
 }));
 
-jest.mock('@octokit/rest', () => {
+vi.mock('@octokit/rest', () => {
   class Octokit {
     constructor() {
       return octokit;
@@ -48,7 +50,7 @@ describe('SingleInstanceGithubCredentialsProvider tests', () => {
   let github: GithubCredentialsProvider;
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
     mockCreateAppAuth.mockReturnValue(async (opts: { type: string }) => {
       if (opts.type === 'app') {
         return { token: 'mock-jwt-token' };

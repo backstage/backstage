@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
 import { searchIndexRegistryExtensionPoint } from '@backstage/plugin-search-backend-node/alpha';
 import searchModuleExploreCollator from './module';
@@ -27,7 +29,7 @@ describe('searchModuleExploreCollator', () => {
 
   it('should register the explore collator to the search index registry extension point with factory and schedule', async () => {
     const extensionPointMock = {
-      addCollator: jest.fn(),
+      addCollator: vi.fn(),
     };
 
     await startTestBackend({

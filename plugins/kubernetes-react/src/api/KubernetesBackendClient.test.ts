@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi, type Mocked } from 'vitest';
+
 import { KubernetesAuthProvidersApi } from '../kubernetes-auth-provider';
 import { KubernetesBackendClient } from './KubernetesBackendClient';
 import { http, HttpResponse } from 'msw';
@@ -30,24 +32,24 @@ import { NotFoundError } from '@backstage/errors';
 
 describe('KubernetesBackendClient', () => {
   let backendClient: KubernetesBackendClient;
-  const kubernetesAuthProvidersApi: jest.Mocked<KubernetesAuthProvidersApi> = {
-    decorateRequestBodyForAuth: jest.fn(),
-    getCredentials: jest.fn(),
+  const kubernetesAuthProvidersApi: Mocked<KubernetesAuthProvidersApi> = {
+    decorateRequestBodyForAuth: vi.fn(),
+    getCredentials: vi.fn(),
   };
   let mockResponse: ObjectsByEntityResponse;
   const worker = setupServer();
   registerMswTestHooks(worker);
 
   const identityApi = {
-    getCredentials: jest.fn(),
-    getProfileInfo: jest.fn(),
-    getBackstageIdentity: jest.fn(),
-    signOut: jest.fn(),
+    getCredentials: vi.fn(),
+    getProfileInfo: vi.fn(),
+    getBackstageIdentity: vi.fn(),
+    signOut: vi.fn(),
   };
   const fetchApi = new MockFetchApi({ injectIdentityAuth: { identityApi } });
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
     backendClient = new KubernetesBackendClient({
       discoveryApi: UrlPatternDiscovery.compile(
         'http://localhost:1234/api/{{ pluginId }}',

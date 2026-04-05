@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { resolvePackagePath } from '@backstage/backend-plugin-api';
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { Knex } from 'knex';
@@ -26,7 +28,7 @@ const migrationsDir = resolvePackagePath(
   'migrations',
 );
 
-jest.setTimeout(60_000);
+vi.setConfig({ testTimeout: 60_000 });
 
 describe('UserInfoDatabase', () => {
   const databases = TestDatabases.create();

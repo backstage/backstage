@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type MockedFunction} from 'vitest';
+
 import { ConfigReader } from '@backstage/config';
 import {
   EvaluatePermissionResponse,
@@ -60,7 +62,7 @@ describe('AuthorizedSearchEngine', () => {
 
   const results = allUsers.concat(allTemplates);
 
-  const mockedQuery: jest.MockedFunction<SearchEngine['query']> = jest.fn();
+  const mockedQuery: MockedFunction<SearchEngine['query']> = vi.fn();
 
   const searchEngine: SearchEngine = {
     setTranslator: () => {
@@ -72,11 +74,11 @@ describe('AuthorizedSearchEngine', () => {
     query: mockedQuery,
   };
 
-  const mockedAuthorize: jest.MockedFunction<PermissionEvaluator['authorize']> =
-    jest.fn();
-  const mockedPermissionQuery: jest.MockedFunction<
+  const mockedAuthorize: MockedFunction<PermissionEvaluator['authorize']> =
+    vi.fn();
+  const mockedPermissionQuery: MockedFunction<
     PermissionEvaluator['authorizeConditional']
-  > = jest.fn();
+  > = vi.fn();
 
   const permissionEvaluator: PermissionEvaluator = {
     authorize: mockedAuthorize,

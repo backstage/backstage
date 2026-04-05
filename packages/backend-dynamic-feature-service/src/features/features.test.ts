@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   startTestBackend,
   mockServices,
@@ -41,7 +43,7 @@ import {
 } from '../server/frontendRemotesServer';
 
 // these can get a bit slow in CI
-jest.setTimeout(60_000);
+vi.setConfig({ testTimeout: 60_000 });
 
 async function jestFreeTypescriptAwareModuleLoader(
   options: CommonJSModuleLoaderOptions & {

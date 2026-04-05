@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { createValidatedOpenApiRouter, getOpenApiSpecRoute } from './stub';
 import express from 'express';
 import request from 'supertest';
@@ -74,7 +76,7 @@ describe('createRouter', () => {
   it('handles nested routes correctly (by treating plugin specs as full paths)', async () => {
     expect.assertions(1);
     const router = createValidatedOpenApiRouter(singlePathSpec);
-    const routerGetFn = jest.fn();
+    const routerGetFn = vi.fn();
     router.get('/pet/:petId', (_, res) => {
       routerGetFn();
       res.json(pet);

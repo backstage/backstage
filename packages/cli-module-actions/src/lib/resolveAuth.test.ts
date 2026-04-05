@@ -14,30 +14,32 @@
  * limitations under the License.
  */
 
+import { vi , type MockedFunction} from 'vitest';
+
 import { resolveAuth } from './resolveAuth';
 import { CliAuth } from '@backstage/cli-node';
 
-jest.mock('@backstage/cli-node', () => {
-  const actual = jest.requireActual('@backstage/cli-node');
+vi.mock('@backstage/cli-node', () => {
+  const actual = vi.importActual('@backstage/cli-node');
   return {
     ...actual,
-    CliAuth: { create: jest.fn() },
+    CliAuth: { create: vi.fn() },
   };
 });
 
-const mockCreate = CliAuth.create as jest.MockedFunction<typeof CliAuth.create>;
+const mockCreate = CliAuth.create as MockedFunction<typeof CliAuth.create>;
 
 describe('resolveAuth', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('resolves auth with the selected instance and stored token', async () => {
     mockCreate.mockResolvedValue({
-      getInstanceName: jest.fn().mockReturnValue('production'),
-      getBaseUrl: jest.fn().mockReturnValue('https://backstage.example.com'),
-      getAccessToken: jest.fn().mockResolvedValue('test-access-token'),
-      getMetadata: jest.fn().mockResolvedValue(['catalog', 'scaffolder']),
+      getInstanceName: vi.fn().mockReturnValue('production'),
+      getBaseUrl: vi.fn().mockReturnValue('https://backstage.example.com'),
+      getAccessToken: vi.fn().mockResolvedValue('test-access-token'),
+      getMetadata: vi.fn().mockResolvedValue(['catalog', 'scaffolder']),
     } as unknown as CliAuth);
 
     const result = await resolveAuth();
@@ -53,10 +55,10 @@ describe('resolveAuth', () => {
 
   it('passes instance name flag to CliAuth.create', async () => {
     mockCreate.mockResolvedValue({
-      getInstanceName: jest.fn().mockReturnValue('staging'),
-      getBaseUrl: jest.fn().mockReturnValue('https://staging.example.com'),
-      getAccessToken: jest.fn().mockResolvedValue('test-access-token'),
-      getMetadata: jest.fn().mockResolvedValue([]),
+      getInstanceName: vi.fn().mockReturnValue('staging'),
+      getBaseUrl: vi.fn().mockReturnValue('https://staging.example.com'),
+      getAccessToken: vi.fn().mockResolvedValue('test-access-token'),
+      getMetadata: vi.fn().mockResolvedValue([]),
     } as unknown as CliAuth);
 
     await resolveAuth('staging');
@@ -66,14 +68,14 @@ describe('resolveAuth', () => {
 
   it('throws when getAccessToken fails', async () => {
     mockCreate.mockResolvedValue({
-      getInstanceName: jest.fn().mockReturnValue('production'),
-      getBaseUrl: jest.fn().mockReturnValue('https://backstage.example.com'),
+      getInstanceName: vi.fn().mockReturnValue('production'),
+      getBaseUrl: vi.fn().mockReturnValue('https://backstage.example.com'),
       getAccessToken: jest
         .fn()
         .mockRejectedValue(
           new Error('No access token found. Run "auth login" to authenticate.'),
         ),
-      getMetadata: jest.fn().mockResolvedValue([]),
+      getMetadata: vi.fn().mockResolvedValue([]),
     } as unknown as CliAuth);
 
     await expect(resolveAuth()).rejects.toThrow(
@@ -83,10 +85,10 @@ describe('resolveAuth', () => {
 
   it('returns empty plugin sources when none are configured', async () => {
     mockCreate.mockResolvedValue({
-      getInstanceName: jest.fn().mockReturnValue('production'),
-      getBaseUrl: jest.fn().mockReturnValue('https://backstage.example.com'),
-      getAccessToken: jest.fn().mockResolvedValue('test-access-token'),
-      getMetadata: jest.fn().mockResolvedValue(undefined),
+      getInstanceName: vi.fn().mockReturnValue('production'),
+      getBaseUrl: vi.fn().mockReturnValue('https://backstage.example.com'),
+      getAccessToken: vi.fn().mockResolvedValue('test-access-token'),
+      getMetadata: vi.fn().mockResolvedValue(undefined),
     } as unknown as CliAuth);
 
     const result = await resolveAuth();

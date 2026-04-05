@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { registerMswTestHooks } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import {
@@ -51,7 +53,7 @@ describe('microsoftAuthenticator', () => {
   };
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
 
     server.use(
       rest.post(

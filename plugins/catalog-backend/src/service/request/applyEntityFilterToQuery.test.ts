@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { TestDatabases } from '@backstage/backend-test-utils';
 import { applyEntityFilterToQuery } from './applyEntityFilterToQuery';
 import {
@@ -28,7 +30,7 @@ import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { v4 as uuid } from 'uuid';
 import { buildEntitySearch } from '../../database/operations/stitcher/buildEntitySearch';
 
-jest.setTimeout(60_000);
+vi.setConfig({ testTimeout: 60_000 });
 
 const databases = TestDatabases.create();
 describe.each(databases.eachSupportedId())(

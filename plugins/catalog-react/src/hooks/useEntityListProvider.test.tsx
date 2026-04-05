@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import type { GetEntitiesResponse } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import {
@@ -81,13 +83,13 @@ const mockIdentityApi = mockApis.identity({
   ownershipEntityRefs,
 });
 const mockCatalogApi = catalogApiMock.mock({
-  getEntities: jest.fn().mockResolvedValue({ items: entities }),
-  queryEntities: jest.fn().mockResolvedValue({
+  getEntities: vi.fn().mockResolvedValue({ items: entities }),
+  queryEntities: vi.fn().mockResolvedValue({
     items: entities,
     pageInfo: { prevCursor: 'prevCursor', nextCursor: 'nextCursor' },
     totalItems: 10,
   }),
-  getEntityByRef: jest.fn().mockResolvedValue(undefined),
+  getEntityByRef: vi.fn().mockResolvedValue(undefined),
 });
 
 const createWrapper =
@@ -114,7 +116,7 @@ const createWrapper =
             [starredEntitiesApiRef, new MockStarredEntitiesApi()],
             [alertApiRef, mockApis.alert()],
             [translationApiRef, mockApis.translation()],
-            [errorApiRef, { error$: jest.fn(), post: jest.fn() }],
+            [errorApiRef, { error$: vi.fn(), post: vi.fn() }],
           ]}
         >
           <EntityListProvider pagination={options.pagination}>
@@ -130,14 +132,14 @@ describe('<EntityListProvider />', () => {
   const pagination = false;
 
   beforeEach(() => {
-    window.history.replaceState = jest.fn();
+    window.history.replaceState = vi.fn();
   });
   afterEach(() => {
     window.history.replaceState = origReplaceState;
   });
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should send backend filters', async () => {
@@ -443,14 +445,14 @@ describe('<EntityListProvider pagination />', () => {
   const orderFields = [{ field: 'metadata.name', order: 'asc' }];
 
   beforeEach(() => {
-    window.history.replaceState = jest.fn();
+    window.history.replaceState = vi.fn();
   });
   afterEach(() => {
     window.history.replaceState = origReplaceState;
   });
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('sends search text to the backend', async () => {
@@ -767,14 +769,14 @@ describe(`<EntityListProvider pagination={{ mode: 'offset' }} />`, () => {
   const orderFields = [{ field: 'metadata.name', order: 'asc' }];
 
   beforeEach(() => {
-    window.history.replaceState = jest.fn();
+    window.history.replaceState = vi.fn();
   });
   afterEach(() => {
     window.history.replaceState = origReplaceState;
   });
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('sends search text to the backend', async () => {
@@ -1083,12 +1085,12 @@ describe('versioned context', () => {
       filters: {},
       entities: [],
       backendEntities: [],
-      updateFilters: jest.fn(),
+      updateFilters: vi.fn(),
       queryParameters: {},
       loading: true,
       limit: 277,
-      setLimit: jest.fn(),
-      setOffset: jest.fn(),
+      setLimit: vi.fn(),
+      setOffset: vi.fn(),
       paginationMode: 'none',
     };
 
@@ -1113,9 +1115,9 @@ describe('versioned context', () => {
                 [identityApiRef, mockIdentityApi],
                 [storageApiRef, mockApis.storage()],
                 [starredEntitiesApiRef, new MockStarredEntitiesApi()],
-                [alertApiRef, { post: jest.fn() }],
+                [alertApiRef, { post: vi.fn() }],
                 [translationApiRef, mockApis.translation()],
-                [errorApiRef, { error$: jest.fn(), post: jest.fn() }],
+                [errorApiRef, { error$: vi.fn(), post: vi.fn() }],
               ]}
             >
               <NewEntityListContext.Provider

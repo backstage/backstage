@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi, type Mocked } from 'vitest';
+
 import { errorApiRef } from '@backstage/core-plugin-api';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { act, screen } from '@testing-library/react';
@@ -23,14 +25,14 @@ import { StepInitAnalyzeUrl } from './StepInitAnalyzeUrl';
 import { AnalyzeResult, catalogImportApiRef } from '../../api/CatalogImportApi';
 
 describe('<StepInitAnalyzeUrl />', () => {
-  const catalogImportApi: jest.Mocked<typeof catalogImportApiRef.T> = {
-    analyzeUrl: jest.fn(),
-    submitPullRequest: jest.fn(),
+  const catalogImportApi: Mocked<typeof catalogImportApiRef.T> = {
+    analyzeUrl: vi.fn(),
+    submitPullRequest: vi.fn(),
   };
 
-  const errorApi: jest.Mocked<typeof errorApiRef.T> = {
-    post: jest.fn(),
-    error$: jest.fn(),
+  const errorApi: Mocked<typeof errorApiRef.T> = {
+    post: vi.fn(),
+    error$: vi.fn(),
   };
 
   const Wrapper = ({ children }: { children?: ReactNode }) => (
@@ -56,7 +58,7 @@ describe('<StepInitAnalyzeUrl />', () => {
   };
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('renders without exploding', async () => {
@@ -87,7 +89,7 @@ describe('<StepInitAnalyzeUrl />', () => {
   });
 
   it('should not analyze without url', async () => {
-    const onAnalysisFn = jest.fn();
+    const onAnalysisFn = vi.fn();
 
     await renderInTestApp(
       <Wrapper>
@@ -109,7 +111,7 @@ describe('<StepInitAnalyzeUrl />', () => {
   });
 
   it('should not analyze invalid value', async () => {
-    const onAnalysisFn = jest.fn();
+    const onAnalysisFn = vi.fn();
 
     await renderInTestApp(
       <Wrapper>
@@ -134,7 +136,7 @@ describe('<StepInitAnalyzeUrl />', () => {
   });
 
   it('should analyze single location', async () => {
-    const onAnalysisFn = jest.fn();
+    const onAnalysisFn = vi.fn();
 
     const analyzeResult = {
       type: 'locations',
@@ -170,7 +172,7 @@ describe('<StepInitAnalyzeUrl />', () => {
   });
 
   it('should analyze multiple locations', async () => {
-    const onAnalysisFn = jest.fn();
+    const onAnalysisFn = vi.fn();
 
     const analyzeResult = {
       type: 'locations',
@@ -205,7 +207,7 @@ describe('<StepInitAnalyzeUrl />', () => {
   });
 
   it('should not analyze with no locations', async () => {
-    const onAnalysisFn = jest.fn();
+    const onAnalysisFn = vi.fn();
 
     const analyzeResult = {
       type: 'locations',
@@ -238,7 +240,7 @@ describe('<StepInitAnalyzeUrl />', () => {
   });
 
   it('should analyze repository', async () => {
-    const onAnalysisFn = jest.fn();
+    const onAnalysisFn = vi.fn();
 
     const analyzeResult = {
       type: 'repository',
@@ -283,7 +285,7 @@ describe('<StepInitAnalyzeUrl />', () => {
   });
 
   it('should not analyze repository without entities', async () => {
-    const onAnalysisFn = jest.fn();
+    const onAnalysisFn = vi.fn();
 
     const analyzeResult = {
       type: 'repository',
@@ -318,7 +320,7 @@ describe('<StepInitAnalyzeUrl />', () => {
   });
 
   it('should not analyze repository if disabled', async () => {
-    const onAnalysisFn = jest.fn();
+    const onAnalysisFn = vi.fn();
 
     const analyzeResult = {
       type: 'repository',
@@ -361,7 +363,7 @@ describe('<StepInitAnalyzeUrl />', () => {
   });
 
   it('should report unknown type to the errorapi', async () => {
-    const onAnalysisFn = jest.fn();
+    const onAnalysisFn = vi.fn();
 
     await renderInTestApp(
       <Wrapper>

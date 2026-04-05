@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { OAuthRequestManager } from './OAuthRequestManager';
 
 describe('OAuthRequestManager', () => {
   it('should forward a requests', async () => {
     const manager = new OAuthRequestManager();
 
-    const reqSpy = jest.fn();
+    const reqSpy = vi.fn();
     manager.authRequest$().subscribe(reqSpy);
 
     const requester = manager.createAuthRequester({

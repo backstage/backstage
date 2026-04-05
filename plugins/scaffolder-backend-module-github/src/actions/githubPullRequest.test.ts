@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import { Config, ConfigReader } from '@backstage/config';
 import {
   GithubCredentialsProvider,
@@ -39,10 +41,10 @@ type GithubPullRequestActionInput = ReturnType<
 describe('createPublishGithubPullRequestAction', () => {
   let instance: TemplateAction<GithubPullRequestActionInput, any, any>;
   let fakeClient: {
-    createPullRequest: jest.Mock;
+    createPullRequest: Mock;
     rest: {
-      pulls: { requestReviewers: jest.Mock };
-      issues: { addAssignees: jest.Mock };
+      pulls: { requestReviewers: Mock };
+      issues: { addAssignees: Mock };
     };
   };
   let config: Config;
@@ -55,7 +57,7 @@ describe('createPublishGithubPullRequestAction', () => {
     config = new ConfigReader({});
     integrations = ScmIntegrations.fromConfig(config);
     fakeClient = {
-      createPullRequest: jest.fn(async (_: any) => {
+      createPullRequest: vi.fn(async (_: any) => {
         return {
           url: 'https://api.github.com/myorg/myrepo/pull/123',
           headers: {},
@@ -71,16 +73,16 @@ describe('createPublishGithubPullRequestAction', () => {
       }),
       rest: {
         pulls: {
-          requestReviewers: jest.fn(async (_: any) => ({ data: {} })),
+          requestReviewers: vi.fn(async (_: any) => ({ data: {} })),
         },
         issues: {
-          addAssignees: jest.fn(async (_: any) => ({ data: {} })),
+          addAssignees: vi.fn(async (_: any) => ({ data: {} })),
         },
       },
     };
-    const clientFactory = jest.fn(async () => fakeClient as any);
+    const clientFactory = vi.fn(async () => fakeClient as any);
     const githubCredentialsProvider: GithubCredentialsProvider = {
-      getCredentials: jest.fn(),
+      getCredentials: vi.fn(),
     };
 
     instance = createPublishGithubPullRequestAction({
@@ -93,7 +95,7 @@ describe('createPublishGithubPullRequestAction', () => {
 
   afterEach(() => {
     mockDir.clear();
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   describe('with targetBranchName', () => {
@@ -102,7 +104,7 @@ describe('createPublishGithubPullRequestAction', () => {
 
     beforeEach(() => {
       fakeClient = {
-        createPullRequest: jest.fn(async (_: any) => {
+        createPullRequest: vi.fn(async (_: any) => {
           return {
             url: 'https://api.github.com/myorg/myrepo/pull/123',
             headers: {},
@@ -118,10 +120,10 @@ describe('createPublishGithubPullRequestAction', () => {
         }),
         rest: {
           pulls: {
-            requestReviewers: jest.fn(async (_: any) => ({ data: {} })),
+            requestReviewers: vi.fn(async (_: any) => ({ data: {} })),
           },
           issues: {
-            addAssignees: jest.fn(async (_: any) => ({ data: {} })),
+            addAssignees: vi.fn(async (_: any) => ({ data: {} })),
           },
         },
       };
@@ -1002,9 +1004,9 @@ describe('createPublishGithubPullRequestAction', () => {
         },
       });
 
-      const clientFactory = jest.fn(async () => fakeClient as any);
+      const clientFactory = vi.fn(async () => fakeClient as any);
       const githubCredentialsProvider: GithubCredentialsProvider = {
-        getCredentials: jest.fn(),
+        getCredentials: vi.fn(),
       };
 
       const instanceWithConfig = createPublishGithubPullRequestAction({
@@ -1073,9 +1075,9 @@ describe('createPublishGithubPullRequestAction', () => {
         },
       });
 
-      const clientFactory = jest.fn(async () => fakeClient as any);
+      const clientFactory = vi.fn(async () => fakeClient as any);
       const githubCredentialsProvider: GithubCredentialsProvider = {
-        getCredentials: jest.fn(),
+        getCredentials: vi.fn(),
       };
 
       const instanceWithConfig = createPublishGithubPullRequestAction({
@@ -1134,9 +1136,9 @@ describe('createPublishGithubPullRequestAction', () => {
     });
 
     it('creates a pull request with using author name and email fallback when have no config', async () => {
-      const clientFactory = jest.fn(async () => fakeClient as any);
+      const clientFactory = vi.fn(async () => fakeClient as any);
       const githubCredentialsProvider: GithubCredentialsProvider = {
-        getCredentials: jest.fn(),
+        getCredentials: vi.fn(),
       };
 
       const instanceWithConfig = createPublishGithubPullRequestAction({
@@ -1173,9 +1175,9 @@ describe('createPublishGithubPullRequestAction', () => {
     });
     it('discards author name and email if forceEmptyGitAuthor is set', async () => {
       input.forceEmptyGitAuthor = true;
-      const clientFactory = jest.fn(async () => fakeClient as any);
+      const clientFactory = vi.fn(async () => fakeClient as any);
       const githubCredentialsProvider: GithubCredentialsProvider = {
-        getCredentials: jest.fn(),
+        getCredentials: vi.fn(),
       };
 
       const instanceWithConfig = createPublishGithubPullRequestAction({

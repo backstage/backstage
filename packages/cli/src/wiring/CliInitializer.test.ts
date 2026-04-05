@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { CliInitializer } from './CliInitializer';
 import { createCliModule } from './factory';
 
-process.exit = jest.fn() as any;
+process.exit = vi.fn() as any;
 
 describe('createCliModule', () => {
   it('should throw if packageJson has no name', () => {
@@ -39,7 +41,7 @@ describe('createCliModule', () => {
 
 describe('CliInitializer', () => {
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
   it('should run commands', async () => {
     expect.assertions(2);
@@ -139,7 +141,7 @@ describe('CliInitializer', () => {
     expect(process.exit).toHaveBeenCalledWith(0);
 
     process.argv = ['node', 'cli', '--help'];
-    const writeSpy = jest.spyOn(process.stdout, 'write');
+    const writeSpy = vi.spyOn(process.stdout, 'write');
     const initializer2 = new CliInitializer();
     initializer2.add(
       createCliModule({
@@ -167,7 +169,7 @@ describe('CliInitializer', () => {
 
   it('should hide tree nodes when all children are experimental', async () => {
     process.argv = ['node', 'cli', '--help'];
-    const writeSpy = jest.spyOn(process.stdout, 'write');
+    const writeSpy = vi.spyOn(process.stdout, 'write');
     const initializer = new CliInitializer();
     initializer.add(
       createCliModule({
@@ -202,7 +204,7 @@ describe('CliInitializer', () => {
 
   it('should show tree nodes when some children are visible', async () => {
     process.argv = ['node', 'cli', '--help'];
-    const writeSpy = jest.spyOn(process.stdout, 'write');
+    const writeSpy = vi.spyOn(process.stdout, 'write');
     const initializer = new CliInitializer();
     initializer.add(
       createCliModule({

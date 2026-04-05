@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   BackstageCredentials,
   SchedulerServiceTaskInvocationDefinition,
@@ -89,8 +91,8 @@ describe('BitbucketCloudEntityProvider', () => {
   });
   const schedule = new PersistingTaskRunner();
   const entityProviderConnection: EntityProviderConnection = {
-    applyMutation: jest.fn(),
-    refresh: jest.fn(),
+    applyMutation: vi.fn(),
+    refresh: vi.fn(),
   };
   const repoPushEvent: Events.RepoPushEvent = {
     actor: {
@@ -197,7 +199,7 @@ describe('BitbucketCloudEntityProvider', () => {
   };
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     schedule.reset();
   });
 
@@ -695,7 +697,7 @@ describe('BitbucketCloudEntityProvider', () => {
   it('no onRepoPush update on non-matching workspace slug', async () => {
     const auth = mockServices.auth();
     const catalog = catalogServiceMock();
-    jest.spyOn(catalog, 'refreshEntity');
+    vi.spyOn(catalog, 'refreshEntity');
     const events = DefaultEventsService.create({ logger });
     const provider = BitbucketCloudEntityProvider.fromConfig(defaultConfig, {
       auth,
@@ -727,7 +729,7 @@ describe('BitbucketCloudEntityProvider', () => {
   it('no onRepoPush update on non-matching repo slug', async () => {
     const auth = mockServices.auth();
     const catalog = catalogServiceMock();
-    jest.spyOn(catalog, 'refreshEntity');
+    vi.spyOn(catalog, 'refreshEntity');
     const events = DefaultEventsService.create({ logger });
     const provider = BitbucketCloudEntityProvider.fromConfig(defaultConfig, {
       auth,
@@ -867,7 +869,7 @@ describe('BitbucketCloudEntityProvider', () => {
   it('no onRepoUpdated update on non-matching workspace slug', async () => {
     const auth = mockServices.auth();
     const catalog = catalogServiceMock();
-    jest.spyOn(catalog, 'refreshEntity');
+    vi.spyOn(catalog, 'refreshEntity');
     const events = DefaultEventsService.create({ logger });
     const provider = BitbucketCloudEntityProvider.fromConfig(defaultConfig, {
       auth,
@@ -899,7 +901,7 @@ describe('BitbucketCloudEntityProvider', () => {
   it('no onRepoUpdated update on non-matching repo slug', async () => {
     const auth = mockServices.auth();
     const catalog = catalogServiceMock();
-    jest.spyOn(catalog, 'refreshEntity');
+    vi.spyOn(catalog, 'refreshEntity');
     const events = DefaultEventsService.create({ logger });
     const provider = BitbucketCloudEntityProvider.fromConfig(defaultConfig, {
       auth,
@@ -928,7 +930,7 @@ describe('BitbucketCloudEntityProvider', () => {
   it('no onRepoUpdated update on non-relevant repo update', async () => {
     const auth = mockServices.auth();
     const catalog = catalogServiceMock();
-    jest.spyOn(catalog, 'refreshEntity');
+    vi.spyOn(catalog, 'refreshEntity');
     const events = DefaultEventsService.create({ logger });
     const provider = BitbucketCloudEntityProvider.fromConfig(defaultConfig, {
       auth,

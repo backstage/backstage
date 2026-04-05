@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   PageBlueprint,
   createFrontendPlugin,
@@ -21,7 +23,7 @@ import {
 import { waitFor, within } from '@testing-library/react';
 import { createDevApp } from './createDevApp';
 
-jest.setTimeout(15000);
+vi.setConfig({ testTimeout: 15000 });
 
 const originalEnv = process.env;
 
@@ -30,7 +32,7 @@ function loadCreateDevAppIsolated(): typeof import('./createDevApp').createDevAp
     | typeof import('./createDevApp').createDevApp
     | undefined;
 
-  jest.isolateModules(() => {
+  vi.hoisted(() => {
     ({ createDevApp: isolatedCreateDevApp } = require('./createDevApp'));
   });
 
@@ -48,7 +50,7 @@ describe('createDevApp', () => {
 
   afterEach(() => {
     document.body.innerHTML = '';
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   afterAll(() => {
@@ -91,28 +93,28 @@ describe('createDevApp', () => {
   });
 
   it('should forward bindRoutes to createApp', async () => {
-    jest.resetModules();
+    vi.resetModules();
 
-    const bindRoutes = jest.fn();
-    const createApp = jest.fn(() => ({
+    const bindRoutes = vi.fn();
+    const createApp = vi.fn(() => ({
       createRoot: () => <div>Test App Root</div>,
     }));
-    const render = jest.fn();
-    const createRoot = jest.fn(() => ({ render }));
+    const render = vi.fn();
+    const createRoot = vi.fn(() => ({ render }));
 
-    jest.doMock('@backstage/frontend-defaults', () => ({
+    vi.doMock('@backstage/frontend-defaults', () => ({
       createApp,
     }));
-    jest.doMock('@backstage/plugin-app', () => ({
+    vi.doMock('@backstage/plugin-app', () => ({
       __esModule: true,
       default: {
-        withOverrides: jest.fn(() => 'app-plugin-override'),
-        getExtension: jest.fn(() => ({
-          override: jest.fn(() => 'disabled-sign-in-page'),
+        withOverrides: vi.fn(() => 'app-plugin-override'),
+        getExtension: vi.fn(() => ({
+          override: vi.fn(() => 'disabled-sign-in-page'),
         })),
       },
     }));
-    jest.doMock('react-dom/client', () => ({
+    vi.doMock('react-dom/client', () => ({
       __esModule: true,
       createRoot,
     }));
@@ -148,27 +150,27 @@ describe('createDevApp', () => {
   });
 
   it('should fall back to legacy react-dom rendering when createRoot is unavailable', async () => {
-    jest.resetModules();
+    vi.resetModules();
     delete process.env.HAS_REACT_DOM_CLIENT;
 
-    const createApp = jest.fn(() => ({
+    const createApp = vi.fn(() => ({
       createRoot: () => <div>Test App Root</div>,
     }));
-    const render = jest.fn();
+    const render = vi.fn();
 
-    jest.doMock('@backstage/frontend-defaults', () => ({
+    vi.doMock('@backstage/frontend-defaults', () => ({
       createApp,
     }));
-    jest.doMock('@backstage/plugin-app', () => ({
+    vi.doMock('@backstage/plugin-app', () => ({
       __esModule: true,
       default: {
-        withOverrides: jest.fn(() => 'app-plugin-override'),
-        getExtension: jest.fn(() => ({
-          override: jest.fn(() => 'disabled-sign-in-page'),
+        withOverrides: vi.fn(() => 'app-plugin-override'),
+        getExtension: vi.fn(() => ({
+          override: vi.fn(() => 'disabled-sign-in-page'),
         })),
       },
     }));
-    jest.doMock('react-dom', () => ({
+    vi.doMock('react-dom', () => ({
       __esModule: true,
       render,
     }));

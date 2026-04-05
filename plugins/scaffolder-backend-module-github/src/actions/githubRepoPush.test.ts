@@ -14,21 +14,23 @@
  * limitations under the License.
  */
 
-jest.mock('./gitHelpers', () => {
+import { vi , type Mock} from 'vitest';
+
+vi.mock('./gitHelpers', () => {
   return {
-    ...jest.requireActual('./gitHelpers'),
-    entityRefToName: jest.fn(),
-    enableBranchProtectionOnDefaultRepoBranch: jest.fn(),
+    ...vi.importActual('./gitHelpers'),
+    entityRefToName: vi.fn(),
+    enableBranchProtectionOnDefaultRepoBranch: vi.fn(),
   };
 });
 
-jest.mock('@backstage/plugin-scaffolder-node', () => {
+vi.mock('@backstage/plugin-scaffolder-node', () => {
   return {
-    ...jest.requireActual('@backstage/plugin-scaffolder-node'),
-    initRepoAndPush: jest.fn().mockResolvedValue({
+    ...vi.importActual('@backstage/plugin-scaffolder-node'),
+    initRepoAndPush: vi.fn().mockResolvedValue({
       commitHash: '220f19cc36b551763d157f1b5e4a4b446165dbd6',
     }),
-    commitAndPushRepo: jest.fn().mockResolvedValue({
+    commitAndPushRepo: vi.fn().mockResolvedValue({
       commitHash: '220f19cc36b551763d157f1b5e4a4b446165dbd6',
     }),
   };
@@ -48,22 +50,22 @@ import {
 import { enableBranchProtectionOnDefaultRepoBranch } from './gitHelpers';
 import { createGithubRepoPushAction } from './githubRepoPush';
 
-const initRepoAndPushMocked = initRepoAndPush as jest.Mock<
+const initRepoAndPushMocked = initRepoAndPush as Mock<
   Promise<{ commitHash: string }>
 >;
 
 import { Octokit } from 'octokit';
 
-const octokitMock = Octokit as unknown as jest.Mock;
+const octokitMock = Octokit as unknown as Mock;
 const mockOctokit = {
   rest: {
     repos: {
-      get: jest.fn(),
+      get: vi.fn(),
     },
   },
 };
-jest.mock('octokit', () => ({
-  Octokit: jest.fn(),
+vi.mock('octokit', () => ({
+  Octokit: vi.fn(),
 }));
 
 describe('github:repo:push', () => {
@@ -90,7 +92,7 @@ describe('github:repo:push', () => {
   });
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
 
     octokitMock.mockImplementation(() => mockOctokit);
 

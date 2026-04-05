@@ -13,19 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import { mockServices } from '@backstage/backend-test-utils';
 import { RateLimitStoreFactory } from './RateLimitStoreFactory.ts';
 import { RedisStore } from 'rate-limit-redis';
 
-jest.mock('@keyv/redis', () => {
-  const Actual = jest.requireActual('@keyv/redis');
+vi.mock('@keyv/redis', () => {
+  const Actual = vi.importActual('@keyv/redis');
   return {
     ...Actual,
     __esModule: true,
-    default: jest.fn(() => {
+    default: vi.fn(() => {
       return {
-        getClient: jest.fn(() => ({
-          sendCommand: jest.fn().mockReturnValue('mock'),
+        getClient: vi.fn(() => ({
+          sendCommand: vi.fn().mockReturnValue('mock'),
         })),
       };
     }),
@@ -33,7 +35,7 @@ jest.mock('@keyv/redis', () => {
 });
 
 describe('CacheRateLimitStoreFactory', () => {
-  afterEach(jest.clearAllMocks);
+  afterEach(vi.clearAllMocks);
 
   it('should return undefined store with auto configuration if redis is not available', () => {
     const config = mockServices.rootConfig({

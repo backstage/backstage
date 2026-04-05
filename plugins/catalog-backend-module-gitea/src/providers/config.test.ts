@@ -14,19 +14,21 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import { readGiteaConfigs } from './config';
 import { ConfigReader } from '@backstage/config';
 import { readSchedulerServiceTaskScheduleDefinitionFromConfig } from '@backstage/backend-plugin-api';
 
-jest.mock('@backstage/backend-plugin-api', () => ({
-  ...jest.requireActual('@backstage/backend-plugin-api'),
-  readSchedulerServiceTaskScheduleDefinitionFromConfig: jest.fn(),
+vi.mock('@backstage/backend-plugin-api', () => ({
+  ...vi.importActual('@backstage/backend-plugin-api'),
+  readSchedulerServiceTaskScheduleDefinitionFromConfig: vi.fn(),
 }));
-jest.mock('p-limit');
+vi.mock('p-limit');
 
 describe('readGiteaConfigs', () => {
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('returns empty array when no gitea provider config is present', () => {
@@ -39,7 +41,7 @@ describe('readGiteaConfigs', () => {
 
   it('parses multiple gitea provider configurations correctly', () => {
     (
-      readSchedulerServiceTaskScheduleDefinitionFromConfig as jest.Mock
+      readSchedulerServiceTaskScheduleDefinitionFromConfig as Mock
     ).mockReturnValue({
       frequency: { minutes: 5 },
       timeout: { minutes: 3 },

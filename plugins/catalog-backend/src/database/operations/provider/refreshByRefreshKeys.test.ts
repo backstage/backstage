@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import * as uuid from 'uuid';
 import { applyDatabaseMigrations } from '../../migrations';
@@ -21,7 +23,7 @@ import { DbRefreshKeysRow, DbRefreshStateRow } from '../../tables';
 import { generateTargetKey } from '../../util';
 import { refreshByRefreshKeys } from './refreshByRefreshKeys';
 
-jest.setTimeout(60_000);
+vi.setConfig({ testTimeout: 60_000 });
 
 describe('refreshByRefreshKeys', () => {
   const databases = TestDatabases.create();

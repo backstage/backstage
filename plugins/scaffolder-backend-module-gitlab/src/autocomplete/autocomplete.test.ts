@@ -14,31 +14,33 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { InputError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { createHandleAutocompleteRequest } from './autocomplete';
 
 const mockGetClient = require('../util').getClient;
 
-jest.mock('../util', () => ({
-  getClient: jest.fn(),
+vi.mock('../util', () => ({
+  getClient: vi.fn(),
 }));
 
 describe('handleAutocompleteRequest', () => {
   const mockIntegrations = {} as ScmIntegrationRegistry;
   const mockClient = {
     Groups: {
-      all: jest.fn(),
-      allProjects: jest.fn(),
+      all: vi.fn(),
+      allProjects: vi.fn(),
     },
     Users: {
-      showCurrentUser: jest.fn(),
-      allProjects: jest.fn(),
+      showCurrentUser: vi.fn(),
+      allProjects: vi.fn(),
     },
   };
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     mockGetClient.mockReturnValue(mockClient);
   });
 

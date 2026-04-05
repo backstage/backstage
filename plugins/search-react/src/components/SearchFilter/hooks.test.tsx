@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { ApiProvider } from '@backstage/core-app-api';
 import { mockApis, TestApiRegistry } from '@backstage/test-utils';
 import { act, renderHook, waitFor } from '@testing-library/react';
@@ -23,7 +25,7 @@ import { SearchContextProvider, useSearch } from '../../context';
 import { useDefaultFilterValue, useAsyncFilterValues } from './hooks';
 import { configApiRef } from '@backstage/core-plugin-api';
 
-jest.useFakeTimers();
+vi.useFakeTimers();
 
 describe('SearchFilter.hooks', () => {
   describe('useDefaultFilterValue', () => {
@@ -37,7 +39,7 @@ describe('SearchFilter.hooks', () => {
       },
     });
     const searchApiMock = {
-      query: jest.fn().mockResolvedValue({ results: [] }),
+      query: vi.fn().mockResolvedValue({ results: [] }),
     };
     const apis = TestApiRegistry.from(
       [searchApiRef, searchApiMock],
@@ -260,7 +262,7 @@ describe('SearchFilter.hooks', () => {
       expect(result.current.loading).toEqual(true);
 
       await act(async () => {
-        jest.runAllTimers();
+        vi.runAllTimers();
       });
 
       expect(result.current.loading).toEqual(false);
@@ -272,20 +274,20 @@ describe('SearchFilter.hooks', () => {
         { value: 'value1', label: 'value 1' },
         { value: 'value2', label: 'value 2' },
       ];
-      const asyncFn = jest.fn().mockResolvedValue(expectedValues);
+      const asyncFn = vi.fn().mockResolvedValue(expectedValues);
       renderHook(() => useAsyncFilterValues(asyncFn, '', undefined, 1000));
 
       expect(asyncFn).not.toHaveBeenCalled();
 
       // Advance timers by 600ms
       await act(async () => {
-        jest.advanceTimersByTime(600);
+        vi.advanceTimersByTime(600);
       });
       expect(asyncFn).not.toHaveBeenCalled();
 
       // Another 600ms to exceed the 1000ms debounce
       await act(async () => {
-        jest.advanceTimersByTime(600);
+        vi.advanceTimersByTime(600);
       });
       expect(asyncFn).toHaveBeenCalled();
     });
@@ -301,7 +303,7 @@ describe('SearchFilter.hooks', () => {
 
       expect(asyncFn).not.toHaveBeenCalled();
       await act(async () => {
-        jest.runAllTimers();
+        vi.runAllTimers();
       });
       expect(asyncFn).toHaveBeenCalledTimes(1);
       expect(asyncFn).toHaveBeenCalledWith('');
@@ -309,7 +311,7 @@ describe('SearchFilter.hooks', () => {
       // Re-render with different input value.
       rerender({ inputValue: 'somethingElse' });
       await act(async () => {
-        jest.runAllTimers();
+        vi.runAllTimers();
       });
       expect(asyncFn).toHaveBeenCalledTimes(2);
       expect(asyncFn).toHaveBeenLastCalledWith('somethingElse');
@@ -320,7 +322,7 @@ describe('SearchFilter.hooks', () => {
         { value: 'value1', label: 'value 1' },
         { value: 'value2', label: 'value 2' },
       ];
-      const asyncFn = jest.fn().mockResolvedValue(expectedValues);
+      const asyncFn = vi.fn().mockResolvedValue(expectedValues);
       const { rerender } = renderHook(
         (props: { inputValue: string } = { inputValue: '' }) =>
           useAsyncFilterValues(asyncFn, props.inputValue, undefined, 1000),
@@ -329,7 +331,7 @@ describe('SearchFilter.hooks', () => {
       expect(asyncFn).not.toHaveBeenCalled();
 
       await act(async () => {
-        jest.runAllTimers();
+        vi.runAllTimers();
       });
       expect(asyncFn).toHaveBeenCalledTimes(1);
 

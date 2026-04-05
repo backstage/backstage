@@ -174,14 +174,14 @@ describe('LegacyTokenHandler', () => {
         }),
       }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Missing required config value at 'secret' in 'mock-config'"`,
+      `[Error: Missing required config value at 'secret' in 'mock-config']`,
     );
     expect(() =>
       handler.initialize({
         options: new ConfigReader({ secret: '', subject: 'ok' }),
       }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid type in config for key 'secret' in 'mock-config', got empty-string, wanted string"`,
+      `[TypeError: Invalid type in config for key 'secret' in 'mock-config', got empty-string, wanted string]`,
     );
     expect(() =>
       handler.initialize({
@@ -191,7 +191,7 @@ describe('LegacyTokenHandler', () => {
         }),
       }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Illegal secret, must be a valid base64 string"`,
+      `[Error: Illegal secret, must be a valid base64 string]`,
     );
     expect(() =>
       handler.initialize({
@@ -201,14 +201,14 @@ describe('LegacyTokenHandler', () => {
         }),
       }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Illegal secret, must be a valid base64 string"`,
+      `[Error: Illegal secret, must be a valid base64 string]`,
     );
     expect(() =>
       handler.initialize({
         options: new ConfigReader({ secret: 3, subject: 'ok' }),
       }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid type in config for key 'secret' in 'mock-config', got number, wanted string"`,
+      `[TypeError: Invalid type in config for key 'secret' in 'mock-config', got number, wanted string]`,
     );
 
     // new style add, bad subjects
@@ -220,14 +220,14 @@ describe('LegacyTokenHandler', () => {
         }),
       }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Missing required config value at 'subject' in 'mock-config'"`,
+      `[Error: Missing required config value at 'subject' in 'mock-config']`,
     );
     expect(() =>
       handler.initialize({
         options: new ConfigReader({ secret: 'b2s=', subject: '' }),
       }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid type in config for key 'subject' in 'mock-config', got empty-string, wanted string"`,
+      `[TypeError: Invalid type in config for key 'subject' in 'mock-config', got empty-string, wanted string]`,
     );
     expect(() =>
       handler.initialize({
@@ -237,7 +237,7 @@ describe('LegacyTokenHandler', () => {
         }),
       }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Illegal subject, must be a set of non-space characters"`,
+      `[Error: Illegal subject, must be a set of non-space characters]`,
     );
     expect(() =>
       handler.initialize({
@@ -247,14 +247,14 @@ describe('LegacyTokenHandler', () => {
         }),
       }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Illegal subject, must be a set of non-space characters"`,
+      `[Error: Illegal subject, must be a set of non-space characters]`,
     );
     expect(() =>
       handler.initialize({
         options: new ConfigReader({ secret: 'b2s=', subject: 3 }),
       }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid type in config for key 'subject' in 'mock-config', got number, wanted string"`,
+      `[TypeError: Invalid type in config for key 'subject' in 'mock-config', got number, wanted string]`,
     );
 
     // old style add
@@ -271,7 +271,7 @@ describe('LegacyTokenHandler', () => {
         legacy: true,
       }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Missing required config value at 'secret' in 'mock-config'"`,
+      `[Error: Missing required config value at 'secret' in 'mock-config']`,
     );
     expect(() =>
       handler.initialize({
@@ -279,7 +279,7 @@ describe('LegacyTokenHandler', () => {
         legacy: true,
       }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid type in config for key 'secret' in 'mock-config', got empty-string, wanted string"`,
+      `[TypeError: Invalid type in config for key 'secret' in 'mock-config', got empty-string, wanted string]`,
     );
     expect(() =>
       handler.initialize({
@@ -287,7 +287,7 @@ describe('LegacyTokenHandler', () => {
         legacy: true,
       }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Illegal secret, must be a valid base64 string"`,
+      `[Error: Illegal secret, must be a valid base64 string]`,
     );
     expect(() =>
       handler.initialize({
@@ -295,7 +295,7 @@ describe('LegacyTokenHandler', () => {
         legacy: true,
       }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Illegal secret, must be a valid base64 string"`,
+      `[Error: Illegal secret, must be a valid base64 string]`,
     );
     expect(() =>
       handler.initialize({
@@ -303,7 +303,7 @@ describe('LegacyTokenHandler', () => {
         legacy: true,
       }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid type in config for key 'secret' in 'mock-config', got number, wanted string"`,
+      `[TypeError: Invalid type in config for key 'secret' in 'mock-config', got number, wanted string]`,
     );
   });
 });

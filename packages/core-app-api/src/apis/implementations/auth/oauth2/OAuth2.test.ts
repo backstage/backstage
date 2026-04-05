@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import OAuth2 from './OAuth2';
 import MockOAuthApi from '../../OAuthRequestApi/MockOAuthApi';
 import { UrlPatternDiscovery } from '../../DiscoveryApi';
@@ -33,10 +35,10 @@ const PREFIX = 'https://www.googleapis.com/auth/';
 
 const scopeTransform = (x: string[]) => x;
 
-let getSession = jest.fn();
+let getSession = vi.fn();
 
-jest.mock('../../../../lib/AuthSessionManager', () => ({
-  ...(jest.requireActual('../../../../lib/AuthSessionManager') as any),
+vi.mock('../../../../lib/AuthSessionManager', () => ({
+  ...(vi.importActual('../../../../lib/AuthSessionManager') as any),
   RefreshingAuthSessionManager: class {
     getSession = getSession;
   },
@@ -65,7 +67,7 @@ class CustomAuthConnector implements AuthConnector<OAuth2Session> {
 
 describe('OAuth2', () => {
   it('should get refreshed access token', async () => {
-    getSession = jest.fn().mockResolvedValue({
+    getSession = vi.fn().mockResolvedValue({
       providerInfo: { accessToken: 'access-token', expiresAt: theFuture },
     });
     const oauth2 = OAuth2.create({
@@ -84,7 +86,7 @@ describe('OAuth2', () => {
   });
 
   it('should transform scopes', async () => {
-    getSession = jest.fn().mockResolvedValue({
+    getSession = vi.fn().mockResolvedValue({
       providerInfo: { accessToken: 'access-token', expiresAt: theFuture },
     });
     const oauth2 = OAuth2.create({
@@ -103,7 +105,7 @@ describe('OAuth2', () => {
   });
 
   it('should forward backstage identity', async () => {
-    getSession = jest.fn().mockResolvedValue({
+    getSession = vi.fn().mockResolvedValue({
       providerInfo: { accessToken: 'access-token', expiresAt: theFuture },
       backstageIdentity: {
         token: 'a.b.c',
@@ -134,7 +136,7 @@ describe('OAuth2', () => {
   });
 
   it('should get refreshed id token', async () => {
-    getSession = jest.fn().mockResolvedValue({
+    getSession = vi.fn().mockResolvedValue({
       providerInfo: { idToken: 'id-token', expiresAt: theFuture },
     });
 
@@ -154,7 +156,7 @@ describe('OAuth2', () => {
   });
 
   it('should get optional id token', async () => {
-    getSession = jest.fn().mockResolvedValue({
+    getSession = vi.fn().mockResolvedValue({
       providerInfo: { idToken: 'id-token', expiresAt: theFuture },
     });
     const oauth2 = OAuth2.create({
@@ -242,7 +244,7 @@ describe('OAuth2', () => {
     expect(getSession).toHaveBeenCalledTimes(4); // De-duping of session requests happens in client
   });
   it('should use provided auth provider', async () => {
-    getSession = jest.fn().mockResolvedValue({
+    getSession = vi.fn().mockResolvedValue({
       providerInfo: { accessToken: 'access-token', expiresAt: theFuture },
     });
 

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import fs from 'fs-extra';
 import os from 'node:os';
 import { join as joinPath, relative as relativePath } from 'node:path';
@@ -204,7 +206,7 @@ describe('createMockDirectory', () => {
   });
 
   it('should provide a posix path to shouldReadAsText', () => {
-    const shouldReadAsText = jest.fn().mockReturnValue(true);
+    const shouldReadAsText = vi.fn().mockReturnValue(true);
 
     mockDir.setContent({ 'a/b/c': 'c' });
 

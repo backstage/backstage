@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import { ConfigReader } from '@backstage/config';
 import {
   GithubCredentialsProvider,
@@ -24,7 +26,7 @@ import { graphql } from '@octokit/graphql';
 import { GithubOrgReaderProcessor } from './GithubOrgReaderProcessor';
 import { mockServices } from '@backstage/backend-test-utils';
 
-jest.mock('@octokit/graphql');
+vi.mock('@octokit/graphql');
 
 describe('GithubOrgReaderProcessor', () => {
   describe('implementation', () => {
@@ -50,7 +52,7 @@ describe('GithubOrgReaderProcessor', () => {
     };
 
     beforeEach(() => {
-      jest.resetAllMocks();
+      vi.resetAllMocks();
     });
 
     it('rejects unknown targets from integrations', async () => {
@@ -80,7 +82,7 @@ describe('GithubOrgReaderProcessor', () => {
         },
       };
 
-      const mockClient = jest.fn();
+      const mockClient = vi.fn();
 
       mockClient
         .mockResolvedValueOnce({
@@ -107,7 +109,7 @@ describe('GithubOrgReaderProcessor', () => {
           },
         });
 
-      (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+      (graphql.defaults as Mock).mockReturnValue(mockClient);
 
       const processor = new GithubOrgReaderProcessor({
         integrations,
@@ -137,7 +139,7 @@ describe('GithubOrgReaderProcessor', () => {
         },
       };
 
-      const mockClient = jest.fn();
+      const mockClient = vi.fn();
 
       mockClient
         .mockResolvedValueOnce({
@@ -164,7 +166,7 @@ describe('GithubOrgReaderProcessor', () => {
           },
         });
 
-      (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+      (graphql.defaults as Mock).mockReturnValue(mockClient);
 
       const processor = new GithubOrgReaderProcessor({
         integrations,

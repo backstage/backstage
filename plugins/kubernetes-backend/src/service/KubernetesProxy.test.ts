@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi, type Mocked , type MockInstance} from 'vitest';
+
 import 'node:buffer';
 import { resolve as resolvePath } from 'node:path';
 import {
@@ -67,12 +69,12 @@ const mockCertDir = createMockDirectory({
 
 describe('KubernetesProxy', () => {
   let proxy: KubernetesProxy;
-  let authStrategy: jest.Mocked<AuthenticationStrategy>;
+  let authStrategy: Mocked<AuthenticationStrategy>;
   const worker = setupServer();
   const logger = mockServices.logger.mock();
 
-  const clusterSupplier: jest.Mocked<KubernetesClustersSupplier> = {
-    getClusters: jest.fn<
+  const clusterSupplier: Mocked<KubernetesClustersSupplier> = {
+    getClusters: vi.fn<
       Promise<ClusterDetails[]>,
       [{ credentials: BackstageCredentials }]
     >(),
@@ -92,7 +94,7 @@ describe('KubernetesProxy', () => {
         'content-type': 'application/json',
         [HEADER_KUBERNETES_CLUSTER.toLowerCase()]: clusterName,
       },
-      header: jest.fn((key: string) => {
+      header: vi.fn((key: string) => {
         switch (key) {
           case 'Content-Type': {
             return APPLICATION_JSON;
@@ -147,8 +149,8 @@ describe('KubernetesProxy', () => {
           [ClusterDetails, KubernetesRequestAuth]
         >()
         .mockResolvedValue({ type: 'anonymous' }),
-      validateCluster: jest.fn(),
-      presentAuthMetadata: jest.fn(),
+      validateCluster: vi.fn(),
+      presentAuthMetadata: vi.fn(),
     };
     proxy = new KubernetesProxy({
       logger,
@@ -530,12 +532,12 @@ describe('KubernetesProxy', () => {
   });
 
   it('should invoke AuthStrategy if Backstage-Kubernetes-Authorization-X-X are provided', async () => {
-    const strategy: jest.Mocked<AuthenticationStrategy> = {
+    const strategy: Mocked<AuthenticationStrategy> = {
       getCredential: jest
         .fn()
         .mockReturnValue({ type: 'bearer token', token: 'MY_TOKEN3' }),
-      validateCluster: jest.fn(),
-      presentAuthMetadata: jest.fn(),
+      validateCluster: vi.fn(),
+      presentAuthMetadata: vi.fn(),
     };
 
     proxy = new KubernetesProxy({
@@ -789,9 +791,9 @@ describe('KubernetesProxy', () => {
   });
 
   describe('when server uses TLS', () => {
-    let httpsRequest: jest.SpyInstance;
+    let httpsRequest: MockInstance;
     beforeAll(() => {
-      httpsRequest = jest.spyOn(
+      httpsRequest = vi.spyOn(
         // this is pretty egregious reverse engineering of msw.
         // If the SetupServerApi constructor was exported, we wouldn't need
         // to be quite so hacky here

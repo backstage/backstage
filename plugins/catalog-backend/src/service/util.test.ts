@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { mockServices } from '@backstage/backend-test-utils';
 import { filterAndSortProcessors, filterProviders } from './util';
 
@@ -109,7 +111,7 @@ describe('filterAndSortProcessors', () => {
         }),
       ),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Unable to convert config value for key 'catalog.processorOptions.processor1.disabled' in 'mock-config' to a boolean"`,
+      `[Error: Unable to convert config value for key 'catalog.processorOptions.processor1.disabled' in 'mock-config' to a boolean]`,
     );
 
     expect(() =>
@@ -126,15 +128,15 @@ describe('filterAndSortProcessors', () => {
         }),
       ),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Unable to convert config value for key 'catalog.processorOptions.processor1.priority' in 'mock-config' to a number"`,
+      `[Error: Unable to convert config value for key 'catalog.processorOptions.processor1.priority' in 'mock-config' to a number]`,
     );
   });
 });
 
 describe('filterProviders', () => {
   it('should filter providers', () => {
-    const p1 = { getProviderName: () => 'provider1', connect: jest.fn() };
-    const p2 = { getProviderName: () => 'provider2', connect: jest.fn() };
+    const p1 = { getProviderName: () => 'provider1', connect: vi.fn() };
+    const p2 = { getProviderName: () => 'provider2', connect: vi.fn() };
     const e1 = { provider: p1 };
     const e2 = { provider: p2 };
 
@@ -174,8 +176,8 @@ describe('filterProviders', () => {
   });
 
   it('rejects invalid config', () => {
-    const p1 = { getProviderName: () => 'provider1', connect: jest.fn() };
-    const p2 = { getProviderName: () => 'provider2', connect: jest.fn() };
+    const p1 = { getProviderName: () => 'provider1', connect: vi.fn() };
+    const p2 = { getProviderName: () => 'provider2', connect: vi.fn() };
     const e1 = { provider: p1 };
     const e2 = { provider: p2 };
 

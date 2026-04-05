@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi, type Mocked } from 'vitest';
+
 import { ApiProvider, ConfigReader } from '@backstage/core-app-api';
 import { configApiRef } from '@backstage/core-plugin-api';
 import {
@@ -29,12 +31,12 @@ import { catalogImportTranslationRef } from '../../translation';
 
 describe('<ImportInfoCard />', () => {
   let apis: TestApiRegistry;
-  let catalogImportApi: jest.Mocked<CatalogImportApi>;
+  let catalogImportApi: Mocked<CatalogImportApi>;
 
   beforeEach(() => {
     catalogImportApi = {
-      analyzeUrl: jest.fn(),
-      submitPullRequest: jest.fn(),
+      analyzeUrl: vi.fn(),
+      submitPullRequest: vi.fn(),
     };
 
     apis = TestApiRegistry.from(

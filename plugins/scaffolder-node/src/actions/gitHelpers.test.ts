@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { Git } from '../scm';
 import {
   addFiles,
@@ -27,26 +29,26 @@ import {
 import { mockServices } from '@backstage/backend-test-utils';
 import { loggerToWinstonLogger } from './loggerToWinstonLogger';
 
-jest.mock('../scm', () => ({
+vi.mock('../scm', () => ({
   Git: {
-    fromAuth: jest.fn().mockReturnValue({
-      init: jest.fn(),
-      add: jest.fn(),
-      remove: jest.fn(),
-      checkout: jest.fn(),
-      branch: jest.fn(),
+    fromAuth: vi.fn().mockReturnValue({
+      init: vi.fn(),
+      add: vi.fn(),
+      remove: vi.fn(),
+      checkout: vi.fn(),
+      branch: vi.fn(),
       commit: jest
         .fn()
         .mockResolvedValue('220f19cc36b551763d157f1b5e4a4b446165dbd6'),
-      fetch: jest.fn(),
-      addRemote: jest.fn(),
-      push: jest.fn(),
-      clone: jest.fn(),
+      fetch: vi.fn(),
+      addRemote: vi.fn(),
+      push: vi.fn(),
+      clone: vi.fn(),
     }),
   },
 }));
-jest.mock('fs-extra', () => ({
-  cpSync: jest.fn(),
+vi.mock('fs-extra', () => ({
+  cpSync: vi.fn(),
 }));
 
 const mockedGit = Git.fromAuth({
@@ -55,7 +57,7 @@ const mockedGit = Git.fromAuth({
 
 describe('initRepoAndPush', () => {
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('with minimal parameters', () => {
@@ -175,7 +177,7 @@ describe('initRepoAndPush', () => {
 
 describe('commitAndPushRepo', () => {
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('with minimal parameters', () => {
@@ -340,7 +342,7 @@ describe('commitAndPushRepo', () => {
 
 describe('cloneRepo', () => {
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('with minimal parameters', () => {
@@ -450,7 +452,7 @@ describe('cloneRepo', () => {
 
 describe('createBranch', () => {
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('with minimal parameters', () => {
@@ -491,7 +493,7 @@ describe('createBranch', () => {
 
 describe('addFiles', () => {
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('with minimal parameters', () => {
@@ -532,7 +534,7 @@ describe('addFiles', () => {
 
 describe('removeFiles', () => {
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('with minimal parameters', () => {
@@ -573,7 +575,7 @@ describe('removeFiles', () => {
 
 describe('commitAndPushBranch', () => {
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('with minimal parameters', () => {

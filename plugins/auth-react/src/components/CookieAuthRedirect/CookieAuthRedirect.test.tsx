@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { screen, waitFor } from '@testing-library/react';
 import {
   TestApiProvider,
@@ -27,7 +29,7 @@ describe('CookieAuthRedirect', () => {
   const identityApiMock = mockApis.identity.mock();
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should render an error message if token is not available', async () => {

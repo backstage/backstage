@@ -14,28 +14,30 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { renderHook, waitFor } from '@testing-library/react';
 import { useExternalRedirect } from './useExternalRedirect';
 import { TestApiProvider } from '@backstage/test-utils';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { TECHDOCS_EXTERNAL_ANNOTATION } from '@backstage/plugin-techdocs-common';
 
-const mockNavigate = jest.fn();
-const mockViewTechdocLink = jest.fn(() => '/docs');
+const mockNavigate = vi.fn();
+const mockViewTechdocLink = vi.fn(() => '/docs');
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+vi.mock('react-router-dom', () => ({
+  ...vi.importActual('react-router-dom'),
   useNavigate: () => mockNavigate,
 }));
 
-jest.mock('@backstage/core-plugin-api', () => ({
-  ...jest.requireActual('@backstage/core-plugin-api'),
+vi.mock('@backstage/core-plugin-api', () => ({
+  ...vi.importActual('@backstage/core-plugin-api'),
   useRouteRef: () => mockViewTechdocLink,
 }));
 
 describe('useExternalRedirect', () => {
   const mockCatalogApi = {
-    getEntityByRef: jest.fn(),
+    getEntityByRef: vi.fn(),
   };
 
   const wrapper = ({ children }: { children: React.ReactNode }) => (
@@ -45,7 +47,7 @@ describe('useExternalRedirect', () => {
   );
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should not show progress when entity has no external annotation', async () => {

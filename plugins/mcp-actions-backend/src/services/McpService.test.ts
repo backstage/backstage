@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { mockCredentials } from '@backstage/backend-test-utils';
 import { McpService } from './McpService';
 import {
@@ -157,7 +159,7 @@ describe('McpService', () => {
 
   it('should call the action when the tool is invoked', async () => {
     const mockActionsRegistry = actionsRegistryServiceMock();
-    const mockAction = jest.fn(async () => ({ output: { output: 'test' } }));
+    const mockAction = vi.fn(async () => ({ output: { output: 'test' } }));
 
     mockActionsRegistry.register({
       name: 'mock-action',
@@ -299,7 +301,7 @@ describe('McpService', () => {
         input: z => z.object({}),
         output: z => z.object({}),
       },
-      action: jest.fn().mockRejectedValue(customError),
+      action: vi.fn().mockRejectedValue(customError),
     });
 
     const mockMetrics = metricsServiceMock.mock();
@@ -501,8 +503,8 @@ describe('McpService', () => {
     ];
 
     const fakeActionsService: ActionsService = {
-      list: jest.fn(async () => ({ actions: fakeActions })),
-      invoke: jest.fn(async () => ({ output: {} })),
+      list: vi.fn(async () => ({ actions: fakeActions })),
+      invoke: vi.fn(async () => ({ output: {} })),
     };
 
     it('should return all actions when no filter rules are set', async () => {

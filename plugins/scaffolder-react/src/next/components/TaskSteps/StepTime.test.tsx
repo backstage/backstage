@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import { StepTime } from './StepTime';
 import { render, act } from '@testing-library/react';
 
@@ -45,11 +47,11 @@ describe('StepTime', () => {
 
   describe('updates', () => {
     beforeEach(() => {
-      jest.useFakeTimers({ now: new Date('2021-01-01T00:00:00Z') });
+      vi.useFakeTimers({ now: new Date('2021-01-01T00:00:00Z') });
     });
 
     afterEach(() => {
-      jest.useRealTimers();
+      vi.useRealTimers();
     });
 
     it('should update the time every second', async () => {
@@ -64,11 +66,11 @@ describe('StepTime', () => {
 
       await expect(findByText('0 seconds')).resolves.toBeInTheDocument();
 
-      act(() => jest.advanceTimersByTime(1000));
+      act(() => vi.advanceTimersByTime(1000));
 
       await expect(findByText('1 second')).resolves.toBeInTheDocument();
 
-      act(() => jest.advanceTimersByTime(1000 * 60));
+      act(() => vi.advanceTimersByTime(1000 * 60));
 
       await expect(
         findByText('1 minute, 1 second'),

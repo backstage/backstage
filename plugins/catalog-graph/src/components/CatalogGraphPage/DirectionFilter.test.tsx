@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { waitFor, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Direction } from '../../lib/types';
@@ -30,7 +32,7 @@ describe('<DirectionFilter/>', () => {
   });
 
   test('should select direction', async () => {
-    const onChange = jest.fn();
+    const onChange = vi.fn();
     await renderInTestApp(
       <DirectionFilter value={Direction.RIGHT_LEFT} onChange={onChange} />,
     );

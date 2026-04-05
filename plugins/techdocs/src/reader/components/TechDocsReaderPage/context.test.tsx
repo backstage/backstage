@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { ReactNode } from 'react';
 import { renderHook, waitFor } from '@testing-library/react';
 
@@ -49,12 +51,12 @@ const mockTechDocsMetadata: TechDocsMetadata = {
 };
 
 const techdocsApiMock = {
-  getEntityMetadata: jest.fn().mockResolvedValue(mockEntityMetadata),
-  getTechDocsMetadata: jest.fn().mockResolvedValue(mockTechDocsMetadata),
+  getEntityMetadata: vi.fn().mockResolvedValue(mockEntityMetadata),
+  getTechDocsMetadata: vi.fn().mockResolvedValue(mockTechDocsMetadata),
 };
 
 const configApiMock = {
-  getOptionalBoolean: jest.fn().mockReturnValue(undefined),
+  getOptionalBoolean: vi.fn().mockReturnValue(undefined),
 };
 
 const wrapper = ({
@@ -84,7 +86,7 @@ const wrapper = ({
 
 describe('context', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('useEntityMetadata', () => {

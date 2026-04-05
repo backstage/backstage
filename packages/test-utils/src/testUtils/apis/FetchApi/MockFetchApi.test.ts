@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { registerMswTestHooks } from '../../msw';
@@ -36,7 +38,7 @@ describe('MockFetchApi', () => {
 
   describe('baseImplementation', () => {
     it('works with a mock implementation', async () => {
-      const inner = jest.fn();
+      const inner = vi.fn();
       const m = new MockFetchApi({ baseImplementation: inner });
       await m.fetch('http://example.com/data.json');
       expect(inner).toHaveBeenLastCalledWith('http://example.com/data.json');
@@ -45,7 +47,7 @@ describe('MockFetchApi', () => {
 
   describe('resolvePluginProtocol', () => {
     it('works', async () => {
-      const inner = jest.fn();
+      const inner = vi.fn();
       const m = new MockFetchApi({
         baseImplementation: inner,
         resolvePluginProtocol: {
@@ -63,7 +65,7 @@ describe('MockFetchApi', () => {
 
   describe('injectIdentityAuth', () => {
     it('works with token', async () => {
-      const inner = jest.fn();
+      const inner = vi.fn();
       const m = new MockFetchApi({
         baseImplementation: inner,
         injectIdentityAuth: { token: 'hello' },
@@ -75,7 +77,7 @@ describe('MockFetchApi', () => {
     });
 
     it('works with identityApi', async () => {
-      const inner = jest.fn();
+      const inner = vi.fn();
       const m = new MockFetchApi({
         baseImplementation: inner,
         injectIdentityAuth: {

@@ -44,12 +44,12 @@ describe('MockUserInfoService', () => {
     await expect(
       service.getUserInfo(mockCredentials.none()),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"User info not available for principal type 'none'"`,
+      `[InputError: User info not available for principal type 'none']`,
     );
     await expect(
       service.getUserInfo(mockCredentials.service()),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"User info not available for principal type 'service'"`,
+      `[InputError: User info not available for principal type 'service']`,
     );
   });
 });

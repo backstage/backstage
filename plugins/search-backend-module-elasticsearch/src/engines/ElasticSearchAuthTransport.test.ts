@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   createOpenSearchAuthTransport,
   createElasticSearchAuthTransport,
@@ -45,7 +47,7 @@ describe('ElasticSearchAuthTransport', () => {
       const Transport = createOpenSearchAuthTransport(authProvider);
 
       // Create a mock parent class request method
-      const mockParentRequest = jest.fn().mockResolvedValue({ body: {} });
+      const mockParentRequest = vi.fn().mockResolvedValue({ body: {} });
 
       // Create an instance with mocked internals
       const transportInstance = Object.create(Transport.prototype);
@@ -101,7 +103,7 @@ describe('ElasticSearchAuthTransport', () => {
       const Transport = createElasticSearchAuthTransport(authProvider);
 
       // Create a mock parent class request method
-      const mockParentRequest = jest.fn().mockResolvedValue({ body: {} });
+      const mockParentRequest = vi.fn().mockResolvedValue({ body: {} });
 
       // Create an instance with mocked internals
       const transportInstance = Object.create(Transport.prototype);
@@ -137,7 +139,7 @@ describe('ElasticSearchAuthTransport', () => {
     it('should support async token retrieval', async () => {
       let tokenRetrievalCount = 0;
       const authProvider: ElasticSearchAuthProvider = {
-        getAuthHeaders: jest.fn().mockImplementation(async () => {
+        getAuthHeaders: vi.fn().mockImplementation(async () => {
           tokenRetrievalCount++;
           // Simulate async token fetch
           await new Promise(resolve => setTimeout(resolve, 10));
@@ -159,7 +161,7 @@ describe('ElasticSearchAuthTransport', () => {
       let currentTokenIndex = 0;
 
       const authProvider: ElasticSearchAuthProvider = {
-        getAuthHeaders: jest.fn().mockImplementation(async () => {
+        getAuthHeaders: vi.fn().mockImplementation(async () => {
           const token = tokens[currentTokenIndex];
           currentTokenIndex = Math.min(
             currentTokenIndex + 1,

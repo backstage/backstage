@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { renderInTestApp } from '@backstage/test-utils';
 import { OwnerListPicker } from './OwnerListPicker';
 import { fireEvent } from '@testing-library/react';
@@ -22,7 +24,7 @@ describe('<OwnerListPicker />', () => {
   it('should render the tasks owner filter', async () => {
     const props = {
       filter: 'owned',
-      onSelectOwner: jest.fn(),
+      onSelectOwner: vi.fn(),
     };
 
     const { getByText } = await renderInTestApp(<OwnerListPicker {...props} />);
@@ -34,7 +36,7 @@ describe('<OwnerListPicker />', () => {
   it('should call the function on select other item', async () => {
     const props = {
       filter: 'owned',
-      onSelectOwner: jest.fn(),
+      onSelectOwner: vi.fn(),
     };
 
     const { getByText } = await renderInTestApp(<OwnerListPicker {...props} />);

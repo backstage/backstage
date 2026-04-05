@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { ConfigReader } from '@backstage/config';
 import { CacheInvalidationError, TechDocsCache } from './TechDocsCache';
 import { mockServices } from '@backstage/backend-test-utils';
@@ -27,7 +29,7 @@ describe('TechDocsCache', () => {
   const cache = mockServices.cache.mock();
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     CacheUnderTest = TechDocsCache.fromConfig(new ConfigReader({}), {
       cache: cache,
       logger: mockServices.logger.mock(),

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { renderInTestApp } from '@backstage/test-utils';
 import { HeaderWorldClock, ClockConfig } from './HeaderWorldClock';
 
@@ -80,7 +82,7 @@ describe('HeaderWorldClock with invalid Time Zone', () => {
 
 describe('HeaderWorldClock with custom Time Format', () => {
   it('uses 24hr clock from custom Time Format', async () => {
-    jest.useFakeTimers().setSystemTime(new Date('2022-06-28T09:10:13.502Z'));
+    vi.useFakeTimers().setSystemTime(new Date('2022-06-28T09:10:13.502Z'));
 
     const clockConfigs: ClockConfig[] = [
       {

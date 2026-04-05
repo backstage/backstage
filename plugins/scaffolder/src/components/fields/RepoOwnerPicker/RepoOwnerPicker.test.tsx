@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { Form } from '@backstage/plugin-scaffolder-react/alpha';
 import validator from '@rjsf/validator-ajv8';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
@@ -42,13 +44,13 @@ describe('RepoOwnerPicker', () => {
 
   beforeEach(() => {
     mockScmAuthApi = {
-      getCredentials: jest.fn().mockResolvedValue({ token: 'abc123' }),
+      getCredentials: vi.fn().mockResolvedValue({ token: 'abc123' }),
     };
   });
 
   describe('happy path rendering', () => {
     it('should render the repo owner picker with minimal props', async () => {
-      const onSubmit = jest.fn();
+      const onSubmit = vi.fn();
 
       const { getByRole, getByText } = await renderInTestApp(
         <TestApiProvider
@@ -91,7 +93,7 @@ describe('RepoOwnerPicker', () => {
     });
 
     it('should disable the picker when ui:disabled', async () => {
-      const onSubmit = jest.fn();
+      const onSubmit = vi.fn();
 
       await renderInTestApp(
         <TestApiProvider

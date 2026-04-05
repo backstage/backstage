@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   TestDatabaseId,
   TestDatabases,
@@ -36,7 +38,7 @@ const highlightOptions: PgSearchHighlightOptions = {
   fragmentDelimiter: ' ... ',
 };
 
-jest.setTimeout(60_000);
+vi.setConfig({ testTimeout: 60_000 });
 
 describe('DatabaseDocumentStore', () => {
   describe('unsupported', () => {

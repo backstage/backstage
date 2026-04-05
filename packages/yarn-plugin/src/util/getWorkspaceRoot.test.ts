@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 const setPlatform = (platform: string) => {
   Object.defineProperty(process, `platform`, {
     configurable: true,
@@ -40,7 +42,7 @@ describe('getWorkspaceRoot', () => {
       realPlatform = process.platform;
       setPlatform(platform);
 
-      jest.resetModules();
+      vi.resetModules();
 
       const {
         overrideTargetPaths,

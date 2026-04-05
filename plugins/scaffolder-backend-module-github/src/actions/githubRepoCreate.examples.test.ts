@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 
-jest.mock('./gitHelpers', () => {
+vi.mock('./gitHelpers', () => {
   return {
-    ...jest.requireActual('./gitHelpers'),
-    entityRefToName: jest.fn(),
+    ...vi.importActual('./gitHelpers'),
+    entityRefToName: vi.fn(),
   };
 });
 
@@ -40,28 +42,28 @@ const publicKey = '2Sg8iYjAxxmI2LvUXpJjkYrMxURPc8r+dB7TJyvvcCU=';
 const mockOctokit = {
   rest: {
     users: {
-      getByUsername: jest.fn(),
+      getByUsername: vi.fn(),
     },
     repos: {
-      addCollaborator: jest.fn(),
-      createInOrg: jest.fn(),
-      createForAuthenticatedUser: jest.fn(),
-      replaceAllTopics: jest.fn(),
+      addCollaborator: vi.fn(),
+      createInOrg: vi.fn(),
+      createForAuthenticatedUser: vi.fn(),
+      replaceAllTopics: vi.fn(),
     },
     teams: {
-      addOrUpdateRepoPermissionsInOrg: jest.fn(),
-      getByName: jest.fn(),
+      addOrUpdateRepoPermissionsInOrg: vi.fn(),
+      getByName: vi.fn(),
     },
     actions: {
-      createRepoVariable: jest.fn(),
-      createOrUpdateRepoSecret: jest.fn(),
-      getRepoPublicKey: jest.fn(),
-      setWorkflowAccessToRepository: jest.fn(),
+      createRepoVariable: vi.fn(),
+      createOrUpdateRepoSecret: vi.fn(),
+      getRepoPublicKey: vi.fn(),
+      setWorkflowAccessToRepository: vi.fn(),
     },
   },
-  request: jest.fn().mockResolvedValue({}),
+  request: vi.fn().mockResolvedValue({}),
 };
-jest.mock('octokit', () => ({
+vi.mock('octokit', () => ({
   Octokit: class {
     constructor() {
       return mockOctokit;
@@ -96,7 +98,7 @@ describe('github:repo:create examples', () => {
       integrations,
       githubCredentialsProvider,
     });
-    (entityRefToName as jest.Mock).mockImplementation((s: string) => s);
+    (entityRefToName as Mock).mockImplementation((s: string) => s);
     mockOctokit.rest.actions.getRepoPublicKey.mockResolvedValue({
       data: {
         key: publicKey,
@@ -105,7 +107,7 @@ describe('github:repo:create examples', () => {
     });
   });
 
-  afterEach(jest.resetAllMocks);
+  afterEach(vi.resetAllMocks);
 
   it('should call the githubApis with the correct values for createInOrg', async () => {
     mockOctokit.rest.users.getByUsername.mockResolvedValue({

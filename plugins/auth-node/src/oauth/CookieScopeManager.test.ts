@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import express from 'express';
 import {
   OAuthAuthenticator,
@@ -126,8 +128,8 @@ describe('CookieScopeManager', () => {
   });
 
   it('should persist scopes', async () => {
-    const setGrantedScopes = jest.fn();
-    const removeGrantedScopes = jest.fn();
+    const setGrantedScopes = vi.fn();
+    const removeGrantedScopes = vi.fn();
     const manager = CookieScopeManager.create({
       authenticator: {
         scopes: {
@@ -194,7 +196,7 @@ describe('CookieScopeManager', () => {
   });
 
   it('should signal whether persisted scopes have already been granted when refreshing', async () => {
-    const getGrantedScopes = jest.fn();
+    const getGrantedScopes = vi.fn();
     const manager = CookieScopeManager.create({
       authenticator: {
         scopes: {

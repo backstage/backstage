@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-jest.mock('@backstage/plugin-scaffolder-node', () => {
-  const actual = jest.requireActual('@backstage/plugin-scaffolder-node');
-  return { ...actual, fetchFile: jest.fn() };
+import { vi , type MockedFunction} from 'vitest';
+
+vi.mock('@backstage/plugin-scaffolder-node', () => {
+  const actual = vi.importActual('@backstage/plugin-scaffolder-node');
+  return { ...actual, fetchFile: vi.fn() };
 });
 
 import { join as joinPath } from 'node:path';
@@ -38,7 +40,7 @@ type FetchTemplateInput = ReturnType<
   ? U
   : never;
 
-const mockFetchFile = fetchFile as jest.MockedFunction<typeof fetchFile>;
+const mockFetchFile = fetchFile as MockedFunction<typeof fetchFile>;
 
 describe('fetch:template:file', () => {
   let action: TemplateAction<any>;

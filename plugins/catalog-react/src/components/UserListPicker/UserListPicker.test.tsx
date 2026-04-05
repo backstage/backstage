@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { fireEvent, waitFor, screen } from '@testing-library/react';
 import { UserEntity } from '@backstage/catalog-model';
 import { UserListPicker, UserListPickerProps } from './UserListPicker';
@@ -67,13 +69,13 @@ const mockConfigApi = mockApis.config({
 });
 
 const mockCatalogApi = catalogApiMock.mock();
-jest.spyOn(mockCatalogApi, 'queryEntities');
+vi.spyOn(mockCatalogApi, 'queryEntities');
 
 const mockIdentityApi = mockApis.identity({
   userEntityRef: ownershipEntityRefs[0],
   ownershipEntityRefs,
 });
-jest.spyOn(mockIdentityApi, 'getBackstageIdentity');
+vi.spyOn(mockIdentityApi, 'getBackstageIdentity');
 
 const mockStarredEntitiesApi = new MockStarredEntitiesApi();
 
@@ -142,7 +144,7 @@ describe('<UserListPicker />', () => {
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('renders filter groups', async () => {
@@ -245,7 +247,7 @@ describe('<UserListPicker />', () => {
   });
 
   it('respects the query parameter filter value', async () => {
-    const updateFilters = jest.fn();
+    const updateFilters = vi.fn();
     const queryParameters = { user: 'owned', kind: 'component' };
     await renderInTestApp(
       <ApiProvider apis={apis}>
@@ -288,7 +290,7 @@ describe('<UserListPicker />', () => {
   });
 
   it('updates user filter when a menuitem is selected', async () => {
-    const updateFilters = jest.fn();
+    const updateFilters = vi.fn();
     await renderInTestApp(
       <ApiProvider apis={apis}>
         <MockEntityListContextProvider
@@ -334,7 +336,7 @@ describe('<UserListPicker />', () => {
   });
 
   it('responds to external queryParameters changes', async () => {
-    const updateFilters = jest.fn();
+    const updateFilters = vi.fn();
     const rendered = await renderInTestApp(
       <ApiProvider apis={apis}>
         <MockEntityListContextProvider
@@ -384,7 +386,7 @@ describe('<UserListPicker />', () => {
   });
 
   describe('filter resetting', () => {
-    const updateFilters = jest.fn();
+    const updateFilters = vi.fn();
 
     const Picker = ({
       filters,

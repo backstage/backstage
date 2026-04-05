@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { ReactNode } from 'react';
 import {
   MockErrorApi,
@@ -44,7 +46,7 @@ const plainRef = createTranslationRef({
 
 function makeWrapper(
   translationApi: TranslationApi,
-  errorApi: ErrorApi = { error$: jest.fn(), post: jest.fn() },
+  errorApi: ErrorApi = { error$: vi.fn(), post: vi.fn() },
 ) {
   return ({ children }: { children: ReactNode }) => (
     <TestApiProvider
@@ -59,7 +61,7 @@ function makeWrapper(
 
 describe('useTranslationRef', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should show default translations', () => {
@@ -306,7 +308,7 @@ describe('useTranslationRef', () => {
           <TestApiProvider
             apis={[
               [translationApiRef, translationApi],
-              [errorApiRef, { post: jest.fn() }],
+              [errorApiRef, { post: vi.fn() }],
             ]}
             children={children}
           />

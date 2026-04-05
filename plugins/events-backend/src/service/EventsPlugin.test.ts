@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 /* eslint-disable jest/expect-expect */
 
 import {
@@ -34,7 +36,7 @@ import { TestEventsService } from '@backstage/plugin-events-backend-test-utils';
 import request from 'supertest';
 import { eventsPlugin } from './EventsPlugin';
 
-jest.setTimeout(60_000);
+vi.setConfig({ testTimeout: 60_000 });
 
 describe('eventsPlugin', () => {
   it('should be initialized properly', async () => {
@@ -387,7 +389,7 @@ describe('eventsPlugin', () => {
         const helper = new ReqHelper(backend);
         await helper.subscribe('tester', ['test']).expect(201);
 
-        jest.useFakeTimers({
+        vi.useFakeTimers({
           advanceTimers: true,
         });
 
@@ -415,12 +417,12 @@ describe('eventsPlugin', () => {
             ]);
 
           await expect(isClosed()).resolves.toBe(false);
-          await jest.advanceTimersByTimeAsync(30000);
+          await vi.advanceTimersByTimeAsync(30000);
           await expect(isClosed()).resolves.toBe(false);
-          await jest.advanceTimersByTimeAsync(30000);
+          await vi.advanceTimersByTimeAsync(30000);
           await expect(isClosed()).resolves.toBe(true);
         } finally {
-          jest.useRealTimers();
+          vi.useRealTimers();
         }
       },
     );

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { ConfigReader } from '@backstage/config';
 import { CodeOwnersProcessor } from './CodeOwnersProcessor';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
@@ -44,11 +46,11 @@ describe('CodeOwnersProcessor', () => {
       const entity = { kind, spec, metadata };
       const config = new ConfigReader({});
       const reader = {
-        read: jest.fn(),
-        readTree: jest.fn(),
-        search: jest.fn(),
-        readUrl: jest.fn().mockResolvedValue({
-          buffer: jest.fn().mockResolvedValue(mockCodeOwnersText()),
+        read: vi.fn(),
+        readTree: vi.fn(),
+        search: vi.fn(),
+        readUrl: vi.fn().mockResolvedValue({
+          buffer: vi.fn().mockResolvedValue(mockCodeOwnersText()),
         }),
       };
       const processor = CodeOwnersProcessor.fromConfig(config, {

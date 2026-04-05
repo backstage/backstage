@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi , type Mock} from 'vitest';
 import { PropsWithChildren } from 'react';
 import {
   DEFAULT_NAMESPACE,
@@ -32,9 +34,9 @@ import { useEntityRelationNodesAndEdges } from './useEntityRelationNodesAndEdges
 import { EntityNode } from '../../lib/types';
 import { catalogGraphApiRef, DefaultCatalogGraphApi } from '../../api';
 
-jest.mock('./useEntityRelationGraph');
+vi.mock('./useEntityRelationGraph');
 
-const useEntityRelationGraph = useEntityRelationGraphMocked as jest.Mock<
+const useEntityRelationGraph = useEntityRelationGraphMocked as Mock<
   ReturnType<typeof useEntityRelationGraphMocked>
 >;
 
@@ -158,7 +160,7 @@ describe('useEntityRelationNodesAndEdges', () => {
   });
 
   afterAll(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   test('should forward loading state', async () => {

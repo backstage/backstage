@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
@@ -23,11 +25,11 @@ import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-
 
 const mockGitlabClient = {
   Namespaces: {
-    show: jest.fn(),
+    show: vi.fn(),
   },
   Branches: {
-    create: jest.fn(),
-    show: jest.fn(async (_repoID: string | number, name: string) => {
+    create: vi.fn(),
+    show: vi.fn(async (_repoID: string | number, name: string) => {
       if (['main', 'existing-branch'].includes(name)) {
         return {
           name,
@@ -45,10 +47,10 @@ const mockGitlabClient = {
     }),
   },
   Commits: {
-    create: jest.fn(() => ({ id: 'mockId' })),
+    create: vi.fn(() => ({ id: 'mockId' })),
   },
   MergeRequests: {
-    create: jest.fn(async (repoId: string) => {
+    create: vi.fn(async (repoId: string) => {
       if (repoId === 'owner/repo-without-approval-rule-license') {
         return {
           iid: 6,
@@ -64,7 +66,7 @@ const mockGitlabClient = {
         iid: 4,
       };
     }),
-    show: jest.fn(async (repoId: string, iid: number) => {
+    show: vi.fn(async (repoId: string, iid: number) => {
       if (repoId === 'owner/repo-without-approval-rule-license' && iid === 6) {
         return {
           iid: 6,
@@ -83,14 +85,14 @@ const mockGitlabClient = {
         default_branch: 'main',
       };
     }),
-    edit: jest.fn(async (_: any) => {
+    edit: vi.fn(async (_: any) => {
       return {
         default_branch: 'main',
       };
     }),
   },
   MergeRequestApprovals: {
-    allApprovalRules: jest.fn(
+    allApprovalRules: vi.fn(
       async (repoId: string, options: { mergerequestIId: number }) => {
         if (
           repoId === 'owner/repo-without-approvals' &&
@@ -150,15 +152,15 @@ const mockGitlabClient = {
     ),
   },
   Projects: {
-    create: jest.fn(),
-    show: jest.fn(async (_: any) => {
+    create: vi.fn(),
+    show: vi.fn(async (_: any) => {
       return {
         default_branch: 'main',
       };
     }),
   },
   Users: {
-    all: jest.fn(async (userOptions: { username: string }) => {
+    all: vi.fn(async (userOptions: { username: string }) => {
       switch (userOptions.username) {
         case 'John Smith':
           return [
@@ -184,7 +186,7 @@ const mockGitlabClient = {
     }),
   },
   Repositories: {
-    allRepositoryTrees: jest.fn(
+    allRepositoryTrees: vi.fn(
       async (
         repoID: string | number,
         options: { ref: string; recursive: boolean; path: string | undefined },
@@ -206,7 +208,7 @@ const mockGitlabClient = {
     ),
   },
   RepositoryFiles: {
-    show: jest.fn(
+    show: vi.fn(
       async (repoID: string | number, filePath: string, ref: string) => {
         if (repoID !== 'owner/repo') throw new Error('repo does not exist');
         if (filePath !== 'source/auto.txt')
@@ -229,7 +231,7 @@ const mockGitlabClient = {
   },
 };
 
-jest.mock('@gitbeaker/rest', () => ({
+vi.mock('@gitbeaker/rest', () => ({
   Gitlab: class {
     constructor() {
       return mockGitlabClient;
@@ -244,7 +246,7 @@ describe('createGitLabMergeRequest', () => {
   const workspacePath = mockDir.resolve('workspace');
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
 
     mockDir.clear();
 
@@ -845,7 +847,7 @@ describe('createGitLabMergeRequest', () => {
       });
 
       const ctx = createMockActionContext({ input, workspacePath });
-      ctx.logger.warn = jest.fn();
+      ctx.logger.warn = vi.fn();
       await instance.handler(ctx);
 
       expect(mockGitlabClient.Branches.create).toHaveBeenCalledWith(

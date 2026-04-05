@@ -14,20 +14,22 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { renderHook, waitFor } from '@testing-library/react';
 import { useFacetsEntities } from './useFacetsEntities';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 
 const mockCatalogApi = catalogApiMock.mock();
 
-jest.mock('@backstage/core-plugin-api', () => ({
-  ...jest.requireActual('@backstage/core-plugin-api'),
+vi.mock('@backstage/core-plugin-api', () => ({
+  ...vi.importActual('@backstage/core-plugin-api'),
   useApi: () => mockCatalogApi,
 }));
 
 describe('useFacetsEntities', () => {
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   const facetsFromEntityRefs = (entityRefs: string[]) => ({

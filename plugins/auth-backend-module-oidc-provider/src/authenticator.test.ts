@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import {
   OAuthAuthenticatorAuthenticateInput,
   OAuthAuthenticatorRefreshInput,
@@ -167,7 +169,7 @@ describe('oidcAuthenticator', () => {
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('timeout configuration', () => {

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import FormHelperText from '@material-ui/core/FormHelperText';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
@@ -24,7 +26,7 @@ import { PreparePullRequestForm } from './PreparePullRequestForm';
 
 describe('<PreparePullRequestForm />', () => {
   it('renders without exploding', async () => {
-    const onSubmitFn = jest.fn();
+    const onSubmitFn = vi.fn();
 
     render(
       <PreparePullRequestForm<{ main: string }>
@@ -48,7 +50,7 @@ describe('<PreparePullRequestForm />', () => {
   });
 
   it('should register a text field', async () => {
-    const onSubmitFn = jest.fn();
+    const onSubmitFn = vi.fn();
 
     render(
       <PreparePullRequestForm<{ main: string }>
@@ -78,7 +80,7 @@ describe('<PreparePullRequestForm />', () => {
   });
 
   it('registers required attribute', async () => {
-    const onSubmitFn = jest.fn();
+    const onSubmitFn = vi.fn();
 
     render(
       <PreparePullRequestForm<{ main: string }>

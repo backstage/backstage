@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { TECHDOCS_ANNOTATION } from '@backstage/plugin-techdocs-common';
 import { DirectoryPreparer } from './dir';
 import { mockServices } from '@backstage/backend-test-utils';
@@ -25,8 +27,8 @@ function normalizePath(path: string) {
     .join('/');
 }
 
-jest.mock('../../helpers', () => ({
-  ...jest.requireActual<{}>('../../helpers'),
+vi.mock('../../helpers', () => ({
+  ...vi.importActual<{}>('../../helpers'),
 }));
 
 const logger = mockServices.logger.mock();

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { mockApis, TestApiProvider } from '@backstage/test-utils';
 import { screen, render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -44,7 +46,7 @@ describe('SearchFilter.Autocomplete', () => {
     },
   });
 
-  const searchApiMock = { query: jest.fn().mockResolvedValue({ results: [] }) };
+  const searchApiMock = { query: vi.fn().mockResolvedValue({ results: [] }) };
 
   const emptySearchContext = {
     term: '',

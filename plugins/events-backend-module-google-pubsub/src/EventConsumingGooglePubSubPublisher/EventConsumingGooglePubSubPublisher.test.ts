@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { mockServices } from '@backstage/backend-test-utils';
 import { metricsServiceMock } from '@backstage/backend-test-utils/alpha';
 import { EventParams } from '@backstage/plugin-events-node';
@@ -32,17 +34,17 @@ describe('EventConsumingGooglePubSubPublisher', () => {
   });
 
   const topic = {
-    publishMessage: jest.fn(),
+    publishMessage: vi.fn(),
   };
   const pubSub = {
-    close: jest.fn(),
-    topic: jest.fn(() => topic),
+    close: vi.fn(),
+    topic: vi.fn(() => topic),
   };
-  const pubSubFactory = jest.fn(() => pubSub as unknown as PubSub);
+  const pubSubFactory = vi.fn(() => pubSub as unknown as PubSub);
 
   beforeEach(() => {
     onEvent = undefined;
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should go though the expected registration and flows', async () => {

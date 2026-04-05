@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { startTaskPipeline, createBarrier } from './TaskPipeline';
 
 function createLimitedLoader(count: number, loadDelay?: number) {
@@ -122,11 +124,11 @@ describe('startTaskPipeline', () => {
 
 describe('createBarrier', () => {
   beforeEach(() => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
   });
 
   afterEach(() => {
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 
   it('abandons a wait after the timeout expires', async () => {
@@ -134,30 +136,30 @@ describe('createBarrier', () => {
     const signal = abortController.signal;
     const barrier = createBarrier({ waitTimeoutMillis: 100, signal });
 
-    const fn1 = jest.fn();
+    const fn1 = vi.fn();
     barrier.wait().then(fn1);
 
     await Promise.resolve();
     expect(fn1).not.toHaveBeenCalled();
 
-    jest.advanceTimersByTime(50);
+    vi.advanceTimersByTime(50);
     await Promise.resolve();
     expect(fn1).not.toHaveBeenCalled();
 
     // start a new wait mid-way through the timeout
     // should NOT resolve when the first one times out
-    const fn2 = jest.fn();
+    const fn2 = vi.fn();
     barrier.wait().then(fn2);
 
     await Promise.resolve();
     expect(fn2).not.toHaveBeenCalled();
 
-    jest.advanceTimersByTime(50);
+    vi.advanceTimersByTime(50);
     await Promise.resolve();
     expect(fn1).toHaveBeenCalledTimes(1);
     expect(fn2).not.toHaveBeenCalled();
 
-    jest.advanceTimersByTime(50);
+    vi.advanceTimersByTime(50);
     await Promise.resolve();
     expect(fn1).toHaveBeenCalledTimes(1);
     expect(fn2).toHaveBeenCalledTimes(1);
@@ -168,7 +170,7 @@ describe('createBarrier', () => {
     const signal = abortController.signal;
     const barrier = createBarrier({ waitTimeoutMillis: 100, signal });
 
-    const fn1 = jest.fn();
+    const fn1 = vi.fn();
     barrier.wait().then(fn1);
 
     // should resolve immediately, not after timeout
@@ -179,7 +181,7 @@ describe('createBarrier', () => {
     expect(fn1).toHaveBeenCalledTimes(1);
 
     // subsequent waits should be immediate no matter what
-    const fn2 = jest.fn();
+    const fn2 = vi.fn();
     barrier.wait().then(fn2);
     await Promise.resolve();
     expect(fn2).toHaveBeenCalledTimes(1);
@@ -190,16 +192,16 @@ describe('createBarrier', () => {
     const signal = abortController.signal;
     const barrier = createBarrier({ waitTimeoutMillis: 100, signal });
 
-    const fn1 = jest.fn();
+    const fn1 = vi.fn();
     barrier.wait().then(fn1);
 
-    jest.advanceTimersByTime(50);
+    vi.advanceTimersByTime(50);
     await Promise.resolve();
     expect(fn1).not.toHaveBeenCalled();
 
     // start a new wait mid-way through the timeout
     // SHOULD resolve when releasing
-    const fn2 = jest.fn();
+    const fn2 = vi.fn();
     barrier.wait().then(fn2);
 
     await Promise.resolve();

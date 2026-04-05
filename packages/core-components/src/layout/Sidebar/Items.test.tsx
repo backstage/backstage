@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   mockApis,
   TestApiProvider,
@@ -35,7 +37,7 @@ const useStyles = makeStyles({
   },
 });
 
-const handleSidebarItemClick = jest.fn();
+const handleSidebarItemClick = vi.fn();
 const analyticsApiMock = mockApis.analytics();
 
 async function renderSidebar() {
@@ -76,7 +78,7 @@ async function renderSidebar() {
 
 describe('Items', () => {
   beforeEach(async () => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     await renderSidebar();
   });
 

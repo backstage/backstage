@@ -13,10 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import { metrics } from '@opentelemetry/api';
 import { DefaultMetricsService } from './DefaultMetricsService';
 
-const mockGetMeter = jest.spyOn(metrics, 'getMeter');
+const mockGetMeter = vi.spyOn(metrics, 'getMeter');
 
 describe('DefaultMetricsService', () => {
   beforeEach(() => {

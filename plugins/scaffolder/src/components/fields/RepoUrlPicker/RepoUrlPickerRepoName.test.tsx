@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import { renderInTestApp } from '@backstage/test-utils';
 import { fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -21,7 +23,7 @@ import { RepoUrlPickerRepoName } from './RepoUrlPickerRepoName';
 
 describe('RepoUrlPickerRepoName', () => {
   it('should call onChange with the first allowed repo if there is none set already', async () => {
-    const onChange = jest.fn();
+    const onChange = vi.fn();
 
     await renderInTestApp(
       <RepoUrlPickerRepoName
@@ -37,7 +39,7 @@ describe('RepoUrlPickerRepoName', () => {
   it('should render a dropdown of all the options', async () => {
     const allowedRepos = ['foo', 'bar'];
 
-    const onChange = jest.fn();
+    const onChange = vi.fn();
 
     const { getByRole } = await renderInTestApp(
       <RepoUrlPickerRepoName
@@ -57,7 +59,7 @@ describe('RepoUrlPickerRepoName', () => {
   });
 
   it('should render a normal text area when no options are passed', async () => {
-    const onChange = jest.fn();
+    const onChange = vi.fn();
 
     const { getByRole } = await renderInTestApp(
       <RepoUrlPickerRepoName
@@ -83,7 +85,7 @@ describe('RepoUrlPickerRepoName', () => {
   it('should autocomplete with provided availableRepos', async () => {
     const availableRepos = [{ name: 'foo' }, { name: 'bar' }];
 
-    const onChange = jest.fn();
+    const onChange = vi.fn();
 
     const { getByRole, getByText } = await renderInTestApp(
       <RepoUrlPickerRepoName
@@ -109,7 +111,7 @@ describe('RepoUrlPickerRepoName', () => {
 
   it('should disable the repo selection when isDisabled is true', async () => {
     const allowedRepos = ['foo', 'bar'];
-    const onChange = jest.fn();
+    const onChange = vi.fn();
 
     const { getByRole } = await renderInTestApp(
       <RepoUrlPickerRepoName
@@ -128,7 +130,7 @@ describe('RepoUrlPickerRepoName', () => {
   });
 
   it('should disable the text input when no options are passed and isDisabled is true', async () => {
-    const onChange = jest.fn();
+    const onChange = vi.fn();
 
     const { getByRole } = await renderInTestApp(
       <RepoUrlPickerRepoName

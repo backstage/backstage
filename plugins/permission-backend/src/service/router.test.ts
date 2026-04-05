@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type MockedFunction} from 'vitest';
+
 import express from 'express';
 import request from 'supertest';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
@@ -29,9 +31,9 @@ import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
 
-const mockApplyConditions: jest.MockedFunction<
+const mockApplyConditions: MockedFunction<
   InstanceType<typeof PermissionIntegrationClient>['applyConditions']
-> = jest.fn(
+> = vi.fn(
   async (
     _pluginId: string,
     _credentials: BackstageCredentials,
@@ -46,14 +48,14 @@ const mockApplyConditions: jest.MockedFunction<
     })),
 );
 
-jest.mock('./PermissionIntegrationClient', () => ({
-  PermissionIntegrationClient: jest.fn(() => ({
+vi.mock('./PermissionIntegrationClient', () => ({
+  PermissionIntegrationClient: vi.fn(() => ({
     applyConditions: mockApplyConditions,
   })),
 }));
 
 const policy = {
-  handle: jest.fn().mockImplementation(async (_req, identity) => {
+  handle: vi.fn().mockImplementation(async (_req, identity) => {
     if (identity) {
       return { result: AuthorizeResult.ALLOW };
     }
@@ -86,7 +88,7 @@ describe('createRouter', () => {
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('GET /health', () => {

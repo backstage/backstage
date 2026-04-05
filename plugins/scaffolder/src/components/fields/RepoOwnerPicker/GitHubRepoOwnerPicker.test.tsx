@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   ScaffolderApi,
   scaffolderApiRef,
@@ -34,7 +36,7 @@ describe('GitHubRepoOwnerPicker', () => {
     const { getByRole } = await renderInTestApp(
       <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
         <GitHubRepoOwnerPicker
-          onChange={jest.fn()}
+          onChange={vi.fn()}
           state={{ owner: 'owner1' }}
           rawErrors={[]}
         />
@@ -49,7 +51,7 @@ describe('GitHubRepoOwnerPicker', () => {
     await renderInTestApp(
       <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
         <GitHubRepoOwnerPicker
-          onChange={jest.fn()}
+          onChange={vi.fn()}
           isDisabled
           state={{ owner: 'owner1' }}
           rawErrors={[]}
@@ -65,7 +67,7 @@ describe('GitHubRepoOwnerPicker', () => {
   });
 
   it('calls onChange when the input field changes', async () => {
-    const onChange = jest.fn();
+    const onChange = vi.fn();
 
     const { getByRole } = await renderInTestApp(
       <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
@@ -91,7 +93,7 @@ describe('GitHubRepoOwnerPicker', () => {
   });
 
   it('should populate owners', async () => {
-    const onChange = jest.fn();
+    const onChange = vi.fn();
 
     const { getByRole, getByText } = await renderInTestApp(
       <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
@@ -122,7 +124,7 @@ describe('GitHubRepoOwnerPicker', () => {
   });
 
   it('should filter out excluded owners', async () => {
-    const onChange = jest.fn();
+    const onChange = vi.fn();
 
     const { getByRole, getByText } = await renderInTestApp(
       <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>

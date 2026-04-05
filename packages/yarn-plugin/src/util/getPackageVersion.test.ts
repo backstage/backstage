@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi, type Mocked , type MockedFunction} from 'vitest';
+
 import {
   Configuration,
   Descriptor,
@@ -25,17 +27,17 @@ import { getManifestByVersion } from '@backstage/release-manifests';
 import { getPackageVersion } from './getPackageVersion';
 import { getCurrentBackstageVersion } from './getCurrentBackstageVersion';
 
-jest.mock('@yarnpkg/core');
-jest.mock('@backstage/release-manifests');
-jest.mock('./getCurrentBackstageVersion');
+vi.mock('@yarnpkg/core');
+vi.mock('@backstage/release-manifests');
+vi.mock('./getCurrentBackstageVersion');
 
-const mockHttpUtils = httpUtils as jest.Mocked<typeof httpUtils>;
-const mockStructUtils = structUtils as jest.Mocked<typeof structUtils>;
-const mockGetManifestByVersion = getManifestByVersion as jest.MockedFunction<
+const mockHttpUtils = httpUtils as Mocked<typeof httpUtils>;
+const mockStructUtils = structUtils as Mocked<typeof structUtils>;
+const mockGetManifestByVersion = getManifestByVersion as MockedFunction<
   typeof getManifestByVersion
 >;
 const mockGetCurrentBackstageVersion =
-  getCurrentBackstageVersion as jest.MockedFunction<
+  getCurrentBackstageVersion as MockedFunction<
     typeof getCurrentBackstageVersion
   >;
 
@@ -58,7 +60,7 @@ describe('getPackageVersion', () => {
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('successful package resolution', () => {
@@ -327,7 +329,7 @@ describe('getPackageVersion', () => {
         ],
       };
 
-      const readJsonSyncSpy = jest.spyOn(xfs, 'readJsonSync');
+      const readJsonSyncSpy = vi.spyOn(xfs, 'readJsonSync');
       readJsonSyncSpy.mockReturnValue(mockManifest);
 
       const descriptor = {
@@ -355,7 +357,7 @@ describe('getPackageVersion', () => {
         ],
       };
 
-      const readJsonSyncSpy = jest.spyOn(xfs, 'readJsonSync');
+      const readJsonSyncSpy = vi.spyOn(xfs, 'readJsonSync');
       readJsonSyncSpy.mockReturnValue(mockManifest);
 
       const descriptor = {
@@ -381,7 +383,7 @@ describe('getPackageVersion', () => {
         packages: [{ name: '@backstage/core-plugin-api', version: '1.9.0' }],
       };
 
-      const readJsonSyncSpy = jest.spyOn(xfs, 'readJsonSync');
+      const readJsonSyncSpy = vi.spyOn(xfs, 'readJsonSync');
       readJsonSyncSpy.mockReturnValue(mockManifest);
 
       const descriptor = {
@@ -413,7 +415,7 @@ describe('getPackageVersion', () => {
       process.env.BACKSTAGE_MANIFEST_FILE = manifestFilePath;
 
       const fileError = new Error('ENOENT: no such file or directory');
-      const readJsonSyncSpy = jest.spyOn(xfs, 'readJsonSync');
+      const readJsonSyncSpy = vi.spyOn(xfs, 'readJsonSync');
       readJsonSyncSpy.mockImplementation(() => {
         throw fileError;
       });
@@ -442,7 +444,7 @@ describe('getPackageVersion', () => {
         ],
       };
 
-      const readJsonSyncSpy = jest.spyOn(xfs, 'readJsonSync');
+      const readJsonSyncSpy = vi.spyOn(xfs, 'readJsonSync');
       readJsonSyncSpy.mockReturnValue(mockManifest);
 
       const descriptor = {

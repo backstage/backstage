@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { QueryEntitiesInitialRequest } from '@backstage/catalog-client';
 import { RELATION_OWNED_BY } from '@backstage/catalog-model';
 import { TableColumn, TableProps } from '@backstage/core-components';
@@ -44,15 +46,15 @@ import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 describe('DefaultCatalogPage', () => {
   const origReplaceState = window.history.replaceState;
   beforeEach(() => {
-    window.history.replaceState = jest.fn();
+    window.history.replaceState = vi.fn();
   });
   afterEach(() => {
     window.history.replaceState = origReplaceState;
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   const catalogApi = catalogApiMock.mock({
-    getEntities: jest.fn().mockImplementation(() =>
+    getEntities: vi.fn().mockImplementation(() =>
       Promise.resolve({
         items: [
           {
@@ -104,7 +106,7 @@ describe('DefaultCatalogPage', () => {
       .mockImplementation(() =>
         Promise.resolve({ id: 'id', type: 'url', target: 'url' }),
       ),
-    getEntityFacets: jest.fn().mockImplementation(async () => ({
+    getEntityFacets: vi.fn().mockImplementation(async () => ({
       facets: {
         'relations.ownedBy': [
           { count: 1, value: 'group:default/not-tools' },
@@ -112,7 +114,7 @@ describe('DefaultCatalogPage', () => {
         ],
       },
     })),
-    getEntitiesByRefs: jest.fn().mockImplementation(async () => ({
+    getEntitiesByRefs: vi.fn().mockImplementation(async () => ({
       items: [
         {
           apiVersion: 'backstage.io/v1alpha1',
@@ -266,7 +268,7 @@ describe('DefaultCatalogPage', () => {
           icon: () => <DashboardIcon fontSize="small" />,
           tooltip: 'Foo Action',
           disabled: false,
-          onClick: () => jest.fn(),
+          onClick: () => vi.fn(),
         };
       },
       () => {
@@ -274,7 +276,7 @@ describe('DefaultCatalogPage', () => {
           icon: () => <DashboardIcon fontSize="small" />,
           tooltip: 'Bar Action',
           disabled: true,
-          onClick: () => jest.fn(),
+          onClick: () => vi.fn(),
         };
       },
     ];

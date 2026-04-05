@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { fireEvent, screen, waitFor } from '@testing-library/react';
 import {
@@ -120,7 +122,7 @@ describe('<EntityOwnerPicker mode="all" />', () => {
   );
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
 
     mockCatalogApi.queryEntities.mockImplementation(async request => {
       const totalItems =
@@ -187,7 +189,7 @@ describe('<EntityOwnerPicker mode="all" />', () => {
   });
 
   it('respects the query parameter filter value', async () => {
-    const updateFilters = jest.fn();
+    const updateFilters = vi.fn();
     const queryParameters = { owners: ['another-owner'] };
     await renderInTestApp(
       <ApiProvider apis={mockApis}>
@@ -211,7 +213,7 @@ describe('<EntityOwnerPicker mode="all" />', () => {
   });
 
   it('should display the selected owners as humanized entities', async () => {
-    const updateFilters = jest.fn();
+    const updateFilters = vi.fn();
     const queryParameters = { owners: ['another-owner'] };
 
     mockCatalogApi.getEntitiesByRefs.mockResolvedValue({
@@ -268,7 +270,7 @@ describe('<EntityOwnerPicker mode="all" />', () => {
   });
 
   it('adds owners to filters', async () => {
-    const updateFilters = jest.fn();
+    const updateFilters = vi.fn();
     await renderInTestApp(
       <ApiProvider apis={mockApis}>
         <MockEntityListContextProvider
@@ -295,7 +297,7 @@ describe('<EntityOwnerPicker mode="all" />', () => {
   });
 
   it('removes owners from filters', async () => {
-    const updateFilters = jest.fn();
+    const updateFilters = vi.fn();
     await renderInTestApp(
       <ApiProvider apis={mockApis}>
         <MockEntityListContextProvider
@@ -327,7 +329,7 @@ describe('<EntityOwnerPicker mode="all" />', () => {
   });
 
   it('responds to external queryParameters changes', async () => {
-    const updateFilters = jest.fn();
+    const updateFilters = vi.fn();
     const rendered = await renderInTestApp(
       <ApiProvider apis={mockApis}>
         <MockEntityListContextProvider
@@ -364,7 +366,7 @@ describe('<EntityOwnerPicker mode="all" />', () => {
   });
 
   it('calls fetch with lowercased input and displays results', async () => {
-    const updateFilters = jest.fn();
+    const updateFilters = vi.fn();
     const someOwnerEntities: Entity[] = [
       {
         apiVersion: '1',
@@ -441,7 +443,7 @@ describe('<EntityOwnerPicker mode="owners-only" />', () => {
   );
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
 
     mockCatalogApi.getEntityFacets.mockResolvedValue({
       facets: {
@@ -500,7 +502,7 @@ describe('<EntityOwnerPicker mode="owners-only" />', () => {
   });
 
   it('respects the query parameter filter value', async () => {
-    const updateFilters = jest.fn();
+    const updateFilters = vi.fn();
     const queryParameters = { owners: ['another-owner'] };
     await renderInTestApp(
       <ApiProvider apis={mockApis}>
@@ -521,7 +523,7 @@ describe('<EntityOwnerPicker mode="owners-only" />', () => {
   });
 
   it('adds owners to filters', async () => {
-    const updateFilters = jest.fn();
+    const updateFilters = vi.fn();
     await renderInTestApp(
       <ApiProvider apis={mockApis}>
         <MockEntityListContextProvider
@@ -550,7 +552,7 @@ describe('<EntityOwnerPicker mode="owners-only" />', () => {
   });
 
   it('removes owners from filters', async () => {
-    const updateFilters = jest.fn();
+    const updateFilters = vi.fn();
     await renderInTestApp(
       <ApiProvider apis={mockApis}>
         <MockEntityListContextProvider
@@ -579,7 +581,7 @@ describe('<EntityOwnerPicker mode="owners-only" />', () => {
   });
 
   it('responds to external queryParameters changes', async () => {
-    const updateFilters = jest.fn();
+    const updateFilters = vi.fn();
     const rendered = await renderInTestApp(
       <ApiProvider apis={mockApis}>
         <MockEntityListContextProvider

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import { waitFor } from '@testing-library/react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { createPlugin } from '@backstage/core-plugin-api';
@@ -24,20 +26,20 @@ import { createSearchResultListItemExtension } from '../../extensions';
 
 import { SearchResult } from './SearchResult';
 
-jest.mock('../../context', () => ({
-  ...jest.requireActual('../../context'),
-  useSearch: jest.fn().mockReturnValue({
+vi.mock('../../context', () => ({
+  ...vi.importActual('../../context'),
+  useSearch: vi.fn().mockReturnValue({
     result: {},
   }),
 }));
 
 describe('SearchResult', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('Progress rendered on Loading state', async () => {
-    (useSearch as jest.Mock).mockReturnValue({
+    (useSearch as Mock).mockReturnValue({
       result: { loading: true },
     });
 
@@ -52,7 +54,7 @@ describe('SearchResult', () => {
 
   it('Alert rendered on Error state', async () => {
     const error = new Error('some error');
-    (useSearch as jest.Mock).mockReturnValue({
+    (useSearch as Mock).mockReturnValue({
       result: { loading: false, error },
     });
 
@@ -68,7 +70,7 @@ describe('SearchResult', () => {
   });
 
   it('On no result value state', async () => {
-    (useSearch as jest.Mock).mockReturnValue({
+    (useSearch as Mock).mockReturnValue({
       result: { loading: false, error: '', value: undefined },
     });
 
@@ -84,7 +86,7 @@ describe('SearchResult', () => {
   });
 
   it('On empty result value state', async () => {
-    (useSearch as jest.Mock).mockReturnValue({
+    (useSearch as Mock).mockReturnValue({
       result: { loading: false, error: '', value: { results: [] } },
     });
 
@@ -100,7 +102,7 @@ describe('SearchResult', () => {
   });
 
   it('On empty result value state with custom component', async () => {
-    (useSearch as jest.Mock).mockReturnValue({
+    (useSearch as Mock).mockReturnValue({
       result: { loading: false, error: '', value: { results: [] } },
     });
 
@@ -116,7 +118,7 @@ describe('SearchResult', () => {
   });
 
   it('Calls children with results set to result.value', async () => {
-    (useSearch as jest.Mock).mockReturnValue({
+    (useSearch as Mock).mockReturnValue({
       result: {
         loading: false,
         error: '',
@@ -158,7 +160,7 @@ describe('SearchResult', () => {
         },
       },
     ];
-    const query = jest.fn().mockResolvedValue({ results });
+    const query = vi.fn().mockResolvedValue({ results });
     await renderInTestApp(
       <TestApiProvider apis={[[searchApiRef, { query }]]}>
         <SearchResult query={{ types: ['techdocs'] }}>
@@ -178,7 +180,7 @@ describe('SearchResult', () => {
   });
 
   it('Renders using search result item extensions', async () => {
-    (useSearch as jest.Mock).mockReturnValue({
+    (useSearch as Mock).mockReturnValue({
       result: {
         loading: false,
         error: '',

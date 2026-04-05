@@ -14,22 +14,24 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import { screen } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { RegisterExistingButton } from './RegisterExistingButton';
 import { usePermission } from '@backstage/plugin-permission-react';
 
-jest.mock('@backstage/plugin-permission-react', () => ({
-  usePermission: jest.fn(),
+vi.mock('@backstage/plugin-permission-react', () => ({
+  usePermission: vi.fn(),
 }));
 
 describe('RegisterExistingButton', () => {
   beforeEach(() => {
-    (usePermission as jest.Mock).mockClear();
+    (usePermission as Mock).mockClear();
   });
 
   it('should not render if to is unset', async () => {
-    (usePermission as jest.Mock).mockReturnValue({ allowed: true });
+    (usePermission as Mock).mockReturnValue({ allowed: true });
 
     await renderInTestApp(<RegisterExistingButton title="Pick me" />);
 
@@ -37,14 +39,14 @@ describe('RegisterExistingButton', () => {
   });
 
   it('should not render if permissions are not allowed', async () => {
-    (usePermission as jest.Mock).mockReturnValue({ allowed: false });
+    (usePermission as Mock).mockReturnValue({ allowed: false });
     await renderInTestApp(<RegisterExistingButton title="Pick me" to="blah" />);
 
     expect(screen.queryByText('Pick me')).not.toBeInTheDocument();
   });
 
   it('should render the button with the text', async () => {
-    (usePermission as jest.Mock).mockReturnValue({ allowed: true });
+    (usePermission as Mock).mockReturnValue({ allowed: true });
     await renderInTestApp(<RegisterExistingButton title="Pick me" to="blah" />);
 
     expect(screen.getByText('Pick me')).toBeInTheDocument();

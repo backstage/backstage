@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { isDockerDisabledForTests } from '../util';
 import { TestCaches } from './TestCaches';
 
 const itIfDocker = isDockerDisabledForTests() ? it.skip : it;
 
-jest.setTimeout(60_000);
+vi.setConfig({ testTimeout: 60_000 });
 
 describe('TestCaches', () => {
   const caches = TestCaches.create();

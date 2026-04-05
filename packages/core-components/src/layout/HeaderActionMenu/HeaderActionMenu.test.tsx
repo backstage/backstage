@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { fireEvent } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { HeaderActionMenu } from './HeaderActionMenu';
@@ -32,7 +34,7 @@ describe('<ComponentContextMenu />', () => {
   });
 
   it('can open the menu and click menu items', async () => {
-    const onClickFunction = jest.fn();
+    const onClickFunction = vi.fn();
     const rendered = await renderInTestApp(
       <HeaderActionMenu
         actionItems={[{ label: 'Some label', onClick: onClickFunction }]}
@@ -67,7 +69,7 @@ describe('<ComponentContextMenu />', () => {
   });
 
   it('Secondary label', async () => {
-    const onClickFunction = jest.fn();
+    const onClickFunction = vi.fn();
     const rendered = await renderInTestApp(
       <HeaderActionMenu
         actionItems={[

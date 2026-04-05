@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { SrvResolvers } from './SrvResolvers';
 
 describe('SrvResolvers', () => {
   afterEach(() => {
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 
   describe('isSrvUrl', () => {
@@ -57,42 +59,42 @@ describe('SrvResolvers', () => {
       expect(() =>
         resolvers.getResolver('://'),
       ).toThrowErrorMatchingInlineSnapshot(
-        `"SRV resolver expected a valid URL starting with http(s)+srv:// but got '://'"`,
+        `[InputError: SRV resolver expected a valid URL starting with http(s)+srv:// but got '://']`,
       );
       expect(() =>
         resolvers.getResolver('https://example.com/a/{{pluginId}}'),
       ).toThrowErrorMatchingInlineSnapshot(
-        `"SRV resolver expected a URL with protocol http(s)+srv:// but got 'https://example.com/a/{{pluginId}}'"`,
+        `[InputError: SRV resolver expected a URL with protocol http(s)+srv:// but got 'https://example.com/a/{{pluginId}}']`,
       );
       expect(() =>
         resolvers.getResolver('http+srv://example.com:8080'),
       ).toThrowErrorMatchingInlineSnapshot(
-        `"SRV resolver URLs cannot contain a port but got 'http+srv://example.com:8080'"`,
+        `[InputError: SRV resolver URLs cannot contain a port but got 'http+srv://example.com:8080']`,
       );
       expect(() =>
         resolvers.getResolver('http+srv://a:b@example.com'),
       ).toThrowErrorMatchingInlineSnapshot(
-        `"SRV resolver URLs cannot contain username or password but got 'http+srv://a:b@example.com'"`,
+        `[InputError: SRV resolver URLs cannot contain username or password but got 'http+srv://a:b@example.com']`,
       );
       expect(() =>
         resolvers.getResolver('http+srv://example.com?a=1'),
       ).toThrowErrorMatchingInlineSnapshot(
-        `"SRV resolver URLs cannot contain search params or a hash but got 'http+srv://example.com?a=1'"`,
+        `[InputError: SRV resolver URLs cannot contain search params or a hash but got 'http+srv://example.com?a=1']`,
       );
       expect(() =>
         resolvers.getResolver('http+srv://example.com#a'),
       ).toThrowErrorMatchingInlineSnapshot(
-        `"SRV resolver URLs cannot contain search params or a hash but got 'http+srv://example.com#a'"`,
+        `[InputError: SRV resolver URLs cannot contain search params or a hash but got 'http+srv://example.com#a']`,
       );
       expect(() =>
         resolvers.getResolver('ftp+srv://example.com/a/{{pluginId}}'),
       ).toThrowErrorMatchingInlineSnapshot(
-        `"SRV URLs must be based on http or https but got 'ftp+srv://example.com/a/{{pluginId}}'"`,
+        `[InputError: SRV URLs must be based on http or https but got 'ftp+srv://example.com/a/{{pluginId}}']`,
       );
     });
 
     it('works for simple cases', async () => {
-      const resolveSrv = jest.fn(async (host: string) => {
+      const resolveSrv = vi.fn(async (host: string) => {
         expect(host).toBe('input.example.com');
         return [
           {
@@ -118,7 +120,7 @@ describe('SrvResolvers', () => {
     });
 
     it('only picks among the highest priority records', async () => {
-      const resolveSrv = jest.fn(async (host: string) => {
+      const resolveSrv = vi.fn(async (host: string) => {
         expect(host).toBe('input.example.com');
         return [
           {
@@ -154,9 +156,9 @@ describe('SrvResolvers', () => {
     });
 
     it('uses caching', async () => {
-      jest.useFakeTimers();
+      vi.useFakeTimers();
 
-      const resolveSrv = jest.fn(async (host: string) => {
+      const resolveSrv = vi.fn(async (host: string) => {
         expect(host).toBe('input.example.com');
         return [
           {
@@ -183,7 +185,7 @@ describe('SrvResolvers', () => {
       );
       expect(resolveSrv).toHaveBeenCalledTimes(1);
 
-      jest.advanceTimersByTime(99);
+      vi.advanceTimersByTime(99);
 
       await expect(resolver1()).resolves.toEqual(
         'http://output.example.com:8080/a',
@@ -196,7 +198,7 @@ describe('SrvResolvers', () => {
       );
       expect(resolveSrv).toHaveBeenCalledTimes(1);
 
-      jest.advanceTimersByTime(1);
+      vi.advanceTimersByTime(1);
 
       await expect(resolver1()).resolves.toEqual(
         'http://output.example.com:8080/a',

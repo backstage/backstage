@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import OktaAuth from './OktaAuth';
 import MockOAuthApi from '../../OAuthRequestApi/MockOAuthApi';
 import { UrlPatternDiscovery } from '../../DiscoveryApi';
@@ -21,10 +23,10 @@ import { mockApis } from '@backstage/test-utils';
 
 const PREFIX = 'okta.';
 
-const getSession = jest.fn();
+const getSession = vi.fn();
 
-jest.mock('../../../../lib/AuthSessionManager', () => ({
-  ...(jest.requireActual('../../../../lib/AuthSessionManager') as any),
+vi.mock('../../../../lib/AuthSessionManager', () => ({
+  ...(vi.importActual('../../../../lib/AuthSessionManager') as any),
   RefreshingAuthSessionManager: class {
     getSession = getSession;
   },
@@ -32,7 +34,7 @@ jest.mock('../../../../lib/AuthSessionManager', () => ({
 
 describe('OktaAuth', () => {
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it.each([

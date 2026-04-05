@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import fs from 'fs-extra';
 import path from 'node:path';
 import { NotFoundError } from '@backstage/errors';
@@ -340,7 +342,7 @@ describe('storage', () => {
 
   describe('withMetadataLock', () => {
     it('should acquire and release lock', async () => {
-      const callback = jest.fn().mockResolvedValue('result');
+      const callback = vi.fn().mockResolvedValue('result');
       const result = await withMetadataLock(callback);
 
       expect(callback).toHaveBeenCalled();
@@ -349,12 +351,12 @@ describe('storage', () => {
 
     it('should release lock even if callback throws', async () => {
       const error = new Error('Test error');
-      const callback = jest.fn().mockRejectedValue(error);
+      const callback = vi.fn().mockRejectedValue(error);
 
       await expect(withMetadataLock(callback)).rejects.toThrow(error);
 
       // Lock should still be released, allowing subsequent calls
-      const callback2 = jest.fn().mockResolvedValue('result');
+      const callback2 = vi.fn().mockResolvedValue('result');
       await expect(withMetadataLock(callback2)).resolves.toBe('result');
     });
   });

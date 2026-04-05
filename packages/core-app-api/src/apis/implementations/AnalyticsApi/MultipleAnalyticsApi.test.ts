@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import { MultipleAnalyticsApi } from './MultipleAnalyticsApi';
 
 describe('MultipleAnalyticsApi', () => {
-  const analyticsApiOne = { captureEvent: jest.fn() };
-  const analyticsApiTwo = { captureEvent: jest.fn() };
+  const analyticsApiOne = { captureEvent: vi.fn() };
+  const analyticsApiTwo = { captureEvent: vi.fn() };
   const multipleApis = MultipleAnalyticsApi.fromApis([
     analyticsApiOne,
     analyticsApiTwo,
@@ -34,7 +36,7 @@ describe('MultipleAnalyticsApi', () => {
   };
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('forwards events to all apis', () => {

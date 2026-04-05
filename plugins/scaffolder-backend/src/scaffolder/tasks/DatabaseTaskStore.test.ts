@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { DatabaseManager } from '@backstage/backend-defaults/database';
 import { ConfigReader } from '@backstage/config';
 import { DatabaseTaskStore, RawDbTaskEventRow } from './DatabaseTaskStore';
@@ -63,11 +65,11 @@ const workspaceDir = createMockDirectory({
 
 describe('DatabaseTaskStore', () => {
   const eventsService = {
-    publish: jest.fn(),
+    publish: vi.fn(),
   } as unknown as EventsService;
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('should create the database store and run migration', async () => {

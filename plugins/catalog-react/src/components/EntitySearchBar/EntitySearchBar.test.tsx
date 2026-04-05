@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { fireEvent, waitFor, screen } from '@testing-library/react';
 import { EntitySearchBar } from './EntitySearchBar';
 import { EntityTextFilter } from '../../filters';
@@ -22,7 +24,7 @@ import { renderInTestApp } from '@backstage/test-utils';
 
 describe('EntitySearchBar', () => {
   it('should display search value and execute set callback', async () => {
-    const updateFilters = jest.fn();
+    const updateFilters = vi.fn();
 
     await renderInTestApp(
       <MockEntityListContextProvider

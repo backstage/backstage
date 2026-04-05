@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { render } from '@testing-library/react';
 import { Edge } from './Edge';
 import { DependencyGraphTypes as Types } from './types';
@@ -36,8 +38,8 @@ const id = {
   w: toNode,
 };
 
-const setEdge = jest.fn();
-const renderElement = jest.fn((props: Types.RenderLabelProps) => (
+const setEdge = vi.fn();
+const renderElement = vi.fn((props: Types.RenderLabelProps) => (
   <div>{props.edge.label}</div>
 ));
 
@@ -60,7 +62,7 @@ describe('<Edge />', () => {
     });
   });
 
-  afterEach(jest.clearAllMocks);
+  afterEach(vi.clearAllMocks);
 
   it('does not render the supplied label element if label is missing', () => {
     const { container } = render(

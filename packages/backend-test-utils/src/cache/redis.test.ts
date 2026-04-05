@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { isDockerDisabledForTests } from '../util/isDockerDisabledForTests';
 import { startRedisContainer } from './redis';
 import { v4 as uuid } from 'uuid';
 
 const itIfDocker = isDockerDisabledForTests() ? it.skip : it;
 
-jest.setTimeout(60_000);
+vi.setConfig({ testTimeout: 60_000 });
 
 describe('startRedisContainer', () => {
   itIfDocker('successfully launches the container', async () => {

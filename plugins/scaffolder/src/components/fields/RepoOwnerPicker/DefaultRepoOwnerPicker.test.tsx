@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { fireEvent, screen } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/test-utils';
 
@@ -23,7 +25,7 @@ describe('DefaultRepoOwnerPicker', () => {
   it('renders an input field', async () => {
     const { getByRole } = await renderInTestApp(
       <DefaultRepoOwnerPicker
-        onChange={jest.fn()}
+        onChange={vi.fn()}
         state={{ owner: 'owner1' }}
         rawErrors={[]}
       />,
@@ -36,7 +38,7 @@ describe('DefaultRepoOwnerPicker', () => {
   it('input field disabled', async () => {
     await renderInTestApp(
       <DefaultRepoOwnerPicker
-        onChange={jest.fn()}
+        onChange={vi.fn()}
         isDisabled
         state={{ owner: 'owner1' }}
         rawErrors={[]}
@@ -51,7 +53,7 @@ describe('DefaultRepoOwnerPicker', () => {
   });
 
   it('calls onChange when the input field changes', async () => {
-    const onChange = jest.fn();
+    const onChange = vi.fn();
 
     const { getByRole } = await renderInTestApp(
       <DefaultRepoOwnerPicker

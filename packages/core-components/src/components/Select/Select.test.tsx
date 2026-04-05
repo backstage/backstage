@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { fireEvent, render, within } from '@testing-library/react';
 import { SelectComponent as Select } from './Select';
 
@@ -29,7 +31,7 @@ const SELECT_ITEMS = [
 ];
 
 const minProps = {
-  onChange: jest.fn(),
+  onChange: vi.fn(),
   label: 'Default',
   placeholder: 'All results',
   items: SELECT_ITEMS,
@@ -99,7 +101,7 @@ describe('<Select />', () => {
       { value: 'test_2', label: 'test 2' },
     ];
 
-    const handleChange = jest.fn();
+    const handleChange = vi.fn();
 
     const { getByTestId, queryByText } = render(
       <Select

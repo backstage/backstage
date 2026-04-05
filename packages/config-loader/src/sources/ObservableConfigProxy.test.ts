@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { ConfigReader } from '@backstage/config';
 import { ObservableConfigProxy } from './ObservableConfigProxy';
 
@@ -21,7 +23,7 @@ describe('ObservableConfigProxy', () => {
   it('should notify subscribers', () => {
     const config = ObservableConfigProxy.create(new AbortController());
 
-    const fn = jest.fn();
+    const fn = vi.fn();
     const sub = config.subscribe(fn);
     expect(config.getOptionalNumber('x')).toBe(undefined);
 
@@ -42,9 +44,9 @@ describe('ObservableConfigProxy', () => {
   it('should forward subscriptions', () => {
     const config1 = ObservableConfigProxy.create(new AbortController());
 
-    const fn1 = jest.fn();
-    const fn2 = jest.fn();
-    const fn3 = jest.fn();
+    const fn1 = vi.fn();
+    const fn2 = vi.fn();
+    const fn3 = vi.fn();
     const config2 = config1.getConfig('a');
     const config3 = config2.getConfig('b');
     const sub1 = config1.subscribe(fn1);
@@ -131,7 +133,7 @@ describe('ObservableConfigProxy', () => {
 
   it('should only notify subscribers when the config data actually changes (ignoring key order)', () => {
     const config = ObservableConfigProxy.create(new AbortController());
-    const fn = jest.fn();
+    const fn = vi.fn();
     config.subscribe(fn);
 
     expect(config.getOptionalNumber('a')).toBe(undefined);

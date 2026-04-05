@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import os from 'node:os';
 import { DatabaseManager } from '@backstage/backend-defaults/database';
 import { ConfigReader } from '@backstage/config';
@@ -39,9 +41,9 @@ import { mockServices } from '@backstage/backend-test-utils';
 import { metricsServiceMock } from '@backstage/backend-test-utils/alpha';
 import { loggerToWinstonLogger } from '../../util/loggerToWinstonLogger';
 
-jest.mock('./NunjucksWorkflowRunner');
+vi.mock('./NunjucksWorkflowRunner');
 const MockedNunjucksWorkflowRunner =
-  NunjucksWorkflowRunner as jest.Mock<NunjucksWorkflowRunner>;
+  NunjucksWorkflowRunner as Mock<NunjucksWorkflowRunner>;
 MockedNunjucksWorkflowRunner.mockImplementation();
 
 async function createStore(): Promise<DatabaseTaskStore> {
@@ -72,7 +74,7 @@ describe('TaskWorker', () => {
   const workingDirectory = '/tmp/scaffolder';
 
   const workflowRunner: NunjucksWorkflowRunner = {
-    execute: jest.fn(),
+    execute: vi.fn(),
   } as unknown as NunjucksWorkflowRunner;
 
   beforeAll(async () => {
@@ -80,7 +82,7 @@ describe('TaskWorker', () => {
   });
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
     MockedNunjucksWorkflowRunner.mockImplementation(() => workflowRunner);
   });
 
@@ -115,7 +117,7 @@ describe('TaskWorker', () => {
   });
 
   it('should save the output to the task', async () => {
-    (workflowRunner.execute as jest.Mock).mockResolvedValue({
+    (workflowRunner.execute as Mock).mockResolvedValue({
       output: { testOutput: 'testmockoutput' },
     });
 
@@ -149,14 +151,14 @@ describe('TaskWorker', () => {
   });
 
   it('should log an audit event with task parameters when running a task', async () => {
-    (workflowRunner.execute as jest.Mock).mockResolvedValue({
+    (workflowRunner.execute as Mock).mockResolvedValue({
       output: {},
     });
 
     const auditor = mockServices.auditor.mock();
     const auditEvent = {
-      success: jest.fn(),
-      fail: jest.fn(),
+      success: vi.fn(),
+      fail: vi.fn(),
     };
     auditor.createEvent.mockResolvedValue(auditEvent);
 
@@ -189,7 +191,7 @@ describe('TaskWorker', () => {
         steps: [],
         output: {},
       },
-      complete: jest.fn(),
+      complete: vi.fn(),
       createdBy: 'test-creator',
       taskId: 'test-id',
     } as unknown as TaskContext);
@@ -236,7 +238,7 @@ describe('Concurrent TaskWorker', () => {
 
   beforeEach(() => {
     asyncTasksCount = 0;
-    jest.resetAllMocks();
+    vi.resetAllMocks();
     MockedNunjucksWorkflowRunner.mockImplementation(() => workflowRunner);
   });
 
@@ -298,7 +300,7 @@ describe('Cancellable TaskWorker', () => {
   });
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
     MockedNunjucksWorkflowRunner.mockImplementation(() => workflowRunner);
   });
 

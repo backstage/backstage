@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
+import { vi , type MockedFunction} from 'vitest';
+
 import { RequirePermission } from './RequirePermission';
 import { usePermission } from '../hooks';
 import { renderInTestApp } from '@backstage/test-utils';
 import { createPermission } from '@backstage/plugin-permission-common';
 
-jest.mock('../hooks', () => ({
-  usePermission: jest.fn(),
+vi.mock('../hooks', () => ({
+  usePermission: vi.fn(),
 }));
-const mockUsePermission = usePermission as jest.MockedFunction<
+const mockUsePermission = usePermission as MockedFunction<
   typeof usePermission
 >;
 

@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 
-jest.mock('./gitHelpers', () => {
+vi.mock('./gitHelpers', () => {
   return {
-    ...jest.requireActual('./gitHelpers'),
-    entityRefToName: jest.fn(),
+    ...vi.importActual('./gitHelpers'),
+    entityRefToName: vi.fn(),
   };
 });
 
@@ -37,36 +39,36 @@ const publicKey = '2Sg8iYjAxxmI2LvUXpJjkYrMxURPc8r+dB7TJyvvcCU=';
 
 import { Octokit } from 'octokit';
 
-const octokitMock = Octokit as unknown as jest.Mock;
+const octokitMock = Octokit as unknown as Mock;
 const mockOctokit = {
   rest: {
     users: {
-      getByUsername: jest.fn(),
+      getByUsername: vi.fn(),
     },
     repos: {
-      addCollaborator: jest.fn(),
-      createInOrg: jest.fn(),
-      createForAuthenticatedUser: jest.fn(),
-      replaceAllTopics: jest.fn(),
+      addCollaborator: vi.fn(),
+      createInOrg: vi.fn(),
+      createForAuthenticatedUser: vi.fn(),
+      replaceAllTopics: vi.fn(),
     },
     teams: {
-      addOrUpdateRepoPermissionsInOrg: jest.fn(),
-      getByName: jest.fn(),
+      addOrUpdateRepoPermissionsInOrg: vi.fn(),
+      getByName: vi.fn(),
     },
     actions: {
-      createRepoVariable: jest.fn(),
-      createOrUpdateRepoSecret: jest.fn(),
-      getRepoPublicKey: jest.fn(),
-      setWorkflowAccessToRepository: jest.fn(),
+      createRepoVariable: vi.fn(),
+      createOrUpdateRepoSecret: vi.fn(),
+      getRepoPublicKey: vi.fn(),
+      setWorkflowAccessToRepository: vi.fn(),
     },
     activity: {
-      setRepoSubscription: jest.fn(),
+      setRepoSubscription: vi.fn(),
     },
   },
-  request: jest.fn(),
+  request: vi.fn(),
 };
-jest.mock('octokit', () => ({
-  Octokit: jest.fn(),
+vi.mock('octokit', () => ({
+  Octokit: vi.fn(),
 }));
 
 describe('github:repo:create', () => {
@@ -100,7 +102,7 @@ describe('github:repo:create', () => {
       integrations,
       githubCredentialsProvider,
     });
-    (entityRefToName as jest.Mock).mockImplementation((s: string) => s);
+    (entityRefToName as Mock).mockImplementation((s: string) => s);
     mockOctokit.rest.actions.getRepoPublicKey.mockResolvedValue({
       data: {
         key: publicKey,
@@ -109,7 +111,7 @@ describe('github:repo:create', () => {
     });
   });
 
-  afterEach(jest.resetAllMocks);
+  afterEach(vi.resetAllMocks);
 
   it('should pass context logger to Octokit client', async () => {
     mockOctokit.rest.users.getByUsername.mockResolvedValue({

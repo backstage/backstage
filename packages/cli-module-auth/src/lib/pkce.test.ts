@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import crypto from 'node:crypto';
 import { generateVerifier, challengeFromVerifier } from './pkce';
 
@@ -62,14 +64,14 @@ describe('pkce', () => {
     it('should produce consistent results for same byte sequence', () => {
       // Mock crypto.randomBytes to return predictable values
       const mockBytes = Buffer.from([1, 2, 3, 4, 5, 6, 7, 8]);
-      jest.spyOn(crypto, 'randomBytes').mockImplementation(_count => mockBytes);
+      vi.spyOn(crypto, 'randomBytes').mockImplementation(_count => mockBytes);
 
       const verifier1 = generateVerifier(8);
       const verifier2 = generateVerifier(8);
 
       expect(verifier1).toBe(verifier2);
 
-      (crypto.randomBytes as jest.Mock).mockRestore();
+      (crypto.randomBytes as Mock).mockRestore();
     });
   });
 

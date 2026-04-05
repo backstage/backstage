@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi , type MockInstance} from 'vitest';
 import {
   mockServices,
   ServiceFactoryTester,
@@ -21,14 +23,14 @@ import { metricsServiceFactory } from './metricsServiceFactory';
 import { DefaultMetricsService } from './DefaultMetricsService';
 
 describe('metricsServiceFactory', () => {
-  let createSpy: jest.SpyInstance;
+  let createSpy: MockInstance;
 
   beforeEach(() => {
-    createSpy = jest.spyOn(DefaultMetricsService, 'create');
+    createSpy = vi.spyOn(DefaultMetricsService, 'create');
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   const defaultServices = [

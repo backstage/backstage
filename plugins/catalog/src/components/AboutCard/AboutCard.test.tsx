@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   EntityProvider,
   catalogApiRef,
@@ -44,7 +46,7 @@ describe('<AboutCard />', () => {
   const catalogApi = catalogApiMock.mock();
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('renders info', async () => {

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { TestApiProvider, renderInTestApp } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
 import { entityPresentationApiRef } from '@backstage/plugin-catalog-react';
@@ -29,7 +31,7 @@ describe('Entity Info Card Grid', () => {
   let Wrapper: ComponentType<PropsWithChildren<{}>>;
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
     Wrapper = ({ children }: { children?: ReactNode }) => (
       <TestApiProvider
         apis={[

@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import { hasErrors } from './utils';
 
 describe('hasErrors', () => {
@@ -21,7 +23,7 @@ describe('hasErrors', () => {
       hasErrors({
         name: {
           __errors: [],
-          addError: jest.fn(),
+          addError: vi.fn(),
         },
       }),
     ).toBe(false);
@@ -32,7 +34,7 @@ describe('hasErrors', () => {
       hasErrors({
         name: {
           __errors: ['an error'],
-          addError: jest.fn(),
+          addError: vi.fn(),
         },
       }),
     ).toBe(true);
@@ -43,16 +45,16 @@ describe('hasErrors', () => {
       hasErrors({
         name: {
           __errors: [],
-          addError: jest.fn(),
+          addError: vi.fn(),
         },
         general: {
           address: {
             __errors: [],
-            addError: jest.fn(),
+            addError: vi.fn(),
           },
           name: {
             __errors: ['something is broken here!'],
-            addError: jest.fn(),
+            addError: vi.fn(),
           },
         },
       }),
@@ -67,23 +69,23 @@ describe('hasErrors', () => {
         __errors: [
           'Accepts alphanumeric values along with _(underscore) and -(hyphen) as special characters',
         ],
-        addError: jest.fn(),
+        addError: vi.fn(),
       },
       someOtherName: {
         __errors: ['Must start with an alphabet & not contain .(period)'],
-        addError: jest.fn(),
+        addError: vi.fn(),
       },
       aName: {
         __errors: [],
-        addError: jest.fn(),
+        addError: vi.fn(),
       },
       bName: {
         __errors: [],
-        addError: jest.fn(),
+        addError: vi.fn(),
       },
       cName: {
         __errors: [],
-        addError: jest.fn(),
+        addError: vi.fn(),
       },
     };
 

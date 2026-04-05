@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { StaticAuthSessionManager } from './StaticAuthSessionManager';
 
 const defaultOptions = {
@@ -31,7 +33,7 @@ describe('StaticAuthSessionManager', () => {
   };
 
   it('should get session by creating session once', async () => {
-    const createSession = jest.fn().mockResolvedValue('my-session');
+    const createSession = vi.fn().mockResolvedValue('my-session');
     const manager = new StaticAuthSessionManager({
       connector: { createSession, ...baseConnector },
       ...defaultOptions,
@@ -45,7 +47,7 @@ describe('StaticAuthSessionManager', () => {
   });
 
   it('should fail to get session if user rejects the request', async () => {
-    const createSession = jest.fn().mockRejectedValue(new Error('NOPE'));
+    const createSession = vi.fn().mockRejectedValue(new Error('NOPE'));
     const manager = new StaticAuthSessionManager({
       connector: { createSession, ...baseConnector },
       ...defaultOptions,
@@ -84,7 +86,7 @@ describe('StaticAuthSessionManager', () => {
   });
 
   it('should clear the local session', async () => {
-    const removeSession = jest.fn();
+    const removeSession = vi.fn();
     const manager = new StaticAuthSessionManager({
       connector: { removeSession },
       ...defaultOptions,
@@ -95,7 +97,7 @@ describe('StaticAuthSessionManager', () => {
   });
 
   it('should not remove the session via the connector', async () => {
-    const removeSession = jest.fn();
+    const removeSession = vi.fn();
     const manager = new StaticAuthSessionManager({
       connector: { removeSession },
       ...defaultOptions,

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { Knex } from 'knex';
 import * as uuid from 'uuid';
@@ -25,7 +27,7 @@ import {
 } from '../../tables';
 import { deleteWithEagerPruningOfChildren } from './deleteWithEagerPruningOfChildren';
 
-jest.setTimeout(60_000);
+vi.setConfig({ testTimeout: 60_000 });
 
 describe('deleteWithEagerPruningOfChildren', () => {
   const databases = TestDatabases.create();

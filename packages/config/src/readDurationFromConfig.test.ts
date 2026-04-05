@@ -63,17 +63,17 @@ describe('readDurationFromConfig', () => {
       expect(() =>
         readDurationFromConfig(config, { key: 'd1' }),
       ).toThrowErrorMatchingInlineSnapshot(
-        `"Invalid duration 'P 1Y' in config at 'd1', Error: Invalid ISO format, expected a value similar to 'P2DT6H' (2 days 6 hours) or 'PT1M' (1 minute)"`,
+        `[InputError: Invalid duration 'P 1Y' in config at 'd1', Error: Invalid ISO format, expected a value similar to 'P2DT6H' (2 days 6 hours) or 'PT1M' (1 minute)]`,
       );
       expect(() =>
         readDurationFromConfig(config, { key: 'd2' }),
       ).toThrowErrorMatchingInlineSnapshot(
-        `"Invalid duration 'P1L' in config at 'd2', Error: Invalid ISO format, expected a value similar to 'P2DT6H' (2 days 6 hours) or 'PT1M' (1 minute)"`,
+        `[InputError: Invalid duration 'P1L' in config at 'd2', Error: Invalid ISO format, expected a value similar to 'P2DT6H' (2 days 6 hours) or 'PT1M' (1 minute)]`,
       );
       expect(() =>
         readDurationFromConfig(config, { key: 'd3' }),
       ).toThrowErrorMatchingInlineSnapshot(
-        `"Invalid duration 'P' in config at 'd3', Error: Invalid ISO format, no values given"`,
+        `[InputError: Invalid duration 'P' in config at 'd3', Error: Invalid ISO format, no values given]`,
       );
     });
   });
@@ -139,17 +139,17 @@ describe('readDurationFromConfig', () => {
       expect(() =>
         readDurationFromConfig(config, { key: 'd1' }),
       ).toThrowErrorMatchingInlineSnapshot(
-        `"Invalid duration '1m 3s' in config at 'd1', Error: Not a valid duration string, try a number followed by a unit such as '1d' or '2 seconds'"`,
+        `[InputError: Invalid duration '1m 3s' in config at 'd1', Error: Not a valid duration string, try a number followed by a unit such as '1d' or '2 seconds']`,
       );
       expect(() =>
         readDurationFromConfig(config, { key: 'd2' }),
       ).toThrowErrorMatchingInlineSnapshot(
-        `"Invalid duration '-3s' in config at 'd2', Error: Negative durations are not allowed"`,
+        `[InputError: Invalid duration '-3s' in config at 'd2', Error: Negative durations are not allowed]`,
       );
       expect(() =>
         readDurationFromConfig(config, { key: 'd3' }),
       ).toThrowErrorMatchingInlineSnapshot(
-        `"Invalid type in config for key 'd3' in 'mock-config', got empty-string, wanted string"`,
+        `[TypeError: Invalid type in config for key 'd3' in 'mock-config', got empty-string, wanted string]`,
       );
     });
   });

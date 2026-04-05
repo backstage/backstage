@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { ApiProvider } from '@backstage/core-app-api';
 import { searchApiRef } from '@backstage/plugin-search-react';
 import { TestApiRegistry, renderInTestApp } from '@backstage/test-utils';
@@ -53,7 +55,7 @@ const singleResult = Promise.resolve({
 describe('<TechDocsSearch />', () => {
   it('should render techdocs search bar', async () => {
     const query = () => emptyResults;
-    const querySpy = jest.fn(query);
+    const querySpy = vi.fn(query);
     const searchApi = { query: querySpy };
 
     const apiRegistry = TestApiRegistry.from([searchApiRef, searchApi]);
@@ -72,7 +74,7 @@ describe('<TechDocsSearch />', () => {
 
 it('should trigger query when autocomplete input changed', async () => {
   const query = () => singleResult;
-  const querySpy = jest.fn(query);
+  const querySpy = vi.fn(query);
   const searchApi = { query: querySpy };
 
   const apiRegistry = TestApiRegistry.from([searchApiRef, searchApi]);
@@ -130,7 +132,7 @@ it('should trigger query when autocomplete input changed', async () => {
 
 it('should update filter values when a new entityName is provided', async () => {
   const query = () => singleResult;
-  const querySpy = jest.fn(query);
+  const querySpy = vi.fn(query);
   const searchApi = { query: querySpy };
   const apiRegistry = TestApiRegistry.from([searchApiRef, searchApi]);
   const newEntityId = {

@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
+import { vi , type MockedFunction} from 'vitest';
+
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { registerMswTestHooks } from '@backstage/backend-test-utils';
 import { isCimdUrl, validateCimdUrl, fetchCimdMetadata } from './CimdClient';
 import * as dns from 'node:dns/promises';
 
-jest.mock('dns/promises');
-const mockDnsLookup = dns.lookup as jest.MockedFunction<typeof dns.lookup>;
+vi.mock('dns/promises');
+const mockDnsLookup = dns.lookup as MockedFunction<typeof dns.lookup>;
 
 const server = setupServer();
 registerMswTestHooks(server);
@@ -30,7 +32,7 @@ describe('CimdClient', () => {
   const originalNodeEnv = process.env.NODE_ENV;
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
     // Default to public IP for DNS lookups
     mockDnsLookup.mockResolvedValue([
       { address: '93.184.216.34', family: 4 },
@@ -302,7 +304,7 @@ describe('CimdClient', () => {
 
     describe('redirect protection', () => {
       it('should reject redirects to prevent SSRF via redirect bypass', async () => {
-        const redirectTarget = jest.fn();
+        const redirectTarget = vi.fn();
 
         server.use(
           rest.get(

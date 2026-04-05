@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
+import { describe, it, expect, vi, type Mocked, afterEach } from 'vitest';
 import { Entity, EntityPolicy } from './entity';
 import { EntityPolicies } from './EntityPolicies';
 
 describe('EntityPolicies', () => {
-  const p1: jest.Mocked<EntityPolicy> = { enforce: jest.fn() };
-  const p2: jest.Mocked<EntityPolicy> = { enforce: jest.fn() };
+  const p1: Mocked<EntityPolicy> = { enforce: vi.fn() };
+  const p2: Mocked<EntityPolicy> = { enforce: vi.fn() };
   const entity1: Entity = {
     apiVersion: 'a1',
     kind: 'k1',
@@ -31,7 +32,7 @@ describe('EntityPolicies', () => {
     metadata: { name: 'n2' },
   };
 
-  afterEach(() => jest.resetAllMocks());
+  afterEach(() => vi.resetAllMocks());
 
   describe('allOf', () => {
     it('resolves when no policies', async () => {

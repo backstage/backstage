@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { useEffect, ReactNode } from 'react';
 import { act, screen, waitFor } from '@testing-library/react';
 import { withLogCollector } from '@backstage/test-utils';
@@ -95,7 +97,7 @@ describe('ExtensionBoundary', () => {
   it('should wrap children with analytics context', async () => {
     const action = 'render';
     const subject = 'analytics';
-    const analyticsApiMock = { captureEvent: jest.fn() };
+    const analyticsApiMock = { captureEvent: vi.fn() };
 
     const AnalyticsComponent = () => {
       const analytics = useAnalytics();
@@ -148,7 +150,7 @@ describe('ExtensionBoundary', () => {
         () =>
         ({ children }: { children: ReactNode }) =>
           <>{children}</>,
-      getPluginWrapper: jest.fn((pluginId: string) => {
+      getPluginWrapper: vi.fn((pluginId: string) => {
         if (pluginId === 'app') {
           return WrapperComponent;
         }
@@ -188,7 +190,7 @@ describe('ExtensionBoundary', () => {
         () =>
         ({ children }: { children: ReactNode }) =>
           <>{children}</>,
-      getPluginWrapper: jest.fn((pluginId: string) => {
+      getPluginWrapper: vi.fn((pluginId: string) => {
         if (pluginId === 'app') {
           return ThrowingWrapper;
         }
@@ -227,7 +229,7 @@ describe('ExtensionBoundary', () => {
       });
       return null;
     };
-    const analyticsApiMock = { captureEvent: jest.fn() };
+    const analyticsApiMock = { captureEvent: vi.fn() };
 
     await act(async () => {
       renderInTestApp(

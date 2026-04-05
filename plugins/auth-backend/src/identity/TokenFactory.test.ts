@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import {
   base64url,
@@ -121,7 +123,7 @@ describe('TokenFactory', () => {
 
   it('should generate new signing keys when the current one expires', async () => {
     const fixedTime = Date.now();
-    jest.spyOn(Date, 'now').mockImplementation(() => fixedTime);
+    vi.spyOn(Date, 'now').mockImplementation(() => fixedTime);
 
     const factory = new TokenFactory({
       issuer: 'my-issuer',
@@ -146,7 +148,7 @@ describe('TokenFactory', () => {
       ],
     });
 
-    jest.spyOn(Date, 'now').mockImplementation(() => fixedTime + 60000);
+    vi.spyOn(Date, 'now').mockImplementation(() => fixedTime + 60000);
 
     await expect(factory.listPublicKeys()).resolves.toEqual({
       keys: [],

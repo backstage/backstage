@@ -13,13 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi , type Mock} from 'vitest';
 import { renderInTestApp } from '@backstage/test-utils';
 import { ReactNode } from 'react';
 import userEvent from '@testing-library/user-event';
 import { TaskLogStream } from './TaskLogStream';
 
 // The <AutoSizer> inside <LogViewer> needs mocking to render in jsdom
-jest.mock('react-virtualized-auto-sizer', () => ({
+vi.mock('react-virtualized-auto-sizer', () => ({
   __esModule: true,
   default: (props: {
     children: (size: { width: number; height: number }) => ReactNode;
@@ -29,11 +31,11 @@ jest.mock('react-virtualized-auto-sizer', () => ({
 beforeAll(() => {
   Reflect.defineProperty(window.URL, 'createObjectURL', {
     writable: true,
-    value: jest.fn((_blob: any) => 'blob:mock-url'),
+    value: vi.fn((_blob: any) => 'blob:mock-url'),
   });
   Reflect.defineProperty(window.URL, 'revokeObjectURL', {
     writable: true,
-    value: jest.fn(),
+    value: vi.fn(),
   });
 });
 
@@ -84,8 +86,8 @@ describe('TaskLogStream', () => {
 
     // Mock only the anchor element creation
     const mockAnchor = document.createElement('a');
-    const clickSpy = jest.spyOn(mockAnchor, 'click');
-    const removeSpy = jest.spyOn(mockAnchor, 'remove');
+    const clickSpy = vi.spyOn(mockAnchor, 'click');
+    const removeSpy = vi.spyOn(mockAnchor, 'remove');
 
     const originalCreateElement = document.createElement.bind(document);
     const createElementSpy = jest
@@ -132,7 +134,7 @@ describe('TaskLogStream', () => {
       });
 
     const mockAnchor = document.createElement('a');
-    const clickSpy = jest.spyOn(mockAnchor, 'click');
+    const clickSpy = vi.spyOn(mockAnchor, 'click');
 
     const originalCreateElement = document.createElement.bind(document);
     const createElementSpy = jest

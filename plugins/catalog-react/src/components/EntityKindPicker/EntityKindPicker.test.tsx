@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { GetEntityFacetsResponse } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import { ApiProvider } from '@backstage/core-app-api';
@@ -56,7 +58,7 @@ describe('<EntityKindPicker/>', () => {
     [
       catalogApiRef,
       {
-        getEntityFacets: jest.fn().mockResolvedValue({
+        getEntityFacets: vi.fn().mockResolvedValue({
           facets: {
             kind: entities.map(e => ({
               value: e.kind,
@@ -98,7 +100,7 @@ describe('<EntityKindPicker/>', () => {
   });
 
   it('sets the selected kind filter', async () => {
-    const updateFilters = jest.fn();
+    const updateFilters = vi.fn();
     await renderInTestApp(
       <ApiProvider apis={apis}>
         <MockEntityListContextProvider
@@ -123,7 +125,7 @@ describe('<EntityKindPicker/>', () => {
   });
 
   it('respects the query parameter filter value', async () => {
-    const updateFilters = jest.fn();
+    const updateFilters = vi.fn();
     const queryParameters = { kind: 'group' };
     await renderInTestApp(
       <ApiProvider apis={apis}>

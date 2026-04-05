@@ -1887,8 +1887,8 @@ export const PageBlueprint: ExtensionBlueprint_2<{
     title: string | undefined;
   };
   configInput: {
-    title?: string | undefined;
     path?: string | undefined;
+    title?: string | undefined;
   };
   dataRefs: never;
 }>;
@@ -2182,8 +2182,8 @@ export const SubPageBlueprint: ExtensionBlueprint_2<{
     title: string | undefined;
   };
   configInput: {
-    title?: string | undefined;
     path?: string | undefined;
+    title?: string | undefined;
   };
   dataRefs: never;
 }>;

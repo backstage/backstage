@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { createTestShadowDom } from '../../test-utils';
 import { onCssReady } from './onCssReady';
 
@@ -27,8 +29,8 @@ const fixture = `
 
 describe('onCssReady', () => {
   it('does not call onLoading and onLoaded without the onCssReady transformer', async () => {
-    const onLoading = jest.fn();
-    const onLoaded = jest.fn();
+    const onLoading = vi.fn();
+    const onLoaded = vi.fn();
 
     await createTestShadowDom(fixture, {
       preTransformers: [],
@@ -40,8 +42,8 @@ describe('onCssReady', () => {
   });
 
   it('calls the onLoading and onLoaded correctly', async () => {
-    const onLoading = jest.fn();
-    const onLoaded = jest.fn();
+    const onLoading = vi.fn();
+    const onLoaded = vi.fn();
 
     await createTestShadowDom(fixture, {
       preTransformers: [],

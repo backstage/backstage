@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { LocalTaskWorker } from './LocalTaskWorker';
 import { mockServices } from '@backstage/backend-test-utils';
 import { ConflictError } from '@backstage/errors';
 import waitFor from 'wait-for-expect';
 
-jest.setTimeout(10_000);
+vi.setConfig({ testTimeout: 10_000 });
 
 describe('LocalTaskWorker', () => {
   const logger = mockServices.logger.mock();
 
   it('runs the happy path (with iso duration) and handles cancellation', async () => {
-    const fn = jest.fn();
+    const fn = vi.fn();
     const controller = new AbortController();
 
     const worker = new LocalTaskWorker('a', fn, logger);
@@ -53,7 +55,7 @@ describe('LocalTaskWorker', () => {
   });
 
   it('runs the happy path (with a cron expression) and handles cancellation', async () => {
-    const fn = jest.fn();
+    const fn = vi.fn();
     const controller = new AbortController();
 
     // Await until system time is just past a second boundary (since cron is
@@ -85,7 +87,7 @@ describe('LocalTaskWorker', () => {
   });
 
   it('can trigger to abort wait', async () => {
-    const fn = jest.fn();
+    const fn = vi.fn();
     const controller = new AbortController();
 
     const worker = new LocalTaskWorker('a', fn, logger);
@@ -113,7 +115,7 @@ describe('LocalTaskWorker', () => {
 
   it('can cancel a running task', async () => {
     let receivedSignal: AbortSignal | undefined;
-    const fn = jest.fn(async (signal: AbortSignal) => {
+    const fn = vi.fn(async (signal: AbortSignal) => {
       receivedSignal = signal;
       await new Promise(r => setTimeout(r, 5000));
     });
@@ -141,7 +143,7 @@ describe('LocalTaskWorker', () => {
   });
 
   it('cannot cancel a task that is not running', async () => {
-    const fn = jest.fn();
+    const fn = vi.fn();
     const controller = new AbortController();
 
     const worker = new LocalTaskWorker('a', fn, logger);

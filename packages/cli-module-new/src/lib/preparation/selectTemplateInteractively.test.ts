@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { PortableTemplateConfig } from '../types';
 import inquirer from 'inquirer';
 import { withLogCollector } from '@backstage/test-utils';
@@ -29,11 +31,11 @@ describe('selectTemplateInteractively', () => {
   } as PortableTemplateConfig;
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('should select a template interactively', async () => {
-    jest.spyOn(inquirer, 'prompt').mockResolvedValueOnce({ name: 'template1' });
+    vi.spyOn(inquirer, 'prompt').mockResolvedValueOnce({ name: 'template1' });
 
     const result = await selectTemplateInteractively(mockConfig);
 

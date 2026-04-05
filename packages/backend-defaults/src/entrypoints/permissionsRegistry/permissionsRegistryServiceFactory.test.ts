@@ -50,8 +50,8 @@ describe('permissionsRegistryServiceFactory', () => {
         ],
       }),
     ).rejects.toThrowErrorMatchingInlineSnapshot(`
-      "Backend startup failed due to the following errors:
-        Plugin 'test' startup failed; caused by Error: Resource type 'some-resource' belongs to plugin 'other', but was used with plugin 'test'"
+      [BackendStartupError: Backend startup failed due to the following errors:
+        Plugin 'test' startup failed; caused by Error: Resource type 'some-resource' belongs to plugin 'other', but was used with plugin 'test']
     `);
 
     await expect(
@@ -77,8 +77,8 @@ describe('permissionsRegistryServiceFactory', () => {
         ],
       }),
     ).rejects.toThrowErrorMatchingInlineSnapshot(`
-      "Backend startup failed due to the following errors:
-        Plugin 'test' startup failed; caused by Error: Resource type 'some-resource' belongs to plugin 'other', but was used with plugin 'test'"
+      [BackendStartupError: Backend startup failed due to the following errors:
+        Plugin 'test' startup failed; caused by Error: Resource type 'some-resource' belongs to plugin 'other', but was used with plugin 'test']
     `);
   });
 });

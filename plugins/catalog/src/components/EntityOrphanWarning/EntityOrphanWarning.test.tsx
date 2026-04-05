@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { catalogApiRef, EntityProvider } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
@@ -44,7 +46,7 @@ describe('<EntityOrphanWarning />', () => {
           [
             catalogApiRef,
             {
-              removeEntityByUid: jest.fn(),
+              removeEntityByUid: vi.fn(),
             },
           ],
         ]}

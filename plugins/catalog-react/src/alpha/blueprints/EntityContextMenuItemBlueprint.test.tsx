@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import {
   createExtensionTester,
   renderInTestApp,
@@ -22,9 +24,9 @@ import { screen, waitFor } from '@testing-library/react';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { Entity } from '@backstage/catalog-model';
 
-jest.mock('../../hooks/useEntityContextMenu', () => ({
+vi.mock('../../hooks/useEntityContextMenu', () => ({
   useEntityContextMenu: () => ({
-    onMenuClose: jest.fn(),
+    onMenuClose: vi.fn(),
   }),
 }));
 

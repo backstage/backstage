@@ -13,20 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi, type Mocked } from 'vitest';
 import { createSendNotificationAction } from './sendNotification';
 import { NotificationService } from '@backstage/plugin-notifications-node';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 
 describe('notification:send', () => {
-  const notificationService: jest.Mocked<NotificationService> = {
-    send: jest.fn(),
+  const notificationService: Mocked<NotificationService> = {
+    send: vi.fn(),
   };
 
   let action: TemplateAction<any, any, 'v2'>;
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
     action = createSendNotificationAction({
       notifications: notificationService,
     });

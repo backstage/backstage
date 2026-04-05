@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   mockServices,
   registerMswTestHooks,
@@ -92,7 +94,7 @@ describe('helpers', () => {
   registerMswTestHooks(server);
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     server.use(
       http.get(
         `https://mock-team.cloudflareaccess.com/cdn-cgi/access/certs`,
@@ -117,11 +119,11 @@ describe('helpers', () => {
   });
 
   afterEach(() => {
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 
   it('works for regular tokens, through header auth', async () => {
-    jest.useFakeTimers({
+    vi.useFakeTimers({
       now: 1600000004000,
     });
 
@@ -163,7 +165,7 @@ describe('helpers', () => {
   });
 
   it('works for regular tokens, through cookie auth', async () => {
-    jest.useFakeTimers({
+    vi.useFakeTimers({
       now: 1600000004000,
     });
 
@@ -200,7 +202,7 @@ describe('helpers', () => {
   });
 
   it('works for service tokens, through header auth', async () => {
-    jest.useFakeTimers({
+    vi.useFakeTimers({
       now: 1600000004000,
     });
 
@@ -241,7 +243,7 @@ describe('helpers', () => {
   });
 
   it('works for regular tokens, through jwtHeaderName header', async () => {
-    jest.useFakeTimers({
+    vi.useFakeTimers({
       now: 1600000004000,
     });
 
@@ -286,7 +288,7 @@ describe('helpers', () => {
   });
 
   it('works for regular tokens, through authorizationCookieName cookie name', async () => {
-    jest.useFakeTimers({
+    vi.useFakeTimers({
       now: 1600000004000,
     });
 

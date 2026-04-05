@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   AppTreeApi,
   appTreeApiRef,
@@ -228,7 +230,7 @@ describe('createSpecializedApp', () => {
   });
 
   it('should initialize the APIs in the correct order to allow for overrides', () => {
-    const mockAnalyticsApi = jest.fn(() => ({ captureEvent: jest.fn() }));
+    const mockAnalyticsApi = vi.fn(() => ({ captureEvent: vi.fn() }));
 
     const app = createSpecializedApp({
       features: [
@@ -942,10 +944,10 @@ describe('createSpecializedApp', () => {
 
     it('should synchronously finalize feature flag predicates without sign-in', async () => {
       const featureFlagsApi = {
-        isActive: jest.fn((name: string) => name === 'test-flag'),
-        registerFlag: jest.fn(),
+        isActive: vi.fn((name: string) => name === 'test-flag'),
+        registerFlag: vi.fn(),
         getRegisteredFlags: () => [],
-        save: jest.fn(),
+        save: vi.fn(),
       } as unknown as typeof featureFlagsApiRef.T;
       const noSignInAppPlugin = appPluginOriginal.withOverrides({
         extensions: [
@@ -1016,10 +1018,10 @@ describe('createSpecializedApp', () => {
 
     it('should defer conditional api roots without resetting visible api instances', () => {
       const featureFlagsApi = {
-        isActive: jest.fn((name: string) => name === 'test-flag'),
-        registerFlag: jest.fn(),
+        isActive: vi.fn((name: string) => name === 'test-flag'),
+        registerFlag: vi.fn(),
         getRegisteredFlags: () => [],
-        save: jest.fn(),
+        save: vi.fn(),
       } as unknown as typeof featureFlagsApiRef.T;
       const visibleApiExtension = ApiBlueprint.make({
         name: 'visible-api',
@@ -1090,10 +1092,10 @@ describe('createSpecializedApp', () => {
       let bootstrapApiValue: string | undefined;
       let finalApiValue: string | undefined;
       const featureFlagsApi = {
-        isActive: jest.fn((name: string) => name === 'test-flag'),
-        registerFlag: jest.fn(),
+        isActive: vi.fn((name: string) => name === 'test-flag'),
+        registerFlag: vi.fn(),
         getRegisteredFlags: () => [],
-        save: jest.fn(),
+        save: vi.fn(),
       } as unknown as typeof featureFlagsApiRef.T;
       const noSignInAppPlugin = appPluginOriginal.withOverrides({
         extensions: [
@@ -1195,10 +1197,10 @@ describe('createSpecializedApp', () => {
       });
       let finalApiValue: string | undefined;
       const featureFlagsApi = {
-        isActive: jest.fn((name: string) => name === 'test-flag'),
-        registerFlag: jest.fn(),
+        isActive: vi.fn((name: string) => name === 'test-flag'),
+        registerFlag: vi.fn(),
         getRegisteredFlags: () => [],
-        save: jest.fn(),
+        save: vi.fn(),
       } as unknown as typeof featureFlagsApiRef.T;
       const noSignInAppPlugin = appPluginOriginal.withOverrides({
         extensions: [
@@ -1302,7 +1304,7 @@ describe('createSpecializedApp', () => {
         getCredentials: async () => ({ token: 'token' }),
         signOut: async () => {},
       };
-      const appLayoutFactory = jest.fn(() => [
+      const appLayoutFactory = vi.fn(() => [
         coreExtensionData.reactElement(<div>App Layout</div>),
       ]);
       const phasedAppPlugin = appPluginOriginal.withOverrides({
@@ -1458,10 +1460,10 @@ describe('createSpecializedApp', () => {
         signOut: async () => {},
       };
       const featureFlagsApi = {
-        isActive: jest.fn((name: string) => name === 'test-flag'),
-        registerFlag: jest.fn(),
+        isActive: vi.fn((name: string) => name === 'test-flag'),
+        registerFlag: vi.fn(),
         getRegisteredFlags: () => [],
-        save: jest.fn(),
+        save: vi.fn(),
       } as unknown as typeof featureFlagsApiRef.T;
       const gatedAppPlugin = appPluginOriginal.withOverrides({
         extensions: [
@@ -1544,10 +1546,10 @@ describe('createSpecializedApp', () => {
         signOut: async () => {},
       };
       const featureFlagsApi = {
-        isActive: jest.fn((name: string) => name === 'test-flag'),
-        registerFlag: jest.fn(),
+        isActive: vi.fn((name: string) => name === 'test-flag'),
+        registerFlag: vi.fn(),
         getRegisteredFlags: () => [],
-        save: jest.fn(),
+        save: vi.fn(),
       } as unknown as typeof featureFlagsApiRef.T;
 
       const preparedApp = prepareSpecializedApp({
@@ -1639,10 +1641,10 @@ describe('createSpecializedApp', () => {
         id: 'test.delayed-api',
       });
       const featureFlagsApi = {
-        isActive: jest.fn((name: string) => name === 'test-flag'),
-        registerFlag: jest.fn(),
+        isActive: vi.fn((name: string) => name === 'test-flag'),
+        registerFlag: vi.fn(),
         getRegisteredFlags: () => [],
-        save: jest.fn(),
+        save: vi.fn(),
       } as unknown as typeof featureFlagsApiRef.T;
 
       const preparedApp = prepareSpecializedApp({

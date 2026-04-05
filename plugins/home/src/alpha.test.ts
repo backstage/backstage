@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import { mockApis } from '@backstage/test-utils';
 import homePlugin from './alpha';
 import { VisitsStorageApi, VisitsWebStorageApi } from './api';
@@ -77,7 +79,7 @@ describe('Home Plugin Alpha', () => {
       const mockIdentityApi = mockApis.identity({
         userEntityRef: 'user:default/testuser',
       });
-      const mockErrorApi = { post: jest.fn(), error$: jest.fn() };
+      const mockErrorApi = { post: vi.fn(), error$: vi.fn() };
 
       // Test that VisitsWebStorageApi can be created without custom storage
       const visitsApi = VisitsWebStorageApi.create({

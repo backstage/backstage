@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { createPluginKeySource } from './createPluginKeySource';
 import {
   TestDatabases,
@@ -22,7 +24,7 @@ import {
 } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 
-jest.setTimeout(60_000);
+vi.setConfig({ testTimeout: 60_000 });
 
 describe('createPluginKeySource', () => {
   const databases = TestDatabases.create();
@@ -33,7 +35,7 @@ describe('createPluginKeySource', () => {
     async databaseId => {
       const knex = await databases.init(databaseId);
 
-      const getClient = jest.fn(async () => knex);
+      const getClient = vi.fn(async () => knex);
 
       const source = await createPluginKeySource({
         config: new ConfigReader({}),
@@ -69,7 +71,7 @@ describe('createPluginKeySource', () => {
     async databaseId => {
       const knex = await databases.init(databaseId);
 
-      const getClient = jest.fn(async () => knex);
+      const getClient = vi.fn(async () => knex);
 
       const source = await createPluginKeySource({
         config: new ConfigReader({
@@ -125,7 +127,7 @@ describe('createPluginKeySource', () => {
     const publicKeyPath = mockDir.resolve('public.pem');
     const privateKeyPath = mockDir.resolve('private.pem');
 
-    const getClient = jest.fn();
+    const getClient = vi.fn();
 
     const source = await createPluginKeySource({
       config: new ConfigReader({

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { ReactNode } from 'react';
 import {
   mockApis,
@@ -29,12 +31,12 @@ import {
 import { SearchType } from './SearchType';
 import { configApiRef } from '@backstage/core-plugin-api';
 
-const setTypesMock = jest.fn();
-const setPageCursorMock = jest.fn();
+const setTypesMock = vi.fn();
+const setPageCursorMock = vi.fn();
 
-jest.mock('@backstage/plugin-search-react', () => ({
-  ...jest.requireActual('@backstage/plugin-search-react'),
-  useSearch: jest.fn().mockReturnValue({
+vi.mock('@backstage/plugin-search-react', () => ({
+  ...vi.importActual('@backstage/plugin-search-react'),
+  useSearch: vi.fn().mockReturnValue({
     types: [],
     setTypes: (types: any) => setTypesMock(types),
     pageCursor: '',
@@ -43,7 +45,7 @@ jest.mock('@backstage/plugin-search-react', () => ({
 }));
 
 describe('SearchType.Tabs', () => {
-  const searchApiMock = { query: jest.fn().mockResolvedValue({ results: [] }) };
+  const searchApiMock = { query: vi.fn().mockResolvedValue({ results: [] }) };
   const configApiMock = mockApis.config({
     data: {
       search: {

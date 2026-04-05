@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi, type Mocked } from 'vitest';
+
 import { TokenCredential } from '@azure/identity';
 import { registerMswTestHooks } from '@backstage/backend-test-utils';
 import { rest } from 'msw';
@@ -21,8 +23,8 @@ import { setupServer } from 'msw/node';
 import { MicrosoftGraphClient } from './client';
 
 describe('MicrosoftGraphClient', () => {
-  const tokenCredential: jest.Mocked<TokenCredential> = {
-    getToken: jest.fn(),
+  const tokenCredential: Mocked<TokenCredential> = {
+    getToken: vi.fn(),
   } as any;
   let client: MicrosoftGraphClient;
   const worker = setupServer();
@@ -37,7 +39,7 @@ describe('MicrosoftGraphClient', () => {
   });
 
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('should perform raw request', async () => {

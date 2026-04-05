@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi, type Mocked } from 'vitest';
+
 import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
 import { wrapServer } from '@backstage/backend-openapi-utils/testUtils';
 import {
@@ -46,7 +48,7 @@ import { basicEntityFilter } from './request';
 import { LocationInput, LocationService, RefreshService } from './types';
 import { decodeCursor, encodeCursor } from './util';
 
-jest.setTimeout(60_000);
+vi.setConfig({ testTimeout: 60_000 });
 
 const middleware = MiddlewareFactory.create({
   logger: mockServices.logger.mock(),
@@ -54,36 +56,36 @@ const middleware = MiddlewareFactory.create({
 });
 
 describe('createRouter readonly disabled', () => {
-  let entitiesCatalog: jest.Mocked<EntitiesCatalog>;
-  let locationService: jest.Mocked<LocationService>;
-  let orchestrator: jest.Mocked<CatalogProcessingOrchestrator>;
+  let entitiesCatalog: Mocked<EntitiesCatalog>;
+  let locationService: Mocked<LocationService>;
+  let orchestrator: Mocked<CatalogProcessingOrchestrator>;
   let app: express.Express | Server;
   let refreshService: RefreshService;
-  let locationAnalyzer: jest.Mocked<LocationAnalyzer>;
+  let locationAnalyzer: Mocked<LocationAnalyzer>;
   const permissionsService = mockServices.permissions();
 
   beforeEach(async () => {
     entitiesCatalog = {
-      entities: jest.fn(),
-      entitiesBatch: jest.fn(),
-      removeEntityByUid: jest.fn(),
-      entityAncestry: jest.fn(),
-      facets: jest.fn(),
-      queryEntities: jest.fn(),
+      entities: vi.fn(),
+      entitiesBatch: vi.fn(),
+      removeEntityByUid: vi.fn(),
+      entityAncestry: vi.fn(),
+      facets: vi.fn(),
+      queryEntities: vi.fn(),
     };
     locationService = {
-      getLocation: jest.fn(),
-      createLocation: jest.fn(),
-      queryLocations: jest.fn(),
-      listLocations: jest.fn(),
-      deleteLocation: jest.fn(),
-      getLocationByEntity: jest.fn(),
+      getLocation: vi.fn(),
+      createLocation: vi.fn(),
+      queryLocations: vi.fn(),
+      listLocations: vi.fn(),
+      deleteLocation: vi.fn(),
+      getLocationByEntity: vi.fn(),
     };
     locationAnalyzer = {
-      analyzeLocation: jest.fn(),
+      analyzeLocation: vi.fn(),
     };
-    refreshService = { refresh: jest.fn() };
-    orchestrator = { process: jest.fn() };
+    refreshService = { refresh: vi.fn() };
+    orchestrator = { process: vi.fn() };
     const router = await createRouter({
       entitiesCatalog,
       locationService,
@@ -102,7 +104,7 @@ describe('createRouter readonly disabled', () => {
   });
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('POST /refresh', () => {
@@ -915,12 +917,12 @@ describe('createRouter readonly disabled', () => {
   describe('POST /locations/by-query', () => {
     beforeEach(async () => {
       locationService = {
-        getLocation: jest.fn(),
-        createLocation: jest.fn(),
-        queryLocations: jest.fn(),
-        listLocations: jest.fn(),
-        deleteLocation: jest.fn(),
-        getLocationByEntity: jest.fn(),
+        getLocation: vi.fn(),
+        createLocation: vi.fn(),
+        queryLocations: vi.fn(),
+        listLocations: vi.fn(),
+        deleteLocation: vi.fn(),
+        getLocationByEntity: vi.fn(),
       };
       const router = await createRouter({
         locationService,
@@ -928,7 +930,7 @@ describe('createRouter readonly disabled', () => {
         config: new ConfigReader(undefined),
         auth: mockServices.auth(),
         httpAuth: mockServices.httpAuth(),
-        orchestrator: { process: jest.fn() },
+        orchestrator: { process: vi.fn() },
         permissionsService: mockServices.permissions(),
         auditor: mockServices.auditor.mock(),
       });
@@ -937,7 +939,7 @@ describe('createRouter readonly disabled', () => {
     });
 
     afterEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
     });
 
     it('happy path: queries locations without pagination', async () => {
@@ -1347,27 +1349,27 @@ describe('createRouter readonly disabled', () => {
 });
 
 describe('createRouter readonly and raw json enabled', () => {
-  let entitiesCatalog: jest.Mocked<EntitiesCatalog>;
+  let entitiesCatalog: Mocked<EntitiesCatalog>;
   let app: express.Express;
-  let locationService: jest.Mocked<LocationService>;
+  let locationService: Mocked<LocationService>;
   const permissionsService = mockServices.permissions();
 
   beforeAll(async () => {
     entitiesCatalog = {
-      entities: jest.fn(),
-      entitiesBatch: jest.fn(),
-      removeEntityByUid: jest.fn(),
-      entityAncestry: jest.fn(),
-      facets: jest.fn(),
-      queryEntities: jest.fn(),
+      entities: vi.fn(),
+      entitiesBatch: vi.fn(),
+      removeEntityByUid: vi.fn(),
+      entityAncestry: vi.fn(),
+      facets: vi.fn(),
+      queryEntities: vi.fn(),
     };
     locationService = {
-      getLocation: jest.fn(),
-      createLocation: jest.fn(),
-      listLocations: jest.fn(),
-      queryLocations: jest.fn(),
-      deleteLocation: jest.fn(),
-      getLocationByEntity: jest.fn(),
+      getLocation: vi.fn(),
+      createLocation: vi.fn(),
+      listLocations: vi.fn(),
+      queryLocations: vi.fn(),
+      deleteLocation: vi.fn(),
+      getLocationByEntity: vi.fn(),
     };
     const router = await createRouter({
       entitiesCatalog,
@@ -1380,7 +1382,7 @@ describe('createRouter readonly and raw json enabled', () => {
       }),
       auth: mockServices.auth(),
       httpAuth: mockServices.httpAuth(),
-      orchestrator: { process: jest.fn() },
+      orchestrator: { process: vi.fn() },
       permissionsService,
       auditor: mockServices.auditor.mock(),
     });
@@ -1389,7 +1391,7 @@ describe('createRouter readonly and raw json enabled', () => {
   });
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('GET /entities', () => {
@@ -1557,9 +1559,9 @@ describe('POST /locations/by-query works end to end', () => {
     await applyDatabaseMigrations(knex);
 
     const mockScmEvents = {
-      subscribe: jest.fn(),
-      publish: jest.fn(),
-      markEventActionTaken: jest.fn(),
+      subscribe: vi.fn(),
+      publish: vi.fn(),
+      markEventActionTaken: vi.fn(),
     };
 
     const store = new DefaultLocationStore(knex, mockScmEvents, {
@@ -1567,11 +1569,11 @@ describe('POST /locations/by-query works end to end', () => {
       unregister: false,
       move: false,
     });
-    await store.connect({ applyMutation: jest.fn(), refresh: jest.fn() });
+    await store.connect({ applyMutation: vi.fn(), refresh: vi.fn() });
 
     const locationService = new DefaultLocationService(
       store,
-      { process: jest.fn() },
+      { process: vi.fn() },
       {
         allowedLocationTypes: ['url'],
         defaultLocationConflictStrategy: 'reject',
@@ -1584,7 +1586,7 @@ describe('POST /locations/by-query works end to end', () => {
       config: new ConfigReader(undefined),
       auth: mockServices.auth(),
       httpAuth: mockServices.httpAuth(),
-      orchestrator: { process: jest.fn() },
+      orchestrator: { process: vi.fn() },
       permissionsService: mockServices.permissions(),
       auditor: mockServices.auditor.mock(),
     });

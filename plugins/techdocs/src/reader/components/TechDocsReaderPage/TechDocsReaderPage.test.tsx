@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi, vi, type Mocked} from 'vitest';
+
 import { ReactNode } from 'react';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 
@@ -68,9 +70,9 @@ const mockTechDocsMetadata = {
   site_description: 'test-site-desc',
 };
 
-const getEntityMetadata = jest.fn();
-const getTechDocsMetadata = jest.fn();
-const getCookie = jest.fn();
+const getEntityMetadata = vi.fn();
+const getTechDocsMetadata = vi.fn();
+const getCookie = vi.fn();
 
 const techdocsApiMock = {
   getEntityMetadata,
@@ -78,19 +80,19 @@ const techdocsApiMock = {
   getCookie,
 };
 
-const techdocsStorageApiMock: jest.Mocked<typeof techdocsStorageApiRef.T> = {
-  getApiOrigin: jest.fn(),
-  getBaseUrl: jest.fn(),
-  getBuilder: jest.fn(),
-  getEntityDocs: jest.fn(),
-  getStorageUrl: jest.fn(),
-  syncEntityDocs: jest.fn(),
+const techdocsStorageApiMock: Mocked<typeof techdocsStorageApiRef.T> = {
+  getApiOrigin: vi.fn(),
+  getBaseUrl: vi.fn(),
+  getBuilder: vi.fn(),
+  getEntityDocs: vi.fn(),
+  getStorageUrl: vi.fn(),
+  syncEntityDocs: vi.fn(),
 };
 
-const entityPresentationApiMock: jest.Mocked<
+const entityPresentationApiMock: Mocked<
   typeof entityPresentationApiRef.T
 > = {
-  forEntity: jest.fn().mockReturnValue({
+  forEntity: vi.fn().mockReturnValue({
     snapshot: {
       primaryTitle: 'Test Entity',
     },
@@ -100,9 +102,9 @@ const entityPresentationApiMock: jest.Mocked<
 const catalogApiMock = catalogApiMockFactory.mock();
 
 const fetchApiMock = {
-  fetch: jest.fn().mockResolvedValue({
+  fetch: vi.fn().mockResolvedValue({
     ok: true,
-    json: jest.fn().mockResolvedValue({
+    json: vi.fn().mockResolvedValue({
       // Expires in 10 minutes
       expiresAt: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
     }),
@@ -114,14 +116,14 @@ const PageMock = () => {
   return <>{`PageMock: ${namespace}#${kind}#${name}`}</>;
 };
 
-jest.mock('@backstage/core-components', () => ({
-  ...jest.requireActual('@backstage/core-components'),
-  Page: jest.fn(),
+vi.mock('@backstage/core-components', () => ({
+  ...vi.importActual('@backstage/core-components'),
+  Page: vi.fn(),
 }));
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useNavigate: jest.fn(),
+vi.mock('react-router-dom', () => ({
+  ...vi.importActual('react-router-dom'),
+  useNavigate: vi.fn(),
 }));
 
 const configApi = mockApis.config({
@@ -154,7 +156,7 @@ const mountedRoutes = {
 };
 
 describe('<TechDocsReaderPage />', () => {
-  const mockNavigate = jest.fn();
+  const mockNavigate = vi.fn();
 
   beforeEach(() => {
     getEntityMetadata.mockResolvedValue(mockEntityMetadata);
@@ -164,16 +166,16 @@ describe('<TechDocsReaderPage />', () => {
       expiresAt: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
     });
 
-    (useNavigate as jest.Mock).mockReturnValue(mockNavigate);
+    (useNavigate as Mock).mockReturnValue(mockNavigate);
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   beforeEach(() => {
-    const realPage = jest.requireActual('@backstage/core-components').Page;
-    (Page as jest.Mock).mockImplementation(realPage);
+    const realPage = vi.importActual('@backstage/core-components').Page;
+    (Page as Mock).mockImplementation(realPage);
   });
 
   it('should render a techdocs reader page without children', async () => {
@@ -221,7 +223,7 @@ describe('<TechDocsReaderPage />', () => {
   });
 
   it('should render techdocs reader page with addons', async () => {
-    (Page as jest.Mock).mockImplementation(PageMock);
+    (Page as Mock).mockImplementation(PageMock);
     const name = 'test-name';
     const namespace = 'test-namespace';
     const kind = 'test';
@@ -251,7 +253,7 @@ describe('<TechDocsReaderPage />', () => {
   });
 
   it('should render techdocs reader page with addons and page', async () => {
-    (Page as jest.Mock).mockImplementation(PageMock);
+    (Page as Mock).mockImplementation(PageMock);
     const rendered = await renderInTestApp(
       <Wrapper>
         <FlatRoutes>

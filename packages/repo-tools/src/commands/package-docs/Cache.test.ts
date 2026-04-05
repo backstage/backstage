@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { Lockfile } from '@backstage/cli-node';
 import { PackageDocsCache } from './Cache';
 import {
@@ -23,15 +25,15 @@ import {
 import { readFile } from 'node:fs/promises';
 import { join as joinPath } from 'node:path';
 
-jest.mock('crypto', () => {
-  const actual = jest.requireActual('crypto');
+vi.mock('crypto', () => {
+  const actual = vi.importActual('crypto');
   const hash = {
-    update: jest.fn(),
-    digest: jest.fn().mockReturnValue('test'),
+    update: vi.fn(),
+    digest: vi.fn().mockReturnValue('test'),
   };
   return {
     ...actual,
-    createHash: jest.fn().mockReturnValue(hash),
+    createHash: vi.fn().mockReturnValue(hash),
   };
 });
 

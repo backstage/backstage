@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 const octokit = {
   search: {
-    code: jest.fn(),
+    code: vi.fn(),
   },
   repos: {
-    get: jest.fn(),
+    get: vi.fn(),
   },
 };
 
-jest.mock('@octokit/rest', () => {
+vi.mock('@octokit/rest', () => {
   class Octokit {
     constructor() {
       return octokit;
@@ -54,7 +56,7 @@ describe('GithubLocationAnalyzer', () => {
     },
   });
   const catalog = catalogServiceMock.mock({
-    addLocation: jest.fn(async location => ({
+    addLocation: vi.fn(async location => ({
       location: {
         id: 'test',
         target: location.target,
@@ -94,7 +96,7 @@ describe('GithubLocationAnalyzer', () => {
   registerMswTestHooks(server);
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     octokit.repos.get.mockResolvedValue({
       data: { default_branch: 'my_default_branch' },
     });

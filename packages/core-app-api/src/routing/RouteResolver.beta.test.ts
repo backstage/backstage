@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   createRouteRef,
   createSubRouteRef,
@@ -26,9 +28,9 @@ import {
 import { RouteResolver } from './RouteResolver';
 import { MATCH_ALL_ROUTE } from './collectors';
 
-jest.mock('react-router', () => jest.requireActual('react-router-beta'));
-jest.mock('react-router-dom', () =>
-  jest.requireActual('react-router-dom-beta'),
+vi.mock('react-router', () => vi.importActual('react-router-beta'));
+vi.mock('react-router-dom', () =>
+  vi.importActual('react-router-dom-beta'),
 );
 
 const rest = {

@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 
-jest.mock('@backstage/plugin-scaffolder-node', () => {
-  const actual = jest.requireActual('@backstage/plugin-scaffolder-node');
-  return { ...actual, fetchFile: jest.fn() };
+vi.mock('@backstage/plugin-scaffolder-node', () => {
+  const actual = vi.importActual('@backstage/plugin-scaffolder-node');
+  return { ...actual, fetchFile: vi.fn() };
 });
 
 import yaml from 'yaml';
@@ -39,13 +41,13 @@ describe('fetch:plain:file examples', () => {
     }),
   );
   const reader: UrlReaderService = {
-    readUrl: jest.fn(),
-    readTree: jest.fn(),
-    search: jest.fn(),
+    readUrl: vi.fn(),
+    readTree: vi.fn(),
+    search: vi.fn(),
   };
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   const action = createFetchPlainFileAction({ integrations, reader });

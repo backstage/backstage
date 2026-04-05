@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import { TestPipeline } from '@backstage/plugin-search-backend-node';
 import Mock from '@elastic/elasticsearch-mock';
 import { range } from 'lodash';
@@ -29,12 +31,12 @@ const clientWrapper = ElasticSearchClientWrapper.fromClientOptions({
 
 describe('ElasticSearchSearchEngineIndexer', () => {
   let indexer: ElasticSearchSearchEngineIndexer;
-  let bulkSpy: jest.Mock;
-  let getSpy: jest.Mock;
-  let createSpy: jest.Mock;
-  let aliasesSpy: jest.Mock;
-  let deleteSpy: jest.Mock;
-  let refreshSpy: jest.Mock;
+  let bulkSpy: Mock;
+  let getSpy: Mock;
+  let createSpy: Mock;
+  let aliasesSpy: Mock;
+  let deleteSpy: Mock;
+  let refreshSpy: Mock;
 
   beforeEach(() => {
     // Instantiate the indexer to be tested.
@@ -51,7 +53,7 @@ describe('ElasticSearchSearchEngineIndexer', () => {
 
     // Set up all requisite Elastic mocks.
     mock.clearAll();
-    bulkSpy = jest.fn().mockReturnValue({ took: 9, errors: false, items: [] });
+    bulkSpy = vi.fn().mockReturnValue({ took: 9, errors: false, items: [] });
     mock.add(
       {
         method: 'POST',
@@ -59,7 +61,7 @@ describe('ElasticSearchSearchEngineIndexer', () => {
       },
       bulkSpy,
     );
-    refreshSpy = jest.fn().mockReturnValue({});
+    refreshSpy = vi.fn().mockReturnValue({});
     // Use specific pattern to avoid conflict with /some-type-index__* wildcard mock
     mock.add(
       {
@@ -69,7 +71,7 @@ describe('ElasticSearchSearchEngineIndexer', () => {
       refreshSpy,
     );
 
-    getSpy = jest.fn().mockReturnValue({
+    getSpy = vi.fn().mockReturnValue({
       'some-type-index__123tobedeleted': {
         aliases: {},
         mappings: {},
@@ -89,7 +91,7 @@ describe('ElasticSearchSearchEngineIndexer', () => {
       getSpy,
     );
 
-    createSpy = jest.fn().mockReturnValue({
+    createSpy = vi.fn().mockReturnValue({
       acknowledged: true,
       shards_acknowledged: true,
       index: 'single_index',
@@ -102,7 +104,7 @@ describe('ElasticSearchSearchEngineIndexer', () => {
       createSpy,
     );
 
-    aliasesSpy = jest.fn().mockReturnValue({});
+    aliasesSpy = vi.fn().mockReturnValue({});
     mock.add(
       {
         method: 'POST',
@@ -111,7 +113,7 @@ describe('ElasticSearchSearchEngineIndexer', () => {
       aliasesSpy,
     );
 
-    deleteSpy = jest.fn().mockReturnValue({});
+    deleteSpy = vi.fn().mockReturnValue({});
     mock.add(
       {
         method: 'DELETE',
@@ -230,7 +232,7 @@ describe('ElasticSearchSearchEngineIndexer', () => {
     ];
 
     // Update initial alias cat to return nothing.
-    getSpy = jest.fn().mockReturnValue({});
+    getSpy = vi.fn().mockReturnValue({});
     mock.clear({
       method: 'GET',
       path: '/some-type-index__*',
@@ -263,7 +265,7 @@ describe('ElasticSearchSearchEngineIndexer', () => {
       };
     }, {});
 
-    getSpy = jest.fn().mockReturnValue(indicesResponse);
+    getSpy = vi.fn().mockReturnValue(indicesResponse);
     mock.clear({
       method: 'GET',
       path: '/some-type-index__*',
@@ -297,7 +299,7 @@ describe('ElasticSearchSearchEngineIndexer', () => {
       node: 'http://localhost:9200',
       Connection: mock.getConnection(),
     });
-    mockClientWrapper.bulk = jest.fn().mockRejectedValue(expectedError);
+    mockClientWrapper.bulk = vi.fn().mockRejectedValue(expectedError);
 
     // And a search engine indexer that uses that client wrapper
     indexer = new ElasticSearchSearchEngineIndexer({

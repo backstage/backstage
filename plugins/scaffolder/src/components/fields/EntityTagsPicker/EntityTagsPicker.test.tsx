@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { Entity } from '@backstage/catalog-model';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
@@ -36,7 +38,7 @@ describe('<EntityTagsPicker />', () => {
     makeEntity('Group', 'default', 'team-a'),
     makeEntity('Group', 'default', 'squad-b'),
   ];
-  const onChange = jest.fn();
+  const onChange = vi.fn();
   const schema = { type: 'array', items: { type: 'string' } };
   const uiSchema: EntityTagsPickerProps['uiSchema'] = {
     'ui:options': {},
@@ -47,7 +49,7 @@ describe('<EntityTagsPicker />', () => {
   let props: FieldProps<string[]>;
 
   const catalogApi = catalogApiMock.mock({
-    getEntities: jest.fn(async () => ({ items: entities })),
+    getEntities: vi.fn(async () => ({ items: entities })),
   });
 
   let Wrapper: ComponentType<PropsWithChildren<{}>>;
@@ -60,7 +62,7 @@ describe('<EntityTagsPicker />', () => {
     );
   });
 
-  afterEach(() => jest.resetAllMocks());
+  afterEach(() => vi.resetAllMocks());
 
   describe('EntityTagsPicker description', () => {
     const description = {

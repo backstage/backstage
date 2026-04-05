@@ -1,3 +1,5 @@
+import { vi } from 'vitest';
+
 import { {{providerClass}} } from './{{providerClass}}';
 import { mockServices } from '@backstage/backend-test-utils';
 
@@ -8,7 +10,7 @@ describe('{{providerClass}}', () => {
       id: 'test',
       target: 'https://example.com',
       logger: mockServices.logger.mock(),
-      taskRunner: { run: jest.fn() },
+      taskRunner: { run: vi.fn() },
     });
 
     const entities = await provider.read({ logger });

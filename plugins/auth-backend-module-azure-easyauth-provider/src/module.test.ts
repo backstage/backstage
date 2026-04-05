@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
 import authPlugin from '@backstage/plugin-auth-backend';
 import { authModuleAzureEasyAuthProvider } from './module';
@@ -40,7 +42,7 @@ const features = [authPlugin, authModuleAzureEasyAuthProvider, rootConfig];
 describe('authModuleAzureEasyAuthProvider', () => {
   const env = process.env;
   beforeEach(() => {
-    jest.resetModules();
+    vi.resetModules();
     process.env = { ...env };
   });
   afterEach(() => {

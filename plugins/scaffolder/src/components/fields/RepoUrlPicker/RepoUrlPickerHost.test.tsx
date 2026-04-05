@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import { RepoUrlPickerHost } from './RepoUrlPickerHost';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
@@ -20,9 +22,9 @@ import { fireEvent, within } from '@testing-library/react';
 
 describe('RepoUrlPickerHostField', () => {
   it('renders the default host properly', async () => {
-    const mockOnChange = jest.fn();
+    const mockOnChange = vi.fn();
     const mockScaffolderApi = {
-      getIntegrationsList: jest.fn().mockResolvedValue({
+      getIntegrationsList: vi.fn().mockResolvedValue({
         integrations: [
           { host: 'github.com', title: 'github.com', type: 'github' },
         ],
@@ -43,9 +45,9 @@ describe('RepoUrlPickerHostField', () => {
   });
 
   it('should provide a dropdown when multiple hosts are returned that can be selected', async () => {
-    const mockOnChange = jest.fn();
+    const mockOnChange = vi.fn();
     const mockScaffolderApi = {
-      getIntegrationsList: jest.fn().mockResolvedValue({
+      getIntegrationsList: vi.fn().mockResolvedValue({
         integrations: [
           { host: 'github.com', title: 'github.com', type: 'github' },
           { host: 'gitlab.com', title: 'gitlab.com', type: 'gitlab' },
@@ -72,9 +74,9 @@ describe('RepoUrlPickerHostField', () => {
   });
 
   it('should not display hosts that dont have integration config set correctly', async () => {
-    const mockOnChange = jest.fn();
+    const mockOnChange = vi.fn();
     const mockScaffolderApi = {
-      getIntegrationsList: jest.fn().mockResolvedValue({
+      getIntegrationsList: vi.fn().mockResolvedValue({
         integrations: [
           { host: 'github.com', title: 'github.com', type: 'github' },
           { host: 'gitlab.com', title: 'gitlab.com', type: 'gitlab' },
@@ -101,9 +103,9 @@ describe('RepoUrlPickerHostField', () => {
   });
 
   it('disables the host select when isDisabled is true', async () => {
-    const mockOnChange = jest.fn();
+    const mockOnChange = vi.fn();
     const mockScaffolderApi = {
-      getIntegrationsList: jest.fn().mockResolvedValue({
+      getIntegrationsList: vi.fn().mockResolvedValue({
         integrations: [
           { host: 'github.com', title: 'github.com', type: 'github' },
           { host: 'gitlab.com', title: 'gitlab.com', type: 'gitlab' },

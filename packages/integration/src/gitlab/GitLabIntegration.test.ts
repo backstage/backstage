@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
 import { ConfigReader } from '@backstage/config';
@@ -25,8 +27,8 @@ import {
 import { registerMswTestHooks } from '../helpers';
 
 // Mock pThrottle to make testing easier
-jest.mock('p-throttle', () => {
-  return jest.fn(() => (fn: any) => fn);
+vi.mock('p-throttle', () => {
+  return vi.fn(() => (fn: any) => fn);
 });
 
 describe('GitLabIntegration', () => {
@@ -75,13 +77,13 @@ describe('GitLabIntegration', () => {
     registerMswTestHooks(worker);
 
     beforeAll(() => {
-      jest.useFakeTimers();
+      vi.useFakeTimers();
     });
     afterAll(() => {
-      jest.useRealTimers();
+      vi.useRealTimers();
     });
     beforeEach(() => {
-      jest.clearAllTimers();
+      vi.clearAllTimers();
     });
 
     it('uses plain fetch when no throttling or retries configured', async () => {
@@ -125,9 +127,9 @@ describe('GitLabIntegration', () => {
         },
       });
       const responsePromise = integration.fetch('https://h.com/api/v4');
-      await jest.advanceTimersByTimeAsync(100);
-      await jest.advanceTimersByTimeAsync(200);
-      await jest.advanceTimersByTimeAsync(400);
+      await vi.advanceTimersByTimeAsync(100);
+      await vi.advanceTimersByTimeAsync(200);
+      await vi.advanceTimersByTimeAsync(400);
       const response = await responsePromise;
 
       expect(response.status).toBe(200);
@@ -154,7 +156,7 @@ describe('GitLabIntegration', () => {
       });
 
       const responsePromise = integration.fetch('https://h.com/api/v4');
-      await jest.advanceTimersByTimeAsync(1000);
+      await vi.advanceTimersByTimeAsync(1000);
       const response = await responsePromise;
 
       expect(response.status).toBe(404);
@@ -181,9 +183,9 @@ describe('GitLabIntegration', () => {
       });
 
       const responsePromise = integration.fetch('https://h.com/api/v4');
-      await jest.advanceTimersByTimeAsync(100);
-      await jest.advanceTimersByTimeAsync(200);
-      await jest.advanceTimersByTimeAsync(400);
+      await vi.advanceTimersByTimeAsync(100);
+      await vi.advanceTimersByTimeAsync(200);
+      await vi.advanceTimersByTimeAsync(400);
       const response = await responsePromise;
 
       expect(response.status).toBe(429);
@@ -192,7 +194,7 @@ describe('GitLabIntegration', () => {
 
     it('applies throttling when limitPerMinute > 0', async () => {
       const pThrottle = require('p-throttle');
-      const throttleMock = jest.fn(() => (fn: any) => fn);
+      const throttleMock = vi.fn(() => (fn: any) => fn);
       pThrottle.mockReturnValue(throttleMock);
 
       const integration = new GitLabIntegration({
@@ -216,7 +218,7 @@ describe('GitLabIntegration', () => {
     it('applies both throttling and retry when both are configured', async () => {
       const pThrottle = require('p-throttle');
 
-      const throttleMock = jest.fn((fn: any) => fn);
+      const throttleMock = vi.fn((fn: any) => fn);
       pThrottle.mockReturnValue(throttleMock);
 
       let callCount = 0;
@@ -242,7 +244,7 @@ describe('GitLabIntegration', () => {
       });
 
       const responsePromise = integration.fetch('https://h.com/api/v4');
-      await jest.advanceTimersByTimeAsync(100);
+      await vi.advanceTimersByTimeAsync(100);
       const response = await responsePromise;
 
       expect(response.status).toBe(200);
@@ -280,7 +282,7 @@ describe('GitLabIntegration', () => {
       });
 
       const responsePromise = integration.fetch('https://h.com/api/v4');
-      await jest.advanceTimersByTimeAsync(1000);
+      await vi.advanceTimersByTimeAsync(1000);
       const response = await responsePromise;
 
       expect(response.status).toBe(200);
@@ -310,9 +312,9 @@ describe('GitLabIntegration', () => {
       });
 
       const responsePromise = integration.fetch('https://h.com/api/v4');
-      await jest.advanceTimersByTimeAsync(100);
-      await jest.advanceTimersByTimeAsync(200);
-      await jest.advanceTimersByTimeAsync(400);
+      await vi.advanceTimersByTimeAsync(100);
+      await vi.advanceTimersByTimeAsync(200);
+      await vi.advanceTimersByTimeAsync(400);
       const response = await responsePromise;
 
       expect(response.status).toBe(200);
@@ -323,13 +325,13 @@ describe('GitLabIntegration', () => {
 
 describe('sleep', () => {
   beforeAll(() => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
   });
   afterAll(() => {
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
   beforeEach(() => {
-    jest.clearAllTimers();
+    vi.clearAllTimers();
   });
 
   it('should resolve after the specified duration when not aborted', async () => {
@@ -337,7 +339,7 @@ describe('sleep', () => {
     const sleepPromise = sleep(duration, null);
 
     // Fast-forward timers to trigger the timeout
-    jest.advanceTimersByTimeAsync(duration);
+    vi.advanceTimersByTimeAsync(duration);
 
     await expect(sleepPromise).resolves.toBeUndefined();
   });
@@ -370,7 +372,7 @@ describe('sleep', () => {
     const sleepPromise = sleep(duration, undefined);
 
     // Fast-forward timers to trigger the timeout
-    jest.advanceTimersByTimeAsync(duration);
+    vi.advanceTimersByTimeAsync(duration);
 
     await expect(sleepPromise).resolves.toBeUndefined();
   });
@@ -382,7 +384,7 @@ describe('sleep', () => {
     const sleepPromise = sleep(duration, abortController.signal);
 
     // Check that a timer was set
-    expect(jest.getTimerCount()).toBe(1);
+    expect(vi.getTimerCount()).toBe(1);
 
     // Abort the signal
     abortController.abort();
@@ -391,7 +393,7 @@ describe('sleep', () => {
     await sleepPromise;
 
     // Timer should be cleaned up
-    expect(jest.getTimerCount()).toBe(0);
+    expect(vi.getTimerCount()).toBe(0);
   });
 
   it('should clean up abort event listener when timeout completes', async () => {
@@ -401,7 +403,7 @@ describe('sleep', () => {
     const sleepPromise = sleep(duration, abortController.signal);
 
     // Fast-forward timers to complete the timeout
-    jest.advanceTimersByTimeAsync(duration);
+    vi.advanceTimersByTimeAsync(duration);
 
     // Wait for the promise to complete and verify it resolves properly
     await expect(sleepPromise).resolves.toBeUndefined();
@@ -410,7 +412,7 @@ describe('sleep', () => {
     abortController.abort(); // This should not affect anything since the sleep is already done
 
     // Verify the sleep function handled cleanup properly
-    expect(jest.getTimerCount()).toBe(0);
+    expect(vi.getTimerCount()).toBe(0);
   });
 });
 

@@ -62,8 +62,8 @@ describe('response body', () => {
     };
     await expect(parser.parse(toResponse(responseBody))).rejects
       .toThrowErrorMatchingInlineSnapshot(`
-      "["GET /api/search" (200)]: Response body validation failed.
-       - The "result" property is not allowed"
+      [Error: ["GET /api/search" (200)]: Response body validation failed.
+       - The "result" property is not allowed]
     `);
   });
 
@@ -75,7 +75,7 @@ describe('response body', () => {
     await expect(
       parser.parse(toResponse()),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"["GET /api/search" (200)]: Response body is required but missing"`,
+      `[Error: ["GET /api/search" (200)]: Response body is required but missing]`,
     );
   });
 });

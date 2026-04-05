@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { InfinispanKeyvStore } from './InfinispanKeyvStore';
 import { mockServices } from '@backstage/backend-test-utils';
 
@@ -24,12 +26,12 @@ describe('InfinispanKeyvStore', () => {
 
   beforeEach(() => {
     mockClient = {
-      get: jest.fn(),
-      put: jest.fn(),
-      remove: jest.fn(),
-      clear: jest.fn(),
-      disconnect: jest.fn(),
-      on: jest.fn(),
+      get: vi.fn(),
+      put: vi.fn(),
+      remove: vi.fn(),
+      clear: vi.fn(),
+      disconnect: vi.fn(),
+      on: vi.fn(),
     };
 
     store = new InfinispanKeyvStore({
@@ -39,7 +41,7 @@ describe('InfinispanKeyvStore', () => {
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('get', () => {
@@ -120,11 +122,11 @@ describe('InfinispanKeyvStore', () => {
   describe('disconnect', () => {
     it('is a no-op as client is managed by CacheManager', async () => {
       const disconnectMockClient = {
-        disconnect: jest.fn().mockResolvedValue(undefined),
-        get: jest.fn().mockResolvedValue(null),
-        put: jest.fn().mockResolvedValue(undefined),
-        remove: jest.fn().mockResolvedValue(undefined),
-        clear: jest.fn().mockResolvedValue(undefined),
+        disconnect: vi.fn().mockResolvedValue(undefined),
+        get: vi.fn().mockResolvedValue(null),
+        put: vi.fn().mockResolvedValue(undefined),
+        remove: vi.fn().mockResolvedValue(undefined),
+        clear: vi.fn().mockResolvedValue(undefined),
       };
       const disconnectStore = new InfinispanKeyvStore({
         clientPromise: Promise.resolve(disconnectMockClient),
@@ -137,11 +139,11 @@ describe('InfinispanKeyvStore', () => {
     it('handles client errors', async () => {
       const error = new Error('Connection error');
       const errorMockClient = {
-        disconnect: jest.fn().mockRejectedValue(error),
-        get: jest.fn().mockResolvedValue(null),
-        put: jest.fn().mockResolvedValue(undefined),
-        remove: jest.fn().mockResolvedValue(undefined),
-        clear: jest.fn().mockResolvedValue(undefined),
+        disconnect: vi.fn().mockRejectedValue(error),
+        get: vi.fn().mockResolvedValue(null),
+        put: vi.fn().mockResolvedValue(undefined),
+        remove: vi.fn().mockResolvedValue(undefined),
+        clear: vi.fn().mockResolvedValue(undefined),
       };
       const errorStore = new InfinispanKeyvStore({
         clientPromise: Promise.resolve(errorMockClient),
@@ -154,7 +156,7 @@ describe('InfinispanKeyvStore', () => {
   describe('error handling', () => {
     it('emits error events from client', async () => {
       const error = new Error('Client error');
-      const errorHandler = jest.fn();
+      const errorHandler = vi.fn();
       store.on('error', errorHandler);
 
       // Simulate client error

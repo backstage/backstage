@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import userEvent from '@testing-library/user-event';
 import { ReactNode } from 'react';
 import { DeleteEntityDialog } from './DeleteEntityDialog';
@@ -56,11 +58,11 @@ describe('DeleteEntityDialog', () => {
   );
 
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('can cancel', async () => {
-    const onClose = jest.fn();
+    const onClose = vi.fn();
 
     await renderInTestApp(
       <Wrapper>
@@ -81,7 +83,7 @@ describe('DeleteEntityDialog', () => {
   });
 
   it('can delete', async () => {
-    const onConfirm = jest.fn();
+    const onConfirm = vi.fn();
 
     await renderInTestApp(
       <Wrapper>
@@ -103,7 +105,7 @@ describe('DeleteEntityDialog', () => {
   });
 
   it('handles error', async () => {
-    const onConfirm = jest.fn();
+    const onConfirm = vi.fn();
 
     await renderInTestApp(
       <Wrapper>

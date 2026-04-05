@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   analyticsApiRef,
   coreExtensionData,
@@ -158,7 +160,7 @@ describe('createExtensionTester', () => {
   });
 
   it('should support API overrides via options', async () => {
-    const analyticsApiMock = { captureEvent: jest.fn() };
+    const analyticsApiMock = { captureEvent: vi.fn() };
 
     const TestComponent = () => {
       const analytics = useAnalytics();

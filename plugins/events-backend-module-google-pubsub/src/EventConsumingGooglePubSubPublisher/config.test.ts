@@ -288,7 +288,7 @@ describe('readSubscriptionTasksFromConfig', () => {
     expect(() =>
       readSubscriptionTasksFromConfig(mockServices.rootConfig({ data })),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Expected Google Pub/Sub 'targetTopicName' to be on the form 'projects/PROJECT_ID/topics/TOPIC_ID' but got 'foo'"`,
+      `[InputError: Expected Google Pub/Sub 'targetTopicName' to be on the form 'projects/PROJECT_ID/topics/TOPIC_ID' but got 'foo']`,
     );
   });
 });

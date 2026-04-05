@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   createTranslationMessages,
   createTranslationRef,
@@ -76,7 +78,7 @@ function assertReady<TMessages extends { [key in string]: string }>(
 
 describe('I18nextTranslationApi', () => {
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should get a translation snapshot', () => {

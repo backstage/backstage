@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { registerMswTestHooks } from '@backstage/backend-test-utils';
@@ -51,7 +53,7 @@ describe('bitbucket:pipelines:run', () => {
   registerMswTestHooks(worker);
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should throw if there is no integration credentials or token provided', async () => {

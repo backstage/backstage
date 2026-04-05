@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { BackstageUserIdentity, ProfileInfo } from '@backstage/core-plugin-api';
 import { UserIdentity } from './UserIdentity';
 
@@ -31,7 +33,7 @@ describe('UserIdentity', () => {
     };
 
     const mockAuthApi: any = {
-      getProfile: jest.fn().mockResolvedValue(mockProfileInfo),
+      getProfile: vi.fn().mockResolvedValue(mockProfileInfo),
     };
 
     const userIdentity = UserIdentity.create({

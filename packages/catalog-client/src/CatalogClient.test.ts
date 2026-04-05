@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { Entity } from '@backstage/catalog-model';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
@@ -573,7 +575,7 @@ describe('CatalogClient', () => {
     });
 
     it('should return paginated functions if next and prev cursors are present', async () => {
-      const mockedEndpoint = jest.fn().mockImplementation((_req, res, ctx) =>
+      const mockedEndpoint = vi.fn().mockImplementation((_req, res, ctx) =>
         res(
           ctx.json({
             items: [
@@ -670,7 +672,7 @@ describe('CatalogClient', () => {
     };
 
     it('should use POST endpoint when query is provided', async () => {
-      const mockedEndpoint = jest.fn().mockImplementation((req, res, ctx) => {
+      const mockedEndpoint = vi.fn().mockImplementation((req, res, ctx) => {
         expect(req.method).toBe('POST');
         expect(req.body).toMatchObject({
           query: { kind: 'component' },
@@ -692,7 +694,7 @@ describe('CatalogClient', () => {
     });
 
     it('should support $all operator', async () => {
-      const mockedEndpoint = jest.fn().mockImplementation((req, res, ctx) => {
+      const mockedEndpoint = vi.fn().mockImplementation((req, res, ctx) => {
         expect(req.body).toMatchObject({
           query: {
             $all: [{ kind: 'component' }, { 'spec.type': 'service' }],
@@ -713,7 +715,7 @@ describe('CatalogClient', () => {
     });
 
     it('should support $any operator', async () => {
-      const mockedEndpoint = jest.fn().mockImplementation((req, res, ctx) => {
+      const mockedEndpoint = vi.fn().mockImplementation((req, res, ctx) => {
         expect(req.body).toMatchObject({
           query: {
             $any: [{ 'spec.type': 'service' }, { 'spec.type': 'website' }],
@@ -734,7 +736,7 @@ describe('CatalogClient', () => {
     });
 
     it('should support $not operator', async () => {
-      const mockedEndpoint = jest.fn().mockImplementation((req, res, ctx) => {
+      const mockedEndpoint = vi.fn().mockImplementation((req, res, ctx) => {
         expect(req.body).toMatchObject({
           query: {
             $not: { 'spec.lifecycle': 'experimental' },
@@ -755,7 +757,7 @@ describe('CatalogClient', () => {
     });
 
     it('should support $exists operator', async () => {
-      const mockedEndpoint = jest.fn().mockImplementation((req, res, ctx) => {
+      const mockedEndpoint = vi.fn().mockImplementation((req, res, ctx) => {
         expect(req.body).toMatchObject({
           query: {
             'spec.owner': { $exists: true },
@@ -776,7 +778,7 @@ describe('CatalogClient', () => {
     });
 
     it('should support $in operator', async () => {
-      const mockedEndpoint = jest.fn().mockImplementation((req, res, ctx) => {
+      const mockedEndpoint = vi.fn().mockImplementation((req, res, ctx) => {
         expect(req.body).toMatchObject({
           query: {
             'spec.owner': { $in: ['team-a', 'team-b', 'team-c'] },
@@ -797,7 +799,7 @@ describe('CatalogClient', () => {
     });
 
     it('should support complex nested predicates', async () => {
-      const mockedEndpoint = jest.fn().mockImplementation((req, res, ctx) => {
+      const mockedEndpoint = vi.fn().mockImplementation((req, res, ctx) => {
         expect(req.body).toMatchObject({
           query: {
             $all: [
@@ -838,7 +840,7 @@ describe('CatalogClient', () => {
     });
 
     it('should send orderFields with correct format', async () => {
-      const mockedEndpoint = jest.fn().mockImplementation((req, res, ctx) => {
+      const mockedEndpoint = vi.fn().mockImplementation((req, res, ctx) => {
         expect(req.body.orderBy).toEqual([
           { field: 'metadata.name', order: 'asc' },
         ]);
@@ -856,7 +858,7 @@ describe('CatalogClient', () => {
     });
 
     it('should send multiple orderFields with correct format', async () => {
-      const mockedEndpoint = jest.fn().mockImplementation((req, res, ctx) => {
+      const mockedEndpoint = vi.fn().mockImplementation((req, res, ctx) => {
         expect(req.body.orderBy).toEqual([
           { field: 'metadata.name', order: 'asc' },
           { field: 'spec.type', order: 'desc' },
@@ -878,7 +880,7 @@ describe('CatalogClient', () => {
     });
 
     it('should send limit and offset parameters in the body', async () => {
-      const mockedEndpoint = jest.fn().mockImplementation((req, res, ctx) => {
+      const mockedEndpoint = vi.fn().mockImplementation((req, res, ctx) => {
         expect(req.body.limit).toBe(50);
         return res(ctx.json(defaultResponse));
       });
@@ -917,7 +919,7 @@ describe('CatalogClient', () => {
         pageInfo: {},
       };
 
-      const mockedEndpoint = jest.fn().mockImplementation((req, res, ctx) => {
+      const mockedEndpoint = vi.fn().mockImplementation((req, res, ctx) => {
         expect(req.method).toBe('POST');
         expect(req.body).toMatchObject({ cursor: cursorPayload });
         return res(ctx.json(page2Response));
@@ -945,7 +947,7 @@ describe('CatalogClient', () => {
         }),
       ).toString('base64');
 
-      const mockedGetEndpoint = jest.fn().mockImplementation((_req, res, ctx) =>
+      const mockedGetEndpoint = vi.fn().mockImplementation((_req, res, ctx) =>
         res(
           ctx.json({
             items: [],
@@ -955,7 +957,7 @@ describe('CatalogClient', () => {
         ),
       );
 
-      const mockedPostEndpoint = jest.fn();
+      const mockedPostEndpoint = vi.fn();
 
       server.use(
         rest.get(`${mockBaseUrl}/entities/by-query`, mockedGetEndpoint),

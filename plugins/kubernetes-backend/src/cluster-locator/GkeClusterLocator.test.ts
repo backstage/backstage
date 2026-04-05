@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { ANNOTATION_KUBERNETES_AUTH_PROVIDER } from '@backstage/plugin-kubernetes-common';
 import { ConfigReader, Config } from '@backstage/config';
 import { GkeClusterLocator } from './GkeClusterLocator';
 import { mockServices } from '@backstage/backend-test-utils';
 import * as container from '@google-cloud/container';
 
-const mockedListClusters = jest.fn();
-jest.mock('@google-cloud/container', () => {
+const mockedListClusters = vi.fn();
+vi.mock('@google-cloud/container', () => {
   return {
     v1: {
-      ClusterManagerClient: jest.fn().mockImplementation(() => {
+      ClusterManagerClient: vi.fn().mockImplementation(() => {
         mockedListClusters();
       }),
     },
@@ -36,7 +38,7 @@ describe('GkeClusterLocator', () => {
 
   beforeEach(() => {
     mockedListClusters.mockRestore();
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
   describe('config-parsing', () => {
     it('should accept missing region', async () => {

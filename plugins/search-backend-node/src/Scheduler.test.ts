@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { Scheduler } from './index';
 import { mockServices } from '@backstage/backend-test-utils';
 
@@ -29,13 +31,13 @@ describe('Scheduler', () => {
 
   describe('addToSchedule', () => {
     it('should not add a task and interval to schedule, if already started', async () => {
-      const mockTask1 = jest.fn();
-      const mockTask2 = jest.fn();
+      const mockTask1 = vi.fn();
+      const mockTask2 = vi.fn();
       const mockScheduledTaskRunner1 = {
-        run: jest.fn(),
+        run: vi.fn(),
       };
       const mockScheduledTaskRunner2 = {
-        run: jest.fn(),
+        run: vi.fn(),
       };
 
       // Add a task and interval to schedule
@@ -72,13 +74,13 @@ describe('Scheduler', () => {
     });
 
     it('should not add a task to schedule, if it already exists', async () => {
-      const mockTask1 = jest.fn();
-      const mockTask2 = jest.fn();
+      const mockTask1 = vi.fn();
+      const mockTask2 = vi.fn();
       const mockScheduledTaskRunner1 = {
-        run: jest.fn(),
+        run: vi.fn(),
       };
       const mockScheduledTaskRunner2 = {
-        run: jest.fn(),
+        run: vi.fn(),
       };
 
       // Add a task and interval to schedule
@@ -115,13 +117,13 @@ describe('Scheduler', () => {
     });
 
     it('should be possible to add a task and interval to schedule, if already started, but stopped in between', async () => {
-      const mockTask1 = jest.fn();
-      const mockTask2 = jest.fn();
+      const mockTask1 = vi.fn();
+      const mockTask2 = vi.fn();
       const mockScheduledTaskRunner1 = {
-        run: jest.fn(),
+        run: vi.fn(),
       };
       const mockScheduledTaskRunner2 = {
-        run: jest.fn(),
+        run: vi.fn(),
       };
 
       // Add a task and interval to schedule
@@ -166,13 +168,13 @@ describe('Scheduler', () => {
 
   describe('start', () => {
     it('should execute tasks on start', () => {
-      const mockTask1 = jest.fn();
-      const mockTask2 = jest.fn();
+      const mockTask1 = vi.fn();
+      const mockTask2 = vi.fn();
       const mockScheduledTaskRunner1 = {
-        run: jest.fn(),
+        run: vi.fn(),
       };
       const mockScheduledTaskRunner2 = {
-        run: jest.fn(),
+        run: vi.fn(),
       };
 
       // Add tasks and interval to schedule
@@ -207,17 +209,17 @@ describe('Scheduler', () => {
 
   describe('stop', () => {
     it('should abort tasks on stop', () => {
-      const run = jest.fn();
+      const run = vi.fn();
 
       // Add tasks and interval to schedule
       testScheduler.addToSchedule({
         id: '1',
-        task: jest.fn(),
+        task: vi.fn(),
         scheduledRunner: { run },
       });
       testScheduler.addToSchedule({
         id: '2',
-        task: jest.fn(),
+        task: vi.fn(),
         scheduledRunner: { run },
       });
 

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   Entity,
   RELATION_HAS_PART,
@@ -155,7 +157,7 @@ describe.skip('<EntityRelationsGraph/>', () => {
   });
 
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   test('renders a single node without exploding', async () => {
@@ -394,7 +396,7 @@ describe.skip('<EntityRelationsGraph/>', () => {
   test('handle clicks on a node', async () => {
     catalog.getEntityByRef.mockImplementation(async n => entities[n as string]);
 
-    const onNodeClick = jest.fn();
+    const onNodeClick = vi.fn();
     await renderInTestApp(
       <Wrapper>
         <EntityRelationsGraph

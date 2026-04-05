@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { PropsWithChildren } from 'react';
 import { routingV1Collector } from './collectors';
 
@@ -32,9 +34,9 @@ import {
 } from '@backstage/core-plugin-api';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 
-jest.mock('react-router', () => jest.requireActual('react-router-beta'));
-jest.mock('react-router-dom', () =>
-  jest.requireActual('react-router-dom-beta'),
+vi.mock('react-router', () => vi.importActual('react-router-beta'));
+vi.mock('react-router-dom', () =>
+  vi.importActual('react-router-dom-beta'),
 );
 
 const MockComponent = ({ children }: PropsWithChildren<{ path?: string }>) => (

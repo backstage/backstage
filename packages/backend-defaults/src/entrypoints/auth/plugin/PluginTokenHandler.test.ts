@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { mockServices } from '@backstage/backend-test-utils';
 import { DefaultPluginTokenHandler } from './PluginTokenHandler';
 import { decodeJwt } from 'jose';
@@ -33,15 +35,15 @@ describe('PluginTokenHandler', () => {
   };
 
   beforeEach(() => {
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 
   it('runs issueToken', async () => {
-    jest.useFakeTimers({
+    vi.useFakeTimers({
       now: new Date(0),
     });
 
-    const getKeyMock = jest.fn(async () => mockPrivateKey);
+    const getKeyMock = vi.fn(async () => mockPrivateKey);
     const handler = DefaultPluginTokenHandler.create({
       discovery: mockServices.discovery(),
       keyDuration: { seconds: 10 },
@@ -49,7 +51,7 @@ describe('PluginTokenHandler', () => {
       ownPluginId: 'test',
       keySource: {
         getPrivateSigningKey: getKeyMock,
-        listKeys: jest.fn(),
+        listKeys: vi.fn(),
       },
     });
 

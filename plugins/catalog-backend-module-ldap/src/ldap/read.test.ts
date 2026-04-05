@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi, type Mocked } from 'vitest';
+
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
 import { Entry } from 'ldapts';
 import merge from 'lodash/merge';
@@ -66,12 +68,12 @@ function group(data: RecursivePartial<GroupEntity>): GroupEntity {
 }
 
 describe('readLdapUsers', () => {
-  const client: jest.Mocked<LdapClient> = {
-    search: jest.fn(),
-    getVendor: jest.fn(),
+  const client: Mocked<LdapClient> = {
+    search: vi.fn(),
+    getVendor: vi.fn(),
   } as any;
 
-  afterEach(() => jest.resetAllMocks());
+  afterEach(() => vi.resetAllMocks());
 
   it('transfers all attributes from a default ldap vendor', async () => {
     const searchEntries: Entry[] = [
@@ -623,12 +625,12 @@ describe('readLdapUsers', () => {
 });
 
 describe('readLdapGroups', () => {
-  const client: jest.Mocked<LdapClient> = {
-    search: jest.fn(),
-    getVendor: jest.fn(),
+  const client: Mocked<LdapClient> = {
+    search: vi.fn(),
+    getVendor: vi.fn(),
   } as any;
 
-  afterEach(() => jest.resetAllMocks());
+  afterEach(() => vi.resetAllMocks());
 
   it('transfers all attributes from a default ldap vendor', async () => {
     client.getVendor.mockResolvedValue(DefaultLdapVendor);

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import { withLogCollector } from '@backstage/test-utils';
 import { act, render, screen } from '@testing-library/react';
 import { useAnalyticsContext } from '../analytics/AnalyticsContext';
@@ -27,9 +29,9 @@ import {
   createRoutableExtension,
 } from './extensions';
 
-jest.mock('../app');
+vi.mock('../app');
 
-const mocked = (f: Function) => f as jest.Mock;
+const mocked = (f: Function) => f as Mock;
 
 const plugin = createPlugin({
   id: 'my-plugin',

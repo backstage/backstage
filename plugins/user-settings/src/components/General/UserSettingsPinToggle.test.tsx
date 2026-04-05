@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { renderInTestApp } from '@backstage/test-utils';
 import { fireEvent, screen } from '@testing-library/react';
 import { UserSettingsPinToggle } from './UserSettingsPinToggle';
@@ -21,7 +23,7 @@ import { SidebarPinStateProvider } from '@backstage/core-components';
 
 describe('<UserSettingsPinToggle />', () => {
   it('toggles the pin sidebar button', async () => {
-    const mockToggleFn = jest.fn();
+    const mockToggleFn = vi.fn();
     await renderInTestApp(
       <SidebarPinStateProvider
         value={{

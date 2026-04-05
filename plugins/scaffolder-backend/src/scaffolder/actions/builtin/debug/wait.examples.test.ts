@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { createWaitAction } from './wait';
 import { examples } from './wait.examples';
 import yaml from 'yaml';
@@ -25,7 +27,7 @@ describe('debug:wait examples', () => {
   const mockContext = createMockActionContext();
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('should wait for specified period of seconds', async () => {

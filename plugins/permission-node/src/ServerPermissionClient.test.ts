@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import { ServerPermissionClient } from './ServerPermissionClient';
 import {
   IdentifiedPermissionMessage,
@@ -62,10 +64,10 @@ describe('ServerPermissionClient', () => {
   discovery.getExternalBaseUrl.mockResolvedValue(mockBaseUrl);
 
   describe('authorize', () => {
-    let mockAuthorizeHandler: jest.Mock;
+    let mockAuthorizeHandler: Mock;
 
     beforeEach(() => {
-      mockAuthorizeHandler = jest.fn((req, res, { json }: RestContext) => {
+      mockAuthorizeHandler = vi.fn((req, res, { json }: RestContext) => {
         const responses = req.body.items.map(
           (r: IdentifiedPermissionMessage<DefinitivePolicyDecision>) => ({
             id: r.id,
@@ -133,10 +135,10 @@ describe('ServerPermissionClient', () => {
   });
 
   describe('authorizeConditional', () => {
-    let mockAuthorizeHandler: jest.Mock;
+    let mockAuthorizeHandler: Mock;
 
     beforeEach(() => {
-      mockAuthorizeHandler = jest.fn((req, res, { json }: RestContext) => {
+      mockAuthorizeHandler = vi.fn((req, res, { json }: RestContext) => {
         const responses = req.body.items.map(
           (r: IdentifiedPermissionMessage<ConditionalPolicyDecision>) => ({
             id: r.id,

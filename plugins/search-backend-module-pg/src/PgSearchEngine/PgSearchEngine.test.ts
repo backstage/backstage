@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi, type Mocked } from 'vitest';
 import { ConfigReader } from '@backstage/config';
 import { DatabaseStore } from '../database';
 import {
@@ -36,9 +38,9 @@ const highlightOptions: PgSearchHighlightOptions = {
   fragmentDelimiter: ' ... ',
 };
 
-jest.mock('uuid', () => ({ v4: () => 'tag' }));
+vi.mock('uuid', () => ({ v4: () => 'tag' }));
 
-jest.mock('./PgSearchEngineIndexer', () => ({
+vi.mock('./PgSearchEngineIndexer', () => ({
   PgSearchEngineIndexer: jest
     .fn()
     .mockImplementation(async () => 'the-expected-indexer'),
@@ -47,7 +49,7 @@ jest.mock('./PgSearchEngineIndexer', () => ({
 describe('PgSearchEngine', () => {
   const tx: any = {} as any;
   let searchEngine: PgSearchEngine;
-  let database: jest.Mocked<DatabaseStore>;
+  let database: Mocked<DatabaseStore>;
   const config = {
     search: {
       pg: {
@@ -58,12 +60,12 @@ describe('PgSearchEngine', () => {
 
   beforeEach(() => {
     database = {
-      transaction: jest.fn(),
-      getTransaction: jest.fn(),
-      insertDocuments: jest.fn(),
-      query: jest.fn(),
-      completeInsert: jest.fn(),
-      prepareInsert: jest.fn(),
+      transaction: vi.fn(),
+      getTransaction: vi.fn(),
+      insertDocuments: vi.fn(),
+      query: vi.fn(),
+      completeInsert: vi.fn(),
+      prepareInsert: vi.fn(),
     };
     searchEngine = new PgSearchEngine(database, new ConfigReader(config));
   });
@@ -71,7 +73,7 @@ describe('PgSearchEngine', () => {
   describe('translator', () => {
     it('query translator invoked', async () => {
       database.transaction.mockResolvedValue([]);
-      const translatorSpy = jest.fn().mockReturnValue({
+      const translatorSpy = vi.fn().mockReturnValue({
         pgSearchTerm: 'testTerm',
       });
       searchEngine.setTranslator(translatorSpy);

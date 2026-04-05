@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { NotAllowedError, NotFoundError } from '@backstage/errors';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { AuthorizedLocationService } from './AuthorizedLocationService';
@@ -21,16 +23,16 @@ import { mockCredentials } from '@backstage/backend-test-utils';
 
 describe('AuthorizedLocationService', () => {
   const fakeLocationService = {
-    createLocation: jest.fn(),
-    listLocations: jest.fn(),
-    queryLocations: jest.fn(),
-    getLocation: jest.fn(),
-    deleteLocation: jest.fn(),
-    getLocationByEntity: jest.fn(),
+    createLocation: vi.fn(),
+    listLocations: vi.fn(),
+    queryLocations: vi.fn(),
+    getLocation: vi.fn(),
+    deleteLocation: vi.fn(),
+    getLocationByEntity: vi.fn(),
   };
   const fakePermissionApi = {
-    authorize: jest.fn(),
-    authorizeConditional: jest.fn(),
+    authorize: vi.fn(),
+    authorizeConditional: vi.fn(),
   };
 
   const mockAllow = () => {
@@ -52,7 +54,7 @@ describe('AuthorizedLocationService', () => {
   };
 
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   describe('createLocation', () => {

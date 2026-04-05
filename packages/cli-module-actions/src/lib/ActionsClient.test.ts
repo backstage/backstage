@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
+import { vi , type MockedFunction} from 'vitest';
+
 import { ActionsClient } from './ActionsClient';
 import { httpJson } from './httpJson';
 
-jest.mock('./httpJson', () => ({
-  httpJson: jest.fn(),
+vi.mock('./httpJson', () => ({
+  httpJson: vi.fn(),
 }));
 
-const mockHttpJson = httpJson as jest.MockedFunction<typeof httpJson>;
+const mockHttpJson = httpJson as MockedFunction<typeof httpJson>;
 
 describe('ActionsClient', () => {
   const baseUrl = 'https://backstage.example.com';
@@ -29,7 +31,7 @@ describe('ActionsClient', () => {
   let client: ActionsClient;
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     client = new ActionsClient(baseUrl, accessToken);
   });
 

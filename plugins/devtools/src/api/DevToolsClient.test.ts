@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { DevToolsClient } from './DevToolsClient';
 
 describe('DevToolsClient', () => {
@@ -21,7 +23,7 @@ describe('DevToolsClient', () => {
   const discoveryApi = {
     getBaseUrl: async (pluginId: string) => `${mockBaseUrl}/${pluginId}`,
   };
-  const mockFetch = jest.fn();
+  const mockFetch = vi.fn();
   const fetchApi = { fetch: mockFetch };
 
   let client: DevToolsClient;
@@ -33,7 +35,7 @@ describe('DevToolsClient', () => {
     client = new DevToolsClient({ discoveryApi, fetchApi });
   });
 
-  afterEach(() => jest.resetAllMocks());
+  afterEach(() => vi.resetAllMocks());
 
   it('should URL-encode the taskId when triggering a scheduled task', async () => {
     await client.triggerScheduledTask(

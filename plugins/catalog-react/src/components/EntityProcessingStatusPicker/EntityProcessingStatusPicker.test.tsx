@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { fireEvent, screen } from '@testing-library/react';
 import { EntityErrorFilter, EntityOrphanFilter } from '../../filters';
 import { MockEntityListContextProvider } from '@backstage/plugin-catalog-react/testUtils';
@@ -35,7 +37,7 @@ describe('<EntityProcessingStatusPicker/>', () => {
   });
 
   it('adds orphan to orphan filter', async () => {
-    const updateFilters = jest.fn();
+    const updateFilters = vi.fn();
     await renderInTestApp(
       <MockEntityListContextProvider
         value={{
@@ -54,7 +56,7 @@ describe('<EntityProcessingStatusPicker/>', () => {
   });
 
   it('adds error to error filter', async () => {
-    const updateFilters = jest.fn();
+    const updateFilters = vi.fn();
     await renderInTestApp(
       <MockEntityListContextProvider
         value={{
@@ -73,7 +75,7 @@ describe('<EntityProcessingStatusPicker/>', () => {
   });
 
   it('remove orphan from orphan filter', async () => {
-    const updateFilters = jest.fn();
+    const updateFilters = vi.fn();
     await renderInTestApp(
       <MockEntityListContextProvider
         value={{
@@ -92,7 +94,7 @@ describe('<EntityProcessingStatusPicker/>', () => {
   });
 
   it('remove error from error filter', async () => {
-    const updateFilters = jest.fn();
+    const updateFilters = vi.fn();
     await renderInTestApp(
       <MockEntityListContextProvider
         value={{

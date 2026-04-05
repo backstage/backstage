@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { renderHook } from '@testing-library/react';
 import { useAnalytics } from './useAnalytics';
 import { analyticsApiRef } from '../apis/definitions/AnalyticsApi';
@@ -28,7 +30,7 @@ describe('useAnalytics', () => {
   });
 
   it('returns tracker from defined analytics api', () => {
-    const captureEvent = jest.fn();
+    const captureEvent = vi.fn();
 
     // Calling the captureEvent method of the underlying implementation should
     // pass along the given event as well as the default context.

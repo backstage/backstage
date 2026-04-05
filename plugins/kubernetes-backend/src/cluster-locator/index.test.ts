@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi, type Mocked } from 'vitest';
+
 import {
   ANNOTATION_KUBERNETES_API_SERVER,
   ANNOTATION_KUBERNETES_API_SERVER_CA,
@@ -54,10 +56,10 @@ describe('getCombinedClusterSupplier', () => {
         },
       },
     });
-    const mockStrategy: jest.Mocked<AuthenticationStrategy> = {
-      getCredential: jest.fn(),
-      validateCluster: jest.fn().mockReturnValue([]),
-      presentAuthMetadata: jest.fn(),
+    const mockStrategy: Mocked<AuthenticationStrategy> = {
+      getCredential: vi.fn(),
+      validateCluster: vi.fn().mockReturnValue([]),
+      presentAuthMetadata: vi.fn(),
     };
 
     const auth = mockServices.auth();
@@ -121,7 +123,7 @@ describe('getCombinedClusterSupplier', () => {
 
   it('logs a warning when two clusters have the same name', async () => {
     const logger = mockServices.logger.mock();
-    const warn = jest.spyOn(logger, 'warn');
+    const warn = vi.spyOn(logger, 'warn');
     const config = mockServices.rootConfig({
       data: {
         kubernetes: {
@@ -137,10 +139,10 @@ describe('getCombinedClusterSupplier', () => {
         },
       },
     });
-    const mockStrategy: jest.Mocked<AuthenticationStrategy> = {
-      getCredential: jest.fn(),
-      validateCluster: jest.fn().mockReturnValue([]),
-      presentAuthMetadata: jest.fn(),
+    const mockStrategy: Mocked<AuthenticationStrategy> = {
+      getCredential: vi.fn(),
+      validateCluster: vi.fn().mockReturnValue([]),
+      presentAuthMetadata: vi.fn(),
     };
 
     const auth = mockServices.auth();

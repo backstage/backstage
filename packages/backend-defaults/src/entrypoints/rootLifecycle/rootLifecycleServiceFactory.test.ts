@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { BackendLifecycleImpl } from './rootLifecycleServiceFactory';
 import { mockServices } from '@backstage/backend-test-utils';
 
 describe('lifecycleService', () => {
   it('should execute registered shutdown hook', async () => {
     const service = new BackendLifecycleImpl(mockServices.logger.mock());
-    const hook = jest.fn();
+    const hook = vi.fn();
     service.addShutdownHook(() => hook());
     // should not execute the hook more than once.
     await service.shutdown();

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type MockedFunction} from 'vitest';
+
 import {
   SchedulerService,
   SchedulerServiceTaskRunner,
@@ -26,8 +28,8 @@ import { AzureDevOpsEntityProvider } from './AzureDevOpsEntityProvider';
 import { codeSearch } from '../lib';
 import { mockServices } from '@backstage/backend-test-utils';
 
-jest.mock('../lib');
-const mockCodeSearch = codeSearch as jest.MockedFunction<typeof codeSearch>;
+vi.mock('../lib');
+const mockCodeSearch = codeSearch as MockedFunction<typeof codeSearch>;
 
 class PersistingTaskRunner implements SchedulerServiceTaskRunner {
   private tasks: SchedulerServiceTaskInvocationDefinition[] = [];
@@ -75,8 +77,8 @@ describe('AzureDevOpsEntityProvider', () => {
 
     const schedule = new PersistingTaskRunner();
     const entityProviderConnection: EntityProviderConnection = {
-      applyMutation: jest.fn(),
-      refresh: jest.fn(),
+      applyMutation: vi.fn(),
+      refresh: vi.fn(),
     };
 
     const schedulingConfig: Record<string, any> = {};
@@ -274,7 +276,7 @@ describe('AzureDevOpsEntityProvider', () => {
 
   it('fail with scheduler but no schedule config', () => {
     const scheduler = {
-      createScheduledTaskRunner: (_: any) => jest.fn(),
+      createScheduledTaskRunner: (_: any) => vi.fn(),
     } as unknown as SchedulerService;
     const config = new ConfigReader({
       catalog: {

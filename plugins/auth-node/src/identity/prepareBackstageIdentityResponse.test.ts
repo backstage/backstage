@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { prepareBackstageIdentityResponse } from './prepareBackstageIdentityResponse';
 
 function mkToken(payload: unknown) {
@@ -23,10 +25,10 @@ function mkToken(payload: unknown) {
 }
 
 describe('prepareBackstageIdentityResponse', () => {
-  afterEach(jest.resetAllMocks);
+  afterEach(vi.resetAllMocks);
 
   it('parses a complete token to determine the identity', () => {
-    jest.spyOn(Date, 'now').mockReturnValue(5000);
+    vi.spyOn(Date, 'now').mockReturnValue(5000);
 
     const token = mkToken({ sub: 'k:ns/n', ent: ['k:ns/o'], exp: 1005 });
     expect(
@@ -45,7 +47,7 @@ describe('prepareBackstageIdentityResponse', () => {
   });
 
   it('uses the identity in the result if present', () => {
-    jest.spyOn(Date, 'now').mockReturnValue(5000);
+    vi.spyOn(Date, 'now').mockReturnValue(5000);
 
     const token = mkToken({ sub: 'k:ns/n', ent: ['k:ns/o'], exp: 1005 });
     expect(
@@ -94,7 +96,7 @@ describe('prepareBackstageIdentityResponse', () => {
   });
 
   it('should reject tokens with negative expiration', () => {
-    jest.spyOn(Date, 'now').mockReturnValue(5000);
+    vi.spyOn(Date, 'now').mockReturnValue(5000);
 
     const token = mkToken({ sub: 'k:ns/n', ent: ['k:ns/o'], exp: 1 });
     expect(() =>

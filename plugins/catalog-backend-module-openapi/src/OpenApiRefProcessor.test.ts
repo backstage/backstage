@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { LocationSpec } from '@backstage/plugin-catalog-common';
 import { OpenApiRefProcessor } from './OpenApiRefProcessor';
 import { bundleFileWithRefs } from './lib';
 import { mockServices } from '@backstage/backend-test-utils';
 
-jest.mock('./lib', () => ({
-  bundleFileWithRefs: jest.fn(),
+vi.mock('./lib', () => ({
+  bundleFileWithRefs: vi.fn(),
 }));
 
 const bundled = '<bundled-specification>';
@@ -36,7 +38,7 @@ describe('OpenApiRefProcessor', () => {
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('preProcessEntity', () => {

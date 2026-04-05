@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   ScaffolderApi,
   scaffolderApiRef,
@@ -26,7 +28,7 @@ import { BitbucketRepoPicker } from './BitbucketRepoPicker';
 
 describe('BitbucketRepoPicker', () => {
   const scaffolderApiMock: Partial<ScaffolderApi> = {
-    autocomplete: jest.fn().mockImplementation(opts =>
+    autocomplete: vi.fn().mockImplementation(opts =>
       Promise.resolve({
         results: [{ id: `${opts.resource}_example` }],
       }),
@@ -38,7 +40,7 @@ describe('BitbucketRepoPicker', () => {
     const { findByText } = await renderInTestApp(
       <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
         <BitbucketRepoPicker
-          onChange={jest.fn()}
+          onChange={vi.fn()}
           rawErrors={[]}
           state={{ host: 'bitbucket.org', repoName: 'repo' }}
           allowedOwners={allowedOwners}
@@ -56,7 +58,7 @@ describe('BitbucketRepoPicker', () => {
     const { getAllByRole } = await renderInTestApp(
       <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
         <BitbucketRepoPicker
-          onChange={jest.fn()}
+          onChange={vi.fn()}
           rawErrors={[]}
           state={state}
         />
@@ -75,7 +77,7 @@ describe('BitbucketRepoPicker', () => {
     const { getAllByRole } = await renderInTestApp(
       <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
         <BitbucketRepoPicker
-          onChange={jest.fn()}
+          onChange={vi.fn()}
           rawErrors={[]}
           state={state}
         />
@@ -87,7 +89,7 @@ describe('BitbucketRepoPicker', () => {
 
   describe('workspace field', () => {
     it('calls onChange when the workspace changes', async () => {
-      const onChange = jest.fn();
+      const onChange = vi.fn();
       const { getAllByRole } = await renderInTestApp(
         <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
           <BitbucketRepoPicker
@@ -114,7 +116,7 @@ describe('BitbucketRepoPicker', () => {
 
   describe('project field', () => {
     it('calls onChange when the project changes', async () => {
-      const onChange = jest.fn();
+      const onChange = vi.fn();
       const { getAllByRole } = await renderInTestApp(
         <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
           <BitbucketRepoPicker
@@ -140,7 +142,7 @@ describe('BitbucketRepoPicker', () => {
       const { getAllByRole } = await renderInTestApp(
         <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
           <BitbucketRepoPicker
-            onChange={jest.fn()}
+            onChange={vi.fn()}
             rawErrors={[]}
             state={{ host: 'bitbucket.org', repoName: 'repo' }}
           />
@@ -155,7 +157,7 @@ describe('BitbucketRepoPicker', () => {
       const { getAllByRole } = await renderInTestApp(
         <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
           <BitbucketRepoPicker
-            onChange={jest.fn()}
+            onChange={vi.fn()}
             rawErrors={[]}
             state={{ host: 'bitbucket.org', repoName: 'repo' }}
             allowedProjects={[]}
@@ -172,7 +174,7 @@ describe('BitbucketRepoPicker', () => {
       const { findByText } = await renderInTestApp(
         <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
           <BitbucketRepoPicker
-            onChange={jest.fn()}
+            onChange={vi.fn()}
             rawErrors={[]}
             state={{ host: 'bitbucket.org', repoName: 'repo' }}
             allowedProjects={allowedProjects}
@@ -187,7 +189,7 @@ describe('BitbucketRepoPicker', () => {
 
   describe('autocompletion', () => {
     it('should populate workspaces if host is set and accessToken is provided', async () => {
-      const onChange = jest.fn();
+      const onChange = vi.fn();
 
       const { getAllByRole, getByText } = await renderInTestApp(
         <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
@@ -217,7 +219,7 @@ describe('BitbucketRepoPicker', () => {
     });
 
     it('should populate projects if host and workspace are set and accessToken is provided', async () => {
-      const onChange = jest.fn();
+      const onChange = vi.fn();
 
       const { getAllByRole, getByText } = await renderInTestApp(
         <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
@@ -245,7 +247,7 @@ describe('BitbucketRepoPicker', () => {
     });
 
     it('should populate repositories if host, workspace and project are set and accessToken is provided', async () => {
-      const onChange = jest.fn();
+      const onChange = vi.fn();
 
       await renderInTestApp(
         <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
@@ -276,7 +278,7 @@ describe('BitbucketRepoPicker', () => {
       const { getAllByRole } = await renderInTestApp(
         <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
           <BitbucketRepoPicker
-            onChange={jest.fn()}
+            onChange={vi.fn()}
             rawErrors={[]}
             state={{
               host: 'bitbucket.org',
@@ -298,7 +300,7 @@ describe('BitbucketRepoPicker', () => {
       const { getAllByRole } = await renderInTestApp(
         <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
           <BitbucketRepoPicker
-            onChange={jest.fn()}
+            onChange={vi.fn()}
             rawErrors={[]}
             state={{
               host: 'bitbucket.org',

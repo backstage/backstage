@@ -14,20 +14,22 @@
  * limitations under the License.
  */
 
+import { vi, type Mocked } from 'vitest';
+
 import { CliAuth } from './CliAuth';
 import * as storage from './storage';
 import * as secretStoreModule from './secretStore';
 import * as httpModule from './httpJson';
 
-jest.mock('./storage');
-jest.mock('./secretStore');
-jest.mock('./httpJson');
+vi.mock('./storage');
+vi.mock('./secretStore');
+vi.mock('./httpJson');
 
-const mockStorage = storage as jest.Mocked<typeof storage>;
-const mockSecretStoreModule = secretStoreModule as jest.Mocked<
+const mockStorage = storage as Mocked<typeof storage>;
+const mockSecretStoreModule = secretStoreModule as Mocked<
   typeof secretStoreModule
 >;
-const mockHttp = httpModule as jest.Mocked<typeof httpModule>;
+const mockHttp = httpModule as Mocked<typeof httpModule>;
 
 describe('CliAuth', () => {
   const now = Date.now();
@@ -40,13 +42,13 @@ describe('CliAuth', () => {
   };
 
   const mockSecretStore = {
-    get: jest.fn(),
-    set: jest.fn(),
-    delete: jest.fn(),
+    get: vi.fn(),
+    set: vi.fn(),
+    delete: vi.fn(),
   };
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     mockStorage.getSelectedInstance.mockResolvedValue(mockInstance);
     mockSecretStoreModule.getSecretStore.mockResolvedValue(mockSecretStore);
     mockStorage.accessTokenNeedsRefresh.mockReturnValue(false);

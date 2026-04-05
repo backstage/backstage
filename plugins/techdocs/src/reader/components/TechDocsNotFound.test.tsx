@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { TechDocsNotFound } from './TechDocsNotFound';
 import { screen, waitFor } from '@testing-library/react';
 import {
@@ -23,8 +25,8 @@ import {
 } from '@backstage/test-utils';
 import { analyticsApiRef } from '@backstage/core-plugin-api';
 
-jest.mock('@backstage/plugin-techdocs-react', () => {
-  const actualModule = jest.requireActual('@backstage/plugin-techdocs-react');
+vi.mock('@backstage/plugin-techdocs-react', () => {
+  const actualModule = vi.importActual('@backstage/plugin-techdocs-react');
   return {
     ...actualModule,
     useTechDocsReaderPage: () => ({
@@ -33,8 +35,8 @@ jest.mock('@backstage/plugin-techdocs-react', () => {
   };
 });
 
-jest.mock('react-router-dom', () => {
-  const actualModule = jest.requireActual('react-router-dom');
+vi.mock('react-router-dom', () => {
+  const actualModule = vi.importActual('react-router-dom');
   return {
     ...actualModule,
     useLocation: () =>

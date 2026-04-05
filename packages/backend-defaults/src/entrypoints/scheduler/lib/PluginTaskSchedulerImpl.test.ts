@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   TestDatabaseId,
   TestDatabases,
@@ -29,10 +31,10 @@ import {
 import { createDeferred } from '@backstage/types';
 import { metricsServiceMock } from '@backstage/backend-test-utils/alpha';
 
-jest.setTimeout(60_000);
+vi.setConfig({ testTimeout: 60_000 });
 
 describe('PluginTaskManagerImpl', () => {
-  const addShutdownHook = jest.fn();
+  const addShutdownHook = vi.fn();
   const databases = TestDatabases.create({
     ids: ['POSTGRES_18', 'POSTGRES_14', 'SQLITE_3'],
   });
@@ -43,11 +45,11 @@ describe('PluginTaskManagerImpl', () => {
       databases.eachSupportedId().map(([id]) => databases.init(id)),
     );
 
-    jest.useFakeTimers();
+    vi.useFakeTimers();
   }, 60_000);
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   async function init(databaseId: TestDatabaseId) {
@@ -60,8 +62,8 @@ describe('PluginTaskManagerImpl', () => {
       metricsServiceMock.mock(),
       {
         addShutdownHook,
-        addBeforeShutdownHook: jest.fn(),
-        addStartupHook: jest.fn(),
+        addBeforeShutdownHook: vi.fn(),
+        addStartupHook: vi.fn(),
       },
     );
     return { knex, manager };
@@ -75,7 +77,7 @@ describe('PluginTaskManagerImpl', () => {
       async databaseId => {
         const { manager } = await init(databaseId);
 
-        const fn = jest.fn();
+        const fn = vi.fn();
         const promise = new Promise(resolve => fn.mockImplementation(resolve));
         await manager.scheduleTask({
           id: 'task1',
@@ -95,7 +97,7 @@ describe('PluginTaskManagerImpl', () => {
       async databaseId => {
         const { manager } = await init(databaseId);
 
-        const fn = jest.fn();
+        const fn = vi.fn();
         const promise = new Promise(resolve => fn.mockImplementation(resolve));
         await manager.scheduleTask({
           id: 'task2',
@@ -115,7 +117,7 @@ describe('PluginTaskManagerImpl', () => {
       async databaseId => {
         const { manager } = await init(databaseId);
 
-        const fn = jest.fn();
+        const fn = vi.fn();
         const promise = new Promise<AbortSignal>(resolve =>
           fn.mockImplementation(resolve),
         );
@@ -144,7 +146,7 @@ describe('PluginTaskManagerImpl', () => {
       async databaseId => {
         const { manager } = await init(databaseId);
 
-        const fn = jest.fn();
+        const fn = vi.fn();
         const promise = new Promise(resolve => fn.mockImplementation(resolve));
         await manager.scheduleTask({
           id: 'task1',
@@ -156,7 +158,7 @@ describe('PluginTaskManagerImpl', () => {
         });
 
         await manager.triggerTask('task1');
-        jest.advanceTimersByTime(5000);
+        vi.advanceTimersByTime(5000);
 
         await promise;
         expect(fn).toHaveBeenCalledWith(expect.any(AbortSignal));
@@ -168,7 +170,7 @@ describe('PluginTaskManagerImpl', () => {
       async databaseId => {
         const { manager } = await init(databaseId);
 
-        const fn = jest.fn();
+        const fn = vi.fn();
         await manager.scheduleTask({
           id: 'task1',
           timeout: Duration.fromMillis(5000),
@@ -215,7 +217,7 @@ describe('PluginTaskManagerImpl', () => {
     it('can run the v1 happy path', async () => {
       const { manager } = await init('SQLITE_3');
 
-      const fn = jest.fn();
+      const fn = vi.fn();
       const promise = new Promise(resolve => fn.mockImplementation(resolve));
       await manager.scheduleTask({
         id: 'task1',
@@ -232,7 +234,7 @@ describe('PluginTaskManagerImpl', () => {
     it('can run the v2 happy path', async () => {
       const { manager } = await init('SQLITE_3');
 
-      const fn = jest.fn();
+      const fn = vi.fn();
       const promise = new Promise(resolve => fn.mockImplementation(resolve));
       await manager.scheduleTask({
         id: 'task2',
@@ -249,7 +251,7 @@ describe('PluginTaskManagerImpl', () => {
     it('aborts the task if shutdown hook is invoked', async () => {
       const { manager } = await init('SQLITE_3');
 
-      const fn = jest.fn();
+      const fn = vi.fn();
       const promise = new Promise<AbortSignal>(resolve =>
         fn.mockImplementation(resolve),
       );
@@ -275,7 +277,7 @@ describe('PluginTaskManagerImpl', () => {
     it('can manually trigger a task', async () => {
       const { manager } = await init('SQLITE_3');
 
-      const fn = jest.fn();
+      const fn = vi.fn();
       const promise = new Promise(resolve => fn.mockImplementation(resolve));
       await manager.scheduleTask({
         id: 'task1',
@@ -287,7 +289,7 @@ describe('PluginTaskManagerImpl', () => {
       });
 
       await manager.triggerTask('task1');
-      jest.advanceTimersByTime(5000);
+      vi.advanceTimersByTime(5000);
 
       await promise;
       expect(fn).toHaveBeenCalledWith(expect.any(AbortSignal));
@@ -296,7 +298,7 @@ describe('PluginTaskManagerImpl', () => {
     it('cant trigger a non-existent task', async () => {
       const { manager } = await init('SQLITE_3');
 
-      const fn = jest.fn();
+      const fn = vi.fn();
       await manager.scheduleTask({
         id: 'task1',
         timeout: Duration.fromMillis(5000),
@@ -341,7 +343,7 @@ describe('PluginTaskManagerImpl', () => {
       async databaseId => {
         const { manager } = await init(databaseId);
 
-        const fn = jest.fn();
+        const fn = vi.fn();
         const promise = new Promise(resolve => fn.mockImplementation(resolve));
         await manager
           .createScheduledTaskRunner({
@@ -365,7 +367,7 @@ describe('PluginTaskManagerImpl', () => {
       'can fetch both global and local task ids, %p',
       async databaseId => {
         const { manager } = await init(databaseId);
-        const fn = jest.fn();
+        const fn = vi.fn();
 
         await manager.scheduleTask({
           id: 'task1',
@@ -423,7 +425,7 @@ describe('PluginTaskManagerImpl', () => {
     it('cannot cancel a task that is not running', async () => {
       const { manager } = await init('SQLITE_3');
 
-      const fn = jest.fn();
+      const fn = vi.fn();
       await manager.scheduleTask({
         id: 'task1',
         timeout: Duration.fromMillis(5000),
@@ -482,7 +484,7 @@ describe('PluginTaskManagerImpl', () => {
           timeout: Duration.fromMillis(5000),
           frequency: Duration.fromObject({ years: 1 }),
           initialDelay: Duration.fromObject({ years: 1 }),
-          fn: jest.fn(),
+          fn: vi.fn(),
           scope: 'global',
         });
 

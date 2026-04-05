@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { TestDatabases, mockServices } from '@backstage/backend-test-utils';
 import { ConflictError, NotFoundError } from '@backstage/errors';
 import { DateTime, Duration } from 'luxon';
@@ -24,7 +26,7 @@ import { TaskWorker } from './TaskWorker';
 import { createTestScopedSignal } from './__testUtils__/createTestScopedSignal';
 import { TaskSettingsV2 } from './types';
 
-jest.setTimeout(60_000);
+vi.setConfig({ testTimeout: 60_000 });
 
 const databases = TestDatabases.create();
 
@@ -37,7 +39,7 @@ describe.each(databases.eachSupportedId())('TaskWorker, %s', databaseId => {
   beforeEach(async () => {
     knex = await databases.init(databaseId);
     await migrateBackendTasks(knex);
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   afterEach(async () => {
@@ -45,7 +47,7 @@ describe.each(databases.eachSupportedId())('TaskWorker, %s', databaseId => {
   });
 
   it('goes through the expected states', async () => {
-    const fn = jest.fn(
+    const fn = vi.fn(
       async () => new Promise<void>(resolve => setTimeout(resolve, 50)),
     );
     const settings: TaskSettingsV2 = {
@@ -160,8 +162,8 @@ describe.each(databases.eachSupportedId())('TaskWorker, %s', databaseId => {
   });
 
   it('logs error when the task throws', async () => {
-    jest.spyOn(logger, 'error');
-    const fn = jest.fn().mockRejectedValue(new Error('failed'));
+    vi.spyOn(logger, 'error');
+    const fn = vi.fn().mockRejectedValue(new Error('failed'));
     const settings: TaskSettingsV2 = {
       version: 2,
       initialDelayDuration: undefined,
@@ -191,7 +193,7 @@ describe.each(databases.eachSupportedId())('TaskWorker, %s', databaseId => {
   });
 
   it('runs tasks more than once even when the task throws', async () => {
-    const fn = jest.fn().mockRejectedValue(new Error('failed'));
+    const fn = vi.fn().mockRejectedValue(new Error('failed'));
     const settings: TaskSettingsV2 = {
       version: 2,
       initialDelayDuration: undefined,
@@ -208,7 +210,7 @@ describe.each(databases.eachSupportedId())('TaskWorker, %s', databaseId => {
   });
 
   it('does not clobber ticket lock when stolen', async () => {
-    const fn = jest.fn(
+    const fn = vi.fn(
       async () => new Promise<void>(resolve => setTimeout(resolve, 50)),
     );
     const settings: TaskSettingsV2 = {
@@ -260,7 +262,7 @@ describe.each(databases.eachSupportedId())('TaskWorker, %s', databaseId => {
   });
 
   it('gracefully handles a disappeared task row', async () => {
-    const fn = jest.fn(async () => {});
+    const fn = vi.fn(async () => {});
     const settings: TaskSettingsV2 = {
       version: 2,
       initialDelayDuration: undefined,
@@ -315,7 +317,7 @@ describe.each(databases.eachSupportedId())('TaskWorker, %s', databaseId => {
     };
 
     // Start a single worker and make sure it waits and then goes to work
-    const fn1 = jest.fn(async () => {});
+    const fn1 = vi.fn(async () => {});
     const worker1 = new TaskWorker(
       'task1',
       fn1,
@@ -332,7 +334,7 @@ describe.each(databases.eachSupportedId())('TaskWorker, %s', databaseId => {
     expect(fn1.mock.calls.length).toBeGreaterThan(0);
 
     // Start a second worker and make sure it waits but the first worker still works along
-    const fn2 = jest.fn();
+    const fn2 = vi.fn();
     const promise2 = new Promise(resolve => fn2.mockImplementation(resolve));
     const worker2 = new TaskWorker(
       'task1',
@@ -353,7 +355,7 @@ describe.each(databases.eachSupportedId())('TaskWorker, %s', databaseId => {
   });
 
   it('next_run_start_at is always the min between schedule changes from cron frequency', async () => {
-    const fn = jest.fn(
+    const fn = vi.fn(
       async () => new Promise<void>(resolve => setTimeout(resolve, 50)),
     );
     const settings: TaskSettingsV2 = {
@@ -392,7 +394,7 @@ describe.each(databases.eachSupportedId())('TaskWorker, %s', databaseId => {
   });
 
   it('next_run_start_at is always the min between schedule changes when using human duration frequency', async () => {
-    const fn = jest.fn(
+    const fn = vi.fn(
       async () => new Promise<void>(resolve => setTimeout(resolve, 50)),
     );
 
@@ -443,7 +445,7 @@ describe.each(databases.eachSupportedId())('TaskWorker, %s', databaseId => {
   });
 
   it('next_run_start_at is always the min between schedule changes when using human duration frequency with initial start delay', async () => {
-    const fn = jest.fn(
+    const fn = vi.fn(
       async () => new Promise<void>(resolve => setTimeout(resolve, 50)),
     );
 
@@ -495,7 +497,7 @@ describe.each(databases.eachSupportedId())('TaskWorker, %s', databaseId => {
   });
 
   it('next_run_start_at is not set for manually-triggered tasks', async () => {
-    const fn = jest.fn(
+    const fn = vi.fn(
       async () => new Promise<void>(resolve => setTimeout(resolve, 50)),
     );
 
@@ -515,7 +517,7 @@ describe.each(databases.eachSupportedId())('TaskWorker, %s', databaseId => {
   });
 
   it('can cancel a running task', async () => {
-    const fn = jest.fn(async () => {});
+    const fn = vi.fn(async () => {});
     const settings: TaskSettingsV2 = {
       version: 2,
       cadence: '* * * * * *',
@@ -549,7 +551,7 @@ describe.each(databases.eachSupportedId())('TaskWorker, %s', databaseId => {
   });
 
   it('cannot cancel a task that is not running', async () => {
-    const fn = jest.fn(async () => {});
+    const fn = vi.fn(async () => {});
     const settings: TaskSettingsV2 = {
       version: 2,
       cadence: '* * * * * *',

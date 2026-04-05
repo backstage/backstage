@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { act, fireEvent } from '@testing-library/react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { CopyTextButton } from './CopyTextButton';
 import { errorApiRef } from '@backstage/core-plugin-api';
 import { default as useCopyToClipboardUnmocked } from 'react-use/esm/useCopyToClipboard';
 
-jest.mock('popper.js', () => {
-  const PopperJS = jest.requireActual('popper.js');
+vi.mock('popper.js', () => {
+  const PopperJS = vi.importActual('popper.js');
 
   return class {
     static placements = PopperJS.placements;
@@ -31,9 +33,9 @@ jest.mock('popper.js', () => {
   };
 });
 
-const useCopyToClipboard = jest.mocked(useCopyToClipboardUnmocked);
-jest.mock('react-use/esm/useCopyToClipboard', () =>
-  jest.fn().mockImplementation(() => [{ noUserInteraction: false }, jest.fn()]),
+const useCopyToClipboard = vi.mocked(useCopyToClipboardUnmocked);
+vi.mock('react-use/esm/useCopyToClipboard', () =>
+  vi.fn().mockImplementation(() => [{ noUserInteraction: false }, vi.fn()]),
 );
 
 const props = {
@@ -43,8 +45,8 @@ const props = {
 };
 
 const mockErrorApi = {
-  post: jest.fn(),
-  error$: jest.fn(),
+  post: vi.fn(),
+  error$: vi.fn(),
 };
 const apis = [[errorApiRef, mockErrorApi] as const] as const;
 
@@ -61,10 +63,10 @@ describe('<CopyTextButton />', () => {
   });
 
   it('displays tooltip and copy the text on click', async () => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
 
     const spy = useCopyToClipboard;
-    const copy = jest.fn();
+    const copy = vi.fn();
     spy.mockReturnValue([{ noUserInteraction: false }, copy]);
 
     const rendered = await renderInTestApp(
@@ -75,18 +77,18 @@ describe('<CopyTextButton />', () => {
     const button = rendered.getByTitle('mockTooltip');
     fireEvent.click(button);
     act(() => {
-      jest.runAllTimers();
+      vi.runAllTimers();
     });
     expect(copy).toHaveBeenCalledWith('mockText');
     rendered.getByText('mockTooltip');
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 
   it('reports copy errors', async () => {
     const spy = useCopyToClipboard;
 
     const error = new Error('just an error');
-    spy.mockReturnValue([{ noUserInteraction: false, error }, jest.fn()]);
+    spy.mockReturnValue([{ noUserInteraction: false, error }, vi.fn()]);
 
     await renderInTestApp(
       <TestApiProvider apis={apis}>

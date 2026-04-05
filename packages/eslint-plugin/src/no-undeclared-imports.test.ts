@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { RuleTester } from 'eslint';
 import { join as joinPath } from 'node:path';
 import rule from '../rules/no-undeclared-imports';
 
-jest.mock('child_process', () => ({
-  execFileSync: jest.fn(),
+vi.mock('child_process', () => ({
+  execFileSync: vi.fn(),
 }));
 
 const RULE = 'no-undeclared-imports';

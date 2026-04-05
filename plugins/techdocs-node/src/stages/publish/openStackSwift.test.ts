@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   Entity,
   CompoundEntityRef,
@@ -34,14 +36,14 @@ import {
 
 const mockDir = createMockDirectory();
 
-jest.mock('@trendyol-js/openstack-swift-sdk', () => {
+vi.mock('@trendyol-js/openstack-swift-sdk', () => {
   const {
     ContainerMetaResponse,
     DownloadResponse,
     NotFound,
     ObjectMetaResponse,
     UploadResponse,
-  }: typeof import('@trendyol-js/openstack-swift-sdk') = jest.requireActual(
+  }: typeof import('@trendyol-js/openstack-swift-sdk') = vi.importActual(
     '@trendyol-js/openstack-swift-sdk',
   );
 

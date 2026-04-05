@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { GerritRepoPicker } from './GerritRepoPicker';
 import { fireEvent } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/test-utils';
@@ -22,7 +24,7 @@ describe('GerritRepoPicker', () => {
   it('disables input fields when isDisabled is true', async () => {
     const { getAllByRole } = await renderInTestApp(
       <GerritRepoPicker
-        onChange={jest.fn()}
+        onChange={vi.fn()}
         rawErrors={[]}
         state={{}}
         isDisabled
@@ -38,7 +40,7 @@ describe('GerritRepoPicker', () => {
 
   describe('owner input field', () => {
     it('calls onChange when the owner input changes', async () => {
-      const onChange = jest.fn();
+      const onChange = vi.fn();
       const { getAllByRole } = await renderInTestApp(
         <GerritRepoPicker
           onChange={onChange}
@@ -57,7 +59,7 @@ describe('GerritRepoPicker', () => {
 
   describe('parent field', () => {
     it('calls onChange when the parent changes', async () => {
-      const onChange = jest.fn();
+      const onChange = vi.fn();
       const { getAllByRole } = await renderInTestApp(
         <GerritRepoPicker
           onChange={onChange}

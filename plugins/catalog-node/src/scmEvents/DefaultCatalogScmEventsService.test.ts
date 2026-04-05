@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { createDeferred } from '@backstage/types';
 import { MetricsAPI } from '@opentelemetry/api';
 import { DefaultCatalogScmEventsService } from './DefaultCatalogScmEventsService';
 
 describe('DefaultCatalogScmEventsService', () => {
-  const counterAdd = jest.fn();
+  const counterAdd = vi.fn();
   const mockMetrics = {
     getMeter: () => ({
       createCounter: () => ({
@@ -32,10 +34,10 @@ describe('DefaultCatalogScmEventsService', () => {
     const service = new DefaultCatalogScmEventsService(mockMetrics);
 
     const subscriber1 = {
-      onEvents: jest.fn(),
+      onEvents: vi.fn(),
     };
     const subscriber2 = {
-      onEvents: jest.fn(),
+      onEvents: vi.fn(),
     };
 
     service.subscribe(subscriber1);
@@ -69,12 +71,12 @@ describe('DefaultCatalogScmEventsService', () => {
     const work2 = createDeferred<void>();
 
     const subscriber1 = {
-      onEvents: jest.fn().mockImplementation(async () => {
+      onEvents: vi.fn().mockImplementation(async () => {
         await work1;
       }),
     };
     const subscriber2 = {
-      onEvents: jest.fn().mockImplementation(async () => {
+      onEvents: vi.fn().mockImplementation(async () => {
         await work2;
       }),
     };

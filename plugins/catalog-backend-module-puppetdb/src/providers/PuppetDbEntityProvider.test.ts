@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   SchedulerServiceTaskRunner,
   SchedulerServiceTaskInvocationDefinition,
@@ -34,9 +36,9 @@ import {
 import { DEFAULT_ENTITY_OWNER, ENDPOINT_NODES } from '../puppet/constants';
 import { mockServices } from '@backstage/backend-test-utils';
 
-jest.mock('../puppet/read', () => {
+vi.mock('../puppet/read', () => {
   return {
-    readPuppetNodes: jest.fn(),
+    readPuppetNodes: vi.fn(),
   };
 });
 
@@ -76,13 +78,13 @@ describe('PuppetEntityProvider', () => {
 
   describe('where there are no nodes', () => {
     beforeEach(() => {
-      jest.spyOn(puppetFunctions, 'readPuppetNodes').mockResolvedValueOnce([]);
+      vi.spyOn(puppetFunctions, 'readPuppetNodes').mockResolvedValueOnce([]);
     });
 
     it('creates no entities', async () => {
       const connection: EntityProviderConnection = {
-        applyMutation: jest.fn(),
-        refresh: jest.fn(),
+        applyMutation: vi.fn(),
+        refresh: vi.fn(),
       };
       const providers = PuppetDbEntityProvider.fromConfig(config, {
         logger,
@@ -101,7 +103,7 @@ describe('PuppetEntityProvider', () => {
 
   describe('where there are nodes', () => {
     beforeEach(() => {
-      jest.spyOn(puppetFunctions, 'readPuppetNodes').mockResolvedValueOnce([
+      vi.spyOn(puppetFunctions, 'readPuppetNodes').mockResolvedValueOnce([
         {
           apiVersion: 'backstage.io/v1beta1',
           kind: 'Resource',
@@ -145,8 +147,8 @@ describe('PuppetEntityProvider', () => {
 
     it('creates entities', async () => {
       const connection: EntityProviderConnection = {
-        applyMutation: jest.fn(),
-        refresh: jest.fn(),
+        applyMutation: vi.fn(),
+        refresh: vi.fn(),
       };
       const providers = PuppetDbEntityProvider.fromConfig(config, {
         logger,

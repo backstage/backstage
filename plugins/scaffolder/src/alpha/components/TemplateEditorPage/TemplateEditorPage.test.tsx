@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { screen } from '@testing-library/react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
@@ -26,10 +28,10 @@ import { rootRouteRef } from '../../../routes';
 import { formDecoratorsApiRef } from '../../api';
 
 describe('TemplateEditorPage', () => {
-  const catalogApiMock = { getEntities: jest.fn().mockResolvedValue([]) };
+  const catalogApiMock = { getEntities: vi.fn().mockResolvedValue([]) };
   const scaffolderApiMock = {};
   const formDecoratorsApiMock = {
-    getFormDecorators: jest.fn().mockResolvedValue([]),
+    getFormDecorators: vi.fn().mockResolvedValue([]),
   };
 
   it('Should render without exploding', async () => {

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { TestApiProvider } from '@backstage/test-utils';
 // eslint-disable-next-line no-restricted-imports
 import { TextEncoder } from 'node:util';
@@ -60,11 +62,11 @@ describe('DryRunProvider', () => {
   describe('execute', () => {
     it('passes the secrets from the SecretsContext to the dryRun call', async () => {
       const scaffolderApiMock = {
-        dryRun: jest.fn(),
+        dryRun: vi.fn(),
       };
 
       const formDecoratorsApiMock = {
-        getFormDecorators: jest.fn().mockResolvedValue([]),
+        getFormDecorators: vi.fn().mockResolvedValue([]),
       };
       const { result } = renderHook(
         () => ({
@@ -76,7 +78,7 @@ describe('DryRunProvider', () => {
               apis={[
                 [scaffolderApiRef, scaffolderApiMock],
                 [formDecoratorsApiRef, formDecoratorsApiMock],
-                [errorApiRef, { post: jest.fn() }],
+                [errorApiRef, { post: vi.fn() }],
               ]}
             >
               <SecretsContextProvider initialSecrets={{ foo: 'bar' }}>

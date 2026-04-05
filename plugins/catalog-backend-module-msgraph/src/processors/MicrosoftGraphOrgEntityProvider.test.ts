@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi , type Mock} from 'vitest';
 import {
   SchedulerService,
   SchedulerServiceTaskRunner,
@@ -37,14 +39,14 @@ import {
 } from './MicrosoftGraphOrgEntityProvider';
 import { mockServices } from '@backstage/backend-test-utils';
 
-jest.mock('../microsoftGraph', () => {
+vi.mock('../microsoftGraph', () => {
   return {
-    ...jest.requireActual('../microsoftGraph'),
-    readMicrosoftGraphOrg: jest.fn(),
+    ...vi.importActual('../microsoftGraph'),
+    readMicrosoftGraphOrg: vi.fn(),
   };
 });
 
-const readMicrosoftGraphOrgMocked = readMicrosoftGraphOrg as jest.Mock<
+const readMicrosoftGraphOrgMocked = readMicrosoftGraphOrg as Mock<
   Promise<{ users: UserEntity[]; groups: GroupEntity[] }>
 >;
 
@@ -96,7 +98,7 @@ describe('MicrosoftGraphOrgEntityProvider', () => {
     });
   });
 
-  afterEach(() => jest.resetAllMocks());
+  afterEach(() => vi.resetAllMocks());
 
   const logger = mockServices.logger.mock();
   const taskRunner = new PersistingTaskRunner();
@@ -104,8 +106,8 @@ describe('MicrosoftGraphOrgEntityProvider', () => {
     createScheduledTaskRunner: (_: any) => taskRunner,
   } as unknown as SchedulerService;
   const entityProviderConnection: EntityProviderConnection = {
-    applyMutation: jest.fn(),
-    refresh: jest.fn(),
+    applyMutation: vi.fn(),
+    refresh: vi.fn(),
   };
 
   const expectedMutation = {
@@ -256,7 +258,7 @@ describe('MicrosoftGraphOrgEntityProvider', () => {
   });
 
   it('should stop processing when AbortSignal is aborted', async () => {
-    jest.spyOn(logger, 'child').mockReturnValue(logger as any);
+    vi.spyOn(logger, 'child').mockReturnValue(logger as any);
 
     const config = new ConfigReader({
       catalog: {

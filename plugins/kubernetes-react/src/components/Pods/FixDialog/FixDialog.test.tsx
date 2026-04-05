@@ -13,19 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import { Fragment } from 'react';
 
 import { FixDialog } from './FixDialog';
 import { Pod } from 'kubernetes-models/v1/Pod';
 import { renderInTestApp } from '@backstage/test-utils';
 
-jest.mock('../Events', () => ({
+vi.mock('../Events', () => ({
   Events: () => {
     return <Fragment />;
   },
 }));
 
-jest.mock('../PodLogs', () => ({
+vi.mock('../PodLogs', () => ({
   PodLogs: () => {
     return <Fragment />;
   },

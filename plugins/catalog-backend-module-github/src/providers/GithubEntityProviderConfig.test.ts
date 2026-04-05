@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { ConfigReader } from '@backstage/config';
 import {
   readProviderConfigs,
@@ -21,7 +23,7 @@ import {
 } from './GithubEntityProviderConfig';
 
 describe('readProviderConfigs', () => {
-  afterEach(() => jest.resetAllMocks());
+  afterEach(() => vi.resetAllMocks());
 
   it('no provider config', () => {
     const config = new ConfigReader({});

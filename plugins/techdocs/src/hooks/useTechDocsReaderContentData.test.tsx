@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi , type Mock} from 'vitest';
 import { ReactNode, useState, useEffect } from 'react';
 import { waitFor, screen } from '@testing-library/react';
 
@@ -29,22 +31,22 @@ import {
 } from '@backstage/test-utils';
 import { configApiRef } from '@backstage/core-plugin-api';
 
-const useTechDocsReaderDom = jest.fn();
-jest.mock('../reader/components/TechDocsReaderPageContent/dom', () => ({
-  ...jest.requireActual('../reader/components/TechDocsReaderPageContent/dom'),
+const useTechDocsReaderDom = vi.fn();
+vi.mock('../reader/components/TechDocsReaderPageContent/dom', () => ({
+  ...vi.importActual('../reader/components/TechDocsReaderPageContent/dom'),
   useTechDocsReaderDom: (...args: any[]) => useTechDocsReaderDom(...args),
 }));
-const useTechDocsReader = jest.fn();
-jest.mock('../reader/components/TechDocsReaderProvider', () => ({
-  ...jest.requireActual('../reader/components/TechDocsReaderProvider'),
+const useTechDocsReader = vi.fn();
+vi.mock('../reader/components/TechDocsReaderProvider', () => ({
+  ...vi.importActual('../reader/components/TechDocsReaderProvider'),
   useTechDocsReader: (...args: any[]) => useTechDocsReader(...args),
 }));
-const useShadowDomStylesLoading = jest.fn().mockReturnValue(false);
-jest.mock('@backstage/plugin-techdocs-react', () => ({
-  ...jest.requireActual('@backstage/plugin-techdocs-react'),
+const useShadowDomStylesLoading = vi.fn().mockReturnValue(false);
+vi.mock('@backstage/plugin-techdocs-react', () => ({
+  ...vi.importActual('@backstage/plugin-techdocs-react'),
   useShadowDomStylesLoading: (...args: any[]) =>
     useShadowDomStylesLoading(...args),
-  useShadowRootElements: jest.fn(),
+  useShadowRootElements: vi.fn(),
 }));
 
 import { useTechDocsReaderContentData } from './useTechDocsReaderContentData';
@@ -64,8 +66,8 @@ const mockTechDocsMetadata = {
   site_description: 'test-site-desc',
 };
 
-const getEntityMetadata = jest.fn();
-const getTechDocsMetadata = jest.fn();
+const getEntityMetadata = vi.fn();
+const getTechDocsMetadata = vi.fn();
 
 const Wrapper = ({
   entityRef = {
@@ -104,11 +106,11 @@ function HookRenderer({ defaultPath }: { defaultPath?: string }) {
 }
 
 describe('useTechDocsReaderContentData', () => {
-  const useShadowRootElementsMock = useShadowRootElements as jest.Mock;
+  const useShadowRootElementsMock = useShadowRootElements as Mock;
 
   beforeEach(() => {
     useShadowRootElementsMock.mockReturnValue([]);
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should return ready state when DOM is loaded', async () => {

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { RefreshingAuthSessionManager } from './RefreshingAuthSessionManager';
 import { SessionState } from '@backstage/core-plugin-api';
 import { AuthConnectorRefreshSessionOptions } from '../AuthConnector';
@@ -25,14 +27,14 @@ const defaultOptions = {
 
 describe('RefreshingAuthSessionManager', () => {
   it('should save result from createSession', async () => {
-    const createSession = jest.fn().mockResolvedValue({ expired: false });
-    const refreshSession = jest.fn().mockRejectedValue(new Error('NOPE'));
-    const removeSession = jest.fn();
+    const createSession = vi.fn().mockResolvedValue({ expired: false });
+    const refreshSession = vi.fn().mockRejectedValue(new Error('NOPE'));
+    const removeSession = vi.fn();
     const manager = new RefreshingAuthSessionManager({
       connector: { createSession, refreshSession, removeSession },
       ...defaultOptions,
     } as any);
-    const stateSubscriber = jest.fn();
+    const stateSubscriber = vi.fn();
     manager.sessionState$().subscribe(stateSubscriber);
 
     await Promise.resolve(); // Wait a tick for observer to post a value
@@ -65,8 +67,8 @@ describe('RefreshingAuthSessionManager', () => {
   });
 
   it('should ask consent only if scopes have changed', async () => {
-    const createSession = jest.fn();
-    const refreshSession = jest.fn().mockRejectedValue(new Error('NOPE'));
+    const createSession = vi.fn();
+    const refreshSession = vi.fn().mockRejectedValue(new Error('NOPE'));
     const manager = new RefreshingAuthSessionManager({
       connector: { createSession, refreshSession },
       ...defaultOptions,
@@ -87,7 +89,7 @@ describe('RefreshingAuthSessionManager', () => {
   });
 
   it('should check for session expiry', async () => {
-    const createSession = jest.fn();
+    const createSession = vi.fn();
     const refreshSession = jest
       .fn()
       .mockRejectedValueOnce(new Error('NOPE'))
@@ -112,8 +114,8 @@ describe('RefreshingAuthSessionManager', () => {
   });
 
   it('should handle user closed popup', async () => {
-    const createSession = jest.fn();
-    const refreshSession = jest.fn().mockRejectedValue(new Error('NOPE'));
+    const createSession = vi.fn();
+    const refreshSession = vi.fn().mockRejectedValue(new Error('NOPE'));
     const manager = new RefreshingAuthSessionManager({
       connector: { createSession, refreshSession },
       ...defaultOptions,
@@ -126,8 +128,8 @@ describe('RefreshingAuthSessionManager', () => {
   });
 
   it('should not get optional session', async () => {
-    const createSession = jest.fn();
-    const refreshSession = jest.fn().mockRejectedValue(new Error('NOPE'));
+    const createSession = vi.fn();
+    const refreshSession = vi.fn().mockRejectedValue(new Error('NOPE'));
     const manager = new RefreshingAuthSessionManager({
       connector: { createSession, refreshSession },
       ...defaultOptions,
@@ -139,8 +141,8 @@ describe('RefreshingAuthSessionManager', () => {
   });
 
   it('should forward option to instantly show auth popup after attempting refresh', async () => {
-    const createSession = jest.fn();
-    const refreshSession = jest.fn().mockRejectedValue(new Error('NOPE'));
+    const createSession = vi.fn();
+    const refreshSession = vi.fn().mockRejectedValue(new Error('NOPE'));
     const manager = new RefreshingAuthSessionManager({
       connector: { createSession, refreshSession },
       ...defaultOptions,
@@ -156,7 +158,7 @@ describe('RefreshingAuthSessionManager', () => {
   });
 
   it('should remove session straight away', async () => {
-    const removeSession = jest.fn();
+    const removeSession = vi.fn();
     const manager = new RefreshingAuthSessionManager({
       connector: { removeSession },
       ...defaultOptions,
@@ -168,8 +170,8 @@ describe('RefreshingAuthSessionManager', () => {
   });
 
   it('should handle two simultaneous session refreshes with same scopes', async () => {
-    const createSession = jest.fn();
-    const refreshSession = jest.fn(
+    const createSession = vi.fn();
+    const refreshSession = vi.fn(
       async (options?: AuthConnectorRefreshSessionOptions) => ({
         scopes: options?.scopes ?? new Set(),
         expired: false,
@@ -194,8 +196,8 @@ describe('RefreshingAuthSessionManager', () => {
   });
 
   it('should handle two simultaneous session refreshes with different scopes', async () => {
-    const createSession = jest.fn();
-    const refreshSession = jest.fn(
+    const createSession = vi.fn();
+    const refreshSession = vi.fn(
       async (options?: AuthConnectorRefreshSessionOptions) => ({
         scopes: options?.scopes ?? new Set(),
         expired: false,
@@ -220,8 +222,8 @@ describe('RefreshingAuthSessionManager', () => {
   });
 
   it('should handle multiple simultaneous session refreshes with different scopes', async () => {
-    const createSession = jest.fn();
-    const refreshSession = jest.fn(
+    const createSession = vi.fn();
+    const refreshSession = vi.fn(
       async (options?: AuthConnectorRefreshSessionOptions) => ({
         scopes: options?.scopes ?? new Set(),
         expired: false,
@@ -277,8 +279,8 @@ describe('RefreshingAuthSessionManager', () => {
   });
 
   it('should create a new session if refresh fails with existing expired session', async () => {
-    const createSession = jest.fn();
-    const refreshSession = jest.fn().mockRejectedValue(new Error('NOPE'));
+    const createSession = vi.fn();
+    const refreshSession = vi.fn().mockRejectedValue(new Error('NOPE'));
     const manager = new RefreshingAuthSessionManager({
       connector: { createSession, refreshSession },
       ...defaultOptions,

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   mockServices,
   registerMswTestHooks,
@@ -171,12 +173,12 @@ describe('GitlabDiscoveryProcessor', () => {
   registerMswTestHooks(server);
 
   beforeAll(() => {
-    jest.useFakeTimers();
-    jest.setSystemTime(new Date(SERVER_TIME));
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date(SERVER_TIME));
   });
 
   afterAll(() => {
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 
   describe('parseUrl', () => {

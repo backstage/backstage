@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi, type Mocked } from 'vitest';
+
 import { registerMswTestHooks } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import {
@@ -33,7 +35,7 @@ import {
   VMwareCloudAuthenticatorContext,
 } from './authenticator';
 
-jest.mock('uid2', () => jest.fn().mockReturnValue('sessionid'));
+vi.mock('uid2', () => vi.fn().mockReturnValue('sessionid'));
 
 describe('vmwareCloudAuthenticator', () => {
   const server = setupServer();
@@ -223,19 +225,19 @@ describe('vmwareCloudAuthenticator', () => {
   });
 
   describe('#authenticate', () => {
-    let resolverContext: jest.Mocked<AuthResolverContext>;
+    let resolverContext: Mocked<AuthResolverContext>;
     let authenticateRequest: OAuthAuthenticatorAuthenticateInput;
 
     beforeEach(() => {
       resolverContext = {
-        issueToken: jest.fn().mockResolvedValue({
+        issueToken: vi.fn().mockResolvedValue({
           token: 'defaultBackstageToken',
         }),
-        findCatalogUser: jest.fn(),
-        signInWithCatalogUser: jest.fn().mockResolvedValue({
+        findCatalogUser: vi.fn(),
+        signInWithCatalogUser: vi.fn().mockResolvedValue({
           token: 'backstageToken',
         }),
-        resolveOwnershipEntityRefs: jest.fn(),
+        resolveOwnershipEntityRefs: vi.fn(),
       };
 
       oAuthState = {
@@ -422,18 +424,18 @@ describe('vmwareCloudAuthenticator', () => {
 
   describe('#refresh', () => {
     let refreshRequest: OAuthAuthenticatorRefreshInput;
-    let resolverContext: jest.Mocked<AuthResolverContext>;
+    let resolverContext: Mocked<AuthResolverContext>;
 
     beforeEach(() => {
       resolverContext = {
-        issueToken: jest.fn().mockResolvedValue({
+        issueToken: vi.fn().mockResolvedValue({
           token: 'defaultBackstageToken',
         }),
-        findCatalogUser: jest.fn(),
-        signInWithCatalogUser: jest.fn().mockResolvedValue({
+        findCatalogUser: vi.fn(),
+        signInWithCatalogUser: vi.fn().mockResolvedValue({
           token: 'backstageToken',
         }),
-        resolveOwnershipEntityRefs: jest.fn(),
+        resolveOwnershipEntityRefs: vi.fn(),
       };
 
       refreshRequest = {

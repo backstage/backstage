@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import { ReactNode } from 'react';
 import { useElementFilter } from './useElementFilter';
 import { renderHook } from '@testing-library/react';
@@ -331,7 +333,7 @@ describe('useElementFilter', () => {
   });
 
   it('should support fragments and text node iteration', () => {
-    jest.spyOn(mockFeatureFlagsApi, 'isActive').mockImplementation(() => true);
+    vi.spyOn(mockFeatureFlagsApi, 'isActive').mockImplementation(() => true);
     const tree = (
       <>
         <MockComponent>

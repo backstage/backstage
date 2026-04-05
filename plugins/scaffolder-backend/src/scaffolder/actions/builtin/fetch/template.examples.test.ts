@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type MockedFunction} from 'vitest';
+
 import { join as joinPath, sep as pathSep } from 'node:path';
 import fs from 'fs-extra';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
@@ -30,9 +32,9 @@ import { examples } from './template.examples';
 import yaml from 'yaml';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 
-jest.mock('@backstage/plugin-scaffolder-node', () => ({
-  ...jest.requireActual('@backstage/plugin-scaffolder-node'),
-  fetchContents: jest.fn(),
+vi.mock('@backstage/plugin-scaffolder-node', () => ({
+  ...vi.importActual('@backstage/plugin-scaffolder-node'),
+  fetchContents: vi.fn(),
 }));
 
 type FetchTemplateInput = ReturnType<
@@ -48,7 +50,7 @@ const aBinaryFile = fs.readFileSync(
   ),
 );
 
-const mockFetchContents = fetchContents as jest.MockedFunction<
+const mockFetchContents = fetchContents as MockedFunction<
   typeof fetchContents
 >;
 

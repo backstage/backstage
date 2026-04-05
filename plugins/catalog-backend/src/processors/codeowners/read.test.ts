@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { ConfigReader } from '@backstage/config';
 import { NotFoundError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
@@ -29,12 +31,12 @@ const mockCodeowners = `
 describe('readCodeOwners', () => {
   it('should return found codeowners file', async () => {
     const reader = {
-      read: jest.fn(),
-      readUrl: jest.fn().mockResolvedValue({
-        buffer: jest.fn().mockResolvedValue(Buffer.from(mockCodeowners)),
+      read: vi.fn(),
+      readUrl: vi.fn().mockResolvedValue({
+        buffer: vi.fn().mockResolvedValue(Buffer.from(mockCodeowners)),
       }),
-      readTree: jest.fn(),
-      search: jest.fn(),
+      readTree: vi.fn(),
+      search: vi.fn(),
     };
 
     const result = await readCodeOwners(reader, sourceUrl, [
@@ -45,12 +47,12 @@ describe('readCodeOwners', () => {
 
   it('should return undefined when no codeowner', async () => {
     const reader = {
-      read: jest.fn(),
-      readUrl: jest.fn().mockResolvedValue({
-        buffer: jest.fn().mockRejectedValue(undefined),
+      read: vi.fn(),
+      readUrl: vi.fn().mockResolvedValue({
+        buffer: vi.fn().mockRejectedValue(undefined),
       }),
-      readTree: jest.fn(),
-      search: jest.fn(),
+      readTree: vi.fn(),
+      search: vi.fn(),
     };
 
     await expect(
@@ -60,15 +62,15 @@ describe('readCodeOwners', () => {
 
   it('should look at multiple locations', async () => {
     const reader = {
-      read: jest.fn(),
-      readUrl: jest.fn().mockResolvedValue({
+      read: vi.fn(),
+      readUrl: vi.fn().mockResolvedValue({
         buffer: jest
           .fn()
           .mockRejectedValue(new NotFoundError('not found'))
           .mockResolvedValue(mockCodeowners),
       }),
-      readTree: jest.fn(),
-      search: jest.fn(),
+      readTree: vi.fn(),
+      search: vi.fn(),
     };
 
     const result = await readCodeOwners(reader, sourceUrl, [
@@ -97,12 +99,12 @@ describe('findCodeOwnerByLocation', () => {
     ).byUrl(target);
 
     const reader = {
-      read: jest.fn(),
-      readUrl: jest.fn().mockResolvedValue({
-        buffer: jest.fn().mockResolvedValue(codeOwnersContents),
+      read: vi.fn(),
+      readUrl: vi.fn().mockResolvedValue({
+        buffer: vi.fn().mockResolvedValue(codeOwnersContents),
       }),
-      readTree: jest.fn(),
-      search: jest.fn(),
+      readTree: vi.fn(),
+      search: vi.fn(),
     };
 
     return { target, reader, scmIntegration, codeOwnersContents };

@@ -65,7 +65,7 @@ describe('parseFilterExpression', () => {
     expect(run('is:orphan')(orphan)).toBe(true);
 
     expect(() => run('is:orphan,bar')).toThrowErrorMatchingInlineSnapshot(
-      `"'bar' is not a valid parameter for 'is' filter expressions, expected one of 'orphan'"`,
+      `[InputError: 'bar' is not a valid parameter for 'is' filter expressions, expected one of 'orphan']`,
     );
   });
 
@@ -89,7 +89,7 @@ describe('parseFilterExpression', () => {
     expect(run('has:labels,links')(annotations)).toBe(false);
 
     expect(() => run('has:labels,bar')).toThrowErrorMatchingInlineSnapshot(
-      `"'bar' is not a valid parameter for 'has' filter expressions, expected one of 'labels','links'"`,
+      `[InputError: 'bar' is not a valid parameter for 'has' filter expressions, expected one of 'labels','links']`,
     );
   });
 
@@ -109,19 +109,19 @@ describe('parseFilterExpression', () => {
 
   it('rejects unknown keys', () => {
     expect(() => run('unknown:foo')).toThrowErrorMatchingInlineSnapshot(
-      `"'unknown' is not a valid filter expression key, expected one of 'kind','type','is','has'"`,
+      `[InputError: 'unknown' is not a valid filter expression key, expected one of 'kind','type','is','has']`,
     );
   });
 
   it('rejects malformed inputs', () => {
     expect(() => run(':')).toThrowErrorMatchingInlineSnapshot(
-      `"':' is not a valid filter expression, expected 'key:parameter' form"`,
+      `[InputError: ':' is not a valid filter expression, expected 'key:parameter' form]`,
     );
     expect(() => run(':a')).toThrowErrorMatchingInlineSnapshot(
-      `"':a' is not a valid filter expression, expected 'key:parameter' form"`,
+      `[InputError: ':a' is not a valid filter expression, expected 'key:parameter' form]`,
     );
     expect(() => run('a:')).toThrowErrorMatchingInlineSnapshot(
-      `"'a:' is not a valid filter expression, expected 'key:parameter' form"`,
+      `[InputError: 'a:' is not a valid filter expression, expected 'key:parameter' form]`,
     );
   });
 });
@@ -161,13 +161,13 @@ describe('splitFilterExpression', () => {
 
   it('rejects malformed inputs', () => {
     expect(() => run(':')).toThrowErrorMatchingInlineSnapshot(
-      `"':' is not a valid filter expression, expected 'key:parameter' form"`,
+      `[InputError: ':' is not a valid filter expression, expected 'key:parameter' form]`,
     );
     expect(() => run(':a')).toThrowErrorMatchingInlineSnapshot(
-      `"':a' is not a valid filter expression, expected 'key:parameter' form"`,
+      `[InputError: ':a' is not a valid filter expression, expected 'key:parameter' form]`,
     );
     expect(() => run('a:')).toThrowErrorMatchingInlineSnapshot(
-      `"'a:' is not a valid filter expression, expected 'key:parameter' form"`,
+      `[InputError: 'a:' is not a valid filter expression, expected 'key:parameter' form]`,
     );
   });
 });

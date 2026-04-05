@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import { useKubernetesObjects } from './useKubernetesObjects';
 import { Entity } from '@backstage/catalog-model';
 import { renderHook, waitFor } from '@testing-library/react';
 import { useApi } from '@backstage/core-plugin-api';
 import { generateAuth } from './auth';
 
-jest.mock('@backstage/core-plugin-api');
+vi.mock('@backstage/core-plugin-api');
 
 const entity = {
   metadata: {
@@ -56,16 +58,16 @@ const mockResponse = {
   ],
 };
 
-jest.mock('./auth', () => {
+vi.mock('./auth', () => {
   return {
-    ...jest.requireActual('./auth'),
-    generateAuth: jest.fn(),
+    ...vi.importActual('./auth'),
+    generateAuth: vi.fn(),
   };
 });
 
 describe('useKubernetesObjects', () => {
-  const mockGetObjectsByEntity = jest.fn();
-  const mockGenerateAuth = generateAuth as jest.Mock;
+  const mockGetObjectsByEntity = vi.fn();
+  const mockGenerateAuth = generateAuth as Mock;
 
   const expectMocksCalledCorrectly = (numOfCalls: number = 1) => {
     expect(mockGenerateAuth).toHaveBeenCalledTimes(numOfCalls);
@@ -79,7 +81,7 @@ describe('useKubernetesObjects', () => {
   };
 
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
   it('should return objects', async () => {
     mockGenerateAuth.mockResolvedValue(entityWithAuthToken.auth);

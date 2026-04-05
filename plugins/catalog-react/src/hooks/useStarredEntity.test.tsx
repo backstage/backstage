@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi, type Mocked } from 'vitest';
+
 import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
 import { TestApiProvider } from '@backstage/test-utils';
 import { waitFor, renderHook } from '@testing-library/react';
@@ -23,9 +25,9 @@ import { StarredEntitiesApi, starredEntitiesApiRef } from '../apis';
 import { useStarredEntity } from './useStarredEntity';
 
 describe('useStarredEntity', () => {
-  const mockStarredEntitiesApi: jest.Mocked<StarredEntitiesApi> = {
-    toggleStarred: jest.fn(),
-    starredEntitie$: jest.fn(),
+  const mockStarredEntitiesApi: Mocked<StarredEntitiesApi> = {
+    toggleStarred: vi.fn(),
+    starredEntitie$: vi.fn(),
   };
   let wrapper: ComponentType<PropsWithChildren<{}>>;
 
@@ -38,7 +40,7 @@ describe('useStarredEntity', () => {
   });
 
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   describe.each`

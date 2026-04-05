@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { createBitbucketPipelinesRunAction } from './bitbucketCloudPipelinesRun';
@@ -51,7 +53,7 @@ describe('bitbucket:pipelines:run', () => {
   registerMswTestHooks(worker);
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('should trigger a pipeline for a branch', async () => {

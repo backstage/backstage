@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { createBackendModule } from '@backstage/backend-plugin-api';
 import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
@@ -35,7 +37,7 @@ describe('catalogModuleIncrementalIngestionEntityProvider', () => {
       },
     };
 
-    const addEntityProvider = jest.fn();
+    const addEntityProvider = vi.fn();
 
     const httpRouterMock = mockServices.httpRouter.mock();
 

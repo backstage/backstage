@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { renderWithEffects } from '@backstage/test-utils';
 import app from './App';
 
-jest.mock('./config', () => ({
+vi.mock('./config', () => ({
   configLoader: async () => [
     {
       data: {

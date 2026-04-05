@@ -14,53 +14,55 @@
  * limitations under the License.
  */
 
+import { vi , type MockedFunction} from 'vitest';
+
 import { IncrementalIngestionEngine } from './IncrementalIngestionEngine';
 import { IterationEngineOptions } from '../types';
 import { performance } from 'node:perf_hooks';
 import { metricsServiceMock } from '@backstage/backend-test-utils/alpha';
 
-jest.mock('node:perf_hooks', () => ({
+vi.mock('node:perf_hooks', () => ({
   performance: {
-    now: jest.fn(),
+    now: vi.fn(),
   },
 }));
 
-const mockPerformanceNow = performance.now as jest.MockedFunction<
+const mockPerformanceNow = performance.now as MockedFunction<
   typeof performance.now
 >;
 
 describe('IncrementalIngestionEngine - Burst Length', () => {
   const createMockProvider = () => ({
-    getProviderName: jest.fn().mockReturnValue('test-provider'),
-    next: jest.fn(),
-    around: jest.fn(),
+    getProviderName: vi.fn().mockReturnValue('test-provider'),
+    next: vi.fn(),
+    around: vi.fn(),
   });
 
   const createMockManager = () =>
     ({
-      getLastMark: jest.fn().mockResolvedValue(null),
-      createMark: jest.fn().mockResolvedValue(undefined),
-      createMarkEntities: jest.fn().mockResolvedValue(undefined),
-      computeRemoved: jest.fn().mockResolvedValue({ total: 0, removed: [] }),
+      getLastMark: vi.fn().mockResolvedValue(null),
+      createMark: vi.fn().mockResolvedValue(undefined),
+      createMarkEntities: vi.fn().mockResolvedValue(undefined),
+      computeRemoved: vi.fn().mockResolvedValue({ total: 0, removed: [] }),
     } as any);
 
   const createMockConnection = () =>
     ({
-      applyMutation: jest.fn().mockResolvedValue(undefined),
-      refresh: jest.fn().mockResolvedValue(undefined),
+      applyMutation: vi.fn().mockResolvedValue(undefined),
+      refresh: vi.fn().mockResolvedValue(undefined),
     } as any);
 
   const createMockLogger = () =>
     ({
-      info: jest.fn(),
-      debug: jest.fn(),
-      error: jest.fn(),
-      warn: jest.fn(),
-      child: jest.fn().mockReturnThis(),
+      info: vi.fn(),
+      debug: vi.fn(),
+      error: vi.fn(),
+      warn: vi.fn(),
+      child: vi.fn().mockReturnThis(),
     } as any);
 
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   it('should respect burst length and stop burst when time limit exceeded', async () => {

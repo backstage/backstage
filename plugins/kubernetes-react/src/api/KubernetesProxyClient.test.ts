@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { DateTime } from 'luxon';
 import { KubernetesProxyClient } from './KubernetesProxyClient';
 
 describe('KubernetesProxyClient', () => {
   let proxy: KubernetesProxyClient;
-  const callProxyMock = jest.fn();
+  const callProxyMock = vi.fn();
   const oneHourAgo = DateTime.now().minus({ hours: 1 }).toISO();
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
     proxy = new KubernetesProxyClient({
       kubernetesApi: {
         proxy: callProxyMock,
@@ -39,7 +41,7 @@ describe('KubernetesProxyClient', () => {
     };
 
     callProxyMock.mockResolvedValue({
-      text: jest.fn().mockResolvedValue('Hello World'),
+      text: vi.fn().mockResolvedValue('Hello World'),
       ok: true,
     });
 
@@ -63,7 +65,7 @@ describe('KubernetesProxyClient', () => {
     };
 
     callProxyMock.mockResolvedValue({
-      text: jest.fn().mockResolvedValue('Hello World'),
+      text: vi.fn().mockResolvedValue('Hello World'),
       ok: true,
     });
 
@@ -105,7 +107,7 @@ describe('KubernetesProxyClient', () => {
     ];
 
     callProxyMock.mockResolvedValue({
-      json: jest.fn().mockResolvedValue({
+      json: vi.fn().mockResolvedValue({
         items: events,
       }),
       ok: true,

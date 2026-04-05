@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { TestApiProvider, renderInTestApp } from '@backstage/test-utils';
 import { createDeferred } from '@backstage/types';
 import { screen } from '@testing-library/react';
@@ -27,11 +29,11 @@ import { EntityDisplayName } from './EntityDisplayName';
 
 describe('<EntityDisplayName />', () => {
   const entityPresentationApi = {
-    forEntity: jest.fn(),
+    forEntity: vi.fn(),
   };
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('works with the sync the happy path', async () => {

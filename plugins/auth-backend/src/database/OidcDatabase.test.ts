@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { AuthDatabase } from './AuthDatabase';
 import { OidcDatabase } from './OidcDatabase';
 import { resolvePackagePath } from '@backstage/backend-plugin-api';
 
-jest.setTimeout(60_000);
+vi.setConfig({ testTimeout: 60_000 });
 
 describe('Oidc Database', () => {
   const databases = TestDatabases.create();

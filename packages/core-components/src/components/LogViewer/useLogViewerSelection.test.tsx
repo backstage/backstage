@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import { PropsWithChildren } from 'react';
 import { act, renderHook } from '@testing-library/react';
 import { MockErrorApi, TestApiProvider } from '@backstage/test-utils';
@@ -24,9 +26,9 @@ import { useLogViewerSelection } from './useLogViewerSelection';
 import copyToClipboard from 'copy-to-clipboard';
 
 // Used by useCopyToClipboard
-jest.mock('copy-to-clipboard', () => ({
+vi.mock('copy-to-clipboard', () => ({
   __esModule: true,
-  default: jest.fn(),
+  default: vi.fn(),
 }));
 
 const lines = [
@@ -51,7 +53,7 @@ const expectSelectedLines = (rendered: any, selectedLines: number[]) => {
 
 describe('useLogViewerSelection', () => {
   beforeEach(() => {
-    (copyToClipboard as jest.Mock).mockClear();
+    (copyToClipboard as Mock).mockClear();
   });
 
   it('should select a new line when clicked', () => {

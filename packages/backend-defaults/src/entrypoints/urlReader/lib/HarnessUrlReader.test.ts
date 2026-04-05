@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   mockServices,
   registerMswTestHooks,
@@ -115,7 +117,7 @@ describe('HarnessUrlReader', () => {
   registerMswTestHooks(worker);
   beforeAll(() => worker.listen({ onUnhandledRequest: 'bypass' }));
   afterAll(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('reader factory', () => {

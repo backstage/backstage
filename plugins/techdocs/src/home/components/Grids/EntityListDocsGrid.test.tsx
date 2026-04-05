@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { ApiProvider } from '@backstage/core-app-api';
 import { configApiRef, storageApiRef } from '@backstage/core-plugin-api';
 import {
@@ -63,7 +65,7 @@ const mockCatalogApi = catalogApiMock({ entities });
 
 describe('Entity List Docs Grid', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   const configApi = mockApis.config({

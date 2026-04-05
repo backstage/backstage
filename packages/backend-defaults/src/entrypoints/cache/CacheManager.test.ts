@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { mockServices, TestCaches } from '@backstage/backend-test-utils';
 import KeyvRedis, { createCluster } from '@keyv/redis';
 import KeyvValkey from '@keyv/valkey';
@@ -24,40 +26,40 @@ import { CacheManager } from './CacheManager';
 // that might interfere with this one.
 
 // Contrived code because it's hard to spy on a default export
-jest.mock('@keyv/redis', () => {
-  const Actual = jest.requireActual('@keyv/redis');
+vi.mock('@keyv/redis', () => {
+  const Actual = vi.importActual('@keyv/redis');
   const DefaultConstructor = Actual.default;
   return {
     ...Actual,
     __esModule: true,
-    default: jest.fn((...args: any[]) => new DefaultConstructor(...args)),
-    createCluster: jest.fn(),
+    default: vi.fn((...args: any[]) => new DefaultConstructor(...args)),
+    createCluster: vi.fn(),
   };
 });
-jest.mock('@keyv/valkey', () => {
-  const Actual = jest.requireActual('@keyv/valkey');
+vi.mock('@keyv/valkey', () => {
+  const Actual = vi.importActual('@keyv/valkey');
   const DefaultConstructor = Actual.default;
   return {
     ...Actual,
     __esModule: true,
-    default: jest.fn((...args: any[]) => new DefaultConstructor(...args)),
-    createCluster: jest.fn(),
+    default: vi.fn((...args: any[]) => new DefaultConstructor(...args)),
+    createCluster: vi.fn(),
   };
 });
-jest.mock('@keyv/memcache', () => {
-  const Actual = jest.requireActual('@keyv/memcache');
+vi.mock('@keyv/memcache', () => {
+  const Actual = vi.importActual('@keyv/memcache');
   const DefaultConstructor = Actual.default;
   return {
     ...Actual,
     __esModule: true,
-    default: jest.fn((...args: any[]) => new DefaultConstructor(...args)),
+    default: vi.fn((...args: any[]) => new DefaultConstructor(...args)),
   };
 });
 
 describe('CacheManager integration', () => {
   const caches = TestCaches.create();
 
-  afterEach(jest.clearAllMocks);
+  afterEach(vi.clearAllMocks);
 
   it.each(caches.eachSupportedId())(
     'only creates one underlying connection per plugin, %p',

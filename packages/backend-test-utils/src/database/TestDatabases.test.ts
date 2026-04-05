@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { TestDatabases } from './TestDatabases';
 
-jest.setTimeout(60_000);
+vi.setConfig({ testTimeout: 60_000 });
 
 describe('TestDatabases', () => {
   describe('each create', () => {

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { TestDatabases, mockServices } from '@backstage/backend-test-utils';
 import { Knex } from 'knex';
 import { DefaultProcessingDatabase } from '../../database/DefaultProcessingDatabase';
@@ -23,7 +25,7 @@ import { metricsServiceMock } from '@backstage/backend-test-utils/alpha';
 
 // #region Helpers
 
-jest.setTimeout(600_000);
+vi.setConfig({ testTimeout: 600_000 });
 
 const databases = TestDatabases.create({
   ids: [/* 'MYSQL_8', */ 'POSTGRES_18', /* 'POSTGRES_14',*/ 'SQLITE_3'],

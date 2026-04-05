@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type MockedFunction} from 'vitest';
+
 import fs from 'fs-extra';
 import child_process from 'node:child_process';
 import { resolve as resolvePath } from 'node:path';
@@ -36,17 +38,17 @@ import {
 import { http, HttpResponse, delay } from 'msw';
 import { setupServer } from 'msw/node';
 
-jest.spyOn(Task, 'log').mockReturnValue(undefined);
-jest.spyOn(Task, 'error').mockReturnValue(undefined);
-jest.spyOn(Task, 'section').mockReturnValue(undefined);
+vi.spyOn(Task, 'log').mockReturnValue(undefined);
+vi.spyOn(Task, 'error').mockReturnValue(undefined);
+vi.spyOn(Task, 'section').mockReturnValue(undefined);
 jest
   .spyOn(Task, 'forItem')
   .mockImplementation((_a, _b, taskFunc) => taskFunc());
 
-jest.mock('child_process');
+vi.mock('child_process');
 
 // By mocking this the filesystem mocks won't mess with reading all of the package.jsons
-jest.mock('./versions', () => ({
+vi.mock('./versions', () => ({
   packageVersions: {
     root: '1.2.3',
     '@backstage/cli': '1.0.0',
@@ -112,7 +114,7 @@ jest.mock('./versions', () => ({
 }));
 
 describe('tasks', () => {
-  const mockExec = child_process.exec as unknown as jest.MockedFunction<
+  const mockExec = child_process.exec as unknown as MockedFunction<
     (
       command: string,
       options: any,
@@ -128,7 +130,7 @@ describe('tasks', () => {
   const origCwd = process.cwd();
   const realChdir = process.chdir;
   // If anyone calls chdir then make it resolve within the tmpdir
-  const mockChdir = jest.spyOn(process, 'chdir');
+  const mockChdir = vi.spyOn(process, 'chdir');
 
   beforeEach(() => {
     mockDir.setContent({

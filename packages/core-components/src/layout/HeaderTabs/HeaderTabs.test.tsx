@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { renderInTestApp } from '@backstage/test-utils';
 import Badge from '@material-ui/core/Badge';
 import { makeStyles } from '@material-ui/core/styles';
@@ -85,7 +87,7 @@ describe('<HeaderTabs />', () => {
   });
 
   it('should trigger onChange only once', async () => {
-    const mockOnChange = jest.fn();
+    const mockOnChange = vi.fn();
     const user = userEvent.setup();
 
     const rendered = await renderInTestApp(

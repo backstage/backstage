@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type MockInstance} from 'vitest';
+
 import { ClusterDetails } from '../types';
 import {
   mockServices,
@@ -37,17 +39,17 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { ExtendedHttpServer } from '@backstage/backend-defaults/rootHttpRouter';
 
-jest.setTimeout(60_000);
+vi.setConfig({ testTimeout: 60_000 });
 
 describe('Pinniped - tokenCredentialRequest', () => {
   let app: ExtendedHttpServer;
   const logger = mockServices.logger.mock();
-  let httpsRequest: jest.SpyInstance;
+  let httpsRequest: MockInstance;
   const worker = setupServer();
   registerMswTestHooks(worker);
 
   beforeAll(() => {
-    httpsRequest = jest.spyOn(
+    httpsRequest = vi.spyOn(
       // this is pretty egregious reverse engineering of msw.
       // If the SetupServerApi constructor was exported, we wouldn't need
       // to be quite so hacky here
@@ -60,7 +62,7 @@ describe('Pinniped - tokenCredentialRequest', () => {
     httpsRequest.mockClear();
 
     const clusterSupplierMock = {
-      getClusters: jest.fn().mockImplementation(_ => {
+      getClusters: vi.fn().mockImplementation(_ => {
         return Promise.resolve([
           {
             name: 'custom-cluster',
@@ -138,8 +140,8 @@ describe('Pinniped - tokenCredentialRequest', () => {
                       cert: clientCerts.cert,
                     };
                   },
-                  validateCluster: jest.fn().mockReturnValue([]),
-                  presentAuthMetadata: jest.fn().mockReturnValue({}),
+                  validateCluster: vi.fn().mockReturnValue([]),
+                  presentAuthMetadata: vi.fn().mockReturnValue({}),
                 });
               },
             });
@@ -231,7 +233,7 @@ describe('Pinniped - tokenCredentialRequest', () => {
       );
 
       const clusterSupplierMock = {
-        getClusters: jest.fn().mockImplementation(_ => {
+        getClusters: vi.fn().mockImplementation(_ => {
           return Promise.resolve([
             {
               name: 'tmc-cluster',
@@ -314,8 +316,8 @@ describe('Pinniped - tokenCredentialRequest', () => {
                         cert: clientCerts.cert,
                       };
                     },
-                    validateCluster: jest.fn().mockReturnValue([]),
-                    presentAuthMetadata: jest.fn().mockReturnValue({}),
+                    validateCluster: vi.fn().mockReturnValue([]),
+                    presentAuthMetadata: vi.fn().mockReturnValue({}),
                   });
                 },
               });

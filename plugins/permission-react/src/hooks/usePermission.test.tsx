@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { render } from '@testing-library/react';
 import { usePermission } from './usePermission';
 import {
@@ -66,7 +68,7 @@ describe('usePermission', () => {
     const permissionApi = mockApis.permission({
       authorize: AuthorizeResult.ALLOW,
     });
-    jest.spyOn(permissionApi, 'authorize');
+    vi.spyOn(permissionApi, 'authorize');
 
     const { findByText } = renderComponent(permissionApi);
 
@@ -78,7 +80,7 @@ describe('usePermission', () => {
     const permissionApi = mockApis.permission({
       authorize: AuthorizeResult.DENY,
     });
-    jest.spyOn(permissionApi, 'authorize');
+    vi.spyOn(permissionApi, 'authorize');
 
     const { findByText } = renderComponent(permissionApi);
 

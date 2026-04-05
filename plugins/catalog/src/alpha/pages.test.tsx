@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {
@@ -725,7 +727,7 @@ describe('Entity page', () => {
   });
 
   describe('Entity Page Context Menu', () => {
-    const onClickMock = jest.fn();
+    const onClickMock = vi.fn();
     beforeEach(() => {
       onClickMock.mockReset();
     });

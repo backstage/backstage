@@ -13,27 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi, vi, type Mocked} from 'vitest';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { spawn } from 'node:child_process';
 import { PassThrough, Writable } from 'node:stream';
 import { executeShellCommand } from './executeShellCommand';
 
-jest.mock('child_process', () => ({
-  spawn: jest.fn(),
+vi.mock('child_process', () => ({
+  spawn: vi.fn(),
 }));
 
 describe('executeShellCommand', () => {
-  let mockSpawn: jest.Mock;
+  let mockSpawn: Mock;
   let mockProcess: any;
-  let mockLogger: jest.Mocked<LoggerService>;
+  let mockLogger: Mocked<LoggerService>;
   let mockLogStream: Writable;
 
   beforeEach(() => {
-    mockSpawn = spawn as jest.Mock;
+    mockSpawn = spawn as Mock;
     mockProcess = {
       stdout: new PassThrough(),
       stderr: new PassThrough(),
-      on: jest.fn((event: string, callback: (code: number) => void) => {
+      on: vi.fn((event: string, callback: (code: number) => void) => {
         if (event === 'close') {
           callback(0);
         }
@@ -44,14 +46,14 @@ describe('executeShellCommand', () => {
     mockLogStream = new PassThrough();
 
     mockLogger = {
-      info: jest.fn(),
-      error: jest.fn(),
-    } as unknown as jest.Mocked<LoggerService>;
-    jest.clearAllMocks();
+      info: vi.fn(),
+      error: vi.fn(),
+    } as unknown as Mocked<LoggerService>;
+    vi.clearAllMocks();
   });
 
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('should execute without logger or logStream', async () => {
@@ -64,7 +66,7 @@ describe('executeShellCommand', () => {
   });
 
   it('should execute with logger but no logStream', async () => {
-    const logStreamSpy = jest.spyOn(mockLogStream, 'write');
+    const logStreamSpy = vi.spyOn(mockLogStream, 'write');
     await executeShellCommand({
       command: 'echo',
       args: ['Hello World'],
@@ -83,7 +85,7 @@ describe('executeShellCommand', () => {
   });
 
   it('should execute with logStream but no logger', async () => {
-    const logStreamSpy = jest.spyOn(mockLogStream, 'write');
+    const logStreamSpy = vi.spyOn(mockLogStream, 'write');
 
     await executeShellCommand({
       command: 'echo',
@@ -102,7 +104,7 @@ describe('executeShellCommand', () => {
   });
 
   it('should execute with both logger and logStream', async () => {
-    const logStreamSpy = jest.spyOn(mockLogStream, 'write');
+    const logStreamSpy = vi.spyOn(mockLogStream, 'write');
 
     await executeShellCommand({
       command: 'echo',

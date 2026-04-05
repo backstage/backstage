@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { Entity } from '@backstage/catalog-model';
 import { ApiProvider } from '@backstage/core-app-api';
 import { analyticsApiRef } from '@backstage/core-plugin-api';
@@ -44,7 +46,7 @@ describe('<CatalogGraphCard/>', () => {
   let apis: TestApiRegistry;
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
 
     entity = {
       apiVersion: 'a',

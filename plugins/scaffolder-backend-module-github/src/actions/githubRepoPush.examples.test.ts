@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-jest.mock('@backstage/plugin-scaffolder-node', () => {
+import { vi , type Mock} from 'vitest';
+
+vi.mock('@backstage/plugin-scaffolder-node', () => {
   return {
-    ...jest.requireActual('@backstage/plugin-scaffolder-node'),
-    initRepoAndPush: jest.fn().mockResolvedValue({
+    ...vi.importActual('@backstage/plugin-scaffolder-node'),
+    initRepoAndPush: vi.fn().mockResolvedValue({
       commitHash: '220f19cc36b551763d157f1b5e4a4b446165dbd6',
     }),
-    commitAndPushRepo: jest.fn().mockResolvedValue({
+    commitAndPushRepo: vi.fn().mockResolvedValue({
       commitHash: '220f19cc36b551763d157f1b5e4a4b446165dbd6',
     }),
   };
@@ -41,25 +43,25 @@ import { createGithubRepoPushAction } from './githubRepoPush';
 import { examples } from './githubRepoPush.examples';
 import yaml from 'yaml';
 
-jest.mock('./helpers', () => {
+vi.mock('./helpers', () => {
   return {
-    ...jest.requireActual('./helpers'),
-    entityRefToName: jest.fn(),
+    ...vi.importActual('./helpers'),
+    entityRefToName: vi.fn(),
   };
 });
 
-const initRepoAndPushMocked = initRepoAndPush as jest.Mock<
+const initRepoAndPushMocked = initRepoAndPush as Mock<
   Promise<{ commitHash: string }>
 >;
 
 const mockOctokit = {
   rest: {
     repos: {
-      get: jest.fn(),
+      get: vi.fn(),
     },
   },
 };
-jest.mock('octokit', () => ({
+vi.mock('octokit', () => ({
   Octokit: class {
     constructor() {
       return mockOctokit;
@@ -84,7 +86,7 @@ describe('github:repo:push examples', () => {
   const mockContext = createMockActionContext();
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
 
     initRepoAndPushMocked.mockResolvedValue({ commitHash: 'test123' });
 

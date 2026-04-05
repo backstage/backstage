@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { renderWithEffects } from '@backstage/test-utils';
 import { mockApis, TestApiProvider } from '@backstage/frontend-test-utils';
 import { waitFor, screen } from '@testing-library/react';
@@ -22,7 +24,7 @@ import { SelectedKindsFilter } from './SelectedKindsFilter';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 
 const catalogApi = catalogApiMock.mock({
-  getEntityFacets: jest.fn().mockResolvedValue({
+  getEntityFacets: vi.fn().mockResolvedValue({
     facets: {
       kind: [
         { value: 'Component', count: 2 },
@@ -62,7 +64,7 @@ describe('<SelectedKindsFilter/>', () => {
   });
 
   it('should select value', async () => {
-    const onChange = jest.fn();
+    const onChange = vi.fn();
     await renderWithEffects(
       <TestApiProvider apis={apis}>
         <SelectedKindsFilter value={['api', 'component']} onChange={onChange} />
@@ -80,7 +82,7 @@ describe('<SelectedKindsFilter/>', () => {
   });
 
   it('should return undefined if all values are selected', async () => {
-    const onChange = jest.fn();
+    const onChange = vi.fn();
     await renderWithEffects(
       <TestApiProvider apis={apis}>
         <SelectedKindsFilter
@@ -103,7 +105,7 @@ describe('<SelectedKindsFilter/>', () => {
   });
 
   it('should return all values when cleared', async () => {
-    const onChange = jest.fn();
+    const onChange = vi.fn();
     await renderWithEffects(
       <TestApiProvider apis={apis}>
         <SelectedKindsFilter value={[]} onChange={onChange} />

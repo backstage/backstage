@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { ReactNode } from 'react';
 import { fireEvent, screen } from '@testing-library/react';
 import { DocsTableRow } from './types';
@@ -74,7 +76,7 @@ describe('OffsetPaginatedDocsTable', () => {
           title={tableTitle}
         />,
         {
-          setOffset: jest.fn(),
+          setOffset: vi.fn(),
           limit: Number.MAX_SAFE_INTEGER,
           offset: 0,
           totalItems: data.length,
@@ -90,7 +92,7 @@ describe('OffsetPaginatedDocsTable', () => {
   });
 
   it('should display and invoke the next and previous buttons', async () => {
-    const offsetFn = jest.fn();
+    const offsetFn = vi.fn();
 
     await renderInTestApp(
       wrapInContext(

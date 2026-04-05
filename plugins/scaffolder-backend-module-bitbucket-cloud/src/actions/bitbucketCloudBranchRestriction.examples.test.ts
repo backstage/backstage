@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import { createBitbucketCloudBranchRestrictionAction } from './bitbucketCloudBranchRestriction';
 import { ScmIntegrations } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
@@ -22,8 +24,8 @@ import { examples } from './bitbucketCloudBranchRestriction.examples';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { Bitbucket } from 'bitbucket';
 
-jest.mock('bitbucket', () => ({
-  Bitbucket: jest.fn(),
+vi.mock('bitbucket', () => ({
+  Bitbucket: vi.fn(),
 }));
 
 describe('bitbucketCloud:branchRestriction:create', () => {
@@ -50,15 +52,15 @@ describe('bitbucketCloud:branchRestriction:create', () => {
 
   const mockBranchRestrictionsApi = {
     branchrestrictions: {
-      create: jest.fn().mockResolvedValue({ status: 201, data: {} }),
+      create: vi.fn().mockResolvedValue({ status: 201, data: {} }),
     },
   };
-  (Bitbucket as unknown as jest.Mock).mockImplementation(
+  (Bitbucket as unknown as Mock).mockImplementation(
     () => mockBranchRestrictionsApi,
   );
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   afterEach(() =>

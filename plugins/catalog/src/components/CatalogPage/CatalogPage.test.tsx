@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import { renderInTestApp } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
 import { useOutlet } from 'react-router-dom';
 import { CatalogPage } from './CatalogPage';
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useOutlet: jest.fn().mockReturnValue('Route Children'),
+vi.mock('react-router-dom', () => ({
+  ...vi.importActual('react-router-dom'),
+  useOutlet: vi.fn().mockReturnValue('Route Children'),
 }));
 
-jest.mock('./DefaultCatalogPage', () => ({
-  DefaultCatalogPage: jest.fn().mockReturnValue('DefaultCatalogPage'),
+vi.mock('./DefaultCatalogPage', () => ({
+  DefaultCatalogPage: vi.fn().mockReturnValue('DefaultCatalogPage'),
 }));
 
 describe('CatalogPage', () => {
@@ -36,7 +38,7 @@ describe('CatalogPage', () => {
   });
 
   it('renders DefaultCatalogPage home when no router children are provided', async () => {
-    (useOutlet as jest.Mock).mockReturnValueOnce(null);
+    (useOutlet as Mock).mockReturnValueOnce(null);
     await renderInTestApp(<CatalogPage />);
 
     expect(screen.getByText('DefaultCatalogPage')).toBeInTheDocument();

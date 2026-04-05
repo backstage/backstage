@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { fireEvent, waitFor, screen, act } from '@testing-library/react';
 import {
   MockEntityListContextProvider,
@@ -92,7 +94,7 @@ describe('<EntityTagPicker/>', () => {
   });
 
   it('respects the query parameter filter value', async () => {
-    const updateFilters = jest.fn();
+    const updateFilters = vi.fn();
     const queryParameters = { tags: ['tag3'] };
     await renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
@@ -115,7 +117,7 @@ describe('<EntityTagPicker/>', () => {
   });
 
   it('adds tags to filters', async () => {
-    const updateFilters = jest.fn();
+    const updateFilters = vi.fn();
     await renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
         <MockEntityListContextProvider
@@ -139,7 +141,7 @@ describe('<EntityTagPicker/>', () => {
   });
 
   it('removes tags from filters', async () => {
-    const updateFilters = jest.fn();
+    const updateFilters = vi.fn();
     await renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
         <MockEntityListContextProvider
@@ -167,7 +169,7 @@ describe('<EntityTagPicker/>', () => {
   });
 
   it('responds to external queryParameters changes', async () => {
-    const updateFilters = jest.fn();
+    const updateFilters = vi.fn();
     const rendered = await renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
         <MockEntityListContextProvider
@@ -203,7 +205,7 @@ describe('<EntityTagPicker/>', () => {
   });
 
   it('verify that user can select tags after query string has been set', async () => {
-    const updateFilters = jest.fn();
+    const updateFilters = vi.fn();
     await renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
         <MockEntityListContextProvider
@@ -233,7 +235,7 @@ describe('<EntityTagPicker/>', () => {
   });
 
   it('removes tags from filters if there are none available', async () => {
-    const updateFilters = jest.fn();
+    const updateFilters = vi.fn();
     const mockCatalogApiRefNoTags = catalogApiMock.mock({
       getEntityFacets: async () => ({
         facets: {},
@@ -261,7 +263,7 @@ describe('<EntityTagPicker/>', () => {
   });
 
   it('respects the initial filter value', async () => {
-    const updateFilters = jest.fn();
+    const updateFilters = vi.fn();
     await renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
         <MockEntityListContextProvider

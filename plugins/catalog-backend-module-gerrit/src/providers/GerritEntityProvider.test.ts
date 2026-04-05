@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   SchedulerService,
   SchedulerServiceTaskRunner,
@@ -62,7 +64,7 @@ describe('GerritEntityProvider', () => {
   registerMswTestHooks(server);
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   const config = mockServices.rootConfig({
@@ -105,8 +107,8 @@ describe('GerritEntityProvider', () => {
   });
 
   const entityProviderConnection: EntityProviderConnection = {
-    applyMutation: jest.fn(),
-    refresh: jest.fn(),
+    applyMutation: vi.fn(),
+    refresh: vi.fn(),
   };
 
   it('discovers projects from the api.', async () => {
@@ -345,7 +347,7 @@ describe('GerritEntityProvider', () => {
 
   it('fail with scheduler but no schedule config', () => {
     const scheduler = {
-      createScheduledTaskRunner: (_: any) => jest.fn(),
+      createScheduledTaskRunner: (_: any) => vi.fn(),
     } as unknown as SchedulerService;
     expect(() =>
       GerritEntityProvider.fromConfig(config, {

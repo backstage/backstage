@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { Suspense, PropsWithChildren, ReactElement } from 'react';
 import { MemoryRouter, Routes, Route, useOutlet } from 'react-router-dom';
 import { render } from '@testing-library/react';
@@ -40,9 +42,9 @@ import { RouteResolver } from './RouteResolver';
 import { AnyRouteRef, RouteFunc } from './types';
 import { AppContextProvider } from '../app/AppContext';
 
-jest.mock('react-router', () => jest.requireActual('react-router-stable'));
-jest.mock('react-router-dom', () =>
-  jest.requireActual('react-router-dom-stable'),
+vi.mock('react-router', () => vi.importActual('react-router-stable'));
+vi.mock('react-router-dom', () =>
+  vi.importActual('react-router-dom-stable'),
 );
 
 const MockComponent = ({ children }: PropsWithChildren<{}>) => (
@@ -131,9 +133,9 @@ const ExtensionSource2 = plugin.provide(
 
 const mockContext = {
   getComponents: () => ({ Progress: () => null } as any),
-  getSystemIcon: jest.fn(),
-  getSystemIcons: jest.fn(),
-  getPlugins: jest.fn(),
+  getSystemIcon: vi.fn(),
+  getSystemIcons: vi.fn(),
+  getPlugins: vi.fn(),
 };
 
 function withRoutingProvider(

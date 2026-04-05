@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { fireEvent, waitFor, screen, within } from '@testing-library/react';
 import { Entity } from '@backstage/catalog-model';
 import { EntityTypePicker } from './EntityTypePicker';
@@ -63,7 +65,7 @@ const apis = TestApiRegistry.from(
   [
     catalogApiRef,
     {
-      getEntityFacets: jest.fn().mockResolvedValue({
+      getEntityFacets: vi.fn().mockResolvedValue({
         facets: {
           'spec.type': entities.map(e => ({
             value: (e.spec as any).type,
@@ -102,7 +104,7 @@ describe('<EntityTypePicker/>', () => {
   });
 
   it('sets the selected type filter', async () => {
-    const updateFilters = jest.fn();
+    const updateFilters = vi.fn();
     await renderInTestApp(
       <ApiProvider apis={apis}>
         <MockEntityListContextProvider
@@ -132,7 +134,7 @@ describe('<EntityTypePicker/>', () => {
   });
 
   it('respects the query parameter filter value', async () => {
-    const updateFilters = jest.fn();
+    const updateFilters = vi.fn();
     const queryParameters = { type: 'tool' };
     await renderInTestApp(
       <ApiProvider apis={apis}>
@@ -154,7 +156,7 @@ describe('<EntityTypePicker/>', () => {
   });
 
   it('responds to external queryParameters changes', async () => {
-    const updateFilters = jest.fn();
+    const updateFilters = vi.fn();
     const rendered = await renderInTestApp(
       <ApiProvider apis={apis}>
         <MockEntityListContextProvider

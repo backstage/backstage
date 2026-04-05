@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import { PropsWithChildren } from 'react';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { useAllEntitiesCount } from './useAllEntitiesCount';
@@ -26,8 +28,8 @@ import { useMountEffect } from '@react-hookz/web';
 
 const mockCatalogApi = catalogApiMock.mock();
 
-jest.mock('@backstage/core-plugin-api', () => {
-  const actual = jest.requireActual('@backstage/core-plugin-api');
+vi.mock('@backstage/core-plugin-api', () => {
+  const actual = vi.importActual('@backstage/core-plugin-api');
   return {
     ...actual,
     useApi: (ref: ApiRef<any>) =>
@@ -37,7 +39,7 @@ jest.mock('@backstage/core-plugin-api', () => {
 
 describe('useAllEntitiesCount', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should return the count', async () => {

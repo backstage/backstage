@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
 import { registerMswTestHooks } from '@backstage/test-utils';
@@ -57,7 +59,7 @@ describe('Release Manifests', () => {
     });
 
     it('should allow overriding the fetch implementation', async () => {
-      const mockFetch = jest.fn().mockImplementation(async url => ({
+      const mockFetch = vi.fn().mockImplementation(async url => ({
         status: 200,
         url,
         json: () => ({
@@ -88,7 +90,7 @@ describe('Release Manifests', () => {
     });
 
     it('should allow overriding the versions host', async () => {
-      const mockFetch = jest.fn().mockImplementation(async url => ({
+      const mockFetch = vi.fn().mockImplementation(async url => ({
         status: 200,
         url,
         json: () => ({
@@ -116,7 +118,7 @@ describe('Release Manifests', () => {
     });
 
     it('should allow overriding github host', async () => {
-      const mockFetch = jest.fn().mockImplementation(async url => {
+      const mockFetch = vi.fn().mockImplementation(async url => {
         if (
           url ===
           'https://versions.some-test-host.com/v1/releases/0.0.0/manifest.json'
@@ -186,7 +188,7 @@ describe('Release Manifests', () => {
     });
 
     it('should allow overriding the fetch implementation', async () => {
-      const mockFetch = jest.fn().mockImplementation(async url => ({
+      const mockFetch = vi.fn().mockImplementation(async url => ({
         status: 200,
         url,
         json: () => ({
@@ -217,7 +219,7 @@ describe('Release Manifests', () => {
     });
 
     it('should allow overriding the versions host', async () => {
-      const mockFetch = jest.fn().mockImplementation(async url => ({
+      const mockFetch = vi.fn().mockImplementation(async url => ({
         status: 200,
         url,
         json: () => ({
@@ -245,7 +247,7 @@ describe('Release Manifests', () => {
     });
 
     it('should allow overriding github host', async () => {
-      const mockFetch = jest.fn().mockImplementation(async url => {
+      const mockFetch = vi.fn().mockImplementation(async url => {
         if (
           url ===
           'https://hosted.raw.internal-github.com/backstage/versions/main/v1/tags/main'
@@ -304,45 +306,45 @@ describe('Release Manifests', () => {
 
 describe('withFallback', () => {
   it('should use the first value to resolve', async () => {
-    const fn1 = jest.fn((_s: AbortSignal) => Promise.resolve(1));
-    const fn2 = jest.fn((_s: AbortSignal) => Promise.resolve(2));
+    const fn1 = vi.fn((_s: AbortSignal) => Promise.resolve(1));
+    const fn2 = vi.fn((_s: AbortSignal) => Promise.resolve(2));
     await expect(withFallback(fn1, fn2, 100)).resolves.toBe(1);
     expect(fn1.mock.lastCall?.[0].aborted).toBe(false);
     expect(fn2).not.toHaveBeenCalled();
   });
 
   it('should fall back on rejection', async () => {
-    const fn1 = jest.fn((_s: AbortSignal) => Promise.reject(new Error('1')));
-    const fn2 = jest.fn((_s: AbortSignal) => Promise.resolve(2));
+    const fn1 = vi.fn((_s: AbortSignal) => Promise.reject(new Error('1')));
+    const fn2 = vi.fn((_s: AbortSignal) => Promise.resolve(2));
     await expect(withFallback(fn1, fn2, 0)).resolves.toBe(2);
     expect(fn1.mock.lastCall?.[0].aborted).toBe(true);
     expect(fn2.mock.lastCall?.[0].aborted).toBe(false);
   });
 
   it('should fall back on timeout', async () => {
-    const fn1 = jest.fn((_s: AbortSignal) => new Promise<number>(() => {}));
-    const fn2 = jest.fn((_s: AbortSignal) => Promise.resolve(2));
+    const fn1 = vi.fn((_s: AbortSignal) => new Promise<number>(() => {}));
+    const fn2 = vi.fn((_s: AbortSignal) => Promise.resolve(2));
     await expect(withFallback(fn1, fn2, 0)).resolves.toBe(2);
     expect(fn1.mock.lastCall?.[0].aborted).toBe(true);
     expect(fn2.mock.lastCall?.[0].aborted).toBe(false);
   });
 
   it('should always reject with the first error', async () => {
-    const fn1 = jest.fn((_s: AbortSignal) => Promise.reject(new Error('1')));
-    const fn2 = jest.fn((_s: AbortSignal) => Promise.reject(new Error('2')));
+    const fn1 = vi.fn((_s: AbortSignal) => Promise.reject(new Error('1')));
+    const fn2 = vi.fn((_s: AbortSignal) => Promise.reject(new Error('2')));
     await expect(withFallback(fn1, fn2, 0)).rejects.toThrow('1');
     expect(fn1.mock.lastCall?.[0].aborted).toBe(false);
     expect(fn2.mock.lastCall?.[0].aborted).toBe(false);
   });
 
   it('should always reject with the first error even if rejected after', async () => {
-    const fn1 = jest.fn(
+    const fn1 = vi.fn(
       (_s: AbortSignal) =>
         new Promise<number>((_resolve, reject) => {
           setTimeout(() => reject(new Error('1')), 100);
         }),
     );
-    const fn2 = jest.fn((_s: AbortSignal) => Promise.reject(new Error('2')));
+    const fn2 = vi.fn((_s: AbortSignal) => Promise.reject(new Error('2')));
     await expect(withFallback(fn1, fn2, 0)).rejects.toThrow('1');
     expect(fn1.mock.lastCall?.[0].aborted).toBe(false);
     expect(fn2.mock.lastCall?.[0].aborted).toBe(false);

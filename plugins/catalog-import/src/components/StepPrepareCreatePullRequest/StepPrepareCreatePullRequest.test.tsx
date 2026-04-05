@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi, vi, type Mocked} from 'vitest';
+
 import { configApiRef, errorApiRef } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
@@ -34,17 +36,17 @@ import {
 } from './StepPrepareCreatePullRequest';
 
 describe('<StepPrepareCreatePullRequest />', () => {
-  const catalogImportApi: jest.Mocked<typeof catalogImportApiRef.T> = {
-    analyzeUrl: jest.fn(),
-    submitPullRequest: jest.fn(),
-    preparePullRequest: jest.fn(),
+  const catalogImportApi: Mocked<typeof catalogImportApiRef.T> = {
+    analyzeUrl: vi.fn(),
+    submitPullRequest: vi.fn(),
+    preparePullRequest: vi.fn(),
   };
 
   const catalogApi = catalogApiMock.mock();
 
-  const errorApi: jest.Mocked<typeof errorApiRef.T> = {
-    error$: jest.fn(),
-    post: jest.fn(),
+  const errorApi: Mocked<typeof errorApiRef.T> = {
+    error$: vi.fn(),
+    post: vi.fn(),
   };
 
   const configApi = mockApis.config();
@@ -62,7 +64,7 @@ describe('<StepPrepareCreatePullRequest />', () => {
     </TestApiProvider>
   );
 
-  const onPrepareFn = jest.fn();
+  const onPrepareFn = vi.fn();
   const analyzeResult = {
     type: 'repository',
     url: 'https://my-repository',
@@ -83,9 +85,9 @@ describe('<StepPrepareCreatePullRequest />', () => {
   } as Extract<AnalyzeResult, { type: 'repository' }>;
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
 
-    (catalogImportApi.preparePullRequest! as jest.Mock).mockResolvedValue({
+    (catalogImportApi.preparePullRequest! as Mock).mockResolvedValue({
       title: 'My title',
       body: 'My **body**',
     });
@@ -242,7 +244,7 @@ spec:
   });
 
   it('should load groups', async () => {
-    const renderFormFieldsFn = jest.fn();
+    const renderFormFieldsFn = vi.fn();
     catalogApi.getEntities.mockReturnValue(
       Promise.resolve({
         items: [

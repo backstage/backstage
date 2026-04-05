@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import {
   mockServices,
   ServiceFactoryTester,
@@ -23,7 +25,7 @@ import { WinstonLogger } from './WinstonLogger';
 
 describe('rootLoggerServiceFactory', () => {
   beforeEach(() => {
-    jest.spyOn(WinstonLogger, 'create');
+    vi.spyOn(WinstonLogger, 'create');
   });
 
   it('should create WinstonLogger with defaults', async () => {

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi, type Mocked } from 'vitest';
+
 import { repoPickerValidation } from './validation';
 import { FieldValidation } from '@rjsf/utils';
 import { ScmIntegrations } from '@backstage/integration';
@@ -23,7 +25,7 @@ import { ApiHolder } from '@backstage/core-plugin-api';
 describe('RepoPicker Validation', () => {
   const fieldValidator = () =>
     ({
-      addError: jest.fn(),
+      addError: vi.fn(),
     } as unknown as FieldValidation);
 
   const config = new ConfigReader({
@@ -53,8 +55,8 @@ describe('RepoPicker Validation', () => {
 
   const scmIntegrations = ScmIntegrations.fromConfig(config);
 
-  const apiHolderMock: jest.Mocked<ApiHolder> = {
-    get: jest.fn().mockImplementation(() => {
+  const apiHolderMock: Mocked<ApiHolder> = {
+    get: vi.fn().mockImplementation(() => {
       return scmIntegrations;
     }),
   };

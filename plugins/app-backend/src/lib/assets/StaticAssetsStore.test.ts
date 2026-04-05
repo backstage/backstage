@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { TestDatabases, mockServices } from '@backstage/backend-test-utils';
 import { StaticAssetsStore } from './StaticAssetsStore';
 
-jest.setTimeout(60_000);
+vi.setConfig({ testTimeout: 60_000 });
 
 describe('StaticAssetsStore', () => {
   const databases = TestDatabases.create();

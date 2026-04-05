@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { screen } from '@testing-library/react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
@@ -22,7 +24,7 @@ import { rootRouteRef } from '../../../routes';
 import { CustomFieldsPage } from './CustomFieldsPage';
 
 describe('CustomFieldsPage', () => {
-  const catalogApiMock = { getEntities: jest.fn().mockResolvedValue([]) };
+  const catalogApiMock = { getEntities: vi.fn().mockResolvedValue([]) };
   const scaffolderApiMock = {};
 
   it('Should render without exploding', async () => {

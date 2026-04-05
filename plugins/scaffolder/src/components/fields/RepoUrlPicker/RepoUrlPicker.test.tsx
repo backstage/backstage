@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi , type Mock} from 'vitest';
 import { RepoUrlPicker } from './RepoUrlPicker';
 import { Form } from '@backstage/plugin-scaffolder-react/alpha';
 import validator from '@rjsf/validator-ajv8';
@@ -68,13 +70,13 @@ describe('RepoUrlPicker', () => {
 
   beforeEach(() => {
     mockScmAuthApi = {
-      getCredentials: jest.fn().mockResolvedValue({ token: 'abc123' }),
+      getCredentials: vi.fn().mockResolvedValue({ token: 'abc123' }),
     };
   });
 
   describe('happy path rendering', () => {
     it('should render the repo url picker with minimal props', async () => {
-      const onSubmit = jest.fn();
+      const onSubmit = vi.fn();
       const { getAllByRole, getByRole } = await renderInTestApp(
         <TestApiProvider
           apis={[
@@ -121,7 +123,7 @@ describe('RepoUrlPicker', () => {
     });
 
     it('should disable the picker when ui:disabled', async () => {
-      const onSubmit = jest.fn();
+      const onSubmit = vi.fn();
       const { getAllByRole } = await renderInTestApp(
         <TestApiProvider
           apis={[
@@ -353,7 +355,7 @@ describe('RepoUrlPicker', () => {
       };
       const allowedHosts = ['github.com', 'gitlab.example.com'];
 
-      (mockScmAuthApi.getCredentials as jest.Mock).mockImplementation(
+      (mockScmAuthApi.getCredentials as Mock).mockImplementation(
         ({ url }) => {
           let token = '';
           if (url === `https://${allowedHosts[0]}`) {

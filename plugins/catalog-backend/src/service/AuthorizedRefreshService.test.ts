@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { NotAllowedError } from '@backstage/errors';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { ServerPermissionClient } from '@backstage/plugin-permission-node';
@@ -22,15 +24,15 @@ import { mockCredentials } from '@backstage/backend-test-utils';
 
 describe('AuthorizedRefreshService', () => {
   const refreshService = {
-    refresh: jest.fn(),
+    refresh: vi.fn(),
   };
   const permissionApi = {
-    authorize: jest.fn(),
-    query: jest.fn(),
+    authorize: vi.fn(),
+    query: vi.fn(),
   };
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('throws AuthorizationError on deny', async () => {

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import { createGithubDeployKeyAction } from './githubDeployKey';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
@@ -22,20 +24,20 @@ import { ScmIntegrations } from '@backstage/integration';
 
 import { Octokit } from 'octokit';
 
-const octokitMock = Octokit as unknown as jest.Mock;
+const octokitMock = Octokit as unknown as Mock;
 const mockOctokit = {
   rest: {
     actions: {
-      getRepoPublicKey: jest.fn(),
-      createOrUpdateRepoSecret: jest.fn(),
+      getRepoPublicKey: vi.fn(),
+      createOrUpdateRepoSecret: vi.fn(),
     },
     repos: {
-      createDeployKey: jest.fn(),
+      createDeployKey: vi.fn(),
     },
   },
 };
-jest.mock('octokit', () => ({
-  Octokit: jest.fn(),
+vi.mock('octokit', () => ({
+  Octokit: vi.fn(),
 }));
 
 const publicKey = '2Sg8iYjAxxmI2LvUXpJjkYrMxURPc8r+dB7TJyvvcCU=';
@@ -63,7 +65,7 @@ describe('github:deployKey:create', () => {
   });
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
 
     octokitMock.mockImplementation(() => mockOctokit);
 

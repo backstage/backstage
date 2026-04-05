@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { ScmIntegrations } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
@@ -25,13 +27,13 @@ import { createGithubBranchProtectionAction } from './githubBranchProtection';
 const mockOctokit = {
   rest: {
     repos: {
-      createCommitSignatureProtection: jest.fn(),
-      get: jest.fn(),
-      updateBranchProtection: jest.fn(),
+      createCommitSignatureProtection: vi.fn(),
+      get: vi.fn(),
+      updateBranchProtection: vi.fn(),
     },
   },
 };
-jest.mock('octokit', () => ({
+vi.mock('octokit', () => ({
   Octokit: class {
     constructor() {
       return mockOctokit;
@@ -59,7 +61,7 @@ describe('github:branch-protection:create', () => {
   });
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
 
     mockOctokit.rest.repos.get.mockResolvedValue({
       data: {

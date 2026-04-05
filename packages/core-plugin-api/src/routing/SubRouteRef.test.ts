@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { AnyParams, SubRouteRef } from './types';
 import { createSubRouteRef } from './SubRouteRef';
 import { createRouteRef } from './RouteRef';
@@ -128,7 +130,7 @@ describe('SubRouteRef', () => {
   });
 
   describe('with new frontend system', () => {
-    const routeResolutionApi = { resolve: jest.fn() } as RouteResolutionApi;
+    const routeResolutionApi = { resolve: vi.fn() } as RouteResolutionApi;
 
     function expectType<T>(): <U>(
       v: U,

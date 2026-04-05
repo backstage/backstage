@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi, type Mocked } from 'vitest';
+
 import { NotFoundError } from '@backstage/errors';
 import { TestApiProvider } from '@backstage/test-utils';
 import { act, renderHook, waitFor } from '@testing-library/react';
@@ -28,13 +30,13 @@ import {
 describe('useReaderState', () => {
   let Wrapper: ComponentType<PropsWithChildren<{}>>;
 
-  const techdocsStorageApi: jest.Mocked<typeof techdocsStorageApiRef.T> = {
-    getApiOrigin: jest.fn(),
-    getBaseUrl: jest.fn(),
-    getBuilder: jest.fn(),
-    getEntityDocs: jest.fn(),
-    getStorageUrl: jest.fn(),
-    syncEntityDocs: jest.fn(),
+  const techdocsStorageApi: Mocked<typeof techdocsStorageApiRef.T> = {
+    getApiOrigin: vi.fn(),
+    getBaseUrl: vi.fn(),
+    getBuilder: vi.fn(),
+    getEntityDocs: vi.fn(),
+    getStorageUrl: vi.fn(),
+    syncEntityDocs: vi.fn(),
   };
 
   beforeEach(() => {
@@ -45,7 +47,7 @@ describe('useReaderState', () => {
     );
   });
 
-  afterEach(() => jest.resetAllMocks());
+  afterEach(() => vi.resetAllMocks());
 
   describe('calculateDisplayState', () => {
     it.each`
@@ -415,7 +417,7 @@ describe('useReaderState', () => {
     });
 
     it('should handle stale content', async () => {
-      jest.useFakeTimers();
+      vi.useFakeTimers();
 
       try {
         techdocsStorageApi.getEntityDocs
@@ -465,7 +467,7 @@ describe('useReaderState', () => {
 
         // the sync takes longer than 1 second so the refreshing state starts
         await act(async () => {
-          jest.advanceTimersByTime(1000);
+          vi.advanceTimersByTime(1000);
         });
 
         expect(result.current).toEqual({
@@ -480,7 +482,7 @@ describe('useReaderState', () => {
 
         // the sync completes — content is updated but not yet displayed
         await act(async () => {
-          jest.advanceTimersByTime(100);
+          vi.advanceTimersByTime(100);
         });
 
         expect(result.current).toEqual({
@@ -511,7 +513,7 @@ describe('useReaderState', () => {
 
         // the new content is loaded
         await act(async () => {
-          jest.advanceTimersByTime(1100);
+          vi.advanceTimersByTime(1100);
         });
 
         expect(result.current).toEqual({
@@ -538,7 +540,7 @@ describe('useReaderState', () => {
           expect.any(Function),
         );
       } finally {
-        jest.useRealTimers();
+        vi.useRealTimers();
       }
     });
 

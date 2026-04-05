@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { TestDatabases } from '@backstage/backend-test-utils';
 import { IncrementalIngestionDatabaseManager } from './IncrementalIngestionDatabaseManager';
 import { v4 as uuid } from 'uuid';
@@ -21,7 +23,7 @@ import { DeferredEntity } from '@backstage/plugin-catalog-node';
 
 const migrationsDir = `${__dirname}/../../migrations`;
 
-jest.setTimeout(60_000);
+vi.setConfig({ testTimeout: 60_000 });
 
 describe('IncrementalIngestionDatabaseManager', () => {
   const databases = TestDatabases.create({

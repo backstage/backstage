@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import { screen } from '@testing-library/react';
 import { CustomHomepageGrid } from './CustomHomepageGrid';
 import {
@@ -81,7 +83,7 @@ const defaultConfig: ComponentProps<typeof CustomHomepageGrid>['config'] = [
 
 describe('CustomHomepageGrid', () => {
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('should save edits', async () => {

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { resolve as resolvePath } from 'node:path';
 import { createFilesystemDeleteAction } from './delete';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
@@ -34,7 +36,7 @@ describe('fs:delete', () => {
   });
 
   beforeEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
 
     mockDir.setContent({
       [workspacePath]: {

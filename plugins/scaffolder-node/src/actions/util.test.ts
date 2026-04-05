@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { parseRepoUrl } from './util';
 import { mapValues } from 'lodash';
@@ -33,7 +35,7 @@ const queryString = (
 
 describe('scaffolder action utils', () => {
   describe('parseRepoUrl', () => {
-    const byHost = jest.fn();
+    const byHost = vi.fn();
     const integrations = {
       byHost,
     } as unknown as ScmIntegrationRegistry;

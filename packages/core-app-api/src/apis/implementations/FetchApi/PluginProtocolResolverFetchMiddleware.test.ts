@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { mockApis } from '@backstage/test-utils';
 import { PluginProtocolResolverFetchMiddleware } from './PluginProtocolResolverFetchMiddleware';
 
@@ -25,7 +27,7 @@ describe('PluginProtocolResolverFetchMiddleware', () => {
       const middleware = new PluginProtocolResolverFetchMiddleware(
         discoveryApi,
       );
-      const inner = jest.fn();
+      const inner = vi.fn();
       const outer = middleware.apply(inner);
 
       await outer(url);
@@ -75,7 +77,7 @@ describe('PluginProtocolResolverFetchMiddleware', () => {
       const middleware = new PluginProtocolResolverFetchMiddleware(
         discoveryApi,
       );
-      const inner = jest.fn();
+      const inner = vi.fn();
       const outer = middleware.apply(inner);
 
       await outer(original);
@@ -89,7 +91,7 @@ describe('PluginProtocolResolverFetchMiddleware', () => {
       getBaseUrl: async () => 'https://elsewhere.com',
     });
     const middleware = new PluginProtocolResolverFetchMiddleware(discoveryApi);
-    const inner = jest.fn();
+    const inner = vi.fn();
     const outer = middleware.apply(inner);
 
     await outer('plugin://a', {

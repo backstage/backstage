@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { setupServer } from 'msw/node';
 import {
   decodeOAuthState,
@@ -85,7 +87,7 @@ describe('openshiftAuthenticator', () => {
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('#start', () => {

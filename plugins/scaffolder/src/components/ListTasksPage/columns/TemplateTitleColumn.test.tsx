@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi, type Mocked } from 'vitest';
+
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 
 import { TemplateTitleColumn } from './TemplateTitleColumn';
@@ -24,9 +26,9 @@ import {
 } from '@backstage/plugin-scaffolder-react';
 
 describe('<TemplateTitleColumn />', () => {
-  const scaffolderApiMock: jest.Mocked<ScaffolderApi> = {
-    scaffold: jest.fn(),
-    getTemplateParameterSchema: jest.fn(),
+  const scaffolderApiMock: Mocked<ScaffolderApi> = {
+    scaffold: vi.fn(),
+    getTemplateParameterSchema: vi.fn(),
   } as any;
 
   it('should render the column with the template name', async () => {

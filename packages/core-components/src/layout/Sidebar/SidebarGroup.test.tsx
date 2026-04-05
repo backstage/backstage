@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { mockBreakpoint } from '@backstage/core-components/testUtils';
 import { renderInTestApp } from '@backstage/test-utils';
 import HomeIcon from '@material-ui/icons/Home';
@@ -60,7 +62,7 @@ describe('<SidebarGroup />', () => {
     mockBreakpoint({ matches: true });
     const value = {
       selectedMenuItemIndex: -1,
-      setSelectedMenuItemIndex: jest.fn(),
+      setSelectedMenuItemIndex: vi.fn(),
     };
     const { findByRole } = await renderInTestApp(
       <MobileSidebarContext.Provider value={value}>

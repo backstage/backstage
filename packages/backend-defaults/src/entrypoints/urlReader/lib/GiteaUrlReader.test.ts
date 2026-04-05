@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   mockServices,
   registerMswTestHooks,
@@ -59,7 +61,7 @@ describe('GiteaUrlReader', () => {
   registerMswTestHooks(worker);
 
   afterAll(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('reader factory', () => {

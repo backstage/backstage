@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { NotAllowedError } from '@backstage/errors';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { createConditionTransformer } from '@backstage/plugin-permission-node';
@@ -28,18 +30,18 @@ import { mockCredentials } from '@backstage/backend-test-utils';
 
 describe('AuthorizedEntitiesCatalog', () => {
   const fakeCatalog = {
-    entities: jest.fn(),
-    entitiesBatch: jest.fn(),
-    removeEntityByUid: jest.fn(),
-    entityAncestry: jest.fn(),
-    facets: jest.fn(),
-    refresh: jest.fn(),
-    listAncestors: jest.fn(),
-    queryEntities: jest.fn(),
+    entities: vi.fn(),
+    entitiesBatch: vi.fn(),
+    removeEntityByUid: vi.fn(),
+    entityAncestry: vi.fn(),
+    facets: vi.fn(),
+    refresh: vi.fn(),
+    listAncestors: vi.fn(),
+    queryEntities: vi.fn(),
   };
   const fakePermissionApi = {
-    authorize: jest.fn(),
-    authorizeConditional: jest.fn(),
+    authorize: vi.fn(),
+    authorizeConditional: vi.fn(),
   };
 
   const createCatalog = (...rules: CatalogPermissionRule[]) =>
@@ -50,7 +52,7 @@ describe('AuthorizedEntitiesCatalog', () => {
     );
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('entities', () => {

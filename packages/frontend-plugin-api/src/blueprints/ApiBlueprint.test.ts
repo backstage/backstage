@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { createExtensionInput } from '../wiring';
 import { ApiBlueprint } from './ApiBlueprint';
 import { createApiRef } from '../apis/system';
@@ -154,7 +156,7 @@ describe('ApiBlueprint', () => {
 
   it('should create an extension with custom factory', () => {
     const api = createApiRef<{ foo: string }>().with({ id: 'test' });
-    const factory = jest.fn(() => ({ foo: 'bar' }));
+    const factory = vi.fn(() => ({ foo: 'bar' }));
 
     const extension = ApiBlueprint.makeWithOverrides({
       config: {

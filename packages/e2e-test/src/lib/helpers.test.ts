@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { waitFor } from './helpers';
 
 describe('waitFor', () => {
   it('should wait for true', async () => {
-    const fn = jest.fn().mockReturnValue(true);
+    const fn = vi.fn().mockReturnValue(true);
     await waitFor(fn);
     expect(fn).toHaveBeenCalledTimes(1);
   });
 
   it('should time out', async () => {
-    const fn = jest.fn().mockReturnValue(false);
+    const fn = vi.fn().mockReturnValue(false);
     await expect(waitFor(fn, 1)).rejects.toThrow(
       'Timed out while waiting for condition',
     );

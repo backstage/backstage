@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { Entity } from '@backstage/catalog-model';
 import { createFetchCatalogEntityAction } from './fetch';
@@ -34,13 +36,13 @@ describe('catalog:fetch', () => {
   const mockContext = createMockActionContext();
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   describe('fetch single entity', () => {
     it('should return entity from catalog', async () => {
       const catalogMock = catalogServiceMock({ entities: [component] });
-      jest.spyOn(catalogMock, 'getEntityByRef');
+      vi.spyOn(catalogMock, 'getEntityByRef');
 
       const action = createFetchCatalogEntityAction({
         catalog: catalogMock,
@@ -87,7 +89,7 @@ describe('catalog:fetch', () => {
 
     it('should throw error if entity not in catalog and optional is false', async () => {
       const catalogMock = catalogServiceMock({ entities: [] });
-      jest.spyOn(catalogMock, 'getEntityByRef');
+      vi.spyOn(catalogMock, 'getEntityByRef');
 
       const action = createFetchCatalogEntityAction({
         catalog: catalogMock,
@@ -119,7 +121,7 @@ describe('catalog:fetch', () => {
       } as Entity;
 
       const catalogMock = catalogServiceMock({ entities: [entity] });
-      jest.spyOn(catalogMock, 'getEntityByRef');
+      vi.spyOn(catalogMock, 'getEntityByRef');
 
       const action = createFetchCatalogEntityAction({
         catalog: catalogMock,
@@ -145,7 +147,7 @@ describe('catalog:fetch', () => {
   describe('fetch multiple entities', () => {
     it('should return entities from catalog', async () => {
       const catalogMock = catalogServiceMock({ entities: [component] });
-      jest.spyOn(catalogMock, 'getEntitiesByRefs');
+      vi.spyOn(catalogMock, 'getEntitiesByRefs');
 
       const action = createFetchCatalogEntityAction({
         catalog: catalogMock,
@@ -167,7 +169,7 @@ describe('catalog:fetch', () => {
 
     it('should throw error if undefined is returned for some entity', async () => {
       const catalogMock = catalogServiceMock({ entities: [component] });
-      jest.spyOn(catalogMock, 'getEntitiesByRefs');
+      vi.spyOn(catalogMock, 'getEntitiesByRefs');
       const action = createFetchCatalogEntityAction({
         catalog: catalogMock,
       });
@@ -193,7 +195,7 @@ describe('catalog:fetch', () => {
 
     it('should return null in case some of the entities not found and optional is true', async () => {
       const catalogMock = catalogServiceMock({ entities: [component] });
-      jest.spyOn(catalogMock, 'getEntitiesByRefs');
+      vi.spyOn(catalogMock, 'getEntitiesByRefs');
 
       const action = createFetchCatalogEntityAction({
         catalog: catalogMock,
@@ -236,7 +238,7 @@ describe('catalog:fetch', () => {
       const catalogMock = catalogServiceMock({
         entities: [entity1, entity2],
       });
-      jest.spyOn(catalogMock, 'getEntitiesByRefs');
+      vi.spyOn(catalogMock, 'getEntitiesByRefs');
 
       const action = createFetchCatalogEntityAction({
         catalog: catalogMock,

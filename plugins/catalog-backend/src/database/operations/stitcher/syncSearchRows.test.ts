@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { TestDatabases } from '@backstage/backend-test-utils';
 import { Knex } from 'knex';
 import { applyDatabaseMigrations } from '../../migrations';
 import { DbSearchRow } from '../../tables';
 import { syncSearchRows } from './syncSearchRows';
 
-jest.setTimeout(60_000);
+vi.setConfig({ testTimeout: 60_000 });
 
 const databases = TestDatabases.create();
 

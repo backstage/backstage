@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { mockApis } from '@backstage/test-utils';
 import { VisitsWebStorageApi } from './VisitsWebStorageApi';
 
@@ -28,7 +30,7 @@ describe('VisitsWebStorageApi.create()', () => {
     userEntityRef: 'user:default/guest',
   });
 
-  const mockErrorApi = { post: jest.fn(), error$: jest.fn() };
+  const mockErrorApi = { post: vi.fn(), error$: vi.fn() };
 
   beforeEach(() => {
     window.crypto.randomUUID = mockRandomUUID;
@@ -36,7 +38,7 @@ describe('VisitsWebStorageApi.create()', () => {
 
   afterEach(() => {
     window.localStorage.clear();
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('instantiates with only identityApi', () => {

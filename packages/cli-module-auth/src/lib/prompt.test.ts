@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
+import { vi, type Mocked } from 'vitest';
+
 import inquirer from 'inquirer';
 import { pickInstance } from './prompt';
 import * as storage from './storage';
 
-jest.mock('inquirer');
-jest.mock('./storage');
+vi.mock('inquirer');
+vi.mock('./storage');
 
-const mockStorage = storage as jest.Mocked<typeof storage>;
-const mockInquirer = inquirer as jest.Mocked<typeof inquirer>;
+const mockStorage = storage as Mocked<typeof storage>;
+const mockInquirer = inquirer as Mocked<typeof inquirer>;
 
 describe('prompt', () => {
   describe('pickInstance', () => {
@@ -57,7 +59,7 @@ describe('prompt', () => {
     ];
 
     beforeEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
     });
 
     it('should return instance by name if provided', async () => {

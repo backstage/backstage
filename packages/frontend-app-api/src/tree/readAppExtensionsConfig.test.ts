@@ -115,7 +115,7 @@ describe('readAppExtensionsConfig', () => {
         }),
       ),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid extension configuration at app.extensions[0], extension ID must not be empty or contain whitespace"`,
+      `[Error: Invalid extension configuration at app.extensions[0], extension ID must not be empty or contain whitespace]`,
     );
   });
 });
@@ -127,31 +127,31 @@ describe('expandShorthandExtensionParameters', () => {
 
   it('rejects unknown keys', () => {
     expect(() => run(null)).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid extension configuration at app.extensions[1], must be a string or an object"`,
+      `[Error: Invalid extension configuration at app.extensions[1], must be a string or an object]`,
     );
     expect(() => run(1)).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid extension configuration at app.extensions[1], must be a string or an object"`,
+      `[Error: Invalid extension configuration at app.extensions[1], must be a string or an object]`,
     );
     expect(() => run([])).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid extension configuration at app.extensions[1], must be a string or an object"`,
+      `[Error: Invalid extension configuration at app.extensions[1], must be a string or an object]`,
     );
   });
 
   it('rejects the wrong number of keys', () => {
     expect(() => run({})).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid extension configuration at app.extensions[1], must have exactly one key, got none"`,
+      `[Error: Invalid extension configuration at app.extensions[1], must have exactly one key, got none]`,
     );
     expect(() => run({ a: {}, b: {} })).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid extension configuration at app.extensions[1], must have exactly one key, got 'a', 'b'"`,
+      `[Error: Invalid extension configuration at app.extensions[1], must have exactly one key, got 'a', 'b']`,
     );
   });
 
   it('rejects unknown values', () => {
     expect(() => run({ a: 1 })).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid extension configuration at app.extensions[1][a], value must be a boolean or object"`,
+      `[Error: Invalid extension configuration at app.extensions[1][a], value must be a boolean or object]`,
     );
     expect(() => run({ a: [] })).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid extension configuration at app.extensions[1][a], value must be a boolean or object"`,
+      `[Error: Invalid extension configuration at app.extensions[1][a], value must be a boolean or object]`,
     );
   });
 
@@ -161,10 +161,10 @@ describe('expandShorthandExtensionParameters', () => {
       disabled: false,
     });
     expect(() => run('')).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid extension configuration at app.extensions[1], extension ID must not be empty or contain whitespace"`,
+      `[Error: Invalid extension configuration at app.extensions[1], extension ID must not be empty or contain whitespace]`,
     );
     expect(() => run(' a')).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid extension configuration at app.extensions[1], extension ID must not be empty or contain whitespace"`,
+      `[Error: Invalid extension configuration at app.extensions[1], extension ID must not be empty or contain whitespace]`,
     );
   });
 
@@ -193,7 +193,7 @@ describe('expandShorthandExtensionParameters', () => {
     expect(() =>
       run({ 'app/root': 'example-package#MyRouter' }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid extension configuration at app.extensions[1][app/root], value must be a boolean or object"`,
+      `[Error: Invalid extension configuration at app.extensions[1][app/root], value must be a boolean or object]`,
     );
   });
 
@@ -201,7 +201,7 @@ describe('expandShorthandExtensionParameters', () => {
     expect(() =>
       run({ 'app/root': { id: 'some.id' } }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid extension configuration at app.extensions[1][app/root].id, unknown parameter; expected one of 'attachTo', 'disabled', 'config'"`,
+      `[Error: Invalid extension configuration at app.extensions[1][app/root].id, unknown parameter; expected one of 'attachTo', 'disabled', 'config']`,
     );
   });
 
@@ -221,7 +221,7 @@ describe('expandShorthandExtensionParameters', () => {
         },
       }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid extension configuration at app.extensions[1][app/root].id, unknown parameter; expected one of 'attachTo', 'disabled', 'config'"`,
+      `[Error: Invalid extension configuration at app.extensions[1][app/root].id, unknown parameter; expected one of 'attachTo', 'disabled', 'config']`,
     );
   });
 
@@ -237,7 +237,7 @@ describe('expandShorthandExtensionParameters', () => {
     expect(() =>
       run({ 'app/root': { disabled: 0 } }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid extension configuration at app.extensions[1][app/root].disabled, must be a boolean"`,
+      `[Error: Invalid extension configuration at app.extensions[1][app/root].disabled, must be a boolean]`,
     );
   });
 
@@ -251,7 +251,7 @@ describe('expandShorthandExtensionParameters', () => {
     expect(() =>
       run({ 'app/root': { config: 0 } }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid extension configuration at app.extensions[1][app/root].config, must be an object"`,
+      `[Error: Invalid extension configuration at app.extensions[1][app/root].config, must be an object]`,
     );
   });
 
@@ -259,7 +259,7 @@ describe('expandShorthandExtensionParameters', () => {
     expect(() =>
       run({ 'app/root': { foo: { settings: true } } }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid extension configuration at app.extensions[1][app/root].foo, unknown parameter; expected one of 'attachTo', 'disabled', 'config'"`,
+      `[Error: Invalid extension configuration at app.extensions[1][app/root].foo, unknown parameter; expected one of 'attachTo', 'disabled', 'config']`,
     );
   });
 });

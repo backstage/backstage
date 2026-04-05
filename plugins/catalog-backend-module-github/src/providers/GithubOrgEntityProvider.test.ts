@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import { mockServices } from '@backstage/backend-test-utils';
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
 import {
@@ -30,10 +32,10 @@ import { createGraphqlClient } from '../lib/github';
 import { withLocations } from '../lib/withLocations';
 import { GithubOrgEntityProvider } from './GithubOrgEntityProvider';
 
-jest.mock('@octokit/graphql');
-jest.mock('../lib/github', () => ({
-  ...jest.requireActual('../lib/github'),
-  createGraphqlClient: jest.fn(),
+vi.mock('@octokit/graphql');
+vi.mock('../lib/github', () => ({
+  ...vi.importActual('../lib/github'),
+  createGraphqlClient: vi.fn(),
 }));
 
 describe('GithubOrgEntityProvider', () => {
@@ -43,14 +45,14 @@ describe('GithubOrgEntityProvider', () => {
     let entityProvider: GithubOrgEntityProvider;
 
     const setupMocks = (response: ((...args: any) => any) | undefined) => {
-      mockClient = jest.fn().mockImplementation(response);
-      (createGraphqlClient as jest.Mock).mockReturnValue(mockClient);
+      mockClient = vi.fn().mockImplementation(response);
+      (createGraphqlClient as Mock).mockReturnValue(mockClient);
     };
 
     beforeEach(() => {
       entityProviderConnection = {
-        applyMutation: jest.fn(),
-        refresh: jest.fn(),
+        applyMutation: vi.fn(),
+        refresh: vi.fn(),
       };
 
       const logger = mockServices.logger.mock();
@@ -58,7 +60,7 @@ describe('GithubOrgEntityProvider', () => {
         host: 'https://github.com',
       };
 
-      const mockGetCredentials = jest.fn().mockReturnValue({
+      const mockGetCredentials = vi.fn().mockReturnValue({
         headers: { token: 'blah' },
         type: 'app',
       });
@@ -78,7 +80,7 @@ describe('GithubOrgEntityProvider', () => {
       entityProvider.connect(entityProviderConnection);
     });
 
-    afterEach(() => jest.resetAllMocks());
+    afterEach(() => vi.resetAllMocks());
 
     it('should read org data and apply mutation', async () => {
       setupMocks(() =>
@@ -268,12 +270,12 @@ describe('GithubOrgEntityProvider', () => {
   });
 
   describe('receiving events from github', () => {
-    afterEach(() => jest.resetAllMocks());
+    afterEach(() => vi.resetAllMocks());
 
     it('should apply delta added on receive a new member in the organization', async () => {
       const entityProviderConnection: EntityProviderConnection = {
-        applyMutation: jest.fn(),
-        refresh: jest.fn(),
+        applyMutation: vi.fn(),
+        refresh: vi.fn(),
       };
 
       const logger = mockServices.logger.mock();
@@ -282,7 +284,7 @@ describe('GithubOrgEntityProvider', () => {
         host: 'github.com',
       };
 
-      const mockGetCredentials = jest.fn().mockReturnValue({
+      const mockGetCredentials = vi.fn().mockReturnValue({
         headers: { token: 'blah' },
         type: 'app',
       });
@@ -361,8 +363,8 @@ describe('GithubOrgEntityProvider', () => {
 
     it('should apply delta removed on receive a removed member in the organization', async () => {
       const entityProviderConnection: EntityProviderConnection = {
-        applyMutation: jest.fn(),
-        refresh: jest.fn(),
+        applyMutation: vi.fn(),
+        refresh: vi.fn(),
       };
 
       const logger = mockServices.logger.mock();
@@ -371,7 +373,7 @@ describe('GithubOrgEntityProvider', () => {
         host: 'github.com',
       };
 
-      const mockGetCredentials = jest.fn().mockReturnValue({
+      const mockGetCredentials = vi.fn().mockReturnValue({
         headers: { token: 'blah' },
         type: 'app',
       });
@@ -450,8 +452,8 @@ describe('GithubOrgEntityProvider', () => {
 
     it('should apply delta added on receive a created team', async () => {
       const entityProviderConnection: EntityProviderConnection = {
-        applyMutation: jest.fn(),
-        refresh: jest.fn(),
+        applyMutation: vi.fn(),
+        refresh: vi.fn(),
       };
 
       const logger = mockServices.logger.mock();
@@ -460,7 +462,7 @@ describe('GithubOrgEntityProvider', () => {
         host: 'github.com',
       };
 
-      const mockGetCredentials = jest.fn().mockReturnValue({
+      const mockGetCredentials = vi.fn().mockReturnValue({
         headers: { token: 'blah' },
         type: 'app',
       });
@@ -543,8 +545,8 @@ describe('GithubOrgEntityProvider', () => {
 
     it('should apply delta added on receive a created team without parent', async () => {
       const entityProviderConnection: EntityProviderConnection = {
-        applyMutation: jest.fn(),
-        refresh: jest.fn(),
+        applyMutation: vi.fn(),
+        refresh: vi.fn(),
       };
 
       const logger = mockServices.logger.mock();
@@ -553,7 +555,7 @@ describe('GithubOrgEntityProvider', () => {
         host: 'github.com',
       };
 
-      const mockGetCredentials = jest.fn().mockReturnValue({
+      const mockGetCredentials = vi.fn().mockReturnValue({
         headers: { token: 'blah' },
         type: 'app',
       });
@@ -632,8 +634,8 @@ describe('GithubOrgEntityProvider', () => {
 
     it('should apply delta removed on receive a deleted team', async () => {
       const entityProviderConnection: EntityProviderConnection = {
-        applyMutation: jest.fn(),
-        refresh: jest.fn(),
+        applyMutation: vi.fn(),
+        refresh: vi.fn(),
       };
 
       const logger = mockServices.logger.mock();
@@ -642,7 +644,7 @@ describe('GithubOrgEntityProvider', () => {
         host: 'github.com',
       };
 
-      const mockGetCredentials = jest.fn().mockReturnValue({
+      const mockGetCredentials = vi.fn().mockReturnValue({
         headers: { token: 'blah' },
         type: 'app',
       });
@@ -726,8 +728,8 @@ describe('GithubOrgEntityProvider', () => {
 
     it('should apply delta on receive a edited team', async () => {
       const entityProviderConnection: EntityProviderConnection = {
-        applyMutation: jest.fn(),
-        refresh: jest.fn(),
+        applyMutation: vi.fn(),
+        refresh: vi.fn(),
       };
 
       const logger = mockServices.logger.mock();
@@ -736,7 +738,7 @@ describe('GithubOrgEntityProvider', () => {
         host: 'github.com',
       };
 
-      const mockGetCredentials = jest.fn().mockReturnValue({
+      const mockGetCredentials = vi.fn().mockReturnValue({
         headers: { token: 'blah' },
         type: 'app',
       });
@@ -754,7 +756,7 @@ describe('GithubOrgEntityProvider', () => {
         logger,
       });
 
-      const mockClient = jest.fn();
+      const mockClient = vi.fn();
 
       mockClient
         .mockResolvedValueOnce({
@@ -828,7 +830,7 @@ describe('GithubOrgEntityProvider', () => {
           },
         });
 
-      (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+      (graphql.defaults as Mock).mockReturnValue(mockClient);
 
       await entityProvider.connect(entityProviderConnection);
 
@@ -984,8 +986,8 @@ describe('GithubOrgEntityProvider', () => {
 
     it('should apply delta on receive a membership added', async () => {
       const entityProviderConnection: EntityProviderConnection = {
-        applyMutation: jest.fn(),
-        refresh: jest.fn(),
+        applyMutation: vi.fn(),
+        refresh: vi.fn(),
       };
 
       const logger = mockServices.logger.mock();
@@ -994,7 +996,7 @@ describe('GithubOrgEntityProvider', () => {
         host: 'github.com',
       };
 
-      const mockGetCredentials = jest.fn().mockReturnValue({
+      const mockGetCredentials = vi.fn().mockReturnValue({
         headers: { token: 'blah' },
         type: 'app',
       });
@@ -1012,7 +1014,7 @@ describe('GithubOrgEntityProvider', () => {
         logger,
       });
 
-      const mockClient = jest.fn();
+      const mockClient = vi.fn();
 
       mockClient
         // getOrganizationTeam
@@ -1057,7 +1059,7 @@ describe('GithubOrgEntityProvider', () => {
           },
         });
 
-      (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+      (graphql.defaults as Mock).mockReturnValue(mockClient);
       await entityProvider.connect(entityProviderConnection);
 
       const event: EventParams = {
@@ -1154,8 +1156,8 @@ describe('GithubOrgEntityProvider', () => {
 
     it('should apply delta on receive a membership removed', async () => {
       const entityProviderConnection: EntityProviderConnection = {
-        applyMutation: jest.fn(),
-        refresh: jest.fn(),
+        applyMutation: vi.fn(),
+        refresh: vi.fn(),
       };
 
       const logger = mockServices.logger.mock();
@@ -1164,7 +1166,7 @@ describe('GithubOrgEntityProvider', () => {
         host: 'github.com',
       };
 
-      const mockGetCredentials = jest.fn().mockReturnValue({
+      const mockGetCredentials = vi.fn().mockReturnValue({
         headers: { token: 'blah' },
         type: 'app',
       });
@@ -1182,7 +1184,7 @@ describe('GithubOrgEntityProvider', () => {
         logger,
       });
 
-      const mockClient = jest.fn();
+      const mockClient = vi.fn();
 
       mockClient
         // getOrganizationTeam
@@ -1216,7 +1218,7 @@ describe('GithubOrgEntityProvider', () => {
           },
         });
 
-      (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+      (graphql.defaults as Mock).mockReturnValue(mockClient);
       await entityProvider.connect(entityProviderConnection);
 
       const event: EventParams = {

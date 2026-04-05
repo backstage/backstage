@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 /* eslint jest/expect-expect: ["warn", { "assertFunctionNames": ["expect", "expectPathExists"] }] */
 
 import { createMockDirectory } from '@backstage/backend-test-utils';
@@ -31,40 +33,40 @@ import {
 
 const fixturesDir = joinPath(__dirname, '__fixtures__');
 
-const mockCreateDistWorkspace = jest.fn();
-const mockPackToDirectory = jest.fn();
-const mockBuildFrontend = jest.fn();
-const mockRun = jest.fn();
-const mockRunOutput = jest.fn();
-const mockListTargetPackages = jest.fn();
-const mockLoadConfigSchema = jest.fn();
-const mockCreateRequire = jest.fn();
+const mockCreateDistWorkspace = vi.fn();
+const mockPackToDirectory = vi.fn();
+const mockBuildFrontend = vi.fn();
+const mockRun = vi.fn();
+const mockRunOutput = vi.fn();
+const mockListTargetPackages = vi.fn();
+const mockLoadConfigSchema = vi.fn();
+const mockCreateRequire = vi.fn();
 
 // Mock external dependencies
 
-jest.mock('@backstage/cli-common', () => ({
-  ...jest.requireActual('@backstage/cli-common'),
+vi.mock('@backstage/cli-common', () => ({
+  ...vi.importActual('@backstage/cli-common'),
   targetPaths: {
     dir: '',
     rootDir: '',
-    resolve: jest.fn(),
+    resolve: vi.fn(),
   },
   run: (...args: unknown[]) => mockRun(...args),
   runOutput: (...args: unknown[]) => mockRunOutput(...args),
 }));
 
-jest.mock('../../../lib/packager', () => ({
-  ...jest.requireActual('../../../lib/packager'),
+vi.mock('../../../lib/packager', () => ({
+  ...vi.importActual('../../../lib/packager'),
   createDistWorkspace: (...args: unknown[]) => mockCreateDistWorkspace(...args),
   packToDirectory: (...args: unknown[]) => mockPackToDirectory(...args),
 }));
 
-jest.mock('../../../lib/buildFrontend', () => ({
+vi.mock('../../../lib/buildFrontend', () => ({
   buildFrontend: (...args: unknown[]) => mockBuildFrontend(...args),
 }));
 
-jest.mock('@backstage/cli-node', () => {
-  const actual = jest.requireActual('@backstage/cli-node');
+vi.mock('@backstage/cli-node', () => {
+  const actual = vi.importActual('@backstage/cli-node');
   return {
     ...actual,
     PackageGraph: Object.assign(actual.PackageGraph, {
@@ -74,12 +76,12 @@ jest.mock('@backstage/cli-node', () => {
   };
 });
 
-jest.mock('@backstage/config-loader', () => ({
+vi.mock('@backstage/config-loader', () => ({
   loadConfigSchema: (...args: unknown[]) => mockLoadConfigSchema(...args),
 }));
 
-jest.mock('node:module', () => ({
-  ...jest.requireActual('node:module'),
+vi.mock('node:module', () => ({
+  ...vi.importActual('node:module'),
   createRequire: (...args: unknown[]) => mockCreateRequire(...args),
 }));
 
@@ -347,7 +349,7 @@ describe('bundle command', () => {
     });
     targetPaths.dir = pluginDir;
     targetPaths.rootDir = mockDir.path;
-    (targetPaths.resolve as jest.Mock).mockImplementation((...args: string[]) =>
+    (targetPaths.resolve as Mock).mockImplementation((...args: string[]) =>
       joinPath(targetPaths.dir, ...args),
     );
 
@@ -406,33 +408,33 @@ describe('bundle command', () => {
   }
 
   beforeEach(() => {
-    jest.clearAllMocks();
-    jest.spyOn(os, 'tmpdir').mockReturnValue(joinPath(mockDir.path, 'tmp'));
+    vi.clearAllMocks();
+    vi.spyOn(os, 'tmpdir').mockReturnValue(joinPath(mockDir.path, 'tmp'));
     mockLoadConfigSchema.mockResolvedValue({
       serialize: () => ({ schemas: [] }),
     });
     mockRunOutput.mockResolvedValue('/mock-cache');
     setupRunMock();
     mockCreateRequire.mockImplementation((path: string) =>
-      jest.requireActual('node:module').createRequire(path),
+      vi.importActual('node:module').createRequire(path),
     );
-    jest.spyOn(console, 'log').mockImplementation();
-    jest.spyOn(console, 'warn').mockImplementation();
-    jest.spyOn(console, 'error').mockImplementation();
+    vi.spyOn(console, 'log').mockImplementation();
+    vi.spyOn(console, 'warn').mockImplementation();
+    vi.spyOn(console, 'error').mockImplementation();
   });
 
   afterEach(() => {
     // Clear native Node module cache for files under mockDir to prevent
     // cross-test contamination when real createRequire loads dist/index.js.
     const nativeModule =
-      jest.requireActual<typeof import('node:module')>('node:module');
+      vi.importActual<typeof import('node:module')>('node:module');
     const nativeRequire = nativeModule.createRequire(__filename);
     for (const key of Object.keys(nativeRequire.cache ?? {})) {
       if (key.includes(mockDir.path)) {
         delete nativeRequire.cache![key];
       }
     }
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   async function expectPathExists(parts: string[], exists: boolean) {
@@ -602,7 +604,7 @@ describe('bundle command', () => {
       it('should clean up temp dir and propagate error on createDistWorkspace failure', async () => {
         mockCreateDistWorkspace.mockRejectedValue(new Error('pack failed'));
         const tempBase = joinPath(mockDir.path, 'tmp');
-        jest.spyOn(os, 'tmpdir').mockReturnValue(tempBase);
+        vi.spyOn(os, 'tmpdir').mockReturnValue(tempBase);
 
         await expect(bundleCommand(defaultOpts)).rejects.toThrow('pack failed');
 

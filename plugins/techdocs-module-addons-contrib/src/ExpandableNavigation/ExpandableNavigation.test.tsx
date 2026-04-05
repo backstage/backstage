@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { TechDocsAddonTester } from '@backstage/plugin-techdocs-addons-test-utils';
 
 import { fireEvent, waitFor } from '@testing-library/react';
@@ -86,7 +88,7 @@ const mockNavWithoutSublevels = (
 
 describe('ExpandableNavigation', () => {
   const entityPresentationApiMock = {
-    forEntity: jest.fn(),
+    forEntity: vi.fn(),
   };
   entityPresentationApiMock.forEntity.mockReturnValue({
     snapshot: {

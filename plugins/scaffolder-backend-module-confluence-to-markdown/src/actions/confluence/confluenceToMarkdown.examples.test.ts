@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { createConfluenceToMarkdownAction } from './confluenceToMarkdown';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
@@ -62,23 +64,23 @@ describe('confluence:transform:markdown examples', () => {
 
   beforeEach(() => {
     reader = {
-      readUrl: jest.fn(),
-      readTree: jest.fn().mockResolvedValue({
-        dir: jest.fn(),
+      readUrl: vi.fn(),
+      readTree: vi.fn().mockResolvedValue({
+        dir: vi.fn(),
       }),
-      search: jest.fn(),
+      search: vi.fn(),
     };
     mockContext = createMockActionContext({
       input: yaml.parse(examples[0].example).steps[0].input,
       workspacePath,
     });
-    jest.spyOn(mockContext.logger, 'info');
+    vi.spyOn(mockContext.logger, 'info');
 
     mockDir.setContent({ 'workspace/mkdocs.yml': 'File contents' });
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should call confluence to markdown action successfully with results array', async () => {

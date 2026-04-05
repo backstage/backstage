@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
 import { ScaffolderEntitiesProcessor } from './processor';
 import { catalogModuleScaffolderEntityModel } from './module';
@@ -21,7 +23,7 @@ import { startTestBackend } from '@backstage/backend-test-utils';
 
 describe('catalogModuleScaffolderEntityModel', () => {
   it('should register the extension point', async () => {
-    const extensionPoint = { addProcessor: jest.fn() };
+    const extensionPoint = { addProcessor: vi.fn() };
     await startTestBackend({
       extensionPoints: [[catalogProcessingExtensionPoint, extensionPoint]],
       features: [catalogModuleScaffolderEntityModel],

@@ -180,16 +180,16 @@ const appPlugin: OverridableFrontendPlugin<
       config: {
         redirects:
           | {
-              from: string;
               to: string;
+              from: string;
             }[]
           | undefined;
       };
       configInput: {
         redirects?:
           | {
-              from: string;
               to: string;
+              from: string;
             }[]
           | undefined;
       };
@@ -819,14 +819,14 @@ const appPlugin: OverridableFrontendPlugin<
         transientTimeoutMs: number;
         anchorOrigin: {
           horizontal: 'center' | 'left' | 'right';
-          vertical: 'top' | 'bottom';
+          vertical: 'bottom' | 'top';
         };
       };
       configInput: {
         anchorOrigin?:
           | {
               horizontal?: 'center' | 'left' | 'right' | undefined;
-              vertical?: 'top' | 'bottom' | undefined;
+              vertical?: 'bottom' | 'top' | undefined;
             }
           | undefined;
         transientTimeoutMs?: number | undefined;

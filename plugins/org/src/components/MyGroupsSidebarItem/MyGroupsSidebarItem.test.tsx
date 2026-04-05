@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   renderInTestApp,
   TestApiProvider,
@@ -242,7 +244,7 @@ describe('MyGroupsSidebarItem Test', () => {
 
   describe('When an additional filter is not provided', () => {
     const entityPresentationApi = {
-      forEntity: jest.fn(),
+      forEntity: vi.fn(),
     };
     it('catalogApi.getEntities() should be called with the default filter', async () => {
       const identityApi = mockApis.identity({
@@ -284,7 +286,7 @@ describe('MyGroupsSidebarItem Test', () => {
 
   describe('When an additional filter is provided', () => {
     const entityPresentationApi = {
-      forEntity: jest.fn(),
+      forEntity: vi.fn(),
     };
 
     it('catalogApi.getEntities() should be called with an additional filter item', async () => {

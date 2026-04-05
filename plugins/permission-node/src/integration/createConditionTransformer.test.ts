@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   PermissionCondition,
   PermissionCriteria,
@@ -31,8 +33,8 @@ const transformConditions = createConditionTransformer([
       foo: z.string(),
       bar: z.number(),
     }),
-    apply: jest.fn(),
-    toQuery: jest.fn(({ foo, bar }) => `test-rule-1:${foo}/${bar}`),
+    apply: vi.fn(),
+    toQuery: vi.fn(({ foo, bar }) => `test-rule-1:${foo}/${bar}`),
   }),
   createPermissionRule({
     name: 'test-rule-2',
@@ -41,8 +43,8 @@ const transformConditions = createConditionTransformer([
     paramsSchema: z.object({
       foo: z.string(),
     }),
-    apply: jest.fn(),
-    toQuery: jest.fn(({ foo }) => `test-rule-2:${foo}`),
+    apply: vi.fn(),
+    toQuery: vi.fn(({ foo }) => `test-rule-2:${foo}`),
   }),
 ]);
 

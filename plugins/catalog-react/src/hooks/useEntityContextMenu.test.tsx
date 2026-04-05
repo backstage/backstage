@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import { ReactNode } from 'react';
 import { useEntityContextMenu } from './useEntityContextMenu';
 import { renderHook } from '@testing-library/react';
@@ -47,7 +49,7 @@ describe('useEntityContextMenu', () => {
   });
 
   it('should return the context value', () => {
-    const mockOnMenuClose = jest.fn();
+    const mockOnMenuClose = vi.fn();
     const { result } = renderHook(() => useEntityContextMenu(), {
       wrapper: ({ children }) => (
         <Provider onMenuClose={mockOnMenuClose}>{children}</Provider>

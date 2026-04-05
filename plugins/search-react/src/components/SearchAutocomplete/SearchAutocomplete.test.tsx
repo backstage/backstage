@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
@@ -32,14 +34,14 @@ const configApiMock = new ConfigReader({
   app: { title },
 });
 
-const query = jest.fn().mockResolvedValue({ results: [] });
+const query = vi.fn().mockResolvedValue({ results: [] });
 const searchApiMock = { query };
 
 describe('SearchAutocomplete', () => {
   const options = ['hello-world', 'petstore', 'spotify'];
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('Renders without exploding', async () => {

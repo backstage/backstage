@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { OngoingTask } from './OngoingTask';
 import {
   mockApis,
@@ -31,13 +33,13 @@ import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { SWRConfig } from 'swr';
 import { entityPresentationApiRef } from '@backstage/plugin-catalog-react';
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+vi.mock('react-router-dom', () => ({
+  ...vi.importActual('react-router-dom'),
   useParams: () => ({ taskId: 'my-task' }),
 }));
 
-jest.mock('@backstage/plugin-scaffolder-react', () => ({
-  ...jest.requireActual('@backstage/plugin-scaffolder-react'),
+vi.mock('@backstage/plugin-scaffolder-react', () => ({
+  ...vi.importActual('@backstage/plugin-scaffolder-react'),
   useTaskEventStream: () => ({
     cancelled: false,
     loading: true,
@@ -58,18 +60,18 @@ jest.mock('@backstage/plugin-scaffolder-react', () => ({
 
 describe('OngoingTask', () => {
   const mockScaffolderApi = {
-    cancelTask: jest.fn(),
-    getTask: jest.fn().mockImplementation(async () => {}),
+    cancelTask: vi.fn(),
+    getTask: vi.fn().mockImplementation(async () => {}),
   };
 
   const mockEntityPresentationApi = {
-    forEntity: jest.fn().mockReturnValue({
+    forEntity: vi.fn().mockReturnValue({
       promise: new Promise(resolve => resolve({ primaryTitle: 'My template' })),
     }),
   };
 
   beforeEach(async () => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   const render = (permissionApi?: PermissionApi) => {

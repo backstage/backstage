@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi , type Mock} from 'vitest';
 import {
   MockDirectory,
   createMockDirectory,
@@ -24,7 +26,7 @@ import { withLogCollector } from '@backstage/test-utils';
 import fs from 'fs-extra';
 
 // Remove log coloring to simplify log matching
-jest.mock('chalk', () => ({
+vi.mock('chalk', () => ({
   red: (str: string) => str,
   blue: (str: string) => str,
   cyan: (str: string) => str,
@@ -34,8 +36,8 @@ jest.mock('chalk', () => ({
 }));
 
 let mockDir: MockDirectory;
-jest.mock('@backstage/cli-common', () => {
-  const actual = jest.requireActual('@backstage/cli-common');
+vi.mock('@backstage/cli-common', () => {
+  const actual = vi.importActual('@backstage/cli-common');
   return {
     ...actual,
     findPaths: () => ({
@@ -44,9 +46,9 @@ jest.mock('@backstage/cli-common', () => {
         return mockDir.path;
       },
     }),
-    run: jest.fn().mockReturnValue({
+    run: vi.fn().mockReturnValue({
       exitCode: null,
-      waitForExit: jest.fn().mockResolvedValue(undefined),
+      waitForExit: vi.fn().mockResolvedValue(undefined),
     }),
   };
 });
@@ -60,14 +62,14 @@ describe('versions:migrate', () => {
   beforeAll(() => overrideTargetPaths(mockDir.path));
 
   beforeEach(() => {
-    (runObj.run as jest.Mock).mockReturnValue({
+    (runObj.run as Mock).mockReturnValue({
       exitCode: null,
-      waitForExit: jest.fn().mockResolvedValue(undefined),
+      waitForExit: vi.fn().mockResolvedValue(undefined),
     });
   });
 
   afterEach(() => {
-    (runObj.run as jest.Mock).mockClear();
+    (runObj.run as Mock).mockClear();
   });
 
   it('should bump to the moved version when the package is moved', async () => {

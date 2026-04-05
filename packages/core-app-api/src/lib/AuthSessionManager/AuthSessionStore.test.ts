@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { withLogCollector } from '@backstage/test-utils';
 import { z } from 'zod/v3';
 import { AuthSessionStore } from './AuthSessionStore';
@@ -40,10 +42,10 @@ class LocalStorage {
 }
 
 class MockManager implements SessionManager<string> {
-  setSession = jest.fn();
-  getSession = jest.fn();
-  removeSession = jest.fn();
-  sessionState$ = jest.fn();
+  setSession = vi.fn();
+  getSession = vi.fn();
+  removeSession = vi.fn();
+  sessionState$ = vi.fn();
 }
 
 describe('GheAuth AuthSessionStore', () => {
@@ -53,7 +55,7 @@ describe('GheAuth AuthSessionStore', () => {
   });
 
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('should load session', async () => {

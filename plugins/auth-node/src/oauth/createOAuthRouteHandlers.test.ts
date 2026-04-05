@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi, vi, type Mocked} from 'vitest';
+
 import { ConfigReader } from '@backstage/config';
 import express from 'express';
 import request, { SuperAgentTest } from 'supertest';
@@ -32,13 +34,13 @@ import { parseWebMessageResponse } from '../flow/__testUtils__/parseWebMessageRe
 import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
 import { mockServices } from '@backstage/backend-test-utils';
 
-const mockAuthenticator: jest.Mocked<OAuthAuthenticator<unknown, unknown>> = {
-  initialize: jest.fn(_r => ({ ctx: 'authenticator' })),
-  start: jest.fn(),
-  authenticate: jest.fn(),
-  refresh: jest.fn(),
-  logout: jest.fn(),
-  defaultProfileTransform: jest.fn(async (_r, _c) => ({ profile: {} })),
+const mockAuthenticator: Mocked<OAuthAuthenticator<unknown, unknown>> = {
+  initialize: vi.fn(_r => ({ ctx: 'authenticator' })),
+  start: vi.fn(),
+  authenticate: vi.fn(),
+  refresh: vi.fn(),
+  logout: vi.fn(),
+  defaultProfileTransform: vi.fn(async (_r, _c) => ({ profile: {} })),
 };
 
 const mockBackstageToken = `a.${btoa(
@@ -163,7 +165,7 @@ function extractTokenStringSlice(tokenString: string, index: number): string {
 }
 
 describe('createOAuthRouteHandlers', () => {
-  afterEach(() => jest.clearAllMocks());
+  afterEach(() => vi.clearAllMocks());
 
   it('should be created', () => {
     const handlers = createOAuthRouteHandlers(baseConfig);
@@ -1265,7 +1267,7 @@ describe('createOAuthRouteHandlers', () => {
     });
 
     it('should return logoutUrl as JSON when authenticator provides one', async () => {
-      (mockAuthenticator.logout as jest.Mock).mockResolvedValueOnce({
+      (mockAuthenticator.logout as Mock).mockResolvedValueOnce({
         logoutUrl: 'https://example.auth0.com/v2/logout?federated',
       });
 
@@ -1293,7 +1295,7 @@ describe('createOAuthRouteHandlers', () => {
     });
 
     it('should return empty body when authenticator logout returns void', async () => {
-      (mockAuthenticator.logout as jest.Mock).mockResolvedValueOnce(undefined);
+      (mockAuthenticator.logout as Mock).mockResolvedValueOnce(undefined);
 
       const agent = request.agent(
         wrapInApp(createOAuthRouteHandlers(baseConfig)),
@@ -1330,7 +1332,7 @@ describe('createOAuthRouteHandlers', () => {
     });
 
     it('should strip logoutUrl with non-HTTPS protocol', async () => {
-      (mockAuthenticator.logout as jest.Mock).mockResolvedValueOnce({
+      (mockAuthenticator.logout as Mock).mockResolvedValueOnce({
         logoutUrl: 'http://evil.com/redirect',
       });
 
@@ -1345,7 +1347,7 @@ describe('createOAuthRouteHandlers', () => {
     });
 
     it('should accept logoutUrl with HTTPS protocol', async () => {
-      (mockAuthenticator.logout as jest.Mock).mockResolvedValueOnce({
+      (mockAuthenticator.logout as Mock).mockResolvedValueOnce({
         logoutUrl: 'https://auth.example.com/v2/logout',
       });
 
@@ -1362,7 +1364,7 @@ describe('createOAuthRouteHandlers', () => {
     });
 
     it('should accept logoutUrl targeting localhost', async () => {
-      (mockAuthenticator.logout as jest.Mock).mockResolvedValueOnce({
+      (mockAuthenticator.logout as Mock).mockResolvedValueOnce({
         logoutUrl: 'http://localhost:3000/logout-callback',
       });
 
@@ -1379,7 +1381,7 @@ describe('createOAuthRouteHandlers', () => {
     });
 
     it('should handle malformed logoutUrl gracefully', async () => {
-      (mockAuthenticator.logout as jest.Mock).mockResolvedValueOnce({
+      (mockAuthenticator.logout as Mock).mockResolvedValueOnce({
         logoutUrl: 'not-a-valid-url',
       });
 

@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi , type MockedFunction} from 'vitest';
 import { Entity } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
@@ -36,7 +38,7 @@ describe('PlaceholderProcessor', () => {
   const reader = mockServices.urlReader.mock();
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('returns placeholder-free data unchanged', async () => {
@@ -58,7 +60,7 @@ describe('PlaceholderProcessor', () => {
   });
 
   it('replaces placeholders deep in the data', async () => {
-    const upperResolver: PlaceholderResolver = jest.fn(async ({ value }) =>
+    const upperResolver: PlaceholderResolver = vi.fn(async ({ value }) =>
       value!.toString().toUpperCase(),
     );
     const processor = new PlaceholderProcessor({
@@ -100,8 +102,8 @@ describe('PlaceholderProcessor', () => {
   it('ignores multiple placeholders', async () => {
     const processor = new PlaceholderProcessor({
       resolvers: {
-        foo: jest.fn(),
-        bar: jest.fn(),
+        foo: vi.fn(),
+        bar: vi.fn(),
       },
       reader,
       integrations,
@@ -122,7 +124,7 @@ describe('PlaceholderProcessor', () => {
   it('ignores unknown placeholders', async () => {
     const processor = new PlaceholderProcessor({
       resolvers: {
-        bar: jest.fn(),
+        bar: vi.fn(),
       },
       reader,
       integrations,
@@ -142,7 +144,7 @@ describe('PlaceholderProcessor', () => {
 
   it('works with the text resolver', async () => {
     reader.readUrl.mockResolvedValue({
-      buffer: jest.fn().mockResolvedValue(Buffer.from('TEXT', 'utf-8')),
+      buffer: vi.fn().mockResolvedValue(Buffer.from('TEXT', 'utf-8')),
     });
     const processor = new PlaceholderProcessor({
       resolvers: { text: textPlaceholderResolver },
@@ -259,7 +261,7 @@ describe('PlaceholderProcessor', () => {
 
   it('resolves absolute path for absolute location', async () => {
     reader.readUrl.mockResolvedValue({
-      buffer: jest.fn().mockResolvedValue(Buffer.from('TEXT', 'utf-8')),
+      buffer: vi.fn().mockResolvedValue(Buffer.from('TEXT', 'utf-8')),
     });
     const processor = new PlaceholderProcessor({
       resolvers: { text: textPlaceholderResolver },
@@ -300,7 +302,7 @@ describe('PlaceholderProcessor', () => {
 
   it('resolves absolute path for relative file location', async () => {
     reader.readUrl.mockResolvedValue({
-      buffer: jest.fn().mockResolvedValue(Buffer.from('TEXT', 'utf-8')),
+      buffer: vi.fn().mockResolvedValue(Buffer.from('TEXT', 'utf-8')),
     });
     const processor = new PlaceholderProcessor({
       resolvers: { text: textPlaceholderResolver },
@@ -343,7 +345,7 @@ describe('PlaceholderProcessor', () => {
     // traversal attacks. If we want to implement this, we need to have additional
     // security measures in place!
     reader.readUrl.mockResolvedValue({
-      buffer: jest.fn().mockResolvedValue(Buffer.from('TEXT', 'utf-8')),
+      buffer: vi.fn().mockResolvedValue(Buffer.from('TEXT', 'utf-8')),
     });
     const processor = new PlaceholderProcessor({
       resolvers: { text: textPlaceholderResolver },
@@ -444,7 +446,7 @@ describe('PlaceholderProcessor', () => {
 });
 
 describe('yamlPlaceholderResolver', () => {
-  const read: jest.MockedFunction<PlaceholderResolverRead> = jest.fn();
+  const read: MockedFunction<PlaceholderResolverRead> = vi.fn();
   const params: PlaceholderResolverParams = {
     key: 'a',
     value: './file.yaml',
@@ -455,7 +457,7 @@ describe('yamlPlaceholderResolver', () => {
   };
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('parses valid yaml', async () => {
@@ -490,7 +492,7 @@ describe('yamlPlaceholderResolver', () => {
 });
 
 describe('jsonPlaceholderResolver', () => {
-  const read: jest.MockedFunction<PlaceholderResolverRead> = jest.fn();
+  const read: MockedFunction<PlaceholderResolverRead> = vi.fn();
   const params: PlaceholderResolverParams = {
     key: 'a',
     value: './file.json',
@@ -501,7 +503,7 @@ describe('jsonPlaceholderResolver', () => {
   };
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('parses valid json', async () => {

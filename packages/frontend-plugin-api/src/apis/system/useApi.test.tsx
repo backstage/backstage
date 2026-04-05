@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { renderHook } from '@testing-library/react';
 import { createVersionedContextForTesting } from '@backstage/version-bridge';
 import { createApiRef } from './ApiRef';
@@ -27,7 +29,7 @@ describe('useApiHolder', () => {
   });
 
   it('should return the API holder from context', () => {
-    const holder = { get: jest.fn() };
+    const holder = { get: vi.fn() };
     context.set({ 1: holder });
 
     const renderedHook = renderHook(() => useApiHolder());
@@ -52,7 +54,7 @@ describe('useApi', () => {
   });
 
   it('should resolve routes', () => {
-    const get = jest.fn(() => 'my-api-impl');
+    const get = vi.fn(() => 'my-api-impl');
     context.set({ 1: { get } });
 
     const apiRef = createApiRef<string>().with({ id: 'x' });

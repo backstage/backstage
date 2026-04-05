@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { Knex } from 'knex';
 import { TestDatabases } from '@backstage/backend-test-utils';
 import fs from 'node:fs';
@@ -39,7 +41,7 @@ async function migrateUntilBefore(knex: Knex, target: string): Promise<void> {
   }
 }
 
-jest.setTimeout(60_000);
+vi.setConfig({ testTimeout: 60_000 });
 
 const databases = TestDatabases.create({
   ids: ['POSTGRES_9', 'POSTGRES_14', 'POSTGRES_16'],

@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import { ReactNode, useState, useEffect } from 'react';
 import { waitFor, screen } from '@testing-library/react';
 
@@ -53,17 +55,17 @@ const mockTechDocsMetadata = {
 };
 
 let useParamsPath = '/';
-jest.mock('react-router-dom', () => {
+vi.mock('react-router-dom', () => {
   return {
-    ...(jest.requireActual('react-router-dom') as any),
+    ...(vi.importActual('react-router-dom') as any),
     useParams: () => ({ '*': useParamsPath }),
   };
 });
 
-const getEntityMetadata = jest.fn();
-const getTechDocsMetadata = jest.fn();
+const getEntityMetadata = vi.fn();
+const getTechDocsMetadata = vi.fn();
 
-const forEntity = jest.fn().mockReturnValue({
+const forEntity = vi.fn().mockReturnValue({
   snapshot: { primaryTitle: 'Test Entity' },
 });
 
@@ -109,7 +111,7 @@ function HookRenderer() {
 describe('useTechDocsReaderHeaderData', () => {
   beforeEach(() => {
     useParamsPath = '/';
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     forEntity.mockReturnValue({
       snapshot: { primaryTitle: 'Test Entity' },
     });

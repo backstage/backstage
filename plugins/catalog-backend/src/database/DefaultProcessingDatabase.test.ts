@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   mockServices,
   TestDatabaseId,
@@ -38,7 +40,7 @@ import { generateStableHash } from './util';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { metricsServiceMock } from '@backstage/backend-test-utils/alpha';
 
-jest.setTimeout(60_000);
+vi.setConfig({ testTimeout: 60_000 });
 
 describe('DefaultProcessingDatabase', () => {
   const defaultLogger = mockServices.logger.mock();
@@ -337,9 +339,9 @@ describe('DefaultProcessingDatabase', () => {
       'updates unprocessed entities with varying location keys, %p',
       async databaseId => {
         const mockLogger = {
-          debug: jest.fn(),
-          error: jest.fn(),
-          warn: jest.fn(),
+          debug: vi.fn(),
+          error: vi.fn(),
+          warn: vi.fn(),
         };
         const { knex, db } = await createDatabase(
           databaseId,
@@ -486,9 +488,9 @@ describe('DefaultProcessingDatabase', () => {
       'stores the refresh keys for the entity where key length is 255 chars or less',
       async databaseId => {
         const mockLogger = {
-          debug: jest.fn(),
-          error: jest.fn(),
-          warn: jest.fn(),
+          debug: vi.fn(),
+          error: vi.fn(),
+          warn: vi.fn(),
         };
         const { knex, db } = await createDatabase(
           databaseId,
@@ -543,9 +545,9 @@ describe('DefaultProcessingDatabase', () => {
       'stores the refresh keys for the entity where key length is greater than 255 chars',
       async databaseId => {
         const mockLogger = {
-          debug: jest.fn(),
-          error: jest.fn(),
-          warn: jest.fn(),
+          debug: vi.fn(),
+          error: vi.fn(),
+          warn: vi.fn(),
         };
         const { knex, db } = await createDatabase(
           databaseId,

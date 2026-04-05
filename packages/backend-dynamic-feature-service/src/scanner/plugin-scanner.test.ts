@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { PluginScanner } from './plugin-scanner';
 import { JsonObject } from '@backstage/types';
 import { Logs, MockedLogger } from '../__testUtils__/testUtils';
@@ -32,7 +34,7 @@ describe('plugin-scanner', () => {
   const env = process.env;
 
   beforeEach(() => {
-    jest.resetModules();
+    vi.resetModules();
   });
 
   afterEach(() => {

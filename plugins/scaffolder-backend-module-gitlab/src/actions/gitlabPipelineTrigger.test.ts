@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { ScmIntegrations } from '@backstage/integration';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { createTriggerGitlabPipelineAction } from './gitlabPipelineTrigger';
@@ -21,12 +23,12 @@ import { mockServices } from '@backstage/backend-test-utils';
 
 const mockGitlabClient = {
   PipelineTriggerTokens: {
-    create: jest.fn(),
-    trigger: jest.fn(),
-    remove: jest.fn(),
+    create: vi.fn(),
+    trigger: vi.fn(),
+    remove: vi.fn(),
   },
 };
-jest.mock('@gitbeaker/rest', () => ({
+vi.mock('@gitbeaker/rest', () => ({
   Gitlab: class {
     constructor() {
       return mockGitlabClient;
@@ -36,15 +38,15 @@ jest.mock('@gitbeaker/rest', () => ({
 
 describe('gitlab:pipeline:trigger', () => {
   beforeEach(() => {
-    jest.resetModules();
-    jest.clearAllMocks();
-    jest.useFakeTimers({
+    vi.resetModules();
+    vi.clearAllMocks();
+    vi.useFakeTimers({
       now: new Date(1988, 5, 3, 12, 0, 0),
     });
   });
 
   afterEach(() => {
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 
   const config = mockServices.rootConfig({

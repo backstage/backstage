@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { renderHook, act } from '@testing-library/react';
 import { TestApiProvider } from '@backstage/test-utils';
 import { appThemeApiRef, AppThemeApi } from '@backstage/core-plugin-api';
@@ -70,7 +72,7 @@ function createWrapper(appThemeApi: AppThemeApi) {
 
 describe('useInvertedThemeMode', () => {
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   it('should return dark when active theme is light', () => {

@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
+import { vi, type Mocked } from 'vitest';
+
 import express from 'express';
 import request from 'supertest';
 import { createStaticAssetMiddleware } from './createStaticAssetMiddleware';
 import { StaticAssetsStore } from './StaticAssetsStore';
 
 const mockStore = {
-  getAsset: jest.fn(),
-} as unknown as jest.Mocked<StaticAssetsStore>;
+  getAsset: vi.fn(),
+} as unknown as Mocked<StaticAssetsStore>;
 
 describe('createStaticAssetMiddleware', () => {
   const app = express();
@@ -31,7 +33,7 @@ describe('createStaticAssetMiddleware', () => {
   });
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('should respond with an asset', async () => {

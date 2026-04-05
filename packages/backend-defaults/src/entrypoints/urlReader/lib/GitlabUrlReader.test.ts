@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { ConfigReader } from '@backstage/config';
 import {
   createMockDirectory,
@@ -687,7 +689,7 @@ describe('GitlabUrlReader', () => {
     });
 
     it('returns a single file for exact urls', async () => {
-      gitlabProcessor.readUrl = jest.fn().mockResolvedValue({
+      gitlabProcessor.readUrl = vi.fn().mockResolvedValue({
         buffer: async () => Buffer.from('content'),
         etag: 'etag',
       } as UrlReaderServiceReadUrlResponse);

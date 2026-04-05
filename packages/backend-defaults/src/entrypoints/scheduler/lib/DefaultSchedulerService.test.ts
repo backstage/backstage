@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { TestDatabases, mockServices } from '@backstage/backend-test-utils';
 import { Duration } from 'luxon';
 import waitForExpect from 'wait-for-expect';
@@ -22,7 +24,7 @@ import { createTestScopedSignal } from './__testUtils__/createTestScopedSignal';
 import { PluginMetadataService } from '@backstage/backend-plugin-api';
 import { metricsServiceMock } from '@backstage/backend-test-utils/alpha';
 
-jest.setTimeout(60_000);
+vi.setConfig({ testTimeout: 60_000 });
 
 describe('TaskScheduler', () => {
   const logger = mockServices.logger.mock();
@@ -49,7 +51,7 @@ describe('TaskScheduler', () => {
         httpRouter,
         pluginMetadata,
       });
-      const fn = jest.fn();
+      const fn = vi.fn();
 
       await manager.scheduleTask({
         id: 'task1',
@@ -79,7 +81,7 @@ describe('TaskScheduler', () => {
         httpRouter,
         pluginMetadata,
       });
-      const fn = jest.fn();
+      const fn = vi.fn();
 
       await manager.scheduleTask({
         id: 'task2',

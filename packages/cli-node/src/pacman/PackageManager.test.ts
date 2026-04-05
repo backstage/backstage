@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { createMockDirectory } from '@backstage/backend-test-utils';
 import { overrideTargetPaths } from '@backstage/cli-common/testUtils';
 import { detectPackageManager } from './PackageManager';
@@ -23,13 +25,13 @@ import { withLogCollector } from '@backstage/test-utils';
 const mockDir = createMockDirectory();
 overrideTargetPaths(mockDir.path);
 
-const mockYarnCreate = jest.spyOn(Yarn, 'create');
+const mockYarnCreate = vi.spyOn(Yarn, 'create');
 
 describe('PackageManager', () => {
   describe('detectPackageManager', () => {
     describe('yarn', () => {
       afterEach(() => {
-        jest.resetAllMocks();
+        vi.resetAllMocks();
       });
 
       it('should detect via yarn.lock', async () => {

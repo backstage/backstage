@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi, type Mocked } from 'vitest';
+
 import * as crypto from 'node:crypto';
 import { JWTHeaderParameters, UnsecuredJWT } from 'jose';
 import NodeCache from 'node-cache';
@@ -23,8 +25,8 @@ import { registerMswTestHooks } from '@backstage/backend-test-utils';
 import { PassportProfile } from '@backstage/plugin-auth-node';
 import { makeProfileInfo, provisionKeyCache } from './helpers';
 
-jest.mock('crypto');
-const cryptoMock = crypto as jest.Mocked<any>;
+vi.mock('crypto');
+const cryptoMock = crypto as Mocked<any>;
 
 describe.each([
   ['eu-west-1', 'https://public-keys.auth.elb.eu-west-1.amazonaws.com/kid'],
@@ -36,11 +38,11 @@ describe.each([
   const server = setupServer();
   registerMswTestHooks(server);
 
-  const nodeCache = jest.fn() as unknown as NodeCache;
-  nodeCache.set = jest.fn();
+  const nodeCache = vi.fn() as unknown as NodeCache;
+  nodeCache.set = vi.fn();
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     server.use(
       http.get(
         url,
@@ -65,7 +67,7 @@ yOlxJ2VW88mLAQGJ7HPAvOdylxZsItMnzCuqNzZvie8m/NJsOjhDncVkrw==
     const getKey = provisionKeyCache(region, nodeCache);
 
     cryptoMock.createPublicKey.mockReturnValueOnce('key');
-    nodeCache.get = jest.fn().mockReturnValue('key');
+    nodeCache.get = vi.fn().mockReturnValue('key');
 
     const key = await getKey({ kid: 'kid' } as unknown as JWTHeaderParameters);
 
@@ -75,10 +77,10 @@ yOlxJ2VW88mLAQGJ7HPAvOdylxZsItMnzCuqNzZvie8m/NJsOjhDncVkrw==
   it('should update cache if key is not found', async () => {
     const getKey = provisionKeyCache(region, nodeCache);
 
-    nodeCache.get = jest.fn().mockReturnValue(undefined);
-    jest.spyOn(nodeCache, 'set');
+    nodeCache.get = vi.fn().mockReturnValue(undefined);
+    vi.spyOn(nodeCache, 'set');
     cryptoMock.createPublicKey.mockReturnValue({
-      export: jest.fn().mockReturnValue('key'),
+      export: vi.fn().mockReturnValue('key'),
     });
 
     await getKey({ kid: 'kid' } as unknown as JWTHeaderParameters);
@@ -88,7 +90,7 @@ yOlxJ2VW88mLAQGJ7HPAvOdylxZsItMnzCuqNzZvie8m/NJsOjhDncVkrw==
   it('should throw error if key is not found', async () => {
     const getKey = provisionKeyCache(region, nodeCache);
 
-    nodeCache.get = jest.fn().mockReturnValue(undefined);
+    nodeCache.get = vi.fn().mockReturnValue(undefined);
     cryptoMock.createPublicKey.mockReturnValue(undefined);
 
     await expect(
@@ -99,7 +101,7 @@ yOlxJ2VW88mLAQGJ7HPAvOdylxZsItMnzCuqNzZvie8m/NJsOjhDncVkrw==
   it('should throw if key is not present in request header', async () => {
     const getKey = provisionKeyCache(region, nodeCache);
 
-    nodeCache.get = jest.fn().mockReturnValue(undefined);
+    nodeCache.get = vi.fn().mockReturnValue(undefined);
 
     await expect(getKey({} as unknown as JWTHeaderParameters)).rejects.toThrow(
       'No key id was specified in header',

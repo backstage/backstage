@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type MockedFunction} from 'vitest';
+
 import { ConfigReader } from '@backstage/config';
 import express from 'express';
 import request from 'supertest';
@@ -21,11 +23,11 @@ import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { createRouter } from './router';
 import { mockServices } from '@backstage/backend-test-utils';
 
-const mockedAuthorize: jest.MockedFunction<PermissionEvaluator['authorize']> =
-  jest.fn();
-const mockedPermissionQuery: jest.MockedFunction<
+const mockedAuthorize: MockedFunction<PermissionEvaluator['authorize']> =
+  vi.fn();
+const mockedPermissionQuery: MockedFunction<
   PermissionEvaluator['authorizeConditional']
-> = jest.fn();
+> = vi.fn();
 
 const permissionEvaluator: PermissionEvaluator = {
   authorize: mockedAuthorize,
@@ -57,7 +59,7 @@ describe('createRouter', () => {
   });
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   describe('GET /health', () => {

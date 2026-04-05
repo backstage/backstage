@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   DeleteMessageBatchCommand,
   ReceiveMessageCommand,
@@ -55,7 +57,7 @@ describe('AwsSqsConsumingEventPublisher', () => {
     const logger = mockServices.logger.mock();
     const events = new TestEventsService();
     const scheduler = {
-      scheduleTask: jest.fn(),
+      scheduleTask: vi.fn(),
     } as unknown as SchedulerService;
 
     const publishers = AwsSqsConsumingEventPublisher.fromConfig({
@@ -89,7 +91,7 @@ describe('AwsSqsConsumingEventPublisher', () => {
     const logger = mockServices.logger.mock();
     const events = new TestEventsService();
     const scheduler = {
-      scheduleTask: jest.fn(),
+      scheduleTask: vi.fn(),
     } as unknown as SchedulerService;
 
     const publishers = AwsSqsConsumingEventPublisher.fromConfig({

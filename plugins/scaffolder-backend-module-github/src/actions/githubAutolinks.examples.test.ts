@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { ConfigReader } from '@backstage/config';
 import {
   DefaultGithubCredentialsProvider,
@@ -29,11 +31,11 @@ import yaml from 'yaml';
 const mockOctokit = {
   rest: {
     repos: {
-      createAutolink: jest.fn(),
+      createAutolink: vi.fn(),
     },
   },
 };
-jest.mock('octokit', () => ({
+vi.mock('octokit', () => ({
   Octokit: class {
     constructor() {
       return mockOctokit;

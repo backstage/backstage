@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { Entity, GroupEntity, UserEntity } from '@backstage/catalog-model';
 import { catalogApiRef, EntityProvider } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
@@ -142,7 +144,7 @@ describe('OwnershipCard', () => {
 
   it('displays entity counts', async () => {
     const catalogApi = catalogApiMock({ entities: items });
-    const mockedGetEntities = jest.spyOn(catalogApi, 'getEntities');
+    const mockedGetEntities = vi.spyOn(catalogApi, 'getEntities');
 
     const { getByText } = await renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi, vi, type Mocked} from 'vitest';
+
 import { NunjucksWorkflowRunner } from './NunjucksWorkflowRunner';
 import {
   DefaultTemplateActionRegistry,
@@ -47,16 +49,16 @@ import {
 describe('NunjucksWorkflowRunner', () => {
   let actionRegistry: TemplateActionRegistry;
   let runner: NunjucksWorkflowRunner;
-  let fakeActionHandler: jest.Mock;
-  let fakeTaskLog: jest.Mock;
+  let fakeActionHandler: Mock;
+  let fakeTaskLog: Mock;
   let stripAnsi: typeof import('strip-ansi').default;
 
   const logger = mockServices.logger.mock();
   const mockDir = createMockDirectory();
 
-  const mockedPermissionApi: jest.Mocked<PermissionEvaluator> = {
-    authorizeConditional: jest.fn(),
-  } as unknown as jest.Mocked<PermissionEvaluator>;
+  const mockedPermissionApi: Mocked<PermissionEvaluator> = {
+    authorizeConditional: vi.fn(),
+  } as unknown as Mocked<PermissionEvaluator>;
 
   const integrations = ScmIntegrations.fromConfig(
     new ConfigReader({
@@ -125,8 +127,8 @@ describe('NunjucksWorkflowRunner', () => {
       actionsRegistryServiceMock(),
       mockServices.logger.mock(),
     );
-    fakeActionHandler = jest.fn();
-    fakeTaskLog = jest.fn();
+    fakeActionHandler = vi.fn();
+    fakeTaskLog = vi.fn();
 
     actionRegistry.register(
       createTemplateAction({
@@ -259,7 +261,7 @@ describe('NunjucksWorkflowRunner', () => {
   afterEach(() => {
     mockDir.clear();
 
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('should throw an error if the action does not exist', async () => {
@@ -548,7 +550,7 @@ describe('NunjucksWorkflowRunner', () => {
     });
 
     it('should not try and parse something that is not parsable', async () => {
-      jest.spyOn(logger, 'error');
+      vi.spyOn(logger, 'error');
       const task = createMockTaskWithSpec({
         steps: [
           {
@@ -2059,7 +2061,7 @@ describe('NunjucksWorkflowRunner', () => {
     });
 
     it('should not pass environment secrets or task secrets to action inputs during dry-run', async () => {
-      const dryRunHandler = jest.fn();
+      const dryRunHandler = vi.fn();
       actionRegistry.register(
         createTemplateAction({
           id: 'jest-dryrun-action',

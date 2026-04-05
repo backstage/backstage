@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SwitchFilter } from './SwitchFilter';
@@ -27,7 +29,7 @@ describe('<SwitchFilter/>', () => {
   });
 
   test('should toggle value', async () => {
-    const onChange = jest.fn();
+    const onChange = vi.fn();
     render(<SwitchFilter label="My label" value onChange={onChange} />);
 
     expect(screen.getByLabelText('My label')).toBeInTheDocument();

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
@@ -22,11 +24,11 @@ import { DateTime } from 'luxon';
 
 const mockGitlabClient = {
   ProjectAccessTokens: {
-    create: jest.fn(),
+    create: vi.fn(),
   },
 };
 
-jest.mock('@gitbeaker/rest', () => ({
+vi.mock('@gitbeaker/rest', () => ({
   Gitlab: class {
     constructor() {
       return mockGitlabClient;
@@ -61,7 +63,7 @@ describe('gitlab:projectAccessToken:create examples', () => {
   });
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('should create a GitLab project access token with minimal options.', async () => {

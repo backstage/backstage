@@ -240,7 +240,7 @@ describe('readSubscriptionTasksFromConfig', () => {
     expect(() =>
       readSubscriptionTasksFromConfig(mockServices.rootConfig({ data })),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Expected Google Pub/Sub 'subscriptionName' to be on the form 'projects/PROJECT_ID/subscriptions/SUBSCRIPTION_ID' but got 'sid'"`,
+      `[InputError: Expected Google Pub/Sub 'subscriptionName' to be on the form 'projects/PROJECT_ID/subscriptions/SUBSCRIPTION_ID' but got 'sid']`,
     );
   });
 });

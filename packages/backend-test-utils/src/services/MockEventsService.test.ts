@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { MockEventsService } from './MockEventsService';
 
 describe('MockEventsService', () => {
   it('notifies subscribers', async () => {
     const service = new MockEventsService();
 
-    const listener1 = jest.fn();
-    const listener2 = jest.fn();
+    const listener1 = vi.fn();
+    const listener2 = vi.fn();
 
     await service.subscribe({
       id: 'a',

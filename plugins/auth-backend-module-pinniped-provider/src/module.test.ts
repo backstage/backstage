@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import {
   mockServices,
   registerMswTestHooks,
@@ -80,7 +82,7 @@ describe('authModulePinnipedProvider', () => {
   });
 
   beforeEach(async () => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
 
     mswServer.use(
       rest.get(

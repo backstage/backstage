@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { IndexableDocument } from '@backstage/plugin-search-common';
 import { DecoratorBase } from './DecoratorBase';
 import { TestPipeline } from '../test-utils';
 
-const decorateSpy = jest.fn().mockResolvedValue(undefined);
-const initializeSpy = jest.fn().mockResolvedValue(undefined);
-const finalizeSpy = jest.fn().mockResolvedValue(undefined);
+const decorateSpy = vi.fn().mockResolvedValue(undefined);
+const initializeSpy = vi.fn().mockResolvedValue(undefined);
+const finalizeSpy = vi.fn().mockResolvedValue(undefined);
 
 class ConcreteDecorator extends DecoratorBase {
   public initialize(): Promise<void> {
@@ -44,7 +46,7 @@ describe('DecoratorBase', () => {
   };
 
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('should work end-to-end', async () => {

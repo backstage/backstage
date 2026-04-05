@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import { CompoundEntityRef, Entity } from '@backstage/catalog-model';
 import { useGetEntities } from './useGetEntities';
 import { renderHook, waitFor } from '@testing-library/react';
@@ -32,22 +34,22 @@ const givenUserEntity = {
 } as Partial<Entity> as Entity;
 
 const catalogApi = catalogApiMock.mock({
-  getEntities: jest.fn(async () => Promise.resolve({ items: [] })),
+  getEntities: vi.fn(async () => Promise.resolve({ items: [] })),
 });
 
-jest.mock('@backstage/core-plugin-api', () => {
-  const actual = jest.requireActual('@backstage/core-plugin-api');
-  return { ...actual, useApi: jest.fn(() => catalogApi) };
+vi.mock('@backstage/core-plugin-api', () => {
+  const actual = vi.importActual('@backstage/core-plugin-api');
+  return { ...actual, useApi: vi.fn(() => catalogApi) };
 });
 
-const getEntityRelationsMock: jest.Mock<
+const getEntityRelationsMock: Mock<
   CompoundEntityRef[],
   [Entity | undefined]
-> = jest.fn();
-jest.mock('@backstage/plugin-catalog-react', () => {
+> = vi.fn();
+vi.mock('@backstage/plugin-catalog-react', () => {
   return {
     catalogApiRef: {},
-    getEntityRelations: jest.fn(entity => {
+    getEntityRelations: vi.fn(entity => {
       return getEntityRelationsMock(entity);
     }) as any,
   };

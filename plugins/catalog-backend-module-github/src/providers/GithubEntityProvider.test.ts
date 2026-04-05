@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   SchedulerService,
   SchedulerServiceTaskRunner,
@@ -44,10 +46,10 @@ type PartialDeep<T> = T extends (...args: unknown[]) => unknown
   ? { [K in keyof T]?: PartialDeep<T[K]> }
   : T;
 
-jest.mock('../lib/github', () => {
+vi.mock('../lib/github', () => {
   return {
-    getOrganizationRepositories: jest.fn(),
-    createGraphqlClient: jest.fn().mockReturnValue(jest.fn()),
+    getOrganizationRepositories: vi.fn(),
+    createGraphqlClient: vi.fn().mockReturnValue(vi.fn()),
   };
 });
 class PersistingTaskRunner implements SchedulerServiceTaskRunner {
@@ -118,7 +120,7 @@ describe('GithubEntityProvider', () => {
     ];
   };
 
-  afterEach(() => jest.clearAllMocks());
+  afterEach(() => vi.clearAllMocks());
 
   it('no provider config', () => {
     const config = new ConfigReader({});
@@ -185,8 +187,8 @@ describe('GithubEntityProvider', () => {
     });
     const schedule = new PersistingTaskRunner();
     const entityProviderConnection: EntityProviderConnection = {
-      applyMutation: jest.fn(),
-      refresh: jest.fn(),
+      applyMutation: vi.fn(),
+      refresh: vi.fn(),
     };
 
     const provider = GithubEntityProvider.fromConfig(config, {
@@ -194,7 +196,7 @@ describe('GithubEntityProvider', () => {
       schedule,
     })[0];
 
-    const mockGetOrganizationRepositories = jest.spyOn(
+    const mockGetOrganizationRepositories = vi.spyOn(
       helpers,
       'getOrganizationRepositories',
     );
@@ -260,8 +262,8 @@ describe('GithubEntityProvider', () => {
     });
     const schedule = new PersistingTaskRunner();
     const entityProviderConnection: EntityProviderConnection = {
-      applyMutation: jest.fn(),
-      refresh: jest.fn(),
+      applyMutation: vi.fn(),
+      refresh: vi.fn(),
     };
 
     const provider = GithubEntityProvider.fromConfig(config, {
@@ -269,7 +271,7 @@ describe('GithubEntityProvider', () => {
       schedule,
     })[0];
 
-    const mockGetOrganizationRepositories = jest.spyOn(
+    const mockGetOrganizationRepositories = vi.spyOn(
       helpers,
       'getOrganizationRepositories',
     );
@@ -341,8 +343,8 @@ describe('GithubEntityProvider', () => {
     });
     const schedule = new PersistingTaskRunner();
     const entityProviderConnection: EntityProviderConnection = {
-      applyMutation: jest.fn(),
-      refresh: jest.fn(),
+      applyMutation: vi.fn(),
+      refresh: vi.fn(),
     };
 
     const provider = GithubEntityProvider.fromConfig(config, {
@@ -350,7 +352,7 @@ describe('GithubEntityProvider', () => {
       schedule,
     })[0];
 
-    const mockGetOrganizationRepositories = jest.spyOn(
+    const mockGetOrganizationRepositories = vi.spyOn(
       helpers,
       'getOrganizationRepositories',
     );
@@ -422,8 +424,8 @@ describe('GithubEntityProvider', () => {
     });
     const schedule = new PersistingTaskRunner();
     const entityProviderConnection: EntityProviderConnection = {
-      applyMutation: jest.fn(),
-      refresh: jest.fn(),
+      applyMutation: vi.fn(),
+      refresh: vi.fn(),
     };
 
     const provider = GithubEntityProvider.fromConfig(config, {
@@ -431,7 +433,7 @@ describe('GithubEntityProvider', () => {
       schedule,
     })[0];
 
-    const mockGetOrganizationRepositories = jest.spyOn(
+    const mockGetOrganizationRepositories = vi.spyOn(
       helpers,
       'getOrganizationRepositories',
     );
@@ -522,8 +524,8 @@ describe('GithubEntityProvider', () => {
     });
     const schedule = new PersistingTaskRunner();
     const entityProviderConnection: EntityProviderConnection = {
-      applyMutation: jest.fn(),
-      refresh: jest.fn(),
+      applyMutation: vi.fn(),
+      refresh: vi.fn(),
     };
 
     const provider = GithubEntityProvider.fromConfig(config, {
@@ -531,7 +533,7 @@ describe('GithubEntityProvider', () => {
       schedule,
     })[0];
 
-    const mockGetOrganizationRepositories = jest.spyOn(
+    const mockGetOrganizationRepositories = vi.spyOn(
       helpers,
       'getOrganizationRepositories',
     );
@@ -739,8 +741,8 @@ describe('GithubEntityProvider', () => {
         const provider = createProviders(config)[0];
 
         const entityProviderConnection: EntityProviderConnection = {
-          applyMutation: jest.fn(),
-          refresh: jest.fn(),
+          applyMutation: vi.fn(),
+          refresh: vi.fn(),
         };
         await provider.connect(entityProviderConnection);
 
@@ -769,8 +771,8 @@ describe('GithubEntityProvider', () => {
         const provider = createProviders(config)[0];
 
         const entityProviderConnection: EntityProviderConnection = {
-          applyMutation: jest.fn(),
-          refresh: jest.fn(),
+          applyMutation: vi.fn(),
+          refresh: vi.fn(),
         };
         await provider.connect(entityProviderConnection);
 
@@ -796,8 +798,8 @@ describe('GithubEntityProvider', () => {
         const provider = createProviders(config)[0];
 
         const entityProviderConnection: EntityProviderConnection = {
-          applyMutation: jest.fn(),
-          refresh: jest.fn(),
+          applyMutation: vi.fn(),
+          refresh: vi.fn(),
         };
         await provider.connect(entityProviderConnection);
 
@@ -823,8 +825,8 @@ describe('GithubEntityProvider', () => {
         const provider = createProviders(config)[0];
 
         const entityProviderConnection: EntityProviderConnection = {
-          applyMutation: jest.fn(),
-          refresh: jest.fn(),
+          applyMutation: vi.fn(),
+          refresh: vi.fn(),
         };
         await provider.connect(entityProviderConnection);
 
@@ -856,8 +858,8 @@ describe('GithubEntityProvider', () => {
         const provider = createProviders(config)[0];
 
         const entityProviderConnection: EntityProviderConnection = {
-          applyMutation: jest.fn(),
-          refresh: jest.fn(),
+          applyMutation: vi.fn(),
+          refresh: vi.fn(),
         };
         await provider.connect(entityProviderConnection);
 
@@ -888,8 +890,8 @@ describe('GithubEntityProvider', () => {
         const provider = createProviders(config)[0];
 
         const entityProviderConnection: EntityProviderConnection = {
-          applyMutation: jest.fn(),
-          refresh: jest.fn(),
+          applyMutation: vi.fn(),
+          refresh: vi.fn(),
         };
         await provider.connect(entityProviderConnection);
 
@@ -918,8 +920,8 @@ describe('GithubEntityProvider', () => {
         const provider = createProviders(config)[0];
 
         const entityProviderConnection: EntityProviderConnection = {
-          applyMutation: jest.fn(),
-          refresh: jest.fn(),
+          applyMutation: vi.fn(),
+          refresh: vi.fn(),
         };
         await provider.connect(entityProviderConnection);
 
@@ -943,8 +945,8 @@ describe('GithubEntityProvider', () => {
         const provider = createProviders(config)[0];
 
         const entityProviderConnection: EntityProviderConnection = {
-          applyMutation: jest.fn(),
-          refresh: jest.fn(),
+          applyMutation: vi.fn(),
+          refresh: vi.fn(),
         };
         await provider.connect(entityProviderConnection);
 
@@ -968,8 +970,8 @@ describe('GithubEntityProvider', () => {
         const provider = createProviders(config)[0];
 
         const entityProviderConnection: EntityProviderConnection = {
-          applyMutation: jest.fn(),
-          refresh: jest.fn(),
+          applyMutation: vi.fn(),
+          refresh: vi.fn(),
         };
         await provider.connect(entityProviderConnection);
 
@@ -989,8 +991,8 @@ describe('GithubEntityProvider', () => {
         const provider = createProviders(config)[0];
 
         const entityProviderConnection: EntityProviderConnection = {
-          applyMutation: jest.fn(),
-          refresh: jest.fn(),
+          applyMutation: vi.fn(),
+          refresh: vi.fn(),
         };
         await provider.connect(entityProviderConnection);
 
@@ -1063,8 +1065,8 @@ describe('GithubEntityProvider', () => {
           const provider = createProviders(config)[0];
 
           const entityProviderConnection: EntityProviderConnection = {
-            applyMutation: jest.fn(),
-            refresh: jest.fn(),
+            applyMutation: vi.fn(),
+            refresh: vi.fn(),
           };
           await provider.connect(entityProviderConnection);
 
@@ -1082,8 +1084,8 @@ describe('GithubEntityProvider', () => {
           const provider = createProviders(config)[0];
 
           const entityProviderConnection: EntityProviderConnection = {
-            applyMutation: jest.fn(),
-            refresh: jest.fn(),
+            applyMutation: vi.fn(),
+            refresh: vi.fn(),
           };
           await provider.connect(entityProviderConnection);
 
@@ -1109,8 +1111,8 @@ describe('GithubEntityProvider', () => {
           const provider = createProviders(config)[0];
 
           const entityProviderConnection: EntityProviderConnection = {
-            applyMutation: jest.fn(),
-            refresh: jest.fn(),
+            applyMutation: vi.fn(),
+            refresh: vi.fn(),
           };
           await provider.connect(entityProviderConnection);
 
@@ -1134,8 +1136,8 @@ describe('GithubEntityProvider', () => {
           const provider = createProviders(config)[0];
 
           const entityProviderConnection: EntityProviderConnection = {
-            applyMutation: jest.fn(),
-            refresh: jest.fn(),
+            applyMutation: vi.fn(),
+            refresh: vi.fn(),
           };
           await provider.connect(entityProviderConnection);
 
@@ -1153,8 +1155,8 @@ describe('GithubEntityProvider', () => {
           const provider = createProviders(config)[0];
 
           const entityProviderConnection: EntityProviderConnection = {
-            applyMutation: jest.fn(),
-            refresh: jest.fn(),
+            applyMutation: vi.fn(),
+            refresh: vi.fn(),
           };
           await provider.connect(entityProviderConnection);
 
@@ -1184,8 +1186,8 @@ describe('GithubEntityProvider', () => {
           const provider = createProviders(config)[0];
 
           const entityProviderConnection: EntityProviderConnection = {
-            applyMutation: jest.fn(),
-            refresh: jest.fn(),
+            applyMutation: vi.fn(),
+            refresh: vi.fn(),
           };
           await provider.connect(entityProviderConnection);
 
@@ -1211,8 +1213,8 @@ describe('GithubEntityProvider', () => {
           const provider = createProviders(config)[0];
 
           const entityProviderConnection: EntityProviderConnection = {
-            applyMutation: jest.fn(),
-            refresh: jest.fn(),
+            applyMutation: vi.fn(),
+            refresh: vi.fn(),
           };
           await provider.connect(entityProviderConnection);
 
@@ -1244,8 +1246,8 @@ describe('GithubEntityProvider', () => {
           const provider = createProviders(config)[0];
 
           const entityProviderConnection: EntityProviderConnection = {
-            applyMutation: jest.fn(),
-            refresh: jest.fn(),
+            applyMutation: vi.fn(),
+            refresh: vi.fn(),
           };
           await provider.connect(entityProviderConnection);
 
@@ -1274,8 +1276,8 @@ describe('GithubEntityProvider', () => {
           const provider = createProviders(config)[0];
 
           const entityProviderConnection: EntityProviderConnection = {
-            applyMutation: jest.fn(),
-            refresh: jest.fn(),
+            applyMutation: vi.fn(),
+            refresh: vi.fn(),
           };
           await provider.connect(entityProviderConnection);
 
@@ -1296,8 +1298,8 @@ describe('GithubEntityProvider', () => {
           const provider = createProviders(config)[0];
 
           const entityProviderConnection: EntityProviderConnection = {
-            applyMutation: jest.fn(),
-            refresh: jest.fn(),
+            applyMutation: vi.fn(),
+            refresh: vi.fn(),
           };
           await provider.connect(entityProviderConnection);
 
@@ -1317,8 +1319,8 @@ describe('GithubEntityProvider', () => {
           const provider = createProviders(config)[0];
 
           const entityProviderConnection: EntityProviderConnection = {
-            applyMutation: jest.fn(),
-            refresh: jest.fn(),
+            applyMutation: vi.fn(),
+            refresh: vi.fn(),
           };
           await provider.connect(entityProviderConnection);
 
@@ -1342,8 +1344,8 @@ describe('GithubEntityProvider', () => {
           const provider = createProviders(config)[0];
 
           const entityProviderConnection: EntityProviderConnection = {
-            applyMutation: jest.fn(),
-            refresh: jest.fn(),
+            applyMutation: vi.fn(),
+            refresh: vi.fn(),
           };
           await provider.connect(entityProviderConnection);
 
@@ -1367,8 +1369,8 @@ describe('GithubEntityProvider', () => {
           const provider = createProviders(config)[0];
 
           const entityProviderConnection: EntityProviderConnection = {
-            applyMutation: jest.fn(),
-            refresh: jest.fn(),
+            applyMutation: vi.fn(),
+            refresh: vi.fn(),
           };
           await provider.connect(entityProviderConnection);
 
@@ -1396,8 +1398,8 @@ describe('GithubEntityProvider', () => {
           const provider = createProviders(config)[0];
 
           const entityProviderConnection: EntityProviderConnection = {
-            applyMutation: jest.fn(),
-            refresh: jest.fn(),
+            applyMutation: vi.fn(),
+            refresh: vi.fn(),
           };
           await provider.connect(entityProviderConnection);
 
@@ -1437,8 +1439,8 @@ describe('GithubEntityProvider', () => {
           const provider = createProviders(config)[0];
 
           const entityProviderConnection: EntityProviderConnection = {
-            applyMutation: jest.fn(),
-            refresh: jest.fn(),
+            applyMutation: vi.fn(),
+            refresh: vi.fn(),
           };
           await provider.connect(entityProviderConnection);
 
@@ -1464,8 +1466,8 @@ describe('GithubEntityProvider', () => {
           const provider = createProviders(config)[0];
 
           const entityProviderConnection: EntityProviderConnection = {
-            applyMutation: jest.fn(),
-            refresh: jest.fn(),
+            applyMutation: vi.fn(),
+            refresh: vi.fn(),
           };
           await provider.connect(entityProviderConnection);
 
@@ -1483,8 +1485,8 @@ describe('GithubEntityProvider', () => {
           const provider = createProviders(config)[0];
 
           const entityProviderConnection: EntityProviderConnection = {
-            applyMutation: jest.fn(),
-            refresh: jest.fn(),
+            applyMutation: vi.fn(),
+            refresh: vi.fn(),
           };
           await provider.connect(entityProviderConnection);
 
@@ -1514,8 +1516,8 @@ describe('GithubEntityProvider', () => {
           const provider = createProviders(config)[0];
 
           const entityProviderConnection: EntityProviderConnection = {
-            applyMutation: jest.fn(),
-            refresh: jest.fn(),
+            applyMutation: vi.fn(),
+            refresh: vi.fn(),
           };
           await provider.connect(entityProviderConnection);
 
@@ -1541,8 +1543,8 @@ describe('GithubEntityProvider', () => {
           const provider = createProviders(config)[0];
 
           const entityProviderConnection: EntityProviderConnection = {
-            applyMutation: jest.fn(),
-            refresh: jest.fn(),
+            applyMutation: vi.fn(),
+            refresh: vi.fn(),
           };
           await provider.connect(entityProviderConnection);
 
@@ -1560,8 +1562,8 @@ describe('GithubEntityProvider', () => {
           const provider = createProviders(config)[0];
 
           const entityProviderConnection: EntityProviderConnection = {
-            applyMutation: jest.fn(),
-            refresh: jest.fn(),
+            applyMutation: vi.fn(),
+            refresh: vi.fn(),
           };
           await provider.connect(entityProviderConnection);
 

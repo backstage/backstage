@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { createLifecycleMiddleware } from './createLifecycleMiddleware';
 import { BackendLifecycleImpl } from '../../rootLifecycle/rootLifecycleServiceFactory';
 import { mockServices } from '@backstage/backend-test-utils';
@@ -29,7 +31,7 @@ describe('createLifecycleMiddleware', () => {
       lifecycle,
     });
 
-    const next = jest.fn();
+    const next = vi.fn();
     middleware({} as any, {} as any, next);
     expect(next).not.toHaveBeenCalled();
     await lifecycle.startup();
@@ -38,7 +40,7 @@ describe('createLifecycleMiddleware', () => {
     expect(next).toHaveBeenCalledWith();
 
     // new call
-    const next2 = jest.fn();
+    const next2 = vi.fn();
     middleware({} as any, {} as any, next2);
     expect(next2).toHaveBeenCalledWith();
   });
@@ -47,7 +49,7 @@ describe('createLifecycleMiddleware', () => {
     const lifecycle = new BackendLifecycleImpl(mockServices.rootLogger());
     const middleware = createLifecycleMiddleware({ config, lifecycle });
 
-    const next = jest.fn();
+    const next = vi.fn();
     middleware({} as any, {} as any, next);
     expect(next).not.toHaveBeenCalled();
     await lifecycle.shutdown();
@@ -58,7 +60,7 @@ describe('createLifecycleMiddleware', () => {
     );
 
     // new call
-    const next2 = jest.fn();
+    const next2 = vi.fn();
     middleware({} as any, {} as any, next2);
     expect(next2).toHaveBeenCalledWith(
       new ServiceUnavailableError('Service is shutting down'),
@@ -80,7 +82,7 @@ describe('createLifecycleMiddleware', () => {
       }),
     });
 
-    const next = jest.fn();
+    const next = vi.fn();
     middleware({} as any, {} as any, next);
     expect(next).not.toHaveBeenCalled();
 

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import { createGithubEnvironmentAction } from './githubEnvironment';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
@@ -24,31 +26,31 @@ import { mockCredentials } from '@backstage/backend-test-utils';
 import { Octokit } from 'octokit';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 
-const octokitMock = Octokit as unknown as jest.Mock;
+const octokitMock = Octokit as unknown as Mock;
 
 const mockOctokit = {
   rest: {
     actions: {
-      getEnvironmentPublicKey: jest.fn(),
-      createEnvironmentVariable: jest.fn(),
-      createOrUpdateEnvironmentSecret: jest.fn(),
+      getEnvironmentPublicKey: vi.fn(),
+      createEnvironmentVariable: vi.fn(),
+      createOrUpdateEnvironmentSecret: vi.fn(),
     },
     repos: {
-      createDeploymentBranchPolicy: jest.fn(),
-      createOrUpdateEnvironment: jest.fn(),
-      get: jest.fn(),
+      createDeploymentBranchPolicy: vi.fn(),
+      createOrUpdateEnvironment: vi.fn(),
+      get: vi.fn(),
     },
     teams: {
-      getByName: jest.fn(),
+      getByName: vi.fn(),
     },
     users: {
-      getByUsername: jest.fn(),
+      getByUsername: vi.fn(),
     },
   },
 };
 
-jest.mock('octokit', () => ({
-  Octokit: jest.fn(),
+vi.mock('octokit', () => ({
+  Octokit: vi.fn(),
 }));
 
 const publicKey = '2Sg8iYjAxxmI2LvUXpJjkYrMxURPc8r+dB7TJyvvcCU=';
@@ -127,7 +129,7 @@ describe('github:environment:create', () => {
     });
   });
 
-  afterEach(jest.resetAllMocks);
+  afterEach(vi.resetAllMocks);
 
   it('should pass context logger to Octokit client', async () => {
     await action.handler(mockContext);

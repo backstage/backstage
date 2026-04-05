@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import { Client as ElasticSearchClient } from '@elastic/elasticsearch';
 import { Client as OpenSearchClient } from '@opensearch-project/opensearch';
 import Mock from '@short.io/opensearch-mock';
@@ -22,9 +24,9 @@ import { Readable } from 'node:stream';
 import { ElasticSearchClientWrapper } from './ElasticSearchClientWrapper';
 import { ElasticSearchClientOptions } from './ElasticSearchSearchEngine';
 
-jest.mock('@elastic/elasticsearch', () => ({
-  ...jest.requireActual('@elastic/elasticsearch'),
-  Client: jest.fn().mockReturnValue({
+vi.mock('@elastic/elasticsearch', () => ({
+  ...vi.importActual('@elastic/elasticsearch'),
+  Client: vi.fn().mockReturnValue({
     search: jest
       .fn()
       .mockImplementation(async args => ({ client: 'es', args })),
@@ -39,7 +41,7 @@ jest.mock('@elastic/elasticsearch', () => ({
         .mockImplementation(async args => ({ client: 'es', args })),
     },
     indices: {
-      get: jest.fn().mockImplementation(async args => ({ client: 'es', args })),
+      get: vi.fn().mockImplementation(async args => ({ client: 'es', args })),
       create: jest
         .fn()
         .mockImplementation(async args => ({ client: 'es', args })),
@@ -59,9 +61,9 @@ jest.mock('@elastic/elasticsearch', () => ({
   }),
 }));
 
-jest.mock('@opensearch-project/opensearch', () => ({
-  ...jest.requireActual('@opensearch-project/opensearch'),
-  Client: jest.fn().mockReturnValue({
+vi.mock('@opensearch-project/opensearch', () => ({
+  ...vi.importActual('@opensearch-project/opensearch'),
+  Client: vi.fn().mockReturnValue({
     search: jest
       .fn()
       .mockImplementation(async args => ({ client: 'os', args })),
@@ -76,7 +78,7 @@ jest.mock('@opensearch-project/opensearch', () => ({
         .mockImplementation(async args => ({ client: 'os', args })),
     },
     indices: {
-      get: jest.fn().mockImplementation(async args => ({ client: 'os', args })),
+      get: vi.fn().mockImplementation(async args => ({ client: 'os', args })),
       create: jest
         .fn()
         .mockImplementation(async args => ({ client: 'os', args })),
@@ -104,7 +106,7 @@ describe('ElasticSearchClientWrapper', () => {
       esOptions = {
         node: 'http://localhost:9200',
       };
-      jest.clearAllMocks();
+      vi.clearAllMocks();
     });
 
     it('instantiation', () => {
@@ -242,7 +244,7 @@ describe('ElasticSearchClientWrapper', () => {
         connection: mock.getConnection(),
       };
 
-      jest.clearAllMocks();
+      vi.clearAllMocks();
     });
 
     it('instantiation', () => {

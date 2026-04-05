@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { createMocks } from 'react-idle-timer';
 // eslint-disable-next-line no-restricted-imports
 import { MessageChannel } from 'node:worker_threads';
@@ -41,7 +43,7 @@ describe('AutoLogout', () => {
   afterAll(cleanup);
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should throw error if idleTimeoutMinutes is smaller than promptBeforeSeconds', async () => {

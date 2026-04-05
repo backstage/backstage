@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi , type MockedClass} from 'vitest';
 import { ManagedIdentityClientAssertion } from './ManagedIdentityClientAssertion';
 import { ManagedIdentityCredential, AccessToken } from '@azure/identity';
 
@@ -20,15 +22,15 @@ const seconds = (s: number) => s * 1000;
 const minutes = (m: number) => seconds(60) * m;
 const hours = (h: number) => minutes(60) * h;
 const MockedManagedIdentityCredential =
-  ManagedIdentityCredential as jest.MockedClass<
+  ManagedIdentityCredential as MockedClass<
     typeof ManagedIdentityCredential
   >;
 
-jest.mock('@azure/identity');
+vi.mock('@azure/identity');
 
 describe('ManagedIdentityClientAssertion', () => {
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
 
     MockedManagedIdentityCredential.prototype.getToken.mockImplementation(() =>
       Promise.resolve({

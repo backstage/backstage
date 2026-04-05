@@ -59,14 +59,14 @@ describe('StaticTokenHandler', () => {
         options: new ConfigReader({ _missingtoken: true, subject: 'ok' }),
       }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Missing required config value at 'token' in 'mock-config'"`,
+      `[Error: Missing required config value at 'token' in 'mock-config']`,
     );
     expect(() =>
       staticTokenHandler.initialize({
         options: new ConfigReader({ token: '', subject: 'ok' }),
       }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid type in config for key 'token' in 'mock-config', got empty-string, wanted string"`,
+      `[TypeError: Invalid type in config for key 'token' in 'mock-config', got empty-string, wanted string]`,
     );
     expect(() =>
       staticTokenHandler.initialize({
@@ -76,7 +76,7 @@ describe('StaticTokenHandler', () => {
         }),
       }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Illegal token, must be a set of non-space characters"`,
+      `[Error: Illegal token, must be a set of non-space characters]`,
     );
     expect(() =>
       staticTokenHandler.initialize({
@@ -86,7 +86,7 @@ describe('StaticTokenHandler', () => {
         }),
       }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Illegal token, must be a set of non-space characters"`,
+      `[Error: Illegal token, must be a set of non-space characters]`,
     );
     expect(() =>
       staticTokenHandler.initialize({
@@ -96,14 +96,14 @@ describe('StaticTokenHandler', () => {
         }),
       }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Illegal token, must be at least 8 characters length"`,
+      `[Error: Illegal token, must be at least 8 characters length]`,
     );
     expect(() =>
       staticTokenHandler.initialize({
         options: new ConfigReader({ token: 3, subject: 'ok' }),
       }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid type in config for key 'token' in 'mock-config', got number, wanted string"`,
+      `[TypeError: Invalid type in config for key 'token' in 'mock-config', got number, wanted string]`,
     );
 
     expect(() =>
@@ -114,7 +114,7 @@ describe('StaticTokenHandler', () => {
         }),
       }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Missing required config value at 'subject' in 'mock-config'"`,
+      `[Error: Missing required config value at 'subject' in 'mock-config']`,
     );
     expect(() =>
       staticTokenHandler.initialize({
@@ -124,7 +124,7 @@ describe('StaticTokenHandler', () => {
         }),
       }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid type in config for key 'subject' in 'mock-config', got empty-string, wanted string"`,
+      `[TypeError: Invalid type in config for key 'subject' in 'mock-config', got empty-string, wanted string]`,
     );
     expect(() =>
       staticTokenHandler.initialize({
@@ -134,7 +134,7 @@ describe('StaticTokenHandler', () => {
         }),
       }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Illegal subject, must be a set of non-space characters"`,
+      `[Error: Illegal subject, must be a set of non-space characters]`,
     );
     expect(() =>
       staticTokenHandler.initialize({
@@ -144,7 +144,7 @@ describe('StaticTokenHandler', () => {
         }),
       }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Illegal subject, must be a set of non-space characters"`,
+      `[Error: Illegal subject, must be a set of non-space characters]`,
     );
     expect(() =>
       staticTokenHandler.initialize({
@@ -154,7 +154,7 @@ describe('StaticTokenHandler', () => {
         }),
       }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid type in config for key 'subject' in 'mock-config', got number, wanted string"`,
+      `[TypeError: Invalid type in config for key 'subject' in 'mock-config', got number, wanted string]`,
     );
   });
 });

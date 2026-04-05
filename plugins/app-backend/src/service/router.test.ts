@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import { AppConfig } from '@backstage/config';
 import express from 'express';
 import Router from 'express-promise-router';
@@ -23,9 +25,9 @@ import { createRouter } from './router';
 import { loadConfigSchema } from '@backstage/config-loader';
 import { mockServices, TestDatabases } from '@backstage/backend-test-utils';
 
-jest.mock('../lib/config', () => ({
-  injectConfig: jest.fn(),
-  readFrontendConfig: jest.fn(),
+vi.mock('../lib/config', () => ({
+  injectConfig: vi.fn(),
+  readFrontendConfig: vi.fn(),
 }));
 
 global.__non_webpack_require__ = {
@@ -58,7 +60,7 @@ describe('createRouter', () => {
   });
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('returns index.html', async () => {
@@ -138,11 +140,11 @@ describe('createRouter with static fallback handler', () => {
 
 describe('createRouter config schema test', () => {
   const libConfigs = require('../lib/config');
-  const libConfigsActual = jest.requireActual('../lib/config');
-  const readFrontendConfigMock: jest.Mock = libConfigs.readFrontendConfig;
+  const libConfigsActual = vi.importActual('../lib/config');
+  const readFrontendConfigMock: Mock = libConfigs.readFrontendConfig;
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
     readFrontendConfigMock.mockImplementation(
       libConfigsActual.readFrontendConfig,
     );

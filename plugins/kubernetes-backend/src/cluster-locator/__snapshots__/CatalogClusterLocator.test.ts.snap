@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`CatalogClusterLocator returns the aws cluster details provided by annotations 1`] = `
+exports[`CatalogClusterLocator > returns the aws cluster details provided by annotations 1`] = `
 {
   "authMetadata": {
     "kubernetes.io/api-server": "https://apiserver.com",
@@ -24,7 +24,7 @@ exports[`CatalogClusterLocator returns the aws cluster details provided by annot
 }
 `;
 
-exports[`CatalogClusterLocator returns the cluster details provided by annotations 1`] = `
+exports[`CatalogClusterLocator > returns the cluster details provided by annotations 1`] = `
 {
   "authMetadata": {
     "kubernetes.io/api-server": "https://apiserver.com",

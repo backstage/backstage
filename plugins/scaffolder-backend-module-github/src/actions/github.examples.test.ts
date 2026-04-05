@@ -13,20 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-jest.mock('./gitHelpers', () => {
+
+import { vi , type Mock} from 'vitest';
+vi.mock('./gitHelpers', () => {
   return {
-    ...jest.requireActual('./gitHelpers'),
-    entityRefToName: jest.fn(),
+    ...vi.importActual('./gitHelpers'),
+    entityRefToName: vi.fn(),
   };
 });
 
-jest.mock('@backstage/plugin-scaffolder-node', () => {
+vi.mock('@backstage/plugin-scaffolder-node', () => {
   return {
-    ...jest.requireActual('@backstage/plugin-scaffolder-node'),
-    initRepoAndPush: jest.fn().mockResolvedValue({
+    ...vi.importActual('@backstage/plugin-scaffolder-node'),
+    initRepoAndPush: vi.fn().mockResolvedValue({
       commitHash: '220f19cc36b551763d157f1b5e4a4b446165dbd6',
     }),
-    commitAndPushRepo: jest.fn().mockResolvedValue({
+    commitAndPushRepo: vi.fn().mockResolvedValue({
       commitHash: '220f19cc36b551763d157f1b5e4a4b446165dbd6',
     }),
   };
@@ -50,33 +52,33 @@ import { entityRefToName } from './gitHelpers';
 
 const publicKey = '2Sg8iYjAxxmI2LvUXpJjkYrMxURPc8r+dB7TJyvvcCU=';
 
-const initRepoAndPushMocked = initRepoAndPush as jest.Mock<
+const initRepoAndPushMocked = initRepoAndPush as Mock<
   Promise<{ commitHash: string }>
 >;
 
 const mockOctokit = {
   rest: {
     users: {
-      getByUsername: jest.fn(),
+      getByUsername: vi.fn(),
     },
     repos: {
-      addCollaborator: jest.fn(),
-      createInOrg: jest.fn(),
-      createForAuthenticatedUser: jest.fn(),
-      replaceAllTopics: jest.fn(),
+      addCollaborator: vi.fn(),
+      createInOrg: vi.fn(),
+      createForAuthenticatedUser: vi.fn(),
+      replaceAllTopics: vi.fn(),
     },
     teams: {
-      getByName: jest.fn(),
-      addOrUpdateRepoPermissionsInOrg: jest.fn(),
+      getByName: vi.fn(),
+      addOrUpdateRepoPermissionsInOrg: vi.fn(),
     },
     actions: {
-      createRepoVariable: jest.fn(),
-      createOrUpdateRepoSecret: jest.fn(),
-      getRepoPublicKey: jest.fn(),
+      createRepoVariable: vi.fn(),
+      createOrUpdateRepoSecret: vi.fn(),
+      getRepoPublicKey: vi.fn(),
     },
   },
 };
-jest.mock('octokit', () => ({
+vi.mock('octokit', () => ({
   Octokit: class {
     constructor() {
       return mockOctokit;
@@ -95,7 +97,7 @@ describe('publish:github', () => {
   });
 
   const { entityRefToName: realFamiliarizeEntityName } =
-    jest.requireActual('./helpers');
+    vi.importActual('./helpers');
   const integrations = ScmIntegrations.fromConfig(config);
   let githubCredentialsProvider: GithubCredentialsProvider;
   let action: TemplateAction<any, any, any>;
@@ -122,7 +124,7 @@ describe('publish:github', () => {
     });
 
     // restore real implementation
-    (entityRefToName as jest.Mock).mockImplementation(
+    (entityRefToName as Mock).mockImplementation(
       realFamiliarizeEntityName,
     );
     mockOctokit.rest.actions.getRepoPublicKey.mockResolvedValue({
@@ -133,7 +135,7 @@ describe('publish:github', () => {
     });
   });
 
-  afterEach(jest.resetAllMocks);
+  afterEach(vi.resetAllMocks);
 
   it('should call initRepoAndPush with the correct values', async () => {
     mockOctokit.rest.users.getByUsername.mockResolvedValue({

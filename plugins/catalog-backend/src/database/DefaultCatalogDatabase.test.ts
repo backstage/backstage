@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   mockServices,
   TestDatabaseId,
@@ -24,7 +26,7 @@ import { applyDatabaseMigrations } from './migrations';
 import { DbRefreshStateReferencesRow, DbRefreshStateRow } from './tables';
 import { LoggerService } from '@backstage/backend-plugin-api';
 
-jest.setTimeout(60_000);
+vi.setConfig({ testTimeout: 60_000 });
 
 describe('DefaultCatalogDatabase', () => {
   const defaultLogger = mockServices.logger.mock();

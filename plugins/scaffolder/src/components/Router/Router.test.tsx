@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi , type Mock} from 'vitest';
 import { Router } from './Router';
 import { renderInTestApp } from '@backstage/test-utils';
 import {
@@ -26,15 +28,15 @@ import {
 } from '@backstage/plugin-scaffolder-react';
 import { TemplateListPage, TemplateWizardPage } from '../../alpha/components';
 
-jest.mock('../../alpha/components', () => ({
-  TemplateWizardPage: jest.fn(() => null),
-  TemplateListPage: jest.fn(() => null),
+vi.mock('../../alpha/components', () => ({
+  TemplateWizardPage: vi.fn(() => null),
+  TemplateListPage: vi.fn(() => null),
 }));
 
 describe('Router', () => {
   beforeEach(() => {
-    (TemplateWizardPage as jest.Mock).mockClear();
-    (TemplateListPage as jest.Mock).mockClear();
+    (TemplateWizardPage as Mock).mockClear();
+    (TemplateListPage as Mock).mockClear();
   });
   describe('/', () => {
     it('should render the TemplateListPage', async () => {
@@ -92,7 +94,7 @@ describe('Router', () => {
     });
 
     it('should pass through the FormProps property', async () => {
-      const transformErrorsMock = jest.fn();
+      const transformErrorsMock = vi.fn();
 
       await renderInTestApp(
         <Router
@@ -107,7 +109,7 @@ describe('Router', () => {
         },
       );
 
-      const mock = TemplateWizardPage as jest.Mock;
+      const mock = TemplateWizardPage as Mock;
 
       const [{ formProps }] = mock.mock.calls[0];
 
@@ -135,7 +137,7 @@ describe('Router', () => {
         { routeEntries: ['/templates/default/foo'] },
       );
 
-      const mock = TemplateWizardPage as jest.Mock;
+      const mock = TemplateWizardPage as Mock;
       const [{ customFieldExtensions }] = mock.mock.calls[0];
 
       expect(customFieldExtensions).toEqual(
@@ -163,7 +165,7 @@ describe('Router', () => {
         { routeEntries: ['/templates/default/foo'] },
       );
 
-      const mock = TemplateWizardPage as jest.Mock;
+      const mock = TemplateWizardPage as Mock;
       const [{ layouts }] = mock.mock.calls[0];
 
       expect(layouts).toEqual(

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { mockServices, TestDatabases } from '@backstage/backend-test-utils';
 import { DefaultProviderDatabase } from '../database/DefaultProviderDatabase';
 import {
@@ -23,13 +25,13 @@ import {
 import { applyDatabaseMigrations } from '../database/migrations';
 import { Knex } from 'knex';
 
-jest.setTimeout(60_000);
+vi.setConfig({ testTimeout: 60_000 });
 
 const databases = TestDatabases.create();
 const logger = mockServices.logger.mock();
 
 afterEach(() => {
-  jest.resetAllMocks();
+  vi.resetAllMocks();
 });
 
 describe.each(databases.eachSupportedId())('%p', databaseId => {
@@ -49,8 +51,8 @@ describe.each(databases.eachSupportedId())('%p', databaseId => {
   describe('getOrphanedEntityProviderNames', () => {
     it('correctly locates and logs orphaned providers', async () => {
       const providers = [
-        { getProviderName: () => 'provider1', connect: jest.fn() },
-        { getProviderName: () => 'provider2', connect: jest.fn() },
+        { getProviderName: () => 'provider1', connect: vi.fn() },
+        { getProviderName: () => 'provider2', connect: vi.fn() },
       ];
 
       await knex('refresh_state').insert([
@@ -95,11 +97,11 @@ describe.each(databases.eachSupportedId())('%p', databaseId => {
 
   describe('evictEntitiesFromOrphanedProviders', () => {
     it('replaces unprocessed entities for orphaned providers with empty items', async () => {
-      jest.spyOn(db, 'replaceUnprocessedEntities');
+      vi.spyOn(db, 'replaceUnprocessedEntities');
 
       const providers = [
-        { getProviderName: () => 'provider1', connect: jest.fn() },
-        { getProviderName: () => 'provider2', connect: jest.fn() },
+        { getProviderName: () => 'provider1', connect: vi.fn() },
+        { getProviderName: () => 'provider2', connect: vi.fn() },
       ];
 
       await knex('refresh_state').insert([
@@ -140,11 +142,11 @@ describe.each(databases.eachSupportedId())('%p', databaseId => {
     });
 
     it('does not replace unprocessed entities for providers that are not orphaned', async () => {
-      jest.spyOn(db, 'replaceUnprocessedEntities');
+      vi.spyOn(db, 'replaceUnprocessedEntities');
 
       const providers = [
-        { getProviderName: () => 'provider1', connect: jest.fn() },
-        { getProviderName: () => 'provider2', connect: jest.fn() },
+        { getProviderName: () => 'provider1', connect: vi.fn() },
+        { getProviderName: () => 'provider2', connect: vi.fn() },
       ];
 
       await knex('refresh_state').insert([

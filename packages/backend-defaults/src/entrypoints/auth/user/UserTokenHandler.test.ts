@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { JsonObject } from '@backstage/types';
 import { UserTokenHandler } from './UserTokenHandler';
 import {
@@ -69,8 +71,8 @@ describe('UserTokenHandler', () => {
   registerMswTestHooks(server);
 
   beforeEach(() => {
-    jest.useRealTimers();
-    jest.resetAllMocks();
+    vi.useRealTimers();
+    vi.resetAllMocks();
 
     userTokenHandler = UserTokenHandler.create({
       discovery: mockServices.discovery(),
@@ -141,7 +143,7 @@ describe('UserTokenHandler', () => {
       const expectedIssuedAt = 1712071714;
       const expectedExpiresAt = 1712075314;
 
-      jest.useFakeTimers({
+      vi.useFakeTimers({
         now: expectedIssuedAt * 1000 + 600_000,
       });
 
@@ -174,7 +176,7 @@ describe('UserTokenHandler', () => {
       const expectedIssuedAt = 1712071714;
       const expectedExpiresAt = 1712075314;
 
-      jest.useFakeTimers({
+      vi.useFakeTimers({
         now: expectedIssuedAt * 1000 + 600_000,
       });
 
@@ -203,7 +205,7 @@ describe('UserTokenHandler', () => {
       const expectedIssuedAt = 1712071714;
       const expectedExpiresAt = 1712075314;
 
-      jest.useFakeTimers({
+      vi.useFakeTimers({
         now: expectedIssuedAt * 1000 + 600_000,
       });
 
@@ -231,7 +233,7 @@ describe('UserTokenHandler', () => {
       const expectedIssuedAt = 1712071714;
       const expectedExpiresAt = 1712075314;
 
-      jest.useFakeTimers({
+      vi.useFakeTimers({
         now: expectedIssuedAt * 1000 + 600_000,
       });
 
@@ -263,7 +265,7 @@ describe('UserTokenHandler', () => {
       const expectedIssuedAt = 1712071714;
       const expectedExpiresAt = 1712075314;
 
-      jest.useFakeTimers({
+      vi.useFakeTimers({
         now: expectedIssuedAt * 1000 + 600_000,
       });
 
@@ -365,7 +367,7 @@ describe('UserTokenHandler', () => {
     });
 
     it('should create limited token that can be verified', async () => {
-      jest.useFakeTimers({
+      vi.useFakeTimers({
         now: 1712071714 * 1000 + 600_000,
       });
       const parts = {

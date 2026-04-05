@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { ConfigReader } from '@backstage/config';
 import { NotFoundError, NotModifiedError } from '@backstage/errors';
 import {
@@ -31,7 +33,7 @@ describe('FetchUrlReader', () => {
   registerMswTestHooks(worker);
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   beforeEach(() => {

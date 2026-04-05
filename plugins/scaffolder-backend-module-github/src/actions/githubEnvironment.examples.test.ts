@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import { createGithubEnvironmentAction } from './githubEnvironment';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
@@ -25,25 +27,25 @@ import { examples } from './gitHubEnvironment.examples';
 const mockOctokit = {
   rest: {
     actions: {
-      getEnvironmentPublicKey: jest.fn(),
-      createEnvironmentVariable: jest.fn(),
-      createOrUpdateEnvironmentSecret: jest.fn(),
+      getEnvironmentPublicKey: vi.fn(),
+      createEnvironmentVariable: vi.fn(),
+      createOrUpdateEnvironmentSecret: vi.fn(),
     },
     repos: {
-      createDeploymentBranchPolicy: jest.fn(),
-      createOrUpdateEnvironment: jest.fn(),
-      get: jest.fn(),
+      createDeploymentBranchPolicy: vi.fn(),
+      createOrUpdateEnvironment: vi.fn(),
+      get: vi.fn(),
     },
     teams: {
-      getByName: jest.fn(),
+      getByName: vi.fn(),
     },
     users: {
-      getByUsername: jest.fn(),
+      getByUsername: vi.fn(),
     },
   },
 };
 
-jest.mock('octokit', () => ({
+vi.mock('octokit', () => ({
   Octokit: class {
     constructor() {
       return mockOctokit;
@@ -116,7 +118,7 @@ describe('github:environment:create examples', () => {
     });
   });
 
-  afterEach(jest.resetAllMocks);
+  afterEach(vi.resetAllMocks);
 
   it('Create a GitHub Environment (No Policies, No Variables, No Secrets)', async () => {
     const input = yaml.parse(examples[0].example).steps[0].input;

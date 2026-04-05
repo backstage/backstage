@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import '@testing-library/jest-dom';
 
-Element.prototype.scrollIntoView = jest.fn();
+Element.prototype.scrollIntoView = vi.fn();
 
 type Listener = (event: { data: any }) => void;
 
@@ -39,8 +41,8 @@ global.BroadcastChannel = jest
           listeners = listeners.filter(l => l !== listener);
         }
       }),
-      close: jest.fn(),
+      close: vi.fn(),
     };
   });
 
-window.scroll = jest.fn();
+window.scroll = vi.fn();

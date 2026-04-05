@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { screen } from '@testing-library/react';
 import user from '@testing-library/user-event';
 import { MaxDepthFilter } from './MaxDepthFilter';
@@ -37,7 +39,7 @@ describe('<MaxDepthFilter/>', () => {
   });
 
   test('should clear max depth', async () => {
-    const onChange = jest.fn();
+    const onChange = vi.fn();
     await renderInTestApp(<MaxDepthFilter value={10} onChange={onChange} />);
 
     expect(onChange).not.toHaveBeenCalled();
@@ -46,7 +48,7 @@ describe('<MaxDepthFilter/>', () => {
   });
 
   test('should set max depth to undefined if below one', async () => {
-    const onChange = jest.fn();
+    const onChange = vi.fn();
     await renderInTestApp(<MaxDepthFilter value={1} onChange={onChange} />);
 
     await user.clear(screen.getByLabelText('maxp'));

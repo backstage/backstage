@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { scaffolderApiMock } from './scaffolderApiMock';
 
 describe('scaffolderApiMock', () => {
-  it('creates a mock with all methods as jest.fn()', () => {
+  it('creates a mock with all methods as vi.fn()', () => {
     const mock = scaffolderApiMock.mock();
 
     expect(mock.getTask).toHaveBeenCalledTimes(0);
@@ -27,7 +29,7 @@ describe('scaffolderApiMock', () => {
 
   it('supports overriding individual methods', async () => {
     const mock = scaffolderApiMock.mock({
-      getTask: jest.fn().mockResolvedValue({ id: 'task-1' }),
+      getTask: vi.fn().mockResolvedValue({ id: 'task-1' }),
     });
 
     await expect(mock.getTask('task-1')).resolves.toEqual(

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { TechDocsAddonTester } from '@backstage/plugin-techdocs-addons-test-utils';
 
 import { fireEvent, waitFor } from '@testing-library/react';
@@ -23,7 +25,7 @@ import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import { ReportIssue } from '../plugin';
 import { entityPresentationApiRef } from '@backstage/plugin-catalog-react';
 
-const byUrl = jest.fn();
+const byUrl = vi.fn();
 
 const fireSelectionChangeEvent = (window: Window) => {
   const selectionChangeEvent = window.document.createEvent('Event');
@@ -54,7 +56,7 @@ describe('ReportIssue', () => {
   } as unknown as Selection;
 
   const entityPresentationApiMock = {
-    forEntity: jest.fn(),
+    forEntity: vi.fn(),
   };
   entityPresentationApiMock.forEntity.mockReturnValue({
     snapshot: {
@@ -63,7 +65,7 @@ describe('ReportIssue', () => {
   });
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('renders github link without exploding', async () => {

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { loadModuleFederationHostShared } from './loadModuleFederationHostShared';
 import {
   BACKSTAGE_RUNTIME_SHARED_DEPENDENCIES_GLOBAL,
@@ -21,7 +23,7 @@ import {
 } from './types';
 import { ForwardedError } from '@backstage/errors';
 
-const globalSpy = jest.fn();
+const globalSpy = vi.fn();
 Object.defineProperty(global, BACKSTAGE_RUNTIME_SHARED_DEPENDENCIES_GLOBAL, {
   get: globalSpy,
 });
@@ -31,7 +33,7 @@ function mockGlobal(items: RuntimeSharedDependenciesGlobal['items']) {
 }
 
 describe('loadModuleFederationHostShared', () => {
-  afterEach(jest.resetAllMocks);
+  afterEach(vi.resetAllMocks);
 
   it('should preload and return shared dependencies keyed by name', async () => {
     const reactMock = { default: { React: 'react' } };

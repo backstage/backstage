@@ -25,25 +25,25 @@ export const createBitbucketPipelinesRunAction: (options: {
             | {
                 type?: string | undefined;
                 source?: string | undefined;
-                selector?:
-                  | {
-                      type: string;
-                      pattern: string;
-                    }
-                  | undefined;
-                pull_request?:
-                  | {
-                      id: string;
-                    }
-                  | undefined;
                 commit?:
                   | {
                       type: string;
                       hash: string;
                     }
                   | undefined;
-                destination?: string | undefined;
+                selector?:
+                  | {
+                      type: string;
+                      pattern: string;
+                    }
+                  | undefined;
                 ref_name?: string | undefined;
+                destination?: string | undefined;
+                pull_request?:
+                  | {
+                      id: string;
+                    }
+                  | undefined;
                 ref_type?: string | undefined;
                 destination_commit?:
                   | {
@@ -54,8 +54,8 @@ export const createBitbucketPipelinesRunAction: (options: {
             | undefined;
           variables?:
             | {
-                key: string;
                 value: string;
+                key: string;
                 secured: boolean;
               }[]
             | undefined;
@@ -80,7 +80,7 @@ export function createPublishBitbucketCloudAction(options: {
     repoUrl: string;
     description?: string | undefined;
     defaultBranch?: string | undefined;
-    repoVisibility?: 'private' | 'public' | undefined;
+    repoVisibility?: 'public' | 'private' | undefined;
     gitCommitMessage?: string | undefined;
     sourcePath?: string | undefined;
     token?: string | undefined;

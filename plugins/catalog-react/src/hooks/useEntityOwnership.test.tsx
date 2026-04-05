@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { ComponentEntity, RELATION_OWNED_BY } from '@backstage/catalog-model';
 import { identityApiRef } from '@backstage/core-plugin-api';
 import { TestApiProvider, mockApis } from '@backstage/test-utils';
@@ -56,7 +58,7 @@ describe('useEntityOwnership', () => {
   };
 
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   describe('useEntityOwnership', () => {

@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
+import { vi , type MockInstance, type Mock} from 'vitest';
+
 import { render } from '@testing-library/react';
 import { TechDocsLiveReload, utils } from './LiveReloadAddon';
 
-jest.mock('@backstage/plugin-techdocs-react', () => ({
-  useShadowRootElements: jest.fn(() => [
+vi.mock('@backstage/plugin-techdocs-react', () => ({
+  useShadowRootElements: vi.fn(() => [
     {
-      querySelector: jest.fn((selector: string) => {
+      querySelector: vi.fn((selector: string) => {
         if (selector === 'live-reload') {
           return {
             getAttribute: (name: string) => {
@@ -38,13 +40,13 @@ jest.mock('@backstage/plugin-techdocs-react', () => ({
 
 describe('TechDocsLiveReload', () => {
   const originalXHR = global.XMLHttpRequest;
-  let openSpy: jest.Mock;
-  let sendSpy: jest.Mock;
-  let reloadPageSpy: jest.SpyInstance;
+  let openSpy: Mock;
+  let sendSpy: Mock;
+  let reloadPageSpy: MockInstance;
 
   beforeEach(() => {
-    openSpy = jest.fn();
-    sendSpy = jest.fn(function (this: any) {
+    openSpy = vi.fn();
+    sendSpy = vi.fn(function (this: any) {
       // simulate long-poll response that does NOT trigger reload (epoch unchanged)
       setTimeout(() => {
         (this as any).status = 200;
@@ -59,7 +61,7 @@ describe('TechDocsLiveReload', () => {
       responseText = '';
       open = openSpy;
       send = sendSpy as any;
-      abort = jest.fn();
+      abort = vi.fn();
     }
 
     global.XMLHttpRequest = MockXHR as any;
@@ -69,8 +71,8 @@ describe('TechDocsLiveReload', () => {
       .spyOn(utils, 'reloadPage')
       .mockImplementation(() => {});
 
-    jest.spyOn(window, 'addEventListener').mockImplementation(() => {});
-    jest.spyOn(window, 'removeEventListener').mockImplementation(() => {});
+    vi.spyOn(window, 'addEventListener').mockImplementation(() => {});
+    vi.spyOn(window, 'removeEventListener').mockImplementation(() => {});
     Object.defineProperty(document, 'visibilityState', {
       value: 'visible',
       configurable: true,
@@ -79,7 +81,7 @@ describe('TechDocsLiveReload', () => {
 
   afterEach(() => {
     global.XMLHttpRequest = originalXHR;
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   it('polls livereload endpoint and does not reload when epoch unchanged', async () => {

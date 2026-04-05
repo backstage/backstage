@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import { Entity, DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import express from 'express';
@@ -32,12 +34,12 @@ import {
 
 const mockDir = createMockDirectory();
 
-jest.mock('@azure/identity', () => ({
+vi.mock('@azure/identity', () => ({
   __esModule: true,
   DefaultAzureCredential: class {},
 }));
 
-jest.mock('@azure/storage-blob', () => {
+vi.mock('@azure/storage-blob', () => {
   class BlockBlobClient {
     private readonly blobName: string;
 
@@ -283,7 +285,7 @@ describe('AzureBlobStoragePublish', () => {
   const directory = getEntityRootDir(entity);
 
   beforeEach(() => {
-    (logger.error as jest.Mock).mockClear();
+    (logger.error as Mock).mockClear();
   });
 
   const files = {
@@ -579,7 +581,7 @@ describe('AzureBlobStoragePublish', () => {
 
     it('should handle stream pipe errors', async () => {
       // Get BlockBlobClient from the mock module and replace the download method with a failing one
-      const { BlockBlobClient } = jest.requireMock('@azure/storage-blob');
+      const { BlockBlobClient } = vi.importMock('@azure/storage-blob');
       const originalDownload = BlockBlobClient.prototype.download;
       BlockBlobClient.prototype.download = function () {
         return Promise.resolve({

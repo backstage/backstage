@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { AzureRepoPicker } from './AzureRepoPicker';
 import { fireEvent } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/test-utils';
@@ -21,7 +23,7 @@ import { renderInTestApp } from '@backstage/test-utils';
 describe('AzureRepoPicker', () => {
   it('renders the two input fields', async () => {
     const { getAllByRole } = await renderInTestApp(
-      <AzureRepoPicker onChange={jest.fn()} rawErrors={[]} state={{}} />,
+      <AzureRepoPicker onChange={vi.fn()} rawErrors={[]} state={{}} />,
     );
 
     const allInputs = getAllByRole('textbox');
@@ -32,7 +34,7 @@ describe('AzureRepoPicker', () => {
   it('disables input fields when isDisabled is true', async () => {
     const { getAllByRole } = await renderInTestApp(
       <AzureRepoPicker
-        onChange={jest.fn()}
+        onChange={vi.fn()}
         rawErrors={[]}
         state={{}}
         isDisabled
@@ -48,7 +50,7 @@ describe('AzureRepoPicker', () => {
 
   describe('org field', () => {
     it('calls onChange when the organisation changes', async () => {
-      const onChange = jest.fn();
+      const onChange = vi.fn();
       const { getAllByRole } = await renderInTestApp(
         <AzureRepoPicker onChange={onChange} rawErrors={[]} state={{}} />,
       );
@@ -63,7 +65,7 @@ describe('AzureRepoPicker', () => {
 
   describe('project field', () => {
     it('calls onChange when the project changes', async () => {
-      const onChange = jest.fn();
+      const onChange = vi.fn();
       const { getAllByRole } = await renderInTestApp(
         <AzureRepoPicker onChange={onChange} rawErrors={[]} state={{}} />,
       );

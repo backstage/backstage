@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import {
   ScmIntegrations,
   DefaultGithubCredentialsProvider,
@@ -26,16 +28,16 @@ import { createGithubActionsDispatchAction } from './githubActionsDispatch';
 
 import { Octokit } from 'octokit';
 
-const octokitMock = Octokit as unknown as jest.Mock;
+const octokitMock = Octokit as unknown as Mock;
 const mockOctokit = {
   rest: {
     actions: {
-      createWorkflowDispatch: jest.fn(),
+      createWorkflowDispatch: vi.fn(),
     },
   },
 };
-jest.mock('octokit', () => ({
-  Octokit: jest.fn(),
+vi.mock('octokit', () => ({
+  Octokit: vi.fn(),
 }));
 
 describe('github:actions:dispatch', () => {
@@ -61,7 +63,7 @@ describe('github:actions:dispatch', () => {
   });
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
     octokitMock.mockImplementation(() => mockOctokit);
     githubCredentialsProvider =
       DefaultGithubCredentialsProvider.fromIntegrations(integrations);

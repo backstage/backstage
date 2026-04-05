@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   TestDatabaseId,
   TestDatabases,
@@ -25,7 +27,7 @@ import {
   RawDbUserSettingsRow,
 } from './DatabaseUserSettingsStore';
 
-jest.setTimeout(60_000);
+vi.setConfig({ testTimeout: 60_000 });
 
 const databases = TestDatabases.create({
   ids: ['POSTGRES_14', 'SQLITE_3'],
@@ -54,7 +56,7 @@ describe.each(databases.eachSupportedId())(
     });
 
     afterEach(async () => {
-      jest.resetAllMocks();
+      vi.resetAllMocks();
 
       await knex('user_settings').del();
     });

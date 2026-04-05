@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { DefaultAuthConnector } from './DefaultAuthConnector';
 import MockOAuthApi from '../../apis/implementations/OAuthRequestApi/MockOAuthApi';
 import * as loginPopup from '../loginPopup';
@@ -24,9 +26,9 @@ import { rest } from 'msw';
 import { ConfigReader } from '@backstage/config';
 import { ConfigApi } from '@backstage/core-plugin-api';
 
-jest.mock('../loginPopup', () => {
+vi.mock('../loginPopup', () => {
   return {
-    openLoginPopup: jest.fn(),
+    openLoginPopup: vi.fn(),
   };
 });
 
@@ -56,7 +58,7 @@ describe('DefaultAuthConnector', () => {
   registerMswTestHooks(server);
 
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('should refresh a session with scope', async () => {
@@ -182,8 +184,8 @@ describe('DefaultAuthConnector', () => {
       .spyOn(loginPopup, 'openLoginPopup')
       .mockResolvedValue('my-session');
 
-    jest.spyOn(window.screen, 'width', 'get').mockReturnValue(1000);
-    jest.spyOn(window.screen, 'height', 'get').mockReturnValue(1000);
+    vi.spyOn(window.screen, 'width', 'get').mockReturnValue(1000);
+    vi.spyOn(window.screen, 'height', 'get').mockReturnValue(1000);
 
     const connector = new DefaultAuthConnector({
       ...defaultOptions,

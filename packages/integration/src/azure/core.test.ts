@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type MockedClass} from 'vitest';
+
 import { getAzureFileFetchUrl, getAzureDownloadUrl } from './core';
 import {
   AccessToken,
@@ -21,16 +23,16 @@ import {
   ManagedIdentityCredential,
 } from '@azure/identity';
 
-const MockedClientSecretCredential = ClientSecretCredential as jest.MockedClass<
+const MockedClientSecretCredential = ClientSecretCredential as MockedClass<
   typeof ClientSecretCredential
 >;
 
 const MockedManagedIdentityCredential =
-  ManagedIdentityCredential as jest.MockedClass<
+  ManagedIdentityCredential as MockedClass<
     typeof ManagedIdentityCredential
   >;
 
-jest.mock('@azure/identity');
+vi.mock('@azure/identity');
 
 MockedClientSecretCredential.prototype.getToken.mockImplementation(() =>
   Promise.resolve({ token: 'fake-client-secret-token' } as AccessToken),

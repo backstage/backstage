@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import { createUnregisterCatalogEntitiesAction } from './createUnregisterCatalogEntitiesAction';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 import { actionsRegistryServiceMock } from '@backstage/backend-test-utils/alpha';
@@ -23,7 +25,7 @@ describe('createUnregisterCatalogEntitiesAction', () => {
       const mockActionsRegistry = actionsRegistryServiceMock();
       const mockCatalog = catalogServiceMock();
 
-      mockCatalog.removeLocationById = jest.fn().mockResolvedValue(undefined);
+      mockCatalog.removeLocationById = vi.fn().mockResolvedValue(undefined);
 
       createUnregisterCatalogEntitiesAction({
         catalog: mockCatalog,
@@ -75,13 +77,13 @@ describe('createUnregisterCatalogEntitiesAction', () => {
       const locationUrl =
         'https://github.com/backstage/demo/blob/master/catalog-info.yaml';
 
-      mockCatalog.getLocations = jest.fn().mockResolvedValue({
+      mockCatalog.getLocations = vi.fn().mockResolvedValue({
         items: [
           { id: 'location-id-1', target: locationUrl },
           { id: 'location-id-2', target: 'https://other-url.com/catalog.yaml' },
         ],
       });
-      mockCatalog.removeLocationById = jest.fn().mockResolvedValue(undefined);
+      mockCatalog.removeLocationById = vi.fn().mockResolvedValue(undefined);
 
       createUnregisterCatalogEntitiesAction({
         catalog: mockCatalog,
@@ -113,7 +115,7 @@ describe('createUnregisterCatalogEntitiesAction', () => {
       const mockActionsRegistry = actionsRegistryServiceMock();
       const mockCatalog = catalogServiceMock();
 
-      mockCatalog.getLocations = jest.fn().mockResolvedValue({
+      mockCatalog.getLocations = vi.fn().mockResolvedValue({
         items: [
           {
             id: 'location-id-1',
@@ -122,7 +124,7 @@ describe('createUnregisterCatalogEntitiesAction', () => {
           },
         ],
       });
-      mockCatalog.removeLocationById = jest.fn().mockResolvedValue(undefined);
+      mockCatalog.removeLocationById = vi.fn().mockResolvedValue(undefined);
 
       createUnregisterCatalogEntitiesAction({
         catalog: mockCatalog,
@@ -156,13 +158,13 @@ describe('createUnregisterCatalogEntitiesAction', () => {
       const locationUrl =
         'https://github.com/backstage/demo/blob/master/catalog-info.yaml';
 
-      mockCatalog.getLocations = jest.fn().mockResolvedValue({
+      mockCatalog.getLocations = vi.fn().mockResolvedValue({
         items: [
           { id: 'location-id-1', target: locationUrl },
           { id: 'location-id-2', target: locationUrl },
         ],
       });
-      mockCatalog.removeLocationById = jest.fn().mockResolvedValue(undefined);
+      mockCatalog.removeLocationById = vi.fn().mockResolvedValue(undefined);
 
       createUnregisterCatalogEntitiesAction({
         catalog: mockCatalog,
@@ -199,7 +201,7 @@ describe('createUnregisterCatalogEntitiesAction', () => {
       const locationUrl =
         'https://github.com/backstage/demo/blob/master/catalog-info.yaml';
 
-      mockCatalog.getLocations = jest.fn().mockResolvedValue({
+      mockCatalog.getLocations = vi.fn().mockResolvedValue({
         items: [
           { id: 'location-id-1', target: 'https://other-url.com/catalog.yaml' },
         ],

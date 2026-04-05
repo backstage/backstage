@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderInTestApp } from '@backstage/test-utils';
@@ -236,10 +238,10 @@ describe('TemplateEditorToolbarTemplatesMenu', () => {
     },
   ];
 
-  const onSelectOption = jest.fn();
+  const onSelectOption = vi.fn();
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should render an item for each option', async () => {

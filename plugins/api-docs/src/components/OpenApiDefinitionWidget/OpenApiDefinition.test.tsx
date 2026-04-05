@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { renderInTestApp } from '@backstage/test-utils';
 import { waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -21,7 +23,7 @@ import { OpenApiDefinition } from './OpenApiDefinition';
 
 describe('<OpenApiDefinition />', () => {
   beforeEach(() => {
-    window.open = jest.fn();
+    window.open = vi.fn();
   });
 
   it('renders openapi spec', async () => {

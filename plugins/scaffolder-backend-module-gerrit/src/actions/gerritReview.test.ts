@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-jest.mock('@backstage/plugin-scaffolder-node', () => {
+import { vi } from 'vitest';
+
+vi.mock('@backstage/plugin-scaffolder-node', () => {
   return {
-    ...jest.requireActual('@backstage/plugin-scaffolder-node'),
-    commitAndPushRepo: jest.fn(),
+    ...vi.importActual('@backstage/plugin-scaffolder-node'),
+    commitAndPushRepo: vi.fn(),
   };
 });
 
@@ -52,7 +54,7 @@ describe('publish:gerrit:review', () => {
   });
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('should throw an error when the repoUrl is not well formed', async () => {
@@ -113,6 +115,6 @@ describe('publish:gerrit:review', () => {
     );
   });
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 });

@@ -20,7 +20,7 @@ export function createPublishBitbucketServerAction(options: {
   {
     repoUrl: string;
     description?: string | undefined;
-    repoVisibility?: 'private' | 'public' | undefined;
+    repoVisibility?: 'public' | 'private' | undefined;
     defaultBranch?: string | undefined;
     sourcePath?: string | undefined;
     enableLFS?: boolean | undefined;

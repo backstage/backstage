@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import { createDryRunTemplateAction } from './createDryRunTemplateAction';
 import { actionsRegistryServiceMock } from '@backstage/backend-test-utils/alpha';
 import { scaffolderServiceMock } from '@backstage/plugin-scaffolder-node/testUtils';
@@ -58,7 +60,7 @@ describe('createDryRunTemplateAction', () => {
   const mockScaffolderService = scaffolderServiceMock.mock();
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('should return success with logs when dry-run succeeds', async () => {

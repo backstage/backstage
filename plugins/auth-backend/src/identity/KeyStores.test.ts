@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { ConfigReader } from '@backstage/config';
 import { AuthDatabase } from '../database/AuthDatabase';
 import { DatabaseKeyStore } from './DatabaseKeyStore';
@@ -22,7 +24,7 @@ import { KeyStores } from './KeyStores';
 import { MemoryKeyStore } from './MemoryKeyStore';
 import { mockServices, TestDatabases } from '@backstage/backend-test-utils';
 
-jest.setTimeout(60_000);
+vi.setConfig({ testTimeout: 60_000 });
 
 describe('KeyStores', () => {
   const databases = TestDatabases.create();
@@ -40,7 +42,7 @@ describe('KeyStores', () => {
     'reads auth section from config, %p',
     async databaseId => {
       const knex = await databases.init(databaseId);
-      const configSpy = jest.spyOn(defaultConfig, 'getOptionalConfig');
+      const configSpy = vi.spyOn(defaultConfig, 'getOptionalConfig');
       const keyStore = await KeyStores.fromConfig(defaultConfig, {
         logger: mockServices.logger.mock(),
         database: AuthDatabase.create(mockServices.database({ knex })),
@@ -72,8 +74,8 @@ describe('KeyStores', () => {
     'can handle additional provider config, %p',
     async databaseId => {
       const knex = await databases.init(databaseId);
-      jest.spyOn(FirestoreKeyStore, 'verifyConnection').mockResolvedValue();
-      const createSpy = jest.spyOn(FirestoreKeyStore, 'create');
+      vi.spyOn(FirestoreKeyStore, 'verifyConnection').mockResolvedValue();
+      const createSpy = vi.spyOn(FirestoreKeyStore, 'create');
 
       const configOptions = {
         auth: {

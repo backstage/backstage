@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { fireEvent, render, screen } from '@testing-library/react';
 
 import { DefaultRepoBranchPicker } from './DefaultRepoBranchPicker';
@@ -22,7 +24,7 @@ describe('DefaultRepoBranchPicker', () => {
   it('renders an input field', () => {
     const { getByRole } = render(
       <DefaultRepoBranchPicker
-        onChange={jest.fn()}
+        onChange={vi.fn()}
         state={{ branch: 'main' }}
         rawErrors={[]}
       />,
@@ -35,7 +37,7 @@ describe('DefaultRepoBranchPicker', () => {
   it('input field disabled', () => {
     render(
       <DefaultRepoBranchPicker
-        onChange={jest.fn()}
+        onChange={vi.fn()}
         isDisabled
         state={{ branch: 'main' }}
         rawErrors={[]}
@@ -50,7 +52,7 @@ describe('DefaultRepoBranchPicker', () => {
   });
 
   it('calls onChange when the input field changes', () => {
-    const onChange = jest.fn();
+    const onChange = vi.fn();
 
     const { getByRole } = render(
       <DefaultRepoBranchPicker

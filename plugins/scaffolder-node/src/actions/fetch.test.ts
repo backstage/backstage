@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-jest.mock('fs-extra');
+import { vi } from 'vitest';
+
+vi.mock('fs-extra');
 
 import fs from 'fs-extra';
 import { resolve as resolvePath } from 'node:path';
@@ -26,7 +28,7 @@ import os from 'node:os';
 
 describe('fetchContents helper', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   const integrations = ScmIntegrations.fromConfig(
@@ -37,12 +39,12 @@ describe('fetchContents helper', () => {
     }),
   );
 
-  const readUrl = jest.fn();
-  const readTree = jest.fn();
+  const readUrl = vi.fn();
+  const readTree = vi.fn();
   const reader: UrlReaderService = {
     readUrl,
     readTree,
-    search: jest.fn(),
+    search: vi.fn(),
   };
 
   const options = {
@@ -113,7 +115,7 @@ describe('fetchContents helper', () => {
     });
 
     it('should fetch url contents', async () => {
-      const dirFunction = jest.fn();
+      const dirFunction = vi.fn();
       readTree.mockResolvedValue({
         dir: dirFunction,
       });

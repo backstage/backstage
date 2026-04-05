@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { RestContext, rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { ConfigReader } from '@backstage/config';
@@ -65,7 +67,7 @@ describe('PermissionClient', () => {
       resourceRef: 'foo:bar',
     };
 
-    const mockAuthorizeHandler = jest.fn((req, res, { json }: RestContext) => {
+    const mockAuthorizeHandler = vi.fn((req, res, { json }: RestContext) => {
       const responses = req.body.items.map(
         (a: IdentifiedPermissionMessage<EvaluatePermissionRequest>) => ({
           id: a.id,
@@ -81,7 +83,7 @@ describe('PermissionClient', () => {
     });
 
     afterEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
     });
 
     it('should fetch entities from correct endpoint', async () => {
@@ -236,7 +238,7 @@ describe('PermissionClient', () => {
       resourceRef: 'foo:bar',
     };
 
-    const mockAuthorizeHandler = jest.fn();
+    const mockAuthorizeHandler = vi.fn();
 
     beforeEach(() => {
       mockAuthorizeHandler.mockReset();
@@ -257,7 +259,7 @@ describe('PermissionClient', () => {
     });
 
     afterEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
     });
 
     it('should fetch entities from correct endpoint', async () => {
@@ -500,7 +502,7 @@ describe('PermissionClient', () => {
       permission: mockPermission,
     };
 
-    const mockPolicyDecisionHandler = jest.fn(
+    const mockPolicyDecisionHandler = vi.fn(
       (req, res, { json }: RestContext) => {
         const responses = req.body.items.map(
           (a: IdentifiedPermissionMessage<ConditionalPolicyDecision>) => ({
@@ -527,7 +529,7 @@ describe('PermissionClient', () => {
     });
 
     afterEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
     });
 
     it('should fetch entities from correct endpoint', async () => {

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import {
   ANNOTATION_ORIGIN_LOCATION,
@@ -32,19 +34,19 @@ import { locationSpecToLocationEntity } from '../util/conversion';
 import { CatalogScmEventsServiceSubscriber } from '@backstage/plugin-catalog-node/alpha';
 import waitFor from 'wait-for-expect';
 
-jest.setTimeout(60_000);
+vi.setConfig({ testTimeout: 60_000 });
 
 describe('DefaultLocationStore', () => {
   const databases = TestDatabases.create();
   const mockScmEvents = {
-    subscribe: jest.fn(),
-    publish: jest.fn(),
-    markEventActionTaken: jest.fn(),
+    subscribe: vi.fn(),
+    publish: vi.fn(),
+    markEventActionTaken: vi.fn(),
   };
   let subscriber: CatalogScmEventsServiceSubscriber | undefined;
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
 
     subscriber = undefined;
     mockScmEvents.subscribe.mockImplementation(sub => {
@@ -56,7 +58,7 @@ describe('DefaultLocationStore', () => {
   async function createLocationStore(databaseId: TestDatabaseId) {
     const knex = await databases.init(databaseId);
     await applyDatabaseMigrations(knex);
-    const connection = { applyMutation: jest.fn(), refresh: jest.fn() };
+    const connection = { applyMutation: vi.fn(), refresh: vi.fn() };
     const store = new DefaultLocationStore(knex, mockScmEvents, {
       refresh: true,
       unregister: true,

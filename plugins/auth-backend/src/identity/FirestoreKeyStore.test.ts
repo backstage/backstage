@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { Firestore } from '@google-cloud/firestore';
 
 import {
@@ -27,26 +29,26 @@ import { AnyJWK } from './types';
 const data = jest
   .fn()
   .mockReturnValue({ key: { kid: 'something' }, kid: 'something' });
-const toDate = jest.fn().mockReturnValue('date');
-const get = jest.fn().mockReturnValue({
+const toDate = vi.fn().mockReturnValue('date');
+const get = vi.fn().mockReturnValue({
   docs: [{ data, createTime: { toDate } }],
 });
-const set = jest.fn();
+const set = vi.fn();
 
 const firestoreMock = {
-  limit: jest.fn().mockReturnThis(),
-  collection: jest.fn().mockReturnThis(),
-  delete: jest.fn(),
-  doc: jest.fn().mockReturnThis(),
+  limit: vi.fn().mockReturnThis(),
+  collection: vi.fn().mockReturnThis(),
+  delete: vi.fn(),
+  doc: vi.fn().mockReturnThis(),
   set,
   get,
 };
 
-jest.mock('@google-cloud/firestore', () => ({
-  Firestore: jest.fn().mockImplementation(() => firestoreMock),
+vi.mock('@google-cloud/firestore', () => ({
+  Firestore: vi.fn().mockImplementation(() => firestoreMock),
 }));
 
-jest.useFakeTimers({ legacyFakeTimers: true });
+vi.useFakeTimers({ legacyFakeTimers: true });
 
 describe('FirestoreKeyStore', () => {
   const key = {
@@ -72,7 +74,7 @@ describe('FirestoreKeyStore', () => {
   } as FirestoreKeyStoreSettings;
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('can create an instance without settings', async () => {
@@ -98,7 +100,7 @@ describe('FirestoreKeyStore', () => {
 
   it('can verify that it can not connect to the database', async () => {
     const keyStore = await FirestoreKeyStore.create();
-    firestoreMock.get = jest.fn().mockRejectedValue(new Error());
+    firestoreMock.get = vi.fn().mockRejectedValue(new Error());
 
     await expect(
       FirestoreKeyStore.verifyConnection(keyStore),
@@ -129,7 +131,7 @@ describe('FirestoreKeyStore', () => {
     const keyStore = await FirestoreKeyStore.create(firestoreSettings);
     const add = keyStore.addKey(key);
 
-    jest.advanceTimersByTime(50);
+    vi.advanceTimersByTime(50);
 
     await expect(add).rejects.toEqual(
       new Error(`Operation timed out after ${timeout}ms`),

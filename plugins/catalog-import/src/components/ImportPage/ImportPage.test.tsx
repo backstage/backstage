@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import { ApiProvider, ConfigReader } from '@backstage/core-app-api';
 import { FetchApi, configApiRef } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
@@ -24,14 +26,14 @@ import { useOutlet } from 'react-router-dom';
 import { catalogImportApiRef, CatalogImportClient } from '../../api';
 import { ImportPage } from './ImportPage';
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useOutlet: jest.fn(),
+vi.mock('react-router-dom', () => ({
+  ...vi.importActual('react-router-dom'),
+  useOutlet: vi.fn(),
 }));
 
 describe('<ImportPage />', () => {
   const fetchApi: FetchApi = {
-    fetch: jest.fn(),
+    fetch: vi.fn(),
   };
 
   let apis: TestApiRegistry;
@@ -54,7 +56,7 @@ describe('<ImportPage />', () => {
     );
   });
 
-  afterEach(() => jest.resetAllMocks());
+  afterEach(() => vi.resetAllMocks());
 
   it('renders without exploding', async () => {
     await renderInTestApp(
@@ -69,7 +71,7 @@ describe('<ImportPage />', () => {
   });
 
   it('renders with custom children', async () => {
-    (useOutlet as jest.Mock).mockReturnValue(<div>Hello World</div>);
+    (useOutlet as Mock).mockReturnValue(<div>Hello World</div>);
 
     await renderInTestApp(
       <ApiProvider apis={apis}>

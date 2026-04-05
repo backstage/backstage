@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { ConflictError, NotFoundError } from '@backstage/errors';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { DefaultTemplateActionRegistry } from './TemplateActionRegistry';
@@ -40,7 +42,7 @@ describe('DefaultTemplateActionRegistry', () => {
       const action = createTemplateAction({
         id: 'test-action',
         description: 'Test action',
-        handler: jest.fn(),
+        handler: vi.fn(),
       });
 
       expect(() => registry.register(action)).not.toThrow();
@@ -50,13 +52,13 @@ describe('DefaultTemplateActionRegistry', () => {
       const action1 = createTemplateAction({
         id: 'duplicate-action',
         description: 'First action',
-        handler: jest.fn(),
+        handler: vi.fn(),
       });
 
       const action2 = createTemplateAction({
         id: 'duplicate-action',
         description: 'Second action',
-        handler: jest.fn(),
+        handler: vi.fn(),
       });
 
       registry.register(action1);
@@ -73,7 +75,7 @@ describe('DefaultTemplateActionRegistry', () => {
       const action = createTemplateAction({
         id: 'test-action',
         description: 'Test action',
-        handler: jest.fn(),
+        handler: vi.fn(),
       });
 
       registry.register(action);
@@ -139,13 +141,13 @@ describe('DefaultTemplateActionRegistry', () => {
       const action1 = createTemplateAction({
         id: 'action-1',
         description: 'First action',
-        handler: jest.fn(),
+        handler: vi.fn(),
       });
 
       const action2 = createTemplateAction({
         id: 'action-2',
         description: 'Second action',
-        handler: jest.fn(),
+        handler: vi.fn(),
       });
 
       registry.register(action1);
@@ -192,7 +194,7 @@ describe('DefaultTemplateActionRegistry', () => {
       const localAction = createTemplateAction({
         id: 'test:same-id',
         description: 'Local action',
-        handler: jest.fn(),
+        handler: vi.fn(),
       });
 
       mockActionsService.register({

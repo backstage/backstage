@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { Entity } from '@backstage/catalog-model';
 import { createFetchCatalogEntityAction } from './fetch';
@@ -42,8 +44,8 @@ describe('catalog:fetch examples', () => {
   const mockContext = createMockActionContext();
 
   beforeEach(() => {
-    jest.resetAllMocks();
-    jest.spyOn(catalogMock, 'getEntityByRef');
+    vi.resetAllMocks();
+    vi.spyOn(catalogMock, 'getEntityByRef');
   });
 
   describe('fetch single entity', () => {

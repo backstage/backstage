@@ -34,13 +34,13 @@ export const catalogImportTranslationRef: TranslationRef<
     readonly 'importInfoCard.fileLinkDescription': 'The wizard analyzes the file, previews the entities, and adds them to the {{appTitle}} catalog.';
     readonly 'importInfoCard.exampleDescription': 'The wizard discovers all {{catalogFilename}} files in the repository, previews the entities, and adds them to the {{appTitle}} catalog.';
     readonly 'importInfoCard.preparePullRequestDescription': 'If no entities are found, the wizard will prepare a Pull Request that adds an example {{catalogFilename}} and prepares the {{appTitle}} catalog to load all entities as soon as the Pull Request is merged.';
-    readonly 'importInfoCard.githubIntegration.label': 'GitHub only';
     readonly 'importInfoCard.githubIntegration.title': 'Link to a repository';
+    readonly 'importInfoCard.githubIntegration.label': 'GitHub only';
     readonly 'importStepper.finish.title': 'Finish';
-    readonly 'importStepper.singleLocation.title': 'Select Locations';
     readonly 'importStepper.singleLocation.description': 'Discovered Locations: 1';
-    readonly 'importStepper.multipleLocations.title': 'Select Locations';
+    readonly 'importStepper.singleLocation.title': 'Select Locations';
     readonly 'importStepper.multipleLocations.description': 'Discovered Locations: {{length, number}}';
+    readonly 'importStepper.multipleLocations.title': 'Select Locations';
     readonly 'importStepper.noLocation.title': 'Create Pull Request';
     readonly 'importStepper.noLocation.createPr.detailsTitle': 'Pull Request Details';
     readonly 'importStepper.noLocation.createPr.titleLabel': 'Pull Request Title';
@@ -57,13 +57,13 @@ export const catalogImportTranslationRef: TranslationRef<
     readonly 'importStepper.noLocation.createPr.ownerPlaceholder': 'my-group';
     readonly 'importStepper.noLocation.createPr.codeownersHelperText': 'WARNING: This may fail if no CODEOWNERS file is found at the target location.';
     readonly 'importStepper.analyze.title': 'Select URL';
-    readonly 'importStepper.prepare.title': 'Import Actions';
     readonly 'importStepper.prepare.description': 'Optional';
+    readonly 'importStepper.prepare.title': 'Import Actions';
     readonly 'importStepper.review.title': 'Review';
-    readonly 'stepFinishImportLocation.repository.title': 'The following Pull Request has been opened: ';
     readonly 'stepFinishImportLocation.repository.description': 'Your entities will be imported as soon as the Pull Request is merged.';
-    readonly 'stepFinishImportLocation.locations.new': 'The following entities have been added to the catalog:';
+    readonly 'stepFinishImportLocation.repository.title': 'The following Pull Request has been opened: ';
     readonly 'stepFinishImportLocation.locations.backButtonText': 'Register another';
+    readonly 'stepFinishImportLocation.locations.new': 'The following entities have been added to the catalog:';
     readonly 'stepFinishImportLocation.locations.existing': 'A refresh was triggered for the following locations:';
     readonly 'stepFinishImportLocation.locations.viewButtonText': 'View Component';
     readonly 'stepFinishImportLocation.backButtonText': 'Register another';
@@ -83,11 +83,11 @@ export const catalogImportTranslationRef: TranslationRef<
     readonly 'stepPrepareSelectLocations.nextButtonText': 'Review';
     readonly 'stepPrepareSelectLocations.existingLocations.description': 'These locations already exist in the catalog:';
     readonly 'stepReviewLocation.refresh': 'Refresh';
-    readonly 'stepReviewLocation.import': 'Import';
-    readonly 'stepReviewLocation.catalog.new': 'The following entities will be added to the catalog:';
     readonly 'stepReviewLocation.catalog.exists': 'The following locations already exist in the catalog:';
-    readonly 'stepReviewLocation.prepareResult.title': 'The following Pull Request has been opened: ';
+    readonly 'stepReviewLocation.catalog.new': 'The following entities will be added to the catalog:';
+    readonly 'stepReviewLocation.import': 'Import';
     readonly 'stepReviewLocation.prepareResult.description': 'You can already import the location and {{appTitle}} will fetch the entities as soon as the Pull Request is merged.';
+    readonly 'stepReviewLocation.prepareResult.title': 'The following Pull Request has been opened: ';
   }
 >;
 
@@ -121,8 +121,8 @@ const _default: OverridableFrontendPlugin<
         title: string | undefined;
       };
       configInput: {
-        title?: string | undefined;
         path?: string | undefined;
+        title?: string | undefined;
       };
       output:
         | ExtensionDataRef<string, 'core.routing.path', {}>

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi, type Mocked } from 'vitest';
+
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import userEvent from '@testing-library/user-event';
 import ObservableImpl from 'zen-observable';
@@ -24,14 +26,14 @@ import {
 import { SidebarLanguageSwitcher } from './SidebarLanguageSwitcher';
 
 describe('SidebarLanguageSwitcher', () => {
-  let languageApi: jest.Mocked<AppLanguageApi>;
+  let languageApi: Mocked<AppLanguageApi>;
 
   beforeEach(() => {
     languageApi = {
-      getAvailableLanguages: jest.fn(),
-      getLanguage: jest.fn(),
-      language$: jest.fn(),
-      setLanguage: jest.fn(),
+      getAvailableLanguages: vi.fn(),
+      getLanguage: vi.fn(),
+      language$: vi.fn(),
+      setLanguage: vi.fn(),
     };
 
     languageApi.language$.mockReturnValue(

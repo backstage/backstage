@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi, type Mocked } from 'vitest';
 import { TestPipeline } from '@backstage/plugin-search-backend-node';
 import { range } from 'lodash';
 import { Transform } from 'node:stream';
@@ -21,22 +23,22 @@ import { DatabaseStore } from '../database';
 
 describe('PgSearchEngineIndexer', () => {
   const tx = {
-    rollback: jest.fn(),
-    commit: jest.fn(),
-    isCompleted: jest.fn(),
+    rollback: vi.fn(),
+    commit: vi.fn(),
+    isCompleted: vi.fn(),
   } as any;
-  let database: jest.Mocked<DatabaseStore>;
+  let database: Mocked<DatabaseStore>;
   let indexer: PgSearchEngineIndexer;
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     database = {
-      transaction: jest.fn().mockImplementation(fn => fn(tx)),
-      getTransaction: jest.fn().mockReturnValue(tx),
-      insertDocuments: jest.fn(),
-      query: jest.fn(),
-      completeInsert: jest.fn(),
-      prepareInsert: jest.fn(),
+      transaction: vi.fn().mockImplementation(fn => fn(tx)),
+      getTransaction: vi.fn().mockReturnValue(tx),
+      insertDocuments: vi.fn(),
+      query: vi.fn(),
+      completeInsert: vi.fn(),
+      prepareInsert: vi.fn(),
     };
     tx.isCompleted.mockReturnValue(false);
     indexer = new PgSearchEngineIndexer({

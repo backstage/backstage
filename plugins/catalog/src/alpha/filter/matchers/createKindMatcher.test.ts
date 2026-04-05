@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { Entity } from '@backstage/catalog-model';
 import { createKindMatcher } from './createKindMatcher';
 
@@ -22,10 +24,10 @@ describe('createKindMatcher', () => {
   const user = { kind: 'User' } as unknown as Entity;
   const resource = { kind: 'Resource' } as unknown as Entity;
 
-  const err = jest.fn();
+  const err = vi.fn();
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('supports valid parameters', () => {

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { TestApiProvider, mockApis } from '@backstage/test-utils';
 import { BackstageRouteObject } from './types';
 import { fireEvent, render } from '@testing-library/react';
@@ -70,7 +72,7 @@ describe('RouteTracker', () => {
   const mockedAnalytics = mockApis.analytics();
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should capture the navigate event on load', async () => {

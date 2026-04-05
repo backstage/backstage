@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { mockServices } from '@backstage/backend-test-utils';
 import { analyzeGithubWebhookEvent } from './analyzeGithubWebhookEvent';
 import { OctokitProviderService } from '../util/octokitProviderService';
@@ -24,12 +26,12 @@ describe('analyzeGithubWebhookEvent', () => {
   const octokit = {
     rest: {
       repos: {
-        getCommit: jest.fn(),
+        getCommit: vi.fn(),
       },
     },
   };
   const octokitProvider = {
-    getOctokit: jest.fn(async () => octokit as any),
+    getOctokit: vi.fn(async () => octokit as any),
   } satisfies OctokitProviderService;
   const logger = mockServices.logger.mock();
 
@@ -62,7 +64,7 @@ describe('analyzeGithubWebhookEvent', () => {
   }
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('push', () => {

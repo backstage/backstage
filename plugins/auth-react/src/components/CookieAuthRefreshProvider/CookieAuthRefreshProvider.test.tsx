@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { CookieAuthRefreshProvider } from './CookieAuthRefreshProvider';
@@ -38,7 +40,7 @@ describe('CookieAuthRefreshProvider', () => {
 
   it('should render a progress bar', async () => {
     const fetchApiMock = {
-      fetch: jest.fn().mockReturnValue(new Promise(() => {})),
+      fetch: vi.fn().mockReturnValue(new Promise(() => {})),
     };
 
     await renderInTestApp(
@@ -63,7 +65,7 @@ describe('CookieAuthRefreshProvider', () => {
   it('should render an error panel', async () => {
     const error = new Error('Failed to get cookie');
     const fetchApiMock = {
-      fetch: jest.fn().mockRejectedValue(error),
+      fetch: vi.fn().mockRejectedValue(error),
     };
 
     await renderInTestApp(
@@ -91,7 +93,7 @@ describe('CookieAuthRefreshProvider', () => {
         .mockRejectedValueOnce(error)
         .mockResolvedValue({
           ok: true,
-          json: jest.fn().mockResolvedValue({
+          json: vi.fn().mockResolvedValue({
             expiresAt: getExpiresAtInFuture(),
           }),
         }),
@@ -135,9 +137,9 @@ describe('CookieAuthRefreshProvider', () => {
 
   it('should render the children', async () => {
     const fetchApiMock = {
-      fetch: jest.fn().mockResolvedValue({
+      fetch: vi.fn().mockResolvedValue({
         ok: true,
-        json: jest.fn().mockResolvedValue({
+        json: vi.fn().mockResolvedValue({
           expiresAt: getExpiresAtInFuture(),
         }),
       }),

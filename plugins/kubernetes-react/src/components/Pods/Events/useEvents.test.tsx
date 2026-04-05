@@ -13,15 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import { useApi } from '@backstage/core-plugin-api';
 import { renderHook, waitFor } from '@testing-library/react';
 import { useEvents } from './useEvents';
 import { DateTime } from 'luxon';
 
-jest.mock('@backstage/core-plugin-api');
+vi.mock('@backstage/core-plugin-api');
 
-jest.mock('@backstage/plugin-kubernetes', () => ({
-  kubernetesProxyApiRef: () => jest.fn(),
+vi.mock('@backstage/plugin-kubernetes', () => ({
+  kubernetesProxyApiRef: () => vi.fn(),
 }));
 
 const oneHourAgo = DateTime.now().minus({ hours: 1 }).toISO();
@@ -39,9 +41,9 @@ const response = [
 ] as any;
 
 describe('Events', () => {
-  const mockGetEventsByInvolvedObjectName = jest.fn();
+  const mockGetEventsByInvolvedObjectName = vi.fn();
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
   it('should fetch and show events', async () => {
     (useApi as any).mockReturnValue({

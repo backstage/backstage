@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { createFrontendModule } from '@backstage/frontend-plugin-api';
 import { SignInPageBlueprint } from '@backstage/plugin-app-react';
 import { render, screen, waitFor } from '@testing-library/react';
@@ -24,7 +26,7 @@ import { createApp } from '@backstage/frontend-defaults';
 
 describe('appModulePublicSignIn', () => {
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('should render a sign-in page', async () => {

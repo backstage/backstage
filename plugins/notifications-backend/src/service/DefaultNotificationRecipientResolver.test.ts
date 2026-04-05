@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { mockServices } from '@backstage/backend-test-utils';
 import {
   RELATION_HAS_MEMBER,
@@ -26,7 +28,7 @@ import { DefaultNotificationRecipientResolver } from './DefaultNotificationRecip
 describe('getUsersForEntityRef', () => {
   it('should resolve users without calling catalog', async () => {
     const catalog = catalogServiceMock();
-    jest.spyOn(catalog, 'getEntitiesByRefs');
+    vi.spyOn(catalog, 'getEntitiesByRefs');
     const resolver = new DefaultNotificationRecipientResolver(
       mockServices.auth(),
       catalog,

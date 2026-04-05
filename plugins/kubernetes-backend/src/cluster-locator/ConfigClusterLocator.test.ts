@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi, type Mocked } from 'vitest';
+
 import { ConfigReader, Config } from '@backstage/config';
 import {
   ANNOTATION_KUBERNETES_AUTH_PROVIDER,
@@ -25,13 +27,13 @@ import { ConfigClusterLocator } from './ConfigClusterLocator';
 import { AuthenticationStrategy } from '@backstage/plugin-kubernetes-node';
 
 describe('ConfigClusterLocator', () => {
-  let authStrategy: jest.Mocked<AuthenticationStrategy>;
+  let authStrategy: Mocked<AuthenticationStrategy>;
 
   beforeEach(() => {
     authStrategy = {
-      getCredential: jest.fn(),
-      validateCluster: jest.fn().mockReturnValue([]),
-      presentAuthMetadata: jest.fn(),
+      getCredential: vi.fn(),
+      validateCluster: vi.fn().mockReturnValue([]),
+      presentAuthMetadata: vi.fn(),
     };
   });
 

@@ -13,15 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import { ResolveOptions, structUtils } from '@yarnpkg/core';
 import { BackstageNpmResolver } from './BackstageNpmResolver';
 import { NpmSemverResolver } from '@yarnpkg/plugin-npm';
 
-const mockGetCandidates = jest.fn();
-const mockGetSatisfying = jest.fn();
-jest.mock('@yarnpkg/plugin-npm', () => {
+const mockGetCandidates = vi.fn();
+const mockGetSatisfying = vi.fn();
+vi.mock('@yarnpkg/plugin-npm', () => {
   return {
-    ...jest.requireActual('@yarnpkg/plugin-npm'),
+    ...vi.importActual('@yarnpkg/plugin-npm'),
     NpmSemverResolver: function MockNpmSemverResolver() {
       return {
         getCandidates: mockGetCandidates,
@@ -50,7 +52,7 @@ describe('BackstageNpmResolver', () => {
   const ident = structUtils.makeIdent('backstage', 'core');
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('getCandidates', () => {

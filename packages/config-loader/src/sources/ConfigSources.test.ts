@@ -14,23 +14,25 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import fs from 'fs-extra';
 import { resolve as resolvePath } from 'node:path';
 import { ConfigSources } from './ConfigSources';
 import { ConfigSource } from './types';
 import { MutableConfigSource } from './MutableConfigSource';
 
-jest.mock('./FileConfigSource', () => ({
+vi.mock('./FileConfigSource', () => ({
   FileConfigSource: {
     create: (opts: {}) => ({ ...opts, name: 'FileConfigSource' }),
   },
 }));
-jest.mock('./RemoteConfigSource', () => ({
+vi.mock('./RemoteConfigSource', () => ({
   RemoteConfigSource: {
     create: (opts: {}) => ({ ...opts, name: 'RemoteConfigSource' }),
   },
 }));
-jest.mock('./EnvConfigSource', () => ({
+vi.mock('./EnvConfigSource', () => ({
   EnvConfigSource: {
     create: (opts: {}) => ({ ...opts, name: 'EnvConfigSource' }),
   },
@@ -69,7 +71,7 @@ describe('ConfigSources', () => {
   });
 
   it('should create default sources for targets', () => {
-    const fsSpy = jest.spyOn(fs, 'pathExistsSync').mockImplementation(path => {
+    const fsSpy = vi.spyOn(fs, 'pathExistsSync').mockImplementation(path => {
       return path === `${root}app-config.yaml`;
     });
 
@@ -177,7 +179,7 @@ describe('ConfigSources', () => {
   });
 
   it('should create a default source', () => {
-    const fsSpy = jest.spyOn(fs, 'pathExistsSync').mockImplementation(path => {
+    const fsSpy = vi.spyOn(fs, 'pathExistsSync').mockImplementation(path => {
       return path === `${root}app-config.yaml`;
     });
 
@@ -234,7 +236,7 @@ describe('ConfigSources', () => {
   it('should create an observable config', async () => {
     const source = MutableConfigSource.create({ data: { a: 1 } });
     const config = await ConfigSources.toConfig(source);
-    const listener = jest.fn();
+    const listener = vi.fn();
     const sub = config.subscribe?.(listener);
 
     expect(config.getNumber('a')).toBe(1);

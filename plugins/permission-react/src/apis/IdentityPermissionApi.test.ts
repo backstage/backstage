@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { ConfigReader } from '@backstage/config';
 import { mockApis } from '@backstage/test-utils';
 import {
@@ -30,7 +32,7 @@ describe('IdentityPermissionApi', () => {
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   it('should batch requests that arrive on the same tick', async () => {

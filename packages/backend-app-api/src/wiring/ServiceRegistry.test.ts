@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   createServiceRef,
   createServiceFactory,
@@ -249,7 +251,7 @@ describe('ServiceRegistry', () => {
   });
 
   it('should only call each default factory loader once', async () => {
-    const factoryLoader = jest.fn(async (service: ServiceRef<void, 'plugin'>) =>
+    const factoryLoader = vi.fn(async (service: ServiceRef<void, 'plugin'>) =>
       createServiceFactory({
         service,
         deps: {},
@@ -270,8 +272,8 @@ describe('ServiceRegistry', () => {
   });
 
   it('should not call factory functions more than once', async () => {
-    const createRootContext = jest.fn(async () => ({ x: 1 }));
-    const factory = jest.fn(async () => ({ x: 1 }));
+    const createRootContext = vi.fn(async () => ({ x: 1 }));
+    const factory = vi.fn(async () => ({ x: 1 }));
     const myFactory = createServiceFactory({
       service: ref1,
       deps: {},
@@ -294,7 +296,7 @@ describe('ServiceRegistry', () => {
   });
 
   it('should not call factory functions more than once without root context', async () => {
-    const factory = jest.fn(async () => ({ x: 1 }));
+    const factory = vi.fn(async () => ({ x: 1 }));
     const myFactory = createServiceFactory({
       service: ref1,
       deps: {},

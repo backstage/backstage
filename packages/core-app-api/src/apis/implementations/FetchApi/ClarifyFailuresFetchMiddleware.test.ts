@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { ClarifyFailuresFetchMiddleware } from './ClarifyFailuresFetchMiddleware';
 
 describe('ClarifyFailuresFetchMiddleware', () => {
   it('passes through successful responses', async () => {
     const response = new Response('ok');
-    const inner = jest.fn().mockResolvedValue(response);
+    const inner = vi.fn().mockResolvedValue(response);
     const middleware = new ClarifyFailuresFetchMiddleware();
     const result = await middleware.apply(inner)('https://example.com/api');
     expect(result).toBe(response);
@@ -27,7 +29,7 @@ describe('ClarifyFailuresFetchMiddleware', () => {
   });
 
   it('replaces "Failed to fetch" TypeError with one that includes the URL', async () => {
-    const inner = jest.fn().mockRejectedValue(new TypeError('Failed to fetch'));
+    const inner = vi.fn().mockRejectedValue(new TypeError('Failed to fetch'));
     const middleware = new ClarifyFailuresFetchMiddleware();
     await expect(
       middleware.apply(inner)('https://example.com/api/catalog'),
@@ -37,7 +39,7 @@ describe('ClarifyFailuresFetchMiddleware', () => {
   });
 
   it('handles Request object input without constructing a new Request', async () => {
-    const inner = jest.fn().mockRejectedValue(new TypeError('Failed to fetch'));
+    const inner = vi.fn().mockRejectedValue(new TypeError('Failed to fetch'));
     const middleware = new ClarifyFailuresFetchMiddleware();
     const request = new Request('https://example.com/api/data', {
       method: 'POST',
@@ -50,7 +52,7 @@ describe('ClarifyFailuresFetchMiddleware', () => {
 
   it('does not modify other TypeErrors', async () => {
     const error = new TypeError('some other error');
-    const inner = jest.fn().mockRejectedValue(error);
+    const inner = vi.fn().mockRejectedValue(error);
     const middleware = new ClarifyFailuresFetchMiddleware();
     await expect(
       middleware.apply(inner)('https://example.com/api'),
@@ -59,7 +61,7 @@ describe('ClarifyFailuresFetchMiddleware', () => {
 
   it('does not modify non-TypeError errors', async () => {
     const error = new Error('Failed to fetch');
-    const inner = jest.fn().mockRejectedValue(error);
+    const inner = vi.fn().mockRejectedValue(error);
     const middleware = new ClarifyFailuresFetchMiddleware();
     await expect(
       middleware.apply(inner)('https://example.com/api'),

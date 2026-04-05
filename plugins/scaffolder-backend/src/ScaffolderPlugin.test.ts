@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import { IncomingMessage } from 'node:http';
 import request from 'supertest';
 import waitForExpect from 'wait-for-expect';
@@ -365,7 +367,7 @@ describe('scaffolderPlugin', () => {
   it('emits auditlog containing user identifier when backstage auth is passed', async () => {
     const mockLogger = mockServices.logger.mock();
     mockLogger.child.mockReturnValue(mockLogger);
-    const loggerSpy = jest.spyOn(mockLogger, 'info');
+    const loggerSpy = vi.spyOn(mockLogger, 'info');
 
     const { server } = await startTestBackend({
       features: [
@@ -793,7 +795,7 @@ describe('scaffolderPlugin', () => {
 
     let statusCode: IncomingMessage['statusCode'] = undefined;
     let headers: IncomingMessage['headers'] = {};
-    const responseDataFn = jest.fn();
+    const responseDataFn = vi.fn();
 
     // Get event stream for the task
     const req = request(server)
@@ -865,7 +867,7 @@ describe('scaffolderPlugin', () => {
 
     let statusCode: IncomingMessage['statusCode'] = undefined;
     let headers: IncomingMessage['headers'] = {};
-    const responseDataFn = jest.fn();
+    const responseDataFn = vi.fn();
 
     // Get event stream for the task
     const req = request(server)
@@ -1169,7 +1171,7 @@ describe('scaffolderPlugin', () => {
   });
 
   it('supports performing an autocomplete for a given provider and resource', async () => {
-    const handleAutocompleteRequest = jest.fn().mockResolvedValue({
+    const handleAutocompleteRequest = vi.fn().mockResolvedValue({
       results: [{ title: 'blob' }],
     });
 

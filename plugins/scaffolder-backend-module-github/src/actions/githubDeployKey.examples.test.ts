@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { createGithubDeployKeyAction } from './githubDeployKey';
@@ -24,15 +26,15 @@ import { ScmIntegrations } from '@backstage/integration';
 const mockOctokit = {
   rest: {
     repos: {
-      createDeployKey: jest.fn(),
+      createDeployKey: vi.fn(),
     },
     actions: {
-      getRepoPublicKey: jest.fn(),
-      createOrUpdateRepoSecret: jest.fn(),
+      getRepoPublicKey: vi.fn(),
+      createOrUpdateRepoSecret: vi.fn(),
     },
   },
 };
-jest.mock('octokit', () => ({
+vi.mock('octokit', () => ({
   Octokit: class {
     constructor() {
       return mockOctokit;
@@ -57,7 +59,7 @@ describe('Usage examples', () => {
   const mockContext = createMockActionContext();
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
 
     action = createGithubDeployKeyAction({
       integrations,

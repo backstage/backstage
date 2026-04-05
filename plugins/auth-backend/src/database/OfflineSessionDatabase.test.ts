@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { Knex } from 'knex';
 import { resolvePackagePath } from '@backstage/backend-plugin-api';
 import { OfflineSessionDatabase } from './OfflineSessionDatabase';
 import { DateTime } from 'luxon';
 
-jest.setTimeout(60_000);
+vi.setConfig({ testTimeout: 60_000 });
 
 describe('OfflineSessionDatabase', () => {
   const databases = TestDatabases.create();

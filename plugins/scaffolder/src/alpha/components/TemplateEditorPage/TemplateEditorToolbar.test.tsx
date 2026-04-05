@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi, type Mocked } from 'vitest';
+
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
@@ -28,19 +30,19 @@ import { TemplateEditorToolbar } from './TemplateEditorToolbar';
 describe('TemplateEditorToolbar', () => {
   const fieldExtensions = DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS;
 
-  const scaffolderApiMock: jest.Mocked<ScaffolderApi> = {
-    scaffold: jest.fn(),
-    cancelTask: jest.fn(),
-    getTemplateParameterSchema: jest.fn(),
-    getIntegrationsList: jest.fn(),
-    getTask: jest.fn(),
-    streamLogs: jest.fn(),
-    listActions: jest.fn(),
-    listTasks: jest.fn(),
-    autocomplete: jest.fn(),
-    retry: jest.fn(),
-    listTemplatingExtensions: jest.fn(),
-    dryRun: jest.fn(),
+  const scaffolderApiMock: Mocked<ScaffolderApi> = {
+    scaffold: vi.fn(),
+    cancelTask: vi.fn(),
+    getTemplateParameterSchema: vi.fn(),
+    getIntegrationsList: vi.fn(),
+    getTask: vi.fn(),
+    streamLogs: vi.fn(),
+    listActions: vi.fn(),
+    listTasks: vi.fn(),
+    autocomplete: vi.fn(),
+    retry: vi.fn(),
+    listTemplatingExtensions: vi.fn(),
+    dryRun: vi.fn(),
   };
 
   scaffolderApiMock.listActions.mockResolvedValue([
@@ -65,7 +67,7 @@ describe('TemplateEditorToolbar', () => {
   const apis = TestApiRegistry.from([scaffolderApiRef, scaffolderApiMock]);
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should show instructions for publishing changes', async () => {

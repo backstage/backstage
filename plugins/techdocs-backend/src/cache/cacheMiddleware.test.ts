@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi, vi, type Mocked} from 'vitest';
+
 import express from 'express';
 import request from 'supertest';
 import { createCacheMiddleware } from './cacheMiddleware';
@@ -46,16 +48,16 @@ const getMockHttpResponseFor = (content: string): Buffer => {
 const waitForSocketClose = () => new Promise(resolve => setTimeout(resolve, 0));
 
 describe('createCacheMiddleware', () => {
-  let cache: jest.Mocked<TechDocsCache>;
+  let cache: Mocked<TechDocsCache>;
   let app: express.Express;
 
   beforeEach(async () => {
     cache = {
-      get: jest.fn().mockResolvedValue(undefined),
-      set: jest.fn().mockResolvedValue(undefined),
-      invalidate: jest.fn().mockResolvedValue(undefined),
-      invalidateMultiple: jest.fn().mockResolvedValue(undefined),
-    } as unknown as jest.Mocked<TechDocsCache>;
+      get: vi.fn().mockResolvedValue(undefined),
+      set: vi.fn().mockResolvedValue(undefined),
+      invalidate: vi.fn().mockResolvedValue(undefined),
+      invalidateMultiple: vi.fn().mockResolvedValue(undefined),
+    } as unknown as Mocked<TechDocsCache>;
     const router = await createCacheMiddleware({
       logger: mockServices.logger.mock(),
       cache,
@@ -107,7 +109,7 @@ describe('createCacheMiddleware', () => {
       await waitForSocketClose();
       expect(cache.set).toHaveBeenCalled();
 
-      const [actualPath, actualBuffer] = (cache.set as jest.Mock).mock.calls[0];
+      const [actualPath, actualBuffer] = (cache.set as Mock).mock.calls[0];
       expect(actualPath).toBe(expectedPath);
       expect(actualBuffer.toString()).toContain('default-response');
     });

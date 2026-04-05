@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { mockServices } from '@backstage/backend-test-utils';
 import { WinstonRootAuditorService } from './WinstonRootAuditorService';
 import { DefaultAuditorService } from './DefaultAuditorService';
@@ -49,7 +51,7 @@ describe('WinstonRootAuditorService', () => {
       config: mockServices.rootConfig.mock(),
     });
     // workaround to spy on private method
-    const auditorSpy = jest.spyOn(auditor as any, 'log');
+    const auditorSpy = vi.spyOn(auditor as any, 'log');
 
     await auditor.createEvent({
       eventId: 'test-event',
@@ -73,7 +75,7 @@ describe('WinstonRootAuditorService', () => {
       config: mockServices.rootConfig.mock(),
     });
     // workaround to spy on private method
-    const auditorSpy = jest.spyOn(auditor as any, 'log');
+    const auditorSpy = vi.spyOn(auditor as any, 'log');
 
     const auditorEvent = await auditor.createEvent({
       eventId: 'test-event',
@@ -101,7 +103,7 @@ describe('WinstonRootAuditorService', () => {
       config: mockServices.rootConfig.mock(),
     });
     // workaround to spy on private method
-    const auditorSpy = jest.spyOn(auditor as any, 'log');
+    const auditorSpy = vi.spyOn(auditor as any, 'log');
 
     const auditorEvent = await auditor.createEvent({
       eventId: 'test-event',
@@ -131,7 +133,7 @@ describe('WinstonRootAuditorService', () => {
       config: mockServices.rootConfig.mock(),
     });
     // workaround to spy on private method
-    const auditorSpy = jest.spyOn(auditor as any, 'log');
+    const auditorSpy = vi.spyOn(auditor as any, 'log');
 
     const auditorEvent = await auditor.createEvent({
       eventId: 'test-event',

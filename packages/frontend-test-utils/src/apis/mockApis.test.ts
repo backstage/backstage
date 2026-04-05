@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { FeatureFlagState } from '@backstage/frontend-plugin-api';
 import { mockApis } from './mockApis';
 
@@ -36,7 +38,7 @@ describe('mockApis', () => {
 
     it('can create a mock and make assertions on it', () => {
       const alert = mockApis.alert.mock({
-        post: jest.fn(msg => {
+        post: vi.fn(msg => {
           expect(msg).toMatchObject({ message: 'test' });
         }),
       });
@@ -80,7 +82,7 @@ describe('mockApis', () => {
 
     it('can create a mock and make assertions on it', () => {
       const featureFlags = mockApis.featureFlags.mock({
-        isActive: jest.fn(() => true),
+        isActive: vi.fn(() => true),
       });
       expect(featureFlags.isActive('test')).toBe(true);
       expect(featureFlags.isActive).toHaveBeenCalledTimes(1);

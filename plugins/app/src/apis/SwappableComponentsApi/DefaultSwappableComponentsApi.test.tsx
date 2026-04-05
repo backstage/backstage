@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   ApiBlueprint,
   AppRootElementBlueprint,
@@ -48,7 +50,7 @@ describe('DefaultSwappableComponentsApi', () => {
   });
 
   it('should key extension refs by ID', async () => {
-    const mockLoader = jest.fn(() => <div>test.b</div>);
+    const mockLoader = vi.fn(() => <div>test.b</div>);
     const api = DefaultSwappableComponentsApi.fromComponents([
       {
         ref: testRefB1,

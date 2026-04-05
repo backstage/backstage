@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { FileReaderProcessor } from './FileReaderProcessor';
 import {
   CatalogProcessorEntityResult,
@@ -71,7 +73,7 @@ describe('FileReaderProcessor', () => {
   it('should support globs', async () => {
     const processor = new FileReaderProcessor();
 
-    const emit = jest.fn();
+    const emit = vi.fn();
 
     await processor.readLocation(
       { type: 'file', target: `${path.join(fixturesRoot, '**', '*.yaml')}` },

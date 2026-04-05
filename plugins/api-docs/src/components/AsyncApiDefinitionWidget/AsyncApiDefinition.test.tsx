@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { renderInTestApp } from '@backstage/test-utils';
 import { AsyncApiDefinition } from './AsyncApiDefinition';
 
-jest.mock('use-resize-observer', () => ({
+vi.mock('use-resize-observer', () => ({
   __esModule: true,
-  default: jest.fn().mockImplementation(() => ({
-    observe: jest.fn(),
-    unobserve: jest.fn(),
-    disconnect: jest.fn(),
+  default: vi.fn().mockImplementation(() => ({
+    observe: vi.fn(),
+    unobserve: vi.fn(),
+    disconnect: vi.fn(),
   })),
 }));
 

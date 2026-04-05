@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { renderHook } from '@testing-library/react';
 import { PropsWithChildren } from 'react';
 import { createVersionedContextForTesting } from '@backstage/version-bridge';
@@ -50,13 +52,13 @@ describe('useApp', () => {
   describe('new system', () => {
     const mockIcon = () => null;
     const mockIconsApi: IconsApi = {
-      icon: jest.fn((key: string) =>
+      icon: vi.fn((key: string) =>
         key === 'test-icon' ? mockIcon() : undefined,
       ),
-      getIcon: jest.fn((key: string) =>
+      getIcon: vi.fn((key: string) =>
         key === 'test-icon' ? mockIcon : undefined,
       ),
-      listIconKeys: jest.fn(() => ['test-icon']),
+      listIconKeys: vi.fn(() => ['test-icon']),
     };
 
     const mockPlugin = {
@@ -83,8 +85,8 @@ describe('useApp', () => {
     };
 
     const mockAppTreeApi: AppTreeApi = {
-      getTree: jest.fn(() => ({ tree: mockAppTree })),
-      getNodesByRoutePath: jest.fn(() => ({ nodes: [] })),
+      getTree: vi.fn(() => ({ tree: mockAppTree })),
+      getNodesByRoutePath: vi.fn(() => ({ nodes: [] })),
     };
 
     it('should provide an app context from new app system', () => {

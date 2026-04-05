@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import {
   ANNOTATION_LOCATION,
@@ -30,13 +32,13 @@ import {
 } from '../database/tables';
 import { GenericScmEventRefreshProvider } from './GenericScmEventRefreshProvider';
 
-jest.setTimeout(60_000);
+vi.setConfig({ testTimeout: 60_000 });
 
 describe('GenericScmEventRefreshProvider', () => {
   const databases = TestDatabases.create();
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   async function initialize(databaseId: TestDatabaseId) {
@@ -45,12 +47,12 @@ describe('GenericScmEventRefreshProvider', () => {
 
     let subscriber: CatalogScmEventsServiceSubscriber | undefined;
     const scmEvents = {
-      subscribe: jest.fn().mockImplementation(sub => {
+      subscribe: vi.fn().mockImplementation(sub => {
         subscriber = sub;
         return { unsubscribe: () => {} };
       }),
-      publish: jest.fn(),
-      markEventActionTaken: jest.fn(),
+      publish: vi.fn(),
+      markEventActionTaken: vi.fn(),
     };
 
     const store = new GenericScmEventRefreshProvider(knex, scmEvents, {
@@ -60,8 +62,8 @@ describe('GenericScmEventRefreshProvider', () => {
     });
 
     const connection = {
-      applyMutation: jest.fn(),
-      refresh: jest.fn(),
+      applyMutation: vi.fn(),
+      refresh: vi.fn(),
     };
     await store.connect(connection);
 

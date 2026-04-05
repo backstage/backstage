@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { OAuthApi } from '@backstage/core-plugin-api';
 import { ScmAuth } from './ScmAuth';
 
 class MockOAuthApi implements OAuthApi {
   constructor(private readonly accessToken: string) {}
 
-  getAccessToken = jest.fn(async () => {
+  getAccessToken = vi.fn(async () => {
     return this.accessToken;
   });
 }
@@ -202,7 +204,7 @@ describe('ScmAuth', () => {
 
   it('should handle host option', () => {
     const mockAuthApi = {
-      getAccessToken: jest.fn(),
+      getAccessToken: vi.fn(),
     };
 
     const expectUrlSupport = (scm: ScmAuth, url: string) => {

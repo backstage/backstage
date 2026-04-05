@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import inquirer from 'inquirer';
 import path from 'node:path';
 import { Command } from 'commander';
@@ -24,25 +26,25 @@ import { tmpdir } from 'node:os';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 import { overrideTargetPaths } from '@backstage/cli-common/testUtils';
 
-jest.mock('./lib/tasks');
+vi.mock('./lib/tasks');
 
 const MOCK_TARGET_DIR = '/mock/target-dir';
 const MOCK_TARGET_ROOT = '/mock/target-root';
 overrideTargetPaths({ dir: MOCK_TARGET_DIR, rootDir: MOCK_TARGET_ROOT });
 
 // By mocking this the filesystem mocks won't mess with reading all of the package.jsons
-jest.mock('./lib/versions', () => ({
+vi.mock('./lib/versions', () => ({
   packageVersions: { root: '1.0.0' },
 }));
 
-const promptMock = jest.spyOn(inquirer, 'prompt');
-const checkPathExistsMock = jest.spyOn(tasks, 'checkPathExistsTask');
-const templatingMock = jest.spyOn(tasks, 'templatingTask');
-const checkAppExistsMock = jest.spyOn(tasks, 'checkAppExistsTask');
-const tryInitGitRepositoryMock = jest.spyOn(tasks, 'tryInitGitRepository');
-const readGitConfig = jest.spyOn(tasks, 'readGitConfig');
-const moveAppMock = jest.spyOn(tasks, 'moveAppTask');
-const buildAppMock = jest.spyOn(tasks, 'buildAppTask');
+const promptMock = vi.spyOn(inquirer, 'prompt');
+const checkPathExistsMock = vi.spyOn(tasks, 'checkPathExistsTask');
+const templatingMock = vi.spyOn(tasks, 'templatingTask');
+const checkAppExistsMock = vi.spyOn(tasks, 'checkAppExistsTask');
+const tryInitGitRepositoryMock = vi.spyOn(tasks, 'tryInitGitRepository');
+const readGitConfig = vi.spyOn(tasks, 'readGitConfig');
+const moveAppMock = vi.spyOn(tasks, 'moveAppTask');
+const buildAppMock = vi.spyOn(tasks, 'buildAppTask');
 
 describe('command entrypoint', () => {
   const mockDir = createMockDirectory({ mockOsTmpDir: true });
@@ -59,7 +61,7 @@ describe('command entrypoint', () => {
 
   afterEach(() => {
     mockDir.clear();
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('should call expected tasks with no `--path` option', async () => {

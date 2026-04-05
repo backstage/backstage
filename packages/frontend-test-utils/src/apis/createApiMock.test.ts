@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { createApiRef } from '@backstage/frontend-plugin-api';
 import { createApiMock } from './createApiMock';
 import { getMockApiFactory } from './MockWithApiFactory';
@@ -28,7 +30,7 @@ describe('createApiMock', () => {
 
   it('returns a factory function that produces jest mocks', () => {
     const mock = createApiMock(testApiRef, () => ({
-      greet: jest.fn(),
+      greet: vi.fn(),
       count: 0 as any,
     }));
 
@@ -40,7 +42,7 @@ describe('createApiMock', () => {
 
   it('applies partial implementations via mockImplementation', () => {
     const mock = createApiMock(testApiRef, () => ({
-      greet: jest.fn(),
+      greet: vi.fn(),
       count: 0 as any,
     }));
 
@@ -51,7 +53,7 @@ describe('createApiMock', () => {
 
   it('preserves non-function partial values', () => {
     const mock = createApiMock(testApiRef, () => ({
-      greet: jest.fn(),
+      greet: vi.fn(),
       count: 0 as any,
     }));
 
@@ -61,7 +63,7 @@ describe('createApiMock', () => {
 
   it('attaches a mock API factory via the symbol', () => {
     const mock = createApiMock(testApiRef, () => ({
-      greet: jest.fn(),
+      greet: vi.fn(),
       count: 0 as any,
     }));
 
@@ -73,7 +75,7 @@ describe('createApiMock', () => {
 
   it('creates fresh mocks on each call', () => {
     const mock = createApiMock(testApiRef, () => ({
-      greet: jest.fn(),
+      greet: vi.fn(),
       count: 0 as any,
     }));
 

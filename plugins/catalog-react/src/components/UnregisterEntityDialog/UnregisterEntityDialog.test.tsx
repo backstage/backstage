@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-jest.mock('./useUnregisterEntityDialogState');
+import { vi } from 'vitest';
+
+vi.mock('./useUnregisterEntityDialogState');
 
 import userEvent from '@testing-library/user-event';
 import { ReactNode } from 'react';
@@ -56,18 +58,18 @@ describe('UnregisterEntityDialog', () => {
     </TestApiProvider>
   );
 
-  const stateSpy = jest.spyOn(state, 'useUnregisterEntityDialogState');
+  const stateSpy = vi.spyOn(state, 'useUnregisterEntityDialogState');
 
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('can cancel', async () => {
-    const onClose = jest.fn();
+    const onClose = vi.fn();
     stateSpy.mockImplementation(() => ({
       type: 'bootstrap',
       location: '',
-      deleteEntity: jest.fn(),
+      deleteEntity: vi.fn(),
     }));
 
     await renderInTestApp(
@@ -146,8 +148,8 @@ describe('UnregisterEntityDialog', () => {
   });
 
   it('handles the bootstrap state', async () => {
-    const deleteEntity = jest.fn();
-    const onConfirm = jest.fn();
+    const deleteEntity = vi.fn();
+    const onConfirm = vi.fn();
 
     stateSpy.mockImplementation(() => ({
       type: 'bootstrap',
@@ -190,8 +192,8 @@ describe('UnregisterEntityDialog', () => {
   });
 
   it('handles the only-delete state', async () => {
-    const deleteEntity = jest.fn();
-    const onConfirm = jest.fn();
+    const deleteEntity = vi.fn();
+    const onConfirm = vi.fn();
 
     stateSpy.mockImplementation(() => ({
       type: 'only-delete',
@@ -230,9 +232,9 @@ describe('UnregisterEntityDialog', () => {
   });
 
   it('handles the unregister state, choosing to unregister', async () => {
-    const unregisterLocation = jest.fn();
-    const deleteEntity = jest.fn();
-    const onConfirm = jest.fn();
+    const unregisterLocation = vi.fn();
+    const deleteEntity = vi.fn();
+    const onConfirm = vi.fn();
 
     stateSpy.mockImplementation(() => ({
       type: 'unregister',
@@ -278,9 +280,9 @@ describe('UnregisterEntityDialog', () => {
   });
 
   it('handles the unregister state, choosing to delete', async () => {
-    const unregisterLocation = jest.fn();
-    const deleteEntity = jest.fn();
-    const onConfirm = jest.fn();
+    const unregisterLocation = vi.fn();
+    const deleteEntity = vi.fn();
+    const onConfirm = vi.fn();
 
     stateSpy.mockImplementation(() => ({
       type: 'unregister',

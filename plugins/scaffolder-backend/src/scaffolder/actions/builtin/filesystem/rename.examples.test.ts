@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { resolve as resolvePath } from 'node:path';
 import { createFilesystemRenameAction } from './rename';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
@@ -38,7 +40,7 @@ describe('fs:rename examples', () => {
   });
 
   beforeEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
 
     mockDir.setContent({
       [workspacePath]: {

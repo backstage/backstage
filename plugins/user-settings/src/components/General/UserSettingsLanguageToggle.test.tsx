@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { screen, fireEvent } from '@testing-library/react';
 import { UserSettingsLanguageToggle } from './UserSettingsLanguageToggle';
 import { TestApiProvider, renderInTestApp } from '@backstage/test-utils';
@@ -21,7 +23,7 @@ import { appLanguageApiRef } from '@backstage/core-plugin-api/alpha';
 
 describe('UserSettingsLanguageToggle', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should not render with only one available language', async () => {
@@ -35,11 +37,11 @@ describe('UserSettingsLanguageToggle', () => {
       getAvailableLanguages: jest
         .fn()
         .mockReturnValue({ languages: ['en', 'de'] }),
-      getLanguage: jest.fn().mockReturnValue({ language: 'en' }),
-      language$: jest.fn().mockReturnValue({
-        subscribe: jest.fn().mockReturnValue({ unsubscribe: jest.fn() }),
+      getLanguage: vi.fn().mockReturnValue({ language: 'en' }),
+      language$: vi.fn().mockReturnValue({
+        subscribe: vi.fn().mockReturnValue({ unsubscribe: vi.fn() }),
       }),
-      setLanguage: jest.fn(),
+      setLanguage: vi.fn(),
     };
 
     await renderInTestApp(
@@ -56,11 +58,11 @@ describe('UserSettingsLanguageToggle', () => {
       getAvailableLanguages: jest
         .fn()
         .mockReturnValue({ languages: ['en', 'de'] }),
-      getLanguage: jest.fn().mockReturnValue({ language: 'en' }),
-      language$: jest.fn().mockReturnValue({
-        subscribe: jest.fn().mockReturnValue({ unsubscribe: jest.fn() }),
+      getLanguage: vi.fn().mockReturnValue({ language: 'en' }),
+      language$: vi.fn().mockReturnValue({
+        subscribe: vi.fn().mockReturnValue({ unsubscribe: vi.fn() }),
       }),
-      setLanguage: jest.fn(),
+      setLanguage: vi.fn(),
     };
 
     await renderInTestApp(

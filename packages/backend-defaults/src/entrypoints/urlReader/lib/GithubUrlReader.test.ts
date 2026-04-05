@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { ConfigReader } from '@backstage/config';
 import {
   GithubCredentialsProvider,
@@ -46,7 +48,7 @@ const treeResponseFactory = DefaultReadTreeResponseFactory.create({
 });
 
 const mockCredentialsProvider = {
-  getCredentials: jest.fn().mockResolvedValue({ headers: {} }),
+  getCredentials: vi.fn().mockResolvedValue({ headers: {} }),
 } satisfies GithubCredentialsProvider;
 
 const githubProcessor = new GithubUrlReader(
@@ -80,7 +82,7 @@ describe('GithubUrlReader', () => {
   beforeEach(mockDir.clear);
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('implementation', () => {
@@ -1055,7 +1057,7 @@ describe('GithubUrlReader', () => {
     });
 
     it('uses readUrl when searching for an exact file', async () => {
-      githubProcessor.readUrl = jest.fn().mockResolvedValue({
+      githubProcessor.readUrl = vi.fn().mockResolvedValue({
         buffer: async () => Buffer.from('content'),
         etag: 'etag',
       } as UrlReaderServiceReadUrlResponse);

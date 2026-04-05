@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { screen } from '@testing-library/react';
 import {
   TestApiProvider,
@@ -25,7 +27,7 @@ import '@testing-library/jest-dom';
 import { PodDrawer } from './PodDrawer';
 import { discoveryApiRef } from '@backstage/core-plugin-api';
 
-jest.mock('../../../hooks/useIsPodExecTerminalSupported');
+vi.mock('../../../hooks/useIsPodExecTerminalSupported');
 
 describe('PodDrawer', () => {
   it('Should show title and container names', async () => {

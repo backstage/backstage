@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { createMockDirectory } from '@backstage/backend-test-utils';
 import { normalize } from 'node:path';
 import { overrideTargetPaths } from '@backstage/cli-common/testUtils';
@@ -27,21 +29,21 @@ import { runCliExtraction } from './cli-reports';
 import { runApiExtraction, buildDocs } from './api-reports/index';
 
 // create mocks for the dependencies of the `buildApiReports` function
-jest.mock('./api-reports', () => ({
-  generateTypeDeclarations: jest.fn(),
-  createTemporaryTsConfig: jest.fn(),
-  runApiExtraction: jest.fn(),
-  runCliExtraction: jest.fn(),
-  buildDocs: jest.fn(),
+vi.mock('./api-reports', () => ({
+  generateTypeDeclarations: vi.fn(),
+  createTemporaryTsConfig: vi.fn(),
+  runApiExtraction: vi.fn(),
+  runCliExtraction: vi.fn(),
+  buildDocs: vi.fn(),
 }));
-jest.mock('./cli-reports', () => ({
-  runCliExtraction: jest.fn(),
+vi.mock('./cli-reports', () => ({
+  runCliExtraction: vi.fn(),
 }));
-jest.mock('./sql-reports', () => ({
-  runSqlExtraction: jest.fn(),
+vi.mock('./sql-reports', () => ({
+  runSqlExtraction: vi.fn(),
 }));
-jest.mock('./categorizePackageDirs', () => ({
-  categorizePackageDirs: jest.fn().mockImplementation(async (p: string[]) => {
+vi.mock('./categorizePackageDirs', () => ({
+  categorizePackageDirs: vi.fn().mockImplementation(async (p: string[]) => {
     console.log('categorizePackageDirs', p);
     return {
       tsPackageDirs: p,
@@ -54,7 +56,7 @@ jest.mock('./categorizePackageDirs', () => ({
 const mockDir = createMockDirectory();
 overrideTargetPaths(mockDir.path);
 
-jest.spyOn(PackageGraph, 'listTargetPackages').mockResolvedValue([
+vi.spyOn(PackageGraph, 'listTargetPackages').mockResolvedValue([
   {
     dir: normalize(mockDir.resolve('packages/package-a')),
     packageJson: { name: 'package-a', version: '0.0.0' },
@@ -108,10 +110,10 @@ describe('buildApiReports', () => {
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
-  jest.spyOn(console, 'log').mockImplementation(() => {});
+  vi.spyOn(console, 'log').mockImplementation(() => {});
 
   it('should run without any options', async () => {
     const opts = {};

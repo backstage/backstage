@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { Request } from 'express';
 import { MockHttpAuthService } from './MockHttpAuthService';
 import { mockCredentials } from './mockCredentials';
@@ -218,7 +220,7 @@ describe('MockHttpAuthService', () => {
   });
 
   it('should issue user cookie from request credentials', async () => {
-    const setHeader = jest.fn();
+    const setHeader = vi.fn();
 
     await expect(
       httpAuth.issueUserCookie({
@@ -236,7 +238,7 @@ describe('MockHttpAuthService', () => {
   });
 
   it('should issue user cookie from explicit credentials', async () => {
-    const setHeader = jest.fn();
+    const setHeader = vi.fn();
 
     await expect(
       httpAuth.issueUserCookie(

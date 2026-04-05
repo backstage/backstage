@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { memoize } from './memoize';
 
 describe('memoize', () => {
   it('memoizes', () => {
-    const mockFunc = jest.fn().mockReturnValue('abc');
+    const mockFunc = vi.fn().mockReturnValue('abc');
 
     const memoized = memoize(mockFunc);
 

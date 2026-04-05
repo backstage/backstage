@@ -73,8 +73,8 @@ const _default: OverridableFrontendPlugin<
       };
       configInput: {
         noTrack?: boolean | undefined;
-        title?: string | undefined;
         path?: string | undefined;
+        title?: string | undefined;
       };
       output:
         | ExtensionDataRef<string, 'core.routing.path', {}>
@@ -242,8 +242,8 @@ export const searchPage: OverridableExtensionDefinition<{
   };
   configInput: {
     noTrack?: boolean | undefined;
-    title?: string | undefined;
     path?: string | undefined;
+    title?: string | undefined;
   };
   output:
     | ExtensionDataRef<string, 'core.routing.path', {}>

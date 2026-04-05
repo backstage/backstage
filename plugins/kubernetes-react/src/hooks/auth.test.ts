@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { Entity } from '@backstage/catalog-model';
 import { generateAuth } from './auth';
 
-jest.mock('@backstage/core-plugin-api');
+vi.mock('@backstage/core-plugin-api');
 
 const entity = {
   metadata: {
@@ -44,8 +46,8 @@ const getClustersResponse = [
 ];
 
 describe('generateAuth', () => {
-  const mockGetClusters = jest.fn();
-  const mockDecorateRequestBodyForAuth = jest.fn();
+  const mockGetClusters = vi.fn();
+  const mockDecorateRequestBodyForAuth = vi.fn();
 
   const expectMocksCalledCorrectly = (numOfCalls: number = 1) => {
     expect(mockGetClusters).toHaveBeenCalledTimes(numOfCalls);
@@ -63,7 +65,7 @@ describe('generateAuth', () => {
   };
 
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
   it('should return auth', async () => {
     const result = await generateAuth(

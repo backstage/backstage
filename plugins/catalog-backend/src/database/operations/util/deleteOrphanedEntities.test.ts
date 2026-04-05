@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { Knex } from 'knex';
 import { StitchingStrategy } from '../../../stitching/types';
@@ -26,7 +28,7 @@ import {
 } from '../../tables';
 import { deleteOrphanedEntities } from './deleteOrphanedEntities';
 
-jest.setTimeout(60_000);
+vi.setConfig({ testTimeout: 60_000 });
 
 describe('deleteOrphanedEntities', () => {
   const databases = TestDatabases.create();

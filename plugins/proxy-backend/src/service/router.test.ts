@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type MockedFunction} from 'vitest';
+
 import { mockServices } from '@backstage/backend-test-utils';
 import { Request, Response } from 'express';
 import * as http from 'node:http';
@@ -24,12 +26,12 @@ import {
 } from 'http-proxy-middleware';
 import { buildMiddleware, createRouter } from './router';
 
-jest.mock('http-proxy-middleware', () => ({
-  createProxyMiddleware: jest.fn(() => () => undefined),
-  fixRequestBody: jest.fn(),
+vi.mock('http-proxy-middleware', () => ({
+  createProxyMiddleware: vi.fn(() => () => undefined),
+  fixRequestBody: vi.fn(),
 }));
 
-const mockCreateProxyMiddleware = createProxyMiddleware as jest.MockedFunction<
+const mockCreateProxyMiddleware = createProxyMiddleware as MockedFunction<
   typeof createProxyMiddleware
 >;
 
@@ -41,7 +43,7 @@ describe('createRouter', () => {
   };
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('where all proxy config are valid', () => {
@@ -479,7 +481,7 @@ describe('buildMiddleware', () => {
         pragma: 'value',
         'set-cookie': ['value'],
       },
-      on: jest.fn(),
+      on: vi.fn(),
     } as Partial<http.IncomingMessage>;
 
     expect(config).toBeDefined();
@@ -523,7 +525,7 @@ describe('buildMiddleware', () => {
         'set-cookie': [],
         'x-auth-request-user': 'asd',
       },
-      on: jest.fn(),
+      on: vi.fn(),
     } as Partial<http.IncomingMessage>;
 
     expect(config).toBeDefined();
@@ -623,7 +625,7 @@ describe('buildMiddleware', () => {
 
     const testServerResponse = {
       headers: {},
-      on: jest.fn((event, callback) => {
+      on: vi.fn((event, callback) => {
         if (event === 'close') {
           callback();
         }
@@ -633,7 +635,7 @@ describe('buildMiddleware', () => {
 
     const testClientResponse = {
       writableEnded: false,
-      end: jest.fn(),
+      end: vi.fn(),
     } as Partial<Response>;
 
     expect(config).toBeDefined();

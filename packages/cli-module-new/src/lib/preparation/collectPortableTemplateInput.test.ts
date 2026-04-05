@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import inquirer from 'inquirer';
 import { PortableTemplateConfig } from '../types';
 import { collectPortableTemplateInput } from './collectPortableTemplateInput';
@@ -40,11 +42,11 @@ describe('collectTemplateParams', () => {
   };
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('should prompt for missing parameters', async () => {
-    jest.spyOn(inquirer, 'prompt').mockResolvedValueOnce({ pluginId: 'other' });
+    vi.spyOn(inquirer, 'prompt').mockResolvedValueOnce({ pluginId: 'other' });
 
     await expect(
       collectPortableTemplateInput({
@@ -162,7 +164,7 @@ describe('collectTemplateParams', () => {
     };
 
     it('should auto-fill pluginPackage for catalog plugin without prompting', async () => {
-      const promptSpy = jest.spyOn(inquirer, 'prompt');
+      const promptSpy = vi.spyOn(inquirer, 'prompt');
 
       await expect(
         collectPortableTemplateInput({
@@ -192,7 +194,7 @@ describe('collectTemplateParams', () => {
     });
 
     it('should prompt for pluginPackage for unknown plugins', async () => {
-      jest.spyOn(inquirer, 'prompt').mockResolvedValueOnce({
+      vi.spyOn(inquirer, 'prompt').mockResolvedValueOnce({
         pluginPackage: '@mycompany/plugin-custom-backend',
       });
 
@@ -221,7 +223,7 @@ describe('collectTemplateParams', () => {
     });
 
     it('should re-prompt when pluginPackage is prefilled with an empty string', async () => {
-      jest.spyOn(inquirer, 'prompt').mockResolvedValueOnce({
+      vi.spyOn(inquirer, 'prompt').mockResolvedValueOnce({
         pluginPackage: '@mycompany/plugin-custom-backend',
       });
 
@@ -250,7 +252,7 @@ describe('collectTemplateParams', () => {
     });
 
     it('should re-prompt when pluginPackage is prefilled with an invalid name', async () => {
-      jest.spyOn(inquirer, 'prompt').mockResolvedValueOnce({
+      vi.spyOn(inquirer, 'prompt').mockResolvedValueOnce({
         pluginPackage: '@mycompany/plugin-custom-backend',
       });
 
@@ -291,7 +293,7 @@ describe('collectTemplateParams', () => {
     };
 
     it('should auto-fill pluginPackage for catalog plugin without prompting', async () => {
-      const promptSpy = jest.spyOn(inquirer, 'prompt');
+      const promptSpy = vi.spyOn(inquirer, 'prompt');
 
       await expect(
         collectPortableTemplateInput({
@@ -321,7 +323,7 @@ describe('collectTemplateParams', () => {
     });
 
     it('should prompt for pluginPackage for unknown plugins', async () => {
-      jest.spyOn(inquirer, 'prompt').mockResolvedValueOnce({
+      vi.spyOn(inquirer, 'prompt').mockResolvedValueOnce({
         pluginPackage: '@mycompany/plugin-custom',
       });
 

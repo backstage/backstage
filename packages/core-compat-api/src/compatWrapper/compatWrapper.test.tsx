@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   swappableComponentsApiRef,
   coreExtensionData,
@@ -40,9 +42,9 @@ import {
 import { convertLegacyRouteRef } from '../convertLegacyRouteRef';
 import { renderInTestApp as renderInOldTestApp } from '@backstage/test-utils';
 
-jest.mock('./BackwardsCompatProvider', () => ({
+vi.mock('./BackwardsCompatProvider', () => ({
   BackwardsCompatProvider: ({ children }: { children: React.ReactNode }) => {
-    const OriginalComponent = jest.requireActual(
+    const OriginalComponent = vi.importActual(
       './BackwardsCompatProvider',
     ).BackwardsCompatProvider;
     return (
@@ -53,9 +55,9 @@ jest.mock('./BackwardsCompatProvider', () => ({
   },
 }));
 
-jest.mock('./ForwardsCompatProvider', () => ({
+vi.mock('./ForwardsCompatProvider', () => ({
   ForwardsCompatProvider: ({ children }: { children: React.ReactNode }) => {
-    const OriginalComponent = jest.requireActual(
+    const OriginalComponent = vi.importActual(
       './ForwardsCompatProvider',
     ).ForwardsCompatProvider;
     return (

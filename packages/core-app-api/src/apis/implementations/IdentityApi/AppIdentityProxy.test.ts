@@ -14,19 +14,21 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { withLogCollector } from '@backstage/test-utils';
 import { AppIdentityProxy } from './AppIdentityProxy';
 
 describe('AppIdentityProxy', () => {
   const mockIdentityApi = {
-    getBackstageIdentity: jest.fn(),
-    getProfileInfo: jest.fn(),
-    getCredentials: jest.fn(),
-    signOut: jest.fn(),
+    getBackstageIdentity: vi.fn(),
+    getProfileInfo: vi.fn(),
+    getCredentials: vi.fn(),
+    signOut: vi.fn(),
   };
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('should forward user identities', async () => {
@@ -84,7 +86,7 @@ describe('AppIdentityProxy', () => {
     const proxy = new AppIdentityProxy();
     proxy.setTarget(mockIdentityApi, { signOutTargetUrl: '/foo' });
 
-    const navigateSpy = jest.spyOn(proxy as any, 'navigateToUrl');
+    const navigateSpy = vi.spyOn(proxy as any, 'navigateToUrl');
     await proxy.signOut();
     expect(navigateSpy).toHaveBeenCalledWith('/foo');
   });

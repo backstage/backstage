@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { handleMetaRedirects } from './handleMetaRedirects';
 import { createTestShadowDom } from '../../test-utils';
 import { screen } from '@testing-library/react';
 
 describe('handleMetaRedirects', () => {
-  const navigate = jest.fn();
+  const navigate = vi.fn();
 
   const setUpNewTestShadowDom = async (html: string, rootHref: string) => {
     const entityName = 'testEntity';
@@ -34,12 +36,12 @@ describe('handleMetaRedirects', () => {
     });
   };
   beforeEach(() => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
-    jest.useRealTimers();
+    vi.clearAllMocks();
+    vi.useRealTimers();
     document.body.innerHTML = '';
   });
 
@@ -54,7 +56,7 @@ describe('handleMetaRedirects', () => {
         'This TechDocs page is no longer maintained. Will automatically redirect to the designated replacement.',
       ),
     ).toBeInTheDocument();
-    jest.runAllTimers();
+    vi.runAllTimers();
     expect(navigate).toHaveBeenCalledWith(
       'http://localhost/docs/default/component/testEntity/anotherPage',
     );
@@ -71,7 +73,7 @@ describe('handleMetaRedirects', () => {
         'This TechDocs page is no longer maintained. Will automatically redirect to the designated replacement.',
       ),
     ).toBeInTheDocument();
-    jest.runAllTimers();
+    vi.runAllTimers();
     expect(navigate).toHaveBeenCalledWith(
       'http://localhost/docs/default/component/testEntity',
     );
@@ -88,7 +90,7 @@ describe('handleMetaRedirects', () => {
         'This TechDocs page is no longer maintained. Will automatically redirect to the designated replacement.',
       ),
     ).toBeInTheDocument();
-    jest.runAllTimers();
+    vi.runAllTimers();
     expect(navigate).toHaveBeenCalledWith('http://localhost/test');
   });
 
@@ -98,7 +100,7 @@ describe('handleMetaRedirects', () => {
       'http://localhost/docs/default/component/testEntity/subpath',
     );
 
-    jest.runAllTimers();
+    vi.runAllTimers();
     expect(navigate).not.toHaveBeenCalled();
   });
 });

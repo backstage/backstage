@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi , type MockedClass} from 'vitest';
 import { ScmIntegrations } from '../ScmIntegrations';
 import { CachedAzureDevOpsCredentialsProvider } from './CachedAzureDevOpsCredentialsProvider';
 import { AzureDevOpsCredentialLike, AzureIntegrationConfig } from './config';
@@ -33,31 +35,31 @@ type AzureIntegrationConfigLike = Partial<
   credentials?: Partial<AzureDevOpsCredentialLike>[];
 };
 
-const MockedClientSecretCredential = ClientSecretCredential as jest.MockedClass<
+const MockedClientSecretCredential = ClientSecretCredential as MockedClass<
   typeof ClientSecretCredential
 >;
 
 const MockedManagedIdentityCredential =
-  ManagedIdentityCredential as jest.MockedClass<
+  ManagedIdentityCredential as MockedClass<
     typeof ManagedIdentityCredential
   >;
 
-const MockedDefaultAzureCredential = DefaultAzureCredential as jest.MockedClass<
+const MockedDefaultAzureCredential = DefaultAzureCredential as MockedClass<
   typeof DefaultAzureCredential
 >;
 
-jest.mock('@azure/identity');
+vi.mock('@azure/identity');
 
 describe('DefaultAzureDevOpsCredentialProvider', () => {
-  const fromAzureDevOpsCredential = jest.spyOn(
+  const fromAzureDevOpsCredential = vi.spyOn(
     CachedAzureDevOpsCredentialsProvider,
     'fromAzureDevOpsCredential',
   );
-  const fromTokenCredential = jest.spyOn(
+  const fromTokenCredential = vi.spyOn(
     CachedAzureDevOpsCredentialsProvider,
     'fromTokenCredential',
   );
-  const fromPersonalAccessTokenCredential = jest.spyOn(
+  const fromPersonalAccessTokenCredential = vi.spyOn(
     CachedAzureDevOpsCredentialsProvider,
     'fromPersonalAccessTokenCredential',
   );
@@ -74,7 +76,7 @@ describe('DefaultAzureDevOpsCredentialProvider', () => {
     );
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     MockedClientSecretCredential.prototype.getToken.mockImplementation(() =>
       Promise.resolve({
         expiresOnTimestamp: DateTime.local().plus({ days: 1 }).toSeconds(),

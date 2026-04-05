@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { getOrCreateGlobalSingleton } from '@backstage/version-bridge';
 import { Tracker, routableExtensionRenderedEvent } from './Tracker';
 
@@ -28,13 +30,13 @@ describe('Tracker', () => {
     () => ({}),
   );
   const analyticsApiSpy = {
-    captureEvent: jest.fn(),
+    captureEvent: vi.fn(),
   };
   let trackerUnderTest: Tracker;
 
   beforeEach(() => {
     // Reset mocks and global state
-    jest.resetAllMocks();
+    vi.resetAllMocks();
     globalEvents.mostRecentGatheredNavigation = undefined;
     globalEvents.mostRecentRoutableExtensionRender = undefined;
 

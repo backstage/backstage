@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { relative as relativePath } from 'node:path';
 import { writeTemplateContents } from './writeTemplateContents';
 import { createMockDirectory } from '@backstage/backend-test-utils';
@@ -36,7 +38,7 @@ describe('writeTemplateContents', () => {
         workspaces: { packages: ['packages/*', 'plugins/*'] },
       }),
     });
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('should write an empty template', async () => {

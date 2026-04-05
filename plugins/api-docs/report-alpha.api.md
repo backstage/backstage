@@ -91,11 +91,11 @@ const _default: OverridableFrontendPlugin<
       name: 'consumed-apis';
       config: {
         filter: FilterPredicate | undefined;
-        type: 'content' | 'info' | undefined;
+        type: 'info' | 'content' | undefined;
       };
       configInput: {
         filter?: FilterPredicate | undefined;
-        type?: 'content' | 'info' | undefined;
+        type?: 'info' | 'content' | undefined;
       };
       output:
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -132,11 +132,11 @@ const _default: OverridableFrontendPlugin<
       name: 'consuming-components';
       config: {
         filter: FilterPredicate | undefined;
-        type: 'content' | 'info' | undefined;
+        type: 'info' | 'content' | undefined;
       };
       configInput: {
         filter?: FilterPredicate | undefined;
-        type?: 'content' | 'info' | undefined;
+        type?: 'info' | 'content' | undefined;
       };
       output:
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -173,11 +173,11 @@ const _default: OverridableFrontendPlugin<
       name: 'definition';
       config: {
         filter: FilterPredicate | undefined;
-        type: 'content' | 'info' | undefined;
+        type: 'info' | 'content' | undefined;
       };
       configInput: {
         filter?: FilterPredicate | undefined;
-        type?: 'content' | 'info' | undefined;
+        type?: 'info' | 'content' | undefined;
       };
       output:
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -214,11 +214,11 @@ const _default: OverridableFrontendPlugin<
       name: 'has-apis';
       config: {
         filter: FilterPredicate | undefined;
-        type: 'content' | 'info' | undefined;
+        type: 'info' | 'content' | undefined;
       };
       configInput: {
         filter?: FilterPredicate | undefined;
-        type?: 'content' | 'info' | undefined;
+        type?: 'info' | 'content' | undefined;
       };
       output:
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -255,11 +255,11 @@ const _default: OverridableFrontendPlugin<
       name: 'provided-apis';
       config: {
         filter: FilterPredicate | undefined;
-        type: 'content' | 'info' | undefined;
+        type: 'info' | 'content' | undefined;
       };
       configInput: {
         filter?: FilterPredicate | undefined;
-        type?: 'content' | 'info' | undefined;
+        type?: 'info' | 'content' | undefined;
       };
       output:
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -296,11 +296,11 @@ const _default: OverridableFrontendPlugin<
       name: 'providing-components';
       config: {
         filter: FilterPredicate | undefined;
-        type: 'content' | 'info' | undefined;
+        type: 'info' | 'content' | undefined;
       };
       configInput: {
         filter?: FilterPredicate | undefined;
-        type?: 'content' | 'info' | undefined;
+        type?: 'info' | 'content' | undefined;
       };
       output:
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
@@ -344,10 +344,10 @@ const _default: OverridableFrontendPlugin<
       };
       configInput: {
         filter?: FilterPredicate | undefined;
-        title?: string | undefined;
         path?: string | undefined;
-        group?: string | false | undefined;
+        title?: string | undefined;
         icon?: string | undefined;
+        group?: string | false | undefined;
       };
       output:
         | ExtensionDataRef<string, 'core.routing.path', {}>
@@ -414,10 +414,10 @@ const _default: OverridableFrontendPlugin<
       };
       configInput: {
         filter?: FilterPredicate | undefined;
-        title?: string | undefined;
         path?: string | undefined;
-        group?: string | false | undefined;
+        title?: string | undefined;
         icon?: string | undefined;
+        group?: string | false | undefined;
       };
       output:
         | ExtensionDataRef<string, 'core.routing.path', {}>
@@ -501,8 +501,8 @@ const _default: OverridableFrontendPlugin<
       };
       configInput: {
         initiallySelectedFilter?: 'all' | 'owned' | 'starred' | undefined;
-        title?: string | undefined;
         path?: string | undefined;
+        title?: string | undefined;
       };
       output:
         | ExtensionDataRef<string, 'core.routing.path', {}>

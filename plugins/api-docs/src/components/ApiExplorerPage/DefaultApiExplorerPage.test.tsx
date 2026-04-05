@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { TableColumn, TableProps } from '@backstage/core-components';
 import { configApiRef, storageApiRef } from '@backstage/core-plugin-api';
 import {
@@ -173,13 +175,13 @@ describe('DefaultApiExplorerPage', () => {
         icon: () => <DashboardIcon fontSize="small" />,
         tooltip: 'Foo Action',
         disabled: false,
-        onClick: jest.fn(),
+        onClick: vi.fn(),
       },
       {
         icon: () => <DashboardIcon fontSize="small" />,
         tooltip: 'Bar Action',
         disabled: true,
-        onClick: jest.fn(),
+        onClick: vi.fn(),
       },
     ];
 

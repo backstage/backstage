@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import { createExtensionTester } from '@backstage/frontend-test-utils';
 import { analyticsApi } from './AnalyticsApi';
 import {
@@ -34,7 +36,7 @@ describe('analyticsApi', () => {
       routeRef: '',
     },
   };
-  const captureEventSpy1 = jest.fn();
+  const captureEventSpy1 = vi.fn();
   const MockImplementation1 = createExtension({
     name: 'mock-implementation-1',
     attachTo: { id: 'api:analytics', input: 'implementations' },
@@ -50,7 +52,7 @@ describe('analyticsApi', () => {
       ];
     },
   });
-  const captureEventSpy2 = jest.fn();
+  const captureEventSpy2 = vi.fn();
   const MockImplementation2 = createExtension({
     name: 'mock-implementation-2',
     attachTo: { id: 'api:analytics', input: 'implementations' },
@@ -68,7 +70,7 @@ describe('analyticsApi', () => {
   });
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('wires up a single AnalyticsImplementationFactory', async () => {

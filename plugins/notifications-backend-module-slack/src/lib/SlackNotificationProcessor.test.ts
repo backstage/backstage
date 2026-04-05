@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi, vi , type MockedFunction} from 'vitest';
+
 import { mockServices } from '@backstage/backend-test-utils';
 import { metricsServiceMock } from '@backstage/backend-test-utils/alpha';
 import { SlackNotificationProcessor } from './SlackNotificationProcessor';
@@ -25,9 +27,9 @@ import { durationToMilliseconds } from '@backstage/types';
 
 const throttleConfigs: Array<{ limit: number; interval: number }> = [];
 
-jest.mock('p-throttle', () => ({
+vi.mock('p-throttle', () => ({
   __esModule: true,
-  default: jest.fn((config: { limit: number; interval: number }) => {
+  default: vi.fn((config: { limit: number; interval: number }) => {
     throttleConfigs.push(config);
     return <T extends (...args: any[]) => Promise<any> | any>(fn: T) =>
       (...args: Parameters<T>) =>
@@ -35,25 +37,25 @@ jest.mock('p-throttle', () => ({
   }),
 }));
 
-const mockedPThrottle = pThrottle as jest.MockedFunction<typeof pThrottle>;
+const mockedPThrottle = pThrottle as MockedFunction<typeof pThrottle>;
 
-jest.mock('@slack/web-api', () => {
+vi.mock('@slack/web-api', () => {
   const mockSlack = {
     chat: {
-      postMessage: jest.fn(() => ({
+      postMessage: vi.fn(() => ({
         ok: true,
         ts: '1234567890.123456',
         channel: 'C12345678',
       })),
     },
     conversations: {
-      list: jest.fn(() => ({
+      list: vi.fn(() => ({
         ok: true,
         channels: [{ id: 'C12345678', name: 'test' }],
       })),
     },
     users: {
-      list: jest.fn(() => ({
+      list: vi.fn(() => ({
         ok: true,
         members: [
           {
@@ -67,10 +69,10 @@ jest.mock('@slack/web-api', () => {
           },
         ],
       })),
-      lookupByEmail: jest.fn(),
+      lookupByEmail: vi.fn(),
     },
   };
-  return { WebClient: jest.fn(() => mockSlack) };
+  return { WebClient: vi.fn(() => mockSlack) };
 });
 
 const DEFAULT_ENTITIES_RESPONSE = {
@@ -145,7 +147,7 @@ describe('SlackNotificationProcessor', () => {
   });
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     throttleConfigs.length = 0;
     mockedPThrottle.mockClear();
   });
@@ -1029,7 +1031,7 @@ describe('SlackNotificationProcessor', () => {
 
     it('should try to find user by email when annotation is missing', async () => {
       const slack = new WebClient();
-      (slack.users.lookupByEmail as jest.Mock).mockResolvedValueOnce({
+      (slack.users.lookupByEmail as Mock).mockResolvedValueOnce({
         ok: true,
         user: { id: 'U12345678' },
       });
@@ -1076,7 +1078,7 @@ describe('SlackNotificationProcessor', () => {
 
     it('should log warning when email lookup fails', async () => {
       const slack = new WebClient();
-      (slack.users.lookupByEmail as jest.Mock).mockRejectedValueOnce(
+      (slack.users.lookupByEmail as Mock).mockRejectedValueOnce(
         new Error('User not found'),
       );
 
@@ -1408,7 +1410,7 @@ describe('SlackNotificationProcessor', () => {
         payload: { title: 'notification' },
       });
 
-      const calls = (slack.chat.postMessage as jest.Mock).mock.calls;
+      const calls = (slack.chat.postMessage as Mock).mock.calls;
       expect(calls).toHaveLength(1);
       expect(calls[0][0].username).toBeUndefined();
     });

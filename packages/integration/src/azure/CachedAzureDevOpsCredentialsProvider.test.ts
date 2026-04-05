@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi , type MockedClass} from 'vitest';
 import { CachedAzureDevOpsCredentialsProvider } from './CachedAzureDevOpsCredentialsProvider';
 import {
   AccessToken,
@@ -21,21 +23,21 @@ import {
   ManagedIdentityCredential,
 } from '@azure/identity';
 
-const MockedClientSecretCredential = ClientSecretCredential as jest.MockedClass<
+const MockedClientSecretCredential = ClientSecretCredential as MockedClass<
   typeof ClientSecretCredential
 >;
 
 const MockedClientAssertionCredential =
-  ClientAssertionCredential as jest.MockedClass<
+  ClientAssertionCredential as MockedClass<
     typeof ClientAssertionCredential
   >;
 
 const MockedManagedIdentityCredential =
-  ManagedIdentityCredential as jest.MockedClass<
+  ManagedIdentityCredential as MockedClass<
     typeof ManagedIdentityCredential
   >;
 
-jest.mock('@azure/identity');
+vi.mock('@azure/identity');
 
 const seconds = (s: number) => s * 1000;
 const minutes = (m: number) => seconds(60) * m;
@@ -43,7 +45,7 @@ const hours = (h: number) => minutes(60) * h;
 
 describe('CachedAzureDevOpsCredentialsProvider', () => {
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
 
     MockedClientSecretCredential.prototype.getToken.mockImplementation(() =>
       Promise.resolve({

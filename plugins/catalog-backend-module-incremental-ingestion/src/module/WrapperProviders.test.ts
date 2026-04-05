@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { SchedulerService } from '@backstage/backend-plugin-api';
 import { TestDatabases, mockServices } from '@backstage/backend-test-utils';
 import { metricsServiceMock } from '@backstage/backend-test-utils/alpha';
@@ -21,21 +23,21 @@ import { ConfigReader } from '@backstage/config';
 import { IncrementalEntityProvider } from '../types';
 import { WrapperProviders } from './WrapperProviders';
 
-jest.setTimeout(60_000);
+vi.setConfig({ testTimeout: 60_000 });
 
 describe('WrapperProviders', () => {
-  const applyDatabaseMigrations = jest.fn();
+  const applyDatabaseMigrations = vi.fn();
   const databases = TestDatabases.create({
     ids: ['POSTGRES_18', 'POSTGRES_14', 'SQLITE_3', 'MYSQL_8'],
   });
   const config = new ConfigReader({});
   const logger = mockServices.logger.mock();
   const scheduler = {
-    scheduleTask: jest.fn(),
+    scheduleTask: vi.fn(),
   };
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it.each(databases.eachSupportedId())(

@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
+import { vi , type MockedFunction} from 'vitest';
+
 import { UrlPatternDiscovery } from '@backstage/core-app-api';
 import { NotFoundError } from '@backstage/errors';
 import { fetchEventSource } from '@microsoft/fetch-event-source';
 import { mockApis, MockFetchApi } from '@backstage/test-utils';
 import { TechDocsStorageClient } from './client';
 
-jest.mock('@microsoft/fetch-event-source');
-const mockFetchEventSource = fetchEventSource as jest.MockedFunction<
+vi.mock('@microsoft/fetch-event-source');
+const mockFetchEventSource = fetchEventSource as MockedFunction<
   typeof fetchEventSource
 >;
 
@@ -39,7 +41,7 @@ describe('TechDocsStorageClient', () => {
   const fetchApi = new MockFetchApi({ injectIdentityAuth: { identityApi } });
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('should return correct base url based on defined storage', async () => {
@@ -162,7 +164,7 @@ describe('TechDocsStorageClient', () => {
         onmessage?.({ id: '', event: 'finish', data: '{"updated": false}' });
       });
 
-      const logHandler = jest.fn();
+      const logHandler = vi.fn();
       await expect(
         storageApi.syncEntityDocs(mockEntity, logHandler),
       ).resolves.toEqual('cached');

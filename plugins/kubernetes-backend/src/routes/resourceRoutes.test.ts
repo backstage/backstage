@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import request from 'supertest';
 import {
   mockCredentials,
@@ -49,7 +51,7 @@ describe('resourcesRoutes', () => {
 
   beforeEach(async () => {
     const objectsProviderMock = {
-      getKubernetesObjectsByEntity: jest.fn().mockImplementation(args => {
+      getKubernetesObjectsByEntity: vi.fn().mockImplementation(args => {
         if (args.entity.metadata.name === 'inject500') {
           return Promise.reject(new Error('some internal error'));
         }
@@ -70,7 +72,7 @@ describe('resourcesRoutes', () => {
           ],
         });
       }),
-      getCustomResourcesByEntity: jest.fn().mockImplementation(args => {
+      getCustomResourcesByEntity: vi.fn().mockImplementation(args => {
         if (args.entity.metadata.name === 'inject500') {
           return Promise.reject(new Error('some internal error'));
         }
@@ -93,9 +95,9 @@ describe('resourcesRoutes', () => {
       }),
     };
 
-    jest.mock('@backstage/catalog-client', () => ({
-      CatalogClient: jest.fn().mockImplementation(() => ({
-        getEntityByRef: jest.fn().mockImplementation(entityRef => {
+    vi.mock('@backstage/catalog-client', () => ({
+      CatalogClient: vi.fn().mockImplementation(() => ({
+        getEntityByRef: vi.fn().mockImplementation(entityRef => {
           if (entityRef.name === 'noentity') {
             return Promise.resolve(undefined);
           }

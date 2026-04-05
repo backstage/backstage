@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { screen } from '@testing-library/react';
 import {
   mockApis,
@@ -26,14 +28,14 @@ import * as oneDeployment from './__fixtures__/1-deployments.json';
 import * as twoDeployments from './__fixtures__/2-deployments.json';
 import { permissionApiRef } from '@backstage/plugin-permission-react';
 
-jest.mock('@backstage/plugin-kubernetes-react', () => ({
-  ...jest.requireActual('@backstage/plugin-kubernetes-react'),
-  useKubernetesObjects: jest.fn(),
+vi.mock('@backstage/plugin-kubernetes-react', () => ({
+  ...vi.importActual('@backstage/plugin-kubernetes-react'),
+  useKubernetesObjects: vi.fn(),
 }));
 
 describe('KubernetesContent', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
   it('render empty response', async () => {
     (useKubernetesObjects as any).mockReturnValue({

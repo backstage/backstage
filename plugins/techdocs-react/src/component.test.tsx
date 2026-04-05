@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { useState, useEffect } from 'react';
 import { render, waitFor, screen } from '@testing-library/react';
 import {
@@ -31,7 +33,7 @@ const createDom = (innerHTML: string) => {
 describe('TechDocsShadowDom', () => {
   it('Should render children', () => {
     const dom = createDom('<body><h1>Title</h1></body>');
-    const onAppend = jest.fn();
+    const onAppend = vi.fn();
     render(
       <TechDocsShadowDom element={dom} onAppend={onAppend}>
         Children
@@ -53,7 +55,7 @@ describe('TechDocsShadowDom', () => {
       return <TechDocsShadowDom element={dom} onAppend={onAppend} />;
     };
 
-    const onAppend = jest.fn();
+    const onAppend = vi.fn();
     render(<Component onAppend={onAppend} />);
 
     await waitFor(() => {
@@ -75,7 +77,7 @@ describe('TechDocsShadowDom', () => {
     ) => {
       listener = _listener;
     };
-    const handleStylesLoad = jest.fn();
+    const handleStylesLoad = vi.fn();
     dom.addEventListener(SHADOW_DOM_STYLE_LOAD_EVENT, handleStylesLoad);
 
     render(<TechDocsShadowDom element={dom}>Children</TechDocsShadowDom>);

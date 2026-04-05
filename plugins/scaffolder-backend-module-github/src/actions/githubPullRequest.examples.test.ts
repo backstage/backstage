@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi , type Mock} from 'vitest';
+
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { ConfigReader } from '@backstage/config';
 import {
@@ -30,15 +32,15 @@ import { createMockDirectory } from '@backstage/backend-test-utils';
 const mockOctokit = {
   rest: {
     pulls: {
-      requestReviewers: jest.fn(),
+      requestReviewers: vi.fn(),
     },
     issues: {
-      addAssignees: jest.fn(),
+      addAssignees: vi.fn(),
     },
   },
 };
 
-jest.mock('octokit', () => ({
+vi.mock('octokit', () => ({
   Octokit: class {
     constructor() {
       return mockOctokit;
@@ -61,10 +63,10 @@ describe('publish:github:pull-request examples', () => {
 
   const mockContext = createMockActionContext();
   let fakeClient: {
-    createPullRequest: jest.Mock;
+    createPullRequest: Mock;
     rest: {
-      pulls: { requestReviewers: jest.Mock };
-      issues: { addAssignees: jest.Mock };
+      pulls: { requestReviewers: Mock };
+      issues: { addAssignees: Mock };
     };
   };
   const mockDir = createMockDirectory();
@@ -72,11 +74,11 @@ describe('publish:github:pull-request examples', () => {
 
   beforeEach(() => {
     mockDir.clear();
-    jest.resetAllMocks();
+    vi.resetAllMocks();
     githubCredentialsProvider =
       DefaultGithubCredentialsProvider.fromIntegrations(integrations);
     fakeClient = {
-      createPullRequest: jest.fn(async (_: any) => {
+      createPullRequest: vi.fn(async (_: any) => {
         return {
           url: 'https://api.github.com/myorg/myrepo/pull/123',
           headers: {},
@@ -92,15 +94,15 @@ describe('publish:github:pull-request examples', () => {
       }),
       rest: {
         pulls: {
-          requestReviewers: jest.fn(async (_: any) => ({ data: {} })),
+          requestReviewers: vi.fn(async (_: any) => ({ data: {} })),
         },
         issues: {
-          addAssignees: jest.fn(async (_: any) => ({ data: {} })),
+          addAssignees: vi.fn(async (_: any) => ({ data: {} })),
         },
       },
     };
 
-    const clientFactory = jest.fn(async () => fakeClient as any);
+    const clientFactory = vi.fn(async () => fakeClient as any);
 
     mockDir.setContent({
       [workspacePath]: { 'file.txt': 'Hello there!' },
@@ -114,7 +116,7 @@ describe('publish:github:pull-request examples', () => {
     });
   });
 
-  afterEach(jest.resetAllMocks);
+  afterEach(vi.resetAllMocks);
 
   it('Create a pull request', async () => {
     const input = yaml.parse(examples[0].example).steps[0].input;

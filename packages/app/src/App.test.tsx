@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { renderWithEffects } from '@backstage/test-utils';
 
 // Rarely, and only in windows CI, do these tests take slightly more than the
 // default five seconds
-jest.setTimeout(15_000);
+vi.setConfig({ testTimeout: 15_000 });
 
 describe('App', () => {
   it('should render', async () => {

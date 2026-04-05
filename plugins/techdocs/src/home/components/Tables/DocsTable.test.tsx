@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { screen } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { configApiRef } from '@backstage/core-plugin-api';
@@ -22,11 +24,11 @@ import { rootDocsRouteRef } from '../../../routes';
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
 
 // Hacky way to mock a specific boolean config value.
-const getOptionalBooleanMock = jest.fn().mockReturnValue(false);
-jest.mock('@backstage/core-plugin-api', () => ({
-  ...jest.requireActual('@backstage/core-plugin-api'),
+const getOptionalBooleanMock = vi.fn().mockReturnValue(false);
+vi.mock('@backstage/core-plugin-api', () => ({
+  ...vi.importActual('@backstage/core-plugin-api'),
   useApi: (apiRef: any) => {
-    const actualUseApi = jest.requireActual(
+    const actualUseApi = vi.importActual(
       '@backstage/core-plugin-api',
     ).useApi;
     const actualApi = actualUseApi(apiRef);
@@ -42,7 +44,7 @@ jest.mock('@backstage/core-plugin-api', () => ({
 
 describe('DocsTable test', () => {
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('should render documents passed', async () => {

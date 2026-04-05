@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { ConfigReader } from '@backstage/config';
@@ -27,10 +29,10 @@ import { examples } from './githubPagesEnable.examples';
 import yaml from 'yaml';
 
 const mockOctokit = {
-  request: jest.fn(),
+  request: vi.fn(),
 };
 
-jest.mock('octokit', () => ({
+vi.mock('octokit', () => ({
   Octokit: class {
     constructor() {
       return mockOctokit;
@@ -71,7 +73,7 @@ describe('github:pages', () => {
     });
   });
 
-  afterEach(jest.resetAllMocks);
+  afterEach(vi.resetAllMocks);
 
   it(`Should ${examples[0].description}`, async () => {
     let input;

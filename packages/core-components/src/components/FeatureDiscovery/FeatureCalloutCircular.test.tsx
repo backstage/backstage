@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { act, fireEvent } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { FeatureCalloutCircular } from './FeatureCalloutCircular';
@@ -43,7 +45,7 @@ const UPDATED_BOUNDING_RECT: DOMRect = {
 };
 
 beforeEach(() => {
-  Element.prototype.getBoundingClientRect = jest.fn(
+  Element.prototype.getBoundingClientRect = vi.fn(
     () => INITIAL_BOUNDING_RECT,
   );
 });
@@ -99,7 +101,7 @@ describe('<FeatureCalloutCircular />', () => {
     const text = getByTestId('text');
 
     act(() => {
-      Element.prototype.getBoundingClientRect = jest.fn(
+      Element.prototype.getBoundingClientRect = vi.fn(
         () => UPDATED_BOUNDING_RECT,
       );
 
@@ -131,7 +133,7 @@ describe('<FeatureCalloutCircular />', () => {
     const text = getByTestId('text');
 
     act(() => {
-      Element.prototype.getBoundingClientRect = jest.fn(
+      Element.prototype.getBoundingClientRect = vi.fn(
         () => UPDATED_BOUNDING_RECT,
       );
 

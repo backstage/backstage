@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi, type Mocked } from 'vitest';
+
 import { waitFor } from '@testing-library/react';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { MyGroupsPicker } from './MyGroupsPicker';
@@ -45,17 +47,17 @@ const mockIdentityApi = mockApis.identity({
 
 describe('<MyGroupsPicker />', () => {
   let entities: Entity[];
-  const onChange = jest.fn();
+  const onChange = vi.fn();
   const schema = {};
   const required = false;
 
   const catalogApi = catalogApiMock.mock({
-    getEntities: jest.fn(async () => ({ items: entities })),
+    getEntities: vi.fn(async () => ({ items: entities })),
   });
 
-  const mockErrorApi: jest.Mocked<ErrorApi> = {
-    post: jest.fn(),
-    error$: jest.fn(),
+  const mockErrorApi: Mocked<ErrorApi> = {
+    post: vi.fn(),
+    error$: vi.fn(),
   };
 
   beforeEach(() => {
@@ -85,7 +87,7 @@ describe('<MyGroupsPicker />', () => {
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should only return the groups a user is part of and not the groups a user is not part of', async () => {

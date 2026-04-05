@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { renderInTestApp, wrapInTestApp } from '@backstage/test-utils';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { CardTab, TabbedCard } from './TabbedCard';
@@ -64,7 +66,7 @@ describe('<TabbedCard />', () => {
   it('switches tabs when clicking in controlled mode', () => {
     let selectedTab = 'one';
 
-    const handleTabChange = jest.fn(
+    const handleTabChange = vi.fn(
       (_ev, newSelectedTab) => (selectedTab = newSelectedTab),
     );
 
@@ -98,7 +100,7 @@ describe('<TabbedCard />', () => {
   });
 
   it('should trigger onChange only once', async () => {
-    const mockOnChange = jest.fn();
+    const mockOnChange = vi.fn();
     const user = userEvent.setup();
 
     const rendered = render(

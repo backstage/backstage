@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { ScmIntegrations } from '../ScmIntegrations';
 import { GithubIntegrationConfig } from './config';
 import { SingleInstanceGithubCredentialsProvider } from './SingleInstanceGithubCredentialsProvider';
@@ -32,7 +34,7 @@ const resultBuilder = (host: string): GithubCredentials => {
   };
 };
 
-jest.mock('./SingleInstanceGithubCredentialsProvider');
+vi.mock('./SingleInstanceGithubCredentialsProvider');
 
 let integrations: ScmIntegrations;
 
@@ -63,7 +65,7 @@ describe('DefaultGithubCredentialsProvider tests', () => {
         },
       }),
     );
-    jest.resetAllMocks();
+    vi.resetAllMocks();
     SingleInstanceGithubCredentialsProvider.create = (
       config: GithubIntegrationConfig,
     ) => {
@@ -73,7 +75,7 @@ describe('DefaultGithubCredentialsProvider tests', () => {
         },
       };
     };
-    jest.spyOn(SingleInstanceGithubCredentialsProvider, 'create');
+    vi.spyOn(SingleInstanceGithubCredentialsProvider, 'create');
   });
 
   describe('.create', () => {

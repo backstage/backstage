@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { type EntityFilterQuery } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import {
@@ -39,7 +41,7 @@ describe('<OwnerPicker />', () => {
     makeEntity('Group', 'default', 'team-a'),
     makeEntity('Group', 'default', 'squad-b'),
   ];
-  const onChange = jest.fn();
+  const onChange = vi.fn();
   const schema = {};
   const required = false;
   let uiSchema: {
@@ -57,7 +59,7 @@ describe('<OwnerPicker />', () => {
   let props: FieldProps<string>;
 
   const catalogApi = catalogApiMock.mock({
-    getEntities: jest.fn(async () => ({ items: entities })),
+    getEntities: vi.fn(async () => ({ items: entities })),
   });
   let Wrapper: ComponentType<PropsWithChildren<{}>>;
 
@@ -77,7 +79,7 @@ describe('<OwnerPicker />', () => {
     );
   });
 
-  afterEach(() => jest.resetAllMocks());
+  afterEach(() => vi.resetAllMocks());
 
   describe('without catalogFilter and allowedKinds', () => {
     beforeEach(() => {

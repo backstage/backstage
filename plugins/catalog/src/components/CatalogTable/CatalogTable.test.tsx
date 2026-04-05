@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import {
   ANNOTATION_EDIT_URL,
   ANNOTATION_VIEW_URL,
@@ -58,11 +60,11 @@ describe('CatalogTable component', () => {
   ]);
 
   beforeEach(() => {
-    window.open = jest.fn();
+    window.open = vi.fn();
   });
 
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('should render error message', async () => {

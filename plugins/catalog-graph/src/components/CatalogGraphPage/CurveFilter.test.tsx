@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { waitFor, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { CurveFilter } from './CurveFilter';
@@ -21,7 +23,7 @@ import { renderInTestApp } from '@backstage/test-utils';
 
 describe('<CurveFilter/>', () => {
   test('should display current curve label', async () => {
-    const onChange = jest.fn();
+    const onChange = vi.fn();
     await renderInTestApp(
       <CurveFilter value="curveMonotoneX" onChange={onChange} />,
     );
@@ -30,7 +32,7 @@ describe('<CurveFilter/>', () => {
   });
 
   test('should select an alternative curve factory', async () => {
-    const onChange = jest.fn();
+    const onChange = vi.fn();
     await renderInTestApp(
       <CurveFilter value="curveStepBefore" onChange={onChange} />,
     );

@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { vi } from 'vitest';
 import { createRegisterCatalogEntitiesAction } from './createRegisterCatalogEntitiesAction';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 import { actionsRegistryServiceMock } from '@backstage/backend-test-utils/alpha';
@@ -23,7 +25,7 @@ describe('createRegisterCatalogEntitiesAction', () => {
     const mockCatalog = catalogServiceMock();
 
     const mockLocationId = 'test-location-id-1234';
-    mockCatalog.addLocation = jest.fn().mockResolvedValue({
+    mockCatalog.addLocation = vi.fn().mockResolvedValue({
       location: {
         id: mockLocationId,
         type: 'url',

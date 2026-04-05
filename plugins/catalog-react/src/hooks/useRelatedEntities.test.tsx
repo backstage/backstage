@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { Entity } from '@backstage/catalog-model';
 import { TestApiProvider } from '@backstage/test-utils';
 import { renderHook, waitFor } from '@testing-library/react';
@@ -24,7 +26,7 @@ import { catalogApiMock } from '../testUtils';
 
 describe('useRelatedEntities', () => {
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   const entity: Entity = {
