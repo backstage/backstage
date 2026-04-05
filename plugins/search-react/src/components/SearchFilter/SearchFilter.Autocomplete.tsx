@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ChangeEvent, useState, useMemo } from 'react';
+import { ChangeEvent, useState, useRef } from 'react';
 import Chip from '@material-ui/core/Chip';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete, {
@@ -66,13 +66,22 @@ export const AutocompleteFilter = (props: SearchAutocompleteFilterProps) => {
     valuesDebounceMs,
   );
   const { filters, setFilters } = useSearch();
-  const filterValueWithLabel = ensureFilterValueWithLabel(
-    filters[name] as string | string[] | undefined,
-  );
-  const filterValue = useMemo(
-    () => filterValueWithLabel || (multiple ? [] : null),
-    [filterValueWithLabel, multiple],
-  );
+
+  // Stabilize filterValue to prevent referential changes on every render.
+  // ensureFilterValueWithLabel creates new objects each time, which would
+  // cause MUI Autocomplete to reset the input (via onInputChange 'reset').
+  const filterValueRef = useRef<
+    FilterValueWithLabel | FilterValueWithLabel[] | null
+  >(multiple ? [] : null);
+  const rawFilterValue = filters[name] as string | string[] | undefined;
+  const serializedRaw = JSON.stringify(rawFilterValue);
+  const prevSerializedRef = useRef<string | undefined>(undefined);
+  if (prevSerializedRef.current !== serializedRaw) {
+    prevSerializedRef.current = serializedRaw;
+    const withLabel = ensureFilterValueWithLabel(rawFilterValue);
+    filterValueRef.current = withLabel || (multiple ? [] : null);
+  }
+  const filterValue = filterValueRef.current;
 
   // Set new filter values on input change.
   const handleChange = (
@@ -92,6 +101,15 @@ export const AutocompleteFilter = (props: SearchAutocompleteFilterProps) => {
       }
       return { ...others };
     });
+
+    // Since we ignore 'reset' reason in onInputChange (to prevent the input
+    // from being cleared on every re-render), we must explicitly clear or
+    // update the input after a selection.
+    if (multiple) {
+      setInputValue('');
+    } else {
+      setInputValue(newValue && !Array.isArray(newValue) ? newValue.label : '');
+    }
   };
 
   // Provide the input field.
@@ -125,8 +143,17 @@ export const AutocompleteFilter = (props: SearchAutocompleteFilterProps) => {
       loading={loading}
       value={filterValue}
       onChange={handleChange}
-      onInputChange={(_, newValue) => setInputValue(newValue)}
+      inputValue={inputValue}
+      onInputChange={(_, newValue, reason) => {
+        // In multiple mode, ignore 'reset' to prevent MUI from clearing the
+        // input when the value prop reference changes on re-render.
+        // In single mode, 'reset' is needed to display the selected label.
+        if (reason !== 'reset' || !multiple) {
+          setInputValue(newValue);
+        }
+      }}
       getOptionLabel={option => option.label}
+      getOptionSelected={(option, value) => option.value === value.value}
       renderInput={renderInput}
       renderTags={renderTags}
     />

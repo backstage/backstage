@@ -447,5 +447,101 @@ describe('SearchFilter.Autocomplete', () => {
         ).toBeInTheDocument();
       });
     });
+
+    it('allows typing after first selection', async () => {
+      const moreValues = ['value1', 'value2', 'value3'];
+      render(
+        <TestApiProvider
+          apis={[
+            [searchApiRef, searchApiMock],
+            [configApiRef, configApiMock],
+          ]}
+        >
+          <SearchContextProvider>
+            <SearchFilter.Autocomplete
+              multiple
+              name={name}
+              values={moreValues}
+            />
+            <SearchContextFilterSpy name={name} />
+          </SearchContextProvider>
+        </TestApiProvider>,
+      );
+
+      const autocomplete = screen.getByRole('combobox');
+      const input = within(autocomplete).getByRole('textbox');
+
+      // Select the first option.
+      await userEvent.click(input);
+      await waitFor(() => {
+        screen.getByRole('listbox');
+      });
+      await userEvent.click(
+        screen.getByRole('option', { name: moreValues[0] }),
+      );
+
+      // Verify the first value is selected.
+      await waitFor(() => {
+        expect(screen.getByTestId(`${name}-filter-spy`)).toHaveTextContent(
+          moreValues[0],
+        );
+      });
+
+      // Type into the input after the first selection.
+      await userEvent.type(input, 'value');
+
+      // The typed text should appear in the input (not be eaten).
+      await waitFor(() => {
+        expect(input).toHaveValue('value');
+      });
+    });
+
+    it('allows typing after removing a selection', async () => {
+      render(
+        <TestApiProvider
+          apis={[
+            [searchApiRef, searchApiMock],
+            [configApiRef, configApiMock],
+          ]}
+        >
+          <SearchContextProvider>
+            <SearchFilter.Autocomplete multiple name={name} values={values} />
+            <SearchContextFilterSpy name={name} />
+          </SearchContextProvider>
+        </TestApiProvider>,
+      );
+
+      const autocomplete = screen.getByRole('combobox');
+      const input = within(autocomplete).getByRole('textbox');
+
+      // Select the first option.
+      await userEvent.click(input);
+      await waitFor(() => {
+        screen.getByRole('listbox');
+      });
+      await userEvent.click(screen.getByRole('option', { name: values[0] }));
+
+      // Verify the first value is selected.
+      await waitFor(() => {
+        expect(screen.getByTestId(`${name}-filter-spy`)).toHaveTextContent(
+          values[0],
+        );
+      });
+
+      // Remove the selection via the Clear button.
+      const clearButton = within(autocomplete).getByLabelText('Clear');
+      await userEvent.click(clearButton);
+      await waitFor(() => {
+        expect(screen.getByTestId(`${name}-filter-spy`)).toHaveTextContent('');
+      });
+
+      // Type into the input after removing the selection.
+      await userEvent.type(input, 'val');
+
+      // The typed text should appear in the input.
+      await waitFor(() => {
+        expect(input).toHaveValue('val');
+      });
+    });
   });
 });
