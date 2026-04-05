@@ -52,6 +52,7 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
-    "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
+    "@backstage/plugin-scaffolder-node-test-utils": "workspace:^",
+    "vitest": "^4.1.2"
   }
 }

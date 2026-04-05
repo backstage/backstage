@@ -67,7 +67,8 @@
     "@types/ping": "^0.4.1",
     "@types/supertest": "^2.0.8",
     "@types/yarnpkg__lockfile": "^1.1.4",
-    "supertest": "^7.0.0"
+    "supertest": "^7.0.0",
+    "vitest": "^4.1.2"
   },
   "configSchema": "config.d.ts"
 }

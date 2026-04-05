@@ -52,7 +52,8 @@
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/config-loader": "workspace:^",
-    "msw": "^1.0.0"
+    "msw": "^1.0.0",
+    "vitest": "^4.1.2"
   },
   "configSchema": "config.d.ts"
 }

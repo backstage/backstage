@@ -47,6 +47,7 @@
     "fs-extra": "^11.2.0",
     "nodemon": "^3.0.1",
     "snyk-nodejs-lockfile-parser": "^2.0.0",
+    "vitest": "^4.1.2",
     "yaml": "^2.0.0"
   }
 }

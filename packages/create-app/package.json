@@ -61,6 +61,7 @@
     "@types/node": "^22.13.14",
     "@types/recursive-readdir": "^2.2.0",
     "msw": "^2.0.0",
-    "nodemon": "^3.0.1"
+    "nodemon": "^3.0.1",
+    "vitest": "^4.1.2"
   }
 }

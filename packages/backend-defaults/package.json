@@ -221,6 +221,7 @@
     "msw": "^1.0.0",
     "node-mocks-http": "^1.0.0",
     "supertest": "^7.0.0",
+    "vitest": "^4.1.2",
     "wait-for-expect": "^4.0.0"
   },
   "peerDependencies": {

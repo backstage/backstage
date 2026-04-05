@@ -47,7 +47,8 @@
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@types/fs-extra": "^11.0.0",
-    "@types/proper-lockfile": "^4"
+    "@types/proper-lockfile": "^4",
+    "vitest": "^4.1.2"
   },
   "optionalDependencies": {
     "keytar": "^7.9.0"

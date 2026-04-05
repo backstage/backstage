@@ -80,6 +80,7 @@
     "@types/express": "^4.17.6",
     "msw": "^1.0.0",
     "supertest": "^7.0.0",
+    "vitest": "^4.1.2",
     "ws": "^8.18.0"
   },
   "configSchema": "config.d.ts"

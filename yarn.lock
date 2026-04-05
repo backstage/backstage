@@ -2591,6 +2591,7 @@ __metadata:
     tar: "npm:^7.5.6"
     triple-beam: "npm:^1.4.1"
     uuid: "npm:^11.0.0"
+    vitest: "npm:^4.1.2"
     wait-for-expect: "npm:^4.0.0"
     winston: "npm:^3.2.1"
     winston-transport: "npm:^4.5.0"
@@ -2833,6 +2834,7 @@ __metadata:
     "@backstage/cli-node": "workspace:^"
     "@backstage/errors": "workspace:^"
     cleye: "npm:^2.3.0"
+    vitest: "npm:^4.1.2"
     zod: "npm:^3.25.76 || ^4.0.0"
   bin:
     cli-module-actions: bin/backstage-cli-module-actions
@@ -2855,6 +2857,7 @@ __metadata:
     inquirer: "npm:^8.2.0"
     keytar: "npm:^7.9.0"
     proper-lockfile: "npm:^4.1.2"
+    vitest: "npm:^4.1.2"
     yaml: "npm:^2.0.0"
     zod: "npm:^3.25.76"
   dependenciesMeta:
@@ -2932,6 +2935,7 @@ __metadata:
     ts-checker-rspack-plugin: "npm:^1.1.5"
     ts-morph: "npm:^24.0.0"
     util: "npm:^0.12.3"
+    vitest: "npm:^4.1.2"
     webpack: "npm:~5.105.0"
     webpack-dev-server: "npm:^5.0.0"
     yml-loader: "npm:^2.1.0"
@@ -3066,6 +3070,7 @@ __metadata:
     ora: "npm:^5.3.0"
     replace-in-file: "npm:^7.1.0"
     semver: "npm:^7.5.3"
+    vitest: "npm:^4.1.2"
   bin:
     cli-module-migrate: bin/backstage-cli-module-migrate
   languageName: unknown
@@ -3373,6 +3378,7 @@ __metadata:
     react-router-dom-stable: "npm:react-router-dom@^6.3.0"
     react-router-stable: "npm:react-router@^6.3.0"
     react-use: "npm:^17.2.4"
+    vitest: "npm:^4.1.2"
     zen-observable: "npm:^0.10.0"
     zod: "npm:^3.25.76 || ^4.0.0"
   peerDependencies:
@@ -3493,6 +3499,7 @@ __metadata:
     rehype-raw: "npm:^6.0.0"
     rehype-sanitize: "npm:^5.0.0"
     remark-gfm: "npm:^3.0.1"
+    vitest: "npm:^4.1.2"
     zen-observable: "npm:^0.10.0"
     zod: "npm:^3.25.76 || ^4.0.0"
   peerDependencies:
@@ -3527,6 +3534,7 @@ __metadata:
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
     react-router-dom: "npm:^6.30.2"
+    vitest: "npm:^4.1.2"
     zod: "npm:^3.25.76 || ^4.0.0"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
@@ -3560,6 +3568,7 @@ __metadata:
     nodemon: "npm:^3.0.1"
     ora: "npm:^5.3.0"
     recursive-readdir: "npm:^2.2.2"
+    vitest: "npm:^4.1.2"
   bin:
     backstage-create-app: bin/backstage-create-app
   languageName: unknown
@@ -3930,6 +3939,7 @@ __metadata:
     luxon: "npm:^3.0.0"
     msw: "npm:^1.0.0"
     p-throttle: "npm:^4.1.1"
+    vitest: "npm:^4.1.2"
   languageName: unknown
   linkType: soft
 
@@ -4024,6 +4034,7 @@ __metadata:
     react-dom: "npm:^18.0.2"
     react-router-dom: "npm:^6.30.2"
     swagger-ui-react: "npm:^5.27.1"
+    vitest: "npm:^4.1.2"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
@@ -4632,6 +4643,7 @@ __metadata:
     passport: "npm:^0.7.0"
     supertest: "npm:^7.0.0"
     uuid: "npm:^11.0.0"
+    vitest: "npm:^4.1.2"
     zod: "npm:^3.25.76 || ^4.0.0"
     zod-validation-error: "npm:^5.0.0"
   languageName: unknown
@@ -4790,6 +4802,7 @@ __metadata:
     "@backstage/plugin-events-node": "workspace:^"
     msw: "npm:^1.0.0"
     uuid: "npm:^11.0.0"
+    vitest: "npm:^4.1.2"
   languageName: unknown
   linkType: soft
 
@@ -4865,6 +4878,7 @@ __metadata:
     "@backstage/plugin-catalog-node": "workspace:^"
     "@backstage/plugin-kubernetes-common": "workspace:^"
     "@google-cloud/container": "npm:^5.0.0"
+    vitest: "npm:^4.1.2"
   languageName: unknown
   linkType: soft
 
@@ -4902,6 +4916,7 @@ __metadata:
     "@backstage/plugin-catalog-node": "workspace:^"
     p-limit: "npm:^3.0.2"
     uuid: "npm:^11.0.0"
+    vitest: "npm:^4.1.2"
   languageName: unknown
   linkType: soft
 
@@ -4953,6 +4968,7 @@ __metadata:
     msw: "npm:^2.0.0"
     octokit: "npm:^3.0.0"
     uuid: "npm:^11.0.0"
+    vitest: "npm:^4.1.2"
   languageName: unknown
   linkType: soft
 
@@ -5017,6 +5033,7 @@ __metadata:
     knex: "npm:^3.0.0"
     luxon: "npm:^3.0.0"
     uuid: "npm:^11.0.0"
+    vitest: "npm:^4.1.2"
   languageName: unknown
   linkType: soft
 
@@ -5188,6 +5205,7 @@ __metadata:
     prom-client: "npm:^15.0.0"
     supertest: "npm:^7.0.0"
     uuid: "npm:^11.0.0"
+    vitest: "npm:^4.1.2"
     wait-for-expect: "npm:^4.0.0"
     winston: "npm:^3.13.0"
     yaml: "npm:^2.0.0"
@@ -5294,6 +5312,7 @@ __metadata:
     react-hook-form: "npm:^7.12.2"
     react-router-dom: "npm:^6.30.2"
     react-use: "npm:^17.2.4"
+    vitest: "npm:^4.1.2"
     yaml: "npm:^2.0.0"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
@@ -5375,6 +5394,7 @@ __metadata:
     react-router-dom: "npm:^6.30.2"
     react-test-renderer: "npm:^16.13.1"
     react-use: "npm:^17.2.4"
+    vitest: "npm:^4.1.2"
     yaml: "npm:^2.0.0"
     zen-observable: "npm:^0.10.0"
     zod: "npm:^3.25.76 || ^4.0.0"
@@ -5488,6 +5508,7 @@ __metadata:
     react-router-dom: "npm:^6.30.2"
     react-use: "npm:^17.2.4"
     swr: "npm:^2.2.5"
+    vitest: "npm:^4.1.2"
     zen-observable: "npm:^0.10.0"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
@@ -5564,6 +5585,7 @@ __metadata:
     ping: "npm:^0.4.1"
     semver: "npm:^7.5.3"
     supertest: "npm:^7.0.0"
+    vitest: "npm:^4.1.2"
     yn: "npm:^4.0.0"
   languageName: unknown
   linkType: soft
@@ -5966,6 +5988,7 @@ __metadata:
     msw: "npm:^1.0.0"
     node-fetch: "npm:^2.7.0"
     supertest: "npm:^7.0.0"
+    vitest: "npm:^4.1.2"
     ws: "npm:^8.18.0"
   languageName: unknown
   linkType: soft
@@ -6039,6 +6062,7 @@ __metadata:
     msw: "npm:^1.3.1"
     node-fetch: "npm:^2.7.0"
     supertest: "npm:^7.0.0"
+    vitest: "npm:^4.1.2"
     winston: "npm:^3.2.1"
   languageName: unknown
   linkType: soft
@@ -6079,6 +6103,7 @@ __metadata:
     react-dom: "npm:^18.0.2"
     react-router-dom: "npm:^6.30.2"
     react-use: "npm:^17.4.0"
+    vitest: "npm:^4.1.2"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
@@ -6201,6 +6226,7 @@ __metadata:
     lodash: "npm:^4.17.21"
     nodemailer: "npm:^8.0.4"
     p-throttle: "npm:^4.1.1"
+    vitest: "npm:^4.1.2"
   languageName: unknown
   linkType: soft
 
@@ -6450,6 +6476,7 @@ __metadata:
     lodash: "npm:^4.17.21"
     msw: "npm:^1.0.0"
     supertest: "npm:^7.0.0"
+    vitest: "npm:^4.1.2"
     yn: "npm:^4.0.0"
     zod: "npm:^3.25.76 || ^4.0.0"
   languageName: unknown
@@ -6489,6 +6516,7 @@ __metadata:
     express-promise-router: "npm:^4.1.0"
     msw: "npm:^1.0.0"
     supertest: "npm:^7.0.0"
+    vitest: "npm:^4.1.2"
     zod: "npm:^3.25.76 || ^4.0.0"
     zod-to-json-schema: "npm:^3.25.1"
   languageName: unknown
@@ -6511,6 +6539,7 @@ __metadata:
     react-dom: "npm:^18.0.2"
     react-router-dom: "npm:^6.30.2"
     swr: "npm:^2.0.0"
+    vitest: "npm:^4.1.2"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
@@ -6541,6 +6570,7 @@ __metadata:
     express-promise-router: "npm:^4.1.0"
     http-proxy-middleware: "npm:^2.0.0"
     msw: "npm:^2.0.0"
+    vitest: "npm:^4.1.2"
   languageName: unknown
   linkType: soft
 
@@ -6569,6 +6599,7 @@ __metadata:
     "@backstage/plugin-scaffolder-node": "workspace:^"
     "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
     azure-devops-node-api: "npm:^14.0.0"
+    vitest: "npm:^4.1.2"
     yaml: "npm:^2.0.0"
   languageName: unknown
   linkType: soft
@@ -6589,6 +6620,7 @@ __metadata:
     bitbucket: "npm:^2.12.0"
     fs-extra: "npm:^11.2.0"
     msw: "npm:^1.0.0"
+    vitest: "npm:^4.1.2"
     yaml: "npm:^2.0.0"
     zod: "npm:^3.25.76 || ^4.0.0"
   languageName: unknown
@@ -6728,6 +6760,7 @@ __metadata:
     libsodium-wrappers: "npm:^0.8.0"
     octokit: "npm:^3.0.0"
     octokit-plugin-create-pull-request: "npm:^5.0.0"
+    vitest: "npm:^4.1.2"
     yaml: "npm:^2.0.0"
     zod: "npm:^3.25.76 || ^4.0.0"
   languageName: unknown
@@ -6868,6 +6901,7 @@ __metadata:
     supertest: "npm:^7.0.0"
     triple-beam: "npm:^1.4.1"
     uuid: "npm:^11.0.0"
+    vitest: "npm:^4.1.2"
     wait-for-expect: "npm:^4.0.0"
     winston: "npm:^3.2.1"
     winston-transport: "npm:^4.7.0"
@@ -6895,6 +6929,7 @@ __metadata:
     json-schema: "npm:^0.4.0"
     msw: "npm:^1.0.0"
     uri-template: "npm:^2.0.0"
+    vitest: "npm:^4.1.2"
     zen-observable: "npm:^0.10.0"
   languageName: unknown
   linkType: soft
@@ -7016,6 +7051,7 @@ __metadata:
     react-use: "npm:^17.2.4"
     swr: "npm:^2.0.0"
     use-immer: "npm:^0.11.0"
+    vitest: "npm:^4.1.2"
     zen-observable: "npm:^0.10.0"
     zod: "npm:^3.25.76 || ^4.0.0"
     zod-to-json-schema: "npm:^3.25.1"
@@ -7103,6 +7139,7 @@ __metadata:
     react-use: "npm:^17.2.4"
     react-window: "npm:^1.8.10"
     swr: "npm:^2.0.0"
+    vitest: "npm:^4.1.2"
     yaml: "npm:^2.0.0"
     zod: "npm:^3.25.76 || ^4.0.0"
     zod-to-json-schema: "npm:^3.25.1"
@@ -7272,6 +7309,7 @@ __metadata:
     lodash: "npm:^4.17.21"
     qs: "npm:^6.10.1"
     supertest: "npm:^7.0.0"
+    vitest: "npm:^4.1.2"
     yn: "npm:^4.0.0"
     zod: "npm:^3.25.76 || ^4.0.0"
   languageName: unknown
@@ -7318,6 +7356,7 @@ __metadata:
     react-router-dom: "npm:^6.30.2"
     react-use: "npm:^17.3.2"
     uuid: "npm:^11.0.2"
+    vitest: "npm:^4.1.2"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
@@ -7360,6 +7399,7 @@ __metadata:
     react-dom: "npm:^18.0.2"
     react-router-dom: "npm:^6.30.2"
     react-use: "npm:^17.2.4"
+    vitest: "npm:^4.1.2"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
@@ -7532,6 +7572,7 @@ __metadata:
     msw: "npm:^2.0.0"
     p-limit: "npm:^3.1.0"
     supertest: "npm:^7.0.0"
+    vitest: "npm:^4.1.2"
     winston: "npm:^3.2.1"
   languageName: unknown
   linkType: soft
@@ -7571,6 +7612,7 @@ __metadata:
     react-dom: "npm:^18.0.2"
     react-router-dom: "npm:^6.30.2"
     shadow-dom-testing-library: "npm:^1.13.1"
+    vitest: "npm:^4.1.2"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
@@ -7623,6 +7665,7 @@ __metadata:
     p-limit: "npm:^3.1.0"
     recursive-readdir: "npm:^2.2.2"
     supertest: "npm:^7.0.0"
+    vitest: "npm:^4.1.2"
     winston: "npm:^3.2.1"
   languageName: unknown
   linkType: soft
@@ -7711,6 +7754,7 @@ __metadata:
     react-helmet: "npm:6.1.0"
     react-router-dom: "npm:^6.30.2"
     react-use: "npm:^17.2.4"
+    vitest: "npm:^4.1.2"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
@@ -7790,6 +7834,7 @@ __metadata:
     react-dom: "npm:^18.0.2"
     react-router-dom: "npm:^6.30.2"
     react-use: "npm:^17.2.4"
+    vitest: "npm:^4.1.2"
     zen-observable: "npm:^0.10.0"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
@@ -51383,6 +51428,7 @@ __metadata:
     nodemon: "npm:^3.0.1"
     semver: "npm:^7.6.0"
     snyk-nodejs-lockfile-parser: "npm:^2.0.0"
+    vitest: "npm:^4.1.2"
     yaml: "npm:^2.0.0"
   languageName: unknown
   linkType: soft
