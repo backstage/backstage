@@ -51,7 +51,7 @@ describe('sentry:project:create action', () => {
   }> =>
     createMockActionContext({
       workspacePath: './dev/proj',
-      logger: vi.importMock('winston'),
+      logger: await vi.importMock('winston'),
       input: {
         organizationSlug: 'org',
         teamSlug: 'team',

@@ -49,10 +49,8 @@ import { BackstageCredentials } from '@backstage/backend-plugin-api';
 describe('KubernetesFanOutHandler', () => {
   const fetchObjectsForService = vi.fn();
   const fetchPodMetricsByNamespaces = vi.fn();
-  const getClustersByEntity = vi.fn<
-    Promise<{ clusters: ClusterDetails[] }>,
-    [Entity]
-  >();
+  const getClustersByEntity =
+    vi.fn<(entity: Entity) => Promise<{ clusters: ClusterDetails[] }>>();
 
   let config: Config;
   let sut: KubernetesFanOutHandler;
@@ -1234,10 +1232,12 @@ describe('KubernetesFanOutHandler', () => {
         );
 
         const fleet: Mocked<KubernetesServiceLocator> = {
-          getClustersByEntity: jest
+          getClustersByEntity: vi
             .fn<
-              Promise<{ clusters: ClusterDetails[] }>,
-              [Entity, ServiceLocatorRequestContext]
+              (
+                entity: Entity,
+                context: ServiceLocatorRequestContext,
+              ) => Promise<{ clusters: ClusterDetails[] }>
             >()
             .mockResolvedValue({
               clusters: [

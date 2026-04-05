@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type Mock} from 'vitest';
+import { vi, type Mock } from 'vitest';
 
 vi.mock('@backstage/plugin-scaffolder-node', () => {
   return {
@@ -51,7 +51,7 @@ vi.mock('./helpers', () => {
 });
 
 const initRepoAndPushMocked = initRepoAndPush as Mock<
-  Promise<{ commitHash: string }>
+  (...args: any[]) => Promise<{ commitHash: string }>
 >;
 
 const mockOctokit = {

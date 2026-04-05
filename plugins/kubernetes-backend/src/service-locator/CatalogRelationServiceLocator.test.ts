@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type Mock} from 'vitest';
+import { vi } from 'vitest';
 import { Entity } from '@backstage/catalog-model';
 import { ServiceLocatorRequestContext } from '@backstage/plugin-kubernetes-node';
 import { CatalogRelationServiceLocator } from './CatalogRelationServiceLocator';

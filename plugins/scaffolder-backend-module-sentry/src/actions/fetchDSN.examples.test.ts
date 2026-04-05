@@ -48,7 +48,7 @@ describe('sentry:fetch:dsn action', () => {
   }> =>
     createMockActionContext({
       workspacePath: './dev/proj',
-      logger: vi.importMock('winston'),
+      logger: await vi.importMock('winston'),
       input: {
         organizationSlug: 'my-org',
         projectSlug: 'my-project',

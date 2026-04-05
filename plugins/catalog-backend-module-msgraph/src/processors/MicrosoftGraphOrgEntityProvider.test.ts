@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type Mock} from 'vitest';
+import { vi, type Mock } from 'vitest';
 import {
   SchedulerService,
   SchedulerServiceTaskRunner,
@@ -47,7 +47,7 @@ vi.mock('../microsoftGraph', () => {
 });
 
 const readMicrosoftGraphOrgMocked = readMicrosoftGraphOrg as Mock<
-  Promise<{ users: UserEntity[]; groups: GroupEntity[] }>
+  (...args: any[]) => Promise<{ users: UserEntity[]; groups: GroupEntity[] }>
 >;
 
 class PersistingTaskRunner implements SchedulerServiceTaskRunner {
@@ -65,9 +65,9 @@ class PersistingTaskRunner implements SchedulerServiceTaskRunner {
 
 describe('MicrosoftGraphOrgEntityProvider', () => {
   beforeEach(() => {
-    jest
-      .spyOn(MicrosoftGraphClient, 'create')
-      .mockReturnValue({} as unknown as MicrosoftGraphClient);
+    vi.spyOn(MicrosoftGraphClient, 'create').mockReturnValue(
+      {} as unknown as MicrosoftGraphClient,
+    );
 
     readMicrosoftGraphOrgMocked.mockResolvedValue({
       users: [
@@ -286,7 +286,7 @@ describe('MicrosoftGraphOrgEntityProvider', () => {
     controller.abort();
 
     readMicrosoftGraphOrgMocked.mockImplementationOnce(
-      async (_client, _tenantId, options) => {
+      async (_client: any, _tenantId: any, options: any) => {
         if (options.signal?.aborted) {
           const error = new Error('The operation was aborted');
           error.name = 'AbortError';

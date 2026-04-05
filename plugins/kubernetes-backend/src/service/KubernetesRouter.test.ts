@@ -375,7 +375,7 @@ describe('API integration tests', () => {
       };
 
       const mockFetcher: Mocked<KubernetesFetcher> = {
-        fetchPodMetricsByNamespaces: jest
+        fetchPodMetricsByNamespaces: vi
           .fn()
           .mockResolvedValue({ errors: [], responses: [] }),
         fetchObjectsForService: vi.fn().mockResolvedValue({
