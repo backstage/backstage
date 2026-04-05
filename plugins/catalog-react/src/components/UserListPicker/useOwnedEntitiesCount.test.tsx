@@ -43,8 +43,8 @@ const mockIdentityApi = mockApis.identity({
 });
 vi.spyOn(mockIdentityApi, 'getBackstageIdentity');
 
-vi.mock('@backstage/core-plugin-api', () => {
-  const actual = vi.importActual('@backstage/core-plugin-api');
+vi.mock('@backstage/core-plugin-api', async () => {
+  const actual = await vi.importActual('@backstage/core-plugin-api');
   return {
     ...actual,
     useApi: (ref: ApiRef<any>) => {

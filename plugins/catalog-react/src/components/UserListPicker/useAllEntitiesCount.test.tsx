@@ -28,8 +28,8 @@ import { useMountEffect } from '@react-hookz/web';
 
 const mockCatalogApi = catalogApiMock.mock();
 
-vi.mock('@backstage/core-plugin-api', () => {
-  const actual = vi.importActual('@backstage/core-plugin-api');
+vi.mock('@backstage/core-plugin-api', async () => {
+  const actual = await vi.importActual('@backstage/core-plugin-api');
   return {
     ...actual,
     useApi: (ref: ApiRef<any>) =>

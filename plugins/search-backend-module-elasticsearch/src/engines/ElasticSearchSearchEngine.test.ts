@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type Mock} from 'vitest';
+import { vi } from 'vitest';
 
 import { ConfigReader } from '@backstage/config';
 import { errors } from '@elastic/elasticsearch';

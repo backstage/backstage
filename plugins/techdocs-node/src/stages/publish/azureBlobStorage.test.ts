@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type Mock} from 'vitest';
+import { vi, type Mock } from 'vitest';
 
 import { Entity, DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
@@ -285,7 +285,7 @@ describe('AzureBlobStoragePublish', () => {
   const directory = getEntityRootDir(entity);
 
   beforeEach(() => {
-    (logger.error as Mock).mockClear();
+    (logger.error as ReturnType<typeof vi.fn>).mockClear();
   });
 
   const files = {
@@ -581,7 +581,7 @@ describe('AzureBlobStoragePublish', () => {
 
     it('should handle stream pipe errors', async () => {
       // Get BlockBlobClient from the mock module and replace the download method with a failing one
-      const { BlockBlobClient } = vi.importMock('@azure/storage-blob');
+      const { BlockBlobClient } = await vi.importMock('@azure/storage-blob');
       const originalDownload = BlockBlobClient.prototype.download;
       BlockBlobClient.prototype.download = function () {
         return Promise.resolve({

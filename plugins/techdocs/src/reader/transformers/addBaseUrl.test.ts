@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type Mock} from 'vitest';
+import { vi } from 'vitest';
 
 import { waitFor } from '@testing-library/react';
 import { TechDocsStorageApi } from '../../api';
@@ -25,15 +25,17 @@ const DOC_STORAGE_URL = 'https://example-host.storage.googleapis.com';
 const API_ORIGIN_URL = 'https://backstage.example.com/api/techdocs';
 
 const techdocsStorageApi: TechDocsStorageApi = {
-  getBaseUrl: vi.fn(o =>
+  getBaseUrl: vi.fn((o: string) =>
     Promise.resolve(new URL(o, DOC_STORAGE_URL).toString()),
   ),
   getEntityDocs: () => new Promise(resolve => resolve('yes!')),
   syncEntityDocs: () => new Promise(resolve => resolve('updated')),
-  getApiOrigin: vi.fn(() => new Promise(resolve => resolve(API_ORIGIN_URL))),
+  getApiOrigin: vi.fn(
+    (): Promise<string> => new Promise(resolve => resolve(API_ORIGIN_URL)),
+  ),
   getBuilder: vi.fn(),
   getStorageUrl: vi.fn(),
-};
+} as TechDocsStorageApi;
 
 const fixture = `
   <html>

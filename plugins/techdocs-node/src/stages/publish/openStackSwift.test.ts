@@ -36,14 +36,14 @@ import {
 
 const mockDir = createMockDirectory();
 
-vi.mock('@trendyol-js/openstack-swift-sdk', () => {
+vi.mock('@trendyol-js/openstack-swift-sdk', async () => {
   const {
     ContainerMetaResponse,
     DownloadResponse,
     NotFound,
     ObjectMetaResponse,
     UploadResponse,
-  }: typeof import('@trendyol-js/openstack-swift-sdk') = vi.importActual(
+  }: typeof import('@trendyol-js/openstack-swift-sdk') = await vi.importActual(
     '@trendyol-js/openstack-swift-sdk',
   );
 

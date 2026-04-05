@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type Mock} from 'vitest';
+import { vi, type Mock } from 'vitest';
 
 import {
   AuthorizeResult,
@@ -85,14 +85,14 @@ const testRule3 = createPermissionRule({
 const defaultMockedGetResources1: CreatePermissionIntegrationRouterResourceOptions<
   string,
   { id: string }
->['getResources'] = vi.fn(async resourceRefs =>
+>['getResources'] = vi.fn(async (resourceRefs: string[]) =>
   resourceRefs.map(resourceRef => ({ id: resourceRef })),
 );
 
 const defaultMockedGetResources2: CreatePermissionIntegrationRouterResourceOptions<
   string,
   { id: string }
->['getResources'] = vi.fn(async resourceRefs =>
+>['getResources'] = vi.fn(async (resourceRefs: string[]) =>
   resourceRefs.map(resourceRef => ({ id: resourceRef })),
 );
 
@@ -754,7 +754,7 @@ describe('createPermissionIntegrationRouter', () => {
       const mockedGetResources: CreatePermissionIntegrationRouterResourceOptions<
         string,
         { id: string }
-      >['getResources'] = vi.fn(async resourceRefs =>
+      >['getResources'] = vi.fn(async (resourceRefs: string[]) =>
         resourceRefs.map(resourceRef =>
           resourceRef === 'default:test/missing-resource'
             ? undefined

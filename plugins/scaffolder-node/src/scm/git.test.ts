@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { vi , type Mock} from 'vitest';
+import { vi, type Mock } from 'vitest';
+
 vi.mock('isomorphic-git');
 vi.mock('isomorphic-git/http/node');
 vi.mock('fs-extra');
@@ -232,7 +233,7 @@ describe('Git', () => {
         isomorphic.clone as unknown as Mock<(typeof isomorphic)['clone']>
       ).mock.calls[0][0]!;
 
-      expect(onAuth()).toEqual(auth);
+      expect(onAuth!('', { username: '' })).toEqual(auth);
     });
 
     it('should pass the provided callback as the onAuth handler when on auth is specified', async () => {
@@ -251,7 +252,7 @@ describe('Git', () => {
         isomorphic.clone as unknown as Mock<(typeof isomorphic)['clone']>
       ).mock.calls[0][0]!;
 
-      expect(onAuth()).toEqual(auth);
+      expect(onAuth!('', { username: '' })).toEqual(auth);
     });
 
     it('should propagate the data from the error handler', async () => {
@@ -366,7 +367,7 @@ describe('Git', () => {
         isomorphic.fetch as unknown as Mock<(typeof isomorphic)['fetch']>
       ).mock.calls[0][0]!;
 
-      expect(onAuth()).toEqual(auth);
+      expect(onAuth!('', { username: '' })).toEqual(auth);
     });
 
     it('should propagate the data from the error handler', async () => {
@@ -543,7 +544,7 @@ describe('Git', () => {
         isomorphic.push as unknown as Mock<(typeof isomorphic)['push']>
       ).mock.calls[0][0]!;
 
-      expect(onAuth()).toEqual(auth);
+      expect(onAuth!('', { username: '' })).toEqual(auth);
     });
 
     it('should propagate the data from the error handler', async () => {
