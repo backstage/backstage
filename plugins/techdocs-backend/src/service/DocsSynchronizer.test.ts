@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi, vi, type Mocked , type MockedClass} from 'vitest';
+import { vi, type Mock, type Mocked, type MockedClass } from 'vitest';
 
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
@@ -369,9 +369,7 @@ describe('DocsSynchronizer', () => {
 
     it('should gracefully handle errors', async () => {
       (shouldCheckForUpdate as Mock).mockReturnValue(true);
-      (publisher.fetchTechDocsMetadata as Mock).mockRejectedValue(
-        new Error(),
-      );
+      (publisher.fetchTechDocsMetadata as Mock).mockRejectedValue(new Error());
 
       await docsSynchronizer.doCacheSync({
         responseHandler: mockResponseHandler,

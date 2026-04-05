@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type MockInstance, type Mock} from 'vitest';
+import { vi, type MockInstance, type Mock } from 'vitest';
 
 import { render } from '@testing-library/react';
 import { TechDocsLiveReload, utils } from './LiveReloadAddon';
@@ -67,12 +67,10 @@ describe('TechDocsLiveReload', () => {
     global.XMLHttpRequest = MockXHR as any;
 
     // Spy on the utils object's reloadPage method
-    reloadPageSpy = jest
-      .spyOn(utils, 'reloadPage')
-      .mockImplementation(() => {});
+    reloadPageSpy = vi.spyOn(utils, 'reloadPage').mockImplementation(() => {});
 
-    vi.spyOn(window, 'addEventListener').mockImplementation(() => {});
-    vi.spyOn(window, 'removeEventListener').mockImplementation(() => {});
+    vi.spyOn(window, 'addEventListener').mockImplementation(() => undefined);
+    vi.spyOn(window, 'removeEventListener').mockImplementation(() => undefined);
     Object.defineProperty(document, 'visibilityState', {
       value: 'visible',
       configurable: true,

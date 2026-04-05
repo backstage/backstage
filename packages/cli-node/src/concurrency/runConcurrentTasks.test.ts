@@ -128,7 +128,7 @@ describe('runConcurrentTasks', () => {
   });
 
   it('supports the deprecated BACKSTAGE_CLI_BUILD_PARALLEL with a warning', async () => {
-    const warnSpy = vi.spyOn(console, 'warn').mockImplementation();
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
     process.env.BACKSTAGE_CLI_BUILD_PARALLEL = '2';
     await runConcurrentTasks({

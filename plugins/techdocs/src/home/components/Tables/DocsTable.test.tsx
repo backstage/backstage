@@ -25,22 +25,23 @@ import { entityRouteRef } from '@backstage/plugin-catalog-react';
 
 // Hacky way to mock a specific boolean config value.
 const getOptionalBooleanMock = vi.fn().mockReturnValue(false);
-vi.mock('@backstage/core-plugin-api', () => ({
-  ...vi.importActual('@backstage/core-plugin-api'),
-  useApi: (apiRef: any) => {
-    const actualUseApi = vi.importActual(
-      '@backstage/core-plugin-api',
-    ).useApi;
-    const actualApi = actualUseApi(apiRef);
-    if (apiRef === configApiRef) {
-      const configReader = actualApi;
-      configReader.getOptionalBoolean = getOptionalBooleanMock;
-      return configReader;
-    }
+vi.mock('@backstage/core-plugin-api', async () => {
+  const actual = await vi.importActual<
+    typeof import('@backstage/core-plugin-api')
+  >('@backstage/core-plugin-api');
+  return {
+    ...actual,
+    useApi: (apiRef: any) => {
+      const actualApi = actual.useApi(apiRef);
+      if (apiRef === configApiRef) {
+        (actualApi as any).getOptionalBoolean = getOptionalBooleanMock;
+        return actualApi;
+      }
 
-    return actualApi;
-  },
-}));
+      return actualApi;
+    },
+  };
+});
 
 describe('DocsTable test', () => {
   beforeEach(() => {

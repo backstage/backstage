@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi, type Mocked , type MockInstance} from 'vitest';
+import { vi, type Mocked, type MockInstance } from 'vitest';
 
 import 'node:buffer';
 import { resolve as resolvePath } from 'node:path';
@@ -74,10 +74,12 @@ describe('KubernetesProxy', () => {
   const logger = mockServices.logger.mock();
 
   const clusterSupplier: Mocked<KubernetesClustersSupplier> = {
-    getClusters: vi.fn<
-      Promise<ClusterDetails[]>,
-      [{ credentials: BackstageCredentials }]
-    >(),
+    getClusters:
+      vi.fn<
+        (options: {
+          credentials: BackstageCredentials;
+        }) => Promise<ClusterDetails[]>
+      >(),
   };
 
   const permissionApi = mockServices.permissions();
@@ -94,7 +96,7 @@ describe('KubernetesProxy', () => {
         'content-type': 'application/json',
         [HEADER_KUBERNETES_CLUSTER.toLowerCase()]: clusterName,
       },
-      header: vi.fn((key: string) => {
+      header: vi.fn((key: string): any => {
         switch (key) {
           case 'Content-Type': {
             return APPLICATION_JSON;
@@ -106,7 +108,7 @@ describe('KubernetesProxy', () => {
             return '';
           }
         }
-      }),
+      }) as any,
     });
 
     return req;
@@ -143,10 +145,12 @@ describe('KubernetesProxy', () => {
 
   beforeEach(() => {
     authStrategy = {
-      getCredential: jest
+      getCredential: vi
         .fn<
-          Promise<KubernetesCredential>,
-          [ClusterDetails, KubernetesRequestAuth]
+          (
+            cluster: ClusterDetails,
+            auth: KubernetesRequestAuth,
+          ) => Promise<KubernetesCredential>
         >()
         .mockResolvedValue({ type: 'anonymous' }),
       validateCluster: vi.fn(),
@@ -533,7 +537,7 @@ describe('KubernetesProxy', () => {
 
   it('should invoke AuthStrategy if Backstage-Kubernetes-Authorization-X-X are provided', async () => {
     const strategy: Mocked<AuthenticationStrategy> = {
-      getCredential: jest
+      getCredential: vi
         .fn()
         .mockReturnValue({ type: 'bearer token', token: 'MY_TOKEN3' }),
       validateCluster: vi.fn(),

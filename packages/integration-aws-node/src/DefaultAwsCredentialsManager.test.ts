@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type Mock} from 'vitest';
+import { vi, type Mock } from 'vitest';
 
 import { DefaultAwsCredentialsManager } from './DefaultAwsCredentialsManager';
 import { mockClient, AwsClientStub } from 'aws-sdk-client-mock';
@@ -34,8 +34,8 @@ let stsMock: AwsClientStub<STSClient>;
 let config: Config;
 let tmpDir: string;
 
-vi.mock('@aws-sdk/credential-providers', () => {
-  const originalModule = vi.importActual('@aws-sdk/credential-providers');
+vi.mock('@aws-sdk/credential-providers', async () => {
+  const originalModule = await vi.importActual('@aws-sdk/credential-providers');
   return {
     ...originalModule,
     fromNodeProviderChain: vi.fn(),
@@ -44,7 +44,7 @@ vi.mock('@aws-sdk/credential-providers', () => {
 });
 
 describe('DefaultAwsCredentialsManager', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     process.env = { ...env };
     vi.resetAllMocks();
 
@@ -154,8 +154,11 @@ describe('DefaultAwsCredentialsManager', () => {
     process.env.AWS_CREDENTIAL_EXPIRATION = testDate.toISOString();
 
     // Return creds from env
+    const actualProviders = await vi.importActual<
+      typeof import('@aws-sdk/credential-providers')
+    >('@aws-sdk/credential-providers');
     (fromNodeProviderChain as Mock).mockImplementation(
-      vi.importActual('@aws-sdk/credential-providers').fromNodeProviderChain,
+      actualProviders.fromNodeProviderChain,
     );
 
     // Write a temporary AWS credentials file and point the SDK at it

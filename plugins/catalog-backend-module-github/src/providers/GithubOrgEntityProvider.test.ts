@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type Mock} from 'vitest';
+import { vi, type Mock } from 'vitest';
 
 import { mockServices } from '@backstage/backend-test-utils';
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
@@ -44,8 +44,8 @@ describe('GithubOrgEntityProvider', () => {
     let entityProviderConnection: EntityProviderConnection;
     let entityProvider: GithubOrgEntityProvider;
 
-    const setupMocks = (response: ((...args: any) => any) | undefined) => {
-      mockClient = vi.fn().mockImplementation(response);
+    const setupMocks = (response?: (...args: any) => any) => {
+      mockClient = response ? vi.fn().mockImplementation(response) : vi.fn();
       (createGraphqlClient as Mock).mockReturnValue(mockClient);
     };
 

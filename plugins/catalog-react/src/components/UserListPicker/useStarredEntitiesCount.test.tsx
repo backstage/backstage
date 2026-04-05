@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type MockedFunction} from 'vitest';
+import { vi, type MockedFunction } from 'vitest';
 
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { EntityListProvider, useStarredEntities } from '../../hooks';
@@ -34,13 +34,15 @@ const mockUseStarredEntities: ReturnType<typeof useStarredEntities> = {
   },
 } as ReturnType<typeof useStarredEntities>;
 
-vi.mock('../../hooks', () => {
-  const actual = vi.importActual('../../hooks');
+vi.mock('../../hooks', async () => {
+  const actual = await vi.importActual('../../hooks');
   return { ...actual, useStarredEntities: () => mockUseStarredEntities };
 });
 
-vi.mock('@backstage/core-plugin-api', () => {
-  const actual = vi.importActual('@backstage/core-plugin-api');
+vi.mock('@backstage/core-plugin-api', async () => {
+  const actual = await vi.importActual<
+    typeof import('@backstage/core-plugin-api')
+  >('@backstage/core-plugin-api');
   return {
     ...actual,
     useApi: (ref: ApiRef<any>) =>

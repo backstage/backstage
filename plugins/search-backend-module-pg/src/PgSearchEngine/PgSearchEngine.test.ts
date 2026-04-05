@@ -66,7 +66,7 @@ describe('PgSearchEngine', () => {
       query: vi.fn(),
       completeInsert: vi.fn(),
       prepareInsert: vi.fn(),
-    };
+    } as unknown as Mocked<DatabaseStore>;
     searchEngine = new PgSearchEngine(database, new ConfigReader(config));
   });
 

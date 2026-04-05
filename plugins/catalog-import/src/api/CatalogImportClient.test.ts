@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi, vi, type Mocked} from 'vitest';
+import { vi, type Mock, type Mocked } from 'vitest';
 
 const octokit = {
   repos: {
@@ -463,7 +463,7 @@ describe('CatalogImportClient', () => {
       });
 
       (new Octokit().search.code as any as Mock).mockImplementationOnce(
-        async params => ({
+        async (params: any) => ({
           data: {
             total_count: 1,
             items: [{ path: params.q.split('+filename:').slice(-1)[0] }],
@@ -592,8 +592,8 @@ describe('CatalogImportClient', () => {
         sha: 'any',
       });
       expect(
-        (new Octokit().repos.createOrUpdateFileContents as any as Mock)
-          .mock.calls[0][0],
+        (new Octokit().repos.createOrUpdateFileContents as any as Mock).mock
+          .calls[0][0],
       ).toEqual({
         owner: 'backstage',
         repo: 'backstage',
@@ -760,8 +760,8 @@ describe('CatalogImportClient', () => {
       );
 
       expect(
-        (new Octokit().repos.createOrUpdateFileContents as any as Mock)
-          .mock.calls[0][0],
+        (new Octokit().repos.createOrUpdateFileContents as any as Mock).mock
+          .calls[0][0],
       ).toEqual(
         expect.objectContaining({
           path: entityFilename,
@@ -824,8 +824,8 @@ spec:
         sha: 'any',
       });
       expect(
-        (new Octokit().repos.createOrUpdateFileContents as any as Mock)
-          .mock.calls[0][0],
+        (new Octokit().repos.createOrUpdateFileContents as any as Mock).mock
+          .calls[0][0],
       ).toEqual({
         owner: 'backstage',
         repo: 'backstage',

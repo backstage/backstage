@@ -23,7 +23,7 @@ describe('hasErrors', () => {
       hasErrors({
         name: {
           __errors: [],
-          addError: vi.fn(),
+          addError: vi.fn() as any,
         },
       }),
     ).toBe(false);
@@ -34,7 +34,7 @@ describe('hasErrors', () => {
       hasErrors({
         name: {
           __errors: ['an error'],
-          addError: vi.fn(),
+          addError: vi.fn() as any,
         },
       }),
     ).toBe(true);
@@ -45,16 +45,16 @@ describe('hasErrors', () => {
       hasErrors({
         name: {
           __errors: [],
-          addError: vi.fn(),
+          addError: vi.fn() as any,
         },
         general: {
           address: {
             __errors: [],
-            addError: vi.fn(),
+            addError: vi.fn() as any,
           },
           name: {
             __errors: ['something is broken here!'],
-            addError: vi.fn(),
+            addError: vi.fn() as any,
           },
         },
       }),
@@ -69,23 +69,23 @@ describe('hasErrors', () => {
         __errors: [
           'Accepts alphanumeric values along with _(underscore) and -(hyphen) as special characters',
         ],
-        addError: vi.fn(),
+        addError: vi.fn() as any,
       },
       someOtherName: {
         __errors: ['Must start with an alphabet & not contain .(period)'],
-        addError: vi.fn(),
+        addError: vi.fn() as any,
       },
       aName: {
         __errors: [],
-        addError: vi.fn(),
+        addError: vi.fn() as any,
       },
       bName: {
         __errors: [],
-        addError: vi.fn(),
+        addError: vi.fn() as any,
       },
       cName: {
         __errors: [],
-        addError: vi.fn(),
+        addError: vi.fn() as any,
       },
     };
 

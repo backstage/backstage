@@ -22,8 +22,8 @@ import { CopyTextButton } from './CopyTextButton';
 import { errorApiRef } from '@backstage/core-plugin-api';
 import { default as useCopyToClipboardUnmocked } from 'react-use/esm/useCopyToClipboard';
 
-vi.mock('popper.js', () => {
-  const PopperJS = vi.importActual('popper.js');
+vi.mock('popper.js', async () => {
+  const PopperJS = await vi.importActual('popper.js');
 
   return class {
     static placements = PopperJS.placements;

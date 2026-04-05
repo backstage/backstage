@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type Mock} from 'vitest';
+import { vi, type Mock } from 'vitest';
 import { PropsWithChildren } from 'react';
 import {
   DEFAULT_NAMESPACE,
@@ -36,9 +36,7 @@ import { catalogGraphApiRef, DefaultCatalogGraphApi } from '../../api';
 
 vi.mock('./useEntityRelationGraph');
 
-const useEntityRelationGraph = useEntityRelationGraphMocked as Mock<
-  ReturnType<typeof useEntityRelationGraphMocked>
->;
+const useEntityRelationGraph = useEntityRelationGraphMocked as unknown as Mock;
 
 /*
   This is the full test graph:
@@ -150,13 +148,15 @@ function GraphContext(props: PropsWithChildren<{}>) {
 
 describe('useEntityRelationNodesAndEdges', () => {
   beforeEach(() => {
-    useEntityRelationGraph.mockImplementation(({ filter: { kinds } }) => ({
-      loading: false,
-      entities: keyBy(
-        filter(entities, e => !kinds || kinds.includes(e.kind)),
-        stringifyEntityRef,
-      ),
-    }));
+    useEntityRelationGraph.mockImplementation(
+      ({ filter: { kinds } }: { filter: { kinds?: string[] } }) => ({
+        loading: false,
+        entities: keyBy(
+          filter(entities, e => !kinds || kinds.includes(e.kind)),
+          stringifyEntityRef,
+        ),
+      }),
+    );
   });
 
   afterAll(() => {

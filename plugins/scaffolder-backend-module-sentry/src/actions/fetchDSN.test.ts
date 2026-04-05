@@ -39,15 +39,17 @@ describe('sentry:fetch:dsn action', () => {
     }),
   });
 
-  const getActionContext = (): ActionContext<{
-    organizationSlug: string;
-    projectSlug: string;
-    authToken?: string;
-    apiBaseUrl?: string;
-  }> =>
+  const getActionContext = async (): Promise<
+    ActionContext<{
+      organizationSlug: string;
+      projectSlug: string;
+      authToken?: string;
+      apiBaseUrl?: string;
+    }>
+  > =>
     createMockActionContext({
       workspacePath: './dev/proj',
-      logger: vi.importMock('winston'),
+      logger: await vi.importMock('winston'),
       input: {
         organizationSlug: 'org',
         projectSlug: 'project',
@@ -59,7 +61,7 @@ describe('sentry:fetch:dsn action', () => {
     expect.assertions(3);
 
     const action = createSentryFetchDSNAction(createScaffolderConfig());
-    const actionContext = getActionContext();
+    const actionContext = await getActionContext();
     const mockDSN = 'https://test@sentry.io/123';
 
     worker.use(
@@ -92,7 +94,7 @@ describe('sentry:fetch:dsn action', () => {
         },
       }),
     );
-    const actionContext = getActionContext();
+    const actionContext = await getActionContext();
     actionContext.input.authToken = undefined;
     const mockDSN = 'https://test@sentry.io/123';
 
@@ -117,7 +119,7 @@ describe('sentry:fetch:dsn action', () => {
 
   it('should throw InputError when auth token is missing from input parameters and scaffolder config.', async () => {
     const action = createSentryFetchDSNAction(createScaffolderConfig());
-    const actionContext = getActionContext();
+    const actionContext = await getActionContext();
     actionContext.input.authToken = undefined;
 
     await expect(() => action.handler(actionContext)).rejects.toThrow(
@@ -127,7 +129,7 @@ describe('sentry:fetch:dsn action', () => {
 
   it('should throw InputError when sentry API returns unexpected content-type.', async () => {
     const action = createSentryFetchDSNAction(createScaffolderConfig());
-    const actionContext = getActionContext();
+    const actionContext = await getActionContext();
 
     worker.use(
       http.get(
@@ -145,7 +147,7 @@ describe('sentry:fetch:dsn action', () => {
 
   it('should throw InputError when sentry API returns error status code.', async () => {
     const action = createSentryFetchDSNAction(createScaffolderConfig());
-    const actionContext = getActionContext();
+    const actionContext = await getActionContext();
 
     worker.use(
       http.get(
@@ -166,7 +168,7 @@ describe('sentry:fetch:dsn action', () => {
 
   it('should throw InputError when no keys are returned.', async () => {
     const action = createSentryFetchDSNAction(createScaffolderConfig());
-    const actionContext = getActionContext();
+    const actionContext = await getActionContext();
 
     worker.use(
       http.get(
@@ -184,7 +186,7 @@ describe('sentry:fetch:dsn action', () => {
 
   it('should throw InputError when no public DSN is found in keys.', async () => {
     const action = createSentryFetchDSNAction(createScaffolderConfig());
-    const actionContext = getActionContext();
+    const actionContext = await getActionContext();
 
     worker.use(
       http.get(
@@ -204,7 +206,7 @@ describe('sentry:fetch:dsn action', () => {
     expect.assertions(3);
 
     const action = createSentryFetchDSNAction(createScaffolderConfig());
-    const actionContext = getActionContext();
+    const actionContext = await getActionContext();
     actionContext.input = {
       ...actionContext.input,
       apiBaseUrl: 'https://custom.sentry.io/api/0',
@@ -240,7 +242,7 @@ describe('sentry:fetch:dsn action', () => {
         },
       }),
     );
-    const actionContext = getActionContext();
+    const actionContext = await getActionContext();
     const mockDSN = 'https://test@sentry.io/123';
 
     worker.use(

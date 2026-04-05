@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type Mock} from 'vitest';
+import { vi, type Mock } from 'vitest';
 
 vi.mock('./gitHelpers', () => {
   return {
@@ -51,7 +51,7 @@ import { enableBranchProtectionOnDefaultRepoBranch } from './gitHelpers';
 import { createGithubRepoPushAction } from './githubRepoPush';
 
 const initRepoAndPushMocked = initRepoAndPush as Mock<
-  Promise<{ commitHash: string }>
+  (...args: any[]) => Promise<{ commitHash: string }>
 >;
 
 import { Octokit } from 'octokit';

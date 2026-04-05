@@ -42,31 +42,31 @@ import {
 import { convertLegacyRouteRef } from '../convertLegacyRouteRef';
 import { renderInTestApp as renderInOldTestApp } from '@backstage/test-utils';
 
-vi.mock('./BackwardsCompatProvider', () => ({
-  BackwardsCompatProvider: ({ children }: { children: React.ReactNode }) => {
-    const OriginalComponent = vi.importActual(
-      './BackwardsCompatProvider',
-    ).BackwardsCompatProvider;
-    return (
-      <OriginalComponent>
-        <div data-testid="backwards-compat-provider">{children}</div>
-      </OriginalComponent>
-    );
-  },
-}));
+vi.mock('./BackwardsCompatProvider', async () => {
+  const actual = await vi.importActual<any>('./BackwardsCompatProvider');
+  return {
+    BackwardsCompatProvider: ({ children }: { children: React.ReactNode }) => {
+      return (
+        <actual.BackwardsCompatProvider>
+          <div data-testid="backwards-compat-provider">{children}</div>
+        </actual.BackwardsCompatProvider>
+      );
+    },
+  };
+});
 
-vi.mock('./ForwardsCompatProvider', () => ({
-  ForwardsCompatProvider: ({ children }: { children: React.ReactNode }) => {
-    const OriginalComponent = vi.importActual(
-      './ForwardsCompatProvider',
-    ).ForwardsCompatProvider;
-    return (
-      <OriginalComponent>
-        <div data-testid="forwards-compat-provider">{children}</div>
-      </OriginalComponent>
-    );
-  },
-}));
+vi.mock('./ForwardsCompatProvider', async () => {
+  const actual = await vi.importActual<any>('./ForwardsCompatProvider');
+  return {
+    ForwardsCompatProvider: ({ children }: { children: React.ReactNode }) => {
+      return (
+        <actual.ForwardsCompatProvider>
+          <div data-testid="forwards-compat-provider">{children}</div>
+        </actual.ForwardsCompatProvider>
+      );
+    },
+  };
+});
 
 describe('BackwardsCompatProvider', () => {
   it('should convert the app context', () => {

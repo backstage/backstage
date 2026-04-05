@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type Mock} from 'vitest';
+import { vi, type Mock } from 'vitest';
 
 import {
   mockServices,
@@ -993,7 +993,7 @@ describe('github', () => {
 
     const logger = mockServices.rootLogger();
 
-    const mockClient = vi.fn().mockImplementation();
+    const mockClient = vi.fn().mockImplementation(() => {});
 
     const graphqlDefaults = vi.fn().mockReturnValue(mockClient);
     const mockedOctokit = vi.fn().mockImplementation(() => ({

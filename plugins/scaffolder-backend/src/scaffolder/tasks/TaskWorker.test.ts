@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type Mock} from 'vitest';
+import { vi, type Mock } from 'vitest';
 
 import os from 'node:os';
 import { DatabaseManager } from '@backstage/backend-defaults/database';
@@ -42,9 +42,12 @@ import { metricsServiceMock } from '@backstage/backend-test-utils/alpha';
 import { loggerToWinstonLogger } from '../../util/loggerToWinstonLogger';
 
 vi.mock('./NunjucksWorkflowRunner');
-const MockedNunjucksWorkflowRunner =
-  NunjucksWorkflowRunner as Mock<NunjucksWorkflowRunner>;
-MockedNunjucksWorkflowRunner.mockImplementation();
+const MockedNunjucksWorkflowRunner = NunjucksWorkflowRunner as unknown as Mock<
+  (...args: any[]) => NunjucksWorkflowRunner
+>;
+MockedNunjucksWorkflowRunner.mockImplementation((() => {}) as unknown as (
+  ...args: any[]
+) => NunjucksWorkflowRunner);
 
 async function createStore(): Promise<DatabaseTaskStore> {
   const manager = DatabaseManager.fromConfig(
@@ -83,7 +86,9 @@ describe('TaskWorker', () => {
 
   beforeEach(() => {
     vi.resetAllMocks();
-    MockedNunjucksWorkflowRunner.mockImplementation(() => workflowRunner);
+    MockedNunjucksWorkflowRunner.mockImplementation(
+      (() => workflowRunner) as any,
+    );
   });
 
   const logger = loggerToWinstonLogger(mockServices.logger.mock());
@@ -239,7 +244,9 @@ describe('Concurrent TaskWorker', () => {
   beforeEach(() => {
     asyncTasksCount = 0;
     vi.resetAllMocks();
-    MockedNunjucksWorkflowRunner.mockImplementation(() => workflowRunner);
+    MockedNunjucksWorkflowRunner.mockImplementation(
+      (() => workflowRunner) as any,
+    );
   });
 
   const logger = loggerToWinstonLogger(mockServices.logger.mock());
@@ -301,7 +308,9 @@ describe('Cancellable TaskWorker', () => {
 
   beforeEach(() => {
     vi.resetAllMocks();
-    MockedNunjucksWorkflowRunner.mockImplementation(() => workflowRunner);
+    MockedNunjucksWorkflowRunner.mockImplementation(
+      (() => workflowRunner) as any,
+    );
   });
 
   const logger = loggerToWinstonLogger(mockServices.logger.mock());

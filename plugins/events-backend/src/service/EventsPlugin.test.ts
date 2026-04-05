@@ -389,9 +389,7 @@ describe('eventsPlugin', () => {
         const helper = new ReqHelper(backend);
         await helper.subscribe('tester', ['test']).expect(201);
 
-        vi.useFakeTimers({
-          advanceTimers: true,
-        });
+        vi.useFakeTimers();
 
         try {
           // Can't use supertest for this one because it can't handle the partially blocking response

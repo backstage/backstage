@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type MockedFunction} from 'vitest';
+import { vi, type MockedFunction } from 'vitest';
 
 import { npath, ppath, xfs } from '@yarnpkg/fslib';
 import { createMockDirectory } from '@backstage/backend-test-utils';
@@ -25,11 +25,12 @@ import { getCurrentBackstageVersion } from './getCurrentBackstageVersion';
  * Disable memoization to allow testing behavior under a variety of
  * circumstances.
  */
-vi.mock('./memoize', () => {
-  const memoizeMock: MockedFunction<typeof memoize> & {
-    memoizationEnabled?: boolean;
-  } = vi.fn(fn => {
-    const memoized = vi.importActual('./memoize').memoize(fn);
+vi.mock('./memoize', async () => {
+  const actualMemoize = await vi.importActual<typeof import('./memoize')>(
+    './memoize',
+  );
+  const memoizeMock: any = vi.fn((fn: () => unknown) => {
+    const memoized = actualMemoize.memoize(fn);
 
     return () => {
       if (memoizeMock.memoizationEnabled) {
@@ -43,7 +44,7 @@ vi.mock('./memoize', () => {
   return { memoize: memoizeMock };
 });
 
-const memoizeMock = memoize as MockedFunction<typeof memoize> & {
+const memoizeMock = memoize as any as MockedFunction<typeof memoize> & {
   memoizationEnabled?: boolean;
 };
 
@@ -51,13 +52,11 @@ describe('getCurrentBackstageVersion', () => {
   const mockDir = createMockDirectory();
 
   beforeEach(() => {
-    jest
-      .spyOn(process, 'cwd')
-      .mockReturnValue(npath.toPortablePath(mockDir.path));
+    vi.spyOn(process, 'cwd').mockReturnValue(
+      npath.toPortablePath(mockDir.path) as string,
+    );
 
-    jest
-      .spyOn(ppath, 'cwd')
-      .mockReturnValue(npath.toPortablePath(mockDir.path));
+    vi.spyOn(ppath, 'cwd').mockReturnValue(npath.toPortablePath(mockDir.path));
 
     mockDir.setContent({
       'package.json': JSON.stringify({}),

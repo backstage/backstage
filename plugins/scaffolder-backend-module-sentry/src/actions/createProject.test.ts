@@ -39,18 +39,20 @@ describe('sentry:project:create action', () => {
     }),
   });
 
-  const getActionContext = (): ActionContext<{
-    organizationSlug: string;
-    teamSlug: string;
-    name: string;
-    slug?: string;
-    platform?: string;
-    authToken?: string;
-    apiBaseUrl?: string;
-  }> =>
+  const getActionContext = async (): Promise<
+    ActionContext<{
+      organizationSlug: string;
+      teamSlug: string;
+      name: string;
+      slug?: string;
+      platform?: string;
+      authToken?: string;
+      apiBaseUrl?: string;
+    }>
+  > =>
     createMockActionContext({
       workspacePath: './dev/proj',
-      logger: vi.importMock('winston'),
+      logger: await vi.importMock('winston'),
       input: {
         organizationSlug: 'org',
         teamSlug: 'team',
@@ -63,7 +65,7 @@ describe('sentry:project:create action', () => {
     expect.assertions(3);
 
     const action = createSentryCreateProjectAction(createScaffolderConfig());
-    const actionContext = getActionContext();
+    const actionContext = await getActionContext();
 
     worker.use(
       http.post(
@@ -91,7 +93,7 @@ describe('sentry:project:create action', () => {
     expect.assertions(3);
 
     const action = createSentryCreateProjectAction(createScaffolderConfig());
-    const actionContext = getActionContext();
+    const actionContext = await getActionContext();
     actionContext.input = { ...actionContext.input, slug: 'project-slug' };
 
     worker.use(
@@ -121,7 +123,7 @@ describe('sentry:project:create action', () => {
     expect.assertions(3);
 
     const action = createSentryCreateProjectAction(createScaffolderConfig());
-    const actionContext = getActionContext();
+    const actionContext = await getActionContext();
     actionContext.input = { ...actionContext.input, platform: 'platform-slug' };
 
     worker.use(
@@ -159,7 +161,7 @@ describe('sentry:project:create action', () => {
         },
       }),
     );
-    const actionContext = getActionContext();
+    const actionContext = await getActionContext();
     actionContext.input.authToken = undefined;
 
     worker.use(
@@ -186,7 +188,7 @@ describe('sentry:project:create action', () => {
 
   it('should throw InputError when auth token is missing from input parameters and scaffolder config.', async () => {
     const action = createSentryCreateProjectAction(createScaffolderConfig());
-    const actionContext = getActionContext();
+    const actionContext = await getActionContext();
     actionContext.input.authToken = undefined;
 
     worker.use(
@@ -215,7 +217,7 @@ describe('sentry:project:create action', () => {
 
   it('should throw InputError when sentry API returns unexpected content-type.', async () => {
     const action = createSentryCreateProjectAction(createScaffolderConfig());
-    const actionContext = getActionContext();
+    const actionContext = await getActionContext();
 
     worker.use(
       http.post(
@@ -233,7 +235,7 @@ describe('sentry:project:create action', () => {
 
   it('should throw InputError when sentry API returns unexpected status code.', async () => {
     const action = createSentryCreateProjectAction(createScaffolderConfig());
-    const actionContext = getActionContext();
+    const actionContext = await getActionContext();
 
     worker.use(
       http.post(
@@ -253,7 +255,7 @@ describe('sentry:project:create action', () => {
     expect.assertions(3);
 
     const action = createSentryCreateProjectAction(createScaffolderConfig());
-    const actionContext = getActionContext();
+    const actionContext = await getActionContext();
     actionContext.input = {
       ...actionContext.input,
       apiBaseUrl: 'https://custom.sentry.io/api/0',
@@ -288,7 +290,7 @@ describe('sentry:project:create action', () => {
         },
       }),
     );
-    const actionContext = getActionContext();
+    const actionContext = await getActionContext();
 
     worker.use(
       http.post(

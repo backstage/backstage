@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type Mock} from 'vitest';
+import { vi } from 'vitest';
 
 import * as util from './util';
 import { Gitlab, GroupSchema } from '@gitbeaker/rest';

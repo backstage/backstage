@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi, vi, type Mocked} from 'vitest';
+import { vi, type Mock, type Mocked } from 'vitest';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { spawn } from 'node:child_process';
 import { PassThrough, Writable } from 'node:stream';

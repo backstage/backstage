@@ -48,7 +48,7 @@ vi.mock('@google-cloud/firestore', () => ({
   Firestore: vi.fn().mockImplementation(() => firestoreMock),
 }));
 
-vi.useFakeTimers({ legacyFakeTimers: true });
+vi.useFakeTimers();
 
 describe('FirestoreKeyStore', () => {
   const key = {
@@ -123,7 +123,7 @@ describe('FirestoreKeyStore', () => {
   });
 
   it('can handle a timeout', async () => {
-    firestoreMock.set = jest
+    firestoreMock.set = vi
       .fn()
       .mockImplementation(
         () => new Promise(resolve => setTimeout(resolve, 20)),

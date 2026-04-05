@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type Mock} from 'vitest';
+import { vi, type Mock } from 'vitest';
 import { PropsWithChildren } from 'react';
 import { ApiProvider } from '@backstage/core-app-api';
 import {
@@ -33,7 +33,7 @@ import { catalogGraphApiRef, DefaultCatalogGraphApi } from '../../api';
 vi.mock('./useEntityStore');
 
 const useEntityStore = useEntityStoreMocked as Mock<
-  ReturnType<typeof useEntityStoreMocked>
+  typeof useEntityStoreMocked
 >;
 
 function GraphContext(props: PropsWithChildren<{}>) {

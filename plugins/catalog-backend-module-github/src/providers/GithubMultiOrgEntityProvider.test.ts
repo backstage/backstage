@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type Mock} from 'vitest';
+import { vi, type Mock } from 'vitest';
 
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
@@ -46,11 +46,11 @@ vi.mock('@backstage/integration', () => ({
 
 describe('GithubMultiOrgEntityProvider', () => {
   describe('read', () => {
-    let mockClient: Mock<any, any, any>;
+    let mockClient: Mock;
     let entityProviderConnection: EntityProviderConnection;
     let logger: LoggerService;
     let gitHubConfig: { host: string };
-    let mockGetCredentials: Mock<any, any, any>;
+    let mockGetCredentials: Mock;
     let entityProvider: GithubMultiOrgEntityProvider;
 
     beforeEach(() => {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi, vi, type Mocked} from 'vitest';
+import { vi, type Mock, type Mocked } from 'vitest';
 
 import { NunjucksWorkflowRunner } from './NunjucksWorkflowRunner';
 import {
@@ -112,9 +112,9 @@ describe('NunjucksWorkflowRunner', () => {
   });
 
   function expectTaskLog(message: string) {
-    expect(fakeTaskLog.mock.calls.map(args => stripAnsi(args[0]))).toContain(
-      message,
-    );
+    expect(
+      fakeTaskLog.mock.calls.map((args: any) => stripAnsi(args[0])),
+    ).toContain(message);
   }
 
   beforeEach(async () => {

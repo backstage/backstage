@@ -25,20 +25,20 @@ describe('createDeferred', () => {
     const d3 = createDeferred<object>();
     const d4 = createDeferred(); // test the implicit void
 
-    const d1resolved = vi.fn<void, [number]>();
+    const d1resolved = vi.fn<(v: number) => void>();
     const d1rejected = vi.fn();
     d1.then(d1resolved, d1rejected);
 
-    const d2resolved = vi.fn<void, [string]>();
+    const d2resolved = vi.fn<(v: string) => void>();
     const d2rejected = vi.fn();
     d2.then(d2resolved, d2rejected);
 
-    const d3resolved = vi.fn<void, [number]>();
+    const d3resolved = vi.fn<(v: number) => void>();
     const d3rejected = vi.fn();
     // @ts-expect-error wrong argument type for resolved
     d3.then(d3resolved, d3rejected);
 
-    const d4resolved = vi.fn<void, [number]>();
+    const d4resolved = vi.fn<(v: number) => void>();
     const d4rejected = vi.fn();
     // @ts-expect-error resolver should not take arguments for void deferred
     d4.then(d4resolved, d4rejected);

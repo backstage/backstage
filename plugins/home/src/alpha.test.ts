@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type Mock} from 'vitest';
+import { vi } from 'vitest';
 
 import { mockApis } from '@backstage/test-utils';
 import homePlugin from './alpha';
