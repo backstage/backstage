@@ -61,8 +61,8 @@ export function createCatalogRegisterAction(options: {
 // @public
 export function createCatalogWriteAction(): TemplateAction<
   {
-    entity: Record<string, any>;
     filePath?: string | undefined;
+    entity?: any;
   },
   {
     [x: string]: any;

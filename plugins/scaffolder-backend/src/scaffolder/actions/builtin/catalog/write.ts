@@ -35,13 +35,32 @@ export function createCatalogWriteAction() {
       input: {
         filePath: z =>
           z.string().optional().describe('Defaults to catalog-info.yaml'),
-        // TODO: this should reference an zod entity validator if it existed.
         entity: z =>
           z
-            .record(z.any())
+            .object({
+              apiVersion: z
+                .string()
+                .describe('The version of the catalog API.'),
+              kind: z.string().describe('The kind of the catalog entity.'),
+              metadata: z
+                .object({
+                  name: z.string().describe('The name of the catalog entity.'),
+                  annotations: z
+                    .record(z.string())
+                    .optional()
+                    .describe('Annotations related to the catalog entity.'),
+                })
+                .catchall(z.any())
+                .describe('Metadata related to the catalog entity.'),
+              spec: z
+                .record(z.any())
+                .optional()
+                .describe('The specification of the catalog entity.'),
+            })
+            .catchall(z.any())
             .describe(
               'You can provide the same values used in the Entity schema.',
-            ),
+            ) as any,
       },
     },
     examples,
@@ -61,7 +80,7 @@ export function createCatalogWriteAction() {
             ...(entityRef
               ? {
                   annotations: {
-                    ...entity.metadata.annotations,
+                    ...(entity.metadata as any).annotations,
                     'backstage.io/source-template': entityRef,
                   },
                 }
