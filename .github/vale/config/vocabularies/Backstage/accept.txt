@@ -564,6 +564,7 @@ varchar
 viewport
 virtualized
 vite
+[Vv]itest
 VMware
 Vodafone
 VPCs

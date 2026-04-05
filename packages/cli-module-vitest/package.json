@@ -1,0 +1,50 @@
+{
+  "name": "@backstage/cli-module-vitest",
+  "version": "0.1.0",
+  "description": "CLI module for running tests with Vitest",
+  "backstage": {
+    "role": "cli-module"
+  },
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.cjs.js",
+    "types": "dist/index.d.ts"
+  },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "packages/cli-module-vitest"
+  },
+  "license": "Apache-2.0",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "bin": "bin/backstage-cli-module-vitest",
+  "files": [
+    "dist",
+    "bin",
+    "config"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack"
+  },
+  "dependencies": {
+    "@backstage/cli-common": "workspace:^",
+    "@backstage/cli-node": "workspace:^",
+    "cleye": "^2.3.0",
+    "fs-extra": "^11.2.0",
+    "glob": "^13.0.0",
+    "yaml": "^2.0.0"
+  },
+  "devDependencies": {
+    "@backstage/cli": "workspace:^",
+    "@types/fs-extra": "^11.0.0"
+  },
+  "peerDependencies": {
+    "vitest": "^4.0.0"
+  }
+}

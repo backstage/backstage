@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-cli-module-vitest
+  title: '@backstage/cli-module-vitest'
+  description: CLI module for running tests with Vitest
+spec:
+  lifecycle: experimental
+  type: backstage-cli-module
+  owner: tooling-maintainers
