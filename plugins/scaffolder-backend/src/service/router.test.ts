@@ -1310,38 +1310,38 @@ describe('scaffolder router', () => {
       let subscriber: ZenObservable.SubscriptionObserver<{
         events: SerializedTaskEvent[];
       }>;
-      (
-        taskBroker.event$ as Mocked<TaskBroker>['event$']
-      ).mockImplementation(({ taskId }) => {
-        return new ObservableImpl(observer => {
-          subscriber = observer;
-          setImmediate(() => {
-            observer.next({
-              events: [
-                {
-                  id: 0,
-                  taskId,
-                  type: 'log',
-                  createdAt: '',
-                  body: { message: 'My log message' },
-                },
-              ],
-            });
-            observer.next({
-              events: [
-                {
-                  id: 1,
-                  taskId,
-                  type: 'completion',
-                  createdAt: '',
-                  body: { message: 'Finished!' },
-                },
-              ],
+      (taskBroker.event$ as Mocked<TaskBroker>['event$']).mockImplementation(
+        ({ taskId }) => {
+          return new ObservableImpl(observer => {
+            subscriber = observer;
+            setImmediate(() => {
+              observer.next({
+                events: [
+                  {
+                    id: 0,
+                    taskId,
+                    type: 'log',
+                    createdAt: '',
+                    body: { message: 'My log message' },
+                  },
+                ],
+              });
+              observer.next({
+                events: [
+                  {
+                    id: 1,
+                    taskId,
+                    type: 'completion',
+                    createdAt: '',
+                    body: { message: 'Finished!' },
+                  },
+                ],
+              });
             });
           });
-        });
-        // emit after this function returned
-      });
+          // emit after this function returned
+        },
+      );
 
       let statusCode: number | undefined = undefined;
       let headers: Record<string, string> = {};
@@ -1405,26 +1405,26 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
       let subscriber: ZenObservable.SubscriptionObserver<{
         events: SerializedTaskEvent[];
       }>;
-      (
-        taskBroker.event$ as Mocked<TaskBroker>['event$']
-      ).mockImplementation(({ taskId }) => {
-        return new ObservableImpl(observer => {
-          subscriber = observer;
-          setImmediate(() => {
-            observer.next({
-              events: [
-                {
-                  id: 1,
-                  taskId,
-                  type: 'completion',
-                  createdAt: '',
-                  body: { message: 'Finished!' },
-                },
-              ],
+      (taskBroker.event$ as Mocked<TaskBroker>['event$']).mockImplementation(
+        ({ taskId }) => {
+          return new ObservableImpl(observer => {
+            subscriber = observer;
+            setImmediate(() => {
+              observer.next({
+                events: [
+                  {
+                    id: 1,
+                    taskId,
+                    type: 'completion',
+                    createdAt: '',
+                    body: { message: 'Finished!' },
+                  },
+                ],
+              });
             });
           });
-        });
-      });
+        },
+      );
 
       let statusCode: number | undefined = undefined;
       let headers: Record<string, string> = {};
@@ -1479,31 +1479,31 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
       let subscriber: ZenObservable.SubscriptionObserver<{
         events: SerializedTaskEvent[];
       }>;
-      (
-        taskBroker.event$ as Mocked<TaskBroker>['event$']
-      ).mockImplementation(({ taskId }) => {
-        return new ObservableImpl(observer => {
-          subscriber = observer;
-          observer.next({
-            events: [
-              {
-                id: 0,
-                taskId,
-                type: 'log',
-                createdAt: '',
-                body: { message: 'My log message' },
-              },
-              {
-                id: 1,
-                taskId,
-                type: 'completion',
-                createdAt: '',
-                body: { message: 'Finished!' },
-              },
-            ],
+      (taskBroker.event$ as Mocked<TaskBroker>['event$']).mockImplementation(
+        ({ taskId }) => {
+          return new ObservableImpl(observer => {
+            subscriber = observer;
+            observer.next({
+              events: [
+                {
+                  id: 0,
+                  taskId,
+                  type: 'log',
+                  createdAt: '',
+                  body: { message: 'My log message' },
+                },
+                {
+                  id: 1,
+                  taskId,
+                  type: 'completion',
+                  createdAt: '',
+                  body: { message: 'Finished!' },
+                },
+              ],
+            });
           });
-        });
-      });
+        },
+      );
 
       const response = await request(router).get(
         '/v2/tasks/a-random-id/events',
@@ -1549,14 +1549,14 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
       let subscriber: ZenObservable.SubscriptionObserver<{
         events: SerializedTaskEvent[];
       }>;
-      (
-        taskBroker.event$ as Mocked<TaskBroker>['event$']
-      ).mockImplementation(() => {
-        return new ObservableImpl(observer => {
-          subscriber = observer;
-          observer.next({ events: [] });
-        });
-      });
+      (taskBroker.event$ as Mocked<TaskBroker>['event$']).mockImplementation(
+        () => {
+          return new ObservableImpl(observer => {
+            subscriber = observer;
+            observer.next({ events: [] });
+          });
+        },
+      );
 
       const response = await request(router)
         .get('/v2/tasks/a-random-id/events')

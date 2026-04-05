@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type MockedFunction} from 'vitest';
+import { vi, type MockedFunction } from 'vitest';
 
 import { UrlPatternDiscovery } from '@backstage/core-app-api';
 import { NotFoundError } from '@backstage/errors';

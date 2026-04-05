@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type Mock} from 'vitest';
+import { vi, type Mock } from 'vitest';
 
 import MicrosoftAuth from './MicrosoftAuth';
 import MockOAuthApi from '../../OAuthRequestApi/MockOAuthApi';

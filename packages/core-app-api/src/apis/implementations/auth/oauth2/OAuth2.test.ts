@@ -37,8 +37,8 @@ const scopeTransform = (x: string[]) => x;
 
 let getSession = vi.fn();
 
-vi.mock('../../../../lib/AuthSessionManager', () => ({
-  ...(vi.importActual('../../../../lib/AuthSessionManager') as any),
+vi.mock('../../../../lib/AuthSessionManager', async () => ({
+  ...((await vi.importActual('../../../../lib/AuthSessionManager')) as any),
   RefreshingAuthSessionManager: class {
     getSession = getSession;
   },
@@ -177,7 +177,7 @@ describe('OAuth2', () => {
   it('should share popup closed errors', async () => {
     const error = new Error('NOPE');
     error.name = 'RejectedError';
-    getSession = jest
+    getSession = vi
       .fn()
       .mockResolvedValueOnce({
         providerInfo: {
@@ -212,7 +212,7 @@ describe('OAuth2', () => {
         scopes: new Set(),
       },
     };
-    getSession = jest
+    getSession = vi
       .fn()
       .mockResolvedValueOnce(initialSession)
       .mockResolvedValue({

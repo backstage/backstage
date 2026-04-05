@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type Mock} from 'vitest';
+import { vi, type Mock } from 'vitest';
 
 import { TechDocsAddonTester } from '@backstage/plugin-techdocs-addons-test-utils';
 import { act, fireEvent, waitFor } from '@testing-library/react';

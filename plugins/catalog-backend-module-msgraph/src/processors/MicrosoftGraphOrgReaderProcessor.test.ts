@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type Mock} from 'vitest';
+import { vi, type Mock } from 'vitest';
 
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
 import { MicrosoftGraphClient, readMicrosoftGraphOrg } from '../microsoftGraph';
@@ -29,7 +29,7 @@ vi.mock('../microsoftGraph', () => {
 });
 
 const readMicrosoftGraphOrgMocked = readMicrosoftGraphOrg as Mock<
-  Promise<{ users: UserEntity[]; groups: GroupEntity[] }>
+  (...args: any[]) => Promise<{ users: UserEntity[]; groups: GroupEntity[] }>
 >;
 
 describe('MicrosoftGraphOrgReaderProcessor', () => {
@@ -50,9 +50,9 @@ describe('MicrosoftGraphOrgReaderProcessor', () => {
       logger: mockServices.logger.mock(),
     });
 
-    jest
-      .spyOn(MicrosoftGraphClient, 'create')
-      .mockReturnValue({} as unknown as MicrosoftGraphClient);
+    vi.spyOn(MicrosoftGraphClient, 'create').mockReturnValue(
+      {} as unknown as MicrosoftGraphClient,
+    );
   });
 
   afterEach(() => vi.resetAllMocks());

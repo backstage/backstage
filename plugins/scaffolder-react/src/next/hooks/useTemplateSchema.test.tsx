@@ -169,9 +169,7 @@ describe('useTemplateSchema', () => {
       const { result } = renderHook(() => useTemplateSchema(manifest), {
         wrapper: ({ children }: PropsWithChildren<{}>) => (
           <TestApiProvider
-            apis={[
-              mockApis.featureFlags.mock({ isActive: vi.fn(() => true) }),
-            ]}
+            apis={[mockApis.featureFlags.mock({ isActive: vi.fn(() => true) })]}
           >
             {children}
           </TestApiProvider>

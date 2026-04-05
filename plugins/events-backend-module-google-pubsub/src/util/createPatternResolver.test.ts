@@ -50,7 +50,9 @@ describe('createPatternResolver', () => {
     );
     expect(() =>
       createPatternResolver('{{a.b}}')({ a: {} }),
-    ).toThrowErrorMatchingInlineSnapshot(`[InputError: No value for selector 'a.b']`);
+    ).toThrowErrorMatchingInlineSnapshot(
+      `[InputError: No value for selector 'a.b']`,
+    );
     expect(() =>
       createPatternResolver("-{{ a.b['length'] }}-")({
         a: { b: ['first', 'second'] },

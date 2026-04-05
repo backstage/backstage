@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type Mock} from 'vitest';
+import { vi } from 'vitest';
 
 import { screen, waitFor, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';

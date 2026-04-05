@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type MockedFunction} from 'vitest';
+import { vi, type MockedFunction } from 'vitest';
 
 import { resolveAuth } from './resolveAuth';
 import { CliAuth } from '@backstage/cli-node';

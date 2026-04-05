@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type Mock} from 'vitest';
+import { vi, type Mock } from 'vitest';
 
 vi.mock('azure-devops-node-api', () => ({
   WebApi: vi.fn(),

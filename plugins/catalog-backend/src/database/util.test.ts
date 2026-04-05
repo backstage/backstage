@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type Mock} from 'vitest';
+import { vi, type Mock } from 'vitest';
 
 import { Knex } from 'knex';
 import { retryOnDeadlock } from './util';
@@ -87,7 +87,7 @@ describe('retryOnDeadlock', () => {
   });
 
   it('applies exponential backoff between retries', async () => {
-    const { setTimeout: sleep } = vi.importMock<{
+    const { setTimeout: sleep } = await vi.importMock<{
       setTimeout: Mock;
     }>('node:timers/promises');
 

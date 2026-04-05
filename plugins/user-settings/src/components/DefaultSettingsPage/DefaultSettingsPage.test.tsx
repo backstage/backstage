@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type Mock} from 'vitest';
+import { vi, type Mock } from 'vitest';
 
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { DefaultSettingsPage } from './DefaultSettingsPage';

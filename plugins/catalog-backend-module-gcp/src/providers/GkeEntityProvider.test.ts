@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type MockedClass} from 'vitest';
+import { vi, type MockedClass } from 'vitest';
 
 import { GkeEntityProvider } from './GkeEntityProvider';
 import { SchedulerServiceTaskRunner } from '@backstage/backend-plugin-api';

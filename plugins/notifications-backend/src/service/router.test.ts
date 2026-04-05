@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi, vi, type Mocked} from 'vitest';
+import { vi, type Mock, type Mocked } from 'vitest';
 
 import express from 'express';
 import request from 'supertest';
@@ -851,10 +851,10 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
       await client('user_settings').del();
 
       (customProcessor.processOptions as Mock).mockImplementation(
-        opts => opts,
+        (opts: any) => opts,
       );
       (customProcessor.preProcess as Mock).mockImplementation(
-        (notification, _options) => notification,
+        (notification: any, _options: any) => notification,
       );
 
       const router = await createRouter({

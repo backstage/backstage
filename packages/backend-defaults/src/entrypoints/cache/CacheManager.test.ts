@@ -26,8 +26,8 @@ import { CacheManager } from './CacheManager';
 // that might interfere with this one.
 
 // Contrived code because it's hard to spy on a default export
-vi.mock('@keyv/redis', () => {
-  const Actual = vi.importActual('@keyv/redis');
+vi.mock('@keyv/redis', async () => {
+  const Actual = await vi.importActual<any>('@keyv/redis');
   const DefaultConstructor = Actual.default;
   return {
     ...Actual,
@@ -36,8 +36,8 @@ vi.mock('@keyv/redis', () => {
     createCluster: vi.fn(),
   };
 });
-vi.mock('@keyv/valkey', () => {
-  const Actual = vi.importActual('@keyv/valkey');
+vi.mock('@keyv/valkey', async () => {
+  const Actual = await vi.importActual<any>('@keyv/valkey');
   const DefaultConstructor = Actual.default;
   return {
     ...Actual,
@@ -46,8 +46,8 @@ vi.mock('@keyv/valkey', () => {
     createCluster: vi.fn(),
   };
 });
-vi.mock('@keyv/memcache', () => {
-  const Actual = vi.importActual('@keyv/memcache');
+vi.mock('@keyv/memcache', async () => {
+  const Actual = await vi.importActual<any>('@keyv/memcache');
   const DefaultConstructor = Actual.default;
   return {
     ...Actual,

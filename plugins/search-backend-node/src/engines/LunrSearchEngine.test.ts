@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi, vi, type Mocked} from 'vitest';
+import { vi, type Mock, type Mocked } from 'vitest';
 
 import lunr from 'lunr';
 import { IndexableDocument } from '@backstage/plugin-search-common';
@@ -65,9 +65,11 @@ vi.mock('./LunrSearchEngineIndexer', () => ({
 
 const getActualIndexer = (engine: SearchEngine, index: string) => {
   (LunrSearchEngineIndexer as unknown as Mock).mockImplementationOnce(
-    () => {
-      const ActualIndexer = vi.importActual(
-        './LunrSearchEngineIndexer',
+    async () => {
+      const ActualIndexer = (
+        await vi.importActual<typeof import('./LunrSearchEngineIndexer')>(
+          './LunrSearchEngineIndexer',
+        )
       ).LunrSearchEngineIndexer;
       return new ActualIndexer();
     },

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type Mock} from 'vitest';
+import { vi } from 'vitest';
 
 import { TestPipeline } from '@backstage/plugin-search-backend-node';
 import Mock from '@elastic/elasticsearch-mock';
@@ -31,12 +31,12 @@ const clientWrapper = ElasticSearchClientWrapper.fromClientOptions({
 
 describe('ElasticSearchSearchEngineIndexer', () => {
   let indexer: ElasticSearchSearchEngineIndexer;
-  let bulkSpy: Mock;
-  let getSpy: Mock;
-  let createSpy: Mock;
-  let aliasesSpy: Mock;
-  let deleteSpy: Mock;
-  let refreshSpy: Mock;
+  let bulkSpy: any;
+  let getSpy: any;
+  let createSpy: any;
+  let aliasesSpy: any;
+  let deleteSpy: any;
+  let refreshSpy: any;
 
   beforeEach(() => {
     // Instantiate the indexer to be tested.

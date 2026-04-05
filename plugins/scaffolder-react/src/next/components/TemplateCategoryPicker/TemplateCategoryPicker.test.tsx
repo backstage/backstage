@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type Mock} from 'vitest';
+import { vi, type Mock } from 'vitest';
 
 import { useEntityTypeFilter } from '@backstage/plugin-catalog-react';
 import { TemplateCategoryPicker } from './TemplateCategoryPicker';

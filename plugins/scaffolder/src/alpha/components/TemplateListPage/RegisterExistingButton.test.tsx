@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type Mock} from 'vitest';
+import { vi, type Mock } from 'vitest';
 
 import { screen } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/test-utils';

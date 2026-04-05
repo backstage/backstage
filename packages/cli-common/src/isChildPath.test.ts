@@ -21,7 +21,7 @@ import { posix, win32 } from 'node:path';
 describe('isChildPath', () => {
   it('should check child posix paths', () => {
     vi.hoisted(() => {
-      vi.doMock('path', posix);
+      vi.doMock('path', () => posix);
       const { isChildPath } = require('./isChildPath');
 
       expect(isChildPath('/', '/')).toBe(true);
@@ -47,7 +47,7 @@ describe('isChildPath', () => {
 
   it('should check child win32 paths', () => {
     vi.hoisted(() => {
-      vi.doMock('path', win32);
+      vi.doMock('path', () => win32);
       const { isChildPath } = require('./isChildPath');
 
       expect(isChildPath('/x', '/x')).toBe(true);

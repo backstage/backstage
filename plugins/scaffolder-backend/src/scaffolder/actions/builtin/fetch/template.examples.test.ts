@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type MockedFunction} from 'vitest';
+import { vi, type MockedFunction } from 'vitest';
 
 import { join as joinPath, sep as pathSep } from 'node:path';
 import fs from 'fs-extra';
@@ -50,9 +50,7 @@ const aBinaryFile = fs.readFileSync(
   ),
 );
 
-const mockFetchContents = fetchContents as MockedFunction<
-  typeof fetchContents
->;
+const mockFetchContents = fetchContents as MockedFunction<typeof fetchContents>;
 
 describe('fetch:template examples', () => {
   let action: TemplateAction<any>;

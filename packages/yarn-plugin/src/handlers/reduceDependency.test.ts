@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type SpyInstance} from 'vitest';
+import { vi, type MockInstance } from 'vitest';
 
 import { Configuration, Project, structUtils, httpUtils } from '@yarnpkg/core';
 import { npath, ppath } from '@yarnpkg/fslib';
@@ -24,23 +24,18 @@ import { reduceDependency } from './reduceDependency';
 describe('reduceDependency', () => {
   const mockDir = createMockDirectory();
   let project: Project;
-  let getMock: SpyInstance<
-    ReturnType<(typeof httpUtils)['get']>,
-    Parameters<(typeof httpUtils)['get']>
-  >;
+  let getMock: MockInstance;
 
   beforeEach(() => {
     project = new Project(ppath.cwd(), {
       configuration: Configuration.create(ppath.cwd()),
     });
 
-    jest
-      .spyOn(ppath, 'cwd')
-      .mockReturnValue(npath.toPortablePath(mockDir.path));
+    vi.spyOn(ppath, 'cwd').mockReturnValue(npath.toPortablePath(mockDir.path));
 
-    jest
-      .spyOn(process, 'cwd')
-      .mockReturnValue(npath.toPortablePath(mockDir.path));
+    vi.spyOn(process, 'cwd').mockReturnValue(
+      npath.toPortablePath(mockDir.path) as string,
+    );
 
     getMock = vi.spyOn(httpUtils, 'get').mockResolvedValue({
       releaseVersion: '1.23.45',

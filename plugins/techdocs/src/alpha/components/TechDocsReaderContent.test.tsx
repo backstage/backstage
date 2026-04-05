@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type Mock} from 'vitest';
+import { vi, type Mock } from 'vitest';
 import { ReactNode } from 'react';
 import { waitFor } from '@testing-library/react';
 
@@ -36,9 +36,7 @@ import { configApiRef } from '@backstage/core-plugin-api';
 
 const useTechDocsReaderDom = vi.fn();
 vi.mock('../../reader/components/TechDocsReaderPageContent/dom', () => ({
-  ...vi.importActual(
-    '../../reader/components/TechDocsReaderPageContent/dom',
-  ),
+  ...vi.importActual('../../reader/components/TechDocsReaderPageContent/dom'),
   useTechDocsReaderDom: (...args: any[]) => useTechDocsReaderDom(...args),
 }));
 const useReaderState = vi.fn();

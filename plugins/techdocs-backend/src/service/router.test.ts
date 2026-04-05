@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi, type Mocked , type MockedClass} from 'vitest';
+import { vi, type Mocked, type MockedClass } from 'vitest';
 
 import { ConfigReader } from '@backstage/config';
 import {

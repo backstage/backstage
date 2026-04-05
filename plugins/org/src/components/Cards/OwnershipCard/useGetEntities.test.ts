@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type Mock} from 'vitest';
+import { vi, type Mock } from 'vitest';
 
 import { CompoundEntityRef, Entity } from '@backstage/catalog-model';
 import { useGetEntities } from './useGetEntities';
@@ -37,14 +37,13 @@ const catalogApi = catalogApiMock.mock({
   getEntities: vi.fn(async () => Promise.resolve({ items: [] })),
 });
 
-vi.mock('@backstage/core-plugin-api', () => {
-  const actual = vi.importActual('@backstage/core-plugin-api');
+vi.mock('@backstage/core-plugin-api', async () => {
+  const actual = await vi.importActual('@backstage/core-plugin-api');
   return { ...actual, useApi: vi.fn(() => catalogApi) };
 });
 
 const getEntityRelationsMock: Mock<
-  CompoundEntityRef[],
-  [Entity | undefined]
+  (entity: Entity | undefined) => CompoundEntityRef[]
 > = vi.fn();
 vi.mock('@backstage/plugin-catalog-react', () => {
   return {
@@ -79,7 +78,7 @@ describe('useGetEntities', () => {
 
     beforeEach(() => {
       catalogApi.getEntitiesByRefs.mockImplementation(
-        async ({ entityRefs: [ref] }) =>
+        async ({ entityRefs: [ref] }: { entityRefs: string[] }) =>
           ref.includes(givenParentGroup)
             ? { items: [givenParentGroupEntity] }
             : { items: [givenLeafGroupEntity] },
@@ -125,7 +124,7 @@ describe('useGetEntities', () => {
         beforeEach(() => {
           catalogApi.getEntitiesByRefs.mockRestore();
           catalogApi.getEntitiesByRefs.mockImplementation(
-            async ({ entityRefs: [ref] }) => {
+            async ({ entityRefs: [ref] }: { entityRefs: string[] }) => {
               if (ref.includes(givenParentGroup)) {
                 return { items: [givenParentGroupEntity] };
               }
@@ -252,7 +251,7 @@ describe('useGetEntities', () => {
     } as Partial<Entity> as Entity;
 
     beforeEach(() => {
-      getEntityRelationsMock.mockImplementation(entity =>
+      getEntityRelationsMock.mockImplementation((entity: Entity | undefined) =>
         entity?.kind === 'User'
           ? manyGroups.map(group => createGroupRefFromName(group.metadata.name))
           : [],
@@ -303,7 +302,7 @@ describe('useGetEntities', () => {
     } as Partial<Entity> as Entity;
 
     beforeEach(() => {
-      getEntityRelationsMock.mockImplementation(entity =>
+      getEntityRelationsMock.mockImplementation((entity: Entity | undefined) =>
         entity?.kind === 'User'
           ? largeNumberOfGroups.map(group =>
               createGroupRefFromName(group.metadata.name),

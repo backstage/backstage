@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type Mock} from 'vitest';
+import { vi, type Mock } from 'vitest';
 import { RepoUrlPicker } from './RepoUrlPicker';
 import { Form } from '@backstage/plugin-scaffolder-react/alpha';
 import validator from '@rjsf/validator-ajv8';
@@ -355,17 +355,15 @@ describe('RepoUrlPicker', () => {
       };
       const allowedHosts = ['github.com', 'gitlab.example.com'];
 
-      (mockScmAuthApi.getCredentials as Mock).mockImplementation(
-        ({ url }) => {
-          let token = '';
-          if (url === `https://${allowedHosts[0]}`) {
-            token = 'abc123';
-          } else if (url === `https://${allowedHosts[1]}`) {
-            token = 'def456';
-          }
-          return Promise.resolve({ token });
-        },
-      );
+      (mockScmAuthApi.getCredentials as Mock).mockImplementation(({ url }) => {
+        let token = '';
+        if (url === `https://${allowedHosts[0]}`) {
+          token = 'abc123';
+        } else if (url === `https://${allowedHosts[1]}`) {
+          token = 'def456';
+        }
+        return Promise.resolve({ token });
+      });
       const secondHost = allowedHosts[1];
 
       const { getAllByRole, getByText } = await renderInTestApp(

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type MockInstance} from 'vitest';
+import { vi, type MockInstance } from 'vitest';
 
 import { ANNOTATION_KUBERNETES_AUTH_PROVIDER } from '@backstage/plugin-kubernetes-common';
 import { KubernetesClientBasedFetcher } from './KubernetesFetcher';

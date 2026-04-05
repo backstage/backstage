@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type MockedFunction} from 'vitest';
+import { vi, type MockedFunction } from 'vitest';
 
 import { RequirePermission } from './RequirePermission';
 import { usePermission } from '../hooks';
@@ -24,9 +24,7 @@ import { createPermission } from '@backstage/plugin-permission-common';
 vi.mock('../hooks', () => ({
   usePermission: vi.fn(),
 }));
-const mockUsePermission = usePermission as MockedFunction<
-  typeof usePermission
->;
+const mockUsePermission = usePermission as MockedFunction<typeof usePermission>;
 
 const permission = createPermission({
   name: 'access.something',

@@ -35,10 +35,10 @@ import { UrlReaders } from '@backstage/backend-defaults/urlReader';
 
 describe('UrlReaderProcessor', () => {
   const mockApiOrigin = 'http://localhost';
-  const mockCache: Mocked<CatalogProcessorCache> = {
+  const mockCache = {
     get: vi.fn(),
     set: vi.fn(),
-  };
+  } as unknown as Mocked<CatalogProcessorCache>;
   const server = setupServer();
   registerMswTestHooks(server);
 

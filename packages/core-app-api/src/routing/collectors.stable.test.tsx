@@ -35,9 +35,7 @@ import {
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 
 vi.mock('react-router', () => vi.importActual('react-router-stable'));
-vi.mock('react-router-dom', () =>
-  vi.importActual('react-router-dom-stable'),
-);
+vi.mock('react-router-dom', () => vi.importActual('react-router-dom-stable'));
 
 const MockComponent = ({ children }: PropsWithChildren<{ path?: string }>) => (
   <>{children}</>

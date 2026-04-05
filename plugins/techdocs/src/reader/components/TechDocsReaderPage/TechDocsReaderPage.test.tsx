@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi, vi, type Mocked} from 'vitest';
+import { vi, type Mock, type Mocked } from 'vitest';
 
 import { ReactNode } from 'react';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
@@ -89,9 +89,7 @@ const techdocsStorageApiMock: Mocked<typeof techdocsStorageApiRef.T> = {
   syncEntityDocs: vi.fn(),
 };
 
-const entityPresentationApiMock: Mocked<
-  typeof entityPresentationApiRef.T
-> = {
+const entityPresentationApiMock: Mocked<typeof entityPresentationApiRef.T> = {
   forEntity: vi.fn().mockReturnValue({
     snapshot: {
       primaryTitle: 'Test Entity',
@@ -116,13 +114,13 @@ const PageMock = () => {
   return <>{`PageMock: ${namespace}#${kind}#${name}`}</>;
 };
 
-vi.mock('@backstage/core-components', () => ({
-  ...vi.importActual('@backstage/core-components'),
+vi.mock('@backstage/core-components', async () => ({
+  ...(await vi.importActual('@backstage/core-components')),
   Page: vi.fn(),
 }));
 
-vi.mock('react-router-dom', () => ({
-  ...vi.importActual('react-router-dom'),
+vi.mock('react-router-dom', async () => ({
+  ...(await vi.importActual('react-router-dom')),
   useNavigate: vi.fn(),
 }));
 
@@ -173,8 +171,12 @@ describe('<TechDocsReaderPage />', () => {
     vi.clearAllMocks();
   });
 
-  beforeEach(() => {
-    const realPage = vi.importActual('@backstage/core-components').Page;
+  beforeEach(async () => {
+    const realPage = (
+      await vi.importActual<typeof import('@backstage/core-components')>(
+        '@backstage/core-components',
+      )
+    ).Page;
     (Page as Mock).mockImplementation(realPage);
   });
 

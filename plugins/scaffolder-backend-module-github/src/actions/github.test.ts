@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { vi , type Mock} from 'vitest';
+import { vi, type Mock } from 'vitest';
+
 vi.mock('./gitHelpers', () => {
   return {
     ...vi.importActual('./gitHelpers'),
@@ -53,7 +54,7 @@ import {
 const publicKey = '2Sg8iYjAxxmI2LvUXpJjkYrMxURPc8r+dB7TJyvvcCU=';
 
 const initRepoAndPushMocked = initRepoAndPush as Mock<
-  Promise<{ commitHash: string }>
+  (...args: any[]) => Promise<{ commitHash: string }>
 >;
 
 import { Octokit } from 'octokit';
@@ -99,8 +100,7 @@ describe('publish:github', () => {
     },
   });
 
-  const { entityRefToName: realFamiliarizeEntityName } =
-    vi.importActual('./gitHelpers');
+  let realFamiliarizeEntityName: typeof entityRefToName;
   const integrations = ScmIntegrations.fromConfig(config);
   let githubCredentialsProvider: GithubCredentialsProvider;
   let action: TemplateAction<any, any, any>;
@@ -112,6 +112,13 @@ describe('publish:github', () => {
       repoVisibility: 'private' as const,
       access: 'owner/blam',
     },
+  });
+
+  beforeAll(async () => {
+    const actual = await vi.importActual<typeof import('./gitHelpers')>(
+      './gitHelpers',
+    );
+    realFamiliarizeEntityName = actual.entityRefToName;
   });
 
   beforeEach(() => {
@@ -127,10 +134,7 @@ describe('publish:github', () => {
       githubCredentialsProvider,
     });
 
-    // restore real implementation
-    (entityRefToName as Mock).mockImplementation(
-      realFamiliarizeEntityName,
-    );
+    (entityRefToName as Mock).mockImplementation(realFamiliarizeEntityName);
     mockOctokit.rest.actions.getRepoPublicKey.mockResolvedValue({
       data: {
         key: publicKey,

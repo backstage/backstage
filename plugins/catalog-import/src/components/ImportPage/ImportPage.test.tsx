@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type Mock} from 'vitest';
+import { vi, type Mock } from 'vitest';
 
 import { ApiProvider, ConfigReader } from '@backstage/core-app-api';
 import { FetchApi, configApiRef } from '@backstage/core-plugin-api';

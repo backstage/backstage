@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type Mock} from 'vitest';
+import { vi, type Mock } from 'vitest';
 
 import { createGithubDeployKeyAction } from './githubDeployKey';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';

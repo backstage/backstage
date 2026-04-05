@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type Mock} from 'vitest';
+import { vi, type Mock } from 'vitest';
 
 import { catalogEntityDeletePermission } from '@backstage/plugin-catalog-common/alpha';
 import { renderHook } from '@testing-library/react';

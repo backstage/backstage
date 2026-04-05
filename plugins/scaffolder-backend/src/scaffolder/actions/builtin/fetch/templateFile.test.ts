@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type MockedFunction} from 'vitest';
+import { vi, type MockedFunction } from 'vitest';
 
 vi.mock('@backstage/plugin-scaffolder-node', () => {
   const actual = vi.importActual('@backstage/plugin-scaffolder-node');

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type Mock} from 'vitest';
+import { vi, type Mock } from 'vitest';
 
 import { Entity, getEntitySourceLocation } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';

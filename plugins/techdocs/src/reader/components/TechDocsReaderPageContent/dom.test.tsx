@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type Mock} from 'vitest';
+import { vi, type Mock } from 'vitest';
 import { render } from '@testing-library/react';
 
 // We need to mock react-router-dom hooks used by useInitialRedirect

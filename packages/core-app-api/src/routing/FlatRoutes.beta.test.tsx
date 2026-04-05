@@ -27,9 +27,7 @@ import { FlatRoutes } from './FlatRoutes';
 import { TestApiProvider } from '@backstage/test-utils';
 
 vi.mock('react-router', () => vi.importActual('react-router-beta'));
-vi.mock('react-router-dom', () =>
-  vi.importActual('react-router-dom-beta'),
-);
+vi.mock('react-router-dom', () => vi.importActual('react-router-dom-beta'));
 
 const mockFeatureFlagsApi = new LocalStorageFeatureFlags();
 const Wrapper = ({ children }: { children?: ReactNode }) => (

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi, type Mocked , type MockedFunction} from 'vitest';
+import { vi, type Mocked, type MockedFunction } from 'vitest';
 
 import {
   coreServices,
@@ -49,10 +49,9 @@ vi.mock('./CimdClient', () => {
 
 import * as CimdClient from './CimdClient';
 
-const mockFetchCimdMetadata =
-  CimdClient.fetchCimdMetadata as MockedFunction<
-    typeof CimdClient.fetchCimdMetadata
-  >;
+const mockFetchCimdMetadata = CimdClient.fetchCimdMetadata as MockedFunction<
+  typeof CimdClient.fetchCimdMetadata
+>;
 
 vi.setConfig({ testTimeout: 60_000 });
 
