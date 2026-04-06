@@ -55,9 +55,9 @@ describe('bitbucketCloud:branchRestriction:create', () => {
       create: vi.fn().mockResolvedValue({ status: 201, data: {} }),
     },
   };
-  (Bitbucket as unknown as Mock).mockImplementation(
-    () => mockBranchRestrictionsApi,
-  );
+  (Bitbucket as unknown as Mock).mockImplementation(function () {
+    return mockBranchRestrictionsApi;
+  });
 
   beforeEach(() => {
     vi.clearAllMocks();

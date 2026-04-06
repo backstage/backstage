@@ -21,9 +21,9 @@ import { MicrosoftGraphClient, readMicrosoftGraphOrg } from '../microsoftGraph';
 import { MicrosoftGraphOrgReaderProcessor } from './MicrosoftGraphOrgReaderProcessor';
 import { mockServices } from '@backstage/backend-test-utils';
 
-vi.mock('../microsoftGraph', () => {
+vi.mock('../microsoftGraph', async () => {
   return {
-    ...vi.importActual('../microsoftGraph'),
+    ...(await vi.importActual('../microsoftGraph')),
     readMicrosoftGraphOrg: vi.fn(),
   };
 });

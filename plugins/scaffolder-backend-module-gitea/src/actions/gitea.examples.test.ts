@@ -29,9 +29,9 @@ import { setupServer } from 'msw/node';
 import { examples } from './gitea.examples';
 import yaml from 'yaml';
 
-vi.mock('@backstage/plugin-scaffolder-node', () => {
+vi.mock('@backstage/plugin-scaffolder-node', async () => {
   return {
-    ...vi.importActual('@backstage/plugin-scaffolder-node'),
+    ...(await vi.importActual('@backstage/plugin-scaffolder-node')),
     initRepoAndPush: vi.fn().mockResolvedValue({
       commitHash: '431f19cc36b551763d157f1b5e4a4b446165dbn2',
     }),

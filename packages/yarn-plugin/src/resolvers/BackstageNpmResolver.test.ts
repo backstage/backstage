@@ -19,11 +19,13 @@ import { ResolveOptions, structUtils } from '@yarnpkg/core';
 import { BackstageNpmResolver } from './BackstageNpmResolver';
 import { NpmSemverResolver } from '@yarnpkg/plugin-npm';
 
-const mockGetCandidates = vi.fn();
-const mockGetSatisfying = vi.fn();
-vi.mock('@yarnpkg/plugin-npm', () => {
+const { mockGetCandidates, mockGetSatisfying } = vi.hoisted(() => ({
+  mockGetCandidates: vi.fn(),
+  mockGetSatisfying: vi.fn(),
+}));
+vi.mock('@yarnpkg/plugin-npm', async () => {
   return {
-    ...vi.importActual('@yarnpkg/plugin-npm'),
+    ...(await vi.importActual('@yarnpkg/plugin-npm')),
     NpmSemverResolver: function MockNpmSemverResolver() {
       return {
         getCandidates: mockGetCandidates,

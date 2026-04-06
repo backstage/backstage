@@ -16,9 +16,9 @@
 
 import { vi } from 'vitest';
 
-vi.mock('@backstage/plugin-scaffolder-node', () => {
+vi.mock('@backstage/plugin-scaffolder-node', async () => {
   return {
-    ...vi.importActual('@backstage/plugin-scaffolder-node'),
+    ...(await vi.importActual('@backstage/plugin-scaffolder-node')),
     initRepoAndPush: vi.fn().mockResolvedValue({
       commitHash: '460f19cc36b551763d157f1b5e4a4b446165dbb8',
     }),

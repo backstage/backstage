@@ -18,9 +18,9 @@ import { vi, type Mock } from 'vitest';
 
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 
-vi.mock('./gitHelpers', () => {
+vi.mock('./gitHelpers', async () => {
   return {
-    ...vi.importActual('./gitHelpers'),
+    ...(await vi.importActual('./gitHelpers')),
     entityRefToName: vi.fn(),
   };
 });

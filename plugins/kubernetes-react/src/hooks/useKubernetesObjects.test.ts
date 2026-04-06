@@ -58,9 +58,9 @@ const mockResponse = {
   ],
 };
 
-vi.mock('./auth', () => {
+vi.mock('./auth', async () => {
   return {
-    ...vi.importActual('./auth'),
+    ...(await vi.importActual('./auth')),
     generateAuth: vi.fn(),
   };
 });

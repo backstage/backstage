@@ -46,8 +46,9 @@ type PartialDeep<T> = T extends (...args: unknown[]) => unknown
   ? { [K in keyof T]?: PartialDeep<T[K]> }
   : T;
 
-vi.mock('../lib/github', () => {
+vi.mock('../lib/github', async () => {
   return {
+    ...(await vi.importActual('../lib/github')),
     getOrganizationRepositories: vi.fn(),
     createGraphqlClient: vi.fn().mockReturnValue(vi.fn()),
   };
@@ -196,9 +197,8 @@ describe('GithubEntityProvider', () => {
       schedule,
     })[0];
 
-    const mockGetOrganizationRepositories = vi.spyOn(
-      helpers,
-      'getOrganizationRepositories',
+    const mockGetOrganizationRepositories = vi.mocked(
+      helpers.getOrganizationRepositories,
     );
 
     mockGetOrganizationRepositories.mockReturnValue(
@@ -271,9 +271,8 @@ describe('GithubEntityProvider', () => {
       schedule,
     })[0];
 
-    const mockGetOrganizationRepositories = vi.spyOn(
-      helpers,
-      'getOrganizationRepositories',
+    const mockGetOrganizationRepositories = vi.mocked(
+      helpers.getOrganizationRepositories,
     );
 
     mockGetOrganizationRepositories.mockReturnValue(
@@ -352,9 +351,8 @@ describe('GithubEntityProvider', () => {
       schedule,
     })[0];
 
-    const mockGetOrganizationRepositories = vi.spyOn(
-      helpers,
-      'getOrganizationRepositories',
+    const mockGetOrganizationRepositories = vi.mocked(
+      helpers.getOrganizationRepositories,
     );
 
     mockGetOrganizationRepositories.mockReturnValue(
@@ -433,9 +431,8 @@ describe('GithubEntityProvider', () => {
       schedule,
     })[0];
 
-    const mockGetOrganizationRepositories = vi.spyOn(
-      helpers,
-      'getOrganizationRepositories',
+    const mockGetOrganizationRepositories = vi.mocked(
+      helpers.getOrganizationRepositories,
     );
 
     mockGetOrganizationRepositories.mockReturnValue(
@@ -533,9 +530,8 @@ describe('GithubEntityProvider', () => {
       schedule,
     })[0];
 
-    const mockGetOrganizationRepositories = vi.spyOn(
-      helpers,
-      'getOrganizationRepositories',
+    const mockGetOrganizationRepositories = vi.mocked(
+      helpers.getOrganizationRepositories,
     );
 
     mockGetOrganizationRepositories.mockReturnValue(

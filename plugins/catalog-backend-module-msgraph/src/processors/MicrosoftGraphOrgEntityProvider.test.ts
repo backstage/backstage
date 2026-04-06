@@ -39,9 +39,9 @@ import {
 } from './MicrosoftGraphOrgEntityProvider';
 import { mockServices } from '@backstage/backend-test-utils';
 
-vi.mock('../microsoftGraph', () => {
+vi.mock('../microsoftGraph', async () => {
   return {
-    ...vi.importActual('../microsoftGraph'),
+    ...(await vi.importActual('../microsoftGraph')),
     readMicrosoftGraphOrg: vi.fn(),
   };
 });
