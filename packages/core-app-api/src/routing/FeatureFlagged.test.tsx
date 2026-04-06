@@ -31,9 +31,7 @@ const Wrapper = ({ children }: { children?: ReactNode }) => (
 describe('FeatureFlagged', () => {
   describe('with', () => {
     it('should render contents when the feature flag is enabled', async () => {
-      jest
-        .spyOn(mockFeatureFlagsApi, 'isActive')
-        .mockImplementation(() => true);
+      vi.spyOn(mockFeatureFlagsApi, 'isActive').mockImplementation(() => true);
 
       render(
         <Wrapper>
@@ -48,9 +46,7 @@ describe('FeatureFlagged', () => {
       expect(screen.getByText('BACKSTAGE!')).toBeInTheDocument();
     });
     it('should not render contents when the feature flag is disabled', async () => {
-      jest
-        .spyOn(mockFeatureFlagsApi, 'isActive')
-        .mockImplementation(() => false);
+      vi.spyOn(mockFeatureFlagsApi, 'isActive').mockImplementation(() => false);
 
       render(
         <Wrapper>
@@ -67,9 +63,7 @@ describe('FeatureFlagged', () => {
   });
   describe('without', () => {
     it('should not render contents when the feature flag is enabled', async () => {
-      jest
-        .spyOn(mockFeatureFlagsApi, 'isActive')
-        .mockImplementation(() => true);
+      vi.spyOn(mockFeatureFlagsApi, 'isActive').mockImplementation(() => true);
 
       render(
         <Wrapper>
@@ -84,9 +78,7 @@ describe('FeatureFlagged', () => {
       expect(screen.queryByText('BACKSTAGE!')).not.toBeInTheDocument();
     });
     it('should render contents when the feature flag is disabled', async () => {
-      jest
-        .spyOn(mockFeatureFlagsApi, 'isActive')
-        .mockImplementation(() => false);
+      vi.spyOn(mockFeatureFlagsApi, 'isActive').mockImplementation(() => false);
 
       render(
         <Wrapper>

@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import { vi , type Mock} from 'vitest';
+import { vi, type Mock } from 'vitest';
 
 import { renderInTestApp } from '@backstage/test-utils';
 import { useLocation } from 'react-router-dom';
 import { useSearch } from '@backstage/plugin-search-react';
 import { SearchPage } from './SearchPage';
 
-vi.mock('react-router-dom', () => ({
-  ...vi.importActual('react-router-dom'),
+vi.mock('react-router-dom', async () => ({
+  ...(await vi.importActual('react-router-dom')),
   useLocation: vi.fn().mockReturnValue({
     search: '',
   }),
@@ -34,11 +34,9 @@ const setTypesMock = vi.fn();
 const setFiltersMock = vi.fn();
 const setPageCursorMock = vi.fn();
 
-vi.mock('@backstage/plugin-search-react', () => ({
-  ...vi.importActual('@backstage/plugin-search-react'),
-  SearchContextProvider: jest
-    .fn()
-    .mockImplementation(({ children }) => children),
+vi.mock('@backstage/plugin-search-react', async () => ({
+  ...(await vi.importActual('@backstage/plugin-search-react')),
+  SearchContextProvider: vi.fn().mockImplementation(({ children }) => children),
   useSearch: vi.fn().mockReturnValue({
     term: '',
     setTerm: (term: any) => setTermMock(term),

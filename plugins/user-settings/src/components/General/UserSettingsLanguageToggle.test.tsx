@@ -34,7 +34,7 @@ describe('UserSettingsLanguageToggle', () => {
 
   it('should render correctly with multiple available languages', async () => {
     const mockLanguageApi: typeof appLanguageApiRef.T = {
-      getAvailableLanguages: jest
+      getAvailableLanguages: vi
         .fn()
         .mockReturnValue({ languages: ['en', 'de'] }),
       getLanguage: vi.fn().mockReturnValue({ language: 'en' }),
@@ -55,7 +55,7 @@ describe('UserSettingsLanguageToggle', () => {
 
   it('should handle language change', async () => {
     const mockLanguageApi: typeof appLanguageApiRef.T = {
-      getAvailableLanguages: jest
+      getAvailableLanguages: vi
         .fn()
         .mockReturnValue({ languages: ['en', 'de'] }),
       getLanguage: vi.fn().mockReturnValue({ language: 'en' }),

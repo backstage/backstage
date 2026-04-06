@@ -23,9 +23,7 @@ import { AppManager } from './AppManager';
 import { AppOptions } from './types';
 
 vi.mock('react-router', () => vi.importActual('react-router-stable'));
-vi.mock('react-router-dom', () =>
-  vi.importActual('react-router-dom-stable'),
-);
+vi.mock('react-router-dom', () => vi.importActual('react-router-dom-stable'));
 
 const mockAppOptions: AppOptions = {
   apis: [],

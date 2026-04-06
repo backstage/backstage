@@ -969,10 +969,10 @@ describe('backend-dynamic-feature-service', () => {
       });
 
       const fromConfigSpier = vi.spyOn(DynamicPluginManager, 'create');
-      const applyConfigSpier = jest
+      const applyConfigSpier = vi
         .spyOn(PluginScanner.prototype as any, 'applyConfig')
         .mockImplementation(() => {});
-      const scanRootSpier = jest
+      const scanRootSpier = vi
         .spyOn(PluginScanner.prototype, 'scanRoot')
         .mockImplementation(async () => ({
           packages: [

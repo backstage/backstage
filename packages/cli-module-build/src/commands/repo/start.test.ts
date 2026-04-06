@@ -103,25 +103,25 @@ describe('findTargetPackages', () => {
   });
 
   it('should select default packages', async () => {
-    jest
-      .spyOn(PackageGraph, 'listTargetPackages')
-      .mockResolvedValue(Object.values(mocks));
+    vi.spyOn(PackageGraph, 'listTargetPackages').mockResolvedValue(
+      Object.values(mocks),
+    );
     const result = await findTargetPackages([], []);
     expect(result).toEqual([mocks.app, mocks.backend]);
   });
 
   it('should select packages by plugin ID', async () => {
-    jest
-      .spyOn(PackageGraph, 'listTargetPackages')
-      .mockResolvedValue(Object.values(mocks));
+    vi.spyOn(PackageGraph, 'listTargetPackages').mockResolvedValue(
+      Object.values(mocks),
+    );
     const result = await findTargetPackages([], ['x']);
     expect(result).toEqual([mocks.pluginX, mocks.pluginXBackend]);
   });
 
   it('should throw an error if no packages match the plugin ID', async () => {
-    jest
-      .spyOn(PackageGraph, 'listTargetPackages')
-      .mockResolvedValue(Object.values(mocks));
+    vi.spyOn(PackageGraph, 'listTargetPackages').mockResolvedValue(
+      Object.values(mocks),
+    );
     await expect(
       findTargetPackages([], ['nonexistent-plugin']),
     ).rejects.toThrow(
@@ -130,26 +130,26 @@ describe('findTargetPackages', () => {
   });
 
   it('should select packages by explicit names', async () => {
-    jest
-      .spyOn(PackageGraph, 'listTargetPackages')
-      .mockResolvedValue(Object.values(mocks));
+    vi.spyOn(PackageGraph, 'listTargetPackages').mockResolvedValue(
+      Object.values(mocks),
+    );
     const result = await findTargetPackages(['other-app'], []);
     expect(result).toEqual([mocks.otherApp]);
   });
 
   it('should throw an error if no package matches the explicit name', async () => {
-    jest
-      .spyOn(PackageGraph, 'listTargetPackages')
-      .mockResolvedValue(Object.values(mocks));
+    vi.spyOn(PackageGraph, 'listTargetPackages').mockResolvedValue(
+      Object.values(mocks),
+    );
     await expect(
       findTargetPackages(['nonexistent-package'], []),
     ).rejects.toThrow("Unable to find package by name 'nonexistent-package'");
   });
 
   it('should select packages by relative path', async () => {
-    jest
-      .spyOn(PackageGraph, 'listTargetPackages')
-      .mockResolvedValue(Object.values(mocks));
+    vi.spyOn(PackageGraph, 'listTargetPackages').mockResolvedValue(
+      Object.values(mocks),
+    );
     const result = await findTargetPackages(
       ['packages/app', 'packages/backend-next'],
       [],
@@ -158,60 +158,62 @@ describe('findTargetPackages', () => {
   });
 
   it('should throw an error if no package matches the relative path', async () => {
-    jest
-      .spyOn(PackageGraph, 'listTargetPackages')
-      .mockResolvedValue(Object.values(mocks));
+    vi.spyOn(PackageGraph, 'listTargetPackages').mockResolvedValue(
+      Object.values(mocks),
+    );
     await expect(findTargetPackages(['nonexistent/path'], [])).rejects.toThrow(
       "Unable to find package by name 'nonexistent/path'",
     );
   });
 
   it('should select a single frontend or backend package if no arguments are provided', async () => {
-    jest
-      .spyOn(PackageGraph, 'listTargetPackages')
-      .mockResolvedValue([mocks.app]);
+    vi.spyOn(PackageGraph, 'listTargetPackages').mockResolvedValue([mocks.app]);
     const result = await findTargetPackages([], []);
     expect(result).toEqual([mocks.app]);
   });
 
   it('should throw an error if multiple frontend packages other than packages/app are found without explicit selection', async () => {
-    jest
-      .spyOn(PackageGraph, 'listTargetPackages')
-      .mockResolvedValue([mocks.otherApp, mocks.appNext]);
+    vi.spyOn(PackageGraph, 'listTargetPackages').mockResolvedValue([
+      mocks.otherApp,
+      mocks.appNext,
+    ]);
     await expect(findTargetPackages([], [])).rejects.toThrow(
       "Found multiple packages with role 'frontend' but none of the use the default path '/root/packages/app',choose which packages you want to run by passing the package names explicitly as arguments, for example 'yarn backstage-cli repo start my-app my-backend'.",
     );
   });
 
   it('should select a single plugin package if no app or backend packages are found', async () => {
-    jest
-      .spyOn(PackageGraph, 'listTargetPackages')
-      .mockResolvedValue([mocks.pluginX]);
+    vi.spyOn(PackageGraph, 'listTargetPackages').mockResolvedValue([
+      mocks.pluginX,
+    ]);
     const result = await findTargetPackages([], []);
     expect(result).toEqual([mocks.pluginX]);
   });
 
   it('should select a pair of plugin packages if no app or backend packages are found', async () => {
-    jest
-      .spyOn(PackageGraph, 'listTargetPackages')
-      .mockResolvedValue([mocks.pluginX, mocks.pluginXBackend]);
+    vi.spyOn(PackageGraph, 'listTargetPackages').mockResolvedValue([
+      mocks.pluginX,
+      mocks.pluginXBackend,
+    ]);
     const result = await findTargetPackages([], []);
     expect(result).toEqual([mocks.pluginX, mocks.pluginXBackend]);
   });
 
   // Right now we're not validating this because it requires backstage.pluginId to be set, and it's a strange case anyway
   it('should select a pair of plugin packages even if they are from different plugins', async () => {
-    jest
-      .spyOn(PackageGraph, 'listTargetPackages')
-      .mockResolvedValue([mocks.pluginX, mocks.pluginYBackend]);
+    vi.spyOn(PackageGraph, 'listTargetPackages').mockResolvedValue([
+      mocks.pluginX,
+      mocks.pluginYBackend,
+    ]);
     const result = await findTargetPackages([], []);
     expect(result).toEqual([mocks.pluginX, mocks.pluginYBackend]);
   });
 
   it('should throw an error if multiple plugin packages are found without explicit selection', async () => {
-    jest
-      .spyOn(PackageGraph, 'listTargetPackages')
-      .mockResolvedValue([mocks.pluginX, mocks.pluginY]);
+    vi.spyOn(PackageGraph, 'listTargetPackages').mockResolvedValue([
+      mocks.pluginX,
+      mocks.pluginY,
+    ]);
     await expect(findTargetPackages([], [])).rejects.toThrow(
       "Found multiple packages with role 'frontend-plugin', please choose which packages you want to run by passing the package names explicitly as arguments, for example 'yarn backstage-cli repo start my-plugin my-plugin-backend'.",
     );

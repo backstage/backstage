@@ -158,9 +158,9 @@ describe('useElementFilter', () => {
   describe('FeatureFlags', () => {
     describe('with', () => {
       it('should not discover deeper than the feature gate if the feature flag is disabled', () => {
-        jest
-          .spyOn(mockFeatureFlagsApi, 'isActive')
-          .mockImplementation(() => false);
+        vi.spyOn(mockFeatureFlagsApi, 'isActive').mockImplementation(
+          () => false,
+        );
         const tree = (
           <MockComponent>
             <FeatureFlagComponent with="testing-flag">
@@ -195,9 +195,9 @@ describe('useElementFilter', () => {
       });
 
       it('should discover components behind a feature flag if the flag is enabled', () => {
-        jest
-          .spyOn(mockFeatureFlagsApi, 'isActive')
-          .mockImplementation(() => true);
+        vi.spyOn(mockFeatureFlagsApi, 'isActive').mockImplementation(
+          () => true,
+        );
         const tree = (
           <MockComponent>
             <FeatureFlagComponent with="testing-flag">
@@ -233,9 +233,9 @@ describe('useElementFilter', () => {
 
     describe('without', () => {
       it('should discover deeper than the feature gate if the feature flag is disabled', () => {
-        jest
-          .spyOn(mockFeatureFlagsApi, 'isActive')
-          .mockImplementation(() => false);
+        vi.spyOn(mockFeatureFlagsApi, 'isActive').mockImplementation(
+          () => false,
+        );
         const tree = (
           <MockComponent>
             <FeatureFlagComponent without="testing-flag">
@@ -269,9 +269,9 @@ describe('useElementFilter', () => {
       });
 
       it('should not discover components behind a feature flag if the flag is enabled', () => {
-        jest
-          .spyOn(mockFeatureFlagsApi, 'isActive')
-          .mockImplementation(() => true);
+        vi.spyOn(mockFeatureFlagsApi, 'isActive').mockImplementation(
+          () => true,
+        );
         const tree = (
           <MockComponent>
             <FeatureFlagComponent without="testing-flag">

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type MockedFunction} from 'vitest';
+import { vi, type MockedFunction } from 'vitest';
 
 import { mockServices } from '@backstage/backend-test-utils';
 import { Request, Response } from 'express';

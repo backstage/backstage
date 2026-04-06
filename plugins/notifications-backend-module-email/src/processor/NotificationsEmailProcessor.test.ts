@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type Mock} from 'vitest';
+import { vi, type Mock } from 'vitest';
 
 import { mockServices } from '@backstage/backend-test-utils';
 import { NotificationsEmailProcessor } from './NotificationsEmailProcessor';
@@ -28,8 +28,8 @@ const sendmailMock = vi.fn();
 const mockTransport = {
   sendMail: sendmailMock,
 };
-vi.mock('nodemailer', () => ({
-  ...vi.importActual('nodemailer'),
+vi.mock('nodemailer', async () => ({
+  ...(await vi.importActual('nodemailer')),
   createTransport: vi.fn(),
 }));
 

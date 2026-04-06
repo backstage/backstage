@@ -36,9 +36,7 @@ describe('afterWorkspaceDependencyReplacement.test', () => {
   } as Workspace;
   const target = {} as suggestUtils.Target;
 
-  const consoleWarnSpy = jest
-    .spyOn(console, 'warn')
-    .mockImplementation(() => {});
+  const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
   beforeEach(() => {
     vi.resetAllMocks();
@@ -53,13 +51,11 @@ describe('afterWorkspaceDependencyReplacement.test', () => {
       ],
     });
 
-    jest
-      .spyOn(ppath, 'cwd')
-      .mockReturnValue(npath.toPortablePath(mockDir.path));
+    vi.spyOn(ppath, 'cwd').mockReturnValue(npath.toPortablePath(mockDir.path));
 
-    jest
-      .spyOn(process, 'cwd')
-      .mockReturnValue(npath.toPortablePath(mockDir.path));
+    vi.spyOn(process, 'cwd').mockReturnValue(
+      npath.toPortablePath(mockDir.path),
+    );
 
     mockDir.setContent({
       'backstage.json': JSON.stringify({

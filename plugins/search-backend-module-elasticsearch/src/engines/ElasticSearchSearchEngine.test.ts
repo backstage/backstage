@@ -48,7 +48,7 @@ const indexerMock = {
   indexName: 'expected-index-name',
 };
 vi.mock('./ElasticSearchSearchEngineIndexer', () => ({
-  ElasticSearchSearchEngineIndexer: jest
+  ElasticSearchSearchEngineIndexer: vi
     .fn()
     .mockImplementation(() => indexerMock),
 }));
@@ -1010,7 +1010,7 @@ describe('ElasticSearchSearchEngine', () => {
       });
 
       const authProvider = {
-        getAuthHeaders: jest
+        getAuthHeaders: vi
           .fn()
           .mockResolvedValue({ Authorization: 'Bearer test-token' }),
       };
@@ -1036,7 +1036,7 @@ describe('ElasticSearchSearchEngine', () => {
       });
 
       const authProvider = {
-        getAuthHeaders: jest
+        getAuthHeaders: vi
           .fn()
           .mockResolvedValue({ Authorization: 'Bearer test-token' }),
       };
@@ -1066,7 +1066,7 @@ describe('ElasticSearchSearchEngine', () => {
       });
 
       const authProvider = {
-        getAuthHeaders: jest
+        getAuthHeaders: vi
           .fn()
           .mockResolvedValue({ Authorization: 'Bearer test-token' }),
       };
@@ -1091,7 +1091,7 @@ describe('ElasticSearchSearchEngine', () => {
       });
 
       const authProvider = {
-        getAuthHeaders: jest
+        getAuthHeaders: vi
           .fn()
           .mockResolvedValue({ Authorization: 'Bearer test-token' }),
       };

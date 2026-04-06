@@ -25,8 +25,8 @@ import { resolveUrlToRelative, useNavigateUrl } from './useNavigateUrl';
 import { configApiRef } from '@backstage/core-plugin-api';
 
 const navigate = vi.fn();
-vi.mock('react-router-dom', () => ({
-  ...vi.importActual('react-router-dom'),
+vi.mock('react-router-dom', async () => ({
+  ...(await vi.importActual('react-router-dom')),
   useNavigate: () => navigate,
 }));
 

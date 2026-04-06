@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type Mock} from 'vitest';
+import { vi, type Mock } from 'vitest';
 
 import { PropsWithChildren } from 'react';
 import { act, renderHook } from '@testing-library/react';

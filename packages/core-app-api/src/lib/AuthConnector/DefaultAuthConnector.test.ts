@@ -121,14 +121,12 @@ describe('DefaultAuthConnector', () => {
 
   it('should create a session', async () => {
     const mockOauth = new MockOAuthApi();
-    const popupSpy = jest
-      .spyOn(loginPopup, 'openLoginPopup')
-      .mockResolvedValue({
-        idToken: 'my-id-token',
-        accessToken: 'my-access-token',
-        scopes: 'a b',
-        expiresInSeconds: 3600,
-      });
+    const popupSpy = vi.spyOn(loginPopup, 'openLoginPopup').mockResolvedValue({
+      idToken: 'my-id-token',
+      accessToken: 'my-access-token',
+      scopes: 'a b',
+      expiresInSeconds: 3600,
+    });
     const connector = new DefaultAuthConnector({
       ...defaultOptions,
       oauthRequestApi: mockOauth,
@@ -154,7 +152,7 @@ describe('DefaultAuthConnector', () => {
   });
 
   it('should instantly show popup if option is set', async () => {
-    const popupSpy = jest
+    const popupSpy = vi
       .spyOn(loginPopup, 'openLoginPopup')
       .mockResolvedValue('my-session');
     const connector = new DefaultAuthConnector({
@@ -180,7 +178,7 @@ describe('DefaultAuthConnector', () => {
   });
 
   it('should show popup fullscreen', async () => {
-    const popupSpy = jest
+    const popupSpy = vi
       .spyOn(loginPopup, 'openLoginPopup')
       .mockResolvedValue('my-session');
 
@@ -214,7 +212,7 @@ describe('DefaultAuthConnector', () => {
   });
 
   it('should show popup with special width and height', async () => {
-    const popupSpy = jest
+    const popupSpy = vi
       .spyOn(loginPopup, 'openLoginPopup')
       .mockResolvedValue('my-session');
     const connector = new DefaultAuthConnector({
@@ -246,7 +244,7 @@ describe('DefaultAuthConnector', () => {
 
   it('should use join func to join scopes', async () => {
     const mockOauth = new MockOAuthApi();
-    const popupSpy = jest
+    const popupSpy = vi
       .spyOn(loginPopup, 'openLoginPopup')
       .mockResolvedValue({ scopes: '' });
     const connector = new DefaultAuthConnector({

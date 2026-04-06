@@ -29,9 +29,7 @@ import { RouteResolver } from './RouteResolver';
 import { MATCH_ALL_ROUTE } from './collectors';
 
 vi.mock('react-router', () => vi.importActual('react-router-stable'));
-vi.mock('react-router-dom', () =>
-  vi.importActual('react-router-dom-stable'),
-);
+vi.mock('react-router-dom', () => vi.importActual('react-router-dom-stable'));
 
 const rest = {
   element: null,

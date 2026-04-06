@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type Mock} from 'vitest';
+import { vi, type Mock } from 'vitest';
 
 import { createGithubEnvironmentAction } from './githubEnvironment';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';

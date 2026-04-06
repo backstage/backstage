@@ -111,9 +111,7 @@ describe('hooks', () => {
       };
 
       beforeEach(() => {
-        jest
-          .spyOn(window, 'MutationObserver')
-          .mockImplementation(() => observer);
+        vi.spyOn(window, 'MutationObserver').mockImplementation(() => observer);
       });
 
       afterEach(() => {

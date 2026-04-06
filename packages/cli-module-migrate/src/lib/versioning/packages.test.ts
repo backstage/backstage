@@ -42,9 +42,9 @@ describe('fetchPackageInfo', () => {
   });
 
   it('should forward info for yarn classic', async () => {
-    jest
-      .spyOn(runObj, 'runOutput')
-      .mockResolvedValue(`{"type":"inspect","data":{"the":"data"}}`);
+    vi.spyOn(runObj, 'runOutput').mockResolvedValue(
+      `{"type":"inspect","data":{"the":"data"}}`,
+    );
     vi.spyOn(yarn, 'detectYarnVersion').mockResolvedValue('classic');
 
     await expect(fetchPackageInfo('my-package')).resolves.toEqual({

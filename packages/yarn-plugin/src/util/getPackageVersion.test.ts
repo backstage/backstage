@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi, type Mocked , type MockedFunction} from 'vitest';
+import { vi, type Mocked, type MockedFunction } from 'vitest';
 
 import {
   Configuration,

@@ -100,9 +100,9 @@ describe('paths', () => {
   });
 
   it('findPaths should find workspace root with object', () => {
-    jest
-      .spyOn(JSON, 'parse')
-      .mockReturnValue({ workspaces: { packages: ['packages/*'] } });
+    vi.spyOn(JSON, 'parse').mockReturnValue({
+      workspaces: { packages: ['packages/*'] },
+    });
     vi.spyOn(process, 'cwd').mockReturnValue(__dirname);
 
     const paths = findPaths(__dirname);

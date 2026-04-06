@@ -43,9 +43,7 @@ describe('selectTemplateInteractively', () => {
   });
 
   it('should error if interactive selections is not found', async () => {
-    jest
-      .spyOn(inquirer, 'prompt')
-      .mockResolvedValueOnce({ name: 'nonexistent' });
+    vi.spyOn(inquirer, 'prompt').mockResolvedValueOnce({ name: 'nonexistent' });
 
     await expect(selectTemplateInteractively(mockConfig)).rejects.toThrow(
       "Template 'nonexistent' not found",

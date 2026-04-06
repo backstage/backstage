@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type MockedClass} from 'vitest';
+import { vi, type MockedClass } from 'vitest';
 
 import { getAzureFileFetchUrl, getAzureDownloadUrl } from './core';
 import {
@@ -28,9 +28,7 @@ const MockedClientSecretCredential = ClientSecretCredential as MockedClass<
 >;
 
 const MockedManagedIdentityCredential =
-  ManagedIdentityCredential as MockedClass<
-    typeof ManagedIdentityCredential
-  >;
+  ManagedIdentityCredential as MockedClass<typeof ManagedIdentityCredential>;
 
 vi.mock('@azure/identity');
 

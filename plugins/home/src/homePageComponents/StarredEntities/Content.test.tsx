@@ -103,7 +103,7 @@ describe('StarredEntitiesContent', () => {
     const mockedApi = new MockStarredEntitiesApi();
 
     const mockCatalogApi = catalogApiMock.mock({
-      getEntitiesByRefs: jest
+      getEntitiesByRefs: vi
         .fn()
         .mockImplementation(async () => ({ items: entities })),
     });
@@ -133,7 +133,7 @@ describe('StarredEntitiesContent', () => {
     const mockedApi = new MockStarredEntitiesApi();
 
     const mockCatalogApi = catalogApiMock.mock({
-      getEntitiesByRefs: jest
+      getEntitiesByRefs: vi
         .fn()
         .mockImplementation(async () => ({ items: entities })),
     });

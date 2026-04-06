@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type Mock} from 'vitest';
+import { vi, type Mock } from 'vitest';
 import { ReactNode } from 'react';
 import { waitFor } from '@testing-library/react';
 
@@ -35,20 +35,20 @@ import {
 import { configApiRef } from '@backstage/core-plugin-api';
 
 const useTechDocsReaderDom = vi.fn();
-vi.mock('../../reader/components/TechDocsReaderPageContent/dom', () => ({
-  ...vi.importActual(
+vi.mock('../../reader/components/TechDocsReaderPageContent/dom', async () => ({
+  ...(await vi.importActual(
     '../../reader/components/TechDocsReaderPageContent/dom',
-  ),
+  )),
   useTechDocsReaderDom: (...args: any[]) => useTechDocsReaderDom(...args),
 }));
 const useReaderState = vi.fn();
-vi.mock('../../reader/components/useReaderState', () => ({
-  ...vi.importActual('../../reader/components/useReaderState'),
+vi.mock('../../reader/components/useReaderState', async () => ({
+  ...(await vi.importActual('../../reader/components/useReaderState')),
   useReaderState: (...args: any[]) => useReaderState(...args),
 }));
 const useShadowDomStylesLoading = vi.fn().mockReturnValue(false);
-vi.mock('@backstage/plugin-techdocs-react', () => ({
-  ...vi.importActual('@backstage/plugin-techdocs-react'),
+vi.mock('@backstage/plugin-techdocs-react', async () => ({
+  ...(await vi.importActual('@backstage/plugin-techdocs-react')),
   useShadowDomStylesLoading: (...args: any[]) =>
     useShadowDomStylesLoading(...args),
   useShadowRootElements: vi.fn(),

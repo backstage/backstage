@@ -23,9 +23,9 @@ describe('<WelcomeTitle>', () => {
   afterEach(() => vi.resetAllMocks());
 
   test('should greet user', async () => {
-    jest
-      .spyOn(global.Date, 'now')
-      .mockImplementation(() => new Date('1970-01-01T23:00:00').valueOf());
+    vi.spyOn(global.Date, 'now').mockImplementation(() =>
+      new Date('1970-01-01T23:00:00').valueOf(),
+    );
 
     const { getByText } = await renderInTestApp(<WelcomeTitle />);
 
@@ -34,9 +34,9 @@ describe('<WelcomeTitle>', () => {
 });
 
 test('should greet user with a single language', async () => {
-  jest
-    .spyOn(global.Date, 'now')
-    .mockImplementation(() => new Date('1970-01-01T10:00:00').valueOf());
+  vi.spyOn(global.Date, 'now').mockImplementation(() =>
+    new Date('1970-01-01T10:00:00').valueOf(),
+  );
 
   const { getByText } = await renderInTestApp(
     <WelcomeTitle language={['English']} />,

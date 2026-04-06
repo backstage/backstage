@@ -162,7 +162,7 @@ describe('LocalTaskWorker', () => {
   });
 
   it('goes through the expected states', async () => {
-    const fn = jest
+    const fn = vi
       .fn()
       .mockImplementationOnce(() => new Promise<void>(r => setTimeout(r, 100)))
       .mockImplementationOnce(

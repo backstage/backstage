@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type Mock} from 'vitest';
+import { vi, type Mock } from 'vitest';
 
 import { Entity, getEntitySourceLocation } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
@@ -37,8 +37,8 @@ import {
   UrlReaderServiceReadTreeResponse,
 } from '@backstage/backend-plugin-api';
 
-vi.mock('@backstage/catalog-model', () => ({
-  ...vi.importActual('@backstage/catalog-model'),
+vi.mock('@backstage/catalog-model', async () => ({
+  ...(await vi.importActual('@backstage/catalog-model')),
   getEntitySourceLocation: vi.fn(),
 }));
 

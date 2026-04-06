@@ -36,8 +36,8 @@ import { GetEntitiesByRefsRequest } from '@backstage/catalog-client';
 
 const navigate = vi.fn();
 
-vi.mock('react-router-dom', () => ({
-  ...vi.importActual('react-router-dom'),
+vi.mock('react-router-dom', async () => ({
+  ...(await vi.importActual('react-router-dom')),
   useNavigate: () => navigate,
 }));
 

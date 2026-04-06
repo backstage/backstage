@@ -46,7 +46,7 @@ describe('retryOnDeadlock', () => {
   });
 
   it('retries on PostgreSQL deadlock errors', async () => {
-    const fn = jest
+    const fn = vi
       .fn()
       .mockRejectedValueOnce(pgDeadlockError())
       .mockRejectedValueOnce(pgDeadlockError())
@@ -92,7 +92,7 @@ describe('retryOnDeadlock', () => {
     }>('node:timers/promises');
 
     const fnCallsAtSleep: number[] = [];
-    const fn = jest
+    const fn = vi
       .fn()
       .mockRejectedValueOnce(pgDeadlockError())
       .mockRejectedValueOnce(pgDeadlockError())

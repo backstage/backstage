@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type Mock} from 'vitest';
+import { vi, type Mock } from 'vitest';
 import {
   MockDirectory,
   createMockDirectory,
@@ -36,8 +36,8 @@ vi.mock('chalk', () => ({
 }));
 
 let mockDir: MockDirectory;
-vi.mock('@backstage/cli-common', () => {
-  const actual = vi.importActual('@backstage/cli-common');
+vi.mock('@backstage/cli-common', async () => {
+  const actual = await vi.importActual('@backstage/cli-common');
   return {
     ...actual,
     findPaths: () => ({

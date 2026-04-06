@@ -83,7 +83,7 @@ describe('createRegisterCatalogEntitiesAction', () => {
     const mockActionsRegistry = actionsRegistryServiceMock();
     const mockCatalog = catalogServiceMock();
 
-    mockCatalog.addLocation = jest
+    mockCatalog.addLocation = vi
       .fn()
       .mockRejectedValue(new Error('Failed to add location'));
 

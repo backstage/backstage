@@ -191,9 +191,7 @@ describe('TarArchiveResponse', () => {
     targetDir.addContent({ sub: {} });
     const sub = targetDir.resolve('sub');
 
-    const mkdtemp = jest
-      .spyOn(fs, 'mkdtemp')
-      .mockImplementation(async () => sub);
+    const mkdtemp = vi.spyOn(fs, 'mkdtemp').mockImplementation(async () => sub);
 
     await expect(fs.pathExists(sub)).resolves.toBe(true);
     await expect(res.dir()).rejects.toThrow('NOPE');

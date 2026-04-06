@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type MockedFunction} from 'vitest';
+import { vi, type MockedFunction } from 'vitest';
 
 vi.mock('@backstage/plugin-scaffolder-node', () => {
   const actual = vi.importActual('@backstage/plugin-scaffolder-node');
@@ -50,9 +50,7 @@ const aBinaryFile = fs.readFileSync(
   ),
 );
 
-const mockFetchContents = fetchContents as MockedFunction<
-  typeof fetchContents
->;
+const mockFetchContents = fetchContents as MockedFunction<typeof fetchContents>;
 
 describe('fetch:template', () => {
   let action: TemplateAction<any>;

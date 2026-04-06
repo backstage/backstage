@@ -90,7 +90,7 @@ describe('TaskLogStream', () => {
     const removeSpy = vi.spyOn(mockAnchor, 'remove');
 
     const originalCreateElement = document.createElement.bind(document);
-    const createElementSpy = jest
+    const createElementSpy = vi
       .spyOn(document, 'createElement')
       .mockImplementation((tagName: string) => {
         if (tagName === 'a') {
@@ -126,7 +126,7 @@ describe('TaskLogStream', () => {
     const { getByRole } = await renderInTestApp(<TaskLogStream logs={logs} />);
 
     let capturedBlob: Blob | null = null;
-    const createObjectURLSpy = jest
+    const createObjectURLSpy = vi
       .spyOn(URL, 'createObjectURL')
       .mockImplementation((blob: any) => {
         capturedBlob = blob;
@@ -137,7 +137,7 @@ describe('TaskLogStream', () => {
     const clickSpy = vi.spyOn(mockAnchor, 'click');
 
     const originalCreateElement = document.createElement.bind(document);
-    const createElementSpy = jest
+    const createElementSpy = vi
       .spyOn(document, 'createElement')
       .mockImplementation((tagName: string) => {
         if (tagName === 'a') {

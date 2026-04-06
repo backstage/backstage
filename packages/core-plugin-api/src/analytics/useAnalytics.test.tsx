@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { vi , type Mock} from 'vitest';
+import { vi, type Mock } from 'vitest';
 
 import { renderHook } from '@testing-library/react';
 import { useAnalytics } from './useAnalytics';
 import { useApi } from '@backstage/frontend-plugin-api';
 
-vi.mock('@backstage/frontend-plugin-api', () => ({
-  ...vi.importActual('@backstage/frontend-plugin-api'),
+vi.mock('@backstage/frontend-plugin-api', async () => ({
+  ...(await vi.importActual('@backstage/frontend-plugin-api')),
   useApi: vi.fn(),
 }));
 

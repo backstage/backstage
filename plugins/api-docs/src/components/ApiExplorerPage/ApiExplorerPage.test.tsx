@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { vi , type Mock} from 'vitest';
+import { vi, type Mock } from 'vitest';
 
 import { renderInTestApp } from '@backstage/test-utils';
 import { useOutlet } from 'react-router-dom';
 import { ApiExplorerPage } from './ApiExplorerPage';
 
-vi.mock('react-router-dom', () => ({
-  ...vi.importActual('react-router-dom'),
+vi.mock('react-router-dom', async () => ({
+  ...(await vi.importActual('react-router-dom')),
   useOutlet: vi.fn().mockReturnValue('Route Children'),
 }));
 

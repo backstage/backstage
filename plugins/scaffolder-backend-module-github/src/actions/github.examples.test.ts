@@ -16,16 +16,16 @@
 
 import { vi, type Mock } from 'vitest';
 
-vi.mock('./gitHelpers', () => {
+vi.mock('./gitHelpers', async () => {
   return {
-    ...vi.importActual('./gitHelpers'),
+    ...(await vi.importActual('./gitHelpers')),
     entityRefToName: vi.fn(),
   };
 });
 
-vi.mock('@backstage/plugin-scaffolder-node', () => {
+vi.mock('@backstage/plugin-scaffolder-node', async () => {
   return {
-    ...vi.importActual('@backstage/plugin-scaffolder-node'),
+    ...(await vi.importActual('@backstage/plugin-scaffolder-node')),
     initRepoAndPush: vi.fn().mockResolvedValue({
       commitHash: '220f19cc36b551763d157f1b5e4a4b446165dbd6',
     }),

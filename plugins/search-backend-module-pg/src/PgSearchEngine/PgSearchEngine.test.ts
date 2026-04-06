@@ -41,7 +41,7 @@ const highlightOptions: PgSearchHighlightOptions = {
 vi.mock('uuid', () => ({ v4: () => 'tag' }));
 
 vi.mock('./PgSearchEngineIndexer', () => ({
-  PgSearchEngineIndexer: jest
+  PgSearchEngineIndexer: vi
     .fn()
     .mockImplementation(async () => 'the-expected-indexer'),
 }));

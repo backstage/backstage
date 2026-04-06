@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type Mock} from 'vitest';
+import { vi, type Mock } from 'vitest';
 
 import yaml from 'yaml';
 import { ConfigReader } from '@backstage/config';
@@ -33,9 +33,9 @@ vi.mock('azure-devops-node-api', () => ({
   getPersonalAccessTokenHandler: vi.fn().mockReturnValue(() => {}),
 }));
 
-vi.mock('@backstage/plugin-scaffolder-node', () => {
+vi.mock('@backstage/plugin-scaffolder-node', async () => {
   return {
-    ...vi.importActual('@backstage/plugin-scaffolder-node'),
+    ...(await vi.importActual('@backstage/plugin-scaffolder-node')),
     initRepoAndPush: vi.fn().mockResolvedValue({
       commitHash: '220f19cc36b551763d157f1b5e4a4b446165dbd6',
     }),

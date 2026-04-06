@@ -27,8 +27,8 @@ function normalizePath(path: string) {
     .join('/');
 }
 
-vi.mock('../../helpers', () => ({
-  ...vi.importActual<{}>('../../helpers'),
+vi.mock('../../helpers', async () => ({
+  ...(await vi.importActual<{}>('../../helpers')),
 }));
 
 const logger = mockServices.logger.mock();

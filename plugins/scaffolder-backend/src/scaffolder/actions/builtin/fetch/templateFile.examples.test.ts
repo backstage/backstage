@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type MockedFunction} from 'vitest';
+import { vi, type MockedFunction } from 'vitest';
 
 import { join as joinPath } from 'node:path';
 import fs from 'fs-extra';
@@ -31,8 +31,8 @@ import { examples } from './templateFile.examples';
 import yaml from 'yaml';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 
-vi.mock('@backstage/plugin-scaffolder-node', () => ({
-  ...vi.importActual('@backstage/plugin-scaffolder-node'),
+vi.mock('@backstage/plugin-scaffolder-node', async () => ({
+  ...(await vi.importActual('@backstage/plugin-scaffolder-node')),
   fetchFile: vi.fn(),
 }));
 

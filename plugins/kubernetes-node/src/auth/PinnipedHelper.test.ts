@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type MockInstance} from 'vitest';
+import { vi, type MockInstance } from 'vitest';
 
 import { ClusterDetails } from '../types';
 import {

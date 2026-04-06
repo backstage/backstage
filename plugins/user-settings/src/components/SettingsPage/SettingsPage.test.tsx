@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type Mock} from 'vitest';
+import { vi, type Mock } from 'vitest';
 
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { SettingsPage } from './SettingsPage';
@@ -26,8 +26,8 @@ import userEvent from '@testing-library/user-event';
 import { catalogApiRef, entityRouteRef } from '@backstage/plugin-catalog-react';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 
-vi.mock('react-router-dom', () => ({
-  ...vi.importActual('react-router-dom'),
+vi.mock('react-router-dom', async () => ({
+  ...(await vi.importActual('react-router-dom')),
   useOutlet: vi.fn().mockReturnValue(undefined),
 }));
 

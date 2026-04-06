@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type Mock} from 'vitest';
+import { vi, type Mock } from 'vitest';
 
 import crypto from 'node:crypto';
 import { generateVerifier, challengeFromVerifier } from './pkce';

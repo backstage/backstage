@@ -25,7 +25,7 @@ describe('openLoginPopup', () => {
 
   it('should open an auth popup', async () => {
     const popupMock = { closed: false };
-    const openSpy = jest
+    const openSpy = vi
       .spyOn(window, 'open')
       .mockReturnValue(popupMock as Window);
     const addEventListenerSpy = vi.spyOn(window, 'addEventListener');
@@ -96,7 +96,7 @@ describe('openLoginPopup', () => {
 
   it('should fail if popup returns error', async () => {
     const popupMock = { closed: false };
-    const openSpy = jest
+    const openSpy = vi
       .spyOn(window, 'open')
       .mockReturnValue(popupMock as Window);
     const addEventListenerSpy = vi.spyOn(window, 'addEventListener');
@@ -136,7 +136,7 @@ describe('openLoginPopup', () => {
   });
 
   it('should fail if popup is closed', async () => {
-    const openSpy = jest
+    const openSpy = vi
       .spyOn(window, 'open')
       .mockReturnValue({ closed: false } as Window);
     const addEventListenerSpy = vi.spyOn(window, 'addEventListener');
@@ -177,7 +177,7 @@ describe('openLoginPopup', () => {
   });
 
   it('should indicate if origin does not match', async () => {
-    const openSpy = jest
+    const openSpy = vi
       .spyOn(window, 'open')
       .mockReturnValue({ closed: false } as Window);
     const addEventListenerSpy = vi.spyOn(window, 'addEventListener');

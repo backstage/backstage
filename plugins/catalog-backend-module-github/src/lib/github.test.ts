@@ -45,8 +45,8 @@ import { Octokit } from '@octokit/core';
 import { throttling } from '@octokit/plugin-throttling';
 import { retry } from '@octokit/plugin-retry';
 
-vi.mock('@octokit/core', () => ({
-  ...vi.importActual('@octokit/core'),
+vi.mock('@octokit/core', async () => ({
+  ...(await vi.importActual('@octokit/core')),
   Octokit: {
     plugin: vi.fn().mockReturnValue({ defaults: vi.fn() }),
   },

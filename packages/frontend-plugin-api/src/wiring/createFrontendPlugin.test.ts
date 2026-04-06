@@ -143,9 +143,7 @@ describe('createFrontendPlugin', () => {
   });
 
   it('should warn about invalid plugin IDs', () => {
-    const consoleWarn = jest
-      .spyOn(console, 'warn')
-      .mockImplementation(() => {});
+    const consoleWarn = vi.spyOn(console, 'warn').mockImplementation(() => {});
     createFrontendPlugin({ pluginId: 'invalid&id' });
     expect(consoleWarn).toHaveBeenCalledWith(
       expect.stringContaining("The pluginId 'invalid&id' will be invalid soon"),

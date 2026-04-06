@@ -27,7 +27,7 @@ import userEvent from '@testing-library/user-event';
 
 describe('GitHubRepoOwnerPicker', () => {
   const scaffolderApiMock: Partial<ScaffolderApi> = {
-    autocomplete: jest
+    autocomplete: vi
       .fn()
       .mockResolvedValue({ results: [{ id: 'owner1' }, { id: 'owner2' }] }),
   };

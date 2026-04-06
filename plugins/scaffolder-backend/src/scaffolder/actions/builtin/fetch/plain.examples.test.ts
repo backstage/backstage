@@ -27,8 +27,8 @@ import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-
 import { examples } from './plain.examples';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 
-vi.mock('@backstage/plugin-scaffolder-node', () => ({
-  ...vi.importActual('@backstage/plugin-scaffolder-node'),
+vi.mock('@backstage/plugin-scaffolder-node', async () => ({
+  ...(await vi.importActual('@backstage/plugin-scaffolder-node')),
   fetchContents: vi.fn(),
 }));
 

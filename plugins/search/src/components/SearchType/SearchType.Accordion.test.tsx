@@ -34,8 +34,8 @@ import { configApiRef } from '@backstage/core-plugin-api';
 const setTypesMock = vi.fn();
 const setPageCursorMock = vi.fn();
 
-vi.mock('@backstage/plugin-search-react', () => ({
-  ...vi.importActual('@backstage/plugin-search-react'),
+vi.mock('@backstage/plugin-search-react', async () => ({
+  ...(await vi.importActual('@backstage/plugin-search-react')),
   useSearch: vi.fn().mockReturnValue({
     types: [],
     setTypes: (types: any) => setTypesMock(types),

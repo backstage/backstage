@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type MockedClass} from 'vitest';
+import { vi, type MockedClass } from 'vitest';
 import { CachedAzureDevOpsCredentialsProvider } from './CachedAzureDevOpsCredentialsProvider';
 import {
   AccessToken,
@@ -28,14 +28,10 @@ const MockedClientSecretCredential = ClientSecretCredential as MockedClass<
 >;
 
 const MockedClientAssertionCredential =
-  ClientAssertionCredential as MockedClass<
-    typeof ClientAssertionCredential
-  >;
+  ClientAssertionCredential as MockedClass<typeof ClientAssertionCredential>;
 
 const MockedManagedIdentityCredential =
-  ManagedIdentityCredential as MockedClass<
-    typeof ManagedIdentityCredential
-  >;
+  ManagedIdentityCredential as MockedClass<typeof ManagedIdentityCredential>;
 
 vi.mock('@azure/identity');
 

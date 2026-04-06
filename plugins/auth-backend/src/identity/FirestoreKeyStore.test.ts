@@ -26,7 +26,7 @@ import {
 } from './FirestoreKeyStore';
 import { AnyJWK } from './types';
 
-const data = jest
+const data = vi
   .fn()
   .mockReturnValue({ key: { kid: 'something' }, kid: 'something' });
 const toDate = vi.fn().mockReturnValue('date');

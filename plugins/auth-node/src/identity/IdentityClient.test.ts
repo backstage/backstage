@@ -238,9 +238,9 @@ describe('IdentityClient', () => {
     it('should throw on expired token', async () => {
       return expect(async () => {
         const fixedTime = Date.now();
-        jest
-          .spyOn(Date, 'now')
-          .mockImplementation(() => fixedTime - keyDurationSeconds * 1000 * 2);
+        vi.spyOn(Date, 'now').mockImplementation(
+          () => fixedTime - keyDurationSeconds * 1000 * 2,
+        );
         const token = await factory.issueToken({
           claims: { sub: 'foo' },
         });
@@ -264,9 +264,9 @@ describe('IdentityClient', () => {
 
     it('should accept token from new key', async () => {
       const fixedTime = Date.now();
-      jest
-        .spyOn(Date, 'now')
-        .mockImplementation(() => fixedTime - keyDurationSeconds * 1000 * 2);
+      vi.spyOn(Date, 'now').mockImplementation(
+        () => fixedTime - keyDurationSeconds * 1000 * 2,
+      );
       const token1 = await factory.issueToken({ claims: { sub: 'foo1' } });
       try {
         // This throws as token has already expired
@@ -276,11 +276,9 @@ describe('IdentityClient', () => {
       }
       // Move forward in time where the signing key has been rotated and the
       // cooldown period to look up a new public key has elapsed.
-      jest
-        .spyOn(Date, 'now')
-        .mockImplementation(
-          () => fixedTime + 30 * keyDurationSeconds * 1000 + 2,
-        );
+      vi.spyOn(Date, 'now').mockImplementation(
+        () => fixedTime + 30 * keyDurationSeconds * 1000 + 2,
+      );
       const token = await factory.issueToken({ claims: { sub: 'foo' } });
       const response = await client.authenticate(token);
       expect(response).toEqual({
@@ -346,7 +344,7 @@ describe('IdentityClient', () => {
       );
       // Advance time
       const future_11s = Date.now() + 11 * 1000;
-      const dateSpy = jest
+      const dateSpy = vi
         .spyOn(Date, 'now')
         .mockImplementation(() => future_11s);
       // Issue a new token

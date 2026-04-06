@@ -51,7 +51,7 @@ describe('createUnregisterCatalogEntitiesAction', () => {
       const mockCatalog = catalogServiceMock();
 
       const errorMessage = 'Failed to remove location';
-      mockCatalog.removeLocationById = jest
+      mockCatalog.removeLocationById = vi
         .fn()
         .mockRejectedValue(new Error(errorMessage));
 
@@ -227,7 +227,7 @@ describe('createUnregisterCatalogEntitiesAction', () => {
       const mockActionsRegistry = actionsRegistryServiceMock();
       const mockCatalog = catalogServiceMock();
 
-      mockCatalog.getLocations = jest
+      mockCatalog.getLocations = vi
         .fn()
         .mockRejectedValue(new Error('Failed to get locations'));
 

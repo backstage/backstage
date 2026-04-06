@@ -115,7 +115,7 @@ describe('McpService', () => {
 
   it('should record metrics with error.type when tools/list fails', async () => {
     const mockActionsRegistry = actionsRegistryServiceMock();
-    mockActionsRegistry.list = jest
+    mockActionsRegistry.list = vi
       .fn()
       .mockRejectedValue(new Error('List failed'));
 

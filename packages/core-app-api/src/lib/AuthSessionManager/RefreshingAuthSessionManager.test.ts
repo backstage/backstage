@@ -90,7 +90,7 @@ describe('RefreshingAuthSessionManager', () => {
 
   it('should check for session expiry', async () => {
     const createSession = vi.fn();
-    const refreshSession = jest
+    const refreshSession = vi
       .fn()
       .mockRejectedValueOnce(new Error('NOPE'))
       .mockResolvedValue({ scopes: new Set(['a']) });
@@ -260,10 +260,10 @@ describe('RefreshingAuthSessionManager', () => {
   });
 
   it("should fall back to create a new session if refresh doesn't provide the correct scopes", async () => {
-    const createSession = jest
+    const createSession = vi
       .fn()
       .mockResolvedValue({ scopes: new Set(['c']), expired: false });
-    const refreshSession = jest
+    const refreshSession = vi
       .fn()
       .mockResolvedValue({ scopes: new Set(['b']), expired: false });
     const manager = new RefreshingAuthSessionManager({

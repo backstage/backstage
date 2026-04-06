@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type MockedClass} from 'vitest';
+import { vi, type MockedClass } from 'vitest';
 import { ManagedIdentityClientAssertion } from './ManagedIdentityClientAssertion';
 import { ManagedIdentityCredential, AccessToken } from '@azure/identity';
 
@@ -22,9 +22,7 @@ const seconds = (s: number) => s * 1000;
 const minutes = (m: number) => seconds(60) * m;
 const hours = (h: number) => minutes(60) * h;
 const MockedManagedIdentityCredential =
-  ManagedIdentityCredential as MockedClass<
-    typeof ManagedIdentityCredential
-  >;
+  ManagedIdentityCredential as MockedClass<typeof ManagedIdentityCredential>;
 
 vi.mock('@azure/identity');
 

@@ -41,13 +41,11 @@ describe('beforeWorkspacePacking', () => {
   const mockDir = createMockDirectory();
 
   beforeEach(() => {
-    jest
-      .spyOn(ppath, 'cwd')
-      .mockReturnValue(npath.toPortablePath(mockDir.path));
+    vi.spyOn(ppath, 'cwd').mockReturnValue(npath.toPortablePath(mockDir.path));
 
-    jest
-      .spyOn(process, 'cwd')
-      .mockReturnValue(npath.toPortablePath(mockDir.path));
+    vi.spyOn(process, 'cwd').mockReturnValue(
+      npath.toPortablePath(mockDir.path),
+    );
 
     vi.spyOn(httpUtils, 'get').mockResolvedValue({
       releaseVersion: '1.23.45',

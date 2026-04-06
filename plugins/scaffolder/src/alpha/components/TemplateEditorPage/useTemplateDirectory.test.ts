@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type Mock} from 'vitest';
+import { vi, type Mock } from 'vitest';
 
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { useTemplateDirectory } from './useTemplateDirectory';
@@ -62,13 +62,13 @@ describe('useTemplateDirectory', () => {
 
   it('should handle opening a directory', async () => {
     const handle = {};
-    jest
-      .spyOn(WebFileSystemStore, 'getDirectory')
-      .mockResolvedValue(handle as FileSystemDirectoryHandle);
-    const setDirectory = jest
+    vi.spyOn(WebFileSystemStore, 'getDirectory').mockResolvedValue(
+      handle as FileSystemDirectoryHandle,
+    );
+    const setDirectory = vi
       .spyOn(WebFileSystemStore, 'setDirectory')
       .mockResolvedValue(undefined);
-    const requestDirectoryAccess = jest
+    const requestDirectoryAccess = vi
       .spyOn(WebFileSystemAccess, 'requestDirectoryAccess')
       .mockResolvedValue(handle as TemplateDirectoryAccess);
 
@@ -89,13 +89,13 @@ describe('useTemplateDirectory', () => {
   it('should handle creating a directory', async () => {
     const handle = {};
     (createExampleTemplate as Mock).mockResolvedValue(handle);
-    jest
-      .spyOn(WebFileSystemStore, 'getDirectory')
-      .mockResolvedValue(handle as FileSystemDirectoryHandle);
-    const setDirectory = jest
+    vi.spyOn(WebFileSystemStore, 'getDirectory').mockResolvedValue(
+      handle as FileSystemDirectoryHandle,
+    );
+    const setDirectory = vi
       .spyOn(WebFileSystemStore, 'setDirectory')
       .mockResolvedValue(undefined);
-    const requestDirectoryAccess = jest
+    const requestDirectoryAccess = vi
       .spyOn(WebFileSystemAccess, 'requestDirectoryAccess')
       .mockResolvedValue(handle as TemplateDirectoryAccess);
 
@@ -113,7 +113,7 @@ describe('useTemplateDirectory', () => {
   it('should handle closing a directory', async () => {
     vi.spyOn(WebFileSystemStore, 'getDirectory').mockResolvedValue(undefined);
 
-    const setDirectory = jest
+    const setDirectory = vi
       .spyOn(WebFileSystemStore, 'setDirectory')
       .mockResolvedValue(undefined);
 

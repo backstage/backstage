@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { vi , type Mock} from 'vitest';
+import { vi, type Mock } from 'vitest';
 
 import { readGiteaConfigs } from './config';
 import { ConfigReader } from '@backstage/config';
 import { readSchedulerServiceTaskScheduleDefinitionFromConfig } from '@backstage/backend-plugin-api';
 
-vi.mock('@backstage/backend-plugin-api', () => ({
-  ...vi.importActual('@backstage/backend-plugin-api'),
+vi.mock('@backstage/backend-plugin-api', async () => ({
+  ...(await vi.importActual('@backstage/backend-plugin-api')),
   readSchedulerServiceTaskScheduleDefinitionFromConfig: vi.fn(),
 }));
 vi.mock('p-limit');

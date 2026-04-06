@@ -58,8 +58,8 @@ vi.mock('ora', () => ({
   },
 }));
 
-vi.mock('@backstage/cli-common', () => {
-  const actual = vi.importActual('@backstage/cli-common');
+vi.mock('@backstage/cli-common', async () => {
+  const actual = await vi.importActual('@backstage/cli-common');
   return {
     ...actual,
     run: vi.fn().mockReturnValue({
@@ -70,8 +70,8 @@ vi.mock('@backstage/cli-common', () => {
 });
 
 const mockFetchPackageInfo = vi.fn();
-vi.mock('../../lib/versioning/packages', () => {
-  const actual = vi.importActual('../../lib/versioning/packages');
+vi.mock('../../lib/versioning/packages', async () => {
+  const actual = await vi.importActual('../../lib/versioning/packages');
   return {
     ...actual,
     fetchPackageInfo: (name: string) => mockFetchPackageInfo(name),

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type MockedFunction} from 'vitest';
+import { vi, type MockedFunction } from 'vitest';
 
 import { resolveAuth } from './resolveAuth';
 import { CliAuth } from '@backstage/cli-node';
@@ -70,7 +70,7 @@ describe('resolveAuth', () => {
     mockCreate.mockResolvedValue({
       getInstanceName: vi.fn().mockReturnValue('production'),
       getBaseUrl: vi.fn().mockReturnValue('https://backstage.example.com'),
-      getAccessToken: jest
+      getAccessToken: vi
         .fn()
         .mockRejectedValue(
           new Error('No access token found. Run "auth login" to authenticate.'),

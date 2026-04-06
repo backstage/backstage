@@ -48,15 +48,15 @@ describe('<HorizontalScrollGrid />', () => {
   });
 
   it('should show scroll buttons', async () => {
-    jest
-      .spyOn(HTMLElement.prototype, 'scrollLeft', 'get')
-      .mockImplementation(() => 5);
-    jest
-      .spyOn(HTMLElement.prototype, 'offsetWidth', 'get')
-      .mockImplementation(() => 10);
-    jest
-      .spyOn(HTMLElement.prototype, 'scrollWidth', 'get')
-      .mockImplementation(() => 20);
+    vi.spyOn(HTMLElement.prototype, 'scrollLeft', 'get').mockImplementation(
+      () => 5,
+    );
+    vi.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockImplementation(
+      () => 10,
+    );
+    vi.spyOn(HTMLElement.prototype, 'scrollWidth', 'get').mockImplementation(
+      () => 20,
+    );
 
     let lastScroll = 0;
     const scrollBy = HTMLElement.prototype.scrollBy;

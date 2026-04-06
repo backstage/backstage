@@ -57,7 +57,7 @@ describe('appModulePublicSignIn', () => {
   });
 
   it('should render the form redirect on sign-in', async () => {
-    const submitSpy = jest
+    const submitSpy = vi
       .spyOn(HTMLFormElement.prototype, 'submit')
       .mockReturnValue();
 

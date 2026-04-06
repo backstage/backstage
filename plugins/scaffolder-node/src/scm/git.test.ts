@@ -19,8 +19,8 @@ import { vi, type Mock } from 'vitest';
 vi.mock('isomorphic-git');
 vi.mock('isomorphic-git/http/node');
 vi.mock('fs-extra');
-vi.mock('@isomorphic-git/pgp-plugin', () => ({
-  ...vi.importActual('@isomorphic-git/pgp-plugin'),
+vi.mock('@isomorphic-git/pgp-plugin', async () => ({
+  ...(await vi.importActual('@isomorphic-git/pgp-plugin')),
   pgp: {
     sign: vi.fn().mockResolvedValue({ signature: 'sign' }),
   },

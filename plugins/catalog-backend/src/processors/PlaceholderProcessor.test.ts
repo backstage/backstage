@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type MockedFunction} from 'vitest';
+import { vi, type MockedFunction } from 'vitest';
 import { Entity } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
@@ -181,7 +181,7 @@ describe('PlaceholderProcessor', () => {
 
   it('works with the json resolver', async () => {
     reader.readUrl.mockResolvedValue({
-      buffer: jest
+      buffer: vi
         .fn()
         .mockResolvedValue(
           Buffer.from(JSON.stringify({ a: ['b', 7] }), 'utf-8'),
@@ -222,7 +222,7 @@ describe('PlaceholderProcessor', () => {
 
   it('works with the yaml resolver', async () => {
     reader.readUrl.mockResolvedValue({
-      buffer: jest
+      buffer: vi
         .fn()
         .mockResolvedValue(Buffer.from('foo:\n  - bar: 7', 'utf-8')),
     });
@@ -379,7 +379,7 @@ describe('PlaceholderProcessor', () => {
   });
   it('should emit the resolverValue as a refreshKey', async () => {
     reader.readUrl.mockResolvedValue({
-      buffer: jest
+      buffer: vi
         .fn()
         .mockResolvedValue(
           Buffer.from(JSON.stringify({ a: ['b', 7] }), 'utf-8'),

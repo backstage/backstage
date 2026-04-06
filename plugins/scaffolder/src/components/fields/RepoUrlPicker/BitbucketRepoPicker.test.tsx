@@ -57,11 +57,7 @@ describe('BitbucketRepoPicker', () => {
 
     const { getAllByRole } = await renderInTestApp(
       <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
-        <BitbucketRepoPicker
-          onChange={vi.fn()}
-          rawErrors={[]}
-          state={state}
-        />
+        <BitbucketRepoPicker onChange={vi.fn()} rawErrors={[]} state={state} />
       </TestApiProvider>,
     );
 
@@ -76,11 +72,7 @@ describe('BitbucketRepoPicker', () => {
 
     const { getAllByRole } = await renderInTestApp(
       <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
-        <BitbucketRepoPicker
-          onChange={vi.fn()}
-          rawErrors={[]}
-          state={state}
-        />
+        <BitbucketRepoPicker onChange={vi.fn()} rawErrors={[]} state={state} />
       </TestApiProvider>,
     );
 

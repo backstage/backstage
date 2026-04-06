@@ -490,16 +490,16 @@ describe('scaffolder router', () => {
   describe('GET /v2/templates/:namespace/:kind/:name/parameter-schema', () => {
     it('returns the parameter schema', async () => {
       const { router, permissions } = await createTestRouter();
-      jest
-        .spyOn(permissions, 'authorizeConditional')
-        .mockImplementationOnce(async () => [
+      vi.spyOn(permissions, 'authorizeConditional').mockImplementationOnce(
+        async () => [
           {
             result: AuthorizeResult.ALLOW,
           },
           {
             result: AuthorizeResult.ALLOW,
           },
-        ]);
+        ],
+      );
       const response = await request(router)
         .get(
           '/v2/templates/default/Template/create-react-app-template/parameter-schema',
@@ -547,16 +547,16 @@ describe('scaffolder router', () => {
 
     it('filters parameters that the user is not authorized to see', async () => {
       const { router, permissions } = await createTestRouter();
-      jest
-        .spyOn(permissions, 'authorizeConditional')
-        .mockImplementationOnce(async () => [
+      vi.spyOn(permissions, 'authorizeConditional').mockImplementationOnce(
+        async () => [
           {
             result: AuthorizeResult.DENY,
           },
           {
             result: AuthorizeResult.ALLOW,
           },
-        ]);
+        ],
+      );
 
       const response = await request(router)
         .get(
@@ -573,9 +573,8 @@ describe('scaffolder router', () => {
 
     it('filters parameters that the user is not authorized to see in case of conditional decision', async () => {
       const { permissions, router } = await createTestRouter();
-      jest
-        .spyOn(permissions, 'authorizeConditional')
-        .mockImplementation(async () => [
+      vi.spyOn(permissions, 'authorizeConditional').mockImplementation(
+        async () => [
           {
             conditions: {
               resourceType: 'scaffolder-template',
@@ -589,7 +588,8 @@ describe('scaffolder router', () => {
           {
             result: AuthorizeResult.ALLOW,
           },
-        ]);
+        ],
+      );
 
       const response = await request(router)
         .get(
@@ -884,16 +884,16 @@ describe('scaffolder router', () => {
 
     it('filters steps that the user is not authorized to see', async () => {
       const { router, permissions, taskBroker } = await createTestRouter();
-      jest
-        .spyOn(permissions, 'authorizeConditional')
-        .mockImplementation(async () => [
+      vi.spyOn(permissions, 'authorizeConditional').mockImplementation(
+        async () => [
           {
             result: AuthorizeResult.ALLOW,
           },
           {
             result: AuthorizeResult.DENY,
           },
-        ]);
+        ],
+      );
 
       const broker = taskBroker.dispatch as Mocked<TaskBroker>['dispatch'];
       const mockTemplate = generateMockTemplate();
@@ -951,9 +951,8 @@ describe('scaffolder router', () => {
 
     it('filters steps that the user is not authorized to see in case of conditional decision', async () => {
       const { permissions, router, taskBroker } = await createTestRouter();
-      jest
-        .spyOn(permissions, 'authorizeConditional')
-        .mockImplementation(async () => [
+      vi.spyOn(permissions, 'authorizeConditional').mockImplementation(
+        async () => [
           {
             result: AuthorizeResult.ALLOW,
           },
@@ -967,7 +966,8 @@ describe('scaffolder router', () => {
             resourceType: 'scaffolder-template',
             result: AuthorizeResult.CONDITIONAL,
           },
-        ]);
+        ],
+      );
 
       const broker = taskBroker.dispatch as Mocked<TaskBroker>['dispatch'];
       const mockTemplate = generateMockTemplate();
@@ -1122,9 +1122,8 @@ describe('scaffolder router', () => {
 
     it('disallows users from seeing tasks they do not own', async () => {
       const { router, taskBroker, permissions } = await createTestRouter();
-      jest
-        .spyOn(permissions, 'authorizeConditional')
-        .mockImplementationOnce(async () => [
+      vi.spyOn(permissions, 'authorizeConditional').mockImplementationOnce(
+        async () => [
           {
             conditions: {
               resourceType: 'scaffolder-task',
@@ -1135,7 +1134,8 @@ describe('scaffolder router', () => {
             resourceType: 'scaffolder-task',
             result: AuthorizeResult.CONDITIONAL,
           },
-        ]);
+        ],
+      );
       const response = await request(router).get(
         `/v2/tasks?createdBy=not-user`,
       );
@@ -1172,9 +1172,8 @@ describe('scaffolder router', () => {
     });
     it('disallows users from seeing tasks they do not own', async () => {
       const { router, permissions, taskBroker } = await createTestRouter();
-      jest
-        .spyOn(permissions, 'authorizeConditional')
-        .mockImplementationOnce(async () => [
+      vi.spyOn(permissions, 'authorizeConditional').mockImplementationOnce(
+        async () => [
           {
             conditions: {
               resourceType: 'scaffolder-task',
@@ -1185,7 +1184,8 @@ describe('scaffolder router', () => {
             resourceType: 'scaffolder-task',
             result: AuthorizeResult.CONDITIONAL,
           },
-        ]);
+        ],
+      );
       (taskBroker.get as Mocked<TaskBroker>['get']).mockResolvedValue({
         id: 'a-random-id',
         spec: {} as any,
@@ -1310,38 +1310,38 @@ describe('scaffolder router', () => {
       let subscriber: ZenObservable.SubscriptionObserver<{
         events: SerializedTaskEvent[];
       }>;
-      (
-        taskBroker.event$ as Mocked<TaskBroker>['event$']
-      ).mockImplementation(({ taskId }) => {
-        return new ObservableImpl(observer => {
-          subscriber = observer;
-          setImmediate(() => {
-            observer.next({
-              events: [
-                {
-                  id: 0,
-                  taskId,
-                  type: 'log',
-                  createdAt: '',
-                  body: { message: 'My log message' },
-                },
-              ],
-            });
-            observer.next({
-              events: [
-                {
-                  id: 1,
-                  taskId,
-                  type: 'completion',
-                  createdAt: '',
-                  body: { message: 'Finished!' },
-                },
-              ],
+      (taskBroker.event$ as Mocked<TaskBroker>['event$']).mockImplementation(
+        ({ taskId }) => {
+          return new ObservableImpl(observer => {
+            subscriber = observer;
+            setImmediate(() => {
+              observer.next({
+                events: [
+                  {
+                    id: 0,
+                    taskId,
+                    type: 'log',
+                    createdAt: '',
+                    body: { message: 'My log message' },
+                  },
+                ],
+              });
+              observer.next({
+                events: [
+                  {
+                    id: 1,
+                    taskId,
+                    type: 'completion',
+                    createdAt: '',
+                    body: { message: 'Finished!' },
+                  },
+                ],
+              });
             });
           });
-        });
-        // emit after this function returned
-      });
+          // emit after this function returned
+        },
+      );
 
       let statusCode: number | undefined = undefined;
       let headers: Record<string, string> = {};
@@ -1405,26 +1405,26 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
       let subscriber: ZenObservable.SubscriptionObserver<{
         events: SerializedTaskEvent[];
       }>;
-      (
-        taskBroker.event$ as Mocked<TaskBroker>['event$']
-      ).mockImplementation(({ taskId }) => {
-        return new ObservableImpl(observer => {
-          subscriber = observer;
-          setImmediate(() => {
-            observer.next({
-              events: [
-                {
-                  id: 1,
-                  taskId,
-                  type: 'completion',
-                  createdAt: '',
-                  body: { message: 'Finished!' },
-                },
-              ],
+      (taskBroker.event$ as Mocked<TaskBroker>['event$']).mockImplementation(
+        ({ taskId }) => {
+          return new ObservableImpl(observer => {
+            subscriber = observer;
+            setImmediate(() => {
+              observer.next({
+                events: [
+                  {
+                    id: 1,
+                    taskId,
+                    type: 'completion',
+                    createdAt: '',
+                    body: { message: 'Finished!' },
+                  },
+                ],
+              });
             });
           });
-        });
-      });
+        },
+      );
 
       let statusCode: number | undefined = undefined;
       let headers: Record<string, string> = {};
@@ -1479,31 +1479,31 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
       let subscriber: ZenObservable.SubscriptionObserver<{
         events: SerializedTaskEvent[];
       }>;
-      (
-        taskBroker.event$ as Mocked<TaskBroker>['event$']
-      ).mockImplementation(({ taskId }) => {
-        return new ObservableImpl(observer => {
-          subscriber = observer;
-          observer.next({
-            events: [
-              {
-                id: 0,
-                taskId,
-                type: 'log',
-                createdAt: '',
-                body: { message: 'My log message' },
-              },
-              {
-                id: 1,
-                taskId,
-                type: 'completion',
-                createdAt: '',
-                body: { message: 'Finished!' },
-              },
-            ],
+      (taskBroker.event$ as Mocked<TaskBroker>['event$']).mockImplementation(
+        ({ taskId }) => {
+          return new ObservableImpl(observer => {
+            subscriber = observer;
+            observer.next({
+              events: [
+                {
+                  id: 0,
+                  taskId,
+                  type: 'log',
+                  createdAt: '',
+                  body: { message: 'My log message' },
+                },
+                {
+                  id: 1,
+                  taskId,
+                  type: 'completion',
+                  createdAt: '',
+                  body: { message: 'Finished!' },
+                },
+              ],
+            });
           });
-        });
-      });
+        },
+      );
 
       const response = await request(router).get(
         '/v2/tasks/a-random-id/events',
@@ -1549,14 +1549,14 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
       let subscriber: ZenObservable.SubscriptionObserver<{
         events: SerializedTaskEvent[];
       }>;
-      (
-        taskBroker.event$ as Mocked<TaskBroker>['event$']
-      ).mockImplementation(() => {
-        return new ObservableImpl(observer => {
-          subscriber = observer;
-          observer.next({ events: [] });
-        });
-      });
+      (taskBroker.event$ as Mocked<TaskBroker>['event$']).mockImplementation(
+        () => {
+          return new ObservableImpl(observer => {
+            subscriber = observer;
+            observer.next({ events: [] });
+          });
+        },
+      );
 
       const response = await request(router)
         .get('/v2/tasks/a-random-id/events')
@@ -1575,9 +1575,8 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
     it('disallows users from seeing events for tasks they do not own', async () => {
       const { permissions, router, taskBroker } = await createTestRouter();
 
-      jest
-        .spyOn(permissions, 'authorizeConditional')
-        .mockImplementationOnce(async () => [
+      vi.spyOn(permissions, 'authorizeConditional').mockImplementationOnce(
+        async () => [
           {
             conditions: {
               resourceType: 'scaffolder-task',
@@ -1588,7 +1587,8 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
             resourceType: 'scaffolder-task',
             result: AuthorizeResult.CONDITIONAL,
           },
-        ]);
+        ],
+      );
       (taskBroker.get as Mocked<TaskBroker>['get']).mockResolvedValue({
         id: 'a-random-id',
         spec: {} as any,

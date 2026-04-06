@@ -64,7 +64,7 @@ describe('UserIdentity', () => {
     };
 
     const mockAuthApi: any = {
-      getProfile: jest
+      getProfile: vi
         .fn()
         .mockRejectedValueOnce(new Error('boop'))
         .mockResolvedValueOnce(mockProfileInfo),

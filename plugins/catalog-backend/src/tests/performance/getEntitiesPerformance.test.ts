@@ -98,7 +98,7 @@ async function createBackend(
 
   const client = new CatalogClient({
     discoveryApi: {
-      getBaseUrl: jest
+      getBaseUrl: vi
         .fn()
         .mockResolvedValue(
           `http://localhost:${backend.server.port()}/api/catalog`,

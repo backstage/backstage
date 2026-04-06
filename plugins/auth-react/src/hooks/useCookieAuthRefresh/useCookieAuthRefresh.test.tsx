@@ -84,7 +84,7 @@ describe('useCookieAuthRefresh', () => {
               [
                 fetchApiRef,
                 {
-                  fetch: jest
+                  fetch: vi
                     .fn()
                     .mockRejectedValueOnce(error)
                     .mockReturnValue(new Promise(() => {})),
@@ -132,7 +132,7 @@ describe('useCookieAuthRefresh', () => {
               [
                 fetchApiRef,
                 {
-                  fetch: jest
+                  fetch: vi
                     .fn()
                     .mockResolvedValueOnce({
                       ok: true,

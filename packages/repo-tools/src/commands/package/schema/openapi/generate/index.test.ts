@@ -21,9 +21,9 @@ import path from 'node:path';
 
 vi.mock(
   'lodash',
-  () =>
+  async () =>
     ({
-      ...vi.importActual('lodash'),
+      ...(await vi.importActual('lodash')),
       debounce: (fn: any) => fn,
     } as any as typeof import('lodash')),
 );

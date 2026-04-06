@@ -36,7 +36,7 @@ describe('IdentityPermissionApi', () => {
   });
 
   it('should batch requests that arrive on the same tick', async () => {
-    const authorizeSpy = jest
+    const authorizeSpy = vi
       .spyOn(PermissionClient.prototype, 'authorize')
       .mockResolvedValue([
         { result: AuthorizeResult.ALLOW },
@@ -65,11 +65,11 @@ describe('IdentityPermissionApi', () => {
   });
 
   it('should not cache requests across ticks', async () => {
-    const authorizeSpy = jest
+    const authorizeSpy = vi
       .spyOn(PermissionClient.prototype, 'authorize')
       .mockResolvedValue([{ result: AuthorizeResult.ALLOW }]);
     const identityApi = mockApis.identity();
-    const credentialsSpy = jest
+    const credentialsSpy = vi
       .spyOn(identityApi, 'getCredentials')
       .mockResolvedValueOnce({ token: 'first-token' })
       .mockResolvedValueOnce({ token: 'second-token' });

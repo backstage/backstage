@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi, type Mocked , type MockedFunction} from 'vitest';
+import { vi, type Mocked, type MockedFunction } from 'vitest';
 import {
   mockServices,
   TestDatabaseId,
@@ -36,17 +36,16 @@ import crypto from 'node:crypto';
 import { AnyJWK, TokenIssuer } from '../identity/types';
 import { CimdClientInfo } from './CimdClient';
 
-vi.mock('./CimdClient', () => ({
-  ...vi.importActual('./CimdClient'),
+vi.mock('./CimdClient', async () => ({
+  ...(await vi.importActual('./CimdClient')),
   fetchCimdMetadata: vi.fn(),
 }));
 
 import * as CimdClient from './CimdClient';
 
-const mockFetchCimdMetadata =
-  CimdClient.fetchCimdMetadata as MockedFunction<
-    typeof CimdClient.fetchCimdMetadata
-  >;
+const mockFetchCimdMetadata = CimdClient.fetchCimdMetadata as MockedFunction<
+  typeof CimdClient.fetchCimdMetadata
+>;
 
 vi.setConfig({ testTimeout: 60_000 });
 
@@ -845,7 +844,7 @@ describe('OidcService', () => {
 
       it('should still return access token when refresh token issuance fails', async () => {
         const mockOfflineAccess = {
-          issueRefreshToken: jest
+          issueRefreshToken: vi
             .fn()
             .mockRejectedValue(new Error('DB constraint violation')),
         } as unknown as OfflineAccessService;

@@ -148,7 +148,7 @@ describe('CatalogClient', () => {
     });
 
     it('builds search filters property even those with URL unsafe values', async () => {
-      const mockedEndpoint = jest
+      const mockedEndpoint = vi
         .fn()
         .mockImplementation((_req, res, ctx) =>
           res(ctx.json({ items: [], totalItems: 0 })),
@@ -447,7 +447,7 @@ describe('CatalogClient', () => {
     });
 
     it('builds multiple entity search filters properly', async () => {
-      const mockedEndpoint = jest
+      const mockedEndpoint = vi
         .fn()
         .mockImplementation((_req, res, ctx) =>
           res(ctx.json({ items: [], totalItems: 0 })),
@@ -488,7 +488,7 @@ describe('CatalogClient', () => {
     });
 
     it('builds search filters property even those with URL unsafe values', async () => {
-      const mockedEndpoint = jest
+      const mockedEndpoint = vi
         .fn()
         .mockImplementation((_req, res, ctx) =>
           res(ctx.json({ items: [], totalItems: 0 })),
@@ -519,7 +519,7 @@ describe('CatalogClient', () => {
     });
 
     it('should send query params correctly on initial request', async () => {
-      const mockedEndpoint = jest
+      const mockedEndpoint = vi
         .fn()
         .mockImplementation((_req, res, ctx) =>
           res(ctx.json({ items: [], totalItems: 0 })),
@@ -552,7 +552,7 @@ describe('CatalogClient', () => {
     });
 
     it('should ignore initial query params if cursor is passed', async () => {
-      const mockedEndpoint = jest
+      const mockedEndpoint = vi
         .fn()
         .mockImplementation((_req, res, ctx) =>
           res(ctx.json({ items: [], totalItems: 0 })),
@@ -627,7 +627,7 @@ describe('CatalogClient', () => {
     });
 
     it('should handle errors', async () => {
-      const mockedEndpoint = jest
+      const mockedEndpoint = vi
         .fn()
         .mockImplementation((_req, res, ctx) => res(ctx.status(401)));
 
@@ -971,7 +971,7 @@ describe('CatalogClient', () => {
     });
 
     it('should handle errors from POST endpoint', async () => {
-      const mockedEndpoint = jest
+      const mockedEndpoint = vi
         .fn()
         .mockImplementation((_req, res, ctx) => res(ctx.status(400)));
 
@@ -1032,7 +1032,7 @@ describe('CatalogClient', () => {
     });
 
     it('should handle errors', async () => {
-      const mockedEndpoint = jest
+      const mockedEndpoint = vi
         .fn()
         .mockImplementation((_req, res, ctx) => res(ctx.status(401)));
 

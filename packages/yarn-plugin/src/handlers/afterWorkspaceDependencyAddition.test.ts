@@ -37,9 +37,7 @@ describe('afterWorkspaceDependencyAddition', () => {
   const target = {} as suggestUtils.Target;
   const strategies: Array<suggestUtils.Strategy> = [];
 
-  const consoleInfoSpy = jest
-    .spyOn(console, 'info')
-    .mockImplementation(() => {});
+  const consoleInfoSpy = vi.spyOn(console, 'info').mockImplementation(() => {});
 
   beforeEach(() => {
     vi.resetAllMocks();
@@ -54,13 +52,11 @@ describe('afterWorkspaceDependencyAddition', () => {
       ],
     });
 
-    jest
-      .spyOn(ppath, 'cwd')
-      .mockReturnValue(npath.toPortablePath(mockDir.path));
+    vi.spyOn(ppath, 'cwd').mockReturnValue(npath.toPortablePath(mockDir.path));
 
-    jest
-      .spyOn(process, 'cwd')
-      .mockReturnValue(npath.toPortablePath(mockDir.path));
+    vi.spyOn(process, 'cwd').mockReturnValue(
+      npath.toPortablePath(mockDir.path),
+    );
 
     mockDir.setContent({
       'backstage.json': JSON.stringify({

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type MockedFunction} from 'vitest';
+import { vi, type MockedFunction } from 'vitest';
 
 import { FieldValidation } from '@rjsf/utils';
 import { KubernetesValidatorFunctions } from '@backstage/catalog-model';

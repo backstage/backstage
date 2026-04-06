@@ -17,8 +17,8 @@
 import { vi } from 'vitest';
 
 const mockRailsTemplater = { run: vi.fn() };
-vi.mock('@backstage/plugin-scaffolder-node', () => ({
-  ...vi.importActual('@backstage/plugin-scaffolder-node'),
+vi.mock('@backstage/plugin-scaffolder-node', async () => ({
+  ...(await vi.importActual('@backstage/plugin-scaffolder-node')),
   fetchContents: vi.fn(),
 }));
 vi.mock('./railsNewRunner', () => {

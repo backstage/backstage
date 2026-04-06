@@ -210,7 +210,7 @@ describe('KubernetesFanOutHandler', () => {
       customResources: customResources,
       objectTypesToFetch: objectTypesToFetch || DEFAULT_OBJECTS,
       authStrategy: {
-        getCredential: jest
+        getCredential: vi
           .fn<
             Promise<KubernetesCredential>,
             [ClusterDetails, KubernetesRequestAuth]
@@ -1277,7 +1277,7 @@ describe('KubernetesFanOutHandler', () => {
             },
           ],
           authStrategy: {
-            getCredential: jest
+            getCredential: vi
               .fn<
                 Promise<KubernetesCredential>,
                 [ClusterDetails, KubernetesRequestAuth]

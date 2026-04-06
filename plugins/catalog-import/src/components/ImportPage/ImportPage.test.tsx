@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type Mock} from 'vitest';
+import { vi, type Mock } from 'vitest';
 
 import { ApiProvider, ConfigReader } from '@backstage/core-app-api';
 import { FetchApi, configApiRef } from '@backstage/core-plugin-api';
@@ -26,8 +26,8 @@ import { useOutlet } from 'react-router-dom';
 import { catalogImportApiRef, CatalogImportClient } from '../../api';
 import { ImportPage } from './ImportPage';
 
-vi.mock('react-router-dom', () => ({
-  ...vi.importActual('react-router-dom'),
+vi.mock('react-router-dom', async () => ({
+  ...(await vi.importActual('react-router-dom')),
   useOutlet: vi.fn(),
 }));
 

@@ -40,9 +40,9 @@ describe('eventsModuleKafkaPublishingEventConsumer', () => {
       shutdown: vi.fn(),
     } as unknown as KafkaPublishingEventConsumer;
 
-    jest
-      .mocked(KafkaPublishingEventConsumer.fromConfig)
-      .mockReturnValue([mockKafkaPublishingEventConsumer]);
+    vi.mocked(KafkaPublishingEventConsumer.fromConfig).mockReturnValue([
+      mockKafkaPublishingEventConsumer,
+    ]);
 
     await startTestBackend({
       features: [

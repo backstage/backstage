@@ -293,7 +293,7 @@ describe('SearchFilter.hooks', () => {
     });
 
     it('should call provided method once per provided input', async () => {
-      const asyncFn = jest
+      const asyncFn = vi
         .fn()
         .mockImplementation((x: string) => Promise.resolve([x]));
       const { rerender } = renderHook(

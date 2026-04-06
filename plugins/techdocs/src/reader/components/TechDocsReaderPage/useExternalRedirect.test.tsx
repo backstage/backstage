@@ -25,13 +25,13 @@ import { TECHDOCS_EXTERNAL_ANNOTATION } from '@backstage/plugin-techdocs-common'
 const mockNavigate = vi.fn();
 const mockViewTechdocLink = vi.fn(() => '/docs');
 
-vi.mock('react-router-dom', () => ({
-  ...vi.importActual('react-router-dom'),
+vi.mock('react-router-dom', async () => ({
+  ...(await vi.importActual('react-router-dom')),
   useNavigate: () => mockNavigate,
 }));
 
-vi.mock('@backstage/core-plugin-api', () => ({
-  ...vi.importActual('@backstage/core-plugin-api'),
+vi.mock('@backstage/core-plugin-api', async () => ({
+  ...(await vi.importActual('@backstage/core-plugin-api')),
   useRouteRef: () => mockViewTechdocLink,
 }));
 

@@ -33,8 +33,8 @@ import { withLocations } from '../lib/withLocations';
 import { GithubOrgEntityProvider } from './GithubOrgEntityProvider';
 
 vi.mock('@octokit/graphql');
-vi.mock('../lib/github', () => ({
-  ...vi.importActual('../lib/github'),
+vi.mock('../lib/github', async () => ({
+  ...(await vi.importActual('../lib/github')),
   createGraphqlClient: vi.fn(),
 }));
 

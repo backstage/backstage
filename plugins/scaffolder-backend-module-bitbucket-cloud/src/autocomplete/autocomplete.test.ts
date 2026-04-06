@@ -52,13 +52,13 @@ describe('handleAutocompleteRequest', () => {
       ]),
     }),
     listBranchesByRepository: vi.fn().mockReturnValue({
-      iteratePages: jest
+      iteratePages: vi
         .fn()
         .mockReturnValue([{ values: [{ name: 'branch1' }] }]),
     }),
   };
 
-  const fromConfig = jest
+  const fromConfig = vi
     .spyOn(BitbucketCloudClient, 'fromConfig')
     .mockReturnValue(client as BitbucketCloudClient);
 

@@ -44,7 +44,7 @@ const testPermission2: Permission = createPermission({
   attributes: {},
 });
 
-const mockTestRule1Apply = jest
+const mockTestRule1Apply = vi
   .fn()
   .mockImplementation((_resource: any, _params) => true);
 const testRule1 = createPermissionRule({
@@ -59,7 +59,7 @@ const testRule1 = createPermissionRule({
   toQuery: _params => ({}),
 });
 
-const mockTestRule2Apply = jest
+const mockTestRule2Apply = vi
   .fn()
   .mockImplementation((_resource: any) => false);
 const testRule2 = createPermissionRule({
@@ -70,7 +70,7 @@ const testRule2 = createPermissionRule({
   toQuery: () => ({}),
 });
 
-const mockTestRule3Apply = jest
+const mockTestRule3Apply = vi
   .fn()
   .mockImplementation((_resource: any) => false);
 const testRule3 = createPermissionRule({

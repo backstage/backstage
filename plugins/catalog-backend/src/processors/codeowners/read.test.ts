@@ -64,7 +64,7 @@ describe('readCodeOwners', () => {
     const reader = {
       read: vi.fn(),
       readUrl: vi.fn().mockResolvedValue({
-        buffer: jest
+        buffer: vi
           .fn()
           .mockRejectedValue(new NotFoundError('not found'))
           .mockResolvedValue(mockCodeowners),

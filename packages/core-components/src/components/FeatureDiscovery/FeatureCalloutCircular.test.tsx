@@ -45,9 +45,7 @@ const UPDATED_BOUNDING_RECT: DOMRect = {
 };
 
 beforeEach(() => {
-  Element.prototype.getBoundingClientRect = vi.fn(
-    () => INITIAL_BOUNDING_RECT,
-  );
+  Element.prototype.getBoundingClientRect = vi.fn(() => INITIAL_BOUNDING_RECT);
 });
 
 describe('<FeatureCalloutCircular />', () => {

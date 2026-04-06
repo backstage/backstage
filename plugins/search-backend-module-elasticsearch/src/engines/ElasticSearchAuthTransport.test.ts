@@ -26,7 +26,7 @@ describe('ElasticSearchAuthTransport', () => {
   describe('createOpenSearchAuthTransport', () => {
     it('should return a Transport class', () => {
       const authProvider: ElasticSearchAuthProvider = {
-        getAuthHeaders: jest
+        getAuthHeaders: vi
           .fn()
           .mockResolvedValue({ Authorization: 'Bearer test' }),
       };
@@ -39,7 +39,7 @@ describe('ElasticSearchAuthTransport', () => {
 
     it('should call getAuthHeaders when request is made', async () => {
       const authProvider: ElasticSearchAuthProvider = {
-        getAuthHeaders: jest
+        getAuthHeaders: vi
           .fn()
           .mockResolvedValue({ Authorization: 'Bearer test-token' }),
       };
@@ -67,7 +67,7 @@ describe('ElasticSearchAuthTransport', () => {
 
     it('should be usable as Transport option', () => {
       const authProvider: ElasticSearchAuthProvider = {
-        getAuthHeaders: jest
+        getAuthHeaders: vi
           .fn()
           .mockResolvedValue({ Authorization: 'Bearer test' }),
       };
@@ -82,7 +82,7 @@ describe('ElasticSearchAuthTransport', () => {
   describe('createElasticSearchAuthTransport', () => {
     it('should return a Transport class', () => {
       const authProvider: ElasticSearchAuthProvider = {
-        getAuthHeaders: jest
+        getAuthHeaders: vi
           .fn()
           .mockResolvedValue({ Authorization: 'Bearer test' }),
       };
@@ -95,7 +95,7 @@ describe('ElasticSearchAuthTransport', () => {
 
     it('should call getAuthHeaders when request is made', async () => {
       const authProvider: ElasticSearchAuthProvider = {
-        getAuthHeaders: jest
+        getAuthHeaders: vi
           .fn()
           .mockResolvedValue({ Authorization: 'Bearer test-token' }),
       };
@@ -123,7 +123,7 @@ describe('ElasticSearchAuthTransport', () => {
 
     it('should be usable as Transport option', () => {
       const authProvider: ElasticSearchAuthProvider = {
-        getAuthHeaders: jest
+        getAuthHeaders: vi
           .fn()
           .mockResolvedValue({ Authorization: 'Bearer test' }),
       };
@@ -183,7 +183,7 @@ describe('ElasticSearchAuthTransport', () => {
 
     it('should handle errors in getAuthHeaders gracefully', async () => {
       const authProvider: ElasticSearchAuthProvider = {
-        getAuthHeaders: jest
+        getAuthHeaders: vi
           .fn()
           .mockRejectedValue(new Error('Token fetch failed')),
       };

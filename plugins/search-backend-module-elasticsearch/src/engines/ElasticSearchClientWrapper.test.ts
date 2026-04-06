@@ -24,74 +24,66 @@ import { Readable } from 'node:stream';
 import { ElasticSearchClientWrapper } from './ElasticSearchClientWrapper';
 import { ElasticSearchClientOptions } from './ElasticSearchSearchEngine';
 
-vi.mock('@elastic/elasticsearch', () => ({
-  ...vi.importActual('@elastic/elasticsearch'),
+vi.mock('@elastic/elasticsearch', async () => ({
+  ...(await vi.importActual('@elastic/elasticsearch')),
   Client: vi.fn().mockReturnValue({
-    search: jest
-      .fn()
-      .mockImplementation(async args => ({ client: 'es', args })),
+    search: vi.fn().mockImplementation(async args => ({ client: 'es', args })),
     cat: {
-      aliases: jest
+      aliases: vi
         .fn()
         .mockImplementation(async args => ({ client: 'es', args })),
     },
     helpers: {
-      bulk: jest
-        .fn()
-        .mockImplementation(async args => ({ client: 'es', args })),
+      bulk: vi.fn().mockImplementation(async args => ({ client: 'es', args })),
     },
     indices: {
       get: vi.fn().mockImplementation(async args => ({ client: 'es', args })),
-      create: jest
+      create: vi
         .fn()
         .mockImplementation(async args => ({ client: 'es', args })),
-      delete: jest
+      delete: vi
         .fn()
         .mockImplementation(async args => ({ client: 'es', args })),
-      exists: jest
+      exists: vi
         .fn()
         .mockImplementation(async args => ({ client: 'es', args })),
-      putIndexTemplate: jest
+      putIndexTemplate: vi
         .fn()
         .mockImplementation(async args => ({ client: 'es', args })),
-      updateAliases: jest
+      updateAliases: vi
         .fn()
         .mockImplementation(async args => ({ client: 'es', args })),
     },
   }),
 }));
 
-vi.mock('@opensearch-project/opensearch', () => ({
-  ...vi.importActual('@opensearch-project/opensearch'),
+vi.mock('@opensearch-project/opensearch', async () => ({
+  ...(await vi.importActual('@opensearch-project/opensearch')),
   Client: vi.fn().mockReturnValue({
-    search: jest
-      .fn()
-      .mockImplementation(async args => ({ client: 'os', args })),
+    search: vi.fn().mockImplementation(async args => ({ client: 'os', args })),
     cat: {
-      aliases: jest
+      aliases: vi
         .fn()
         .mockImplementation(async args => ({ client: 'os', args })),
     },
     helpers: {
-      bulk: jest
-        .fn()
-        .mockImplementation(async args => ({ client: 'os', args })),
+      bulk: vi.fn().mockImplementation(async args => ({ client: 'os', args })),
     },
     indices: {
       get: vi.fn().mockImplementation(async args => ({ client: 'os', args })),
-      create: jest
+      create: vi
         .fn()
         .mockImplementation(async args => ({ client: 'os', args })),
-      delete: jest
+      delete: vi
         .fn()
         .mockImplementation(async args => ({ client: 'os', args })),
-      exists: jest
+      exists: vi
         .fn()
         .mockImplementation(async args => ({ client: 'os', args })),
-      putIndexTemplate: jest
+      putIndexTemplate: vi
         .fn()
         .mockImplementation(async args => ({ client: 'os', args })),
-      updateAliases: jest
+      updateAliases: vi
         .fn()
         .mockImplementation(async args => ({ client: 'os', args })),
     },

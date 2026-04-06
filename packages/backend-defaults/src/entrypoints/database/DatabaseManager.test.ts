@@ -174,7 +174,7 @@ describe('DatabaseManagerImpl', () => {
     const rootLifecycle = { addShutdownHook: vi.fn() } as unknown as any;
     const destroy = vi.fn();
     const connector1 = {
-      getClient: jest
+      getClient: vi
         .fn()
         .mockResolvedValue({ destroy, client: { config: 'pg' } }),
     } satisfies Connector;

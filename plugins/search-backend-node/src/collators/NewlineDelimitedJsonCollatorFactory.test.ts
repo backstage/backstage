@@ -127,7 +127,7 @@ describe('DefaultCatalogCollatorFactory', () => {
       });
       reader.readUrl.mockResolvedValue({
         buffer: vi.fn(),
-        stream: jest
+        stream: vi
           .fn()
           .mockReturnValue(
             Readable.from(

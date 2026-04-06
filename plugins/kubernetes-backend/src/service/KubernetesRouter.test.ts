@@ -225,7 +225,7 @@ describe('API integration tests', () => {
                 deps: { extension: kubernetesAuthStrategyExtensionPoint },
                 async init({ extension }) {
                   extension.addAuthStrategy('customAuth', {
-                    getCredential: jest
+                    getCredential: vi
                       .fn<
                         Promise<KubernetesCredential>,
                         [ClusterDetails, KubernetesRequestAuth]
@@ -436,7 +436,7 @@ describe('API integration tests', () => {
 
     it('reads auth data for custom strategy', async () => {
       const mockFetcher = {
-        fetchPodMetricsByNamespaces: jest
+        fetchPodMetricsByNamespaces: vi
           .fn()
           .mockResolvedValue({ errors: [], responses: [] }),
         fetchObjectsForService: vi.fn().mockResolvedValue({
@@ -468,7 +468,7 @@ describe('API integration tests', () => {
                 deps: { extension: kubernetesAuthStrategyExtensionPoint },
                 async init({ extension }) {
                   extension.addAuthStrategy('custom', {
-                    getCredential: jest
+                    getCredential: vi
                       .fn<
                         Promise<KubernetesCredential>,
                         [ClusterDetails, KubernetesRequestAuth]
@@ -637,7 +637,7 @@ metadata:
                 deps: { extension: kubernetesAuthStrategyExtensionPoint },
                 async init({ extension }) {
                   extension.addAuthStrategy('custom', {
-                    getCredential: jest
+                    getCredential: vi
                       .fn<
                         Promise<KubernetesCredential>,
                         [ClusterDetails, KubernetesRequestAuth]
@@ -757,7 +757,7 @@ metadata:
                 deps: { extension: kubernetesAuthStrategyExtensionPoint },
                 async init({ extension }) {
                   extension.addAuthStrategy('custom-strategy', {
-                    getCredential: jest
+                    getCredential: vi
                       .fn<
                         Promise<KubernetesCredential>,
                         [ClusterDetails, KubernetesRequestAuth]

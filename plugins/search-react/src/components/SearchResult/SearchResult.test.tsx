@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type Mock} from 'vitest';
+import { vi, type Mock } from 'vitest';
 
 import { waitFor } from '@testing-library/react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
@@ -26,8 +26,8 @@ import { createSearchResultListItemExtension } from '../../extensions';
 
 import { SearchResult } from './SearchResult';
 
-vi.mock('../../context', () => ({
-  ...vi.importActual('../../context'),
+vi.mock('../../context', async () => ({
+  ...(await vi.importActual('../../context')),
   useSearch: vi.fn().mockReturnValue({
     result: {},
   }),

@@ -37,7 +37,7 @@ vi.mock('../scm', () => ({
       remove: vi.fn(),
       checkout: vi.fn(),
       branch: vi.fn(),
-      commit: jest
+      commit: vi
         .fn()
         .mockResolvedValue('220f19cc36b551763d157f1b5e4a4b446165dbd6'),
       fetch: vi.fn(),

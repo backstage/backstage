@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type Mock} from 'vitest';
+import { vi, type Mock } from 'vitest';
 
 import { catalogEntityDeletePermission } from '@backstage/plugin-catalog-common/alpha';
 import { renderHook } from '@testing-library/react';
@@ -22,12 +22,12 @@ import { useEntityPermission } from './useEntityPermission';
 import { useAsyncEntity } from './useEntity';
 import { usePermission } from '@backstage/plugin-permission-react';
 
-vi.mock('./useEntity', () => ({
-  ...vi.importActual('./useEntity'),
+vi.mock('./useEntity', async () => ({
+  ...(await vi.importActual('./useEntity')),
   useAsyncEntity: vi.fn(),
 }));
-vi.mock('@backstage/plugin-permission-react', () => ({
-  ...vi.importActual('@backstage/plugin-permission-react'),
+vi.mock('@backstage/plugin-permission-react', async () => ({
+  ...(await vi.importActual('@backstage/plugin-permission-react')),
   usePermission: vi.fn(),
 }));
 const useEntityMock = useAsyncEntity as Mock;

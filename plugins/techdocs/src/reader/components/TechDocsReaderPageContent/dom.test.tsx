@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type Mock} from 'vitest';
+import { vi, type Mock } from 'vitest';
 import { render } from '@testing-library/react';
 
 // We need to mock react-router-dom hooks used by useInitialRedirect
@@ -23,8 +23,8 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 // Import the module from which the hook is defined
 import { useInitialRedirect } from './dom';
 
-vi.mock('react-router-dom', () => ({
-  ...vi.importActual('react-router-dom'),
+vi.mock('react-router-dom', async () => ({
+  ...(await vi.importActual('react-router-dom')),
   useLocation: vi.fn(),
   useNavigate: vi.fn(),
   useParams: vi.fn(),

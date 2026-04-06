@@ -88,7 +88,7 @@ describe('CookieAuthRefreshProvider', () => {
   it('should call the api again when retry is clicked', async () => {
     const error = new Error('Failed to get cookie');
     const fetchApiMock = {
-      fetch: jest
+      fetch: vi
         .fn()
         .mockRejectedValueOnce(error)
         .mockResolvedValue({

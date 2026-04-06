@@ -216,9 +216,9 @@ describe('StorageTaskBroker', () => {
     const { taskId } = await broker.dispatch(emptyTaskSpec);
     const task = await broker.claim();
 
-    jest
-      .spyOn((task as any).storage, 'heartbeatTask')
-      .mockRejectedValue(new Error('nah m8'));
+    vi.spyOn((task as any).storage, 'heartbeatTask').mockRejectedValue(
+      new Error('nah m8'),
+    );
 
     const intervalId = setInterval(() => {
       broker.vacuumTasks({ timeoutS: 2 });

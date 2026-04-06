@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type MockedClass} from 'vitest';
+import { vi, type MockedClass } from 'vitest';
 import { ScmIntegrations } from '../ScmIntegrations';
 import { CachedAzureDevOpsCredentialsProvider } from './CachedAzureDevOpsCredentialsProvider';
 import { AzureDevOpsCredentialLike, AzureIntegrationConfig } from './config';
@@ -40,9 +40,7 @@ const MockedClientSecretCredential = ClientSecretCredential as MockedClass<
 >;
 
 const MockedManagedIdentityCredential =
-  ManagedIdentityCredential as MockedClass<
-    typeof ManagedIdentityCredential
-  >;
+  ManagedIdentityCredential as MockedClass<typeof ManagedIdentityCredential>;
 
 const MockedDefaultAzureCredential = DefaultAzureCredential as MockedClass<
   typeof DefaultAzureCredential

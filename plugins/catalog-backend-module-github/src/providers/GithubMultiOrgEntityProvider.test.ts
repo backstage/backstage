@@ -35,8 +35,8 @@ import { mockServices } from '@backstage/backend-test-utils';
 vi.mock('@octokit/graphql');
 
 const getAllInstallationsMock = vi.fn();
-vi.mock('@backstage/integration', () => ({
-  ...vi.importActual('@backstage/integration'),
+vi.mock('@backstage/integration', async () => ({
+  ...(await vi.importActual('@backstage/integration')),
   GithubAppCredentialsMux: function mockGithubAppCredentialsMux() {
     return {
       getAllInstallations: getAllInstallationsMock,

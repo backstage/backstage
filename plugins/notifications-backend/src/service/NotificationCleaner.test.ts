@@ -45,7 +45,7 @@ describe('NotificationCleaner', () => {
       const mockTaskRunner = {
         run: vi.fn(),
       };
-      mockScheduler.createScheduledTaskRunner = jest
+      mockScheduler.createScheduledTaskRunner = vi
         .fn()
         .mockReturnValue(mockTaskRunner);
 
@@ -88,13 +88,13 @@ describe('NotificationCleaner', () => {
 
   describe('clearNotifications', () => {
     it('should clear notifications', async () => {
-      mockDatabase.clearNotifications = jest
+      mockDatabase.clearNotifications = vi
         .fn()
         .mockResolvedValue({ deletedCount: 1 });
       const mockTaskRunner = {
         run: vi.fn().mockImplementation(({ fn }) => fn()),
       };
-      mockScheduler.createScheduledTaskRunner = jest
+      mockScheduler.createScheduledTaskRunner = vi
         .fn()
         .mockReturnValue(mockTaskRunner);
 

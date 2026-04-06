@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { vi , type MockedFunction} from 'vitest';
+import { vi, type MockedFunction } from 'vitest';
 
 import fs from 'fs-extra';
 import child_process from 'node:child_process';
@@ -41,9 +41,7 @@ import { setupServer } from 'msw/node';
 vi.spyOn(Task, 'log').mockReturnValue(undefined);
 vi.spyOn(Task, 'error').mockReturnValue(undefined);
 vi.spyOn(Task, 'section').mockReturnValue(undefined);
-jest
-  .spyOn(Task, 'forItem')
-  .mockImplementation((_a, _b, taskFunc) => taskFunc());
+vi.spyOn(Task, 'forItem').mockImplementation((_a, _b, taskFunc) => taskFunc());
 
 vi.mock('child_process');
 

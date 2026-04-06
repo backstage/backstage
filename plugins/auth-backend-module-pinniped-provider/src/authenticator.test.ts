@@ -372,9 +372,9 @@ describe('pinnipedAuthenticator', () => {
 
       await pinnipedAuthenticator.start(startRequest, authCtx);
 
-      jest
-        .spyOn(DateTime, 'local')
-        .mockImplementation(() => fixedTime.plus({ seconds: 60000 }));
+      vi.spyOn(DateTime, 'local').mockImplementation(() =>
+        fixedTime.plus({ seconds: 60000 }),
+      );
 
       await pinnipedAuthenticator.start(startRequest, authCtx);
 
@@ -667,9 +667,9 @@ describe('pinnipedAuthenticator', () => {
 
       await pinnipedAuthenticator.authenticate(handlerRequest, authCtx);
 
-      jest
-        .spyOn(DateTime, 'local')
-        .mockImplementation(() => fixedTime.plus({ seconds: 60000 }));
+      vi.spyOn(DateTime, 'local').mockImplementation(() =>
+        fixedTime.plus({ seconds: 60000 }),
+      );
 
       await pinnipedAuthenticator.authenticate(
         {
@@ -811,9 +811,9 @@ describe('pinnipedAuthenticator', () => {
 
       await pinnipedAuthenticator.refresh(refreshRequest, authCtx);
 
-      jest
-        .spyOn(DateTime, 'local')
-        .mockImplementation(() => fixedTime.plus({ seconds: 60000 }));
+      vi.spyOn(DateTime, 'local').mockImplementation(() =>
+        fixedTime.plus({ seconds: 60000 }),
+      );
 
       await pinnipedAuthenticator.refresh(refreshRequest, authCtx);
 

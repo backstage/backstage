@@ -280,9 +280,7 @@ describe('I18nextTranslationApi', () => {
 
   it('should only call the loader once', async () => {
     const languageApi = AppLanguageSelector.create();
-    const loader = jest
-      .fn()
-      .mockResolvedValue({ default: { foo: 'OtherFoo' } });
+    const loader = vi.fn().mockResolvedValue({ default: { foo: 'OtherFoo' } });
     const translationApi = I18nextTranslationApi.create({
       languageApi,
       resources: [

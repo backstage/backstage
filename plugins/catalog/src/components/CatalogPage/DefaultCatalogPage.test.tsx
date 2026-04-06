@@ -101,7 +101,7 @@ describe('DefaultCatalogPage', () => {
         ],
       }),
     ),
-    getLocationByRef: jest
+    getLocationByRef: vi
       .fn()
       .mockImplementation(() =>
         Promise.resolve({ id: 'id', type: 'url', target: 'url' }),
@@ -134,7 +134,7 @@ describe('DefaultCatalogPage', () => {
         },
       ],
     })),
-    queryEntities: jest
+    queryEntities: vi
       .fn()
       .mockImplementation(async (request: QueryEntitiesInitialRequest) => {
         if ((request.filter as any)['relations.ownedBy']) {

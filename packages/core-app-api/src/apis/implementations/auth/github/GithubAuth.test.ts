@@ -23,8 +23,8 @@ import { mockApis } from '@backstage/test-utils';
 
 const getSession = vi.fn();
 
-vi.mock('../../../../lib/AuthSessionManager', () => ({
-  ...(vi.importActual('../../../../lib/AuthSessionManager') as any),
+vi.mock('../../../../lib/AuthSessionManager', async () => ({
+  ...((await vi.importActual('../../../../lib/AuthSessionManager')) as any),
   RefreshingAuthSessionManager: class {
     getSession = getSession;
   },

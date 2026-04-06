@@ -22,8 +22,8 @@ import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 
 const mockCatalogApi = catalogApiMock.mock();
 
-vi.mock('@backstage/core-plugin-api', () => ({
-  ...vi.importActual('@backstage/core-plugin-api'),
+vi.mock('@backstage/core-plugin-api', async () => ({
+  ...(await vi.importActual('@backstage/core-plugin-api')),
   useApi: () => mockCatalogApi,
 }));
 
