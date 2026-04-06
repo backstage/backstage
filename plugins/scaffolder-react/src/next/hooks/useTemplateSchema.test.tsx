@@ -388,4 +388,325 @@ describe('useTemplateSchema', () => {
       });
     });
   });
+
+  describe('Conditional Schema Keywords', () => {
+    it('preserves if/then/else keywords through schema extraction', () => {
+      const manifest: TemplateParameterSchema = {
+        title: 'Conditional Template',
+        description: 'Template with if/then/else conditionals',
+        steps: [
+          {
+            title: 'Conditional Step',
+            schema: {
+              type: 'object',
+              properties: {
+                toggle: { type: 'boolean', title: 'Toggle' },
+              },
+              if: {
+                properties: { toggle: { const: true } },
+              },
+              then: {
+                properties: {
+                  conditionalField: {
+                    type: 'string',
+                    title: 'Conditional',
+                  },
+                },
+                required: ['conditionalField'],
+              },
+              else: {
+                properties: {
+                  alternateField: { type: 'number', title: 'Alternate' },
+                },
+              },
+            },
+          },
+        ],
+      };
+
+      const { result } = renderHook(() => useTemplateSchema(manifest), {
+        wrapper: ({ children }: PropsWithChildren<{}>) => (
+          <TestApiProvider
+            apis={[
+              mockApis.featureFlags.mock({ isActive: jest.fn(() => false) }),
+            ]}
+          >
+            {children}
+          </TestApiProvider>
+        ),
+      });
+
+      const step = result.current.steps[0];
+
+      // The 'if' keyword is NOT destructured by extractUiSchema, so it passes
+      // through the extraction pipeline completely untouched.
+      expect(step.schema).toHaveProperty('if');
+      expect(step.schema).toMatchObject({
+        if: {
+          properties: { toggle: { const: true } },
+        },
+      });
+
+      // 'then' and 'else' are destructured for ui:* extraction but their
+      // structural content (properties, required, etc.) is preserved.
+      expect(step.schema).toHaveProperty('then');
+      expect(step.schema).toMatchObject({
+        then: {
+          properties: {
+            conditionalField: { type: 'string', title: 'Conditional' },
+          },
+          required: ['conditionalField'],
+        },
+      });
+
+      expect(step.schema).toHaveProperty('else');
+      expect(step.schema).toMatchObject({
+        else: {
+          properties: {
+            alternateField: { type: 'number', title: 'Alternate' },
+          },
+        },
+      });
+
+      // Verify the base properties also survive alongside conditionals
+      expect(step.schema).toMatchObject({
+        type: 'object',
+        properties: {
+          toggle: { type: 'boolean', title: 'Toggle' },
+        },
+      });
+    });
+
+    it('preserves dependencies keyword with schema dependencies through extraction', () => {
+      const manifest: TemplateParameterSchema = {
+        title: 'Dependencies Template',
+        description: 'Template with schema-style dependencies',
+        steps: [
+          {
+            title: 'Provider Step',
+            schema: {
+              type: 'object',
+              properties: {
+                cloudProvider: {
+                  type: 'string',
+                  enum: ['AWS', 'GCP', 'Azure'],
+                  title: 'Cloud Provider',
+                },
+              },
+              dependencies: {
+                cloudProvider: {
+                  oneOf: [
+                    {
+                      properties: {
+                        cloudProvider: { enum: ['AWS'] },
+                        awsRegion: {
+                          type: 'string',
+                          title: 'AWS Region',
+                          enum: ['us-east-1', 'us-west-2'],
+                        },
+                      },
+                    },
+                    {
+                      properties: {
+                        cloudProvider: { enum: ['GCP'] },
+                        gcpRegion: {
+                          type: 'string',
+                          title: 'GCP Region',
+                          enum: ['us-central1', 'europe-west1'],
+                        },
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+          },
+        ],
+      };
+
+      const { result } = renderHook(() => useTemplateSchema(manifest), {
+        wrapper: ({ children }: PropsWithChildren<{}>) => (
+          <TestApiProvider
+            apis={[
+              mockApis.featureFlags.mock({ isActive: jest.fn(() => false) }),
+            ]}
+          >
+            {children}
+          </TestApiProvider>
+        ),
+      });
+
+      const step = result.current.steps[0];
+
+      // Verify the dependencies keyword is preserved
+      expect(step.schema).toHaveProperty('dependencies');
+      expect(step.schema.dependencies).toBeDefined();
+
+      // Verify the full structural content of the oneOf branches within
+      // the dependency is preserved, including properties and enum values
+      expect(step.schema).toMatchObject({
+        dependencies: {
+          cloudProvider: {
+            oneOf: [
+              {
+                properties: {
+                  cloudProvider: { enum: ['AWS'] },
+                  awsRegion: {
+                    type: 'string',
+                    title: 'AWS Region',
+                    enum: ['us-east-1', 'us-west-2'],
+                  },
+                },
+              },
+              {
+                properties: {
+                  cloudProvider: { enum: ['GCP'] },
+                  gcpRegion: {
+                    type: 'string',
+                    title: 'GCP Region',
+                    enum: ['us-central1', 'europe-west1'],
+                  },
+                },
+              },
+            ],
+          },
+        },
+      });
+    });
+
+    it('preserves both if/then/else and dependencies in the same step schema', () => {
+      const manifest: TemplateParameterSchema = {
+        title: 'Combined Conditionals Template',
+        description: 'Template with both if/then/else and dependencies',
+        steps: [
+          {
+            title: 'Combined Step',
+            schema: {
+              type: 'object',
+              properties: {
+                enableAdvanced: { type: 'boolean', title: 'Enable Advanced' },
+                environment: {
+                  type: 'string',
+                  enum: ['dev', 'staging', 'prod'],
+                  title: 'Environment',
+                },
+              },
+              if: {
+                properties: { enableAdvanced: { const: true } },
+              },
+              then: {
+                properties: {
+                  advancedConfig: {
+                    type: 'string',
+                    title: 'Advanced Configuration',
+                  },
+                },
+              },
+              else: {
+                properties: {
+                  simpleConfig: {
+                    type: 'string',
+                    title: 'Simple Configuration',
+                  },
+                },
+              },
+              dependencies: {
+                environment: {
+                  oneOf: [
+                    {
+                      properties: {
+                        environment: { enum: ['prod'] },
+                        approver: {
+                          type: 'string',
+                          title: 'Approver',
+                        },
+                      },
+                      required: ['approver'],
+                    },
+                    {
+                      properties: {
+                        environment: { enum: ['dev', 'staging'] },
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+          },
+        ],
+      };
+
+      const { result } = renderHook(() => useTemplateSchema(manifest), {
+        wrapper: ({ children }: PropsWithChildren<{}>) => (
+          <TestApiProvider
+            apis={[
+              mockApis.featureFlags.mock({ isActive: jest.fn(() => false) }),
+            ]}
+          >
+            {children}
+          </TestApiProvider>
+        ),
+      });
+
+      const step = result.current.steps[0];
+
+      // Verify all conditional keywords coexist in the extracted schema
+      expect(step.schema).toHaveProperty('if');
+      expect(step.schema).toHaveProperty('then');
+      expect(step.schema).toHaveProperty('else');
+      expect(step.schema).toHaveProperty('dependencies');
+
+      // Verify if/then/else structural content
+      expect(step.schema).toMatchObject({
+        if: {
+          properties: { enableAdvanced: { const: true } },
+        },
+        then: {
+          properties: {
+            advancedConfig: { type: 'string', title: 'Advanced Configuration' },
+          },
+        },
+        else: {
+          properties: {
+            simpleConfig: { type: 'string', title: 'Simple Configuration' },
+          },
+        },
+      });
+
+      // Verify dependencies structural content
+      expect(step.schema).toMatchObject({
+        dependencies: {
+          environment: {
+            oneOf: expect.arrayContaining([
+              expect.objectContaining({
+                properties: expect.objectContaining({
+                  environment: { enum: ['prod'] },
+                  approver: { type: 'string', title: 'Approver' },
+                }),
+                required: ['approver'],
+              }),
+              expect.objectContaining({
+                properties: expect.objectContaining({
+                  environment: { enum: ['dev', 'staging'] },
+                }),
+              }),
+            ]),
+          },
+        },
+      });
+
+      // Verify base properties also survive
+      expect(step.schema).toMatchObject({
+        type: 'object',
+        properties: {
+          enableAdvanced: { type: 'boolean', title: 'Enable Advanced' },
+          environment: {
+            type: 'string',
+            enum: ['dev', 'staging', 'prod'],
+            title: 'Environment',
+          },
+        },
+      });
+    });
+  });
 });
