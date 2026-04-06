@@ -45,7 +45,9 @@ const firestoreMock = {
 };
 
 vi.mock('@google-cloud/firestore', () => ({
-  Firestore: vi.fn().mockImplementation(() => firestoreMock),
+  Firestore: vi.fn().mockImplementation(function () {
+    return firestoreMock;
+  }),
 }));
 
 vi.useFakeTimers();

@@ -64,7 +64,9 @@ describe('github:autolinks:create', () => {
       githubCredentialsProvider,
     });
 
-    octokitMock.mockImplementation(() => mockOctokit);
+    octokitMock.mockImplementation(function () {
+      return mockOctokit;
+    });
 
     const mockContext = createMockActionContext({
       input: {

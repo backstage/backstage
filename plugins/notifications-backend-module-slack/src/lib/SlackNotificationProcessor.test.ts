@@ -72,7 +72,11 @@ vi.mock('@slack/web-api', () => {
       lookupByEmail: vi.fn(),
     },
   };
-  return { WebClient: vi.fn(() => mockSlack) };
+  return {
+    WebClient: vi.fn().mockImplementation(function () {
+      return mockSlack;
+    }),
+  };
 });
 
 const DEFAULT_ENTITIES_RESPONSE = {

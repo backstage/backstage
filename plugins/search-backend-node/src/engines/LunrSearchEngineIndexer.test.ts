@@ -31,7 +31,7 @@ vi.mock('lunr', async () => {
   const actualLunr = await vi.importActual<typeof import('lunr')>('lunr');
   return {
     ...actualLunr,
-    Builder: vi.fn().mockImplementation(() => {
+    Builder: vi.fn().mockImplementation(function () {
       const actualBuilder = new actualLunr.Builder();
       actualBuilder.add = lunrBuilderAddSpy;
       actualBuilder.ref = lunrBuilderRefSpy;

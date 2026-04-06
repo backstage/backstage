@@ -23,11 +23,13 @@ import { GoogleServiceAccountStrategy } from './GoogleServiceAccountStrategy';
 const mockGetAccessToken = vi.fn();
 
 vi.mock('@google-cloud/container', () => {
-  const mockClusterManagerClient = vi.fn().mockImplementation(() => ({
-    auth: {
-      getAccessToken: mockGetAccessToken,
-    },
-  }));
+  const mockClusterManagerClient = vi.fn().mockImplementation(function () {
+    return {
+      auth: {
+        getAccessToken: mockGetAccessToken,
+      },
+    };
+  });
 
   return {
     v1: {

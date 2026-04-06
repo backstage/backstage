@@ -26,7 +26,7 @@ const mockedListClusters = vi.fn();
 vi.mock('@google-cloud/container', () => {
   return {
     v1: {
-      ClusterManagerClient: vi.fn().mockImplementation(() => {
+      ClusterManagerClient: vi.fn().mockImplementation(function () {
         mockedListClusters();
       }),
     },

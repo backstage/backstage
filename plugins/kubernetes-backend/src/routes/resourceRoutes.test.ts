@@ -96,20 +96,22 @@ describe('resourcesRoutes', () => {
     };
 
     vi.mock('@backstage/catalog-client', () => ({
-      CatalogClient: vi.fn().mockImplementation(() => ({
-        getEntityByRef: vi.fn().mockImplementation(entityRef => {
-          if (entityRef.name === 'noentity') {
-            return Promise.resolve(undefined);
-          }
-          return Promise.resolve({
-            kind: entityRef.kind,
-            metadata: {
-              name: entityRef.name,
-              namespace: entityRef.namespace,
-            },
-          } as Entity);
-        }),
-      })),
+      CatalogClient: vi.fn().mockImplementation(function () {
+        return {
+          getEntityByRef: vi.fn().mockImplementation(entityRef => {
+            if (entityRef.name === 'noentity') {
+              return Promise.resolve(undefined);
+            }
+            return Promise.resolve({
+              kind: entityRef.kind,
+              metadata: {
+                name: entityRef.name,
+                namespace: entityRef.namespace,
+              },
+            } as Entity);
+          }),
+        };
+      }),
     }));
 
     const { server } = await startTestBackend({

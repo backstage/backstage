@@ -95,7 +95,9 @@ describe('github:repo:create', () => {
   });
 
   beforeEach(() => {
-    octokitMock.mockImplementation(() => mockOctokit);
+    octokitMock.mockImplementation(function () {
+      return mockOctokit;
+    });
     githubCredentialsProvider =
       DefaultGithubCredentialsProvider.fromIntegrations(integrations);
     action = createGithubRepoCreateAction({

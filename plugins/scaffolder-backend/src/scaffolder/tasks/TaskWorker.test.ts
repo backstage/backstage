@@ -45,7 +45,7 @@ vi.mock('./NunjucksWorkflowRunner');
 const MockedNunjucksWorkflowRunner = NunjucksWorkflowRunner as unknown as Mock<
   (...args: any[]) => NunjucksWorkflowRunner
 >;
-MockedNunjucksWorkflowRunner.mockImplementation((() => {}) as unknown as (
+MockedNunjucksWorkflowRunner.mockImplementation(function () {} as unknown as (
   ...args: any[]
 ) => NunjucksWorkflowRunner);
 

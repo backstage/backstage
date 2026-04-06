@@ -75,7 +75,9 @@ describe('github:issues:create', () => {
 
   beforeEach(() => {
     vi.resetAllMocks();
-    octokitMock.mockImplementation(() => mockOctokit);
+    octokitMock.mockImplementation(function () {
+      return mockOctokit;
+    });
     mockOctokit.rest.issues.create.mockResolvedValue({
       data: {
         html_url: 'https://github.com/owner/repo/issues/1',

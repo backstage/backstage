@@ -59,7 +59,9 @@ describe('github:branch-protection:create', () => {
   });
 
   beforeEach(() => {
-    octokitMock.mockImplementation(() => mockOctokit);
+    octokitMock.mockImplementation(function () {
+      return mockOctokit;
+    });
 
     mockOctokit.rest.repos.get.mockResolvedValue({
       data: {

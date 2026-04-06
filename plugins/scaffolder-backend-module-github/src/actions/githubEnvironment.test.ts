@@ -80,7 +80,9 @@ describe('github:environment:create', () => {
   });
 
   beforeEach(() => {
-    octokitMock.mockImplementation(() => mockOctokit);
+    octokitMock.mockImplementation(function () {
+      return mockOctokit;
+    });
 
     mockOctokit.rest.actions.getEnvironmentPublicKey.mockResolvedValue({
       data: {

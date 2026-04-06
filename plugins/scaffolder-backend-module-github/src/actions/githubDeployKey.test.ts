@@ -67,7 +67,9 @@ describe('github:deployKey:create', () => {
   beforeEach(() => {
     vi.resetAllMocks();
 
-    octokitMock.mockImplementation(() => mockOctokit);
+    octokitMock.mockImplementation(function () {
+      return mockOctokit;
+    });
 
     action = createGithubDeployKeyAction({
       integrations,

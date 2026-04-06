@@ -46,7 +46,9 @@ const signer = {
 };
 
 vi.mock('@smithy/signature-v4', () => ({
-  SignatureV4: vi.fn().mockImplementation(() => signer),
+  SignatureV4: vi.fn().mockImplementation(function () {
+    return signer;
+  }),
 }));
 
 const fromTemporaryCredentials = vi.fn();

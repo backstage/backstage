@@ -94,7 +94,9 @@ describe('github:repo:push', () => {
   beforeEach(() => {
     vi.resetAllMocks();
 
-    octokitMock.mockImplementation(() => mockOctokit);
+    octokitMock.mockImplementation(function () {
+      return mockOctokit;
+    });
 
     initRepoAndPushMocked.mockResolvedValue({ commitHash: 'test123' });
 

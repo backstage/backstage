@@ -122,7 +122,9 @@ describe('publish:github', () => {
   });
 
   beforeEach(() => {
-    octokitMock.mockImplementation(() => mockOctokit);
+    octokitMock.mockImplementation(function () {
+      return mockOctokit;
+    });
     initRepoAndPushMocked.mockResolvedValue({
       commitHash: '220f19cc36b551763d157f1b5e4a4b446165dbd6',
     });

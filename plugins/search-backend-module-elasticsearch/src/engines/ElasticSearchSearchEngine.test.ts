@@ -48,9 +48,9 @@ const indexerMock = {
   indexName: 'expected-index-name',
 };
 vi.mock('./ElasticSearchSearchEngineIndexer', () => ({
-  ElasticSearchSearchEngineIndexer: vi
-    .fn()
-    .mockImplementation(() => indexerMock),
+  ElasticSearchSearchEngineIndexer: vi.fn().mockImplementation(function () {
+    return indexerMock;
+  }),
 }));
 
 const customIndexTemplate = {

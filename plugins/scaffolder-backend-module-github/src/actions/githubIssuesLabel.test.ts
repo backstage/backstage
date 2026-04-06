@@ -72,7 +72,9 @@ describe('github:issues:label', () => {
 
   beforeEach(() => {
     vi.resetAllMocks();
-    octokitMock.mockImplementation(() => mockOctokit);
+    octokitMock.mockImplementation(function () {
+      return mockOctokit;
+    });
     githubCredentialsProvider =
       DefaultGithubCredentialsProvider.fromIntegrations(integrations);
     action = createGithubIssuesLabelAction({

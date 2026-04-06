@@ -60,18 +60,20 @@ const indexerMock = {
   getDocumentStore: vi.fn(),
 };
 vi.mock('./LunrSearchEngineIndexer', () => ({
-  LunrSearchEngineIndexer: vi.fn().mockImplementation(() => indexerMock),
+  LunrSearchEngineIndexer: vi.fn().mockImplementation(function () {
+    return indexerMock;
+  }),
 }));
+
+const { LunrSearchEngineIndexer: ActualLunrSearchEngineIndexer } =
+  await vi.importActual<typeof import('./LunrSearchEngineIndexer')>(
+    './LunrSearchEngineIndexer',
+  );
 
 const getActualIndexer = (engine: SearchEngine, index: string) => {
   (LunrSearchEngineIndexer as unknown as Mock).mockImplementationOnce(
-    async () => {
-      const ActualIndexer = (
-        await vi.importActual<typeof import('./LunrSearchEngineIndexer')>(
-          './LunrSearchEngineIndexer',
-        )
-      ).LunrSearchEngineIndexer;
-      return new ActualIndexer();
+    function () {
+      return new ActualLunrSearchEngineIndexer();
     },
   );
   return engine.getIndexer(index);

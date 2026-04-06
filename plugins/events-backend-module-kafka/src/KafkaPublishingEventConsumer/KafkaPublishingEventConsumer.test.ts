@@ -36,7 +36,9 @@ describe('KafkaPublishingEventConsumer', () => {
     producer: vi.fn().mockReturnValue(mockProducer),
   } as unknown as Kafka;
 
-  vi.mocked(Kafka).mockImplementation(() => mockKafkaClient);
+  vi.mocked(Kafka).mockImplementation(function () {
+    return mockKafkaClient;
+  });
 
   const mockConfig = new ConfigReader({
     events: {

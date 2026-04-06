@@ -63,7 +63,9 @@ describe('github:pages', () => {
   });
 
   beforeEach(() => {
-    octokitMock.mockImplementation(() => mockOctokit);
+    octokitMock.mockImplementation(function () {
+      return mockOctokit;
+    });
     githubCredentialsProvider =
       DefaultGithubCredentialsProvider.fromIntegrations(integrations);
     action = createGithubPagesEnableAction({
