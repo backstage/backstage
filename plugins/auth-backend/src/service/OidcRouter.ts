@@ -437,11 +437,29 @@ export class OidcRouter {
               );
             }
 
+            // Authenticate client if credentials are provided
+            const hasCredentials =
+              req.headers.authorization?.match(/^Basic[ ]+([^\s]+)$/i) ||
+              (bodyClientId && bodyClientSecret);
+
+            let authenticatedClientId: string | undefined;
+            if (hasCredentials) {
+              const { clientId: authedId } = await authenticateClient({
+                req,
+                oidc: this.oidc,
+                bodyClientId,
+                bodyClientSecret,
+              });
+              authenticatedClientId = authedId;
+            }
+
             const result = await this.oidc.exchangeCodeForToken({
               code,
               redirectUri,
               codeVerifier,
               grantType,
+              clientId: authenticatedClientId || bodyClientId,
+              clientAuthenticated: !!authenticatedClientId,
             });
 
             return res.json({
