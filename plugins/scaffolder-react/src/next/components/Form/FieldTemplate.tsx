@@ -21,9 +21,13 @@ import {
   getTemplate,
   getUiOptions,
 } from '@rjsf/utils';
+import { useCallback } from 'react';
+import { useApiHolder } from '@backstage/core-plugin-api';
+import { JsonObject } from '@backstage/types';
 
 import { ScaffolderField } from '../ScaffolderField';
 import { ShadcnButton as Button } from '@backstage/core-components';
+import { useOptionsLoader } from '../../hooks';
 
 /** The `FieldTemplate` component is the template used by `SchemaField` to render any field. It renders the field
  * content, (label, description, children, errors and help) inside of a `WrapIfAdditional` component.
@@ -59,22 +63,49 @@ export const FieldTemplate = <
     registry,
   } = props;
 
-  // Extract field loading states from formContext (cascading forms feature).
-  // The formContext is populated by Stepper.tsx with fieldLoadingStates when
-  // async optionsLoader calls are in progress or have failed for a field.
+  // Bridge: connect the optionsLoaderRegistry (populated by Stepper.tsx in
+  // formContext) to field-level loading/error state by invoking useOptionsLoader
+  // for fields whose custom extension declares an optionsLoader with dependency
+  // fields. For fields without an optionsLoader the hook is a no-op because
+  // the empty dependencies array causes the internal effect to short-circuit.
   const formContext = registry.formContext as
     | Record<string, unknown>
     | undefined;
-  const fieldLoadingStates = formContext?.fieldLoadingStates as
+  const apiHolder = useApiHolder();
+  const uiFieldName = (uiSchema as Record<string, unknown> | undefined)?.[
+    'ui:field'
+  ] as string | undefined;
+  const loaderRegistry = formContext?.optionsLoaderRegistry as
     | Record<
         string,
-        { loading: boolean; error: Error | null; retry?: () => void }
+        {
+          dependencies: string[];
+          optionsLoader: (
+            formData: JsonObject,
+            context: { apiHolder: any },
+          ) => Promise<Array<{ label: string; value: string | number }>>;
+        }
       >
     | undefined;
-  const fieldState = fieldLoadingStates?.[id];
-  const isFieldLoading = fieldState?.loading === true;
-  const fieldLoadError = fieldState?.error ?? null;
-  const fieldRetry = fieldState?.retry;
+  const loaderEntry = uiFieldName ? loaderRegistry?.[uiFieldName] : undefined;
+  const formDataForLoader = (formContext?.formData ?? {}) as JsonObject;
+  // Stable no-op loader for fields without an optionsLoader. The hook
+  // short-circuits when dependencies is empty so this is never invoked.
+  const noopLoader = useCallback(
+    async () => [] as Array<{ label: string; value: string | number }>,
+    [],
+  );
+  const {
+    loading: isFieldLoading,
+    error: fieldLoadError,
+    retry: fieldRetry,
+  } = useOptionsLoader(
+    id,
+    loaderEntry?.dependencies ?? [],
+    loaderEntry?.optionsLoader ?? noopLoader,
+    formDataForLoader,
+    apiHolder,
+  );
 
   const uiOptions = getUiOptions<T, S, F>(uiSchema);
   const WrapIfAdditionalTemplate = getTemplate<

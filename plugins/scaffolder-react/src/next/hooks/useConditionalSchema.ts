@@ -25,17 +25,17 @@ import { resolveConditionalSchema } from '../lib';
  * This hook wraps the pure `resolveConditionalSchema()` utility with React
  * memoization for efficient use in component render cycles.
  *
- * @param schema - The JSON Schema potentially containing conditional keywords
+ * @param schema - The JSON Schema potentially containing conditional keywords, or undefined
  * @param formData - The current form data to evaluate conditions against
- * @returns A resolved schema with active conditional branches merged in
+ * @returns A resolved schema with active conditional branches merged in, or undefined if schema is undefined
  * @alpha
  */
 export const useConditionalSchema = (
-  schema: JsonObject,
+  schema: JsonObject | undefined,
   formData: JsonObject,
-): JsonObject => {
+): JsonObject | undefined => {
   return useMemo(
-    () => resolveConditionalSchema(schema, formData),
+    () => (schema ? resolveConditionalSchema(schema, formData) : undefined),
     [schema, formData],
   );
 };

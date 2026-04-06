@@ -52,7 +52,7 @@ import {
 import { ErrorListTemplate } from './ErrorListTemplate';
 import * as FieldOverrides from './FieldOverrides';
 import { hasErrors } from './utils';
-import { resolveConditionalSchema } from '../../lib';
+import { useConditionalSchema } from '../../hooks/useConditionalSchema';
 
 const validator = customizeValidator();
 ajvErrors(validator.ajv);
@@ -191,18 +191,13 @@ export const Stepper = (stepperProps: StepperProps) => {
   // Reactively resolve conditional JSON Schema keywords (if/then/else,
   // dependencies) against the current form data so the Form component
   // receives a schema that reflects only the active conditional branches.
-  // This useMemo re-evaluates whenever the step schema or formData changes,
+  // The hook re-evaluates whenever the step schema or formData changes,
   // enabling reactive field mount/unmount within the same render cycle.
-  // resolveConditionalSchema is pure and synchronous (<50ms for ≤20 branches).
-  const resolvedSchema = useMemo(
-    () =>
-      currentStep?.schema
-        ? resolveConditionalSchema(
-            currentStep.schema as JsonObject,
-            stepsState as JsonObject,
-          )
-        : currentStep?.schema,
-    [currentStep?.schema, stepsState],
+  // resolveConditionalSchema (wrapped inside the hook) is pure and
+  // synchronous (<50ms for ≤20 branches).
+  const resolvedSchema = useConditionalSchema(
+    currentStep?.schema as JsonObject | undefined,
+    stepsState as JsonObject,
   );
 
   const {

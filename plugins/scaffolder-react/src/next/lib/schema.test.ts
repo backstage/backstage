@@ -935,6 +935,13 @@ describe('resolveConditionalSchema', () => {
     expect((resolvedCat.properties as JsonObject).fetching).toBeUndefined();
     // oneOf is removed after successful resolution
     expect(resolvedCat.oneOf).toBeUndefined();
+    // Verify the base property retains its full definition (not overwritten
+    // by the branch's narrow enum constraint). mergeSchemaInto uses
+    // additive-only property merge — existing properties are preserved.
+    expect((resolvedCat.properties as JsonObject).animalType).toEqual({
+      type: 'string',
+      enum: ['cat', 'dog'],
+    });
 
     // When animalType is 'dog', the dog branch properties are merged
     const resolvedDog = resolveConditionalSchema(inputSchema, {
@@ -947,6 +954,11 @@ describe('resolveConditionalSchema', () => {
     });
     expect((resolvedDog.properties as JsonObject).purring).toBeUndefined();
     expect(resolvedDog.oneOf).toBeUndefined();
+    // Same preservation check for the dog branch
+    expect((resolvedDog.properties as JsonObject).animalType).toEqual({
+      type: 'string',
+      enum: ['cat', 'dog'],
+    });
   });
 
   it('passes through schema with no conditional keywords unchanged', () => {
