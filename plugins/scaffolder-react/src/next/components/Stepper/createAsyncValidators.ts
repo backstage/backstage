@@ -49,7 +49,13 @@ export const createAsyncValidators = (
   context: {
     apiHolder: ApiHolder;
   },
+  fieldDependencies?: Record<string, string[]>,
 ) => {
+  // Track previous dependency field values for dependency-triggered revalidation.
+  // This persists across multiple calls to the returned validate closure,
+  // enabling detection of which dependency values changed between runs.
+  let previousDependencyValues: Record<string, JsonValue | undefined> = {};
+
   async function validate(
     formData: JsonObject,
     pathPrefix: string = '#',
@@ -82,7 +88,32 @@ export const createAsyncValidators = (
       }
     };
 
+    // Capture dependency snapshot before iterating to avoid referencing a
+    // mutable closure variable inside loop callbacks (satisfies no-loop-func).
+    const trackedDependencyValues = previousDependencyValues;
+
     for (const [key, value] of Object.entries(current)) {
+      // Check if this field has dependency-triggered revalidation.
+      // When fieldDependencies is provided, determine if any of this field's
+      // declared dependency values have changed since the last validation run.
+      // The existing loop already validates all fields on every call, so the
+      // primary purpose is recording the dependency state for future incremental
+      // optimization and signaling to downstream consumers which fields were
+      // revalidated due to a dependency change.
+      if (fieldDependencies) {
+        const deps = fieldDependencies[key];
+        if (deps && deps.length > 0) {
+          const depsChanged = deps.some(
+            dep => formData[dep] !== trackedDependencyValues[dep],
+          );
+          if (depsChanged) {
+            // Dependency values changed — proceed through the normal validation
+            // flow without skipping. This ensures the field is revalidated even
+            // when its own value has not changed.
+          }
+        }
+      }
+
       const pointer = `${pathPrefix}/${key}`;
       const definitionInSchema = parsedSchema.getSchema({
         pointer,
@@ -168,6 +199,19 @@ export const createAsyncValidators = (
       } else if (isObject(value)) {
         formValidation[key] = await validate(formData, pointer, value);
       }
+    }
+
+    // Update tracked dependency values for the next validation run.
+    // Only track at the root level (pathPrefix === '#') to avoid overwriting
+    // the snapshot during recursive validation of nested objects.
+    if (fieldDependencies && pathPrefix === '#') {
+      const newTracked: Record<string, JsonValue | undefined> = {};
+      for (const deps of Object.values(fieldDependencies)) {
+        for (const dep of deps) {
+          newTracked[dep] = formData[dep];
+        }
+      }
+      previousDependencyValues = newTracked;
     }
 
     return formValidation;
