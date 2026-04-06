@@ -480,8 +480,17 @@ export class OidcService {
     redirectUri: string;
     codeVerifier?: string;
     grantType: string;
+    clientId?: string;
+    clientAuthenticated?: boolean;
   }) {
-    const { code, redirectUri, codeVerifier, grantType } = params;
+    const {
+      code,
+      redirectUri,
+      codeVerifier,
+      grantType,
+      clientId,
+      clientAuthenticated,
+    } = params;
 
     if (grantType !== 'authorization_code') {
       throw new InputError('Unsupported grant type');
@@ -518,6 +527,27 @@ export class OidcService {
 
     if (!session.userEntityRef) {
       throw new AuthenticationError('No user associated with authorization');
+    }
+
+    // Verify client identity matches the authorization session
+    if (clientId && clientId !== session.clientId) {
+      throw new AuthenticationError('Client ID mismatch');
+    }
+
+    // Confidential clients (DCR) must authenticate at the token endpoint
+    // per RFC 6749 Section 4.1.3
+    let isConfidentialClient = true;
+    try {
+      validateCimdUrl(session.clientId);
+      isConfidentialClient = false;
+    } catch {
+      // Not a CIMD URL, so it's a DCR (confidential) client
+    }
+
+    if (isConfidentialClient && !clientAuthenticated) {
+      throw new AuthenticationError(
+        'Client authentication required for confidential clients',
+      );
     }
 
     if (session.codeChallenge) {

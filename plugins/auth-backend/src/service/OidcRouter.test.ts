@@ -674,6 +674,8 @@ describe('OidcRouter', () => {
             grant_type: 'authorization_code',
             code: authorizationCode,
             redirect_uri: 'https://example.com/callback',
+            client_id: client.clientId,
+            client_secret: client.clientSecret,
           })
           .expect(200);
 
@@ -767,6 +769,8 @@ describe('OidcRouter', () => {
             code: authorizationCode,
             redirect_uri: 'https://example.com/callback',
             code_verifier: codeVerifier,
+            client_id: client.clientId,
+            client_secret: client.clientSecret,
           })
           .expect(200);
 
@@ -901,6 +905,8 @@ describe('OidcRouter', () => {
             code: authorizationCode,
             redirect_uri: 'https://example.com/callback',
             code_verifier: codeVerifier,
+            client_id: client.clientId,
+            client_secret: client.clientSecret,
           })
           .expect(200);
 
@@ -986,6 +992,8 @@ describe('OidcRouter', () => {
             grant_type: 'authorization_code',
             code: authorizationCode,
             redirect_uri: 'https://example.com/callback',
+            client_id: client.clientId,
+            client_secret: client.clientSecret,
           })
           .expect(200);
 

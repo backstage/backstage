@@ -743,6 +743,8 @@ describe('OidcService', () => {
           code,
           redirectUri: 'https://example.com/callback',
           grantType: 'authorization_code',
+          clientId: client.clientId,
+          clientAuthenticated: true,
         });
 
         expect(tokenResult).toEqual({
@@ -802,6 +804,8 @@ describe('OidcService', () => {
           redirectUri: 'https://example.com/callback',
           grantType: 'authorization_code',
           codeVerifier,
+          clientId: client.clientId,
+          clientAuthenticated: true,
         });
 
         expect(tokenResult.accessToken).toBe(mockToken);
@@ -837,6 +841,8 @@ describe('OidcService', () => {
             redirectUri: 'https://example.com/callback',
             grantType: 'authorization_code',
             codeVerifier: 'invalid-verifier',
+            clientId: client.clientId,
+            clientAuthenticated: true,
           }),
         ).rejects.toThrow('Invalid code verifier');
       });
@@ -878,6 +884,8 @@ describe('OidcService', () => {
           code,
           redirectUri: 'https://example.com/callback',
           grantType: 'authorization_code',
+          clientId: client.clientId,
+          clientAuthenticated: true,
         });
 
         expect(tokenResult.accessToken).toBe(mockToken);
