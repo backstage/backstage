@@ -144,7 +144,7 @@ function registerCommands(
                   : (mod.default as any).default;
               await fn(context);
             }
-            process.exit(0);
+            process.exit();
           } catch (error: unknown) {
             exitWithError(error);
           }

@@ -38,7 +38,7 @@ export function lazy<TModule extends object>(
       const actionFunc = actualModule[exportName] as ActionFunc;
       await actionFunc(...args);
 
-      process.exit(0);
+      process.exit();
     } catch (error) {
       assertError(error);
       exitWithError(error);

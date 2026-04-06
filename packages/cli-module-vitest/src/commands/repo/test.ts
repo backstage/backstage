@@ -308,13 +308,7 @@ export default async ({ args, info }: CliCommandContext) => {
     ...options,
   };
   if (selectedPackages) {
-    const graph = await getPackageGraph();
-    vitestOptions.projects = selectedPackages
-      .map(name => {
-        const pkg = graph.get(name);
-        return pkg ? relativePath(targetPaths.rootDir, pkg.dir) : undefined;
-      })
-      .filter((p): p is string => Boolean(p));
+    vitestOptions.project = selectedPackages;
   }
 
   const vitest = await startVitest(

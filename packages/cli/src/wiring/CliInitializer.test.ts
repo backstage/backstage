@@ -62,7 +62,7 @@ describe('CliInitializer', () => {
       }),
     );
     await initializer.run();
-    expect(process.exit).toHaveBeenCalledWith(0);
+    expect(process.exit).toHaveBeenCalled();
   });
 
   it('should pass positional args to the subcommand', async () => {
@@ -84,7 +84,7 @@ describe('CliInitializer', () => {
       }),
     );
     await initializer.run();
-    expect(process.exit).toHaveBeenCalledWith(0);
+    expect(process.exit).toHaveBeenCalled();
   });
 
   it('should run commands using a loader', async () => {
@@ -109,7 +109,7 @@ describe('CliInitializer', () => {
       }),
     );
     await initializer.run();
-    expect(process.exit).toHaveBeenCalledWith(0);
+    expect(process.exit).toHaveBeenCalled();
   });
 
   it('should run experimental commands but exclude them from help output', async () => {
@@ -138,7 +138,7 @@ describe('CliInitializer', () => {
       }),
     );
     await initializer.run();
-    expect(process.exit).toHaveBeenCalledWith(0);
+    expect(process.exit).toHaveBeenCalled();
 
     process.argv = ['node', 'cli', '--help'];
     const writeSpy = vi.spyOn(process.stdout, 'write');
@@ -257,7 +257,7 @@ describe('CliInitializer', () => {
       }),
     );
     await initializer.run();
-    expect(process.exit).toHaveBeenCalledWith(0);
+    expect(process.exit).toHaveBeenCalled();
   });
 
   it('should silently override array-sourced module with conflicting individual module while keeping siblings', async () => {
@@ -302,7 +302,7 @@ describe('CliInitializer', () => {
     initializer.add([conflictingArrayModule, nonConflictingArrayModule]);
 
     await initializer.run();
-    expect(process.exit).toHaveBeenCalledWith(0);
+    expect(process.exit).toHaveBeenCalled();
 
     // Verify the sibling command is available by running it
     process.argv = ['node', 'cli', 'other'];
