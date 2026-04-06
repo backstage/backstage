@@ -14,6 +14,45 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
+// Vitest resolves jose's ESM entry which imports node:http/node:https, but
+// MSW v1 only patches the CJS "http"/"https" modules. Replacing
+// createRemoteJWKSet with a shim that fetches via CJS http lets MSW intercept.
+vi.mock('jose', async () => {
+  const actual = await vi.importActual<typeof import('jose')>('jose');
+  return {
+    ...actual,
+    createRemoteJWKSet(url: URL, options?: any) {
+      let cached: ReturnType<typeof actual.createLocalJWKSet> | undefined;
+      const getKey: any = async (
+        header: import('jose').JWSHeaderParameters,
+        token: import('jose').FlattenedJWSInput,
+      ) => {
+        if (!cached) {
+          const http = require('node:http');
+          const https = require('node:https');
+          const get = url.protocol === 'https:' ? https.get : http.get;
+          const body: string = await new Promise((resolve, reject) => {
+            get(
+              url.href,
+              { timeout: options?.timeoutDuration ?? 5000 },
+              (res: any) => {
+                let d = '';
+                res.on('data', (c: any) => (d += c));
+                res.on('end', () => resolve(d));
+              },
+            ).on('error', reject);
+          });
+          cached = actual.createLocalJWKSet(JSON.parse(body));
+        }
+        return cached(header, token);
+      };
+      return getKey;
+    },
+  };
+});
+
 import { registerMswTestHooks } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { SignJWT, exportJWK, generateKeyPair } from 'jose';

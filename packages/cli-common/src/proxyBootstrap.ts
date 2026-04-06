@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+import * as globalAgent from 'global-agent';
+import * as undici from 'undici';
+
 /**
  * This function can be called to setup undici and node-fetch Proxy agents.
  *
@@ -36,14 +39,10 @@ export function bootstrapEnvProxyAgents() {
     process.env[`${globalAgentNamespace}HTTP_PROXY`] ||
     process.env[`${globalAgentNamespace}HTTPS_PROXY`]
   ) {
-    const globalAgent =
-      require('global-agent') as typeof import('global-agent');
     globalAgent.bootstrap();
   }
 
   if (process.env.HTTP_PROXY || process.env.HTTPS_PROXY) {
-    const { setGlobalDispatcher, EnvHttpProxyAgent } =
-      require('undici') as typeof import('undici');
-    setGlobalDispatcher(new EnvHttpProxyAgent());
+    undici.setGlobalDispatcher(new undici.EnvHttpProxyAgent());
   }
 }

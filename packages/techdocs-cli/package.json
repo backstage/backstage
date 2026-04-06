@@ -66,6 +66,7 @@
     "@types/webpack-env": "^1.15.3",
     "find-process": "^2.0.0",
     "nodemon": "^3.0.1",
-    "techdocs-cli-embedded-app": "link:../techdocs-cli-embedded-app"
+    "techdocs-cli-embedded-app": "link:../techdocs-cli-embedded-app",
+    "vitest": "^4.1.2"
   }
 }

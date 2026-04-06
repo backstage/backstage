@@ -20708,6 +20708,7 @@ __metadata:
     react-dev-utils: "npm:^12.0.0-next.60"
     serve-handler: "npm:^6.1.3"
     techdocs-cli-embedded-app: "link:../techdocs-cli-embedded-app"
+    vitest: "npm:^4.1.2"
     winston: "npm:^3.2.1"
   bin:
     techdocs-cli: bin/techdocs-cli
