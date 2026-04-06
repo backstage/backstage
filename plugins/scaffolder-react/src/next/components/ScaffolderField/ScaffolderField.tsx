@@ -41,6 +41,7 @@ export interface ScaffolderFieldProps {
   required?: boolean;
   disabled?: boolean;
   displayLabel?: boolean;
+  isLoading?: boolean;
 }
 
 /**
@@ -60,6 +61,7 @@ export const ScaffolderField = (
     rawDescription,
     required: _required,
     disabled,
+    isLoading,
   } = props;
 
   return (
@@ -72,8 +74,17 @@ export const ScaffolderField = (
       role="group"
       aria-invalid={rawErrors.length > 0 || undefined}
       aria-disabled={disabled || undefined}
+      aria-busy={isLoading || undefined}
     >
       {children}
+      {isLoading && (
+        <div
+          role="progressbar"
+          className="h-1 w-full overflow-hidden rounded-full bg-primary/20"
+        >
+          <div className="h-full w-1/3 animate-[backstage-indeterminate_1.5s_ease-in-out_infinite] rounded-full bg-primary" />
+        </div>
+      )}
       {displayLabel && rawDescription ? (
         <MarkdownContent
           content={rawDescription}
