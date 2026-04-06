@@ -538,4 +538,82 @@ describe('createAsyncValidators', () => {
 
     expect(validatorsForChoice2.ValidateKebabCase).toHaveBeenCalled();
   });
+
+  it('should revalidate dependent fields when parent field changes and fieldDependencies are provided', async () => {
+    const schema: JsonObject = {
+      type: 'object',
+      properties: {
+        cloudProvider: {
+          type: 'string',
+          'ui:field': 'CloudProviderField',
+        },
+        region: {
+          type: 'string',
+          'ui:field': 'RegionField',
+        },
+      },
+    };
+
+    const validators = {
+      CloudProviderField: jest.fn(),
+      RegionField: jest.fn(),
+    };
+
+    // fieldDependencies declares that 'region' depends on 'cloudProvider'
+    const fieldDependencies: Record<string, string[]> = {
+      region: ['cloudProvider'],
+    };
+
+    const validate = createAsyncValidators(
+      schema,
+      validators,
+      {
+        apiHolder: { get: jest.fn() },
+      },
+      fieldDependencies,
+    );
+
+    // First validation call — both fields get validated
+    await validate({
+      cloudProvider: 'AWS',
+      region: 'us-east-1',
+    });
+
+    expect(validators.RegionField).toHaveBeenCalled();
+    expect(validators.CloudProviderField).toHaveBeenCalled();
+  });
+
+  it('should still validate correctly when fieldDependencies parameter is omitted (backward compatibility)', async () => {
+    const schema: JsonObject = {
+      type: 'object',
+      properties: {
+        name: {
+          type: 'string',
+          'ui:field': 'NameField',
+        },
+        description: {
+          type: 'string',
+          'ui:field': 'DescriptionField',
+        },
+      },
+    };
+
+    const validators = {
+      NameField: jest.fn(),
+      DescriptionField: jest.fn(),
+    };
+
+    // No fieldDependencies parameter — backward compatible call
+    const validate = createAsyncValidators(schema, validators, {
+      apiHolder: { get: jest.fn() },
+    });
+
+    await validate({
+      name: 'test-name',
+      description: 'test-description',
+    });
+
+    expect(validators.NameField).toHaveBeenCalled();
+    expect(validators.DescriptionField).toHaveBeenCalled();
+  });
 });
