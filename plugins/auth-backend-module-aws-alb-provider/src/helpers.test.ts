@@ -25,7 +25,10 @@ import { registerMswTestHooks } from '@backstage/backend-test-utils';
 import { PassportProfile } from '@backstage/plugin-auth-node';
 import { makeProfileInfo, provisionKeyCache } from './helpers';
 
-vi.mock('crypto');
+vi.mock('node:crypto', async importOriginal => {
+  const actual = await importOriginal<typeof crypto>();
+  return { ...actual, default: actual, createPublicKey: vi.fn() };
+});
 const cryptoMock = crypto as Mocked<any>;
 
 describe.each([

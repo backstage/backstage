@@ -49,7 +49,7 @@ describe('createIsMatcher', () => {
         throw e;
       }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"'foo' is not a valid parameter for 'is' filter expressions, expected one of 'orphan'"`,
+      `[InputError: 'foo' is not a valid parameter for 'is' filter expressions, expected one of 'orphan']`,
     );
     expect(err).not.toHaveBeenCalled();
 

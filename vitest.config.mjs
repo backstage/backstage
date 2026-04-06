@@ -19,9 +19,26 @@ import { createRequire } from 'node:module';
 import fs from 'node:fs';
 import path from 'node:path';
 import { glob } from 'glob';
+import { parse as parseYaml } from 'yaml';
 
 const require = createRequire(import.meta.url);
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
+
+function yamlPlugin() {
+  return {
+    name: 'yaml-transform',
+    transform(code, id) {
+      if (id.endsWith('.yaml') || id.endsWith('.yml')) {
+        const parsed = parseYaml(code);
+        return {
+          code: `export default ${JSON.stringify(parsed)}`,
+          map: null,
+        };
+      }
+      return undefined;
+    },
+  };
+}
 
 const SRC_EXTS = 'ts,js,tsx,jsx,mts,cts,mjs,cjs';
 
@@ -100,6 +117,7 @@ async function getProjects() {
     const role = pkg.backstage?.role ?? 'node-library';
     const environment = FRONTEND_ROLES.has(role) ? 'jsdom' : 'node';
     projects.push({
+      plugins: [yamlPlugin()],
       test: {
         name: pkg.name,
         root: path.resolve(dir, 'src'),
@@ -115,6 +133,7 @@ async function getProjects() {
 }
 
 export default defineConfig(async () => ({
+  plugins: [yamlPlugin()],
   test: {
     coverage: {
       provider: 'v8',

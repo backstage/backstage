@@ -528,7 +528,7 @@ describe('HostDiscovery', () => {
         },
       ),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"SRV resolver URLs cannot be used in the target for external endpoints"`,
+      `[Error: SRV resolver URLs cannot be used in the target for external endpoints]`,
     );
 
     expect(() =>
@@ -552,7 +552,7 @@ describe('HostDiscovery', () => {
         },
       ),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"SRV resolver URLs cannot be used in the target for external endpoints"`,
+      `[Error: SRV resolver URLs cannot be used in the target for external endpoints]`,
     );
 
     expect(() =>
@@ -575,7 +575,7 @@ describe('HostDiscovery', () => {
         }),
       ),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"SRV resolver URLs cannot be used in the target for external endpoints"`,
+      `[Error: SRV resolver URLs cannot be used in the target for external endpoints]`,
     );
 
     expect(() =>
@@ -598,7 +598,7 @@ describe('HostDiscovery', () => {
         }),
       ),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"SRV resolver URLs cannot be used in the target for external endpoints"`,
+      `[Error: SRV resolver URLs cannot be used in the target for external endpoints]`,
     );
   });
 });

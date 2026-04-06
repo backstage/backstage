@@ -512,7 +512,7 @@ describe('createParameterTruncator', () => {
         }),
       ),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid configuration for 'scaffolder.auditor.taskParameterMaxLength', got -2. Must be a positive integer or -1 to disable truncation."`,
+      `[InputError: Invalid configuration for 'scaffolder.auditor.taskParameterMaxLength', got -2. Must be a positive integer or -1 to disable truncation.]`,
     );
 
     expect(() =>
@@ -528,7 +528,7 @@ describe('createParameterTruncator', () => {
         }),
       ),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid configuration for 'scaffolder.auditor.taskParameterMaxLength', got 1.5. Must be a positive integer or -1 to disable truncation."`,
+      `[InputError: Invalid configuration for 'scaffolder.auditor.taskParameterMaxLength', got 1.5. Must be a positive integer or -1 to disable truncation.]`,
     );
   });
 });

@@ -26,14 +26,18 @@ import { withLogCollector } from '@backstage/test-utils';
 import fs from 'fs-extra';
 
 // Remove log coloring to simplify log matching
-vi.mock('chalk', () => ({
-  red: (str: string) => str,
-  blue: (str: string) => str,
-  cyan: (str: string) => str,
-  green: (str: string) => str,
-  magenta: (str: string) => str,
-  yellow: (str: string) => str,
-}));
+vi.mock('chalk', () => {
+  const identity = (str: string) => str;
+  const mock = {
+    red: identity,
+    blue: identity,
+    cyan: identity,
+    green: identity,
+    magenta: identity,
+    yellow: identity,
+  };
+  return { ...mock, default: mock };
+});
 
 let mockDir: MockDirectory;
 vi.mock('@backstage/cli-common', async () => {

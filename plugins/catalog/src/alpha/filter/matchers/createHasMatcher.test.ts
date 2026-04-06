@@ -72,7 +72,7 @@ describe('createHasMatcher', () => {
         throw e;
       }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"'bar' is not a valid parameter for 'has' filter expressions, expected one of 'labels','links'"`,
+      `[InputError: 'bar' is not a valid parameter for 'has' filter expressions, expected one of 'labels','links']`,
     );
     expect(err).not.toHaveBeenCalled();
 

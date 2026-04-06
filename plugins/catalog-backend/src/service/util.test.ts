@@ -195,7 +195,7 @@ describe('filterProviders', () => {
         }),
       ),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Unable to convert config value for key 'catalog.providerOptions.provider1.disabled' in 'mock-config' to a boolean"`,
+      `[Error: Unable to convert config value for key 'catalog.providerOptions.provider1.disabled' in 'mock-config' to a boolean]`,
     );
   });
 });

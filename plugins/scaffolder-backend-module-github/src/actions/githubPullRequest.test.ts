@@ -613,7 +613,7 @@ describe('createPublishGithubPullRequestAction', () => {
       await expect(
         instance.handler(ctx),
       ).rejects.toThrowErrorMatchingInlineSnapshot(
-        `"Relative path is not allowed to refer to a directory outside its parent"`,
+        `[NotAllowedError: Relative path is not allowed to refer to a directory outside its parent]`,
       );
     });
   });

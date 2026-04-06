@@ -141,7 +141,7 @@ describe('ExternalTokenHandler', () => {
     await expect(
       plugin2.verifyToken('token'),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"This token's access is restricted to plugin(s) 'plugin1'"`,
+      `[NotAllowedError: This token's access is restricted to plugin(s) 'plugin1']`,
     );
   });
 
@@ -396,7 +396,7 @@ describe('ExternalTokenHandler', () => {
       });
 
     expect(createHandler).toThrowErrorMatchingInlineSnapshot(
-      `"Duplicate external token handler type 'static', each handler must have a unique type"`,
+      `[Error: Duplicate external token handler type 'static', each handler must have a unique type]`,
     );
   });
   it('should fail if 2 custom handlers have the same type', async () => {
@@ -424,7 +424,7 @@ describe('ExternalTokenHandler', () => {
       });
 
     expect(createHandler).toThrowErrorMatchingInlineSnapshot(
-      `[ReferenceError: jest is not defined]`,
+      `[Error: Duplicate external token handler type 'internal-custom', each handler must have a unique type]`,
     );
   });
   it('should fail if config contains types not declared', async () => {
@@ -456,7 +456,7 @@ describe('ExternalTokenHandler', () => {
       });
 
     expect(createHandler).toThrowErrorMatchingInlineSnapshot(
-      `[ReferenceError: jest is not defined]`,
+      `[Error: Unknown type 'internal-custom' in backend.auth.externalAccess, expected one of 'static', 'legacy', 'jwks']`,
     );
   });
 
@@ -498,7 +498,7 @@ describe('ExternalTokenHandler', () => {
       });
 
     expect(createHandler).toThrowErrorMatchingInlineSnapshot(
-      `[ReferenceError: jest is not defined]`,
+      `[Error: Unknown type 'internal-custom-invalid' in backend.auth.externalAccess, expected one of 'static', 'legacy', 'jwks', 'internal-custom']`,
     );
   });
 });

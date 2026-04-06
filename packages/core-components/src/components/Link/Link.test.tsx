@@ -201,7 +201,7 @@ describe('<Link />', () => {
       // eslint-disable-next-line no-script-url
       renderInTestApp(<Link to="javascript:alert('hello')">Script</Link>),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"Link component rejected javascript: URL as a security precaution"`,
+      `[Error: Link component rejected javascript: URL as a security precaution]`,
     );
   });
 });
@@ -212,7 +212,7 @@ describe('window.open', () => {
       // eslint-disable-next-line no-script-url
       window.open("javascript:alert('hello')"),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Rejected window.open() with a javascript: URL as a security precaution"`,
+      `[Error: Rejected window.open() with a javascript: URL as a security precaution]`,
     );
   });
 });

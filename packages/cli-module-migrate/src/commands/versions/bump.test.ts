@@ -36,18 +36,21 @@ vi.mock('undici', () => ({
 }));
 
 // Remove log coloring to simplify log matching
-vi.mock('chalk', () => ({
-  bold: (str: string) => str,
-  red: (str: string) => str,
-  blue: (str: string) => str,
-  cyan: (str: string) => str,
-  green: (str: string) => str,
-  magenta: (str: string) => str,
-  yellow: (str: string) => str,
-}));
+vi.mock('chalk', () => {
+  const identity = (str: string) => str;
+  const mock = {
+    bold: identity,
+    red: identity,
+    blue: identity,
+    cyan: identity,
+    green: identity,
+    magenta: identity,
+    yellow: identity,
+  };
+  return { ...mock, default: mock };
+});
 
 vi.mock('ora', () => ({
-  __esModule: true,
   default({ prefixText }: any) {
     console.log(prefixText);
     return {

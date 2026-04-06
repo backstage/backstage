@@ -470,7 +470,7 @@ describe('createExtensionBlueprint', () => {
         mockParentInputs,
       ),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"override data provided for input 'multi' must match the length of the original inputs"`,
+      `[Error: override data provided for input 'multi' must match the length of the original inputs]`,
     );
 
     // Required input not provided
@@ -492,7 +492,7 @@ describe('createExtensionBlueprint', () => {
         mockParentInputs,
       ),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"missing required extension data value(s) 'test1'"`,
+      `[Error: missing required extension data value(s) 'test1']`,
     );
 
     // Wrong value provided
@@ -520,7 +520,7 @@ describe('createExtensionBlueprint', () => {
         mockParentInputs,
       ),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"extension data 'test2' was provided but not declared"`,
+      `[Error: extension data 'test2' was provided but not declared]`,
     );
 
     // Forwarding entire inputs object
@@ -714,7 +714,7 @@ describe('createExtensionBlueprint', () => {
         }).makeWithOverrides({ factory: orig => orig({}) }),
       ),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"extension data 'test2' was provided but not declared"`,
+      `[Error: extension data 'test2' was provided but not declared]`,
     );
 
     expect(() =>
@@ -730,7 +730,7 @@ describe('createExtensionBlueprint', () => {
         }).makeWithOverrides({ factory: orig => orig({}) }),
       ),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"missing required extension data value(s) 'test1'"`,
+      `[Error: missing required extension data value(s) 'test1']`,
     );
   });
 

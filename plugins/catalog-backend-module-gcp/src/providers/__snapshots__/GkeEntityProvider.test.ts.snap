@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`GkeEntityProvider should return clusters as Resources 1`] = `
+exports[`GkeEntityProvider > should return clusters as Resources 1`] = `
 [MockFunction] {
   "calls": [
     [
@@ -68,7 +68,7 @@ exports[`GkeEntityProvider should return clusters as Resources 1`] = `
 }
 `;
 
-exports[`GkeEntityProvider should use configured values for authProvider and owner 1`] = `
+exports[`GkeEntityProvider > should use configured values for authProvider and owner 1`] = `
 [MockFunction] {
   "calls": [
     [

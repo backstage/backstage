@@ -916,7 +916,7 @@ describe('createExtension', () => {
           output: [numberDataRef],
         }),
       ).toThrowErrorMatchingInlineSnapshot(
-        `"Refused to override output without also overriding factory"`,
+        `[Error: Refused to override output without also overriding factory]`,
       );
     });
 
@@ -1241,7 +1241,7 @@ describe('createExtension', () => {
           .add(multi2Ext)
           .get(outputRef),
       ).toThrowErrorMatchingInlineSnapshot(
-        `"Failed to resolve the extension tree: Failed to instantiate extension 'subject', override data provided for input 'multi' must match the length of the original inputs"`,
+        `[Error: Failed to resolve the extension tree: Failed to instantiate extension 'subject', override data provided for input 'multi' must match the length of the original inputs]`,
       );
 
       // Mix forward and data override
@@ -1264,7 +1264,7 @@ describe('createExtension', () => {
           .add(multi2Ext)
           .get(outputRef),
       ).toThrowErrorMatchingInlineSnapshot(
-        `"Failed to resolve the extension tree: Failed to instantiate extension 'subject', override data for input 'multi' may not mix forwarded inputs with data overrides"`,
+        `[Error: Failed to resolve the extension tree: Failed to instantiate extension 'subject', override data for input 'multi' may not mix forwarded inputs with data overrides]`,
       );
 
       // Required input not provided
@@ -1287,7 +1287,7 @@ describe('createExtension', () => {
           .add(multi2Ext)
           .get(outputRef),
       ).toThrowErrorMatchingInlineSnapshot(
-        `"Failed to resolve the extension tree: Failed to instantiate extension 'subject', missing required extension data value(s) 'test1'"`,
+        `[Error: Failed to resolve the extension tree: Failed to instantiate extension 'subject', missing required extension data value(s) 'test1']`,
       );
 
       // Wrong value provided
@@ -1316,7 +1316,7 @@ describe('createExtension', () => {
           .add(multi2Ext)
           .get(outputRef),
       ).toThrowErrorMatchingInlineSnapshot(
-        `"Failed to resolve the extension tree: Failed to instantiate extension 'subject', extension data 'test2' was provided but not declared"`,
+        `[Error: Failed to resolve the extension tree: Failed to instantiate extension 'subject', extension data 'test2' was provided but not declared]`,
       );
     });
   });
