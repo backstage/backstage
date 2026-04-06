@@ -308,9 +308,13 @@ export default async ({ args, info }: CliCommandContext) => {
     ...options,
   };
   if (selectedPackages) {
-    vitestOptions.projects = selectedPackages.map(
-      name => `packages/${name.replace('@backstage/', '')}`,
-    );
+    const graph = await getPackageGraph();
+    vitestOptions.projects = selectedPackages
+      .map(name => {
+        const pkg = graph.get(name);
+        return pkg ? relativePath(targetPaths.rootDir, pkg.dir) : undefined;
+      })
+      .filter((p): p is string => Boolean(p));
   }
 
   const vitest = await startVitest(
