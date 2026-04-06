@@ -19,32 +19,26 @@ import { vi } from 'vitest';
 import { ConfigReader } from '@backstage/config';
 import { GoogleServiceAccountStrategy } from './GoogleServiceAccountStrategy';
 
-// Mock the @google-cloud/container module
-const mockGetAccessToken = vi.fn();
-
-vi.mock('@google-cloud/container', () => {
-  const mockClusterManagerClient = vi.fn().mockImplementation(function () {
+const { mockGetAccessToken, MockedClusterManagerClient } = vi.hoisted(() => {
+  const getAccessToken = vi.fn();
+  const clusterManagerClient = vi.fn().mockImplementation(function () {
     return {
       auth: {
-        getAccessToken: mockGetAccessToken,
+        getAccessToken: getAccessToken,
       },
     };
   });
-
   return {
-    v1: {
-      ClusterManagerClient: mockClusterManagerClient,
-    },
+    mockGetAccessToken: getAccessToken,
+    MockedClusterManagerClient: clusterManagerClient,
   };
 });
 
-// Get reference to the mocked constructor for use in tests
-const {
-  v1: { ClusterManagerClient: MockedClusterManagerClient },
-} = vi.mocked(
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  require('@google-cloud/container'),
-);
+vi.mock('@google-cloud/container', () => ({
+  v1: {
+    ClusterManagerClient: MockedClusterManagerClient,
+  },
+}));
 
 describe('GoogleServiceAccountStrategy', () => {
   beforeEach(() => {

@@ -51,6 +51,7 @@ vi.mock('@google-cloud/firestore', () => ({
 }));
 
 vi.useFakeTimers();
+const setTimeoutSpy = vi.spyOn(globalThis, 'setTimeout');
 
 describe('FirestoreKeyStore', () => {
   const key = {
@@ -115,7 +116,7 @@ describe('FirestoreKeyStore', () => {
     const keyStore = await FirestoreKeyStore.create();
     await keyStore.addKey(key);
 
-    expect(setTimeout).toHaveBeenCalledWith(
+    expect(setTimeoutSpy).toHaveBeenCalledWith(
       expect.any(Function),
       DEFAULT_TIMEOUT_MS,
     );
@@ -146,7 +147,7 @@ describe('FirestoreKeyStore', () => {
     const keyStore = await FirestoreKeyStore.create(firestoreSettings);
     await keyStore.addKey(key);
 
-    expect(setTimeout).toHaveBeenCalledTimes(1);
+    expect(setTimeoutSpy).toHaveBeenCalledTimes(1);
     expect(firestoreMock.collection).toHaveBeenCalledWith(path);
     expect(firestoreMock.doc).toHaveBeenCalledWith(key.kid);
     expect(firestoreMock.set).toHaveBeenCalledWith({
@@ -159,7 +160,7 @@ describe('FirestoreKeyStore', () => {
     const keyStore = await FirestoreKeyStore.create(firestoreSettings);
     await keyStore.removeKeys(['123']);
 
-    expect(setTimeout).toHaveBeenCalledTimes(1);
+    expect(setTimeoutSpy).toHaveBeenCalledTimes(1);
     expect(firestoreMock.collection).toHaveBeenCalledWith(path);
     expect(firestoreMock.doc).toHaveBeenCalledWith('123');
     expect(firestoreMock.delete).toHaveBeenCalledTimes(1);
@@ -169,7 +170,7 @@ describe('FirestoreKeyStore', () => {
     const keyStore = await FirestoreKeyStore.create(firestoreSettings);
     await keyStore.removeKeys(['123', '456']);
 
-    expect(setTimeout).toHaveBeenCalledTimes(2);
+    expect(setTimeoutSpy).toHaveBeenCalledTimes(2);
     expect(firestoreMock.collection).toHaveBeenCalledWith(path);
     expect(firestoreMock.doc).toHaveBeenCalledWith('123');
     expect(firestoreMock.doc).toHaveBeenCalledWith('456');
@@ -180,7 +181,7 @@ describe('FirestoreKeyStore', () => {
     const keyStore = await FirestoreKeyStore.create(firestoreSettings);
     const items = await keyStore.listKeys();
 
-    expect(setTimeout).toHaveBeenCalledTimes(1);
+    expect(setTimeoutSpy).toHaveBeenCalledTimes(1);
     expect(firestoreMock.collection).toHaveBeenCalledWith(path);
     expect(firestoreMock.get).toHaveBeenCalledTimes(1);
     expect(data).toHaveBeenCalledTimes(1);
@@ -199,7 +200,7 @@ describe('FirestoreKeyStore', () => {
     const keyStore = await FirestoreKeyStore.create(firestoreSettings);
     const items = await keyStore.listKeys();
 
-    expect(setTimeout).toHaveBeenCalledTimes(1);
+    expect(setTimeoutSpy).toHaveBeenCalledTimes(1);
     expect(firestoreMock.collection).toHaveBeenCalledWith(path);
     expect(firestoreMock.get).toHaveBeenCalledTimes(1);
     expect(data).toHaveBeenCalledTimes(1);
