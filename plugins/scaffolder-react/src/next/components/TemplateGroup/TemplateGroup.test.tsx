@@ -15,6 +15,7 @@
  */
 
 import { vi } from 'vitest';
+
 vi.mock('../TemplateCard', () => ({ TemplateCard: vi.fn(() => null) }));
 
 import { TemplateGroup } from './TemplateGroup';
