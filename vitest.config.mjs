@@ -35,6 +35,15 @@ const FRONTEND_ROLES = new Set([
 
 function resolveSetupFiles(targetPath, role) {
   const setupFiles = [];
+  try {
+    setupFiles.push(
+      require.resolve(
+        '@backstage/cli-module-vitest/config/vitestJestCompat.js',
+      ),
+    );
+  } catch {
+    /* not available */
+  }
   const rootPkg = JSON.parse(
     fs.readFileSync(path.resolve(__dirname, 'package.json'), 'utf8'),
   );

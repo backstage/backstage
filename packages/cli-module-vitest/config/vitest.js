@@ -55,7 +55,7 @@ async function getProjectConfig(targetPath, extraConfig) {
   const role = pkgJson.backstage?.role;
   const environment = getRoleEnvironment(role);
 
-  const setupFiles = [];
+  const setupFiles = [require.resolve('./vitestJestCompat.js')];
 
   if (
     extraConfig.rejectFrontendNetworkRequests &&
