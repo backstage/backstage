@@ -14,29 +14,15 @@
  * limitations under the License.
  */
 
-import { vi } from 'vitest';
-
-const mocks = vi.hoisted(() => ({
-  bootstrap: vi.fn(),
-  setGlobalDispatcher: vi.fn(),
-  EnvHttpProxyAgent: vi.fn(),
-}));
-
-vi.mock('global-agent', () => ({
-  bootstrap: mocks.bootstrap,
-}));
-vi.mock('undici', () => ({
-  setGlobalDispatcher: mocks.setGlobalDispatcher,
-  EnvHttpProxyAgent: mocks.EnvHttpProxyAgent,
-}));
-
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
+import * as proxyAgents from './proxyAgents';
 import { bootstrapEnvProxyAgents } from './proxyBootstrap';
 
 describe('bootstrapEnvProxyAgents', () => {
   const originalEnv = process.env;
 
   beforeEach(() => {
-    vi.clearAllMocks();
+    vi.restoreAllMocks();
     process.env = { ...originalEnv };
     delete process.env.GLOBAL_AGENT_ENVIRONMENT_VARIABLE_NAMESPACE;
     delete process.env.GLOBAL_AGENT_HTTP_PROXY;
@@ -50,56 +36,62 @@ describe('bootstrapEnvProxyAgents', () => {
   });
 
   it('should bootstrap global-agent if GLOBAL_AGENT_HTTP_PROXY is set', () => {
+    const spy = vi.spyOn(proxyAgents, 'bootstrapGlobalAgent').mockReturnValue();
     process.env.GLOBAL_AGENT_HTTP_PROXY = 'http://proxy.example.com';
 
     bootstrapEnvProxyAgents();
 
-    expect(mocks.bootstrap).toHaveBeenCalledTimes(1);
+    expect(spy).toHaveBeenCalledTimes(1);
   });
 
   it('should bootstrap global-agent if GLOBAL_AGENT_HTTPS_PROXY is set', () => {
+    const spy = vi.spyOn(proxyAgents, 'bootstrapGlobalAgent').mockReturnValue();
     process.env.GLOBAL_AGENT_HTTPS_PROXY = 'https://proxy.example.com';
 
     bootstrapEnvProxyAgents();
 
-    expect(mocks.bootstrap).toHaveBeenCalledTimes(1);
+    expect(spy).toHaveBeenCalledTimes(1);
   });
 
   it('should use undici EnvHttpProxyAgent if HTTP_PROXY is set', () => {
+    const spy = vi.spyOn(proxyAgents, 'bootstrapUndiciProxy').mockReturnValue();
     process.env.HTTP_PROXY = 'http://proxy.example.com';
 
     bootstrapEnvProxyAgents();
 
-    expect(mocks.EnvHttpProxyAgent).toHaveBeenCalledTimes(1);
-    expect(mocks.setGlobalDispatcher).toHaveBeenCalledWith(
-      expect.any(mocks.EnvHttpProxyAgent),
-    );
+    expect(spy).toHaveBeenCalledTimes(1);
   });
 
   it('should use undici EnvHttpProxyAgent if HTTPS_PROXY is set', () => {
+    const spy = vi.spyOn(proxyAgents, 'bootstrapUndiciProxy').mockReturnValue();
     process.env.HTTPS_PROXY = 'https://proxy.example.com';
 
     bootstrapEnvProxyAgents();
 
-    expect(mocks.EnvHttpProxyAgent).toHaveBeenCalledTimes(1);
-    expect(mocks.setGlobalDispatcher).toHaveBeenCalledWith(
-      expect.any(mocks.EnvHttpProxyAgent),
-    );
+    expect(spy).toHaveBeenCalledTimes(1);
   });
 
   it('should not bootstrap global-agent or set undici dispatcher if no proxy is set', () => {
+    const globalAgentSpy = vi
+      .spyOn(proxyAgents, 'bootstrapGlobalAgent')
+      .mockReturnValue();
+    const undiciSpy = vi
+      .spyOn(proxyAgents, 'bootstrapUndiciProxy')
+      .mockReturnValue();
+
     bootstrapEnvProxyAgents();
 
-    expect(mocks.bootstrap).not.toHaveBeenCalled();
-    expect(mocks.setGlobalDispatcher).not.toHaveBeenCalled();
+    expect(globalAgentSpy).not.toHaveBeenCalled();
+    expect(undiciSpy).not.toHaveBeenCalled();
   });
 
   it('should respect GLOBAL_AGENT_ENVIRONMENT_VARIABLE_NAMESPACE', () => {
+    const spy = vi.spyOn(proxyAgents, 'bootstrapGlobalAgent').mockReturnValue();
     process.env.GLOBAL_AGENT_ENVIRONMENT_VARIABLE_NAMESPACE = 'CUSTOM_AGENT_';
     process.env.CUSTOM_AGENT_HTTP_PROXY = 'http://proxy.example.com';
 
     bootstrapEnvProxyAgents();
 
-    expect(mocks.bootstrap).toHaveBeenCalledTimes(1);
+    expect(spy).toHaveBeenCalledTimes(1);
   });
 });
