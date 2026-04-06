@@ -47,15 +47,16 @@ const createBlobList = (blobsArray: string[]) => {
 // Mocking Azure Storage Blob Library
 vi.mock('@azure/storage-blob', () => {
   return {
-    BlobServiceClient: vi.fn().mockImplementation(() => ({
-      url: 'https://myaccount.blob.core.windows.net/',
-      getContainerClient: vi.fn().mockImplementation(() => ({
-        // eslint-disable-next-line func-names
-        listBlobsFlat: vi.fn(async function* () {
-          yield* createBlobList(blobs);
-        }),
-      })),
-    })),
+    BlobServiceClient: vi.fn().mockImplementation(function () {
+      return {
+        url: 'https://myaccount.blob.core.windows.net/',
+        getContainerClient: vi.fn().mockImplementation(() => ({
+          listBlobsFlat: vi.fn(async function* () {
+            yield* createBlobList(blobs);
+          }),
+        })),
+      };
+    }),
   };
 });
 

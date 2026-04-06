@@ -72,7 +72,9 @@ describe('publish:azure examples', () => {
     getGitApi: vi.fn().mockReturnValue(mockGitClient),
   };
 
-  (WebApi as unknown as Mock).mockImplementation(() => mockGitApi);
+  (WebApi as unknown as Mock).mockImplementation(function () {
+    return mockGitApi;
+  });
 
   beforeEach(() => {
     vi.clearAllMocks();
