@@ -21,11 +21,11 @@ import { ScmIntegrations } from '@backstage/integration';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { createGitlabProjectDeployTokenAction } from './gitlabProjectDeployTokenCreate';
 
-const mockGitlabClient = {
+const mockGitlabClient = vi.hoisted(() => ({
   DeployTokens: {
     create: vi.fn(),
   },
-};
+}));
 vi.mock('@gitbeaker/rest', () => ({
   Gitlab: class {
     constructor() {

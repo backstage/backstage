@@ -24,7 +24,7 @@ import { ScmIntegrations } from '@backstage/integration';
 import yaml from 'yaml';
 import { examples } from './gitHubEnvironment.examples';
 
-const mockOctokit = {
+const mockOctokit = vi.hoisted(() => ({
   rest: {
     actions: {
       getEnvironmentPublicKey: vi.fn(),
@@ -43,7 +43,7 @@ const mockOctokit = {
       getByUsername: vi.fn(),
     },
   },
-};
+}));
 
 vi.mock('octokit', () => ({
   Octokit: class {

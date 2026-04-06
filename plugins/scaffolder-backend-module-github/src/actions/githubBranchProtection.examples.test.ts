@@ -24,7 +24,7 @@ import yaml from 'yaml';
 import { examples } from './githubBranchProtection.examples';
 import { createGithubBranchProtectionAction } from './githubBranchProtection';
 
-const mockOctokit = {
+const mockOctokit = vi.hoisted(() => ({
   rest: {
     repos: {
       createCommitSignatureProtection: vi.fn(),
@@ -32,7 +32,7 @@ const mockOctokit = {
       updateBranchProtection: vi.fn(),
     },
   },
-};
+}));
 vi.mock('octokit', () => ({
   Octokit: class {
     constructor() {

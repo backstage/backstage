@@ -39,7 +39,7 @@ import { examples } from './githubRepoCreate.examples';
 
 const publicKey = '2Sg8iYjAxxmI2LvUXpJjkYrMxURPc8r+dB7TJyvvcCU=';
 
-const mockOctokit = {
+const mockOctokit = vi.hoisted(() => ({
   rest: {
     users: {
       getByUsername: vi.fn(),
@@ -62,7 +62,7 @@ const mockOctokit = {
     },
   },
   request: vi.fn().mockResolvedValue({}),
-};
+}));
 vi.mock('octokit', () => ({
   Octokit: class {
     constructor() {

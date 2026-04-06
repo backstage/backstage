@@ -23,7 +23,7 @@ import { examples } from './githubDeployKey.examples';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 
-const mockOctokit = {
+const mockOctokit = vi.hoisted(() => ({
   rest: {
     repos: {
       createDeployKey: vi.fn(),
@@ -33,7 +33,7 @@ const mockOctokit = {
       createOrUpdateRepoSecret: vi.fn(),
     },
   },
-};
+}));
 vi.mock('octokit', () => ({
   Octokit: class {
     constructor() {

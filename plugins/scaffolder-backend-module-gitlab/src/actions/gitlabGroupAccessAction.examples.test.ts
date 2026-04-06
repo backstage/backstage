@@ -23,7 +23,7 @@ import { createGitlabGroupAccessAction } from './gitlabGroupAccessAction';
 import { examples } from './gitlabGroupAccessAction.examples';
 import { mockServices } from '@backstage/backend-test-utils';
 
-const mockGitlabClient = {
+const mockGitlabClient = vi.hoisted(() => ({
   GroupMembers: {
     add: vi.fn(),
     remove: vi.fn(),
@@ -32,7 +32,7 @@ const mockGitlabClient = {
     share: vi.fn(),
     unshare: vi.fn(),
   },
-};
+}));
 
 vi.mock('@gitbeaker/rest', () => ({
   Gitlab: class {

@@ -24,11 +24,11 @@ import { createGitlabProjectAccessTokenAction } from './gitlabProjectAccessToken
 import { examples } from './gitlabProjectAccessTokenCreate.examples';
 import { DateTime } from 'luxon';
 
-const mockGitlabClient = {
+const mockGitlabClient = vi.hoisted(() => ({
   ProjectAccessTokens: {
     create: vi.fn(),
   },
-};
+}));
 
 vi.mock('@gitbeaker/rest', () => ({
   Gitlab: class {

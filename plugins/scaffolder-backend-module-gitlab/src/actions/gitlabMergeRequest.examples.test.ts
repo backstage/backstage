@@ -25,7 +25,7 @@ import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-
 import { examples } from './gitlabMergeRequest.examples';
 import yaml from 'yaml';
 
-const mockGitlabClient = {
+const mockGitlabClient = vi.hoisted(() => ({
   Namespaces: {
     show: vi.fn(),
   },
@@ -116,7 +116,7 @@ const mockGitlabClient = {
         ];
     }),
   },
-};
+}));
 
 vi.mock('@gitbeaker/rest', () => ({
   Gitlab: class {

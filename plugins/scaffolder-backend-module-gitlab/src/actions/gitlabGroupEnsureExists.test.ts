@@ -22,12 +22,12 @@ import { createGitlabGroupEnsureExistsAction } from './gitlabGroupEnsureExists';
 import { getClient } from '../util';
 import { mockServices } from '@backstage/backend-test-utils';
 
-const mockGitlabClient = {
+const mockGitlabClient = vi.hoisted(() => ({
   Groups: {
     show: vi.fn(),
     create: vi.fn(),
   },
-};
+}));
 
 vi.mock('@gitbeaker/rest', () => ({
   Gitlab: class {

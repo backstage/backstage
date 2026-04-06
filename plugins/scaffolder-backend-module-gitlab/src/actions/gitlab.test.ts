@@ -34,7 +34,7 @@ import { ConfigReader } from '@backstage/config';
 import { initRepoAndPush } from '@backstage/plugin-scaffolder-node';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 
-const mockGitlabClient = {
+const mockGitlabClient = vi.hoisted(() => ({
   Namespaces: {
     show: vi.fn(),
   },
@@ -61,7 +61,7 @@ const mockGitlabClient = {
   ProjectVariables: {
     create: vi.fn(),
   },
-};
+}));
 vi.mock('@gitbeaker/rest', () => ({
   Gitlab: class {
     constructor() {

@@ -35,13 +35,13 @@ vi.mock('../util', () => {
   };
 });
 
-const mockOctokit = {
+const mockOctokit = vi.hoisted(() => ({
   rest: {
     issues: {
       addLabels: vi.fn(),
     },
   },
-};
+}));
 vi.mock('octokit', () => ({
   Octokit: class {
     constructor() {

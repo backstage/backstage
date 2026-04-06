@@ -23,12 +23,12 @@ import { examples } from './gitlabUserInfo.examples';
 import yaml from 'yaml';
 import { mockServices } from '@backstage/backend-test-utils';
 
-const mockGitlabClient = {
+const mockGitlabClient = vi.hoisted(() => ({
   Users: {
     show: vi.fn(),
     showCurrentUser: vi.fn(),
   },
-};
+}));
 vi.mock('@gitbeaker/rest', () => ({
   Gitlab: class {
     constructor() {

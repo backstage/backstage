@@ -29,7 +29,7 @@ import yaml from 'yaml';
 import { examples } from './githubPullRequest.examples';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 
-const mockOctokit = {
+const mockOctokit = vi.hoisted(() => ({
   rest: {
     pulls: {
       requestReviewers: vi.fn(),
@@ -38,7 +38,7 @@ const mockOctokit = {
       addAssignees: vi.fn(),
     },
   },
-};
+}));
 
 vi.mock('octokit', () => ({
   Octokit: class {

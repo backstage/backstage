@@ -23,11 +23,11 @@ import yaml from 'yaml';
 import { createGitlabProjectVariableAction } from './gitlabProjectVariableCreate';
 import { examples } from './gitlabProjectVariableCreate.examples';
 
-const mockGitlabClient = {
+const mockGitlabClient = vi.hoisted(() => ({
   ProjectVariables: {
     create: vi.fn(),
   },
-};
+}));
 vi.mock('@gitbeaker/rest', () => ({
   Gitlab: class {
     constructor() {

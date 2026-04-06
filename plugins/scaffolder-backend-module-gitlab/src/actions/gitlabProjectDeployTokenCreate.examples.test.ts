@@ -23,11 +23,11 @@ import yaml from 'yaml';
 import { createGitlabProjectDeployTokenAction } from './gitlabProjectDeployTokenCreate';
 import { examples } from './gitlabProjectDeployTokenCreate.examples';
 
-const mockGitlabClient = {
+const mockGitlabClient = vi.hoisted(() => ({
   DeployTokens: {
     create: vi.fn(),
   },
-};
+}));
 vi.mock('@gitbeaker/rest', () => ({
   Gitlab: class {
     constructor() {

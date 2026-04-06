@@ -27,13 +27,13 @@ import { createGithubWebhookAction } from './githubWebhook';
 import yaml from 'yaml';
 import { examples } from './githubWebhook.examples';
 
-const mockOctokit = {
+const mockOctokit = vi.hoisted(() => ({
   rest: {
     repos: {
       createWebhook: vi.fn(),
     },
   },
-};
+}));
 vi.mock('octokit', () => ({
   Octokit: class {
     constructor() {

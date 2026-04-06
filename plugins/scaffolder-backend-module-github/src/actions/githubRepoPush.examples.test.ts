@@ -54,13 +54,13 @@ const initRepoAndPushMocked = initRepoAndPush as Mock<
   (...args: any[]) => Promise<{ commitHash: string }>
 >;
 
-const mockOctokit = {
+const mockOctokit = vi.hoisted(() => ({
   rest: {
     repos: {
       get: vi.fn(),
     },
   },
-};
+}));
 vi.mock('octokit', () => ({
   Octokit: class {
     constructor() {

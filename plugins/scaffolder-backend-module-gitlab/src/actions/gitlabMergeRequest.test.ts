@@ -23,7 +23,7 @@ import { createPublishGitlabMergeRequestAction } from './gitlabMergeRequest';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 
-const mockGitlabClient = {
+const mockGitlabClient = vi.hoisted(() => ({
   Namespaces: {
     show: vi.fn(),
   },
@@ -229,7 +229,7 @@ const mockGitlabClient = {
       },
     ),
   },
-};
+}));
 
 vi.mock('@gitbeaker/rest', () => ({
   Gitlab: class {

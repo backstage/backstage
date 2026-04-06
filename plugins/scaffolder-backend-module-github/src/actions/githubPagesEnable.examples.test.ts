@@ -28,9 +28,9 @@ import { createGithubPagesEnableAction } from './githubPagesEnable';
 import { examples } from './githubPagesEnable.examples';
 import yaml from 'yaml';
 
-const mockOctokit = {
+const mockOctokit = vi.hoisted(() => ({
   request: vi.fn(),
-};
+}));
 
 vi.mock('octokit', () => ({
   Octokit: class {

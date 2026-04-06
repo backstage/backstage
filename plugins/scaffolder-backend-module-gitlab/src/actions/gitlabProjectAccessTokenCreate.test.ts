@@ -22,11 +22,11 @@ import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-
 import { createGitlabProjectAccessTokenAction } from './gitlabProjectAccessTokenCreate'; // Adjust the import based on your project structure
 import { DateTime } from 'luxon';
 
-const mockGitlabClient = {
+const mockGitlabClient = vi.hoisted(() => ({
   ProjectAccessTokens: {
     create: vi.fn(),
   },
-};
+}));
 
 vi.mock('@gitbeaker/rest', () => ({
   Gitlab: class {

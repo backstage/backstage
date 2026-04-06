@@ -22,13 +22,13 @@ import { createGitlabProjectMigrateAction } from './gitlabProjectMigrate';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 
-const mockGitlabClient = {
+const mockGitlabClient = vi.hoisted(() => ({
   Migrations: {
     create: vi.fn(() => ({
       id: 0,
     })),
   },
-};
+}));
 
 vi.mock('@gitbeaker/rest', () => ({
   Gitlab: class {

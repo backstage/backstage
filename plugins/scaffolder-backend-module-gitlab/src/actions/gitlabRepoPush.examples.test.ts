@@ -25,7 +25,7 @@ import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-
 import { examples } from './gitlabRepoPush.examples';
 import yaml from 'yaml';
 
-const mockGitlabClient = {
+const mockGitlabClient = vi.hoisted(() => ({
   Projects: {
     create: vi.fn(),
     show: vi.fn(async (_: any) => {
@@ -43,7 +43,7 @@ const mockGitlabClient = {
       id: 'f8a2c9bd4e2915b0792b43235c779e82ddad54af',
     })),
   },
-};
+}));
 
 vi.mock('@gitbeaker/rest', () => ({
   Gitlab: class {

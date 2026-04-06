@@ -36,7 +36,7 @@ import { ScmIntegrations } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
 import { examples } from './gitlab.examples';
 
-const mockGitlabClient = {
+const mockGitlabClient = vi.hoisted(() => ({
   Namespaces: {
     show: vi.fn(),
   },
@@ -52,7 +52,7 @@ const mockGitlabClient = {
   ProjectMembers: {
     add: vi.fn(),
   },
-};
+}));
 vi.mock('@gitbeaker/rest', () => ({
   Gitlab: class {
     constructor() {

@@ -23,11 +23,11 @@ import { examples } from './gitlabIssueCreate.examples';
 import yaml from 'yaml';
 import { mockServices } from '@backstage/backend-test-utils';
 
-const mockGitlabClient = {
+const mockGitlabClient = vi.hoisted(() => ({
   Issues: {
     create: vi.fn(),
   },
-};
+}));
 vi.mock('@gitbeaker/rest', () => ({
   Gitlab: class {
     constructor() {

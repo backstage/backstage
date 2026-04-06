@@ -28,13 +28,13 @@ import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-
 import yaml from 'yaml';
 import { examples } from './githubActionsDispatch.examples';
 
-const mockOctokit = {
+const mockOctokit = vi.hoisted(() => ({
   rest: {
     actions: {
       createWorkflowDispatch: vi.fn(),
     },
   },
-};
+}));
 vi.mock('octokit', () => ({
   Octokit: class {
     constructor() {

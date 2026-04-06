@@ -21,12 +21,12 @@ import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-
 import { createGitlabUserInfoAction } from './gitlabUserInfo';
 import { mockServices } from '@backstage/backend-test-utils';
 
-const mockGitlabClient = {
+const mockGitlabClient = vi.hoisted(() => ({
   Users: {
     show: vi.fn(),
     showCurrentUser: vi.fn(),
   },
-};
+}));
 vi.mock('@gitbeaker/rest', () => ({
   Gitlab: class {
     constructor() {

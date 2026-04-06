@@ -23,7 +23,7 @@ import { createMockDirectory } from '@backstage/backend-test-utils';
 import { createGitlabRepoPushAction } from './gitlabRepoPush';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 
-const mockGitlabClient = {
+const mockGitlabClient = vi.hoisted(() => ({
   Projects: {
     create: vi.fn(),
     show: vi.fn(async (_: any) => {
@@ -41,7 +41,7 @@ const mockGitlabClient = {
       id: 'bb6bce457ed069a38ef8d16ef38602972c7735c5',
     })),
   },
-};
+}));
 
 vi.mock('@gitbeaker/rest', () => ({
   Gitlab: class {

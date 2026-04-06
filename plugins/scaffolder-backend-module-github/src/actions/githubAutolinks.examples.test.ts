@@ -28,13 +28,13 @@ import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-
 import { examples } from './githubAutolinks.examples';
 import yaml from 'yaml';
 
-const mockOctokit = {
+const mockOctokit = vi.hoisted(() => ({
   rest: {
     repos: {
       createAutolink: vi.fn(),
     },
   },
-};
+}));
 vi.mock('octokit', () => ({
   Octokit: class {
     constructor() {

@@ -24,13 +24,13 @@ import { createMockDirectory } from '@backstage/backend-test-utils';
 import { examples } from './gitlabProjectMigrate.examples';
 import yaml from 'yaml';
 
-const mockGitlabClient = {
+const mockGitlabClient = vi.hoisted(() => ({
   Migrations: {
     create: vi.fn(() => ({
       id: 0,
     })),
   },
-};
+}));
 
 vi.mock('@gitbeaker/rest', () => ({
   Gitlab: class {
