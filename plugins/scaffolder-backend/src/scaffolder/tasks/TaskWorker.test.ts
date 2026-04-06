@@ -86,9 +86,9 @@ describe('TaskWorker', () => {
 
   beforeEach(() => {
     vi.resetAllMocks();
-    MockedNunjucksWorkflowRunner.mockImplementation(
-      (() => workflowRunner) as any,
-    );
+    MockedNunjucksWorkflowRunner.mockImplementation(function () {
+      return workflowRunner;
+    } as any);
   });
 
   const logger = loggerToWinstonLogger(mockServices.logger.mock());
@@ -244,9 +244,9 @@ describe('Concurrent TaskWorker', () => {
   beforeEach(() => {
     asyncTasksCount = 0;
     vi.resetAllMocks();
-    MockedNunjucksWorkflowRunner.mockImplementation(
-      (() => workflowRunner) as any,
-    );
+    MockedNunjucksWorkflowRunner.mockImplementation(function () {
+      return workflowRunner;
+    } as any);
   });
 
   const logger = loggerToWinstonLogger(mockServices.logger.mock());
@@ -308,9 +308,9 @@ describe('Cancellable TaskWorker', () => {
 
   beforeEach(() => {
     vi.resetAllMocks();
-    MockedNunjucksWorkflowRunner.mockImplementation(
-      (() => workflowRunner) as any,
-    );
+    MockedNunjucksWorkflowRunner.mockImplementation(function () {
+      return workflowRunner;
+    } as any);
   });
 
   const logger = loggerToWinstonLogger(mockServices.logger.mock());

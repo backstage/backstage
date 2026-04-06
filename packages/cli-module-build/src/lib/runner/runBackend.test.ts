@@ -39,9 +39,9 @@ vi.mock('cross-spawn', () => ({
 }));
 
 vi.mock('../ipc', () => ({
-  IpcServer: vi.fn().mockImplementation(() => ({
-    addChild: vi.fn(),
-  })),
+  IpcServer: vi.fn().mockImplementation(function () {
+    return { addChild: vi.fn() };
+  }),
   ServerDataStore: {
     bind: vi.fn(),
   },

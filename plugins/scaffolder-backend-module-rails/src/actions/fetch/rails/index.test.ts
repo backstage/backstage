@@ -23,7 +23,7 @@ vi.mock('@backstage/plugin-scaffolder-node', async () => ({
 }));
 vi.mock('./railsNewRunner', () => {
   return {
-    RailsNewRunner: vi.fn().mockImplementation(() => {
+    RailsNewRunner: vi.fn().mockImplementation(function () {
       return mockRailsTemplater;
     }),
   };

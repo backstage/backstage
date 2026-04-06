@@ -996,11 +996,13 @@ describe('github', () => {
     const mockClient = vi.fn().mockImplementation(() => {});
 
     const graphqlDefaults = vi.fn().mockReturnValue(mockClient);
-    const mockedOctokit = vi.fn().mockImplementation(() => ({
-      graphql: {
-        defaults: graphqlDefaults,
-      },
-    }));
+    const mockedOctokit = vi.fn().mockImplementation(function () {
+      return {
+        graphql: {
+          defaults: graphqlDefaults,
+        },
+      };
+    });
     (Octokit.plugin as Mock).mockReturnValue(mockedOctokit);
 
     const rateLimitOptions = {

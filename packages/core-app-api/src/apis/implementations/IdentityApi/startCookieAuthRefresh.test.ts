@@ -59,12 +59,14 @@ describe('startCookieAuthRefresh', () => {
 
   it('should refresh cookie', async () => {
     const postMessage = vi.fn();
-    global.BroadcastChannel = vi.fn().mockImplementation(() => ({
-      postMessage,
-      addEventListener() {},
-      removeEventListener() {},
-      close() {},
-    }));
+    global.BroadcastChannel = vi.fn().mockImplementation(function () {
+      return {
+        postMessage,
+        addEventListener() {},
+        removeEventListener() {},
+        close() {},
+      };
+    });
 
     const stop = startCookieAuthRefresh(mockOptions);
 
@@ -99,15 +101,17 @@ describe('startCookieAuthRefresh', () => {
 
   it('should bump refresh when receiving a broadcast message', async () => {
     let messageListener: undefined | ((params: any) => void) = undefined;
-    global.BroadcastChannel = vi.fn().mockImplementation(() => ({
-      postMessage() {},
-      addEventListener: vi.fn().mockImplementation((type, listener) => {
-        expect(type).toBe('message');
-        messageListener = listener;
-      }),
-      removeEventListener() {},
-      close() {},
-    }));
+    global.BroadcastChannel = vi.fn().mockImplementation(function () {
+      return {
+        postMessage() {},
+        addEventListener: vi.fn().mockImplementation((type, listener) => {
+          expect(type).toBe('message');
+          messageListener = listener;
+        }),
+        removeEventListener() {},
+        close() {},
+      };
+    });
     const stop = startCookieAuthRefresh(mockOptions);
 
     await vi.advanceTimersByTimeAsync(0);
