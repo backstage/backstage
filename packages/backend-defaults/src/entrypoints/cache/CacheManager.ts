@@ -38,6 +38,7 @@ import {
   InfinispanClientCacheInterface,
   InfinispanKeyvStore,
 } from './providers/infinispan/InfinispanKeyvStore';
+import * as keyvStores from './keyvStores';
 
 type StoreFactory = (pluginId: string, defaultTtl: number | undefined) => Keyv;
 
@@ -327,9 +328,7 @@ export class CacheManager {
   }
 
   private createRedisStoreFactory(): StoreFactory {
-    const KeyvRedis = require('@keyv/redis').default;
-    const { createCluster } = require('@keyv/redis');
-    const stores: Record<string, typeof KeyvRedis> = {};
+    const stores: Record<string, any> = {};
 
     return (pluginId, defaultTtl) => {
       if (this.storeOptions?.type !== 'redis') {
@@ -343,11 +342,14 @@ export class CacheManager {
         };
         if (this.storeOptions?.cluster) {
           // Create a Redis cluster
-          const cluster = createCluster(this.storeOptions?.cluster);
-          stores[pluginId] = new KeyvRedis(cluster, redisOptions);
+          const cluster = keyvStores.createCluster(this.storeOptions?.cluster);
+          stores[pluginId] = keyvStores.createRedisStore(cluster, redisOptions);
         } else {
           // Create a regular Redis connection
-          stores[pluginId] = new KeyvRedis(this.connection, redisOptions);
+          stores[pluginId] = keyvStores.createRedisStore(
+            this.connection,
+            redisOptions,
+          );
         }
 
         // Always provide an error handler to avoid stopping the process
@@ -367,11 +369,9 @@ export class CacheManager {
   }
 
   private createValkeyStoreFactory(): StoreFactory {
-    const KeyvValkey = require('@keyv/valkey').default;
     // `@keyv/valkey` doesn't export a `createCluster` function, but is compatible with the one from `@keyv/redis`
     // See https://keyv.org/docs/storage-adapters/valkey
-    const { createCluster } = require('@keyv/redis');
-    const stores: Record<string, typeof KeyvValkey> = {};
+    const stores: Record<string, any> = {};
 
     return (pluginId, defaultTtl) => {
       if (this.storeOptions?.type !== 'valkey') {
@@ -383,11 +383,17 @@ export class CacheManager {
         const valkeyOptions = this.storeOptions?.client;
         if (this.storeOptions?.cluster) {
           // Create a Valkey cluster (Redis cluster under the hood)
-          const cluster = createCluster(this.storeOptions?.cluster);
-          stores[pluginId] = new KeyvValkey(cluster, valkeyOptions);
+          const cluster = keyvStores.createCluster(this.storeOptions?.cluster);
+          stores[pluginId] = keyvStores.createValkeyStore(
+            cluster as any,
+            valkeyOptions,
+          );
         } else {
           // Create a regular Valkey connection
-          stores[pluginId] = new KeyvValkey(this.connection, valkeyOptions);
+          stores[pluginId] = keyvStores.createValkeyStore(
+            this.connection,
+            valkeyOptions,
+          );
         }
 
         // Always provide an error handler to avoid stopping the process
@@ -407,12 +413,11 @@ export class CacheManager {
   }
 
   private createMemcacheStoreFactory(): StoreFactory {
-    const KeyvMemcache = require('@keyv/memcache').default;
-    const stores: Record<string, typeof KeyvMemcache> = {};
+    const stores: Record<string, any> = {};
 
     return (pluginId, defaultTtl) => {
       if (!stores[pluginId]) {
-        stores[pluginId] = new KeyvMemcache(this.connection);
+        stores[pluginId] = keyvStores.createMemcacheStore(this.connection);
         // Always provide an error handler to avoid stopping the process
         stores[pluginId].on('error', (err: Error) => {
           this.logger?.error('Failed to create memcache cache client', err);

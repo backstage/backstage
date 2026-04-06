@@ -17,49 +17,32 @@
 import { vi } from 'vitest';
 
 import { mockServices, TestCaches } from '@backstage/backend-test-utils';
-import KeyvRedis, { createCluster } from '@keyv/redis';
-import KeyvValkey from '@keyv/valkey';
-import KeyvMemcache from '@keyv/memcache';
+import * as keyvStores from './keyvStores';
 import { CacheManager } from './CacheManager';
 
-// This test is in a separate file because the main test file uses other mocking
-// that might interfere with this one.
-
-// Contrived code because it's hard to spy on a default export
-vi.mock('@keyv/redis', async () => {
-  const Actual = await vi.importActual<any>('@keyv/redis');
-  const DefaultConstructor = Actual.default;
+function mockKeyvStore() {
   return {
-    ...Actual,
-    __esModule: true,
-    default: vi.fn((...args: any[]) => new DefaultConstructor(...args)),
-    createCluster: vi.fn(),
+    on: vi.fn(),
+    get: vi.fn(),
+    set: vi.fn(),
+    delete: vi.fn(),
+    clear: vi.fn(),
+    has: vi.fn(),
+    getMany: vi.fn(),
+    disconnect: vi.fn(),
   };
-});
-vi.mock('@keyv/valkey', async () => {
-  const Actual = await vi.importActual<any>('@keyv/valkey');
-  const DefaultConstructor = Actual.default;
-  return {
-    ...Actual,
-    __esModule: true,
-    default: vi.fn((...args: any[]) => new DefaultConstructor(...args)),
-    createCluster: vi.fn(),
-  };
-});
-vi.mock('@keyv/memcache', async () => {
-  const Actual = await vi.importActual<any>('@keyv/memcache');
-  const DefaultConstructor = Actual.default;
-  return {
-    ...Actual,
-    __esModule: true,
-    default: vi.fn((...args: any[]) => new DefaultConstructor(...args)),
-  };
-});
+}
 
 describe('CacheManager integration', () => {
   const caches = TestCaches.create();
 
-  afterEach(vi.clearAllMocks);
+  beforeEach(() => {
+    vi.spyOn(keyvStores, 'createRedisStore');
+    vi.spyOn(keyvStores, 'createValkeyStore');
+    vi.spyOn(keyvStores, 'createMemcacheStore');
+  });
+
+  afterEach(vi.restoreAllMocks);
 
   it.each(caches.eachSupportedId())(
     'only creates one underlying connection per plugin, %p',
@@ -79,13 +62,13 @@ describe('CacheManager integration', () => {
 
       if (store === 'redis') {
         // eslint-disable-next-line jest/no-conditional-expect
-        expect(KeyvRedis).toHaveBeenCalledTimes(3);
+        expect(keyvStores.createRedisStore).toHaveBeenCalledTimes(3);
       } else if (store === 'memcache') {
         // eslint-disable-next-line jest/no-conditional-expect
-        expect(KeyvMemcache).toHaveBeenCalledTimes(3);
+        expect(keyvStores.createMemcacheStore).toHaveBeenCalledTimes(3);
       } else if (store === 'valkey') {
         // eslint-disable-next-line jest/no-conditional-expect
-        expect(KeyvValkey).toHaveBeenCalledTimes(3);
+        expect(keyvStores.createValkeyStore).toHaveBeenCalledTimes(3);
       }
     },
   );
@@ -213,6 +196,21 @@ describe('CacheManager integration', () => {
 });
 
 describe('CacheManager store options', () => {
+  beforeEach(() => {
+    vi.spyOn(keyvStores, 'createRedisStore').mockReturnValue(
+      mockKeyvStore() as any,
+    );
+    vi.spyOn(keyvStores, 'createCluster').mockReturnValue({} as any);
+    vi.spyOn(keyvStores, 'createValkeyStore').mockReturnValue(
+      mockKeyvStore() as any,
+    );
+    vi.spyOn(keyvStores, 'createMemcacheStore').mockReturnValue(
+      mockKeyvStore() as any,
+    );
+  });
+
+  afterEach(vi.restoreAllMocks);
+
   it('uses default options when no store-specific config exists', () => {
     const manager = CacheManager.fromConfig(
       mockServices.rootConfig({
@@ -229,9 +227,12 @@ describe('CacheManager store options', () => {
 
     manager.forPlugin('p1');
 
-    expect(KeyvRedis).toHaveBeenCalledWith('redis://localhost:6379', {
-      keyPrefixSeparator: ':',
-    });
+    expect(keyvStores.createRedisStore).toHaveBeenCalledWith(
+      'redis://localhost:6379',
+      {
+        keyPrefixSeparator: ':',
+      },
+    );
   });
 
   it('defaults to non-clustered mode when cluster config is missing root nodes', () => {
@@ -252,9 +253,12 @@ describe('CacheManager store options', () => {
     );
     manager.forPlugin('p1');
 
-    expect(KeyvRedis).toHaveBeenCalledWith('redis://localhost:6379', {
-      keyPrefixSeparator: ':',
-    });
+    expect(keyvStores.createRedisStore).toHaveBeenCalledWith(
+      'redis://localhost:6379',
+      {
+        keyPrefixSeparator: ':',
+      },
+    );
   });
 
   it('uses cluster config when present', () => {
@@ -277,7 +281,7 @@ describe('CacheManager store options', () => {
     );
     manager.forPlugin('p1');
 
-    expect(createCluster).toHaveBeenCalledWith({
+    expect(keyvStores.createCluster).toHaveBeenCalledWith({
       rootNodes: [{ url: 'redis://localhost:6379' }],
       defaults: undefined,
     });
@@ -303,9 +307,12 @@ describe('CacheManager store options', () => {
     );
     manager.forPlugin('p1');
 
-    expect(KeyvRedis).toHaveBeenCalledWith('redis://localhost:6379', {
-      keyPrefixSeparator: '!',
-    });
+    expect(keyvStores.createRedisStore).toHaveBeenCalledWith(
+      'redis://localhost:6379',
+      {
+        keyPrefixSeparator: '!',
+      },
+    );
   });
 
   it('accepts client config for clustered mode', () => {
@@ -331,9 +338,12 @@ describe('CacheManager store options', () => {
     );
     manager.forPlugin('p1');
 
-    expect(KeyvRedis).toHaveBeenCalledWith(expect.anything(), {
-      keyPrefixSeparator: '!',
-    });
+    expect(keyvStores.createRedisStore).toHaveBeenCalledWith(
+      expect.anything(),
+      {
+        keyPrefixSeparator: '!',
+      },
+    );
   });
 
   it('correctly applies namespace configuration to redis and valkey stores', () => {
@@ -369,13 +379,13 @@ describe('CacheManager store options', () => {
 
       if (store === 'redis') {
         // eslint-disable-next-line jest/no-conditional-expect
-        expect(KeyvRedis).toHaveBeenCalledWith(
+        expect(keyvStores.createRedisStore).toHaveBeenCalledWith(
           'redis://localhost:6379',
           client,
         );
       } else if (store === 'valkey') {
         // eslint-disable-next-line jest/no-conditional-expect
-        expect(KeyvValkey).toHaveBeenCalledWith(
+        expect(keyvStores.createValkeyStore).toHaveBeenCalledWith(
           'redis://localhost:6379',
           client,
         );
@@ -399,9 +409,12 @@ describe('CacheManager store options', () => {
 
     manager.forPlugin('testPlugin');
 
-    expect(KeyvRedis).toHaveBeenCalledWith('redis://localhost:6379', {
-      keyPrefixSeparator: ':',
-    });
+    expect(keyvStores.createRedisStore).toHaveBeenCalledWith(
+      'redis://localhost:6379',
+      {
+        keyPrefixSeparator: ':',
+      },
+    );
   });
 
   describe('Namespace construction', () => {
