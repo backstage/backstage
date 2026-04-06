@@ -26,7 +26,16 @@ function includesAnyOf(hayStack: string[], ...needles: string[]) {
   return false;
 }
 
-export default async ({ args }: CliCommandContext) => {
+export default async ({ args, info }: CliCommandContext) => {
+  if (includesAnyOf(args, '--help', '-h')) {
+    console.log(`Usage: ${info.usage} [options] [...filters]`);
+    console.log();
+    console.log('Options:');
+    console.log('  All Vitest CLI options are supported.');
+    console.log('  See https://vitest.dev/guide/cli for details.');
+    return;
+  }
+
   if (
     !process.env.CI &&
     !includesAnyOf(args, '--coverage', '--coverage.enabled') &&
