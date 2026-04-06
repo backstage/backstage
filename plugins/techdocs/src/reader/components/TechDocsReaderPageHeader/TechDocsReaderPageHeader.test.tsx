@@ -55,9 +55,9 @@ const mockTechDocsMetadata = {
 };
 
 let useParamsPath = '/';
-vi.mock('react-router-dom', () => {
+vi.mock('react-router-dom', async () => {
   return {
-    ...(vi.importActual('react-router-dom') as any),
+    ...(await vi.importActual('react-router-dom')),
     useParams: () => ({ '*': useParamsPath }),
   };
 });

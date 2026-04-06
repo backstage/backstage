@@ -16,10 +16,10 @@
 
 import { vi, type MockedFunction } from 'vitest';
 
-vi.mock('@backstage/plugin-scaffolder-node', () => {
-  const actual = vi.importActual('@backstage/plugin-scaffolder-node');
-  return { ...actual, fetchContents: vi.fn() };
-});
+vi.mock('@backstage/plugin-scaffolder-node', async () => ({
+  ...(await vi.importActual('@backstage/plugin-scaffolder-node')),
+  fetchContents: vi.fn(),
+}));
 
 import { join as joinPath, sep as pathSep } from 'node:path';
 import fs from 'fs-extra';

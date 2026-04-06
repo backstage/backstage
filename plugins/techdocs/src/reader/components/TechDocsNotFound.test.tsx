@@ -25,8 +25,10 @@ import {
 } from '@backstage/test-utils';
 import { analyticsApiRef } from '@backstage/core-plugin-api';
 
-vi.mock('@backstage/plugin-techdocs-react', () => {
-  const actualModule = vi.importActual('@backstage/plugin-techdocs-react');
+vi.mock('@backstage/plugin-techdocs-react', async () => {
+  const actualModule = await vi.importActual(
+    '@backstage/plugin-techdocs-react',
+  );
   return {
     ...actualModule,
     useTechDocsReaderPage: () => ({
@@ -35,8 +37,8 @@ vi.mock('@backstage/plugin-techdocs-react', () => {
   };
 });
 
-vi.mock('react-router-dom', () => {
-  const actualModule = vi.importActual('react-router-dom');
+vi.mock('react-router-dom', async () => {
+  const actualModule = await vi.importActual('react-router-dom');
   return {
     ...actualModule,
     useLocation: () =>

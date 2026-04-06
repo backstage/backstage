@@ -16,10 +16,10 @@
 
 import { vi } from 'vitest';
 
-vi.mock('@backstage/plugin-scaffolder-node', () => {
-  const actual = vi.importActual('@backstage/plugin-scaffolder-node');
-  return { ...actual, fetchContents: vi.fn() };
-});
+vi.mock('@backstage/plugin-scaffolder-node', async () => ({
+  ...(await vi.importActual('@backstage/plugin-scaffolder-node')),
+  fetchContents: vi.fn(),
+}));
 
 import { resolve as resolvePath } from 'node:path';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';

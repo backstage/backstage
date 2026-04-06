@@ -22,8 +22,8 @@ import { fetchPackageInfo, mapDependencies } from './packages';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 import { NotFoundError } from '@backstage/errors';
 
-vi.mock('@backstage/cli-common', () => {
-  const actual = vi.importActual('@backstage/cli-common');
+vi.mock('@backstage/cli-common', async () => {
+  const actual = await vi.importActual('@backstage/cli-common');
   return {
     ...actual,
     runOutput: vi.fn(),

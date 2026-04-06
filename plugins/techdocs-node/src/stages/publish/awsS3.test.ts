@@ -283,8 +283,9 @@ describe('AwsS3Publish', () => {
     });
 
     it('should use aws.accounts over integrations.awsS3 if both are provided', async () => {
-      vi.doMock('@aws-sdk/client-s3', () => ({
-        ...vi.importActual('@aws-sdk/client-s3'),
+      vi.resetModules();
+      vi.doMock('@aws-sdk/client-s3', async () => ({
+        ...(await vi.importActual('@aws-sdk/client-s3')),
         S3Client: vi.fn(),
       }));
 
@@ -334,8 +335,9 @@ describe('AwsS3Publish', () => {
     });
 
     it('should use awsS3.credentials if they are provided', async () => {
-      vi.doMock('@aws-sdk/client-s3', () => ({
-        ...vi.importActual('@aws-sdk/client-s3'),
+      vi.resetModules();
+      vi.doMock('@aws-sdk/client-s3', async () => ({
+        ...(await vi.importActual('@aws-sdk/client-s3')),
         S3Client: vi.fn(),
       }));
 
@@ -379,8 +381,9 @@ describe('AwsS3Publish', () => {
     });
 
     it('should use credentials from integrations if awsS3.credentials is not provided', async () => {
-      vi.doMock('@aws-sdk/client-s3', () => ({
-        ...vi.importActual('@aws-sdk/client-s3'),
+      vi.resetModules();
+      vi.doMock('@aws-sdk/client-s3', async () => ({
+        ...(await vi.importActual('@aws-sdk/client-s3')),
         S3Client: vi.fn(),
       }));
 
@@ -452,8 +455,9 @@ describe('AwsS3Publish', () => {
     });
 
     it('should retrieve the target integration if multiple integrations are provided and credentials are not provided', async () => {
-      vi.doMock('@aws-sdk/client-s3', () => ({
-        ...vi.importActual('@aws-sdk/client-s3'),
+      vi.resetModules();
+      vi.doMock('@aws-sdk/client-s3', async () => ({
+        ...(await vi.importActual('@aws-sdk/client-s3')),
         S3Client: vi.fn(),
       }));
 

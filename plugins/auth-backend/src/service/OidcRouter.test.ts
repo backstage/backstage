@@ -39,8 +39,8 @@ import { TokenIssuer } from '../identity/types';
 import { OfflineAccessService } from './OfflineAccessService';
 import { CimdClientInfo, isCimdUrl } from './CimdClient';
 
-vi.mock('./CimdClient', () => {
-  const actual = vi.importActual('./CimdClient');
+vi.mock('./CimdClient', async () => {
+  const actual = await vi.importActual('./CimdClient');
   return {
     ...actual,
     fetchCimdMetadata: vi.fn(),

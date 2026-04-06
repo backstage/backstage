@@ -19,8 +19,8 @@ import { mockServices } from '@backstage/backend-test-utils';
 import { RateLimitStoreFactory } from './RateLimitStoreFactory.ts';
 import { RedisStore } from 'rate-limit-redis';
 
-vi.mock('@keyv/redis', () => {
-  const Actual = vi.importActual('@keyv/redis');
+vi.mock('@keyv/redis', async () => {
+  const Actual = await vi.importActual('@keyv/redis');
   return {
     ...Actual,
     __esModule: true,

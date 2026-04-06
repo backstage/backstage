@@ -18,10 +18,10 @@ import { vi } from 'vitest';
 
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 
-vi.mock('@backstage/plugin-scaffolder-node', () => {
-  const actual = vi.importActual('@backstage/plugin-scaffolder-node');
-  return { ...actual, fetchFile: vi.fn() };
-});
+vi.mock('@backstage/plugin-scaffolder-node', async () => ({
+  ...(await vi.importActual('@backstage/plugin-scaffolder-node')),
+  fetchFile: vi.fn(),
+}));
 
 import yaml from 'yaml';
 import { resolve as resolvePath } from 'node:path';

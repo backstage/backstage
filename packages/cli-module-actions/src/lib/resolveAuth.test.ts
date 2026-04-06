@@ -19,8 +19,8 @@ import { vi, type MockedFunction } from 'vitest';
 import { resolveAuth } from './resolveAuth';
 import { CliAuth } from '@backstage/cli-node';
 
-vi.mock('@backstage/cli-node', () => {
-  const actual = vi.importActual('@backstage/cli-node');
+vi.mock('@backstage/cli-node', async () => {
+  const actual = await vi.importActual('@backstage/cli-node');
   return {
     ...actual,
     CliAuth: { create: vi.fn() },
