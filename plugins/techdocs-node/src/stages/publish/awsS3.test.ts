@@ -324,7 +324,9 @@ describe('AwsS3Publish', () => {
       expect(getCredProviderMock).toHaveBeenCalledTimes(0);
       expect(MockS3Client).toHaveBeenCalledTimes(1);
       await expect(
-        MockS3Client.mock.calls[0][0]!.credentialDefaultProvider!(undefined!)(),
+        vi.mocked(MockS3Client).mock.calls[0][0]!.credentialDefaultProvider!(
+          undefined!,
+        )(),
       ).resolves.toEqual({
         accessKeyId: 'access-key-from-aws',
         secretAccessKey: 'secret-access-key-from-aws',
@@ -367,7 +369,9 @@ describe('AwsS3Publish', () => {
       expect(getCredProviderMock).toHaveBeenCalledTimes(0);
       expect(MockS3Client).toHaveBeenCalledTimes(1);
       await expect(
-        MockS3Client.mock.calls[0][0]!.credentialDefaultProvider!(undefined!)(),
+        vi.mocked(MockS3Client).mock.calls[0][0]!.credentialDefaultProvider!(
+          undefined!,
+        )(),
       ).resolves.toEqual({
         accessKeyId: 'accessKeyId',
         secretAccessKey: 'secretAccessKey',
@@ -408,7 +412,9 @@ describe('AwsS3Publish', () => {
       expect(getCredProviderMock).toHaveBeenCalledTimes(0);
       expect(MockS3Client).toHaveBeenCalledTimes(1);
       await expect(
-        MockS3Client.mock.calls[0][0]!.credentialDefaultProvider!(undefined!)(),
+        vi.mocked(MockS3Client).mock.calls[0][0]!.credentialDefaultProvider!(
+          undefined!,
+        )(),
       ).resolves.toEqual({
         accessKeyId: 'access-key-from-integrations',
         secretAccessKey: 'secret-access-key-from-integrations',
@@ -485,7 +491,9 @@ describe('AwsS3Publish', () => {
       expect(getCredProviderMock).toHaveBeenCalledTimes(0);
       expect(MockS3Client).toHaveBeenCalledTimes(1);
       await expect(
-        MockS3Client.mock.calls[0][0]!.credentialDefaultProvider!(undefined!)(),
+        vi.mocked(MockS3Client).mock.calls[0][0]!.credentialDefaultProvider!(
+          undefined!,
+        )(),
       ).resolves.toEqual({
         accessKeyId: 'access-key-from-integrations-2',
         secretAccessKey: 'secret-access-key-from-integrations-2',

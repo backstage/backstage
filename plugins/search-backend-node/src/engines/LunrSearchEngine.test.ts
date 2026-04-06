@@ -65,10 +65,13 @@ vi.mock('./LunrSearchEngineIndexer', () => ({
   }),
 }));
 
-const { LunrSearchEngineIndexer: ActualLunrSearchEngineIndexer } =
-  await vi.importActual<typeof import('./LunrSearchEngineIndexer')>(
-    './LunrSearchEngineIndexer',
-  );
+let ActualLunrSearchEngineIndexer: typeof LunrSearchEngineIndexer;
+beforeAll(async () => {
+  ({ LunrSearchEngineIndexer: ActualLunrSearchEngineIndexer } =
+    await vi.importActual<typeof import('./LunrSearchEngineIndexer')>(
+      './LunrSearchEngineIndexer',
+    ));
+});
 
 const getActualIndexer = (engine: SearchEngine, index: string) => {
   (LunrSearchEngineIndexer as unknown as Mock).mockImplementationOnce(

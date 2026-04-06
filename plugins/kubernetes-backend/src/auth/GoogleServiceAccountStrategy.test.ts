@@ -41,7 +41,10 @@ vi.mock('@google-cloud/container', () => {
 // Get reference to the mocked constructor for use in tests
 const {
   v1: { ClusterManagerClient: MockedClusterManagerClient },
-} = vi.mocked(await import('@google-cloud/container'));
+} = vi.mocked(
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  require('@google-cloud/container'),
+);
 
 describe('GoogleServiceAccountStrategy', () => {
   beforeEach(() => {
