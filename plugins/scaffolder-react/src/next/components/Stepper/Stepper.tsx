@@ -211,7 +211,16 @@ export const Stepper = (stepperProps: StepperProps) => {
   const handleChange = useCallback(
     (e: IChangeEvent) => {
       setStepsState(current => {
-        return { ...current, ...e.formData };
+        const next = { ...current, ...e.formData };
+        // Structural equality bail-out: if the merged state is identical to the
+        // current state, return the same reference so React skips the re-render.
+        // This breaks the reference-change → RJSF onChange → handleChange loop
+        // that occurs when RJSF fires onChange with structurally identical
+        // formData (e.g. during step transitions or schema re-evaluation).
+        if (JSON.stringify(current) === JSON.stringify(next)) {
+          return current;
+        }
+        return next;
       });
     },
     [setStepsState],

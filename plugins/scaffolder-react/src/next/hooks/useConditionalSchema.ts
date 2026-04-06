@@ -13,17 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
 import { JsonObject } from '@backstage/types';
 import { resolveConditionalSchema } from '../lib';
 
 /**
  * Reactively resolves conditional JSON Schema keywords (if/then/else, dependencies)
- * against the current form data. Returns a memoized resolved schema that only
- * recomputes when the schema or formData reference changes.
+ * against the current form data. Returns a structurally-stable resolved schema
+ * that only changes its object reference when the resolved output is
+ * structurally different from the previous resolution.
  *
- * This hook wraps the pure `resolveConditionalSchema()` utility with React
- * memoization for efficient use in component render cycles.
+ * Structural stability is critical because `resolveConditionalSchema` always
+ * returns a new object (via deep clone). Without equality comparison, RJSF
+ * would receive a new `schema` prop reference on every `formData` change,
+ * triggering an infinite re-render loop:
+ *   new schema ref → RJSF re-render → onChange → stepsState update →
+ *   new formData ref → useMemo recomputes → new schema ref → …
+ *
+ * The hook breaks this loop by caching the previous resolved schema and its
+ * JSON serialization. When a new resolution produces an identical serialization,
+ * the previous object reference is returned, preventing unnecessary RJSF
+ * re-renders.
  *
  * @param schema - The JSON Schema potentially containing conditional keywords, or undefined
  * @param formData - The current form data to evaluate conditions against
@@ -34,8 +44,30 @@ export const useConditionalSchema = (
   schema: JsonObject | undefined,
   formData: JsonObject,
 ): JsonObject | undefined => {
-  return useMemo(
+  const cacheRef = useRef<{
+    result: JsonObject | undefined;
+    serialized: string;
+  }>({
+    result: undefined,
+    serialized: '',
+  });
+
+  // Compute the resolved schema whenever the schema definition or form data
+  // reference changes. This is a pure computation with no side effects.
+  const resolved = useMemo(
     () => (schema ? resolveConditionalSchema(schema, formData) : undefined),
     [schema, formData],
   );
+
+  // Structural equality check: serialize the resolved schema and compare
+  // with the cached serialization. Return the cached reference when the
+  // structure has not changed to avoid triggering downstream re-renders.
+  const serialized =
+    resolved !== undefined ? JSON.stringify(resolved) : '';
+
+  if (serialized !== cacheRef.current.serialized) {
+    cacheRef.current = { result: resolved, serialized };
+  }
+
+  return cacheRef.current.result;
 };
