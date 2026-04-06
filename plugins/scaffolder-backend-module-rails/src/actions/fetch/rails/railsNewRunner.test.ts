@@ -22,12 +22,9 @@ const commandExists = vi.fn();
 vi.mock('@backstage/plugin-scaffolder-node', () => ({
   executeShellCommand: (...args: any[]) => executeShellCommand(...args),
 }));
-vi.mock(
-  'command-exists',
-  () =>
-    (...args: any[]) =>
-      commandExists(...args),
-);
+vi.mock('command-exists', () => ({
+  default: (...args: any[]) => commandExists(...args),
+}));
 
 import path from 'node:path';
 import { PassThrough } from 'node:stream';

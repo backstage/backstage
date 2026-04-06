@@ -27,8 +27,8 @@ vi.mock('chokidar', () => ({
   })),
 }));
 
-vi.mock('cross-spawn', () =>
-  vi.fn(() => ({
+vi.mock('cross-spawn', () => ({
+  default: vi.fn(() => ({
     on: vi.fn().mockReturnThis(),
     once: vi.fn().mockReturnThis(),
     kill: vi.fn(),
@@ -36,7 +36,7 @@ vi.mock('cross-spawn', () =>
     exitCode: null,
     pid: 12345,
   })),
-);
+}));
 
 vi.mock('../ipc', () => ({
   IpcServer: vi.fn().mockImplementation(() => ({

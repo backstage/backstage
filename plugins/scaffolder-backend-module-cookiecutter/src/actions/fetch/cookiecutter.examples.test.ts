@@ -41,12 +41,9 @@ vi.mock('@backstage/plugin-scaffolder-node', async () => ({
   executeShellCommand: (...args: any[]) => executeShellCommand(...args),
 }));
 
-vi.mock(
-  'command-exists',
-  () =>
-    (...args: any[]) =>
-      commandExists(...args),
-);
+vi.mock('command-exists', () => ({
+  default: (...args: any[]) => commandExists(...args),
+}));
 
 describe('fetch:cookiecutter', () => {
   const mockDir = createMockDirectory({ mockOsTmpDir: true });

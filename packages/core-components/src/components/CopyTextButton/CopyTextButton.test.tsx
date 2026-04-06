@@ -34,9 +34,11 @@ vi.mock('popper.js', async () => {
 });
 
 const useCopyToClipboard = vi.mocked(useCopyToClipboardUnmocked);
-vi.mock('react-use/esm/useCopyToClipboard', () =>
-  vi.fn().mockImplementation(() => [{ noUserInteraction: false }, vi.fn()]),
-);
+vi.mock('react-use/esm/useCopyToClipboard', () => ({
+  default: vi
+    .fn()
+    .mockImplementation(() => [{ noUserInteraction: false }, vi.fn()]),
+}));
 
 const props = {
   text: 'mockText',

@@ -31,9 +31,11 @@ Object.defineProperty(window.navigator, 'clipboard', {
 
 const useCopyToClipboard = vi.mocked(useCopyToClipboardUnmocked);
 
-vi.mock('react-use/esm/useCopyToClipboard', () =>
-  vi.fn().mockImplementation(() => [{ noUserInteraction: false }, vi.fn()]),
-);
+vi.mock('react-use/esm/useCopyToClipboard', () => ({
+  default: vi
+    .fn()
+    .mockImplementation(() => [{ noUserInteraction: false }, vi.fn()]),
+}));
 
 describe('copyToClipboard', () => {
   it('calls navigator.clipboard.writeText when clipboard button has been clicked', async () => {

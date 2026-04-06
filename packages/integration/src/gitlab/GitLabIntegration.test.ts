@@ -27,9 +27,9 @@ import {
 import { registerMswTestHooks } from '../helpers';
 
 // Mock pThrottle to make testing easier
-vi.mock('p-throttle', () => {
-  return vi.fn(() => (fn: any) => fn);
-});
+vi.mock('p-throttle', () => ({
+  default: vi.fn(() => (fn: any) => fn),
+}));
 
 describe('GitLabIntegration', () => {
   it('has a working factory', () => {
