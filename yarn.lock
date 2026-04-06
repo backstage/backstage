@@ -45266,7 +45266,7 @@ __metadata:
     ts-morph: "npm:^24.0.0"
     typedoc: "npm:^0.28.0"
     typescript: "npm:~5.7.0"
-    vite: "npm:^7.1.5"
+    vite: "npm:^7.3.2"
     yaml: "npm:^2.7.0"
     zod: "npm:^3.25.76 || ^4.0.0"
   languageName: unknown
@@ -49871,9 +49871,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite@npm:^7.1.5":
-  version: 7.3.1
-  resolution: "vite@npm:7.3.1"
+"vite@npm:^7.3.2":
+  version: 7.3.2
+  resolution: "vite@npm:7.3.2"
   dependencies:
     esbuild: "npm:^0.27.0"
     fdir: "npm:^6.5.0"
@@ -49922,7 +49922,7 @@ __metadata:
       optional: true
   bin:
     vite: bin/vite.js
-  checksum: 10/62e48ffa4283b688f0049005405a004447ad38ffc99a0efea4c3aa9b7eed739f7402b43f00668c0ee5a895b684dc953d62f0722d8a92c5b2f6c95f051bceb208
+  checksum: 10/c5f7a9a60011c41c836cedf31c8ee7624102aff9b6a7f3aab2ff47639721bba0916f81994c3a3ea6577a16c4f0dfee1e7dbd244e0da8edd5954e3c6d48daaaa2
   languageName: node
   linkType: hard
 
