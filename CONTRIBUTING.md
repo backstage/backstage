@@ -170,7 +170,9 @@ To help your changes get reviewed and merged smoothly, please keep the following
 
 - We really appreciate contributions that improve clarity or fix outdated information. That said, we generally don’t accept changes that are purely stylistic (e.g., rewording a sentence just to tweak the tone or phrasing). If something is **unclear**, **confusing**, or **factually inaccurate**, those are great opportunities to help!
 
-Ready to get started? You can find all the documentation files in the [docs](docs) directory! If you have any questions or need help, feel free to reach out in the [Backstage Discord Docs Channel](https://discord.com/channels/687207715902193673/687994765559463940)
+Ready to get started? You can find all the documentation files in the [docs](docs) directory!
+Please take a look through [our style guide](./docs/contribute/doc-style-guide.md) as well for writing style tips.
+If you have any questions or need help, feel free to reach out in the [Backstage Discord Docs Channel](https://discord.com/channels/687207715902193673/687994765559463940).
 
 Thank you in advance for your contributions! We really appreciate it. 🙏
 

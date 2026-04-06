@@ -43,11 +43,13 @@ breakpoint
 Brex
 broadcasted
 bugfixes
+BUIProvider
 builtins
 bundler
 bundlers
 bursty
 callout
+callouts
 camelCase
 CDNs
 Chai
@@ -58,6 +60,7 @@ chanwit
 Chanwit
 CI/CD
 classname
+cleye
 cli
 CLIs
 cloudbuild
@@ -137,6 +140,7 @@ dyno
 ecco
 elasticsearch
 Entra
+enums
 env
 Env
 esbuild
@@ -246,6 +250,8 @@ Levenshtein
 lightbox
 Lightsail
 limitranges
+liveness
+LLMs
 LocalStack
 lockdown
 lockfile
@@ -392,6 +398,7 @@ repos
 requestors
 rerender
 rerenders
+resizable
 resourcequotas
 retryable
 reusability
@@ -513,6 +520,7 @@ toolsets
 tooltip
 tooltips
 touchpoint
+touchpoints
 transpilation
 transpile
 transpiled
@@ -554,11 +562,13 @@ validators
 Valkey
 varchar
 viewport
+virtualized
 vite
 VMware
 Vodafone
 VPCs
 VSCode
+walkthroughs
 Wayfair
 Weaveworks
 Webpack
@@ -577,7 +587,3 @@ zod
 Zolotusky
 zoomable
 zsh
-resizable
-enums
-LLMs
-cleye

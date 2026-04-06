@@ -22,7 +22,11 @@ import type { TextFieldProps } from './types';
 import { useDefinition } from '../../hooks/useDefinition';
 import { TextFieldDefinition } from './definition';
 
-/** @public */
+/**
+ * A single-line text input with an integrated label, optional icon, and inline error display.
+ *
+ * @public
+ */
 export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
   (props, ref) => {
     const { ownProps, restProps, dataAttributes } = useDefinition(

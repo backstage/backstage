@@ -1,5 +1,375 @@
 # @backstage/ui
 
+## 0.14.0-next.1
+
+### Patch Changes
+
+- 2e5c5f8: Bumped `glob` dependency from v7/v8/v11 to v13 to address security vulnerabilities in older versions. Bumped `rollup` from v4.27 to v4.59+ to fix a high severity path traversal vulnerability (GHSA-mw96-cpmx-2vgc).
+- 8d79835: Added RangeSlider component for selecting numeric ranges.
+
+  **Affected components:** RangeSlider
+
+- 5081bcc: Fixed `Avatar` becoming elliptical in flex layouts by preventing it from shrinking.
+
+  **Affected components:** Avatar
+
+- d840ba9: Fixed relative `href` resolution for BUI link components. Relative paths like `../other` are now correctly turned into absolute paths before reaching the React Aria layer, ensuring client-side navigation goes to the right place.
+
+  **Affected components:** ButtonLink, Card, CellProfile, CellText, Link, ListRow, MenuItem, MenuListBoxItem, Row, SearchAutocompleteItem, Tab, Tag
+
+- 3bc23a5: Added support for disabling pagination in `useTable` complete mode by setting `paginationOptions: { type: 'none' }`. This skips data slicing and produces `pagination: { type: 'none' }` in `tableProps`, removing the need for consumers to manually override the pagination prop on `Table`. Also fixed complete mode not reacting to dynamic changes in `paginationOptions.pageSize`.
+
+  **Affected components:** `useTable`
+
+- c368cf3: Updated dependency `@types/use-sync-external-store` to `^1.0.0`.
+- d0f055f: Added `showPaginationLabel` prop to `TablePagination` and `useTable` pagination options. When set to `false`, the pagination label (e.g., "1 - 20 of 150") is hidden while navigation controls remain visible. Defaults to `true`.
+
+  **Affected components:** `TablePagination`, `useTable`
+
+- feaf3d1: Fixed HeaderNav hover indicator covering tab text when theme uses opaque background colors. Also fixed an incorrect CSS variable reference (`--bui-font-family` → `--bui-font-regular`).
+
+  **Affected components:** Header
+
+## 0.14.0-next.0
+
+### Minor Changes
+
+- 8659f33: **BREAKING**: The `Header` component's `tabs` prop now uses `HeaderNavTabItem[]` instead of `HeaderTab[]`. Tabs render as a `<nav>` element with links and optional dropdown menus instead of `role="tablist"`. A new `activeTabId` prop controls which tab is highlighted.
+
+  **Migration:**
+
+  ```diff
+  - import { Header, type HeaderTab } from '@backstage/ui';
+  + import { Header, type HeaderNavTabItem } from '@backstage/ui';
+
+    // Tabs no longer support matchStrategy — active state is controlled via activeTabId
+  - const tabs: HeaderTab[] = [
+  -   { id: 'overview', label: 'Overview', href: '/overview', matchStrategy: 'prefix' },
+  + const tabs: HeaderNavTabItem[] = [
+  +   { id: 'overview', label: 'Overview', href: '/overview' },
+    ];
+
+  - <Header title="My Page" tabs={tabs} />
+  + <Header title="My Page" tabs={tabs} activeTabId="overview" />
+  ```
+
+  **Affected components:** Header
+
+- bed3307: **BREAKING**: Dropped support for React 17. The minimum supported React version is now 18.
+- 49ffe8a: **BREAKING**: Removed the `toolbarWrapper` element from `PluginHeader` and dropped `toolbarWrapper` from `PluginHeaderDefinition.classNames`. Toolbar layout styles now live on `toolbar` (`.bui-PluginHeaderToolbar`).
+
+  **Migration:** Update custom CSS that targeted `.bui-PluginHeaderToolbarWrapper` to use `.bui-PluginHeaderToolbar` instead.
+
+  **Affected components:** PluginHeader
+
+### Patch Changes
+
+- bcbb6eb: Made `SearchAutocomplete` background-aware. The input now adapts its background color based on its parent container's background level.
+
+  **Affected components:** SearchAutocomplete
+
+- 8c2e24e: Added `aria-hidden` to the `PluginHeader` icon to prevent screen readers from announcing decorative plugin icons.
+
+  **Affected components:** PluginHeader
+
+- 3d67aeb: Added `prefers-reduced-motion` support to Tab indicator animations. Users with reduced motion preferences will no longer see sliding transitions on the active and hover indicators.
+
+  **Affected components:** Tabs
+
+- cc4a682: Fixed the ButtonIcon's loading spinner animation
+
+  **Affected components:** ButtonIcon
+
+- adcdd2f: Simplified the `Menu` component's item structure by removing the inner wrapper element and applying styles directly to the menu item, improving DOM clarity.
+
+  **Affected components:** Menu
+
+- 0257ada: Added `react-aria`, `react-stately`, `@react-aria/interactions`, `@react-stately/layout`, and `@react-stately/overlays` as dependencies.
+- Updated dependencies
+  - @backstage/version-bridge@1.0.12
+
+## 0.13.0
+
+### Minor Changes
+
+- 768f09d: **BREAKING**: Simplified the neutral background prop API for container components. The explicit `neutral-1`, `neutral-2`, `neutral-3`, and `neutral-auto` values have been removed from `ProviderBg`. They are replaced by a single `'neutral'` value that always auto-increments from the parent context, making it impossible to skip or pin to an explicit neutral level.
+
+  **Migration:**
+
+  Replace any explicit `bg="neutral-1"`, `bg="neutral-2"`, `bg="neutral-3"`, or `bg="neutral-auto"` props with `bg="neutral"`. To achieve a specific neutral level in stories or tests, use nested containers — each additional `bg="neutral"` wrapper increments by one level.
+
+  ```tsx
+  // Before
+  <Box bg="neutral-2">...</Box>
+
+  // After
+  <Box bg="neutral">
+    <Box bg="neutral">...</Box>
+  </Box>
+  ```
+
+  **Affected components:** Box, Flex, Grid, Card, Accordion, Popover, Tooltip, Dialog, Menu
+
+- b42fcdc: **BREAKING**: Removed `--bui-bg-popover` CSS token. Popover, Tooltip, Menu, and Dialog now use `--bui-bg-app` for their outer shell and `Box bg="neutral-1"` for content areas, providing better theme consistency and eliminating a redundant token.
+
+  **Migration:**
+
+  Replace any usage of `--bui-bg-popover` with `--bui-bg-neutral-1` (for content surfaces) or `--bui-bg-app` (for outer shells):
+
+  ```diff
+  - background: var(--bui-bg-popover);
+  + background: var(--bui-bg-neutral-1);
+  ```
+
+  **Affected components:** Popover, Tooltip, Menu, Dialog
+
+- bd3a76e: **BREAKING**: Data attributes rendered by components are now always lowercase. This affects CSS selectors targeting camelCase data attributes.
+
+  **Migration:**
+
+  Update any custom CSS selectors that target camelCase data attributes to use lowercase instead:
+
+  ```diff
+  - [data-startCollapsed='true'] { ... }
+  + [data-startcollapsed='true'] { ... }
+  ```
+
+  **Affected components:** SearchField
+
+- 95702ab: **BREAKING**: Removed deprecated types `ComponentDefinition`, `ClassNamesMap`, `DataAttributeValues`, and `DataAttributesMap` from the public API. These were internal styling infrastructure types that have been replaced by the `defineComponent` system.
+
+  **Migration:**
+
+  Remove any direct usage of these types. Component definitions now use `defineComponent()` and their shapes are not part of the public API contract.
+
+  ```diff
+  - import type { ComponentDefinition, ClassNamesMap } from '@backstage/ui';
+  ```
+
+  If you were reading `definition.dataAttributes`, use `definition.propDefs` instead — props with `dataAttribute: true` in `propDefs` are the equivalent.
+
+- 42f8c9b: **BREAKING**: Centralized client-side routing in `BUIProvider`. Components like Link, ButtonLink, Tabs, Menu, TagGroup, and Table now require a `BUIProvider` rendered inside a React Router context for client-side navigation to work.
+
+  **Migration:**
+
+  This change requires updating `@backstage/plugin-app` and `@backstage/core-app-api` alongside `@backstage/ui`. If you only upgrade `@backstage/ui`, BUI components will fall back to full-page navigation.
+
+  If you cannot upgrade all packages together, or if you have a custom app shell, add a `BUIProvider` inside your Router:
+
+  ```diff
+  + import { BUIProvider } from '@backstage/ui';
+
+    <BrowserRouter>
+  +   <BUIProvider>
+        <AppContent />
+  +   </BUIProvider>
+    </BrowserRouter>
+  ```
+
+  **Affected components:** Link, ButtonLink, Tabs, Menu, TagGroup, Table
+
+- 17d6398: **BREAKING**: Renamed internal CSS classes to match the `Header` component name.
+
+  **Migration:**: If you are targeting these classes directly in your styles, update the following:
+
+  - `bui-HeaderPage` → `bui-Header`
+  - `bui-HeaderPageContent` → `bui-HeaderContent`
+  - `bui-HeaderPageBreadcrumbs` → `bui-HeaderBreadcrumbs`
+  - `bui-HeaderPageTabsWrapper` → `bui-HeaderTabsWrapper`
+  - `bui-HeaderPageControls` → `bui-HeaderControls`
+
+  **Affected components:**: Header
+
+- 9d5f3ba: Removed redundant `selected` and `indeterminate` props from the `Checkbox` component. Use the `isSelected` and `isIndeterminate` props instead, which are the standard React Aria props and already handle both the checkbox behaviour and the corresponding CSS data attributes.
+
+  **Migration:**
+  Replace any usage of the `selected` and `indeterminate` props on `Checkbox` with the `isSelected` and `isIndeterminate` props. Note that the checked state and related CSS data attributes (such as `data-selected` and `data-indeterminate`) are now driven by React Aria, so any custom logic that previously inspected or set these via the old props should instead rely on the React Aria-managed state and attributes exposed through the new props.
+
+  **Affected components:** Checkbox
+
+### Patch Changes
+
+- 04d9d8d: Added `List` and `ListRow` components. These provide a standalone, accessible list of interactive rows built on top of React Aria's `GridList` and `GridListItem` primitives. Rows support icons, descriptions, actions, menus, and single or multiple selection modes.
+
+  **Affected components:** List, ListRow
+
+- a1f4bee: Made Accordion a `bg` provider so nested components like Button auto-increment their background level. Updated `useDefinition` to resolve `bg` `propDef` defaults for provider components.
+- db92751: Added interactive support to the `Card` component. Pass `onPress` to make the entire card surface pressable, or `href` to make it navigate to a URL. A transparent overlay handles the interaction while nested buttons and links remain independently clickable.
+- 12d8afe: Added analytics capabilities to the component library. Components with navigation behavior (Link, ButtonLink, Tab, MenuItem, Tag, Row) now fire analytics events on click when a `BUIProvider` is present.
+
+  New exports: `BUIProvider`, `useAnalytics`, `getNodeText`, and associated types (`AnalyticsTracker`, `UseAnalyticsFn`, `BUIProviderProps`, `AnalyticsEventAttributes`).
+
+  Components with analytics support now accept a `noTrack` prop to suppress event firing.
+
+  **Affected components:** Link, ButtonLink, Tab, MenuItem, Tag, Row
+
+- b838cc9: Added a `loading` prop and `data-loading` data attribute to `TableRoot`, allowing consumers to distinguish between stale data and initial loading states. Both `stale` and `loading` set `aria-busy` on the table.
+
+  Affected components: TableRoot
+
+- 690786f: Improved the `Table` component loading state to show a skeleton UI with visible headers instead of plain "Loading..." text. The table now renders its full structure during loading, with animated skeleton rows in place of data. The loading state includes proper accessibility support with `aria-busy` on the table and screen reader announcements.
+
+  Affected components: Table
+
+- 58224d3: Fixed neutral-1 hover & pressed state in light mode.
+- 95702ab: Migrated all components from `useStyles` to `useDefinition` hook. Exported `OwnProps` types for each component, enabling better type composition for consumers.
+
+  **Affected components:** Avatar, Checkbox, Container, Dialog, FieldError, FieldLabel, Flex, FullPage, Grid, HeaderPage, Link, Menu, PasswordField, PluginHeader, Popover, RadioGroup, SearchField, Select, Skeleton, Switch, Table, TablePagination, Tabs, TagGroup, Text, TextField, ToggleButton, ToggleButtonGroup, Tooltip, VisuallyHidden
+
+- 430d5ed: Fixed interactive cards so that CardBody can scroll when the card has a constrained height. Previously, the overlay element blocked scroll events.
+
+  **Affected components:** Card
+
+- 4c2c350: Removed the `transition` on `Container` padding to prevent an unwanted animation when the viewport is resized.
+
+  Affected components: Container
+
+- e0b7eb0: Fixed --bui-fg-success token in light mode to be more accessible.
+- ad7c883: Deprecated the `HeaderPage` component name in favor of `Header`. The old `HeaderPage`, `HeaderPageProps`, `HeaderPageOwnProps`, `HeaderPageBreadcrumb`, and `HeaderPageDefinition` exports are still available as deprecated aliases.
+- 0ebde15: Added documentation for the table cell wrapper requirement to TSDoc comments for `Cell`, `CellText`, `CellProfile`, `ColumnConfig`, and `RowRenderFn`.
+- d9d2dd6: Added `SearchAutocomplete` and `SearchAutocompleteItem` components for building accessible search-with-results patterns. Built on React Aria's Autocomplete with keyboard navigation and screen reader support. Designed for async/external search results with a configurable popover width.
+
+  **Affected components:** SearchAutocomplete, SearchAutocompleteItem
+
+- a6b84e1: Made Checkbox `children` optional and added a dev warning when neither a visible label, `aria-label`, nor `aria-labelledby` is provided. The label wrapper div is no longer rendered when there are no children, removing the unnecessary gap.
+
+  **Affected components:** Checkbox
+
+- b99f6d5: Fixed `Dialog` content overflowing when no `height` prop is set. The dialog now grows with its content and scrolls when content exceeds the viewport height.
+
+  **Affected components**: Dialog
+
+- 2f581de: Fixed focus ring styles to use React Aria's `[data-focus-visible]` data attribute instead of the native CSS `:focus-visible` pseudo-class. This ensures keyboard focus rings render reliably when focus is managed programmatically by React Aria (e.g. inside a GridList, Menu, or Select).
+
+  **Affected components:** Accordion, Button, ButtonIcon, ButtonLink, Card, List, Menu, Select, ToggleButtonGroup
+
+- 17d6398: Fixed incorrect bottom spacing caused by `Container` using `padding-bottom` for its default bottom spacing. Changed to `margin-bottom` and prevented it from applying when `Container` is used as the `Header` root element.
+
+  **Affected components:** Container, Header
+
+- 2e5c651: Fixed `PluginHeader` to avoid triggering `ResizeObserver loop completed with undelivered notifications` warnings when used in layouts that react to the header height, such as pages that use `FullPage`.
+
+  **Affected components:** PluginHeader
+
+- d4fa5b4: Fixed tab `matchStrategy` matching to ignore query parameters and hash fragments in tab `href` values. Previously, tabs with query params in their `href` (e.g., `/page?group=foo`) would never show as active since matching compared the full `href` string against `location.pathname` which never includes query params.
+
+  **Affected components:** Tabs, PluginHeader
+
+- bc42b60: Fixed Table component to use current `--bui-bg-neutral-1` tokens instead of the removed `--bui-bg-tint` tokens, restoring row hover, selected, pressed, and disabled background colors.
+- 9314ff5: Fixed a bug in the `useTable` hook where the loading skeleton was never shown for `complete` mode when using `getData`. The initial data state was an empty array instead of `undefined`, causing the `Table` component to skip the loading state.
+- f42f4cc: Fixed Table column headers overflowing and wrapping when there is not enough space. Headers now truncate with ellipsis instead.
+
+  **Affected components:** Table
+
+- 1f9682b: Fixed Table row hover, selected, pressed, and disabled background states to use the correct neutral token level based on the container background.
+
+  **Affected components:** Table
+
+- fbd5c5a: Fixed Table rows showing a pointer cursor when not interactive. Rows now only show `cursor: pointer` when they have an `href`, are selectable, or are pressable.
+
+  **Affected components:** Table
+
+- 612c217: Fixed `Table` rows with external `href` values to open in a new tab by automatically applying `target="_blank"` and `rel="noopener noreferrer"`.
+
+  **Affected components**: Table
+
+- 545129a: Updated Table selection checkboxes to use `aria-label` instead of empty fragment children, improving accessibility and removing the unnecessary label gap in the selection cells.
+
+  **Affected components:** Table
+
+- 36987db: Fixed handling of the `style` prop on `Button`, `ButtonIcon`, and `ButtonLink` so that it is now correctly forwarded to the underlying element instead of being silently dropped.
+
+  **Affected components:** Button, ButtonIcon, ButtonLink
+
+- 95702ab: Fixed Link variant default from `'body'` to `'body-medium'` to match actual CSS selectors. The previous default did not correspond to a valid variant value.
+
+  **Affected components:** Link
+
+- 9027b10: Fixed scroll overflow in Menu and Select popover content when constrained by viewport height.
+
+  **Affected components:** Menu, Select
+
+- 7960d54: Added support for native HTML div attributes on the `Flex`, `Grid`, and `Grid.Item` components.
+
+  **Affected components:** Flex, Grid, Grid.Item
+
+- 0559408: Added `virtualized` prop to `Table` component for virtualized rendering of large datasets. Accepts `true` for default row height, `{ rowHeight: number }` for fixed height, or `{ estimatedRowHeight: number }` for variable height rows.
+- 8909359: Fixed focus-visible outline styles for Menu and Select components.
+
+  **Affected components:** Menu, Select
+
+- 12d8afe: Fixed MenuItem `onAction` prop ordering so user-provided `onAction` handlers are chained rather than silently overwritten.
+- aa29b50: Pages created with `PageBlueprint` now render the plugin header by default in the new frontend system.
+- bb66b86: The `Select` trigger now automatically adapts its background colour based on the parent background context.
+
+  **Affected components:** Select
+
+- 4105a78: Merged the internal `PluginHeaderToolbar` component into `PluginHeader`, removing the separate component and its associated types (`PluginHeaderToolbarOwnProps`, `PluginHeaderToolbarProps`) and definition (`PluginHeaderToolbarDefinition`). This is an internal refactor with no changes to the public API of `PluginHeader`.
+
+  **Affected components:** PluginHeader
+
+- 9599697: Updated dependency `globals` to `^17.0.0`.
+- 0f462f8: Improved type safety in `useDefinition` by centralizing prop resolution and strengthening the `BgPropsConstraint` to require that `bg` provider components declare `children` as a required prop in their OwnProps type.
+- 8909359: Added proper cursor styles for RadioGroup items.
+
+  **Affected components:** RadioGroup
+
+- fcaac3b: Fixed `Card` interactive cards not firing the `onPress` handler when clicking the card surface.
+
+  **Affected components**: Card
+
+- b303857: Fixed `isRequired` prop not being passed to the underlying React Aria field components in TextField, SearchField, and PasswordField. Previously, `isRequired` was consumed locally for the secondary label text but never forwarded, which meant the input elements lacked `aria-required="true"` and React Aria's built-in required validation was not activated.
+
+  **Affected components:** TextField, SearchField, PasswordField
+
+- 934ac03: `SearchField` and `TextField` now automatically adapt their background color based on the parent bg context, stepping up one neutral level (e.g. neutral-1 → neutral-2) when placed on a neutral background. `TextField` also gains a focus ring using the `--bui-ring` token.
+
+  **Affected components:** SearchField, TextField
+
+- cd3cb0f: Improved `useBreakpoint` performance by sharing a single set of `matchMedia` listeners across all component instances instead of creating independent listeners per hook call.
+- 36987db: Extended `AlertProps`, `ContainerProps`, `DialogBodyProps`, and `FieldLabelProps` with native div element props to allow passing attributes like `aria-*` and `data-*`.
+
+  **Affected components:** Alert, Container, DialogBody, FieldLabel
+
+## 0.13.0-next.2
+
+### Patch Changes
+
+- db92751: Added interactive support to the `Card` component. Pass `onPress` to make the entire card surface pressable, or `href` to make it navigate to a URL. A transparent overlay handles the interaction while nested buttons and links remain independently clickable.
+- 12d8afe: Added analytics capabilities to the component library. Components with navigation behavior (Link, ButtonLink, Tab, MenuItem, Tag, Row) now fire analytics events on click when a `BUIProvider` is present.
+
+  New exports: `BUIProvider`, `useAnalytics`, `getNodeText`, and associated types (`AnalyticsTracker`, `UseAnalyticsFn`, `BUIProviderProps`, `AnalyticsEventAttributes`).
+
+  Components with analytics support now accept a `noTrack` prop to suppress event firing.
+
+  **Affected components:** Link, ButtonLink, Tab, MenuItem, Tag, Row
+
+- 430d5ed: Fixed interactive cards so that CardBody can scroll when the card has a constrained height. Previously, the overlay element blocked scroll events.
+
+  **Affected components:** Card
+
+- ad7c883: Deprecated the `HeaderPage` component name in favor of `Header`. The old `HeaderPage`, `HeaderPageProps`, `HeaderPageOwnProps`, `HeaderPageBreadcrumb`, and `HeaderPageDefinition` exports are still available as deprecated aliases.
+- f42f4cc: Fixed Table column headers overflowing and wrapping when there is not enough space. Headers now truncate with ellipsis instead.
+
+  **Affected components:** Table
+
+- fbd5c5a: Fixed Table rows showing a pointer cursor when not interactive. Rows now only show `cursor: pointer` when they have an `href`, are selectable, or are pressable.
+
+  **Affected components:** Table
+
+- 7960d54: Added support for native HTML div attributes on the `Flex`, `Grid`, and `Grid.Item` components.
+
+  **Affected components:** Flex, Grid, Grid.Item
+
+- 12d8afe: Fixed MenuItem `onAction` prop ordering so user-provided `onAction` handlers are chained rather than silently overwritten.
+- bb66b86: The `Select` trigger now automatically adapts its background colour based on the parent background context.
+
+  **Affected components:** Select
+
+- 934ac03: `SearchField` and `TextField` now automatically adapt their background color based on the parent bg context, stepping up one neutral level (e.g. neutral-1 → neutral-2) when placed on a neutral background. `TextField` also gains a focus ring using the `--bui-ring` token.
+
+  **Affected components:** SearchField, TextField
+
 ## 0.13.0-next.1
 
 ### Minor Changes

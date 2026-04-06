@@ -4,6 +4,12 @@ title: Backend plugins
 description: Creating and Developing Backend plugins
 ---
 
+:::caution Legacy Documentation
+
+This section is part of the legacy plugins documentation. While this page already describes the new backend system patterns, the canonical documentation for building backend plugins has moved to [Building Backend Plugins and Modules](../backend-system/building-plugins-and-modules/01-index.md).
+
+:::
+
 This page describes the process of creating and managing backend plugins in your
 Backstage repository.
 

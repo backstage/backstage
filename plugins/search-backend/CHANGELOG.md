@@ -1,5 +1,56 @@
 # @backstage/plugin-search-backend
 
+## 2.1.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0-next.1
+  - @backstage/backend-openapi-utils@0.6.8-next.1
+  - @backstage/plugin-permission-node@0.10.12-next.1
+  - @backstage/plugin-search-backend-node@1.4.3-next.1
+
+## 2.1.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.1-next.0
+  - @backstage/plugin-permission-node@0.10.12-next.0
+  - @backstage/plugin-search-backend-node@1.4.3-next.0
+  - @backstage/backend-openapi-utils@0.6.8-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-permission-common@0.9.7
+  - @backstage/plugin-search-common@1.2.22
+
+## 2.1.0
+
+### Minor Changes
+
+- 0fbcf23: Migrated OpenAPI schemas to 3.1.
+
+### Patch Changes
+
+- a49a40d: Updated dependency `zod` to `^3.25.76 || ^4.0.0` & migrated to `/v3` or `/v4` imports.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0
+  - @backstage/plugin-permission-common@0.9.7
+  - @backstage/plugin-permission-node@0.10.11
+  - @backstage/backend-openapi-utils@0.6.7
+  - @backstage/plugin-search-backend-node@1.4.2
+
+## 2.1.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0-next.1
+  - @backstage/backend-openapi-utils@0.6.7-next.1
+  - @backstage/plugin-permission-node@0.10.11-next.1
+  - @backstage/plugin-search-backend-node@1.4.2-next.1
+
 ## 2.1.0-next.1
 
 ### Minor Changes

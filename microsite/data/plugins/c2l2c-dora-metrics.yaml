@@ -1,0 +1,11 @@
+---
+title: DORA Metrics
+author: C2L2C
+authorUrl: https://github.com/C2L2C
+category: Monitoring
+description: Per-entity DORA metrics for catalog services. Computes Deployment Frequency, Lead Time, CFR & MTTR from GitHub PRs — multi-environment, trend history, no extra backend.
+documentation: https://github.com/C2L2C/backstage-plugin-dora-metrics#readme
+iconUrl: https://raw.githubusercontent.com/tailwindlabs/heroicons/master/src/24/outline/chart-bar.svg
+npmPackageName: '@c2l2c/backstage-plugin-dora-metrics'
+addedDate: '2026-03-18'
+status: active

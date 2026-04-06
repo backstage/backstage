@@ -14,5 +14,23 @@
  * limitations under the License.
  */
 
-export { createApiRef } from '@backstage/frontend-plugin-api';
-export type { ApiRefConfig } from '@backstage/frontend-plugin-api';
+import {
+  createApiRef as createFrontendApiRef,
+  type ApiRef,
+  type ApiRefConfig,
+} from '@backstage/frontend-plugin-api';
+
+const createFrontendApiRefCompat = createFrontendApiRef as <T>(
+  config: ApiRefConfig,
+) => ApiRef<T>;
+
+/**
+ * Creates a reference to an API.
+ *
+ * @public
+ */
+export function createApiRef<T>(config: ApiRefConfig): ApiRef<T> {
+  return createFrontendApiRefCompat<T>(config);
+}
+
+export type { ApiRefConfig };

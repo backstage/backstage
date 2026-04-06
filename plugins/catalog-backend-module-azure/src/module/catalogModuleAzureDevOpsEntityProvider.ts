@@ -19,10 +19,13 @@ import {
   createBackendModule,
 } from '@backstage/backend-plugin-api';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
+import { catalogScmEventsServiceRef } from '@backstage/plugin-catalog-node/alpha';
+import { eventsServiceRef } from '@backstage/plugin-events-node';
 import {
   AzureBlobStorageEntityProvider,
   AzureDevOpsEntityProvider,
 } from '../providers';
+import { AzureDevOpsScmEventsBridge } from '../events/AzureDevOpsScmEventsBridge';
 
 /**
  * Registers the AzureDevOpsEntityProvider with the catalog processing extension point.
@@ -39,8 +42,19 @@ export const catalogModuleAzureEntityProvider = createBackendModule({
         catalog: catalogProcessingExtensionPoint,
         logger: coreServices.logger,
         scheduler: coreServices.scheduler,
+        events: eventsServiceRef,
+        catalogScmEvents: catalogScmEventsServiceRef,
+        lifecycle: coreServices.lifecycle,
       },
-      async init({ config, catalog, logger, scheduler }) {
+      async init({
+        config,
+        catalog,
+        logger,
+        scheduler,
+        events,
+        catalogScmEvents,
+        lifecycle,
+      }) {
         // Check for Azure Blob Storage provider configuration and register it
         if (config.has('catalog.providers.azureBlob')) {
           catalog.addEntityProvider(
@@ -59,6 +73,23 @@ export const catalogModuleAzureEntityProvider = createBackendModule({
               scheduler,
             }),
           );
+        }
+
+        // Only wire up the SCM events bridge when Azure DevOps provider
+        // configuration is present — Azure Blob Storage users should not be
+        // required to handle Azure DevOps webhook events.
+        if (config.has('catalog.providers.azureDevOps')) {
+          const bridge = new AzureDevOpsScmEventsBridge({
+            logger,
+            events,
+            catalogScmEvents,
+          });
+          lifecycle.addStartupHook(async () => {
+            await bridge.start();
+          });
+          lifecycle.addShutdownHook(async () => {
+            await bridge.stop();
+          });
         }
       },
     });

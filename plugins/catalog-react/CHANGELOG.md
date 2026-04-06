@@ -1,5 +1,87 @@
 # @backstage/plugin-catalog-react
 
+## 2.1.2-next.1
+
+### Patch Changes
+
+- eba2f61: Fixed `EntityInfoCard` header overflowing on narrow screens.
+- 0416216: Fixed entity relation cards (e.g., "Has components") only showing one entity at a time by using `paginationOptions: { type: 'none' }` instead of deriving page size from data length.
+- Updated dependencies
+  - @backstage/ui@0.14.0-next.1
+  - @backstage/frontend-plugin-api@0.16.0-next.1
+  - @backstage/core-compat-api@0.5.10-next.1
+  - @backstage/core-components@0.18.9-next.0
+  - @backstage/core-plugin-api@1.12.5-next.1
+  - @backstage/frontend-test-utils@0.5.2-next.1
+
+## 2.1.1-next.0
+
+### Patch Changes
+
+- 51aacae: Fixed a UI flicker in the catalog entity list where changing a filter would briefly flash stale data before showing the new results.
+- Updated dependencies
+  - @backstage/ui@0.14.0-next.0
+  - @backstage/core-components@0.18.9-next.0
+  - @backstage/frontend-plugin-api@0.15.2-next.0
+  - @backstage/core-compat-api@0.5.10-next.0
+  - @backstage/frontend-test-utils@0.5.2-next.0
+  - @backstage/integration-react@1.2.17-next.0
+  - @backstage/core-plugin-api@1.12.5-next.0
+  - @backstage/catalog-client@1.14.0
+  - @backstage/catalog-model@1.7.7
+  - @backstage/errors@1.2.7
+  - @backstage/filter-predicates@0.1.1
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.12
+  - @backstage/plugin-catalog-common@1.1.8
+  - @backstage/plugin-permission-common@0.9.7
+  - @backstage/plugin-permission-react@0.4.42-next.0
+
+## 2.1.0
+
+### Minor Changes
+
+- c548a0f: Added `EntityDataTable`, `EntityRelationCard`, `entityDataTableColumns`, `entityColumnPresets`, and related types as alpha exports. These replace `EntityTable` and `RelatedEntitiesCard` (from `@backstage/plugin-catalog`) respectively, providing a unified BUI-based pattern for entity table cards.
+- 4d58894: Added `aliases` and `contentOrder` fields to `EntityContentGroupDefinition`, allowing groups to declare alias IDs and control the sort order of their content items.
+- d14b6e0: Exported `useEntityRefLink` hook that returns a function for generating entity page URLs from entity references.
+- 0be2541: Promoted the plugin's translation ref to the stable package entry point. It was previously only available through the alpha entry point.
+- c6080eb: Added `EntityInfoCard` component to `@backstage/plugin-catalog-react` as a BUI-based card wrapper for entity page cards.
+
+### Patch Changes
+
+- a49a40d: Updated dependency `zod` to `^3.25.76 || ^4.0.0` & migrated to `/v3` or `/v4` imports.
+- Updated dependencies
+  - @backstage/ui@0.13.0
+  - @backstage/core-compat-api@0.5.9
+  - @backstage/core-plugin-api@1.12.4
+  - @backstage/core-components@0.18.8
+  - @backstage/frontend-plugin-api@0.15.0
+  - @backstage/catalog-client@1.14.0
+  - @backstage/frontend-test-utils@0.5.1
+  - @backstage/plugin-permission-react@0.4.41
+  - @backstage/filter-predicates@0.1.1
+  - @backstage/plugin-permission-common@0.9.7
+  - @backstage/catalog-model@1.7.7
+  - @backstage/integration-react@1.2.16
+
+## 2.1.0-next.2
+
+### Minor Changes
+
+- d14b6e0: Exported `useEntityRefLink` hook that returns a function for generating entity page URLs from entity references.
+- c6080eb: Added `EntityInfoCard` component to `@backstage/plugin-catalog-react` as a BUI-based card wrapper for entity page cards.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-compat-api@0.5.9-next.2
+  - @backstage/ui@0.13.0-next.2
+  - @backstage/frontend-test-utils@0.5.1-next.2
+  - @backstage/frontend-plugin-api@0.15.0-next.1
+  - @backstage/core-plugin-api@1.12.4-next.1
+  - @backstage/catalog-client@1.14.0-next.2
+  - @backstage/core-components@0.18.8-next.1
+
 ## 2.1.0-next.1
 
 ### Minor Changes

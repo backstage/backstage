@@ -143,7 +143,7 @@ Some things that changeset should NOT contain are:
 
 ### Backstage UI Changeset Format
 
-Changesets for `@backstage/ui` must follow a standardized format to enable proper documentation generation. See [`.changeset/README.md`](.changeset/README.md#backstage-ui-changeset-format) for the complete guide.
+Changesets for `@backstage/ui` must follow a standardized format to enable proper documentation generation. See [`.changeset/README.md`](.changeset/README.md#backstage-ui-changesets) for the complete guide.
 
 **Required structure:**
 

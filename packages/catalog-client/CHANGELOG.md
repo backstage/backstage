@@ -1,5 +1,32 @@
 # @backstage/catalog-client
 
+## 1.14.0
+
+### Minor Changes
+
+- 972f686: Added support for the `query` field in `getEntitiesByRefs` requests, enabling predicate-based filtering with `$all`, `$any`, `$not`, `$exists`, `$in`, `$contains`, and `$hasPrefix` operators.
+- 5d95e8e: Add an `onConflict` option to location creation that can refresh an existing location instead of throwing a conflict error.
+- 56c908e: Added support for the `query` field in `getEntityFacets` requests, enabling predicate-based filtering with `$all`, `$any`, `$not`, `$exists`, `$in`, `$contains`, and `$hasPrefix` operators.
+- 0fbcf23: Migrated OpenAPI schemas to 3.1.
+- 51e23eb: Added predicate-based entity filtering via POST /entities/by-query endpoint.
+
+  Supports `$all`, `$any`, `$not`, `$exists`, `$in`, `$hasPrefix`, and (partially) `$contains` operators for expressive entity queries. Integrated into the existing `queryEntities` flow with full cursor-based pagination, permission enforcement, and `totalItems` support.
+
+  The catalog client's `queryEntities()` method automatically routes to the POST endpoint when a `query` predicate is provided.
+
+### Patch Changes
+
+- d2494d6: Minor update to catalog client docs
+- Updated dependencies
+  - @backstage/filter-predicates@0.1.1
+  - @backstage/catalog-model@1.7.7
+
+## 1.14.0-next.2
+
+### Minor Changes
+
+- 5d95e8e: Add an `onConflict` option to location creation that can refresh an existing location instead of throwing a conflict error.
+
 ## 1.14.0-next.1
 
 ### Minor Changes

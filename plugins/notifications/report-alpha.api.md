@@ -120,7 +120,7 @@ const _default: OverridableFrontendPlugin<
 >;
 export default _default;
 
-// @alpha (undocumented)
+// @alpha @deprecated (undocumented)
 export const notificationsTranslationRef: TranslationRef<
   'plugin.notifications',
   {

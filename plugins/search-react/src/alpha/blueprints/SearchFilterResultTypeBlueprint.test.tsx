@@ -47,6 +47,7 @@ describe('SearchFilterResultTypeBlueprint', () => {
         "configSchema": undefined,
         "disabled": false,
         "factory": [Function],
+        "if": undefined,
         "inputs": {},
         "kind": "search-filter-result-type",
         "name": "test",

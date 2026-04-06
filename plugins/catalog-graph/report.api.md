@@ -15,6 +15,7 @@ import { MouseEvent as MouseEvent_2 } from 'react';
 import { MouseEventHandler } from 'react';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
+import { TranslationRef } from '@backstage/frontend-plugin-api';
 
 // @public
 export const ALL_RELATION_PAIRS: RelationPairs;
@@ -68,6 +69,34 @@ export const catalogGraphPlugin: BackstagePlugin<
 
 // @public
 export const catalogGraphRouteRef: RouteRef<undefined>;
+
+// @public (undocumented)
+export const catalogGraphTranslationRef: TranslationRef<
+  'catalog-graph',
+  {
+    readonly 'catalogGraphCard.title': 'Relations';
+    readonly 'catalogGraphCard.deepLinkTitle': 'View graph';
+    readonly 'catalogGraphPage.title': 'Catalog Graph';
+    readonly 'catalogGraphPage.filterToggleButtonTitle': 'Filters';
+    readonly 'catalogGraphPage.supportButtonDescription': 'Start tracking your component in by adding it to the software catalog.';
+    readonly 'catalogGraphPage.simplifiedSwitchLabel': 'Simplified';
+    readonly 'catalogGraphPage.mergeRelationsSwitchLabel': 'Merge relations';
+    readonly 'catalogGraphPage.zoomOutDescription': 'Use pinch & zoom to move around the diagram. Click to change active node, shift click to navigate to entity.';
+    readonly 'catalogGraphPage.curveFilter.title': 'Curve';
+    readonly 'catalogGraphPage.curveFilter.curveStepBefore': 'Step Before';
+    readonly 'catalogGraphPage.curveFilter.curveMonotoneX': 'Monotone X';
+    readonly 'catalogGraphPage.directionFilter.title': 'Direction';
+    readonly 'catalogGraphPage.directionFilter.leftToRight': 'Left to right';
+    readonly 'catalogGraphPage.directionFilter.rightToLeft': 'Right to left';
+    readonly 'catalogGraphPage.directionFilter.topToBottom': 'Top to bottom';
+    readonly 'catalogGraphPage.directionFilter.bottomToTop': 'Bottom to top';
+    readonly 'catalogGraphPage.maxDepthFilter.title': 'Max depth';
+    readonly 'catalogGraphPage.maxDepthFilter.inputPlaceholder': '∞ Infinite';
+    readonly 'catalogGraphPage.maxDepthFilter.clearButtonAriaLabel': 'clear max depth';
+    readonly 'catalogGraphPage.selectedKindsFilter.title': 'Kinds';
+    readonly 'catalogGraphPage.selectedRelationsFilter.title': 'Relations';
+  }
+>;
 
 // @public (undocumented)
 export type CustomLabelClassKey = 'text' | 'secondary';

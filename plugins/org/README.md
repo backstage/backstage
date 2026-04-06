@@ -1,8 +1,5 @@
 # Org Plugin for Backstage
 
-> Disclaimer:
-> If you are looking for documentation on the experimental new frontend system support, please go [here](./README-alpha.md).
-
 ## Features
 
 - Show Group Page
@@ -20,6 +17,33 @@ Here's an example of what the Group Page looks like:
 Here's an example of what the User Profile looks like:
 
 ![Group Page example](./docs/user-profile-example.png)
+
+## Installation
+
+```bash
+# From your Backstage root directory
+yarn --cwd packages/app add @backstage/plugin-org
+```
+
+Once installed, the plugin is automatically available in your app through the default feature discovery. For more details and alternative installation methods, see [installing plugins](https://backstage.io/docs/frontend-system/building-apps/installing-plugins).
+
+You can enable entity cards on the catalog entity page through configuration:
+
+```yaml
+# app-config.yaml
+app:
+  extensions:
+    - entity-card:org/group-profile
+    - entity-card:org/members-list
+    - entity-card:org/ownership
+    - entity-card:org/user-profile
+```
+
+For the full list of available extensions and their configuration options, see the [README-alpha.md](./README-alpha.md).
+
+## Old Frontend System
+
+If your Backstage app uses the old frontend system, you need to manually wire the plugin into your app as outlined in this section. If you are on the new frontend system, you can skip this.
 
 ### MyGroupsSidebarItem
 

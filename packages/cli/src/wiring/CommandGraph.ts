@@ -13,91 +13,146 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { BackstageCommand } from './types';
-
-type Node = TreeNode | LeafNode;
-
-interface TreeNode {
-  $$type: '@tree/root';
-  name: string;
-  children: TreeNode[];
-}
-
-interface LeafNode {
-  $$type: '@tree/leaf';
-  name: string;
-  command: BackstageCommand;
-}
+import {
+  CommandNode,
+  OpaqueCommandTreeNode,
+  OpaqueCommandLeafNode,
+  OpaqueCliModule,
+} from '@internal/cli';
+import { CliCommand, CliModule } from './types';
 
 /**
  * A sparse graph of commands.
  */
 export class CommandGraph {
-  private graph: Node[] = [];
+  private graph: CommandNode[] = [];
 
   /**
    * Adds a command to the graph. The graph is sparse, so we use the path to determine the nodes
    *    to traverse. Only leaf nodes should have a command/action.
    */
-  add(command: BackstageCommand) {
+  add(command: CliCommand, module?: CliModule) {
     const path = command.path;
     let current = this.graph;
     for (let i = 0; i < path.length - 1; i++) {
       const name = path[i];
-      let next = current.find(n => n.name === name);
+      let next = current.find(
+        n =>
+          (OpaqueCommandTreeNode.isType(n) &&
+            OpaqueCommandTreeNode.toInternal(n).name === name) ||
+          (OpaqueCommandLeafNode.isType(n) &&
+            OpaqueCommandLeafNode.toInternal(n).name === name),
+      );
       if (!next) {
-        next = { $$type: '@tree/root', name, children: [] };
+        next = OpaqueCommandTreeNode.createInstance('v1', {
+          name,
+          children: [],
+        });
         current.push(next);
-      } else if (next.$$type === '@tree/leaf') {
+      } else if (OpaqueCommandLeafNode.isType(next)) {
         throw new Error(
-          `Command already exists at path: "${path.slice(0, i).join(' ')}"`,
+          formatConflictError(
+            path,
+            module,
+            OpaqueCommandLeafNode.toInternal(next).module,
+          ),
         );
       }
-      current = next.children;
+      current = OpaqueCommandTreeNode.toInternal(next).children;
     }
-    const last = current.find(n => n.name === path[path.length - 1]);
-    if (last && last.$$type === '@tree/leaf') {
+    const lastName = path[path.length - 1];
+    const last = current.find(n => {
+      if (OpaqueCommandTreeNode.isType(n)) {
+        return OpaqueCommandTreeNode.toInternal(n).name === lastName;
+      }
+      return OpaqueCommandLeafNode.toInternal(n).name === lastName;
+    });
+    if (last && OpaqueCommandLeafNode.isType(last)) {
       throw new Error(
-        `Command already exists at path: "${path.slice(0, -1).join(' ')}"`,
+        formatConflictError(
+          path,
+          module,
+          OpaqueCommandLeafNode.toInternal(last).module,
+        ),
       );
     } else {
-      current.push({
-        $$type: '@tree/leaf',
-        name: path[path.length - 1],
-        command,
-      });
+      current.push(
+        OpaqueCommandLeafNode.createInstance('v1', {
+          name: lastName,
+          command,
+          module,
+        }),
+      );
     }
   }
 
   /**
    * Given a path, try to find a command that matches it.
    */
-  find(path: string[]): BackstageCommand | undefined {
+  find(path: string[]): CliCommand | undefined {
     let current = this.graph;
     for (let i = 0; i < path.length - 1; i++) {
       const name = path[i];
-      const next = current.find(n => n.name === name);
-      if (!next) {
-        return undefined;
-      } else if (next.$$type === '@tree/leaf') {
+      const next = current.find(n => {
+        if (OpaqueCommandTreeNode.isType(n)) {
+          return OpaqueCommandTreeNode.toInternal(n).name === name;
+        }
+        return OpaqueCommandLeafNode.toInternal(n).name === name;
+      });
+      if (!next || OpaqueCommandLeafNode.isType(next)) {
         return undefined;
       }
-      current = next.children;
+      current = OpaqueCommandTreeNode.toInternal(next).children;
     }
-    const last = current.find(n => n.name === path[path.length - 1]);
-    if (!last || last.$$type === '@tree/root') {
+    const lastName = path[path.length - 1];
+    const last = current.find(n => {
+      if (OpaqueCommandTreeNode.isType(n)) {
+        return OpaqueCommandTreeNode.toInternal(n).name === lastName;
+      }
+      return OpaqueCommandLeafNode.toInternal(n).name === lastName;
+    });
+    if (!last || OpaqueCommandTreeNode.isType(last)) {
       return undefined;
     }
-    return last?.command;
+    return OpaqueCommandLeafNode.toInternal(last).command;
   }
 
-  atDepth(depth: number): Node[] {
+  atDepth(depth: number): CommandNode[] {
     let current = this.graph;
     for (let i = 0; i < depth; i++) {
       current = current.flatMap(n =>
-        n.$$type === '@tree/root' ? n.children : [],
+        OpaqueCommandTreeNode.isType(n)
+          ? OpaqueCommandTreeNode.toInternal(n).children
+          : [],
       );
     }
     return current;
   }
+}
+
+function getModuleName(module?: CliModule): string | undefined {
+  if (module && OpaqueCliModule.isType(module)) {
+    return OpaqueCliModule.toInternal(module).packageName;
+  }
+  return undefined;
+}
+
+function formatConflictError(
+  path: string[],
+  newModule?: CliModule,
+  existingModule?: CliModule,
+): string {
+  const cmd = path.join(' ');
+  const newPkg = getModuleName(newModule);
+  const existingPkg = getModuleName(existingModule);
+  if (newPkg && existingPkg) {
+    return `Command "${cmd}" from "${newPkg}" conflicts with an existing command from "${existingPkg}"`;
+  }
+  if (newPkg) {
+    return `Command "${cmd}" from "${newPkg}" conflicts with an existing command`;
+  }
+  if (existingPkg) {
+    return `Command "${cmd}" conflicts with an existing command from "${existingPkg}"`;
+  }
+  return `Command "${cmd}" conflicts with an existing command`;
 }

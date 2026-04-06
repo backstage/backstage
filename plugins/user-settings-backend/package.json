@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-user-settings-backend",
-  "version": "0.4.1-next.0",
+  "version": "0.4.2-next.1",
   "description": "The Backstage backend plugin to manage user settings",
   "backstage": {
     "role": "backend-plugin",
@@ -59,7 +59,7 @@
     "express-promise-router": "^4.1.0",
     "knex": "^3.0.0",
     "p-limit": "^3.1.0",
-    "zod": "^3.25.76"
+    "zod": "^3.25.76 || ^4.0.0"
   },
   "devDependencies": {
     "@backstage/backend-defaults": "workspace:^",

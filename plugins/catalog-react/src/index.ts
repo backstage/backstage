@@ -34,3 +34,4 @@ export * from './overridableComponents';
 export { getEntityRelations, getEntitySourceLocation } from './utils';
 export type { EntitySourceLocation } from './utils';
 export * from './deprecated';
+export { catalogReactTranslationRef } from './translation';

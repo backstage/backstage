@@ -402,3 +402,46 @@ spec:
   definition:
     $openapi: ./spec/openapi.yaml # by using $openapi Backstage will now resolve all $ref instances
 ```
+
+## Backstage OpenAPI Module
+
+As Backstage increasingly uses OpenAPI to define its core APIs (such as the Catalog and Scaffolder), discovering and interacting with these APIs is essential for integrating external tools.
+
+You can install the **Backstage OpenAPI Module** to easily expose the OpenAPI specifications for your Backstage instance plugins directly into the catalog.
+
+### Installation
+
+1. Install the module in your backend:
+
+```bash
+yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-backstage-openapi
+```
+
+2. Register the module in your backend:
+
+```ts title="packages/backend/src/index.ts"
+backend.add(
+  import('@backstage/plugin-catalog-backend-module-backstage-openapi'),
+);
+```
+
+3. Add the configuration to your `app-config.yaml`:
+
+```yaml title="app-config.yaml"
+catalog:
+  providers:
+    backstageOpenapi:
+      plugins:
+        - catalog
+        - scaffolder
+      # Optional configuration:
+      # definitionFormat controls how generated definitions are serialized.
+      # Supported values: 'json' (default) or 'yaml'.
+      # definitionFormat: json
+      # entityOverrides can be used to override parts of the produced entities.
+      # For example, to add a tag to all generated APIs:
+      # entityOverrides:
+      #   metadata:
+      #     tags:
+      #       - from-openapi
+```

@@ -19,7 +19,6 @@ import { useLink } from 'react-aria';
 import type { LinkProps } from './types';
 import { useDefinition } from '../../hooks/useDefinition';
 import { LinkDefinition } from './definition';
-import { InternalLinkProvider } from '../InternalLinkProvider';
 import { getNodeText } from '../../analytics/getNodeText';
 
 const LinkInternal = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
@@ -62,13 +61,13 @@ const LinkInternal = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
 
 LinkInternal.displayName = 'LinkInternal';
 
-/** @public */
+/**
+ * A styled anchor element that supports analytics event tracking on click.
+ *
+ * @public
+ */
 export const Link = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
-  return (
-    <InternalLinkProvider href={props.href}>
-      <LinkInternal {...props} ref={ref} />
-    </InternalLinkProvider>
-  );
+  return <LinkInternal {...props} ref={ref} />;
 });
 
 Link.displayName = 'Link';

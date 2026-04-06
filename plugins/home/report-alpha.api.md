@@ -206,7 +206,7 @@ const _default: OverridableFrontendPlugin<
 >;
 export default _default;
 
-// @alpha
+// @alpha @deprecated (undocumented)
 export const homeTranslationRef: TranslationRef<
   'home',
   {

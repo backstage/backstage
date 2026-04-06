@@ -69,7 +69,7 @@
     }
   }
 
-  .bui-Card[data-interactive]:has(.bui-CardTrigger:focus-visible) {
+  .bui-Card[data-interactive]:has(.bui-CardTrigger[data-focus-visible]) {
     outline: 2px solid var(--bui-ring);
     outline-offset: -2px;
   }

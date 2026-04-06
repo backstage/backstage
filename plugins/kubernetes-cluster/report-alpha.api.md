@@ -5,7 +5,7 @@
 ```ts
 import { TranslationRef } from '@backstage/frontend-plugin-api';
 
-// @alpha (undocumented)
+// @alpha @deprecated (undocumented)
 export const kubernetesClusterTranslationRef: TranslationRef<
   'kubernetes-cluster',
   {

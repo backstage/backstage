@@ -1,5 +1,77 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.20.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@2.1.2-next.1
+  - @backstage/frontend-plugin-api@0.16.0-next.1
+  - @backstage/core-components@0.18.9-next.0
+  - @backstage/core-plugin-api@1.12.5-next.1
+  - @backstage/frontend-test-utils@0.5.2-next.1
+
+## 1.20.1-next.0
+
+### Patch Changes
+
+- bdbbf00: build(deps): bump `flatted` from 3.4.1 to 3.4.2
+- Updated dependencies
+  - @backstage/plugin-catalog-react@2.1.1-next.0
+  - @backstage/core-components@0.18.9-next.0
+  - @backstage/frontend-plugin-api@0.15.2-next.0
+  - @backstage/frontend-test-utils@0.5.2-next.0
+  - @backstage/core-plugin-api@1.12.5-next.0
+  - @backstage/catalog-client@1.14.0
+  - @backstage/catalog-model@1.7.7
+  - @backstage/theme@0.7.2
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.12
+  - @backstage/plugin-permission-react@0.4.42-next.0
+  - @backstage/plugin-scaffolder-common@2.0.0
+
+## 1.20.0
+
+### Minor Changes
+
+- 0be2541: Promoted the plugin's translation ref to the stable package entry point. It was previously only available through the alpha entry point.
+- 470f72d: The `LogViewer` component from `@backstage/core-components` now supports downloading logs if a callback is passed to `onDownloadLogs`
+
+### Patch Changes
+
+- 004b5c1: Added back `formFieldsApiRef` and `ScaffolderFormFieldsApi` as alpha exports.
+- bd31ddd: Updated dependency `flatted` to `3.3.4`.
+- f598909: Added `scaffolderApiMock` test utility, exported from `@backstage/plugin-scaffolder-react/testUtils`.
+- a49a40d: Updated dependency `zod` to `^3.25.76 || ^4.0.0` & migrated to `/v3` or `/v4` imports.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@2.1.0
+  - @backstage/core-plugin-api@1.12.4
+  - @backstage/core-components@0.18.8
+  - @backstage/frontend-plugin-api@0.15.0
+  - @backstage/catalog-client@1.14.0
+  - @backstage/frontend-test-utils@0.5.1
+  - @backstage/plugin-permission-react@0.4.41
+  - @backstage/plugin-scaffolder-common@2.0.0
+  - @backstage/catalog-model@1.7.7
+
+## 1.20.0-next.2
+
+### Minor Changes
+
+- 470f72d: The `LogViewer` component from `@backstage/core-components` now supports downloading logs if a callback is passed to `onDownloadLogs`
+
+### Patch Changes
+
+- bd31ddd: Updated dependency `flatted` to `3.3.4`.
+- Updated dependencies
+  - @backstage/frontend-test-utils@0.5.1-next.2
+  - @backstage/frontend-plugin-api@0.15.0-next.1
+  - @backstage/core-plugin-api@1.12.4-next.1
+  - @backstage/catalog-client@1.14.0-next.2
+  - @backstage/plugin-catalog-react@2.1.0-next.2
+  - @backstage/core-components@0.18.8-next.1
+  - @backstage/plugin-scaffolder-common@2.0.0-next.2
+
 ## 1.19.8-next.1
 
 ### Patch Changes

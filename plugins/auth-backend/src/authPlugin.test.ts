@@ -100,7 +100,7 @@ describe('authPlugin', () => {
       const token = refreshRes.body.backstageIdentity.token;
       const decoded = JSON.parse(atob(token.split('.')[1]));
       expect(decoded.sub).toEqual(expectedIdentity.userEntityRef);
-      expect(decoded.ent).toEqual(expectedIdentity.ownershipEntityRefs);
+      expect('ent' in decoded).toBeFalsy();
 
       const userInfoRes = await request(server)
         .get('/api/auth/v1/userinfo')
@@ -115,7 +115,7 @@ describe('authPlugin', () => {
       });
     });
 
-    it('should omit ownership claims from the token when the config is set', async () => {
+    it('should include ownership claims in the token when the config is set to false', async () => {
       const { server } = await startTestBackend({
         features: [
           authPlugin,
@@ -127,7 +127,7 @@ describe('authPlugin', () => {
                 baseUrl: 'http://localhost',
               },
               auth: {
-                omitIdentityTokenOwnershipClaim: true,
+                omitIdentityTokenOwnershipClaim: false,
                 ...mockProvidersConfig,
               },
             },
@@ -149,7 +149,7 @@ describe('authPlugin', () => {
       const token = refreshRes.body.backstageIdentity.token;
       const decoded = JSON.parse(atob(token.split('.')[1]));
       expect(decoded.sub).toEqual(expectedIdentity.userEntityRef);
-      expect(decoded.ent).toBeUndefined();
+      expect(decoded.ent).toEqual(expectedIdentity.ownershipEntityRefs);
 
       const userInfoRes = await request(server)
         .get('/api/auth/v1/userinfo')

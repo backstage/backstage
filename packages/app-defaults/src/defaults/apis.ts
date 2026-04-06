@@ -113,6 +113,7 @@ export const apis = [
             identityApi,
             config: configApi,
           }),
+          FetchMiddlewares.clarifyFailures(),
         ],
       });
     },

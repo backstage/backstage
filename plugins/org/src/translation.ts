@@ -16,7 +16,7 @@
 import { createTranslationRef } from '@backstage/frontend-plugin-api';
 
 /**
- * @alpha
+ * @public
  */
 export const orgTranslationRef = createTranslationRef({
   id: 'org',

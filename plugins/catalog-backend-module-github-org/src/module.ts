@@ -23,6 +23,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import {
+  buildDefaultUserTransformer,
   GithubMultiOrgEntityProvider,
   TeamTransformer,
   UserTransformer,
@@ -116,7 +117,11 @@ export const catalogModuleGithubOrgEntityProvider = createBackendModule({
                 definition.schedule,
               ),
               logger,
-              userTransformer,
+              userTransformer:
+                userTransformer ??
+                buildDefaultUserTransformer({
+                  useVerifiedEmails: definition.useVerifiedEmails,
+                }),
               teamTransformer,
               alwaysUseDefaultNamespace:
                 definitions.length === 1 && definition.orgs?.length === 1,
@@ -141,6 +146,7 @@ function readDefinitionsFromConfig(rootConfig: Config): Array<{
     organizationMembers?: number;
   };
   excludeSuspendedUsers?: boolean;
+  useVerifiedEmails?: boolean;
 }> {
   const baseKey = 'catalog.providers.githubOrg';
   const baseConfig = rootConfig.getOptional(baseKey);
@@ -170,5 +176,7 @@ function readDefinitionsFromConfig(rootConfig: Config): Array<{
       : undefined,
     excludeSuspendedUsers:
       c.getOptionalBoolean('excludeSuspendedUsers') ?? false,
+    useVerifiedEmails:
+      c.getOptionalBoolean('defaultUserTransformer.useVerifiedEmails') ?? false,
   }));
 }

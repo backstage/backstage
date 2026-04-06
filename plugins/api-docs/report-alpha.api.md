@@ -26,7 +26,7 @@ import { RouteRef } from '@backstage/core-plugin-api';
 import { RouteRef as RouteRef_2 } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
 
-// @alpha (undocumented)
+// @alpha @deprecated (undocumented)
 export const apiDocsTranslationRef: TranslationRef<
   'api-docs',
   {
@@ -58,7 +58,7 @@ export const apiDocsTranslationRef: TranslationRef<
     readonly 'providingComponentsCard.error.title': 'Could not load components';
     readonly 'providingComponentsCard.title': 'Providers';
     readonly 'providingComponentsCard.emptyContent.title': 'No component provides this API.';
-    readonly apisCardHelpLinkTitle: 'Learn how to change this';
+    readonly apisCardHelpLinkTitle: 'Learn how to change this.';
   }
 >;
 

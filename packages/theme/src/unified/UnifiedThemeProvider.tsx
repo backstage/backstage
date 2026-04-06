@@ -47,6 +47,9 @@ export interface UnifiedThemeProviderProps {
  * This call needs to be in the same module as the `UnifiedThemeProvider` to ensure that it doesn't get removed by tree shaking
  */
 ClassNameGenerator.configure(componentName => {
+  if ((componentName ?? '').startsWith('v5-')) {
+    return componentName;
+  }
   return `v5-${componentName}`;
 });
 

@@ -101,6 +101,7 @@ export const getCombinedClusterSupplier = (
         case 'gke':
           return GkeClusterLocator.fromConfig(
             clusterLocatorMethod,
+            logger,
             refreshInterval,
           );
         default:

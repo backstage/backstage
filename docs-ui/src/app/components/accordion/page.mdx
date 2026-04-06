@@ -140,11 +140,18 @@ Allows multiple panels to be open simultaneously.
 <Snippet
   align="center"
   py={4}
-  height={280}
+  height="auto"
   preview={<GroupMultipleOpen />}
   code={groupMultipleOpenSnippet}
 />
 
 <Theming definition={AccordionDefinition} />
 
-<ChangelogComponent component="accordion" />
+<ChangelogComponent
+  component={[
+    'accordion',
+    'accordion-trigger',
+    'accordion-panel',
+    'accordion-group',
+  ]}
+/>

@@ -41,12 +41,20 @@ import { Box } from '../Box';
 import { BgReset } from '../../hooks/useBg';
 import { Flex } from '../Flex';
 
-/** @public */
+/**
+ * A wrapper that connects a trigger element to a Dialog, controlling its open and close state.
+ *
+ * @public
+ */
 export const DialogTrigger = (props: DialogTriggerProps) => {
   return <RADialogTrigger {...props} />;
 };
 
-/** @public */
+/**
+ * A modal overlay that presents content requiring user interaction or acknowledgment, dismissible by clicking outside or pressing Escape.
+ *
+ * @public
+ */
 export const Dialog = forwardRef<React.ElementRef<typeof Modal>, DialogProps>(
   (props, ref) => {
     const { ownProps, restProps } = useDefinition(DialogDefinition, props, {
@@ -67,11 +75,12 @@ export const Dialog = forwardRef<React.ElementRef<typeof Modal>, DialogProps>(
           style={{
             ['--bui-dialog-min-width' as keyof React.CSSProperties]:
               typeof width === 'number' ? `${width}px` : width || '400px',
-            ['--bui-dialog-min-height' as keyof React.CSSProperties]: height
-              ? typeof height === 'number'
-                ? `${height}px`
-                : height
-              : 'auto',
+            ...(height
+              ? {
+                  ['--bui-dialog-height' as keyof React.CSSProperties]:
+                    typeof height === 'number' ? `${height}px` : height,
+                }
+              : {}),
             ...style,
           }}
         >
@@ -88,7 +97,11 @@ export const Dialog = forwardRef<React.ElementRef<typeof Modal>, DialogProps>(
 
 Dialog.displayName = 'Dialog';
 
-/** @public */
+/**
+ * The header section of a Dialog, containing the title and a close button.
+ *
+ * @public
+ */
 export const DialogHeader = forwardRef<
   React.ElementRef<'div'>,
   DialogHeaderProps
@@ -109,7 +122,11 @@ export const DialogHeader = forwardRef<
 });
 DialogHeader.displayName = 'DialogHeader';
 
-/** @public */
+/**
+ * The main scrollable content area of a Dialog.
+ *
+ * @public
+ */
 export const DialogBody = forwardRef<React.ElementRef<'div'>, DialogBodyProps>(
   (props, ref) => {
     const { ownProps, restProps } = useDefinition(DialogBodyDefinition, props);
@@ -125,7 +142,11 @@ export const DialogBody = forwardRef<React.ElementRef<'div'>, DialogBodyProps>(
 
 DialogBody.displayName = 'DialogBody';
 
-/** @public */
+/**
+ * The footer section of a Dialog, typically used to place action buttons.
+ *
+ * @public
+ */
 export const DialogFooter = forwardRef<
   React.ElementRef<'div'>,
   DialogFooterProps

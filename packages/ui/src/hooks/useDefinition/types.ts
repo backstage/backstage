@@ -51,6 +51,16 @@ export interface ComponentConfig<
    * `noTrack?: boolean`.
    */
   analytics?: boolean;
+  /**
+   * Whether this component accepts an href prop that should be turned
+   * into an absolute path before being passed to the underlying React
+   * Aria component. This is necessary because React Aria's navigate
+   * callback receives the raw href and cannot correctly turn relative
+   * paths into absolute ones from where it is called. When true,
+   * `useDefinition` will call `useHref()` to make the href absolute
+   * using the current route context.
+   */
+  resolveHref?: boolean;
 }
 
 /**
@@ -83,6 +93,22 @@ export type AnalyticsPropsConstraint<P, Analytics> = Analytics extends true
     ? {}
     : {
         __error: 'Analytics components must include noTrack in own props type.';
+      }
+  : {};
+
+/**
+ * Type constraint that ensures components whose props include `href`
+ * have `resolveHref: true` in their definition. This is necessary
+ * because React Aria's navigate callback cannot turn relative hrefs
+ * into absolute paths on its own in Backstage because of how routing
+ * is set up — the href must be made absolute before it reaches the
+ * React Aria layer.
+ */
+export type ResolveHrefConstraint<P, ResolveHref> = 'href' extends keyof P
+  ? ResolveHref extends true
+    ? {}
+    : {
+        __error: 'Components with href must set resolveHref: true in their definition to properly resolve relative paths.';
       }
   : {};
 

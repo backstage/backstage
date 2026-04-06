@@ -8,6 +8,7 @@
     "plugins/*/dev",
     "plugins/*/migrations"
   ],
+  "exclude": ["**/*.stories.ts", "**/*.stories.tsx"],
   "compilerOptions": {
     "outDir": "dist-types",
     "rootDir": ".",

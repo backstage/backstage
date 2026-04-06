@@ -85,7 +85,16 @@ export const auth0Authenticator = createOAuthAuthenticator({
         },
       ),
     );
-    return { helper, audience, connection, connectionScope };
+    const federated = config.getOptionalBoolean('federatedLogout') ?? false;
+    return {
+      helper,
+      audience,
+      connection,
+      connectionScope,
+      domain,
+      clientID,
+      federated,
+    };
   },
 
   async start(
@@ -114,5 +123,18 @@ export const auth0Authenticator = createOAuthAuthenticator({
 
   async refresh(input, { helper }) {
     return helper.refresh(input);
+  },
+
+  async logout(input, { domain, clientID, federated }) {
+    const logoutUrl = new URL(`https://${domain}/v2/logout`);
+    if (federated) {
+      logoutUrl.searchParams.set('federated', '');
+    }
+    logoutUrl.searchParams.set('client_id', clientID);
+    const origin = input.req.get('origin');
+    if (origin) {
+      logoutUrl.searchParams.set('returnTo', origin);
+    }
+    return { logoutUrl: logoutUrl.toString() };
   },
 });

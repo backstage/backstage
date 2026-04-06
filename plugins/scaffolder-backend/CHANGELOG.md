@@ -1,5 +1,91 @@
 # @backstage/plugin-scaffolder-backend
 
+## 3.3.0-next.1
+
+### Minor Changes
+
+- 309b712: Added a new `execute-template` actions registry action that executes a scaffolder template with provided input values and returns a task ID for tracking progress.
+
+### Patch Changes
+
+- 4559806: Removed unnecessary empty `examples` array from actions bridged via the actions registry.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0-next.1
+  - @backstage/backend-openapi-utils@0.6.8-next.1
+  - @backstage/plugin-catalog-node@2.1.1-next.1
+  - @backstage/plugin-events-node@0.4.21-next.1
+  - @backstage/plugin-permission-node@0.10.12-next.1
+  - @backstage/plugin-scaffolder-node@0.13.1-next.1
+
+## 3.2.1-next.0
+
+### Patch Changes
+
+- 79453c0: Updated dependency `wait-for-expect` to `^4.0.0`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.1-next.0
+  - @backstage/plugin-permission-node@0.10.12-next.0
+  - @backstage/backend-openapi-utils@0.6.8-next.0
+  - @backstage/plugin-catalog-node@2.1.1-next.0
+  - @backstage/plugin-events-node@0.4.21-next.0
+  - @backstage/plugin-scaffolder-node@0.13.1-next.0
+  - @backstage/catalog-model@1.7.7
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/integration@2.0.0
+  - @backstage/types@1.2.2
+  - @backstage/plugin-permission-common@0.9.7
+  - @backstage/plugin-scaffolder-common@2.0.0
+
+## 3.2.0
+
+### Minor Changes
+
+- c9b11eb: Added a new `list-scaffolder-tasks` action that allows querying scaffolder tasks with optional ownership filtering and pagination support
+- 1b42218: Adds a new `get-scaffolder-task-logs` action to `@backstage/plugin-scaffolder-backend` that retrieves log events for a given scaffolder task, with optional support for retrieving only new events after a given event ID.
+- 0fbcf23: Migrated OpenAPI schemas to 3.1.
+- 7695dd2: Added a new `list-scaffolder-actions` action that returns all installed scaffolder actions with their schemas and examples
+- e8736ea: Added secrets schema validation for task creation, retry, and dry-run endpoints. When a template defines `spec.secrets.schema`, the API validates provided secrets against the schema and returns a `400` error if validation fails.
+
+### Patch Changes
+
+- e27bd4e: Removed `@backstage/plugin-scaffolder-backend-module-bitbucket` from `package.json` as the package itself has been deprecated and the code deleted.
+- 4f5ed06: Fixed a security vulnerability where server-configured environment secrets were exposed through the scaffolder dry-run endpoint.
+- 30ff981: Fixed a security vulnerability where secrets could bypass log redaction when transformed through Nunjucks filters in scaffolder templates.
+- 4e39e63: Removed unused dependencies
+- a49a40d: Updated dependency `zod` to `^3.25.76 || ^4.0.0` & migrated to `/v3` or `/v4` imports.
+- ccc20cf: create scaffolder MCP action to dry run a provided scaffolder template
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0
+  - @backstage/plugin-scaffolder-node@0.13.0
+  - @backstage/integration@2.0.0
+  - @backstage/plugin-catalog-node@2.1.0
+  - @backstage/plugin-scaffolder-common@2.0.0
+  - @backstage/plugin-permission-common@0.9.7
+  - @backstage/plugin-permission-node@0.10.11
+  - @backstage/catalog-model@1.7.7
+  - @backstage/backend-openapi-utils@0.6.7
+  - @backstage/plugin-events-node@0.4.20
+
+## 3.2.0-next.2
+
+### Minor Changes
+
+- e8736ea: Added secrets schema validation for task creation, retry, and dry-run endpoints. When a template defines `spec.secrets.schema`, the API validates provided secrets against the schema and returns a `400` error if validation fails.
+
+### Patch Changes
+
+- 30ff981: Fixed a security vulnerability where secrets could bypass log redaction when transformed through Nunjucks filters in scaffolder templates.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0-next.1
+  - @backstage/integration@2.0.0-next.2
+  - @backstage/plugin-scaffolder-common@2.0.0-next.2
+  - @backstage/backend-openapi-utils@0.6.7-next.1
+  - @backstage/plugin-catalog-node@2.1.0-next.2
+  - @backstage/plugin-events-node@0.4.20-next.1
+  - @backstage/plugin-permission-node@0.10.11-next.1
+  - @backstage/plugin-scaffolder-node@0.13.0-next.2
+
 ## 3.2.0-next.1
 
 ### Minor Changes
@@ -5565,7 +5651,7 @@
     - `step`: The name of the step that was run
     - `result`: A string describing whether the task ran successfully, failed, or was skipped
 
-  You can find a guide for running Prometheus metrics here: https://github.com/backstage/backstage/blob/master/contrib/docs/tutorials/prometheus-metrics.md
+  You can find a guide for running Prometheus metrics here: https://github.com/backstage/backstage/blob/384b7bac2e/contrib/docs/tutorials/prometheus-metrics.md
 
 - 5921b5ce49: - The GitLab Project ID for the `publish:gitlab:merge-request` action is now passed through the query parameter `project` in the `repoUrl`. It still allows people to not use the `projectid` and use the `repoUrl` with the `owner` and `repo` query parameters instead. This makes it easier to publish to repositories instead of writing the full path to the project.
 - 5025d2e8b6: Adds the ability to pass (an optional) array of strings that will be applied to the newly scaffolded repository as topic labels.
@@ -5658,7 +5744,7 @@
     - `step`: The name of the step that was run
     - `result`: A string describing whether the task ran successfully, failed, or was skipped
 
-  You can find a guide for running Prometheus metrics here: https://github.com/backstage/backstage/blob/master/contrib/docs/tutorials/prometheus-metrics.md
+  You can find a guide for running Prometheus metrics here: https://github.com/backstage/backstage/blob/384b7bac2e/contrib/docs/tutorials/prometheus-metrics.md
 
 ### Patch Changes
 

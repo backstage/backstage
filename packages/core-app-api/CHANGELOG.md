@@ -1,5 +1,51 @@
 # @backstage/core-app-api
 
+## 1.20.0-next.1
+
+### Minor Changes
+
+- 400aa23: Added `FetchMiddlewares.clarifyFailures()` which replaces the uninformative "TypeError: Failed to fetch" with a message that includes the request method and URL.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.14.0-next.1
+  - @backstage/core-plugin-api@1.12.5-next.1
+
+## 1.19.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.14.0-next.0
+  - @backstage/core-plugin-api@1.12.5-next.0
+  - @backstage/config@1.3.6
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.12
+
+## 1.19.6
+
+### Patch Changes
+
+- 12d8afe: Added `BUIProvider` from `@backstage/ui` to the app shell provider tree, enabling BUI components to fire analytics events through the Backstage analytics system.
+- 59752a2: Deprecated `AlertApiForwarder` in favor of the new `ToastApi`. The `AlertApiForwarder` now emits a console warning on first use, guiding developers to migrate to `ToastApi` from `@backstage/frontend-plugin-api`.
+- 0452d02: Add optional `description` field to plugin-level feature flags.
+- 42f8c9b: Added `BUIProvider` inside the legacy app router to enable client-side routing for all BUI components.
+- a49a40d: Updated dependency `zod` to `^3.25.76 || ^4.0.0` & migrated to `/v3` or `/v4` imports.
+- Updated dependencies
+  - @backstage/ui@0.13.0
+  - @backstage/core-plugin-api@1.12.4
+
+## 1.19.6-next.1
+
+### Patch Changes
+
+- 12d8afe: Added `BUIProvider` from `@backstage/ui` to the app shell provider tree, enabling BUI components to fire analytics events through the Backstage analytics system.
+- 0452d02: Add optional `description` field to plugin-level feature flags.
+- Updated dependencies
+  - @backstage/ui@0.13.0-next.2
+  - @backstage/core-plugin-api@1.12.4-next.1
+
 ## 1.19.6-next.0
 
 ### Patch Changes

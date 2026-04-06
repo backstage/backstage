@@ -41,6 +41,11 @@ export type FieldLabelOwnProps = {
    */
   id?: string;
 
+  /**
+   * The id to apply to the description element for aria-describedby
+   */
+  descriptionId?: string;
+
   className?: string;
 };
 

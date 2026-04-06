@@ -27,7 +27,7 @@ Initially, the Catalog displays registered entities matching the following filte
 - `Kind` - Component
 - `Type` - all
 - `Owner` - Owned
-- `Lifecycle` - list of [lifecycle](../features/software-catalog/descriptor-format.md#speclifecycle-required-1) values of entities in the Catalog
+- `Lifecycle` - list of [lifecycle](../features/software-catalog/descriptor-format.md#speclifecycle-required) values of entities in the Catalog
 - `Processing Status` - normal
 - `Namespace` - The ID of a [namespace](../features/software-catalog/descriptor-format.md#namespace-optional) to which the entity belongs
 

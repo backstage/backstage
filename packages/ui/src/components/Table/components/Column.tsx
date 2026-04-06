@@ -20,7 +20,11 @@ import { ColumnDefinition } from '../definition';
 import { ColumnProps } from '../types';
 import { RiArrowUpLine } from '@remixicon/react';
 
-/** @public */
+/**
+ * A table column header cell with an optional sort toggle and support for resizable widths.
+ *
+ * @public
+ */
 export const Column = (props: ColumnProps) => {
   const { ownProps, restProps } = useDefinition(ColumnDefinition, props);
   const { classes, children } = ownProps;
@@ -29,7 +33,7 @@ export const Column = (props: ColumnProps) => {
     <ReactAriaColumn className={classes.root} {...restProps}>
       {({ allowsSorting }) => (
         <div className={classes.headContent}>
-          {children}
+          <span className={classes.headLabel}>{children}</span>
           {allowsSorting && (
             <span aria-hidden="true" className={classes.headSortButton}>
               <RiArrowUpLine size={16} />

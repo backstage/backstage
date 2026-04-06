@@ -21,6 +21,7 @@ import type { Selection } from 'react-aria-components';
 import { Flex } from '../../';
 import { useListData } from 'react-stately';
 import { MemoryRouter } from 'react-router-dom';
+import { BUIProvider } from '../../provider';
 import {
   RiAccountCircleLine,
   RiBugLine,
@@ -50,7 +51,9 @@ const meta = preview.meta({
   decorators: [
     Story => (
       <MemoryRouter>
-        <Story />
+        <BUIProvider>
+          <Story />
+        </BUIProvider>
       </MemoryRouter>
     ),
   ],

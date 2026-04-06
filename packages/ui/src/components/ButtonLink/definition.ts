@@ -30,6 +30,7 @@ export const ButtonLinkDefinition = defineComponent<ButtonLinkOwnProps>()({
   },
   bg: 'consumer',
   analytics: true,
+  resolveHref: true,
   propDefs: {
     noTrack: {},
     size: { dataAttribute: true, default: 'small' },

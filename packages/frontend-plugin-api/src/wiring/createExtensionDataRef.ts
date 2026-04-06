@@ -33,7 +33,7 @@ export type ExtensionDataRef<
   readonly config: TConfig;
 };
 
-/** @public */
+/** @ignore */
 export type ExtensionDataRefToValue<TDataRef extends ExtensionDataRef> =
   TDataRef extends ExtensionDataRef<infer IData, infer IId, any>
     ? ExtensionDataValue<IData, IId>

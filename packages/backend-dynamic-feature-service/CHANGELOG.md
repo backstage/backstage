@@ -1,5 +1,93 @@
 # @backstage/backend-dynamic-feature-service
 
+## 0.8.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0-next.1
+  - @backstage/backend-defaults@0.16.1-next.1
+  - @backstage/plugin-catalog-backend@3.5.1-next.1
+  - @backstage/plugin-auth-node@0.7.0-next.1
+  - @backstage/backend-openapi-utils@0.6.8-next.1
+  - @backstage/plugin-app-node@0.1.44-next.1
+  - @backstage/plugin-events-backend@0.6.1-next.1
+  - @backstage/plugin-events-node@0.4.21-next.1
+  - @backstage/plugin-permission-node@0.10.12-next.1
+  - @backstage/plugin-scaffolder-node@0.13.1-next.1
+  - @backstage/plugin-search-backend-node@1.4.3-next.1
+
+## 0.8.1-next.0
+
+### Patch Changes
+
+- 79453c0: Updated dependency `wait-for-expect` to `^4.0.0`.
+- Updated dependencies
+  - @backstage/cli-common@0.2.1-next.0
+  - @backstage/plugin-catalog-backend@3.5.1-next.0
+  - @backstage/backend-defaults@0.16.1-next.0
+  - @backstage/backend-plugin-api@1.8.1-next.0
+  - @backstage/cli-node@0.3.1-next.0
+  - @backstage/config-loader@1.10.10-next.0
+  - @backstage/plugin-auth-node@0.6.15-next.0
+  - @backstage/plugin-events-backend@0.6.1-next.0
+  - @backstage/plugin-permission-node@0.10.12-next.0
+  - @backstage/plugin-search-backend-node@1.4.3-next.0
+  - @backstage/backend-openapi-utils@0.6.8-next.0
+  - @backstage/plugin-app-node@0.1.44-next.0
+  - @backstage/plugin-events-node@0.4.21-next.0
+  - @backstage/plugin-scaffolder-node@0.13.1-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-permission-common@0.9.7
+  - @backstage/plugin-search-common@1.2.22
+
+## 0.8.0
+
+### Minor Changes
+
+- 0fbcf23: Migrated OpenAPI schemas to 3.1.
+
+### Patch Changes
+
+- 4074a22: Fixed `resolvePackagePath` resolution for bundled dynamic plugins. When a plugin bundles its own copy of `@backstage/backend-plugin-api` inside `node_modules`, the `CommonJSModuleLoader` fallback now correctly resolves the plugin's `package.json` by name. Previously the fallback only applied when the resolution originated from the host application; it now also applies when originating from a bundled dependency, which is the case for plugins produced by the `backstage-cli package bundle` command.
+- 70fc178: Migrated from deprecated `findPaths` to `targetPaths` and `findOwnPaths` from `@backstage/cli-common`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0
+  - @backstage/backend-defaults@0.16.0
+  - @backstage/cli-node@0.3.0
+  - @backstage/plugin-catalog-backend@3.5.0
+  - @backstage/cli-common@0.2.0
+  - @backstage/plugin-scaffolder-node@0.13.0
+  - @backstage/plugin-events-backend@0.6.0
+  - @backstage/config-loader@1.10.9
+  - @backstage/plugin-permission-common@0.9.7
+  - @backstage/plugin-permission-node@0.10.11
+  - @backstage/plugin-auth-node@0.6.14
+  - @backstage/backend-openapi-utils@0.6.7
+  - @backstage/plugin-app-node@0.1.43
+  - @backstage/plugin-events-node@0.4.20
+  - @backstage/plugin-search-backend-node@1.4.2
+
+## 0.8.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0-next.1
+  - @backstage/backend-defaults@0.16.0-next.2
+  - @backstage/cli-common@0.2.0-next.2
+  - @backstage/plugin-catalog-backend@3.5.0-next.2
+  - @backstage/backend-openapi-utils@0.6.7-next.1
+  - @backstage/plugin-app-node@0.1.43-next.1
+  - @backstage/plugin-auth-node@0.6.14-next.2
+  - @backstage/plugin-events-backend@0.6.0-next.2
+  - @backstage/plugin-events-node@0.4.20-next.1
+  - @backstage/plugin-permission-node@0.10.11-next.1
+  - @backstage/plugin-scaffolder-node@0.13.0-next.2
+  - @backstage/plugin-search-backend-node@1.4.2-next.1
+
 ## 0.8.0-next.1
 
 ### Minor Changes

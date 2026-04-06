@@ -59,6 +59,8 @@ describe('DefaultIconsApi', () => {
     expect(result).toBeTruthy();
     // @ts-expect-error accessing internal React element structure
     expect(result.type).toBe(MyIcon);
+    // @ts-expect-error accessing internal React element structure
+    expect(result.props.fontSize).toBe('inherit');
   });
 
   it('should wrap IconElement values in a component for getIcon()', () => {
@@ -69,8 +71,41 @@ describe('DefaultIconsApi', () => {
     expect(icon).toBeDefined();
     expect(typeof icon).toBe('function');
     // @ts-expect-error testing runtime behavior
-    expect(icon({})).toBe(element);
+    const result = icon({});
+    expect(result.type).toBe('span');
+    expect(result.props.style).toEqual({ fontSize: '1.5rem' });
+    expect(result.props.children).toBe(element.props.children);
     expect(api.getIcon('myIcon')).toBe(icon);
+  });
+
+  it('should honor fontSize for getIcon()', () => {
+    const element = createElement('svg');
+    const api = new DefaultIconsApi({ myIcon: element });
+    const icon = api.getIcon('myIcon');
+
+    // @ts-expect-error testing runtime behavior
+    const result = icon({ fontSize: 'small' });
+    expect(result.props.style.fontSize).toBe('1.25rem');
+  });
+
+  it('should forward runtime props to the original icon element', () => {
+    const element = createElement('svg', {
+      className: 'existing',
+      style: { color: 'red' },
+    });
+    const api = new DefaultIconsApi({ myIcon: element });
+    const icon = api.getIcon('myIcon');
+
+    // @ts-expect-error testing runtime behavior
+    const result = icon({ className: 'extra', style: { width: '2em' } });
+
+    expect(result.type).toBe('svg');
+    expect(result.props.className).toBe('existing extra');
+    expect(result.props.style).toEqual({
+      color: 'red',
+      fontSize: '1.5rem',
+      width: '2em',
+    });
   });
 
   it('should wrap null IconElement in a component for getIcon()', () => {

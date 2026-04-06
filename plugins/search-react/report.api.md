@@ -28,6 +28,7 @@ import { SearchResult as SearchResult_2 } from '@backstage/plugin-search-common'
 import { SearchResultSet } from '@backstage/plugin-search-common';
 import { SetStateAction } from 'react';
 import { TextFieldProps } from '@material-ui/core/TextField';
+import { TranslationRef } from '@backstage/frontend-plugin-api';
 import { TypographyProps } from '@material-ui/core/Typography';
 
 // @public (undocumented)
@@ -294,6 +295,24 @@ export type SearchPaginationProps = Omit<
   | 'pageCursor'
   | 'onPageCursorChange'
   | 'hasNextPage'
+>;
+
+// @public (undocumented)
+export const searchReactTranslationRef: TranslationRef<
+  'search-react',
+  {
+    readonly 'searchBar.title': 'Search';
+    readonly 'searchBar.placeholder': 'Search in {{org}}';
+    readonly 'searchBar.clearButtonTitle': 'Clear';
+    readonly 'searchFilter.allOptionTitle': 'All';
+    readonly 'searchPagination.limitLabel': 'Results per page:';
+    readonly 'searchPagination.limitText': 'of {{num}}';
+    readonly noResultsDescription: 'Sorry, no results were found';
+    readonly 'searchResultGroup.linkTitle': 'See All';
+    readonly 'searchResultGroup.addFilterButtonTitle': 'Add filter';
+    readonly 'searchResultPager.next': 'Next';
+    readonly 'searchResultPager.previous': 'Previous';
+  }
 >;
 
 // @public

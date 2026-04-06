@@ -12,6 +12,8 @@ Options:
   -h, --help
 
 Commands:
+  actions [command]
+  auth [command]
   build-workspace
   config [command]
   config:check
@@ -28,6 +30,162 @@ Commands:
   translations [command]
   versions:bump
   versions:migrate
+```
+
+### `backstage-cli actions`
+
+```
+Usage: backstage-cli actions [options] [command] [command]
+
+Options:
+  -h, --help
+
+Commands:
+  execute
+  help [command]
+  list
+  sources [command]
+```
+
+### `backstage-cli actions execute`
+
+```
+Usage: backstage-cli actions execute
+
+Options:
+  --instance <string>
+  -h, --help
+```
+
+### `backstage-cli actions list`
+
+```
+Usage: backstage-cli actions list
+
+Options:
+  --instance <string>
+  -h, --help
+```
+
+### `backstage-cli actions sources`
+
+```
+Usage: backstage-cli actions sources [options] [command] [command]
+
+Options:
+  -h, --help
+
+Commands:
+  add
+  help [command]
+  list
+  remove
+```
+
+### `backstage-cli actions sources add`
+
+```
+Usage: backstage-cli actions sources add
+
+Options:
+  -h, --help
+```
+
+### `backstage-cli actions sources list`
+
+```
+Usage: backstage-cli actions sources list
+
+Options:
+  -h, --help
+```
+
+### `backstage-cli actions sources remove`
+
+```
+Usage: backstage-cli actions sources remove
+
+Options:
+  -h, --help
+```
+
+### `backstage-cli auth`
+
+```
+Usage: backstage-cli auth [options] [command] [command]
+
+Options:
+  -h, --help
+
+Commands:
+  help [command]
+  list
+  login
+  logout
+  print-token
+  select
+  show
+```
+
+### `backstage-cli auth list`
+
+```
+Usage: backstage-cli auth list
+
+Options:
+  -h, --help
+```
+
+### `backstage-cli auth login`
+
+```
+Usage: backstage-cli auth login
+
+Options:
+  --backend-url <string>
+  --instance <string>
+  --no-browser
+  -h, --help
+```
+
+### `backstage-cli auth logout`
+
+```
+Usage: backstage-cli auth logout
+
+Options:
+  --instance <string>
+  -h, --help
+```
+
+### `backstage-cli auth print-token`
+
+```
+Usage: backstage-cli auth print-token
+
+Options:
+  --instance <string>
+  -h, --help
+```
+
+### `backstage-cli auth select`
+
+```
+Usage: backstage-cli auth select
+
+Options:
+  --instance <string>
+  -h, --help
+```
+
+### `backstage-cli auth show`
+
+```
+Usage: backstage-cli auth show
+
+Options:
+  --instance <string>
+  -h, --help
 ```
 
 ### `backstage-cli build-workspace`

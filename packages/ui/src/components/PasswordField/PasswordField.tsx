@@ -28,7 +28,11 @@ import { useDefinition } from '../../hooks/useDefinition';
 import { PasswordFieldDefinition } from './definition';
 import { RiEyeLine, RiEyeOffLine } from '@remixicon/react';
 
-/** @public */
+/**
+ * A text input for password entry with a toggleable visibility button, integrated label, and inline error display.
+ *
+ * @public
+ */
 export const PasswordField = forwardRef<HTMLDivElement, PasswordFieldProps>(
   (props, ref) => {
     const { ownProps, restProps, dataAttributes } = useDefinition(

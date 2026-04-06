@@ -9,7 +9,9 @@ description: Frontend extension overrides
 
 An important customization point in the frontend system is the ability to override existing extensions. It can be used for anything from slight tweaks to the extension logic, to completely replacing an extension with a custom implementation. While extensions are encouraged to make themselves configurable, there are many situations where you need to override an extension to achieve the desired behavior. The ability to override extensions should be kept in mind when building plugins, and can be a powerful tool to allow for deeper customizations without the need to re-implement large parts of the plugin.
 
-In general, most features should have a good level of customization built into them, so that users do not have to leverage extension overrides to achieve common goals. A well written feature often has [configuration](../../conf/) settings, or uses extension inputs for extensibility where applicable. An example of this is the search plugin, which allows you to provide result renderers as inputs rather than replacing the result page wholesale just to tweak how results are shown. Adopters should take advantage of those when possible in order to reduce the need and size of extension overrides.
+In general, most features should have a good level of customization built into them, so that users do not have to leverage extension overrides to achieve common goals. A well written feature often has [configuration](../../conf/index.md) settings, or uses extension inputs for extensibility where applicable. An example of this is the search plugin, which allows you to provide result renderers as inputs rather than replacing the result page wholesale just to tweak how results are shown. Adopters should take advantage of those when possible in order to reduce the need and size of extension overrides.
+
+Extension overrides can also replace or remove existing `if` predicates. This applies both to direct extension overrides through `.override(...)` and to plugin-level overrides through `plugin.withOverrides(...)`. Frontend modules can use the same extension override mechanism to adjust or clear the condition for an overridden extension.
 
 ## Overriding an extension
 
@@ -343,3 +345,5 @@ export default app.createRoot();
 ```
 
 You must define a `pluginId` when creating a frontend module, and the plugin must also be installed for the module to be loaded.
+
+Frontend modules also support an `if` option. Just like for plugins, that predicate is applied to every extension that comes from the module, and is combined with any extension-level `if` predicate using logical `AND`. This is useful when you want to enable or disable an entire override package based on a feature flag or permission.

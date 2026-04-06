@@ -800,6 +800,22 @@ If you are using [app feature discovery](../architecture/10-app.md#feature-disco
 
 Continue this process for each of your legacy routes until you have migrated all of them. For any plugin with additional extensions installed as children of the `Route`, refer to the plugin READMEs for more detailed instructions. For the entity pages, refer to the [separate section](#catalog-entity-page).
 
+##### Migrating `<Redirect>` routes
+
+If your old routes include `<Redirect>` elements to forward users from one path to another, you can replace them with the built-in redirect configuration on the `app/routes` extension:
+
+```yaml title="app-config.yaml"
+app:
+  extensions:
+    - app/routes:
+        config:
+          redirects:
+            - from: /old-path
+              to: /new-path
+```
+
+See the [`app/routes` built-in extension documentation](./03-built-in-extensions.md#configuring-redirects) for more details.
+
 ### Migrating core, internal and third-party plugins
 
 For certain core plugins — such as the Catalog plugin's entity page — we provide a dedicated step-by-step migration guide, since these plugins often require a more gradual approach due to their complexity.
@@ -899,39 +915,7 @@ It's encouraged that once you switch over to using the new frontend system, that
 
 This practice is also pretty important early on, as it's going to help you get familiar with the practices of the new frontend system.
 
-When creating a new Backstage app with `create-app` and using the `--next` flag you'll automatically get these choices in the `yarn new` command, but if you want to bring these templates to an older app, you can add the following to your root `package.json`:
-
-```json
-{
-  ...
-  "scripts": {
-    ...
-    "new": "backstage-cli new"
-  },
-  "backstage": {
-    "cli": {
-      "new": {
-        "globals": {
-          "license": "UNLICENSED"
-        },
-        "templates": [
-          "@backstage/cli/templates/new-frontend-plugin",
-          "@backstage/cli/templates/new-frontend-plugin-module",
-          "@backstage/cli/templates/backend-plugin",
-          "@backstage/cli/templates/backend-plugin-module",
-          "@backstage/cli/templates/plugin-web-library",
-          "@backstage/cli/templates/plugin-node-library",
-          "@backstage/cli/templates/plugin-common-library",
-          "@backstage/cli/templates/web-library",
-          "@backstage/cli/templates/node-library",
-          "@backstage/cli/templates/catalog-provider-module",
-          "@backstage/cli/templates/scaffolder-backend-module"
-        ]
-      }
-    }
-  }
-}
-```
+The `yarn new` command now defaults to the new frontend system templates for frontend plugins. If you have an older app that was created before this change, you can simply update the `@backstage/cli-module-new` package to get access to the new templates.
 
 ## Troubleshooting
 

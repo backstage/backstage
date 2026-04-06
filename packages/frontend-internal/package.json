@@ -1,6 +1,6 @@
 {
   "name": "@internal/frontend",
-  "version": "0.0.18-next.0",
+  "version": "0.0.19-next.1",
   "backstage": {
     "role": "web-library",
     "inline": true
@@ -23,6 +23,7 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
+    "@backstage/filter-predicates": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/types": "workspace:^",
     "@backstage/version-bridge": "workspace:^"

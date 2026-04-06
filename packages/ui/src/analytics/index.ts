@@ -15,8 +15,6 @@
  */
 
 export { useAnalytics } from './useAnalytics';
-export { BUIProvider } from './BUIProvider';
-export type { BUIProviderProps } from './BUIProvider';
 export { getNodeText } from './getNodeText';
 export type {
   AnalyticsTracker,

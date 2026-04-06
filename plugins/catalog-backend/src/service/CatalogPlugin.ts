@@ -36,13 +36,9 @@ import {
 import {
   CatalogModelExtensionPoint,
   catalogModelExtensionPoint,
-  CatalogPermissionExtensionPoint,
-  catalogPermissionExtensionPoint,
-  CatalogPermissionRuleInput,
   catalogScmEventsServiceRef,
 } from '@backstage/plugin-catalog-node/alpha';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
-import { Permission } from '@backstage/plugin-permission-common';
 import { merge } from 'lodash';
 import { CatalogBuilder } from './CatalogBuilder';
 import {
@@ -63,33 +59,6 @@ class CatalogLocationsExtensionPointImpl
 
   get allowedLocationTypes() {
     return this.#locationTypes;
-  }
-}
-
-class CatalogPermissionExtensionPointImpl
-  implements CatalogPermissionExtensionPoint
-{
-  #permissions = new Array<Permission>();
-  #permissionRules = new Array<CatalogPermissionRuleInput>();
-
-  addPermissions(...permission: Array<Permission | Array<Permission>>): void {
-    this.#permissions.push(...permission.flat());
-  }
-
-  addPermissionRules(
-    ...rules: Array<
-      CatalogPermissionRuleInput | Array<CatalogPermissionRuleInput>
-    >
-  ): void {
-    this.#permissionRules.push(...rules.flat());
-  }
-
-  get permissions() {
-    return this.#permissions;
-  }
-
-  get permissionRules() {
-    return this.#permissionRules;
   }
 }
 
@@ -189,12 +158,6 @@ export const catalogPlugin = createBackendPlugin({
       },
     });
 
-    const permissionExtensions = new CatalogPermissionExtensionPointImpl();
-    env.registerExtensionPoint(
-      catalogPermissionExtensionPoint,
-      permissionExtensions,
-    );
-
     const modelExtensions = new CatalogModelExtensionPointImpl();
     env.registerExtensionPoint(catalogModelExtensionPoint, modelExtensions);
 
@@ -282,8 +245,6 @@ export const catalogPlugin = createBackendPlugin({
         } else {
           builder.addLocationAnalyzers(...scmLocationAnalyzers);
         }
-        builder.addPermissions(...permissionExtensions.permissions);
-        builder.addPermissionRules(...permissionExtensions.permissionRules);
         builder.setFieldFormatValidators(modelExtensions.fieldValidators);
 
         if (locationTypeExtensions.allowedLocationTypes) {

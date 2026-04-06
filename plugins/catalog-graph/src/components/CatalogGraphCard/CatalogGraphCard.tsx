@@ -68,6 +68,7 @@ export const CatalogGraphCard = (
     maxDepth = 1,
     unidirectional = true,
     mergeRelations = true,
+    showArrowHeads,
     direction = Direction.LEFT_RIGHT,
     kinds,
     relations,
@@ -147,6 +148,7 @@ export const CatalogGraphCard = (
         relationPairs={relationPairs}
         entityFilter={entityFilter}
         zoom={zoom}
+        showArrowHeads={showArrowHeads}
       />
     </EntityInfoCard>
   );

@@ -100,8 +100,5 @@ export const catalogAnalysisExtensionPoint = _catalogAnalysisExtensionPoint;
 
 export type { CatalogModelExtensionPoint } from './extensions';
 export { catalogModelExtensionPoint } from './extensions';
-export type { CatalogPermissionRuleInput } from './extensions';
-export type { CatalogPermissionExtensionPoint } from './extensions';
-export { catalogPermissionExtensionPoint } from './extensions';
 
 export * from './scmEvents';

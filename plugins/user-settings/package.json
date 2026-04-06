@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-user-settings",
-  "version": "0.9.1-next.1",
+  "version": "0.9.2-next.1",
   "description": "A Backstage plugin that provides a settings page",
   "backstage": {
     "role": "frontend-plugin",
@@ -66,6 +66,7 @@
     "@backstage/plugin-user-settings-common": "workspace:^",
     "@backstage/theme": "workspace:^",
     "@backstage/types": "workspace:^",
+    "@backstage/ui": "workspace:^",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.61",

@@ -19,7 +19,7 @@ import {
   PassportProfile,
   SignInInfo,
 } from '@backstage/plugin-auth-node';
-import { z } from 'zod';
+import { z } from 'zod/v3';
 
 /**
  * Available sign-in resolvers for the Bitbucket Server auth provider.

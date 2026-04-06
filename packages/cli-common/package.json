@@ -1,6 +1,6 @@
 {
   "name": "@backstage/cli-common",
-  "version": "0.2.0-next.1",
+  "version": "0.2.1-next.0",
   "description": "Common functionality used by cli, backend, and create-app",
   "backstage": {
     "role": "node-library"
@@ -51,7 +51,7 @@
     "@backstage/errors": "workspace:^",
     "cross-spawn": "^7.0.3",
     "global-agent": "^3.0.0",
-    "undici": "^7.2.3"
+    "undici": "^7.24.5"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

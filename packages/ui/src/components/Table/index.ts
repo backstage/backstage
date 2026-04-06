@@ -53,6 +53,7 @@ export type {
   NoPagination,
   PagePagination,
   TablePaginationType,
+  VirtualizedProp,
 } from './types';
 export type {
   UseTableOptions,
@@ -68,6 +69,7 @@ export type {
   SearchState,
   QueryOptions,
   PaginationOptions,
+  CompletePaginationOptions,
 } from './hooks/types';
 
 export { TableDefinition } from './definition';

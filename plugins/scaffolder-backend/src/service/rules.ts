@@ -29,7 +29,7 @@ import {
 
 import { SerializedTask, TaskFilter } from '@backstage/plugin-scaffolder-node';
 
-import { z } from 'zod';
+import { z } from 'zod/v3';
 import { JsonObject, JsonPrimitive } from '@backstage/types';
 import { get } from 'lodash';
 

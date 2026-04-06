@@ -107,6 +107,17 @@ export class PluginTaskSchedulerImpl implements SchedulerService {
     await TaskWorker.trigger(knex, id);
   }
 
+  async cancelTask(id: string): Promise<void> {
+    const localTask = this.localWorkersById.get(id);
+    if (localTask) {
+      localTask.cancel();
+      return;
+    }
+
+    const knex = await this.databaseFactory();
+    await TaskWorker.cancel(knex, id);
+  }
+
   async scheduleTask(
     task: SchedulerServiceTaskScheduleDefinition &
       SchedulerServiceTaskInvocationDefinition,
@@ -202,6 +213,15 @@ export class PluginTaskSchedulerImpl implements SchedulerService {
       async (req, res) => {
         const { id } = req.params;
         await this.triggerTask(id);
+        res.status(200).end();
+      },
+    );
+
+    router.post(
+      '/.backstage/scheduler/v1/tasks/:id/cancel',
+      async (req, res) => {
+        const { id } = req.params;
+        await this.cancelTask(id);
         res.status(200).end();
       },
     );

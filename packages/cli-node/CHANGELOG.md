@@ -1,5 +1,33 @@
 # @backstage/cli-node
 
+## 0.3.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.2.1-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 0.3.0
+
+### Minor Changes
+
+- 7d055ef: Added `createCliModule` API and related types for building Backstage CLI plugins.
+
+### Patch Changes
+
+- 94a885a: Added a new `cli-module` package role for packages that provide CLI plugin extensions.
+- 12fa965: Added `CliAuth` class for managing CLI authentication state. This provides a class-based API with a static `create` method that resolves the currently selected (or explicitly named) auth instance, transparently refreshes expired access tokens, and exposes helpers for other CLI modules to authenticate with a Backstage backend.
+- 61cb976: Added `toString()` method to `Lockfile` for serializing lockfiles back to string format.
+- 06c2015: Added `runConcurrentTasks` and `runWorkerQueueThreads` utilities, moved from the `@backstage/cli` internal code.
+- 70fc178: Migrated from deprecated `findPaths` to `targetPaths` and `findOwnPaths` from `@backstage/cli-common`.
+- 3c811bf: Added `hasBackstageYarnPlugin` and `SuccessCache` exports, moved from `@backstage/cli`.
+- a49a40d: Updated dependency `zod` to `^3.25.76 || ^4.0.0` & migrated to `/v3` or `/v4` imports.
+- a9d23c4: Properly support `package.json` `workspaces` field
+- Updated dependencies
+  - @backstage/cli-common@0.2.0
+
 ## 0.2.19-next.1
 
 ### Patch Changes

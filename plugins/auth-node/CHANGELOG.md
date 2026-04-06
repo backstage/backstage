@@ -1,5 +1,67 @@
 # @backstage/plugin-auth-node
 
+## 0.7.0-next.1
+
+### Minor Changes
+
+- fa55078: **BREAKING**: Refactored `SignInResolverFactoryOptions` to use a schema-first generic pattern, following Zod's [recommended approach](https://zod.dev/library-authors?id=how-to-accept-user-defined-schemas#how-to-accept-user-defined-schemas) for writing generic functions. The type parameters changed from `<TAuthResult, TOptionsOutput, TOptionsInput>` to `<TAuthResult, TSchema extends ZodType>`.
+
+  This fixes "Type instantiation is excessively deep and possibly infinite" errors that occurred when the Zod version in a user's project did not align with the one in Backstage core.
+
+  If you use `createSignInResolverFactory` without explicit type parameters (the typical usage), no changes are needed:
+
+  ```ts
+  // This usage is unchanged
+  createSignInResolverFactory({
+    optionsSchema: z.object({ domain: z.string() }).optional(),
+    create(options = {}) {
+      /* ... */
+    },
+  });
+  ```
+
+  If you reference `SignInResolverFactoryOptions` with explicit type parameters, update as follows:
+
+  ```diff
+  - SignInResolverFactoryOptions<MyAuthResult, MyOutput, MyInput>
+  + SignInResolverFactoryOptions<MyAuthResult, typeof mySchema>
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0-next.1
+
+## 0.6.15-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.1-next.0
+  - @backstage/catalog-client@1.14.0
+  - @backstage/catalog-model@1.7.7
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 0.6.14
+
+### Patch Changes
+
+- a49a40d: Updated dependency `zod` to `^3.25.76 || ^4.0.0` & migrated to `/v3` or `/v4` imports.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0
+  - @backstage/catalog-client@1.14.0
+  - @backstage/catalog-model@1.7.7
+
+## 0.6.14-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0-next.1
+  - @backstage/catalog-client@1.14.0-next.2
+
 ## 0.6.14-next.1
 
 ### Patch Changes

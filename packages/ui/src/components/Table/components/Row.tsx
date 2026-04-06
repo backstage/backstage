@@ -24,27 +24,51 @@ import { Checkbox } from '../../Checkbox';
 import { useDefinition } from '../../../hooks/useDefinition';
 import { RowDefinition } from '../definition';
 import type { RowProps } from '../types';
-import { isExternalLink } from '../../../utils/isExternalLink';
-import { InternalLinkProvider } from '../../InternalLinkProvider';
+import { isExternalLink } from '../../../utils/linkUtils';
 import clsx from 'clsx';
 import { Flex } from '../../Flex';
 
-/** @public */
+/**
+ * A table row that can optionally act as a navigation link or trigger an action when clicked, with analytics tracking.
+ *
+ * @public
+ */
 export function Row<T extends object>(props: RowProps<T>) {
-  const { ownProps, restProps, analytics } = useDefinition(
+  const { ownProps, restProps, dataAttributes, analytics } = useDefinition(
     RowDefinition,
     props,
   );
   const { classes, columns, children, href } = ownProps;
-  const hasInternalHref = !!href && !isExternalLink(href);
+  const isExternal = isExternalLink(href);
+  const hasInternalHref = !!href && !isExternal;
+  const hasExternalHref = !!href && isExternal;
+  const hasInteraction = !!restProps.onAction || !!href;
 
-  const handlePress = () => {
-    if (href) {
-      analytics.captureEvent('click', href, {
-        attributes: { to: String(href) },
-      });
-    }
-  };
+  // Derive the effective target, defaulting to _blank for external links.
+  const effectiveTarget = hasExternalHref ? '_blank' : restProps.target;
+  // Always include noopener noreferrer when target=_blank, merging any
+  // consumer-provided rel tokens to avoid reverse-tabnabbing risk.
+  const effectiveRel =
+    effectiveTarget === '_blank'
+      ? [
+          ...new Set([
+            'noopener',
+            'noreferrer',
+            ...(restProps.rel?.split(/\s+/).filter(Boolean) ?? []),
+          ]),
+        ].join(' ')
+      : restProps.rel;
+
+  const handlePress = hasInteraction
+    ? () => {
+        restProps.onAction?.();
+        if (href) {
+          analytics.captureEvent('click', href, {
+            attributes: { to: String(href) },
+          });
+        }
+      }
+    : undefined;
 
   let { selectionBehavior, selectionMode } = useTableOptions();
 
@@ -53,9 +77,7 @@ export function Row<T extends object>(props: RowProps<T>) {
       {selectionBehavior === 'toggle' && selectionMode === 'multiple' && (
         <ReactAriaCell className={clsx(classes.cell, classes.cellSelection)}>
           <Flex justify="center" align="center">
-            <Checkbox slot="selection">
-              <></>
-            </Checkbox>
+            <Checkbox slot="selection" aria-label="Select row" />
           </Flex>
         </ReactAriaCell>
       )}
@@ -64,19 +86,17 @@ export function Row<T extends object>(props: RowProps<T>) {
   );
 
   return (
-    <InternalLinkProvider href={href}>
-      <ReactAriaRow
-        href={href}
-        className={classes.root}
-        data-react-aria-pressable={hasInternalHref ? 'true' : undefined}
-        {...restProps}
-        onAction={() => {
-          restProps.onAction?.();
-          handlePress();
-        }}
-      >
-        {content}
-      </ReactAriaRow>
-    </InternalLinkProvider>
+    <ReactAriaRow
+      href={href}
+      {...restProps}
+      {...dataAttributes}
+      target={effectiveTarget}
+      rel={effectiveRel}
+      className={clsx(classes.root, restProps.className)}
+      data-react-aria-pressable={hasInternalHref ? 'true' : undefined}
+      onAction={handlePress}
+    >
+      {content}
+    </ReactAriaRow>
   );
 }

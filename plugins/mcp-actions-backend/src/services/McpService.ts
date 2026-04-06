@@ -22,6 +22,7 @@ import {
 import { JsonObject } from '@backstage/types';
 import {
   ActionsService,
+  ActionsServiceAction,
   MetricsServiceHistogram,
   MetricsService,
 } from '@backstage/backend-plugin-api/alpha';
@@ -31,13 +32,20 @@ import { performance } from 'node:perf_hooks';
 
 import { handleErrors } from './handleErrors';
 import { bucketBoundaries, McpServerOperationAttributes } from '../metrics';
+import { FilterRule, McpServerConfig } from '../config';
 
 export class McpService {
   private readonly actions: ActionsService;
+  private readonly namespacedToolNames: boolean;
   private readonly operationDuration: MetricsServiceHistogram<McpServerOperationAttributes>;
 
-  constructor(actions: ActionsService, metrics: MetricsService) {
+  constructor(
+    actions: ActionsService,
+    metrics: MetricsService,
+    namespacedToolNames?: boolean,
+  ) {
     this.actions = actions;
+    this.namespacedToolNames = namespacedToolNames ?? true;
     this.operationDuration =
       metrics.createHistogram<McpServerOperationAttributes>(
         'mcp.server.operation.duration',
@@ -52,19 +60,30 @@ export class McpService {
   static async create({
     actions,
     metrics,
+    namespacedToolNames,
   }: {
     actions: ActionsService;
     metrics: MetricsService;
+    namespacedToolNames?: boolean;
   }) {
-    return new McpService(actions, metrics);
+    return new McpService(actions, metrics, namespacedToolNames);
   }
 
-  getServer({ credentials }: { credentials: BackstageCredentials }) {
+  getServer({
+    credentials,
+    serverConfig,
+  }: {
+    credentials: BackstageCredentials;
+    serverConfig?: McpServerConfig;
+  }) {
     const server = new McpServer(
       {
-        name: 'backstage',
+        name: serverConfig?.name ?? 'backstage',
         // TODO: this version will most likely change in the future.
         version,
+        ...(serverConfig?.description && {
+          description: serverConfig.description,
+        }),
       },
       { capabilities: { tools: {} } },
     );
@@ -74,8 +93,12 @@ export class McpService {
       let errorType: string | undefined;
 
       try {
-        // TODO: switch this to be configuration based later
-        const { actions } = await this.actions.list({ credentials });
+        const { actions: allActions } = await this.actions.list({
+          credentials,
+        });
+        const actions = serverConfig
+          ? this.filterActions(allActions, serverConfig)
+          : allActions;
 
         return {
           tools: actions.map(action => ({
@@ -83,7 +106,7 @@ export class McpService {
             // todo(blam): this is unfortunately not supported by most clients yet.
             // When this is provided you need to provide structuredContent instead.
             // outputSchema: action.schema.output,
-            name: action.name,
+            name: this.getToolName(action),
             description: action.description,
             annotations: {
               title: action.title,
@@ -114,8 +137,14 @@ export class McpService {
 
       try {
         const result = await handleErrors(async () => {
-          const { actions } = await this.actions.list({ credentials });
-          const action = actions.find(a => a.name === params.name);
+          const { actions: allActions } = await this.actions.list({
+            credentials,
+          });
+          const actions = serverConfig
+            ? this.filterActions(allActions, serverConfig)
+            : allActions;
+
+          const action = actions.find(a => this.getToolName(a) === params.name);
 
           if (!action) {
             throw new NotFoundError(`Action "${params.name}" not found`);
@@ -168,5 +197,54 @@ export class McpService {
     });
 
     return server;
+  }
+
+  private filterActions(
+    actions: ActionsServiceAction[],
+    serverConfig: McpServerConfig,
+  ): ActionsServiceAction[] {
+    const { includeRules, excludeRules } = serverConfig;
+    if (includeRules.length === 0 && excludeRules.length === 0) {
+      return actions;
+    }
+
+    return actions.filter(action => {
+      if (excludeRules.some(rule => this.matchesRule(action, rule))) {
+        return false;
+      }
+
+      if (includeRules.length === 0) {
+        return true;
+      }
+
+      return includeRules.some(rule => this.matchesRule(action, rule));
+    });
+  }
+
+  private getToolName(action: ActionsServiceAction): string {
+    if (this.namespacedToolNames) {
+      return `${action.pluginId}.${action.name}`;
+    }
+    return action.name;
+  }
+
+  private matchesRule(action: ActionsServiceAction, rule: FilterRule): boolean {
+    if (rule.idMatcher && !rule.idMatcher.match(action.id)) {
+      return false;
+    }
+
+    if (rule.attributes) {
+      for (const [key, value] of Object.entries(rule.attributes)) {
+        if (
+          action.attributes[
+            key as 'destructive' | 'readOnly' | 'idempotent'
+          ] !== value
+        ) {
+          return false;
+        }
+      }
+    }
+
+    return true;
   }
 }

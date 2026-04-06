@@ -16,7 +16,7 @@
 
 import { createTranslationRef } from '@backstage/core-plugin-api/alpha';
 
-/** @alpha */
+/** @public */
 export const kubernetesReactTranslationRef = createTranslationRef({
   id: 'kubernetes-react',
   messages: {

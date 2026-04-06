@@ -25,16 +25,17 @@ import styles from './Header.module.css';
 export const HeaderDefinition = defineComponent<HeaderOwnProps>()({
   styles,
   classNames: {
-    root: 'bui-HeaderPage',
-    content: 'bui-HeaderPageContent',
-    breadcrumbs: 'bui-HeaderPageBreadcrumbs',
-    tabsWrapper: 'bui-HeaderPageTabsWrapper',
-    controls: 'bui-HeaderPageControls',
+    root: 'bui-Header',
+    content: 'bui-HeaderContent',
+    breadcrumbs: 'bui-HeaderBreadcrumbs',
+    tabsWrapper: 'bui-HeaderTabsWrapper',
+    controls: 'bui-HeaderControls',
   },
   propDefs: {
     title: {},
     customActions: {},
     tabs: {},
+    activeTabId: {},
     breadcrumbs: {},
     className: {},
   },

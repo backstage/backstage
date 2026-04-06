@@ -45,10 +45,16 @@ export interface Config {
 
     /**
      * Whether to omit the entity ownership references (`ent`) claim from the
-     * identity token. If this is enabled the `ent` claim will only be available
-     * via the user info endpoint and the `UserInfoService`.
+     * identity token.
      *
-     * Defaults to `false`.
+     * If this is disabled an `ent` claim will be included in the token
+     * containing all of the user's ownership refs as returned by the sign in
+     * resolver. This can in extreme cases lead to tokens that risk hitting HTTP
+     * header size limits. Setting it to `false` is therefore discouraged, and
+     * is only provided for backward compatibility reasons.
+     *
+     * Defaults to `true`, which means that the `ent` claim instead is available
+     * via the user info endpoint and the `UserInfoService`.
      */
     omitIdentityTokenOwnershipClaim?: boolean;
 

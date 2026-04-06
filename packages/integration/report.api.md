@@ -602,7 +602,7 @@ export class GithubAppCredentialsMux {
     RestEndpointMethodTypes['apps']['listInstallations']['response']['data']
   >;
   // (undocumented)
-  getAppToken(owner: string, repo?: string): Promise<string | undefined>;
+  getAppToken(owner?: string, repo?: string): Promise<string | undefined>;
 }
 
 // @public

@@ -63,6 +63,7 @@ import {
 import {
   actionsServiceRef,
   actionsRegistryServiceRef,
+  metricsServiceRef,
 } from '@backstage/backend-plugin-api/alpha';
 import { createScaffolderActions } from './actions';
 
@@ -151,6 +152,7 @@ export const scaffolderPlugin = createBackendPlugin({
         actionsRegistry: actionsServiceRef,
         actionsRegistryService: actionsRegistryServiceRef,
         scaffolderService: scaffolderServiceRef,
+        metrics: metricsServiceRef,
       },
       async init({
         logger,
@@ -168,6 +170,7 @@ export const scaffolderPlugin = createBackendPlugin({
         actionsRegistry,
         actionsRegistryService,
         scaffolderService,
+        metrics,
       }) {
         const log = loggerToWinstonLogger(logger);
         const integrations = ScmIntegrations.fromConfig(config);
@@ -244,6 +247,7 @@ export const scaffolderPlugin = createBackendPlugin({
           events,
           auditor,
           actionsRegistry,
+          metrics,
         });
         httpRouter.use(router);
       },

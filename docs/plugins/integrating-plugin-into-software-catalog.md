@@ -4,6 +4,12 @@ title: Integrate into the Software Catalog
 description: How to integrate a plugin into software catalog
 ---
 
+:::caution Legacy Documentation
+
+This page describes integrating plugins into the Software Catalog using the **old frontend system** patterns (`EntitySwitch`, `EntityLayout`, `EntityLayout.Route`). For the new frontend system, entity page integrations are done using `EntityCardBlueprint` and `EntityContentBlueprint` — see [Common Extension Blueprints](../frontend-system/building-plugins/03-common-extension-blueprints.md).
+
+:::
+
 > This is an advanced use case and currently is an experimental feature. Expect
 > API to change over time
 

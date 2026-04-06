@@ -200,6 +200,7 @@ describe('EntityCardBlueprint', () => {
         },
         "disabled": false,
         "factory": [Function],
+        "if": undefined,
         "inputs": {},
         "kind": "entity-card",
         "name": "test",

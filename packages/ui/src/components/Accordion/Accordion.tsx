@@ -38,7 +38,11 @@ import {
 } from './definition';
 import { Flex } from '../Flex';
 
-/** @public */
+/**
+ * A collapsible section that reveals or hides its content when the trigger is activated.
+ *
+ * @public
+ */
 export const Accordion = forwardRef(
   (props: AccordionProps, ref: Ref<React.ElementRef<typeof RADisclosure>>) => {
     const { ownProps, restProps, dataAttributes } = useDefinition(
@@ -62,7 +66,11 @@ export const Accordion = forwardRef(
 
 Accordion.displayName = 'Accordion';
 
-/** @public */
+/**
+ * The clickable heading that toggles the visibility of an accordion panel.
+ *
+ * @public
+ */
 export const AccordionTrigger = forwardRef(
   (
     props: AccordionTriggerProps,
@@ -100,7 +108,11 @@ export const AccordionTrigger = forwardRef(
 
 AccordionTrigger.displayName = 'AccordionTrigger';
 
-/** @public */
+/**
+ * The content area of an accordion that is revealed when the trigger is activated.
+ *
+ * @public
+ */
 export const AccordionPanel = forwardRef(
   (
     props: AccordionPanelProps,
@@ -125,7 +137,11 @@ export const AccordionPanel = forwardRef(
 
 AccordionPanel.displayName = 'AccordionPanel';
 
-/** @public */
+/**
+ * A container that groups multiple Accordion items, optionally allowing several panels to be expanded at once.
+ *
+ * @public
+ */
 export const AccordionGroup = forwardRef(
   (
     props: AccordionGroupProps,

@@ -55,6 +55,7 @@ export const TabListDefinition = defineComponent<TabListOwnProps>()({
 /** @internal */
 export const TabDefinition = defineComponent<TabOwnProps>()({
   styles,
+  resolveHref: true,
   classNames: {
     root: 'bui-Tab',
   },

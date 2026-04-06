@@ -1,5 +1,98 @@
 # @backstage/create-app
 
+## 0.8.2-next.1
+
+### Patch Changes
+
+- Bumped create-app version.
+
+## 0.8.2-next.0
+
+### Patch Changes
+
+- e8ffac1: Various fixes for the `create-app` template: reorganizing sidebar items, removing redundant config and code, and adding a documentation example.
+- 4cf9f3a: Removed the unnecessary `@backstage/cli-module-new` dependency from the `next-app` template, since it is already included through `@backstage/cli-defaults`.
+- Updated dependencies
+  - @backstage/cli-common@0.2.1-next.0
+
+## 0.8.0
+
+### Minor Changes
+
+- a6735c3: **BREAKING**: The new frontend system is now the default template when creating a new Backstage app. The previous `--next` flag has been replaced with a `--legacy` flag that can be used to create an app using the old frontend system instead.
+
+### Patch Changes
+
+- d806b0c: The create-app templates now include `@backstage/cli-defaults` as a `devDependency`, enabling the CLI's automatic module discovery for newly created projects.
+- d14b6e0: **BREAKING**: Migrated `MembersListCard`, `OwnershipCard`, and `CatalogGraphCard` to use BUI card primitives via `EntityInfoCard`.
+
+  - `OwnershipCard`: Removed `variant` and `maxScrollHeight` props. Card height and scrolling are now controlled by the parent container — the card fills its container and the body scrolls automatically when content overflows.
+  - `CatalogGraphCard`: Removed `variant` prop.
+  - `MembersListCard`: Translation keys `subtitle`, `paginationLabel`, `aggregateMembersToggle.directMembers`, `aggregateMembersToggle.aggregatedMembers`, and `aggregateMembersToggle.ariaLabel` have been removed. The `title` key now includes `{{groupName}}`. New keys added: `cardLabel`, `noSearchResult`, `aggregateMembersToggle.label`.
+  - `OwnershipCard`: Translation keys `aggregateRelationsToggle.directRelations`, `aggregateRelationsToggle.aggregatedRelations`, and `aggregateRelationsToggle.ariaLabel` have been removed. New key added: `aggregateRelationsToggle.label`.
+  - Removed `MemberComponentClassKey` export, and `root` and `cardContent` from `MembersListCardClassKey`, `card` from `OwnershipCardClassKey`, and `card` from `CatalogGraphCardClassKey`.
+
+  **Migration:**
+
+  ```diff
+  - <EntityOwnershipCard variant="gridItem" />
+  + <EntityOwnershipCard />
+  ```
+
+  ```diff
+  - <EntityCatalogGraphCard variant="gridItem" height={400} />
+  + <EntityCatalogGraphCard height={400} />
+  ```
+
+- 70fc178: Migrated from deprecated `findPaths` to `targetPaths` and `findOwnPaths` from `@backstage/cli-common`.
+- ea90ab0: Updated the `next-app` template to reference `@backstage/cli-module-new/templates/*` instead of `@backstage/cli/templates/*` for the built-in `yarn new` templates.
+- de62a9d: Upgraded `commander` dependency from `^12.0.0` to `^14.0.3` across all CLI packages.
+- a9d23c4: Properly support `package.json` `workspaces` field
+- ebd4630: Replace deprecated `workspaces.packages` with `workspaces` in `package.json`
+
+  This change is **not** required, but you can edit your main `package.json`, to fit the more modern & more common pattern:
+
+  ```diff
+  -  "workspaces": {
+  -    "packages": [
+     "workspaces": [
+       "packages/*",
+       "plugins/*"
+  -     ]
+  -   },
+    ],
+  ```
+
+- Updated dependencies
+  - @backstage/cli-common@0.2.0
+
+## 0.7.10-next.2
+
+### Patch Changes
+
+- d14b6e0: **BREAKING**: Migrated `MembersListCard`, `OwnershipCard`, and `CatalogGraphCard` to use BUI card primitives via `EntityInfoCard`.
+
+  - `OwnershipCard`: Removed `variant` and `maxScrollHeight` props. Card height and scrolling are now controlled by the parent container — the card fills its container and the body scrolls automatically when content overflows.
+  - `CatalogGraphCard`: Removed `variant` prop.
+  - `MembersListCard`: Translation keys `subtitle`, `paginationLabel`, `aggregateMembersToggle.directMembers`, `aggregateMembersToggle.aggregatedMembers`, and `aggregateMembersToggle.ariaLabel` have been removed. The `title` key now includes `{{groupName}}`. New keys added: `cardLabel`, `noSearchResult`, `aggregateMembersToggle.label`.
+  - `OwnershipCard`: Translation keys `aggregateRelationsToggle.directRelations`, `aggregateRelationsToggle.aggregatedRelations`, and `aggregateRelationsToggle.ariaLabel` have been removed. New key added: `aggregateRelationsToggle.label`.
+  - Removed `MemberComponentClassKey` export, and `root` and `cardContent` from `MembersListCardClassKey`, `card` from `OwnershipCardClassKey`, and `card` from `CatalogGraphCardClassKey`.
+
+  **Migration:**
+
+  ```diff
+  - <EntityOwnershipCard variant="gridItem" />
+  + <EntityOwnershipCard />
+  ```
+
+  ```diff
+  - <EntityCatalogGraphCard variant="gridItem" height={400} />
+  + <EntityCatalogGraphCard height={400} />
+  ```
+
+- Updated dependencies
+  - @backstage/cli-common@0.2.0-next.2
+
 ## 0.7.10-next.1
 
 ### Patch Changes

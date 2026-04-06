@@ -98,6 +98,7 @@ function pascalToKebab(str) {
     TextField: 'textfield',
     DataTable: 'datatable',
     ScrollArea: 'scrollarea',
+    'Grid.Item': 'grid-item',
   };
 
   if (specialCases[str]) {
@@ -285,24 +286,37 @@ async function parseListItem(
   // Remove the commit SHA prefix from markdown
   let description = fullMarkdown.replace(/^-?\s*[a-f0-9]+:\s*/, '').trim();
 
-  // Extract components using bold marker (standard format)
+  // Extract components from "Affected components" line
+  // Supports: **Affected components:** X, **Affected components**: X, Affected components: X
   let components = [];
-  const componentMatch = description.match(
-    /\*\*Affected components:\*\*\s*([^\n]+)/,
-  );
+  const unknownNames = [];
+  const affectedComponentsRe = /\*{2}Affected components?:?\*{2}:?\s*([^\n]+)/i;
+  const affectedComponentsPlainRe = /Affected components?:\s*([^\n]+)/i;
+  const componentMatch =
+    description.match(affectedComponentsRe) ||
+    description.match(affectedComponentsPlainRe);
   if (componentMatch) {
     const componentNames = componentMatch[1]
       .split(',')
-      .map(name => name.trim())
+      .map(name => name.trim().replace(/`/g, ''))
       .filter(Boolean);
 
-    components = componentNames
-      .map(name => mapComponentName(name, validComponents))
-      .filter(Boolean);
+    componentNames.forEach(name => {
+      const mapped = mapComponentName(name, validComponents);
+      if (mapped) {
+        components.push(mapped);
+      } else {
+        unknownNames.push(name);
+      }
+    });
 
-    // Strip "**Affected components:**" line from description
+    // Deduplicate
+    components = [...new Set(components)];
+
+    // Strip "Affected components" line from description (all formats)
     description = description
-      .replace(/\n*\*\*Affected components:\*\*[ \t]*[^\n]+/g, '')
+      .replace(/\n*\*{2}Affected components?:?\*{2}:?\s*[^\n]+/gi, '')
+      .replace(/\n*Affected components?:\s*[^\n]+/gi, '')
       .trim();
   }
 
@@ -335,6 +349,7 @@ async function parseListItem(
     commitSha,
     description,
     components,
+    unknownNames,
     prs,
     breaking,
     migration,
@@ -814,6 +829,7 @@ async function main() {
   const args = process.argv.slice(2);
   const dryRun = args.includes('--dry-run');
   const force = args.includes('--force');
+  const skipPrs = args.includes('--skip-prs');
 
   const changelogTsPath = path.join(__dirname, '../src/utils/changelog.ts');
   const changelogMdPath = path.join(
@@ -878,7 +894,9 @@ async function main() {
   }
 
   // Fetch PR numbers for new entries (lazy fetch - only for entries that will be written)
-  await fetchPRNumbers(relevantEntries, dryRun);
+  if (!skipPrs) {
+    await fetchPRNumbers(relevantEntries, dryRun);
+  }
 
   // Show summary
   console.log('\n📝 New entries by component:');
@@ -896,23 +914,8 @@ async function main() {
     console.log(`  - ${comp}: ${count} ${count === 1 ? 'entry' : 'entries'}`);
   });
 
-  // Warn about unknown components
-  const unknownComponents = [];
-  allEntries.forEach(entry => {
-    const fullText = entry.description;
-    const componentMatch = fullText.match(
-      /Affected components?:[ \t]*([^\n]+)/i,
-    );
-    if (componentMatch) {
-      const names = componentMatch[1].split(',').map(n => n.trim());
-      names.forEach(name => {
-        if (!mapComponentName(name, validComponents)) {
-          unknownComponents.push(name);
-        }
-      });
-    }
-  });
-
+  // Warn about unknown components (collected during extraction)
+  const unknownComponents = allEntries.flatMap(e => e.unknownNames || []);
   if (unknownComponents.length > 0) {
     console.log('\n⚠️  Unknown components (skipped):');
     [...new Set(unknownComponents)].forEach(name => {

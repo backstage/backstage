@@ -38,7 +38,9 @@ describe('useApiHolder', () => {
     const renderedHook = renderHook(() => useApiHolder());
 
     const holder = renderedHook.result.current;
-    expect(holder.get(createApiRef<string>({ id: 'x' }))).toBeUndefined();
+    expect(
+      holder.get(createApiRef<string>().with({ id: 'x' })),
+    ).toBeUndefined();
   });
 });
 
@@ -53,7 +55,7 @@ describe('useApi', () => {
     const get = jest.fn(() => 'my-api-impl');
     context.set({ 1: { get } });
 
-    const apiRef = createApiRef<string>({ id: 'x' });
+    const apiRef = createApiRef<string>().with({ id: 'x' });
     const renderedHook = renderHook(() => useApi(apiRef));
 
     const value = renderedHook.result.current;

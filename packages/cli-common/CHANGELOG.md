@@ -1,5 +1,53 @@
 # @backstage/cli-common
 
+## 0.2.1-next.0
+
+### Patch Changes
+
+- e928e73: chore(deps): bump `undici` from 7.22.0 to 7.24.0
+- Updated dependencies
+  - @backstage/errors@1.2.7
+
+## 0.2.0
+
+### Minor Changes
+
+- 56bd494: Added `targetPaths` and `findOwnPaths` as replacements for `findPaths`, with a cleaner separation between target project paths and package-relative paths.
+
+  To migrate existing `findPaths` usage:
+
+  ```ts
+  // Before
+  import { findPaths } from '@backstage/cli-common';
+  const paths = findPaths(__dirname);
+
+  // After — for target project paths (cwd-based):
+  import { targetPaths } from '@backstage/cli-common';
+  // paths.targetDir    → targetPaths.dir
+  // paths.targetRoot   → targetPaths.rootDir
+  // paths.resolveTarget('src')      → targetPaths.resolve('src')
+  // paths.resolveTargetRoot('yarn.lock') → targetPaths.resolveRoot('yarn.lock')
+
+  // After — for package-relative paths:
+  import { findOwnPaths } from '@backstage/cli-common';
+  const own = findOwnPaths(__dirname);
+  // paths.ownDir       → own.dir
+  // paths.ownRoot      → own.rootDir
+  // paths.resolveOwn('config/jest.js')    → own.resolve('config/jest.js')
+  // paths.resolveOwnRoot('tsconfig.json') → own.resolveRoot('tsconfig.json')
+  ```
+
+### Patch Changes
+
+- e44b6a9: The `findOwnRootDir` utility now searches for the monorepo root by traversing up the directory tree looking for a `package.json` with `workspaces`, instead of assuming a fixed `../..` relative path. If no workspaces root is found during this traversal, `findOwnRootDir` now throws to enforce stricter validation of the repository layout.
+- 9361965: Fixed `runCheck` to ignore stdio of the spawned process, preventing unwanted output from leaking to the terminal.
+
+## 0.2.0-next.2
+
+### Patch Changes
+
+- 9361965: Fixed `runCheck` to ignore stdio of the spawned process, preventing unwanted output from leaking to the terminal.
+
 ## 0.2.0-next.1
 
 ### Patch Changes

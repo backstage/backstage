@@ -16,7 +16,6 @@
 
 import { AppNode } from '../apis';
 import { Expand } from '@backstage/types';
-import { ResolvedExtensionInput } from './createExtension';
 import { createExtensionDataContainer } from '@internal/frontend';
 import {
   ExtensionDataRefToValue,
@@ -124,7 +123,7 @@ export function resolveInputOverrides(
           );
         }
         newInputs[name] = Object.assign(providedContainer, {
-          node: (originalInput as ResolvedExtensionInput<any>).node,
+          node: (originalInput as { node: AppNode }).node,
         }) as any;
       }
     } else {
@@ -158,7 +157,7 @@ export function resolveInputOverrides(
               declaredInput.extensionData,
             );
             return Object.assign(providedContainer, {
-              node: (originalInput[i] as ResolvedExtensionInput<any>).node,
+              node: (originalInput[i] as { node: AppNode }).node,
             }) as any;
           });
         } else if (withNodesCount === providedData.length) {

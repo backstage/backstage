@@ -1,5 +1,61 @@
 # @backstage/backend-test-utils
 
+## 1.11.2-next.1
+
+### Patch Changes
+
+- 4559806: Added support for typed `examples` on actions registered via the actions registry. Action authors can now provide examples with compile-time-checked `input` and `output` values that match their schema definitions.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0-next.1
+  - @backstage/backend-defaults@0.16.1-next.1
+  - @backstage/plugin-auth-node@0.7.0-next.1
+  - @backstage/backend-app-api@1.6.1-next.1
+  - @backstage/plugin-events-node@0.4.21-next.1
+
+## 1.11.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.16.1-next.0
+  - @backstage/backend-plugin-api@1.8.1-next.0
+  - @backstage/backend-app-api@1.6.1-next.0
+  - @backstage/plugin-auth-node@0.6.15-next.0
+  - @backstage/plugin-events-node@0.4.21-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-permission-common@0.9.7
+
+## 1.11.1
+
+### Patch Changes
+
+- dee4283: Added `pluginId` field to `ActionsServiceAction` type, populated from the registering plugin's metadata.
+- 164711a: Added `cancelTask` to `MockSchedulerService` and mock scheduler service factory.
+- 62f0a53: Fixed error forwarding in the actions registry so that known errors like `InputError` and `NotFoundError` thrown by actions preserve their original status codes and messages instead of being wrapped in `ForwardedError` and coerced to 500.
+- a49a40d: Updated dependency `zod` to `^3.25.76 || ^4.0.0` & migrated to `/v3` or `/v4` imports.
+- 1ee5b28: Adds a new metrics service mock to be leveraged in tests
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0
+  - @backstage/backend-defaults@0.16.0
+  - @backstage/plugin-permission-common@0.9.7
+  - @backstage/plugin-auth-node@0.6.14
+  - @backstage/backend-app-api@1.6.0
+  - @backstage/plugin-events-node@0.4.20
+
+## 1.11.1-next.2
+
+### Patch Changes
+
+- 164711a: Added `cancelTask` to `MockSchedulerService` and mock scheduler service factory.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0-next.1
+  - @backstage/backend-defaults@0.16.0-next.2
+  - @backstage/backend-app-api@1.6.0-next.1
+  - @backstage/plugin-auth-node@0.6.14-next.2
+  - @backstage/plugin-events-node@0.4.20-next.1
+
 ## 1.11.1-next.1
 
 ### Patch Changes

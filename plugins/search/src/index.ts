@@ -51,3 +51,4 @@ export {
   searchPlugin as plugin,
   searchPlugin,
 } from './plugin';
+export { searchTranslationRef } from './translation';

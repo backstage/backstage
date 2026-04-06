@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-import { forwardRef } from 'react';
+import { forwardRef, useEffect } from 'react';
 import { Checkbox as RACheckbox } from 'react-aria-components';
 import type { CheckboxProps } from './types';
 import { useDefinition } from '../../hooks/useDefinition';
 import { CheckboxDefinition } from './definition';
 import { RiCheckLine, RiSubtractLine } from '@remixicon/react';
 
-/** @public */
+/**
+ * A form checkbox input with support for indeterminate state and accessible labeling.
+ *
+ * @public
+ */
 export const Checkbox = forwardRef<HTMLLabelElement, CheckboxProps>(
   (props, ref) => {
     const { ownProps, restProps, dataAttributes } = useDefinition(
@@ -29,6 +33,16 @@ export const Checkbox = forwardRef<HTMLLabelElement, CheckboxProps>(
       props,
     );
     const { classes, children } = ownProps;
+    const ariaLabel = restProps['aria-label'];
+    const ariaLabelledBy = restProps['aria-labelledby'];
+
+    useEffect(() => {
+      if (!children && !ariaLabel && !ariaLabelledBy) {
+        console.warn(
+          'Checkbox requires either a visible label, aria-label, or aria-labelledby for accessibility',
+        );
+      }
+    }, [children, ariaLabel, ariaLabelledBy]);
 
     return (
       <RACheckbox
@@ -39,14 +53,14 @@ export const Checkbox = forwardRef<HTMLLabelElement, CheckboxProps>(
       >
         {({ isIndeterminate }) => (
           <>
-            <div className={classes.indicator}>
+            <div className={classes.indicator} aria-hidden="true">
               {isIndeterminate ? (
                 <RiSubtractLine size={12} />
               ) : (
                 <RiCheckLine size={12} />
               )}
             </div>
-            {children}
+            {children != null && <div>{children}</div>}
           </>
         )}
       </RACheckbox>

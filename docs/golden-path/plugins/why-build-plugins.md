@@ -2,6 +2,7 @@
 id: why-build-plugins
 sidebar_label: Why build plugins?
 title: Introduction to the Value and Impact of Plugins within Backstage
+description: Understanding the benefits and impact of building plugins for Backstage
 ---
 
 Backstage plugins are essential components that enable the integration of various tools and services into a unified developer portal. Here’s a detailed look at why building plugins for Backstage can be highly beneficial:

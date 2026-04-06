@@ -16,6 +16,7 @@
 
 import {
   AuditorService,
+  AuditorServiceEvent,
   AuthService,
   BackstageCredentials,
   DatabaseService,
@@ -26,7 +27,7 @@ import {
   resolveSafeChildPath,
   SchedulerService,
 } from '@backstage/backend-plugin-api';
-import { validate } from 'jsonschema';
+import { validate, ValidatorResult } from 'jsonschema';
 import {
   CompoundEntityRef,
   Entity,
@@ -84,7 +85,7 @@ import express from 'express';
 import { Duration } from 'luxon';
 import { pathToFileURL } from 'node:url';
 import { v4 as uuid } from 'uuid';
-import { z } from 'zod';
+import { z } from 'zod/v3';
 import {
   DatabaseTaskStore,
   DefaultTemplateActionRegistry,
@@ -130,7 +131,10 @@ import {
   scaffolderTaskRules,
   scaffolderTemplateRules,
 } from './rules';
-import { ActionsService } from '@backstage/backend-plugin-api/alpha';
+import {
+  ActionsService,
+  MetricsService,
+} from '@backstage/backend-plugin-api/alpha';
 
 /**
  * RouterOptions
@@ -164,6 +168,7 @@ export interface RouterOptions {
   auditor?: AuditorService;
   autocompleteHandlers?: Record<string, AutocompleteHandler>;
   actionsRegistry: ActionsService;
+  metrics: MetricsService;
 }
 
 function isSupportedTemplate(entity: TemplateEntityV1beta3) {
@@ -180,6 +185,49 @@ const readDuration = (
   }
   return defaultValue;
 };
+
+function formatSecretsValidationErrors(result: ValidatorResult) {
+  return result.errors.map(err => {
+    const property = err.property.replace(/^instance/, 'secrets');
+    const secretName = err.argument;
+    const message =
+      err.name === 'required'
+        ? `secrets.${secretName} is required`
+        : `${property} ${err.message}`;
+    return {
+      ...err,
+      property,
+      message,
+      instance: {},
+    };
+  });
+}
+
+async function validateSecrets(options: {
+  template: TemplateEntityV1beta3;
+  secrets: Record<string, unknown>;
+  res: express.Response;
+  auditorEvent?: AuditorServiceEvent;
+}): Promise<boolean> {
+  const { template, secrets, res, auditorEvent } = options;
+  if (!template.spec.secrets?.schema) {
+    return true;
+  }
+
+  const result = validate(secrets, template.spec.secrets.schema);
+  if (result.valid) {
+    return true;
+  }
+
+  await auditorEvent?.fail({
+    error: new InputError('Secrets validation failed'),
+  });
+
+  res.status(400).json({
+    errors: formatSecretsValidationErrors(result),
+  });
+  return false;
+}
 
 /**
  * A method to create a router for the scaffolder backend plugin.
@@ -212,6 +260,7 @@ export async function createRouter(
     httpAuth,
     auditor,
     actionsRegistry,
+    metrics,
   } = options;
 
   const concurrentTasksLimit =
@@ -300,6 +349,7 @@ export async function createRouter(
       concurrentTasksLimit,
       permissions,
       gracefulShutdown,
+      metrics,
       ...templateExtensions,
     });
 
@@ -331,6 +381,7 @@ export async function createRouter(
     workingDirectory,
     permissions,
     config,
+    metrics,
     ...templateExtensions,
   });
 
@@ -525,6 +576,16 @@ export async function createRouter(
             res.status(400).json({ errors: result.errors });
             return;
           }
+        }
+
+        const secretsValid = await validateSecrets({
+          template,
+          secrets: req.body.secrets ?? {},
+          res,
+          auditorEvent,
+        });
+        if (!secretsValid) {
+          return;
         }
 
         const baseUrl = getEntityBaseUrl(template);
@@ -746,6 +807,28 @@ export async function createRouter(
           task: task,
           isTaskAuthorized,
         });
+
+        // Validate secrets against template schema if defined
+        if (task.spec.templateInfo?.entityRef) {
+          const templateEntityRef = parseEntityRef(
+            task.spec.templateInfo.entityRef,
+            { defaultKind: 'template' },
+          );
+          const template = await authorizeTemplate(
+            templateEntityRef,
+            credentials,
+          );
+
+          const secretsValid = await validateSecrets({
+            template,
+            secrets: req.body.secrets ?? {},
+            res,
+            auditorEvent,
+          });
+          if (!secretsValid) {
+            return;
+          }
+        }
 
         await auditorEvent?.success();
 
@@ -973,6 +1056,16 @@ export async function createRouter(
             res.status(400).json({ errors: result.errors });
             return;
           }
+        }
+
+        const secretsValid = await validateSecrets({
+          template,
+          secrets: body.secrets ?? {},
+          res,
+          auditorEvent,
+        });
+        if (!secretsValid) {
+          return;
         }
 
         const steps = template.spec.steps.map((step, index) => ({

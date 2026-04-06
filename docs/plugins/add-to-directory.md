@@ -4,6 +4,12 @@ title: Add to Directory
 description: Documentation on Adding Plugin to Plugin Directory
 ---
 
+:::caution Legacy Documentation
+
+This section is part of the legacy plugins documentation. The process for adding plugins to the directory described here is still current.
+
+:::
+
 ## Adding a Plugin to the Directory
 
 To add a new plugin to the [plugin directory](https://backstage.io/plugins) create a file with the following pattern `<plugin-name>.yaml` where `<plugin-name>` is the name of your plugin. This file will go in [`microsite/data/plugins`](https://github.com/backstage/backstage/tree/master/microsite/data/plugins) with your plugin's information. Example:

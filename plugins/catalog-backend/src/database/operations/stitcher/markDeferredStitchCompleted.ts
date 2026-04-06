@@ -15,7 +15,7 @@
  */
 
 import { Knex } from 'knex';
-import { DbRefreshStateRow } from '../../tables';
+import { DbStitchQueueRow } from '../../tables';
 
 /**
  * Marks a single entity as having been stitched.
@@ -24,10 +24,10 @@ import { DbRefreshStateRow } from '../../tables';
  *
  * This assumes that the stitching strategy is set to deferred.
  *
- * The timestamp and ticket are only reset if the ticket hasn't changed. If it
- * has, it means that a new stitch request has been made, and the entity should
- * be stitched once more some time in the future - or is indeed already being
- * stitched concurrently with ourselves.
+ * The row is only deleted from stitch_queue if the ticket hasn't changed. If
+ * it has, it means that a new stitch request has been made, and the entity
+ * should be stitched once more some time in the future - or is indeed already
+ * being stitched concurrently with ourselves.
  */
 export async function markDeferredStitchCompleted(option: {
   knex: Knex | Knex.Transaction;
@@ -36,11 +36,8 @@ export async function markDeferredStitchCompleted(option: {
 }): Promise<void> {
   const { knex, entityRef, stitchTicket } = option;
 
-  await knex<DbRefreshStateRow>('refresh_state')
-    .update({
-      next_stitch_at: null,
-      next_stitch_ticket: null,
-    })
+  await knex<DbStitchQueueRow>('stitch_queue')
     .where('entity_ref', '=', entityRef)
-    .andWhere('next_stitch_ticket', '=', stitchTicket);
+    .andWhere('stitch_ticket', '=', stitchTicket)
+    .delete();
 }

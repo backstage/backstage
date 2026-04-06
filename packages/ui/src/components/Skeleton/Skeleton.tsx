@@ -18,7 +18,11 @@ import type { SkeletonProps } from './types';
 import { useDefinition } from '../../hooks/useDefinition';
 import { SkeletonDefinition } from './definition';
 
-/** @public */
+/**
+ * A placeholder shape displayed while content is loading, matching the size and layout of the content it replaces.
+ *
+ * @public
+ */
 export const Skeleton = (props: SkeletonProps) => {
   const { ownProps, restProps, dataAttributes } = useDefinition(
     SkeletonDefinition,

@@ -19,7 +19,11 @@ import { useDefinition } from '../../../hooks/useDefinition';
 import { TableBodyDefinition } from '../definition';
 import type { TableBodyProps } from '../types';
 
-/** @public */
+/**
+ * The body section of a table that renders data rows from the provided items collection.
+ *
+ * @public
+ */
 export const TableBody = <T extends object>(props: TableBodyProps<T>) => {
   const { ownProps, restProps } = useDefinition(TableBodyDefinition, props);
 

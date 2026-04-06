@@ -26,7 +26,11 @@ import { FieldError } from '../FieldError';
 import { SelectTrigger } from './SelectTrigger';
 import { SelectContent } from './SelectContent';
 
-/** @public */
+/**
+ * A dropdown picker for selecting one or multiple options from a list, with optional search filtering and inline error display.
+ *
+ * @public
+ */
 export const Select = forwardRef<
   HTMLDivElement,
   SelectProps<'single' | 'multiple'>

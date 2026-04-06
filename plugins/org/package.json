@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-org",
-  "version": "0.6.50-next.1",
+  "version": "0.7.1-next.1",
   "description": "A Backstage plugin that helps you create entity pages for your organization",
   "backstage": {
     "role": "frontend-plugin",
@@ -61,6 +61,7 @@
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.61",
+    "@remixicon/react": "^4.6.0",
     "lodash": "^4.17.21",
     "p-limit": "^3.1.0",
     "pluralize": "^8.0.0",

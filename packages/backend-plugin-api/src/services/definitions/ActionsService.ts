@@ -29,6 +29,12 @@ export type ActionsServiceAction = {
     input: JSONSchema7;
     output: JSONSchema7;
   };
+  examples?: Array<{
+    title: string;
+    description?: string;
+    input: JsonObject;
+    output?: JsonObject;
+  }>;
   attributes: {
     readOnly: boolean;
     destructive: boolean;

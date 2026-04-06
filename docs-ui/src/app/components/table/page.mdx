@@ -42,6 +42,7 @@ import {
   tableCombinedSnippet,
   tableCustomRowSnippet,
   tablePrimitivesSnippet,
+  tableCellRequirementSnippet,
 } from './snippets';
 import { ChangelogComponent } from '@/components/ChangelogComponent';
 import { PageTitle } from '@/components/PageTitle';
@@ -94,6 +95,18 @@ For full control over state, use the controlled props instead:
 - `search` / `onSearchChange`
 - `filter` / `onFilterChange`
 
+### Cell Requirement
+
+Every cell rendered via `ColumnConfig.cell` (or inside a custom `RowRenderFn`) **must** return a cell component as the top-level element. The available cell components are:
+
+- **`CellText`** — displays a title with optional description and icon.
+- **`CellProfile`** — displays an avatar with a name and optional description.
+- **`Cell`** — a generic wrapper for fully custom cell content.
+
+Returning bare text, React fragments, or other elements without wrapping them in one of these cell components will break the table layout.
+
+<CodeBlock code={tableCellRequirementSnippet} />
+
 ## Common Patterns
 
 ### Sorting
@@ -106,7 +119,7 @@ With `mode: 'complete'`, sorting happens client-side. Provide a `sortFn` that re
 
 ### Pagination
 
-Configure page size and available options through `paginationOptions`. The table displays navigation controls automatically.
+Configure page size and available options through `paginationOptions`. The table displays navigation controls automatically. In `complete` mode, set `type: 'none'` to disable pagination and show all rows.
 
 <CodeBlock code={tablePaginationSnippet} />
 
@@ -292,4 +305,17 @@ Low-level components for building custom table layouts.
 
 <Theming definition={TableDefinition} />
 
-<ChangelogComponent component="table" />
+<ChangelogComponent
+  component={[
+    'table',
+    'table-root',
+    'table-header',
+    'table-body',
+    'table-pagination',
+    'row',
+    'column',
+    'cell',
+    'cell-text',
+    'cell-profile',
+  ]}
+/>

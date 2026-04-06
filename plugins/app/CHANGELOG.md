@@ -1,5 +1,117 @@
 # @backstage/plugin-app
 
+## 0.4.3-next.1
+
+### Patch Changes
+
+- e5baa20: Added support for configuring URL redirects on the `app/routes` extension. Redirects can be configured through `app-config` as an array of `{from, to}` path pairs, which will cause navigation to the `from` path to be redirected to the `to` path.
+
+  For example:
+
+  ```yaml
+  app:
+    extensions:
+      - app/routes:
+          config:
+            redirects:
+              - from: /old-path
+                to: /new-path
+  ```
+
+- Updated dependencies
+  - @backstage/ui@0.14.0-next.1
+  - @backstage/frontend-plugin-api@0.16.0-next.1
+  - @backstage/core-components@0.18.9-next.0
+  - @backstage/core-plugin-api@1.12.5-next.1
+  - @backstage/plugin-app-react@0.2.2-next.1
+
+## 0.4.3-next.0
+
+### Patch Changes
+
+- d66a3ec: Updated the `PageLayout` swap to pass a clickable `titleLink` on the `PluginHeader`, resolved from the plugin's root route ref.
+- Updated dependencies
+  - @backstage/ui@0.14.0-next.0
+  - @backstage/core-components@0.18.9-next.0
+  - @backstage/frontend-plugin-api@0.15.2-next.0
+  - @backstage/integration-react@1.2.17-next.0
+  - @backstage/core-plugin-api@1.12.5-next.0
+  - @backstage/plugin-app-react@0.2.2-next.0
+  - @backstage/filter-predicates@0.1.1
+  - @backstage/theme@0.7.2
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.12
+  - @backstage/plugin-permission-react@0.4.42-next.0
+
+## 0.4.1
+
+### Patch Changes
+
+- 5f3f5d2: `NavContentBlueprint` nav item collections now keep previously collected `rest()` results in sync when additional items are taken later in the same render, making it easier to place items across multiple sidebar sections.
+- aa29b50: Pages created with `PageBlueprint` now render the plugin header by default in the new frontend system.
+- c0ab376: The app nav now falls back to `plugin.icon` for navigation items that don't have an explicit icon set.
+- 12d8afe: Added `BUIProvider` from `@backstage/ui` to the app root, enabling BUI components to fire analytics events through the Backstage analytics system.
+- 5fec07d: Updated the default app root to better support phased app preparation by allowing the app layout to be absent during bootstrap, routing bootstrap failures through the app root boundary, and avoiding installation of a guest identity in protected apps that do not provide a sign-in page.
+- 9508514: Updated the default `PluginWrapperApi` implementation to support the new `useWrapperValue` hook and root wrapper. The root wrapper is now rendered in the app root to manage shared hook state across plugin wrapper instances.
+- a49a40d: Updated dependency `zod` to `^3.25.76 || ^4.0.0` & migrated to `/v3` or `/v4` imports.
+- 42f8c9b: Moved `BUIProvider` inside the app router to enable automatic client-side routing for all BUI components.
+- 909c742: Switched translation API imports (`translationApiRef`, `appLanguageApiRef`) from the alpha `@backstage/core-plugin-api/alpha` path to the stable `@backstage/frontend-plugin-api` export. This has no effect on runtime behavior.
+- 7e743f4: Introduced a new `ToastApi` for displaying rich toast notifications in the new frontend system.
+
+  The new `ToastApi` provides enhanced notification capabilities compared to the existing `AlertApi`:
+
+  - **Title and Description**: Toasts support both a title and an optional description
+  - **Custom Timeouts**: Each toast can specify its own timeout duration
+  - **Links**: Toasts can include action links
+  - **Status Variants**: Support for neutral, info, success, warning, and danger statuses
+  - **Programmatic Dismiss**: Toasts can be dismissed programmatically using the `close()` handle returned from `post()`
+
+  **Usage:**
+
+  ```typescript
+  import { toastApiRef, useApi } from '@backstage/frontend-plugin-api';
+
+  const toastApi = useApi(toastApiRef);
+
+  // Full-featured toast
+  toastApi.post({
+    title: 'Entity saved',
+    description: 'Your changes have been saved successfully.',
+    status: 'success',
+    timeout: 5000,
+    links: [{ label: 'View entity', href: '/catalog/entity' }],
+  });
+
+  // Programmatic dismiss
+  const { close } = toastApi.post({ title: 'Uploading...', status: 'info' });
+  // Later...
+  close();
+  ```
+
+  The `ToastDisplay` component subscribes to both `ToastApi` and `AlertApi`, providing a migration path where both systems work side by side until `AlertApi` is fully deprecated.
+
+- Updated dependencies
+  - @backstage/ui@0.13.0
+  - @backstage/core-plugin-api@1.12.4
+  - @backstage/core-components@0.18.8
+  - @backstage/frontend-plugin-api@0.15.0
+  - @backstage/plugin-app-react@0.2.1
+  - @backstage/plugin-permission-react@0.4.41
+  - @backstage/filter-predicates@0.1.1
+  - @backstage/integration-react@1.2.16
+
+## 0.4.1-next.2
+
+### Patch Changes
+
+- 12d8afe: Added `BUIProvider` from `@backstage/ui` to the app root, enabling BUI components to fire analytics events through the Backstage analytics system.
+- Updated dependencies
+  - @backstage/ui@0.13.0-next.2
+  - @backstage/frontend-plugin-api@0.15.0-next.1
+  - @backstage/core-plugin-api@1.12.4-next.1
+  - @backstage/core-components@0.18.8-next.1
+  - @backstage/plugin-app-react@0.2.1-next.1
+
 ## 0.4.1-next.1
 
 ### Patch Changes

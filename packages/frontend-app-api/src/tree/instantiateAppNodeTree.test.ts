@@ -17,11 +17,10 @@
 import {
   AppNode,
   Extension,
+  ExtensionDataContainer,
   ExtensionDataRef,
   ExtensionDefinition,
-  ExtensionInput,
   PortableSchema,
-  ResolvedExtensionInput,
   createExtension,
   createExtensionBlueprint,
   createExtensionDataRef,
@@ -146,8 +145,8 @@ function mirrorInputs(ctx: {
   inputs: {
     [name in string]:
       | undefined
-      | ResolvedExtensionInput<ExtensionInput>
-      | Array<ResolvedExtensionInput<ExtensionInput>>;
+      | ({ node: AppNode } & ExtensionDataContainer<ExtensionDataRef>)
+      | Array<{ node: AppNode } & ExtensionDataContainer<ExtensionDataRef>>;
   };
 }) {
   return [
@@ -1781,6 +1780,98 @@ describe('instantiateAppNodeTree', () => {
           ]);
         });
       });
+    });
+  });
+
+  describe('if predicate', () => {
+    function makeNodeWithEnabled(
+      enabled: AppNodeSpec['if'],
+      disabled = false,
+    ): AppNode {
+      const ext = resolveExtensionDefinition(
+        createExtension({
+          attachTo: { id: 'ignored', input: 'ignored' },
+          output: [testDataRef],
+          factory: () => [testDataRef('value')],
+        }),
+        { namespace: 'test-ext' },
+      );
+      return {
+        spec: {
+          id: ext.id,
+          attachTo: ext.attachTo,
+          disabled,
+          if: enabled,
+          extension: ext as Extension<unknown, unknown>,
+          plugin: createFrontendPlugin({ pluginId: 'app' }),
+        },
+        edges: { attachments: new Map() },
+      };
+    }
+
+    it('should skip a node when the predicate is not satisfied', () => {
+      const node = makeNodeWithEnabled({
+        featureFlags: { $contains: 'the-flag' },
+      });
+      const tree = resolveAppTree('test-ext', [node.spec], collector);
+      instantiateAppNodeTree(tree.root, testApis, collector, undefined, {
+        featureFlags: [],
+      });
+      expect(tree.root.instance).toBeUndefined();
+    });
+
+    it('should instantiate a node when the predicate is satisfied', () => {
+      const node = makeNodeWithEnabled({
+        featureFlags: { $contains: 'the-flag' },
+      });
+      const tree = resolveAppTree('test-ext', [node.spec], collector);
+      instantiateAppNodeTree(tree.root, testApis, collector, undefined, {
+        featureFlags: ['the-flag'],
+      });
+      expect(tree.root.instance).toBeDefined();
+      expect(tree.root.instance?.getData(testDataRef)).toBe('value');
+    });
+
+    it('should support $all operator across multiple flags', () => {
+      const node = makeNodeWithEnabled({
+        $all: [
+          { featureFlags: { $contains: 'flag-a' } },
+          { featureFlags: { $contains: 'flag-b' } },
+        ],
+      });
+      const tree = resolveAppTree('test-ext', [node.spec], collector);
+
+      // Only one flag active — should not instantiate
+      instantiateAppNodeTree(tree.root, testApis, collector, undefined, {
+        featureFlags: ['flag-a'],
+      });
+      expect(tree.root.instance).toBeUndefined();
+
+      // Both flags active — should instantiate
+      const tree2 = resolveAppTree('test-ext', [node.spec], collector);
+      instantiateAppNodeTree(tree2.root, testApis, collector, undefined, {
+        featureFlags: ['flag-a', 'flag-b'],
+      });
+      expect(tree2.root.instance).toBeDefined();
+    });
+
+    it('should instantiate nodes without an enabled field regardless of predicateContext', () => {
+      const node = makeNodeWithEnabled(undefined);
+      const tree = resolveAppTree('test-ext', [node.spec], collector);
+      instantiateAppNodeTree(tree.root, testApis, collector, undefined, {
+        featureFlags: [],
+      });
+      expect(tree.root.instance).toBeDefined();
+    });
+
+    it('should instantiate nodes with enabled predicate when predicateContext is not provided', () => {
+      const node = makeNodeWithEnabled({
+        featureFlags: { $contains: 'the-flag' },
+      });
+      const tree = resolveAppTree('test-ext', [node.spec], collector);
+      // No predicateContext passed — predicate evaluation is skipped
+      instantiateAppNodeTree(tree.root, testApis, collector);
+      expect(tree.root.instance).toBeDefined();
     });
   });
 });

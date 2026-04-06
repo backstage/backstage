@@ -1,5 +1,78 @@
 # @backstage/plugin-catalog-backend-module-github-org
 
+## 0.3.21-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0-next.1
+  - @backstage/plugin-catalog-backend-module-github@0.13.1-next.1
+  - @backstage/plugin-catalog-node@2.1.1-next.1
+  - @backstage/plugin-events-node@0.4.21-next.1
+
+## 0.3.21-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend-module-github@0.13.1-next.0
+  - @backstage/backend-plugin-api@1.8.1-next.0
+  - @backstage/plugin-catalog-node@2.1.1-next.0
+  - @backstage/plugin-events-node@0.4.21-next.0
+  - @backstage/config@1.3.6
+
+## 0.3.20
+
+### Patch Changes
+
+- 106d1b2: Added a `defaultUserTransformer.useVerifiedEmails` config option for the `githubOrg` provider. When set to `true`, the default user transformer prefers organization verified domain emails over the user's public GitHub email. Defaults to `false`, which uses only the public GitHub email.
+
+  This option has no effect when a custom user transformer is set via the `githubOrgEntityProviderTransformsExtensionPoint`.
+
+  ```yaml
+  catalog:
+    providers:
+      githubOrg:
+        production:
+          githubUrl: https://github.com
+          orgs:
+            - my-org
+          defaultUserTransformer:
+            useVerifiedEmails: true
+  ```
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0
+  - @backstage/plugin-catalog-backend-module-github@0.13.0
+  - @backstage/plugin-catalog-node@2.1.0
+  - @backstage/plugin-events-node@0.4.20
+
+## 0.3.20-next.2
+
+### Patch Changes
+
+- 106d1b2: Added a `defaultUserTransformer.useVerifiedEmails` config option for the `githubOrg` provider. When set to `true`, the default user transformer prefers organization verified domain emails over the user's public GitHub email. Defaults to `false`, which uses only the public GitHub email.
+
+  This option has no effect when a custom user transformer is set via the `githubOrgEntityProviderTransformsExtensionPoint`.
+
+  ```yaml
+  catalog:
+    providers:
+      githubOrg:
+        production:
+          githubUrl: https://github.com
+          orgs:
+            - my-org
+          defaultUserTransformer:
+            useVerifiedEmails: true
+  ```
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0-next.1
+  - @backstage/plugin-catalog-backend-module-github@0.13.0-next.2
+  - @backstage/plugin-catalog-node@2.1.0-next.2
+  - @backstage/plugin-events-node@0.4.20-next.1
+
 ## 0.3.20-next.1
 
 ### Patch Changes

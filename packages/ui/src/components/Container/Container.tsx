@@ -19,7 +19,11 @@ import type { ContainerProps } from './types';
 import { useDefinition } from '../../hooks/useDefinition';
 import { ContainerDefinition } from './definition';
 
-/** @public */
+/**
+ * A centered layout wrapper that constrains content to a maximum width and provides consistent page-level padding.
+ *
+ * @public
+ */
 export const Container = forwardRef<HTMLDivElement, ContainerProps>(
   (props, ref) => {
     const { ownProps, restProps, utilityStyle } = useDefinition(

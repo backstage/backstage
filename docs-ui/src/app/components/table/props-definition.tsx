@@ -45,14 +45,44 @@ export const useTableOptionsPropDefs: Record<string, PropDef> = {
       'The data for the table. Only applicable for "complete" mode, and either this or `getData` must be provided.',
   },
   paginationOptions: {
-    type: 'enum',
-    values: ['object'],
-    description: (
-      <>
-        Pagination configuration including <Chip>pageSize</Chip>,{' '}
-        <Chip>pageSizeOptions</Chip>, and <Chip>initialOffset</Chip>.
-      </>
-    ),
+    type: 'complex',
+    description: 'Pagination configuration.',
+    complexType: {
+      name: 'PaginationOptions',
+      properties: {
+        type: {
+          type: "'page' | 'none'",
+          description:
+            "Pagination mode. Set to 'none' to disable pagination and show all rows (complete mode only). Defaults to 'page'.",
+        },
+        pageSize: {
+          type: 'number',
+          description: 'Number of items per page. Defaults to 20.',
+        },
+        pageSizeOptions: {
+          type: 'number[]',
+          description: 'Available page size options for the dropdown.',
+        },
+        initialOffset: {
+          type: 'number',
+          description: 'Starting offset for the first page.',
+        },
+        showPageSizeOptions: {
+          type: 'boolean',
+          description:
+            'Whether to show the page size dropdown. Defaults to true.',
+        },
+        showPaginationLabel: {
+          type: 'boolean',
+          description:
+            "Whether to display the pagination label (e.g., '1 - 20 of 150').",
+        },
+        getLabel: {
+          type: '(props) => string',
+          description: 'Custom function to generate the pagination label text.',
+        },
+      },
+    },
   },
   // Uncontrolled state
   initialSort: {
@@ -413,6 +443,12 @@ export const tablePaginationPropDefs: Record<string, PropDef> = {
     values: ['(props) => string'],
     description: 'Custom function to generate the pagination label text.',
   },
+  showPaginationLabel: {
+    type: 'boolean',
+    default: 'true',
+    description:
+      'Whether to display the pagination label (e.g., "1 - 20 of 150"). When false, only navigation controls are shown.',
+  },
 };
 
 // =============================================================================
@@ -427,6 +463,17 @@ export const tableRootPropDefs: Record<string, PropDef> = {
       <>
         Whether the table data is stale (e.g., while fetching new data). Adds{' '}
         <Chip>aria-busy</Chip> attribute.
+      </>
+    ),
+  },
+  loading: {
+    type: 'boolean',
+    default: 'false',
+    description: (
+      <>
+        Whether the table is in a loading state (e.g., initial data fetch). Adds{' '}
+        <Chip>aria-busy</Chip> attribute and <Chip>data-loading</Chip> data
+        attribute for styling.
       </>
     ),
   },

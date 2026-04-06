@@ -1,5 +1,58 @@
 # @backstage/repo-tools
 
+## 0.17.1-next.1
+
+### Patch Changes
+
+- 2e5c5f8: Bumped `glob` dependency from v7/v8/v11 to v13 to address security vulnerabilities in older versions. Bumped `rollup` from v4.27 to v4.59+ to fix a high severity path traversal vulnerability (GHSA-mw96-cpmx-2vgc).
+- 8e9679b: Parallelized CLI report generation, reducing wall-clock time by ~4x.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0-next.1
+
+## 0.17.1-next.0
+
+### Patch Changes
+
+- 270efef: Added support for packages that only support React 18+ in the `peer-deps` command.
+- Updated dependencies
+  - @backstage/cli-common@0.2.1-next.0
+  - @backstage/backend-plugin-api@1.8.1-next.0
+  - @backstage/cli-node@0.3.1-next.0
+  - @backstage/config-loader@1.10.10-next.0
+  - @backstage/catalog-model@1.7.7
+  - @backstage/errors@1.2.7
+
+## 0.17.0
+
+### Minor Changes
+
+- 0fbcf23: Added support for OpenAPI 3.1 to all `schema openapi` commands. The commands now auto-detect the OpenAPI version from the spec file and use the appropriate generator, supporting both OpenAPI 3.0.x and 3.1.x specifications.
+
+### Patch Changes
+
+- 426edbe: Fixed `generate-catalog-info` command failing with "too many arguments" when invoked by lint-staged via the pre-commit hook.
+- d5779e5: Updated the CLI report parser to support cleye-style help output, and strip ANSI escape codes from captured output.
+- 6738cf0: build(deps): bump `minimatch` from 9.0.5 to 10.2.1
+- 2a51546: Fixed prettier existence checks in OpenAPI commands to use `fs.pathExists` instead of checking the resolved path string, which was always truthy.
+- 70fc178: Migrated from deprecated `findPaths` to `targetPaths` and `findOwnPaths` from `@backstage/cli-common`.
+- de62a9d: Upgraded `commander` dependency from `^12.0.0` to `^14.0.3` across all CLI packages.
+- a49a40d: Updated dependency `zod` to `^3.25.76 || ^4.0.0` & migrated to `/v3` or `/v4` imports.
+- 18a946c: Updated `@microsoft/api-extractor` to `7.57.3` and added tests for `getTsDocConfig`
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0
+  - @backstage/cli-node@0.3.0
+  - @backstage/cli-common@0.2.0
+  - @backstage/config-loader@1.10.9
+  - @backstage/catalog-model@1.7.7
+
+## 0.17.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0-next.1
+  - @backstage/cli-common@0.2.0-next.2
+
 ## 0.17.0-next.1
 
 ### Minor Changes

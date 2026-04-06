@@ -19,6 +19,7 @@ import {
   createFrontendPlugin,
   PageBlueprint,
 } from '@backstage/frontend-plugin-api';
+import { RiMindMap } from '@remixicon/react';
 import { EntityCardBlueprint } from '@backstage/plugin-catalog-react/alpha';
 import { catalogGraphRouteRef, catalogEntityRouteRef } from './routes';
 import {
@@ -36,6 +37,7 @@ const CatalogGraphEntityCard = EntityCardBlueprint.makeWithOverrides({
       maxDepth: z => z.number().optional(),
       unidirectional: z => z.boolean().optional(),
       mergeRelations: z => z.boolean().optional(),
+      showArrowHeads: z => z.boolean().optional(),
       direction: z => z.nativeEnum(Direction).optional(),
       relationPairs: z => z.array(z.tuple([z.string(), z.string()])).optional(),
       zoom: z => z.enum(['enabled', 'disabled', 'enable-on-click']).optional(),
@@ -65,6 +67,7 @@ const CatalogGraphPage = PageBlueprint.makeWithOverrides({
       maxDepth: z => z.number().optional(),
       unidirectional: z => z.boolean().optional(),
       mergeRelations: z => z.boolean().optional(),
+      showArrowHeads: z => z.boolean().optional(),
       direction: z => z.nativeEnum(Direction).optional(),
       showFilters: z => z.boolean().optional(),
       curve: z => z.enum(['curveStepBefore', 'curveMonotoneX']).optional(),
@@ -97,6 +100,8 @@ const CatalogGraphApi = ApiBlueprint.make({
 
 export default createFrontendPlugin({
   pluginId: 'catalog-graph',
+  title: 'Catalog Graph',
+  icon: <RiMindMap />,
   info: { packageJson: () => import('../package.json') },
   routes: {
     catalogGraph: catalogGraphRouteRef,
@@ -107,4 +112,10 @@ export default createFrontendPlugin({
   extensions: [CatalogGraphPage, CatalogGraphEntityCard, CatalogGraphApi],
 });
 
-export { catalogGraphTranslationRef } from './translation';
+import { catalogGraphTranslationRef as _catalogGraphTranslationRef } from './translation';
+
+/**
+ * @alpha
+ * @deprecated Import from `@backstage/plugin-catalog-graph` instead.
+ */
+export const catalogGraphTranslationRef = _catalogGraphTranslationRef;

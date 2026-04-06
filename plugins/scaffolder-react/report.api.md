@@ -56,10 +56,11 @@ import { TemplateGlobalFunction as TemplateGlobalFunction_2 } from '@backstage/p
 import { TemplateGlobalValue as TemplateGlobalValue_2 } from '@backstage/plugin-scaffolder-common';
 import { TemplateParameterSchema as TemplateParameterSchema_2 } from '@backstage/plugin-scaffolder-common';
 import { TemplatesType } from '@rjsf/utils';
+import { TranslationRef } from '@backstage/frontend-plugin-api';
 import { UIOptionsType } from '@rjsf/utils';
 import { UiSchema } from '@rjsf/utils';
 import { ValidatorType } from '@rjsf/utils';
-import { z } from 'zod';
+import { z } from 'zod/v3';
 
 // @public @deprecated
 export type Action = Action_2;
@@ -208,7 +209,9 @@ export type ReviewStepProps = {
 export type ScaffolderApi = ScaffolderApi_2;
 
 // @public (undocumented)
-export const scaffolderApiRef: ApiRef<ScaffolderApi_2>;
+export const scaffolderApiRef: ApiRef<ScaffolderApi_2> & {
+  readonly $$type: '@backstage/ApiRef';
+};
 
 // @public @deprecated (undocumented)
 export type ScaffolderDryRunOptions = ScaffolderDryRunOptions_2;
@@ -237,6 +240,31 @@ export type ScaffolderOutputLink = ScaffolderOutputLink_2;
 
 // @public @deprecated (undocumented)
 export type ScaffolderOutputText = ScaffolderOutputText_2;
+
+// @public (undocumented)
+export const scaffolderReactTranslationRef: TranslationRef<
+  'scaffolder-react',
+  {
+    readonly 'workflow.noDescription': 'No description';
+    readonly 'passwordWidget.content': 'This widget is insecure. Please use [`ui:field: Secret`](https://backstage.io/docs/features/software-templates/writing-templates/#using-secrets) instead of `ui:widget: password`';
+    readonly 'scaffolderPageContextMenu.createLabel': 'Create';
+    readonly 'scaffolderPageContextMenu.moreLabel': 'more';
+    readonly 'scaffolderPageContextMenu.editorLabel': 'Manage Templates';
+    readonly 'scaffolderPageContextMenu.actionsLabel': 'Installed Actions';
+    readonly 'scaffolderPageContextMenu.tasksLabel': 'Task List';
+    readonly 'scaffolderPageContextMenu.templatingExtensionsLabel': 'Templating Extensions';
+    readonly 'stepper.backButtonText': 'Back';
+    readonly 'stepper.nextButtonText': 'Next';
+    readonly 'stepper.createButtonText': 'Create';
+    readonly 'stepper.reviewButtonText': 'Review';
+    readonly 'stepper.stepIndexLabel': 'Step {{index, number}}';
+    readonly 'templateCategoryPicker.title': 'Categories';
+    readonly 'templateCard.noDescription': 'No description';
+    readonly 'templateCard.chooseButtonText': 'Choose';
+    readonly 'cardHeader.detailBtnTitle': 'Show template entity details';
+    readonly 'templateOutputs.title': 'Text Output';
+  }
+>;
 
 // @public
 export type ScaffolderRJSFField<

@@ -49,23 +49,28 @@ your plugin and import the components you need.
 
 <CodeBlock lang="tsx" title="Let's get started 🚀" code={snippet} />
 
-## Analytics
+## BUIProvider
 
-BUI components with navigation behavior — Link, ButtonLink, Tab, MenuItem, Tag, and Row — can fire analytics events when clicked. To enable this, you need to connect BUI's analytics layer to Backstage's analytics system.
+`BUIProvider` provides routing and analytics integration for all BUI components. It must be rendered inside a React Router context for client-side navigation to work in components like Link, ButtonLink, Tabs, Menu, TagGroup, and Table.
 
 ### Setup
 
-If you're using the **new frontend system**, analytics is wired automatically via `@backstage/plugin-app` — no setup required.
+If you're using the **new frontend system**, the provider is wired automatically via `@backstage/plugin-app` — no setup required.
 
 For the **old frontend system**, the `BUIProvider` is included in the app shell from `@backstage/core-app-api` and works out of the box.
 
-If you need to set up the provider manually (e.g. in a custom app shell), wrap your app content with the `BUIProvider` and pass in Backstage's `useAnalytics` hook:
+If you need to set up the provider manually (e.g. in a custom app shell), wrap your app content with the `BUIProvider` inside your Router and pass in Backstage's `useAnalytics` hook:
 
 <CodeBlock lang="tsx" code={analyticsSetupSnippet} />
 
-### How it works
+<Banner
+  text="BUIProvider must be rendered inside a React Router context. If placed outside, components will fall back to full-page navigation instead of client-side routing."
+  variant="warning"
+/>
 
-Once configured, BUI components fire a `click` event through Backstage's analytics system when a user navigates. Events include the link text as the subject and the destination URL in the attributes, along with any `AnalyticsContext` metadata (such as `pluginId`) from the component's position in the tree.
+### Analytics
+
+Once configured, BUI components with navigation behavior — Link, ButtonLink, Tab, MenuItem, Tag, and Row — fire a `click` event through Backstage's analytics system when a user navigates. Events include the link text as the subject and the destination URL in the attributes, along with any `AnalyticsContext` metadata (such as `pluginId`) from the component's position in the tree.
 
 To suppress tracking on an individual component, use the `noTrack` prop:
 

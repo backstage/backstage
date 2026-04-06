@@ -25,6 +25,7 @@ Each action registered with the service must conform to the `ActionsRegistryActi
 
 ### Optional Properties
 
+- **`visibilityPermission`:** A `BasicPermission` that controls visibility and access to the action through the permissions framework. See [Permissions](#permissions) below.
 - **`attributes`:** Object containing behavioral flags:
   - **`destructive`:** Boolean indicating if the action modifies or deletes data
   - **`idempotent`:** Boolean indicating if running the action multiple times produces the same result
@@ -156,6 +157,43 @@ export const myPlugin = createBackendPlugin({
   },
 });
 ```
+
+## Permissions
+
+Actions can optionally declare a `visibilityPermission` to control visibility and access through the Backstage permissions framework. The `visibilityPermission` must be a `BasicPermission` (not a resource permission). When set, the action is only visible in listings and accessible by callers who are authorized.
+
+When accessed via the Actions Service or the `/.backstage/actions/v1/...` HTTP endpoints, actions that are denied by the permission policy are filtered from list results and return a `404 Not Found` on invocation, as if they don't exist.
+
+Permissions declared on actions are automatically registered with the `PermissionsRegistryService` so they appear in the permission policy system.
+
+### Adding a Permission to an Action
+
+```typescript
+import { createPermission } from '@backstage/plugin-permission-common';
+
+// Define a permission for your action
+const myDeletePermission = createPermission({
+  name: 'my-plugin.actions.deleteEntity',
+  attributes: { action: 'delete' },
+});
+
+actionsRegistry.register({
+  name: 'delete-entity',
+  title: 'Delete Entity',
+  description: 'Removes an entity from the catalog',
+  visibilityPermission: myDeletePermission,
+  schema: {
+    input: z => z.object({ entityRef: z.string() }),
+    output: z => z.object({ deleted: z.boolean() }),
+  },
+  action: async ({ input }) => {
+    // action logic
+    return { output: { deleted: true } };
+  },
+});
+```
+
+Actions without a `visibilityPermission` field remain visible and accessible by all callers, preserving backwards compatibility.
 
 ## Best Practices
 

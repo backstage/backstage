@@ -7,6 +7,7 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
+import { TranslationRef } from '@backstage/frontend-plugin-api';
 
 // @public (undocumented)
 export type ComponentsGridClassKey =
@@ -86,6 +87,35 @@ export { orgPlugin };
 export { orgPlugin as plugin };
 
 // @public (undocumented)
+export const orgTranslationRef: TranslationRef<
+  'org',
+  {
+    readonly 'groupProfileCard.groupNotFound': 'Group not found';
+    readonly 'groupProfileCard.editIconButtonTitle': 'Edit Metadata';
+    readonly 'groupProfileCard.refreshIconButtonTitle': 'Schedule entity refresh';
+    readonly 'groupProfileCard.refreshIconButtonAriaLabel': 'Refresh';
+    readonly 'groupProfileCard.listItemTitle.email': 'Email';
+    readonly 'groupProfileCard.listItemTitle.entityRef': 'Entity Ref';
+    readonly 'groupProfileCard.listItemTitle.parentGroup': 'Parent Group';
+    readonly 'groupProfileCard.listItemTitle.childGroups': 'Child Groups';
+    readonly 'membersListCard.title': '{{groupName}} members';
+    readonly 'membersListCard.cardLabel': 'User page for {{memberName}}';
+    readonly 'membersListCard.noMembersDescription': 'This group has no members.';
+    readonly 'membersListCard.noSearchResult': 'Found no members matching "{{searchTerm}}".';
+    readonly 'membersListCard.aggregateMembersToggle.label': 'Include subgroups';
+    readonly 'ownershipCard.title': 'Ownership';
+    readonly 'ownershipCard.aggregateRelationsToggle.label': 'Include indirect ownership';
+    readonly 'userProfileCard.editIconButtonTitle': 'Edit Metadata';
+    readonly 'userProfileCard.listItemTitle.email': 'Email';
+    readonly 'userProfileCard.listItemTitle.memberOf': 'Member of';
+    readonly 'userProfileCard.userNotFound': 'User not found';
+    readonly 'userProfileCard.moreGroupButtonTitle': '...More ({{number}})';
+    readonly 'userProfileCard.allGroupDialog.title': "All {{name}}'s groups:";
+    readonly 'userProfileCard.allGroupDialog.closeButtonTitle': 'Close';
+  }
+>;
+
+// @public (undocumented)
 export const OwnershipCard: (props: {
   entityFilterKind?: string[];
   hideRelationsToggle?: boolean;
@@ -108,5 +138,6 @@ export const UserProfileCard: (props: {
 export type UserProfileCardClassKey =
   | 'closeButton'
   | 'moreButton'
-  | 'dialogPaper';
+  | 'dialogPaper'
+  | 'list';
 ```

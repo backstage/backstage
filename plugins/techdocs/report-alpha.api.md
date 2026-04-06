@@ -448,6 +448,17 @@ const _default: OverridableFrontendPlugin<
         noHeader?: boolean;
       };
     }>;
+    'plugin-header-action:techdocs': OverridableExtensionDefinition<{
+      kind: 'plugin-header-action';
+      name: undefined;
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
+      inputs: {};
+      params: {
+        loader: () => Promise<JSX.Element>;
+      };
+    }>;
     'search-result-list-item:techdocs': OverridableExtensionDefinition<{
       config: {
         title: string | undefined;

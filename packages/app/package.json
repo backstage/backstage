@@ -1,6 +1,6 @@
 {
   "name": "example-app",
-  "version": "0.0.33-next.1",
+  "version": "0.0.34-next.1",
   "backstage": {
     "role": "frontend"
   },
@@ -19,7 +19,7 @@
     "build": "backstage-cli package build",
     "clean": "backstage-cli package clean",
     "lint": "backstage-cli package lint",
-    "start": "backstage-cli package start --config ../../app-config.yaml --config app-config.yaml",
+    "start": "backstage-cli package start",
     "test": "backstage-cli package test"
   },
   "browserslist": {
@@ -98,7 +98,7 @@
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^16.0.0",
     "@testing-library/user-event": "^14.0.0",
-    "@types/jquery": "^3.3.34",
+    "@types/jquery": "^4.0.0",
     "@types/react": "*",
     "@types/react-dom": "*",
     "@types/zen-observable": "^0.8.0",

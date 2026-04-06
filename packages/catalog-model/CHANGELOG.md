@@ -1,5 +1,11 @@
 # @backstage/catalog-model
 
+## 1.7.7
+
+### Patch Changes
+
+- a49a40d: Updated dependency `zod` to `^3.25.76 || ^4.0.0` & migrated to `/v3` or `/v4` imports.
+
 ## 1.7.6
 
 ### Patch Changes

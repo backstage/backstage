@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-mcp-actions-backend",
-  "version": "0.1.10-next.1",
+  "version": "0.1.11-next.1",
   "backstage": {
     "role": "backend-plugin",
     "pluginId": "mcp-actions",
@@ -21,8 +21,10 @@
   "license": "Apache-2.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
+  "configSchema": "config.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "config.d.ts"
   ],
   "scripts": {
     "build": "backstage-cli package build",
@@ -36,6 +38,7 @@
   "dependencies": {
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/catalog-client": "workspace:^",
+    "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/plugin-catalog-node": "workspace:^",
     "@backstage/types": "workspace:^",
@@ -43,7 +46,8 @@
     "@modelcontextprotocol/sdk": "^1.25.2",
     "express": "^4.22.0",
     "express-promise-router": "^4.1.0",
-    "zod": "^3.25.76"
+    "minimatch": "^10.2.1",
+    "zod": "^3.25.76 || ^4.0.0"
   },
   "devDependencies": {
     "@backstage/backend-defaults": "workspace:^",

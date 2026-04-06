@@ -1,6 +1,6 @@
 {
   "name": "example-app-legacy",
-  "version": "0.2.119-next.1",
+  "version": "0.2.120-next.1",
   "backstage": {
     "role": "frontend"
   },
@@ -92,7 +92,7 @@
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^16.0.0",
     "@testing-library/user-event": "^14.0.0",
-    "@types/jquery": "^3.3.34",
+    "@types/jquery": "^4.0.0",
     "@types/react": "*",
     "@types/react-dom": "*",
     "@types/zen-observable": "^0.8.0",

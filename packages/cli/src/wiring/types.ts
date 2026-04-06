@@ -13,53 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { OpaqueType } from '@internal/opaque';
 
-export interface CommandContext {
-  args: string[];
-  info: {
-    /**
-     * The usage string of the current command, for example: "backstage-cli repo test"
-     */
-    usage: string;
-    /**
-     * The description provided for the command
-     */
-    description: string;
-  };
-}
-
-export type CommandExecuteFn = (context: CommandContext) => Promise<void>;
-
-export interface BackstageCommand {
-  path: string[];
-  description: string;
-  deprecated?: boolean;
-  experimental?: boolean;
-  execute:
-    | CommandExecuteFn
-    | {
-        loader: () => Promise<{ default: CommandExecuteFn }>;
-      };
-}
-
-export type CliFeature = CliPlugin;
-
-export interface CliPlugin {
-  readonly pluginId: string;
-  readonly $$type: '@backstage/CliPlugin';
-}
-
-export const OpaqueCliPlugin = OpaqueType.create<{
-  public: CliPlugin;
-  versions: {
-    readonly version: 'v1';
-    readonly description: string;
-    init: (registry: {
-      addCommand: (command: BackstageCommand) => void;
-    }) => Promise<void>;
-  };
-}>({
-  type: '@backstage/CliPlugin',
-  versions: ['v1'],
-});
+export type {
+  CliCommandContext,
+  CliCommand,
+  CliModule,
+} from '@backstage/cli-node';

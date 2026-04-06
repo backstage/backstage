@@ -19,7 +19,11 @@ import type { FlexProps } from './types';
 import { useDefinition } from '../../hooks/useDefinition';
 import { FlexDefinition } from './definition';
 
-/** @public */
+/**
+ * A flexbox layout container with props for controlling gap, alignment, justification, and direction.
+ *
+ * @public
+ */
 export const Flex = forwardRef<HTMLDivElement, FlexProps>((props, ref) => {
   const { ownProps, dataAttributes, utilityStyle, restProps } = useDefinition(
     FlexDefinition,

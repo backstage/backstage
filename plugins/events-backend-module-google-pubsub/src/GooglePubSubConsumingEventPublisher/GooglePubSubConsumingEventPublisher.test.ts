@@ -15,6 +15,7 @@
  */
 
 import { mockServices } from '@backstage/backend-test-utils';
+import { metricsServiceMock } from '@backstage/backend-test-utils/alpha';
 import { Message, PubSub } from '@google-cloud/pubsub';
 import { GooglePubSubConsumingEventPublisher } from './GooglePubSubConsumingEventPublisher';
 import { JsonObject } from '@backstage/types';
@@ -36,6 +37,7 @@ function makeMessage(
 describe('GooglePubSubConsumingEventPublisher', () => {
   const logger = mockServices.logger.mock();
   const events = mockServices.events.mock();
+  const metrics = metricsServiceMock.mock();
 
   let onMessage: undefined | ((message: Message) => void);
   const subscription = {
@@ -62,6 +64,7 @@ describe('GooglePubSubConsumingEventPublisher', () => {
     const publisher = new GooglePubSubConsumingEventPublisher({
       logger,
       events,
+      metrics,
       tasks: [
         {
           id: 'my-id',

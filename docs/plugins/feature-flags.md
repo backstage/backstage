@@ -4,6 +4,12 @@ title: Feature Flags
 description: Details the process of defining setting and reading a feature flag.
 ---
 
+:::caution Legacy Documentation
+
+This page describes feature flags using the **old frontend system** APIs (`createPlugin` from `@backstage/core-plugin-api` and `createApp` from `@backstage/app-defaults`). For the new frontend system version, see [Feature Flags](../frontend-system/building-plugins/09-feature-flags.md). The `FeatureFlagged` component and `featureFlagsApiRef` work the same way in both systems.
+
+:::
+
 Backstage offers the ability to define feature flags inside a plugin or during application creation. This allows you to restrict parts of your plugin to those individual users who have toggled the feature flag to on.
 
 This page describes the process of defining, setting and reading a feature flag. If you are looking for using feature flags specifically with software templates please see [Writing Templates](https://backstage.io/docs/features/software-templates/writing-templates#remove-sections-or-fields-based-on-feature-flags).

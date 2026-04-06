@@ -11,10 +11,7 @@ import { CatalogProcessorParser } from '@backstage/plugin-catalog-node';
 import { EntitiesSearchFilter } from '@backstage/plugin-catalog-node';
 import { Entity } from '@backstage/catalog-model';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
-import { Permission } from '@backstage/plugin-permission-common';
 import { PermissionResourceRef } from '@backstage/plugin-permission-node';
-import { PermissionRule } from '@backstage/plugin-permission-node';
-import { PermissionRuleParams } from '@backstage/plugin-permission-common';
 import { ServiceRef } from '@backstage/backend-plugin-api';
 import { Validators } from '@backstage/catalog-model';
 
@@ -46,26 +43,6 @@ export interface CatalogModelExtensionPoint {
 
 // @alpha (undocumented)
 export const catalogModelExtensionPoint: ExtensionPoint<CatalogModelExtensionPoint>;
-
-// @alpha @deprecated (undocumented)
-export interface CatalogPermissionExtensionPoint {
-  // (undocumented)
-  addPermissionRules(
-    ...rules: Array<
-      CatalogPermissionRuleInput | Array<CatalogPermissionRuleInput>
-    >
-  ): void;
-  // (undocumented)
-  addPermissions(...permissions: Array<Permission | Array<Permission>>): void;
-}
-
-// @alpha @deprecated (undocumented)
-export const catalogPermissionExtensionPoint: ExtensionPoint<CatalogPermissionExtensionPoint>;
-
-// @alpha @deprecated (undocumented)
-export type CatalogPermissionRuleInput<
-  TParams extends PermissionRuleParams = PermissionRuleParams,
-> = PermissionRule<Entity, EntitiesSearchFilter, 'catalog-entity', TParams>;
 
 // @alpha @deprecated (undocumented)
 export type CatalogProcessingExtensionPoint = CatalogProcessingExtensionPoint_2;

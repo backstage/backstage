@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { JSX, lazy, ReactNode, Suspense } from 'react';
+import { JSX, lazy, ReactNode, Suspense, useEffect, useState } from 'react';
 import {
   ConfigApi,
-  coreExtensionData,
+  ExtensionFactoryMiddleware,
   FrontendFeature,
   FrontendFeatureLoader,
 } from '@backstage/frontend-plugin-api';
@@ -29,8 +29,9 @@ import { overrideBaseUrlConfigs } from '../../core-app-api/src/app/overrideBaseU
 import { ConfigReader } from '@backstage/config';
 import {
   CreateAppRouteBinder,
-  createSpecializedApp,
-  ExtensionFactoryMiddleware,
+  FinalizedSpecializedApp,
+  prepareSpecializedApp,
+  PreparedSpecializedApp,
   FrontendPluginInfoResolver,
 } from '@backstage/frontend-app-api';
 import appPlugin from '@backstage/plugin-app';
@@ -119,23 +120,16 @@ export function createApp(options?: CreateAppOptions): {
       features: [...discoveredFeaturesAndLoaders, ...(options?.features ?? [])],
     });
 
-    const app = createSpecializedApp({
+    const preparedApp = prepareSpecializedApp({
       features: [appPlugin, ...loadedFeatures],
       config,
       bindRoutes: options?.bindRoutes,
       advanced: options?.advanced,
     });
 
-    const errorPage = maybeCreateErrorPage(app);
-    if (errorPage) {
-      return { default: () => errorPage };
-    }
-
-    const rootEl = app.tree.root.instance!.getData(
-      coreExtensionData.reactElement,
-    );
-
-    return { default: () => rootEl };
+    return {
+      default: () => <PreparedAppRoot preparedApp={preparedApp} />,
+    };
   }
 
   const LazyApp = lazy(appLoader);
@@ -149,4 +143,29 @@ export function createApp(options?: CreateAppOptions): {
       );
     },
   };
+}
+
+function PreparedAppRoot(props: {
+  preparedApp: PreparedSpecializedApp;
+}): JSX.Element {
+  const bootstrapApp = props.preparedApp.getBootstrapApp();
+  const [finalizedApp, setFinalizedApp] = useState<
+    FinalizedSpecializedApp | undefined
+  >();
+
+  useEffect(
+    () => props.preparedApp.onFinalized(setFinalizedApp),
+    [props.preparedApp],
+  );
+
+  if (!finalizedApp) {
+    return bootstrapApp.element;
+  }
+
+  const errorPage = maybeCreateErrorPage(finalizedApp);
+  if (errorPage) {
+    return errorPage;
+  }
+
+  return finalizedApp.element;
 }

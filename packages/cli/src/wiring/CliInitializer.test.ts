@@ -15,9 +15,27 @@
  */
 
 import { CliInitializer } from './CliInitializer';
-import { createCliPlugin } from './factory';
+import { createCliModule } from './factory';
 
 process.exit = jest.fn() as any;
+
+describe('createCliModule', () => {
+  it('should throw if packageJson has no name', () => {
+    expect(() =>
+      createCliModule({
+        packageJson: { name: '' },
+        init: async () => {},
+      }),
+    ).toThrow('The packageJson provided to createCliModule must have a name');
+
+    expect(() =>
+      createCliModule({
+        packageJson: {} as any,
+        init: async () => {},
+      }),
+    ).toThrow('The packageJson provided to createCliModule must have a name');
+  });
+});
 
 describe('CliInitializer', () => {
   beforeEach(() => {
@@ -28,8 +46,8 @@ describe('CliInitializer', () => {
     process.argv = ['node', 'cli', 'test'];
     const initializer = new CliInitializer();
     initializer.add(
-      createCliPlugin({
-        pluginId: 'test',
+      createCliModule({
+        packageJson: { name: '@backstage/test' },
         init: async reg =>
           reg.addCommand({
             path: ['test'],
@@ -50,8 +68,8 @@ describe('CliInitializer', () => {
     process.argv = ['node', 'cli', 'test', '[positional]', '<arg>'];
     const initializer = new CliInitializer();
     initializer.add(
-      createCliPlugin({
-        pluginId: 'test',
+      createCliModule({
+        packageJson: { name: '@backstage/test' },
         init: async reg =>
           reg.addCommand({
             path: ['test'],
@@ -72,8 +90,8 @@ describe('CliInitializer', () => {
     process.argv = ['node', 'cli', 'test', '--verbose'];
     const initializer = new CliInitializer();
     initializer.add(
-      createCliPlugin({
-        pluginId: 'test',
+      createCliModule({
+        packageJson: { name: '@backstage/test' },
         init: async reg =>
           reg.addCommand({
             path: ['test'],
@@ -97,8 +115,8 @@ describe('CliInitializer', () => {
     process.argv = ['node', 'cli', 'secret'];
     const initializer = new CliInitializer();
     initializer.add(
-      createCliPlugin({
-        pluginId: 'test',
+      createCliModule({
+        packageJson: { name: '@backstage/test' },
         init: async reg => {
           reg.addCommand({
             path: ['visible'],
@@ -124,8 +142,8 @@ describe('CliInitializer', () => {
     const writeSpy = jest.spyOn(process.stdout, 'write');
     const initializer2 = new CliInitializer();
     initializer2.add(
-      createCliPlugin({
-        pluginId: 'test',
+      createCliModule({
+        packageJson: { name: '@backstage/test' },
         init: async reg => {
           reg.addCommand({
             path: ['visible'],
@@ -152,8 +170,8 @@ describe('CliInitializer', () => {
     const writeSpy = jest.spyOn(process.stdout, 'write');
     const initializer = new CliInitializer();
     initializer.add(
-      createCliPlugin({
-        pluginId: 'test',
+      createCliModule({
+        packageJson: { name: '@backstage/test' },
         init: async reg => {
           reg.addCommand({
             path: ['visible'],
@@ -187,8 +205,8 @@ describe('CliInitializer', () => {
     const writeSpy = jest.spyOn(process.stdout, 'write');
     const initializer = new CliInitializer();
     initializer.add(
-      createCliPlugin({
-        pluginId: 'test',
+      createCliModule({
+        packageJson: { name: '@backstage/test' },
         init: async reg => {
           reg.addCommand({
             path: ['group', 'alpha'],
@@ -223,8 +241,8 @@ describe('CliInitializer', () => {
     ];
     const initializer = new CliInitializer();
     initializer.add(
-      createCliPlugin({
-        pluginId: 'test',
+      createCliModule({
+        packageJson: { name: '@backstage/test' },
         init: async reg =>
           reg.addCommand({
             path: ['test', 'nested', 'command'],
@@ -238,5 +256,121 @@ describe('CliInitializer', () => {
     );
     await initializer.run();
     expect(process.exit).toHaveBeenCalledWith(0);
+  });
+
+  it('should silently override array-sourced module with conflicting individual module while keeping siblings', async () => {
+    expect.assertions(3);
+    process.argv = ['node', 'cli', 'test'];
+    const initializer = new CliInitializer();
+
+    const individualModule = createCliModule({
+      packageJson: { name: '@backstage/individual' },
+      init: async reg =>
+        reg.addCommand({
+          path: ['test'],
+          description: 'individual test',
+          execute: ({ args }) => {
+            expect(args).toEqual([]);
+            return Promise.resolve();
+          },
+        }),
+    });
+
+    const conflictingArrayModule = createCliModule({
+      packageJson: { name: '@backstage/array-conflict' },
+      init: async reg =>
+        reg.addCommand({
+          path: ['test'],
+          description: 'array test (should be skipped)',
+          execute: () => Promise.resolve(),
+        }),
+    });
+
+    const nonConflictingArrayModule = createCliModule({
+      packageJson: { name: '@backstage/array-sibling' },
+      init: async reg =>
+        reg.addCommand({
+          path: ['other'],
+          description: 'other command',
+          execute: () => Promise.resolve(),
+        }),
+    });
+
+    initializer.add(individualModule);
+    initializer.add([conflictingArrayModule, nonConflictingArrayModule]);
+
+    await initializer.run();
+    expect(process.exit).toHaveBeenCalledWith(0);
+
+    // Verify the sibling command is available by running it
+    process.argv = ['node', 'cli', 'other'];
+    const initializer2 = new CliInitializer();
+    initializer2.add(individualModule);
+    initializer2.add([conflictingArrayModule, nonConflictingArrayModule]);
+    await initializer2.run();
+    expect(process.exit).toHaveBeenCalledTimes(2);
+  });
+
+  it('should error with package names when two individual modules conflict', async () => {
+    const initializer = new CliInitializer();
+
+    initializer.add(
+      createCliModule({
+        packageJson: { name: '@backstage/module-a' },
+        init: async reg =>
+          reg.addCommand({
+            path: ['conflicting'],
+            description: 'from module A',
+            execute: () => Promise.resolve(),
+          }),
+      }),
+    );
+
+    initializer.add(
+      createCliModule({
+        packageJson: { name: '@backstage/module-b' },
+        init: async reg =>
+          reg.addCommand({
+            path: ['conflicting'],
+            description: 'from module B',
+            execute: () => Promise.resolve(),
+          }),
+      }),
+    );
+
+    await expect(initializer.run()).rejects.toThrow(
+      'Command "conflicting" from "@backstage/module-b" conflicts with an existing command from "@backstage/module-a"',
+    );
+  });
+
+  it('should error with package names when two array-sourced modules conflict', async () => {
+    const initializer = new CliInitializer();
+
+    const moduleA = createCliModule({
+      packageJson: { name: '@backstage/array-a' },
+      init: async reg =>
+        reg.addCommand({
+          path: ['shared'],
+          description: 'from array A',
+          execute: () => Promise.resolve(),
+        }),
+    });
+
+    const moduleB = createCliModule({
+      packageJson: { name: '@backstage/array-b' },
+      init: async reg =>
+        reg.addCommand({
+          path: ['shared'],
+          description: 'from array B',
+          execute: () => Promise.resolve(),
+        }),
+    });
+
+    initializer.add([moduleA]);
+    initializer.add([moduleB]);
+
+    await expect(initializer.run()).rejects.toThrow(
+      'Command "shared" from "@backstage/array-b" conflicts with an existing command from "@backstage/array-a"',
+    );
   });
 });

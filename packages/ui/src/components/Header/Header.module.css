@@ -17,32 +17,31 @@
 @layer tokens, base, components, utilities;
 
 @layer components {
-  .bui-HeaderPage {
+  .bui-Header {
     display: flex;
     flex-direction: column;
     gap: var(--bui-space-1);
     margin-top: var(--bui-space-6);
-    margin-bottom: var(--bui-space-6);
   }
 
-  .bui-HeaderPageContent {
+  .bui-HeaderContent {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
   }
 
-  .bui-HeaderPageTabsWrapper {
+  .bui-HeaderTabsWrapper {
     margin-left: -8px;
   }
 
-  .bui-HeaderPageControls {
+  .bui-HeaderControls {
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: var(--bui-space-2);
   }
 
-  .bui-HeaderPageBreadcrumbs {
+  .bui-HeaderBreadcrumbs {
     display: flex;
     flex-direction: row;
     align-items: center;

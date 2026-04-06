@@ -20,6 +20,8 @@ import type { DisclosurePanelProps } from 'react-aria-components';
 import type { DisclosureProps } from 'react-aria-components';
 import type { ElementType } from 'react';
 import { ForwardRefExoticComponent } from 'react';
+import type { GridListItemProps } from 'react-aria-components';
+import type { GridListProps } from 'react-aria-components';
 import type { HeadingProps } from 'react-aria-components';
 import type { HTMLAttributes } from 'react';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
@@ -41,6 +43,7 @@ import { RowProps as RowProps_2 } from 'react-aria-components';
 import type { SearchFieldProps as SearchFieldProps_2 } from 'react-aria-components';
 import type { SelectProps as SelectProps_2 } from 'react-aria-components';
 import type { SeparatorProps } from 'react-aria-components';
+import type { SliderProps as SliderProps_2 } from 'react-aria-components';
 import type { SortDescriptor as SortDescriptor_2 } from 'react-stately';
 import type { SubmenuTriggerProps as SubmenuTriggerProps_2 } from 'react-aria-components';
 import type { SwitchProps as SwitchProps_2 } from 'react-aria-components';
@@ -60,7 +63,7 @@ import type { ToggleButtonProps as ToggleButtonProps_2 } from 'react-aria-compon
 import type { TooltipProps as TooltipProps_2 } from 'react-aria-components';
 import { TooltipTriggerComponentProps } from 'react-aria-components';
 
-// @public (undocumented)
+// @public
 export const Accordion: ForwardRefExoticComponent<
   AccordionProps & RefAttributes<HTMLDivElement>
 >;
@@ -84,7 +87,7 @@ export const AccordionDefinition: {
   };
 };
 
-// @public (undocumented)
+// @public
 export const AccordionGroup: ForwardRefExoticComponent<
   AccordionGroupProps & RefAttributes<HTMLDivElement>
 >;
@@ -123,7 +126,7 @@ export type AccordionOwnProps = {
   className?: string;
 };
 
-// @public (undocumented)
+// @public
 export const AccordionPanel: ForwardRefExoticComponent<
   AccordionPanelProps & RefAttributes<HTMLDivElement>
 >;
@@ -156,7 +159,7 @@ export interface AccordionProps
   extends Omit<DisclosureProps, 'children' | 'className'>,
     AccordionOwnProps {}
 
-// @public (undocumented)
+// @public
 export const AccordionTrigger: ForwardRefExoticComponent<
   AccordionTriggerProps & RefAttributes<HTMLHeadingElement>
 >;
@@ -273,7 +276,7 @@ export type AnalyticsTracker = {
   ) => void;
 };
 
-// @public (undocumented)
+// @public
 export const Avatar: ForwardRefExoticComponent<
   AvatarProps & RefAttributes<HTMLDivElement>
 >;
@@ -316,6 +319,45 @@ export interface AvatarProps
   extends Omit<React.ComponentPropsWithoutRef<'div'>, 'children' | 'className'>,
     AvatarOwnProps {}
 
+// @public
+export const Badge: ForwardRefExoticComponent<
+  BadgeProps & RefAttributes<HTMLSpanElement>
+>;
+
+// @public
+export const BadgeDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-Badge';
+    readonly icon: 'bui-BadgeIcon';
+  };
+  readonly bg: 'consumer';
+  readonly propDefs: {
+    readonly icon: {};
+    readonly size: {
+      readonly dataAttribute: true;
+      readonly default: 'small';
+    };
+    readonly children: {};
+    readonly className: {};
+  };
+};
+
+// @public
+export type BadgeOwnProps = {
+  icon?: React.ReactNode;
+  size?: 'small' | 'medium';
+  children?: React.ReactNode;
+  className?: string;
+};
+
+// @public
+export interface BadgeProps
+  extends BadgeOwnProps,
+    Omit<React.HTMLAttributes<HTMLSpanElement>, keyof BadgeOwnProps> {}
+
 // @public (undocumented)
 export interface BgContextValue {
   // (undocumented)
@@ -347,7 +389,7 @@ export type BorderRadius =
   | 'xl'
   | '2xl';
 
-// @public (undocumented)
+// @public
 export const Box: ForwardRefExoticComponent<
   BoxProps & RefAttributes<HTMLDivElement>
 >;
@@ -478,7 +520,7 @@ export const ButtonDefinition: {
   };
 };
 
-// @public (undocumented)
+// @public
 export const ButtonIcon: ForwardRefExoticComponent<
   ButtonIconProps & RefAttributes<HTMLButtonElement>
 >;
@@ -525,7 +567,7 @@ export interface ButtonIconProps
   extends Omit<ButtonProps_2, keyof ButtonIconOwnProps>,
     ButtonIconOwnProps {}
 
-// @public (undocumented)
+// @public
 export const ButtonLink: ForwardRefExoticComponent<
   ButtonLinkProps & RefAttributes<HTMLAnchorElement>
 >;
@@ -541,6 +583,7 @@ export const ButtonLinkDefinition: {
   };
   readonly bg: 'consumer';
   readonly analytics: true;
+  readonly resolveHref: true;
   readonly propDefs: {
     readonly noTrack: {};
     readonly size: {
@@ -647,6 +690,7 @@ export const CardDefinition: {
   readonly styles: {
     readonly [key: string]: string;
   };
+  readonly resolveHref: true;
   readonly classNames: {
     readonly root: 'bui-Card';
     readonly trigger: 'bui-CardTrigger';
@@ -761,21 +805,21 @@ export type CardStaticVariant = {
   download?: never;
 };
 
-// @public (undocumented)
+// @public
 export const Cell: {
   (props: CellProps): JSX_2.Element;
   displayName: string;
 };
 
-// @public (undocumented)
+// @public
 export type CellOwnProps = {
   className?: string;
 };
 
-// @public (undocumented)
+// @public
 export const CellProfile: (props: CellProfileProps) => JSX_2.Element;
 
-// @public (undocumented)
+// @public
 export type CellProfileOwnProps = {
   src?: string;
   name?: string;
@@ -785,23 +829,23 @@ export type CellProfileOwnProps = {
   className?: string;
 };
 
-// @public (undocumented)
+// @public
 export interface CellProfileProps
   extends CellProfileOwnProps,
     Omit<CellProps_2, keyof CellProfileOwnProps> {}
 
-// @public (undocumented)
+// @public
 export interface CellProps
   extends CellOwnProps,
     Omit<CellProps_2, keyof CellOwnProps> {}
 
-// @public (undocumented)
+// @public
 export const CellText: {
   (props: CellTextProps): JSX_2.Element;
   displayName: string;
 };
 
-// @public (undocumented)
+// @public
 export type CellTextOwnProps = {
   title: string;
   description?: string;
@@ -811,12 +855,12 @@ export type CellTextOwnProps = {
   className?: string;
 };
 
-// @public (undocumented)
+// @public
 export interface CellTextProps
   extends CellTextOwnProps,
     Omit<CellProps_2, keyof CellTextOwnProps> {}
 
-// @public (undocumented)
+// @public
 export const Checkbox: ForwardRefExoticComponent<
   CheckboxProps & RefAttributes<HTMLLabelElement>
 >;
@@ -831,12 +875,6 @@ export const CheckboxDefinition: {
     readonly indicator: 'bui-CheckboxIndicator';
   };
   readonly propDefs: {
-    readonly selected: {
-      readonly dataAttribute: true;
-    };
-    readonly indeterminate: {
-      readonly dataAttribute: true;
-    };
     readonly children: {};
     readonly className: {};
   };
@@ -885,9 +923,7 @@ export interface CheckboxGroupProps
 
 // @public (undocumented)
 export type CheckboxOwnProps = {
-  selected?: boolean;
-  indeterminate?: boolean;
-  children: React.ReactNode;
+  children?: React.ReactNode;
   className?: string;
 };
 
@@ -896,12 +932,11 @@ export interface CheckboxProps
   extends Omit<CheckboxProps_2, 'children' | 'className'>,
     CheckboxOwnProps {}
 
-// @public (undocumented)
+// @public
 export const Column: (props: ColumnProps) => JSX_2.Element;
 
-// @public (undocumented)
+// @public
 export interface ColumnConfig<T extends TableItem> {
-  // (undocumented)
   cell: (item: T) => ReactElement;
   // (undocumented)
   defaultWidth?: ColumnSize | null;
@@ -953,6 +988,12 @@ export type Columns =
   | 'auto';
 
 // @public (undocumented)
+export interface CompletePaginationOptions extends PaginationOptions {
+  // (undocumented)
+  type?: 'page' | 'none';
+}
+
+// @public
 export const Container: ForwardRefExoticComponent<
   ContainerProps & RefAttributes<HTMLDivElement>
 >;
@@ -1043,12 +1084,12 @@ export interface CursorResponse<T> {
   totalCount?: number;
 }
 
-// @public (undocumented)
+// @public
 export const Dialog: ForwardRefExoticComponent<
   DialogProps & RefAttributes<HTMLDivElement>
 >;
 
-// @public (undocumented)
+// @public
 export const DialogBody: ForwardRefExoticComponent<
   DialogBodyProps & RefAttributes<HTMLDivElement>
 >;
@@ -1097,7 +1138,7 @@ export const DialogDefinition: {
   };
 };
 
-// @public (undocumented)
+// @public
 export const DialogFooter: ForwardRefExoticComponent<
   DialogFooterProps & RefAttributes<HTMLDivElement>
 >;
@@ -1127,7 +1168,7 @@ export interface DialogFooterProps
   extends DialogFooterOwnProps,
     Omit<React.ComponentPropsWithoutRef<'div'>, keyof DialogFooterOwnProps> {}
 
-// @public (undocumented)
+// @public
 export const DialogHeader: ForwardRefExoticComponent<
   DialogHeaderProps & RefAttributes<HTMLDivElement>
 >;
@@ -1172,7 +1213,7 @@ export interface DialogProps
   extends DialogOwnProps,
     Omit<ModalOverlayProps, keyof DialogOwnProps> {}
 
-// @public (undocumented)
+// @public
 export const DialogTrigger: (props: DialogTriggerProps) => JSX_2.Element;
 
 // @public
@@ -1181,7 +1222,7 @@ export interface DialogTriggerProps extends DialogTriggerProps_2 {}
 // @public (undocumented)
 export type Display = 'none' | 'flex' | 'block' | 'inline';
 
-// @public (undocumented)
+// @public
 export const FieldLabel: ForwardRefExoticComponent<
   FieldLabelProps & RefAttributes<HTMLDivElement>
 >;
@@ -1203,6 +1244,7 @@ export const FieldLabelDefinition: {
     readonly description: {};
     readonly htmlFor: {};
     readonly id: {};
+    readonly descriptionId: {};
     readonly className: {};
   };
 };
@@ -1214,6 +1256,7 @@ export type FieldLabelOwnProps = {
   description?: string | null;
   htmlFor?: string;
   id?: string;
+  descriptionId?: string;
   className?: string;
 };
 
@@ -1230,7 +1273,7 @@ export interface FilterState<TFilter> {
   value: TFilter | undefined;
 }
 
-// @public (undocumented)
+// @public
 export const Flex: ForwardRefExoticComponent<
   FlexProps & RefAttributes<HTMLDivElement>
 >;
@@ -1459,23 +1502,96 @@ export const HeaderDefinition: {
     readonly [key: string]: string;
   };
   readonly classNames: {
-    readonly root: 'bui-HeaderPage';
-    readonly content: 'bui-HeaderPageContent';
-    readonly breadcrumbs: 'bui-HeaderPageBreadcrumbs';
-    readonly tabsWrapper: 'bui-HeaderPageTabsWrapper';
-    readonly controls: 'bui-HeaderPageControls';
+    readonly root: 'bui-Header';
+    readonly content: 'bui-HeaderContent';
+    readonly breadcrumbs: 'bui-HeaderBreadcrumbs';
+    readonly tabsWrapper: 'bui-HeaderTabsWrapper';
+    readonly controls: 'bui-HeaderControls';
   };
   readonly propDefs: {
     readonly title: {};
     readonly customActions: {};
     readonly tabs: {};
+    readonly activeTabId: {};
     readonly breadcrumbs: {};
     readonly className: {};
   };
 };
 
+// @public (undocumented)
+export const HeaderNavDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-HeaderNav';
+    readonly list: 'bui-HeaderNavList';
+    readonly active: 'bui-HeaderNavActive';
+    readonly hovered: 'bui-HeaderNavHovered';
+  };
+  readonly analytics: true;
+  readonly propDefs: {
+    readonly noTrack: {};
+    readonly tabs: {};
+    readonly activeTabId: {};
+    readonly children: {};
+    readonly className: {};
+  };
+};
+
+// @public (undocumented)
+export const HeaderNavGroupDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-HeaderNavGroup';
+  };
+  readonly propDefs: {
+    readonly className: {};
+  };
+};
+
+// @public (undocumented)
+export const HeaderNavItemDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-HeaderNavItem';
+  };
+  readonly propDefs: {
+    readonly className: {};
+  };
+};
+
+// @public
+export interface HeaderNavTab {
+  // (undocumented)
+  href: string;
+  // (undocumented)
+  id: string;
+  // (undocumented)
+  label: string;
+}
+
+// @public
+export interface HeaderNavTabGroup {
+  // (undocumented)
+  id: string;
+  // (undocumented)
+  items: HeaderNavTab[];
+  // (undocumented)
+  label: string;
+}
+
+// @public
+export type HeaderNavTabItem = HeaderNavTab | HeaderNavTabGroup;
+
 // @public
 export interface HeaderOwnProps {
+  // (undocumented)
+  activeTabId?: string;
   // (undocumented)
   breadcrumbs?: HeaderBreadcrumb[];
   // (undocumented)
@@ -1483,7 +1599,7 @@ export interface HeaderOwnProps {
   // (undocumented)
   customActions?: React.ReactNode;
   // (undocumented)
-  tabs?: HeaderTab[];
+  tabs?: HeaderNavTabItem[];
   // (undocumented)
   title?: string;
 }
@@ -1500,16 +1616,17 @@ export const HeaderPageDefinition: {
     readonly [key: string]: string;
   };
   readonly classNames: {
-    readonly root: 'bui-HeaderPage';
-    readonly content: 'bui-HeaderPageContent';
-    readonly breadcrumbs: 'bui-HeaderPageBreadcrumbs';
-    readonly tabsWrapper: 'bui-HeaderPageTabsWrapper';
-    readonly controls: 'bui-HeaderPageControls';
+    readonly root: 'bui-Header';
+    readonly content: 'bui-HeaderContent';
+    readonly breadcrumbs: 'bui-HeaderBreadcrumbs';
+    readonly tabsWrapper: 'bui-HeaderTabsWrapper';
+    readonly controls: 'bui-HeaderControls';
   };
   readonly propDefs: {
     readonly title: {};
     readonly customActions: {};
     readonly tabs: {};
+    readonly activeTabId: {};
     readonly breadcrumbs: {};
     readonly className: {};
   };
@@ -1544,7 +1661,7 @@ export type JustifyContent =
   | 'around'
   | 'between';
 
-// @public (undocumented)
+// @public
 export const Link: ForwardRefExoticComponent<
   LinkProps & RefAttributes<HTMLAnchorElement>
 >;
@@ -1558,6 +1675,7 @@ export const LinkDefinition: {
     readonly root: 'bui-Link';
   };
   readonly analytics: true;
+  readonly resolveHref: true;
   readonly propDefs: {
     readonly noTrack: {};
     readonly variant: {
@@ -1604,6 +1722,81 @@ export type LinkOwnProps = {
 export interface LinkProps
   extends Omit<LinkProps_2, 'children' | 'className'>,
     LinkOwnProps {}
+
+// @public
+export const List: <T extends object>(props: ListProps<T>) => JSX_2.Element;
+
+// @public
+export const ListDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-List';
+  };
+  readonly propDefs: {
+    readonly items: {};
+    readonly children: {};
+    readonly renderEmptyState: {};
+    readonly className: {};
+  };
+};
+
+// @public
+export type ListOwnProps<T = object> = {
+  items?: GridListProps<T>['items'];
+  children?: GridListProps<T>['children'];
+  renderEmptyState?: GridListProps<T>['renderEmptyState'];
+  className?: string;
+};
+
+// @public
+export interface ListProps<T>
+  extends ListOwnProps<T>,
+    Omit<GridListProps<T>, keyof ListOwnProps<T>> {}
+
+// @public
+export const ListRow: (props: ListRowProps) => JSX_2.Element;
+
+// @public
+export const ListRowDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly bg: 'consumer';
+  readonly resolveHref: true;
+  readonly classNames: {
+    readonly root: 'bui-ListRow';
+    readonly check: 'bui-ListRowCheck';
+    readonly icon: 'bui-ListRowIcon';
+    readonly label: 'bui-ListRowLabel';
+    readonly description: 'bui-ListRowDescription';
+    readonly actions: 'bui-ListRowActions';
+  };
+  readonly propDefs: {
+    readonly children: {};
+    readonly description: {};
+    readonly icon: {};
+    readonly menuItems: {};
+    readonly customActions: {};
+    readonly className: {};
+  };
+};
+
+// @public
+export type ListRowOwnProps = {
+  children?: React.ReactNode;
+  description?: string;
+  icon?: React.ReactElement;
+  menuItems?: React.ReactNode;
+  customActions?: React.ReactNode;
+  className?: string;
+};
+
+// @public
+export interface ListRowProps
+  extends ListRowOwnProps,
+    Omit<GridListItemProps, keyof ListRowOwnProps> {}
 
 // @public (undocumented)
 export interface MarginProps {
@@ -1772,7 +1965,7 @@ export interface MenuSeparatorProps
   extends MenuSeparatorOwnProps,
     Omit<SeparatorProps, keyof MenuSeparatorOwnProps> {}
 
-// @public (undocumented)
+// @public
 export const MenuTrigger: (props: MenuTriggerProps) => JSX_2.Element;
 
 // @public (undocumented)
@@ -1860,13 +2053,14 @@ export interface PaginationOptions
       | 'onPreviousPage'
       | 'showPageSizeOptions'
       | 'getLabel'
+      | 'showPaginationLabel'
     >
   > {
   // (undocumented)
   initialOffset?: number;
 }
 
-// @public (undocumented)
+// @public
 export const PasswordField: ForwardRefExoticComponent<
   PasswordFieldProps & RefAttributes<HTMLDivElement>
 >;
@@ -1924,7 +2118,6 @@ export const PluginHeaderDefinition: {
   readonly classNames: {
     readonly root: 'bui-PluginHeader';
     readonly toolbar: 'bui-PluginHeaderToolbar';
-    readonly toolbarWrapper: 'bui-PluginHeaderToolbarWrapper';
     readonly toolbarContent: 'bui-PluginHeaderToolbarContent';
     readonly toolbarControls: 'bui-PluginHeaderToolbarControls';
     readonly toolbarIcon: 'bui-PluginHeaderToolbarIcon';
@@ -2022,7 +2215,7 @@ export interface QueryOptions<TFilter> {
   sort?: SortDescriptor | null;
 }
 
-// @public (undocumented)
+// @public
 export const Radio: ForwardRefExoticComponent<
   RadioProps & RefAttributes<HTMLLabelElement>
 >;
@@ -2040,7 +2233,7 @@ export const RadioDefinition: {
   };
 };
 
-// @public (undocumented)
+// @public
 export const RadioGroup: ForwardRefExoticComponent<
   RadioGroupProps & RefAttributes<HTMLDivElement>
 >;
@@ -2092,7 +2285,7 @@ export interface RadioProps
 // @public (undocumented)
 export type Responsive<T> = T | Partial<Record<Breakpoint, T>>;
 
-// @public (undocumented)
+// @public
 export function Row<T extends object>(props: RowProps<T>): JSX_2.Element;
 
 // @public (undocumented)
@@ -2118,13 +2311,93 @@ export interface RowProps<T>
   extends RowOwnProps<T>,
     Omit<RowProps_2<T>, keyof RowOwnProps> {}
 
-// @public (undocumented)
+// @public
 export type RowRenderFn<T extends TableItem> = (params: {
   item: T;
   index: number;
 }) => ReactNode;
 
+// @public
+export function SearchAutocomplete(
+  props: SearchAutocompleteProps,
+): JSX_2.Element;
+
+// @public
+export const SearchAutocompleteDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly bg: 'consumer';
+  readonly classNames: {
+    readonly root: 'bui-SearchAutocomplete';
+    readonly searchField: 'bui-SearchAutocompleteSearchField';
+    readonly searchFieldInput: 'bui-SearchAutocompleteInput';
+    readonly searchFieldClear: 'bui-SearchAutocompleteClear';
+    readonly popover: 'bui-SearchAutocompletePopover';
+    readonly inner: 'bui-SearchAutocompleteInner';
+    readonly listBox: 'bui-SearchAutocompleteListBox';
+    readonly loadingState: 'bui-SearchAutocompleteLoadingState';
+    readonly emptyState: 'bui-SearchAutocompleteEmptyState';
+  };
+  readonly propDefs: {
+    readonly 'aria-label': {};
+    readonly 'aria-labelledby': {};
+    readonly size: {
+      readonly dataAttribute: true;
+      readonly default: 'small';
+    };
+    readonly placeholder: {
+      readonly default: 'Search';
+    };
+    readonly inputValue: {};
+    readonly onInputChange: {};
+    readonly popoverWidth: {};
+    readonly popoverPlacement: {};
+    readonly children: {};
+    readonly isLoading: {};
+    readonly defaultOpen: {};
+    readonly className: {};
+    readonly style: {};
+  };
+};
+
+// @public
+export function SearchAutocompleteItem(
+  props: SearchAutocompleteItemProps,
+): JSX_2.Element;
+
 // @public (undocumented)
+export type SearchAutocompleteItemOwnProps = {
+  children: ReactNode;
+  className?: string;
+};
+
+// @public (undocumented)
+export interface SearchAutocompleteItemProps
+  extends SearchAutocompleteItemOwnProps,
+    Omit<ListBoxItemProps, keyof SearchAutocompleteItemOwnProps> {}
+
+// @public (undocumented)
+export type SearchAutocompleteOwnProps = {
+  inputValue?: string;
+  onInputChange?: (value: string) => void;
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+  'aria-label'?: string;
+  'aria-labelledby'?: string;
+  placeholder?: string;
+  popoverWidth?: string;
+  popoverPlacement?: PopoverProps_2['placement'];
+  children?: ReactNode;
+  isLoading?: boolean;
+  defaultOpen?: boolean;
+  className?: string;
+  style?: React.CSSProperties;
+};
+
+// @public (undocumented)
+export interface SearchAutocompleteProps extends SearchAutocompleteOwnProps {}
+
+// @public
 export const SearchField: ForwardRefExoticComponent<
   SearchFieldProps & RefAttributes<HTMLDivElement>
 >;
@@ -2187,7 +2460,7 @@ export interface SearchState {
   value: string;
 }
 
-// @public (undocumented)
+// @public
 export const Select: ForwardRefExoticComponent<
   SelectProps<'multiple' | 'single'> & RefAttributes<HTMLDivElement>
 >;
@@ -2239,7 +2512,7 @@ export interface SelectProps<T extends 'single' | 'multiple'>
   selectionMode?: T;
 }
 
-// @public (undocumented)
+// @public
 export const Skeleton: (props: SkeletonProps) => JSX_2.Element;
 
 // @public
@@ -2279,6 +2552,56 @@ export type SkeletonOwnProps = {
 export interface SkeletonProps
   extends Omit<ComponentProps<'div'>, 'children' | 'className' | 'style'>,
     SkeletonOwnProps {}
+
+// @public
+export const Slider: (<T extends number | number[]>(
+  props: SliderProps<T> & {
+    ref?: React.ForwardedRef<HTMLDivElement>;
+  },
+) => JSX.Element) & {
+  displayName: string;
+};
+
+// @public
+export const SliderDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-Slider';
+    readonly header: 'bui-SliderHeader';
+    readonly track: 'bui-SliderTrack';
+    readonly trackFill: 'bui-SliderTrackFill';
+    readonly thumb: 'bui-SliderThumb';
+    readonly output: 'bui-SliderOutput';
+  };
+  readonly propDefs: {
+    readonly className: {};
+    readonly label: {};
+    readonly secondaryLabel: {};
+    readonly description: {};
+    readonly isRequired: {};
+  };
+};
+
+// @public (undocumented)
+export interface SliderOwnProps {
+  // (undocumented)
+  className?: string;
+  // (undocumented)
+  description?: FieldLabelProps['description'];
+  // (undocumented)
+  isRequired?: boolean;
+  // (undocumented)
+  label?: FieldLabelProps['label'];
+  // (undocumented)
+  secondaryLabel?: FieldLabelProps['secondaryLabel'];
+}
+
+// @public (undocumented)
+export interface SliderProps<T extends number | number[]>
+  extends Omit<SliderProps_2<T>, 'children' | 'className'>,
+    SliderOwnProps {}
 
 // @public (undocumented)
 export type SortDescriptor = SortDescriptor_2;
@@ -2320,7 +2643,7 @@ export const SubmenuTrigger: (props: SubmenuTriggerProps) => JSX_2.Element;
 // @public (undocumented)
 export interface SubmenuTriggerProps extends SubmenuTriggerProps_2 {}
 
-// @public (undocumented)
+// @public
 export const Switch: ForwardRefExoticComponent<
   SwitchProps & RefAttributes<HTMLLabelElement>
 >;
@@ -2354,10 +2677,10 @@ export interface SwitchProps
 // @public
 export const Tab: (props: TabProps) => JSX_2.Element;
 
-// @public (undocumented)
+// @public
 export function Table<T extends TableItem>(input: TableProps<T>): JSX_2.Element;
 
-// @public (undocumented)
+// @public
 export const TableBody: <T extends object>(
   props: TableBodyProps<T>,
 ) => JSX_2.Element;
@@ -2382,10 +2705,13 @@ export const TableDefinition: {
     readonly stale: {
       readonly dataAttribute: true;
     };
+    readonly loading: {
+      readonly dataAttribute: true;
+    };
   };
 };
 
-// @public (undocumented)
+// @public
 export const TableHeader: <T extends object>(
   props: TableHeaderProps<T>,
 ) => JSX_2.Element;
@@ -2437,6 +2763,9 @@ export const TablePaginationDefinition: {
       readonly default: true;
     };
     readonly getLabel: {};
+    readonly showPaginationLabel: {
+      readonly default: true;
+    };
   };
 };
 
@@ -2457,6 +2786,7 @@ export type TablePaginationOwnProps = {
     offset?: number;
     totalCount?: number;
   }) => string;
+  showPaginationLabel?: boolean;
 };
 
 // @public (undocumented)
@@ -2491,14 +2821,17 @@ export interface TableProps<T extends TableItem> {
   sort?: SortState;
   // (undocumented)
   style?: React.CSSProperties;
+  // (undocumented)
+  virtualized?: VirtualizedProp;
 }
 
-// @public (undocumented)
+// @public
 export const TableRoot: (props: TableRootProps) => JSX_2.Element;
 
 // @public (undocumented)
 export type TableRootOwnProps = {
   stale?: boolean;
+  loading?: boolean;
 };
 
 // @public (undocumented)
@@ -2645,7 +2978,7 @@ export interface TagProps
   extends TagOwnProps,
     Omit<TagProps_2, keyof TagOwnProps> {}
 
-// @public (undocumented)
+// @public
 const Text_2: {
   <T extends ElementType = 'p'>(
     props: TextProps<T> & {
@@ -2693,7 +3026,7 @@ export const TextDefinition: {
   };
 };
 
-// @public (undocumented)
+// @public
 export const TextField: ForwardRefExoticComponent<
   TextFieldProps & RefAttributes<HTMLDivElement>
 >;
@@ -2788,7 +3121,7 @@ export type TextVariants =
 // @public (undocumented)
 export type TextWeights = 'regular' | 'bold';
 
-// @public (undocumented)
+// @public
 export const ToggleButton: ForwardRefExoticComponent<
   ToggleButtonProps & RefAttributes<HTMLButtonElement>
 >;
@@ -2814,7 +3147,7 @@ export const ToggleButtonDefinition: {
   };
 };
 
-// @public (undocumented)
+// @public
 export const ToggleButtonGroup: ForwardRefExoticComponent<
   ToggleButtonGroupProps & RefAttributes<HTMLDivElement>
 >;
@@ -2858,7 +3191,7 @@ export interface ToggleButtonProps
   extends Omit<ToggleButtonProps_2, 'children' | 'className'>,
     ToggleButtonOwnProps {}
 
-// @public (undocumented)
+// @public
 export const Tooltip: ForwardRefExoticComponent<
   TooltipProps & RefAttributes<HTMLDivElement>
 >;
@@ -2890,7 +3223,7 @@ export interface TooltipProps
   extends Omit<TooltipProps_2, 'children' | 'className'>,
     TooltipOwnProps {}
 
-// @public (undocumented)
+// @public
 export const TooltipTrigger: (
   props: TooltipTriggerComponentProps,
 ) => JSX_2.Element;
@@ -2914,9 +3247,19 @@ export const useBreakpoint: () => {
   down: (key: Breakpoint) => boolean;
 };
 
+// @public
+export function useTable<T extends TableItem, TFilter = unknown>(
+  options: UseTableCompleteOptions<T, TFilter>,
+): UseTableResult<T, TFilter>;
+
 // @public (undocumented)
 export function useTable<T extends TableItem, TFilter = unknown>(
-  options: UseTableOptions<T, TFilter>,
+  options: UseTableOffsetOptions<T, TFilter>,
+): UseTableResult<T, TFilter>;
+
+// @public (undocumented)
+export function useTable<T extends TableItem, TFilter = unknown>(
+  options: UseTableCursorOptions<T, TFilter>,
 ): UseTableResult<T, TFilter>;
 
 // @public (undocumented)
@@ -2925,7 +3268,7 @@ export type UseTableCompleteOptions<
   TFilter = unknown,
 > = QueryOptions<TFilter> & {
   mode: 'complete';
-  paginationOptions?: PaginationOptions;
+  paginationOptions?: CompletePaginationOptions;
   sortFn?: (data: T[], sort: SortDescriptor) => T[];
   filterFn?: (data: T[], filter: TFilter) => T[];
   searchFn?: (data: T[], search: string) => T[];
@@ -2999,6 +3342,16 @@ export interface UtilityProps extends SpaceProps {
   justifyContent?: Responsive<JustifyContent>;
   rowSpan?: Responsive<Columns | 'full'>;
 }
+
+// @public (undocumented)
+export type VirtualizedProp =
+  | boolean
+  | {
+      rowHeight: number;
+    }
+  | {
+      estimatedRowHeight: number;
+    };
 
 // @public
 export const VisuallyHidden: (props: VisuallyHiddenProps) => JSX_2.Element;

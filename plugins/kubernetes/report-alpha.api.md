@@ -240,7 +240,7 @@ const _default: OverridableFrontendPlugin<
 >;
 export default _default;
 
-// @alpha (undocumented)
+// @alpha @deprecated (undocumented)
 export const kubernetesTranslationRef: TranslationRef<
   'kubernetes',
   {

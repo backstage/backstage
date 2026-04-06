@@ -54,6 +54,7 @@ import { SVGProps } from 'react';
 import { TabProps } from '@material-ui/core/Tab';
 import { Theme } from '@material-ui/core/styles';
 import { TooltipProps } from '@material-ui/core/Tooltip';
+import { TranslationRef } from '@backstage/frontend-plugin-api';
 import { WithStyles } from '@material-ui/core/styles';
 
 // @public
@@ -221,6 +222,69 @@ export interface CopyTextButtonProps {
   tooltipDelay?: number;
   tooltipText?: string;
 }
+
+// @public (undocumented)
+export const coreComponentsTranslationRef: TranslationRef<
+  'core-components',
+  {
+    readonly 'table.filter.title': 'Filters';
+    readonly 'table.filter.placeholder': 'All results';
+    readonly 'table.filter.clearAll': 'Clear all';
+    readonly 'table.body.emptyDataSourceMessage': 'No records to display';
+    readonly 'table.header.actions': 'Actions';
+    readonly 'table.toolbar.search': 'Filter';
+    readonly 'table.pagination.labelDisplayedRows': '{from}-{to} of {count}';
+    readonly 'table.pagination.firstTooltip': 'First Page';
+    readonly 'table.pagination.labelRowsSelect': 'rows';
+    readonly 'table.pagination.lastTooltip': 'Last Page';
+    readonly 'table.pagination.nextTooltip': 'Next Page';
+    readonly 'table.pagination.previousTooltip': 'Previous Page';
+    readonly 'emptyState.missingAnnotation.title': 'Missing Annotation';
+    readonly 'emptyState.missingAnnotation.actionTitle': 'Add the annotation to your component YAML as shown in the highlighted example below:';
+    readonly 'emptyState.missingAnnotation.readMore': 'Read more';
+    readonly 'signIn.title': 'Sign In';
+    readonly 'signIn.loginFailed': 'Login failed';
+    readonly 'signIn.customProvider.title': 'Custom User';
+    readonly 'signIn.customProvider.subtitle': 'Enter your own User ID and credentials.\n This selection will not be stored.';
+    readonly 'signIn.customProvider.userId': 'User ID';
+    readonly 'signIn.customProvider.tokenInvalid': 'Token is not a valid OpenID Connect JWT Token';
+    readonly 'signIn.customProvider.continue': 'Continue';
+    readonly 'signIn.customProvider.idToken': 'ID Token (optional)';
+    readonly 'signIn.guestProvider.title': 'Guest';
+    readonly 'signIn.guestProvider.enter': 'Enter';
+    readonly 'signIn.guestProvider.subtitle': 'Enter as a Guest User.\n You will not have a verified identity, meaning some features might be unavailable.';
+    readonly skipToContent: 'Skip to content';
+    readonly 'copyTextButton.tooltipText': 'Text copied to clipboard';
+    readonly 'simpleStepper.finish': 'Finish';
+    readonly 'simpleStepper.reset': 'Reset';
+    readonly 'simpleStepper.next': 'Next';
+    readonly 'simpleStepper.skip': 'Skip';
+    readonly 'simpleStepper.back': 'Back';
+    readonly 'errorPage.title': 'Looks like someone dropped the mic!';
+    readonly 'errorPage.subtitle': 'ERROR {{status}}: {{statusMessage}}';
+    readonly 'errorPage.goBack': 'Go back';
+    readonly 'errorPage.showMoreDetails': 'Show more details';
+    readonly 'errorPage.showLessDetails': 'Show less details';
+    readonly 'supportConfig.default.title': 'Support Not Configured';
+    readonly 'supportConfig.default.linkTitle': 'Add `app.support` config key';
+    readonly 'errorBoundary.title': 'Please contact {{slackChannel}} for help.';
+    readonly 'oauthRequestDialog.message': 'Sign-in to allow {{appTitle}} access to {{provider}} APIs and identities.';
+    readonly 'oauthRequestDialog.title': 'Login Required';
+    readonly 'oauthRequestDialog.authRedirectTitle': 'This will trigger a http redirect to OAuth Login.';
+    readonly 'oauthRequestDialog.login': 'Log in';
+    readonly 'oauthRequestDialog.rejectAll': 'Reject All';
+    readonly 'supportButton.title': 'Support';
+    readonly 'supportButton.close': 'Close';
+    readonly 'alertDisplay.message_one': '({{ count }} newer message)';
+    readonly 'alertDisplay.message_other': '({{ count }} newer messages)';
+    readonly 'autoLogout.stillTherePrompt.title': 'Logging out due to inactivity';
+    readonly 'autoLogout.stillTherePrompt.buttonText': "Yes! Don't log me out";
+    readonly 'dependencyGraph.fullscreenTooltip': 'Toggle fullscreen';
+    readonly 'proxiedSignInPage.title': 'You do not appear to be signed in. Please try reloading the browser page.';
+    readonly 'logViewer.searchField.placeholder': 'Search';
+    readonly 'logViewer.downloadBtn.tooltip': 'Download logs';
+  }
+>;
 
 // @public
 export function CreateButton(props: CreateButtonProps): JSX_2.Element | null;
@@ -512,7 +576,7 @@ export function FeatureCalloutCircular(
 ): JSX_2.Element;
 
 // @public (undocumented)
-export type FiltersContainerClassKey = 'root' | 'title';
+export type FiltersContainerClassKey = 'root' | 'filterControls' | 'title';
 
 // @public
 export function Gauge(props: GaugeProps): JSX_2.Element;
@@ -819,6 +883,7 @@ export interface LogViewerProps {
   classes?: {
     root?: string;
   };
+  onDownloadLog?: () => void;
   text: string;
   textWrap?: boolean;
 }

@@ -172,6 +172,7 @@ export type CreateLocation = {
   body: CreateLocationRequest;
   query: {
     dryRun?: string;
+    onConflict?: 'refresh' | 'reject';
   };
   response: CreateLocation201Response | Error | Error;
 };

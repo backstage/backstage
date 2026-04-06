@@ -6,17 +6,24 @@ The Backstage UI Themer helps you convert an existing MUI v5 theme into Backstag
 
 ## Installation
 
-### 1) Add the dependency to your app
-
-Run this from your Backstage repo root:
+Add the dependency to your app:
 
 ```bash
 yarn --cwd packages/app add @backstage/plugin-mui-to-bui
 ```
 
-### 2) Wire it up depending on your frontend system
+Once installed, the plugin is automatically available in your app through the default feature discovery. For more details and alternative installation methods, see [installing plugins](https://backstage.io/docs/frontend-system/building-apps/installing-plugins).
 
-#### Old frontend system (legacy `App.tsx` with `<FlatRoutes>`)
+## Accessing the Themer page
+
+- Navigate to `/mui-to-bui` in your Backstage app (for example `http://localhost:3000/mui-to-bui`).
+- Optional: Add a sidebar/link in your app that points to `/mui-to-bui` if you want a permanent navigation entry.
+
+## Old Frontend System
+
+If your Backstage app uses the old frontend system, you need to manually wire the
+plugin into your app as outlined in this section. If you are on the new frontend
+system, you can skip this.
 
 Add a route for the page in your app:
 
@@ -34,30 +41,3 @@ export const App = () => (
   </FlatRoutes>
 );
 ```
-
-#### New frontend system
-
-If package discovery is enabled in your app, this plugin is picked up automatically after installation — no code changes required. Just navigate to `/mui-to-bui`.
-
-If you prefer explicit registration (or don't use discovery), register the plugin as a feature. The page route (`/mui-to-bui`) is provided by the plugin.
-
-```tsx
-// packages/app/src/App.tsx (or your app entry where you call createApp)
-import React from 'react';
-import { createApp } from '@backstage/frontend-defaults';
-import buiThemerPlugin from '@backstage/plugin-mui-to-bui';
-
-const app = createApp({
-  features: [
-    // ...other features
-    buiThemerPlugin,
-  ],
-});
-
-export default app.createRoot();
-```
-
-## Accessing the Themer page
-
-- Navigate to `/mui-to-bui` in your Backstage app (for example `http://localhost:3000/mui-to-bui`).
-- Optional: Add a sidebar/link in your app that points to `/mui-to-bui` if you want a permanent navigation entry.

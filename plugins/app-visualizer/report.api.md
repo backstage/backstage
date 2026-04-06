@@ -5,7 +5,6 @@
 ```ts
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
-import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
 import { IconComponent } from '@backstage/frontend-plugin-api';
@@ -124,11 +123,9 @@ const visualizerPlugin: OverridableFrontendPlugin<
       configInput: {};
       output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
       inputs: {};
-      params: (params: {
+      params: {
         loader: () => Promise<JSX.Element>;
-      }) => ExtensionBlueprintParams<{
-        loader: () => Promise<JSX.Element>;
-      }>;
+      };
     }>;
     'sub-page:app-visualizer/details': OverridableExtensionDefinition<{
       kind: 'sub-page';

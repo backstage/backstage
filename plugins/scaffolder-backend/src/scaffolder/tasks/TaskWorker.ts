@@ -15,6 +15,7 @@
  */
 
 import { AuditorService, LoggerService } from '@backstage/backend-plugin-api';
+import type { MetricsService } from '@backstage/backend-plugin-api/alpha';
 import { assertError, InputError, stringifyError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
@@ -78,6 +79,7 @@ export type CreateWorkerOptions = {
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
   permissions?: PermissionEvaluator;
   gracefulShutdown?: boolean;
+  metrics: MetricsService;
 };
 
 /**
@@ -123,6 +125,7 @@ export class TaskWorker {
       additionalTemplateGlobals,
       permissions,
       gracefulShutdown,
+      metrics,
     } = options;
 
     const workflowRunner = new NunjucksWorkflowRunner({
@@ -135,6 +138,7 @@ export class TaskWorker {
       additionalTemplateGlobals,
       permissions,
       config,
+      metrics,
     });
 
     return new TaskWorker({

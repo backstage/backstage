@@ -27,6 +27,7 @@ export {
 } from './components/Accordion/definition';
 export { AlertDefinition } from './components/Alert/definition';
 export { AvatarDefinition } from './components/Avatar/definition';
+export { BadgeDefinition } from './components/Badge/definition';
 export { BoxDefinition } from './components/Box/definition';
 export { ButtonDefinition } from './components/Button/definition';
 export { ButtonIconDefinition } from './components/ButtonIcon/definition';
@@ -49,13 +50,22 @@ export {
   HeaderPageDefinition,
 } from './components/Header/definition';
 export { LinkDefinition } from './components/Link/definition';
+export {
+  ListDefinition,
+  ListRowDefinition,
+} from './components/List/definition';
 export { MenuDefinition } from './components/Menu/definition';
 export { PasswordFieldDefinition } from './components/PasswordField/definition';
 export { PopoverDefinition } from './components/Popover/definition';
 export { RadioGroupDefinition } from './components/RadioGroup/definition';
+export {
+  SearchAutocompleteDefinition,
+  SearchAutocompleteItemDefinition,
+} from './components/SearchAutocomplete/definition';
 export { SearchFieldDefinition } from './components/SearchField/definition';
 export { SelectDefinition } from './components/Select/definition';
 export { SkeletonDefinition } from './components/Skeleton/definition';
+export { SliderDefinition } from './components/Slider/definition';
 export { SwitchDefinition } from './components/Switch/definition';
 export { ToggleButtonDefinition } from './components/ToggleButton/definition';
 export { ToggleButtonGroupDefinition } from './components/ToggleButtonGroup/definition';

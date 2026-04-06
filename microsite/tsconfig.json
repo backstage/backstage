@@ -9,5 +9,6 @@
       "@docusaurus/theme-classic",
       "@types/webpack-env"
     ]
-  }
+  },
+  "exclude": ["node_modules", "build", ".docusaurus", "static", "blog"]
 }

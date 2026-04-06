@@ -100,11 +100,11 @@ export const MenuItemDefinition = defineComponent<MenuItemOwnProps>()({
   styles,
   classNames: {
     root: 'bui-MenuItem',
-    itemWrapper: 'bui-MenuItemWrapper',
     itemContent: 'bui-MenuItemContent',
     itemArrow: 'bui-MenuItemArrow',
   },
   analytics: true,
+  resolveHref: true,
   propDefs: {
     iconStart: {},
     children: {},
@@ -119,9 +119,9 @@ export const MenuItemDefinition = defineComponent<MenuItemOwnProps>()({
 export const MenuListBoxItemDefinition =
   defineComponent<MenuListBoxItemOwnProps>()({
     styles,
+    resolveHref: true,
     classNames: {
       root: 'bui-MenuItemListBox',
-      itemWrapper: 'bui-MenuItemWrapper',
       itemContent: 'bui-MenuItemContent',
       check: 'bui-MenuItemListBoxCheck',
     },
