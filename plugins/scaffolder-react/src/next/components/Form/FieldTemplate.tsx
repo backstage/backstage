@@ -23,6 +23,7 @@ import {
 } from '@rjsf/utils';
 
 import { ScaffolderField } from '../ScaffolderField';
+import { ShadcnButton as Button } from '@backstage/core-components';
 
 /** The `FieldTemplate` component is the template used by `SchemaField` to render any field. It renders the field
  * content, (label, description, children, errors and help) inside of a `WrapIfAdditional` component.
@@ -58,6 +59,23 @@ export const FieldTemplate = <
     registry,
   } = props;
 
+  // Extract field loading states from formContext (cascading forms feature).
+  // The formContext is populated by Stepper.tsx with fieldLoadingStates when
+  // async optionsLoader calls are in progress or have failed for a field.
+  const formContext = registry.formContext as
+    | Record<string, unknown>
+    | undefined;
+  const fieldLoadingStates = formContext?.fieldLoadingStates as
+    | Record<
+        string,
+        { loading: boolean; error: Error | null; retry?: () => void }
+      >
+    | undefined;
+  const fieldState = fieldLoadingStates?.[id];
+  const isFieldLoading = fieldState?.loading === true;
+  const fieldLoadError = fieldState?.error ?? null;
+  const fieldRetry = fieldState?.retry;
+
   const uiOptions = getUiOptions<T, S, F>(uiSchema);
   const WrapIfAdditionalTemplate = getTemplate<
     'WrapIfAdditionalTemplate',
@@ -88,13 +106,26 @@ export const FieldTemplate = <
         displayLabel={displayLabel}
         rawErrors={rawErrors}
         help={help}
-        disabled={disabled}
+        disabled={disabled || isFieldLoading}
         rawDescription={rawDescription}
         errors={errors}
         required={required}
+        isLoading={isFieldLoading}
       >
         {children}
       </ScaffolderField>
+      {fieldLoadError && (
+        <div role="alert" className="flex items-center gap-2 mt-1">
+          <div className="text-xs text-destructive">
+            {fieldLoadError.message || 'Failed to load options'}
+          </div>
+          {fieldRetry && (
+            <Button variant="ghost" size="sm" onClick={fieldRetry}>
+              Retry
+            </Button>
+          )}
+        </div>
+      )}
     </WrapIfAdditionalTemplate>
   );
 };
