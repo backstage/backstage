@@ -73,7 +73,8 @@
     "@backstage/plugin-events-backend-test-utils": "workspace:^",
     "@backstage/repo-tools": "workspace:^",
     "@types/content-type": "^1.1.8",
-    "supertest": "^7.0.0"
+    "supertest": "^7.0.0",
+    "vitest": "^4.1.2"
   },
   "configSchema": "config.d.ts"
 }

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import fs from 'fs-extra';
 import { resolve as resolvePath, join as joinPath } from 'node:path';
 import { TarArchiveResponse } from './TarArchiveResponse';

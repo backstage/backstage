@@ -39,6 +39,7 @@
     "@backstage/cli": "workspace:^",
     "@types/zen-observable": "^0.8.0",
     "luxon": "^3.0.0",
+    "vitest": "^4.1.2",
     "zen-observable": "^0.10.0"
   }
 }

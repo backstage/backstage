@@ -21,7 +21,7 @@ vi.mock('azure-devops-node-api', async () => ({
   getPersonalAccessTokenHandler: vi.fn().mockReturnValue(() => {}),
 }));
 
-vi.mock('@backstage/plugin-scaffolder-node', () => {
+vi.mock('@backstage/plugin-scaffolder-node', async () => {
   return {
     ...(await vi.importActual('@backstage/plugin-scaffolder-node')),
     initRepoAndPush: vi.fn().mockResolvedValue({

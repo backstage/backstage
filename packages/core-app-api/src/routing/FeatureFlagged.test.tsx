@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { ReactNode } from 'react';
 import { FeatureFlagged } from './FeatureFlagged';
 import { render, screen } from '@testing-library/react';

@@ -227,8 +227,10 @@ describe('API integration tests', () => {
                   extension.addAuthStrategy('customAuth', {
                     getCredential: vi
                       .fn<
-                        Promise<KubernetesCredential>,
-                        [ClusterDetails, KubernetesRequestAuth]
+                        (
+                          clusterDetails: ClusterDetails,
+                          requestAuth: KubernetesRequestAuth,
+                        ) => Promise<KubernetesCredential>
                       >()
                       .mockImplementation(async (_, requestAuth) => ({
                         type: 'bearer token',
@@ -470,8 +472,10 @@ describe('API integration tests', () => {
                   extension.addAuthStrategy('custom', {
                     getCredential: vi
                       .fn<
-                        Promise<KubernetesCredential>,
-                        [ClusterDetails, KubernetesRequestAuth]
+                        (
+                          clusterDetails: ClusterDetails,
+                          requestAuth: KubernetesRequestAuth,
+                        ) => Promise<KubernetesCredential>
                       >()
                       .mockImplementation(async (_, requestAuth) => ({
                         type: 'bearer token',
@@ -639,8 +643,10 @@ metadata:
                   extension.addAuthStrategy('custom', {
                     getCredential: vi
                       .fn<
-                        Promise<KubernetesCredential>,
-                        [ClusterDetails, KubernetesRequestAuth]
+                        (
+                          clusterDetails: ClusterDetails,
+                          requestAuth: KubernetesRequestAuth,
+                        ) => Promise<KubernetesCredential>
                       >()
                       .mockResolvedValue({ type: 'anonymous' }),
                     validateCluster: vi.fn().mockReturnValue([]),
@@ -759,8 +765,10 @@ metadata:
                   extension.addAuthStrategy('custom-strategy', {
                     getCredential: vi
                       .fn<
-                        Promise<KubernetesCredential>,
-                        [ClusterDetails, KubernetesRequestAuth]
+                        (
+                          clusterDetails: ClusterDetails,
+                          requestAuth: KubernetesRequestAuth,
+                        ) => Promise<KubernetesCredential>
                       >()
                       .mockResolvedValue({ type: 'anonymous' }),
                     validateCluster: vi.fn().mockReturnValue([]),

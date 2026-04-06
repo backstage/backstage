@@ -48,7 +48,8 @@
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
-    "express": "^4.22.0"
+    "express": "^4.22.0",
+    "vitest": "^4.1.2"
   },
   "configSchema": "config.d.ts"
 }

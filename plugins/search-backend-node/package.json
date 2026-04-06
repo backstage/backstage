@@ -68,6 +68,7 @@
     "@backstage/backend-defaults": "workspace:^",
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
-    "@types/ndjson": "^2.0.1"
+    "@types/ndjson": "^2.0.1",
+    "vitest": "^4.1.2"
   }
 }

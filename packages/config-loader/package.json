@@ -58,6 +58,7 @@
     "@types/json-schema-merge-allof": "^0.6.0",
     "@types/minimist": "^1.2.5",
     "msw": "^2.0.0",
+    "vitest": "^4.1.2",
     "zen-observable": "^0.10.0"
   }
 }

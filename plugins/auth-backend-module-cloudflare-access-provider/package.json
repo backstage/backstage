@@ -50,7 +50,8 @@
     "@backstage/types": "workspace:^",
     "msw": "^2.0.0",
     "node-mocks-http": "^1.0.0",
-    "uuid": "^11.0.0"
+    "uuid": "^11.0.0",
+    "vitest": "^4.1.2"
   },
   "configSchema": "config.d.ts"
 }

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { vi } from 'vitest';
+
 import { createElement } from 'react';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { createApp } from '../../../frontend-defaults/src/createApp';

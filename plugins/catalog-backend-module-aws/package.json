@@ -75,6 +75,7 @@
     "@backstage/cli": "workspace:^",
     "aws-sdk-client-mock": "^4.0.0",
     "aws-sdk-client-mock-jest": "^4.0.0",
+    "vitest": "^4.1.2",
     "yaml": "^2.0.0"
   },
   "configSchema": "config.d.ts"

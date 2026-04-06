@@ -101,7 +101,8 @@
     "@types/node": "^22.13.14",
     "jest": "^30.2.0",
     "jsdom": "^27.1.0",
-    "nodemon": "^3.0.1"
+    "nodemon": "^3.0.1",
+    "vitest": "^4.1.2"
   },
   "peerDependencies": {
     "@jest/environment-jsdom-abstract": "^30.0.0",

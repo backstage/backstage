@@ -51,6 +51,7 @@
     "@backstage/config": "workspace:^",
     "@backstage/types": "workspace:^",
     "express": "^4.22.0",
-    "msw": "^2.0.8"
+    "msw": "^2.0.8",
+    "vitest": "^4.1.2"
   }
 }

@@ -93,7 +93,8 @@
     "@types/is-glob": "^4.0.2",
     "@types/node": "^22.13.14",
     "@types/prettier": "^2.0.0",
-    "typedoc": "^0.28.0"
+    "typedoc": "^0.28.0",
+    "vitest": "^4.1.2"
   },
   "peerDependencies": {
     "@microsoft/api-extractor-model": "*",

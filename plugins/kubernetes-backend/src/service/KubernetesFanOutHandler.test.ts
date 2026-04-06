@@ -212,8 +212,10 @@ describe('KubernetesFanOutHandler', () => {
       authStrategy: {
         getCredential: vi
           .fn<
-            Promise<KubernetesCredential>,
-            [ClusterDetails, KubernetesRequestAuth]
+            (
+              clusterDetails: ClusterDetails,
+              requestAuth: KubernetesRequestAuth,
+            ) => Promise<KubernetesCredential>
           >()
           .mockResolvedValue({ type: 'anonymous' }),
         validateCluster: vi.fn().mockReturnValue([]),
@@ -1279,8 +1281,10 @@ describe('KubernetesFanOutHandler', () => {
           authStrategy: {
             getCredential: vi
               .fn<
-                Promise<KubernetesCredential>,
-                [ClusterDetails, KubernetesRequestAuth]
+                (
+                  clusterDetails: ClusterDetails,
+                  requestAuth: KubernetesRequestAuth,
+                ) => Promise<KubernetesCredential>
               >()
               .mockResolvedValue({ type: 'bearer token', token: 'token' }),
             validateCluster: vi.fn().mockReturnValue([]),
