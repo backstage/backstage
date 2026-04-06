@@ -357,6 +357,7 @@ export const Form = (props: PropsWithChildren<ScaffolderRJSFFormProps>) => {
                 {...wrapperProps}
                 uiSchema={wrapperProps.uiSchema ?? {}}
                 formData={wrapperProps.formData}
+                formContext={wrapperProps.formContext}
                 rawErrors={wrapperProps.rawErrors ?? []}
                 disabled={wrapperProps.disabled ?? false}
                 readonly={wrapperProps.readonly ?? false}
