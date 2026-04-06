@@ -851,4 +851,210 @@ describe('Stepper', () => {
       );
     });
   });
+
+  describe('Cascading/Dynamic Forms', () => {
+    it('should show conditional fields when if/then/else condition is met', async () => {
+      const manifest: TemplateParameterSchema = {
+        steps: [
+          {
+            title: 'Conditional Step',
+            schema: {
+              type: 'object',
+              properties: {
+                enableAdvanced: {
+                  type: 'boolean',
+                  title: 'Enable Advanced Options',
+                  default: false,
+                },
+              },
+              if: {
+                properties: { enableAdvanced: { const: true } },
+              },
+              then: {
+                properties: {
+                  advancedSetting: {
+                    type: 'string',
+                    title: 'Advanced Setting',
+                  },
+                },
+              },
+            },
+          },
+        ],
+        title: 'Conditional Test',
+      };
+
+      const { getByLabelText, queryByLabelText } = await renderInTestApp(
+        <SecretsContextProvider>
+          <Stepper manifest={manifest} extensions={[]} onCreate={jest.fn()} />
+        </SecretsContextProvider>,
+      );
+
+      // Initially, the conditional field should not be visible (enableAdvanced is false by default)
+      expect(queryByLabelText('Advanced Setting')).not.toBeInTheDocument();
+
+      // Toggle the boolean field to true
+      await act(async () => {
+        fireEvent.click(getByLabelText('Enable Advanced Options'));
+      });
+
+      // The conditional field should now be visible
+      await waitFor(() => {
+        expect(queryByLabelText('Advanced Setting')).toBeInTheDocument();
+      });
+    });
+
+    it('should preserve form values when conditional fields unmount and remount', async () => {
+      const manifest: TemplateParameterSchema = {
+        steps: [
+          {
+            title: 'Preservation Step',
+            schema: {
+              type: 'object',
+              properties: {
+                enableAdvanced: {
+                  type: 'boolean',
+                  title: 'Enable Advanced Options',
+                  default: false,
+                },
+              },
+              if: {
+                properties: { enableAdvanced: { const: true } },
+              },
+              then: {
+                properties: {
+                  advancedSetting: {
+                    type: 'string',
+                    title: 'Advanced Setting',
+                  },
+                },
+              },
+            },
+          },
+        ],
+        title: 'Value Preservation Test',
+      };
+
+      const { getByLabelText, queryByLabelText } = await renderInTestApp(
+        <SecretsContextProvider>
+          <Stepper manifest={manifest} extensions={[]} onCreate={jest.fn()} />
+        </SecretsContextProvider>,
+      );
+
+      // Step 1: Enable advanced, fill in the conditional field
+      await act(async () => {
+        fireEvent.click(getByLabelText('Enable Advanced Options'));
+      });
+
+      await waitFor(() => {
+        expect(queryByLabelText('Advanced Setting')).toBeInTheDocument();
+      });
+
+      await act(async () => {
+        fireEvent.change(getByLabelText('Advanced Setting'), {
+          target: { value: 'my-advanced-value' },
+        });
+      });
+
+      // Step 2: Disable advanced (conditional field unmounts)
+      await act(async () => {
+        fireEvent.click(getByLabelText('Enable Advanced Options'));
+      });
+
+      await waitFor(() => {
+        expect(queryByLabelText('Advanced Setting')).not.toBeInTheDocument();
+      });
+
+      // Step 3: Re-enable advanced (conditional field remounts)
+      await act(async () => {
+        fireEvent.click(getByLabelText('Enable Advanced Options'));
+      });
+
+      // The previously entered value should be restored
+      await waitFor(() => {
+        const advancedField = queryByLabelText('Advanced Setting');
+        expect(advancedField).toBeInTheDocument();
+        expect(advancedField).toHaveValue('my-advanced-value');
+      });
+    });
+
+    it('should show dependent fields based on dependencies schema keyword', async () => {
+      const manifest: TemplateParameterSchema = {
+        steps: [
+          {
+            title: 'Dependencies Step',
+            schema: {
+              type: 'object',
+              properties: {
+                cloudProvider: {
+                  type: 'string',
+                  title: 'Cloud Provider',
+                  enum: ['AWS', 'GCP'],
+                },
+              },
+              dependencies: {
+                cloudProvider: {
+                  oneOf: [
+                    {
+                      properties: {
+                        cloudProvider: { enum: ['AWS'] },
+                        awsRegion: {
+                          type: 'string',
+                          title: 'AWS Region',
+                          enum: ['us-east-1', 'us-west-2'],
+                        },
+                      },
+                    },
+                    {
+                      properties: {
+                        cloudProvider: { enum: ['GCP'] },
+                        gcpRegion: {
+                          type: 'string',
+                          title: 'GCP Region',
+                          enum: ['us-central1', 'europe-west1'],
+                        },
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+          },
+        ],
+        title: 'Dependencies Test',
+      };
+
+      const { getByLabelText, queryByLabelText } = await renderInTestApp(
+        <SecretsContextProvider>
+          <Stepper manifest={manifest} extensions={[]} onCreate={jest.fn()} />
+        </SecretsContextProvider>,
+      );
+
+      // Select AWS as cloud provider
+      await act(async () => {
+        fireEvent.change(getByLabelText('Cloud Provider'), {
+          target: { value: 'AWS' },
+        });
+      });
+
+      // AWS-specific region field should appear
+      await waitFor(() => {
+        expect(queryByLabelText('AWS Region')).toBeInTheDocument();
+      });
+      expect(queryByLabelText('GCP Region')).not.toBeInTheDocument();
+
+      // Switch to GCP
+      await act(async () => {
+        fireEvent.change(getByLabelText('Cloud Provider'), {
+          target: { value: 'GCP' },
+        });
+      });
+
+      // GCP-specific region field should appear, AWS should disappear
+      await waitFor(() => {
+        expect(queryByLabelText('GCP Region')).toBeInTheDocument();
+      });
+      expect(queryByLabelText('AWS Region')).not.toBeInTheDocument();
+    });
+  });
 });
