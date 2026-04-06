@@ -98,7 +98,7 @@ describe('useOptionsLoader', () => {
     // The single invocation must receive the LAST formData (from 'd' rerender)
     expect(mockLoader).toHaveBeenCalledWith(
       { parentField: 'd' },
-      { apiHolder: mockApiHolder },
+      expect.objectContaining({ apiHolder: mockApiHolder }),
     );
 
     // The resolved options should appear in the hook result
@@ -370,7 +370,7 @@ describe('useOptionsLoader', () => {
     // The second call should include the updated dependency value
     expect(mockLoader).toHaveBeenLastCalledWith(
       { parentField: 'GCP', unrelatedField: 'y' },
-      { apiHolder: mockApiHolder },
+      expect.objectContaining({ apiHolder: mockApiHolder }),
     );
   });
 
@@ -414,7 +414,7 @@ describe('useOptionsLoader', () => {
     // Verify the call was made with the latest formData
     expect(mockLoader).toHaveBeenCalledWith(
       { parentField: 'b' },
-      { apiHolder: mockApiHolder },
+      expect.objectContaining({ apiHolder: mockApiHolder }),
     );
   });
 });

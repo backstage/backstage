@@ -20,13 +20,16 @@ import { JsonObject } from '@backstage/types';
 
 /**
  * Function type for async option loading. Receives current form data and
- * a context with the Backstage ApiHolder for making API calls.
+ * a context with the Backstage ApiHolder for making API calls. An optional
+ * AbortSignal is provided so that in-flight network requests can be
+ * cancelled when the parent field value changes again or the component
+ * unmounts.
  *
  * @alpha
  */
 export type OptionsLoaderFn = (
   formData: JsonObject,
-  context: { apiHolder: ApiHolder },
+  context: { apiHolder: ApiHolder; signal?: AbortSignal },
 ) => Promise<Array<{ label: string; value: string | number }>>;
 
 /**
@@ -127,6 +130,7 @@ export const useOptionsLoader = (
       try {
         const result = await optionsLoaderRef.current(currentFormData, {
           apiHolder: apiHolderRef.current,
+          signal: controller.signal,
         });
 
         // Guard against state updates if unmounted or aborted during async call

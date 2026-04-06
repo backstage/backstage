@@ -104,11 +104,13 @@ export type FieldExtensionOptions<
    *
    * The function receives the full form data and a context object containing
    * the Backstage `ApiHolder`, enabling data retrieval from catalog, custom
-   * backends, or other Backstage APIs.
+   * backends, or other Backstage APIs. An optional `AbortSignal` is provided
+   * so that in-flight network requests can be cancelled when the parent field
+   * value changes again or the component unmounts.
    *
    * @example
    * ```ts
-   * optionsLoader: async (formData, { apiHolder }) => {
+   * optionsLoader: async (formData, { apiHolder, signal }) => {
    *   const catalogApi = apiHolder.get(catalogApiRef);
    *   const entities = await catalogApi.getEntities({ filter: { kind: 'Component' } });
    *   return entities.items.map(e => ({ label: e.metadata.name, value: e.metadata.name }));
@@ -117,6 +119,6 @@ export type FieldExtensionOptions<
    */
   optionsLoader?: (
     formData: JsonObject,
-    context: { apiHolder: ApiHolder },
+    context: { apiHolder: ApiHolder; signal?: AbortSignal },
   ) => Promise<Array<{ label: string; value: string | number }>>;
 };
