@@ -1,5 +1,3 @@
-import { vi, type Mocked } from 'vitest';
-
 import {
   mockCredentials,
   mockErrorHandler,
@@ -22,13 +20,13 @@ const mockTodoItem = {
 // Testing the router directly allows you to write a unit test that mocks the provided options.
 describe('createRouter', () => {
   let app: express.Express;
-  let todoList: Mocked<typeof todoListServiceRef.T>;
+  let todoList: jest.Mocked<typeof todoListServiceRef.T>;
 
   beforeEach(async () => {
     todoList = {
-      createTodo: vi.fn(),
-      listTodos: vi.fn(),
-      getTodo: vi.fn(),
+      createTodo: jest.fn(),
+      listTodos: jest.fn(),
+      getTodo: jest.fn(),
     };
     const router = await createRouter({
       httpAuth: mockServices.httpAuth(),

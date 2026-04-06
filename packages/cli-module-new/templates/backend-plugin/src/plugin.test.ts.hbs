@@ -1,5 +1,3 @@
-import { vi } from 'vitest';
-
 import {
   mockCredentials,
   startTestBackend,
@@ -100,9 +98,9 @@ describe('plugin', () => {
           service: todoListServiceRef,
           deps: {},
           factory: () => ({
-            createTodo: vi.fn().mockRejectedValue(new ConflictError()),
-            listTodos: vi.fn().mockRejectedValue(new AuthenticationError()),
-            getTodo: vi.fn().mockRejectedValue(new NotAllowedError()),
+            createTodo: jest.fn().mockRejectedValue(new ConflictError()),
+            listTodos: jest.fn().mockRejectedValue(new AuthenticationError()),
+            getTodo: jest.fn().mockRejectedValue(new NotAllowedError()),
           }),
         })
       ],
