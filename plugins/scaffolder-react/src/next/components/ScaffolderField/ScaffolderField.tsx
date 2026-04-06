@@ -80,6 +80,7 @@ export const ScaffolderField = (
       {isLoading && (
         <div
           role="progressbar"
+          aria-label="Loading field options"
           className="h-1 w-full overflow-hidden rounded-full bg-primary/20"
         >
           <div className="h-full w-1/3 animate-[backstage-indeterminate_1.5s_ease-in-out_infinite] rounded-full bg-primary" />

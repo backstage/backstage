@@ -107,9 +107,12 @@ export const createAsyncValidators = (
             dep => formData[dep] !== trackedDependencyValues[dep],
           );
           if (depsChanged) {
-            // Dependency values changed — proceed through the normal validation
-            // flow without skipping. This ensures the field is revalidated even
-            // when its own value has not changed.
+            // Infrastructure for future incremental revalidation optimization:
+            // dependency values changed, marking this field as a candidate for
+            // selective re-validation. Currently all fields are validated on
+            // every call regardless, so no action is taken here yet. When
+            // incremental validation is implemented, this branch will skip
+            // fields whose dependencies have NOT changed to reduce work.
           }
         }
       }

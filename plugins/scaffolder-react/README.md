@@ -221,9 +221,10 @@ the form lifecycle, including values from conditionally unmounted fields.
   your template has deeply nested or numerous `if/then/else` blocks, consider
   simplifying by splitting complex logic across multiple wizard steps.
 
-- **`optionsLoader` timeout** — By default, `optionsLoader` calls time out after
-  **10 seconds**. If your backend API is slow, ensure the loader handles timeouts
-  gracefully and returns a meaningful error.
+- **`optionsLoader` error handling** — The `optionsLoader` function does not
+  impose a built-in timeout. If your backend API may be slow, implement a timeout
+  in your loader using `AbortSignal.timeout()` or a similar mechanism, and return
+  a meaningful error so the retry button can be used.
 
 - **Synchronous vs. asynchronous resolution** — `resolveConditionalSchema()` is a pure,
   synchronous function that evaluates `if/then/else` and `dependencies` keywords against
