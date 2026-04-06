@@ -16,7 +16,6 @@
 
 const http = require('node:http');
 const https = require('node:https');
-const { afterAll } = require('vitest');
 
 const errorMessage = 'Network requests are not allowed in tests';
 

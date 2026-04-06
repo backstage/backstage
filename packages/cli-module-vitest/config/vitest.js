@@ -75,6 +75,7 @@ async function getProjectConfig(targetPath, extraConfig) {
     test: {
       name: pkgJson.name,
       root: path.resolve(targetPath, 'src'),
+      globals: true,
       environment,
       include: [`**/*.test.{${SRC_EXTS.join(',')}}`],
       passWithNoTests: true,
@@ -141,7 +142,7 @@ async function getWorkspaceConfig() {
     if (testScript && isSupportedTestScript) {
       const config = await getProjectConfig(projectPath, extraConfig);
       if (config.test) {
-        projects.push(config.test);
+        projects.push(config);
       }
     }
   }

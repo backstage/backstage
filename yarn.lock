@@ -3157,7 +3157,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/cli-module-vitest@workspace:packages/cli-module-vitest":
+"@backstage/cli-module-vitest@workspace:*, @backstage/cli-module-vitest@workspace:packages/cli-module-vitest":
   version: 0.0.0-use.local
   resolution: "@backstage/cli-module-vitest@workspace:packages/cli-module-vitest"
   dependencies:
@@ -45684,6 +45684,7 @@ __metadata:
   dependencies:
     "@backstage/cli": "workspace:*"
     "@backstage/cli-defaults": "workspace:*"
+    "@backstage/cli-module-vitest": "workspace:*"
     "@backstage/codemods": "workspace:*"
     "@backstage/create-app": "workspace:*"
     "@backstage/e2e-test-utils": "workspace:*"

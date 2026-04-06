@@ -303,16 +303,21 @@ export default async ({ args, info }: CliCommandContext) => {
 
   const { options, filter } = parseCLI(['vitest', ...vitestArgs]);
 
-  const vitest = await startVitest('test', [...filter, ...fileFilters], {
+  const vitestOptions: Record<string, unknown> = {
     passWithNoTests: true,
     ...options,
-    // Use the workspace-level vitest projects configuration
-    projects: selectedPackages
-      ? selectedPackages.map(
-          name => `packages/${name.replace('@backstage/', '')}`,
-        )
-      : undefined,
-  });
+  };
+  if (selectedPackages) {
+    vitestOptions.projects = selectedPackages.map(
+      name => `packages/${name.replace('@backstage/', '')}`,
+    );
+  }
+
+  const vitest = await startVitest(
+    'test',
+    [...filter, ...fileFilters],
+    vitestOptions,
+  );
 
   if (vitest && successCacheState) {
     const graph = await getPackageGraph();

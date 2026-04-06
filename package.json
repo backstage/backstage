@@ -126,6 +126,7 @@
   "devDependencies": {
     "@backstage/cli": "workspace:*",
     "@backstage/cli-defaults": "workspace:*",
+    "@backstage/cli-module-vitest": "workspace:*",
     "@backstage/codemods": "workspace:*",
     "@backstage/create-app": "workspace:*",
     "@backstage/e2e-test-utils": "workspace:*",
