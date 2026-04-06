@@ -49,16 +49,19 @@ describe.each(['beta', 'stable'])('FlatRoutes %s', rrVersion => {
 
   const mockFeatureFlagsApi = new LocalStorageFeatureFlags();
 
-  function requireDeps() {
+  async function importDeps() {
     return {
-      ...(require('./FlatRoutes') as typeof import('./FlatRoutes')),
-      ...(require('react-router-dom') as typeof import('react-router-dom')),
-      ...(require('@backstage/test-utils') as typeof import('@backstage/test-utils')),
+      ...(await import('./FlatRoutes')),
+      ...(await import('react-router-dom')),
+      ...(await import('@backstage/test-utils')),
     };
   }
 
-  function makeRouteRenderer(node: ReactNode) {
-    const { MemoryRouter, TestApiProvider } = requireDeps();
+  function makeRouteRenderer(
+    deps: Awaited<ReturnType<typeof importDeps>>,
+    node: ReactNode,
+  ) {
+    const { MemoryRouter, TestApiProvider } = deps;
     let rendered: RenderResult | undefined = undefined;
 
     const Wrapper = ({ children }: { children?: ReactNode }) => (
@@ -93,9 +96,11 @@ describe.each(['beta', 'stable'])('FlatRoutes %s', rrVersion => {
     };
   }
 
-  it('renders some routes', () => {
-    const { Route, FlatRoutes } = requireDeps();
+  it('renders some routes', async () => {
+    const deps = await importDeps();
+    const { Route, FlatRoutes } = deps;
     const renderRoute = makeRouteRenderer(
+      deps,
       <FlatRoutes>
         <Route path="a" element={<>a</>} />
         <Route path="b" element={<>b</>} />
@@ -108,9 +113,9 @@ describe.each(['beta', 'stable'])('FlatRoutes %s', rrVersion => {
     expect(renderRoute('/a').getByText('a')).toBeInTheDocument();
   });
 
-  it('is not sensitive to ordering and overlapping routes', () => {
-    const { Route, FlatRoutes } = requireDeps();
-    // The '/*' suffixes here are intentional and will be ignored by FlatRoutes
+  it('is not sensitive to ordering and overlapping routes', async () => {
+    const deps = await importDeps();
+    const { Route, FlatRoutes } = deps;
     const routes = (
       <>
         <Route path="a-1/*" element={<>a-1</>} />
@@ -118,14 +123,18 @@ describe.each(['beta', 'stable'])('FlatRoutes %s', rrVersion => {
         <Route path="a-2/*" element={<>a-2</>} />
       </>
     );
-    const renderRoute = makeRouteRenderer(<FlatRoutes>{routes}</FlatRoutes>);
+    const renderRoute = makeRouteRenderer(
+      deps,
+      <FlatRoutes>{routes}</FlatRoutes>,
+    );
     expect(renderRoute('/a').getByText('a')).toBeInTheDocument();
     expect(renderRoute('/a-1').getByText('a-1')).toBeInTheDocument();
     expect(renderRoute('/a-2').getByText('a-2')).toBeInTheDocument();
   });
 
-  it('renders children straight as outlets', () => {
-    const { Route, useOutlet, FlatRoutes } = requireDeps();
+  it('renders children straight as outlets', async () => {
+    const deps = await importDeps();
+    const { Route, useOutlet, FlatRoutes } = deps;
     const MyPage = () => {
       return <>Outlet: {useOutlet()}</>;
     };
@@ -144,7 +153,10 @@ describe.each(['beta', 'stable'])('FlatRoutes %s', rrVersion => {
         <Route element={<MyPage />}>c</Route>
       </>
     );
-    const renderRoute = makeRouteRenderer(<FlatRoutes>{routes}</FlatRoutes>);
+    const renderRoute = makeRouteRenderer(
+      deps,
+      <FlatRoutes>{routes}</FlatRoutes>,
+    );
     expect(renderRoute('/a').getByText('Outlet: a')).toBeInTheDocument();
     expect(renderRoute('/a/b').getByText('Outlet: a-b')).toBeInTheDocument();
     expect(renderRoute('/b').getByText('Outlet: b')).toBeInTheDocument();

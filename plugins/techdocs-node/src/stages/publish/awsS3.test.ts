@@ -283,147 +283,135 @@ describe('AwsS3Publish', () => {
     });
 
     it('should use aws.accounts over integrations.awsS3 if both are provided', async () => {
-      await vi.hoisted(async () => {
-        vi.doMock('@aws-sdk/client-s3', () => ({
-          ...vi.importActual('@aws-sdk/client-s3'),
-          S3Client: vi.fn(),
-        }));
+      vi.doMock('@aws-sdk/client-s3', () => ({
+        ...vi.importActual('@aws-sdk/client-s3'),
+        S3Client: vi.fn(),
+      }));
 
-        const { S3Client: MockS3Client } = require('@aws-sdk/client-s3');
-        const { AwsS3Publish: IsolatedAwsS3Publish } = require('./awsS3');
-        const mockConfig = new ConfigReader({
-          techdocs: {
-            publisher: {
-              type: 'awsS3',
-              awsS3: {
-                accountId: '111111111111',
-                bucketName: 'bucketName',
-                bucketRootPath: '/',
-              },
+      const { S3Client: MockS3Client } = await import('@aws-sdk/client-s3');
+      const { AwsS3Publish: IsolatedAwsS3Publish } = await import('./awsS3');
+      const mockConfig = new ConfigReader({
+        techdocs: {
+          publisher: {
+            type: 'awsS3',
+            awsS3: {
+              accountId: '111111111111',
+              bucketName: 'bucketName',
+              bucketRootPath: '/',
             },
           },
-          integrations: {
-            awsS3: [
-              {
-                accessKeyId: 'access-key-from-integrations',
-                secretAccessKey: 'secret-access-key-from-integrations',
-              },
-            ],
-          },
-          aws: {
-            accounts: [
-              {
-                accountId: '111111111111',
-                accessKeyId: 'access-key-from-aws',
-                secretAccessKey: 'secret-access-key-from-aws',
-              },
-            ],
-          },
-        });
+        },
+        integrations: {
+          awsS3: [
+            {
+              accessKeyId: 'access-key-from-integrations',
+              secretAccessKey: 'secret-access-key-from-integrations',
+            },
+          ],
+        },
+        aws: {
+          accounts: [
+            {
+              accountId: '111111111111',
+              accessKeyId: 'access-key-from-aws',
+              secretAccessKey: 'secret-access-key-from-aws',
+            },
+          ],
+        },
+      });
 
-        await IsolatedAwsS3Publish.fromConfig(mockConfig, logger);
-        expect(getCredProviderMock).toHaveBeenCalledTimes(0);
-        expect(MockS3Client).toHaveBeenCalledTimes(1);
-        await expect(
-          MockS3Client.mock.calls[0][0]!.credentialDefaultProvider!(
-            undefined!,
-          )(),
-        ).resolves.toEqual({
-          accessKeyId: 'access-key-from-aws',
-          secretAccessKey: 'secret-access-key-from-aws',
-        });
+      await IsolatedAwsS3Publish.fromConfig(mockConfig, logger);
+      expect(getCredProviderMock).toHaveBeenCalledTimes(0);
+      expect(MockS3Client).toHaveBeenCalledTimes(1);
+      await expect(
+        MockS3Client.mock.calls[0][0]!.credentialDefaultProvider!(undefined!)(),
+      ).resolves.toEqual({
+        accessKeyId: 'access-key-from-aws',
+        secretAccessKey: 'secret-access-key-from-aws',
       });
     });
 
     it('should use awsS3.credentials if they are provided', async () => {
-      await vi.hoisted(async () => {
-        vi.doMock('@aws-sdk/client-s3', () => ({
-          ...vi.importActual('@aws-sdk/client-s3'),
-          S3Client: vi.fn(),
-        }));
+      vi.doMock('@aws-sdk/client-s3', () => ({
+        ...vi.importActual('@aws-sdk/client-s3'),
+        S3Client: vi.fn(),
+      }));
 
-        const { S3Client: MockS3Client } = require('@aws-sdk/client-s3');
-        const { AwsS3Publish: IsolatedAwsS3Publish } = require('./awsS3');
-        const mockConfig = new ConfigReader({
-          techdocs: {
-            publisher: {
-              type: 'awsS3',
-              awsS3: {
-                credentials: {
-                  accessKeyId: 'accessKeyId',
-                  secretAccessKey: 'secretAccessKey',
-                },
-                bucketName: 'bucketName',
-                bucketRootPath: '/',
+      const { S3Client: MockS3Client } = await import('@aws-sdk/client-s3');
+      const { AwsS3Publish: IsolatedAwsS3Publish } = await import('./awsS3');
+      const mockConfig = new ConfigReader({
+        techdocs: {
+          publisher: {
+            type: 'awsS3',
+            awsS3: {
+              credentials: {
+                accessKeyId: 'accessKeyId',
+                secretAccessKey: 'secretAccessKey',
               },
+              bucketName: 'bucketName',
+              bucketRootPath: '/',
             },
           },
-          integrations: {
-            awsS3: [
-              {
-                accessKeyId: 'access-key-from-integrations',
-                secretAccessKey: 'secret-access-key-from-integrations',
-              },
-            ],
-          },
-        });
+        },
+        integrations: {
+          awsS3: [
+            {
+              accessKeyId: 'access-key-from-integrations',
+              secretAccessKey: 'secret-access-key-from-integrations',
+            },
+          ],
+        },
+      });
 
-        await IsolatedAwsS3Publish.fromConfig(mockConfig, logger);
-        expect(getCredProviderMock).toHaveBeenCalledTimes(0);
-        expect(MockS3Client).toHaveBeenCalledTimes(1);
-        await expect(
-          MockS3Client.mock.calls[0][0]!.credentialDefaultProvider!(
-            undefined!,
-          )(),
-        ).resolves.toEqual({
-          accessKeyId: 'accessKeyId',
-          secretAccessKey: 'secretAccessKey',
-        });
+      await IsolatedAwsS3Publish.fromConfig(mockConfig, logger);
+      expect(getCredProviderMock).toHaveBeenCalledTimes(0);
+      expect(MockS3Client).toHaveBeenCalledTimes(1);
+      await expect(
+        MockS3Client.mock.calls[0][0]!.credentialDefaultProvider!(undefined!)(),
+      ).resolves.toEqual({
+        accessKeyId: 'accessKeyId',
+        secretAccessKey: 'secretAccessKey',
       });
     });
 
     it('should use credentials from integrations if awsS3.credentials is not provided', async () => {
-      await vi.hoisted(async () => {
-        vi.doMock('@aws-sdk/client-s3', () => ({
-          ...vi.importActual('@aws-sdk/client-s3'),
-          S3Client: vi.fn(),
-        }));
+      vi.doMock('@aws-sdk/client-s3', () => ({
+        ...vi.importActual('@aws-sdk/client-s3'),
+        S3Client: vi.fn(),
+      }));
 
-        const { S3Client: MockS3Client } = require('@aws-sdk/client-s3');
-        const { AwsS3Publish: IsolatedAwsS3Publish } = require('./awsS3');
+      const { S3Client: MockS3Client } = await import('@aws-sdk/client-s3');
+      const { AwsS3Publish: IsolatedAwsS3Publish } = await import('./awsS3');
 
-        const mockConfig = new ConfigReader({
-          techdocs: {
-            publisher: {
-              type: 'awsS3',
-              awsS3: {
-                credentials: {},
-                bucketName: 'bucketName',
-                bucketRootPath: '/',
-              },
+      const mockConfig = new ConfigReader({
+        techdocs: {
+          publisher: {
+            type: 'awsS3',
+            awsS3: {
+              credentials: {},
+              bucketName: 'bucketName',
+              bucketRootPath: '/',
             },
           },
-          integrations: {
-            awsS3: [
-              {
-                accessKeyId: 'access-key-from-integrations',
-                secretAccessKey: 'secret-access-key-from-integrations',
-              },
-            ],
-          },
-        });
+        },
+        integrations: {
+          awsS3: [
+            {
+              accessKeyId: 'access-key-from-integrations',
+              secretAccessKey: 'secret-access-key-from-integrations',
+            },
+          ],
+        },
+      });
 
-        await IsolatedAwsS3Publish.fromConfig(mockConfig, logger);
-        expect(getCredProviderMock).toHaveBeenCalledTimes(0);
-        expect(MockS3Client).toHaveBeenCalledTimes(1);
-        await expect(
-          MockS3Client.mock.calls[0][0]!.credentialDefaultProvider!(
-            undefined!,
-          )(),
-        ).resolves.toEqual({
-          accessKeyId: 'access-key-from-integrations',
-          secretAccessKey: 'secret-access-key-from-integrations',
-        });
+      await IsolatedAwsS3Publish.fromConfig(mockConfig, logger);
+      expect(getCredProviderMock).toHaveBeenCalledTimes(0);
+      expect(MockS3Client).toHaveBeenCalledTimes(1);
+      await expect(
+        MockS3Client.mock.calls[0][0]!.credentialDefaultProvider!(undefined!)(),
+      ).resolves.toEqual({
+        accessKeyId: 'access-key-from-integrations',
+        secretAccessKey: 'secret-access-key-from-integrations',
       });
     });
 
@@ -458,53 +446,49 @@ describe('AwsS3Publish', () => {
     });
 
     it('should retrieve the target integration if multiple integrations are provided and credentials are not provided', async () => {
-      await vi.hoisted(async () => {
-        vi.doMock('@aws-sdk/client-s3', () => ({
-          ...vi.importActual('@aws-sdk/client-s3'),
-          S3Client: vi.fn(),
-        }));
+      vi.doMock('@aws-sdk/client-s3', () => ({
+        ...vi.importActual('@aws-sdk/client-s3'),
+        S3Client: vi.fn(),
+      }));
 
-        const { S3Client: MockS3Client } = require('@aws-sdk/client-s3');
-        const { AwsS3Publish: IsolatedAwsS3Publish } = require('./awsS3');
+      const { S3Client: MockS3Client } = await import('@aws-sdk/client-s3');
+      const { AwsS3Publish: IsolatedAwsS3Publish } = await import('./awsS3');
 
-        const mockConfig = new ConfigReader({
-          techdocs: {
-            publisher: {
-              type: 'awsS3',
-              awsS3: {
-                credentials: {
-                  accessKeyId: 'access-key-from-integrations-2',
-                },
-                bucketName: 'bucketName',
-                bucketRootPath: '/',
+      const mockConfig = new ConfigReader({
+        techdocs: {
+          publisher: {
+            type: 'awsS3',
+            awsS3: {
+              credentials: {
+                accessKeyId: 'access-key-from-integrations-2',
               },
+              bucketName: 'bucketName',
+              bucketRootPath: '/',
             },
           },
-          integrations: {
-            awsS3: [
-              {
-                accessKeyId: 'access-key-from-integrations',
-                secretAccessKey: 'secret-access-key-from-integrations',
-              },
-              {
-                accessKeyId: 'access-key-from-integrations-2',
-                secretAccessKey: 'secret-access-key-from-integrations-2',
-              },
-            ],
-          },
-        });
+        },
+        integrations: {
+          awsS3: [
+            {
+              accessKeyId: 'access-key-from-integrations',
+              secretAccessKey: 'secret-access-key-from-integrations',
+            },
+            {
+              accessKeyId: 'access-key-from-integrations-2',
+              secretAccessKey: 'secret-access-key-from-integrations-2',
+            },
+          ],
+        },
+      });
 
-        await IsolatedAwsS3Publish.fromConfig(mockConfig, logger);
-        expect(getCredProviderMock).toHaveBeenCalledTimes(0);
-        expect(MockS3Client).toHaveBeenCalledTimes(1);
-        await expect(
-          MockS3Client.mock.calls[0][0]!.credentialDefaultProvider!(
-            undefined!,
-          )(),
-        ).resolves.toEqual({
-          accessKeyId: 'access-key-from-integrations-2',
-          secretAccessKey: 'secret-access-key-from-integrations-2',
-        });
+      await IsolatedAwsS3Publish.fromConfig(mockConfig, logger);
+      expect(getCredProviderMock).toHaveBeenCalledTimes(0);
+      expect(MockS3Client).toHaveBeenCalledTimes(1);
+      await expect(
+        MockS3Client.mock.calls[0][0]!.credentialDefaultProvider!(undefined!)(),
+      ).resolves.toEqual({
+        accessKeyId: 'access-key-from-integrations-2',
+        secretAccessKey: 'secret-access-key-from-integrations-2',
       });
     });
   });

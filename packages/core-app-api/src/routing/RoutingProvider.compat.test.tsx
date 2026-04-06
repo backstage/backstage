@@ -38,22 +38,25 @@ const mockContext = {
 };
 
 describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
-  function requireDeps() {
+  type Deps = Awaited<ReturnType<typeof importDeps>>;
+  let deps: Deps;
+
+  async function importDeps() {
     return {
-      ...(require('./FlatRoutes') as typeof import('./FlatRoutes')),
-      ...(require('react-router-dom') as typeof import('react-router-dom')),
-      ...(require('./RoutingProvider') as typeof import('./RoutingProvider')),
-      ...(require('../extensions/traversal') as typeof import('../extensions/traversal')),
-      ...(require('./collectors') as typeof import('./collectors')),
-      ...(require('./validation') as typeof import('./validation')),
-      ...(require('./types') as typeof import('./types')),
-      ...(require('../app/AppContext') as typeof import('../app/AppContext')),
-      ...(require('@backstage/core-plugin-api') as typeof import('@backstage/core-plugin-api')),
+      ...(await import('./FlatRoutes')),
+      ...(await import('react-router-dom')),
+      ...(await import('./RoutingProvider')),
+      ...(await import('../extensions/traversal')),
+      ...(await import('./collectors')),
+      ...(await import('./validation')),
+      ...(await import('./types')),
+      ...(await import('../app/AppContext')),
+      ...(await import('@backstage/core-plugin-api')),
     };
   }
 
   const MockComponent = ({ children }: PropsWithChildren<{}>) => {
-    const { useOutlet } = requireDeps();
+    const { useOutlet } = deps;
     return (
       <>
         {children}
@@ -68,7 +71,7 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
     routeRef: AnyRouteRef;
     params?: T;
   }) => {
-    const { useRouteRef } = requireDeps();
+    const { useRouteRef } = deps;
     try {
       const routeFunc = useRouteRef(props.routeRef as any) as
         | RouteFunc<any>
@@ -105,7 +108,7 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
   let ExtensionSource1: typeof MockRouteSource;
   let ExtensionSource2: typeof MockRouteSource;
 
-  beforeAll(() => {
+  beforeAll(async () => {
     vi.doMock('react', () => React);
     vi.doMock('react-router', () =>
       rrVersion === 'beta'
@@ -118,12 +121,14 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
         : vi.importActual('react-router-dom-stable'),
     );
 
+    deps = await importDeps();
+
     const {
       createRoutableExtension,
       createExternalRouteRef,
       createRouteRef,
       createPlugin,
-    } = requireDeps();
+    } = deps;
 
     plugin = createPlugin({ id: 'my-plugin' });
     refPage1 = createRouteRef({ id: 'refPage1' });
@@ -191,7 +196,7 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
       routeElementDiscoverer,
       routingV2Collector,
       RoutingProvider,
-    } = requireDeps();
+    } = deps;
     const { routing } = traverseElementTree({
       root,
       discoverers: [childDiscoverer, routeElementDiscoverer],
@@ -214,7 +219,7 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
   }
 
   it('should handle simple routeRef path creation for routeRefs used in other parts of the app', async () => {
-    const { MemoryRouter, Routes, Route, AppContextProvider } = requireDeps();
+    const { MemoryRouter, Routes, Route, AppContextProvider } = deps;
     const root = (
       <AppContextProvider appContext={mockContext}>
         <MemoryRouter initialEntries={['/foo/bar']}>
@@ -280,7 +285,7 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
   });
 
   it('should handle routeRefs with parameters', async () => {
-    const { MemoryRouter, Routes, Route, AppContextProvider } = requireDeps();
+    const { MemoryRouter, Routes, Route, AppContextProvider } = deps;
     const root = (
       <AppContextProvider appContext={mockContext}>
         <MemoryRouter initialEntries={['/foo/bar/wat']}>
@@ -318,7 +323,7 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
   });
 
   it('should handle relative routing within parameterized routePaths', async () => {
-    const { MemoryRouter, Routes, Route, AppContextProvider } = requireDeps();
+    const { MemoryRouter, Routes, Route, AppContextProvider } = deps;
     const root = (
       <AppContextProvider appContext={mockContext}>
         <MemoryRouter initialEntries={['/foo/blob/bar']}>
@@ -353,7 +358,7 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
   });
 
   it('should throw errors for routing to other routeRefs with unsupported parameters', () => {
-    const { MemoryRouter, Routes, Route } = requireDeps();
+    const { MemoryRouter, Routes, Route } = deps;
     const root = (
       <MemoryRouter initialEntries={['/']}>
         <Routes>
@@ -399,7 +404,7 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
       routeElementDiscoverer,
       routingV2Collector,
       validateRouteParameters,
-    } = requireDeps();
+    } = deps;
     const root = (
       <MemoryRouter>
         <Routes>

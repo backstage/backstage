@@ -39,31 +39,28 @@ describe('bootstrapEnvProxyAgents', () => {
     vi.clearAllMocks();
   });
 
-  it('should bootstrap global-agent if GLOBAL_AGENT_HTTP_PROXY is set', () => {
+  it('should bootstrap global-agent if GLOBAL_AGENT_HTTP_PROXY is set', async () => {
     process.env.GLOBAL_AGENT_HTTP_PROXY = 'http://proxy.example.com';
 
-    const { bootstrap } =
-      require('global-agent') as typeof import('global-agent');
+    const { bootstrap } = await import('global-agent');
     bootstrapEnvProxyAgents();
 
     expect(bootstrap).toHaveBeenCalledTimes(1);
   });
 
-  it('should bootstrap global-agent if GLOBAL_AGENT_HTTPS_PROXY is set', () => {
+  it('should bootstrap global-agent if GLOBAL_AGENT_HTTPS_PROXY is set', async () => {
     process.env.GLOBAL_AGENT_HTTPS_PROXY = 'https://proxy.example.com';
 
-    const { bootstrap } =
-      require('global-agent') as typeof import('global-agent');
+    const { bootstrap } = await import('global-agent');
     bootstrapEnvProxyAgents();
 
     expect(bootstrap).toHaveBeenCalledTimes(1);
   });
 
-  it('should use undici EnvHttpProxyAgent if HTTP_PROXY is set', () => {
+  it('should use undici EnvHttpProxyAgent if HTTP_PROXY is set', async () => {
     process.env.HTTP_PROXY = 'http://proxy.example.com';
 
-    const { setGlobalDispatcher, EnvHttpProxyAgent } =
-      require('undici') as typeof import('undici');
+    const { setGlobalDispatcher, EnvHttpProxyAgent } = await import('undici');
     bootstrapEnvProxyAgents();
 
     expect(EnvHttpProxyAgent).toHaveBeenCalledTimes(1);
@@ -72,11 +69,10 @@ describe('bootstrapEnvProxyAgents', () => {
     );
   });
 
-  it('should use undici EnvHttpProxyAgent if HTTPS_PROXY is set', () => {
+  it('should use undici EnvHttpProxyAgent if HTTPS_PROXY is set', async () => {
     process.env.HTTPS_PROXY = 'https://proxy.example.com';
 
-    const { setGlobalDispatcher, EnvHttpProxyAgent } =
-      require('undici') as typeof import('undici');
+    const { setGlobalDispatcher, EnvHttpProxyAgent } = await import('undici');
     bootstrapEnvProxyAgents();
 
     expect(EnvHttpProxyAgent).toHaveBeenCalledTimes(1);
@@ -85,11 +81,9 @@ describe('bootstrapEnvProxyAgents', () => {
     );
   });
 
-  it('should not bootstrap global-agent or set undici dispatcher if no proxy is set', () => {
-    const { bootstrap } =
-      require('global-agent') as typeof import('global-agent');
-    const { setGlobalDispatcher } =
-      require('undici') as typeof import('undici');
+  it('should not bootstrap global-agent or set undici dispatcher if no proxy is set', async () => {
+    const { bootstrap } = await import('global-agent');
+    const { setGlobalDispatcher } = await import('undici');
 
     bootstrapEnvProxyAgents();
 
@@ -97,12 +91,11 @@ describe('bootstrapEnvProxyAgents', () => {
     expect(setGlobalDispatcher).not.toHaveBeenCalled();
   });
 
-  it('should respect GLOBAL_AGENT_ENVIRONMENT_VARIABLE_NAMESPACE', () => {
+  it('should respect GLOBAL_AGENT_ENVIRONMENT_VARIABLE_NAMESPACE', async () => {
     process.env.GLOBAL_AGENT_ENVIRONMENT_VARIABLE_NAMESPACE = 'CUSTOM_AGENT_';
     process.env.CUSTOM_AGENT_HTTP_PROXY = 'http://proxy.example.com';
 
-    const { bootstrap } =
-      require('global-agent') as typeof import('global-agent');
+    const { bootstrap } = await import('global-agent');
     bootstrapEnvProxyAgents();
 
     expect(bootstrap).toHaveBeenCalledTimes(1);

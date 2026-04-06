@@ -40,12 +40,12 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
     );
   });
 
-  function requireDeps() {
+  async function importDeps() {
     return {
-      ...(require('./collectors') as typeof import('./collectors')),
-      ...(require('../extensions/traversal') as typeof import('../extensions/traversal')),
-      ...(require('@backstage/core-plugin-api') as typeof import('@backstage/core-plugin-api')),
-      ...(require('react-router-dom') as typeof import('react-router-dom')),
+      ...(await import('./collectors')),
+      ...(await import('../extensions/traversal')),
+      ...(await import('@backstage/core-plugin-api')),
+      ...(await import('react-router-dom')),
     };
   }
 
@@ -149,13 +149,13 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
       discoverers: Discoverer[];
       collectors: { routing: Collector<any, any> };
     };
-    beforeEach(() => {
+    beforeEach(async () => {
       const {
         routingV1Collector,
         routingV2Collector,
         childDiscoverer,
         routeElementDiscoverer,
-      } = requireDeps();
+      } = await importDeps();
 
       traversalOptions = {
         discoverers: [childDiscoverer, routeElementDiscoverer],
@@ -166,9 +166,9 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
       };
     });
 
-    it('should collect routes', () => {
+    it('should collect routes', async () => {
       const { MemoryRouter, Routes, Route, traverseElementTree } =
-        requireDeps();
+        await importDeps();
       const list = [
         <div key={0} />,
         <div key={1} />,
@@ -244,9 +244,9 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
       ]);
     });
 
-    it('should collect routes with aggregators', () => {
+    it('should collect routes with aggregators', async () => {
       const { MemoryRouter, Routes, Route, traverseElementTree } =
-        requireDeps();
+        await importDeps();
       const root = (
         <MemoryRouter>
           <Routes>

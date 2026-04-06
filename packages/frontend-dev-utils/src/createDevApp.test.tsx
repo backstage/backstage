@@ -27,19 +27,10 @@ vi.setConfig({ testTimeout: 15000 });
 
 const originalEnv = process.env;
 
-function loadCreateDevAppIsolated(): typeof import('./createDevApp').createDevApp {
-  let isolatedCreateDevApp:
-    | typeof import('./createDevApp').createDevApp
-    | undefined;
-
-  vi.hoisted(() => {
-    ({ createDevApp: isolatedCreateDevApp } = require('./createDevApp'));
-  });
-
-  if (!isolatedCreateDevApp) {
-    throw new Error('Expected createDevApp to be loaded in isolation');
-  }
-
+async function loadCreateDevAppIsolated(): Promise<
+  typeof import('./createDevApp').createDevApp
+> {
+  const { createDevApp: isolatedCreateDevApp } = await import('./createDevApp');
   return isolatedCreateDevApp;
 }
 
@@ -123,7 +114,7 @@ describe('createDevApp', () => {
     root.id = 'root';
     document.body.appendChild(root);
 
-    const isolatedCreateDevApp = loadCreateDevAppIsolated();
+    const isolatedCreateDevApp = await loadCreateDevAppIsolated();
     isolatedCreateDevApp({
       bindRoutes,
       features: ['plugin-feature'] as any,
@@ -179,7 +170,7 @@ describe('createDevApp', () => {
     root.id = 'root';
     document.body.appendChild(root);
 
-    const isolatedCreateDevApp = loadCreateDevAppIsolated();
+    const isolatedCreateDevApp = await loadCreateDevAppIsolated();
     isolatedCreateDevApp({
       features: ['plugin-feature'] as any,
     });

@@ -40,19 +40,19 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
     vi.resetModules();
   });
 
-  function requireDeps() {
+  async function importDeps() {
     return {
-      ...(require('./AppManager') as typeof import('./AppManager')),
-      ...(require('../routing') as typeof import('../routing')),
-      ...(require('react-router-dom') as typeof import('react-router-dom')),
-      ...(require('@backstage/test-utils') as typeof import('@backstage/test-utils')),
+      ...(await import('./AppManager')),
+      ...(await import('../routing')),
+      ...(await import('react-router-dom')),
+      ...(await import('@backstage/test-utils')),
     };
   }
 
   describe('AppManager', () => {
     it('supports base path', async () => {
       const { AppManager, MemoryRouter, Navigate, Route, FlatRoutes } =
-        requireDeps();
+        await importDeps();
       const app = new AppManager({
         apis: [],
         defaultApis: [],

@@ -17,22 +17,26 @@
 import { vi } from 'vitest';
 
 describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
-  it('should return the correct value for the different version', () => {
-    vi.hoisted(() => {
-      vi.doMock('react-router', () =>
-        rrVersion === 'beta'
-          ? vi.importActual('react-router-beta')
-          : vi.importActual('react-router-stable'),
-      );
-      vi.doMock('react-router-dom', () =>
-        rrVersion === 'beta'
-          ? vi.importActual('react-router-dom-beta')
-          : vi.importActual('react-router-dom-stable'),
-      );
+  beforeAll(() => {
+    vi.doMock('react-router', () =>
+      rrVersion === 'beta'
+        ? vi.importActual('react-router-beta')
+        : vi.importActual('react-router-stable'),
+    );
+    vi.doMock('react-router-dom', () =>
+      rrVersion === 'beta'
+        ? vi.importActual('react-router-dom-beta')
+        : vi.importActual('react-router-dom-stable'),
+    );
+  });
 
-      const { isReactRouterBeta } = require('./isReactRouterBeta');
-      expect(isReactRouterBeta()).toBe(rrVersion === 'beta');
-    });
+  afterAll(() => {
+    vi.resetModules();
+  });
+
+  it('should return the correct value for the different version', async () => {
+    const { isReactRouterBeta } = await import('./isReactRouterBeta');
+    expect(isReactRouterBeta()).toBe(rrVersion === 'beta');
   });
 });
 

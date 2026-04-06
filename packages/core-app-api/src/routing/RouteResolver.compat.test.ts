@@ -90,9 +90,10 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
     vi.clearAllMocks();
   });
 
-  it('should not resolve anything with an empty resolver', () => {
-    const { RouteResolver } =
-      require('./RouteResolver') as typeof import('./RouteResolver');
+  it('should not resolve anything with an empty resolver', async () => {
+    const { RouteResolver } = (await import(
+      './RouteResolver'
+    )) as typeof import('./RouteResolver');
     const r = new RouteResolver(new Map(), new Map(), [], new Map(), '');
 
     expect(r.resolve(ref1, '/')?.()).toBe(undefined);
@@ -107,9 +108,10 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
     expect(r.resolve(externalRef4, '/')?.({ x: '6x' })).toBe(undefined);
   });
 
-  it('should resolve an absolute route', () => {
-    const { RouteResolver } =
-      require('./RouteResolver') as typeof import('./RouteResolver');
+  it('should resolve an absolute route', async () => {
+    const { RouteResolver } = (await import(
+      './RouteResolver'
+    )) as typeof import('./RouteResolver');
     const r = new RouteResolver(
       new Map([[ref1, 'my-route']]),
       new Map(),
@@ -130,9 +132,10 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
     expect(r.resolve(externalRef4, '/')?.({ x: '6x' })).toBe(undefined);
   });
 
-  it('should resolve an absolute route and sub route with an app base path', () => {
-    const { RouteResolver } =
-      require('./RouteResolver') as typeof import('./RouteResolver');
+  it('should resolve an absolute route and sub route with an app base path', async () => {
+    const { RouteResolver } = (await import(
+      './RouteResolver'
+    )) as typeof import('./RouteResolver');
     const r = new RouteResolver(
       new Map<RouteRef, string>([
         [ref2, 'my-parent/:x'],
@@ -187,9 +190,10 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
     expect(r.resolve(externalRef4, '/')?.({ x: '6x' })).toBe(undefined);
   });
 
-  it('should resolve an absolute route with a param and with a parent', () => {
-    const { RouteResolver } =
-      require('./RouteResolver') as typeof import('./RouteResolver');
+  it('should resolve an absolute route with a param and with a parent', async () => {
+    const { RouteResolver } = (await import(
+      './RouteResolver'
+    )) as typeof import('./RouteResolver');
     const r = new RouteResolver(
       new Map<RouteRef, string>([
         [ref1, 'my-route'],
@@ -235,9 +239,10 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
     );
   });
 
-  it('should resolve the most specific match', () => {
-    const { RouteResolver } =
-      require('./RouteResolver') as typeof import('./RouteResolver');
+  it('should resolve the most specific match', async () => {
+    const { RouteResolver } = (await import(
+      './RouteResolver'
+    )) as typeof import('./RouteResolver');
     const r = new RouteResolver(
       new Map<RouteRef, string>([
         [ref1, 'deep'],
@@ -291,9 +296,10 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
     );
   });
 
-  it('should resolve an absolute route with multiple parents', () => {
-    const { RouteResolver } =
-      require('./RouteResolver') as typeof import('./RouteResolver');
+  it('should resolve an absolute route with multiple parents', async () => {
+    const { RouteResolver } = (await import(
+      './RouteResolver'
+    )) as typeof import('./RouteResolver');
     const r = new RouteResolver(
       new Map<RouteRef, string>([
         [ref1, 'my-route'],
@@ -392,9 +398,10 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
     );
   });
 
-  it('should encode some characters in params', () => {
-    const { RouteResolver } =
-      require('./RouteResolver') as typeof import('./RouteResolver');
+  it('should encode some characters in params', async () => {
+    const { RouteResolver } = (await import(
+      './RouteResolver'
+    )) as typeof import('./RouteResolver');
     const r = new RouteResolver(
       new Map<RouteRef, string>([
         [ref2, 'my-parent/:x'],

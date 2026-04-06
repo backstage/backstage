@@ -38,17 +38,17 @@ describe('getWorkspaceRoot', () => {
     let realPlatform: string;
     let getWorkspaceRoot: () => string;
 
-    beforeEach(() => {
+    beforeEach(async () => {
       realPlatform = process.platform;
       setPlatform(platform);
 
       vi.resetModules();
 
-      const {
-        overrideTargetPaths,
-      } = require('@backstage/cli-common/testUtils');
+      const { overrideTargetPaths } = await import(
+        '@backstage/cli-common/testUtils'
+      );
       overrideTargetPaths(native);
-      getWorkspaceRoot = require('./getWorkspaceRoot').getWorkspaceRoot;
+      getWorkspaceRoot = (await import('./getWorkspaceRoot')).getWorkspaceRoot;
     });
 
     afterEach(() => {
