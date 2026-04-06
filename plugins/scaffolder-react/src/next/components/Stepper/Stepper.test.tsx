@@ -16,7 +16,7 @@
 import { renderInTestApp } from '@backstage/test-utils';
 import { JsonValue } from '@backstage/types';
 import type { RJSFValidationError } from '@rjsf/utils';
-import { act, fireEvent, waitFor } from '@testing-library/react';
+import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import { useEffect } from 'react';
 
 import { FieldExtensionComponentProps } from '../../../extensions';
@@ -674,9 +674,9 @@ describe('Stepper', () => {
 
     const nameInput = getFormInput(container, 'name');
     expect(nameInput).toHaveValue('Some Name');
-    // With headless RJSF widgets (no MUI theme), ui:readonly renders as the
-    // HTML readonly attribute rather than disabled (readOnlyAsDisabled was MUI-specific)
-    expect(nameInput).toHaveAttribute('readonly');
+    // With MuiTheme, readOnlyAsDisabled: true in formContext causes ui:readonly
+    // fields to render as disabled rather than using the HTML readonly attribute
+    expect(nameInput).toBeDisabled();
     expect(nameInput).toHaveAttribute('placeholder', 'Enter your name');
 
     const ageInput = getFormInput(container, 'age');
@@ -1030,11 +1030,14 @@ describe('Stepper', () => {
         </SecretsContextProvider>,
       );
 
-      // Select AWS as cloud provider
+      // Select AWS as cloud provider via MUI Select interaction:
+      // MuiTheme renders enum fields as MUI Select (div[role="button"]),
+      // not native <select>, so use mouseDown to open + click on option.
       await act(async () => {
-        fireEvent.change(getByLabelText('Cloud Provider'), {
-          target: { value: 'AWS' },
-        });
+        fireEvent.mouseDown(getByLabelText('Cloud Provider'));
+      });
+      await act(async () => {
+        fireEvent.click(screen.getByRole('option', { name: 'AWS' }));
       });
 
       // AWS-specific region field should appear
@@ -1045,9 +1048,10 @@ describe('Stepper', () => {
 
       // Switch to GCP
       await act(async () => {
-        fireEvent.change(getByLabelText('Cloud Provider'), {
-          target: { value: 'GCP' },
-        });
+        fireEvent.mouseDown(getByLabelText('Cloud Provider'));
+      });
+      await act(async () => {
+        fireEvent.click(screen.getByRole('option', { name: 'GCP' }));
       });
 
       // GCP-specific region field should appear, AWS should disappear

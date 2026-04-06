@@ -26,7 +26,8 @@ import { useApiHolder } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 
 import { ScaffolderField } from '../ScaffolderField';
-import { ShadcnButton as Button } from '@backstage/core-components';
+import Button from '@material-ui/core/Button';
+import FormHelperText from '@material-ui/core/FormHelperText';
 import { useOptionsLoader } from '../../hooks';
 
 /** The `FieldTemplate` component is the template used by `SchemaField` to render any field. It renders the field
@@ -135,7 +136,11 @@ export const FieldTemplate = <
     >
       <ScaffolderField
         displayLabel={displayLabel}
-        rawErrors={rawErrors}
+        rawErrors={
+          fieldLoadError
+            ? [...rawErrors, fieldLoadError.message || 'Failed to load options']
+            : rawErrors
+        }
         help={help}
         disabled={disabled || isFieldLoading}
         rawDescription={rawDescription}
@@ -146,12 +151,16 @@ export const FieldTemplate = <
         {children}
       </ScaffolderField>
       {fieldLoadError && (
-        <div role="alert" className="flex items-center gap-2 mt-1">
-          <div className="text-xs text-destructive">
+        <div role="alert" style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
+          <FormHelperText error>
             {fieldLoadError.message || 'Failed to load options'}
-          </div>
+          </FormHelperText>
           {fieldRetry && (
-            <Button variant="ghost" size="sm" onClick={fieldRetry}>
+            <Button
+              variant="text"
+              size="small"
+              onClick={fieldRetry}
+            >
               Retry
             </Button>
           )}
