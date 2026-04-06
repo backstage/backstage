@@ -96,6 +96,10 @@ export const FieldTemplate = <
     async () => [] as Array<{ label: string; value: string | number }>,
     [],
   );
+  // Extract ui:options early so that debounceMs can be forwarded to the hook
+  const uiOptions = getUiOptions<T, S, F>(uiSchema);
+  const fieldDebounceMs =
+    typeof uiOptions.debounceMs === 'number' ? uiOptions.debounceMs : undefined;
   const {
     loading: isFieldLoading,
     error: fieldLoadError,
@@ -106,9 +110,8 @@ export const FieldTemplate = <
     loaderEntry?.optionsLoader ?? noopLoader,
     formDataForLoader,
     apiHolder,
+    fieldDebounceMs !== undefined ? { debounceMs: fieldDebounceMs } : undefined,
   );
-
-  const uiOptions = getUiOptions<T, S, F>(uiSchema);
   const WrapIfAdditionalTemplate = getTemplate<
     'WrapIfAdditionalTemplate',
     T,
@@ -151,16 +154,20 @@ export const FieldTemplate = <
         {children}
       </ScaffolderField>
       {fieldLoadError && (
-        <div role="alert" style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
+        <div
+          role="alert"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            marginTop: 4,
+          }}
+        >
           <FormHelperText error>
             {fieldLoadError.message || 'Failed to load options'}
           </FormHelperText>
           {fieldRetry && (
-            <Button
-              variant="text"
-              size="small"
-              onClick={fieldRetry}
-            >
+            <Button variant="text" size="small" onClick={fieldRetry}>
               Retry
             </Button>
           )}

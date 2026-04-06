@@ -171,8 +171,8 @@ optionsLoader?: (
 ) => Promise<Array<{ label: string; value: string | number }>>;
 ```
 
-- **`formData`** — The current form data for the active step, including all sibling
-  field values.
+- **`formData`** — The current form data, including values from all wizard steps
+  and all sibling field values.
 - **`context.apiHolder`** — The Backstage `ApiHolder` instance, giving access to any
   registered API (catalog, scaffolder, custom backends, etc.).
 
