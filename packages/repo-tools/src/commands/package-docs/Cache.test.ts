@@ -25,14 +25,15 @@ import {
 import { readFile } from 'node:fs/promises';
 import { join as joinPath } from 'node:path';
 
-vi.mock('crypto', () => {
-  const actual = vi.importActual('crypto');
+vi.mock('node:crypto', async importOriginal => {
+  const actual = await importOriginal<typeof import('node:crypto')>();
   const hash = {
     update: vi.fn(),
     digest: vi.fn().mockReturnValue('test'),
   };
   return {
     ...actual,
+    default: { ...actual, createHash: vi.fn().mockReturnValue(hash) },
     createHash: vi.fn().mockReturnValue(hash),
   };
 });

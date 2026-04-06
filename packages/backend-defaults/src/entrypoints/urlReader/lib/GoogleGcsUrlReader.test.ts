@@ -43,7 +43,7 @@ class Storage {
     return new Bucket();
   }
 }
-vi.spyOn(GoogleCloud, 'Storage').mockReturnValue(new Storage() as any);
+vi.spyOn(GoogleCloud, 'Storage').mockImplementation(() => new Storage() as any);
 
 describe('GcsUrlReader', () => {
   const createReader = (config: JsonObject): UrlReaderPredicateTuple[] => {
@@ -89,7 +89,9 @@ describe('GcsUrlReader', () => {
     };
     vi.mock('@google-cloud/storage', () => {
       return {
-        Storage: vi.fn(() => getStorage),
+        Storage: vi.fn().mockImplementation(function () {
+          return getStorage;
+        }),
       };
     });
     const getUserAgent = getStorage.userAgent.toString();

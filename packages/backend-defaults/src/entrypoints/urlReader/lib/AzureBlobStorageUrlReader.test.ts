@@ -48,10 +48,12 @@ class MockBlobServiceClient {
   getContainerClient = vi.fn(() => new MockContainerClient());
 }
 
-vi.spyOn(AzureStorage, 'BlobServiceClient').mockReturnValue(
-  new MockBlobServiceClient() as any,
+vi.spyOn(AzureStorage, 'BlobServiceClient').mockImplementation(
+  () => new MockBlobServiceClient() as any,
 );
-vi.spyOn(AzureStorage, 'StorageSharedKeyCredential').mockReturnValue({} as any);
+vi.spyOn(AzureStorage, 'StorageSharedKeyCredential').mockImplementation(
+  () => ({} as any),
+);
 
 const treeResponseFactory = DefaultReadTreeResponseFactory.create({
   config: new ConfigReader({}),

@@ -26,67 +26,79 @@ import { ElasticSearchClientOptions } from './ElasticSearchSearchEngine';
 
 vi.mock('@elastic/elasticsearch', async () => ({
   ...(await vi.importActual('@elastic/elasticsearch')),
-  Client: vi.fn().mockReturnValue({
-    search: vi.fn().mockImplementation(async args => ({ client: 'es', args })),
-    cat: {
-      aliases: vi
+  Client: vi.fn().mockImplementation(function () {
+    return {
+      search: vi
         .fn()
         .mockImplementation(async args => ({ client: 'es', args })),
-    },
-    helpers: {
-      bulk: vi.fn().mockImplementation(async args => ({ client: 'es', args })),
-    },
-    indices: {
-      get: vi.fn().mockImplementation(async args => ({ client: 'es', args })),
-      create: vi
-        .fn()
-        .mockImplementation(async args => ({ client: 'es', args })),
-      delete: vi
-        .fn()
-        .mockImplementation(async args => ({ client: 'es', args })),
-      exists: vi
-        .fn()
-        .mockImplementation(async args => ({ client: 'es', args })),
-      putIndexTemplate: vi
-        .fn()
-        .mockImplementation(async args => ({ client: 'es', args })),
-      updateAliases: vi
-        .fn()
-        .mockImplementation(async args => ({ client: 'es', args })),
-    },
+      cat: {
+        aliases: vi
+          .fn()
+          .mockImplementation(async args => ({ client: 'es', args })),
+      },
+      helpers: {
+        bulk: vi
+          .fn()
+          .mockImplementation(async args => ({ client: 'es', args })),
+      },
+      indices: {
+        get: vi.fn().mockImplementation(async args => ({ client: 'es', args })),
+        create: vi
+          .fn()
+          .mockImplementation(async args => ({ client: 'es', args })),
+        delete: vi
+          .fn()
+          .mockImplementation(async args => ({ client: 'es', args })),
+        exists: vi
+          .fn()
+          .mockImplementation(async args => ({ client: 'es', args })),
+        putIndexTemplate: vi
+          .fn()
+          .mockImplementation(async args => ({ client: 'es', args })),
+        updateAliases: vi
+          .fn()
+          .mockImplementation(async args => ({ client: 'es', args })),
+      },
+    };
   }),
 }));
 
 vi.mock('@opensearch-project/opensearch', async () => ({
   ...(await vi.importActual('@opensearch-project/opensearch')),
-  Client: vi.fn().mockReturnValue({
-    search: vi.fn().mockImplementation(async args => ({ client: 'os', args })),
-    cat: {
-      aliases: vi
+  Client: vi.fn().mockImplementation(function () {
+    return {
+      search: vi
         .fn()
         .mockImplementation(async args => ({ client: 'os', args })),
-    },
-    helpers: {
-      bulk: vi.fn().mockImplementation(async args => ({ client: 'os', args })),
-    },
-    indices: {
-      get: vi.fn().mockImplementation(async args => ({ client: 'os', args })),
-      create: vi
-        .fn()
-        .mockImplementation(async args => ({ client: 'os', args })),
-      delete: vi
-        .fn()
-        .mockImplementation(async args => ({ client: 'os', args })),
-      exists: vi
-        .fn()
-        .mockImplementation(async args => ({ client: 'os', args })),
-      putIndexTemplate: vi
-        .fn()
-        .mockImplementation(async args => ({ client: 'os', args })),
-      updateAliases: vi
-        .fn()
-        .mockImplementation(async args => ({ client: 'os', args })),
-    },
+      cat: {
+        aliases: vi
+          .fn()
+          .mockImplementation(async args => ({ client: 'os', args })),
+      },
+      helpers: {
+        bulk: vi
+          .fn()
+          .mockImplementation(async args => ({ client: 'os', args })),
+      },
+      indices: {
+        get: vi.fn().mockImplementation(async args => ({ client: 'os', args })),
+        create: vi
+          .fn()
+          .mockImplementation(async args => ({ client: 'os', args })),
+        delete: vi
+          .fn()
+          .mockImplementation(async args => ({ client: 'os', args })),
+        exists: vi
+          .fn()
+          .mockImplementation(async args => ({ client: 'os', args })),
+        putIndexTemplate: vi
+          .fn()
+          .mockImplementation(async args => ({ client: 'os', args })),
+        updateAliases: vi
+          .fn()
+          .mockImplementation(async args => ({ client: 'os', args })),
+      },
+    };
   }),
 }));
 
