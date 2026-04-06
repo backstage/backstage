@@ -49,9 +49,11 @@ const mockApplyConditions: MockedFunction<
 );
 
 vi.mock('./PermissionIntegrationClient', () => ({
-  PermissionIntegrationClient: vi.fn(() => ({
-    applyConditions: mockApplyConditions,
-  })),
+  PermissionIntegrationClient: vi.fn().mockImplementation(function () {
+    return {
+      applyConditions: mockApplyConditions,
+    };
+  }),
 }));
 
 const policy = {

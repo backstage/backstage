@@ -106,19 +106,21 @@ describe('API integration tests', () => {
     };
 
     vi.mock('@backstage/catalog-client', () => ({
-      CatalogClient: vi.fn().mockReturnValue({
-        getEntityByRef: vi.fn().mockImplementation(async entityRef => {
-          if (entityRef.name === 'noentity') {
-            return undefined;
-          }
-          return {
-            kind: entityRef.kind,
-            metadata: {
-              name: entityRef.name,
-              namespace: entityRef.namespace,
-            },
-          };
-        }),
+      CatalogClient: vi.fn().mockImplementation(function () {
+        return {
+          getEntityByRef: vi.fn().mockImplementation(async entityRef => {
+            if (entityRef.name === 'noentity') {
+              return undefined;
+            }
+            return {
+              kind: entityRef.kind,
+              metadata: {
+                name: entityRef.name,
+                namespace: entityRef.namespace,
+              },
+            };
+          }),
+        };
       }),
     }));
 

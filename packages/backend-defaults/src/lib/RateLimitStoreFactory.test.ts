@@ -24,7 +24,7 @@ vi.mock('@keyv/redis', () => {
   return {
     ...Actual,
     __esModule: true,
-    default: vi.fn(() => {
+    default: vi.fn().mockImplementation(function () {
       return {
         getClient: vi.fn(() => ({
           sendCommand: vi.fn().mockReturnValue('mock'),
