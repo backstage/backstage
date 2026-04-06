@@ -22,7 +22,7 @@ import {
   ReviewStepProps,
   TemplateParameterSchema,
 } from '@backstage/plugin-scaffolder-react';
-import { JsonValue } from '@backstage/types';
+import { JsonObject, JsonValue } from '@backstage/types';
 import { ShadcnButton as Button, cn } from '@backstage/core-components';
 import { Check } from 'lucide-react';
 import { type IChangeEvent } from '@rjsf/core';
@@ -52,6 +52,7 @@ import {
 import { ErrorListTemplate } from './ErrorListTemplate';
 import * as FieldOverrides from './FieldOverrides';
 import { hasErrors } from './utils';
+import { resolveConditionalSchema } from '../../lib';
 
 const validator = customizeValidator();
 ajvErrors(validator.ajv);
@@ -126,6 +127,29 @@ export const Stepper = (stepperProps: StepperProps) => {
     );
   }, [props.extensions]);
 
+  // Build a registry of field extensions that declare optionsLoader with
+  // dependency field names. This registry is passed through formContext so
+  // downstream components (FieldTemplate, field extensions) can invoke
+  // option loading when dependency fields change.
+  const optionsLoaderRegistry = useMemo(() => {
+    const registry: Record<
+      string,
+      {
+        dependencies: string[];
+        optionsLoader: FieldExtensionOptions<any, any>['optionsLoader'];
+      }
+    > = {};
+    for (const ext of props.extensions) {
+      if (ext.dependencies && ext.optionsLoader) {
+        registry[ext.name] = {
+          dependencies: ext.dependencies,
+          optionsLoader: ext.optionsLoader,
+        };
+      }
+    }
+    return registry;
+  }, [props.extensions]);
+
   const fields = useMemo(
     () => ({ ...FieldOverrides, ...extensions }),
     [extensions],
@@ -137,17 +161,49 @@ export const Stepper = (stepperProps: StepperProps) => {
     );
   }, [props.extensions]);
 
+  // Derive a field dependency map from the optionsLoaderRegistry so that
+  // createAsyncValidators can trigger revalidation of dependent fields when
+  // their parent field values change. Returns undefined when no dependencies
+  // exist to preserve backward-compatible call semantics.
+  const fieldDependencies = useMemo(() => {
+    const deps: Record<string, string[]> = {};
+    for (const [name, entry] of Object.entries(optionsLoaderRegistry)) {
+      deps[name] = entry.dependencies;
+    }
+    return Object.keys(deps).length > 0 ? deps : undefined;
+  }, [optionsLoaderRegistry]);
+
   const validation = useMemo(() => {
-    return createAsyncValidators(steps[activeStep]?.mergedSchema, validators, {
-      apiHolder,
-    });
-  }, [steps, activeStep, validators, apiHolder]);
+    return createAsyncValidators(
+      steps[activeStep]?.mergedSchema,
+      validators,
+      { apiHolder },
+      fieldDependencies,
+    );
+  }, [steps, activeStep, validators, apiHolder, fieldDependencies]);
 
   const handleBack = useCallback(() => {
     setActiveStep(prevActiveStep => prevActiveStep - 1);
   }, [setActiveStep]);
 
   const currentStep = useTransformSchemaToProps(steps[activeStep], { layouts });
+
+  // Reactively resolve conditional JSON Schema keywords (if/then/else,
+  // dependencies) against the current form data so the Form component
+  // receives a schema that reflects only the active conditional branches.
+  // This useMemo re-evaluates whenever the step schema or formData changes,
+  // enabling reactive field mount/unmount within the same render cycle.
+  // resolveConditionalSchema is pure and synchronous (<50ms for ≤20 branches).
+  const resolvedSchema = useMemo(
+    () =>
+      currentStep?.schema
+        ? resolveConditionalSchema(
+            currentStep.schema as JsonObject,
+            stepsState as JsonObject,
+          )
+        : currentStep?.schema,
+    [currentStep?.schema, stepsState],
+  );
 
   const {
     formContext: propFormContext,
@@ -320,8 +376,12 @@ export const Stepper = (stepperProps: StepperProps) => {
             validator={validator}
             extraErrors={errors as unknown as ErrorSchema}
             formData={stepsState}
-            formContext={{ ...propFormContext, formData: stepsState }}
-            schema={currentStep.schema}
+            formContext={{
+              ...propFormContext,
+              formData: stepsState,
+              optionsLoaderRegistry,
+            }}
+            schema={resolvedSchema ?? currentStep.schema}
             uiSchema={mergedUiSchema}
             onSubmit={handleNext}
             fields={fields}

@@ -170,11 +170,18 @@ function evaluateCondition(
 
 /**
  * Merges `properties` and `required` from a source conditional branch
- * schema into a target schema. Properties are shallow-merged (source
- * keys overwrite target keys); required entries are deduplicated.
+ * schema into a target schema. Only NEW properties (those not already
+ * present in the target) are added. Existing target properties are
+ * preserved to avoid overwriting base definitions with discriminator
+ * constraints from oneOf/dependencies branches (e.g., a narrow enum
+ * in a oneOf branch should not replace the full enum in the base).
+ * Required entries are deduplicated.
  */
 function mergeSchemaInto(target: JsonObject, source: JsonObject): void {
-  // Merge properties
+  // Merge properties — only add new properties from the source branch.
+  // Existing properties in the target (base schema) are preserved so that
+  // discriminator constraints from dependencies.oneOf branches do not
+  // replace base property definitions (title, full enum, type, etc.).
   if (isObject(source.properties)) {
     if (!isObject(target.properties)) {
       target.properties = {};
@@ -182,7 +189,9 @@ function mergeSchemaInto(target: JsonObject, source: JsonObject): void {
     const targetProps = target.properties as JsonObject;
     const sourceProps = source.properties as JsonObject;
     for (const [key, value] of Object.entries(sourceProps)) {
-      targetProps[key] = value;
+      if (!(key in targetProps)) {
+        targetProps[key] = value;
+      }
     }
   }
 
