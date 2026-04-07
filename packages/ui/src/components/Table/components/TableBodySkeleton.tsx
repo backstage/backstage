@@ -24,6 +24,7 @@ const SKELETON_WIDTHS = ['75%', '50%', '60%', '45%', '70%'];
 
 const skeletonItems = Array.from({ length: SKELETON_ROW_COUNT }, (_, i) => ({
   id: `skeleton-${i}`,
+  index: i,
 }));
 
 /**
@@ -43,7 +44,7 @@ export function TableBodySkeleton<T extends { id: string }>({
   return (
     <TableBody items={skeletonItems} dependencies={[columns]}>
       {item => {
-        const rowIndex = Number(item.id.split('-')[1]);
+        const rowIndex = item.index;
         return (
           <Row id={item.id} columns={columns}>
             {column => (
