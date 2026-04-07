@@ -17,3 +17,4 @@ export { notificationsPlugin, NotificationsPage } from './plugin';
 export * from './api';
 export { useNotificationsApi } from './hooks';
 export * from './components';
+export { notificationsTranslationRef } from './translation';

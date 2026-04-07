@@ -28,23 +28,16 @@ import {
   OpaqueExtensionDefinition,
   OpaqueExtensionInput,
 } from '@internal/frontend';
+import { FilterPredicate } from '@backstage/filter-predicates';
 
 /** @public */
-export type ExtensionAttachTo =
-  | { id: string; input: string }
-  | Array<{ id: string; input: string }>;
-
-/**
- * @deprecated Use {@link ExtensionAttachTo} instead.
- * @public
- */
-export type ExtensionAttachToSpec = ExtensionAttachTo;
+export type ExtensionAttachTo = { id: string; input: string };
 
 /** @public */
 export interface Extension<TConfig, TConfigInput = TConfig> {
   $$type: '@backstage/Extension';
   readonly id: string;
-  readonly attachTo: ExtensionAttachToSpec;
+  readonly attachTo: ExtensionAttachTo;
   readonly disabled: boolean;
   readonly configSchema?: PortableSchema<TConfig, TConfigInput>;
 }
@@ -82,6 +75,7 @@ export type InternalExtension<TConfig, TConfigInput> = Extension<
       }
     | {
         readonly version: 'v2';
+        readonly if?: FilterPredicate;
         readonly inputs: { [inputName in string]: ExtensionInput };
         readonly output: Array<ExtensionDataRef>;
         factory(options: {
@@ -151,7 +145,7 @@ function resolveExtensionId(
 function resolveAttachTo(
   attachTo: ExtensionDefinitionAttachTo | ExtensionDefinitionAttachTo[],
   namespace?: string,
-): ExtensionAttachToSpec {
+): ExtensionAttachTo | ExtensionAttachTo[] {
   const resolveSpec = (
     spec: ExtensionDefinitionAttachTo,
   ): { id: string; input: string } => {
@@ -213,7 +207,7 @@ export function resolveExtensionDefinition<
 
   return {
     ...rest,
-    attachTo: resolveAttachTo(attachTo, namespace),
+    attachTo: resolveAttachTo(attachTo, namespace) as ExtensionAttachTo,
     $$type: '@backstage/Extension',
     version: internalDefinition.version,
     id,

@@ -262,4 +262,55 @@ describe('DefaultAuthConnector', () => {
       url: 'http://my-host/api/auth/my-provider/start?scope=-ab-&origin=http%3A%2F%2Flocalhost&flow=popup&env=production',
     });
   });
+
+  it('should not resolve when provider returns a logoutUrl', async () => {
+    const logoutUrl =
+      'https://test.auth0.com/v2/logout?federated&client_id=abc&returnTo=http%3A%2F%2Flocalhost';
+
+    server.use(
+      rest.post('*', (_req, res, ctx) => res(ctx.json({ logoutUrl }))),
+    );
+
+    const connector = new DefaultAuthConnector(defaultOptions);
+
+    // When a logoutUrl is returned, removeSession redirects the browser and
+    // returns a never-resolving promise. Race against a short delay to verify
+    // that it does not resolve.
+    const result = await Promise.race([
+      connector.removeSession().then(() => 'resolved'),
+      new Promise<'timeout'>(r => setTimeout(() => r('timeout'), 50)),
+    ]);
+
+    expect(result).toBe('timeout');
+  });
+
+  it('should complete normally when provider returns empty logout response', async () => {
+    server.use(rest.post('*', (_req, res, ctx) => res(ctx.status(200))));
+
+    const connector = new DefaultAuthConnector(defaultOptions);
+    await connector.removeSession();
+    // No redirect, no error — the original behavior
+  });
+
+  it('should complete normally when response is not JSON', async () => {
+    server.use(
+      rest.post('*', (_req, res, ctx) => res(ctx.status(200), ctx.text('OK'))),
+    );
+
+    const connector = new DefaultAuthConnector(defaultOptions);
+    await connector.removeSession();
+    // Should complete without error — non-JSON responses are ignored
+  });
+
+  it('should ignore logoutUrl with non-HTTPS protocol', async () => {
+    server.use(
+      rest.post('*', (_req, res, ctx) =>
+        res(ctx.json({ logoutUrl: 'http://evil.com/steal' })),
+      ),
+    );
+
+    const connector = new DefaultAuthConnector(defaultOptions);
+    await connector.removeSession();
+    // Should complete normally without redirecting - http:// is rejected
+  });
 });

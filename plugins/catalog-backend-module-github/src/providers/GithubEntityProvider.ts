@@ -275,6 +275,7 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
           organization,
           catalogPath,
           pageSizes,
+          this.config.filters.branch,
         );
       repositories = repositories.concat(
         repositoriesFromGithub.map(r =>
@@ -664,6 +665,7 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
         organization,
         repository.name,
         catalogPath,
+        this.config.filters.branch,
       ).then(r =>
         r ? this.createRepoFromGithubResponse(r, organization) : null,
       );

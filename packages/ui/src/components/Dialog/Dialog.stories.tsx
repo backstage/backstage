@@ -63,6 +63,24 @@ export const Default = meta.story({
 });
 
 export const Open = Default.extend({
+  parameters: { layout: 'fullscreen' },
+  decorators: [
+    Story => (
+      <div
+        style={{
+          minHeight: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundImage:
+            'radial-gradient(circle, var(--bui-border-1) 1px, transparent 1px)',
+          backgroundSize: '16px 16px',
+        }}
+      >
+        <Story />
+      </div>
+    ),
+  ],
   args: {
     defaultOpen: true,
   },
@@ -222,6 +240,39 @@ export const WithForm = meta.story({
           </Button>
           <Button variant="primary" slot="close">
             Create User
+          </Button>
+        </DialogFooter>
+      </Dialog>
+    </DialogTrigger>
+  ),
+});
+
+export const OverflowWithoutHeight = meta.story({
+  args: {
+    defaultOpen: true,
+  },
+  render: args => (
+    <DialogTrigger>
+      <Button variant="secondary">Open Dialog</Button>
+      <Dialog {...args}>
+        <DialogHeader>Overflow Without Height</DialogHeader>
+        <DialogBody>
+          <Flex direction="column" gap="3">
+            {Array.from({ length: 20 }, (_, i) => (
+              <Text key={i}>
+                Line {i + 1}: Lorem ipsum dolor sit amet, consectetur adipiscing
+                elit. Sed do eiusmod tempor incididunt ut labore et dolore magna
+                aliqua.
+              </Text>
+            ))}
+          </Flex>
+        </DialogBody>
+        <DialogFooter>
+          <Button variant="secondary" slot="close">
+            Cancel
+          </Button>
+          <Button variant="primary" slot="close">
+            Confirm
           </Button>
         </DialogFooter>
       </Dialog>

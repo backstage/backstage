@@ -26,7 +26,7 @@ import {
   ctxParamsSymbol,
   VerifyExtensionAttachTo,
 } from './createExtension';
-import type { z } from 'zod';
+import type { z } from 'zod/v3';
 import { ExtensionInput } from './createExtensionInput';
 import { ExtensionDataRef, ExtensionDataValue } from './createExtensionDataRef';
 import { createExtensionDataContainer } from '@internal/frontend';
@@ -36,6 +36,7 @@ import {
 } from './resolveInputOverrides';
 import { ExtensionDataContainer } from './types';
 import { PageBlueprint } from '../blueprints/PageBlueprint';
+import { FilterPredicate } from '@backstage/filter-predicates';
 
 /**
  * A function used to define a parameter mapping function in order to facilitate
@@ -114,6 +115,7 @@ export type CreateExtensionBlueprintOptions<
   attachTo: ExtensionDefinitionAttachTo<UParentInputs> &
     VerifyExtensionAttachTo<UOutput, UParentInputs>;
   disabled?: boolean;
+  if?: FilterPredicate;
   inputs?: TInputs;
   output: Array<UOutput>;
   config?: {
@@ -221,6 +223,7 @@ export interface ExtensionBlueprint<
     attachTo?: ExtensionDefinitionAttachTo<UParentInputs> &
       VerifyExtensionAttachTo<NonNullable<T['output']>, UParentInputs>;
     disabled?: boolean;
+    if?: FilterPredicate;
     params: TParamsInput extends ExtensionBlueprintDefineParams
       ? TParamsInput
       : T['params'] extends ExtensionBlueprintDefineParams
@@ -261,6 +264,7 @@ export interface ExtensionBlueprint<
         UParentInputs
       >;
     disabled?: boolean;
+    if?: FilterPredicate;
     inputs?: TExtraInputs & {
       [KName in keyof T['inputs']]?: `Error: Input '${KName &
         string}' is already defined in parent definition`;
@@ -510,6 +514,7 @@ export function createExtensionBlueprint<
         attachTo: (args.attachTo ??
           options.attachTo) as ExtensionDefinitionAttachTo,
         disabled: args.disabled ?? options.disabled,
+        if: args.if ?? options.if,
         inputs: options.inputs,
         output: options.output as ExtensionDataRef[],
         config: options.config,
@@ -527,6 +532,7 @@ export function createExtensionBlueprint<
         attachTo: (args.attachTo ??
           options.attachTo) as ExtensionDefinitionAttachTo,
         disabled: args.disabled ?? options.disabled,
+        if: args.if ?? options.if,
         inputs: { ...args.inputs, ...options.inputs },
         output: (args.output ?? options.output) as ExtensionDataRef[],
         config:

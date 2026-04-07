@@ -19,8 +19,12 @@ import clsx from 'clsx';
 import { useBreakpoint } from '../useBreakpoint';
 import { useBgProvider, useBgConsumer, BgProvider } from '../useBg';
 import { resolveDefinitionProps, processUtilityProps } from './helpers';
+import { useAnalytics } from '../../analytics/useAnalytics';
+import { noopTracker } from '../../analytics/useAnalytics';
+import { useInRouterContext, useHref } from 'react-router-dom';
 import type {
   ComponentConfig,
+  ResolveHrefConstraint,
   UseDefinitionOptions,
   UseDefinitionResult,
   UtilityKeys,
@@ -30,16 +34,32 @@ export function useDefinition<
   D extends ComponentConfig<any, any>,
   P extends Record<string, any>,
 >(
-  definition: D,
+  definition: D & ResolveHrefConstraint<P, D['resolveHref']>,
   props: P,
   options?: UseDefinitionOptions<D>,
 ): UseDefinitionResult<D, P> {
   const { breakpoint } = useBreakpoint();
 
+  // Turn relative href into an absolute path using the current route
+  // context, so that client-side navigation works correctly.
+  let hrefResolvedProps = props;
+  if (definition.resolveHref) {
+    const hasRouter = useInRouterContext();
+    // useHref throws outside a Router, so we guard with useInRouterContext.
+    // The guard is safe because a component's router context does not
+    // change during its lifetime, keeping the hook call count stable.
+    if (hasRouter) {
+      const absoluteHref = useHref((props as any).href ?? '');
+      if ((props as any).href !== undefined) {
+        hrefResolvedProps = { ...props, href: absoluteHref } as P;
+      }
+    }
+  }
+
   // Resolve all props centrally — applies responsive values and defaults
   const { ownPropsResolved, restProps } = resolveDefinitionProps(
     definition,
-    props,
+    hrefResolvedProps,
     breakpoint,
   );
 
@@ -82,6 +102,13 @@ export function useDefinition<
     (definition.utilityProps ?? []) as readonly UtilityKeys<D>[],
   );
 
+  // Analytics: conditionally call useAnalytics based on definition flag
+  let analytics = noopTracker;
+  if (definition.analytics) {
+    const tracker = useAnalytics();
+    analytics = ownPropsResolved.noTrack ? noopTracker : tracker;
+  }
+
   const utilityTarget = options?.utilityTarget ?? 'root';
   const classNameTarget = options?.classNameTarget ?? 'root';
 
@@ -120,5 +147,6 @@ export function useDefinition<
     restProps,
     dataAttributes,
     utilityStyle,
+    ...(definition.analytics ? { analytics } : {}),
   } as unknown as UseDefinitionResult<D, P>;
 }

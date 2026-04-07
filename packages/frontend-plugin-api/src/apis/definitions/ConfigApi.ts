@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ApiRef, createApiRef } from '../system';
+import { createApiRef } from '../system';
 import type { Config } from '@backstage/config';
 
 /**
@@ -29,6 +29,7 @@ export type ConfigApi = Config;
  *
  * @public
  */
-export const configApiRef: ApiRef<ConfigApi> = createApiRef({
+export const configApiRef = createApiRef<ConfigApi>().with({
   id: 'core.config',
+  pluginId: 'app',
 });

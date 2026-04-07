@@ -183,35 +183,16 @@
     font-weight: var(--bui-font-weight-regular);
   }
 
-  .bui-HeaderToolbar {
-    padding-top: var(--bui-space-2);
-    padding-inline: var(--bui-space-2);
-  }
-
-  .bui-HeaderToolbarWrapper {
-    border-radius: var(--bui-radius-3);
-    padding-inline: var(--bui-space-3);
-    border: none;
-  }
-
-  .bui-HeaderToolbarControls {
-    right: calc(var(--bui-space-3) - 1px);
-  }
-
-  .bui-HeaderTabsWrapper {
-    margin-top: var(--bui-space-2);
-    margin-inline: var(--bui-space-2);
-    border-radius: var(--bui-radius-3);
-    padding-inline: var(--bui-space-1);
-    border: none;
-  }
-
   .bui-Input {
     border-radius: var(--bui-radius-3);
   }
 
   .bui-Tag {
     border-radius: var(--bui-radius-full);
+  }
+
+  .bui-Container {
+    padding-inline: 0;
   }
 }
 
@@ -232,14 +213,6 @@
   --bui-border-success: #53db83;
 
   --bui-ring: rgba(0, 0, 0, 0.2);
-
-  .bui-HeaderToolbarWrapper {
-    border: 1px solid var(--bui-border-2);
-  }
-
-  .bui-HeaderTabsWrapper {
-    border: 1px solid var(--bui-border-2);
-  }
 }
 
 [data-theme-mode='dark'][data-theme-name='spotify'] {
@@ -269,4 +242,25 @@
   --bui-border-success: #53db83;
 
   --bui-ring: rgba(255, 255, 255, 0.2);
+}
+
+/*
+ * Plugin header (@backstage/ui) and story shell header — kept at the bottom of
+ * this file for easier scanning alongside other component overrides above.
+ */
+[data-theme-name='spotify'] {
+  .bui-PluginHeaderToolbar {
+    padding: 0;
+    height: 32px;
+    border: none;
+    background: none;
+    margin-bottom: var(--bui-space-2);
+  }
+
+  .bui-PluginHeaderTabsWrapper {
+    padding: 0;
+    border: none;
+    background: none;
+    margin-left: -8px;
+  }
 }

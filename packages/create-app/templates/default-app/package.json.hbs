@@ -22,14 +22,35 @@
     "prettier:check": "prettier --check .",
     "new": "backstage-cli new"
   },
-  "workspaces": {
-    "packages": [
-      "packages/*",
-      "plugins/*"
-    ]
+  "backstage": {
+    "cli": {
+      "new": {
+        "globals": {
+          "license": "UNLICENSED"
+        },
+        "templates": [
+          "@backstage/cli-module-new/templates/legacy-frontend-plugin",
+          "@backstage/cli-module-new/templates/backend-plugin",
+          "@backstage/cli-module-new/templates/backend-plugin-module",
+          "@backstage/cli-module-new/templates/plugin-web-library",
+          "@backstage/cli-module-new/templates/plugin-node-library",
+          "@backstage/cli-module-new/templates/plugin-common-library",
+          "@backstage/cli-module-new/templates/web-library",
+          "@backstage/cli-module-new/templates/node-library",
+          "@backstage/cli-module-new/templates/cli-module",
+          "@backstage/cli-module-new/templates/catalog-provider-module",
+          "@backstage/cli-module-new/templates/scaffolder-backend-module"
+        ]
+      }
+    }
   },
+  "workspaces": [
+    "packages/*",
+    "plugins/*"
+  ],
   "devDependencies": {
     "@backstage/cli": "^{{version '@backstage/cli'}}",
+    "@backstage/cli-defaults": "^{{version '@backstage/cli-defaults'}}",
     "@backstage/e2e-test-utils": "^{{version '@backstage/e2e-test-utils'}}",
     "@jest/environment-jsdom-abstract": "^30.0.0",
     "@playwright/test": "^1.32.3",

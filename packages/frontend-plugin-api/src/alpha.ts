@@ -14,7 +14,49 @@
  * limitations under the License.
  */
 
-export { PluginWrapperBlueprint } from './blueprints/PluginWrapperBlueprint';
+// These exports are now available from the main entry point and are
+// re-exported here only for backwards compatibility.
+export {
+  PluginWrapperBlueprint,
+  type PluginWrapperDefinition,
+} from './blueprints/PluginWrapperBlueprint';
+export type {
+  ConfigurableExtensionDataRef,
+  Extension,
+  ExtensionAttachTo,
+  ExtensionDefinition,
+  ExtensionDefinitionParameters,
+  ExtensionBlueprintDefineParams,
+  ExtensionBlueprint,
+  ExtensionBlueprintParameters,
+  ExtensionBlueprintParams,
+  ExtensionDataContainer,
+  ExtensionDataRef,
+  ExtensionDataValue,
+  ExtensionDefinitionAttachTo,
+  ExtensionInput,
+  FrontendPlugin,
+  OverridableExtensionDefinition,
+} from './wiring';
+export type {
+  ApiHolder,
+  ApiRef,
+  AppNode,
+  AppNodeEdges,
+  AppNodeInstance,
+  AppNodeSpec,
+  AppTree,
+} from './apis';
+export type { PortableSchema } from './schema';
+export type {
+  AnyRouteRefParams,
+  RouteRef,
+  SubRouteRef,
+  ExternalRouteRef,
+} from './routing';
+export type { IconElement } from './icons';
+export type { FrontendPluginInfo } from './wiring';
+export { createExtensionBlueprintParams } from './wiring';
 export {
   type PluginWrapperApi,
   pluginWrapperApiRef,

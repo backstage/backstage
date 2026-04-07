@@ -290,7 +290,7 @@ and type for your field props to preventing having to duplicate the definitions:
 ```tsx
 //packages/app/src/scaffolder/MyCustomExtensionWithOptions/MyCustomExtensionWithOptions.tsx
 ...
-import { z } from 'zod';
+import { z } from 'zod/v3';
 import { makeFieldSchemaFromZod } from '@backstage/plugin-scaffolder';
 
 const MyCustomExtensionWithOptionsFieldSchema = makeFieldSchemaFromZod(

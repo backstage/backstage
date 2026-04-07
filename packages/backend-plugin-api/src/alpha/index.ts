@@ -23,6 +23,7 @@ export type {
   ActionsRegistryService,
   ActionsRegistryActionOptions,
   ActionsRegistryActionContext,
+  ActionsRegistryActionExample,
 } from './ActionsRegistryService';
 
 export type { ActionsService, ActionsServiceAction } from './ActionsService';

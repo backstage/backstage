@@ -1,6 +1,6 @@
 {
   "name": "@backstage/frontend-plugin-api",
-  "version": "0.14.2-next.0",
+  "version": "0.16.0-next.1",
   "backstage": {
     "role": "web-library"
   },
@@ -45,9 +45,10 @@
   },
   "dependencies": {
     "@backstage/errors": "workspace:^",
+    "@backstage/filter-predicates": "workspace:^",
     "@backstage/types": "workspace:^",
     "@backstage/version-bridge": "workspace:^",
-    "zod": "^3.25.76",
+    "zod": "^3.25.76 || ^4.0.0",
     "zod-to-json-schema": "^3.25.1"
   },
   "devDependencies": {

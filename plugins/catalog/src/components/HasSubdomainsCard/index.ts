@@ -15,4 +15,7 @@
  */
 
 export { HasSubdomainsCard } from './HasSubdomainsCard';
-export type { HasSubdomainsCardProps } from './HasSubdomainsCard';
+export type {
+  HasSubdomainsCardLegacyProps,
+  HasSubdomainsCardProps,
+} from './HasSubdomainsCard';

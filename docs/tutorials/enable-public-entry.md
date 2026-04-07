@@ -4,6 +4,13 @@ title: Enabling a public entry point
 description: A guide for how to experiment with public and protected Backstage app bundles
 ---
 
+::::info
+This documentation is written for the new frontend system, which is the default
+in new Backstage apps. If your Backstage app still uses the old frontend system,
+read the [old frontend system version of this guide](./enable-public-entry--old.md)
+instead.
+::::
+
 # Enable Public Entry (Experimental)
 
 In this tutorial, you will learn how to restrict access to your main Backstage app bundle to authenticated users only.
@@ -33,50 +40,20 @@ With that, Backstage's cli and backend will detect public entry point and serve 
 
    ```tsx title="in packages/app/src/index-public-experimental.tsx"
    import ReactDOM from 'react-dom/client';
-   import { createApp } from '@backstage/app-defaults';
-   import { AppRouter } from '@backstage/core-app-api';
-   import {
-     AlertDisplay,
-     OAuthRequestDialog,
-     SignInPage,
-   } from '@backstage/core-components';
-   import {
-     configApiRef,
-     discoveryApiRef,
-     createApiFactory,
-   } from '@backstage/core-plugin-api';
-   import { CookieAuthRedirect } from '@backstage/plugin-auth-react';
+   import { signInPageModule } from './overrides/SignInPage';
+   import { appModulePublicSignIn } from '@backstage/plugin-app/alpha';
+   import { createApp } from '@backstage/frontend-defaults';
 
-   // Notice that this is only setting up what is needed by the sign-in pages
    const app = createApp({
-     // If you have any custom APIs that your sign-in page depends on, you need to add them here
-     apis: [],
-     components: {
-       SignInPage: props => {
-         return (
-           <SignInPage
-             {...props}
-             providers={['guest']}
-             title="Select a sign-in method"
-           />
-         );
-       },
-     },
+     features: [signInPageModule, appModulePublicSignIn],
    });
 
-   const App = app.createRoot(
-     <>
-       <AlertDisplay transientTimeoutMs={2500} />
-       <OAuthRequestDialog />
-       <AppRouter>
-         {/* This component triggers an authenticated redirect to the main app, while staying on the same URL */}
-         <CookieAuthRedirect />
-       </AppRouter>
-     </>,
+   ReactDOM.createRoot(document.getElementById('root')!).render(
+     app.createRoot(),
    );
-
-   ReactDOM.createRoot(document.getElementById('root')!).render(<App />);
    ```
+
+   The `signInPageModule` is your custom sign-in page extension that you should already have configured in your app. The `appModulePublicSignIn` from `@backstage/plugin-app/alpha` provides the `CookieAuthRedirect` component that triggers an authenticated redirect to the main app after sign-in.
 
    :::note
    The frontend will handle cookie refreshing automatically, so you don't have to worry about it.
@@ -99,19 +76,3 @@ With that, Backstage's cli and backend will detect public entry point and serve 
 5. Finally, as soon as you log in, you will be redirected to the main app home page (inspect the page and see that the protected bundle was served from the app backend after the redirect).
 
 That's it!
-
-## New Frontend System
-
-If your app uses the new frontend system, you can still use the public entry point feature. The `index-public-experimental.tsx` file does end up looking a bit different in this case:
-
-```tsx title="in packages/app/src/index-public-experimental.tsx"
-import ReactDOM from 'react-dom/client';
-import { signInPageModule } from './overrides/SignInPage';
-import { createPublicSignInApp } from '@backstage/frontend-defaults';
-
-const app = createPublicSignInApp({
-  features: [signInPageModule],
-});
-
-ReactDOM.createRoot(document.getElementById('root')!).render(app.createRoot());
-```

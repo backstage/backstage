@@ -16,47 +16,48 @@
 
 import { forwardRef, useEffect } from 'react';
 import { Select as AriaSelect, Popover } from 'react-aria-components';
-import clsx from 'clsx';
 import { SelectProps } from './types';
-import { useStyles } from '../../hooks/useStyles';
+import { useDefinition } from '../../hooks/useDefinition';
 import { SelectDefinition } from './definition';
 import { PopoverDefinition } from '../Popover/definition';
+import clsx from 'clsx';
 import { FieldLabel } from '../FieldLabel';
 import { FieldError } from '../FieldError';
-import styles from './Select.module.css';
-import stylesPopover from '../Popover/Popover.module.css';
 import { SelectTrigger } from './SelectTrigger';
 import { SelectContent } from './SelectContent';
 
-/** @public */
+/**
+ * A dropdown picker for selecting one or multiple options from a list, with optional search filtering and inline error display.
+ *
+ * @public
+ */
 export const Select = forwardRef<
   HTMLDivElement,
   SelectProps<'single' | 'multiple'>
 >((props, ref) => {
-  const { classNames: popoverClassNames } = useStyles(PopoverDefinition);
-  const { classNames, dataAttributes, cleanedProps } = useStyles(
+  const { ownProps, restProps, dataAttributes } = useDefinition(
     SelectDefinition,
     {
-      size: 'small',
       placeholder: 'Select an option',
       ...props,
     },
   );
+  const { ownProps: popoverOwnProps } = useDefinition(PopoverDefinition, {});
 
   const {
-    className,
+    classes,
     label,
     description,
     options,
     icon,
     searchable,
     searchPlaceholder,
-    'aria-label': ariaLabel,
-    'aria-labelledby': ariaLabelledBy,
     isRequired,
     secondaryLabel,
-    ...rest
-  } = cleanedProps;
+  } = ownProps;
+
+  const ariaLabel = restProps['aria-label'];
+  const ariaLabelledBy = restProps['aria-labelledby'];
 
   useEffect(() => {
     if (!label && !ariaLabel && !ariaLabelledBy) {
@@ -70,12 +71,10 @@ export const Select = forwardRef<
 
   return (
     <AriaSelect
-      className={clsx(classNames.root, styles[classNames.root], className)}
+      className={classes.root}
       {...dataAttributes}
       ref={ref}
-      aria-label={ariaLabel}
-      aria-labelledby={ariaLabelledBy}
-      {...rest}
+      {...restProps}
     >
       <FieldLabel
         label={label}
@@ -85,12 +84,7 @@ export const Select = forwardRef<
       <SelectTrigger icon={icon} />
       <FieldError />
       <Popover
-        className={clsx(
-          popoverClassNames.root,
-          stylesPopover[popoverClassNames.root],
-          classNames.popover,
-          styles[classNames.popover],
-        )}
+        className={clsx(popoverOwnProps.classes.root, classes.popover)}
         {...dataAttributes}
       >
         <SelectContent

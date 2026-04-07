@@ -16,6 +16,7 @@
 
 import preview from '../../../../../.storybook/preview';
 import { ToggleButton } from './ToggleButton';
+import { Box } from '../Box';
 import { Flex } from '../Flex';
 import { Text } from '../Text';
 import { useState } from 'react';
@@ -65,21 +66,27 @@ export const Backgrounds = meta.story({
       </Flex>
       <Flex direction="column" gap="4">
         <Text>On Neutral 1</Text>
-        <Flex align="center" bg="neutral-1" p="4">
+        <Flex align="center" bg="neutral" p="4">
           <ToggleButton>Toggle</ToggleButton>
         </Flex>
       </Flex>
       <Flex direction="column" gap="4">
         <Text>On Neutral 2</Text>
-        <Flex align="center" bg="neutral-2" p="4">
-          <ToggleButton>Toggle</ToggleButton>
-        </Flex>
+        <Box bg="neutral">
+          <Flex align="center" bg="neutral" p="4">
+            <ToggleButton>Toggle</ToggleButton>
+          </Flex>
+        </Box>
       </Flex>
       <Flex direction="column" gap="4">
         <Text>On Neutral 3</Text>
-        <Flex align="center" bg="neutral-3" p="4">
-          <ToggleButton>Toggle</ToggleButton>
-        </Flex>
+        <Box bg="neutral">
+          <Box bg="neutral">
+            <Flex align="center" bg="neutral" p="4">
+              <ToggleButton>Toggle</ToggleButton>
+            </Flex>
+          </Box>
+        </Box>
       </Flex>
     </Flex>
   ),

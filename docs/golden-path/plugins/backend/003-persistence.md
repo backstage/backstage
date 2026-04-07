@@ -2,6 +2,7 @@
 id: persistence
 sidebar_label: 003 - Persisting your TODOs
 title: 003 - Persisting your TODOs
+description: How to add database persistence to your backend plugin
 ---
 
 ## Saving Plugin State Indefinitely

@@ -34,10 +34,10 @@ import { findOwnPaths, runOutput, run } from '@backstage/cli-common';
 const ownPaths = findOwnPaths(__dirname);
 
 const templatePackagePaths = [
-  'packages/cli/templates/frontend-plugin/package.json.hbs',
-  'packages/create-app/templates/default-app/package.json.hbs',
-  'packages/create-app/templates/default-app/packages/app/package.json.hbs',
-  'packages/create-app/templates/default-app/packages/backend/package.json.hbs',
+  'packages/cli-module-new/templates/frontend-plugin/package.json.hbs',
+  'packages/create-app/templates/next-app/package.json.hbs',
+  'packages/create-app/templates/next-app/packages/app/package.json.hbs',
+  'packages/create-app/templates/next-app/packages/backend/package.json.hbs',
 ];
 
 export async function runCommand(opts: OptionValues) {
@@ -61,20 +61,6 @@ export async function runCommand(opts: OptionValues) {
   await createPlugin({ appDir, pluginId, select: 'backend-plugin' });
 
   print(`Running 'yarn test:e2e' in newly created app with new plugin`);
-  await runOutput(['yarn', 'test:e2e'], {
-    cwd: appDir,
-    env: { ...process.env, CI: undefined },
-  });
-
-  await switchToReact17(appDir);
-
-  print(`Running 'yarn install' to install React 17`);
-  await runOutput(['yarn', 'install'], { cwd: appDir });
-
-  print(`Running 'yarn tsc' with React 17`);
-  await runOutput(['yarn', 'tsc'], { cwd: appDir });
-
-  print(`Running 'yarn test:e2e' with React 17`);
   await runOutput(['yarn', 'test:e2e'], {
     cwd: appDir,
     env: { ...process.env, CI: undefined },
@@ -383,8 +369,12 @@ async function createPlugin(options: {
 
   try {
     let stdout = '';
+    let stderr = '';
     child.stdout?.on('data', (data: Buffer) => {
       stdout = stdout + data.toString('utf8');
+    });
+    child.stderr?.on('data', (data: Buffer) => {
+      stderr = stderr + data.toString('utf8');
     });
 
     print('Waiting for plugin create script to be done');
@@ -406,37 +396,6 @@ async function createPlugin(options: {
   } finally {
     child.kill();
   }
-}
-
-/**
- * Switch the entire project to use React 17
- */
-async function switchToReact17(appDir: string) {
-  const rootPkg = await fs.readJson(resolvePath(appDir, 'package.json'));
-  rootPkg.resolutions = {
-    ...(rootPkg.resolutions || {}),
-    react: '^17.0.0',
-    'react-dom': '^17.0.0',
-    '@types/react': '^17.0.0',
-    '@types/react-dom': '^17.0.0',
-    'swagger-ui-react/react': '17.0.2',
-    'swagger-ui-react/react-dom': '17.0.2',
-    'swagger-ui-react/react-redux': '^8',
-  };
-  await fs.writeJson(resolvePath(appDir, 'package.json'), rootPkg, {
-    spaces: 2,
-  });
-
-  await fs.writeFile(
-    resolvePath(appDir, 'packages/app/src/index.tsx'),
-    `import '@backstage/cli/asset-types';
-import ReactDOM from 'react-dom';
-import App from './App';
-
-ReactDOM.render(<App />, document.getElementById('root'));
-`,
-    'utf8',
-  );
 }
 
 /** Drops PG databases */

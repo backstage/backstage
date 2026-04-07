@@ -21,6 +21,7 @@ import {
   resolveExtensionDefinition,
 } from './resolveExtensionDefinition';
 import { FeatureFlagConfig } from './types';
+import { FilterPredicate } from '@backstage/filter-predicates';
 
 /** @public */
 export interface CreateFrontendModuleOptions<
@@ -30,6 +31,7 @@ export interface CreateFrontendModuleOptions<
   pluginId: TPluginId;
   extensions?: TExtensions;
   featureFlags?: FeatureFlagConfig[];
+  if?: FilterPredicate;
 }
 
 /** @public */
@@ -43,6 +45,7 @@ export interface InternalFrontendModule extends FrontendModule {
   readonly version: 'v1';
   readonly extensions: Extension<unknown>[];
   readonly featureFlags: FeatureFlagConfig[];
+  readonly if?: FilterPredicate;
 }
 
 /**
@@ -126,6 +129,7 @@ export function createFrontendModule<
     version: 'v1',
     pluginId,
     featureFlags: options.featureFlags ?? [],
+    if: options.if,
     extensions,
     toString() {
       return `Module{pluginId=${pluginId}}`;

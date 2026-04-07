@@ -1,5 +1,21 @@
 # @backstage/module-federation-common
 
+## 0.1.2
+
+### Patch Changes
+
+- 0cb5646: Fixed the `@mui/material/styles` shared dependency key by removing a trailing slash that caused module resolution failures with MUI package exports.
+
+## 0.1.2-next.0
+
+### Patch Changes
+
+- 0cb5646: Fixed the `@mui/material/styles` shared dependency key by removing a trailing slash that caused module resolution failures with MUI package exports.
+- Updated dependencies
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
 ## 0.1.0
 
 ### Minor Changes

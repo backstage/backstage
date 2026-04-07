@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { CommandGraph } from './CommandGraph';
-import { BackstageCommand } from './types';
+import { CliCommand } from './types';
 
 export class CommandRegistry {
   private graph: CommandGraph;
@@ -22,7 +22,7 @@ export class CommandRegistry {
     this.graph = graph;
   }
 
-  addCommand(command: BackstageCommand) {
+  addCommand(command: CliCommand) {
     this.graph.add(command);
   }
 }

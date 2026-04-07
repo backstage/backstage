@@ -15,7 +15,7 @@
  */
 import { createTranslationRef } from '@backstage/core-plugin-api/alpha';
 
-/** @alpha */
+/** @public */
 export const scaffolderTranslationRef = createTranslationRef({
   id: 'scaffolder',
   messages: {
@@ -182,6 +182,7 @@ export const scaffolderTranslationRef = createTranslationRef({
       hideLogsButtonTitle: 'Hide Logs',
       showLogsButtonTitle: 'Show Logs',
       contextMenu: {
+        moreOptions: 'More options',
         hideLogs: 'Hide Logs',
         showLogs: 'Show Logs',
         hideButtonBar: 'Hide Button Bar',

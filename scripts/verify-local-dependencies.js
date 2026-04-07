@@ -62,6 +62,7 @@ const roleRules = [
       // TODO(freben): Address these
       '@backstage/frontend-defaults',
       '@backstage/frontend-app-api',
+      '@backstage/frontend-dev-utils',
       '@backstage/frontend-test-utils',
       '@backstage/plugin-api-docs',
       '@backstage/plugin-techdocs-addons-test-utils',

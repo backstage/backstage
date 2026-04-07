@@ -1,0 +1,33 @@
+{
+  "name": "@scope/plugin-foo",
+  "version": "1.0.0",
+  "backstage": {
+    "role": "frontend-plugin",
+    "pluginId": "foo"
+  },
+  "keywords": [
+    "backstage"
+  ],
+  "license": "Apache-2.0",
+  "exports": {
+    ".": {},
+    "./alpha": {},
+    "./package.json": "./package.json"
+  },
+  "main": "src/index.ts",
+  "module": "src/index.ts",
+  "types": "src/index.ts",
+  "typesVersions": {
+    "*": {
+      "alpha": [
+        "src/alpha.ts"
+      ]
+    }
+  },
+  "dependencies": {
+    "@backstage/catalog-model": "^1.7.6"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

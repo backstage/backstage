@@ -19,9 +19,10 @@
  *
  * @public
  */
-export type ApiRef<T> = {
-  id: string;
-  T: T;
+export type ApiRef<T, TId extends string = string> = {
+  readonly $$type?: '@backstage/ApiRef';
+  readonly id: TId;
+  readonly T: T;
 };
 
 /**

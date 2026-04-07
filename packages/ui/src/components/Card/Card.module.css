@@ -20,13 +20,76 @@
   .bui-Card {
     display: flex;
     flex-direction: column;
-    gap: var(--bui-space-3);
     border-radius: var(--bui-radius-3);
-    padding-block: var(--bui-space-3);
     color: var(--bui-fg-primary);
-    overflow: hidden;
+    overflow: auto;
     min-height: 0;
     width: 100%;
+    position: relative;
+    padding: var(--bui-space-3);
+  }
+
+  .bui-Card[data-bg='neutral-1'] {
+    --bui-card-bg: var(--bui-bg-neutral-1);
+  }
+
+  .bui-Card[data-bg='neutral-2'] {
+    --bui-card-bg: var(--bui-bg-neutral-2);
+  }
+
+  .bui-Card[data-bg='neutral-3'] {
+    --bui-card-bg: var(--bui-bg-neutral-3);
+  }
+
+  .bui-Card:has(.bui-CardHeader, .bui-CardBody, .bui-CardFooter) {
+    padding: 0;
+  }
+
+  /*
+   * Cursor and hover tint are applied at the card level so they cover the
+   * entire surface.
+   */
+  .bui-Card[data-interactive] {
+    cursor: pointer;
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: color-mix(in srgb, currentColor 5%, transparent);
+      border-radius: inherit;
+      pointer-events: none;
+      z-index: 3;
+      opacity: 0;
+      transition: opacity 200ms ease-in-out;
+    }
+
+    &:hover::after {
+      opacity: 1;
+    }
+  }
+
+  .bui-Card[data-interactive]:has(.bui-CardTrigger[data-focus-visible]) {
+    outline: 2px solid var(--bui-ring);
+    outline-offset: -2px;
+  }
+
+  .bui-CardTrigger {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(100%);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .bui-CardHeader {
+    padding-inline: var(--bui-space-3);
+    padding-block: var(--bui-space-3);
   }
 
   .bui-CardBody {
@@ -34,13 +97,67 @@
     min-height: 0;
     overflow: auto;
     padding-inline: var(--bui-space-3);
+    padding-block: var(--bui-space-3);
   }
 
-  .bui-CardHeader {
-    padding-inline: var(--bui-space-3);
+  @keyframes bui-card-body-shadow {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .bui-Card:has(.bui-CardHeader) .bui-CardBody {
+    padding-block-start: 0;
+
+    &::before {
+      content: '';
+      position: sticky;
+      top: 0;
+      display: block;
+      height: 1.5rem;
+      margin-bottom: -1.5rem;
+      background: linear-gradient(
+        to bottom,
+        var(--bui-card-bg),
+        rgb(from var(--bui-card-bg) r g b / 0)
+      );
+      pointer-events: none;
+      opacity: 0;
+      animation: bui-card-body-shadow linear both;
+      animation-timeline: scroll();
+      animation-range: 0px 2.5rem;
+    }
+  }
+
+  .bui-Card:has(.bui-CardFooter) .bui-CardBody {
+    padding-block-end: 0;
+
+    &::after {
+      content: '';
+      position: sticky;
+      bottom: 0;
+      display: block;
+      height: 1.5rem;
+      margin-top: -1.5rem;
+      background: linear-gradient(
+        to top,
+        var(--bui-card-bg),
+        rgb(from var(--bui-card-bg) r g b / 0)
+      );
+      pointer-events: none;
+      opacity: 0;
+      animation: bui-card-body-shadow linear forwards,
+        bui-card-body-shadow linear forwards reverse;
+      animation-timeline: scroll(), scroll();
+      animation-range: 0px 1px, calc(100% - 2.5rem) 100%;
+    }
   }
 
   .bui-CardFooter {
     padding-inline: var(--bui-space-3);
+    padding-block: var(--bui-space-3);
   }
 }

@@ -526,6 +526,7 @@ export namespace mockServices {
       getScheduledTasks: jest.fn(),
       scheduleTask: jest.fn(),
       triggerTask: jest.fn(),
+      cancelTask: jest.fn(),
     }));
   }
 

@@ -60,6 +60,7 @@ export function convertLegacyPageExtension(
     name: overrides?.name ?? kebabName,
     params: {
       path: overrides?.path ?? `/${kebabName}`,
+      noHeader: true,
       routeRef: mountPoint && convertLegacyRouteRef(mountPoint),
       loader: async () => compatWrapper(element),
     },

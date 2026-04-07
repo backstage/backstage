@@ -29,8 +29,6 @@ As this provider is not one of the default providers, you will first need to ins
 yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-gitlab @backstage/plugin-catalog-backend-module-gitlab-org
 ```
 
-### Installation with New Backend System
-
 Then add the following to your backend initialization:
 
 ```ts title="packages/backend/src/index.ts
@@ -58,92 +56,6 @@ Further documentation:
 - [Events Plugin](https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md)
 - [GitLab Module for the Events Plugin](https://github.com/backstage/backstage/blob/master/plugins/events-backend-module-gitlab/README.md)
 
-### Installation with Legacy Backend System
-
-#### Installation without Events Support
-
-Add the plugin to the plugin catalog `packages/backend/src/plugins/catalog.ts`:
-
-```ts
-/* packages/backend/src/plugins/catalog.ts */
-/* highlight-add-next-line */
-import { GitlabOrgDiscoveryEntityProvider } from '@backstage/plugin-catalog-backend-module-gitlab';
-
-export default async function createPlugin(
-  env: PluginEnvironment,
-): Promise<Router> {
-  const builder = await CatalogBuilder.create(env);
-  /** ... other processors and/or providers ... */
-  /* highlight-add-start */
-  builder.addEntityProvider(
-    ...GitlabOrgDiscoveryEntityProvider.fromConfig(env.config, {
-      logger: env.logger,
-      // optional: alternatively, use scheduler with schedule defined in app-config.yaml
-      schedule: env.scheduler.createScheduledTaskRunner({
-        frequency: { minutes: 30 },
-        timeout: { minutes: 3 },
-      }),
-      // optional: alternatively, use schedule
-      scheduler: env.scheduler,
-    }),
-  );
-  /* highlight-add-end */
-  // ..
-}
-```
-
-#### Installation with Events Support
-
-Please follow the installation instructions at
-
-- [Events Plugin](https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md)
-- [GitLab Module for the Events Plugin](https://github.com/backstage/backstage/blob/master/plugins/events-backend-module-gitlab/README.md)
-
-Additionally, you need to decide how you want to receive events from external sources like
-
-- [via HTTP endpoint](https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md)
-- [via an AWS SQS queue](https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-aws-sqs/README.md)
-- [via Google Pub/Sub](https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-google-pubsub/README.md)
-- [via a Kafka topic](https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-kafka/README.md)
-
-Set up your provider
-
-```ts title="packages/backend/src/plugins/catalog.ts"
-import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
-/* highlight-add-next-line */
-import { GitlabOrgDiscoveryEntityProvider } from '@backstage/plugin-catalog-backend-module-gitlab';
-import { ScaffolderEntitiesProcessor } from '@backstage/plugin-scaffolder-backend';
-import { Router } from 'express';
-import { PluginEnvironment } from '../types';
-
-export default async function createPlugin(
-  env: PluginEnvironment,
-): Promise<Router> {
-  const builder = await CatalogBuilder.create(env);
-  builder.addProcessor(new ScaffolderEntitiesProcessor());
-  /* highlight-add-start */
-  const gitlabOrgProvider = GitlabOrgDiscoveryEntityProvider.fromConfig(
-    env.config,
-    {
-      logger: env.logger,
-      // optional: alternatively, use scheduler with schedule defined in app-config.yaml
-      schedule: env.scheduler.createScheduledTaskRunner({
-        frequency: { minutes: 30 },
-        timeout: { minutes: 3 },
-      }),
-      // optional: alternatively, use schedule
-      scheduler: env.scheduler,
-      events: env.events,
-    },
-  );
-  builder.addEntityProvider(gitlabOrgProvider);
-  /* highlight-add-end */
-  const { processingEngine, router } = await builder.build();
-  await processingEngine.start();
-  return router;
-}
-```
-
 ## Configuration
 
 To use the entity provider, you'll need a [Gitlab integration set up](https://backstage.io/docs/integrations/gitlab/locations).
@@ -163,7 +75,7 @@ will be those visible to the account which provisioned the token.
 
 :::note Note
 
-If you are using the New Backend System, the `schedule` has to be setup in the config, as shown below.
+The `schedule` has to be setup in the config, as shown below.
 
 :::
 

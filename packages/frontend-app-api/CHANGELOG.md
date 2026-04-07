@@ -1,5 +1,70 @@
 # @backstage/frontend-app-api
 
+## 0.16.2-next.1
+
+### Patch Changes
+
+- 400aa23: Wrapped extension permission authorization in a try/catch to surface errors as `ForwardedError` with a clear message.
+- Updated dependencies
+  - @backstage/core-app-api@1.20.0-next.1
+  - @backstage/frontend-plugin-api@0.16.0-next.1
+  - @backstage/core-plugin-api@1.12.5-next.1
+  - @backstage/frontend-defaults@0.5.1-next.1
+
+## 0.16.2-next.0
+
+### Patch Changes
+
+- 364d4fe: Added `apis` to `BootstrapSpecializedApp` and `FinalizedSpecializedApp` types.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.15.2-next.0
+  - @backstage/core-app-api@1.19.7-next.0
+  - @backstage/frontend-defaults@0.5.1-next.0
+  - @backstage/core-plugin-api@1.12.5-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/filter-predicates@0.1.1
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.12
+
+## 0.16.0
+
+### Minor Changes
+
+- 92af1ae: **BREAKING**: Removed the `allowUnknownExtensionConfig` option from `createSpecializedApp`. This flag had no effect and was a no-op, so no behavioral changes are expected.
+
+### Patch Changes
+
+- d911b72: Frontend apps now respect an explicit `pluginId` on `ApiRef`s when deciding which plugin owns an API factory.
+- 0452d02: Add optional `description` field to plugin-level feature flags.
+- 5fd78ba: Removed `@backstage/core-plugin-api` leakage from the public API surface. All types such as `ApiHolder` and `ConfigApi` are now imported from `@backstage/frontend-plugin-api`.
+- dab6c46: Added the `ExtensionFactoryMiddleware` type as a public export.
+- 3f36ce1: Clarified the `IconElement` sizing contract for the new frontend system and aligned legacy system icon rendering with the new icon API.
+- 5b160f9: Added `prepareSpecializedApp` for two-phase app wiring so apps can render a bootstrap tree before full app finalization. The bootstrap phase now supports deferred `app/root.elements`, predicate-gated APIs, reusable `sessionState`, and warnings for bootstrap-visible predicates or bootstrap code that accessed APIs that only became available after finalization. Utility APIs that are materialized during bootstrap are also frozen for the lifetime of the app instance, causing deferred overrides of those APIs to be ignored and reported as app errors.
+- a49a40d: Updated dependency `zod` to `^3.25.76 || ^4.0.0` & migrated to `/v3` or `/v4` imports.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.4
+  - @backstage/frontend-plugin-api@0.15.0
+  - @backstage/core-app-api@1.19.6
+  - @backstage/frontend-defaults@0.5.0
+  - @backstage/filter-predicates@0.1.1
+
+## 0.16.0-next.1
+
+### Minor Changes
+
+- 92af1ae: **BREAKING**: Removed the `allowUnknownExtensionConfig` option from `createSpecializedApp`. This flag had no effect and was a no-op, so no behavioral changes are expected.
+
+### Patch Changes
+
+- 0452d02: Add optional `description` field to plugin-level feature flags.
+- dab6c46: Added the `ExtensionFactoryMiddleware` type as a public export.
+- Updated dependencies
+  - @backstage/core-app-api@1.19.6-next.1
+  - @backstage/frontend-plugin-api@0.15.0-next.1
+  - @backstage/core-plugin-api@1.12.4-next.1
+  - @backstage/frontend-defaults@0.5.0-next.1
+
 ## 0.15.1-next.0
 
 ### Patch Changes

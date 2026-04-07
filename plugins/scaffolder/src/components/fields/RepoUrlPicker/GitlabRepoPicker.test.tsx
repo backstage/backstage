@@ -176,5 +176,42 @@ describe('GitlabRepoPicker', () => {
 
       expect(onChange).toHaveBeenCalledWith({ owner: 'my-mock-owner' });
     });
+
+    it('should render description if allowed owners are passed', async () => {
+      const { findByText } = await renderInTestApp(
+        <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
+          <GitlabRepoPicker
+            onChange={jest.fn()}
+            rawErrors={[]}
+            state={{ repoName: 'repo' }}
+            allowedOwners={['owner1']}
+          />
+        </TestApiProvider>,
+      );
+
+      expect(
+        await findByText(
+          /GitLab namespace where this repository will belong to./,
+        ),
+      ).toBeInTheDocument();
+    });
+
+    it('should render description if no allowed owners are passed', async () => {
+      const { findByText } = await renderInTestApp(
+        <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
+          <GitlabRepoPicker
+            onChange={jest.fn()}
+            rawErrors={[]}
+            state={{ repoName: 'repo' }}
+          />
+        </TestApiProvider>,
+      );
+
+      expect(
+        await findByText(
+          /GitLab namespace where this repository will belong to./,
+        ),
+      ).toBeInTheDocument();
+    });
   });
 });

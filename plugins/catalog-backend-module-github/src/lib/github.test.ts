@@ -29,6 +29,7 @@ import {
   getOrganizationUsers,
   getTeamMembers,
   getOrganizationRepositories,
+  getOrganizationRepository,
   QueryResponse,
   GithubUser,
   GithubTeam,
@@ -778,14 +779,104 @@ describe('github', () => {
       };
 
       server.use(
-        graphqlMsw.query('repositories', () =>
-          HttpResponse.json({ data: input }),
-        ),
+        graphqlMsw.query('repositories', ({ variables }) => {
+          expect(variables.catalogPathRef).toBe('HEAD:catalog-info.yaml');
+          return HttpResponse.json({ data: input });
+        }),
       );
 
       await expect(
         getOrganizationRepositories(graphql, 'a', 'catalog-info.yaml'),
       ).resolves.toEqual(output);
+    });
+
+    it('uses provided branch for catalog path ref', async () => {
+      server.use(
+        graphqlMsw.query('repositories', ({ variables }) => {
+          expect(variables.catalogPathRef).toBe('develop:catalog-info.yaml');
+          return HttpResponse.json({
+            data: {
+              repositoryOwner: {
+                repositories: {
+                  pageInfo: { hasNextPage: false, endCursor: null },
+                  nodes: [
+                    {
+                      name: 'repo1',
+                      url: 'https://github.com/my-org/repo1',
+                      isArchived: false,
+                      isFork: false,
+                      visibility: 'public',
+                      defaultBranchRef: { name: 'main' },
+                      catalogInfoFile: null,
+                      repositoryTopics: { nodes: [] },
+                    },
+                  ],
+                },
+              },
+            },
+          });
+        }),
+      );
+
+      await getOrganizationRepositories(
+        graphql as any,
+        'my-org',
+        '/catalog-info.yaml',
+        undefined,
+        'develop',
+      );
+    });
+  });
+
+  describe('getOrganizationRepository', () => {
+    const repositoryData = {
+      repositoryOwner: {
+        repository: {
+          name: 'my-repo',
+          url: 'https://github.com/my-org/my-repo',
+          isArchived: false,
+          isFork: false,
+          visibility: 'public',
+          defaultBranchRef: { name: 'main' },
+          catalogInfoFile: null,
+          repositoryTopics: { nodes: [] },
+        },
+      },
+    };
+
+    it('defaults catalogPathRef to HEAD when no branch is provided', async () => {
+      server.use(
+        graphqlMsw.query('repository', ({ variables }) => {
+          expect(variables.catalogPathRef).toBe('HEAD:catalog-info.yaml');
+          return HttpResponse.json({ data: repositoryData });
+        }),
+      );
+
+      await getOrganizationRepository(
+        graphql as any,
+        'my-org',
+        'my-repo',
+        'catalog-info.yaml',
+      );
+    });
+
+    it('uses provided branch for catalogPathRef', async () => {
+      server.use(
+        graphqlMsw.query('repository', ({ variables }) => {
+          expect(variables.catalogPathRef).toBe(
+            'my-feature-branch:catalog-info.yaml',
+          );
+          return HttpResponse.json({ data: repositoryData });
+        }),
+      );
+
+      await getOrganizationRepository(
+        graphql as any,
+        'my-org',
+        'my-repo',
+        'catalog-info.yaml',
+        'my-feature-branch',
+      );
     });
   });
 

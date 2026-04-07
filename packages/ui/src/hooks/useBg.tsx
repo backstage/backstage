@@ -70,6 +70,24 @@ export const BgProvider = ({ bg, children }: BgProviderProps) => {
 };
 
 /**
+ * Resets the bg context to undefined, cutting any inherited neutral chain.
+ * Use this inside overlay components (Popover, Tooltip, Dialog, Menu) so
+ * their content always starts from neutral-1 regardless of where the trigger
+ * is placed in the tree.
+ *
+ * @internal
+ */
+export const BgReset = ({ children }: { children: ReactNode }) => {
+  return (
+    <BgContext.Provider
+      value={createVersionedValueMap({ 1: { bg: undefined } })}
+    >
+      {children}
+    </BgContext.Provider>
+  );
+};
+
+/**
  * Hook for consumer components (e.g. Button) to read the parent bg context.
  *
  * Returns the parent container's bg unchanged. The consumer component's CSS
@@ -90,10 +108,14 @@ export function useBgConsumer(): BgContextValue {
  *
  * - `bg` is `undefined` -- transparent, no context change, returns `{ bg: undefined }`.
  *   This is the default for Box, Flex, and Grid (they do **not** auto-increment).
- * - `bg` is a `ContainerBg` value -- uses that value directly (e.g. `'neutral-1'`).
- * - `bg` is `'neutral-auto'` -- increments the neutral level from the parent context,
- *   capping at `neutral-3`. Only components that explicitly pass `'neutral-auto'`
- *   (e.g. Card) will auto-increment; it is never implicit.
+ * - `bg` is `'neutral'` -- when the parent bg is neutral, increments the neutral
+ *   level from the parent context, capping at `neutral-3`. When the parent bg is
+ *   an intent (`'danger'` | `'warning'` | `'success'`), the intent passes through
+ *   unchanged (i.e. `bg: 'neutral'` does not override the parent intent). The
+ *   increment is always relative to the parent; it is not possible to pin a
+ *   container to an explicit neutral level.
+ * - `bg` is `'danger'` | `'warning'` | `'success'` -- sets the bg to that intent
+ *   explicitly, regardless of the parent value.
  *
  * **Capping:**
  *
@@ -116,7 +138,7 @@ export function useBgProvider(bg?: Responsive<ProviderBg>): BgContextValue {
 
   const resolved = resolveResponsiveValue(bg, breakpoint);
 
-  if (resolved === 'neutral-auto') {
+  if (resolved === 'neutral') {
     return { bg: incrementNeutralBg(context.bg) };
   }
 

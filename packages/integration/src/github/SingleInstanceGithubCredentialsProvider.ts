@@ -121,9 +121,20 @@ class GithubAppManager {
   }
 
   async getInstallationCredentials(
-    owner: string,
+    owner?: string,
     repo?: string,
   ): Promise<{ accessToken: string | undefined }> {
+    // No owner means a bare host URL (e.g. https://github.com) — return an
+    // app-level JWT rather than an installation token.
+    if (!owner) {
+      const auth = createAppAuth({
+        appId: this.baseAuthConfig.appId,
+        privateKey: this.baseAuthConfig.privateKey,
+      });
+      const { token } = await auth({ type: 'app' });
+      return { accessToken: token };
+    }
+
     if (this.allowedInstallationOwners) {
       if (
         !this.allowedInstallationOwners?.includes(
@@ -256,7 +267,10 @@ export class GithubAppCredentialsMux {
     return installs.flat();
   }
 
-  async getAppToken(owner: string, repo?: string): Promise<string | undefined> {
+  async getAppToken(
+    owner?: string,
+    repo?: string,
+  ): Promise<string | undefined> {
     if (this.apps.length === 0) {
       return undefined;
     }

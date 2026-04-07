@@ -87,6 +87,51 @@ export interface BackstagePackageJson {
 }
 
 // @public
+export class CliAuth {
+  static create(options?: CliAuthCreateOptions): Promise<CliAuth>;
+  getAccessToken(): Promise<string>;
+  getBaseUrl(): string;
+  getInstanceName(): string;
+  getMetadata(key: string): Promise<unknown>;
+  setMetadata(key: string, value: unknown): Promise<void>;
+}
+
+// @public
+export interface CliAuthCreateOptions {
+  instanceName?: string;
+}
+
+// @public
+export interface CliCommand {
+  deprecated?: boolean;
+  description: string;
+  execute:
+    | ((context: CliCommandContext) => Promise<void>)
+    | {
+        loader: () => Promise<{
+          default: (context: CliCommandContext) => Promise<void>;
+        }>;
+      };
+  experimental?: boolean;
+  path: string[];
+}
+
+// @public
+export interface CliCommandContext {
+  args: string[];
+  info: {
+    usage: string;
+    name: string;
+  };
+}
+
+// @public
+export interface CliModule {
+  // (undocumented)
+  readonly $$type: '@backstage/CliModule';
+}
+
+// @public
 export type ConcurrentTasksOptions<TItem> = {
   concurrencyFactor?: number;
   items: Iterable<TItem>;
@@ -94,10 +139,23 @@ export type ConcurrentTasksOptions<TItem> = {
 };
 
 // @public
+export function createCliModule(options: {
+  packageJson: {
+    name: string;
+  };
+  init: (registry: {
+    addCommand: (command: CliCommand) => void;
+  }) => Promise<void>;
+}): CliModule;
+
+// @public
 export class GitUtils {
   static listChangedFiles(ref: string): Promise<string[]>;
   static readFileAtRef(path: string, ref: string): Promise<string>;
 }
+
+// @public
+export function hasBackstageYarnPlugin(workspaceDir?: string): Promise<boolean>;
 
 // @public
 export function isMonoRepo(): Promise<boolean>;
@@ -111,6 +169,7 @@ export class Lockfile {
   keys(): IterableIterator<string>;
   static load(path: string): Promise<Lockfile>;
   static parse(content: string): Lockfile;
+  toString(): string;
 }
 
 // @public
@@ -183,6 +242,7 @@ export type PackageRole =
   | 'frontend'
   | 'backend'
   | 'cli'
+  | 'cli-module'
   | 'web-library'
   | 'node-library'
   | 'common-library'
@@ -209,6 +269,13 @@ export class PackageRoles {
 }
 
 // @public
+export function runCliModule(options: {
+  module: CliModule;
+  name: string;
+  version?: string;
+}): Promise<void>;
+
+// @public
 export function runConcurrentTasks<TItem>(
   options: ConcurrentTasksOptions<TItem>,
 ): Promise<void>;
@@ -219,6 +286,17 @@ export function runWorkerQueueThreads<TItem, TResult, TContext>(
 ): Promise<{
   results: TResult[];
 }>;
+
+// @public
+export class SuccessCache {
+  // (undocumented)
+  static create(options: { name: string; basePath?: string }): SuccessCache;
+  // (undocumented)
+  read(): Promise<Set<string>>;
+  static trimPaths(input: string): string;
+  // (undocumented)
+  write(newEntries: Iterable<string>): Promise<void>;
+}
 
 // @public
 export type WorkerQueueThreadsOptions<TItem, TResult, TContext> = {

@@ -41,6 +41,7 @@ export interface IconsApi {
  *
  * @public
  */
-export const iconsApiRef = createApiRef<IconsApi>({
+export const iconsApiRef = createApiRef<IconsApi>().with({
   id: 'core.icons',
+  pluginId: 'app',
 });

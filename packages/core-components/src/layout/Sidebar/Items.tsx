@@ -116,6 +116,17 @@ const makeSidebarStyles = (sidebarConfig: SidebarConfig) =>
         font: 'inherit',
         textTransform: 'none',
       },
+      itemIcon: {
+        display: 'inline-flex',
+        fontSize: theme.typography.fontSize,
+        lineHeight: 0,
+        '& svg': {
+          width: '1.5em',
+          height: '1.5em',
+          fontSize: 'inherit',
+          flexShrink: 0,
+        },
+      },
       closed: {
         width: sidebarConfig.drawerWidthClosed,
         justifyContent: 'center',
@@ -401,7 +412,9 @@ const SidebarItemBase = forwardRef<
 
   const displayItemIcon = (
     <Box style={divStyle}>
-      <Icon fontSize="small" />
+      <Box component="span" className={classes.itemIcon}>
+        <Icon fontSize="inherit" />
+      </Box>
       {!isOpen && hasSubmenu ? <ArrowRightIcon fontSize="small" /> : <></>}
     </Box>
   );

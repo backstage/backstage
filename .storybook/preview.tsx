@@ -3,10 +3,10 @@ import addonDocs from '@storybook/addon-docs';
 import addonThemes from '@storybook/addon-themes';
 import addonLinks from '@storybook/addon-links';
 import { definePreview } from '@storybook/react-vite';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { TestApiProvider } from '@backstage/test-utils';
 import { AlertDisplay } from '@backstage/core-components';
-import { apis } from './support/apis';
+import { apis, appThemeApi } from './support/apis';
 import { useGlobals } from 'storybook/preview-api';
 import { UnifiedThemeProvider, themes } from '@backstage/theme';
 import { allModes } from './modes';
@@ -19,6 +19,7 @@ import './storybook.css';
 
 // Custom themes
 import './themes/spotify.css';
+import { Box } from '../packages/ui/src/components/Box';
 
 export default definePreview({
   tags: ['manifest'],
@@ -30,8 +31,8 @@ export default definePreview({
       toolbar: {
         icon: 'circlehollow',
         items: [
-          { value: 'light', icon: 'circlehollow', title: 'Light' },
-          { value: 'dark', icon: 'circle', title: 'Dark' },
+          { value: 'light', icon: 'sun', title: 'Light' },
+          { value: 'dark', icon: 'moon', title: 'Dark' },
         ],
         dynamicTitle: true,
       },
@@ -49,11 +50,26 @@ export default definePreview({
         dynamicTitle: true,
       },
     },
+    background: {
+      name: 'Background',
+      description: 'Global background for components',
+      defaultValue: 'app',
+      toolbar: {
+        icon: 'contrast',
+        items: [
+          { value: 'app', title: 'App Background' },
+          { value: 'neutral-1', title: 'Neutral 1 Background' },
+          { value: 'neutral-2', title: 'Neutral 2 Background' },
+          { value: 'neutral-3', title: 'Neutral 3 Background' },
+        ],
+      },
+    },
   },
 
   initialGlobals: {
     themeMode: 'light',
     themeName: 'backstage',
+    background: 'app',
   },
 
   parameters: {
@@ -70,7 +86,14 @@ export default definePreview({
 
     options: {
       storySort: {
-        order: ['Backstage UI', 'Plugins', 'Layout', 'Navigation'],
+        order: [
+          'Backstage UI',
+          'Recipes',
+          'Guidelines',
+          'Plugins',
+          'Layout',
+          'Navigation',
+        ],
       },
     },
 
@@ -114,12 +137,14 @@ export default definePreview({
   },
 
   decorators: [
-    Story => {
+    (Story, context) => {
       const [globals] = useGlobals();
       const selectedTheme =
         globals.themeMode === 'light' ? themes.light : themes.dark;
       const selectedThemeMode = globals.themeMode || 'light';
       const selectedThemeName = globals.themeName || 'backstage';
+      const selectedBackground = globals.background || 'app';
+      const isFullscreen = context.parameters.layout === 'fullscreen';
 
       useEffect(() => {
         document.body.removeAttribute('data-theme-mode');
@@ -132,7 +157,13 @@ export default definePreview({
         };
       }, [selectedTheme, selectedThemeName]);
 
+      useEffect(() => {
+        appThemeApi.setActiveThemeId(selectedThemeMode);
+      }, [selectedThemeMode]);
+
       document.body.style.backgroundColor = 'var(--bui-bg-app)';
+      document.body.style.padding =
+        isFullscreen && selectedBackground !== 'app' ? '1rem' : '';
       const docsStoryElements = document.getElementsByClassName('docs-story');
       Array.from(docsStoryElements).forEach(element => {
         (element as HTMLElement).style.backgroundColor = 'var(--bui-bg-app)';
@@ -143,7 +174,19 @@ export default definePreview({
           {/* @ts-ignore */}
           <TestApiProvider apis={apis}>
             <AlertDisplay />
-            <Story />
+            {Array.from({
+              length:
+                selectedBackground === 'app'
+                  ? 0
+                  : parseInt(selectedBackground.split('-')[1], 10),
+            }).reduce<React.ReactNode>(
+              children => (
+                <Box bg="neutral" p="4">
+                  {children}
+                </Box>
+              ),
+              <Story />,
+            )}
           </TestApiProvider>
         </UnifiedThemeProvider>
       );

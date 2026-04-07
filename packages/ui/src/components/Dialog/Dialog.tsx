@@ -21,57 +21,74 @@ import {
   Modal,
   Heading,
 } from 'react-aria-components';
-import clsx from 'clsx';
 import type {
   DialogTriggerProps,
   DialogHeaderProps,
   DialogProps,
   DialogBodyProps,
+  DialogFooterProps,
 } from './types';
 import { RiCloseLine } from '@remixicon/react';
 import { Button } from '../Button';
-import { useStyles } from '../../hooks/useStyles';
-import { DialogDefinition } from './definition';
+import { useDefinition } from '../../hooks/useDefinition';
+import {
+  DialogDefinition,
+  DialogHeaderDefinition,
+  DialogBodyDefinition,
+  DialogFooterDefinition,
+} from './definition';
+import { Box } from '../Box';
+import { BgReset } from '../../hooks/useBg';
 import { Flex } from '../Flex';
-import styles from './Dialog.module.css';
 
-/** @public */
+/**
+ * A wrapper that connects a trigger element to a Dialog, controlling its open and close state.
+ *
+ * @public
+ */
 export const DialogTrigger = (props: DialogTriggerProps) => {
   return <RADialogTrigger {...props} />;
 };
 
-/** @public */
+/**
+ * A modal overlay that presents content requiring user interaction or acknowledgment, dismissible by clicking outside or pressing Escape.
+ *
+ * @public
+ */
 export const Dialog = forwardRef<React.ElementRef<typeof Modal>, DialogProps>(
   (props, ref) => {
-    const { classNames, cleanedProps } = useStyles(DialogDefinition, props);
-    const { className, children, width, height, style, ...rest } = cleanedProps;
+    const { ownProps, restProps } = useDefinition(DialogDefinition, props, {
+      classNameTarget: 'dialog',
+    });
+    const { classes, children, width, height, style } = ownProps;
 
     return (
       <Modal
         ref={ref}
-        className={clsx(classNames.overlay, styles[classNames.overlay])}
+        className={classes.root}
         isDismissable
         isKeyboardDismissDisabled={false}
-        {...rest}
+        {...restProps}
       >
         <RADialog
-          className={clsx(
-            classNames.dialog,
-            styles[classNames.dialog],
-            className,
-          )}
+          className={classes.dialog}
           style={{
             ['--bui-dialog-min-width' as keyof React.CSSProperties]:
               typeof width === 'number' ? `${width}px` : width || '400px',
-            ['--bui-dialog-min-height' as keyof React.CSSProperties]: height
-              ? typeof height === 'number'
-                ? `${height}px`
-                : height
-              : 'auto',
+            ...(height
+              ? {
+                  ['--bui-dialog-height' as keyof React.CSSProperties]:
+                    typeof height === 'number' ? `${height}px` : height,
+                }
+              : {}),
             ...style,
           }}
         >
-          {children}
+          <BgReset>
+            <Box bg="neutral" className={classes.content}>
+              {children}
+            </Box>
+          </BgReset>
         </RADialog>
       </Modal>
     );
@@ -80,24 +97,21 @@ export const Dialog = forwardRef<React.ElementRef<typeof Modal>, DialogProps>(
 
 Dialog.displayName = 'Dialog';
 
-/** @public */
+/**
+ * The header section of a Dialog, containing the title and a close button.
+ *
+ * @public
+ */
 export const DialogHeader = forwardRef<
   React.ElementRef<'div'>,
   DialogHeaderProps
 >((props, ref) => {
-  const { classNames, cleanedProps } = useStyles(DialogDefinition, props);
-  const { className, children, ...rest } = cleanedProps;
+  const { ownProps, restProps } = useDefinition(DialogHeaderDefinition, props);
+  const { classes, children } = ownProps;
 
   return (
-    <Flex
-      ref={ref}
-      className={clsx(classNames.header, styles[classNames.header], className)}
-      {...rest}
-    >
-      <Heading
-        slot="title"
-        className={clsx(classNames.headerTitle, styles[classNames.headerTitle])}
-      >
+    <Flex ref={ref} className={classes.root} {...restProps}>
+      <Heading slot="title" className={classes.title}>
         {children}
       </Heading>
       <Button name="close" aria-label="Close" variant="tertiary" slot="close">
@@ -108,18 +122,18 @@ export const DialogHeader = forwardRef<
 });
 DialogHeader.displayName = 'DialogHeader';
 
-/** @public */
+/**
+ * The main scrollable content area of a Dialog.
+ *
+ * @public
+ */
 export const DialogBody = forwardRef<React.ElementRef<'div'>, DialogBodyProps>(
   (props, ref) => {
-    const { classNames, cleanedProps } = useStyles(DialogDefinition, props);
-    const { className, children, ...rest } = cleanedProps;
+    const { ownProps, restProps } = useDefinition(DialogBodyDefinition, props);
+    const { classes, children } = ownProps;
 
     return (
-      <div
-        className={clsx(classNames.body, styles[classNames.body], className)}
-        ref={ref}
-        {...rest}
-      >
+      <div className={classes.root} ref={ref} {...restProps}>
         {children}
       </div>
     );
@@ -128,20 +142,20 @@ export const DialogBody = forwardRef<React.ElementRef<'div'>, DialogBodyProps>(
 
 DialogBody.displayName = 'DialogBody';
 
-/** @public */
+/**
+ * The footer section of a Dialog, typically used to place action buttons.
+ *
+ * @public
+ */
 export const DialogFooter = forwardRef<
   React.ElementRef<'div'>,
-  React.ComponentPropsWithoutRef<'div'>
+  DialogFooterProps
 >((props, ref) => {
-  const { classNames, cleanedProps } = useStyles(DialogDefinition, props);
-  const { className, children, ...rest } = cleanedProps;
+  const { ownProps, restProps } = useDefinition(DialogFooterDefinition, props);
+  const { classes, children } = ownProps;
 
   return (
-    <div
-      ref={ref}
-      className={clsx(classNames.footer, styles[classNames.footer], className)}
-      {...rest}
-    >
+    <div ref={ref} className={classes.root} {...restProps}>
       {children}
     </div>
   );

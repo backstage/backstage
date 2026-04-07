@@ -4,6 +4,7 @@
 
 ```ts
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
+import { ColumnConfig } from '@backstage/ui';
 import { ComponentType } from 'react';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
@@ -13,11 +14,13 @@ import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { FilterPredicate } from '@backstage/filter-predicates';
 import { IconLinkVerticalProps } from '@backstage/core-components';
 import { JSX as JSX_2 } from 'react';
+import { JSX as JSX_3 } from 'react/jsx-runtime';
 import { JSXElementConstructor } from 'react';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { RouteRef } from '@backstage/frontend-plugin-api';
+import { TableItem } from '@backstage/ui';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
 
 // @alpha
@@ -33,7 +36,7 @@ export const CatalogFilterBlueprint: ExtensionBlueprint<{
   dataRefs: never;
 }>;
 
-// @alpha (undocumented)
+// @alpha @deprecated (undocumented)
 export const catalogReactTranslationRef: TranslationRef<
   'catalog-react',
   {
@@ -119,6 +122,7 @@ export const catalogReactTranslationRef: TranslationRef<
     readonly 'entityTableColumnTitle.owner': 'Owner';
     readonly 'entityTableColumnTitle.lifecycle': 'Lifecycle';
     readonly 'entityTableColumnTitle.targets': 'Targets';
+    readonly 'entityRelationCard.emptyHelpLinkTitle': 'Learn how to change this.';
     readonly 'missingAnnotationEmptyState.title': 'Missing Annotation';
     readonly 'missingAnnotationEmptyState.readMore': 'Read more';
     readonly 'missingAnnotationEmptyState.annotationYaml': 'Add the annotation to your {{entityKind}} YAML as shown in the highlighted example below:';
@@ -241,6 +245,32 @@ export const EntityCardBlueprint: ExtensionBlueprint<{
 // @alpha (undocumented)
 export type EntityCardType = 'info' | 'content';
 
+// @public (undocumented)
+export interface EntityColumnConfig extends ColumnConfig<EntityRow> {
+  // (undocumented)
+  sortValue?: (entity: EntityRow) => string;
+}
+
+// @alpha (undocumented)
+export const entityColumnPresets: {
+  readonly component: {
+    readonly columns: EntityColumnConfig[];
+    readonly helpLink: 'https://backstage.io/docs/features/software-catalog/descriptor-format#kind-component';
+  };
+  readonly resource: {
+    readonly columns: EntityColumnConfig[];
+    readonly helpLink: 'https://backstage.io/docs/features/software-catalog/descriptor-format#kind-resource';
+  };
+  readonly system: {
+    readonly columns: EntityColumnConfig[];
+    readonly helpLink: 'https://backstage.io/docs/features/software-catalog/descriptor-format#kind-system';
+  };
+  readonly domain: {
+    readonly columns: EntityColumnConfig[];
+    readonly helpLink: 'https://backstage.io/docs/features/software-catalog/descriptor-format#kind-domain';
+  };
+};
+
 // @alpha
 export const EntityContentBlueprint: ExtensionBlueprint<{
   kind: 'entity-content';
@@ -345,6 +375,8 @@ export type EntityContentGroupDefinitions = Record<
   {
     title: string;
     icon?: string | ReactElement;
+    aliases?: string[];
+    contentOrder?: 'title' | 'natural';
   }
 >;
 
@@ -447,6 +479,46 @@ export type EntityContextMenuItemParams = {
   icon: JSX_2.Element;
   filter?: FilterPredicate | ((entity: Entity) => boolean);
 };
+
+// @public (undocumented)
+export function EntityDataTable(props: EntityDataTableProps): JSX_3.Element;
+
+// @public (undocumented)
+export const entityDataTableColumns: Readonly<{
+  createEntityRefColumn(options: {
+    defaultKind?: string;
+    isRowHeader?: boolean;
+  }): EntityColumnConfig;
+  createEntityRelationColumn(options: {
+    id: string;
+    translationKey: 'owner' | 'system' | 'domain';
+    relation: string;
+    defaultKind?: string;
+    filter?: {
+      kind: string;
+    };
+  }): EntityColumnConfig;
+  createOwnerColumn(): EntityColumnConfig;
+  createSystemColumn(): EntityColumnConfig;
+  createDomainColumn(): EntityColumnConfig;
+  createMetadataDescriptionColumn(): EntityColumnConfig;
+  createSpecTypeColumn(): EntityColumnConfig;
+  createSpecLifecycleColumn(): EntityColumnConfig;
+}>;
+
+// @public (undocumented)
+export interface EntityDataTableProps {
+  // (undocumented)
+  columnConfig: EntityColumnConfig[];
+  // (undocumented)
+  data: Entity[];
+  // (undocumented)
+  emptyState?: ReactNode;
+  // (undocumented)
+  error?: Error;
+  // (undocumented)
+  loading?: boolean;
+}
 
 // @alpha (undocumented)
 export const EntityHeaderBlueprint: ExtensionBlueprint<{
@@ -554,6 +626,33 @@ export const EntityIconLinkBlueprint: ExtensionBlueprint<{
     >;
   };
 }>;
+
+// @public (undocumented)
+export function EntityRelationCard(
+  props: EntityRelationCardProps,
+): JSX_3.Element;
+
+// @public (undocumented)
+export interface EntityRelationCardProps {
+  // (undocumented)
+  className?: string;
+  // (undocumented)
+  columnConfig: EntityColumnConfig[];
+  // (undocumented)
+  emptyState?: {
+    message: string;
+    helpLink?: string;
+  };
+  // (undocumented)
+  entityKind?: string;
+  // (undocumented)
+  relationType: string;
+  // (undocumented)
+  title: string;
+}
+
+// @public (undocumented)
+export type EntityRow = Entity & TableItem;
 
 // @alpha (undocumented)
 export const EntityTableColumnTitle: (

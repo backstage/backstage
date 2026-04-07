@@ -1,8 +1,6 @@
-# Catalog Graph
+# Catalog Graph - Extension Reference
 
-> [!WARNING]
-> This documentation is made for those using the experimental new Frontend system.
-> If you are not using the new frontend system, please go [here](./README.md).
+This page contains detailed documentation for all extensions provided by the `@backstage/plugin-catalog-graph` plugin. For general information about the plugin, see the [README](./README.md).
 
 The Catalog graph plugin helps you to visualize the relations between entities, like ownership, grouping or API relationships.
 It comes with these features:

@@ -114,7 +114,7 @@ After:
       'switch',
       'skeleton',
       'plugin-header',
-      'header-page',
+      'header',
       'tabs',
     ],
     version: '0.9.0',

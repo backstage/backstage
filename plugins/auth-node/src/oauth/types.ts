@@ -77,6 +77,16 @@ export interface OAuthAuthenticatorLogoutInput {
 }
 
 /** @public */
+export interface OAuthAuthenticatorLogoutResult {
+  /**
+   * If set, the frontend will redirect the browser to this URL after clearing
+   * the Backstage session. Use this to terminate provider-side sessions (e.g.
+   * Auth0's `/v2/logout` endpoint).
+   */
+  logoutUrl?: string;
+}
+
+/** @public */
 export interface OAuthAuthenticatorResult<TProfile> {
   fullProfile: TProfile;
   session: OAuthSession;
@@ -101,7 +111,10 @@ export interface OAuthAuthenticator<TContext, TProfile> {
     input: OAuthAuthenticatorRefreshInput,
     ctx: TContext,
   ): Promise<OAuthAuthenticatorResult<TProfile>>;
-  logout?(input: OAuthAuthenticatorLogoutInput, ctx: TContext): Promise<void>;
+  logout?(
+    input: OAuthAuthenticatorLogoutInput,
+    ctx: TContext,
+  ): Promise<void | OAuthAuthenticatorLogoutResult>;
 }
 
 /** @public */

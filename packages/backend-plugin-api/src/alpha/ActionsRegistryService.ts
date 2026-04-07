@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { z, AnyZodObject } from 'zod';
+import { z, AnyZodObject } from 'zod/v3';
+import { BasicPermission } from '@backstage/plugin-permission-common';
 import {
   LoggerService,
   BackstageCredentials,
@@ -26,6 +27,21 @@ export type ActionsRegistryActionContext<TInputSchema extends AnyZodObject> = {
   input: z.infer<TInputSchema>;
   logger: LoggerService;
   credentials: BackstageCredentials;
+};
+
+/**
+ * An example of how to use an action registered in the actions registry.
+ *
+ * @alpha
+ */
+export type ActionsRegistryActionExample<
+  TInputSchema extends AnyZodObject,
+  TOutputSchema extends AnyZodObject,
+> = {
+  title: string;
+  description?: string;
+  input: z.infer<TInputSchema>;
+  output?: z.infer<TOutputSchema>;
 };
 
 /**
@@ -42,6 +58,8 @@ export type ActionsRegistryActionOptions<
     input: (zod: typeof z) => TInputSchema;
     output: (zod: typeof z) => TOutputSchema;
   };
+  examples?: Array<ActionsRegistryActionExample<TInputSchema, TOutputSchema>>;
+  visibilityPermission?: BasicPermission;
   attributes?: {
     destructive?: boolean;
     idempotent?: boolean;

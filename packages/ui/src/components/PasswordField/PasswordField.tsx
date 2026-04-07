@@ -20,71 +20,49 @@ import {
   TextField as AriaTextField,
   Button as RAButton,
 } from 'react-aria-components';
-import clsx from 'clsx';
 import { FieldLabel } from '../FieldLabel';
 import { FieldError } from '../FieldError';
 
 import type { PasswordFieldProps } from './types';
-import { useStyles } from '../../hooks/useStyles';
+import { useDefinition } from '../../hooks/useDefinition';
 import { PasswordFieldDefinition } from './definition';
 import { RiEyeLine, RiEyeOffLine } from '@remixicon/react';
-import stylesPasswordField from './PasswordField.module.css';
 
-/** @public */
+/**
+ * A text input for password entry with a toggleable visibility button, integrated label, and inline error display.
+ *
+ * @public
+ */
 export const PasswordField = forwardRef<HTMLDivElement, PasswordFieldProps>(
   (props, ref) => {
-    const {
-      label,
-      'aria-label': ariaLabel,
-      'aria-labelledby': ariaLabelledBy,
-    } = props;
+    const { ownProps, restProps, dataAttributes } = useDefinition(
+      PasswordFieldDefinition,
+      props,
+    );
+    const { classes, label, icon, secondaryLabel, placeholder, description } =
+      ownProps;
 
     useEffect(() => {
-      if (!label && !ariaLabel && !ariaLabelledBy) {
+      if (!label && !restProps['aria-label'] && !restProps['aria-labelledby']) {
         console.warn(
           'PasswordField requires either a visible label, aria-label, or aria-labelledby for accessibility',
         );
       }
-    }, [label, ariaLabel, ariaLabelledBy]);
-
-    const {
-      classNames: classNamesPasswordField,
-      dataAttributes,
-      cleanedProps,
-    } = useStyles(PasswordFieldDefinition, {
-      size: 'small',
-      ...props,
-    });
-
-    const {
-      className,
-      description,
-      icon,
-      isRequired,
-      secondaryLabel,
-      placeholder,
-      ...rest
-    } = cleanedProps;
+    }, [label, restProps['aria-label'], restProps['aria-labelledby']]);
 
     // If a secondary label is provided, use it. Otherwise, use 'Required' if the field is required.
     const secondaryLabelText =
-      secondaryLabel || (isRequired ? 'Required' : null);
+      secondaryLabel || (restProps.isRequired ? 'Required' : null);
 
     // Manage secret visibility toggle
     const [isVisible, setIsVisible] = useState(false);
 
     return (
       <AriaTextField
-        className={clsx(
-          classNamesPasswordField.root,
-          stylesPasswordField[classNamesPasswordField.root],
-          className,
-        )}
+        className={classes.root}
         {...dataAttributes}
-        aria-label={ariaLabel}
-        aria-labelledby={ariaLabelledBy}
         type="password"
-        {...rest}
+        {...restProps}
         ref={ref}
       >
         <FieldLabel
@@ -93,18 +71,12 @@ export const PasswordField = forwardRef<HTMLDivElement, PasswordFieldProps>(
           description={description}
         />
         <div
-          className={clsx(
-            classNamesPasswordField.inputWrapper,
-            stylesPasswordField[classNamesPasswordField.inputWrapper],
-          )}
+          className={classes.inputWrapper}
           data-size={dataAttributes['data-size']}
         >
           {icon && (
             <div
-              className={clsx(
-                classNamesPasswordField.inputIcon,
-                stylesPasswordField[classNamesPasswordField.inputIcon],
-              )}
+              className={classes.inputIcon}
               data-size={dataAttributes['data-size']}
               aria-hidden="true"
             >
@@ -112,10 +84,7 @@ export const PasswordField = forwardRef<HTMLDivElement, PasswordFieldProps>(
             </div>
           )}
           <Input
-            className={clsx(
-              classNamesPasswordField.input,
-              stylesPasswordField[classNamesPasswordField.input],
-            )}
+            className={classes.input}
             {...(icon && { 'data-icon': true })}
             placeholder={placeholder}
             type={isVisible ? 'text' : 'password'}
@@ -127,10 +96,7 @@ export const PasswordField = forwardRef<HTMLDivElement, PasswordFieldProps>(
             aria-controls={isVisible ? 'text' : 'password'}
             aria-expanded={isVisible}
             onPress={() => setIsVisible(v => !v)}
-            className={clsx(
-              classNamesPasswordField.inputVisibility,
-              stylesPasswordField[classNamesPasswordField.inputVisibility],
-            )}
+            className={classes.inputVisibility}
           >
             {isVisible ? <RiEyeLine /> : <RiEyeOffLine />}
           </RAButton>

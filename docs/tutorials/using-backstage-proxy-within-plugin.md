@@ -25,7 +25,7 @@ If your plugin requires access to an API, backstage offers
   - [Option 2: Defining the API client interface](#defining-the-api-client-interface)
     - [Creating the API client](#creating-the-api-client)
     - [Bundling your ApiRef with your plugin](#bundling-your-apiref-with-your-plugin)
-    - [Using the API in your components](#using-your-plugin-in-your-components)
+    - [Using the API in your components](#using-the-api-in-your-components)
 
 ## Setting up the backstage proxy
 
@@ -46,7 +46,7 @@ proxy:
 You can find more details about the proxy config options in the
 [proxying section](../plugins/proxying.md).
 
-# Calling an API using the backstage proxy
+## Calling an API using the backstage proxy
 
 If you followed the previous steps, you should now be able to access your API by
 calling `${backend-url}/api/proxy/<your-proxy-uri>`. The reason why
@@ -94,15 +94,15 @@ export const AwesomeUsersTable = () => {
 
 This section describes the steps to wrap your API client in a [Utility API](../api/utility-apis.md), which are:
 
-- use [`createApiRef`](https://backstage.io/api/stable/functions/_backstage_frontend-plugin-api.createApiRef.html) to create a
-  new [`ApiRef`](https://backstage.io/api/stable/types/_backstage_frontend-plugin-api.ApiRef.html)
-- register an [`ApiFactory`](https://backstage.io/api/stable/types/_backstage_frontend-plugin-api.ApiFactory.html) with
+- use [`createApiRef`](https://backstage.io/api/stable/functions/_backstage_frontend-plugin-api.index.createApiRef.html) to create a
+  new [`ApiRef`](https://backstage.io/api/stable/types/_backstage_frontend-plugin-api.index.ApiRef.html)
+- register an [`ApiFactory`](https://backstage.io/api/stable/types/_backstage_frontend-plugin-api.index.ApiFactory.html) with
   your plugin using
-  [`createApiFactory`](https://backstage.io/api/stable/functions/_backstage_frontend-plugin-api.createApiFactory.html). This
+  [`createApiFactory`](https://backstage.io/api/stable/functions/_backstage_frontend-plugin-api.index.createApiFactory.html). This
   will wrap your API implementation, associate your `ApiRef` with your
   implementation and tell backstage how to instantiate it
 - finally, you can use your API in your components by calling
-  [`useApi`](https://backstage.io/api/stable/functions/_backstage_frontend-plugin-api.useApi.html)
+  [`useApi`](https://backstage.io/api/stable/functions/_backstage_frontend-plugin-api.index.useApi.html)
 
 ### Defining the API client interface
 
@@ -187,8 +187,8 @@ export class MyAwesomeApiClient implements MyAwesomeApi {
 ```
 
 > Check out the docs for more information on the
-> [DiscoveryApi](https://backstage.io/api/stable/types/_backstage_frontend-plugin-api.DiscoveryApi.html) or the
-> [FetchApi](https://backstage.io/api/stable/types/_backstage_frontend-plugin-api.FetchApi.html)
+> [DiscoveryApi](https://backstage.io/api/stable/types/_backstage_frontend-plugin-api.index.DiscoveryApi.html) or the
+> [FetchApi](https://backstage.io/api/stable/types/_backstage_frontend-plugin-api.index.FetchApi.html)
 
 ### Bundling your ApiRef with your plugin
 
@@ -233,7 +233,7 @@ export const myCustomPlugin = createPlugin({
 ### Using the API in your components
 
 Now you should be able to access your API using the backstage hook
-[`useApi`](https://backstage.io/api/stable/functions/_backstage_frontend-plugin-api.useApi.html) from within your plugin code.
+[`useApi`](https://backstage.io/api/stable/functions/_backstage_frontend-plugin-api.index.useApi.html) from within your plugin code.
 
 ```ts title="plugins/my-awesome-plugin/src/components/AwesomeUsersTable.tsx"
 import { useApi } from '@backstage/core-plugin-api';

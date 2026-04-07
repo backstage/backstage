@@ -2,6 +2,7 @@
 id: installing-plugins
 sidebar_label: 003 - Installing plugins
 title: 003 - Installing plugins
+description: How to find and install plugins in your Backstage app
 ---
 
 Now that you have a working Backstage app, let's walk through the most valuable part of the Backstage ecosystem - plugins!

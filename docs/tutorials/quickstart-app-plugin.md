@@ -1,37 +1,30 @@
 ---
 id: quickstart-app-plugin
 title: Adding Custom Plugin to Existing Monorepo App
+description: Tutorial for adding a custom plugin to an existing Backstage monorepo application
 ---
 
-###### September 15th 2020 - v0.1.1-alpha.21
-
-<br />
+::::info
+This documentation is written for the new frontend system, which is the default
+in new Backstage apps. If your Backstage app still uses the old frontend system,
+read the [old frontend system version of this guide](./quickstart-app-plugin--old.md)
+instead.
+::::
 
 > This document takes you through setting up a new plugin for your existing
-> monorepo with a _GitHub provider already setup_. If you don't have either of
-> those, you can clone
-> [simple-backstage-app](https://github.com/johnson-jesse/simple-backstage-app)
-> which this document builds on.
+> monorepo with a _GitHub provider already setup_.
 >
 > This document does not cover authoring a plugin for sharing with the Backstage
 > community. That will have to be a later discussion.
 >
 > We start with a skeleton plugin install. And after verifying its
-> functionality, extend the Sidebar to make our life easy. Finally, we add
-> custom code to display GitHub repository information.
->
-> This document assumes you have Node.js 16 active along with Yarn and Python.
-> Please note, that at the time of this writing, the current version is
-> 0.1.1-alpha.21. This guide can still be used with future versions, just,
-> verify as you go. If you run into issues, you can compare your setup with mine
-> here >
-> [simple-backstage-app-plugin](https://github.com/johnson-jesse/simple-backstage-app-plugin).
+> functionality, we add custom code to display GitHub repository information.
 
 ## The Skeleton Plugin
 
 1. Start by using the built-in creator. From the terminal and root of your
    project run: `yarn new` and select `frontend-plugin`.
-1. Enter a plugin ID. I used `github-playground`
+1. Enter a plugin ID. We'll use `github-playground` for this tutorial.
 1. When the process finishes, let's start the backend:
    `yarn --cwd packages/backend start`
 1. If you see errors starting, refer to
@@ -40,27 +33,15 @@ title: Adding Custom Plugin to Existing Monorepo App
 1. And now the frontend, from a new terminal window and the root of your
    project: `yarn start`
 1. As usual, a browser window should popup loading the App.
-1. Now manually navigate to our plugin page from your browser:
+1. Now manually navigate to the plugin page from your browser:
    `http://localhost:3000/github-playground`
 1. You should see successful verbiage for this endpoint,
    `Welcome to github-playground!`
 
-## The Shortcut
-
-Let's add a shortcut.
-
-1. Open and modify `root: packages > app > src > components > Root.tsx` with the
-   following:
-
-```tsx
-import GitHubIcon from '@material-ui/icons/GitHub';
-...
-<SidebarItem icon={GitHubIcon} to="github-playground" text="GitHub Repository" />
-```
-
-Simple! The App will reload with your changes automatically. You should now see
-a GitHub icon displayed in the sidebar. Clicking that will link to our new
-plugin. And now, the API fun begins.
+With the new frontend system, plugins are auto-discovered when installed as
+dependencies of your `packages/app` package. The plugin was already added there
+by `yarn new`, so the route and a sidebar item are available without any manual
+wiring in `App.tsx` or `Root.tsx`.
 
 ## The Identity
 
@@ -71,7 +52,6 @@ Our first modification will be to extract information from the Identity API.
 1. Add two new imports
 
 ```tsx
-// Add identityApiRef to the list of imported from core
 import { identityApiRef, useApi } from '@backstage/core-plugin-api';
 ```
 
@@ -97,10 +77,8 @@ const ExampleComponent = () => {
 4. Now add our hook and const data before the return statement
 
 ```tsx
-// our API hook
 const identityApi = useApi(identityApiRef);
 
-// data to use
 const userId = identityApi.getUserId();
 const profile = identityApi.getProfile();
 ```

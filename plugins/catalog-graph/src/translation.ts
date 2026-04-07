@@ -15,7 +15,7 @@
  */
 import { createTranslationRef } from '@backstage/frontend-plugin-api';
 
-/** @alpha */
+/** @public */
 export const catalogGraphTranslationRef = createTranslationRef({
   id: 'catalog-graph',
   messages: {

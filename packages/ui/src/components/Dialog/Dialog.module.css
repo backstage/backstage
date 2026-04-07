@@ -43,18 +43,29 @@
   }
 
   .bui-Dialog {
-    background: var(--bui-bg-popover);
-    border-radius: 0.5rem;
+    --dialog-border-radius: 0.5rem;
+    background: var(--bui-bg-app);
+    box-shadow: var(--bui-shadow);
+    border-radius: var(--dialog-border-radius);
     border: 1px solid var(--bui-border-1);
     color: var(--bui-fg-primary);
     position: relative;
-    width: min(var(--bui-dialog-min-width, 400px), calc(100vw - 3rem));
-    max-width: calc(100vw - 3rem);
-    height: min(var(--bui-dialog-min-height, auto), calc(100vh - 3rem));
-    max-height: calc(100vh - 3rem);
     display: flex;
     flex-direction: column;
+    width: min(var(--bui-dialog-min-width, 400px), calc(100vw - 3rem));
+    max-width: calc(100vw - 3rem);
+    height: var(--bui-dialog-height, auto);
+    max-height: calc(100vh - 3rem);
     outline: none;
+  }
+
+  .bui-DialogContent {
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--dialog-border-radius);
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
   }
 
   /* Dialog entering animation */
@@ -95,6 +106,7 @@
   .bui-DialogBody {
     padding: var(--bui-space-3);
     flex: 1;
+    min-height: 0;
     overflow-y: auto;
   }
 

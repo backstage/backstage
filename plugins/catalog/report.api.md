@@ -11,6 +11,7 @@ import { CompoundEntityRef } from '@backstage/catalog-model';
 import { DomainEntity } from '@backstage/catalog-model';
 import { ElementType } from 'react';
 import { Entity } from '@backstage/catalog-model';
+import { EntityColumnConfig } from '@backstage/plugin-catalog-react/alpha';
 import { EntityListContextProps } from '@backstage/plugin-catalog-react';
 import { EntityListPagination } from '@backstage/plugin-catalog-react';
 import { EntityOwnerPickerProps } from '@backstage/plugin-catalog-react';
@@ -38,12 +39,8 @@ import { TableColumn } from '@backstage/core-components';
 import { TableOptions } from '@backstage/core-components';
 import { TableProps } from '@backstage/core-components';
 import { TabProps } from '@material-ui/core/Tab';
+import { TranslationRef } from '@backstage/frontend-plugin-api';
 import { UserListFilterKind } from '@backstage/plugin-catalog-react';
-
-// @public
-export type AboutCardProps = {
-  variant?: InfoCardVariants;
-};
 
 // @public (undocumented)
 export function AboutContent(props: AboutContentProps): JSX_2.Element;
@@ -63,8 +60,6 @@ export interface AboutFieldProps {
   children?: ReactNode;
   // (undocumented)
   className?: string;
-  // (undocumented)
-  gridSizes?: Record<string, number>;
   // (undocumented)
   label: string;
   // (undocumented)
@@ -222,6 +217,105 @@ export interface CatalogTableRow {
 export type CatalogTableToolbarClassKey = 'root' | 'text';
 
 // @public (undocumented)
+export const catalogTranslationRef: TranslationRef<
+  'catalog',
+  {
+    readonly 'deleteEntity.description': 'This entity is not referenced by any location and is therefore not receiving updates.';
+    readonly 'deleteEntity.cancelButtonTitle': 'Cancel';
+    readonly 'deleteEntity.deleteButtonTitle': 'Delete';
+    readonly 'deleteEntity.dialogTitle': 'Are you sure you want to delete this entity?';
+    readonly 'deleteEntity.actionButtonTitle': 'Delete entity';
+    readonly 'indexPage.title': '{{orgName}} Catalog';
+    readonly 'indexPage.createButtonTitle': 'Create';
+    readonly 'indexPage.supportButtonContent': 'All your software catalog entities';
+    readonly 'entityPage.notFoundMessage': 'There is no {{kind}} with the requested {{link}}.';
+    readonly 'entityPage.notFoundLinkText': 'kind, namespace, and name';
+    readonly 'aboutCard.title': 'About';
+    readonly 'aboutCard.unknown': 'unknown';
+    readonly 'aboutCard.refreshButtonTitle': 'Schedule entity refresh';
+    readonly 'aboutCard.editButtonTitle': 'Edit Metadata';
+    readonly 'aboutCard.editButtonAriaLabel': 'Edit';
+    readonly 'aboutCard.createSimilarButtonTitle': 'Create something similar';
+    readonly 'aboutCard.refreshScheduledMessage': 'Refresh scheduled';
+    readonly 'aboutCard.refreshButtonAriaLabel': 'Refresh';
+    readonly 'aboutCard.launchTemplate': 'Launch Template';
+    readonly 'aboutCard.viewTechdocs': 'View TechDocs';
+    readonly 'aboutCard.viewSource': 'View Source';
+    readonly 'aboutCard.descriptionField.value': 'No description';
+    readonly 'aboutCard.descriptionField.label': 'Description';
+    readonly 'aboutCard.ownerField.value': 'No Owner';
+    readonly 'aboutCard.ownerField.label': 'Owner';
+    readonly 'aboutCard.domainField.value': 'No Domain';
+    readonly 'aboutCard.domainField.label': 'Domain';
+    readonly 'aboutCard.systemField.value': 'No System';
+    readonly 'aboutCard.systemField.label': 'System';
+    readonly 'aboutCard.parentComponentField.value': 'No Parent Component';
+    readonly 'aboutCard.parentComponentField.label': 'Parent Component';
+    readonly 'aboutCard.kindField.label': 'Kind';
+    readonly 'aboutCard.typeField.label': 'Type';
+    readonly 'aboutCard.lifecycleField.label': 'Lifecycle';
+    readonly 'aboutCard.tagsField.value': 'No Tags';
+    readonly 'aboutCard.tagsField.label': 'Tags';
+    readonly 'aboutCard.targetsField.label': 'Targets';
+    readonly 'searchResultItem.type': 'Type';
+    readonly 'searchResultItem.kind': 'Kind';
+    readonly 'searchResultItem.owner': 'Owner';
+    readonly 'searchResultItem.lifecycle': 'Lifecycle';
+    readonly 'catalogTable.allFilters': 'All';
+    readonly 'catalogTable.warningPanelTitle': 'Could not fetch catalog entities.';
+    readonly 'catalogTable.viewActionTitle': 'View';
+    readonly 'catalogTable.editActionTitle': 'Edit';
+    readonly 'catalogTable.starActionTitle': 'Add to favorites';
+    readonly 'catalogTable.unStarActionTitle': 'Remove from favorites';
+    readonly 'dependencyOfComponentsCard.title': 'Dependency of components';
+    readonly 'dependencyOfComponentsCard.emptyMessage': 'No component depends on this component.';
+    readonly 'dependsOnComponentsCard.title': 'Depends on components';
+    readonly 'dependsOnComponentsCard.emptyMessage': 'No component is a dependency of this component.';
+    readonly 'dependsOnResourcesCard.title': 'Depends on resources';
+    readonly 'dependsOnResourcesCard.emptyMessage': 'No resource is a dependency of this component.';
+    readonly 'entityContextMenu.copiedMessage': 'Copied!';
+    readonly 'entityContextMenu.moreButtonTitle': 'More';
+    readonly 'entityContextMenu.inspectMenuTitle': 'Inspect entity';
+    readonly 'entityContextMenu.copyURLMenuTitle': 'Copy entity URL';
+    readonly 'entityContextMenu.unregisterMenuTitle': 'Unregister entity';
+    readonly 'entityContextMenu.moreButtonAriaLabel': 'more';
+    readonly 'entityLabelsCard.title': 'Labels';
+    readonly 'entityLabelsCard.readMoreButtonTitle': 'Read more';
+    readonly 'entityLabelsCard.columnKeyLabel': 'Label';
+    readonly 'entityLabelsCard.columnValueLabel': 'Value';
+    readonly 'entityLabelsCard.emptyDescription': 'No labels defined for this entity. You can add labels to your entity YAML as shown in the highlighted example below:';
+    readonly 'entityLabels.ownerLabel': 'Owner';
+    readonly 'entityLabels.warningPanelTitle': 'Entity not found';
+    readonly 'entityLabels.lifecycleLabel': 'Lifecycle';
+    readonly 'entityLinksCard.title': 'Links';
+    readonly 'entityLinksCard.readMoreButtonTitle': 'Read more';
+    readonly 'entityLinksCard.emptyDescription': 'No links defined for this entity. You can add links to your entity YAML as shown in the highlighted example below:';
+    readonly 'entityNotFound.title': 'Entity was not found';
+    readonly 'entityNotFound.description': 'Want to help us build this? Check out our Getting Started documentation.';
+    readonly 'entityNotFound.docButtonTitle': 'DOCS';
+    readonly 'entityTabs.tabsAriaLabel': 'Tabs';
+    readonly entityProcessingErrorsDescription: 'The error below originates from';
+    readonly entityRelationWarningDescription: "This entity has relations to other entities, which can't be found in the catalog.\n Entities not found are: ";
+    readonly 'hasComponentsCard.title': 'Has components';
+    readonly 'hasComponentsCard.emptyMessage': 'No component is part of this system.';
+    readonly 'hasResourcesCard.title': 'Has resources';
+    readonly 'hasResourcesCard.emptyMessage': 'No resource is part of this system.';
+    readonly 'hasSubcomponentsCard.title': 'Has subcomponents';
+    readonly 'hasSubcomponentsCard.emptyMessage': 'No subcomponent is part of this component.';
+    readonly 'hasSubdomainsCard.title': 'Has subdomains';
+    readonly 'hasSubdomainsCard.emptyMessage': 'No subdomain is part of this domain.';
+    readonly 'hasSystemsCard.title': 'Has systems';
+    readonly 'hasSystemsCard.emptyMessage': 'No system is part of this domain.';
+    readonly 'relatedEntitiesCard.emptyHelpLinkTitle': 'Learn how to change this.';
+    readonly 'systemDiagramCard.title': 'System Diagram';
+    readonly 'systemDiagramCard.description': 'Use pinch & zoom to move around the diagram.';
+    readonly 'systemDiagramCard.edgeLabels.dependsOn': 'depends on';
+    readonly 'systemDiagramCard.edgeLabels.partOf': 'part of';
+    readonly 'systemDiagramCard.edgeLabels.provides': 'provides';
+  }
+>;
+
+// @public (undocumented)
 export type ColumnBreakpoints = Record<Breakpoint, number>;
 
 // @public
@@ -297,44 +391,68 @@ export class DefaultStarredEntitiesApi implements StarredEntitiesApi {
   toggleStarred(entityRef: string): Promise<void>;
 }
 
-// @public (undocumented)
-export interface DependencyOfComponentsCardProps {
-  // (undocumented)
+// @public @deprecated
+export interface DependencyOfComponentsCardLegacyProps {
+  // @deprecated (undocumented)
   columns?: TableColumn<ComponentEntity>[];
-  // (undocumented)
+  // @deprecated (undocumented)
   tableOptions?: TableOptions;
   // (undocumented)
   title?: string;
+  // @deprecated (undocumented)
+  variant?: InfoCardVariants;
+}
+
+// @public (undocumented)
+export interface DependencyOfComponentsCardProps {
   // (undocumented)
+  columnConfig?: EntityColumnConfig[];
+  // (undocumented)
+  title?: string;
+}
+
+// @public @deprecated
+export interface DependsOnComponentsCardLegacyProps {
+  // @deprecated (undocumented)
+  columns?: TableColumn<ComponentEntity>[];
+  // @deprecated (undocumented)
+  tableOptions?: TableOptions;
+  // (undocumented)
+  title?: string;
+  // @deprecated (undocumented)
   variant?: InfoCardVariants;
 }
 
 // @public (undocumented)
 export interface DependsOnComponentsCardProps {
   // (undocumented)
-  columns?: TableColumn<ComponentEntity>[];
+  columnConfig?: EntityColumnConfig[];
   // (undocumented)
+  title?: string;
+}
+
+// @public @deprecated
+export interface DependsOnResourcesCardLegacyProps {
+  // @deprecated (undocumented)
+  columns?: TableColumn<ResourceEntity>[];
+  // @deprecated (undocumented)
   tableOptions?: TableOptions;
   // (undocumented)
   title?: string;
-  // (undocumented)
+  // @deprecated (undocumented)
   variant?: InfoCardVariants;
 }
 
 // @public (undocumented)
 export interface DependsOnResourcesCardProps {
   // (undocumented)
-  columns?: TableColumn<ResourceEntity>[];
-  // (undocumented)
-  tableOptions?: TableOptions;
+  columnConfig?: EntityColumnConfig[];
   // (undocumented)
   title?: string;
-  // (undocumented)
-  variant?: InfoCardVariants;
 }
 
 // @public
-export const EntityAboutCard: (props: AboutCardProps) => JSX.Element;
+export const EntityAboutCard: () => JSX.Element;
 
 // @public (undocumented)
 export type EntityContextMenuClassKey = 'button';
@@ -384,8 +502,6 @@ export const EntityLabelsCard: (props: EntityLabelsCardProps) => JSX_2.Element;
 export interface EntityLabelsCardProps {
   // (undocumented)
   title?: string;
-  // (undocumented)
-  variant?: InfoCardVariants;
 }
 
 // @public (undocumented)
@@ -435,8 +551,6 @@ export const EntityLinksCard: (props: EntityLinksCardProps) => JSX_2.Element;
 export interface EntityLinksCardProps {
   // (undocumented)
   cols?: ColumnBreakpoints | number;
-  // (undocumented)
-  variant?: InfoCardVariants;
 }
 
 // @public (undocumented)
@@ -513,16 +627,24 @@ export function hasCatalogProcessingErrors(
   },
 ): Promise<boolean>;
 
-// @public (undocumented)
-export interface HasComponentsCardProps {
-  // (undocumented)
+// @public @deprecated
+export interface HasComponentsCardLegacyProps {
+  // @deprecated (undocumented)
   columns?: TableColumn<ComponentEntity>[];
-  // (undocumented)
+  // @deprecated (undocumented)
   tableOptions?: TableOptions;
   // (undocumented)
   title?: string;
-  // (undocumented)
+  // @deprecated (undocumented)
   variant?: InfoCardVariants;
+}
+
+// @public (undocumented)
+export interface HasComponentsCardProps {
+  // (undocumented)
+  columnConfig?: EntityColumnConfig[];
+  // (undocumented)
+  title?: string;
 }
 
 // @public
@@ -536,54 +658,88 @@ export function hasRelationWarnings(
   },
 ): Promise<boolean>;
 
-// @public (undocumented)
-export interface HasResourcesCardProps {
-  // (undocumented)
+// @public @deprecated
+export interface HasResourcesCardLegacyProps {
+  // @deprecated (undocumented)
   columns?: TableColumn<ResourceEntity>[];
-  // (undocumented)
+  // @deprecated (undocumented)
   tableOptions?: TableOptions;
   // (undocumented)
   title?: string;
+  // @deprecated (undocumented)
+  variant?: InfoCardVariants;
+}
+
+// @public (undocumented)
+export interface HasResourcesCardProps {
   // (undocumented)
+  columnConfig?: EntityColumnConfig[];
+  // (undocumented)
+  title?: string;
+}
+
+// @public @deprecated
+export interface HasSubcomponentsCardLegacyProps {
+  // @deprecated (undocumented)
+  columns?: TableColumn<ComponentEntity>[];
+  // (undocumented)
+  kind?: string;
+  // @deprecated (undocumented)
+  tableOptions?: TableOptions;
+  // (undocumented)
+  title?: string;
+  // @deprecated (undocumented)
   variant?: InfoCardVariants;
 }
 
 // @public (undocumented)
 export interface HasSubcomponentsCardProps {
   // (undocumented)
-  columns?: TableColumn<ComponentEntity>[];
+  columnConfig?: EntityColumnConfig[];
   // (undocumented)
   kind?: string;
   // (undocumented)
+  title?: string;
+}
+
+// @public @deprecated
+export interface HasSubdomainsCardLegacyProps {
+  // @deprecated (undocumented)
+  columns?: TableColumn<DomainEntity>[];
+  // @deprecated (undocumented)
   tableOptions?: TableOptions;
   // (undocumented)
   title?: string;
-  // (undocumented)
+  // @deprecated (undocumented)
   variant?: InfoCardVariants;
 }
 
 // @public (undocumented)
 export interface HasSubdomainsCardProps {
   // (undocumented)
-  columns?: TableColumn<DomainEntity>[];
+  columnConfig?: EntityColumnConfig[];
   // (undocumented)
+  title?: string;
+}
+
+// @public @deprecated
+export interface HasSystemsCardLegacyProps {
+  // @deprecated (undocumented)
+  columns?: TableColumn<SystemEntity>[];
+  // @deprecated (undocumented)
   tableOptions?: TableOptions;
   // (undocumented)
   title?: string;
-  // (undocumented)
+  // @deprecated (undocumented)
   variant?: InfoCardVariants;
 }
 
 // @public (undocumented)
 export interface HasSystemsCardProps {
   // (undocumented)
-  columns?: TableColumn<SystemEntity>[];
-  // (undocumented)
-  tableOptions?: TableOptions;
+  columnConfig?: EntityColumnConfig[];
   // (undocumented)
   title?: string;
-  // (undocumented)
-  variant?: InfoCardVariants;
 }
 
 // @public

@@ -15,57 +15,74 @@
  */
 
 import { spawn } from 'node:child_process';
-import os from 'node:os';
-import pLimit from 'p-limit';
+import { randomUUID } from 'node:crypto';
+import { openSync, closeSync, readFileSync, unlinkSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
-// Some commands launch full node processes doing heavy work, which at high
-// concurrency levels risk exhausting system resources. Placing the limiter here
-// at the root level ensures that the concurrency boundary applies globally, not
-// just per-runner.
-const limiter = pLimit(os.cpus().length);
+// Matches ANSI SGR escape sequences (e.g. bold, color, reset)
+const ansiPattern = new RegExp(`${String.fromCharCode(0x1b)}\\[[0-9;]*m`, 'g');
 
+/**
+ * Redirect stdout to a temp file so that output is captured reliably even when
+ * child processes call process.exit() before async buffers have been flushed.
+ *
+ * Uses async spawn so that multiple invocations can run concurrently when
+ * combined with a concurrency limiter.
+ */
 export function createBinRunner(cwd: string, path: string) {
-  return async (...command: string[]) =>
-    limiter(
-      () =>
-        new Promise<string>((resolve, reject) => {
-          // Handle the case where path is empty and the script path is the first command argument
-          const args = path ? [path, ...command] : command;
-          const child = spawn('node', args, {
-            cwd,
-            stdio: ['ignore', 'pipe', 'pipe'],
-          });
+  return (...command: string[]) => {
+    return new Promise<string>((resolve, reject) => {
+      const args = path ? [path, ...command] : command;
+      const outPath = join(tmpdir(), `backstage-cli-out-${randomUUID()}.txt`);
+      const outFd = openSync(outPath, 'w');
 
-          let stdout = '';
-          let stderr = '';
+      const child = spawn('node', args, {
+        cwd,
+        env: { ...process.env, NO_COLOR: '1' },
+        stdio: ['ignore', outFd, 'pipe'],
+      });
 
-          child.stdout?.on('data', data => {
-            stdout += data.toString();
-          });
+      // The fd is duplicated by the OS for the child process, so we can
+      // close our copy immediately after spawn.
+      closeSync(outFd);
 
-          child.stderr?.on('data', data => {
-            stderr += data.toString();
-          });
+      const stderrChunks: Buffer[] = [];
+      child.stderr?.on('data', chunk => stderrChunks.push(chunk));
 
-          child.on('error', err => {
-            reject(new Error(`Process error: ${err.message}`));
-          });
+      child.on('error', err => {
+        try {
+          unlinkSync(outPath);
+        } catch {
+          /* ignore cleanup errors */
+        }
+        reject(new Error(`Process error: ${err.message}`));
+      });
 
-          child.on('close', (code, signal) => {
-            if (signal) {
-              reject(
-                new Error(
-                  `Process was killed with signal ${signal}\n${stderr}`,
-                ),
-              );
-            } else if (code !== 0) {
-              reject(new Error(`Process exited with code ${code}\n${stderr}`));
-            } else if (stderr.trim()) {
-              reject(new Error(`Command printed error output: ${stderr}`));
-            } else {
-              resolve(stdout);
-            }
-          });
-        }),
-    );
+      child.on('close', (code, signal) => {
+        try {
+          const stdout = readFileSync(outPath, 'utf8').replace(ansiPattern, '');
+          const stderr = Buffer.concat(stderrChunks).toString();
+
+          if (signal) {
+            reject(
+              new Error(`Process was killed with signal ${signal}\n${stderr}`),
+            );
+          } else if (code !== 0) {
+            reject(new Error(`Process exited with code ${code}\n${stderr}`));
+          } else if (stderr.trim()) {
+            reject(new Error(`Command printed error output: ${stderr}`));
+          } else {
+            resolve(stdout);
+          }
+        } finally {
+          try {
+            unlinkSync(outPath);
+          } catch {
+            /* ignore cleanup errors */
+          }
+        }
+      });
+    });
+  };
 }

@@ -15,22 +15,14 @@ Some features are not yet available for all supported Git providers.
 
 ## Getting Started
 
-1. Install the Catalog Import Plugin:
+Install the Catalog Import Plugin:
 
 ```bash
 # From your Backstage root directory
 yarn --cwd packages/app add @backstage/plugin-catalog-import
 ```
 
-2. Add the `CatalogImportPage` extension to the app:
-
-```tsx
-// packages/app/src/App.tsx
-
-import { CatalogImportPage } from '@backstage/plugin-catalog-import';
-
-<Route path="/catalog-import" element={<CatalogImportPage />} />;
-```
+Once installed, the plugin is automatically available in your app through the default feature discovery. For more details and alternative installation methods, see [installing plugins](https://backstage.io/docs/frontend-system/building-apps/installing-plugins).
 
 ## Customizations
 
@@ -102,6 +94,22 @@ Following React components accept optional props for providing custom example en
   exampleLocationUrl="https://github.com/acme-corp/our-awesome-api/blob/main/anvil.yaml"
   exampleRepositoryUrl="https://github.com/acme-corp/our-awesome-api"
 />
+```
+
+## Old Frontend System
+
+If your Backstage app uses the old frontend system, you need to manually wire the
+plugin into your app as outlined in this section. If you are on the new frontend
+system, you can skip this.
+
+Add the `CatalogImportPage` extension to the app:
+
+```tsx
+// packages/app/src/App.tsx
+
+import { CatalogImportPage } from '@backstage/plugin-catalog-import';
+
+<Route path="/catalog-import" element={<CatalogImportPage />} />;
 ```
 
 ## Development

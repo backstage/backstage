@@ -24,6 +24,7 @@ import {
   TableProps,
 } from '@backstage/core-components';
 import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
+import { HeaderPage } from '@backstage/ui';
 import { CatalogTable, CatalogTableRow } from '@backstage/plugin-catalog';
 import {
   EntityKindPicker,
@@ -67,6 +68,42 @@ export type DefaultApiExplorerPageProps = {
   pagination?: EntityListPagination;
 };
 
+type ApiExplorerPageContentProps = {
+  initiallySelectedFilter: UserListFilterKind;
+  columns?: TableColumn<CatalogTableRow>[];
+  actions?: TableProps<CatalogTableRow>['actions'];
+  ownerPickerMode?: EntityOwnerPickerProps['mode'];
+  pagination?: EntityListPagination;
+};
+
+function ApiExplorerPageContent(props: ApiExplorerPageContentProps) {
+  const {
+    initiallySelectedFilter,
+    columns,
+    actions,
+    ownerPickerMode,
+    pagination,
+  } = props;
+
+  return (
+    <EntityListProvider pagination={pagination}>
+      <CatalogFilterLayout>
+        <CatalogFilterLayout.Filters>
+          <EntityKindPicker initialFilter="api" hidden />
+          <EntityTypePicker />
+          <UserListPicker initialFilter={initiallySelectedFilter} />
+          <EntityOwnerPicker mode={ownerPickerMode} />
+          <EntityLifecyclePicker />
+          <EntityTagPicker />
+        </CatalogFilterLayout.Filters>
+        <CatalogFilterLayout.Content>
+          <CatalogTable columns={columns || defaultColumns} actions={actions} />
+        </CatalogFilterLayout.Content>
+      </CatalogFilterLayout>
+    </EntityListProvider>
+  );
+}
+
 /**
  * DefaultApiExplorerPage
  * @public
@@ -89,6 +126,19 @@ export const DefaultApiExplorerPage = (props: DefaultApiExplorerPageProps) => {
   const { allowed } = usePermission({
     permission: catalogEntityCreatePermission,
   });
+  const headerActions = (
+    <>
+      {allowed && (
+        <CreateButton
+          title={t('defaultApiExplorerPage.createButtonTitle')}
+          to={registerComponentLink?.()}
+        />
+      )}
+      <SupportButton>
+        {t('defaultApiExplorerPage.supportButtonTitle')}
+      </SupportButton>
+    </>
+  );
 
   return (
     <PageWithHeader
@@ -98,36 +148,63 @@ export const DefaultApiExplorerPage = (props: DefaultApiExplorerPageProps) => {
       pageTitleOverride={t('defaultApiExplorerPage.pageTitleOverride')}
     >
       <Content>
-        <ContentHeader title="">
-          {allowed && (
-            <CreateButton
-              title={t('defaultApiExplorerPage.createButtonTitle')}
-              to={registerComponentLink?.()}
-            />
-          )}
-          <SupportButton>
-            {t('defaultApiExplorerPage.supportButtonTitle')}
-          </SupportButton>
-        </ContentHeader>
-        <EntityListProvider pagination={pagination}>
-          <CatalogFilterLayout>
-            <CatalogFilterLayout.Filters>
-              <EntityKindPicker initialFilter="api" hidden />
-              <EntityTypePicker />
-              <UserListPicker initialFilter={initiallySelectedFilter} />
-              <EntityOwnerPicker mode={ownerPickerMode} />
-              <EntityLifecyclePicker />
-              <EntityTagPicker />
-            </CatalogFilterLayout.Filters>
-            <CatalogFilterLayout.Content>
-              <CatalogTable
-                columns={columns || defaultColumns}
-                actions={actions}
-              />
-            </CatalogFilterLayout.Content>
-          </CatalogFilterLayout>
-        </EntityListProvider>
+        <ContentHeader title="">{headerActions}</ContentHeader>
+        <ApiExplorerPageContent
+          initiallySelectedFilter={initiallySelectedFilter}
+          columns={columns}
+          actions={actions}
+          ownerPickerMode={ownerPickerMode}
+          pagination={pagination}
+        />
       </Content>
     </PageWithHeader>
+  );
+};
+
+export const NfsApiExplorerPage = (props: DefaultApiExplorerPageProps) => {
+  const {
+    initiallySelectedFilter = 'all',
+    columns,
+    actions,
+    ownerPickerMode,
+    pagination,
+  } = props;
+
+  const configApi = useApi(configApiRef);
+  const { t } = useTranslationRef(apiDocsTranslationRef);
+  const generatedSubtitle = t('defaultApiExplorerPage.subtitle', {
+    orgName: configApi.getOptionalString('organization.name') ?? 'Backstage',
+  });
+  const registerComponentLink = useRouteRef(registerComponentRouteRef);
+  const { allowed } = usePermission({
+    permission: catalogEntityCreatePermission,
+  });
+  const headerActions = (
+    <>
+      {allowed && (
+        <CreateButton
+          title={t('defaultApiExplorerPage.createButtonTitle')}
+          to={registerComponentLink?.()}
+        />
+      )}
+      <SupportButton>
+        {t('defaultApiExplorerPage.supportButtonTitle')}
+      </SupportButton>
+    </>
+  );
+
+  return (
+    <>
+      <HeaderPage title={generatedSubtitle} customActions={headerActions} />
+      <Content>
+        <ApiExplorerPageContent
+          initiallySelectedFilter={initiallySelectedFilter}
+          columns={columns}
+          actions={actions}
+          ownerPickerMode={ownerPickerMode}
+          pagination={pagination}
+        />
+      </Content>
+    </>
   );
 };

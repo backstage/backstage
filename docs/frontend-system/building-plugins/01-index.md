@@ -11,7 +11,7 @@ frontend _features_, and what you install to build up a Backstage frontend [app]
 
 ## Creating a new plugin
 
-This guide assumes that you already have a Backstage project set up. Even if you only want to develop a single plugin for publishing, we still recommend that you do so in a standard Backstage monorepo project, as you often end up needing multiple packages. For instructions on how to set up a new project, see our [getting started](../../getting-started/index.md#prerequisites) documentation.
+This guide assumes that you already have a Backstage project set up. Even if you only want to develop a single plugin for publishing, we still recommend that you do so in a standard Backstage monorepo project, as you often end up needing multiple packages. For instructions on how to set up a new project, see our [getting started](../../getting-started/index.md) documentation.
 
 To create a frontend plugin, run `yarn new`, select `plugin`, and fill out the rest of the prompts. This will create a new package at `plugins/<pluginId>`, which will be the main entrypoint for your plugin.
 
@@ -109,6 +109,21 @@ export const examplePlugin = createFrontendPlugin({
 What we've built here is a very common type of plugin. It's a top-level tool that provides a single page, along with a method for navigating to that page. The implementation of the page component, in this case the highlighted `ExamplePage`, can be arbitrarily complex. It can be anything from a single simple information page, to a full-blown application with multiple sub-pages.
 
 We have also provided external access to our route reference by passing it to the plugin `routes` option. This makes it possible for app integrators to bind an external link from a different plugin to our plugin page. You can read more about how this works in the [External Route References](../architecture/36-routes.md#external-route-references) section.
+
+## Running a dev server
+
+Each frontend plugin package has a `dev/` folder that is used as the entry point when you run `yarn start`. This is a convenient way to run your plugin in isolation during development. The `@backstage/frontend-dev-utils` package provides a `createDevApp` helper that sets up a minimal app for this purpose:
+
+```tsx title="in dev/index.ts"
+import { createDevApp } from '@backstage/frontend-dev-utils';
+import myPlugin from '../src';
+
+createDevApp({ features: [myPlugin] });
+```
+
+This will create and render a Backstage app with only your plugin installed. If you need to include additional features that your plugin depends on, pass them along in the `features` array. You can also use `bindRoutes` to wire up any external routes that your plugin depends on.
+
+The dev setup is started by running `yarn start` in the plugin directory, which uses the `backstage-cli package start` command. It sets up a local development server with hot reloading, just like a full app.
 
 ## Utility APIs
 
@@ -223,3 +238,11 @@ export const examplePlugin = createFrontendPlugin({
 The `ExampleEntityContent` itself is again a regular React component where you can implement any functionality you want. To access the entity that the content is being rendered for, you can use the `useEntity` hook from `@backstage/plugin-catalog-react`. You can see a full list of APIs provided by the catalog React library in [the API reference](https://backstage.io/api/stable/modules/_backstage_plugin-catalog-react.index.html).
 
 For a more complete list of the different kinds of extensions that you can create for your plugin, see the [extension blueprints](./03-common-extension-blueprints.md) section.
+
+## Related topics
+
+The following guides cover cross-cutting concerns for building frontend plugins:
+
+- [Internationalization (i18n)](./07-internationalization.md) — Adding translations to your plugin using `createTranslationRef` and `useTranslationRef`.
+- [Plugin Analytics](./08-analytics.md) — Instrumenting user interactions with the Analytics API using `AnalyticsImplementationBlueprint`.
+- [Feature Flags](./09-feature-flags.md) — Defining and using feature flags via the `featureFlags` option of `createFrontendPlugin`.

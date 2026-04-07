@@ -97,7 +97,7 @@ Since this service only handles loading, you would choose a packaging approach b
 
 **When to use:** Plugin only uses dependencies that are already provided by the main Backstage application.
 
-**How to apply:**
+**How to use:**
 
 ```bash
 cd my-backstage-plugin
@@ -117,7 +117,7 @@ tar -xzf package.tgz -C /path/to/dynamic-plugins-root/my-backstage-plugin --stri
 
 **When to use:** Plugin has private dependencies not available in the main Backstage application.
 
-**How to apply:**
+**How to use:**
 
 ```bash
 # Package the plugin
@@ -136,35 +136,47 @@ yarn install  # Installs all the plugin's dependencies
 
 **Example scenario:** Plugin needs `axios@1.4.0` which isn't available in the main application.
 
-### 3. Custom packaging CLI tool
+### 3. Dedicated bundling CLI command
 
-**When to use:** When you want to produce self-contained dynamic plugin packages that can be directly extracted without any post-action, and systematically use the core `@backstage` dependencies provided by the Backstage application.
+**When to use:**
 
-**What a packaging CLI needs to do:**
+- When you want to produce self-contained dynamic plugin packages that can be directly extracted and loaded without any post-action,
+- especially when your plugin depends on other packages in the same monorepo.
 
-1. **Analyze plugin dependencies** - Identify which are Backstage core vs private dependencies
-2. **Create distribution package** - Generate a new directory with modified structure:
-   - Move `@backstage/*` packages from `dependencies` to `peerDependencies` in package.json
-   - Keep only private dependencies in the `dependencies` section
-   - Keep the built JavaScript code unchanged
-   - Include only the filtered private dependencies in `node_modules`
-3. **Result** - A self-contained package that uses the main app's `@backstage/*` packages but includes its own private dependencies
+**How to use:**
 
-**Benefits:**
-
-- Systematic use of main application's `@backstage/*` packages (no version conflicts), enabling the future implementation of `@backstage` dependency version checking at start time
-- Self-contained packages with only necessary private dependencies
-- No post-installation steps required (extract and run)
-- Consistent dependency structure across all dynamic plugins
-- Production-ready distribution format
-
-**Example implementation:** The [`@red-hat-developer-hub/cli`](https://github.com/redhat-developer/rhdh-cli) tool implements this approach:
+The [`backstage-cli package bundle`](../cli/cli-report.md) command automates the required steps. Run it from within a plugin directory:
 
 ```bash
 cd my-backstage-plugin
-npx @red-hat-developer-hub/cli@latest plugin export
-# Creates a self-contained package with embedded dependencies in the `/dist-dynamic` sub-folder
-
-# Deploy the generated package
-cp -r dist-dynamic /path/to/dynamic-plugins-root/my-backstage-plugin
+yarn backstage-cli package bundle --output-destination /path/to/dynamic-plugins-root
+# Creates a self-contained bundle in the /path/to/dynamic-plugins-root/my-backstage-plugin/ sub-folder
 ```
+
+**Batch bundling:** When bundling many plugins from the same monorepo, use `--pre-packed-dir` to avoid redundant work:
+
+```bash
+# First, build a shared dist workspace
+backstage-cli build-workspace dist-workspace --alwaysPack ...plugin-packages
+
+# Then bundle each plugin using the pre-packed output
+cd plugins/my-backstage-plugin
+backstage-cli package bundle --pre-packed-dir ../../dist-workspace
+```
+
+See the full list of options in the [CLI reference](../cli/cli-report.md).
+
+**What the command does:**
+
+1. **Builds the plugin** — Produces CJS output for the backend plugin and its transitively-required monorepo packages (`*-node` or `*-common`)
+2. **Packs local packages** — Resolves `workspace:^` and `backstage:^` dependencies on both the main plugin package and its transitively-required monorepo packages (`*-node` or `*-common`)
+3. **Installs private dependencies** — Seeds a lockfile from the plugin source monorepo and prunes it, then installs a private `node_modules` containing all required dependencies
+4. **Collects configuration schemas** — Gathers plugin config schemas and writes them to `dist/.config-schema.json` so they are available for validation at load time
+
+**Benefits:**
+
+- Self-contained packages with all necessary dependencies
+- No post-installation steps required (extract and run)
+- Consistent dependency structure across all dynamic plugins
+- Automatic configuration schema collection
+- Production-ready distribution format

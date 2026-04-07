@@ -9,7 +9,7 @@ The `createExtension` function and related APIs is considered a low-level buildi
 
 ## Creating an extension from a blueprint
 
-Every extension blueprint provides a `make` method that can be used to create new extensions. It is a simple way to create a new extension where the base blueprint provides all the necessary functionality. All you need to do is to provide the necessary blueprint parameters, but you also have the ability to provide additional options, for example a `name` for the extension.
+Every extension blueprint provides a `make` method that can be used to create new extensions. It is a simple way to create a new extension where the base blueprint provides all the necessary functionality. All you need to do is to provide the necessary blueprint parameters, but you also have the ability to provide additional options, for example a `name`, `attachTo`, `disabled`, or `if` predicate for the extension.
 
 The following is a simple example of how one might use the blueprint `make` method to create a new extension:
 

@@ -15,8 +15,9 @@
  */
 
 @layer tokens {
-  /* Light theme tokens */
-  :root {
+  /* Light theme tokens (also used for nested light theme switching) */
+  :root,
+  [data-theme-mode='light'] {
     /* Font families */
     --bui-font-regular: system-ui;
     --bui-font-monospace: ui-monospace, 'Menlo', 'Monaco', 'Consolas',
@@ -78,11 +79,10 @@
 
     /* Neutral background colors */
     --bui-bg-app: #f8f8f8;
-    --bui-bg-popover: #ffffff;
 
     --bui-bg-neutral-1: #fff;
-    --bui-bg-neutral-1-hover: oklch(0% 0 0 / 12%);
-    --bui-bg-neutral-1-pressed: oklch(0% 0 0 / 16%);
+    --bui-bg-neutral-1-hover: oklch(0% 0 0 / 6%);
+    --bui-bg-neutral-1-pressed: oklch(0% 0 0 / 12%);
     --bui-bg-neutral-1-disabled: oklch(0% 0 0 / 6%);
 
     --bui-bg-neutral-2: oklch(0% 0 0 / 6%);
@@ -120,7 +120,7 @@
     --bui-fg-info-on-bg: #173da6;
     --bui-fg-danger: #ec3b18;
     --bui-fg-warning: #ef7a32;
-    --bui-fg-success: #1ed760;
+    --bui-fg-success: #1aaf4f;
     --bui-fg-info: #0d74ce;
 
     /* Border colors */
@@ -153,7 +153,6 @@
 
     /* Neutral background colors */
     --bui-bg-app: #333333;
-    --bui-bg-popover: #1a1a1a;
 
     --bui-bg-neutral-1: oklch(100% 0 0 / 10%);
     --bui-bg-neutral-1-hover: oklch(100% 0 0 / 14%);

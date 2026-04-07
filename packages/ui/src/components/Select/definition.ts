@@ -14,29 +14,94 @@
  * limitations under the License.
  */
 
-import type { ComponentDefinition } from '../../types';
+import { defineComponent } from '../../hooks/useDefinition';
+import type {
+  SelectOwnProps,
+  SelectTriggerOwnProps,
+  SelectContentOwnProps,
+  SelectListBoxOwnProps,
+} from './types';
+import styles from './Select.module.css';
 
 /**
  * Component definition for Select
  * @public
  */
-export const SelectDefinition = {
+export const SelectDefinition = defineComponent<SelectOwnProps>()({
+  styles,
   classNames: {
     root: 'bui-Select',
     popover: 'bui-SelectPopover',
-    trigger: 'bui-SelectTrigger',
-    chevron: 'bui-SelectTriggerChevron',
-    value: 'bui-SelectValue',
-    list: 'bui-SelectList',
-    item: 'bui-SelectItem',
-    itemIndicator: 'bui-SelectItemIndicator',
-    itemLabel: 'bui-SelectItemLabel',
-    searchWrapper: 'bui-SelectSearchWrapper',
-    search: 'bui-SelectSearch',
-    searchClear: 'bui-SelectSearchClear',
-    noResults: 'bui-SelectNoResults',
   },
-  dataAttributes: {
-    size: ['small', 'medium'] as const,
+  propDefs: {
+    icon: {},
+    size: { dataAttribute: true, default: 'small' },
+    options: {},
+    searchable: {},
+    searchPlaceholder: {},
+    label: {},
+    secondaryLabel: {},
+    description: {},
+    isRequired: {},
+    className: {},
   },
-} as const satisfies ComponentDefinition;
+});
+
+/**
+ * Component definition for SelectTrigger
+ * @internal
+ */
+export const SelectTriggerDefinition = defineComponent<SelectTriggerOwnProps>()(
+  {
+    styles,
+    classNames: {
+      root: 'bui-SelectTrigger',
+      chevron: 'bui-SelectTriggerChevron',
+      value: 'bui-SelectValue',
+    },
+    bg: 'consumer',
+    propDefs: {
+      icon: {},
+    },
+  },
+);
+
+/**
+ * Component definition for SelectContent
+ * @internal
+ */
+export const SelectContentDefinition = defineComponent<SelectContentOwnProps>()(
+  {
+    styles,
+    classNames: {
+      root: 'bui-SelectSearchWrapper',
+      search: 'bui-SelectSearch',
+      searchClear: 'bui-SelectSearchClear',
+    },
+    propDefs: {
+      searchable: {},
+      searchPlaceholder: { default: 'Search...' },
+      options: {},
+    },
+  },
+);
+
+/**
+ * Component definition for SelectListBox
+ * @internal
+ */
+export const SelectListBoxDefinition = defineComponent<SelectListBoxOwnProps>()(
+  {
+    styles,
+    classNames: {
+      root: 'bui-SelectList',
+      item: 'bui-SelectItem',
+      itemIndicator: 'bui-SelectItemIndicator',
+      itemLabel: 'bui-SelectItemLabel',
+      noResults: 'bui-SelectNoResults',
+    },
+    propDefs: {
+      options: {},
+    },
+  },
+);

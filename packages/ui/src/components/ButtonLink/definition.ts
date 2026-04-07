@@ -29,13 +29,15 @@ export const ButtonLinkDefinition = defineComponent<ButtonLinkOwnProps>()({
     content: 'bui-ButtonLinkContent',
   },
   bg: 'consumer',
+  analytics: true,
+  resolveHref: true,
   propDefs: {
+    noTrack: {},
     size: { dataAttribute: true, default: 'small' },
     variant: { dataAttribute: true, default: 'primary' },
     iconStart: {},
     iconEnd: {},
     children: {},
     className: {},
-    style: {},
   },
 });

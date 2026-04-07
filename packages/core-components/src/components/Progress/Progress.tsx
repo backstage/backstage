@@ -22,6 +22,7 @@ import { useTheme } from '@material-ui/core/styles';
 import { PropsWithChildren, useEffect, useState } from 'react';
 
 export function Progress(props: PropsWithChildren<LinearProgressProps>) {
+  const { 'aria-label': ariaLabel, ...progressProps } = props;
   const theme = useTheme();
   const [isVisible, setIsVisible] = useState(false);
 
@@ -34,7 +35,11 @@ export function Progress(props: PropsWithChildren<LinearProgressProps>) {
   }, [theme.transitions.duration.short]);
 
   return isVisible ? (
-    <LinearProgress {...props} data-testid="progress" />
+    <LinearProgress
+      {...progressProps}
+      aria-label={ariaLabel ?? 'Loading'}
+      data-testid="progress"
+    />
   ) : (
     <Box display="none" data-testid="progress" />
   );

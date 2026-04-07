@@ -76,11 +76,10 @@ const appVisualizerTextPage = SubPageBlueprint.make({
 });
 
 const copyTreeAsJson = PluginHeaderActionBlueprint.make({
-  params: defineParams =>
-    defineParams({
-      loader: () =>
-        import('./components/CopyTreeButton').then(m => <m.CopyTreeButton />),
-    }),
+  params: {
+    loader: () =>
+      import('./components/CopyTreeButton').then(m => <m.CopyTreeButton />),
+  },
 });
 
 export const appVisualizerNavItem = NavItemBlueprint.make({

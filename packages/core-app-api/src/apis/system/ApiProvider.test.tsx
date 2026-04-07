@@ -114,12 +114,16 @@ describe('ApiProvider', () => {
       withLogCollector(['error'], () => {
         expect(() => {
           render(<MyHookConsumer />);
-        }).toThrow(/^API context is not available/);
+        }).toThrow('No implementation available for apiRef{x}');
       }).error,
     ).toEqual([
-      expect.stringContaining('Error: API context is not available'),
+      expect.stringContaining(
+        'Error: No implementation available for apiRef{x}',
+      ),
       expect.objectContaining({ type: 'unhandled-exception' }),
-      expect.stringContaining('Error: API context is not available'),
+      expect.stringContaining(
+        'Error: No implementation available for apiRef{x}',
+      ),
       expect.objectContaining({ type: 'unhandled-exception' }),
       expect.stringContaining(
         'The above error occurred in the <MyHookConsumer> component',
@@ -130,12 +134,16 @@ describe('ApiProvider', () => {
       withLogCollector(['error'], () => {
         expect(() => {
           render(<MyHocConsumer />);
-        }).toThrow(/^API context is not available/);
+        }).toThrow('No implementation available for apiRef{x}');
       }).error,
     ).toEqual([
-      expect.stringContaining('Error: API context is not available'),
+      expect.stringContaining(
+        'Error: No implementation available for apiRef{x}',
+      ),
       expect.objectContaining({ type: 'unhandled-exception' }),
-      expect.stringContaining('Error: API context is not available'),
+      expect.stringContaining(
+        'Error: No implementation available for apiRef{x}',
+      ),
       expect.objectContaining({ type: 'unhandled-exception' }),
       expect.stringContaining(
         'The above error occurred in the <withApis(Component)> component',

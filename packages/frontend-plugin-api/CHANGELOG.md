@@ -1,5 +1,172 @@
 # @backstage/frontend-plugin-api
 
+## 0.16.0-next.1
+
+### Minor Changes
+
+- 49397c1: Simplified the type signature of `createRouteRef` by replacing the dual `TParams`/`TParamKeys` type parameters with a single `TParamKey` parameter. This is a breaking change for callers that explicitly provided type arguments, but most usage that relies on inference is unaffected.
+
+### Patch Changes
+
+- ddc5247: Fixed `FlattenedMessages` type to avoid excessive type instantiation depth in TypeScript 6 when using `createTranslationRef` with the `translations` option.
+- fa55078: Refactored the internal `createSchemaFromZod` helper to use a schema-first generic pattern, replacing the `ZodSchema<TOutput, ZodTypeDef, TInput>` constraint with `TSchema extends ZodType`. This avoids "excessively deep" type inference errors when multiple Zod copies are resolved.
+
+## 0.15.2-next.0
+
+### Patch Changes
+
+- d66a3ec: Added `titleLink` prop to `PageLayoutProps` so the plugin header title can link back to the plugin root.
+- e220589: Removed the unnecessary need to use `defineParams` callback from `PluginHeaderActionBlueprint`. It still works, but is no longer required.
+- Updated dependencies
+  - @backstage/errors@1.2.7
+  - @backstage/filter-predicates@0.1.1
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.12
+
+## 0.15.0
+
+### Minor Changes
+
+- 5fd78ba: Renamed `PluginOptions` to `CreateFrontendPluginOptions` and deprecated the old name. Removed `ResolvedExtensionInputs` from the main entry point; it is still available as an inline type in extension factory signatures.
+- 72991a5: Removed the `ResolvedExtensionInput` and `ExtensionDataRefToValue` helper types from the public API surface to reduce top-level API clutter. These types were internal plumbing that are not needed by plugin authors. If you were relying on `ResolvedExtensionInput`, use the `ResolvedExtensionInputs` type instead, which maps a full set of inputs. If you were using `ExtensionDataRefToValue`, replace it with `ExtensionDataValue` combined with inferred types from your `ExtensionDataRef`.
+- 9508514: **BREAKING**: Promoted `PluginWrapperApi`, `pluginWrapperApiRef`, `PluginWrapperBlueprint`, and the new `PluginWrapperDefinition` type from `@alpha` to `@public`. These are now available from the main package entry point rather than only through `/alpha`.
+
+  The `PluginWrapperApi` type now has a required `getRootWrapper()` method that returns a root wrapper component. The `pluginWrapperApiRef` ID changed from `core.plugin-wrapper.alpha` to `core.plugin-wrapper`.
+
+  The `PluginWrapperBlueprint` now accepts `PluginWrapperDefinition` as the loader return type, which supports an optional `useWrapperValue` hook that allows sharing state between wrapper instances.
+
+- 6573901: **BREAKING**: Removed the deprecated `AnyExtensionDataRef` type. Use `ExtensionDataRef` without type parameters instead.
+- a9440f0: **BREAKING**: Simplified the `ExtensionAttachTo` type to only support a single attachment target. The array form for attaching to multiple extension points has been removed. Also removed the deprecated `ExtensionAttachToSpec` type alias.
+
+### Patch Changes
+
+- e26e3de: The `icon` field on `AuthProviderInfo` now accepts `IconElement` in addition to `IconComponent`, letting you pass `<MyIcon />` instead of `MyIcon`.
+- eea95b8: Deprecated `AlertApi` in favor of the new `ToastApi`.
+
+  `AlertApi` is now deprecated and will be removed in a future release. Please migrate to `ToastApi` which provides richer notification features.
+
+  **Why migrate?**
+
+  `ToastApi` offers enhanced capabilities over `AlertApi`:
+
+  - **Title and Description**: Display a prominent title with optional description text
+  - **Action Links**: Include clickable links within notifications
+  - **Status Variants**: Support for neutral, info, success, warning, and danger statuses
+  - **Per-toast Timeout**: Control auto-dismiss timing for each notification individually
+  - **Programmatic Dismiss**: Close notifications via the `close()` handle returned from `post()`
+
+  **Migration Guide**
+
+  | AlertApi                                     | ToastApi                                   |
+  | -------------------------------------------- | ------------------------------------------ |
+  | `message: string`                            | `title: ReactNode`                         |
+  | `severity: 'error'`                          | `status: 'danger'`                         |
+  | `severity: 'success' \| 'info' \| 'warning'` | `status: 'success' \| 'info' \| 'warning'` |
+  | `display: 'transient'`                       | `timeout: 5000` (or custom ms)             |
+  | `display: 'permanent'`                       | omit `timeout`                             |
+  | `post()` returns `void`                      | `post()` returns `{ close(): void }`       |
+
+  **Example Migration**
+
+  ```typescript
+  // Before (AlertApi)
+  import { alertApiRef, useApi } from '@backstage/core-plugin-api';
+
+  const alertApi = useApi(alertApiRef);
+  alertApi.post({
+    message: 'Entity saved successfully',
+    severity: 'success',
+    display: 'transient',
+  });
+
+  // After (ToastApi)
+  import { toastApiRef, useApi } from '@backstage/frontend-plugin-api';
+
+  const toastApi = useApi(toastApiRef);
+  const toast = toastApi.post({
+    title: 'Entity saved successfully',
+    status: 'success',
+    timeout: 5000,
+  });
+  // Later: toast.close() to dismiss programmatically
+  ```
+
+  **Note**: During the migration period, both APIs work simultaneously. The `ToastDisplay` component subscribes to both `AlertApi` and `ToastApi`, so existing code continues to work while you migrate incrementally.
+
+- 8a3a906: Deprecated `NavItemBlueprint`. Nav items are now automatically inferred from `PageBlueprint` extensions based on their `title` and `icon` params.
+- b15a685: Deprecated `withApis`, use the `withApis` export from `@backstage/core-compat-api` instead.
+- 0452d02: Add optional `description` field to plugin-level feature flags.
+- 1bec049: Fixed inconsistent `JSX.Element` type reference in the `DialogApiDialog.update` method signature.
+- 9c81af9: Made the `pluginId` property optional in the `FrontendFeature` type, allowing plugins published against older versions of the framework to be used without type errors.
+- 2c383b5: Deprecated `AnalyticsImplementationBlueprint` and `AnalyticsImplementationFactory` in favor of the exports from `@backstage/plugin-app-react`.
+- dab6c46: Deprecated the `ExtensionFactoryMiddleware` type, which has been moved to `@backstage/frontend-app-api`.
+- aa29b50: Pages created with `PageBlueprint` now render the plugin header by default in the new frontend system.
+- 3f36ce1: Clarified the `IconElement` sizing contract for the new frontend system and aligned legacy system icon rendering with the new icon API.
+- cc459f7: Added a builder form for `createApiRef` in the new frontend system and deprecated the direct `createApiRef({ ... })` call in favor of `createApiRef().with({ ... })`. The builder form now also preserves literal API ref IDs in the resulting `ApiRef` type.
+
+  The `createApiRef().with({ ... })` form can also use an explicit `pluginId` to declare API ownership without encoding the plugin ID into the API ref ID, while keeping that metadata internal to runtime handling.
+
+- 5b160f9: Added support for `if` predicates on `createFrontendPlugin` and `createFrontendModule`, applying shared conditions to every extension in the feature. Plugin and extension overrides can now also replace or remove existing `if` predicates.
+- d0206c4: Removed the deprecated `defaultPath` migration helper from `PageBlueprint` params.
+- edb872c: Renamed the `PageTab` type to `PageLayoutTab`. The old `PageTab` name is now a deprecated type alias.
+- a49a40d: Updated dependency `zod` to `^3.25.76 || ^4.0.0` & migrated to `/v3` or `/v4` imports.
+- 7e743f4: Introduced a new `ToastApi` for displaying rich toast notifications in the new frontend system.
+
+  The new `ToastApi` provides enhanced notification capabilities compared to the existing `AlertApi`:
+
+  - **Title and Description**: Toasts support both a title and an optional description
+  - **Custom Timeouts**: Each toast can specify its own timeout duration
+  - **Links**: Toasts can include action links
+  - **Status Variants**: Support for neutral, info, success, warning, and danger statuses
+  - **Programmatic Dismiss**: Toasts can be dismissed programmatically using the `close()` handle returned from `post()`
+
+  **Usage:**
+
+  ```typescript
+  import { toastApiRef, useApi } from '@backstage/frontend-plugin-api';
+
+  const toastApi = useApi(toastApiRef);
+
+  // Full-featured toast
+  toastApi.post({
+    title: 'Entity saved',
+    description: 'Your changes have been saved successfully.',
+    status: 'success',
+    timeout: 5000,
+    links: [{ label: 'View entity', href: '/catalog/entity' }],
+  });
+
+  // Programmatic dismiss
+  const { close } = toastApi.post({ title: 'Uploading...', status: 'info' });
+  // Later...
+  close();
+  ```
+
+  The `ToastDisplay` component subscribes to both `ToastApi` and `AlertApi`, providing a migration path where both systems work side by side until `AlertApi` is fully deprecated.
+
+- fe848e0: Changed `useApiHolder` to return an empty `ApiHolder` instead of throwing when used outside of an API context.
+- Updated dependencies
+  - @backstage/filter-predicates@0.1.1
+
+## 0.15.0-next.1
+
+### Minor Changes
+
+- 6573901: **BREAKING**: Removed the deprecated `AnyExtensionDataRef` type. Use `ExtensionDataRef` without type parameters instead.
+- a9440f0: **BREAKING**: Simplified the `ExtensionAttachTo` type to only support a single attachment target. The array form for attaching to multiple extension points has been removed. Also removed the deprecated `ExtensionAttachToSpec` type alias.
+
+### Patch Changes
+
+- 8a3a906: Deprecated `NavItemBlueprint`. Nav items are now automatically inferred from `PageBlueprint` extensions based on their `title` and `icon` params.
+- b15a685: Deprecated `withApis`, use the `withApis` export from `@backstage/core-compat-api` instead.
+- 0452d02: Add optional `description` field to plugin-level feature flags.
+- 1bec049: Fixed inconsistent `JSX.Element` type reference in the `DialogApiDialog.update` method signature.
+- 2c383b5: Deprecated `AnalyticsImplementationBlueprint` and `AnalyticsImplementationFactory` in favor of the exports from `@backstage/plugin-app-react`.
+- dab6c46: Deprecated the `ExtensionFactoryMiddleware` type, which has been moved to `@backstage/frontend-app-api`.
+- d0206c4: Removed the deprecated `defaultPath` migration helper from `PageBlueprint` params.
+- edb872c: Renamed the `PageTab` type to `PageLayoutTab`. The old `PageTab` name is now a deprecated type alias.
+- fe848e0: Changed `useApiHolder` to return an empty `ApiHolder` instead of throwing when used outside of an API context.
+
 ## 0.14.2-next.0
 
 ### Patch Changes

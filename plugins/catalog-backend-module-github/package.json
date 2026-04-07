@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-backend-module-github",
-  "version": "0.12.3-next.0",
+  "version": "0.13.1-next.1",
   "description": "A Backstage catalog backend module that helps integrate towards GitHub",
   "backstage": {
     "role": "backend-plugin-module",
@@ -81,8 +81,7 @@
     "@backstage/plugin-events-backend-module-github": "workspace:^",
     "@backstage/plugin-events-backend-module-google-pubsub": "workspace:^",
     "@types/lodash": "^4.14.151",
-    "msw": "^2.0.0",
-    "type-fest": "^4.41.0"
+    "msw": "^2.0.0"
   },
   "configSchema": "config.d.ts"
 }

@@ -4,8 +4,10 @@ title: Integrating Search into a plugin
 description: How to integrate Search into a Backstage plugin
 ---
 
-:::info
-This documentation is written for [the new backend system](../backend-system/index.md) which is the default since Backstage [version 1.24](../releases/v1.24.0.md). If you are still on the old backend system, you may want to read [its own article](https://github.com/backstage/backstage/blob/v1.37.0/docs/plugins/integrating-search-into-plugins--old.md) instead, and [consider migrating](../backend-system/building-backends/08-migrating.md)!
+:::caution Legacy Documentation
+
+This section is part of the legacy plugins documentation. The backend search collator patterns described here use the new backend system and are still current. The frontend search experience examples use the old frontend system APIs.
+
 :::
 
 The Backstage Search Platform was designed to give plugin developers the APIs

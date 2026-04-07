@@ -29,12 +29,20 @@ import styles from './Card.module.css';
  */
 export const CardDefinition = defineComponent<CardOwnProps>()({
   styles,
+  resolveHref: true,
   classNames: {
     root: 'bui-Card',
+    trigger: 'bui-CardTrigger',
   },
   propDefs: {
     children: {},
     className: {},
+    onPress: {},
+    href: {},
+    label: {},
+    target: {},
+    rel: {},
+    download: {},
   },
 });
 

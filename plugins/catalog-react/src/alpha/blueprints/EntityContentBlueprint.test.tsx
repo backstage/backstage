@@ -215,6 +215,7 @@ describe('EntityContentBlueprint', () => {
         },
         "disabled": false,
         "factory": [Function],
+        "if": undefined,
         "inputs": {},
         "kind": "entity-content",
         "name": "test",

@@ -80,6 +80,7 @@ export interface EntityLayoutProps {
    */
   parentEntityRelations?: string[];
   groupDefinitions: EntityContentGroupDefinitions;
+  defaultContentOrder?: 'title' | 'natural';
   showNavItemIcons?: boolean;
 }
 
@@ -110,6 +111,7 @@ export const EntityLayout = (props: EntityLayoutProps) => {
     NotFoundComponent,
     parentEntityRelations,
     groupDefinitions,
+    defaultContentOrder,
     showNavItemIcons,
   } = props;
   const { kind } = useRouteRefParams(entityRouteRef);
@@ -164,6 +166,7 @@ export const EntityLayout = (props: EntityLayoutProps) => {
         <EntityTabs
           routes={routes}
           groupDefinitions={groupDefinitions}
+          defaultContentOrder={defaultContentOrder}
           showIcons={showNavItemIcons}
         />
       )}

@@ -15,35 +15,30 @@
  */
 
 import { forwardRef } from 'react';
-import clsx from 'clsx';
 import type { ElementType } from 'react';
 import type { TextProps } from './types';
-import { useStyles } from '../../hooks/useStyles';
-import styles from './Text.module.css';
+import { useDefinition } from '../../hooks/useDefinition';
 import { TextDefinition } from './definition';
 
 function TextComponent<T extends ElementType = 'span'>(
   props: TextProps<T>,
   ref: React.Ref<any>,
 ) {
-  const Component = props.as || 'span';
-
-  const { classNames, dataAttributes, cleanedProps } = useStyles(
+  // Cast to default TextProps so TypeScript can evaluate the
+  // ResolveHrefConstraint. The generic ElementType is only used for
+  // the `as` prop which doesn't include 'a', so href is never present.
+  const { ownProps, restProps, dataAttributes } = useDefinition(
     TextDefinition,
-    {
-      variant: 'body-medium',
-      weight: 'regular',
-      color: 'primary',
-      ...props,
-    },
+    props as TextProps,
   );
+  const { classes, as } = ownProps;
 
-  const { className, truncate, ...restProps } = cleanedProps;
+  const Component = as;
 
   return (
     <Component
       ref={ref}
-      className={clsx(classNames.root, styles[classNames.root], className)}
+      className={classes.root}
       {...dataAttributes}
       {...restProps}
     />
@@ -52,7 +47,11 @@ function TextComponent<T extends ElementType = 'span'>(
 
 TextComponent.displayName = 'Text';
 
-/** @public */
+/**
+ * A typographic primitive that renders text with design system variants, weights, and colors, and can render as any HTML element.
+ *
+ * @public
+ */
 export const Text = forwardRef(TextComponent) as {
   <T extends ElementType = 'p'>(
     props: TextProps<T> & { ref?: React.ComponentPropsWithRef<T>['ref'] },

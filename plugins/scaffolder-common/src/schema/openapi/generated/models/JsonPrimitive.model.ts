@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,4 +22,4 @@
  * A type representing all allowed JSON primitive values.
  * @public
  */
-export type JsonPrimitive = any | boolean | number | string;
+export type JsonPrimitive = boolean | number | string;

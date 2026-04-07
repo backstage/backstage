@@ -184,8 +184,14 @@ Choose the correct next steps for your user role, if you're likely to be deployi
 
 - Using your Backstage instance
   - [Logging into Backstage](./logging-in.md)
+  - [Viewing the Catalog](./viewing-catalog.md)
+  - [Viewing what you own](./view-what-you-own.md)
+  - [Viewing entity relationships](./viewing-entity-relationships.md)
+  - [Filtering the Catalog](./filter-catalog.md)
   - [Register a component](./register-a-component.md)
   - [Create a new component](./create-a-component.md)
+  - [Update a component](./update-a-component.md)
+  - [Unregistering and deleting a component](./unregister-delete-component.md)
 
 Share your experiences, comments, or suggestions with us:
 [on discord](https://discord.gg/backstage-687207715902193673), file issues for any

@@ -34,7 +34,7 @@ The following sections show the plugins and search engines currently supported b
 | Plugin                                                                                                                                                                        | Support Status |
 | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------- |
 | Software Catalog                                                                                                                                                              | ✅             |
-| [TechDocs](./how-to-guides.md#how-to-index-techdocs-documents)                                                                                                                | ✅             |
+| [TechDocs](./how-to-guides.md#how-to-customize-fields-in-the-software-catalog-or-techdocs-index)                                                                              | ✅             |
 | [Stack Overflow](https://github.com/backstage/backstage/blob/master/plugins/search-backend-module-stack-overflow-collator/README.md#index-stack-overflow-questions-to-search) | ✅             |
 
 ### Search engines

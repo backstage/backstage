@@ -14,26 +14,13 @@ locations like GitHub or GitLab.
 
 When creating custom scaffolder actions, **use camelCase for action IDs** instead of kebab-case. Action IDs with dashes (like `fetch-component-id`) will cause template expressions like `${{ steps.fetch-component-id.output.componentId }}` to return `NaN` because the dashes are evaluated as subtraction operators in JavaScript expressions.
 
-:::note
-
-See the [Writing Custom Actions guide](./writing-custom-actions.md#naming-conventions) and [Template Migration guide](./migrating-from-v1beta2-to-v1beta3.md#watch-out-for-dash-case) for more details.
+See the [Writing Custom Actions guide](./writing-custom-actions.md#naming-conventions) for more details.
 
 :::
 
 ## Prerequisites
 
-:::note Note
-
-If you're running Backstage with Node 20 or later, you'll need to pass the flag `--no-node-snapshot` to Node in order to
-use the templates feature.
-One way to do this is to specify the `NODE_OPTIONS` environment variable before starting Backstage:
-`export NODE_OPTIONS="${NODE_OPTIONS:-} --no-node-snapshot"`
-
-It's important to append to the existing `NODE_OPTIONS` value, if it's already set, rather than overwriting it, since some NodeJS Debugging tools may rely on this environment variable to work properly.
-
-:::
-
-These docs assume you have already gone over the [Backstage Getting Started](../../getting-started) section and you are able to run Backstage locally or it has been deployed somewhere.
+These docs assume you have already gone over the [Backstage Getting Started](../../getting-started/index.md) section and you are able to run Backstage locally or it has been deployed somewhere.
 
 ## Getting Started
 

@@ -342,4 +342,4 @@ indexBuilder.addCollator({
 });
 ```
 
-> For more advanced customization of the Search backend, also see how to guides such as [How to index TechDocs documents](./how-to-guides.md#how-to-index-techdocs-documents) and [How to limit what can be searched in the Software Catalog](./how-to-guides.md#how-to-limit-what-can-be-searched-in-the-software-catalog)
+> For more advanced customization of the Search backend, also see how to guides such as [How to customize fields in the Software Catalog or TechDocs index](./how-to-guides.md#how-to-customize-fields-in-the-software-catalog-or-techdocs-index)

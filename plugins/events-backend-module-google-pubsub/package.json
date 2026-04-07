@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-events-backend-module-google-pubsub",
-  "version": "0.2.1-next.0",
+  "version": "0.2.2-next.1",
   "description": "The google-pubsub backend module for the events plugin.",
   "backstage": {
     "role": "backend-plugin-module",
@@ -48,7 +48,7 @@
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@backstage/plugin-events-backend": "workspace:^",
-    "wait-for-expect": "^3.0.2"
+    "wait-for-expect": "^4.0.0"
   },
   "configSchema": "config.d.ts"
 }

@@ -1,5 +1,87 @@
 # @backstage/backend-plugin-api
 
+## 1.9.0-next.1
+
+### Minor Changes
+
+- 4559806: Added support for typed `examples` on actions registered via the actions registry. Action authors can now provide examples with compile-time-checked `input` and `output` values that match their schema definitions.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.7.0-next.1
+  - @backstage/plugin-permission-node@0.10.12-next.1
+
+## 1.8.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.2.1-next.0
+  - @backstage/plugin-auth-node@0.6.15-next.0
+  - @backstage/plugin-permission-node@0.10.12-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-permission-common@0.9.7
+
+## 1.8.0
+
+### Minor Changes
+
+- cc8348e: Added optional `visibilityPermission` field to `ActionsRegistryActionOptions`, allowing actions to declare a `BasicPermission` that controls visibility and access.
+
+  ```typescript
+  import { createPermission } from '@backstage/plugin-permission-common';
+
+  const myPermission = createPermission({
+    name: 'myPlugin.myAction.use',
+    attributes: {},
+  });
+
+  actionsRegistry.register({
+    name: 'my-action',
+    title: 'My Action',
+    description: 'An action that requires permission',
+    visibilityPermission: myPermission,
+    schema: {
+      input: z => z.object({ name: z.string() }),
+      output: z => z.object({ ok: z.boolean() }),
+    },
+    action: async ({ input }) => {
+      return { output: { ok: true } };
+    },
+  });
+  ```
+
+  Actions without a `visibilityPermission` field continue to work as before.
+
+- 015668c: Added `cancelTask` method to the `SchedulerService` interface and implementation, allowing cancellation of currently running scheduled tasks. For global tasks, the database lock is released and a periodic liveness check aborts the running task function. For local tasks, the task's abort signal is triggered directly. A new `POST /.backstage/scheduler/v1/tasks/:id/cancel` endpoint is also available.
+
+### Patch Changes
+
+- dee4283: Added `pluginId` field to `ActionsServiceAction` type, populated from the registering plugin's metadata.
+- 1ee5b28: Adds an alpha `MetricsService` to provide a unified interface for metrics instrumentation across Backstage plugins.
+- a49a40d: Updated dependency `zod` to `^3.25.76 || ^4.0.0` & migrated to `/v3` or `/v4` imports.
+- Updated dependencies
+  - @backstage/cli-common@0.2.0
+  - @backstage/plugin-permission-common@0.9.7
+  - @backstage/plugin-permission-node@0.10.11
+  - @backstage/plugin-auth-node@0.6.14
+
+## 1.8.0-next.1
+
+### Minor Changes
+
+- 015668c: Added `cancelTask` method to the `SchedulerService` interface and implementation, allowing cancellation of currently running scheduled tasks. For global tasks, the database lock is released and a periodic liveness check aborts the running task function. For local tasks, the task's abort signal is triggered directly. A new `POST /.backstage/scheduler/v1/tasks/:id/cancel` endpoint is also available.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.2.0-next.2
+  - @backstage/plugin-auth-node@0.6.14-next.2
+  - @backstage/plugin-permission-node@0.10.11-next.1
+
 ## 1.7.1-next.0
 
 ### Patch Changes

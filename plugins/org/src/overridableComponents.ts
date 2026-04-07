@@ -18,7 +18,6 @@ import { Overrides } from '@material-ui/core/styles/overrides';
 import { StyleRules } from '@material-ui/core/styles/withStyles';
 import {
   ComponentsGridClassKey,
-  MemberComponentClassKey,
   MembersListCardClassKey,
   OwnershipCardClassKey,
   UserProfileCardClassKey,
@@ -26,7 +25,6 @@ import {
 
 /** @public */
 export type CatalogReactComponentsNameToClassKey = {
-  PluginOrgMemberComponent: MemberComponentClassKey;
   PluginOrgMembersListCardComponent: MembersListCardClassKey;
   PluginOrgOwnershipCard: OwnershipCardClassKey;
   PluginOrgComponentsGrid: ComponentsGridClassKey;

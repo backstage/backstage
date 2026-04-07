@@ -607,7 +607,7 @@ component, but there will always be one ultimate owner.
 
 | [`kind`](#apiversion-and-kind-required)                | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                              |
 | ------------------------------------------------------ | ------------------------------------------ | ------------------------------------------------------------------------------- |
-| [`Group`](#kind-group) (default), [`User`](#kind-user) | Same as this entity, typically `default`   | [`ownerOf`, and reverse `ownedBy`](well-known-relations.md#ownedby-and-ownerof) |
+| [`Group`](#kind-group) (default), [`User`](#kind-user) | Same as this entity, typically `default`   | [`ownedBy`, and reverse `ownerOf`](well-known-relations.md#ownedby-and-ownerof) |
 
 ### `spec.system` [optional]
 
@@ -811,7 +811,7 @@ Template, but there will always be one ultimate owner.
 
 | [`kind`](#apiversion-and-kind-required)                | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                              |
 | ------------------------------------------------------ | ------------------------------------------ | ------------------------------------------------------------------------------- |
-| [`Group`](#kind-group) (default), [`User`](#kind-user) | Same as this entity, typically `default`   | [`ownerOf`, and reverse `ownedBy`](well-known-relations.md#ownedby-and-ownerof) |
+| [`Group`](#kind-group) (default), [`User`](#kind-user) | Same as this entity, typically `default`   | [`ownedBy`, and reverse `ownerOf`](well-known-relations.md#ownedby-and-ownerof) |
 
 ## Kind: API
 
@@ -921,7 +921,7 @@ one ultimate owner.
 
 | [`kind`](#apiversion-and-kind-required)                | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                              |
 | ------------------------------------------------------ | ------------------------------------------ | ------------------------------------------------------------------------------- |
-| [`Group`](#kind-group) (default), [`User`](#kind-user) | Same as this entity, typically `default`   | [`ownerOf`, and reverse `ownedBy`](well-known-relations.md#ownedby-and-ownerof) |
+| [`Group`](#kind-group) (default), [`User`](#kind-user) | Same as this entity, typically `default`   | [`ownedBy`, and reverse `ownerOf`](well-known-relations.md#ownedby-and-ownerof) |
 
 ### `spec.system` [optional]
 
@@ -1121,7 +1121,7 @@ Describes the following entity kind:
 | `apiVersion` | `backstage.io/v1alpha1` |
 | `kind`       | `Resource`              |
 
-A resource describes the infrastructure a system needs to operate, like BigTable
+A Resource describes the infrastructure a system needs to operate, like BigTable
 databases, Pub/Sub topics, S3 buckets or CDNs. Modelling them together with
 components and systems allows to visualize resource footprint, and create
 tooling around them.
@@ -1164,7 +1164,7 @@ resource, but there will always be one ultimate owner.
 
 | [`kind`](#apiversion-and-kind-required)                | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                              |
 | ------------------------------------------------------ | ------------------------------------------ | ------------------------------------------------------------------------------- |
-| [`Group`](#kind-group) (default), [`User`](#kind-user) | Same as this entity, typically `default`   | [`ownerOf`, and reverse `ownedBy`](well-known-relations.md#ownedby-and-ownerof) |
+| [`Group`](#kind-group) (default), [`User`](#kind-user) | Same as this entity, typically `default`   | [`ownedBy`, and reverse `ownerOf`](well-known-relations.md#ownedby-and-ownerof) |
 
 ### `spec.type` [required]
 
@@ -1262,7 +1262,7 @@ but there will always be one ultimate owner.
 
 | [`kind`](#apiversion-and-kind-required)                | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                              |
 | ------------------------------------------------------ | ------------------------------------------ | ------------------------------------------------------------------------------- |
-| [`Group`](#kind-group) (default), [`User`](#kind-user) | Same as this entity, typically `default`   | [`ownerOf`, and reverse `ownedBy`](well-known-relations.md#ownedby-and-ownerof) |
+| [`Group`](#kind-group) (default), [`User`](#kind-user) | Same as this entity, typically `default`   | [`ownedBy`, and reverse `ownerOf`](well-known-relations.md#ownedby-and-ownerof) |
 
 ### `spec.domain` [optional]
 
@@ -1334,7 +1334,7 @@ but there will always be one ultimate owner.
 
 | [`kind`](#apiversion-and-kind-required)                | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                              |
 | ------------------------------------------------------ | ------------------------------------------ | ------------------------------------------------------------------------------- |
-| [`Group`](#kind-group) (default), [`User`](#kind-user) | Same as this entity, typically `default`   | [`ownerOf`, and reverse `ownedBy`](well-known-relations.md#ownedby-and-ownerof) |
+| [`Group`](#kind-group) (default), [`User`](#kind-user) | Same as this entity, typically `default`   | [`ownedBy`, and reverse `ownerOf`](well-known-relations.md#ownedby-and-ownerof) |
 
 ### `spec.subdomainOf` [optional]
 

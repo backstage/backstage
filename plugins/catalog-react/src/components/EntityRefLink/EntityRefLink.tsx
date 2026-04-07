@@ -17,7 +17,7 @@
 import { CompoundEntityRef, Entity } from '@backstage/catalog-model';
 import { Link, LinkProps } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
-import { ReactNode, forwardRef } from 'react';
+import { ReactNode, forwardRef, useCallback } from 'react';
 import { entityRouteParams, entityRouteRef } from '../../routes';
 import { EntityDisplayName } from '../EntityDisplayName';
 
@@ -54,7 +54,7 @@ export const EntityRefLink = forwardRef<any, EntityRefLinkProps>(
       disableTooltip,
       ...linkProps
     } = props;
-    const entityRoute = useEntityRoute(props.entityRef);
+    const entityLink = useEntityRefLink();
 
     const content = children ?? title ?? (
       <EntityDisplayName
@@ -67,23 +67,28 @@ export const EntityRefLink = forwardRef<any, EntityRefLinkProps>(
     );
 
     return (
-      <Link {...linkProps} ref={ref} to={entityRoute}>
+      <Link {...linkProps} ref={ref} to={entityLink(props.entityRef)}>
         {content}
       </Link>
     );
   },
 ) as (props: EntityRefLinkProps) => JSX.Element;
 
-// Hook that computes the route to a given entity / ref. This is a bit
-// contrived, because it tries to retain the casing of the entity name if
-// present, but not of other parts. This is in an attempt to make slightly more
-// nice-looking URLs.
-function useEntityRoute(
+/**
+ * Returns a function that generates a route path to the given entity.
+ *
+ * @public
+ */
+export function useEntityRefLink(): (
   entityRef: Entity | CompoundEntityRef | string,
-): string {
+) => string {
   const entityRoute = useRouteRef(entityRouteRef);
 
-  const routeParams = entityRouteParams(entityRef, { encodeParams: true });
-
-  return entityRoute(routeParams);
+  return useCallback(
+    (entityRef: Entity | CompoundEntityRef | string) => {
+      const routeParams = entityRouteParams(entityRef, { encodeParams: true });
+      return entityRoute(routeParams);
+    },
+    [entityRoute],
+  );
 }

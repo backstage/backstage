@@ -34,3 +34,4 @@ export {
   EntityProvidedApisCard,
   EntityProvidingComponentsCard,
 } from './plugin';
+export { apiDocsTranslationRef } from './translation';

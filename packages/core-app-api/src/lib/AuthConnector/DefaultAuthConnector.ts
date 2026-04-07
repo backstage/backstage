@@ -194,6 +194,28 @@ export class DefaultAuthConnector<AuthSession>
       error.status = res.status;
       throw error;
     }
+
+    // If the auth provider returned a logout URL (e.g. for Auth0 federated
+    // logout), redirect the browser to clear the provider's session cookies.
+    try {
+      const contentType = res.headers.get('content-type');
+      if (contentType?.includes('application/json')) {
+        const body = await res.json();
+        if (body.logoutUrl) {
+          const url = new URL(body.logoutUrl);
+          if (url.protocol === 'https:' || url.hostname === 'localhost') {
+            window.location.href = body.logoutUrl;
+            return new Promise(() => {});
+          }
+        }
+      }
+    } catch {
+      // Provider logout redirect is best-effort - the backend session
+      // (refresh token cookie and persisted scopes) is already cleared,
+      // so we degrade gracefully.
+    }
+
+    return undefined;
   }
 
   private async showPopup(scopes: Set<string>): Promise<AuthSession> {

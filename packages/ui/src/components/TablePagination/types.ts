@@ -21,7 +21,7 @@ export interface PageSizeOption {
 }
 
 /** @public */
-export interface TablePaginationProps {
+export type TablePaginationOwnProps = {
   pageSize: number;
   pageSizeOptions?: number[] | PageSizeOption[];
   offset?: number;
@@ -37,4 +37,8 @@ export interface TablePaginationProps {
     offset?: number;
     totalCount?: number;
   }) => string;
-}
+  showPaginationLabel?: boolean;
+};
+
+/** @public */
+export interface TablePaginationProps extends TablePaginationOwnProps {}

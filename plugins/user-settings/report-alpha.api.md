@@ -45,6 +45,8 @@ const _default: OverridableFrontendPlugin<
       };
     }>;
     'page:user-settings': OverridableExtensionDefinition<{
+      kind: 'page';
+      name: undefined;
       config: {
         path: string | undefined;
         title: string | undefined;
@@ -108,6 +110,44 @@ const _default: OverridableFrontendPlugin<
             internal: false;
           }
         >;
+      };
+      params: {
+        path: string;
+        title?: string;
+        icon?: IconElement;
+        loader?: () => Promise<JSX_2.Element>;
+        routeRef?: RouteRef;
+        noHeader?: boolean;
+      };
+    }>;
+    'sub-page:user-settings/auth-providers': OverridableExtensionDefinition<{
+      config: {
+        path: string | undefined;
+        title: string | undefined;
+      };
+      configInput: {
+        title?: string | undefined;
+        path?: string | undefined;
+      };
+      output:
+        | ExtensionDataRef<string, 'core.routing.path', {}>
+        | ExtensionDataRef<
+            RouteRef<AnyRouteRefParams>,
+            'core.routing.ref',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ExtensionDataRef<string, 'core.title', {}>
+        | ExtensionDataRef<
+            IconElement,
+            'core.icon',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {
         providerSettings: ExtensionInput<
           ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
           {
@@ -117,16 +157,90 @@ const _default: OverridableFrontendPlugin<
           }
         >;
       };
-      kind: 'page';
-      name: undefined;
+      kind: 'sub-page';
+      name: 'auth-providers';
       params: {
-        defaultPath?: [Error: `Use the 'path' param instead`];
         path: string;
-        title?: string;
+        title: string;
         icon?: IconElement;
-        loader?: () => Promise<JSX_2.Element>;
+        loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef;
-        noHeader?: boolean;
+      };
+    }>;
+    'sub-page:user-settings/feature-flags': OverridableExtensionDefinition<{
+      kind: 'sub-page';
+      name: 'feature-flags';
+      config: {
+        path: string | undefined;
+        title: string | undefined;
+      };
+      configInput: {
+        title?: string | undefined;
+        path?: string | undefined;
+      };
+      output:
+        | ExtensionDataRef<string, 'core.routing.path', {}>
+        | ExtensionDataRef<
+            RouteRef<AnyRouteRefParams>,
+            'core.routing.ref',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ExtensionDataRef<string, 'core.title', {}>
+        | ExtensionDataRef<
+            IconElement,
+            'core.icon',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {};
+      params: {
+        path: string;
+        title: string;
+        icon?: IconElement;
+        loader: () => Promise<JSX.Element>;
+        routeRef?: RouteRef;
+      };
+    }>;
+    'sub-page:user-settings/general': OverridableExtensionDefinition<{
+      kind: 'sub-page';
+      name: 'general';
+      config: {
+        path: string | undefined;
+        title: string | undefined;
+      };
+      configInput: {
+        title?: string | undefined;
+        path?: string | undefined;
+      };
+      output:
+        | ExtensionDataRef<string, 'core.routing.path', {}>
+        | ExtensionDataRef<
+            RouteRef<AnyRouteRefParams>,
+            'core.routing.ref',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ExtensionDataRef<string, 'core.title', {}>
+        | ExtensionDataRef<
+            IconElement,
+            'core.icon',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {};
+      params: {
+        path: string;
+        title: string;
+        icon?: IconElement;
+        loader: () => Promise<JSX.Element>;
+        routeRef?: RouteRef;
       };
     }>;
   }
@@ -156,7 +270,7 @@ export const settingsNavItem: OverridableExtensionDefinition<{
   };
 }>;
 
-// @alpha (undocumented)
+// @alpha @deprecated (undocumented)
 export const userSettingsTranslationRef: TranslationRef<
   'user-settings',
   {

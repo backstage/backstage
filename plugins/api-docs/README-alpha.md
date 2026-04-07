@@ -1,8 +1,6 @@
-# Api Docs
+# Api Docs - Extension Reference
 
-> [!WARNING]
-> This documentation is made for those using the experimental new Frontend system.
-> If you are not using the new frontend system, please go [here](./README.md).
+This page contains detailed documentation for all extensions provided by the `@backstage/plugin-api-docs` plugin. For general information about the plugin, see the [README](./README.md).
 
 This is an extension for the catalog plugin that provides components to discover and display API entities.
 APIs define the interface between components, see the [system model](https://backstage.io/docs/features/software-catalog/system-model) for details.

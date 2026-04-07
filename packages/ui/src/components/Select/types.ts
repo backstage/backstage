@@ -23,9 +23,7 @@ import type { FieldLabelProps } from '../FieldLabel/types';
 export type Option = { value: string; label: string; disabled?: boolean };
 
 /** @public */
-export interface SelectProps<T extends 'single' | 'multiple'>
-  extends AriaSelectProps<Option, T>,
-    Omit<FieldLabelProps, 'htmlFor' | 'id' | 'className'> {
+export type SelectOwnProps = {
   /**
    * An icon to render before the input
    */
@@ -55,9 +53,37 @@ export interface SelectProps<T extends 'single' | 'multiple'>
    */
   searchPlaceholder?: string;
 
+  label?: FieldLabelProps['label'];
+  secondaryLabel?: FieldLabelProps['secondaryLabel'];
+  description?: FieldLabelProps['description'];
+  isRequired?: boolean;
+  className?: string;
+};
+
+/** @public */
+export interface SelectProps<T extends 'single' | 'multiple'>
+  extends SelectOwnProps,
+    Omit<AriaSelectProps<Option, T>, keyof SelectOwnProps> {
   /**
    * Selection mode, single or multiple
    * @defaultvalue 'single'
    */
   selectionMode?: T;
+}
+
+/** @internal */
+export interface SelectTriggerOwnProps {
+  icon?: SelectOwnProps['icon'];
+}
+
+/** @internal */
+export interface SelectContentOwnProps {
+  searchable?: boolean;
+  searchPlaceholder?: string;
+  options?: SelectOwnProps['options'];
+}
+
+/** @internal */
+export interface SelectListBoxOwnProps {
+  options?: SelectOwnProps['options'];
 }

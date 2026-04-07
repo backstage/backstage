@@ -202,7 +202,7 @@ const _default: OverridableFrontendPlugin<
 >;
 export default _default;
 
-// @alpha (undocumented)
+// @alpha @deprecated (undocumented)
 export const orgTranslationRef: TranslationRef<
   'org',
   {
@@ -214,17 +214,13 @@ export const orgTranslationRef: TranslationRef<
     readonly 'groupProfileCard.listItemTitle.entityRef': 'Entity Ref';
     readonly 'groupProfileCard.listItemTitle.parentGroup': 'Parent Group';
     readonly 'groupProfileCard.listItemTitle.childGroups': 'Child Groups';
-    readonly 'membersListCard.title': 'Members';
-    readonly 'membersListCard.subtitle': 'of {{groupName}}';
-    readonly 'membersListCard.paginationLabel': ', page {{page}} of {{nbPages}}';
+    readonly 'membersListCard.title': '{{groupName}} members';
+    readonly 'membersListCard.cardLabel': 'User page for {{memberName}}';
     readonly 'membersListCard.noMembersDescription': 'This group has no members.';
-    readonly 'membersListCard.aggregateMembersToggle.ariaLabel': 'Users Type Switch';
-    readonly 'membersListCard.aggregateMembersToggle.directMembers': 'Direct Members';
-    readonly 'membersListCard.aggregateMembersToggle.aggregatedMembers': 'Aggregated Members';
+    readonly 'membersListCard.noSearchResult': 'Found no members matching "{{searchTerm}}".';
+    readonly 'membersListCard.aggregateMembersToggle.label': 'Include subgroups';
     readonly 'ownershipCard.title': 'Ownership';
-    readonly 'ownershipCard.aggregateRelationsToggle.ariaLabel': 'Ownership Type Switch';
-    readonly 'ownershipCard.aggregateRelationsToggle.directRelations': 'Direct Relations';
-    readonly 'ownershipCard.aggregateRelationsToggle.aggregatedRelations': 'Aggregated Relations';
+    readonly 'ownershipCard.aggregateRelationsToggle.label': 'Include indirect ownership';
     readonly 'userProfileCard.editIconButtonTitle': 'Edit Metadata';
     readonly 'userProfileCard.listItemTitle.email': 'Email';
     readonly 'userProfileCard.listItemTitle.memberOf': 'Member of';

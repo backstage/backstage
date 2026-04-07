@@ -19,7 +19,7 @@ import {
   PermissionRuleParams,
 } from '@backstage/plugin-permission-common';
 import { NoInfer, PermissionRule } from '../types';
-import { z } from 'zod';
+import { z } from 'zod/v3';
 import { PermissionResourceRef } from './createPermissionResourceRef';
 
 /**

@@ -2,6 +2,7 @@
 id: first-steps
 sidebar_label: 001 - Scaffolding the plugin
 title: How to scaffold a new plugin?
+description: How to scaffold a new Backstage backend plugin using the CLI
 ---
 
 # Scaffolding a new plugin
