@@ -1,0 +1,41 @@
+app:
+  baseUrl: https://blitzy-sandbox-backstage.fly.dev
+  listen:
+    host: 0.0.0.0
+
+backend:
+  baseUrl: https://blitzy-sandbox-backstage.fly.dev
+  listen:
+    port: 7007
+    host: 0.0.0.0
+  database:
+    client: better-sqlite3
+    connection:
+      directory: /data
+  cors:
+    origin:
+      - https://blitzy-sandbox-backstage.fly.dev
+    methods: [GET, HEAD, OPTIONS, POST]
+    credentials: true
+
+catalog:
+  readonly: true
+
+auth:
+  environment: production
+  providers:
+    # Override all development-only providers to prevent startup failures
+    # when their env vars (clientId/clientSecret) are not set
+    google: {}
+    github: {}
+    gitlab: {}
+    okta: {}
+    oauth2: {}
+    oidc: {}
+    auth0: {}
+    microsoft: {}
+    onelogin: {}
+    bitbucket: {}
+    atlassian: {}
+    guest:
+      dangerouslyAllowOutsideDevelopment: true

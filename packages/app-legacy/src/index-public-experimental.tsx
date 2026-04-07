@@ -30,7 +30,6 @@ import {
   discoveryApiRef,
 } from '@backstage/core-plugin-api';
 import { AuthProxyDiscoveryApi } from '../src/AuthProxyDiscoveryApi';
-import '@backstage/ui/css/styles.css';
 
 const app = createApp({
   apis: [

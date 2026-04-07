@@ -81,19 +81,19 @@
       "node ./scripts/check-docs-quality"
     ],
     "{plugins,packages}/*/catalog-info.yaml": [
-      "yarn backstage-repo-tools generate-catalog-info --ci"
+      "bash -c 'yarn backstage-repo-tools generate-catalog-info --ci'"
     ],
     ".github/CODEOWNERS": [
-      "yarn backstage-repo-tools generate-catalog-info",
+      "bash -c 'yarn backstage-repo-tools generate-catalog-info'",
       "git add */catalog-info.yaml"
     ],
     "package.json": [
-      "yarn backstage-repo-tools generate-catalog-info",
+      "bash -c 'yarn backstage-repo-tools generate-catalog-info'",
       "git add */catalog-info.yaml",
       "node ./scripts/sort-package-json.mjs"
     ],
     "yarn.lock": [
-      "node ./scripts/verify-lockfile-duplicates --fix"
+      "bash -c 'node ./scripts/verify-lockfile-duplicates --fix'"
     ]
   },
   "prettier": "@backstage/cli/config/prettier",

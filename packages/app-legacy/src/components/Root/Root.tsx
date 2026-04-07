@@ -35,7 +35,6 @@ import {
   SidebarGroup,
   SidebarItem,
   SidebarPage,
-  SidebarScrollWrapper,
   SidebarSpace,
   SidebarSubmenu,
   SidebarSubmenuItem,
@@ -44,9 +43,7 @@ import {
 import { MyGroupsSidebarItem } from '@backstage/plugin-org';
 import { SearchModal } from '../search/SearchModal';
 import { useApp } from '@backstage/core-plugin-api';
-import BuildIcon from '@material-ui/icons/Build';
 import { NotificationsSidebarItem } from '@backstage/plugin-notifications';
-import UpdateIcon from '@material-ui/icons/Update';
 import CategoryIcon from '@material-ui/icons/Category';
 
 const useSidebarLogoStyles = makeStyles({
@@ -149,13 +146,6 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
         <SidebarItem icon={CreateComponentIcon} to="create" text="Create..." />
         {/* End global nav */}
         <SidebarDivider />
-        <SidebarScrollWrapper>
-          <SidebarItem
-            icon={UpdateIcon}
-            to="catalog-unprocessed-entities"
-            text="Unprocessed Entities"
-          />
-        </SidebarScrollWrapper>
       </SidebarGroup>
       <SidebarSpace />
       <SidebarDivider />
@@ -167,7 +157,6 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
         to="/settings"
       >
         <SidebarSettings />
-        <SidebarItem icon={BuildIcon} to="devtools" text="DevTools" />
       </SidebarGroup>
     </Sidebar>
     {children}

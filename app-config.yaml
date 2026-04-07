@@ -1,6 +1,8 @@
 app:
-  title: Backstage Example App
+  title: Blitzy Sandbox
   baseUrl: http://localhost:3000
+  listen:
+    host: 0.0.0.0
   packages: all # ✨
 
   #datadogRum:
@@ -12,18 +14,13 @@ app:
   #   sessionReplaySampleRate: 0
 
   support:
-    url: https://github.com/backstage/backstage/issues # Used by common ErrorPage
-    items: # Used by common SupportButton component
+    url: https://github.com/Blitzy-Sandbox/blitzy-sandbox-backstage/issues
+    items:
       - title: Issues
         icon: github
         links:
-          - url: https://github.com/backstage/backstage/issues
+          - url: https://github.com/Blitzy-Sandbox/blitzy-sandbox-backstage/issues
             title: GitHub Issues
-      - title: Discord Chatroom
-        icon: chat
-        links:
-          - url: https://discord.gg/backstage-687207715902193673
-            title: '#backstage'
 
   packageName: example-app
 
@@ -44,7 +41,7 @@ backend:
   auth:
     # TODO: once plugins have been migrated we can remove this, but right now it
     # is require for the backend-next to work in this repo
-    dangerouslyDisableDefaultAuthPolicy: true
+    dangerouslyDisableDefaultAuthPolicy: false
 
   baseUrl: http://localhost:7007
   listen:
@@ -53,11 +50,15 @@ backend:
     client: better-sqlite3
     connection: ':memory:'
   cors:
-    origin: http://localhost:3000
+    origin:
+      - http://localhost:3000
+      - http://localhost:3001
+      - http://localhost:8080
     methods: [GET, HEAD, PATCH, POST, PUT, DELETE]
     credentials: true
   csp:
     connect-src: ["'self'", 'http:', 'https:']
+    script-src: ["'self'", "'unsafe-inline'", "'unsafe-eval'", 'https://unpkg.com']
     # Content-Security-Policy directives follow the Helmet format: https://helmetjs.github.io/#reference
     # Default Helmet Content-Security-Policy values can be removed by setting the key to false
   reading:
@@ -70,14 +71,10 @@ backend:
       - catalog
 # See README.md in the proxy-backend plugin for information on the configuration format
 proxy:
-  endpoints:
-    '/pagerduty':
-      target: https://api.pagerduty.com
-      headers:
-        Authorization: Token token=${PAGERDUTY_TOKEN}
+  endpoints: {}
 
 organization:
-  name: My Company
+  name: Blitzy Sandbox
 
 # Reference documentation http://backstage.io/docs/features/techdocs/configuration
 # Note: After experimenting with basic setup, use CI/CD to generate docs
@@ -86,7 +83,7 @@ organization:
 techdocs:
   builder: 'local' # Alternatives - 'external'
   generator:
-    runIn: 'docker'
+    runIn: 'local'
     # dockerImage: my-org/techdocs # use a custom docker image
     # pullImage: true # or false to disable automatic pulling of image (e.g. if custom docker login is required)
   publisher:
@@ -163,6 +160,23 @@ catalog:
         frequency: { minutes: 30 }
         # supports ISO duration, "human duration" as used in code
         timeout: { minutes: 3 }
+    githubOrg:
+      id: blitzy-sandbox
+      githubUrl: https://github.com
+      orgs:
+        - Blitzy-Sandbox
+      schedule:
+        frequency: { minutes: 30 }
+        timeout: { minutes: 3 }
+    github:
+      blitzySandbox:
+        organization: Blitzy-Sandbox
+        catalogPath: /catalog-info.yaml
+        filters:
+          repository: 'blitzy-.*'
+        schedule:
+          frequency: { minutes: 30 }
+          timeout: { minutes: 3 }
     backstageOpenapi:
       plugins:
         - catalog
@@ -181,22 +195,11 @@ catalog:
     # File locations are relative to the current working directory of the
     # backend, for example packages/backend/.
 
-    # Backstage example entities
+    # Blitzy Sandbox repositories
     - type: file
-      target: ../catalog-model/examples/all.yaml
-    # Backstage example groups and users
-    - type: file
-      target: ../catalog-model/examples/acme-corp.yaml
+      target: ../../catalog-blitzy-sandbox.yaml
       rules:
-        - allow: [User, Group]
-    # Example component for TechDocs
-    - type: file
-      target: ../../plugins/techdocs-backend/examples/documented-component/catalog-info.yaml
-    # Backstage example templates
-    - type: file
-      target: ../../plugins/scaffolder-backend/sample-templates/all-templates.yaml
-      rules:
-        - allow: [Template]
+        - allow: [Component, Group, System]
 
 scaffolder:
   auditor:
@@ -312,7 +315,8 @@ auth:
         clientSecret: ${AUTH_ATLASSIAN_CLIENT_SECRET}
         scope: ${AUTH_ATLASSIAN_SCOPES}
     myproxy: {}
-    guest: {}
+    guest:
+      dangerouslyAllowOutsideDevelopment: true
 
 permission:
   enabled: true

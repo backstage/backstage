@@ -15,12 +15,13 @@
  */
 
 import { createApp } from '@backstage/frontend-defaults';
-import { pagesPlugin } from './examples/pagesPlugin';
+import { guestSignInPageModule } from './GuestSignInPage';
 import notFoundErrorPage from './examples/notFoundErrorPageExtension';
 import userSettingsPlugin from '@backstage/plugin-user-settings/alpha';
 import homePlugin from '@backstage/plugin-home/alpha';
 
 import { createFrontendModule } from '@backstage/frontend-plugin-api';
+
 import {
   HomePageLayoutBlueprint,
   type HomePageLayoutProps,
@@ -40,18 +41,14 @@ import {
   EntityTechdocsContent,
 } from '@backstage/plugin-techdocs';
 import appVisualizerPlugin from '@backstage/plugin-app-visualizer';
-import { convertLegacyAppRoot } from '@backstage/core-compat-api';
-import { FlatRoutes } from '@backstage/core-app-api';
-import { Route } from 'react-router';
-import { CatalogImportPage } from '@backstage/plugin-catalog-import';
-import kubernetesPlugin from '@backstage/plugin-kubernetes/alpha';
-import { convertLegacyPlugin } from '@backstage/core-compat-api';
+import {
+  techDocsMermaidAddonModule,
+  techDocsLightBoxAddonModule,
+} from '@backstage/plugin-techdocs-module-addons-contrib/alpha';
 import { convertLegacyPageExtension } from '@backstage/core-compat-api';
 import { convertLegacyEntityContentExtension } from '@backstage/plugin-catalog-react/alpha';
 import { pluginInfoResolver } from './pluginInfoResolver';
 import { appModuleNav } from './modules/appModuleNav';
-import devtoolsPlugin from '@backstage/plugin-devtools/alpha';
-import { unprocessedEntitiesDevToolsContent } from '@backstage/plugin-catalog-unprocessed-entities/alpha';
 import catalogPlugin from '@backstage/plugin-catalog/alpha';
 import { Info } from 'lucide-react';
 
@@ -116,6 +113,217 @@ const clockConfigs: ClockConfig[] = [
   { label: 'TYO', timeZone: 'Asia/Tokyo' },
 ];
 
+const lifecycleStages = [
+  {
+    label: 'Ingestion',
+    color: 'bg-yellow-500/15 text-yellow-700 dark:text-yellow-400',
+    description: 'Codebase mapping and dependency analysis',
+  },
+  {
+    label: 'Tech Spec',
+    color: 'bg-blue-500/15 text-blue-700 dark:text-blue-400',
+    description: 'Automated documentation generation',
+  },
+  {
+    label: 'Prompt Review',
+    color: 'bg-orange-500/15 text-orange-700 dark:text-orange-400',
+    description: 'Requirements refinement and validation',
+  },
+  {
+    label: 'AAP Generation',
+    color: 'bg-purple-500/15 text-purple-700 dark:text-purple-400',
+    description: 'Architect Action Plan creation',
+  },
+  {
+    label: 'Project Guide Review',
+    color: 'bg-red-500/15 text-red-700 dark:text-red-400',
+    description: 'The critical 20% - human expertise required',
+  },
+  {
+    label: 'Code Review',
+    color: 'bg-green-500/15 text-green-700 dark:text-green-400',
+    description: 'Production-ready reference implementation',
+  },
+];
+
+function BlitzySandboxWelcome() {
+  return (
+    <div className="flex flex-col items-center px-8 max-w-4xl mx-auto">
+      <div className="text-center mb-10">
+        <h1 className="text-5xl font-bold tracking-tight mb-3">
+          Blitzy Sandbox
+        </h1>
+        <p className="text-xl text-muted-foreground italic">
+          The Testing Ground for AI-Native Development
+        </p>
+        <p className="text-sm text-muted-foreground mt-3 max-w-xl mx-auto">
+          Explore autonomous code generation at scale &mdash; production-grade
+          repositories, zero friction
+        </p>
+      </div>
+
+      <div className="w-16 h-px bg-border mb-10" />
+
+      {/* What You Get */}
+      <div className="w-full mb-10">
+        <p className="text-sm text-muted-foreground leading-relaxed text-center max-w-2xl mx-auto mb-6">
+          Neutral, production-grade codebases where you can explore AI-native
+          development workflows. Standalone repositories, ready to explore, no
+          setup friction.
+        </p>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+          {[
+            { title: 'Hands-on', desc: 'Real codebases in various states' },
+            { title: 'Learning', desc: 'Practical AI-native examples' },
+            { title: 'Experiment', desc: 'Test prompts and iterate' },
+            { title: 'Insights', desc: 'Generation quality and patterns' },
+          ].map(item => (
+            <div key={item.title} className="p-4 rounded-lg bg-muted/50">
+              <p className="text-sm font-semibold text-foreground">
+                {item.title}
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">{item.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="w-16 h-px bg-border mb-10" />
+
+      {/* The 80/20 Principle */}
+      <div className="w-full text-center mb-10">
+        <h2 className="text-lg font-semibold mb-2">The 80/20 Principle</h2>
+        <p className="text-sm text-muted-foreground max-w-xl mx-auto mb-4">
+          Blitzy automates{' '}
+          <span className="font-semibold text-foreground">80%</span> of
+          development through AI agents, leaving the critical{' '}
+          <span className="font-semibold text-foreground">20%</span> for human
+          expertise.
+        </p>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-left max-w-2xl mx-auto">
+          {[
+            'System 2 Thinking',
+            'Multi-Agent Orchestration',
+            'Runtime Validation',
+            'Human-in-the-Loop',
+          ].map(concept => (
+            <div
+              key={concept}
+              className="text-xs text-muted-foreground bg-muted/50 rounded px-3 py-2 text-center"
+            >
+              {concept}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="w-16 h-px bg-border mb-10" />
+
+      {/* Project Lifecycle */}
+      <div className="w-full mb-10">
+        <h2 className="text-lg font-semibold text-center mb-4">
+          Project Lifecycle
+        </h2>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+          {lifecycleStages.map(stage => (
+            <div
+              key={stage.label}
+              className="flex flex-col gap-1 p-3 rounded-lg bg-muted/30"
+            >
+              <span
+                className={`text-xs font-semibold px-2 py-0.5 rounded-full w-fit ${stage.color}`}
+              >
+                {stage.label}
+              </span>
+              <span className="text-xs text-muted-foreground">
+                {stage.description}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="w-16 h-px bg-border mb-10" />
+
+      {/* Quick Links */}
+      <div className="grid grid-cols-2 gap-8 mb-10 text-center">
+        <a
+          href="/catalog"
+          className="group flex flex-col items-center gap-2 no-underline"
+        >
+          <div className="w-12 h-12 rounded-lg bg-muted flex items-center justify-center group-hover:bg-primary/10 transition-colors">
+            <span className="text-xl">&#9776;</span>
+          </div>
+          <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">
+            Catalog
+          </span>
+        </a>
+        <a
+          href="/docs"
+          className="group flex flex-col items-center gap-2 no-underline"
+        >
+          <div className="w-12 h-12 rounded-lg bg-muted flex items-center justify-center group-hover:bg-primary/10 transition-colors">
+            <span className="text-xl">&#128214;</span>
+          </div>
+          <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">
+            Docs
+          </span>
+        </a>
+      </div>
+
+      {/* Resources */}
+      <div className="w-full mb-8">
+        <div className="flex flex-wrap justify-center gap-3 text-xs">
+          <a
+            href="https://docs.blitzy.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-3 py-1.5 rounded-full bg-muted hover:bg-muted/80 text-muted-foreground hover:text-foreground transition-colors no-underline"
+          >
+            Platform Docs
+          </a>
+          <a
+            href="https://platform.blitzy.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-3 py-1.5 rounded-full bg-muted hover:bg-muted/80 text-muted-foreground hover:text-foreground transition-colors no-underline"
+          >
+            Blitzy Platform
+          </a>
+          <a
+            href="https://docs.blitzy.com/templates"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-3 py-1.5 rounded-full bg-muted hover:bg-muted/80 text-muted-foreground hover:text-foreground transition-colors no-underline"
+          >
+            Prompt Library
+          </a>
+          <a
+            href="https://docs.blitzy.com/prompt-engineering/golden-rules"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-3 py-1.5 rounded-full bg-muted hover:bg-muted/80 text-muted-foreground hover:text-foreground transition-colors no-underline"
+          >
+            Best Practices
+          </a>
+          <a
+            href="https://blitzy.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-3 py-1.5 rounded-full bg-muted hover:bg-muted/80 text-muted-foreground hover:text-foreground transition-colors no-underline"
+          >
+            About Blitzy
+          </a>
+        </div>
+      </div>
+
+      <p className="text-xs text-muted-foreground/50 mb-4">
+        Where AI-native development meets Open Source Enterprise Software
+      </p>
+    </div>
+  );
+}
+
 const customHomePageModule = createFrontendModule({
   pluginId: 'home',
   extensions: [
@@ -129,15 +337,18 @@ const customHomePageModule = createFrontendModule({
                   <HeaderWorldClock clockConfigs={clockConfigs} />
                 </Header>
                 <Content>
-                  <div className="max-w-full overflow-x-hidden [&_pre]:overflow-x-auto [&_pre]:max-w-full">
-                    <CustomHomepageGrid>
-                      {widgets.map((widget, index) => (
-                        <Fragment key={widget.name ?? index}>
-                          {widget.component}
-                        </Fragment>
-                      ))}
-                    </CustomHomepageGrid>
-                  </div>
+                  <BlitzySandboxWelcome />
+                  {widgets.length > 0 && (
+                    <div className="max-w-full overflow-x-hidden [&_pre]:overflow-x-auto [&_pre]:max-w-full mt-8">
+                      <CustomHomepageGrid>
+                        {widgets.map((widget, index) => (
+                          <Fragment key={widget.name ?? index}>
+                            {widget.component}
+                          </Fragment>
+                        ))}
+                      </CustomHomepageGrid>
+                    </div>
+                  )}
                 </Content>
               </Page>
             );
@@ -163,32 +374,19 @@ const notFoundErrorPageModule = createFrontendModule({
   extensions: [notFoundErrorPage],
 });
 
-const devtoolsPluginUnprocessed = createFrontendModule({
-  pluginId: 'catalog-unprocessed-entities',
-  extensions: [unprocessedEntitiesDevToolsContent],
-});
-
-const collectedLegacyPlugins = convertLegacyAppRoot(
-  <FlatRoutes>
-    <Route path="/catalog-import" element={<CatalogImportPage />} />
-  </FlatRoutes>,
-);
-
 const app = createApp({
   features: [
     customizedCatalog,
-    pagesPlugin,
     convertedTechdocsPlugin,
     userSettingsPlugin,
     homePlugin,
     appVisualizerPlugin,
-    kubernetesPlugin,
     notFoundErrorPageModule,
     appModuleNav,
     customHomePageModule,
-    devtoolsPlugin,
-    devtoolsPluginUnprocessed,
-    ...collectedLegacyPlugins,
+    guestSignInPageModule,
+    techDocsMermaidAddonModule,
+    techDocsLightBoxAddonModule,
   ],
   advanced: {
     pluginInfoResolver,

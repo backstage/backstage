@@ -5,6 +5,16 @@
     "role": "frontend"
   },
   "private": true,
+  "proxy": [
+    {
+      "context": [
+        "/api"
+      ],
+      "target": "http://localhost:7007",
+      "changeOrigin": true,
+      "ws": true
+    }
+  ],
   "homepage": "https://backstage.io",
   "repository": {
     "type": "git",

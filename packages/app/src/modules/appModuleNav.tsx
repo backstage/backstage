@@ -25,10 +25,8 @@ import {
   SidebarSpace,
   useSidebarOpenState,
 } from '@backstage/core-components';
-import { Search, Menu, Wrench } from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
+import { Search, Menu } from 'lucide-react';
 import { createFrontendModule } from '@backstage/frontend-plugin-api';
-import type { IconComponent } from '@backstage/frontend-plugin-api';
 import { NavContentBlueprint } from '@backstage/plugin-app-react';
 import { SidebarSearchModal } from '@backstage/plugin-search';
 import { NotificationsSidebarItem } from '@backstage/plugin-notifications';
@@ -36,18 +34,6 @@ import {
   Settings,
   UserSettingsSignInAvatar,
 } from '@backstage/plugin-user-settings';
-
-/**
- * Wraps a Lucide icon component to satisfy the Backstage IconComponent type contract.
- */
-const wrapIcon = (Icon: LucideIcon): IconComponent => {
-  const Wrapped = (props: {
-    fontSize?: 'medium' | 'large' | 'small' | 'inherit';
-  }) => <Icon {...props} />;
-  return Wrapped;
-};
-
-const WrenchIcon = wrapIcon(Wrench);
 
 const SidebarLogo = () => {
   const { isOpen } = useSidebarOpenState();
@@ -123,7 +109,6 @@ export const appModuleNav = createFrontendModule({
             />
           ));
           nav.take('page:home'); // Skip home — rendered as SidebarLogo
-          nav.take('page:devtools'); // Take DevTools to prevent duplicate in nav.rest()
           return (
             <Sidebar>
               <SidebarLogo />
@@ -133,7 +118,6 @@ export const appModuleNav = createFrontendModule({
               <SidebarDivider />
               <SidebarGroup label="Menu" icon={<Menu />}>
                 {nav.take('page:catalog')}
-                {nav.take('page:scaffolder')}
                 <SidebarDivider />
                 <SidebarScrollWrapper>
                   {nav.rest({ sortBy: 'title' })}
@@ -148,7 +132,6 @@ export const appModuleNav = createFrontendModule({
                 to="/settings"
               >
                 <NotificationsSidebarItem />
-                <SidebarItem icon={WrenchIcon} to="devtools" text="DevTools" />
                 <Settings />
               </SidebarGroup>
             </Sidebar>

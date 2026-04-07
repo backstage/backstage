@@ -50,14 +50,13 @@ async function main() {
   const lockFiles = await findLockFiles();
 
   let fix = false;
-  for (const arg of process.argv) {
-    if (arg.startsWith('--')) {
-      if (arg === '--fix') {
-        fix = true;
-      } else {
-        throw new Error(`Unknown argument ${arg}`);
-      }
+  for (const arg of process.argv.slice(2)) {
+    if (arg === '--fix') {
+      fix = true;
+    } else if (arg.startsWith('--')) {
+      throw new Error(`Unknown argument ${arg}`);
     }
+    // Ignore positional arguments (e.g. filenames from lint-staged)
   }
 
   for (const lockFile of lockFiles) {

@@ -728,12 +728,11 @@ export function CatalogAutocomplete<
       <label
         {...LabelProps}
         className={cn(
-          'relative block font-bold text-sm text-foreground',
-          '[&>span:first-child]:top-0 [&>span:first-child]:inset-inline-start-0 [&>span:first-child]:absolute',
+          'relative block text-sm text-foreground',
           LabelProps?.className,
         )}
       >
-        <span>{label}</span>
+        <span className="block font-medium mb-1">{label}</span>
         {comboboxContent}
       </label>
       {renderDropdown()}

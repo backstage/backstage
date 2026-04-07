@@ -33,7 +33,9 @@ export function HeaderIconLinkRow(props: Props) {
   const { links } = props;
   return (
     <nav
-      className={cn('my-4 grid grid-flow-col auto-cols-min gap-6 break-keep')}
+      className={cn(
+        'my-4 ml-4 grid grid-flow-col auto-cols-min gap-6 break-keep',
+      )}
     >
       {links.map((link, index) => (
         <IconLinkVertical key={index + 1} {...link} />

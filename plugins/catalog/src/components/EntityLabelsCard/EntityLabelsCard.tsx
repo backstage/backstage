@@ -15,12 +15,7 @@
  */
 
 import { useEntity } from '@backstage/plugin-catalog-react';
-import {
-  InfoCard,
-  InfoCardVariants,
-  Table,
-  TableColumn,
-} from '@backstage/core-components';
+import { InfoCard, InfoCardVariants } from '@backstage/core-components';
 import { EntityLabelsEmptyState } from './EntityLabelsEmptyState';
 import { catalogTranslationRef } from '../../alpha/translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
@@ -36,41 +31,29 @@ export const EntityLabelsCard = (props: EntityLabelsCardProps) => {
   const { entity } = useEntity();
   const { t } = useTranslationRef(catalogTranslationRef);
 
-  const columns: TableColumn<{ key: string; value: string }>[] = [
-    {
-      render: row => {
-        return <span className="text-sm font-bold">{row.key}</span>;
-      },
-    },
-    {
-      field: 'value',
-    },
-  ];
-
-  const labels = entity?.metadata?.labels;
+  const allLabels = entity?.metadata?.labels;
+  // Filter out Backstage system labels that aren't meaningful to display
+  const labels = allLabels
+    ? Object.fromEntries(
+        Object.entries(allLabels).filter(
+          ([key]) => !key.startsWith('backstage.io/'),
+        ),
+      )
+    : undefined;
 
   return (
     <InfoCard title={title || t('entityLabelsCard.title')} variant={variant}>
       {!labels || Object.keys(labels).length === 0 ? (
         <EntityLabelsEmptyState />
       ) : (
-        <Table
-          columns={columns}
-          data={Object.keys(labels).map(labelKey => ({
-            key: labelKey,
-            value: labels[labelKey],
-          }))}
-          options={{
-            search: false,
-            showTitle: true,
-            loadingType: 'linear',
-            header: false,
-            padding: 'dense',
-            pageSize: 5,
-            toolbar: false,
-            paging: Object.keys(labels).length > 5,
-          }}
-        />
+        <div className="flex flex-col gap-2 pt-4">
+          {Object.entries(labels).map(([key, value]) => (
+            <div key={key} className="flex items-baseline gap-2">
+              <span className="text-sm font-bold">{key}</span>
+              <span className="text-sm text-muted-foreground">{value}</span>
+            </div>
+          ))}
+        </div>
       )}
     </InfoCard>
   );
