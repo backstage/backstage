@@ -25,6 +25,35 @@ interface DiscoveryGlobal {
   modules: Array<{ name: string; export?: string; default: unknown }>;
 }
 
+/** @internal */
+export const patternToRegex = (pattern: string): RegExp => {
+  // Escape regex special characters, then replace escaped '*' with '.*' to allow wildcard matching.
+  const escaped = pattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return new RegExp(`^${escaped.replace(/\\\*/g, '.*')}$`);
+};
+
+/** @internal */
+const createRegexMatcher = (pattern: string) => {
+  const re = patternToRegex(pattern);
+  return (name: string) => re.test(name);
+};
+
+/** @internal */
+export const filtersToMatchers = (filters: string[] | undefined) => {
+  if (!filters || filters.length === 0) {
+    return undefined;
+  }
+
+  // Convert each unique filter into a matcher function.
+  // If the filter contains a wildcard, convert it to a regex matcher.
+  // Otherwise, convert it to an exact string matcher.
+  return [...new Set(filters)].map(filter =>
+    filter.includes('*')
+      ? createRegexMatcher(filter)
+      : (name: string) => name === filter,
+  );
+};
+
 function readPackageDetectionConfig(config: Config) {
   const packages = config.getOptional('app.packages');
   if (packages === undefined || packages === null) {
@@ -66,14 +95,17 @@ export function discoverAvailableFeatures(config: Config): {
     return { features: [] };
   }
 
+  const includeMatchers = filtersToMatchers(detection.include) ?? [() => true];
+  const excludeMatchers = filtersToMatchers(detection.exclude) ?? [() => false];
+
   return {
     features:
       discovered?.modules
         .filter(({ name }) => {
-          if (detection.exclude?.includes(name)) {
+          if (excludeMatchers.some(match => match(name))) {
             return false;
           }
-          if (detection.include && !detection.include.includes(name)) {
+          if (!includeMatchers.some(match => match(name))) {
             return false;
           }
           return true;
