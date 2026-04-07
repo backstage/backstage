@@ -233,7 +233,7 @@ The HTML content is automatically converted to Markdown for better LLM understan
           `Error stack: ${error instanceof Error ? error.stack : 'N/A'}`,
         );
 
-        throw new Error(
+        throw new InputError(
           `Failed to get TechDocs content for ${entityRef}, path: ${input.path}. Error: ${errorMessage}`,
         );
       }
