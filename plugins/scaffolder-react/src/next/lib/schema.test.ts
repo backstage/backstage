@@ -1029,4 +1029,130 @@ describe('resolveConditionalSchema', () => {
     // The input schema is NOT mutated
     expect(inputSchema).toEqual(originalSnapshot);
   });
+
+  it('resolves a schema with 20 conditional branches in under 50ms', () => {
+    // Build a schema with 20 if/then/else branches wrapped in allOf.
+    // This matches the AAP performance target: <50ms for ≤20 branches.
+    const branches: JsonObject[] = [];
+    for (let i = 0; i < 20; i++) {
+      branches.push({
+        if: {
+          properties: {
+            [`selector${i}`]: { const: `option${i}` },
+          },
+        },
+        then: {
+          properties: {
+            [`conditionalField${i}`]: {
+              type: 'string',
+              title: `Conditional Field ${i}`,
+            },
+          },
+          required: [`conditionalField${i}`],
+        },
+        else: {
+          properties: {
+            [`fallbackField${i}`]: {
+              type: 'string',
+              title: `Fallback Field ${i}`,
+            },
+          },
+        },
+      });
+    }
+
+    const selectorProperties: JsonObject = {};
+    for (let i = 0; i < 20; i++) {
+      selectorProperties[`selector${i}`] = {
+        type: 'string',
+        enum: [`option${i}`, `other${i}`],
+      };
+    }
+
+    const schema: JsonObject = {
+      type: 'object',
+      properties: selectorProperties,
+      allOf: branches,
+    };
+
+    // Form data that triggers all 20 "then" branches
+    const formData: JsonObject = {};
+    for (let i = 0; i < 20; i++) {
+      formData[`selector${i}`] = `option${i}`;
+    }
+
+    // Warm up JIT
+    resolveConditionalSchema(schema, formData);
+
+    // Measure performance over 100 iterations for statistical significance
+    const iterations = 100;
+    const start = window.performance.now();
+    for (let iter = 0; iter < iterations; iter++) {
+      resolveConditionalSchema(schema, formData);
+    }
+    const elapsed = window.performance.now() - start;
+    const avgMs = elapsed / iterations;
+
+    // Target: <50ms per call for 20 branches
+    expect(avgMs).toBeLessThan(50);
+
+    // Verify correctness: all 20 conditional fields should be present
+    const result = resolveConditionalSchema(schema, formData);
+    for (let i = 0; i < 20; i++) {
+      expect(
+        (result.properties as JsonObject)?.[`conditionalField${i}`],
+      ).toBeDefined();
+    }
+  });
+
+  it('resolves deeply nested if/then/else chains within performance budget', () => {
+    // Build a schema with 10 levels of nested if/then/else
+    let innerSchema: JsonObject = {
+      properties: {
+        deepField: { type: 'string', title: 'Deep Field' },
+      },
+    };
+
+    for (let depth = 9; depth >= 0; depth--) {
+      innerSchema = {
+        if: {
+          properties: {
+            [`level${depth}`]: { const: 'yes' },
+          },
+        },
+        then: innerSchema,
+        else: {
+          properties: {
+            [`fallback${depth}`]: { type: 'string' },
+          },
+        },
+      };
+    }
+
+    const schema: JsonObject = {
+      type: 'object',
+      properties: {
+        level0: { type: 'string', enum: ['yes', 'no'] },
+      },
+      ...innerSchema,
+    };
+
+    const formData: JsonObject = {};
+    for (let i = 0; i < 10; i++) {
+      formData[`level${i}`] = 'yes';
+    }
+
+    // Warm up
+    resolveConditionalSchema(schema, formData);
+
+    const iterations = 50;
+    const start = window.performance.now();
+    for (let iter = 0; iter < iterations; iter++) {
+      resolveConditionalSchema(schema, formData);
+    }
+    const avgMs = (window.performance.now() - start) / iterations;
+
+    // Should resolve well under 50ms even with nesting
+    expect(avgMs).toBeLessThan(50);
+  });
 });
