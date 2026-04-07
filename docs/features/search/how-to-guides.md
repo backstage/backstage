@@ -5,6 +5,13 @@ sidebar_label: How-To guides
 description: Search How To guides
 ---
 
+::::info
+This documentation is written for the new frontend system, which is the default
+in new Backstage apps. If your Backstage app still uses the old frontend system,
+read the [old frontend system version of this guide](./how-to-guides--old.md)
+instead.
+::::
+
 ## How to implement your own Search API
 
 The Search plugin provides implementation of one primary API by default: the
@@ -26,24 +33,9 @@ to do that in two steps.
    }
    ```
 
-2. Override the API ref `searchApiRef` with your new implemented API in the
-   `App.tsx` using `ApiFactories`.
-   [Read more about App APIs](https://backstage.io/docs/api/utility-apis#app-apis).
-
-   ```typescript
-   const app = createApp({
-     apis: [
-       // SearchApi
-       createApiFactory({
-         api: searchApiRef,
-         deps: { discovery: discoveryApiRef },
-         factory({ discovery }) {
-           return new SearchClient({ discoveryApi: discovery });
-         },
-       }),
-     ],
-   });
-   ```
+2. Override the default API extension by creating a custom API extension using
+   `createApiExtension` from `@backstage/frontend-plugin-api`, and install it
+   in your app. See the [Utility APIs](../../frontend-system/utility-apis/01-index.md) documentation for details on how to create and install custom API extensions.
 
 ## How to customize fields in the Software Catalog or TechDocs index
 
@@ -119,7 +111,7 @@ how highlighted terms look you can follow Backstage's guide on how to
 [Customizing Your App's UI](https://backstage.io/docs/conf/user-interface)
 to create an override with your preferred styling.
 
-For example, using the new MUI V4+V5 unified theming method, the following will result
+For example, using the unified theming method, the following will result
 in highlighted words to be bold & underlined:
 
 ```typescript jsx title=packages/app/src/theme/theme.ts
@@ -151,211 +143,69 @@ export const myLightTheme: UnifiedTheme = createUnifiedTheme({
 });
 ```
 
-```typescript jsx title= packages/app/src/App.tsx
-
-const app : BackstageApp = createApp({
-  ...
-  themes: [{
-    id: 'my-light-theme',
-    title: 'Light Theme',
-    variant: 'light',
-    icon: <LightIcon />,
-    Provider: ({ children }) => (<UnifiedThemeProvider theme={myLightTheme} children={children } />)
-  }]
-});
-```
-
-Obviously if you wanted a dark theme, you would need to provide that as well.
+Custom themes are installed as extensions in the new frontend system. See the
+[theming documentation](../../frontend-system/building-apps/02-configuring-extensions.md)
+for details on how to install custom themes.
 
 ## How to render search results using extensions
 
-Extensions for search results let you customize components used to render search result items, It is possible to provide your own search result item extensions or use the ones provided by plugin packages.
+Extensions for search results let you customize components used to render
+search result items. It is possible to provide your own search result item
+extensions or use the ones provided by plugin packages.
 
-### 1. Providing an extension in your plugin package
+### Providing a search result list item extension
 
-> Note: You must use the `plugin.provide()` function to make a search item renderer available. Unlike rendering a list in a standard MUI Table or similar, you cannot simply provide
-> a rendering function to the `<SearchResult />` component.
+In the new frontend system, search result list item extensions are created
+using the `SearchResultListItemBlueprint` from
+`@backstage/plugin-search-react/alpha`:
 
-Using the example below, you can provide an extension to be used as a search result item:
+```tsx title="plugins/your-plugin/src/extensions.ts"
+import { SearchResultListItemBlueprint } from '@backstage/plugin-search-react/alpha';
 
-```tsx title="plugins/your-plugin/src/plugin.ts"
-import { createPlugin } from '@backstage/core-plugin-api';
-import { createSearchResultListItemExtension } from '@backstage/plugin-search-react';
-
-const plugin = createPlugin({ id: 'YOUR_PLUGIN_ID' });
-
-export const YourSearchResultListItemExtension = plugin.provide(
-  createSearchResultListItemExtension({
-    name: 'YourSearchResultListItem',
-    component: () =>
-      import('./components').then(m => m.YourSearchResultListItem),
-  }),
-);
-```
-
-If your list item accept props, you can extend the `SearchResultListItemExtensionProps` with your component specific props:
-
-```tsx
-export const YourSearchResultListItemExtension: (
-  props: SearchResultListItemExtensionProps<YourSearchResultListItemProps>,
-) => JSX.Element | null = plugin.provide(
-  createSearchResultListItemExtension({
-    name: 'YourSearchResultListItem',
-    component: () =>
-      import('./components').then(m => m.YourSearchResultListItem),
-  }),
-);
-```
-
-Additionally, you can define a predicate function that receives a result and returns whether your extension should be used to render it or not:
-
-```tsx title="plugins/your-plugin/src/plugin.ts"
-import { createPlugin } from '@backstage/core-plugin-api';
-import { createSearchResultListItemExtension } from '@backstage/plugin-search-react';
-
-const plugin = createPlugin({ id: 'YOUR_PLUGIN_ID' });
-
-export const YourSearchResultListItemExtension = plugin.provide(
-  createSearchResultListItemExtension({
-    name: 'YourSearchResultListItem',
-    component: () =>
-      import('./components').then(m => m.YourSearchResultListItem),
-    // Only results matching your type will be rendered by this extension
+export const YourSearchResultListItem = SearchResultListItemBlueprint.make({
+  name: 'your-result-item',
+  params: {
     predicate: result => result.type === 'YOUR_RESULT_TYPE',
-  }),
-);
+    component: async () => {
+      const { YourSearchResultListItem } = await import('./components');
+      return YourSearchResultListItem;
+    },
+  },
+});
 ```
 
-Remember to export your new extension via your plugin's `index.ts` so that it is available from within your app:
+The extension is then exported from your plugin's alpha entry point and
+automatically discovered when the plugin is installed.
 
-```tsx title="plugins/your-plugin/src/index.ts"
-export { YourSearchResultListItem } from './plugin.ts';
+If you need to provide a search result list item extension from your app
+rather than a plugin, wrap it in a frontend module and pass it to `createApp`:
+
+```tsx title="packages/app/src/search/searchModule.ts"
+import { createFrontendModule } from '@backstage/frontend-plugin-api';
+import { YourSearchResultListItem } from './YourSearchResultListItem';
+
+export const searchCustomizations = createFrontendModule({
+  pluginId: 'search',
+  extensions: [YourSearchResultListItem],
+});
 ```
 
-For more details, see the [createSearchResultListItemExtension](https://backstage.io/api/stable/functions/_backstage_plugin-search-react.index.createSearchResultListItemExtension.html) API reference.
+```tsx title="packages/app/src/App.tsx"
+import { createApp } from '@backstage/frontend-defaults';
+import { searchCustomizations } from './search/searchModule';
 
-### 2. Custom search result extension in the SearchPage
+const app = createApp({
+  features: [searchCustomizations],
+});
 
-Once you have exposed your item renderer via the `plugin.provide()` function, you can now override the default search item renderers and tell the `<SearchResult>` component
-which renderers to use. Note that the order of the renderers matters! The first one that matches via its predicate function will be used.
-
-Here is an example of customizing your `SearchPage`:
-
-```tsx title="packages/app/src/components/searchPage.tsx"
-import { Grid, Paper } from '@material-ui/core';
-import BuildIcon from '@material-ui/icons/Build';
-
-import {
-  Page,
-  Header,
-  Content,
-  DocsIcon,
-  CatalogIcon,
-} from '@backstage/core-components';
-import { SearchBar, SearchResult } from '@backstage/plugin-search-react';
-
-// Your search result item extension
-import { YourSearchResultListItem } from '@backstage/your-plugin';
-
-// Extensions provided by other plugin developers
-import { ToolSearchResultListItem } from '@backstage/plugin-explore';
-import { TechDocsSearchResultListItem } from '@backstage/plugin-techdocs';
-import { CatalogSearchResultListItem } from '@internal/plugin-catalog-customized';
-
-// This example omits other components, like filter and pagination
-const SearchPage = () => (
-  <Page themeId="home">
-    <Header title="Search" />
-    <Content>
-      <Grid container direction="row">
-        <Grid item xs={12}>
-          <Paper>
-            <SearchBar />
-          </Paper>
-        </Grid>
-        <Grid item xs={12}>
-          <SearchResult>
-            <YourSearchResultListItem />
-            <CatalogSearchResultListItem icon={<CatalogIcon />} />
-            <TechDocsSearchResultListItem icon={<DocsIcon />} />
-            <ToolSearchResultListItem icon={<BuildIcon />} />
-          </SearchResult>
-        </Grid>
-      </Grid>
-    </Content>
-  </Page>
-);
-
-export const searchPage = <SearchPage />;
+export default app.createRoot();
 ```
 
-> **Important**: A default result item extension (one that does not have a predicate) should be placed as the last child, so it can be used only when no other extensions match the result being rendered.
-> If a non-default extension is specified, the `DefaultResultListItem` component will be used.
+### Search result item ordering
 
-### 2. Custom search result extension in the SidebarSearchModal
-
-You may be using the SidebarSearchModal component. In this case, you can customize the search items in this component as follows:
-
-```tsx title="packages/app/src/components/Root/Root.tsx"
-import { SidebarSearchModal } from '@backstage/plugin-search';
-...
-export const Root = ({ children }: PropsWithChildren<{}>) => {
-  const styles = useStyles();
-
-  return <SidebarPage>
-    <Sidebar>
-      ...
-      <SidebarSearchModal resultItemComponents={[
-        /* Provide a custom Extension search item renderer */
-        <CustomSearchResultListItem icon={<CatalogIcon />} />,
-        /* Provide an existing search item renderer */
-        <TechDocsSearchResultListItem icon={<DocsIcon />} />
-      ]} />
-      ...
-    </Sidebar>
-    {children}
-  </SidebarPage>;
-};
-```
-
-### 3. Custom search result extension in a custom SearchModal
-
-Assuming you have completely customized your SearchModal, here's an example that renders results with extensions:
-
-```tsx title="packages/app/src/components/searchModal.tsx"
-import { DialogContent, DialogTitle, Paper } from '@material-ui/core';
-import BuildIcon from '@material-ui/icons/Build';
-
-import { DocsIcon, CatalogIcon } from '@backstage/core-components';
-import { SearchBar, SearchResult } from '@backstage/plugin-search-react';
-
-// Your search result item extension
-import { YourSearchResultListItem } from '@backstage/your-plugin';
-
-// Extensions provided by other plugin developers
-import { ToolSearchResultListItem } from '@backstage/plugin-explore';
-import { TechDocsSearchResultListItem } from '@backstage/plugin-techdocs';
-import { CatalogSearchResultListItem } from '@internal/plugin-catalog-customized';
-
-export const SearchModal = ({ toggleModal }: { toggleModal: () => void }) => (
-  <>
-    <DialogTitle>
-      <Paper>
-        <SearchBar />
-      </Paper>
-    </DialogTitle>
-    <DialogContent>
-      <SearchResult onClick={toggleModal}>
-        <CatalogSearchResultListItem icon={<CatalogIcon />} />
-        <TechDocsSearchResultListItem icon={<DocsIcon />} />
-        <ToolSearchResultListItem icon={<BuildIcon />} />
-        {/* As a "default" extension, it does not define a predicate function,
-        so it must be the last child to render results that do not match the above extensions */}
-        <YourSearchResultListItem />
-      </SearchResult>
-    </DialogContent>
-  </>
-);
-```
+When multiple search result list item extensions are installed, the search page
+uses them to render results based on their predicate functions. The first
+extension whose predicate matches a given result is used to render it. Extensions
+without a predicate act as fallback renderers and should be ordered last.
 
 There are other more specific search results layout components that also accept result item extensions, check their documentation: [SearchResultList](https://backstage.io/storybook/?path=/story/plugins-search-searchresultlist--with-result-item-extensions) and [SearchResultGroup](https://backstage.io/storybook/?path=/story/plugins-search-searchresultgroup--with-result-item-extensions).

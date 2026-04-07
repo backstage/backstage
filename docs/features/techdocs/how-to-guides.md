@@ -5,6 +5,13 @@ sidebar_label: How-To guides
 description: TechDocs How-To guides related to TechDocs
 ---
 
+::::info
+This documentation is written for the new frontend system, which is the default
+in new Backstage apps. If your Backstage app still uses the old frontend system,
+read the [old frontend system version of this guide](./how-to-guides--old.md)
+instead.
+::::
+
 ## How to migrate from TechDocs Basic to Recommended deployment approach?
 
 The main difference between TechDocs Basic and Recommended deployment approach
@@ -108,241 +115,81 @@ much data git clone has to transfer.
 ## How to customize the TechDocs home page?
 
 TechDocs uses a composability pattern similar to the Search and Catalog plugins
-in Backstage. While a default table experience, similar to the one provided by
-the Catalog plugin, is made available for ease-of-use, it's possible for you to
-provide a completely custom experience, tailored to the needs of your
-organization. For example, TechDocs comes with an alternative grid based layout
-(`<EntityListDocsGrid>`) and panel layout (`TechDocsCustomHome`).
+in Backstage. The default TechDocs home page provides a table experience
+similar to the one provided by the Catalog plugin. TechDocs also comes with
+an alternative grid based layout and panel layout.
 
-This is done in your `app` package. By default, you might see something like
-this in your `App.tsx`:
+Customization of the TechDocs home page in the new frontend system is done by
+overriding the `page:techdocs` extension. The TechDocs home page is a standard
+page extension created using `PageBlueprint`, which means you can override it
+just like any other page extension.
 
-```tsx
-const AppRoutes = () => {
-  <FlatRoutes>
-    <Route path="/docs" element={<TechDocsIndexPage />}>
-      <DefaultTechDocsHome />
-    </Route>
-  </FlatRoutes>;
-};
-```
+The simplest approach is to use the `plugin.withOverrides` method to provide a
+replacement page extension. Since the TechDocs page extension has the ID
+`page:techdocs`, you can override it by creating a new page extension under the
+`techdocs` plugin namespace:
 
-### Using TechDocsCustomHome
+```tsx title="packages/app/src/techdocs/TechDocsHomePage.tsx"
+import { PageBlueprint } from '@backstage/frontend-plugin-api';
+import techdocsPlugin from '@backstage/plugin-techdocs/alpha';
 
-You can easily customize the TechDocs home page using TechDocs panel layout
-(`<TechDocsCustomHome />`).
-
-Modify your `App.tsx` as follows:
-
-```tsx
-import { Fragment, PropsWithChildren } from 'react';
-import { TechDocsCustomHome } from '@backstage/plugin-techdocs';
-//...
-
-const options = { emptyRowsWhenPaging: false };
-const linkDestination = (entity: Entity): string | undefined => {
-  return entity.metadata.annotations?.['external-docs'];
-};
-const techDocsTabsConfig = [
-  {
-    label: 'Recommended Documentation',
-    panels: [
-      {
-        title: 'Golden Path',
-        description: 'Documentation about standards to follow',
-        panelType: 'DocsCardGrid',
-        panelProps: { CustomHeader: () => <ContentHeader title='Golden Path'/> },
-        filterPredicate: entity =>
-          entity?.metadata?.tags?.includes('golden-path') ?? false,
-      },
-      {
-        title: 'Recommended',
-        description: 'Useful documentation',
-        panelType: 'InfoCardGrid',
-        panelProps: {
-          CustomHeader: () => <ContentHeader title='Recommended' />
-          linkDestination: linkDestination,
+export default techdocsPlugin.withOverrides({
+  extensions: [
+    PageBlueprint.make({
+      params: {
+        path: '/docs',
+        routeRef: techdocsPlugin.routes.root,
+        loader: async () => {
+          const { CustomTechDocsHome } = await import('./CustomTechDocsHome');
+          return <CustomTechDocsHome />;
         },
-        filterPredicate: entity =>
-          entity?.metadata?.tags?.includes('recommended') ?? false,
       },
-    ],
-  },
-  {
-    label: 'Browse All',
-    panels: [
-      {
-        description: 'Browse all docs',
-        filterPredicate: filterEntity,
-        panelType: 'TechDocsIndexPage',
-        title: 'All',
-        panelProps: { PageWrapper: Fragment, CustomHeader: Fragment, options: options },
-      },
-    ],
-  },
-];
-const docsFilter = {
-  kind: ['Location', 'Resource', 'Component'],
-  'metadata.annotations.featured-docs': CATALOG_FILTER_EXISTS,
-}
-const customPageWrapper = ({ children }: PropsWithChildren<{}>) =>
-  (<PageWithHeader title="Docs" themeId="documentation">{children}</PageWithHeader>)
-const AppRoutes = () => {
-  <FlatRoutes>
-    <Route
-      path="/docs"
-      element={
-        <TechDocsCustomHome
-          tabsConfig={techDocsTabsConfig}
-          filter={docsFilter}
-          CustomPageWrapper={customPageWrapper}
-        />
-      }
-    />
-  </FlatRoutes>;
-};
+    }),
+  ],
+});
 ```
 
-### Building a Custom home page
+Then install the overridden plugin in your app:
 
-But you can replace `<DefaultTechDocsHome />` with any React component, which
-will be rendered in its place. Most likely, you would want to create and
-maintain such a component in a new directory at
-`packages/app/src/components/techdocs`, and import and use it in `App.tsx`:
+```tsx title="packages/app/src/App.tsx"
+import { createApp } from '@backstage/frontend-defaults';
+import techdocsPlugin from './techdocs/TechDocsHomePage';
 
-For example, you can define the following Custom home page component:
+const app = createApp({
+  features: [techdocsPlugin],
+});
 
-```tsx
-import { ReactNode } from 'react';
-
-import { Content } from '@backstage/core-components';
-import {
-  CatalogFilterLayout,
-  EntityOwnerPicker,
-  EntityTagPicker,
-  UserListPicker,
-  EntityListProvider,
-} from '@backstage/plugin-catalog-react';
-import {
-  TechDocsPageWrapper,
-  TechDocsPicker,
-} from '@backstage/plugin-techdocs';
-import { Entity } from '@backstage/catalog-model';
-
-import { EntityListDocsGrid } from '@backstage/plugin-techdocs';
-
-export type CustomTechDocsHomeProps = {
-  groups?: Array<{
-    title: ReactNode;
-    filterPredicate: ((entity: Entity) => boolean) | string;
-  }>;
-};
-
-export const CustomTechDocsHome = ({ groups }: CustomTechDocsHomeProps) => {
-  return (
-    <TechDocsPageWrapper>
-      <Content>
-        <EntityListProvider>
-          <CatalogFilterLayout>
-            <CatalogFilterLayout.Filters>
-              <TechDocsPicker />
-              <UserListPicker initialFilter="all" />
-              <EntityOwnerPicker />
-              <EntityTagPicker />
-            </CatalogFilterLayout.Filters>
-            <CatalogFilterLayout.Content>
-              <EntityListDocsGrid groups={groups} />
-            </CatalogFilterLayout.Content>
-          </CatalogFilterLayout>
-        </EntityListProvider>
-      </Content>
-    </TechDocsPageWrapper>
-  );
-};
+export default app.createRoot();
 ```
 
-Then you can add the following to your `App.tsx`:
-
-```tsx
-import { CustomTechDocsHome } from './components/techdocs/CustomTechDocsHome';
-// ...
-const AppRoutes = () => {
-  <FlatRoutes>
-    <Route path="/docs" element={<TechDocsIndexPage />}>
-      <CustomTechDocsHome
-        groups={[
-          {
-            title: 'Recommended Documentation',
-            filterPredicate: entity =>
-              entity?.metadata?.tags?.includes('recommended') ?? false,
-          },
-          {
-            title: 'My Docs',
-            filterPredicate: 'ownedByUser',
-          },
-        ]}
-      />
-    </Route>
-  </FlatRoutes>;
-};
-```
+You can also use the `.override(...)` method on the original extension if you
+want to customize the existing page without fully replacing it. For more details
+on extension overrides and the different override patterns available, see the
+[extension overrides](../../frontend-system/architecture/25-extension-overrides.md) documentation.
 
 ## How to customize the TechDocs reader page?
 
-Similar to how it is possible to customize the TechDocs Home, it is also
-possible to customize the TechDocs Reader Page. It is done in your `app`
-package. By default, you might see something like this in your `App.tsx`:
+The TechDocs reader page can be configured through `app-config.yaml`. For
+example, you can disable the in-context search or the header:
 
-```tsx
-const AppRoutes = () => {
-  <Route path="/docs/:namespace/:kind/:name/*" element={<TechDocsReaderPage />}>
-    {techDocsPage}
-  </Route>;
-};
+```yaml title="app-config.yaml"
+app:
+  extensions:
+    - page:techdocs/reader:
+        config:
+          withoutSearch: true
 ```
 
-The `techDocsPage` is a default techdocs reader page which lives in
-`packages/app/src/components/techdocs`. It includes the following without you
-having to set anything up.
-
-```tsx
-<Page themeId="documentation">
-  <TechDocsReaderPageHeader />
-  <TechDocsReaderPageSubheader />
-  <TechDocsReaderPageContent />
-</Page>
+```yaml title="app-config.yaml"
+app:
+  extensions:
+    - page:techdocs/reader:
+        config:
+          withoutHeader: true
 ```
 
-If you would like to compose your own `techDocsPage`, you can do so by replacing
-the children of TechDocsPage with something else. Maybe you are _just_
-interested in replacing the Header:
-
-```tsx
-<Page themeId="documentation">
-  <Header type="documentation" title="Custom Header" />
-  <TechDocsReaderPageContent />
-</Page>
-```
-
-Or maybe you want to disable the in-context search
-
-```tsx
-<Page themeId="documentation">
-  <Header type="documentation" title="Custom Header" />
-  <TechDocsReaderPageContent withSearch={false} />
-</Page>
-```
-
-Or maybe you want to replace the entire TechDocs Page.
-
-```tsx
-<Page themeId="documentation">
-  <Header type="documentation" title="Custom Header" />
-  <Content data-testid="techdocs-content">
-    <p>my own content</p>
-  </Content>
-</Page>
-```
+For more advanced customization of the reader page, you can override the page
+extension. See the [extension overrides](../../frontend-system/architecture/25-extension-overrides.md) documentation for details.
 
 ## How to migrate from TechDocs Alpha to Beta
 
@@ -446,32 +293,9 @@ export class TechDocsCustomApiClient implements TechDocsApi {
 }
 ```
 
-2. Override the API refs `techdocsStorageApiRef` and `techdocsApiRef` with your
-   new implemented APIs in the `App.tsx` using `ApiFactories`.
-   [Read more about App APIs](https://backstage.io/docs/api/utility-apis#app-apis).
-
-```typescript
-const app = createApp({
-  apis: [
-    // TechDocsStorageApi
-    createApiFactory({
-      api: techdocsStorageApiRef,
-      deps: { discoveryApi: discoveryApiRef, configApi: configApiRef },
-      factory({ discoveryApi, configApi }) {
-        return new TechDocsCustomStorageApi({ discoveryApi, configApi });
-      },
-    }),
-    // TechDocsApi
-    createApiFactory({
-      api: techdocsApiRef,
-      deps: { discoveryApi: discoveryApiRef },
-      factory({ discoveryApi }) {
-        return new TechDocsCustomApiClient({ discoveryApi });
-      },
-    }),
-  ],
-});
-```
+2. Override the default API extensions by creating custom API extensions using
+   `createApiExtension` from `@backstage/frontend-plugin-api`, and install them
+   in your app. See the [Utility APIs](../../frontend-system/utility-apis/01-index.md) documentation for details on how to create and install custom API extensions.
 
 ## How to add the documentation setup to your software templates
 

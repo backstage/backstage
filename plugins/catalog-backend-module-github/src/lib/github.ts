@@ -30,6 +30,7 @@ import { DeferredEntity } from '@backstage/plugin-catalog-node';
 import { Octokit } from '@octokit/core';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { throttling } from '@octokit/plugin-throttling';
+import { retry } from '@octokit/plugin-retry';
 
 /**
  * Configuration for GitHub GraphQL API page sizes.
@@ -874,7 +875,7 @@ export const createReplaceEntitiesOperation =
   };
 
 /**
- * Creates a GraphQL Client with Throttling
+ * Creates a GraphQL Client with Throttling and Retries
  */
 export const createGraphqlClient = (args: {
   headers:
@@ -886,7 +887,7 @@ export const createGraphqlClient = (args: {
   logger: LoggerService;
 }): typeof graphql => {
   const { headers, baseUrl, logger } = args;
-  const ThrottledOctokit = Octokit.plugin(throttling);
+  const ThrottledOctokit = Octokit.plugin(throttling, retry);
   const octokit = new ThrottledOctokit({
     throttle: {
       onRateLimit: (retryAfter, rateLimitData, _, retryCount) => {

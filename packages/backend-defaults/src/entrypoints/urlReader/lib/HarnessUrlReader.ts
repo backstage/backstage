@@ -36,7 +36,7 @@ import { ReadTreeResponseFactory, ReaderFactory } from './types';
 import fetch, { Response } from 'node-fetch';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 import {
-  assertError,
+  toError,
   AuthenticationError,
   NotFoundError,
   NotModifiedError,
@@ -187,8 +187,8 @@ export class HarnessUrlReader implements UrlReaderService {
         ],
         etag: data.etag ?? '',
       };
-    } catch (error) {
-      assertError(error);
+    } catch (e) {
+      const error = toError(e);
       if (error.name === 'NotFoundError') {
         return {
           files: [],

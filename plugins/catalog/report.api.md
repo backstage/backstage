@@ -153,6 +153,7 @@ export const CatalogTable: {
   columns: Readonly<{
     createNameColumn(options?: {
       defaultKind?: string;
+      entityPresentationApi?: EntityPresentationApi;
     }): TableColumn<CatalogTableRow>;
     createSystemColumn(): TableColumn<CatalogTableRow>;
     createOwnerColumn(): TableColumn<CatalogTableRow>;

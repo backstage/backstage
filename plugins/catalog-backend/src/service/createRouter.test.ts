@@ -31,20 +31,14 @@ import {
 } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import { NotFoundError } from '@backstage/errors';
-import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common/alpha';
 import { LocationAnalyzer } from '@backstage/plugin-catalog-node';
-import { AuthorizeResult } from '@backstage/plugin-permission-common';
-import {
-  createPermissionIntegrationRouter,
-  createPermissionRule,
-} from '@backstage/plugin-permission-node';
 import express from 'express';
 import { Server } from 'node:http';
 import request from 'supertest';
-import { z } from 'zod/v3';
 import { Cursor, EntitiesCatalog } from '../catalog/types';
 import { applyDatabaseMigrations } from '../database/migrations';
 import { DbLocationsRow } from '../database/tables';
+import { computeLocationEntityRef } from '../util/conversion';
 import { CatalogProcessingOrchestrator } from '../processing/types';
 import { DefaultLocationStore } from '../providers/DefaultLocationStore';
 import { createRouter } from './createRouter';
@@ -98,7 +92,6 @@ describe('createRouter readonly disabled', () => {
       logger: mockServices.logger.mock(),
       refreshService,
       config: new ConfigReader(undefined),
-      permissionIntegrationRouter: express.Router(),
       auth: mockServices.auth(),
       httpAuth: mockServices.httpAuth(),
       locationAnalyzer,
@@ -1386,7 +1379,6 @@ describe('createRouter readonly and raw json enabled', () => {
           readonly: true,
         },
       }),
-      permissionIntegrationRouter: express.Router(),
       auth: mockServices.auth(),
       httpAuth: mockServices.httpAuth(),
       orchestrator: { process: jest.fn() },
@@ -1558,110 +1550,6 @@ describe('createRouter readonly and raw json enabled', () => {
   });
 });
 
-describe('NextRouter permissioning', () => {
-  let entitiesCatalog: jest.Mocked<EntitiesCatalog>;
-  let locationService: jest.Mocked<LocationService>;
-  let app: express.Express;
-  let refreshService: RefreshService;
-  const permissionsService = mockServices.permissions();
-
-  const fakeRule = createPermissionRule({
-    name: 'FAKE_RULE',
-    description: 'fake rule',
-    resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
-    paramsSchema: z.object({
-      foo: z.string(),
-    }),
-    apply: () => true,
-    toQuery: () => ({ key: '', values: [] }),
-  });
-
-  beforeAll(async () => {
-    entitiesCatalog = {
-      entities: jest.fn(),
-      entitiesBatch: jest.fn(),
-      removeEntityByUid: jest.fn(),
-      entityAncestry: jest.fn(),
-      facets: jest.fn(),
-      queryEntities: jest.fn(),
-    };
-    locationService = {
-      getLocation: jest.fn(),
-      createLocation: jest.fn(),
-      queryLocations: jest.fn(),
-      listLocations: jest.fn(),
-      deleteLocation: jest.fn(),
-      getLocationByEntity: jest.fn(),
-    };
-    refreshService = { refresh: jest.fn() };
-    const router = await createRouter({
-      entitiesCatalog,
-      locationService,
-      logger: mockServices.logger.mock(),
-      refreshService,
-      config: new ConfigReader(undefined),
-      permissionIntegrationRouter: createPermissionIntegrationRouter({
-        resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
-        rules: [fakeRule],
-        getResources: jest.fn((resourceRefs: string[]) =>
-          Promise.resolve(
-            resourceRefs.map(resourceRef => ({ id: resourceRef })),
-          ),
-        ),
-      }),
-      auth: mockServices.auth(),
-      httpAuth: mockServices.httpAuth(),
-      orchestrator: { process: jest.fn() },
-      permissionsService,
-      auditor: mockServices.auditor.mock(),
-    });
-    app = express().use(router);
-  });
-
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
-  it('accepts and evaluates conditions at the apply-conditions endpoint', async () => {
-    const spideySense: Entity = {
-      apiVersion: 'a',
-      kind: 'component',
-      metadata: {
-        name: 'spidey-sense',
-      },
-    };
-    entitiesCatalog.entities.mockResolvedValueOnce({
-      entities: { type: 'object', entities: [spideySense] },
-      pageInfo: { hasNextPage: false },
-    });
-
-    const requestBody = {
-      items: [
-        {
-          id: '123',
-          resourceType: 'catalog-entity',
-          resourceRef: 'component:default/spidey-sense',
-          conditions: {
-            rule: 'FAKE_RULE',
-            resourceType: 'catalog-entity',
-            params: {
-              foo: 'user:default/spiderman',
-            },
-          },
-        },
-      ],
-    };
-    const response = await request(app)
-      .post('/.well-known/backstage/permissions/apply-conditions')
-      .send(requestBody);
-
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual({
-      items: [{ id: '123', result: AuthorizeResult.ALLOW }],
-    });
-  });
-});
-
 describe('POST /locations/by-query works end to end', () => {
   const databases = TestDatabases.create();
 
@@ -1748,7 +1636,13 @@ describe('POST /locations/by-query works end to end', () => {
       // Clear the table and insert our test data
       await knex<DbLocationsRow>('locations').delete();
       for (const location of locations) {
-        await knex<DbLocationsRow>('locations').insert(location);
+        await knex<DbLocationsRow>('locations').insert({
+          ...location,
+          location_entity_ref: computeLocationEntityRef(
+            location.type,
+            location.target,
+          ),
+        });
       }
 
       // First request: get first 2 locations
@@ -1816,7 +1710,13 @@ describe('POST /locations/by-query works end to end', () => {
       // Clear the table and insert our test data
       await knex<DbLocationsRow>('locations').delete();
       for (const location of locations) {
-        await knex<DbLocationsRow>('locations').insert(location);
+        await knex<DbLocationsRow>('locations').insert({
+          ...location,
+          location_entity_ref: computeLocationEntityRef(
+            location.type,
+            location.target,
+          ),
+        });
       }
 
       // Query only url type locations

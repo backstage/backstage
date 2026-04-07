@@ -1,5 +1,13 @@
 # @backstage/frontend-plugin-api
 
+## 0.16.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/filter-predicates@0.1.2-next.0
+
 ## 0.16.0-next.1
 
 ### Minor Changes

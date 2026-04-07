@@ -1,5 +1,16 @@
 # @backstage/plugin-auth
 
+## 0.1.7-next.2
+
+### Patch Changes
+
+- 482ceed: Migrated from `assertError` to `toError` for error handling.
+- Updated dependencies
+  - @backstage/ui@0.14.0-next.2
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/theme@0.7.3-next.0
+  - @backstage/frontend-plugin-api@0.16.0-next.2
+
 ## 0.1.7-next.1
 
 ### Patch Changes

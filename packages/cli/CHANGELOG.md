@@ -1,5 +1,16 @@
 # @backstage/cli
 
+## 0.36.1-next.2
+
+### Patch Changes
+
+- 482ceed: Migrated from `assertError` to `toError` for error handling.
+- Updated dependencies
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/cli-common@0.2.1-next.1
+  - @backstage/cli-node@0.3.1-next.1
+  - @backstage/cli-module-build@0.1.1-next.2
+
 ## 0.36.1-next.1
 
 ### Patch Changes

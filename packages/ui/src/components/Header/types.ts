@@ -25,6 +25,15 @@ export interface HeaderNavTab {
   href: string;
 }
 
+/** @internal */
+export interface HeaderNavLinkProps extends HeaderNavTab {
+  noTrack?: boolean;
+  active: boolean;
+  registerRef: (key: string, el: HTMLElement | null) => void;
+  onHighlight: (key: string | null) => void;
+  className?: string;
+}
+
 /**
  * Represents a group of navigation tabs rendered as a dropdown menu.
  *
@@ -52,7 +61,7 @@ export interface HeaderOwnProps {
   title?: string;
   customActions?: React.ReactNode;
   tabs?: HeaderNavTabItem[];
-  activeTabId?: string;
+  activeTabId?: string | null;
   breadcrumbs?: HeaderBreadcrumb[];
   className?: string;
 }

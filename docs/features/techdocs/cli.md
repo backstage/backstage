@@ -208,15 +208,7 @@ Options:
 
 #### Publishing from behind a proxy
 
-On Node.js 22.21.0+, set `NODE_USE_ENV_PROXY=1` along with `HTTP_PROXY`/`HTTPS_PROXY`/`NO_PROXY` to route TechDocs publishing through a proxy. See the [corporate proxy guide](../../tutorials/corporate-proxy.md) for details.
-
-On older Node.js versions, the TechDocs CLI leverages `global-agent` to navigate the proxy. To enable `global-agent`, the following variables need to be set prior to running the techdocs-cli command:
-
-```bash
-export GLOBAL_AGENT_HTTP_PROXY=${HTTP_PROXY}
-export GLOBAL_AGENT_HTTPS_PROXY=${HTTPS_PROXY}
-export GLOBAL_AGENT_NO_PROXY=${NO_PROXY}
-```
+Set `NODE_USE_ENV_PROXY=1` along with `HTTP_PROXY`/`HTTPS_PROXY`/`NO_PROXY` to route TechDocs publishing through a proxy. See the [corporate proxy guide](../../tutorials/corporate-proxy.md) for details.
 
 ### Migrate content for case-insensitive access
 

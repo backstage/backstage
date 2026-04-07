@@ -1,5 +1,19 @@
 # @backstage/plugin-catalog-graph
 
+## 0.6.1-next.2
+
+### Patch Changes
+
+- d5899c2: Support configuring `showArrowHeads` on `page:catalog-graph` and `entity-card:catalog-graph/relations`.
+- Updated dependencies
+  - @backstage/ui@0.14.0-next.2
+  - @backstage/core-components@0.18.9-next.1
+  - @backstage/plugin-catalog-react@2.1.2-next.2
+  - @backstage/catalog-client@1.14.1-next.0
+  - @backstage/catalog-model@1.7.8-next.0
+  - @backstage/core-plugin-api@1.12.5-next.2
+  - @backstage/frontend-plugin-api@0.16.0-next.2
+
 ## 0.6.1-next.1
 
 ### Patch Changes

@@ -27,7 +27,7 @@ import {
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { assertError, InputError, NotFoundError } from '@backstage/errors';
+import { InputError, NotFoundError, toError } from '@backstage/errors';
 import { CatalogService } from '@backstage/plugin-catalog-node';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import fs from 'fs-extra';
@@ -47,13 +47,13 @@ export async function getWorkingDirectory(
     await fs.access(workingDirectory, fs.constants.F_OK | fs.constants.W_OK);
     logger.info(`using working directory: ${workingDirectory}`);
   } catch (err) {
-    assertError(err);
+    const error = toError(err);
     logger.error(
       `working directory ${workingDirectory} ${
-        err.code === 'ENOENT' ? 'does not exist' : 'is not writable'
+        error.code === 'ENOENT' ? 'does not exist' : 'is not writable'
       }`,
     );
-    throw err;
+    throw error;
   }
   return workingDirectory;
 }

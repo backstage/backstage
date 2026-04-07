@@ -16,6 +16,13 @@
 
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useFocusVisible, useHover, useLink } from 'react-aria';
+import {
+  matchRoutes,
+  resolvePath,
+  useInRouterContext,
+  useLocation,
+  useResolvedPath,
+} from 'react-router-dom';
 import { Button as RAButton } from 'react-aria-components';
 import { RiArrowDownSLine } from '@remixicon/react';
 import { useDefinition } from '../../hooks/useDefinition';
@@ -26,9 +33,8 @@ import {
 } from './HeaderNavDefinition';
 import { HeaderNavIndicators } from './HeaderNavIndicators';
 import { MenuTrigger, Menu, MenuItem } from '../Menu';
-import type { AnalyticsTracker } from '../../analytics/types';
 import type {
-  HeaderNavTab,
+  HeaderNavLinkProps,
   HeaderNavTabGroup,
   HeaderNavTabItem,
 } from './types';
@@ -37,29 +43,21 @@ function isTabGroup(tab: HeaderNavTabItem): tab is HeaderNavTabGroup {
   return 'items' in tab;
 }
 
-interface HeaderNavLinkProps {
-  tab: HeaderNavTab;
-  active: boolean;
-  analytics: AnalyticsTracker;
-  registerRef: (key: string, el: HTMLElement | null) => void;
-  onHighlight: (key: string | null) => void;
-}
-
 function HeaderNavLink(props: HeaderNavLinkProps) {
-  const { tab, active, analytics, registerRef, onHighlight } = props;
-  const { ownProps } = useDefinition(HeaderNavItemDefinition, {});
+  const { ownProps, analytics } = useDefinition(HeaderNavItemDefinition, props);
+  const { id, label, href, active, registerRef, onHighlight } = ownProps;
 
   const linkRef = useRef<HTMLAnchorElement>(null);
-  const { linkProps } = useLink({ href: tab.href }, linkRef);
+  const { linkProps } = useLink({ href }, linkRef);
   const { hoverProps } = useHover({
-    onHoverStart: () => onHighlight(tab.id),
+    onHoverStart: () => onHighlight(id),
     onHoverEnd: () => onHighlight(null),
   });
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     linkProps.onClick?.(e);
-    analytics.captureEvent('click', tab.label, {
-      attributes: { to: tab.href },
+    analytics.captureEvent('click', label, {
+      attributes: { to: href },
     });
   };
 
@@ -72,16 +70,16 @@ function HeaderNavLink(props: HeaderNavLinkProps) {
           (
             linkRef as React.MutableRefObject<HTMLAnchorElement | null>
           ).current = el;
-          registerRef(tab.id, el);
+          registerRef(id, el);
         }}
-        href={tab.href}
+        href={href}
         className={ownProps.classes.root}
         aria-current={active ? 'page' : undefined}
         onClick={handleClick}
-        onFocus={() => onHighlight(tab.id)}
+        onFocus={() => onHighlight(id)}
         onBlur={() => onHighlight(null)}
       >
-        {tab.label}
+        {label}
       </a>
     </li>
   );
@@ -136,13 +134,32 @@ function HeaderNavGroupItem(props: HeaderNavGroupItemProps) {
 
 interface HeaderNavProps {
   tabs: HeaderNavTabItem[];
-  activeTabId?: string;
+  activeTabId?: string | null;
 }
 
-/** @internal */
-export function HeaderNav(props: HeaderNavProps) {
+function useAutoActiveTabId(tabs: HeaderNavTabItem[]): string | undefined {
+  const basePath = useResolvedPath('.').pathname;
+  const { pathname } = useLocation();
+
+  return useMemo(() => {
+    const allTabs = tabs.flatMap(tab => (isTabGroup(tab) ? tab.items : [tab]));
+    const routeObjects = allTabs.map(tab => ({
+      path: `${resolvePath(tab.href, basePath).pathname}/*`,
+      id: tab.id,
+    }));
+    const matches = matchRoutes(routeObjects, pathname);
+    return matches?.[0]?.route.id;
+  }, [tabs, basePath, pathname]);
+}
+
+function HeaderNavAutoDetect(props: { tabs: HeaderNavTabItem[] }) {
+  const activeTabId = useAutoActiveTabId(props.tabs);
+  return <HeaderNavInner tabs={props.tabs} activeTabId={activeTabId} />;
+}
+
+function HeaderNavInner(props: HeaderNavProps) {
   const { tabs, activeTabId } = props;
-  const { ownProps, analytics } = useDefinition(HeaderNavDefinition, {
+  const { ownProps } = useDefinition(HeaderNavDefinition, {
     tabs,
     activeTabId,
   });
@@ -199,9 +216,10 @@ export function HeaderNav(props: HeaderNavProps) {
           ) : (
             <HeaderNavLink
               key={item.id}
-              tab={item}
+              id={item.id}
+              label={item.label}
+              href={item.href}
               active={activeKey === item.id}
-              analytics={analytics}
               registerRef={registerRef}
               onHighlight={setHighlightedKey}
             />
@@ -217,4 +235,15 @@ export function HeaderNav(props: HeaderNavProps) {
       />
     </nav>
   );
+}
+
+/** @internal */
+export function HeaderNav(props: HeaderNavProps) {
+  const inRouter = useInRouterContext();
+
+  if (props.activeTabId === undefined && inRouter) {
+    return <HeaderNavAutoDetect tabs={props.tabs} />;
+  }
+
+  return <HeaderNavInner tabs={props.tabs} activeTabId={props.activeTabId} />;
 }

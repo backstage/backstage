@@ -21,7 +21,7 @@ import {
   getRepoUrlFromLocationAnnotation,
   MKDOCS_SCHEMA,
 } from './helpers';
-import { assertError } from '@backstage/errors';
+import { toError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { LoggerService } from '@backstage/backend-plugin-api';
 
@@ -45,9 +45,10 @@ const patchMkdocsFile = async (
   try {
     mkdocsYmlFileString = await fs.readFile(mkdocsYmlPath, 'utf8');
   } catch (error) {
-    assertError(error);
     logger.warn(
-      `Could not read MkDocs YAML config file ${mkdocsYmlPath} before running the generator: ${error.message}`,
+      `Could not read MkDocs YAML config file ${mkdocsYmlPath} before running the generator: ${
+        toError(error).message
+      }`,
     );
     return;
   }
@@ -62,9 +63,10 @@ const patchMkdocsFile = async (
       throw new Error('Bad YAML format.');
     }
   } catch (error) {
-    assertError(error);
     logger.warn(
-      `Error in parsing YAML at ${mkdocsYmlPath} before running the generator. ${error.message}`,
+      `Error in parsing YAML at ${mkdocsYmlPath} before running the generator. ${
+        toError(error).message
+      }`,
     );
     return;
   }
@@ -80,9 +82,10 @@ const patchMkdocsFile = async (
       );
     }
   } catch (error) {
-    assertError(error);
     logger.warn(
-      `Could not write to ${mkdocsYmlPath} after updating it before running the generator. ${error.message}`,
+      `Could not write to ${mkdocsYmlPath} after updating it before running the generator. ${
+        toError(error).message
+      }`,
     );
     return;
   }

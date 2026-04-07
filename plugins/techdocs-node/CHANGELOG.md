@@ -1,5 +1,19 @@
 # @backstage/plugin-techdocs-node
 
+## 1.14.5-next.2
+
+### Patch Changes
+
+- 482ceed: Migrated from `assertError` to `toError` for error handling.
+- Updated dependencies
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/integration@2.0.1-next.0
+  - @backstage/backend-plugin-api@1.9.0-next.2
+  - @backstage/catalog-model@1.7.8-next.0
+  - @backstage/config@1.3.7-next.0
+  - @backstage/integration-aws-node@0.1.21-next.0
+  - @backstage/plugin-search-common@1.2.23-next.0
+
 ## 1.14.5-next.1
 
 ### Patch Changes

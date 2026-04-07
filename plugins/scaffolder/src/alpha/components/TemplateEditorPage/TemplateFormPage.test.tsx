@@ -18,14 +18,34 @@ import { screen } from '@testing-library/react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { TemplateFormPage } from './TemplateFormPage';
 import { rootRouteRef } from '../../../routes';
-import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import {
+  catalogApiRef,
+  defaultEntityPresentation,
+  entityPresentationApiRef,
+} from '@backstage/plugin-catalog-react';
 
 describe('TemplateFormPage', () => {
   const catalogApiMock = { getEntities: jest.fn().mockResolvedValue([]) };
 
+  const entityPresentationApi: typeof entityPresentationApiRef.T = {
+    forEntity(entityOrRef, context) {
+      const presentation = defaultEntityPresentation(entityOrRef, context);
+      return {
+        snapshot: presentation,
+        update$: { subscribe: () => ({ unsubscribe: () => {} }) } as any,
+        promise: Promise.resolve(presentation),
+      };
+    },
+  };
+
   it('Should render without exploding', async () => {
     await renderInTestApp(
-      <TestApiProvider apis={[[catalogApiRef, catalogApiMock]]}>
+      <TestApiProvider
+        apis={[
+          [catalogApiRef, catalogApiMock],
+          [entityPresentationApiRef, entityPresentationApi],
+        ]}
+      >
         <TemplateFormPage />
       </TestApiProvider>,
       {
@@ -41,7 +61,12 @@ describe('TemplateFormPage', () => {
 
   it('Should have an link back to the edit page', async () => {
     await renderInTestApp(
-      <TestApiProvider apis={[[catalogApiRef, catalogApiMock]]}>
+      <TestApiProvider
+        apis={[
+          [catalogApiRef, catalogApiMock],
+          [entityPresentationApiRef, entityPresentationApi],
+        ]}
+      >
         <TemplateFormPage />
       </TestApiProvider>,
       {

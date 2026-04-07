@@ -120,7 +120,7 @@ An executable or [package](#package) file with all of the necessary information 
 
 1. A centralized, self-service interface providing developers with all the necessary resources, tools, documentation, and information to effectively build, integrate, deploy, and manage software products within an organization.
 
-2. Backstage is a specific example of a developer portal, designed as a centralized system with a user interface and database to streamline development and maintenance of an organization's software projects. It features a robust [Software Catalog](#software-catalog) that centralizes and organizes access to the organization's services, websites, mobile features, libraries, and other software components. Backstage also includes [Software Templates](#software-templates-aka-scaffolder) that simplify the creation of new projects and components.
+2. Backstage is a specific example of a developer portal, designed as a centralized system with a user interface and database to streamline development and maintenance of an organization's software projects. It features a robust [Software Catalog](#software-catalog) that centralizes and organizes access to the organization's services, websites, mobile features, libraries, and other software components. Backstage also includes [Software Templates](#software-templates) that simplify the creation of new projects and components.
 
 Backstage is both a developer portal and a plugin-based framework for creating new custom developer portals.
 
@@ -353,7 +353,7 @@ A specific type of dynamic access control associated with a [resource](#resource
 
 ## Scaffolder
 
-Another name for [Software Templates](#software-templates-aka-scaffolder). (The term comes from the use of Software Templates as _scaffolds_ for building new components and projects.)
+Another name for [Software Templates](#software-templates). (The term comes from the use of Software Templates as _scaffolds_ for building new components and projects.)
 
 ## Scope
 

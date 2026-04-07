@@ -35,7 +35,7 @@ import type {
 } from '../../../backend-plugin-api/src/wiring/types';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import type { InternalServiceFactory } from '../../../backend-plugin-api/src/services/system/types';
-import { ForwardedError, ConflictError, assertError } from '@backstage/errors';
+import { ConflictError, ForwardedError, toError } from '@backstage/errors';
 import { DependencyGraph } from '../lib/DependencyGraph';
 import { ServiceRegistry } from './ServiceRegistry';
 import { createInitializationResultCollector } from './createInitializationResultCollector';
@@ -385,12 +385,8 @@ export class BackendInitializer {
                   await moduleInit.init.func(moduleDeps);
                   resultCollector.onPluginModuleResult(pluginId, moduleId);
                 } catch (error: unknown) {
-                  assertError(error);
-                  resultCollector.onPluginModuleResult(
-                    pluginId,
-                    moduleId,
-                    error,
-                  );
+                  const err = toError(error);
+                  resultCollector.onPluginModuleResult(pluginId, moduleId, err);
                 }
               },
             );
@@ -414,8 +410,8 @@ export class BackendInitializer {
           const lifecycleService = await this.#getPluginLifecycleImpl(pluginId);
           await lifecycleService.startup();
         } catch (error: unknown) {
-          assertError(error);
-          resultCollector.onPluginResult(pluginId, error);
+          const err = toError(error);
+          resultCollector.onPluginResult(pluginId, err);
         }
       }),
     ).catch(error => {
@@ -515,19 +511,19 @@ export class BackendInitializer {
           throw new Error(`Invalid registration type '${(r as any).type}'`);
         }
       } catch (error: unknown) {
-        assertError(error);
+        const err = toError(error);
         // Clean up partially registered extension points
         for (const id of addedExtensionPointIds) {
           this.#extensionPoints.delete(id);
         }
         if ('pluginId' in r && 'moduleId' in r) {
-          resultCollector.onPluginModuleResult(r.pluginId, r.moduleId, error);
+          resultCollector.onPluginModuleResult(r.pluginId, r.moduleId, err);
         } else if ('pluginId' in r) {
           pluginInits.delete(r.pluginId);
           moduleInits.delete(r.pluginId);
-          resultCollector.onPluginResult(r.pluginId, error);
+          resultCollector.onPluginResult(r.pluginId, err);
         } else {
-          throw error;
+          throw err;
         }
       }
     }

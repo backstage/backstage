@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import { useMemo } from 'react';
 import preview from '../../../../.storybook/preview';
 import type { StoryFn } from '@storybook/react-vite';
-import { MemoryRouter, useLocation } from 'react-router-dom';
+import { MemoryRouter } from 'react-router-dom';
 import { BUIProvider } from '../provider';
 import type { HeaderNavTabItem } from '../components/Header/types';
 import {
@@ -211,20 +210,17 @@ const subTabs: HeaderNavTabItem[] = [
   { id: 'logs', label: 'Logs', href: '/logs' },
 ];
 
-function useActiveTabId(items: HeaderNavTabItem[]): string | undefined {
-  const location = useLocation();
-  return useMemo(() => {
-    for (const item of items) {
-      if ('href' in item && item.href === location.pathname) return item.id;
-    }
-    return undefined;
-  }, [items, location.pathname]);
-}
-
 export const WithSubTabs = meta.story({
-  decorators: [withLayout],
+  decorators: [
+    (Story: StoryFn) => (
+      <MemoryRouter initialEntries={['/summary']}>
+        <BUIProvider>
+          <Story />
+        </BUIProvider>
+      </MemoryRouter>
+    ),
+  ],
   render: () => {
-    const activeTabId = useActiveTabId(subTabs);
     return (
       <>
         <PluginHeader
@@ -249,7 +245,6 @@ export const WithSubTabs = meta.story({
         />
         <Header
           title="main · #842"
-          activeTabId={activeTabId}
           tabs={subTabs}
           breadcrumbs={[
             { label: 'Catalog', href: '/catalog' },

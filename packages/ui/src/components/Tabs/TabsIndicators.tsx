@@ -37,7 +37,7 @@ export const TabsIndicators = (props: TabsIndicatorsProps) => {
     const tabsRect = tabsRef.current.getBoundingClientRect();
 
     // Set active tab variables
-    if (state?.selectedKey) {
+    if (state?.selectedKey != null && state.selectedKey !== '') {
       const activeTab = tabRefs.current.get(state.selectedKey.toString());
 
       if (activeTab) {
@@ -98,7 +98,11 @@ export const TabsIndicators = (props: TabsIndicatorsProps) => {
           '--active-tab-height',
           `${activeRect.height}px`,
         );
+        tabsRef.current.style.setProperty('--active-tab-opacity', '1');
       }
+    } else {
+      tabsRef.current.style.setProperty('--active-tab-opacity', '0');
+      prevSelectedKey.current = null;
     }
 
     // Set hovered tab variables

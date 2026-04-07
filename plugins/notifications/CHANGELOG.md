@@ -1,5 +1,19 @@
 # @backstage/plugin-notifications
 
+## 0.5.16-next.2
+
+### Patch Changes
+
+- 19a2a03: Migrated notifications plugin to use backstage UI
+- Updated dependencies
+  - @backstage/ui@0.14.0-next.2
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/theme@0.7.3-next.0
+  - @backstage/core-components@0.18.9-next.1
+  - @backstage/core-plugin-api@1.12.5-next.2
+  - @backstage/frontend-plugin-api@0.16.0-next.2
+  - @backstage/plugin-notifications-common@0.2.2-next.0
+
 ## 0.5.16-next.1
 
 ### Patch Changes

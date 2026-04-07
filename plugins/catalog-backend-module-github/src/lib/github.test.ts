@@ -41,6 +41,7 @@ import {
 } from './github';
 import { Octokit } from '@octokit/core';
 import { throttling } from '@octokit/plugin-throttling';
+import { retry } from '@octokit/plugin-retry';
 
 jest.mock('@octokit/core', () => ({
   ...jest.requireActual('@octokit/core'),
@@ -1009,9 +1010,9 @@ describe('github', () => {
       baseUrl,
       logger,
     });
-    it('should return a graphql client with throttling', async () => {
+    it('should return a graphql client with throttling and retry', async () => {
       expect(client).toBeDefined();
-      expect(Octokit.plugin).toHaveBeenCalledWith(throttling);
+      expect(Octokit.plugin).toHaveBeenCalledWith(throttling, retry);
     });
 
     it('should return a graphql client with the correct options', async () => {

@@ -62,6 +62,7 @@ nav:
           - Extending the model: 'features/software-catalog/extending-the-model.md'
           - External integrations: 'features/software-catalog/external-integrations.md'
           - Catalog Customization: 'features/software-catalog/catalog-customization.md'
+          - Entity Presentation: 'features/software-catalog/entity-presentation.md'
           - API: 'features/software-catalog/api.md'
           - FAQ: 'features/software-catalog/faq.md'
       - Kubernetes:
@@ -221,7 +222,6 @@ nav:
       - React Router 6.0 Migration: 'tutorials/react-router-stable-migration.md'
       - Package Role Migration: 'tutorials/package-role-migration.md'
       - Migrating away from @backstage/core: 'tutorials/migrating-away-from-core.md'
-      - Adding Custom Plugin to Existing Monorepo App: 'tutorials/quickstart-app-plugin.md'
       - Manual Rollback using Knex: 'tutorials/manual-knex-rollback.md'
       - Switching Backstage from SQLite to PostgreSQL: 'tutorials/switching-sqlite-postgres.md'
       - Using the Backstage Proxy from Within a Plugin: 'tutorials/using-backstage-proxy-within-plugin.md'

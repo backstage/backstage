@@ -27,12 +27,14 @@ export {
 } from './components/Accordion/definition';
 export { AlertDefinition } from './components/Alert/definition';
 export { AvatarDefinition } from './components/Avatar/definition';
+export { BadgeDefinition } from './components/Badge/definition';
 export { BoxDefinition } from './components/Box/definition';
 export { ButtonDefinition } from './components/Button/definition';
 export { ButtonIconDefinition } from './components/ButtonIcon/definition';
 export { ButtonLinkDefinition } from './components/ButtonLink/definition';
 export { CardDefinition } from './components/Card/definition';
 export { CheckboxDefinition } from './components/Checkbox/definition';
+export { CheckboxGroupDefinition } from './components/CheckboxGroup/definition';
 export { ContainerDefinition } from './components/Container/definition';
 export { DialogDefinition } from './components/Dialog/definition';
 export { FieldErrorDefinition } from './components/FieldError/definition';

@@ -155,4 +155,7 @@ export class ServiceUnavailableError extends CustomErrorBase {}
 
 // @public
 export function stringifyError(error: unknown): string;
+
+// @public
+export function toError(value: unknown): ErrorLike;
 ```

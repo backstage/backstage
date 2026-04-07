@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { assertError } from '@backstage/errors';
+import { toError } from '@backstage/errors';
 import { Entity } from '@backstage/catalog-model';
 import { getDocFilesFromRepository } from '../../helpers';
 import {
@@ -62,13 +62,13 @@ export class UrlPreparer implements PreparerBase {
         logger: this.logger,
       });
     } catch (error) {
-      assertError(error);
+      const err = toError(error);
       // NotModifiedError means that etag based cache is still valid.
-      if (error.name === 'NotModifiedError') {
+      if (err.name === 'NotModifiedError') {
         this.logger.debug(`Cache is valid for etag ${options?.etag}`);
       } else {
         this.logger.debug(
-          `Unable to fetch files for building docs ${error.message}`,
+          `Unable to fetch files for building docs ${err.message}`,
         );
       }
 

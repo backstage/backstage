@@ -23,6 +23,7 @@ import { runBackend } from '../../../lib/runner';
 interface StartBackendOptions {
   targetDir: string;
   checksEnabled: boolean;
+  configPaths?: string[];
   inspectEnabled?: boolean | string;
   inspectBrkEnabled?: boolean | string;
   linkedWorkspace?: string;
@@ -33,6 +34,7 @@ export async function startBackend(options: StartBackendOptions) {
   const waitForExit = await runBackend({
     targetDir: options.targetDir,
     entry: 'src/index',
+    configPaths: options.configPaths,
     inspectEnabled: options.inspectEnabled,
     inspectBrkEnabled: options.inspectBrkEnabled,
     linkedWorkspace: options.linkedWorkspace,
@@ -56,6 +58,7 @@ export async function startBackendPlugin(options: StartBackendOptions) {
   const waitForExit = await runBackend({
     targetDir: options.targetDir,
     entry: 'dev/index',
+    configPaths: options.configPaths,
     inspectEnabled: options.inspectEnabled,
     inspectBrkEnabled: options.inspectBrkEnabled,
     require: options.require,

@@ -19,7 +19,7 @@ import {
   Entity,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import { assertError, serializeError, stringifyError } from '@backstage/errors';
+import { serializeError, stringifyError, toError } from '@backstage/errors';
 import { Hash } from 'node:crypto';
 import stableStringify from 'fast-json-stable-stringify';
 import { Knex } from 'knex';
@@ -344,8 +344,7 @@ export class DefaultCatalogProcessingEngine {
 
             track.markSuccessfulWithChanges();
           } catch (error) {
-            assertError(error);
-            track.markFailed(error);
+            track.markFailed(toError(error));
           }
         });
       },

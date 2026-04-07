@@ -28,7 +28,10 @@ import {
   EntityProvider,
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
-import { locationSpecToLocationEntity } from '../util/conversion';
+import {
+  computeLocationEntityRef,
+  locationSpecToLocationEntity,
+} from '../util/conversion';
 import { LocationInput, LocationStore } from '../service/types';
 import {
   ANNOTATION_ORIGIN_LOCATION,
@@ -98,6 +101,7 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
         id: uuid(),
         type: input.type,
         target: input.target,
+        location_entity_ref: computeLocationEntityRef(input.type, input.target),
       };
 
       await tx<DbLocationsRow>('locations').insert(inner);
@@ -107,7 +111,10 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
 
     // Always upsert the entity, even if the location already existed, to
     // recover from cases where the entity was inadvertently deleted.
-    const entity = locationSpecToLocationEntity({ location });
+    const entity = locationSpecToLocationEntity({
+      location,
+      locationEntityRef: location.location_entity_ref,
+    });
     await this.connection.applyMutation({
       type: 'delta',
       added: [{ entity, locationKey: getEntityLocationRef(entity) }],
@@ -126,11 +133,15 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
         });
     }
 
-    return location;
+    return { id: location.id, type: location.type, target: location.target };
   }
 
   async listLocations(): Promise<Location[]> {
-    return await this.locations();
+    return (await this.locations()).map(({ id, type, target }) => ({
+      id,
+      type,
+      target,
+    }));
   }
 
   async queryLocations(options: {
@@ -181,7 +192,8 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
     if (!items.length) {
       throw new NotFoundError(`Found no location with ID ${id}`);
     }
-    return items[0];
+    const { id: rowId, type, target } = items[0];
+    return { id: rowId, type, target };
   }
 
   async deleteLocation(id: string): Promise<void> {
@@ -201,7 +213,10 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
       await tx<DbLocationsRow>('locations').where({ id }).del();
       return location;
     });
-    const entity = locationSpecToLocationEntity({ location: deleted });
+    const entity = locationSpecToLocationEntity({
+      location: deleted,
+      locationEntityRef: deleted.location_entity_ref,
+    });
     await this.connection.applyMutation({
       type: 'delta',
       added: [],
@@ -245,7 +260,11 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
       );
     }
 
-    return locationRow;
+    return {
+      id: locationRow.id,
+      type: locationRow.type,
+      target: locationRow.target,
+    };
   }
 
   private get connection(): EntityProviderConnection {
@@ -262,7 +281,10 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
     const locations = await this.locations();
 
     const entities = locations.map(location => {
-      const entity = locationSpecToLocationEntity({ location });
+      const entity = locationSpecToLocationEntity({
+        location,
+        locationEntityRef: location.location_entity_ref,
+      });
       return { entity, locationKey: getEntityLocationRef(entity) };
     });
 
@@ -279,18 +301,15 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
     }
   }
 
-  private async locations(dbOrTx: Knex.Transaction | Knex = this.db) {
+  private async locations(
+    dbOrTx: Knex.Transaction | Knex = this.db,
+  ): Promise<DbLocationsRow[]> {
     const locations = await dbOrTx<DbLocationsRow>('locations').select();
     return (
       locations
         // TODO(blam): We should create a mutation to remove this location for everyone
         // eventually when it's all done and dusted
         .filter(({ type }) => type !== 'bootstrap')
-        .map(item => ({
-          id: item.id,
-          target: item.target,
-          type: item.type,
-        }))
     );
   }
 
@@ -380,7 +399,12 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
 
       const newLocations = batch
         .filter(url => !existingUrls.has(url))
-        .map(url => ({ id: uuid(), type: 'url', target: url }));
+        .map(url => ({
+          id: uuid(),
+          type: 'url',
+          target: url,
+          location_entity_ref: computeLocationEntityRef('url', url),
+        }));
 
       if (newLocations.length) {
         await this.db<DbLocationsRow>('locations').insert(newLocations);
@@ -388,7 +412,10 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
         await this.connection.applyMutation({
           type: 'delta',
           added: newLocations.map(location => {
-            const entity = locationSpecToLocationEntity({ location });
+            const entity = locationSpecToLocationEntity({
+              location,
+              locationEntityRef: location.location_entity_ref,
+            });
             return { entity, locationKey: getEntityLocationRef(entity) };
           }),
           removed: [],
@@ -422,7 +449,10 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
           type: 'delta',
           added: [],
           removed: rows.map(row => ({
-            entity: locationSpecToLocationEntity({ location: row }),
+            entity: locationSpecToLocationEntity({
+              location: row,
+              locationEntityRef: row.location_entity_ref,
+            }),
           })),
         });
 
@@ -501,7 +531,10 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
       type: 'delta',
       added: [],
       removed: rows.map(l => ({
-        entity: locationSpecToLocationEntity({ location: l }),
+        entity: locationSpecToLocationEntity({
+          location: l,
+          locationEntityRef: l.location_entity_ref,
+        }),
       })),
     });
   }

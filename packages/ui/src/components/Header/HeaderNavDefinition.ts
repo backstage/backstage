@@ -15,14 +15,13 @@
  */
 
 import { defineComponent } from '../../hooks/useDefinition';
-import type { HeaderNavTabItem } from './types';
+import type { HeaderNavTabItem, HeaderNavLinkProps } from './types';
 import styles from './HeaderNav.module.css';
 
 /** @public */
 export const HeaderNavDefinition = defineComponent<{
-  noTrack?: boolean;
   tabs: HeaderNavTabItem[];
-  activeTabId?: string;
+  activeTabId?: string | null;
   children?: React.ReactNode;
   className?: string;
 }>()({
@@ -33,9 +32,7 @@ export const HeaderNavDefinition = defineComponent<{
     active: 'bui-HeaderNavActive',
     hovered: 'bui-HeaderNavHovered',
   },
-  analytics: true,
   propDefs: {
-    noTrack: {},
     tabs: {},
     activeTabId: {},
     children: {},
@@ -44,14 +41,21 @@ export const HeaderNavDefinition = defineComponent<{
 });
 
 /** @public */
-export const HeaderNavItemDefinition = defineComponent<{
-  className?: string;
-}>()({
+export const HeaderNavItemDefinition = defineComponent<HeaderNavLinkProps>()({
   styles,
   classNames: {
     root: 'bui-HeaderNavItem',
   },
+  analytics: true,
+  resolveHref: true,
   propDefs: {
+    noTrack: {},
+    id: {},
+    label: {},
+    href: {},
+    active: {},
+    registerRef: {},
+    onHighlight: {},
     className: {},
   },
 });

@@ -1,5 +1,19 @@
 # @backstage/cli-module-build
 
+## 0.1.1-next.2
+
+### Patch Changes
+
+- c16c508: When building dist-workspaces with --always-pack, batch `yarn pack` operations to avoid packing packages and their dependencies simultaneously.
+- f14df56: Added experimental support for using `embedded-postgres` as the database for local development. Set `backend.database.client` to `embedded-postgres` in your app config to enable this. The `embedded-postgres` package must be installed as an explicit dependency in your project.
+- Updated dependencies
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/cli-common@0.2.1-next.1
+  - @backstage/cli-node@0.3.1-next.1
+  - @backstage/config-loader@1.10.10-next.1
+  - @backstage/config@1.3.7-next.0
+  - @backstage/module-federation-common@0.1.3-next.0
+
 ## 0.1.1-next.1
 
 ### Patch Changes

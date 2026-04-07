@@ -27,7 +27,7 @@ import {
   UserEntity,
 } from '@backstage/catalog-model';
 import { Config, readDurationFromConfig } from '@backstage/config';
-import { NotFoundError } from '@backstage/errors';
+import { NotFoundError, toError } from '@backstage/errors';
 import { Notification } from '@backstage/plugin-notifications-common';
 import {
   NotificationProcessor,
@@ -238,9 +238,7 @@ export class SlackNotificationProcessor implements NotificationProcessor {
           channel = await this.getSlackNotificationTarget(entityRef);
         } catch (error) {
           this.logger.error(
-            `Failed to get Slack channel for entity: ${
-              (error as Error).message
-            }`,
+            `Failed to get Slack channel for entity: ${toError(error).message}`,
           );
           return;
         }

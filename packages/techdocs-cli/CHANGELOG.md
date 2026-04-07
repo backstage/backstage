@@ -1,5 +1,17 @@
 # @techdocs/cli
 
+## 1.10.7-next.1
+
+### Patch Changes
+
+- 980b7f5: Updated proxy documentation to recommend Node.js built-in proxy support via `NODE_USE_ENV_PROXY` instead of `global-agent`.
+- Updated dependencies
+  - @backstage/backend-defaults@0.16.1-next.2
+  - @backstage/cli-common@0.2.1-next.1
+  - @backstage/plugin-techdocs-node@1.14.5-next.2
+  - @backstage/catalog-model@1.7.8-next.0
+  - @backstage/config@1.3.7-next.0
+
 ## 1.10.7-next.0
 
 ### Patch Changes

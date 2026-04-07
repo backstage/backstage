@@ -14,11 +14,17 @@
  * limitations under the License.
  */
 
-import { withStyles } from '@material-ui/core/styles';
-import MuiTableCell from '@material-ui/core/TableCell';
+import { ReactNode } from 'react';
+import styles from './NoBorderTableCell.module.css';
 
-export const NoBorderTableCell = withStyles({
-  root: {
-    borderBottom: 'none',
-  },
-})(MuiTableCell);
+export const NoBorderTableCell = ({
+  children,
+  align,
+}: {
+  children?: ReactNode;
+  align?: 'left' | 'center' | 'right';
+}) => (
+  <td className={styles.cell} style={align ? { textAlign: align } : undefined}>
+    {children}
+  </td>
+);

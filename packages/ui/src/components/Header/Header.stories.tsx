@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-import { useMemo } from 'react';
 import preview from '../../../../../.storybook/preview';
 import type { StoryFn } from '@storybook/react-vite';
 import { Header } from './Header';
 import type { HeaderNavTabItem } from './types';
-import { MemoryRouter, useLocation } from 'react-router-dom';
+import { MemoryRouter } from 'react-router-dom';
 import { BUIProvider } from '../../provider';
 import { Button, ButtonIcon, MenuTrigger, Menu, MenuItem } from '../../';
 import { RiMore2Line } from '@remixicon/react';
@@ -88,26 +87,6 @@ const withRouter = (Story: StoryFn) => (
   </MemoryRouter>
 );
 
-/**
- * Derives activeTabId from the current router location by matching
- * the pathname against all tab hrefs (including group children).
- */
-function useActiveTabId(items: HeaderNavTabItem[]): string | undefined {
-  const location = useLocation();
-  return useMemo(() => {
-    for (const item of items) {
-      if ('items' in item) {
-        for (const child of item.items) {
-          if (child.href === location.pathname) return child.id;
-        }
-      } else if (item.href === location.pathname) {
-        return item.id;
-      }
-    }
-    return undefined;
-  }, [items, location.pathname]);
-}
-
 export const Default = meta.story({
   args: {
     title: 'Page Title',
@@ -116,9 +95,9 @@ export const Default = meta.story({
 
 export const WithTabs = meta.story({
   decorators: [withRouter],
-  render: () => {
-    const activeTabId = useActiveTabId(tabs);
-    return <Header title="Page Title" tabs={tabs} activeTabId={activeTabId} />;
+  args: {
+    ...Default.input.args,
+    tabs,
   },
 });
 
@@ -175,17 +154,11 @@ export const WithLongBreadcrumbs = meta.story({
 
 export const WithEverything = meta.story({
   decorators: [withRouter],
-  render: () => {
-    const activeTabId = useActiveTabId(tabs);
-    return (
-      <Header
-        title="Page Title"
-        tabs={tabs}
-        activeTabId={activeTabId}
-        customActions={<Button>Custom action</Button>}
-        breadcrumbs={[{ label: 'Home', href: '/' }]}
-      />
-    );
+  args: {
+    ...Default.input.args,
+    tabs,
+    customActions: <Button>Custom action</Button>,
+    breadcrumbs: [{ label: 'Home', href: '/' }],
   },
 });
 
@@ -212,10 +185,17 @@ export const WithGroupedTabs = meta.story({
       </MemoryRouter>
     ),
   ],
-  render: () => {
-    const activeTabId = useActiveTabId(groupedTabs);
-    return (
-      <Header title="Page Title" tabs={groupedTabs} activeTabId={activeTabId} />
-    );
+  args: {
+    ...Default.input.args,
+    tabs: groupedTabs,
+  },
+});
+
+export const WithExplicitActiveTab = meta.story({
+  decorators: [withRouter],
+  args: {
+    ...Default.input.args,
+    tabs,
+    activeTabId: 'campaigns',
   },
 });

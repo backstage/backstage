@@ -1,5 +1,21 @@
 # @backstage/plugin-catalog-backend-module-bitbucket-cloud
 
+## 0.5.10-next.2
+
+### Patch Changes
+
+- f215863: Added Bitbucket Cloud SCM event translation layer for the catalog backend module. The module now subscribes to Bitbucket Cloud webhook events and translates them into generic catalog SCM events, enabling instant catalog reprocessing when repositories are pushed to, renamed, transferred, or deleted. The `analyzeBitbucketCloudWebhookEvent` function is exported from the alpha entry point for custom integrations.
+- Updated dependencies
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/plugin-catalog-node@2.2.0-next.2
+  - @backstage/integration@2.0.1-next.0
+  - @backstage/backend-plugin-api@1.9.0-next.2
+  - @backstage/catalog-model@1.7.8-next.0
+  - @backstage/config@1.3.7-next.0
+  - @backstage/plugin-events-node@0.4.21-next.2
+  - @backstage/plugin-bitbucket-cloud-common@0.3.9-next.0
+  - @backstage/plugin-catalog-common@1.1.9-next.0
+
 ## 0.5.10-next.1
 
 ### Patch Changes

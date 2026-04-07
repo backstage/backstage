@@ -17,6 +17,7 @@ export type Component =
   | 'cell-profile'
   | 'cell-text'
   | 'checkbox'
+  | 'checkbox-group'
   | 'collapsible'
   | 'column'
   | 'container'
