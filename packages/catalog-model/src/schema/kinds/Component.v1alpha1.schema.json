@@ -39,7 +39,8 @@
         },
         "spec": {
           "type": "object",
-          "required": ["type", "lifecycle", "owner"],
+          "required": ["type", "lifecycle"],
+          "anyOf": [{ "required": ["owner"] }, { "required": ["owners"] }],
           "properties": {
             "type": {
               "type": "string",
@@ -58,6 +59,15 @@
               "description": "An entity reference to the owner of the component.",
               "examples": ["artist-relations-team", "user:john.johnson"],
               "minLength": 1
+            },
+            "owners": {
+              "type": "array",
+              "description": "An array of entity references to the owners of the component.",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 1
             },
             "system": {
               "type": "string",

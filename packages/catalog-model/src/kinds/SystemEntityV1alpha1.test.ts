@@ -56,8 +56,25 @@ describe('SystemV1alpha1Validator', () => {
     await expect(validator.check(entity)).resolves.toBe(false);
   });
 
-  it('rejects missing owner', async () => {
+  it('rejects missing owner and owners', async () => {
     delete (entity as any).spec.owner;
+    await expect(validator.check(entity)).rejects.toThrow(/owner/);
+  });
+
+  it('accepts owners array instead of owner', async () => {
+    delete (entity as any).spec.owner;
+    (entity as any).spec.owners = ['team-a', 'team-b'];
+    await expect(validator.check(entity)).resolves.toBe(true);
+  });
+
+  it('accepts both owner and owners', async () => {
+    (entity as any).spec.owners = ['team-a'];
+    await expect(validator.check(entity)).resolves.toBe(true);
+  });
+
+  it('rejects empty owners array', async () => {
+    delete (entity as any).spec.owner;
+    (entity as any).spec.owners = [];
     await expect(validator.check(entity)).rejects.toThrow(/owner/);
   });
 

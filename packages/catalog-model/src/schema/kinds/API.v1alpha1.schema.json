@@ -41,7 +41,8 @@
         },
         "spec": {
           "type": "object",
-          "required": ["type", "lifecycle", "owner", "definition"],
+          "required": ["type", "lifecycle", "definition"],
+          "anyOf": [{ "required": ["owner"] }, { "required": ["owners"] }],
           "properties": {
             "type": {
               "type": "string",
@@ -60,6 +61,15 @@
               "description": "An entity reference to the owner of the API.",
               "examples": ["artist-relations-team", "user:john.johnson"],
               "minLength": 1
+            },
+            "owners": {
+              "type": "array",
+              "description": "An array of entity references to the owners of the API.",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 1
             },
             "system": {
               "type": "string",

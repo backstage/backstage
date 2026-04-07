@@ -33,7 +33,8 @@
         },
         "spec": {
           "type": "object",
-          "required": ["type", "owner"],
+          "required": ["type"],
+          "anyOf": [{ "required": ["owner"] }, { "required": ["owners"] }],
           "properties": {
             "type": {
               "type": "string",
@@ -46,6 +47,15 @@
               "description": "An entity reference to the owner of the resource.",
               "examples": ["artist-relations-team", "user:john.johnson"],
               "minLength": 1
+            },
+            "owners": {
+              "type": "array",
+              "description": "An array of entity references to the owners of the resource.",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 1
             },
             "dependsOn": {
               "type": "array",

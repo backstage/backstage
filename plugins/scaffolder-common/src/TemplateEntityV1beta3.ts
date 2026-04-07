@@ -88,6 +88,10 @@ export interface TemplateEntityV1beta3 extends Entity {
      */
     owner?: string;
     /**
+     * An array of owner entityRefs of the TemplateEntity
+     */
+    owners?: string[];
+    /**
      * Specifies the lifecycle phase of the TemplateEntity
      */
     lifecycle?: string;

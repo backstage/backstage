@@ -67,8 +67,10 @@ export class ScaffolderEntitiesProcessor implements CatalogProcessor {
     ) {
       const template = entity as TemplateEntityV1beta3;
 
-      const target = template.spec.owner;
-      if (target) {
+      const targets =
+        template.spec.owners ??
+        (template.spec.owner ? [template.spec.owner] : []);
+      for (const target of targets) {
         const targetRef = parseEntityRef(target, {
           defaultKind: 'Group',
           defaultNamespace: selfRef.namespace,

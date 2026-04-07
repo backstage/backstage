@@ -42,7 +42,8 @@ interface ApiEntityV1alpha1 extends Entity {
   spec: {
     type: string;
     lifecycle: string;
-    owner: string;
+    owner?: string;
+    owners?: string[];
     definition: string;
     system?: string;
   };
@@ -82,7 +83,8 @@ interface ComponentEntityV1alpha1 extends Entity {
   spec: {
     type: string;
     lifecycle: string;
-    owner: string;
+    owner?: string;
+    owners?: string[];
     subcomponentOf?: string;
     providesApis?: string[];
     consumesApis?: string[];
@@ -122,7 +124,8 @@ interface DomainEntityV1alpha1 extends Entity {
   kind: 'Domain';
   // (undocumented)
   spec: {
-    owner: string;
+    owner?: string;
+    owners?: string[];
     subdomainOf?: string;
     type?: string;
   };
@@ -411,7 +414,8 @@ interface ResourceEntityV1alpha1 extends Entity {
   // (undocumented)
   spec: {
     type: string;
-    owner: string;
+    owner?: string;
+    owners?: string[];
     dependsOn?: string[];
     dependencyOf?: string[];
     system?: string;
@@ -454,7 +458,8 @@ interface SystemEntityV1alpha1 extends Entity {
   kind: 'System';
   // (undocumented)
   spec: {
-    owner: string;
+    owner?: string;
+    owners?: string[];
     domain?: string;
     type?: string;
   };

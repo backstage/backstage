@@ -97,6 +97,7 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
     }
 
     // Sort the fields of the entity to ensure consistent hash
+    sortField('spec.owners');
     sortField('spec.providesApis');
     sortField('spec.consumesApis');
     sortField('spec.dependsOn');
@@ -162,7 +163,7 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
     if (entity.kind === 'Component') {
       const component = entity as ComponentEntity;
       doEmit(
-        component.spec.owner,
+        component.spec.owners ?? component.spec.owner,
         { defaultKind: 'Group', defaultNamespace: selfRef.namespace },
         RELATION_OWNED_BY,
         RELATION_OWNER_OF,
@@ -212,7 +213,7 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
     if (entity.kind === 'API') {
       const api = entity as ApiEntity;
       doEmit(
-        api.spec.owner,
+        api.spec.owners ?? api.spec.owner,
         { defaultKind: 'Group', defaultNamespace: selfRef.namespace },
         RELATION_OWNED_BY,
         RELATION_OWNER_OF,
@@ -232,7 +233,7 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
     if (entity.kind === 'Resource') {
       const resource = entity as ResourceEntity;
       doEmit(
-        resource.spec.owner,
+        resource.spec.owners ?? resource.spec.owner,
         { defaultKind: 'Group', defaultNamespace: selfRef.namespace },
         RELATION_OWNED_BY,
         RELATION_OWNER_OF,
@@ -304,7 +305,7 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
     if (entity.kind === 'System') {
       const system = entity as SystemEntity;
       doEmit(
-        system.spec.owner,
+        system.spec.owners ?? system.spec.owner,
         { defaultKind: 'Group', defaultNamespace: selfRef.namespace },
         RELATION_OWNED_BY,
         RELATION_OWNER_OF,
@@ -324,7 +325,7 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
     if (entity.kind === 'Domain') {
       const domain = entity as DomainEntity;
       doEmit(
-        domain.spec.owner,
+        domain.spec.owners ?? domain.spec.owner,
         { defaultKind: 'Group', defaultNamespace: selfRef.namespace },
         RELATION_OWNED_BY,
         RELATION_OWNER_OF,

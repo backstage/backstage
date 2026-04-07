@@ -96,6 +96,15 @@
               "description": "The user (or group) owner of the template",
               "minLength": 1
             },
+            "owners": {
+              "type": "array",
+              "description": "An array of entity references to the owners of the template.",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 1
+            },
             "lifecycle": {
               "type": "string",
               "description": "The lifecycle state of the template.",

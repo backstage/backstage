@@ -33,13 +33,23 @@
         },
         "spec": {
           "type": "object",
-          "required": ["owner"],
+          "required": [],
+          "anyOf": [{ "required": ["owner"] }, { "required": ["owners"] }],
           "properties": {
             "owner": {
               "type": "string",
-              "description": "An entity reference to the owner of the component.",
+              "description": "An entity reference to the owner of the domain.",
               "examples": ["artist-relations-team", "user:john.johnson"],
               "minLength": 1
+            },
+            "owners": {
+              "type": "array",
+              "description": "An array of entity references to the owners of the domain.",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 1
             },
             "subdomainOf": {
               "type": "string",

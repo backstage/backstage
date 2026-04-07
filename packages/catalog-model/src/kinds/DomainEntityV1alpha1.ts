@@ -31,7 +31,8 @@ export interface DomainEntityV1alpha1 extends Entity {
   apiVersion: 'backstage.io/v1alpha1' | 'backstage.io/v1beta1';
   kind: 'Domain';
   spec: {
-    owner: string;
+    owner?: string;
+    owners?: string[];
     subdomainOf?: string;
     type?: string;
   };

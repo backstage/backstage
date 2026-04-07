@@ -33,7 +33,8 @@ export interface ApiEntityV1alpha1 extends Entity {
   spec: {
     type: string;
     lifecycle: string;
-    owner: string;
+    owner?: string;
+    owners?: string[];
     definition: string;
     system?: string;
   };

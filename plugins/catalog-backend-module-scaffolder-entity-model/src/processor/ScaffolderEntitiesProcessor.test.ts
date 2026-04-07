@@ -76,5 +76,104 @@ describe('ScaffolderEntitiesProcessor', () => {
         },
       });
     });
+    it('generates relations for template entities with owners array', async () => {
+      const processor = new ScaffolderEntitiesProcessor();
+      const emit = jest.fn();
+
+      const entity: TemplateEntityV1beta3 = {
+        ...mockEntity,
+        spec: {
+          ...mockEntity.spec,
+          owner: undefined,
+          owners: ['team-a', 'user:john'],
+        },
+      };
+
+      await processor.postProcessEntity(entity, mockLocation, emit);
+
+      expect(emit).toHaveBeenCalledTimes(4);
+      expect(emit).toHaveBeenCalledWith({
+        type: 'relation',
+        relation: {
+          source: { kind: 'Template', namespace: 'default', name: 'n' },
+          type: 'ownedBy',
+          target: { kind: 'Group', namespace: 'default', name: 'team-a' },
+        },
+      });
+      expect(emit).toHaveBeenCalledWith({
+        type: 'relation',
+        relation: {
+          source: { kind: 'Template', namespace: 'default', name: 'n' },
+          type: 'ownedBy',
+          target: { kind: 'User', namespace: 'default', name: 'john' },
+        },
+      });
+    });
+
+    it('owners takes precedence over owner for template entities', async () => {
+      const processor = new ScaffolderEntitiesProcessor();
+      const emit = jest.fn();
+
+      const entity: TemplateEntityV1beta3 = {
+        ...mockEntity,
+        spec: {
+          ...mockEntity.spec,
+          owner: 'o',
+          owners: ['team-a', 'user:john'],
+        },
+      };
+
+      await processor.postProcessEntity(entity, mockLocation, emit);
+
+      expect(emit).toHaveBeenCalledTimes(4);
+      expect(emit).toHaveBeenCalledWith({
+        type: 'relation',
+        relation: {
+          source: { kind: 'Group', namespace: 'default', name: 'team-a' },
+          type: 'ownerOf',
+          target: { kind: 'Template', namespace: 'default', name: 'n' },
+        },
+      });
+      expect(emit).toHaveBeenCalledWith({
+        type: 'relation',
+        relation: {
+          source: { kind: 'Template', namespace: 'default', name: 'n' },
+          type: 'ownedBy',
+          target: { kind: 'Group', namespace: 'default', name: 'team-a' },
+        },
+      });
+      expect(emit).toHaveBeenCalledWith({
+        type: 'relation',
+        relation: {
+          source: { kind: 'User', namespace: 'default', name: 'john' },
+          type: 'ownerOf',
+          target: { kind: 'Template', namespace: 'default', name: 'n' },
+        },
+      });
+      expect(emit).toHaveBeenCalledWith({
+        type: 'relation',
+        relation: {
+          source: { kind: 'Template', namespace: 'default', name: 'n' },
+          type: 'ownedBy',
+          target: { kind: 'User', namespace: 'default', name: 'john' },
+        },
+      });
+      expect(emit).not.toHaveBeenCalledWith({
+        type: 'relation',
+        relation: {
+          source: { kind: 'Group', namespace: 'default', name: 'o' },
+          type: 'ownerOf',
+          target: { kind: 'Template', namespace: 'default', name: 'n' },
+        },
+      });
+      expect(emit).not.toHaveBeenCalledWith({
+        type: 'relation',
+        relation: {
+          source: { kind: 'Template', namespace: 'default', name: 'n' },
+          type: 'ownedBy',
+          target: { kind: 'Group', namespace: 'default', name: 'o' },
+        },
+      });
+    });
   });
 });

@@ -426,6 +426,7 @@ export interface TemplateEntityV1beta3 extends Entity {
       [name: string]: string;
     };
     owner?: string;
+    owners?: string[];
     lifecycle?: string;
   };
 }

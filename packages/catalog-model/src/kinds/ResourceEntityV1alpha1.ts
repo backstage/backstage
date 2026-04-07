@@ -32,7 +32,8 @@ export interface ResourceEntityV1alpha1 extends Entity {
   kind: 'Resource';
   spec: {
     type: string;
-    owner: string;
+    owner?: string;
+    owners?: string[];
     dependsOn?: string[];
     dependencyOf?: string[];
     system?: string;

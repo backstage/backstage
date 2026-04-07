@@ -67,6 +67,26 @@ describe('BuiltinKindsEntityProcessor', () => {
         },
       });
     });
+
+    it('should sort spec.owners for consistent hashing', async () => {
+      const entity: ComponentEntity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: { name: 'n' },
+        spec: {
+          type: 'service',
+          owners: ['team-b', 'team-a'],
+          lifecycle: 'l',
+        },
+      };
+
+      const ret = await processor.preProcessEntity(entity);
+
+      expect((ret as ComponentEntity).spec.owners).toEqual([
+        'team-a',
+        'team-b',
+      ]);
+    });
   });
 
   describe('postProcessEntity', () => {
@@ -241,6 +261,71 @@ describe('BuiltinKindsEntityProcessor', () => {
           target: { kind: 'System', namespace: 'default', name: 's' },
         },
       });
+    });
+
+    it('generates relations for component entities with owners array', async () => {
+      const entity: ComponentEntity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: { name: 'n' },
+        spec: {
+          type: 'service',
+          owners: ['team-a', 'user:john'],
+          lifecycle: 'l',
+          system: 's',
+        },
+      };
+
+      await processor.postProcessEntity(entity, location, emit);
+
+      expect(emit).toHaveBeenCalledWith({
+        type: 'relation',
+        relation: {
+          source: { kind: 'Component', namespace: 'default', name: 'n' },
+          type: 'ownedBy',
+          target: { kind: 'Group', namespace: 'default', name: 'team-a' },
+        },
+      });
+      expect(emit).toHaveBeenCalledWith({
+        type: 'relation',
+        relation: {
+          source: { kind: 'Component', namespace: 'default', name: 'n' },
+          type: 'ownedBy',
+          target: { kind: 'User', namespace: 'default', name: 'john' },
+        },
+      });
+    });
+
+    it('owners takes precedence over owner for component entities', async () => {
+      const entity: ComponentEntity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: { name: 'n' },
+        spec: {
+          type: 'service',
+          owner: 'ignored',
+          owners: ['team-a'],
+          lifecycle: 'l',
+        },
+      };
+
+      await processor.postProcessEntity(entity, location, emit);
+
+      expect(emit).toHaveBeenCalledWith({
+        type: 'relation',
+        relation: {
+          source: { kind: 'Component', namespace: 'default', name: 'n' },
+          type: 'ownedBy',
+          target: { kind: 'Group', namespace: 'default', name: 'team-a' },
+        },
+      });
+      expect(emit).not.toHaveBeenCalledWith(
+        expect.objectContaining({
+          relation: expect.objectContaining({
+            target: expect.objectContaining({ name: 'ignored' }),
+          }),
+        }),
+      );
     });
 
     it('generates an error for component entities with unspecified dependsOn entity reference kinds', async () => {
@@ -554,6 +639,131 @@ describe('BuiltinKindsEntityProcessor', () => {
           source: { kind: 'Domain', namespace: 'default', name: 'p' },
           type: 'hasPart',
           target: { kind: 'Domain', namespace: 'default', name: 'n' },
+        },
+      });
+    });
+
+    it('generates relations for api entities with owners array', async () => {
+      const entity: ApiEntity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'API',
+        metadata: { name: 'n' },
+        spec: {
+          type: 'openapi',
+          owners: ['team-a', 'team-b'],
+          lifecycle: 'l',
+          definition: 'd',
+        },
+      };
+
+      await processor.postProcessEntity(entity, location, emit);
+
+      expect(emit).toHaveBeenCalledWith({
+        type: 'relation',
+        relation: {
+          source: { kind: 'API', namespace: 'default', name: 'n' },
+          type: 'ownedBy',
+          target: { kind: 'Group', namespace: 'default', name: 'team-a' },
+        },
+      });
+      expect(emit).toHaveBeenCalledWith({
+        type: 'relation',
+        relation: {
+          source: { kind: 'API', namespace: 'default', name: 'n' },
+          type: 'ownedBy',
+          target: { kind: 'Group', namespace: 'default', name: 'team-b' },
+        },
+      });
+    });
+
+    it('generates relations for resource entities with owners array', async () => {
+      const entity: ResourceEntity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Resource',
+        metadata: { name: 'n' },
+        spec: {
+          type: 'database',
+          owners: ['team-a', 'user:jane'],
+        },
+      };
+
+      await processor.postProcessEntity(entity, location, emit);
+
+      expect(emit).toHaveBeenCalledWith({
+        type: 'relation',
+        relation: {
+          source: { kind: 'Resource', namespace: 'default', name: 'n' },
+          type: 'ownedBy',
+          target: { kind: 'Group', namespace: 'default', name: 'team-a' },
+        },
+      });
+      expect(emit).toHaveBeenCalledWith({
+        type: 'relation',
+        relation: {
+          source: { kind: 'Resource', namespace: 'default', name: 'n' },
+          type: 'ownedBy',
+          target: { kind: 'User', namespace: 'default', name: 'jane' },
+        },
+      });
+    });
+
+    it('generates relations for system entities with owners array', async () => {
+      const entity: SystemEntity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'System',
+        metadata: { name: 'n' },
+        spec: {
+          owners: ['team-a', 'team-b'],
+          domain: 'd',
+        },
+      };
+
+      await processor.postProcessEntity(entity, location, emit);
+
+      expect(emit).toHaveBeenCalledWith({
+        type: 'relation',
+        relation: {
+          source: { kind: 'System', namespace: 'default', name: 'n' },
+          type: 'ownedBy',
+          target: { kind: 'Group', namespace: 'default', name: 'team-a' },
+        },
+      });
+      expect(emit).toHaveBeenCalledWith({
+        type: 'relation',
+        relation: {
+          source: { kind: 'System', namespace: 'default', name: 'n' },
+          type: 'ownedBy',
+          target: { kind: 'Group', namespace: 'default', name: 'team-b' },
+        },
+      });
+    });
+
+    it('generates relations for domain entities with owners array', async () => {
+      const entity: DomainEntity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Domain',
+        metadata: { name: 'n' },
+        spec: {
+          owners: ['team-a', 'user:jane'],
+        },
+      };
+
+      await processor.postProcessEntity(entity, location, emit);
+
+      expect(emit).toHaveBeenCalledWith({
+        type: 'relation',
+        relation: {
+          source: { kind: 'Domain', namespace: 'default', name: 'n' },
+          type: 'ownedBy',
+          target: { kind: 'Group', namespace: 'default', name: 'team-a' },
+        },
+      });
+      expect(emit).toHaveBeenCalledWith({
+        type: 'relation',
+        relation: {
+          source: { kind: 'Domain', namespace: 'default', name: 'n' },
+          type: 'ownedBy',
+          target: { kind: 'User', namespace: 'default', name: 'jane' },
         },
       });
     });

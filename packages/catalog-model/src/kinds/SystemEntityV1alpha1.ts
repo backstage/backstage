@@ -31,7 +31,8 @@ export interface SystemEntityV1alpha1 extends Entity {
   apiVersion: 'backstage.io/v1alpha1' | 'backstage.io/v1beta1';
   kind: 'System';
   spec: {
-    owner: string;
+    owner?: string;
+    owners?: string[];
     domain?: string;
     type?: string;
   };
