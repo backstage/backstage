@@ -56,12 +56,13 @@ describe('createGetTechdocsContentAction', () => {
   };
 
   describe('HTML content retrieval', () => {
-    it('should return content for a valid HTML file', async () => {
+    it('should return content as Markdown for a valid HTML file', async () => {
       const mockActionsRegistry = actionsRegistryServiceMock();
       const { auth, discovery } = createMockServices();
-      const fileContent = '<html><body>Hello World</body></html>';
+      const htmlContent =
+        '<html><body><h1>Hello World</h1><p>This is a test.</p></body></html>';
 
-      mockFetch.mockResolvedValueOnce(createMockStreamResponse(fileContent));
+      mockFetch.mockResolvedValueOnce(createMockStreamResponse(htmlContent));
 
       createGetTechdocsContentAction({
         actionsRegistry: mockActionsRegistry,
@@ -80,19 +81,24 @@ describe('createGetTechdocsContentAction', () => {
         credentials: mockCredentials.service(),
       });
 
-      expect(result.output).toEqual({
-        content: fileContent,
-        contentType: 'text/html',
-        path: 'index.html',
-      });
+      // Content should be converted to Markdown
+      const output = result.output as {
+        content: string;
+        contentType: string;
+        path: string;
+      };
+      expect(output.contentType).toBe('text/markdown');
+      expect(output.path).toBe('index.html');
+      expect(output.content).toContain('Hello World');
+      expect(output.content).toContain('This is a test.');
     });
 
     it('should use default values for kind, namespace, and path', async () => {
       const mockActionsRegistry = actionsRegistryServiceMock();
       const { auth, discovery } = createMockServices();
-      const fileContent = '<html><body>Default Page</body></html>';
+      const htmlContent = '<html><body><p>Default Page</p></body></html>';
 
-      mockFetch.mockResolvedValueOnce(createMockStreamResponse(fileContent));
+      mockFetch.mockResolvedValueOnce(createMockStreamResponse(htmlContent));
 
       createGetTechdocsContentAction({
         actionsRegistry: mockActionsRegistry,
@@ -108,11 +114,14 @@ describe('createGetTechdocsContentAction', () => {
         credentials: mockCredentials.service(),
       });
 
-      expect(result.output).toEqual({
-        content: fileContent,
-        contentType: 'text/html',
-        path: 'index.html',
-      });
+      const output = result.output as {
+        content: string;
+        contentType: string;
+        path: string;
+      };
+      expect(output.contentType).toBe('text/markdown');
+      expect(output.path).toBe('index.html');
+      expect(output.content).toContain('Default Page');
       expect(mockFetch).toHaveBeenCalledWith(
         expect.stringContaining(
           '/static/docs/default/Component/test-component/index.html',
@@ -124,9 +133,9 @@ describe('createGetTechdocsContentAction', () => {
     it('should handle nested HTML paths', async () => {
       const mockActionsRegistry = actionsRegistryServiceMock();
       const { auth, discovery } = createMockServices();
-      const fileContent = '<html><body>Nested Page</body></html>';
+      const htmlContent = '<html><body><p>Nested Page</p></body></html>';
 
-      mockFetch.mockResolvedValueOnce(createMockStreamResponse(fileContent));
+      mockFetch.mockResolvedValueOnce(createMockStreamResponse(htmlContent));
 
       createGetTechdocsContentAction({
         actionsRegistry: mockActionsRegistry,
@@ -145,11 +154,14 @@ describe('createGetTechdocsContentAction', () => {
         credentials: mockCredentials.service(),
       });
 
-      expect(result.output).toEqual({
-        content: fileContent,
-        contentType: 'text/html',
-        path: 'guide/getting-started/index.html',
-      });
+      const output = result.output as {
+        content: string;
+        contentType: string;
+        path: string;
+      };
+      expect(output.contentType).toBe('text/markdown');
+      expect(output.path).toBe('guide/getting-started/index.html');
+      expect(output.content).toContain('Nested Page');
     });
   });
 
@@ -500,12 +512,12 @@ describe('createGetTechdocsContentAction', () => {
       ).rejects.toThrow(/not readable/);
     });
 
-    it('should successfully stream content within size limits', async () => {
+    it('should successfully stream content within size limits and convert to Markdown', async () => {
       const mockActionsRegistry = actionsRegistryServiceMock();
       const { auth, discovery } = createMockServices();
 
       const chunk1 = new TextEncoder().encode('<html><body>');
-      const chunk2 = new TextEncoder().encode('Hello World');
+      const chunk2 = new TextEncoder().encode('<p>Hello World</p>');
       const chunk3 = new TextEncoder().encode('</body></html>');
 
       const mockReader = {
@@ -543,11 +555,14 @@ describe('createGetTechdocsContentAction', () => {
         credentials: mockCredentials.service(),
       });
 
-      expect(result.output).toEqual({
-        content: '<html><body>Hello World</body></html>',
-        contentType: 'text/html',
-        path: 'index.html',
-      });
+      const output = result.output as {
+        content: string;
+        contentType: string;
+        path: string;
+      };
+      expect(output.contentType).toBe('text/markdown');
+      expect(output.path).toBe('index.html');
+      expect(output.content).toContain('Hello World');
       expect(mockReader.releaseLock).toHaveBeenCalled();
     });
   });

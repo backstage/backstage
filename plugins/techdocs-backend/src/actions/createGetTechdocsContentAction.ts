@@ -21,6 +21,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { InputError, NotFoundError, ResponseError } from '@backstage/errors';
 import { stringifyEntityRef } from '@backstage/catalog-model';
+import { NodeHtmlMarkdown } from 'node-html-markdown';
 import path from 'node:path';
 
 // Memory optimization constants
@@ -64,10 +65,11 @@ export const createGetTechdocsContentAction = ({
       idempotent: true,
     },
     description: `
-This allows you to get the HTML content of a specific page from a TechDocs site.
+This allows you to get the content of a specific page from a TechDocs site as Markdown.
 Each entity in the software catalog has a unique name, kind, and namespace. The default namespace is "default".
 You can specify the file path within the documentation site to retrieve its content.
 Only HTML files are supported - binary files like images are not returned.
+The HTML content is automatically converted to Markdown for better LLM understanding and reduced token consumption.
     `,
     schema: {
       input: zodSchema =>
@@ -92,10 +94,10 @@ Only HTML files are supported - binary files like images are not returned.
         zodSchema.object({
           content: zodSchema
             .string()
-            .describe('The content of the requested file'),
+            .describe('The Markdown content of the requested file'),
           contentType: zodSchema
             .string()
-            .describe('The content type of the file'),
+            .describe('The content type of the output (text/markdown)'),
           path: zodSchema.string().describe('The path of the requested file'),
         }),
     },
@@ -197,14 +199,17 @@ Only HTML files are supported - binary files like images are not returned.
             offset += chunk.length;
           }
 
-          const content = new TextDecoder('utf-8').decode(combined);
+          const htmlContent = new TextDecoder('utf-8').decode(combined);
 
           chunks.length = 0;
 
+          // Convert HTML to Markdown for better LLM understanding and reduced token consumption
+          const markdownContent = NodeHtmlMarkdown.translate(htmlContent);
+
           return {
             output: {
-              content,
-              contentType: 'text/html',
+              content: markdownContent,
+              contentType: 'text/markdown',
               path: safePath,
             },
           };
