@@ -79,30 +79,38 @@ async function findClosestPackageDir(
 }
 
 /** @internal */
-export class PatternMatcher {
-  private cache = new Map<string, RegExp>();
+export const patternToRegex = (pattern: string): RegExp => {
+  // Escape regex special characters, then replace escaped '*' with '.*' to allow wildcard matching.
+  const escaped = pattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return new RegExp(`^${escaped.replace(/\\\*/g, '.*')}$`);
+};
 
-  matches(name: string, pattern: string): boolean {
-    if (!pattern.includes('*')) {
-      return name === pattern;
-    }
+/** @internal */
+const createRegexMatcher = (pattern: string) => {
+  const re = patternToRegex(pattern);
+  return (name: string) => re.test(name);
+};
 
-    let regex = this.cache.get(pattern);
-    if (!regex) {
-      const escaped = pattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      regex = new RegExp(`^${escaped.replace(/\\\*/g, '.*')}$`);
-      this.cache.set(pattern, regex);
-    }
-
-    return regex.test(name);
+/** @internal */
+export const filtersToMatchers = (filters: string[] | undefined) => {
+  if (!filters || filters.length === 0) {
+    return undefined;
   }
-}
+
+  // Convert each unique filter into a matcher function.
+  // If the filter contains a wildcard, convert it to a regex matcher.
+  // Otherwise, convert it to an exact string matcher.
+  return [...new Set(filters)].map(filter =>
+    filter.includes('*')
+      ? createRegexMatcher(filter)
+      : (name: string) => name === filter,
+  );
+};
 
 /** @internal */
 export class PackageDiscoveryService {
   private readonly config: RootConfigService;
   private readonly logger: RootLoggerService;
-  private readonly patternMatcher = new PatternMatcher();
 
   constructor(config: RootConfigService, logger: RootLoggerService) {
     this.config = config;
@@ -119,29 +127,23 @@ export class PackageDiscoveryService {
       return dependencyNames;
     }
 
-    const includedPackagesConfig = this.config.getOptionalStringArray(
-      'backend.packages.include',
+    // If no include filters are specified, we include all by default.
+    // If include filters are specified, we only include those that match at least one filter.
+    const includeMatchers = filtersToMatchers(
+      this.config.getOptionalStringArray('backend.packages.include'),
+    ) ?? [() => true];
+
+    // If no exclude filters are specified, we exclude none by default.
+    const excludeMatchers = filtersToMatchers(
+      this.config.getOptionalStringArray('backend.packages.exclude'),
+    ) ?? [() => false];
+
+    const includedPackages = dependencyNames.filter(name =>
+      includeMatchers.some(match => match(name)),
     );
 
-    const excludedPackagesConfig = [
-      ...new Set(
-        this.config.getOptionalStringArray('backend.packages.exclude') ?? [],
-      ),
-    ];
-
-    const includedPackages = includedPackagesConfig
-      ? dependencyNames.filter(name =>
-          includedPackagesConfig.some(pattern =>
-            this.patternMatcher.matches(name, pattern),
-          ),
-        )
-      : dependencyNames;
-
     return includedPackages.filter(
-      name =>
-        !excludedPackagesConfig.some(pattern =>
-          this.patternMatcher.matches(name, pattern),
-        ),
+      name => !excludeMatchers.some(match => match(name)),
     );
   }
 

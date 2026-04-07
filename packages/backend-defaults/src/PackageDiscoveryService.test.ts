@@ -16,8 +16,9 @@
 
 import { ConfigReader } from '@backstage/config';
 import {
+  filtersToMatchers,
   PackageDiscoveryService,
-  PatternMatcher,
+  patternToRegex,
 } from './PackageDiscoveryService';
 import { mockServices } from '@backstage/backend-test-utils';
 
@@ -36,54 +37,95 @@ jest.mock(
   { virtual: true },
 );
 
-describe('PatternMatcher', () => {
-  const matcher = new PatternMatcher();
-
-  it('matches exact string', () => {
-    expect(matcher.matches('foo', 'foo')).toBe(true);
-    expect(matcher.matches('foo', 'bar')).toBe(false);
+describe('patternToRegex', () => {
+  it('matches an exact string with no wildcards', () => {
+    const re = patternToRegex('@backstage/plugin-catalog-backend');
+    expect(re.test('@backstage/plugin-catalog-backend')).toBe(true);
+    expect(re.test('@backstage/plugin-catalog-backend-extra')).toBe(false);
+    expect(re.test('other')).toBe(false);
   });
 
-  it('matches trailing wildcard', () => {
-    expect(matcher.matches('foobar', 'foo*')).toBe(true);
-    expect(matcher.matches('foo', 'foo*')).toBe(true);
-    expect(matcher.matches('barfoo', 'foo*')).toBe(false);
+  it('matches a trailing wildcard pattern', () => {
+    const re = patternToRegex('@backstage/plugin-catalog-*');
+    expect(re.test('@backstage/plugin-catalog-backend')).toBe(true);
+    expect(re.test('@backstage/plugin-catalog-backend-module-github')).toBe(
+      true,
+    );
+    expect(re.test('@backstage/plugin-scaffolder-backend')).toBe(false);
   });
 
-  it('matches leading wildcard', () => {
-    expect(matcher.matches('foobar', '*bar')).toBe(true);
-    expect(matcher.matches('bar', '*bar')).toBe(true);
-    expect(matcher.matches('barfoo', '*bar')).toBe(false);
+  it('matches a wildcard in the middle of a pattern', () => {
+    const re = patternToRegex('@backstage/plugin-*-backend-module-*');
+    expect(re.test('@backstage/plugin-catalog-backend-module-github')).toBe(
+      true,
+    );
+    expect(re.test('@backstage/plugin-scaffolder-backend-module-github')).toBe(
+      true,
+    );
+    expect(re.test('@backstage/plugin-catalog-backend')).toBe(false);
   });
 
-  it('matches wildcard in the middle', () => {
-    expect(matcher.matches('foobarbaz', 'foo*baz')).toBe(true);
-    expect(matcher.matches('foobaz', 'foo*baz')).toBe(true);
-    expect(matcher.matches('foobazbar', 'foo*baz')).toBe(false);
+  it('escapes regex special characters in the pattern', () => {
+    const re = patternToRegex('@scope/pkg.name+extra');
+    expect(re.test('@scope/pkg.name+extra')).toBe(true);
+    // dot and plus should be literal, not regex wildcards
+    expect(re.test('@scope/pkgXnameYextra')).toBe(false);
+  });
+});
+
+describe('filtersToMatchers', () => {
+  it('returns undefined when filters are undefined', () => {
+    expect(filtersToMatchers(undefined)).toBeUndefined();
   });
 
-  it('matches multiple wildcards', () => {
-    expect(matcher.matches('foobarbazqux', 'foo*bar*baz*qux')).toBe(true);
-    expect(matcher.matches('foobazqux', 'foo*bar*baz*qux')).toBe(false);
+  it('returns undefined when filters are an empty array', () => {
+    expect(filtersToMatchers([])).toBeUndefined();
   });
 
-  it('matches only wildcard', () => {
-    expect(matcher.matches('anything', '*')).toBe(true);
-    expect(matcher.matches('', '*')).toBe(true);
+  it('returns exact-match matchers for non-wildcard filters', () => {
+    const matchers = filtersToMatchers([
+      '@backstage/plugin-catalog-backend',
+      '@backstage/plugin-scaffolder-backend',
+    ])!;
+    expect(matchers).toHaveLength(2);
+    expect(matchers[0]('@backstage/plugin-catalog-backend')).toBe(true);
+    expect(matchers[0]('@backstage/plugin-scaffolder-backend')).toBe(false);
+    expect(matchers[1]('@backstage/plugin-scaffolder-backend')).toBe(true);
+    expect(matchers[1]('@backstage/plugin-catalog-backend')).toBe(false);
   });
 
-  it('matches empty pattern', () => {
-    expect(matcher.matches('', '')).toBe(true);
-    expect(matcher.matches('foo', '')).toBe(false);
+  it('returns regex matchers for wildcard filters', () => {
+    const matchers = filtersToMatchers(['@backstage/plugin-catalog-*'])!;
+    expect(matchers).toHaveLength(1);
+    expect(matchers[0]('@backstage/plugin-catalog-backend')).toBe(true);
+    expect(matchers[0]('@backstage/plugin-catalog-backend-module-github')).toBe(
+      true,
+    );
+    expect(matchers[0]('@backstage/plugin-scaffolder-backend')).toBe(false);
   });
 
-  it('caches regex objects', () => {
-    // This test checks that cache is used, but cannot directly inspect WeakRef internals
-    matcher.matches('foo', 'foo*');
-    matcher.matches('foo', 'foo*');
-    matcher.matches('foo', 'foo*');
-    // No assertion, but ensures no error and cache is reused
-    expect(matcher.matches('foo', 'foo*')).toBe(true);
+  it('deduplicates identical filters', () => {
+    const matchers = filtersToMatchers([
+      '@backstage/plugin-catalog-backend',
+      '@backstage/plugin-catalog-backend',
+      '@backstage/plugin-catalog-*',
+      '@backstage/plugin-catalog-*',
+    ])!;
+    expect(matchers).toHaveLength(2);
+  });
+
+  it('handles a mix of exact and wildcard filters', () => {
+    const matchers = filtersToMatchers([
+      '@backstage/plugin-catalog-backend',
+      '@backstage/plugin-scaffolder-*',
+    ])!;
+    expect(matchers).toHaveLength(2);
+    expect(matchers[0]('@backstage/plugin-catalog-backend')).toBe(true);
+    expect(matchers[1]('@backstage/plugin-scaffolder-backend')).toBe(true);
+    expect(
+      matchers[1]('@backstage/plugin-scaffolder-backend-module-github'),
+    ).toBe(true);
+    expect(matchers[0]('@backstage/plugin-scaffolder-backend')).toBe(false);
   });
 });
 
