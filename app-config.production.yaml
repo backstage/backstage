@@ -27,7 +27,10 @@ auth:
     # Override all development-only providers to prevent startup failures
     # when their env vars (clientId/clientSecret) are not set
     google: {}
-    github: {}
+    github:
+      production:
+        clientId: ${AUTH_GITHUB_CLIENT_ID}
+        clientSecret: ${AUTH_GITHUB_CLIENT_SECRET}
     gitlab: {}
     okta: {}
     oauth2: {}
