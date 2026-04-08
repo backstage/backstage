@@ -78,8 +78,8 @@ describe('filtersToMatchers', () => {
     expect(filtersToMatchers(undefined)).toBeUndefined();
   });
 
-  it('returns undefined when filters are an empty array', () => {
-    expect(filtersToMatchers([])).toBeUndefined();
+  it('returns empty array when filters are an empty array', () => {
+    expect(filtersToMatchers([])).toEqual([]);
   });
 
   it('returns exact-match matchers for non-wildcard filters', () => {

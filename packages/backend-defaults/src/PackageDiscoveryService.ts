@@ -93,7 +93,7 @@ const createRegexMatcher = (pattern: string) => {
 
 /** @internal */
 export const filtersToMatchers = (filters: string[] | undefined) => {
-  if (!filters || filters.length === 0) {
+  if (filters === undefined) {
     return undefined;
   }
 
@@ -138,12 +138,10 @@ export class PackageDiscoveryService {
       this.config.getOptionalStringArray('backend.packages.exclude'),
     ) ?? [() => false];
 
-    const includedPackages = dependencyNames.filter(name =>
-      includeMatchers.some(match => match(name)),
-    );
-
-    return includedPackages.filter(
-      name => !excludeMatchers.some(match => match(name)),
+    return dependencyNames.filter(
+      name =>
+        includeMatchers.some(match => match(name)) &&
+        !excludeMatchers.some(match => match(name)),
     );
   }
 

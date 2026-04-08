@@ -40,7 +40,7 @@ const createRegexMatcher = (pattern: string) => {
 
 /** @internal */
 export const filtersToMatchers = (filters: string[] | undefined) => {
-  if (!filters || filters.length === 0) {
+  if (filters === undefined) {
     return undefined;
   }
 
@@ -101,15 +101,11 @@ export function discoverAvailableFeatures(config: Config): {
   return {
     features:
       discovered?.modules
-        .filter(({ name }) => {
-          if (excludeMatchers.some(match => match(name))) {
-            return false;
-          }
-          if (!includeMatchers.some(match => match(name))) {
-            return false;
-          }
-          return true;
-        })
+        .filter(
+          ({ name }) =>
+            includeMatchers.some(match => match(name)) &&
+            !excludeMatchers.some(match => match(name)),
+        )
         .map(m => m.default)
         .filter(isFeatureOrLoader) ?? [],
   };
