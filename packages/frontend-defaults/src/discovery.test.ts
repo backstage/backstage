@@ -120,6 +120,21 @@ describe('discoverAvailableFeatures', () => {
     expect(discoverAvailableFeatures(c)).toEqual({ features: [test1Plugin] });
   });
 
+  it('empty include list means no packages', () => {
+    const test1Plugin = createFrontendPlugin({ pluginId: 'test1' });
+    const test2Plugin = createFrontendPlugin({ pluginId: 'test2' });
+    globalSpy.mockReturnValue({
+      modules: [
+        { name: '@backstage/plugin-test1', default: test1Plugin },
+        { name: '@backstage/plugin-test2', default: test2Plugin },
+      ],
+    });
+    const c = new ConfigReader({
+      app: { packages: { include: [] } },
+    });
+    expect(discoverAvailableFeatures(c)).toEqual({ features: [] });
+  });
+
   it('should filter by exact exclude names', () => {
     const test1Plugin = createFrontendPlugin({ pluginId: 'test1' });
     const test2Plugin = createFrontendPlugin({ pluginId: 'test2' });

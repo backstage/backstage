@@ -155,6 +155,19 @@ describe('PackageDiscoveryService', () => {
       expect(result).toEqual(['@backstage/plugin-catalog-backend']);
     });
 
+    it('empty include list means no packages', () => {
+      const config = new ConfigReader({
+        backend: {
+          packages: {
+            include: [],
+          },
+        },
+      });
+      const service = new PackageDiscoveryService(config, logger);
+      const result = service.getDependencyNames('/mock-package/package.json');
+      expect(result).toEqual([]);
+    });
+
     it('filters by exact exclude names', () => {
       const config = new ConfigReader({
         backend: {
