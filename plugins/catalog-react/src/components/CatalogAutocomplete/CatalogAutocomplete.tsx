@@ -454,8 +454,8 @@ export function CatalogAutocomplete<
         role="listbox"
         {...listboxProps}
         className={cn(
-          'absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md',
-          'border border-border bg-popover p-1 text-popover-foreground shadow-md',
+          'absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-lg',
+          'border border-border bg-popover p-1 text-popover-foreground shadow-lg',
           listboxProps?.className,
         )}
       >
@@ -481,9 +481,10 @@ export function CatalogAutocomplete<
                 role="option"
                 aria-selected={selected}
                 className={cn(
-                  'relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none',
+                  'relative flex cursor-pointer select-none items-center rounded-md px-2.5 py-2 text-sm outline-none',
+                  'transition-colors duration-100',
                   highlighted && 'bg-accent text-accent-foreground',
-                  selected && !highlighted && 'bg-accent/50',
+                  selected && !highlighted && 'bg-primary/10 text-primary',
                   !highlighted &&
                     !selected &&
                     'hover:bg-accent hover:text-accent-foreground',
@@ -554,9 +555,10 @@ export function CatalogAutocomplete<
     <div className="relative">
       <div
         className={cn(
-          'mt-6 flex flex-wrap items-center gap-1 w-full rounded-md border border-input bg-background text-sm',
-          'focus-within:border-primary focus-within:ring-1 focus-within:ring-primary',
-          'hover:border-muted-foreground/50',
+          'mt-6 flex flex-wrap items-center gap-1 w-full rounded-lg border border-input bg-background text-sm shadow-sm',
+          'transition-all duration-150',
+          'focus-within:border-primary focus-within:ring-2 focus-within:ring-ring/30',
+          'hover:border-primary/40 hover:shadow',
           disabled && 'cursor-not-allowed opacity-50',
           size === 'small' ? 'px-1.5 py-1.5' : 'px-3 py-2',
           mergedTextFieldProps.className,
@@ -572,9 +574,9 @@ export function CatalogAutocomplete<
               tabIndex={0}
               /* Accessible name derived from text content (getOptionLabel) */
               className={cn(
-                'inline-flex items-center gap-0.5 rounded-sm bg-secondary',
-                'px-1.5 py-0.5 text-xs text-secondary-foreground',
-                'max-w-[calc(100%-2rem)] cursor-default',
+                'inline-flex items-center gap-1 rounded-md bg-primary/10',
+                'px-2 py-0.5 text-xs font-medium text-primary',
+                'max-w-[calc(100%-2rem)] cursor-default transition-colors hover:bg-primary/20',
               )}
               onClick={e => handleTagRemove(e, tagVal)}
               onKeyDown={e => {

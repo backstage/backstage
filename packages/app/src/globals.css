@@ -26,18 +26,11 @@
  *
  * WCAG 2.1 AA contrast requirements are met for all text/interactive pairings.
  *
- * Contrast verification (light mode):
- *   --foreground (#000) on --background (#f8f8f8)              ~19:1  ✓
- *   --primary-foreground (#fff) on --primary (#1f5493)          ~5.8:1 ✓
- *   --destructive-foreground (#fff) on --destructive (#E22134)  ~4.5:1 ✓
- *   --muted-foreground (#6E6E6E) on --background (#f8f8f8)      ~5.3:1 ✓
- *
- * Contrast verification (dark mode):
- *   --foreground (#fff) on --background (#333)                  ~9.5:1 ✓
- *   --primary-foreground (#101821) on --primary (#9cc9ff)       ~10.5:1 ✓
- *   --muted-foreground (#CCCCCC) on --background (#333)         ~8.0:1 ✓
- *   --destructive-foreground (#fff) on --destructive (#C62828)  ~6.7:1 ✓
+ * Blitzy brand theme — vibrant purple + neon green accent.
+ * Font: Inter. Dark-first aesthetic.
  */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 @layer base {
   /* ================================================================
@@ -45,130 +38,65 @@
    * Default theme values applied at the document root.
    * ================================================================ */
   :root {
-    /* ----------------------------------------------------------
-     * Background & Foreground
-     * ---------------------------------------------------------- */
-    --background: #f8f8f8; /* BUI: --bui-bg-app */
-    --foreground: #000000; /* BUI: --bui-fg-primary (--bui-black) */
+    --background: #FAFAFA;
+    --foreground: #1a1a2e;
 
-    /* ----------------------------------------------------------
-     * Card
-     * ---------------------------------------------------------- */
-    --card: #ffffff; /* BUI: --bui-bg-neutral-1 */
-    --card-foreground: #000000; /* BUI: --bui-fg-primary */
+    --card: #FFFFFF;
+    --card-foreground: #1a1a2e;
 
-    /* ----------------------------------------------------------
-     * Popover
-     * ---------------------------------------------------------- */
-    --popover: #ffffff; /* BUI: --bui-bg-popover */
-    --popover-foreground: #000000; /* BUI: --bui-fg-primary */
+    --popover: #FFFFFF;
+    --popover-foreground: #1a1a2e;
 
-    /* ----------------------------------------------------------
-     * Primary
-     * ---------------------------------------------------------- */
-    --primary: #1f5493; /* BUI: --bui-bg-solid */
-    --primary-foreground: #ffffff; /* BUI: --bui-fg-solid (--bui-white) */
+    --primary: #5B39F3;
+    --primary-foreground: #FFFFFF;
 
-    /* ----------------------------------------------------------
-     * Secondary
-     * ---------------------------------------------------------- */
-    --secondary: #F5F5F5; /* palettes.light neutral background */
-    --secondary-foreground: #000000; /* palettes.light.textContrast */
+    --secondary: #F5F5F5;
+    --secondary-foreground: #2D1C77;
 
-    /* ----------------------------------------------------------
-     * Muted
-     * ---------------------------------------------------------- */
-    --muted: #F5F5F5; /* palettes.light neutral background */
-    --muted-foreground: #6E6E6E; /* palettes.light.textSubtle */
+    --muted: #F5F5F5;
+    --muted-foreground: #5F5B76;
 
-    /* ----------------------------------------------------------
-     * Accent
-     * ---------------------------------------------------------- */
-    --accent: #F5F5F5; /* palettes.light neutral background */
-    --accent-foreground: #000000; /* palettes.light.textContrast */
+    --accent: #F5F5F5;
+    --accent-foreground: #2D1C77;
 
-    /* ----------------------------------------------------------
-     * Destructive
-     * ---------------------------------------------------------- */
-    --destructive: #E22134; /* palettes.light.status.error — WCAG AA 4.5:1 */
-    --destructive-foreground: #FFFFFF; /* White text on destructive bg */
+    --destructive: #E22134;
+    --destructive-foreground: #FFFFFF;
 
-    /* ----------------------------------------------------------
-     * Border, Input, Ring
-     * ---------------------------------------------------------- */
-    --border: #E6E6E6; /* palettes.light.border */
-    --input: #E6E6E6; /* palettes.light.border (input field borders) */
-    --ring: #1F5493; /* palettes.light.primary.main */
+    --border: #E5E5E5;
+    --input: #E5E5E5;
+    --ring: #5B39F3;
 
-    /* ----------------------------------------------------------
-     * Radius
-     * ---------------------------------------------------------- */
-    --radius: 0.5rem; /* BUI: --bui-radius-3 */
+    --radius: 0.75rem;
 
-    /* ----------------------------------------------------------
-     * Typography
-     *
-     * --font-sans extends BUI's --bui-font-regular (system-ui)
-     * with a robust cross-platform fallback chain.
-     * --font-mono directly mirrors BUI's --bui-font-monospace.
-     * ---------------------------------------------------------- */
-    --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
-      Roboto, 'Helvetica Neue', Arial, sans-serif; /* BUI: --bui-font-regular extended */
+    --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
     --font-mono: ui-monospace, 'Menlo', 'Monaco', 'Consolas',
-      'Liberation Mono', 'Courier New', monospace; /* BUI: --bui-font-monospace */
+      'Liberation Mono', 'Courier New', monospace;
 
-    /* ----------------------------------------------------------
-     * Diagram Node Tokens (Backstage-specific)
-     *
-     * Used for SystemDiagramCard and other entity graph visualizations.
-     * ---------------------------------------------------------- */
-    --gold: #FFD600; /* API node fill in system diagrams */
+    --gold: #FFD600;
 
-    /* ----------------------------------------------------------
-     * Status Tokens (Backstage-specific)
-     *
-     * Used for catalog health indicators and CI/CD status displays.
-     * Color-blind-friendly — components MUST pair these with shape
-     * or icon differentiation per AAP Section 0.8.2.
-     * ---------------------------------------------------------- */
-    --success: #dcfce7; /* BUI: --bui-bg-success */
-    --success-foreground: #116932; /* BUI: --bui-fg-success-on-bg */
-    --warning: #ffedd5; /* BUI: --bui-bg-warning */
-    --warning-foreground: #92310a; /* BUI: --bui-fg-warning-on-bg */
-    --info: #dbeafe; /* BUI: --bui-bg-info */
-    --info-foreground: #173da6; /* BUI: --bui-fg-info-on-bg */
+    --success: #ECFDF5;
+    --success-foreground: #065F46;
+    --warning: #FFF7ED;
+    --warning-foreground: #92310a;
+    --info: #EDE9FE;
+    --info-foreground: #5B39F3;
 
-    /* ----------------------------------------------------------
-     * Status Indicator Tokens (Backstage-specific)
-     *
-     * Direct indicator colors for progress bars, status dots, and
-     * CI/CD pipeline displays. Unlike --success/--warning/--info
-     * (surface + foreground pairs for alert backgrounds), these
-     * tokens represent the indicator color itself.
-     * Derived from palettes.light.status / palettes.dark.status.
-     * ---------------------------------------------------------- */
-    --status-ok: #1DB954; /* palettes.light.status.ok */
-    --status-warning: #FF9800; /* palettes.light.status.warning */
-    --status-error: #E22134; /* palettes.light.status.error */
-    --status-running: #1F5493; /* palettes.light.status.running */
-    --status-pending: #FFED51; /* palettes.light.status.pending */
-    --status-aborted: #757575; /* palettes.light.status.aborted */
+    --status-ok: #10B981;
+    --status-warning: #F59E0B;
+    --status-error: #E22134;
+    --status-running: #5B39F3;
+    --status-pending: #F59E0B;
+    --status-aborted: #8A85A2;
 
-    /* ----------------------------------------------------------
-     * Sidebar Tokens
-     *
-     * Dedicated tokens for the collapsible sidebar redesign.
-     * The sidebar uses a dark surface in light mode, consistent
-     * with the established Backstage navigation palette.
-     * ---------------------------------------------------------- */
-    --sidebar-background: #171717; /* palettes.light.navigation.background */
-    --sidebar-foreground: #b5b5b5; /* palettes.light.navigation.color */
-    --sidebar-primary: #FFFFFF; /* palettes.light.navigation.selectedColor */
-    --sidebar-primary-foreground: #1F5493; /* palettes.light.primary.main */
-    --sidebar-accent: #404040; /* palettes.light.navigation.navItem.hoverBackground */
-    --sidebar-accent-foreground: #FFFFFF; /* Active text on hover */
-    --sidebar-border: #404040; /* Subtle dividers in sidebar */
-    --sidebar-ring: #9BF0E1; /* palettes.light.navigation.indicator */
+    --sidebar-nav-bg: #1a1a2e;
+    --sidebar-background: #1a1a2e;
+    --sidebar-foreground: #A29DBC;
+    --sidebar-primary: #FFFFFF;
+    --sidebar-primary-foreground: #94FAD5;
+    --sidebar-accent: #2D1C77;
+    --sidebar-accent-foreground: #FFFFFF;
+    --sidebar-border: #2D1C77;
+    --sidebar-ring: #94FAD5;
   }
 
   /* ================================================================
@@ -179,101 +107,59 @@
    * Do NOT use Tailwind's dark: or .dark class approach.
    * ================================================================ */
   [data-theme-mode='dark'] {
-    /* ----------------------------------------------------------
-     * Background & Foreground
-     * ---------------------------------------------------------- */
-    --background: #333333; /* BUI dark: --bui-bg-app */
-    --foreground: #ffffff; /* BUI dark: --bui-fg-primary (--bui-white) */
+    --background: #0F0A1F;
+    --foreground: #E5DEFF;
 
-    /* ----------------------------------------------------------
-     * Card
-     * ---------------------------------------------------------- */
-    --card: #424242; /* palettes.dark.background.paper */
-    --card-foreground: #FFFFFF; /* palettes.dark.textContrast */
+    --card: #1a1a2e;
+    --card-foreground: #E5DEFF;
 
-    /* ----------------------------------------------------------
-     * Popover
-     * ---------------------------------------------------------- */
-    --popover: #1a1a1a; /* BUI dark: --bui-bg-popover */
-    --popover-foreground: #ffffff; /* BUI dark: --bui-fg-primary */
+    --popover: #1a1a2e;
+    --popover-foreground: #E5DEFF;
 
-    /* ----------------------------------------------------------
-     * Primary
-     * ---------------------------------------------------------- */
-    --primary: #9cc9ff; /* BUI dark: --bui-bg-solid (lighter blue for dark mode) */
-    --primary-foreground: #101821; /* BUI dark: --bui-fg-solid */
+    --primary: #7A6DEC;
+    --primary-foreground: #FFFFFF;
 
-    /* ----------------------------------------------------------
-     * Secondary
-     * ---------------------------------------------------------- */
-    --secondary: #424242; /* palettes.dark.background.paper (neutral dark surface) */
-    --secondary-foreground: #FFFFFF; /* palettes.dark.textContrast */
+    --secondary: #1a1a2e;
+    --secondary-foreground: #E5DEFF;
 
-    /* ----------------------------------------------------------
-     * Muted
-     * ---------------------------------------------------------- */
-    --muted: #424242; /* palettes.dark neutral background */
-    --muted-foreground: #CCCCCC; /* palettes.dark.textSubtle */
+    --muted: #1a1a2e;
+    --muted-foreground: #A29DBC;
 
-    /* ----------------------------------------------------------
-     * Accent
-     * ---------------------------------------------------------- */
-    --accent: #424242; /* palettes.dark neutral background */
-    --accent-foreground: #FFFFFF; /* palettes.dark.textContrast */
+    --accent: #2D1C77;
+    --accent-foreground: #E5DEFF;
 
-    /* ----------------------------------------------------------
-     * Destructive
-     * ---------------------------------------------------------- */
-    --destructive: #C62828; /* Darkened from palettes.dark.status.error for WCAG AA — 6.7:1 */
-    --destructive-foreground: #FFFFFF; /* White text on destructive bg */
+    --destructive: #C62828;
+    --destructive-foreground: #FFFFFF;
 
-    /* ----------------------------------------------------------
-     * Border, Input, Ring
-     * ---------------------------------------------------------- */
-    --border: #E6E6E6; /* palettes.dark.border */
-    --input: #E6E6E6; /* palettes.dark.border */
-    --ring: #9CC9FF; /* palettes.dark.primary.main */
+    --border: #2D1C77;
+    --input: #2D1C77;
+    --ring: #94FAD5;
 
-    /* ----------------------------------------------------------
-     * Diagram Node Tokens (dark mode)
-     * ---------------------------------------------------------- */
-    --gold: #FFD600; /* API node fill in system diagrams — same in dark mode */
+    --gold: #FFD600;
 
-    /* ----------------------------------------------------------
-     * Status Tokens (dark mode)
-     * ---------------------------------------------------------- */
-    --success: #042713; /* BUI dark: --bui-bg-success */
-    --success-foreground: #86efac; /* BUI dark: --bui-fg-success-on-bg */
-    --warning: #302008; /* BUI dark: --bui-bg-warning */
-    --warning-foreground: #fdba74; /* BUI dark: --bui-fg-warning-on-bg */
-    --info: #132049; /* BUI dark: --bui-bg-info */
-    --info-foreground: #a3cfff; /* BUI dark: --bui-fg-info-on-bg */
+    --success: #042713;
+    --success-foreground: #94FAD5;
+    --warning: #302008;
+    --warning-foreground: #fdba74;
+    --info: #1a1040;
+    --info-foreground: #C8BFFF;
 
-    /* ----------------------------------------------------------
-     * Status Indicator Tokens (dark mode)
-     * Derived from palettes.dark.status
-     * ---------------------------------------------------------- */
-    --status-ok: #71CF88; /* palettes.dark.status.ok */
-    --status-warning: #FFB84D; /* palettes.dark.status.warning */
-    --status-error: #F84C55; /* palettes.dark.status.error */
-    --status-running: #3488E3; /* palettes.dark.status.running */
-    --status-pending: #FEF071; /* palettes.dark.status.pending */
-    --status-aborted: #9E9E9E; /* palettes.dark.status.aborted */
+    --status-ok: #94FAD5;
+    --status-warning: #FFB84D;
+    --status-error: #FF9999;
+    --status-running: #7A6DEC;
+    --status-pending: #FEF071;
+    --status-aborted: #8A85A2;
 
-    /* ----------------------------------------------------------
-     * Sidebar Tokens (dark mode)
-     *
-     * Dark mode sidebar uses the paper surface color for a
-     * cohesive look with the rest of the dark UI.
-     * ---------------------------------------------------------- */
-    --sidebar-background: #424242; /* palettes.dark.navigation.background */
-    --sidebar-foreground: #b5b5b5; /* palettes.dark.navigation.color */
-    --sidebar-primary: #FFFFFF; /* palettes.dark.navigation.selectedColor */
-    --sidebar-primary-foreground: #9CC9FF; /* palettes.dark.primary.main */
-    --sidebar-accent: #404040; /* palettes.dark.navigation.navItem.hoverBackground */
-    --sidebar-accent-foreground: #FFFFFF; /* Active text on hover */
-    --sidebar-border: #404040; /* palettes.dark.navigation.submenu.background */
-    --sidebar-ring: #9BF0E1; /* palettes.dark.navigation.indicator */
+    --sidebar-nav-bg: #0F0A1F;
+    --sidebar-background: #0F0A1F;
+    --sidebar-foreground: #A29DBC;
+    --sidebar-primary: #FFFFFF;
+    --sidebar-primary-foreground: #94FAD5;
+    --sidebar-accent: #2D1C77;
+    --sidebar-accent-foreground: #FFFFFF;
+    --sidebar-border: #2D1C77;
+    --sidebar-ring: #94FAD5;
   }
 
   /* ================================================================

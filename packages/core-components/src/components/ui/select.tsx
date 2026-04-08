@@ -37,9 +37,11 @@ const SelectTrigger = forwardRef<
     ref={ref}
     data-slot="select-trigger"
     className={cn(
-      'flex h-9 w-full items-center justify-between whitespace-nowrap rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm ring-offset-background',
+      'flex h-9 w-full items-center justify-between whitespace-nowrap rounded-lg border border-input bg-background px-3 py-2 text-sm shadow-sm ring-offset-background',
+      'transition-all duration-150',
       'placeholder:text-muted-foreground',
-      'focus:outline-none focus:ring-1 focus:ring-ring',
+      'hover:border-primary/40 hover:shadow',
+      'focus:outline-none focus:ring-2 focus:ring-ring/30 focus:border-primary',
       'disabled:cursor-not-allowed disabled:opacity-50',
       '[&>span]:line-clamp-1',
       className,
@@ -48,7 +50,7 @@ const SelectTrigger = forwardRef<
   >
     {children}
     <SelectPrimitive.Icon asChild>
-      <ChevronDown className="h-4 w-4 opacity-50" />
+      <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-150 data-[state=open]:rotate-180" />
     </SelectPrimitive.Icon>
   </SelectPrimitive.Trigger>
 ));
@@ -102,7 +104,7 @@ const SelectContent = forwardRef<
       ref={ref}
       data-slot="select-content"
       className={cn(
-        'relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded-md border border-border bg-popover text-popover-foreground shadow-md',
+        'relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded-lg border border-border bg-popover text-popover-foreground shadow-lg',
         'data-[state=open]:animate-in data-[state=closed]:animate-out',
         'data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
         'data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95',
@@ -154,8 +156,10 @@ const SelectItem = forwardRef<
     ref={ref}
     data-slot="select-item"
     className={cn(
-      'relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-2 pr-8 text-sm outline-none',
+      'relative flex w-full cursor-pointer select-none items-center rounded-md py-2 pl-2.5 pr-8 text-sm outline-none',
+      'transition-colors duration-100',
       'focus:bg-accent focus:text-accent-foreground',
+      'data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground',
       'data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
       className,
     )}

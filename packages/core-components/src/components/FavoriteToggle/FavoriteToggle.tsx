@@ -38,16 +38,14 @@ export type FavoriteToggleIconClassKey = 'icon' | 'iconBorder';
 export function FavoriteToggleIcon(props: { isFavorite: boolean }) {
   const { isFavorite } = props;
   return (
-    <span
+    <Star
       className={cn(
-        'inline-flex cursor-pointer',
-        isFavorite ? 'text-[#f3ba37]' : 'text-inherit',
+        '!h-4 !w-4 transition-colors',
+        isFavorite
+          ? 'fill-[var(--gold,#FFD600)] text-[var(--gold,#FFD600)] drop-shadow-[0_0_3px_rgba(255,214,0,0.4)]'
+          : 'fill-none text-foreground/40 hover:text-foreground/70',
       )}
-    >
-      <Star
-        className={cn('h-5 w-5', isFavorite ? 'fill-current' : 'fill-none')}
-      />
-    </span>
+    />
   );
 }
 
@@ -86,6 +84,12 @@ export function FavoriteToggle(props: FavoriteToggleProps) {
           <Button
             variant="ghost"
             size="icon"
+            className={cn(
+              'h-8 w-8 rounded-full transition-all',
+              value
+                ? 'text-[var(--gold,#FFD600)] hover:bg-[var(--gold,#FFD600)]/15'
+                : 'text-foreground/40 hover:text-foreground/70 hover:bg-accent',
+            )}
             aria-label={title}
             id={id}
             onClick={() => onChange(!value)}

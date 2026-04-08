@@ -41,7 +41,7 @@ backend:
   auth:
     # TODO: once plugins have been migrated we can remove this, but right now it
     # is require for the backend-next to work in this repo
-    dangerouslyDisableDefaultAuthPolicy: false
+    dangerouslyDisableDefaultAuthPolicy: true
 
   baseUrl: http://localhost:7007
   listen:

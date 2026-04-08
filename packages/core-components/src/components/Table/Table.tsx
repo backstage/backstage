@@ -498,30 +498,34 @@ export function TableToolbar(toolbarProps: {
   );
 
   return (
-    <div className="flex items-center justify-between px-2.5 py-3 flex-wrap gap-2">
-      <div className="flex items-center gap-2">
+    <div className="flex items-center justify-between px-3 py-3 flex-wrap gap-2">
+      <div className="flex items-center gap-3">
         {hasFilters && (
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1.5">
             <Button
-              variant="ghost"
-              size="icon"
+              variant="outline"
+              size="sm"
               onClick={toggleFilters}
               aria-label="filter list"
+              className="gap-1.5"
             >
-              <Filter className="h-5 w-5" />
+              <Filter className="h-3.5 w-3.5" />
+              <span>{t('table.filter.title')}</span>
+              {selectedFiltersLength > 0 && (
+                <span className="ml-0.5 rounded-full bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold text-primary leading-none">
+                  {selectedFiltersLength}
+                </span>
+              )}
             </Button>
-            <span className="font-bold text-lg whitespace-nowrap">
-              {t('table.filter.title')} ({selectedFiltersLength})
-            </span>
           </div>
         )}
         {(title || subtitle) && (
           <div>
             {title && (
-              <h2 className="text-xl font-bold leading-tight">{title}</h2>
+              <h2 className="text-lg font-semibold leading-tight">{title}</h2>
             )}
             {subtitle && (
-              <p className="text-muted-foreground text-sm">{subtitle}</p>
+              <p className="text-muted-foreground text-xs">{subtitle}</p>
             )}
           </div>
         )}
@@ -595,7 +599,7 @@ function TablePagination<T>({
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8"
+                className="h-8 w-8 rounded-full"
                 onClick={() => goToPage(0)}
                 disabled={!table.getCanPreviousPage()}
                 aria-label={t('table.pagination.firstTooltip')}
@@ -613,7 +617,7 @@ function TablePagination<T>({
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8"
+                className="h-8 w-8 rounded-full"
                 onClick={() => {
                   table.previousPage();
                   onPageChange?.(pageIndex - 1);
@@ -634,7 +638,7 @@ function TablePagination<T>({
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8"
+                className="h-8 w-8 rounded-full"
                 onClick={() => {
                   table.nextPage();
                   onPageChange?.(pageIndex + 1);
@@ -653,7 +657,7 @@ function TablePagination<T>({
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8"
+                className="h-8 w-8 rounded-full"
                 onClick={() => goToPage(pageCount - 1)}
                 disabled={!table.getCanNextPage()}
                 aria-label={t('table.pagination.lastTooltip')}
@@ -939,7 +943,7 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
       )}
 
       {/* Main table area */}
-      <div className="flex-1 min-w-0 overflow-hidden rounded-md border border-border bg-card">
+      <div className="flex-1 min-w-0 overflow-hidden rounded-lg border border-border bg-card shadow-sm">
         {/* Toolbar */}
         <TableToolbar
           setSearch={setSearch}
@@ -1102,7 +1106,7 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
                       <TableCell
                         className={cn(cellPadding, 'whitespace-nowrap')}
                       >
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-0.5">
                           {actions
                             .map(a =>
                               typeof a === 'function' ? a(row.original) : a,
@@ -1115,7 +1119,7 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
                                   key={actionIdx}
                                   variant="ghost"
                                   size="icon"
-                                  className="h-8 w-8"
+                                  className="h-7 w-7 rounded-full text-muted-foreground hover:text-foreground"
                                   title={action.tooltip}
                                   disabled={action.disabled}
                                   style={action.cellStyle}

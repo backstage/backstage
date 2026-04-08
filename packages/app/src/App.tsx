@@ -45,12 +45,16 @@ import {
   techDocsMermaidAddonModule,
   techDocsLightBoxAddonModule,
 } from '@backstage/plugin-techdocs-module-addons-contrib/alpha';
-import { convertLegacyPageExtension } from '@backstage/core-compat-api';
+import {
+  convertLegacyPageExtension,
+  convertLegacyPlugin,
+} from '@backstage/core-compat-api';
 import { convertLegacyEntityContentExtension } from '@backstage/plugin-catalog-react/alpha';
 import { pluginInfoResolver } from './pluginInfoResolver';
 import { appModuleNav } from './modules/appModuleNav';
 import catalogPlugin from '@backstage/plugin-catalog/alpha';
-import { Info } from 'lucide-react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCircleInfo } from '@fortawesome/free-solid-svg-icons';
 
 /*
 
@@ -363,7 +367,7 @@ const customizedCatalog = catalogPlugin.withOverrides({
   extensions: [
     catalogPlugin.getExtension('entity-content:catalog/overview').override({
       params: {
-        icon: <Info />,
+        icon: <FontAwesomeIcon icon={faCircleInfo} />,
       },
     }),
   ],

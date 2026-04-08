@@ -45,16 +45,16 @@ export const shapes: Record<string, string> = {
  * @public
  */
 export const colorVariants: Record<string, string[]> = {
-  darkGrey: ['#171717', '#383838'],
-  marineBlue: ['#006D8F', '#0049A1'],
-  veryBlue: ['#0027AF', '#270094'],
-  rubyRed: ['#98002B', '#8D1134'],
-  toastyOrange: ['#BE2200', '#A41D00'],
-  purpleSky: ['#8912CA', '#3E00EA'],
-  eveningSea: ['#00CFC5', '#035355'],
-  teal: ['#005B4B'],
-  pinkSea: ['#C8077A', '#C2297D'],
-  greens: ['#4BB8A5', '#187656'],
+  darkGrey: ['#1a1a2e', '#2D1C77'],
+  marineBlue: ['#2D1C77', '#5B39F3'],
+  veryBlue: ['#5B39F3', '#7A6DEC'],
+  rubyRed: ['#5B39F3', '#2D1C77'],
+  toastyOrange: ['#2D1C77', '#5B39F3'],
+  purpleSky: ['#5B39F3', '#7A6DEC'],
+  eveningSea: ['#2D1C77', '#5B39F3'],
+  teal: ['#2D1C77', '#5B39F3'],
+  pinkSea: ['#5B39F3', '#7A6DEC'],
+  greens: ['#2D1C77', '#5B39F3'],
 };
 
 /**
