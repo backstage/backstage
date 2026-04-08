@@ -1,0 +1,5 @@
+---
+'@backstage/ui': minor
+---
+
+Added
