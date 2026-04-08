@@ -24,7 +24,6 @@ import { noopTracker } from '../../analytics/useAnalytics';
 import { useInRouterContext, useHref } from 'react-router-dom';
 import type {
   ComponentConfig,
-  ResolveHrefConstraint,
   UseDefinitionOptions,
   UseDefinitionResult,
   UtilityKeys,
@@ -34,7 +33,7 @@ export function useDefinition<
   D extends ComponentConfig<any, any>,
   P extends Record<string, any>,
 >(
-  definition: D & ResolveHrefConstraint<P, D['resolveHref']>,
+  definition: D,
   props: P,
   options?: UseDefinitionOptions<D>,
 ): UseDefinitionResult<D, P> {
@@ -43,16 +42,14 @@ export function useDefinition<
   // Turn relative href into an absolute path using the current route
   // context, so that client-side navigation works correctly.
   let hrefResolvedProps = props;
-  if (definition.resolveHref) {
-    const hasRouter = useInRouterContext();
-    // useHref throws outside a Router, so we guard with useInRouterContext.
-    // The guard is safe because a component's router context does not
-    // change during its lifetime, keeping the hook call count stable.
-    if (hasRouter) {
-      const absoluteHref = useHref((props as any).href ?? '');
-      if ((props as any).href !== undefined) {
-        hrefResolvedProps = { ...props, href: absoluteHref } as P;
-      }
+  const hasRouter = useInRouterContext();
+  // useHref throws outside a Router, so we guard with useInRouterContext.
+  // The guard is safe because a component's router context does not
+  // change during its lifetime, keeping the hook call count stable.
+  if (hasRouter) {
+    const absoluteHref = useHref((props as any).href ?? '');
+    if ((props as any).href !== undefined) {
+      hrefResolvedProps = { ...props, href: absoluteHref } as P;
     }
   }
 

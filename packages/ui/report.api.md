@@ -583,7 +583,6 @@ export const ButtonLinkDefinition: {
   };
   readonly bg: 'consumer';
   readonly analytics: true;
-  readonly resolveHref: true;
   readonly propDefs: {
     readonly noTrack: {};
     readonly size: {
@@ -690,7 +689,6 @@ export const CardDefinition: {
   readonly styles: {
     readonly [key: string]: string;
   };
-  readonly resolveHref: true;
   readonly classNames: {
     readonly root: 'bui-Card';
     readonly trigger: 'bui-CardTrigger';
@@ -1559,7 +1557,6 @@ export const HeaderNavItemDefinition: {
     readonly root: 'bui-HeaderNavItem';
   };
   readonly analytics: true;
-  readonly resolveHref: true;
   readonly propDefs: {
     readonly noTrack: {};
     readonly id: {};
@@ -1682,7 +1679,6 @@ export const LinkDefinition: {
     readonly root: 'bui-Link';
   };
   readonly analytics: true;
-  readonly resolveHref: true;
   readonly propDefs: {
     readonly noTrack: {};
     readonly variant: {
@@ -1771,7 +1767,6 @@ export const ListRowDefinition: {
     readonly [key: string]: string;
   };
   readonly bg: 'consumer';
-  readonly resolveHref: true;
   readonly classNames: {
     readonly root: 'bui-ListRow';
     readonly check: 'bui-ListRowCheck';
