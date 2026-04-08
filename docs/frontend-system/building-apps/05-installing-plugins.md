@@ -26,7 +26,8 @@ app:
   packages: all
 ```
 
-This is the recommended setup and is the default for all new Backstage apps. With this enabled, any plugin that is added as a dependency of your app package will be automatically discovered and installed. You can use include or exclude filters to control which packages are discovered:
+This is the recommended setup and is the default for all new Backstage apps. With this enabled, any plugin that is added as a dependency of your app package will be automatically discovered and installed.
+You can use include or exclude filters to control which packages are discovered (note that wildcard patterns using `*` are also supported in these filters):
 
 ```yaml title="app-config.yaml"
 app:
@@ -34,6 +35,7 @@ app:
     include:
       - '@backstage/plugin-catalog'
       - '@backstage/plugin-scaffolder'
+      - '@backstage/plugin-scaffolder-module-*' # includes all scaffolder modules
 ```
 
 ```yaml title="app-config.yaml"
@@ -41,6 +43,7 @@ app:
   packages:
     exclude:
       - '@backstage/plugin-catalog'
+      - '@backstage/plugin-catalog-module-*' # excludes all catalog modules
 ```
 
 Feature discovery requires that your app is built using the `@backstage/cli`, which is the default for all Backstage apps. Note that you do not need to exclude packages that you also install manually in code, since plugin instances are deduplicated by the app.
