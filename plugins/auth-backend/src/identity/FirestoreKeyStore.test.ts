@@ -33,6 +33,9 @@ const get = jest.fn().mockReturnValue({
 });
 const set = jest.fn();
 
+const batchDelete = jest.fn();
+const batchCommit = jest.fn().mockResolvedValue([]);
+
 const firestoreMock = {
   limit: jest.fn().mockReturnThis(),
   collection: jest.fn().mockReturnThis(),
@@ -40,6 +43,10 @@ const firestoreMock = {
   doc: jest.fn().mockReturnThis(),
   set,
   get,
+  batch: jest.fn().mockReturnValue({
+    delete: batchDelete,
+    commit: batchCommit,
+  }),
 };
 
 jest.mock('@google-cloud/firestore', () => ({
@@ -73,6 +80,10 @@ describe('FirestoreKeyStore', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    firestoreMock.batch.mockReturnValue({
+      delete: batchDelete,
+      commit: batchCommit,
+    });
   });
 
   it('can create an instance without settings', async () => {
@@ -151,25 +162,45 @@ describe('FirestoreKeyStore', () => {
     });
   });
 
-  it('can delete a single key', async () => {
+  it('can delete a single key using a batch', async () => {
     const keyStore = await FirestoreKeyStore.create(firestoreSettings);
     await keyStore.removeKeys(['123']);
 
-    expect(setTimeout).toHaveBeenCalledTimes(1);
+    expect(firestoreMock.batch).toHaveBeenCalledTimes(1);
     expect(firestoreMock.collection).toHaveBeenCalledWith(path);
     expect(firestoreMock.doc).toHaveBeenCalledWith('123');
-    expect(firestoreMock.delete).toHaveBeenCalledTimes(1);
+    expect(batchDelete).toHaveBeenCalledTimes(1);
+    expect(batchCommit).toHaveBeenCalledTimes(1);
   });
 
-  it('can delete a multiple keys', async () => {
+  it('can delete multiple keys in a single batch', async () => {
     const keyStore = await FirestoreKeyStore.create(firestoreSettings);
     await keyStore.removeKeys(['123', '456']);
 
-    expect(setTimeout).toHaveBeenCalledTimes(2);
+    expect(firestoreMock.batch).toHaveBeenCalledTimes(1);
     expect(firestoreMock.collection).toHaveBeenCalledWith(path);
     expect(firestoreMock.doc).toHaveBeenCalledWith('123');
     expect(firestoreMock.doc).toHaveBeenCalledWith('456');
-    expect(firestoreMock.delete).toHaveBeenCalledTimes(2);
+    expect(batchDelete).toHaveBeenCalledTimes(2);
+    expect(batchCommit).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not create a batch when removing zero keys', async () => {
+    const keyStore = await FirestoreKeyStore.create(firestoreSettings);
+    await keyStore.removeKeys([]);
+
+    expect(firestoreMock.batch).not.toHaveBeenCalled();
+    expect(batchCommit).not.toHaveBeenCalled();
+  });
+
+  it('chunks deletes into batches of 500', async () => {
+    const keyStore = await FirestoreKeyStore.create(firestoreSettings);
+    const kids = Array.from({ length: 501 }, (_, i) => `key-${i}`);
+    await keyStore.removeKeys(kids);
+
+    expect(firestoreMock.batch).toHaveBeenCalledTimes(2);
+    expect(batchDelete).toHaveBeenCalledTimes(501);
+    expect(batchCommit).toHaveBeenCalledTimes(2);
   });
 
   it('can list keys', async () => {

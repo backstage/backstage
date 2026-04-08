@@ -102,35 +102,20 @@ export class FirestoreKeyStore implements KeyStore {
   }
 
   async removeKeys(kids: string[]): Promise<void> {
-    // This is probably really slow, but it's done async in the background
-    for (const kid of kids) {
-      await this.withTimeout<WriteResult>(
-        this.database.collection(this.path).doc(kid).delete(),
-      );
+    if (kids.length === 0) {
+      return;
     }
 
-    /**
-     * This could be achieved with batching but there's a couple of limitations with that:
-     *
-     * - A batched write can contain a maximum of 500 operations
-     *  https://firebase.google.com/docs/firestore/manage-data/transactions#batched-writes
-     *
-     * - The "in" operator can combine a maximum of 10 equality clauses
-     *  https://firebase.google.com/docs/firestore/query-data/queries#in_not-in_and_array-contains-any
-     *
-     * Example:
-     *
-     *  const batch = this.database.batch();
-     *  const docs = await this.database
-     *    .collection(this.path)
-     *    .where('kid', 'in', kids)
-     *    .get();
-     *  docs.forEach(doc => {
-     *    batch.delete(doc.ref);
-     *  });
-     *  await batch.commit();
-     *
-     */
+    // Firestore batched writes support up to 500 operations per batch
+    const BATCH_SIZE = 500;
+    for (let i = 0; i < kids.length; i += BATCH_SIZE) {
+      const chunk = kids.slice(i, i + BATCH_SIZE);
+      const batch = this.database.batch();
+      for (const kid of chunk) {
+        batch.delete(this.database.collection(this.path).doc(kid));
+      }
+      await this.withTimeout<WriteResult[]>(batch.commit());
+    }
   }
 
   /**
