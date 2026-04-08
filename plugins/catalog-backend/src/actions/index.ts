@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import { createValidateEntityAction } from './createValidateEntityAction.ts';
 import { createRegisterCatalogEntitiesAction } from './createRegisterCatalogEntitiesAction.ts';
 import { createUnregisterCatalogEntitiesAction } from './createUnregisterCatalogEntitiesAction.ts';
 import { createQueryCatalogEntitiesAction } from './createQueryCatalogEntitiesAction.ts';
+import { createRefreshCatalogEntityAction } from './createRefreshCatalogEntityAction.ts';
 
 export const createCatalogActions = (options: {
   actionsRegistry: ActionsRegistryService;
@@ -30,4 +31,5 @@ export const createCatalogActions = (options: {
   createRegisterCatalogEntitiesAction(options);
   createUnregisterCatalogEntitiesAction(options);
   createQueryCatalogEntitiesAction(options);
+  createRefreshCatalogEntityAction(options);
 };

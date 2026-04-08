@@ -18,6 +18,7 @@ This is a (non-exhaustive) list of actions that are known to be part of the Acti
 
 - `catalog.get-catalog-entity` (Get Catalog Entity): This allows you to get a single entity from the software catalog.
 - `catalog.query-catalog-entities` (Query Catalog Entities): Query entities from the Backstage Software Catalog using predicate filters.
+- `catalog.refresh-catalog-entity` (Refresh entity from the Catalog): Refresh an entity stored inside the Backstage catalog.
 - `catalog.register-entity` (Register entity in the Catalog): Registers one or more entities in the Backstage catalog by creating a Location entity that points to a remote `catalog-info.yaml` file.
 - `catalog.unregister-entity` (Unregister entity from the Catalog): Unregisters a Location entity and all entities it owns from the Backstage catalog.
 - `catalog.validate-entity` (Validate Catalog Entity): This action can be used to validate `catalog-info.yaml` file contents meant to be used with the software catalog.
