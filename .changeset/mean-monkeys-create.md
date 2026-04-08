@@ -1,5 +1,5 @@
 ---
-'@backstage/ui': minor
+'@backstage/ui': patch
 ---
 
-Added
+Added invalid-state styling for Checkbox and corresponding Storybook variants for verification.
