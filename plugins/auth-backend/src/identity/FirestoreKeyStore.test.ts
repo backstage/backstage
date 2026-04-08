@@ -166,6 +166,7 @@ describe('FirestoreKeyStore', () => {
     const keyStore = await FirestoreKeyStore.create(firestoreSettings);
     await keyStore.removeKeys(['123']);
 
+    expect(setTimeout).toHaveBeenCalledTimes(1);
     expect(firestoreMock.batch).toHaveBeenCalledTimes(1);
     expect(firestoreMock.collection).toHaveBeenCalledWith(path);
     expect(firestoreMock.doc).toHaveBeenCalledWith('123');
@@ -177,6 +178,7 @@ describe('FirestoreKeyStore', () => {
     const keyStore = await FirestoreKeyStore.create(firestoreSettings);
     await keyStore.removeKeys(['123', '456']);
 
+    expect(setTimeout).toHaveBeenCalledTimes(1);
     expect(firestoreMock.batch).toHaveBeenCalledTimes(1);
     expect(firestoreMock.collection).toHaveBeenCalledWith(path);
     expect(firestoreMock.doc).toHaveBeenCalledWith('123');
@@ -198,6 +200,7 @@ describe('FirestoreKeyStore', () => {
     const kids = Array.from({ length: 501 }, (_, i) => `key-${i}`);
     await keyStore.removeKeys(kids);
 
+    expect(setTimeout).toHaveBeenCalledTimes(2);
     expect(firestoreMock.batch).toHaveBeenCalledTimes(2);
     expect(batchDelete).toHaveBeenCalledTimes(501);
     expect(batchCommit).toHaveBeenCalledTimes(2);
