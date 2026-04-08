@@ -24,6 +24,7 @@ import {
   tableRootPropDefs,
   columnPropDefs,
   rowPropDefs,
+  tableBodySkeletonPropDefs,
 } from './props-definition';
 import {
   tableUsageSnippet,
@@ -303,6 +304,12 @@ Low-level components for building custom table layouts.
 
 <ReactAriaLink component="Cell" href={reactAriaUrls.cell} />
 
+#### TableBodySkeleton
+
+A table body that renders animated skeleton rows as a loading placeholder. Useful when composing with primitives and you need a loading state without the full `Table` component.
+
+<PropsTable data={tableBodySkeletonPropDefs} />
+
 <Theming definition={TableDefinition} />
 
 <ChangelogComponent
@@ -317,5 +324,6 @@ Low-level components for building custom table layouts.
     'cell',
     'cell-text',
     'cell-profile',
+    'table-body-skeleton',
   ]}
 />

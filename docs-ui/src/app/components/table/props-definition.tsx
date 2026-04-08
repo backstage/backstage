@@ -491,6 +491,15 @@ export const columnPropDefs: Record<string, PropDef> = {
   },
 };
 
+export const tableBodySkeletonPropDefs: Record<string, PropDef> = {
+  columns: {
+    type: 'enum',
+    values: ['{ id: string }[]'],
+    description:
+      'Array of column objects. Each item must have an `id` property. Compatible with `ColumnConfig` and custom column types.',
+  },
+};
+
 export const rowPropDefs: Record<string, PropDef> = {
   id: {
     type: 'enum',
