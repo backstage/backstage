@@ -1243,6 +1243,7 @@ export const FieldLabelDefinition: {
     readonly htmlFor: {};
     readonly id: {};
     readonly descriptionId: {};
+    readonly descriptionSlot: {};
     readonly className: {};
   };
 };
@@ -1255,6 +1256,7 @@ export type FieldLabelOwnProps = {
   htmlFor?: string;
   id?: string;
   descriptionId?: string;
+  descriptionSlot?: string;
   className?: string;
 };
 

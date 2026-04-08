@@ -80,6 +80,7 @@ export const Select = forwardRef<
         label={label}
         secondaryLabel={secondaryLabelText}
         description={description}
+        descriptionSlot="description"
       />
       <SelectTrigger icon={icon} />
       <FieldError />
