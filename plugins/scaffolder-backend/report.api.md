@@ -61,8 +61,18 @@ export function createCatalogRegisterAction(options: {
 // @public
 export function createCatalogWriteAction(): TemplateAction<
   {
+    entity: {
+      metadata: {
+        name: string;
+        annotations?: Record<string, string> | undefined;
+      } & {
+        [k: string]: any;
+      };
+      kind: string;
+      apiVersion: string;
+      spec?: Record<string, any> | undefined;
+    };
     filePath?: string | undefined;
-    entity?: any;
   },
   {
     [x: string]: any;

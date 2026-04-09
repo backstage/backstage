@@ -57,10 +57,9 @@ export function createCatalogWriteAction() {
                 .optional()
                 .describe('The specification of the catalog entity.'),
             })
-            .catchall(z.any())
             .describe(
               'You can provide the same values used in the Entity schema.',
-            ) as any,
+            ),
       },
     },
     examples,
@@ -80,7 +79,7 @@ export function createCatalogWriteAction() {
             ...(entityRef
               ? {
                   annotations: {
-                    ...(entity.metadata as any).annotations,
+                    ...(entity.metadata.annotations || {}),
                     'backstage.io/source-template': entityRef,
                   },
                 }
