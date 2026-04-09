@@ -44,16 +44,16 @@ Each entity is identified by a unique entity reference, which is a string of the
           kind: z
             .string()
             .describe(
-              'The kind of the entity to query. If the kind is unknown it can be omitted.',
+              'The kind of the entity to refresh. If the kind is unknown it can be omitted.',
             )
             .optional(),
           namespace: z
             .string()
             .describe(
-              'The namespace of the entity to query. If the namespace is unknown it can be omitted.',
+              'The namespace of the entity to refresh. If the namespace is unknown it can be omitted.',
             )
             .optional(),
-          name: z.string().describe('The name of the entity to query'),
+          name: z.string().describe('The name of the entity to refresh'),
         }),
       output: z =>
         z.object({
