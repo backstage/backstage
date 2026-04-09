@@ -229,9 +229,7 @@ function NotificationsPageContent(
             page={pageNumber}
             pageSize={pageSize}
             totalCount={totalCount}
-            NotificationDescriptionComponent={
-              NotificationDescriptionComponent
-            }
+            NotificationDescriptionComponent={NotificationDescriptionComponent}
           />
         </Grid.Item>
       </Grid.Root>
