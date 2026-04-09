@@ -29,7 +29,7 @@ type JsonSchemaObject = {
   required?: string[];
 };
 
-type CleyeFlag = {
+export type CleyeFlag = {
   type: StringConstructor | NumberConstructor | BooleanConstructor;
   description?: string;
   default?: unknown;
@@ -52,32 +52,24 @@ function resolveFlagType(
   return undefined;
 }
 
-export function getComplexKeys(schema: JsonSchemaObject): Set<string> {
-  const keys = new Set<string>();
-  if (!schema.properties) return keys;
-  for (const [key, prop] of Object.entries(schema.properties)) {
-    if (isComplexType(prop)) {
-      keys.add(key);
-    }
-  }
-  return keys;
-}
-
-export function schemaToFlags(
-  schema: JsonSchemaObject,
-): Record<string, CleyeFlag> {
+export function schemaToFlags(schema: JsonSchemaObject): {
+  flags: Record<string, CleyeFlag>;
+  complexKeys: Set<string>;
+} {
   const flags: Record<string, CleyeFlag> = {};
+  const complexKeys = new Set<string>();
   const required = new Set(schema.required ?? []);
 
   if (!schema.properties) {
-    return flags;
+    return { flags, complexKeys };
   }
 
   for (const [key, prop] of Object.entries(schema.properties)) {
     const rawType = Array.isArray(prop.type) ? prop.type[0] : prop.type;
+    const complex = isComplexType(prop);
     let flagType = resolveFlagType(rawType);
 
-    if (!flagType && isComplexType(prop)) {
+    if (!flagType && complex) {
       flagType = String;
     }
 
@@ -85,9 +77,13 @@ export function schemaToFlags(
       continue;
     }
 
+    if (complex) {
+      complexKeys.add(key);
+    }
+
     let desc = prop.description ?? '';
 
-    if (isComplexType(prop)) {
+    if (complex) {
       desc = desc ? `${desc} (JSON)` : '(JSON)';
     }
 
@@ -107,5 +103,5 @@ export function schemaToFlags(
     flags[key] = flag;
   }
 
-  return flags;
+  return { flags, complexKeys };
 }

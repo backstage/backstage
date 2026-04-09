@@ -17,9 +17,34 @@
 import { cli } from 'cleye';
 import type { CliCommandContext } from '@backstage/cli-node';
 import { ActionsClient } from '../lib/ActionsClient';
-import { schemaToFlags, getComplexKeys } from '../lib/schemaToFlags';
+import { schemaToFlags } from '../lib/schemaToFlags';
 import { resolveAuth } from '../lib/resolveAuth';
-import { formatActionHelp } from '../lib/format';
+import { formatActionHelp, flagDefsToFlagInfo } from '../lib/format';
+
+function parseArgs(args: string[]) {
+  const instanceIdx = args.indexOf('--instance');
+  const instanceFlag = instanceIdx !== -1 ? args[instanceIdx + 1] : undefined;
+
+  const skipIndices = new Set<number>();
+  if (instanceIdx !== -1) {
+    skipIndices.add(instanceIdx);
+    skipIndices.add(instanceIdx + 1);
+  }
+
+  let actionId: string | undefined;
+  let actionIdIdx = -1;
+  for (let i = 0; i < args.length; i++) {
+    if (!skipIndices.has(i) && !args[i].startsWith('-')) {
+      actionId = args[i];
+      actionIdIdx = i;
+      break;
+    }
+  }
+
+  const wantsHelp = args.includes('--help') || args.includes('-h');
+
+  return { instanceFlag, actionId, actionIdIdx, wantsHelp };
+}
 
 function showGenericHelp(
   info: CliCommandContext['info'],
@@ -41,77 +66,53 @@ function showGenericHelp(
   );
 }
 
+async function showActionHelp(
+  info: CliCommandContext['info'],
+  actionId: string,
+  instanceFlag: string | undefined,
+): Promise<boolean> {
+  try {
+    const { accessToken, baseUrl } = await resolveAuth(instanceFlag);
+    const client = new ActionsClient(baseUrl, accessToken);
+    const actions = await client.listForPlugin(actionId);
+    const action = actions.find(a => a.id === actionId);
+
+    if (!action) {
+      return false;
+    }
+
+    const { flags: flagDefs } = schemaToFlags(action.schema.input as any);
+    const flags = flagDefsToFlagInfo(flagDefs);
+    flags.push({
+      name: 'instance',
+      type: 'string',
+      description: 'Name of the instance to use',
+    });
+
+    process.stdout.write(
+      await formatActionHelp({
+        action,
+        usage: `${info.usage ?? 'backstage actions execute'} ${actionId}`,
+        flags,
+      }),
+    );
+    return true;
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    process.stderr.write(
+      `Unable to retrieve action schema: ${msg}\nShowing generic help.\n`,
+    );
+    return false;
+  }
+}
+
 export default async ({ args, info }: CliCommandContext) => {
-  const instanceIdx = args.indexOf('--instance');
-  const instanceFlag = instanceIdx !== -1 ? args[instanceIdx + 1] : undefined;
-
-  // Skip flag names, flag values (the argument after a known flag), and
-  // the --instance value position so we only pick up positional arguments.
-  const skipIndices = new Set<number>();
-  if (instanceIdx !== -1) {
-    skipIndices.add(instanceIdx);
-    skipIndices.add(instanceIdx + 1);
-  }
-
-  let actionId: string | undefined;
-  let actionIdIdx = -1;
-  for (let i = 0; i < args.length; i++) {
-    if (!skipIndices.has(i) && !args[i].startsWith('-')) {
-      actionId = args[i];
-      actionIdIdx = i;
-      break;
-    }
-  }
-
-  const wantsHelp = args.includes('--help') || args.includes('-h');
-
-  if (wantsHelp && actionId) {
-    try {
-      const { accessToken, baseUrl } = await resolveAuth(instanceFlag);
-      const client = new ActionsClient(baseUrl, accessToken);
-      const actions = await client.listForPlugin(actionId);
-      const action = actions.find(a => a.id === actionId);
-      if (action) {
-        const flagDefs = schemaToFlags(action.schema.input as any);
-        const typeNames: Record<string, string> = {
-          String: 'string',
-          Number: 'number',
-          Boolean: 'boolean',
-        };
-        const flags = Object.entries(flagDefs).map(([name, def]) => ({
-          name,
-          type:
-            def.type === Boolean ? '' : typeNames[def.type.name] ?? 'string',
-          description: def.description,
-        }));
-        flags.push({
-          name: 'instance',
-          type: 'string',
-          description: 'Name of the instance to use',
-        });
-
-        process.stdout.write(
-          await formatActionHelp({
-            action,
-            usage: `${info.usage ?? 'backstage actions execute'} ${actionId}`,
-            flags,
-          }),
-        );
-        return;
-      }
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err);
-      process.stderr.write(
-        `Unable to retrieve action schema: ${msg}\nShowing generic help.\n`,
-      );
-    }
-
-    showGenericHelp(info, args);
-    return;
-  }
+  const { instanceFlag, actionId, actionIdIdx, wantsHelp } = parseArgs(args);
 
   if (wantsHelp) {
-    showGenericHelp(info, args);
+    if (!actionId || !(await showActionHelp(info, actionId, instanceFlag))) {
+      showGenericHelp(info, args);
+    }
     return;
   }
 
@@ -122,7 +123,6 @@ export default async ({ args, info }: CliCommandContext) => {
   }
 
   const { accessToken, baseUrl } = await resolveAuth(instanceFlag);
-
   const client = new ActionsClient(baseUrl, accessToken);
   const actions = await client.listForPlugin(actionId);
   const action = actions.find(a => a.id === actionId);
@@ -134,8 +134,7 @@ export default async ({ args, info }: CliCommandContext) => {
   }
 
   const inputSchema = action.schema.input as any;
-  const schemaFlags = schemaToFlags(inputSchema);
-  const complexKeys = getComplexKeys(inputSchema);
+  const { flags: schemaFlags, complexKeys } = schemaToFlags(inputSchema);
 
   const flagArgs = args.filter((_, i) => i !== actionIdIdx);
 
@@ -157,16 +156,17 @@ export default async ({ args, info }: CliCommandContext) => {
   const allFlags = flags as Record<string, unknown>;
   const input: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(allFlags)) {
-    if (key !== 'instance' && value !== undefined) {
-      if (complexKeys.has(key) && typeof value === 'string') {
-        try {
-          input[key] = JSON.parse(value);
-        } catch {
-          throw new Error(`Invalid JSON for --${key}. Expected a JSON string.`);
-        }
-      } else {
-        input[key] = value;
+    if (key === 'instance' || value === undefined) {
+      continue;
+    }
+    if (complexKeys.has(key) && typeof value === 'string') {
+      try {
+        input[key] = JSON.parse(value);
+      } catch {
+        throw new Error(`Invalid JSON for --${key}. Expected a JSON string.`);
       }
+    } else {
+      input[key] = value;
     }
   }
 

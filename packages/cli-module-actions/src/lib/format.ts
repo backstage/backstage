@@ -16,6 +16,7 @@
 
 import chalk from 'chalk';
 import type { GroupedActions } from './ActionsClient';
+import type { CleyeFlag } from './schemaToFlags';
 
 async function renderMarkdown(text: string): Promise<string> {
   const { Marked } = await import('marked');
@@ -82,11 +83,27 @@ export function formatActionList(grouped: GroupedActions): string {
   return lines.join('\n');
 }
 
-type FlagInfo = {
+export type FlagInfo = {
   name: string;
   type: string;
   description?: string;
 };
+
+const typeHintNames: Record<string, string> = {
+  String: 'string',
+  Number: 'number',
+  Boolean: '',
+};
+
+export function flagDefsToFlagInfo(
+  defs: Record<string, CleyeFlag>,
+): FlagInfo[] {
+  return Object.entries(defs).map(([name, def]) => ({
+    name,
+    type: typeHintNames[def.type.name] ?? 'string',
+    description: def.description,
+  }));
+}
 
 export async function formatActionHelp(options: {
   action: {

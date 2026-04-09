@@ -14,24 +14,6 @@
  * limitations under the License.
  */
 
-import { cli } from 'cleye';
-import { CliAuth, type CliCommandContext } from '@backstage/cli-node';
-import { pluginSourcesSchema } from '../lib/pluginSources';
+import { z } from 'zod/v3';
 
-export default async ({ args, info }: CliCommandContext) => {
-  cli({ help: info }, undefined, args);
-
-  const auth = await CliAuth.create();
-  const sources = pluginSourcesSchema.parse(
-    await auth.getMetadata('pluginSources'),
-  );
-
-  if (!sources.length) {
-    process.stderr.write('No plugin sources configured.\n');
-    return;
-  }
-
-  for (const source of sources) {
-    process.stdout.write(`${source}\n`);
-  }
-};
+export const pluginSourcesSchema = z.array(z.string()).default([]);

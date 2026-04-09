@@ -15,7 +15,11 @@
  */
 
 import chalk from 'chalk';
-import { formatActionList, formatActionHelp } from './format';
+import {
+  formatActionList,
+  formatActionHelp,
+  flagDefsToFlagInfo,
+} from './format';
 
 chalk.level = 0;
 
@@ -99,6 +103,22 @@ describe('formatActionList', () => {
 
     expect(output).toContain('── catalog ');
     expect(output).toContain('── scaffolder ');
+  });
+});
+
+describe('flagDefsToFlagInfo', () => {
+  it('converts cleye flag defs to display-ready flag info', () => {
+    const result = flagDefsToFlagInfo({
+      name: { type: String, description: 'The name' },
+      count: { type: Number, description: 'How many' },
+      verbose: { type: Boolean, description: 'Verbose output' },
+    });
+
+    expect(result).toEqual([
+      { name: 'name', type: 'string', description: 'The name' },
+      { name: 'count', type: 'number', description: 'How many' },
+      { name: 'verbose', type: '', description: 'Verbose output' },
+    ]);
   });
 });
 

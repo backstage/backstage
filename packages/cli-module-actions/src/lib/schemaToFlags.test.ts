@@ -14,16 +14,22 @@
  * limitations under the License.
  */
 
-import { schemaToFlags, getComplexKeys } from './schemaToFlags';
+import { schemaToFlags } from './schemaToFlags';
 
 describe('schemaToFlags', () => {
-  it('returns empty object when schema has no properties', () => {
-    expect(schemaToFlags({})).toEqual({});
-    expect(schemaToFlags({ properties: {} })).toEqual({});
+  it('returns empty results when schema has no properties', () => {
+    expect(schemaToFlags({})).toEqual({
+      flags: {},
+      complexKeys: new Set(),
+    });
+    expect(schemaToFlags({ properties: {} })).toEqual({
+      flags: {},
+      complexKeys: new Set(),
+    });
   });
 
   it('converts string properties to String flags', () => {
-    const flags = schemaToFlags({
+    const { flags } = schemaToFlags({
       properties: {
         myProp: { type: 'string', description: 'A string prop' },
       },
@@ -35,7 +41,7 @@ describe('schemaToFlags', () => {
   });
 
   it('converts number and integer properties to Number flags', () => {
-    const flags = schemaToFlags({
+    const { flags } = schemaToFlags({
       properties: {
         count: { type: 'integer' },
         amount: { type: 'number', description: 'An amount' },
@@ -47,7 +53,7 @@ describe('schemaToFlags', () => {
   });
 
   it('converts boolean properties to Boolean flags', () => {
-    const flags = schemaToFlags({
+    const { flags } = schemaToFlags({
       properties: {
         verbose: { type: 'boolean', description: 'Enable verbose output' },
       },
@@ -60,7 +66,7 @@ describe('schemaToFlags', () => {
   });
 
   it('maps object and array properties to String flags with JSON hint', () => {
-    const flags = schemaToFlags({
+    const { flags, complexKeys } = schemaToFlags({
       properties: {
         name: { type: 'string' },
         metadata: { type: 'object', description: 'Entity metadata' },
@@ -74,19 +80,15 @@ describe('schemaToFlags', () => {
       description: 'Entity metadata (JSON)',
     });
     expect(flags.tags).toEqual({ type: String, description: '(JSON)' });
+    expect(complexKeys).toEqual(new Set(['metadata', 'tags']));
   });
 
-  it('maps anyOf and oneOf properties to String flags with JSON hint', () => {
-    const flags = schemaToFlags({
+  it('maps anyOf, oneOf, and allOf properties to String flags with JSON hint', () => {
+    const { flags, complexKeys } = schemaToFlags({
       properties: {
-        orderFields: {
-          anyOf: [{}, {}],
-          description: 'Sort order',
-        },
-        filter: {
-          oneOf: [{}, {}],
-          description: 'Filter criteria',
-        },
+        orderFields: { anyOf: [{}, {}], description: 'Sort order' },
+        filter: { oneOf: [{}, {}], description: 'Filter criteria' },
+        combined: { allOf: [{}, {}], description: 'Combined schema' },
       },
     });
 
@@ -98,10 +100,15 @@ describe('schemaToFlags', () => {
       type: String,
       description: 'Filter criteria (JSON)',
     });
+    expect(flags.combined).toEqual({
+      type: String,
+      description: 'Combined schema (JSON)',
+    });
+    expect(complexKeys).toEqual(new Set(['orderFields', 'filter', 'combined']));
   });
 
   it('skips properties with no type or composite types', () => {
-    const flags = schemaToFlags({
+    const { flags } = schemaToFlags({
       properties: {
         noType: {},
         name: { type: 'string' },
@@ -112,7 +119,7 @@ describe('schemaToFlags', () => {
   });
 
   it('uses first type when type is an array', () => {
-    const flags = schemaToFlags({
+    const { flags } = schemaToFlags({
       properties: {
         value: { type: ['string', 'null'] },
       },
@@ -122,7 +129,7 @@ describe('schemaToFlags', () => {
   });
 
   it('appends enum values to description', () => {
-    const flags = schemaToFlags({
+    const { flags } = schemaToFlags({
       properties: {
         color: {
           type: 'string',
@@ -138,7 +145,7 @@ describe('schemaToFlags', () => {
   });
 
   it('marks required fields in description', () => {
-    const flags = schemaToFlags({
+    const { flags } = schemaToFlags({
       properties: {
         name: { type: 'string', description: 'The name' },
         optional: { type: 'string', description: 'Optional field' },
@@ -153,7 +160,7 @@ describe('schemaToFlags', () => {
   });
 
   it('applies default values from schema', () => {
-    const flags = schemaToFlags({
+    const { flags } = schemaToFlags({
       properties: {
         count: { type: 'number', default: 10 },
         name: { type: 'string' },
@@ -165,7 +172,7 @@ describe('schemaToFlags', () => {
   });
 
   it('combines enum and required in description', () => {
-    const flags = schemaToFlags({
+    const { flags } = schemaToFlags({
       properties: {
         env: {
           type: 'string',
@@ -179,39 +186,8 @@ describe('schemaToFlags', () => {
     expect(flags.env.description).toBe('Target env [dev, prod] (required)');
   });
 
-  it('maps allOf properties to String flags with JSON hint', () => {
-    const flags = schemaToFlags({
-      properties: {
-        combined: { allOf: [{}, {}], description: 'Combined schema' },
-      },
-    });
-
-    expect(flags.combined).toEqual({
-      type: String,
-      description: 'Combined schema (JSON)',
-    });
-  });
-
-  it('getComplexKeys returns keys for object, array, anyOf, oneOf, and allOf types', () => {
-    const keys = getComplexKeys({
-      properties: {
-        name: { type: 'string' },
-        query: { type: 'object' },
-        fields: { type: 'array' },
-        order: { anyOf: [{}, {}] },
-        filter: { oneOf: [{}, {}] },
-        combined: { allOf: [{}, {}] },
-        count: { type: 'number' },
-      },
-    });
-
-    expect(keys).toEqual(
-      new Set(['query', 'fields', 'order', 'filter', 'combined']),
-    );
-  });
-
   it('preserves camelCase property names as flag keys', () => {
-    const flags = schemaToFlags({
+    const { flags } = schemaToFlags({
       properties: {
         targetEntityRef: { type: 'string' },
         maxResults: { type: 'integer' },
