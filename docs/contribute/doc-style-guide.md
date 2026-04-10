@@ -157,6 +157,33 @@ dilute their impact and make the content harder to read. If a section has
 more than two admonitions, restructure the content so that most of the
 information is in regular paragraphs.
 
+## Accordions
+
+Use HTML `<details>` and `<summary>` elements to create collapsible sections.
+These are useful for "Common issues" sections, lengthy reference tables, or
+supplementary content that would otherwise break the reading flow.
+
+```markdown
+<details>
+  <summary>Summary text visible when collapsed</summary>
+
+Content inside the accordion. You can use **Markdown** here, including code
+blocks, lists, and other formatting.
+
+</details>
+```
+
+<details>
+  <summary>Summary text visible when collapsed</summary>
+
+Content inside the accordion. You can use **Markdown** here, including code
+blocks, lists, and other formatting.
+
+</details>
+
+Leave a blank line after the `<summary>` tag and before the closing
+`</details>` tag so that Markdown content inside renders correctly.
+
 ## Markdown elements
 
 ### Line breaks

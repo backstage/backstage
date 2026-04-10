@@ -88,12 +88,26 @@ yarn workspace @internal/plugin-todo start
 
 ## Common issues
 
-- **Plugin page not showing up.** Verify that `app.packages` is set to `all`
-  in your `app-config.yaml`. If you use include/exclude filters, make sure your
-  plugin package is not excluded.
-- **`yarn new --select frontend-plugin --option pluginId=todo --option owner=` fails during installation.** Make sure
-  you have run `yarn install` in the repository root first and that your
-  Node.js version matches the one required by the project.
-- **TypeScript errors after scaffolding.** Run `yarn tsc` from the repository
-  root to check for type errors. A fresh scaffold should compile cleanly — if
-  not, try running `yarn install` again.
+<details>
+  <summary>Plugin page not showing up</summary>
+
+Verify that `app.packages` is set to `all` in your `app-config.yaml`. If you
+use include/exclude filters, make sure your plugin package is not excluded.
+
+</details>
+
+<details>
+  <summary><code>yarn new</code> fails during installation</summary>
+
+Make sure you have run `yarn install` in the repository root first and that
+your Node.js version matches the one required by the project.
+
+</details>
+
+<details>
+  <summary>TypeScript errors after scaffolding</summary>
+
+Run `yarn tsc` from the repository root to check for type errors. A fresh
+scaffold should compile cleanly — if not, try running `yarn install` again.
+
+</details>
