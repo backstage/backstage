@@ -65,14 +65,14 @@ export const Dialog = forwardRef<React.ElementRef<typeof Modal>, DialogProps>(
 
     return (
       <ModalOverlay
-        className={classes.root}
+        className={classes.overlay}
         isDismissable
         isKeyboardDismissDisabled={false}
         {...restProps}
       >
         <Modal
           ref={ref}
-          className={classes.dialog}
+          className={classes.root}
           style={{
             ['--bui-dialog-min-width' as keyof React.CSSProperties]:
               typeof width === 'number' ? `${width}px` : width || '400px',
@@ -85,7 +85,7 @@ export const Dialog = forwardRef<React.ElementRef<typeof Modal>, DialogProps>(
             ...style,
           }}
         >
-          <RADialog>
+          <RADialog className={classes.dialog}>
             <BgReset>
               <Box bg="neutral" className={classes.content}>
                 {children}
