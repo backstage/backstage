@@ -1083,8 +1083,9 @@ export const DialogDefinition: {
     readonly [key: string]: string;
   };
   readonly classNames: {
-    readonly root: 'bui-DialogOverlay';
-    readonly dialog: 'bui-Dialog';
+    readonly overlay: 'bui-DialogOverlay';
+    readonly root: 'bui-Dialog';
+    readonly dialog: 'bui-DialogInner';
     readonly content: 'bui-DialogContent';
   };
   readonly propDefs: {
