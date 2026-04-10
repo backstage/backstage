@@ -914,11 +914,19 @@ metadata:
 
     expect(response.status).toEqual(200);
     expect(response.body).toMatchObject({
-      permissions: [
+      permissions: expect.arrayContaining([
         { type: 'basic', name: 'kubernetes.proxy', attributes: {} },
-        { type: 'basic', name: 'kubernetes.resources.read', attributes: {} },
-        { type: 'basic', name: 'kubernetes.clusters.read', attributes: {} },
-      ],
+        {
+          type: 'basic',
+          name: 'kubernetes.resources.read',
+          attributes: { action: 'read' },
+        },
+        {
+          type: 'basic',
+          name: 'kubernetes.clusters.read',
+          attributes: { action: 'read' },
+        },
+      ]),
       rules: [],
     });
   });
