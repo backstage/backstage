@@ -97,7 +97,7 @@ use include/exclude filters, make sure your plugin package is not excluded.
 </details>
 
 <details>
-  <summary><code>yarn new</code> fails during installation</summary>
+  <summary>`yarn new` fails during installation</summary>
 
 Make sure you have run `yarn install` in the repository root first and that
 your Node.js version matches the one required by the project.

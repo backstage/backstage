@@ -184,6 +184,10 @@ blocks, lists, and other formatting.
 Leave a blank line after the `<summary>` tag and before the closing
 `</details>` tag so that Markdown content inside renders correctly.
 
+Use backticks for inline code inside `<summary>` elements instead of HTML
+`<code>` tags. Backticks render correctly inside summary elements and keep
+the source consistent with the rest of the Markdown content.
+
 ## Markdown elements
 
 ### Line breaks
