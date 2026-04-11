@@ -52,6 +52,21 @@ Never update ESLint, Prettier, or TypeScript configuration files unless specific
 
 Never make changes to the release notes in `/docs/releases` unless explicitly asked. These document past releases and should not be updated based on newer changes.
 
+## UI Development
+
+When working on UI components using `@backstage/ui`, always use the `backstage-ui-mcp` MCP tools to access Storybook's component and documentation knowledge before answering or taking any action. The MCP server is available at `http://localhost:6006/mcp` when Storybook is running (`yarn storybook`).
+
+- **CRITICAL: Never hallucinate component properties!** Before using ANY property on a component from `@backstage/ui` (including common-sounding ones like `shadow`, `size`, `color`, etc.), you MUST use the MCP tools to check if the property is actually documented for that component.
+- Query `list-all-documentation` to get a list of all available components and their stories
+- Query `get-documentation` for a specific component to see all available properties and usage examples
+- Query `get-documentation-for-story` when you need full detail on a specific story
+- Use `get-storybook-story-instructions` to fetch the latest instructions for creating or updating stories
+- Check your work by running `run-story-tests`
+
+When building multi-component layouts, always consult the recipes and guidelines stories in `packages/ui/src/recipes/` and `packages/ui/src/guidelines/` — these are the golden-path composition patterns for Backstage UI and should be followed in priority over generic web patterns.
+
+Remember: A story name might not reflect the property name correctly, so always verify properties through documentation or example stories before using them.
+
 ## Repository Structure
 
 See `/docs/contribute/project-structure.md` for a detailed description of the repository structure.

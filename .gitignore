@@ -188,6 +188,9 @@ tsconfig.typedoc.tmp.json
 # Storybook
 dist-storybook/
 
+# UI MCP Evals
+packages/ui/evals/results/
+
 # Personal allow patterns etc
 .claude/settings.local.json
 .claude/worktrees/

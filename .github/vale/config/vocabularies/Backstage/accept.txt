@@ -588,3 +588,8 @@ zod
 Zolotusky
 zoomable
 zsh
+devDependencies
+eval
+Evals
+gitignored
+useTable
