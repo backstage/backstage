@@ -32,6 +32,7 @@ import { Notification } from '@backstage/plugin-notifications-common';
 import {
   NotificationProcessor,
   NotificationSendOptions,
+  resolveNotificationLink,
 } from '@backstage/plugin-notifications-node';
 import { durationToMilliseconds } from '@backstage/types';
 import {
@@ -67,9 +68,10 @@ export class SlackNotificationProcessor implements NotificationProcessor {
   private readonly messagesFailed: MetricsServiceCounter;
   private readonly messagesUpdated: MetricsServiceCounter;
   private db?: Knex;
+  private readonly frontendBaseUrl: string;
+  private readonly entityLoader: DataLoader<string, Entity | undefined>;
   private readonly broadcastChannels?: string[];
   private readonly broadcastRoutes?: BroadcastRoute[];
-  private readonly entityLoader: DataLoader<string, Entity | undefined>;
   private readonly username?: string;
   private readonly concurrencyLimit: number;
   private readonly throttleInterval: number;
@@ -104,6 +106,7 @@ export class SlackNotificationProcessor implements NotificationProcessor {
             readDurationFromConfig(c, { key: 'throttleInterval' }),
           )
         : durationToMilliseconds({ minutes: 1 });
+      const frontendBaseUrl = config.getString('app.baseUrl');
       return new SlackNotificationProcessor({
         slack,
         broadcastChannels,
@@ -111,6 +114,7 @@ export class SlackNotificationProcessor implements NotificationProcessor {
         username,
         concurrencyLimit,
         throttleInterval,
+        frontendBaseUrl,
         ...options,
       });
     });
@@ -122,6 +126,7 @@ export class SlackNotificationProcessor implements NotificationProcessor {
     logger: LoggerService;
     catalog: CatalogService;
     metrics: MetricsService;
+    frontendBaseUrl: string;
     broadcastChannels?: string[];
     broadcastRoutes?: BroadcastRoute[];
     username?: string;
@@ -134,6 +139,7 @@ export class SlackNotificationProcessor implements NotificationProcessor {
       catalog,
       logger,
       metrics,
+      frontendBaseUrl,
       slack,
       broadcastChannels,
       broadcastRoutes,
@@ -145,6 +151,7 @@ export class SlackNotificationProcessor implements NotificationProcessor {
     this.logger = logger;
     this.catalog = catalog;
     this.auth = auth;
+    this.frontendBaseUrl = frontendBaseUrl;
     this.slack = slack;
     this.broadcastChannels = broadcastChannels;
     this.broadcastRoutes = broadcastRoutes;
@@ -299,7 +306,13 @@ export class SlackNotificationProcessor implements NotificationProcessor {
 
         const payload = toChatPostMessageArgs({
           channel,
-          payload: options.payload,
+          payload: {
+            ...options.payload,
+            link: resolveNotificationLink(
+              options.payload.link,
+              this.frontendBaseUrl,
+            ),
+          },
           username: this.username,
           blockKitRenderer: this.blockKitRenderer,
         });
@@ -390,6 +403,7 @@ export class SlackNotificationProcessor implements NotificationProcessor {
   ) {
     return {
       ...payload,
+      link: resolveNotificationLink(payload.link, this.frontendBaseUrl),
       description: await this.replaceUserRefsWithSlackIds(payload.description),
     };
   }

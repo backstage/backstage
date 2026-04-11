@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,22 @@
  */
 
 /**
- * Node.js library for the notifications plugin.
- *
- * @packageDocumentation
+ * Resolves a relative notification link to an absolute URL using the provided base URL.
+ * @public
  */
-
-export * from './service';
-export * from './lib';
-export * from './extensions';
-export * from './utils';
+export function resolveNotificationLink(
+  link: string | undefined,
+  baseUrl: string,
+): string | undefined {
+  if (!link) return undefined;
+  const stripLeadingSlash = (s: string) => s.replace(/^\//, '');
+  const ensureTrailingSlash = (s: string) => s.replace(/\/?$/, '/');
+  try {
+    return new URL(
+      stripLeadingSlash(link),
+      ensureTrailingSlash(baseUrl),
+    ).toString();
+  } catch {
+    return link;
+  }
+}
