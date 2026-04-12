@@ -30,9 +30,9 @@ import styles from './Dialog.module.css';
 export const DialogDefinition = defineComponent<DialogOwnProps>()({
   styles,
   classNames: {
-    overlay: 'bui-DialogOverlay',
-    root: 'bui-Dialog',
-    dialog: 'bui-DialogInner',
+    root: 'bui-DialogOverlay',
+    container: 'bui-Dialog',
+    inner: 'bui-DialogInner',
     content: 'bui-DialogContent',
   },
   propDefs: {

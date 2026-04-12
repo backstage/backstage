@@ -59,20 +59,20 @@ export const DialogTrigger = (props: DialogTriggerProps) => {
 export const Dialog = forwardRef<React.ElementRef<typeof Modal>, DialogProps>(
   (props, ref) => {
     const { ownProps, restProps } = useDefinition(DialogDefinition, props, {
-      classNameTarget: 'dialog',
+      classNameTarget: 'container',
     });
     const { classes, children, width, height, style } = ownProps;
 
     return (
       <ModalOverlay
-        className={classes.overlay}
+        className={classes.root}
         isDismissable
         isKeyboardDismissDisabled={false}
         {...restProps}
       >
         <Modal
           ref={ref}
-          className={classes.root}
+          className={classes.container}
           style={{
             ['--bui-dialog-min-width' as keyof React.CSSProperties]:
               typeof width === 'number' ? `${width}px` : width || '400px',
@@ -85,7 +85,7 @@ export const Dialog = forwardRef<React.ElementRef<typeof Modal>, DialogProps>(
             ...style,
           }}
         >
-          <RADialog className={classes.dialog}>
+          <RADialog className={classes.inner}>
             <BgReset>
               <Box bg="neutral" className={classes.content}>
                 {children}
