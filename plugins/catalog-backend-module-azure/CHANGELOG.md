@@ -1,5 +1,28 @@
 # @backstage/plugin-catalog-backend-module-azure
 
+## 0.3.16-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/plugin-catalog-node@2.2.0-next.2
+  - @backstage/integration@2.0.1-next.0
+  - @backstage/backend-plugin-api@1.9.0-next.2
+  - @backstage/config@1.3.7-next.0
+  - @backstage/plugin-events-node@0.4.21-next.2
+  - @backstage/plugin-catalog-common@1.1.9-next.0
+
+## 0.3.16-next.1
+
+### Patch Changes
+
+- 39d27ee: Add Azure DevOps SCM event translation layer for instant catalog reprocessing.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0-next.1
+  - @backstage/plugin-catalog-node@2.1.1-next.1
+  - @backstage/plugin-events-node@0.4.21-next.1
+
 ## 0.3.16-next.0
 
 ### Patch Changes

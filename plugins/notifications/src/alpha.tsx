@@ -21,6 +21,7 @@ import {
   discoveryApiRef,
   fetchApiRef,
 } from '@backstage/frontend-plugin-api';
+import { RiNotification3Line } from '@remixicon/react';
 import { rootRouteRef } from './routes';
 import { NotificationsClient, notificationsApiRef } from './api';
 
@@ -48,6 +49,8 @@ const api = ApiBlueprint.make({
 /** @alpha */
 export default createFrontendPlugin({
   pluginId: 'notifications',
+  title: 'Notifications',
+  icon: <RiNotification3Line />,
   info: { packageJson: () => import('../package.json') },
   routes: {
     root: rootRouteRef,

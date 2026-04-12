@@ -88,8 +88,9 @@ export const notificationsTranslationRef = createTranslationRef({
       },
       confirmDialog: {
         title: 'Are you sure?',
-        markAllReadDescription: 'Mark <b>all</b> notifications as <b>read</b>.',
+        markAllReadDescription: 'Mark all notifications as read.',
         markAllReadConfirmation: 'Mark All',
+        cancel: 'Cancel',
       },
       errors: {
         markAllReadFailed: 'Failed to mark all notifications as read',

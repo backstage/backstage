@@ -15,7 +15,7 @@
  */
 import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { assertError, ForwardedError } from '@backstage/errors';
+import { ForwardedError, toError } from '@backstage/errors';
 
 // Maximum size in bytes for a single upload part (5MB)
 const MAX_SINGLE_UPLOAD_BYTES = 5 * 1024 * 1024;
@@ -491,9 +491,10 @@ export class AwsS3Publish implements PublisherBase {
         .map(f => f.Key || '')
         .filter(f => !!f);
     } catch (e) {
-      assertError(e);
       this.logger.error(
-        `Unable to list files for Entity ${entity.metadata.name}: ${e.message}`,
+        `Unable to list files for Entity ${entity.metadata.name}: ${
+          toError(e).message
+        }`,
       );
     }
 
@@ -708,9 +709,8 @@ export class AwsS3Publish implements PublisherBase {
 
           resolve(techdocsMetadata);
         } catch (err) {
-          assertError(err);
-          this.logger.error(err.message);
-          reject(new Error(err.message));
+          this.logger.error(toError(err).message);
+          reject(new Error(toError(err).message));
         }
       });
     } catch (e) {
@@ -769,9 +769,10 @@ export class AwsS3Publish implements PublisherBase {
           })
           .pipe(res);
       } catch (err) {
-        assertError(err);
         this.logger.warn(
-          `TechDocs S3 router failed to serve static files from bucket ${this.bucketName} at key ${filePath}: ${err.message}`,
+          `TechDocs S3 router failed to serve static files from bucket ${
+            this.bucketName
+          } at key ${filePath}: ${toError(err).message}`,
         );
         res.status(404).send('File Not Found');
       }
@@ -823,8 +824,7 @@ export class AwsS3Publish implements PublisherBase {
           try {
             newPath = lowerCaseEntityTripletInStoragePath(file);
           } catch (e) {
-            assertError(e);
-            this.logger.warn(e.message);
+            this.logger.warn(toError(e).message);
             return;
           }
 
@@ -852,8 +852,9 @@ export class AwsS3Publish implements PublisherBase {
               );
             }
           } catch (e) {
-            assertError(e);
-            this.logger.warn(`Unable to migrate ${file}: ${e.message}`);
+            this.logger.warn(
+              `Unable to migrate ${file}: ${toError(e).message}`,
+            );
           }
         }, f),
       ),

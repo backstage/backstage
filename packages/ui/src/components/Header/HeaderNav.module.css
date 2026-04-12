@@ -50,7 +50,7 @@
 
   .bui-HeaderNavItem,
   .bui-HeaderNavGroup {
-    font-family: var(--bui-font-family);
+    font-family: var(--bui-font-regular);
     font-size: var(--bui-font-size-3);
     font-weight: var(--bui-font-weight-regular);
     color: var(--bui-fg-secondary);
@@ -61,6 +61,8 @@
     padding-inline: var(--bui-space-2);
     text-decoration: none;
     cursor: pointer;
+    position: relative;
+    z-index: 2;
     border: none;
     background: none;
     outline: none;

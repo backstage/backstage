@@ -15,7 +15,7 @@
  */
 
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { assertError } from '@backstage/errors';
+import { isError, toError } from '@backstage/errors';
 import { randomBytes } from 'node:crypto';
 
 function handleBadError(error: Error, logger: LoggerService) {
@@ -37,11 +37,8 @@ export function applyInternalErrorFilter(
   error: unknown,
   logger: LoggerService,
 ): Error {
-  try {
-    assertError(error);
-  } catch (assertionError: unknown) {
-    assertError(assertionError);
-    return handleBadError(assertionError, logger);
+  if (!isError(error)) {
+    return handleBadError(toError(error), logger);
   }
 
   const constructorName = error.constructor.name;

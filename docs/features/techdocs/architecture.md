@@ -17,8 +17,7 @@ out-of-the box experience.
 
 See below for our recommended deployment architecture which takes care
 of stability, scalability and speed. Also look at the
-[HOW TO migrate guide](how-to-guides
-md#how-to-migrate-from-techdocs-basic-to-recommended-deployment-approach).
+[HOW TO migrate guide](how-to-guides.md#how-to-migrate-from-techdocs-basic-to-recommended-deployment-approach).
 
 :::
 

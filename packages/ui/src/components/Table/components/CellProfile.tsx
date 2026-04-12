@@ -22,7 +22,11 @@ import { useDefinition } from '../../../hooks/useDefinition';
 import { CellProfileDefinition } from '../definition';
 import { Cell as ReactAriaCell } from 'react-aria-components';
 
-/** @public */
+/**
+ * A table cell that renders an avatar image alongside a name, with an optional description and link.
+ *
+ * @public
+ */
 export const CellProfile = (props: CellProfileProps) => {
   const { ownProps, restProps } = useDefinition(CellProfileDefinition, props);
   const { classes, src, name, href, description, color } = ownProps;

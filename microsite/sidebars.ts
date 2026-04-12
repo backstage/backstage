@@ -127,7 +127,7 @@ export default {
             description:
               'Features in Backstage you can leverage with your AI tools.',
           },
-          ['ai/mcp-actions', 'ai/well-known-actions'],
+          ['ai/skills', 'ai/mcp-actions', 'ai/well-known-actions'],
         ),
         sidebarElementWithIndex(
           {
@@ -271,6 +271,7 @@ export default {
             'features/software-catalog/extending-the-model',
             'features/software-catalog/external-integrations',
             'features/software-catalog/catalog-customization',
+            'features/software-catalog/entity-presentation',
             'features/software-catalog/audit-events',
             {
               type: 'category',
@@ -655,7 +656,6 @@ export default {
             description: 'Technical tutorials and guides.',
           },
           [
-            'tutorials/quickstart-app-plugin',
             'tutorials/configuring-plugin-databases',
             'tutorials/manual-knex-rollback',
             'tutorials/switching-sqlite-postgres',

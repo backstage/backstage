@@ -137,8 +137,9 @@ export const notificationsTranslationRef: TranslationRef<
     readonly 'table.bulkActions.returnSelectedAmongUnread': 'Return selected among unread';
     readonly 'table.bulkActions.saveSelectedForLater': 'Save selected for later';
     readonly 'table.bulkActions.undoSaveForSelected': 'Undo save for selected';
+    readonly 'table.confirmDialog.cancel': 'Cancel';
     readonly 'table.confirmDialog.title': 'Are you sure?';
-    readonly 'table.confirmDialog.markAllReadDescription': 'Mark <b>all</b> notifications as <b>read</b>.';
+    readonly 'table.confirmDialog.markAllReadDescription': 'Mark all notifications as read.';
     readonly 'table.confirmDialog.markAllReadConfirmation': 'Mark All';
     readonly 'filters.view.all': 'All';
     readonly 'filters.view.label': 'View';

@@ -177,8 +177,6 @@ export async function loadPortableTemplateConfig(
   );
 
   // Auto-filter frontend templates based on detected frontend system.
-  // This must happen before the conflict check since both the new and legacy
-  // frontend plugin templates have the same name, but only one will be shown.
   if (isUsingDefaultTemplates) {
     const frontendSystem = await detectFrontendSystem(basePath);
     templatePointerEntries = filterTemplateEntriesForFrontendSystem(

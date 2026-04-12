@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { assertError, CustomErrorBase } from '@backstage/errors';
+import { CustomErrorBase, toError } from '@backstage/errors';
 import { Config, readDurationFromConfig } from '@backstage/config';
 import { CacheService, LoggerService } from '@backstage/backend-plugin-api';
 import { durationToMilliseconds } from '@backstage/types';
@@ -77,9 +77,9 @@ export class TechDocsCache {
       this.logger.debug(`Cache miss: ${path}`);
       return response;
     } catch (e) {
-      assertError(e);
-      this.logger.warn(`Error getting cache entry ${path}: ${e.message}`);
-      this.logger.debug(e.message, e);
+      const error = toError(e);
+      this.logger.warn(`Error getting cache entry ${path}: ${error.message}`);
+      this.logger.debug(error.message, error);
       return undefined;
     }
   }

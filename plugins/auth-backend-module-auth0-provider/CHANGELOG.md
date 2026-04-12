@@ -1,5 +1,26 @@
 # @backstage/plugin-auth-backend-module-auth0-provider
 
+## 0.4.0-next.2
+
+### Minor Changes
+
+- 9244b70: Added federated logout support. Set `federatedLogout: true` in the Auth0 provider config to clear both the Auth0 session and any upstream IdP session on sign-out. The authenticator returns a logout URL that redirects the browser to Auth0's `/v2/logout?federated` endpoint, ensuring users must fully re-authenticate after signing out.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/plugin-auth-node@0.7.0-next.2
+  - @backstage/backend-plugin-api@1.9.0-next.2
+
+## 0.3.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0-next.1
+  - @backstage/plugin-auth-node@0.7.0-next.1
+
 ## 0.3.2-next.0
 
 ### Patch Changes

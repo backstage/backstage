@@ -23,7 +23,6 @@ import {
   TaskStep,
 } from '@backstage/plugin-scaffolder-common';
 import { JsonArray, JsonObject, JsonValue } from '@backstage/types';
-import { metrics } from '@opentelemetry/api';
 import fs from 'fs-extra';
 import { validate as validateJsonSchema } from 'jsonschema';
 import nunjucks from 'nunjucks';
@@ -42,6 +41,7 @@ import type {
   LoggerService,
   PermissionsService,
 } from '@backstage/backend-plugin-api';
+import type { MetricsService } from '@backstage/backend-plugin-api/alpha';
 import { UserEntity } from '@backstage/catalog-model';
 import {
   AuthorizeResult,
@@ -78,6 +78,7 @@ type NunjucksWorkflowRunnerOptions = {
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
   permissions?: PermissionsService;
   config?: Config;
+  metrics: MetricsService;
 };
 
 type TemplateContext = {
@@ -188,6 +189,8 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
     secrets?: Record<string, string>;
   } = { parameters: {}, secrets: {} };
 
+  private readonly tracker: ReturnType<typeof scaffoldingTracker>;
+
   constructor(options: NunjucksWorkflowRunnerOptions) {
     this.options = options;
     this.defaultTemplateFilters = convertFiltersToRecord(
@@ -195,9 +198,8 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
         integrations: this.options.integrations,
       }),
     );
+    this.tracker = scaffoldingTracker(options.metrics);
   }
-
-  private readonly tracker = scaffoldingTracker();
 
   async getEnvironmentConfig(): Promise<{
     parameters: JsonObject;
@@ -700,7 +702,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
   }
 }
 
-function scaffoldingTracker() {
+function scaffoldingTracker(metrics: MetricsService) {
   // prom-client metrics are deprecated in favour of OpenTelemetry metrics.
   const promTaskCount = createCounterMetric({
     name: 'scaffolder_task_count',
@@ -723,23 +725,22 @@ function scaffoldingTracker() {
     labelNames: ['template', 'step', 'result'],
   });
 
-  const meter = metrics.getMeter('default');
-  const taskCount = meter.createCounter('scaffolder.task.count', {
-    description: 'Count of task runs',
+  const taskCount = metrics.createCounter('scaffolder.task.count', {
+    description: 'Total number of scaffolder tasks executed',
   });
 
-  const taskDuration = meter.createHistogram('scaffolder.task.duration', {
-    description: 'Duration of a task run',
-    unit: 'seconds',
+  const taskDuration = metrics.createHistogram('scaffolder.task.duration', {
+    description: 'Time taken to complete a scaffolder task end-to-end',
+    unit: 's',
   });
 
-  const stepCount = meter.createCounter('scaffolder.step.count', {
-    description: 'Count of step runs',
+  const stepCount = metrics.createCounter('scaffolder.step.count', {
+    description: 'Total number of individual scaffolder action steps executed',
   });
 
-  const stepDuration = meter.createHistogram('scaffolder.step.duration', {
-    description: 'Duration of a step runs',
-    unit: 'seconds',
+  const stepDuration = metrics.createHistogram('scaffolder.step.duration', {
+    description: 'Time taken to complete a single scaffolder action step',
+    unit: 's',
   });
 
   async function taskStart(task: TaskContext) {

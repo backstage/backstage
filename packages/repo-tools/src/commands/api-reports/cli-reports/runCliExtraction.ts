@@ -19,7 +19,9 @@ import {
   resolve as resolvePath,
   relative as relativePath,
 } from 'node:path';
+import os from 'node:os';
 import fs from 'fs-extra';
+import pLimit from 'p-limit';
 import { createBinRunner } from '../../util';
 import { CliHelpPage, CliModel } from './types';
 import { targetPaths } from '@backstage/cli-common';
@@ -92,11 +94,12 @@ function parseHelpPage(helpPageContent: string) {
 
 async function exploreCliHelpPages(
   run: (...args: string[]) => Promise<string>,
+  limit: ReturnType<typeof pLimit>,
 ): Promise<CliHelpPage[]> {
   const helpPages = new Array<CliHelpPage>();
 
   async function exploreHelpPage(...path: string[]) {
-    const content = await run(...path, '--help');
+    const content = await limit(() => run(...path, '--help'));
     const parsed = parseHelpPage(content);
     helpPages.push({ path, ...parsed });
 
@@ -126,73 +129,79 @@ export async function runCliExtraction({
   packageDirs,
   isLocalBuild,
 }: CliExtractionOptions) {
-  for (const packageDir of packageDirs) {
-    console.log(`## Processing ${packageDir}`);
-    const fullDir = targetPaths.resolveRoot(packageDir);
-    const pkgJson = await fs.readJson(resolvePath(fullDir, 'package.json'));
+  // Share a single concurrency limiter across all packages so that we run
+  // multiple help-page invocations in parallel without exhausting resources.
+  const limit = pLimit(os.cpus().length);
 
-    if (!pkgJson.bin) {
-      if (pkgJson.backstage?.role === 'cli') {
-        throw new Error(
-          `CLI package ${pkgJson.name} is missing a "bin" field in its package.json`,
-        );
+  await Promise.all(
+    packageDirs.map(async packageDir => {
+      console.log(`## Processing ${packageDir}`);
+      const fullDir = targetPaths.resolveRoot(packageDir);
+      const pkgJson = await fs.readJson(resolvePath(fullDir, 'package.json'));
+
+      if (!pkgJson.bin) {
+        if (pkgJson.backstage?.role === 'cli') {
+          throw new Error(
+            `CLI package ${pkgJson.name} is missing a "bin" field in its package.json`,
+          );
+        }
+        return;
       }
-      continue;
-    }
 
-    const models = new Array<CliModel>();
-    if (typeof pkgJson.bin === 'string') {
-      const run = createBinRunner(fullDir, pkgJson.bin);
-      const helpPages = await exploreCliHelpPages(run);
-      models.push({ name: basename(pkgJson.bin), helpPages });
-    } else {
-      for (const [name, path] of Object.entries<string>(pkgJson.bin)) {
-        const run = createBinRunner(fullDir, path);
-        const helpPages = await exploreCliHelpPages(run);
-        models.push({ name, helpPages });
-      }
-    }
-
-    for (const model of models) {
-      const report = generateCliReport({ packageName: pkgJson.name, model });
-
-      const reportPath = resolvePath(
-        fullDir,
-        `cli-report.${models.length === 1 ? '' : `${model.name}.`}md`,
-      );
-      const existingReport = await fs
-        .readFile(reportPath, 'utf8')
-        .catch(error => {
-          if (error.code === 'ENOENT') {
-            return undefined;
-          }
-          throw error;
-        });
-
-      if (existingReport !== report) {
-        if (isLocalBuild) {
-          console.warn(`CLI report changed for ${packageDir}`);
-          await fs.writeFile(reportPath, report);
-        } else {
-          logApiReportInstructions();
-
-          if (existingReport) {
-            console.log('');
-            console.log(
-              `The conflicting file is ${relativePath(
-                targetPaths.rootDir,
-                reportPath,
-              )}, expecting the following content:`,
-            );
-            console.log('');
-
-            console.log(report);
-
-            logApiReportInstructions();
-          }
-          throw new Error(`CLI report changed for ${packageDir}, `);
+      const models = new Array<CliModel>();
+      if (typeof pkgJson.bin === 'string') {
+        const run = createBinRunner(fullDir, pkgJson.bin);
+        const helpPages = await exploreCliHelpPages(run, limit);
+        models.push({ name: basename(pkgJson.bin), helpPages });
+      } else {
+        for (const [name, path] of Object.entries<string>(pkgJson.bin)) {
+          const run = createBinRunner(fullDir, path);
+          const helpPages = await exploreCliHelpPages(run, limit);
+          models.push({ name, helpPages });
         }
       }
-    }
-  }
+
+      for (const model of models) {
+        const report = generateCliReport({ packageName: pkgJson.name, model });
+
+        const reportPath = resolvePath(
+          fullDir,
+          `cli-report.${models.length === 1 ? '' : `${model.name}.`}md`,
+        );
+        const existingReport = await fs
+          .readFile(reportPath, 'utf8')
+          .catch(error => {
+            if (error.code === 'ENOENT') {
+              return undefined;
+            }
+            throw error;
+          });
+
+        if (existingReport !== report) {
+          if (isLocalBuild) {
+            console.warn(`CLI report changed for ${packageDir}`);
+            await fs.writeFile(reportPath, report);
+          } else {
+            logApiReportInstructions();
+
+            if (existingReport) {
+              console.log('');
+              console.log(
+                `The conflicting file is ${relativePath(
+                  targetPaths.rootDir,
+                  reportPath,
+                )}, expecting the following content:`,
+              );
+              console.log('');
+
+              console.log(report);
+
+              logApiReportInstructions();
+            }
+            throw new Error(`CLI report changed for ${packageDir}`);
+          }
+        }
+      }
+    }),
+  );
 }

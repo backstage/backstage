@@ -6,12 +6,16 @@
 import { AnyApiFactory } from '@backstage/frontend-plugin-api';
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ApiFactory } from '@backstage/frontend-plugin-api';
+import { CompoundEntityRef } from '@backstage/catalog-model';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { defaultEntityContentGroups } from '@backstage/plugin-catalog-react/alpha';
 import { Entity } from '@backstage/catalog-model';
 import { EntityCardType } from '@backstage/plugin-catalog-react/alpha';
 import { EntityContentLayoutProps } from '@backstage/plugin-catalog-react/alpha';
 import { EntityContextMenuItemParams } from '@backstage/plugin-catalog-react/alpha';
+import { EntityListContextProps } from '@backstage/plugin-catalog-react';
+import { EntityListPagination } from '@backstage/plugin-catalog-react';
+import { EntityOwnerPickerProps } from '@backstage/plugin-catalog-react';
 import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
@@ -21,16 +25,68 @@ import { IconComponent } from '@backstage/frontend-plugin-api';
 import { IconElement } from '@backstage/frontend-plugin-api';
 import { IconLinkVerticalProps } from '@backstage/core-components';
 import { JSX as JSX_2 } from 'react';
+import { JSX as JSX_3 } from 'react/jsx-runtime';
 import { JSXElementConstructor } from 'react';
 import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
 import { ReactElement } from 'react';
+import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { RouteRef as RouteRef_2 } from '@backstage/frontend-plugin-api';
 import { SearchResultItemExtensionComponent } from '@backstage/plugin-search-react/alpha';
 import { SearchResultItemExtensionPredicate } from '@backstage/plugin-search-react/alpha';
 import { SearchResultListItemBlueprintParams } from '@backstage/plugin-search-react/alpha';
+import { TableColumn } from '@backstage/core-components';
+import { TableProps } from '@backstage/core-components';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
+import { UserListFilterKind } from '@backstage/plugin-catalog-react';
+
+// @public (undocumented)
+export function CatalogIndexPage(props: CatalogIndexPageProps): JSX_3.Element;
+
+// @public
+export interface CatalogIndexPageProps {
+  // (undocumented)
+  actions?: TableProps<CatalogTableRow>['actions'];
+  // (undocumented)
+  columns?: TableColumn<CatalogTableRow>[] | CatalogTableColumnsFunc;
+  // (undocumented)
+  emptyContent?: ReactNode;
+  // (undocumented)
+  filters?: ReactNode;
+  // (undocumented)
+  initialKind?: string;
+  // (undocumented)
+  initiallySelectedFilter?: UserListFilterKind;
+  // (undocumented)
+  initiallySelectedNamespaces?: string[];
+  // (undocumented)
+  ownerPickerMode?: EntityOwnerPickerProps['mode'];
+  // (undocumented)
+  pagination?: EntityListPagination;
+  // (undocumented)
+  tableOptions?: TableProps<CatalogTableRow>['options'];
+}
+
+// @public
+export type CatalogTableColumnsFunc = (
+  entityListContext: EntityListContextProps,
+) => TableColumn<CatalogTableRow>[];
+
+// @public (undocumented)
+export interface CatalogTableRow {
+  // (undocumented)
+  entity: Entity;
+  // (undocumented)
+  resolved: {
+    name: string;
+    entityRef: string;
+    partOfSystemRelationTitle?: string;
+    partOfSystemRelations: CompoundEntityRef[];
+    ownedByRelationsTitle?: string;
+    ownedByRelations: CompoundEntityRef[];
+  };
+}
 
 // @alpha @deprecated (undocumented)
 export const catalogTranslationRef: TranslationRef<
@@ -67,6 +123,7 @@ export const catalogTranslationRef: TranslationRef<
     readonly 'aboutCard.systemField.label': 'System';
     readonly 'aboutCard.parentComponentField.value': 'No Parent Component';
     readonly 'aboutCard.parentComponentField.label': 'Parent Component';
+    readonly 'aboutCard.kindField.label': 'Kind';
     readonly 'aboutCard.typeField.label': 'Type';
     readonly 'aboutCard.lifecycleField.label': 'Lifecycle';
     readonly 'aboutCard.tagsField.value': 'No Tags';

@@ -43,11 +43,12 @@
 
 ## Table `locations`
 
-| Column   | Type                | Nullable | Max Length | Default |
-| -------- | ------------------- | -------- | ---------- | ------- |
-| `id`     | `uuid`              | false    | -          | -       |
-| `target` | `text`              | true     | -          | -       |
-| `type`   | `character varying` | false    | 255        | -       |
+| Column                | Type                | Nullable | Max Length | Default |
+| --------------------- | ------------------- | -------- | ---------- | ------- |
+| `id`                  | `uuid`              | false    | -          | -       |
+| `location_entity_ref` | `character varying` | false    | 255        | -       |
+| `target`              | `text`              | true     | -          | -       |
+| `type`                | `character varying` | false    | 255        | -       |
 
 ### Indices
 

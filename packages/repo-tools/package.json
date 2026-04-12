@@ -1,6 +1,6 @@
 {
   "name": "@backstage/repo-tools",
-  "version": "0.17.1-next.0",
+  "version": "0.17.1-next.2",
   "description": "CLI for Backstage repo tooling ",
   "backstage": {
     "role": "cli"
@@ -69,7 +69,7 @@
     "command-exists": "^1.2.9",
     "commander": "^14.0.3",
     "fs-extra": "^11.2.0",
-    "glob": "^8.0.3",
+    "glob": "^13.0.0",
     "globby": "^11.0.0",
     "is-glob": "^4.0.3",
     "js-yaml": "^4.1.0",

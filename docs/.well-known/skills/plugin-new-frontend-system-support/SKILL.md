@@ -9,6 +9,8 @@ This skill helps add new frontend system (NFS) support to an existing Backstage 
 
 This is the preferred approach for published plugins or plugins that are used by external parties, since it avoids forcing consumers to migrate their app before they are ready.
 
+It is highly recommended to be on Backstage version 1.49.x or above before starting this, although not mandatory, you may face issues with some of the instructions below. This can be verified by looking in the `backstage.json` file in the root of the repository.
+
 ## Key Concepts
 
 - **Dual entry point:** The plugin keeps its existing `src/plugin.ts` (old system) and adds a new `src/alpha.tsx` (new system)

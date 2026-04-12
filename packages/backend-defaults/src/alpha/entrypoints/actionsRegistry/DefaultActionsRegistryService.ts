@@ -90,7 +90,7 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
 
   createRouter(): Router {
     const router = PromiseRouter();
-    router.use(json());
+    router.use('/.backstage/actions/', json());
 
     router.get('/.backstage/actions/v1/actions', async (req, res) => {
       const credentials = await this.httpAuth.credentials(req);

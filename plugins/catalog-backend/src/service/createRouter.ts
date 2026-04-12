@@ -79,7 +79,6 @@ export interface RouterOptions {
   refreshService?: RefreshService;
   logger: LoggerService;
   config: Config;
-  permissionIntegrationRouter?: express.Router;
   auth: AuthService;
   httpAuth: HttpAuthService;
   permissionsService: PermissionsService;
@@ -108,7 +107,6 @@ export async function createRouter(
     refreshService,
     config,
     logger,
-    permissionIntegrationRouter,
     permissionsService,
     auth,
     httpAuth,
@@ -154,10 +152,6 @@ export async function createRouter(
         throw err;
       }
     });
-  }
-
-  if (permissionIntegrationRouter) {
-    router.use(permissionIntegrationRouter);
   }
 
   if (entitiesCatalog) {

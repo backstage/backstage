@@ -1,5 +1,28 @@
 # @backstage/core-compat-api
 
+## 0.5.10-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/plugin-catalog-react@2.1.2-next.2
+  - @backstage/core-plugin-api@1.12.5-next.2
+  - @backstage/filter-predicates@0.1.2-next.0
+  - @backstage/frontend-plugin-api@0.16.0-next.2
+
+## 0.5.10-next.1
+
+### Patch Changes
+
+- 77ab7d5: Hide the default page header for pages created through the compatibility wrappers, since legacy plugins already render their own headers.
+- 49397c1: Removed unnecessary type argument from internal `createRouteRef` call.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@2.1.2-next.1
+  - @backstage/frontend-plugin-api@0.16.0-next.1
+  - @backstage/core-plugin-api@1.12.5-next.1
+  - @backstage/plugin-app-react@0.2.2-next.1
+
 ## 0.5.10-next.0
 
 ### Patch Changes

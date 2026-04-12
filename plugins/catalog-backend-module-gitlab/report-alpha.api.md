@@ -4,6 +4,40 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
+import { CatalogScmEvent } from '@backstage/plugin-catalog-node/alpha';
+import { LoggerService } from '@backstage/backend-plugin-api';
+
+// @alpha
+export function analyzeGitLabWebhookEvent(
+  eventType: string,
+  eventPayload: unknown,
+  options: AnalyzeWebhookEventOptions,
+): Promise<AnalyzeWebhookEventResult>;
+
+// @alpha
+export interface AnalyzeWebhookEventOptions {
+  isRelevantPath: (path: string) => boolean;
+  logger?: LoggerService;
+}
+
+// @alpha
+export type AnalyzeWebhookEventResult =
+  | {
+      result: 'unsupported-event';
+      event: string;
+    }
+  | {
+      result: 'ignored';
+      reason: string;
+    }
+  | {
+      result: 'aborted';
+      reason: string;
+    }
+  | {
+      result: 'ok';
+      events: CatalogScmEvent[];
+    };
 
 // @alpha (undocumented)
 const _feature: BackendFeature;

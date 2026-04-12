@@ -177,8 +177,22 @@ const appPlugin: OverridableFrontendPlugin<
       name: 'root';
     }>;
     'app/routes': OverridableExtensionDefinition<{
-      config: {};
-      configInput: {};
+      config: {
+        redirects:
+          | {
+              from: string;
+              to: string;
+            }[]
+          | undefined;
+      };
+      configInput: {
+        redirects?:
+          | {
+              from: string;
+              to: string;
+            }[]
+          | undefined;
+      };
       output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
       inputs: {
         routes: ExtensionInput<

@@ -63,6 +63,11 @@ export interface PaginationOptions
 }
 
 /** @public */
+export interface CompletePaginationOptions extends PaginationOptions {
+  type?: 'page' | 'none';
+}
+
+/** @public */
 export interface OffsetParams<TFilter> {
   offset: number;
   pageSize: number;
@@ -102,7 +107,7 @@ export type UseTableCompleteOptions<
   TFilter = unknown,
 > = QueryOptions<TFilter> & {
   mode: 'complete';
-  paginationOptions?: PaginationOptions;
+  paginationOptions?: CompletePaginationOptions;
   sortFn?: (data: T[], sort: SortDescriptor) => T[];
   filterFn?: (data: T[], filter: TFilter) => T[];
   searchFn?: (data: T[], search: string) => T[];

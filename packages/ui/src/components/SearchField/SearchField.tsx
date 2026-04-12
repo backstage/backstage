@@ -28,7 +28,11 @@ import { SearchFieldDefinition } from './definition';
 
 import type { SearchFieldProps } from './types';
 
-/** @public */
+/**
+ * A text input optimized for search queries, with a built-in clear button, optional icon, and support for a collapsible mode.
+ *
+ * @public
+ */
 export const SearchField = forwardRef<HTMLDivElement, SearchFieldProps>(
   (props, ref) => {
     const { ownProps, restProps, dataAttributes } = useDefinition(
@@ -92,6 +96,7 @@ export const SearchField = forwardRef<HTMLDivElement, SearchFieldProps>(
           label={label}
           secondaryLabel={secondaryLabelText}
           description={description}
+          descriptionSlot="description"
         />
         <div
           className={classes.inputWrapper}

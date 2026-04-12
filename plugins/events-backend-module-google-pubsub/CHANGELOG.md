@@ -1,5 +1,25 @@
 # @backstage/plugin-events-backend-module-google-pubsub
 
+## 0.2.2-next.2
+
+### Patch Changes
+
+- eacf362: Migrated internal metrics in `GooglePubSubConsumingEventPublisher` and `EventConsumingGooglePubSubPublisher` to use the new alpha `MetricsService`
+- Updated dependencies
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/backend-plugin-api@1.9.0-next.2
+  - @backstage/config@1.3.7-next.0
+  - @backstage/filter-predicates@0.1.2-next.0
+  - @backstage/plugin-events-node@0.4.21-next.2
+
+## 0.2.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0-next.1
+  - @backstage/plugin-events-node@0.4.21-next.1
+
 ## 0.2.2-next.0
 
 ### Patch Changes

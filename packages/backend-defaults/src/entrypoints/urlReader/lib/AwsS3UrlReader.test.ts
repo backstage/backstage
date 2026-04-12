@@ -128,6 +128,55 @@ describe('parseUrl', () => {
     });
   });
 
+  it('supports aws formats with custom endpoint hosts', () => {
+    expect(
+      parseUrl(
+        'https://bucket-1.s3.eu-central-1.amazonaws.com/path/to/file.yaml',
+        {
+          host: 'bucket-1.s3.eu-central-1.amazonaws.com',
+        },
+      ),
+    ).toEqual({
+      path: 'path/to/file.yaml',
+      bucket: 'bucket-1',
+      region: 'eu-central-1',
+    });
+    expect(
+      parseUrl('https://my-bucket.s3.cn-north-1.amazonaws.com.cn/data.json', {
+        host: 'my-bucket.s3.cn-north-1.amazonaws.com.cn',
+      }),
+    ).toEqual({
+      path: 'data.json',
+      bucket: 'my-bucket',
+      region: 'cn-north-1',
+    });
+    expect(
+      parseUrl(
+        'https://s3.eu-central-1.amazonaws.com/my-bucket/path/to/file.yaml',
+        {
+          host: 's3.eu-central-1.amazonaws.com',
+        },
+      ),
+    ).toEqual({
+      path: 'path/to/file.yaml',
+      bucket: 'my-bucket',
+      region: 'eu-central-1',
+    });
+    expect(
+      parseUrl(
+        'https://s3.eu-central-1.amazonaws.com/my-bucket/path/to/file.yaml',
+        {
+          host: 's3.eu-central-1.amazonaws.com',
+          s3ForcePathStyle: true,
+        },
+      ),
+    ).toEqual({
+      path: 'path/to/file.yaml',
+      bucket: 'my-bucket',
+      region: 'eu-central-1',
+    });
+  });
+
   it('supports all non-aws formats', () => {
     expect(
       parseUrl('https://my-host.com/my.bucket-3/a/puppy.jpg', {

@@ -42,9 +42,10 @@ export const headerPagePropDefs: Record<string, PropDef> = {
     },
   },
   activeTabId: {
-    type: 'string',
+    type: 'enum',
+    values: ['string', 'null'],
     description:
-      'ID of the currently active tab. Can be a flat tab ID or a child tab ID within a group.',
+      'ID of the currently active tab. Omit to auto-detect from the current route. Set to null for no active tab.',
   },
   breadcrumbs: {
     type: 'complex',

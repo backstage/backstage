@@ -21,7 +21,11 @@ import { useDefinition } from '../../hooks/useDefinition';
 import { CheckboxDefinition } from './definition';
 import { RiCheckLine, RiSubtractLine } from '@remixicon/react';
 
-/** @public */
+/**
+ * A form checkbox input with support for indeterminate state and accessible labeling.
+ *
+ * @public
+ */
 export const Checkbox = forwardRef<HTMLLabelElement, CheckboxProps>(
   (props, ref) => {
     const { ownProps, restProps, dataAttributes } = useDefinition(

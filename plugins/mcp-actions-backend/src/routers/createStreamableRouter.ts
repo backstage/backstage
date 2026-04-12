@@ -20,7 +20,7 @@ import { McpService } from '../services/McpService';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import { LATEST_PROTOCOL_VERSION } from '@modelcontextprotocol/sdk/types.js';
 import { HttpAuthService, LoggerService } from '@backstage/backend-plugin-api';
-import { isError } from '@backstage/errors';
+import { toError } from '@backstage/errors';
 import { MetricsService } from '@backstage/backend-plugin-api/alpha';
 import { bucketBoundaries, McpServerSessionAttributes } from '../metrics';
 import { McpServerConfig } from '../config';
@@ -83,11 +83,10 @@ export const createStreamableRouter = ({
         sessionDuration.record(durationSeconds, baseAttributes);
       });
     } catch (error) {
-      const errorType = isError(error) ? error.name : 'Error';
+      const err = toError(error);
+      const errorType = err.name;
 
-      if (isError(error)) {
-        logger.error(error.message);
-      }
+      logger.error(err.message);
 
       if (!res.headersSent) {
         res.status(500).json({

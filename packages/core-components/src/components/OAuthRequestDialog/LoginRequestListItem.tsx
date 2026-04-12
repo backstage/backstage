@@ -21,7 +21,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import { createElement, isValidElement, useState } from 'react';
-import { isError } from '@backstage/errors';
+import { toError } from '@backstage/errors';
 import {
   configApiRef,
   IconComponent,
@@ -63,7 +63,7 @@ const LoginRequestListItem = ({ request, busy, setBusy }: RowProps) => {
     try {
       await request.trigger();
     } catch (e) {
-      setError(isError(e) ? e.message : 'An unspecified error occurred');
+      setError(toError(e).message);
     } finally {
       setBusy(false);
     }

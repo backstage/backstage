@@ -23,6 +23,7 @@ import {
   HttpAuthService,
   LifecycleService,
   LoggerService,
+  PermissionsRegistryService,
   PermissionsService,
   resolveSafeChildPath,
   SchedulerService,
@@ -45,7 +46,6 @@ import {
   ConditionTransformer,
   createConditionAuthorizer,
   createConditionTransformer,
-  createPermissionIntegrationRouter,
 } from '@backstage/plugin-permission-node';
 import {
   TaskSpec,
@@ -53,16 +53,13 @@ import {
   templateEntityV1beta3Validator,
 } from '@backstage/plugin-scaffolder-common';
 import {
-  RESOURCE_TYPE_SCAFFOLDER_ACTION,
-  RESOURCE_TYPE_SCAFFOLDER_TASK,
-  RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
   scaffolderActionPermissions,
-  scaffolderPermissions,
   scaffolderTaskPermissions,
   scaffolderTemplatePermissions,
   taskCancelPermission,
   taskCreatePermission,
   taskReadPermission,
+  templateManagementPermission,
   templateParameterReadPermission,
   templateStepReadPermission,
 } from '@backstage/plugin-scaffolder-common/alpha';
@@ -78,6 +75,9 @@ import {
   AutocompleteHandler,
   CreatedTemplateFilter,
   CreatedTemplateGlobal,
+  scaffolderActionPermissionResourceRef,
+  scaffolderTaskPermissionResourceRef,
+  scaffolderTemplatePermissionResourceRef,
   WorkspaceProvider,
 } from '@backstage/plugin-scaffolder-node/alpha';
 import { HumanDuration, JsonObject } from '@backstage/types';
@@ -131,7 +131,10 @@ import {
   scaffolderTaskRules,
   scaffolderTemplateRules,
 } from './rules';
-import { ActionsService } from '@backstage/backend-plugin-api/alpha';
+import {
+  ActionsService,
+  MetricsService,
+} from '@backstage/backend-plugin-api/alpha';
 
 /**
  * RouterOptions
@@ -158,6 +161,7 @@ export interface RouterOptions {
     | CreatedTemplateGlobal[];
   additionalWorkspaceProviders?: Record<string, WorkspaceProvider>;
   permissions?: PermissionsService;
+  permissionsRegistry: PermissionsRegistryService;
   permissionRules?: Array<ScaffolderPermissionRuleInput>;
   auth: AuthService;
   httpAuth: HttpAuthService;
@@ -165,6 +169,7 @@ export interface RouterOptions {
   auditor?: AuditorService;
   autocompleteHandlers?: Record<string, AutocompleteHandler>;
   actionsRegistry: ActionsService;
+  metrics: MetricsService;
 }
 
 function isSupportedTemplate(entity: TemplateEntityV1beta3) {
@@ -249,6 +254,7 @@ export async function createRouter(
     additionalTemplateGlobals,
     additionalWorkspaceProviders,
     permissions,
+    permissionsRegistry,
     permissionRules,
     autocompleteHandlers = {},
     events: eventsService,
@@ -256,6 +262,7 @@ export async function createRouter(
     httpAuth,
     auditor,
     actionsRegistry,
+    metrics,
   } = options;
 
   const concurrentTasksLimit =
@@ -344,6 +351,7 @@ export async function createRouter(
       concurrentTasksLimit,
       permissions,
       gracefulShutdown,
+      metrics,
       ...templateExtensions,
     });
 
@@ -375,6 +383,7 @@ export async function createRouter(
     workingDirectory,
     permissions,
     config,
+    metrics,
     ...templateExtensions,
   });
 
@@ -403,35 +412,35 @@ export async function createRouter(
   const taskTransformConditions: ConditionTransformer<TaskFilters> =
     createConditionTransformer(Object.values(taskRules));
 
-  const permissionIntegrationRouter = createPermissionIntegrationRouter({
-    resources: [
-      {
-        resourceType: RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
-        permissions: scaffolderTemplatePermissions,
-        rules: templateRules,
-      },
-      {
-        resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
-        permissions: scaffolderActionPermissions,
-        rules: actionRules,
-      },
-      {
-        resourceType: RESOURCE_TYPE_SCAFFOLDER_TASK,
-        permissions: scaffolderTaskPermissions,
-        rules: taskRules,
-        getResources: async resourceRefs => {
-          return Promise.all(
-            resourceRefs.map(async taskId => {
-              return await taskBroker.get(taskId);
-            }),
-          );
-        },
-      },
-    ],
-    permissions: scaffolderPermissions,
+  permissionsRegistry.addResourceType({
+    resourceRef: scaffolderTemplatePermissionResourceRef,
+    permissions: scaffolderTemplatePermissions,
+    rules: templateRules,
   });
 
-  router.use(permissionIntegrationRouter);
+  permissionsRegistry.addResourceType({
+    resourceRef: scaffolderActionPermissionResourceRef,
+    permissions: scaffolderActionPermissions,
+    rules: actionRules,
+  });
+
+  permissionsRegistry.addResourceType({
+    resourceRef: scaffolderTaskPermissionResourceRef,
+    permissions: scaffolderTaskPermissions,
+    rules: taskRules,
+    getResources: async resourceRefs => {
+      return Promise.all(
+        resourceRefs.map(async taskId => {
+          return await taskBroker.get(taskId);
+        }),
+      );
+    },
+  });
+
+  permissionsRegistry.addPermissions([
+    taskCreatePermission,
+    templateManagementPermission,
+  ]);
 
   router
     .get(
@@ -951,7 +960,8 @@ export async function createRouter(
           isTaskAuthorized,
         });
 
-        const after = Number(req.query.after) || undefined;
+        const after =
+          req.query.after !== undefined ? Number(req.query.after) : undefined;
 
         // cancel the request after 30 seconds. this aligns with the recommendations of RFC 6202.
         const timeout = setTimeout(() => {

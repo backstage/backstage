@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-auth-backend-module-auth0-provider",
-  "version": "0.3.2-next.0",
+  "version": "0.4.0-next.2",
   "description": "The auth0-provider backend module for the auth plugin.",
   "backstage": {
     "role": "backend-plugin-module",
@@ -37,7 +37,9 @@
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/plugin-auth-node": "workspace:^",
+    "@types/passport": "^1.0.3",
     "express": "^4.22.0",
+    "jose": "^5.0.0",
     "passport": "^0.7.0",
     "passport-auth0": "^1.4.3",
     "passport-oauth2": "^1.6.1"
@@ -48,7 +50,6 @@
     "@backstage/cli": "workspace:^",
     "@backstage/plugin-auth-backend": "workspace:^",
     "@backstage/types": "workspace:^",
-    "@types/passport": "^1.0.3",
     "@types/passport-auth0": "^1.0.5",
     "@types/passport-oauth2": "^1.4.15",
     "supertest": "^7.0.0"

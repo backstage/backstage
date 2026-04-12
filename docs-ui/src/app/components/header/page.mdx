@@ -47,7 +47,7 @@ Labels are truncated at 240px.
 
 ### Tabs
 
-Tabs use React Router and highlight based on the current route.
+Tabs auto-detect the active tab from the current route when `activeTabId` is omitted. Pass an explicit `activeTabId` to override, or `null` for no active tab.
 
 <Snippet open preview={<WithTabs />} code={withTabs} />
 

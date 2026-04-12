@@ -1,5 +1,27 @@
 # @backstage/cli
 
+## 0.36.1-next.2
+
+### Patch Changes
+
+- 482ceed: Migrated from `assertError` to `toError` for error handling.
+- Updated dependencies
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/cli-common@0.2.1-next.1
+  - @backstage/cli-node@0.3.1-next.1
+  - @backstage/cli-module-build@0.1.1-next.2
+
+## 0.36.1-next.1
+
+### Patch Changes
+
+- 2e5c5f8: Bumped `glob` dependency from v7/v8/v11 to v13 to address security vulnerabilities in older versions. Bumped `rollup` from v4.27 to v4.59+ to fix a high severity path traversal vulnerability (GHSA-mw96-cpmx-2vgc).
+- a7a14b7: Added `DOM.AsyncIterable` to the default `lib` in the shared TypeScript configuration, enabling standard async iteration support for DOM APIs such as `FileSystemDirectoryHandle`. This aligns behavior with [TypeScript 6.0](https://devblogs.microsoft.com/typescript/announcing-typescript-6-0/#the-dom-lib-now-contains-domiterable-and-domasynciterable), where this lib is included in `DOM` by default.
+- Updated dependencies
+  - @backstage/cli-module-build@0.1.1-next.1
+  - @backstage/cli-module-test-jest@0.1.1-next.1
+  - @backstage/eslint-plugin@0.2.3-next.0
+
 ## 0.36.1-next.0
 
 ### Patch Changes

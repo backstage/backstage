@@ -10,7 +10,7 @@ import { SpawnOptions } from 'node:child_process';
 // @public
 export const BACKSTAGE_JSON = 'backstage.json';
 
-// @public
+// @public @deprecated
 export function bootstrapEnvProxyAgents(): void;
 
 // @public

@@ -338,7 +338,7 @@ describe('DefaultCatalogProcessingOrchestrator', () => {
           ok: false,
           errors: [
             new InputError(
-              "Policy check failed for location:default/l; caused by unknown error 'boom'",
+              'Policy check failed for location:default/l; caused by Error: boom',
             ),
           ],
         }),

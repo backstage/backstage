@@ -340,6 +340,34 @@ import { ApiExplorerPage } from '@backstage/plugin-api-docs';
 />;
 ```
 
+## Troubleshooting
+
+### "Try it out" sends requests to the wrong host
+
+If the **Try it out** feature in the OpenAPI widget sends requests to your Backstage app's URL instead of the actual API host, the OpenAPI spec is missing a `servers` entry.
+When no `servers` field is present, Swagger UI falls back to `window.location.origin` — the current page's host — as the base URL for all requests.
+
+**Fix**: add a `servers` field to your API entity's `spec.definition`:
+
+```yaml
+# catalog-info.yaml
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: my-api
+spec:
+  type: openapi
+  definition: |
+    openapi: "3.0.0"
+    info:
+      title: My API
+      version: v1
+    servers:
+      - url: https://api.example.com/v1   # ← specify your api base URL
+```
+
+If you cannot modify the spec (e.g. it is generated or fetched from an external source), you can work around this by adding a `requestInterceptor` that rewrites the URL — see [Adding `requestInterceptor` to Swagger UI](#adding-requestinterceptor-to-swagger-ui) above.
+
 ## Old Frontend System
 
 If your Backstage app uses the old frontend system, you need to manually wire the plugin into your app as outlined in this section. If you are on the new frontend system, you can skip this.

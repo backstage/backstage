@@ -8,6 +8,7 @@ import { ColumnConfig } from '@backstage/ui';
 import { ComponentType } from 'react';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
+import { EntityPresentationApi } from '@backstage/plugin-catalog-react';
 import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
@@ -73,6 +74,7 @@ export const catalogReactTranslationRef: TranslationRef<
     readonly 'inspectEntityDialog.colocatedPage.alertNoEntity': 'There were no other entities on this location.';
     readonly 'inspectEntityDialog.colocatedPage.locationHeader': 'At the same location';
     readonly 'inspectEntityDialog.colocatedPage.originHeader': 'At the same origin';
+    readonly 'inspectEntityDialog.colocatedPage.entityListAriaLabel': 'Colocated entities';
     readonly 'inspectEntityDialog.jsonPage.title': 'Entity as JSON';
     readonly 'inspectEntityDialog.jsonPage.description': 'This is the raw entity data as received from the catalog, on JSON form.';
     readonly 'inspectEntityDialog.overviewPage.title': 'Overview';
@@ -82,6 +84,9 @@ export const catalogReactTranslationRef: TranslationRef<
     readonly 'inspectEntityDialog.overviewPage.identity.title': 'Identity';
     readonly 'inspectEntityDialog.overviewPage.annotations': 'Annotations';
     readonly 'inspectEntityDialog.overviewPage.tags': 'Tags';
+    readonly 'inspectEntityDialog.overviewPage.copyAriaLabel': 'Copy {{label}}';
+    readonly 'inspectEntityDialog.overviewPage.copiedStatus': 'Copied';
+    readonly 'inspectEntityDialog.overviewPage.helpLinkAriaLabel': 'Learn more';
     readonly 'inspectEntityDialog.overviewPage.relation.title': 'Relations';
     readonly 'inspectEntityDialog.yamlPage.title': 'Entity as YAML';
     readonly 'inspectEntityDialog.yamlPage.description': 'This is the raw entity data as received from the catalog, on YAML form.';
@@ -488,6 +493,7 @@ export const entityDataTableColumns: Readonly<{
   createEntityRefColumn(options: {
     defaultKind?: string;
     isRowHeader?: boolean;
+    entityPresentationApi?: EntityPresentationApi;
   }): EntityColumnConfig;
   createEntityRelationColumn(options: {
     id: string;
@@ -497,6 +503,7 @@ export const entityDataTableColumns: Readonly<{
     filter?: {
       kind: string;
     };
+    entityPresentationApi?: EntityPresentationApi;
   }): EntityColumnConfig;
   createOwnerColumn(): EntityColumnConfig;
   createSystemColumn(): EntityColumnConfig;

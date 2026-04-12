@@ -19,7 +19,12 @@ import type { CellProps } from '../types';
 import { useDefinition } from '../../../hooks/useDefinition';
 import { CellDefinition } from '../definition';
 
-/** @public */
+/**
+ * A low-level table cell primitive for building custom cell content.
+ * For standard use cases, prefer `CellText` or `CellProfile`.
+ *
+ * @public
+ */
 const Cell = (props: CellProps) => {
   const { ownProps, restProps } = useDefinition(CellDefinition, props);
 

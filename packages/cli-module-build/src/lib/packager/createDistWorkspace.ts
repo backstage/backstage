@@ -26,6 +26,7 @@ import * as tar from 'tar';
 import partition from 'lodash/partition';
 
 import { run, targetPaths } from '@backstage/cli-common';
+import { computeTopologicalLayers } from './computeTopologicalLayers';
 import {
   dependencies as cliDependencies,
   devDependencies as cliDevDependencies,
@@ -347,8 +348,14 @@ async function moveToDistWorkspace(
 
   // Old flow is below, which calls `yarn pack` and extracts the tarball
 
-  async function pack(target: PackageGraphNode, archive: string) {
+  let archiveIndex = 0;
+
+  async function pack(
+    target: PackageGraphNode,
+    archive: string = `temp-package-${archiveIndex++}.tgz`,
+  ) {
     logger.log(`Repacking ${target.name} into dist workspace`);
+
     const absoluteOutputPath = resolvePath(
       workspaceDir,
       relativePath(targetPaths.rootDir, target.dir),
@@ -392,13 +399,18 @@ async function moveToDistWorkspace(
     await pack(target, `temp-package.tgz`);
   }
 
-  // Repacking in parallel is much faster and safe for all packages outside of the Backstage repo
-  await runConcurrentTasks({
-    items: safePackages.map((target, index) => ({ target, index })),
-    worker: async ({ target, index }) => {
-      await pack(target, `temp-package-${index}.tgz`);
-    },
-  });
+  // Pack safe packages in topological layers so that a package is never
+  // packed concurrently with its own dependencies. `yarn pack` temporarily
+  // rewrites each package's package.json to resolve workspace:^ references;
+  // packing a package while a dependency's manifest is mid-rewrite causes
+  // intermittent "No local workspace found for this range" failures.
+  const layers = computeTopologicalLayers(safePackages);
+  for (const layer of layers) {
+    await runConcurrentTasks({
+      items: layer,
+      worker: pack,
+    });
+  }
 }
 
 /**

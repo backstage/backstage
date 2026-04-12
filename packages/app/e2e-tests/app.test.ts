@@ -25,7 +25,11 @@ test('App should render the welcome page', async ({ page }) => {
 
   // Verify the sidebar navigation is visible after sign-in
   await expect(
-    page.getByRole('navigation').getByRole('link', { name: 'Catalog' }),
+    page
+      .getByRole('navigation')
+      .getByRole('link', { name: 'Catalog', exact: true }),
   ).toBeVisible();
-  await expect(page.getByRole('link', { name: 'APIs' })).toBeVisible();
+  await expect(
+    page.getByRole('link', { name: 'APIs', exact: true }),
+  ).toBeVisible();
 });

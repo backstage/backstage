@@ -14,6 +14,12 @@
   }
 }
 
+.partnerLogo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .listContainer {
   height: 100%;
   align-items: stretch !important;

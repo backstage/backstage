@@ -44,9 +44,13 @@ You can configure the name and description of your Backstage MCP server with the
 
 ```yaml title="app-config.yaml"
 mcpActions:
-  name: 'My MCP Server' # defaults to "backstage"
-  description: 'Tools for interacting with My MCP Server' # optional
+  name: 'My Company Backstage' # defaults to "backstage"
+  description: 'Tools for managing your software catalog, creating new services from templates, and exploring your developer portal' # optional
 ```
+
+:::tip
+Keep the following in mind when picking the name and description. The description should answer "what can I do with these tools?" from the perspective of an AI agent deciding whether to use this server — not "what is this server?". That means describing Backstage capabilities (catalog, scaffolder, etc.), not the MCP protocol or server identity.
+:::
 
 ## Namespaced Tool Names
 
@@ -146,20 +150,20 @@ Authorization: Bearer <token>
 For more details about external access tokens and service-to-service authentication, see the
 [Service-to-Service Auth documentation](../auth/service-to-service-auth.md).
 
-### Experimental: Dynamic Client Registration
+### Experimental Authentication methods
 
-:::warning
-This feature is highly experimental and only works with the New Frontend System. Proceed with caution.
-:::
+The MCP Actions Backend supports two experimental authentication methods based on the MCP specification:
 
-You can configure the auth-backend and install the auth frontend plugin to enable **Dynamic Client Registration** with MCP clients. This means you do not need to manually configure a token in your MCP client settings. Instead, a client can request a token on your behalf. When adding the MCP server to an MCP client like Cursor or Claude, a popup requiring your approval will open in your Backstage instance (powered by the auth plugin).
+- [Client ID Metadata Documents (CIMD)](https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization#client-id-metadata-documents)
+- [Dynamic Client Registration (DCR)](https://modelcontextprotocol.io/specification/2025-06-18/basic/authorization#dynamic-client-registration)
 
-**Requirements:**
+They have the following requirements:
 
+- You must be using the [New Frontend System](../frontend-system/architecture/00-index.md).
 - The `@backstage/plugin-auth-backend` plugin must be configured.
 - The new `@backstage/plugin-auth` frontend plugin must be configured.
 
-**Installation:**
+Follow these steps to install and configure the new `@backstage/plugin-auth` frontend plugin:
 
 1. Install the `@backstage/plugin-auth` frontend plugin:
 
@@ -180,17 +184,51 @@ You can configure the auth-backend and install the auth frontend plugin to enabl
    });
    ```
 
-3. Enable the feature:
+#### Client ID Metadata Documents
 
-   ```yaml title="app-config.yaml"
-   auth:
-     experimentalDynamicClientRegistration:
-       enabled: true
+:::warning
+This feature is highly experimental; proceed with caution. Client support is also currently limited but quickly being implemented.
+:::
 
-       # Optional: limit valid callback URLs for added security
-       allowedRedirectUriPatterns:
-         - cursor://*
-   ```
+The [November 2025 MCP specification](https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization) outlined a new authorization method to replace Dynamic Client Registration called [Client ID Metadata Documents (CIMD)](https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization#client-id-metadata-documents).
+
+Using Client ID Metadata Documents means you do not need to manually configure a token in your MCP client settings. Instead, a client can request a token on your behalf. When adding the MCP server to an MCP client like Cursor or Claude, a popup requiring your approval will open in your Backstage instance (powered by the `auth` plugin).
+
+This can be enabled in the `auth-backend` plugin by using the `auth.experimentalClientIdMetadataDocuments.enabled` flag in config:
+
+```yaml title="app-config.yaml"
+auth:
+  experimentalClientIdMetadataDocuments:
+    enabled: true
+    # Optional: restrict which `client_id` URLs are allowed (defaults to ['*'])
+    allowedClientIdPatterns:
+      - 'https://example.com/*'
+      - 'https://*.trusted-domain.com/*'
+    # Optional: restrict which redirect URIs are allowed (defaults to ['*'])
+    allowedRedirectUriPatterns:
+      - 'http://localhost:*'
+      - 'https://*.example.com/*'
+```
+
+#### Dynamic Client Registration
+
+:::warning
+This feature is highly experimental; proceed with caution. This method will likely be deprecated and replaced by [Client ID Metadata Documents](#client-id-metadata-documents) in the future. Only use in cases where clients do not yet support Client ID Metadata Documents.
+:::
+
+Using Dynamic Client Registration means you do not need to manually configure a token in your MCP client settings. Instead, a client can request a token on your behalf. When adding the MCP server to an MCP client like Cursor or Claude, a popup requiring your approval will open in your Backstage instance (powered by the `auth` plugin).
+
+This can be enabled in the `auth-backend` plugin by using the `auth.experimentalDynamicClientRegistration.enabled` flag in config:
+
+```yaml title="app-config.yaml"
+auth:
+  experimentalDynamicClientRegistration:
+    enabled: true
+
+    # Optional: limit valid callback URLs for added security
+    allowedRedirectUriPatterns:
+      - cursor://*
+```
 
 ## Configuring MCP Clients
 

@@ -21,6 +21,7 @@ import { useBgProvider, useBgConsumer, BgProvider } from '../useBg';
 import { resolveDefinitionProps, processUtilityProps } from './helpers';
 import { useAnalytics } from '../../analytics/useAnalytics';
 import { noopTracker } from '../../analytics/useAnalytics';
+import { useInRouterContext, useHref } from 'react-router-dom';
 import type {
   ComponentConfig,
   UseDefinitionOptions,
@@ -38,10 +39,24 @@ export function useDefinition<
 ): UseDefinitionResult<D, P> {
   const { breakpoint } = useBreakpoint();
 
+  // Turn relative href into an absolute path using the current route
+  // context, so that client-side navigation works correctly.
+  let hrefResolvedProps = props;
+  const hasRouter = useInRouterContext();
+  // useHref throws outside a Router, so we guard with useInRouterContext.
+  // The guard is safe because a component's router context does not
+  // change during its lifetime, keeping the hook call count stable.
+  if (hasRouter) {
+    const absoluteHref = useHref((props as any).href ?? '');
+    if ((props as any).href !== undefined) {
+      hrefResolvedProps = { ...props, href: absoluteHref } as P;
+    }
+  }
+
   // Resolve all props centrally — applies responsive values and defaults
   const { ownPropsResolved, restProps } = resolveDefinitionProps(
     definition,
-    props,
+    hrefResolvedProps,
     breakpoint,
   );
 
@@ -85,7 +100,6 @@ export function useDefinition<
   );
 
   // Analytics: conditionally call useAnalytics based on definition flag
-  // Safe: definition is a module-level constant, condition never changes at runtime
   let analytics = noopTracker;
   if (definition.analytics) {
     const tracker = useAnalytics();

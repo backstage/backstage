@@ -98,7 +98,12 @@ function useLiveRegionLabel(
   return liveRegionLabel;
 }
 
-/** @public */
+/**
+ * A full-featured data table with built-in pagination, sorting, row selection, loading and error states, and optional virtualization.
+ * Pair with `useTable` to manage data fetching and state, or pass `data`, `columnConfig`, and `pagination` directly for manual control.
+ *
+ * @public
+ */
 export function Table<T extends TableItem>({
   columnConfig,
   data,

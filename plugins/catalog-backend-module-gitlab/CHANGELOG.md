@@ -1,5 +1,31 @@
 # @backstage/plugin-catalog-backend-module-gitlab
 
+## 0.8.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/plugin-catalog-node@2.2.0-next.2
+  - @backstage/backend-defaults@0.16.1-next.2
+  - @backstage/integration@2.0.1-next.0
+  - @backstage/backend-plugin-api@1.9.0-next.2
+  - @backstage/catalog-model@1.7.8-next.0
+  - @backstage/config@1.3.7-next.0
+  - @backstage/plugin-events-node@0.4.21-next.2
+  - @backstage/plugin-catalog-common@1.1.9-next.0
+
+## 0.8.2-next.1
+
+### Patch Changes
+
+- 54a8300: Add GitLab SCM event translation layer for instant catalog reprocessing.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0-next.1
+  - @backstage/backend-defaults@0.16.1-next.1
+  - @backstage/plugin-catalog-node@2.1.1-next.1
+  - @backstage/plugin-events-node@0.4.21-next.1
+
 ## 0.8.2-next.0
 
 ### Patch Changes

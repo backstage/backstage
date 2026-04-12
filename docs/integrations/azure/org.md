@@ -120,7 +120,7 @@ microsoftGraphOrg:
 In addition to these groups, one additional group will be created for your organization.
 All imported groups will be a child of this group.
 
-By default the provider will get groups using the msgraph `/group` endpoint, but it is possible to use different endpoints by setting the `path` configuration. All the endpoint containing `/microsoft.graph.group` will return the right type of group object. [See usage](#Using-path-parameter) for more details.
+By default the provider will get groups using the msgraph `/group` endpoint, but it is possible to use different endpoints by setting the `path` configuration. All the endpoint containing `/microsoft.graph.group` will return the right type of group object. [See usage](#using-path-parameter) for more details.
 
 ### Users
 
@@ -145,7 +145,7 @@ microsoftGraphOrg:
       search: '"description:One" AND ("displayName:Video" OR "displayName:Drive")'
 ```
 
-By default the provider will get user using the msgraph `/user` endpoint, but it is possible to use different endpoints by setting the `path` configuration. All the endpoint containing `/microsoft.graph.user` will return the right type of user object. [See usage](#Using-path-parameter) for more details.
+By default the provider will get user using the msgraph `/user` endpoint, but it is possible to use different endpoints by setting the `path` configuration. All the endpoint containing `/microsoft.graph.user` will return the right type of user object. [See usage](#using-path-parameter) for more details.
 
 ### Using `path` parameter
 

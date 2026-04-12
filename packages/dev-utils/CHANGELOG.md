@@ -1,5 +1,32 @@
 # @backstage/dev-utils
 
+## 1.1.22-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.14.0-next.2
+  - @backstage/theme@0.7.3-next.0
+  - @backstage/core-app-api@1.20.0-next.2
+  - @backstage/core-components@0.18.9-next.1
+  - @backstage/plugin-catalog-react@2.1.2-next.2
+  - @backstage/catalog-model@1.7.8-next.0
+  - @backstage/core-plugin-api@1.12.5-next.2
+  - @backstage/app-defaults@1.7.7-next.2
+  - @backstage/integration-react@1.2.17-next.1
+
+## 1.1.22-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/app-defaults@1.7.7-next.1
+  - @backstage/ui@0.14.0-next.1
+  - @backstage/core-app-api@1.20.0-next.1
+  - @backstage/plugin-catalog-react@2.1.2-next.1
+  - @backstage/core-components@0.18.9-next.0
+  - @backstage/core-plugin-api@1.12.5-next.1
+
 ## 1.1.22-next.0
 
 ### Patch Changes

@@ -24,6 +24,7 @@ import {
   tableRootPropDefs,
   columnPropDefs,
   rowPropDefs,
+  tableBodySkeletonPropDefs,
 } from './props-definition';
 import {
   tableUsageSnippet,
@@ -119,7 +120,7 @@ With `mode: 'complete'`, sorting happens client-side. Provide a `sortFn` that re
 
 ### Pagination
 
-Configure page size and available options through `paginationOptions`. The table displays navigation controls automatically.
+Configure page size and available options through `paginationOptions`. The table displays navigation controls automatically. In `complete` mode, set `type: 'none'` to disable pagination and show all rows.
 
 <CodeBlock code={tablePaginationSnippet} />
 
@@ -303,6 +304,12 @@ Low-level components for building custom table layouts.
 
 <ReactAriaLink component="Cell" href={reactAriaUrls.cell} />
 
+#### TableBodySkeleton
+
+A table body that renders animated skeleton rows as a loading placeholder. Useful when composing with primitives and you need a loading state without the full `Table` component.
+
+<PropsTable data={tableBodySkeletonPropDefs} />
+
 <Theming definition={TableDefinition} />
 
 <ChangelogComponent
@@ -317,5 +324,6 @@ Low-level components for building custom table layouts.
     'cell',
     'cell-text',
     'cell-profile',
+    'table-body-skeleton',
   ]}
 />

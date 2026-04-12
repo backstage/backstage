@@ -23,11 +23,7 @@ import {
   UrlReaderServiceSearchOptions,
   UrlReaderServiceSearchResponse,
 } from '@backstage/backend-plugin-api';
-import {
-  assertError,
-  NotFoundError,
-  NotModifiedError,
-} from '@backstage/errors';
+import { toError, NotFoundError, NotModifiedError } from '@backstage/errors';
 import {
   BitbucketCloudIntegration,
   getBitbucketCloudDefaultBranch,
@@ -196,8 +192,8 @@ export class BitbucketCloudUrlReader implements UrlReaderService {
           ],
           etag: data.etag ?? '',
         };
-      } catch (error) {
-        assertError(error);
+      } catch (e) {
+        const error = toError(e);
         if (error.name === 'NotFoundError') {
           return {
             files: [],

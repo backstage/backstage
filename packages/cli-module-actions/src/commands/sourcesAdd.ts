@@ -16,35 +16,46 @@
 
 import { cli } from 'cleye';
 import { CliAuth, type CliCommandContext } from '@backstage/cli-node';
-import { z } from 'zod/v3';
-
-const pluginSourcesSchema = z.array(z.string()).default([]);
+import { pluginSourcesSchema } from '../lib/pluginSources';
 
 export default async ({ args, info }: CliCommandContext) => {
   const parsed = cli(
     {
       help: info,
-      parameters: ['<plugin-id>'],
+      parameters: ['<plugin-ids...>'],
     },
     undefined,
     args,
   );
 
-  const pluginId = parsed._[0];
+  const pluginIds: string[] = parsed._.pluginIds;
 
   const auth = await CliAuth.create();
   const existing = pluginSourcesSchema.parse(
     await auth.getMetadata('pluginSources'),
   );
 
-  if (existing.includes(pluginId)) {
-    process.stderr.write(
-      `Plugin source "${pluginId}" is already configured.\n`,
-    );
-    return;
+  const added: string[] = [];
+  const skipped: string[] = [];
+
+  for (const pluginId of pluginIds) {
+    if (existing.includes(pluginId)) {
+      skipped.push(pluginId);
+    } else {
+      added.push(pluginId);
+    }
   }
 
-  await auth.setMetadata('pluginSources', [...existing, pluginId]);
+  if (added.length > 0) {
+    await auth.setMetadata('pluginSources', [...existing, ...added]);
+    process.stdout.write(
+      `Added plugin source${added.length > 1 ? 's' : ''}: ${added.join(
+        ', ',
+      )}\n`,
+    );
+  }
 
-  process.stdout.write(`Added plugin source "${pluginId}".\n`);
+  for (const id of skipped) {
+    process.stderr.write(`Plugin source "${id}" is already configured.\n`);
+  }
 };

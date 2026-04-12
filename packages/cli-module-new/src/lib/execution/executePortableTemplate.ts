@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { assertError } from '@backstage/errors';
+import { toError } from '@backstage/errors';
 import { addCodeownersEntry } from '../codeowners';
 import { Task } from '../tasks';
 import {
@@ -68,9 +68,9 @@ export async function executePortableTemplate(
             }).waitForExit();
           });
         } catch (error) {
-          assertError(error);
+          const err = toError(error);
           Task.error(
-            `Warning: Failed to execute command '${commandStr}', ${error}`,
+            `Warning: Failed to execute command '${commandStr}', ${err}`,
           );
         }
       }
@@ -80,8 +80,8 @@ export async function executePortableTemplate(
     Task.log(`🎉  Successfully created ${template.name}`);
     Task.log();
   } catch (error) {
-    assertError(error);
-    Task.error(error.message);
+    const err = toError(error);
+    Task.error(err.message);
 
     if (modified) {
       Task.log('It seems that something went wrong in the creation process 🤔');

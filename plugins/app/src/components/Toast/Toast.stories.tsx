@@ -28,7 +28,7 @@ const toastQueue = new ToastQueue<ToastApiMessageContent>({
 });
 
 const meta = preview.meta({
-  title: 'Plugins/App/Toast',
+  title: 'App/Toast',
   component: ToastContainer,
   parameters: {
     layout: 'centered',
@@ -155,6 +155,35 @@ export const Default = meta.story({
       </Flex>
     </>
   ),
+});
+
+const previewQueue = new ToastQueue<ToastApiMessageContent>({
+  maxVisibleToasts: 4,
+});
+previewQueue.add({
+  title: 'Changes saved successfully',
+  description: 'Your changes have been saved.',
+  status: 'success',
+});
+
+export const PreviewToast = meta.story({
+  render: () => <ToastContainer queue={previewQueue} />,
+});
+
+const timerQueue = new ToastQueue<ToastApiMessageContent>({
+  maxVisibleToasts: 4,
+});
+timerQueue.add(
+  {
+    title: 'Auto-dismissing in 5 seconds',
+    description: 'This toast will disappear automatically.',
+    status: 'info',
+  },
+  { timeout: 5000 },
+);
+
+export const PreviewToastWithTimer = meta.story({
+  render: () => <ToastContainer queue={timerQueue} />,
 });
 
 export const StatusVariants = meta.story({
@@ -555,115 +584,6 @@ export const AlertApiIntegration = meta.story({
       </>
     );
   },
-});
-
-/**
- * This story tests the real AlertApi integration.
- * It uses the alertApi from the TestApiProvider (set up in storybook preview)
- * and shows how alerts posted via alertApi.post() appear.
- *
- * Note: The storybook preview.tsx renders AlertDisplay from core-components,
- * which still uses Material UI. To test the new ToastDisplay, run the actual
- * Backstage app where the app plugin's elements.tsx is used.
- */
-function RealAlertApiStory() {
-  // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-  const { useApi, alertApiRef } = require('@backstage/core-plugin-api');
-  const alertApi = useApi(alertApiRef);
-
-  return (
-    <Flex direction="column" gap="4">
-      <Flex direction="column" gap="2">
-        <Text variant="body-medium" weight="bold">
-          Real AlertApi Test
-        </Text>
-        <Text variant="body-small">
-          These buttons call alertApi.post() directly. Alerts appear in the OLD
-          AlertDisplay (top of screen) because Storybook uses core-components.
-        </Text>
-        <Text variant="body-small">
-          To test the NEW ToastDisplay, run: yarn start
-        </Text>
-      </Flex>
-      <Flex gap="3">
-        <Button
-          onPress={() =>
-            alertApi.post({
-              message: 'Entity saved successfully!',
-              severity: 'success',
-              display: 'transient',
-            })
-          }
-        >
-          Success (transient)
-        </Button>
-        <Button
-          onPress={() =>
-            alertApi.post({
-              message: 'Catalog refresh in progress',
-              severity: 'info',
-              display: 'transient',
-            })
-          }
-        >
-          Info (transient)
-        </Button>
-        <Button
-          onPress={() =>
-            alertApi.post({
-              message: 'Entity validation has warnings',
-              severity: 'warning',
-              display: 'transient',
-            })
-          }
-        >
-          Warning (transient)
-        </Button>
-        <Button
-          onPress={() =>
-            alertApi.post({
-              message: 'Failed to fetch entity from catalog',
-              severity: 'error',
-              display: 'transient',
-            })
-          }
-        >
-          Error (transient)
-        </Button>
-      </Flex>
-      <Flex gap="3">
-        <Button
-          variant="secondary"
-          onPress={() =>
-            alertApi.post({
-              message: 'This alert stays until dismissed',
-              severity: 'info',
-              display: 'permanent',
-            })
-          }
-        >
-          Permanent Alert
-        </Button>
-        <Button
-          variant="secondary"
-          onPress={() =>
-            alertApi.post({
-              message: 'Critical error - requires attention!',
-              severity: 'error',
-              display: 'permanent',
-            })
-          }
-        >
-          Permanent Error
-        </Button>
-      </Flex>
-    </Flex>
-  );
-}
-
-export const RealAlertApi = meta.story({
-  name: 'Real AlertApi Test',
-  render: () => <RealAlertApiStory />,
 });
 
 export default meta;

@@ -1,5 +1,13 @@
 # @backstage/theme
 
+## 0.7.3-next.0
+
+### Patch Changes
+
+- a0100d4: Fixes occasional duplication of v5 class name prefix for MUI 5 components.
+
+  Documentation added to explain how to resolve missing v5 prefix in class names when using MUI 5 components in main app.
+
 ## 0.7.2
 
 ### Patch Changes

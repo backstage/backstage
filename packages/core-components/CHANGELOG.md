@@ -1,5 +1,17 @@
 # @backstage/core-components
 
+## 0.18.9-next.1
+
+### Patch Changes
+
+- 482ceed: Migrated from `assertError` to `toError` for error handling.
+- 58b9f3f: Use Backstage Link component for markdown anchor rendering to ensure consistent internal and external link behavior.
+- Updated dependencies
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/theme@0.7.3-next.0
+  - @backstage/config@1.3.7-next.0
+  - @backstage/core-plugin-api@1.12.5-next.2
+
 ## 0.18.9-next.0
 
 ### Patch Changes

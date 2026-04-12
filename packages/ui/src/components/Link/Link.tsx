@@ -61,7 +61,11 @@ const LinkInternal = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
 
 LinkInternal.displayName = 'LinkInternal';
 
-/** @public */
+/**
+ * A styled anchor element that supports analytics event tracking on click.
+ *
+ * @public
+ */
 export const Link = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
   return <LinkInternal {...props} ref={ref} />;
 });

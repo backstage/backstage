@@ -1,5 +1,28 @@
 # @backstage/plugin-devtools-backend
 
+## 0.5.16-next.2
+
+### Patch Changes
+
+- 482ceed: Migrated from `assertError` to `toError` for error handling.
+- Updated dependencies
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/cli-common@0.2.1-next.1
+  - @backstage/config-loader@1.10.10-next.1
+  - @backstage/backend-plugin-api@1.9.0-next.2
+  - @backstage/config@1.3.7-next.0
+  - @backstage/plugin-permission-common@0.9.8-next.0
+  - @backstage/plugin-permission-node@0.10.12-next.2
+  - @backstage/plugin-devtools-common@0.1.24-next.0
+
+## 0.5.16-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0-next.1
+  - @backstage/plugin-permission-node@0.10.12-next.1
+
 ## 0.5.16-next.0
 
 ### Patch Changes

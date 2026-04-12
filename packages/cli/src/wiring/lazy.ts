@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { assertError } from '@backstage/errors';
+import { toError } from '@backstage/errors';
 import { exitWithError } from './errors';
 
 type ActionFunc = (...args: any[]) => Promise<void>;
@@ -40,8 +40,7 @@ export function lazy<TModule extends object>(
 
       process.exit(0);
     } catch (error) {
-      assertError(error);
-      exitWithError(error);
+      exitWithError(toError(error));
     }
   };
 }

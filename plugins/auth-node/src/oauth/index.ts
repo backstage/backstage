@@ -37,6 +37,7 @@ export {
   type OAuthAuthenticator,
   type OAuthAuthenticatorAuthenticateInput,
   type OAuthAuthenticatorLogoutInput,
+  type OAuthAuthenticatorLogoutResult,
   type OAuthAuthenticatorRefreshInput,
   type OAuthAuthenticatorResult,
   type OAuthAuthenticatorScopeOptions,

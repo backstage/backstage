@@ -1,5 +1,27 @@
 # @backstage/repo-tools
 
+## 0.17.1-next.2
+
+### Patch Changes
+
+- 482ceed: Migrated from `assertError` to `toError` for error handling.
+- Updated dependencies
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/cli-common@0.2.1-next.1
+  - @backstage/cli-node@0.3.1-next.1
+  - @backstage/config-loader@1.10.10-next.1
+  - @backstage/backend-plugin-api@1.9.0-next.2
+  - @backstage/catalog-model@1.7.8-next.0
+
+## 0.17.1-next.1
+
+### Patch Changes
+
+- 2e5c5f8: Bumped `glob` dependency from v7/v8/v11 to v13 to address security vulnerabilities in older versions. Bumped `rollup` from v4.27 to v4.59+ to fix a high severity path traversal vulnerability (GHSA-mw96-cpmx-2vgc).
+- 8e9679b: Parallelized CLI report generation, reducing wall-clock time by ~4x.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0-next.1
+
 ## 0.17.1-next.0
 
 ### Patch Changes

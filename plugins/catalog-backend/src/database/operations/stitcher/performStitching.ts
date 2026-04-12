@@ -27,12 +27,12 @@ import { StitchingStrategy } from '../../../stitching/types';
 import {
   DbFinalEntitiesRow,
   DbRefreshStateRow,
-  DbSearchRow,
   DbStitchQueueRow,
 } from '../../tables';
 import { buildEntitySearch } from './buildEntitySearch';
 import { markDeferredStitchCompleted } from './markDeferredStitchCompleted';
-import { BATCH_SIZE, generateStableHash } from './util';
+import { syncSearchRows } from './syncSearchRows';
+import { generateStableHash } from './util';
 import {
   LoggerService,
   isDatabaseConflictError,
@@ -256,10 +256,7 @@ export async function performStitching(options: {
       return 'abandoned';
     }
 
-    await knex.transaction(async trx => {
-      await trx<DbSearchRow>('search').where({ entity_id: entityId }).delete();
-      await trx.batchInsert('search', searchEntries, BATCH_SIZE);
-    });
+    await syncSearchRows(knex, entityId, searchEntries);
 
     return 'changed';
   } catch (error) {

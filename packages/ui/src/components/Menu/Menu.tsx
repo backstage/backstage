@@ -76,7 +76,11 @@ const MenuEmptyState = () => {
   return <div className={ownProps.classes.root}>No results found.</div>;
 };
 
-/** @public */
+/**
+ * A wrapper that connects a trigger element to a dropdown menu, controlling its open and close state.
+ *
+ * @public
+ */
 export const MenuTrigger = (props: MenuTriggerProps) => {
   return <RAMenuTrigger {...props} />;
 };

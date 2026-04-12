@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-events-backend-module-google-pubsub",
-  "version": "0.2.2-next.0",
+  "version": "0.2.2-next.2",
   "description": "The google-pubsub backend module for the events plugin.",
   "backstage": {
     "role": "backend-plugin-module",
@@ -40,8 +40,7 @@
     "@backstage/filter-predicates": "workspace:^",
     "@backstage/plugin-events-node": "workspace:^",
     "@backstage/types": "workspace:^",
-    "@google-cloud/pubsub": "^4.10.0",
-    "@opentelemetry/api": "^1.9.0"
+    "@google-cloud/pubsub": "^4.10.0"
   },
   "devDependencies": {
     "@backstage/backend-defaults": "workspace:^",

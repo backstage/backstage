@@ -81,51 +81,53 @@ const Community = () => {
     },
   ];
 
-  const partners: { name: string; url: string; logo: string }[] = [
+  const partners: {
+    name: string;
+    url: string;
+    logo: string;
+    height: number;
+  }[] = [
     {
       name: 'Frontside Software',
       url: 'https://frontside.com/backstage/',
       logo: 'img/partner-logo-frontside',
-    },
-    {
-      name: 'RedHat',
-      url: 'https://developers.redhat.com/rhdh',
-      logo: 'img/partner-logo-redhat',
-    },
-    {
-      name: 'Roadie',
-      url: 'https://roadie.io/',
-      logo: 'img/partner-logo-roadie',
-    },
-    {
-      name: 'solo.io',
-      url: 'https://www.solo.io/spotlight/',
-      logo: 'img/partner-logo-solo',
-    },
-    {
-      name: 'ThoughtWorks',
-      url: 'https://www.thoughtworks.com/about-us/partnerships/technology/backstage-by-spotify',
-      logo: 'img/partner-logo-thoughtworks',
-    },
-    {
-      name: 'VMWare',
-      url: 'https://tanzu.vmware.com/developer-portal',
-      logo: 'img/partner-logo-tanzubybroadcom',
-    },
-    {
-      name: 'StatusNeo',
-      url: 'https://statusneo.com/backstage',
-      logo: 'img/partner-logo-statusneo',
-    },
-    {
-      name: 'Alauda',
-      url: 'https://www.alauda.io/community/169249',
-      logo: 'img/partner-logo-alauda',
+      height: 62,
     },
     {
       name: 'Liatrio',
       url: 'https://www.liatrio.com/service-offerings/backstage',
       logo: 'img/partner-logo-liatrio',
+      height: 36,
+    },
+    {
+      name: 'RedHat',
+      url: 'https://developers.redhat.com/rhdh',
+      logo: 'img/partner-logo-redhat',
+      height: 38,
+    },
+    {
+      name: 'Roadie',
+      url: 'https://roadie.io/',
+      logo: 'img/partner-logo-roadie',
+      height: 62,
+    },
+    {
+      name: 'Spotify',
+      url: 'https://backstage.spotify.com',
+      logo: 'img/partner-logo-spotify',
+      height: 28,
+    },
+    {
+      name: 'StatusNeo',
+      url: 'https://statusneo.com/backstage',
+      logo: 'img/partner-logo-statusneo',
+      height: 30,
+    },
+    {
+      name: 'ThoughtWorks',
+      url: 'https://www.thoughtworks.com/about-us/partnerships/technology/backstage-by-spotify',
+      logo: 'img/partner-logo-thoughtworks',
+      height: 55,
     },
   ];
   //#endregion
@@ -232,11 +234,12 @@ const Community = () => {
           <BannerSectionGrid
             header={<h2 className="text--primary">Commercial Partners</h2>}
           >
-            {partners.map(({ name, url, logo }, index) => (
-              <div key={index}>
+            {partners.map(({ name, url, logo, height }, index) => (
+              <div key={index} className={communityStyles.partnerLogo}>
                 <Link to={url}>
                   <ThemedImage
                     alt={name}
+                    style={{ height }}
                     sources={{
                       light: useBaseUrl(`${siteConfig.baseUrl}${logo}-blk.png`),
                       dark: useBaseUrl(`${siteConfig.baseUrl}${logo}.png`),

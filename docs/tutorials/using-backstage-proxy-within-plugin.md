@@ -25,7 +25,7 @@ If your plugin requires access to an API, backstage offers
   - [Option 2: Defining the API client interface](#defining-the-api-client-interface)
     - [Creating the API client](#creating-the-api-client)
     - [Bundling your ApiRef with your plugin](#bundling-your-apiref-with-your-plugin)
-    - [Using the API in your components](#using-your-plugin-in-your-components)
+    - [Using the API in your components](#using-the-api-in-your-components)
 
 ## Setting up the backstage proxy
 
@@ -46,7 +46,7 @@ proxy:
 You can find more details about the proxy config options in the
 [proxying section](../plugins/proxying.md).
 
-# Calling an API using the backstage proxy
+## Calling an API using the backstage proxy
 
 If you followed the previous steps, you should now be able to access your API by
 calling `${backend-url}/api/proxy/<your-proxy-uri>`. The reason why

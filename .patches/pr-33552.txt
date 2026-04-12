@@ -1,0 +1,1 @@
+Add showPaginationLabel prop to TablePagination

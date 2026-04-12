@@ -182,6 +182,7 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
   );
 }
 
+/** @public */
 export function NfsDefaultCatalogPage(props: DefaultCatalogPageProps) {
   const {
     columns,

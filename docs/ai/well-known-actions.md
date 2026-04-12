@@ -22,6 +22,10 @@ This is a (non-exhaustive) list of actions that are known to be part of the Acti
 - `catalog.unregister-entity` (Unregister entity from the Catalog): Unregisters a Location entity and all entities it owns from the Backstage catalog.
 - `catalog.validate-entity` (Validate Catalog Entity): This action can be used to validate `catalog-info.yaml` file contents meant to be used with the software catalog.
 
+### Notifications
+
+- `notifications.get-notifications` (Get Notifications): Fetches notifications for the currently authenticated user. Defaults to returning only unread notifications. Supports filtering by read status (`unread`, `read`, `saved`, `all`), severity, topic, free-text search, and creation date. Supports pagination via `offset` and `limit`.
+
 ### Scaffolder
 
 - `scaffolder.dry-run-template` (Dry Run Scaffolder Template): Dry-runs a scaffolder template to validate it without making changes. Returns success with execution logs, or errors for validation failures.

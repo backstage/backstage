@@ -814,25 +814,14 @@ export interface CreateFrontendPluginOptions<
 }
 
 // @public
-export function createRouteRef<
-  TParams extends
-    | {
-        [param in TParamKeys]: string;
-      }
-    | undefined = undefined,
-  TParamKeys extends string = string,
->(config?: {
-  readonly params?: string extends TParamKeys
-    ? (keyof TParams)[]
-    : TParamKeys[];
+export function createRouteRef<TParamKey extends string = never>(config?: {
+  readonly params?: TParamKey[];
   aliasFor?: string;
 }): RouteRef<
-  keyof TParams extends never
+  [TParamKey] extends [never]
     ? undefined
-    : string extends TParamKeys
-    ? TParams
     : {
-        [param in TParamKeys]: string;
+        [param in TParamKey]: string;
       }
 >;
 

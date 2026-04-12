@@ -1,6 +1,6 @@
 {
   "name": "@backstage/cli",
-  "version": "0.36.1-next.0",
+  "version": "0.36.1-next.2",
   "description": "CLI for developing Backstage plugins and apps",
   "backstage": {
     "role": "cli"
@@ -71,7 +71,7 @@
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-unused-imports": "^4.1.4",
     "fs-extra": "^11.2.0",
-    "glob": "^7.1.7",
+    "glob": "^13.0.0",
     "jest-css-modules": "^2.1.0",
     "pirates": "^4.0.6",
     "postcss": "^8.1.0",

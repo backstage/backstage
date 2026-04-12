@@ -1,5 +1,31 @@
 # @backstage/plugin-org
 
+## 0.7.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.14.0-next.2
+  - @backstage/core-components@0.18.9-next.1
+  - @backstage/plugin-catalog-react@2.1.2-next.2
+  - @backstage/catalog-model@1.7.8-next.0
+  - @backstage/core-plugin-api@1.12.5-next.2
+  - @backstage/frontend-plugin-api@0.16.0-next.2
+  - @backstage/plugin-catalog-common@1.1.9-next.0
+
+## 0.7.1-next.1
+
+### Patch Changes
+
+- 87eb31c: Fixed `GroupProfileCard` and `UserProfileCard` content overflowing on narrow screens.
+- d156cf4: Added `title` and `icon` to the new frontend system plugin definition.
+- Updated dependencies
+  - @backstage/ui@0.14.0-next.1
+  - @backstage/plugin-catalog-react@2.1.2-next.1
+  - @backstage/frontend-plugin-api@0.16.0-next.1
+  - @backstage/core-components@0.18.9-next.0
+  - @backstage/core-plugin-api@1.12.5-next.1
+
 ## 0.7.1-next.0
 
 ### Patch Changes

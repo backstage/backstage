@@ -39,7 +39,7 @@ At the end of this tutorial, you can expect:
 Before we begin, make sure
 
 - You have created your own standalone Backstage app using
-  [`@backstage/create-app`](./index.md#1-create-your-backstage-app) and not
+  [`@backstage/create-app`](./index.md#creating-and-running-a-backstage-application) and not
   using a fork of the [backstage](https://github.com/backstage/backstage)
   repository.
 - You do not have an existing homepage, and by default you are redirected to

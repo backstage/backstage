@@ -114,8 +114,10 @@ describe('TemplateEditorToolbar', () => {
 
     expect(screen.getByLabelText('Search for an action')).toBeInTheDocument();
     expect(screen.getByText('action:example')).toBeInTheDocument();
-    expect(screen.getByText('Example description')).toBeInTheDocument();
-    expect(screen.getByText('Inform the title')).toBeInTheDocument();
+
+    await userEvent.click(screen.getByText('action:example'));
+
+    expect(await screen.findByText('Inform the title')).toBeInTheDocument();
   });
 
   it('should accept custom toolbar actions', async () => {

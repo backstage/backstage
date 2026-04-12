@@ -173,6 +173,7 @@ module.exports = {
             !ignoreTargetPackages.includes(targetName),
         )
       ) {
+        /** @type {import('eslint').Rule.SuggestionReportDescriptor[]} */
         const suggest = [];
 
         if (
@@ -187,9 +188,9 @@ module.exports = {
               sourcePackage: sourceName,
               sourceRole: sourceRole,
             },
-            /** @param {import('eslint').Rule.RuleFixer} _fixer */
-            fix(_fixer) {
+            fix() {
               // Not a fixable case, just give a suggestion to change plugin id
+              return null;
             },
           });
           suggest.push({
@@ -197,7 +198,6 @@ module.exports = {
             data: {
               targetPackage: targetName,
             },
-            /** @param {import('eslint').Rule.RuleFixer} fixer */
             fix(fixer) {
               const source = context.sourceCode;
               const nodeSource = source.getText(imp.node);
@@ -210,7 +210,6 @@ module.exports = {
             data: {
               targetPackage: targetName,
             },
-            /** @param {import('eslint').Rule.RuleFixer} fixer */
             fix(fixer) {
               const source = context.sourceCode;
               const nodeSource = source.getText(imp.node);
@@ -228,7 +227,6 @@ module.exports = {
             data: {
               targetPackage: targetName,
             },
-            /** @param {import('eslint').Rule.RuleFixer} fixer */
             fix(fixer) {
               const source = context.sourceCode;
               const nodeSource = source.getText(imp.node);
@@ -241,7 +239,6 @@ module.exports = {
             data: {
               targetPackage: targetName,
             },
-            /** @param {import('eslint').Rule.RuleFixer} fixer */
             fix(fixer) {
               const source = context.sourceCode;
               const nodeSource = source.getText(imp.node);
@@ -252,9 +249,9 @@ module.exports = {
         } else {
           suggest.push({
             messageId: 'removeImport',
-            /** @param {import('eslint').Rule.RuleFixer} _fixer */
-            fix(_fixer) {
-              // Not a fixable case, just give a suggestion to remove the import
+            fix() {
+              // Not a fixable case, just give a suggestion to change plugin id
+              return null;
             },
           });
         }

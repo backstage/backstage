@@ -800,6 +800,22 @@ If you are using [app feature discovery](../architecture/10-app.md#feature-disco
 
 Continue this process for each of your legacy routes until you have migrated all of them. For any plugin with additional extensions installed as children of the `Route`, refer to the plugin READMEs for more detailed instructions. For the entity pages, refer to the [separate section](#catalog-entity-page).
 
+##### Migrating `<Redirect>` routes
+
+If your old routes include `<Redirect>` elements to forward users from one path to another, you can replace them with the built-in redirect configuration on the `app/routes` extension:
+
+```yaml title="app-config.yaml"
+app:
+  extensions:
+    - app/routes:
+        config:
+          redirects:
+            - from: /old-path
+              to: /new-path
+```
+
+See the [`app/routes` built-in extension documentation](./03-built-in-extensions.md#configuring-redirects) for more details.
+
 ### Migrating core, internal and third-party plugins
 
 For certain core plugins — such as the Catalog plugin's entity page — we provide a dedicated step-by-step migration guide, since these plugins often require a more gradual approach due to their complexity.

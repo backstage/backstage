@@ -20,18 +20,9 @@ import {
   OriginSetting,
   TopicSetting,
 } from '@backstage/plugin-notifications-common';
-import TableRow from '@material-ui/core/TableRow';
-import Tooltip from '@material-ui/core/Tooltip';
-import Switch from '@material-ui/core/Switch';
-import { withStyles } from '@material-ui/core/styles';
+import { Switch, Tooltip, TooltipTrigger } from '@backstage/ui';
 import { NoBorderTableCell } from './NoBorderTableCell';
 import { useNotificationFormat } from './UserNotificationSettingsCard';
-
-const TopicTableRow = withStyles({
-  root: {
-    paddingLeft: '4px',
-  },
-})(TableRow);
 
 export const TopicRow = (props: {
   topic: TopicSetting;
@@ -47,33 +38,32 @@ export const TopicRow = (props: {
   const { topic, origin, settings, handleChange } = props;
   const { formatOriginName, formatTopicName } = useNotificationFormat();
   return (
-    <TopicTableRow>
+    <tr>
       <NoBorderTableCell />
       <NoBorderTableCell />
       <NoBorderTableCell>{formatTopicName(topic.id)}</NoBorderTableCell>
       {settings.channels.map(ch => (
-        <NoBorderTableCell key={`${ch.id}-${topic}`} align="center">
-          <Tooltip
-            title={`Enable or disable ${ch.id.toLocaleLowerCase(
-              'en-US',
-            )} notifications for the ${formatTopicName(
-              topic.id,
-            )} topic from ${formatOriginName(origin.id)}`}
-          >
+        <NoBorderTableCell key={`${ch.id}-${topic.id}`} align="center">
+          <TooltipTrigger>
             <Switch
-              checked={isNotificationsEnabledFor(
+              isSelected={isNotificationsEnabledFor(
                 settings,
                 ch.id,
                 origin.id,
                 topic.id,
               )}
-              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                handleChange(ch.id, origin.id, topic.id, event.target.checked);
+              onChange={(isSelected: boolean) => {
+                handleChange(ch.id, origin.id, topic.id, isSelected);
               }}
             />
-          </Tooltip>
+            <Tooltip>{`Enable or disable ${ch.id.toLocaleLowerCase(
+              'en-US',
+            )} notifications for the ${formatTopicName(
+              topic.id,
+            )} topic from ${formatOriginName(origin.id)}`}</Tooltip>
+          </TooltipTrigger>
         </NoBorderTableCell>
       ))}
-    </TopicTableRow>
+    </tr>
   );
 };

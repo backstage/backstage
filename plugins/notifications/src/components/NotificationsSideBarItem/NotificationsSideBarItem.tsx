@@ -13,16 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { forwardRef, useCallback, useEffect, useMemo, useState } from 'react';
 import { useNotificationsApi } from '../../hooks';
-import { Link, SidebarItem } from '@backstage/core-components';
-import NotificationsIcon from '@material-ui/icons/Notifications';
-import {
-  alertApiRef,
-  IconComponent,
-  useApi,
-  useRouteRef,
-} from '@backstage/core-plugin-api';
+import { SidebarItem } from '@backstage/core-components';
+import { IconComponent, useApi, useRouteRef } from '@backstage/core-plugin-api';
+import { toastApiRef } from '@backstage/frontend-plugin-api';
 import { rootRouteRef } from '../../routes';
 import { useSignal } from '@backstage/plugin-signals-react';
 import {
@@ -43,31 +38,34 @@ import {
   VariantType,
 } from 'notistack';
 import { SeverityIcon } from '../NotificationsTable/SeverityIcon';
-import OpenInNew from '@material-ui/icons/OpenInNew';
-import MarkAsReadIcon from '@material-ui/icons/CheckCircle';
-import IconButton from '@material-ui/core/IconButton';
-import Chip from '@material-ui/core/Chip';
-import { styled } from '@material-ui/core/styles';
+import { ButtonIcon, Flex, Tag, TagGroup } from '@backstage/ui';
+import {
+  RiExternalLinkLine,
+  RiCheckboxCircleLine,
+  RiNotification2Line,
+} from '@remixicon/react';
+import styles from './NotificationsSideBarItem.module.css';
 
-const StyledMaterialDesignContent = styled(MaterialDesignContent)(
-  ({ theme }) => ({
-    '&.notistack-MuiContent-low': {
-      backgroundColor: theme.palette.background.default,
-      color: theme.palette.text.primary,
-    },
-    '&.notistack-MuiContent-normal': {
-      backgroundColor: theme.palette.background.default,
-      color: theme.palette.text.primary,
-    },
-    '&.notistack-MuiContent-high': {
-      backgroundColor: theme.palette.background.default,
-      color: theme.palette.text.primary,
-    },
-    '&.notistack-MuiContent-critical': {
-      backgroundColor: theme.palette.background.default,
-      color: theme.palette.text.primary,
-    },
-  }),
+const NotificationsIcon: IconComponent = props => {
+  let size = 24;
+  if (props.fontSize === 'large') {
+    size = 32;
+  } else if (props.fontSize === 'small') {
+    size = 16;
+  }
+  return <RiNotification2Line size={size} />;
+};
+
+const StyledMaterialDesignContent = forwardRef<HTMLDivElement, any>(
+  (props: any, ref: React.Ref<HTMLDivElement>) => (
+    <MaterialDesignContent
+      {...props}
+      ref={ref}
+      className={[props.className, styles.snackbarContent]
+        .filter(Boolean)
+        .join(' ')}
+    />
+  ),
 );
 
 declare module 'notistack' {
@@ -146,7 +144,7 @@ export const NotificationsSidebarItem = (
     webNotificationsEnabled = false,
     titleCounterEnabled = true,
     snackbarEnabled = true,
-    snackbarAutoHideDuration = 10000,
+    snackbarAutoHideDuration = 15000,
     icon = NotificationsIcon,
     text = 'Notifications',
     ...restProps
@@ -155,7 +153,7 @@ export const NotificationsSidebarItem = (
     titleCounterEnabled: true,
     snackbarProps: {
       enabled: true,
-      autoHideDuration: 10000,
+      autoHideDuration: 15000,
     },
   };
 
@@ -172,7 +170,7 @@ export const NotificationsSidebarItem = (
     api.getStatus(),
   );
   const notificationsApi = useApi(notificationsApiRef);
-  const alertApi = useApi(alertApiRef);
+  const toastApi = useApi(toastApiRef);
   const [unreadCount, setUnreadCount] = useState(0);
   const notificationsRoute = useRouteRef(rootRouteRef)();
   // TODO: Do we want to add long polling in case signals are not available
@@ -186,11 +184,14 @@ export const NotificationsSidebarItem = (
   const getSnackbarProperties = useCallback(
     (notification: Notification) => {
       const action = (snackBarId: SnackbarKey) => (
-        <>
-          <IconButton
-            component={Link}
-            to={notification.payload.link ?? notificationsRoute}
-            onClick={() => {
+        <Flex gap="1">
+          <ButtonIcon
+            aria-label="open notification"
+            icon={<RiExternalLinkLine size={16} />}
+            variant="secondary"
+            onPress={() => {
+              const link = notification.payload.link ?? notificationsRoute;
+              window.open(link, '_blank', 'noopener,noreferrer');
               if (notification.payload.link) {
                 notificationsApi
                   .updateNotifications({
@@ -198,19 +199,20 @@ export const NotificationsSidebarItem = (
                     read: true,
                   })
                   .catch(() => {
-                    alertApi.post({
-                      message: 'Failed to mark notification as read',
-                      severity: 'error',
+                    toastApi.post({
+                      title: 'Failed to mark notification as read',
+                      status: 'danger',
                     });
                   });
               }
               closeSnackbar(snackBarId);
             }}
-          >
-            <OpenInNew fontSize="small" />
-          </IconButton>
-          <IconButton
-            onClick={() => {
+          />
+          <ButtonIcon
+            aria-label="mark as read"
+            icon={<RiCheckboxCircleLine size={16} />}
+            variant="secondary"
+            onPress={() => {
               notificationsApi
                 .updateNotifications({
                   ids: [notification.id],
@@ -220,21 +222,19 @@ export const NotificationsSidebarItem = (
                   closeSnackbar(snackBarId);
                 })
                 .catch(() => {
-                  alertApi.post({
-                    message: 'Failed to mark notification as read',
-                    severity: 'error',
+                  toastApi.post({
+                    title: 'Failed to mark notification as read',
+                    status: 'danger',
                   });
                 });
             }}
-          >
-            <MarkAsReadIcon fontSize="small" />
-          </IconButton>
-        </>
+          />
+        </Flex>
       );
 
       return { action };
     },
-    [notificationsRoute, notificationsApi, alertApi],
+    [notificationsRoute, notificationsApi, toastApi],
   );
 
   useEffect(() => {
@@ -286,9 +286,9 @@ export const NotificationsSidebarItem = (
           }
         })
         .catch(() => {
-          alertApi.post({
-            message: 'Failed to fetch notification',
-            severity: 'error',
+          toastApi.post({
+            title: 'Failed to fetch notification',
+            status: 'danger',
           });
         });
     };
@@ -302,7 +302,7 @@ export const NotificationsSidebarItem = (
     sendWebNotification,
     webNotificationsEnabled,
     notificationsApi,
-    alertApi,
+    toastApi,
     getSnackbarProperties,
     snackbarProps,
   ]);
@@ -341,16 +341,19 @@ export const NotificationsSidebarItem = (
         <SnackbarProvider
           iconVariant={{
             normal: snackbarProps?.iconVariant?.normal ?? (
-              <SeverityIcon severity="normal" />
+              <SeverityIcon severity="normal" className={styles.snackbarIcon} />
             ),
             critical: snackbarProps?.iconVariant?.critical ?? (
-              <SeverityIcon severity="critical" />
+              <SeverityIcon
+                severity="critical"
+                className={styles.snackbarIcon}
+              />
             ),
             high: snackbarProps?.iconVariant?.high ?? (
-              <SeverityIcon severity="high" />
+              <SeverityIcon severity="high" className={styles.snackbarIcon} />
             ),
             low: snackbarProps?.iconVariant?.low ?? (
-              <SeverityIcon severity="low" />
+              <SeverityIcon severity="low" className={styles.snackbarIcon} />
             ),
           }}
           dense={snackbarProps?.dense}
@@ -377,7 +380,11 @@ export const NotificationsSidebarItem = (
           icon={icon}
           {...restProps}
         >
-          {count && <Chip size="small" label={count > 99 ? '99+' : count} />}
+          {count && (
+            <TagGroup aria-label="Unread notifications">
+              <Tag size="small">{count > 99 ? '99+' : count}</Tag>
+            </TagGroup>
+          )}
         </SidebarItem>
       )}
     </>

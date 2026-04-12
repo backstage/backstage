@@ -16,6 +16,13 @@
 
 export { default } from './plugin';
 
+export { NfsDefaultCatalogPage as CatalogIndexPage } from '../components/CatalogPage';
+export type { DefaultCatalogPageProps as CatalogIndexPageProps } from '../components/CatalogPage';
+export type {
+  CatalogTableRow,
+  CatalogTableColumnsFunc,
+} from '../components/CatalogTable';
+
 import { catalogTranslationRef as _catalogTranslationRef } from './translation';
 
 /**

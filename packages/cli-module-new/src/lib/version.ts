@@ -49,6 +49,7 @@ import { version as frontendTestUtils } from '../../../frontend-test-utils/packa
 import { version as testUtils } from '../../../test-utils/package.json';
 import { version as theme } from '../../../theme/package.json';
 import { version as types } from '../../../types/package.json';
+import { version as ui } from '../../../ui/package.json';
 import { version as authBackend } from '../../../../plugins/auth-backend/package.json';
 import { version as authBackendModuleGuestProvider } from '../../../../plugins/auth-backend-module-guest-provider/package.json';
 import { version as catalogNode } from '../../../../plugins/catalog-node/package.json';
@@ -74,6 +75,7 @@ export const packageVersions: Record<string, string> = {
   '@backstage/test-utils': testUtils,
   '@backstage/theme': theme,
   '@backstage/types': types,
+  '@backstage/ui': ui,
   '@backstage/plugin-scaffolder-node': scaffolderNode,
   '@backstage/plugin-scaffolder-node-test-utils': scaffolderNodeTestUtils,
   '@backstage/plugin-auth-backend': authBackend,

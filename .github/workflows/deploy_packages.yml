@@ -102,7 +102,7 @@ jobs:
             ${{ runner.os }}-v${{ matrix.node-version }}-backstage-cli-
 
       - name: lint
-        run: yarn backstage-cli repo lint --successCache --successCacheDir .cache/backstage-cli
+        run: yarn backstage-cli repo lint --success-cache --success-cache-dir .cache/backstage-cli
 
       - name: type checking and declarations
         run: yarn tsc:full
@@ -115,7 +115,7 @@ jobs:
 
       - name: test (and upload coverage)
         run: |
-          yarn backstage-cli repo test --maxWorkers=3 --workerIdleMemoryLimit=1300M --coverage --successCache --successCacheDir .cache/backstage-cli
+          yarn backstage-cli repo test --maxWorkers=3 --workerIdleMemoryLimit=1300M --coverage --success-cache --success-cache-dir .cache/backstage-cli
         env:
           BACKSTAGE_TEST_DISABLE_DOCKER: 1
           BACKSTAGE_TEST_DATABASE_postgres18_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres18.ports[5432] }}
@@ -125,11 +125,26 @@ jobs:
 
       - name: Discord notification
         if: ${{ failure() }}
-        uses: Ilshidur/action-discord@d2594079a10f1d6739ee50a2471f0ca57418b554 # 0.4.0
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         with:
-          args: 'Master build failed https://github.com/{{GITHUB_REPOSITORY}}/actions/runs/{{GITHUB_RUN_ID}}'
+          script: |
+            const webhook = process.env.DISCORD_WEBHOOK;
+            if (!webhook) {
+              throw new Error('DISCORD_WEBHOOK secret is not set');
+            }
+            const repo = context.repo.owner + '/' + context.repo.repo;
+            const runId = context.runId;
+            const message = `Master build failed https://github.com/${repo}/actions/runs/${runId}`;
+            const response = await fetch(webhook, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ content: message }),
+            });
+            if (!response.ok) {
+              throw new Error(`Discord webhook request failed: ${response.status} ${response.statusText}`);
+            }
 
   # A separate release build that is only run for commits that are the result of merging the "Version Packages" PR
   # We can't re-use the output from the above step, but we'll have a guaranteed node_modules cache and
@@ -153,8 +168,22 @@ jobs:
 
       # Notify maintainers that a new release is ready to be published
       - name: Discord notification
-        uses: Ilshidur/action-discord@d2594079a10f1d6739ee50a2471f0ca57418b554 # 0.4.0
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_MAINTAINERS_WEBHOOK }}
         with:
-          args: 'A new release is ready to be [published](https://github.com/backstage/publishing/actions/workflows/publish-main.yml) from {{GITHUB_SHA}}'
+          script: |
+            const webhook = process.env.DISCORD_WEBHOOK;
+            if (!webhook) {
+              throw new Error('DISCORD_MAINTAINERS_WEBHOOK secret is not set');
+            }
+            const sha = context.sha;
+            const message = `A new release is ready to be [published](https://github.com/backstage/publishing/actions/workflows/publish-main.yml) from ${sha}`;
+            const response = await fetch(webhook, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ content: message }),
+            });
+            if (!response.ok) {
+              throw new Error(`Discord webhook request failed: ${response.status} ${response.statusText}`);
+            }

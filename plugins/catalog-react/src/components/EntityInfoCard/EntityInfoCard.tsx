@@ -30,6 +30,10 @@ const useStyles = makeStyles({
   root: {
     height: '100%',
   },
+  title: {
+    minWidth: 0,
+    overflow: 'hidden',
+  },
   footer: {
     display: 'flex',
     justifyContent: 'flex-end',
@@ -55,7 +59,12 @@ export function EntityInfoCard(props: EntityInfoCardProps) {
       {title && (
         <CardHeader>
           <Flex justify="between" align="center">
-            <Text as="h3" variant="title-x-small" weight="bold">
+            <Text
+              as="h3"
+              variant="title-x-small"
+              weight="bold"
+              className={classes.title}
+            >
               {title}
             </Text>
             {headerActions && (

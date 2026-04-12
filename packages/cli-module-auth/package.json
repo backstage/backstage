@@ -1,6 +1,6 @@
 {
   "name": "@backstage/cli-module-auth",
-  "version": "0.1.1-next.0",
+  "version": "0.1.1-next.2",
   "description": "CLI module for Backstage CLI",
   "backstage": {
     "role": "cli-module"
@@ -37,7 +37,7 @@
     "@backstage/errors": "workspace:^",
     "cleye": "^2.3.0",
     "fs-extra": "^11.2.0",
-    "glob": "^7.1.7",
+    "glob": "^13.0.0",
     "inquirer": "^8.2.0",
     "proper-lockfile": "^4.1.2",
     "yaml": "^2.0.0",

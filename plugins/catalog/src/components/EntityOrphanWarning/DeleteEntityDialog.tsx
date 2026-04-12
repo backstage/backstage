@@ -18,7 +18,7 @@ import { Entity } from '@backstage/catalog-model';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { useState } from 'react';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
-import { assertError } from '@backstage/errors';
+import { toError } from '@backstage/errors';
 import { catalogTranslationRef } from '../../alpha/translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { Button, Dialog, DialogFooter, DialogHeader } from '@backstage/ui';
@@ -44,8 +44,7 @@ export function DeleteEntityDialog(props: DeleteEntityDialogProps) {
       await catalogApi.removeEntityByUid(uid!);
       onConfirm();
     } catch (err) {
-      assertError(err);
-      alertApi.post({ message: err.message });
+      alertApi.post({ message: toError(err).message });
     } finally {
       setBusy(false);
     }

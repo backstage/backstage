@@ -19,7 +19,11 @@ import { AvatarProps } from './types';
 import { useDefinition } from '../../hooks/useDefinition';
 import { AvatarDefinition } from './definition';
 
-/** @public */
+/**
+ * Displays a user's profile image with an automatic fallback to their initials when the image fails to load.
+ *
+ * @public
+ */
 export const Avatar = forwardRef<HTMLDivElement, AvatarProps>((props, ref) => {
   const { ownProps, restProps, dataAttributes } = useDefinition(
     AvatarDefinition,

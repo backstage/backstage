@@ -39,7 +39,10 @@ import {
   mockCredentials,
   mockServices,
 } from '@backstage/backend-test-utils';
-import { actionsRegistryServiceMock } from '@backstage/backend-test-utils/alpha';
+import {
+  actionsRegistryServiceMock,
+  metricsServiceMock,
+} from '@backstage/backend-test-utils/alpha';
 
 describe('NunjucksWorkflowRunner', () => {
   let actionRegistry: TemplateActionRegistry;
@@ -249,6 +252,7 @@ describe('NunjucksWorkflowRunner', () => {
       logger,
       permissions: mockedPermissionApi,
       config,
+      metrics: metricsServiceMock.mock(),
     });
   });
 
