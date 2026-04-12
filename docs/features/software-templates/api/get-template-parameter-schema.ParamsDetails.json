@@ -1,0 +1,1 @@
+{"parameters":[{"name":"namespace","in":"path","required":true,"schema":{"type":"string"}},{"name":"kind","in":"path","required":true,"schema":{"type":"string"}},{"name":"name","in":"path","required":true,"schema":{"type":"string"}}]}

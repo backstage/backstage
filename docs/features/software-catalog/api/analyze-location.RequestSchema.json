@@ -1,0 +1,1 @@
+{"title":"Body","body":{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"catalogFileName":{"type":"string"},"location":{"type":"object","properties":{"type":{"type":"string"},"target":{"type":"string"}},"required":["type","target"],"additionalProperties":false,"title":"LocationInput"}},"required":["location"]}}}}}

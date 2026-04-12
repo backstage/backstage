@@ -1,0 +1,1 @@
+{"parameters":[{"in":"path","name":"provider","required":true,"schema":{"type":"string"}},{"in":"path","name":"resource","required":true,"schema":{"type":"string"}}]}

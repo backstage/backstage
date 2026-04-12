@@ -1,0 +1,1 @@
+{"responses":{"200":{"description":"Ok"},"400":{"description":"Validation errors.","content":{"application/json":{"schema":{"type":"object","properties":{"errors":{"type":"array","items":{"type":"object","properties":{"name":{"type":"string"},"message":{"type":"string"}},"required":["name","message"],"additionalProperties":{}}}},"required":["errors"]}}}}}}

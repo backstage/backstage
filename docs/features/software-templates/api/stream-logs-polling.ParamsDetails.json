@@ -1,0 +1,1 @@
+{"parameters":[{"name":"after","in":"query","description":"Offset event ID to stream events after.","required":false,"allowReserved":true,"schema":{"type":"integer"}},{"name":"taskId","in":"path","required":true,"schema":{"type":"string"}}]}

@@ -1,0 +1,1 @@
+{"title":"Body","body":{"required":true,"content":{"application/json":{"schema":{"type":"object","properties":{"location":{"type":"string"},"entity":{"type":"object","additionalProperties":{}}},"required":["location","entity"]}}}}}
