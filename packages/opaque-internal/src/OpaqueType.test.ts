@@ -96,6 +96,22 @@ describe('OpaqueType', () => {
     ).toThrowErrorMatchingInlineSnapshot(
       `"Invalid opaque type, expected 'my-type', but got '<function>'"`,
     );
+    const fnWithType = Object.assign(() => {}, {
+      $$type: 'some-other-type',
+    });
+    expect(() =>
+      OpaqueMyType.toInternal(fnWithType),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Invalid opaque type, expected 'my-type', but got 'some-other-type'"`,
+    );
+    expect(OpaqueMyType.isType(fnWithType)).toBe(false);
+    const fnWithCorrectType = Object.assign(() => {}, {
+      $$type: 'my-type',
+      version: 'v1',
+      foo: 'baz',
+    });
+    expect(OpaqueMyType.isType(fnWithCorrectType)).toBe(true);
+    expect(OpaqueMyType.toInternal(fnWithCorrectType).foo).toBe('baz');
     expect(() =>
       OpaqueMyType.toInternal({ $$type: 'some-other-type' }),
     ).toThrowErrorMatchingInlineSnapshot(

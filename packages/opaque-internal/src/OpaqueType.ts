@@ -142,21 +142,26 @@ export class OpaqueType<
   }
 
   #isThisInternalType(value: unknown): value is T['public'] & T['versions'] {
-    if (value === null || typeof value !== 'object') {
+    if (
+      value === null ||
+      (typeof value !== 'object' && typeof value !== 'function')
+    ) {
       return false;
     }
     return (value as T['public']).$$type === this.#type;
   }
 
   #stringifyUnknown(value: unknown) {
+    if (typeof value === 'function' || typeof value === 'object') {
+      if (value === null) {
+        return '<null>';
+      }
+      if ('$$type' in value) {
+        return String(value.$$type);
+      }
+    }
     if (typeof value !== 'object') {
       return `<${typeof value}>`;
-    }
-    if (value === null) {
-      return '<null>';
-    }
-    if ('$$type' in value) {
-      return String(value.$$type);
     }
     return String(value);
   }
