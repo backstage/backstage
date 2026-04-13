@@ -98,7 +98,7 @@ yarn workspace @internal/plugin-todo-backend add --dev knex
 Now, running this command will scaffold a file in that `migrations/` directory for us.
 
 ```bash
-yarn workspace @internal/plugin-todo-backend knex migrate:make init
+yarn workspace @internal/plugin-todo-backend knex migrate:make init --migrations-directory ./migrations
 ```
 
 This should spit out a message like
