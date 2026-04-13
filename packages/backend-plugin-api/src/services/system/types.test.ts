@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
-import {
-  InternalServiceFactory,
-  createServiceFactory,
-  createServiceRef,
-} from './types';
+import { OpaqueBackendFeature } from '../../wiring/types';
+import { createServiceFactory, createServiceRef } from './types';
 
 const ref = createServiceRef<string>({ id: 'x' });
 const rootDep = createServiceRef<number>({ id: 'y', scope: 'root' });
@@ -48,7 +45,9 @@ describe('createServiceFactory', () => {
       },
     });
     expect(factory.$$type).toBe('@backstage/BackendFeature');
-    expect((factory as InternalServiceFactory).featureType).toBe('service');
+    expect(OpaqueBackendFeature.toInternal(factory).featureType).toBe(
+      'service',
+    );
     expect(factory.service).toBe(ref);
   });
 
@@ -61,7 +60,9 @@ describe('createServiceFactory', () => {
       },
     });
     expect(factory.$$type).toBe('@backstage/BackendFeature');
-    expect((factory as InternalServiceFactory).featureType).toBe('service');
+    expect(OpaqueBackendFeature.toInternal(factory).featureType).toBe(
+      'service',
+    );
     expect(factory.service).toBe(rootDep);
   });
 
@@ -75,7 +76,9 @@ describe('createServiceFactory', () => {
       },
     });
     expect(factory.$$type).toBe('@backstage/BackendFeature');
-    expect((factory as InternalServiceFactory).featureType).toBe('service');
+    expect(OpaqueBackendFeature.toInternal(factory).featureType).toBe(
+      'service',
+    );
     expect(factory.service).toBe(ref);
   });
 

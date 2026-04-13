@@ -15,29 +15,33 @@
  */
 
 import { coreServices, createServiceFactory } from '../services';
-import { InternalServiceFactory } from '../services/system/types';
 import { BackendFeature } from '../types';
 import { createBackendFeatureLoader } from './createBackendFeatureLoader';
 import { createBackendPlugin } from './createBackendPlugin';
-import { InternalBackendFeatureLoader } from './types';
+import { OpaqueBackendFeature } from './types';
 
 describe('createBackendFeatureLoader', () => {
   it('should create an empty feature loader', () => {
-    const result = createBackendFeatureLoader({
-      deps: {},
-      loader: () => [],
-    }) as InternalBackendFeatureLoader;
+    const result = OpaqueBackendFeature.toInternal(
+      createBackendFeatureLoader({
+        deps: {},
+        loader: () => [],
+      }),
+    );
 
     expect(result.$$type).toEqual('@backstage/BackendFeature');
     expect(result.version).toEqual('v1');
     expect(result.featureType).toEqual('loader');
+    if (result.featureType !== 'loader') {
+      throw new Error('unexpected');
+    }
     expect(result.deps).toEqual({});
     expect(result.loader).toEqual(expect.any(Function));
     expect(result.description).toMatch(/^created at '.*'$/);
   });
 
   it('should create a feature loader that loads a few features', async () => {
-    const result = createBackendFeatureLoader({
+    const raw = createBackendFeatureLoader({
       deps: {
         config: coreServices.rootConfig,
       },
@@ -61,11 +65,15 @@ describe('createBackendFeatureLoader', () => {
           }),
         ];
       },
-    }) as InternalBackendFeatureLoader;
+    });
 
+    const result = OpaqueBackendFeature.toInternal(raw);
     expect(result.$$type).toEqual('@backstage/BackendFeature');
     expect(result.version).toEqual('v1');
     expect(result.featureType).toEqual('loader');
+    if (result.featureType !== 'loader') {
+      throw new Error('unexpected');
+    }
 
     const results = await result.loader({ config: {} });
     expect(results.length).toBe(3);
@@ -73,9 +81,12 @@ describe('createBackendFeatureLoader', () => {
     expect(pluginX.$$type).toBe('@backstage/BackendFeature');
     expect(serviceFactory.$$type).toBe('@backstage/BackendFeature');
     expect(pluginY.$$type).toBe('@backstage/BackendFeature');
-    expect((serviceFactory as InternalServiceFactory).service.id).toBe(
-      coreServices.pluginMetadata.id,
-    );
+    const internalServiceFactory =
+      OpaqueBackendFeature.toInternal(serviceFactory);
+    expect(
+      internalServiceFactory.featureType === 'service' &&
+        internalServiceFactory.service.id,
+    ).toBe(coreServices.pluginMetadata.id);
   });
 
   it('should support multiple output formats', async () => {
@@ -83,7 +94,10 @@ describe('createBackendFeatureLoader', () => {
     const dynamicFeature = Promise.resolve({ default: feature });
 
     async function extractResult(f: BackendFeature) {
-      const internal = f as InternalBackendFeatureLoader;
+      const internal = OpaqueBackendFeature.toInternal(f);
+      if (internal.featureType !== 'loader') {
+        throw new Error('unexpected');
+      }
       return internal.loader({});
     }
 

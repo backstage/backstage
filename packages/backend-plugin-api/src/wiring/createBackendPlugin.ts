@@ -20,7 +20,7 @@ import {
   ExtensionPoint,
   ExtensionPointFactoryContext,
   InternalBackendPluginRegistrationV1_1,
-  InternalBackendRegistrations,
+  OpaqueBackendFeature,
 } from './types';
 import { ID_PATTERN, ID_PATTERN_OLD } from './constants';
 
@@ -133,5 +133,5 @@ export function createBackendPlugin(
     version: 'v1',
     featureType: 'registrations',
     getRegistrations,
-  } as InternalBackendRegistrations;
+  } as typeof OpaqueBackendFeature.TInternal;
 }

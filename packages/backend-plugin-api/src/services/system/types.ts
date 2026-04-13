@@ -15,9 +15,7 @@
  */
 
 import { BackendFeature } from '../../types';
-import type { InternalServiceFactory } from '@internal/backend';
-
-export type { InternalServiceFactory };
+import { OpaqueBackendFeature } from '@internal/backend';
 
 /**
  * A reference to a backend service. You can use these references to mark
@@ -277,7 +275,8 @@ export function createServiceFactory<
       deps: options.deps,
       factory: async (deps: ServiceRefsToInstances<TDeps, 'root'>) =>
         c.factory(deps),
-    } as InternalServiceFactory<TService, 'root', TInstances>;
+    } as typeof OpaqueBackendFeature.TInternal &
+      ServiceFactory<TService, 'root', TInstances>;
   }
   const c = options as PluginServiceFactoryOptions<
     TService,
@@ -302,5 +301,6 @@ export function createServiceFactory<
     deps: options.deps,
     factory: async (deps: ServiceRefsToInstances<TDeps>, ctx: TContext) =>
       c.factory(deps, ctx),
-  } as InternalServiceFactory<TService, 'plugin', TInstances>;
+  } as typeof OpaqueBackendFeature.TInternal &
+    ServiceFactory<TService, 'plugin', TInstances>;
 }

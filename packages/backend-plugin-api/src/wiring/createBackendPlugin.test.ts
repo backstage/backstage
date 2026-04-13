@@ -18,7 +18,7 @@ import { createServiceRef } from '../services';
 import { ID_PATTERN } from './constants';
 import { createBackendPlugin } from './createBackendPlugin';
 import { createExtensionPoint } from './createExtensionPoint';
-import { InternalBackendRegistrations } from './types';
+import { OpaqueBackendFeature } from './types';
 
 describe('createBackendPlugin', () => {
   it('should create a BackendPlugin', () => {
@@ -29,11 +29,15 @@ describe('createBackendPlugin', () => {
       },
     });
 
-    const plugin = result as unknown as InternalBackendRegistrations;
-    expect(plugin.$$type).toEqual('@backstage/BackendFeature');
-    expect(plugin.version).toEqual('v1');
-    expect(plugin.getRegistrations).toEqual(expect.any(Function));
-    expect(plugin.getRegistrations()).toEqual([
+    const internal = OpaqueBackendFeature.toInternal(result);
+    expect(internal.$$type).toEqual('@backstage/BackendFeature');
+    expect(internal.version).toEqual('v1');
+    expect(internal.featureType).toEqual('registrations');
+    if (internal.featureType !== 'registrations') {
+      throw new Error('unexpected');
+    }
+    expect(internal.getRegistrations).toEqual(expect.any(Function));
+    expect(internal.getRegistrations()).toEqual([
       {
         type: 'plugin-v1.1',
         pluginId: 'x',

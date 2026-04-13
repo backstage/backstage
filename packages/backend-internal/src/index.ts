@@ -17,13 +17,9 @@
 export { OpaqueExtensionPointFactoryMiddleware } from './wiring';
 export { OpaqueBackendFeature } from './types';
 export type {
-  InternalBackendFeature,
-  InternalBackendRegistrations,
-  InternalBackendFeatureLoader,
   InternalBackendPluginRegistration,
   InternalBackendModuleRegistration,
   InternalBackendPluginRegistrationV1_1,
   InternalBackendModuleRegistrationV1_1,
   ExtensionPointRegistration,
-  InternalServiceFactory,
 } from './types';

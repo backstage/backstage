@@ -31,10 +31,16 @@ import {
 import {
   OpaqueExtensionPointFactoryMiddleware,
   OpaqueBackendFeature,
-  type InternalBackendFeatureLoader,
-  type InternalBackendRegistrations,
 } from '@internal/backend';
 import { ConflictError, ForwardedError, toError } from '@backstage/errors';
+
+type InternalBackendFeature = typeof OpaqueBackendFeature.TInternal;
+type InternalRegistrations = InternalBackendFeature & {
+  featureType: 'registrations';
+};
+type InternalFeatureLoader = InternalBackendFeature & {
+  featureType: 'loader';
+};
 import { DependencyGraph } from '../lib/DependencyGraph';
 import { ServiceRegistry } from './ServiceRegistry';
 import { createInitializationResultCollector } from './createInitializationResultCollector';
@@ -57,7 +63,7 @@ export interface BackendRegisterInit {
 export class BackendInitializer {
   #startPromise?: Promise<{ result: BackendStartupResult }>;
   #stopPromise?: Promise<void>;
-  #registrations = new Array<InternalBackendRegistrations>();
+  #registrations = new Array<InternalRegistrations>();
   #extensionPoints = new Map<
     string,
     {
@@ -67,7 +73,7 @@ export class BackendInitializer {
   >();
   #serviceRegistry: ServiceRegistry;
   #registeredFeatures = new Array<Promise<BackendFeature>>();
-  #registeredFeatureLoaders = new Array<InternalBackendFeatureLoader>();
+  #registeredFeatureLoaders = new Array<InternalFeatureLoader>();
   #extensionPointFactoryMiddleware: ExtensionPointFactoryMiddleware[];
   #unhandledRejectionHandler?: (reason: Error) => void;
   #uncaughtExceptionHandler?: (error: Error) => void;
@@ -153,11 +159,9 @@ export class BackendInitializer {
     if (internal.featureType === 'service') {
       this.#serviceRegistry.add(internal as ServiceFactory);
     } else if (internal.featureType === 'loader') {
-      this.#registeredFeatureLoaders.push(
-        internal as InternalBackendFeatureLoader,
-      );
+      this.#registeredFeatureLoaders.push(internal as InternalFeatureLoader);
     } else if (internal.featureType === 'registrations') {
-      this.#registrations.push(internal as InternalBackendRegistrations);
+      this.#registrations.push(internal as InternalRegistrations);
     } else {
       throw new Error(
         `Failed to add feature, invalid feature ${JSON.stringify(feature)}`,
@@ -345,9 +349,7 @@ export class BackendInitializer {
   }
 
   #enumerateRegistrations(
-    allRegistrations: ReturnType<
-      InternalBackendRegistrations['getRegistrations']
-    >,
+    allRegistrations: ReturnType<InternalRegistrations['getRegistrations']>,
     resultCollector: ReturnType<typeof createInitializationResultCollector>,
   ): {
     pluginInits: Map<string, BackendRegisterInit>;
@@ -547,11 +549,8 @@ export class BackendInitializer {
     throw new Error('Unexpected plugin lifecycle service implementation');
   }
 
-  async #applyBackendFeatureLoaders(loaders: InternalBackendFeatureLoader[]) {
-    const servicesAddedByLoaders = new Map<
-      string,
-      InternalBackendFeatureLoader
-    >();
+  async #applyBackendFeatureLoaders(loaders: InternalFeatureLoader[]) {
+    const servicesAddedByLoaders = new Map<string, InternalFeatureLoader>();
 
     for (const loader of loaders) {
       const deps = new Map<string, unknown>();
@@ -592,12 +591,12 @@ export class BackendInitializer {
         });
 
       let didAddServiceFactory = false;
-      const newLoaders = new Array<InternalBackendFeatureLoader>();
+      const newLoaders = new Array<InternalFeatureLoader>();
 
       for await (const feature of result) {
         const internal = OpaqueBackendFeature.toInternal(feature);
         if (internal.featureType === 'loader') {
-          newLoaders.push(internal as InternalBackendFeatureLoader);
+          newLoaders.push(internal as InternalFeatureLoader);
         } else {
           // This block makes sure that feature loaders do not provide duplicate
           // implementations for the same service, but at the same time allows

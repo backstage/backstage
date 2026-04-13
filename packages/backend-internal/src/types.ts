@@ -18,7 +18,6 @@ import {
   BackendFeature,
   ExtensionPoint,
   ServiceRef,
-  ServiceFactory,
 } from '@backstage/backend-plugin-api';
 import { OpaqueType } from '@internal/opaque';
 
@@ -117,15 +116,3 @@ export const OpaqueBackendFeature = OpaqueType.create<{
   type: '@backstage/BackendFeature',
   versions: ['v1'],
 });
-
-export type InternalBackendFeature = typeof OpaqueBackendFeature.TInternal;
-export type InternalBackendRegistrations =
-  typeof OpaqueBackendFeature.TInternal & { featureType: 'registrations' };
-export type InternalBackendFeatureLoader =
-  typeof OpaqueBackendFeature.TInternal & { featureType: 'loader' };
-export type InternalServiceFactory<
-  TService = unknown,
-  TScope extends 'plugin' | 'root' = 'plugin' | 'root',
-  TInstances extends 'singleton' | 'multiton' = 'singleton' | 'multiton',
-> = typeof OpaqueBackendFeature.TInternal &
-  ServiceFactory<TService, TScope, TInstances> & { featureType: 'service' };

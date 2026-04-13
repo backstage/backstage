@@ -21,10 +21,13 @@ import {
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
 import { ConflictError, stringifyError } from '@backstage/errors';
-import {
-  OpaqueBackendFeature,
-  type InternalServiceFactory,
-} from '@internal/backend';
+import { OpaqueBackendFeature } from '@internal/backend';
+
+type InternalServiceFactory<
+  TService = unknown,
+  TScope extends 'plugin' | 'root' = 'plugin' | 'root',
+> = typeof OpaqueBackendFeature.TInternal &
+  ServiceFactory<TService, TScope> & { featureType: 'service' };
 import { DependencyGraph } from '../lib/DependencyGraph';
 /**
  * Keep in sync with `@backstage/backend-plugin-api/src/services/system/types.ts`

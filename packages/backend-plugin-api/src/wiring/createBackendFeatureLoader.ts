@@ -17,7 +17,7 @@
 import { ServiceRef } from '../services';
 import { BackendFeature } from '../types';
 import { describeParentCallSite } from './describeParentCallSite';
-import { InternalBackendFeatureLoader } from './types';
+import { OpaqueBackendFeature } from './types';
 
 /**
  * @public
@@ -64,5 +64,5 @@ export function createBackendFeatureLoader<
       }
       return result;
     },
-  } as InternalBackendFeatureLoader;
+  } as typeof OpaqueBackendFeature.TInternal;
 }

@@ -10045,6 +10045,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@internal/backend@workspace:packages/backend-internal"
   dependencies:
+    "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/cli": "workspace:^"
   languageName: unknown
   linkType: soft

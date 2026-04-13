@@ -16,15 +16,13 @@
 
 import { ServiceRef } from '../services/system/types';
 
-export type {
-  InternalBackendRegistrations,
-  InternalBackendFeatureLoader,
-  InternalBackendPluginRegistration,
-  InternalBackendModuleRegistration,
-  InternalBackendPluginRegistrationV1_1,
-  InternalBackendModuleRegistrationV1_1,
-  ExtensionPointRegistration,
-  InternalBackendFeature,
+export {
+  OpaqueBackendFeature,
+  type InternalBackendPluginRegistration,
+  type InternalBackendModuleRegistration,
+  type InternalBackendPluginRegistrationV1_1,
+  type InternalBackendModuleRegistrationV1_1,
+  type ExtensionPointRegistration,
 } from '@internal/backend';
 
 /**

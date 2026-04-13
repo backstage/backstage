@@ -21,7 +21,7 @@ import {
   ExtensionPoint,
   ExtensionPointFactoryContext,
   InternalBackendModuleRegistrationV1_1,
-  InternalBackendRegistrations,
+  OpaqueBackendFeature,
 } from './types';
 
 /**
@@ -139,5 +139,5 @@ export function createBackendModule(
     featureType: 'registrations',
     version: 'v1',
     getRegistrations,
-  } as InternalBackendRegistrations;
+  } as typeof OpaqueBackendFeature.TInternal;
 }
