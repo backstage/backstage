@@ -28,13 +28,16 @@ import {
   ExtensionPointFactoryMiddleware,
   ServiceOrExtensionPoint,
 } from './types';
-import { OpaqueExtensionPointFactoryMiddleware } from '@internal/backend';
-// Direct internal import to avoid duplication
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import {
+  OpaqueExtensionPointFactoryMiddleware,
+  isServiceFactory,
+  isBackendRegistrations,
+  isBackendFeatureLoader,
+} from '@internal/backend';
 import type {
   InternalBackendFeatureLoader,
   InternalBackendRegistrations,
-} from '../../../backend-plugin-api/src/wiring/types';
+} from '@internal/backend';
 import { ConflictError, ForwardedError, toError } from '@backstage/errors';
 import { DependencyGraph } from '../lib/DependencyGraph';
 import { ServiceRegistry } from './ServiceRegistry';
@@ -45,11 +48,6 @@ import { BackendStartupError } from './BackendStartupError';
 import { createAllowBootFailurePredicate } from './createAllowBootFailurePredicate';
 import { instanceRegistry } from './instanceRegistry';
 import { createRootInstanceMetadataServiceFactory } from './instanceMetadataServiceFactory';
-import {
-  isServiceFactory,
-  isBackendRegistrations,
-  isBackendFeatureLoader,
-} from './featureDiscovery';
 
 export interface BackendRegisterInit {
   consumes: Set<ServiceOrExtensionPoint>;

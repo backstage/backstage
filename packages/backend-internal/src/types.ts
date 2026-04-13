@@ -1,5 +1,5 @@
 /*
- * Copyright 2026 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-export { OpaqueExtensionPointFactoryMiddleware } from './wiring';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
 export type {
   InternalBackendFeature,
   InternalBackendRegistrations,
@@ -24,10 +24,7 @@ export type {
   InternalBackendPluginRegistrationV1_1,
   InternalBackendModuleRegistrationV1_1,
   ExtensionPointRegistration,
-} from './types';
-export type { InternalServiceFactory } from './types';
-export {
-  isServiceFactory,
-  isBackendRegistrations,
-  isBackendFeatureLoader,
-} from './featureDiscovery';
+} from '../../backend-plugin-api/src/wiring/types';
+
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+export type { InternalServiceFactory } from '../../backend-plugin-api/src/services/system/types';

@@ -19,9 +19,7 @@ import {
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
 import type { RootInstanceMetadataServicePluginInfo } from '@backstage/backend-plugin-api';
-// Direct internal import to avoid duplication
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import type { InternalBackendRegistrations } from '../../../backend-plugin-api/src/wiring/types';
+import type { InternalBackendRegistrations } from '@internal/backend';
 import { deepFreeze } from './helpers';
 
 export function createRootInstanceMetadataServiceFactory(

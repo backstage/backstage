@@ -21,9 +21,7 @@ import {
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
 import { ConflictError, stringifyError } from '@backstage/errors';
-// Direct internal import to avoid duplication
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { InternalServiceFactory } from '../../../backend-plugin-api/src/services/system/types';
+import type { InternalServiceFactory } from '@internal/backend';
 import { DependencyGraph } from '../lib/DependencyGraph';
 /**
  * Keep in sync with `@backstage/backend-plugin-api/src/services/system/types.ts`

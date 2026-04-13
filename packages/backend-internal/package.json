@@ -22,6 +22,9 @@
     "lint": "backstage-cli package lint",
     "test": "backstage-cli package test"
   },
+  "dependencies": {
+    "@backstage/backend-plugin-api": "workspace:^"
+  },
   "devDependencies": {
     "@backstage/cli": "workspace:^"
   }

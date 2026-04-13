@@ -14,43 +14,22 @@
  * limitations under the License.
  */
 
-import { BackendFeature, ServiceRef } from '@backstage/backend-plugin-api';
-import { OpaqueType } from '@internal/opaque';
+import { BackendFeature } from '@backstage/backend-plugin-api';
+import type {
+  InternalBackendFeature,
+  InternalBackendRegistrations,
+  InternalBackendFeatureLoader,
+  InternalServiceFactory,
+} from './types';
 
-const OpaqueBackendFeature = OpaqueType.create<{
-  public: BackendFeature;
-  versions: {
-    version: 'v1';
-    featureType: 'service' | 'registrations' | 'loader';
-  };
-}>({
-  type: '@backstage/BackendFeature',
-  versions: ['v1'],
-});
-
-type InternalBackendFeature = typeof OpaqueBackendFeature.TInternal;
-
-type InternalServiceFactory = InternalBackendFeature & {
-  featureType: 'service';
-  service: ServiceRef<unknown>;
-};
-
-type InternalBackendRegistrations = InternalBackendFeature & {
-  featureType: 'registrations';
-  getRegistrations(): Array<any>;
-};
-
-type InternalBackendFeatureLoader = InternalBackendFeature & {
-  featureType: 'loader';
-  description: string;
-  deps: Record<string, ServiceRef<unknown>>;
-  loader(deps: Record<string, unknown>): Promise<BackendFeature[]>;
-};
+function toInternal(feature: BackendFeature): InternalBackendFeature {
+  return feature as InternalBackendFeature;
+}
 
 export function isServiceFactory(
   feature: BackendFeature,
 ): feature is InternalServiceFactory {
-  const internal = OpaqueBackendFeature.toInternal(feature);
+  const internal = toInternal(feature);
   if (internal.featureType === 'service') {
     return true;
   }
@@ -61,7 +40,7 @@ export function isServiceFactory(
 export function isBackendRegistrations(
   feature: BackendFeature,
 ): feature is InternalBackendRegistrations {
-  const internal = OpaqueBackendFeature.toInternal(feature);
+  const internal = toInternal(feature);
   if (internal.featureType === 'registrations') {
     return true;
   }
@@ -72,5 +51,5 @@ export function isBackendRegistrations(
 export function isBackendFeatureLoader(
   feature: BackendFeature,
 ): feature is InternalBackendFeatureLoader {
-  return OpaqueBackendFeature.toInternal(feature).featureType === 'loader';
+  return toInternal(feature).featureType === 'loader';
 }
