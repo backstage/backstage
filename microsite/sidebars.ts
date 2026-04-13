@@ -122,6 +122,7 @@ export default {
               'golden-path/adoption/leadership-buy-in',
               'golden-path/adoption/setting-up-a-poc',
               'golden-path/adoption/first-stakeholder-feedback',
+              'golden-path/adoption/customize-your-instance',
               'golden-path/adoption/preparing-for-ga',
               'golden-path/adoption/plugin-ownership',
               'golden-path/adoption/full-catalog',

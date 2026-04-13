@@ -25,7 +25,7 @@ To start, let's just plumb through the general `databaseService` usage we expect
 
 First, add a new service dependency on `databaseService`,
 
-```diff file="services/TodoListService.ts"
+```diff file="src/services/TodoListService.ts"
 
 export const todoListServiceRef = createServiceRef<Expand<TodoListService>>({
   id: 'todo.list',
@@ -46,7 +46,7 @@ export const todoListServiceRef = createServiceRef<Expand<TodoListService>>({
 
 We then need to add it to our service,
 
-```diff file="services/TodoListService.ts"
+```diff file="src/services/TodoListService.ts"
 +import type { Knex } from 'knex';
 import {
   coreServices,
@@ -89,10 +89,10 @@ And with that, we have an isolated `knex` client to communicate with our databas
 
 Unfortunately, without tables in our database, our `knex` client is not doing much. We need to create a _migration_. Knex stores migrations as JavaScript/TypeScript files that get executed as part of a call to `knex.migrate.latest()`. By default, these are stored in a `migrations/` directory.
 
-Let's get started. First, we need to install `knex` as a dev dependency to use its CLI,
+Let's get started. First, we need to install `knex` as a dependency so both its CLI and imported `Knex` types are available,
 
 ```bash
-yarn workspace @internal/plugin-todo-backend add --dev knex
+yarn workspace @internal/plugin-todo-backend add knex
 ```
 
 Now, running this command will scaffold a file in that `migrations/` directory for us.
@@ -159,7 +159,7 @@ exports.down = async function down(knex) {
 
 Now, we need to actually tell our `knex` client to automatically apply these migrations. We'll add the `database` service to our plugin's `init` function,
 
-```diff file="plugin.ts"
+```diff file="src/plugin.ts"
 import {
   coreServices,
   createBackendPlugin,
@@ -224,7 +224,7 @@ For those who want more details, the full [Knex migration docs](https://knexjs.o
 
 Now that we have our table, we need to add types for it to protect against runtime incompatibilities. For now, these are hand written.
 
-```diff title="services/TodoListService.ts"
+```diff title="src/services/TodoListService.ts"
 +export interface TodoDatabaseRow {
 +  title: string;
 +  id: string;
@@ -242,7 +242,7 @@ export interface TodoItem {
 
 Notice the change to snake case as it has to match the database schema we have above. Now we need to transform `TodoItem` to `TodoDatabaseRow` for writes and `TodoDatabaseRow` to `TodoItem` for reads.
 
-```diff title="services/TodoListService.ts"
+```diff title="src/services/TodoListService.ts"
   private constructor(
     logger: LoggerService,
     catalog: typeof catalogServiceRef.T,
@@ -259,7 +259,7 @@ Notice the change to snake case as it has to match the database schema we have a
 +      title: todo.title,
 +      created_by: todo.createdBy,
 +      created_at: todo.createdAt,
-+    }
++    };
 +  }
 
 +  private fromDatabaseRow(row: TodoDatabaseRow): TodoItem {
@@ -268,7 +268,7 @@ Notice the change to snake case as it has to match the database schema we have a
 +      title: row.title,
 +      createdBy: row.created_by,
 +      createdAt: row.created_at,
-+    }
++    };
 +  }
 ```
 
@@ -278,7 +278,7 @@ And that's it! You're now set up to actually read from and write to your databas
 
 Creating your table was a solid chunk of work - thankfully, writing to it is going to be much easier!
 
-```diff title="services/TodoListService.ts"
+```diff title="src/services/TodoListService.ts"
 
   async createTodo(
     // ...
@@ -306,7 +306,7 @@ We've basically just updated our service call to use `this.#database` instead of
 
 Now that we have things in our database, how do we actually get them back out again?
 
-```diff title="services/TodoListService.ts"
+```diff title="src/services/TodoListService.ts"
 
   async listTodos(): Promise<{ items: TodoItem[] }> {
 -    return { items: Array.from(this.#storedTodos) };
