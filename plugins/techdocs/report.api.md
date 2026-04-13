@@ -13,6 +13,7 @@ import { Entity } from '@backstage/catalog-model';
 import { EntityFilterQuery } from '@backstage/catalog-client';
 import { EntityListPagination } from '@backstage/plugin-catalog-react';
 import { EntityOwnerPickerProps } from '@backstage/plugin-catalog-react';
+import { EntityPresentationApi } from '@backstage/plugin-catalog-react';
 import { FC } from 'react';
 import { FetchApi } from '@backstage/core-plugin-api';
 import { IdentityApi } from '@backstage/core-plugin-api';
@@ -98,10 +99,15 @@ export type DocsGroupConfig = {
 export const DocsTable: {
   (props: DocsTableProps): JSX_2.Element | null;
   columns: {
-    createTitleColumn(options?: {
-      hidden?: boolean;
-    }): TableColumn<DocsTableRow>;
-    createNameColumn(): TableColumn<DocsTableRow>;
+    createTitleColumn(
+      options?: {
+        hidden?: boolean;
+      },
+      entityPresentationApi?: EntityPresentationApi,
+    ): TableColumn<DocsTableRow>;
+    createNameColumn(
+      entityPresentationApi?: EntityPresentationApi,
+    ): TableColumn<DocsTableRow>;
     createOwnerColumn(): TableColumn<DocsTableRow>;
     createKindColumn(): TableColumn<DocsTableRow>;
     createTypeColumn(): TableColumn<DocsTableRow>;
@@ -167,10 +173,15 @@ export type EntityListDocsGridPageProps = {
 export const EntityListDocsTable: {
   (props: EntityListDocsTableProps): JSX_2.Element;
   columns: {
-    createTitleColumn(options?: {
-      hidden?: boolean;
-    }): TableColumn<DocsTableRow>;
-    createNameColumn(): TableColumn<DocsTableRow>;
+    createTitleColumn(
+      options?: {
+        hidden?: boolean;
+      },
+      entityPresentationApi?: EntityPresentationApi,
+    ): TableColumn<DocsTableRow>;
+    createNameColumn(
+      entityPresentationApi?: EntityPresentationApi,
+    ): TableColumn<DocsTableRow>;
     createOwnerColumn(): TableColumn<DocsTableRow>;
     createKindColumn(): TableColumn<DocsTableRow>;
     createTypeColumn(): TableColumn<DocsTableRow>;
