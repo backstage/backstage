@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { isError } from '@backstage/errors';
+
 /**
  * Tries to deduce whether a thrown error is a database conflict.
  *
@@ -23,8 +25,7 @@
  *          known database engine
  */
 export function isDatabaseConflictError(e: unknown) {
-  const message =
-    e instanceof Error ? e.message : (e as { message?: unknown })?.message;
+  const message = isError(e) ? e.message : undefined;
 
   return (
     typeof message === 'string' &&
