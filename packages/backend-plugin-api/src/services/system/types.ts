@@ -136,8 +136,8 @@ export function createServiceRef<
   TService,
   TInstances extends 'singleton' | 'multiton',
 >(
-  options: ServiceRefOptions<TService, any, TInstances>,
-): ServiceRef<TService, any, TInstances> {
+  options: ServiceRefOptions<TService, 'root' | 'plugin', TInstances>,
+): ServiceRef<TService, 'root' | 'plugin', TInstances> {
   const { id, scope = 'plugin', multiton = false, defaultFactory } = options;
   return {
     id,

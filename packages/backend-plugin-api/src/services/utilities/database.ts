@@ -23,7 +23,8 @@
  *          known database engine
  */
 export function isDatabaseConflictError(e: unknown) {
-  const message = (e as any)?.message;
+  const message =
+    e instanceof Error ? e.message : (e as { message?: unknown })?.message;
 
   return (
     typeof message === 'string' &&
