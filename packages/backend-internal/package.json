@@ -23,8 +23,7 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
-    "@backstage/backend-plugin-api": "workspace:^",
-    "@internal/opaque": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^"

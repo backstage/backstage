@@ -2530,8 +2530,6 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
-    "@internal/backend": "workspace:^"
-    "@internal/opaque": "workspace:^"
   languageName: unknown
   linkType: soft
 
@@ -2734,7 +2732,6 @@ __metadata:
     "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/plugin-permission-node": "workspace:^"
     "@backstage/types": "workspace:^"
-    "@internal/backend": "workspace:^"
     "@types/express": "npm:^4.17.6"
     "@types/json-schema": "npm:^7.0.6"
     "@types/luxon": "npm:^3.0.0"
@@ -2759,7 +2756,6 @@ __metadata:
     "@backstage/plugin-events-node": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/types": "workspace:^"
-    "@internal/backend": "workspace:^"
     "@keyv/memcache": "npm:^2.0.1"
     "@keyv/redis": "npm:^4.0.1"
     "@keyv/valkey": "npm:^1.0.1"
@@ -10044,13 +10040,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@internal/backend@workspace:^, @internal/backend@workspace:packages/backend-internal":
+"@internal/backend@workspace:packages/backend-internal":
   version: 0.0.0-use.local
   resolution: "@internal/backend@workspace:packages/backend-internal"
   dependencies:
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/cli": "workspace:^"
-    "@internal/opaque": "workspace:^"
   languageName: unknown
   linkType: soft
 
@@ -10080,7 +10075,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@internal/opaque@workspace:^, @internal/opaque@workspace:packages/opaque-internal":
+"@internal/opaque@workspace:packages/opaque-internal":
   version: 0.0.0-use.local
   resolution: "@internal/opaque@workspace:packages/opaque-internal"
   dependencies:
