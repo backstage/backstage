@@ -48,7 +48,8 @@
   "dependencies": {
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/config": "workspace:^",
-    "@backstage/errors": "workspace:^"
+    "@backstage/errors": "workspace:^",
+    "@internal/opaque": "workspace:^"
   },
   "devDependencies": {
     "@backstage/backend-defaults": "workspace:^",
