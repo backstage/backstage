@@ -148,7 +148,7 @@ export const mcpPlugin = createBackendPlugin({
                 discovery.getExternalBaseUrl('mcp-actions'),
               ]);
               res.json({
-                resource: mcpBaseUrl,
+                resource: `${mcpBaseUrl}/v1`,
                 authorization_servers: [authBaseUrl],
               });
             },

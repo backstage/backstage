@@ -339,7 +339,7 @@ describe('Mcp Backend', () => {
         '/.well-known/oauth-protected-resource',
       );
       expect(response.status).toBe(200);
-      expect(response.body.resource).toMatch(/\/api\/mcp-actions$/);
+      expect(response.body.resource).toMatch(/\/api\/mcp-actions\/v\d+$/);
       expect(response.body.authorization_servers).toHaveLength(1);
       expect(response.body.authorization_servers[0]).toMatch(/\/api\/auth$/);
       expect(response.body.resource).toContain(`${mockExternalBaseUrl}`);
@@ -374,7 +374,7 @@ describe('Mcp Backend', () => {
         '/.well-known/oauth-protected-resource',
       );
       expect(response.status).toBe(200);
-      expect(response.body.resource).toMatch(/\/api\/mcp-actions$/);
+      expect(response.body.resource).toMatch(/\/api\/mcp-actions\/v\d+$/);
       expect(response.body.authorization_servers).toHaveLength(1);
       expect(response.body.authorization_servers[0]).toMatch(/\/api\/auth$/);
     });
