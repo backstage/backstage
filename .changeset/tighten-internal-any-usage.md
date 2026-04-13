@@ -2,4 +2,4 @@
 '@backstage/backend-plugin-api': patch
 ---
 
-Tightened internal `any` usage in `isDatabaseConflictError`.
+Added stricter type checks in `isDatabaseConflictError`.
