@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { useMemo } from 'react';
 import useCopyToClipboard from 'react-use/esm/useCopyToClipboard';
 
 import {
@@ -64,6 +65,12 @@ export const DocsTable = (props: DocsTableProps) => {
   const config = useApi(configApiRef);
   const apis = useApiHolder();
   const entityPresentationApi = apis.get(entityPresentationApiRef);
+
+  const defaultColumns = useMemo(
+    () => createDefaultColumns(entityPresentationApi),
+    [entityPresentationApi],
+  );
+
   if (!entities) return null;
 
   const documents = entitiesToDocsMapper(
@@ -93,7 +100,7 @@ export const DocsTable = (props: DocsTableProps) => {
             ...options,
           }}
           data={documents}
-          columns={columns || createDefaultColumns(entityPresentationApi)}
+          columns={columns || defaultColumns}
           actions={actions || defaultActions}
           title={
             title

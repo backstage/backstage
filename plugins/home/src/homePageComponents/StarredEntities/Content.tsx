@@ -21,7 +21,7 @@ import {
   useStarredEntities,
 } from '@backstage/plugin-catalog-react';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
-import { useApi } from '@backstage/core-plugin-api';
+import { useApi, useApiHolder } from '@backstage/core-plugin-api';
 import { Progress, ResponseErrorPanel } from '@backstage/core-components';
 import List from '@material-ui/core/List';
 import Typography from '@material-ui/core/Typography';
@@ -65,7 +65,8 @@ export const Content = ({
 }: StarredEntitiesProps) => {
   const classes = useStyles();
   const catalogApi = useApi(catalogApiRef);
-  const entityPresentationApi = useApi(entityPresentationApiRef);
+  const apis = useApiHolder();
+  const entityPresentationApi = apis.get(entityPresentationApiRef);
   const { starredEntities, toggleStarredEntity } = useStarredEntities();
   const [activeTab, setActiveTab] = useState(0);
   const { t } = useTranslationRef(homeTranslationRef);

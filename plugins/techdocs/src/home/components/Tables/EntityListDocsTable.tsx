@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { useMemo } from 'react';
 import useCopyToClipboard from 'react-use/esm/useCopyToClipboard';
 import { capitalize } from 'lodash';
 import {
@@ -87,10 +88,15 @@ export const EntityListDocsTable = (props: EntityListDocsTableProps) => {
     entityPresentationApi,
   );
 
+  const defaultColumns = useMemo(
+    () => createDefaultColumns(entityPresentationApi),
+    [entityPresentationApi],
+  );
+
   if (paginationMode === 'cursor') {
     return (
       <CursorPaginatedDocsTable
-        columns={columns || createDefaultColumns(entityPresentationApi)}
+        columns={columns || defaultColumns}
         isLoading={loading}
         title={title}
         actions={actions || defaultActions}
@@ -103,7 +109,7 @@ export const EntityListDocsTable = (props: EntityListDocsTableProps) => {
   } else if (paginationMode === 'offset') {
     return (
       <OffsetPaginatedDocsTable
-        columns={columns || createDefaultColumns(entityPresentationApi)}
+        columns={columns || defaultColumns}
         isLoading={loading}
         title={title}
         actions={actions || defaultActions}

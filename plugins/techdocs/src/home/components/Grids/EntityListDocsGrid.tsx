@@ -138,7 +138,7 @@ export const EntityListDocsGrid = (props: EntityListDocsGridPageProps) => {
     );
   }
 
-  entities.sort((a, b) =>
+  const sortedEntities = [...entities].sort((a, b) =>
     entityPresentationSnapshot(
       a,
       undefined,
@@ -153,7 +153,7 @@ export const EntityListDocsGrid = (props: EntityListDocsGridPageProps) => {
     <Content>
       {(props.groups || [allEntitiesGroup]).map((group, index: number) => (
         <EntityListDocsGridGroup
-          entities={entities}
+          entities={sortedEntities}
           group={group}
           key={`${group.title}-${index}`}
         />

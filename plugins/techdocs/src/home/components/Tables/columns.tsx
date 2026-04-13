@@ -57,6 +57,13 @@ export const columnFactories = {
       highlight: true,
       searchable: true,
       defaultSort: 'asc',
+      customFilterAndSearch: (filter, row) => {
+        const title = customTitle(
+          row.entity,
+          entityPresentationApi,
+        ).toLocaleLowerCase();
+        return title.includes(filter.toLocaleLowerCase());
+      },
       customSort: (row1, row2) => {
         const title1 = customTitle(
           row1.entity,
