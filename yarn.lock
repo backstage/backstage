@@ -2530,6 +2530,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
+    "@internal/opaque": "workspace:^"
   languageName: unknown
   linkType: soft
 
@@ -10074,7 +10075,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@internal/opaque@workspace:packages/opaque-internal":
+"@internal/opaque@workspace:^, @internal/opaque@workspace:packages/opaque-internal":
   version: 0.0.0-use.local
   resolution: "@internal/opaque@workspace:packages/opaque-internal"
   dependencies:

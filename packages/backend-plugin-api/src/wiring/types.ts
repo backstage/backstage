@@ -14,8 +14,18 @@
  * limitations under the License.
  */
 
-import { InternalServiceFactory, ServiceRef } from '../services/system/types';
-import { BackendFeature } from '../types';
+import { ServiceRef } from '../services/system/types';
+
+export type {
+  InternalBackendRegistrations,
+  InternalBackendFeatureLoader,
+  InternalBackendPluginRegistration,
+  InternalBackendModuleRegistration,
+  InternalBackendPluginRegistrationV1_1,
+  InternalBackendModuleRegistrationV1_1,
+  ExtensionPointRegistration,
+  InternalBackendFeature,
+} from '@internal/backend';
 
 /**
  * TODO
@@ -118,84 +128,3 @@ export interface BackendModuleRegistrationPoints {
     init(deps: DepsToInstances<TDeps>): Promise<void>;
   }): void;
 }
-
-/** @internal */
-export interface InternalBackendRegistrations extends BackendFeature {
-  version: 'v1';
-  featureType: 'registrations';
-  getRegistrations(): Array<
-    | InternalBackendPluginRegistration
-    | InternalBackendModuleRegistration
-    | InternalBackendPluginRegistrationV1_1
-    | InternalBackendModuleRegistrationV1_1
-  >;
-}
-
-/** @internal */
-export interface InternalBackendPluginRegistration {
-  pluginId: string;
-  type: 'plugin';
-  extensionPoints: Array<readonly [ExtensionPoint<unknown>, unknown]>;
-  init: {
-    deps: Record<string, ServiceRef<unknown>>;
-    func(deps: Record<string, unknown>): Promise<void>;
-  };
-}
-
-/** @internal */
-export interface InternalBackendModuleRegistration {
-  pluginId: string;
-  moduleId: string;
-  type: 'module';
-  extensionPoints: Array<readonly [ExtensionPoint<unknown>, unknown]>;
-  init: {
-    deps: Record<string, ServiceRef<unknown> | ExtensionPoint<unknown>>;
-    func(deps: Record<string, unknown>): Promise<void>;
-  };
-}
-
-/** @internal */
-export type ExtensionPointRegistration = {
-  extensionPoint: ExtensionPoint<unknown>;
-  factory: (context: ExtensionPointFactoryContext) => unknown;
-};
-
-/** @internal */
-export interface InternalBackendPluginRegistrationV1_1 {
-  pluginId: string;
-  type: 'plugin-v1.1';
-  extensionPoints: Array<ExtensionPointRegistration>;
-  init: {
-    deps: Record<string, ServiceRef<unknown>>;
-    func(deps: Record<string, unknown>): Promise<void>;
-  };
-}
-
-/** @internal */
-export interface InternalBackendModuleRegistrationV1_1 {
-  pluginId: string;
-  moduleId: string;
-  type: 'module-v1.1';
-  extensionPoints: Array<ExtensionPointRegistration>;
-  init: {
-    deps: Record<string, ServiceRef<unknown> | ExtensionPoint<unknown>>;
-    func(deps: Record<string, unknown>): Promise<void>;
-  };
-}
-
-/**
- * @public
- */
-export interface InternalBackendFeatureLoader extends BackendFeature {
-  version: 'v1';
-  featureType: 'loader';
-  description: string;
-  deps: Record<string, ServiceRef<unknown>>;
-  loader(deps: Record<string, unknown>): Promise<BackendFeature[]>;
-}
-
-/** @internal */
-export type InternalBackendFeature =
-  | InternalBackendRegistrations
-  | InternalBackendFeatureLoader
-  | InternalServiceFactory;

@@ -30,13 +30,9 @@ import {
 } from './types';
 import {
   OpaqueExtensionPointFactoryMiddleware,
-  isServiceFactory,
-  isBackendRegistrations,
-  isBackendFeatureLoader,
-} from '@internal/backend';
-import type {
-  InternalBackendFeatureLoader,
-  InternalBackendRegistrations,
+  OpaqueBackendFeature,
+  type InternalBackendFeatureLoader,
+  type InternalBackendRegistrations,
 } from '@internal/backend';
 import { ConflictError, ForwardedError, toError } from '@backstage/errors';
 import { DependencyGraph } from '../lib/DependencyGraph';
@@ -153,12 +149,15 @@ export class BackendInitializer {
   }
 
   #addFeature(feature: BackendFeature) {
-    if (isServiceFactory(feature)) {
-      this.#serviceRegistry.add(feature);
-    } else if (isBackendFeatureLoader(feature)) {
-      this.#registeredFeatureLoaders.push(feature);
-    } else if (isBackendRegistrations(feature)) {
-      this.#registrations.push(feature);
+    const internal = OpaqueBackendFeature.toInternal(feature);
+    if (internal.featureType === 'service') {
+      this.#serviceRegistry.add(internal as ServiceFactory);
+    } else if (internal.featureType === 'loader') {
+      this.#registeredFeatureLoaders.push(
+        internal as InternalBackendFeatureLoader,
+      );
+    } else if (internal.featureType === 'registrations') {
+      this.#registrations.push(internal as InternalBackendRegistrations);
     } else {
       throw new Error(
         `Failed to add feature, invalid feature ${JSON.stringify(feature)}`,
@@ -596,8 +595,9 @@ export class BackendInitializer {
       const newLoaders = new Array<InternalBackendFeatureLoader>();
 
       for await (const feature of result) {
-        if (isBackendFeatureLoader(feature)) {
-          newLoaders.push(feature);
+        const internal = OpaqueBackendFeature.toInternal(feature);
+        if (internal.featureType === 'loader') {
+          newLoaders.push(internal as InternalBackendFeatureLoader);
         } else {
           // This block makes sure that feature loaders do not provide duplicate
           // implementations for the same service, but at the same time allows
@@ -606,20 +606,23 @@ export class BackendInitializer {
           //
           // If a factory has already been explicitly installed, the service
           // factory provided by the loader will simply be ignored.
-          if (isServiceFactory(feature) && !feature.service.multiton) {
+          if (
+            internal.featureType === 'service' &&
+            !internal.service.multiton
+          ) {
             const conflictingLoader = servicesAddedByLoaders.get(
-              feature.service.id,
+              internal.service.id,
             );
             if (conflictingLoader) {
               throw new Error(
-                `Duplicate service implementations provided for ${feature.service.id} by both feature loader ${loader.description} and feature loader ${conflictingLoader.description}`,
+                `Duplicate service implementations provided for ${internal.service.id} by both feature loader ${loader.description} and feature loader ${conflictingLoader.description}`,
               );
             }
 
             // Check that this service wasn't already explicitly added by backend.add(serviceFactory)
-            if (!this.#serviceRegistry.hasBeenAdded(feature.service)) {
+            if (!this.#serviceRegistry.hasBeenAdded(internal.service)) {
               didAddServiceFactory = true;
-              servicesAddedByLoaders.set(feature.service.id, loader);
+              servicesAddedByLoaders.set(internal.service.id, loader);
               this.#addFeature(feature);
             }
           } else {

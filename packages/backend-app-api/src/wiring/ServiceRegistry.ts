@@ -21,7 +21,10 @@ import {
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
 import { ConflictError, stringifyError } from '@backstage/errors';
-import type { InternalServiceFactory } from '@internal/backend';
+import {
+  OpaqueBackendFeature,
+  type InternalServiceFactory,
+} from '@internal/backend';
 import { DependencyGraph } from '../lib/DependencyGraph';
 /**
  * Keep in sync with `@backstage/backend-plugin-api/src/services/system/types.ts`
@@ -36,14 +39,13 @@ export type InternalServiceRef = ServiceRef<unknown> & {
 function toInternalServiceFactory<TService, TScope extends 'plugin' | 'root'>(
   factory: ServiceFactory<TService, TScope>,
 ): InternalServiceFactory<TService, TScope> {
-  const f = factory as InternalServiceFactory<TService, TScope>;
-  if (f.$$type !== '@backstage/BackendFeature') {
-    throw new Error(`Invalid service factory, bad type '${f.$$type}'`);
+  const internal = OpaqueBackendFeature.toInternal(factory);
+  if (internal.featureType !== 'service') {
+    throw new Error(
+      `Invalid service factory, bad feature type '${internal.featureType}'`,
+    );
   }
-  if (f.version !== 'v1') {
-    throw new Error(`Invalid service factory, bad version '${f.version}'`);
-  }
-  return f;
+  return internal as InternalServiceFactory<TService, TScope>;
 }
 
 function createPluginMetadataServiceFactory(pluginId: string) {

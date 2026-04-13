@@ -26,10 +26,7 @@ import {
 import { mockServices } from '../services';
 import { ConfigReader } from '@backstage/config';
 import express from 'express';
-import type {
-  InternalBackendFeature,
-  InternalBackendRegistrations,
-} from '@internal/backend';
+import { OpaqueBackendFeature } from '@internal/backend';
 import {
   DefaultRootHttpRouter,
   ExtendedHttpServer,
@@ -104,8 +101,9 @@ function createPluginsForOrphanModules(features: Array<BackendFeature>) {
   const modulePluginIds = new Set<string>();
 
   for (const feature of features) {
-    if (isInternalBackendRegistrations(feature)) {
-      const registrations = feature.getRegistrations();
+    const internal = OpaqueBackendFeature.toInternal(feature);
+    if (internal.featureType === 'registrations') {
+      const registrations = internal.getRegistrations();
       for (const registration of registrations) {
         if (
           registration.type === 'plugin' ||
@@ -153,8 +151,9 @@ function createExtensionPointTestModules(
   }
 
   const registrations = features.flatMap(feature => {
-    if (isInternalBackendRegistrations(feature)) {
-      return feature.getRegistrations();
+    const internal = OpaqueBackendFeature.toInternal(feature);
+    if (internal.featureType === 'registrations') {
+      return internal.getRegistrations();
     }
     return [];
   });
@@ -374,29 +373,3 @@ function registerTestHooks() {
 }
 
 registerTestHooks();
-
-function toInternalBackendFeature(
-  feature: BackendFeature,
-): InternalBackendFeature {
-  if (feature.$$type !== '@backstage/BackendFeature') {
-    throw new Error(`Invalid BackendFeature, bad type '${feature.$$type}'`);
-  }
-  const internal = feature as InternalBackendFeature;
-  if (internal.version !== 'v1') {
-    throw new Error(
-      `Invalid BackendFeature, bad version '${internal.version}'`,
-    );
-  }
-  return internal;
-}
-
-function isInternalBackendRegistrations(
-  feature: BackendFeature,
-): feature is InternalBackendRegistrations {
-  const internal = toInternalBackendFeature(feature);
-  if (internal.featureType === 'registrations') {
-    return true;
-  }
-  // Backwards compatibility for v1 registrations that use duck typing
-  return 'getRegistrations' in internal;
-}

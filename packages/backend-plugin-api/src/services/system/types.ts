@@ -15,6 +15,9 @@
  */
 
 import { BackendFeature } from '../../types';
+import type { InternalServiceFactory } from '@internal/backend';
+
+export type { InternalServiceFactory };
 
 /**
  * A reference to a backend service. You can use these references to mark
@@ -64,23 +67,6 @@ export interface ServiceFactory<
   TInstances extends 'singleton' | 'multiton' = 'singleton' | 'multiton',
 > extends BackendFeature {
   service: ServiceRef<TService, TScope, TInstances>;
-}
-
-/** @internal */
-export interface InternalServiceFactory<
-  TService = unknown,
-  TScope extends 'plugin' | 'root' = 'plugin' | 'root',
-  TInstances extends 'singleton' | 'multiton' = 'singleton' | 'multiton',
-> extends ServiceFactory<TService, TScope, TInstances> {
-  version: 'v1';
-  featureType: 'service';
-  initialization?: 'always' | 'lazy';
-  deps: { [key in string]: ServiceRef<unknown> };
-  createRootContext?(deps: { [key in string]: unknown }): Promise<unknown>;
-  factory(
-    deps: { [key in string]: unknown },
-    context: unknown,
-  ): Promise<TService>;
 }
 
 /** @public */
