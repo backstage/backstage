@@ -127,16 +127,7 @@ export type GetLabelFunction = (visit: Visit) => string;
 // @public
 export const HeaderWorldClock: (props: {
   clockConfigs: ClockConfig[];
-  customTimeFormat?: /**
-   * A component to display a company logo for the user.
-   *
-   * @public
-   */
-  /**
-   * A component to display a company logo for the user.
-   *
-   * @public
-   */ Intl.DateTimeFormatOptions;
+  customTimeFormat?: Intl.DateTimeFormatOptions;
 }) => JSX_2.Element | null;
 
 // @public

@@ -130,14 +130,16 @@ export const Content = ({
     <div>
       {!groupByKind && (
         <List className={classes.list}>
-          {entities.value?.sort(sortEntitiesByPresentation).map(entity => (
-            <StarredEntityListItem
-              key={stringifyEntityRef(entity)}
-              entity={entity}
-              onToggleStarredEntity={toggleStarredEntity}
-              showKind
-            />
-          ))}
+          {[...(entities.value || [])]
+            .sort(sortEntitiesByPresentation)
+            .map(entity => (
+              <StarredEntityListItem
+                key={stringifyEntityRef(entity)}
+                entity={entity}
+                onToggleStarredEntity={toggleStarredEntity}
+                showKind
+              />
+            ))}
         </List>
       )}
 
@@ -160,14 +162,16 @@ export const Content = ({
         groupByKindEntries.map(([kind, entitiesByKind], index) => (
           <div key={kind} hidden={groupByKind && activeTab !== index}>
             <List className={classes.list}>
-              {entitiesByKind?.sort(sortEntitiesByPresentation).map(entity => (
-                <StarredEntityListItem
-                  key={stringifyEntityRef(entity)}
-                  entity={entity}
-                  onToggleStarredEntity={toggleStarredEntity}
-                  showKind={false}
-                />
-              ))}
+              {[...(entitiesByKind || [])]
+                .sort(sortEntitiesByPresentation)
+                .map(entity => (
+                  <StarredEntityListItem
+                    key={stringifyEntityRef(entity)}
+                    entity={entity}
+                    onToggleStarredEntity={toggleStarredEntity}
+                    showKind={false}
+                  />
+                ))}
             </List>
           </div>
         ))}
