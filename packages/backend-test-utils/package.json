@@ -58,6 +58,7 @@
     "@backstage/plugin-events-node": "workspace:^",
     "@backstage/plugin-permission-common": "workspace:^",
     "@backstage/types": "workspace:^",
+    "@internal/backend": "workspace:^",
     "@keyv/memcache": "^2.0.1",
     "@keyv/redis": "^4.0.1",
     "@keyv/valkey": "^1.0.1",
