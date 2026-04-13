@@ -35,7 +35,7 @@ import { AuthDatabase } from '../database/AuthDatabase';
 import { OidcService } from '../service/OidcService';
 import { TokenIssuer } from '../identity/types';
 import { OfflineAccessService } from './OfflineAccessService';
-import { CimdClientInfo, isCimdUrl } from './CimdClient';
+import { CimdClientInfo, validateCimdUrl } from './CimdClient';
 
 jest.mock('./CimdClient', () => {
   const actual = jest.requireActual('./CimdClient');
@@ -1253,8 +1253,7 @@ describe('OidcRouter', () => {
         };
         mockFetchCimdMetadata.mockResolvedValue(cimdMetadata);
 
-        // Verify isCimdUrl works correctly
-        expect(isCimdUrl(cimdClientId)).toBe(true);
+        expect(() => validateCimdUrl(cimdClientId)).not.toThrow();
 
         const knex = await databases.init(databaseId);
 
