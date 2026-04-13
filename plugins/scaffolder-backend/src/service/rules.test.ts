@@ -14,19 +14,15 @@
  * limitations under the License.
  */
 
-import { JsonObject, JsonPrimitive } from '@backstage/types';
+import { JsonObject } from '@backstage/types';
 import {
   hasActionId,
   hasBooleanProperty,
   hasNumberProperty,
-  hasProperty,
   hasStringProperty,
   hasTag,
   isTaskOwner,
 } from './rules';
-import { createConditionAuthorizer } from '@backstage/plugin-permission-node';
-import { RESOURCE_TYPE_SCAFFOLDER_ACTION } from '@backstage/plugin-scaffolder-common/alpha';
-import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { SerializedTask } from '@backstage/plugin-scaffolder-node';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 
@@ -136,162 +132,6 @@ const input: JsonObject = {
   propwitharray: ['item', 0, true, false],
   nested: { propwithstring: '1', nested: { propwithnumber: 1 } },
 };
-
-describe('hasProperty', () => {
-  describe('apply', () => {
-    it.each([
-      'foo',
-      'bar',
-      'prop.prop',
-      'nested.nonexisting',
-      '',
-      'propwitharray.100',
-    ])(`returns false when a property doesn't exist in the input`, key => {
-      expect(hasProperty.apply({ action: 'action', input }, { key })).toEqual(
-        false,
-      );
-    });
-
-    it.each([
-      'propwithstring',
-      'propwithnumber',
-      'propwithobject',
-      'propwithnull',
-      'propwithfalse',
-      'propwithtrue',
-      'propwitharray',
-      'propwitharray.1',
-      'nested.propwithstring',
-      'nested.nested',
-      'nested.nested.propwithnumber',
-    ])(`returns true when a property exists, property=%s`, key => {
-      expect(hasProperty.apply({ action: 'action', input }, { key })).toEqual(
-        true,
-      );
-    });
-
-    it.each([
-      ['propwithstring', 1],
-      ['propwithnumber', '2'],
-      ['propwithnumber', true],
-      ['propwithobject', [{}]],
-      ['propwithnull', false],
-      ['propwithfalse', true],
-      ['propwithtrue', null],
-      ['propwitharray', 'nonexistingitem'],
-      ['propwitharray.0', 'nonmatchingitem'],
-      ['nested.propwithstring', 'x'],
-      ['nested.nested', '1'],
-      ['nested.nested.propwithnumber', 'ops'],
-    ])(
-      `returns false when a property exists but the value doesn't match, key=%s value=%o`,
-      (key, value) => {
-        expect(
-          hasProperty.apply(
-            { action: 'action', input },
-            { key, value: value as JsonPrimitive },
-          ),
-        ).toEqual(false);
-      },
-    );
-
-    it.each([
-      ['propwithstring', '1'],
-      ['propwithnumber', 2],
-      ['propwithnull', null],
-      ['propwithfalse', false],
-      ['propwithtrue', true],
-      ['propwitharray.0', 'item'],
-      ['nested.propwithstring', '1'],
-      ['nested.nested.propwithnumber', 1],
-    ])(
-      `returns true when a property exists and the value matches, key=%s value=%o`,
-      (key, value) => {
-        expect(
-          hasProperty.apply({ action: 'action', input }, { key, value }),
-        ).toEqual(true);
-      },
-    );
-
-    it('should throw if params are invalid', () => {
-      const isActionAuthorized = createConditionAuthorizer([hasProperty]);
-
-      expect(() =>
-        isActionAuthorized(
-          {
-            resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
-            pluginId: 'scaffolder',
-            result: AuthorizeResult.CONDITIONAL,
-            conditions: {
-              resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
-              rule: 'HAS_PROPERTY',
-              params: {
-                key: 1,
-              },
-            },
-          },
-          { action: 'an-action', input: {} },
-        ),
-      ).toThrow();
-      expect(() =>
-        isActionAuthorized(
-          {
-            resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
-            pluginId: 'scaffolder',
-            result: AuthorizeResult.CONDITIONAL,
-            conditions: {
-              resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
-              rule: 'HAS_PROPERTY',
-              params: {},
-            },
-          },
-          { action: 'an-action', input: {} },
-        ),
-      ).toThrow();
-    });
-
-    it('should not throw if params are valid', () => {
-      const isActionAuthorized = createConditionAuthorizer([hasProperty]);
-
-      expect(() =>
-        isActionAuthorized(
-          {
-            resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
-            pluginId: 'scaffolder',
-            result: AuthorizeResult.CONDITIONAL,
-            conditions: {
-              resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
-              rule: 'HAS_PROPERTY',
-              params: {
-                key: 'key',
-              },
-            },
-          },
-          { action: 'an-action', input: {} },
-        ),
-      ).not.toThrow();
-
-      expect(() =>
-        isActionAuthorized(
-          {
-            resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
-            pluginId: 'scaffolder',
-            result: AuthorizeResult.CONDITIONAL,
-            conditions: {
-              resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
-              rule: 'HAS_PROPERTY',
-              params: {
-                key: 'key',
-                value: 'value',
-              },
-            },
-          },
-          { action: 'an-action', input: {} },
-        ),
-      ).not.toThrow();
-    });
-  });
-});
 
 describe('hasBooleanProperty', () => {
   describe('apply', () => {

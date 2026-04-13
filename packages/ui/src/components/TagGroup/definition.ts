@@ -39,7 +39,6 @@ export const TagGroupDefinition = defineComponent<TagGroupOwnProps>()({
 /** @internal */
 export const TagDefinition = defineComponent<TagOwnProps>()({
   styles,
-  resolveHref: true,
   classNames: {
     root: 'bui-Tag',
     icon: 'bui-TagIcon',

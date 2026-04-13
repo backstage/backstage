@@ -78,8 +78,6 @@ export async function startEmbeddedDb() {
   const port = await getPortPromise();
   const tmpDir = await fs.mkdtemp(resolvePath(os.tmpdir(), TEMP_DIR_PREFIX));
 
-  await fs.writeFile(resolvePath(tmpDir, PID_FILE), String(process.pid));
-
   const pg = new EmbeddedPostgres({
     databaseDir: tmpDir,
     user,
@@ -94,6 +92,7 @@ export async function startEmbeddedDb() {
 
   try {
     await pg.initialise();
+    await fs.writeFile(resolvePath(tmpDir, PID_FILE), String(process.pid));
     await pg.start();
   } catch (error) {
     await pg.stop().catch(() => {});

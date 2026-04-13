@@ -17,8 +17,6 @@
 import {
   formatMessagePath,
   createMessagePathParser,
-  messagePatternToGlob,
-  patternHasSubdirectories,
   DEFAULT_MESSAGE_PATTERN,
 } from './messageFilePath';
 
@@ -95,28 +93,6 @@ describe('messageFilePath', () => {
       expect(() => createMessagePathParser('{id}.{lang}.yaml')).toThrow(
         'must end with .json',
       );
-    });
-  });
-
-  describe('messagePatternToGlob', () => {
-    it('converts the default pattern', () => {
-      expect(messagePatternToGlob(DEFAULT_MESSAGE_PATTERN)).toBe(
-        'messages/*.*.json',
-      );
-    });
-
-    it('converts a language-directory pattern', () => {
-      expect(messagePatternToGlob('{lang}/{id}.json')).toBe('*/*.json');
-    });
-  });
-
-  describe('patternHasSubdirectories', () => {
-    it('returns true for the default pattern', () => {
-      expect(patternHasSubdirectories(DEFAULT_MESSAGE_PATTERN)).toBe(true);
-    });
-
-    it('returns true for patterns with directories', () => {
-      expect(patternHasSubdirectories('{lang}/{id}.json')).toBe(true);
     });
   });
 });

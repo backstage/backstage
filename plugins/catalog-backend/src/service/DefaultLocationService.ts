@@ -25,7 +25,10 @@ import {
 import { Location } from '@backstage/catalog-client';
 import { CatalogProcessingOrchestrator } from '../processing/types';
 import { LocationInput, LocationService, LocationStore } from './types';
-import { locationSpecToMetadataName } from '../util/conversion';
+import {
+  computeLocationEntityRef,
+  locationSpecToMetadataName,
+} from '../util/conversion';
 import { InputError } from '@backstage/errors';
 import { DeferredEntity } from '@backstage/plugin-catalog-node';
 import { FilterPredicate } from '@backstage/filter-predicates';
@@ -99,6 +102,22 @@ export class DefaultLocationService implements LocationService {
   getLocation(id: string): Promise<Location> {
     return this.store.getLocation(id);
   }
+
+  async updateLocation(
+    id: string,
+    location: LocationInput,
+    _options: { credentials: BackstageCredentials },
+  ): Promise<Location> {
+    if (!this.options.allowedLocationTypes.includes(location.type)) {
+      throw new InputError(
+        `Registered locations must be of an allowed type ${JSON.stringify(
+          this.options.allowedLocationTypes,
+        )}`,
+      );
+    }
+    return this.store.updateLocation(id, location);
+  }
+
   deleteLocation(id: string): Promise<void> {
     return this.store.deleteLocation(id);
   }
@@ -182,7 +201,11 @@ export class DefaultLocationService implements LocationService {
 
     return {
       exists: await existsPromise,
-      location: { ...spec, id: `${spec.type}:${spec.target}` },
+      location: {
+        ...spec,
+        id: `${spec.type}:${spec.target}`,
+        entityRef: computeLocationEntityRef(spec.type, spec.target),
+      },
       entities,
     };
   }

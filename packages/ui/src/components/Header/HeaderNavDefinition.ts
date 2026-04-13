@@ -47,7 +47,6 @@ export const HeaderNavItemDefinition = defineComponent<HeaderNavLinkProps>()({
     root: 'bui-HeaderNavItem',
   },
   analytics: true,
-  resolveHref: true,
   propDefs: {
     noTrack: {},
     id: {},

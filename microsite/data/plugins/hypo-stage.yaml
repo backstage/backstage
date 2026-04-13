@@ -1,0 +1,11 @@
+---
+title: HypoStage
+author: ArchHypo
+authorUrl: https://github.com/ArchHypo
+category: Discovery
+description: Document architectural assumptions, track uncertainty, and validate decisions with hypothesis management, quality attributes, and technical planning.
+documentation: https://github.com/ArchHypo/hypo-stage/blob/v1.0.0/README.md
+iconUrl: 'https://raw.githubusercontent.com/ArchHypo/hypo-stage/main/docs/backstage-directory/icon/hypo-stage.png'
+npmPackageName: '@archhypo/plugin-hypo-stage'
+addedDate: '2026-04-14'
+status: active

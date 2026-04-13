@@ -22,7 +22,7 @@ import {
 import { useAnalytics, useRouteRef } from '@backstage/core-plugin-api';
 import {
   EntityInfoCard,
-  humanizeEntityRef,
+  entityPresentationSnapshot,
   useEntity,
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
@@ -100,7 +100,7 @@ export const CatalogGraphCard = (
       });
       analytics.captureEvent(
         'click',
-        node.entity.metadata.title ?? humanizeEntityRef(nodeEntityName),
+        entityPresentationSnapshot(node.entity).primaryTitle,
         { attributes: { to: path } },
       );
       navigate(path);

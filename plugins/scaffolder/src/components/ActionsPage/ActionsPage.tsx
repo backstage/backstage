@@ -13,21 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import useAsync from 'react-use/esm/useAsync';
 import { Action, scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
-import Accordion from '@material-ui/core/Accordion';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import LinkIcon from '@material-ui/icons/Link';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import TextField from '@material-ui/core/TextField';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import SearchIcon from '@material-ui/icons/Search';
 
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import {
@@ -35,11 +23,10 @@ import {
   EmptyState,
   ErrorPanel,
   Header,
-  Link,
   MarkdownContent,
   Page,
-  Progress,
 } from '@backstage/core-components';
+import { Flex, List, ListRow, SearchField, Text } from '@backstage/ui';
 import { ScaffolderPageContextMenu } from '@backstage/plugin-scaffolder-react/alpha';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -53,60 +40,119 @@ import { scaffolderTranslationRef } from '../../translation';
 import { Expanded, RenderSchema, SchemaRenderContext } from '../RenderSchema';
 import { ScaffolderUsageExamplesTable } from '../ScaffolderUsageExamplesTable';
 
-const useStyles = makeStyles(theme => ({
-  code: {
-    fontFamily: 'Menlo, monospace',
-    padding: theme.spacing(1),
-    backgroundColor:
-      theme.palette.type === 'dark'
-        ? theme.palette.grey[700]
-        : theme.palette.grey[300],
-    display: 'inline-block',
-    borderRadius: 5,
-    border: `1px solid ${theme.palette.grey[500]}`,
-    position: 'relative',
-  },
+function ActionDetail({ action }: { action: Action }) {
+  const { t } = useTranslationRef(scaffolderTranslationRef);
+  const expanded = useState<Expanded>({});
 
-  codeRequired: {
-    '&::after': {
-      position: 'absolute',
-      content: '"*"',
-      top: 0,
-      right: theme.spacing(0.5),
-      fontWeight: 'bolder',
-      color: theme.palette.error.light,
-    },
-  },
-  link: {
-    paddingLeft: theme.spacing(1),
-  },
-}));
+  const partialSchemaRenderContext: Omit<SchemaRenderContext, 'parentId'> = {
+    expanded,
+  };
+
+  const hasInput = !!action.schema?.input;
+  const hasOutput = !!action.schema?.output;
+  const hasExamples = !!action.examples;
+
+  if (!hasInput && !hasOutput && !hasExamples) {
+    return null;
+  }
+
+  return (
+    <Flex direction="column" gap="6">
+      {hasInput && (
+        <Flex direction="column" gap="2">
+          <Text as="h3" variant="title-small" weight="bold">
+            {t('actionsPage.action.input')}
+          </Text>
+          <RenderSchema
+            strategy="properties"
+            context={{
+              parentId: `${action.id}.input`,
+              ...partialSchemaRenderContext,
+            }}
+            schema={action?.schema?.input}
+          />
+        </Flex>
+      )}
+      {hasOutput && (
+        <Flex direction="column" gap="2">
+          <Text as="h3" variant="title-small" weight="bold">
+            {t('actionsPage.action.output')}
+          </Text>
+          <RenderSchema
+            strategy="properties"
+            context={{
+              parentId: `${action.id}.output`,
+              ...partialSchemaRenderContext,
+            }}
+            schema={action?.schema?.output}
+          />
+        </Flex>
+      )}
+      {hasExamples && (
+        <Flex direction="column" gap="2">
+          <Text as="h3" variant="title-small" weight="bold">
+            {t('actionsPage.action.examples')}
+          </Text>
+          <ScaffolderUsageExamplesTable examples={action.examples!} />
+        </Flex>
+      )}
+    </Flex>
+  );
+}
 
 export const ActionPageContent = () => {
   const api = useApi(scaffolderApiRef);
   const { t } = useTranslationRef(scaffolderTranslationRef);
 
-  const classes = useStyles();
   const {
     loading,
-    value = [],
+    value: actions,
     error,
   } = useAsync(async () => {
     return api.listActions();
   }, [api]);
 
-  const [selectedAction, setSelectedAction] = useState<Action | null>(null);
-  const expanded = useState<Expanded>({});
+  const [selectedActionId, setSelectedActionId] = useState<
+    string | undefined
+  >();
+  const [searchQuery, setSearchQuery] = useState('');
+  const initialHashHandled = useRef(false);
 
   useEffect(() => {
-    if (value.length && window.location.hash) {
-      document.querySelector(window.location.hash)?.scrollIntoView();
+    if (initialHashHandled.current || !actions) {
+      return;
     }
-  }, [value]);
+    const hash = window.location.hash.slice(1);
+    if (hash && actions.some(a => a.id === hash)) {
+      initialHashHandled.current = true;
+      setSelectedActionId(hash);
+      requestAnimationFrame(() => {
+        const row = document.querySelector(`[data-key="${CSS.escape(hash)}"]`);
+        if (row && typeof row.scrollIntoView === 'function') {
+          row.scrollIntoView({ block: 'nearest' });
+        }
+      });
+    }
+  }, [actions]);
 
-  if (loading) {
-    return <Progress />;
-  }
+  const filteredActions = useMemo(() => {
+    const nonLegacy =
+      actions?.filter(action => !action.id.startsWith('legacy:')) ?? [];
+    if (!searchQuery) {
+      return nonLegacy;
+    }
+    const lowerQuery = searchQuery.toLowerCase();
+    return nonLegacy.filter(
+      action =>
+        action.id.toLowerCase().includes(lowerQuery) ||
+        action.description?.toLowerCase().includes(lowerQuery),
+    );
+  }, [actions, searchQuery]);
+
+  const selectedAction = useMemo(
+    () => filteredActions.find(a => a.id === selectedActionId),
+    [filteredActions, selectedActionId],
+  );
 
   if (error) {
     return (
@@ -122,116 +168,80 @@ export const ActionPageContent = () => {
   }
 
   return (
-    <>
-      <Box pb={3}>
-        <Autocomplete
-          id="actions-autocomplete"
-          options={value}
-          loading={loading}
-          getOptionLabel={option => option.id}
-          renderInput={params => (
-            <TextField
-              {...params}
-              aria-label={t('actionsPage.content.searchFieldPlaceholder')}
-              placeholder={t('actionsPage.content.searchFieldPlaceholder')}
-              variant="outlined"
-              InputProps={{
-                ...params.InputProps,
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon />
-                  </InputAdornment>
-                ),
-              }}
-            />
-          )}
-          onChange={(_event, option) => {
-            setSelectedAction(option);
-          }}
-          fullWidth
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: selectedAction ? '320px 1fr' : '1fr',
+        gridTemplateRows: 'auto 1fr',
+        gap: 24,
+      }}
+    >
+      <SearchField
+        aria-label={t('actionsPage.content.searchFieldPlaceholder')}
+        placeholder={t('actionsPage.content.searchFieldPlaceholder')}
+        value={searchQuery}
+        onChange={setSearchQuery}
+      />
+      {!loading && !filteredActions.length ? (
+        <EmptyState
+          missing="info"
+          title={t('actionsPage.content.emptyState.title')}
+          description={t('actionsPage.content.emptyState.description')}
         />
-      </Box>
-      {(selectedAction ? [selectedAction] : value).map(action => {
-        if (action.id.startsWith('legacy:')) {
-          return undefined;
-        }
-        const partialSchemaRenderContext: Omit<
-          SchemaRenderContext,
-          'parentId'
-        > = {
-          classes,
-          expanded,
-          headings: [<Typography variant="h6" component="h4" />],
-        };
-        return (
-          <Box pb={3} key={action.id}>
-            <Box display="flex" alignItems="center">
-              <Typography
-                id={action.id.replaceAll(':', '-')}
-                variant="h5"
-                component="h2"
-                className={classes.code}
-              >
-                {action.id}
-              </Typography>
-              <Link
-                className={classes.link}
-                to={`#${action.id.replaceAll(':', '-')}`}
-              >
-                <LinkIcon />
-              </Link>
-            </Box>
-            {action.description && (
-              <MarkdownContent content={action.description} />
+      ) : (
+        <List
+          aria-label={t('actionsPage.title')}
+          selectionMode="single"
+          selectionBehavior="toggle"
+          selectedKeys={selectedActionId ? [selectedActionId] : []}
+          style={{ minWidth: 0, overflow: 'hidden' }}
+          onSelectionChange={selection => {
+            if (selection === 'all') {
+              return;
+            }
+            const selected = [...selection][0] as string | undefined;
+            setSelectedActionId(prev => {
+              const next = prev === selected ? undefined : selected;
+              const hash = next ? `#${next}` : '';
+              window.history.replaceState(
+                null,
+                '',
+                `${window.location.pathname}${window.location.search}${hash}`,
+              );
+              return next;
+            });
+          }}
+        >
+          {filteredActions.map(action => (
+            <ListRow
+              key={action.id}
+              id={action.id}
+              textValue={action.id}
+              description={action.description ?? undefined}
+            >
+              {action.id}
+            </ListRow>
+          ))}
+        </List>
+      )}
+      {selectedAction && (
+        <Flex
+          direction="column"
+          gap="3"
+          style={{ gridColumn: 2, gridRow: '1 / -1', minWidth: 0 }}
+        >
+          <Flex direction="column" gap="1">
+            <Text as="h2" variant="title-medium" weight="bold">
+              {selectedAction.id}
+            </Text>
+            {selectedAction.description && (
+              <MarkdownContent content={selectedAction.description} />
             )}
-            {action.schema?.input && (
-              <Box pb={2}>
-                <Typography variant="h6" component="h3">
-                  {t('actionsPage.action.input')}
-                </Typography>
-                <RenderSchema
-                  strategy="properties"
-                  context={{
-                    parentId: `${action.id}.input`,
-                    ...partialSchemaRenderContext,
-                  }}
-                  schema={action?.schema?.input}
-                />
-              </Box>
-            )}
-            {action.schema?.output && (
-              <Box pb={2}>
-                <Typography variant="h5" component="h3">
-                  {t('actionsPage.action.output')}
-                </Typography>
-                <RenderSchema
-                  strategy="properties"
-                  context={{
-                    parentId: `${action.id}.output`,
-                    ...partialSchemaRenderContext,
-                  }}
-                  schema={action?.schema?.output}
-                />
-              </Box>
-            )}
-            {action.examples && (
-              <Accordion>
-                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                  <Typography variant="h6" component="h3">
-                    {t('actionsPage.action.examples')}
-                  </Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <Box pb={2}>
-                    <ScaffolderUsageExamplesTable examples={action.examples} />
-                  </Box>
-                </AccordionDetails>
-              </Accordion>
-            )}
-          </Box>
-        );
-      })}
-    </>
+          </Flex>
+          <ActionDetail action={selectedAction} />
+        </Flex>
+      )}
+    </div>
   );
 };
 

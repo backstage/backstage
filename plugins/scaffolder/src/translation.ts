@@ -203,6 +203,7 @@ export const scaffolderTranslationRef = createTranslationRef({
         title: 'Title',
         description: 'Description',
         type: 'Type',
+        value: 'Value',
       },
       undefined: 'No schema defined',
     },

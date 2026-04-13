@@ -907,6 +907,12 @@ export function createTranslationResource<
 
 // @public
 export interface DialogApi {
+  open<TResult = void>(
+    elementOrComponent:
+      | JSX.Element
+      | ((props: { dialog: DialogApiDialog<TResult> }) => JSX.Element),
+  ): DialogApiDialog<TResult>;
+  // @deprecated
   show<TResult = void>(
     elementOrComponent:
       | JSX.Element
@@ -914,6 +920,7 @@ export interface DialogApi {
           dialog: DialogApiDialog<TResult | undefined>;
         }) => JSX.Element),
   ): DialogApiDialog<TResult | undefined>;
+  // @deprecated
   showModal<TResult = void>(
     elementOrComponent:
       | JSX.Element

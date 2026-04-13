@@ -64,6 +64,7 @@ export const RadioGroup = forwardRef<HTMLDivElement, RadioGroupProps>(
           label={label}
           secondaryLabel={secondaryLabelText}
           description={description}
+          descriptionSlot="description"
         />
         <div className={classes.content}>{children}</div>
         <FieldError />

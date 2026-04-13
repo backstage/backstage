@@ -31,7 +31,8 @@ export const DialogDefinition = defineComponent<DialogOwnProps>()({
   styles,
   classNames: {
     root: 'bui-DialogOverlay',
-    dialog: 'bui-Dialog',
+    container: 'bui-Dialog',
+    inner: 'bui-DialogInner',
     content: 'bui-DialogContent',
   },
   propDefs: {

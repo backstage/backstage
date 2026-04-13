@@ -937,6 +937,12 @@ API belongs to, e.g. `artist-engagement-portal`. This field is optional.
 The definition of the API, based on the format defined by `spec.type`. This
 field is required.
 
+**Note:** Be sure to specify the API base URL of your API within the `spec.definition`. If this is not provided, some widgets (such as OpenAPI) will fallback to the base URL of the Backstage instance. Below are some examples of specifying API base URL for different formats:
+
+- [OpenAPI 3.x - use the `server` field](https://swagger.io/docs/specification/v3_0/api-host-and-base-path/#:~:text=All%20API%20endpoints%20are%20relative,.com%2Fv1%2Fusers%20.&text=In%20OpenAPI%203.0%2C%20you%20use,base%20URLs%20for%20your%20API.)
+- [OpenAPI 2.0 (Swagger) — use `host`, `basePath`, and `schemes`](https://swagger.io/docs/specification/v2_0/api-host-and-base-path/)
+- [AsyncAPI - use the `server` field](https://www.asyncapi.com/docs/concepts/asyncapi-document/structure#servers-field)
+
 ## Kind: Group
 
 Describes the following entity kind:

@@ -69,6 +69,7 @@ export const PasswordField = forwardRef<HTMLDivElement, PasswordFieldProps>(
           label={label}
           secondaryLabel={secondaryLabelText}
           description={description}
+          descriptionSlot="description"
         />
         <div
           className={classes.inputWrapper}

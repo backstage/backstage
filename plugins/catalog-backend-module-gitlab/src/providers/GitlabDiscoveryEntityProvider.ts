@@ -383,7 +383,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
         per_page: 50,
         ...(!this.config.includeArchivedRepos && { archived: false }),
         ...(this.config.membership && { membership: true }),
-        ...(this.config.topics && { topics: this.config.topics }),
+        ...(this.config.topics && { topic: this.config.topics }),
         // Only use simple=true when we don't need to skip forked repos.
         // The simple=true parameter reduces response size by returning fewer fields,
         // but it excludes the 'forked_from_project' field which is required for fork detection.

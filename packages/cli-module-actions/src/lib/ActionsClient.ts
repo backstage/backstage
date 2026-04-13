@@ -19,6 +19,7 @@ import { httpJson } from './httpJson';
 export type ActionDef = {
   id: string;
   name: string;
+  title?: string;
   description?: string;
   schema: {
     input: object;
@@ -51,32 +52,31 @@ function pluginActionsUrl(baseUrl: string, pluginId: string): string {
   ).toString();
 }
 
+export type GroupedActions = { pluginId: string; actions: ActionDef[] }[];
+
 export class ActionsClient {
   constructor(
     private readonly baseUrl: string,
     private readonly accessToken: string,
   ) {}
 
-  async list(pluginSources: string[]): Promise<ActionDef[]> {
-    const results: ActionDef[] = [];
-
-    for (const pluginId of pluginSources) {
-      const url = pluginActionsUrl(this.baseUrl, pluginId);
-
-      const response = await httpJson<ListActionsResponse>(url, {
-        headers: { Authorization: `Bearer ${this.accessToken}` },
-        signal: AbortSignal.timeout(30_000),
-      });
-
-      results.push(...response.actions);
-    }
-
-    return results;
+  async list(pluginSources: string[]): Promise<GroupedActions> {
+    return Promise.all(
+      pluginSources.map(async pluginId => {
+        const url = pluginActionsUrl(this.baseUrl, pluginId);
+        const response = await httpJson<ListActionsResponse>(url, {
+          headers: { Authorization: `Bearer ${this.accessToken}` },
+          signal: AbortSignal.timeout(30_000),
+        });
+        return { pluginId, actions: response.actions };
+      }),
+    );
   }
 
   async listForPlugin(actionId: string): Promise<ActionDef[]> {
     const pluginId = extractPluginId(actionId);
-    return this.list([pluginId]);
+    const grouped = await this.list([pluginId]);
+    return grouped.flatMap(g => g.actions);
   }
 
   async execute(actionId: string, input?: unknown): Promise<unknown> {

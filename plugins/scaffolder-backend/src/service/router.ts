@@ -960,7 +960,8 @@ export async function createRouter(
           isTaskAuthorized,
         });
 
-        const after = Number(req.query.after) || undefined;
+        const after =
+          req.query.after !== undefined ? Number(req.query.after) : undefined;
 
         // cancel the request after 30 seconds. this aligns with the recommendations of RFC 6202.
         const timeout = setTimeout(() => {

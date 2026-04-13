@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
-import {
-  OpaqueExtensionDefinition,
-  OpaqueFrontendPlugin,
-} from '@internal/frontend';
+import { OpaqueFrontendPlugin } from '@internal/frontend';
 import {
   ExtensionDefinition,
   OverridableExtensionDefinition,
 } from './createExtension';
 import {
-  Extension,
   resolveExtensionDefinition,
+  resolveExtensionDefinitions,
 } from './resolveExtensionDefinition';
 import { FeatureFlagConfig } from './types';
 import { MakeSortedExtensionsMap } from './MakeSortedExtensionsMap';
@@ -272,36 +269,13 @@ export function createFrontendPlugin<
     );
   }
 
-  const extensions = new Array<Extension<any>>();
-  const extensionDefinitionsById = new Map<
-    string,
-    typeof OpaqueExtensionDefinition.TInternal
-  >();
-
-  for (const def of options.extensions ?? []) {
-    const internal = OpaqueExtensionDefinition.toInternal(def);
-    const ext = resolveExtensionDefinition(def, { namespace: pluginId });
-    extensions.push(ext);
-    extensionDefinitionsById.set(ext.id, {
-      ...internal,
+  const { extensions, extensionDefinitionsById } = resolveExtensionDefinitions(
+    options.extensions ?? [],
+    {
       namespace: pluginId,
-    });
-  }
-
-  if (extensions.length !== extensionDefinitionsById.size) {
-    const extensionIds = extensions.map(e => e.id);
-    const duplicates = Array.from(
-      new Set(
-        extensionIds.filter((id, index) => extensionIds.indexOf(id) !== index),
-      ),
-    );
-    // TODO(Rugvip): This could provide some more information about the kind + name of the extensions
-    throw new Error(
-      `Plugin '${pluginId}' provided duplicate extensions: ${duplicates.join(
-        ', ',
-      )}`,
-    );
-  }
+      featureType: 'Plugin',
+    },
+  );
 
   return OpaqueFrontendPlugin.createInstance('v1', {
     pluginId,

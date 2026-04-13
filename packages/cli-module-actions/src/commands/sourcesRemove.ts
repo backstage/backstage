@@ -16,36 +16,49 @@
 
 import { cli } from 'cleye';
 import { CliAuth, type CliCommandContext } from '@backstage/cli-node';
-import { z } from 'zod/v3';
-
-const pluginSourcesSchema = z.array(z.string()).default([]);
+import { pluginSourcesSchema } from '../lib/pluginSources';
 
 export default async ({ args, info }: CliCommandContext) => {
   const parsed = cli(
     {
       help: info,
-      parameters: ['<plugin-id>'],
+      parameters: ['<plugin-ids...>'],
     },
     undefined,
     args,
   );
 
-  const pluginId = parsed._[0];
+  const pluginIds: string[] = parsed._.pluginIds;
 
   const auth = await CliAuth.create();
   const existing = pluginSourcesSchema.parse(
     await auth.getMetadata('pluginSources'),
   );
 
-  if (!existing.includes(pluginId)) {
-    process.stderr.write(`Plugin source "${pluginId}" is not configured.\n`);
-    return;
+  const removed: string[] = [];
+  const skipped: string[] = [];
+
+  for (const pluginId of pluginIds) {
+    if (existing.includes(pluginId)) {
+      removed.push(pluginId);
+    } else {
+      skipped.push(pluginId);
+    }
   }
 
-  await auth.setMetadata(
-    'pluginSources',
-    existing.filter(s => s !== pluginId),
-  );
+  if (removed.length > 0) {
+    await auth.setMetadata(
+      'pluginSources',
+      existing.filter(s => !removed.includes(s)),
+    );
+    process.stdout.write(
+      `Removed plugin source${removed.length > 1 ? 's' : ''}: ${removed.join(
+        ', ',
+      )}\n`,
+    );
+  }
 
-  process.stdout.write(`Removed plugin source "${pluginId}".\n`);
+  for (const id of skipped) {
+    process.stderr.write(`Plugin source "${id}" is not configured.\n`);
+  }
 };

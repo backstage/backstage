@@ -19,6 +19,9 @@ type JsonSchemaProperty = {
   description?: string;
   enum?: unknown[];
   default?: unknown;
+  anyOf?: unknown[];
+  oneOf?: unknown[];
+  allOf?: unknown[];
 };
 
 type JsonSchemaObject = {
@@ -26,37 +29,64 @@ type JsonSchemaObject = {
   required?: string[];
 };
 
-type CleyeFlag = {
+export type CleyeFlag = {
   type: StringConstructor | NumberConstructor | BooleanConstructor;
   description?: string;
   default?: unknown;
 };
 
-export function schemaToFlags(
-  schema: JsonSchemaObject,
-): Record<string, CleyeFlag> {
+function isComplexType(prop: JsonSchemaProperty): boolean {
+  if (prop.anyOf || prop.oneOf || prop.allOf) {
+    return true;
+  }
+  const rawType = Array.isArray(prop.type) ? prop.type[0] : prop.type;
+  return rawType === 'object' || rawType === 'array';
+}
+
+function resolveFlagType(
+  rawType: string | undefined,
+): StringConstructor | NumberConstructor | BooleanConstructor | undefined {
+  if (rawType === 'string') return String;
+  if (rawType === 'number' || rawType === 'integer') return Number;
+  if (rawType === 'boolean') return Boolean;
+  return undefined;
+}
+
+export function schemaToFlags(schema: JsonSchemaObject): {
+  flags: Record<string, CleyeFlag>;
+  complexKeys: Set<string>;
+} {
   const flags: Record<string, CleyeFlag> = {};
+  const complexKeys = new Set<string>();
   const required = new Set(schema.required ?? []);
 
   if (!schema.properties) {
-    return flags;
+    return { flags, complexKeys };
   }
 
   for (const [key, prop] of Object.entries(schema.properties)) {
     const rawType = Array.isArray(prop.type) ? prop.type[0] : prop.type;
+    const complex = isComplexType(prop);
+    let flagType = resolveFlagType(rawType);
 
-    let flagType: StringConstructor | NumberConstructor | BooleanConstructor;
-    if (rawType === 'string') {
+    if (!flagType && complex) {
       flagType = String;
-    } else if (rawType === 'number' || rawType === 'integer') {
-      flagType = Number;
-    } else if (rawType === 'boolean') {
-      flagType = Boolean;
-    } else {
+    }
+
+    if (!flagType) {
       continue;
     }
 
+    if (complex) {
+      complexKeys.add(key);
+    }
+
     let desc = prop.description ?? '';
+
+    if (complex) {
+      desc = desc ? `${desc} (JSON)` : '(JSON)';
+    }
+
     if (prop.enum?.length) {
       const values = prop.enum.map(v => String(v)).join(', ');
       desc = desc ? `${desc} [${values}]` : `[${values}]`;
@@ -73,5 +103,5 @@ export function schemaToFlags(
     flags[key] = flag;
   }
 
-  return flags;
+  return { flags, complexKeys };
 }

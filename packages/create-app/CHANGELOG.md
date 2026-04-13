@@ -7024,7 +7024,7 @@ The `.fromConfig` of the `DefaultCatalogCollator` also now takes a `tokenManager
 
   To apply this change to an existing plugin, it is important that all plugins that you are using have already been migrated. In this case the most crucial piece is that no entity page cards of contents may require the `entity` prop, and they must instead consume the entity from context using `useEntity`.
 
-  Since this change is large with a lot of repeated changes, we'll describe a couple of common cases rather than the entire change. If your entity pages are unchanged from the `create-app` template, you can also just bring in the latest version directly from the [template itself](https://github.com/backstage/backstage/blob/master/packages/create-app/templates/default-app/packages/app/src/components/catalog/EntityPage.tsx).
+  Since this change is large with a lot of repeated changes, we'll describe a couple of common cases rather than the entire change. If your entity pages are unchanged from the `create-app` template, you can also just bring in the latest version directly from the [template itself](https://github.com/backstage/backstage/blob/master/packages/create-app/templates/legacy-app/packages/app/src/components/catalog/EntityPage.tsx).
 
   The first step of the change is to change the `packages/app/src/components/catalog/EntityPage.tsx` export to `entityPage` rather than `EntityPage`. This will require an update to `App.tsx`, which is the only change we need to do outside of `EntityPage.tsx`:
 

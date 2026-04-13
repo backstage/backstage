@@ -56,7 +56,11 @@ type DepsToInstances<
     [key in string]: ServiceRef<unknown> | ExtensionPoint<unknown>;
   },
 > = {
-  [key in keyof TDeps]: TDeps[key] extends ServiceRef<unknown, any, 'multiton'>
+  [key in keyof TDeps]: TDeps[key] extends ServiceRef<
+    unknown,
+    'root' | 'plugin',
+    'multiton'
+  >
     ? Array<TDeps[key]['T']>
     : TDeps[key]['T'];
 };

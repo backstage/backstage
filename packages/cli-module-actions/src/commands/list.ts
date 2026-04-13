@@ -18,6 +18,7 @@ import { cli } from 'cleye';
 import type { CliCommandContext } from '@backstage/cli-node';
 import { ActionsClient } from '../lib/ActionsClient';
 import { resolveAuth } from '../lib/resolveAuth';
+import { formatActionList } from '../lib/format';
 
 export default async ({ args, info }: CliCommandContext) => {
   const {
@@ -48,15 +49,13 @@ export default async ({ args, info }: CliCommandContext) => {
   }
 
   const client = new ActionsClient(baseUrl, accessToken);
-  const actions = await client.list(pluginSources);
+  const grouped = await client.list(pluginSources);
 
-  if (!actions.length) {
+  const hasActions = grouped.some(g => g.actions.length > 0);
+  if (!hasActions) {
     process.stderr.write('No actions found.\n');
     return;
   }
 
-  for (const action of actions) {
-    const desc = action.description ? ` - ${action.description}` : '';
-    process.stdout.write(`${action.id}${desc}\n`);
-  }
+  process.stdout.write(`${formatActionList(grouped)}\n`);
 };

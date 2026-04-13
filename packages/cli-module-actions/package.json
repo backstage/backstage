@@ -35,7 +35,11 @@
   "dependencies": {
     "@backstage/cli-node": "workspace:^",
     "@backstage/errors": "workspace:^",
+    "chalk": "^4.0.0",
     "cleye": "^2.3.0",
+    "marked": "^15.0.12",
+    "marked-terminal": "^7.3.0",
+    "strip-ansi": "^7.1.0",
     "zod": "^3.25.76 || ^4.0.0"
   },
   "devDependencies": {

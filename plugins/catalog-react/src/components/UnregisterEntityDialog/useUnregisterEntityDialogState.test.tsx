@@ -72,7 +72,12 @@ describe('useUnregisterEntityDialogState', () => {
 
     expect(rendered.result.current).toEqual({ type: 'loading' });
 
-    resolveLocation({ type: 'url', target: 'https://example.com', id: 'x' });
+    resolveLocation({
+      type: 'url',
+      target: 'https://example.com',
+      id: 'x',
+      entityRef: 'location:default/generated-x',
+    });
     resolveColocatedEntities([entity]);
 
     await waitFor(() => {
@@ -94,7 +99,12 @@ describe('useUnregisterEntityDialogState', () => {
       wrapper: Wrapper,
     });
 
-    resolveLocation({ type: 'bootstrap', target: 'bootstrap', id: 'x' });
+    resolveLocation({
+      type: 'bootstrap',
+      target: 'bootstrap',
+      id: 'x',
+      entityRef: '',
+    });
     resolveColocatedEntities([]);
 
     await waitFor(() => {

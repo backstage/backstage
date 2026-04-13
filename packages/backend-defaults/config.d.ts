@@ -634,6 +634,35 @@ export interface Config {
           }
         | {
             /**
+             * The specific config for AWS RDS connections with IAM authentication.
+             * Requires the `@aws-sdk/rds-signer` package to be installed.
+             * The IAM role or user must have the `rds-db:connect` permission for the database user.
+             */
+            type: 'rds';
+            /**
+             * The hostname of the RDS instance.
+             */
+            host: string;
+            /**
+             * The port number the database is listening on.
+             */
+            port: number;
+            /**
+             * The database user to authenticate as. This user must have the `rds_iam` role granted.
+             */
+            user: string;
+            /**
+             * The AWS region where the RDS instance is located.
+             * Falls back to the AWS_REGION or AWS_DEFAULT_REGION environment variables if not set.
+             */
+            region?: string;
+            /**
+             * Other connection settings
+             */
+            [key: string]: unknown;
+          }
+        | {
+            /**
              * The rest config for default, regular connections
              */
             type?: 'default';

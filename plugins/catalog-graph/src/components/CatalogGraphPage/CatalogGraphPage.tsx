@@ -24,8 +24,8 @@ import {
 } from '@backstage/core-components';
 import { useAnalytics, useRouteRef } from '@backstage/core-plugin-api';
 import {
+  entityPresentationSnapshot,
   entityRouteRef,
-  humanizeEntityRef,
 } from '@backstage/plugin-catalog-react';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
@@ -160,6 +160,7 @@ export const CatalogGraphPage = (
   const onNodeClick = useCallback(
     (node: EntityNode, event: MouseEvent<unknown>) => {
       const nodeEntityName = parseEntityRef(node.id);
+      const nodeTitle = entityPresentationSnapshot(node.entity).primaryTitle;
 
       if (event.shiftKey) {
         const path = catalogEntityRoute({
@@ -168,17 +169,12 @@ export const CatalogGraphPage = (
           name: nodeEntityName.name,
         });
 
-        analytics.captureEvent(
-          'click',
-          node.entity.metadata.title ?? humanizeEntityRef(nodeEntityName),
-          { attributes: { to: path } },
-        );
+        analytics.captureEvent('click', nodeTitle, {
+          attributes: { to: path },
+        });
         navigate(path);
       } else {
-        analytics.captureEvent(
-          'click',
-          node.entity.metadata.title ?? humanizeEntityRef(nodeEntityName),
-        );
+        analytics.captureEvent('click', nodeTitle);
         setRootEntityNames([nodeEntityName]);
       }
     },
@@ -189,7 +185,9 @@ export const CatalogGraphPage = (
     <Page themeId="home">
       <Header
         title={t('catalogGraphPage.title')}
-        subtitle={rootEntityNames.map(e => humanizeEntityRef(e)).join(', ')}
+        subtitle={rootEntityNames
+          .map(e => entityPresentationSnapshot(e).primaryTitle)
+          .join(', ')}
       />
       <Content stretch className={classes.content}>
         <ContentHeader

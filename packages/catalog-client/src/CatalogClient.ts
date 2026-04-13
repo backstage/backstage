@@ -613,6 +613,27 @@ export class CatalogClient implements CatalogApi {
   }
 
   /**
+   * {@inheritdoc CatalogApi.updateLocation}
+   */
+  async updateLocation(
+    id: string,
+    location: { type?: string; target: string },
+    options?: CatalogRequestOptions,
+  ): Promise<Location> {
+    const { type = 'url', target } = location;
+    const response = await this.apiClient.updateLocation(
+      { path: { id }, body: { type, target } },
+      options,
+    );
+
+    if (response.status !== 200) {
+      throw await ResponseError.fromResponse(response);
+    }
+
+    return response.json();
+  }
+
+  /**
    * {@inheritdoc CatalogApi.removeLocationById}
    */
   async removeLocationById(

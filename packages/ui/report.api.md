@@ -583,7 +583,6 @@ export const ButtonLinkDefinition: {
   };
   readonly bg: 'consumer';
   readonly analytics: true;
-  readonly resolveHref: true;
   readonly propDefs: {
     readonly noTrack: {};
     readonly size: {
@@ -690,7 +689,6 @@ export const CardDefinition: {
   readonly styles: {
     readonly [key: string]: string;
   };
-  readonly resolveHref: true;
   readonly classNames: {
     readonly root: 'bui-Card';
     readonly trigger: 'bui-CardTrigger';
@@ -1126,7 +1124,8 @@ export const DialogDefinition: {
   };
   readonly classNames: {
     readonly root: 'bui-DialogOverlay';
-    readonly dialog: 'bui-Dialog';
+    readonly container: 'bui-Dialog';
+    readonly inner: 'bui-DialogInner';
     readonly content: 'bui-DialogContent';
   };
   readonly propDefs: {
@@ -1245,6 +1244,7 @@ export const FieldLabelDefinition: {
     readonly htmlFor: {};
     readonly id: {};
     readonly descriptionId: {};
+    readonly descriptionSlot: {};
     readonly className: {};
   };
 };
@@ -1257,6 +1257,7 @@ export type FieldLabelOwnProps = {
   htmlFor?: string;
   id?: string;
   descriptionId?: string;
+  descriptionSlot?: string;
   className?: string;
 };
 
@@ -1559,7 +1560,6 @@ export const HeaderNavItemDefinition: {
     readonly root: 'bui-HeaderNavItem';
   };
   readonly analytics: true;
-  readonly resolveHref: true;
   readonly propDefs: {
     readonly noTrack: {};
     readonly id: {};
@@ -1682,7 +1682,6 @@ export const LinkDefinition: {
     readonly root: 'bui-Link';
   };
   readonly analytics: true;
-  readonly resolveHref: true;
   readonly propDefs: {
     readonly noTrack: {};
     readonly variant: {
@@ -1771,7 +1770,6 @@ export const ListRowDefinition: {
     readonly [key: string]: string;
   };
   readonly bg: 'consumer';
-  readonly resolveHref: true;
   readonly classNames: {
     readonly root: 'bui-ListRow';
     readonly check: 'bui-ListRowCheck';
@@ -2699,6 +2697,13 @@ export type TableBodyOwnProps = {};
 export interface TableBodyProps<T extends object>
   extends TableBodyOwnProps,
     Omit<TableBodyProps_2<T>, keyof TableBodyOwnProps> {}
+
+// @public
+export function TableBodySkeleton<
+  T extends {
+    id: string;
+  },
+>(input: { columns: readonly T[] }): JSX_2.Element;
 
 // @public
 export const TableDefinition: {

@@ -708,6 +708,7 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'renderSchema.undefined': 'No schema defined';
     readonly 'renderSchema.tableCell.name': 'Name';
     readonly 'renderSchema.tableCell.type': 'Type';
+    readonly 'renderSchema.tableCell.value': 'Value';
     readonly 'renderSchema.tableCell.title': 'Title';
     readonly 'renderSchema.tableCell.description': 'Description';
     readonly 'templatingExtensions.content.values.title': 'Values';
