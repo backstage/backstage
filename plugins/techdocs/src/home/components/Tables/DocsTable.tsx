@@ -16,9 +16,15 @@
 
 import useCopyToClipboard from 'react-use/esm/useCopyToClipboard';
 
-import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
+import {
+  configApiRef,
+  useApi,
+  useApiHolder,
+  useRouteRef,
+} from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { rootDocsRouteRef } from '../../../routes';
+import { entityPresentationApiRef } from '@backstage/plugin-catalog-react';
 import {
   EmptyState,
   LinkButton,
@@ -56,6 +62,9 @@ export const DocsTable = (props: DocsTableProps) => {
   const [, copyToClipboard] = useCopyToClipboard();
   const getRouteToReaderPageFor = useRouteRef(rootDocsRouteRef);
   const config = useApi(configApiRef);
+  const apiHolder = useApiHolder();
+  const presentationApi = apiHolder.get(entityPresentationApiRef);
+
   if (!entities) return null;
 
   const documents = entitiesToDocsMapper(
@@ -63,6 +72,21 @@ export const DocsTable = (props: DocsTableProps) => {
     getRouteToReaderPageFor,
     config,
   );
+
+  const tableColumns =
+    columns ||
+    (presentationApi
+      ? [
+          columnFactories.createTitleColumn({
+            hidden: true,
+            presentationApi,
+          }),
+          columnFactories.createNameColumn(presentationApi),
+          columnFactories.createOwnerColumn(),
+          columnFactories.createKindColumn(),
+          columnFactories.createTypeColumn(),
+        ]
+      : defaultColumns);
 
   const defaultActions: TableProps<DocsTableRow>['actions'] = [
     actionFactories.createCopyDocsUrlAction(copyToClipboard),
@@ -84,7 +108,7 @@ export const DocsTable = (props: DocsTableProps) => {
             ...options,
           }}
           data={documents}
-          columns={columns || defaultColumns}
+          columns={tableColumns}
           actions={actions || defaultActions}
           title={
             title

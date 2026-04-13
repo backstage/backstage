@@ -15,12 +15,21 @@
  */
 
 import { Link, SubvalueCell, TableColumn } from '@backstage/core-components';
-import { EntityRefLinks } from '@backstage/plugin-catalog-react';
+import {
+  EntityDisplayName,
+  EntityPresentationApi,
+  entityPresentationSnapshot,
+  EntityRefLinks,
+} from '@backstage/plugin-catalog-react';
 import { Entity } from '@backstage/catalog-model';
 import { DocsTableRow } from './types';
 
-function customTitle(entity: Entity): string {
-  return entity.metadata.title || entity.metadata.name;
+function customTitle(
+  entity: Entity,
+  presentationApi?: EntityPresentationApi,
+): string {
+  return entityPresentationSnapshot(entity, undefined, presentationApi)
+    .primaryTitle;
 }
 
 /**
@@ -29,15 +38,21 @@ function customTitle(entity: Entity): string {
  * @public
  */
 export const columnFactories = {
-  createTitleColumn(options?: { hidden?: boolean }): TableColumn<DocsTableRow> {
-    const nameCol = columnFactories.createNameColumn();
+  createTitleColumn(options?: {
+    hidden?: boolean;
+    presentationApi?: EntityPresentationApi;
+  }): TableColumn<DocsTableRow> {
+    const nameCol = columnFactories.createNameColumn(options?.presentationApi);
     return {
       ...nameCol,
       field: 'entity.metadata.title',
       hidden: options?.hidden,
     };
   },
-  createNameColumn(): TableColumn<DocsTableRow> {
+
+  createNameColumn(
+    presentationApi?: EntityPresentationApi,
+  ): TableColumn<DocsTableRow> {
     return {
       title: 'Document',
       field: 'entity.metadata.name',
@@ -45,14 +60,22 @@ export const columnFactories = {
       searchable: true,
       defaultSort: 'asc',
       customSort: (row1, row2) => {
-        const title1 = customTitle(row1.entity).toLocaleLowerCase();
-        const title2 = customTitle(row2.entity).toLocaleLowerCase();
+        const title1 = customTitle(
+          row1.entity,
+          presentationApi,
+        ).toLocaleLowerCase();
+        const title2 = customTitle(
+          row2.entity,
+          presentationApi,
+        ).toLocaleLowerCase();
         return title1.localeCompare(title2);
       },
       render: (row: DocsTableRow) => (
         <SubvalueCell
           value={
-            <Link to={row.resolved.docsUrl}>{customTitle(row.entity)}</Link>
+            <Link to={row.resolved.docsUrl}>
+              <EntityDisplayName entityRef={row.entity} />
+            </Link>
           }
           subvalue={row.entity.metadata.description}
         />

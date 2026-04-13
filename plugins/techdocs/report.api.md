@@ -13,6 +13,7 @@ import { Entity } from '@backstage/catalog-model';
 import { EntityFilterQuery } from '@backstage/catalog-client';
 import { EntityListPagination } from '@backstage/plugin-catalog-react';
 import { EntityOwnerPickerProps } from '@backstage/plugin-catalog-react';
+import { EntityPresentationApi } from '@backstage/plugin-catalog-react';
 import { FC } from 'react';
 import { FetchApi } from '@backstage/core-plugin-api';
 import { IdentityApi } from '@backstage/core-plugin-api';
@@ -100,8 +101,11 @@ export const DocsTable: {
   columns: {
     createTitleColumn(options?: {
       hidden?: boolean;
+      presentationApi?: EntityPresentationApi;
     }): TableColumn<DocsTableRow>;
-    createNameColumn(): TableColumn<DocsTableRow>;
+    createNameColumn(
+      presentationApi?: EntityPresentationApi,
+    ): TableColumn<DocsTableRow>;
     createOwnerColumn(): TableColumn<DocsTableRow>;
     createKindColumn(): TableColumn<DocsTableRow>;
     createTypeColumn(): TableColumn<DocsTableRow>;
@@ -169,8 +173,11 @@ export const EntityListDocsTable: {
   columns: {
     createTitleColumn(options?: {
       hidden?: boolean;
+      presentationApi?: EntityPresentationApi;
     }): TableColumn<DocsTableRow>;
-    createNameColumn(): TableColumn<DocsTableRow>;
+    createNameColumn(
+      presentationApi?: EntityPresentationApi,
+    ): TableColumn<DocsTableRow>;
     createOwnerColumn(): TableColumn<DocsTableRow>;
     createKindColumn(): TableColumn<DocsTableRow>;
     createTypeColumn(): TableColumn<DocsTableRow>;

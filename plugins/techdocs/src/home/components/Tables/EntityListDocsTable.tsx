@@ -23,10 +23,16 @@ import {
   TableProps,
   WarningPanel,
 } from '@backstage/core-components';
-import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
+import {
+  configApiRef,
+  useApi,
+  useApiHolder,
+  useRouteRef,
+} from '@backstage/core-plugin-api';
 import {
   useEntityList,
   useStarredEntities,
+  entityPresentationApiRef,
 } from '@backstage/plugin-catalog-react';
 import { DocsTable } from './DocsTable';
 import { OffsetPaginatedDocsTable } from './OffsetPaginatedDocsTable';
@@ -61,6 +67,8 @@ export const EntityListDocsTable = (props: EntityListDocsTableProps) => {
   const [, copyToClipboard] = useCopyToClipboard();
   const getRouteToReaderPageFor = useRouteRef(rootDocsRouteRef);
   const config = useApi(configApiRef);
+  const apiHolder = useApiHolder();
+  const presentationApi = apiHolder.get(entityPresentationApiRef);
 
   const title = capitalize(filters.user?.value ?? 'all');
 
@@ -78,10 +86,25 @@ export const EntityListDocsTable = (props: EntityListDocsTableProps) => {
     config,
   );
 
+  const tableColumns =
+    columns ||
+    (presentationApi
+      ? [
+          columnFactories.createTitleColumn({
+            hidden: true,
+            presentationApi,
+          }),
+          columnFactories.createNameColumn(presentationApi),
+          columnFactories.createOwnerColumn(),
+          columnFactories.createKindColumn(),
+          columnFactories.createTypeColumn(),
+        ]
+      : defaultColumns);
+
   if (paginationMode === 'cursor') {
     return (
       <CursorPaginatedDocsTable
-        columns={columns || defaultColumns}
+        columns={tableColumns}
         isLoading={loading}
         title={title}
         actions={actions || defaultActions}
@@ -94,7 +117,7 @@ export const EntityListDocsTable = (props: EntityListDocsTableProps) => {
   } else if (paginationMode === 'offset') {
     return (
       <OffsetPaginatedDocsTable
-        columns={columns || defaultColumns}
+        columns={tableColumns}
         isLoading={loading}
         title={title}
         actions={actions || defaultActions}
@@ -121,7 +144,7 @@ export const EntityListDocsTable = (props: EntityListDocsTableProps) => {
       entities={entities}
       loading={loading}
       actions={actions || defaultActions}
-      columns={columns}
+      columns={tableColumns}
       options={options}
     />
   );
