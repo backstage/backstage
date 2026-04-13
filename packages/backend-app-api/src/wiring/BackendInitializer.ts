@@ -22,7 +22,6 @@ import {
   ServiceFactory,
   LifecycleService,
   RootLifecycleService,
-  createServiceFactory,
   ExtensionPointFactoryContext,
 } from '@backstage/backend-plugin-api';
 import {
@@ -33,21 +32,24 @@ import { OpaqueExtensionPointFactoryMiddleware } from '@internal/backend';
 // Direct internal import to avoid duplication
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import type {
-  InternalBackendFeature,
   InternalBackendFeatureLoader,
   InternalBackendRegistrations,
 } from '../../../backend-plugin-api/src/wiring/types';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import type { InternalServiceFactory } from '../../../backend-plugin-api/src/services/system/types';
 import { ConflictError, ForwardedError, toError } from '@backstage/errors';
 import { DependencyGraph } from '../lib/DependencyGraph';
 import { ServiceRegistry } from './ServiceRegistry';
 import { createInitializationResultCollector } from './createInitializationResultCollector';
-import { deepFreeze, unwrapFeature } from './helpers';
-import type { RootInstanceMetadataServicePluginInfo } from '@backstage/backend-plugin-api';
+import { unwrapFeature } from './helpers';
 import { BackendStartupResult } from './types';
 import { BackendStartupError } from './BackendStartupError';
 import { createAllowBootFailurePredicate } from './createAllowBootFailurePredicate';
+import { instanceRegistry } from './instanceRegistry';
+import { createRootInstanceMetadataServiceFactory } from './instanceMetadataServiceFactory';
+import {
+  isServiceFactory,
+  isBackendRegistrations,
+  isBackendFeatureLoader,
+} from './featureDiscovery';
 
 export interface BackendRegisterInit {
   consumes: Set<ServiceOrExtensionPoint>;
@@ -56,104 +58,6 @@ export interface BackendRegisterInit {
     deps: { [name: string]: ServiceOrExtensionPoint };
     func: (deps: { [name: string]: unknown }) => Promise<void>;
   };
-}
-
-/**
- * A registry of backend instances, used to manage process shutdown hooks across all instances.
- */
-const instanceRegistry = new (class InstanceRegistry {
-  #registered = false;
-  #instances = new Set<BackendInitializer>();
-
-  register(instance: BackendInitializer) {
-    if (!this.#registered) {
-      this.#registered = true;
-
-      process.addListener('SIGTERM', this.#exitHandler);
-      process.addListener('SIGINT', this.#exitHandler);
-      process.addListener('beforeExit', this.#exitHandler);
-    }
-
-    this.#instances.add(instance);
-  }
-
-  unregister(instance: BackendInitializer) {
-    this.#instances.delete(instance);
-  }
-
-  #exitHandler = async () => {
-    try {
-      const results = await Promise.allSettled(
-        Array.from(this.#instances).map(b => b.stop()),
-      );
-      const errors = results.flatMap(r =>
-        r.status === 'rejected' ? [r.reason] : [],
-      );
-
-      if (errors.length > 0) {
-        for (const error of errors) {
-          console.error(error);
-        }
-        process.exit(1);
-      } else {
-        process.exit(0);
-      }
-    } catch (error) {
-      console.error(error);
-      process.exit(1);
-    }
-  };
-})();
-
-function createRootInstanceMetadataServiceFactory(
-  rawRegistrations: InternalBackendRegistrations[],
-) {
-  const installedPlugins: Map<string, RootInstanceMetadataServicePluginInfo> =
-    new Map();
-  const registrations = rawRegistrations
-    .filter(registration => registration.featureType === 'registrations')
-    .flatMap(registration => registration.getRegistrations());
-  const plugins = registrations.filter(
-    registration =>
-      registration.type === 'plugin' || registration.type === 'plugin-v1.1',
-  );
-  const modules = registrations.filter(
-    registration =>
-      registration.type === 'module' || registration.type === 'module-v1.1',
-  );
-  for (const plugin of plugins) {
-    const { pluginId } = plugin;
-    if (!installedPlugins.get(pluginId)) {
-      installedPlugins.set(pluginId, {
-        pluginId,
-        modules: [],
-      });
-    }
-  }
-  for (const module of modules) {
-    const { pluginId, moduleId } = module;
-    const installedPlugin = installedPlugins.get(pluginId);
-    if (installedPlugin) {
-      (installedPlugin.modules as Array<{ moduleId: string }>).push({
-        moduleId,
-      });
-    }
-  }
-
-  return createServiceFactory({
-    service: coreServices.rootInstanceMetadata,
-    deps: {},
-    factory: async () => {
-      const readonlyInstalledPlugins = deepFreeze([
-        ...installedPlugins.values(),
-      ]);
-      const instanceMetadata = {
-        getInstalledPlugins: () => Promise.resolve(readonlyInstalledPlugins),
-      };
-
-      return instanceMetadata;
-    },
-  });
 }
 
 export class BackendInitializer {
@@ -737,47 +641,4 @@ export class BackendInitializer {
       }
     }
   }
-}
-
-function toInternalBackendFeature(
-  feature: BackendFeature,
-): InternalBackendFeature {
-  if (feature.$$type !== '@backstage/BackendFeature') {
-    throw new Error(`Invalid BackendFeature, bad type '${feature.$$type}'`);
-  }
-  const internal = feature as InternalBackendFeature;
-  if (internal.version !== 'v1') {
-    throw new Error(
-      `Invalid BackendFeature, bad version '${internal.version}'`,
-    );
-  }
-  return internal;
-}
-
-function isServiceFactory(
-  feature: BackendFeature,
-): feature is InternalServiceFactory {
-  const internal = toInternalBackendFeature(feature);
-  if (internal.featureType === 'service') {
-    return true;
-  }
-  // Backwards compatibility for v1 registrations that use duck typing
-  return 'service' in internal;
-}
-
-function isBackendRegistrations(
-  feature: BackendFeature,
-): feature is InternalBackendRegistrations {
-  const internal = toInternalBackendFeature(feature);
-  if (internal.featureType === 'registrations') {
-    return true;
-  }
-  // Backwards compatibility for v1 registrations that use duck typing
-  return 'getRegistrations' in internal;
-}
-
-function isBackendFeatureLoader(
-  feature: BackendFeature,
-): feature is InternalBackendFeatureLoader {
-  return toInternalBackendFeature(feature).featureType === 'loader';
 }

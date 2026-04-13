@@ -37,16 +37,14 @@ const baseFactories = [
   mockServices.logger.factory(),
 ];
 
-function mkNoopFactory(ref: ServiceRef<{}, 'plugin'>) {
+function mkNoopFactory(ref: ServiceRef<any, 'plugin'>) {
   const fn = jest.fn().mockReturnValue({});
-  return Object.assign(
-    fn,
-    createServiceFactory({
-      service: ref,
-      deps: {},
-      factory: fn,
-    }),
-  );
+  const factory = createServiceFactory({
+    service: ref,
+    deps: {},
+    factory: fn,
+  });
+  return Object.assign(factory, { fn });
 }
 
 const testPlugin = createBackendPlugin({
@@ -232,19 +230,23 @@ describe('BackendInitializer', () => {
 
     await init.start();
 
-    expect(factory1).not.toHaveBeenCalled();
-    expect(factory2).toHaveBeenCalled();
-    expect(factory3).not.toHaveBeenCalled();
+    expect(factory1.fn).not.toHaveBeenCalled();
+    expect(factory2.fn).toHaveBeenCalled();
+    expect(factory3.fn).not.toHaveBeenCalled();
   });
 
   it('should include all multiton service factories', async () => {
     expect.assertions(5);
 
     const ref = createServiceRef<number>({ id: '1', multiton: true });
-    const factory1 = mkNoopFactory(ref).mockResolvedValue(1);
-    const factory2 = mkNoopFactory(ref).mockResolvedValue(2);
-    const factory3 = mkNoopFactory(ref).mockResolvedValue(3);
-    const factory4 = mkNoopFactory(ref).mockResolvedValue(4);
+    const factory1 = mkNoopFactory(ref);
+    factory1.fn.mockResolvedValue(1);
+    const factory2 = mkNoopFactory(ref);
+    factory2.fn.mockResolvedValue(2);
+    const factory3 = mkNoopFactory(ref);
+    factory3.fn.mockResolvedValue(3);
+    const factory4 = mkNoopFactory(ref);
+    factory4.fn.mockResolvedValue(4);
 
     const init = new BackendInitializer([...baseFactories, factory1]);
     init.add(factory2);
@@ -273,10 +275,10 @@ describe('BackendInitializer', () => {
 
     await init.start();
 
-    expect(factory1).toHaveBeenCalled();
-    expect(factory2).toHaveBeenCalled();
-    expect(factory3).toHaveBeenCalled();
-    expect(factory4).toHaveBeenCalled();
+    expect(factory1.fn).toHaveBeenCalled();
+    expect(factory2.fn).toHaveBeenCalled();
+    expect(factory3.fn).toHaveBeenCalled();
+    expect(factory4.fn).toHaveBeenCalled();
   });
 
   // Note: this is an important escape hatch in case to loaders conflict and you need to select the winning service factory
@@ -312,10 +314,10 @@ describe('BackendInitializer', () => {
 
     await init.start();
 
-    expect(factory1).not.toHaveBeenCalled();
-    expect(factory2).toHaveBeenCalled();
-    expect(factory3).not.toHaveBeenCalled();
-    expect(factory4).not.toHaveBeenCalled();
+    expect(factory1.fn).not.toHaveBeenCalled();
+    expect(factory2.fn).toHaveBeenCalled();
+    expect(factory3.fn).not.toHaveBeenCalled();
+    expect(factory4.fn).not.toHaveBeenCalled();
   });
 
   it('should reject duplicate service factories from feature loader without an explicit override', async () => {
