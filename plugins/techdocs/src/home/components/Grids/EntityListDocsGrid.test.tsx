@@ -18,6 +18,7 @@ import { ApiProvider } from '@backstage/core-app-api';
 import { configApiRef, storageApiRef } from '@backstage/core-plugin-api';
 import {
   catalogApiRef,
+  entityPresentationApiRef,
   starredEntitiesApiRef,
   MockStarredEntitiesApi,
 } from '@backstage/plugin-catalog-react';
@@ -75,6 +76,31 @@ describe('Entity List Docs Grid', () => {
     [configApiRef, configApi],
     [storageApiRef, mockApis.storage()],
     [starredEntitiesApiRef, new MockStarredEntitiesApi()],
+    [
+      entityPresentationApiRef,
+      {
+        forEntity: (entity: any) => ({
+          snapshot: {
+            entityRef: entity.metadata.name,
+            primaryTitle:
+              entity.metadata.annotations?.[
+                'backstage.io/presentation-title'
+              ] ??
+              entity.metadata.title ??
+              entity.metadata.name,
+          },
+          promise: Promise.resolve({
+            entityRef: entity.metadata.name,
+            primaryTitle:
+              entity.metadata.annotations?.[
+                'backstage.io/presentation-title'
+              ] ??
+              entity.metadata.title ??
+              entity.metadata.name,
+          }),
+        }),
+      },
+    ],
   );
 
   it('should render all entities without filtering', async () => {
@@ -171,5 +197,55 @@ describe('Entity List Docs Grid', () => {
     expect(screen.queryByText('Documentation #1')).not.toBeInTheDocument();
     expect(screen.queryByText('Documentation #2')).not.toBeInTheDocument();
     expect(screen.getByTestId('doc-not-found')).toBeInTheDocument();
+  });
+
+  it('should sort entities by presentation title', async () => {
+    const unsortedEntities = [
+      {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: {
+          name: 'z-doc',
+          namespace: 'default',
+          annotations: {
+            'backstage.io/presentation-title': 'A Doc',
+          },
+        },
+        spec: {
+          type: 'documentation',
+        },
+      },
+      {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: {
+          name: 'a-doc',
+          namespace: 'default',
+          annotations: {
+            'backstage.io/presentation-title': 'Z Doc',
+          },
+        },
+        spec: {
+          type: 'documentation',
+        },
+      },
+    ];
+
+    await renderInTestApp(
+      <ApiProvider apis={apiRegistry}>
+        <MockEntityListContextProvider value={{ entities: unsortedEntities }}>
+          <EntityListDocsGrid />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/docs/:namespace/:kind/:name/*': rootDocsRouteRef,
+        },
+      },
+    );
+
+    const headings = screen.getAllByRole('heading', { level: 4 });
+    expect(headings[0]).toHaveTextContent('A Doc');
+    expect(headings[1]).toHaveTextContent('Z Doc');
   });
 });

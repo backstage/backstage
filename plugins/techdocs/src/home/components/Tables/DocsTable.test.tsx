@@ -15,11 +15,14 @@
  */
 
 import { screen } from '@testing-library/react';
-import { renderInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { configApiRef } from '@backstage/core-plugin-api';
 import { DocsTable } from './DocsTable';
 import { rootDocsRouteRef } from '../../../routes';
-import { entityRouteRef } from '@backstage/plugin-catalog-react';
+import {
+  entityPresentationApiRef,
+  entityRouteRef,
+} from '@backstage/plugin-catalog-react';
 
 // Hacky way to mock a specific boolean config value.
 const getOptionalBooleanMock = jest.fn().mockReturnValue(false);
@@ -41,48 +44,78 @@ jest.mock('@backstage/core-plugin-api', () => ({
 }));
 
 describe('DocsTable test', () => {
+  const mockEntityPresentationApi = {
+    forEntity: (entityOrRef: any) => {
+      const entityRef =
+        typeof entityOrRef === 'string'
+          ? entityOrRef
+          : `${entityOrRef.kind}:${
+              entityOrRef.metadata.namespace ?? 'default'
+            }/${entityOrRef.metadata.name}`;
+      const primaryTitle =
+        typeof entityOrRef === 'string'
+          ? entityOrRef
+          : entityOrRef.metadata.title ?? entityOrRef.metadata.name;
+
+      return {
+        snapshot: {
+          entityRef,
+          primaryTitle,
+        },
+        promise: Promise.resolve({
+          entityRef,
+          primaryTitle,
+        }),
+      };
+    },
+  };
+
   beforeEach(() => {
     jest.resetAllMocks();
   });
 
   it('should render documents passed', async () => {
     await renderInTestApp(
-      <DocsTable
-        entities={[
-          {
-            apiVersion: 'version',
-            kind: 'TestKind',
-            metadata: {
-              name: 'testName',
-            },
-            spec: {
-              owner: 'user:owned',
-            },
-            relations: [
-              {
-                targetRef: 'user:default/owned',
-                type: 'ownedBy',
+      <TestApiProvider
+        apis={[[entityPresentationApiRef, mockEntityPresentationApi]]}
+      >
+        <DocsTable
+          entities={[
+            {
+              apiVersion: 'version',
+              kind: 'TestKind',
+              metadata: {
+                name: 'testName',
               },
-            ],
-          },
-          {
-            apiVersion: 'version',
-            kind: 'TestKind2',
-            metadata: {
-              name: 'testName2',
-            },
-            spec: {
-              owner: 'not-owned@example.com',
-            },
-            relations: [
-              {
-                targetRef: 'user:default/not-owned',
-                type: 'ownedBy',
+              spec: {
+                owner: 'user:owned',
               },
-            ],
-          },
-        ]}
-      />,
+              relations: [
+                {
+                  targetRef: 'user:default/owned',
+                  type: 'ownedBy',
+                },
+              ],
+            },
+            {
+              apiVersion: 'version',
+              kind: 'TestKind2',
+              metadata: {
+                name: 'testName2',
+              },
+              spec: {
+                owner: 'not-owned@example.com',
+              },
+              relations: [
+                {
+                  targetRef: 'user:default/not-owned',
+                  type: 'ownedBy',
+                },
+              ],
+            },
+          ]}
+        />
+      </TestApiProvider>,
       {
         mountedRoutes: {
           '/docs/:namespace/:kind/:name/*': rootDocsRouteRef,
@@ -107,27 +140,31 @@ describe('DocsTable test', () => {
     getOptionalBooleanMock.mockReturnValue(true);
 
     await renderInTestApp(
-      <DocsTable
-        entities={[
-          {
-            apiVersion: 'version',
-            kind: 'TestKind',
-            metadata: {
-              name: 'testName',
-              namespace: 'SomeNamespace',
-            },
-            spec: {
-              owner: 'user:owned',
-            },
-            relations: [
-              {
-                targetRef: 'user:default/owned',
-                type: 'ownedBy',
+      <TestApiProvider
+        apis={[[entityPresentationApiRef, mockEntityPresentationApi]]}
+      >
+        <DocsTable
+          entities={[
+            {
+              apiVersion: 'version',
+              kind: 'TestKind',
+              metadata: {
+                name: 'testName',
+                namespace: 'SomeNamespace',
               },
-            ],
-          },
-        ]}
-      />,
+              spec: {
+                owner: 'user:owned',
+              },
+              relations: [
+                {
+                  targetRef: 'user:default/owned',
+                  type: 'ownedBy',
+                },
+              ],
+            },
+          ]}
+        />
+      </TestApiProvider>,
       {
         mountedRoutes: {
           '/techdocs/:namespace/:kind/:name/*': rootDocsRouteRef,
@@ -146,12 +183,19 @@ describe('DocsTable test', () => {
   });
 
   it('should render empty state if no owned documents exist', async () => {
-    await renderInTestApp(<DocsTable entities={[]} />, {
-      mountedRoutes: {
-        '/docs/:namespace/:kind/:name/*': rootDocsRouteRef,
-        '/catalog/:namespace/:kind/:name': entityRouteRef,
+    await renderInTestApp(
+      <TestApiProvider
+        apis={[[entityPresentationApiRef, mockEntityPresentationApi]]}
+      >
+        <DocsTable entities={[]} />
+      </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/docs/:namespace/:kind/:name/*': rootDocsRouteRef,
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
       },
-    });
+    );
 
     expect(await screen.findByText('No documents to show')).toBeInTheDocument();
   });

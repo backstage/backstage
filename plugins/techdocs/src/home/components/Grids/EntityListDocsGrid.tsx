@@ -26,10 +26,13 @@ import {
 } from '@backstage/core-components';
 import {
   useEntityList,
+  entityPresentationApiRef,
+  entityPresentationSnapshot,
   useEntityOwnership,
 } from '@backstage/plugin-catalog-react';
 import Typography from '@material-ui/core/Typography';
 import { ReactNode } from 'react';
+import { useApiHolder } from '@backstage/core-plugin-api';
 
 /**
  * Props for {@link EntityListDocsGrid}
@@ -103,6 +106,8 @@ const EntityListDocsGridGroup = (props: {
  */
 export const EntityListDocsGrid = (props: EntityListDocsGridPageProps) => {
   const { loading, error, entities } = useEntityList();
+  const apis = useApiHolder();
+  const entityPresentationApi = apis.get(entityPresentationApiRef);
 
   if (error) {
     return (
@@ -134,8 +139,13 @@ export const EntityListDocsGrid = (props: EntityListDocsGridPageProps) => {
   }
 
   entities.sort((a, b) =>
-    (a.metadata.title ?? a.metadata.name).localeCompare(
-      b.metadata.title ?? b.metadata.name,
+    entityPresentationSnapshot(
+      a,
+      undefined,
+      entityPresentationApi,
+    ).primaryTitle.localeCompare(
+      entityPresentationSnapshot(b, undefined, entityPresentationApi)
+        .primaryTitle,
     ),
   );
 

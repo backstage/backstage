@@ -15,8 +15,9 @@
  */
 
 import { configApiRef } from '@backstage/core-plugin-api';
-import { renderInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
+import { entityPresentationApiRef } from '@backstage/plugin-catalog-react';
 import { rootDocsRouteRef } from '../../../routes';
 import { DocsCardGrid } from './DocsCardGrid';
 
@@ -46,30 +47,50 @@ describe('Entity Docs Card Grid', () => {
 
   it('should render all entities passed to it', async () => {
     await renderInTestApp(
-      <DocsCardGrid
-        entities={[
-          {
-            apiVersion: 'version',
-            kind: 'TestKind',
-            metadata: {
-              name: 'testName',
+      <TestApiProvider
+        apis={[
+          [
+            entityPresentationApiRef,
+            {
+              forEntity: (entity: any) => ({
+                snapshot: {
+                  entityRef: entity.metadata.name,
+                  primaryTitle: entity.metadata.title ?? entity.metadata.name,
+                },
+                promise: Promise.resolve({
+                  entityRef: entity.metadata.name,
+                  primaryTitle: entity.metadata.title ?? entity.metadata.name,
+                }),
+              }),
             },
-            spec: {
-              owner: 'techdocs@example.com',
-            },
-          },
-          {
-            apiVersion: 'version',
-            kind: 'TestKind2',
-            metadata: {
-              name: 'testName2',
-            },
-            spec: {
-              owner: 'not-owned@example.com',
-            },
-          },
+          ],
         ]}
-      />,
+      >
+        <DocsCardGrid
+          entities={[
+            {
+              apiVersion: 'version',
+              kind: 'TestKind',
+              metadata: {
+                name: 'testName',
+              },
+              spec: {
+                owner: 'techdocs@example.com',
+              },
+            },
+            {
+              apiVersion: 'version',
+              kind: 'TestKind2',
+              metadata: {
+                name: 'testName2',
+              },
+              spec: {
+                owner: 'not-owned@example.com',
+              },
+            },
+          ]}
+        />
+      </TestApiProvider>,
       {
         mountedRoutes: {
           '/docs/:namespace/:kind/:name/*': rootDocsRouteRef,
@@ -91,21 +112,41 @@ describe('Entity Docs Card Grid', () => {
     getOptionalBooleanMock.mockReturnValue(true);
 
     await renderInTestApp(
-      <DocsCardGrid
-        entities={[
-          {
-            apiVersion: 'version',
-            kind: 'TestKind',
-            metadata: {
-              name: 'testName',
-              namespace: 'SomeNamespace',
+      <TestApiProvider
+        apis={[
+          [
+            entityPresentationApiRef,
+            {
+              forEntity: (entity: any) => ({
+                snapshot: {
+                  entityRef: entity.metadata.name,
+                  primaryTitle: entity.metadata.title ?? entity.metadata.name,
+                },
+                promise: Promise.resolve({
+                  entityRef: entity.metadata.name,
+                  primaryTitle: entity.metadata.title ?? entity.metadata.name,
+                }),
+              }),
             },
-            spec: {
-              owner: 'techdocs@example.com',
-            },
-          },
+          ],
         ]}
-      />,
+      >
+        <DocsCardGrid
+          entities={[
+            {
+              apiVersion: 'version',
+              kind: 'TestKind',
+              metadata: {
+                name: 'testName',
+                namespace: 'SomeNamespace',
+              },
+              spec: {
+                owner: 'techdocs@example.com',
+              },
+            },
+          ]}
+        />
+      </TestApiProvider>,
       {
         mountedRoutes: {
           '/techdocs/:namespace/:kind/:name/*': rootDocsRouteRef,
@@ -124,21 +165,41 @@ describe('Entity Docs Card Grid', () => {
 
   it('should render entity title if available', async () => {
     await renderInTestApp(
-      <DocsCardGrid
-        entities={[
-          {
-            apiVersion: 'version',
-            kind: 'TestKind',
-            metadata: {
-              name: 'testName',
-              title: 'TestTitle',
+      <TestApiProvider
+        apis={[
+          [
+            entityPresentationApiRef,
+            {
+              forEntity: (entity: any) => ({
+                snapshot: {
+                  entityRef: entity.metadata.name,
+                  primaryTitle: entity.metadata.title ?? entity.metadata.name,
+                },
+                promise: Promise.resolve({
+                  entityRef: entity.metadata.name,
+                  primaryTitle: entity.metadata.title ?? entity.metadata.name,
+                }),
+              }),
             },
-            spec: {
-              owner: 'techdocs@example.com',
-            },
-          },
+          ],
         ]}
-      />,
+      >
+        <DocsCardGrid
+          entities={[
+            {
+              apiVersion: 'version',
+              kind: 'TestKind',
+              metadata: {
+                name: 'testName',
+                title: 'TestTitle',
+              },
+              spec: {
+                owner: 'techdocs@example.com',
+              },
+            },
+          ]}
+        />
+      </TestApiProvider>,
       {
         mountedRoutes: {
           '/docs/:namespace/:kind/:name/*': rootDocsRouteRef,
@@ -146,5 +207,50 @@ describe('Entity Docs Card Grid', () => {
       },
     );
     expect(await screen.findByText('TestTitle')).toBeInTheDocument();
+  });
+
+  it('should render entity display name if available', async () => {
+    await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [
+            entityPresentationApiRef,
+            {
+              forEntity: () => ({
+                snapshot: {
+                  entityRef: 'component:default/testName',
+                  primaryTitle: 'Presentation Title',
+                },
+                promise: Promise.resolve({
+                  entityRef: 'component:default/testName',
+                  primaryTitle: 'Presentation Title',
+                }),
+              }),
+            },
+          ],
+        ]}
+      >
+        <DocsCardGrid
+          entities={[
+            {
+              apiVersion: 'version',
+              kind: 'Component',
+              metadata: {
+                name: 'testName',
+                title: 'TestTitle',
+              },
+            },
+          ]}
+        />
+      </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/docs/:namespace/:kind/:name/*': rootDocsRouteRef,
+        },
+      },
+    );
+
+    expect(await screen.findByText('Presentation Title')).toBeInTheDocument();
+    expect(screen.queryByText('TestTitle')).not.toBeInTheDocument();
   });
 });

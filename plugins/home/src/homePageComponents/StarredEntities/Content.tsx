@@ -16,6 +16,8 @@
 
 import {
   catalogApiRef,
+  entityPresentationApiRef,
+  entityPresentationSnapshot,
   useStarredEntities,
 } from '@backstage/plugin-catalog-react';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
@@ -63,6 +65,7 @@ export const Content = ({
 }: StarredEntitiesProps) => {
   const classes = useStyles();
   const catalogApi = useApi(catalogApiRef);
+  const entityPresentationApi = useApi(entityPresentationApiRef);
   const { starredEntities, toggleStarredEntity } = useStarredEntities();
   const [activeTab, setActiveTab] = useState(0);
   const { t } = useTranslationRef(homeTranslationRef);
@@ -110,6 +113,15 @@ export const Content = ({
   });
 
   const groupByKindEntries = Object.entries(groupedEntities);
+  const sortEntitiesByPresentation = (a: Entity, b: Entity) =>
+    entityPresentationSnapshot(
+      a,
+      undefined,
+      entityPresentationApi,
+    ).primaryTitle.localeCompare(
+      entityPresentationSnapshot(b, undefined, entityPresentationApi)
+        .primaryTitle,
+    );
 
   return entities.error ? (
     <ResponseErrorPanel error={entities.error} />
@@ -117,20 +129,14 @@ export const Content = ({
     <div>
       {!groupByKind && (
         <List className={classes.list}>
-          {entities.value
-            ?.sort((a, b) =>
-              (a.metadata.title ?? a.metadata.name).localeCompare(
-                b.metadata.title ?? b.metadata.name,
-              ),
-            )
-            .map(entity => (
-              <StarredEntityListItem
-                key={stringifyEntityRef(entity)}
-                entity={entity}
-                onToggleStarredEntity={toggleStarredEntity}
-                showKind
-              />
-            ))}
+          {entities.value?.sort(sortEntitiesByPresentation).map(entity => (
+            <StarredEntityListItem
+              key={stringifyEntityRef(entity)}
+              entity={entity}
+              onToggleStarredEntity={toggleStarredEntity}
+              showKind
+            />
+          ))}
         </List>
       )}
 
@@ -153,20 +159,14 @@ export const Content = ({
         groupByKindEntries.map(([kind, entitiesByKind], index) => (
           <div key={kind} hidden={groupByKind && activeTab !== index}>
             <List className={classes.list}>
-              {entitiesByKind
-                ?.sort((a, b) =>
-                  (a.metadata.title ?? a.metadata.name).localeCompare(
-                    b.metadata.title ?? b.metadata.name,
-                  ),
-                )
-                .map(entity => (
-                  <StarredEntityListItem
-                    key={stringifyEntityRef(entity)}
-                    entity={entity}
-                    onToggleStarredEntity={toggleStarredEntity}
-                    showKind={false}
-                  />
-                ))}
+              {entitiesByKind?.sort(sortEntitiesByPresentation).map(entity => (
+                <StarredEntityListItem
+                  key={stringifyEntityRef(entity)}
+                  entity={entity}
+                  onToggleStarredEntity={toggleStarredEntity}
+                  showKind={false}
+                />
+              ))}
             </List>
           </div>
         ))}

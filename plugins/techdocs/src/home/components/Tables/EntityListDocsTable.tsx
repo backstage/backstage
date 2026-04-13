@@ -23,8 +23,14 @@ import {
   TableProps,
   WarningPanel,
 } from '@backstage/core-components';
-import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import {
+  configApiRef,
+  useApi,
+  useApiHolder,
+  useRouteRef,
+} from '@backstage/core-plugin-api';
+import {
+  entityPresentationApiRef,
   useEntityList,
   useStarredEntities,
 } from '@backstage/plugin-catalog-react';
@@ -32,7 +38,7 @@ import { DocsTable } from './DocsTable';
 import { OffsetPaginatedDocsTable } from './OffsetPaginatedDocsTable';
 import { CursorPaginatedDocsTable } from './CursorPaginatedDocsTable';
 import { actionFactories } from './actions';
-import { columnFactories, defaultColumns } from './columns';
+import { columnFactories, createDefaultColumns } from './columns';
 import { DocsTableRow } from './types';
 import { rootDocsRouteRef } from '../../../routes';
 import { entitiesToDocsMapper } from './helpers';
@@ -61,6 +67,8 @@ export const EntityListDocsTable = (props: EntityListDocsTableProps) => {
   const [, copyToClipboard] = useCopyToClipboard();
   const getRouteToReaderPageFor = useRouteRef(rootDocsRouteRef);
   const config = useApi(configApiRef);
+  const apis = useApiHolder();
+  const entityPresentationApi = apis.get(entityPresentationApiRef);
 
   const title = capitalize(filters.user?.value ?? 'all');
 
@@ -76,12 +84,13 @@ export const EntityListDocsTable = (props: EntityListDocsTableProps) => {
     entities,
     getRouteToReaderPageFor,
     config,
+    entityPresentationApi,
   );
 
   if (paginationMode === 'cursor') {
     return (
       <CursorPaginatedDocsTable
-        columns={columns || defaultColumns}
+        columns={columns || createDefaultColumns(entityPresentationApi)}
         isLoading={loading}
         title={title}
         actions={actions || defaultActions}
@@ -94,7 +103,7 @@ export const EntityListDocsTable = (props: EntityListDocsTableProps) => {
   } else if (paginationMode === 'offset') {
     return (
       <OffsetPaginatedDocsTable
-        columns={columns || defaultColumns}
+        columns={columns || createDefaultColumns(entityPresentationApi)}
         isLoading={loading}
         title={title}
         actions={actions || defaultActions}

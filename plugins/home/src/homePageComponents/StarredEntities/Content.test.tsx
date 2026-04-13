@@ -15,8 +15,10 @@
  */
 
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
+import { screen } from '@testing-library/react';
 import {
   catalogApiRef,
+  entityPresentationApiRef,
   starredEntitiesApiRef,
   MockStarredEntitiesApi,
   entityRouteRef,
@@ -72,6 +74,31 @@ describe('StarredEntitiesContent', () => {
       <TestApiProvider
         apis={[
           [catalogApiRef, mockCatalogApi],
+          [
+            entityPresentationApiRef,
+            {
+              forEntity: (entity: any) => ({
+                snapshot: {
+                  entityRef: entity.metadata.name,
+                  primaryTitle:
+                    entity.metadata.annotations?.[
+                      'backstage.io/presentation-title'
+                    ] ??
+                    entity.metadata.title ??
+                    entity.metadata.name,
+                },
+                promise: Promise.resolve({
+                  entityRef: entity.metadata.name,
+                  primaryTitle:
+                    entity.metadata.annotations?.[
+                      'backstage.io/presentation-title'
+                    ] ??
+                    entity.metadata.title ??
+                    entity.metadata.name,
+                }),
+              }),
+            },
+          ],
           [starredEntitiesApiRef, mockedApi],
         ]}
       >
@@ -110,6 +137,21 @@ describe('StarredEntitiesContent', () => {
       <TestApiProvider
         apis={[
           [catalogApiRef, mockCatalogApi],
+          [
+            entityPresentationApiRef,
+            {
+              forEntity: (entity: any) => ({
+                snapshot: {
+                  entityRef: entity.metadata.name,
+                  primaryTitle: entity.metadata.title ?? entity.metadata.name,
+                },
+                promise: Promise.resolve({
+                  entityRef: entity.metadata.name,
+                  primaryTitle: entity.metadata.title ?? entity.metadata.name,
+                }),
+              }),
+            },
+          ],
           [starredEntitiesApiRef, mockedApi],
         ]}
       >
@@ -140,6 +182,21 @@ describe('StarredEntitiesContent', () => {
       <TestApiProvider
         apis={[
           [catalogApiRef, mockCatalogApi],
+          [
+            entityPresentationApiRef,
+            {
+              forEntity: (entity: any) => ({
+                snapshot: {
+                  entityRef: entity.metadata.name,
+                  primaryTitle: entity.metadata.title ?? entity.metadata.name,
+                },
+                promise: Promise.resolve({
+                  entityRef: entity.metadata.name,
+                  primaryTitle: entity.metadata.title ?? entity.metadata.name,
+                }),
+              }),
+            },
+          ],
           [starredEntitiesApiRef, mockedApi],
         ]}
       >
@@ -153,5 +210,159 @@ describe('StarredEntitiesContent', () => {
     );
 
     expect(getByText('foo')).toBeInTheDocument();
+  });
+
+  it('should sort starred entities by presentation title', async () => {
+    const mockedApi = new MockStarredEntitiesApi();
+    mockedApi.toggleStarred('component:default/z-name');
+    mockedApi.toggleStarred('component:default/a-name');
+
+    const mockCatalogApi = catalogApiMock.mock({
+      getEntitiesByRefs: jest.fn().mockResolvedValue({
+        items: [
+          {
+            apiVersion: '1',
+            kind: 'Component',
+            metadata: {
+              name: 'z-name',
+              annotations: {
+                'backstage.io/presentation-title': 'A title',
+              },
+            },
+          },
+          {
+            apiVersion: '1',
+            kind: 'Component',
+            metadata: {
+              name: 'a-name',
+              annotations: {
+                'backstage.io/presentation-title': 'Z title',
+              },
+            },
+          },
+        ],
+      }),
+    });
+
+    await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [catalogApiRef, mockCatalogApi],
+          [
+            entityPresentationApiRef,
+            {
+              forEntity: (entity: any) => ({
+                snapshot: {
+                  entityRef: entity.metadata.name,
+                  primaryTitle:
+                    entity.metadata.annotations?.[
+                      'backstage.io/presentation-title'
+                    ] ?? entity.metadata.name,
+                },
+                promise: Promise.resolve({
+                  entityRef: entity.metadata.name,
+                  primaryTitle:
+                    entity.metadata.annotations?.[
+                      'backstage.io/presentation-title'
+                    ] ?? entity.metadata.name,
+                }),
+              }),
+            },
+          ],
+          [starredEntitiesApiRef, mockedApi],
+        ]}
+      >
+        <Content />
+      </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
+    );
+
+    const firstTitle = await screen.findByText('A title');
+    const secondTitle = await screen.findByText('Z title');
+    expect(
+      firstTitle.compareDocumentPosition(secondTitle) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+  });
+
+  it('should sort grouped starred entities by presentation title', async () => {
+    const mockedApi = new MockStarredEntitiesApi();
+    mockedApi.toggleStarred('component:default/z-name');
+    mockedApi.toggleStarred('component:default/a-name');
+
+    const mockCatalogApi = catalogApiMock.mock({
+      getEntitiesByRefs: jest.fn().mockResolvedValue({
+        items: [
+          {
+            apiVersion: '1',
+            kind: 'Component',
+            metadata: {
+              name: 'z-name',
+              annotations: {
+                'backstage.io/presentation-title': 'A title',
+              },
+            },
+          },
+          {
+            apiVersion: '1',
+            kind: 'Component',
+            metadata: {
+              name: 'a-name',
+              annotations: {
+                'backstage.io/presentation-title': 'Z title',
+              },
+            },
+          },
+        ],
+      }),
+    });
+
+    await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [catalogApiRef, mockCatalogApi],
+          [
+            entityPresentationApiRef,
+            {
+              forEntity: (entity: any) => ({
+                snapshot: {
+                  entityRef: entity.metadata.name,
+                  primaryTitle:
+                    entity.metadata.annotations?.[
+                      'backstage.io/presentation-title'
+                    ] ?? entity.metadata.name,
+                },
+                promise: Promise.resolve({
+                  entityRef: entity.metadata.name,
+                  primaryTitle:
+                    entity.metadata.annotations?.[
+                      'backstage.io/presentation-title'
+                    ] ?? entity.metadata.name,
+                }),
+              }),
+            },
+          ],
+          [starredEntitiesApiRef, mockedApi],
+        ]}
+      >
+        <Content groupByKind />
+      </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
+    );
+
+    const firstTitle = await screen.findByText('A title');
+    const secondTitle = await screen.findByText('Z title');
+    expect(
+      firstTitle.compareDocumentPosition(secondTitle) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
   });
 });
