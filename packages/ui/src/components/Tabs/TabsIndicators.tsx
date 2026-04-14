@@ -31,10 +31,22 @@ export const TabsIndicators = (props: TabsIndicatorsProps) => {
   const state = useContext(TabListStateContext);
   const prevSelectedKey = useRef<string | null>(null);
 
+  console.log('[TabsIndicators] render', {
+    selectedKey: state?.selectedKey,
+    prevSelectedKey: prevSelectedKey.current,
+    hoveredKey,
+  });
+
   const updateCSSVariables = useCallback(() => {
     if (!tabsRef.current) return;
 
     const tabsRect = tabsRef.current.getBoundingClientRect();
+
+    console.log('[TabsIndicators] updateCSSVariables', {
+      selectedKey: state?.selectedKey,
+      prevSelectedKey: prevSelectedKey.current,
+      tabRefsSize: tabRefs.current.size,
+    });
 
     // Set active tab variables
     if (state?.selectedKey != null && state.selectedKey !== '') {
@@ -99,6 +111,9 @@ export const TabsIndicators = (props: TabsIndicatorsProps) => {
           `${activeRect.height}px`,
         );
         tabsRef.current.style.setProperty('--active-tab-opacity', '1');
+        console.log('[TabsIndicators] → set opacity 1', {
+          selectedKey: state.selectedKey.toString(),
+        });
       }
     } else if (
       // Hide indicator on explicit deselection (selectedKey === '') or when
@@ -108,6 +123,10 @@ export const TabsIndicators = (props: TabsIndicatorsProps) => {
       (state?.selectedKey == null && prevSelectedKey.current !== null)
     ) {
       tabsRef.current.style.setProperty('--active-tab-opacity', '0');
+      console.log('[TabsIndicators] → set opacity 0', {
+        selectedKey: state?.selectedKey,
+        prevSelectedKey: prevSelectedKey.current,
+      });
       prevSelectedKey.current = null;
     }
 
