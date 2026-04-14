@@ -143,6 +143,10 @@ describe('Sidebar', () => {
   });
 
   describe('Submenu', () => {
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
     it('Submenu closes on unhover with default config', async () => {
       await renderScalableSidebar();
 
