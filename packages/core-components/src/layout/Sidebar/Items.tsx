@@ -46,6 +46,7 @@ import {
   useCallback,
   useContext,
   useMemo,
+  useRef,
   useState,
   MouseEvent,
   ChangeEvent,
@@ -515,7 +516,7 @@ const SidebarItemWithSubmenu = ({
 }: SidebarItemBaseProps & {
   children: ReactElement<SidebarSubmenuProps>;
 }) => {
-  const { sidebarConfig } = useContext(SidebarConfigContext);
+  const { sidebarConfig, submenuConfig } = useContext(SidebarConfigContext);
   const classes = useMemoStyles(sidebarConfig);
   const [isHoveredOn, setIsHoveredOn] = useState(false);
   const location = useLocation();
@@ -523,12 +524,24 @@ const SidebarItemWithSubmenu = ({
   const isSmallScreen = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down('sm'),
   );
+  const closeTimerRef = useRef<number>();
 
   const handleMouseEnter = () => {
+    if (closeTimerRef.current) {
+      clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = undefined;
+    }
     setIsHoveredOn(true);
   };
   const handleMouseLeave = () => {
-    setIsHoveredOn(false);
+    if (submenuConfig.defaultCloseDelayMs > 0) {
+      closeTimerRef.current = window.setTimeout(() => {
+        closeTimerRef.current = undefined;
+        setIsHoveredOn(false);
+      }, submenuConfig.defaultCloseDelayMs);
+    } else {
+      setIsHoveredOn(false);
+    }
   };
 
   const arrowIcon = () => {

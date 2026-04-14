@@ -19,15 +19,18 @@ import AcUnitIcon from '@material-ui/icons/AcUnit';
 import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
 import BuildRoundedIcon from '@material-ui/icons/BuildRounded';
 import MenuBookIcon from '@material-ui/icons/MenuBook';
-import { screen } from '@testing-library/react';
+import { act, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Sidebar } from './Bar';
 import { SidebarExpandButton, SidebarItem, SidebarSearchField } from './Items';
 import { SidebarPinStateProvider } from './SidebarPinStateContext';
 import { SidebarSubmenu } from './SidebarSubmenu';
 import { SidebarSubmenuItem } from './SidebarSubmenuItem';
+import { SubmenuOptions } from './config';
 
-async function renderScalableSidebar() {
+async function renderScalableSidebar({
+  submenuOptions,
+}: { submenuOptions?: SubmenuOptions } = {}) {
   await renderInTestApp(
     <SidebarPinStateProvider
       value={{
@@ -36,7 +39,7 @@ async function renderScalableSidebar() {
         toggleSidebarPinState: () => {},
       }}
     >
-      <Sidebar disableExpandOnHover>
+      <Sidebar disableExpandOnHover submenuOptions={submenuOptions}>
         <SidebarSearchField onSearch={() => {}} to="/search" />
         <SidebarItem icon={MenuBookIcon} onClick={() => {}} text="Catalog">
           <SidebarSubmenu title="Catalog">
@@ -75,11 +78,11 @@ async function renderScalableSidebar() {
 }
 
 describe('Sidebar', () => {
-  beforeEach(async () => {
-    await renderScalableSidebar();
-  });
-
   describe('Click to Expand', () => {
+    beforeEach(async () => {
+      await renderScalableSidebar();
+    });
+
     it('Sidebar should show expanded items when expand button is clicked', async () => {
       await userEvent.click(screen.getByTestId('sidebar-expand-button'));
       expect(await screen.findByText('Create...')).toBeInTheDocument();
@@ -90,6 +93,10 @@ describe('Sidebar', () => {
     });
   });
   describe('Submenu Items', () => {
+    beforeEach(async () => {
+      await renderScalableSidebar();
+    });
+
     it('Extended sidebar with submenu content hidden by default', async () => {
       expect(screen.queryByText('Tools')).not.toBeInTheDocument();
       expect(screen.queryByText('Misc')).not.toBeInTheDocument();
@@ -132,6 +139,56 @@ describe('Sidebar', () => {
         'href',
         'https://backstage.io/',
       );
+    });
+  });
+
+  describe('Submenu', () => {
+    it('Submenu closes on unhover with default config', async () => {
+      await renderScalableSidebar();
+
+      await userEvent.hover(screen.getByTestId('item-with-submenu'));
+      expect(await screen.findByText('Tools')).toBeInTheDocument();
+
+      await userEvent.unhover(screen.getByTestId('item-with-submenu'));
+      expect(screen.queryByText('Tools')).not.toBeInTheDocument();
+    });
+
+    it('Submenu closes on unhover after provided delay', async () => {
+      jest.useFakeTimers();
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+      await renderScalableSidebar({
+        submenuOptions: { defaultCloseDelayMs: 200 },
+      });
+
+      await user.hover(screen.getByTestId('item-with-submenu'));
+      expect(await screen.findByText('Tools')).toBeInTheDocument();
+
+      await user.unhover(screen.getByTestId('item-with-submenu'));
+      expect(screen.queryByText('Tools')).toBeInTheDocument();
+
+      act(() => {
+        jest.advanceTimersByTime(200);
+      });
+      expect(screen.queryByText('Tools')).not.toBeInTheDocument();
+    });
+
+    it('Submenu stays open on hover after unhovering', async () => {
+      jest.useFakeTimers();
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+      await renderScalableSidebar({
+        submenuOptions: { defaultCloseDelayMs: 200 },
+      });
+
+      await user.hover(screen.getByTestId('item-with-submenu'));
+      expect(await screen.findByText('Tools')).toBeInTheDocument();
+
+      await user.unhover(screen.getByTestId('item-with-submenu'));
+      await user.hover(screen.getByTestId('item-with-submenu'));
+
+      act(() => {
+        jest.advanceTimersByTime(200);
+      });
+      expect(screen.queryByText('Tools')).toBeInTheDocument();
     });
   });
 });
