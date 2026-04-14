@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { useAsync } from '@react-hookz/web';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useAsync, useMountEffect } from '@react-hookz/web';
+import { useCallback, useMemo } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import { Content } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
@@ -153,9 +153,7 @@ export function EditorSubPage() {
     },
   );
 
-  useEffect(() => {
-    execute();
-  }, [execute]);
+  useMountEffect(execute);
 
   const fieldExtensions = useMemo(
     () => buildEditorFieldExtensions(customFieldExtensions),
