@@ -72,9 +72,9 @@ When you run the command, you'll see an output like this.
     copying       .dockerignore ✔
     copying       .eslintignore ✔
     templating    .eslintrc.js.hbs ✔
-       .
-       .
-       .
+       
+       ...
+       
   Moving to final location:
     moving        my-backstage-app ✔
     fetching      yarn.lock seed ✔
