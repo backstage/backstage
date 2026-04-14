@@ -2,6 +2,7 @@
 id: notifications
 sidebar_label: 004 - Notifications
 title: Integrating with Notifications
+description: How to integrate your plugin with Backstage Notifications
 ---
 
 ## Notifications

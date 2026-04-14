@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   build:
-    runs-on: windows-2022
+    runs-on: windows-2025
 
     strategy:
       fail-fast: false
@@ -29,14 +29,14 @@ jobs:
 
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@5ef0c079ce82195b2a36a210272d6b661572d83e # v2.14.2
+        uses: step-security/harden-runner@58077d3c7e43986b6b15fba718e8ea69e387dfcc # v2.15.1
         with:
           egress-policy: audit
 
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: use node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
@@ -46,7 +46,7 @@ jobs:
         run: yarn install --immutable
 
       - name: lint
-        run: yarn backstage-cli repo lint --successCache
+        run: yarn backstage-cli repo lint --success-cache
 
       - name: type checking and declarations
         run: yarn tsc:full
@@ -55,7 +55,7 @@ jobs:
         run: yarn lint:type-deps
 
       - name: test
-        run: yarn backstage-cli repo test --maxWorkers=3 --workerIdleMemoryLimit=1300M --successCache
+        run: yarn backstage-cli repo test --maxWorkers=3 --workerIdleMemoryLimit=1300M --success-cache
         env:
           BACKSTAGE_TEST_DISABLE_DOCKER: 1
 

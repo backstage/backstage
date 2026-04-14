@@ -22,7 +22,7 @@ import { RouteRef } from '@backstage/core-plugin-api';
 import { RouteRef as RouteRef_2 } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
 
-// @alpha (undocumented)
+// @alpha @deprecated (undocumented)
 export const catalogGraphTranslationRef: TranslationRef<
   'catalog-graph',
   {
@@ -88,6 +88,7 @@ const _default: OverridableFrontendPlugin<
         maxDepth: number | undefined;
         unidirectional: boolean | undefined;
         mergeRelations: boolean | undefined;
+        showArrowHeads: boolean | undefined;
         direction: 'TB' | 'BT' | 'LR' | 'RL' | undefined;
         relationPairs: [string, string][] | undefined;
         zoom: 'disabled' | 'enabled' | 'enable-on-click' | undefined;
@@ -103,6 +104,7 @@ const _default: OverridableFrontendPlugin<
         direction?: 'TB' | 'BT' | 'LR' | 'RL' | undefined;
         zoom?: 'disabled' | 'enabled' | 'enable-on-click' | undefined;
         title?: string | undefined;
+        showArrowHeads?: boolean | undefined;
         relations?: string[] | undefined;
         maxDepth?: number | undefined;
         kinds?: string[] | undefined;
@@ -152,6 +154,7 @@ const _default: OverridableFrontendPlugin<
         maxDepth: number | undefined;
         unidirectional: boolean | undefined;
         mergeRelations: boolean | undefined;
+        showArrowHeads: boolean | undefined;
         direction: 'TB' | 'BT' | 'LR' | 'RL' | undefined;
         showFilters: boolean | undefined;
         curve: 'curveStepBefore' | 'curveMonotoneX' | undefined;
@@ -166,6 +169,7 @@ const _default: OverridableFrontendPlugin<
         curve?: 'curveStepBefore' | 'curveMonotoneX' | undefined;
         direction?: 'TB' | 'BT' | 'LR' | 'RL' | undefined;
         zoom?: 'disabled' | 'enabled' | 'enable-on-click' | undefined;
+        showArrowHeads?: boolean | undefined;
         relations?: string[] | undefined;
         maxDepth?: number | undefined;
         rootEntityRefs?: string[] | undefined;
@@ -238,7 +242,6 @@ const _default: OverridableFrontendPlugin<
       kind: 'page';
       name: undefined;
       params: {
-        defaultPath?: [Error: `Use the 'path' param instead`];
         path: string;
         title?: string;
         icon?: IconElement;

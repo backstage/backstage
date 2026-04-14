@@ -91,14 +91,14 @@ describe('command entrypoint', () => {
     expect(buildAppMock).toHaveBeenCalled();
   });
 
-  it('should call expected tasks when `--next` is supplied', async () => {
-    const cmd = { next: true } as unknown as Command;
+  it('should call expected tasks when `--legacy` is supplied', async () => {
+    const cmd = { legacy: true } as unknown as Command;
     await createApp(cmd);
     expect(checkAppExistsMock).toHaveBeenCalled();
     expect(tryInitGitRepositoryMock).toHaveBeenCalled();
     expect(templatingMock).toHaveBeenCalled();
     expect(templatingMock.mock.lastCall?.[0]).toEqual(
-      findOwnPaths(__dirname).resolve('templates/next-app'),
+      findOwnPaths(__dirname).resolve('templates/legacy-app'),
     );
     expect(templatingMock.mock.lastCall?.[1]).toContain(
       path.join(tmpdir(), 'MyApp'),

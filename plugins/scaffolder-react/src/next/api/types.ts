@@ -18,3 +18,8 @@
 export interface FormField {
   readonly $$type: '@backstage/scaffolder/FormField';
 }
+
+/** @alpha */
+export interface ScaffolderFormFieldsApi {
+  loadFormFields(): Promise<FormField[]>;
+}

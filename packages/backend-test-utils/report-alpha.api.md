@@ -7,7 +7,7 @@ import { ActionsRegistryActionOptions } from '@backstage/backend-plugin-api/alph
 import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
 import { ActionsService } from '@backstage/backend-plugin-api/alpha';
 import { ActionsServiceAction } from '@backstage/backend-plugin-api/alpha';
-import { AnyZodObject } from 'zod';
+import { AnyZodObject } from 'zod/v3';
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';

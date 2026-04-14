@@ -15,6 +15,7 @@ export type AddLocationRequest = {
   type?: string;
   target: string;
   dryRun?: boolean;
+  onConflict?: 'refresh' | 'reject';
 };
 
 // @public
@@ -101,6 +102,14 @@ export interface CatalogApi {
     request?: QueryLocationsInitialRequest,
     options?: CatalogRequestOptions,
   ): AsyncIterable<Location_2[]>;
+  updateLocation(
+    id: string,
+    location: {
+      type?: string;
+      target: string;
+    },
+    options?: CatalogRequestOptions,
+  ): Promise<Location_2>;
   validateEntity(
     entity: Entity,
     locationRef: string,
@@ -195,6 +204,14 @@ export class CatalogClient implements CatalogApi {
     request?: QueryLocationsInitialRequest,
     options?: CatalogRequestOptions,
   ): AsyncIterable<Location_2[]>;
+  updateLocation(
+    id: string,
+    location: {
+      type?: string;
+      target: string;
+    },
+    options?: CatalogRequestOptions,
+  ): Promise<Location_2>;
   validateEntity(
     entity: Entity,
     locationRef: string,
@@ -236,6 +253,7 @@ export interface GetEntitiesByRefsRequest {
   entityRefs: string[];
   fields?: EntityFieldsQuery | undefined;
   filter?: EntityFilterQuery;
+  query?: FilterPredicate;
 }
 
 // @public
@@ -280,6 +298,7 @@ export interface GetEntityAncestorsResponse {
 export interface GetEntityFacetsRequest {
   facets: string[];
   filter?: EntityFilterQuery;
+  query?: FilterPredicate;
 }
 
 // @public
@@ -304,6 +323,7 @@ type Location_2 = {
   id: string;
   type: string;
   target: string;
+  entityRef: string;
 };
 export { Location_2 as Location };
 

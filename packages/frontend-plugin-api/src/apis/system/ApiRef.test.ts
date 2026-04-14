@@ -15,13 +15,54 @@
  */
 
 import { createApiRef } from './ApiRef';
+import type { ApiRef as ApiRefType } from './types';
 
 describe('ApiRef', () => {
-  it('should be created', () => {
+  it('should be created with config', () => {
     const ref = createApiRef({ id: 'abc' });
+    expect(ref.$$type).toBe('@backstage/ApiRef');
     expect(ref.id).toBe('abc');
     expect(String(ref)).toBe('apiRef{abc}');
-    expect(() => ref.T).toThrow('tried to read ApiRef.T of apiRef{abc}');
+    expect(ref.T).toBeNull();
+  });
+
+  it('should not accept pluginId with deprecated config form', () => {
+    expect(createApiRef<string>({ id: 'abc' }).id).toBe('abc');
+
+    // @ts-expect-error pluginId is only supported through .with(...)
+    createApiRef<string>({ id: 'abc', pluginId: 'test' });
+  });
+
+  it('should keep the deprecated config form id wide', () => {
+    const ref = createApiRef<string>({ id: 'abc' });
+    const wideRef: ApiRefType<string> = ref;
+    expect(wideRef.id).toBe('abc');
+
+    // @ts-expect-error deprecated config form should not infer literal ids
+    const literalRef: ApiRefType<string, 'abc'> = ref;
+    expect(literalRef.id).toBe('abc');
+  });
+
+  it('should be created with builder pattern', () => {
+    const ref = createApiRef<string>().with({ id: 'abc', pluginId: 'test' });
+    expect(ref.$$type).toBe('@backstage/ApiRef');
+    expect(ref.id).toBe('abc');
+    expect(String(ref)).toBe('apiRef{abc}');
+    expect(ref.T).toBeNull();
+    expect((ref as { pluginId?: string }).pluginId).toBe('test');
+
+    // @ts-expect-error pluginId is internal runtime metadata
+    expect(ref.pluginId).toBe('test');
+  });
+
+  it('should infer literal ids with builder pattern', () => {
+    const ref = createApiRef<string>().with({ id: 'abc', pluginId: 'test' });
+    const literalRef: ApiRefType<string, 'abc'> = ref;
+    expect(literalRef.id).toBe('abc');
+
+    // @ts-expect-error builder pattern should preserve literal ids
+    const wrongLiteralRef: ApiRefType<string, 'def'> = ref;
+    expect(wrongLiteralRef.id).toBe('abc');
   });
 
   it('should reject invalid ids', () => {
@@ -46,5 +87,11 @@ describe('ApiRef', () => {
         `API id must only contain period separated lowercase alphanum tokens with dashes, got '${id}'`,
       );
     }
+  });
+
+  it('should reject invalid ids with builder pattern', () => {
+    expect(() => createApiRef().with({ id: '123' })).toThrow(
+      `API id must only contain period separated lowercase alphanum tokens with dashes, got '123'`,
+    );
   });
 });

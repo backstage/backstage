@@ -1,6 +1,7 @@
 ---
 id: npx-create-app
 title: '001 - Scaffolding'
+description: How to scaffold a new Backstage app using create-app
 ---
 
 Audience: Developers and Admins

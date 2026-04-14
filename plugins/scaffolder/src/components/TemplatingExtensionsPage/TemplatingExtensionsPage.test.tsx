@@ -40,6 +40,8 @@ const scaffolderApiMock: jest.Mocked<ScaffolderApi> = {
   listTemplatingExtensions,
   listTasks: jest.fn(),
   autocomplete: jest.fn(),
+  retry: jest.fn(),
+  dryRun: jest.fn(),
 };
 
 const mockPermissionApi = { authorize: jest.fn() };

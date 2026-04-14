@@ -68,24 +68,26 @@ export const CustomFieldPlayground = ({
   const [refreshKey, setRefreshKey] = useState(Date.now());
   const [fieldFormState, setFieldFormState] = useState({});
   const [selectedField, setSelectedField] = useState(fieldOptions[0]);
-  const sampleFieldTemplate = useMemo(
-    () =>
-      yaml.stringify({
-        parameters: [
-          {
-            title: `${selectedField.name} Example`,
-            properties: {
-              [selectedField.name]: {
-                type: selectedField.schema?.returnValue?.type,
-                'ui:field': selectedField.name,
-                'ui:options': fieldFormState,
-              },
+  const sampleFieldTemplate = useMemo(() => {
+    if (!selectedField) {
+      return '';
+    }
+
+    return yaml.stringify({
+      parameters: [
+        {
+          title: `${selectedField.name} Example`,
+          properties: {
+            [selectedField.name]: {
+              type: selectedField.schema?.returnValue?.type,
+              'ui:field': selectedField.name,
+              'ui:options': fieldFormState,
             },
           },
-        ],
-      }),
-    [fieldFormState, selectedField],
-  );
+        },
+      ],
+    });
+  }, [fieldFormState, selectedField]);
 
   const fieldComponents = useMemo(() => {
     return Object.fromEntries(
@@ -98,18 +100,15 @@ export const CustomFieldPlayground = ({
       setSelectedField(selection);
       setFieldFormState({});
     },
-    [setFieldFormState, setSelectedField],
+    [],
   );
 
-  const handleFieldConfigChange = useCallback(
-    (state: {}) => {
-      setFieldFormState(state);
-      // Force TemplateEditorForm to re-render since some fields
-      // may not be responsive to ui:option changes
-      setRefreshKey(Date.now());
-    },
-    [setFieldFormState, setRefreshKey],
-  );
+  const handleFieldConfigChange = useCallback((state: {}) => {
+    setFieldFormState(state);
+    // Force TemplateEditorForm to re-render since some fields
+    // may not be responsive to ui:option changes
+    setRefreshKey(Date.now());
+  }, []);
 
   return (
     <main className={classes.root}>
@@ -211,7 +210,7 @@ export const CustomFieldPlayground = ({
               formContext={{ fieldFormState }}
               onSubmit={e => handleFieldConfigChange(e.formData)}
               validator={validator}
-              schema={selectedField.schema?.uiOptions || {}}
+              schema={selectedField?.schema?.uiOptions || {}}
               experimental_defaultFormStateBehavior={{
                 allOf: 'populateDefaults',
               }}
@@ -220,7 +219,7 @@ export const CustomFieldPlayground = ({
                 variant="contained"
                 color="primary"
                 type="submit"
-                disabled={!selectedField.schema?.uiOptions}
+                disabled={!selectedField?.schema?.uiOptions}
               >
                 {t(
                   'templateEditorPage.customFieldExplorer.fieldForm.applyButtonTitle',

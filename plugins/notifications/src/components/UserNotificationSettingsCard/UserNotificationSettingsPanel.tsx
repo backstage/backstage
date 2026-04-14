@@ -19,21 +19,12 @@ import {
   NotificationSettings,
   OriginSetting,
 } from '@backstage/plugin-notifications-common';
-import Table from '@material-ui/core/Table';
-import MuiTableCell from '@material-ui/core/TableCell';
-import { withStyles } from '@material-ui/core/styles';
-import TableHead from '@material-ui/core/TableHead';
-import Typography from '@material-ui/core/Typography';
-import TableBody from '@material-ui/core/TableBody';
-import TableRow from '@material-ui/core/TableRow';
+import { Text } from '@backstage/ui';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { notificationsTranslationRef } from '../../translation';
 import { TopicRow } from './TopicRow';
 import { OriginRow } from './OriginRow';
-
-const TableCell = withStyles({
-  root: {
-    borderBottom: 'none',
-  },
-})(MuiTableCell);
+import styles from './UserNotificationSettingsPanel.module.css';
 
 export const UserNotificationSettingsPanel = (props: {
   settings: NotificationSettings;
@@ -42,6 +33,7 @@ export const UserNotificationSettingsPanel = (props: {
   topicNames?: Record<string, string>;
 }) => {
   const { settings, onChange } = props;
+  const { t } = useTranslationRef(notificationsTranslationRef);
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
 
   const handleRowToggle = (originId: string) => {
@@ -106,9 +98,7 @@ export const UserNotificationSettingsPanel = (props: {
 
   if (settings.channels.length === 0) {
     return (
-      <Typography variant="body1">
-        No notification settings available, check back later
-      </Typography>
+      <Text variant="body-medium">{t('settings.noSettingsAvailable')}</Text>
     );
   }
 
@@ -125,26 +115,29 @@ export const UserNotificationSettingsPanel = (props: {
   const uniqueOrigins = Array.from(uniqueOriginsMap);
 
   return (
-    <Table>
-      <TableHead>
-        <TableRow>
-          <TableCell />
-          <TableCell>
-            <Typography variant="subtitle1">Origin</Typography>
-          </TableCell>
-          <TableCell>
-            <Typography variant="subtitle1">Topic</Typography>
-          </TableCell>
+    <table className={styles.table}>
+      <thead>
+        <tr>
+          <th className={styles.headerCell} />
+          <th className={styles.headerCell}>
+            <Text variant="title-x-small">{t('settings.table.origin')}</Text>
+          </th>
+          <th className={styles.headerCell}>
+            <Text variant="title-x-small">{t('settings.table.topic')}</Text>
+          </th>
           {settings.channels.map(channel => (
-            <TableCell key={channel.id}>
-              <Typography variant="subtitle1" align="center">
+            <th key={channel.id} className={styles.headerCell}>
+              <Text
+                variant="title-x-small"
+                style={{ textAlign: 'center', display: 'block' }}
+              >
                 {channel.id}
-              </Typography>
-            </TableCell>
+              </Text>
+            </th>
           ))}
-        </TableRow>
-      </TableHead>
-      <TableBody>
+        </tr>
+      </thead>
+      <tbody>
         {uniqueOrigins.flatMap(origin => [
           <OriginRow
             key={origin.id}
@@ -166,7 +159,7 @@ export const UserNotificationSettingsPanel = (props: {
               )) || []
             : []),
         ])}
-      </TableBody>
-    </Table>
+      </tbody>
+    </table>
   );
 };

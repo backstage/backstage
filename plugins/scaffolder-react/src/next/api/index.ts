@@ -14,4 +14,12 @@
  * limitations under the License.
  */
 
-export { type FormField } from './types';
+import { createApiRef } from '@backstage/frontend-plugin-api';
+import { ScaffolderFormFieldsApi } from './types';
+
+export { type FormField, type ScaffolderFormFieldsApi } from './types';
+
+/** @alpha */
+export const formFieldsApiRef = createApiRef<ScaffolderFormFieldsApi>({
+  id: 'plugin.scaffolder.form-fields-loader',
+});

@@ -885,6 +885,32 @@ another_unknown: true
       );
     });
 
+    it('should remove the INHERIT key to prevent loading unsanitized parent configs', async () => {
+      const mkdocsWithInherit = `INHERIT: ../parent.yml
+site_name: Test
+`;
+      mockDir.setContent({
+        'mkdocs_inherit.yml': mkdocsWithInherit,
+      });
+
+      await sanitizeMkdocsYml(
+        mockDir.resolve('mkdocs_inherit.yml'),
+        mockLogger,
+      );
+
+      const updatedMkdocsYml = await fs.readFile(
+        mockDir.resolve('mkdocs_inherit.yml'),
+      );
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as Record<
+        string,
+        unknown
+      >;
+
+      expect(parsedYml.INHERIT).toBeUndefined();
+      expect(parsedYml.site_name).toBe('Test');
+      expect(warn).toHaveBeenCalledWith(expect.stringContaining('INHERIT'));
+    });
+
     it('should remove hooks with duplicate merge keys and top-level anchors', async () => {
       mockDir.setContent({
         'mkdocs_duplicate_merge.yml': mkdocsYmlWithDuplicateMergeHooks,
@@ -909,6 +935,83 @@ another_unknown: true
       expect(updatedMkdocsYml.toString()).not.toContain('<<:');
 
       expect(warn).toHaveBeenCalledWith(expect.stringContaining('hooks'));
+    });
+
+    it('should allow additional keys when configured via dangerouslyAllowAdditionalKeys', async () => {
+      const mkdocsWithHooksAndCustom = `site_name: Test
+hooks:
+  - hook.py
+custom_dir: custom
+some_unknown_key: value
+`;
+      mockDir.setContent({
+        'mkdocs_allowed.yml': mkdocsWithHooksAndCustom,
+      });
+
+      // Allow 'hooks' and 'custom_dir' but not 'some_unknown_key'
+      await sanitizeMkdocsYml(
+        mockDir.resolve('mkdocs_allowed.yml'),
+        mockLogger,
+        ['hooks', 'custom_dir'],
+      );
+
+      const updatedMkdocsYml = await fs.readFile(
+        mockDir.resolve('mkdocs_allowed.yml'),
+      );
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as Record<
+        string,
+        unknown
+      >;
+
+      // 'hooks' and 'custom_dir' should be preserved
+      expect(parsedYml.hooks).toEqual(['hook.py']);
+      expect(parsedYml.custom_dir).toBe('custom');
+      // 'some_unknown_key' should still be removed
+      expect(parsedYml.some_unknown_key).toBeUndefined();
+      expect(parsedYml.site_name).toBe('Test');
+
+      // Should warn about the dangerous configuration AND the removed key
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining(
+          'DANGEROUS: Allowing additional MkDocs configuration keys beyond the default safe allowlist: hooks, custom_dir',
+        ),
+      );
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining(
+          'Removed the following unsupported configuration keys from mkdocs.yml: some_unknown_key',
+        ),
+      );
+    });
+
+    it('should warn about dangerous keys even when no keys are removed', async () => {
+      mockDir.setContent({
+        'mkdocs_with_hooks.yml': mkdocsYmlWithHooks,
+      });
+
+      await sanitizeMkdocsYml(
+        mockDir.resolve('mkdocs_with_hooks.yml'),
+        mockLogger,
+        ['hooks'],
+      );
+
+      const updatedMkdocsYml = await fs.readFile(
+        mockDir.resolve('mkdocs_with_hooks.yml'),
+      );
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as {
+        hooks?: string[];
+        site_name: string;
+      };
+
+      // Hooks should be preserved
+      expect(parsedYml.hooks).toBeDefined();
+      expect(parsedYml.site_name).toBe('Test site name');
+
+      // Should warn about dangerous configuration
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining(
+          'DANGEROUS: Allowing additional MkDocs configuration keys beyond the default safe allowlist: hooks',
+        ),
+      );
     });
   });
 

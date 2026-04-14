@@ -220,7 +220,7 @@ function convertOldToNew(
     const legacyRef = ref as LegacyRouteRef;
     const legacyRefStr = String(legacyRef);
     const newRef = OpaqueRouteRef.toInternal(
-      createRouteRef<{ [key in string]: string }>({
+      createRouteRef({
         params: legacyRef.params as string[],
       }),
     );

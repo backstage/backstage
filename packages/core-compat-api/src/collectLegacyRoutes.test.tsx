@@ -156,7 +156,7 @@ describe('collectLegacyRoutes', () => {
               if={isKind('component')}
               children={
                 <EntityLayout>
-                  <EntityAboutCard variant="gridItem" />
+                  <EntityAboutCard />
                 </EntityLayout>
               }
             />

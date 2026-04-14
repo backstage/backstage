@@ -14,16 +14,24 @@
  * limitations under the License.
  */
 
-import type { ComponentDefinition } from '../../types';
+import { defineComponent } from '../../hooks/useDefinition';
+import type { PopoverOwnProps } from './types';
+import styles from './Popover.module.css';
 
 /**
  * Component definition for Popover
  * @public
  */
-export const PopoverDefinition = {
+export const PopoverDefinition = defineComponent<PopoverOwnProps>()({
+  styles,
   classNames: {
     root: 'bui-Popover',
     arrow: 'bui-PopoverArrow',
     content: 'bui-PopoverContent',
   },
-} as const satisfies ComponentDefinition;
+  propDefs: {
+    children: {},
+    hideArrow: {},
+    className: {},
+  },
+});

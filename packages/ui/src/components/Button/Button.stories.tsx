@@ -357,26 +357,32 @@ export const AutoBg = meta.story({
         neutral level by 1. No prop is needed on the button -- it's fully
         automatic.
       </div>
-      <Box bg="neutral-1" p="4">
+      <Box bg="neutral" p="4">
         <Text>Neutral 1 container</Text>
         <Flex gap="2" mt="2">
           <Button variant="secondary">Auto (neutral-2)</Button>
           <Button variant="tertiary">Auto (neutral-2)</Button>
         </Flex>
       </Box>
-      <Box bg="neutral-2" p="4">
-        <Text>Neutral 2 container</Text>
-        <Flex gap="2" mt="2">
-          <Button variant="secondary">Auto (neutral-3)</Button>
-          <Button variant="tertiary">Auto (neutral-3)</Button>
-        </Flex>
+      <Box bg="neutral">
+        <Box bg="neutral" p="4">
+          <Text>Neutral 2 container</Text>
+          <Flex gap="2" mt="2">
+            <Button variant="secondary">Auto (neutral-3)</Button>
+            <Button variant="tertiary">Auto (neutral-3)</Button>
+          </Flex>
+        </Box>
       </Box>
-      <Box bg="neutral-3" p="4">
-        <Text>Neutral 3 container</Text>
-        <Flex gap="2" mt="2">
-          <Button variant="secondary">Auto (neutral-4)</Button>
-          <Button variant="tertiary">Auto (neutral-4)</Button>
-        </Flex>
+      <Box bg="neutral">
+        <Box bg="neutral">
+          <Box bg="neutral" p="4">
+            <Text>Neutral 3 container</Text>
+            <Flex gap="2" mt="2">
+              <Button variant="secondary">Auto (neutral-4)</Button>
+              <Button variant="tertiary">Auto (neutral-4)</Button>
+            </Flex>
+          </Box>
+        </Box>
       </Box>
     </Flex>
   ),

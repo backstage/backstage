@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { OpaqueType } from '@internal/opaque';
-import { z } from 'zod';
+import { z } from 'zod/v3';
 
 import {
   ScaffolderFormDecorator,

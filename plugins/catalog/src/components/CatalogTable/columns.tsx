@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 import {
-  humanizeEntityRef,
+  defaultEntityPresentation,
   EntityRefLink,
   EntityRefLinks,
+  type EntityPresentationApi,
 } from '@backstage/plugin-catalog-react';
 import Chip from '@material-ui/core/Chip';
 import { CatalogTableRow } from './types';
@@ -31,14 +32,17 @@ import { EntityTableColumnTitle } from '@backstage/plugin-catalog-react/alpha';
 export const columnFactories = Object.freeze({
   createNameColumn(options?: {
     defaultKind?: string;
+    entityPresentationApi?: EntityPresentationApi;
   }): TableColumn<CatalogTableRow> {
     function formatContent(entity: Entity): string {
-      return (
-        entity.metadata?.title ||
-        humanizeEntityRef(entity, {
+      if (options?.entityPresentationApi) {
+        return options.entityPresentationApi.forEntity(entity, {
           defaultKind: options?.defaultKind,
-        })
-      );
+        }).snapshot.primaryTitle;
+      }
+      return defaultEntityPresentation(entity, {
+        defaultKind: options?.defaultKind,
+      }).primaryTitle;
     }
 
     return {

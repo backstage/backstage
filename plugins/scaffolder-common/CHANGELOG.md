@@ -1,5 +1,78 @@
 # @backstage/plugin-scaffolder-common
 
+## 2.1.0
+
+### Minor Changes
+
+- e5fcfcb: Added `scaffolderCatalogModelLayer`, a Template kind model layer with JSON Schema definition, serving as an example of how plugins can declare their own catalog entity kinds.
+
+### Patch Changes
+
+- 3ef6078: Added optional `if` property to `ScaffolderOutputLink` and `ScaffolderOutputText` types, allowing template authors to conditionally include output links and text items.
+- Updated dependencies
+  - @backstage/errors@1.3.0
+  - @backstage/catalog-model@1.8.0
+  - @backstage/integration@2.0.1
+  - @backstage/plugin-permission-common@0.9.8
+
+## 2.0.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/integration@2.0.1-next.0
+  - @backstage/catalog-model@1.7.8-next.0
+  - @backstage/plugin-permission-common@0.9.8-next.0
+
+## 2.0.0
+
+### Major Changes
+
+- 527cf88: **BREAKING** Removed deprecated `bitbucket` integration from being registered in the `ScaffolderClient`. Use the `bitbucketCloud` or `bitbucketServer` integrations instead.
+
+### Minor Changes
+
+- f598909: **BREAKING PRODUCERS**: Made `retry`, `listTasks`, `listTemplatingExtensions`, `dryRun`, and `autocomplete` required methods on the `ScaffolderApi` interface. Implementations of `ScaffolderApi` must now provide these methods.
+- e8736ea: Added an optional `secrets` field to `TemplateEntityV1beta3` for configuring secrets validation. The schema for validating secrets is defined under `secrets.schema` as a JSON Schema object.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.0.0
+  - @backstage/plugin-permission-common@0.9.7
+  - @backstage/catalog-model@1.7.7
+
+## 2.0.0-next.2
+
+### Minor Changes
+
+- e8736ea: Added an optional `secrets` field to `TemplateEntityV1beta3` for configuring secrets validation. The schema for validating secrets is defined under `secrets.schema` as a JSON Schema object.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.0.0-next.2
+
+## 2.0.0-next.1
+
+### Major Changes
+
+- 527cf88: **BREAKING** Removed deprecated `bitbucket` integration from being registered in the `ScaffolderClient`. Use the `bitbucketCloud` or `bitbucketServer` integrations instead.
+
+### Minor Changes
+
+- f598909: **BREAKING PRODUCERS**: Made `retry`, `listTasks`, `listTemplatingExtensions`, `dryRun`, and `autocomplete` required methods on the `ScaffolderApi` interface. Implementations of `ScaffolderApi` must now provide these methods.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.0.0-next.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-permission-common@0.9.6
+
 ## 1.7.7-next.0
 
 ### Patch Changes

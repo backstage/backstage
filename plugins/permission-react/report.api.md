@@ -11,9 +11,7 @@ import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { EvaluatePermissionRequest } from '@backstage/plugin-permission-common';
 import { EvaluatePermissionResponse } from '@backstage/plugin-permission-common';
 import { IdentityApi } from '@backstage/core-plugin-api';
-import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { Permission } from '@backstage/plugin-permission-common';
-import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
 
@@ -47,26 +45,6 @@ export type PermissionApi = {
 
 // @public
 export const permissionApiRef: ApiRef<PermissionApi>;
-
-// @public @deprecated
-export const PermissionedRoute: (
-  props: {
-    caseSensitive?: boolean;
-    children?: ReactNode;
-    element?: ReactElement | null;
-    path?: string;
-    errorComponent?: ReactElement | null;
-  } & (
-    | {
-        permission: Exclude<Permission, ResourcePermission>;
-        resourceRef?: never;
-      }
-    | {
-        permission: ResourcePermission;
-        resourceRef: string | undefined;
-      }
-  ),
-) => JSX_2.Element;
 
 // @public
 export function RequirePermission(

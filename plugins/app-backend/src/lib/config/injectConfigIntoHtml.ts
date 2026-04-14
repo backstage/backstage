@@ -70,7 +70,7 @@ ${JSON.stringify(appConfigs, null, 2)
   return Buffer.from(indexHtmlContentWithConfig, 'utf8');
 }
 
-export function resolvePublicPath(config: Config) {
+function resolvePublicPath(config: Config) {
   const baseUrl = new URL(
     config.getOptionalString('app.baseUrl') ?? '/',
     'http://localhost:7007',

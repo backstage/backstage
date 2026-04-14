@@ -16,7 +16,6 @@
 
 import {
   Entity,
-  parseEntityRef,
   RELATION_MEMBER_OF,
   RELATION_PARENT_OF,
   stringifyEntityRef,
@@ -24,8 +23,8 @@ import {
 import {
   CatalogApi,
   catalogApiRef,
+  entityPresentationSnapshot,
   getEntityRelations,
-  humanizeEntityRef,
 } from '@backstage/plugin-catalog-react';
 import limiterFactory from 'p-limit';
 import { useApi } from '@backstage/core-plugin-api';
@@ -47,8 +46,9 @@ const getQueryParams = (
   selectedEntity: EntityTypeProps,
 ): string => {
   const { kind, type } = selectedEntity;
-  const owners = ownersEntityRef.map(owner =>
-    humanizeEntityRef(parseEntityRef(owner), { defaultKind: 'group' }),
+  const owners = ownersEntityRef.map(
+    ref =>
+      entityPresentationSnapshot(ref, { defaultKind: 'group' }).primaryTitle,
   );
   const filters = {
     kind: kind.toLocaleLowerCase('en-US'),

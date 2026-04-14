@@ -83,6 +83,8 @@ describe('<AboutContent />', () => {
       expect(screen.getByText('Type').nextSibling).toHaveTextContent('t');
       expect(screen.getByText('Lifecycle')).toBeInTheDocument();
       expect(screen.getByText('Lifecycle').nextSibling).toHaveTextContent('l');
+      expect(screen.getByText('Kind')).toBeInTheDocument();
+      expect(screen.getByText('Kind').nextSibling).toHaveTextContent('Unknown');
       expect(screen.getByText('Tags')).toBeInTheDocument();
       expect(screen.getByText('Tags').nextSibling).toHaveTextContent('tag-1');
     });
@@ -111,6 +113,7 @@ describe('<AboutContent />', () => {
       expect(screen.queryByText('Parent Component')).not.toBeInTheDocument();
       expect(screen.queryByText('Type')).not.toBeInTheDocument();
       expect(screen.queryByText('Lifecycle')).not.toBeInTheDocument();
+      expect(screen.getByText('Kind')).toBeInTheDocument();
     });
   });
 
@@ -362,7 +365,9 @@ describe('<AboutContent />', () => {
       expect(screen.getByText('Owner').nextSibling).toHaveTextContent(
         'user:guest',
       );
-      expect(screen.queryByText('Domain')).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole('heading', { name: 'Domain' }),
+      ).not.toBeInTheDocument();
       expect(screen.queryByText('System')).not.toBeInTheDocument();
       expect(screen.queryByText('Parent Component')).not.toBeInTheDocument();
       expect(screen.queryByText('Type')).not.toBeInTheDocument();
@@ -389,7 +394,9 @@ describe('<AboutContent />', () => {
       expect(screen.getByText('Owner').nextSibling).toHaveTextContent(
         'No Owner',
       );
-      expect(screen.queryByText('Domain')).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole('heading', { name: 'Domain' }),
+      ).not.toBeInTheDocument();
       expect(screen.queryByText('System')).not.toBeInTheDocument();
       expect(screen.queryByText('Parent Component')).not.toBeInTheDocument();
       expect(screen.queryByText('Type')).not.toBeInTheDocument();
@@ -617,7 +624,9 @@ describe('<AboutContent />', () => {
       expect(screen.getByText('Domain').nextSibling).toHaveTextContent(
         'domain',
       );
-      expect(screen.queryByText('System')).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole('heading', { name: 'System' }),
+      ).not.toBeInTheDocument();
       expect(screen.queryByText('Parent Component')).not.toBeInTheDocument();
       expect(screen.queryByText('Type')).not.toBeInTheDocument();
       expect(screen.queryByText('Lifecycle')).not.toBeInTheDocument();
@@ -648,7 +657,9 @@ describe('<AboutContent />', () => {
       expect(screen.getByText('Domain').nextSibling).toHaveTextContent(
         'No Domain',
       );
-      expect(screen.queryByText('System')).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole('heading', { name: 'System' }),
+      ).not.toBeInTheDocument();
       expect(screen.queryByText('Parent Component')).not.toBeInTheDocument();
       expect(screen.queryByText('Type')).not.toBeInTheDocument();
       expect(screen.queryByText('Lifecycle')).not.toBeInTheDocument();

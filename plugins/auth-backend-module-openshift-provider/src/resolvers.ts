@@ -25,7 +25,7 @@ import {
   DEFAULT_NAMESPACE,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import { z } from 'zod';
+import { z } from 'zod/v3';
 
 export namespace openshiftSignInResolvers {
   export const displayNameMatchingUserEntityName = createSignInResolverFactory({

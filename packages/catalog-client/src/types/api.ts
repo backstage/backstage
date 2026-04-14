@@ -212,6 +212,16 @@ export interface GetEntitiesByRefsRequest {
    * If given, return only entities that match the given filter.
    */
   filter?: EntityFilterQuery;
+  /**
+   * If given, return only entities that match the given predicate query.
+   *
+   * @remarks
+   *
+   * Supports operators like `$all`, `$any`, `$not`, `$exists`, `$in`,
+   * `$contains`, and `$hasPrefix`. When both `filter` and `query` are
+   * provided, they are combined with `$all`.
+   */
+  query?: FilterPredicate;
 }
 
 /**
@@ -298,6 +308,16 @@ export interface GetEntityFacetsRequest {
    */
   filter?: EntityFilterQuery;
   /**
+   * If given, return only entities that match the given predicate query.
+   *
+   * @remarks
+   *
+   * Supports operators like `$all`, `$any`, `$not`, `$exists`, `$in`,
+   * `$contains`, and `$hasPrefix`. When both `filter` and `query` are
+   * provided, they are combined with `$all`.
+   */
+  query?: FilterPredicate;
+  /**
    * Dot separated paths for the facets to extract from each entity.
    *
    * @remarks
@@ -352,6 +372,8 @@ export type Location = {
   id: string;
   type: string;
   target: string;
+  /** The entity ref of the corresponding Location kind entity, e.g. `location:default/generated-<sha1hex>`. */
+  entityRef: string;
 };
 
 /**
@@ -376,6 +398,12 @@ export type AddLocationRequest = {
    * contain the entities that match the given location.
    */
   dryRun?: boolean;
+  /**
+   * Behavior when the location already exists. If set to `'reject'` (the
+   * default), a conflict error is returned. If set to `'refresh'`, the
+   * existing location entity is marked for refresh and a 201 is returned.
+   */
+  onConflict?: 'refresh' | 'reject';
 };
 
 /**
@@ -802,6 +830,19 @@ export interface CatalogApi {
     id: string,
     options?: CatalogRequestOptions,
   ): Promise<void>;
+
+  /**
+   * Updates the type and target of an existing registered location.
+   *
+   * @param id - The location ID to update
+   * @param location - The new type and target for the location
+   * @param options - Additional options
+   */
+  updateLocation(
+    id: string,
+    location: { type?: string; target: string },
+    options?: CatalogRequestOptions,
+  ): Promise<Location>;
 
   /**
    * Gets a location associated with an entity.

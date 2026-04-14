@@ -9,6 +9,28 @@ import { ScmIntegrationRegistry } from '@backstage/integration';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 
 // @public
+export const createGitlabGroupAccessAction: (options: {
+  integrations: ScmIntegrationRegistry;
+}) => TemplateAction<
+  {
+    repoUrl: string;
+    path: string | number;
+    token?: string | undefined;
+    userIds?: number[] | undefined;
+    groupIds?: number[] | undefined;
+    action?: 'add' | 'remove' | undefined;
+    accessLevel?: string | number | undefined;
+  },
+  {
+    userIds?: number[] | undefined;
+    groupIds?: number[] | undefined;
+    path?: string | number | undefined;
+    accessLevel?: number | undefined;
+  },
+  'v2'
+>;
+
+// @public
 export const createGitlabGroupEnsureExistsAction: (options: {
   integrations: ScmIntegrationRegistry;
 }) => TemplateAction<
@@ -132,7 +154,7 @@ export const createGitlabRepoPushAction: (options: {
     sourcePath?: string | undefined;
     targetPath?: string | undefined;
     token?: string | undefined;
-    commitAction?: 'auto' | 'update' | 'delete' | 'create' | undefined;
+    commitAction?: 'auto' | 'update' | 'create' | 'delete' | undefined;
   },
   {
     projectid: string;
@@ -181,9 +203,11 @@ export function createPublishGitlabAction(options: {
     skipExisting?: boolean | undefined;
     token?: string | undefined;
     setUserAsOwner?: boolean | undefined;
+    ownerUsername?: string | undefined;
     topics?: string[] | undefined;
     settings?:
       | {
+          name?: string | undefined;
           visibility?: 'internal' | 'private' | 'public' | undefined;
           path?: string | undefined;
           description?: string | undefined;
@@ -249,7 +273,7 @@ export const createPublishGitlabMergeRequestAction: (options: {
     sourcePath?: string | undefined;
     targetPath?: string | undefined;
     token?: string | undefined;
-    commitAction?: 'auto' | 'update' | 'delete' | 'create' | 'skip' | undefined;
+    commitAction?: 'auto' | 'update' | 'create' | 'delete' | 'skip' | undefined;
     projectid?: string | undefined;
     removeSourceBranch?: boolean | undefined;
     assignee?: string | undefined;

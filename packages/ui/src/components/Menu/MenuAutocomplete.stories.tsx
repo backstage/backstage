@@ -25,6 +25,7 @@ import {
 import { Button } from '../..';
 import { useState, useEffect } from 'react';
 import { MemoryRouter } from 'react-router-dom';
+import { BUIProvider } from '../../provider';
 
 const meta = preview.meta({
   title: 'Backstage UI/MenuAutocomplete',
@@ -32,7 +33,9 @@ const meta = preview.meta({
   decorators: [
     Story => (
       <MemoryRouter>
-        <Story />
+        <BUIProvider>
+          <Story />
+        </BUIProvider>
       </MemoryRouter>
     ),
   ],

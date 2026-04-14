@@ -27,6 +27,7 @@ import { Button, Flex, Text } from '../..';
 import { useEffect, useState } from 'react';
 import { Selection } from 'react-aria-components';
 import { MemoryRouter } from 'react-router-dom';
+import { BUIProvider } from '../../provider';
 
 const meta = preview.meta({
   title: 'Backstage UI/MenuAutocompleteListBox',
@@ -34,7 +35,9 @@ const meta = preview.meta({
   decorators: [
     Story => (
       <MemoryRouter>
-        <Story />
+        <BUIProvider>
+          <Story />
+        </BUIProvider>
       </MemoryRouter>
     ),
   ],

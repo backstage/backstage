@@ -21,7 +21,7 @@ import {
   ScmIntegrationRegistry,
 } from '@backstage/integration';
 import { Gitlab, GroupSchema, RepositoryTreeSchema } from '@gitbeaker/rest';
-import { z } from 'zod';
+import { z } from 'zod/v3';
 import commonGitlabConfig from './commonGitlabConfig';
 
 import { SerializedFile } from '@backstage/plugin-scaffolder-node';

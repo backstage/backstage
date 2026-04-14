@@ -6,7 +6,7 @@ import { definePreview } from '@storybook/react-vite';
 import React, { useEffect } from 'react';
 import { TestApiProvider } from '@backstage/test-utils';
 import { AlertDisplay } from '@backstage/core-components';
-import { apis } from './support/apis';
+import { apis, appThemeApi } from './support/apis';
 import { useGlobals } from 'storybook/preview-api';
 import { UnifiedThemeProvider, themes } from '@backstage/theme';
 import { allModes } from './modes';
@@ -88,6 +88,7 @@ export default definePreview({
       storySort: {
         order: [
           'Backstage UI',
+          'Recipes',
           'Guidelines',
           'Plugins',
           'Layout',
@@ -156,6 +157,10 @@ export default definePreview({
         };
       }, [selectedTheme, selectedThemeName]);
 
+      useEffect(() => {
+        appThemeApi.setActiveThemeId(selectedThemeMode);
+      }, [selectedThemeMode]);
+
       document.body.style.backgroundColor = 'var(--bui-bg-app)';
       document.body.style.padding =
         isFullscreen && selectedBackground !== 'app' ? '1rem' : '';
@@ -176,7 +181,7 @@ export default definePreview({
                   : parseInt(selectedBackground.split('-')[1], 10),
             }).reduce<React.ReactNode>(
               children => (
-                <Box bg="neutral-auto" p="4">
+                <Box bg="neutral" p="4">
                   {children}
                 </Box>
               ),

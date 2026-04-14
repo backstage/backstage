@@ -19,13 +19,15 @@ import {
   parseEntityRef,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import { InfoCard, InfoCardVariants } from '@backstage/core-components';
 import { useAnalytics, useRouteRef } from '@backstage/core-plugin-api';
 import {
-  humanizeEntityRef,
+  EntityInfoCard,
+  entityPresentationSnapshot,
   useEntity,
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
+import { ButtonLink } from '@backstage/ui';
+import { RiArrowRightLine } from '@remixicon/react';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import qs from 'qs';
 import { MouseEvent, ReactNode, useCallback, useMemo } from 'react';
@@ -41,23 +43,13 @@ import { Direction, EntityNode } from '../../lib/types';
 import classNames from 'classnames';
 
 /** @public */
-export type CatalogGraphCardClassKey = 'card' | 'graph';
+export type CatalogGraphCardClassKey = 'graph';
 
 const useStyles = makeStyles<Theme, { height?: number }>(
   {
-    card: ({ height }) => ({
-      display: 'flex',
-      flexDirection: 'column',
-      ...(height && {
-        height,
-        maxHeight: height,
-        minHeight: height,
-      }),
-    }),
     graph: ({ height }) => ({
-      flex: height ? '0 0 auto' : 1,
+      height: height ?? '100%',
       minHeight: 0,
-      ...(height && { height }),
     }),
   },
   { name: 'PluginCatalogGraphCatalogGraphCard' },
@@ -65,7 +57,6 @@ const useStyles = makeStyles<Theme, { height?: number }>(
 
 export const CatalogGraphCard = (
   props: Partial<EntityRelationsGraphProps> & {
-    variant?: InfoCardVariants;
     height?: number;
     title?: string;
     action?: ReactNode;
@@ -73,11 +64,11 @@ export const CatalogGraphCard = (
 ) => {
   const { t } = useTranslationRef(catalogGraphTranslationRef);
   const {
-    variant = 'gridItem',
     relationPairs,
     maxDepth = 1,
     unidirectional = true,
     mergeRelations = true,
+    showArrowHeads,
     direction = Direction.LEFT_RIGHT,
     kinds,
     relations,
@@ -109,7 +100,7 @@ export const CatalogGraphCard = (
       });
       analytics.captureEvent(
         'click',
-        node.entity.metadata.title ?? humanizeEntityRef(nodeEntityName),
+        entityPresentationSnapshot(node.entity).primaryTitle,
         { attributes: { to: path } },
       );
       navigate(path);
@@ -132,16 +123,18 @@ export const CatalogGraphCard = (
   const catalogGraphUrl = `${catalogGraphRoute()}${catalogGraphParams}`;
 
   return (
-    <InfoCard
+    <EntityInfoCard
       title={title}
-      action={action}
-      cardClassName={classes.card}
-      variant={variant}
-      noPadding
-      deepLink={{
-        title: t('catalogGraphCard.deepLinkTitle'),
-        link: catalogGraphUrl,
-      }}
+      headerActions={action}
+      footerActions={
+        <ButtonLink
+          iconEnd={<RiArrowRightLine />}
+          variant="tertiary"
+          href={catalogGraphUrl}
+        >
+          {t('catalogGraphCard.deepLinkTitle')}
+        </ButtonLink>
+      }
     >
       <EntityRelationsGraph
         {...props}
@@ -155,7 +148,8 @@ export const CatalogGraphCard = (
         relationPairs={relationPairs}
         entityFilter={entityFilter}
         zoom={zoom}
+        showArrowHeads={showArrowHeads}
       />
-    </InfoCard>
+    </EntityInfoCard>
   );
 };

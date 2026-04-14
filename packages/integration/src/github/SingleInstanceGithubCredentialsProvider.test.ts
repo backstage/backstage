@@ -25,6 +25,12 @@ const octokit = {
   },
 };
 
+const mockCreateAppAuth = jest.fn();
+
+jest.mock('@octokit/auth-app', () => ({
+  createAppAuth: (...args: any[]) => mockCreateAppAuth(...args),
+}));
+
 jest.mock('@octokit/rest', () => {
   class Octokit {
     constructor() {
@@ -43,6 +49,12 @@ describe('SingleInstanceGithubCredentialsProvider tests', () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
+    mockCreateAppAuth.mockReturnValue(async (opts: { type: string }) => {
+      if (opts.type === 'app') {
+        return { token: 'mock-jwt-token' };
+      }
+      throw new Error(`Unexpected auth type: ${opts.type}`);
+    });
     github = SingleInstanceGithubCredentialsProvider.create({
       host: 'github.com',
       apps: [
@@ -887,6 +899,78 @@ describe('SingleInstanceGithubCredentialsProvider tests', () => {
 
       expect(type).toEqual('app');
       expect(token).toEqual('public_access_from_app_2');
+    });
+  });
+
+  describe('bare host URL (no org/repo)', () => {
+    it('should return app JWT when URL has no org or repo', async () => {
+      const { token, headers, type } = await github.getCredentials({
+        url: 'https://github.com',
+      });
+
+      expect(type).toEqual('app');
+      expect(token).toEqual('mock-jwt-token');
+      expect(headers).toEqual({
+        Authorization: 'Bearer mock-jwt-token',
+      });
+    });
+
+    it('should return app JWT with multiple apps configured', async () => {
+      const multiAppProvider = SingleInstanceGithubCredentialsProvider.create({
+        host: 'github.com',
+        apps: [
+          {
+            appId: 1,
+            privateKey: 'privateKey',
+            webhookSecret: '123',
+            clientId: 'CLIENT_ID',
+            clientSecret: 'CLIENT_SECRET',
+          },
+          {
+            appId: 2,
+            privateKey: 'privateKey2',
+            webhookSecret: '456',
+            clientId: 'CLIENT_ID_2',
+            clientSecret: 'CLIENT_SECRET_2',
+          },
+        ],
+      });
+
+      const { token, type } = await multiAppProvider.getCredentials({
+        url: 'https://github.com',
+      });
+
+      expect(type).toEqual('app');
+      expect(token).toBeDefined();
+    });
+
+    it('should fall back to configured token when no apps are configured and URL has no org', async () => {
+      const githubProvider = SingleInstanceGithubCredentialsProvider.create({
+        host: 'github.com',
+        apps: [],
+        token: 'fallback_token',
+      });
+
+      const { token, type } = await githubProvider.getCredentials({
+        url: 'https://github.com',
+      });
+
+      expect(type).toEqual('token');
+      expect(token).toEqual('fallback_token');
+    });
+
+    it('should return undefined token when no apps and no token configured for bare host URL', async () => {
+      const githubProvider = SingleInstanceGithubCredentialsProvider.create({
+        host: 'github.com',
+      });
+
+      const { token, headers, type } = await githubProvider.getCredentials({
+        url: 'https://github.com',
+      });
+
+      expect(type).toEqual('token');
+      expect(token).toBeUndefined();
+      expect(headers).toBeUndefined();
     });
   });
 });

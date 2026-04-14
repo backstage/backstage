@@ -16,7 +16,6 @@
 import { createRegisterCatalogEntitiesAction } from './createRegisterCatalogEntitiesAction';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 import { actionsRegistryServiceMock } from '@backstage/backend-test-utils/alpha';
-import { ForwardedError } from '@backstage/errors';
 
 describe('createRegisterCatalogEntitiesAction', () => {
   it('should successfully register a catalog location with a valid URL', async () => {
@@ -78,14 +77,13 @@ describe('createRegisterCatalogEntitiesAction', () => {
     ).rejects.toThrow('not-a-valid-url is an invalid URL');
   });
 
-  it('should throw a ForwardedError if catalog.addLocation throws an error', async () => {
+  it('should throw the original error if catalog.addLocation fails', async () => {
     const mockActionsRegistry = actionsRegistryServiceMock();
     const mockCatalog = catalogServiceMock();
 
-    const errorMessage = 'Failed to add location';
     mockCatalog.addLocation = jest
       .fn()
-      .mockRejectedValue(new Error(errorMessage));
+      .mockRejectedValue(new Error('Failed to add location'));
 
     createRegisterCatalogEntitiesAction({
       catalog: mockCatalog,
@@ -100,6 +98,9 @@ describe('createRegisterCatalogEntitiesAction', () => {
             'https://github.com/example/repo/blob/main/catalog-info.yaml',
         },
       }),
-    ).rejects.toThrow(ForwardedError);
+    ).rejects.toMatchObject({
+      name: 'Error',
+      message: 'Failed to add location',
+    });
   });
 });

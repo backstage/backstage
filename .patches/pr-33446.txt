@@ -1,0 +1,1 @@
+Fixed incorrect name of the `legacy-frontend-plugin` template

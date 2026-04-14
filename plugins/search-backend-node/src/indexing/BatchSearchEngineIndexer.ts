@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { assertError } from '@backstage/errors';
+import { toError } from '@backstage/errors';
 import { IndexableDocument } from '@backstage/plugin-search-common';
 import { Writable } from 'node:stream';
 
@@ -66,8 +66,7 @@ export abstract class BatchSearchEngineIndexer extends Writable {
       await this.initialize();
       done();
     } catch (e) {
-      assertError(e);
-      done(e);
+      done(toError(e));
     }
   }
 
@@ -91,8 +90,7 @@ export abstract class BatchSearchEngineIndexer extends Writable {
       this.currentBatch = [];
       done();
     } catch (e) {
-      assertError(e);
-      done(e);
+      done(toError(e));
     }
   }
 
@@ -110,8 +108,7 @@ export abstract class BatchSearchEngineIndexer extends Writable {
       await this.finalize();
       done();
     } catch (e) {
-      assertError(e);
-      done(e);
+      done(toError(e));
     }
   }
 }

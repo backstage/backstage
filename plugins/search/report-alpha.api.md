@@ -181,7 +181,6 @@ const _default: OverridableFrontendPlugin<
       kind: 'page';
       name: undefined;
       params: {
-        defaultPath?: [Error: `Use the 'path' param instead`];
         path: string;
         title?: string;
         icon?: IconElement;
@@ -351,7 +350,6 @@ export const searchPage: OverridableExtensionDefinition<{
   kind: 'page';
   name: undefined;
   params: {
-    defaultPath?: [Error: `Use the 'path' param instead`];
     path: string;
     title?: string;
     icon?: IconElement;
@@ -361,7 +359,7 @@ export const searchPage: OverridableExtensionDefinition<{
   };
 }>;
 
-// @alpha (undocumented)
+// @alpha @deprecated (undocumented)
 export const searchTranslationRef: TranslationRef<
   'search',
   {

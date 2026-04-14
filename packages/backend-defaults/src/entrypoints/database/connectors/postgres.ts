@@ -108,6 +108,8 @@ export async function buildPgDatabaseConfig(
       return buildAzurePgConfig(mergedConfigReader);
     case 'cloudsql':
       return buildCloudSqlConfig(mergedConfigReader);
+    case 'rds':
+      return buildRdsPgConfig(mergedConfigReader);
     default:
       throw new Error(`Unknown connection type: ${config.connection.type}`);
   }
@@ -271,6 +273,69 @@ export async function buildCloudSqlConfig(
   };
 }
 
+export async function buildRdsPgConfig(config: Config): Promise<Knex.Config> {
+  const { Signer } =
+    require('@aws-sdk/rds-signer') as typeof import('@aws-sdk/rds-signer');
+
+  let hostname: string;
+  let port: number;
+  let username: string;
+  try {
+    hostname = config.getString('connection.host');
+    port = config.getNumber('connection.port');
+    username = config.getString('connection.user');
+  } catch (err) {
+    throw new ForwardedError(
+      'AWS RDS IAM auth: missing required database connection config — make sure connection.host, connection.port, and connection.user are set and any environment variables they reference are set',
+      err,
+    );
+  }
+  const region =
+    config.getOptionalString('connection.region') ??
+    process.env.AWS_REGION ??
+    process.env.AWS_DEFAULT_REGION;
+  if (!region) {
+    throw new Error(
+      'Missing region for AWS RDS IAM auth: set connection.region or the AWS_REGION environment variable',
+    );
+  }
+
+  const rawConfig = config.get() as Record<string, unknown>;
+  const sanitizedConnection = omit(
+    config.get('connection') as Record<string, unknown>,
+    ['type', 'region'],
+  ) as Partial<Knex.StaticConnectionConfig>;
+
+  const signer = new Signer({ hostname, port, username, region });
+
+  // RDS IAM auth tokens are valid for 15 minutes. Renew 1 minute early so
+  // that pooled connections are refreshed before the token actually expires.
+  const tokenTtlMs = 15 * 60 * 1000;
+  const renewalOffsetMs = 60 * 1000;
+
+  async function getConnectionConfig() {
+    try {
+      const password = await signer.getAuthToken();
+      const tokenExpiration = Date.now() + tokenTtlMs - renewalOffsetMs;
+      return {
+        ...sanitizedConnection,
+        password,
+        expirationChecker: () => tokenExpiration <= Date.now(),
+      };
+    } catch (err) {
+      throw new ForwardedError(
+        `AWS RDS IAM auth token acquisition failed for ${username}@${hostname}:${port}`,
+        err,
+      );
+    }
+  }
+
+  return {
+    ...(rawConfig as Record<string, unknown>),
+    connection: getConnectionConfig,
+  };
+}
+
 /**
  * Gets the postgres connection config
  *
@@ -323,18 +388,20 @@ export async function ensurePgDatabaseExists(
   dbConfig: Config,
   ...databases: Array<string>
 ) {
-  const admin = await createPgDatabaseClient(dbConfig, {
-    connection: {
-      database: 'postgres',
-    },
-    pool: {
-      min: 0,
-      acquireTimeoutMillis: 10000,
-    },
-  });
+  // Implements a single existence check attempt
+  const ensureDatabase = async (database: string) => {
+    const admin = await createPgDatabaseClient(dbConfig, {
+      connection: {
+        database: 'postgres',
+      },
+      pool: {
+        min: 0,
+        max: 1,
+        acquireTimeoutMillis: 10000,
+      },
+    });
 
-  try {
-    const ensureDatabase = async (database: string) => {
+    try {
       const result = await admin
         .from('pg_database')
         .where('datname', database)
@@ -345,28 +412,30 @@ export async function ensurePgDatabaseExists(
       }
 
       await admin.raw(`CREATE DATABASE ??`, [database]);
-    };
+    } finally {
+      await admin.destroy();
+    }
+  };
 
-    await Promise.all(
-      databases.map(async database => {
-        // For initial setup we use a smaller timeout but several retries. Given that this
-        // is a separate connection pool we should never really run into issues with connection
-        // acquisition timeouts, but we do anyway. This might be a bug in knex or some other dependency.
-        let lastErr: Error | undefined = undefined;
-        for (let i = 0; i < 3; i++) {
-          try {
-            return await ddlLimiter(() => ensureDatabase(database));
-          } catch (err) {
-            lastErr = err;
+  await Promise.all(
+    databases.map(async database => {
+      // For initial setup we use a smaller timeout but several retries. Given that this
+      // is a separate connection pool we should never really run into issues with connection
+      // acquisition timeouts, but we do anyway. This might be a bug in knex or some other dependency.
+      const maxAttempts = 3;
+      for (let attempt = 1; ; attempt++) {
+        try {
+          return await ddlLimiter(() => ensureDatabase(database));
+        } catch (err) {
+          if (attempt >= maxAttempts) {
+            throw err;
+          } else {
+            await new Promise(resolve => setTimeout(resolve, 100));
           }
-          await new Promise(resolve => setTimeout(resolve, 100));
         }
-        throw lastErr;
-      }),
-    );
-  } finally {
-    await admin.destroy();
-  }
+      }
+    }),
+  );
 }
 
 /**

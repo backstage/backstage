@@ -15,4 +15,4 @@
  */
 export { Container } from './Container';
 export { ContainerDefinition } from './definition';
-export type { ContainerProps } from './types';
+export type { ContainerOwnProps, ContainerProps } from './types';

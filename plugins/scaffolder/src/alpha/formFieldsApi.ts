@@ -16,24 +16,14 @@
 
 import {
   ApiBlueprint,
-  createApiRef,
+  appTreeApiRef,
   createExtensionInput,
 } from '@backstage/frontend-plugin-api';
 import {
   FormFieldBlueprint,
-  type FormField,
+  formFieldsApiRef,
 } from '@backstage/plugin-scaffolder-react/alpha';
 import { OpaqueFormField } from '@internal/scaffolder';
-
-/** @alpha */
-export interface ScaffolderFormFieldsApi {
-  loadFormFields(): Promise<FormField[]>;
-}
-
-/** @alpha */
-const formFieldsApiRef = createApiRef<ScaffolderFormFieldsApi>({
-  id: 'plugin.scaffolder.form-fields-loader',
-});
 
 export const formFieldsApi = ApiBlueprint.makeWithOverrides({
   name: 'form-fields',
@@ -50,18 +40,18 @@ export const formFieldsApi = ApiBlueprint.makeWithOverrides({
     return originalFactory(defineParams =>
       defineParams({
         api: formFieldsApiRef,
-        deps: {},
-        factory: () => ({
+        deps: { appTreeApi: appTreeApiRef },
+        factory: ({ appTreeApi }) => ({
           async loadFormFields() {
+            const pageFormFieldLoaders = getPageFormFieldLoaders(appTreeApi);
+
             const formFields = await Promise.all(
-              formFieldLoaders.map(loader => loader()),
+              [...formFieldLoaders, ...pageFormFieldLoaders].map(loader =>
+                loader(),
+              ),
             );
 
-            const internalFormFields = formFields.map(
-              OpaqueFormField.toInternal,
-            );
-
-            return internalFormFields;
+            return formFields.map(OpaqueFormField.toInternal);
           },
         }),
       }),
@@ -69,4 +59,25 @@ export const formFieldsApi = ApiBlueprint.makeWithOverrides({
   },
 });
 
-export { formFieldsApiRef };
+function getPageFormFieldLoaders(appTreeApi: typeof appTreeApiRef.T) {
+  const { tree } = appTreeApi.getTree();
+  const pageNode = tree.nodes.get('page:scaffolder');
+  if (!pageNode?.instance) {
+    return [];
+  }
+  const formFieldNodes = pageNode.edges.attachments.get('formFields') ?? [];
+  return formFieldNodes.flatMap(node => {
+    if (!node.instance) {
+      return [];
+    }
+    const loader = node.instance.getData(
+      FormFieldBlueprint.dataRefs.formFieldLoader,
+    );
+    return loader ? [loader] : [];
+  });
+}
+
+export {
+  formFieldsApiRef,
+  type ScaffolderFormFieldsApi,
+} from '@backstage/plugin-scaffolder-react/alpha';

@@ -1,19 +1,19 @@
 export const surfacesSnippet = `<Flex direction="column" gap="4">
-  <Box bg="neutral-1">
+  <Box bg="neutral">
     <Button variant="secondary">Hello World</Button>
   </Box>
-  <Box bg="neutral-1">
+  <Box bg="neutral">
     <Button variant="secondary">Hello World</Button>
   </Box>
 </Flex>`;
 
-export const adaptiveSnippet = `<Box bg="neutral-1">
+export const adaptiveSnippet = `<Box bg="neutral">
   <Card> {/* automatically set background to neutral-2 */}
     <Button variant="secondary">Button with background set to neutral-3</Button>
   </Card>
 </Box>`;
 
-export const customCardSnippet = `<Box bg="autoIncrement">
+export const customCardSnippet = `<Box bg="neutral">
   <Text>Hello World</Text>
 </Box>`;
 

@@ -41,6 +41,7 @@ class NavItemBag implements NavContentNavItems {
   readonly #items: NavContentNavItem[];
   readonly #index: Map<string, NavContentNavItem>;
   readonly #taken: Set<string>;
+  #restItems: NavContentNavItem[] | undefined;
 
   constructor(items: NavContentNavItem[], taken?: Iterable<string>) {
     this.#items = items;
@@ -50,14 +51,27 @@ class NavItemBag implements NavContentNavItems {
 
   take(id: string): NavContentNavItem | undefined {
     const item = this.#index.get(id);
-    if (item) {
+    if (item && !this.#taken.has(id)) {
       this.#taken.add(id);
+      if (this.#restItems) {
+        const index = this.#restItems.findIndex(
+          restItem => restItem.node.spec.id === id,
+        );
+        if (index !== -1) {
+          this.#restItems.splice(index, 1);
+        }
+      }
     }
     return item;
   }
 
   rest(): NavContentNavItem[] {
-    return this.#items.filter(item => !this.#taken.has(item.node.spec.id));
+    if (!this.#restItems) {
+      this.#restItems = this.#items.filter(
+        item => !this.#taken.has(item.node.spec.id),
+      );
+    }
+    return this.#restItems;
   }
 
   clone(): NavContentNavItems {
@@ -65,19 +79,32 @@ class NavItemBag implements NavContentNavItems {
   }
 
   withComponent(Component: (props: NavContentNavItem) => JSX.Element) {
+    let renderedItems: JSX.Element[] | undefined;
+
     return {
       take: (id: string) => {
         const item = this.take(id);
-        return item ? <Component {...item} /> : null;
+        if (item && renderedItems) {
+          const index = renderedItems.findIndex(
+            renderedItem => renderedItem.key === item.node.spec.id,
+          );
+          if (index !== -1) {
+            renderedItems.splice(index, 1);
+          }
+        }
+        return item ? <Component key={item.node.spec.id} {...item} /> : null;
       },
       rest: (options?: { sortBy?: 'title' }) => {
         const items = this.rest();
-        if (options?.sortBy === 'title') {
-          items.sort((a, b) => a.title.localeCompare(b.title));
+        if (!renderedItems) {
+          if (options?.sortBy === 'title') {
+            items.sort((a, b) => a.title.localeCompare(b.title));
+          }
+          renderedItems = items.map(item => (
+            <Component key={item.node.spec.id} {...item} />
+          ));
         }
-        return items.map(item => (
-          <Component key={item.node.spec.id} {...item} />
-        ));
+        return renderedItems;
       },
     };
   }
@@ -172,6 +199,7 @@ function NavContentRenderer(props: {
       // We want the priority: page (config/params) -> nav item -> plugin -> pluginId
       const resolvedTitle = node.instance.getData(coreExtensionData.title);
       const pluginTitle = node.spec.plugin.title;
+      const pluginIcon = node.spec.plugin.icon;
       const pluginId = node.spec.plugin.pluginId;
       const hasExplicitPageTitle =
         resolvedTitle !== undefined &&
@@ -194,6 +222,8 @@ function NavContentRenderer(props: {
         icon = <NavItemIcon />;
       } else if (resolvedIcon) {
         icon = resolvedIcon;
+      } else if (pluginIcon) {
+        icon = pluginIcon;
       }
 
       if (!title || !icon) {

@@ -44,9 +44,10 @@ yarn techdocs-cli:dev [...options]
 
 ```sh
 # Prior to executing the techdocs-cli command
-export GLOBAL_AGENT_HTTP_PROXY=${HTTP_PROXY}
-export GLOBAL_AGENT_HTTPS_PROXY=${HTTPS_PROXY}
-export GLOBAL_AGENT_NO_PROXY=${NO_PROXY}
+export HTTP_PROXY=http://proxy.company.com:8080
+export HTTPS_PROXY=http://proxy.company.com:8080
+export NO_PROXY=localhost,internal.company.com
+export NODE_USE_ENV_PROXY=1
 ```
 
 ### Using an example docs project

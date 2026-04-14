@@ -18,6 +18,10 @@ export const components: Page[] = [
     slug: 'avatar',
   },
   {
+    title: 'Badge',
+    slug: 'badge',
+  },
+  {
     title: 'Box',
     slug: 'box',
   },
@@ -42,6 +46,10 @@ export const components: Page[] = [
     slug: 'checkbox',
   },
   {
+    title: 'CheckboxGroup',
+    slug: 'checkbox-group',
+  },
+  {
     title: 'Container',
     slug: 'container',
   },
@@ -62,12 +70,16 @@ export const components: Page[] = [
     slug: 'plugin-header',
   },
   {
-    title: 'HeaderPage',
-    slug: 'header-page',
+    title: 'Header',
+    slug: 'header',
   },
   {
     title: 'Link',
     slug: 'link',
+  },
+  {
+    title: 'List',
+    slug: 'list',
   },
   {
     title: 'Menu',
@@ -86,6 +98,10 @@ export const components: Page[] = [
     slug: 'radio-group',
   },
   {
+    title: 'SearchAutocomplete',
+    slug: 'search-autocomplete',
+  },
+  {
     title: 'SearchField',
     slug: 'search-field',
   },
@@ -96,6 +112,10 @@ export const components: Page[] = [
   {
     title: 'Skeleton',
     slug: 'skeleton',
+  },
+  {
+    title: 'Slider',
+    slug: 'slider',
   },
   {
     title: 'Switch',
@@ -136,5 +156,12 @@ export const components: Page[] = [
   {
     title: 'VisuallyHidden',
     slug: 'visually-hidden',
+  },
+];
+
+export const hooks: Page[] = [
+  {
+    title: 'useBreakpoint',
+    slug: 'use-breakpoint',
   },
 ];

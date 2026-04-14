@@ -15,7 +15,7 @@
  */
 
 /** @public */
-export interface AvatarProps extends React.ComponentPropsWithoutRef<'div'> {
+export type AvatarOwnProps = {
   /**
    * URL of the image to display
    */
@@ -39,4 +39,11 @@ export interface AvatarProps extends React.ComponentPropsWithoutRef<'div'> {
    * @defaultValue 'informative'
    */
   purpose?: 'decoration' | 'informative';
-}
+
+  className?: string;
+};
+
+/** @public */
+export interface AvatarProps
+  extends Omit<React.ComponentPropsWithoutRef<'div'>, 'children' | 'className'>,
+    AvatarOwnProps {}

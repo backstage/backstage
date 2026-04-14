@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { JSX } from 'react';
+import { cloneElement, JSX } from 'react';
 import { type PluginHeaderActionsApi } from '@backstage/frontend-plugin-api';
 
 // Stable reference
@@ -51,7 +51,14 @@ export class DefaultPluginHeaderActionsApi implements PluginHeaderActionsApi {
         actionsByPlugin.set(action.pluginId, pluginActions);
       }
 
-      pluginActions.push(action.element);
+      const index = pluginActions.length;
+      pluginActions.push(
+        cloneElement(action.element, {
+          key:
+            action.element.key ??
+            `plugin-header-action-${action.pluginId}-${index}`,
+        }),
+      );
     }
 
     return new DefaultPluginHeaderActionsApi(actionsByPlugin);

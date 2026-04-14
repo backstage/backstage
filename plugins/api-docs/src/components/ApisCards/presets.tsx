@@ -17,8 +17,12 @@
 import { ApiEntity } from '@backstage/catalog-model';
 import { TableColumn } from '@backstage/core-components';
 import { EntityTable } from '@backstage/plugin-catalog-react';
-import ExtensionIcon from '@material-ui/icons/Extension';
-import ToggleButton from '@material-ui/lab/ToggleButton';
+import {
+  EntityColumnConfig,
+  entityDataTableColumns,
+} from '@backstage/plugin-catalog-react/alpha';
+import { ButtonIcon, Cell } from '@backstage/ui';
+import { RiPuzzleLine } from '@remixicon/react';
 import { useState } from 'react';
 import { ApiTypeTitle } from '../ApiDefinitionCard';
 import { ApiDefinitionDialog } from '../ApiDefinitionDialog';
@@ -28,6 +32,7 @@ import {
 } from '@backstage/core-plugin-api/alpha';
 import { apiDocsTranslationRef } from '../../translation';
 
+/** @deprecated Use `getApiEntityColumnConfig` instead. */
 export function createSpecApiTypeColumn(
   t: TranslationFunction<typeof apiDocsTranslationRef.T>,
 ): TableColumn<ApiEntity> {
@@ -43,13 +48,13 @@ const ApiDefinitionButton = ({ apiEntity }: { apiEntity: ApiEntity }) => {
   const { t } = useTranslationRef(apiDocsTranslationRef);
   return (
     <>
-      <ToggleButton
+      <ButtonIcon
         aria-label={t('apiDefinitionDialog.toggleButtonAriaLabel')}
-        onClick={() => setDialogOpen(!dialogOpen)}
-        value={dialogOpen}
-      >
-        <ExtensionIcon />
-      </ToggleButton>
+        onPress={() => setDialogOpen(!dialogOpen)}
+        variant="tertiary"
+        size="small"
+        icon={<RiPuzzleLine />}
+      />
       <ApiDefinitionDialog
         entity={apiEntity}
         open={dialogOpen}
@@ -68,6 +73,7 @@ function createApiDefinitionColumn(
   };
 }
 
+/** @deprecated Use `getApiEntityColumnConfig` instead. */
 export const getApiEntityColumns = (
   t: TranslationFunction<typeof apiDocsTranslationRef.T>,
 ): TableColumn<ApiEntity>[] => {
@@ -81,3 +87,62 @@ export const getApiEntityColumns = (
     createApiDefinitionColumn(t),
   ];
 };
+
+// Column config presets
+
+function createSpecApiTypeColumnConfig(
+  t: TranslationFunction<typeof apiDocsTranslationRef.T>,
+): EntityColumnConfig {
+  return {
+    id: 'apiType',
+    label: t('apiEntityColumns.typeTitle'),
+    isSortable: true,
+    cell: entity => (
+      <Cell>
+        <ApiTypeTitle apiEntity={entity as unknown as ApiEntity} />
+      </Cell>
+    ),
+    sortValue: entity =>
+      (entity.spec as Record<string, string> | undefined)?.type ?? '',
+  };
+}
+
+function createApiDefinitionColumnConfig(
+  t: TranslationFunction<typeof apiDocsTranslationRef.T>,
+): EntityColumnConfig {
+  return {
+    id: 'apiDefinition',
+    label: t('apiEntityColumns.apiDefinitionTitle'),
+    cell: entity => (
+      <Cell>
+        <ApiDefinitionButton apiEntity={entity as unknown as ApiEntity} />
+      </Cell>
+    ),
+  };
+}
+
+export function getApiEntityColumnConfig(
+  t: TranslationFunction<typeof apiDocsTranslationRef.T>,
+): EntityColumnConfig[] {
+  return [
+    entityDataTableColumns.createEntityRefColumn({ defaultKind: 'API' }),
+    entityDataTableColumns.createSystemColumn(),
+    entityDataTableColumns.createOwnerColumn(),
+    createSpecApiTypeColumnConfig(t),
+    entityDataTableColumns.createSpecLifecycleColumn(),
+    entityDataTableColumns.createMetadataDescriptionColumn(),
+    createApiDefinitionColumnConfig(t),
+  ];
+}
+
+export function getHasApisColumnConfig(
+  t: TranslationFunction<typeof apiDocsTranslationRef.T>,
+): EntityColumnConfig[] {
+  return [
+    entityDataTableColumns.createEntityRefColumn({ defaultKind: 'API' }),
+    entityDataTableColumns.createOwnerColumn(),
+    createSpecApiTypeColumnConfig(t),
+    entityDataTableColumns.createSpecLifecycleColumn(),
+    entityDataTableColumns.createMetadataDescriptionColumn(),
+  ];
+}

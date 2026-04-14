@@ -29,6 +29,10 @@ const targetDataRef = createExtensionDataRef<{
  * Creates extensions that make up the items of the nav bar.
  *
  * @public
+ * @deprecated Nav items are now automatically inferred from `PageBlueprint`
+ * extensions based on their `title` and `icon` params. You can remove your
+ * `NavItemBlueprint` usage and instead pass `title` and `icon` directly to
+ * the `PageBlueprint`.
  */
 export const NavItemBlueprint = createExtensionBlueprint({
   kind: 'nav-item',

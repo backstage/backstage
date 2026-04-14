@@ -2,6 +2,7 @@
 id: index
 sidebar_label: Backstage Plugins!
 title: How to create plugins with Backstage
+description: A guided walkthrough for building frontend and backend plugins in Backstage
 ---
 
 ### Prerequisites
@@ -31,3 +32,4 @@ To start, this guide will walk through creating a backend plugin. You'll get you
 - [Why build plugins?](./why-build-plugins.md)
 - [Sustainable plugin development](./sustainable-plugin-development.md)
 - [Golden path: Backend plugins](./backend/001-first-steps.md)
+- [Golden path: Frontend plugins](./frontend/001-first-steps.md)

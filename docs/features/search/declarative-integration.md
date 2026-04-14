@@ -71,30 +71,25 @@ app:
 
 ### Customizations
 
-Plugin developers can use the `createSearchResultItemExtension` factory provided by the `@backstage/plugin-search-react` for building their own custom `Search` result item extensions.
+Plugin developers can use the `SearchResultListItemBlueprint` from `@backstage/plugin-search-react/alpha` for building their own custom search result item extensions.
 
 _Example creating a custom `TechDocsSearchResultItemExtension`_
 
 ```tsx
-// plugins/techdocs/alpha.tsx
-import { createSearchResultListItemExtension } from '@backstage/plugin-search-react/alpha';
+// plugins/techdocs/src/alpha.tsx
+import { SearchResultListItemBlueprint } from '@backstage/plugin-search-react/alpha';
 
-/** @alpha */
 export const TechDocsSearchResultListItemExtension =
-  createSearchResultListItemExtension({
-    id: 'techdocs',
-    configSchema: createSchemaFromZod(z =>
-      z.object({
-        noTrack: z.boolean().default(false),
-        lineClamp: z.number().default(5),
-      }),
-    ),
-    predicate: result => result.type === 'techdocs',
-    component: async ({ config }) => {
-      const { TechDocsSearchResultListItem } = await import(
-        './components/TechDocsSearchResultListItem'
-      );
-      return props => <TechDocsSearchResultListItem {...props} {...config} />;
+  SearchResultListItemBlueprint.make({
+    name: 'techdocs',
+    params: {
+      predicate: result => result.type === 'techdocs',
+      component: async ({ config }) => {
+        const { TechDocsSearchResultListItem } = await import(
+          './components/TechDocsSearchResultListItem'
+        );
+        return props => <TechDocsSearchResultListItem {...props} {...config} />;
+      },
     },
   });
 ```
@@ -107,110 +102,42 @@ When a Backstage adopter doesn't want to use the custom `TechDocs` search result
 # app-config.yaml
 app:
   extensions:
-    - plugin.search.result.item.techdocs: false # ✨
+    - search-result-list-item:techdocs: false
 ```
 
-Because a configuration schema was provided to the extension factory, Backstage adopters will be able to customize `TechDocs` search results **line clamp** that defaults to 3 and also **disable automatic analytics events tracking**:
+The `SearchResultListItemBlueprint` includes a built-in `noTrack` config option that can be used to **disable automatic analytics events tracking**:
 
 ```yaml
 # app-config.yaml
 app:
   extensions:
-    - plugin.search.result.item.techdocs:
-        config: # ✨
+    - search-result-list-item:techdocs:
+        config:
           noTrack: true
-          lineClamp: 3
 ```
 
-[comment]: <> (TODO: Extract this explanation to a more central place in the future)
-The `createSearchResultItemExtension` function returns a Backstage's extension representation as follows:
+To complete the development cycle for creating a custom search result item extension, provide the extension via the `TechDocs` plugin. You can also take a look at the [actual implementation](https://github.com/backstage/backstage/blob/master/plugins/techdocs/src/alpha/index.tsx) of a custom `TechDocs` search result item:
 
-```ts
-{
-  "$$type": "@backstage/Extension", // [1]
-  "id": "plugin.search.result.item.techdocs", // [2]
-  "at": "plugin.search.page/items", // [3]
-  "inputs": {} // [4️]
-  "output": { // [5️]
-    "item": {
-      "$$type": "@backstage/ExtensionDataRef",
-      "id": "plugin.search.result.item.data",
-      "config": {}
-    }
-  },
-  "configSchema": { // [6️]
-    "schema": {
-      "type": "object",
-      "properties": {
-        "noTrack": {
-          "type": "boolean",
-          "default": false
-        },
-        "lineClamp": {
-          "type": "number",
-          "default": 5
-        }
+```tsx
+// plugins/techdocs/src/alpha.tsx
+import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
+import { SearchResultListItemBlueprint } from '@backstage/plugin-search-react/alpha';
+
+const TechDocsSearchResultListItemExtension =
+  SearchResultListItemBlueprint.make({
+    name: 'techdocs',
+    params: {
+      predicate: result => result.type === 'techdocs',
+      component: async ({ config }) => {
+        const { TechDocsSearchResultListItem } = await import(
+          './components/TechDocsSearchResultListItem'
+        );
+        return props => <TechDocsSearchResultListItem {...props} {...config} />;
       },
-      "additionalProperties": false,
-      "$schema": "http://json-schema.org/draft-07/schema#"
-    }
-  },
-  "disabled": false, // [7️]
-}
-```
-
-In this object, you can see exactly what will happen once the custom extension is installed:
-
-- **[1] `$$type`**: declares that the object represents an extension;
-- **[2] `id`**: Is a unique identification for the extension, the `plugin.search.result.item.techdocs` is the key used to configure the extension in the `app-config.yaml` file;
-- **[3] `at`**: It represents the extension attachment point, so the value `plugin.search.page/items` says that the `TechDocs`'s search result item output will be injected as input on the "items" attachment expected by the search page extension;
-- **[4] `inputs`**: in this case is an empty object because this extension doesn't expect inputs;
-- **[5] `output`**: Object representing the artifact produced by the `TechDocs` result item extension, on the example, it is a react component reference;
-- **[6] `configSchema`**: represents the `TechDocs` search result item configuration definition, this is the same schema that adopters will use for customizing the extension via `app-config.yaml` file;
-- **[7] `disable`**: Says that the result item extension will be enable by default when the `TechDocs` plugin is installed in the app.
-
-To complete the development cycle for creating a custom search result item extension, we should provide the extension via `TechDocs` plugin:
-
-```tsx
-// plugins/techdocs/alpha.tsx
-import { createPlugin } from "@backstage/frontend-plugin-api";
-
-// plugins should be always exported as default
-export default createPlugin({
-  id: 'techdocs'
-  extensions: [TechDocsSearchResultItemExtension]
-})
-```
-
-Here is the `plugins/techdocs/alpha/index.tsx` final version, and you can also take a look at the [actual implementation](https://github.com/backstage/backstage/blob/master/plugins/techdocs/src/alpha/index.tsx) of a custom `TechDocs` search result item:
-
-```tsx
-// plugins/techdocs/alpha.tsx
-import { createPlugin } from '@backstage/frontend-plugin-api';
-import { createSearchResultListItemExtension } from '@backstage/plugin-search-react/alpha';
-
-/** @alpha */
-export const TechDocsSearchResultListItemExtension =
-  createSearchResultListItemExtension({
-    id: 'techdocs',
-    configSchema: createSchemaFromZod(z =>
-      z.object({
-        noTrack: z.boolean().default(false),
-        lineClamp: z.number().default(5),
-      }),
-    ),
-    predicate: result => result.type === 'techdocs',
-    component: async ({ config }) => {
-      const { TechDocsSearchResultListItem } = await import(
-        './components/TechDocsSearchResultListItem'
-      );
-      return props => <TechDocsSearchResultListItem {...props} {...config} />;
     },
   });
 
-/** @alpha */
-export default createPlugin({
-  // plugins should be always exported as default
+export default createFrontendPlugin({
   id: 'techdocs',
   extensions: [TechDocsSearchResultListItemExtension],
 });

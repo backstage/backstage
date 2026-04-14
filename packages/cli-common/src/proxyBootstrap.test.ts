@@ -26,14 +26,17 @@ jest.mock('undici', () => ({
 
 describe('bootstrapEnvProxyAgents', () => {
   const originalEnv = process.env;
+  const originalExecArgv = process.execArgv;
 
   beforeEach(() => {
     jest.resetModules();
     process.env = { ...originalEnv };
+    process.execArgv = [...originalExecArgv];
   });
 
   afterEach(() => {
     process.env = originalEnv;
+    process.execArgv = originalExecArgv;
     jest.clearAllMocks();
   });
 
@@ -101,8 +104,153 @@ describe('bootstrapEnvProxyAgents', () => {
 
     const { bootstrap } =
       require('global-agent') as typeof import('global-agent');
+    const spy = jest.spyOn(process, 'emitWarning');
     bootstrapEnvProxyAgents();
 
     expect(bootstrap).toHaveBeenCalledTimes(1);
+    expect(spy).toHaveBeenCalledWith(
+      expect.stringContaining('CUSTOM_AGENT_*'),
+      expect.objectContaining({
+        type: 'DeprecationWarning',
+        code: 'BACKSTAGE_CLI_GLOBAL_AGENT_PROXY',
+      }),
+    );
+
+    spy.mockRestore();
+  });
+
+  it('should skip undici dispatcher but still bootstrap global-agent when NODE_USE_ENV_PROXY is set', () => {
+    process.env.GLOBAL_AGENT_HTTP_PROXY = 'http://proxy.example.com';
+    process.env.HTTP_PROXY = 'http://proxy.example.com';
+    process.env.NODE_USE_ENV_PROXY = '1';
+
+    const { bootstrap } =
+      require('global-agent') as typeof import('global-agent');
+    const { setGlobalDispatcher } =
+      require('undici') as typeof import('undici');
+    bootstrapEnvProxyAgents();
+
+    expect(bootstrap).toHaveBeenCalledTimes(1);
+    expect(setGlobalDispatcher).not.toHaveBeenCalled();
+  });
+
+  it('should skip undici dispatcher when --use-env-proxy is in execArgv', () => {
+    process.env.HTTP_PROXY = 'http://proxy.example.com';
+    process.execArgv = ['--use-env-proxy'];
+
+    const { setGlobalDispatcher } =
+      require('undici') as typeof import('undici');
+    bootstrapEnvProxyAgents();
+
+    expect(setGlobalDispatcher).not.toHaveBeenCalled();
+  });
+
+  it('should skip undici dispatcher when --use-env-proxy is in NODE_OPTIONS', () => {
+    process.env.HTTP_PROXY = 'http://proxy.example.com';
+    process.env.NODE_OPTIONS = '--use-env-proxy';
+
+    const { setGlobalDispatcher } =
+      require('undici') as typeof import('undici');
+    bootstrapEnvProxyAgents();
+
+    expect(setGlobalDispatcher).not.toHaveBeenCalled();
+  });
+
+  it('should emit a deprecation warning when standard proxy vars are set without NODE_USE_ENV_PROXY', () => {
+    process.env.HTTP_PROXY = 'http://proxy.example.com';
+    const spy = jest.spyOn(process, 'emitWarning');
+
+    bootstrapEnvProxyAgents();
+
+    expect(spy).toHaveBeenCalledWith(
+      expect.stringContaining('NODE_USE_ENV_PROXY=1'),
+      expect.objectContaining({
+        type: 'DeprecationWarning',
+        code: 'BACKSTAGE_CLI_PROXY_BOOTSTRAP',
+      }),
+    );
+
+    spy.mockRestore();
+  });
+
+  it('should not emit a deprecation warning when standard proxy vars are set with NODE_USE_ENV_PROXY', () => {
+    process.env.HTTP_PROXY = 'http://proxy.example.com';
+    process.env.NODE_USE_ENV_PROXY = '1';
+    const spy = jest.spyOn(process, 'emitWarning');
+
+    bootstrapEnvProxyAgents();
+
+    expect(spy).not.toHaveBeenCalled();
+
+    spy.mockRestore();
+  });
+
+  it('should not emit a deprecation warning when --use-env-proxy is in execArgv', () => {
+    process.env.HTTP_PROXY = 'http://proxy.example.com';
+    process.execArgv = ['--use-env-proxy'];
+    const spy = jest.spyOn(process, 'emitWarning');
+
+    bootstrapEnvProxyAgents();
+
+    expect(spy).not.toHaveBeenCalled();
+
+    spy.mockRestore();
+  });
+
+  it('should not emit a deprecation warning when --use-env-proxy is in NODE_OPTIONS', () => {
+    process.env.HTTP_PROXY = 'http://proxy.example.com';
+    process.env.NODE_OPTIONS = '--use-env-proxy';
+    const spy = jest.spyOn(process, 'emitWarning');
+
+    bootstrapEnvProxyAgents();
+
+    expect(spy).not.toHaveBeenCalled();
+
+    spy.mockRestore();
+  });
+
+  it('should emit a deprecation warning when GLOBAL_AGENT proxy vars are set', () => {
+    process.env.GLOBAL_AGENT_HTTP_PROXY = 'http://proxy.example.com';
+    const spy = jest.spyOn(process, 'emitWarning');
+
+    bootstrapEnvProxyAgents();
+
+    expect(spy).toHaveBeenCalledWith(
+      expect.stringContaining('GLOBAL_AGENT_*'),
+      expect.objectContaining({
+        type: 'DeprecationWarning',
+        code: 'BACKSTAGE_CLI_GLOBAL_AGENT_PROXY',
+      }),
+    );
+
+    spy.mockRestore();
+  });
+
+  it('should emit a deprecation warning for GLOBAL_AGENT proxy vars even with NODE_USE_ENV_PROXY', () => {
+    process.env.GLOBAL_AGENT_HTTP_PROXY = 'http://proxy.example.com';
+    process.env.NODE_USE_ENV_PROXY = '1';
+    const spy = jest.spyOn(process, 'emitWarning');
+
+    bootstrapEnvProxyAgents();
+
+    expect(spy).toHaveBeenCalledWith(
+      expect.stringContaining('GLOBAL_AGENT_*'),
+      expect.objectContaining({
+        type: 'DeprecationWarning',
+        code: 'BACKSTAGE_CLI_GLOBAL_AGENT_PROXY',
+      }),
+    );
+
+    spy.mockRestore();
+  });
+
+  it('should not emit a deprecation warning when no proxy vars are set', () => {
+    const spy = jest.spyOn(process, 'emitWarning');
+
+    bootstrapEnvProxyAgents();
+
+    expect(spy).not.toHaveBeenCalled();
+
+    spy.mockRestore();
   });
 });

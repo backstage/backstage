@@ -125,7 +125,7 @@ export const homePageWidgetDataRef: ConfigurableExtensionDataRef<
   {}
 >;
 
-// @alpha
+// @alpha @deprecated (undocumented)
 export const homeReactTranslationRef: TranslationRef<
   'home-react',
   {
@@ -134,4 +134,6 @@ export const homeReactTranslationRef: TranslationRef<
     readonly 'cardExtension.settingsButtonTitle': 'Settings';
   }
 >;
+
+// (No @packageDocumentation comment for this package)
 ```

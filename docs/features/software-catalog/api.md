@@ -150,7 +150,54 @@ Some more real world usable examples:
 
 #### Full text filtering
 
-TODO
+You can perform a text search across entity fields using the `fullTextFilterTerm`
+query parameter. This performs a case-insensitive substring match against the
+values in the entity YAML fields.
+
+By default, when no `fullTextFilterFields` parameter is specified, the search
+runs against the current sort field (from `orderField`), or `metadata.uid` if
+no sort field is set. This means that without specifying fields explicitly, the
+search may not match against the fields you expect.
+
+To control which fields are searched, pass the `fullTextFilterFields` query
+parameter as a comma-separated list of entity field paths.
+
+Query parameters:
+
+- `fullTextFilterTerm` - The text to search for (case insensitive, substring match)
+- `fullTextFilterFields` - A comma-separated list of entity field paths to
+  search against (e.g. `metadata.name,metadata.title`)
+
+Example:
+
+```text
+/entities/by-query?fullTextFilterTerm=my-service&fullTextFilterFields=metadata.name,metadata.title
+
+  Return entities whose metadata.name OR metadata.title contains "my-service"
+```
+
+Some more real world usable examples:
+
+- Search for components by name:
+
+  `/entities/by-query?filter=kind=component&fullTextFilterTerm=payment&fullTextFilterFields=metadata.name`
+
+- Search across both name and title:
+
+  `/entities/by-query?filter=kind=system&fullTextFilterTerm=platform&fullTextFilterFields=metadata.name,metadata.title`
+
+- Combine with other filters (e.g. owned by a specific group):
+
+  `/entities/by-query?filter=kind=component,relations.ownedBy=group:default/my-team&fullTextFilterTerm=api&fullTextFilterFields=metadata.name`
+
+:::note Note
+
+Full text filtering is mutually exclusive with cursor-based pagination. When a
+`cursor` is provided, `fullTextFilterTerm` and `fullTextFilterFields` are
+ignored — the cursor already encodes the original filter parameters from the
+initial request.
+
+:::
 
 #### Field selection
 

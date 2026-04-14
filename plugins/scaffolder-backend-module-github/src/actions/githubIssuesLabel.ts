@@ -22,7 +22,7 @@ import {
   createTemplateAction,
   parseRepoUrl,
 } from '@backstage/plugin-scaffolder-node';
-import { assertError, InputError } from '@backstage/errors';
+import { InputError, toError } from '@backstage/errors';
 import { Octokit } from 'octokit';
 import { getOctokitOptions } from '../util';
 import { examples } from './githubIssuesLabel.examples';
@@ -101,9 +101,10 @@ export function createGithubIssuesLabelAction(options: {
           },
         });
       } catch (e) {
-        assertError(e);
         ctx.logger.warn(
-          `Failed: adding labels to issue: '${number}' on repo: '${repo}', ${e.message}`,
+          `Failed: adding labels to issue: '${number}' on repo: '${repo}', ${
+            toError(e).message
+          }`,
         );
       }
     },

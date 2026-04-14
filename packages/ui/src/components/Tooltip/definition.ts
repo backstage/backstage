@@ -14,16 +14,23 @@
  * limitations under the License.
  */
 
-import type { ComponentDefinition } from '../../types';
+import { defineComponent } from '../../hooks/useDefinition';
+import type { TooltipOwnProps } from './types';
+import styles from './Tooltip.module.css';
 
 /**
  * Component definition for Tooltip
  * @public
  */
-export const TooltipDefinition = {
+export const TooltipDefinition = defineComponent<TooltipOwnProps>()({
+  styles,
   classNames: {
     tooltip: 'bui-Tooltip',
     content: 'bui-TooltipContent',
     arrow: 'bui-TooltipArrow',
   },
-} as const satisfies ComponentDefinition;
+  propDefs: {
+    children: {},
+    className: {},
+  },
+});

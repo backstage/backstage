@@ -14,113 +14,57 @@
  * limitations under the License.
  */
 
-import { Link } from '@backstage/core-components';
-import Box from '@material-ui/core/Box';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import MuiListItemText from '@material-ui/core/ListItemText';
-import MuiListSubheader from '@material-ui/core/ListSubheader';
-import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
-import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
+import classNames from 'classnames';
 import { ReactNode } from 'react';
 
-const useStyles = makeStyles(theme => ({
-  root: {
+const useStyles = makeStyles({
+  list: {
+    listStyle: 'none',
+    margin: 0,
+    padding: 0,
+  },
+  indented: {
+    paddingLeft: 'var(--bui-space-4)',
+  },
+  listItem: {
     display: 'flex',
-    flexDirection: 'column',
-  },
-  marginTop: {
-    marginTop: theme.spacing(2),
-  },
-  helpIcon: {
-    marginLeft: theme.spacing(1),
-    color: theme.palette.text.disabled,
-  },
-  monospace: {
+    alignItems: 'flex-start',
+    marginTop: 'var(--bui-space-1)',
+    paddingLeft: 'var(--bui-space-4)',
     fontFamily: 'monospace',
+    fontSize: 'var(--bui-font-size-3)',
+    '&:first-child': {
+      marginTop: 0,
+    },
   },
-}));
+});
 
-export function ListItemText(props: {
-  primary: ReactNode;
-  secondary?: ReactNode;
-}) {
-  const classes = useStyles();
-  return (
-    <MuiListItemText
-      {...props}
-      primaryTypographyProps={{ className: classes.monospace }}
-      secondaryTypographyProps={{ className: classes.monospace }}
-    />
-  );
-}
-
-export function ListSubheader(props: { children?: ReactNode }) {
-  const classes = useStyles();
-  return (
-    <MuiListSubheader className={classes.monospace}>
-      {props.children}
-    </MuiListSubheader>
-  );
-}
-
-export function Container(props: {
-  title: ReactNode;
-  helpLink?: string;
+export function ListSection(props: {
   children: ReactNode;
-}) {
-  return (
-    <Box mt={2}>
-      <Card variant="outlined">
-        <CardContent>
-          <Typography variant="h6" gutterBottom>
-            {props.title}
-            {props.helpLink && <HelpIcon to={props.helpLink} />}
-          </Typography>
-          {props.children}
-        </CardContent>
-      </Card>
-    </Box>
-  );
-}
-
-// Extracts a link from a value, if possible
-function findLink(value: string): string | undefined {
-  if (value.match(/^url:https?:\/\//)) {
-    return value.slice('url:'.length);
-  }
-  if (value.match(/^https?:\/\//)) {
-    return value;
-  }
-  return undefined;
-}
-
-export function KeyValueListItem(props: {
   indent?: boolean;
-  entry: [string, string];
+  className?: string;
+  'aria-label'?: string;
 }) {
-  const [key, value] = props.entry;
-  const link = findLink(value);
-
-  return (
-    <ListItem>
-      {props.indent && <ListItemIcon />}
-      <ListItemText
-        primary={key}
-        secondary={link ? <Link to={link}>{value}</Link> : value}
-      />
-    </ListItem>
-  );
-}
-
-export function HelpIcon(props: { to: string }) {
   const classes = useStyles();
   return (
-    <Link to={props.to} className={classes.helpIcon}>
-      <HelpOutlineIcon fontSize="inherit" />
-    </Link>
+    <ul
+      className={classNames(
+        classes.list,
+        props.indent && classes.indented,
+        props.className,
+      )}
+      aria-label={props['aria-label']}
+    >
+      {props.children}
+    </ul>
   );
+}
+
+/**
+ * A dense monospace list item.
+ */
+export function ListItemRow(props: { children: ReactNode }) {
+  const classes = useStyles();
+  return <li className={classes.listItem}>{props.children}</li>;
 }

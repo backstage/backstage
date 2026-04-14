@@ -8,7 +8,7 @@
 Usage: backstage-create-app [options]
 
 Options:
-  --next
+  --legacy
   --path [directory]
   --skip-install
   --template-path [directory]

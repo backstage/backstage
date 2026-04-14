@@ -43,7 +43,7 @@ const apiDocsNavItem = NavItemBlueprint.make({
   params: {
     title: 'APIs',
     routeRef: rootRoute,
-    icon: () => <AppIcon id="kind:api" />,
+    icon: () => <AppIcon fontSize="inherit" id="kind:api" />,
   },
 });
 
@@ -77,11 +77,13 @@ const apiDocsExplorerPage = PageBlueprint.makeWithOverrides({
       path: '/api-docs',
       routeRef: rootRoute,
       loader: () =>
-        import('./components/ApiExplorerPage').then(m => (
-          <m.ApiExplorerIndexPage
-            initiallySelectedFilter={config.initiallySelectedFilter}
-          />
-        )),
+        import('./components/ApiExplorerPage/DefaultApiExplorerPage').then(
+          m => (
+            <m.NfsApiExplorerPage
+              initiallySelectedFilter={config.initiallySelectedFilter}
+            />
+          ),
+        ),
     });
   },
 });
@@ -174,6 +176,7 @@ const apiDocsDefinitionEntityContent = EntityContentBlueprint.make({
   params: {
     path: '/definition',
     title: 'Definition',
+    group: 'documentation',
     filter: { kind: 'api' },
     loader: async () =>
       import('./components/ApiDefinitionCard').then(m => (
@@ -191,6 +194,7 @@ const apiDocsApisEntityContent = EntityContentBlueprint.make({
   params: {
     path: '/apis',
     title: 'APIs',
+    group: 'development',
     filter: { kind: 'component' },
     loader: async () =>
       import('./components/ApisCards').then(m => (
@@ -209,7 +213,7 @@ const apiDocsApisEntityContent = EntityContentBlueprint.make({
 export default createFrontendPlugin({
   pluginId: 'api-docs',
   title: 'APIs',
-  icon: <AppIcon id="kind:api" />,
+  icon: <AppIcon fontSize="inherit" id="kind:api" />,
   info: { packageJson: () => import('../package.json') },
   routes: {
     root: rootRoute,
@@ -232,4 +236,10 @@ export default createFrontendPlugin({
   ],
 });
 
-export { apiDocsTranslationRef } from './translation';
+import { apiDocsTranslationRef as _apiDocsTranslationRef } from './translation';
+
+/**
+ * @alpha
+ * @deprecated Import from `@backstage/plugin-api-docs` instead.
+ */
+export const apiDocsTranslationRef = _apiDocsTranslationRef;

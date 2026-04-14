@@ -11,7 +11,7 @@ This page answers frequently asked questions about [TechDocs](README.md).
 
 - [What static site generator is TechDocs using?](#what-static-site-generator-is-techdocs-using)
 - [What is the mkdocs-techdocs-core plugin?](#what-is-the-mkdocs-techdocs-core-plugin)
-- [Does TechDocs support file formats other than Markdown (e.g. RST, AsciiDoc)?](#does-techdocs-support-file-formats-other-than-markdown-eg-rst-asciidoc-)
+- [Does TechDocs support file formats other than Markdown (e.g. RST, AsciiDoc)?](#does-techdocs-support-file-formats-other-than-markdown-eg-rst-asciidoc)
 - [What should be the value of `backstage.io/techdocs-ref` when using external build and storage?](#what-should-be-the-value-of-backstageiotechdocs-ref-when-using-external-build-and-storage)
 - [Is it possible for users to suggest changes or provide feedback on a TechDocs page?](#is-it-possible-for-users-to-suggest-changes-or-provide-feedback-on-a-techdocs-page)
 
@@ -30,7 +30,7 @@ plugins (e.g.
 [MkDocs Monorepo Plugin](https://github.com/spotify/mkdocs-monorepo-plugin)) as
 well as a selection of Python Markdown extensions that TechDocs supports.
 
-#### Does TechDocs support file formats other than Markdown (e.g. RST, AsciiDoc) ?
+#### Does TechDocs support file formats other than Markdown (e.g. RST, AsciiDoc)?
 
 Not right now. We are currently using MkDocs to generate the documentation from
 source, so the files have to be in Markdown format. However, in the future we

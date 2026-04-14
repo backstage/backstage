@@ -15,4 +15,7 @@
  */
 
 export { HasSystemsCard } from './HasSystemsCard';
-export type { HasSystemsCardProps } from './HasSystemsCard';
+export type {
+  HasSystemsCardLegacyProps,
+  HasSystemsCardProps,
+} from './HasSystemsCard';

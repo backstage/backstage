@@ -13,4 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './translation';
+import { coreComponentsTranslationRef as _coreComponentsTranslationRef } from './translation';
+
+/**
+ * @alpha
+ * @deprecated Import from `@backstage/core-components` instead.
+ */
+export const coreComponentsTranslationRef = _coreComponentsTranslationRef;

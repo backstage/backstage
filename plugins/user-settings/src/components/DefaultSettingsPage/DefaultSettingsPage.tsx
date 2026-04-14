@@ -18,7 +18,8 @@ import { ReactElement } from 'react';
 import { UserSettingsAuthProviders } from '../AuthProviders';
 import { UserSettingsFeatureFlags } from '../FeatureFlags';
 import { UserSettingsGeneral } from '../General';
-import { SettingsLayout, SettingsLayoutRouteProps } from '../SettingsLayout';
+import { SettingsLayoutRouteProps } from '../SettingsLayout';
+import { SettingsLayout } from '../SettingsLayout/SettingsLayout';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { userSettingsTranslationRef } from '../../translation';
 

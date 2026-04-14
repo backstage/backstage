@@ -16,8 +16,9 @@
 
 import { RELATION_OWNED_BY, Entity } from '@backstage/catalog-model';
 import {
+  entityPresentationSnapshot,
   getEntityRelations,
-  humanizeEntityRef,
+  type EntityPresentationApi,
 } from '@backstage/plugin-catalog-react';
 import { toLowerMaybe } from '../../../helpers';
 import { ConfigApi, RouteFunc } from '@backstage/core-plugin-api';
@@ -32,6 +33,7 @@ export function entitiesToDocsMapper(
   entities: Entity[],
   getRouteToReaderPageFor: getRouteFunc,
   config: ConfigApi,
+  entityPresentationApi?: EntityPresentationApi,
 ) {
   return entities.map(entity => {
     const ownedByRelations = getEntityRelations(entity, RELATION_OWNED_BY);
@@ -48,7 +50,14 @@ export function entitiesToDocsMapper(
         }),
         ownedByRelations,
         ownedByRelationsTitle: ownedByRelations
-          .map(r => humanizeEntityRef(r, { defaultKind: 'group' }))
+          .map(
+            r =>
+              entityPresentationSnapshot(
+                r,
+                { defaultKind: 'group' },
+                entityPresentationApi,
+              ).primaryTitle,
+          )
           .join(', '),
       },
     };

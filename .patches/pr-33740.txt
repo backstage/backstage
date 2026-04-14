@@ -1,0 +1,1 @@
+Fix issue with missing permissions on the `/.well-known` endpoint for the scaffolder plugin

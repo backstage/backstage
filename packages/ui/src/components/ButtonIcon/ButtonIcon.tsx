@@ -21,7 +21,11 @@ import type { ButtonIconProps } from './types';
 import { useDefinition } from '../../hooks/useDefinition';
 import { ButtonIconDefinition } from './definition';
 
-/** @public */
+/**
+ * An icon-only button that supports a loading state and requires an accessible label.
+ *
+ * @public
+ */
 export const ButtonIcon = forwardRef(
   (props: ButtonIconProps, ref: Ref<HTMLButtonElement>) => {
     const { ownProps, restProps, dataAttributes } = useDefinition(

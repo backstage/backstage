@@ -15,7 +15,7 @@
  */
 import { createDevApp } from '@backstage/dev-utils';
 import { ScmIntegrations } from '@backstage/integration';
-import { scmIntegrationsApiRef } from '../src/ScmIntegrationsApi';
+import { scmIntegrationsApiRef } from '../src/api/ScmIntegrationsApi';
 import { DevPage } from './DevPage';
 import { configApiRef, createApiFactory } from '@backstage/core-plugin-api';
 

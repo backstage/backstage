@@ -15,13 +15,13 @@
  */
 
 import type { DeferredEntity } from '@backstage/plugin-catalog-node';
-import { Gauge, metrics } from '@opentelemetry/api';
+import { MetricsServiceGauge } from '@backstage/backend-plugin-api/alpha';
 import { IterationEngine, IterationEngineOptions } from '../types';
 import { IncrementalIngestionDatabaseManager } from '../database/IncrementalIngestionDatabaseManager';
 import { performance } from 'node:perf_hooks';
 import { Duration } from 'luxon';
 import { v4 } from 'uuid';
-import { stringifyError } from '@backstage/errors';
+import { stringifyError, toError } from '@backstage/errors';
 import { EventParams } from '@backstage/plugin-events-node';
 import { HumanDuration } from '@backstage/types';
 
@@ -29,14 +29,12 @@ export class IncrementalIngestionEngine implements IterationEngine {
   private readonly restLength: Duration;
   private readonly burstLength: Duration;
   private readonly backoff: HumanDuration[];
-  private readonly lastStarted: Gauge;
-  private readonly lastCompleted: Gauge;
+  private readonly lastStarted: MetricsServiceGauge;
+  private readonly lastCompleted: MetricsServiceGauge;
 
   private manager: IncrementalIngestionDatabaseManager;
 
   constructor(private options: IterationEngineOptions) {
-    const meter = metrics.getMeter('default');
-
     this.manager = options.manager;
     this.restLength = Duration.fromObject(options.restLength);
     this.burstLength = Duration.fromObject(options.burstLength);
@@ -47,20 +45,18 @@ export class IncrementalIngestionEngine implements IterationEngine {
       { hours: 3 },
     ];
 
-    this.lastStarted = meter.createGauge(
+    this.lastStarted = options.metrics.createGauge(
       'catalog_incremental.ingestions.started',
       {
-        description:
-          'Epoch timestamp seconds when the ingestion was last started',
-        unit: 'seconds',
+        description: 'Epoch timestamp when the ingestion was last started',
+        unit: 's',
       },
     );
-    this.lastCompleted = meter.createGauge(
+    this.lastCompleted = options.metrics.createGauge(
       'catalog_incremental.ingestions.completed',
       {
-        description:
-          'Epoch timestamp seconds when the ingestion was last completed',
-        unit: 'seconds',
+        description: 'Epoch timestamp when the ingestion was last completed',
+        unit: 's',
       },
     );
   }
@@ -127,17 +123,12 @@ export class IncrementalIngestionEngine implements IterationEngine {
               );
             }
           } catch (error) {
-            if (
-              (error as Error).message &&
-              (error as Error).message === 'CANCEL'
-            ) {
+            const err = toError(error);
+            if (err.message === 'CANCEL') {
               this.options.logger.info(
                 `incremental-engine: Ingestion '${ingestionId}' canceled`,
               );
-              await this.manager.setProviderCanceling(
-                ingestionId,
-                (error as Error).message,
-              );
+              await this.manager.setProviderCanceling(ingestionId, err.message);
             } else {
               const currentBackoff = Duration.fromObject(
                 this.backoff[Math.min(this.backoff.length - 1, attempts)],

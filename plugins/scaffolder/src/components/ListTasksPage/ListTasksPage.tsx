@@ -59,7 +59,7 @@ export interface MyTaskPageProps {
   };
 }
 
-const ListTaskPageContent = (props: MyTaskPageProps) => {
+export const ListTaskPageContent = (props: MyTaskPageProps) => {
   const { initiallySelectedFilter = 'owned' } = props;
   const { t } = useTranslationRef(scaffolderTranslationRef);
   const [limit, setLimit] = useState(5);

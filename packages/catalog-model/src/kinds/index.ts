@@ -39,7 +39,22 @@ export type {
   LocationEntityV1alpha1 as LocationEntity,
   LocationEntityV1alpha1,
 } from './LocationEntityV1alpha1';
-export * from './relations';
+export {
+  RELATION_API_CONSUMED_BY,
+  RELATION_API_PROVIDED_BY,
+  RELATION_CHILD_OF,
+  RELATION_CONSUMES_API,
+  RELATION_DEPENDENCY_OF,
+  RELATION_DEPENDS_ON,
+  RELATION_HAS_MEMBER,
+  RELATION_HAS_PART,
+  RELATION_MEMBER_OF,
+  RELATION_OWNED_BY,
+  RELATION_OWNER_OF,
+  RELATION_PARENT_OF,
+  RELATION_PART_OF,
+  RELATION_PROVIDES_API,
+} from './relations';
 export { resourceEntityV1alpha1Validator } from './ResourceEntityV1alpha1';
 export type {
   ResourceEntityV1alpha1 as ResourceEntity,

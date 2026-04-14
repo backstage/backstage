@@ -14,39 +14,16 @@
  * limitations under the License.
  */
 
-import Keyv from 'keyv';
 import KeyvValkey from '@keyv/valkey';
-import { v4 as uuid } from 'uuid';
 import { Instance } from './types';
+import { attemptKeyvConnection, startRedisLikeContainer } from './helpers';
 
-async function attemptValkeyConnection(connection: string): Promise<Keyv> {
-  const startTime = Date.now();
-
-  for (;;) {
-    try {
-      const store = new KeyvValkey(connection);
-      const keyv = new Keyv({ store });
-      const value = uuid();
-      await keyv.set('test', value);
-      if ((await keyv.get('test')) === value) {
-        return keyv;
-      }
-    } catch (e) {
-      if (Date.now() - startTime > 30_000) {
-        throw new Error(
-          `Timed out waiting for valkey to be ready for connections, ${e}`,
-        );
-      }
-    }
-
-    await new Promise(resolve => setTimeout(resolve, 100));
-  }
-}
+const createStore = (connection: string) => new KeyvValkey(connection);
 
 export async function connectToExternalValkey(
   connection: string,
 ): Promise<Instance> {
-  const keyv = await attemptValkeyConnection(connection);
+  const keyv = await attemptKeyvConnection(createStore, connection, 'valkey');
   return {
     store: 'valkey',
     connection,
@@ -56,27 +33,5 @@ export async function connectToExternalValkey(
 }
 
 export async function startValkeyContainer(image: string): Promise<Instance> {
-  // Lazy-load to avoid side-effect of importing testcontainers
-  const { GenericContainer } =
-    require('testcontainers') as typeof import('testcontainers');
-
-  const container = await new GenericContainer(image)
-    .withExposedPorts(6379)
-    .start();
-
-  const host = container.getHost();
-  const port = container.getMappedPort(6379);
-  const connection = `redis://${host}:${port}`;
-
-  const keyv = await attemptValkeyConnection(connection);
-
-  return {
-    store: 'valkey',
-    connection,
-    keyv,
-    stop: async () => {
-      await keyv.disconnect();
-      await container.stop({ timeout: 10_000 });
-    },
-  };
+  return startRedisLikeContainer(image, 'valkey', createStore);
 }

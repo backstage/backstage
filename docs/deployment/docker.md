@@ -113,7 +113,7 @@ CMD ["node", "packages/backend", "--config", "app-config.yaml", "--config", "app
 
 For more details on how the `backend:bundle` command and the `skeleton.tar.gz`
 file works, see the
-[`backend:bundle` command docs](../tooling/cli/03-commands.md#backendbundle).
+[`backend:bundle` command docs](../tooling/cli/03-commands.md#package-bundle).
 
 The `Dockerfile` is located at `packages/backend/Dockerfile`, but needs to be
 executed with the root of the repo as the build context, in order to get access

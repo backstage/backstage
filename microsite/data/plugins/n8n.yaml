@@ -1,0 +1,11 @@
+---
+title: n8n
+author: André Ahlert Junior
+authorUrl: https://github.com/andreahlert
+category: Other
+description: n8n workflow automation — view workflows and execution history on Backstage entity pages.
+documentation: https://github.com/backstage/community-plugins/tree/main/workspaces/n8n/plugins/n8n
+iconUrl: /img/logo-gradient-on-dark.svg
+npmPackageName: '@backstage-community/plugin-n8n'
+addedDate: '2026-02-15'
+status: active

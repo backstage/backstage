@@ -20,7 +20,11 @@
  * @packageDocumentation
  */
 
+export * from './auth';
+export * from './cache';
+export * from './cli-module';
+export * from './concurrency';
 export * from './git';
 export * from './monorepo';
-export * from './concurrency';
 export * from './roles';
+export * from './yarn';

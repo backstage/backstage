@@ -47,174 +47,38 @@ describe('EntityContentBlueprint', () => {
           "input": "contents",
         },
         "configSchema": {
-          "parse": [Function],
-          "schema": {
-            "$schema": "http://json-schema.org/draft-07/schema#",
-            "additionalProperties": false,
-            "properties": {
-              "filter": {
-                "anyOf": [
-                  {
-                    "type": "string",
-                  },
-                  {
-                    "anyOf": [
-                      {
-                        "anyOf": [
-                          {
-                            "additionalProperties": {
-                              "anyOf": [
-                                {
-                                  "type": [
-                                    "string",
-                                    "number",
-                                    "boolean",
-                                  ],
-                                },
-                                {
-                                  "additionalProperties": false,
-                                  "properties": {
-                                    "$exists": {
-                                      "type": "boolean",
-                                    },
-                                  },
-                                  "required": [
-                                    "$exists",
-                                  ],
-                                  "type": "object",
-                                },
-                                {
-                                  "additionalProperties": false,
-                                  "properties": {
-                                    "$in": {
-                                      "items": {
-                                        "$ref": "#/properties/filter/anyOf/1/anyOf/0/anyOf/0/additionalProperties/anyOf/0",
-                                      },
-                                      "type": "array",
-                                    },
-                                  },
-                                  "required": [
-                                    "$in",
-                                  ],
-                                  "type": "object",
-                                },
-                                {
-                                  "additionalProperties": false,
-                                  "properties": {
-                                    "$contains": {
-                                      "$ref": "#/properties/filter/anyOf/1",
-                                    },
-                                  },
-                                  "required": [
-                                    "$contains",
-                                  ],
-                                  "type": "object",
-                                },
-                                {
-                                  "additionalProperties": false,
-                                  "properties": {
-                                    "$hasPrefix": {
-                                      "type": "string",
-                                    },
-                                  },
-                                  "required": [
-                                    "$hasPrefix",
-                                  ],
-                                  "type": "object",
-                                },
-                              ],
-                            },
-                            "propertyNames": {
-                              "pattern": "^(?!\\$).*$",
-                            },
-                            "type": "object",
-                          },
-                          {
-                            "additionalProperties": {
-                              "not": {},
-                            },
-                            "propertyNames": {
-                              "pattern": "^\\$",
-                            },
-                            "type": "object",
-                          },
-                        ],
-                      },
-                      {
-                        "$ref": "#/properties/filter/anyOf/1/anyOf/0/anyOf/0/additionalProperties/anyOf/0",
-                      },
-                      {
-                        "additionalProperties": false,
-                        "properties": {
-                          "$all": {
-                            "items": {
-                              "$ref": "#/properties/filter/anyOf/1",
-                            },
-                            "type": "array",
-                          },
-                        },
-                        "required": [
-                          "$all",
-                        ],
-                        "type": "object",
-                      },
-                      {
-                        "additionalProperties": false,
-                        "properties": {
-                          "$any": {
-                            "items": {
-                              "$ref": "#/properties/filter/anyOf/1",
-                            },
-                            "type": "array",
-                          },
-                        },
-                        "required": [
-                          "$any",
-                        ],
-                        "type": "object",
-                      },
-                      {
-                        "additionalProperties": false,
-                        "properties": {
-                          "$not": {
-                            "$ref": "#/properties/filter/anyOf/1",
-                          },
-                        },
-                        "required": [
-                          "$not",
-                        ],
-                        "type": "object",
-                      },
-                    ],
-                  },
-                ],
-              },
-              "group": {
-                "anyOf": [
-                  {
-                    "const": false,
-                    "type": "boolean",
-                  },
-                  {
-                    "type": "string",
-                  },
-                ],
-              },
-              "icon": {
-                "type": "string",
-              },
-              "path": {
-                "type": "string",
-              },
-              "title": {
-                "type": "string",
-              },
+          "_fields": {
+            "filter": {
+              "required": false,
+              "toJsonSchema": [Function],
+              "validate": [Function],
             },
-            "type": "object",
+            "group": {
+              "required": false,
+              "toJsonSchema": [Function],
+              "validate": [Function],
+            },
+            "icon": {
+              "required": false,
+              "toJsonSchema": [Function],
+              "validate": [Function],
+            },
+            "path": {
+              "required": false,
+              "toJsonSchema": [Function],
+              "validate": [Function],
+            },
+            "title": {
+              "required": false,
+              "toJsonSchema": [Function],
+              "validate": [Function],
+            },
           },
+          "parse": [Function],
         },
         "disabled": false,
         "factory": [Function],
+        "if": undefined,
         "inputs": {},
         "kind": "entity-content",
         "name": "test",

@@ -23,7 +23,13 @@
  *
  * @packageDocumentation
  */
-export { homeReactTranslationRef } from './translation';
+import { homeReactTranslationRef as _homeReactTranslationRef } from './translation';
+
+/**
+ * @alpha
+ * @deprecated Import from `@backstage/plugin-home-react` instead.
+ */
+export const homeReactTranslationRef = _homeReactTranslationRef;
 export {
   HomePageWidgetBlueprint,
   type HomePageWidgetBlueprintParams,

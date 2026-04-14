@@ -15,7 +15,7 @@
  */
 
 import { AppConfig } from '@backstage/config';
-import { assertError } from '@backstage/errors';
+import { toError } from '@backstage/errors';
 import { JsonObject } from '@backstage/types';
 import { AsyncConfigSourceGenerator, ConfigSource } from './types';
 
@@ -165,7 +165,6 @@ function safeJsonParse(str: string): [Error | null, any] {
   try {
     return [null, JSON.parse(str)];
   } catch (err) {
-    assertError(err);
-    return [err, str];
+    return [toError(err), str];
   }
 }

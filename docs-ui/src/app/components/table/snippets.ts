@@ -58,6 +58,23 @@ const {
 } = useTable({ ... });`;
 
 // =============================================================================
+// Cell Requirement
+// =============================================================================
+
+export const tableCellRequirementSnippet = `// ✅ Correct — CellText is the top-level element
+cell: item => <CellText title={item.name} />;
+
+// ✅ Correct — Cell wraps custom content
+cell: item => (
+  <Cell>
+    <MyCustomContent value={item.name} />
+  </Cell>
+);
+
+// ❌ Wrong — bare text without a cell wrapper
+cell: item => <span>{item.name}</span>;`;
+
+// =============================================================================
 // Common Patterns
 // =============================================================================
 

@@ -15,6 +15,7 @@
  */
 
 import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
+import { RiTeamLine } from '@remixicon/react';
 import { catalogIndexRouteRef } from './routes';
 import { EntityCardBlueprint } from '@backstage/plugin-catalog-react/alpha';
 
@@ -118,6 +119,8 @@ const EntityUserProfileCard = EntityCardBlueprint.makeWithOverrides({
 /** @alpha */
 export default createFrontendPlugin({
   pluginId: 'org',
+  title: 'Org',
+  icon: <RiTeamLine />,
   info: { packageJson: () => import('../package.json') },
   extensions: [
     EntityGroupProfileCard,
@@ -130,4 +133,10 @@ export default createFrontendPlugin({
   },
 });
 
-export { orgTranslationRef } from './translation';
+import { orgTranslationRef as _orgTranslationRef } from './translation';
+
+/**
+ * @alpha
+ * @deprecated Import from `@backstage/plugin-org` instead.
+ */
+export const orgTranslationRef = _orgTranslationRef;

@@ -140,6 +140,12 @@ export interface CatalogService {
     options: CatalogServiceRequestOptions,
   ): Promise<void>;
 
+  updateLocation(
+    id: string,
+    location: { type?: string; target: string },
+    options: CatalogServiceRequestOptions,
+  ): Promise<Location>;
+
   getLocationByEntity(
     entityRef: string | CompoundEntityRef,
     options: CatalogServiceRequestOptions,
@@ -323,6 +329,18 @@ class DefaultCatalogService implements CatalogService {
   ): Promise<void> {
     return this.#catalogApi.removeLocationById(
       id,
+      await this.#getOptions(options),
+    );
+  }
+
+  async updateLocation(
+    id: string,
+    location: { type?: string; target: string },
+    options: CatalogServiceRequestOptions,
+  ): Promise<Location> {
+    return this.#catalogApi.updateLocation(
+      id,
+      location,
       await this.#getOptions(options),
     );
   }

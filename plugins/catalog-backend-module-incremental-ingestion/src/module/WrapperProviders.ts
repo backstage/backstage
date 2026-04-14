@@ -19,6 +19,7 @@ import {
   RootConfigService,
   SchedulerService,
 } from '@backstage/backend-plugin-api';
+import { MetricsService } from '@backstage/backend-plugin-api/alpha';
 import { stringifyError } from '@backstage/errors';
 import {
   EntityProvider,
@@ -55,6 +56,7 @@ export class WrapperProviders {
       scheduler: SchedulerService;
       applyDatabaseMigrations?: typeof applyDatabaseMigrations;
       events: EventsService;
+      metrics: MetricsService;
     },
   ) {}
 
@@ -117,6 +119,7 @@ export class WrapperProviders {
         provider,
         restLength,
         connection,
+        metrics: this.options.metrics,
       });
 
       let frequency = Duration.isDuration(burstInterval)

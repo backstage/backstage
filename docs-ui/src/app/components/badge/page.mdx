@@ -1,0 +1,41 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { CodeBlock } from '@/components/CodeBlock';
+import { Default, WithIcon, Sizes } from './components';
+import { badgePropDefs } from './props-definition';
+import { usage, preview, withIcons, sizes } from './snippets';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { BadgeDefinition } from '../../../utils/definitions';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+
+<PageTitle
+  title="Badge"
+  description="A non-interactive label for annotating, categorizing, or highlighting content."
+/>
+
+<Snippet align="center" py={4} preview={<Default />} code={preview} />
+
+## Usage
+
+<CodeBlock code={usage} />
+
+## API reference
+
+### Badge
+
+<PropsTable data={badgePropDefs} />
+
+## Examples
+
+### With icons
+
+<Snippet align="center" py={4} open preview={<WithIcon />} code={withIcons} />
+
+### Sizes
+
+<Snippet align="center" py={4} open preview={<Sizes />} code={sizes} />
+
+<Theming definition={BadgeDefinition} />
+
+<ChangelogComponent component={['badge']} />

@@ -1,5 +1,29 @@
 # @backstage/catalog-model
 
+## 1.8.0
+
+### Minor Changes
+
+- e5fcfcb: Added a new catalog model layer system that allows plugins to declare and extend catalog entity kinds, annotations, labels, tags, and relations using JSON Schema. The new `createCatalogModelLayer` API provides a builder for composing model definitions, and a `compileCatalogModel` function validates and merges them into a unified model. Built-in entity kinds now include model layer definitions.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.0
+
+## 1.7.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.0-next.0
+
+## 1.7.7
+
+### Patch Changes
+
+- a49a40d: Updated dependency `zod` to `^3.25.76 || ^4.0.0` & migrated to `/v3` or `/v4` imports.
+
 ## 1.7.6
 
 ### Patch Changes

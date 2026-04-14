@@ -23,14 +23,26 @@ export { Row } from './components/Row';
 export { Cell } from './components/Cell';
 export { CellText } from './components/CellText';
 export { CellProfile } from './components/CellProfile';
+export { TableBodySkeleton } from './components/TableBodySkeleton';
 export { useTable } from './hooks/useTable';
 
 export type {
+  CellOwnProps,
   CellProps,
+  CellTextOwnProps,
   CellTextProps,
+  CellProfileOwnProps,
   CellProfileProps,
+  ColumnOwnProps,
   ColumnProps,
+  RowOwnProps,
+  RowProps,
+  TableBodyOwnProps,
+  TableBodyProps,
+  TableHeaderOwnProps,
+  TableHeaderProps,
   TableProps,
+  TableRootOwnProps,
   TableRootProps,
   TableItem,
   ColumnConfig,
@@ -42,6 +54,7 @@ export type {
   NoPagination,
   PagePagination,
   TablePaginationType,
+  VirtualizedProp,
 } from './types';
 export type {
   UseTableOptions,
@@ -57,6 +70,7 @@ export type {
   SearchState,
   QueryOptions,
   PaginationOptions,
+  CompletePaginationOptions,
 } from './hooks/types';
 
 export { TableDefinition } from './definition';

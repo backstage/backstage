@@ -24,4 +24,8 @@
 export interface GetEntitiesByRefsRequest {
   entityRefs: Array<string>;
   fields?: Array<string>;
+  /**
+   * A type representing all allowed JSON object values.
+   */
+  query?: { [key: string]: any };
 }

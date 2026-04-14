@@ -34,11 +34,7 @@ import {
 } from '@backstage/integration';
 import parseGitUrl from 'git-url-parse';
 import { Minimatch } from 'minimatch';
-import {
-  assertError,
-  NotFoundError,
-  NotModifiedError,
-} from '@backstage/errors';
+import { toError, NotFoundError, NotModifiedError } from '@backstage/errors';
 import { ReadTreeResponseFactory, ReaderFactory } from './types';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 
@@ -212,8 +208,8 @@ export class AzureUrlReader implements UrlReaderService {
           ],
           etag: data.etag ?? '',
         };
-      } catch (error) {
-        assertError(error);
+      } catch (e) {
+        const error = toError(e);
         if (error.name === 'NotFoundError') {
           return {
             files: [],

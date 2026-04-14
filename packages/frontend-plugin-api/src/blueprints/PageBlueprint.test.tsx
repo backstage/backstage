@@ -48,23 +48,23 @@ describe('PageBlueprint', () => {
           "input": "routes",
         },
         "configSchema": {
-          "parse": [Function],
-          "schema": {
-            "$schema": "http://json-schema.org/draft-07/schema#",
-            "additionalProperties": false,
-            "properties": {
-              "path": {
-                "type": "string",
-              },
-              "title": {
-                "type": "string",
-              },
+          "_fields": {
+            "path": {
+              "required": false,
+              "toJsonSchema": [Function],
+              "validate": [Function],
             },
-            "type": "object",
+            "title": {
+              "required": false,
+              "toJsonSchema": [Function],
+              "validate": [Function],
+            },
           },
+          "parse": [Function],
         },
         "disabled": false,
         "factory": [Function],
+        "if": undefined,
         "inputs": {
           "pages": {
             "$$type": "@backstage/ExtensionInput",
