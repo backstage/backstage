@@ -83,7 +83,7 @@ When you run the command, you'll see an output like this.
     executing     yarn install ✔
     executing     yarn tsc ✔
 
-  🥇  Successfully created my-backstage-app
+  Successfully created my-backstage-app
 ```
 
 And when it finishes, you'll have a working Backstage app (with example data)!
