@@ -36,16 +36,6 @@ export const TabsIndicators = (props: TabsIndicatorsProps) => {
 
     const tabsRect = tabsRef.current.getBoundingClientRect();
 
-    // Hide the indicator when explicitly deselected (routed tabs with no
-    // matching route) or when transitioning from a selected tab back to no
-    // selection (controlled mode). When selectedKey is null/undefined and
-    // no tab was previously selected (e.g. React Aria uncontrolled mode
-    // settling on initial render), leave the indicator state unchanged so
-    // it doesn't flash away before state settles.
-    const isDeselected =
-      state?.selectedKey === '' ||
-      (state?.selectedKey == null && prevSelectedKey.current !== null);
-
     // Set active tab variables
     if (state?.selectedKey != null && state.selectedKey !== '') {
       const activeTab = tabRefs.current.get(state.selectedKey.toString());
@@ -110,7 +100,13 @@ export const TabsIndicators = (props: TabsIndicatorsProps) => {
         );
         tabsRef.current.style.setProperty('--active-tab-opacity', '1');
       }
-    } else if (isDeselected) {
+    } else if (
+      // Hide indicator on explicit deselection (selectedKey === '') or when
+      // transitioning away from a previously selected tab. Skip when no tab
+      // was ever selected (uncontrolled mode settling on initial render).
+      state?.selectedKey === '' ||
+      (state?.selectedKey == null && prevSelectedKey.current !== null)
+    ) {
       tabsRef.current.style.setProperty('--active-tab-opacity', '0');
       prevSelectedKey.current = null;
     }
