@@ -140,19 +140,36 @@ export const mcpPlugin = createBackendPlugin({
           // Protected Resource Metadata (RFC 9728)
           // https://datatracker.ietf.org/doc/html/rfc9728
           // This allows MCP clients to discover the authorization server for this resource
-          rootRouter.use(
-            '/.well-known/oauth-protected-resource',
-            async (_, res) => {
-              const [authBaseUrl, mcpBaseUrl] = await Promise.all([
-                discovery.getExternalBaseUrl('auth'),
-                discovery.getExternalBaseUrl('mcp-actions'),
-              ]);
-              res.json({
-                resource: `${mcpBaseUrl}/v1`,
-                authorization_servers: [authBaseUrl],
-              });
-            },
-          );
+          const serverSuffixes: string[] = [];
+
+          if (serverConfigs && serverConfigs.size > 0) {
+            for (const key of serverConfigs.keys()) {
+              serverSuffixes.push(`/v1/${key}`);
+            }
+          } else {
+            serverSuffixes.push('/v1');
+          }
+
+          const [authBaseUrl, mcpBaseUrl] = await Promise.all([
+            discovery.getExternalBaseUrl('auth'),
+            discovery.getExternalBaseUrl('mcp-actions'),
+          ]);
+
+          const mcpBasePath = new URL(mcpBaseUrl).pathname;
+
+          for (const suffix of serverSuffixes) {
+            const mcpResourcePath = `${mcpBasePath}${suffix}`;
+
+            rootRouter.use(
+              `/.well-known/oauth-protected-resource${mcpResourcePath}`,
+              async (_req, res) => {
+                res.json({
+                  resource: `${mcpBaseUrl}${suffix}`,
+                  authorization_servers: [authBaseUrl],
+                });
+              },
+            );
+          }
         }
       },
     });
