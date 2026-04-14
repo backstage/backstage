@@ -131,7 +131,6 @@ To create the application:
     copying       .dockerignore ✔
     copying       .eslintignore ✔
     templating    .eslintrc.js.hbs ✔
-
     ...
    Moving to final location:
     moving        my-backstage-app ✔
