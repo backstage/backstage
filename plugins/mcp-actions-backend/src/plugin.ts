@@ -140,42 +140,28 @@ export const mcpPlugin = createBackendPlugin({
           // Protected Resource Metadata (RFC 9728)
           // https://datatracker.ietf.org/doc/html/rfc9728
           // This allows MCP clients to discover the authorization server for this resource
-          rootRouter.use(
-            '/.well-known/oauth-protected-resource/*',
-            async (req, res) => {
-              const requestedResourcePath = `/${req.params[0]}`;
+          const serverSuffixes = serverConfigs?.size
+            ? [...serverConfigs.keys()].map(key => `/v1/${key}`)
+            : ['/v1'];
 
-              const serverSuffixes =
-                serverConfigs && serverConfigs.size > 0
-                  ? [...serverConfigs.keys()].map(key => `/v1/${key}`)
-                  : ['/v1'];
+          for (const suffix of serverSuffixes) {
+            const mcpBasePath = `/api/mcp-actions${suffix}`;
 
-              const [authBaseUrl, mcpBaseUrlString] = await Promise.all([
-                discovery.getExternalBaseUrl('auth'),
-                discovery.getExternalBaseUrl('mcp-actions'),
-              ]);
+            rootRouter.use(
+              `/.well-known/oauth-protected-resource${mcpBasePath}`,
+              async (_req, res) => {
+                const [authBaseUrl, mcpBaseUrl] = await Promise.all([
+                  discovery.getExternalBaseUrl('auth'),
+                  discovery.getExternalBaseUrl('mcp-actions'),
+                ]);
 
-              const mcpBaseUrl = new URL(mcpBaseUrlString);
-
-              const availableResourcePaths = new Set(
-                serverSuffixes.map(suffix => `${mcpBaseUrl.pathname}${suffix}`),
-              );
-
-              if (!availableResourcePaths.has(requestedResourcePath)) {
-                return res.sendStatus(404);
-              }
-
-              const resourceUrl = new URL(
-                requestedResourcePath,
-                mcpBaseUrl.origin,
-              );
-
-              return res.json({
-                resource: resourceUrl.toString(),
-                authorization_servers: [authBaseUrl],
-              });
-            },
-          );
+                res.json({
+                  resource: `${mcpBaseUrl}${suffix}`,
+                  authorization_servers: [authBaseUrl],
+                });
+              },
+            );
+          }
         }
       },
     });
