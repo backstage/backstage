@@ -14,11 +14,19 @@
  * limitations under the License.
  */
 
-import {
-  propsOfHumanDuration,
-  readDurationFromConfig,
-} from './readDurationFromConfig';
+import { readDurationFromConfig } from './readDurationFromConfig';
 import { ConfigReader } from './reader';
+
+const propsOfHumanDuration = [
+  'years',
+  'months',
+  'weeks',
+  'days',
+  'hours',
+  'minutes',
+  'seconds',
+  'milliseconds',
+];
 
 describe('readDurationFromConfig', () => {
   describe('ISO form', () => {

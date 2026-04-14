@@ -19,7 +19,7 @@ import { HumanDuration } from '@backstage/types';
 import ms from 'ms';
 import { Config } from './types';
 
-export const propsOfHumanDuration = [
+const propsOfHumanDuration = [
   'years',
   'months',
   'weeks',
