@@ -140,36 +140,42 @@ export const mcpPlugin = createBackendPlugin({
           // Protected Resource Metadata (RFC 9728)
           // https://datatracker.ietf.org/doc/html/rfc9728
           // This allows MCP clients to discover the authorization server for this resource
-          const serverSuffixes: string[] = [];
+          rootRouter.use(
+            '/.well-known/oauth-protected-resource/*',
+            async (req, res) => {
+              const requestedResourcePath = `/${req.params[0]}`;
 
-          if (serverConfigs && serverConfigs.size > 0) {
-            for (const key of serverConfigs.keys()) {
-              serverSuffixes.push(`/v1/${key}`);
-            }
-          } else {
-            serverSuffixes.push('/v1');
-          }
+              const serverSuffixes =
+                serverConfigs && serverConfigs.size > 0
+                  ? [...serverConfigs.keys()].map(key => `/v1/${key}`)
+                  : ['/v1'];
 
-          const [authBaseUrl, mcpBaseUrl] = await Promise.all([
-            discovery.getExternalBaseUrl('auth'),
-            discovery.getExternalBaseUrl('mcp-actions'),
-          ]);
+              const [authBaseUrl, mcpBaseUrlString] = await Promise.all([
+                discovery.getExternalBaseUrl('auth'),
+                discovery.getExternalBaseUrl('mcp-actions'),
+              ]);
 
-          const mcpBasePath = new URL(mcpBaseUrl).pathname;
+              const mcpBaseUrl = new URL(mcpBaseUrlString);
 
-          for (const suffix of serverSuffixes) {
-            const mcpResourcePath = `${mcpBasePath}${suffix}`;
+              const availableResourcePaths = new Set(
+                serverSuffixes.map(suffix => `${mcpBaseUrl.pathname}${suffix}`),
+              );
 
-            rootRouter.use(
-              `/.well-known/oauth-protected-resource${mcpResourcePath}`,
-              async (_req, res) => {
-                res.json({
-                  resource: `${mcpBaseUrl}${suffix}`,
-                  authorization_servers: [authBaseUrl],
-                });
-              },
-            );
-          }
+              if (!availableResourcePaths.has(requestedResourcePath)) {
+                return res.sendStatus(404);
+              }
+
+              const resourceUrl = new URL(
+                requestedResourcePath,
+                mcpBaseUrl.origin,
+              );
+
+              return res.json({
+                resource: resourceUrl.toString(),
+                authorization_servers: [authBaseUrl],
+              });
+            },
+          );
         }
       },
     });

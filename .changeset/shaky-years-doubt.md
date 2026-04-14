@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-mcp-actions-backend': minor
+'@backstage/plugin-mcp-actions-backend': patch
 ---
 
 Fixed the `.well-known/oauth-protected-resource` resource URL to comply with
