@@ -73,7 +73,7 @@ When you run the command, you'll see an output like this.
     copying       .eslintignore ✔
     templating    .eslintrc.js.hbs ✔
        
-       ...
+    ...
        
   Moving to final location:
     moving        my-backstage-app ✔
