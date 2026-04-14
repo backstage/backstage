@@ -4,4 +4,4 @@
 '@backstage/backend-test-utils': patch
 ---
 
-Migrated internal backend feature types to use `OpaqueType` helpers from `@internal/backend`.
+Split `BackendInitializer.ts` into focused internal modules, centralized internal backend feature types into a new `@internal/backend` package using `OpaqueType` helpers, and removed redundant type aliases in favor of deriving types from `OpaqueBackendFeature` at call sites.
