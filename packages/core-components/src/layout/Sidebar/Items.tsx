@@ -52,6 +52,7 @@ import {
   ChangeEvent,
   ReactElement,
   createElement,
+  TouchEvent,
 } from 'react';
 
 import {
@@ -533,8 +534,8 @@ const SidebarItemWithSubmenu = ({
     }
     setIsHoveredOn(true);
   };
-  const handleMouseLeave = () => {
-    if (submenuConfig.defaultCloseDelayMs > 0) {
+  const handleMouseLeave = (event: MouseEvent | TouchEvent) => {
+    if (event.type === 'mouseleave' && submenuConfig.defaultCloseDelayMs > 0) {
       closeTimerRef.current = window.setTimeout(() => {
         closeTimerRef.current = undefined;
         setIsHoveredOn(false);
