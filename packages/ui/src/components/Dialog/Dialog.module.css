@@ -30,7 +30,7 @@
     z-index: 1000;
   }
 
-  [data-theme='dark'] .bui-Dialog {
+  [data-theme-mode='dark'] .bui-Dialog {
     background: rgba(0, 0, 0, 0.5);
   }
 
