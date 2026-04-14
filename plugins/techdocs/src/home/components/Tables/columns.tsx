@@ -18,11 +18,13 @@ import { Link, SubvalueCell, TableColumn } from '@backstage/core-components';
 import {
   EntityDisplayName,
   EntityPresentationApi,
+  entityPresentationApiRef,
   entityPresentationSnapshot,
   EntityRefLinks,
 } from '@backstage/plugin-catalog-react';
 import { Entity } from '@backstage/catalog-model';
 import { DocsTableRow } from './types';
+import { ApiHolder } from '@backstage/core-plugin-api';
 
 function customTitle(
   entity: Entity,
@@ -40,9 +42,9 @@ function customTitle(
 export const columnFactories = {
   createTitleColumn(options?: {
     hidden?: boolean;
-    presentationApi?: EntityPresentationApi;
+    apis?: ApiHolder;
   }): TableColumn<DocsTableRow> {
-    const nameCol = columnFactories.createNameColumn(options?.presentationApi);
+    const nameCol = columnFactories.createNameColumn({ apis: options?.apis });
     return {
       ...nameCol,
       field: 'entity.metadata.title',
@@ -50,9 +52,8 @@ export const columnFactories = {
     };
   },
 
-  createNameColumn(
-    presentationApi?: EntityPresentationApi,
-  ): TableColumn<DocsTableRow> {
+  createNameColumn(options?: { apis?: ApiHolder }): TableColumn<DocsTableRow> {
+    const presentationApi = options?.apis?.get(entityPresentationApiRef);
     return {
       title: 'Document',
       field: 'entity.metadata.name',
@@ -70,6 +71,10 @@ export const columnFactories = {
         ).toLocaleLowerCase();
         return title1.localeCompare(title2);
       },
+      customFilterAndSearch: (filter, row) =>
+        customTitle(row.entity, presentationApi)
+          .toLocaleLowerCase()
+          .includes(filter.toLocaleLowerCase()),
       render: (row: DocsTableRow) => (
         <SubvalueCell
           value={

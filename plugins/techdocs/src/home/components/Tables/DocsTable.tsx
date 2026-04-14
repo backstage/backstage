@@ -34,7 +34,7 @@ import {
   TableProps,
 } from '@backstage/core-components';
 import { actionFactories } from './actions';
-import { columnFactories, defaultColumns } from './columns';
+import { columnFactories } from './columns';
 import { DocsTableRow } from './types';
 import { entitiesToDocsMapper } from './helpers';
 
@@ -63,7 +63,6 @@ export const DocsTable = (props: DocsTableProps) => {
   const getRouteToReaderPageFor = useRouteRef(rootDocsRouteRef);
   const config = useApi(configApiRef);
   const apiHolder = useApiHolder();
-  const presentationApi = apiHolder.get(entityPresentationApiRef);
 
   if (!entities) return null;
 
@@ -71,22 +70,19 @@ export const DocsTable = (props: DocsTableProps) => {
     entities,
     getRouteToReaderPageFor,
     config,
+    apiHolder.get(entityPresentationApiRef),
   );
 
-  const tableColumns =
-    columns ||
-    (presentationApi
-      ? [
-          columnFactories.createTitleColumn({
-            hidden: true,
-            presentationApi,
-          }),
-          columnFactories.createNameColumn(presentationApi),
-          columnFactories.createOwnerColumn(),
-          columnFactories.createKindColumn(),
-          columnFactories.createTypeColumn(),
-        ]
-      : defaultColumns);
+  const tableColumns = columns || [
+    columnFactories.createTitleColumn({
+      hidden: true,
+      apis: apiHolder,
+    }),
+    columnFactories.createNameColumn({ apis: apiHolder }),
+    columnFactories.createOwnerColumn(),
+    columnFactories.createKindColumn(),
+    columnFactories.createTypeColumn(),
+  ];
 
   const defaultActions: TableProps<DocsTableRow>['actions'] = [
     actionFactories.createCopyDocsUrlAction(copyToClipboard),

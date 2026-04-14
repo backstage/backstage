@@ -38,7 +38,7 @@ import { DocsTable } from './DocsTable';
 import { OffsetPaginatedDocsTable } from './OffsetPaginatedDocsTable';
 import { CursorPaginatedDocsTable } from './CursorPaginatedDocsTable';
 import { actionFactories } from './actions';
-import { columnFactories, defaultColumns } from './columns';
+import { columnFactories } from './columns';
 import { DocsTableRow } from './types';
 import { rootDocsRouteRef } from '../../../routes';
 import { entitiesToDocsMapper } from './helpers';
@@ -68,7 +68,6 @@ export const EntityListDocsTable = (props: EntityListDocsTableProps) => {
   const getRouteToReaderPageFor = useRouteRef(rootDocsRouteRef);
   const config = useApi(configApiRef);
   const apiHolder = useApiHolder();
-  const presentationApi = apiHolder.get(entityPresentationApiRef);
 
   const title = capitalize(filters.user?.value ?? 'all');
 
@@ -84,22 +83,19 @@ export const EntityListDocsTable = (props: EntityListDocsTableProps) => {
     entities,
     getRouteToReaderPageFor,
     config,
+    apiHolder.get(entityPresentationApiRef),
   );
 
-  const tableColumns =
-    columns ||
-    (presentationApi
-      ? [
-          columnFactories.createTitleColumn({
-            hidden: true,
-            presentationApi,
-          }),
-          columnFactories.createNameColumn(presentationApi),
-          columnFactories.createOwnerColumn(),
-          columnFactories.createKindColumn(),
-          columnFactories.createTypeColumn(),
-        ]
-      : defaultColumns);
+  const tableColumns = columns || [
+    columnFactories.createTitleColumn({
+      hidden: true,
+      apis: apiHolder,
+    }),
+    columnFactories.createNameColumn({ apis: apiHolder }),
+    columnFactories.createOwnerColumn(),
+    columnFactories.createKindColumn(),
+    columnFactories.createTypeColumn(),
+  ];
 
   if (paginationMode === 'cursor') {
     return (
