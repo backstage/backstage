@@ -297,4 +297,160 @@ describe('BitbucketServerUrlReader', () => {
       expect((await result.files[0].content()).toString()).toEqual('content');
     });
   });
+
+  describe('token forwarding', () => {
+    const repoBuffer = fs.readFileSync(
+      path.resolve(__dirname, '__fixtures__/bitbucket-server-repo.tar.gz'),
+    );
+
+    const readerWithoutConfigToken = new BitbucketServerUrlReader(
+      new BitbucketServerIntegration(
+        readBitbucketServerIntegrationConfig(
+          new ConfigReader({
+            host: 'bitbucket.mycompany.net',
+            apiBaseUrl: 'https://api.bitbucket.mycompany.net/rest/api/1.0',
+          }),
+        ),
+      ),
+      { treeResponseFactory },
+    );
+
+    const readerWithConfigToken = new BitbucketServerUrlReader(
+      new BitbucketServerIntegration(
+        readBitbucketServerIntegrationConfig(
+          new ConfigReader({
+            host: 'bitbucket.mycompany.net',
+            apiBaseUrl: 'https://api.bitbucket.mycompany.net/rest/api/1.0',
+            token: 'config-token',
+          }),
+        ),
+      ),
+      { treeResponseFactory },
+    );
+
+    it('should use the passed token in readUrl requests', async () => {
+      let authHeader: string | null = null;
+      worker.use(
+        rest.get(
+          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/raw/docs/catalog.yaml',
+          (req, res, ctx) => {
+            authHeader = req.headers.get('Authorization');
+            return res(ctx.status(200), ctx.text('file content'));
+          },
+        ),
+      );
+
+      await readerWithoutConfigToken.readUrl(
+        'https://bitbucket.mycompany.net/projects/backstage/repos/mock/browse/docs/catalog.yaml',
+        { token: 'my-token' },
+      );
+
+      expect(authHeader).toBe('Bearer my-token');
+    });
+
+    it('should fall back to config token when no token is passed', async () => {
+      let authHeader: string | null = null;
+      worker.use(
+        rest.get(
+          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/raw/docs/catalog.yaml',
+          (req, res, ctx) => {
+            authHeader = req.headers.get('Authorization');
+            return res(ctx.status(200), ctx.text('file content'));
+          },
+        ),
+      );
+
+      await readerWithConfigToken.readUrl(
+        'https://bitbucket.mycompany.net/projects/backstage/repos/mock/browse/docs/catalog.yaml',
+      );
+
+      expect(authHeader).toBe('Bearer config-token');
+    });
+
+    it('should prefer passed token over config token', async () => {
+      let authHeader: string | null = null;
+      worker.use(
+        rest.get(
+          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/raw/docs/catalog.yaml',
+          (req, res, ctx) => {
+            authHeader = req.headers.get('Authorization');
+            return res(ctx.status(200), ctx.text('file content'));
+          },
+        ),
+      );
+
+      await readerWithConfigToken.readUrl(
+        'https://bitbucket.mycompany.net/projects/backstage/repos/mock/browse/docs/catalog.yaml',
+        { token: 'passed-token' },
+      );
+
+      expect(authHeader).toBe('Bearer passed-token');
+    });
+
+    it('should forward token to all API calls in readTree', async () => {
+      const authHeaders: Record<string, string | null> = {};
+      worker.use(
+        rest.get(
+          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/branches',
+          (req, res, ctx) => {
+            authHeaders.branches = req.headers.get('Authorization');
+            return res(
+              ctx.status(200),
+              ctx.json({
+                size: 1,
+                values: [
+                  {
+                    displayId: 'some-branch',
+                    latestCommit: '12ab34cd56ef78gh90ij12kl34mn56op78qr90st',
+                  },
+                ],
+              }),
+            );
+          },
+        ),
+        rest.get(
+          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/archive',
+          (req, res, ctx) => {
+            authHeaders.archive = req.headers.get('Authorization');
+            return res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/zip'),
+              ctx.set(
+                'content-disposition',
+                'attachment; filename=backstage-mock.tgz',
+              ),
+              ctx.body(new Uint8Array(repoBuffer)),
+            );
+          },
+        ),
+      );
+
+      await readerWithoutConfigToken.readTree(
+        'https://bitbucket.mycompany.net/projects/backstage/repos/mock/browse/docs?at=some-branch',
+        { token: 'tree-token' },
+      );
+
+      expect(authHeaders.branches).toBe('Bearer tree-token');
+      expect(authHeaders.archive).toBe('Bearer tree-token');
+    });
+
+    it('should send no auth header when neither token nor config is set', async () => {
+      let authHeader: string | null = null;
+      worker.use(
+        rest.get(
+          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/raw/docs/catalog.yaml',
+          (req, res, ctx) => {
+            authHeader = req.headers.get('Authorization');
+            return res(ctx.status(200), ctx.text('file content'));
+          },
+        ),
+      );
+
+      await readerWithoutConfigToken.readUrl(
+        'https://bitbucket.mycompany.net/projects/backstage/repos/mock/browse/docs/catalog.yaml',
+      );
+
+      expect(authHeader).toBeNull();
+    });
+  });
 });

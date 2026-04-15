@@ -74,13 +74,14 @@ export class BitbucketServerUrlReader implements UrlReaderService {
     url: string,
     options?: UrlReaderServiceReadUrlOptions,
   ): Promise<UrlReaderServiceReadUrlResponse> {
-    const { etag, lastModifiedAfter, signal } = options ?? {};
+    const { etag, lastModifiedAfter, signal, token } = options ?? {};
     const bitbucketUrl = getBitbucketServerFileFetchUrl(
       url,
       this.integration.config,
     );
     const requestOptions = getBitbucketServerRequestOptions(
       this.integration.config,
+      token,
     );
 
     let response: Response;
@@ -126,7 +127,10 @@ export class BitbucketServerUrlReader implements UrlReaderService {
   ): Promise<UrlReaderServiceReadTreeResponse> {
     const { filepath } = parseGitUrl(url);
 
-    const lastCommitShortHash = await this.getLastCommitShortHash(url);
+    const lastCommitShortHash = await this.getLastCommitShortHash(
+      url,
+      options?.token,
+    );
     if (options?.etag && options.etag === lastCommitShortHash) {
       throw new NotModifiedError();
     }
@@ -137,7 +141,7 @@ export class BitbucketServerUrlReader implements UrlReaderService {
     );
     const archiveResponse = await fetch(
       downloadUrl,
-      getBitbucketServerRequestOptions(this.integration.config),
+      getBitbucketServerRequestOptions(this.integration.config, options?.token),
     );
     if (!archiveResponse.ok) {
       const message = `Failed to read tree from ${url}, ${archiveResponse.status} ${archiveResponse.statusText}`;
@@ -199,6 +203,7 @@ export class BitbucketServerUrlReader implements UrlReaderService {
     const tree = await this.readTree(treeUrl, {
       etag: options?.etag,
       filter: path => matcher.match(path),
+      token: options?.token,
     });
     const files = await tree.files();
 
@@ -221,7 +226,10 @@ export class BitbucketServerUrlReader implements UrlReaderService {
     return `bitbucketServer{host=${host},authed=${authed}}`;
   }
 
-  private async getLastCommitShortHash(url: string): Promise<string> {
+  private async getLastCommitShortHash(
+    url: string,
+    token?: string,
+  ): Promise<string> {
     const { name: repoName, owner: project, ref: branch } = parseGitUrl(url);
 
     // If a branch is provided use that otherwise fall back to the default branch
@@ -234,7 +242,7 @@ export class BitbucketServerUrlReader implements UrlReaderService {
 
     const branchListResponse = await fetch(
       branchListUrl,
-      getBitbucketServerRequestOptions(this.integration.config),
+      getBitbucketServerRequestOptions(this.integration.config, token),
     );
     if (!branchListResponse.ok) {
       const message = `Failed to retrieve branch list from ${branchListUrl}, ${branchListResponse.status} ${branchListResponse.statusText}`;

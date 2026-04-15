@@ -140,10 +140,13 @@ export function getBitbucketServerFileFetchUrl(
  */
 export function getBitbucketServerRequestOptions(
   config: BitbucketServerIntegrationConfig,
+  token?: string,
 ): { headers: Record<string, string> } {
   const headers: Record<string, string> = {};
 
-  if (config.token) {
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  } else if (config.token) {
     headers.Authorization = `Bearer ${config.token}`;
   } else if (config.username && config.password) {
     const buffer = Buffer.from(`${config.username}:${config.password}`, 'utf8');

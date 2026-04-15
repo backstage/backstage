@@ -437,6 +437,7 @@ export function getBitbucketServerFileFetchUrl(
 // @public
 export function getBitbucketServerRequestOptions(
   config: BitbucketServerIntegrationConfig,
+  token?: string,
 ): {
   headers: Record<string, string>;
 };
