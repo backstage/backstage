@@ -195,7 +195,7 @@ When declaring a service factory you may also want to make the export the buildi
 
 ```ts
 export class DefaultFooService {
-  static create(options: { transform: (foo: string) => string }) {
+  static create(options: { transform?: (foo: string) => string }) {
     return new DefaultFooService(options.transform ?? (foo => foo));
   }
 
@@ -264,7 +264,7 @@ In some cases it might be beneficial to allow users of your service factory to p
 
 ```ts
 const fooServiceFactoryWithOptions = (options?: {
-  transform: (foo: string) => string;
+  transform?: (foo: string) => string;
 }) =>
   createServiceFactory<FooService>({
     service: fooServiceRef,
