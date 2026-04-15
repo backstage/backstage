@@ -22,12 +22,12 @@ import type { RootInstanceMetadataServicePluginInfo } from '@backstage/backend-p
 import { OpaqueBackendFeature } from '@internal/backend';
 import { deepFreeze } from './helpers';
 
-type InternalRegistrations = typeof OpaqueBackendFeature.TInternal & {
+type BackendFeatureRegistrations = typeof OpaqueBackendFeature.TInternal & {
   featureType: 'registrations';
 };
 
 export function createRootInstanceMetadataServiceFactory(
-  rawRegistrations: InternalRegistrations[],
+  rawRegistrations: BackendFeatureRegistrations[],
 ) {
   const installedPlugins: Map<string, RootInstanceMetadataServicePluginInfo> =
     new Map();
