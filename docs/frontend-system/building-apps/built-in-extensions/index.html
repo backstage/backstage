@@ -31,8 +31,8 @@
 <script src="/js/medium-zoom.js"></script>
 <script src="/js/dismissable-banner.js"></script>
 <script src="/js/scroll-nav-to-view-in-docs.js"></script><link rel="stylesheet" href="/assets/css/styles.a3f04945.css">
-<script src="/assets/js/runtime~main.61c7f0bc.js" defer="defer"></script>
-<script src="/assets/js/main.30541482.js" defer="defer"></script>
+<script src="/assets/js/runtime~main.6b8300a6.js" defer="defer"></script>
+<script src="/assets/js/main.08ae6130.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
 <svg style="display: none;"><defs>
@@ -542,6 +542,29 @@
 <li class="">Remember to user the route refs for getting paths dynamically, otherwise if an adopter modifies a path through configuration, the route is not going to point to the configured path;</li>
 <li class="">Adopters expect to be able to customize the <code>NotFoundErrorPage</code> component via Components API, you should render this component for routes not configured.</li>
 </ul>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="configurations-1">Configurations<a href="#configurations-1" class="hash-link" aria-label="Direct link to Configurations" title="Direct link to Configurations" translate="no">​</a></h4>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Key</th><th>Type</th><th>Default value</th><th>Description</th></tr></thead><tbody><tr><td><code>redirects</code></td><td><code>{ from: string, to: string }[]</code></td><td>-</td><td>A list of URL redirects. Navigation to <code>from</code> will redirect to <code>to</code>.</td></tr></tbody></table>
+<h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="configuring-redirects">Configuring redirects<a href="#configuring-redirects" class="hash-link" aria-label="Direct link to Configuring redirects" title="Direct link to Configuring redirects" translate="no">​</a></h5>
+<p>You can configure redirects for the <code>app/routes</code> extension to automatically redirect users from one path to another. This is useful when restructuring your app&#x27;s routes, for example after moving or renaming plugin pages.</p>
+<div class="language-yaml codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#9CDCFE;--prism-background-color:#232323"><div class="codeBlockTitle_OeMC">app-config.yaml</div><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-yaml codeBlock_bY9V thin-scrollbar" style="color:#9CDCFE;background-color:#232323"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#9CDCFE"><span class="token key atrule">app</span><span class="token punctuation" style="color:rgb(212, 212, 212)">:</span><span class="token plain"></span><br></span><span class="token-line" style="color:#9CDCFE"><span class="token plain">  </span><span class="token key atrule">extensions</span><span class="token punctuation" style="color:rgb(212, 212, 212)">:</span><span class="token plain"></span><br></span><span class="token-line" style="color:#9CDCFE"><span class="token plain">    </span><span class="token punctuation" style="color:rgb(212, 212, 212)">-</span><span class="token plain"> </span><span class="token key atrule">app/routes</span><span class="token punctuation" style="color:rgb(212, 212, 212)">:</span><span class="token plain"></span><br></span><span class="token-line" style="color:#9CDCFE"><span class="token plain">        </span><span class="token key atrule">config</span><span class="token punctuation" style="color:rgb(212, 212, 212)">:</span><span class="token plain"></span><br></span><span class="token-line" style="color:#9CDCFE"><span class="token plain">          </span><span class="token key atrule">redirects</span><span class="token punctuation" style="color:rgb(212, 212, 212)">:</span><span class="token plain"></span><br></span><span class="token-line" style="color:#9CDCFE"><span class="token plain">            </span><span class="token punctuation" style="color:rgb(212, 212, 212)">-</span><span class="token plain"> </span><span class="token key atrule">from</span><span class="token punctuation" style="color:rgb(212, 212, 212)">:</span><span class="token plain"> /old</span><span class="token punctuation" style="color:rgb(212, 212, 212)">-</span><span class="token plain">path</span><br></span><span class="token-line" style="color:#9CDCFE"><span class="token plain">              </span><span class="token key atrule">to</span><span class="token punctuation" style="color:rgb(212, 212, 212)">:</span><span class="token plain"> /new</span><span class="token punctuation" style="color:rgb(212, 212, 212)">-</span><span class="token plain">path</span><br></span><span class="token-line" style="color:#9CDCFE"><span class="token plain">            </span><span class="token punctuation" style="color:rgb(212, 212, 212)">-</span><span class="token plain"> </span><span class="token key atrule">from</span><span class="token punctuation" style="color:rgb(212, 212, 212)">:</span><span class="token plain"> /legacy/page</span><br></span><span class="token-line" style="color:#9CDCFE"><span class="token plain">              </span><span class="token key atrule">to</span><span class="token punctuation" style="color:rgb(212, 212, 212)">:</span><span class="token plain"> /updated/page</span><br></span></code></pre></div></div>
+<p>Redirects are matched before any regular routes and use the <a href="https://developer.mozilla.org/en-US/docs/Web/API/History/replaceState" target="_blank" rel="noopener noreferrer" class=""><code>replace</code></a> strategy, so the old path will not appear in the browser history.</p>
 <h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="inputs-4">Inputs<a href="#inputs-4" class="hash-link" aria-label="Direct link to Inputs" title="Direct link to Inputs" translate="no">​</a></h4>
 
 

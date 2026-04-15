@@ -31,8 +31,8 @@
 <script src="/js/medium-zoom.js"></script>
 <script src="/js/dismissable-banner.js"></script>
 <script src="/js/scroll-nav-to-view-in-docs.js"></script><link rel="stylesheet" href="/assets/css/styles.a3f04945.css">
-<script src="/assets/js/runtime~main.61c7f0bc.js" defer="defer"></script>
-<script src="/assets/js/main.30541482.js" defer="defer"></script>
+<script src="/assets/js/runtime~main.6b8300a6.js" defer="defer"></script>
+<script src="/assets/js/main.08ae6130.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
 <svg style="display: none;"><defs>
@@ -42,7 +42,7 @@
 <a class="" href="/docs/frontend-system/architecture/extension-overrides">overrides</a>. They are sometimes collectively referred to as
 frontend <em>features</em>, and what you install to build up a Backstage frontend <a class="" href="/docs/frontend-system/architecture/app">app</a>.</p>
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="creating-a-new-plugin">Creating a new plugin<a href="#creating-a-new-plugin" class="hash-link" aria-label="Direct link to Creating a new plugin" title="Direct link to Creating a new plugin" translate="no">​</a></h2>
-<p>This guide assumes that you already have a Backstage project set up. Even if you only want to develop a single plugin for publishing, we still recommend that you do so in a standard Backstage monorepo project, as you often end up needing multiple packages. For instructions on how to set up a new project, see our <a class="" href="/docs/getting-started/#prerequisites">getting started</a> documentation.</p>
+<p>This guide assumes that you already have a Backstage project set up. Even if you only want to develop a single plugin for publishing, we still recommend that you do so in a standard Backstage monorepo project, as you often end up needing multiple packages. For instructions on how to set up a new project, see our <a class="" href="/docs/getting-started/">getting started</a> documentation.</p>
 <p>To create a frontend plugin, run <code>yarn new</code>, select <code>plugin</code>, and fill out the rest of the prompts. This will create a new package at <code>plugins/&lt;pluginId&gt;</code>, which will be the main entrypoint for your plugin.</p>
 <div class="theme-admonition theme-admonition-info admonition_xJq3 alert alert--info"><div class="admonitionHeading_Gvgb"><span class="admonitionIcon_Rf37"><svg viewBox="0 0 14 16"><path fill-rule="evenodd" d="M7 2.3c3.14 0 5.7 2.56 5.7 5.7s-2.56 5.7-5.7 5.7A5.71 5.71 0 0 1 1.3 8c0-3.14 2.56-5.7 5.7-5.7zM7 1C3.14 1 0 4.14 0 8s3.14 7 7 7 7-3.14 7-7-3.14-7-7-7zm1 3H6v5h2V4zm0 6H6v2h2v-2z"></path></svg></span>info</div><div class="admonitionContent_BuS1"><p>The created plugin will currently be templated for use in the legacy frontend system, and you will need to replace the existing plugin wiring code.</p></div></div>
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="the-plugin-instance">The plugin instance<a href="#the-plugin-instance" class="hash-link" aria-label="Direct link to The plugin instance" title="Direct link to The plugin instance" translate="no">​</a></h2>

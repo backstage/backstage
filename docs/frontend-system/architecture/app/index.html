@@ -31,8 +31,8 @@
 <script src="/js/medium-zoom.js"></script>
 <script src="/js/dismissable-banner.js"></script>
 <script src="/js/scroll-nav-to-view-in-docs.js"></script><link rel="stylesheet" href="/assets/css/styles.a3f04945.css">
-<script src="/assets/js/runtime~main.61c7f0bc.js" defer="defer"></script>
-<script src="/assets/js/main.30541482.js" defer="defer"></script>
+<script src="/assets/js/runtime~main.6b8300a6.js" defer="defer"></script>
+<script src="/assets/js/main.08ae6130.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
 <svg style="display: none;"><defs>
@@ -61,7 +61,7 @@
 <p>When using phased app preparation, <code>app/root.children</code> acts as the main session boundary. Conditional extensions behind that boundary are evaluated during finalization. Conditional <code>app/root.elements</code> and API branches are also deferred until finalization, while other bootstrap-visible predicates are ignored and reported as warnings.</p>
 <p>Utility APIs that are first materialized during bootstrap are frozen for the lifetime of that app instance. Finalization may still add new APIs and may override existing API refs that were not materialized during bootstrap, but any deferred override of an already materialized bootstrap API is ignored and reported as an app error.</p>
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="plugin-info-resolution">Plugin Info Resolution<a href="#plugin-info-resolution" class="hash-link" aria-label="Direct link to Plugin Info Resolution" title="Direct link to Plugin Info Resolution" translate="no">​</a></h2>
-<p>When a plugin is installed in an app it may provide sources of information about the plugin that can be useful to end users and admins. This includes things like what version of a plugin is running, what team owns the plugin, and who to contact for support. You can read more about how the plugins provide this information in the <a class="" href="/docs/frontend-system/architecture/plugins#info">plugins <code>info</code> option section</a>.</p>
+<p>When a plugin is installed in an app it may provide sources of information about the plugin that can be useful to end users and admins. This includes things like what version of a plugin is running, what team owns the plugin, and who to contact for support. You can read more about how the plugins provide this information in the <a class="" href="/docs/frontend-system/architecture/plugins#info-option">plugins <code>info</code> option section</a>.</p>
 <p>By default the app will pick a few common fields from <code>package.json</code> files, and assume that the opaque manifests are <code>catalog-info.yaml</code> files that some information can be gathered from too. This information will then be available via the <code>info()</code> method on plugin instances, returning a structure of the <code>FrontendPluginInfo</code> type.</p>
 <h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="extending-plugin-info">Extending Plugin Info<a href="#extending-plugin-info" class="hash-link" aria-label="Direct link to Extending Plugin Info" title="Direct link to Extending Plugin Info" translate="no">​</a></h3>
 <p>The default plugin info is intended as a base to build upon. As part of setting up an app you can both customize the way that the plugin info is resolved, as well as extend the <code>FrontendPluginInfo</code> type to include more information.</p>
