@@ -60,26 +60,26 @@ When you run the command, you'll see an output like this.
 
 ? Enter a name for the app [required] my-backstage-app
 
-  Creating the app...
+Creating the app...
 
 Checking if the directory is available:
 
- checking      my-backstage-app ✔
+checking      my-backstage-app ✔
 
 Creating a temporary app directory:
 
 Preparing files:
- copying       .dockerignore ✔
- copying       .eslintignore ✔
- templating    .eslintrc.js.hbs ✔
- ...
+copying       .dockerignore ✔
+copying       .eslintignore ✔
+templating    .eslintrc.js.hbs ✔
+...
 Moving to final location:
- moving        my-backstage-app ✔
- fetching      yarn.lock seed ✔
+moving        my-backstage-app ✔
+fetching      yarn.lock seed ✔
 
 Installing dependencies:
- executing     yarn install ✔
- executing     yarn tsc ✔
+executing     yarn install ✔
+executing     yarn tsc ✔
 
 Successfully created my-backstage-app
 ```
