@@ -102,7 +102,7 @@ To create the application:
 1. Type the following command to install the Backstage application.
 
     ```bash
-   npx @backstage/create-app@latest
+    npx @backstage/create-app@latest
     ```
 
 2. If this is the first time that you are installing a Backstage application on this device, the following question is displayed. Enter `y` and select `Enter` to proceed with the installation.
@@ -122,22 +122,22 @@ To create the application:
 
    Checking if the directory is available:
 
-    checking      my-backstage-app ✔
+   checking      my-backstage-app ✔
 
    Creating a temporary app directory:
 
    Preparing files:
-    copying       .dockerignore ✔
-    copying       .eslintignore ✔
-    templating    .eslintrc.js.hbs ✔
+   copying       .dockerignore ✔
+   copying       .eslintignore ✔
+   templating    .eslintrc.js.hbs ✔
     ...
    Moving to final location:
-    moving        my-backstage-app ✔
-    fetching      yarn.lock seed ✔
+   moving        my-backstage-app ✔
+   fetching      yarn.lock seed ✔
 
    Installing dependencies:
-    executing     yarn install ✔
-    executing     yarn tsc ✔
+   executing     yarn install ✔
+   executing     yarn tsc ✔
 
    Successfully created my-backstage-app
    ```
