@@ -8,8 +8,6 @@ import { CellProps as CellProps_2 } from 'react-aria-components';
 import type { CheckboxGroupProps as CheckboxGroupProps_2 } from 'react-aria-components';
 import type { CheckboxProps as CheckboxProps_2 } from 'react-aria-components';
 import { ColumnProps as ColumnProps_2 } from 'react-aria-components';
-import type { ColumnSize } from '@react-types/table';
-import type { ColumnStaticSize } from '@react-types/table';
 import type { ComponentProps } from 'react';
 import type { ComponentPropsWithoutRef } from 'react';
 import type { ComponentPropsWithRef } from 'react';
@@ -984,6 +982,12 @@ export type Columns =
   | '11'
   | '12'
   | 'auto';
+
+// @public (undocumented)
+export type ColumnSize = ColumnStaticSize | `${number}fr`;
+
+// @public (undocumented)
+export type ColumnStaticSize = number | `${number}` | `${number}%`;
 
 // @public (undocumented)
 export interface CompletePaginationOptions extends PaginationOptions {

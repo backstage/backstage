@@ -46,6 +46,8 @@ export type {
   TableRootProps,
   TableItem,
   ColumnConfig,
+  ColumnSize,
+  ColumnStaticSize,
   RowConfig,
   RowRenderFn,
   TableSelection,
