@@ -58,32 +58,30 @@ When you run the command, you'll see an output like this.
 
 ```console
 
-  ? Enter a name for the app [required] my-backstage-app
+? Enter a name for the app [required] my-backstage-app
 
-     Creating the app...
+  Creating the app...
 
-  Checking if the directory is available:
+Checking if the directory is available:
 
-    checking      my-backstage-app ✔
+ checking      my-backstage-app ✔
 
-  Creating a temporary app directory:
+Creating a temporary app directory:
 
-  Preparing files:
-    copying       .dockerignore ✔
-    copying       .eslintignore ✔
-    templating    .eslintrc.js.hbs ✔
-       
-    ...
-       
-  Moving to final location:
-    moving        my-backstage-app ✔
-    fetching      yarn.lock seed ✔
+Preparing files:
+ copying       .dockerignore ✔
+ copying       .eslintignore ✔
+ templating    .eslintrc.js.hbs ✔
+ ...
+Moving to final location:
+ moving        my-backstage-app ✔
+ fetching      yarn.lock seed ✔
 
-  Installing dependencies:
-    executing     yarn install ✔
-    executing     yarn tsc ✔
+Installing dependencies:
+ executing     yarn install ✔
+ executing     yarn tsc ✔
 
-  Successfully created my-backstage-app
+Successfully created my-backstage-app
 ```
 
 And when it finishes, you'll have a working Backstage app (with example data)!
