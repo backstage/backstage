@@ -54,7 +54,7 @@
 
 - 8d79835: Added RangeSlider component for selecting numeric ranges.
 
-  **Affected components:** RangeSlider
+  **Affected components:** Slider
 
 - bcbb6eb: Made `SearchAutocomplete` background-aware. The input now adapts its background color based on its parent container's background level.
 
@@ -146,7 +146,7 @@
 - 2e5c5f8: Bumped `glob` dependency from v7/v8/v11 to v13 to address security vulnerabilities in older versions. Bumped `rollup` from v4.27 to v4.59+ to fix a high severity path traversal vulnerability (GHSA-mw96-cpmx-2vgc).
 - 8d79835: Added RangeSlider component for selecting numeric ranges.
 
-  **Affected components:** RangeSlider
+  **Affected components:** Slider
 
 - 5081bcc: Fixed `Avatar` becoming elliptical in flex layouts by preventing it from shrinking.
 
