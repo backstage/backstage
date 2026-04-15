@@ -207,7 +207,7 @@ export function OngoingTaskBody(props: {
   const [, { execute: triggerRetry }] = useAsync(async () => {
     if (taskId) {
       analytics.captureEvent('retried', 'Template has been retried');
-      await scaffolderApi.retryTask(taskId);
+      await scaffolderApi.retry(taskId);
     }
   });
 
@@ -330,7 +330,7 @@ function OngoingTaskChrome(props: {
     if (taskId) {
       analytics.captureEvent('retried', 'Template has been retried');
       try {
-        await scaffolderApi.retryTask(taskId);
+        await scaffolderApi.retry(taskId);
       } catch (error) {
         if (error instanceof Error && error.name === 'AbortError') {
           return;
@@ -518,7 +518,7 @@ function OngoingTaskContent(props: {
   const [, { execute: triggerRetry }] = useAsync(async () => {
     if (taskId) {
       analytics.captureEvent('retried', 'Template has been retried');
-      await scaffolderApi.retryTask(taskId);
+      await scaffolderApi.retry(taskId);
     }
   });
 
