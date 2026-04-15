@@ -116,10 +116,9 @@ To create the application:
 3. Enter the name for your application and select `Enter`. This is the root directory of your application. In this example, the name is set to `my-backstage-app`.
 
    ```console
-
    ? Enter a name for the app [required] my-backstage-app
 
-     Creating the app...
+   Creating the app...
 
    Checking if the directory is available:
 
