@@ -434,6 +434,62 @@ describe('BitbucketServerUrlReader', () => {
       expect(authHeaders.archive).toBe('Bearer tree-token');
     });
 
+    it('should forward token to default branch lookup API calls in readTree', async () => {
+      const authHeaders: Record<string, string | null | undefined> = {};
+      worker.use(
+        rest.get(
+          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/branches/default',
+          (req, res, ctx) => {
+            authHeaders.branchesDefault = req.headers.get('Authorization');
+            return res(
+              ctx.status(200),
+              ctx.json({
+                displayId: 'master',
+                latestCommit: '12ab34cd56ef78gh90ij12kl34mn56op78qr90st',
+              }),
+            );
+          },
+        ),
+        rest.get(
+          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/default-branch',
+          (req, res, ctx) => {
+            authHeaders.defaultBranch = req.headers.get('Authorization');
+            return res(
+              ctx.status(200),
+              ctx.json({
+                displayId: 'master',
+                latestCommit: '12ab34cd56ef78gh90ij12kl34mn56op78qr90st',
+              }),
+            );
+          },
+        ),
+        rest.get(
+          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/archive',
+          (req, res, ctx) => {
+            authHeaders.archive = req.headers.get('Authorization');
+            return res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/zip'),
+              ctx.set(
+                'content-disposition',
+                'attachment; filename=backstage-mock.tgz',
+              ),
+              ctx.body(new Uint8Array(repoBuffer)),
+            );
+          },
+        ),
+      );
+      await readerWithoutConfigToken.readTree(
+        'https://bitbucket.mycompany.net/projects/backstage/repos/mock/browse/docs',
+        { token: 'tree-token' },
+      );
+      expect([
+        authHeaders.branchesDefault,
+        authHeaders.defaultBranch,
+      ]).toContain('Bearer tree-token');
+      expect(authHeaders.archive).toBe('Bearer tree-token');
+    });
+
     it('should send no auth header when neither token nor config is set', async () => {
       let authHeader: string | null = null;
       worker.use(

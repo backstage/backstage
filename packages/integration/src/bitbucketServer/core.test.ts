@@ -73,6 +73,42 @@ describe('bitbucketServer core', () => {
           .Authorization,
       ).toBeUndefined();
     });
+
+    it('prefers per-request token over config token', () => {
+      const config: BitbucketServerIntegrationConfig = {
+        host: '',
+        apiBaseUrl: '',
+        token: 'config-token',
+      };
+      expect(
+        getBitbucketServerRequestOptions(config, 'request-token').headers
+          .Authorization,
+      ).toEqual('Bearer request-token');
+    });
+
+    it('prefers per-request token over basic auth', () => {
+      const config: BitbucketServerIntegrationConfig = {
+        host: '',
+        apiBaseUrl: '',
+        username: 'u',
+        password: 'p',
+      };
+      expect(
+        getBitbucketServerRequestOptions(config, 'request-token').headers
+          .Authorization,
+      ).toEqual('Bearer request-token');
+    });
+
+    it('falls back to config token when no per-request token is provided', () => {
+      const config: BitbucketServerIntegrationConfig = {
+        host: '',
+        apiBaseUrl: '',
+        token: 'config-token',
+      };
+      expect(
+        getBitbucketServerRequestOptions(config).headers.Authorization,
+      ).toEqual('Bearer config-token');
+    });
   });
 
   describe('getBitbucketServerFileFetchUrl', () => {
@@ -250,6 +286,81 @@ describe('bitbucketServer core', () => {
         config,
       );
       expect(defaultBranch).toEqual('main');
+    });
+
+    it('forwards per-request token to the default branch API call', async () => {
+      let authHeader: string | null = null;
+      worker.use(
+        rest.get(
+          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/default-branch',
+          (req, res, ctx) => {
+            authHeader = req.headers.get('Authorization');
+            return res(ctx.status(200), ctx.json({ displayId: 'main' }));
+          },
+        ),
+      );
+      const config: BitbucketServerIntegrationConfig = {
+        host: 'bitbucket.mycompany.net',
+        apiBaseUrl: 'https://api.bitbucket.mycompany.net/rest/api/1.0',
+      };
+      await getBitbucketServerDefaultBranch(
+        'https://bitbucket.mycompany.net/projects/backstage/repos/mock/browse/README.md',
+        config,
+        'my-token',
+      );
+      expect(authHeader).toBe('Bearer my-token');
+    });
+
+    it('forwards per-request token to the fallback API call for older Bitbucket versions', async () => {
+      let authHeader: string | null = null;
+      worker.use(
+        rest.get(
+          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/default-branch',
+          (_, res, ctx) => res(ctx.status(404)),
+        ),
+        rest.get(
+          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/branches/default',
+          (req, res, ctx) => {
+            authHeader = req.headers.get('Authorization');
+            return res(ctx.status(200), ctx.json({ displayId: 'main' }));
+          },
+        ),
+      );
+      const config: BitbucketServerIntegrationConfig = {
+        host: 'bitbucket.mycompany.net',
+        apiBaseUrl: 'https://api.bitbucket.mycompany.net/rest/api/1.0',
+      };
+      await getBitbucketServerDefaultBranch(
+        'https://bitbucket.mycompany.net/projects/backstage/repos/mock/browse/README.md',
+        config,
+        'my-token',
+      );
+      expect(authHeader).toBe('Bearer my-token');
+    });
+  });
+
+  describe('getBitbucketServerDownloadUrl token forwarding', () => {
+    it('forwards per-request token to default branch lookup', async () => {
+      let authHeader: string | null = null;
+      worker.use(
+        rest.get(
+          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/default-branch',
+          (req, res, ctx) => {
+            authHeader = req.headers.get('Authorization');
+            return res(ctx.status(200), ctx.json({ displayId: 'main' }));
+          },
+        ),
+      );
+      const config: BitbucketServerIntegrationConfig = {
+        host: 'bitbucket.mycompany.net',
+        apiBaseUrl: 'https://api.bitbucket.mycompany.net/rest/api/1.0',
+      };
+      await getBitbucketServerDownloadUrl(
+        'https://bitbucket.mycompany.net/projects/backstage/repos/mock/browse/docs',
+        config,
+        'my-token',
+      );
+      expect(authHeader).toBe('Bearer my-token');
     });
   });
 });

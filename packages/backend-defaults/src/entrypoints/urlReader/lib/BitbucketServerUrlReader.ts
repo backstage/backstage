@@ -138,6 +138,7 @@ export class BitbucketServerUrlReader implements UrlReaderService {
     const downloadUrl = await getBitbucketServerDownloadUrl(
       url,
       this.integration.config,
+      options?.token,
     );
     const archiveResponse = await fetch(
       downloadUrl,

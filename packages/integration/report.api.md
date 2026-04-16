@@ -420,12 +420,14 @@ export function getBitbucketCloudRequestOptions(
 export function getBitbucketServerDefaultBranch(
   url: string,
   config: BitbucketServerIntegrationConfig,
+  token?: string,
 ): Promise<string>;
 
 // @public
 export function getBitbucketServerDownloadUrl(
   url: string,
   config: BitbucketServerIntegrationConfig,
+  token?: string,
 ): Promise<string>;
 
 // @public

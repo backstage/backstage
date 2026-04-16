@@ -24,11 +24,13 @@ import { BitbucketServerIntegrationConfig } from './config';
  *
  * @param url - A URL pointing to a path
  * @param config - The relevant provider config
+ * @param token - An optional per-request token to use for authentication
  * @public
  */
 export async function getBitbucketServerDefaultBranch(
   url: string,
   config: BitbucketServerIntegrationConfig,
+  token?: string,
 ): Promise<string> {
   const { name: repoName, owner: project } = parseGitUrl(url);
 
@@ -37,14 +39,17 @@ export async function getBitbucketServerDefaultBranch(
 
   let response = await fetch(
     branchUrl,
-    getBitbucketServerRequestOptions(config),
+    getBitbucketServerRequestOptions(config, token),
   );
 
   if (response.status === 404) {
     // First try the new format, and then if it gets specifically a 404 it should try the old format
     // (to support old  Atlassian Bitbucket Server v5.11.1 format )
     branchUrl = `${config.apiBaseUrl}/projects/${project}/repos/${repoName}/branches/default`;
-    response = await fetch(branchUrl, getBitbucketServerRequestOptions(config));
+    response = await fetch(
+      branchUrl,
+      getBitbucketServerRequestOptions(config, token),
+    );
   }
 
   if (!response.ok) {
@@ -69,11 +74,13 @@ export async function getBitbucketServerDefaultBranch(
  *
  * @param url - A URL pointing to a path
  * @param config - The relevant provider config
+ * @param token - An optional per-request token to use for authentication
  * @public
  */
 export async function getBitbucketServerDownloadUrl(
   url: string,
   config: BitbucketServerIntegrationConfig,
+  token?: string,
 ): Promise<string> {
   const {
     name: repoName,
@@ -84,7 +91,7 @@ export async function getBitbucketServerDownloadUrl(
 
   let branch = ref;
   if (!branch) {
-    branch = await getBitbucketServerDefaultBranch(url, config);
+    branch = await getBitbucketServerDefaultBranch(url, config, token);
   }
   // path will limit the downloaded content
   // /docs will only download the docs folder and everything below it
@@ -136,6 +143,7 @@ export function getBitbucketServerFileFetchUrl(
  * Gets the request options necessary to make requests to a given provider.
  *
  * @param config - The relevant provider config
+ * @param token - An optional per-request token to use for authentication, which takes precedence over the config token
  * @public
  */
 export function getBitbucketServerRequestOptions(
