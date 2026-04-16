@@ -1,1 +1,0 @@
-import{d as r}from"./useObjectRef-B6g01Sss.js";import{$ as f}from"./useLabels-WOLYX76B.js";function m(i){let{id:e,label:t,"aria-labelledby":a,"aria-label":o,labelElementType:$="label"}=i;e=r(e);let l=r(),b={};t&&(a=a?`${l} ${a}`:l,b={id:l,htmlFor:$==="label"?e:void 0});let d=f({id:e,"aria-label":o,"aria-labelledby":a});return{labelProps:b,fieldProps:d}}export{m as $};
