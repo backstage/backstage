@@ -182,7 +182,9 @@ export function InternalAboutCard(props: InternalAboutCardProps) {
     entity.metadata.annotations?.[ANNOTATION_EDIT_URL];
 
   const entityLocation = entity.metadata.annotations?.[ANNOTATION_LOCATION];
-  // Limiting the ability to manually refresh to the less expensive locations
+  // By default, manual refresh is limited to the less expensive `url` and
+  // `file` locations, but this can be overridden via
+  // `allowedRefreshLocationTypes`.
   const defaultAllowedRefreshLocationTypes = ['url', 'file'];
   const allowRefresh = (
     allowedRefreshLocationTypes || defaultAllowedRefreshLocationTypes
