@@ -35,7 +35,6 @@ import {
   useApp,
   useApi,
   useRouteRef,
-  configApiRef,
 } from '@backstage/core-plugin-api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
@@ -161,10 +160,12 @@ function DefaultAboutCardSubheader() {
 export interface InternalAboutCardProps {
   /** Icon link row rendered at the top of the card body. */
   iconLinks?: JSX.Element;
+  /** List of allowed location types for refreshing entities. If not specified, defaults to url and file. */
+  allowedRefreshLocationTypes?: string[];
 }
 
 export function InternalAboutCard(props: InternalAboutCardProps) {
-  const { iconLinks } = props;
+  const { iconLinks, allowedRefreshLocationTypes } = props;
   const classes = useStyles();
   const { entity } = useEntity();
   const catalogApi = useApi(catalogApiRef);
@@ -183,13 +184,9 @@ export function InternalAboutCard(props: InternalAboutCardProps) {
   const entityLocation = entity.metadata.annotations?.[ANNOTATION_LOCATION];
   // Limiting the ability to manually refresh to the less expensive locations
   const defaultAllowedRefreshLocationTypes = ['url', 'file'];
-  const allowedRefreshLocationTypes =
-    useApi(configApiRef).getOptionalStringArray(
-      'catalog.allowedRefreshLocationTypes',
-    ) ?? defaultAllowedRefreshLocationTypes;
-  const allowRefresh = allowedRefreshLocationTypes.some(type =>
-    entityLocation?.startsWith(`${type}:`),
-  );
+  const allowRefresh = (
+    allowedRefreshLocationTypes || defaultAllowedRefreshLocationTypes
+  ).some(type => entityLocation?.startsWith(`${type}:`));
   const refreshEntity = useCallback(async () => {
     try {
       await catalogApi.refreshEntity(stringifyEntityRef(entity));

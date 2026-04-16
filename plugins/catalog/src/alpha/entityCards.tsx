@@ -23,11 +23,15 @@ import {
   HeaderIconLinkRow,
   IconLinkVerticalProps,
 } from '@backstage/core-components';
+import { z } from 'zod/v4';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { buildFilterFn } from './filter/FilterWrapper';
 
 export const catalogAboutEntityCard = EntityCardBlueprint.makeWithOverrides({
   name: 'about',
+  configSchema: {
+    allowedRefreshLocationTypes: z.array(z.string()).optional(),
+  },
   inputs: {
     iconLinks: createExtensionInput([
       EntityIconLinkBlueprint.dataRefs.filterFunction.optional(),
@@ -35,7 +39,7 @@ export const catalogAboutEntityCard = EntityCardBlueprint.makeWithOverrides({
       EntityIconLinkBlueprint.dataRefs.useProps,
     ]),
   },
-  factory(originalFactory, { inputs }) {
+  factory(originalFactory, { inputs, config }) {
     function Subheader() {
       const { entity } = useEntity();
       // The "useProps" functions may be calling other hooks, so we need to
@@ -66,7 +70,7 @@ export const catalogAboutEntityCard = EntityCardBlueprint.makeWithOverrides({
         const { InternalAboutCard } = await import(
           '../components/AboutCard/AboutCard'
         );
-        return <InternalAboutCard iconLinks={<Subheader />} />;
+        return <InternalAboutCard iconLinks={<Subheader />} {...config} />;
       },
     });
   },

@@ -23,13 +23,5 @@ export interface Config {
       | {
           limit?: number;
         };
-
-    /**
-     * List of allowed location types for refreshing entities.
-     * If not specified, defaults to allowing types 'url' and 'file'.
-     *
-     * @deepVisibility frontend
-     */
-    allowedRefreshLocationTypes?: string[];
   };
 }
