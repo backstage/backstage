@@ -183,10 +183,13 @@ export function InternalAboutCard(props: InternalAboutCardProps) {
   const entityLocation = entity.metadata.annotations?.[ANNOTATION_LOCATION];
   // Limiting the ability to manually refresh to the less expensive locations
   const defaultAllowedRefreshLocationTypes = ['url', 'file'];
-  const allowedRefreshLocationTypes = useApi(configApiRef).getOptionalConfigArray(
-    'catalog.allowedRefreshLocationTypes',
-  ) ?? defaultAllowedRefreshLocationTypes;
-  const allowRefresh = allowedRefreshLocationTypes.some(type => entityLocation?.startsWith(`${type}:`));
+  const allowedRefreshLocationTypes =
+    useApi(configApiRef).getOptionalStringArray(
+      'catalog.allowedRefreshLocationTypes',
+    ) ?? defaultAllowedRefreshLocationTypes;
+  const allowRefresh = allowedRefreshLocationTypes.some(type =>
+    entityLocation?.startsWith(`${type}:`),
+  );
   const refreshEntity = useCallback(async () => {
     try {
       await catalogApi.refreshEntity(stringifyEntityRef(entity));
