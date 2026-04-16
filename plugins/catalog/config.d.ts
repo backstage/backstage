@@ -29,7 +29,7 @@ export interface Config {
      * If not specified, defaults to allowing types 'url' and 'file'.
      *
      * @deepVisibility frontend
-      */
+     */
     allowedRefreshLocationTypes?: string[];
   };
 }
