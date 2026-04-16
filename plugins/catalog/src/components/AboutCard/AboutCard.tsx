@@ -35,6 +35,7 @@ import {
   useApp,
   useApi,
   useRouteRef,
+  configApiRef,
 } from '@backstage/core-plugin-api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
@@ -181,8 +182,11 @@ export function InternalAboutCard(props: InternalAboutCardProps) {
 
   const entityLocation = entity.metadata.annotations?.[ANNOTATION_LOCATION];
   // Limiting the ability to manually refresh to the less expensive locations
-  const allowRefresh =
-    entityLocation?.startsWith('url:') || entityLocation?.startsWith('file:');
+  const defaultAllowedRefreshLocationTypes = ['url', 'file'];
+  const allowedRefreshLocationTypes = useApi(configApiRef).getOptionalConfigArray(
+    'catalog.allowedRefreshLocationTypes',
+  ) ?? defaultAllowedRefreshLocationTypes;
+  const allowRefresh = allowedRefreshLocationTypes.some(type => entityLocation?.startsWith(`${type}:`));
   const refreshEntity = useCallback(async () => {
     try {
       await catalogApi.refreshEntity(stringifyEntityRef(entity));
