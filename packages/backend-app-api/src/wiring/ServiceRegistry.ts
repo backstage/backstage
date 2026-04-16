@@ -247,6 +247,24 @@ export class ServiceRegistry {
     }
   }
 
+  #resolveDeps(
+    factory: InternalServiceFactory,
+    pluginId: string,
+    scopeFilter?: 'root' | 'plugin',
+  ): Promise<Record<string, unknown>> {
+    const entries: Array<Promise<[name: string, impl: unknown]>> = [];
+
+    for (const [name, serviceRef] of Object.entries(factory.deps)) {
+      if (scopeFilter && serviceRef.scope !== scopeFilter) {
+        continue;
+      }
+      const target = this.get(serviceRef, pluginId)!;
+      entries.push(target.then(impl => [name, impl]));
+    }
+
+    return Promise.all(entries).then(Object.fromEntries);
+  }
+
   get<T, TInstances extends 'singleton' | 'multiton'>(
     ref: ServiceRef<T, 'plugin' | 'root', TInstances>,
     pluginId: string,
@@ -263,96 +281,91 @@ export class ServiceRegistry {
         : undefined;
     }
 
-    return resolvedFactory
-      .then(factories => {
-        return Promise.all(
-          factories.map(factory => {
-            if (factory.service.scope === 'root') {
-              let existing = this.#rootServiceImplementations.get(factory);
-              if (!existing) {
-                this.#checkForMissingDeps(factory, pluginId);
-                const rootDeps = new Array<
-                  Promise<[name: string, impl: unknown]>
-                >();
+    return resolvedFactory.then(factories =>
+      Promise.all(
+        factories.map(factory => {
+          if (factory.service.scope === 'root') {
+            return this.#getRootScoped(factory, ref, pluginId);
+          }
+          return this.#getPluginScoped(factory, ref, pluginId);
+        }),
+      ).then(
+        results =>
+          (ref.multiton ? results : results[0]) as TInstances extends 'multiton'
+            ? T[]
+            : T,
+      ),
+    );
+  }
 
-                for (const [name, serviceRef] of Object.entries(factory.deps)) {
-                  if (serviceRef.scope !== 'root') {
-                    throw new Error(
-                      `Failed to instantiate 'root' scoped service '${ref.id}' because it depends on '${serviceRef.scope}' scoped service '${serviceRef.id}'.`,
-                    );
-                  }
-                  const target = this.get(serviceRef, pluginId)!;
-                  rootDeps.push(target.then(impl => [name, impl]));
-                }
+  #getRootScoped<T>(
+    factory: InternalServiceFactory,
+    ref: ServiceRef<T>,
+    pluginId: string,
+  ): Promise<T> {
+    let existing = this.#rootServiceImplementations.get(factory);
+    if (existing) {
+      return existing as Promise<T>;
+    }
 
-                existing = Promise.all(rootDeps).then(entries =>
-                  factory.factory(Object.fromEntries(entries), undefined),
-                );
-                this.#rootServiceImplementations.set(factory, existing);
-              }
-              return existing as Promise<T>;
-            }
+    this.#checkForMissingDeps(factory, pluginId);
 
-            let implementation = this.#implementations.get(factory);
-            if (!implementation) {
-              this.#checkForMissingDeps(factory, pluginId);
-              const rootDeps = new Array<
-                Promise<[name: string, impl: unknown]>
-              >();
-
-              for (const [name, serviceRef] of Object.entries(factory.deps)) {
-                if (serviceRef.scope === 'root') {
-                  const target = this.get(serviceRef, pluginId)!;
-                  rootDeps.push(target.then(impl => [name, impl]));
-                }
-              }
-
-              implementation = {
-                context: Promise.all(rootDeps)
-                  .then(entries =>
-                    factory.createRootContext?.(Object.fromEntries(entries)),
-                  )
-                  .catch(error => {
-                    const cause = stringifyError(error);
-                    throw new Error(
-                      `Failed to instantiate service '${ref.id}' because createRootContext threw an error, ${cause}`,
-                    );
-                  }),
-                byPlugin: new Map(),
-              };
-
-              this.#implementations.set(factory, implementation);
-            }
-
-            let result = implementation.byPlugin.get(pluginId) as Promise<any>;
-            if (!result) {
-              const allDeps = new Array<
-                Promise<[name: string, impl: unknown]>
-              >();
-
-              for (const [name, serviceRef] of Object.entries(factory.deps)) {
-                const target = this.get(serviceRef, pluginId)!;
-                allDeps.push(target.then(impl => [name, impl]));
-              }
-
-              result = implementation.context
-                .then(context =>
-                  Promise.all(allDeps).then(entries =>
-                    factory.factory(Object.fromEntries(entries), context),
-                  ),
-                )
-                .catch(error => {
-                  const cause = stringifyError(error);
-                  throw new Error(
-                    `Failed to instantiate service '${ref.id}' for '${pluginId}' because the factory function threw an error, ${cause}`,
-                  );
-                });
-              implementation.byPlugin.set(pluginId, result);
-            }
-            return result;
-          }),
+    for (const serviceRef of Object.values(factory.deps)) {
+      if (serviceRef.scope !== 'root') {
+        throw new Error(
+          `Failed to instantiate 'root' scoped service '${ref.id}' because it depends on '${serviceRef.scope}' scoped service '${serviceRef.id}'.`,
         );
-      })
-      .then(results => (ref.multiton ? results : results[0]));
+      }
+    }
+
+    existing = this.#resolveDeps(factory, pluginId).then(deps =>
+      factory.factory(deps, undefined),
+    );
+    this.#rootServiceImplementations.set(factory, existing);
+    return existing as Promise<T>;
+  }
+
+  #getPluginScoped<T>(
+    factory: InternalServiceFactory,
+    ref: ServiceRef<T>,
+    pluginId: string,
+  ): Promise<T> {
+    let implementation = this.#implementations.get(factory);
+    if (!implementation) {
+      this.#checkForMissingDeps(factory, pluginId);
+
+      implementation = {
+        context: this.#resolveDeps(factory, pluginId, 'root')
+          .then(deps => factory.createRootContext?.(deps))
+          .catch(error => {
+            const cause = stringifyError(error);
+            throw new Error(
+              `Failed to instantiate service '${ref.id}' because createRootContext threw an error, ${cause}`,
+            );
+          }),
+        byPlugin: new Map(),
+      };
+
+      this.#implementations.set(factory, implementation);
+    }
+
+    let result = implementation.byPlugin.get(pluginId) as
+      | Promise<T>
+      | undefined;
+    if (!result) {
+      result = Promise.all([
+        this.#resolveDeps(factory, pluginId),
+        implementation.context,
+      ])
+        .then(([deps, context]) => factory.factory(deps, context) as Promise<T>)
+        .catch(error => {
+          const cause = stringifyError(error);
+          throw new Error(
+            `Failed to instantiate service '${ref.id}' for '${pluginId}' because the factory function threw an error, ${cause}`,
+          );
+        });
+      implementation.byPlugin.set(pluginId, result);
+    }
+    return result;
   }
 }
