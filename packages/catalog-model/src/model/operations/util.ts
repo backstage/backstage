@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { InputError } from '@backstage/errors';
-import { isJsonObject } from '../jsonSchema/util';
 import { opDeclareAnnotationV1Schema } from './declareAnnotation';
 import { opDeclareKindV1Schema } from './declareKind';
 import { opDeclareKindVersionV1Schema } from './declareKindVersion';
@@ -35,23 +33,16 @@ import { opUpdateRelationV1Schema } from './updateRelation';
 import { opUpdateTagV1Schema } from './updateTag';
 
 /**
- * Descriptor for a catalog model operation, mapping it to its parser.
- */
-export interface CatalogModelOpDescriptor<T extends CatalogModelOp> {
-  op: T['op'];
-  order: number;
-  parse: (data: unknown) => T;
-}
-
-/**
  * A mapping from each operation's `op` string to its descriptor, containing
  * the `op` literal and a `parse` function that validates unknown data into the
  * corresponding operation type.
  */
 export const ops: {
-  [K in CatalogModelOp['op']]: CatalogModelOpDescriptor<
-    Extract<CatalogModelOp, { op: K }>
-  >;
+  [K in CatalogModelOp['op']]: {
+    op: K;
+    order: number;
+    parse: (data: unknown) => Extract<CatalogModelOp, { op: K }>;
+  };
 } = {
   'declareAnnotation.v1': {
     op: 'declareAnnotation.v1',
@@ -134,29 +125,3 @@ export const ops: {
     parse: data => opRemoveKindV1Schema.parse(data),
   },
 };
-
-/**
- * Parses and validates a catalog model operation, as received for example from
- * a REST endpoint.
- */
-export function parseOp(data: unknown): { op: CatalogModelOp; order: number } {
-  if (!isJsonObject(data)) {
-    throw new InputError('Invalid op: expected a JSON object');
-  }
-
-  const opOp = data.op;
-  if (typeof opOp !== 'string') {
-    throw new InputError(`Unknown op type ${opOp}`);
-  }
-
-  const op = ops[opOp as keyof typeof ops];
-  if (!op) {
-    throw new InputError(`Unknown op ${opOp}`);
-  }
-
-  try {
-    return { op: op.parse(data), order: op.order };
-  } catch (error) {
-    throw new InputError(`Invalid op ${opOp}: ${error}`);
-  }
-}
