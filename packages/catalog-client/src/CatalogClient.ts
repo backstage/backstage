@@ -195,39 +195,27 @@ export class CatalogClient implements CatalogApi {
     request?: GetEntitiesRequest,
     options?: CatalogRequestOptions,
   ): Promise<GetEntitiesResponse> {
-    const {
-      filter = [],
-      fields = [],
-      order,
-      offset,
-      limit,
-      after,
-    } = request ?? {};
-    const encodedOrder = [];
-    if (order) {
-      for (const directive of [order].flat()) {
-        if (directive) {
-          encodedOrder.push(`${directive.order}:${directive.field}`);
-        }
-      }
+    const { filter, fields, order, offset, limit, after } = request ?? {};
+
+    // The `after` cursor is specific to the legacy GET /entities pagination
+    // and is not compatible with the POST endpoint's cursor format. Fall back
+    // to the GET endpoint when it is provided.
+    if (after !== undefined) {
+      return this.getEntitiesViaGet(request!, options);
     }
 
-    const entities = await this.requestRequired(
-      await this.apiClient.getEntities(
-        {
-          query: {
-            fields,
-            limit,
-            filter: this.getFilterValue(filter),
-            offset,
-            after,
-            order: order ? encodedOrder : undefined,
-          },
-        },
-        options,
-      ),
+    const result = await this.queryEntitiesByPredicate(
+      {
+        filter,
+        fields,
+        orderFields: order,
+        offset,
+        limit,
+      },
+      options,
     );
-    return { items: entities };
+
+    return { items: result.items };
   }
 
   /**
@@ -755,6 +743,42 @@ export class CatalogClient implements CatalogApi {
     }
 
     return await response.json();
+  }
+
+  /**
+   * Legacy fallback for getEntities when the `after` cursor parameter is used,
+   * which is not compatible with the POST endpoint's cursor format.
+   */
+  private async getEntitiesViaGet(
+    request: GetEntitiesRequest,
+    options?: CatalogRequestOptions,
+  ): Promise<GetEntitiesResponse> {
+    const { filter = [], fields = [], order, offset, limit, after } = request;
+    const encodedOrder = [];
+    if (order) {
+      for (const directive of [order].flat()) {
+        if (directive) {
+          encodedOrder.push(`${directive.order}:${directive.field}`);
+        }
+      }
+    }
+
+    const entities = await this.requestRequired(
+      await this.apiClient.getEntities(
+        {
+          query: {
+            fields,
+            limit,
+            filter: this.getFilterValue(filter),
+            offset,
+            after,
+            order: order ? encodedOrder : undefined,
+          },
+        },
+        options,
+      ),
+    );
+    return { items: entities };
   }
 
   private getFilterValue(filter: EntityFilterQuery = []) {

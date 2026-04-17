@@ -60,15 +60,18 @@ describe('catalogServiceRef', () => {
     expect.assertions(1);
 
     server.use(
-      rest.get('http://localhost/api/catalog/entities', (req, res, ctx) => {
-        expect(req.headers.get('authorization')).toBe(
-          mockCredentials.service.header({
-            onBehalfOf: mockCredentials.user(),
-            targetPluginId: 'catalog',
-          }),
-        );
-        return res(ctx.json({}));
-      }),
+      rest.post(
+        'http://localhost/api/catalog/entities/by-query',
+        (req, res, ctx) => {
+          expect(req.headers.get('authorization')).toBe(
+            mockCredentials.service.header({
+              onBehalfOf: mockCredentials.user(),
+              targetPluginId: 'catalog',
+            }),
+          );
+          return res(ctx.json({ items: [], totalItems: 0, pageInfo: {} }));
+        },
+      ),
     );
     const tester = ServiceFactoryTester.from(
       createServiceFactory({
@@ -91,15 +94,18 @@ describe('catalogServiceRef', () => {
     expect.assertions(1);
 
     server.use(
-      rest.get('http://localhost/api/catalog/entities', (req, res, ctx) => {
-        expect(req.headers.get('authorization')).toBe(
-          mockCredentials.service.header({
-            onBehalfOf: mockCredentials.service(),
-            targetPluginId: 'catalog',
-          }),
-        );
-        return res(ctx.json({}));
-      }),
+      rest.post(
+        'http://localhost/api/catalog/entities/by-query',
+        (req, res, ctx) => {
+          expect(req.headers.get('authorization')).toBe(
+            mockCredentials.service.header({
+              onBehalfOf: mockCredentials.service(),
+              targetPluginId: 'catalog',
+            }),
+          );
+          return res(ctx.json({ items: [], totalItems: 0, pageInfo: {} }));
+        },
+      ),
     );
     const tester = ServiceFactoryTester.from(
       createServiceFactory({
