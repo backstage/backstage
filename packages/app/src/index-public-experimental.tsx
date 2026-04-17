@@ -16,12 +16,14 @@
 
 import ReactDOM from 'react-dom/client';
 import { createApp } from '@backstage/frontend-defaults';
-import { appModulePublicSignIn } from '@backstage/plugin-app/alpha';
 
 import '@backstage/ui/css/styles.css';
+import './tailwind.css';
+import './globals.css';
+import { guestSignInPageModule } from './GuestSignInPage';
 
 const app = createApp({
-  features: [appModulePublicSignIn],
+  features: [guestSignInPageModule],
 });
 
 ReactDOM.createRoot(document.getElementById('root')!).render(app.createRoot());
