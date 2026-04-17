@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { CATALOG_FILTER_EXISTS } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import {
   catalogApiRef,
@@ -155,7 +156,8 @@ describe('<EntityPicker />', () => {
 
       expect(catalogApi.queryEntities).toHaveBeenCalledWith(
         expect.objectContaining({
-          query: { kind: 'User' },
+          filter: { kind: ['User'] },
+          query: {},
         }),
       );
     });
@@ -202,12 +204,11 @@ describe('<EntityPicker />', () => {
 
       expect(catalogApi.queryEntities).toHaveBeenCalledWith(
         expect.objectContaining({
-          query: {
-            $any: [
-              { $all: [{ kind: 'Group' }, { 'metadata.name': 'test-entity' }] },
-              { $all: [{ kind: 'User' }, { 'metadata.name': 'test-entity' }] },
-            ],
-          },
+          filter: [
+            { kind: ['Group'], 'metadata.name': 'test-entity' },
+            { kind: ['User'], 'metadata.name': 'test-entity' },
+          ],
+          query: {},
         }),
       );
     });
@@ -235,9 +236,8 @@ describe('<EntityPicker />', () => {
 
       expect(catalogApi.queryEntities).toHaveBeenCalledWith(
         expect.objectContaining({
-          query: {
-            $all: [{ kind: 'Group' }, { 'metadata.name': 'test-entity' }],
-          },
+          filter: { kind: ['Group'], 'metadata.name': 'test-entity' },
+          query: {},
         }),
       );
     });
@@ -262,12 +262,13 @@ describe('<EntityPicker />', () => {
 
       expect(catalogApi.queryEntities).toHaveBeenCalledWith(
         expect.objectContaining({
-          query: {
-            $all: [
-              { kind: 'User' },
-              { 'metadata.annotation.some/anotation': { $exists: true } },
-            ],
-          },
+          filter: [
+            {
+              kind: ['User'],
+              'metadata.annotation.some/anotation': CATALOG_FILTER_EXISTS,
+            },
+          ],
+          query: {},
         }),
       );
     });
@@ -382,9 +383,8 @@ describe('<EntityPicker />', () => {
 
       expect(catalogApi.queryEntities).toHaveBeenCalledWith(
         expect.objectContaining({
-          query: {
-            $all: [{ kind: 'Group' }, { 'metadata.name': 'test-group' }],
-          },
+          filter: [{ kind: ['Group'], 'metadata.name': 'test-group' }],
+          query: {},
         }),
       );
     });
