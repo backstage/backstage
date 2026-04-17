@@ -16,7 +16,7 @@
 
 import { useEffect, useState } from 'react';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
-import { ToastQueue } from '@react-stately/toast';
+import { ToastQueue } from 'react-stately';
 import { ToastContainer } from './ToastContainer';
 import { toastApiForwarderRef } from '../../apis';
 import type {
