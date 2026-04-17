@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { assertError } from '@backstage/errors';
+import { toError } from '@backstage/errors';
 import { Octokit } from 'octokit';
 import { LoggerService } from '@backstage/backend-plugin-api';
 
@@ -109,9 +109,9 @@ export const enableBranchProtectionOnDefaultRepoBranch = async ({
         });
       }
     } catch (e) {
-      assertError(e);
+      const error = toError(e);
       if (
-        e.message.includes(
+        error.message.includes(
           'Upgrade to GitHub Pro or make this repository public to enable this feature',
         )
       ) {
@@ -119,7 +119,7 @@ export const enableBranchProtectionOnDefaultRepoBranch = async ({
           'Branch protection was not enabled as it requires GitHub Pro for private repositories',
         );
       } else {
-        throw e;
+        throw error;
       }
     }
   };

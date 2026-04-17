@@ -247,6 +247,39 @@ export const WithForm = meta.story({
   ),
 });
 
+export const OverflowWithoutHeight = meta.story({
+  args: {
+    defaultOpen: true,
+  },
+  render: args => (
+    <DialogTrigger>
+      <Button variant="secondary">Open Dialog</Button>
+      <Dialog {...args}>
+        <DialogHeader>Overflow Without Height</DialogHeader>
+        <DialogBody>
+          <Flex direction="column" gap="3">
+            {Array.from({ length: 20 }, (_, i) => (
+              <Text key={i}>
+                Line {i + 1}: Lorem ipsum dolor sit amet, consectetur adipiscing
+                elit. Sed do eiusmod tempor incididunt ut labore et dolore magna
+                aliqua.
+              </Text>
+            ))}
+          </Flex>
+        </DialogBody>
+        <DialogFooter>
+          <Button variant="secondary" slot="close">
+            Cancel
+          </Button>
+          <Button variant="primary" slot="close">
+            Confirm
+          </Button>
+        </DialogFooter>
+      </Dialog>
+    </DialogTrigger>
+  ),
+});
+
 export const PreviewFixedWidthAndHeight = FixedWidth.extend({
   args: {
     defaultOpen: undefined,

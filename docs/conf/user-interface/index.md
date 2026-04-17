@@ -634,3 +634,53 @@ export const myTheme = createUnifiedTheme({
 ```
 
 </details>
+
+<details>
+  <summary>Missing v5 prefix for MUI 5 class names</summary>
+
+If you are using MUI 5 components in the main app, you may notice that the rendered elements have a `v5-` prefix in front of the MUI class names, but not when you try to use the class name props in code.
+
+Example:
+
+```html
+<button class="v5-MuiButtonBase-root v5-MuiButton-root ..." ...
+```
+
+```jsx
+import { buttonClasses } from '@mui/material/Button'
+
+...
+
+console.log(buttonClasses.root)
+// outputs "MuiButton-root" instead of "v5-MuiButton-root"
+```
+
+The reason for this is that the `UnifiedThemeProvider` is configuring the MUI class name generator function too late. According to [MUI 5 docs](https://v5.mui.com/material-ui/experimental-api/classname-generator/#caveat), it should be configured before any MUI 5 components load.
+
+To resolve this issue:
+
+1. Create a file that configures the class name generator, e.g. `packages/app/src/MuiClassnameSetup.ts`, containing:
+
+```ts
+// this replicates functionality from UnifiedThemeProvider
+import { unstable_ClassNameGenerator as ClassNameGenerator } from '@mui/material/className';
+
+ClassNameGenerator.configure(componentName => {
+  if ((componentName ?? '').startsWith('v5-')) {
+    return componentName;
+  }
+  return `v5-${componentName}`;
+});
+```
+
+2. Import this as the very first thing in `packages/app/src/index.tsx`
+
+```tsx
+// CRITICAL: Must be first import so that static MUI V5 class names are
+// generated before any MUI V5 components load
+import './MuiClassnameSetup'
+
+...
+```
+
+</details>

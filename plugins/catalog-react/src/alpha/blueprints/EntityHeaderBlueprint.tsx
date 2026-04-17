@@ -21,7 +21,7 @@ import {
 } from '@backstage/frontend-plugin-api';
 import {
   FilterPredicate,
-  createZodV3FilterPredicateSchema,
+  createZodV4FilterPredicateSchema,
 } from '@backstage/filter-predicates';
 import { Entity } from '@backstage/catalog-model';
 import { resolveEntityFilterData } from './resolveEntityFilterData';
@@ -38,10 +38,8 @@ export const EntityHeaderBlueprint = createExtensionBlueprint({
     filterFunction: entityFilterFunctionDataRef,
     element: coreExtensionData.reactElement,
   },
-  config: {
-    schema: {
-      filter: z => createZodV3FilterPredicateSchema(z).optional(),
-    },
+  configSchema: {
+    filter: createZodV4FilterPredicateSchema().optional(),
   },
   output: [
     entityFilterFunctionDataRef.optional(),

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-scaffolder-node",
-  "version": "0.12.6-next.0",
+  "version": "0.13.2",
   "description": "The plugin-scaffolder-node module for @backstage/plugin-scaffolder-backend",
   "backstage": {
     "role": "node-library",
@@ -63,6 +63,7 @@
     "@backstage/errors": "workspace:^",
     "@backstage/integration": "workspace:^",
     "@backstage/plugin-permission-common": "workspace:^",
+    "@backstage/plugin-permission-node": "workspace:^",
     "@backstage/plugin-scaffolder-common": "workspace:^",
     "@backstage/types": "workspace:^",
     "@isomorphic-git/pgp-plugin": "^0.0.7",
@@ -76,7 +77,7 @@
     "tar": "^7.5.6",
     "winston": "^3.2.1",
     "winston-transport": "^4.7.0",
-    "zod": "^3.25.76",
+    "zod": "^3.25.76 || ^4.0.0",
     "zod-to-json-schema": "^3.25.1"
   },
   "devDependencies": {

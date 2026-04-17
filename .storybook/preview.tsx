@@ -6,7 +6,7 @@ import { definePreview } from '@storybook/react-vite';
 import React, { useEffect } from 'react';
 import { TestApiProvider } from '@backstage/test-utils';
 import { AlertDisplay } from '@backstage/core-components';
-import { apis } from './support/apis';
+import { apis, appThemeApi } from './support/apis';
 import { useGlobals } from 'storybook/preview-api';
 import { UnifiedThemeProvider, themes } from '@backstage/theme';
 import { allModes } from './modes';
@@ -88,6 +88,7 @@ export default definePreview({
       storySort: {
         order: [
           'Backstage UI',
+          'Recipes',
           'Guidelines',
           'Plugins',
           'Layout',
@@ -155,6 +156,10 @@ export default definePreview({
           document.body.removeAttribute('data-theme-name');
         };
       }, [selectedTheme, selectedThemeName]);
+
+      useEffect(() => {
+        appThemeApi.setActiveThemeId(selectedThemeMode);
+      }, [selectedThemeMode]);
 
       document.body.style.backgroundColor = 'var(--bui-bg-app)';
       document.body.style.padding =

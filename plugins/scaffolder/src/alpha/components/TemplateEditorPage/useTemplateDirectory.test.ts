@@ -21,10 +21,7 @@ import {
   TemplateDirectoryAccess,
   WebFileSystemStore,
 } from '../../../lib/filesystem';
-import {
-  IterableDirectoryHandle,
-  WebFileSystemAccess,
-} from '../../../lib/filesystem/WebFileSystemAccess';
+import { WebFileSystemAccess } from '../../../lib/filesystem/WebFileSystemAccess';
 
 jest.mock('../../../lib/filesystem/createExampleTemplate');
 
@@ -49,7 +46,7 @@ describe('useTemplateDirectory', () => {
   });
 
   it('should return an access when there is  existing directory in the file system store', async () => {
-    const handle = {} as IterableDirectoryHandle;
+    const handle = {} as FileSystemDirectoryHandle;
 
     jest.spyOn(WebFileSystemStore, 'getDirectory').mockResolvedValue(handle);
 
@@ -65,7 +62,7 @@ describe('useTemplateDirectory', () => {
     const handle = {};
     jest
       .spyOn(WebFileSystemStore, 'getDirectory')
-      .mockResolvedValue(handle as IterableDirectoryHandle);
+      .mockResolvedValue(handle as FileSystemDirectoryHandle);
     const setDirectory = jest
       .spyOn(WebFileSystemStore, 'setDirectory')
       .mockResolvedValue(undefined);
@@ -92,7 +89,7 @@ describe('useTemplateDirectory', () => {
     (createExampleTemplate as jest.Mock).mockResolvedValue(handle);
     jest
       .spyOn(WebFileSystemStore, 'getDirectory')
-      .mockResolvedValue(handle as IterableDirectoryHandle);
+      .mockResolvedValue(handle as FileSystemDirectoryHandle);
     const setDirectory = jest
       .spyOn(WebFileSystemStore, 'setDirectory')
       .mockResolvedValue(undefined);

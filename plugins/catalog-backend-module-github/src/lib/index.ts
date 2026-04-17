@@ -28,6 +28,8 @@ export {
 export {
   type UserTransformer,
   defaultUserTransformer,
+  buildDefaultUserTransformer,
+  type DefaultUserTransformerOptions,
   type TeamTransformer,
   defaultOrganizationTeamTransformer,
   type TransformerContext,

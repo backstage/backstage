@@ -17,31 +17,19 @@ The first step is to add the Kubernetes frontend plugin to your Backstage applic
 yarn --cwd packages/app add @backstage/plugin-kubernetes
 ```
 
-Once the package has been installed, you need to import the plugin in your app by adding the "Kubernetes" tab to the respective catalog pages.
+Once installed, the plugin is automatically available in your app through the default feature discovery. It adds a "Kubernetes" tab to entity pages for entities that have Kubernetes resources associated with them. For more details and alternative installation methods, see [installing plugins](../../frontend-system/building-apps/05-installing-plugins.md).
 
-```tsx title="packages/app/src/components/catalog/EntityPage.tsx"
-/* highlight-add-next-line */
-import { EntityKubernetesContent } from '@backstage/plugin-kubernetes';
+The Kubernetes tab is shown by default for entities where Kubernetes data is available, based on the entity annotations. You can customize the entity filter for the tab through `app-config.yaml`:
 
-// You can add the tab to any number of pages, the service page is shown as an
-// example here
-const serviceEntityPage = (
-  <EntityLayout>
-    {/* other tabs... */}
-    {/* highlight-add-start */}
-    <EntityLayout.Route path="/kubernetes" title="Kubernetes">
-      <EntityKubernetesContent refreshIntervalMs={30000} />
-    </EntityLayout.Route>
-    {/* highlight-add-end */}
-  </EntityLayout>
-);
+```yaml title="app-config.yaml"
+app:
+  extensions:
+    - entity-content:kubernetes/kubernetes:
+        config:
+          filter:
+            metadata.annotations.backstage.io/kubernetes-id:
+              $exists: true
 ```
-
-:::note Note
-
-The optional `refreshIntervalMs` property on the `EntityKubernetesContent` defines the interval in which the content automatically refreshes, if not set this will default to 10 seconds.
-
-:::
 
 That's it! But now, we need the Kubernetes Backend plugin for the frontend to work.
 

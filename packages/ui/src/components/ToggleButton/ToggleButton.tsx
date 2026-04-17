@@ -20,7 +20,11 @@ import type { ToggleButtonProps } from './types';
 import { useDefinition } from '../../hooks/useDefinition';
 import { ToggleButtonDefinition } from './definition';
 
-/** @public */
+/**
+ * A button that maintains a pressed or unpressed state, with optional start and end icon slots.
+ *
+ * @public
+ */
 export const ToggleButton = forwardRef(
   (props: ToggleButtonProps, ref: Ref<HTMLButtonElement>) => {
     const { ownProps, restProps, dataAttributes } = useDefinition(

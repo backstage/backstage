@@ -225,4 +225,10 @@ export default createFrontendPlugin({
   },
 });
 
-export { homeTranslationRef } from './translation';
+import { homeTranslationRef as _homeTranslationRef } from './translation';
+
+/**
+ * @alpha
+ * @deprecated Import from `@backstage/plugin-home` instead.
+ */
+export const homeTranslationRef = _homeTranslationRef;

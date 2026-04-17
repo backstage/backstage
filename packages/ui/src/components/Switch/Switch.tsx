@@ -20,7 +20,11 @@ import type { SwitchProps } from './types';
 import { useDefinition } from '../../hooks/useDefinition';
 import { SwitchDefinition } from './definition';
 
-/** @public */
+/**
+ * A toggle control for switching between on and off states, with an optional visible label.
+ *
+ * @public
+ */
 export const Switch = forwardRef<HTMLLabelElement, SwitchProps>(
   (props, ref) => {
     const { ownProps, restProps } = useDefinition(SwitchDefinition, props);

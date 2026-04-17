@@ -40,7 +40,7 @@ import {
   NotFoundError,
   NotModifiedError,
   ResponseError,
-  assertError,
+  toError,
 } from '@backstage/errors';
 import { ReadTreeResponseFactory, ReaderFactory } from './types';
 import { Minimatch } from 'minimatch';
@@ -174,8 +174,8 @@ export class GerritUrlReader implements UrlReaderService {
           ],
           etag: data.etag ?? '',
         };
-      } catch (error) {
-        assertError(error);
+      } catch (e) {
+        const error = toError(e);
         if (error.name === 'NotFoundError') {
           return {
             files: [],

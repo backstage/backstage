@@ -27,6 +27,128 @@ app:
 
   packageName: example-app
 
+  routes:
+    bindings:
+      catalog.viewTechDoc: techdocs.docRoot
+      org.catalogIndex: catalog.catalogIndex
+
+  pluginOverrides:
+    - match:
+        pluginId: pages
+      info:
+        description: 'This description was overridden in app-config.yaml'
+    - match:
+        pluginId: /^catalog(-.*)?$/
+      info:
+        ownerEntityRefs: [cubic-belugas]
+    - match:
+        packageName: '@backstage/plugin-scaffolder'
+      info:
+        ownerEntityRefs: [cubic-belugas]
+
+  extensions:
+    # set availableLanguages example
+    - api:app/app-language:
+        config:
+          availableLanguages: ['en', 'es', 'fr', 'de', 'ja']
+          defaultLanguage: 'en'
+    - entity-card:org/members-list:
+        config:
+          showAggregateMembersToggle: true
+          initialRelationAggregation: aggregated
+    - entity-card:org/ownership:
+        config:
+          ownedKinds: ['Component', 'API', 'System']
+
+    # - apis.plugin.graphiql.browse.gitlab: true
+    # - graphiql-endpoint:graphiql/gitlab: true
+
+    - nav-item:search: false
+    - nav-item:user-settings: false
+    - nav-item:catalog
+    - nav-item:api-docs
+    - nav-item:scaffolder
+    - nav-item:app-visualizer
+
+    # Pages
+    - page:catalog/entity:
+        config:
+          showNavItemIcons: true
+          # default content order for all groups, can be 'title' or 'natural'
+          # defaultContentOrder: title
+          groups:
+            # placing a tab at the beginning
+            - overview:
+                title: Overview
+            # example disabling a default group
+            # - development: false
+            # example overriding a default group title
+            - documentation:
+                title: Docs
+                icon: docs
+                # example aliasing a group
+                # aliases:
+                #   - docs
+            - deployment:
+                title: Deployments
+            # example adding a new group
+            - custom:
+                title: Custom
+
+    # Entity page cards
+    - entity-card:catalog/about:
+        config:
+          type: info
+    - entity-card:catalog/labels
+    - entity-card:catalog/links:
+        config:
+          filter:
+            kind: component
+            metadata.links:
+              $exists: true
+          # filter: kind:component has:links
+          type: info
+    # - entity-card:linguist/languages
+    - entity-card:catalog-graph/relations:
+        config:
+          height: 300
+    - entity-card:api-docs/has-apis
+    - entity-card:api-docs/consumed-apis
+    - entity-card:api-docs/provided-apis
+    - entity-card:api-docs/providing-components
+    - entity-card:api-docs/consuming-components
+    # Org Plugin
+    - entity-card:org/group-profile
+    - entity-card:org/members-list
+    - entity-card:org/ownership
+    - entity-card:org/user-profile:
+        config:
+          maxRelations: 5
+          hideIcons: true
+    # - entity-card:azure-devops/readme
+
+    # Entity page contents
+    - entity-content:catalog/overview
+    - entity-content:api-docs/definition
+    - entity-content:api-docs/apis:
+        config:
+          # example overriding the default group
+          group: documentation
+          icon: kind:api
+    - entity-content:techdocs:
+        config:
+          icon: techdocs
+    - entity-content:kubernetes/kubernetes:
+        config:
+          # example disassociating from the default group
+          group: false
+    # - entity-content:azure-devops/pipelines
+    # - entity-content:azure-devops/pull-requests
+    # - entity-content:azure-devops/git-tags
+
+    # Disable the catalog-unprocessed-entities element outside devtools
+    - page:catalog-unprocessed-entities: false
+
 backend:
   # Used for enabling authentication, secret is shared by all backend plugins
   # See https://backstage.io/docs/auth/service-to-service-auth for

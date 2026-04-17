@@ -46,6 +46,7 @@ export class AuthorizedLocationService implements LocationService {
     spec: LocationInput,
     dryRun: boolean,
     options: {
+      onConflict?: 'refresh' | 'reject';
       credentials: BackstageCredentials;
     },
   ): Promise<{
@@ -120,6 +121,25 @@ export class AuthorizedLocationService implements LocationService {
     }
 
     return this.locationService.getLocation(id, options);
+  }
+
+  async updateLocation(
+    id: string,
+    location: LocationInput,
+    options: { credentials: BackstageCredentials },
+  ): Promise<Location> {
+    const authorizationResponse = (
+      await this.permissionApi.authorize(
+        [{ permission: catalogLocationCreatePermission }],
+        { credentials: options.credentials },
+      )
+    )[0];
+
+    if (authorizationResponse.result === AuthorizeResult.DENY) {
+      throw new NotAllowedError();
+    }
+
+    return this.locationService.updateLocation(id, location, options);
   }
 
   async deleteLocation(

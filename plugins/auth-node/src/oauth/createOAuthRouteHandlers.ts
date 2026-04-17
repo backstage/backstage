@@ -39,7 +39,11 @@ import {
   ProfileTransform,
   SignInResolver,
 } from '../types';
-import { OAuthAuthenticator, OAuthAuthenticatorResult } from './types';
+import {
+  OAuthAuthenticator,
+  OAuthAuthenticatorLogoutResult,
+  OAuthAuthenticatorResult,
+} from './types';
 import { Config, readDurationFromConfig } from '@backstage/config';
 import { CookieScopeManager } from './CookieScopeManager';
 
@@ -280,16 +284,40 @@ export function createOAuthRouteHandlers<TProfile>(
         throw new AuthenticationError('Invalid X-Requested-With header');
       }
 
+      const origin = req.get('origin');
+      if (origin && !isOriginAllowed(origin)) {
+        throw new NotAllowedError(`Origin '${origin}' is not allowed`);
+      }
+
+      let logoutResult: void | OAuthAuthenticatorLogoutResult = undefined;
       if (authenticator.logout) {
         const refreshToken = cookieManager.getRefreshToken(req);
-        await authenticator.logout({ req, refreshToken }, authenticatorCtx);
+        logoutResult = await authenticator.logout(
+          { req, refreshToken },
+          authenticatorCtx,
+        );
       }
 
       // remove refresh token cookie if it is set
-      cookieManager.removeRefreshToken(res, req.get('origin'));
+      cookieManager.removeRefreshToken(res, origin);
 
       // remove persisted scopes
       await scopeManager.clear(req);
+
+      if (logoutResult?.logoutUrl) {
+        try {
+          const logoutUrl = new URL(logoutResult.logoutUrl);
+          if (
+            logoutUrl.protocol === 'https:' ||
+            logoutUrl.hostname === 'localhost'
+          ) {
+            res.status(200).json({ logoutUrl: logoutResult.logoutUrl });
+            return;
+          }
+        } catch {
+          // Malformed URL — fall through to empty response
+        }
+      }
 
       res.status(200).end();
     },

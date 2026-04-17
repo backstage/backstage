@@ -26,7 +26,6 @@ import { alertApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import {
   dialogApiRef,
   useTranslationRef,
-  type DialogApiDialog,
 } from '@backstage/frontend-plugin-api';
 import { catalogTranslationRef } from './translation';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -110,7 +109,7 @@ export const unregisterEntityContextMenuItem =
           title: t('entityContextMenu.unregisterMenuTitle'),
           disabled: !unregisterPermission.allowed,
           onClick: async () => {
-            dialogApi.showModal(({ dialog }: { dialog: DialogApiDialog }) => (
+            dialogApi.open(({ dialog }) => (
               <UnregisterEntityDialog
                 open
                 entity={entity}

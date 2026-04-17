@@ -2,7 +2,7 @@
 
 ## Unused dependencies (1)
 
-| Name                        | Location     | Severity |
-| :-------------------------- | :----------- | :------- |
-| @backstage/plugin-auth-node | packages/backend-plugin-api/package.json | error    |
+| Name                        | Location          | Severity |
+| :-------------------------- | :---------------- | :------- |
+| @backstage/plugin-auth-node | package.json:59:6 | error    |
 

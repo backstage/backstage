@@ -270,6 +270,7 @@ export interface ScaffolderGetIntegrationsListResponse {
 
 // @public (undocumented)
 export type ScaffolderOutputLink = {
+  if?: string | boolean;
   title?: string;
   icon?: string;
   url?: string;
@@ -278,6 +279,7 @@ export type ScaffolderOutputLink = {
 
 // @public (undocumented)
 export type ScaffolderOutputText = {
+  if?: string | boolean;
   title?: string;
   icon?: string;
   content?: string;
@@ -418,6 +420,9 @@ export interface TemplateEntityV1beta3 extends Entity {
       input?: JsonObject;
     }[];
     parameters?: TemplateParametersV1beta3 | TemplateParametersV1beta3[];
+    secrets?: {
+      schema?: JsonObject;
+    };
     steps: Array<TemplateEntityStepV1beta3>;
     output?: {
       [name: string]: string;

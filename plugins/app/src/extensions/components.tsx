@@ -29,6 +29,7 @@ import {
 import { PluginHeader } from '@backstage/ui';
 import Button from '@material-ui/core/Button';
 import { useMemo } from 'react';
+import { useResolvedPath } from 'react-router-dom';
 
 export const Progress = SwappableComponentBlueprint.make({
   name: 'core-progress',
@@ -74,32 +75,45 @@ export const PageLayout = SwappableComponentBlueprint.make({
     define({
       component: SwappablePageLayout,
       loader: () => (props: PageLayoutProps) => {
-        const { title, icon, noHeader, headerActions, tabs, children } = props;
-        const tabsWithMatchStrategy = useMemo(
+        const {
+          title,
+          icon,
+          noHeader,
+          titleLink,
+          headerActions,
+          tabs,
+          children,
+        } = props;
+        // TODO(Rugvip): Different solution to this path handling would be good
+        const parentPath = useResolvedPath('.').pathname.replace(/\/$/, '');
+        const resolvedTabs = useMemo(
           () =>
             tabs?.map(tab => ({
               ...tab,
+              href: tab.href.startsWith('/')
+                ? tab.href
+                : `${parentPath}/${tab.href}`.replace(/\/{2,}/g, '/'),
               matchStrategy: 'prefix' as const,
             })),
-          [tabs],
+          [tabs, parentPath],
         );
 
-        if (tabsWithMatchStrategy) {
-          return (
-            <>
-              {!noHeader && (
-                <PluginHeader
-                  title={title}
-                  icon={icon}
-                  tabs={tabsWithMatchStrategy}
-                  customActions={headerActions}
-                />
-              )}
-              {children}
-            </>
-          );
+        if (noHeader) {
+          return <>{children}</>;
         }
-        return <>{children}</>;
+
+        return (
+          <>
+            <PluginHeader
+              title={title}
+              icon={icon}
+              titleLink={titleLink}
+              tabs={resolvedTabs}
+              customActions={headerActions}
+            />
+            {children}
+          </>
+        );
       },
     }),
 });

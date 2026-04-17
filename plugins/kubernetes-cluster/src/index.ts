@@ -25,3 +25,4 @@ export {
   type EntityKubernetesClusterContentProps,
 } from './plugin';
 export { Router, isKubernetesClusterAvailable } from './Router';
+export { kubernetesClusterTranslationRef } from './translation';

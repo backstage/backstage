@@ -36,6 +36,7 @@ import { WorkflowRunner } from './types';
 import ObservableImpl from 'zen-observable';
 import waitForExpect from 'wait-for-expect';
 import { mockServices } from '@backstage/backend-test-utils';
+import { metricsServiceMock } from '@backstage/backend-test-utils/alpha';
 import { loggerToWinstonLogger } from '../../util/loggerToWinstonLogger';
 
 jest.mock('./NunjucksWorkflowRunner');
@@ -93,6 +94,7 @@ describe('TaskWorker', () => {
       integrations,
       taskBroker: broker,
       actionRegistry,
+      metrics: metricsServiceMock.mock(),
     });
 
     await broker.dispatch({
@@ -124,6 +126,7 @@ describe('TaskWorker', () => {
       integrations,
       taskBroker: broker,
       actionRegistry,
+      metrics: metricsServiceMock.mock(),
     });
 
     const { taskId } = await broker.dispatch({
@@ -174,6 +177,7 @@ describe('TaskWorker', () => {
           },
         },
       }),
+      metrics: metricsServiceMock.mock(),
     });
 
     await taskWorker.runOneTask({
@@ -261,6 +265,7 @@ describe('Concurrent TaskWorker', () => {
       taskBroker: broker,
       actionRegistry,
       concurrentTasksLimit: expectedConcurrentTasks,
+      metrics: metricsServiceMock.mock(),
     });
 
     taskWorker.start();
@@ -307,6 +312,7 @@ describe('Cancellable TaskWorker', () => {
       integrations,
       taskBroker,
       actionRegistry,
+      metrics: metricsServiceMock.mock(),
     });
 
     const steps = [...Array(10)].map(n => ({

@@ -34,6 +34,20 @@ export const Default = meta.story({
   ),
 });
 
+export const WithDescription = meta.story({
+  args: {
+    ...Default.input.args,
+    description: 'Choose only one option',
+  },
+  render: args => (
+    <RadioGroup {...args}>
+      <Radio value="bulbasaur">Bulbasaur</Radio>
+      <Radio value="charmander">Charmander</Radio>
+      <Radio value="squirtle">Squirtle</Radio>
+    </RadioGroup>
+  ),
+});
+
 export const Horizontal = meta.story({
   args: {
     ...Default.input.args,

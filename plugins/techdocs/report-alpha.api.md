@@ -132,9 +132,9 @@ const _default: OverridableFrontendPlugin<
         icon: string | undefined;
       };
       configInput: {
-        filter?: FilterPredicate | undefined;
-        title?: string | undefined;
         path?: string | undefined;
+        title?: string | undefined;
+        filter?: FilterPredicate | undefined;
         group?: string | false | undefined;
         icon?: string | undefined;
       };
@@ -229,9 +229,9 @@ const _default: OverridableFrontendPlugin<
         filter: FilterPredicate | undefined;
       };
       configInput: {
-        filter?: FilterPredicate | undefined;
         label?: string | undefined;
         title?: string | undefined;
+        filter?: FilterPredicate | undefined;
       };
       output:
         | ExtensionDataRef<
@@ -262,8 +262,12 @@ const _default: OverridableFrontendPlugin<
     'nav-item:techdocs': OverridableExtensionDefinition<{
       kind: 'nav-item';
       name: undefined;
-      config: {};
-      configInput: {};
+      config: {
+        title: string | undefined;
+      };
+      configInput: {
+        title?: string | undefined;
+      };
       output: ExtensionDataRef<
         {
           title: string;
@@ -288,8 +292,8 @@ const _default: OverridableFrontendPlugin<
         title: string | undefined;
       };
       configInput: {
-        title?: string | undefined;
         path?: string | undefined;
+        title?: string | undefined;
       };
       output:
         | ExtensionDataRef<string, 'core.routing.path', {}>
@@ -348,7 +352,6 @@ const _default: OverridableFrontendPlugin<
         >;
       };
       params: {
-        defaultPath?: [Error: `Use the 'path' param instead`];
         path: string;
         title?: string;
         icon?: IconElement;
@@ -367,8 +370,8 @@ const _default: OverridableFrontendPlugin<
       configInput: {
         withoutSearch?: boolean | undefined;
         withoutHeader?: boolean | undefined;
-        title?: string | undefined;
         path?: string | undefined;
+        title?: string | undefined;
       };
       output:
         | ExtensionDataRef<string, 'core.routing.path', {}>
@@ -441,13 +444,23 @@ const _default: OverridableFrontendPlugin<
       kind: 'page';
       name: 'reader';
       params: {
-        defaultPath?: [Error: `Use the 'path' param instead`];
         path: string;
         title?: string;
         icon?: IconElement;
         loader?: () => Promise<JSX_2.Element>;
         routeRef?: RouteRef_2;
         noHeader?: boolean;
+      };
+    }>;
+    'plugin-header-action:techdocs': OverridableExtensionDefinition<{
+      kind: 'plugin-header-action';
+      name: undefined;
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
+      inputs: {};
+      params: {
+        loader: () => Promise<JSX.Element>;
       };
     }>;
     'search-result-list-item:techdocs': OverridableExtensionDefinition<{
@@ -461,8 +474,8 @@ const _default: OverridableFrontendPlugin<
       configInput: {
         title?: string | undefined;
         lineClamp?: number | undefined;
-        asListItem?: boolean | undefined;
         asLink?: boolean | undefined;
+        asListItem?: boolean | undefined;
         noTrack?: boolean | undefined;
       };
       output: ExtensionDataRef<
@@ -495,8 +508,8 @@ export const techDocsSearchResultListItemExtension: OverridableExtensionDefiniti
   configInput: {
     title?: string | undefined;
     lineClamp?: number | undefined;
-    asListItem?: boolean | undefined;
     asLink?: boolean | undefined;
+    asListItem?: boolean | undefined;
     noTrack?: boolean | undefined;
   };
   output: ExtensionDataRef<

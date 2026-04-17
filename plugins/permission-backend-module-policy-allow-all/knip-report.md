@@ -2,13 +2,13 @@
 
 ## Unused dependencies (1)
 
-| Name                        | Location     | Severity |
-| :-------------------------- | :----------- | :------- |
-| @backstage/plugin-auth-node | plugins/permission-backend-module-policy-allow-all/package.json | error    |
+| Name                        | Location          | Severity |
+| :-------------------------- | :---------------- | :------- |
+| @backstage/plugin-auth-node | package.json:37:6 | error    |
 
 ## Unused devDependencies (1)
 
-| Name                          | Location     | Severity |
-| :---------------------------- | :----------- | :------- |
-| @backstage/backend-test-utils | plugins/permission-backend-module-policy-allow-all/package.json | error    |
+| Name                          | Location          | Severity |
+| :---------------------------- | :---------------- | :------- |
+| @backstage/backend-test-utils | package.json:42:6 | error    |
 

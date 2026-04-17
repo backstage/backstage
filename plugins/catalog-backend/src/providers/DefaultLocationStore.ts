@@ -28,7 +28,10 @@ import {
   EntityProvider,
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
-import { locationSpecToLocationEntity } from '../util/conversion';
+import {
+  computeLocationEntityRef,
+  locationSpecToLocationEntity,
+} from '../util/conversion';
 import { LocationInput, LocationStore } from '../service/types';
 import {
   ANNOTATION_ORIGIN_LOCATION,
@@ -68,16 +71,27 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
     return 'DefaultLocationStore';
   }
 
-  async createLocation(input: LocationInput): Promise<Location> {
+  async createLocation(
+    input: LocationInput,
+    options?: {
+      onConflict?: 'refresh' | 'reject';
+    },
+  ): Promise<Location> {
+    let existed = false;
+
     const location = await this.db.transaction(async tx => {
       // Attempt to find a previous location matching the input
       const previousLocations = await this.locations(tx);
       // TODO: when location id's are a compilation of input target we can remove this full
       // lookup of locations first and just grab the by that instead.
-      const previousLocation = previousLocations.some(
+      const previousLocation = previousLocations.find(
         l => input.type === l.type && input.target === l.target,
       );
       if (previousLocation) {
+        if (options?.onConflict === 'refresh') {
+          existed = true;
+          return previousLocation;
+        }
         throw new ConflictError(
           `Location ${input.type}:${input.target} already exists`,
         );
@@ -87,24 +101,55 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
         id: uuid(),
         type: input.type,
         target: input.target,
+        location_entity_ref: computeLocationEntityRef(input.type, input.target),
       };
 
       await tx<DbLocationsRow>('locations').insert(inner);
 
       return inner;
     });
-    const entity = locationSpecToLocationEntity({ location });
+
+    // Always upsert the entity, even if the location already existed, to
+    // recover from cases where the entity was inadvertently deleted.
+    const entity = locationSpecToLocationEntity({
+      location,
+      locationEntityRef: location.location_entity_ref,
+    });
     await this.connection.applyMutation({
       type: 'delta',
       added: [{ entity, locationKey: getEntityLocationRef(entity) }],
       removed: [],
     });
 
-    return location;
+    if (existed) {
+      // This is the "onConflict refresh" case, where a re-registration safely
+      // tries to recover from a bad state.
+      const entityRef = stringifyEntityRef(entity);
+      await this.db<DbRefreshStateRow>('refresh_state')
+        .where({ entity_ref: entityRef })
+        .update({
+          next_update_at: this.db.fn.now(),
+          result_hash: '',
+        });
+    }
+
+    return {
+      id: location.id,
+      type: location.type,
+      target: location.target,
+      entityRef: location.location_entity_ref,
+    };
   }
 
   async listLocations(): Promise<Location[]> {
-    return await this.locations();
+    return (await this.locations()).map(
+      ({ id, type, target, location_entity_ref }) => ({
+        id,
+        type,
+        target,
+        entityRef: location_entity_ref,
+      }),
+    );
   }
 
   async queryLocations(options: {
@@ -142,6 +187,7 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
         id: item.id,
         target: item.target,
         type: item.type,
+        entityRef: item.location_entity_ref,
       })),
       totalItems: Number(count),
     };
@@ -155,7 +201,82 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
     if (!items.length) {
       throw new NotFoundError(`Found no location with ID ${id}`);
     }
-    return items[0];
+    const { id: rowId, type, target, location_entity_ref } = items[0];
+    return { id: rowId, type, target, entityRef: location_entity_ref };
+  }
+
+  async updateLocation(id: string, location: LocationInput): Promise<Location> {
+    if (!this.connection) {
+      throw new Error('location store is not initialized');
+    }
+
+    // MySQL doesn't support UPDATE ... RETURNING. MySQL also reports 0 affected
+    // rows when the new values are identical to the old ones, so we can't rely
+    // on the row count to detect existence. Instead we SELECT to check existence
+    // first and then UPDATE inside a transaction.
+    let row: DbLocationsRow | undefined;
+    if (this.db.client.config.client.includes('mysql')) {
+      await this.db.transaction(async tx => {
+        [row] = await tx<DbLocationsRow>('locations').where({ id }).select();
+        if (!row) {
+          return;
+        }
+
+        const [conflict] = await tx<DbLocationsRow>('locations')
+          .where({ type: location.type, target: location.target })
+          .whereNot({ id })
+          .select();
+        if (conflict) {
+          throw new ConflictError(
+            `Location ${location.type}:${location.target} already exists`,
+          );
+        }
+
+        await tx<DbLocationsRow>('locations')
+          .where({ id })
+          .update({ type: location.type, target: location.target });
+        row = { ...row, type: location.type, target: location.target };
+      });
+    } else {
+      await this.db.transaction(async tx => {
+        const [conflict] = await tx<DbLocationsRow>('locations')
+          .where({ type: location.type, target: location.target })
+          .whereNot({ id })
+          .select();
+        if (conflict) {
+          throw new ConflictError(
+            `Location ${location.type}:${location.target} already exists`,
+          );
+        }
+
+        [row] = await tx<DbLocationsRow>('locations')
+          .where({ id })
+          .update({ type: location.type, target: location.target })
+          .returning('*');
+      });
+    }
+
+    if (!row) {
+      throw new NotFoundError(`Found no location with ID ${id}`);
+    }
+
+    const entity = locationSpecToLocationEntity({
+      location: row,
+      locationEntityRef: row.location_entity_ref,
+    });
+
+    await this.connection.applyMutation({
+      type: 'delta',
+      added: [{ entity, locationKey: getEntityLocationRef(entity) }],
+      removed: [],
+    });
+
+    return {
+      id: row.id,
+      type: row.type,
+      target: row.target,
+      entityRef: row.location_entity_ref,
+    };
   }
 
   async deleteLocation(id: string): Promise<void> {
@@ -175,7 +296,10 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
       await tx<DbLocationsRow>('locations').where({ id }).del();
       return location;
     });
-    const entity = locationSpecToLocationEntity({ location: deleted });
+    const entity = locationSpecToLocationEntity({
+      location: deleted,
+      locationEntityRef: deleted.location_entity_ref,
+    });
     await this.connection.applyMutation({
       type: 'delta',
       added: [],
@@ -219,7 +343,12 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
       );
     }
 
-    return locationRow;
+    return {
+      id: locationRow.id,
+      type: locationRow.type,
+      target: locationRow.target,
+      entityRef: locationRow.location_entity_ref,
+    };
   }
 
   private get connection(): EntityProviderConnection {
@@ -236,7 +365,10 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
     const locations = await this.locations();
 
     const entities = locations.map(location => {
-      const entity = locationSpecToLocationEntity({ location });
+      const entity = locationSpecToLocationEntity({
+        location,
+        locationEntityRef: location.location_entity_ref,
+      });
       return { entity, locationKey: getEntityLocationRef(entity) };
     });
 
@@ -253,18 +385,15 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
     }
   }
 
-  private async locations(dbOrTx: Knex.Transaction | Knex = this.db) {
+  private async locations(
+    dbOrTx: Knex.Transaction | Knex = this.db,
+  ): Promise<DbLocationsRow[]> {
     const locations = await dbOrTx<DbLocationsRow>('locations').select();
     return (
       locations
         // TODO(blam): We should create a mutation to remove this location for everyone
         // eventually when it's all done and dusted
         .filter(({ type }) => type !== 'bootstrap')
-        .map(item => ({
-          id: item.id,
-          target: item.target,
-          type: item.type,
-        }))
     );
   }
 
@@ -354,7 +483,12 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
 
       const newLocations = batch
         .filter(url => !existingUrls.has(url))
-        .map(url => ({ id: uuid(), type: 'url', target: url }));
+        .map(url => ({
+          id: uuid(),
+          type: 'url',
+          target: url,
+          location_entity_ref: computeLocationEntityRef('url', url),
+        }));
 
       if (newLocations.length) {
         await this.db<DbLocationsRow>('locations').insert(newLocations);
@@ -362,7 +496,10 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
         await this.connection.applyMutation({
           type: 'delta',
           added: newLocations.map(location => {
-            const entity = locationSpecToLocationEntity({ location });
+            const entity = locationSpecToLocationEntity({
+              location,
+              locationEntityRef: location.location_entity_ref,
+            });
             return { entity, locationKey: getEntityLocationRef(entity) };
           }),
           removed: [],
@@ -396,7 +533,10 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
           type: 'delta',
           added: [],
           removed: rows.map(row => ({
-            entity: locationSpecToLocationEntity({ location: row }),
+            entity: locationSpecToLocationEntity({
+              location: row,
+              locationEntityRef: row.location_entity_ref,
+            }),
           })),
         });
 
@@ -475,7 +615,10 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
       type: 'delta',
       added: [],
       removed: rows.map(l => ({
-        entity: locationSpecToLocationEntity({ location: l }),
+        entity: locationSpecToLocationEntity({
+          location: l,
+          locationEntityRef: l.location_entity_ref,
+        }),
       })),
     });
   }
@@ -633,13 +776,15 @@ function applyLocationFilterToQuery(
 
   for (const [keyAnyCase, value] of entries) {
     const key = keyAnyCase.toLocaleLowerCase('en-US');
-    if (!['id', 'type', 'target'].includes(key)) {
+    if (!['id', 'type', 'target', 'entityref'].includes(key)) {
       throw new InputError(
-        `Invalid filter predicate, expected key to be 'id', 'type', or 'target', got '${keyAnyCase}'`,
+        `Invalid filter predicate, expected key to be 'id', 'type', 'target', or 'entityRef', got '${keyAnyCase}'`,
       );
     }
 
-    result = applyFilterValueToQuery(clientType, result, key, value);
+    // Map the API field name to the underlying column name
+    const column = key === 'entityref' ? 'location_entity_ref' : key;
+    result = applyFilterValueToQuery(clientType, result, column, value);
   }
 
   return result;

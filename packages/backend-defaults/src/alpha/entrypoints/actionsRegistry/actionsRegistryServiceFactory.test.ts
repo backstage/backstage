@@ -24,6 +24,10 @@ import request from 'supertest';
 import { actionsRegistryServiceFactory } from './actionsRegistryServiceFactory';
 import { InputError, NotFoundError } from '@backstage/errors';
 import { actionsRegistryServiceRef } from '@backstage/backend-plugin-api/alpha';
+import {
+  AuthorizeResult,
+  createPermission,
+} from '@backstage/plugin-permission-common';
 
 describe('actionsRegistryServiceFactory', () => {
   const defaultServices = [
@@ -99,6 +103,57 @@ describe('actionsRegistryServiceFactory', () => {
                 action: async () => {
                   return { output: { ok: 'bo' } };
                 },
+              });
+            },
+          });
+        },
+      });
+
+      expect(true).toBe(true);
+    });
+
+    it('should enforce types on example input and output', () => {
+      createBackendPlugin({
+        pluginId: 'my-plugin',
+        register(reg) {
+          reg.registerInit({
+            deps: {
+              actionsRegistry: actionsRegistryServiceRef,
+            },
+            async init({ actionsRegistry }) {
+              actionsRegistry.register({
+                name: 'test',
+                title: 'Test',
+                description: 'Test',
+                schema: {
+                  input: z =>
+                    z.object({
+                      name: z.string(),
+                    }),
+                  output: z =>
+                    z.object({
+                      ok: z.boolean(),
+                    }),
+                },
+                examples: [
+                  {
+                    title: 'Valid example',
+                    input: { name: 'test' },
+                    output: { ok: true },
+                  },
+                  {
+                    title: 'Bad input',
+                    // @ts-expect-error - name must be a string
+                    input: { name: 123 },
+                  },
+                  {
+                    title: 'Bad output',
+                    input: { name: 'test' },
+                    // @ts-expect-error - ok must be a boolean
+                    output: { ok: 'yes' },
+                  },
+                ],
+                action: async () => ({ output: { ok: true } }),
               });
             },
           });
@@ -282,6 +337,79 @@ describe('actionsRegistryServiceFactory', () => {
       });
     });
 
+    it('should return examples in the action list', async () => {
+      const pluginSubject = createBackendPlugin({
+        pluginId: 'my-plugin',
+        register(reg) {
+          reg.registerInit({
+            deps: {
+              actionsRegistry: actionsRegistryServiceRef,
+            },
+            async init({ actionsRegistry }) {
+              actionsRegistry.register({
+                name: 'test',
+                title: 'Test',
+                description: 'Test',
+                schema: {
+                  input: z =>
+                    z.object({
+                      name: z.string(),
+                    }),
+                  output: z =>
+                    z.object({
+                      ok: z.boolean(),
+                    }),
+                },
+                examples: [
+                  {
+                    title: 'Basic usage',
+                    description: 'A simple example',
+                    input: { name: 'world' },
+                    output: { ok: true },
+                  },
+                  {
+                    title: 'Without output',
+                    input: { name: 'test' },
+                  },
+                ],
+                action: async () => ({ output: { ok: true } }),
+              });
+            },
+          });
+        },
+      });
+
+      const { server } = await startTestBackend({
+        features: [pluginSubject, ...defaultServices],
+      });
+
+      const { body, status } = await request(server).get(
+        '/api/my-plugin/.backstage/actions/v1/actions',
+      );
+
+      expect(status).toBe(200);
+
+      expect(body).toMatchObject({
+        actions: [
+          {
+            name: 'test',
+            examples: [
+              {
+                title: 'Basic usage',
+                description: 'A simple example',
+                input: { name: 'world' },
+                output: { ok: true },
+              },
+              {
+                title: 'Without output',
+                input: { name: 'test' },
+              },
+            ],
+          },
+        ],
+      });
+    });
+
     it('should forces registration of input and output schema as objects', async () => {
       const pluginSubject = createBackendPlugin({
         pluginId: 'my-plugin',
@@ -439,7 +567,7 @@ describe('actionsRegistryServiceFactory', () => {
       });
     });
 
-    it('should throw an error if the action is invoked by a user', async () => {
+    it('should allow actions to be invoked by a user', async () => {
       const testServices = [
         actionsRegistryServiceFactory,
         httpRouterServiceFactory,
@@ -460,12 +588,8 @@ describe('actionsRegistryServiceFactory', () => {
           name: 'test',
         });
 
-      expect(status).toBe(403);
-      expect(body).toMatchObject({
-        error: {
-          message: 'Actions must be invoked by a service, not a user',
-        },
-      });
+      expect(status).toBe(200);
+      expect(body).toMatchObject({ output: { ok: true } });
     });
 
     it('should validate the output of the action if provided', async () => {
@@ -556,6 +680,313 @@ describe('actionsRegistryServiceFactory', () => {
           message: 'entity not found',
         },
       });
+    });
+  });
+
+  describe('permissions', () => {
+    const testPermission = createPermission({
+      name: 'test.action.use',
+      attributes: {},
+    });
+
+    it('should filter out actions with denied permissions when listing', async () => {
+      const pluginSubject = createBackendPlugin({
+        pluginId: 'my-plugin',
+        register(reg) {
+          reg.registerInit({
+            deps: {
+              actionsRegistry: actionsRegistryServiceRef,
+            },
+            async init({ actionsRegistry }) {
+              actionsRegistry.register({
+                name: 'public-action',
+                title: 'Public Action',
+                description: 'No permission required',
+                schema: {
+                  input: z => z.object({}),
+                  output: z => z.object({}),
+                },
+                action: async () => ({ output: {} }),
+              });
+              actionsRegistry.register({
+                name: 'protected-action',
+                title: 'Protected Action',
+                description: 'Permission required',
+                visibilityPermission: testPermission,
+                schema: {
+                  input: z => z.object({}),
+                  output: z => z.object({}),
+                },
+                action: async () => ({ output: {} }),
+              });
+            },
+          });
+        },
+      });
+
+      const { server } = await startTestBackend({
+        features: [
+          pluginSubject,
+          actionsRegistryServiceFactory,
+          httpRouterServiceFactory,
+          mockServices.httpAuth.factory({
+            defaultCredentials: mockCredentials.service('user:default/mock'),
+          }),
+          mockServices.permissions.factory({
+            result: AuthorizeResult.DENY,
+          }),
+        ],
+      });
+
+      const { body, status } = await request(server).get(
+        '/api/my-plugin/.backstage/actions/v1/actions',
+      );
+
+      expect(status).toBe(200);
+      expect(body.actions).toHaveLength(1);
+      expect(body.actions[0].name).toBe('public-action');
+    });
+
+    it('should include actions with allowed permissions when listing', async () => {
+      const pluginSubject = createBackendPlugin({
+        pluginId: 'my-plugin',
+        register(reg) {
+          reg.registerInit({
+            deps: {
+              actionsRegistry: actionsRegistryServiceRef,
+            },
+            async init({ actionsRegistry }) {
+              actionsRegistry.register({
+                name: 'protected-action',
+                title: 'Protected Action',
+                description: 'Permission required',
+                visibilityPermission: testPermission,
+                schema: {
+                  input: z => z.object({}),
+                  output: z => z.object({}),
+                },
+                action: async () => ({ output: {} }),
+              });
+            },
+          });
+        },
+      });
+
+      const { server } = await startTestBackend({
+        features: [
+          pluginSubject,
+          actionsRegistryServiceFactory,
+          httpRouterServiceFactory,
+          mockServices.httpAuth.factory({
+            defaultCredentials: mockCredentials.service('user:default/mock'),
+          }),
+          mockServices.permissions.factory({
+            result: AuthorizeResult.ALLOW,
+          }),
+        ],
+      });
+
+      const { body, status } = await request(server).get(
+        '/api/my-plugin/.backstage/actions/v1/actions',
+      );
+
+      expect(status).toBe(200);
+      expect(body.actions).toHaveLength(1);
+      expect(body.actions[0].name).toBe('protected-action');
+    });
+
+    it('should return 404 when invoking an action with denied permission', async () => {
+      const pluginSubject = createBackendPlugin({
+        pluginId: 'my-plugin',
+        register(reg) {
+          reg.registerInit({
+            deps: {
+              actionsRegistry: actionsRegistryServiceRef,
+            },
+            async init({ actionsRegistry }) {
+              actionsRegistry.register({
+                name: 'protected-action',
+                title: 'Protected Action',
+                description: 'Permission required',
+                visibilityPermission: testPermission,
+                schema: {
+                  input: z => z.object({}),
+                  output: z => z.object({}),
+                },
+                action: async () => ({ output: {} }),
+              });
+            },
+          });
+        },
+      });
+
+      const { server } = await startTestBackend({
+        features: [
+          pluginSubject,
+          actionsRegistryServiceFactory,
+          httpRouterServiceFactory,
+          mockServices.httpAuth.factory({
+            defaultCredentials: mockCredentials.service('user:default/mock'),
+          }),
+          mockServices.permissions.factory({
+            result: AuthorizeResult.DENY,
+          }),
+        ],
+      });
+
+      const { body, status } = await request(server).post(
+        '/api/my-plugin/.backstage/actions/v1/actions/my-plugin:protected-action/invoke',
+      );
+
+      expect(status).toBe(404);
+      expect(body).toMatchObject({
+        error: {
+          message: 'Action "my-plugin:protected-action" not found',
+        },
+      });
+    });
+
+    it('should allow invoking an action when permission is granted', async () => {
+      const mockAction = jest.fn().mockResolvedValue({ output: { ok: true } });
+
+      const pluginSubject = createBackendPlugin({
+        pluginId: 'my-plugin',
+        register(reg) {
+          reg.registerInit({
+            deps: {
+              actionsRegistry: actionsRegistryServiceRef,
+            },
+            async init({ actionsRegistry }) {
+              actionsRegistry.register({
+                name: 'protected-action',
+                title: 'Protected Action',
+                description: 'Permission required',
+                visibilityPermission: testPermission,
+                schema: {
+                  input: z => z.object({}),
+                  output: z => z.object({ ok: z.boolean() }),
+                },
+                action: mockAction,
+              });
+            },
+          });
+        },
+      });
+
+      const { server } = await startTestBackend({
+        features: [
+          pluginSubject,
+          actionsRegistryServiceFactory,
+          httpRouterServiceFactory,
+          mockServices.httpAuth.factory({
+            defaultCredentials: mockCredentials.service('user:default/mock'),
+          }),
+          mockServices.permissions.factory({
+            result: AuthorizeResult.ALLOW,
+          }),
+        ],
+      });
+
+      const { body, status } = await request(server).post(
+        '/api/my-plugin/.backstage/actions/v1/actions/my-plugin:protected-action/invoke',
+      );
+
+      expect(status).toBe(200);
+      expect(body).toMatchObject({ output: { ok: true } });
+      expect(mockAction).toHaveBeenCalled();
+    });
+
+    it('should pass the correct permission to the authorize call', async () => {
+      const permissionsMock = mockServices.permissions.mock({
+        authorize: async () => [{ result: AuthorizeResult.ALLOW }],
+      });
+
+      const pluginSubject = createBackendPlugin({
+        pluginId: 'my-plugin',
+        register(reg) {
+          reg.registerInit({
+            deps: {
+              actionsRegistry: actionsRegistryServiceRef,
+            },
+            async init({ actionsRegistry }) {
+              actionsRegistry.register({
+                name: 'protected-action',
+                title: 'Protected Action',
+                description: 'Permission required',
+                visibilityPermission: testPermission,
+                schema: {
+                  input: z => z.object({}),
+                  output: z => z.object({}),
+                },
+                action: async () => ({ output: {} }),
+              });
+            },
+          });
+        },
+      });
+
+      const { server } = await startTestBackend({
+        features: [
+          pluginSubject,
+          actionsRegistryServiceFactory,
+          httpRouterServiceFactory,
+          mockServices.httpAuth.factory({
+            defaultCredentials: mockCredentials.service('user:default/mock'),
+          }),
+          permissionsMock.factory,
+        ],
+      });
+
+      await request(server).get('/api/my-plugin/.backstage/actions/v1/actions');
+
+      expect(permissionsMock.authorize).toHaveBeenCalledWith(
+        [{ permission: testPermission }],
+        expect.objectContaining({ credentials: expect.anything() }),
+      );
+    });
+
+    it('should register the permission with the permissions registry', async () => {
+      const permissionsRegistryMock = mockServices.permissionsRegistry.mock();
+
+      const pluginSubject = createBackendPlugin({
+        pluginId: 'my-plugin',
+        register(reg) {
+          reg.registerInit({
+            deps: {
+              actionsRegistry: actionsRegistryServiceRef,
+            },
+            async init({ actionsRegistry }) {
+              actionsRegistry.register({
+                name: 'protected-action',
+                title: 'Protected Action',
+                description: 'Permission required',
+                visibilityPermission: testPermission,
+                schema: {
+                  input: z => z.object({}),
+                  output: z => z.object({}),
+                },
+                action: async () => ({ output: {} }),
+              });
+            },
+          });
+        },
+      });
+
+      await startTestBackend({
+        features: [
+          pluginSubject,
+          actionsRegistryServiceFactory,
+          httpRouterServiceFactory,
+          mockServices.httpAuth.factory({
+            defaultCredentials: mockCredentials.service('user:default/mock'),
+          }),
+          permissionsRegistryMock.factory,
+        ],
+      });
+
+      expect(permissionsRegistryMock.addPermissions).toHaveBeenCalledWith([
+        testPermission,
+      ]);
     });
   });
 });

@@ -17,15 +17,16 @@
 import { MouseEvent, useState, useCallback } from 'react';
 import {
   catalogApiRef,
-  humanizeEntityRef,
+  defaultEntityPresentation,
+  entityPresentationApiRef,
 } from '@backstage/plugin-catalog-react';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import useAsync from 'react-use/esm/useAsync';
 import Popover from '@material-ui/core/Popover';
-import { useApi } from '@backstage/core-plugin-api';
+import { useApi, useApiHolder } from '@backstage/core-plugin-api';
 import { ResponseErrorPanel } from '@backstage/core-components';
-import { Entity, GroupEntity } from '@backstage/catalog-model';
+import { GroupEntity } from '@backstage/catalog-model';
 import { GroupListPickerButton } from './GroupListPickerButton';
 
 /**
@@ -43,6 +44,8 @@ export type GroupListPickerProps = {
 /** @public */
 export const GroupListPicker = (props: GroupListPickerProps) => {
   const catalogApi = useApi(catalogApiRef);
+  const apis = useApiHolder();
+  const entityPresentationApi = apis.get(entityPresentationApiRef);
 
   const { onChange, groupTypes, placeholder = '', defaultValue = '' } = props;
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
@@ -85,8 +88,6 @@ export const GroupListPicker = (props: GroupListPickerProps) => {
     return <ResponseErrorPanel error={error} />;
   }
 
-  const getHumanEntityRef = (entity: Entity) => humanizeEntityRef(entity);
-
   return (
     <>
       <Popover
@@ -101,7 +102,9 @@ export const GroupListPicker = (props: GroupListPickerProps) => {
           options={groups ?? []}
           groupBy={option => option.spec.type}
           getOptionLabel={option =>
-            option.spec.profile?.displayName ?? getHumanEntityRef(option)
+            entityPresentationApi
+              ? entityPresentationApi.forEntity(option).snapshot.primaryTitle
+              : defaultEntityPresentation(option).primaryTitle
           }
           inputValue={inputValue}
           onInputChange={(_, value) => setInputValue(value)}

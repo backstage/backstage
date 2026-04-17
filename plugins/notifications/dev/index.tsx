@@ -21,7 +21,18 @@ import {
 } from '../src';
 import { signalsPlugin } from '@backstage/plugin-signals';
 import { SidebarItem } from '@backstage/core-components';
-import AddAlert from '@material-ui/icons/AddAlert';
+import { IconComponent } from '@backstage/core-plugin-api';
+import { RiBellLine } from '@remixicon/react';
+
+const AddAlertIcon: IconComponent = props => {
+  let size = 24;
+  if (props.fontSize === 'large') {
+    size = 32;
+  } else if (props.fontSize === 'small') {
+    size = 16;
+  }
+  return <RiBellLine size={size} />;
+};
 
 createDevApp()
   .registerPlugin(notificationsPlugin)
@@ -38,7 +49,7 @@ createDevApp()
   .addSidebarItem(<NotificationsSidebarItem webNotificationsEnabled />)
   .addSidebarItem(
     <SidebarItem
-      icon={AddAlert}
+      icon={AddAlertIcon}
       text="Random notification"
       onClick={() => {
         fetch('http://localhost:7007/api/notifications-debug/', {

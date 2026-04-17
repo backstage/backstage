@@ -20,7 +20,11 @@ import type { FieldErrorProps } from './types';
 import { useDefinition } from '../../hooks/useDefinition';
 import { FieldErrorDefinition } from './definition';
 
-/** @public */
+/**
+ * Displays a validation error message associated with a form field.
+ *
+ * @public
+ */
 export const FieldError = forwardRef<HTMLDivElement, FieldErrorProps>(
   (props: FieldErrorProps, ref) => {
     const { ownProps, restProps } = useDefinition(FieldErrorDefinition, props);

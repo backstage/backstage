@@ -17,6 +17,7 @@
 import { ANNOTATION_KUBERNETES_AUTH_PROVIDER } from '@backstage/plugin-kubernetes-common';
 import { ConfigReader, Config } from '@backstage/config';
 import { GkeClusterLocator } from './GkeClusterLocator';
+import { mockServices } from '@backstage/backend-test-utils';
 import * as container from '@google-cloud/container';
 
 const mockedListClusters = jest.fn();
@@ -31,8 +32,11 @@ jest.mock('@google-cloud/container', () => {
 });
 
 describe('GkeClusterLocator', () => {
+  const logger = mockServices.logger.mock();
+
   beforeEach(() => {
     mockedListClusters.mockRestore();
+    jest.clearAllMocks();
   });
   describe('config-parsing', () => {
     it('should accept missing region', async () => {
@@ -41,9 +45,13 @@ describe('GkeClusterLocator', () => {
         projectId: 'some-project',
       });
 
-      GkeClusterLocator.fromConfigWithClient(config, {
-        listClusters: mockedListClusters,
-      } as any);
+      GkeClusterLocator.fromConfigWithClient(
+        config,
+        {
+          listClusters: mockedListClusters,
+        } as any,
+        logger,
+      );
 
       expect(mockedListClusters).toHaveBeenCalledTimes(0);
     });
@@ -53,12 +61,33 @@ describe('GkeClusterLocator', () => {
       });
 
       expect(() =>
-        GkeClusterLocator.fromConfigWithClient(config, {
-          listClusters: mockedListClusters,
-        } as any),
+        GkeClusterLocator.fromConfigWithClient(
+          config,
+          {
+            listClusters: mockedListClusters,
+          } as any,
+          logger,
+        ),
       ).toThrow("Missing required config value at 'projectId'");
 
       expect(mockedListClusters).toHaveBeenCalledTimes(0);
+    });
+    it('should reject invalid endpointType', async () => {
+      const config: Config = new ConfigReader({
+        type: 'gke',
+        projectId: 'some-project',
+        endpointType: 'invalid',
+      });
+
+      expect(() =>
+        GkeClusterLocator.fromConfigWithClient(
+          config,
+          {
+            listClusters: mockedListClusters,
+          } as any,
+          logger,
+        ),
+      ).toThrow("Invalid endpointType 'invalid', must be one of: public, dns");
     });
   });
   describe('listClusters', () => {
@@ -75,9 +104,13 @@ describe('GkeClusterLocator', () => {
         region: 'some-region',
       });
 
-      const sut = GkeClusterLocator.fromConfigWithClient(config, {
-        listClusters: mockedListClusters,
-      } as any);
+      const sut = GkeClusterLocator.fromConfigWithClient(
+        config,
+        {
+          listClusters: mockedListClusters,
+        } as any,
+        logger,
+      );
 
       const result = await sut.getClusters();
 
@@ -106,9 +139,13 @@ describe('GkeClusterLocator', () => {
         skipMetricsLookup: true,
       });
 
-      const sut = GkeClusterLocator.fromConfigWithClient(config, {
-        listClusters: mockedListClusters,
-      } as any);
+      const sut = GkeClusterLocator.fromConfigWithClient(
+        config,
+        {
+          listClusters: mockedListClusters,
+        } as any,
+        logger,
+      );
 
       const result = await sut.getClusters();
 
@@ -143,9 +180,13 @@ describe('GkeClusterLocator', () => {
         projectId: 'some-project',
       });
 
-      const sut = GkeClusterLocator.fromConfigWithClient(config, {
-        listClusters: mockedListClusters,
-      } as any);
+      const sut = GkeClusterLocator.fromConfigWithClient(
+        config,
+        {
+          listClusters: mockedListClusters,
+        } as any,
+        logger,
+      );
 
       const result = await sut.getClusters();
 
@@ -185,9 +226,13 @@ describe('GkeClusterLocator', () => {
         region: 'some-region',
       });
 
-      const sut = GkeClusterLocator.fromConfigWithClient(config, {
-        listClusters: mockedListClusters,
-      } as any);
+      const sut = GkeClusterLocator.fromConfigWithClient(
+        config,
+        {
+          listClusters: mockedListClusters,
+        } as any,
+        logger,
+      );
 
       const result = await sut.getClusters();
 
@@ -240,9 +285,13 @@ describe('GkeClusterLocator', () => {
         region: 'some-region',
       });
 
-      const sut = GkeClusterLocator.fromConfigWithClient(config, {
-        listClusters: mockedListClusters,
-      } as any);
+      const sut = GkeClusterLocator.fromConfigWithClient(
+        config,
+        {
+          listClusters: mockedListClusters,
+        } as any,
+        logger,
+      );
 
       const result = await sut.getClusters();
 
@@ -301,9 +350,13 @@ describe('GkeClusterLocator', () => {
         ],
       });
 
-      const sut = GkeClusterLocator.fromConfigWithClient(config, {
-        listClusters: mockedListClusters,
-      } as any);
+      const sut = GkeClusterLocator.fromConfigWithClient(
+        config,
+        {
+          listClusters: mockedListClusters,
+        } as any,
+        logger,
+      );
 
       const result = await sut.getClusters();
 
@@ -332,9 +385,13 @@ describe('GkeClusterLocator', () => {
         region: 'some-region',
       });
 
-      const sut = GkeClusterLocator.fromConfigWithClient(config, {
-        listClusters: mockedListClusters,
-      } as any);
+      const sut = GkeClusterLocator.fromConfigWithClient(
+        config,
+        {
+          listClusters: mockedListClusters,
+        } as any,
+        logger,
+      );
 
       await expect(sut.getClusters()).rejects.toThrow(
         'There was an error retrieving clusters from GKE for projectId=some-project region=some-region; caused by Error: some error',
@@ -365,9 +422,13 @@ describe('GkeClusterLocator', () => {
         exposeDashboard: true,
       });
 
-      const sut = GkeClusterLocator.fromConfigWithClient(config, {
-        listClusters: mockedListClusters,
-      } as any);
+      const sut = GkeClusterLocator.fromConfigWithClient(
+        config,
+        {
+          listClusters: mockedListClusters,
+        } as any,
+        logger,
+      );
 
       const result = await sut.getClusters();
 
@@ -408,9 +469,13 @@ describe('GkeClusterLocator', () => {
         projectId: 'some-project',
       });
 
-      const sut = GkeClusterLocator.fromConfigWithClient(config, {
-        listClusters: mockedListClusters,
-      } as any);
+      const sut = GkeClusterLocator.fromConfigWithClient(
+        config,
+        {
+          listClusters: mockedListClusters,
+        } as any,
+        logger,
+      );
 
       const result = await sut.getClusters();
 
@@ -442,9 +507,13 @@ describe('GkeClusterLocator', () => {
         authProvider: 'googleServiceAccount',
       });
 
-      const sut = GkeClusterLocator.fromConfigWithClient(config, {
-        listClusters: mockedListClusters,
-      } as any);
+      const sut = GkeClusterLocator.fromConfigWithClient(
+        config,
+        {
+          listClusters: mockedListClusters,
+        } as any,
+        logger,
+      );
 
       const result = await sut.getClusters();
 
@@ -478,9 +547,13 @@ describe('GkeClusterLocator', () => {
         authProvider: 'differentValue',
       });
 
-      const sut = GkeClusterLocator.fromConfigWithClient(config, {
-        listClusters: mockedListClusters,
-      } as any);
+      const sut = GkeClusterLocator.fromConfigWithClient(
+        config,
+        {
+          listClusters: mockedListClusters,
+        } as any,
+        logger,
+      );
 
       const result = await sut.getClusters();
 
@@ -494,13 +567,99 @@ describe('GkeClusterLocator', () => {
         },
       ]);
     });
+    it('uses DNS endpoint when endpointType is dns', async () => {
+      mockedListClusters.mockReturnValueOnce([
+        {
+          clusters: [
+            {
+              name: 'some-cluster',
+              endpoint: '1.2.3.4',
+              controlPlaneEndpointsConfig: {
+                dnsEndpointConfig: {
+                  endpoint: 'gke-abc123.us-central1.gke.goog',
+                },
+              },
+            },
+          ],
+        },
+      ]);
+
+      const config: Config = new ConfigReader({
+        type: 'gke',
+        projectId: 'some-project',
+        region: 'some-region',
+        endpointType: 'dns',
+      });
+
+      const sut = GkeClusterLocator.fromConfigWithClient(
+        config,
+        {
+          listClusters: mockedListClusters,
+        } as any,
+        logger,
+      );
+
+      const result = await sut.getClusters();
+
+      expect(result).toStrictEqual([
+        {
+          name: 'some-cluster',
+          url: 'https://gke-abc123.us-central1.gke.goog',
+          authMetadata: { [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'google' },
+          skipTLSVerify: false,
+          skipMetricsLookup: false,
+        },
+      ]);
+    });
+    it('falls back to public IP with warning when endpointType is dns but no DNS endpoint available', async () => {
+      mockedListClusters.mockReturnValueOnce([
+        {
+          clusters: [
+            {
+              name: 'some-cluster',
+              endpoint: '1.2.3.4',
+            },
+          ],
+        },
+      ]);
+
+      const config: Config = new ConfigReader({
+        type: 'gke',
+        projectId: 'some-project',
+        region: 'some-region',
+        endpointType: 'dns',
+      });
+
+      const sut = GkeClusterLocator.fromConfigWithClient(
+        config,
+        {
+          listClusters: mockedListClusters,
+        } as any,
+        logger,
+      );
+
+      const result = await sut.getClusters();
+
+      expect(result).toStrictEqual([
+        {
+          name: 'some-cluster',
+          url: 'https://1.2.3.4',
+          authMetadata: { [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'google' },
+          skipTLSVerify: false,
+          skipMetricsLookup: false,
+        },
+      ]);
+      expect(logger.info).toHaveBeenCalledWith(
+        "Cluster 'some-cluster' has endpointType 'dns' configured but no DNS endpoint available, falling back to public IP",
+      );
+    });
     it('constructs ClusterManagerClient with identifying metadata', async () => {
       const configs: Config = new ConfigReader({
         type: 'gke',
         projectId: 'some-project',
       });
 
-      GkeClusterLocator.fromConfig(configs);
+      GkeClusterLocator.fromConfig(configs, logger);
 
       expect(container.v1.ClusterManagerClient).toHaveBeenCalledWith({
         libName: 'backstage/kubernetes-backend.GkeClusterLocator',

@@ -1,5 +1,81 @@
 # @backstage/plugin-notifications-backend
 
+## 0.6.4
+
+### Patch Changes
+
+- 4c1fd43: Added an action to get a user's notifications
+- 070af42: Fix handling of `limit=0` in `getNotifications` query to return empty results instead of all notifications
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0
+  - @backstage/errors@1.3.0
+  - @backstage/catalog-model@1.8.0
+  - @backstage/plugin-catalog-node@2.2.0
+  - @backstage/plugin-signals-node@0.2.0
+  - @backstage/plugin-notifications-node@0.2.25
+  - @backstage/config@1.3.7
+  - @backstage/plugin-notifications-common@0.2.2
+
+## 0.6.4-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/plugin-catalog-node@2.2.0-next.2
+  - @backstage/backend-plugin-api@1.9.0-next.2
+  - @backstage/catalog-model@1.7.8-next.0
+  - @backstage/config@1.3.7-next.0
+  - @backstage/plugin-notifications-node@0.2.25-next.2
+  - @backstage/plugin-notifications-common@0.2.2-next.0
+  - @backstage/plugin-signals-node@0.1.30-next.2
+
+## 0.6.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0-next.1
+  - @backstage/plugin-catalog-node@2.1.1-next.1
+  - @backstage/plugin-notifications-node@0.2.25-next.1
+  - @backstage/plugin-signals-node@0.1.30-next.1
+
+## 0.6.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.1-next.0
+  - @backstage/plugin-catalog-node@2.1.1-next.0
+  - @backstage/plugin-notifications-node@0.2.25-next.0
+  - @backstage/plugin-signals-node@0.1.30-next.0
+  - @backstage/catalog-model@1.7.7
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-notifications-common@0.2.1
+
+## 0.6.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0
+  - @backstage/plugin-catalog-node@2.1.0
+  - @backstage/catalog-model@1.7.7
+  - @backstage/plugin-notifications-node@0.2.24
+  - @backstage/plugin-signals-node@0.1.29
+
+## 0.6.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.8.0-next.1
+  - @backstage/plugin-catalog-node@2.1.0-next.2
+  - @backstage/plugin-notifications-node@0.2.24-next.2
+  - @backstage/plugin-signals-node@0.1.29-next.1
+
 ## 0.6.3-next.0
 
 ### Patch Changes

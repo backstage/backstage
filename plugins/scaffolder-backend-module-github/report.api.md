@@ -24,10 +24,13 @@ export function createGithubActionsDispatchAction(options: {
     workflowId: string;
     branchOrTagName: string;
     workflowInputs?: Record<string, string> | undefined;
+    returnWorkflowRunDetails?: boolean | undefined;
     token?: string | undefined;
   },
   {
-    [x: string]: any;
+    workflowRunId?: number | undefined;
+    workflowRunUrl?: string | undefined;
+    workflowRunHtmlUrl?: string | undefined;
   },
   'v2'
 >;

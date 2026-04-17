@@ -51,16 +51,16 @@ type FlattenedMessages<TMessages extends AnyNestedMessages> =
   // final step of flipping this unions around to an intersection by inferring the function parameter.
   {
     [TKey in keyof TMessages]: (
-      _: TMessages[TKey] extends infer TValue // "local variable" for the value
-        ? TValue extends AnyNestedMessages
-          ? FlattenedMessages<TValue> extends infer TNested // Recurse into nested messages, "local variable" for the result
-            ? {
-                [TNestedKey in keyof TNested as `${TKey & string}.${TNestedKey &
-                  string}`]: TNested[TNestedKey];
-              }
-            : never
-          : { [_ in TKey]: TValue } // Primitive object values are passed through with the same key
-        : never,
+      _: TMessages[TKey] extends string
+        ? { [_ in TKey]: TMessages[TKey] } // String values are leaf nodes, passed through with the same key
+        : TMessages[TKey] extends AnyNestedMessages
+        ? FlattenedMessages<TMessages[TKey]> extends infer TNested // Recurse into nested messages, "local variable" for the result
+          ? {
+              [TNestedKey in keyof TNested as `${TKey & string}.${TNestedKey &
+                string}`]: TNested[TNestedKey];
+            }
+          : never
+        : never, // Unreachable: TMessages[TKey] is always string or AnyNestedMessages
     ) => void;
     // The `[keyof TMessages]` extracts the object values union from our flattened structure, still wrapped up in function parameters.
     // The `extends (_: infer TIntersection) => void` flips the union to an intersection, at which point we have the correct type.

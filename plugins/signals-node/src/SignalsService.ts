@@ -26,9 +26,3 @@ export interface SignalsService {
     signal: SignalPayload<TMessage>,
   ): Promise<void>;
 }
-
-/**
- * @public
- * @deprecated Use `SignalsService` instead
- */
-export interface SignalService extends SignalsService {}

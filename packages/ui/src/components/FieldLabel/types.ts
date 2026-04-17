@@ -41,6 +41,16 @@ export type FieldLabelOwnProps = {
    */
   id?: string;
 
+  /**
+   * The id to apply to the description element for aria-describedby
+   */
+  descriptionId?: string;
+
+  /**
+   * The slot name to set on the description's React Aria `<Text>` element.
+   */
+  descriptionSlot?: string;
+
   className?: string;
 };
 

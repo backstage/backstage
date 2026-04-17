@@ -413,6 +413,56 @@ describe('HostDiscovery', () => {
     );
   });
 
+  describe('backend.baseUrl warnings', () => {
+    const env = process.env as Record<string, string>;
+    const originalNodeEnv = env.NODE_ENV;
+
+    afterEach(() => {
+      if (originalNodeEnv) {
+        env.NODE_ENV = originalNodeEnv;
+      } else {
+        delete env.NODE_ENV;
+      }
+    });
+
+    it('warns when backend.baseUrl is a localhost URL and NODE_ENV is production', () => {
+      env.NODE_ENV = 'production';
+      const logger = mockServices.logger.mock();
+
+      HostDiscovery.fromConfig(
+        new ConfigReader({
+          backend: {
+            baseUrl: 'http://localhost:7007',
+            listen: { port: 7007, host: 'localhost' },
+          },
+        }),
+        { logger },
+      );
+
+      expect(logger.warn).toHaveBeenCalledWith(
+        `backend.baseUrl is set to a localhost URL and NODE_ENV is 'production'. This is likely a misconfiguration — localhost URLs are not reachable by other services in a deployed environment. Prefer setting it to a routable URL that can be resolved and reached both by your app and by other plugin deployments / services.`,
+      );
+    });
+
+    it('warns when backend.baseUrl is not a valid URL', () => {
+      const logger = mockServices.logger.mock();
+
+      HostDiscovery.fromConfig(
+        new ConfigReader({
+          backend: {
+            baseUrl: 'not-a-valid-url',
+            listen: { port: 7007, host: 'localhost' },
+          },
+        }),
+        { logger },
+      );
+
+      expect(logger.warn).toHaveBeenCalledWith(
+        `backend.baseUrl config value 'not-a-valid-url' does not appear to be a valid URL.`,
+      );
+    });
+  });
+
   it('only accepts SRV URLs in the internal target', async () => {
     expect(() =>
       HostDiscovery.fromConfig(

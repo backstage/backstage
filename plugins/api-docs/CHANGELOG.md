@@ -1,5 +1,120 @@
 # @backstage/plugin-api-docs
 
+## 0.14.0
+
+### Minor Changes
+
+- b871d4e: Use Entity Presentation API for entity display in api-docs plugin
+
+### Patch Changes
+
+- da17844: Update readme to add instructions for custom api base URL
+- Updated dependencies
+  - @backstage/ui@0.14.0
+  - @backstage/plugin-catalog@2.0.2
+  - @backstage/catalog-model@1.8.0
+  - @backstage/plugin-catalog-react@2.1.2
+  - @backstage/frontend-plugin-api@0.16.0
+  - @backstage/core-components@0.18.9
+  - @backstage/plugin-permission-react@0.5.0
+  - @backstage/core-plugin-api@1.12.5
+  - @backstage/plugin-catalog-common@1.1.9
+
+## 0.13.6-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.14.0-next.2
+  - @backstage/plugin-catalog@2.0.2-next.2
+  - @backstage/core-components@0.18.9-next.1
+  - @backstage/plugin-catalog-react@2.1.2-next.2
+  - @backstage/catalog-model@1.7.8-next.0
+  - @backstage/core-plugin-api@1.12.5-next.2
+  - @backstage/frontend-plugin-api@0.16.0-next.2
+  - @backstage/plugin-catalog-common@1.1.9-next.0
+  - @backstage/plugin-permission-react@0.4.42-next.1
+
+## 0.13.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.14.0-next.1
+  - @backstage/plugin-catalog-react@2.1.2-next.1
+  - @backstage/frontend-plugin-api@0.16.0-next.1
+  - @backstage/core-components@0.18.9-next.0
+  - @backstage/core-plugin-api@1.12.5-next.1
+  - @backstage/plugin-catalog@2.0.2-next.1
+
+## 0.13.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog@2.0.2-next.0
+  - @backstage/ui@0.14.0-next.0
+  - @backstage/plugin-catalog-react@2.1.1-next.0
+  - @backstage/core-components@0.18.9-next.0
+  - @backstage/frontend-plugin-api@0.15.2-next.0
+  - @backstage/core-plugin-api@1.12.5-next.0
+  - @backstage/catalog-model@1.7.7
+  - @backstage/plugin-catalog-common@1.1.8
+  - @backstage/plugin-permission-react@0.4.42-next.0
+
+## 0.13.5
+
+### Patch Changes
+
+- 9c9d425: Fixed invisible text in parameter input fields when using dark mode in OpenAPI definition pages
+- 538c985: Updated installation documentation to use feature discovery as the default.
+- 30e08df: Added default entity content groups for the API docs entity content tabs. The API definition tab defaults to the `documentation` group and the APIs tab defaults to the `development` group.
+- c548a0f: Migrated entity table cards (`ConsumedApisCard`, `ProvidedApisCard`, `HasApisCard`, `ConsumingComponentsCard`, `ProvidingComponentsCard`) to use BUI when no legacy props are passed. The old `variant`, `columns`, and `tableOptions` props are deprecated but still supported — passing any of them triggers the legacy MUI-based rendering. The new `columnConfig` prop accepts `EntityColumnConfig[]` for BUI-based rendering.
+- aa29b50: New frontend system pages now use the default plugin header together with `HeaderPage` instead of the legacy core page header pattern.
+- 3f36ce1: Updated alpha plugin icons to follow the new frontend icon sizing rules when rendered in plugin and navigation surfaces.
+- 0be2541: Promoted the plugin's translation ref to the stable package entry point. It was previously only available through the alpha entry point.
+- ca277ef: Updated dependency `graphiql` to `3.9.0` to address security vulnerability in `markdown-it` package.
+  Updated dependency `@graphiql/react` to `0.29.0` to match the version used by `graphiql`.
+  Moved dependency `graphql-config` to `devDependencies` as it is needed only for types.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@2.1.0
+  - @backstage/ui@0.13.0
+  - @backstage/core-plugin-api@1.12.4
+  - @backstage/core-components@0.18.8
+  - @backstage/frontend-plugin-api@0.15.0
+  - @backstage/plugin-catalog@2.0.0
+  - @backstage/plugin-permission-react@0.4.41
+  - @backstage/catalog-model@1.7.7
+
+## 0.13.5-next.2
+
+### Patch Changes
+
+- ca277ef: Updated dependency `graphiql` to `3.9.0` to address security vulnerability in `markdown-it` package.
+  Updated dependency `@graphiql/react` to `0.29.0` to match the version used by `graphiql`.
+  Moved dependency `graphql-config` to `devDependencies` as it is needed only for types.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.15.0-next.1
+  - @backstage/core-plugin-api@1.12.4-next.1
+  - @backstage/plugin-catalog-react@2.1.0-next.2
+  - @backstage/core-components@0.18.8-next.1
+  - @backstage/plugin-catalog@2.0.0-next.2
+
+## 0.13.5-next.1
+
+### Patch Changes
+
+- 30e08df: Added default entity content groups for the API docs entity content tabs. The API definition tab defaults to the `documentation` group and the APIs tab defaults to the `development` group.
+- Updated dependencies
+  - @backstage/plugin-catalog@1.34.0-next.1
+  - @backstage/plugin-catalog-react@2.1.0-next.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/core-components@0.18.8-next.0
+  - @backstage/core-plugin-api@1.12.4-next.0
+  - @backstage/frontend-plugin-api@0.14.2-next.0
+  - @backstage/plugin-catalog-common@1.1.8
+  - @backstage/plugin-permission-react@0.4.41-next.0
+
 ## 0.13.5-next.0
 
 ### Patch Changes

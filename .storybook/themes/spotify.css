@@ -183,21 +183,6 @@
     font-weight: var(--bui-font-weight-regular);
   }
 
-  .bui-PluginHeaderToolbarWrapper {
-    padding: 0;
-    height: 32px;
-    border: none;
-    background: none;
-  }
-
-  .bui-PluginHeaderTabsWrapper {
-    margin: 0;
-    padding: 0;
-    margin-left: -8px;
-    border: none;
-    background: none;
-  }
-
   .bui-Input {
     border-radius: var(--bui-radius-3);
   }
@@ -228,14 +213,6 @@
   --bui-border-success: #53db83;
 
   --bui-ring: rgba(0, 0, 0, 0.2);
-
-  .bui-HeaderToolbarWrapper {
-    border: 1px solid var(--bui-border-2);
-  }
-
-  .bui-HeaderTabsWrapper {
-    border: 1px solid var(--bui-border-2);
-  }
 }
 
 [data-theme-mode='dark'][data-theme-name='spotify'] {
@@ -265,4 +242,25 @@
   --bui-border-success: #53db83;
 
   --bui-ring: rgba(255, 255, 255, 0.2);
+}
+
+/*
+ * Plugin header (@backstage/ui) and story shell header — kept at the bottom of
+ * this file for easier scanning alongside other component overrides above.
+ */
+[data-theme-name='spotify'] {
+  .bui-PluginHeaderToolbar {
+    padding: 0;
+    height: 32px;
+    border: none;
+    background: none;
+    margin-bottom: var(--bui-space-2);
+  }
+
+  .bui-PluginHeaderTabsWrapper {
+    padding: 0;
+    border: none;
+    background: none;
+    margin-left: -8px;
+  }
 }

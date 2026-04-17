@@ -14,77 +14,77 @@
  * limitations under the License.
  */
 
-import { useEntity } from '@backstage/plugin-catalog-react';
-import {
-  InfoCard,
-  InfoCardVariants,
-  Table,
-  TableColumn,
-} from '@backstage/core-components';
+import { useEntity, EntityInfoCard } from '@backstage/plugin-catalog-react';
 import { EntityLabelsEmptyState } from './EntityLabelsEmptyState';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
+import {
+  Table,
+  CellText,
+  useTable,
+  type ColumnConfig,
+  type TableItem,
+} from '@backstage/ui';
 import { catalogTranslationRef } from '../../alpha/translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { useMemo } from 'react';
 
 /** @public */
 export interface EntityLabelsCardProps {
-  variant?: InfoCardVariants;
   title?: string;
 }
 
-const useStyles = makeStyles(_ => ({
-  key: {
-    fontWeight: 'bold',
-  },
-}));
+interface LabelItem extends TableItem {
+  id: string;
+  key: string;
+  value: string;
+}
 
 export const EntityLabelsCard = (props: EntityLabelsCardProps) => {
-  const { variant, title } = props;
+  const { title } = props;
   const { entity } = useEntity();
-  const classes = useStyles();
   const { t } = useTranslationRef(catalogTranslationRef);
-
-  const columns: TableColumn<{ key: string; value: string }>[] = [
-    {
-      render: row => {
-        return (
-          <Typography className={classes.key} variant="body2">
-            {row.key}
-          </Typography>
-        );
-      },
-    },
-    {
-      field: 'value',
-    },
-  ];
 
   const labels = entity?.metadata?.labels;
 
+  const columnConfig: ColumnConfig<LabelItem>[] = useMemo(
+    () => [
+      {
+        id: 'key',
+        label: t('entityLabelsCard.columnKeyLabel'),
+        isRowHeader: true,
+        cell: item => <CellText title={item.key} />,
+      },
+      {
+        id: 'value',
+        label: t('entityLabelsCard.columnValueLabel'),
+        cell: item => <CellText title={item.value} />,
+      },
+    ],
+    [t],
+  );
+
+  const data = useMemo(
+    () =>
+      Object.keys(labels ?? {}).map(labelKey => ({
+        id: labelKey,
+        key: labelKey,
+        value: labels![labelKey],
+      })),
+    [labels],
+  );
+
+  const { tableProps } = useTable({
+    mode: 'complete',
+    data,
+    paginationOptions: { pageSize: 5 },
+  });
+
   return (
-    <InfoCard title={title || t('entityLabelsCard.title')} variant={variant}>
+    <EntityInfoCard title={title || t('entityLabelsCard.title')}>
       {!labels || Object.keys(labels).length === 0 ? (
         <EntityLabelsEmptyState />
       ) : (
-        <Table
-          columns={columns}
-          data={Object.keys(labels).map(labelKey => ({
-            key: labelKey,
-            value: labels[labelKey],
-          }))}
-          options={{
-            search: false,
-            showTitle: true,
-            loadingType: 'linear',
-            header: false,
-            padding: 'dense',
-            pageSize: 5,
-            toolbar: false,
-            paging: Object.keys(labels).length > 5,
-          }}
-        />
+        <Table columnConfig={columnConfig} {...tableProps} />
       )}
-    </InfoCard>
+    </EntityInfoCard>
   );
 };

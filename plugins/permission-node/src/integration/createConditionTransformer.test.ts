@@ -18,7 +18,7 @@ import {
   PermissionCondition,
   PermissionCriteria,
 } from '@backstage/plugin-permission-common';
-import { z } from 'zod';
+import { z } from 'zod/v3';
 import { createConditionTransformer } from './createConditionTransformer';
 import { createPermissionRule } from './createPermissionRule';
 

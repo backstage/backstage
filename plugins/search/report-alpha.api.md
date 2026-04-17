@@ -47,8 +47,12 @@ const _default: OverridableFrontendPlugin<
     'nav-item:search': OverridableExtensionDefinition<{
       kind: 'nav-item';
       name: undefined;
-      config: {};
-      configInput: {};
+      config: {
+        title: string | undefined;
+      };
+      configInput: {
+        title?: string | undefined;
+      };
       output: ExtensionDataRef<
         {
           title: string;
@@ -73,8 +77,8 @@ const _default: OverridableFrontendPlugin<
       };
       configInput: {
         noTrack?: boolean | undefined;
-        title?: string | undefined;
         path?: string | undefined;
+        title?: string | undefined;
       };
       output:
         | ExtensionDataRef<string, 'core.routing.path', {}>
@@ -181,7 +185,6 @@ const _default: OverridableFrontendPlugin<
       kind: 'page';
       name: undefined;
       params: {
-        defaultPath?: [Error: `Use the 'path' param instead`];
         path: string;
         title?: string;
         icon?: IconElement;
@@ -215,8 +218,12 @@ export const searchApi: OverridableExtensionDefinition<{
 export const searchNavItem: OverridableExtensionDefinition<{
   kind: 'nav-item';
   name: undefined;
-  config: {};
-  configInput: {};
+  config: {
+    title: string | undefined;
+  };
+  configInput: {
+    title?: string | undefined;
+  };
   output: ExtensionDataRef<
     {
       title: string;
@@ -243,8 +250,8 @@ export const searchPage: OverridableExtensionDefinition<{
   };
   configInput: {
     noTrack?: boolean | undefined;
-    title?: string | undefined;
     path?: string | undefined;
+    title?: string | undefined;
   };
   output:
     | ExtensionDataRef<string, 'core.routing.path', {}>
@@ -351,7 +358,6 @@ export const searchPage: OverridableExtensionDefinition<{
   kind: 'page';
   name: undefined;
   params: {
-    defaultPath?: [Error: `Use the 'path' param instead`];
     path: string;
     title?: string;
     icon?: IconElement;
@@ -361,7 +367,7 @@ export const searchPage: OverridableExtensionDefinition<{
   };
 }>;
 
-// @alpha (undocumented)
+// @alpha @deprecated (undocumented)
 export const searchTranslationRef: TranslationRef<
   'search',
   {

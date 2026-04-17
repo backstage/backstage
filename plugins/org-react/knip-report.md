@@ -2,7 +2,7 @@
 
 ## Unused dependencies (1)
 
-| Name                      | Location     | Severity |
-| :------------------------ | :----------- | :------- |
-| @backstage/catalog-client | plugins/org-react/package.json | error    |
+| Name                      | Location          | Severity |
+| :------------------------ | :---------------- | :------- |
+| @backstage/catalog-client | package.json:43:6 | error    |
 

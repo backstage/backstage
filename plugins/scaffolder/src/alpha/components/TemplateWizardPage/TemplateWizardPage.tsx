@@ -71,7 +71,7 @@ export type TemplateWizardPageProps = {
   };
 };
 
-export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
+function useTemplateWizard(_props: TemplateWizardPageProps) {
   const rootRef = useRouteRef(rootRouteRef);
   const taskRoute = useRouteRef(scaffolderTaskRouteRef);
   const { secrets: contextSecrets } = useTemplateSecrets();
@@ -133,6 +133,65 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
   );
 
   const onError = useCallback(() => <Navigate to={rootRef()} />, [rootRef]);
+
+  return {
+    templateRef,
+    templateName,
+    namespace,
+    manifest,
+    editUrl,
+    isCreating,
+    onCreate,
+    onError,
+    t,
+  };
+}
+
+/**
+ * Content-only version of the template wizard, for use within the NFS page layout
+ * where the header is provided by the framework.
+ *
+ * @internal
+ */
+export const TemplateWizardPageContent = (props: TemplateWizardPageProps) => {
+  const {
+    templateRef,
+    templateName,
+    namespace,
+    isCreating,
+    onCreate,
+    onError,
+  } = useTemplateWizard(props);
+
+  return (
+    <AnalyticsContext attributes={{ entityRef: templateRef }}>
+      {isCreating && <Progress />}
+      <Workflow
+        namespace={namespace}
+        templateName={templateName}
+        onCreate={onCreate}
+        components={props.components}
+        onError={onError}
+        extensions={props.customFieldExtensions}
+        formProps={props.formProps}
+        layouts={props.layouts}
+      />
+    </AnalyticsContext>
+  );
+};
+
+export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
+  const {
+    templateRef,
+    templateName,
+    namespace,
+    manifest,
+    editUrl,
+    isCreating,
+    onCreate,
+    onError,
+    t,
+  } = useTemplateWizard(props);
 
   return (
     <AnalyticsContext attributes={{ entityRef: templateRef }}>

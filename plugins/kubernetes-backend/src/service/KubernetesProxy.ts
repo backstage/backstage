@@ -46,8 +46,6 @@ import {
   PermissionsService,
 } from '@backstage/backend-plugin-api';
 
-export const APPLICATION_JSON: string = 'application/json';
-
 /**
  * The header that is used to specify the cluster name.
  *

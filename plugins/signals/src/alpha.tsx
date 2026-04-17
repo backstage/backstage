@@ -20,6 +20,7 @@ import {
   discoveryApiRef,
   identityApiRef,
 } from '@backstage/frontend-plugin-api';
+import { RiBroadcastLine } from '@remixicon/react';
 import { signalApiRef } from '@backstage/plugin-signals-react';
 import { SignalClient } from './api/SignalClient';
 
@@ -43,6 +44,8 @@ const api = ApiBlueprint.make({
 /** @alpha */
 export default createFrontendPlugin({
   pluginId: 'signals',
+  title: 'Signals',
+  icon: <RiBroadcastLine />,
   info: { packageJson: () => import('../package.json') },
   extensions: [api],
 });

@@ -23,6 +23,7 @@ import {
   WriteResult,
 } from '@google-cloud/firestore';
 
+import { toError } from '@backstage/errors';
 import { AnyJWK, KeyStore, StoredKey } from './types';
 
 export type FirestoreKeyStoreSettings = Settings & Options;
@@ -66,14 +67,11 @@ export class FirestoreKeyStore implements KeyStore {
     try {
       await keyStore.verify();
     } catch (error) {
+      const err = toError(error);
       if (process.env.NODE_ENV !== 'development') {
-        throw new Error(
-          `Failed to connect to database: ${(error as Error).message}`,
-        );
+        throw new Error(`Failed to connect to database: ${err.message}`);
       }
-      logger?.warn(
-        `Failed to connect to database: ${(error as Error).message}`,
-      );
+      logger?.warn(`Failed to connect to database: ${err.message}`);
     }
   }
 

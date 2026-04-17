@@ -17,6 +17,7 @@
 import { UserEntity } from '@backstage/catalog-model';
 import { graphql } from '@octokit/graphql';
 import {
+  buildDefaultUserTransformer,
   defaultUserTransformer,
   TransformerContext,
 } from './defaultTransformers';
@@ -63,7 +64,7 @@ describe('defaultUserTransformer', () => {
     expect(result.spec.memberOf).toEqual([]);
   });
 
-  it('prefers verified domain email over regular email', async () => {
+  it('uses public email and ignores verified domain emails', async () => {
     const result = (await defaultUserTransformer(
       makeUser({
         email: 'public@gmail.com',
@@ -72,21 +73,10 @@ describe('defaultUserTransformer', () => {
       ctx,
     )) as UserEntity;
 
-    expect(result.spec.profile!.email).toBe('corp@company.com');
+    expect(result.spec.profile!.email).toBe('public@gmail.com');
   });
 
-  it('strips plus-addressed tag from verified domain email', async () => {
-    const result = (await defaultUserTransformer(
-      makeUser({
-        organizationVerifiedDomainEmails: ['amckay+2jc29kv2@spotify.com'],
-      }),
-      ctx,
-    )) as UserEntity;
-
-    expect(result.spec.profile!.email).toBe('amckay@spotify.com');
-  });
-
-  it('uses verified domain email when regular email is absent', async () => {
+  it('sets no email when public email is absent even if verified emails exist', async () => {
     const result = (await defaultUserTransformer(
       makeUser({
         organizationVerifiedDomainEmails: ['corp@company.com'],
@@ -94,30 +84,7 @@ describe('defaultUserTransformer', () => {
       ctx,
     )) as UserEntity;
 
-    expect(result.spec.profile!.email).toBe('corp@company.com');
-  });
-
-  it('falls back to regular email when verified array is empty', async () => {
-    const result = (await defaultUserTransformer(
-      makeUser({
-        email: 'public@gmail.com',
-        organizationVerifiedDomainEmails: [],
-      }),
-      ctx,
-    )) as UserEntity;
-
-    expect(result.spec.profile!.email).toBe('public@gmail.com');
-  });
-
-  it('falls back to regular email when verified array is undefined', async () => {
-    const result = (await defaultUserTransformer(
-      makeUser({
-        email: 'public@gmail.com',
-      }),
-      ctx,
-    )) as UserEntity;
-
-    expect(result.spec.profile!.email).toBe('public@gmail.com');
+    expect(result.spec.profile!.email).toBeUndefined();
   });
 
   it('sets no email when both are absent', async () => {
@@ -127,5 +94,121 @@ describe('defaultUserTransformer', () => {
     )) as UserEntity;
 
     expect(result.spec.profile!.email).toBeUndefined();
+  });
+});
+
+describe('buildDefaultUserTransformer', () => {
+  describe('with useVerifiedEmails: false', () => {
+    const transformer = buildDefaultUserTransformer({
+      useVerifiedEmails: false,
+    });
+
+    it('uses public email and ignores verified domain emails', async () => {
+      const result = (await transformer(
+        makeUser({
+          email: 'public@gmail.com',
+          organizationVerifiedDomainEmails: ['corp@company.com'],
+        }),
+        ctx,
+      )) as UserEntity;
+
+      expect(result.spec.profile!.email).toBe('public@gmail.com');
+    });
+
+    it('sets no email when public email is absent', async () => {
+      const result = (await transformer(
+        makeUser({
+          organizationVerifiedDomainEmails: ['corp@company.com'],
+        }),
+        ctx,
+      )) as UserEntity;
+
+      expect(result.spec.profile!.email).toBeUndefined();
+    });
+  });
+
+  describe('with useVerifiedEmails: true', () => {
+    const transformer = buildDefaultUserTransformer({
+      useVerifiedEmails: true,
+    });
+
+    it('prefers verified domain email over public email', async () => {
+      const result = (await transformer(
+        makeUser({
+          email: 'public@gmail.com',
+          organizationVerifiedDomainEmails: ['corp@company.com'],
+        }),
+        ctx,
+      )) as UserEntity;
+
+      expect(result.spec.profile!.email).toBe('corp@company.com');
+    });
+
+    it('strips plus-addressed tag from verified domain email', async () => {
+      const result = (await transformer(
+        makeUser({
+          organizationVerifiedDomainEmails: ['amckay+2jc29kv2@spotify.com'],
+        }),
+        ctx,
+      )) as UserEntity;
+
+      expect(result.spec.profile!.email).toBe('amckay@spotify.com');
+    });
+
+    it('uses verified domain email when public email is absent', async () => {
+      const result = (await transformer(
+        makeUser({
+          organizationVerifiedDomainEmails: ['corp@company.com'],
+        }),
+        ctx,
+      )) as UserEntity;
+
+      expect(result.spec.profile!.email).toBe('corp@company.com');
+    });
+
+    it('falls back to public email when verified array is empty', async () => {
+      const result = (await transformer(
+        makeUser({
+          email: 'public@gmail.com',
+          organizationVerifiedDomainEmails: [],
+        }),
+        ctx,
+      )) as UserEntity;
+
+      expect(result.spec.profile!.email).toBe('public@gmail.com');
+    });
+
+    it('falls back to public email when verified array is undefined', async () => {
+      const result = (await transformer(
+        makeUser({
+          email: 'public@gmail.com',
+        }),
+        ctx,
+      )) as UserEntity;
+
+      expect(result.spec.profile!.email).toBe('public@gmail.com');
+    });
+
+    it('sets no email when both are absent', async () => {
+      const result = (await transformer(makeUser(), ctx)) as UserEntity;
+
+      expect(result.spec.profile!.email).toBeUndefined();
+    });
+  });
+
+  describe('with no options', () => {
+    const transformer = buildDefaultUserTransformer();
+
+    it('behaves the same as useVerifiedEmails: false', async () => {
+      const result = (await transformer(
+        makeUser({
+          email: 'public@gmail.com',
+          organizationVerifiedDomainEmails: ['corp@company.com'],
+        }),
+        ctx,
+      )) as UserEntity;
+
+      expect(result.spec.profile!.email).toBe('public@gmail.com');
+    });
   });
 });

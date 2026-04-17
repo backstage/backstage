@@ -26,7 +26,10 @@ export type FlexOwnProps = {
 };
 
 /** @public */
-export interface FlexProps extends SpaceProps, FlexOwnProps {
+export interface FlexProps
+  extends SpaceProps,
+    FlexOwnProps,
+    Omit<React.HTMLAttributes<HTMLDivElement>, 'children'> {
   gap?: Responsive<Space>;
   align?: Responsive<'start' | 'center' | 'end' | 'baseline' | 'stretch'>;
   justify?: Responsive<'start' | 'center' | 'end' | 'between'>;

@@ -16,11 +16,7 @@
 
 import { lazy as reactLazy } from 'react';
 import { ExtensionBoundary } from '../components';
-import {
-  coreExtensionData,
-  createExtensionBlueprint,
-  createExtensionBlueprintParams,
-} from '../wiring';
+import { coreExtensionData, createExtensionBlueprint } from '../wiring';
 
 /**
  * Creates extensions that provide plugin-scoped header actions.
@@ -36,10 +32,7 @@ export const PluginHeaderActionBlueprint = createExtensionBlueprint({
   kind: 'plugin-header-action',
   attachTo: { id: 'api:app/plugin-header-actions', input: 'actions' },
   output: [coreExtensionData.reactElement],
-  defineParams(params: { loader: () => Promise<JSX.Element> }) {
-    return createExtensionBlueprintParams(params);
-  },
-  *factory(params, { node }) {
+  *factory(params: { loader: () => Promise<JSX.Element> }, { node }) {
     const LazyAction = reactLazy(() =>
       params.loader().then(element => ({ default: () => element })),
     );

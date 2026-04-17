@@ -16,7 +16,7 @@
 
 import { AuthService, LoggerService } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
-import { assertError, NotFoundError } from '@backstage/errors';
+import { NotFoundError, toError } from '@backstage/errors';
 import {
   AuthOwnershipResolver,
   AuthProviderFactory,
@@ -104,14 +104,17 @@ export function bindProviderRouters(
 
         targetRouter.use(`/${providerId}`, r);
       } catch (e) {
-        assertError(e);
         if (process.env.NODE_ENV !== 'development') {
           throw new Error(
-            `Failed to initialize ${providerId} auth provider, ${e.message}`,
+            `Failed to initialize ${providerId} auth provider, ${
+              toError(e).message
+            }`,
           );
         }
 
-        logger.warn(`Skipping ${providerId} auth provider, ${e.message}`);
+        logger.warn(
+          `Skipping ${providerId} auth provider, ${toError(e).message}`,
+        );
 
         targetRouter.use(`/${providerId}`, () => {
           // If the user added the provider under auth.providers but the clientId and clientSecret etc. were not found.

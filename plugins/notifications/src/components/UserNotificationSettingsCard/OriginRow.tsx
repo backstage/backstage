@@ -19,12 +19,8 @@ import {
   NotificationSettings,
   OriginSetting,
 } from '@backstage/plugin-notifications-common';
-import IconButton from '@material-ui/core/IconButton';
-import Switch from '@material-ui/core/Switch';
-import TableRow from '@material-ui/core/TableRow';
-import Tooltip from '@material-ui/core/Tooltip';
-import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
-import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
+import { ButtonIcon, Switch, Tooltip, TooltipTrigger } from '@backstage/ui';
+import { RiArrowDownSLine, RiArrowUpSLine } from '@remixicon/react';
 import { NoBorderTableCell } from './NoBorderTableCell';
 import { useNotificationFormat } from './UserNotificationSettingsCard';
 
@@ -43,45 +39,50 @@ export const OriginRow = (props: {
   const { origin, settings, handleChange, open, handleRowToggle } = props;
   const { formatOriginName } = useNotificationFormat();
   return (
-    <TableRow>
+    <tr>
       <NoBorderTableCell>
         {origin.topics && origin.topics.length > 0 && (
-          <Tooltip
-            title={`Show Topics for the ${formatOriginName(origin.id)} origin`}
-          >
-            <IconButton
+          <TooltipTrigger>
+            <ButtonIcon
               aria-label="expand row"
-              size="small"
-              onClick={() => handleRowToggle(origin.id)}
-            >
-              {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-            </IconButton>
-          </Tooltip>
+              onPress={() => handleRowToggle(origin.id)}
+              icon={
+                open ? (
+                  <RiArrowUpSLine size={16} />
+                ) : (
+                  <RiArrowDownSLine size={16} />
+                )
+              }
+              variant="secondary"
+            />
+            <Tooltip>{`Show Topics for the ${formatOriginName(
+              origin.id,
+            )} origin`}</Tooltip>
+          </TooltipTrigger>
         )}
       </NoBorderTableCell>
       <NoBorderTableCell>{formatOriginName(origin.id)}</NoBorderTableCell>
       <NoBorderTableCell>all</NoBorderTableCell>
       {settings.channels.map(ch => (
         <NoBorderTableCell key={ch.id} align="center">
-          <Tooltip
-            title={`Enable or disable ${ch.id.toLocaleLowerCase(
-              'en-US',
-            )} notifications from ${formatOriginName(origin.id)}`}
-          >
+          <TooltipTrigger>
             <Switch
-              checked={isNotificationsEnabledFor(
+              isSelected={isNotificationsEnabledFor(
                 settings,
                 ch.id,
                 origin.id,
                 null,
               )}
-              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                handleChange(ch.id, origin.id, null, event.target.checked);
+              onChange={(isSelected: boolean) => {
+                handleChange(ch.id, origin.id, null, isSelected);
               }}
             />
-          </Tooltip>
+            <Tooltip>{`Enable or disable ${ch.id.toLocaleLowerCase(
+              'en-US',
+            )} notifications from ${formatOriginName(origin.id)}`}</Tooltip>
+          </TooltipTrigger>
         </NoBorderTableCell>
       ))}
-    </TableRow>
+    </tr>
   );
 };

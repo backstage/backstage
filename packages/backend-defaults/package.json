@@ -1,6 +1,6 @@
 {
   "name": "@backstage/backend-defaults",
-  "version": "0.15.3-next.0",
+  "version": "0.17.0",
   "description": "Backend defaults used by Backstage backend apps",
   "backstage": {
     "role": "node-library"
@@ -130,6 +130,7 @@
     "@aws-sdk/client-codecommit": "^3.350.0",
     "@aws-sdk/client-s3": "^3.350.0",
     "@aws-sdk/credential-providers": "^3.350.0",
+    "@aws-sdk/rds-signer": "^3.0.0",
     "@aws-sdk/types": "^3.347.0",
     "@azure/identity": "^4.0.0",
     "@azure/storage-blob": "^12.5.0",
@@ -144,6 +145,7 @@
     "@backstage/integration-aws-node": "workspace:^",
     "@backstage/plugin-auth-node": "workspace:^",
     "@backstage/plugin-events-node": "workspace:^",
+    "@backstage/plugin-permission-common": "workspace:^",
     "@backstage/plugin-permission-node": "workspace:^",
     "@backstage/types": "workspace:^",
     "@google-cloud/storage": "^7.0.0",
@@ -164,7 +166,7 @@
     "cron": "^3.0.0",
     "express": "^4.22.0",
     "express-promise-router": "^4.1.0",
-    "express-rate-limit": "^7.5.0",
+    "express-rate-limit": "^8.2.2",
     "fs-extra": "^11.2.0",
     "git-url-parse": "^15.0.0",
     "helmet": "^6.0.0",
@@ -193,14 +195,13 @@
     "uuid": "^11.0.0",
     "winston": "^3.2.1",
     "winston-transport": "^4.5.0",
-    "yauzl": "^3.0.0",
+    "yauzl": "^3.2.1",
     "yn": "^4.0.0",
-    "zod": "^3.25.76",
+    "zod": "^3.25.76 || ^4.0.0",
     "zod-to-json-schema": "^3.25.1"
   },
   "devDependencies": {
     "@aws-sdk/util-stream-node": "^3.350.0",
-    "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@google-cloud/cloud-sql-connector": "^1.4.0",
@@ -220,7 +221,7 @@
     "msw": "^1.0.0",
     "node-mocks-http": "^1.0.0",
     "supertest": "^7.0.0",
-    "wait-for-expect": "^3.0.2"
+    "wait-for-expect": "^4.0.0"
   },
   "peerDependencies": {
     "@google-cloud/cloud-sql-connector": "^1.4.0",

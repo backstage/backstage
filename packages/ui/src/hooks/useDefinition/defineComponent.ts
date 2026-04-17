@@ -14,13 +14,19 @@
  * limitations under the License.
  */
 
-import type { ComponentConfig, BgPropsConstraint } from './types';
+import type {
+  ComponentConfig,
+  BgPropsConstraint,
+  AnalyticsPropsConstraint,
+} from './types';
 
 export function defineComponent<P extends Record<string, any>>() {
   return <
     const S extends Record<string, string>,
     const C extends ComponentConfig<P, S>,
   >(
-    config: C & BgPropsConstraint<P, C['bg']>,
+    config: C &
+      BgPropsConstraint<P, C['bg']> &
+      AnalyticsPropsConstraint<P, C['analytics']>,
   ): C => config;
 }

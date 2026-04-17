@@ -16,7 +16,7 @@
 /* We want to maintain the same information as an enum, so we disable the redeclaration warning */
 /* eslint-disable @typescript-eslint/no-redeclare */
 
-import { z } from 'zod';
+import { z } from 'zod/v3';
 
 const commonGitlabConfig = z.object({
   repoUrl: z.string({ description: 'Repository Location' }),

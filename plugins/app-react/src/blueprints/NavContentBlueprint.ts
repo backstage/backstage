@@ -53,7 +53,12 @@ export interface NavContentNavItem {
 export interface NavContentNavItemsWithComponent {
   /** Render and take a specific item by extension ID. Returns null if not found. */
   take(id: string): JSX.Element | null;
-  /** Render all remaining items not yet taken, optionally sorted. */
+  /**
+   * Render all remaining items not yet taken, optionally sorted.
+   *
+   * The returned array is live and is updated when later `take` calls remove
+   * items from the collection.
+   */
   rest(options?: { sortBy?: 'title' }): JSX.Element[];
 }
 
@@ -66,7 +71,12 @@ export interface NavContentNavItemsWithComponent {
 export interface NavContentNavItems {
   /** Take an item by extension ID, removing it from the collection. */
   take(id: string): NavContentNavItem | undefined;
-  /** All items not yet taken. */
+  /**
+   * All items not yet taken.
+   *
+   * The returned array is live and is updated when later `take` calls remove
+   * items from the collection.
+   */
   rest(): NavContentNavItem[];
   /** Create a copy of the collection preserving the current taken state. */
   clone(): NavContentNavItems;

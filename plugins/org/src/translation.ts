@@ -16,7 +16,7 @@
 import { createTranslationRef } from '@backstage/frontend-plugin-api';
 
 /**
- * @alpha
+ * @public
  */
 export const orgTranslationRef = createTranslationRef({
   id: 'org',
@@ -34,22 +34,18 @@ export const orgTranslationRef = createTranslationRef({
       },
     },
     membersListCard: {
-      title: 'Members',
-      subtitle: 'of {{groupName}}',
-      paginationLabel: ', page {{page}} of {{nbPages}}',
+      cardLabel: 'User page for {{memberName}}',
+      title: '{{groupName}} members',
       noMembersDescription: 'This group has no members.',
+      noSearchResult: 'Found no members matching "{{searchTerm}}".',
       aggregateMembersToggle: {
-        directMembers: 'Direct Members',
-        aggregatedMembers: 'Aggregated Members',
-        ariaLabel: 'Users Type Switch',
+        label: 'Include subgroups',
       },
     },
     ownershipCard: {
       title: 'Ownership',
       aggregateRelationsToggle: {
-        directRelations: 'Direct Relations',
-        aggregatedRelations: 'Aggregated Relations',
-        ariaLabel: 'Ownership Type Switch',
+        label: 'Include indirect ownership',
       },
     },
     userProfileCard: {

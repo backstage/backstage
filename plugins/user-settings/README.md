@@ -11,7 +11,20 @@ be used in the frontend as a persistent alternative to the builtin `WebStorage`.
 Please see [the backend README](https://github.com/backstage/backstage/tree/master/plugins/user-settings-backend)
 for installation instructions.
 
-## Components Usage
+## Installation
+
+```bash
+# From your Backstage root directory
+yarn --cwd packages/app add @backstage/plugin-user-settings
+```
+
+Once installed, the plugin is automatically available in your app through the default feature discovery. For more details and alternative installation methods, see [installing plugins](https://backstage.io/docs/frontend-system/building-apps/installing-plugins).
+
+## Old Frontend System
+
+If your Backstage app uses the old frontend system, you need to manually wire the plugin into your app as outlined in this section. If you are on the new frontend system, you can skip this.
+
+### Components Usage
 
 Add the item to the Sidebar:
 

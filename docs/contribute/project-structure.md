@@ -144,7 +144,10 @@ are separated out into their own folder, see further down.
 
 - [`dev-utils/`](https://github.com/backstage/backstage/tree/master/packages/dev-utils) -
   Helps you setup a plugin for isolated development so that it can be served
-  separately.
+  separately. This is for plugins using the legacy frontend system.
+
+- [`frontend-dev-utils/`](https://github.com/backstage/backstage/tree/master/packages/frontend-dev-utils) -
+  Utilities for developing frontend plugins using the new frontend system. Provides the `createDevApp` helper for setting up a minimal development app in a plugin's `dev/` entry point.
 
 - [`e2e-test/`](https://github.com/backstage/backstage/tree/master/packages/e2e-test) -
   Another CLI that can be run to try out what would happen if you build all the

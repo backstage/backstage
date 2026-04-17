@@ -70,7 +70,7 @@ import { StorageValueSnapshot } from '@backstage/core-plugin-api';
 import { SubRouteRef } from '@backstage/core-plugin-api';
 import { vmwareCloudAuthApiRef } from '@backstage/core-plugin-api';
 
-// @public
+// @public @deprecated
 export class AlertApiForwarder implements AlertApi {
   // (undocumented)
   alert$(): Observable<AlertMessage>;
@@ -438,6 +438,7 @@ export interface FetchMiddleware {
 
 // @public
 export class FetchMiddlewares {
+  static clarifyFailures(): FetchMiddleware;
   static injectIdentityAuth(options: {
     identityApi: IdentityApi;
     config?: Config;

@@ -25,11 +25,14 @@ interface SelectTriggerProps {
 }
 
 export function SelectTrigger(props: SelectTriggerProps) {
-  const { ownProps } = useDefinition(SelectTriggerDefinition, props);
+  const { ownProps, dataAttributes } = useDefinition(
+    SelectTriggerDefinition,
+    props,
+  );
   const { classes, icon } = ownProps;
 
   return (
-    <Button className={classes.root}>
+    <Button className={classes.root} {...dataAttributes}>
       {icon}
       <SelectValue className={classes.value} />
       <div className={classes.chevron}>

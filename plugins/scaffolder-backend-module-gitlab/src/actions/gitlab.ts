@@ -112,6 +112,13 @@ export function createPublishGitlabAction(options: {
                 'Set the token user as owner of the newly created repository. Requires a token authorized to do the edit in the integration configuration for the matching host',
             })
             .optional(),
+        ownerUsername: z =>
+          z
+            .string({
+              description:
+                'Username of a GitLab user to add as owner (access level 50) of the newly created project. Requires a privileged token in the integration configuration for the matching host.',
+            })
+            .optional(),
         topics: z =>
           z
             .array(z.string(), {
@@ -122,6 +129,12 @@ export function createPublishGitlabAction(options: {
         settings: z =>
           z
             .object({
+              name: z
+                .string({
+                  description:
+                    'Human-readable project name (title). If not provided, the repository name from repoUrl is used.',
+                })
+                .optional(),
               path: z
                 .string({
                   description:
@@ -323,6 +336,7 @@ export function createPublishGitlabAction(options: {
           await client.Projects.create({
             namespaceId: targetNamespaceId,
             name: repo,
+            path: repo,
             visibility: repoVisibility,
             ...(topics.length ? { topics } : {}),
             ...(Object.keys(settings).length ? { ...settings } : {}),
@@ -341,6 +355,33 @@ export function createPublishGitlabAction(options: {
           });
 
           await adminClient.ProjectMembers.add(projectId, 50, { userId });
+        }
+
+        if (ctx.input.ownerUsername && integrationConfig.config.token) {
+          try {
+            const adminClient = new Gitlab({
+              host: integrationConfig.config.baseUrl,
+              token: integrationConfig.config.token,
+            });
+
+            const users = await adminClient.Users.all({
+              username: ctx.input.ownerUsername,
+            });
+            if (users.length > 0) {
+              await adminClient.ProjectMembers.add(projectId, 50, {
+                userId: users[0].id,
+              });
+            } else {
+              ctx.logger.warn(
+                `Could not find GitLab user with username '${ctx.input.ownerUsername}'. Skipping owner assignment.`,
+              );
+            }
+          } catch (e) {
+            const errorMessage = e instanceof Error ? e.message : String(e);
+            ctx.logger.warn(
+              `Failed to add user '${ctx.input.ownerUsername}' as owner: ${errorMessage}. Proceeding without owner assignment.`,
+            );
+          }
         }
 
         const remoteUrl = (http_url_to_repo as string).replace(/\.git$/, '');

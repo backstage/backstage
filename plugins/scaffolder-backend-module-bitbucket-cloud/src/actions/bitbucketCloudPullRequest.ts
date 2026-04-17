@@ -199,7 +199,6 @@ const getDefaultBranch = async (opts: {
   apiBaseUrl: string;
 }): Promise<string> => {
   const { workspace, repo, authorization, apiBaseUrl } = opts;
-  let response: Response;
 
   const options: RequestInit = {
     method: 'GET',
@@ -209,14 +208,10 @@ const getDefaultBranch = async (opts: {
     },
   };
 
-  try {
-    response = await fetch(
-      `${apiBaseUrl}/repositories/${workspace}/${repo}`,
-      options,
-    );
-  } catch (error) {
-    throw error;
-  }
+  const response = await fetch(
+    `${apiBaseUrl}/repositories/${workspace}/${repo}`,
+    options,
+  );
 
   const { mainbranch } = await response.json();
   const defaultBranch = mainbranch.name;

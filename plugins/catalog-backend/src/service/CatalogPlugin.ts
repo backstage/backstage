@@ -13,13 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
+import {
+  actionsRegistryServiceRef,
+  metricsServiceRef,
+} from '@backstage/backend-plugin-api/alpha';
 import { Entity, Validators } from '@backstage/catalog-model';
+import { CatalogModelSource } from '@backstage/catalog-model/alpha';
 import { ForwardedError } from '@backstage/errors';
 import {
+  catalogAnalysisExtensionPoint,
+  CatalogLocationsExtensionPoint,
+  catalogLocationsExtensionPoint,
+  catalogProcessingExtensionPoint,
   CatalogProcessor,
   CatalogProcessorParser,
   catalogServiceRef,
@@ -28,29 +38,16 @@ import {
   ScmLocationAnalyzer,
 } from '@backstage/plugin-catalog-node';
 import {
-  catalogAnalysisExtensionPoint,
-  CatalogLocationsExtensionPoint,
-  catalogLocationsExtensionPoint,
-  catalogProcessingExtensionPoint,
-} from '@backstage/plugin-catalog-node';
-import {
   CatalogModelExtensionPoint,
   catalogModelExtensionPoint,
-  CatalogPermissionExtensionPoint,
-  catalogPermissionExtensionPoint,
-  CatalogPermissionRuleInput,
   catalogScmEventsServiceRef,
 } from '@backstage/plugin-catalog-node/alpha';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
-import { Permission } from '@backstage/plugin-permission-common';
 import { merge } from 'lodash';
-import { CatalogBuilder } from './CatalogBuilder';
-import {
-  actionsRegistryServiceRef,
-  metricsServiceRef,
-} from '@backstage/backend-plugin-api/alpha';
 import { createCatalogActions } from '../actions';
+import { ModelHolder } from '../model/ModelHolder';
 import type { EntityProviderEntry } from '../processing/connectEntityProviders';
+import { CatalogBuilder } from './CatalogBuilder';
 
 class CatalogLocationsExtensionPointImpl
   implements CatalogLocationsExtensionPoint
@@ -63,33 +60,6 @@ class CatalogLocationsExtensionPointImpl
 
   get allowedLocationTypes() {
     return this.#locationTypes;
-  }
-}
-
-class CatalogPermissionExtensionPointImpl
-  implements CatalogPermissionExtensionPoint
-{
-  #permissions = new Array<Permission>();
-  #permissionRules = new Array<CatalogPermissionRuleInput>();
-
-  addPermissions(...permission: Array<Permission | Array<Permission>>): void {
-    this.#permissions.push(...permission.flat());
-  }
-
-  addPermissionRules(
-    ...rules: Array<
-      CatalogPermissionRuleInput | Array<CatalogPermissionRuleInput>
-    >
-  ): void {
-    this.#permissionRules.push(...rules.flat());
-  }
-
-  get permissions() {
-    return this.#permissions;
-  }
-
-  get permissionRules() {
-    return this.#permissionRules;
   }
 }
 
@@ -117,6 +87,16 @@ class CatalogModelExtensionPointImpl implements CatalogModelExtensionPoint {
 
   get entityDataParser() {
     return this.#entityDataParser;
+  }
+
+  #modelSources: CatalogModelSource[] = [];
+
+  addModelSource(source: CatalogModelSource): void {
+    this.#modelSources.push(source);
+  }
+
+  get modelSources() {
+    return this.#modelSources;
   }
 }
 
@@ -189,12 +169,6 @@ export const catalogPlugin = createBackendPlugin({
       },
     });
 
-    const permissionExtensions = new CatalogPermissionExtensionPointImpl();
-    env.registerExtensionPoint(
-      catalogPermissionExtensionPoint,
-      permissionExtensions,
-    );
-
     const modelExtensions = new CatalogModelExtensionPointImpl();
     env.registerExtensionPoint(catalogModelExtensionPoint, modelExtensions);
 
@@ -243,8 +217,17 @@ export const catalogPlugin = createBackendPlugin({
         catalogScmEvents,
         metrics,
       }) {
+        const modelHolder = modelExtensions.modelSources.length
+          ? await ModelHolder.create({
+              sources: modelExtensions.modelSources,
+              logger,
+              lifecycle,
+            })
+          : undefined;
+
         const builder = await CatalogBuilder.create({
           config,
+          modelHolder,
           reader,
           permissions,
           permissionsRegistry,
@@ -282,8 +265,6 @@ export const catalogPlugin = createBackendPlugin({
         } else {
           builder.addLocationAnalyzers(...scmLocationAnalyzers);
         }
-        builder.addPermissions(...permissionExtensions.permissions);
-        builder.addPermissionRules(...permissionExtensions.permissionRules);
         builder.setFieldFormatValidators(modelExtensions.fieldValidators);
 
         if (locationTypeExtensions.allowedLocationTypes) {
@@ -306,6 +287,7 @@ export const catalogPlugin = createBackendPlugin({
         createCatalogActions({
           catalog,
           actionsRegistry,
+          modelHolder,
         });
 
         const scmEventsMessagesCounter = metrics.createCounter<{

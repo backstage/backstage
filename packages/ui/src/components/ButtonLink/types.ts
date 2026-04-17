@@ -20,6 +20,7 @@ import type { Responsive } from '../../types';
 
 /** @public */
 export type ButtonLinkOwnProps = {
+  noTrack?: boolean;
   size?: Responsive<'small' | 'medium'>;
   variant?: Responsive<'primary' | 'secondary' | 'tertiary'>;
   iconStart?: ReactElement;

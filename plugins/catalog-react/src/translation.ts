@@ -16,7 +16,7 @@
 
 import { createTranslationRef } from '@backstage/core-plugin-api/alpha';
 
-/** @alpha */
+/** @public */
 export const catalogReactTranslationRef = createTranslationRef({
   id: 'catalog-react',
   messages: {
@@ -82,6 +82,7 @@ export const catalogReactTranslationRef = createTranslationRef({
         alertNoEntity: 'There were no other entities on this location.',
         locationHeader: 'At the same location',
         originHeader: 'At the same origin',
+        entityListAriaLabel: 'Colocated entities',
       },
       jsonPage: {
         title: 'Entity as JSON',
@@ -105,6 +106,9 @@ export const catalogReactTranslationRef = createTranslationRef({
         annotations: 'Annotations',
         labels: 'Labels',
         tags: 'Tags',
+        copyAriaLabel: 'Copy {{label}}',
+        copiedStatus: 'Copied',
+        helpLinkAriaLabel: 'Learn more',
       },
       yamlPage: {
         title: 'Entity as YAML',
@@ -167,6 +171,9 @@ export const catalogReactTranslationRef = createTranslationRef({
       title: 'Title',
       label: 'Label',
       domain: 'Domain',
+    },
+    entityRelationCard: {
+      emptyHelpLinkTitle: 'Learn how to change this.',
     },
     missingAnnotationEmptyState: {
       title: 'Missing Annotation',

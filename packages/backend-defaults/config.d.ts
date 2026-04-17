@@ -585,7 +585,7 @@ export interface Config {
     /** Database connection configuration, select base database type using the `client` field */
     database: {
       /** Default database client to use */
-      client: 'better-sqlite3' | 'sqlite3' | 'pg';
+      client: 'better-sqlite3' | 'sqlite3' | 'pg' | 'embedded-postgres';
       /**
        * Base database connection string, or object with individual connection properties
        * @visibility secret
@@ -631,6 +631,35 @@ export interface Config {
              * The ip address type to use for the connection. Defaults to 'PUBLIC'
              */
             ipAddressType?: 'PUBLIC' | 'PRIVATE' | 'PSC';
+          }
+        | {
+            /**
+             * The specific config for AWS RDS connections with IAM authentication.
+             * Requires the `@aws-sdk/rds-signer` package to be installed.
+             * The IAM role or user must have the `rds-db:connect` permission for the database user.
+             */
+            type: 'rds';
+            /**
+             * The hostname of the RDS instance.
+             */
+            host: string;
+            /**
+             * The port number the database is listening on.
+             */
+            port: number;
+            /**
+             * The database user to authenticate as. This user must have the `rds_iam` role granted.
+             */
+            user: string;
+            /**
+             * The AWS region where the RDS instance is located.
+             * Falls back to the AWS_REGION or AWS_DEFAULT_REGION environment variables if not set.
+             */
+            region?: string;
+            /**
+             * Other connection settings
+             */
+            [key: string]: unknown;
           }
         | {
             /**

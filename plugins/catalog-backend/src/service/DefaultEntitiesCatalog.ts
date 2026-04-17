@@ -525,94 +525,96 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
   }
 
   async removeEntityByUid(uid: string): Promise<void> {
-    const dbConfig = this.database.client.config;
+    const relationPeerRefs = await this.database.transaction(async tx => {
+      const dbConfig = tx.client.config;
 
-    // Clear the hashed state of the immediate parents of the deleted entity.
-    // This makes sure that when they get reprocessed, their output is written
-    // down again. The reason for wanting to do this, is that if the user
-    // deletes entities that ARE still emitted by the parent, the parent
-    // processing will still generate the same output hash as always, which
-    // means it'll never try to write down the children again (it assumes that
-    // they already exist). This means that without the code below, the database
-    // never "heals" from accidental deletes.
-    if (dbConfig.client.includes('mysql')) {
-      // MySQL doesn't support the syntax we need to do this in a single query,
-      // http://dev.mysql.com/doc/refman/5.6/en/update.html
-      const results = await this.database<DbRefreshStateRow>('refresh_state')
-        .select('entity_id')
-        .whereIn('entity_ref', function parents(builder) {
-          return builder
-            .from<DbRefreshStateRow>('refresh_state')
-            .innerJoin<DbRefreshStateReferencesRow>(
-              'refresh_state_references',
-              {
-                'refresh_state_references.target_entity_ref':
-                  'refresh_state.entity_ref',
-              },
-            )
-            .where('refresh_state.entity_id', '=', uid)
-            .select('refresh_state_references.source_entity_ref');
-        });
-      await this.database<DbRefreshStateRow>('refresh_state')
-        .update({
-          result_hash: 'child-was-deleted',
-          next_update_at: this.database.fn.now(),
-        })
-        .whereIn(
-          'entity_id',
-          results.map(key => key.entity_id),
-        );
-    } else {
-      await this.database<DbRefreshStateRow>('refresh_state')
-        .update({
-          result_hash: 'child-was-deleted',
-          next_update_at: this.database.fn.now(),
-        })
-        .whereIn('entity_ref', function parents(builder) {
-          return builder
-            .from<DbRefreshStateRow>('refresh_state')
-            .innerJoin<DbRefreshStateReferencesRow>(
-              'refresh_state_references',
-              {
-                'refresh_state_references.target_entity_ref':
-                  'refresh_state.entity_ref',
-              },
-            )
-            .where('refresh_state.entity_id', '=', uid)
-            .select('refresh_state_references.source_entity_ref');
-        });
-    }
-
-    // Stitch the entities that the deleted one had relations to. If we do not
-    // do this, the entities in the other end of the relations will still look
-    // like they have a relation to the entity that was deleted, despite not
-    // having any corresponding rows in the relations table.
-    const relationPeers = await this.database
-      .from<DbRelationsRow>('relations')
-      .innerJoin<DbRefreshStateReferencesRow>('refresh_state', {
-        'refresh_state.entity_ref': 'relations.target_entity_ref',
-      })
-      .where('relations.originating_entity_id', '=', uid)
-      .andWhere('refresh_state.entity_id', '!=', uid)
-      .select({ ref: 'relations.target_entity_ref' })
-      .union(other =>
-        other
-          .from<DbRelationsRow>('relations')
-          .innerJoin<DbRefreshStateReferencesRow>('refresh_state', {
-            'refresh_state.entity_ref': 'relations.source_entity_ref',
+      // Clear the hashed state of the immediate parents of the deleted entity.
+      // This makes sure that when they get reprocessed, their output is written
+      // down again. The reason for wanting to do this, is that if the user
+      // deletes entities that ARE still emitted by the parent, the parent
+      // processing will still generate the same output hash as always, which
+      // means it'll never try to write down the children again (it assumes that
+      // they already exist). This means that without the code below, the database
+      // never "heals" from accidental deletes.
+      if (dbConfig.client.includes('mysql')) {
+        // MySQL doesn't support the syntax we need to do this in a single query,
+        // http://dev.mysql.com/doc/refman/5.6/en/update.html
+        const results = await tx<DbRefreshStateRow>('refresh_state')
+          .select('entity_id')
+          .whereIn('entity_ref', function parents(builder) {
+            return builder
+              .from<DbRefreshStateRow>('refresh_state')
+              .innerJoin<DbRefreshStateReferencesRow>(
+                'refresh_state_references',
+                {
+                  'refresh_state_references.target_entity_ref':
+                    'refresh_state.entity_ref',
+                },
+              )
+              .where('refresh_state.entity_id', '=', uid)
+              .select('refresh_state_references.source_entity_ref');
+          });
+        await tx<DbRefreshStateRow>('refresh_state')
+          .update({
+            result_hash: 'child-was-deleted',
+            next_update_at: tx.fn.now(),
           })
-          .where('relations.originating_entity_id', '=', uid)
-          .andWhere('refresh_state.entity_id', '!=', uid)
-          .select({ ref: 'relations.source_entity_ref' }),
-      );
+          .whereIn(
+            'entity_id',
+            results.map(key => key.entity_id),
+          );
+      } else {
+        await tx<DbRefreshStateRow>('refresh_state')
+          .update({
+            result_hash: 'child-was-deleted',
+            next_update_at: tx.fn.now(),
+          })
+          .whereIn('entity_ref', function parents(builder) {
+            return builder
+              .from<DbRefreshStateRow>('refresh_state')
+              .innerJoin<DbRefreshStateReferencesRow>(
+                'refresh_state_references',
+                {
+                  'refresh_state_references.target_entity_ref':
+                    'refresh_state.entity_ref',
+                },
+              )
+              .where('refresh_state.entity_id', '=', uid)
+              .select('refresh_state_references.source_entity_ref');
+          });
+      }
 
-    await this.database<DbRefreshStateRow>('refresh_state')
-      .where('entity_id', uid)
-      .delete();
+      const relationPeers = await tx
+        .from<DbRelationsRow>('relations')
+        .innerJoin<DbRefreshStateRow>('refresh_state', {
+          'refresh_state.entity_ref': 'relations.target_entity_ref',
+        })
+        .where('relations.originating_entity_id', '=', uid)
+        .andWhere('refresh_state.entity_id', '!=', uid)
+        .select({ ref: 'relations.target_entity_ref' })
+        .union(other =>
+          other
+            .from<DbRelationsRow>('relations')
+            .innerJoin<DbRefreshStateRow>('refresh_state', {
+              'refresh_state.entity_ref': 'relations.source_entity_ref',
+            })
+            .where('relations.originating_entity_id', '=', uid)
+            .andWhere('refresh_state.entity_id', '!=', uid)
+            .select({ ref: 'relations.source_entity_ref' }),
+        );
 
-    await this.stitcher.stitch({
-      entityRefs: new Set(relationPeers.map(p => p.ref)),
+      await tx<DbRefreshStateRow>('refresh_state')
+        .where('entity_id', uid)
+        .delete();
+
+      return new Set(relationPeers.map(p => p.ref));
     });
+
+    if (relationPeerRefs.size > 0) {
+      await this.stitcher.stitch({
+        entityRefs: relationPeerRefs,
+      });
+    }
   }
 
   async entityAncestry(rootRef: string): Promise<EntityAncestryResponse> {

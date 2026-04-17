@@ -21,4 +21,5 @@ export {
   type EntityRefPresentationSnapshot,
 } from './EntityPresentationApi';
 export { defaultEntityPresentation } from './defaultEntityPresentation';
+export { entityPresentationSnapshot } from './entityPresentationSnapshot';
 export { useEntityPresentation } from './useEntityPresentation';

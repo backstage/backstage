@@ -43,6 +43,7 @@ describe('CatalogFilterBlueprint', () => {
         "configSchema": undefined,
         "disabled": false,
         "factory": [Function],
+        "if": undefined,
         "inputs": {},
         "kind": "catalog-filter",
         "name": undefined,

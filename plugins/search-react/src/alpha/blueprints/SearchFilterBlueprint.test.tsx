@@ -45,6 +45,7 @@ describe('SearchFilterBlueprint', () => {
         "configSchema": undefined,
         "disabled": false,
         "factory": [Function],
+        "if": undefined,
         "inputs": {},
         "kind": "search-filter",
         "name": "test",

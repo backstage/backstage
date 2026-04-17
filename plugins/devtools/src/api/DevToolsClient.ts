@@ -24,7 +24,7 @@ import {
   ScheduledTasks,
   TriggerScheduledTask,
 } from '@backstage/plugin-devtools-common/alpha';
-import { ResponseError } from '@backstage/errors';
+import { ResponseError, NotFoundError, ConflictError } from '@backstage/errors';
 import { DevToolsApi } from './DevToolsApi';
 
 export class DevToolsClient implements DevToolsApi {
@@ -82,7 +82,31 @@ export class DevToolsClient implements DevToolsApi {
       throw await ResponseError.fromResponse(response);
     }
 
-    return response.json() as Promise<TriggerScheduledTask>;
+    return {};
+  }
+
+  public async cancelScheduledTask(
+    plugin: string,
+    taskId: string,
+  ): Promise<void> {
+    const baseUrl = `${await this.discoveryApi.getBaseUrl(plugin)}/`;
+    const url = new URL(
+      `.backstage/scheduler/v1/tasks/${encodeURIComponent(taskId)}/cancel`,
+      baseUrl,
+    );
+
+    const response = await this.fetchApi.fetch(url.toString(), {
+      method: 'POST',
+    });
+
+    if (!response.ok) {
+      if (response.status === 404) {
+        throw new NotFoundError(`Task ${taskId} not found`);
+      } else if (response.status === 409) {
+        throw new ConflictError(`Task ${taskId} is not running`);
+      }
+      throw await ResponseError.fromResponse(response);
+    }
   }
 
   public async getExternalDependencies(): Promise<

@@ -15,4 +15,12 @@
  */
 
 export { ConsumingComponentsCard } from './ConsumingComponentsCard';
+export type {
+  ConsumingComponentsCardLegacyProps,
+  ConsumingComponentsCardProps,
+} from './ConsumingComponentsCard';
 export { ProvidingComponentsCard } from './ProvidingComponentsCard';
+export type {
+  ProvidingComponentsCardLegacyProps,
+  ProvidingComponentsCardProps,
+} from './ProvidingComponentsCard';

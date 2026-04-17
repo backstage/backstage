@@ -20,7 +20,7 @@ import {
   TemplateActionRegistry,
 } from '../actions';
 import { ScmIntegrations } from '@backstage/integration';
-import { JsonObject } from '@backstage/types';
+import { JsonArray, JsonObject } from '@backstage/types';
 import { ConfigReader } from '@backstage/config';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import {
@@ -39,7 +39,10 @@ import {
   mockCredentials,
   mockServices,
 } from '@backstage/backend-test-utils';
-import { actionsRegistryServiceMock } from '@backstage/backend-test-utils/alpha';
+import {
+  actionsRegistryServiceMock,
+  metricsServiceMock,
+} from '@backstage/backend-test-utils/alpha';
 
 describe('NunjucksWorkflowRunner', () => {
   let actionRegistry: TemplateActionRegistry;
@@ -249,6 +252,7 @@ describe('NunjucksWorkflowRunner', () => {
       logger,
       permissions: mockedPermissionApi,
       config,
+      metrics: metricsServiceMock.mock(),
     });
   });
 
@@ -512,6 +516,136 @@ describe('NunjucksWorkflowRunner', () => {
         const { output } = await runner.execute(task);
         expect(output.result).toBeUndefined();
       });
+    });
+  });
+
+  describe('conditional output items', () => {
+    it('should include output links without an if condition', async () => {
+      const task = createMockTaskWithSpec({
+        steps: [{ id: 'test', name: 'test', action: 'jest-mock-action' }],
+        output: {
+          links: [{ title: 'Always', url: 'https://example.com' }],
+        },
+      });
+
+      const { output } = await runner.execute(task);
+      expect(output.links).toEqual([
+        { title: 'Always', url: 'https://example.com' },
+      ]);
+    });
+
+    it('should filter out output links where if is false', async () => {
+      const task = createMockTaskWithSpec({
+        steps: [{ id: 'test', name: 'test', action: 'jest-mock-action' }],
+        output: {
+          links: [
+            { title: 'Always', url: 'https://example.com' },
+            { if: false, title: 'Hidden', url: 'https://hidden.com' },
+          ],
+        },
+      });
+
+      const { output } = await runner.execute(task);
+      expect(output.links).toEqual([
+        { title: 'Always', url: 'https://example.com' },
+      ]);
+    });
+
+    it('should include output links where if is true', async () => {
+      const task = createMockTaskWithSpec({
+        steps: [{ id: 'test', name: 'test', action: 'jest-mock-action' }],
+        output: {
+          links: [{ if: true, title: 'Visible', url: 'https://visible.com' }],
+        },
+      });
+
+      const { output } = await runner.execute(task);
+      expect(output.links).toEqual([
+        { title: 'Visible', url: 'https://visible.com' },
+      ]);
+    });
+
+    it('should filter output links based on templated if condition', async () => {
+      const task = createMockTaskWithSpec({
+        steps: [{ id: 'test', name: 'test', action: 'output-action' }],
+        output: {
+          links: [
+            {
+              if: '${{ parameters.enableCI === "Yes" }}',
+              title: 'CI',
+              url: 'https://ci.example.com',
+            },
+            {
+              if: '${{ parameters.enableCI === "Yes" }}',
+              title: 'CI Docs',
+              url: 'https://ci.example.com/docs',
+            },
+          ],
+        },
+        parameters: { enableCI: 'No' },
+      });
+
+      const { output } = await runner.execute(task);
+      expect(output.links).toEqual([]);
+    });
+
+    it('should include output links when templated if condition is truthy', async () => {
+      const task = createMockTaskWithSpec({
+        steps: [{ id: 'test', name: 'test', action: 'output-action' }],
+        output: {
+          links: [
+            {
+              if: '${{ parameters.enableCI === "Yes" }}',
+              title: 'CI',
+              url: 'https://ci.example.com',
+            },
+          ],
+        },
+        parameters: { enableCI: 'Yes' },
+      });
+
+      const { output } = await runner.execute(task);
+      expect(output.links).toEqual([
+        { title: 'CI', url: 'https://ci.example.com' },
+      ]);
+    });
+
+    it('should filter output text items based on if condition', async () => {
+      const task = createMockTaskWithSpec({
+        steps: [{ id: 'test', name: 'test', action: 'jest-mock-action' }],
+        output: {
+          text: [
+            { title: 'Always', content: 'visible' },
+            { if: false, title: 'Hidden', content: 'hidden' },
+            {
+              if: '${{ parameters.show }}',
+              title: 'Conditional',
+              content: 'conditional',
+            },
+          ],
+        },
+        parameters: { show: true },
+      });
+
+      const { output } = await runner.execute(task);
+      expect(output.text).toEqual([
+        { title: 'Always', content: 'visible' },
+        { title: 'Conditional', content: 'conditional' },
+      ]);
+    });
+
+    it('should strip the if field from output items that pass the condition', async () => {
+      const task = createMockTaskWithSpec({
+        steps: [{ id: 'test', name: 'test', action: 'jest-mock-action' }],
+        output: {
+          links: [{ if: true, title: 'Link', url: 'https://example.com' }],
+          text: [{ if: true, title: 'Text', content: 'content' }],
+        },
+      });
+
+      const { output } = await runner.execute(task);
+      expect((output.links as JsonArray)[0]).not.toHaveProperty('if');
+      expect((output.text as JsonArray)[0]).not.toHaveProperty('if');
     });
   });
 
@@ -895,6 +1029,405 @@ describe('NunjucksWorkflowRunner', () => {
       await runner.execute(task);
 
       expectTaskLog('info: *** {"thing":"***"}');
+    });
+
+    // eslint-disable-next-line jest/expect-expect
+    it('should redact secrets that have been transformed with a replace filter', async () => {
+      actionRegistry.register({
+        id: 'log-secret',
+        description: 'Mock action for testing',
+        supportsDryRun: true,
+        handler: async ctx => {
+          ctx.logger.info(ctx.input.secret);
+        },
+        schema: {
+          input: {
+            type: 'object',
+            required: ['secret'],
+            properties: {
+              secret: {
+                type: 'string',
+              },
+            },
+          },
+        },
+      });
+
+      const task = createMockTaskWithSpec(
+        {
+          steps: [
+            {
+              id: 'test',
+              name: 'name',
+              action: 'log-secret',
+              input: {
+                secret: "${{ secrets.backstageToken | replace('.', '_DOT_') }}",
+              },
+            },
+          ],
+        },
+        { backstageToken: 'header.payload.signature' },
+      );
+
+      await runner.execute(task);
+
+      expectTaskLog('info: ***');
+    });
+
+    // eslint-disable-next-line jest/expect-expect
+    it('should redact secrets transformed with the upper filter', async () => {
+      actionRegistry.register({
+        id: 'log-secret',
+        description: 'Mock action for testing',
+        supportsDryRun: true,
+        handler: async ctx => {
+          ctx.logger.info(ctx.input.secret);
+        },
+        schema: {
+          input: {
+            type: 'object',
+            required: ['secret'],
+            properties: {
+              secret: {
+                type: 'string',
+              },
+            },
+          },
+        },
+      });
+
+      const task = createMockTaskWithSpec(
+        {
+          steps: [
+            {
+              id: 'test',
+              name: 'name',
+              action: 'log-secret',
+              input: {
+                secret: '${{ secrets.mySecret | upper }}',
+              },
+            },
+          ],
+        },
+        { mySecret: 'super-secret-token' },
+      );
+
+      await runner.execute(task);
+
+      expectTaskLog('info: ***');
+    });
+
+    // eslint-disable-next-line jest/expect-expect
+    it('should redact secrets embedded in a larger string with other text', async () => {
+      actionRegistry.register({
+        id: 'log-secret',
+        description: 'Mock action for testing',
+        supportsDryRun: true,
+        handler: async ctx => {
+          ctx.logger.info(ctx.input.message);
+        },
+        schema: {
+          input: {
+            type: 'object',
+            required: ['message'],
+            properties: {
+              message: {
+                type: 'string',
+              },
+            },
+          },
+        },
+      });
+
+      const task = createMockTaskWithSpec(
+        {
+          steps: [
+            {
+              id: 'test',
+              name: 'name',
+              action: 'log-secret',
+              input: {
+                message:
+                  "scaffold-init:${{ secrets.backstageToken | replace('.', '_DOT_') }}",
+              },
+            },
+          ],
+        },
+        { backstageToken: 'header.payload.signature' },
+      );
+
+      await runner.execute(task);
+
+      expectTaskLog('info: ***');
+    });
+
+    // eslint-disable-next-line jest/expect-expect
+    it('should redact environment secrets that have been transformed', async () => {
+      actionRegistry.register({
+        id: 'log-secret',
+        description: 'Mock action for testing',
+        supportsDryRun: true,
+        handler: async ctx => {
+          ctx.logger.info(ctx.input.secret);
+        },
+        schema: {
+          input: {
+            type: 'object',
+            required: ['secret'],
+            properties: {
+              secret: {
+                type: 'string',
+              },
+            },
+          },
+        },
+      });
+
+      const task = createMockTaskWithSpec(
+        {
+          steps: [
+            {
+              id: 'test',
+              name: 'name',
+              action: 'log-secret',
+              input: {
+                secret: '${{ environment.secrets.AWS_ACCESS_KEY | upper }}',
+              },
+            },
+          ],
+        },
+        {},
+      );
+
+      await runner.execute(task);
+
+      expectTaskLog('info: ***');
+    });
+
+    it('should not redact non-secret values in rendered input', async () => {
+      actionRegistry.register({
+        id: 'log-secret',
+        description: 'Mock action for testing',
+        supportsDryRun: true,
+        handler: async ctx => {
+          ctx.logger.info(ctx.input.name);
+        },
+        schema: {
+          input: {
+            type: 'object',
+            required: ['name'],
+            properties: {
+              name: {
+                type: 'string',
+              },
+            },
+          },
+        },
+      });
+
+      const task = createMockTaskWithSpec({
+        steps: [
+          {
+            id: 'test',
+            name: 'name',
+            action: 'log-secret',
+            input: {
+              name: '${{ parameters.serviceName }}',
+            },
+          },
+        ],
+        parameters: { serviceName: 'my-service' },
+      });
+
+      await runner.execute(task);
+
+      expectTaskLog('info: my-service');
+    });
+
+    // eslint-disable-next-line jest/expect-expect
+    it('should redact secrets in deeply nested input objects', async () => {
+      actionRegistry.register({
+        id: 'log-secret',
+        description: 'Mock action for testing',
+        supportsDryRun: true,
+        handler: async ctx => {
+          ctx.logger.info(ctx.input.nested.deep.secret);
+        },
+        schema: {
+          input: {
+            type: 'object',
+            required: ['nested'],
+            properties: {
+              nested: {
+                type: 'object',
+                properties: {
+                  deep: {
+                    type: 'object',
+                    properties: {
+                      secret: { type: 'string' },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+
+      const task = createMockTaskWithSpec(
+        {
+          steps: [
+            {
+              id: 'test',
+              name: 'name',
+              action: 'log-secret',
+              input: {
+                nested: {
+                  deep: {
+                    secret: "${{ secrets.token | replace('.', '-') }}",
+                  },
+                },
+              },
+            },
+          ],
+        },
+        { token: 'aaa.bbb.ccc' },
+      );
+
+      await runner.execute(task);
+
+      expectTaskLog('info: ***');
+    });
+
+    // eslint-disable-next-line jest/expect-expect
+    it('should redact secrets in arrays within input', async () => {
+      actionRegistry.register({
+        id: 'log-secret',
+        description: 'Mock action for testing',
+        supportsDryRun: true,
+        handler: async ctx => {
+          ctx.logger.info(ctx.input.items[0]);
+        },
+        schema: {
+          input: {
+            type: 'object',
+            required: ['items'],
+            properties: {
+              items: {
+                type: 'array',
+                items: { type: 'string' },
+              },
+            },
+          },
+        },
+      });
+
+      const task = createMockTaskWithSpec(
+        {
+          steps: [
+            {
+              id: 'test',
+              name: 'name',
+              action: 'log-secret',
+              input: {
+                items: ['${{ secrets.token | upper }}', 'not-a-secret'],
+              },
+            },
+          ],
+        },
+        { token: 'my-secret' },
+      );
+
+      await runner.execute(task);
+
+      expectTaskLog('info: ***');
+    });
+
+    // eslint-disable-next-line jest/expect-expect
+    it('should redact multiple different transformed secrets in the same step', async () => {
+      actionRegistry.register({
+        id: 'log-secret',
+        description: 'Mock action for testing',
+        supportsDryRun: true,
+        handler: async ctx => {
+          ctx.logger.info(`${ctx.input.a} ${ctx.input.b}`);
+        },
+        schema: {
+          input: {
+            type: 'object',
+            required: ['a', 'b'],
+            properties: {
+              a: { type: 'string' },
+              b: { type: 'string' },
+            },
+          },
+        },
+      });
+
+      const task = createMockTaskWithSpec(
+        {
+          steps: [
+            {
+              id: 'test',
+              name: 'name',
+              action: 'log-secret',
+              input: {
+                a: '${{ secrets.s1 | upper }}',
+                b: "${{ secrets.s2 | replace('.', '_') }}",
+              },
+            },
+          ],
+        },
+        { s1: 'first-secret', s2: 'second.secret' },
+      );
+
+      await runner.execute(task);
+
+      expectTaskLog('info: *** ***');
+    });
+
+    it('should still pass the correct transformed value to the action input', async () => {
+      actionRegistry.register({
+        id: 'log-secret',
+        description: 'Mock action for testing',
+        supportsDryRun: true,
+        handler: fakeActionHandler,
+        schema: {
+          input: {
+            type: 'object',
+            required: ['secret'],
+            properties: {
+              secret: {
+                type: 'string',
+              },
+            },
+          },
+        },
+      });
+
+      const task = createMockTaskWithSpec(
+        {
+          steps: [
+            {
+              id: 'test',
+              name: 'name',
+              action: 'log-secret',
+              input: {
+                secret: "${{ secrets.backstageToken | replace('.', '_DOT_') }}",
+              },
+            },
+          ],
+        },
+        { backstageToken: 'header.payload.signature' },
+      );
+
+      await runner.execute(task);
+
+      expect(fakeActionHandler).toHaveBeenCalledWith(
+        expect.objectContaining({
+          input: { secret: 'header_DOT_payload_DOT_signature' },
+        }),
+      );
     });
   });
 
@@ -1653,6 +2186,42 @@ describe('NunjucksWorkflowRunner', () => {
       expect(fakeActionHandler.mock.calls[0][0].isDryRun).toEqual(true);
       expect(fakeActionHandler.mock.calls[0][0].step.id).toEqual('test');
       expect(fakeActionHandler.mock.calls[0][0].step.name).toEqual('name');
+    });
+
+    it('should not pass environment secrets or task secrets to action inputs during dry-run', async () => {
+      const dryRunHandler = jest.fn();
+      actionRegistry.register(
+        createTemplateAction({
+          id: 'jest-dryrun-action',
+          description: 'Mock action with dry-run support',
+          supportsDryRun: true,
+          handler: dryRunHandler,
+        }),
+      );
+
+      const task = createMockTaskWithSpec(
+        {
+          steps: [
+            {
+              id: 'test',
+              name: 'name',
+              action: 'jest-dryrun-action',
+              input: {
+                envSecret: '${{ environment.secrets.AWS_ACCESS_KEY }}',
+                taskSecret: '${{ secrets.mySecret }}',
+              },
+            },
+          ],
+        },
+        { mySecret: 'task-secret-value', backstageToken: token },
+        true,
+      );
+
+      await runner.execute(task);
+
+      const handlerCall = dryRunHandler.mock.calls[0][0];
+      expect(handlerCall.input.envSecret).toBeUndefined();
+      expect(handlerCall.input.taskSecret).toBeUndefined();
     });
   });
 

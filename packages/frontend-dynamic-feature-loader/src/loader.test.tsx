@@ -991,7 +991,7 @@ describe('dynamicFrontendFeaturesLoader', () => {
 
     expect(warnCalls).toEqual(['[ Federation Runtime ]']);
     expect(errorCalls).toEqual([
-      "Failed loading remote module 'plugin_1' of dynamic plugin 'plugin-1': Error: [ Federation Runtime ]: http://localhost:7007/.backstage/dynamic-features/remotes/plugin-1/mf-manifest.json is not a federation manifest",
+      `Failed loading remote module 'plugin_1' of dynamic plugin 'plugin-1': Error: [ Federation Runtime ]: "http://localhost:7007/.backstage/dynamic-features/remotes/plugin-1/mf-manifest.json" is not a valid federation manifest for remote "plugin_1". Missing required fields: metaData, exposes, shared.`,
     ]);
     expect(features).toMatchObject([
       {
@@ -1089,7 +1089,7 @@ describe('dynamicFrontendFeaturesLoader', () => {
     const warnCalls = mocks.console.warn.mock.calls.flatMap(e => e[0]);
     expect(warnCalls).toEqual(['[ Federation Runtime ]']);
     expect(errorCalls).toEqual([
-      "Failed loading remote module 'plugin_1' of dynamic plugin 'plugin-1': Error: [ Federation Runtime ]: http://localhost:7007/.backstage/dynamic-features/remotes/plugin-1/mf-manifest.json is not a federation manifest",
+      `Failed loading remote module 'plugin_1' of dynamic plugin 'plugin-1': Error: [ Federation Runtime ]: "http://localhost:7007/.backstage/dynamic-features/remotes/plugin-1/mf-manifest.json" is not a valid federation manifest for remote "plugin_1". Missing required fields: metaData, exposes, shared.`,
     ]);
     expect(features).toMatchObject([
       {

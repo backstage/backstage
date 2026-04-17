@@ -26,7 +26,7 @@ import { RouteRef } from '@backstage/core-plugin-api';
 import { RouteRef as RouteRef_2 } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
 
-// @alpha (undocumented)
+// @alpha @deprecated (undocumented)
 export const apiDocsTranslationRef: TranslationRef<
   'api-docs',
   {
@@ -58,7 +58,7 @@ export const apiDocsTranslationRef: TranslationRef<
     readonly 'providingComponentsCard.error.title': 'Could not load components';
     readonly 'providingComponentsCard.title': 'Providers';
     readonly 'providingComponentsCard.emptyContent.title': 'No component provides this API.';
-    readonly apisCardHelpLinkTitle: 'Learn how to change this';
+    readonly apisCardHelpLinkTitle: 'Learn how to change this.';
   }
 >;
 
@@ -343,9 +343,9 @@ const _default: OverridableFrontendPlugin<
         icon: string | undefined;
       };
       configInput: {
-        filter?: FilterPredicate | undefined;
-        title?: string | undefined;
         path?: string | undefined;
+        title?: string | undefined;
+        filter?: FilterPredicate | undefined;
         group?: string | false | undefined;
         icon?: string | undefined;
       };
@@ -413,9 +413,9 @@ const _default: OverridableFrontendPlugin<
         icon: string | undefined;
       };
       configInput: {
-        filter?: FilterPredicate | undefined;
-        title?: string | undefined;
         path?: string | undefined;
+        title?: string | undefined;
+        filter?: FilterPredicate | undefined;
         group?: string | false | undefined;
         icon?: string | undefined;
       };
@@ -475,8 +475,12 @@ const _default: OverridableFrontendPlugin<
     'nav-item:api-docs': OverridableExtensionDefinition<{
       kind: 'nav-item';
       name: undefined;
-      config: {};
-      configInput: {};
+      config: {
+        title: string | undefined;
+      };
+      configInput: {
+        title?: string | undefined;
+      };
       output: ExtensionDataRef<
         {
           title: string;
@@ -501,8 +505,8 @@ const _default: OverridableFrontendPlugin<
       };
       configInput: {
         initiallySelectedFilter?: 'all' | 'owned' | 'starred' | undefined;
-        title?: string | undefined;
         path?: string | undefined;
+        title?: string | undefined;
       };
       output:
         | ExtensionDataRef<string, 'core.routing.path', {}>
@@ -563,7 +567,6 @@ const _default: OverridableFrontendPlugin<
       kind: 'page';
       name: undefined;
       params: {
-        defaultPath?: [Error: `Use the 'path' param instead`];
         path: string;
         title?: string;
         icon?: IconElement;

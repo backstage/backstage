@@ -15,7 +15,7 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { assertError } from '@backstage/errors';
+import { toError } from '@backstage/errors';
 import limiterFactory, { Limit } from 'p-limit';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
 import {
@@ -109,18 +109,16 @@ export class UrlReaderProcessor implements CatalogProcessor {
 
       emit(processingResult.refresh(`${location.type}:${location.target}`));
     } catch (error) {
-      assertError(error);
-      const message = `Unable to read ${location.type}, ${error}`.substring(
-        0,
-        5000,
-      );
-      if (error.name === 'NotModifiedError' && cacheItem) {
+      const err = toError(error);
+      const message =
+        `Unable to read ${location.type}, ${err.message}`.substring(0, 5000);
+      if (err.name === 'NotModifiedError' && cacheItem) {
         for (const parseResult of cacheItem.value) {
           emit(parseResult);
         }
         emit(processingResult.refresh(`${location.type}:${location.target}`));
         await cache.set(CACHE_KEY, cacheItem);
-      } else if (error.name === 'NotFoundError') {
+      } else if (err.name === 'NotFoundError') {
         if (!optional) {
           emit(processingResult.notFoundError(location, message));
         }

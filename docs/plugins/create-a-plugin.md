@@ -4,6 +4,12 @@ title: Create a Backstage Plugin
 description: Documentation on How to Create a Backstage Plugin
 ---
 
+:::caution Legacy Documentation
+
+This page describes creating plugins for the **old frontend system**. For creating plugins using the new frontend system, see [Building Frontend Plugins](../frontend-system/building-plugins/01-index.md). For creating backend plugins, see [Building Backend Plugins and Modules](../backend-system/building-plugins-and-modules/01-index.md).
+
+:::
+
 A Backstage Plugin adds functionality to Backstage.
 
 ## Create a Plugin

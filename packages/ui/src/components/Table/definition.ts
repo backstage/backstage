@@ -27,6 +27,20 @@ import type {
 } from './types';
 import styles from './Table.module.css';
 
+/** @internal */
+export const TableWrapperDefinition = defineComponent<{
+  className?: string;
+}>()({
+  styles,
+  classNames: {
+    root: 'bui-TableWrapper',
+    resizableContainer: 'bui-TableResizableContainer',
+  },
+  propDefs: {
+    className: {},
+  },
+});
+
 /**
  * Component definition for Table
  * @public
@@ -38,6 +52,7 @@ export const TableDefinition = defineComponent<TableRootOwnProps>()({
   },
   propDefs: {
     stale: { dataAttribute: true },
+    loading: { dataAttribute: true },
   },
 });
 
@@ -75,6 +90,8 @@ export const TableBodyDefinition = defineComponent<TableBodyOwnProps>()({
  */
 export const RowDefinition = defineComponent<RowOwnProps>()({
   styles,
+  analytics: true,
+  bg: 'consumer',
   classNames: {
     root: 'bui-TableRow',
     cell: 'bui-TableCell',
@@ -84,6 +101,7 @@ export const RowDefinition = defineComponent<RowOwnProps>()({
     columns: {},
     children: {},
     href: {},
+    noTrack: {},
   },
 });
 
@@ -96,6 +114,7 @@ export const ColumnDefinition = defineComponent<ColumnOwnProps>()({
   classNames: {
     root: 'bui-TableHead',
     headContent: 'bui-TableHeadContent',
+    headLabel: 'bui-TableHeadLabel',
     headSortButton: 'bui-TableHeadSortButton',
   },
   propDefs: {

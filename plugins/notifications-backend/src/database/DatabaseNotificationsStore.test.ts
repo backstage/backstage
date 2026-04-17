@@ -469,6 +469,11 @@ describe.each(databases.eachSupportedId())(
           id3,
         ]);
       });
+
+      it('should return empty array when limit is 0', async () => {
+        const result = await storage.getNotifications({ user, limit: 0 });
+        expect(result).toEqual([]);
+      });
     });
 
     describe('getNotifications sorting', () => {

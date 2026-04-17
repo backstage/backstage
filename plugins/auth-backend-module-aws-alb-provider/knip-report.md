@@ -2,7 +2,7 @@
 
 ## Unused dependencies (1)
 
-| Name                           | Location     | Severity |
-| :----------------------------- | :----------- | :------- |
-| @backstage/plugin-auth-backend | plugins/auth-backend-module-aws-alb-provider/package.json | error    |
+| Name                           | Location          | Severity |
+| :----------------------------- | :---------------- | :------- |
+| @backstage/plugin-auth-backend | package.json:42:6 | error    |
 

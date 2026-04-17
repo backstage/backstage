@@ -35,7 +35,7 @@ import {
 import { ReaderFactory, ReadTreeResponseFactory } from './types';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 import {
-  assertError,
+  toError,
   AuthenticationError,
   NotFoundError,
   NotModifiedError,
@@ -189,8 +189,8 @@ export class GiteaUrlReader implements UrlReaderService {
         ],
         etag: data.etag ?? '',
       };
-    } catch (error) {
-      assertError(error);
+    } catch (e) {
+      const error = toError(e);
       if (error.name === 'NotFoundError') {
         return {
           files: [],

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ZodSchema, ZodTypeDef } from 'zod';
+import type { z, ZodType } from 'zod/v3';
 import { SignInResolver } from '../types';
 import zodToJsonSchema from 'zod-to-json-schema';
 import { JsonObject } from '@backstage/types';
@@ -34,38 +34,32 @@ export interface SignInResolverFactory<TAuthResult = any, TOptions = any> {
 /** @public */
 export interface SignInResolverFactoryOptions<
   TAuthResult,
-  TOptionsOutput,
-  TOptionsInput,
+  TSchema extends ZodType = ZodType<unknown>,
 > {
-  optionsSchema?: ZodSchema<TOptionsOutput, ZodTypeDef, TOptionsInput>;
-  create(options: TOptionsOutput): SignInResolver<TAuthResult>;
+  optionsSchema?: TSchema;
+  create(options: z.output<TSchema>): SignInResolver<TAuthResult>;
 }
 
 /** @public */
 export function createSignInResolverFactory<
   TAuthResult,
-  TOptionsOutput,
-  TOptionsInput,
+  TSchema extends ZodType = ZodType<unknown>,
 >(
-  options: SignInResolverFactoryOptions<
-    TAuthResult,
-    TOptionsOutput,
-    TOptionsInput
-  >,
-): SignInResolverFactory<TAuthResult, TOptionsInput> {
+  options: SignInResolverFactoryOptions<TAuthResult, TSchema>,
+): SignInResolverFactory<TAuthResult, z.input<TSchema>> {
   const { optionsSchema } = options;
   if (!optionsSchema) {
-    return (resolverOptions?: TOptionsInput) => {
+    return (resolverOptions?: z.input<TSchema>) => {
       if (resolverOptions) {
         throw new InputError('sign-in resolver does not accept options');
       }
-      return options.create(undefined as TOptionsOutput);
+      return options.create(undefined);
     };
   }
   const factory = (
-    ...[resolverOptions]: undefined extends TOptionsInput
-      ? [options?: TOptionsInput]
-      : [options: TOptionsInput]
+    ...[resolverOptions]: undefined extends z.input<TSchema>
+      ? [options?: z.input<TSchema>]
+      : [options: z.input<TSchema>]
   ) => {
     let parsedOptions;
     try {

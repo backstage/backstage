@@ -885,6 +885,32 @@ another_unknown: true
       );
     });
 
+    it('should remove the INHERIT key to prevent loading unsanitized parent configs', async () => {
+      const mkdocsWithInherit = `INHERIT: ../parent.yml
+site_name: Test
+`;
+      mockDir.setContent({
+        'mkdocs_inherit.yml': mkdocsWithInherit,
+      });
+
+      await sanitizeMkdocsYml(
+        mockDir.resolve('mkdocs_inherit.yml'),
+        mockLogger,
+      );
+
+      const updatedMkdocsYml = await fs.readFile(
+        mockDir.resolve('mkdocs_inherit.yml'),
+      );
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as Record<
+        string,
+        unknown
+      >;
+
+      expect(parsedYml.INHERIT).toBeUndefined();
+      expect(parsedYml.site_name).toBe('Test');
+      expect(warn).toHaveBeenCalledWith(expect.stringContaining('INHERIT'));
+    });
+
     it('should remove hooks with duplicate merge keys and top-level anchors', async () => {
       mockDir.setContent({
         'mkdocs_duplicate_merge.yml': mkdocsYmlWithDuplicateMergeHooks,

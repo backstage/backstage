@@ -2,9 +2,9 @@
 
 ## Unused devDependencies (3)
 
-| Name            | Location     | Severity |
-| :-------------- | :----------- | :------- |
-| express-session | plugins/auth-backend-module-pinniped-provider/package.json | error    |
-| cookie-parser   | plugins/auth-backend-module-pinniped-provider/package.json | error    |
-| passport        | plugins/auth-backend-module-pinniped-provider/package.json | error    |
+| Name            | Location          | Severity |
+| :-------------- | :---------------- | :------- |
+| express-session | package.json:50:6 | error    |
+| cookie-parser   | package.json:48:6 | error    |
+| passport        | package.json:53:6 | error    |
 

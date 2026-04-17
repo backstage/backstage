@@ -2,7 +2,7 @@
 
 ## Unused dependencies (1)
 
-| Name             | Location     | Severity |
-| :--------------- | :----------- | :------- |
-| @backstage/types | plugins/events-node/package.json | error    |
+| Name             | Location          | Severity |
+| :--------------- | :---------------- | :------- |
+| @backstage/types | package.json:57:6 | error    |
 

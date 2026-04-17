@@ -99,15 +99,21 @@ export class CommonJSModuleLoader implements ModuleLoader {
         );
       }
 
-      // Are we trying to resolve a `package.json` from an originating module of the core backstage application
-      // (this is mostly done by calling `@backstage/backend-plugin-api/resolvePackagePath`).
-      const resolvingPackageJsonFromBackstageApplication =
+      // Is this a `resolvePackagePath` call from `@backstage/backend-plugin-api`?
+      // This covers both the host application's copy and a bundled copy living
+      // inside a dynamic plugin's own node_modules.
+      // The regex matches mod.path against the various ways the package can be resolved on disk
+      // (with optional subdirectory such as /src or /dist after the package name):
+      //   - .../node_modules/@backstage/backend-plugin-api[/...]  (npm-installed)
+      //   - .../<plugin>/node_modules/@backstage/backend-plugin-api[/...]  (bundled)
+      //   - .../packages/backend-plugin-api[/...]  (symlinked workspace in monorepo)
+      const resolvingPackageJsonViaResolvePackagePath =
         request?.endsWith('/package.json') &&
-        mod?.path &&
-        !dynamicPluginsPaths.some(p => mod.path.startsWith(p));
+        /[/\\](?:@backstage|packages)[/\\]backend-plugin-api(?:[/\\]|$)/.test(
+          mod?.path ?? '',
+        );
 
-      // If not, we don't need the dedicated specific case below.
-      if (!resolvingPackageJsonFromBackstageApplication) {
+      if (!resolvingPackageJsonViaResolvePackagePath) {
         throw errorToThrow;
       }
 

@@ -2,7 +2,8 @@
 
 ## Unused devDependencies (2)
 
-| Name        | Location     | Severity |
-| :---------- | :----------- | :------- |
-| cross-fetch | packages/app-example-plugin/package.json | error    |
-| msw         | packages/app-example-plugin/package.json | error    |
+| Name        | Location          | Severity |
+| :---------- | :---------------- | :------- |
+| cross-fetch | package.json:51:6 | error    |
+| msw         | package.json:52:6 | error    |
+

@@ -6,8 +6,8 @@
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
-import { InfoCardVariants } from '@backstage/core-components';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
+import { TranslationRef } from '@backstage/frontend-plugin-api';
 
 // @public (undocumented)
 export type ComponentsGridClassKey =
@@ -18,7 +18,6 @@ export type ComponentsGridClassKey =
 
 // @public (undocumented)
 export const EntityGroupProfileCard: (props: {
-  variant?: InfoCardVariants;
   showLinks?: boolean;
 }) => JSX_2.Element;
 
@@ -34,13 +33,11 @@ export const EntityMembersListCard: (props: {
 
 // @public (undocumented)
 export const EntityOwnershipCard: (props: {
-  variant?: InfoCardVariants;
   entityFilterKind?: string[];
   hideRelationsToggle?: boolean;
   relationsType?: EntityRelationAggregation;
   relationAggregation?: EntityRelationAggregation;
   entityLimit?: number;
-  maxScrollHeight?: string;
 }) => JSX_2.Element;
 
 // @public (undocumented)
@@ -48,7 +45,6 @@ export type EntityRelationAggregation = 'direct' | 'aggregated';
 
 // @public (undocumented)
 export const EntityUserProfileCard: (props: {
-  variant?: InfoCardVariants;
   showLinks?: boolean;
   maxRelations?: number;
   hideIcons?: boolean;
@@ -56,12 +52,8 @@ export const EntityUserProfileCard: (props: {
 
 // @public (undocumented)
 export const GroupProfileCard: (props: {
-  variant?: InfoCardVariants;
   showLinks?: boolean;
 }) => JSX_2.Element;
-
-// @public (undocumented)
-export type MemberComponentClassKey = 'card' | 'avatar';
 
 // @public (undocumented)
 export const MembersListCard: (props: {
@@ -74,7 +66,7 @@ export const MembersListCard: (props: {
 }) => JSX_2.Element;
 
 // @public (undocumented)
-export type MembersListCardClassKey = 'root' | 'cardContent' | 'memberList';
+export type MembersListCardClassKey = 'memberList';
 
 // @public
 export const MyGroupsSidebarItem: (props: {
@@ -95,28 +87,48 @@ export { orgPlugin };
 export { orgPlugin as plugin };
 
 // @public (undocumented)
+export const orgTranslationRef: TranslationRef<
+  'org',
+  {
+    readonly 'groupProfileCard.groupNotFound': 'Group not found';
+    readonly 'groupProfileCard.editIconButtonTitle': 'Edit Metadata';
+    readonly 'groupProfileCard.refreshIconButtonTitle': 'Schedule entity refresh';
+    readonly 'groupProfileCard.refreshIconButtonAriaLabel': 'Refresh';
+    readonly 'groupProfileCard.listItemTitle.email': 'Email';
+    readonly 'groupProfileCard.listItemTitle.entityRef': 'Entity Ref';
+    readonly 'groupProfileCard.listItemTitle.parentGroup': 'Parent Group';
+    readonly 'groupProfileCard.listItemTitle.childGroups': 'Child Groups';
+    readonly 'membersListCard.title': '{{groupName}} members';
+    readonly 'membersListCard.cardLabel': 'User page for {{memberName}}';
+    readonly 'membersListCard.noMembersDescription': 'This group has no members.';
+    readonly 'membersListCard.noSearchResult': 'Found no members matching "{{searchTerm}}".';
+    readonly 'membersListCard.aggregateMembersToggle.label': 'Include subgroups';
+    readonly 'ownershipCard.title': 'Ownership';
+    readonly 'ownershipCard.aggregateRelationsToggle.label': 'Include indirect ownership';
+    readonly 'userProfileCard.editIconButtonTitle': 'Edit Metadata';
+    readonly 'userProfileCard.listItemTitle.email': 'Email';
+    readonly 'userProfileCard.listItemTitle.memberOf': 'Member of';
+    readonly 'userProfileCard.userNotFound': 'User not found';
+    readonly 'userProfileCard.moreGroupButtonTitle': '...More ({{number}})';
+    readonly 'userProfileCard.allGroupDialog.title': "All {{name}}'s groups:";
+    readonly 'userProfileCard.allGroupDialog.closeButtonTitle': 'Close';
+  }
+>;
+
+// @public (undocumented)
 export const OwnershipCard: (props: {
-  variant?: InfoCardVariants;
   entityFilterKind?: string[];
   hideRelationsToggle?: boolean;
   relationsType?: EntityRelationAggregation;
   relationAggregation?: EntityRelationAggregation;
   entityLimit?: number;
-  maxScrollHeight?: string;
 }) => JSX_2.Element;
 
 // @public (undocumented)
-export type OwnershipCardClassKey =
-  | 'card'
-  | 'cardContent'
-  | 'list'
-  | 'listItemText'
-  | 'listItemSecondaryAction'
-  | 'grid';
+export type OwnershipCardClassKey = 'grid';
 
 // @public (undocumented)
 export const UserProfileCard: (props: {
-  variant?: InfoCardVariants;
   showLinks?: boolean;
   maxRelations?: number;
   hideIcons?: boolean;
@@ -126,5 +138,6 @@ export const UserProfileCard: (props: {
 export type UserProfileCardClassKey =
   | 'closeButton'
   | 'moreButton'
-  | 'dialogPaper';
+  | 'dialogPaper'
+  | 'list';
 ```

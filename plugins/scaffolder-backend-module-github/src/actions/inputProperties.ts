@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { z as zod } from 'zod';
+import { z as zod } from 'zod/v3';
 
 const repoUrl = (z: typeof zod) =>
   z.string({

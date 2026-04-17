@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { z } from 'zod/v4';
 import { IconComponent } from '../icons/types';
 import { RouteRef } from '../routing';
 import { createExtensionBlueprint, createExtensionDataRef } from '../wiring';
@@ -29,6 +30,10 @@ const targetDataRef = createExtensionDataRef<{
  * Creates extensions that make up the items of the nav bar.
  *
  * @public
+ * @deprecated Nav items are now automatically inferred from `PageBlueprint`
+ * extensions based on their `title` and `icon` params. You can remove your
+ * `NavItemBlueprint` usage and instead pass `title` and `icon` directly to
+ * the `PageBlueprint`.
  */
 export const NavItemBlueprint = createExtensionBlueprint({
   kind: 'nav-item',
@@ -55,9 +60,7 @@ export const NavItemBlueprint = createExtensionBlueprint({
       routeRef,
     }),
   ],
-  config: {
-    schema: {
-      title: z => z.string().optional(),
-    },
+  configSchema: {
+    title: z.string().optional(),
   },
 });
