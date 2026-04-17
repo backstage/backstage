@@ -17,6 +17,10 @@ import {
   type EntityFilterQuery,
   CATALOG_FILTER_EXISTS,
 } from '@backstage/catalog-client';
+import type {
+  FilterPredicate,
+  FilterPredicateExpression,
+} from '@backstage/filter-predicates';
 import {
   Entity,
   parseEntityRef,
@@ -90,11 +94,16 @@ export const EntityPicker = (props: EntityPickerProps) => {
       'spec.profile.displayName',
       'spec.type',
     ];
-    const { items } = await catalogApi.getEntities(
-      catalogFilter
-        ? { filter: catalogFilter, fields }
-        : { filter: undefined, fields },
-    );
+
+    let queryParams: { query?: FilterPredicate; fields: string[] };
+    if (catalogFilter) {
+      const predicate = convertFilterToPredicate(catalogFilter);
+      queryParams = { query: predicate, fields };
+    } else {
+      queryParams = { fields };
+    }
+
+    const { items } = await catalogApi.queryEntities(queryParams);
 
     const entityRefToPresentation = new Map<
       string,
@@ -273,6 +282,44 @@ function convertSchemaFiltersToQuery(
   }
 
   return query;
+}
+
+/**
+ * Converts an EntityFilterQuery to a FilterPredicate format for use with queryEntities.
+ * This enables the use of POST requests instead of GET, avoiding URL length limits.
+ *
+ * @param filter - The EntityFilterQuery to convert.
+ * @returns A FilterPredicate that can be used with the queryEntities API.
+ */
+function convertFilterToPredicate(
+  filter: EntityFilterQuery,
+):
+  | FilterPredicateExpression
+  | { $all: FilterPredicate[] }
+  | { $any: FilterPredicate[] } {
+  const records = [filter].flat();
+
+  const clauses = records.map(record => {
+    const parts: FilterPredicateExpression[] = [];
+
+    for (const [key, value] of Object.entries(record)) {
+      const values = [value].flat();
+      const strings = values.filter((v): v is string => typeof v === 'string');
+      const hasExists = values.some(v => v === CATALOG_FILTER_EXISTS);
+
+      if (hasExists) {
+        parts.push({ [key]: { $exists: true } } as FilterPredicateExpression);
+      } else if (strings.length === 1) {
+        parts.push({ [key]: strings[0] } as FilterPredicateExpression);
+      } else if (strings.length > 1) {
+        parts.push({ [key]: { $in: strings } } as FilterPredicateExpression);
+      }
+    }
+
+    return parts.length === 1 ? parts[0] : { $all: parts };
+  });
+
+  return clauses.length === 1 ? clauses[0] : { $any: clauses };
 }
 
 /**
