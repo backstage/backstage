@@ -202,11 +202,11 @@ Use `mode: 'cursor'` when your API uses cursor-based pagination (common with Gra
 
 <CodeBlock code={tableCursorPaginationSnippet} />
 
-### Loading States
+### Pending States
 
-When fetching data, the table shows a loading state. If the user triggers a new query (by paginating, sorting, or searching) while previous data is displayed, the table enters a "stale" state where it continues showing the previous data until new data arrives. This prevents jarring layout shifts.
+When fetching data, the table shows a pending state. If the user triggers a new query (by paginating, sorting, or searching) while previous data is displayed, the table enters a "stale" state where it continues showing the previous data until new data arrives. This prevents jarring layout shifts.
 
-You can access these states via `tableProps.loading` and `tableProps.isStale` if you need to render additional loading indicators.
+You can access these states via `tableProps.isPending` and `tableProps.isStale` if you need to render additional pending indicators.
 
 ## Combining Features
 

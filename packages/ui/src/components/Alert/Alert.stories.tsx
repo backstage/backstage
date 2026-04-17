@@ -32,7 +32,7 @@ const meta = preview.meta({
     icon: {
       control: 'boolean',
     },
-    loading: {
+    isPending: {
       control: 'boolean',
     },
   },
@@ -208,25 +208,25 @@ export const WithActionsAndDescriptions = WithActions.extend({
   },
 });
 
-export const LoadingVariants = meta.story({
+export const PendingVariants = meta.story({
   render: () => (
     <Flex direction="column" gap="4">
       <Text>Info</Text>
       <Alert
         status="info"
         icon={true}
-        loading
+        isPending
         title="Processing your request..."
       />
 
       <Text>Success</Text>
-      <Alert status="success" icon={true} loading title="Saving changes..." />
+      <Alert status="success" icon={true} isPending title="Saving changes..." />
 
       <Text>Warning</Text>
       <Alert
         status="warning"
         icon={true}
-        loading
+        isPending
         title="Checking for issues..."
       />
 
@@ -234,27 +234,27 @@ export const LoadingVariants = meta.story({
       <Alert
         status="danger"
         icon={true}
-        loading
+        isPending
         title="Attempting recovery..."
       />
     </Flex>
   ),
 });
 
-export const LoadingWithDescription = meta.story({
+export const PendingWithDescription = meta.story({
   render: () => (
     <Flex direction="column" gap="4">
       <Alert
         status="info"
         icon={true}
-        loading
+        isPending
         title="Processing your request"
         description="This may take a few moments. Please do not close this window."
       />
       <Alert
         status="success"
         icon={true}
-        loading
+        isPending
         title="Deployment in Progress"
         description="Your application is being deployed to production. You'll receive a notification when complete."
       />

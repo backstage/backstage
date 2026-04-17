@@ -48,7 +48,7 @@ export interface UsePageCacheOptions<T, TCursor extends CursorType = string> {
 
 /** @internal */
 export interface UsePageCacheResult<T, TCursor extends CursorType = string> {
-  loading: boolean;
+  isPending: boolean;
   error: Error | undefined;
   data: T[] | undefined;
   totalCount: number | undefined;
@@ -149,7 +149,7 @@ export function usePageCache<T, TCursor extends CursorType = string>(
 
   const cacheStore = useRef(new PageCacheStore<T, TCursor>()).current;
 
-  const [loading, setLoading] = useState(true);
+  const [isPending, setIsPending] = useState(true);
   const [error, setError] = useState<Error | undefined>(undefined);
   const [totalCount, setTotalCount] = useState<number | undefined>(undefined);
 
@@ -189,7 +189,7 @@ export function usePageCache<T, TCursor extends CursorType = string>(
       const abortController = new AbortController();
       abortControllerRef.current = abortController;
 
-      setLoading(true);
+      setIsPending(true);
       setError(undefined);
 
       try {
@@ -215,14 +215,14 @@ export function usePageCache<T, TCursor extends CursorType = string>(
           setTotalCount(result.totalCount);
         }
 
-        setLoading(false);
+        setIsPending(false);
       } catch (err) {
         if (abortController.signal.aborted) {
           return;
         }
 
         setError(err instanceof Error ? err : new Error(String(err)));
-        setLoading(false);
+        setIsPending(false);
       }
     },
     [getData, initialCurrentCursor, currentCursor, cacheStore],
@@ -239,18 +239,18 @@ export function usePageCache<T, TCursor extends CursorType = string>(
   }, []);
 
   const onNextPage = useCallback(() => {
-    if (loading) return;
+    if (isPending) return;
     const page = cacheStore.get(currentCursor);
     if (!page?.nextCursor) return;
     goToPage('next');
-  }, [loading, currentCursor, goToPage, cacheStore]);
+  }, [isPending, currentCursor, goToPage, cacheStore]);
 
   const onPreviousPage = useCallback(() => {
-    if (loading) return;
+    if (isPending) return;
     const page = cacheStore.get(currentCursor);
     if (!page?.prevCursor) return;
     goToPage('prev');
-  }, [loading, currentCursor, goToPage, cacheStore]);
+  }, [isPending, currentCursor, goToPage, cacheStore]);
 
   const reload = useCallback(
     (reloadOptions?: { keepCurrentCursor?: boolean }) => {
@@ -266,7 +266,7 @@ export function usePageCache<T, TCursor extends CursorType = string>(
   );
 
   return {
-    loading,
+    isPending,
     error,
     data,
     totalCount,

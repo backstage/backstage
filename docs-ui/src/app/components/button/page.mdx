@@ -8,7 +8,7 @@ import {
   withIconsSnippet,
   disabledSnippet,
   destructiveSnippet,
-  loadingSnippet,
+  isPendingSnippet,
   asLinkSnippet,
   buttonSnippetUsage,
   buttonResponsiveSnippet,
@@ -24,7 +24,7 @@ import {
   WithIcons,
   Disabled,
   Destructive,
-  Loading,
+  Pending,
   AsLink,
 } from './components';
 
@@ -34,7 +34,7 @@ export const reactAriaUrls = {
 
 <PageTitle
   title="Button"
-  description="A button with primary, secondary, and tertiary variants, destructive styling, and loading state."
+  description="A button with primary, secondary, and tertiary variants, destructive styling, and pending state."
 />
 
 <Snippet align="center" py={4} preview={<Variants />} code={variantsSnippet} />
@@ -110,7 +110,7 @@ Use the `destructive` prop for dangerous actions like delete or remove.
   layout="side-by-side"
 />
 
-### Loading
+### Pending
 
 Shows a spinner and disables interaction during async operations.
 
@@ -118,8 +118,8 @@ Shows a spinner and disables interaction during async operations.
   align="center"
   py={4}
   open
-  preview={<Loading />}
-  code={loadingSnippet}
+  preview={<Pending />}
+  code={isPendingSnippet}
   layout="side-by-side"
 />
 

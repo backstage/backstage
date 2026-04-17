@@ -8,7 +8,7 @@ import {
   statusVariantsSnippet,
   withDescriptionSnippet,
   withActionsSnippet,
-  loadingStatesSnippet,
+  pendingStatesSnippet,
   withoutIconsSnippet,
   customIconSnippet,
 } from './snippets';
@@ -17,7 +17,7 @@ import {
   StatusVariants,
   WithDescription,
   WithActions,
-  LoadingStates,
+  PendingStates,
   WithoutIcons,
   CustomIcon,
 } from './components';
@@ -79,16 +79,16 @@ Include custom actions like buttons for interactive alerts.
   code={withActionsSnippet}
 />
 
-### Loading States
+### Pending State
 
-The loading spinner replaces the icon to indicate an ongoing process.
+The pending spinner replaces the icon to indicate an ongoing process.
 
 <Snippet
   align="center"
   py={4}
   open
-  preview={<LoadingStates />}
-  code={loadingStatesSnippet}
+  preview={<PendingStates />}
+  code={pendingStatesSnippet}
 />
 
 ### Without Icons

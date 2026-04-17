@@ -55,7 +55,7 @@ export const destructiveSnippet = `<Flex gap="4">
   </Button>
 </Flex>`;
 
-export const loadingSnippet = `<Button variant="primary" loading={true}>
+export const isPendingSnippet = `<Button variant="primary" isPending={true}>
   Load more items
 </Button>`;
 

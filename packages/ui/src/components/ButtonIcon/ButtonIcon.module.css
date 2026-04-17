@@ -54,7 +54,7 @@
       cursor: not-allowed;
     }
 
-    &[data-loading='true'] {
+    &[data-ispending='true'] {
       cursor: wait;
     }
   }
@@ -66,7 +66,7 @@
     --fg: var(--bui-fg-solid);
 
     &[data-disabled='true'],
-    &[data-loading='true'] {
+    &[data-ispending='true'] {
       --bg: var(--bui-bg-solid-disabled);
       --bg-hover: var(--bui-bg-solid-disabled);
       --bg-active: var(--bui-bg-solid-disabled);
@@ -104,7 +104,7 @@
     }
 
     &[data-disabled='true'],
-    &[data-loading='true'] {
+    &[data-ispending='true'] {
       --bg-hover: var(--bg);
       --bg-active: var(--bg);
       --fg: var(--bui-fg-disabled);
@@ -138,7 +138,7 @@
     }
 
     &[data-disabled='true'],
-    &[data-loading='true'] {
+    &[data-ispending='true'] {
       --bg-hover: var(--bg);
       --bg-active: var(--bg);
       --fg: var(--bui-fg-disabled);
@@ -179,7 +179,7 @@
     width: 100%;
     transition: opacity var(--loading-duration) ease-out;
 
-    .bui-ButtonIcon[data-loading='true'] & {
+    .bui-ButtonIcon[data-ispending='true'] & {
       opacity: 0;
     }
   }
@@ -193,7 +193,7 @@
     opacity: 0;
     transition: opacity var(--loading-duration) ease-in;
 
-    .bui-ButtonIcon[data-loading='true'] & {
+    .bui-ButtonIcon[data-ispending='true'] & {
       opacity: 1;
     }
 

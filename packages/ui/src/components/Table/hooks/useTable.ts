@@ -52,7 +52,7 @@ function useTableProps<T extends TableItem>(
   }
 
   const displayData = paginationResult.data ?? previousDataRef.current;
-  const isStale = paginationResult.loading && displayData !== undefined;
+  const isStale = paginationResult.isPending && displayData !== undefined;
 
   const pagination = useMemo(() => {
     if (paginationOptions.type === 'none') {
@@ -104,7 +104,8 @@ function useTableProps<T extends TableItem>(
   return useMemo(
     () => ({
       data: displayData,
-      loading: paginationResult.loading,
+      isPending: paginationResult.isPending,
+      loading: paginationResult.isPending,
       isStale,
       error: paginationResult.error,
       pagination,
@@ -112,7 +113,7 @@ function useTableProps<T extends TableItem>(
     }),
     [
       displayData,
-      paginationResult.loading,
+      paginationResult.isPending,
       isStale,
       paginationResult.error,
       pagination,

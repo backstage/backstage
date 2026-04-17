@@ -107,7 +107,7 @@ export const Destructive = meta.story({
           <Button variant="primary" destructive isDisabled>
             Disabled
           </Button>
-          <Button variant="primary" destructive loading>
+          <Button variant="primary" destructive isPending>
             Loading
           </Button>
         </Flex>
@@ -124,7 +124,7 @@ export const Destructive = meta.story({
           <Button variant="secondary" destructive isDisabled>
             Disabled
           </Button>
-          <Button variant="secondary" destructive loading>
+          <Button variant="secondary" destructive isPending>
             Loading
           </Button>
         </Flex>
@@ -141,7 +141,7 @@ export const Destructive = meta.story({
           <Button variant="tertiary" destructive isDisabled>
             Disabled
           </Button>
-          <Button variant="tertiary" destructive loading>
+          <Button variant="tertiary" destructive isPending>
             Loading
           </Button>
         </Flex>
@@ -254,94 +254,94 @@ export const Responsive = meta.story({
   },
 });
 
-export const Loading = meta.story({
+export const Pending = meta.story({
   render: () => {
-    const [isLoading, setIsLoading] = useState(false);
+    const [isPending, setIsPending] = useState(false);
 
     const handleClick = () => {
-      setIsLoading(true);
+      setIsPending(true);
       setTimeout(() => {
-        setIsLoading(false);
+        setIsPending(false);
       }, 3000);
     };
 
     return (
-      <Button variant="primary" loading={isLoading} onPress={handleClick}>
+      <Button variant="primary" isPending={isPending} onPress={handleClick}>
         Load more items
       </Button>
     );
   },
 });
 
-export const LoadingVariants = meta.story({
+export const PendingVariants = meta.story({
   render: () => (
     <Flex direction="column" gap="4">
       <Text>Primary</Text>
       <Flex align="center" gap="4">
-        <Button variant="primary" size="small" loading>
+        <Button variant="primary" size="small" isPending>
           Small Loading
         </Button>
-        <Button variant="primary" size="medium" loading>
+        <Button variant="primary" size="medium" isPending>
           Medium Loading
         </Button>
-        <Button variant="primary" loading iconStart={<RiCloudLine />}>
+        <Button variant="primary" isPending iconStart={<RiCloudLine />}>
           With Icon
         </Button>
       </Flex>
 
       <Text>Secondary</Text>
       <Flex align="center" gap="4">
-        <Button variant="secondary" size="small" loading>
+        <Button variant="secondary" size="small" isPending>
           Small Loading
         </Button>
-        <Button variant="secondary" size="medium" loading>
+        <Button variant="secondary" size="medium" isPending>
           Medium Loading
         </Button>
-        <Button variant="secondary" loading iconStart={<RiCloudLine />}>
+        <Button variant="secondary" isPending iconStart={<RiCloudLine />}>
           With Icon
         </Button>
       </Flex>
 
       <Text>Tertiary</Text>
       <Flex align="center" gap="4">
-        <Button variant="tertiary" size="small" loading>
+        <Button variant="tertiary" size="small" isPending>
           Small Loading
         </Button>
-        <Button variant="tertiary" size="medium" loading>
+        <Button variant="tertiary" size="medium" isPending>
           Medium Loading
         </Button>
-        <Button variant="tertiary" loading iconStart={<RiCloudLine />}>
+        <Button variant="tertiary" isPending iconStart={<RiCloudLine />}>
           With Icon
         </Button>
       </Flex>
 
       <Text>Primary Destructive</Text>
       <Flex align="center" gap="4">
-        <Button variant="primary" destructive size="small" loading>
+        <Button variant="primary" destructive size="small" isPending>
           Small Loading
         </Button>
-        <Button variant="primary" destructive size="medium" loading>
+        <Button variant="primary" destructive size="medium" isPending>
           Medium Loading
         </Button>
         <Button
           variant="primary"
           destructive
-          loading
+          isPending
           iconStart={<RiCloudLine />}
         >
           With Icon
         </Button>
       </Flex>
 
-      <Text>Loading vs Disabled</Text>
+      <Text>Pending vs Disabled</Text>
       <Flex align="center" gap="4">
-        <Button variant="primary" loading>
+        <Button variant="primary" isPending>
           Loading
         </Button>
         <Button variant="primary" isDisabled>
           Disabled
         </Button>
-        <Button variant="primary" loading isDisabled>
+        <Button variant="primary" isPending isDisabled>
           Both (Disabled Wins)
         </Button>
       </Flex>
