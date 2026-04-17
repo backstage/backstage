@@ -51,7 +51,7 @@
     "@tanstack/react-table": "^8.21.3",
     "clsx": "^2.1.1",
     "react-aria": "^3.48.0",
-    "react-aria-components": "^1.17.0",
+    "react-aria-components": "~1.17.0",
     "react-stately": "^3.46.0",
     "use-sync-external-store": "^1.4.0"
   },
