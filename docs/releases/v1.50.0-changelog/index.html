@@ -31,7 +31,7 @@
 <script src="/js/medium-zoom.js"></script>
 <script src="/js/dismissable-banner.js"></script>
 <script src="/js/scroll-nav-to-view-in-docs.js"></script><link rel="stylesheet" href="/assets/css/styles.a3f04945.css">
-<script src="/assets/js/runtime~main.15d9438a.js" defer="defer"></script>
+<script src="/assets/js/runtime~main.d7c50aa7.js" defer="defer"></script>
 <script src="/assets/js/main.7fd9aec5.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
@@ -171,7 +171,7 @@
 <li class="">4c09967: Fixed the duplicate extension error message in <code>createFrontendModule</code> to correctly say &quot;Module&quot; instead of &quot;Plugin&quot;.</li>
 <li class="">e4804ab: Added <code>open</code> method to <code>DialogApi</code> that renders dialogs without any built-in dialog chrome, giving the caller full control over the dialog presentation. This avoids focus trap conflicts that occur when mixing components from different design libraries. The existing <code>show</code> and <code>showModal</code> methods are now deprecated in favor of <code>open</code>.</li>
 <li class="">ddc5247: Fixed <code>FlattenedMessages</code> type to avoid excessive type instantiation depth in TypeScript 6 when using <code>createTranslationRef</code> with the <code>translations</code> option.</li>
-<li class="">a2a6c3b: Added a new <code>configSchema</code> option for <code>createExtension</code> and <code>createExtensionBlueprint</code> that accepts direct schema values from any <a href="https://github.com/standard-schema/standard-schema" target="_blank" rel="noopener noreferrer" class="">Standard Schema</a> compatible library with JSON Schema support, such as zod v4 or the <code>zod/v4</code> subpath from zod v3. The old <code>config.schema</code> option is now deprecated. Note that direct zod v3 schemas are not supported by the new <code>configSchema</code> option — use <code>import { z } from &#x27;zod/v4&#x27;</code> from the zod v3 package, or upgrade to zod v4. See the <a href="https://backstage.io/docs/frontend-system/architecture/migrations#150" target="_blank" rel="noopener noreferrer" class="">1.50 migration documentation</a> for more information.</li>
+<li class="">a2a6c3b: Added a new <code>configSchema</code> option for <code>createExtension</code> and <code>createExtensionBlueprint</code> that accepts direct schema values from any <a href="https://github.com/standard-schema/standard-schema" target="_blank" rel="noopener noreferrer" class="">Standard Schema</a> compatible library with JSON Schema support, such as zod v4 (<code>zod@^4.0.0</code>). The old <code>config.schema</code> option is now deprecated. Note that Zod v3 is not supported by the new <code>configSchema</code> option, including the <code>zod/v4</code> subpath export which does not include JSON Schema conversion support. You must upgrade to the <code>zod</code> v4 package. See the <a href="https://backstage.io/docs/frontend-system/architecture/migrations#150" target="_blank" rel="noopener noreferrer" class="">1.50 migration documentation</a> for more information.</li>
 <li class="">d66a3ec: Added <code>titleLink</code> prop to <code>PageLayoutProps</code> so the plugin header title can link back to the plugin root.</li>
 <li class="">e220589: Removed the unnecessary need to use <code>defineParams</code> callback from <code>PluginHeaderActionBlueprint</code>. It still works, but is no longer required.</li>
 <li class="">Updated dependencies
@@ -2837,7 +2837,7 @@
 </ul>
 </li>
 </ul>
-<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="backstageplugin-search-react1111">@backstage/plugin-search-react@1.11.1<a href="#backstageplugin-search-react1111" class="hash-link" aria-label="Direct link to @backstage/plugin-search-react@1.11.1" title="Direct link to @backstage/plugin-search-react@1.11.1" translate="no">​</a></h2>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="backstageplugin-search-react1111">@backstage/plugin-search-react@1.11.1<a href="#backstageplugin-search-react1111" class="hash-link" aria-label="Direct link to @backstage/plugin-search-react@1.11.1" title="Direct link to @backstage/plugin-search-react@1.11.1" translate="no">  ​</a></h2>
 <h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="patch-changes-187">Patch Changes<a href="#patch-changes-187" class="hash-link" aria-label="Direct link to Patch Changes" title="Direct link to Patch Changes" translate="no">​</a></h3>
 <ul>
 <li class="">Updated dependencies
