@@ -53,6 +53,9 @@ import { convertLegacyEntityContentExtension } from '@backstage/plugin-catalog-r
 import { pluginInfoResolver } from './pluginInfoResolver';
 import { appModuleNav } from './modules/appModuleNav';
 import catalogPlugin from '@backstage/plugin-catalog/alpha';
+import apiDocsPlugin from '@backstage/plugin-api-docs/alpha';
+import scaffolderPlugin from '@backstage/plugin-scaffolder/alpha';
+import searchPlugin from '@backstage/plugin-search/alpha';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleInfo } from '@fortawesome/free-solid-svg-icons';
 
@@ -385,6 +388,9 @@ const app = createApp({
     userSettingsPlugin,
     homePlugin,
     appVisualizerPlugin,
+    apiDocsPlugin,
+    scaffolderPlugin,
+    searchPlugin,
     notFoundErrorPageModule,
     appModuleNav,
     customHomePageModule,

@@ -26,7 +26,11 @@ import {
   useSidebarOpenState,
 } from '@backstage/core-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMagnifyingGlass, faBars } from '@fortawesome/free-solid-svg-icons';
+import {
+  faMagnifyingGlass,
+  faBars,
+  faBook,
+} from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
 import { createFrontendModule } from '@backstage/frontend-plugin-api';
 import { NavContentBlueprint } from '@backstage/plugin-app-react';
@@ -165,6 +169,13 @@ export const appModuleNav = createFrontendModule({
                 icon={<FontAwesomeIcon icon={faBars} />}
               >
                 {nav.take('page:catalog')}
+                {nav.take('page:scaffolder')}
+                {nav.take('page:api-docs')}
+                <SidebarItem
+                  icon={() => <FontAwesomeIcon icon={faBook} />}
+                  to="/docs"
+                  text="Docs"
+                />
                 <SidebarDivider />
                 <SidebarScrollWrapper>
                   {nav.rest({ sortBy: 'title' })}
