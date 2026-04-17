@@ -1,10 +1,8 @@
 name: Sync Patch Release
 on:
-  push:
-    branches:
-      - master
-    paths:
-      - '.patches/**'
+  pull_request:
+    types: [labeled, unlabeled, closed]
+  workflow_dispatch: {}
 
 concurrency:
   group: sync-patch-release
@@ -14,7 +12,15 @@ jobs:
   sync-patch-release:
     name: Sync Patch Release
     runs-on: ubuntu-latest
-    if: github.repository == 'backstage/backstage'
+    if: >-
+      github.repository == 'backstage/backstage' &&
+      (
+        github.event_name == 'workflow_dispatch' ||
+        (
+          (github.event.action == 'labeled' || github.event.action == 'unlabeled') &&
+          github.event.label.name == 'patch-release'
+        )
+      )
     permissions:
       contents: write
       pull-requests: write
@@ -42,33 +48,56 @@ jobs:
           git config --global user.email noreply@backstage.io
           git config --global user.name 'Github patch release workflow'
 
-      - name: Check for patch files
-        id: check-patches
-        run: |
-          if [ -d ".patches" ] && [ "$(ls -A .patches/pr-*.txt 2>/dev/null)" ]; then
-            echo "has_patches=true" >> $GITHUB_OUTPUT
-            echo "Found patch files"
-          else
-            echo "has_patches=false" >> $GITHUB_OUTPUT
-            echo "No patch files found"
-          fi
+      - name: Collect patches from labeled PRs
+        id: collect
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        with:
+          github-token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
+          script: |
+            const { data: result } = await github.rest.search.issuesAndPullRequests({
+              q: `is:pr is:merged label:patch-release repo:${context.repo.owner}/${context.repo.repo}`,
+              per_page: 100,
+            });
+
+            const patches = result.items
+              .map(item => ({
+                number: item.number,
+                title: item.title,
+                mergedAt: item.pull_request?.merged_at,
+              }))
+              .sort((a, b) => {
+                if (!a.mergedAt || !b.mergedAt) {
+                  return a.number - b.number;
+                }
+                return new Date(a.mergedAt) - new Date(b.mergedAt);
+              });
+
+            if (patches.length === 0) {
+              console.log('No merged PRs with patch-release label found');
+              core.setOutput('has_patches', 'false');
+              return;
+            }
+
+            console.log(`Found ${patches.length} patch(es):`);
+            for (const p of patches) {
+              console.log(`  #${p.number}: ${p.title}`);
+            }
+
+            core.setOutput('has_patches', 'true');
+            core.setOutput('patches', JSON.stringify(patches));
+            core.setOutput('pr_numbers', patches.map(p => p.number).join(' '));
 
       - name: Find existing PR
         id: find-pr
-        if: steps.check-patches.outputs.has_patches == 'true'
         uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
         with:
           github-token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
           script: |
             const branchName = 'patch-release';
-            const owner = context.repo.owner;
-            const repo = context.repo.repo;
-
-            // Find PR with the branch as head
             const { data: pulls } = await github.rest.pulls.list({
-              owner,
-              repo,
-              head: `${owner}:${branchName}`,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              head: `${context.repo.owner}:${branchName}`,
               state: 'open',
             });
 
@@ -82,38 +111,34 @@ jobs:
             }
 
       - name: Close PR and delete branch if no patches
-        if: steps.check-patches.outputs.has_patches == 'false'
+        if: steps.collect.outputs.has_patches == 'false'
         uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
         with:
           github-token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
           script: |
             const branchName = 'patch-release';
-            const owner = context.repo.owner;
-            const repo = context.repo.repo;
 
-            // Find PR with the branch as head
             const { data: pulls } = await github.rest.pulls.list({
-              owner,
-              repo,
-              head: `${owner}:${branchName}`,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              head: `${context.repo.owner}:${branchName}`,
               state: 'open',
             });
 
             if (pulls.length > 0) {
               console.log(`Closing PR #${pulls[0].number}`);
               await github.rest.pulls.update({
-                owner,
-                repo,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
                 pull_number: pulls[0].number,
                 state: 'closed',
               });
             }
 
-            // Delete the branch
             try {
               await github.rest.git.deleteRef({
-                owner,
-                repo,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
                 ref: `heads/${branchName}`,
               });
               console.log(`Deleted branch ${branchName}`);
@@ -126,99 +151,39 @@ jobs:
             }
 
       - name: Install Dependencies
-        if: steps.check-patches.outputs.has_patches == 'true'
+        if: steps.collect.outputs.has_patches == 'true'
         run: yarn --immutable
 
-      - name: Read patch files for PR metadata
-        if: steps.check-patches.outputs.has_patches == 'true'
-        id: read-patches
-        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
-        with:
-          github-token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
-          script: |
-            // Read patch files from master branch to generate PR body
-            const fs = require('fs').promises;
-            const path = require('path');
-
-            const patchesDir = path.join(process.cwd(), '.patches');
-            let files = [];
-            try {
-              files = await fs.readdir(patchesDir);
-            } catch (error) {
-              console.log(`Error reading patches directory: ${error.message}`);
-              core.setOutput('pr_body', 'This patch release fixes issues.');
-              return;
-            }
-
-            const patchFiles = files.filter(f => /^pr-\d+\.txt$/.test(f));
-
-            const patches = [];
-            for (const file of patchFiles) {
-              const match = file.match(/^pr-(\d+)\.txt$/);
-              if (match) {
-                const prNumber = parseInt(match[1], 10);
-                const filePath = path.join(patchesDir, file);
-                let content = '';
-                try {
-                  content = await fs.readFile(filePath, 'utf8');
-                } catch (error) {
-                  console.log(`Error reading ${file}: ${error.message}`);
-                }
-                const description = content.trim() || '<empty>';
-                patches.push({ prNumber, description });
-              }
-            }
-
-            if (patches.length === 0) {
-              console.log('No patches found, using default values');
-              core.setOutput('pr_body', 'This patch release fixes issues.');
-              core.setOutput('pr_numbers', '[]');
-              return;
-            }
-
-            patches.sort((a, b) => a.prNumber - b.prNumber);
-            const prNumbers = patches.map(p => p.prNumber);
-            const descriptions = patches.map(p => p.description);
-
-            const descriptionList = descriptions.map(desc => `- ${desc}`).join('\n');
-            const body = `This patch release fixes the following issues:\n\n${descriptionList}`;
-
-            core.setOutput('pr_body', body);
-            core.setOutput('pr_numbers', JSON.stringify(prNumbers));
-
       - name: Run patch release script
-        if: steps.check-patches.outputs.has_patches == 'true'
+        if: steps.collect.outputs.has_patches == 'true'
         id: run-script
         env:
           GITHUB_TOKEN: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
           HUSKY: '0'
           PATCH_RELEASE_BRANCH: patch-release
         run: |
-          # The script will handle finding the release version, creating the patch branch,
-          # and deleting patch files. Run the patch script with --from-dir flag to read from .patches/ directory
-          # The script will write the patch branch to GITHUB_OUTPUT
-          node scripts/patch-release-for-pr.js --from-dir
-
-          # Ensure the branch is pushed (script pushes it, but force push in case of conflicts)
+          node scripts/patch-release-for-pr.js ${{ steps.collect.outputs.pr_numbers }}
           git push origin patch-release --force
 
       - name: Create or update PR
-        if: steps.check-patches.outputs.has_patches == 'true'
+        if: steps.collect.outputs.has_patches == 'true'
         uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
         env:
           PR_EXISTS: ${{ steps.find-pr.outputs.pr_exists }}
           PR_NUMBER: ${{ steps.find-pr.outputs.pr_number }}
-          PR_BODY: ${{ steps.read-patches.outputs.pr_body }}
+          PATCHES: ${{ steps.collect.outputs.patches }}
           PATCH_BRANCH: ${{ steps.run-script.outputs.patch_branch }}
         with:
           github-token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
           script: |
             const branchName = 'patch-release';
-            const owner = context.repo.owner;
-            const repo = context.repo.repo;
+            const patches = JSON.parse(process.env.PATCHES);
 
+            const descriptionList = patches.map(p => `- ${p.title}`).join('\n');
+            const prNumbers = patches.map(p => p.number).join(',');
+            const body = `This patch release fixes the following issues:\n\n${descriptionList}\n\n<!-- patch-prs:${prNumbers} -->`;
             const title = 'Patch Release';
-            const body = process.env.PR_BODY;
+
             const prExists = process.env.PR_EXISTS === 'true';
             const prNumber = process.env.PR_NUMBER;
             const patchBranch = process.env.PATCH_BRANCH;
@@ -226,28 +191,72 @@ jobs:
             if (prExists && prNumber) {
               console.log(`Updating PR #${prNumber}`);
               await github.rest.pulls.update({
-                owner,
-                repo,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
                 pull_number: parseInt(prNumber, 10),
                 title,
                 body,
               });
             } else {
-              // Use the patch branch from the script
               if (!patchBranch) {
-                throw new Error('Patch branch not provided from script. Make sure the script outputs the patch branch name.');
+                throw new Error('Patch branch not provided from script');
               }
 
-              const baseBranch = patchBranch;
-              console.log(`Creating new PR with base branch: ${baseBranch}`);
+              console.log(`Creating new PR with base branch: ${patchBranch}`);
 
               const { data: pr } = await github.rest.pulls.create({
-                owner,
-                repo,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
                 title,
                 body,
                 head: branchName,
-                base: baseBranch,
+                base: patchBranch,
               });
               console.log(`Created PR #${pr.number}`);
+            }
+
+  cleanup-labels:
+    name: Cleanup Patch Release Labels
+    runs-on: ubuntu-latest
+    if: >-
+      github.repository == 'backstage/backstage' &&
+      github.event.action == 'closed' &&
+      github.event.pull_request.merged == true &&
+      github.event.pull_request.head.ref == 'patch-release'
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@58077d3c7e43986b6b15fba718e8ea69e387dfcc # v2.15.1
+        with:
+          egress-policy: audit
+
+      - name: Remove patch-release labels from included PRs
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        with:
+          github-token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
+          script: |
+            const body = context.payload.pull_request.body || '';
+            const match = body.match(/<!-- patch-prs:([\d,]+) -->/);
+            const prNumbers = match ? match[1].split(',').map(n => parseInt(n, 10)) : [];
+
+            if (prNumbers.length === 0) {
+              console.log('No PR references found in patch release PR body');
+              return;
+            }
+
+            console.log(`Found ${prNumbers.length} PR(s) to clean up: ${prNumbers.join(', ')}`);
+
+            for (const prNumber of prNumbers) {
+              console.log(`Removing patch-release label from PR #${prNumber}`);
+              try {
+                await github.rest.issues.removeLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: prNumber,
+                  name: 'patch-release',
+                });
+              } catch (error) {
+                console.log(`Failed to remove label from #${prNumber}: ${error.message}`);
+              }
             }
