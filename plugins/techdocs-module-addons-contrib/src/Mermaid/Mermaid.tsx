@@ -24,8 +24,6 @@ mermaid.initialize({
   securityLevel: 'loose',
 });
 
-let renderCounter = 0;
-
 /**
  * Known mermaid diagram type keywords that appear at the start of a block.
  * Used to detect mermaid content in plain code blocks that lack a
@@ -48,11 +46,13 @@ export const MermaidAddon = () => {
   const shadowRoot = useShadowRoot();
   const renderedIds = useRef(new Set<string>());
   const observerRef = useRef<MutationObserver | null>(null);
+  const renderCounterRef = useRef(0);
 
   useEffect(() => {
     if (!shadowRoot) return undefined;
 
     let cancelled = false;
+    const currentRenderedIds = renderedIds.current;
 
     const findMermaidTargets = (): {
       container: HTMLElement;
@@ -110,7 +110,7 @@ export const MermaidAddon = () => {
         if (cancelled) break;
 
         try {
-          const id = `mermaid-diagram-${renderCounter++}`;
+          const id = `mermaid-diagram-${renderCounterRef.current++}`;
           const { svg } = await mermaid.render(id, code);
           if (!cancelled) {
             container.innerHTML = svg;
@@ -118,6 +118,11 @@ export const MermaidAddon = () => {
             renderedIds.current.add(id);
           }
         } catch (error) {
+          if (!cancelled) {
+            container.setAttribute('data-mermaid-rendered', 'true');
+            container.innerHTML =
+              '<pre style="color: #d32f2f; padding: 1em; border: 1px solid #d32f2f; border-radius: 4px;">Failed to render Mermaid diagram. Check the syntax.</pre>';
+          }
           // eslint-disable-next-line no-console
           console.warn('Failed to render mermaid diagram:', error);
         }
@@ -139,6 +144,8 @@ export const MermaidAddon = () => {
     return () => {
       cancelled = true;
       observerRef.current?.disconnect();
+      renderCounterRef.current = 0;
+      currentRenderedIds.clear();
     };
   }, [shadowRoot]);
 

@@ -1068,7 +1068,7 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
                 return (
                   <TableRow
                     key={row.id}
-                    className={cn(onRowClick && 'cursor-pointer')}
+                    className={cn('group/row', onRowClick && 'cursor-pointer')}
                     onClick={
                       onRowClick
                         ? (e: MouseEvent<HTMLTableRowElement>) =>
@@ -1106,7 +1106,7 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
                       <TableCell
                         className={cn(cellPadding, 'whitespace-nowrap')}
                       >
-                        <div className="flex items-center gap-0.5">
+                        <div className="flex items-center gap-0.5 opacity-40 transition-opacity duration-150 group-hover/row:opacity-100">
                           {actions
                             .map(a =>
                               typeof a === 'function' ? a(row.original) : a,

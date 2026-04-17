@@ -222,7 +222,7 @@ export const UserListPicker = (props: UserListPickerProps) => {
   ]);
 
   return hidden ? null : (
-    <div className={cn('rounded-md bg-black/[0.11] shadow-none my-2')}>
+    <div className={cn('rounded-lg bg-muted/60 shadow-none my-2')}>
       {filterGroups.map(group => (
         <Fragment key={group.name}>
           <span

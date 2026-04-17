@@ -23,75 +23,7 @@ import {
   useCallback,
 } from 'react';
 
-import {
-  withStyles,
-  makeStyles,
-  useTheme,
-  Box,
-  MenuItem,
-  ListItemText,
-  Slider,
-  IconButton,
-  Typography,
-  Theme,
-} from '@material-ui/core';
-import AddIcon from '@material-ui/icons/Add';
-import RemoveIcon from '@material-ui/icons/Remove';
-
 import { useShadowRootElements } from '@backstage/plugin-techdocs-react';
-
-const boxShadow =
-  '0 3px 1px rgba(0,0,0,0.1),0 4px 8px rgba(0,0,0,0.13),0 0 0 1px rgba(0,0,0,0.02)';
-
-const StyledSlider = withStyles(theme => ({
-  root: {
-    height: 2,
-    padding: '15px 0',
-  },
-  thumb: {
-    height: 18,
-    width: 18,
-    backgroundColor: theme.palette.common.white,
-    boxShadow: boxShadow,
-    marginTop: -9,
-    marginLeft: -9,
-    '&:focus, &:hover, &$active': {
-      boxShadow:
-        '0 3px 1px rgba(0,0,0,0.1),0 4px 8px rgba(0,0,0,0.3),0 0 0 1px rgba(0,0,0,0.02)',
-      // Reset on touch devices, it doesn't add specificity
-      '@media (hover: none)': {
-        boxShadow: boxShadow,
-      },
-    },
-  },
-  active: {},
-  valueLabel: {
-    top: '100%',
-    left: '50%',
-    transform: 'scale(1) translate(-50%, -5px) !important',
-    '& *': {
-      color: theme.palette.textSubtle,
-      fontSize: theme.typography.caption.fontSize,
-      background: 'transparent',
-    },
-  },
-  track: {
-    height: 2,
-  },
-  rail: {
-    height: 2,
-    opacity: 0.5,
-  },
-  mark: {
-    height: 10,
-    width: 1,
-    marginTop: -4,
-  },
-  markActive: {
-    opacity: 1,
-    backgroundColor: 'currentColor',
-  },
-}))(Slider);
 
 const settings = {
   key: 'techdocs.addons.settings.textsize',
@@ -99,47 +31,14 @@ const settings = {
 };
 
 const marks = [
-  {
-    value: 90,
-  },
-  {
-    value: 100,
-  },
-  {
-    value: 115,
-  },
-  {
-    value: 130,
-  },
-  {
-    value: 150,
-  },
+  { value: 90 },
+  { value: 100 },
+  { value: 115 },
+  { value: 130 },
+  { value: 150 },
 ];
 
-const useStyles = makeStyles(theme => ({
-  container: {
-    color: theme.palette.textSubtle,
-    display: 'flex',
-    alignItems: 'center',
-    margin: 0,
-    minWidth: 200,
-  },
-  menuItem: {
-    '&:hover': {
-      background: 'transparent',
-    },
-  },
-  decreaseButton: {
-    marginRight: theme.spacing(1),
-  },
-  increaseButton: {
-    marginLeft: theme.spacing(1),
-  },
-}));
-
 export const TextSizeAddon = () => {
-  const classes = useStyles();
-  const theme = useTheme();
   const [body] = useShadowRootElements(['body']);
 
   const [value, setValue] = useState<number>(() => {
@@ -152,92 +51,160 @@ export const TextSizeAddon = () => {
   const min = useMemo(() => values[0], [values]);
   const max = useMemo(() => values[values.length - 1], [values]);
 
-  const getValueText = useCallback(() => `${value}%`, [value]);
-
   const handleChangeCommitted = useCallback(
-    (_event: ChangeEvent<{}>, newValue: number | number[]) => {
-      if (!Array.isArray(newValue)) {
-        setValue(newValue);
-        localStorage?.setItem(settings.key, String(newValue));
-      }
+    (_event: ChangeEvent<HTMLInputElement> | MouseEvent, newValue: number) => {
+      setValue(newValue);
+      localStorage?.setItem(settings.key, String(newValue));
     },
     [setValue],
   );
 
+  const handleSliderChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      const raw = Number(event.target.value);
+      // Snap to nearest mark
+      const closest = values.reduce((prev, curr) =>
+        Math.abs(curr - raw) < Math.abs(prev - raw) ? curr : prev,
+      );
+      handleChangeCommitted(event, closest);
+    },
+    [values, handleChangeCommitted],
+  );
+
   const handleDecreaseClick = useCallback(
     (event: MouseEvent) => {
-      handleChangeCommitted(event, values[index - 1]);
+      if (index > 0) {
+        handleChangeCommitted(event, values[index - 1]);
+      }
     },
     [index, values, handleChangeCommitted],
   );
 
   const handleIncreaseClick = useCallback(
     (event: MouseEvent) => {
-      handleChangeCommitted(event, values[index + 1]);
+      if (index < values.length - 1) {
+        handleChangeCommitted(event, values[index + 1]);
+      }
     },
     [index, values, handleChangeCommitted],
   );
 
   useEffect(() => {
     if (!body) return;
-    const htmlFontSize =
-      (
-        theme.typography as Theme['typography'] & {
-          htmlFontSize?: number;
-        }
-      )?.htmlFontSize ?? 16;
+    const htmlFontSize = 16;
     body.style.setProperty(
       '--md-typeset-font-size',
       `${htmlFontSize * (value / 100)}px`,
     );
-  }, [body, value, theme]);
+  }, [body, value]);
 
   return (
-    <MenuItem className={classes.menuItem} button disableRipple>
-      <ListItemText
-        primary={
-          <Typography variant="subtitle2" color="textPrimary">
-            Text size
-          </Typography>
-        }
-        secondary={
-          <Box className={classes.container}>
-            <IconButton
-              className={classes.decreaseButton}
-              size="small"
-              edge="start"
-              disabled={value === min}
-              onClick={handleDecreaseClick}
-              aria-label="Decrease text size"
-            >
-              <RemoveIcon />
-            </IconButton>
-            <StyledSlider
-              value={value}
-              aria-labelledby="text-size-slider"
-              getAriaValueText={getValueText}
-              valueLabelDisplay="on"
-              valueLabelFormat={getValueText}
-              marks={marks}
-              step={null}
-              min={min}
-              max={max}
-              onChangeCommitted={handleChangeCommitted}
-            />
-            <IconButton
-              className={classes.increaseButton}
-              size="small"
-              edge="end"
-              disabled={value === max}
-              onClick={handleIncreaseClick}
-              aria-label="Increase text size"
-            >
-              <AddIcon />
-            </IconButton>
-          </Box>
-        }
-        disableTypography
-      />
-    </MenuItem>
+    <div role="menuitem" style={{ padding: '6px 16px', cursor: 'default' }}>
+      <span
+        style={{
+          display: 'block',
+          fontSize: '0.875rem',
+          fontWeight: 500,
+          color: 'var(--foreground, inherit)',
+          marginBottom: '8px',
+        }}
+      >
+        Text size
+      </span>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          minWidth: 200,
+          color: 'var(--muted-foreground, #666)',
+        }}
+      >
+        <button
+          type="button"
+          onClick={handleDecreaseClick}
+          disabled={value === min}
+          aria-label="Decrease text size"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: 28,
+            height: 28,
+            borderRadius: '6px',
+            border: '1px solid var(--border, #e5e5e5)',
+            background: 'var(--background, #fff)',
+            cursor: value === min ? 'not-allowed' : 'pointer',
+            opacity: value === min ? 0.5 : 1,
+            color: 'inherit',
+            fontSize: '16px',
+            lineHeight: 1,
+          }}
+        >
+          −
+        </button>
+        <div
+          style={{
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '2px',
+          }}
+        >
+          <input
+            type="range"
+            min={min}
+            max={max}
+            value={value}
+            onChange={handleSliderChange}
+            aria-label="Text size"
+            aria-valuetext={`${value}%`}
+            style={{
+              width: '100%',
+              height: '4px',
+              appearance: 'none',
+              WebkitAppearance: 'none',
+              background: 'var(--border, #e5e5e5)',
+              borderRadius: '2px',
+              outline: 'none',
+              cursor: 'pointer',
+              accentColor: 'var(--primary, #5B39F3)',
+            }}
+          />
+          <span
+            style={{
+              fontSize: '0.75rem',
+              color: 'var(--muted-foreground, #666)',
+            }}
+          >
+            {value}%
+          </span>
+        </div>
+        <button
+          type="button"
+          onClick={handleIncreaseClick}
+          disabled={value === max}
+          aria-label="Increase text size"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: 28,
+            height: 28,
+            borderRadius: '6px',
+            border: '1px solid var(--border, #e5e5e5)',
+            background: 'var(--background, #fff)',
+            cursor: value === max ? 'not-allowed' : 'pointer',
+            opacity: value === max ? 0.5 : 1,
+            color: 'inherit',
+            fontSize: '16px',
+            lineHeight: 1,
+          }}
+        >
+          +
+        </button>
+      </div>
+    </div>
   );
 };
