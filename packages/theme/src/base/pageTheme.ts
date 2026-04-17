@@ -88,25 +88,46 @@ export function genPageTheme(props: {
 }
 
 /**
+ * Blitzy gradient banner — replaces the generated SVG wave shapes with a
+ * clean, branded gradient image for a modern, polished header aesthetic.
+ */
+const blitzyGradient = 'url("/gradient.png")';
+
+/**
  * All of the builtin page themes.
  *
  * @public
  */
 export const pageTheme: Record<string, PageTheme> = {
-  home: genPageTheme({ colors: colorVariants.teal, shape: shapes.wave }),
+  home: genPageTheme({ colors: colorVariants.teal, shape: blitzyGradient }),
   documentation: genPageTheme({
     colors: colorVariants.pinkSea,
-    shape: shapes.wave2,
+    shape: blitzyGradient,
   }),
-  tool: genPageTheme({ colors: colorVariants.purpleSky, shape: shapes.round }),
+  tool: genPageTheme({
+    colors: colorVariants.purpleSky,
+    shape: blitzyGradient,
+  }),
   service: genPageTheme({
     colors: colorVariants.marineBlue,
-    shape: shapes.wave,
+    shape: blitzyGradient,
   }),
-  website: genPageTheme({ colors: colorVariants.veryBlue, shape: shapes.wave }),
-  library: genPageTheme({ colors: colorVariants.rubyRed, shape: shapes.wave }),
-  other: genPageTheme({ colors: colorVariants.darkGrey, shape: shapes.wave }),
-  app: genPageTheme({ colors: colorVariants.toastyOrange, shape: shapes.wave }),
-  apis: genPageTheme({ colors: colorVariants.teal, shape: shapes.wave2 }),
-  card: genPageTheme({ colors: colorVariants.greens, shape: shapes.wave }),
+  website: genPageTheme({
+    colors: colorVariants.veryBlue,
+    shape: blitzyGradient,
+  }),
+  library: genPageTheme({
+    colors: colorVariants.rubyRed,
+    shape: blitzyGradient,
+  }),
+  other: genPageTheme({
+    colors: colorVariants.darkGrey,
+    shape: blitzyGradient,
+  }),
+  app: genPageTheme({
+    colors: colorVariants.toastyOrange,
+    shape: blitzyGradient,
+  }),
+  apis: genPageTheme({ colors: colorVariants.teal, shape: blitzyGradient }),
+  card: genPageTheme({ colors: colorVariants.greens, shape: blitzyGradient }),
 };
