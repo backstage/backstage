@@ -85,6 +85,11 @@ export function registerCommands(program: Command) {
       'Bypass setting the container user as the same user and group id as host for Linux and MacOS',
       false,
     )
+    .option(
+      '--mkdocs-parameter-strict',
+      'Pass "--strict" parameter to mkdocs build',
+      false,
+    )
     .alias('build')
     .action(lazy(() => import('./generate/generate'), 'default'));
 
