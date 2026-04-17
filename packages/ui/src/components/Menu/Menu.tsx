@@ -93,8 +93,15 @@ export const SubmenuTrigger = (props: SubmenuTriggerProps) => {
 /** @public */
 export const Menu = (props: MenuProps<object>) => {
   const { ownProps, restProps } = useDefinition(MenuDefinition, props);
-  const { classes, placement, virtualized, maxWidth, maxHeight, style } =
-    ownProps;
+  const {
+    classes,
+    placement,
+    virtualized,
+    maxWidth,
+    maxHeight,
+    style,
+    renderPopover = true,
+  } = ownProps;
 
   let newMaxWidth = maxWidth || (virtualized ? '260px' : 'undefined');
 
@@ -107,24 +114,32 @@ export const Menu = (props: MenuProps<object>) => {
     />
   );
 
+  const inner = (
+    <BgReset>
+      <Box bg="neutral" className={classes.inner}>
+        {virtualized ? (
+          <Virtualizer
+            layout={ListLayout}
+            layoutOptions={{
+              rowHeight,
+            }}
+          >
+            {menuContent}
+          </Virtualizer>
+        ) : (
+          menuContent
+        )}
+      </Box>
+    </BgReset>
+  );
+
+  if (!renderPopover) {
+    return inner;
+  }
+
   return (
     <RAPopover className={classes.root} placement={placement}>
-      <BgReset>
-        <Box bg="neutral" className={classes.inner}>
-          {virtualized ? (
-            <Virtualizer
-              layout={ListLayout}
-              layoutOptions={{
-                rowHeight,
-              }}
-            >
-              {menuContent}
-            </Virtualizer>
-          ) : (
-            menuContent
-          )}
-        </Box>
-      </BgReset>
+      {inner}
     </RAPopover>
   );
 };
@@ -140,6 +155,7 @@ export const MenuListBox = (props: MenuListBoxProps<object>) => {
     maxWidth,
     maxHeight,
     style,
+    renderPopover = true,
   } = ownProps;
   let newMaxWidth = maxWidth || (virtualized ? '260px' : 'undefined');
 
@@ -152,24 +168,32 @@ export const MenuListBox = (props: MenuListBoxProps<object>) => {
     />
   );
 
+  const inner = (
+    <BgReset>
+      <Box bg="neutral" className={classes.inner}>
+        {virtualized ? (
+          <Virtualizer
+            layout={ListLayout}
+            layoutOptions={{
+              rowHeight,
+            }}
+          >
+            {listBoxContent}
+          </Virtualizer>
+        ) : (
+          listBoxContent
+        )}
+      </Box>
+    </BgReset>
+  );
+
+  if (!renderPopover) {
+    return inner;
+  }
+
   return (
     <RAPopover className={classes.root} placement={placement}>
-      <BgReset>
-        <Box bg="neutral" className={classes.inner}>
-          {virtualized ? (
-            <Virtualizer
-              layout={ListLayout}
-              layoutOptions={{
-                rowHeight,
-              }}
-            >
-              {listBoxContent}
-            </Virtualizer>
-          ) : (
-            listBoxContent
-          )}
-        </Box>
-      </BgReset>
+      {inner}
     </RAPopover>
   );
 };
@@ -254,6 +278,8 @@ export const MenuAutocompleteListbox = (
     maxHeight,
     style,
     placeholder,
+    autoFocus,
+    renderPopover = true,
   } = ownProps;
   const { contains } = useFilter({ sensitivity: 'base' });
   let newMaxWidth = maxWidth || (virtualized ? '260px' : 'undefined');
@@ -268,38 +294,47 @@ export const MenuAutocompleteListbox = (
     />
   );
 
+  const inner = (
+    <BgReset>
+      <Box bg="neutral" className={classes.inner}>
+        <RAAutocomplete filter={contains}>
+          <RASearchField
+            className={classes.searchField}
+            aria-label={placeholder || 'Search'}
+          >
+            <RAInput
+              className={classes.searchFieldInput}
+              placeholder={placeholder || 'Search...'}
+              autoFocus={autoFocus}
+            />
+            <RAButton className={classes.searchFieldClear}>
+              <RiCloseCircleLine />
+            </RAButton>
+          </RASearchField>
+          {virtualized ? (
+            <Virtualizer
+              layout={ListLayout}
+              layoutOptions={{
+                rowHeight,
+              }}
+            >
+              {listBoxContent}
+            </Virtualizer>
+          ) : (
+            listBoxContent
+          )}
+        </RAAutocomplete>
+      </Box>
+    </BgReset>
+  );
+
+  if (!renderPopover) {
+    return inner;
+  }
+
   return (
     <RAPopover className={classes.root} placement={placement}>
-      <BgReset>
-        <Box bg="neutral" className={classes.inner}>
-          <RAAutocomplete filter={contains}>
-            <RASearchField
-              className={classes.searchField}
-              aria-label={placeholder || 'Search'}
-            >
-              <RAInput
-                className={classes.searchFieldInput}
-                placeholder={placeholder || 'Search...'}
-              />
-              <RAButton className={classes.searchFieldClear}>
-                <RiCloseCircleLine />
-              </RAButton>
-            </RASearchField>
-            {virtualized ? (
-              <Virtualizer
-                layout={ListLayout}
-                layoutOptions={{
-                  rowHeight,
-                }}
-              >
-                {listBoxContent}
-              </Virtualizer>
-            ) : (
-              listBoxContent
-            )}
-          </RAAutocomplete>
-        </Box>
-      </BgReset>
+      {inner}
     </RAPopover>
   );
 };

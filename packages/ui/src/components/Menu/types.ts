@@ -44,6 +44,14 @@ export type MenuPopoverOwnProps = {
   maxHeight?: string;
   style?: React.CSSProperties;
   className?: string;
+  /**
+   * When false, skips the internal RAPopover wrapper and renders only the
+   * content. Use this to embed the menu inside a controlled `Popover` from
+   * `@backstage/ui` — avoids nested-overlay context conflicts.
+   *
+   * @default true
+   */
+  renderPopover?: boolean;
 };
 
 /** @public */
@@ -77,6 +85,8 @@ export interface MenuAutocompleteProps<T>
 /** @public */
 export type MenuAutocompleteListBoxOwnProps = MenuPopoverOwnProps & {
   placeholder?: string;
+  /** When true, the search input auto-focuses when mounted. */
+  autoFocus?: boolean;
   selectionMode?: RAListBoxProps<object>['selectionMode'];
 };
 

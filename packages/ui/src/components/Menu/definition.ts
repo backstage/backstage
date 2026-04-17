@@ -46,6 +46,7 @@ const menuAutocompleteClassNames = {
 const menuPopoverPropDefs = {
   placement: { default: 'bottom start' },
   virtualized: { default: false },
+  renderPopover: { default: true },
   maxWidth: {},
   maxHeight: {},
   style: {},
@@ -91,6 +92,7 @@ export const MenuAutocompleteListboxDefinition =
     propDefs: {
       ...menuPopoverPropDefs,
       placeholder: {},
+      autoFocus: {},
       selectionMode: { default: 'single' },
     },
   });
