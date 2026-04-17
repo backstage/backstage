@@ -1,18 +1,41 @@
 name: blitzy-sandbox-backstage
 services:
-  # Single entry point on :8080 with /toggle page to switch design systems
-  # Use with ngrok: ngrok http 8080
-  #
-  # Prerequisites: start the apps on the host first:
-  #   yarn start example-backend &
-  #   yarn start example-app &
-  #   PORT=3001 yarn start example-app-legacy --config ../../app-config.yaml &
-  #   docker compose up
-  proxy:
-    image: nginx:alpine
+  backstage:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
     ports:
-      - '8080:8080'
+      - '${BACKSTAGE_PORT:-3000}:3000'
+      - '${BACKSTAGE_BACKEND_PORT:-7007}:7007'
+    env_file:
+      - .env
+    environment:
+      NODE_OPTIONS: '--max-old-space-size=8192'
     volumes:
-      - ./nginx-toggle.conf:/etc/nginx/conf.d/default.conf:ro
-    extra_hosts:
-      - 'host.docker.internal:host-gateway'
+      # Mount source for hot-reload during development
+      - ./packages:/app/packages
+      - ./plugins:/app/plugins
+      - ./docs:/app/docs
+      - ./mkdocs.yml:/app/mkdocs.yml
+      - ./catalog-blitzy-sandbox.yaml:/app/catalog-blitzy-sandbox.yaml
+      - ./catalog-info.yaml:/app/catalog-info.yaml
+      - ./app-config.yaml:/app/app-config.yaml
+    command: yarn start
+    healthcheck:
+      test: ['CMD-SHELL', 'curl -f http://localhost:7007/api/catalog/entities?limit=1 || exit 1']
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 180s
+
+  # Optional: nginx proxy on :8080 for design system toggle
+  # Prerequisites: uncomment and provide nginx-toggle.conf
+  # proxy:
+  #   image: nginx:alpine
+  #   ports:
+  #     - '8080:8080'
+  #   volumes:
+  #     - ./nginx-toggle.conf:/etc/nginx/conf.d/default.conf:ro
+  #   depends_on:
+  #     backstage:
+  #       condition: service_healthy

@@ -53,6 +53,7 @@ backend:
     origin:
       - http://localhost:3000
       - http://localhost:3001
+      - http://localhost:3002
       - http://localhost:8080
     methods: [GET, HEAD, PATCH, POST, PUT, DELETE]
     credentials: true
@@ -84,10 +85,21 @@ techdocs:
   builder: 'local' # Alternatives - 'external'
   generator:
     runIn: 'local'
-    # dockerImage: my-org/techdocs # use a custom docker image
-    # pullImage: true # or false to disable automatic pulling of image (e.g. if custom docker login is required)
   publisher:
-    type: 'local' # Alternatives - 'googleGcs' or 'awsS3' or 'azureBlobStorage' or 'openStackSwift'. Read documentation for using alternatives.
+    type: 'local'
+
+search:
+  collators:
+    catalog:
+      schedule:
+        frequency: { minutes: 60 }
+        timeout: { minutes: 5 }
+        initialDelay: { minutes: 2 }
+    techdocs:
+      schedule:
+        frequency: { minutes: 120 }
+        timeout: { minutes: 10 }
+        initialDelay: { minutes: 5 }
 
 integrations:
   github:
@@ -167,7 +179,8 @@ catalog:
         - Blitzy-Sandbox
       schedule:
         frequency: { minutes: 30 }
-        timeout: { minutes: 3 }
+        timeout: { minutes: 10 }
+        initialDelay: { seconds: 30 }
     github:
       blitzySandbox:
         organization: Blitzy-Sandbox
@@ -176,7 +189,8 @@ catalog:
           repository: 'blitzy-.*'
         schedule:
           frequency: { minutes: 30 }
-          timeout: { minutes: 3 }
+          timeout: { minutes: 10 }
+          initialDelay: { seconds: 30 }
     backstageOpenapi:
       plugins:
         - catalog
