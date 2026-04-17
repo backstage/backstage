@@ -57,6 +57,7 @@
   }
 
   .bui-MenuInner {
+    --menu-border-radius: var(--bui-radius-2);
     border-radius: var(--menu-border-radius);
     display: flex;
     flex-direction: column;

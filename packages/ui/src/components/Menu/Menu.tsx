@@ -103,7 +103,7 @@ export const Menu = (props: MenuProps<object>) => {
     renderPopover = true,
   } = ownProps;
 
-  let newMaxWidth = maxWidth || (virtualized ? '260px' : 'undefined');
+  const newMaxWidth = maxWidth || (virtualized ? '260px' : 'undefined');
 
   const menuContent = (
     <RAMenu
@@ -157,7 +157,7 @@ export const MenuListBox = (props: MenuListBoxProps<object>) => {
     style,
     renderPopover = true,
   } = ownProps;
-  let newMaxWidth = maxWidth || (virtualized ? '260px' : 'undefined');
+  const newMaxWidth = maxWidth || (virtualized ? '260px' : 'undefined');
 
   const listBoxContent = (
     <RAListBox
@@ -212,9 +212,10 @@ export const MenuAutocomplete = (props: MenuAutocompleteProps<object>) => {
     maxHeight,
     style,
     placeholder,
+    renderPopover = true,
   } = ownProps;
   const { contains } = useFilter({ sensitivity: 'base' });
-  let newMaxWidth = maxWidth || (virtualized ? '260px' : 'undefined');
+  const newMaxWidth = maxWidth || (virtualized ? '260px' : 'undefined');
 
   const menuContent = (
     <RAMenu
@@ -225,38 +226,46 @@ export const MenuAutocomplete = (props: MenuAutocompleteProps<object>) => {
     />
   );
 
+  const inner = (
+    <BgReset>
+      <Box bg="neutral" className={classes.inner}>
+        <RAAutocomplete filter={contains}>
+          <RASearchField
+            className={classes.searchField}
+            aria-label={placeholder || 'Search'}
+          >
+            <RAInput
+              className={classes.searchFieldInput}
+              placeholder={placeholder || 'Search...'}
+            />
+            <RAButton className={classes.searchFieldClear}>
+              <RiCloseCircleLine />
+            </RAButton>
+          </RASearchField>
+          {virtualized ? (
+            <Virtualizer
+              layout={ListLayout}
+              layoutOptions={{
+                rowHeight,
+              }}
+            >
+              {menuContent}
+            </Virtualizer>
+          ) : (
+            menuContent
+          )}
+        </RAAutocomplete>
+      </Box>
+    </BgReset>
+  );
+
+  if (!renderPopover) {
+    return inner;
+  }
+
   return (
     <RAPopover className={classes.root} placement={placement}>
-      <BgReset>
-        <Box bg="neutral" className={classes.inner}>
-          <RAAutocomplete filter={contains}>
-            <RASearchField
-              className={classes.searchField}
-              aria-label={placeholder || 'Search'}
-            >
-              <RAInput
-                className={classes.searchFieldInput}
-                placeholder={placeholder || 'Search...'}
-              />
-              <RAButton className={classes.searchFieldClear}>
-                <RiCloseCircleLine />
-              </RAButton>
-            </RASearchField>
-            {virtualized ? (
-              <Virtualizer
-                layout={ListLayout}
-                layoutOptions={{
-                  rowHeight,
-                }}
-              >
-                {menuContent}
-              </Virtualizer>
-            ) : (
-              menuContent
-            )}
-          </RAAutocomplete>
-        </Box>
-      </BgReset>
+      {inner}
     </RAPopover>
   );
 };
@@ -282,7 +291,7 @@ export const MenuAutocompleteListbox = (
     renderPopover = true,
   } = ownProps;
   const { contains } = useFilter({ sensitivity: 'base' });
-  let newMaxWidth = maxWidth || (virtualized ? '260px' : 'undefined');
+  const newMaxWidth = maxWidth || (virtualized ? '260px' : 'undefined');
 
   const listBoxContent = (
     <RAListBox
