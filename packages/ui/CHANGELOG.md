@@ -1,5 +1,11 @@
 # @backstage/ui
 
+## 0.13.3
+
+### Patch Changes
+
+- Pinned React Aria–family dependency ranges to use tilde (`~`) instead of caret (`^`), since React Aria does not strictly follow semver and may ship breaking changes in minor releases. This ensures only patch-level updates are picked up automatically.
+
 ## 0.13.2
 
 ### Patch Changes
