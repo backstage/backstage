@@ -62,7 +62,7 @@
     "@remixicon/react": "^4.6.0",
     "lodash": "^4.17.21",
     "notistack": "^3.0.1",
-    "react-aria-components": "^1.17.0",
+    "react-aria-components": "~1.17.0",
     "react-relative-time": "^0.0.9",
     "react-use": "^17.2.4"
   },

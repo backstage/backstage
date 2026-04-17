@@ -2441,9 +2441,9 @@ __metadata:
   linkType: hard
 
 "@babel/runtime@npm:^7.0.0, @babel/runtime@npm:^7.1.2, @babel/runtime@npm:^7.10.1, @babel/runtime@npm:^7.12.1, @babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.18.3, @babel/runtime@npm:^7.18.6, @babel/runtime@npm:^7.20.13, @babel/runtime@npm:^7.20.6, @babel/runtime@npm:^7.21.0, @babel/runtime@npm:^7.23.9, @babel/runtime@npm:^7.26.0, @babel/runtime@npm:^7.28.4, @babel/runtime@npm:^7.3.1, @babel/runtime@npm:^7.4.4, @babel/runtime@npm:^7.5.5, @babel/runtime@npm:^7.6.0, @babel/runtime@npm:^7.7.6, @babel/runtime@npm:^7.8.3, @babel/runtime@npm:^7.8.4, @babel/runtime@npm:^7.8.7, @babel/runtime@npm:^7.9.2":
-  version: 7.28.4
-  resolution: "@babel/runtime@npm:7.28.4"
-  checksum: 10/6c9a70452322ea80b3c9b2a412bcf60771819213a67576c8cec41e88a95bb7bf01fc983754cda35dc19603eef52df22203ccbf7777b9d6316932f9fb77c25163
+  version: 7.29.2
+  resolution: "@babel/runtime@npm:7.29.2"
+  checksum: 10/f55ba4052aa0255055b34371a145fbe69c29b37b49eaea14805b095bfb4153701486416e89392fd27ec8abafa53868be86e960b9f8f959fff91f2c8ac2a14b02
   languageName: node
   linkType: hard
 
@@ -4139,7 +4139,7 @@ __metadata:
     "@remixicon/react": "npm:^4.6.0"
     "@types/react": "npm:^18.0.0"
     react: "npm:^18.0.2"
-    react-aria-components: "npm:^1.14.0"
+    react-aria-components: "npm:~1.17.0"
     react-dom: "npm:^18.0.2"
     react-router-dom: "npm:^6.30.2"
   peerDependencies:
@@ -6330,7 +6330,7 @@ __metadata:
     msw: "npm:^1.0.0"
     notistack: "npm:^3.0.1"
     react: "npm:^18.0.2"
-    react-aria-components: "npm:^1.17.0"
+    react-aria-components: "npm:~1.17.0"
     react-dom: "npm:^18.0.2"
     react-relative-time: "npm:^0.0.9"
     react-router-dom: "npm:^6.30.2"
@@ -7985,7 +7985,7 @@ __metadata:
     globals: "npm:^17.0.0"
     react: "npm:^18.0.2"
     react-aria: "npm:^3.48.0"
-    react-aria-components: "npm:^1.17.0"
+    react-aria-components: "npm:~1.17.0"
     react-dom: "npm:^18.0.2"
     react-router-dom: "npm:^6.30.2"
     react-stately: "npm:^3.46.0"
@@ -41515,7 +41515,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-aria-components@npm:^1.14.0, react-aria-components@npm:^1.17.0":
+"react-aria-components@npm:~1.17.0":
   version: 1.17.0
   resolution: "react-aria-components@npm:1.17.0"
   dependencies:
