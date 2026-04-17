@@ -26,7 +26,7 @@ import {
   ListBoxItem,
   OverlayTriggerStateContext,
 } from 'react-aria-components';
-import { useOverlayTriggerState } from '@react-stately/overlays';
+import { useOverlayTriggerState } from 'react-stately';
 import { RiSearch2Line, RiCloseCircleLine } from '@remixicon/react';
 import { useDefinition } from '../../hooks/useDefinition';
 import {

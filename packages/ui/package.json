@@ -51,6 +51,7 @@
     "@tanstack/react-table": "^8.21.3",
     "clsx": "^2.1.1",
     "react-aria-components": "~1.14.0",
+    "react-stately": "^3.43.0",
     "use-sync-external-store": "^1.4.0"
   },
   "devDependencies": {

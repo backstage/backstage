@@ -15,8 +15,8 @@
  */
 
 import { forwardRef, Ref, useState, useRef, useCallback, useMemo } from 'react';
-import { useToastRegion } from '@react-aria/toast';
-import { useToastQueue } from '@react-stately/toast';
+import { useToastRegion } from 'react-aria';
+import { useToastQueue } from 'react-stately';
 import { AnimatePresence } from 'motion/react';
 import type { ToastApiMessageContainerProps } from './types';
 import { useInvertedThemeMode } from '../../hooks/useInvertedThemeMode';
