@@ -68,8 +68,8 @@
     "@react-hookz/web": "^24.0.0",
     "@remixicon/react": "^4.6.0",
     "motion": "^12.0.0",
-    "react-aria": "^3.48.0",
-    "react-stately": "^3.46.0",
+    "react-aria": "~3.47.0",
+    "react-stately": "~3.45.0",
     "react-use": "^17.2.4",
     "zen-observable": "^0.10.0",
     "zod": "^4.0.0"
