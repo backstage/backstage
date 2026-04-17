@@ -57,7 +57,11 @@ describe('<OwnerPicker />', () => {
   let props: FieldProps<string>;
 
   const catalogApi = catalogApiMock.mock({
-    getEntities: jest.fn(async () => ({ items: entities })),
+    queryEntities: jest.fn(async () => ({
+      items: entities,
+      totalItems: entities.length,
+      pageInfo: {},
+    })),
   });
   let Wrapper: ComponentType<PropsWithChildren<{}>>;
 
@@ -99,11 +103,12 @@ describe('<OwnerPicker />', () => {
         </Wrapper>,
       );
 
-      expect(catalogApi.getEntities).toHaveBeenCalledWith(
+      expect(catalogApi.queryEntities).toHaveBeenCalledWith(
         expect.objectContaining({
           filter: {
             kind: ['Group', 'User'],
           },
+          query: {},
           fields: [
             'kind',
             'metadata.name',
@@ -143,7 +148,11 @@ describe('<OwnerPicker />', () => {
         formData,
       } as unknown as FieldProps<any>;
 
-      catalogApi.getEntities.mockResolvedValue({ items: entities });
+      catalogApi.queryEntities.mockResolvedValue({
+        items: entities,
+        totalItems: entities.length,
+        pageInfo: {},
+      });
     });
     it('Prevents user from modifying input when ui:disabled is true', async () => {
       props.uiSchema = { 'ui:disabled': true };
@@ -205,11 +214,12 @@ describe('<OwnerPicker />', () => {
         </Wrapper>,
       );
 
-      expect(catalogApi.getEntities).toHaveBeenCalledWith(
+      expect(catalogApi.queryEntities).toHaveBeenCalledWith(
         expect.objectContaining({
           filter: {
             kind: ['User'],
           },
+          query: {},
           fields: [
             'kind',
             'metadata.name',
@@ -245,7 +255,11 @@ describe('<OwnerPicker />', () => {
         formData,
       } as unknown as FieldProps<any>;
 
-      catalogApi.getEntities.mockResolvedValue({ items: entities });
+      catalogApi.queryEntities.mockResolvedValue({
+        items: entities,
+        totalItems: entities.length,
+        pageInfo: {},
+      });
     });
 
     it('searches for group entities of type team', async () => {
@@ -255,7 +269,7 @@ describe('<OwnerPicker />', () => {
         </Wrapper>,
       );
 
-      expect(catalogApi.getEntities).toHaveBeenCalledWith(
+      expect(catalogApi.queryEntities).toHaveBeenCalledWith(
         expect.objectContaining({
           filter: [
             {
@@ -263,6 +277,7 @@ describe('<OwnerPicker />', () => {
               'spec.type': 'team',
             },
           ],
+          query: {},
         }),
       );
     });
@@ -300,7 +315,7 @@ describe('<OwnerPicker />', () => {
         </Wrapper>,
       );
 
-      expect(catalogApi.getEntities).toHaveBeenCalledWith(
+      expect(catalogApi.queryEntities).toHaveBeenCalledWith(
         expect.objectContaining({
           filter: [
             {
@@ -310,6 +325,7 @@ describe('<OwnerPicker />', () => {
               'spec.type': ['team', 'business-unit'],
             },
           ],
+          query: {},
         }),
       );
     });
