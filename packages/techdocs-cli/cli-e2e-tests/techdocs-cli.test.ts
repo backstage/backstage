@@ -90,6 +90,44 @@ describe('end-to-end', () => {
     expect(proc.exit).toEqual(0);
   });
 
+  it('can generate docs without warnings when using --mkdocs-parameter-strict', async () => {
+    const proc = await executeCommand(
+      entryPoint,
+      [
+        'generate',
+        '--no-docker',
+        '--mkdocs-parameter-strict',
+        '--source-dir',
+        '../example-docs/sub-docs',
+      ],
+      {
+        cwd,
+        timeout,
+      },
+    );
+    expect(proc.stdout).toContain('Successfully generated docs');
+    expect(proc.exit).toEqual(0);
+  });
+
+  it('can not generate docs with warnings when using --mkdocs-parameter-strict', async () => {
+    const proc = await executeCommand(
+      entryPoint,
+      [
+        'generate',
+        '--no-docker',
+        '--mkdocs-parameter-strict',
+        '--source-dir',
+        '../example-docs/sub-docs-with-warnings',
+      ],
+      {
+        cwd,
+        timeout,
+      },
+    );
+    expect(proc.stderr).toContain('Failed to generate');
+    expect(proc.exit).toEqual(1);
+  });
+
   it('can generate with DOCKER_* TLS variables and --no-docker option', async () => {
     const env = {
       DOCKER_HOST: 'tcp://localhost:2376',
