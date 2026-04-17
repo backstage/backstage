@@ -17,7 +17,6 @@ import {
   type EntityFilterQuery,
   CATALOG_FILTER_EXISTS,
 } from '@backstage/catalog-client';
-import type { FilterPredicate } from '@backstage/filter-predicates';
 import {
   Entity,
   parseEntityRef,
@@ -96,7 +95,7 @@ export const EntityPicker = (props: EntityPickerProps) => {
       fields,
       ...(catalogFilter && {
         filter: catalogFilter,
-        query: {} as FilterPredicate, // needed to force POST routing avoiding URL length limits with large filters
+        query: {}, // Forces POST routing, avoiding URL length limits with large filters
       }),
     });
 
