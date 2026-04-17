@@ -32,6 +32,12 @@ export const TabsIndicators = (props: TabsIndicatorsProps) => {
   const prevSelectedKey = useRef<string | null>(null);
 
   const updateCSSVariables = useCallback(() => {
+    // When rendered inside CollectionBuilder's hidden tree (for collection
+    // building), there is no TabListStateContext provider, so state is null.
+    // Bail out to avoid overwriting CSS variables on the shared tabsRef DOM
+    // element that the real instance also writes to.
+    if (state == null) return;
+
     if (!tabsRef.current) return;
 
     const tabsRect = tabsRef.current.getBoundingClientRect();
