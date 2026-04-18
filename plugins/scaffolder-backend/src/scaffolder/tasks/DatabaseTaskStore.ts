@@ -298,10 +298,19 @@ export class DatabaseTaskStore implements TaskStore {
     }
 
     if (search) {
-      const pattern = `%${search}%`;
-      queryBuilder.andWhere(sub => {
-        sub.where('id', 'like', pattern).orWhere('spec', 'like', pattern);
-      });
+      const terms = search.split(/\s+/).filter(Boolean);
+      const isPg = this.db.client.config.client === 'pg';
+      const idExpr = isPg ? 'CAST("id" AS TEXT)' : '"id"';
+
+      for (const term of terms) {
+        const escaped = term.replace(/[%_\\]/g, '\\$&');
+        const pattern = `%${escaped}%`;
+        queryBuilder.andWhere(sub => {
+          sub
+            .whereRaw(`${idExpr} LIKE ? ESCAPE ?`, [pattern, '\\'])
+            .orWhereRaw('"spec" LIKE ? ESCAPE ?', [pattern, '\\']);
+        });
+      }
     }
 
     const countQuery = queryBuilder.clone();

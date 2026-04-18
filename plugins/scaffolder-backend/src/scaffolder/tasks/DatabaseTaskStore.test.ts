@@ -570,6 +570,127 @@ describe('DatabaseTaskStore', () => {
     });
   });
 
+  it('should filter tasks by search term matching task ID', async () => {
+    const { store } = await createStore();
+    const { taskId: taskId1 } = await store.createTask({
+      spec: { templateInfo: { entityRef: 'template:default/a' } } as TaskSpec,
+      createdBy: 'me',
+    });
+    await store.createTask({
+      spec: { templateInfo: { entityRef: 'template:default/b' } } as TaskSpec,
+      createdBy: 'me',
+    });
+
+    const idFragment = taskId1.slice(0, 8);
+    const { tasks, totalTasks } = await store.list({ search: idFragment });
+    expect(totalTasks).toBe(1);
+    expect(tasks).toHaveLength(1);
+    expect(tasks[0].id).toBe(taskId1);
+  });
+
+  it('should filter tasks by search term matching spec content', async () => {
+    const { store } = await createStore();
+    await store.createTask({
+      spec: {
+        templateInfo: { entityRef: 'template:default/my-template' },
+      } as TaskSpec,
+      createdBy: 'me',
+    });
+    await store.createTask({
+      spec: {
+        templateInfo: { entityRef: 'template:default/other' },
+      } as TaskSpec,
+      createdBy: 'me',
+    });
+
+    const { tasks, totalTasks } = await store.list({
+      search: 'my-template',
+    });
+    expect(totalTasks).toBe(1);
+    expect(tasks).toHaveLength(1);
+    expect(tasks[0].spec.templateInfo?.entityRef).toBe(
+      'template:default/my-template',
+    );
+  });
+
+  it('should require all search terms to match for multi-word queries', async () => {
+    const { store } = await createStore();
+    await store.createTask({
+      spec: {
+        templateInfo: { entityRef: 'template:default/create-service' },
+      } as TaskSpec,
+      createdBy: 'user:default/alice',
+    });
+    await store.createTask({
+      spec: {
+        templateInfo: { entityRef: 'template:default/create-website' },
+      } as TaskSpec,
+      createdBy: 'user:default/bob',
+    });
+    await store.createTask({
+      spec: {
+        templateInfo: { entityRef: 'template:default/delete-service' },
+      } as TaskSpec,
+      createdBy: 'user:default/alice',
+    });
+
+    const { tasks: both } = await store.list({ search: 'create service' });
+    expect(both).toHaveLength(1);
+    expect(both[0].spec.templateInfo?.entityRef).toBe(
+      'template:default/create-service',
+    );
+
+    const { tasks: createOnly } = await store.list({ search: 'create' });
+    expect(createOnly).toHaveLength(2);
+
+    const { tasks: noMatch } = await store.list({
+      search: 'create nonexistent',
+    });
+    expect(noMatch).toHaveLength(0);
+  });
+
+  it('should escape LIKE wildcards in search terms', async () => {
+    const { store } = await createStore();
+    await store.createTask({
+      spec: { templateInfo: { entityRef: 'template:default/foo' } } as TaskSpec,
+      createdBy: 'me',
+    });
+    await store.createTask({
+      spec: { templateInfo: { entityRef: 'template:default/bar' } } as TaskSpec,
+      createdBy: 'me',
+    });
+
+    const { tasks: wildcardSearch } = await store.list({ search: '%' });
+    expect(wildcardSearch).toHaveLength(0);
+
+    const { tasks: underscoreSearch } = await store.list({ search: 'f_o' });
+    expect(underscoreSearch).toHaveLength(0);
+  });
+
+  it('should combine search with other filters', async () => {
+    const { store } = await createStore();
+    await store.createTask({
+      spec: {
+        templateInfo: { entityRef: 'template:default/service' },
+      } as TaskSpec,
+      createdBy: 'user:default/alice',
+    });
+    await store.createTask({
+      spec: {
+        templateInfo: { entityRef: 'template:default/service' },
+      } as TaskSpec,
+      createdBy: 'user:default/bob',
+    });
+
+    const { tasks, totalTasks } = await store.list({
+      search: 'service',
+      filters: { createdBy: 'user:default/alice' },
+    });
+    expect(totalTasks).toBe(1);
+    expect(tasks).toHaveLength(1);
+    expect(tasks[0].createdBy).toBe('user:default/alice');
+  });
+
   it('serialize and restore the workspace', async () => {
     const { store } = await createStore();
     const { taskId } = await store.createTask({

@@ -68,7 +68,18 @@ export const ListTaskPageContent = (props: MyTaskPageProps) => {
   const [searchInput, setSearchInput] = useState('');
   const [search, setSearch] = useState('');
 
-  useDebounce(() => setSearch(searchInput), 300, [searchInput]);
+  useDebounce(
+    () => {
+      setSearch(prev => {
+        if (prev !== searchInput) {
+          setPage(0);
+        }
+        return searchInput;
+      });
+    },
+    300,
+    [searchInput],
+  );
 
   const scaffolderApi = useApi(scaffolderApiRef);
   const rootLink = useRouteRef(rootRouteRef);
@@ -132,10 +143,7 @@ export const ListTaskPageContent = (props: MyTaskPageProps) => {
             setLimit(pageSize);
           }}
           onPageChange={newPage => setPage(newPage)}
-          onSearchChange={text => {
-            setPage(0);
-            setSearchInput(text);
-          }}
+          onSearchChange={text => setSearchInput(text)}
           options={{
             pageSize: limit,
             emptyRowsWhenPaging: false,
