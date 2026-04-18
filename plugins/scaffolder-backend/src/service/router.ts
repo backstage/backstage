@@ -674,7 +674,7 @@ export async function createRouter(
           };
         });
 
-        const { limit, offset, search } = req.query;
+        const { limit, offset, fullTextFilter } = req.query;
 
         const taskPermissionFilters = await getAuthorizeConditions({
           credentials: credentials,
@@ -687,7 +687,8 @@ export async function createRouter(
           filters: {
             createdBy,
             status: status ? (status as TaskStatus[]) : undefined,
-            search: typeof search === 'string' ? search : undefined,
+            fullTextFilter:
+              typeof fullTextFilter === 'string' ? fullTextFilter : undefined,
           },
           order,
           pagination: {

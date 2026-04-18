@@ -110,7 +110,7 @@ export type ListTasks = {
     limit?: number;
     offset?: number;
     order?: Array<string>;
-    search?: string;
+    fullTextFilter?: string;
     status?: Array<string>;
   };
 };
@@ -326,7 +326,7 @@ export class DefaultApiClient {
    * @param limit - Number of records to return in the response.
    * @param offset - Number of records to skip in the query page.
    * @param order - Order
-   * @param search - Search string to filter tasks by ID or template name.
+   * @param fullTextFilter - Search string to filter tasks by ID or template name.
    * @param status - Status
    */
   public async listTasks(
@@ -336,7 +336,7 @@ export class DefaultApiClient {
   ): Promise<TypedResponse<ListTasksResponse>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
 
-    const uriTemplate = `/v2/tasks{?createdBy*,limit,offset,order*,search,status*}`;
+    const uriTemplate = `/v2/tasks{?createdBy*,limit,offset,order*,fullTextFilter,status*}`;
 
     const uri = parser.parse(uriTemplate).expand({
       ...request.query,

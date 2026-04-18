@@ -124,8 +124,8 @@ export const spec = {
           },
         },
       },
-      search: {
-        name: 'search',
+      fullTextFilter: {
+        name: 'fullTextFilter',
         in: 'query',
         description: 'Search string to filter tasks by ID or template name.',
         required: false,
@@ -863,7 +863,7 @@ export const spec = {
             $ref: '#/components/parameters/order',
           },
           {
-            $ref: '#/components/parameters/search',
+            $ref: '#/components/parameters/fullTextFilter',
           },
           {
             $ref: '#/components/parameters/status',

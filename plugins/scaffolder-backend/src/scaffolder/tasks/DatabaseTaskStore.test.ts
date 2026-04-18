@@ -583,7 +583,7 @@ describe('DatabaseTaskStore', () => {
   });
 
   it.each(databases.eachSupportedId())(
-    'should filter tasks by search term matching task ID, %p',
+    'should filter tasks by fullTextFilter matching task ID, %p',
     async databaseId => {
       const { store } = await createStoreForDb(databaseId);
       const { taskId: taskId1 } = await store.createTask({
@@ -601,7 +601,7 @@ describe('DatabaseTaskStore', () => {
 
       const idFragment = taskId1.slice(0, 8);
       const { tasks, totalTasks } = await store.list({
-        filters: { search: idFragment },
+        filters: { fullTextFilter: idFragment },
       });
       expect(Number(totalTasks)).toBe(1);
       expect(tasks).toHaveLength(1);
@@ -610,7 +610,7 @@ describe('DatabaseTaskStore', () => {
   );
 
   it.each(databases.eachSupportedId())(
-    'should filter tasks by search term matching spec content, %p',
+    'should filter tasks by fullTextFilter matching spec content, %p',
     async databaseId => {
       const { store } = await createStoreForDb(databaseId);
       await store.createTask({
@@ -627,7 +627,7 @@ describe('DatabaseTaskStore', () => {
       });
 
       const { tasks, totalTasks } = await store.list({
-        filters: { search: 'my-template' },
+        filters: { fullTextFilter: 'my-template' },
       });
       expect(Number(totalTasks)).toBe(1);
       expect(tasks).toHaveLength(1);
@@ -638,7 +638,7 @@ describe('DatabaseTaskStore', () => {
   );
 
   it.each(databases.eachSupportedId())(
-    'should require all search terms to match for multi-word queries, %p',
+    'should require all fullTextFilter terms to match for multi-word queries, %p',
     async databaseId => {
       const { store } = await createStoreForDb(databaseId);
       await store.createTask({
@@ -661,7 +661,7 @@ describe('DatabaseTaskStore', () => {
       });
 
       const { tasks: both } = await store.list({
-        filters: { search: 'create service' },
+        filters: { fullTextFilter: 'create service' },
       });
       expect(both).toHaveLength(1);
       expect(both[0].spec.templateInfo?.entityRef).toBe(
@@ -669,19 +669,19 @@ describe('DatabaseTaskStore', () => {
       );
 
       const { tasks: createOnly } = await store.list({
-        filters: { search: 'create' },
+        filters: { fullTextFilter: 'create' },
       });
       expect(createOnly).toHaveLength(2);
 
       const { tasks: noMatch } = await store.list({
-        filters: { search: 'create nonexistent' },
+        filters: { fullTextFilter: 'create nonexistent' },
       });
       expect(noMatch).toHaveLength(0);
     },
   );
 
   it.each(databases.eachSupportedId())(
-    'should escape LIKE wildcards in search terms, %p',
+    'should escape LIKE wildcards in fullTextFilter terms, %p',
     async databaseId => {
       const { store } = await createStoreForDb(databaseId);
       await store.createTask({
@@ -698,19 +698,19 @@ describe('DatabaseTaskStore', () => {
       });
 
       const { tasks: wildcardSearch } = await store.list({
-        filters: { search: '%' },
+        filters: { fullTextFilter: '%' },
       });
       expect(wildcardSearch).toHaveLength(0);
 
       const { tasks: underscoreSearch } = await store.list({
-        filters: { search: 'f_o' },
+        filters: { fullTextFilter: 'f_o' },
       });
       expect(underscoreSearch).toHaveLength(0);
     },
   );
 
   it.each(databases.eachSupportedId())(
-    'should combine search with other filters, %p',
+    'should combine fullTextFilter with other filters, %p',
     async databaseId => {
       const { store } = await createStoreForDb(databaseId);
       await store.createTask({
@@ -727,7 +727,7 @@ describe('DatabaseTaskStore', () => {
       });
 
       const { tasks, totalTasks } = await store.list({
-        filters: { search: 'service', createdBy: 'user:default/alice' },
+        filters: { fullTextFilter: 'service', createdBy: 'user:default/alice' },
       });
       expect(Number(totalTasks)).toBe(1);
       expect(tasks).toHaveLength(1);

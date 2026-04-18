@@ -295,7 +295,7 @@ export class StorageTaskBroker implements TaskBroker {
     filters?: {
       createdBy?: string | string[];
       status?: TaskStatus | TaskStatus[];
-      search?: string;
+      fullTextFilter?: string;
     };
     pagination?: {
       limit?: number;

@@ -514,7 +514,7 @@ export interface TaskBroker {
     filters?: {
       createdBy?: string | string[];
       status?: TaskStatus | TaskStatus[];
-      search?: string;
+      fullTextFilter?: string;
     };
     pagination?: {
       limit?: number;

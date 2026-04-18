@@ -65,16 +65,16 @@ export const ListTaskPageContent = (props: MyTaskPageProps) => {
   const { t } = useTranslationRef(scaffolderTranslationRef);
   const [limit, setLimit] = useState(5);
   const [page, setPage] = useState(0);
-  const [searchInput, setSearchInput] = useState('');
-  const [search, setSearch] = useState('');
+  const [filterInput, setFilterInput] = useState('');
+  const [fullTextFilter, setFullTextFilter] = useState('');
 
   useDebounce(
     () => {
-      setSearch(searchInput);
+      setFullTextFilter(filterInput);
       setPage(0);
     },
     300,
-    [searchInput],
+    [filterInput],
   );
 
   const scaffolderApi = useApi(scaffolderApiRef);
@@ -88,7 +88,7 @@ export const ListTaskPageContent = (props: MyTaskPageProps) => {
         filterByOwnership: ownerFilter,
         limit,
         offset: page * limit,
-        search: search || undefined,
+        fullTextFilter: fullTextFilter || undefined,
       });
     }
 
@@ -98,7 +98,7 @@ export const ListTaskPageContent = (props: MyTaskPageProps) => {
     );
 
     return Promise.resolve({ tasks: [], totalTasks: 0 });
-  }, [scaffolderApi, ownerFilter, limit, page, search]);
+  }, [scaffolderApi, ownerFilter, limit, page, fullTextFilter]);
 
   if (!value && loading) {
     return <Progress />;
@@ -140,7 +140,7 @@ export const ListTaskPageContent = (props: MyTaskPageProps) => {
             setLimit(pageSize);
           }}
           onPageChange={newPage => setPage(newPage)}
-          onSearchChange={text => setSearchInput(text)}
+          onSearchChange={text => setFilterInput(text)}
           options={{
             pageSize: limit,
             emptyRowsWhenPaging: false,

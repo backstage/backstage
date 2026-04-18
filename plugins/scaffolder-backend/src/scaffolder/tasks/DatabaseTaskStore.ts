@@ -248,7 +248,7 @@ export class DatabaseTaskStore implements TaskStore {
     filters?: {
       createdBy?: string | string[];
       status?: TaskStatus | TaskStatus[];
-      search?: string;
+      fullTextFilter?: string;
     };
     pagination?: {
       limit?: number;
@@ -259,7 +259,7 @@ export class DatabaseTaskStore implements TaskStore {
   }): Promise<{ tasks: SerializedTask[]; totalTasks?: number }> {
     const { createdBy, status, pagination, order, filters, permissionFilters } =
       options ?? {};
-    const { search } = filters ?? {};
+    const { fullTextFilter } = filters ?? {};
     const queryBuilder = this.db<RawDbTaskRow & { count: number }>('tasks');
 
     const createdByValues = flattenParams<string>(
@@ -291,8 +291,8 @@ export class DatabaseTaskStore implements TaskStore {
       queryBuilder.whereIn('status', [...new Set(arr)]);
     }
 
-    if (search) {
-      const terms = search.split(/\s+/).filter(Boolean);
+    if (fullTextFilter) {
+      const terms = fullTextFilter.split(/\s+/).filter(Boolean);
       const isPg = this.db.client.config.client === 'pg';
       const idExpr = isPg ? 'CAST(?? AS TEXT)' : '??';
       const like = isPg ? 'ILIKE' : 'LIKE';

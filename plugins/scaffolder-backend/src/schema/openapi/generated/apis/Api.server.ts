@@ -98,7 +98,7 @@ export type ListTasks = {
     limit?: number;
     offset?: number;
     order?: Array<string>;
-    search?: string;
+    fullTextFilter?: string;
     status?: Array<string>;
   };
   response: ListTasksResponse;
