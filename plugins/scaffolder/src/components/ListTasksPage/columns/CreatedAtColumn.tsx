@@ -34,5 +34,5 @@ export const CreatedAtColumn: FC<CreatedAtColumnProps> = ({
     ...DateTime.DATETIME_SHORT_WITH_SECONDS,
   });
 
-  return <Typography paragraph>{formatted}</Typography>;
+  return <Typography>{formatted}</Typography>;
 };

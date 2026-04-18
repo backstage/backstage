@@ -30,7 +30,7 @@ export const OwnerEntityColumn = ({ entityRef }: { entityRef?: string }) => {
   );
 
   if (!entityRef) {
-    return <Typography paragraph>Unknown</Typography>;
+    return <Typography>Unknown</Typography>;
   }
 
   if (loading || error) {
