@@ -76,6 +76,7 @@ export type GeneratorRunOptions = {
     name?: string;
   };
   runAsDefaultUser?: boolean;
+  mkdocsParameterStrict?: boolean;
 };
 
 // @public
