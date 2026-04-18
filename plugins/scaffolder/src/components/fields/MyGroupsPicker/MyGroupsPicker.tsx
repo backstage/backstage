@@ -70,12 +70,16 @@ export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
       return { catalogEntities: [], entityRefToPresentation: new Map() };
     }
 
-    const { items } = await catalogApi.getEntities({
+    const items: Entity[] = [];
+    for await (const batch of catalogApi.streamEntities({
+      query: {},
       filter: {
         kind: 'Group',
         ['relations.hasMember']: [userEntityRef],
       },
-    });
+    })) {
+      items.push(...batch);
+    }
 
     const entityRefToPresentation = new Map<
       string,
