@@ -687,8 +687,8 @@ export async function createRouter(
           filters: {
             createdBy,
             status: status ? (status as TaskStatus[]) : undefined,
+            search: typeof search === 'string' ? search : undefined,
           },
-          search: typeof search === 'string' ? search : undefined,
           order,
           pagination: {
             limit,

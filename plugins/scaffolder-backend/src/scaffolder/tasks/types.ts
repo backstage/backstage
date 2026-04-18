@@ -114,8 +114,8 @@ export interface TaskStore {
     filters?: {
       createdBy?: string | string[];
       status?: TaskStatus | TaskStatus[];
+      search?: string;
     };
-    search?: string;
     pagination?: {
       limit?: number;
       offset?: number;

@@ -582,7 +582,9 @@ describe('DatabaseTaskStore', () => {
     });
 
     const idFragment = taskId1.slice(0, 8);
-    const { tasks, totalTasks } = await store.list({ search: idFragment });
+    const { tasks, totalTasks } = await store.list({
+      filters: { search: idFragment },
+    });
     expect(totalTasks).toBe(1);
     expect(tasks).toHaveLength(1);
     expect(tasks[0].id).toBe(taskId1);
@@ -604,7 +606,7 @@ describe('DatabaseTaskStore', () => {
     });
 
     const { tasks, totalTasks } = await store.list({
-      search: 'my-template',
+      filters: { search: 'my-template' },
     });
     expect(totalTasks).toBe(1);
     expect(tasks).toHaveLength(1);
@@ -634,17 +636,21 @@ describe('DatabaseTaskStore', () => {
       createdBy: 'user:default/alice',
     });
 
-    const { tasks: both } = await store.list({ search: 'create service' });
+    const { tasks: both } = await store.list({
+      filters: { search: 'create service' },
+    });
     expect(both).toHaveLength(1);
     expect(both[0].spec.templateInfo?.entityRef).toBe(
       'template:default/create-service',
     );
 
-    const { tasks: createOnly } = await store.list({ search: 'create' });
+    const { tasks: createOnly } = await store.list({
+      filters: { search: 'create' },
+    });
     expect(createOnly).toHaveLength(2);
 
     const { tasks: noMatch } = await store.list({
-      search: 'create nonexistent',
+      filters: { search: 'create nonexistent' },
     });
     expect(noMatch).toHaveLength(0);
   });
@@ -660,10 +666,14 @@ describe('DatabaseTaskStore', () => {
       createdBy: 'me',
     });
 
-    const { tasks: wildcardSearch } = await store.list({ search: '%' });
+    const { tasks: wildcardSearch } = await store.list({
+      filters: { search: '%' },
+    });
     expect(wildcardSearch).toHaveLength(0);
 
-    const { tasks: underscoreSearch } = await store.list({ search: 'f_o' });
+    const { tasks: underscoreSearch } = await store.list({
+      filters: { search: 'f_o' },
+    });
     expect(underscoreSearch).toHaveLength(0);
   });
 
@@ -683,8 +693,7 @@ describe('DatabaseTaskStore', () => {
     });
 
     const { tasks, totalTasks } = await store.list({
-      search: 'service',
-      filters: { createdBy: 'user:default/alice' },
+      filters: { search: 'service', createdBy: 'user:default/alice' },
     });
     expect(totalTasks).toBe(1);
     expect(tasks).toHaveLength(1);

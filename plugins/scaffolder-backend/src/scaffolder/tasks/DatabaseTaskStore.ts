@@ -248,8 +248,8 @@ export class DatabaseTaskStore implements TaskStore {
     filters?: {
       createdBy?: string | string[];
       status?: TaskStatus | TaskStatus[];
+      search?: string;
     };
-    search?: string;
     pagination?: {
       limit?: number;
       offset?: number;
@@ -257,15 +257,9 @@ export class DatabaseTaskStore implements TaskStore {
     order?: { order: 'asc' | 'desc'; field: string }[];
     permissionFilters?: PermissionCriteria<TaskFilters>;
   }): Promise<{ tasks: SerializedTask[]; totalTasks?: number }> {
-    const {
-      createdBy,
-      status,
-      search,
-      pagination,
-      order,
-      filters,
-      permissionFilters,
-    } = options ?? {};
+    const { createdBy, status, pagination, order, filters, permissionFilters } =
+      options ?? {};
+    const { search } = filters ?? {};
     const queryBuilder = this.db<RawDbTaskRow & { count: number }>('tasks');
 
     const createdByValues = flattenParams<string>(
