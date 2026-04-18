@@ -293,18 +293,16 @@ export class DatabaseTaskStore implements TaskStore {
 
     if (search) {
       const terms = search.split(/\s+/).filter(Boolean);
-      const client = this.db.client.config.client;
-      const q = client === 'mysql2' ? '`' : '"';
-      const idExpr =
-        client === 'pg' ? `CAST(${q}id${q} AS TEXT)` : `${q}id${q}`;
+      const isPg = this.db.client.config.client === 'pg';
+      const idExpr = isPg ? 'CAST(?? AS TEXT)' : '??';
 
       for (const term of terms) {
         const escaped = term.replace(/[%_\\]/g, '\\$&');
         const pattern = `%${escaped}%`;
         queryBuilder.andWhere(sub => {
           sub
-            .whereRaw(`${idExpr} LIKE ? ESCAPE ?`, [pattern, '\\'])
-            .orWhereRaw(`${q}spec${q} LIKE ? ESCAPE ?`, [pattern, '\\']);
+            .whereRaw(`${idExpr} LIKE ? ESCAPE ?`, ['id', pattern, '\\'])
+            .orWhereRaw('?? LIKE ? ESCAPE ?', ['spec', pattern, '\\']);
         });
       }
     }
