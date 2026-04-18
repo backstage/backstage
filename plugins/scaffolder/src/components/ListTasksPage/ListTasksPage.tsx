@@ -27,7 +27,7 @@ import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { CatalogFilterLayout } from '@backstage/plugin-catalog-react';
 import useAsync from 'react-use/esm/useAsync';
 import useDebounce from 'react-use/esm/useDebounce';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   scaffolderApiRef,
   ScaffolderTask,
@@ -68,29 +68,27 @@ export const ListTaskPageContent = (props: MyTaskPageProps) => {
   const [searchInput, setSearchInput] = useState('');
   const [search, setSearch] = useState('');
 
-  useDebounce(
-    () => {
-      setSearch(prev => {
-        if (prev !== searchInput) {
-          setPage(0);
-        }
-        return searchInput;
-      });
-    },
-    300,
-    [searchInput],
-  );
+  useDebounce(() => setSearch(searchInput), 300, [searchInput]);
 
   const scaffolderApi = useApi(scaffolderApiRef);
   const rootLink = useRouteRef(rootRouteRef);
 
   const [ownerFilter, setOwnerFilter] = useState(initiallySelectedFilter);
+
+  const searchChangedRef = useRef(false);
+  const prevSearchRef = useRef(search);
+  if (search !== prevSearchRef.current) {
+    prevSearchRef.current = search;
+    searchChangedRef.current = true;
+  }
+  const offset = searchChangedRef.current ? 0 : page * limit;
+
   const { value, loading, error } = useAsync(() => {
     if (scaffolderApi.listTasks) {
       return scaffolderApi.listTasks?.({
         filterByOwnership: ownerFilter,
         limit,
-        offset: page * limit,
+        offset,
         search: search || undefined,
       });
     }
@@ -101,7 +99,14 @@ export const ListTaskPageContent = (props: MyTaskPageProps) => {
     );
 
     return Promise.resolve({ tasks: [], totalTasks: 0 });
-  }, [scaffolderApi, ownerFilter, limit, page, search]);
+  }, [scaffolderApi, ownerFilter, limit, offset, search]);
+
+  useEffect(() => {
+    if (!loading && searchChangedRef.current) {
+      searchChangedRef.current = false;
+      setPage(0);
+    }
+  }, [loading]);
 
   if (loading) {
     return <Progress />;
