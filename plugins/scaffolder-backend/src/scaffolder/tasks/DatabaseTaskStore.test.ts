@@ -22,6 +22,8 @@ import { ConflictError } from '@backstage/errors';
 import {
   mockServices,
   createMockDirectory,
+  TestDatabaseId,
+  TestDatabases,
 } from '@backstage/backend-test-utils';
 import fs from 'fs-extra';
 import { EventsService } from '@backstage/plugin-events-node';
@@ -48,6 +50,14 @@ const createStore = async (events?: EventsService) => {
   });
   return { store, manager };
 };
+
+const databases = TestDatabases.create();
+
+async function createStoreForDb(databaseId: TestDatabaseId) {
+  const knex = await databases.init(databaseId);
+  const store = await DatabaseTaskStore.create({ database: knex });
+  return { store, knex };
+}
 
 const workspaceDir = createMockDirectory({
   content: {
@@ -570,135 +580,163 @@ describe('DatabaseTaskStore', () => {
     });
   });
 
-  it('should filter tasks by search term matching task ID', async () => {
-    const { store } = await createStore();
-    const { taskId: taskId1 } = await store.createTask({
-      spec: { templateInfo: { entityRef: 'template:default/a' } } as TaskSpec,
-      createdBy: 'me',
-    });
-    await store.createTask({
-      spec: { templateInfo: { entityRef: 'template:default/b' } } as TaskSpec,
-      createdBy: 'me',
-    });
+  it.each(databases.eachSupportedId())(
+    'should filter tasks by search term matching task ID, %p',
+    async databaseId => {
+      const { store } = await createStoreForDb(databaseId);
+      const { taskId: taskId1 } = await store.createTask({
+        spec: {
+          templateInfo: { entityRef: 'template:default/a' },
+        } as TaskSpec,
+        createdBy: 'me',
+      });
+      await store.createTask({
+        spec: {
+          templateInfo: { entityRef: 'template:default/b' },
+        } as TaskSpec,
+        createdBy: 'me',
+      });
 
-    const idFragment = taskId1.slice(0, 8);
-    const { tasks, totalTasks } = await store.list({
-      filters: { search: idFragment },
-    });
-    expect(totalTasks).toBe(1);
-    expect(tasks).toHaveLength(1);
-    expect(tasks[0].id).toBe(taskId1);
-  });
+      const idFragment = taskId1.slice(0, 8);
+      const { tasks, totalTasks } = await store.list({
+        filters: { search: idFragment },
+      });
+      expect(Number(totalTasks)).toBe(1);
+      expect(tasks).toHaveLength(1);
+      expect(tasks[0].id).toBe(taskId1);
+    },
+    60_000,
+  );
 
-  it('should filter tasks by search term matching spec content', async () => {
-    const { store } = await createStore();
-    await store.createTask({
-      spec: {
-        templateInfo: { entityRef: 'template:default/my-template' },
-      } as TaskSpec,
-      createdBy: 'me',
-    });
-    await store.createTask({
-      spec: {
-        templateInfo: { entityRef: 'template:default/other' },
-      } as TaskSpec,
-      createdBy: 'me',
-    });
+  it.each(databases.eachSupportedId())(
+    'should filter tasks by search term matching spec content, %p',
+    async databaseId => {
+      const { store } = await createStoreForDb(databaseId);
+      await store.createTask({
+        spec: {
+          templateInfo: { entityRef: 'template:default/my-template' },
+        } as TaskSpec,
+        createdBy: 'me',
+      });
+      await store.createTask({
+        spec: {
+          templateInfo: { entityRef: 'template:default/other' },
+        } as TaskSpec,
+        createdBy: 'me',
+      });
 
-    const { tasks, totalTasks } = await store.list({
-      filters: { search: 'my-template' },
-    });
-    expect(totalTasks).toBe(1);
-    expect(tasks).toHaveLength(1);
-    expect(tasks[0].spec.templateInfo?.entityRef).toBe(
-      'template:default/my-template',
-    );
-  });
+      const { tasks, totalTasks } = await store.list({
+        filters: { search: 'my-template' },
+      });
+      expect(Number(totalTasks)).toBe(1);
+      expect(tasks).toHaveLength(1);
+      expect(tasks[0].spec.templateInfo?.entityRef).toBe(
+        'template:default/my-template',
+      );
+    },
+    60_000,
+  );
 
-  it('should require all search terms to match for multi-word queries', async () => {
-    const { store } = await createStore();
-    await store.createTask({
-      spec: {
-        templateInfo: { entityRef: 'template:default/create-service' },
-      } as TaskSpec,
-      createdBy: 'user:default/alice',
-    });
-    await store.createTask({
-      spec: {
-        templateInfo: { entityRef: 'template:default/create-website' },
-      } as TaskSpec,
-      createdBy: 'user:default/bob',
-    });
-    await store.createTask({
-      spec: {
-        templateInfo: { entityRef: 'template:default/delete-service' },
-      } as TaskSpec,
-      createdBy: 'user:default/alice',
-    });
+  it.each(databases.eachSupportedId())(
+    'should require all search terms to match for multi-word queries, %p',
+    async databaseId => {
+      const { store } = await createStoreForDb(databaseId);
+      await store.createTask({
+        spec: {
+          templateInfo: { entityRef: 'template:default/create-service' },
+        } as TaskSpec,
+        createdBy: 'user:default/alice',
+      });
+      await store.createTask({
+        spec: {
+          templateInfo: { entityRef: 'template:default/create-website' },
+        } as TaskSpec,
+        createdBy: 'user:default/bob',
+      });
+      await store.createTask({
+        spec: {
+          templateInfo: { entityRef: 'template:default/delete-service' },
+        } as TaskSpec,
+        createdBy: 'user:default/alice',
+      });
 
-    const { tasks: both } = await store.list({
-      filters: { search: 'create service' },
-    });
-    expect(both).toHaveLength(1);
-    expect(both[0].spec.templateInfo?.entityRef).toBe(
-      'template:default/create-service',
-    );
+      const { tasks: both } = await store.list({
+        filters: { search: 'create service' },
+      });
+      expect(both).toHaveLength(1);
+      expect(both[0].spec.templateInfo?.entityRef).toBe(
+        'template:default/create-service',
+      );
 
-    const { tasks: createOnly } = await store.list({
-      filters: { search: 'create' },
-    });
-    expect(createOnly).toHaveLength(2);
+      const { tasks: createOnly } = await store.list({
+        filters: { search: 'create' },
+      });
+      expect(createOnly).toHaveLength(2);
 
-    const { tasks: noMatch } = await store.list({
-      filters: { search: 'create nonexistent' },
-    });
-    expect(noMatch).toHaveLength(0);
-  });
+      const { tasks: noMatch } = await store.list({
+        filters: { search: 'create nonexistent' },
+      });
+      expect(noMatch).toHaveLength(0);
+    },
+    60_000,
+  );
 
-  it('should escape LIKE wildcards in search terms', async () => {
-    const { store } = await createStore();
-    await store.createTask({
-      spec: { templateInfo: { entityRef: 'template:default/foo' } } as TaskSpec,
-      createdBy: 'me',
-    });
-    await store.createTask({
-      spec: { templateInfo: { entityRef: 'template:default/bar' } } as TaskSpec,
-      createdBy: 'me',
-    });
+  it.each(databases.eachSupportedId())(
+    'should escape LIKE wildcards in search terms, %p',
+    async databaseId => {
+      const { store } = await createStoreForDb(databaseId);
+      await store.createTask({
+        spec: {
+          templateInfo: { entityRef: 'template:default/foo' },
+        } as TaskSpec,
+        createdBy: 'me',
+      });
+      await store.createTask({
+        spec: {
+          templateInfo: { entityRef: 'template:default/bar' },
+        } as TaskSpec,
+        createdBy: 'me',
+      });
 
-    const { tasks: wildcardSearch } = await store.list({
-      filters: { search: '%' },
-    });
-    expect(wildcardSearch).toHaveLength(0);
+      const { tasks: wildcardSearch } = await store.list({
+        filters: { search: '%' },
+      });
+      expect(wildcardSearch).toHaveLength(0);
 
-    const { tasks: underscoreSearch } = await store.list({
-      filters: { search: 'f_o' },
-    });
-    expect(underscoreSearch).toHaveLength(0);
-  });
+      const { tasks: underscoreSearch } = await store.list({
+        filters: { search: 'f_o' },
+      });
+      expect(underscoreSearch).toHaveLength(0);
+    },
+    60_000,
+  );
 
-  it('should combine search with other filters', async () => {
-    const { store } = await createStore();
-    await store.createTask({
-      spec: {
-        templateInfo: { entityRef: 'template:default/service' },
-      } as TaskSpec,
-      createdBy: 'user:default/alice',
-    });
-    await store.createTask({
-      spec: {
-        templateInfo: { entityRef: 'template:default/service' },
-      } as TaskSpec,
-      createdBy: 'user:default/bob',
-    });
+  it.each(databases.eachSupportedId())(
+    'should combine search with other filters, %p',
+    async databaseId => {
+      const { store } = await createStoreForDb(databaseId);
+      await store.createTask({
+        spec: {
+          templateInfo: { entityRef: 'template:default/service' },
+        } as TaskSpec,
+        createdBy: 'user:default/alice',
+      });
+      await store.createTask({
+        spec: {
+          templateInfo: { entityRef: 'template:default/service' },
+        } as TaskSpec,
+        createdBy: 'user:default/bob',
+      });
 
-    const { tasks, totalTasks } = await store.list({
-      filters: { search: 'service', createdBy: 'user:default/alice' },
-    });
-    expect(totalTasks).toBe(1);
-    expect(tasks).toHaveLength(1);
-    expect(tasks[0].createdBy).toBe('user:default/alice');
-  });
+      const { tasks, totalTasks } = await store.list({
+        filters: { search: 'service', createdBy: 'user:default/alice' },
+      });
+      expect(Number(totalTasks)).toBe(1);
+      expect(tasks).toHaveLength(1);
+      expect(tasks[0].createdBy).toBe('user:default/alice');
+    },
+    60_000,
+  );
 
   it('serialize and restore the workspace', async () => {
     const { store } = await createStore();

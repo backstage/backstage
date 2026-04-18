@@ -293,8 +293,10 @@ export class DatabaseTaskStore implements TaskStore {
 
     if (search) {
       const terms = search.split(/\s+/).filter(Boolean);
-      const isPg = this.db.client.config.client === 'pg';
-      const idExpr = isPg ? 'CAST("id" AS TEXT)' : '"id"';
+      const client = this.db.client.config.client;
+      const q = client === 'mysql2' ? '`' : '"';
+      const idExpr =
+        client === 'pg' ? `CAST(${q}id${q} AS TEXT)` : `${q}id${q}`;
 
       for (const term of terms) {
         const escaped = term.replace(/[%_\\]/g, '\\$&');
@@ -302,7 +304,7 @@ export class DatabaseTaskStore implements TaskStore {
         queryBuilder.andWhere(sub => {
           sub
             .whereRaw(`${idExpr} LIKE ? ESCAPE ?`, [pattern, '\\'])
-            .orWhereRaw('"spec" LIKE ? ESCAPE ?', [pattern, '\\']);
+            .orWhereRaw(`${q}spec${q} LIKE ? ESCAPE ?`, [pattern, '\\']);
         });
       }
     }
