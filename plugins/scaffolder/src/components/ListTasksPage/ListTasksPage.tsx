@@ -26,6 +26,7 @@ import {
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { CatalogFilterLayout } from '@backstage/plugin-catalog-react';
 import useAsync from 'react-use/esm/useAsync';
+import useDebounce from 'react-use/esm/useDebounce';
 import { useState } from 'react';
 import {
   scaffolderApiRef,
@@ -64,6 +65,10 @@ export const ListTaskPageContent = (props: MyTaskPageProps) => {
   const { t } = useTranslationRef(scaffolderTranslationRef);
   const [limit, setLimit] = useState(5);
   const [page, setPage] = useState(0);
+  const [searchInput, setSearchInput] = useState('');
+  const [search, setSearch] = useState('');
+
+  useDebounce(() => setSearch(searchInput), 300, [searchInput]);
 
   const scaffolderApi = useApi(scaffolderApiRef);
   const rootLink = useRouteRef(rootRouteRef);
@@ -75,6 +80,7 @@ export const ListTaskPageContent = (props: MyTaskPageProps) => {
         filterByOwnership: ownerFilter,
         limit,
         offset: page * limit,
+        search: search || undefined,
       });
     }
 
@@ -84,7 +90,7 @@ export const ListTaskPageContent = (props: MyTaskPageProps) => {
     );
 
     return Promise.resolve({ tasks: [], totalTasks: 0 });
-  }, [scaffolderApi, ownerFilter, limit, page]);
+  }, [scaffolderApi, ownerFilter, limit, page, search]);
 
   if (loading) {
     return <Progress />;
@@ -126,7 +132,16 @@ export const ListTaskPageContent = (props: MyTaskPageProps) => {
             setLimit(pageSize);
           }}
           onPageChange={newPage => setPage(newPage)}
-          options={{ pageSize: limit, emptyRowsWhenPaging: false }}
+          onSearchChange={text => {
+            setPage(0);
+            setSearchInput(text);
+          }}
+          options={{
+            pageSize: limit,
+            emptyRowsWhenPaging: false,
+            search: true,
+            searchAutoFocus: true,
+          }}
           data={value?.tasks ?? []}
           page={page}
           totalCount={value?.totalTasks ?? 0}

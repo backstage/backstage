@@ -124,6 +124,16 @@ export const spec = {
           },
         },
       },
+      search: {
+        name: 'search',
+        in: 'query',
+        description: 'Search string to filter tasks by ID or template name.',
+        required: false,
+        allowReserved: true,
+        schema: {
+          type: 'string',
+        },
+      },
       status: {
         name: 'status',
         in: 'query',
@@ -851,6 +861,9 @@ export const spec = {
           },
           {
             $ref: '#/components/parameters/order',
+          },
+          {
+            $ref: '#/components/parameters/search',
           },
           {
             $ref: '#/components/parameters/status',

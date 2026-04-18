@@ -104,6 +104,7 @@ export interface ScaffolderApi {
       filterByOwnership: 'owned' | 'all';
       limit?: number;
       offset?: number;
+      search?: string;
     },
     options?: ScaffolderRequestOptions,
   ): Promise<{
@@ -195,6 +196,7 @@ export class ScaffolderClient implements ScaffolderApi {
       filterByOwnership: 'owned' | 'all';
       limit?: number;
       offset?: number;
+      search?: string;
     },
     options?: ScaffolderRequestOptions,
   ): Promise<{

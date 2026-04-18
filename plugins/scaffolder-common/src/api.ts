@@ -297,6 +297,7 @@ export interface ScaffolderApi {
       filterByOwnership: 'owned' | 'all';
       limit?: number;
       offset?: number;
+      search?: string;
     },
     options?: ScaffolderRequestOptions,
   ): Promise<{ tasks: ScaffolderTask[]; totalTasks?: number }>;

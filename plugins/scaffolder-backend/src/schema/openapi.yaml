@@ -77,6 +77,14 @@ components:
         type: array
         items:
           type: string
+    search:
+      name: search
+      in: query
+      description: Search string to filter tasks by ID or template name.
+      required: false
+      allowReserved: true
+      schema:
+        type: string
     status:
       name: status
       in: query
@@ -577,6 +585,7 @@ paths:
         - $ref: '#/components/parameters/limit'
         - $ref: '#/components/parameters/offset'
         - $ref: '#/components/parameters/order'
+        - $ref: '#/components/parameters/search'
         - $ref: '#/components/parameters/status'
     post:
       operationId: Scaffold

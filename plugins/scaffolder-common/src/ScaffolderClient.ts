@@ -92,6 +92,7 @@ export class ScaffolderClient implements ScaffolderApi {
       filterByOwnership: 'owned' | 'all';
       limit?: number;
       offset?: number;
+      search?: string;
     },
     options?: ScaffolderRequestOptions,
   ): Promise<{ tasks: ScaffolderTask[]; totalTasks?: number }> {
@@ -113,6 +114,7 @@ export class ScaffolderClient implements ScaffolderApi {
                 : undefined,
             limit: request.limit,
             offset: request.offset,
+            search: request.search || undefined,
           },
         },
         options,

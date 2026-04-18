@@ -249,6 +249,7 @@ export class DatabaseTaskStore implements TaskStore {
       createdBy?: string | string[];
       status?: TaskStatus | TaskStatus[];
     };
+    search?: string;
     pagination?: {
       limit?: number;
       offset?: number;
@@ -256,8 +257,15 @@ export class DatabaseTaskStore implements TaskStore {
     order?: { order: 'asc' | 'desc'; field: string }[];
     permissionFilters?: PermissionCriteria<TaskFilters>;
   }): Promise<{ tasks: SerializedTask[]; totalTasks?: number }> {
-    const { createdBy, status, pagination, order, filters, permissionFilters } =
-      options ?? {};
+    const {
+      createdBy,
+      status,
+      search,
+      pagination,
+      order,
+      filters,
+      permissionFilters,
+    } = options ?? {};
     const queryBuilder = this.db<RawDbTaskRow & { count: number }>('tasks');
 
     const createdByValues = flattenParams<string>(
@@ -287,6 +295,13 @@ export class DatabaseTaskStore implements TaskStore {
         filters?.status,
       );
       queryBuilder.whereIn('status', [...new Set(arr)]);
+    }
+
+    if (search) {
+      const pattern = `%${search}%`;
+      queryBuilder.andWhere(sub => {
+        sub.where('id', 'like', pattern).orWhere('spec', 'like', pattern);
+      });
     }
 
     const countQuery = queryBuilder.clone();
