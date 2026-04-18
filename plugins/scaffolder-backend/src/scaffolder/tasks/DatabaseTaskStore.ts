@@ -303,7 +303,8 @@ export class DatabaseTaskStore implements TaskStore {
         queryBuilder.andWhere(sub => {
           sub
             .whereRaw(`${idExpr} ${like} ? ESCAPE ?`, ['id', pattern, '\\'])
-            .orWhereRaw(`?? ${like} ? ESCAPE ?`, ['spec', pattern, '\\']);
+            .orWhereRaw(`?? ${like} ? ESCAPE ?`, ['spec', pattern, '\\'])
+            .orWhereRaw(`?? ${like} ? ESCAPE ?`, ['status', pattern, '\\']);
         });
       }
     }
