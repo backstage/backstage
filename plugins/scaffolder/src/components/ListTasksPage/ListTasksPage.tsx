@@ -154,6 +154,9 @@ export const ListTaskPageContent = (props: MyTaskPageProps) => {
             {
               title: t('listTaskPage.content.tableCell.taskID'),
               field: 'id',
+              // Disable client-side search filtering; search is handled
+              // server-side. Without this, material-table filters out all
+              // rows when the search field has text.
               customFilterAndSearch: () => true,
               render: row => (
                 <Link to={`${rootLink()}/tasks/${row.id}`}>{row.id}</Link>
