@@ -78,6 +78,7 @@ export type GeneratorConfig = {
  * @param logger - A logger that forwards the messages to the caller to be displayed outside of the backend.
  * @param logStream - A log stream that can send raw log messages to the caller to be displayed outside of the backend.
  * @param siteOptions - Options for the site: The `name` property will be used in mkdocs.yml config for the required `site_name` property, default value is "Documentation Site"
+ * @param mkdocsParameterStrict - If present, the `--strict` option will be used when invoking mkdocs build".
  */
 export type GeneratorRunOptions = {
   inputDir: string;
