@@ -20,7 +20,6 @@ import {
   Header,
   Link,
   Page,
-  Progress,
   Table,
 } from '@backstage/core-components';
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
@@ -100,10 +99,6 @@ export const ListTaskPageContent = (props: MyTaskPageProps) => {
     return Promise.resolve({ tasks: [], totalTasks: 0 });
   }, [scaffolderApi, ownerFilter, limit, page, search]);
 
-  if (loading) {
-    return <Progress />;
-  }
-
   if (error) {
     return (
       <CatalogFilterLayout>
@@ -135,6 +130,7 @@ export const ListTaskPageContent = (props: MyTaskPageProps) => {
       </CatalogFilterLayout.Filters>
       <CatalogFilterLayout.Content>
         <Table<ScaffolderTask>
+          isLoading={loading}
           onRowsPerPageChange={pageSize => {
             setPage(0);
             setLimit(pageSize);
