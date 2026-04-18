@@ -163,6 +163,7 @@ export const ListTaskPageContent = (props: MyTaskPageProps) => {
             {
               title: t('listTaskPage.content.tableCell.taskID'),
               field: 'id',
+              searchable: false,
               render: row => (
                 <Link to={`${rootLink()}/tasks/${row.id}`}>{row.id}</Link>
               ),
@@ -170,6 +171,7 @@ export const ListTaskPageContent = (props: MyTaskPageProps) => {
             {
               title: t('listTaskPage.content.tableCell.template'),
               field: 'spec.templateInfo.entity.metadata.title',
+              searchable: false,
               render: row => (
                 <TemplateTitleColumn
                   entityRef={row.spec.templateInfo?.entityRef}
@@ -179,11 +181,13 @@ export const ListTaskPageContent = (props: MyTaskPageProps) => {
             {
               title: t('listTaskPage.content.tableCell.created'),
               field: 'createdAt',
+              searchable: false,
               render: row => <CreatedAtColumn createdAt={row.createdAt} />,
             },
             {
               title: t('listTaskPage.content.tableCell.owner'),
               field: 'createdBy',
+              searchable: false,
               render: row => (
                 <OwnerEntityColumn entityRef={row.spec?.user?.ref} />
               ),
@@ -191,6 +195,7 @@ export const ListTaskPageContent = (props: MyTaskPageProps) => {
             {
               title: t('listTaskPage.content.tableCell.status'),
               field: 'status',
+              searchable: false,
               render: row => <TaskStatusColumn status={row.status} />,
             },
           ]}
