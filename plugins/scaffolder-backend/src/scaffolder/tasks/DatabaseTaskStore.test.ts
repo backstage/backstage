@@ -30,6 +30,8 @@ import { EventsService } from '@backstage/plugin-events-node';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
 import { TaskFilters } from '@backstage/plugin-scaffolder-node';
 
+jest.setTimeout(60_000);
+
 const createStore = async (events?: EventsService) => {
   const manager = DatabaseManager.fromConfig(
     new ConfigReader({
@@ -605,7 +607,6 @@ describe('DatabaseTaskStore', () => {
       expect(tasks).toHaveLength(1);
       expect(tasks[0].id).toBe(taskId1);
     },
-    60_000,
   );
 
   it.each(databases.eachSupportedId())(
@@ -634,7 +635,6 @@ describe('DatabaseTaskStore', () => {
         'template:default/my-template',
       );
     },
-    60_000,
   );
 
   it.each(databases.eachSupportedId())(
@@ -678,7 +678,6 @@ describe('DatabaseTaskStore', () => {
       });
       expect(noMatch).toHaveLength(0);
     },
-    60_000,
   );
 
   it.each(databases.eachSupportedId())(
@@ -708,7 +707,6 @@ describe('DatabaseTaskStore', () => {
       });
       expect(underscoreSearch).toHaveLength(0);
     },
-    60_000,
   );
 
   it.each(databases.eachSupportedId())(
@@ -735,7 +733,6 @@ describe('DatabaseTaskStore', () => {
       expect(tasks).toHaveLength(1);
       expect(tasks[0].createdBy).toBe('user:default/alice');
     },
-    60_000,
   );
 
   it('serialize and restore the workspace', async () => {
