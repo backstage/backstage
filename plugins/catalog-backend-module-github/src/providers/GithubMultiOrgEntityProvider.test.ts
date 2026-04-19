@@ -969,6 +969,36 @@ describe('GithubMultiOrgEntityProvider', () => {
 
       expect(entityProviderConnection.applyMutation).not.toHaveBeenCalled();
     });
+
+    it('should log a debug hint and rethrow when getCredentials fails with NotFoundError', async () => {
+      entityProvider = new GithubMultiOrgEntityProvider({
+        id: 'my-id',
+        gitHubConfig,
+        githubCredentialsProvider: {
+          getCredentials: mockGetCredentials,
+        },
+        githubUrl: 'https://github.com',
+        logger,
+        orgs: ['orgA'],
+      });
+
+      await entityProvider.connect(entityProviderConnection);
+
+      const notFound = new Error('No GitHub App installation found');
+      notFound.name = 'NotFoundError';
+      mockGetCredentials.mockRejectedValueOnce(notFound);
+
+      await expect(entityProvider.read()).rejects.toThrow(
+        'No GitHub App installation found',
+      );
+
+      expect(logger.debug).toHaveBeenCalledWith(
+        expect.stringContaining(
+          'No GitHub App installation found for org "orgA"',
+        ),
+      );
+      expect(entityProviderConnection.applyMutation).not.toHaveBeenCalled();
+    });
   });
 
   describe('withLocations', () => {

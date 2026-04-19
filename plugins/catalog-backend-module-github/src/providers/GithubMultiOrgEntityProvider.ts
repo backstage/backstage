@@ -29,6 +29,7 @@ import { isError } from '@backstage/errors';
 import {
   DefaultGithubCredentialsProvider,
   GithubAppCredentialsMux,
+  GithubCredentials,
   GithubCredentialsProvider,
   GithubIntegrationConfig,
   ScmIntegrations,
@@ -298,7 +299,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       : await this.getAllOrgs(this.options.gitHubConfig);
 
     for (const org of orgsToProcess) {
-      let credentials;
+      let credentials: GithubCredentials;
       try {
         credentials =
           await this.options.githubCredentialsProvider.getCredentials({
