@@ -1,11 +1,6 @@
 app:
   packages: 'all' # ✨
 
-  routes:
-    bindings:
-      catalog.viewTechDoc: techdocs.docRoot
-      org.catalogIndex: catalog.catalogIndex
-
   pluginOverrides:
     - match:
         pluginId: pages
@@ -21,6 +16,11 @@ app:
         ownerEntityRefs: [cubic-belugas]
 
   extensions:
+    # Route the home page to / so it serves as the landing page
+    - page:home:
+        config:
+          path: /
+
     # set availableLanguages example
     - api:app/app-language:
         config:
@@ -40,52 +40,37 @@ app:
     - nav-item:search: false
     - nav-item:user-settings: false
     - nav-item:catalog
-    - nav-item:api-docs
-    - nav-item:scaffolder
-    - nav-item:app-visualizer
+    - nav-item:scaffolder: false
 
     # Pages
     - page:catalog/entity:
         config:
           showNavItemIcons: true
           groups:
-            # placing a tab at the beginning
             - overview:
                 title: Overview
-            # example disabling a default group
-            # - development: false
-            # example overriding a default group title
             - documentation:
-                title: Docs
+                title: Documentation
                 icon: docs
-            - deployment:
-                title: Deployments
-            # example adding a new group
-            - custom:
-                title: Custom
 
-    # Entity page cards
+    # Entity page cards — maximize information density
+    - entity-card:catalog-graph/relations:
+        config:
+          height: 400
     - entity-card:catalog/about:
         config:
           type: info
-    - entity-card:catalog/labels
+    - entity-card:catalog/labels:
+        config:
+          type: info
     - entity-card:catalog/links:
         config:
           filter:
             kind: component
             metadata.links:
               $exists: true
-          # filter: kind:component has:links
           type: info
-    # - entity-card:linguist/languages
-    - entity-card:catalog-graph/relations:
-        config:
-          height: 300
-    - entity-card:api-docs/has-apis
-    - entity-card:api-docs/consumed-apis
-    - entity-card:api-docs/provided-apis
-    - entity-card:api-docs/providing-components
-    - entity-card:api-docs/consuming-components
+    - entity-card:catalog/readme
     # Org Plugin
     - entity-card:org/group-profile
     - entity-card:org/members-list
@@ -94,34 +79,34 @@ app:
         config:
           maxRelations: 5
           hideIcons: true
-    # - entity-card:azure-devops/readme
+    # Disable empty/irrelevant cards
+    - entity-card:api-docs/has-apis: false
+    - entity-card:api-docs/consumed-apis: false
+    - entity-card:api-docs/provided-apis: false
+    - entity-card:api-docs/providing-components: false
+    - entity-card:api-docs/consuming-components: false
+    - entity-card:catalog/has-components: false
+    - entity-card:catalog/has-resources: false
+    - entity-card:catalog/has-subcomponents: false
 
     # Entity page contents
     - entity-content:catalog/overview:
         config:
           group: overview
-    - entity-content:api-docs/definition
-    - entity-content:api-docs/apis:
-        config:
-          # example associating with a default group
-          group: documentation
-          icon: kind:api
     - entity-content:techdocs:
         config:
           group: documentation
           icon: techdocs
-    - entity-content:kubernetes/kubernetes:
-        config:
-          # example disassociating with a default group
-          group: false
-    # - entity-content:azure-devops/pipelines
-    # - entity-content:azure-devops/pull-requests
-    # - entity-content:azure-devops/git-tags
+    # Disable API and Kubernetes content tabs
+    - entity-content:api-docs/definition: false
+    - entity-content:api-docs/apis: false
+    - entity-content:kubernetes/kubernetes: false
 
-    # Enable the catalog-unprocessed-entities tab in devtools
-    - devtools-content:catalog-unprocessed-entities: true
-    # Disable the catalog-unprocessed-entities element outside devtools
-    - page:catalog-unprocessed-entities: false
+    # Disable irrelevant nav items
+    - nav-item:app-visualizer: false
+    - nav-item:api-docs: false
+    - nav-item:devtools: false
+    - nav-item:catalog-unprocessed-entities: false
 
   # scmAuthExtension: >-
   #   createScmAuthExtension({

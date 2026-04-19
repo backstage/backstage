@@ -16,9 +16,6 @@
 
 import { useEffect, useState } from 'react';
 import { useLocalStorageValue } from '@react-hookz/web';
-import { Button, withStyles } from '@material-ui/core';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import { useShadowRootElements } from '@backstage/plugin-techdocs-react';
 
@@ -26,31 +23,6 @@ const NESTED_LIST_TOGGLE = '.md-nav__item--nested .md-toggle';
 
 const EXPANDABLE_NAVIGATION_LOCAL_STORAGE =
   '@backstage/techdocs-addons/nav-expanded';
-
-const StyledButton = withStyles({
-  root: {
-    position: 'absolute',
-    left: '13.7rem', // Sidebar inner width (15.1em) minus the different margins/paddings
-    top: '19px',
-    zIndex: 2,
-    padding: 0,
-    minWidth: 0,
-  },
-})(Button);
-
-const CollapsedIcon = withStyles({
-  root: {
-    height: '20px',
-    width: '20px',
-  },
-})(ChevronRightIcon);
-
-const ExpandedIcon = withStyles({
-  root: {
-    height: '20px',
-    width: '20px',
-  },
-})(ExpandMoreIcon);
 
 type expandableNavigationLocalStorage = {
   expandAllNestedNavs: boolean;
@@ -114,18 +86,62 @@ export const ExpandableNavigationAddon = () => {
   return (
     <>
       {hasNavSubLevels ? (
-        <StyledButton
-          size="small"
+        <button
+          type="button"
           onClick={handleState}
           onKeyDown={handleButtonKeyDown}
-          tabIndex={0} // Ensuring keyboard focus
-          aria-expanded={expanded?.expandAllNestedNavs} // Accessibility
+          tabIndex={0}
+          aria-expanded={expanded?.expandAllNestedNavs}
           aria-label={
             expanded?.expandAllNestedNavs ? 'collapse-nav' : 'expand-nav'
           }
+          style={{
+            position: 'absolute',
+            left: '13.7rem',
+            top: '19px',
+            zIndex: 2,
+            padding: 0,
+            minWidth: 0,
+            width: '24px',
+            height: '24px',
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            border: 'none',
+            background: 'transparent',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            color: 'var(--muted-foreground, #666)',
+          }}
         >
-          {expanded?.expandAllNestedNavs ? <ExpandedIcon /> : <CollapsedIcon />}
-        </StyledButton>
+          {expanded?.expandAllNestedNavs ? (
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
+          ) : (
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
+          )}
+        </button>
       ) : null}
     </>
   );

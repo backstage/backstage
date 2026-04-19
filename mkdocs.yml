@@ -1,7 +1,24 @@
-site_name: 'blitzy-sandbox-backstage'
-nav:
-  - Home: index.md
-  - Project Guide: project-guide.md
-  - Technical Specifications: technical-specifications.md
+site_name: 'Blitzy Sandbox'
+site_description: 'Developer portal for Blitzy Sandbox — AI-generated codebase demos'
+repo_url: https://github.com/Blitzy-Sandbox/blitzy-sandbox-backstage
+edit_uri: edit/master/docs
+
 plugins:
   - techdocs-core
+  - mermaid2
+
+markdown_extensions:
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:mermaid2.fence_mermaid_custom
+
+nav:
+  - Home: 'index.md'
+  - Getting Started: 'getting-started.md'
+  - Architecture: 'architecture.md'
+  - Project Catalog: 'projects.md'
+  - Adding TechDocs: 'adding-techdocs.md'
+  - Project Guide: 'project-guide.md'
+  - Technical Specifications: 'technical-specifications.md'

@@ -131,12 +131,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
       const title = t('catalogTable.viewActionTitle');
 
       return {
-        icon: () => (
-          <>
-            <span className="sr-only">{title}</span>
-            <ExternalLink className="h-4 w-4" />
-          </>
-        ),
+        icon: () => <ExternalLink />,
         tooltip: title,
         disabled: !url,
         onClick: () => {
@@ -150,12 +145,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
       const title = t('catalogTable.editActionTitle');
 
       return {
-        icon: () => (
-          <>
-            <span className="sr-only">{title}</span>
-            <Pencil className="h-4 w-4" />
-          </>
-        ),
+        icon: () => <Pencil />,
         tooltip: title,
         disabled: !url,
         onClick: () => {
@@ -171,7 +161,6 @@ export const CatalogTable = (props: CatalogTableProps) => {
         : t('catalogTable.starActionTitle');
 
       return {
-        cellStyle: { paddingLeft: '1em' },
         icon: () => <FavoriteToggleIcon isFavorite={isStarred} />,
         tooltip: title,
         onClick: () => toggleStarredEntity(entity),

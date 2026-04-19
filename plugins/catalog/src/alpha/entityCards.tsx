@@ -164,6 +164,19 @@ export const catalogHasSubdomainsEntityCard = EntityCardBlueprint.make({
   },
 });
 
+export const catalogReadmeEntityCard = EntityCardBlueprint.make({
+  name: 'readme',
+  params: {
+    filter: {
+      'metadata.annotations.github.com/project-slug': { $exists: true },
+    },
+    loader: async () =>
+      import('../components/ReadmeCard').then(m => (
+        <m.ReadmeCard variant="gridItem" />
+      )),
+  },
+});
+
 export const catalogHasSystemsEntityCard = EntityCardBlueprint.make({
   name: 'has-systems',
   params: {
@@ -179,8 +192,7 @@ export default [
   catalogAboutEntityCard,
   catalogLinksEntityCard,
   catalogLabelsEntityCard,
-  catalogDependsOnComponentsEntityCard,
-  catalogDependsOnResourcesEntityCard,
+  catalogReadmeEntityCard,
   catalogHasComponentsEntityCard,
   catalogHasResourcesEntityCard,
   catalogHasSubcomponentsEntityCard,

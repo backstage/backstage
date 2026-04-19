@@ -27,7 +27,8 @@ import {
   WelcomeTitle,
 } from '@backstage/plugin-home';
 import { Content, Header, Page } from '@backstage/core-components';
-import { Home } from 'lucide-react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHouse } from '@fortawesome/free-solid-svg-icons';
 
 const clockConfigs: ClockConfig[] = [
   {
@@ -101,7 +102,7 @@ export const homePage = (
               {
                 url: 'https://backstage.io',
                 label: 'Backstage Homepage',
-                icon: <Home />,
+                icon: <FontAwesomeIcon icon={faHouse} />,
               },
             ]}
           />

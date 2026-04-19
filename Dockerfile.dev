@@ -1,0 +1,26 @@
+FROM node:24-trixie-slim AS base
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+      libsqlite3-dev python3 python3-pip python3-venv build-essential curl && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install mkdocs + techdocs-core for local TechDocs generation
+RUN python3 -m venv /opt/techdocs && \
+    /opt/techdocs/bin/pip install --no-cache-dir \
+      mkdocs-techdocs-core mkdocs-mermaid2-plugin && \
+    ln -s /opt/techdocs/bin/mkdocs /usr/local/bin/mkdocs
+
+RUN corepack enable
+
+WORKDIR /app
+
+# Copy the full repo for yarn install (monorepo needs all workspace package.json files)
+COPY . .
+
+# Install with platform-native binaries inside the container
+RUN yarn install
+
+EXPOSE 3000 7007
+
+CMD ["yarn", "start"]

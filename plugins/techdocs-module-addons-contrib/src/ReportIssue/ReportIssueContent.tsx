@@ -15,7 +15,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { makeStyles, Portal, Paper } from '@material-ui/core';
+import { Portal } from '@material-ui/core';
 import { useGitTemplate } from './hooks';
 import {
   PAGE_MAIN_CONTENT_SELECTOR,
@@ -30,16 +30,6 @@ import {
 } from '@backstage/plugin-techdocs-react';
 import { Repository } from './types';
 import { ReportIssueProps } from './ReportIssue';
-
-const useStyles = makeStyles(theme => ({
-  root: {
-    transform: 'translate(-100%, -100%)',
-    position: 'absolute',
-    padding: theme.spacing(1),
-    zIndex: theme.zIndex.tooltip,
-    background: theme.palette.common.white,
-  },
-}));
 
 type Style = {
   top: string;
@@ -56,7 +46,6 @@ export const ReportIssueAddonContent = ({
   templateBuilder,
   repository,
 }: ReportIssueAddonContentProps) => {
-  const classes = useStyles();
   const [style, setStyle] = useState<Style>();
   const defaultTemplate = useGitTemplate(debounceTime);
   const selection = useShadowRootSelection(debounceTime);
@@ -116,10 +105,21 @@ export const ReportIssueAddonContent = ({
 
   return (
     <Portal container={feedbackContainer}>
-      <Paper
+      <div
         data-testid="report-issue-addon"
-        className={classes.root}
-        style={style}
+        style={{
+          transform: 'translate(-100%, -100%)',
+          position: 'absolute',
+          padding: '8px',
+          zIndex: 1500,
+          background: 'var(--popover, #fff)',
+          color: 'var(--popover-foreground, #000)',
+          borderRadius: '8px',
+          border: '1px solid var(--border, #e5e5e5)',
+          boxShadow:
+            '0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1)',
+          ...style,
+        }}
       >
         <IssueLink
           repository={repository}
@@ -127,7 +127,7 @@ export const ReportIssueAddonContent = ({
             templateBuilder ? templateBuilder({ selection }) : defaultTemplate
           }
         />
-      </Paper>
+      </div>
     </Portal>
   );
 };

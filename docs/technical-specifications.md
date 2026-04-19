@@ -68,7 +68,6 @@ These feature requirements translate to the following technical implementation s
 
 - To **trigger dependency-aware revalidation**, we will modify `createAsyncValidators.ts` to detect fields with `dependencies` declarations and re-run validation for dependent fields when their parent values change.
 
-
 ## 0.2 Repository Scope Discovery
 
 ### 0.2.1 Comprehensive File Analysis
@@ -77,36 +76,36 @@ All modifications are scoped exclusively within `plugins/scaffolder-react/`. The
 
 **Existing Files Requiring Modification:**
 
-| File Path | Current Purpose | Required Change |
-|---|---|---|
-| `plugins/scaffolder-react/src/next/lib/schema.ts` | Extracts JSON Schema and UI Schema from template step definitions; handles `ui:*` key separation via `extractUiSchema()` | Add `resolveConditionalSchema(schema, formData)` pure utility; verify `if` keyword preservation through extraction pipeline; ensure `dependencies` schema branches are properly forwarded to RJSF |
-| `plugins/scaffolder-react/src/next/lib/index.ts` | Barrel export for `extractSchemaFromStep` and `createFieldValidation` | Add export for `resolveConditionalSchema` |
-| `plugins/scaffolder-react/src/next/components/Stepper/Stepper.tsx` | Multi-step wizard orchestrator; passes extracted schema to `<Form>` via `currentStep.schema` | Add `useMemo`-based reactive schema resolution that re-resolves schema when `formData` changes within a step; enhance `stepsState` to preserve conditional field values across mount/unmount |
-| `plugins/scaffolder-react/src/next/components/Form/Form.tsx` | Wraps RJSF `withTheme(MuiTheme)` and adapts field/template props | Pass resolved (not raw) schema to RJSF `<WrappedForm>`; integrate `formContext` extensions for `optionsLoader` metadata propagation |
-| `plugins/scaffolder-react/src/next/components/Form/FieldTemplate.tsx` | Custom RJSF FieldTemplate rendering each field row with `ScaffolderField` wrapper | Add loading indicator and inline error state rendering for fields with pending `optionsLoader`; detect `ui:options.loading` and `ui:options.loadError` states |
-| `plugins/scaffolder-react/src/extensions/types.ts` | Defines `FieldExtensionOptions`, `FieldExtensionComponentProps`, `CustomFieldValidator`, and related types | Add optional `dependencies?: string[]` and `optionsLoader?` to `FieldExtensionOptions` type |
-| `plugins/scaffolder-react/src/extensions/createScaffolderFieldExtension.tsx` | Runtime factory that attaches field extension metadata to placeholder components | Forward new `dependencies` and `optionsLoader` metadata through `FIELD_EXTENSION_KEY` attachment |
-| `plugins/scaffolder-react/src/next/components/Stepper/createAsyncValidators.ts` | Recursive async validation engine that traverses schema to invoke field validators | Add dependency-triggered revalidation logic; when a parent field changes, re-run validation for fields that declare it as a dependency |
-| `plugins/scaffolder-react/src/next/hooks/useTemplateSchema.ts` | Parses template manifest into `ParsedTemplateSchema[]` with feature flag filtering | Verify that conditional schema keywords (`if/then/else`, `dependencies`) survive the extraction and filtering pipeline without loss |
-| `plugins/scaffolder-react/src/next/components/ScaffolderField/ScaffolderField.tsx` | Accessible field shell with markdown descriptions, errors, and disabled state | Add optional `isLoading` prop to render loading indicator within the field shell |
+| File Path                                                                          | Current Purpose                                                                                                          | Required Change                                                                                                                                                                                   |
+| ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `plugins/scaffolder-react/src/next/lib/schema.ts`                                  | Extracts JSON Schema and UI Schema from template step definitions; handles `ui:*` key separation via `extractUiSchema()` | Add `resolveConditionalSchema(schema, formData)` pure utility; verify `if` keyword preservation through extraction pipeline; ensure `dependencies` schema branches are properly forwarded to RJSF |
+| `plugins/scaffolder-react/src/next/lib/index.ts`                                   | Barrel export for `extractSchemaFromStep` and `createFieldValidation`                                                    | Add export for `resolveConditionalSchema`                                                                                                                                                         |
+| `plugins/scaffolder-react/src/next/components/Stepper/Stepper.tsx`                 | Multi-step wizard orchestrator; passes extracted schema to `<Form>` via `currentStep.schema`                             | Add `useMemo`-based reactive schema resolution that re-resolves schema when `formData` changes within a step; enhance `stepsState` to preserve conditional field values across mount/unmount      |
+| `plugins/scaffolder-react/src/next/components/Form/Form.tsx`                       | Wraps RJSF `withTheme(MuiTheme)` and adapts field/template props                                                         | Pass resolved (not raw) schema to RJSF `<WrappedForm>`; integrate `formContext` extensions for `optionsLoader` metadata propagation                                                               |
+| `plugins/scaffolder-react/src/next/components/Form/FieldTemplate.tsx`              | Custom RJSF FieldTemplate rendering each field row with `ScaffolderField` wrapper                                        | Add loading indicator and inline error state rendering for fields with pending `optionsLoader`; detect `ui:options.loading` and `ui:options.loadError` states                                     |
+| `plugins/scaffolder-react/src/extensions/types.ts`                                 | Defines `FieldExtensionOptions`, `FieldExtensionComponentProps`, `CustomFieldValidator`, and related types               | Add optional `dependencies?: string[]` and `optionsLoader?` to `FieldExtensionOptions` type                                                                                                       |
+| `plugins/scaffolder-react/src/extensions/createScaffolderFieldExtension.tsx`       | Runtime factory that attaches field extension metadata to placeholder components                                         | Forward new `dependencies` and `optionsLoader` metadata through `FIELD_EXTENSION_KEY` attachment                                                                                                  |
+| `plugins/scaffolder-react/src/next/components/Stepper/createAsyncValidators.ts`    | Recursive async validation engine that traverses schema to invoke field validators                                       | Add dependency-triggered revalidation logic; when a parent field changes, re-run validation for fields that declare it as a dependency                                                            |
+| `plugins/scaffolder-react/src/next/hooks/useTemplateSchema.ts`                     | Parses template manifest into `ParsedTemplateSchema[]` with feature flag filtering                                       | Verify that conditional schema keywords (`if/then/else`, `dependencies`) survive the extraction and filtering pipeline without loss                                                               |
+| `plugins/scaffolder-react/src/next/components/ScaffolderField/ScaffolderField.tsx` | Accessible field shell with markdown descriptions, errors, and disabled state                                            | Add optional `isLoading` prop to render loading indicator within the field shell                                                                                                                  |
 
 **Existing Test Files Requiring Updates:**
 
-| File Path | Current Coverage | Required Change |
-|---|---|---|
-| `plugins/scaffolder-react/src/next/lib/schema.test.ts` | Tests `extractSchemaFromStep` for properties, anyOf/oneOf/allOf, dependencies, if/then/else UI extraction | Add tests for `resolveConditionalSchema()`: simple if/then/else, nested conditions, property dependencies, schema dependencies, oneOf discrimination |
-| `plugins/scaffolder-react/src/next/components/Stepper/Stepper.test.tsx` | 842-line integration suite covering step rendering, navigation, state preservation, async validation | Add integration tests for reactive conditional field visibility; test form value preservation across conditional mount/unmount; test cascading dropdown behavior |
-| `plugins/scaffolder-react/src/next/components/Stepper/createAsyncValidators.test.ts` | Tests nested object dispatch, schema propagation, error aggregation, dependency branches | Add tests for dependency-triggered revalidation; test that parent field changes cause dependent field revalidation |
-| `plugins/scaffolder-react/src/next/hooks/useTemplateSchema.test.tsx` | Tests feature flag filtering at step and property level | Add tests verifying if/then/else and dependencies keywords survive schema parsing |
+| File Path                                                                            | Current Coverage                                                                                          | Required Change                                                                                                                                                  |
+| ------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `plugins/scaffolder-react/src/next/lib/schema.test.ts`                               | Tests `extractSchemaFromStep` for properties, anyOf/oneOf/allOf, dependencies, if/then/else UI extraction | Add tests for `resolveConditionalSchema()`: simple if/then/else, nested conditions, property dependencies, schema dependencies, oneOf discrimination             |
+| `plugins/scaffolder-react/src/next/components/Stepper/Stepper.test.tsx`              | 842-line integration suite covering step rendering, navigation, state preservation, async validation      | Add integration tests for reactive conditional field visibility; test form value preservation across conditional mount/unmount; test cascading dropdown behavior |
+| `plugins/scaffolder-react/src/next/components/Stepper/createAsyncValidators.test.ts` | Tests nested object dispatch, schema propagation, error aggregation, dependency branches                  | Add tests for dependency-triggered revalidation; test that parent field changes cause dependent field revalidation                                               |
+| `plugins/scaffolder-react/src/next/hooks/useTemplateSchema.test.tsx`                 | Tests feature flag filtering at step and property level                                                   | Add tests verifying if/then/else and dependencies keywords survive schema parsing                                                                                |
 
 **Configuration and Documentation Files:**
 
-| File Path | Required Change |
-|---|---|
-| `plugins/scaffolder-react/package.json` | No dependency changes required (all needed libraries already present); verify version compatibility |
-| `plugins/scaffolder-react/report.api.md` | Will be auto-regenerated by `yarn build:api-reports` if public API surface changes |
+| File Path                                      | Required Change                                                                                                       |
+| ---------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `plugins/scaffolder-react/package.json`        | No dependency changes required (all needed libraries already present); verify version compatibility                   |
+| `plugins/scaffolder-react/report.api.md`       | Will be auto-regenerated by `yarn build:api-reports` if public API surface changes                                    |
 | `plugins/scaffolder-react/report-alpha.api.md` | Will be auto-regenerated; new alpha exports (`resolveConditionalSchema`, updated `FieldExtensionOptions`) will appear |
-| `plugins/scaffolder-react/README.md` | Add documentation section for cascading/dynamic forms feature |
+| `plugins/scaffolder-react/README.md`           | Add documentation section for cascading/dynamic forms feature                                                         |
 
 ### 0.2.2 Integration Point Discovery
 
@@ -151,18 +150,18 @@ flowchart TD
 
 **New source files to create:**
 
-| File Path | Purpose |
-|---|---|
-| `plugins/scaffolder-react/src/next/hooks/useOptionsLoader.ts` | Custom React hook that manages `optionsLoader` lifecycle: watches specified dependency fields, debounces calls (300ms default, configurable), manages loading/error/data state, and exposes results to field components |
-| `plugins/scaffolder-react/src/next/hooks/useOptionsLoader.test.ts` | Unit tests for the `useOptionsLoader` hook covering debounce behavior, loading states, error handling, retry logic, and dependency change detection |
-| `plugins/scaffolder-react/src/next/hooks/useConditionalSchema.ts` | Custom React hook wrapping `resolveConditionalSchema()` with `useMemo` to reactively resolve schema when formData changes |
+| File Path                                                          | Purpose                                                                                                                                                                                                                 |
+| ------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `plugins/scaffolder-react/src/next/hooks/useOptionsLoader.ts`      | Custom React hook that manages `optionsLoader` lifecycle: watches specified dependency fields, debounces calls (300ms default, configurable), manages loading/error/data state, and exposes results to field components |
+| `plugins/scaffolder-react/src/next/hooks/useOptionsLoader.test.ts` | Unit tests for the `useOptionsLoader` hook covering debounce behavior, loading states, error handling, retry logic, and dependency change detection                                                                     |
+| `plugins/scaffolder-react/src/next/hooks/useConditionalSchema.ts`  | Custom React hook wrapping `resolveConditionalSchema()` with `useMemo` to reactively resolve schema when formData changes                                                                                               |
 
 **New test fixtures:**
 
-| File Path | Purpose |
-|---|---|
-| Test cases within `schema.test.ts` | New `describe('resolveConditionalSchema')` block with fixtures for if/then/else resolution, nested conditions, property and schema dependencies, oneOf discrimination |
-| Test cases within `Stepper.test.tsx` | New integration tests for cascading field behavior, value preservation across mount/unmount, and async option loading UI states |
+| File Path                            | Purpose                                                                                                                                                               |
+| ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Test cases within `schema.test.ts`   | New `describe('resolveConditionalSchema')` block with fixtures for if/then/else resolution, nested conditions, property and schema dependencies, oneOf discrimination |
+| Test cases within `Stepper.test.tsx` | New integration tests for cascading field behavior, value preservation across mount/unmount, and async option loading UI states                                       |
 
 ### 0.2.4 Web Search Research Conducted
 
@@ -170,7 +169,6 @@ flowchart TD
 - Best practices for debounced async data fetching in React hooks with AbortController cleanup
 - JSON Schema Draft 07 conditional keyword semantics and evaluation order
 - RJSF custom field extension patterns for dynamic option loading
-
 
 ## 0.3 Dependency Inventory
 
@@ -180,53 +178,53 @@ All packages listed below are already installed in the `plugins/scaffolder-react
 
 **Core Form Rendering Packages:**
 
-| Registry | Package Name | Version | Purpose | Status |
-|---|---|---|---|---|
-| npm | `@rjsf/core` | 5.24.13 | React JSON Schema Form engine; provides `withTheme()`, `Form` component, and conditional schema evaluation | Installed |
-| npm | `@rjsf/utils` | 5.24.13 | RJSF type definitions (`FieldTemplateProps`, `UiSchema`, `ErrorSchema`, `FieldValidation`, `RegistryFieldsType`) | Installed |
-| npm | `@rjsf/validator-ajv8` | 5.24.13 | AJV8-based validator for RJSF; provides `customizeValidator()` used in Stepper.tsx | Installed |
-| npm | `@rjsf/material-ui` | 5.24.13 | MUI v4 theme for RJSF; provides `Theme` used in `withTheme(MuiTheme)` in Form.tsx | Installed |
-| npm | `ajv` | ^8.0.1 | JSON Schema validator; supports Draft 07 including `if/then/else` and `dependencies` | Installed |
-| npm | `ajv-errors` | ^3.0.0 | Custom error messages for AJV validation; used in Stepper.tsx | Installed |
-| npm | `json-schema-library` | ^9.0.0 | Schema traversal and resolution; provides `Draft07` class used in `createAsyncValidators.ts` for pointer-based schema lookup | Installed |
+| Registry | Package Name           | Version | Purpose                                                                                                                      | Status    |
+| -------- | ---------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------- | --------- |
+| npm      | `@rjsf/core`           | 5.24.13 | React JSON Schema Form engine; provides `withTheme()`, `Form` component, and conditional schema evaluation                   | Installed |
+| npm      | `@rjsf/utils`          | 5.24.13 | RJSF type definitions (`FieldTemplateProps`, `UiSchema`, `ErrorSchema`, `FieldValidation`, `RegistryFieldsType`)             | Installed |
+| npm      | `@rjsf/validator-ajv8` | 5.24.13 | AJV8-based validator for RJSF; provides `customizeValidator()` used in Stepper.tsx                                           | Installed |
+| npm      | `@rjsf/material-ui`    | 5.24.13 | MUI v4 theme for RJSF; provides `Theme` used in `withTheme(MuiTheme)` in Form.tsx                                            | Installed |
+| npm      | `ajv`                  | ^8.0.1  | JSON Schema validator; supports Draft 07 including `if/then/else` and `dependencies`                                         | Installed |
+| npm      | `ajv-errors`           | ^3.0.0  | Custom error messages for AJV validation; used in Stepper.tsx                                                                | Installed |
+| npm      | `json-schema-library`  | ^9.0.0  | Schema traversal and resolution; provides `Draft07` class used in `createAsyncValidators.ts` for pointer-based schema lookup | Installed |
 
 **Backstage Platform Packages:**
 
-| Registry | Package Name | Version | Purpose | Status |
-|---|---|---|---|---|
-| workspace | `@backstage/core-plugin-api` | workspace:^ | Provides `useApiHolder()`, `useAnalytics()`, `ApiHolder` type | Installed |
-| workspace | `@backstage/frontend-plugin-api` | workspace:^ | Provides `useTranslationRef()` for i18n | Installed |
-| workspace | `@backstage/core-components` | workspace:^ | UI primitives: `MarkdownContent`, `Progress` (loading indicator), `AlertDisplay`, `WarningPanel` | Installed |
-| workspace | `@backstage/types` | workspace:^ | Provides `JsonObject`, `JsonValue` types | Installed |
-| workspace | `@backstage/plugin-scaffolder-common` | workspace:^ | Provides `TemplateParameterSchema`, `TemplatePresentationV1beta3` | Installed |
-| workspace | `@backstage/theme` | workspace:^ | Theme integration for component style overrides | Installed |
+| Registry  | Package Name                          | Version     | Purpose                                                                                          | Status    |
+| --------- | ------------------------------------- | ----------- | ------------------------------------------------------------------------------------------------ | --------- |
+| workspace | `@backstage/core-plugin-api`          | workspace:^ | Provides `useApiHolder()`, `useAnalytics()`, `ApiHolder` type                                    | Installed |
+| workspace | `@backstage/frontend-plugin-api`      | workspace:^ | Provides `useTranslationRef()` for i18n                                                          | Installed |
+| workspace | `@backstage/core-components`          | workspace:^ | UI primitives: `MarkdownContent`, `Progress` (loading indicator), `AlertDisplay`, `WarningPanel` | Installed |
+| workspace | `@backstage/types`                    | workspace:^ | Provides `JsonObject`, `JsonValue` types                                                         | Installed |
+| workspace | `@backstage/plugin-scaffolder-common` | workspace:^ | Provides `TemplateParameterSchema`, `TemplatePresentationV1beta3`                                | Installed |
+| workspace | `@backstage/theme`                    | workspace:^ | Theme integration for component style overrides                                                  | Installed |
 
 **UI Framework Packages (already used in scaffolder-react):**
 
-| Registry | Package Name | Version | Purpose | Status |
-|---|---|---|---|---|
-| npm | `@material-ui/core` | ^4.12.2 | MUI v4 components: `Button`, `LinearProgress`, `Step`, `StepLabel`, `Stepper`, `FormControl`, `FormHelperText` | Installed |
-| npm | `@material-ui/icons` | ^4.9.1 | Material Design icons | Installed |
-| npm | `@material-ui/lab` | 4.0.0-alpha.61 | Experimental MUI v4 components (e.g., `Skeleton`) | Installed |
+| Registry | Package Name         | Version        | Purpose                                                                                                        | Status    |
+| -------- | -------------------- | -------------- | -------------------------------------------------------------------------------------------------------------- | --------- |
+| npm      | `@material-ui/core`  | ^4.12.2        | MUI v4 components: `Button`, `LinearProgress`, `Step`, `StepLabel`, `Stepper`, `FormControl`, `FormHelperText` | Installed |
+| npm      | `@material-ui/icons` | ^4.9.1         | Material Design icons                                                                                          | Installed |
+| npm      | `@material-ui/lab`   | 4.0.0-alpha.61 | Experimental MUI v4 components (e.g., `Skeleton`)                                                              | Installed |
 
 **Utility Packages:**
 
-| Registry | Package Name | Version | Purpose | Status |
-|---|---|---|---|---|
-| npm | `flatted` | 3.3.3 | Cyclic-safe JSON clone via `stringify`/`parse`; used in `extractSchemaFromStep()` | Installed |
-| npm | `lodash` | ^4.17.21 | `merge()` used for uiSchema merging in Stepper.tsx | Installed |
-| npm | `react-use` | ^17.2.4 | Composable React hooks (e.g., `useDebounce`) | Installed |
-| npm | `immer` | ^9.0.6 | Immutable state management | Installed |
-| npm | `use-immer` | ^0.11.0 | Immer-powered React state hooks | Installed |
+| Registry | Package Name | Version  | Purpose                                                                           | Status    |
+| -------- | ------------ | -------- | --------------------------------------------------------------------------------- | --------- |
+| npm      | `flatted`    | 3.3.3    | Cyclic-safe JSON clone via `stringify`/`parse`; used in `extractSchemaFromStep()` | Installed |
+| npm      | `lodash`     | ^4.17.21 | `merge()` used for uiSchema merging in Stepper.tsx                                | Installed |
+| npm      | `react-use`  | ^17.2.4  | Composable React hooks (e.g., `useDebounce`)                                      | Installed |
+| npm      | `immer`      | ^9.0.6   | Immutable state management                                                        | Installed |
+| npm      | `use-immer`  | ^0.11.0  | Immer-powered React state hooks                                                   | Installed |
 
 **Testing Packages (devDependencies):**
 
-| Registry | Package Name | Version | Purpose | Status |
-|---|---|---|---|---|
-| npm | `@testing-library/react` | ^16.0.0 | React component testing utilities | Installed |
-| npm | `@testing-library/jest-dom` | ^6.0.0 | Custom Jest matchers for DOM assertions | Installed |
-| npm | `@testing-library/user-event` | ^14.0.0 | User interaction simulation | Installed |
-| workspace | `@backstage/test-utils` | workspace:^ | Provides `renderInTestApp`, `mockApis`, `TestApiRegistry` | Installed |
+| Registry  | Package Name                  | Version     | Purpose                                                   | Status    |
+| --------- | ----------------------------- | ----------- | --------------------------------------------------------- | --------- |
+| npm       | `@testing-library/react`      | ^16.0.0     | React component testing utilities                         | Installed |
+| npm       | `@testing-library/jest-dom`   | ^6.0.0      | Custom Jest matchers for DOM assertions                   | Installed |
+| npm       | `@testing-library/user-event` | ^14.0.0     | User interaction simulation                               | Installed |
+| workspace | `@backstage/test-utils`       | workspace:^ | Provides `renderInTestApp`, `mockApis`, `TestApiRegistry` | Installed |
 
 ### 0.3.2 Dependency Updates
 
@@ -248,7 +246,6 @@ Files requiring new internal imports (within `plugins/scaffolder-react/`):
 - `plugins/scaffolder-react/report.api.md` — Auto-regenerated via `yarn build:api-reports`; will reflect updated `FieldExtensionOptions` type with new optional fields
 - `plugins/scaffolder-react/report-alpha.api.md` — Auto-regenerated; will reflect new `resolveConditionalSchema` export and updated alpha API surface
 
-
 ## 0.4 Integration Analysis
 
 ### 0.4.1 Existing Code Touchpoints
@@ -264,10 +261,12 @@ Files requiring new internal imports (within `plugins/scaffolder-react/`):
 - **`plugins/scaffolder-react/src/next/components/Form/FieldTemplate.tsx`** (lines 32–100): The custom `FieldTemplate` renders every field via `ScaffolderField`. The modification adds detection of loading/error states from `formContext` for fields with active `optionsLoader` calls. When a field is in loading state, the template renders a `LinearProgress` indicator below the field children. When in error state, it renders an inline error message with retry affordance.
 
 - **`plugins/scaffolder-react/src/extensions/types.ts`** (lines 77–87): The `FieldExtensionOptions` type gains two new optional properties:
+
   ```ts
   dependencies?: string[];
   optionsLoader?: (formData: JsonObject, context: { apiHolder: ApiHolder }) => Promise<Array<{ label: string; value: string | number }>>;
   ```
+
   Both default to `undefined`, preserving full backward compatibility.
 
 - **`plugins/scaffolder-react/src/extensions/createScaffolderFieldExtension.tsx`** (lines 33–52): The `createScaffolderFieldExtension` factory attaches the full `options` object (including the new `dependencies` and `optionsLoader` fields) to the placeholder component via `attachComponentData`. Since the entire `options` object is already passed as the metadata value (line 43–46), no structural change to the attachment mechanism is needed — the type expansion in `types.ts` automatically flows through.
@@ -333,7 +332,6 @@ sequenceDiagram
     end
 ```
 
-
 ## 0.5 Design System Compliance
 
 ### 0.5.1 System Identification
@@ -344,13 +342,13 @@ The scaffolder-react plugin operates within a **dual design system** environment
 - **Secondary (Platform-wide Legacy):** `@backstage/core-components` — provides `MarkdownContent`, `Progress`, `AlertDisplay`, `WarningPanel`, and other higher-level Backstage primitives
 - **Emerging (Not yet adopted by Scaffolder):** Backstage UI (`@backstage/ui` / `packages/ui/`) — the new BUI design system with `Skeleton`, `Alert`, and token-driven components
 
-| Attribute | Value |
-|---|---|
-| Library | `@material-ui/core` (MUI v4) + `@backstage/core-components` |
-| Version | ^4.12.2 (MUI v4), workspace:^ (core-components) |
-| Status | Installed and actively used |
-| Package | `@material-ui/core`, `@backstage/core-components` |
-| Source | `plugins/scaffolder-react/package.json` dependencies |
+| Attribute | Value                                                       |
+| --------- | ----------------------------------------------------------- |
+| Library   | `@material-ui/core` (MUI v4) + `@backstage/core-components` |
+| Version   | ^4.12.2 (MUI v4), workspace:^ (core-components)             |
+| Status    | Installed and actively used                                 |
+| Package   | `@material-ui/core`, `@backstage/core-components`           |
+| Source    | `plugins/scaffolder-react/package.json` dependencies        |
 
 Per the user's Rule #6: "Loading indicators and error states MUST use existing `@backstage/core-components` primitives (Skeleton, Alert, etc.) — no new UI libraries." The implementation will use MUI v4 and `@backstage/core-components` primitives that are already imported throughout the scaffolder plugin.
 
@@ -358,17 +356,17 @@ Per the user's Rule #6: "Loading indicators and error states MUST use existing `
 
 The following table maps each new UI element required by the cascading forms feature to an existing library component already in use within `plugins/scaffolder-react/`:
 
-| UI Element | Library Component | Import Source | Props / Variant | Notes |
-|---|---|---|---|---|
-| Loading indicator (field-level) | `LinearProgress` | `@material-ui/core/LinearProgress` | `variant="indeterminate"` | Already imported in `Stepper.tsx` line 27; reuse for field-level loading |
-| Loading indicator (global) | `LinearProgress` | `@material-ui/core/LinearProgress` | `variant="indeterminate"` | Already rendered at `Stepper.tsx` line 245 during validation |
-| Field error message | `FormHelperText` | `@material-ui/core/FormHelperText` | `error={true}` | Already used in `PasswordWidget.tsx` line 19 |
-| Field container | `FormControl` | `@material-ui/core/FormControl` | `fullWidth`, `error`, `disabled` | Already used in `ScaffolderField.tsx` line 69 |
-| Field description | `MarkdownContent` | `@backstage/core-components` | `content`, `linkTarget="_blank"` | Already used in `ScaffolderField.tsx` line 77 |
-| Retry button | `Button` | `@material-ui/core/Button` | `variant="text"`, `size="small"` | Already imported in `Stepper.tsx` line 26 |
-| Error icon | `ErrorIcon` | `@material-ui/icons/Error` | — | Already used in `ErrorListTemplate/errorListTemplate.tsx` line 23 |
-| Field shell wrapper | `ScaffolderField` | `../ScaffolderField` | `displayLabel`, `rawErrors`, `errors`, `help`, `disabled` | Custom Backstage component; primary field wrapper in `FieldTemplate.tsx` |
-| Styled container | `makeStyles` | `@material-ui/core/styles` | Theme-aware CSS-in-JS | Used in `ScaffolderField.tsx` line 22, `Stepper.tsx` line 69 |
+| UI Element                      | Library Component | Import Source                      | Props / Variant                                           | Notes                                                                    |
+| ------------------------------- | ----------------- | ---------------------------------- | --------------------------------------------------------- | ------------------------------------------------------------------------ |
+| Loading indicator (field-level) | `LinearProgress`  | `@material-ui/core/LinearProgress` | `variant="indeterminate"`                                 | Already imported in `Stepper.tsx` line 27; reuse for field-level loading |
+| Loading indicator (global)      | `LinearProgress`  | `@material-ui/core/LinearProgress` | `variant="indeterminate"`                                 | Already rendered at `Stepper.tsx` line 245 during validation             |
+| Field error message             | `FormHelperText`  | `@material-ui/core/FormHelperText` | `error={true}`                                            | Already used in `PasswordWidget.tsx` line 19                             |
+| Field container                 | `FormControl`     | `@material-ui/core/FormControl`    | `fullWidth`, `error`, `disabled`                          | Already used in `ScaffolderField.tsx` line 69                            |
+| Field description               | `MarkdownContent` | `@backstage/core-components`       | `content`, `linkTarget="_blank"`                          | Already used in `ScaffolderField.tsx` line 77                            |
+| Retry button                    | `Button`          | `@material-ui/core/Button`         | `variant="text"`, `size="small"`                          | Already imported in `Stepper.tsx` line 26                                |
+| Error icon                      | `ErrorIcon`       | `@material-ui/icons/Error`         | —                                                         | Already used in `ErrorListTemplate/errorListTemplate.tsx` line 23        |
+| Field shell wrapper             | `ScaffolderField` | `../ScaffolderField`               | `displayLabel`, `rawErrors`, `errors`, `help`, `disabled` | Custom Backstage component; primary field wrapper in `FieldTemplate.tsx` |
+| Styled container                | `makeStyles`      | `@material-ui/core/styles`         | Theme-aware CSS-in-JS                                     | Used in `ScaffolderField.tsx` line 22, `Stepper.tsx` line 69             |
 
 ### 0.5.3 Compliance Principles
 
@@ -389,16 +387,15 @@ The following table maps each new UI element required by the cascading forms fea
 
 ### 0.5.4 Gaps Inventory
 
-| Gap | Description | Resolution |
-|---|---|---|
-| Skeleton placeholder for async-loading select fields | No Skeleton component is currently imported in scaffolder-react | Use `LinearProgress` with `variant="indeterminate"` inside the field container, matching the existing loading pattern in `Stepper.tsx` line 245. This maintains consistency without adding new component imports. Alternatively, import `Skeleton` from `@material-ui/lab` (already a dependency at `4.0.0-alpha.61`) |
-| Inline retry button for optionsLoader failures | No retry button pattern exists in current scaffolder | Compose `Button` (variant="text", size="small") with `FormHelperText` (error=true) in a horizontal layout using `makeStyles`. This follows the existing button styling in `Stepper.tsx` |
-| Disabled field state during loading | `ScaffolderField` already supports `disabled` prop but no `isLoading` prop | Extend `ScaffolderFieldProps` with optional `isLoading?: boolean` and apply `disabled` + `aria-busy="true"` when loading is active |
+| Gap                                                  | Description                                                                | Resolution                                                                                                                                                                                                                                                                                                            |
+| ---------------------------------------------------- | -------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Skeleton placeholder for async-loading select fields | No Skeleton component is currently imported in scaffolder-react            | Use `LinearProgress` with `variant="indeterminate"` inside the field container, matching the existing loading pattern in `Stepper.tsx` line 245. This maintains consistency without adding new component imports. Alternatively, import `Skeleton` from `@material-ui/lab` (already a dependency at `4.0.0-alpha.61`) |
+| Inline retry button for optionsLoader failures       | No retry button pattern exists in current scaffolder                       | Compose `Button` (variant="text", size="small") with `FormHelperText` (error=true) in a horizontal layout using `makeStyles`. This follows the existing button styling in `Stepper.tsx`                                                                                                                               |
+| Disabled field state during loading                  | `ScaffolderField` already supports `disabled` prop but no `isLoading` prop | Extend `ScaffolderFieldProps` with optional `isLoading?: boolean` and apply `disabled` + `aria-busy="true"` when loading is active                                                                                                                                                                                    |
 
 ### 0.5.5 Compliance Summary
 
 All UI elements required for the cascading forms feature are covered by existing MUI v4 components and `@backstage/core-components` primitives that are already dependencies of `plugins/scaffolder-react`. The loading indicator (`LinearProgress`), error messages (`FormHelperText`), field containers (`FormControl`), and action buttons (`Button`) are all imported and used in the current codebase. No new UI framework dependencies need to be added. Three minor gaps exist (Skeleton placeholder, retry pattern, loading prop) that are resolved through composition of existing primitives, maintaining zero new dependency overhead.
-
 
 ## 0.6 Technical Implementation
 
@@ -409,6 +406,7 @@ Every file listed below MUST be created or modified. Files are grouped by functi
 **Group 1 — Core Schema Resolution (Foundation):**
 
 - **MODIFY: `plugins/scaffolder-react/src/next/lib/schema.ts`**
+
   - Verify that `extractUiSchema()` preserves the `if` keyword in the returned schema (currently not destructured, which is correct — confirm no side effects remove it)
   - Add new exported function `resolveConditionalSchema(schema: JsonObject, formData: JsonObject): JsonObject` that evaluates `if/then/else` conditions against current formData and returns a merged schema reflecting active branches
   - The resolution function MUST be pure and synchronous with no side effects
@@ -420,6 +418,7 @@ Every file listed below MUST be created or modified. Files are grouped by functi
 **Group 2 — Type System Extensions (API Surface):**
 
 - **MODIFY: `plugins/scaffolder-react/src/extensions/types.ts`**
+
   - Extend `FieldExtensionOptions` with two new optional fields:
     ```ts
     dependencies?: string[];
@@ -437,6 +436,7 @@ Every file listed below MUST be created or modified. Files are grouped by functi
 **Group 3 — Reactive Hooks (Behavioral Infrastructure):**
 
 - **CREATE: `plugins/scaffolder-react/src/next/hooks/useOptionsLoader.ts`**
+
   - Implement hook signature: `useOptionsLoader(fieldName: string, dependencies: string[], optionsLoader: OptionsLoaderFn, formData: JsonObject, apiHolder: ApiHolder)`
   - Track watched field values using `useRef` for previous value comparison
   - Implement 300ms debounce (configurable via `debounceMs` parameter) using `setTimeout`/`clearTimeout`
@@ -445,6 +445,7 @@ Every file listed below MUST be created or modified. Files are grouped by functi
   - Provide `retry()` function in return value for error recovery
 
 - **CREATE: `plugins/scaffolder-react/src/next/hooks/useOptionsLoader.test.ts`**
+
   - Test debounce: rapid parent changes produce only one loader call after 300ms
   - Test loading state: `loading=true` while fetch is pending
   - Test error handling: rejected loader sets `error` and `loading=false`
@@ -458,6 +459,7 @@ Every file listed below MUST be created or modified. Files are grouped by functi
 **Group 4 — Stepper Integration (Orchestration):**
 
 - **MODIFY: `plugins/scaffolder-react/src/next/components/Stepper/Stepper.tsx`**
+
   - Add `useMemo` after `currentStep` computation (line 173) that calls `resolveConditionalSchema(currentStep.schema, stepsState)` to produce a resolved schema
   - Pass resolved schema to `<Form>` instead of `currentStep.schema` at line 281
   - Extend `formContext` (line 280) to include `optionsLoaderRegistry` built from extensions that declare `dependencies` and `optionsLoader`
@@ -473,10 +475,12 @@ Every file listed below MUST be created or modified. Files are grouped by functi
 **Group 5 — Form Rendering (UI Layer):**
 
 - **MODIFY: `plugins/scaffolder-react/src/next/components/Form/Form.tsx`**
+
   - Pass `formContext` through to `WrappedForm` (already happens via `{...props}` spread at line 66)
   - Verify that the `wrappedFields` memo (lines 34–53) correctly forwards `formContext` to wrapped field components so they can access `optionsLoaderRegistry`
 
 - **MODIFY: `plugins/scaffolder-react/src/next/components/Form/FieldTemplate.tsx`**
+
   - Access `formContext` from RJSF `registry` to check for active loading/error states on the current field
   - When `formContext.fieldLoadingStates[fieldId]?.loading === true`: render `LinearProgress` inside `ScaffolderField`, set `aria-busy="true"` on the field container
   - When `formContext.fieldLoadingStates[fieldId]?.error !== null`: render inline `FormHelperText` with error message and retry `Button`
@@ -489,6 +493,7 @@ Every file listed below MUST be created or modified. Files are grouped by functi
 **Group 6 — Tests and Documentation:**
 
 - **MODIFY: `plugins/scaffolder-react/src/next/lib/schema.test.ts`**
+
   - Add `describe('resolveConditionalSchema')` test block with cases for:
     - Simple if/then/else with single boolean condition
     - Nested if/then/else with multiple conditions
@@ -498,15 +503,18 @@ Every file listed below MUST be created or modified. Files are grouped by functi
     - Schema with no conditionals (passthrough behavior)
 
 - **MODIFY: `plugins/scaffolder-react/src/next/components/Stepper/Stepper.test.tsx`**
+
   - Add integration test: render Stepper with `if/then/else` schema; toggle parent field; assert dependent field mounts/unmounts
   - Add integration test: fill conditional field, toggle parent away and back; assert value is preserved
   - Add integration test: render with `optionsLoader` extension; change parent; assert loading state appears; assert options update
 
 - **MODIFY: `plugins/scaffolder-react/src/next/components/Stepper/createAsyncValidators.test.ts`**
+
   - Add test: dependency-triggered revalidation when parent field changes
   - Add test: no redundant revalidation when unrelated field changes
 
 - **MODIFY: `plugins/scaffolder-react/src/next/hooks/useTemplateSchema.test.tsx`**
+
   - Add test: verify if/then/else keywords survive `useTemplateSchema()` parsing pipeline
 
 - **MODIFY: `plugins/scaffolder-react/README.md`**
@@ -530,25 +538,28 @@ For files that reference observability requirements (per project rules), structu
 The cascading forms feature introduces three new visual states for dependent fields:
 
 **Loading State:**
+
 - A `LinearProgress` bar (indeterminate variant) renders below the field input area
 - The field input is set to `disabled` with `aria-busy="true"`
 - Appears within 100ms of parent field change (debounce fires at 300ms, but the loading indicator appears immediately when the debounce is scheduled)
 
 **Error State:**
+
 - An inline `FormHelperText` with `error={true}` displays the error message below the field
 - A "Retry" `Button` (text variant, small size) is rendered alongside the error message
 - The field remains interactive so users can manually enter values if the loader fails
 
 **Conditional Mount/Unmount:**
+
 - Fields governed by `if/then/else` appear and disappear based on parent field values
 - No animation or transition is applied (matches existing RJSF behavior for consistency)
 - Previously entered values are restored when a field remounts (verified by the `stepsState` accumulation pattern)
 
 **No changes to existing visual elements:**
+
 - The multi-step wizard navigation (MUI Stepper) remains unchanged
 - The Review step rendering remains unchanged
 - All existing field extension components render identically to their current behavior
-
 
 ## 0.7 Scope Boundaries
 
@@ -629,7 +640,6 @@ The cascading forms feature introduces three new visual states for dependent fie
 - **Backend API changes** — No new backend endpoints, no server-side schema manipulation
 - **Cross-plugin API changes** — `@backstage/plugin-scaffolder-common` types remain unchanged
 
-
 ## 0.8 Rules for Feature Addition
 
 ### 0.8.1 User-Specified Rules
@@ -662,18 +672,23 @@ Loading indicators and error states MUST use existing `@backstage/core-component
 The following rules derive from the project's global implementation rules and apply to this feature:
 
 **Observability:**
+
 - Ship observability with the initial implementation. The `useOptionsLoader` hook MUST include structured logging for error paths, optionsLoader latency tracking via the Backstage analytics API (`useAnalytics()` already used in `Stepper.tsx`), and correlation IDs for tracing failed async loads through development tooling.
 
 **Onboarding & Continued Development:**
+
 - Update `plugins/scaffolder-react/README.md` with cascading forms documentation. Include setup instructions, JSON Schema patterns for `if/then/else` and `dependencies`, `optionsLoader` API usage examples, and common pitfalls (e.g., circular dependencies, performance with many conditional branches). Suggest next tasks: cross-step reactivity, visual transitions for field mount/unmount.
 
 **Executive Presentation:**
+
 - Deliver a reveal.js HTML artifact covering: what was built (cascading forms), why (template author productivity), architectural changes (schema resolution pipeline), risks (performance with complex schemas, RJSF version coupling), and onboarding path. Every slide MUST include a Mermaid diagram or visual.
 
 **Explainability:**
+
 - Deliver a decision log as a Markdown table documenting: choosing pure synchronous resolution over async, debounce timing selection (300ms), using `stepsState` for value preservation vs. separate cache, `LinearProgress` over `Skeleton` for loading states, and extending `FieldExtensionOptions` type vs. creating a new type.
 
 **Visual Architecture Documentation:**
+
 - All architecture diagrams MUST use Mermaid. Provide before/after diagrams of the schema resolution pipeline showing the addition of `resolveConditionalSchema()`. Include component interaction diagrams and data flow diagrams for the async options loading lifecycle.
 
 ### 0.8.3 Non-Functional Requirements
@@ -687,7 +702,6 @@ The following rules derive from the project's global implementation rules and ap
 - Linting MUST pass: `yarn lint --fix`
 - API reports MUST be regenerated: `yarn build:api-reports`
 
-
 ## 0.9 References
 
 ### 0.9.1 Repository Files and Folders Searched
@@ -696,70 +710,70 @@ The following files and folders were systematically inspected to derive the conc
 
 **Root-level configuration files:**
 
-| File | Purpose |
-|---|---|
-| `package.json` | Root workspace manifest; verified Node engine (`22 \|\| 24`), package manager (Yarn 4.8.1), TypeScript version (~5.7.0), and React type resolutions (^18.0.0) |
-| `tsconfig.json` | Root TypeScript configuration |
+| File            | Purpose                                                                                                                                                       |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `package.json`  | Root workspace manifest; verified Node engine (`22 \|\| 24`), package manager (Yarn 4.8.1), TypeScript version (~5.7.0), and React type resolutions (^18.0.0) |
+| `tsconfig.json` | Root TypeScript configuration                                                                                                                                 |
 
 **Plugin-level files (plugins/scaffolder-react/):**
 
-| File | Purpose |
-|---|---|
-| `plugins/scaffolder-react/package.json` | Plugin manifest; verified all dependency versions: `@rjsf/core` 5.24.13, `@rjsf/utils` 5.24.13, `@rjsf/validator-ajv8` 5.24.13, `@rjsf/material-ui` 5.24.13, `ajv` ^8.0.1, `json-schema-library` ^9.0.0, `@material-ui/core` ^4.12.2, `@material-ui/lab` 4.0.0-alpha.61, React ^18.0.2, `@testing-library/react` ^16.0.0 |
-| `plugins/scaffolder-react/report.api.md` | Public API surface snapshot; confirmed `FieldExtensionOptions` type signature and `createScaffolderFieldExtension` export |
-| `plugins/scaffolder-react/report-alpha.api.md` | Alpha API surface; confirmed `extractSchemaFromStep`, `createAsyncValidators`, `Stepper`, `StepperProps`, `ParsedTemplateSchema`, `FormValidation` exports |
+| File                                           | Purpose                                                                                                                                                                                                                                                                                                                  |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `plugins/scaffolder-react/package.json`        | Plugin manifest; verified all dependency versions: `@rjsf/core` 5.24.13, `@rjsf/utils` 5.24.13, `@rjsf/validator-ajv8` 5.24.13, `@rjsf/material-ui` 5.24.13, `ajv` ^8.0.1, `json-schema-library` ^9.0.0, `@material-ui/core` ^4.12.2, `@material-ui/lab` 4.0.0-alpha.61, React ^18.0.2, `@testing-library/react` ^16.0.0 |
+| `plugins/scaffolder-react/report.api.md`       | Public API surface snapshot; confirmed `FieldExtensionOptions` type signature and `createScaffolderFieldExtension` export                                                                                                                                                                                                |
+| `plugins/scaffolder-react/report-alpha.api.md` | Alpha API surface; confirmed `extractSchemaFromStep`, `createAsyncValidators`, `Stepper`, `StepperProps`, `ParsedTemplateSchema`, `FormValidation` exports                                                                                                                                                               |
 
 **Source files read in full:**
 
-| File | Lines | Key Findings |
-|---|---|---|
-| `plugins/scaffolder-react/src/next/lib/schema.ts` | 1–150 | `extractUiSchema()` handles `if/then/else/dependencies` for UI metadata extraction; `if` keyword NOT destructured (passes through to RJSF); `extractSchemaFromStep()` clones via flatted and returns `{schema, uiSchema}` |
-| `plugins/scaffolder-react/src/next/lib/index.ts` | 1–17 | Exports `extractSchemaFromStep` and `createFieldValidation` only |
-| `plugins/scaffolder-react/src/next/components/Stepper/Stepper.tsx` | 1–349 | Full wizard implementation; `stepsState` accumulator (line 133); `currentStep.schema` passed to `<Form>` (line 281); `formContext.formData` set to `stepsState` (line 280); `key={activeStep}` remounts form on step change (line 276) |
-| `plugins/scaffolder-react/src/next/components/Form/Form.tsx` | 1–68 | `WrappedForm = withTheme(MuiTheme)` (line 25); wraps fields to provide default props (lines 34–53); passes templates including `FieldTemplate` and `DescriptionFieldTemplate` |
-| `plugins/scaffolder-react/src/next/components/Form/FieldTemplate.tsx` | 1–100 | Custom RJSF FieldTemplate; renders `WrapIfAdditionalTemplate` around `ScaffolderField`; handles hidden fields with `display:none` |
-| `plugins/scaffolder-react/src/next/components/ScaffolderField/ScaffolderField.tsx` | 1–87 | Accessible field shell with `FormControl`, `MarkdownContent` descriptions, error/help rendering |
-| `plugins/scaffolder-react/src/next/components/Stepper/createAsyncValidators.ts` | 1–179 | Recursive async validation engine; traverses schema via `json-schema-library` `Draft07`; handles `ui:field`, items, dependencies branches |
-| `plugins/scaffolder-react/src/extensions/types.ts` | 1–87 | `FieldExtensionOptions` type with `name`, `component`, `validation?`, `schema?` — no `dependencies` or `optionsLoader` currently |
-| `plugins/scaffolder-react/src/extensions/createScaffolderFieldExtension.tsx` | 1–84 | Factory attaches full `options` to `FIELD_EXTENSION_KEY` metadata |
-| `plugins/scaffolder-react/src/next/hooks/useTemplateSchema.ts` | 1–94 | Parses manifest steps via `extractSchemaFromStep()`; filters by feature flags; returns `ParsedTemplateSchema[]` with `mergedSchema` |
-| `plugins/scaffolder-react/src/next/hooks/useTransformSchemaToProps.ts` | 1–52 | Resolves `ui:ObjectFieldTemplate` string handles to layout components |
+| File                                                                               | Lines | Key Findings                                                                                                                                                                                                                           |
+| ---------------------------------------------------------------------------------- | ----- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `plugins/scaffolder-react/src/next/lib/schema.ts`                                  | 1–150 | `extractUiSchema()` handles `if/then/else/dependencies` for UI metadata extraction; `if` keyword NOT destructured (passes through to RJSF); `extractSchemaFromStep()` clones via flatted and returns `{schema, uiSchema}`              |
+| `plugins/scaffolder-react/src/next/lib/index.ts`                                   | 1–17  | Exports `extractSchemaFromStep` and `createFieldValidation` only                                                                                                                                                                       |
+| `plugins/scaffolder-react/src/next/components/Stepper/Stepper.tsx`                 | 1–349 | Full wizard implementation; `stepsState` accumulator (line 133); `currentStep.schema` passed to `<Form>` (line 281); `formContext.formData` set to `stepsState` (line 280); `key={activeStep}` remounts form on step change (line 276) |
+| `plugins/scaffolder-react/src/next/components/Form/Form.tsx`                       | 1–68  | `WrappedForm = withTheme(MuiTheme)` (line 25); wraps fields to provide default props (lines 34–53); passes templates including `FieldTemplate` and `DescriptionFieldTemplate`                                                          |
+| `plugins/scaffolder-react/src/next/components/Form/FieldTemplate.tsx`              | 1–100 | Custom RJSF FieldTemplate; renders `WrapIfAdditionalTemplate` around `ScaffolderField`; handles hidden fields with `display:none`                                                                                                      |
+| `plugins/scaffolder-react/src/next/components/ScaffolderField/ScaffolderField.tsx` | 1–87  | Accessible field shell with `FormControl`, `MarkdownContent` descriptions, error/help rendering                                                                                                                                        |
+| `plugins/scaffolder-react/src/next/components/Stepper/createAsyncValidators.ts`    | 1–179 | Recursive async validation engine; traverses schema via `json-schema-library` `Draft07`; handles `ui:field`, items, dependencies branches                                                                                              |
+| `plugins/scaffolder-react/src/extensions/types.ts`                                 | 1–87  | `FieldExtensionOptions` type with `name`, `component`, `validation?`, `schema?` — no `dependencies` or `optionsLoader` currently                                                                                                       |
+| `plugins/scaffolder-react/src/extensions/createScaffolderFieldExtension.tsx`       | 1–84  | Factory attaches full `options` to `FIELD_EXTENSION_KEY` metadata                                                                                                                                                                      |
+| `plugins/scaffolder-react/src/next/hooks/useTemplateSchema.ts`                     | 1–94  | Parses manifest steps via `extractSchemaFromStep()`; filters by feature flags; returns `ParsedTemplateSchema[]` with `mergedSchema`                                                                                                    |
+| `plugins/scaffolder-react/src/next/hooks/useTransformSchemaToProps.ts`             | 1–52  | Resolves `ui:ObjectFieldTemplate` string handles to layout components                                                                                                                                                                  |
 
 **Source files read partially (first N lines for pattern understanding):**
 
-| File | Lines Read | Key Findings |
-|---|---|---|
-| `plugins/scaffolder-react/src/next/lib/schema.test.ts` | 1–80 | Test patterns: `describe/it` with `JsonObject` fixtures; `expect(extractSchemaFromStep(input)).toEqual({schema, uiSchema})` |
-| `plugins/scaffolder-react/src/next/components/Stepper/Stepper.test.tsx` | 1–80 | Test patterns: `renderInTestApp` with `SecretsContextProvider`; `TemplateParameterSchema` fixtures; `act/fireEvent/waitFor` |
-| `plugins/scaffolder-react/src/next/components/Workflow/Workflow.test.tsx` | 48–120 | Test patterns: `ApiProvider` with `TestApiRegistry`; mock scaffolder API; `renderInTestApp` |
+| File                                                                      | Lines Read | Key Findings                                                                                                                |
+| ------------------------------------------------------------------------- | ---------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `plugins/scaffolder-react/src/next/lib/schema.test.ts`                    | 1–80       | Test patterns: `describe/it` with `JsonObject` fixtures; `expect(extractSchemaFromStep(input)).toEqual({schema, uiSchema})` |
+| `plugins/scaffolder-react/src/next/components/Stepper/Stepper.test.tsx`   | 1–80       | Test patterns: `renderInTestApp` with `SecretsContextProvider`; `TemplateParameterSchema` fixtures; `act/fireEvent/waitFor` |
+| `plugins/scaffolder-react/src/next/components/Workflow/Workflow.test.tsx` | 48–120     | Test patterns: `ApiProvider` with `TestApiRegistry`; mock scaffolder API; `renderInTestApp`                                 |
 
 **Folders explored:**
 
-| Folder | Depth | Key Findings |
-|---|---|---|
-| `` (root) | Level 0 | Monorepo with `plugins/`, `packages/`, `docs/`, `scripts/` top-level directories |
-| `plugins/` | Level 1 | 155+ plugin packages; `scaffolder-react` identified as the target |
-| `plugins/scaffolder-react/` | Level 1 | Package root with `src/`, `package.json`, API reports, README |
-| `plugins/scaffolder-react/src/` | Level 2 | Barrel exports, extension subsystem, hooks, layouts, secrets, `next/` |
-| `plugins/scaffolder-react/src/next/` | Level 2 | API, blueprints, components, extensions, hooks, lib |
-| `plugins/scaffolder-react/src/next/components/` | Level 3 | Form, Stepper, ScaffolderField, Workflow, ReviewState, TemplateCard, and 10+ other component folders |
-| `plugins/scaffolder-react/src/next/components/Stepper/` | Level 3 | Stepper.tsx, createAsyncValidators.ts, utils.ts, ErrorListTemplate/, FieldOverrides/ |
-| `plugins/scaffolder-react/src/next/components/Form/` | Level 3 | Form.tsx, FieldTemplate.tsx, DescriptionFieldTemplate.tsx, index.ts |
-| `plugins/scaffolder-react/src/next/lib/` | Level 3 | schema.ts, schema.test.ts, index.ts |
-| `plugins/scaffolder-react/src/next/hooks/` | Level 3 | useTemplateSchema.ts, useTransformSchemaToProps.ts, useFormDataFromQuery.ts, and others |
-| `plugins/scaffolder-react/src/extensions/` | Level 3 | createScaffolderFieldExtension.tsx, types.ts, keys.ts, rjsf.ts, index.ts |
-| `plugins/scaffolder-react/src/next/components/ScaffolderField/` | Level 3 | ScaffolderField.tsx, index.ts |
-| `packages/core-components/src/components/` | Level 2 | AlertDisplay, Progress, WarningPanel, MarkdownContent, and 30+ component directories |
-| `packages/ui/src/components/` | Level 2 | Skeleton, Alert (BUI equivalents) confirmed at `packages/ui/src/components/Skeleton/` and `packages/ui/src/components/Alert/` |
+| Folder                                                          | Depth   | Key Findings                                                                                                                  |
+| --------------------------------------------------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `` (root)                                                       | Level 0 | Monorepo with `plugins/`, `packages/`, `docs/`, `scripts/` top-level directories                                              |
+| `plugins/`                                                      | Level 1 | 155+ plugin packages; `scaffolder-react` identified as the target                                                             |
+| `plugins/scaffolder-react/`                                     | Level 1 | Package root with `src/`, `package.json`, API reports, README                                                                 |
+| `plugins/scaffolder-react/src/`                                 | Level 2 | Barrel exports, extension subsystem, hooks, layouts, secrets, `next/`                                                         |
+| `plugins/scaffolder-react/src/next/`                            | Level 2 | API, blueprints, components, extensions, hooks, lib                                                                           |
+| `plugins/scaffolder-react/src/next/components/`                 | Level 3 | Form, Stepper, ScaffolderField, Workflow, ReviewState, TemplateCard, and 10+ other component folders                          |
+| `plugins/scaffolder-react/src/next/components/Stepper/`         | Level 3 | Stepper.tsx, createAsyncValidators.ts, utils.ts, ErrorListTemplate/, FieldOverrides/                                          |
+| `plugins/scaffolder-react/src/next/components/Form/`            | Level 3 | Form.tsx, FieldTemplate.tsx, DescriptionFieldTemplate.tsx, index.ts                                                           |
+| `plugins/scaffolder-react/src/next/lib/`                        | Level 3 | schema.ts, schema.test.ts, index.ts                                                                                           |
+| `plugins/scaffolder-react/src/next/hooks/`                      | Level 3 | useTemplateSchema.ts, useTransformSchemaToProps.ts, useFormDataFromQuery.ts, and others                                       |
+| `plugins/scaffolder-react/src/extensions/`                      | Level 3 | createScaffolderFieldExtension.tsx, types.ts, keys.ts, rjsf.ts, index.ts                                                      |
+| `plugins/scaffolder-react/src/next/components/ScaffolderField/` | Level 3 | ScaffolderField.tsx, index.ts                                                                                                 |
+| `packages/core-components/src/components/`                      | Level 2 | AlertDisplay, Progress, WarningPanel, MarkdownContent, and 30+ component directories                                          |
+| `packages/ui/src/components/`                                   | Level 2 | Skeleton, Alert (BUI equivalents) confirmed at `packages/ui/src/components/Skeleton/` and `packages/ui/src/components/Alert/` |
 
 **Tech Spec Sections Retrieved:**
 
-| Section | Purpose |
-|---|---|
-| 2.1 Feature Catalog | Confirmed F-002 (Software Templates/Scaffolder) feature context, dependencies, and technical implementation details |
-| 3.2 Frameworks & Libraries | Verified frontend framework versions: React ^18.0.2, MUI v4 ^4.12.2, TypeScript ~5.7.0, Vite ^7.1.5 |
-| 7.1 Core UI Technologies | Confirmed active MUI-to-BUI migration, frontend entry points, and extension system architecture |
-| 7.2 UI Component Libraries | Cataloged available UI primitives: core-components (MUI v4-based), BUI (React Aria + tokens), design token system |
+| Section                    | Purpose                                                                                                             |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| 2.1 Feature Catalog        | Confirmed F-002 (Software Templates/Scaffolder) feature context, dependencies, and technical implementation details |
+| 3.2 Frameworks & Libraries | Verified frontend framework versions: React ^18.0.2, MUI v4 ^4.12.2, TypeScript ~5.7.0, Vite ^7.1.5                 |
+| 7.1 Core UI Technologies   | Confirmed active MUI-to-BUI migration, frontend entry points, and extension system architecture                     |
+| 7.2 UI Component Libraries | Cataloged available UI primitives: core-components (MUI v4-based), BUI (React Aria + tokens), design token system   |
 
 ### 0.9.2 Attachments and External References
 
@@ -767,26 +781,26 @@ The following files and folders were systematically inspected to derive the conc
 
 **External References from User Prompt:**
 
-| Reference | Context |
-|---|---|
-| RJSF v5.24.13 (`@rjsf/core`) | Confirmed as installed dependency in `plugins/scaffolder-react/package.json` |
-| AJV8 (`ajv` ^8.0.1) | Confirmed as installed dependency |
-| `json-schema-library` ^9.0.0 | Confirmed as installed dependency |
-| JSON Schema Draft 07 `if/then/else` specification | Standard keywords used for conditional field rendering |
-| JSON Schema Draft 07 `dependencies` specification | Standard keyword for property and schema dependencies |
-| `@backstage/frontend-plugin-api` (new frontend system) | Confirmed as workspace dependency |
-| `@backstage/core-components` | Confirmed as workspace dependency; provides `MarkdownContent`, layout primitives |
+| Reference                                              | Context                                                                          |
+| ------------------------------------------------------ | -------------------------------------------------------------------------------- |
+| RJSF v5.24.13 (`@rjsf/core`)                           | Confirmed as installed dependency in `plugins/scaffolder-react/package.json`     |
+| AJV8 (`ajv` ^8.0.1)                                    | Confirmed as installed dependency                                                |
+| `json-schema-library` ^9.0.0                           | Confirmed as installed dependency                                                |
+| JSON Schema Draft 07 `if/then/else` specification      | Standard keywords used for conditional field rendering                           |
+| JSON Schema Draft 07 `dependencies` specification      | Standard keyword for property and schema dependencies                            |
+| `@backstage/frontend-plugin-api` (new frontend system) | Confirmed as workspace dependency                                                |
+| `@backstage/core-components`                           | Confirmed as workspace dependency; provides `MarkdownContent`, layout primitives |
 
 **Figma URLs:** None provided.
 
 **Build and Verification Commands (from user):**
 
-| Command | Purpose |
-|---|---|
-| `yarn install` | Install all workspace dependencies |
-| `yarn tsc` | TypeScript type checking across the monorepo |
-| `yarn test --no-watch plugins/scaffolder-react` | Run scaffolder-react test suite (non-watch mode) |
-| `yarn test --no-watch plugins/scaffolder-react/src/next/lib/schema.test.ts` | Run schema utility unit tests |
-| `yarn lint --fix` | Lint and auto-fix |
-| `yarn build:api-reports` | Regenerate API surface reports (required if public API changes) |
-| `yarn start` | Start dev server for manual smoke testing at `/create` |
+| Command                                                                     | Purpose                                                         |
+| --------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| `yarn install`                                                              | Install all workspace dependencies                              |
+| `yarn tsc`                                                                  | TypeScript type checking across the monorepo                    |
+| `yarn test --no-watch plugins/scaffolder-react`                             | Run scaffolder-react test suite (non-watch mode)                |
+| `yarn test --no-watch plugins/scaffolder-react/src/next/lib/schema.test.ts` | Run schema utility unit tests                                   |
+| `yarn lint --fix`                                                           | Lint and auto-fix                                               |
+| `yarn build:api-reports`                                                    | Regenerate API surface reports (required if public API changes) |
+| `yarn start`                                                                | Start dev server for manual smoke testing at `/create`          |

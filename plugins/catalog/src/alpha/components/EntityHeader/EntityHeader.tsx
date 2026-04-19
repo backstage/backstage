@@ -99,7 +99,7 @@ function EntityHeaderTitle() {
   const { kind, namespace, name } = useRouteRefParams(entityRouteRef);
   const { headerTitle: title } = headerProps(kind, namespace, name, entity);
   return (
-    <div className="inline-flex items-center h-[1em] max-w-full">
+    <div className="inline-flex items-center gap-1 h-[1em] max-w-full">
       <span className="overflow-hidden text-ellipsis whitespace-nowrap">
         {entity ? <EntityDisplayName entityRef={entity} hideIcon /> : title}
       </span>

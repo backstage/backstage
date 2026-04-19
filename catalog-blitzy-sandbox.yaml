@@ -1,0 +1,122 @@
+---
+apiVersion: backstage.io/v1alpha1
+kind: Group
+metadata:
+  name: blitzy-sandbox
+  description: Blitzy Sandbox organization — AI-powered software development demos
+spec:
+  type: organization
+  children: []
+---
+# All Projects
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: blitzy-sandbox-projects
+  description: All Blitzy Sandbox demo projects — AI-generated codebases across web apps, infrastructure, and libraries
+spec:
+  owner: blitzy-sandbox
+---
+# Language Groupings
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: blitzy-typescript
+  description: TypeScript/JavaScript projects — web applications, frontend frameworks, and Node.js runtime
+  tags:
+    - typescript
+    - javascript
+spec:
+  owner: blitzy-sandbox
+---
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: blitzy-rust
+  description: Rust projects — C-to-Rust rewrites of curl, zlib, BlueZ, Exim, and a from-scratch C11 compiler
+  tags:
+    - rust
+spec:
+  owner: blitzy-sandbox
+---
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: blitzy-python
+  description: Python projects — ML infrastructure (DeepSeek-V3, vLLM, XLA), ERP (Odoo), and coding agents (Vibe)
+  tags:
+    - python
+spec:
+  owner: blitzy-sandbox
+---
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: blitzy-go
+  description: Go projects — cloud-native infrastructure including Kubernetes, Grafana, RudderStack, and coding tools
+  tags:
+    - go
+spec:
+  owner: blitzy-sandbox
+---
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: blitzy-c-cpp
+  description: C/C++ projects — systems programming including Linux kernel, nginx, Redis, and OpenSSL
+  tags:
+    - c
+    - cpp
+spec:
+  owner: blitzy-sandbox
+---
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: blitzy-dotnet
+  description: .NET/C# projects — enterprise CRM and ERP modernization (SplendidCRM, DotNetNuke, WebVella)
+  tags:
+    - csharp
+spec:
+  owner: blitzy-sandbox
+---
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: blitzy-java
+  description: Java projects — Jenkins CI/CD modernization and COBOL-to-Java mainframe migration
+  tags:
+    - java
+spec:
+  owner: blitzy-sandbox
+---
+# This repo's component (always available locally)
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: blitzy-sandbox-backstage
+  description: Backstage developer portal with MUI-to-shadcn/ui migration — 88.8% component coverage across 154 plugins, demonstrating large-scale design system modernization
+  tags:
+    - typescript
+    - web-app
+    - refactor
+  labels:
+    blitzy.com/language: typescript
+  annotations:
+    github.com/project-slug: Blitzy-Sandbox/blitzy-sandbox-backstage
+    backstage.io/source-location: url:https://github.com/Blitzy-Sandbox/blitzy-sandbox-backstage/tree/master/
+    backstage.io/techdocs-ref: dir:.
+  links:
+    - url: https://github.com/Blitzy-Sandbox/blitzy-sandbox-backstage
+      title: GitHub Repository
+    - url: https://github.com/Blitzy-Sandbox/blitzy-sandbox-backstage/pull/1
+      title: "PR #1: MUI-to-shadcn Migration"
+      icon: github
+    - url: https://github.com/Blitzy-Sandbox/blitzy-sandbox-backstage/tree/master/blitzy/documentation
+      title: Blitzy Documentation
+      icon: docs
+spec:
+  type: website
+  lifecycle: production
+  owner: blitzy-sandbox
+  system: blitzy-typescript
