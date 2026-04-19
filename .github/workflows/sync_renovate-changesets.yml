@@ -5,6 +5,9 @@ on:
       - '.github/workflows/sync_renovate-changesets.yml'
       - '**/yarn.lock'
 
+permissions:
+  contents: read
+
 jobs:
   generate-changeset:
     runs-on: ubuntu-latest

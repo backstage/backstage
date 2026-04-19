@@ -6,6 +6,9 @@ on:
     paths:
       - '.patches/**'
 
+permissions:
+  contents: read
+
 concurrency:
   group: sync-patch-release
   cancel-in-progress: true

@@ -3,6 +3,9 @@ on:
   repository_dispatch:
     types: [release-published]
 
+permissions:
+  contents: read
+
 jobs:
   create-new-version:
     runs-on: ubuntu-latest

@@ -5,6 +5,9 @@ on:
     paths:
       - '**/openapi.yaml'
 
+permissions:
+  contents: read
+
 jobs:
   get-backstage-changes:
     env:

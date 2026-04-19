@@ -4,6 +4,9 @@ on:
     types:
       - labeled
 
+permissions:
+  contents: read
+
 jobs:
   stale:
     permissions:

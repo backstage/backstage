@@ -6,6 +6,8 @@ on:
       - '.github/workflows/verify_docs-quality.yml'
       - '**.md'
 
+permissions: {}
+
 jobs:
   check-docs:
     permissions:

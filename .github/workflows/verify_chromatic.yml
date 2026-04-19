@@ -12,6 +12,9 @@ on:
       - 'packages/ui/**'
       - '**/*.stories.tsx'
 
+permissions:
+  contents: read
+
 jobs:
   chromatic:
     runs-on: ${{ matrix.os }}

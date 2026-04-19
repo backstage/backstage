@@ -9,6 +9,10 @@ on:
       - 'beps/**'
       - 'mkdocs.yml'
       - 'docs/**'
+
+permissions:
+  contents: read
+
 jobs:
   lhci:
     name: Microsite Accessibility

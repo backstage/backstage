@@ -5,6 +5,9 @@ on:
   repository_dispatch:
     types: [release-published]
 
+permissions:
+  contents: read
+
 env:
   RELEASE_VERSION: v${{ github.event.client_payload.version }}
   TAG_VERSION: ghcr.io/${{ github.repository_owner }}/backstage:${{ github.event.client_payload.version }}
