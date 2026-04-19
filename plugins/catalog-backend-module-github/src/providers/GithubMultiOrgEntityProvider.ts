@@ -25,6 +25,7 @@ import {
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
+import { isError } from '@backstage/errors';
 import {
   DefaultGithubCredentialsProvider,
   GithubAppCredentialsMux,
@@ -297,10 +298,21 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       : await this.getAllOrgs(this.options.gitHubConfig);
 
     for (const org of orgsToProcess) {
-      const { headers, type: tokenType } =
-        await this.options.githubCredentialsProvider.getCredentials({
-          url: `${this.options.githubUrl}/${org}`,
-        });
+      let credentials;
+      try {
+        credentials =
+          await this.options.githubCredentialsProvider.getCredentials({
+            url: `${this.options.githubUrl}/${org}`,
+          });
+      } catch (error) {
+        if (isError(error) && error.name === 'NotFoundError') {
+          logger.debug(
+            `No GitHub App installation found for org "${org}". This often means the GitHub App is not installed on that organization, or the authenticated user does not have the Organization Owner role required to see the installation. See https://backstage.io/docs/integrations/github/github-apps/#troubleshooting for more information.`,
+          );
+        }
+        throw error;
+      }
+      const { headers, type: tokenType } = credentials;
       const client = graphql.defaults({
         baseUrl: this.options.gitHubConfig.apiBaseUrl,
         headers,
