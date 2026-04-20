@@ -85,12 +85,12 @@ export interface SelectTriggerOwnProps {
 export interface SelectContentOwnProps {
   searchable?: boolean;
   searchPlaceholder?: string;
-  options?: Array<Option | OptionSection>;
+  options?: SelectOwnProps['options'];
 }
 
 /** @internal */
 export interface SelectListBoxOwnProps {
-  options?: Array<Option | OptionSection>;
+  options?: SelectOwnProps['options'];
 }
 
 /** @internal */

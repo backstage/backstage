@@ -24,10 +24,10 @@ import {
 import { RiCheckLine } from '@remixicon/react';
 import { useDefinition } from '../../hooks/useDefinition';
 import { SelectListBoxDefinition, SelectSectionDefinition } from './definition';
-import type { Option, OptionSection } from './types';
+import type { Option, OptionSection, SelectOwnProps } from './types';
 
 interface SelectListBoxProps {
-  options?: Array<Option | OptionSection>;
+  options?: SelectOwnProps['options'];
 }
 
 const NoResults = () => {
