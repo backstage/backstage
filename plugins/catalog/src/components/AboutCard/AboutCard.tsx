@@ -16,12 +16,10 @@
 
 import { useCallback } from 'react';
 
-import { RefreshCw, Pencil, FileText, PlusCircle } from 'lucide-react';
+import { RefreshCw, Pencil } from 'lucide-react';
 
 import {
   AppIcon,
-  HeaderIconLinkRow,
-  IconLinkVerticalProps,
   InfoCardVariants,
   Link,
   cn,
@@ -29,13 +27,11 @@ import {
   CardHeader,
   CardTitle,
   CardContent,
-  Separator,
   ShadcnButton as Button,
 } from '@backstage/core-components';
 import {
   alertApiRef,
   errorApiRef,
-  useApp,
   useApi,
   useRouteRef,
 } from '@backstage/core-plugin-api';
@@ -47,7 +43,6 @@ import {
 } from '@backstage/integration-react';
 
 import {
-  DEFAULT_NAMESPACE,
   ANNOTATION_EDIT_URL,
   ANNOTATION_LOCATION,
   stringifyEntityRef,
@@ -60,18 +55,7 @@ import {
 import { useEntityPermission } from '@backstage/plugin-catalog-react/alpha';
 import { catalogEntityRefreshPermission } from '@backstage/plugin-catalog-common/alpha';
 
-import {
-  TECHDOCS_ANNOTATION,
-  TECHDOCS_EXTERNAL_ANNOTATION,
-} from '@backstage/plugin-techdocs-common';
-import { buildTechDocsURL } from '@backstage/plugin-techdocs-react';
-
-import { isTemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
-import { taskCreatePermission } from '@backstage/plugin-scaffolder-common/alpha';
-
-import { usePermission } from '@backstage/plugin-permission-react';
-
-import { createFromTemplateRouteRef, viewTechDocRouteRef } from '../../routes';
+import { createFromTemplateRouteRef } from '../../routes';
 import { catalogTranslationRef } from '../../alpha/translation';
 import { useSourceTemplateCompoundEntityRef } from './hooks';
 import { AboutContent } from './AboutContent';
@@ -92,64 +76,6 @@ export function useCatalogSourceIconLinkProps() {
   };
 }
 
-// TODO: This hook is duplicated from the TechDocs plugin for backwards compatibility
-// Remove it when the the legacy frontend system support is dropped.
-function useTechdocsReaderIconLinkProps(): IconLinkVerticalProps {
-  const { entity } = useEntity();
-  const viewTechdocLink = useRouteRef(viewTechDocRouteRef);
-  const { t } = useTranslationRef(catalogTranslationRef);
-
-  return {
-    label: t('aboutCard.viewTechdocs'),
-    disabled:
-      !(
-        entity.metadata.annotations?.[TECHDOCS_ANNOTATION] ||
-        entity.metadata.annotations?.[TECHDOCS_EXTERNAL_ANNOTATION]
-      ) || !viewTechdocLink,
-    icon: <FileText className="h-5 w-5" />,
-    href: buildTechDocsURL(entity, viewTechdocLink),
-  };
-}
-
-// TODO: This hook is duplicated from the Scaffolder plugin for backwards compatibility
-// Remove it when the the legacy frontend system support is dropped.
-function useScaffolderTemplateIconLinkProps(): IconLinkVerticalProps {
-  const app = useApp();
-  const { entity } = useEntity();
-  const templateRoute = useRouteRef(createFromTemplateRouteRef);
-  const { t } = useTranslationRef(catalogTranslationRef);
-  const Icon = app.getSystemIcon('scaffolder') ?? PlusCircle;
-  const { allowed: canCreateTemplateTask } = usePermission({
-    permission: taskCreatePermission,
-  });
-
-  return {
-    label: t('aboutCard.launchTemplate'),
-    icon: <Icon />,
-    disabled: !templateRoute || !canCreateTemplateTask,
-    href:
-      templateRoute &&
-      templateRoute({
-        templateName: entity.metadata.name,
-        namespace: entity.metadata.namespace || DEFAULT_NAMESPACE,
-      }),
-  };
-}
-
-function DefaultAboutCardSubheader() {
-  const { entity } = useEntity();
-  const catalogSourceIconLink = useCatalogSourceIconLinkProps();
-  const techdocsreaderIconLink = useTechdocsReaderIconLinkProps();
-  const scaffolderTemplateIconLink = useScaffolderTemplateIconLinkProps();
-
-  const links = [catalogSourceIconLink, techdocsreaderIconLink];
-  if (isTemplateEntityV1beta3(entity)) {
-    links.push(scaffolderTemplateIconLink);
-  }
-
-  return <HeaderIconLinkRow links={links} />;
-}
-
 /**
  * Props for {@link EntityAboutCard}.
  *
@@ -164,7 +90,7 @@ export interface InternalAboutCardProps extends AboutCardProps {
 }
 
 export function InternalAboutCard(props: InternalAboutCardProps) {
-  const { variant, subheader } = props;
+  const { variant } = props;
   const { entity } = useEntity();
   const catalogApi = useApi(catalogApiRef);
   const alertApi = useApi(alertApiRef);
@@ -259,8 +185,6 @@ export function InternalAboutCard(props: InternalAboutCardProps) {
           )}
         </div>
       </CardHeader>
-      {subheader !== undefined ? subheader : <DefaultAboutCardSubheader />}
-      <Separator />
       <CardContent className={cardContentClass}>
         <AboutContent entity={entity} />
       </CardContent>
