@@ -91,6 +91,27 @@ const HEADERS = {
   Accept: 'application/vnd.github.machine-man-preview+json',
 };
 
+type Installations =
+  RestEndpointMethodTypes['apps']['listInstallations']['response']['data'];
+
+// Bound on how long a listInstallations response may be reused before it is
+// refetched. This matches the grace period applied to installation token
+// expiries, so the two caches age at the same rate.
+const INSTALLATIONS_CACHE_TTL_MINUTES = 10;
+
+// Minimum time between on-demand refreshes triggered by an owner miss. This
+// keeps the cache from being paginated on every lookup for an unknown owner,
+// while still letting a newly-added installation show up before the TTL.
+const INSTALLATIONS_REFRESH_THROTTLE_SECONDS = 60;
+
+function isStaleInstallationError(error: unknown): boolean {
+  if (typeof error !== 'object' || error === null) {
+    return false;
+  }
+  const status = (error as { status?: unknown }).status;
+  return status === 404 || status === 410;
+}
+
 /**
  * GithubAppManager issues and caches tokens for a specific GitHub App.
  */
@@ -100,6 +121,12 @@ class GithubAppManager {
   private readonly baseAuthConfig: { appId: number; privateKey: string };
   private readonly cache = new Cache();
   private readonly allowedInstallationOwners: string[] | undefined; // undefined allows all installations
+  private installationsCache?: {
+    data: Installations;
+    fetchedAt: DateTime;
+    expiresAt: DateTime;
+  };
+  private pendingInstallations?: Promise<Installations>;
   public readonly publicAccess: boolean;
 
   constructor(config: GithubAppConfig, baseUrl?: string) {
@@ -154,10 +181,20 @@ class GithubAppManager {
         throw new Error(`The GitHub application for ${owner} is suspended`);
       }
 
-      const result = await this.appClient.apps.createInstallationAccessToken({
-        installation_id: installationId,
-        headers: HEADERS,
-      });
+      let result;
+      try {
+        result = await this.appClient.apps.createInstallationAccessToken({
+          installation_id: installationId,
+          headers: HEADERS,
+        });
+      } catch (error) {
+        // A 404/410 means the installation referenced in our cache no longer
+        // exists, so drop the cache to force a refresh on the next lookup.
+        if (isStaleInstallationError(error)) {
+          this.installationsCache = undefined;
+        }
+        throw error;
+      }
 
       let repositoryNames;
 
@@ -207,21 +244,59 @@ class GithubAppManager {
     );
   }
 
-  getInstallations(): Promise<
-    RestEndpointMethodTypes['apps']['listInstallations']['response']['data']
-  > {
-    return this.appClient.paginate(this.appClient.apps.listInstallations);
+  async getInstallations(
+    options: { forceRefresh?: boolean } = {},
+  ): Promise<Installations> {
+    if (
+      !options.forceRefresh &&
+      this.installationsCache &&
+      DateTime.local() < this.installationsCache.expiresAt
+    ) {
+      // Shallow copy so callers can't mutate our cached array.
+      return [...this.installationsCache.data];
+    }
+    if (!this.pendingInstallations) {
+      const pending = this.appClient
+        .paginate(this.appClient.apps.listInstallations)
+        .then(data => {
+          const now = DateTime.local();
+          this.installationsCache = {
+            data,
+            fetchedAt: now,
+            expiresAt: now.plus({ minutes: INSTALLATIONS_CACHE_TTL_MINUTES }),
+          };
+          return data;
+        })
+        .finally(() => {
+          if (this.pendingInstallations === pending) {
+            this.pendingInstallations = undefined;
+          }
+        });
+      this.pendingInstallations = pending;
+    }
+    const data = await this.pendingInstallations;
+    return [...data];
   }
 
   private async getInstallationData(owner: string): Promise<InstallationData> {
-    const allInstallations = await this.getInstallations();
-    const installation = allInstallations.find(
-      inst =>
-        inst.account &&
-        'login' in inst.account &&
-        inst.account.login?.toLocaleLowerCase('en-US') ===
-          owner.toLocaleLowerCase('en-US'),
-    );
+    const find = (list: Installations) =>
+      list.find(
+        inst =>
+          inst.account &&
+          'login' in inst.account &&
+          inst.account.login?.toLocaleLowerCase('en-US') ===
+            owner.toLocaleLowerCase('en-US'),
+      );
+
+    let installations = await this.getInstallations();
+    let installation = find(installations);
+
+    // Owner not in cache — a newly-created installation may have appeared
+    // since we last paginated. Force a refresh (throttled) before failing.
+    if (!installation && this.canRefreshInstallations()) {
+      installations = await this.getInstallations({ forceRefresh: true });
+      installation = find(installations);
+    }
 
     if (installation) {
       return {
@@ -235,6 +310,16 @@ class GithubAppManager {
     );
     notFoundError.name = 'NotFoundError';
     throw notFoundError;
+  }
+
+  private canRefreshInstallations(): boolean {
+    if (!this.installationsCache) {
+      return true;
+    }
+    const age = DateTime.local()
+      .diff(this.installationsCache.fetchedAt)
+      .as('seconds');
+    return age >= INSTALLATIONS_REFRESH_THROTTLE_SECONDS;
   }
 }
 
