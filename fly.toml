@@ -1,0 +1,25 @@
+app = 'blitzy-sandbox-backstage'
+primary_region = 'iad'
+
+[build]
+  dockerfile = 'packages/backend/Dockerfile'
+
+[env]
+  NODE_ENV = 'production'
+  LOG_LEVEL = 'info'
+
+[http_service]
+  internal_port = 7007
+  force_https = true
+  auto_stop_machines = 'suspend'
+  auto_start_machines = true
+  min_machines_running = 1
+
+[mounts]
+  source = 'backstage_data'
+  destination = '/data'
+
+[[vm]]
+  memory = '2048mb'
+  cpu_kind = 'shared'
+  cpus = 2

@@ -94,8 +94,8 @@ export const palettes = {
     type: 'dark' as const,
     mode: 'dark' as const,
     background: {
-      default: '#333333',
-      paper: '#424242',
+      default: '#0F0A1F',
+      paper: '#1a1a2e',
     },
     status: {
       ok: '#71CF88',
@@ -145,19 +145,19 @@ export const palettes = {
     link: '#9CC9FF',
     gold: '#FFD600',
     navigation: {
-      background: '#424242',
+      background: '#0F0A1F',
       indicator: '#9BF0E1',
       color: '#b5b5b5',
       selectedColor: '#FFF',
       navItem: {
-        hoverBackground: '#404040',
+        hoverBackground: '#1a1a2e',
       },
       submenu: {
-        background: '#404040',
+        background: '#1a1a2e',
       },
     },
     pinSidebarButton: {
-      icon: '#404040',
+      icon: '#1a1a2e',
       background: '#BDBDBD',
     },
     tabbar: {
@@ -210,7 +210,7 @@ export function generatePaletteTokens(
 ): Record<string, string> {
   // Neutral tone used for secondary/muted/accent backgrounds.
   // Light mode uses a near-white, dark mode reuses the paper surface.
-  const neutralBg = palette.type === 'light' ? '#F5F5F5' : '#424242';
+  const neutralBg = palette.type === 'light' ? '#F5F5F5' : '#1a1a2e';
 
   return {
     // ── Core Layout ──────────────────────────────────────────────

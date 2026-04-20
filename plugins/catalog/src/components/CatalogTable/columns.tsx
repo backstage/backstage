@@ -28,6 +28,40 @@ import { Entity } from '@backstage/catalog-model';
 import { JsonArray } from '@backstage/types';
 import { EntityTableColumnTitle } from '@backstage/plugin-catalog-react/alpha';
 
+/**
+ * Maps a lifecycle value to a semantic badge variant for visual differentiation.
+ */
+function lifecycleBadgeVariant(
+  lifecycle: string | undefined,
+): 'success' | 'warning' | 'info' | 'secondary' | 'outline' {
+  switch (lifecycle?.toLowerCase()) {
+    case 'production':
+      return 'success';
+    case 'experimental':
+      return 'warning';
+    case 'deprecated':
+      return 'outline';
+    default:
+      return 'info';
+  }
+}
+
+/**
+ * Maps an entity spec type to a muted badge variant.
+ */
+function typeBadgeVariant(
+  type: string | undefined,
+): 'secondary' | 'info' | 'outline' {
+  switch (type?.toLowerCase()) {
+    case 'service':
+      return 'info';
+    case 'library':
+      return 'secondary';
+    default:
+      return 'outline';
+  }
+}
+
 // The columnFactories symbol is not directly exported, but through the
 // CatalogTable.columns field.
 /** @public */
@@ -140,12 +174,24 @@ export const columnFactories = Object.freeze({
       field: 'entity.spec.type',
       hidden: options.hidden,
       width: 'auto',
+      render: ({ entity }) => {
+        const type = entity.spec?.type as string | undefined;
+        return type ? (
+          <Badge variant={typeBadgeVariant(type)}>{type}</Badge>
+        ) : null;
+      },
     };
   },
   createSpecLifecycleColumn(): TableColumn<CatalogTableRow> {
     return {
       title: <EntityTableColumnTitle translationKey="lifecycle" />,
       field: 'entity.spec.lifecycle',
+      render: ({ entity }) => {
+        const lifecycle = entity.spec?.lifecycle as string | undefined;
+        return lifecycle ? (
+          <Badge variant={lifecycleBadgeVariant(lifecycle)}>{lifecycle}</Badge>
+        ) : null;
+      },
     };
   },
   createMetadataDescriptionColumn(): TableColumn<CatalogTableRow> {

@@ -26,6 +26,7 @@ export {
   ReportIssue,
   TextSize,
   LightBox,
+  Mermaid,
 } from './plugin';
 export type {
   ReportIssueProps,

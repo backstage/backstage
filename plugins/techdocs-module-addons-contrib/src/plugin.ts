@@ -23,6 +23,7 @@ import { ExpandableNavigationAddon } from './ExpandableNavigation';
 import { ReportIssueAddon, ReportIssueProps } from './ReportIssue';
 import { TextSizeAddon } from './TextSize';
 import { LightBoxAddon } from './LightBox';
+import { MermaidAddon } from './Mermaid';
 
 /**
  * The TechDocs addons contrib plugin
@@ -248,5 +249,33 @@ export const LightBox = techdocsModuleAddonsContribPlugin.provide(
     name: 'LightBox',
     location: TechDocsAddonLocations.Content,
     component: LightBoxAddon,
+  }),
+);
+
+/**
+ * TechDocs addon that renders Mermaid diagrams inside TechDocs pages.
+ *
+ * @remarks
+ * Requires the `mermaid2` mkdocs plugin to wrap fenced mermaid code blocks
+ * in `<pre class="mermaid">` tags. The addon finds those elements in the
+ * shadow DOM and renders them as SVG using the mermaid library.
+ *
+ * @example
+ * ```
+ * import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
+ * import { Mermaid } from '@backstage/plugin-techdocs-module-addons-contrib';
+ *
+ * <TechDocsAddons>
+ *   <Mermaid />
+ * </TechDocsAddons>
+ * ```
+ *
+ * @public
+ */
+export const Mermaid = techdocsModuleAddonsContribPlugin.provide(
+  createTechDocsAddonExtension({
+    name: 'Mermaid',
+    location: TechDocsAddonLocations.Content,
+    component: MermaidAddon,
   }),
 );

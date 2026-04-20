@@ -298,21 +298,21 @@ export const lightTokenValues: ShadcnTokens = {
  * @public
  */
 export const darkTokenValues: ShadcnTokens = {
-  // Core colors — derived from palettes.dark
-  background: '#333333', // palettes.dark.background.default
-  foreground: '#FFFFFF', // palettes.dark.textContrast
-  card: '#424242', // palettes.dark.background.paper
-  cardForeground: '#FFFFFF', // palettes.dark.textContrast
-  popover: '#1a1a1a', // BUI --bui-bg-popover (dark)
-  popoverForeground: '#FFFFFF', // palettes.dark.textContrast
-  primary: '#9CC9FF', // palettes.dark.primary.main
-  primaryForeground: '#101821', // BUI --bui-fg-solid (dark)
-  secondary: '#424242', // palettes.dark.background.paper
-  secondaryForeground: '#FFFFFF', // palettes.dark.textContrast
-  muted: '#424242', // dark muted surface
-  mutedForeground: '#CCCCCC', // palettes.dark.textSubtle
-  accent: '#424242', // accent surface
-  accentForeground: '#FFFFFF', // palettes.dark.textContrast
+  // Core colors — derived from palettes.dark (Blitzy dark theme)
+  background: '#0F0A1F', // palettes.dark.background.default
+  foreground: '#E5DEFF', // palettes.dark.textContrast
+  card: '#1a1a2e', // palettes.dark.background.paper
+  cardForeground: '#E5DEFF', // palettes.dark.textContrast
+  popover: '#1a1a2e', // BUI --bui-bg-popover (dark)
+  popoverForeground: '#E5DEFF', // palettes.dark.textContrast
+  primary: '#7A6DEC', // Blitzy purple
+  primaryForeground: '#FFFFFF', // white on primary
+  secondary: '#1a1a2e', // palettes.dark.background.paper
+  secondaryForeground: '#E5DEFF', // palettes.dark.textContrast
+  muted: '#1a1a2e', // dark muted surface
+  mutedForeground: '#A29DBC', // palettes.dark.textSubtle
+  accent: '#2D1C77', // Blitzy accent
+  accentForeground: '#E5DEFF', // palettes.dark.textContrast
   destructive: '#C62828', // Darkened from palettes.dark.status.error for WCAG AA normal text contrast
   destructiveForeground: '#FFFFFF', // white on destructive — contrast ≈ 6.7:1
 

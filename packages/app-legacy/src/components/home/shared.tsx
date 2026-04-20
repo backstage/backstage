@@ -32,28 +32,18 @@ export const useLogoStyles = makeStyles(theme => ({
 
 export const tools = [
   {
-    url: 'https://backstage.io/docs',
-    label: 'Docs',
+    url: 'https://github.com/orgs/Blitzy-Sandbox/repositories',
+    label: 'All Repos',
     icon: <TemplateBackstageLogoIcon />,
   },
   {
-    url: 'https://github.com/backstage/backstage',
-    label: 'GitHub',
+    url: 'https://blitzy.com',
+    label: 'Blitzy',
     icon: <TemplateBackstageLogoIcon />,
   },
   {
-    url: 'https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md',
-    label: 'Contributing',
-    icon: <TemplateBackstageLogoIcon />,
-  },
-  {
-    url: 'https://backstage.io/plugins',
-    label: 'Plugins Directory',
-    icon: <TemplateBackstageLogoIcon />,
-  },
-  {
-    url: 'https://github.com/backstage/backstage/issues/new/choose',
-    label: 'Submit New Issue',
+    url: 'https://github.com/Blitzy-Sandbox/blitzy-sandbox-backstage',
+    label: 'Portal Source',
     icon: <TemplateBackstageLogoIcon />,
   },
 ];

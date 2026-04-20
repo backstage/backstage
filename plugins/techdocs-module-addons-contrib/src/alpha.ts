@@ -19,6 +19,7 @@ import { TextSizeAddon } from './TextSize';
 import { ReportIssueAddon } from './ReportIssue';
 import { ExpandableNavigationAddon } from './ExpandableNavigation';
 import { LightBoxAddon } from './LightBox';
+import { MermaidAddon } from './Mermaid';
 import { createFrontendModule } from '@backstage/frontend-plugin-api';
 
 /** @alpha */
@@ -83,4 +84,20 @@ const techDocsLightBoxAddon = AddonBlueprint.make({
 export const techDocsLightBoxAddonModule = createFrontendModule({
   pluginId: 'techdocs',
   extensions: [techDocsLightBoxAddon],
+});
+
+/** @alpha */
+const techDocsMermaidAddon = AddonBlueprint.make({
+  name: 'mermaid',
+  params: {
+    name: 'Mermaid',
+    location: TechDocsAddonLocations.Content,
+    component: MermaidAddon,
+  },
+});
+
+/** @alpha */
+export const techDocsMermaidAddonModule = createFrontendModule({
+  pluginId: 'techdocs',
+  extensions: [techDocsMermaidAddon],
 });

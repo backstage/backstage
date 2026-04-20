@@ -45,16 +45,16 @@ export const shapes: Record<string, string> = {
  * @public
  */
 export const colorVariants: Record<string, string[]> = {
-  darkGrey: ['#171717', '#383838'],
-  marineBlue: ['#006D8F', '#0049A1'],
-  veryBlue: ['#0027AF', '#270094'],
-  rubyRed: ['#98002B', '#8D1134'],
-  toastyOrange: ['#BE2200', '#A41D00'],
-  purpleSky: ['#8912CA', '#3E00EA'],
-  eveningSea: ['#00CFC5', '#035355'],
-  teal: ['#005B4B'],
-  pinkSea: ['#C8077A', '#C2297D'],
-  greens: ['#4BB8A5', '#187656'],
+  darkGrey: ['#1a1a2e', '#2D1C77'],
+  marineBlue: ['#2D1C77', '#5B39F3'],
+  veryBlue: ['#5B39F3', '#7A6DEC'],
+  rubyRed: ['#5B39F3', '#2D1C77'],
+  toastyOrange: ['#2D1C77', '#5B39F3'],
+  purpleSky: ['#5B39F3', '#7A6DEC'],
+  eveningSea: ['#2D1C77', '#5B39F3'],
+  teal: ['#2D1C77', '#5B39F3'],
+  pinkSea: ['#5B39F3', '#7A6DEC'],
+  greens: ['#2D1C77', '#5B39F3'],
 };
 
 /**
@@ -88,25 +88,46 @@ export function genPageTheme(props: {
 }
 
 /**
+ * Blitzy gradient banner — replaces the generated SVG wave shapes with a
+ * clean, branded gradient image for a modern, polished header aesthetic.
+ */
+const blitzyGradient = 'url("/gradient.png")';
+
+/**
  * All of the builtin page themes.
  *
  * @public
  */
 export const pageTheme: Record<string, PageTheme> = {
-  home: genPageTheme({ colors: colorVariants.teal, shape: shapes.wave }),
+  home: genPageTheme({ colors: colorVariants.teal, shape: blitzyGradient }),
   documentation: genPageTheme({
     colors: colorVariants.pinkSea,
-    shape: shapes.wave2,
+    shape: blitzyGradient,
   }),
-  tool: genPageTheme({ colors: colorVariants.purpleSky, shape: shapes.round }),
+  tool: genPageTheme({
+    colors: colorVariants.purpleSky,
+    shape: blitzyGradient,
+  }),
   service: genPageTheme({
     colors: colorVariants.marineBlue,
-    shape: shapes.wave,
+    shape: blitzyGradient,
   }),
-  website: genPageTheme({ colors: colorVariants.veryBlue, shape: shapes.wave }),
-  library: genPageTheme({ colors: colorVariants.rubyRed, shape: shapes.wave }),
-  other: genPageTheme({ colors: colorVariants.darkGrey, shape: shapes.wave }),
-  app: genPageTheme({ colors: colorVariants.toastyOrange, shape: shapes.wave }),
-  apis: genPageTheme({ colors: colorVariants.teal, shape: shapes.wave2 }),
-  card: genPageTheme({ colors: colorVariants.greens, shape: shapes.wave }),
+  website: genPageTheme({
+    colors: colorVariants.veryBlue,
+    shape: blitzyGradient,
+  }),
+  library: genPageTheme({
+    colors: colorVariants.rubyRed,
+    shape: blitzyGradient,
+  }),
+  other: genPageTheme({
+    colors: colorVariants.darkGrey,
+    shape: blitzyGradient,
+  }),
+  app: genPageTheme({
+    colors: colorVariants.toastyOrange,
+    shape: blitzyGradient,
+  }),
+  apis: genPageTheme({ colors: colorVariants.teal, shape: blitzyGradient }),
+  card: genPageTheme({ colors: colorVariants.greens, shape: blitzyGradient }),
 };

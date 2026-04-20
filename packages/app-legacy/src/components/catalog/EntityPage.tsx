@@ -27,19 +27,14 @@ import {
 import { EmptyState } from '@backstage/core-components';
 import {
   EntityApiDefinitionCard,
-  EntityConsumedApisCard,
   EntityConsumingComponentsCard,
   EntityHasApisCard,
-  EntityProvidedApisCard,
   EntityProvidingComponentsCard,
 } from '@backstage/plugin-api-docs';
 import {
   EntityAboutCard,
-  EntityDependsOnComponentsCard,
-  EntityDependsOnResourcesCard,
   EntityHasComponentsCard,
   EntityHasResourcesCard,
-  EntityHasSubcomponentsCard,
   EntityHasSystemsCard,
   EntityLayout,
   EntityLinksCard,
@@ -59,7 +54,6 @@ import {
   Direction,
   EntityCatalogGraphCard,
 } from '@backstage/plugin-catalog-graph';
-import { EntityKubernetesContent } from '@backstage/plugin-kubernetes';
 import {
   isKubernetesClusterAvailable,
   EntityKubernetesClusterContent,
@@ -79,7 +73,10 @@ import {
   ReportIssue,
   LightBox,
 } from '@backstage/plugin-techdocs-module-addons-contrib';
-import { EntityTechdocsContent } from '@backstage/plugin-techdocs';
+import {
+  EntityTechdocsContent,
+  isTechDocsAvailable,
+} from '@backstage/plugin-techdocs';
 
 const customEntityFilterKind = ['Component', 'API', 'System'];
 
@@ -184,10 +181,6 @@ const overviewContent = (
         </Grid>
       </EntitySwitch.Case>
     </EntitySwitch>
-
-    <Grid item md={8} xs={12}>
-      <EntityHasSubcomponentsCard variant="gridItem" />
-    </Grid>
   </Grid>
 );
 
@@ -197,38 +190,8 @@ const serviceEntityPage = (
       {overviewContent}
     </EntityLayout.Route>
 
-    <EntityLayout.Route path="/ci-cd" title="CI/CD">
-      {cicdContent}
-    </EntityLayout.Route>
-
-    <EntityLayout.Route path="/api" title="API">
-      <Grid container spacing={3} alignItems="stretch">
-        <Grid item xs={12} md={6}>
-          <EntityProvidedApisCard />
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <EntityConsumedApisCard />
-        </Grid>
-      </Grid>
-    </EntityLayout.Route>
-
-    <EntityLayout.Route path="/dependencies" title="Dependencies">
-      <Grid container spacing={3} alignItems="stretch">
-        <Grid item xs={12} md={6}>
-          <EntityDependsOnComponentsCard variant="gridItem" />
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <EntityDependsOnResourcesCard variant="gridItem" />
-        </Grid>
-      </Grid>
-    </EntityLayout.Route>
-
-    <EntityLayout.Route path="/docs" title="Docs">
+    <EntityLayout.Route path="/docs" title="Docs" if={isTechDocsAvailable}>
       {techdocsContent}
-    </EntityLayout.Route>
-
-    <EntityLayout.Route path="/kubernetes" title="Kubernetes">
-      <EntityKubernetesContent />
     </EntityLayout.Route>
   </EntityLayoutWrapper>
 );
@@ -239,27 +202,8 @@ const websiteEntityPage = (
       {overviewContent}
     </EntityLayout.Route>
 
-    <EntityLayout.Route path="/ci-cd" title="CI/CD">
-      {cicdContent}
-    </EntityLayout.Route>
-
-    <EntityLayout.Route path="/dependencies" title="Dependencies">
-      <Grid container spacing={3} alignItems="stretch">
-        <Grid item md={6}>
-          <EntityDependsOnComponentsCard variant="gridItem" />
-        </Grid>
-        <Grid item md={6}>
-          <EntityDependsOnResourcesCard variant="gridItem" />
-        </Grid>
-      </Grid>
-    </EntityLayout.Route>
-
-    <EntityLayout.Route path="/docs" title="Docs">
+    <EntityLayout.Route path="/docs" title="Docs" if={isTechDocsAvailable}>
       {techdocsContent}
-    </EntityLayout.Route>
-
-    <EntityLayout.Route path="/kubernetes" title="Kubernetes">
-      <EntityKubernetesContent />
     </EntityLayout.Route>
   </EntityLayoutWrapper>
 );
@@ -270,7 +214,7 @@ const defaultEntityPage = (
       {overviewContent}
     </EntityLayout.Route>
 
-    <EntityLayout.Route path="/docs" title="Docs">
+    <EntityLayout.Route path="/docs" title="Docs" if={isTechDocsAvailable}>
       {techdocsContent}
     </EntityLayout.Route>
   </EntityLayoutWrapper>

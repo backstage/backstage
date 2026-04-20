@@ -36,7 +36,7 @@ export function LinksGridList(props: LinksGridListProps) {
 
   return (
     <div
-      className="grid gap-2"
+      className="grid gap-2 pt-4"
       style={{ gridTemplateColumns: `repeat(${numOfCols}, minmax(0, 1fr))` }}
     >
       {items.map(({ text, href, Icon }, i) => (

@@ -25,6 +25,16 @@ There are 3 main components in this architecture:
 
 ![The architecture of a basic Backstage application](../assets/architecture-overview/backstage-front-back-arch.jpeg)
 
+```mermaid
+graph LR
+    A[Frontend App] --> B[Backend API]
+    B --> C[(Database)]
+    B --> D[Plugin Backend]
+    D --> E[External Services]
+    A --> F[Plugin Frontend]
+    F --> B
+```
+
 ## Frontend building blocks
 
 The architectural diagram provides an overview of the different building blocks and the other blocks that each of them interacts with.

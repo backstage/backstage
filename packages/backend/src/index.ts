@@ -32,8 +32,8 @@ const searchLoader = createBackendFeatureLoader({
   *loader({ config }) {
     yield import('@backstage/plugin-search-backend');
     yield import('@backstage/plugin-search-backend-module-catalog');
-    yield import('@backstage/plugin-search-backend-module-explore');
-    yield import('@backstage/plugin-search-backend-module-techdocs');
+    // TechDocs search collator disabled — causes OOM indexing 36 repos with no docs built
+    // yield import('@backstage/plugin-search-backend-module-techdocs');
     if (config.has('search.elasticsearch')) {
       yield import('@backstage/plugin-search-backend-module-elasticsearch');
     }
@@ -53,18 +53,11 @@ backend.add(
 backend.add(import('@backstage/plugin-catalog-backend-module-github'));
 backend.add(import('@backstage/plugin-catalog-backend-module-github-org'));
 backend.add(import('@backstage/plugin-events-backend'));
-backend.add(import('@backstage/plugin-devtools-backend'));
-backend.add(import('@backstage/plugin-kubernetes-backend'));
 backend.add(
   import('@backstage/plugin-permission-backend-module-allow-all-policy'),
 );
 backend.add(import('@backstage/plugin-permission-backend'));
 backend.add(import('@backstage/plugin-proxy-backend'));
-backend.add(import('@backstage/plugin-scaffolder-backend'));
-backend.add(import('@backstage/plugin-scaffolder-backend-module-github'));
-backend.add(
-  import('@backstage/plugin-scaffolder-backend-module-notifications'),
-);
 backend.add(
   import('@backstage/plugin-catalog-backend-module-backstage-openapi'),
 );
@@ -74,6 +67,4 @@ backend.add(import('@backstage/plugin-signals-backend'));
 backend.add(import('@backstage/plugin-notifications-backend'));
 backend.add(rootSystemMetadataServiceFactory);
 
-backend.add(import('@backstage/plugin-events-backend-module-google-pubsub'));
-backend.add(import('@backstage/plugin-mcp-actions-backend'));
 backend.start();

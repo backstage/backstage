@@ -19,31 +19,22 @@ import {
   ShadcnButton as Button,
   Sheet,
   SheetContent,
+  SheetTitle,
 } from '@backstage/core-components';
-import { X } from 'lucide-react';
 import { useState } from 'react';
 
 export const TechDocsBuildLogsDrawerContent = ({
   buildLog,
-  onClose,
 }: {
   buildLog: string[];
-  onClose: () => void;
+  onClose?: () => void;
 }) => {
   const logText =
     buildLog.length === 0 ? 'Waiting for logs...' : buildLog.join('\n');
   return (
     <div className="flex flex-col h-full overflow-hidden">
       <div className="flex items-center justify-between flex-shrink-0">
-        <h2 className="text-xl font-semibold">Build Details</h2>
-        <Button
-          variant="ghost"
-          size="icon"
-          title="Close the drawer"
-          onClick={onClose}
-        >
-          <X className="h-4 w-4" />
-        </Button>
+        <SheetTitle>Build Details</SheetTitle>
       </div>
       <div className="flex-1 min-h-0">
         <LogViewer text={logText} classes={{ root: 'bg-background' }} />

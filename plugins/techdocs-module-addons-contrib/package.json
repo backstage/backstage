@@ -62,6 +62,7 @@
     "@material-ui/icons": "^4.9.1",
     "@react-hookz/web": "^24.0.0",
     "git-url-parse": "^15.0.0",
+    "mermaid": "^11.0.0",
     "photoswipe": "^5.3.7"
   },
   "devDependencies": {

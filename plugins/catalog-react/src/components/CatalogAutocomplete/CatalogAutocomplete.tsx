@@ -419,6 +419,16 @@ export function CatalogAutocomplete<
   );
 
   /* --------------------------------------------------------------------- */
+  /* Auto-focus input when dropdown opens                                   */
+  /* --------------------------------------------------------------------- */
+  useEffect(() => {
+    if (open) {
+      // Small delay to allow the input to render before focusing
+      requestAnimationFrame(() => inputRef.current?.focus());
+    }
+  }, [open]);
+
+  /* --------------------------------------------------------------------- */
   /* Scroll highlighted option into view                                    */
   /* --------------------------------------------------------------------- */
   useEffect(() => {
@@ -454,8 +464,9 @@ export function CatalogAutocomplete<
         role="listbox"
         {...listboxProps}
         className={cn(
-          'absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md',
-          'border border-border bg-popover p-1 text-popover-foreground shadow-md',
+          'absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-lg',
+          'border border-border bg-popover p-1 text-popover-foreground shadow-lg',
+          'animate-in fade-in-0 zoom-in-95 slide-in-from-top-2',
           listboxProps?.className,
         )}
       >
@@ -481,9 +492,10 @@ export function CatalogAutocomplete<
                 role="option"
                 aria-selected={selected}
                 className={cn(
-                  'relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none',
+                  'relative flex cursor-pointer select-none items-center rounded-md px-2.5 py-2 text-sm outline-none',
+                  'transition-colors duration-100',
                   highlighted && 'bg-accent text-accent-foreground',
-                  selected && !highlighted && 'bg-accent/50',
+                  selected && !highlighted && 'bg-primary/10 text-primary',
                   !highlighted &&
                     !selected &&
                     'hover:bg-accent hover:text-accent-foreground',
@@ -550,107 +562,104 @@ export function CatalogAutocomplete<
   /* --------------------------------------------------------------------- */
   /* Default input renderer                                                 */
   /* --------------------------------------------------------------------- */
+  const selectedCount =
+    multiple && Array.isArray(value) ? (value as T[]).length : 0;
+
   const renderDefaultInput = () => (
     <div className="relative">
+      {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
       <div
         className={cn(
-          'mt-6 flex flex-wrap items-center gap-1 w-full rounded-md border border-input bg-background text-sm',
-          'focus-within:border-primary focus-within:ring-1 focus-within:ring-primary',
-          'hover:border-muted-foreground/50',
+          'flex h-9 w-full items-center justify-between whitespace-nowrap rounded-lg border border-input bg-background px-3 py-2 text-sm shadow-sm ring-offset-background',
+          'transition-all duration-150',
+          'hover:border-primary/40 hover:shadow',
+          'focus-within:outline-none focus-within:ring-2 focus-within:ring-ring/30 focus-within:border-primary',
           disabled && 'cursor-not-allowed opacity-50',
-          size === 'small' ? 'px-1.5 py-1.5' : 'px-3 py-2',
           mergedTextFieldProps.className,
         )}
-      >
-        {/* Render selected value tags for multi-select mode */}
-        {multiple &&
-          Array.isArray(value) &&
-          (value as T[]).map((tagVal, tagIdx) => (
-            <span
-              key={tagIdx}
-              role="button"
-              tabIndex={0}
-              /* Accessible name derived from text content (getOptionLabel) */
-              className={cn(
-                'inline-flex items-center gap-0.5 rounded-sm bg-secondary',
-                'px-1.5 py-0.5 text-xs text-secondary-foreground',
-                'max-w-[calc(100%-2rem)] cursor-default',
-              )}
-              onClick={e => handleTagRemove(e, tagVal)}
-              onKeyDown={e => {
-                if (e.key === 'Backspace' || e.key === 'Delete') {
-                  handleTagRemove(e, tagVal);
-                }
-              }}
-            >
-              <span className="truncate">{getOptionLabel(tagVal)}</span>
-              <X
-                aria-hidden="true"
-                className="h-3 w-3 shrink-0 opacity-70 hover:opacity-100"
-              />
-            </span>
-          ))}
-        <input
-          ref={inputRef}
-          role="combobox"
-          type="text"
-          value={inputTextValue}
-          onChange={handleInputChange}
-          onKeyDown={handleKeyDown}
-          onFocus={handleOpen}
-          disabled={disabled}
-          required={mergedTextFieldProps.required}
-          placeholder={mergedTextFieldProps.placeholder}
-          id={id}
-          aria-expanded={open}
-          aria-controls={open ? listboxId : undefined}
-          aria-activedescendant={
-            open && highlightedIndex >= 0
-              ? `${listboxId}-option-${highlightedIndex}`
-              : undefined
+        onClick={e => {
+          if (!disabled) {
+            if (open) {
+              handleClose(e, 'toggleInput');
+            } else {
+              handleOpen(e);
+              inputRef.current?.focus();
+            }
           }
-          aria-autocomplete="list"
-          autoComplete="off"
-          className={cn(
-            'flex-1 bg-transparent outline-none text-sm text-foreground',
-            'placeholder:text-muted-foreground min-w-0',
-            'disabled:cursor-not-allowed',
-          )}
-        />
-        <div className="flex items-center shrink-0 gap-0.5">
-          {showClearIcon && (
+        }}
+      >
+        {/* Collapsed: show count or placeholder, matching SelectTrigger */}
+        {(() => {
+          if (!open && selectedCount > 0) {
+            return (
+              <div className="flex items-center gap-1.5 overflow-hidden flex-1 min-w-0">
+                <span className="truncate text-sm text-foreground">
+                  {selectedCount === 1
+                    ? getOptionLabel((value as T[])[0])
+                    : `${selectedCount} selected`}
+                </span>
+              </div>
+            );
+          }
+          if (!open) {
+            return (
+              <span className="text-muted-foreground text-sm line-clamp-1">
+                {mergedTextFieldProps.placeholder || 'All'}
+              </span>
+            );
+          }
+          return (
+            <input
+              ref={inputRef}
+              role="combobox"
+              type="text"
+              value={inputTextValue}
+              onChange={handleInputChange}
+              onKeyDown={handleKeyDown}
+              disabled={disabled}
+              required={mergedTextFieldProps.required}
+              placeholder="Search..."
+              id={id}
+              aria-expanded={open}
+              aria-controls={open ? listboxId : undefined}
+              aria-activedescendant={
+                open && highlightedIndex >= 0
+                  ? `${listboxId}-option-${highlightedIndex}`
+                  : undefined
+              }
+              aria-autocomplete="list"
+              autoComplete="off"
+              className={cn(
+                'flex-1 bg-transparent outline-none text-sm text-foreground',
+                'placeholder:text-muted-foreground min-w-0',
+                'disabled:cursor-not-allowed',
+              )}
+              onClick={e => e.stopPropagation()}
+            />
+          );
+        })()}
+        <div className="flex items-center shrink-0 gap-0.5 ml-1">
+          {showClearIcon && !open && (
             <button
               type="button"
-              onClick={handleClear}
-              className="p-0.5 text-muted-foreground hover:text-foreground"
+              onClick={e => {
+                e.stopPropagation();
+                handleClear(e);
+              }}
+              className="p-0.5 text-muted-foreground hover:text-foreground transition-colors"
               aria-label="Clear"
               tabIndex={-1}
             >
-              <X className="h-4 w-4" />
+              <X className="h-3.5 w-3.5" />
             </button>
           )}
-          <button
-            type="button"
-            onClick={e => {
-              if (open) {
-                handleClose(e, 'toggleInput');
-              } else {
-                handleOpen(e);
-                inputRef.current?.focus();
-              }
-            }}
-            className="p-0 m-0 text-muted-foreground hover:bg-transparent"
-            tabIndex={-1}
-            aria-label="Toggle options"
-          >
-            <ChevronDown
-              data-testid={`${name}-expand`}
-              className={cn(
-                'h-5 w-5 transition-transform',
-                open && 'rotate-180',
-              )}
-            />
-          </button>
+          <ChevronDown
+            data-testid={`${name}-expand`}
+            className={cn(
+              'h-4 w-4 text-muted-foreground transition-transform duration-150',
+              open && 'rotate-180',
+            )}
+          />
         </div>
       </div>
       {mergedTextFieldProps.helperText && (
@@ -725,17 +734,18 @@ export function CatalogAutocomplete<
    */
   return (
     <div ref={containerRef} className={cn('my-2 relative', className)}>
-      <label
-        {...LabelProps}
-        className={cn(
-          'relative block font-bold text-sm text-foreground',
-          '[&>span:first-child]:top-0 [&>span:first-child]:inset-inline-start-0 [&>span:first-child]:absolute',
-          LabelProps?.className,
-        )}
-      >
-        <span>{label}</span>
+      <div className="space-y-1">
+        <label
+          {...LabelProps}
+          className={cn(
+            'text-sm font-medium leading-none',
+            LabelProps?.className,
+          )}
+        >
+          {label}
+        </label>
         {comboboxContent}
-      </label>
+      </div>
       {renderDropdown()}
     </div>
   );

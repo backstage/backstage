@@ -218,6 +218,7 @@ export default app.createRoot(
     <AlertDisplay transientTimeoutMs={2500} />
     <OAuthRequestDialog />
     <SignalsDisplay />
+
     <AppRouter>
       <VisitListener />
       <Root>{routes}</Root>
