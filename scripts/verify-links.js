@@ -21,7 +21,7 @@ const { resolve: resolvePath, join: joinPath, dirname } = require('node:path');
 const fs = require('node:fs').promises;
 const { existsSync, statSync } = require('node:fs');
 
-// sub-docs-with-warnings is excluded since we intentionally added missing links on it to verify techdocs-cli build ---mkdocs-parameter-strict
+// sub-docs-with-warnings is excluded since we intentionally added missing links on it to verify techdocs-cli build --mkdocs-parameter-strict
 const IGNORED_DIRS = [
   'node_modules',
   'dist',
