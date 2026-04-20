@@ -31,12 +31,12 @@ Options:
   --docker-image <DOCKER_IMAGE>
   --etag <ETAG>
   --legacyCopyReadmeMdToIndexMd
+  --mkdocs-parameter-strict
   --no-docker
   --no-pull
   --omitTechdocsCoreMkdocsPlugin
   --output-dir <PATH>
   --runAsDefaultUser
-  --mkdocs-parameter-strict
   --site-name
   --source-dir <PATH>
   --techdocs-ref <HOST_TYPE:URL>
