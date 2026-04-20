@@ -63,13 +63,13 @@ function SelectItem({ option }: { option: Option }) {
 }
 
 function SelectSectionItems({ section }: { section: OptionSection }) {
-  const { ownProps } = useDefinition(SelectSectionDefinition, section);
-  const { classes, title, options } = ownProps;
+  const { ownProps } = useDefinition(SelectSectionDefinition, {});
+  const { classes } = ownProps;
 
   return (
     <ListBoxSection className={classes.root}>
-      <Header className={classes.header}>{title}</Header>
-      {options.map(option => (
+      <Header className={classes.header}>{section.title}</Header>
+      {section.options.map(option => (
         <SelectItem key={option.value} option={option} />
       ))}
     </ListBoxSection>

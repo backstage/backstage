@@ -131,9 +131,6 @@ export const SelectSectionDefinition = defineComponent<SelectSectionOwnProps>()(
       root: 'bui-SelectSection',
       header: 'bui-SelectSectionHeader',
     },
-    propDefs: {
-      title: {},
-      options: {},
-    },
+    propDefs: {},
   },
 );

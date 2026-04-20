@@ -93,7 +93,7 @@ export interface SelectListBoxOwnProps {
 }
 
 /** @internal */
-export interface SelectListBoxItemOwnProps {}
+export type SelectListBoxItemOwnProps = {};
 
 /** @internal */
-export type SelectSectionOwnProps = OptionSection;
+export type SelectSectionOwnProps = {};
