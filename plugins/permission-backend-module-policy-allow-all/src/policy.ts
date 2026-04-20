@@ -17,7 +17,6 @@
 import {
   AuthorizeResult,
   PolicyDecision,
-  isReadPermission,
 } from '@backstage/plugin-permission-common';
 import {
   PermissionPolicy,
@@ -27,15 +26,9 @@ import {
 
 export class AllowAllPermissionPolicy implements PermissionPolicy {
   async handle(
-    request: PolicyQuery,
+    _request: PolicyQuery,
     _user?: PolicyQueryUser,
   ): Promise<PolicyDecision> {
-    if (isReadPermission(request.permission)) {
-      return { result: AuthorizeResult.ALLOW };
-    }
-    if (request.permission.attributes.action === undefined) {
-      return { result: AuthorizeResult.ALLOW };
-    }
-    return { result: AuthorizeResult.DENY };
+    return { result: AuthorizeResult.ALLOW };
   }
 }
