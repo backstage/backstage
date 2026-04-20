@@ -1060,7 +1060,9 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
     });
 
     it('should accept valid offset and limit', async () => {
-      const response = await request(app).get('/').query({ offset: '0', limit: '10' });
+      const response = await request(app)
+        .get('/')
+        .query({ offset: '0', limit: '10' });
       expect(response.status).toEqual(200);
     });
   });
