@@ -923,7 +923,7 @@ className?: string</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Alert</h2>
       <div class="badges">
-        <label for="c-1-backstage-ui-alert-props" class="badge ok as-toggle">15 prop types</label>
+        <label for="c-1-backstage-ui-alert-props" class="badge ok as-toggle">16 prop types</label>
         
         <label for="c-1-backstage-ui-alert-stories" class="badge ok as-toggle">13 stories</label>
         
@@ -932,7 +932,7 @@ className?: string</code></pre>
     <div class="meta" title="./packages/ui/src/components/Alert/Alert.stories.tsx">backstage-ui-alert · ./packages/ui/src/components/Alert/Alert.stories.tsx</div>
     
     <div class="hint">A component for displaying alert messages with different status levels.</div>
-    <div class="kv"><span class="chip">remarks:  The Alert component supports multiple status variants (info, success, warning, danger) and can display icons, loading states, and custom actions. It automatically handles icon selection based on status when the icon prop is set to true.</span><span class="chip">example:  Basic usage with title only: ```tsx &lt;Alert status=&quot;info&quot; title=&quot;This is an informational message&quot; /&gt; ```</span><span class="chip">example:  With title and description: ```tsx &lt;Alert status=&quot;warning&quot; icon={true} title=&quot;Pending Review&quot; description=&quot;Please review the following items before proceeding.&quot; /&gt; ```</span><span class="chip">example:  With custom actions and loading state: ```tsx &lt;Alert status=&quot;success&quot; icon={true} title=&quot;Operation completed&quot; description=&quot;Your changes have been saved successfully.&quot; loading={isProcessing} customActions={ &lt;&gt; &lt;Button size=&quot;small&quot; variant=&quot;tertiary&quot;&gt;Dismiss&lt;/Button&gt; &lt;Button size=&quot;small&quot; variant=&quot;primary&quot;&gt;View&lt;/Button&gt; &lt;/&gt; } /&gt; ```</span><span class="chip">public:  </span></div>
+    <div class="kv"><span class="chip">remarks:  The Alert component supports multiple status variants (info, success, warning, danger) and can display icons, pending states, and custom actions. It automatically handles icon selection based on status when the icon prop is set to true.</span><span class="chip">example:  Basic usage with title only: ```tsx &lt;Alert status=&quot;info&quot; title=&quot;This is an informational message&quot; /&gt; ```</span><span class="chip">example:  With title and description: ```tsx &lt;Alert status=&quot;warning&quot; icon={true} title=&quot;Pending Review&quot; description=&quot;Please review the following items before proceeding.&quot; /&gt; ```</span><span class="chip">example:  With custom actions and pending state: ```tsx &lt;Alert status=&quot;success&quot; icon={true} title=&quot;Operation completed&quot; description=&quot;Your changes have been saved successfully.&quot; isPending={isProcessing} customActions={ &lt;&gt; &lt;Button size=&quot;small&quot; variant=&quot;tertiary&quot;&gt;Dismiss&lt;/Button&gt; &lt;Button size=&quot;small&quot; variant=&quot;primary&quot;&gt;View&lt;/Button&gt; &lt;/&gt; } /&gt; ```</span><span class="chip">public:  </span></div>
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
@@ -950,7 +950,7 @@ className?: string</code></pre>
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types <small>(react-docgen)</small></span>
-              <span class="badge ok">15 prop types</span>
+              <span class="badge ok">16 prop types</span>
             </div>
             <pre><code>Component: packages/ui/src/components/Alert/Alert.tsx::Alert</code></pre>
             <pre><code>Props:</code></pre>
@@ -962,6 +962,11 @@ description?: ReactNode
 
 icon?: boolean | ReactElement
 
+isPending?: boolean
+
+/**
+ * @deprecated Use `isPending` instead.
+ */
 loading?: boolean
 
 m?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;
@@ -1183,29 +1188,29 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
-                <span class="ex-name">Loading Variants</span>
+                <span class="ex-name">Pending Variants</span>
                 <span class="badge ok">story ok</span>
               </div>
               
               
-              <pre><code>const LoadingVariants = () =&gt; (
+              <pre><code>const PendingVariants = () =&gt; (
   &lt;Flex direction=&quot;column&quot; gap=&quot;4&quot;&gt;
     &lt;Text&gt;Info&lt;/Text&gt;
     &lt;Alert
       status=&quot;info&quot;
       icon={true}
-      loading
+      isPending
       title=&quot;Processing your request...&quot;
     /&gt;
 
     &lt;Text&gt;Success&lt;/Text&gt;
-    &lt;Alert status=&quot;success&quot; icon={true} loading title=&quot;Saving changes...&quot; /&gt;
+    &lt;Alert status=&quot;success&quot; icon={true} isPending title=&quot;Saving changes...&quot; /&gt;
 
     &lt;Text&gt;Warning&lt;/Text&gt;
     &lt;Alert
       status=&quot;warning&quot;
       icon={true}
-      loading
+      isPending
       title=&quot;Checking for issues...&quot;
     /&gt;
 
@@ -1213,7 +1218,7 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
     &lt;Alert
       status=&quot;danger&quot;
       icon={true}
-      loading
+      isPending
       title=&quot;Attempting recovery...&quot;
     /&gt;
   &lt;/Flex&gt;
@@ -1221,24 +1226,24 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
-                <span class="ex-name">Loading With Description</span>
+                <span class="ex-name">Pending With Description</span>
                 <span class="badge ok">story ok</span>
               </div>
               
               
-              <pre><code>const LoadingWithDescription = () =&gt; (
+              <pre><code>const PendingWithDescription = () =&gt; (
   &lt;Flex direction=&quot;column&quot; gap=&quot;4&quot;&gt;
     &lt;Alert
       status=&quot;info&quot;
       icon={true}
-      loading
+      isPending
       title=&quot;Processing your request&quot;
       description=&quot;This may take a few moments. Please do not close this window.&quot;
     /&gt;
     &lt;Alert
       status=&quot;success&quot;
       icon={true}
-      loading
+      isPending
       title=&quot;Deployment in Progress&quot;
       description=&quot;Your application is being deployed to production. You&#39;ll receive a notification when complete.&quot;
     /&gt;
@@ -2126,7 +2131,7 @@ width?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Button</h2>
       <div class="badges">
-        <label for="c-5-backstage-ui-button-props" class="badge ok as-toggle">8 prop types</label>
+        <label for="c-5-backstage-ui-button-props" class="badge ok as-toggle">9 prop types</label>
         
         <label for="c-5-backstage-ui-button-stories" class="badge ok as-toggle">11 stories</label>
         
@@ -2135,7 +2140,7 @@ width?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;</code></pre>
     <div class="meta" title="./packages/ui/src/components/Button/Button.stories.tsx">backstage-ui-button · ./packages/ui/src/components/Button/Button.stories.tsx</div>
     
     <div class="hint">A button component built on React Aria Components that provides accessible interactive elements for triggering actions.</div>
-    <div class="kv"><span class="chip">remarks:  The Button component supports multiple variants (primary, secondary, tertiary, danger), sizes (small, medium), and states including loading and disabled. It automatically handles keyboard navigation, focus management, and ARIA attributes for accessibility.</span><span class="chip">example:  Basic usage: ```tsx &lt;Button&gt;Click me&lt;/Button&gt; ```</span><span class="chip">example:  With icons and loading state: ```tsx &lt;Button variant=&quot;primary&quot; size=&quot;medium&quot; iconStart={&lt;IconComponent /&gt;} loading={isSubmitting} &gt; Submit &lt;/Button&gt; ```</span><span class="chip">public:  </span></div>
+    <div class="kv"><span class="chip">remarks:  The Button component supports multiple variants (primary, secondary, tertiary, danger), sizes (small, medium), and states including loading and disabled. It automatically handles keyboard navigation, focus management, and ARIA attributes for accessibility.</span><span class="chip">example:  Basic usage: ```tsx &lt;Button&gt;Click me&lt;/Button&gt; ```</span><span class="chip">example:  With icons and loading state: ```tsx &lt;Button variant=&quot;primary&quot; size=&quot;medium&quot; iconStart={&lt;IconComponent /&gt;} isPending={isSubmitting} &gt; Submit &lt;/Button&gt; ```</span><span class="chip">public:  </span></div>
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
@@ -2153,7 +2158,7 @@ width?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;</code></pre>
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types <small>(react-docgen)</small></span>
-              <span class="badge ok">8 prop types</span>
+              <span class="badge ok">9 prop types</span>
             </div>
             <pre><code>Component: packages/ui/src/components/Button/Button.tsx::Button</code></pre>
             <pre><code>Props:</code></pre>
@@ -2167,6 +2172,11 @@ iconEnd?: ReactElement
 
 iconStart?: ReactElement
 
+isPending?: boolean
+
+/**
+ * @deprecated Use `isPending` instead.
+ */
 loading?: boolean
 
 size?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;
@@ -2252,7 +2262,7 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
         &lt;Button variant=&quot;primary&quot; destructive isDisabled&gt;
           Disabled
         &lt;/Button&gt;
-        &lt;Button variant=&quot;primary&quot; destructive loading&gt;
+        &lt;Button variant=&quot;primary&quot; destructive isPending&gt;
           Loading
         &lt;/Button&gt;
       &lt;/Flex&gt;
@@ -2269,7 +2279,7 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
         &lt;Button variant=&quot;secondary&quot; destructive isDisabled&gt;
           Disabled
         &lt;/Button&gt;
-        &lt;Button variant=&quot;secondary&quot; destructive loading&gt;
+        &lt;Button variant=&quot;secondary&quot; destructive isPending&gt;
           Loading
         &lt;/Button&gt;
       &lt;/Flex&gt;
@@ -2286,7 +2296,7 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
         &lt;Button variant=&quot;tertiary&quot; destructive isDisabled&gt;
           Disabled
         &lt;/Button&gt;
-        &lt;Button variant=&quot;tertiary&quot; destructive loading&gt;
+        &lt;Button variant=&quot;tertiary&quot; destructive isPending&gt;
           Loading
         &lt;/Button&gt;
       &lt;/Flex&gt;
@@ -2402,23 +2412,23 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
-                <span class="ex-name">Loading</span>
+                <span class="ex-name">Pending</span>
                 <span class="badge ok">story ok</span>
               </div>
               
               
-              <pre><code>const Loading = () =&gt; {
-  const [isLoading, setIsLoading] = useState(false);
+              <pre><code>const Pending = () =&gt; {
+  const [isPending, setIsPending] = useState(false);
 
   const handleClick = () =&gt; {
-    setIsLoading(true);
+    setIsPending(true);
     setTimeout(() =&gt; {
-      setIsLoading(false);
+      setIsPending(false);
     }, 3000);
   };
 
   return (
-    &lt;Button variant=&quot;primary&quot; loading={isLoading} onPress={handleClick}&gt;
+    &lt;Button variant=&quot;primary&quot; isPending={isPending} onPress={handleClick}&gt;
       Load more items
     &lt;/Button&gt;
   );
@@ -2426,79 +2436,79 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
-                <span class="ex-name">Loading Variants</span>
+                <span class="ex-name">Pending Variants</span>
                 <span class="badge ok">story ok</span>
               </div>
               
               
-              <pre><code>const LoadingVariants = () =&gt; (
+              <pre><code>const PendingVariants = () =&gt; (
   &lt;Flex direction=&quot;column&quot; gap=&quot;4&quot;&gt;
     &lt;Text&gt;Primary&lt;/Text&gt;
     &lt;Flex align=&quot;center&quot; gap=&quot;4&quot;&gt;
-      &lt;Button variant=&quot;primary&quot; size=&quot;small&quot; loading&gt;
+      &lt;Button variant=&quot;primary&quot; size=&quot;small&quot; isPending&gt;
         Small Loading
       &lt;/Button&gt;
-      &lt;Button variant=&quot;primary&quot; size=&quot;medium&quot; loading&gt;
+      &lt;Button variant=&quot;primary&quot; size=&quot;medium&quot; isPending&gt;
         Medium Loading
       &lt;/Button&gt;
-      &lt;Button variant=&quot;primary&quot; loading iconStart={&lt;RiCloudLine /&gt;}&gt;
+      &lt;Button variant=&quot;primary&quot; isPending iconStart={&lt;RiCloudLine /&gt;}&gt;
         With Icon
       &lt;/Button&gt;
     &lt;/Flex&gt;
 
     &lt;Text&gt;Secondary&lt;/Text&gt;
     &lt;Flex align=&quot;center&quot; gap=&quot;4&quot;&gt;
-      &lt;Button variant=&quot;secondary&quot; size=&quot;small&quot; loading&gt;
+      &lt;Button variant=&quot;secondary&quot; size=&quot;small&quot; isPending&gt;
         Small Loading
       &lt;/Button&gt;
-      &lt;Button variant=&quot;secondary&quot; size=&quot;medium&quot; loading&gt;
+      &lt;Button variant=&quot;secondary&quot; size=&quot;medium&quot; isPending&gt;
         Medium Loading
       &lt;/Button&gt;
-      &lt;Button variant=&quot;secondary&quot; loading iconStart={&lt;RiCloudLine /&gt;}&gt;
+      &lt;Button variant=&quot;secondary&quot; isPending iconStart={&lt;RiCloudLine /&gt;}&gt;
         With Icon
       &lt;/Button&gt;
     &lt;/Flex&gt;
 
     &lt;Text&gt;Tertiary&lt;/Text&gt;
     &lt;Flex align=&quot;center&quot; gap=&quot;4&quot;&gt;
-      &lt;Button variant=&quot;tertiary&quot; size=&quot;small&quot; loading&gt;
+      &lt;Button variant=&quot;tertiary&quot; size=&quot;small&quot; isPending&gt;
         Small Loading
       &lt;/Button&gt;
-      &lt;Button variant=&quot;tertiary&quot; size=&quot;medium&quot; loading&gt;
+      &lt;Button variant=&quot;tertiary&quot; size=&quot;medium&quot; isPending&gt;
         Medium Loading
       &lt;/Button&gt;
-      &lt;Button variant=&quot;tertiary&quot; loading iconStart={&lt;RiCloudLine /&gt;}&gt;
+      &lt;Button variant=&quot;tertiary&quot; isPending iconStart={&lt;RiCloudLine /&gt;}&gt;
         With Icon
       &lt;/Button&gt;
     &lt;/Flex&gt;
 
     &lt;Text&gt;Primary Destructive&lt;/Text&gt;
     &lt;Flex align=&quot;center&quot; gap=&quot;4&quot;&gt;
-      &lt;Button variant=&quot;primary&quot; destructive size=&quot;small&quot; loading&gt;
+      &lt;Button variant=&quot;primary&quot; destructive size=&quot;small&quot; isPending&gt;
         Small Loading
       &lt;/Button&gt;
-      &lt;Button variant=&quot;primary&quot; destructive size=&quot;medium&quot; loading&gt;
+      &lt;Button variant=&quot;primary&quot; destructive size=&quot;medium&quot; isPending&gt;
         Medium Loading
       &lt;/Button&gt;
       &lt;Button
         variant=&quot;primary&quot;
         destructive
-        loading
+        isPending
         iconStart={&lt;RiCloudLine /&gt;}
       &gt;
         With Icon
       &lt;/Button&gt;
     &lt;/Flex&gt;
 
-    &lt;Text&gt;Loading vs Disabled&lt;/Text&gt;
+    &lt;Text&gt;Pending vs Disabled&lt;/Text&gt;
     &lt;Flex align=&quot;center&quot; gap=&quot;4&quot;&gt;
-      &lt;Button variant=&quot;primary&quot; loading&gt;
+      &lt;Button variant=&quot;primary&quot; isPending&gt;
         Loading
       &lt;/Button&gt;
       &lt;Button variant=&quot;primary&quot; isDisabled&gt;
         Disabled
       &lt;/Button&gt;
-      &lt;Button variant=&quot;primary&quot; loading isDisabled&gt;
+      &lt;Button variant=&quot;primary&quot; isPending isDisabled&gt;
         Both (Disabled Wins)
       &lt;/Button&gt;
     &lt;/Flex&gt;
@@ -2565,7 +2575,7 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> ButtonIcon</h2>
       <div class="badges">
-        <label for="c-6-backstage-ui-buttonicon-props" class="badge ok as-toggle">5 prop types</label>
+        <label for="c-6-backstage-ui-buttonicon-props" class="badge ok as-toggle">6 prop types</label>
         
         <label for="c-6-backstage-ui-buttonicon-stories" class="badge ok as-toggle">7 stories</label>
         
@@ -2592,7 +2602,7 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types <small>(react-docgen)</small></span>
-              <span class="badge ok">5 prop types</span>
+              <span class="badge ok">6 prop types</span>
             </div>
             <pre><code>Component: packages/ui/src/components/ButtonIcon/ButtonIcon.tsx::ButtonIcon</code></pre>
             <pre><code>Props:</code></pre>
@@ -2600,6 +2610,11 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
 
 icon?: ReactElement
 
+isPending?: boolean
+
+/**
+ * @deprecated Use `isPending` instead.
+ */
 loading?: boolean
 
 size?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;
@@ -2694,18 +2709,18 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
-                <span class="ex-name">Loading</span>
+                <span class="ex-name">Pending</span>
                 <span class="badge ok">story ok</span>
               </div>
               
               
-              <pre><code>const Loading = () =&gt; {
-  const [isLoading, setIsLoading] = useState(false);
+              <pre><code>const Pending = () =&gt; {
+  const [isPending, setIsPending] = useState(false);
 
   const handleClick = () =&gt; {
-    setIsLoading(true);
+    setIsPending(true);
     setTimeout(() =&gt; {
-      setIsLoading(false);
+      setIsPending(false);
     }, 3000);
   };
 
@@ -2713,7 +2728,7 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
     &lt;ButtonIcon
       variant=&quot;primary&quot;
       icon={&lt;RiCloudLine /&gt;}
-      loading={isLoading}
+      isPending={isPending}
       onPress={handleClick}
     /&gt;
   );
@@ -2721,12 +2736,12 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
-                <span class="ex-name">Loading Variants</span>
+                <span class="ex-name">Pending Variants</span>
                 <span class="badge ok">story ok</span>
               </div>
               
               
-              <pre><code>const LoadingVariants = () =&gt; (
+              <pre><code>const PendingVariants = () =&gt; (
   &lt;Flex direction=&quot;column&quot; gap=&quot;4&quot;&gt;
     &lt;Text&gt;Primary&lt;/Text&gt;
     &lt;Flex align=&quot;center&quot; gap=&quot;4&quot;&gt;
@@ -2734,13 +2749,13 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
         variant=&quot;primary&quot;
         size=&quot;small&quot;
         icon={&lt;RiCloudLine /&gt;}
-        loading
+        isPending
       /&gt;
       &lt;ButtonIcon
         variant=&quot;primary&quot;
         size=&quot;medium&quot;
         icon={&lt;RiCloudLine /&gt;}
-        loading
+        isPending
       /&gt;
     &lt;/Flex&gt;
 
@@ -2750,13 +2765,13 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
         variant=&quot;secondary&quot;
         size=&quot;small&quot;
         icon={&lt;RiCloudLine /&gt;}
-        loading
+        isPending
       /&gt;
       &lt;ButtonIcon
         variant=&quot;secondary&quot;
         size=&quot;medium&quot;
         icon={&lt;RiCloudLine /&gt;}
-        loading
+        isPending
       /&gt;
     &lt;/Flex&gt;
 
@@ -2766,24 +2781,24 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
         variant=&quot;tertiary&quot;
         size=&quot;small&quot;
         icon={&lt;RiCloudLine /&gt;}
-        loading
+        isPending
       /&gt;
       &lt;ButtonIcon
         variant=&quot;tertiary&quot;
         size=&quot;medium&quot;
         icon={&lt;RiCloudLine /&gt;}
-        loading
+        isPending
       /&gt;
     &lt;/Flex&gt;
 
-    &lt;Text&gt;Loading vs Disabled&lt;/Text&gt;
+    &lt;Text&gt;Pending vs Disabled&lt;/Text&gt;
     &lt;Flex align=&quot;center&quot; gap=&quot;4&quot;&gt;
-      &lt;ButtonIcon variant=&quot;primary&quot; icon={&lt;RiCloudLine /&gt;} loading /&gt;
+      &lt;ButtonIcon variant=&quot;primary&quot; icon={&lt;RiCloudLine /&gt;} isPending /&gt;
       &lt;ButtonIcon variant=&quot;primary&quot; icon={&lt;RiCloudLine /&gt;} isDisabled /&gt;
       &lt;ButtonIcon
         variant=&quot;primary&quot;
         icon={&lt;RiCloudLine /&gt;}
-        loading
+        isPending
         isDisabled
       /&gt;
     &lt;/Flex&gt;
@@ -4286,7 +4301,7 @@ style?: React.CSSProperties</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> dev</h2>
       <div class="badges">
-        <label for="c-14-backstage-ui-table-dev-props" class="badge ok as-toggle">13 prop types</label>
+        <label for="c-14-backstage-ui-table-dev-props" class="badge ok as-toggle">14 prop types</label>
         
         <label for="c-14-backstage-ui-table-dev-stories" class="badge ok as-toggle">24 stories</label>
         
@@ -4313,7 +4328,7 @@ style?: React.CSSProperties</code></pre>
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types <small>(react-docgen)</small></span>
-              <span class="badge ok">13 prop types</span>
+              <span class="badge ok">14 prop types</span>
             </div>
             <pre><code>Component: packages/ui/src/components/Table/components/Table.tsx::Table</code></pre>
             <pre><code>Props:</code></pre>
@@ -4327,8 +4342,13 @@ emptyState?: ReactNode
 
 error?: Error
 
+isPending?: boolean = false
+
 isStale?: boolean = false
 
+/**
+ * @deprecated Use `isPending` instead.
+ */
 loading?: boolean = false
 
 pagination: NoPagination | PagePagination
@@ -14859,7 +14879,7 @@ import { RiArrowRightSLine, RiCloudLine, RiStarFill, RiStarLine } from "@remixic
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> visual</h2>
       <div class="badges">
-        <label for="c-47-backstage-ui-table-visual-props" class="badge ok as-toggle">13 prop types</label>
+        <label for="c-47-backstage-ui-table-visual-props" class="badge ok as-toggle">14 prop types</label>
         
         <label for="c-47-backstage-ui-table-visual-stories" class="badge ok as-toggle">9 stories</label>
         
@@ -14886,7 +14906,7 @@ import { RiArrowRightSLine, RiCloudLine, RiStarFill, RiStarLine } from "@remixic
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types <small>(react-docgen)</small></span>
-              <span class="badge ok">13 prop types</span>
+              <span class="badge ok">14 prop types</span>
             </div>
             <pre><code>Component: packages/ui/src/components/Table/components/Table.tsx::Table</code></pre>
             <pre><code>Props:</code></pre>
@@ -14900,8 +14920,13 @@ emptyState?: ReactNode
 
 error?: Error
 
+isPending?: boolean = false
+
 isStale?: boolean = false
 
+/**
+ * @deprecated Use `isPending` instead.
+ */
 loading?: boolean = false
 
 pagination: NoPagination | PagePagination
@@ -15177,7 +15202,7 @@ virtualized?: | boolean
     &lt;Table
       columnConfig={columns}
       data={undefined}
-      loading={true}
+      isPending
       pagination={{ type: &#39;none&#39; }}
     /&gt;
   );
