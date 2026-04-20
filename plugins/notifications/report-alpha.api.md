@@ -48,8 +48,8 @@ const _default: OverridableFrontendPlugin<
         title: string | undefined;
       };
       configInput: {
-        title?: string | undefined;
         path?: string | undefined;
+        title?: string | undefined;
       };
       output:
         | ExtensionDataRef<string, 'core.routing.path', {}>
@@ -108,7 +108,6 @@ const _default: OverridableFrontendPlugin<
         >;
       };
       params: {
-        defaultPath?: [Error: `Use the 'path' param instead`];
         path: string;
         title?: string;
         icon?: IconElement;
@@ -121,7 +120,7 @@ const _default: OverridableFrontendPlugin<
 >;
 export default _default;
 
-// @alpha (undocumented)
+// @alpha @deprecated (undocumented)
 export const notificationsTranslationRef: TranslationRef<
   'plugin.notifications',
   {
@@ -138,8 +137,9 @@ export const notificationsTranslationRef: TranslationRef<
     readonly 'table.bulkActions.returnSelectedAmongUnread': 'Return selected among unread';
     readonly 'table.bulkActions.saveSelectedForLater': 'Save selected for later';
     readonly 'table.bulkActions.undoSaveForSelected': 'Undo save for selected';
+    readonly 'table.confirmDialog.cancel': 'Cancel';
     readonly 'table.confirmDialog.title': 'Are you sure?';
-    readonly 'table.confirmDialog.markAllReadDescription': 'Mark <b>all</b> notifications as <b>read</b>.';
+    readonly 'table.confirmDialog.markAllReadDescription': 'Mark all notifications as read.';
     readonly 'table.confirmDialog.markAllReadConfirmation': 'Mark All';
     readonly 'filters.view.all': 'All';
     readonly 'filters.view.label': 'View';

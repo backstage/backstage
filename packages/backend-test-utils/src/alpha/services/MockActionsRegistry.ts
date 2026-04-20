@@ -17,9 +17,9 @@ import {
   BackstageCredentials,
   LoggerService,
 } from '@backstage/backend-plugin-api';
-import { ForwardedError, InputError, NotFoundError } from '@backstage/errors';
+import { InputError, NotFoundError } from '@backstage/errors';
 import { JsonObject, JsonValue } from '@backstage/types';
-import { z, AnyZodObject } from 'zod';
+import { z, AnyZodObject } from 'zod/v3';
 import zodToJsonSchema from 'zod-to-json-schema';
 import { mockCredentials } from '../../services';
 import {
@@ -82,6 +82,7 @@ export class MockActionsRegistry
     return {
       actions: Array.from(this.actions.entries()).map(([id, action]) => ({
         id,
+        pluginId: 'test',
         name: action.name,
         title: action.title,
         description: action.description,
@@ -90,6 +91,7 @@ export class MockActionsRegistry
           idempotent: action.attributes?.idempotent ?? false,
           readOnly: action.attributes?.readOnly ?? false,
         },
+        examples: action.examples,
         schema: {
           input: action.schema?.input
             ? zodToJsonSchema(action.schema.input(z))
@@ -126,31 +128,24 @@ export class MockActionsRegistry
       throw new InputError(`Invalid input to action "${opts.id}"`, input.error);
     }
 
-    try {
-      const result = await action.action({
-        input: input.data,
-        credentials: opts.credentials ?? mockCredentials.none(),
-        logger: this.logger,
-      });
+    const result = await action.action({
+      input: input.data,
+      credentials: opts.credentials ?? mockCredentials.none(),
+      logger: this.logger,
+    });
 
-      const output = action.schema?.output
-        ? action.schema.output(z).safeParse(result?.output)
-        : ({ success: true, data: result?.output } as const);
+    const output = action.schema?.output
+      ? action.schema.output(z).safeParse(result?.output)
+      : ({ success: true, data: result?.output } as const);
 
-      if (!output.success) {
-        throw new InputError(
-          `Invalid output from action "${opts.id}"`,
-          output.error,
-        );
-      }
-
-      return { output: output.data };
-    } catch (error) {
-      throw new ForwardedError(
-        `Failed execution of action "${opts.id}"`,
-        error,
+    if (!output.success) {
+      throw new InputError(
+        `Invalid output from action "${opts.id}"`,
+        output.error,
       );
     }
+
+    return { output: output.data };
   }
 
   register<

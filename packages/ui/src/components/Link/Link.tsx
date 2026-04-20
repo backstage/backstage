@@ -16,52 +16,33 @@
 
 import { forwardRef, useRef } from 'react';
 import { useLink } from 'react-aria';
-import clsx from 'clsx';
-import { useStyles } from '../../hooks/useStyles';
-import { LinkDefinition } from './definition';
 import type { LinkProps } from './types';
-import { InternalLinkProvider } from '../InternalLinkProvider';
-import styles from './Link.module.css';
+import { useDefinition } from '../../hooks/useDefinition';
+import { LinkDefinition } from './definition';
+import { getNodeText } from '../../analytics/getNodeText';
 
 const LinkInternal = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
-  const { classNames, dataAttributes, cleanedProps } = useStyles(
+  const { ownProps, restProps, dataAttributes, analytics } = useDefinition(
     LinkDefinition,
-    {
-      variant: 'body',
-      weight: 'regular',
-      color: 'primary',
-      ...props,
-    },
+    props,
   );
-
-  const {
-    className,
-    href,
-    title,
-    children,
-    onPress,
-    variant,
-    weight,
-    color,
-    truncate,
-    standalone,
-    slot,
-    ...restProps
-  } = cleanedProps;
+  const { classes, title, children } = ownProps;
 
   const internalRef = useRef<HTMLAnchorElement>(null);
   const linkRef = (ref || internalRef) as React.RefObject<HTMLAnchorElement>;
 
-  // Use useLink hook to get link props
-  // For internal links, this will use the RouterProvider's navigate function
-  const { linkProps } = useLink(
-    {
-      href,
-      onPress,
-      ...restProps,
-    },
-    linkRef,
-  );
+  const { linkProps } = useLink(restProps, linkRef);
+
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    linkProps.onClick?.(e);
+    const text =
+      restProps['aria-label'] ??
+      getNodeText(children) ??
+      String(restProps.href ?? '');
+    analytics.captureEvent('click', text, {
+      attributes: { to: String(restProps.href ?? '') },
+    });
+  };
 
   return (
     <a
@@ -69,9 +50,9 @@ const LinkInternal = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
       {...dataAttributes}
       {...(restProps as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
       ref={linkRef}
-      href={href}
       title={title}
-      className={clsx(classNames.root, styles[classNames.root], className)}
+      className={classes.root}
+      onClick={handleClick}
     >
       {children}
     </a>
@@ -80,13 +61,13 @@ const LinkInternal = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
 
 LinkInternal.displayName = 'LinkInternal';
 
-/** @public */
+/**
+ * A styled anchor element that supports analytics event tracking on click.
+ *
+ * @public
+ */
 export const Link = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
-  return (
-    <InternalLinkProvider href={props.href}>
-      <LinkInternal {...props} ref={ref} />
-    </InternalLinkProvider>
-  );
+  return <LinkInternal {...props} ref={ref} />;
 });
 
 Link.displayName = 'Link';

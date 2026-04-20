@@ -55,7 +55,9 @@ describe('api-docs plugin entity extensions', () => {
         ],
       });
 
-      expect(await screen.findByText('My API')).toBeInTheDocument();
+      expect(
+        await screen.findByText('My API', {}, { timeout: 10000 }),
+      ).toBeInTheDocument();
     });
 
     it('should not render for non-API entities', async () => {
@@ -111,7 +113,9 @@ describe('api-docs plugin entity extensions', () => {
         ],
       });
 
-      expect(await screen.findByText('pet-api')).toBeInTheDocument();
+      expect(
+        await screen.findByText('pet-api', {}, { timeout: 10000 }),
+      ).toBeInTheDocument();
     });
   });
 
@@ -140,7 +144,9 @@ describe('api-docs plugin entity extensions', () => {
         ],
       });
 
-      expect(await screen.findByText('Content API')).toBeInTheDocument();
+      expect(
+        await screen.findByText('Content API', {}, { timeout: 10000 }),
+      ).toBeInTheDocument();
     });
 
     it('should not render for non-API entities', async () => {

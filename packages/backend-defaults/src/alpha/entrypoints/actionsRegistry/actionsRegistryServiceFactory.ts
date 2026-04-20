@@ -32,13 +32,25 @@ export const actionsRegistryServiceFactory = createServiceFactory({
     httpAuth: coreServices.httpAuth,
     logger: coreServices.logger,
     auth: coreServices.auth,
+    permissions: coreServices.permissions,
+    permissionsRegistry: coreServices.permissionsRegistry,
   },
-  factory: ({ metadata, httpRouter, httpAuth, logger, auth }) => {
+  factory: ({
+    metadata,
+    httpRouter,
+    httpAuth,
+    logger,
+    auth,
+    permissions,
+    permissionsRegistry,
+  }) => {
     const actionsRegistryService = DefaultActionsRegistryService.create({
       httpAuth,
       logger,
       auth,
       metadata,
+      permissions,
+      permissionsRegistry,
     });
 
     httpRouter.use(actionsRegistryService.createRouter());

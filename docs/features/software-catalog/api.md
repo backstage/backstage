@@ -150,7 +150,54 @@ Some more real world usable examples:
 
 #### Full text filtering
 
-TODO
+You can perform a text search across entity fields using the `fullTextFilterTerm`
+query parameter. This performs a case-insensitive substring match against the
+values in the entity YAML fields.
+
+By default, when no `fullTextFilterFields` parameter is specified, the search
+runs against the current sort field (from `orderField`), or `metadata.uid` if
+no sort field is set. This means that without specifying fields explicitly, the
+search may not match against the fields you expect.
+
+To control which fields are searched, pass the `fullTextFilterFields` query
+parameter as a comma-separated list of entity field paths.
+
+Query parameters:
+
+- `fullTextFilterTerm` - The text to search for (case insensitive, substring match)
+- `fullTextFilterFields` - A comma-separated list of entity field paths to
+  search against (e.g. `metadata.name,metadata.title`)
+
+Example:
+
+```text
+/entities/by-query?fullTextFilterTerm=my-service&fullTextFilterFields=metadata.name,metadata.title
+
+  Return entities whose metadata.name OR metadata.title contains "my-service"
+```
+
+Some more real world usable examples:
+
+- Search for components by name:
+
+  `/entities/by-query?filter=kind=component&fullTextFilterTerm=payment&fullTextFilterFields=metadata.name`
+
+- Search across both name and title:
+
+  `/entities/by-query?filter=kind=system&fullTextFilterTerm=platform&fullTextFilterFields=metadata.name,metadata.title`
+
+- Combine with other filters (e.g. owned by a specific group):
+
+  `/entities/by-query?filter=kind=component,relations.ownedBy=group:default/my-team&fullTextFilterTerm=api&fullTextFilterFields=metadata.name`
+
+:::note Note
+
+Full text filtering is mutually exclusive with cursor-based pagination. When a
+`cursor` is provided, `fullTextFilterTerm` and `fullTextFilterFields` are
+ignored — the cursor already encodes the original filter parameters from the
+initial request.
+
+:::
 
 #### Field selection
 
@@ -209,6 +256,191 @@ if `prevCursor` exists, it can be used to retrieve the previous batch of entitie
   **NOTE**: [`filter`, `orderField`, `fullTextFilter`] and `cursor` are mutually exclusive. This means that,
   it isn't possible to change any of [`filter`, `orderField`, `fullTextFilter`] when passing `cursor` as query parameters,
   as changing any of these properties will affect pagination. If any of `filter`, `orderField`, `fullTextFilter` is specified together with `cursor`, only the latter is taken into consideration.
+
+### `POST /entities/by-query`
+
+This supports the same features as the `GET` variant, but in a `POST` body to
+not have to abide by URL length limits. Additionally, it supports advanced, more
+expressive querying format - see below. The response format is identical.
+
+#### Querying by filter predicate
+
+You can pass in a filter predicate to select a subset of entities in the
+catalog. They are comprised of an optional logical expression tree (using
+`$all`, `$any`, `$not`), ending in filter sets that can have custom matchers
+(e.g. `$exists`, `$in`, `$hasPrefix`, `$contains`).
+
+This is an example of what such a filter predicate expression might look like:
+
+```js
+{
+  "query": {
+    "$all": [
+      {
+        "kind": "Component",
+        "spec.type": { "$in": ["service", "website"] }
+      },
+      {
+        "$not": {
+          "metadata.annotations.backstage.io/orphan": "true"
+        }
+      }
+    ]
+  }
+}
+```
+
+A filter set is an object whose keys are dot separated paths into an object, and
+the values are either primitives (string, number, or boolean) or custom matchers
+as per below. An example of a simple such filter set is:
+
+```js
+// All of the following must be true for a given entity (there's an
+// implicit AND between them)
+{
+  // The kind field is matched against a literal, case insensitively
+  "kind": "Component",
+  // The type field inside the spec is matched using a custom matcher, see below
+  "spec.type": { "$in": ["service", "website"] }
+}
+```
+
+The root of the query is always an object, whether there is a logic expression
+tree or not. Nodes with a single key that starts with a `$` sign have special
+meaning.
+
+- `$not`: Logical negation.
+
+  Its value must be a single expression. Example:
+
+  ```js
+  // Matches entities that do NOT have kind Component
+  {
+    "$not": {
+      "kind": "Component",
+    }
+  }
+  ```
+
+  Note that `$not` cannot be used in a right hand side value matcher.
+
+  ```js
+  // ❌ WRONG
+  { "kind": { "$not": "Component" } }
+  // ✅ CORRECT
+  { "$not": { "kind": "Component" } }
+  ```
+
+- `$all`: Require that all given expressions match each entity.
+
+  Its value must be an array of expressions. Example:
+
+  ```js
+  // Matches entities that BOTH have kind Component and type website
+  {
+    "$all": [
+      { "kind": "Component" },
+      { "spec.type": "website" }
+    ]
+  }
+  ```
+
+  An empty array always matches every entity.
+
+- `$any`: Require that at least one of a set of expressions match a given entity.
+
+  Its value must be an array of expressions. Example:
+
+  ```js
+  // Matches entities that EITHER have kind Component or type website
+  {
+    "$any": [
+      { "kind": "Component" },
+      { "spec.type": "website" }
+    ]
+  }
+  ```
+
+  An empty array never matches anything.
+
+- `$exists`: Assert on the existence of fields.
+
+  Its value is either `true`, meaning that the field must exist on the entity
+  (no matter what its value), or `false`, meaning that it must not exist.
+  Example:
+
+  ```js
+  // Matches entities that DO NOT have that annotation, ignoring what the
+  // value might be
+  {
+    "metadata.annotations.backstage.io/orphan": {
+      "$exists": false
+    },
+  }
+  ```
+
+- `$in`: Assert that a field has any of a set of primitive values.
+
+  Its value must be an array of string, number, and/or boolean values. Example:
+
+  ```js
+  // Matches entities whose type is EITHER service or website
+  {
+    "spec.type": {
+      "$in": ["service", "website"]
+    }
+  }
+  ```
+
+  The matching is case insensitive. An empty array never matches anything.
+
+- `$hasPrefix`: Assert that a field is a string that starts with a certain prefix text.
+
+  Its value is a string. Example:
+
+  ```js
+  // Matches entities whose project slug annotation starts with "backstage/"
+  {
+    "metadata.annotations.github.com/project-slug": {
+      "$hasPrefix": "backstage/"
+    }
+  }
+  ```
+
+  The matching is case insensitive, and captures both exact matches and strings
+  that start with the given prefix.
+
+- `$contains`: Assert that an array contains an element that matches the given expression.
+
+  There is only limited support for this matcher. One use case is for relations:
+
+  ```js
+  {
+    // Specifically type and (optionally) targetRef supported, and only
+    // with equality or "$in" for the targetRef
+    "relations": {
+      "$contains": {
+        "type": "ownedBy",
+        "targetRef": {
+          "$in": ["user:default/foo", "group:default/bar"]
+        }
+      }
+    }
+  }
+  ```
+
+  The other use case is for arrays where you match with a primitive value, such
+  as tags. Example:
+
+  ```js
+  {
+    // Works for array fields whose items are primitive values
+    // (typically strings, but numbers and booleans are also supported)
+    "metadata.tags": {
+      "$contains": "java"
+    }
+  }
+  ```
 
 ### `GET /entities`
 

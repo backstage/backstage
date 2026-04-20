@@ -17,12 +17,11 @@
 import { forwardRef } from 'react';
 import { useId } from 'react-aria';
 import { OverlayArrow, Popover as AriaPopover } from 'react-aria-components';
-import clsx from 'clsx';
 import { PopoverProps } from './types';
-import { useStyles } from '../../hooks/useStyles';
+import { useDefinition } from '../../hooks/useDefinition';
 import { PopoverDefinition } from './definition';
-import styles from './Popover.module.css';
 import { Box } from '../Box';
+import { BgReset } from '../../hooks/useBg';
 
 /**
  * A popover component built on React Aria Components that displays floating
@@ -61,24 +60,18 @@ import { Box } from '../Box';
  */
 export const Popover = forwardRef<HTMLDivElement, PopoverProps>(
   (props, ref) => {
-    const { classNames, cleanedProps } = useStyles(PopoverDefinition, props);
-    const { className, children, hideArrow, ...rest } = cleanedProps;
+    const { ownProps, restProps } = useDefinition(PopoverDefinition, props);
+    const { classes, children, hideArrow } = ownProps;
     const svgPathId = useId();
 
     return (
-      <AriaPopover
-        className={clsx(classNames.root, styles[classNames.root], className)}
-        {...rest}
-        ref={ref}
-      >
+      <AriaPopover className={classes.root} {...restProps} ref={ref}>
         {({ trigger }) => (
           <>
             {!hideArrow &&
               trigger !== 'MenuTrigger' &&
               trigger !== 'SubmenuTrigger' && (
-                <OverlayArrow
-                  className={clsx(classNames.arrow, styles[classNames.arrow])}
-                >
+                <OverlayArrow className={classes.arrow}>
                   <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                     <defs>
                       <path
@@ -95,12 +88,11 @@ export const Popover = forwardRef<HTMLDivElement, PopoverProps>(
                   </svg>
                 </OverlayArrow>
               )}
-            <Box
-              bg="neutral-1"
-              className={clsx(classNames.content, styles[classNames.content])}
-            >
-              {children}
-            </Box>
+            <BgReset>
+              <Box bg="neutral" className={classes.content}>
+                {children}
+              </Box>
+            </BgReset>
           </>
         )}
       </AriaPopover>

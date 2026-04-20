@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-app",
-  "version": "0.4.1-next.0",
+  "version": "0.4.3",
   "backstage": {
     "role": "frontend-plugin",
     "pluginId": "app",
@@ -53,6 +53,7 @@
   "dependencies": {
     "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
+    "@backstage/filter-predicates": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/integration-react": "workspace:^",
     "@backstage/plugin-app-react": "workspace:^",
@@ -65,8 +66,13 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.61",
     "@react-hookz/web": "^24.0.0",
+    "@remixicon/react": "^4.6.0",
+    "motion": "^12.0.0",
+    "react-aria": "~3.48.0",
+    "react-stately": "~3.46.0",
     "react-use": "^17.2.4",
-    "zod": "^3.25.76"
+    "zen-observable": "^0.10.0",
+    "zod": "^4.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

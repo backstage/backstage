@@ -19,3 +19,9 @@ import { catalogModuleGitlabDiscoveryEntityProvider } from './module/catalogModu
 /** @alpha */
 const _feature = catalogModuleGitlabDiscoveryEntityProvider;
 export default _feature;
+
+export {
+  analyzeGitLabWebhookEvent,
+  type AnalyzeWebhookEventOptions,
+  type AnalyzeWebhookEventResult,
+} from './events/analyzeGitLabWebhookEvent';

@@ -16,20 +16,15 @@
 
 import { createExtensionPoint } from '@backstage/backend-plugin-api';
 import { Entity, Validators } from '@backstage/catalog-model';
+import { CatalogModelSource } from '@backstage/catalog-model/alpha';
 import {
   CatalogProcessor,
   CatalogProcessorParser,
-  EntitiesSearchFilter,
   EntityProvider,
-  PlaceholderResolver,
   LocationAnalyzer,
+  PlaceholderResolver,
   ScmLocationAnalyzer,
 } from '@backstage/plugin-catalog-node';
-import {
-  Permission,
-  PermissionRuleParams,
-} from '@backstage/plugin-permission-common';
-import { PermissionRule } from '@backstage/plugin-permission-node';
 
 /**
  * @public
@@ -109,10 +104,18 @@ export interface CatalogModelExtensionPoint {
   setFieldValidators(validators: Partial<Validators>): void;
 
   /**
-   * Sets the entity data parser which is used to read raw data from locations
+   * Sets the entity data parser which is used to read raw data from locations.
+   *
    * @param parser - Parser which will used to extract entities from raw data
    */
   setEntityDataParser(parser: CatalogProcessorParser): void;
+
+  /**
+   * Adds a catalog model source to be part of the compiled entity model.
+   *
+   * @param source - The model source to add
+   */
+  addModelSource(source: CatalogModelSource): void;
 }
 
 /**
@@ -162,34 +165,4 @@ export const catalogAnalysisExtensionPoint =
 export const catalogModelExtensionPoint =
   createExtensionPoint<CatalogModelExtensionPoint>({
     id: 'catalog.model',
-  });
-
-/**
- * @alpha
- * @deprecated Use the `coreServices.permissionsRegistry` instead.
- */
-export type CatalogPermissionRuleInput<
-  TParams extends PermissionRuleParams = PermissionRuleParams,
-> = PermissionRule<Entity, EntitiesSearchFilter, 'catalog-entity', TParams>;
-
-/**
- * @alpha
- * @deprecated Use the `coreServices.permissionsRegistry` instead.
- */
-export interface CatalogPermissionExtensionPoint {
-  addPermissions(...permissions: Array<Permission | Array<Permission>>): void;
-  addPermissionRules(
-    ...rules: Array<
-      CatalogPermissionRuleInput | Array<CatalogPermissionRuleInput>
-    >
-  ): void;
-}
-
-/**
- * @alpha
- * @deprecated Use the `coreServices.permissionsRegistry` instead.
- */
-export const catalogPermissionExtensionPoint =
-  createExtensionPoint<CatalogPermissionExtensionPoint>({
-    id: 'catalog.permission',
   });

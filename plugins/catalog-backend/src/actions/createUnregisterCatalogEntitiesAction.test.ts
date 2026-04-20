@@ -192,9 +192,12 @@ describe('createUnregisterCatalogEntitiesAction', () => {
       );
     });
 
-    it('should throw NotFoundError if no location matches the URL', async () => {
+    it('should throw NotFoundError with the original message if no location matches the URL', async () => {
       const mockActionsRegistry = actionsRegistryServiceMock();
       const mockCatalog = catalogServiceMock();
+
+      const locationUrl =
+        'https://github.com/backstage/demo/blob/master/catalog-info.yaml';
 
       mockCatalog.getLocations = jest.fn().mockResolvedValue({
         items: [
@@ -210,48 +213,21 @@ describe('createUnregisterCatalogEntitiesAction', () => {
       await expect(
         mockActionsRegistry.invoke({
           id: 'test:unregister-entity',
-          input: {
-            type: {
-              locationUrl:
-                'https://github.com/backstage/demo/blob/master/catalog-info.yaml',
-            },
-          },
-        }),
-      ).rejects.toThrow(/NotFoundError/);
-    });
-
-    it('should throw NotFoundError with descriptive message when location not found', async () => {
-      const mockActionsRegistry = actionsRegistryServiceMock();
-      const mockCatalog = catalogServiceMock();
-
-      const locationUrl =
-        'https://github.com/backstage/demo/blob/master/catalog-info.yaml';
-
-      mockCatalog.getLocations = jest.fn().mockResolvedValue({
-        items: [],
-      });
-
-      createUnregisterCatalogEntitiesAction({
-        catalog: mockCatalog,
-        actionsRegistry: mockActionsRegistry,
-      });
-
-      await expect(
-        mockActionsRegistry.invoke({
-          id: 'test:unregister-entity',
           input: { type: { locationUrl } },
         }),
-      ).rejects.toThrow(`Location with URL ${locationUrl} not found`);
+      ).rejects.toMatchObject({
+        name: 'NotFoundError',
+        message: `Location with URL ${locationUrl} not found`,
+      });
     });
 
-    it('should throw an error if catalog.getLocations throws an error', async () => {
+    it('should throw the original error if catalog.getLocations fails', async () => {
       const mockActionsRegistry = actionsRegistryServiceMock();
       const mockCatalog = catalogServiceMock();
 
-      const errorMessage = 'Failed to get locations';
       mockCatalog.getLocations = jest
         .fn()
-        .mockRejectedValue(new Error(errorMessage));
+        .mockRejectedValue(new Error('Failed to get locations'));
 
       createUnregisterCatalogEntitiesAction({
         catalog: mockCatalog,
@@ -268,7 +244,10 @@ describe('createUnregisterCatalogEntitiesAction', () => {
             },
           },
         }),
-      ).rejects.toThrow(errorMessage);
+      ).rejects.toMatchObject({
+        name: 'Error',
+        message: 'Failed to get locations',
+      });
     });
   });
 });

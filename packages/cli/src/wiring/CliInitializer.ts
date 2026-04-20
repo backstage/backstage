@@ -15,44 +15,95 @@
  */
 
 import { CommandGraph } from './CommandGraph';
-import { CliFeature, OpaqueCliPlugin } from './types';
-import { CommandRegistry } from './CommandRegistry';
+import {
+  OpaqueCliModule,
+  OpaqueCommandTreeNode,
+  OpaqueCommandLeafNode,
+  isCommandNodeHidden,
+} from '@internal/cli';
+import type { CliModule } from '@backstage/cli-node';
 import { Command } from 'commander';
-import { version } from '../lib/version';
+import { version } from './version';
 import chalk from 'chalk';
-import { exitWithError } from '../lib/errors';
+import { exitWithError } from './errors';
 import { ForwardedError } from '@backstage/errors';
 import { isPromise } from 'node:util/types';
 
-type UninitializedFeature = CliFeature | Promise<{ default: CliFeature }>;
+type UninitializedFeature =
+  | CliModule
+  | CliModule[]
+  | Promise<{ default: CliModule | CliModule[] }>;
+
+interface TaggedFeature {
+  feature: CliModule;
+  /**
+   * Whether this module was sourced from an array (e.g. cli-defaults).
+   * Array-sourced modules are silently skipped when any of their commands
+   * overlap with an individually-added module, allowing explicit module
+   * additions to take precedence without causing conflicts.
+   */
+  fromArray: boolean;
+}
 
 export class CliInitializer {
   private graph = new CommandGraph();
-  private commandRegistry = new CommandRegistry(this.graph);
-  #uninitiazedFeatures: Promise<CliFeature>[] = [];
+  #uninitiazedFeatures: Promise<TaggedFeature[]>[] = [];
 
   add(feature: UninitializedFeature) {
     if (isPromise(feature)) {
       this.#uninitiazedFeatures.push(
-        feature.then(f => unwrapFeature(f.default)),
+        feature.then(f => {
+          const unwrapped = unwrapFeature(f.default);
+          if (Array.isArray(unwrapped)) {
+            return unwrapped.map(m => ({ feature: m, fromArray: true }));
+          }
+          return [{ feature: unwrapped, fromArray: false }];
+        }),
+      );
+    } else if (Array.isArray(feature)) {
+      this.#uninitiazedFeatures.push(
+        Promise.resolve(feature.map(m => ({ feature: m, fromArray: true }))),
       );
     } else {
-      this.#uninitiazedFeatures.push(Promise.resolve(feature));
+      this.#uninitiazedFeatures.push(
+        Promise.resolve([{ feature, fromArray: false }]),
+      );
     }
   }
 
-  async #register(feature: CliFeature) {
-    if (OpaqueCliPlugin.isType(feature)) {
-      const internal = OpaqueCliPlugin.toInternal(feature);
-      await internal.init(this.commandRegistry);
+  async #register(feature: CliModule) {
+    if (OpaqueCliModule.isType(feature)) {
+      for (const command of await OpaqueCliModule.toInternal(feature)
+        .commands) {
+        this.graph.add(command, feature);
+      }
     } else {
       throw new Error(`Unsupported feature type: ${(feature as any).$$type}`);
     }
   }
 
   async #doInit() {
-    const features = await Promise.all(this.#uninitiazedFeatures);
-    for (const feature of features) {
+    const resolvedGroups = await Promise.all(this.#uninitiazedFeatures);
+    const allFeatures = resolvedGroups.flat();
+
+    // Collect command paths from individually-added modules
+    const individualPaths = new Set<string>();
+    for (const { feature, fromArray } of allFeatures) {
+      if (!fromArray && OpaqueCliModule.isType(feature)) {
+        const cmds = await OpaqueCliModule.toInternal(feature).commands;
+        for (const cmd of cmds) {
+          individualPaths.add(cmd.path.join(' '));
+        }
+      }
+    }
+
+    for (const { feature, fromArray } of allFeatures) {
+      if (fromArray && OpaqueCliModule.isType(feature)) {
+        const cmds = await OpaqueCliModule.toInternal(feature).commands;
+        if (cmds.some(cmd => individualPaths.has(cmd.path.join(' ')))) {
+          continue;
+        }
+      }
       await this.#register(feature);
     }
   }
@@ -78,21 +129,28 @@ export class CliInitializer {
     }));
     while (queue.length) {
       const { node, argParser } = queue.shift()!;
-      if (node.$$type === '@tree/root') {
+      if (OpaqueCommandTreeNode.isType(node)) {
+        const internal = OpaqueCommandTreeNode.toInternal(node);
         const treeParser = argParser
-          .command(`${node.name} [command]`)
-          .description(node.name);
+          .command(`${internal.name} [command]`, {
+            hidden: isCommandNodeHidden(node),
+          })
+          .description(internal.name);
 
         queue.push(
-          ...node.children.map(child => ({
+          ...internal.children.map(child => ({
             node: child,
             argParser: treeParser,
           })),
         );
       } else {
+        const internal = OpaqueCommandLeafNode.toInternal(node);
         argParser
-          .command(node.name, { hidden: !!node.command.deprecated })
-          .description(node.command.description)
+          .command(internal.name, {
+            hidden:
+              !!internal.command.deprecated || !!internal.command.experimental,
+          })
+          .description(internal.command.description)
           .helpOption(false)
           .allowUnknownOption(true)
           .allowExcessArguments(true)
@@ -111,20 +169,32 @@ export class CliInitializer {
                 // Skip the command name
                 if (
                   argIndex === index &&
-                  node.command.path[argIndex] === nonProcessArgs[argIndex]
+                  internal.command.path[argIndex] === nonProcessArgs[argIndex]
                 ) {
                   index += 1;
                   continue;
                 }
                 positionalArgs.push(nonProcessArgs[argIndex]);
               }
-              await node.command.execute({
+              const context = {
                 args: [...positionalArgs, ...args.unknown],
                 info: {
-                  usage: [programName, ...node.command.path].join(' '),
-                  description: node.command.description,
+                  usage: [programName, ...internal.command.path].join(' '),
+                  name: internal.command.path.join(' '),
                 },
-              });
+              };
+
+              if (typeof internal.command.execute === 'function') {
+                await internal.command.execute(context);
+              } else {
+                const mod = await internal.command.execute.loader();
+                // Handle CJS double-wrapping of default exports
+                const fn =
+                  typeof mod.default === 'function'
+                    ? mod.default
+                    : (mod.default as any).default;
+                await fn(context);
+              }
               process.exit(0);
             } catch (error: unknown) {
               exitWithError(error);
@@ -144,14 +214,18 @@ export class CliInitializer {
       exitWithError(new ForwardedError('Unhandled rejection', rejection));
     });
 
-    program.parse(process.argv);
+    await program.parseAsync(process.argv);
   }
 }
 
 /** @internal */
 export function unwrapFeature(
-  feature: CliFeature | { default: CliFeature },
-): CliFeature {
+  feature: CliModule | CliModule[] | { default: CliModule | CliModule[] },
+): CliModule | CliModule[] {
+  if (Array.isArray(feature)) {
+    return feature;
+  }
+
   if ('$$type' in feature) {
     return feature;
   }

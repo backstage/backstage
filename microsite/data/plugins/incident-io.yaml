@@ -1,0 +1,10 @@
+title: incident.io
+author: incident.io
+authorUrl: https://github.com/incident-io
+category: Monitoring
+description: Display ongoing and historic incidents against Backstage components, and to provide quick links to open new incidents for that service inside of incident.io.
+documentation: https://github.com/incident-io/backstage-plugins/blob/master/incident/README.md
+iconUrl: /img/incident-io-logo.png
+npmPackageName: '@incident-io/backstage'
+addedDate: '2026-04-06'
+status: active

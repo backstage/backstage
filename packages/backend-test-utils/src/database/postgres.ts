@@ -14,54 +14,31 @@
  * limitations under the License.
  */
 
-import { stringifyError } from '@backstage/errors';
 import { randomBytes } from 'node:crypto';
 import knexFactory, { Knex } from 'knex';
 import { parse as parsePgConnectionString } from 'pg-connection-string';
 import { v4 as uuid } from 'uuid';
+import { waitForReady } from '../util/waitForReady';
 import { Engine, LARGER_POOL_CONFIG, TestDatabaseProperties } from './types';
 
 async function waitForPostgresReady(
   connection: Knex.PgConnectionConfig,
 ): Promise<void> {
-  const startTime = Date.now();
-
-  let lastError: Error | undefined;
-  let attempts = 0;
-  for (;;) {
-    attempts += 1;
-
-    let knex: Knex | undefined;
+  await waitForReady(async () => {
+    const knex = knexFactory({
+      client: 'pg',
+      connection: {
+        // make a copy because the driver mutates this
+        ...connection,
+      },
+    });
     try {
-      knex = knexFactory({
-        client: 'pg',
-        connection: {
-          // make a copy because the driver mutates this
-          ...connection,
-        },
-      });
       const result = await knex.select(knex.raw('version()'));
-      if (Array.isArray(result) && result[0]?.version) {
-        return;
-      }
-    } catch (e) {
-      lastError = e;
+      return Array.isArray(result) && Boolean(result[0]?.version);
     } finally {
-      await knex?.destroy();
+      await knex.destroy();
     }
-
-    if (Date.now() - startTime > 30_000) {
-      throw new Error(
-        `Timed out waiting for the database to be ready for connections, ${attempts} attempts, ${
-          lastError
-            ? `last error was ${stringifyError(lastError)}`
-            : '(no errors thrown)'
-        }`,
-      );
-    }
-
-    await new Promise(resolve => setTimeout(resolve, 100));
-  }
+  }, 'the database');
 }
 
 export async function startPostgresContainer(image: string): Promise<{

@@ -43,5 +43,8 @@ export function createSpecializedBackend(
     );
   }
 
-  return new BackstageBackend(options.defaultServiceFactories);
+  return new BackstageBackend(
+    options.defaultServiceFactories,
+    options.extensionPointFactoryMiddleware,
+  );
 }

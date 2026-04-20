@@ -18,7 +18,11 @@ import { Knex } from 'knex';
 import splitToChunks from 'lodash/chunk';
 import { v4 as uuid } from 'uuid';
 import { StitchingStrategy } from '../../../stitching/types';
-import { DbFinalEntitiesRow, DbRefreshStateRow } from '../../tables';
+import {
+  DbFinalEntitiesRow,
+  DbRefreshStateRow,
+  DbStitchQueueRow,
+} from '../../tables';
 import { retryOnDeadlock } from '../../util';
 
 const UPDATE_CHUNK_SIZE = 100; // Smaller chunks reduce contention
@@ -77,30 +81,46 @@ export async function markForStitching(options: {
       }, knex);
     }
   } else if (mode === 'deferred') {
-    // It's OK that this is shared across refresh state rows; it just needs to
+    // It's OK that this is shared across stitch_queue rows; it just needs to
     // be uniquely generated for every new stitch request.
     const ticket = uuid();
 
-    // Update by primary key in deterministic order to avoid deadlocks
     for (const chunk of entityRefs) {
       await retryOnDeadlock(async () => {
-        await knex<DbRefreshStateRow>('refresh_state')
-          .update({
-            next_stitch_at: knex.fn.now(),
-            next_stitch_ticket: ticket,
-          })
-          .whereIn('entity_ref', chunk);
+        if (chunk.length > 0) {
+          await knex<DbStitchQueueRow>('stitch_queue')
+            .insert(
+              chunk.map(ref => ({
+                entity_ref: ref,
+                stitch_ticket: ticket,
+                next_stitch_at: knex.fn.now(),
+              })),
+            )
+            .onConflict('entity_ref')
+            .merge(['next_stitch_at', 'stitch_ticket']);
+        }
       }, knex);
     }
 
     for (const chunk of entityIds) {
       await retryOnDeadlock(async () => {
-        await knex<DbRefreshStateRow>('refresh_state')
-          .update({
-            next_stitch_at: knex.fn.now(),
-            next_stitch_ticket: ticket,
-          })
+        // Look up entity_refs from refresh_state by entity_id
+        const refreshStateRows = await knex<DbRefreshStateRow>('refresh_state')
+          .select('entity_ref')
           .whereIn('entity_id', chunk);
+
+        if (refreshStateRows.length > 0) {
+          await knex<DbStitchQueueRow>('stitch_queue')
+            .insert(
+              refreshStateRows.map(row => ({
+                entity_ref: row.entity_ref,
+                stitch_ticket: ticket,
+                next_stitch_at: knex.fn.now(),
+              })),
+            )
+            .onConflict('entity_ref')
+            .merge(['next_stitch_at', 'stitch_ticket']);
+        }
       }, knex);
     }
   } else {

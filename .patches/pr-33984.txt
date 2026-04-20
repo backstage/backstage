@@ -1,0 +1,1 @@
+Fix active tab indicator disappearing on uncontrolled Tabs in @backstage/ui

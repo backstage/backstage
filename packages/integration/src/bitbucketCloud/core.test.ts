@@ -16,7 +16,7 @@
 
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { registerMswTestHooks } from '../helpers';
+import { registerMswTestHooks } from '@backstage/backend-test-utils';
 import { BitbucketCloudIntegrationConfig } from './config';
 import {
   getBitbucketCloudDefaultBranch,

@@ -209,6 +209,23 @@ describe('<Table />', () => {
     expect(rendered.getByText('subtitle')).toBeInTheDocument();
   });
 
+  it('renders with both title and filters without layout issues', async () => {
+    const rendered = await renderInTestApp(
+      <Table
+        title="My Table"
+        filters={[
+          {
+            column: column1.title,
+            type: 'select',
+          },
+        ]}
+        {...minProps}
+      />,
+    );
+    expect(rendered.getByText('My Table')).toBeInTheDocument();
+    expect(rendered.getByText('Filters (0)')).toBeInTheDocument();
+  });
+
   it('renders custom empty component if empty', async () => {
     const rendered = await renderInTestApp(
       <Table

@@ -4,6 +4,12 @@ title: Plugin Development
 description: Documentation on Plugin Development
 ---
 
+:::caution Legacy Documentation
+
+This page covers plugin development patterns for the **old frontend system**, including `createPlugin`, `createRoutableExtension`, and `RouteRef` from `@backstage/core-plugin-api`. For the new frontend system equivalents, see [Building Frontend Plugins](../frontend-system/building-plugins/01-index.md) and [Routes](../frontend-system/architecture/36-routes.md).
+
+:::
+
 Backstage plugins provide features to a Backstage App.
 
 Each plugin is treated as a self-contained web app and can include almost any

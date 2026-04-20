@@ -19,6 +19,8 @@
 /** @type{import('prism-react-renderer').PrismTheme} **/
 // @ts-ignore
 import { themes } from 'prism-react-renderer';
+import { cpSync, existsSync } from 'node:fs';
+import { resolve as resolvePath } from 'node:path';
 import type * as Preset from '@docusaurus/preset-classic';
 import { Config } from '@docusaurus/types';
 import RedirectPlugin from '@docusaurus/plugin-client-redirects';
@@ -28,7 +30,9 @@ import type * as OpenApiPlugin from 'docusaurus-plugin-openapi-docs';
 const backstageTheme = themes.vsDark;
 backstageTheme.plain.backgroundColor = '#232323';
 
-const useVersionedDocs = require('node:fs').existsSync('versions.json');
+const useVersionedDocs = existsSync('versions.json');
+const wellKnownDocsPath = resolvePath(__dirname, '../docs/.well-known');
+const wellKnownPublicPath = '/.well-known';
 
 // This patches the redirect plugin to ignore the error when it tries to override existing fields.
 // This lets us add redirects that only apply to the next docs, while the stable docs still contain the source path.
@@ -63,11 +67,63 @@ const defaultOpenApiOptions = {
   },
 } satisfies OpenApiPlugin.Options;
 
+const seoDescription =
+  'Backstage is an open source developer portal framework that centralizes your software catalog, unifies infrastructure tools, and helps teams ship high-quality code faster.';
+
+const seoKeywords = [
+  'Backstage',
+  'developer portal',
+  'internal developer platform',
+  'platform engineering',
+  'software catalog',
+  'software templates',
+  'TechDocs',
+  'developer experience',
+  'IDP',
+  'open source',
+];
+
 const config: Config = {
   title: 'Backstage Software Catalog and Developer Platform',
   tagline: 'An open source framework for building developer portals',
   url: 'https://backstage.io',
   baseUrl: '/',
+  headTags: [
+    {
+      tagName: 'link',
+      attributes: {
+        rel: 'preconnect',
+        href: 'https://fonts.googleapis.com',
+      },
+    },
+    {
+      tagName: 'link',
+      attributes: {
+        rel: 'preconnect',
+        href: 'https://fonts.gstatic.com',
+        crossOrigin: 'anonymous',
+      },
+    },
+    {
+      tagName: 'script',
+      attributes: {
+        type: 'application/ld+json',
+      },
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'WebSite',
+        name: 'Backstage',
+        url: 'https://backstage.io',
+        description: seoDescription,
+        image: 'https://backstage.io/img/sharing-opengraph.png',
+        publisher: {
+          '@type': 'Organization',
+          name: 'Spotify',
+          url: 'https://spotify.github.io/',
+        },
+      }),
+    },
+  ],
   organizationName: 'Spotify',
   projectName: 'backstage',
   scripts: [
@@ -201,6 +257,40 @@ const config: Config = {
         };
       },
     }),
+    () => ({
+      name: 'publish-well-known-docs',
+      getPathsToWatch() {
+        return [wellKnownDocsPath];
+      },
+      configureWebpack() {
+        if (!existsSync(wellKnownDocsPath)) {
+          return undefined;
+        }
+
+        return {
+          devServer: {
+            static: [
+              {
+                publicPath: wellKnownPublicPath,
+                directory: wellKnownDocsPath,
+                staticOptions: {
+                  dotfiles: 'allow',
+                },
+              },
+            ],
+          },
+        };
+      },
+      async postBuild({ outDir }: { outDir: string }) {
+        if (!existsSync(wellKnownDocsPath)) {
+          return;
+        }
+
+        cpSync(wellKnownDocsPath, resolvePath(outDir, '.well-known'), {
+          recursive: true,
+        });
+      },
+    }),
     ctx =>
       PatchedRedirectPlugin(ctx, {
         id: '@docusaurus/plugin-client-redirects',
@@ -237,7 +327,7 @@ const config: Config = {
           },
           {
             from: '/docs/features/software-templates/testing-scaffolder-alpha',
-            to: '/docs/features/software-templates/migrating-to-rjsf-v5',
+            to: '/docs/features/software-templates/',
           },
           {
             from: '/docs/auth/glossary',
@@ -330,6 +420,28 @@ const config: Config = {
   ],
   themes: ['docusaurus-theme-openapi-docs'],
   themeConfig: {
+    metadata: [
+      {
+        name: 'description',
+        content: seoDescription,
+      },
+      {
+        name: 'keywords',
+        content: seoKeywords.join(', '),
+      },
+      {
+        property: 'og:site_name',
+        content: 'Backstage',
+      },
+      {
+        property: 'og:type',
+        content: 'website',
+      },
+      {
+        name: 'twitter:card',
+        content: 'summary_large_image',
+      },
+    ],
     languageTabs: [
       {
         highlight: 'javascript',
@@ -432,12 +544,14 @@ const config: Config = {
           position: 'right',
           className: 'header-github-link',
           'aria-label': 'GitHub repository',
+          title: 'GitHub repository',
         },
         {
           href: 'https://discord.gg/backstage-687207715902193673',
           position: 'right',
           className: 'header-discord-link',
           'aria-label': 'Discord community',
+          title: 'Discord community',
         },
         ...(useVersionedDocs
           ? [
@@ -450,6 +564,13 @@ const config: Config = {
       ],
     },
     image: 'img/sharing-opengraph.png',
+    metadata: [
+      {
+        name: 'description',
+        content:
+          'Backstage is an open source developer portal framework that centralizes your software catalog, unifies infrastructure tools, and helps teams ship high-quality code faster.',
+      },
+    ],
     footer: {
       links: [
         {

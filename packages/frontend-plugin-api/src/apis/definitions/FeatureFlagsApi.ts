@@ -16,7 +16,7 @@
 /* We want to maintain the same information as an enum, so we disable the redeclaration warning */
 /* eslint-disable @typescript-eslint/no-redeclare */
 
-import { ApiRef, createApiRef } from '../system';
+import { createApiRef } from '../system';
 
 /**
  * Feature flag descriptor.
@@ -121,6 +121,7 @@ export interface FeatureFlagsApi {
  *
  * @public
  */
-export const featureFlagsApiRef: ApiRef<FeatureFlagsApi> = createApiRef({
+export const featureFlagsApiRef = createApiRef<FeatureFlagsApi>().with({
   id: 'core.featureflags',
+  pluginId: 'app',
 });

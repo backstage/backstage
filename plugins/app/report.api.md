@@ -19,6 +19,7 @@ import { JSX as JSX_2 } from 'react';
 import { NavContentComponent } from '@backstage/plugin-app-react';
 import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
+import { PluginWrapperDefinition } from '@backstage/frontend-plugin-api';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { SignInPageProps } from '@backstage/plugin-app-react';
@@ -146,7 +147,7 @@ const appPlugin: OverridableFrontendPlugin<
           ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
           {
             singleton: true;
-            optional: false;
+            optional: true;
             internal: false;
           }
         >;
@@ -176,8 +177,22 @@ const appPlugin: OverridableFrontendPlugin<
       name: 'root';
     }>;
     'app/routes': OverridableExtensionDefinition<{
-      config: {};
-      configInput: {};
+      config: {
+        redirects:
+          | {
+              from: string;
+              to: string;
+            }[]
+          | undefined;
+      };
+      configInput: {
+        redirects?:
+          | {
+              from: string;
+              to: string;
+            }[]
+          | undefined;
+      };
       output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
       inputs: {
         routes: ExtensionInput<
@@ -620,11 +635,7 @@ const appPlugin: OverridableFrontendPlugin<
       inputs: {
         wrappers: ExtensionInput<
           ConfigurableExtensionDataRef<
-            () => Promise<{
-              component: ComponentType<{
-                children: ReactNode;
-              }>;
-            }>,
+            () => Promise<PluginWrapperDefinition>,
             'core.plugin-wrapper.loader',
             {}
           >,
@@ -723,6 +734,36 @@ const appPlugin: OverridableFrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
+    'api:app/toast': OverridableExtensionDefinition<{
+      kind: 'api';
+      name: 'toast';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+      inputs: {};
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
+    }>;
+    'api:app/toast-forwarder': OverridableExtensionDefinition<{
+      kind: 'api';
+      name: 'toast-forwarder';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+      inputs: {};
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
+    }>;
     'api:app/translations': OverridableExtensionDefinition<{
       config: {};
       configInput: {};
@@ -777,18 +818,18 @@ const appPlugin: OverridableFrontendPlugin<
       config: {
         transientTimeoutMs: number;
         anchorOrigin: {
-          horizontal: 'center' | 'left' | 'right';
           vertical: 'top' | 'bottom';
+          horizontal: 'center' | 'left' | 'right';
         };
       };
       configInput: {
+        transientTimeoutMs?: number | undefined;
         anchorOrigin?:
           | {
-              horizontal?: 'center' | 'left' | 'right' | undefined;
               vertical?: 'top' | 'bottom' | undefined;
+              horizontal?: 'center' | 'left' | 'right' | undefined;
             }
           | undefined;
-        transientTimeoutMs?: number | undefined;
       };
       output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
       inputs: {};

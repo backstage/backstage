@@ -15,6 +15,7 @@
  */
 
 import { mockServices } from '@backstage/backend-test-utils';
+import { metricsServiceMock } from '@backstage/backend-test-utils/alpha';
 import { EventParams } from '@backstage/plugin-events-node';
 import { PubSub } from '@google-cloud/pubsub';
 import waitFor from 'wait-for-expect';
@@ -23,6 +24,7 @@ import { EventConsumingGooglePubSubPublisher } from './EventConsumingGooglePubSu
 describe('EventConsumingGooglePubSubPublisher', () => {
   const logger = mockServices.logger.mock();
   const events = mockServices.events.mock();
+  const metrics = metricsServiceMock.mock();
 
   let onEvent: undefined | ((event: EventParams) => void);
   events.subscribe.mockImplementation(async options => {
@@ -47,6 +49,7 @@ describe('EventConsumingGooglePubSubPublisher', () => {
     const publisher = new EventConsumingGooglePubSubPublisher({
       logger,
       events,
+      metrics,
       tasks: [
         {
           id: 'my-id',

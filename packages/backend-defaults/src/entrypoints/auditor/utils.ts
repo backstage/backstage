@@ -16,8 +16,20 @@
 
 import type { Config } from '@backstage/config';
 import { InputError } from '@backstage/errors';
-import { z } from 'zod';
-import { CONFIG_ROOT_KEY, severityLogLevelMappingsSchema } from './types';
+import { z } from 'zod/v4';
+
+const CONFIG_ROOT_KEY = 'backend.auditor';
+
+const logLevel = z.enum(['debug', 'info', 'warn', 'error']);
+
+const severityLogLevelMappingsSchema = z.object({
+  low: logLevel.default('debug'),
+  medium: logLevel.default('info'),
+  high: logLevel.default('info'),
+  critical: logLevel.default('info'),
+});
+
+type SeverityLogLevelMappings = z.infer<typeof severityLogLevelMappingsSchema>;
 
 /**
  * Gets the `backend.auditor.severityLogLevelMappings` configuration.
@@ -26,41 +38,32 @@ import { CONFIG_ROOT_KEY, severityLogLevelMappingsSchema } from './types';
  * @returns The validated severity-to-log-level mappings.
  * @throws error - {@link @backstage/errors#InputError} if the mapping configuration is invalid.
  */
-export function getSeverityLogLevelMappings(config: Config) {
+export function getSeverityLogLevelMappings(
+  config: Config,
+): SeverityLogLevelMappings {
   const auditorConfig = config.getOptionalConfig(CONFIG_ROOT_KEY);
 
-  const severityLogLevelMappings = {
-    low:
-      auditorConfig?.getOptionalString('severityLogLevelMappings.low') ??
-      'debug',
-    medium:
-      auditorConfig?.getOptionalString('severityLogLevelMappings.medium') ??
-      'info',
-    high:
-      auditorConfig?.getOptionalString('severityLogLevelMappings.high') ??
-      'info',
-    critical:
-      auditorConfig?.getOptionalString('severityLogLevelMappings.critical') ??
-      'info',
-  } as Required<z.infer<typeof severityLogLevelMappingsSchema>>;
+  const input = {
+    low: auditorConfig?.getOptionalString('severityLogLevelMappings.low'),
+    medium: auditorConfig?.getOptionalString('severityLogLevelMappings.medium'),
+    high: auditorConfig?.getOptionalString('severityLogLevelMappings.high'),
+    critical: auditorConfig?.getOptionalString(
+      'severityLogLevelMappings.critical',
+    ),
+  };
 
-  const res = severityLogLevelMappingsSchema.safeParse(
-    severityLogLevelMappings,
-  );
-  if (!res.success) {
-    const key = res.error.issues.at(0)?.path.at(0) as string;
-    const value = (
-      res.error.issues.at(0) as unknown as Record<PropertyKey, unknown>
-    ).received as string;
-    const validKeys = (
-      res.error.issues.at(0) as unknown as Record<PropertyKey, unknown>
-    ).options as string[];
+  const parsed = severityLogLevelMappingsSchema.safeParse(input);
+
+  if (!parsed.success) {
+    const issue = parsed.error.issues[0];
+    const key = issue.path[0] as keyof typeof input;
+    const receivedValue = input[key];
     throw new InputError(
-      `The configuration value for 'backend.auditor.severityLogLevelMappings.${key}' was given an invalid value: '${value}'. Expected one of the following valid values: '${validKeys.join(
+      `The configuration value for '${CONFIG_ROOT_KEY}.severityLogLevelMappings.${key}' was given an invalid value: '${receivedValue}'. Expected one of the following valid values: '${logLevel.options.join(
         ', ',
       )}'.`,
     );
   }
 
-  return severityLogLevelMappings;
+  return parsed.data;
 }

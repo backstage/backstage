@@ -5,12 +5,19 @@
 ```ts
 import { Config } from '@backstage/config';
 import { JsonValue } from '@backstage/types';
+import { z } from 'zod/v4';
 import * as zodV3 from 'zod/v3';
 
 // @public
 export function createZodV3FilterPredicateSchema(
   z: typeof zodV3.z,
 ): zodV3.ZodType<FilterPredicate>;
+
+// @public
+export function createZodV4FilterPredicateSchema(): z.ZodType<
+  FilterPredicate,
+  FilterPredicate
+>;
 
 // @public
 export function evaluateFilterPredicate(

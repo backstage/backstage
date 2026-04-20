@@ -798,6 +798,156 @@ export const SelectionReplaceWithRowLinks: Story = {
   },
 };
 
+export const VirtualizedTable: Story = {
+  render: () => {
+    const largeData = Array.from({ length: 500 }, (_, i) => ({
+      id: String(i),
+      name: `Service ${i}`,
+      owner: { name: `Team ${i % 10}` },
+      type: ['service', 'website', 'library'][i % 3],
+      lifecycle: ['production', 'experimental'][i % 2],
+      description: `Description for service ${i}`,
+    }));
+
+    const columns: ColumnConfig<(typeof largeData)[0]>[] = [
+      {
+        id: 'name',
+        label: 'Name',
+        isRowHeader: true,
+        cell: item => (
+          <CellText title={item.name} description={item.description} />
+        ),
+      },
+      {
+        id: 'owner',
+        label: 'Owner',
+        cell: item => <CellText title={item.owner.name} />,
+      },
+      {
+        id: 'type',
+        label: 'Type',
+        cell: item => <CellText title={item.type} />,
+      },
+    ];
+
+    const { tableProps } = useTable({
+      mode: 'complete',
+      getData: () => largeData,
+      paginationOptions: { pageSize: 50 },
+    });
+
+    return (
+      <Table
+        columnConfig={columns}
+        {...tableProps}
+        virtualized
+        style={{ height: 400 }}
+      />
+    );
+  },
+};
+
+export const VirtualizedWithCustomRowHeight: Story = {
+  render: () => {
+    const largeData = Array.from({ length: 500 }, (_, i) => ({
+      id: String(i),
+      name: `Service ${i}`,
+      owner: { name: `Team ${i % 10}` },
+      type: ['service', 'website', 'library'][i % 3],
+      lifecycle: ['production', 'experimental'][i % 2],
+      description: `Description for service ${i}`,
+    }));
+
+    const columns: ColumnConfig<(typeof largeData)[0]>[] = [
+      {
+        id: 'name',
+        label: 'Name',
+        isRowHeader: true,
+        cell: item => (
+          <CellText title={item.name} description={item.description} />
+        ),
+      },
+      {
+        id: 'owner',
+        label: 'Owner',
+        cell: item => <CellText title={item.owner.name} />,
+      },
+      {
+        id: 'type',
+        label: 'Type',
+        cell: item => <CellText title={item.type} />,
+      },
+    ];
+
+    const { tableProps } = useTable({
+      mode: 'complete',
+      getData: () => largeData,
+      paginationOptions: { pageSize: 50 },
+    });
+
+    return (
+      <Table
+        columnConfig={columns}
+        {...tableProps}
+        virtualized={{ rowHeight: 56 }}
+        style={{ height: 400 }}
+      />
+    );
+  },
+};
+
+export const VirtualizedWithEstimatedRowHeight: Story = {
+  render: () => {
+    const largeData = Array.from({ length: 500 }, (_, i) => ({
+      id: String(i),
+      name: `Service ${i}`,
+      owner: { name: `Team ${i % 10}` },
+      type: ['service', 'website', 'library'][i % 3],
+      lifecycle: ['production', 'experimental'][i % 2],
+      description:
+        i % 5 === 0
+          ? `This is a much longer description for service ${i} that spans multiple lines to demonstrate variable height row rendering in the virtualized table`
+          : `Description for service ${i}`,
+    }));
+
+    const columns: ColumnConfig<(typeof largeData)[0]>[] = [
+      {
+        id: 'name',
+        label: 'Name',
+        isRowHeader: true,
+        cell: item => (
+          <CellText title={item.name} description={item.description} />
+        ),
+      },
+      {
+        id: 'owner',
+        label: 'Owner',
+        cell: item => <CellText title={item.owner.name} />,
+      },
+      {
+        id: 'type',
+        label: 'Type',
+        cell: item => <CellText title={item.type} />,
+      },
+    ];
+
+    const { tableProps } = useTable({
+      mode: 'complete',
+      getData: () => largeData,
+      paginationOptions: { pageSize: 50 },
+    });
+
+    return (
+      <Table
+        columnConfig={columns}
+        {...tableProps}
+        virtualized={{ estimatedRowHeight: 48 }}
+        style={{ height: 400 }}
+      />
+    );
+  },
+};
+
 // Type filter interface for ComprehensiveServerSide story
 interface TypeFilter {
   type: string | null;

@@ -14,10 +14,16 @@
  * limitations under the License.
  */
 
+import type { ReactNode } from 'react';
 import type { ToggleButtonGroupProps as AriaToggleButtonGroupProps } from 'react-aria-components';
 
 /** @public */
+export type ToggleButtonGroupOwnProps = {
+  className?: string;
+  children?: ReactNode;
+};
+
+/** @public */
 export interface ToggleButtonGroupProps
-  extends Omit<AriaToggleButtonGroupProps, 'orientation'> {
-  orientation?: NonNullable<AriaToggleButtonGroupProps['orientation']>;
-}
+  extends Omit<AriaToggleButtonGroupProps, 'className' | 'children'>,
+    ToggleButtonGroupOwnProps {}

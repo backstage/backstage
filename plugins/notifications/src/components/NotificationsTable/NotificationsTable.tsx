@@ -17,15 +17,20 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import throttle from 'lodash/throttle';
 // @ts-ignore
 import RelativeTime from 'react-relative-time';
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
-import CheckBox from '@material-ui/core/Checkbox';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
 import { Notification } from '@backstage/plugin-notifications-common';
-import { useConfirm } from 'material-ui-confirm';
-import BroadcastIcon from '@material-ui/icons/RssFeed';
-import { alertApiRef, useApi } from '@backstage/core-plugin-api';
+import {
+  Button,
+  Checkbox,
+  Dialog,
+  DialogBody,
+  DialogFooter,
+  DialogHeader,
+  Flex,
+  Text,
+} from '@backstage/ui';
+import { RiRssFill } from '@remixicon/react';
+import { useApi } from '@backstage/core-plugin-api';
+import { toastApiRef } from '@backstage/frontend-plugin-api';
 import {
   Link,
   Table,
@@ -41,23 +46,9 @@ import { BulkActions } from './BulkActions';
 import { NotificationIcon } from './NotificationIcon';
 import { NotificationDescription } from './NotificationDescription';
 
-const ThrottleDelayMs = 1000;
+import styles from './NotificationsTable.module.css';
 
-const useStyles = makeStyles(theme => ({
-  severityItem: {
-    alignContent: 'center',
-  },
-  broadcastIcon: {
-    fontSize: '1rem',
-    verticalAlign: 'text-bottom',
-  },
-  notificationInfoRow: {
-    marginRight: theme.spacing(0.5),
-    '&:not(:first-child)': {
-      marginLeft: theme.spacing(0.5),
-    },
-  },
-}));
+const ThrottleDelayMs = 1000;
 
 /** @public */
 export type NotificationsTableProps = Pick<
@@ -89,10 +80,9 @@ export const NotificationsTable = ({
   totalCount,
 }: NotificationsTableProps) => {
   const { t } = useTranslationRef(notificationsTranslationRef);
-  const classes = useStyles();
   const notificationsApi = useApi(notificationsApiRef);
-  const alertApi = useApi(alertApiRef);
-  const confirm = useConfirm();
+  const toastApi = useApi(toastApiRef);
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
 
   const [selectedNotifications, setSelectedNotifications] = useState(
     new Set<Notification['id']>(),
@@ -136,38 +126,26 @@ export const NotificationsTable = ({
     [notificationsApi, onUpdate],
   );
 
-  const onMarkAllRead = useCallback(() => {
-    confirm({
-      title: 'Are you sure?',
-      description: (
-        <>
-          Mark <b>all</b> notifications as <b>read</b>.
-        </>
-      ),
-      confirmationText: 'Mark All',
-    })
-      .then(async () => {
-        const ids = (
-          await notificationsApi.getNotifications({ read: false })
-        ).notifications?.map(notification => notification.id);
-
-        return notificationsApi
-          .updateNotifications({
-            ids,
-            read: true,
-          })
-          .then(onUpdate);
-      })
-      .catch(e => {
-        if (e) {
-          // if e === undefined, the Cancel button has been hit
-          alertApi.post({
-            message: 'Failed to mark all notifications as read',
-            severity: 'error',
-          });
-        }
+  const doMarkAllRead = useCallback(async () => {
+    setConfirmDialogOpen(false);
+    try {
+      const result = await notificationsApi.getNotifications({ read: false });
+      const ids =
+        result.notifications?.map(notification => notification.id) ?? [];
+      if (ids.length === 0) return;
+      await notificationsApi.updateNotifications({ ids, read: true });
+      onUpdate();
+    } catch {
+      toastApi.post({
+        title: t('table.errors.markAllReadFailed'),
+        status: 'danger',
       });
-  }, [alertApi, confirm, notificationsApi, onUpdate]);
+    }
+  }, [notificationsApi, onUpdate, toastApi, t]);
+
+  const onMarkAllRead = useCallback(() => {
+    setConfirmDialogOpen(true);
+  }, []);
 
   const throttledContainsTextHandler = useMemo(
     () => throttle(setContainsText, ThrottleDelayMs),
@@ -190,6 +168,7 @@ export const NotificationsTable = ({
       {
         /* selection column */
         width: '1rem',
+        cellStyle: { paddingRight: '2.5rem' },
         title: showToolbar ? (
           <SelectAll
             count={selectedNotifications.size}
@@ -203,10 +182,10 @@ export const NotificationsTable = ({
           />
         ) : undefined,
         render: (notification: Notification) => (
-          <CheckBox
-            color="primary"
-            checked={selectedNotifications.has(notification.id)}
-            onChange={(_, checked) =>
+          <Checkbox
+            aria-label="Select notification"
+            isSelected={selectedNotifications.has(notification.id)}
+            onChange={checked =>
               onNotificationsSelectChange([notification.id], checked)
             }
           />
@@ -216,75 +195,66 @@ export const NotificationsTable = ({
         /* compact-data column */
         customFilterAndSearch: () =>
           true /* Keep sorting&filtering on backend due to pagination. */,
+        cellStyle: { paddingLeft: 0 },
         render: (notification: Notification) => {
           // Compact content
           return (
-            <Grid container>
-              <Grid item className={classes.severityItem}>
+            <Flex gap="4" align="center">
+              <div className={styles.severityItem}>
                 <NotificationIcon notification={notification} />
-              </Grid>
-              <Grid item xs={11}>
-                <Box>
-                  <Typography variant="subtitle1">
-                    {notification.payload.link ? (
-                      <Link
-                        to={notification.payload.link}
-                        onClick={() => {
-                          if (markAsReadOnLinkOpen && !notification.read) {
-                            onSwitchReadStatus([notification.id], true);
-                          }
-                        }}
-                      >
-                        {notification.payload.title}
-                      </Link>
-                    ) : (
-                      notification.payload.title
-                    )}
-                  </Typography>
-                  {notification.payload.description ? (
-                    <NotificationDescription
-                      description={notification.payload.description}
-                    />
-                  ) : null}
+              </div>
+              <Flex direction="column" gap="1">
+                <Text variant="body-medium">
+                  {notification.payload.link ? (
+                    <Link
+                      to={notification.payload.link}
+                      onClick={() => {
+                        if (markAsReadOnLinkOpen && !notification.read) {
+                          onSwitchReadStatus([notification.id], true);
+                        }
+                      }}
+                    >
+                      {notification.payload.title}
+                    </Link>
+                  ) : (
+                    notification.payload.title
+                  )}
+                </Text>
+                {notification.payload.description ? (
+                  <NotificationDescription
+                    description={notification.payload.description}
+                  />
+                ) : null}
 
-                  <Typography variant="caption">
-                    {!notification.user && (
-                      <>
-                        <BroadcastIcon className={classes.broadcastIcon} />
-                      </>
-                    )}
-                    {notification.origin && (
-                      <>
-                        <Typography
-                          variant="inherit"
-                          className={classes.notificationInfoRow}
-                        >
-                          {notification.origin}
-                        </Typography>
-                        &bull;
-                      </>
-                    )}
-                    {notification.payload.topic && (
-                      <>
-                        <Typography
-                          variant="inherit"
-                          className={classes.notificationInfoRow}
-                        >
-                          {notification.payload.topic}
-                        </Typography>
-                        &bull;
-                      </>
-                    )}
-                    {notification.created && (
-                      <RelativeTime
-                        value={notification.created}
-                        className={classes.notificationInfoRow}
-                      />
-                    )}
-                  </Typography>
-                </Box>
-              </Grid>
-            </Grid>
+                <Text variant="body-small" color="secondary">
+                  {!notification.user && (
+                    <RiRssFill size={14} className={styles.broadcastIcon} />
+                  )}
+                  {notification.origin && (
+                    <>
+                      <span className={styles.notificationInfoRow}>
+                        {notification.origin}
+                      </span>
+                      &bull;
+                    </>
+                  )}
+                  {notification.payload.topic && (
+                    <>
+                      <span className={styles.notificationInfoRow}>
+                        {notification.payload.topic}
+                      </span>
+                      &bull;
+                    </>
+                  )}
+                  {notification.created && (
+                    <RelativeTime
+                      value={notification.created}
+                      className={styles.notificationInfoRow}
+                    />
+                  )}
+                </Text>
+              </Flex>
+            </Flex>
           );
         },
       },
@@ -319,44 +289,63 @@ export const NotificationsTable = ({
     onSwitchSavedStatus,
     onMarkAllRead,
     onNotificationsSelectChange,
-    classes.severityItem,
-    classes.broadcastIcon,
-    classes.notificationInfoRow,
     markAsReadOnLinkOpen,
   ]);
 
   return (
-    <Table<Notification>
-      isLoading={isLoading}
-      options={{
-        padding: 'dense',
-        search: true,
-        paging: true,
-        pageSize,
-        header: true,
-        sorting: false,
-      }}
-      title={title}
-      onPageChange={onPageChange}
-      onRowsPerPageChange={onRowsPerPageChange}
-      page={page}
-      totalCount={totalCount}
-      onSearchChange={throttledContainsTextHandler}
-      data={notifications}
-      columns={compactColumns}
-      localization={{
-        body: {
-          emptyDataSourceMessage: t('table.emptyMessage'),
-        },
-        pagination: {
-          firstTooltip: t('table.pagination.firstTooltip'),
-          labelDisplayedRows: t('table.pagination.labelDisplayedRows'),
-          labelRowsSelect: t('table.pagination.labelRowsSelect'),
-          lastTooltip: t('table.pagination.lastTooltip'),
-          nextTooltip: t('table.pagination.nextTooltip'),
-          previousTooltip: t('table.pagination.previousTooltip'),
-        },
-      }}
-    />
+    <>
+      <Table<Notification>
+        isLoading={isLoading}
+        options={{
+          padding: 'dense',
+          search: true,
+          paging: true,
+          pageSize,
+          header: true,
+          sorting: false,
+        }}
+        title={title}
+        onPageChange={onPageChange}
+        onRowsPerPageChange={onRowsPerPageChange}
+        page={page}
+        totalCount={totalCount}
+        onSearchChange={throttledContainsTextHandler}
+        data={notifications}
+        columns={compactColumns}
+        localization={{
+          body: {
+            emptyDataSourceMessage: t('table.emptyMessage'),
+          },
+          pagination: {
+            firstTooltip: t('table.pagination.firstTooltip'),
+            labelDisplayedRows: t('table.pagination.labelDisplayedRows'),
+            labelRowsSelect: t('table.pagination.labelRowsSelect'),
+            lastTooltip: t('table.pagination.lastTooltip'),
+            nextTooltip: t('table.pagination.nextTooltip'),
+            previousTooltip: t('table.pagination.previousTooltip'),
+          },
+        }}
+      />
+      <Dialog
+        isOpen={confirmDialogOpen}
+        onOpenChange={setConfirmDialogOpen}
+        isDismissable
+      >
+        <DialogHeader>{t('table.confirmDialog.title')}</DialogHeader>
+        <DialogBody>
+          <Text variant="body-medium">
+            {t('table.confirmDialog.markAllReadDescription')}
+          </Text>
+        </DialogBody>
+        <DialogFooter>
+          <Button variant="primary" onPress={doMarkAllRead}>
+            {t('table.confirmDialog.markAllReadConfirmation')}
+          </Button>
+          <Button variant="secondary" slot="close">
+            {t('table.confirmDialog.cancel')}
+          </Button>
+        </DialogFooter>
+      </Dialog>
+    </>
   );
 };

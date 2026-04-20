@@ -6,6 +6,7 @@ on:
   pull_request:
     paths:
       - 'microsite/**'
+      - '!microsite/data/**'
       - 'beps/**'
 
 permissions:
@@ -40,7 +41,7 @@ jobs:
     name: Test ${{ matrix.node-version }}
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@5ef0c079ce82195b2a36a210272d6b661572d83e # v2.14.2
+        uses: step-security/harden-runner@58077d3c7e43986b6b15fba718e8ea69e387dfcc # v2.15.1
         with:
           egress-policy: audit
 

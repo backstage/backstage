@@ -1,5 +1,43 @@
 # @backstage/config-loader
 
+## 1.10.10
+
+### Patch Changes
+
+- 482ceed: Migrated from `assertError` to `toError` for error handling.
+- Updated dependencies
+  - @backstage/errors@1.3.0
+  - @backstage/cli-common@0.2.1
+  - @backstage/config@1.3.7
+
+## 1.10.10-next.1
+
+### Patch Changes
+
+- 482ceed: Migrated from `assertError` to `toError` for error handling.
+- Updated dependencies
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/cli-common@0.2.1-next.1
+  - @backstage/config@1.3.7-next.0
+
+## 1.10.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.2.1-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 1.10.9
+
+### Patch Changes
+
+- 70fc178: Migrated from deprecated `findPaths` to `targetPaths` and `findOwnPaths` from `@backstage/cli-common`.
+- Updated dependencies
+  - @backstage/cli-common@0.2.0
+
 ## 1.10.9-next.0
 
 ### Patch Changes

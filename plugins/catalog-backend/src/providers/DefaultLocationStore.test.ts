@@ -15,7 +15,10 @@
  */
 
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
-import { ANNOTATION_ORIGIN_LOCATION } from '@backstage/catalog-model';
+import {
+  ANNOTATION_ORIGIN_LOCATION,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import { v4 as uuid } from 'uuid';
 import { applyDatabaseMigrations } from '../database/migrations';
 import {
@@ -25,6 +28,10 @@ import {
   DbSearchRow,
 } from '../database/tables';
 import { DefaultLocationStore } from './DefaultLocationStore';
+import {
+  computeLocationEntityRef,
+  locationSpecToLocationEntity,
+} from '../util/conversion';
 import { CatalogScmEventsServiceSubscriber } from '@backstage/plugin-catalog-node/alpha';
 import waitFor from 'wait-for-expect';
 
@@ -154,6 +161,69 @@ describe('DefaultLocationStore', () => {
         });
       },
     );
+
+    it.each(databases.eachSupportedId())(
+      'updates refresh_state when onConflict is refresh, %p',
+      async databaseId => {
+        const { store, knex } = await createLocationStore(databaseId);
+        const spec = {
+          type: 'url',
+          target:
+            'https://github.com/backstage/demo/blob/master/catalog-info.yml',
+        };
+
+        // Create the location initially
+        await store.createLocation(spec);
+
+        // Seed a refresh_state row for the corresponding Location entity
+        const entity = locationSpecToLocationEntity({ location: spec });
+        const entityRef = stringifyEntityRef(entity);
+        const entityId = uuid();
+        const oldDate = new Date('2020-01-01T00:00:00Z');
+        await knex<DbRefreshStateRow>('refresh_state').insert({
+          entity_id: entityId,
+          entity_ref: entityRef,
+          unprocessed_entity: '{}',
+          errors: '[]',
+          next_update_at: oldDate,
+          last_discovery_at: oldDate,
+          result_hash: 'old-hash',
+        });
+
+        // Re-register the same location with onConflict: 'refresh'
+        await store.createLocation(spec, { onConflict: 'refresh' });
+
+        // Verify that the refresh_state row was updated
+        const [row] = await knex<DbRefreshStateRow>('refresh_state').where({
+          entity_ref: entityRef,
+        });
+        expect(row.result_hash).toBe('');
+        expect(new Date(row.next_update_at).getTime()).toBeGreaterThan(
+          oldDate.getTime(),
+        );
+      },
+    );
+
+    it.each(databases.eachSupportedId())(
+      'persists the correct location_entity_ref when creating a location, %p',
+      async databaseId => {
+        const { store, knex } = await createLocationStore(databaseId);
+        const created = await store.createLocation({
+          type: 'url',
+          target:
+            'https://github.com/backstage/demo/blob/master/catalog-info.yml',
+        });
+
+        const [row] = await knex<DbLocationsRow>('locations').where(
+          'id',
+          created.id,
+        );
+        // Hardcoded expected value: sha1('url:<target>') lowercased via stringifyEntityRef
+        expect(row.location_entity_ref).toBe(
+          'location:default/generated-fa35d9c166e43ab7f4a7c59a00e88e4e8b5aba34',
+        );
+      },
+    );
   });
 
   describe('deleteLocation', () => {
@@ -202,6 +272,83 @@ describe('DefaultLocationStore', () => {
     );
   });
 
+  describe('updateLocation', () => {
+    it.each(databases.eachSupportedId())(
+      'throws if the location does not exist, %p',
+      async databaseId => {
+        const { store } = await createLocationStore(databaseId);
+        const id = uuid();
+        await expect(() =>
+          store.updateLocation(id, {
+            type: 'url',
+            target: 'https://example.com',
+          }),
+        ).rejects.toThrow(new RegExp(`Found no location with ID ${id}`));
+      },
+    );
+
+    it.each(databases.eachSupportedId())(
+      'throws ConflictError when updating to a type+target already used by another location, %p',
+      async databaseId => {
+        const { store } = await createLocationStore(databaseId);
+
+        await store.createLocation({
+          type: 'url',
+          target: 'https://example.com/a',
+        });
+        const b = await store.createLocation({
+          type: 'url',
+          target: 'https://example.com/b',
+        });
+
+        await expect(() =>
+          store.updateLocation(b.id, {
+            type: 'url',
+            target: 'https://example.com/a',
+          }),
+        ).rejects.toThrow(/already exists/);
+      },
+    );
+
+    it.each(databases.eachSupportedId())(
+      'updates type and target and issues a delta mutation with the new entity, %p',
+      async databaseId => {
+        const { store, connection } = await createLocationStore(databaseId);
+
+        const created = await store.createLocation({
+          type: 'url',
+          target: 'https://example.com/old',
+        });
+
+        jest.clearAllMocks();
+
+        const updated = await store.updateLocation(created.id, {
+          type: 'url',
+          target: 'https://example.com/new',
+        });
+
+        expect(updated.id).toBe(created.id);
+        expect(updated.type).toBe('url');
+        expect(updated.target).toBe('https://example.com/new');
+        // entityRef (location_entity_ref) is stable across updates
+        expect(updated.entityRef).toBe(created.entityRef);
+
+        expect(connection.applyMutation).toHaveBeenCalledWith({
+          type: 'delta',
+          removed: [],
+          added: [
+            {
+              entity: expect.objectContaining({
+                spec: { type: 'url', target: 'https://example.com/new' },
+              }),
+              locationKey: 'url:https://example.com/new',
+            },
+          ],
+        });
+      },
+    );
+  });
+
   describe('getLocationByEntity', () => {
     it.each(databases.eachSupportedId())(
       'loads correctly, %p',
@@ -225,7 +372,6 @@ describe('DefaultLocationStore', () => {
           final_entity: '{}',
           hash: 'hash',
           last_updated_at: new Date(),
-          stitch_ticket: '',
           entity_ref: 'k:ns/n',
         });
 
@@ -240,6 +386,10 @@ describe('DefaultLocationStore', () => {
           id: locationId,
           type: 'url',
           target: 'https://example.com',
+          location_entity_ref: computeLocationEntityRef(
+            'url',
+            'https://example.com',
+          ),
         });
 
         await expect(
@@ -248,6 +398,8 @@ describe('DefaultLocationStore', () => {
           id: locationId,
           type: 'url',
           target: 'https://example.com',
+          entityRef:
+            'location:default/generated-7ade06d301ec98b80352203e9969e7640dc618b8',
         });
 
         await expect(
@@ -293,11 +445,13 @@ describe('DefaultLocationStore', () => {
               id: expect.any(String),
               type: 'url',
               target: matchTarget,
+              location_entity_ref: expect.any(String),
             },
             {
               id: expect.any(String),
               type: 'url',
               target: otherTarget,
+              location_entity_ref: expect.any(String),
             },
           ]);
         });
@@ -349,7 +503,12 @@ describe('DefaultLocationStore', () => {
               .where('type', 'url')
               .orderBy('target', 'asc'),
           ).resolves.toEqual([
-            { id: expect.any(String), type: 'url', target: otherTarget },
+            {
+              id: expect.any(String),
+              type: 'url',
+              target: otherTarget,
+              location_entity_ref: expect.any(String),
+            },
           ]);
 
           expect(connection.applyMutation).toHaveBeenLastCalledWith({
@@ -403,11 +562,13 @@ describe('DefaultLocationStore', () => {
               id: expect.any(String),
               type: 'url',
               target: matchTarget,
+              location_entity_ref: expect.any(String),
             },
             {
               id: expect.any(String),
               type: 'url',
               target: otherTarget,
+              location_entity_ref: expect.any(String),
             },
           ]);
         });
@@ -469,8 +630,14 @@ describe('DefaultLocationStore', () => {
               type: 'url',
               target:
                 'https://github.com/backstage/freben/blob/master/catalog-info.yaml',
+              location_entity_ref: expect.any(String),
             },
-            { id: expect.any(String), type: 'url', target: otherTarget },
+            {
+              id: expect.any(String),
+              type: 'url',
+              target: otherTarget,
+              location_entity_ref: expect.any(String),
+            },
           ]);
 
           expect(connection.applyMutation).toHaveBeenLastCalledWith({
@@ -534,11 +701,13 @@ describe('DefaultLocationStore', () => {
               id: expect.any(String),
               type: 'url',
               target: matchTarget,
+              location_entity_ref: expect.any(String),
             },
             {
               id: expect.any(String),
               type: 'url',
               target: otherTarget,
+              location_entity_ref: expect.any(String),
             },
           ]);
         });
@@ -590,7 +759,12 @@ describe('DefaultLocationStore', () => {
               .where('type', 'url')
               .orderBy('target', 'asc'),
           ).resolves.toEqual([
-            { id: expect.any(String), type: 'url', target: otherTarget },
+            {
+              id: expect.any(String),
+              type: 'url',
+              target: otherTarget,
+              location_entity_ref: expect.any(String),
+            },
           ]);
 
           expect(connection.applyMutation).toHaveBeenLastCalledWith({
@@ -644,11 +818,13 @@ describe('DefaultLocationStore', () => {
               id: expect.any(String),
               type: 'url',
               target: matchTarget,
+              location_entity_ref: expect.any(String),
             },
             {
               id: expect.any(String),
               type: 'url',
               target: otherTarget,
+              location_entity_ref: expect.any(String),
             },
           ]);
         });
@@ -704,12 +880,18 @@ describe('DefaultLocationStore', () => {
               .where('type', 'url')
               .orderBy('target', 'asc'),
           ).resolves.toEqual([
-            { id: expect.any(String), type: 'url', target: otherTarget },
+            {
+              id: expect.any(String),
+              type: 'url',
+              target: otherTarget,
+              location_entity_ref: expect.any(String),
+            },
             {
               id: expect.any(String),
               type: 'url',
               target:
                 'https://github.com/freben/demo-renamed/blob/master/folder/catalog-info.yaml',
+              location_entity_ref: expect.any(String),
             },
           ]);
 
@@ -745,23 +927,31 @@ describe('DefaultLocationStore', () => {
       type: 'url',
       target:
         'https://github.com/backstage/backstage/blob/master/packages/catalog-model/catalog-info.yaml',
+      entityRef:
+        'location:default/generated-0ecbc46527aae891650cc1ad4eb17e15391fa96a',
     };
     const l2 = {
       id: '00000000-0000-0000-0000-000000000002',
       type: 'url',
       target:
         'https://github.com/backstage/backstage/blob/master/plugins/catalog/catalog-info.yaml',
+      entityRef:
+        'location:default/generated-888dd2d9775aaf5b722ebdece23c21e2541e90ce',
     };
     const l3 = {
       id: '00000000-0000-0000-0000-000000000003',
       type: 'url',
       target:
         'https://github.com/backstage/backstage/blob/master/plugins/scaffolder/catalog-info.yaml',
+      entityRef:
+        'location:default/generated-d4255ab29a8321cb6eae30cee45969a272e1206e',
     };
     const l4 = {
       id: '00000000-0000-0000-0000-000000000004',
       type: 'file',
       target: '/tmp/catalog-info.yaml',
+      entityRef:
+        'location:default/generated-d14ac9f97f7d042d45b2130dcf3d087e000f07f2',
     };
 
     it.each(databases.eachSupportedId())(
@@ -774,7 +964,15 @@ describe('DefaultLocationStore', () => {
         locations.sort(() => Math.random() - 0.5);
         await knex<DbLocationsRow>('locations').delete();
         for (const location of locations) {
-          await knex<DbLocationsRow>('locations').insert(location);
+          await knex<DbLocationsRow>('locations').insert({
+            id: location.id,
+            type: location.type,
+            target: location.target,
+            location_entity_ref: computeLocationEntityRef(
+              location.type,
+              location.target,
+            ),
+          });
         }
 
         await expect(

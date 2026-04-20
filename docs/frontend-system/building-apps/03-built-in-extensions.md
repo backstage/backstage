@@ -99,7 +99,7 @@ This is the extension that creates the app root element, so it renders root leve
 | ---------- | --------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
 | router     | A React component that should manager the app routes context.                           | It must be one [router](https://reactrouter.com/en/main/routers/picking-a-router#web-projects) component or a custom component compatible with the 'react-router' library. | true     | [BrowserRouter](https://reactrouter.com/en/main/router-components/browser-router)                                                                                                            | [createRouterExtension](https://backstage.io/docs/reference/frontend-plugin-api.createrouterextension)                  |
 | signInPage | A React component that should render the app sign-in page.                              | Should call the `onSignInSuccess` prop when the user has been successfully authorized, otherwise the user will not be correctly redirected to the application home page.   | true     | The default `AppRoot` extension does not use a default component for this input, it bypasses the user authentication check and always renders all routes when a login page is not installed. | [createSignInPageExtension](https://backstage.io/docs/reference/frontend-plugin-api.createsigninpageextension/)         |
-| children   | A React component that renders the app sidebar and main content in a particular layout. | -                                                                                                                                                                          | false    | The [`App/Layout`](#app-layout) extension output.                                                                                                                                            | No creator available, configure or override the [`App/Layout`](#app-layout) extension.                                  |
+| children   | A React component that renders the app sidebar and main content in a particular layout. | -                                                                                                                                                                          | true     | The [`App/Layout`](#app-layout) extension output.                                                                                                                                            | No creator available, configure or override the [`App/Layout`](#app-layout) extension.                                  |
 | elements   | React elements to be rendered outside of the app layout, such as shared popups.         | -                                                                                                                                                                          | false    | See [default elements](#default-app-root-elements-extensions).                                                                                                                               | [createAppRootElementExtension](https://backstage.io/docs/reference/frontend-plugin-api.createapprootelementextension/) |
 | wrappers   | React components that should wrap the root element.                                     | -                                                                                                                                                                          | true     | -                                                                                                                                                                                            | [createAppRootWrapperExtension](https://backstage.io/docs/reference/frontend-plugin-api.createapprootwrapperextension/) |
 
@@ -182,6 +182,30 @@ Be careful when overriding this extension, as to do so correctly you must consid
 - Don't remove configs or inputs, just extend these things yourself with optional new options, otherwise it will cause breaking changes for extensions like `createPageExtension` that depend on this type of inputs;
 - Remember to user the route refs for getting paths dynamically, otherwise if an adopter modifies a path through configuration, the route is not going to point to the configured path;
 - Adopters expect to be able to customize the `NotFoundErrorPage` component via Components API, you should render this component for routes not configured.
+
+#### Configurations
+
+| Key         | Type                             | Default value | Description                                                          |
+| ----------- | -------------------------------- | ------------- | -------------------------------------------------------------------- |
+| `redirects` | `{ from: string, to: string }[]` | -             | A list of URL redirects. Navigation to `from` will redirect to `to`. |
+
+##### Configuring redirects
+
+You can configure redirects for the `app/routes` extension to automatically redirect users from one path to another. This is useful when restructuring your app's routes, for example after moving or renaming plugin pages.
+
+```yaml title="app-config.yaml"
+app:
+  extensions:
+    - app/routes:
+        config:
+          redirects:
+            - from: /old-path
+              to: /new-path
+            - from: /legacy/page
+              to: /updated/page
+```
+
+Redirects are matched before any regular routes and use the [`replace`](https://developer.mozilla.org/en-US/docs/Web/API/History/replaceState) strategy, so the old path will not appear in the browser history.
 
 #### Inputs
 

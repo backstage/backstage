@@ -13,19 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
 import { CatalogService } from '@backstage/plugin-catalog-node';
+import { ModelHolder } from '../model/ModelHolder';
+import { createGetCatalogModelDescriptionAction } from './createGetCatalogModelDescriptionAction.ts';
 import { createGetCatalogEntityAction } from './createGetCatalogEntityAction.ts';
 import { createValidateEntityAction } from './createValidateEntityAction.ts';
 import { createRegisterCatalogEntitiesAction } from './createRegisterCatalogEntitiesAction.ts';
 import { createUnregisterCatalogEntitiesAction } from './createUnregisterCatalogEntitiesAction.ts';
+import { createQueryCatalogEntitiesAction } from './createQueryCatalogEntitiesAction.ts';
 
 export const createCatalogActions = (options: {
   actionsRegistry: ActionsRegistryService;
   catalog: CatalogService;
+  modelHolder: ModelHolder | undefined;
 }) => {
+  createGetCatalogModelDescriptionAction(options);
   createGetCatalogEntityAction(options);
   createValidateEntityAction(options);
   createRegisterCatalogEntitiesAction(options);
   createUnregisterCatalogEntitiesAction(options);
+  createQueryCatalogEntitiesAction(options);
 };

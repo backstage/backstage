@@ -15,4 +15,7 @@
  */
 
 export { HasSubcomponentsCard } from './HasSubcomponentsCard';
-export type { HasSubcomponentsCardProps } from './HasSubcomponentsCard';
+export type {
+  HasSubcomponentsCardLegacyProps,
+  HasSubcomponentsCardProps,
+} from './HasSubcomponentsCard';

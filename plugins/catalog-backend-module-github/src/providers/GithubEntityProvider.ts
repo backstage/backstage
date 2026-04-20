@@ -32,13 +32,13 @@ import {
 
 import { LocationSpec } from '@backstage/plugin-catalog-common';
 
-import { graphql } from '@octokit/graphql';
 import * as uuid from 'uuid';
 import {
   GithubEntityProviderConfig,
   readProviderConfigs,
 } from './GithubEntityProviderConfig';
 import {
+  createGraphqlClient,
   getOrganizationRepositories,
   getOrganizationRepository,
   RepositoryResponse,
@@ -249,9 +249,10 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
       url: orgUrl,
     });
 
-    return graphql.defaults({
-      baseUrl: this.integration.apiBaseUrl,
+    return createGraphqlClient({
       headers,
+      baseUrl: this.integration.apiBaseUrl!,
+      logger: this.logger,
     });
   }
 
@@ -275,6 +276,7 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
           organization,
           catalogPath,
           pageSizes,
+          this.config.filters.branch,
         );
       repositories = repositories.concat(
         repositoriesFromGithub.map(r =>
@@ -664,6 +666,7 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
         organization,
         repository.name,
         catalogPath,
+        this.config.filters.branch,
       ).then(r =>
         r ? this.createRepoFromGithubResponse(r, organization) : null,
       );

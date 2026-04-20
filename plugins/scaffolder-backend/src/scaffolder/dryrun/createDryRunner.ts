@@ -19,6 +19,7 @@ import {
   BackstageCredentials,
   LoggerService,
 } from '@backstage/backend-plugin-api';
+import type { MetricsService } from '@backstage/backend-plugin-api/alpha';
 import type { UserEntity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
@@ -81,6 +82,7 @@ export type TemplateTesterCreateOptions = {
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
   permissions?: PermissionEvaluator;
   config?: Config;
+  metrics: MetricsService;
 };
 
 /**

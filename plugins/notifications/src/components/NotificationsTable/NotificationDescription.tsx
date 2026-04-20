@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
+import { Text, Button } from '@backstage/ui';
 import { useState } from 'react';
 
 const MAX_LENGTH = 100;
@@ -25,37 +24,35 @@ export const NotificationDescription = (props: { description: string }) => {
   const isLong = description.length > MAX_LENGTH;
 
   if (!isLong) {
-    return <Typography variant="body2">{description}</Typography>;
+    return <Text variant="body-small">{description}</Text>;
   }
 
   if (shown) {
     return (
-      <Typography variant="body2">
+      <Text variant="body-small">
         {description}{' '}
         <Button
-          variant="text"
-          size="small"
-          onClick={() => {
+          variant="tertiary"
+          onPress={() => {
             setShown(false);
           }}
         >
           Show less
         </Button>
-      </Typography>
+      </Text>
     );
   }
   return (
-    <Typography variant="body2">
+    <Text variant="body-small">
       {description.substring(0, MAX_LENGTH)}...{' '}
       <Button
-        variant="text"
-        size="small"
-        onClick={() => {
+        variant="tertiary"
+        onPress={() => {
           setShown(true);
         }}
       >
         Show more
       </Button>
-    </Typography>
+    </Text>
   );
 };

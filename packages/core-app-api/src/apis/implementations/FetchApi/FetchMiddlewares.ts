@@ -16,6 +16,7 @@
 
 import { Config } from '@backstage/config';
 import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
+import { ClarifyFailuresFetchMiddleware } from './ClarifyFailuresFetchMiddleware';
 import { IdentityAuthInjectorFetchMiddleware } from './IdentityAuthInjectorFetchMiddleware';
 import { PluginProtocolResolverFetchMiddleware } from './PluginProtocolResolverFetchMiddleware';
 import { FetchMiddleware } from './types';
@@ -72,6 +73,14 @@ export class FetchMiddlewares {
     };
   }): FetchMiddleware {
     return IdentityAuthInjectorFetchMiddleware.create(options);
+  }
+
+  /**
+   * Replaces the generic "TypeError: Failed to fetch" with a more informative
+   * message that includes some request details to ease debugging.
+   */
+  static clarifyFailures(): FetchMiddleware {
+    return new ClarifyFailuresFetchMiddleware();
   }
 
   private constructor() {}

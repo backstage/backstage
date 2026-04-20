@@ -16,13 +16,11 @@
 
 import { CachedEntityLoader } from './CachedEntityLoader';
 import { CompoundEntityRef } from '@backstage/catalog-model';
-import { mockServices } from '@backstage/backend-test-utils';
+import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
-import { BackstageCredentials } from '@backstage/backend-plugin-api';
 
 describe('CachedEntityLoader', () => {
   const cache = mockServices.cache.mock();
-  const auth = mockServices.auth.mock();
 
   const entityName: CompoundEntityRef = {
     kind: 'component',
@@ -39,23 +37,8 @@ describe('CachedEntityLoader', () => {
     },
   };
 
-  const token = 'test-token';
-
-  const userCredentials: BackstageCredentials = {
-    $$type: '@backstage/BackstageCredentials',
-    principal: {
-      type: 'user',
-      userEntityRef: 'user:default/test-user',
-    },
-  };
-
-  const pluginCredentials: BackstageCredentials = {
-    $$type: '@backstage/BackstageCredentials',
-    principal: {
-      type: 'plugin',
-      subject: 'plugin:test-plugin',
-    },
-  };
+  const userCredentials = mockCredentials.user('user:default/test-user');
+  const serviceCredentials = mockCredentials.service('plugin:test-plugin');
 
   afterEach(() => {
     jest.resetAllMocks();
@@ -64,14 +47,17 @@ describe('CachedEntityLoader', () => {
   it('writes entities to cache for user credentials', async () => {
     cache.get.mockResolvedValue(undefined);
     const catalog = catalogServiceMock({ entities: [entity] });
-    auth.isPrincipal.mockReturnValue(true);
+    jest.spyOn(catalog, 'getEntityByRef');
 
-    const loader = new CachedEntityLoader({ auth, catalog, cache });
-    const result = await loader.load(userCredentials, entityName, token);
+    const loader = new CachedEntityLoader({ catalog, cache });
+    const result = await loader.load(userCredentials, entityName);
 
     expect(result).toEqual(entity);
+    expect(catalog.getEntityByRef).toHaveBeenCalledWith(entityName, {
+      credentials: userCredentials,
+    });
     expect(cache.set).toHaveBeenCalledWith(
-      'catalog:component:default/test:user:default/test-user',
+      `catalog:component:default/test:${userCredentials}`,
       entity,
       { ttl: 5000 },
     );
@@ -81,10 +67,9 @@ describe('CachedEntityLoader', () => {
     const catalog = catalogServiceMock();
     jest.spyOn(catalog, 'getEntityByRef');
     cache.get.mockResolvedValue(entity);
-    auth.isPrincipal.mockReturnValue(true);
 
-    const loader = new CachedEntityLoader({ auth, catalog, cache });
-    const result = await loader.load(userCredentials, entityName, token);
+    const loader = new CachedEntityLoader({ catalog, cache });
+    const result = await loader.load(userCredentials, entityName);
 
     expect(result).toEqual(entity);
     expect(catalog.getEntityByRef).not.toHaveBeenCalled();
@@ -93,31 +78,12 @@ describe('CachedEntityLoader', () => {
   it('does not cache missing entities', async () => {
     const catalog = catalogServiceMock({ entities: [] });
     cache.get.mockResolvedValue(undefined);
-    auth.isPrincipal.mockReturnValue(true);
 
-    const loader = new CachedEntityLoader({ auth, catalog, cache });
-    const result = await loader.load(userCredentials, entityName, token);
+    const loader = new CachedEntityLoader({ catalog, cache });
+    const result = await loader.load(userCredentials, entityName);
 
     expect(result).toBeUndefined();
     expect(cache.set).not.toHaveBeenCalled();
-  });
-
-  it('uses entity ref as cache key for service credentials', async () => {
-    const catalog = catalogServiceMock({ entities: [entity] });
-    cache.get.mockResolvedValue(undefined);
-    auth.isPrincipal.mockReturnValueOnce(false).mockReturnValueOnce(true);
-
-    const loader = new CachedEntityLoader({ auth, catalog, cache });
-    const result = await loader.load(pluginCredentials, entityName, undefined);
-
-    expect(result).toEqual(entity);
-    expect(cache.set).toHaveBeenCalledWith(
-      'catalog:component:default/test:plugin:test-plugin',
-      entity,
-      {
-        ttl: 5000,
-      },
-    );
   });
 
   it('calls the catalog if the cache read takes too long', async () => {
@@ -128,80 +94,48 @@ describe('CachedEntityLoader', () => {
         }),
     );
     const catalog = catalogServiceMock({ entities: [entity] });
-    auth.isPrincipal.mockReturnValue(true);
 
-    const loader = new CachedEntityLoader({ auth, catalog, cache });
-    const result = await loader.load(userCredentials, entityName, token);
+    const loader = new CachedEntityLoader({ catalog, cache });
+    const result = await loader.load(userCredentials, entityName);
 
     expect(result).toEqual(entity);
   });
 
-  it('creates different cache keys for different users', async () => {
+  it('creates different cache keys for different credentials', async () => {
     const catalog = catalogServiceMock({ entities: [entity] });
     cache.get.mockResolvedValue(undefined);
-    auth.isPrincipal.mockReturnValue(true);
 
-    const loader = new CachedEntityLoader({ auth, catalog, cache });
+    const loader = new CachedEntityLoader({ catalog, cache });
 
-    const anotherUserCredentials: BackstageCredentials = {
-      $$type: '@backstage/BackstageCredentials',
-      principal: {
-        type: 'user',
-        userEntityRef: 'user:default/another-user',
-      },
-    };
+    const anotherUserCredentials = mockCredentials.user(
+      'user:default/another-user',
+    );
 
-    await loader.load(userCredentials, entityName, token);
-    await loader.load(anotherUserCredentials, entityName, token);
+    await loader.load(userCredentials, entityName);
+    await loader.load(anotherUserCredentials, entityName);
 
     expect(cache.set).toHaveBeenCalledWith(
-      'catalog:component:default/test:user:default/test-user',
+      `catalog:component:default/test:${userCredentials}`,
       entity,
       { ttl: 5000 },
     );
     expect(cache.set).toHaveBeenCalledWith(
-      'catalog:component:default/test:user:default/another-user',
+      `catalog:component:default/test:${anotherUserCredentials}`,
       entity,
       { ttl: 5000 },
     );
   });
 
-  it('creates cache key with service subject for service credentials', async () => {
+  it('uses service credentials as cache key for service credentials', async () => {
     const catalog = catalogServiceMock({ entities: [entity] });
     cache.get.mockResolvedValue(undefined);
-    auth.isPrincipal.mockReturnValueOnce(false).mockReturnValueOnce(true);
 
-    const loader = new CachedEntityLoader({ auth, catalog, cache });
-    const result = await loader.load(pluginCredentials, entityName, token);
+    const loader = new CachedEntityLoader({ catalog, cache });
+    const result = await loader.load(serviceCredentials, entityName);
 
     expect(result).toEqual(entity);
     expect(cache.set).toHaveBeenCalledWith(
-      'catalog:component:default/test:plugin:test-plugin',
-      entity,
-      { ttl: 5000 },
-    );
-    expect(auth.isPrincipal).toHaveBeenCalledWith(pluginCredentials, 'user');
-    expect(auth.isPrincipal).toHaveBeenCalledWith(pluginCredentials, 'service');
-  });
-
-  it('handles credentials that are neither user nor service', async () => {
-    const catalog = catalogServiceMock({ entities: [entity] });
-    cache.get.mockResolvedValue(undefined);
-    auth.isPrincipal.mockReturnValue(false);
-
-    const unknownCredentials: BackstageCredentials = {
-      $$type: '@backstage/BackstageCredentials',
-      principal: {
-        type: 'unknown' as any,
-      },
-    };
-
-    const loader = new CachedEntityLoader({ auth, catalog, cache });
-    const result = await loader.load(unknownCredentials, entityName, token);
-
-    expect(result).toEqual(entity);
-    expect(cache.set).toHaveBeenCalledWith(
-      'catalog:component:default/test',
+      `catalog:component:default/test:${serviceCredentials}`,
       entity,
       { ttl: 5000 },
     );

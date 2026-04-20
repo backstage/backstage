@@ -37,11 +37,7 @@ import fetch, { RequestInit, Response } from 'node-fetch';
 import parseGitUrl from 'git-url-parse';
 import { Minimatch } from 'minimatch';
 import { Readable } from 'node:stream';
-import {
-  assertError,
-  NotFoundError,
-  NotModifiedError,
-} from '@backstage/errors';
+import { toError, NotFoundError, NotModifiedError } from '@backstage/errors';
 import { ReadTreeResponseFactory, ReaderFactory } from './types';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 import { parseLastModified } from './util';
@@ -209,8 +205,8 @@ export class GithubUrlReader implements UrlReaderService {
           ],
           etag: data.etag ?? '',
         };
-      } catch (error) {
-        assertError(error);
+      } catch (e) {
+        const error = toError(e);
         if (error.name === 'NotFoundError') {
           return {
             files: [],

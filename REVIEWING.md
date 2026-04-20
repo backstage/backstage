@@ -135,15 +135,15 @@ Each changeset should be written in a way that describes the impact of the chang
 
 Some things that changeset should NOT contain are:
 
-- Internal architecture details - these are generally not interesting to users, focus on the impact towards users of the package instead.
+- Internal implementation details such as internal function names, class names, variable names, or other code symbols that are not part of the public API. Changeset messages should describe user-facing behavior changes in plain language. Focus on the impact towards users of the package, not on how the code is structured internally.
 - Information related to a different package.
 - A large amount of content, consider for example a separate migration guide instead, either in the package README or [./docs/](./docs/), and then link to that instead.
 - Documentation - changesets can describe new features, but it should not be relied on for documenting them. Documentation should either be placed in [TSDoc](https://tsdoc.org) comments, package README, or [./docs/](./docs/).
-- Diffs of internal code, for example mirroring what the pull request changes _inside_ a plugin rather than public surfaces. This is not of interest to the reader of a package changelog. Sometimes, however, a small and concise diff can be used in a changeset to illustrate changes that the user will have to make in _their own_ Backstage installation as part of an upgrade, specifically when breaking changes are made to a package.
+- Diffs of internal code, for example mirroring what the pull request changes _inside_ a plugin rather than public surfaces. This is not of interest to the reader of a package changelog, and internal function names, class names, or variable names should never appear in changeset messages. Sometimes, however, a small and concise diff can be used in a changeset to illustrate changes that the user will have to make in _their own_ Backstage installation as part of an upgrade, specifically when breaking changes are made to a package.
 
 ### Backstage UI Changeset Format
 
-Changesets for `@backstage/ui` must follow a standardized format to enable proper documentation generation. See [`.changeset/README.md`](.changeset/README.md#backstage-ui-changeset-format) for the complete guide.
+Changesets for `@backstage/ui` must follow a standardized format to enable proper documentation generation. See [`.changeset/README.md`](.changeset/README.md#backstage-ui-changesets) for the complete guide.
 
 **Required structure:**
 

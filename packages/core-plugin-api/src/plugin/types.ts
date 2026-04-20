@@ -73,6 +73,8 @@ export type BackstagePlugin<
 export type PluginFeatureFlagConfig = {
   /** Feature flag name */
   name: string;
+  /** Feature flag description */
+  description?: string;
 };
 
 /**

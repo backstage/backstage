@@ -1,5 +1,19 @@
 # @backstage/config
 
+## 1.3.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.0
+
+## 1.3.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.0-next.0
+
 ## 1.3.6
 
 ### Patch Changes

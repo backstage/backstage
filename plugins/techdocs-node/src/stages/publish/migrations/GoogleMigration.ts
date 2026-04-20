@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { assertError } from '@backstage/errors';
+import { toError } from '@backstage/errors';
 import { File } from '@google-cloud/storage';
 import { Writable } from 'node:stream';
 import { lowerCaseEntityTripletInStoragePath } from '../helpers';
@@ -47,8 +47,7 @@ export class MigrateWriteStream extends Writable {
     try {
       newFile = lowerCaseEntityTripletInStoragePath(file.name);
     } catch (e) {
-      assertError(e);
-      this.logger.warn(e.message);
+      this.logger.warn(toError(e).message);
       next();
       return;
     }

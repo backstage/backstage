@@ -18,23 +18,23 @@ plugins to communicate during their entire life cycle.
 
 ## Consuming APIs
 
-Each Utility API is tied to an [`ApiRef`](https://backstage.io/api/stable/types/_backstage_frontend-plugin-api.ApiRef.html)
+Each Utility API is tied to an [`ApiRef`](https://backstage.io/api/stable/types/_backstage_frontend-plugin-api.index.ApiRef.html)
 instance, which is a global singleton object without any additional state or
 functionality, its only purpose is to reference Utility APIs.
-[`ApiRef`](https://backstage.io/api/stable/types/_backstage_frontend-plugin-api.ApiRef.html)s are created using
-[`createApiRef`](https://backstage.io/api/stable/functions/_backstage_frontend-plugin-api.createApiRef.html), which is exported
+[`ApiRef`](https://backstage.io/api/stable/types/_backstage_frontend-plugin-api.index.ApiRef.html)s are created using
+[`createApiRef`](https://backstage.io/api/stable/functions/_backstage_frontend-plugin-api.index.createApiRef.html), which is exported
 by [`@backstage/core-plugin-api`](https://backstage.io/api/stable/modules/_backstage_core-plugin-api.html). There are also
 many predefined Utility APIs in
 [`@backstage/core-plugin-api`](https://backstage.io/api/stable/modules/_backstage_core-plugin-api.html), and they're all
 exported with a name of the pattern `*ApiRef`, for example
-[`errorApiRef`](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.errorApiRef.html).
+[`errorApiRef`](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.index.errorApiRef.html).
 
 To access one of the Utility APIs inside a React component, use the
-[`useApi`](https://backstage.io/api/stable/functions/_backstage_frontend-plugin-api.useApi.html) hook exported by
+[`useApi`](https://backstage.io/api/stable/functions/_backstage_frontend-plugin-api.index.useApi.html) hook exported by
 [`@backstage/core-plugin-api`](https://backstage.io/api/stable/modules/_backstage_core-plugin-api.html), or the
-[`withApis`](https://backstage.io/api/stable/functions/_backstage_frontend-plugin-api.withApis.html) HOC if you prefer class
+[`withApis`](https://backstage.io/api/stable/functions/_backstage_frontend-plugin-api.index.withApis.html) HOC if you prefer class
 components. For example, the
-[`ErrorApi`](https://backstage.io/api/stable/types/_backstage_frontend-plugin-api.ErrorApi.html) can be accessed like this:
+[`ErrorApi`](https://backstage.io/api/stable/types/_backstage_frontend-plugin-api.index.ErrorApi.html) can be accessed like this:
 
 ```tsx
 import { useApi, errorApiRef } from '@backstage/core-plugin-api';
@@ -52,9 +52,9 @@ export const MyComponent = () => {
 ```
 
 Note that there is no explicit type given for
-[`ErrorApi`](https://backstage.io/api/stable/types/_backstage_frontend-plugin-api.ErrorApi.html). This is because the
-[`errorApiRef`](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.errorApiRef.html) has the type
-embedded, and [`useApi`](https://backstage.io/api/stable/functions/_backstage_frontend-plugin-api.useApi.html) is able to infer
+[`ErrorApi`](https://backstage.io/api/stable/types/_backstage_frontend-plugin-api.index.ErrorApi.html). This is because the
+[`errorApiRef`](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.index.errorApiRef.html) has the type
+embedded, and [`useApi`](https://backstage.io/api/stable/functions/_backstage_frontend-plugin-api.index.useApi.html) is able to infer
 the type.
 
 Also note that consuming Utility APIs is not limited to plugins; it can be done
@@ -67,15 +67,15 @@ requirement is that they are beneath the `AppProvider` in the react tree.
 ### API Factories
 
 APIs are registered in the form of
-[`ApiFactory`](https://backstage.io/api/stable/types/_backstage_frontend-plugin-api.ApiFactory.html) instances, which encapsulate
+[`ApiFactory`](https://backstage.io/api/stable/types/_backstage_frontend-plugin-api.index.ApiFactory.html) instances, which encapsulate
 the process of instantiating an API. It is a collection of three things: the
-[`ApiRef`](https://backstage.io/api/stable/types/_backstage_frontend-plugin-api.ApiRef.html) of the API to instantiate, a
+[`ApiRef`](https://backstage.io/api/stable/types/_backstage_frontend-plugin-api.index.ApiRef.html) of the API to instantiate, a
 list of all required dependencies, and a factory function that returns a new API
 instance.
 
 For example, this is the default
-[`ApiFactory`](https://backstage.io/api/stable/types/_backstage_frontend-plugin-api.ApiFactory.html) for the
-[`ErrorApi`](https://backstage.io/api/stable/types/_backstage_frontend-plugin-api.ErrorApi.html):
+[`ApiFactory`](https://backstage.io/api/stable/types/_backstage_frontend-plugin-api.index.ApiFactory.html) for the
+[`ErrorApi`](https://backstage.io/api/stable/types/_backstage_frontend-plugin-api.index.ErrorApi.html):
 
 ```ts
 createApiFactory({
@@ -89,25 +89,25 @@ createApiFactory({
 });
 ```
 
-In this example, the [`errorApiRef`](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.errorApiRef.html)
+In this example, the [`errorApiRef`](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.index.errorApiRef.html)
 is our API, which encapsulates the
-[`ErrorApi`](https://backstage.io/api/stable/types/_backstage_frontend-plugin-api.ErrorApi.html) type. The
-[`alertApiRef`](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.alertApiRef.html) is our single
+[`ErrorApi`](https://backstage.io/api/stable/types/_backstage_frontend-plugin-api.index.ErrorApi.html) type. The
+[`alertApiRef`](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.index.alertApiRef.html) is our single
 dependency, which we give the name `alertApi`, and is then passed on to the
 factory function, which returns an implementation of the
-[`ErrorApi`](https://backstage.io/api/stable/types/_backstage_frontend-plugin-api.ErrorApi.html).
+[`ErrorApi`](https://backstage.io/api/stable/types/_backstage_frontend-plugin-api.index.ErrorApi.html).
 
-The [`createApiFactory`](https://backstage.io/api/stable/functions/_backstage_frontend-plugin-api.createApiFactory.html)
+The [`createApiFactory`](https://backstage.io/api/stable/functions/_backstage_frontend-plugin-api.index.createApiFactory.html)
 function is a thin wrapper that enables TypeScript type inference. You may
 notice that there are no type annotations in the above example, and that is
 because we're able to infer all types from the
-[`ApiRef`](https://backstage.io/api/stable/types/_backstage_frontend-plugin-api.ApiRef.html)s. TypeScript will make sure
+[`ApiRef`](https://backstage.io/api/stable/types/_backstage_frontend-plugin-api.index.ApiRef.html)s. TypeScript will make sure
 that the return value of the `factory` function matches the type embedded in
-`api`'s [`ApiRef`](https://backstage.io/api/stable/types/_backstage_frontend-plugin-api.ApiRef.html), in this case the
-[`ErrorApi`](https://backstage.io/api/stable/types/_backstage_frontend-plugin-api.ErrorApi.html). It will also match the
+`api`'s [`ApiRef`](https://backstage.io/api/stable/types/_backstage_frontend-plugin-api.index.ApiRef.html), in this case the
+[`ErrorApi`](https://backstage.io/api/stable/types/_backstage_frontend-plugin-api.index.ErrorApi.html). It will also match the
 types between the `deps` and the parameters of the `factory` function, again
 using the type embedded within the
-[`ApiRef`](https://backstage.io/api/stable/types/_backstage_frontend-plugin-api.ApiRef.html)s.
+[`ApiRef`](https://backstage.io/api/stable/types/_backstage_frontend-plugin-api.index.ApiRef.html)s.
 
 ## Registering API Factories
 
@@ -120,8 +120,8 @@ app, and the app itself.
 Starting with the Backstage core library, it provides implementations for all of
 the core APIs. The core APIs are the ones exported by
 [`@backstage/core-plugin-api`](https://backstage.io/api/stable/modules/_backstage_core-plugin-api.html), such as the
-[`errorApiRef`](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.errorApiRef.html) and
-[`configApiRef`](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.configApiRef.html).
+[`errorApiRef`](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.index.errorApiRef.html) and
+[`configApiRef`](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.index.configApiRef.html).
 
 The core APIs are loaded for any app created with
 [`createApp`](https://backstage.io/api/stable/functions/_backstage_app-defaults.createApp.html) from
@@ -133,7 +133,7 @@ there is no step that needs to be taken to include these APIs in an app.
 In addition to the core APIs, plugins can define and export their own APIs.
 While doing so, they should usually also provide default implementations of their
 own APIs; for example, the `catalog` plugin exports `catalogApiRef` and also
-supplies a default [`ApiFactory`](https://backstage.io/api/stable/types/_backstage_frontend-plugin-api.ApiFactory.html) of
+supplies a default [`ApiFactory`](https://backstage.io/api/stable/types/_backstage_frontend-plugin-api.index.ApiFactory.html) of
 that API using the `CatalogClient`. There is one restriction to plugin-provided
 API Factories: plugins may not supply factories for core APIs; trying to do so
 will cause the app to refuse to start.
@@ -227,16 +227,16 @@ const app = createApp({
 ```
 
 Note that the above line will cause an error if `IgnoreErrorApi` does not fully
-implement the [`ErrorApi`](https://backstage.io/api/stable/types/_backstage_frontend-plugin-api.ErrorApi.html), as it is
+implement the [`ErrorApi`](https://backstage.io/api/stable/types/_backstage_frontend-plugin-api.index.ErrorApi.html), as it is
 checked by the type embedded in the
-[`errorApiRef`](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.errorApiRef.html) at compile time.
+[`errorApiRef`](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.index.errorApiRef.html) at compile time.
 
 ## Defining custom Utility APIs
 
 Plugins are free to define their own Utility APIs. Simply define the TypeScript
 interface for the API and create an
-[`ApiRef`](https://backstage.io/api/stable/types/_backstage_frontend-plugin-api.ApiRef.html) using
-[`createApiRef`](https://backstage.io/api/stable/functions/_backstage_frontend-plugin-api.createApiRef.html) exported from
+[`ApiRef`](https://backstage.io/api/stable/types/_backstage_frontend-plugin-api.index.ApiRef.html) using
+[`createApiRef`](https://backstage.io/api/stable/functions/_backstage_frontend-plugin-api.index.createApiRef.html) exported from
 [`@backstage/core-plugin-api`](https://backstage.io/api/stable/modules/_backstage_core-plugin-api.html). Also, be sure to
 provide at least one implementation of the API and to declare a default factory
 for the API in [`createPlugin`](https://backstage.io/api/stable/functions/_backstage_core-plugin-api.index.createPlugin.html).
@@ -244,16 +244,16 @@ for the API in [`createPlugin`](https://backstage.io/api/stable/functions/_backs
 Custom Utility APIs can be either public or private, which is up to the plugin to choose. Private APIs do not expose an external API surface, and it's therefore possible to make breaking changes to the API without affecting other users of the plugin. If an API is made public, however, it opens up for other plugins to make use of the API, and it also makes it possible for users for your plugin to override the API in the app. It is, however, important to maintain backward compatibility of public APIs, as you may otherwise break apps that are using your plugin.
 
 To make an API public, simply export the
-[`ApiRef`](https://backstage.io/api/stable/types/_backstage_frontend-plugin-api.ApiRef.html) of the API, and any associated
+[`ApiRef`](https://backstage.io/api/stable/types/_backstage_frontend-plugin-api.index.ApiRef.html) of the API, and any associated
 types. To make an API private, just avoid exporting the
-[`ApiRef`](https://backstage.io/api/stable/types/_backstage_frontend-plugin-api.ApiRef.html), but still be sure to supply a
+[`ApiRef`](https://backstage.io/api/stable/types/_backstage_frontend-plugin-api.index.ApiRef.html), but still be sure to supply a
 default factory to [`createPlugin`](https://backstage.io/api/stable/functions/_backstage_core-plugin-api.index.createPlugin.html).
 
 Private APIs are useful for plugins that want to depend on other APIs outside of
 React components, but not have to expose an entire API surface to maintain. When
 using private APIs, it is fine to use the `typeof` of an implementing class as
 the type parameter passed to
-[`createApiRef`](https://backstage.io/api/stable/functions/_backstage_frontend-plugin-api.createApiRef.html), while public APIs
+[`createApiRef`](https://backstage.io/api/stable/functions/_backstage_frontend-plugin-api.index.createApiRef.html), while public APIs
 should always define a separate TypeScript interface type.
 
 Plugins may depend on APIs from other plugins, both in React components and as
@@ -262,13 +262,13 @@ dependencies between plugins.
 
 ## Architecture
 
-The [`ApiRef`](https://backstage.io/api/stable/types/_backstage_frontend-plugin-api.ApiRef.html) instances mentioned above
+The [`ApiRef`](https://backstage.io/api/stable/types/_backstage_frontend-plugin-api.index.ApiRef.html) instances mentioned above
 provide a point of indirection between consumers and producers of Utility APIs.
 It allows for plugins and components to depend on APIs in a type-safe way,
 without having a direct reference to a concrete implementation of the APIs. The
 Apps are also given a lot of flexibility in what implementations to provide. As
 long as they adhere to the contract established by an
-[`ApiRef`](https://backstage.io/api/stable/types/_backstage_frontend-plugin-api.ApiRef.html), they are free to choose any
+[`ApiRef`](https://backstage.io/api/stable/types/_backstage_frontend-plugin-api.index.ApiRef.html), they are free to choose any
 implementation they want.
 
 The figure below shows the relationship between

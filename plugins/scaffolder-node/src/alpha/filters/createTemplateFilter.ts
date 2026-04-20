@@ -16,7 +16,7 @@
 
 import { ZodFunctionSchema } from '../types';
 import { CreatedTemplateFilter, TemplateFilterExample } from './types';
-import { z } from 'zod';
+import { z } from 'zod/v3';
 
 /**
  * This function is used to create new template filters in type-safe manner.

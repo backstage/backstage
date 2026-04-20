@@ -14,31 +14,14 @@
  * limitations under the License.
  */
 
-const path = require('node:path');
-
-module.exports = {
-  process(src, filename) {
-    const assetFilename = JSON.stringify(path.basename(filename));
-
-    if (filename.match(/\.icon\.svg$/)) {
-      return {
-        code: `const React = require('react');
-      const SvgIcon = require('@material-ui/core/SvgIcon').default;
-      module.exports = {
-        __esModule: true,
-        default: props => React.createElement(SvgIcon, props, {
-          $$typeof: Symbol.for('react.element'),
-          type: 'svg',
-          ref: ref,
-          key: null,
-          props: Object.assign({}, props, {
-            children: ${assetFilename}
-          })
-        })
-      };`,
-      };
-    }
-
-    return { code: `module.exports = ${assetFilename};` };
-  },
-};
+try {
+  module.exports = require('@backstage/cli-module-test-jest/config/jestFileTransform');
+} catch (e) {
+  if (e.code === 'MODULE_NOT_FOUND') {
+    throw new Error(
+      '@backstage/cli-module-test-jest is required to use the jest file transform. ' +
+        'Please install it as a dependency.',
+    );
+  }
+  throw e;
+}

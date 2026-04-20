@@ -22,7 +22,7 @@ import {
   replaceGitLabUrlType,
   sleep,
 } from './GitLabIntegration';
-import { registerMswTestHooks } from '../helpers';
+import { registerMswTestHooks } from '@backstage/backend-test-utils';
 
 // Mock pThrottle to make testing easier
 jest.mock('p-throttle', () => {

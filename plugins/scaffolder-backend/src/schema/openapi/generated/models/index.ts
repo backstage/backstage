@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ export * from '../models/Autocomplete400Response.model';
 export * from '../models/AutocompleteRequest.model';
 export * from '../models/CancelTask200Response.model';
 export * from '../models/DryRun200Response.model';
-export * from '../models/DryRun200ResponseAllOf.model';
 export * from '../models/DryRun200ResponseAllOfDirectoryContentsInner.model';
 export * from '../models/DryRun200ResponseAllOfStepsInner.model';
 export * from '../models/DryRunRequest.model';
@@ -31,7 +30,6 @@ export * from '../models/DryRunRequestDirectoryContentsInner.model';
 export * from '../models/DryRunResult.model';
 export * from '../models/DryRunResultLogInner.model';
 export * from '../models/DryRunResultLogInnerBody.model';
-export * from '../models/DryRunResultLogInnerBodyAllOf.model';
 export * from '../models/ErrorError.model';
 export * from '../models/ErrorRequest.model';
 export * from '../models/ErrorResponse.model';
@@ -51,7 +49,6 @@ export * from '../models/SerializedTask.model';
 export * from '../models/SerializedTaskEvent.model';
 export * from '../models/TaskEventType.model';
 export * from '../models/TaskSecrets.model';
-export * from '../models/TaskSecretsAllOf.model';
 export * from '../models/TaskStatus.model';
 export * from '../models/TemplateFilter.model';
 export * from '../models/TemplateFilterSchema.model';

@@ -1,0 +1,195 @@
+/*
+ * Copyright 2025 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@layer tokens, base, components, utilities;
+
+@layer components {
+  .bui-List {
+    box-sizing: border-box;
+    outline: none;
+    display: flex;
+    flex-direction: column;
+
+    gap: var(--bui-space-3);
+
+    &:has([data-selection-mode]) {
+      gap: 0;
+    }
+
+    &[data-focus-visible] {
+      outline: none;
+    }
+  }
+
+  .bui-ListRow {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    gap: var(--bui-space-3);
+    border-radius: var(--bui-radius-2);
+    font-size: var(--bui-font-size-3);
+    font-family: var(--bui-font-regular);
+    color: var(--bui-fg-primary);
+    outline: none;
+
+    &[data-disabled] {
+      cursor: not-allowed;
+      color: var(--bui-fg-disabled);
+    }
+
+    &[data-focus-visible] {
+      outline: 2px solid var(--bui-ring);
+    }
+
+    &[data-selection-mode] {
+      cursor: pointer;
+      padding-block: var(--bui-space-2);
+      padding-inline: var(--bui-space-2);
+
+      &[data-selected] {
+        &:has(+ [data-selected]) {
+          border-end-start-radius: 0;
+          border-end-end-radius: 0;
+        }
+
+        + [data-selected] {
+          border-start-start-radius: 0;
+          border-start-end-radius: 0;
+        }
+      }
+
+      &[data-hovered],
+      &[data-focus-visible] {
+        background-color: var(--bui-bg-neutral-1-hover);
+      }
+
+      &[data-pressed],
+      &[data-selected],
+      &[data-selected][data-hovered],
+      &[data-selected][data-focus-visible],
+      &[data-selected][data-pressed] {
+        background-color: var(--bui-bg-neutral-1-pressed);
+      }
+
+      &[data-on-bg='neutral-1'] {
+        &[data-hovered],
+        &[data-focus-visible] {
+          background-color: var(--bui-bg-neutral-2-hover);
+        }
+
+        &[data-pressed],
+        &[data-selected],
+        &[data-selected][data-hovered],
+        &[data-selected][data-focus-visible],
+        &[data-selected][data-pressed] {
+          background-color: var(--bui-bg-neutral-2-pressed);
+        }
+      }
+
+      &[data-on-bg='neutral-2'] {
+        &[data-hovered],
+        &[data-focus-visible] {
+          background-color: var(--bui-bg-neutral-3-hover);
+        }
+
+        &[data-pressed],
+        &[data-selected],
+        &[data-selected][data-hovered],
+        &[data-selected][data-focus-visible],
+        &[data-selected][data-pressed] {
+          background-color: var(--bui-bg-neutral-3-pressed);
+        }
+      }
+
+      &[data-on-bg='neutral-3'],
+      &[data-on-bg='neutral-4'] {
+        &[data-hovered],
+        &[data-focus-visible] {
+          background-color: var(--bui-bg-neutral-4-hover);
+        }
+
+        &[data-pressed],
+        &[data-selected],
+        &[data-selected][data-hovered],
+        &[data-selected][data-focus-visible],
+        &[data-selected][data-pressed] {
+          background-color: var(--bui-bg-neutral-4-pressed);
+        }
+      }
+    }
+  }
+
+  .bui-ListRowCheck {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 1rem;
+    height: 1rem;
+
+    & svg {
+      width: 1rem;
+      height: 1rem;
+    }
+  }
+
+  .bui-ListRowIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 2rem;
+    height: 2rem;
+    color: var(--bui-fg-secondary);
+    border-radius: var(--bui-radius-2);
+
+    & svg {
+      width: 1rem;
+      height: 1rem;
+    }
+  }
+
+  .bui-ListRowLabel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--bui-space-1);
+    min-width: 0;
+    overflow: hidden;
+
+    & > * {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+  }
+
+  .bui-ListRowDescription {
+    font-size: var(--bui-font-size-2);
+    color: var(--bui-fg-secondary);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .bui-ListRowActions {
+    display: flex;
+    align-items: center;
+    gap: var(--bui-space-1);
+    flex-shrink: 0;
+    margin-left: auto;
+  }
+}

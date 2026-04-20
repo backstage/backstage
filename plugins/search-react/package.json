@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-search-react",
-  "version": "1.10.5-next.0",
+  "version": "1.11.1",
   "backstage": {
     "role": "web-library",
     "pluginId": "search",
@@ -69,7 +69,8 @@
     "lodash": "^4.17.21",
     "qs": "^6.9.4",
     "react-use": "^17.3.2",
-    "uuid": "^11.0.2"
+    "uuid": "^11.0.2",
+    "zod": "^4.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

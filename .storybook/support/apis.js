@@ -1,5 +1,6 @@
 import {
   AlertApiForwarder,
+  AppThemeSelector,
   ErrorAlerter,
   ErrorApiForwarder,
   GithubAuth,
@@ -13,6 +14,7 @@ import {
 
 import {
   alertApiRef,
+  appThemeApiRef,
   errorApiRef,
   githubAuthApiRef,
   gitlabAuthApiRef,
@@ -24,10 +26,16 @@ import {
   featureFlagsApiRef,
 } from '@backstage/core-plugin-api';
 
+import { themes } from '@backstage/theme';
+
 import { translationApiRef } from '@backstage/core-plugin-api/alpha';
 import { MockTranslationApi } from '@backstage/test-utils/alpha';
 
 const configApi = new ConfigReader({});
+export const appThemeApi = AppThemeSelector.createWithStorage([
+  { id: 'light', title: 'Light', variant: 'light', theme: themes.light },
+  { id: 'dark', title: 'Dark', variant: 'dark', theme: themes.dark },
+]);
 const featureFlagsApi = new LocalStorageFeatureFlags();
 const alertApi = new AlertApiForwarder();
 const errorApi = new ErrorAlerter(alertApi, new ErrorApiForwarder());
@@ -62,6 +70,7 @@ const translationApi = MockTranslationApi.create();
 
 export const apis = [
   [configApiRef, configApi],
+  [appThemeApiRef, appThemeApi],
   [featureFlagsApiRef, featureFlagsApi],
   [alertApiRef, alertApi],
   [errorApiRef, errorApi],

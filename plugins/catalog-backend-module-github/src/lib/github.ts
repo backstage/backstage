@@ -30,6 +30,7 @@ import { DeferredEntity } from '@backstage/plugin-catalog-node';
 import { Octokit } from '@octokit/core';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { throttling } from '@octokit/plugin-throttling';
+import { retry } from '@octokit/plugin-retry';
 
 /**
  * Configuration for GitHub GraphQL API page sizes.
@@ -594,6 +595,7 @@ export async function getOrganizationRepositories(
   org: string,
   catalogPath: string,
   pageSizes: GithubPageSizes = DEFAULT_PAGE_SIZES,
+  branch?: string,
 ): Promise<{ repositories: RepositoryResponse[] }> {
   let relativeCatalogPathRef: string;
   // We must strip the leading slash or the query for objects does not work
@@ -602,7 +604,8 @@ export async function getOrganizationRepositories(
   } else {
     relativeCatalogPathRef = catalogPath;
   }
-  const catalogPathRef = `HEAD:${relativeCatalogPathRef}`;
+  const branchRef = branch ?? 'HEAD';
+  const catalogPathRef = `${branchRef}:${relativeCatalogPathRef}`;
   const query = `
     query repositories($org: String!, $catalogPathRef: String!, $cursor: String, $repositoriesPageSize: Int!) {
       repositoryOwner(login: $org) {
@@ -663,6 +666,7 @@ export async function getOrganizationRepository(
   org: string,
   repoName: string,
   catalogPath: string,
+  branch?: string,
 ): Promise<RepositoryResponse | null> {
   let relativeCatalogPathRef: string;
   // We must strip the leading slash or the query for objects does not work
@@ -671,7 +675,8 @@ export async function getOrganizationRepository(
   } else {
     relativeCatalogPathRef = catalogPath;
   }
-  const catalogPathRef = `HEAD:${relativeCatalogPathRef}`;
+  const branchRef = branch ?? 'HEAD';
+  const catalogPathRef = `${branchRef}:${relativeCatalogPathRef}`;
   const query = `
     query repository($org: String!, $repoName: String!, $catalogPathRef: String!) {
       repositoryOwner(login: $org) {
@@ -870,7 +875,7 @@ export const createReplaceEntitiesOperation =
   };
 
 /**
- * Creates a GraphQL Client with Throttling
+ * Creates a GraphQL Client with Throttling and Retries
  */
 export const createGraphqlClient = (args: {
   headers:
@@ -882,7 +887,7 @@ export const createGraphqlClient = (args: {
   logger: LoggerService;
 }): typeof graphql => {
   const { headers, baseUrl, logger } = args;
-  const ThrottledOctokit = Octokit.plugin(throttling);
+  const ThrottledOctokit = Octokit.plugin(throttling, retry);
   const octokit = new ThrottledOctokit({
     throttle: {
       onRateLimit: (retryAfter, rateLimitData, _, retryCount) => {

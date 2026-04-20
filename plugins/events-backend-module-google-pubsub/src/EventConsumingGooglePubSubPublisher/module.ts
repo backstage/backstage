@@ -18,6 +18,7 @@ import {
   coreServices,
   createBackendModule,
 } from '@backstage/backend-plugin-api';
+import { metricsServiceRef } from '@backstage/backend-plugin-api/alpha';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { EventConsumingGooglePubSubPublisher } from './EventConsumingGooglePubSubPublisher';
 
@@ -38,13 +39,15 @@ export const eventsModuleEventConsumingGooglePubSubPublisher =
           logger: coreServices.logger,
           rootLifecycle: coreServices.rootLifecycle,
           events: eventsServiceRef,
+          metrics: metricsServiceRef,
         },
-        async init({ config, logger, rootLifecycle, events }) {
+        async init({ config, logger, rootLifecycle, events, metrics }) {
           EventConsumingGooglePubSubPublisher.create({
             config,
             logger,
             rootLifecycle,
             events,
+            metrics,
           });
         },
       });

@@ -18,8 +18,10 @@ import {
   EntitiesSearchFilter,
   EntityFilter,
 } from '@backstage/plugin-catalog-node';
+import { FilterPredicate } from '@backstage/filter-predicates';
 import { Knex } from 'knex';
-import { DbSearchRow } from '../../database/tables';
+import { applyPredicateEntityFilterToQuery } from './applyPredicateEntityFilterToQuery';
+import { searchExists, SEARCH_FLT_ALIAS } from './searchSubquery';
 
 function isEntitiesSearchFilter(
   filter: EntitiesSearchFilter | EntityFilter,
@@ -40,27 +42,29 @@ function isNegationEntityFilter(
 }
 
 /**
- * Applies filtering through a number of WHERE IN subqueries. Example:
+ * Applies filtering through correlated EXISTS subqueries. Example:
  *
  * ```
  * SELECT * FROM final_entities
  * WHERE
- *   entity_id IN (
- *     SELECT entity_id FROM search
- *     WHERE key = 'kind' AND value = 'component'
+ *   EXISTS (
+ *     SELECT 1 FROM search AS search_flt
+ *     WHERE search_flt.entity_id = final_entities.entity_id
+ *       AND key = 'kind' AND value = 'component'
  *   )
- *   AND entity_id IN (
- *     SELECT entity_id FROM search
- *     WHERE key = 'spec.lifecycle' AND value = 'production'
+ *   AND EXISTS (
+ *     SELECT 1 FROM search AS search_flt
+ *     WHERE search_flt.entity_id = final_entities.entity_id
+ *       AND key = 'spec.lifecycle' AND value = 'production'
  *   )
  *   AND final_entities.final_entity IS NOT NULL
  * ```
  *
- * This strategy is a good all-rounder, in the sense that it has medium-good
- * performance on most queries on all database engines. However, it does not
- * scale well down to very short runtimes as well as the JOIN strategy.
+ * The EXISTS strategy enables efficient semi-join plans, particularly on
+ * PostgreSQL with large datasets, since the database can stop scanning as
+ * soon as the first matching row is found.
  */
-function applyInStrategy(
+function applyExistsStrategy(
   filter: EntityFilter,
   targetQuery: Knex.QueryBuilder,
   onEntityIdField: string,
@@ -68,7 +72,7 @@ function applyInStrategy(
   negate: boolean,
 ): Knex.QueryBuilder {
   if (isNegationEntityFilter(filter)) {
-    return applyInStrategy(
+    return applyExistsStrategy(
       filter.not,
       targetQuery,
       onEntityIdField,
@@ -80,21 +84,18 @@ function applyInStrategy(
   if (isEntitiesSearchFilter(filter)) {
     const key = filter.key.toLowerCase();
     const values = filter.values?.map(v => v.toLowerCase());
-    const matchQuery = knex<DbSearchRow>('search')
-      .select('search.entity_id')
-      .where({ key })
+    const subquery = searchExists(knex, onEntityIdField)
+      .where(`${SEARCH_FLT_ALIAS}.key`, key)
       .andWhere(function keyFilter() {
         if (values?.length === 1) {
-          this.where({ value: values.at(0) });
+          this.where(`${SEARCH_FLT_ALIAS}.value`, values.at(0));
         } else if (values) {
-          this.andWhere('value', 'in', values);
+          this.whereIn(`${SEARCH_FLT_ALIAS}.value`, values);
         }
       });
-    return targetQuery.andWhere(
-      onEntityIdField,
-      negate ? 'not in' : 'in',
-      matchQuery,
-    );
+    return negate
+      ? targetQuery.whereNotExists(subquery)
+      : targetQuery.whereExists(subquery);
   }
 
   return targetQuery[negate ? 'andWhereNot' : 'andWhere'](
@@ -102,13 +103,25 @@ function applyInStrategy(
       if (isOrEntityFilter(filter)) {
         for (const subFilter of filter.anyOf ?? []) {
           this.orWhere(subQuery =>
-            applyInStrategy(subFilter, subQuery, onEntityIdField, knex, false),
+            applyExistsStrategy(
+              subFilter,
+              subQuery,
+              onEntityIdField,
+              knex,
+              false,
+            ),
           );
         }
       } else {
         for (const subFilter of filter.allOf ?? []) {
           this.andWhere(subQuery =>
-            applyInStrategy(subFilter, subQuery, onEntityIdField, knex, false),
+            applyExistsStrategy(
+              subFilter,
+              subQuery,
+              onEntityIdField,
+              knex,
+              false,
+            ),
           );
         }
       }
@@ -118,13 +131,28 @@ function applyInStrategy(
 
 // The actual exported function
 export function applyEntityFilterToQuery(options: {
-  filter: EntityFilter;
+  filter?: EntityFilter;
+  query?: FilterPredicate;
   targetQuery: Knex.QueryBuilder;
   onEntityIdField: string;
   knex: Knex;
-  strategy?: 'in' | 'join';
 }): Knex.QueryBuilder {
-  const { filter, targetQuery, onEntityIdField, knex } = options;
+  const { filter, query, targetQuery, onEntityIdField, knex } = options;
 
-  return applyInStrategy(filter, targetQuery, onEntityIdField, knex, false);
+  let result = targetQuery;
+
+  if (filter) {
+    result = applyExistsStrategy(filter, result, onEntityIdField, knex, false);
+  }
+
+  if (query) {
+    result = applyPredicateEntityFilterToQuery({
+      filter: query,
+      targetQuery: result,
+      onEntityIdField,
+      knex,
+    });
+  }
+
+  return result;
 }

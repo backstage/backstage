@@ -19,7 +19,22 @@ import {
   IconElement,
   IconsApi,
 } from '@backstage/frontend-plugin-api';
-import { createElement, isValidElement } from 'react';
+import { cloneElement, createElement, isValidElement } from 'react';
+
+const legacyFontSizeMap = {
+  inherit: 'inherit',
+  small: '1.25rem',
+  medium: '1.5rem',
+  large: '2.1875rem',
+} as const;
+
+function mergeClassNames(...classNames: Array<string | undefined>) {
+  const merged = classNames.filter(Boolean).join(' ');
+  if (merged) {
+    return merged;
+  }
+  return undefined;
+}
 
 /**
  * Implementation for the {@link IconsApi}
@@ -39,7 +54,10 @@ export class DefaultIconsApi implements IconsApi {
           return [key, value];
         }
         deprecatedKeys.push(key);
-        return [key, createElement(value as IconComponent)];
+        return [
+          key,
+          createElement(value as IconComponent, { fontSize: 'inherit' }),
+        ];
       }),
     );
 
@@ -65,7 +83,37 @@ export class DefaultIconsApi implements IconsApi {
     if (el === undefined) {
       return undefined;
     }
-    component = () => el;
+    component = props => {
+      if (el === null) {
+        return null;
+      }
+
+      const {
+        fontSize = 'medium',
+        className,
+        style,
+        ...rest
+      } = props as {
+        fontSize?: keyof typeof legacyFontSizeMap;
+        className?: string;
+        style?: Record<string, unknown>;
+      } & Record<string, unknown>;
+
+      const elementProps = el.props as {
+        className?: string;
+        style?: Record<string, unknown>;
+      };
+
+      return cloneElement(el, {
+        ...rest,
+        className: mergeClassNames(elementProps.className, className),
+        style: {
+          ...elementProps.style,
+          fontSize: legacyFontSizeMap[fontSize],
+          ...style,
+        },
+      });
+    };
     this.#components.set(key, component);
     return component;
   }

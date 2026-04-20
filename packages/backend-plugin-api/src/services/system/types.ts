@@ -50,7 +50,7 @@ export type ServiceRef<
 
   /**
    * Utility for getting the type of the service, using `typeof serviceRef.T`.
-   * Attempting to actually read this value will result in an exception.
+   * Reading this value will always return `null`. It is only intended for use with `typeof serviceRef.T`.
    */
   T: TService;
 
@@ -136,21 +136,18 @@ export function createServiceRef<
   TService,
   TInstances extends 'singleton' | 'multiton',
 >(
-  options: ServiceRefOptions<TService, any, TInstances>,
-): ServiceRef<TService, any, TInstances> {
+  options: ServiceRefOptions<TService, 'root' | 'plugin', TInstances>,
+): ServiceRef<TService, 'root' | 'plugin', TInstances> {
   const { id, scope = 'plugin', multiton = false, defaultFactory } = options;
   return {
     id,
     scope,
     multiton,
-    get T(): TService {
-      throw new Error(`tried to read ServiceRef.T of ${this}`);
-    },
+    T: null as TService,
     toString() {
       return `serviceRef{${options.id}}`;
     },
     toJSON() {
-      // This avoids accidental calls to T happening e.g. in tests
       return {
         $$type: '@backstage/ServiceRef',
         id,

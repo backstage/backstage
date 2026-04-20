@@ -21,6 +21,7 @@ import {
   discoveryApiRef,
   fetchApiRef,
 } from '@backstage/frontend-plugin-api';
+import { RiNotification3Line } from '@remixicon/react';
 import { rootRouteRef } from './routes';
 import { NotificationsClient, notificationsApiRef } from './api';
 
@@ -30,7 +31,7 @@ const page = PageBlueprint.make({
     routeRef: rootRouteRef,
     loader: () =>
       import('./components/NotificationsPage').then(m => (
-        <m.NotificationsPage />
+        <m.NfsNotificationsPage />
       )),
   },
 });
@@ -48,6 +49,8 @@ const api = ApiBlueprint.make({
 /** @alpha */
 export default createFrontendPlugin({
   pluginId: 'notifications',
+  title: 'Notifications',
+  icon: <RiNotification3Line />,
   info: { packageJson: () => import('../package.json') },
   routes: {
     root: rootRouteRef,
@@ -56,4 +59,10 @@ export default createFrontendPlugin({
   extensions: [page, api],
 });
 
-export { notificationsTranslationRef } from './translation';
+import { notificationsTranslationRef as _notificationsTranslationRef } from './translation';
+
+/**
+ * @alpha
+ * @deprecated Import from `@backstage/plugin-notifications` instead.
+ */
+export const notificationsTranslationRef = _notificationsTranslationRef;

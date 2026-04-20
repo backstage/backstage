@@ -63,11 +63,11 @@ export default async (opts: OptionValues): Promise<void> => {
     },
   ]);
 
-  // Pick the built-in template based on the --next flag
+  // Pick the built-in template based on the --legacy flag
   /* eslint-disable-next-line no-restricted-syntax */
   const ownPaths = findOwnPaths(__dirname);
-  const builtInTemplate = opts.next
-    ? ownPaths.resolve('templates/next-app')
+  const builtInTemplate = opts.legacy
+    ? ownPaths.resolve('templates/legacy-app')
     : ownPaths.resolve('templates/default-app');
 
   // Use `--template-path` argument as template when specified. Otherwise, use the default template.

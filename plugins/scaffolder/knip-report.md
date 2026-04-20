@@ -2,16 +2,17 @@
 
 ## Unused dependencies (4)
 
-| Name                | Location     | Severity |
-| :------------------ | :----------- | :------- |
-| json-schema-library | plugins/scaffolder/package.json | error    |
-| @rjsf/material-ui   | plugins/scaffolder/package.json | error    |
-| react-resizable     | plugins/scaffolder/package.json | error    |
-| git-url-parse       | plugins/scaffolder/package.json | error    |
+| Name                | Location           | Severity |
+| :------------------ | :----------------- | :------- |
+| react-resizable     | package.json:101:6 | error    |
+| json-schema-library | package.json:96:6  | error    |
+| @rjsf/material-ui   | package.json:87:6  | error    |
+| git-url-parse       | package.json:92:6  | error    |
 
-## Unused devDependencies (1)
+## Unused devDependencies (2)
 
-| Name                   | Location     | Severity |
-| :--------------------- | :----------- | :------- |
-| @types/react-resizable | plugins/scaffolder/package.json | error    |
+| Name                       | Location           | Severity |
+| :------------------------- | :----------------- | :------- |
+| @backstage/plugin-techdocs | package.json:116:6 | error    |
+| @types/react-resizable     | package.json:125:6 | error    |
 

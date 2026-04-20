@@ -20,6 +20,7 @@ import waitForExpect from 'wait-for-expect';
 import { DefaultSchedulerService } from './DefaultSchedulerService';
 import { createTestScopedSignal } from './__testUtils__/createTestScopedSignal';
 import { PluginMetadataService } from '@backstage/backend-plugin-api';
+import { metricsServiceMock } from '@backstage/backend-test-utils/alpha';
 
 jest.setTimeout(60_000);
 
@@ -32,6 +33,7 @@ describe('TaskScheduler', () => {
     getId: () => 'test',
   } satisfies PluginMetadataService;
   const testScopedSignal = createTestScopedSignal();
+  const metrics = metricsServiceMock.mock();
 
   it.each(databases.eachSupportedId())(
     'can return a working v1 plugin impl, %p',
@@ -42,6 +44,7 @@ describe('TaskScheduler', () => {
       const manager = DefaultSchedulerService.create({
         database,
         logger,
+        metrics,
         rootLifecycle,
         httpRouter,
         pluginMetadata,
@@ -71,6 +74,7 @@ describe('TaskScheduler', () => {
       const manager = DefaultSchedulerService.create({
         database,
         logger,
+        metrics,
         rootLifecycle,
         httpRouter,
         pluginMetadata,

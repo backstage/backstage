@@ -15,7 +15,7 @@
  */
 
 import { ActionContext, TemplateAction } from './types';
-import { z } from 'zod';
+import { z } from 'zod/v3';
 import { Expand, JsonObject } from '@backstage/types';
 import { parseSchemas } from './util';
 

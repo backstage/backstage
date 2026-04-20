@@ -14,42 +14,53 @@
  * limitations under the License.
  */
 
-import { forwardRef } from 'react';
+import { forwardRef, useEffect } from 'react';
 import { Checkbox as RACheckbox } from 'react-aria-components';
 import type { CheckboxProps } from './types';
-import { useStyles } from '../../hooks/useStyles';
+import { useDefinition } from '../../hooks/useDefinition';
 import { CheckboxDefinition } from './definition';
-import clsx from 'clsx';
-import styles from './Checkbox.module.css';
 import { RiCheckLine, RiSubtractLine } from '@remixicon/react';
 
-/** @public */
+/**
+ * A form checkbox input with support for indeterminate state and accessible labeling.
+ *
+ * @public
+ */
 export const Checkbox = forwardRef<HTMLLabelElement, CheckboxProps>(
   (props, ref) => {
-    const { classNames } = useStyles(CheckboxDefinition);
-    const { className, children, ...rest } = props;
+    const { ownProps, restProps, dataAttributes } = useDefinition(
+      CheckboxDefinition,
+      props,
+    );
+    const { classes, children } = ownProps;
+    const ariaLabel = restProps['aria-label'];
+    const ariaLabelledBy = restProps['aria-labelledby'];
+
+    useEffect(() => {
+      if (!children && !ariaLabel && !ariaLabelledBy) {
+        console.warn(
+          'Checkbox requires either a visible label, aria-label, or aria-labelledby for accessibility',
+        );
+      }
+    }, [children, ariaLabel, ariaLabelledBy]);
 
     return (
       <RACheckbox
         ref={ref}
-        className={clsx(classNames.root, styles[classNames.root], className)}
-        {...rest}
+        className={classes.root}
+        {...dataAttributes}
+        {...restProps}
       >
         {({ isIndeterminate }) => (
           <>
-            <div
-              className={clsx(
-                classNames.indicator,
-                styles[classNames.indicator],
-              )}
-            >
+            <div className={classes.indicator} aria-hidden="true">
               {isIndeterminate ? (
                 <RiSubtractLine size={12} />
               ) : (
                 <RiCheckLine size={12} />
               )}
             </div>
-            {children}
+            {children != null && <div>{children}</div>}
           </>
         )}
       </RACheckbox>

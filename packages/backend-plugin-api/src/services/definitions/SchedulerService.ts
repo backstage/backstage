@@ -305,6 +305,16 @@ export interface SchedulerService {
   triggerTask(id: string): Promise<void>;
 
   /**
+   * Cancels a currently running task by ID, marking it as idle.
+   *
+   * If the task doesn't exist, a NotFoundError is thrown. If the task is
+   * not currently running, a ConflictError is thrown.
+   *
+   * @param id - The task ID
+   */
+  cancelTask(id: string): Promise<void>;
+
+  /**
    * Schedules a task function for recurring runs.
    *
    * @remarks

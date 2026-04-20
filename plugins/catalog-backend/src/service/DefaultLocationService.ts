@@ -25,7 +25,10 @@ import {
 import { Location } from '@backstage/catalog-client';
 import { CatalogProcessingOrchestrator } from '../processing/types';
 import { LocationInput, LocationService, LocationStore } from './types';
-import { locationSpecToMetadataName } from '../util/conversion';
+import {
+  computeLocationEntityRef,
+  locationSpecToMetadataName,
+} from '../util/conversion';
 import { InputError } from '@backstage/errors';
 import { DeferredEntity } from '@backstage/plugin-catalog-node';
 import { FilterPredicate } from '@backstage/filter-predicates';
@@ -33,6 +36,7 @@ import { BackstageCredentials } from '@backstage/backend-plugin-api';
 
 export type DefaultLocationServiceOptions = {
   allowedLocationTypes: string[];
+  defaultLocationConflictStrategy: 'refresh' | 'reject';
 };
 
 export class DefaultLocationService implements LocationService {
@@ -45,6 +49,7 @@ export class DefaultLocationService implements LocationService {
     orchestrator: CatalogProcessingOrchestrator,
     options: DefaultLocationServiceOptions = {
       allowedLocationTypes: ['url'],
+      defaultLocationConflictStrategy: 'reject',
     },
   ) {
     this.store = store;
@@ -55,6 +60,10 @@ export class DefaultLocationService implements LocationService {
   async createLocation(
     input: LocationInput,
     dryRun: boolean,
+    options?: {
+      onConflict?: 'refresh' | 'reject';
+      credentials?: BackstageCredentials;
+    },
   ): Promise<{ location: Location; entities: Entity[]; exists?: boolean }> {
     if (!this.options.allowedLocationTypes.includes(input.type)) {
       throw new InputError(
@@ -66,7 +75,10 @@ export class DefaultLocationService implements LocationService {
     if (dryRun) {
       return this.dryRunCreateLocation(input);
     }
-    const location = await this.store.createLocation(input);
+    const location = await this.store.createLocation(input, {
+      onConflict:
+        options?.onConflict ?? this.options.defaultLocationConflictStrategy,
+    });
     return { location, entities: [] };
   }
 
@@ -90,6 +102,22 @@ export class DefaultLocationService implements LocationService {
   getLocation(id: string): Promise<Location> {
     return this.store.getLocation(id);
   }
+
+  async updateLocation(
+    id: string,
+    location: LocationInput,
+    _options: { credentials: BackstageCredentials },
+  ): Promise<Location> {
+    if (!this.options.allowedLocationTypes.includes(location.type)) {
+      throw new InputError(
+        `Registered locations must be of an allowed type ${JSON.stringify(
+          this.options.allowedLocationTypes,
+        )}`,
+      );
+    }
+    return this.store.updateLocation(id, location);
+  }
+
   deleteLocation(id: string): Promise<void> {
     return this.store.deleteLocation(id);
   }
@@ -173,7 +201,11 @@ export class DefaultLocationService implements LocationService {
 
     return {
       exists: await existsPromise,
-      location: { ...spec, id: `${spec.type}:${spec.target}` },
+      location: {
+        ...spec,
+        id: `${spec.type}:${spec.target}`,
+        entityRef: computeLocationEntityRef(spec.type, spec.target),
+      },
       entities,
     };
   }

@@ -15,36 +15,25 @@
  */
 import { MarkdownContent } from '@backstage/core-components';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import Box from '@material-ui/core/Box';
-import Chip from '@material-ui/core/Chip';
-import Collapse from '@material-ui/core/Collapse';
-import IconButton from '@material-ui/core/IconButton';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import Paper from '@material-ui/core/Paper';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
-import { ClassNameMap } from '@material-ui/core/styles/withStyles';
-import ExpandLessIcon from '@material-ui/icons/ExpandLess';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import WrapText from '@material-ui/icons/WrapText';
-import classNames from 'classnames';
+import {
+  Button,
+  Cell,
+  CellText,
+  ColumnConfig,
+  Flex,
+  Table,
+  Text,
+  Tooltip,
+  TooltipTrigger,
+} from '@backstage/ui';
 import {
   JSONSchema7,
   JSONSchema7Definition,
   JSONSchema7Type,
 } from 'json-schema';
-import { FC, JSX, cloneElement, Fragment, ReactElement } from 'react';
+import { FC } from 'react';
 import { scaffolderTranslationRef } from '../../translation';
 import { SchemaRenderContext, SchemaRenderStrategy } from './types';
-import { TranslationMessages } from '../TemplatingExtensionsPage/types';
 
 const compositeSchemaProperties = ['allOf', 'anyOf', 'not', 'oneOf'] as const;
 
@@ -131,79 +120,21 @@ const getSubschemas = (schema: JSONSchema7Definition): subSchemasType => {
   );
 };
 
-const useColumnStyles = makeStyles({
-  description: {
-    width: '40%',
-    whiteSpace: 'normal',
-    wordWrap: 'break-word',
-    '&.MuiTableCell-root': {
-      whiteSpace: 'normal',
-    },
-  },
-  standard: {
-    whiteSpace: 'normal',
-  },
-});
-
-type SchemaRenderElement = {
+interface SchemaTableItem {
+  id: string;
   schema: JSONSchema7Definition;
-  key?: string;
+  propKey?: string;
   required?: boolean;
-};
-
-type RenderColumn = (
-  element: SchemaRenderElement,
-  context: SchemaRenderContext,
-) => JSX.Element;
-
-type Column = {
-  key: string;
-  title: (t: TranslationMessages<typeof scaffolderTranslationRef>) => string;
-  render: RenderColumn;
-  className?: keyof ReturnType<typeof useColumnStyles>;
-};
+}
 
 const generateId = (
-  element: SchemaRenderElement,
+  item: { propKey?: string },
   context: SchemaRenderContext,
 ) => {
-  return element.key ? `${context.parentId}.${element.key}` : context.parentId;
+  return item.propKey
+    ? `${context.parentId}.${item.propKey}`
+    : context.parentId;
 };
-
-const nameColumn = {
-  key: 'name',
-  title: t => t('renderSchema.tableCell.name'),
-  render: (element: SchemaRenderElement, context: SchemaRenderContext) => {
-    return (
-      <div
-        className={classNames(context.classes.code, {
-          [context.classes.codeRequired]: element.required,
-        })}
-      >
-        {element.key}
-      </div>
-    );
-  },
-} as Column;
-
-const titleColumn = {
-  key: 'title',
-  title: t => t('renderSchema.tableCell.title'),
-  render: (element: SchemaRenderElement) => (
-    <MarkdownContent content={(element.schema as JSONSchema7).title ?? ''} />
-  ),
-} as Column;
-
-const descriptionColumn = {
-  key: 'description',
-  title: t => t('renderSchema.tableCell.description'),
-  render: (element: SchemaRenderElement) => (
-    <MarkdownContent
-      content={(element.schema as JSONSchema7).description ?? ''}
-    />
-  ),
-  className: 'description',
-} as Column;
 
 const enumFrom = (schema: JSONSchema7) => {
   if (schema.type === 'array') {
@@ -242,106 +173,57 @@ const inspectSchema = (
   };
 };
 
-const typeColumn = {
-  key: 'type',
-  title: t => t('renderSchema.tableCell.type'),
-  render: (element: SchemaRenderElement, context: SchemaRenderContext) => {
-    if (typeof element.schema === 'boolean') {
-      return <Typography>{element.schema ? 'any' : 'none'}</Typography>;
-    }
-    const types = getTypes(element.schema);
-    const [isExpanded, setIsExpanded] = context.expanded;
-    const id = generateId(element, context);
-    const info = inspectSchema(element.schema);
-    return (
-      <>
-        {types?.map((type, index) =>
-          info.canSubschema || (info.hasEnum && index === 0) ? (
-            <Chip
-              data-testid={`expand_${id}`}
-              label={type}
-              key={type}
-              icon={isExpanded[id] ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-              variant="outlined"
-              onClick={() =>
-                setIsExpanded(prevState => {
-                  return {
-                    ...prevState,
-                    [id]: !!!prevState[id],
-                  };
-                })
-              }
-            />
-          ) : (
-            <Chip label={type} key={type} variant="outlined" />
-          ),
-        )}
-      </>
-    );
-  },
-} as Column;
-
 export const RenderEnum: FC<{
   e: JSONSchema7Type[];
-  classes: ClassNameMap;
   [key: string]: any;
-}> = ({
-  e,
-  classes,
-  ...props
-}: {
-  e: JSONSchema7Type[];
-  classes: ClassNameMap;
-}) => {
+}> = ({ e, ...props }: { e: JSONSchema7Type[] }) => {
   return (
-    <List {...props}>
+    <ul {...props} style={{ listStyle: 'none', padding: 0, margin: 0 }}>
       {e.map((v, i) => {
-        let inner: JSX.Element = (
-          <Typography
-            data-testid={`enum_el${i}`}
-            className={classNames(classes.code)}
-          >
-            {JSON.stringify(v)}
-          </Typography>
-        );
-        if (v !== null && ['object', 'array'].includes(typeof v)) {
-          inner = (
-            <>
-              {inner}
-              <Tooltip
-                title={
-                  <Typography
-                    data-testid={`pretty_${i}`}
-                    className={classNames(classes.code)}
-                    style={{ whiteSpace: 'pre-wrap' }}
-                  >
-                    {JSON.stringify(v, undefined, 2)}
-                  </Typography>
-                }
+        const text = JSON.stringify(v);
+        const isComplex = v !== null && ['object', 'array'].includes(typeof v);
+        return (
+          <li key={i} style={{ padding: '2px 0' }}>
+            <Flex gap="2" align="center">
+              <Text
+                as="span"
+                variant="body-small"
+                data-testid={`enum_el${i}`}
+                style={{ fontFamily: 'monospace' }}
               >
-                <IconButton data-testid={`wrap-text_${i}`}>
-                  <WrapText />
-                </IconButton>
-              </Tooltip>
-            </>
-          );
-        }
-        return <ListItem key={i}>{inner}</ListItem>;
+                {text}
+              </Text>
+              {isComplex && (
+                <TooltipTrigger>
+                  <Button
+                    data-testid={`wrap-text_${i}`}
+                    variant="tertiary"
+                    size="small"
+                    aria-label="Show formatted value"
+                  >
+                    ↵
+                  </Button>
+                  <Tooltip>
+                    <Text
+                      as="span"
+                      data-testid={`pretty_${i}`}
+                      style={{
+                        fontFamily: 'monospace',
+                        whiteSpace: 'pre-wrap',
+                      }}
+                    >
+                      {JSON.stringify(v, undefined, 2)}
+                    </Text>
+                  </Tooltip>
+                </TooltipTrigger>
+              )}
+            </Flex>
+          </li>
+        );
       })}
-    </List>
+    </ul>
   );
 };
-
-const useTableStyles = makeStyles({
-  schema: {
-    width: '100%',
-    overflowX: 'hidden',
-    '& table': {
-      width: '100%',
-      tableLayout: 'fixed',
-    },
-  },
-});
 
 export const RenderSchema = ({
   strategy,
@@ -353,165 +235,228 @@ export const RenderSchema = ({
   schema?: JSONSchema7Definition;
 }) => {
   const { t } = useTranslationRef(scaffolderTranslationRef);
-  const tableStyles = useTableStyles();
-  const columnStyles = useColumnStyles();
+
+  const columnConfig: ColumnConfig<SchemaTableItem>[] =
+    strategy === 'root'
+      ? [
+          {
+            id: 'value',
+            label: t('renderSchema.tableCell.value'),
+            isRowHeader: true,
+            defaultWidth: '3fr',
+            cell: item => <ValueCell item={item} context={context} />,
+          },
+        ]
+      : [
+          {
+            id: 'name',
+            label: t('renderSchema.tableCell.name'),
+            isRowHeader: true,
+            defaultWidth: 300,
+            cell: item => {
+              const name = item.propKey ?? '';
+              return (
+                <Cell>
+                  <Text
+                    as="span"
+                    variant="body-medium"
+                    style={{ fontFamily: 'monospace' }}
+                  >
+                    {item.required ? `${name} *` : name}
+                  </Text>
+                </Cell>
+              );
+            },
+          },
+          {
+            id: 'value',
+            label: t('renderSchema.tableCell.value'),
+            defaultWidth: '1fr',
+            cell: item => <ValueCell item={item} context={context} />,
+          },
+        ];
+
   const result = (() => {
     if (typeof schema === 'object') {
       const subschemas = getSubschemas(schema);
-      let columns: Column[] | undefined;
-      let elements: SchemaRenderElement[] | undefined;
+      let data: SchemaTableItem[] | undefined;
       if (strategy === 'root') {
         if ('type' in schema || !Object.keys(subschemas).length) {
-          elements = [{ schema }];
-          columns = [typeColumn];
-          if (schema.description) {
-            columns.unshift(descriptionColumn);
-          }
-          if (schema.title) {
-            columns.unshift(titleColumn);
-          }
+          data = [{ id: `root-row_${context.parentId}`, schema }];
         }
       } else if (schema.properties) {
-        columns = [nameColumn, titleColumn, descriptionColumn, typeColumn];
-        elements = Object.entries(schema.properties!).map(([key, v]) => ({
+        data = Object.entries(schema.properties).map(([key, v]) => ({
+          id: `${strategy}-row_${context.parentId}.${key}`,
           schema: v,
-          key,
+          propKey: key,
           required: schema.required?.includes(key),
         }));
       } else if (!Object.keys(subschemas).length) {
         return undefined;
       }
-      const [isExpanded] = context.expanded;
+      const [isExpanded, setIsExpanded] = context.expanded;
 
       return (
-        <>
-          {columns && elements && (
-            <TableContainer component={Paper} className={tableStyles.schema}>
+        <Flex direction="column" gap="2">
+          {data && (
+            <div data-testid={`${strategy}_${context.parentId}`}>
               <Table
-                data-testid={`${strategy}_${context.parentId}`}
-                size="small"
-              >
-                <TableHead>
-                  <TableRow>
-                    {columns.map((col, index) => (
-                      <TableCell
-                        key={index}
-                        className={columnStyles[col.className ?? 'standard']}
-                      >
-                        {col.title(t)}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {elements.map(el => {
-                    const id = generateId(el, context);
-                    const info = inspectSchema(el.schema);
-                    const rows = [
-                      <TableRow data-testid={`${strategy}-row_${id}`}>
-                        {columns!.map(col => (
-                          <TableCell
-                            key={col.key}
-                            className={
-                              columnStyles[col.className ?? 'standard']
-                            }
-                          >
-                            {col.render(el, context)}
-                          </TableCell>
-                        ))}
-                      </TableRow>,
-                    ];
-                    if (
-                      typeof el.schema !== 'boolean' &&
-                      (info.canSubschema || info.hasEnum)
-                    ) {
-                      let details: ReactElement = (
-                        <Box data-testid={`expansion_${id}`} sx={{ margin: 1 }}>
-                          {info.canSubschema && (
-                            <RenderSchema
-                              strategy="properties"
-                              context={{
-                                ...context,
-                                parentId: id,
-                                parent: context,
-                              }}
-                              schema={
-                                el.schema.type === 'array'
-                                  ? (el.schema.items as JSONSchema7 | undefined)
-                                  : el.schema
-                              }
-                            />
-                          )}
-                          {info.hasEnum && (
-                            <>
-                              {cloneElement(
-                                context.headings[0],
-                                {},
-                                'Valid values:',
-                              )}
-                              <RenderEnum
-                                data-testid={`enum_${id}`}
-                                e={enumFrom(el.schema)!}
-                                classes={context.classes}
-                              />
-                            </>
-                          )}
-                        </Box>
-                      );
-                      if (getTypes(el.schema)) {
-                        details = (
-                          <Collapse
-                            in={isExpanded[id]}
-                            timeout="auto"
-                            unmountOnExit
-                          >
-                            {details}
-                          </Collapse>
-                        );
-                      }
-                      rows.push(
-                        <TableRow>
-                          <TableCell
-                            style={{ paddingBottom: 0, paddingTop: 0 }}
-                            colSpan={columns!.length}
-                          >
-                            {details}
-                          </TableCell>
-                        </TableRow>,
-                      );
-                    }
-                    return <Fragment key={id}>{rows}</Fragment>;
-                  })}
-                </TableBody>
-              </Table>
-            </TableContainer>
+                columnConfig={columnConfig}
+                data={data}
+                pagination={{ type: 'none' }}
+              />
+            </div>
           )}
-          {(Object.keys(subschemas) as Array<keyof subSchemasType>).map(sk => (
-            <Fragment key={sk}>
-              {cloneElement(context.headings[0], {}, sk)}
-              {subschemas[sk]!.map((sub, index) => (
-                <RenderSchema
-                  key={index}
-                  strategy={
-                    typeof sub !== 'boolean' && 'properties' in sub
-                      ? strategy
-                      : 'root'
+          {(Object.keys(subschemas) as Array<keyof subSchemasType>).map(sk => {
+            const subId = `${context.parentId}_${sk}`;
+            const isSubOpen = isExpanded[subId];
+            return (
+              <Flex key={sk} direction="column" gap="2">
+                <Button
+                  data-testid={`expand_${subId}`}
+                  variant="tertiary"
+                  size="small"
+                  onPress={() =>
+                    setIsExpanded(prevState => ({
+                      ...prevState,
+                      [subId]: !prevState[subId],
+                    }))
                   }
-                  {...{
-                    context: {
-                      ...context,
-                      parentId: `${context.parentId}_${sk}${index}`,
-                    },
-                    schema: sub,
-                  }}
-                />
-              ))}
-            </Fragment>
-          ))}
-        </>
+                  style={{ alignSelf: 'flex-start' }}
+                >
+                  {isSubOpen ? '▴' : '▾'} {sk}
+                </Button>
+                {isSubOpen &&
+                  subschemas[sk]!.map((sub, index) => (
+                    <RenderSchema
+                      key={index}
+                      strategy={
+                        typeof sub !== 'boolean' && 'properties' in sub
+                          ? strategy
+                          : 'root'
+                      }
+                      context={{
+                        ...context,
+                        parentId: `${context.parentId}_${sk}${index}`,
+                      }}
+                      schema={sub}
+                    />
+                  ))}
+              </Flex>
+            );
+          })}
+        </Flex>
       );
     }
     return undefined;
   })();
-  return result ?? <Typography>No schema defined</Typography>;
+  return result ?? <Text as="p">{t('renderSchema.undefined')}</Text>;
 };
+
+function RenderExpansion({
+  item,
+  context,
+}: {
+  item: SchemaTableItem;
+  context: SchemaRenderContext;
+}) {
+  const id = generateId(item, context);
+  const info = inspectSchema(item.schema);
+  const hasDetails =
+    typeof item.schema !== 'boolean' && (info.canSubschema || info.hasEnum);
+  const s =
+    typeof item.schema !== 'boolean' ? (item.schema as JSONSchema7) : undefined;
+  const [isExpanded] = context.expanded;
+  const isOpen = hasDetails && s && (!getTypes(s) || isExpanded[id]);
+
+  if (!isOpen) {
+    return null;
+  }
+
+  return (
+    <div data-testid={`expansion_${id}`} style={{ paddingLeft: 16 }}>
+      {info.canSubschema && (
+        <RenderSchema
+          strategy="properties"
+          context={{
+            ...context,
+            parentId: id,
+            parent: context,
+          }}
+          schema={
+            s!.type === 'array' ? (s!.items as JSONSchema7 | undefined) : s
+          }
+        />
+      )}
+      {info.hasEnum && (
+        <>
+          <Text as="h4" variant="title-small" weight="bold">
+            Valid values:
+          </Text>
+          <RenderEnum data-testid={`enum_${id}`} e={enumFrom(s!)!} />
+        </>
+      )}
+    </div>
+  );
+}
+
+function ValueCell({
+  item,
+  context,
+}: {
+  item: SchemaTableItem;
+  context: SchemaRenderContext;
+}) {
+  if (typeof item.schema === 'boolean') {
+    return <CellText title={item.schema ? 'any' : 'none'} />;
+  }
+  const types = getTypes(item.schema);
+  const [isExpanded, setIsExpanded] = context.expanded;
+  const id = generateId(item, context);
+  const info = inspectSchema(item.schema);
+  const { title, description } = item.schema;
+  return (
+    <Cell>
+      <Flex direction="column" gap="1">
+        <Flex gap="1" align="center">
+          {types?.map((type, index) =>
+            (info.canSubschema || info.hasEnum) && index === 0 ? (
+              <Button
+                key={type}
+                data-testid={`expand_${id}`}
+                variant="tertiary"
+                size="small"
+                onPress={() =>
+                  setIsExpanded(prevState => ({
+                    ...prevState,
+                    [id]: !prevState[id],
+                  }))
+                }
+              >
+                {isExpanded[id] ? '▴' : '▾'} {type}
+              </Button>
+            ) : (
+              <Text
+                key={type}
+                as="span"
+                variant="body-small"
+                color="secondary"
+                style={{
+                  fontFamily: 'monospace',
+                  background: 'var(--bui-bg-neutral-2)',
+                  padding: '1px 6px',
+                  borderRadius: 4,
+                }}
+              >
+                {type}
+              </Text>
+            ),
+          )}
+        </Flex>
+        {title && <MarkdownContent content={title} />}
+        {description && <MarkdownContent content={description} />}
+        <RenderExpansion item={item} context={context} />
+      </Flex>
+    </Cell>
+  );
+}

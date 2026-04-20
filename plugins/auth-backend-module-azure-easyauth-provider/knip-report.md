@@ -2,7 +2,7 @@
 
 ## Unused dependencies (1)
 
-| Name                     | Location     | Severity |
-| :----------------------- | :----------- | :------- |
-| @backstage/catalog-model | plugins/auth-backend-module-azure-easyauth-provider/package.json | error    |
+| Name                     | Location          | Severity |
+| :----------------------- | :---------------- | :------- |
+| @backstage/catalog-model | package.json:37:6 | error    |
 

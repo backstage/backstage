@@ -25,7 +25,7 @@ On the technical side, this is unwanted complexity. You need to implement and ma
 
 On the user experience side, a Backstage experience without complete organizational data is a serious hindrance to getting the full power out of the tool. Your users won't be able to click on owners and seeing who they are and what teams they belong to. They won't be able to find out what the communications paths are when they need to reach you or your managers when something goes wrong or they have a feature request. They can't get an overview of what teams own and how they relate to each other. It will be a much more barren experience. Organizational data is highly valuable to have centrally available, complete and correct.
 
-## Can I call the catalog itself from inside a processor / provider?
+## Can I call the catalog itself from inside a processor / provider? {#can-i-call-the-catalog-itself-from-inside-a-processor--provider}
 
 While it's possible to get hold of a catalog client via the `catalogServiceRef` from `@backstage/plugin-catalog-node`, it's almost never the right thing to do, and we strongly discourage from doing so.
 

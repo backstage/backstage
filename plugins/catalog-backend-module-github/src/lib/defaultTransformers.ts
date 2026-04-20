@@ -55,36 +55,73 @@ export type TeamTransformer = (
 ) => Promise<Entity | undefined>;
 
 /**
+ * Options for {@link buildDefaultUserTransformer}.
+ *
+ * @public
+ */
+export interface DefaultUserTransformerOptions {
+  /**
+   * Whether to prefer organization verified domain emails over the user's
+   * public GitHub email. When enabled, the transformer uses the first
+   * verified domain email (with plus-addressed routing tags stripped) and
+   * falls back to the public email if none are available.
+   *
+   * @defaultValue false
+   */
+  useVerifiedEmails?: boolean;
+}
+
+/**
+ * Builds a user transformer with configurable email behavior.
+ *
+ * @public
+ */
+export function buildDefaultUserTransformer(
+  options?: DefaultUserTransformerOptions,
+): UserTransformer {
+  return async (item, _ctx) => {
+    const entity: UserEntity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'User',
+      metadata: {
+        name: item.login,
+        annotations: {
+          [ANNOTATION_GITHUB_USER_LOGIN]: item.login,
+          ...(item.id && { [ANNOTATION_GITHUB_USER_ID]: item.id }),
+        },
+      },
+      spec: {
+        profile: {},
+        memberOf: [],
+      },
+    };
+
+    if (item.bio) entity.metadata.description = item.bio;
+    if (item.name) entity.spec.profile!.displayName = item.name;
+
+    if (options?.useVerifiedEmails) {
+      // GitHub returns verified domain emails as plus-addressed routing aliases
+      // (e.g. user+abc123@example.com). Strip the tag to get the real address.
+      const email = item.organizationVerifiedDomainEmails?.length
+        ? item.organizationVerifiedDomainEmails[0].replace(/\+[^@]*/, '')
+        : item.email;
+      if (email) entity.spec.profile!.email = email;
+    } else {
+      if (item.email) entity.spec.profile!.email = item.email;
+    }
+
+    if (item.avatarUrl) entity.spec.profile!.picture = item.avatarUrl;
+    return entity;
+  };
+}
+
+/**
  * Default transformer for GitHub users to UserEntity
  *
  * @public
  */
-export const defaultUserTransformer = async (
-  item: GithubUser,
-  _ctx: TransformerContext,
-): Promise<UserEntity | undefined> => {
-  const entity: UserEntity = {
-    apiVersion: 'backstage.io/v1alpha1',
-    kind: 'User',
-    metadata: {
-      name: item.login,
-      annotations: {
-        [ANNOTATION_GITHUB_USER_LOGIN]: item.login,
-        ...(item.id && { [ANNOTATION_GITHUB_USER_ID]: item.id }),
-      },
-    },
-    spec: {
-      profile: {},
-      memberOf: [],
-    },
-  };
-
-  if (item.bio) entity.metadata.description = item.bio;
-  if (item.name) entity.spec.profile!.displayName = item.name;
-  if (item.email) entity.spec.profile!.email = item.email;
-  if (item.avatarUrl) entity.spec.profile!.picture = item.avatarUrl;
-  return entity;
-};
+export const defaultUserTransformer: UserTransformer =
+  buildDefaultUserTransformer();
 
 /**
  * Default transformer for GitHub Team to GroupEntity

@@ -15,6 +15,7 @@
  */
 
 import { TestDatabases, mockServices } from '@backstage/backend-test-utils';
+import { ConflictError, NotFoundError } from '@backstage/errors';
 import { DateTime, Duration } from 'luxon';
 import waitForExpect from 'wait-for-expect';
 import { migrateBackendTasks } from '../database/migrateBackendTasks';
@@ -25,123 +26,154 @@ import { TaskSettingsV2 } from './types';
 
 jest.setTimeout(60_000);
 
-describe('TaskWorker', () => {
+const databases = TestDatabases.create();
+
+describe.each(databases.eachSupportedId())('TaskWorker, %s', databaseId => {
   const logger = mockServices.logger.mock();
-  const databases = TestDatabases.create();
   const testScopedSignal = createTestScopedSignal();
 
-  beforeEach(() => {
+  let knex: Awaited<ReturnType<typeof databases.init>>;
+
+  beforeEach(async () => {
+    knex = await databases.init(databaseId);
+    await migrateBackendTasks(knex);
     jest.resetAllMocks();
   });
 
-  it.each(databases.eachSupportedId())(
-    'goes through the expected states, %p',
-    async databaseId => {
-      const knex = await databases.init(databaseId);
-      await migrateBackendTasks(knex);
+  afterEach(async () => {
+    await knex?.destroy();
+  });
 
-      const fn = jest.fn(
-        async () => new Promise<void>(resolve => setTimeout(resolve, 50)),
-      );
-      const settings: TaskSettingsV2 = {
-        version: 2,
-        cadence: '*/2 * * * * *',
-        initialDelayDuration: Duration.fromObject({ seconds: 3 }).toISO()!, // over 1 second, to cover for 1-second granularity in some database timestamps
-        timeoutAfterDuration: Duration.fromObject({ minutes: 1 }).toISO()!,
-      };
+  it('goes through the expected states', async () => {
+    const fn = jest.fn(
+      async () => new Promise<void>(resolve => setTimeout(resolve, 50)),
+    );
+    const settings: TaskSettingsV2 = {
+      version: 2,
+      cadence: '*/2 * * * * *',
+      initialDelayDuration: Duration.fromObject({ seconds: 3 }).toISO()!, // over 1 second, to cover for 1-second granularity in some database timestamps
+      timeoutAfterDuration: Duration.fromObject({ minutes: 1 }).toISO()!,
+    };
 
-      const worker = new TaskWorker('task1', fn, knex, logger);
-      await worker.persistTask(settings);
+    const worker = new TaskWorker('task1', fn, knex, logger);
+    await worker.persistTask(settings);
 
-      let row = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
-      expect(row).toEqual(
-        expect.objectContaining({
-          id: 'task1',
-          current_run_ticket: null,
-          current_run_started_at: null,
-          current_run_expires_at: null,
-        }),
-      );
-      expect(JSON.parse(row.settings_json)).toEqual({
-        version: 2,
-        cadence: '*/2 * * * * *',
-        initialDelayDuration: 'PT3S',
-        timeoutAfterDuration: 'PT1M',
-      });
-      await expect(TaskWorker.taskStates(knex)).resolves.toEqual(
-        new Map([
-          [
-            'task1',
-            {
-              status: 'idle',
-              startsAt: expect.anything(),
-            },
-          ],
-        ]),
-      );
+    let row = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
+    expect(row).toEqual(
+      expect.objectContaining({
+        id: 'task1',
+        current_run_ticket: null,
+        current_run_started_at: null,
+        current_run_expires_at: null,
+      }),
+    );
+    expect(JSON.parse(row.settings_json)).toEqual({
+      version: 2,
+      cadence: '*/2 * * * * *',
+      initialDelayDuration: 'PT3S',
+      timeoutAfterDuration: 'PT1M',
+    });
+    await expect(TaskWorker.taskStates(knex)).resolves.toEqual(
+      new Map([
+        [
+          'task1',
+          {
+            status: 'idle',
+            startsAt: expect.anything(),
+          },
+        ],
+      ]),
+    );
 
-      // Note that this is timing sensitive - if things take too long between
-      // persistTask and findReadyTask, this test will fail. We set some margin
-      // of initialDelayDuration to cover for this, but if this turns out to be
-      // flaky, we may have to revisit how this test is written.
+    // Note that this is timing sensitive - if things take too long between
+    // persistTask and findReadyTask, this test will fail. We set some margin
+    // of initialDelayDuration to cover for this, but if this turns out to be
+    // flaky, we may have to revisit how this test is written.
+    await expect(worker.findReadyTask()).resolves.toEqual({
+      result: 'not-ready-yet',
+    });
+
+    await waitForExpect(async () => {
       await expect(worker.findReadyTask()).resolves.toEqual({
-        result: 'not-ready-yet',
+        result: 'ready',
+        settings,
       });
+    });
 
-      await waitForExpect(async () => {
-        await expect(worker.findReadyTask()).resolves.toEqual({
-          result: 'ready',
-          settings,
-        });
-      });
+    row = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
+    expect(row).toEqual(
+      expect.objectContaining({
+        id: 'task1',
+        current_run_ticket: null,
+        current_run_started_at: null,
+        current_run_expires_at: null,
+      }),
+    );
 
-      row = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
-      expect(row).toEqual(
-        expect.objectContaining({
-          id: 'task1',
-          current_run_ticket: null,
-          current_run_started_at: null,
-          current_run_expires_at: null,
-        }),
-      );
+    await expect(worker.tryClaimTask('ticket', settings)).resolves.toBe(true);
 
-      await expect(worker.tryClaimTask('ticket', settings)).resolves.toBe(true);
+    row = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
+    expect(row).toEqual(
+      expect.objectContaining({
+        id: 'task1',
+        current_run_ticket: 'ticket',
+        current_run_started_at: expect.anything(),
+        current_run_expires_at: expect.anything(),
+      }),
+    );
+    await expect(TaskWorker.taskStates(knex)).resolves.toEqual(
+      new Map([
+        [
+          'task1',
+          {
+            status: 'running',
+            startedAt: expect.anything(),
+            timesOutAt: expect.anything(),
+          },
+        ],
+      ]),
+    );
 
-      row = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
-      expect(row).toEqual(
-        expect.objectContaining({
-          id: 'task1',
-          current_run_ticket: 'ticket',
-          current_run_started_at: expect.anything(),
-          current_run_expires_at: expect.anything(),
-        }),
-      );
-      await expect(TaskWorker.taskStates(knex)).resolves.toEqual(
-        new Map([
-          [
-            'task1',
-            {
-              status: 'running',
-              startedAt: expect.anything(),
-              timesOutAt: expect.anything(),
-            },
-          ],
-        ]),
-      );
+    await expect(worker.tryReleaseTask('ticket', settings)).resolves.toBe(true);
 
-      await expect(worker.tryReleaseTask('ticket', settings)).resolves.toBe(
-        true,
-      );
+    row = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
+    expect(row).toEqual(
+      expect.objectContaining({
+        id: 'task1',
+        current_run_ticket: null,
+        current_run_started_at: null,
+        current_run_expires_at: null,
+      }),
+    );
+    await expect(TaskWorker.taskStates(knex)).resolves.toEqual(
+      new Map([
+        [
+          'task1',
+          {
+            status: 'idle',
+            startsAt: expect.anything(),
+            lastRunEndedAt: expect.anything(),
+          },
+        ],
+      ]),
+    );
+  });
 
-      row = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
-      expect(row).toEqual(
-        expect.objectContaining({
-          id: 'task1',
-          current_run_ticket: null,
-          current_run_started_at: null,
-          current_run_expires_at: null,
-        }),
-      );
+  it('logs error when the task throws', async () => {
+    jest.spyOn(logger, 'error');
+    const fn = jest.fn().mockRejectedValue(new Error('failed'));
+    const settings: TaskSettingsV2 = {
+      version: 2,
+      initialDelayDuration: undefined,
+      cadence: '* * * * * *',
+      timeoutAfterDuration: Duration.fromMillis(60000).toISO()!,
+    };
+    const checkFrequency = Duration.fromObject({ milliseconds: 100 });
+    const worker = new TaskWorker('task1', fn, knex, logger, checkFrequency);
+    worker.start(settings, { signal: testScopedSignal() });
+
+    await waitForExpect(async () => {
+      expect(logger.error).toHaveBeenCalled();
       await expect(TaskWorker.taskStates(knex)).resolves.toEqual(
         new Map([
           [
@@ -150,438 +182,386 @@ describe('TaskWorker', () => {
               status: 'idle',
               startsAt: expect.anything(),
               lastRunEndedAt: expect.anything(),
+              lastRunError: expect.stringContaining('failed'),
             },
           ],
         ]),
       );
-    },
-  );
+    });
+  });
 
-  it.each(databases.eachSupportedId())(
-    'logs error when the task throws, %p',
-    async databaseId => {
-      const knex = await databases.init(databaseId);
-      await migrateBackendTasks(knex);
+  it('runs tasks more than once even when the task throws', async () => {
+    const fn = jest.fn().mockRejectedValue(new Error('failed'));
+    const settings: TaskSettingsV2 = {
+      version: 2,
+      initialDelayDuration: undefined,
+      cadence: '* * * * * *',
+      timeoutAfterDuration: Duration.fromMillis(60000).toISO()!,
+    };
+    const checkFrequency = Duration.fromObject({ milliseconds: 100 });
+    const worker = new TaskWorker('task1', fn, knex, logger, checkFrequency);
+    worker.start(settings, { signal: testScopedSignal() });
 
-      jest.spyOn(logger, 'error');
-      const fn = jest.fn().mockRejectedValue(new Error('failed'));
-      const settings: TaskSettingsV2 = {
-        version: 2,
-        initialDelayDuration: undefined,
-        cadence: '* * * * * *',
-        timeoutAfterDuration: Duration.fromMillis(60000).toISO()!,
-      };
-      const checkFrequency = Duration.fromObject({ milliseconds: 100 });
-      const worker = new TaskWorker('task1', fn, knex, logger, checkFrequency);
-      worker.start(settings, { signal: testScopedSignal() });
+    await waitForExpect(() => {
+      expect(fn).toHaveBeenCalledTimes(3);
+    });
+  });
 
-      await waitForExpect(async () => {
-        expect(logger.error).toHaveBeenCalled();
-        await expect(TaskWorker.taskStates(knex)).resolves.toEqual(
-          new Map([
-            [
-              'task1',
-              {
-                status: 'idle',
-                startsAt: expect.anything(),
-                lastRunEndedAt: expect.anything(),
-                lastRunError: expect.stringContaining('failed'),
-              },
-            ],
-          ]),
-        );
+  it('does not clobber ticket lock when stolen', async () => {
+    const fn = jest.fn(
+      async () => new Promise<void>(resolve => setTimeout(resolve, 50)),
+    );
+    const settings: TaskSettingsV2 = {
+      version: 2,
+      initialDelayDuration: undefined,
+      cadence: '* * * * * *',
+      timeoutAfterDuration: Duration.fromMillis(60000).toISO()!,
+    };
+
+    const worker = new TaskWorker('task1', fn, knex, logger);
+    await worker.persistTask(settings);
+
+    await waitForExpect(async () => {
+      await expect(worker.findReadyTask()).resolves.toEqual({
+        result: 'ready',
+        settings,
       });
-    },
-  );
+    });
 
-  it.each(databases.eachSupportedId())(
-    'runs tasks more than once even when the task throws, %p',
-    async databaseId => {
-      const knex = await databases.init(databaseId);
-      await migrateBackendTasks(knex);
+    await expect(worker.tryClaimTask('ticket', settings)).resolves.toBe(true);
 
-      const fn = jest.fn().mockRejectedValue(new Error('failed'));
-      const settings: TaskSettingsV2 = {
-        version: 2,
-        initialDelayDuration: undefined,
-        cadence: '* * * * * *',
-        timeoutAfterDuration: Duration.fromMillis(60000).toISO()!,
-      };
-      const checkFrequency = Duration.fromObject({ milliseconds: 100 });
-      const worker = new TaskWorker('task1', fn, knex, logger, checkFrequency);
-      worker.start(settings, { signal: testScopedSignal() });
+    let row = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
+    expect(row).toEqual(
+      expect.objectContaining({
+        id: 'task1',
+        current_run_ticket: 'ticket',
+        current_run_started_at: expect.anything(),
+        current_run_expires_at: expect.anything(),
+      }),
+    );
 
-      await waitForExpect(() => {
-        expect(fn).toHaveBeenCalledTimes(3);
+    await knex<DbTasksRow>(DB_TASKS_TABLE)
+      .where('id', '=', 'task1')
+      .update({ current_run_ticket: 'stolen' });
+
+    await expect(worker.tryReleaseTask('ticket', settings)).resolves.toBe(
+      false,
+    );
+
+    row = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
+    expect(row).toEqual(
+      expect.objectContaining({
+        id: 'task1',
+        current_run_ticket: 'stolen',
+        current_run_started_at: expect.anything(),
+        current_run_expires_at: expect.anything(),
+      }),
+    );
+  });
+
+  it('gracefully handles a disappeared task row', async () => {
+    const fn = jest.fn(async () => {});
+    const settings: TaskSettingsV2 = {
+      version: 2,
+      initialDelayDuration: undefined,
+      cadence: '* * * * * *',
+      timeoutAfterDuration: Duration.fromMillis(60000).toISO()!,
+    };
+
+    const worker1 = new TaskWorker('task1', fn, knex, logger);
+    await worker1.persistTask(settings);
+    await knex<DbTasksRow>(DB_TASKS_TABLE).where('id', '=', 'task1').delete();
+    await expect(worker1.findReadyTask()).resolves.toEqual({
+      result: 'abort',
+    });
+
+    const worker2 = new TaskWorker('task2', fn, knex, logger);
+    await worker2.persistTask(settings);
+
+    await waitForExpect(async () => {
+      await expect(worker2.findReadyTask()).resolves.toEqual({
+        result: 'ready',
+        settings,
       });
-    },
-  );
+    });
 
-  it.each(databases.eachSupportedId())(
-    'does not clobber ticket lock when stolen, %p',
-    async databaseId => {
-      const knex = await databases.init(databaseId);
-      await migrateBackendTasks(knex);
+    await knex<DbTasksRow>(DB_TASKS_TABLE).where('id', '=', 'task2').delete();
+    await expect(worker2.tryClaimTask('ticket', settings)).resolves.toBe(false);
 
-      const fn = jest.fn(
-        async () => new Promise<void>(resolve => setTimeout(resolve, 50)),
-      );
-      const settings: TaskSettingsV2 = {
-        version: 2,
-        initialDelayDuration: undefined,
-        cadence: '* * * * * *',
-        timeoutAfterDuration: Duration.fromMillis(60000).toISO()!,
-      };
+    const worker3 = new TaskWorker('task3', fn, knex, logger);
+    await worker3.persistTask(settings);
 
-      const worker = new TaskWorker('task1', fn, knex, logger);
-      await worker.persistTask(settings);
-
-      await waitForExpect(async () => {
-        await expect(worker.findReadyTask()).resolves.toEqual({
-          result: 'ready',
-          settings,
-        });
+    await waitForExpect(async () => {
+      await expect(worker3.findReadyTask()).resolves.toEqual({
+        result: 'ready',
+        settings,
       });
+    });
 
-      await expect(worker.tryClaimTask('ticket', settings)).resolves.toBe(true);
+    await expect(worker3.tryClaimTask('ticket', settings)).resolves.toBe(true);
+    await knex<DbTasksRow>(DB_TASKS_TABLE).where('id', '=', 'task3').delete();
+    await expect(worker3.tryReleaseTask('ticket', settings)).resolves.toBe(
+      false,
+    );
+  });
 
-      let row = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
-      expect(row).toEqual(
-        expect.objectContaining({
-          id: 'task1',
-          current_run_ticket: 'ticket',
-          current_run_started_at: expect.anything(),
-          current_run_expires_at: expect.anything(),
-        }),
-      );
+  it('respects initialDelayDuration per worker', async () => {
+    const abortFirst = new AbortController();
+    const settings: TaskSettingsV2 = {
+      version: 2,
+      initialDelayDuration: 'PT0.3S',
+      cadence: 'PT0.1S',
+      timeoutAfterDuration: 'PT10S',
+    };
 
-      await knex<DbTasksRow>(DB_TASKS_TABLE)
-        .where('id', '=', 'task1')
-        .update({ current_run_ticket: 'stolen' });
+    // Start a single worker and make sure it waits and then goes to work
+    const fn1 = jest.fn(async () => {});
+    const worker1 = new TaskWorker(
+      'task1',
+      fn1,
+      knex,
+      logger,
+      Duration.fromMillis(10),
+    );
+    await worker1.start(settings, { signal: abortFirst.signal });
 
-      await expect(worker.tryReleaseTask('ticket', settings)).resolves.toBe(
-        false,
-      );
+    expect(fn1).toHaveBeenCalledTimes(0);
+    await new Promise(resolve => setTimeout(resolve, 250));
+    expect(fn1).toHaveBeenCalledTimes(0);
+    await new Promise(resolve => setTimeout(resolve, 100));
+    expect(fn1.mock.calls.length).toBeGreaterThan(0);
 
-      row = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
-      expect(row).toEqual(
-        expect.objectContaining({
-          id: 'task1',
-          current_run_ticket: 'stolen',
-          current_run_started_at: expect.anything(),
-          current_run_expires_at: expect.anything(),
-        }),
-      );
-    },
-  );
+    // Start a second worker and make sure it waits but the first worker still works along
+    const fn2 = jest.fn();
+    const promise2 = new Promise(resolve => fn2.mockImplementation(resolve));
+    const worker2 = new TaskWorker(
+      'task1',
+      fn2,
+      knex,
+      logger,
+      Duration.fromMillis(10),
+    );
+    await worker2.start(settings, { signal: testScopedSignal() });
 
-  it.each(databases.eachSupportedId())(
-    'gracefully handles a disappeared task row, %p',
-    async databaseId => {
-      const knex = await databases.init(databaseId);
-      await migrateBackendTasks(knex);
+    // We eventually abort the first worker just to make sure that the second
+    // one for sure will get a go at running the task
+    setTimeout(() => abortFirst.abort(), 1000);
 
-      const fn = jest.fn(async () => {});
-      const settings: TaskSettingsV2 = {
-        version: 2,
-        initialDelayDuration: undefined,
-        cadence: '* * * * * *',
-        timeoutAfterDuration: Duration.fromMillis(60000).toISO()!,
-      };
+    const before = fn1.mock.calls.length;
+    await promise2;
+    expect(fn1.mock.calls.length).toBeGreaterThan(before);
+  });
 
-      const worker1 = new TaskWorker('task1', fn, knex, logger);
-      await worker1.persistTask(settings);
-      await knex<DbTasksRow>(DB_TASKS_TABLE).where('id', '=', 'task1').delete();
-      await expect(worker1.findReadyTask()).resolves.toEqual({
-        result: 'abort',
-      });
+  it('next_run_start_at is always the min between schedule changes from cron frequency', async () => {
+    const fn = jest.fn(
+      async () => new Promise<void>(resolve => setTimeout(resolve, 50)),
+    );
+    const settings: TaskSettingsV2 = {
+      version: 2,
+      cadence: '*/15 * * * *',
+      initialDelayDuration: 'PT2M',
+      timeoutAfterDuration: 'PT1M',
+    };
 
-      const worker2 = new TaskWorker('task2', fn, knex, logger);
-      await worker2.persistTask(settings);
+    const worker = new TaskWorker('task99', fn, knex, logger);
+    await worker.persistTask(settings);
+    const row1 = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
 
-      await waitForExpect(async () => {
-        await expect(worker2.findReadyTask()).resolves.toEqual({
-          result: 'ready',
-          settings,
-        });
-      });
+    const settings2 = {
+      ...settings,
+      cadence: '*/2 * * * *',
+      initialDelayDuration: 'PT1M',
+    };
+    await worker.persistTask(settings2);
+    const row2 = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
 
-      await knex<DbTasksRow>(DB_TASKS_TABLE).where('id', '=', 'task2').delete();
-      await expect(worker2.tryClaimTask('ticket', settings)).resolves.toBe(
-        false,
-      );
+    expect(row2.next_run_start_at).not.toStrictEqual(row1.next_run_start_at);
 
-      const worker3 = new TaskWorker('task3', fn, knex, logger);
-      await worker3.persistTask(settings);
+    const settings3 = { ...settings };
+    await worker.persistTask(settings3);
+    const row3 = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
 
-      await waitForExpect(async () => {
-        await expect(worker3.findReadyTask()).resolves.toEqual({
-          result: 'ready',
-          settings,
-        });
-      });
+    // The new timestamp can basically be 0 or a minute depending on how the
+    // initialDelayDuration falls right on a cron boundary. This kinda
+    // contrived check removes a test flakiness based on wall clock time.
+    expect(
+      Math.abs(
+        +new Date(row3.next_run_start_at!) - +new Date(row2.next_run_start_at!),
+      ),
+    ).toBeLessThanOrEqual(60_000);
+  });
 
-      await expect(worker3.tryClaimTask('ticket', settings)).resolves.toBe(
-        true,
-      );
-      await knex<DbTasksRow>(DB_TASKS_TABLE).where('id', '=', 'task3').delete();
-      await expect(worker3.tryReleaseTask('ticket', settings)).resolves.toBe(
-        false,
-      );
-    },
-  );
+  it('next_run_start_at is always the min between schedule changes when using human duration frequency', async () => {
+    const fn = jest.fn(
+      async () => new Promise<void>(resolve => setTimeout(resolve, 50)),
+    );
 
-  it.each(databases.eachSupportedId())(
-    'respects initialDelayDuration per worker, %p',
-    async databaseId => {
-      const knex = await databases.init(databaseId);
-      await migrateBackendTasks(knex);
+    const initialSettings: TaskSettingsV2 = {
+      version: 2,
+      cadence: 'PT120M',
+      timeoutAfterDuration: 'PT1M',
+    };
 
-      const abortFirst = new AbortController();
-      const settings: TaskSettingsV2 = {
-        version: 2,
-        initialDelayDuration: 'PT0.3S',
-        cadence: 'PT0.1S',
-        timeoutAfterDuration: 'PT10S',
-      };
+    const worker = new TaskWorker('task99', fn, knex, logger);
+    await worker.persistTask(initialSettings);
+    // replicate task running, sets next_run_start_at based on cadence
+    await worker.tryClaimTask('ticket', initialSettings);
+    await worker.tryReleaseTask('ticket', initialSettings);
 
-      // Start a single worker and make sure it waits and then goes to work
-      const fn1 = jest.fn(async () => {});
-      const worker1 = new TaskWorker(
-        'task1',
-        fn1,
-        knex,
-        logger,
-        Duration.fromMillis(10),
-      );
-      await worker1.start(settings, { signal: abortFirst.signal });
+    // grab initial row for comparisons later
+    const rowAfterClaimAndRelease = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
 
-      expect(fn1).toHaveBeenCalledTimes(0);
-      await new Promise(resolve => setTimeout(resolve, 250));
-      expect(fn1).toHaveBeenCalledTimes(0);
-      await new Promise(resolve => setTimeout(resolve, 100));
-      expect(fn1.mock.calls.length).toBeGreaterThan(0);
+    const settings: TaskSettingsV2 = {
+      ...initialSettings,
+      cadence: 'PT60M',
+    };
+    await worker.persistTask(settings);
+    const row1 = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
 
-      // Start a second worker and make sure it waits but the first worker still works along
-      const fn2 = jest.fn();
-      const promise2 = new Promise(resolve => fn2.mockImplementation(resolve));
-      const worker2 = new TaskWorker(
-        'task1',
-        fn2,
-        knex,
-        logger,
-        Duration.fromMillis(10),
-      );
-      await worker2.start(settings, { signal: testScopedSignal() });
+    const rowAfterClaimAndReleaseNextStartAt = DateTime.fromJSDate(
+      new Date(rowAfterClaimAndRelease.next_run_start_at!),
+    );
+    const row1NextStartAt = DateTime.fromJSDate(
+      new Date(row1.next_run_start_at!),
+    );
+    const now = DateTime.now();
+    expect(
+      rowAfterClaimAndReleaseNextStartAt.diff(row1NextStartAt).as('minutes'),
+    ).toBeCloseTo(60, 1); // ensure that next start at is sooner than initial by one hour
+    expect(row1NextStartAt.diff(now).as('minutes')).toBeCloseTo(60, 1); // ensure that next start at is later than now by one hour
+    expect(
+      rowAfterClaimAndReleaseNextStartAt.diff(now).as('minutes'),
+    ).toBeCloseTo(120, 1);
 
-      // We eventually abort the first worker just to make sure that the second
-      // one for sure will get a go at running the task
-      setTimeout(() => abortFirst.abort(), 1000);
+    const settings2 = {
+      ...settings,
+    };
+    await worker.persistTask(settings2);
+    const row2 = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
 
-      const before = fn1.mock.calls.length;
-      await promise2;
-      expect(fn1.mock.calls.length).toBeGreaterThan(before);
+    expect(row2.next_run_start_at).toStrictEqual(row1.next_run_start_at);
+  });
 
-      await knex.destroy();
-    },
-  );
+  it('next_run_start_at is always the min between schedule changes when using human duration frequency with initial start delay', async () => {
+    const fn = jest.fn(
+      async () => new Promise<void>(resolve => setTimeout(resolve, 50)),
+    );
 
-  it.each(databases.eachSupportedId())(
-    'next_run_start_at is always the min between schedule changes from cron frequency, %p',
-    async databaseId => {
-      const knex = await databases.init(databaseId);
-      await migrateBackendTasks(knex);
+    const initialSettings: TaskSettingsV2 = {
+      version: 2,
+      cadence: 'PT120M',
+      initialDelayDuration: 'PT2M',
+      timeoutAfterDuration: 'PT1M',
+    };
 
-      const fn = jest.fn(
-        async () => new Promise<void>(resolve => setTimeout(resolve, 50)),
-      );
-      const settings: TaskSettingsV2 = {
-        version: 2,
-        cadence: '*/15 * * * *',
-        initialDelayDuration: 'PT2M',
-        timeoutAfterDuration: 'PT1M',
-      };
+    const worker = new TaskWorker('task99', fn, knex, logger);
+    await worker.persistTask(initialSettings);
+    // replicate task running, sets next_run_start_at based on cadence
+    await worker.tryClaimTask('ticket', initialSettings);
+    await worker.tryReleaseTask('ticket', initialSettings);
 
-      const worker = new TaskWorker('task99', fn, knex, logger);
-      await worker.persistTask(settings);
-      const row1 = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
+    // grab initial row for comparisons later
+    const rowAfterClaimAndRelease = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
 
-      const settings2 = {
-        ...settings,
-        cadence: '*/2 * * * *',
-        initialDelayDuration: 'PT1M',
-      };
-      await worker.persistTask(settings2);
-      const row2 = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
+    const settings: TaskSettingsV2 = {
+      ...initialSettings,
+      cadence: 'PT60M',
+    };
+    await worker.persistTask(settings);
+    const row1 = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
 
-      expect(row2.next_run_start_at).not.toStrictEqual(row1.next_run_start_at);
+    const rowAfterClaimAndReleaseNextStartAt = DateTime.fromJSDate(
+      new Date(rowAfterClaimAndRelease.next_run_start_at!),
+    );
+    const row1NextStartAt = DateTime.fromJSDate(
+      new Date(row1.next_run_start_at!),
+    );
+    const now = DateTime.now();
+    expect(
+      rowAfterClaimAndReleaseNextStartAt.diff(row1NextStartAt).as('minutes'),
+    ).toBeCloseTo(62, 1); // ensure that next start at is sooner than initial by one hour, plus the 2 minute delay (set my tryReleaseTask)
+    expect(row1NextStartAt.diff(now).as('minutes')).toBeCloseTo(60, 1); // ensure that next start at is later than now by one hour (2 minute delay doesn't take effect here)
+    expect(
+      rowAfterClaimAndReleaseNextStartAt.diff(now).as('minutes'),
+    ).toBeCloseTo(122, 1); // includes 2 minute start delay (which is persisted from tryReleaseTask)
 
-      const settings3 = { ...settings };
-      await worker.persistTask(settings3);
-      const row3 = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
+    const settings2 = {
+      ...settings,
+    };
+    await worker.persistTask(settings2);
+    const row2 = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
 
-      // The new timestamp can basically be 0 or a minute depending on how the
-      // initialDelayDuration falls right on a cron boundary. This kinda
-      // contrived check removes a test flakiness based on wall clock time.
-      expect(
-        Math.abs(
-          +new Date(row3.next_run_start_at!) -
-            +new Date(row2.next_run_start_at!),
-        ),
-      ).toBeLessThanOrEqual(60_000);
+    expect(row2.next_run_start_at).toStrictEqual(row1.next_run_start_at);
+  });
 
-      await knex.destroy();
-    },
-  );
+  it('next_run_start_at is not set for manually-triggered tasks', async () => {
+    const fn = jest.fn(
+      async () => new Promise<void>(resolve => setTimeout(resolve, 50)),
+    );
 
-  it.each(databases.eachSupportedId())(
-    'next_run_start_at is always the min between schedule changes when using human duration frequency, %p',
-    async databaseId => {
-      const knex = await databases.init(databaseId);
-      await migrateBackendTasks(knex);
+    const initialSettings: TaskSettingsV2 = {
+      version: 2,
+      cadence: 'manual',
+      timeoutAfterDuration: 'PT1M',
+    };
 
-      const fn = jest.fn(
-        async () => new Promise<void>(resolve => setTimeout(resolve, 50)),
-      );
+    const worker = new TaskWorker('task99', fn, knex, logger);
+    await worker.persistTask(initialSettings);
+    await worker.tryClaimTask('ticket', initialSettings);
+    await worker.tryReleaseTask('ticket', initialSettings);
 
-      const initialSettings: TaskSettingsV2 = {
-        version: 2,
-        cadence: 'PT120M',
-        timeoutAfterDuration: 'PT1M',
-      };
+    const row = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
+    expect(row.next_run_start_at).toBeNull();
+  });
 
-      const worker = new TaskWorker('task99', fn, knex, logger);
-      await worker.persistTask(initialSettings);
-      // replicate task running, sets next_run_start_at based on cadence
-      await worker.tryClaimTask('ticket', initialSettings);
-      await worker.tryReleaseTask('ticket', initialSettings);
+  it('can cancel a running task', async () => {
+    const fn = jest.fn(async () => {});
+    const settings: TaskSettingsV2 = {
+      version: 2,
+      cadence: '* * * * * *',
+      initialDelayDuration: undefined,
+      timeoutAfterDuration: Duration.fromObject({ minutes: 1 }).toISO()!,
+    };
 
-      // grab initial row for comparisons later
-      const rowAfterClaimAndRelease = (
-        await knex<DbTasksRow>(DB_TASKS_TABLE)
-      )[0];
+    const worker = new TaskWorker('task1', fn, knex, logger);
+    await worker.persistTask(settings);
+    await worker.tryClaimTask('ticket', settings);
 
-      const settings: TaskSettingsV2 = {
-        ...initialSettings,
-        cadence: 'PT60M',
-      };
-      await worker.persistTask(settings);
-      const row1 = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
+    // Verify the task is running
+    let row = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
+    expect(row.current_run_ticket).toBe('ticket');
 
-      const rowAfterClaimAndReleaseNextStartAt = DateTime.fromJSDate(
-        new Date(rowAfterClaimAndRelease.next_run_start_at!),
-      );
-      const row1NextStartAt = DateTime.fromJSDate(
-        new Date(row1.next_run_start_at!),
-      );
-      const now = DateTime.now();
-      expect(
-        rowAfterClaimAndReleaseNextStartAt.diff(row1NextStartAt).as('minutes'),
-      ).toBeCloseTo(60, 1); // ensure that next start at is sooner than initial by one hour
-      expect(row1NextStartAt.diff(now).as('minutes')).toBeCloseTo(60, 1); // ensure that next start at is later than now by one hour
-      expect(
-        rowAfterClaimAndReleaseNextStartAt.diff(now).as('minutes'),
-      ).toBeCloseTo(120, 1);
+    await TaskWorker.cancel(knex, 'task1');
 
-      const settings2 = {
-        ...settings,
-      };
-      await worker.persistTask(settings2);
-      const row2 = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
+    // Verify the task is now idle with a cancellation error recorded
+    row = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
+    expect(row.current_run_ticket).toBeNull();
+    expect(row.current_run_started_at).toBeNull();
+    expect(row.current_run_expires_at).toBeNull();
+    expect(row.last_run_ended_at).not.toBeNull();
+    expect(row.last_run_error_json).toContain('Task was cancelled');
+  });
 
-      expect(row2.next_run_start_at).toStrictEqual(row1.next_run_start_at);
+  it('cannot cancel a non-existent task', async () => {
+    await expect(TaskWorker.cancel(knex, 'nonexistent')).rejects.toThrow(
+      NotFoundError,
+    );
+  });
 
-      await knex.destroy();
-    },
-  );
+  it('cannot cancel a task that is not running', async () => {
+    const fn = jest.fn(async () => {});
+    const settings: TaskSettingsV2 = {
+      version: 2,
+      cadence: '* * * * * *',
+      initialDelayDuration: undefined,
+      timeoutAfterDuration: Duration.fromObject({ minutes: 1 }).toISO()!,
+    };
 
-  it.each(databases.eachSupportedId())(
-    'next_run_start_at is always the min between schedule changes when using human duration frequency with initial start delay, %p',
-    async databaseId => {
-      const knex = await databases.init(databaseId);
-      await migrateBackendTasks(knex);
+    const worker = new TaskWorker('task1', fn, knex, logger);
+    await worker.persistTask(settings);
 
-      const fn = jest.fn(
-        async () => new Promise<void>(resolve => setTimeout(resolve, 50)),
-      );
-
-      const initialSettings: TaskSettingsV2 = {
-        version: 2,
-        cadence: 'PT120M',
-        initialDelayDuration: 'PT2M',
-        timeoutAfterDuration: 'PT1M',
-      };
-
-      const worker = new TaskWorker('task99', fn, knex, logger);
-      await worker.persistTask(initialSettings);
-      // replicate task running, sets next_run_start_at based on cadence
-      await worker.tryClaimTask('ticket', initialSettings);
-      await worker.tryReleaseTask('ticket', initialSettings);
-
-      // grab initial row for comparisons later
-      const rowAfterClaimAndRelease = (
-        await knex<DbTasksRow>(DB_TASKS_TABLE)
-      )[0];
-
-      const settings: TaskSettingsV2 = {
-        ...initialSettings,
-        cadence: 'PT60M',
-      };
-      await worker.persistTask(settings);
-      const row1 = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
-
-      const rowAfterClaimAndReleaseNextStartAt = DateTime.fromJSDate(
-        new Date(rowAfterClaimAndRelease.next_run_start_at!),
-      );
-      const row1NextStartAt = DateTime.fromJSDate(
-        new Date(row1.next_run_start_at!),
-      );
-      const now = DateTime.now();
-      expect(
-        rowAfterClaimAndReleaseNextStartAt.diff(row1NextStartAt).as('minutes'),
-      ).toBeCloseTo(62, 1); // ensure that next start at is sooner than initial by one hour, plus the 2 minute delay (set my tryReleaseTask)
-      expect(row1NextStartAt.diff(now).as('minutes')).toBeCloseTo(60, 1); // ensure that next start at is later than now by one hour (2 minute delay doesn't take effect here)
-      expect(
-        rowAfterClaimAndReleaseNextStartAt.diff(now).as('minutes'),
-      ).toBeCloseTo(122, 1); // includes 2 minute start delay (which is persisted from tryReleaseTask)
-
-      const settings2 = {
-        ...settings,
-      };
-      await worker.persistTask(settings2);
-      const row2 = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
-
-      expect(row2.next_run_start_at).toStrictEqual(row1.next_run_start_at);
-
-      await knex.destroy();
-    },
-  );
-
-  it.each(databases.eachSupportedId())(
-    'next_run_start_at is not set for manually-triggered tasks, %p',
-    async databaseId => {
-      const knex = await databases.init(databaseId);
-      await migrateBackendTasks(knex);
-
-      const fn = jest.fn(
-        async () => new Promise<void>(resolve => setTimeout(resolve, 50)),
-      );
-
-      const initialSettings: TaskSettingsV2 = {
-        version: 2,
-        cadence: 'manual',
-        timeoutAfterDuration: 'PT1M',
-      };
-
-      const worker = new TaskWorker('task99', fn, knex, logger);
-      await worker.persistTask(initialSettings);
-      await worker.tryClaimTask('ticket', initialSettings);
-      await worker.tryReleaseTask('ticket', initialSettings);
-
-      const row = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
-      expect(row.next_run_start_at).toBeNull();
-
-      await knex.destroy();
-    },
-  );
+    await expect(TaskWorker.cancel(knex, 'task1')).rejects.toThrow(
+      ConflictError,
+    );
+  });
 });

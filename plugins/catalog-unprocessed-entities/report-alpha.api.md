@@ -7,7 +7,6 @@ import { AnyApiFactory } from '@backstage/frontend-plugin-api';
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ApiFactory } from '@backstage/frontend-plugin-api';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
-import { DevToolsContentBlueprintParams } from '@backstage/plugin-devtools-react';
 import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
@@ -44,8 +43,12 @@ const _default: OverridableFrontendPlugin<
     'nav-item:catalog-unprocessed-entities': OverridableExtensionDefinition<{
       kind: 'nav-item';
       name: undefined;
-      config: {};
-      configInput: {};
+      config: {
+        title: string | undefined;
+      };
+      configInput: {
+        title?: string | undefined;
+      };
       output: ExtensionDataRef<
         {
           title: string;
@@ -70,8 +73,8 @@ const _default: OverridableFrontendPlugin<
         title: string | undefined;
       };
       configInput: {
-        title?: string | undefined;
         path?: string | undefined;
+        title?: string | undefined;
       };
       output:
         | ExtensionDataRef<string, 'core.routing.path', {}>
@@ -130,7 +133,6 @@ const _default: OverridableFrontendPlugin<
         >;
       };
       params: {
-        defaultPath?: [Error: `Use the 'path' param instead`];
         path: string;
         title?: string;
         icon?: IconElement;
@@ -139,36 +141,47 @@ const _default: OverridableFrontendPlugin<
         noHeader?: boolean;
       };
     }>;
+    'sub-page:catalog-unprocessed-entities': OverridableExtensionDefinition<{
+      kind: 'sub-page';
+      name: undefined;
+      config: {
+        path: string | undefined;
+        title: string | undefined;
+      };
+      configInput: {
+        path?: string | undefined;
+        title?: string | undefined;
+      };
+      output:
+        | ExtensionDataRef<string, 'core.routing.path', {}>
+        | ExtensionDataRef<
+            RouteRef_2<AnyRouteRefParams>,
+            'core.routing.ref',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ExtensionDataRef<string, 'core.title', {}>
+        | ExtensionDataRef<
+            IconElement,
+            'core.icon',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {};
+      params: {
+        path: string;
+        title: string;
+        icon?: IconElement;
+        loader: () => Promise<JSX.Element>;
+        routeRef?: RouteRef_2;
+      };
+    }>;
   }
 >;
 export default _default;
-
-// @alpha
-export const unprocessedEntitiesDevToolsContent: OverridableExtensionDefinition<{
-  kind: 'devtools-content';
-  name: undefined;
-  config: {
-    path: string | undefined;
-    title: string | undefined;
-  };
-  configInput: {
-    title?: string | undefined;
-    path?: string | undefined;
-  };
-  output:
-    | ExtensionDataRef<string, 'core.routing.path', {}>
-    | ExtensionDataRef<
-        RouteRef_2<AnyRouteRefParams>,
-        'core.routing.ref',
-        {
-          optional: true;
-        }
-      >
-    | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
-    | ExtensionDataRef<string, 'core.title', {}>;
-  inputs: {};
-  params: DevToolsContentBlueprintParams;
-}>;
 
 // (No @packageDocumentation comment for this package)
 ```

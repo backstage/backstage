@@ -64,6 +64,18 @@ export interface Config {
          * List of mkdocs plugins which should be added as default to all mkdocs.yml files.
          */
         defaultPlugins?: string[];
+
+        /**
+         * List of additional MkDocs configuration keys to allow beyond
+         * the default safe allowlist. This can introduce security vulnerabilities.
+         *
+         * WARNING: Some MkDocs configuration keys can execute arbitrary code. For example, the
+         * 'hooks' key allows running arbitrary Python code during documentation generation.
+         * Only use this in trusted environments where all mkdocs.yml files are audited.
+         *
+         * @see https://www.mkdocs.org/user-guide/configuration/#hooks
+         */
+        dangerouslyAllowAdditionalKeys?: string[];
       };
     };
 

@@ -16,7 +16,7 @@
 import { AnyApiRef } from '@backstage/core-plugin-api';
 import { JsonObject, JsonValue } from '@backstage/types';
 import { OpaqueFormDecorator } from '@internal/scaffolder';
-import { z } from 'zod';
+import { z } from 'zod/v3';
 
 /** @alpha */
 export type ScaffolderFormDecoratorContext<

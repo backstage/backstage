@@ -16,12 +16,8 @@
 
 import { PopoverProps as AriaPopoverProps } from 'react-aria-components';
 
-/**
- * Properties for {@link Popover}
- *
- * @public
- */
-export interface PopoverProps extends Omit<AriaPopoverProps, 'children'> {
+/** @public */
+export type PopoverOwnProps = {
   /**
    * The content to display inside the popover.
    * Content is automatically wrapped with padding and scroll behavior.
@@ -35,4 +31,15 @@ export interface PopoverProps extends Omit<AriaPopoverProps, 'children'> {
    * @defaultValue false
    */
   hideArrow?: boolean;
-}
+
+  className?: string;
+};
+
+/**
+ * Properties for {@link Popover}
+ *
+ * @public
+ */
+export interface PopoverProps
+  extends Omit<AriaPopoverProps, 'children' | 'className'>,
+    PopoverOwnProps {}

@@ -23,7 +23,6 @@
  */
 export interface ValidateEntity400ResponseErrorsInner {
   [key: string]: any;
-
   name: string;
   message: string;
 }

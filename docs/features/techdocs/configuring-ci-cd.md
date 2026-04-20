@@ -104,7 +104,7 @@ the TechDocs plugin in your Backstage app.
 
 Here is an example workflow using GitHub Actions CI and AWS S3 storage. You can
 use any CI and any other
-[TechDocs supported cloud storage providers](README.md#platforms-supported).
+[TechDocs supported cloud storage providers](README.md#supported).
 
 Add a `.github/workflows/techdocs.yml` file in your
 [Software Template(s)](../software-templates/index.md) like this -

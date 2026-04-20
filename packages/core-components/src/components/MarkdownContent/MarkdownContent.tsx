@@ -23,6 +23,7 @@ import { HeadingProps } from 'react-markdown/lib/ast-to-react';
 import rehypeRaw from 'rehype-raw';
 import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
 import type { PluggableList } from 'react-markdown/lib/react-markdown';
+import { Link } from '../Link';
 
 export type MarkdownContentClassKey = 'markdown';
 
@@ -109,6 +110,20 @@ const components: Options['components'] = {
   h4: headingRenderer,
   h5: headingRenderer,
   h6: headingRenderer,
+
+  a: ({ href, children, title, target, rel }) =>
+    href ? (
+      <Link
+        to={href}
+        title={title}
+        {...(target ? { target } : {})}
+        {...(rel ? { rel } : {})}
+      >
+        {children}
+      </Link>
+    ) : (
+      <>{children}</>
+    ),
 };
 
 const gfmRehypePlugins: PluggableList = [

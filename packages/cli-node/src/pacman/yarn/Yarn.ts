@@ -14,16 +14,10 @@
  * limitations under the License.
  */
 
-import {
-  assertError,
-  ForwardedError,
-  NotImplementedError,
-} from '@backstage/errors';
+import { ForwardedError, NotImplementedError } from '@backstage/errors';
 import { PackageInfo, PackageManager } from '../PackageManager';
 import { Lockfile } from '../Lockfile';
 import { YarnVersion } from './types';
-import fs from 'fs-extra';
-import { targetPaths } from '@backstage/cli-common';
 import { run, runOutput, RunOptions } from '@backstage/cli-common';
 
 export class Yarn implements PackageManager {
@@ -44,16 +38,6 @@ export class Yarn implements PackageManager {
 
   lockfileName(): string {
     return 'yarn.lock';
-  }
-
-  async getMonorepoPackages() {
-    const rootPackageJsonPath = targetPaths.resolveRoot('package.json');
-    try {
-      const pkg = await fs.readJson(rootPackageJsonPath);
-      return pkg?.workspaces?.packages || [];
-    } catch (error) {
-      return [];
-    }
   }
 
   async pack(out: string, packageDir: string) {
@@ -108,7 +92,6 @@ function detectYarnVersion(dir?: string): Promise<YarnVersion> {
         : 'berry';
       return { version: versionString, codename };
     } catch (error) {
-      assertError(error);
       throw new ForwardedError('Failed to determine yarn version', error);
     }
   });

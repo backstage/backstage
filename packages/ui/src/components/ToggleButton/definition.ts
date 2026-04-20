@@ -14,18 +14,25 @@
  * limitations under the License.
  */
 
-import type { ComponentDefinition } from '../../types';
+import { defineComponent } from '../../hooks/useDefinition';
+import type { ToggleButtonOwnProps } from './types';
+import styles from './ToggleButton.module.css';
 
 /**
  * Component definition for ToggleButton
  * @public
  */
-export const ToggleButtonDefinition = {
+export const ToggleButtonDefinition = defineComponent<ToggleButtonOwnProps>()({
+  styles,
   classNames: {
     root: 'bui-ToggleButton',
     content: 'bui-ToggleButtonContent',
   },
-  dataAttributes: {
-    size: ['small', 'medium'] as const,
+  propDefs: {
+    size: { dataAttribute: true, default: 'small' },
+    iconStart: {},
+    iconEnd: {},
+    children: {},
+    className: {},
   },
-} as const satisfies ComponentDefinition;
+});

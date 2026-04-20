@@ -40,7 +40,7 @@ import contextMenuItems from './contextMenuItems';
 export default createFrontendPlugin({
   pluginId: 'catalog',
   title: 'Catalog',
-  icon: <CategoryIcon />,
+  icon: <CategoryIcon fontSize="inherit" />,
   info: {
     packageJson: () => import('../../package.json'),
   },

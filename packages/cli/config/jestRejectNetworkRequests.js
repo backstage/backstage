@@ -14,57 +14,14 @@
  * limitations under the License.
  */
 
-const http = require('node:http');
-const https = require('node:https');
-
-const errorMessage = 'Network requests are not allowed in tests';
-
-const origHttpAgent = http.globalAgent;
-const origHttpsAgent = https.globalAgent;
-const origFetch = global.fetch;
-const origXMLHttpRequest = global.XMLHttpRequest;
-
-http.globalAgent = new http.Agent({
-  lookup() {
-    throw new Error(errorMessage);
-  },
-});
-
-https.globalAgent = new https.Agent({
-  lookup() {
-    throw new Error(errorMessage);
-  },
-});
-
-const BLOCKING_FETCH_SYMBOL = Symbol.for(
-  'backstage.jestRejectNetworkRequests.blockingFetch',
-);
-
-if (global.fetch) {
-  const blockingFetch = async (input, init) => {
-    // If global.fetch still has our marker, block the request
-    if (global.fetch[BLOCKING_FETCH_SYMBOL]) {
-      throw new Error(errorMessage);
-    }
-    // MSW (or something else) wrapped us - pass through
-    return origFetch(input, init);
-  };
-  blockingFetch[BLOCKING_FETCH_SYMBOL] = true;
-  global.fetch = blockingFetch;
+try {
+  module.exports = require('@backstage/cli-module-test-jest/config/jestRejectNetworkRequests');
+} catch (e) {
+  if (e.code === 'MODULE_NOT_FOUND') {
+    throw new Error(
+      '@backstage/cli-module-test-jest is required to use the jest network request rejection. ' +
+        'Please install it as a dependency.',
+    );
+  }
+  throw e;
 }
-
-if (global.XMLHttpRequest) {
-  global.XMLHttpRequest = class {
-    constructor() {
-      throw new Error(errorMessage);
-    }
-  };
-}
-
-// Reset overrides after each suite to make sure we don't pollute the test environment
-afterAll(() => {
-  http.globalAgent = origHttpAgent;
-  https.globalAgent = origHttpsAgent;
-  global.fetch = origFetch;
-  global.XMLHttpRequest = origXMLHttpRequest;
-});

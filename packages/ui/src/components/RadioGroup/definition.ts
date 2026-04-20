@@ -14,16 +14,40 @@
  * limitations under the License.
  */
 
-import type { ComponentDefinition } from '../../types';
+import { defineComponent } from '../../hooks/useDefinition';
+import type { RadioGroupOwnProps, RadioOwnProps } from './types';
+import styles from './RadioGroup.module.css';
 
 /**
  * Component definition for RadioGroup
  * @public
  */
-export const RadioGroupDefinition = {
+export const RadioGroupDefinition = defineComponent<RadioGroupOwnProps>()({
+  styles,
   classNames: {
     root: 'bui-RadioGroup',
     content: 'bui-RadioGroupContent',
-    radio: 'bui-Radio',
   },
-} as const satisfies ComponentDefinition;
+  propDefs: {
+    children: {},
+    className: {},
+    label: {},
+    secondaryLabel: {},
+    description: {},
+    isRequired: {},
+  },
+});
+
+/**
+ * Component definition for Radio
+ * @public
+ */
+export const RadioDefinition = defineComponent<RadioOwnProps>()({
+  styles,
+  classNames: {
+    root: 'bui-Radio',
+  },
+  propDefs: {
+    className: {},
+  },
+});

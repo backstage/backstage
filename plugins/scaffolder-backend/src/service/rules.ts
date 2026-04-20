@@ -29,7 +29,7 @@ import {
 
 import { SerializedTask, TaskFilter } from '@backstage/plugin-scaffolder-node';
 
-import { z } from 'zod';
+import { z } from 'zod/v3';
 import { JsonObject, JsonPrimitive } from '@backstage/types';
 import { get } from 'lodash';
 
@@ -72,12 +72,6 @@ export const hasActionId = createActionPermissionRule({
     return resource.action === actionId;
   },
   toQuery: () => ({}),
-});
-
-export const hasProperty = buildHasProperty({
-  name: 'HAS_PROPERTY',
-  valueSchema: z.union([z.string(), z.number(), z.boolean(), z.null()]),
-  validateProperty: false,
 });
 
 export const hasBooleanProperty = buildHasProperty({

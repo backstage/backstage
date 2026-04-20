@@ -4,12 +4,401 @@
 
 ```ts
 import { Entity } from '@backstage/catalog-model';
+import { JsonObject } from '@backstage/types';
+import { JsonValue } from '@backstage/types';
 import { SerializedError } from '@backstage/errors';
 
 // @alpha
 export interface AlphaEntity extends Entity {
   status?: EntityStatus;
 }
+
+// @alpha
+export type AsyncCatalogModelSourceGenerator = AsyncGenerator<
+  {
+    data: Array<{
+      layer: CatalogModelLayer;
+    }>;
+  },
+  void,
+  void
+>;
+
+// @alpha
+export interface CatalogModel {
+  getKind(options: {
+    kind: string;
+    apiVersion: string;
+    spec?: {
+      type?: string;
+    };
+  }): CatalogModelKind | undefined;
+  getMetadata(): {
+    annotations: CatalogModelAnnotationSummary[];
+    labels: CatalogModelLabelSummary[];
+    tags: CatalogModelTagSummary[];
+  };
+  getRelations(options: { kind: string }): CatalogModelRelation[] | undefined;
+  listKinds(): CatalogModelKindSummary[];
+  listRelations(): CatalogModelRelationSummary[];
+}
+
+// @alpha
+export interface CatalogModelAnnotationDefinition {
+  description: string;
+  name: string;
+  schema?: {
+    jsonSchema: JsonObject;
+  };
+  title?: string;
+}
+
+// @alpha
+export interface CatalogModelAnnotationSummary {
+  description: string;
+  name: string;
+  title?: string;
+}
+
+// @alpha
+export interface CatalogModelKind {
+  apiVersions: string[];
+  description: string;
+  jsonSchema: JsonObject;
+  names: {
+    kind: string;
+    singular: string;
+    plural: string;
+  };
+  relationFields: Array<{
+    path: string;
+    relation: string;
+    defaultKind?: string;
+    defaultNamespace?: 'inherit' | 'default';
+    allowedKinds?: string[];
+  }>;
+}
+
+// @alpha
+export interface CatalogModelKindDefinition {
+  description: string;
+  group: string;
+  names: {
+    kind: string;
+    singular: string;
+    plural: string;
+  };
+  versions?: CatalogModelKindVersionDefinition[];
+}
+
+// @alpha (undocumented)
+export interface CatalogModelKindRelationFieldDefinition {
+  allowedKinds?: string[];
+  defaultKind?: string;
+  defaultNamespace?: 'default' | 'inherit';
+  relation: string;
+  selector: {
+    path: string;
+  };
+}
+
+// @alpha
+export interface CatalogModelKindRootSchema extends JsonObject {
+  // (undocumented)
+  $ref?: never;
+  // (undocumented)
+  [key: string]: JsonValue | undefined;
+  // (undocumented)
+  allOf?: never;
+  // (undocumented)
+  anyOf?: never;
+  // (undocumented)
+  else?: never;
+  // (undocumented)
+  if?: never;
+  // (undocumented)
+  not?: never;
+  // (undocumented)
+  oneOf?: never;
+  // (undocumented)
+  properties?:
+    | undefined
+    | {
+        kind?: never;
+        apiVersion?: never;
+        metadata?: never;
+        $ref?: never;
+        [key: string]:
+          | undefined
+          | {
+              allOf?: never;
+              anyOf?: never;
+              oneOf?: never;
+              if?: never;
+              then?: never;
+              else?: never;
+              not?: never;
+              $ref?: never;
+              [key: string]: JsonValue | undefined;
+            };
+      };
+  // (undocumented)
+  then?: never;
+  // (undocumented)
+  type: 'object';
+}
+
+// @alpha
+export interface CatalogModelKindSummary {
+  description: string;
+  names: {
+    kind: string;
+    singular: string;
+    plural: string;
+  };
+  versions: Array<{
+    apiVersion: string;
+    specType?: string;
+  }>;
+}
+
+// @alpha
+export interface CatalogModelKindVersionDefinition {
+  description?: string;
+  name: string | string[];
+  relationFields?: CatalogModelKindRelationFieldDefinition[];
+  // (undocumented)
+  schema: {
+    jsonSchema: JsonObject;
+  };
+  specType?: string | string[];
+}
+
+// @alpha
+export interface CatalogModelLabelDefinition {
+  description: string;
+  name: string;
+  schema?: {
+    jsonSchema: JsonObject;
+  };
+  title?: string;
+}
+
+// @alpha
+export interface CatalogModelLabelSummary {
+  description: string;
+  name: string;
+  title?: string;
+}
+
+// @alpha
+export interface CatalogModelLayer {
+  // (undocumented)
+  readonly $$type: '@backstage/CatalogModelLayer';
+  readonly layerId: string;
+}
+
+// @alpha
+export interface CatalogModelLayerBuilder {
+  addAnnotation(annotation: CatalogModelAnnotationDefinition): void;
+  addKind(kind: CatalogModelKindDefinition): void;
+  addLabel(label: CatalogModelLabelDefinition): void;
+  addRelationPair(relation: CatalogModelRelationPairDefinition): void;
+  addTag(tag: CatalogModelTagDefinition): void;
+  import(layer: CatalogModelLayer): void;
+  removeAnnotation(annotation: CatalogModelRemoveAnnotationDefinition): void;
+  removeKind(kind: CatalogModelRemoveKindDefinition): void;
+  removeLabel(label: CatalogModelRemoveLabelDefinition): void;
+  removeTag(tag: CatalogModelRemoveTagDefinition): void;
+  updateAnnotation(annotation: CatalogModelUpdateAnnotationDefinition): void;
+  updateKind(kind: CatalogModelUpdateKindDefinition): void;
+  updateLabel(label: CatalogModelUpdateLabelDefinition): void;
+  updateRelationPair(relation: CatalogModelUpdateRelationPairDefinition): void;
+  updateTag(tag: CatalogModelUpdateTagDefinition): void;
+}
+
+// @alpha
+export interface CatalogModelRelation {
+  description: string;
+  forward: {
+    type: string;
+    title: string;
+  };
+  fromKind: string[];
+  reverse: {
+    type: string;
+    title: string;
+  };
+  toKind: string[];
+}
+
+// @alpha
+export interface CatalogModelRelationPairDefinition {
+  description: string;
+  forward: {
+    type: string;
+    title: string;
+  };
+  fromKind: string | string[];
+  reverse: {
+    type: string;
+    title: string;
+  };
+  toKind: string | string[];
+}
+
+// @alpha
+export interface CatalogModelRelationSummary {
+  description: string;
+  forward: {
+    type: string;
+    title: string;
+  };
+  fromKind: string[];
+  reverse: {
+    type: string;
+    title: string;
+  };
+  toKind: string[];
+}
+
+// @alpha
+export interface CatalogModelRemoveAnnotationDefinition {
+  name: string;
+}
+
+// @alpha
+export interface CatalogModelRemoveKindDefinition {
+  kind: string;
+}
+
+// @alpha
+export interface CatalogModelRemoveLabelDefinition {
+  name: string;
+}
+
+// @alpha
+export interface CatalogModelRemoveTagDefinition {
+  name: string;
+}
+
+// @alpha
+export interface CatalogModelSource {
+  read(
+    options?: CatalogModelSourceReadOptions,
+  ): AsyncCatalogModelSourceGenerator;
+}
+
+// @alpha
+export interface CatalogModelSourceReadOptions {
+  // (undocumented)
+  signal?: AbortSignal;
+}
+
+// @alpha
+export class CatalogModelSources {
+  static default(): CatalogModelSource;
+  static static(layers: CatalogModelLayer[]): CatalogModelSource;
+}
+
+// @alpha
+export interface CatalogModelTagDefinition {
+  description: string;
+  name: string;
+  title?: string;
+}
+
+// @alpha
+export interface CatalogModelTagSummary {
+  description: string;
+  name: string;
+  title?: string;
+}
+
+// @alpha
+export interface CatalogModelUpdateAnnotationDefinition {
+  description?: string;
+  name: string;
+  schema?: {
+    jsonSchema: JsonObject;
+  };
+  title?: string;
+}
+
+// @alpha
+export interface CatalogModelUpdateKindDefinition {
+  description?: string;
+  names: {
+    kind: string;
+    singular?: string;
+    plural?: string;
+  };
+  versions?: CatalogModelUpdateKindVersionDefinition[];
+}
+
+// @alpha
+export interface CatalogModelUpdateKindVersionDefinition {
+  description?: string;
+  name: string | string[];
+  relationFields?: CatalogModelKindRelationFieldDefinition[];
+  schema?: {
+    jsonSchema: JsonObject;
+  };
+  specType?: string | string[];
+}
+
+// @alpha
+export interface CatalogModelUpdateLabelDefinition {
+  description?: string;
+  name: string;
+  schema?: {
+    jsonSchema: JsonObject;
+  };
+  title?: string;
+}
+
+// @alpha
+export interface CatalogModelUpdateRelationPairDefinition {
+  description?: string;
+  forward: {
+    type: string;
+    title?: string;
+  };
+  fromKind: string | string[];
+  reverse: {
+    type?: string;
+    title?: string;
+  };
+  toKind: string | string[];
+}
+
+// @alpha
+export interface CatalogModelUpdateTagDefinition {
+  description?: string;
+  name: string;
+  title?: string;
+}
+
+// @alpha
+export function compileCatalogModel(
+  inputs: Iterable<CatalogModelLayer>,
+): CatalogModel;
+
+// @alpha
+export function createCatalogModelLayer(options: {
+  layerId: string;
+  builder: (model: CatalogModelLayerBuilder) => void;
+}): CatalogModelLayer;
+
+// @alpha
+export function createCatalogModelLayerBuilder(options: {
+  layerId: string;
+}): CatalogModelLayerBuilder & {
+  build(): CatalogModelLayer;
+};
+
+// @alpha
+export const defaultCatalogEntityModel: CatalogModelLayer;
 
 // @alpha
 export type EntityStatus = {

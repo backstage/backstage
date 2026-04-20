@@ -15,12 +15,10 @@
  */
 
 import { TabListStateContext } from 'react-aria-components';
-import { useStyles } from '../../hooks/useStyles';
-import { TabsDefinition } from './definition';
+import { useDefinition } from '../../hooks/useDefinition';
+import { TabsIndicatorsDefinition } from './definition';
 import { useContext, useEffect, useCallback, useRef } from 'react';
 import type { TabsIndicatorsProps } from './types';
-import styles from './Tabs.module.css';
-import clsx from 'clsx';
 
 /**
  * A component that renders the indicators for the toolbar.
@@ -28,18 +26,24 @@ import clsx from 'clsx';
  * @internal
  */
 export const TabsIndicators = (props: TabsIndicatorsProps) => {
-  const { tabRefs, tabsRef, hoveredKey, prevHoveredKey } = props;
-  const { classNames } = useStyles(TabsDefinition);
+  const { ownProps } = useDefinition(TabsIndicatorsDefinition, props);
+  const { classes, tabRefs, tabsRef, hoveredKey, prevHoveredKey } = ownProps;
   const state = useContext(TabListStateContext);
   const prevSelectedKey = useRef<string | null>(null);
 
   const updateCSSVariables = useCallback(() => {
+    // When rendered inside CollectionBuilder's hidden tree (for collection
+    // building), there is no TabListStateContext provider, so state is null.
+    // Bail out to avoid overwriting CSS variables on the shared tabsRef DOM
+    // element that the real instance also writes to.
+    if (state == null) return;
+
     if (!tabsRef.current) return;
 
     const tabsRect = tabsRef.current.getBoundingClientRect();
 
     // Set active tab variables
-    if (state?.selectedKey) {
+    if (state?.selectedKey != null && state.selectedKey !== '') {
       const activeTab = tabRefs.current.get(state.selectedKey.toString());
 
       if (activeTab) {
@@ -100,7 +104,11 @@ export const TabsIndicators = (props: TabsIndicatorsProps) => {
           '--active-tab-height',
           `${activeRect.height}px`,
         );
+        tabsRef.current.style.setProperty('--active-tab-opacity', '1');
       }
+    } else {
+      tabsRef.current.style.setProperty('--active-tab-opacity', '0');
+      prevSelectedKey.current = null;
     }
 
     // Set hovered tab variables
@@ -187,12 +195,8 @@ export const TabsIndicators = (props: TabsIndicatorsProps) => {
 
   return (
     <>
-      <div
-        className={clsx(classNames.tabActive, styles[classNames.tabActive])}
-      />
-      <div
-        className={clsx(classNames.tabHovered, styles[classNames.tabHovered])}
-      />
+      <div className={classes.root} />
+      <div className={classes.hovered} />
     </>
   );
 };

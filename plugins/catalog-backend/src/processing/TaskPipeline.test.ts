@@ -121,8 +121,13 @@ describe('startTaskPipeline', () => {
 });
 
 describe('createBarrier', () => {
-  const tick = (millis: number) =>
-    new Promise(resolve => setTimeout(resolve, millis));
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
 
   it('abandons a wait after the timeout expires', async () => {
     const abortController = new AbortController();
@@ -132,10 +137,11 @@ describe('createBarrier', () => {
     const fn1 = jest.fn();
     barrier.wait().then(fn1);
 
-    await tick(0);
+    await Promise.resolve();
     expect(fn1).not.toHaveBeenCalled();
 
-    await tick(50);
+    jest.advanceTimersByTime(50);
+    await Promise.resolve();
     expect(fn1).not.toHaveBeenCalled();
 
     // start a new wait mid-way through the timeout
@@ -143,14 +149,16 @@ describe('createBarrier', () => {
     const fn2 = jest.fn();
     barrier.wait().then(fn2);
 
-    await tick(0);
+    await Promise.resolve();
     expect(fn2).not.toHaveBeenCalled();
 
-    await tick(50);
+    jest.advanceTimersByTime(50);
+    await Promise.resolve();
     expect(fn1).toHaveBeenCalledTimes(1);
     expect(fn2).not.toHaveBeenCalled();
 
-    await tick(50);
+    jest.advanceTimersByTime(50);
+    await Promise.resolve();
     expect(fn1).toHaveBeenCalledTimes(1);
     expect(fn2).toHaveBeenCalledTimes(1);
   });
@@ -164,16 +172,16 @@ describe('createBarrier', () => {
     barrier.wait().then(fn1);
 
     // should resolve immediately, not after timeout
-    await tick(0);
+    await Promise.resolve();
     expect(fn1).not.toHaveBeenCalled();
     abortController.abort();
-    await tick(0);
+    await Promise.resolve();
     expect(fn1).toHaveBeenCalledTimes(1);
 
     // subsequent waits should be immediate no matter what
     const fn2 = jest.fn();
     barrier.wait().then(fn2);
-    await tick(0);
+    await Promise.resolve();
     expect(fn2).toHaveBeenCalledTimes(1);
   });
 
@@ -185,7 +193,8 @@ describe('createBarrier', () => {
     const fn1 = jest.fn();
     barrier.wait().then(fn1);
 
-    await tick(50);
+    jest.advanceTimersByTime(50);
+    await Promise.resolve();
     expect(fn1).not.toHaveBeenCalled();
 
     // start a new wait mid-way through the timeout
@@ -193,13 +202,13 @@ describe('createBarrier', () => {
     const fn2 = jest.fn();
     barrier.wait().then(fn2);
 
-    await tick(0);
+    await Promise.resolve();
     expect(fn1).not.toHaveBeenCalled();
     expect(fn2).not.toHaveBeenCalled();
 
     barrier.release();
 
-    await tick(0);
+    await Promise.resolve();
     expect(fn1).toHaveBeenCalledTimes(1);
     expect(fn2).toHaveBeenCalledTimes(1);
   });

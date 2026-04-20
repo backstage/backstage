@@ -15,7 +15,11 @@
  */
 
 export { CatalogPage } from './CatalogPage';
-export { BaseCatalogPage, DefaultCatalogPage } from './DefaultCatalogPage';
+export {
+  BaseCatalogPage,
+  DefaultCatalogPage,
+  NfsDefaultCatalogPage,
+} from './DefaultCatalogPage';
 export type {
   BaseCatalogPageProps,
   DefaultCatalogPageProps,

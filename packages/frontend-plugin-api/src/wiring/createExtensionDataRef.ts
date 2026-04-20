@@ -33,17 +33,11 @@ export type ExtensionDataRef<
   readonly config: TConfig;
 };
 
-/** @public */
-export type ExtensionDataRefToValue<TDataRef extends AnyExtensionDataRef> =
+/** @ignore */
+export type ExtensionDataRefToValue<TDataRef extends ExtensionDataRef> =
   TDataRef extends ExtensionDataRef<infer IData, infer IId, any>
     ? ExtensionDataValue<IData, IId>
     : never;
-
-/**
- * @deprecated Use `ExtensionDataRef` without type parameters instead.
- * @public
- */
-export type AnyExtensionDataRef = ExtensionDataRef;
 
 /** @public */
 export interface ConfigurableExtensionDataRef<

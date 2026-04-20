@@ -17,14 +17,31 @@
 @layer tokens, base, components, utilities;
 
 @layer components {
+  .bui-TableWrapper {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .bui-TableResizableContainer {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+  }
+
   .bui-Table {
     width: 100%;
     caption-side: bottom;
     border-collapse: collapse;
     table-layout: fixed;
     transition: opacity 0.2s ease-in-out;
+    overflow: auto;
+    flex: 1;
+    min-height: 0;
 
-    &[data-stale='true'] {
+    &[data-stale='true'],
+    &[data-loading='true'] {
       opacity: 0.6;
     }
   }
@@ -50,6 +67,13 @@
     flex-direction: row;
     align-items: center;
     gap: var(--bui-space-1);
+  }
+
+  .bui-TableHeadLabel {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
   }
 
   .bui-TableHeadSortButton {
@@ -83,25 +107,83 @@
   .bui-TableRow {
     border-bottom: 1px solid var(--bui-border-2);
     transition: color 0.2s ease-in-out;
+    cursor: default;
 
     &:hover {
-      background-color: var(--bui-bg-tint-hover);
+      background-color: var(--bui-bg-neutral-1-hover);
     }
 
     &[data-selected] {
-      background-color: var(--bui-bg-tint-pressed);
+      background-color: var(--bui-bg-neutral-1-pressed);
     }
 
     &[data-pressed] {
-      background-color: var(--bui-bg-tint-pressed);
+      background-color: var(--bui-bg-neutral-1-pressed);
+    }
+
+    &[data-on-bg='neutral-1'] {
+      &:hover {
+        background-color: var(--bui-bg-neutral-2-hover);
+      }
+
+      &[data-selected] {
+        background-color: var(--bui-bg-neutral-2-pressed);
+      }
+
+      &[data-pressed] {
+        background-color: var(--bui-bg-neutral-2-pressed);
+      }
+
+      &[data-disabled] {
+        background-color: var(--bui-bg-neutral-2-disabled);
+      }
+    }
+
+    &[data-on-bg='neutral-2'] {
+      &:hover {
+        background-color: var(--bui-bg-neutral-3-hover);
+      }
+
+      &[data-selected] {
+        background-color: var(--bui-bg-neutral-3-pressed);
+      }
+
+      &[data-pressed] {
+        background-color: var(--bui-bg-neutral-3-pressed);
+      }
+
+      &[data-disabled] {
+        background-color: var(--bui-bg-neutral-3-disabled);
+      }
+    }
+
+    &[data-on-bg='neutral-3'] {
+      &:hover {
+        background-color: var(--bui-bg-neutral-4-hover);
+      }
+
+      &[data-selected] {
+        background-color: var(--bui-bg-neutral-4-pressed);
+      }
+
+      &[data-pressed] {
+        background-color: var(--bui-bg-neutral-4-pressed);
+      }
+
+      &[data-disabled] {
+        background-color: var(--bui-bg-neutral-4-disabled);
+      }
+    }
+
+    &[data-href],
+    &[data-selection-mode],
+    &[data-react-aria-pressable='true'] {
+      cursor: pointer;
     }
 
     &[data-disabled] {
-      background-color: var(--bui-bg-tint-disabled);
-    }
-
-    &[data-react-aria-pressable='true'] {
-      cursor: pointer;
+      background-color: var(--bui-bg-neutral-1-disabled);
+      cursor: not-allowed;
     }
   }
 

@@ -5,7 +5,6 @@
 ```ts
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
-import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
 import { IconComponent } from '@backstage/frontend-plugin-api';
@@ -23,8 +22,12 @@ const visualizerPlugin: OverridableFrontendPlugin<
     'nav-item:app-visualizer': OverridableExtensionDefinition<{
       kind: 'nav-item';
       name: undefined;
-      config: {};
-      configInput: {};
+      config: {
+        title: string | undefined;
+      };
+      configInput: {
+        title?: string | undefined;
+      };
       output: ExtensionDataRef<
         {
           title: string;
@@ -49,8 +52,8 @@ const visualizerPlugin: OverridableFrontendPlugin<
         title: string | undefined;
       };
       configInput: {
-        title?: string | undefined;
         path?: string | undefined;
+        title?: string | undefined;
       };
       output:
         | ExtensionDataRef<string, 'core.routing.path', {}>
@@ -109,7 +112,6 @@ const visualizerPlugin: OverridableFrontendPlugin<
         >;
       };
       params: {
-        defaultPath?: [Error: `Use the 'path' param instead`];
         path: string;
         title?: string;
         icon?: IconElement;
@@ -125,11 +127,9 @@ const visualizerPlugin: OverridableFrontendPlugin<
       configInput: {};
       output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
       inputs: {};
-      params: (params: {
+      params: {
         loader: () => Promise<JSX.Element>;
-      }) => ExtensionBlueprintParams<{
-        loader: () => Promise<JSX.Element>;
-      }>;
+      };
     }>;
     'sub-page:app-visualizer/details': OverridableExtensionDefinition<{
       kind: 'sub-page';
@@ -139,8 +139,8 @@ const visualizerPlugin: OverridableFrontendPlugin<
         title: string | undefined;
       };
       configInput: {
-        title?: string | undefined;
         path?: string | undefined;
+        title?: string | undefined;
       };
       output:
         | ExtensionDataRef<string, 'core.routing.path', {}>
@@ -177,8 +177,8 @@ const visualizerPlugin: OverridableFrontendPlugin<
         title: string | undefined;
       };
       configInput: {
-        title?: string | undefined;
         path?: string | undefined;
+        title?: string | undefined;
       };
       output:
         | ExtensionDataRef<string, 'core.routing.path', {}>
@@ -215,8 +215,8 @@ const visualizerPlugin: OverridableFrontendPlugin<
         title: string | undefined;
       };
       configInput: {
-        title?: string | undefined;
         path?: string | undefined;
+        title?: string | undefined;
       };
       output:
         | ExtensionDataRef<string, 'core.routing.path', {}>
