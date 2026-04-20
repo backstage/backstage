@@ -15,10 +15,7 @@
  */
 
 import { z } from 'zod/v3';
-import {
-  AuthorizeResult,
-  ConditionalPolicyDecision,
-} from '@backstage/plugin-permission-common';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import {
   ApplyConditionsRequestEntry,
   ApplyConditionsResponseEntry,
@@ -47,10 +44,6 @@ const responseSchema = z.object({
     }),
   ),
 });
-
-export type ResourcePolicyDecision = ConditionalPolicyDecision & {
-  resourceRef: string;
-};
 
 /**
  * @internal
