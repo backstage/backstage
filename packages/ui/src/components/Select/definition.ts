@@ -20,6 +20,7 @@ import type {
   SelectTriggerOwnProps,
   SelectContentOwnProps,
   SelectListBoxOwnProps,
+  SelectSectionOwnProps,
 } from './types';
 import styles from './Select.module.css';
 
@@ -102,6 +103,23 @@ export const SelectListBoxDefinition = defineComponent<SelectListBoxOwnProps>()(
     },
     propDefs: {
       options: {},
+    },
+  },
+);
+
+/**
+ * Component definition for SelectSection
+ * @internal
+ */
+export const SelectSectionDefinition = defineComponent<SelectSectionOwnProps>()(
+  {
+    styles,
+    classNames: {
+      root: 'bui-SelectSection',
+      header: 'bui-SelectSectionHeader',
+    },
+    propDefs: {
+      title: {},
     },
   },
 );

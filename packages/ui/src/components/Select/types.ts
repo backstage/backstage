@@ -23,6 +23,9 @@ import type { FieldLabelProps } from '../FieldLabel/types';
 export type Option = { value: string; label: string; disabled?: boolean };
 
 /** @public */
+export type OptionSection = { title: string; options: Option[] };
+
+/** @public */
 export type SelectOwnProps = {
   /**
    * An icon to render before the input
@@ -36,9 +39,11 @@ export type SelectOwnProps = {
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
 
   /**
-   * The options of the select field
+   * The options of the select field. Pass either a flat array of options
+   * or an array of option sections for grouped display. Mixing options and
+   * sections in the same array is not supported.
    */
-  options?: Array<Option>;
+  options?: Array<Option> | Array<OptionSection>;
 
   /**
    * Enable search/filter functionality in the dropdown
@@ -80,10 +85,15 @@ export interface SelectTriggerOwnProps {
 export interface SelectContentOwnProps {
   searchable?: boolean;
   searchPlaceholder?: string;
-  options?: SelectOwnProps['options'];
+  options?: Array<Option | OptionSection>;
 }
 
 /** @internal */
 export interface SelectListBoxOwnProps {
-  options?: SelectOwnProps['options'];
+  options?: Array<Option | OptionSection>;
+}
+
+/** @internal */
+export interface SelectSectionOwnProps {
+  title: string;
 }
