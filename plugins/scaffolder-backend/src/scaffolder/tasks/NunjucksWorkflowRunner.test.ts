@@ -1754,7 +1754,7 @@ describe('NunjucksWorkflowRunner', () => {
       );
     });
 
-    it('should run step with bare if: always() even when a previous step failed', async () => {
+    it('should run step with if: ${{ always() }} even when a previous step failed', async () => {
       const task = createMockTaskWithSpec({
         steps: [
           {
@@ -1766,7 +1766,7 @@ describe('NunjucksWorkflowRunner', () => {
             id: 'step2',
             name: 'Always runs',
             action: 'cleanup-action',
-            if: 'always()',
+            if: '${{ always() }}',
           },
         ],
       });
@@ -1775,7 +1775,7 @@ describe('NunjucksWorkflowRunner', () => {
       expect(cleanupHandler).toHaveBeenCalledTimes(1);
     });
 
-    it('should run step with bare if: failure() only when a previous step failed', async () => {
+    it('should run step with if: ${{ failure() }} only when a previous step failed', async () => {
       const task = createMockTaskWithSpec({
         steps: [
           {
@@ -1787,7 +1787,7 @@ describe('NunjucksWorkflowRunner', () => {
             id: 'step2',
             name: 'Runs on failure',
             action: 'cleanup-action',
-            if: 'failure()',
+            if: '${{ failure() }}',
           },
         ],
       });
@@ -1796,7 +1796,7 @@ describe('NunjucksWorkflowRunner', () => {
       expect(cleanupHandler).toHaveBeenCalledTimes(1);
     });
 
-    it('should not run step with bare if: failure() when no step has failed', async () => {
+    it('should not run step with if: ${{ failure() }} when no step has failed', async () => {
       const task = createMockTaskWithSpec({
         steps: [
           {
@@ -1808,7 +1808,7 @@ describe('NunjucksWorkflowRunner', () => {
             id: 'step2',
             name: 'Only on failure',
             action: 'cleanup-action',
-            if: 'failure()',
+            if: '${{ failure() }}',
           },
         ],
       });
@@ -1818,7 +1818,28 @@ describe('NunjucksWorkflowRunner', () => {
       expect(cleanupHandler).not.toHaveBeenCalled();
     });
 
-    it('should still throw the original error after running always() steps', async () => {
+    it('should not run step with if: ${{ true }} after a previous step failed', async () => {
+      const task = createMockTaskWithSpec({
+        steps: [
+          {
+            id: 'step1',
+            name: 'Failing step',
+            action: 'failing-action',
+          },
+          {
+            id: 'step2',
+            name: 'Truthy but not a status check',
+            action: 'cleanup-action',
+            if: '${{ true }}',
+          },
+        ],
+      });
+
+      await expect(runner.execute(task)).rejects.toThrow('step failed');
+      expect(cleanupHandler).not.toHaveBeenCalled();
+    });
+
+    it('should still throw the original error after running ${{ always() }} steps', async () => {
       const task = createMockTaskWithSpec({
         steps: [
           {
@@ -1830,7 +1851,7 @@ describe('NunjucksWorkflowRunner', () => {
             id: 'step2',
             name: 'Always step',
             action: 'cleanup-action',
-            if: 'always()',
+            if: '${{ always() }}',
           },
           {
             id: 'step3',
@@ -1869,13 +1890,13 @@ describe('NunjucksWorkflowRunner', () => {
             id: 'step2',
             name: 'Failing cleanup',
             action: 'failing-cleanup',
-            if: 'always()',
+            if: '${{ always() }}',
           },
           {
             id: 'step3',
             name: 'Another cleanup',
             action: 'cleanup-action',
-            if: 'always()',
+            if: '${{ always() }}',
           },
         ],
       });
@@ -1920,13 +1941,13 @@ describe('NunjucksWorkflowRunner', () => {
             id: 'step2',
             name: 'First cleanup',
             action: 'failing-cleanup-2',
-            if: 'always()',
+            if: '${{ always() }}',
           },
           {
             id: 'step3',
             name: 'Second cleanup',
             action: 'failing-cleanup-3',
-            if: 'always()',
+            if: '${{ always() }}',
           },
         ],
       });
@@ -1966,7 +1987,7 @@ describe('NunjucksWorkflowRunner', () => {
       );
     });
 
-    it('should support template expression syntax for failure() and always()', async () => {
+    it('should support failure() and always() together across multiple steps', async () => {
       const task = createMockTaskWithSpec({
         steps: [
           {

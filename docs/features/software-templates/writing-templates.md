@@ -699,12 +699,16 @@ When `each` is used, the outputs of a repeated step are returned as an array of 
 
 By default, when a step fails during a scaffolder run, all subsequent steps are skipped and the task is marked as failed. This can be problematic when your template creates external resources (repositories, cloud infrastructure, deployments) that need to be cleaned up if a later step fails.
 
-Status check functions give you control over which steps run even after a failure. You use them in the `if` field of a step.
+Status check functions give you control over which steps run even after a failure. You use them inside a `${{ ... }}` template expression in the `if` field of a step.
 
 | Function    | Description                                                                  |
 | ----------- | ---------------------------------------------------------------------------- |
 | `always()`  | Always runs the step, regardless of whether previous steps passed or failed. |
 | `failure()` | Runs the step only when a previous step has failed.                          |
+
+These functions must be used as template expressions such as `${{ always() }}` or `${{ failure() }}`.
+
+After a step has failed, the scaffolder only attempts later steps whose `if` expression invokes one of these status check functions. Plain truthy conditions such as `${{ true }}` do not continue execution after a failure.
 
 #### Usage
 
@@ -713,7 +717,7 @@ steps:
   - id: cleanup
     name: Cleanup Resources
     action: my:cleanup:action
-    if: always()
+    if: ${{ always() }}
 ```
 
 #### Example: Cleanup on failure
@@ -739,7 +743,7 @@ steps:
   - id: cleanup-repo
     name: Delete Repository
     action: github:repo:delete
-    if: failure()
+    if: ${{ failure() }}
     input:
       repoUrl: ${{ parameters.repoUrl }}
 
@@ -747,9 +751,17 @@ steps:
   - id: audit
     name: Post Audit Event
     action: debug:log
-    if: always()
+    if: ${{ always() }}
     input:
       message: 'Scaffolder run completed for ${{ parameters.repoUrl }}'
+
+  # Does not run after a failure, because it does not invoke a status check function
+  - id: plain-truthy-condition
+    name: Plain Truthy Condition
+    action: debug:log
+    if: ${{ true }}
+    input:
+      message: 'This step is skipped after a previous failure'
 ```
 
 ## Outputs

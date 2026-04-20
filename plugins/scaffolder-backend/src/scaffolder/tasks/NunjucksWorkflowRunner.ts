@@ -543,32 +543,6 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
     }
   }
 
-  /**
-   * Check if a step's `if` condition uses status check functions (always() or failure())
-   * that should cause the step to be attempted even when a previous step has failed.
-   */
-  private hasStatusCheckFunction(step: TaskStep): boolean {
-    if (typeof step.if !== 'string') return false;
-    return /\b(?:always|failure)\s*\(\s*\)/.test(step.if);
-  }
-
-  /**
-   * Preprocess bare status check functions in the step's `if` condition.
-   * Converts bare `always()` and `failure()` strings to their
-   * boolean values. Template expressions like `${{ always() }}` are handled
-   * separately via template globals.
-   */
-  private preprocessStepCondition(
-    step: TaskStep,
-    taskState: { failed: boolean },
-  ): TaskStep {
-    if (typeof step.if !== 'string') return step;
-    const trimmed = step.if.trim();
-    if (trimmed === 'always()') return { ...step, if: true };
-    if (trimmed === 'failure()') return { ...step, if: taskState.failed };
-    return step;
-  }
-
   async execute(task: TaskContext): Promise<WorkflowResponse> {
     if (!isValidTaskSpec(task.spec)) {
       throw new InputError(
@@ -587,6 +561,9 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
     // Track whether any step has failed, used by status check functions
     const taskState = { failed: false };
 
+    // Track whether a status check global (always/failure) was invoked during rendering
+    const statusCheckInvoked = { value: false };
+
     const renderTemplate = await SecureTemplater.loadRenderer({
       templateFilters: {
         ...this.defaultTemplateFilters,
@@ -594,8 +571,14 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
       },
       templateGlobals: {
         ...additionalTemplateGlobals,
-        always: () => true,
-        failure: () => taskState.failed,
+        always: () => {
+          statusCheckInvoked.value = true;
+          return true;
+        },
+        failure: () => {
+          statusCheckInvoked.value = true;
+          return taskState.failed;
+        },
       },
     });
 
@@ -632,21 +615,34 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
       const allErrors: Array<{ step: TaskStep; error: Error }> = [];
 
       for (const step of task.spec.steps) {
-        // If a previous step failed, skip steps that don't use status check functions
-        if (taskState.failed && !this.hasStatusCheckFunction(step)) {
-          await task.emitLog(
-            `Skipping step ${step.id} because a previous step failed`,
-            { stepId: step.id, status: 'skipped' },
-          );
-          continue;
+        // If a previous step failed, only run steps whose `if` condition
+        // invokes a status check global (${{ always() }} or ${{ failure() }})
+        if (taskState.failed) {
+          if (typeof step.if !== 'string') {
+            await task.emitLog(
+              `Skipping step ${step.id} because a previous step failed`,
+              { stepId: step.id, status: 'skipped' },
+            );
+            continue;
+          }
+
+          // Render the if condition to detect status check function usage
+          statusCheckInvoked.value = false;
+          this.render(step.if, context, renderTemplate);
+
+          if (!statusCheckInvoked.value) {
+            await task.emitLog(
+              `Skipping step ${step.id} because a previous step failed`,
+              { stepId: step.id, status: 'skipped' },
+            );
+            continue;
+          }
         }
 
         try {
-          // Preprocess bare status functions (e.g. `if: always()`) into booleans
-          const processedStep = this.preprocessStepCondition(step, taskState);
           await this.executeStep(
             task,
-            processedStep,
+            step,
             context,
             renderTemplate,
             taskTrack,
