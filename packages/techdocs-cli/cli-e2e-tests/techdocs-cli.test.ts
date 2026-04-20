@@ -109,7 +109,7 @@ describe('end-to-end', () => {
     expect(proc.exit).toEqual(0);
   });
 
-  it('can not generate docs with warnings when using --mkdocs-parameter-strict', async () => {
+  it('cannot generate docs with warnings when using --mkdocs-parameter-strict', async () => {
     const proc = await executeCommand(
       entryPoint,
       [
