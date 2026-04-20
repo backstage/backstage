@@ -46,10 +46,10 @@ backend.add(import('@backstage/plugin-auth-backend-module-guest-provider'));
 backend.add(import('@backstage/plugin-auth-backend-module-openshift-provider'));
 backend.add(import('@backstage/plugin-app-backend'));
 backend.add(import('@backstage/plugin-catalog-backend-module-unprocessed'));
+backend.add(import('@backstage/plugin-catalog-backend'));
 backend.add(
   import('@backstage/plugin-catalog-backend-module-scaffolder-entity-model'),
 );
-backend.add(import('@backstage/plugin-catalog-backend'));
 backend.add(import('@backstage/plugin-events-backend'));
 backend.add(import('@backstage/plugin-devtools-backend'));
 backend.add(import('@backstage/plugin-kubernetes-backend'));
