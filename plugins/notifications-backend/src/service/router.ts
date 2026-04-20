@@ -498,15 +498,15 @@ export async function createRouter(
     };
     if (req.query.offset) {
       const offset = Number.parseInt(req.query.offset.toString(), 10);
-      if (isNaN(offset)) {
-        throw new InputError('offset must be a valid integer');
+      if (isNaN(offset) || offset < 0) {
+        throw new InputError('Offset must be a non-negative integer');
       }
       opts.offset = offset;
     }
     if (req.query.limit) {
       const limit = Number.parseInt(req.query.limit.toString(), 10);
-      if (isNaN(limit)) {
-        throw new InputError('limit must be a valid integer');
+      if (isNaN(limit) || limit <= 0 || limit > 100) {
+        throw new InputError('Limit must be a positive integer <= 100');
       }
       opts.limit = limit;
     }

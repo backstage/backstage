@@ -1028,6 +1028,41 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
         totalCount: 2,
       });
     });
+
+    it('should return 400 for non-integer offset', async () => {
+      const response = await request(app).get('/').query({ offset: 'abc' });
+      expect(response.status).toEqual(400);
+    });
+
+    it('should return 400 for negative offset', async () => {
+      const response = await request(app).get('/').query({ offset: '-1' });
+      expect(response.status).toEqual(400);
+    });
+
+    it('should return 400 for non-integer limit', async () => {
+      const response = await request(app).get('/').query({ limit: 'abc' });
+      expect(response.status).toEqual(400);
+    });
+
+    it('should return 400 for zero limit', async () => {
+      const response = await request(app).get('/').query({ limit: '0' });
+      expect(response.status).toEqual(400);
+    });
+
+    it('should return 400 for negative limit', async () => {
+      const response = await request(app).get('/').query({ limit: '-5' });
+      expect(response.status).toEqual(400);
+    });
+
+    it('should return 400 for limit exceeding maximum', async () => {
+      const response = await request(app).get('/').query({ limit: '1000' });
+      expect(response.status).toEqual(400);
+    });
+
+    it('should accept valid offset and limit', async () => {
+      const response = await request(app).get('/').query({ offset: '0', limit: '10' });
+      expect(response.status).toEqual(200);
+    });
   });
 
   describe('GET /settings', () => {
