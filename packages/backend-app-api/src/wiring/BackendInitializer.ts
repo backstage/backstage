@@ -35,6 +35,10 @@ import { OpaqueExtensionPointFactoryMiddleware } from '@internal/backend';
 import type {
   InternalBackendFeature,
   InternalBackendFeatureLoader,
+  InternalBackendModuleRegistration,
+  InternalBackendModuleRegistrationV1_1,
+  InternalBackendPluginRegistration,
+  InternalBackendPluginRegistrationV1_1,
   InternalBackendRegistrations,
 } from '../../../backend-plugin-api/src/wiring/types';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -113,14 +117,8 @@ function createRootInstanceMetadataServiceFactory(
   const registrations = rawRegistrations
     .filter(registration => registration.featureType === 'registrations')
     .flatMap(registration => registration.getRegistrations());
-  const plugins = registrations.filter(
-    registration =>
-      registration.type === 'plugin' || registration.type === 'plugin-v1.1',
-  );
-  const modules = registrations.filter(
-    registration =>
-      registration.type === 'module' || registration.type === 'module-v1.1',
-  );
+  const plugins = registrations.filter(isPluginRegistration);
+  const modules = registrations.filter(isModuleRegistration);
   for (const plugin of plugins) {
     const { pluginId } = plugin;
     if (!installedPlugins.get(pluginId)) {
@@ -460,39 +458,32 @@ export class BackendInitializer {
       try {
         const provides = new Set<ExtensionPoint<unknown>>();
 
-        if (r.type === 'plugin' || r.type === 'module') {
-          // Handle v1 format: Array<readonly [ExtensionPoint<unknown>, unknown]>
-          for (const [extRef, extImpl] of r.extensionPoints) {
-            if (this.#extensionPoints.has(extRef.id)) {
-              throw new Error(
-                `ExtensionPoint with ID '${extRef.id}' is already registered`,
-              );
-            }
-            this.#extensionPoints.set(extRef.id, {
-              pluginId: r.pluginId,
-              factory: () => extImpl,
-            });
-            addedExtensionPointIds.push(extRef.id);
-            provides.add(extRef);
+        const normalizedExtensionPoints =
+          r.type === 'plugin' || r.type === 'module'
+            ? r.extensionPoints.map(([ref, impl]) => ({
+                ref,
+                factory: () => impl,
+              }))
+            : r.extensionPoints.map(reg => ({
+                ref: reg.extensionPoint,
+                factory: reg.factory,
+              }));
+
+        for (const { ref, factory } of normalizedExtensionPoints) {
+          if (this.#extensionPoints.has(ref.id)) {
+            throw new Error(
+              `ExtensionPoint with ID '${ref.id}' is already registered`,
+            );
           }
-        } else if (r.type === 'plugin-v1.1' || r.type === 'module-v1.1') {
-          // Handle v1.1 format: Array<ExtensionPointRegistration>
-          for (const extReg of r.extensionPoints) {
-            if (this.#extensionPoints.has(extReg.extensionPoint.id)) {
-              throw new Error(
-                `ExtensionPoint with ID '${extReg.extensionPoint.id}' is already registered`,
-              );
-            }
-            this.#extensionPoints.set(extReg.extensionPoint.id, {
-              pluginId: r.pluginId,
-              factory: extReg.factory,
-            });
-            addedExtensionPointIds.push(extReg.extensionPoint.id);
-            provides.add(extReg.extensionPoint);
-          }
+          this.#extensionPoints.set(ref.id, {
+            pluginId: r.pluginId,
+            factory,
+          });
+          addedExtensionPointIds.push(ref.id);
+          provides.add(ref);
         }
 
-        if (r.type === 'plugin' || r.type === 'plugin-v1.1') {
+        if (isPluginRegistration(r)) {
           if (pluginInits.has(r.pluginId)) {
             throw new Error(`Plugin '${r.pluginId}' is already registered`);
           }
@@ -501,7 +492,7 @@ export class BackendInitializer {
             consumes: new Set(Object.values(r.init.deps)),
             init: r.init,
           });
-        } else if (r.type === 'module' || r.type === 'module-v1.1') {
+        } else if (isModuleRegistration(r)) {
           let modules = moduleInits.get(r.pluginId);
           if (!modules) {
             modules = new Map();
@@ -571,7 +562,7 @@ export class BackendInitializer {
     const allPlugins = new Set<string>();
     for (const feature of this.#registrations) {
       for (const r of feature.getRegistrations()) {
-        if (r.type === 'plugin' || r.type === 'plugin-v1.1') {
+        if (isPluginRegistration(r)) {
           allPlugins.add(r.pluginId);
         }
       }
@@ -780,4 +771,24 @@ function isBackendFeatureLoader(
   feature: BackendFeature,
 ): feature is InternalBackendFeatureLoader {
   return toInternalBackendFeature(feature).featureType === 'loader';
+}
+
+type BackendRegistration = ReturnType<
+  InternalBackendRegistrations['getRegistrations']
+>[number];
+
+function isPluginRegistration(
+  r: BackendRegistration,
+): r is
+  | InternalBackendPluginRegistration
+  | InternalBackendPluginRegistrationV1_1 {
+  return r.type === 'plugin' || r.type === 'plugin-v1.1';
+}
+
+function isModuleRegistration(
+  r: BackendRegistration,
+): r is
+  | InternalBackendModuleRegistration
+  | InternalBackendModuleRegistrationV1_1 {
+  return r.type === 'module' || r.type === 'module-v1.1';
 }
