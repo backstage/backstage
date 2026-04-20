@@ -150,13 +150,13 @@ describe('PluginTaskManagerImpl', () => {
           id: 'task1',
           timeout: Duration.fromMillis(5000),
           frequency: Duration.fromObject({ years: 1 }),
-          initialDelay: Duration.fromObject({ years: 1 }),
+          initialDelay: Duration.fromObject({ seconds: 60 }),
           fn,
           scope: 'global',
         });
 
         await manager.triggerTask('task1');
-        jest.advanceTimersByTime(5000);
+        await jest.advanceTimersByTimeAsync(65_000);
 
         await promise;
         expect(fn).toHaveBeenCalledWith(expect.any(AbortSignal));

@@ -431,6 +431,9 @@ export const BoxDefinition: {
     'py',
     'position',
     'display',
+    'grow',
+    'shrink',
+    'basis',
     'width',
     'minWidth',
     'maxWidth',
@@ -452,6 +455,7 @@ export type BoxOwnProps = {
 // @public (undocumented)
 export interface BoxProps
   extends SpaceProps,
+    FlexItemProps,
     BoxOwnProps,
     BoxUtilityProps,
     Omit<React.HTMLAttributes<HTMLDivElement>, 'children'> {}
@@ -642,6 +646,7 @@ export const Card: ForwardRefExoticComponent<
 export type CardBaseProps = {
   children?: ReactNode;
   className?: string;
+  style?: CSSProperties;
 };
 
 // @public
@@ -702,7 +707,9 @@ export const CardDefinition: {
     readonly target: {};
     readonly rel: {};
     readonly download: {};
+    readonly style: {};
   };
+  readonly utilityProps: readonly ['grow', 'shrink', 'basis'];
 };
 
 // @public
@@ -786,10 +793,12 @@ export type CardOwnProps = Pick<
   | 'target'
   | 'rel'
   | 'download'
+  | 'style'
 >;
 
 // @public
 export type CardProps = CardBaseProps &
+  FlexItemProps &
   Omit<React.HTMLAttributes<HTMLDivElement>, 'onClick'> &
   (CardButtonVariant | CardLinkVariant | CardStaticVariant);
 
@@ -1315,11 +1324,21 @@ export const FlexDefinition: {
     'align',
     'justify',
     'direction',
+    'grow',
+    'shrink',
+    'basis',
   ];
 };
 
 // @public (undocumented)
 export type FlexDirection = 'row' | 'column';
+
+// @public
+export interface FlexItemProps {
+  basis?: Responsive<CSSProperties['flexBasis']>;
+  grow?: Responsive<number | boolean>;
+  shrink?: Responsive<number | boolean>;
+}
 
 // @public (undocumented)
 export type FlexOwnProps = {
@@ -1332,6 +1351,7 @@ export type FlexOwnProps = {
 // @public (undocumented)
 export interface FlexProps
   extends SpaceProps,
+    FlexItemProps,
     FlexOwnProps,
     Omit<React.HTMLAttributes<HTMLDivElement>, 'children'> {
   // (undocumented)
@@ -1422,6 +1442,9 @@ export const GridDefinition: {
     'pt',
     'px',
     'py',
+    'grow',
+    'shrink',
+    'basis',
   ];
 };
 
@@ -1478,6 +1501,7 @@ export type GridOwnProps = {
 // @public (undocumented)
 export interface GridProps
   extends SpaceProps,
+    FlexItemProps,
     GridOwnProps,
     Omit<HTMLAttributes<HTMLDivElement>, 'children'> {
   // (undocumented)
