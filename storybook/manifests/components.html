@@ -576,13 +576,13 @@
 <header>
   <div class="wrap">
     <h1>Manifest Debugger</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">49 components ok</span><span class="filter-pill ok" aria-disabled="true">447 stories ok</span></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">49 components ok</span><span class="filter-pill ok" aria-disabled="true">448 stories ok</span></div>
   </div>
 </header>
 <main>
   <div class="wrap">
     <div class="note info" style="margin-bottom: 16px;">
-            <strong>Tip:</strong> You are using <code>react-docgen</code> (the default). Generation took <strong>2.3s</strong>. For higher quality prop types, consider switching to <code>react-docgen-typescript</code> in your <code>main.ts</code>:
+            <strong>Tip:</strong> You are using <code>react-docgen</code> (the default). Generation took <strong>3.0s</strong>. For higher quality prop types, consider switching to <code>react-docgen-typescript</code> in your <code>main.ts</code>:
             <pre><code>typescript: {
   reactDocgen: 'react-docgen-typescript',
 }</code></pre>
@@ -1656,7 +1656,7 @@ import { RiBugLine } from "@remixicon/react";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Box</h2>
       <div class="badges">
-        <label for="c-4-backstage-ui-box-props" class="badge ok as-toggle">27 prop types</label>
+        <label for="c-4-backstage-ui-box-props" class="badge ok as-toggle">30 prop types</label>
         
         <label for="c-4-backstage-ui-box-stories" class="badge ok as-toggle">12 stories</label>
         
@@ -1683,11 +1683,16 @@ import { RiBugLine } from "@remixicon/react";</code></pre>
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types <small>(react-docgen)</small></span>
-              <span class="badge ok">27 prop types</span>
+              <span class="badge ok">30 prop types</span>
             </div>
             <pre><code>Component: packages/ui/src/components/Box/Box.tsx::Box</code></pre>
             <pre><code>Props:</code></pre>
             <pre><code>as?: JSX.IntrinsicElements
+
+/**
+ * Controls the flex-basis property.
+ */
+basis?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;
 
 bg?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;
 
@@ -1696,6 +1701,11 @@ children: ReactNode
 className?: string
 
 display?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;
+
+/**
+ * Controls the flex-grow property. Values of `true` or `false` are converted to `1` or `0` respectively.
+ */
+grow?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;
 
 height?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;
 
@@ -1736,6 +1746,11 @@ pt?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;
 px?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;
 
 py?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;
+
+/**
+ * Controls the flex-shrink property. Values of `true` or `false` are converted to `1` or `0` respectively.
+ */
+shrink?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;
 
 style?: CSSProperties
 
@@ -2995,7 +3010,7 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Card</h2>
       <div class="badges">
-        <label for="c-8-backstage-ui-card-props" class="badge ok as-toggle">2 prop types</label>
+        <label for="c-8-backstage-ui-card-props" class="badge ok as-toggle">6 prop types</label>
         
         <label for="c-8-backstage-ui-card-stories" class="badge ok as-toggle">17 stories</label>
         
@@ -3022,13 +3037,30 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types <small>(react-docgen)</small></span>
-              <span class="badge ok">2 prop types</span>
+              <span class="badge ok">6 prop types</span>
             </div>
             <pre><code>Component: packages/ui/src/components/Card/Card.tsx::Card</code></pre>
             <pre><code>Props:</code></pre>
-            <pre><code>children?: ReactNode
+            <pre><code>/**
+ * Controls the flex-basis property.
+ */
+basis?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;
 
-className?: string</code></pre>
+children?: ReactNode
+
+className?: string
+
+/**
+ * Controls the flex-grow property. Values of `true` or `false` are converted to `1` or `0` respectively.
+ */
+grow?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;
+
+/**
+ * Controls the flex-shrink property. Values of `true` or `false` are converted to `1` or `0` respectively.
+ */
+shrink?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;
+
+style?: CSSProperties</code></pre>
           </div>
         </div>
     
@@ -3468,7 +3500,7 @@ className?: string</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> CardswithList</h2>
       <div class="badges">
-        <label for="c-9-recipes-cards-with-list-props" class="badge ok as-toggle">2 prop types</label>
+        <label for="c-9-recipes-cards-with-list-props" class="badge ok as-toggle">6 prop types</label>
         
         <label for="c-9-recipes-cards-with-list-stories" class="badge ok as-toggle">3 stories</label>
         
@@ -3495,13 +3527,30 @@ className?: string</code></pre>
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types <small>(react-docgen)</small></span>
-              <span class="badge ok">2 prop types</span>
+              <span class="badge ok">6 prop types</span>
             </div>
             <pre><code>Component: packages/ui/src/components/Card/Card.tsx::Card</code></pre>
             <pre><code>Props:</code></pre>
-            <pre><code>children?: ReactNode
+            <pre><code>/**
+ * Controls the flex-basis property.
+ */
+basis?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;
 
-className?: string</code></pre>
+children?: ReactNode
+
+className?: string
+
+/**
+ * Controls the flex-grow property. Values of `true` or `false` are converted to `1` or `0` respectively.
+ */
+grow?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;
+
+/**
+ * Controls the flex-shrink property. Values of `true` or `false` are converted to `1` or `0` respectively.
+ */
+shrink?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;
+
+style?: CSSProperties</code></pre>
           </div>
         </div>
     
@@ -3613,7 +3662,7 @@ import {
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> CardswithTable</h2>
       <div class="badges">
-        <label for="c-10-guidelines-cards-with-table-props" class="badge ok as-toggle">2 prop types</label>
+        <label for="c-10-guidelines-cards-with-table-props" class="badge ok as-toggle">6 prop types</label>
         
         <label for="c-10-guidelines-cards-with-table-stories" class="badge ok as-toggle">1 story</label>
         
@@ -3640,13 +3689,30 @@ import {
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types <small>(react-docgen)</small></span>
-              <span class="badge ok">2 prop types</span>
+              <span class="badge ok">6 prop types</span>
             </div>
             <pre><code>Component: packages/ui/src/components/Card/Card.tsx::Card</code></pre>
             <pre><code>Props:</code></pre>
-            <pre><code>children?: ReactNode
+            <pre><code>/**
+ * Controls the flex-basis property.
+ */
+basis?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;
 
-className?: string</code></pre>
+children?: ReactNode
+
+className?: string
+
+/**
+ * Controls the flex-grow property. Values of `true` or `false` are converted to `1` or `0` respectively.
+ */
+grow?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;
+
+/**
+ * Controls the flex-shrink property. Values of `true` or `false` are converted to `1` or `0` respectively.
+ */
+shrink?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;
+
+style?: CSSProperties</code></pre>
           </div>
         </div>
     
@@ -6089,9 +6155,9 @@ secondaryLabel?: string | null</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Flex</h2>
       <div class="badges">
-        <label for="c-18-backstage-ui-flex-props" class="badge ok as-toggle">22 prop types</label>
+        <label for="c-18-backstage-ui-flex-props" class="badge ok as-toggle">25 prop types</label>
         
-        <label for="c-18-backstage-ui-flex-stories" class="badge ok as-toggle">15 stories</label>
+        <label for="c-18-backstage-ui-flex-stories" class="badge ok as-toggle">16 stories</label>
         
       </div>
     </div>
@@ -6116,11 +6182,16 @@ secondaryLabel?: string | null</code></pre>
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types <small>(react-docgen)</small></span>
-              <span class="badge ok">22 prop types</span>
+              <span class="badge ok">25 prop types</span>
             </div>
             <pre><code>Component: packages/ui/src/components/Flex/Flex.tsx::Flex</code></pre>
             <pre><code>Props:</code></pre>
             <pre><code>align?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;
+
+/**
+ * Controls the flex-basis property.
+ */
+basis?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;
 
 bg?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;
 
@@ -6131,6 +6202,11 @@ className?: string
 direction?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;
 
 gap?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;
+
+/**
+ * Controls the flex-grow property. Values of `true` or `false` are converted to `1` or `0` respectively.
+ */
+grow?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;
 
 justify?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;
 
@@ -6162,6 +6238,11 @@ px?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;
 
 py?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;
 
+/**
+ * Controls the flex-shrink property. Values of `true` or `false` are converted to `1` or `0` respectively.
+ */
+shrink?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;
+
 style?: CSSProperties</code></pre>
           </div>
         </div>
@@ -6174,7 +6255,7 @@ style?: CSSProperties</code></pre>
                 <div class="row">
                   <span class="ex-name">Imports</span>
                 </div>
-                <pre><code>import { Box, Flex, Text } from "@backstage/ui";</code></pre>
+                <pre><code>import { Box, Card, CardBody, CardFooter, CardHeader, Flex, Grid, Text } from "@backstage/ui";</code></pre>
               </div>
           
           
@@ -6299,6 +6380,37 @@ style?: CSSProperties</code></pre>
     &lt;DecorativeBox height=&quot;24px&quot; /&gt;
     &lt;DecorativeBox height=&quot;48px&quot; /&gt;
 &lt;/Flex&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Flex Items</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const FlexItems = () =&gt; {
+    return (
+        &lt;Flex style={{ width: &#39;100%&#39;, height: &#39;256px&#39; }}&gt;
+            &lt;div
+                style={{
+                  width: &#39;256px&#39;,
+                  flex: &#39;1 1 auto&#39;,
+                  background:
+                    &#39;repeating-linear-gradient(-45deg, transparent 0px, transparent 5px, #e8e8e8 5px, #e8e8e8 10px)&#39;,
+                  borderRadius: &#39;12px&#39;,
+                }} /&gt;
+            &lt;Component component=&quot;Box&quot; grow={1} shrink={0} basis=&quot;auto&quot;&gt;{null}&lt;/Component&gt;
+            &lt;div
+                style={{
+                  width: &#39;256px&#39;,
+                  flex: &#39;1 1 auto&#39;,
+                  background:
+                    &#39;repeating-linear-gradient(-45deg, transparent 0px, transparent 5px, #e8e8e8 5px, #e8e8e8 10px)&#39;,
+                  borderRadius: &#39;12px&#39;,
+                }} /&gt;
+        &lt;/Flex&gt;
+    );
+};</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
