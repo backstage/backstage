@@ -23,7 +23,7 @@ This section will guide you through how to:
 TechDocs uses the following artifacts to generate the documentation for a component:
 
 - `mkdocs.yml` - A file created at the root of your component repository that provides the name of your documentation site, as well as the navigation for the documentation.
-- `docs` - A folder at the root of your component repository that holds your documentation markdown files. You can call this folder anything you want, but `docs` will be used for the examples in this file. At a minimum, it should include an `index.md` file.
+- `docs` - A folder at the root of your component repository that holds your documentation markdown files. You can call this folder anything you want, but `docs` will be used for the examples that follow. At a minimum, it should include an `index.md` file.
 - `docs/index.md` - The entry point for your documentation.
 
 For example:
@@ -80,13 +80,15 @@ To add documentation to an existing entity:
       - techdocs-core
     ```
 
-    > Note - The plugins section above is optional. Backstage automatically adds the `techdocs-core` plugin to the
-    > mkdocs file if it is missing. This functionality can be turned off with a [configuration option](./configuration.md) in Backstage.
+    :::note
+    The plugins section above is optional. Backstage automatically adds the `techdocs-core` plugin to the
+    mkdocs file if it is missing. This functionality can be turned off with a [configuration option](./configuration.md) in Backstage.
+    :::
 
-2.  Update your component's entity description by adding the following lines to its
+3.  Update your component's entity description by adding the following lines to its
     `catalog-info.yaml` file in the root of its repository:
 
-    ````yaml
+    ```yaml
      metadata:
        annotations:
          backstage.io/techdocs-ref: dir:.
@@ -97,17 +99,17 @@ To add documentation to an existing entity:
     is used by TechDocs to download the documentation source files for generating an
     entity's TechDocs site.
 
-    ````
-
-3.  Create a `/docs` folder in the root of your repository with at least an
+4.  Create a `/docs` folder in the root of your repository with at least an
     `index.md` file in it. _(If you add more markdown files, make sure to update the
     nav in the mkdocs.yml file to get a proper navigation for your documentation.)_
 
-        > Note - Although `docs` is a popular directory name for storing documentation,
-        > it can be renamed to something else and can be configured by `mkdocs.yml`. See
-        > https://www.mkdocs.org/user-guide/configuration/#docs_dir
+    :::note
+    Although `docs` is a popular directory name for storing documentation,
+    it can be renamed to something else and can be configured by `mkdocs.yml`. See
+    https://www.mkdocs.org/user-guide/configuration/#docs_dir
+    :::
 
-4.  Create a `docs/index.md` file, as a minimum. For example:
+6.  Create a `docs/index.md` file, as a minimum. For example:
 
     ```md
     # example docs
@@ -115,7 +117,7 @@ To add documentation to an existing entity:
     This is a basic example of documentation.
     ```
 
-5.  Commit your changes, open a pull request and merge. You will now get your
+7.  Commit your changes, open a pull request and merge. You will now get your
     updated documentation next time you run Backstage!
 
 ### Create a standalone documentation
