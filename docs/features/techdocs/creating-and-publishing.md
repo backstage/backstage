@@ -85,21 +85,21 @@ To add documentation to an existing entity:
     mkdocs file if it is missing. This functionality can be turned off with a [configuration option](./configuration.md) in Backstage.
     :::
 
-3.  Update your component's entity description by adding the following lines to its
+2.  Update your component's entity description by adding the following lines to its
     `catalog-info.yaml` file in the root of its repository:
 
     ```yaml
-     metadata:
-       annotations:
-         backstage.io/techdocs-ref: dir:.
-     ```
+    metadata:
+      annotations:
+        backstage.io/techdocs-ref: dir:.
+    ```
 
-     The
+    The
     [`backstage.io/techdocs-ref` annotation](../software-catalog/well-known-annotations.md#backstageiotechdocs-ref)
     is used by TechDocs to download the documentation source files for generating an
     entity's TechDocs site.
 
-4.  Create a `/docs` folder in the root of your repository with at least an
+3.  Create a `/docs` folder in the root of your repository with at least an
     `index.md` file in it. _(If you add more markdown files, make sure to update the
     nav in the mkdocs.yml file to get a proper navigation for your documentation.)_
 
@@ -109,7 +109,7 @@ To add documentation to an existing entity:
     https://www.mkdocs.org/user-guide/configuration/#docs_dir
     :::
 
-6.  Create a `docs/index.md` file, as a minimum. For example:
+4.  Create a `docs/index.md` file, as a minimum. For example:
 
     ```md
     # example docs
@@ -117,7 +117,7 @@ To add documentation to an existing entity:
     This is a basic example of documentation.
     ```
 
-7.  Commit your changes, open a pull request and merge. You will now get your
+5.  Commit your changes, open a pull request and merge. You will now get your
     updated documentation next time you run Backstage!
 
 ### Create a standalone documentation
