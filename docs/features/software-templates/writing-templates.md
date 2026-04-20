@@ -708,7 +708,7 @@ Status check functions give you control over which steps run even after a failur
 
 These functions must be used as template expressions such as `${{ always() }}` or `${{ failure() }}`.
 
-After a step has failed, the scaffolder only attempts later steps whose `if` expression invokes one of these status check functions. Plain truthy conditions such as `${{ true }}` do not continue execution after a failure.
+After a step has failed, the scaffolder only attempts later steps whose `if` expression invokes one of these status check functions.
 
 #### Usage
 
