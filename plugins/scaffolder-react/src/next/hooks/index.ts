@@ -20,3 +20,8 @@ export {
 } from './useTemplateSchema';
 export { useTemplateParameterSchema } from './useTemplateParameterSchema';
 export { useFilteredSchemaProperties } from './useFilteredSchemaProperties';
+export {
+  useOptionsLoader,
+  type OptionsLoaderFn,
+  type UseOptionsLoaderResult,
+} from './useOptionsLoader';

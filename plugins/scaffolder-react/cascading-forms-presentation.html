@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cascading/Dynamic Forms — Backstage Scaffolder</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/white.css"
+    />
+    <style>
+      .reveal h1,
+      .reveal h2,
+      .reveal h3 {
+        text-transform: none;
+      }
+      .reveal pre {
+        font-size: 0.55em;
+      }
+      .reveal .mermaid {
+        font-size: 0.7em;
+      }
+      .reveal table {
+        font-size: 0.6em;
+        margin: 0 auto;
+      }
+      .reveal th,
+      .reveal td {
+        padding: 4px 10px;
+        border: 1px solid #ccc;
+      }
+      .risk-high {
+        color: #d32f2f;
+        font-weight: bold;
+      }
+      .risk-medium {
+        color: #f57c00;
+        font-weight: bold;
+      }
+      .risk-low {
+        color: #388e3c;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <!-- Slide 1: Title -->
+        <section>
+          <h1>Cascading / Dynamic Forms</h1>
+          <h3>Backstage Scaffolder Feature</h3>
+          <p><code>plugins/scaffolder-react</code></p>
+          <pre class="mermaid">
+  flowchart LR
+    A[Template YAML] --> B[Schema Extraction]
+    B --> C[Conditional Resolution]
+    C --> D[RJSF Rendering]
+    D --> E[Reactive Fields]
+  </pre
+          >
+        </section>
+
+        <!-- Slide 2: What Was Built -->
+        <section>
+          <h2>What Was Built</h2>
+          <ul>
+            <li>
+              <strong>Reactive conditional rendering</strong> —
+              <code>if/then/else</code> and <code>dependencies</code> keywords
+              drive field visibility
+            </li>
+            <li>
+              <strong>Dependent dropdown filtering</strong> — parent field
+              changes update child field options within 200ms
+            </li>
+            <li>
+              <strong>Async option loading</strong> —
+              <code>optionsLoader</code> fetches data from Backstage APIs with
+              300ms debounce
+            </li>
+            <li>
+              <strong>Value preservation</strong> — unmounted field values
+              restored on remount
+            </li>
+            <li>
+              <strong>Error boundaries</strong> — per-field isolation prevents
+              cascading crashes
+            </li>
+            <li>
+              <strong>Analytics tracking</strong> — load, success, and error
+              events via Backstage analytics API
+            </li>
+          </ul>
+          <pre class="mermaid">
+  graph TD
+    A[User changes parent field] --> B{Condition met?}
+    B -->|Yes| C[Mount dependent fields]
+    B -->|No| D[Unmount dependent fields]
+    C --> E[Restore previous values]
+    D --> F[Preserve values in state]
+  </pre
+          >
+        </section>
+
+        <!-- Slide 3: Why — Template Author Productivity -->
+        <section>
+          <h2>Why — Template Author Productivity</h2>
+          <ul>
+            <li>
+              <strong>Before:</strong> Static forms only — every field always
+              visible regardless of context
+            </li>
+            <li>
+              <strong>After:</strong> Dynamic forms — fields appear/disappear
+              based on sibling values
+            </li>
+            <li>
+              <strong>Impact:</strong> Fewer wizard steps, less user confusion,
+              richer template logic
+            </li>
+          </ul>
+          <pre class="mermaid">
+  flowchart LR
+    subgraph Before
+      A1[cloudProvider] --> B1[awsRegion always visible]
+      A1 --> C1[gcpZone always visible]
+    end
+    subgraph After
+      A2[cloudProvider=AWS] --> B2[awsRegion visible]
+      A3[cloudProvider=GCP] --> C2[gcpZone visible]
+    end
+  </pre
+          >
+        </section>
+
+        <!-- Slide 4: Architecture — Schema Resolution Pipeline -->
+        <section>
+          <h2>Architecture — Schema Resolution Pipeline</h2>
+          <pre class="mermaid">
+  flowchart TD
+    A["Template YAML\n(if/then/else, dependencies)"] --> B["useTemplateSchema()\nParses manifest"]
+    B --> C["extractSchemaFromStep()\nSeparates ui:* metadata"]
+    C --> D["ParsedTemplateSchema\n{schema, uiSchema, mergedSchema}"]
+    D --> E["useTransformSchemaToProps()\nLayout resolution"]
+    E --> F["Stepper.tsx\ncurrentStep.schema"]
+    F --> G["useConditionalSchema()\nNEW: resolveConditionalSchema()"]
+    G --> H["Form.tsx\nWrappedForm schema prop"]
+    H --> I["RJSF v5\nNative if/then/else evaluation"]
+    I --> J["FieldTemplate.tsx\nRenders each field row"]
+  </pre
+          >
+        </section>
+
+        <!-- Slide 5: Architecture — Async Options Loading -->
+        <section>
+          <h2>Architecture — Async Options Loading</h2>
+          <pre class="mermaid">
+  sequenceDiagram
+    participant U as User
+    participant P as Parent Field
+    participant H as useOptionsLoader
+    participant T as Debounce Timer
+    participant L as optionsLoader()
+    participant C as Child Field
+    U->>P: Changes value
+    P->>H: formData change detected
+    H->>T: Reset 300ms debounce
+    T->>H: Timer fires
+    H->>C: Set loading=true
+    H->>L: Call optionsLoader(formData, {apiHolder})
+    L->>H: Return options[]
+    H->>C: Update options, loading=false
+  </pre
+          >
+        </section>
+
+        <!-- Slide 6: Component Interaction -->
+        <section>
+          <h2>Component Interaction</h2>
+          <pre class="mermaid">
+  flowchart TD
+    S[Stepper.tsx] -->|resolvedSchema| F[Form.tsx]
+    S -->|formContext.optionsLoaderRegistry| F
+    S -->|stepsState as formData| F
+    F -->|fields, templates| R[RJSF WrappedForm]
+    R -->|per-field render| FT[FieldTemplate.tsx]
+    FT -->|useOptionsLoader| OL[useOptionsLoader hook]
+    FT -->|wrap if optionsLoader| EB[ErrorBoundary]
+    FT -->|loading/error state| SF[ScaffolderField.tsx]
+    OL -->|debounced call| EXT[optionsLoader function]
+    FT -->|analytics events| AN[useAnalytics]
+  </pre
+          >
+        </section>
+
+        <!-- Slide 7: Risks and Mitigations -->
+        <section>
+          <h2>Risks and Mitigations</h2>
+          <table>
+            <tr>
+              <th>Risk</th>
+              <th>Severity</th>
+              <th>Mitigation</th>
+            </tr>
+            <tr>
+              <td>Performance with complex schemas (>20 branches)</td>
+              <td class="risk-medium">Medium</td>
+              <td>
+                resolveConditionalSchema is pure/sync with &lt;50ms target;
+                MAX_DEPTH=50 prevents stack overflow
+              </td>
+            </tr>
+            <tr>
+              <td>RJSF version coupling (5.24.13)</td>
+              <td class="risk-medium">Medium</td>
+              <td>
+                Zero RJSF core modifications; all customization through
+                documented extension points
+              </td>
+            </tr>
+            <tr>
+              <td>Infinite render loops from schema changes</td>
+              <td class="risk-high">High</td>
+              <td>
+                useConditionalSchema uses structural equality caching;
+                handleChange has JSON equality bail-out
+              </td>
+            </tr>
+            <tr>
+              <td>optionsLoader network failures</td>
+              <td class="risk-low">Low</td>
+              <td>
+                Per-field error boundary + retry button + AbortController
+                cleanup on unmount
+              </td>
+            </tr>
+            <tr>
+              <td>Memory leaks from field mount/unmount cycles</td>
+              <td class="risk-low">Low</td>
+              <td>
+                mountedRef guard + AbortController + clearTimeout in
+                useOptionsLoader cleanup
+              </td>
+            </tr>
+          </table>
+        </section>
+
+        <!-- Slide 8: Onboarding Path -->
+        <section>
+          <h2>Onboarding Path</h2>
+          <ol>
+            <li>
+              <strong>Read:</strong>
+              <code>plugins/scaffolder-react/README.md</code> —
+              Cascading/Dynamic Forms section
+            </li>
+            <li>
+              <strong>Try:</strong> Add <code>if/then/else</code> to a template
+              YAML and test in dev server
+            </li>
+            <li>
+              <strong>Extend:</strong> Create a field extension with
+              <code>dependencies</code> + <code>optionsLoader</code>
+            </li>
+            <li>
+              <strong>Review:</strong> Study <code>schema.test.ts</code> and
+              <code>Stepper.test.tsx</code> test cases
+            </li>
+          </ol>
+          <h3>Suggested Next Tasks</h3>
+          <ul>
+            <li>
+              Cross-step reactivity (Step 2 fields depending on Step 1 values)
+            </li>
+            <li>Visual transitions for field mount/unmount animations</li>
+            <li>Server-side dynamic schema generation</li>
+            <li>
+              Incremental validation optimization (skip unchanged dependency
+              fields)
+            </li>
+          </ul>
+          <pre class="mermaid">
+  flowchart LR
+    A[Read README] --> B[Try if/then/else]
+    B --> C[Build optionsLoader]
+    C --> D[Study tests]
+    D --> E[Extend feature]
+  </pre
+          >
+        </section>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+    <script type="module">
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+      mermaid.initialize({ startOnLoad: false, theme: 'default' });
+      const deck = new Reveal({ hash: true, slideNumber: true });
+      deck.initialize().then(() => {
+        mermaid.run();
+      });
+    </script>
+  </body>
+</html>

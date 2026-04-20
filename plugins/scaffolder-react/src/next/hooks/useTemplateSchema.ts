@@ -52,6 +52,10 @@ export const useTemplateSchema = (
     ...extractSchemaFromStep(schema),
   }));
 
+  // Conditional schema keywords (if/then/else, dependencies) are preserved
+  // through the extraction pipeline. extractSchemaFromStep() strips only ui:*
+  // keys from conditional branches, and feature flag filtering operates only
+  // on properties — conditional structural keywords pass through to RJSF.
   const returningSteps = steps
     // Filter out steps that are not enabled with the feature flags
     .filter(step => {

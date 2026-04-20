@@ -70,7 +70,8 @@ export type CustomFieldValidator<TFieldReturnValue, TUiOptions = unknown> = (
 
 /**
  * Type for the Custom Field Extension with the
- * name and components and validation function.
+ * name, component, validation function, and optional support for
+ * cascading/dynamic form behavior via `dependencies` and `optionsLoader`.
  *
  * @public
  */
@@ -84,4 +85,40 @@ export type FieldExtensionOptions<
   ) => JSX.Element | null;
   validation?: CustomFieldValidator<TFieldReturnValue, TUiOptions>;
   schema?: CustomFieldExtensionSchema;
+  /**
+   * An optional list of sibling field names that this field extension watches
+   * for changes. When any of the listed fields change value, the field's
+   * `optionsLoader` (if provided) will be re-invoked to fetch updated options.
+   *
+   * @example
+   * ```ts
+   * dependencies: ['cloudProvider']
+   * ```
+   */
+  dependencies?: string[];
+  /**
+   * An optional async function that fetches dynamic options for this field
+   * based on the current form data. It is called whenever a field listed in
+   * `dependencies` changes value, after a configurable debounce period
+   * (default 300ms).
+   *
+   * The function receives the full form data and a context object containing
+   * the Backstage `ApiHolder`, enabling data retrieval from catalog, custom
+   * backends, or other Backstage APIs. An optional `AbortSignal` is provided
+   * so that in-flight network requests can be cancelled when the parent field
+   * value changes again or the component unmounts.
+   *
+   * @example
+   * ```ts
+   * optionsLoader: async (formData, { apiHolder, signal }) => {
+   *   const catalogApi = apiHolder.get(catalogApiRef);
+   *   const entities = await catalogApi.getEntities({ filter: { kind: 'Component' } });
+   *   return entities.items.map(e => ({ label: e.metadata.name, value: e.metadata.name }));
+   * }
+   * ```
+   */
+  optionsLoader?: (
+    formData: JsonObject,
+    context: { apiHolder: ApiHolder; signal?: AbortSignal },
+  ) => Promise<Array<{ label: string; value: string | number }>>;
 };

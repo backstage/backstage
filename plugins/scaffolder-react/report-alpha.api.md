@@ -21,7 +21,6 @@ import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { LayoutOptions } from '@backstage/plugin-scaffolder-react';
-import { Overrides } from '@material-ui/core/styles/overrides';
 import { PropsWithChildren } from 'react';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
@@ -30,7 +29,6 @@ import { ScaffolderRJSFFormProps } from '@backstage/plugin-scaffolder-react';
 import { ScaffolderStep } from '@backstage/plugin-scaffolder-react';
 import { ScaffolderTaskOutput } from '@backstage/plugin-scaffolder-react';
 import { SetStateAction } from 'react';
-import { StyleRules } from '@material-ui/core/styles/withStyles';
 import { TaskStep } from '@backstage/plugin-scaffolder-common';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateGroupFilter } from '@backstage/plugin-scaffolder-react';
@@ -42,9 +40,9 @@ import { WidgetProps } from '@rjsf/utils';
 import { z } from 'zod';
 
 // @alpha (undocumented)
-export type BackstageOverrides = Overrides & {
+export type BackstageOverrides = {
   [Name in keyof ScaffolderReactComponentsNameToClassKey]?: Partial<
-    StyleRules<ScaffolderReactComponentsNameToClassKey[Name]>
+    Record<ScaffolderReactComponentsNameToClassKey[Name], string>
   >;
 };
 
@@ -64,6 +62,7 @@ export const createAsyncValidators: (
   context: {
     apiHolder: ApiHolder;
   },
+  fieldDependencies?: Record<string, string[]>,
 ) => (formData: JsonObject) => Promise<FormValidation>;
 
 // @alpha
@@ -204,6 +203,19 @@ export type FormValidation = {
 };
 
 // @alpha
+export type OptionsLoaderFn = (
+  formData: JsonObject,
+  context: {
+    apiHolder: ApiHolder;
+  },
+) => Promise<
+  Array<{
+    label: string;
+    value: string | number;
+  }>
+>;
+
+// @alpha
 export interface ParsedTemplateSchema {
   // (undocumented)
   description?: string;
@@ -216,6 +228,12 @@ export interface ParsedTemplateSchema {
   // (undocumented)
   uiSchema: UiSchema;
 }
+
+// @alpha
+export const resolveConditionalSchema: (
+  schema: JsonObject,
+  formData: JsonObject,
+) => JsonObject;
 
 // @alpha
 export const ReviewState: (props: ReviewStateProps) => JSX_2.Element;
@@ -241,6 +259,8 @@ export interface ScaffolderFieldProps {
   errors?: ReactElement;
   // (undocumented)
   help?: ReactElement;
+  // (undocumented)
+  isLoading?: boolean;
   // (undocumented)
   rawDescription?: string;
   // (undocumented)
@@ -306,8 +326,8 @@ export const scaffolderReactTranslationRef: TranslationRef<
     readonly 'stepper.reviewButtonText': 'Review';
     readonly 'stepper.stepIndexLabel': 'Step {{index, number}}';
     readonly 'passwordWidget.content': 'This widget is insecure. Please use [`ui:field: Secret`](https://backstage.io/docs/features/software-templates/writing-templates/#using-secrets) instead of `ui:widget: password`';
-    readonly 'scaffolderPageContextMenu.createLabel': 'Create';
     readonly 'scaffolderPageContextMenu.moreLabel': 'more';
+    readonly 'scaffolderPageContextMenu.createLabel': 'Create';
     readonly 'scaffolderPageContextMenu.editorLabel': 'Manage Templates';
     readonly 'scaffolderPageContextMenu.actionsLabel': 'Installed Actions';
     readonly 'scaffolderPageContextMenu.tasksLabel': 'Task List';
@@ -449,6 +469,29 @@ export const useFilteredSchemaProperties: (
 export const useFormDataFromQuery: (
   initialState?: Record<string, JsonValue>,
 ) => [Record<string, any>, Dispatch<SetStateAction<Record<string, any>>>];
+
+// @alpha
+export const useOptionsLoader: (
+  fieldName: string,
+  dependencies: string[],
+  optionsLoader: OptionsLoaderFn,
+  formData: JsonObject,
+  apiHolder: ApiHolder,
+  options?: {
+    debounceMs?: number;
+  },
+) => UseOptionsLoaderResult;
+
+// @alpha
+export interface UseOptionsLoaderResult {
+  error: Error | null;
+  loading: boolean;
+  options: Array<{
+    label: string;
+    value: string | number;
+  }>;
+  retry: () => void;
+}
 
 // @alpha (undocumented)
 export const useTemplateParameterSchema: (templateRef: string) => {

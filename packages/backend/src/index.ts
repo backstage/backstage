@@ -45,7 +45,11 @@ backend.add(import('./authModuleGithubProvider'));
 backend.add(import('@backstage/plugin-auth-backend-module-guest-provider'));
 backend.add(import('@backstage/plugin-auth-backend-module-openshift-provider'));
 backend.add(import('@backstage/plugin-app-backend'));
+backend.add(import('@backstage/plugin-catalog-backend-module-unprocessed'));
 backend.add(import('@backstage/plugin-catalog-backend'));
+backend.add(
+  import('@backstage/plugin-catalog-backend-module-scaffolder-entity-model'),
+);
 backend.add(import('@backstage/plugin-catalog-backend-module-github'));
 backend.add(import('@backstage/plugin-catalog-backend-module-github-org'));
 backend.add(import('@backstage/plugin-events-backend'));
@@ -54,6 +58,7 @@ backend.add(
 );
 backend.add(import('@backstage/plugin-permission-backend'));
 backend.add(import('@backstage/plugin-proxy-backend'));
+backend.add(import('@backstage/plugin-scaffolder-backend'));
 backend.add(
   import('@backstage/plugin-catalog-backend-module-backstage-openapi'),
 );

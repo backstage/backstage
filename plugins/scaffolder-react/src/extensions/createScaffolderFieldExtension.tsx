@@ -27,7 +27,17 @@ import { FIELD_EXTENSION_KEY, FIELD_EXTENSION_WRAPPER_KEY } from './keys';
 
 /**
  * Method for creating field extensions that can be used in the scaffolder
- * frontend form.
+ * frontend form. The `options` descriptor is attached as component metadata
+ * under the `FIELD_EXTENSION_KEY`, making all properties — including the
+ * optional `dependencies` and `optionsLoader` fields — available to downstream
+ * consumers such as the Stepper, Form, and FieldTemplate components.
+ *
+ * @remarks
+ * Field extensions may optionally declare `dependencies` (an array of sibling
+ * field names to watch) and an `optionsLoader` (an async function that
+ * re-fetches options when watched fields change). Both fields default to
+ * `undefined`, so existing extensions remain fully backward-compatible.
+ *
  * @public
  */
 export function createScaffolderFieldExtension<
