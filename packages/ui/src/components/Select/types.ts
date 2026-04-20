@@ -94,6 +94,9 @@ export interface SelectListBoxOwnProps {
 }
 
 /** @internal */
+export interface SelectListBoxItemOwnProps {}
+
+/** @internal */
 export interface SelectSectionOwnProps {
   title: string;
 }

@@ -23,7 +23,11 @@ import {
 } from 'react-aria-components';
 import { RiCheckLine } from '@remixicon/react';
 import { useDefinition } from '../../hooks/useDefinition';
-import { SelectListBoxDefinition, SelectSectionDefinition } from './definition';
+import {
+  SelectListBoxDefinition,
+  SelectListBoxItemDefinition,
+  SelectSectionDefinition,
+} from './definition';
 import type { Option, OptionSection, SelectOwnProps } from './types';
 
 interface SelectListBoxProps {
@@ -38,20 +42,20 @@ const NoResults = () => {
 };
 
 function SelectItem({ option }: { option: Option }) {
-  const { ownProps } = useDefinition(SelectListBoxDefinition, {});
+  const { ownProps } = useDefinition(SelectListBoxItemDefinition, {});
   const { classes } = ownProps;
 
   return (
     <ListBoxItem
       id={option.value}
       textValue={option.label}
-      className={classes.item}
+      className={classes.root}
       isDisabled={option.disabled}
     >
-      <div className={classes.itemIndicator}>
+      <div className={classes.indicator}>
         <RiCheckLine />
       </div>
-      <Text slot="label" className={classes.itemLabel}>
+      <Text slot="label" className={classes.label}>
         {option.label}
       </Text>
     </ListBoxItem>
