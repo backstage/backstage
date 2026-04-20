@@ -15,7 +15,6 @@
  */
 
 import { Globe } from 'lucide-react';
-import { Link } from '@backstage/core-components';
 import { IconComponent } from '@backstage/core-plugin-api';
 
 export function IconLink(props: {
@@ -26,15 +25,16 @@ export function IconLink(props: {
   const { href, text, Icon } = props;
 
   return (
-    <div className="flex items-start gap-2">
-      <div className="inline-flex shrink-0 [&_svg]:inline-block [&_svg]:text-[inherit] [&_svg]:align-baseline">
-        <div>{Icon ? <Icon /> : <Globe />}</div>
-      </div>
-      <div className="min-w-0 flex-1">
-        <Link to={href} target="_blank" rel="noopener">
-          {text || href}
-        </Link>
-      </div>
-    </div>
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="flex items-center gap-3 rounded-lg border border-border px-4 py-3 hover:border-foreground hover:bg-accent w-full text-foreground"
+    >
+      <span className="text-muted-foreground group-hover:text-foreground">
+        {Icon ? <Icon /> : <Globe />}
+      </span>
+      <span className="truncate flex-1">{text ?? href}</span>
+    </a>
   );
 }
