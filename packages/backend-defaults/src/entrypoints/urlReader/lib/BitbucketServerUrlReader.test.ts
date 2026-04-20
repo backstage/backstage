@@ -483,10 +483,8 @@ describe('BitbucketServerUrlReader', () => {
         'https://bitbucket.mycompany.net/projects/backstage/repos/mock/browse/docs',
         { token: 'tree-token' },
       );
-      expect([
-        authHeaders.branchesDefault,
-        authHeaders.defaultBranch,
-      ]).toContain('Bearer tree-token');
+      expect(authHeaders.branchesDefault).toBe('Bearer tree-token');
+      expect(authHeaders.defaultBranch).toBe('Bearer tree-token');
       expect(authHeaders.archive).toBe('Bearer tree-token');
     });
 
@@ -507,6 +505,53 @@ describe('BitbucketServerUrlReader', () => {
       );
 
       expect(authHeader).toBeNull();
+    });
+
+    it('should forward token when search uses glob pattern', async () => {
+      const authHeaders: Record<string, string | null> = {};
+      worker.use(
+        rest.get(
+          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/branches',
+          (req, res, ctx) => {
+            authHeaders.branches = req.headers.get('Authorization');
+            return res(
+              ctx.status(200),
+              ctx.json({
+                size: 1,
+                values: [
+                  {
+                    displayId: 'some-branch',
+                    latestCommit: '12ab34cd56ef78gh90ij12kl34mn56op78qr90st',
+                  },
+                ],
+              }),
+            );
+          },
+        ),
+        rest.get(
+          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/archive',
+          (req, res, ctx) => {
+            authHeaders.archive = req.headers.get('Authorization');
+            return res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/zip'),
+              ctx.set(
+                'content-disposition',
+                'attachment; filename=backstage-mock.tgz',
+              ),
+              ctx.body(new Uint8Array(repoBuffer)),
+            );
+          },
+        ),
+      );
+
+      await readerWithoutConfigToken.search(
+        'https://bitbucket.mycompany.net/projects/backstage/repos/mock/browse/docs/*.yaml?at=some-branch',
+        { token: 'search-token' },
+      );
+
+      expect(authHeaders.branches).toBe('Bearer search-token');
+      expect(authHeaders.archive).toBe('Bearer search-token');
     });
   });
 });
