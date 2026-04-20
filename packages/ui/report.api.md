@@ -2506,7 +2506,7 @@ export const SelectDefinition: {
 export type SelectOwnProps = {
   icon?: ReactNode;
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
-  options?: Array<Option_2> | Array<OptionSection>;
+  options?: Array<Option_2 | OptionSection>;
   searchable?: boolean;
   searchPlaceholder?: string;
   label?: FieldLabelProps['label'];

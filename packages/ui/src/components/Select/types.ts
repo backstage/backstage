@@ -39,11 +39,10 @@ export type SelectOwnProps = {
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
 
   /**
-   * The options of the select field. Pass either a flat array of options
-   * or an array of option sections for grouped display. Mixing options and
-   * sections in the same array is not supported.
+   * The options of the select field. Pass flat options, option sections for
+   * grouped display, or a mix of both in the same array.
    */
-  options?: Array<Option> | Array<OptionSection>;
+  options?: Array<Option | OptionSection>;
 
   /**
    * Enable search/filter functionality in the dropdown
