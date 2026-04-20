@@ -30,8 +30,44 @@ import {
   toInternalFrontendModule,
 } from '../../../frontend-plugin-api/src/wiring/createFrontendModule';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { toInternalExtension } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
+import {
+  toInternalExtension,
+  resolveExtensionDefinition,
+} from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
 import { ErrorCollector } from '../wiring/createErrorCollector';
+
+/**
+ * Parses an extension ID into its kind, namespace, and name components.
+ * Extension IDs follow the format: `kind:namespace/name` or `kind:namespace`
+ * @internal
+ */
+function parseExtensionId(extensionId: string): {
+  kind?: string;
+  namespace?: string;
+  name?: string;
+} {
+  let kind: string | undefined;
+  let rest: string;
+
+  const colonIndex = extensionId.indexOf(':');
+  if (colonIndex >= 0) {
+    kind = extensionId.substring(0, colonIndex);
+    rest = extensionId.substring(colonIndex + 1);
+  } else {
+    rest = extensionId;
+  }
+
+  const slashIndex = rest.indexOf('/');
+  if (slashIndex >= 0) {
+    return {
+      kind,
+      namespace: rest.substring(0, slashIndex),
+      name: rest.substring(slashIndex + 1),
+    };
+  }
+
+  return { kind, namespace: rest };
+}
 
 function normalizePlugin(plugin: FrontendPlugin): FrontendPlugin {
   // Ensure pluginId is always set for plugins in the app
@@ -62,6 +98,106 @@ function getExtensionPredicate(options: {
     return options.internalExtension.if;
   }
   return undefined;
+}
+
+/**
+ * Attempts to create a new extension from a registered blueprint when a
+ * config references an extension ID that doesn't exist in code.
+ *
+ * Parses the extension ID to extract kind/namespace/name, then looks for a
+ * matching blueprint in the plugin that owns that namespace.
+ *
+ * @internal
+ */
+function tryCreateFromBlueprint(
+  extensionId: string,
+  _overrideParam: ExtensionParameters,
+  plugins: FrontendPlugin[],
+): { extension: Extension<any, any>; plugin: FrontendPlugin } | undefined {
+  const { kind, namespace, name } = parseExtensionId(extensionId);
+
+  // We need kind, namespace, and name to create from a blueprint.
+  // kind is needed to find the right blueprint.
+  // namespace identifies the owning plugin.
+  // name is needed to distinguish the new extension from the default.
+  if (!kind || !namespace || !name) {
+    return undefined;
+  }
+
+  // Find the plugin that owns this namespace
+  const plugin = plugins.find(p => p.pluginId === namespace);
+  if (!plugin) {
+    return undefined;
+  }
+
+  // Look for a matching blueprint in the plugin's registered blueprints
+  const internalPlugin = OpaqueFrontendPlugin.toInternal(plugin);
+  const blueprints = internalPlugin.blueprints ?? [];
+  const blueprint = blueprints.find(bp => bp.kind === kind);
+
+  if (!blueprint) {
+    return undefined;
+  }
+
+  // The blueprint must have defaultParams to support config-driven creation
+  if (!blueprint.defaultParams) {
+    return undefined;
+  }
+
+  // Create the extension using the blueprint's defaults
+  const definition = blueprint.makeFromConfig({ name });
+  const extension = resolveExtensionDefinition(definition, { namespace });
+
+  return { extension, plugin };
+}
+
+/**
+ * Creates a clone of an existing extension with a new ID.
+ * The clone shares the same factory, inputs, outputs, and config schema
+ * but gets a new name and can have different config overrides.
+ *
+ * @internal
+ */
+function tryCloneExtension(
+  extensionId: string,
+  overrideParam: ExtensionParameters,
+  deduplicatedExtensions: Array<{
+    extension: ReturnType<typeof toInternalExtension>;
+    params: {
+      plugin: FrontendPlugin;
+      source: FrontendPlugin;
+      attachTo: any;
+      disabled: boolean;
+      if?: any;
+      config: unknown;
+    };
+  }>,
+) {
+  const sourceId = overrideParam.from!;
+  const source = deduplicatedExtensions.find(e => e.extension.id === sourceId);
+  if (!source) {
+    return undefined;
+  }
+
+  // Create a cloned extension with the new ID but same factory/inputs/outputs
+  const clonedExtension = {
+    ...source.extension,
+    id: extensionId,
+    attachTo: overrideParam.attachTo ?? source.extension.attachTo,
+    disabled: overrideParam.disabled ?? source.extension.disabled,
+  };
+
+  return {
+    extension: clonedExtension,
+    params: {
+      plugin: source.params.plugin,
+      source: source.params.source,
+      attachTo: overrideParam.attachTo ?? source.params.attachTo,
+      disabled: Boolean(overrideParam.disabled ?? source.params.disabled),
+      if: source.params.if,
+      config: overrideParam.config ?? source.params.config,
+    },
+  };
 }
 
 /** @internal */
@@ -268,14 +404,59 @@ export function resolveAppNodeSpecs(options: {
         existing.params.disabled = Boolean(overrideParam.disabled);
       }
       order.set(extensionId, existing);
+    } else if (overrideParam.from) {
+      // Clone an existing extension with a new ID and different config
+      const cloned = tryCloneExtension(
+        extensionId,
+        overrideParam,
+        deduplicatedExtensions,
+      );
+      if (cloned) {
+        deduplicatedExtensions.push(cloned);
+        seenExtensionIds.add(extensionId);
+        order.set(extensionId, cloned);
+      } else {
+        collector.report({
+          code: 'INVALID_EXTENSION_CONFIG_KEY',
+          message: `Cannot clone extension '${overrideParam.from}': source extension does not exist`,
+          context: {
+            extensionId,
+          },
+        });
+      }
     } else {
-      collector.report({
-        code: 'INVALID_EXTENSION_CONFIG_KEY',
-        message: `Extension ${extensionId} does not exist`,
-        context: {
-          extensionId,
-        },
-      });
+      // Try to create a new extension from a registered blueprint
+      const created = tryCreateFromBlueprint(
+        extensionId,
+        overrideParam,
+        plugins,
+      );
+      if (created) {
+        const { extension, plugin } = created;
+        const internalExtension = toInternalExtension(extension);
+        const newEntry = {
+          extension: internalExtension,
+          params: {
+            plugin,
+            source: plugin,
+            attachTo: overrideParam.attachTo ?? internalExtension.attachTo,
+            disabled: Boolean(overrideParam.disabled),
+            if: getExtensionPredicate({ internalExtension }),
+            config: overrideParam.config,
+          },
+        };
+        deduplicatedExtensions.push(newEntry);
+        seenExtensionIds.add(extensionId);
+        order.set(extensionId, newEntry);
+      } else {
+        collector.report({
+          code: 'INVALID_EXTENSION_CONFIG_KEY',
+          message: `Extension ${extensionId} does not exist`,
+          context: {
+            extensionId,
+          },
+        });
+      }
     }
   }
 

@@ -65,10 +65,53 @@ app:
 
     - nav-item:search: false
     - nav-item:user-settings: false
+
+    # Config-driven icon links (created from blueprint, no code needed)
+    - entity-icon-link:catalog/dashboard:
+        config:
+          label: Dashboard
+          icon: dashboard
+          title: Open monitoring dashboard
+          href: https://grafana.example.com/d/{{metadata.name}}
+
+    # Clone an existing icon link with different config
+    - entity-icon-link:catalog/view-source-for-apis:
+        from: entity-icon-link:catalog/view-source
+        config:
+          label: API Source
+          filter: { kind: api }
+
     - nav-item:catalog
     - nav-item:api-docs
     - nav-item:scaffolder
     - nav-item:app-visualizer
+
+    # Clone the catalog page for a "Teams" view
+    - page:catalog/teams:
+        from: page:catalog
+        config:
+          path: /teams
+          title: Teams
+
+    # Clone the kind filter locked to 'group', attached to the teams page
+    - catalog-filter:catalog/kind-for-teams:
+        from: catalog-filter:catalog/kind
+        attachTo: { id: 'page:catalog/teams', input: 'filters' }
+        config:
+          initialFilter: group
+          
+
+    # Clone the type filter for the teams page
+    - catalog-filter:catalog/type-for-teams:
+        from: catalog-filter:catalog/type
+        attachTo: { id: 'page:catalog/teams', input: 'filters' }
+
+    # Clone the list filter for the teams page
+    - catalog-filter:catalog/list-for-teams:
+        from: catalog-filter:catalog/list
+        attachTo: { id: 'page:catalog/teams', input: 'filters' }
+        config:
+          initialFilter: all
 
     # Pages
     - page:catalog/entity:

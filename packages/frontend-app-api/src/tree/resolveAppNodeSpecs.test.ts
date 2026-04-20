@@ -16,6 +16,7 @@
 
 import {
   createExtension,
+  createExtensionBlueprint,
   createExtensionDataRef,
   createFrontendModule,
   createFrontendPlugin,
@@ -707,5 +708,177 @@ describe('resolveAppNodeSpecs', () => {
     expect(overriddenSpecs[0].if).toEqual(overrideIf);
     expect(clearedSpecs).toHaveLength(1);
     expect(clearedSpecs[0].if).toBeUndefined();
+  });
+
+  describe('config-driven blueprint creation', () => {
+    const testDataRef = createExtensionDataRef<string>().with({
+      id: 'test.data',
+    });
+
+    const TestItemBlueprint = createExtensionBlueprint({
+      kind: 'test-item',
+      attachTo: { id: 'test-plugin', input: 'items' },
+      output: [testDataRef],
+      defaultParams: { label: 'default-label' },
+      *factory(params: { label: string }) {
+        yield testDataRef(params.label);
+      },
+    });
+
+    it('should create an extension from a blueprint when config references a non-existent extension', () => {
+      const plugin = createFrontendPlugin({
+        pluginId: 'test-plugin',
+        extensions: [],
+        blueprints: [TestItemBlueprint],
+      });
+
+      const specs = resolveAppNodeSpecs({
+        features: [plugin],
+        builtinExtensions: [],
+        parameters: [
+          {
+            id: 'test-item:test-plugin/my-new-item',
+            config: { title: 'Created from config' },
+          },
+        ],
+        collector,
+      });
+
+      expect(specs).toHaveLength(1);
+      expect(specs[0].id).toBe('test-item:test-plugin/my-new-item');
+      expect(specs[0].config).toEqual({ title: 'Created from config' });
+      expect(specs[0].plugin).toBe(plugin);
+      expect(specs[0].disabled).toBe(false);
+    });
+
+    it('should create multiple extensions from the same blueprint via config', () => {
+      const plugin = createFrontendPlugin({
+        pluginId: 'test-plugin',
+        extensions: [],
+        blueprints: [TestItemBlueprint],
+      });
+
+      const specs = resolveAppNodeSpecs({
+        features: [plugin],
+        builtinExtensions: [],
+        parameters: [
+          {
+            id: 'test-item:test-plugin/item-a',
+            config: { title: 'Item A' },
+          },
+          {
+            id: 'test-item:test-plugin/item-b',
+            config: { title: 'Item B' },
+          },
+        ],
+        collector,
+      });
+
+      expect(specs).toHaveLength(2);
+      expect(specs[0].id).toBe('test-item:test-plugin/item-a');
+      expect(specs[0].config).toEqual({ title: 'Item A' });
+      expect(specs[1].id).toBe('test-item:test-plugin/item-b');
+      expect(specs[1].config).toEqual({ title: 'Item B' });
+    });
+
+    it('should still override existing extensions rather than creating new ones', () => {
+      const plugin = createFrontendPlugin({
+        pluginId: 'test-plugin',
+        extensions: [
+          TestItemBlueprint.make({
+            name: 'existing',
+            params: { label: 'from code' },
+          }),
+        ],
+        blueprints: [TestItemBlueprint],
+      });
+
+      const specs = resolveAppNodeSpecs({
+        features: [plugin],
+        builtinExtensions: [],
+        parameters: [
+          {
+            id: 'test-item:test-plugin/existing',
+            config: { title: 'overridden' },
+          },
+        ],
+        collector,
+      });
+
+      expect(specs).toHaveLength(1);
+      expect(specs[0].id).toBe('test-item:test-plugin/existing');
+      expect(specs[0].config).toEqual({ title: 'overridden' });
+    });
+
+    it('should report an error when no matching blueprint exists for a non-existent extension', () => {
+      const plugin = createFrontendPlugin({
+        pluginId: 'test-plugin',
+        extensions: [],
+        blueprints: [], // no blueprints registered
+      });
+
+      const specs = resolveAppNodeSpecs({
+        features: [plugin],
+        builtinExtensions: [],
+        parameters: [
+          {
+            id: 'unknown-kind:test-plugin/something',
+          },
+        ],
+        collector,
+      });
+
+      expect(specs).toEqual([]);
+      expect(collector.collectErrors()).toEqual([
+        {
+          code: 'INVALID_EXTENSION_CONFIG_KEY',
+          message:
+            'Extension unknown-kind:test-plugin/something does not exist',
+          context: {
+            extensionId: 'unknown-kind:test-plugin/something',
+          },
+        },
+      ]);
+    });
+
+    it('should not create from a blueprint without defaultParams', () => {
+      const NoDefaultBlueprint = createExtensionBlueprint({
+        kind: 'no-default',
+        attachTo: { id: 'test-plugin', input: 'items' },
+        output: [testDataRef],
+        // no defaultParams
+        *factory(params: { label: string }) {
+          yield testDataRef(params.label);
+        },
+      });
+
+      const plugin = createFrontendPlugin({
+        pluginId: 'test-plugin',
+        extensions: [],
+        blueprints: [NoDefaultBlueprint],
+      });
+
+      const specs = resolveAppNodeSpecs({
+        features: [plugin],
+        builtinExtensions: [],
+        parameters: [
+          {
+            id: 'no-default:test-plugin/something',
+          },
+        ],
+        collector,
+      });
+
+      expect(specs).toEqual([]);
+      expect(collector.collectErrors()).toEqual([
+        {
+          code: 'INVALID_EXTENSION_CONFIG_KEY',
+          message: 'Extension no-default:test-plugin/something does not exist',
+          context: {
+            extensionId: 'no-default:test-plugin/something',
+          },
+        },
+      ]);
+    });
   });
 });

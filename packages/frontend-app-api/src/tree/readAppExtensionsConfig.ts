@@ -19,12 +19,13 @@ import { JsonValue } from '@backstage/types';
 
 export interface ExtensionParameters {
   id: string;
+  from?: string;
   attachTo?: { id: string; input: string };
   disabled?: boolean;
   config?: unknown;
 }
 
-const knownExtensionParameters = ['attachTo', 'disabled', 'config'];
+const knownExtensionParameters = ['from', 'attachTo', 'disabled', 'config'];
 
 // Since we'll never merge arrays in config the config reader context
 // isn't too much of a help. Fall back to manual config reading logic
@@ -136,6 +137,11 @@ export function expandShorthandExtensionParameters(
   const attachTo = value.attachTo as { id: string; input: string } | undefined;
   const disabled = value.disabled;
   const config = value.config;
+  const from = value.from;
+
+  if (from !== undefined && typeof from !== 'string') {
+    throw new Error(errorMsg('must be a string', id, 'from'));
+  }
 
   if (attachTo !== undefined) {
     if (
@@ -183,6 +189,7 @@ export function expandShorthandExtensionParameters(
 
   return {
     id,
+    from,
     attachTo,
     disabled,
     config,

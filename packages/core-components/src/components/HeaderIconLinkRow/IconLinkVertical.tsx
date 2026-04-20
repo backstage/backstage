@@ -20,6 +20,8 @@ import LinkIcon from '@material-ui/icons/Link';
 import { Link } from '../Link';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
+import { iconsApiRef } from '@backstage/frontend-plugin-api';
+import { useApi } from '@backstage/frontend-plugin-api';
 
 export type IconLinkVerticalProps = {
   color?: 'primary' | 'secondary';
@@ -46,6 +48,7 @@ const useIconStyles = makeStyles(
       justifyItems: 'center',
       gridGap: 4,
       textAlign: 'center',
+      fontSize: theme.typography.pxToRem(24),
     },
     disabled: {
       color: theme.palette.text.secondary,
@@ -77,11 +80,13 @@ export function IconLinkVertical({
   title,
 }: IconLinkVerticalProps) {
   const classes = useIconStyles();
+  const icons = useApi(iconsApiRef);
+  const IconComponent = typeof icon === 'string' ? icons.icon(icon) : icon;
 
   if (disabled) {
     return (
       <Box title={title} className={classnames(classes.link, classes.disabled)}>
-        {icon}
+        {IconComponent}
         <Typography
           variant="caption"
           component="span"
@@ -100,7 +105,7 @@ export function IconLinkVertical({
       to={href}
       onClick={onClick}
     >
-      {icon}
+      {IconComponent}
       <Typography variant="caption" component="span" className={classes.label}>
         {label}
       </Typography>

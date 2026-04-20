@@ -16,6 +16,7 @@
 
 import {
   Extension,
+  ExtensionBlueprint,
   FeatureFlagConfig,
   IconElement,
   OverridableFrontendPlugin,
@@ -31,6 +32,7 @@ export const OpaqueFrontendPlugin = OpaqueType.create<{
     readonly title?: string;
     readonly icon?: IconElement;
     readonly extensions: Extension<unknown>[];
+    readonly blueprints: ExtensionBlueprint[];
     readonly featureFlags: FeatureFlagConfig[];
     readonly if?: FilterPredicate;
     readonly infoOptions?: {

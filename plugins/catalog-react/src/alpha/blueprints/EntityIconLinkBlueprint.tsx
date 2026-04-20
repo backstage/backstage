@@ -31,6 +31,21 @@ import {
 } from './extensionData';
 import { Entity } from '@backstage/catalog-model';
 import { resolveEntityFilterData } from './resolveEntityFilterData';
+import { useEntity } from '../../hooks';
+
+/**
+ * Resolves template expressions like `${metadata.name}` or `${spec.type}`
+ * against an entity object using dot-notation paths.
+ */
+function resolveEntityTemplate(template: string, entity: Entity): string {
+  return template.replace(/\{\{([^}]+)\}\}/g, (_, path: string) => {
+    const value = path
+      .trim()
+      .split('.')
+      .reduce((obj: any, key) => obj?.[key], entity);
+    return value !== null ? String(value) : '';
+  });
+}
 
 const entityIconLinkPropsDataRef = createExtensionDataRef<
   () => IconLinkVerticalProps
@@ -52,10 +67,15 @@ export const EntityIconLinkBlueprint = createExtensionBlueprint({
     filterFunction: entityFilterFunctionDataRef,
     filterExpression: entityFilterExpressionDataRef,
   },
+  defaultParams: {
+    useProps: () => ({}),
+  },
   config: {
     schema: {
       label: z => z.string().optional(),
       title: z => z.string().optional(),
+      icon: z => z.string().optional(),
+      href: z => z.string().optional(),
       filter: z => createZodV3FilterPredicateSchema(z).optional(),
     },
   },
@@ -80,6 +100,29 @@ export const EntityIconLinkBlueprint = createExtensionBlueprint({
           : rest,
       {},
     );
-    yield entityIconLinkPropsDataRef(() => ({ ...useProps(), ...configProps }));
+
+    const hrefTemplate =
+      typeof config.href === 'string' && config.href.includes('{{')
+        ? config.href
+        : undefined;
+
+    if (hrefTemplate) {
+      // When href contains template expressions, resolve them at render time
+      // using the current entity. useEntity() is safe here because useProps
+      // is always called inside a React component context.
+      yield entityIconLinkPropsDataRef(() => {
+        const { entity } = useEntity();
+        return {
+          ...useProps(),
+          ...configProps,
+          href: resolveEntityTemplate(hrefTemplate, entity),
+        };
+      });
+    } else {
+      yield entityIconLinkPropsDataRef(() => ({
+        ...useProps(),
+        ...configProps,
+      }));
+    }
   },
 });

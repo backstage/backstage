@@ -30,6 +30,7 @@ import { IconElement } from '../icons/types';
 import { RouteRef, SubRouteRef, ExternalRouteRef } from '../routing';
 import { ID_PATTERN } from './constants';
 import { FilterPredicate } from '@backstage/filter-predicates';
+import { ExtensionBlueprint } from './createExtensionBlueprint';
 
 /**
  * Information about the plugin.
@@ -197,6 +198,13 @@ export interface CreateFrontendPluginOptions<
   routes?: TRoutes;
   externalRoutes?: TExternalRoutes;
   extensions?: TExtensions;
+  /**
+   * Blueprints that can be used to create extensions from app-config.yaml.
+   * When a config references an extension ID matching a blueprint's kind and
+   * the plugin's namespace, and no such extension exists in code, a new
+   * extension will be created using the blueprint's defaultParams.
+   */
+  blueprints?: ExtensionBlueprint[];
   featureFlags?: FeatureFlagConfig[];
   if?: FilterPredicate;
   info?: FrontendPluginInfoOptions;
@@ -287,6 +295,7 @@ export function createFrontendPlugin<
     featureFlags: options.featureFlags ?? [],
     if: options.if,
     extensions: extensions,
+    blueprints: options.blueprints ?? [],
     infoOptions: options.info,
 
     // This method is overridden when the plugin instance is installed in an app

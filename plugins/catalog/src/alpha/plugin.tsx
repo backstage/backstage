@@ -16,6 +16,7 @@
 
 import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
+import { EntityIconLinkBlueprint } from '@backstage/plugin-catalog-react/alpha';
 import CategoryIcon from '@material-ui/icons/Category';
 
 import {
@@ -65,4 +66,5 @@ export default createFrontendPlugin({
     ...contextMenuItems,
     ...searchResultItems,
   ],
+  blueprints: [EntityIconLinkBlueprint],
 });

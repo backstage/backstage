@@ -230,7 +230,11 @@ function NavContentRenderer(props: {
         return [];
       }
 
-      const to = tryResolveLink(routeResolutionApi, routeRef);
+      // Prefer the node's own routePath (reflects config overrides like
+      // `path: /teams` on cloned pages) over routeRef resolution, which can
+      // return the wrong path when multiple pages share the same routeRef.
+      const routePath = node.instance.getData(coreExtensionData.routePath);
+      const to = routePath ?? tryResolveLink(routeResolutionApi, routeRef);
       if (!to) {
         return [];
       }

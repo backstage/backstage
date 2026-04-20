@@ -173,6 +173,14 @@ export type CreateExtensionBlueprintOptions<
   defineParams?: TParams extends ExtensionBlueprintDefineParams
     ? TParams
     : 'The defineParams option must be a function if provided, see the docs for details';
+  /**
+   * Default params to use when creating extensions from config.
+   * When provided, the blueprint can be used to create extensions
+   * purely from app-config.yaml without any code-level params.
+   */
+  defaultParams?: TParams extends ExtensionBlueprintDefineParams
+    ? ReturnType<TParams>['T']
+    : TParams;
   factory(
     params: TParams extends ExtensionBlueprintDefineParams
       ? ReturnType<TParams>['T']
@@ -229,7 +237,22 @@ type AnyParamsInput<TParams extends object | ExtensionBlueprintDefineParams> =
 export interface ExtensionBlueprint<
   T extends ExtensionBlueprintParameters = ExtensionBlueprintParameters,
 > {
+  /** @internal */
+  readonly $$type: '@backstage/ExtensionBlueprint';
+  /** The kind identifier for this blueprint */
+  readonly kind: T['kind'];
   dataRefs: T['dataRefs'];
+  /** Default params used for config-driven extension creation. Undefined if not supported. */
+  readonly defaultParams: T['params'] | undefined;
+
+  /**
+   * Creates a new extension from the blueprint using only the blueprint's
+   * defaultParams and config from app-config.yaml. Used for config-driven
+   * extension creation when no code-level params are provided.
+   *
+   * @internal
+   */
+  makeFromConfig(args: { name: string }): OverridableExtensionDefinition;
 
   make<
     TName extends string | undefined,
@@ -586,6 +609,9 @@ export function createExtensionBlueprint<
     defineParams?: TParams extends ExtensionBlueprintDefineParams
       ? TParams
       : 'The defineParams option must be a function if provided, see the docs for details';
+    defaultParams?: TParams extends ExtensionBlueprintDefineParams
+      ? ReturnType<TParams>['T']
+      : TParams;
     factory(
       params: TParams extends ExtensionBlueprintDefineParams
         ? ReturnType<TParams>['T']
@@ -656,6 +682,9 @@ export function createExtensionBlueprint<
     defineParams?: TParams extends ExtensionBlueprintDefineParams
       ? TParams
       : 'The defineParams option must be a function if provided, see the docs for details';
+    defaultParams?: TParams extends ExtensionBlueprintDefineParams
+      ? ReturnType<TParams>['T']
+      : TParams;
     factory(
       params: TParams extends ExtensionBlueprintDefineParams
         ? ReturnType<TParams>['T']
@@ -710,7 +739,40 @@ export function createExtensionBlueprint(options: any): any {
     | undefined;
 
   return {
+    $$type: '@backstage/ExtensionBlueprint' as const,
+    kind: options.kind as string,
     dataRefs: options.dataRefs,
+    defaultParams: options.defaultParams,
+    /**
+     * Creates a new extension from the blueprint using only config values
+     * and the blueprint's defaultParams. This is used for config-driven
+     * extension creation where no code-level params are provided.
+     *
+     * @internal
+     */
+    makeFromConfig(args: { name: string }) {
+      const defaultParams = options.defaultParams;
+      if (!defaultParams) {
+        throw new Error(
+          `Blueprint with kind '${options.kind}' does not support config-driven creation (no defaultParams provided)`,
+        );
+      }
+      return createExtension({
+        kind: options.kind,
+        name: args.name,
+        attachTo: options.attachTo as ExtensionDefinitionAttachTo,
+        disabled: options.disabled,
+        if: options.if,
+        inputs: options.inputs,
+        output: options.output as ExtensionDataRef[],
+        config: options.config,
+        configSchema: options.configSchema as any,
+        factory: ctx =>
+          options.factory(defaultParams, ctx as any) as Iterable<
+            ExtensionDataValue<any, any>
+          >,
+      }) as OverridableExtensionDefinition;
+    },
     make(args) {
       return createExtension({
         kind: options.kind,
