@@ -55,7 +55,8 @@ describe('HookRunner', () => {
     await expect(runner.run()).resolves.toBeUndefined();
     expect(ok).toHaveBeenCalled();
     expect(logger.error).toHaveBeenCalledWith(
-      'Shutdown hook failed, Error: boom',
+      'Shutdown hook failed',
+      expect.any(Error),
     );
   });
 
@@ -69,16 +70,19 @@ describe('HookRunner', () => {
 
     await expect(runner.run()).resolves.toBeUndefined();
     expect(logger.error).toHaveBeenCalledWith(
-      'Shutdown hook failed, Error: async boom',
+      'Shutdown hook failed',
+      expect.any(Error),
     );
   });
 
   it('should reject adding hooks after run', async () => {
     const logger = mockServices.logger.mock();
-    const runner = new HookRunner('startup', logger);
+    const runner = new HookRunner('startup', logger, {
+      lateAddMessage: 'Attempted to add startup hook after startup completed',
+    });
     await runner.run();
     expect(() => runner.add(() => {})).toThrow(
-      'Attempted to add startup hook after startup',
+      'Attempted to add startup hook after startup completed',
     );
   });
 

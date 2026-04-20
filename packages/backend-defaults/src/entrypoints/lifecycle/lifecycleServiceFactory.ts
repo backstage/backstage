@@ -37,8 +37,14 @@ export class BackendPluginLifecycleImpl implements LifecycleService {
   constructor(logger: LoggerService, pluginMetadata: PluginMetadataService) {
     this.#logger = logger;
     this.#pluginMetadata = pluginMetadata;
-    this.#startup = new HookRunner('plugin startup', logger);
-    this.#shutdown = new HookRunner('plugin shutdown', logger);
+    this.#startup = new HookRunner('plugin startup', logger, {
+      lateAddMessage:
+        'Attempted to add plugin startup hook after startup has completed',
+    });
+    this.#shutdown = new HookRunner('plugin shutdown', logger, {
+      lateAddMessage:
+        'Attempted to add plugin shutdown hook after shutdown has started',
+    });
   }
 
   addStartupHook(

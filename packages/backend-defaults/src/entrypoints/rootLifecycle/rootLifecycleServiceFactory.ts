@@ -33,9 +33,18 @@ export class BackendLifecycleImpl implements RootLifecycleService {
   readonly #shutdown: HookRunner<LifecycleServiceShutdownOptions>;
 
   constructor(logger: LoggerService) {
-    this.#startup = new HookRunner('startup', logger);
-    this.#beforeShutdown = new HookRunner('before shutdown', logger);
-    this.#shutdown = new HookRunner('shutdown', logger);
+    this.#startup = new HookRunner('startup', logger, {
+      lateAddMessage:
+        'Attempted to add startup hook after startup has completed',
+    });
+    this.#beforeShutdown = new HookRunner('before shutdown', logger, {
+      lateAddMessage:
+        'Attempted to add before shutdown hook after shutdown has started',
+    });
+    this.#shutdown = new HookRunner('shutdown', logger, {
+      lateAddMessage:
+        'Attempted to add shutdown hook after shutdown has started',
+    });
   }
 
   addStartupHook(

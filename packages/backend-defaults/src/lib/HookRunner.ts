@@ -16,15 +16,16 @@
 
 import { LoggerService } from '@backstage/backend-plugin-api';
 
+/** @internal */
+type HookRunnerOptions = { logger?: LoggerService } | undefined;
+
 /**
  * Manages a set of lifecycle hooks that fire once.
  *
  * @internal
  */
 export class HookRunner<
-  TOptions extends { logger?: LoggerService } | undefined =
-    | { logger?: LoggerService }
-    | undefined,
+  TOptions extends HookRunnerOptions = HookRunnerOptions,
 > {
   #hasFired = false;
   #tasks: Array<{
@@ -33,18 +34,24 @@ export class HookRunner<
   }> = [];
 
   readonly #label: string;
+  readonly #lateAddMessage: string;
   readonly #logger: LoggerService;
 
-  constructor(label: string, logger: LoggerService) {
+  constructor(
+    label: string,
+    logger: LoggerService,
+    options?: { lateAddMessage?: string },
+  ) {
     this.#label = label;
     this.#logger = logger;
+    this.#lateAddMessage =
+      options?.lateAddMessage ??
+      `Attempted to add ${label} hook after ${label}`;
   }
 
   add(hook: () => void | Promise<void>, options?: TOptions): void {
     if (this.#hasFired) {
-      throw new Error(
-        `Attempted to add ${this.#label} hook after ${this.#label}`,
-      );
+      throw new Error(this.#lateAddMessage);
     }
     this.#tasks.push({ hook, options });
   }
@@ -65,7 +72,7 @@ export class HookRunner<
           await hook();
           logger.debug(`${label} hook succeeded`);
         } catch (error) {
-          logger.error(`${label} hook failed, ${error}`);
+          logger.error(`${label} hook failed`, error);
         }
       }),
     );
