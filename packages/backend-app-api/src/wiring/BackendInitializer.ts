@@ -458,16 +458,23 @@ export class BackendInitializer {
       try {
         const provides = new Set<ExtensionPoint<unknown>>();
 
-        const normalizedExtensionPoints =
-          r.type === 'plugin' || r.type === 'module'
-            ? r.extensionPoints.map(([ref, impl]) => ({
-                ref,
-                factory: () => impl,
-              }))
-            : r.extensionPoints.map(reg => ({
-                ref: reg.extensionPoint,
-                factory: reg.factory,
-              }));
+        let normalizedExtensionPoints: Array<{
+          ref: ExtensionPoint<unknown>;
+          factory: (context: ExtensionPointFactoryContext) => unknown;
+        }>;
+        if (r.type === 'plugin' || r.type === 'module') {
+          normalizedExtensionPoints = r.extensionPoints.map(([ref, impl]) => ({
+            ref,
+            factory: () => impl,
+          }));
+        } else if (r.type === 'plugin-v1.1' || r.type === 'module-v1.1') {
+          normalizedExtensionPoints = r.extensionPoints.map(reg => ({
+            ref: reg.extensionPoint,
+            factory: reg.factory,
+          }));
+        } else {
+          normalizedExtensionPoints = [];
+        }
 
         for (const { ref, factory } of normalizedExtensionPoints) {
           if (this.#extensionPoints.has(ref.id)) {
