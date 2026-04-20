@@ -21,7 +21,14 @@ const { resolve: resolvePath, join: joinPath, dirname } = require('node:path');
 const fs = require('node:fs').promises;
 const { existsSync, statSync } = require('node:fs');
 
-const IGNORED_DIRS = ['node_modules', 'dist', 'bin', '.git'];
+// sub-docs-with-warnings is excluded since we intentionally added missing links on it to verify techdocs-cli build ---mkdocs-parameter-strict
+const IGNORED_DIRS = [
+  'node_modules',
+  'dist',
+  'bin',
+  '.git',
+  'sub-docs-with-warnings',
+];
 const projectRoot = resolvePath(__dirname, '..');
 
 // Zero-width and other invisible Unicode characters that shouldn't appear in URLs
