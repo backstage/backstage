@@ -133,6 +133,7 @@ export const SelectSectionDefinition = defineComponent<SelectSectionOwnProps>()(
     },
     propDefs: {
       title: {},
+      options: {},
     },
   },
 );
