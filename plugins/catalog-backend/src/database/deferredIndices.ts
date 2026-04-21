@@ -133,10 +133,10 @@ export async function ensureDeferredIndices(
       const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
       log?.info(`Deferred index creation completed in ${elapsed}s`);
     } finally {
-      // Restore session state before returning the connection to the pool.
-      // If the connection is dead these will fail harmlessly — PostgreSQL
-      // auto-releases advisory locks and resets session state when the
-      // session terminates.
+      // Release the advisory lock and reset statement_timeout to the server
+      // default before returning the connection to the pool. If the connection
+      // is dead these will fail harmlessly — PostgreSQL auto-releases advisory
+      // locks and resets session state when the session terminates.
       await conn
         .query('SELECT pg_advisory_unlock($1, $2)', [LOCK_NAMESPACE, LOCK_ID])
         .catch(() => {});
