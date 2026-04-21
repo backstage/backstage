@@ -71,4 +71,50 @@ describe('createConfigSecretEnumerator', () => {
     );
     expect(Array.from(secrets)).toEqual(['my-secret']);
   });
+
+  it('should only read secret config paths, not the entire config', async () => {
+    const logger = mockServices.logger.mock();
+
+    const enumerate = await createConfigSecretEnumerator({
+      logger,
+      schema: await loadConfigSchema({
+        serialized: {
+          schemas: [
+            {
+              value: {
+                type: 'object',
+                properties: {
+                  secret: {
+                    visibility: 'secret',
+                    type: 'string',
+                  },
+                  other: {
+                    type: 'string',
+                  },
+                },
+              },
+              path: '/mock',
+            },
+          ],
+          backstageConfigSchemaVersion: 1,
+        },
+      }),
+    });
+
+    const config = mockServices.rootConfig({
+      data: {
+        secret: 'my-secret',
+        other: 'not-secret',
+      },
+    });
+
+    const getOptionalSpy = jest.spyOn(config, 'getOptional');
+    enumerate(config);
+
+    // Should read 'secret' but never read 'other' or the full config (no-arg call)
+    const calledKeys = getOptionalSpy.mock.calls.map(c => c[0]);
+    expect(calledKeys).not.toContain(undefined);
+    expect(calledKeys).not.toContain('other');
+    expect(calledKeys).toContain('secret');
+  });
 });
