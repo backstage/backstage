@@ -1092,6 +1092,62 @@ describe('SingleInstanceGithubCredentialsProvider tests', () => {
       );
     });
 
+    it('should drop the installations cache when a public access installation is no longer valid', async () => {
+      const githubProvider = SingleInstanceGithubCredentialsProvider.create({
+        host: 'github.com',
+        apps: [
+          {
+            appId: 1,
+            privateKey: 'privateKey',
+            webhookSecret: '123',
+            clientId: 'CLIENT_ID',
+            clientSecret: 'CLIENT_SECRET',
+            allowedInstallationOwners: ['installed-org'],
+            publicAccess: true,
+          },
+        ],
+      });
+
+      octokit.apps.listInstallations.mockResolvedValue({
+        headers: { etag: '1' },
+        data: [
+          {
+            id: 1,
+            repository_selection: 'all',
+            account: { login: 'installed-org' },
+          },
+        ],
+      } as RestEndpointMethodTypes['apps']['listInstallations']['response']);
+
+      octokit.apps.createInstallationAccessToken
+        .mockRejectedValueOnce(
+          Object.assign(new Error('Gone'), { status: 410, name: 'HttpError' }),
+        )
+        .mockResolvedValueOnce({
+          data: {
+            expires_at: DateTime.local().plus({ hours: 1 }).toString(),
+            token: 'public_access_token',
+          },
+        } as RestEndpointMethodTypes['apps']['createInstallationAccessToken']['response']);
+
+      // First call: stale public installation triggers 410.
+      const firstResult = await githubProvider.getCredentials({
+        url: 'https://github.com/some-public-org/some-repo',
+      });
+      // The 410 is not surfaced — the mux falls through and returns the
+      // default (undefined) token, so type is 'token'.
+      expect(firstResult.type).toEqual('token');
+
+      // Second call should succeed after the installations cache was dropped
+      // and re-fetched.
+      const secondResult = await githubProvider.getCredentials({
+        url: 'https://github.com/some-public-org/some-repo',
+      });
+      expect(secondResult.type).toEqual('app');
+      expect(secondResult.token).toEqual('public_access_token');
+      expect(octokit.apps.listInstallations).toHaveBeenCalledTimes(2);
+    });
+
     it('should use public access with multiple apps when only one has publicAccess enabled', async () => {
       const githubProvider = SingleInstanceGithubCredentialsProvider.create({
         host: 'github.com',

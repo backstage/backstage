@@ -181,20 +181,7 @@ class GithubAppManager {
         throw new Error(`The GitHub application for ${owner} is suspended`);
       }
 
-      let result;
-      try {
-        result = await this.appClient.apps.createInstallationAccessToken({
-          installation_id: installationId,
-          headers: HEADERS,
-        });
-      } catch (error) {
-        // A 404/410 means the installation referenced in our cache no longer
-        // exists, so drop the cache to force a refresh on the next lookup.
-        if (isStaleInstallationError(error)) {
-          this.installationsCache = undefined;
-        }
-        throw error;
-      }
+      const result = await this.createInstallationAccessToken(installationId);
 
       let repositoryNames;
 
@@ -231,10 +218,9 @@ class GithubAppManager {
       `public:${installation.id}`,
       undefined,
       async () => {
-        const result = await this.appClient.apps.createInstallationAccessToken({
-          installation_id: installation.id,
-          headers: HEADERS,
-        });
+        const result = await this.createInstallationAccessToken(
+          installation.id,
+        );
 
         return {
           token: result.data.token,
@@ -242,6 +228,22 @@ class GithubAppManager {
         };
       },
     );
+  }
+
+  private async createInstallationAccessToken(installationId: number) {
+    try {
+      return await this.appClient.apps.createInstallationAccessToken({
+        installation_id: installationId,
+        headers: HEADERS,
+      });
+    } catch (error) {
+      // A 404/410 means the installation referenced in our cache no longer
+      // exists, so drop the cache to force a refresh on the next lookup.
+      if (isStaleInstallationError(error)) {
+        this.installationsCache = undefined;
+      }
+      throw error;
+    }
   }
 
   async getInstallations(
