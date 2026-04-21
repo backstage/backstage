@@ -241,7 +241,14 @@ export const BlitzyProjectGraphCard = () => {
     const [owner, repo] = slug.split('/');
     if (!owner || !repo) return undefined;
     const proxyBase = await discoveryApi.getBaseUrl('proxy');
-    const url = `${proxyBase}/github-api/repos/${owner}/${repo}/pulls?state=all&per_page=100`;
+    // Defense-in-depth: encode the path segments even though GitHub slug
+    // naming rules already restrict owner/repo to URL-safe characters.
+    // Guards against path-injection characters (`?`, `#`, `/`, `..`)
+    // that could alter URL structure if the slug annotation were ever
+    // populated from a less-trusted source (CWE-20).
+    const url = `${proxyBase}/github-api/repos/${encodeURIComponent(
+      owner,
+    )}/${encodeURIComponent(repo)}/pulls?state=all&per_page=100`;
     const res = await fetchApi.fetch(url);
     if (!res.ok) {
       throw new Error(`GitHub proxy returned ${res.status}`);
@@ -290,9 +297,15 @@ export const BlitzyProjectGraphCard = () => {
   }
 
   if (error) {
+    // Render a sanitized, user-facing message only — do NOT interpolate
+    // `error.message` into the DOM. Raw error strings can expose stack
+    // traces, internal file paths, or lower-level DNS/CORS/parse failure
+    // detail (CP2 Phase 2 Security mandate). Use the `text-destructive`
+    // shadcn semantic token to stay consistent with the rest of the
+    // design system (AAP §0.5).
     return (
-      <div className="p-4 text-sm text-red-600">
-        Failed to load pull requests: {error.message}
+      <div className="p-4 text-sm text-destructive">
+        Could not load pull requests
       </div>
     );
   }
@@ -439,9 +452,19 @@ export const BlitzyProjectGraphCard = () => {
                     class on the `<g>` (Rule 1 / AAP 0.8.1 — no inline
                     `style` object). An invisible 20×20 hit area rect
                     makes the icon easier to click without affecting
-                    visual layout. */}
+                    visual layout. Because this `<g>` declares
+                    `role="button"` + `tabIndex={0}`, WCAG 2.1 requires
+                    keyboard activation via Enter/Space — native
+                    `<button>` provides this automatically but an SVG
+                    `<g>` with a button role must wire it explicitly. */}
                 <g
                   onClick={() => setSelected(project)}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      setSelected(project);
+                    }
+                  }}
                   className="cursor-pointer"
                   role="button"
                   aria-label={`Open details for PR ${project.number}`}
