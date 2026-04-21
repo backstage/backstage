@@ -29,7 +29,7 @@ export function IconLink(props: {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="flex items-center gap-3 rounded-lg border border-border px-4 py-3 hover:border-foreground hover:bg-accent w-full text-foreground"
+      className="group flex items-center gap-3 rounded-lg border border-border px-4 py-3 hover:border-foreground hover:bg-accent w-full text-foreground"
     >
       <span className="text-muted-foreground group-hover:text-foreground">
         {Icon ? <Icon /> : <Globe />}

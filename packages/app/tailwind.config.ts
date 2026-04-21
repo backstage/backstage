@@ -119,15 +119,21 @@ const config: BackstageTailwindConfig = {
    * ---------------------------------------------------------------------------
    * Content paths
    * ---------------------------------------------------------------------------
-   * Scans TypeScript and TSX source files within both the app package and
-   * the core-components package. This dual-path scanning is essential because
-   * the app imports components from @backstage/core-components — without the
-   * core-components path, Tailwind's purge step would remove utility classes
-   * that are only referenced inside those shared components.
+   * Scans TypeScript and TSX source files within the app package, the
+   * core-components package, and the in-scope catalog plugins. This
+   * multi-path scanning is essential because the app imports components
+   * from @backstage/core-components and from the Backstage catalog
+   * plugins (@backstage/plugin-catalog and @backstage/plugin-catalog-graph)
+   * — without these content paths, Tailwind's purge step would remove
+   * utility classes that are only referenced inside those packages/plugins
+   * (e.g. `hover:border-foreground`, `group-hover:text-foreground` used
+   * by the Entity Links card in @backstage/plugin-catalog).
    */
   content: [
     './src/**/*.{ts,tsx}',
     '../../packages/core-components/src/**/*.{ts,tsx}',
+    '../../plugins/catalog/src/**/*.{ts,tsx}',
+    '../../plugins/catalog-graph/src/**/*.{ts,tsx}',
   ],
 
   /*
