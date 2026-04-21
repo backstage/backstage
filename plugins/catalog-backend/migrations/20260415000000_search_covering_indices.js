@@ -32,7 +32,8 @@
  * - search_key_value_entity_idx (key, value, entity_id)
  * - search_facets_covering_idx (key, original_value, entity_id) WHERE original_value IS NOT NULL
  *
- * These replace the older non-covering indices:
+ * On PostgreSQL, these replace the older non-covering indices as part of the
+ * deferred index management in `src/database/deferredIndices.ts`:
  * - search_key_value_idx (key, value) -> superseded by search_key_value_entity_idx
  * - search_key_original_value_idx (key, original_value) -> superseded by search_facets_covering_idx
  *

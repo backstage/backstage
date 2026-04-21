@@ -143,9 +143,8 @@ async function getIndexState(
 ): Promise<'valid' | 'invalid' | 'missing'> {
   const result = await conn.query(
     `SELECT i.indisvalid
-       FROM pg_class c
-       JOIN pg_index i ON i.indexrelid = c.oid
-      WHERE c.relname = $1`,
+       FROM pg_index i
+      WHERE i.indexrelid = to_regclass($1)`,
     [indexName],
   );
 

@@ -43,6 +43,7 @@ import {
   UrlReaderService,
 } from '@backstage/backend-plugin-api';
 import { Config, readDurationFromConfig } from '@backstage/config';
+import { isError } from '@backstage/errors';
 import { catalogPermissions } from '@backstage/plugin-catalog-common/alpha';
 import {
   CatalogProcessor,
@@ -414,7 +415,10 @@ export class CatalogBuilder {
     // Runs regardless of migrations.skip since it's idempotent and handles
     // installations where migrations are applied out-of-band.
     ensureDeferredIndices(dbClient, logger).catch(error => {
-      logger.error('Background index creation failed', { error });
+      logger.error(
+        'Background index creation failed',
+        isError(error) ? error : new Error(String(error)),
+      );
     });
 
     const stitcher = DefaultStitcher.fromConfig(config, {
