@@ -254,7 +254,6 @@ class GithubAppManager {
       this.installationsCache &&
       DateTime.local() < this.installationsCache.expiresAt
     ) {
-      // Shallow copy so callers can't mutate our cached array.
       return [...this.installationsCache.data];
     }
     if (!this.pendingInstallations) {
