@@ -57,6 +57,7 @@ import { durationToMilliseconds } from '@backstage/types';
 import { DefaultCatalogDatabase } from '../database/DefaultCatalogDatabase';
 import { DefaultProcessingDatabase } from '../database/DefaultProcessingDatabase';
 import { DefaultProviderDatabase } from '../database/DefaultProviderDatabase';
+import { ensureDeferredIndices } from '../database/deferredIndices';
 import { applyDatabaseMigrations } from '../database/migrations';
 import { DefaultCatalogRulesEnforcer } from '../ingestion/CatalogRules';
 import { RepoLocationAnalyzer } from '../ingestion/LocationAnalyzer';
@@ -407,6 +408,14 @@ export class CatalogBuilder {
       logger.info('Performing database migration');
       await applyDatabaseMigrations(dbClient);
     }
+
+    // Fire-and-forget: create covering indices in the background so that
+    // service startup is not blocked by long-running CREATE INDEX CONCURRENTLY.
+    // Runs regardless of migrations.skip since it's idempotent and handles
+    // installations where migrations are applied out-of-band.
+    ensureDeferredIndices(dbClient, logger).catch(error => {
+      logger.error('Background index creation failed', { error });
+    });
 
     const stitcher = DefaultStitcher.fromConfig(config, {
       knex: dbClient,
