@@ -94,9 +94,9 @@ const HEADERS = {
 type Installations =
   RestEndpointMethodTypes['apps']['listInstallations']['response']['data'];
 
-// Bound on how long a listInstallations response may be reused before it is
-// refetched. This matches the grace period applied to installation token
-// expiries, so the two caches age at the same rate.
+// How long a listInstallations response may be reused before refetching.
+// Short enough that newly-added installations show up quickly, long enough
+// that token refresh cycles don't re-paginate on every miss.
 const INSTALLATIONS_CACHE_TTL_MINUTES = 10;
 
 // Minimum time between on-demand refreshes triggered by an owner miss. This
