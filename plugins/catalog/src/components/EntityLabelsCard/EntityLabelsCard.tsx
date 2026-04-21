@@ -31,26 +31,21 @@ export const EntityLabelsCard = (props: EntityLabelsCardProps) => {
   const { entity } = useEntity();
   const { t } = useTranslationRef(catalogTranslationRef);
 
-  const allLabels = entity?.metadata?.labels;
-  // Filter out Backstage system labels that aren't meaningful to display
-  const labels = allLabels
-    ? Object.fromEntries(
-        Object.entries(allLabels).filter(
-          ([key]) => !key.startsWith('backstage.io/'),
-        ),
-      )
-    : undefined;
+  const labels = entity?.metadata?.labels ?? {};
+  const filtered = Object.entries(labels).filter(
+    ([k]) => !k.startsWith('backstage.io/'),
+  );
 
   return (
     <InfoCard title={title || t('entityLabelsCard.title')} variant={variant}>
-      {!labels || Object.keys(labels).length === 0 ? (
+      {filtered.length === 0 ? (
         <EntityLabelsEmptyState />
       ) : (
-        <div className="flex flex-col gap-2 pt-4">
-          {Object.entries(labels).map(([key, value]) => (
-            <div key={key} className="flex items-baseline gap-2">
-              <span className="text-sm font-bold">{key}</span>
-              <span className="text-sm text-muted-foreground">{value}</span>
+        <div className="flex flex-col gap-2">
+          {filtered.map(([k, v]) => (
+            <div key={k} className="flex gap-2 text-sm">
+              <span className="font-bold">{k}</span>
+              <span className="text-muted-foreground">{v}</span>
             </div>
           ))}
         </div>
