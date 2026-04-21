@@ -97,6 +97,16 @@ export async function ensureDeferredIndices(
   const conn: PgConnection = await knex.client.acquireConnection();
 
   try {
+    // Skip on read replicas — indices replicate from the primary automatically
+    // via streaming replication. pg_is_in_recovery() returns true on standbys.
+    const recoveryResult = await conn.query('SELECT pg_is_in_recovery() AS ro');
+    if (recoveryResult.rows[0].ro) {
+      log?.debug(
+        'Connected to a read replica (standby), skipping deferred index creation',
+      );
+      return;
+    }
+
     const lockResult = await conn.query(
       'SELECT pg_try_advisory_lock($1, $2) AS locked',
       [LOCK_NAMESPACE, LOCK_ID],
