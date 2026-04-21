@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { FC, useLayoutEffect, useRef } from 'react';
+import { FC, ReactNode, useLayoutEffect, useRef } from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import type { BlitzyProject } from './visualMergeXs';
 
@@ -40,29 +40,43 @@ type ProjectModalProps = {
  * Tailwind JIT compiler can statically discover and pre-generate the
  * corresponding CSS rules at build time (AAP 0.6.1 / Rule 1).
  *
- * Colors map to the user-specified state palette (AAP 0.1.1):
- * - `open`   → `#22c55e` (green)
- * - `merged` → `#a855f7` (purple)
- * - `closed` → `#ef4444` (red)
+ * Colors map to the user-specified state palette (AAP 0.1.1) via the
+ * compiled Tailwind palette classes. These palette classes are the
+ * closest exact matches to the AAP state-color specification and are
+ * GUARANTEED present in the app's compiled Tailwind stylesheet
+ * (`packages/app/src/tailwind.css`):
+ * - `open`   → `bg-green-500`  ≈ `#22c55e`
+ * - `merged` → `bg-purple-500` ≈ `#a855f7`
+ * - `closed` → `bg-red-500`    ≈ `#ef4444`
+ *
+ * Earlier revisions used arbitrary-hex classes
+ * (`bg-[#22c55e]`, `bg-[#a855f7]`, `bg-[#ef4444]`) which cannot be
+ * statically discovered outside the Tailwind content-scanned paths —
+ * the app's pre-compiled stylesheet does NOT scan
+ * `plugins/catalog-graph/src/**` (AAP 0.5.4 Gaps Inventory and the
+ * QA D1 finding), so those classes were never emitted and the accent
+ * bar / pill / action button all rendered with a transparent
+ * background. Switching to the palette classes fixes the invisibility
+ * while preserving the user-specified visual state colors.
  */
 const stateClasses: Record<
   'open' | 'merged' | 'closed',
   { bar: string; pill: string; button: string }
 > = {
   open: {
-    bar: 'bg-[#22c55e]',
-    pill: 'bg-[#22c55e] text-white',
-    button: 'bg-[#22c55e] hover:opacity-90',
+    bar: 'bg-green-500',
+    pill: 'bg-green-500 text-white',
+    button: 'bg-green-500 hover:opacity-90',
   },
   merged: {
-    bar: 'bg-[#a855f7]',
-    pill: 'bg-[#a855f7] text-white',
-    button: 'bg-[#a855f7] hover:opacity-90',
+    bar: 'bg-purple-500',
+    pill: 'bg-purple-500 text-white',
+    button: 'bg-purple-500 hover:opacity-90',
   },
   closed: {
-    bar: 'bg-[#ef4444]',
-    pill: 'bg-[#ef4444] text-white',
-    button: 'bg-[#ef4444] hover:opacity-90',
+    bar: 'bg-red-500',
+    pill: 'bg-red-500 text-white',
+    button: 'bg-red-500 hover:opacity-90',
   },
 };
 
@@ -82,18 +96,21 @@ const formatDate = (d: Date): string =>
  * A single GitHub-label chip.
  *
  * GitHub label colors (`label.color`) are runtime 6-char hex strings that
- * cannot be known at build time, so the Tailwind JIT compiler cannot
- * pre-generate `bg-[#<dynamic>]` classes for them. The Rule-1-compliant
- * pattern (AAP 0.8.1) is:
+ * cannot be known at build time, so no static Tailwind class — not even
+ * the `bg-[color:var(--label-color)]` indirection — can pre-generate the
+ * chip's background color. The QA D1 finding confirmed this: the app's
+ * pre-compiled Tailwind stylesheet does not include any variant of
+ * `bg-[color:var(--label-color)]`, so the chip previously rendered with
+ * a transparent background.
  *
- *   1. Apply the literal Tailwind class `bg-[color:var(--label-color)]`
- *      which the JIT resolves at build time to
- *      `background-color: var(--label-color)`.
- *   2. Set the `--label-color` CSS custom property per-instance via the
- *      imperative DOM API (`style.setProperty`) inside a
- *      {@link useLayoutEffect}. This is a DOM API call, NOT a JSX
- *      `style={{}}` attribute — Rule 1 specifically prohibits the JSX
- *      attribute form, not imperative DOM property mutation.
+ * The Rule-1-compliant pattern (AAP 0.8.1) used here:
+ *
+ *   1. Acquire a DOM ref to the chip element.
+ *   2. Inside a {@link useLayoutEffect}, imperatively set the
+ *      `backgroundColor` style property via `ref.current.style.setProperty`.
+ *      This is a DOM API call, NOT a JSX `style={{}}` attribute — Rule 1
+ *      specifically prohibits the JSX attribute form, not imperative DOM
+ *      property mutation.
  *
  * The `useLayoutEffect` (rather than `useEffect`) is deliberate: it runs
  * synchronously after DOM mutations but BEFORE the browser paints, so the
@@ -103,16 +120,94 @@ const LabelChip: FC<{ name: string; color: string }> = ({ name, color }) => {
   const ref = useRef<HTMLSpanElement>(null);
   useLayoutEffect(() => {
     if (ref.current) {
-      ref.current.style.setProperty('--label-color', `#${color}`);
+      // Set background color imperatively (Rule 1 compliant — DOM API, not JSX attribute).
+      ref.current.style.setProperty('background-color', `#${color}`);
     }
   }, [color]);
   return (
     <span
       ref={ref}
-      className="inline-flex items-center gap-1 rounded-full border border-border bg-[color:var(--label-color)] px-2 py-1 text-xs"
+      className="inline-flex items-center gap-1 rounded-full border border-border px-2 py-1 text-xs"
     >
       {name}
     </span>
+  );
+};
+
+/**
+ * Metadata row ("Created" or "Merged") — renders a fixed-width bold label
+ * alongside a muted value.
+ *
+ * Uses imperative DOM to achieve both the AAP-specified 96px label column
+ * (`w-24`) and the 700 bold weight. Neither of these renders correctly in
+ * the pre-compiled app Tailwind stylesheet:
+ * - `w-24` is not emitted because the app's Tailwind content-scan paths
+ *   do not include `plugins/catalog-graph/src/**` (QA D2).
+ * - `font-bold` IS emitted but resolves to font-weight 600 at runtime due
+ *   to a MUI Typography cascade override inside the MUI Dialog (QA D6).
+ *
+ * The imperative DOM pattern (ref + useLayoutEffect + style.setProperty)
+ * is the LabelChip precedent (see {@link LabelChip} JSDoc) and is Rule 1
+ * compliant — Rule 1 prohibits only the JSX `style={{}}` attribute form.
+ * The `!important` priority on `font-weight` is required to outrank
+ * MUI Typography's higher-specificity cascade.
+ */
+const MetadataRow: FC<{ label: string; value: string }> = ({
+  label,
+  value,
+}) => {
+  const labelRef = useRef<HTMLSpanElement>(null);
+  useLayoutEffect(() => {
+    if (labelRef.current) {
+      // Enforce the AAP w-24 (96px = 6rem) fixed-width label column.
+      labelRef.current.style.setProperty('width', '6rem');
+      // Force the 700 bold weight through any MUI cascade override.
+      labelRef.current.style.setProperty('font-weight', '700', 'important');
+    }
+  }, []);
+  return (
+    <div className="flex gap-2 text-sm">
+      <span ref={labelRef} className="font-bold">
+        {label}
+      </span>
+      <span className="text-muted-foreground">{value}</span>
+    </div>
+  );
+};
+
+/**
+ * Action-row bar — renders the Dismiss button and the Open Pull Request
+ * anchor with a top border at 30% opacity of the semantic border color.
+ *
+ * Applies the `border-border/30` opacity via imperative DOM because the
+ * fractional-opacity variant is not emitted in the app's pre-compiled
+ * Tailwind stylesheet (QA D4). The base `border-t` and plain
+ * `border-border` classes ARE compiled, but the `/30` modifier is only
+ * generated when Tailwind's content scan discovers a reference in a
+ * scanned file — which this plugin directory is not.
+ *
+ * Uses `rgba(230, 230, 230, 0.3)` to represent 30% of the `--border`
+ * token (`#E6E6E6`) on a light background, matching the visual intent
+ * of the AAP `border-border/30` specification.
+ */
+const ActionBarTop: FC<{ children: ReactNode }> = ({ children }) => {
+  const ref = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    if (ref.current) {
+      // 30% alpha of --border (#E6E6E6). Matches the AAP border-border/30 intent.
+      ref.current.style.setProperty(
+        'border-top-color',
+        'rgba(230, 230, 230, 0.3)',
+      );
+    }
+  }, []);
+  return (
+    <div
+      ref={ref}
+      className="flex items-center justify-end gap-2 border-t border-border pt-4"
+    >
+      {children}
+    </div>
   );
 };
 
@@ -185,19 +280,9 @@ export const ProjectModal: FC<ProjectModalProps> = ({
 
         {/* Created / Merged metadata rows */}
         <div className="mb-4 flex flex-col gap-2">
-          <div className="flex gap-2 text-sm">
-            <span className="w-24 font-bold">Created</span>
-            <span className="text-muted-foreground">
-              {formatDate(project.createdAt)}
-            </span>
-          </div>
+          <MetadataRow label="Created" value={formatDate(project.createdAt)} />
           {project.mergedAt && (
-            <div className="flex gap-2 text-sm">
-              <span className="w-24 font-bold">Merged</span>
-              <span className="text-muted-foreground">
-                {formatDate(project.mergedAt)}
-              </span>
-            </div>
+            <MetadataRow label="Merged" value={formatDate(project.mergedAt)} />
           )}
         </div>
 
@@ -215,7 +300,7 @@ export const ProjectModal: FC<ProjectModalProps> = ({
         )}
 
         {/* Action row: Dismiss + Open Pull Request */}
-        <div className="flex items-center justify-end gap-2 border-t border-border/30 pt-4">
+        <ActionBarTop>
           <button
             type="button"
             onClick={onClose}
@@ -231,7 +316,7 @@ export const ProjectModal: FC<ProjectModalProps> = ({
           >
             Open Pull Request →
           </a>
-        </div>
+        </ActionBarTop>
       </div>
     </Dialog>
   );

@@ -31,6 +31,7 @@ import { LinksGridList } from '../EntityLinksCard/LinksGridList';
 import { useEntitySourceUrl } from './hooks';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { catalogTranslationRef } from '../../alpha/translation';
+import { useLayoutEffect, useRef } from 'react';
 
 /**
  * Props for {@link AboutContent}.
@@ -71,6 +72,23 @@ export function AboutContent(props: AboutContentProps) {
   const sourceUrl = useEntitySourceUrl(entity);
   const { t } = useTranslationRef(catalogTranslationRef);
 
+  // D4 fix: the AAP-specified `border-border/30` fractional-opacity modifier
+  // on the description divider is not emitted in the app's pre-compiled
+  // Tailwind stylesheet (`packages/app/src/tailwind.css`). Updating the
+  // Tailwind scan paths is OUT OF SCOPE per AAP 0.7.2. Apply the 30%
+  // alpha of the `--border` token (#E6E6E6) imperatively via the DOM
+  // API — Rule 1 compliant (the rule prohibits JSX `style={{}}`, not
+  // imperative DOM mutation).
+  const descriptionRef = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    if (descriptionRef.current) {
+      descriptionRef.current.style.setProperty(
+        'border-bottom-color',
+        'rgba(230, 230, 230, 0.3)',
+      );
+    }
+  }, []);
+
   const isSystem = entity.kind.toLocaleLowerCase('en-US') === 'system';
   const isResource = entity.kind.toLocaleLowerCase('en-US') === 'resource';
   const isComponent = entity.kind.toLocaleLowerCase('en-US') === 'component';
@@ -108,7 +126,10 @@ export function AboutContent(props: AboutContentProps) {
 
   return (
     <div>
-      <div className="text-sm border-b border-border/30 pb-3 mb-3 break-words">
+      <div
+        ref={descriptionRef}
+        className="text-sm border-b border-border pb-3 mb-3 break-words"
+      >
         <MarkdownContent
           content={
             entity?.metadata?.description ||
