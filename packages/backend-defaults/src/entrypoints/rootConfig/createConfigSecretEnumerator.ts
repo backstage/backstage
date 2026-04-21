@@ -22,10 +22,7 @@ import {
   mergeConfigSchemas,
 } from '@backstage/config-loader';
 import { getPackages } from '@manypkg/get-packages';
-import {
-  extractSecretPaths,
-  collectSecretValues,
-} from './collectConfigSecrets';
+import { collectSecretValues } from './collectConfigSecrets';
 
 /** @public */
 export async function createConfigSecretEnumerator(options: {
@@ -43,11 +40,10 @@ export async function createConfigSecretEnumerator(options: {
 
   const serialized = schema.serialize();
   const schemas = serialized.schemas as Array<{ value: Record<string, any> }>;
-  const merged = mergeConfigSchemas(schemas.map(s => s.value));
-  const secretPaths = extractSecretPaths(merged as Record<string, any>);
+  const mergedSchema = mergeConfigSchemas(schemas.map(s => s.value));
 
   return (config: Config) => {
-    const secrets = collectSecretValues(config, secretPaths);
+    const secrets = collectSecretValues(config, mergedSchema);
     logger.info(
       `Found ${secrets.size} new secrets in config that will be redacted`,
     );
