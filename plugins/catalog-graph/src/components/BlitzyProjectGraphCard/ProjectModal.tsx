@@ -19,6 +19,40 @@ import Dialog from '@material-ui/core/Dialog';
 import type { BlitzyProject } from './visualMergeXs';
 
 /**
+ * URL scheme allow-list gate for the PR link `href` attribute.
+ *
+ * `project.prUrl` is sourced from the GitHub API response's `html_url`
+ * field on each pull request. Although the public GitHub REST API
+ * enforces that `html_url` resolves to a `github.com` URL, a
+ * defense-in-depth scheme allow-list guards against:
+ *   - Compromised or self-hosted GitHub Enterprise mocks that could
+ *     return arbitrary URLs.
+ *   - A fetch-layer interceptor or man-in-the-middle proxy injecting
+ *     a dangerous scheme into the response body.
+ *   - The `javascript://comment%0a` bypass vector explicitly flagged
+ *     by Backstage security advisory **GHSA-7hv8-3fr9-j2hv**.
+ *
+ * Modern Chrome already blocks click-time navigation for `javascript:`,
+ * `data:`, and `vbscript:` schemes, but the QA Checkpoint 9 report
+ * (finding Issue #1, MINOR) requires the scheme check to be applied
+ * statically at render time so that older browsers, embedded WebViews,
+ * and future attacker-controlled contexts cannot exploit the gap.
+ *
+ * Returns `true` only when the URL is defined and begins with one of:
+ * `http:`, `https:`, `mailto:`, `tel:`, or a forward-slash relative path
+ * (`/...`). Any other scheme — including empty, undefined, or protocol-
+ * relative URLs starting with `//` — returns `false`, causing the caller
+ * to substitute `#` as the rendered `href`.
+ *
+ * The regex is case-insensitive so that `JavaScript:` / `DATA:` casing
+ * games cannot sneak past the check, and it deliberately uses
+ * `^(https?:|mailto:|tel:|\/)` (anchored at the start, literal colon)
+ * so that `javascript://comment%0a` does NOT match the `http:` prefix.
+ */
+const isSafeHref = (url: string | undefined): boolean =>
+  !!url && /^(https?:|mailto:|tel:|\/)/i.test(url);
+
+/**
  * Props accepted by {@link ProjectModal}.
  *
  * - `project` may be `null` to support the brief close-animation transient
@@ -308,8 +342,17 @@ export const ProjectModal: FC<ProjectModalProps> = ({
           >
             Dismiss
           </button>
+          {/*
+           * Defense-in-depth: gate the PR link `href` through the
+           * isSafeHref allow-list so that dangerous URL schemes
+           * (javascript:, data:text/html, vbscript:, and the
+           * javascript://comment%0a bypass flagged by GHSA-7hv8-3fr9-j2hv)
+           * are replaced with `#` before the value reaches the DOM. Safe
+           * URLs (http:, https:, mailto:, tel:, relative /...) pass through
+           * unchanged. Addresses QA Checkpoint 9 Issue #1.
+           */}
           <a
-            href={project.prUrl}
+            href={isSafeHref(project.prUrl) ? project.prUrl : '#'}
             target="_blank"
             rel="noopener noreferrer"
             className={`rounded-md px-4 py-2 text-sm font-medium text-white ${classes.button}`}

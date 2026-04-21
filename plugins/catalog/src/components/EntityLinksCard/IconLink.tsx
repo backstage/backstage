@@ -19,6 +19,36 @@ import { Globe } from 'lucide-react';
 import { IconComponent } from '@backstage/core-plugin-api';
 
 /**
+ * URL scheme allow-list gate for `href` attributes rendered from
+ * user-controlled entity metadata.
+ *
+ * Entity `metadata.links[].url` values are authored outside the frontend
+ * and flow through the catalog API unmodified. Without a scheme allow-list,
+ * dangerous URL schemes — `javascript:`, `data:text/html`, `vbscript:`, and
+ * the `javascript://comment%0a...` bypass vector flagged by Backstage
+ * security advisory **GHSA-7hv8-3fr9-j2hv** — survive into the rendered
+ * `<a href="...">` attribute. Although modern Chrome blocks click-time
+ * navigation for those schemes and React emits a console warning, the
+ * QA Checkpoint 9 report (finding Issue #2, MINOR) requires a
+ * defense-in-depth static scheme check so that older browsers, embedded
+ * WebViews, and future attacker-controlled contexts cannot exploit the
+ * gap.
+ *
+ * Returns `true` only when the URL is defined and begins with one of:
+ * `http:`, `https:`, `mailto:`, `tel:`, or a forward-slash relative path
+ * (`/...`). Any other scheme — including empty, undefined, or protocol-
+ * relative URLs starting with `//` — returns `false`, causing the caller
+ * to substitute `#` as the rendered `href`.
+ *
+ * The regex is case-insensitive so that `JavaScript:` / `DATA:` casing
+ * games cannot sneak past the check, and it deliberately uses
+ * `^(https?:|mailto:|tel:|\/)` (anchored at the start, literal colon)
+ * so that `javascript://comment%0a` does NOT match the `http:` prefix.
+ */
+const isSafeHref = (url: string | undefined): boolean =>
+  !!url && /^(https?:|mailto:|tel:|\/)/i.test(url);
+
+/**
  * A single link row for the Entity Links card.
  *
  * Renders a native `<a>` element styled as a bordered card row with icon
@@ -98,10 +128,17 @@ export function IconLink(props: {
     }
   };
 
+  // Defense-in-depth: gate the `href` through the isSafeHref allow-list so
+  // that dangerous URL schemes (javascript:, data:text/html, vbscript:, and
+  // the javascript://comment%0a bypass flagged by GHSA-7hv8-3fr9-j2hv) are
+  // replaced with `#` before the value reaches the DOM. Safe URLs
+  // (http:, https:, mailto:, tel:, relative /...) pass through unchanged.
+  const safeHref = isSafeHref(href) ? href : '#';
+
   return (
     <a
       ref={anchorRef}
-      href={href}
+      href={safeHref}
       target="_blank"
       rel="noopener noreferrer"
       onMouseEnter={handleMouseEnter}
