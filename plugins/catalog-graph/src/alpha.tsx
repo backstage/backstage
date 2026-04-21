@@ -27,7 +27,7 @@ import {
   Direction,
 } from '@backstage/plugin-catalog-graph';
 
-const CatalogGraphEntityCard = EntityCardBlueprint.makeWithOverrides({
+const BlitzyProjectGraphEntityCard = EntityCardBlueprint.makeWithOverrides({
   name: 'relations',
   config: {
     schema: {
@@ -46,11 +46,11 @@ const CatalogGraphEntityCard = EntityCardBlueprint.makeWithOverrides({
       height: z => z.number().optional(),
     },
   },
-  factory(originalFactory, { config }) {
-    return originalFactory({
+  factory(_originalFactory) {
+    return _originalFactory({
       loader: async () =>
-        import('./components/CatalogGraphCard').then(m => (
-          <m.CatalogGraphCard {...config} />
+        import('./components/BlitzyProjectGraphCard').then(m => (
+          <m.BlitzyProjectGraphCard />
         )),
     });
   },
@@ -104,7 +104,7 @@ export default createFrontendPlugin({
   externalRoutes: {
     catalogEntity: catalogEntityRouteRef,
   },
-  extensions: [CatalogGraphPage, CatalogGraphEntityCard, CatalogGraphApi],
+  extensions: [CatalogGraphPage, BlitzyProjectGraphEntityCard, CatalogGraphApi],
 });
 
 export { catalogGraphTranslationRef } from './translation';
