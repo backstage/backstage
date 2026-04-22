@@ -316,10 +316,9 @@ export const BlitzyProjectGraphCard = () => {
   const svgHeight = TRUNK_Y + ROW_H * (projects.length + 1) + 40;
 
   return (
-    <div className="w-full overflow-x-auto rounded-lg border border-border bg-background p-4">
+    <div className="w-full overflow-hidden rounded-lg border border-border bg-background p-4">
       <svg
-        width={SVG_W}
-        height={svgHeight}
+        width="100%"
         viewBox={`0 0 ${SVG_W} ${svgHeight}`}
         role="img"
         aria-label="Pull requests swimlane"
@@ -370,9 +369,10 @@ export const BlitzyProjectGraphCard = () => {
                 strokeWidth={2}
               />
               {/* Merged PRs: vertical rise back to trunk + merge-dot
-                  circle. Open/closed PRs render neither — a closed PR
-                  branch simply terminates near the node card without
-                  reconnecting to the trunk. */}
+                  circle + dashed connector from merge point to the
+                  node card's left edge. Open/closed PRs render none
+                  of these — a closed PR branch simply terminates near
+                  the node card without reconnecting to the trunk. */}
               {isMerged && (
                 <>
                   <line
@@ -389,11 +389,40 @@ export const BlitzyProjectGraphCard = () => {
                     r={4}
                     fill={stateColor}
                   />
+                  <line
+                    x1={mergeX as number}
+                    y1={rowY}
+                    x2={NODE_L - 4}
+                    y2={rowY}
+                    stroke={stateColor}
+                    strokeWidth={2}
+                    strokeDasharray="6 4"
+                  />
                 </>
               )}
               {/* Node card group — shadow, body, accent bar, text,
-                  clickable expand icon. */}
-              <g>
+                  and expand icon. The entire card is clickable and
+                  keyboard-activatable via Enter/Space — the outer
+                  `<g>` declares `role="button"` + `tabIndex={0}` so
+                  WCAG 2.1 keyboard-activation requirements are met
+                  (native `<button>` provides this automatically; an
+                  SVG `<g>` with a button role must wire it
+                  explicitly). Cursor affordance uses the
+                  `cursor-pointer` Tailwind utility class (Rule 1 /
+                  AAP 0.8.1 — no inline `style` object). */}
+              <g
+                onClick={() => setSelected(project)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    setSelected(project);
+                  }
+                }}
+                className="cursor-pointer"
+                role="button"
+                aria-label={`Open details for PR ${project.number}`}
+                tabIndex={0}
+              >
                 {/* Drop shadow (8% black, offset +2px). Rendered before
                     the body rect so it appears beneath the white card. */}
                 <rect
@@ -446,30 +475,10 @@ export const BlitzyProjectGraphCard = () => {
                 >
                   {project.prState}
                 </text>
-                {/* Expand icon — the ONLY clickable element in this
-                    node card (Rule 4 / AAP 0.8.4). Cursor affordance is
-                    applied via the `cursor-pointer` Tailwind utility
-                    class on the `<g>` (Rule 1 / AAP 0.8.1 — no inline
-                    `style` object). An invisible 20×20 hit area rect
-                    makes the icon easier to click without affecting
-                    visual layout. Because this `<g>` declares
-                    `role="button"` + `tabIndex={0}`, WCAG 2.1 requires
-                    keyboard activation via Enter/Space — native
-                    `<button>` provides this automatically but an SVG
-                    `<g>` with a button role must wire it explicitly. */}
-                <g
-                  onClick={() => setSelected(project)}
-                  onKeyDown={e => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
-                      setSelected(project);
-                    }
-                  }}
-                  className="cursor-pointer"
-                  role="button"
-                  aria-label={`Open details for PR ${project.number}`}
-                  tabIndex={0}
-                >
+                {/* Expand icon — purely decorative now that the whole
+                    card is clickable. An invisible 20×20 hit area rect
+                    is retained for visual layout. */}
+                <g>
                   <rect
                     x={NODE_L + NODE_W - 28}
                     y={rowY - NODE_H / 2 + 8}
