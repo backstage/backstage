@@ -59,18 +59,19 @@ const SUPERSEDED_INDICES = [
 
 /**
  * Creates covering indices on the `search` table in the background, designed
- * to run after service startup without blocking readiness. On PostgreSQL this
- * uses `CREATE INDEX CONCURRENTLY` with advisory locking to coordinate across
- * multiple pods. On other engines indices are created inline.
+ * to run after service startup without blocking readiness. This helper is
+ * PostgreSQL-specific and uses `CREATE INDEX CONCURRENTLY` with advisory
+ * locking to coordinate across multiple pods. On other engines, index creation
+ * happens inline in the migration rather than through this helper.
  *
  * @remarks
  *
  * All PostgreSQL operations run on a single dedicated connection acquired from
  * the pool, ensuring that the session-level advisory lock, statement timeout,
- * and DDL statements all share the same session. The connection is released
- * back to the pool (with settings restored) when finished, or if the pod dies
- * the session terminates and PostgreSQL auto-releases the lock and cancels any
- * in-flight DDL.
+ * and DDL statements all share the same session. When finished, the connection
+ * is released back to the pool after releasing the advisory lock and resetting
+ * `statement_timeout`; if the pod dies, the session terminates and PostgreSQL
+ * auto-releases the lock and cancels any in-flight DDL.
  *
  * This function is intentionally fire-and-forget from the caller's perspective.
  * Failures are logged but do not prevent the service from operating — the
