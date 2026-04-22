@@ -122,8 +122,10 @@ export function useDefinition<
     analytics = ownPropsResolved.noTrack ? noopTracker : tracker;
   }
 
-  const utilityTarget = options?.utilityTarget ?? 'root';
-  const classNameTarget = options?.classNameTarget ?? 'root';
+  const utilityTarget =
+    options?.utilityTarget !== undefined ? options.utilityTarget : 'root';
+  const classNameTarget =
+    options?.classNameTarget !== undefined ? options.classNameTarget : 'root';
 
   const classes: Record<string, string> = {};
 
