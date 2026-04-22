@@ -18,6 +18,7 @@ import { renderHook, render } from '@testing-library/react';
 import { useDefinition } from './useDefinition';
 import type { ComponentConfig } from './types';
 import { BgProvider, useBgConsumer } from '../useBg';
+import { noopTracker } from '../../analytics/useAnalytics';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -81,6 +82,16 @@ const consumerDef = {
     className: {},
   },
   bg: 'consumer' as const,
+} as ComponentConfig<any, any>;
+
+const analyticsDef = {
+  styles: { root: 'css-root' },
+  classNames: { root: 'root' },
+  propDefs: {
+    noTrack: {},
+    className: {},
+  },
+  analytics: true,
 } as ComponentConfig<any, any>;
 
 // ---------------------------------------------------------------------------
@@ -437,6 +448,59 @@ describe('useDefinition', () => {
       );
 
       expect(result.current.ownProps).toHaveProperty('children', 'hello');
+    });
+  });
+
+  describe('utility style', () => {
+    it('returns utilityStyle with CSS custom properties from utility props', () => {
+      const { result } = renderHook(() =>
+        useDefinition(utilityDef, {
+          variant: 'primary',
+          width: '100px',
+        }),
+      );
+
+      expect(result.current.utilityStyle).toEqual({ '--width': '100px' });
+    });
+
+    it('returns empty utilityStyle when no utility props are provided', () => {
+      const { result } = renderHook(() =>
+        useDefinition(utilityDef, { variant: 'primary' }),
+      );
+
+      expect(result.current.utilityStyle).toEqual({});
+    });
+  });
+
+  describe('analytics', () => {
+    it('returns analytics tracker when definition.analytics is true', () => {
+      const { result } = renderHook(() => useDefinition(analyticsDef, {}));
+
+      expect(result.current).toHaveProperty('analytics');
+      expect(result.current.analytics).toHaveProperty('captureEvent');
+    });
+
+    it('does not include analytics key when definition.analytics is not set', () => {
+      const { result } = renderHook(() =>
+        useDefinition(basicDef, { variant: 'primary' }),
+      );
+
+      expect(result.current).not.toHaveProperty('analytics');
+    });
+
+    it('returns noopTracker when noTrack is true', () => {
+      const { result } = renderHook(() =>
+        useDefinition(analyticsDef, { noTrack: true }),
+      );
+
+      expect(result.current.analytics).toBe(noopTracker);
+    });
+
+    it('returns noopTracker when no BUIProvider is present', () => {
+      const { result } = renderHook(() => useDefinition(analyticsDef, {}));
+
+      // Without BUIProvider, useAnalytics() returns noopTracker
+      expect(result.current.analytics).toBe(noopTracker);
     });
   });
 });
