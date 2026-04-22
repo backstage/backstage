@@ -13,9 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { renderHook } from '@testing-library/react';
+import { type PropsWithChildren } from 'react';
+import { renderHook, render } from '@testing-library/react';
 import { useDefinition } from './useDefinition';
 import type { ComponentConfig } from './types';
+import { BgProvider, useBgConsumer } from '../useBg';
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+function BgReader() {
+  const { bg } = useBgConsumer();
+  return <span data-testid="bg">{bg ?? 'none'}</span>;
+}
 
 // ---------------------------------------------------------------------------
 // Fixtures
@@ -49,6 +60,27 @@ const utilityDef = {
     className: {},
   },
   utilityProps: ['m', 'p', 'width'] as const,
+} as ComponentConfig<any, any>;
+
+const providerDef = {
+  styles: { root: 'css-root' },
+  classNames: { root: 'root' },
+  propDefs: {
+    bg: { dataAttribute: true } as const,
+    children: {},
+    className: {},
+  },
+  bg: 'provider' as const,
+} as ComponentConfig<any, any>;
+
+const consumerDef = {
+  styles: { root: 'css-root' },
+  classNames: { root: 'root' },
+  propDefs: {
+    variant: {},
+    className: {},
+  },
+  bg: 'consumer' as const,
 } as ComponentConfig<any, any>;
 
 // ---------------------------------------------------------------------------
@@ -255,7 +287,7 @@ describe('useDefinition', () => {
     });
 
     it('skips data-bg for bg prop when definition.bg is provider', () => {
-      const providerDef = {
+      const localProviderDef = {
         styles: { root: 'css-root' },
         classNames: { root: 'root' },
         propDefs: {
@@ -267,7 +299,7 @@ describe('useDefinition', () => {
       } as ComponentConfig<any, any>;
 
       const { result } = renderHook(() =>
-        useDefinition(providerDef, {
+        useDefinition(localProviderDef, {
           bg: 'danger',
           children: null,
         }),
@@ -275,6 +307,136 @@ describe('useDefinition', () => {
 
       // data-bg comes from the provider resolution path, not the propDef
       expect(result.current.dataAttributes['data-bg']).toBe('danger');
+    });
+  });
+
+  describe('bg: provider', () => {
+    it('sets data-bg from the resolved provider bg value', () => {
+      const { result } = renderHook(() =>
+        useDefinition(providerDef, {
+          bg: 'danger',
+          children: null,
+        }),
+      );
+
+      expect(result.current.dataAttributes['data-bg']).toBe('danger');
+    });
+
+    it('does not set data-bg when bg prop is undefined', () => {
+      const { result } = renderHook(() =>
+        useDefinition(providerDef, {
+          children: null,
+        }),
+      );
+
+      expect(result.current.dataAttributes).not.toHaveProperty('data-bg');
+    });
+
+    it('adds childrenWithBgProvider to ownProps', () => {
+      const { result } = renderHook(() =>
+        useDefinition(providerDef, {
+          bg: 'neutral',
+          children: 'hello',
+        }),
+      );
+
+      expect(result.current.ownProps).toHaveProperty('childrenWithBgProvider');
+    });
+
+    it('wraps children in BgProvider when bg resolves to a value', () => {
+      const { result } = renderHook(() =>
+        useDefinition(providerDef, {
+          bg: 'neutral',
+          children: <BgReader />,
+        }),
+      );
+
+      const { getByTestId } = render(
+        <>{result.current.ownProps.childrenWithBgProvider}</>,
+      );
+
+      expect(getByTestId('bg')).toHaveTextContent('neutral-1');
+    });
+
+    it('returns raw children as childrenWithBgProvider when bg is undefined', () => {
+      const childContent = <span>hello</span>;
+      const { result } = renderHook(() =>
+        useDefinition(providerDef, {
+          children: childContent,
+        }),
+      );
+
+      expect(result.current.ownProps.childrenWithBgProvider).toBe(childContent);
+    });
+
+    it('increments neutral bg level from parent context', () => {
+      const wrapper = ({ children }: PropsWithChildren) => (
+        <BgProvider bg="neutral-1">{children}</BgProvider>
+      );
+
+      const { result } = renderHook(
+        () =>
+          useDefinition(providerDef, {
+            bg: 'neutral',
+            children: <BgReader />,
+          }),
+        { wrapper },
+      );
+
+      expect(result.current.dataAttributes['data-bg']).toBe('neutral-2');
+    });
+  });
+
+  describe('bg: consumer', () => {
+    it('sets data-on-bg from parent BgProvider context', () => {
+      const wrapper = ({ children }: PropsWithChildren) => (
+        <BgProvider bg="neutral-1">{children}</BgProvider>
+      );
+
+      const { result } = renderHook(
+        () => useDefinition(consumerDef, { variant: 'primary' }),
+        { wrapper },
+      );
+
+      expect(result.current.dataAttributes['data-on-bg']).toBe('neutral-1');
+    });
+
+    it('does not set data-on-bg when no parent BgProvider exists', () => {
+      const { result } = renderHook(() =>
+        useDefinition(consumerDef, { variant: 'primary' }),
+      );
+
+      expect(result.current.dataAttributes).not.toHaveProperty('data-on-bg');
+    });
+
+    it('returns children (not childrenWithBgProvider) in ownProps', () => {
+      const { result } = renderHook(() =>
+        useDefinition(consumerDef, { variant: 'primary', children: 'hello' }),
+      );
+
+      expect(result.current.ownProps).toHaveProperty('children', 'hello');
+      expect(result.current.ownProps).not.toHaveProperty(
+        'childrenWithBgProvider',
+      );
+    });
+  });
+
+  describe('no bg config', () => {
+    it('does not set data-bg or data-on-bg', () => {
+      const { result } = renderHook(() =>
+        useDefinition(basicDef, { variant: 'primary' }),
+      );
+
+      expect(result.current.dataAttributes).not.toHaveProperty('data-bg');
+      expect(result.current.dataAttributes).not.toHaveProperty('data-on-bg');
+    });
+
+    it('returns children in ownProps', () => {
+      const { result } = renderHook(() =>
+        useDefinition(basicDef, { variant: 'primary', children: 'hello' }),
+      );
+
+      expect(result.current.ownProps).toHaveProperty('children', 'hello');
     });
   });
 });
