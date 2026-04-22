@@ -15,6 +15,7 @@
  */
 
 import { LoggerService } from '@backstage/backend-plugin-api';
+import { isError } from '@backstage/errors';
 import { Knex } from 'knex';
 
 // Stable lock key for the pg_advisory_lock two-argument form.
@@ -100,7 +101,7 @@ export async function ensureDeferredIndices(
   } catch (error) {
     log?.warn(
       'Failed to acquire database connection for deferred index creation',
-      error instanceof Error ? error : undefined,
+      isError(error) ? error : undefined,
     );
     return;
   }
