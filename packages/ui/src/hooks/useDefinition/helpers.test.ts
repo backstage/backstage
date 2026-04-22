@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { resolveResponsiveValue } from './helpers';
+import { resolveResponsiveValue, resolveDefinitionProps } from './helpers';
+import type { ComponentConfig } from './types';
 
 describe('resolveResponsiveValue', () => {
   it('returns a plain string unchanged', () => {
@@ -85,5 +86,205 @@ describe('resolveResponsiveValue', () => {
         'md',
       ),
     ).toBe('small');
+  });
+});
+
+describe('resolveDefinitionProps', () => {
+  it('separates own props from rest props based on propDefs keys', () => {
+    const definition = {
+      propDefs: { variant: {}, size: {} },
+      utilityProps: [],
+      styles: {},
+      classNames: {},
+    } as ComponentConfig<any, any>;
+
+    const { ownPropsResolved, restProps } = resolveDefinitionProps(
+      definition,
+      { variant: 'primary', size: 'large', 'aria-label': 'test' },
+      'initial',
+    );
+
+    expect(ownPropsResolved).toEqual({ variant: 'primary', size: 'large' });
+    expect(restProps).toEqual({ 'aria-label': 'test' });
+  });
+
+  it('excludes utility props from rest props', () => {
+    const definition = {
+      propDefs: { variant: {} },
+      utilityProps: ['m', 'p'] as const,
+      styles: {},
+      classNames: {},
+    } as ComponentConfig<any, any>;
+
+    const { restProps } = resolveDefinitionProps(
+      definition,
+      { variant: 'primary', m: '2', p: '4', 'aria-label': 'test' },
+      'initial',
+    );
+
+    expect(restProps).toEqual({ 'aria-label': 'test' });
+  });
+
+  it('does not exclude utility props that are also in propDefs', () => {
+    const definition = {
+      propDefs: { gap: {} },
+      utilityProps: ['gap'] as const,
+      styles: {},
+      classNames: {},
+    } as ComponentConfig<any, any>;
+
+    const { ownPropsResolved } = resolveDefinitionProps(
+      definition,
+      { gap: '4' },
+      'initial',
+    );
+
+    expect(ownPropsResolved).toEqual({ gap: '4' });
+  });
+
+  it('applies default values from propDefs when prop is not provided', () => {
+    const definition = {
+      propDefs: { size: { default: 'medium' } },
+      utilityProps: [],
+      styles: {},
+      classNames: {},
+    } as ComponentConfig<any, any>;
+
+    const { ownPropsResolved } = resolveDefinitionProps(
+      definition,
+      {},
+      'initial',
+    );
+
+    expect(ownPropsResolved).toEqual({ size: 'medium' });
+  });
+
+  it('does not apply default when prop is explicitly provided', () => {
+    const definition = {
+      propDefs: { size: { default: 'medium' } },
+      utilityProps: [],
+      styles: {},
+      classNames: {},
+    } as ComponentConfig<any, any>;
+
+    const { ownPropsResolved } = resolveDefinitionProps(
+      definition,
+      { size: 'large' },
+      'initial',
+    );
+
+    expect(ownPropsResolved).toEqual({ size: 'large' });
+  });
+
+  it('preserves falsy prop values (false, 0, empty string) over defaults', () => {
+    const definition = {
+      propDefs: {
+        disabled: { default: true },
+        count: { default: 10 },
+        label: { default: 'default' },
+      },
+      utilityProps: [],
+      styles: {},
+      classNames: {},
+    } as ComponentConfig<any, any>;
+
+    const { ownPropsResolved } = resolveDefinitionProps(
+      definition,
+      { disabled: false, count: 0, label: '' },
+      'initial',
+    );
+
+    expect(ownPropsResolved).toEqual({
+      disabled: false,
+      count: 0,
+      label: '',
+    });
+  });
+
+  it('resolves responsive own prop values at the given breakpoint', () => {
+    const definition = {
+      propDefs: { variant: {} },
+      utilityProps: [],
+      styles: {},
+      classNames: {},
+    } as ComponentConfig<any, any>;
+
+    const { ownPropsResolved } = resolveDefinitionProps(
+      definition,
+      { variant: { xs: 'small', md: 'large' } },
+      'md',
+    );
+
+    expect(ownPropsResolved).toEqual({ variant: 'large' });
+  });
+
+  it('omits own props that are undefined and have no default', () => {
+    const definition = {
+      propDefs: { variant: {}, size: {} },
+      utilityProps: [],
+      styles: {},
+      classNames: {},
+    } as ComponentConfig<any, any>;
+
+    const { ownPropsResolved } = resolveDefinitionProps(
+      definition,
+      { variant: 'primary' },
+      'initial',
+    );
+
+    expect(ownPropsResolved).toEqual({ variant: 'primary' });
+    expect('size' in ownPropsResolved).toBe(false);
+  });
+
+  it('passes through rest props without responsive resolution', () => {
+    const definition = {
+      propDefs: { variant: {} },
+      utilityProps: [],
+      styles: {},
+      classNames: {},
+    } as ComponentConfig<any, any>;
+
+    const responsiveObj = { xs: 'small', md: 'large' };
+    const { restProps } = resolveDefinitionProps(
+      definition,
+      { variant: 'primary', 'data-value': responsiveObj },
+      'md',
+    );
+
+    expect(restProps['data-value']).toBe(responsiveObj);
+  });
+
+  it('returns empty ownPropsResolved when no props match propDefs', () => {
+    const definition = {
+      propDefs: { variant: {} },
+      utilityProps: [],
+      styles: {},
+      classNames: {},
+    } as ComponentConfig<any, any>;
+
+    const { ownPropsResolved } = resolveDefinitionProps(
+      definition,
+      { 'aria-label': 'test' },
+      'initial',
+    );
+
+    expect(ownPropsResolved).toEqual({});
+  });
+
+  it('returns empty restProps when all props are own or utility props', () => {
+    const definition = {
+      propDefs: { variant: {} },
+      utilityProps: ['m'] as const,
+      styles: {},
+      classNames: {},
+    } as ComponentConfig<any, any>;
+
+    const { restProps } = resolveDefinitionProps(
+      definition,
+      { variant: 'primary', m: '2' },
+      'initial',
+    );
+
+    expect(restProps).toEqual({});
   });
 });
