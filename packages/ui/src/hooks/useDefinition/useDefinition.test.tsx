@@ -208,4 +208,73 @@ describe('useDefinition', () => {
       expect(result.current.ownProps.classes.content).not.toContain('custom');
     });
   });
+
+  describe('data attributes', () => {
+    it('generates data-* attributes for props with dataAttribute: true', () => {
+      const { result } = renderHook(() =>
+        useDefinition(basicDef, { variant: 'primary' }),
+      );
+
+      expect(result.current.dataAttributes['data-variant']).toBe('primary');
+    });
+
+    it('does not generate data-* for props without dataAttribute', () => {
+      const { result } = renderHook(() =>
+        useDefinition(basicDef, {
+          variant: 'primary',
+          className: 'custom',
+        }),
+      );
+
+      expect(result.current.dataAttributes).not.toHaveProperty(
+        'data-classname',
+      );
+    });
+
+    it('omits data-* when the prop value is undefined', () => {
+      const { result } = renderHook(() => useDefinition(basicDef, {}));
+
+      expect(result.current.dataAttributes).not.toHaveProperty('data-variant');
+    });
+
+    it('stringifies non-string prop values in data attributes', () => {
+      const numericDef = {
+        styles: { root: 'css-root' },
+        classNames: { root: 'root' },
+        propDefs: {
+          count: { dataAttribute: true } as const,
+          className: {},
+        },
+      } as ComponentConfig<any, any>;
+
+      const { result } = renderHook(() =>
+        useDefinition(numericDef, { count: 42 }),
+      );
+
+      expect(result.current.dataAttributes['data-count']).toBe('42');
+    });
+
+    it('skips data-bg for bg prop when definition.bg is provider', () => {
+      const providerDef = {
+        styles: { root: 'css-root' },
+        classNames: { root: 'root' },
+        propDefs: {
+          bg: { dataAttribute: true } as const,
+          children: {},
+          className: {},
+        },
+        bg: 'provider' as const,
+      } as ComponentConfig<any, any>;
+
+      const { result } = renderHook(() =>
+        useDefinition(providerDef, {
+          bg: 'danger',
+          children: null,
+        }),
+      );
+
+      // data-bg comes from the provider resolution path, not the propDef
+      expect(result.current.dataAttributes['data-bg']).toBe('danger');
+    });
+  });
 });
