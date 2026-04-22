@@ -408,18 +408,16 @@ export class CatalogBuilder {
     if (!database.migrations?.skip) {
       logger.info('Performing database migration');
       await applyDatabaseMigrations(dbClient);
-    }
 
-    // Fire-and-forget: create covering indices in the background so that
-    // service startup is not blocked by long-running CREATE INDEX CONCURRENTLY.
-    // Runs regardless of migrations.skip since it's idempotent and handles
-    // installations where migrations are applied out-of-band.
-    ensureDeferredIndices(dbClient, logger).catch(error => {
-      logger.error(
-        'Background index creation failed',
-        isError(error) ? error : new Error(String(error)),
-      );
-    });
+      // Fire-and-forget: create covering indices in the background so that
+      // service startup is not blocked by long-running CREATE INDEX CONCURRENTLY.
+      ensureDeferredIndices(dbClient, logger).catch(error => {
+        logger.error(
+          'Background index creation failed',
+          isError(error) ? error : new Error(String(error)),
+        );
+      });
+    }
 
     const stitcher = DefaultStitcher.fromConfig(config, {
       knex: dbClient,
