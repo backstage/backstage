@@ -1,1 +1,0 @@
-import{_ as t,o as r,ax as n}from"./iframe-V0mCSmm6.js";import{s as i,a as d,c as p,b as l,d as m,f as u,g as x,p as c,e as f,h as y,i as g,t as h}from"./styled-jbaTKMHC.js";var v=function(a){var s=i(a);return function(e,o){return s(e,t({defaultTheme:r},o))}},b=d(p(l,m,u,x,c,f,y,g,n,h)),T=v("div")(b,{name:"MuiBox"});export{T as B,b as a,v as s};

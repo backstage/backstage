@@ -1,1 +1,0 @@
-function i(t){return t?!!(t.startsWith("http://")||t.startsWith("https://")||t.startsWith("//")||t.startsWith("mailto:")||t.startsWith("tel:")):!1}function r(t){return!!t&&!i(t)}export{i as a,r as i};
