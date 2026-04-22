@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { type PropsWithChildren } from 'react';
+import { type PropsWithChildren, type ReactNode } from 'react';
 import { renderHook, render } from '@testing-library/react';
+import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { useDefinition } from './useDefinition';
 import type { ComponentConfig } from './types';
 import { BgProvider, useBgConsumer } from '../useBg';
@@ -94,9 +95,57 @@ const analyticsDef = {
   analytics: true,
 } as ComponentConfig<any, any>;
 
+const hrefDef = {
+  styles: { root: 'css-root' },
+  classNames: { root: 'root' },
+  propDefs: {
+    href: {},
+    className: {},
+  },
+} as ComponentConfig<any, any>;
+
 // ---------------------------------------------------------------------------
 // Tests
 // ---------------------------------------------------------------------------
+
+function createRouterWrapper({
+  basename,
+  currentRoute,
+}: {
+  basename?: string;
+  currentRoute: string;
+}) {
+  return function Wrapper({ children }: PropsWithChildren) {
+    const entry = basename ? `${basename}${currentRoute}` : currentRoute;
+    // Build nested Routes one level per path segment. Each parent uses a plain
+    // (non-splat) path so that `..` resolution works correctly at every depth.
+    const segments =
+      currentRoute === '/'
+        ? []
+        : currentRoute.replace(/^\//, '').split('/').filter(Boolean);
+
+    const buildRoutes = (segs: string[], el: ReactNode): ReactNode => {
+      if (segs.length === 0) return <Route index element={el} />;
+      const [head, ...tail] = segs;
+      if (tail.length === 0) {
+        return <Route path={head} element={el} />;
+      }
+      return <Route path={`${head}/*`}>{buildRoutes(tail, el)}</Route>;
+    };
+
+    return (
+      <MemoryRouter basename={basename} initialEntries={[entry]}>
+        <Routes>
+          {segments.length === 0 ? (
+            <Route path="*" element={children} />
+          ) : (
+            buildRoutes(segments, children)
+          )}
+        </Routes>
+      </MemoryRouter>
+    );
+  };
+}
 
 describe('useDefinition', () => {
   describe('prop resolution', () => {
@@ -501,6 +550,91 @@ describe('useDefinition', () => {
 
       // Without BUIProvider, useAnalytics() returns noopTracker
       expect(result.current.analytics).toBe(noopTracker);
+    });
+  });
+
+  describe('href resolution', () => {
+    describe('inside router context', () => {
+      describe.each([
+        ['no basename', undefined],
+        ['with basename /app', '/app'],
+      ] as const)('%s', (_label, basename) => {
+        it.each`
+          description                       | href                  | currentRoute        | expected
+          ${'absolute path'}                | ${'/foo'}             | ${'/catalog'}       | ${'/foo'}
+          ${'root /'}                       | ${'/'}                | ${'/catalog'}       | ${'/'}
+          ${'relative path "foo"'}          | ${'foo'}              | ${'/catalog'}       | ${'/catalog/foo'}
+          ${'relative path "./foo"'}        | ${'./foo'}            | ${'/catalog'}       | ${'/catalog/foo'}
+          ${'relative path "../foo"'}       | ${'../foo'}           | ${'/catalog/items'} | ${'/catalog/foo'}
+          ${'empty string'}                 | ${''}                 | ${'/catalog'}       | ${'/catalog'}
+          ${'absolute with query params'}   | ${'/foo?q=1'}         | ${'/catalog'}       | ${'/foo?q=1'}
+          ${'absolute with hash'}           | ${'/foo#section'}     | ${'/catalog'}       | ${'/foo#section'}
+          ${'absolute with query and hash'} | ${'/foo?q=1#section'} | ${'/catalog'}       | ${'/foo?q=1#section'}
+          ${'relative with query params'}   | ${'foo?q=1'}          | ${'/catalog'}       | ${'/catalog/foo?q=1'}
+        `(
+          'resolves $description — returns $expected',
+          ({
+            href,
+            currentRoute,
+            expected,
+          }: {
+            href: string;
+            currentRoute: string;
+            expected: string;
+          }) => {
+            const { result } = renderHook(
+              () => useDefinition(hrefDef, { href }),
+              {
+                wrapper: createRouterWrapper({ basename, currentRoute }),
+              },
+            );
+
+            expect(result.current.ownProps.href).toBe(expected);
+          },
+        );
+
+        it.each`
+          description                | href
+          ${'https:// URL'}          | ${'https://example.com'}
+          ${'http:// URL'}           | ${'http://example.com'}
+          ${'mailto: link'}          | ${'mailto:a@b.com'}
+          ${'tel: link'}             | ${'tel:123'}
+          ${'protocol-relative URL'} | ${'//example.com'}
+        `('leaves $description unchanged', ({ href }: { href: string }) => {
+          const { result } = renderHook(
+            () => useDefinition(hrefDef, { href }),
+            {
+              wrapper: createRouterWrapper({
+                basename,
+                currentRoute: '/catalog',
+              }),
+            },
+          );
+
+          expect(result.current.ownProps.href).toBe(href);
+        });
+
+        it('does not modify props when href is undefined', () => {
+          const { result } = renderHook(() => useDefinition(hrefDef, {}), {
+            wrapper: createRouterWrapper({
+              basename,
+              currentRoute: '/catalog',
+            }),
+          });
+
+          expect(result.current.ownProps).not.toHaveProperty('href');
+        });
+      });
+    });
+
+    describe('outside router context', () => {
+      it('passes all href values through unchanged', () => {
+        const { result } = renderHook(() =>
+          useDefinition(hrefDef, { href: '/foo' }),
+        );
+
+        expect(result.current.ownProps.href).toBe('/foo');
+      });
     });
   });
 });
