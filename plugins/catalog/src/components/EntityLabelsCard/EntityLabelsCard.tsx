@@ -75,7 +75,7 @@ export const EntityLabelsCard = (props: EntityLabelsCardProps) => {
       {filtered.length === 0 ? (
         <EntityLabelsEmptyState />
       ) : (
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 pt-2">
           {filtered.map(([k, v]) => (
             <div key={k} className="flex gap-2 text-sm">
               <LabelKey>{k}</LabelKey>

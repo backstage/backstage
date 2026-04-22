@@ -33,7 +33,7 @@ export function LinksGridList(props: LinksGridListProps) {
   const { items } = props;
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2 pt-2">
       {items.map(({ text, href, Icon }, i) => (
         <IconLink key={i} href={href} text={text ?? href} Icon={Icon} />
       ))}

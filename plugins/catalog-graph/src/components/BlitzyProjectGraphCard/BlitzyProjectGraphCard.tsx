@@ -316,91 +316,106 @@ export const BlitzyProjectGraphCard = () => {
   const svgHeight = TRUNK_Y + ROW_H * (projects.length + 1) + 40;
 
   return (
-    <div className="w-full overflow-hidden rounded-lg border border-border bg-background p-4">
-      <svg
-        width="100%"
-        viewBox={`0 0 ${SVG_W} ${svgHeight}`}
-        role="img"
-        aria-label="Pull requests swimlane"
-      >
-        {/* Trunk — horizontal grey line spanning the whole timeline. */}
-        <line
-          x1={TRUNK_START}
-          y1={TRUNK_Y}
-          x2={TIMELINE_END}
-          y2={TRUNK_Y}
-          stroke={TRUNK_COLOR}
-          strokeWidth={2}
-        />
-        {projects.map((project, i) => {
-          const rowY = TRUNK_Y + ROW_H * (i + 1);
-          const splitX = toX(project.createdAt);
-          const stateColor = STATE_COLORS[project.prState];
-          const mergeX = mergeXs[i];
-          const isMerged = project.prState === 'merged' && mergeX !== null;
-          // Merged branches terminate at `mergeX` (then rise to trunk);
-          // open and closed branches extend to `NODE_L - 4` so the line
-          // visually meets the node card's left accent bar.
-          const branchEndX = isMerged ? (mergeX as number) : NODE_L - 4;
-          const title = truncate(project.title, 24);
-          const branchName = truncate(project.branchName, 28);
+    <div className="w-full overflow-hidden rounded-lg border border-border bg-card">
+      <div className="border-b border-border px-4 py-0">
+        <p className="text-small font-semibold text-foreground">
+          Blitzy Project History
+        </p>
+      </div>
+      <div className="p-4">
+        <svg
+          width="100%"
+          viewBox={`0 0 ${SVG_W} ${svgHeight}`}
+          role="img"
+          aria-label="Pull requests swimlane"
+        >
+          {/* Trunk — extended left to the start block position. */}
+          <line
+            x1={TRUNK_START - 30}
+            y1={TRUNK_Y}
+            x2={TIMELINE_END}
+            y2={TRUNK_Y}
+            stroke={TRUNK_COLOR}
+            strokeWidth={2}
+          />
+          {/* Starting state block — sits left of the first split dot. */}
+          <rect
+            x={TRUNK_START - 42}
+            y={TRUNK_Y - 8}
+            width={16}
+            height={16}
+            rx={3}
+            fill={TRUNK_COLOR}
+          />
+          {projects.map((project, i) => {
+            const rowY = TRUNK_Y + ROW_H * (i + 1);
+            const splitX = toX(project.createdAt);
+            const stateColor = STATE_COLORS[project.prState];
+            const mergeX = mergeXs[i];
+            const isMerged = project.prState === 'merged' && mergeX !== null;
+            // Merged branches terminate at `mergeX` (then rise to trunk);
+            // open and closed branches extend to `NODE_L - 4` so the line
+            // visually meets the node card's left accent bar.
+            const branchEndX = isMerged ? (mergeX as number) : NODE_L - 4;
+            const title = truncate(project.title, 24);
+            const branchName = truncate(project.branchName, 28);
 
-          return (
-            <g key={project.number}>
-              {/* Split dot on trunk — the origin point of the branch. */}
-              <circle cx={splitX} cy={TRUNK_Y} r={4} fill={TRUNK_COLOR} />
-              {/* Vertical descent from trunk down to this branch's row. */}
-              <line
-                x1={splitX}
-                y1={TRUNK_Y}
-                x2={splitX}
-                y2={rowY}
-                stroke={stateColor}
-                strokeWidth={2}
-              />
-              {/* Horizontal branch line in the state color (solid —
+            return (
+              <g key={project.number}>
+                {/* Split dot on trunk — the origin point of the branch. */}
+                <circle cx={splitX} cy={TRUNK_Y} r={4} fill={TRUNK_COLOR} />
+                {/* Vertical descent from trunk down to this branch's row. */}
+                <line
+                  x1={splitX}
+                  y1={TRUNK_Y}
+                  x2={splitX}
+                  y2={rowY}
+                  stroke={stateColor}
+                  strokeWidth={2}
+                />
+                {/* Horizontal branch line in the state color (solid —
                   never dashed, per Per-Story 1.6). */}
-              <line
-                x1={splitX}
-                y1={rowY}
-                x2={branchEndX}
-                y2={rowY}
-                stroke={stateColor}
-                strokeWidth={2}
-              />
-              {/* Merged PRs: vertical rise back to trunk + merge-dot
+                <line
+                  x1={splitX}
+                  y1={rowY}
+                  x2={branchEndX}
+                  y2={rowY}
+                  stroke={stateColor}
+                  strokeWidth={2}
+                />
+                {/* Merged PRs: vertical rise back to trunk + merge-dot
                   circle + dashed connector from merge point to the
                   node card's left edge. Open/closed PRs render none
                   of these — a closed PR branch simply terminates near
                   the node card without reconnecting to the trunk. */}
-              {isMerged && (
-                <>
-                  <line
-                    x1={mergeX as number}
-                    y1={rowY}
-                    x2={mergeX as number}
-                    y2={TRUNK_Y}
-                    stroke={stateColor}
-                    strokeWidth={2}
-                  />
-                  <circle
-                    cx={mergeX as number}
-                    cy={TRUNK_Y}
-                    r={4}
-                    fill={stateColor}
-                  />
-                  <line
-                    x1={mergeX as number}
-                    y1={rowY}
-                    x2={NODE_L - 4}
-                    y2={rowY}
-                    stroke={stateColor}
-                    strokeWidth={2}
-                    strokeDasharray="6 4"
-                  />
-                </>
-              )}
-              {/* Node card group — shadow, body, accent bar, text,
+                {isMerged && (
+                  <>
+                    <line
+                      x1={mergeX as number}
+                      y1={rowY}
+                      x2={mergeX as number}
+                      y2={TRUNK_Y}
+                      stroke={stateColor}
+                      strokeWidth={2}
+                    />
+                    <circle
+                      cx={mergeX as number}
+                      cy={TRUNK_Y}
+                      r={4}
+                      fill={stateColor}
+                    />
+                    <line
+                      x1={mergeX as number}
+                      y1={rowY}
+                      x2={NODE_L - 4}
+                      y2={rowY}
+                      stroke={stateColor}
+                      strokeWidth={2}
+                      strokeDasharray="6 4"
+                    />
+                  </>
+                )}
+                {/* Node card group — shadow, body, accent bar, text,
                   and expand icon. The entire card is clickable and
                   keyboard-activatable via Enter/Space — the outer
                   `<g>` declares `role="button"` + `tabIndex={0}` so
@@ -410,112 +425,118 @@ export const BlitzyProjectGraphCard = () => {
                   explicitly). Cursor affordance uses the
                   `cursor-pointer` Tailwind utility class (Rule 1 /
                   AAP 0.8.1 — no inline `style` object). */}
-              <g
-                onClick={() => setSelected(project)}
-                onKeyDown={e => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    setSelected(project);
-                  }
-                }}
-                className="cursor-pointer"
-                role="button"
-                aria-label={`Open details for PR ${project.number}`}
-                tabIndex={0}
-              >
-                {/* Drop shadow (8% black, offset +2px). Rendered before
+                <g
+                  onClick={() => setSelected(project)}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      setSelected(project);
+                    }
+                  }}
+                  className="cursor-pointer"
+                  role="button"
+                  aria-label={`Open details for PR ${project.number}`}
+                  tabIndex={0}
+                >
+                  {/* Drop shadow (8% black, offset +2px). Rendered before
                     the body rect so it appears beneath the white card. */}
-                <rect
-                  x={NODE_L + 2}
-                  y={rowY - NODE_H / 2 + 2}
-                  width={NODE_W}
-                  height={NODE_H}
-                  fill="#00000014"
-                  rx={6}
-                />
-                {/* White card body with a thin grey border. */}
-                <rect
-                  x={NODE_L}
-                  y={rowY - NODE_H / 2}
-                  width={NODE_W}
-                  height={NODE_H}
-                  fill="#ffffff"
-                  stroke="#e5e7eb"
-                  rx={6}
-                />
-                {/* 4px left accent bar in the state color. */}
-                <rect
-                  x={NODE_L}
-                  y={rowY - NODE_H / 2}
-                  width={4}
-                  height={NODE_H}
-                  fill={stateColor}
-                />
-                {/* PR title — bold, dark, truncated with ellipsis. */}
-                <text
-                  x={NODE_L + 12}
-                  y={rowY - 8}
-                  fontSize={12}
-                  fontWeight={700}
-                  fill="#111827"
-                >
-                  {title}
-                </text>
-                {/* Branch name — muted, smaller, truncated. */}
-                <text x={NODE_L + 12} y={rowY + 8} fontSize={10} fill="#6b7280">
-                  {branchName}
-                </text>
-                {/* State label — same state color as the accent bar. */}
-                <text
-                  x={NODE_L + 12}
-                  y={rowY + 22}
-                  fontSize={10}
-                  fontWeight={600}
-                  fill={stateColor}
-                >
-                  {project.prState}
-                </text>
-                {/* Expand icon — purely decorative now that the whole
+                  <rect
+                    x={NODE_L + 2}
+                    y={rowY - NODE_H / 2 + 2}
+                    width={NODE_W}
+                    height={NODE_H}
+                    fill="#00000014"
+                    rx={6}
+                  />
+                  {/* White card body with a thin grey border. */}
+                  <rect
+                    x={NODE_L}
+                    y={rowY - NODE_H / 2}
+                    width={NODE_W}
+                    height={NODE_H}
+                    fill="#ffffff"
+                    stroke="#e5e7eb"
+                    rx={6}
+                  />
+                  {/* 4px left accent bar in the state color. */}
+                  <rect
+                    x={NODE_L}
+                    y={rowY - NODE_H / 2}
+                    width={4}
+                    height={NODE_H}
+                    fill={stateColor}
+                  />
+                  {/* PR title — bold, dark, truncated with ellipsis. */}
+                  <text
+                    x={NODE_L + 12}
+                    y={rowY - 8}
+                    fontSize={12}
+                    fontWeight={700}
+                    fill="#111827"
+                  >
+                    {title}
+                  </text>
+                  {/* Branch name — muted, smaller, truncated. */}
+                  <text
+                    x={NODE_L + 12}
+                    y={rowY + 8}
+                    fontSize={10}
+                    fill="#6b7280"
+                  >
+                    {branchName}
+                  </text>
+                  {/* State label — same state color as the accent bar. */}
+                  <text
+                    x={NODE_L + 12}
+                    y={rowY + 22}
+                    fontSize={10}
+                    fontWeight={600}
+                    fill={stateColor}
+                  >
+                    {project.prState}
+                  </text>
+                  {/* Expand icon — purely decorative now that the whole
                     card is clickable. An invisible 20×20 hit area rect
                     is retained for visual layout. */}
-                <g>
-                  <rect
-                    x={NODE_L + NODE_W - 28}
-                    y={rowY - NODE_H / 2 + 8}
-                    width={20}
-                    height={20}
-                    fill="transparent"
-                  />
-                  <path
-                    d={`M${NODE_L + NODE_W - 22},${
-                      rowY - NODE_H / 2 + 14
-                    } h4 v-4 M${NODE_L + NODE_W - 14},${
-                      rowY - NODE_H / 2 + 14
-                    } h-4 v-4 M${NODE_L + NODE_W - 22},${
-                      rowY - NODE_H / 2 + 22
-                    } h4 v4 M${NODE_L + NODE_W - 14},${
-                      rowY - NODE_H / 2 + 22
-                    } h-4 v4`}
-                    stroke={stateColor}
-                    strokeWidth={1.5}
-                    fill="none"
-                    strokeLinecap="round"
-                  />
+                  <g>
+                    <rect
+                      x={NODE_L + NODE_W - 28}
+                      y={rowY - NODE_H / 2 + 8}
+                      width={20}
+                      height={20}
+                      fill="transparent"
+                    />
+                    <path
+                      d={`M${NODE_L + NODE_W - 24},${rowY - NODE_H / 2 + 24} L${
+                        NODE_L + NODE_W - 12
+                      },${rowY - NODE_H / 2 + 12} M${NODE_L + NODE_W - 12},${
+                        rowY - NODE_H / 2 + 12
+                      } L${NODE_L + NODE_W - 17},${rowY - NODE_H / 2 + 12} M${
+                        NODE_L + NODE_W - 12
+                      },${rowY - NODE_H / 2 + 12} L${NODE_L + NODE_W - 12},${
+                        rowY - NODE_H / 2 + 17
+                      }`}
+                      stroke={stateColor}
+                      strokeWidth={1.5}
+                      fill="none"
+                      strokeLinecap="round"
+                    />
+                  </g>
                 </g>
               </g>
-            </g>
-          );
-        })}
-      </svg>
-      {/* Detail modal — rendered unconditionally so that MUI's Dialog
+            );
+          })}
+        </svg>
+        {/* Detail modal — rendered unconditionally so that MUI's Dialog
           can animate its close transition. `open={!!selected}` drives
           visibility; `project` is passed through even during the brief
           close-animation window when `selected` is still defined. */}
-      <ProjectModal
-        project={selected}
-        open={!!selected}
-        onClose={() => setSelected(null)}
-      />
+        <ProjectModal
+          project={selected}
+          open={!!selected}
+          onClose={() => setSelected(null)}
+        />
+      </div>
     </div>
   );
 };
