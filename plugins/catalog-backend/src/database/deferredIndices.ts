@@ -31,22 +31,22 @@ interface PgConnection {
 
 interface DeferredIndex {
   name: string;
-  columns: string;
+  columnExpr: string;
   where?: string;
 }
 
 const DEFERRED_INDICES: DeferredIndex[] = [
   {
     name: 'search_entity_key_value_idx',
-    columns: '(entity_id, key, value)',
+    columnExpr: '(entity_id, key, value)',
   },
   {
     name: 'search_key_value_entity_idx',
-    columns: '(key, value, entity_id)',
+    columnExpr: '(key, value, entity_id)',
   },
   {
     name: 'search_facets_covering_idx',
-    columns: '(key, original_value, entity_id)',
+    columnExpr: '(key, original_value, entity_id)',
     where: 'WHERE original_value IS NOT NULL',
   },
 ];
@@ -94,7 +94,16 @@ export async function ensureDeferredIndices(
   // This is critical: Knex's normal knex.raw() picks a random connection
   // from the pool each time, which would cause the advisory lock to be
   // acquired on one connection while DDL runs on another.
-  const conn: PgConnection = await knex.client.acquireConnection();
+  let conn: PgConnection;
+  try {
+    conn = await knex.client.acquireConnection();
+  } catch (error) {
+    log?.warn(
+      'Failed to acquire database connection for deferred index creation',
+      error instanceof Error ? error : undefined,
+    );
+    return;
+  }
 
   try {
     // Skip on read replicas — indices replicate from the primary automatically
@@ -187,7 +196,7 @@ async function ensureIndex(
   log?.info(`Creating index ${index.name} concurrently`);
   const whereClause = index.where ? ` ${index.where}` : '';
   await conn.query(
-    `CREATE INDEX CONCURRENTLY IF NOT EXISTS ${index.name} ON search ${index.columns}${whereClause}`,
+    `CREATE INDEX CONCURRENTLY IF NOT EXISTS ${index.name} ON search ${index.columnExpr}${whereClause}`,
   );
   log?.info(`Index ${index.name} created successfully`);
 }
