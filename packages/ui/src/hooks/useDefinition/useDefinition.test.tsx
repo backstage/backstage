@@ -637,4 +637,53 @@ describe('useDefinition', () => {
       });
     });
   });
+
+  describe('options', () => {
+    it('utilityTarget defaults to root', () => {
+      const { result } = renderHook(() =>
+        useDefinition(multiSlotDef, { variant: 'primary', m: '2' }),
+      );
+
+      expect(result.current.ownProps.classes.root).toContain('bui-m-2');
+      expect(result.current.ownProps.classes.content).not.toContain('bui-m-2');
+    });
+
+    it('classNameTarget defaults to root', () => {
+      const { result } = renderHook(() =>
+        useDefinition(multiSlotDef, {
+          variant: 'primary',
+          className: 'custom',
+        }),
+      );
+
+      expect(result.current.ownProps.classes.root).toContain('custom');
+      expect(result.current.ownProps.classes.content).not.toContain('custom');
+    });
+
+    it('custom utilityTarget applies utility classes to that slot', () => {
+      const { result } = renderHook(() =>
+        useDefinition(
+          multiSlotDef,
+          { variant: 'primary', m: '2' },
+          { utilityTarget: 'content' },
+        ),
+      );
+
+      expect(result.current.ownProps.classes.content).toContain('bui-m-2');
+      expect(result.current.ownProps.classes.root).not.toContain('bui-m-2');
+    });
+
+    it('custom classNameTarget applies className to that slot', () => {
+      const { result } = renderHook(() =>
+        useDefinition(
+          multiSlotDef,
+          { variant: 'primary', className: 'custom' },
+          { classNameTarget: 'content' },
+        ),
+      );
+
+      expect(result.current.ownProps.classes.content).toContain('custom');
+      expect(result.current.ownProps.classes.root).not.toContain('custom');
+    });
+  });
 });
