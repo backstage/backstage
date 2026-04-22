@@ -31,22 +31,22 @@ interface PgConnection {
 
 interface DeferredIndex {
   name: string;
-  columnExpr: string;
+  columns: string[];
   where?: string;
 }
 
 const DEFERRED_INDICES: DeferredIndex[] = [
   {
     name: 'search_entity_key_value_idx',
-    columnExpr: '(entity_id, key, value)',
+    columns: ['entity_id', 'key', 'value'],
   },
   {
     name: 'search_key_value_entity_idx',
-    columnExpr: '(key, value, entity_id)',
+    columns: ['key', 'value', 'entity_id'],
   },
   {
     name: 'search_facets_covering_idx',
-    columnExpr: '(key, original_value, entity_id)',
+    columns: ['key', 'original_value', 'entity_id'],
     where: 'WHERE original_value IS NOT NULL',
   },
 ];
@@ -194,9 +194,10 @@ async function ensureIndex(
   }
 
   log?.info(`Creating index ${index.name} concurrently`);
+  const columnExpr = `(${index.columns.join(', ')})`;
   const whereClause = index.where ? ` ${index.where}` : '';
   await conn.query(
-    `CREATE INDEX CONCURRENTLY IF NOT EXISTS ${index.name} ON search ${index.columnExpr}${whereClause}`,
+    `CREATE INDEX CONCURRENTLY IF NOT EXISTS ${index.name} ON search ${columnExpr}${whereClause}`,
   );
   log?.info(`Index ${index.name} created successfully`);
 }
