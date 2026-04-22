@@ -13,7 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { resolveResponsiveValue, resolveDefinitionProps } from './helpers';
+import {
+  resolveResponsiveValue,
+  resolveDefinitionProps,
+  processUtilityProps,
+} from './helpers';
 import type { ComponentConfig } from './types';
 
 describe('resolveResponsiveValue', () => {
@@ -286,5 +290,109 @@ describe('resolveDefinitionProps', () => {
     );
 
     expect(restProps).toEqual({});
+  });
+});
+
+describe('processUtilityProps', () => {
+  it('returns empty classes and style when no utility props are provided', () => {
+    const { utilityClasses, utilityStyle } = processUtilityProps({}, [
+      'm',
+      'p',
+    ]);
+    expect(utilityClasses).toBe('');
+    expect(utilityStyle).toEqual({});
+  });
+
+  it('returns empty classes and style when utility values are undefined', () => {
+    const { utilityClasses, utilityStyle } = processUtilityProps(
+      { m: undefined },
+      ['m'],
+    );
+    expect(utilityClasses).toBe('');
+    expect(utilityStyle).toEqual({});
+  });
+
+  it('returns empty classes and style when utility values are null', () => {
+    const { utilityClasses, utilityStyle } = processUtilityProps({ m: null }, [
+      'm',
+    ]);
+    expect(utilityClasses).toBe('');
+    expect(utilityStyle).toEqual({});
+  });
+
+  it('generates a utility class for a predefined spacing value', () => {
+    const { utilityClasses } = processUtilityProps({ m: '2' }, ['m']);
+    expect(utilityClasses).toBe('bui-m-2');
+  });
+
+  it('generates a CSS custom property for a custom value', () => {
+    const { utilityStyle } = processUtilityProps({ width: '100px' }, ['width']);
+    expect(utilityStyle).toEqual({ '--width': '100px' });
+  });
+
+  it('generates both the class name and CSS var for custom values', () => {
+    const { utilityClasses, utilityStyle } = processUtilityProps(
+      { width: '100px' },
+      ['width'],
+    );
+    expect(utilityClasses).toBe('bui-w');
+    expect(utilityStyle).toEqual({ '--width': '100px' });
+  });
+
+  it('handles responsive utility values with breakpoint prefixes', () => {
+    const { utilityClasses } = processUtilityProps(
+      { m: { initial: '2', md: '4' } },
+      ['m'],
+    );
+    expect(utilityClasses).toContain('bui-m-2');
+    expect(utilityClasses).toContain('md:bui-m-4');
+  });
+
+  it('uses no prefix for the initial breakpoint in responsive values', () => {
+    const { utilityClasses } = processUtilityProps({ m: { initial: '2' } }, [
+      'm',
+    ]);
+    expect(utilityClasses).toBe('bui-m-2');
+  });
+
+  it('applies the transform function (grow: true becomes 1)', () => {
+    const { utilityStyle } = processUtilityProps({ grow: true }, ['grow']);
+    expect(utilityStyle).toEqual({ '--grow': 1 });
+  });
+
+  it('applies the transform function (basis: 42 becomes "42px")', () => {
+    const { utilityStyle } = processUtilityProps({ basis: 42 }, ['basis']);
+    expect(utilityStyle).toEqual({ '--basis': '42px' });
+  });
+
+  it('ignores values not in the valid list for fixed-value props', () => {
+    const { utilityClasses, utilityStyle } = processUtilityProps(
+      { position: 'invalid' },
+      ['position'],
+    );
+    expect(utilityClasses).toBe('');
+    expect(utilityStyle).toEqual({});
+  });
+
+  it('combines classes and styles from multiple utility props', () => {
+    const { utilityClasses, utilityStyle } = processUtilityProps(
+      { m: '2', p: '4', width: '100px' },
+      ['m', 'p', 'width'],
+    );
+    expect(utilityClasses).toContain('bui-m-2');
+    expect(utilityClasses).toContain('bui-p-4');
+    expect(utilityClasses).toContain('bui-w');
+    expect(utilityStyle).toEqual({ '--width': '100px' });
+  });
+
+  it('handles a mix of predefined and custom values across different props', () => {
+    const { utilityClasses, utilityStyle } = processUtilityProps(
+      { m: '2', width: '100px', position: 'relative' },
+      ['m', 'width', 'position'],
+    );
+    expect(utilityClasses).toContain('bui-m-2');
+    expect(utilityClasses).toContain('bui-w');
+    expect(utilityClasses).toContain('bui-position-relative');
+    expect(utilityStyle).toEqual({ '--width': '100px' });
   });
 });
