@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 
 const FIRST_PAGE_CURSOR = Symbol('firstPage');
 
@@ -44,6 +44,7 @@ export interface UsePageCacheOptions<T, TCursor extends CursorType = string> {
     signal: AbortSignal;
   }) => Promise<GetDataResult<T, TCursor>>;
   initialCurrentCursor?: TCursor;
+  infinite?: boolean;
 }
 
 /** @internal */
@@ -64,6 +65,7 @@ type Direction = 'mount' | 'reset' | 'refresh' | 'next' | 'prev';
 
 class PageCacheStore<T, TCursor extends CursorType> {
   private cache = new Map<InternalCursor<TCursor>, PageEntry<T, TCursor>>();
+  version = 0;
 
   get(cursor: InternalCursor<TCursor>): PageEntry<T, TCursor> | undefined {
     return this.cache.get(cursor);
@@ -80,11 +82,13 @@ class PageCacheStore<T, TCursor extends CursorType> {
       prevCursor: undefined,
     };
     this.cache.set(cursor, entry);
+    this.version++;
     return entry;
   }
 
   clear() {
     this.cache.clear();
+    this.version++;
   }
 
   getTargetCursor(
@@ -122,6 +126,58 @@ class PageCacheStore<T, TCursor extends CursorType> {
     } else if (direction === 'prev') {
       entry.nextCursor = currentCursor;
     }
+    this.version++;
+  }
+
+  markDataLoaded(
+    entry: PageEntry<T, TCursor>,
+    data: T[],
+    nextCursor: TCursor | undefined,
+    prevCursor: TCursor | undefined,
+  ) {
+    entry.data = data;
+    if (entry.nextCursor === undefined && nextCursor !== undefined) {
+      entry.nextCursor = nextCursor;
+    }
+    if (entry.prevCursor === undefined && prevCursor !== undefined) {
+      entry.prevCursor = prevCursor;
+    }
+    this.version++;
+  }
+
+  getAllData(startCursor: InternalCursor<TCursor>): T[] | undefined {
+    const firstEntry = this.cache.get(startCursor);
+    if (!firstEntry || firstEntry.data === undefined) {
+      return undefined;
+    }
+
+    const result: T[] = [];
+    let cursor: InternalCursor<TCursor> | undefined = startCursor;
+
+    while (cursor !== undefined) {
+      const entry = this.cache.get(cursor);
+      if (!entry?.data) break;
+      result.push(...entry.data);
+      cursor = entry.nextCursor;
+    }
+
+    return result;
+  }
+
+  getFirstCursor(fromCursor: InternalCursor<TCursor>): InternalCursor<TCursor> {
+    let cursor = fromCursor;
+    const visited = new Set<InternalCursor<TCursor>>();
+
+    while (true) {
+      visited.add(cursor);
+      const entry = this.cache.get(cursor);
+      if (!entry?.prevCursor || visited.has(entry.prevCursor)) break;
+      const prevEntry = this.cache.get(entry.prevCursor);
+      if (!prevEntry?.data) break;
+      cursor = entry.prevCursor;
+    }
+
+    return cursor;
   }
 }
 
@@ -141,7 +197,7 @@ function toExternalCursor<TCursor extends CursorType>(
 export function usePageCache<T, TCursor extends CursorType = string>(
   options: UsePageCacheOptions<T, TCursor>,
 ): UsePageCacheResult<T, TCursor> {
-  const { getData, initialCurrentCursor } = options;
+  const { getData, initialCurrentCursor, infinite } = options;
 
   const [currentCursor, setCurrentCursor] = useState<InternalCursor<TCursor>>(
     () => toInternalCursor(initialCurrentCursor),
@@ -159,6 +215,13 @@ export function usePageCache<T, TCursor extends CursorType = string>(
   const data = currentPage?.data;
   const hasNextPage = currentPage?.nextCursor !== undefined;
   const hasPreviousPage = currentPage?.prevCursor !== undefined;
+
+  const firstCursor = cacheStore.getFirstCursor(currentCursor);
+  const cacheVersion = cacheStore.version;
+  const allData = useMemo(
+    () => cacheStore.getAllData(firstCursor),
+    [cacheStore, firstCursor, cacheVersion],
+  );
 
   const goToPage = useCallback(
     async (direction: Direction) => {
@@ -202,14 +265,12 @@ export function usePageCache<T, TCursor extends CursorType = string>(
           return;
         }
 
-        entry.data = result.data;
-
-        if (entry.nextCursor === undefined && result.nextCursor !== undefined) {
-          entry.nextCursor = result.nextCursor;
-        }
-        if (entry.prevCursor === undefined && result.prevCursor !== undefined) {
-          entry.prevCursor = result.prevCursor;
-        }
+        cacheStore.markDataLoaded(
+          entry,
+          result.data,
+          result.nextCursor,
+          result.prevCursor,
+        );
 
         if (result.totalCount !== undefined) {
           setTotalCount(result.totalCount);
@@ -268,7 +329,7 @@ export function usePageCache<T, TCursor extends CursorType = string>(
   return {
     isPending,
     error,
-    data,
+    data: infinite ? allData : data,
     totalCount,
     currentCursor: toExternalCursor(currentCursor),
     hasPreviousPage,
