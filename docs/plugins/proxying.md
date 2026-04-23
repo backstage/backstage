@@ -191,5 +191,7 @@ point (usually `packages/backend/src/index.ts`):
 
 ```ts
 backend.add(import('@backstage/plugin-proxy-backend'));
-backend.add(import('@internal/plugin-proxy-backend-module-demo-additional-endpoints'));
+backend.add(
+  import('@internal/plugin-proxy-backend-module-demo-additional-endpoints'),
+);
 ```
