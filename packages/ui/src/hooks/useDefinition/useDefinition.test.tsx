@@ -120,10 +120,10 @@ function createRouterWrapper({
   basename?: string;
   currentRoute: string;
 }) {
-  return function Wrapper({ children }: PropsWithChildren) {
+  return function RouterWrapper({ children }: PropsWithChildren) {
     const entry = basename ? `${basename}${currentRoute}` : currentRoute;
-    // Build nested Routes one level per path segment. Each parent uses a plain
-    // (non-splat) path so that `..` resolution works correctly at every depth.
+    // Build nested Routes one level per path segment. The leaf route uses a
+    // non-splat path so that `..` resolution works correctly.
     const segments =
       currentRoute === '/'
         ? []
@@ -380,7 +380,7 @@ describe('useDefinition', () => {
       expect(result.current.dataAttributes['data-count']).toBe('42');
     });
 
-    it('skips data-bg for bg prop when definition.bg is provider', () => {
+    it('does not generate data-bg from propDefs when bg=provider (uses provider path instead)', () => {
       const localProviderDef = {
         styles: { root: 'css-root' },
         classNames: { root: 'root' },
