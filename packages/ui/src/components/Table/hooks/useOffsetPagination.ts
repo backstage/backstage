@@ -80,6 +80,7 @@ export function useOffsetPagination<T extends TableItem, TFilter>(
   const cache = usePageCache<T, number>({
     getData: wrappedGetData,
     initialCurrentCursor: initialOffset > 0 ? initialOffset : undefined,
+    infinite: paginationOptions.infinite,
   });
 
   useDebouncedReload(query, pageSize, cache.reload);

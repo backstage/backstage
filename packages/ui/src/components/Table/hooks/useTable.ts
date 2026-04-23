@@ -44,6 +44,7 @@ function useTableProps<T extends TableItem>(
     onPreviousPage: onPreviousPageCallback,
     getLabel,
     showPaginationLabel,
+    infinite,
   } = paginationOptions;
 
   const previousDataRef = useRef(paginationResult.data);
@@ -55,6 +56,25 @@ function useTableProps<T extends TableItem>(
   const isStale = paginationResult.isPending && displayData !== undefined;
 
   const pagination = useMemo(() => {
+    if (infinite) {
+      return {
+        type: 'infinite' as const,
+        onLoadMore: () => {
+          paginationResult.onNextPage();
+          onNextPageCallback?.();
+        },
+        onLoadPrevious: paginationResult.hasPreviousPage
+          ? () => {
+              paginationResult.onPreviousPage();
+              onPreviousPageCallback?.();
+            }
+          : () => {},
+        isLoading: paginationResult.isPending,
+        hasMoreItems: paginationResult.hasNextPage,
+        hasPreviousPages: paginationResult.hasPreviousPage,
+      };
+    }
+
     if (paginationOptions.type === 'none') {
       return { type: 'none' as const };
     }
@@ -83,7 +103,9 @@ function useTableProps<T extends TableItem>(
       showPaginationLabel,
     };
   }, [
+    infinite,
     paginationOptions.type,
+    paginationResult.isPending,
     paginationResult.pageSize,
     pageSizeOptions,
     paginationResult.offset,
@@ -110,6 +132,7 @@ function useTableProps<T extends TableItem>(
       error: paginationResult.error,
       pagination,
       sort: sortState,
+      ...(infinite ? { virtualized: true as const } : undefined),
     }),
     [
       displayData,
@@ -118,6 +141,7 @@ function useTableProps<T extends TableItem>(
       paginationResult.error,
       pagination,
       sortState,
+      infinite,
     ],
   );
 }
