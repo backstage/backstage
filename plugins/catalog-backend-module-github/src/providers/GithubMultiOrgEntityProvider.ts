@@ -297,10 +297,27 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       : await this.getAllOrgs(this.options.gitHubConfig);
 
     for (const org of orgsToProcess) {
-      const { headers, type: tokenType } =
-        await this.options.githubCredentialsProvider.getCredentials({
-          url: `${this.options.githubUrl}/${org}`,
-        });
+      let headers: Record<string, string | undefined> | undefined;
+      let tokenType: string | undefined;
+      try {
+        ({ headers, type: tokenType } =
+          await this.options.githubCredentialsProvider.getCredentials({
+            url: `${this.options.githubUrl}/${org}`,
+          }));
+      } catch (error: any) {
+        // When a GitHub App is configured but not installed on one of the
+        // orgs listed in the provider config, `getCredentials` throws a
+        // NotFoundError. Skip that org with a clear warning rather than
+        // aborting the whole refresh, so orgs with the app installed still
+        // sync. See docs/integrations/github/github-apps.md#troubleshooting.
+        if (error?.name === 'NotFoundError') {
+          logger.warn(
+            `Skipping GitHub org "${org}": no app installation found. Check that the GitHub App is installed on this org (see https://backstage.io/docs/integrations/github/github-apps/#troubleshooting). Underlying error: ${error.message}`,
+          );
+          continue;
+        }
+        throw error;
+      }
       const client = graphql.defaults({
         baseUrl: this.options.gitHubConfig.apiBaseUrl,
         headers,

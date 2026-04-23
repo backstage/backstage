@@ -969,6 +969,54 @@ describe('GithubMultiOrgEntityProvider', () => {
 
       expect(entityProviderConnection.applyMutation).not.toHaveBeenCalled();
     });
+
+    it('should warn and skip orgs without an app installation instead of aborting the refresh', async () => {
+      const notFoundError = new Error(
+        'No app installation found for orgB in 12345',
+      );
+      notFoundError.name = 'NotFoundError';
+
+      mockGetCredentials
+        .mockImplementationOnce(() => ({
+          headers: { token: 'blah' },
+          type: 'app',
+        }))
+        .mockImplementationOnce(() => {
+          throw notFoundError;
+        });
+
+      entityProvider = new GithubMultiOrgEntityProvider({
+        id: 'my-id',
+        gitHubConfig,
+        githubCredentialsProvider: {
+          getCredentials: mockGetCredentials,
+        },
+        githubUrl: 'https://github.com',
+        logger,
+        orgs: ['orgA', 'orgB'],
+      });
+
+      await entityProvider.connect(entityProviderConnection);
+
+      mockClient
+        .mockResolvedValueOnce({
+          organization: {
+            membersWithRole: { pageInfo: { hasNextPage: false }, nodes: [] },
+          },
+        })
+        .mockResolvedValueOnce({
+          organization: {
+            teams: { pageInfo: { hasNextPage: false }, nodes: [] },
+          },
+        });
+
+      await expect(entityProvider.read()).resolves.not.toThrow();
+
+      expect(logger.warn).toHaveBeenCalledWith(
+        expect.stringContaining('Skipping GitHub org "orgB"'),
+      );
+      expect(entityProviderConnection.applyMutation).toHaveBeenCalled();
+    });
   });
 
   describe('withLocations', () => {
