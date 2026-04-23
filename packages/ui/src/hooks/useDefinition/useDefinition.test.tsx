@@ -47,7 +47,7 @@ const basicDef = {
     size: { dataAttribute: true, default: 'medium' } as const,
     className: {},
   },
-} as ComponentConfig<any, any>;
+} as const satisfies ComponentConfig<any, any>;
 
 const multiSlotDef = {
   styles: { root: 'css-root', content: 'css-content' },
@@ -57,7 +57,7 @@ const multiSlotDef = {
     className: {},
   },
   utilityProps: ['m'] as const,
-} as ComponentConfig<any, any>;
+} as const satisfies ComponentConfig<any, any>;
 
 const utilityDef = {
   styles: { root: 'css-root' },
@@ -67,7 +67,7 @@ const utilityDef = {
     className: {},
   },
   utilityProps: ['m', 'p', 'width'] as const,
-} as ComponentConfig<any, any>;
+} as const satisfies ComponentConfig<any, any>;
 
 const providerDef = {
   styles: { root: 'css-root' },
@@ -78,7 +78,7 @@ const providerDef = {
     className: {},
   },
   bg: 'provider' as const,
-} as ComponentConfig<any, any>;
+} as const satisfies ComponentConfig<any, any>;
 
 const consumerDef = {
   styles: { root: 'css-root' },
@@ -88,7 +88,7 @@ const consumerDef = {
     className: {},
   },
   bg: 'consumer' as const,
-} as ComponentConfig<any, any>;
+} as const satisfies ComponentConfig<any, any>;
 
 const analyticsDef = {
   styles: { root: 'css-root' },
@@ -98,7 +98,7 @@ const analyticsDef = {
     className: {},
   },
   analytics: true,
-} as ComponentConfig<any, any>;
+} as const satisfies ComponentConfig<any, any>;
 
 const hrefDef = {
   styles: { root: 'css-root' },
@@ -107,7 +107,7 @@ const hrefDef = {
     href: {},
     className: {},
   },
-} as ComponentConfig<any, any>;
+} as const satisfies ComponentConfig<any, any>;
 
 // ---------------------------------------------------------------------------
 // Tests
@@ -171,7 +171,7 @@ describe('useDefinition', () => {
         { wrapper: Wrapper },
       );
 
-      expect(result.current.ownProps.size).toBe('medium');
+      expect((result.current.ownProps as any).size).toBe('medium');
     });
 
     it('returns rest props for props not in propDefs or utilityProps', () => {
@@ -370,7 +370,7 @@ describe('useDefinition', () => {
           count: { dataAttribute: true } as const,
           className: {},
         },
-      } as ComponentConfig<any, any>;
+      } as const satisfies ComponentConfig<any, any>;
 
       const { result } = renderHook(
         () => useDefinition(numericDef, { count: 42 }),
@@ -390,7 +390,7 @@ describe('useDefinition', () => {
           className: {},
         },
         bg: 'provider' as const,
-      } as ComponentConfig<any, any>;
+      } as const satisfies ComponentConfig<any, any>;
 
       const { result } = renderHook(
         () =>
