@@ -576,13 +576,13 @@
 <header>
   <div class="wrap">
     <h1>Manifest Debugger</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">50 components ok</span><span class="filter-pill ok" aria-disabled="true">458 stories ok</span></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">50 components ok</span><span class="filter-pill ok" aria-disabled="true">459 stories ok</span></div>
   </div>
 </header>
 <main>
   <div class="wrap">
     <div class="note info" style="margin-bottom: 16px;">
-            <strong>Tip:</strong> You are using <code>react-docgen</code> (the default). Generation took <strong>3.1s</strong>. For higher quality prop types, consider switching to <code>react-docgen-typescript</code> in your <code>main.ts</code>:
+            <strong>Tip:</strong> You are using <code>react-docgen</code> (the default). Generation took <strong>3.0s</strong>. For higher quality prop types, consider switching to <code>react-docgen-typescript</code> in your <code>main.ts</code>:
             <pre><code>typescript: {
   reactDocgen: 'react-docgen-typescript',
 }</code></pre>
@@ -3786,7 +3786,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
       <div class="badges">
         <label for="c-11-backstage-ui-checkbox-props" class="badge ok as-toggle">2 prop types</label>
         
-        <label for="c-11-backstage-ui-checkbox-stories" class="badge ok as-toggle">5 stories</label>
+        <label for="c-11-backstage-ui-checkbox-stories" class="badge ok as-toggle">6 stories</label>
         
       </div>
     </div>
@@ -3875,6 +3875,15 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
+                <span class="ex-name">Invalid</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Invalid = () =&gt; &lt;Checkbox isInvalid /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
                 <span class="ex-name">All Variants</span>
                 <span class="badge ok">story ok</span>
               </div>
@@ -3891,6 +3900,13 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     &lt;/Checkbox&gt;
     &lt;Checkbox isIndeterminate isDisabled&gt;
       Indeterminate &amp; Disabled
+    &lt;/Checkbox&gt;
+    &lt;Checkbox isInvalid&gt;Invalid&lt;/Checkbox&gt;
+    &lt;Checkbox isInvalid isSelected&gt;
+      Invalid &amp; Checked
+    &lt;/Checkbox&gt;
+    &lt;Checkbox isInvalid isIndeterminate&gt;
+      Invalid &amp; Indeterminate
     &lt;/Checkbox&gt;
   &lt;/Flex&gt;
 );</code></pre>
