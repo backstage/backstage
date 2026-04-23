@@ -148,19 +148,37 @@ export function useCompletePagination<T extends TableItem, TFilter>(
     sortFn,
   ]);
 
+  const processedDataRef = useRef(processedData);
+  useEffect(() => {
+    if (
+      paginationOptions.infinite &&
+      processedData !== processedDataRef.current
+    ) {
+      processedDataRef.current = processedData;
+      setOffset(0);
+    }
+  }, [processedData, paginationOptions.infinite]);
+
   const totalCount = processedData?.length ?? 0;
 
   // Paginate the processed data
-  const paginatedData = useMemo(
-    () =>
-      noPagination
-        ? processedData
-        : processedData?.slice(offset, offset + pageSize),
-    [processedData, offset, pageSize, noPagination],
-  );
+  const paginatedData = useMemo(() => {
+    if (noPagination) {
+      return processedData;
+    }
+    const start = paginationOptions.infinite ? 0 : offset;
+    return processedData?.slice(start, offset + pageSize);
+  }, [
+    processedData,
+    offset,
+    pageSize,
+    noPagination,
+    paginationOptions.infinite,
+  ]);
 
   const hasNextPage = !noPagination && offset + pageSize < totalCount;
-  const hasPreviousPage = !noPagination && offset > 0;
+  const hasPreviousPage =
+    !noPagination && !paginationOptions.infinite && offset > 0;
 
   const onNextPage = useCallback(() => {
     if (offset + pageSize < totalCount) {
