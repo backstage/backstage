@@ -21,7 +21,11 @@ import { useBgProvider, useBgConsumer, BgProvider } from '../useBg';
 import { resolveDefinitionProps, processUtilityProps } from './helpers';
 import { useAnalytics } from '../../analytics/useAnalytics';
 import { noopTracker } from '../../analytics/useAnalytics';
-import { useHref, useInRouterContext } from 'react-router-dom';
+import {
+  useResolvedPath,
+  useInRouterContext,
+  createPath,
+} from 'react-router-dom';
 import { isExternalLink } from '../../utils/linkUtils';
 import type {
   ComponentConfig,
@@ -40,32 +44,13 @@ export function useDefinition<
 ): UseDefinitionResult<D, P> {
   const { breakpoint } = useBreakpoint();
 
-  // Pre-resolve href at component render time (where route context is
-  // correct), so that click-navigation has a correct absolute path
-  // regardless of where useNavigate is called. `useHref` returns the
-  // path with basename prepended; strip it so the output is the
-  // canonical pre-basename form that react-router's downstream useHref
-  // and navigate both expect as input (avoids double-prefixing).
-  // External URLs bypass resolution.
   let hrefResolvedProps = props;
   const hasRouter = useInRouterContext();
   if (hasRouter) {
     const rawHref = (props as any).href;
-    // useHref('/') returns the router's basename. Strip trailing slashes
-    // so the prefix check works regardless of how the consumer configured
-    // their <Router basename>.
-    const basename = useHref('/').replace(/\/+$/, '') || '/';
-    const absoluteHref = useHref(rawHref ?? '');
+    const resolved = useResolvedPath(rawHref ?? '');
     if (rawHref !== undefined && !isExternalLink(rawHref)) {
-      let stripped = absoluteHref;
-      if (
-        basename !== '/' &&
-        (absoluteHref === basename || absoluteHref.startsWith(`${basename}/`))
-      ) {
-        stripped =
-          absoluteHref === basename ? '/' : absoluteHref.slice(basename.length);
-      }
-      hrefResolvedProps = { ...props, href: stripped } as P;
+      hrefResolvedProps = { ...props, href: createPath(resolved) } as P;
     }
   }
 
