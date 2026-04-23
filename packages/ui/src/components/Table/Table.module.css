@@ -36,7 +36,6 @@
     border-collapse: collapse;
     table-layout: fixed;
     transition: opacity 0.2s ease-in-out;
-    overflow: auto;
     flex: 1;
     min-height: 0;
 
