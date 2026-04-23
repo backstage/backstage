@@ -17,7 +17,7 @@ import { Express } from 'express';
 import { Server } from 'node:http';
 import { Proxy } from './proxy/setup';
 
-const proxiesToCleanup: Proxy[] = [];
+const proxiesToCleanup: Set<Proxy> = new Set();
 
 /**
  * !!! THIS CURRENTLY ONLY SUPPORTS SUPERTEST !!!
@@ -29,7 +29,7 @@ const proxiesToCleanup: Proxy[] = [];
  */
 export async function wrapServer(app: Express): Promise<Server> {
   const proxy = new Proxy();
-  proxiesToCleanup.push(proxy);
+  proxiesToCleanup.add(proxy);
   await proxy.setup();
 
   const server = app.listen(proxy.forwardTo.port);
@@ -48,10 +48,12 @@ function registerHooks() {
   }
   registered = true;
 
-  afterAll(() => {
-    for (const proxy of proxiesToCleanup) {
-      proxy.stop();
-    }
+  afterAll(async () => {
+    const stopPromises = Array.from(proxiesToCleanup).map(proxy =>
+      proxy.stop(),
+    );
+    await Promise.allSettled(stopPromises);
+    proxiesToCleanup.clear();
   });
 }
 

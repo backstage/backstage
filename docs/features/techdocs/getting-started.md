@@ -4,6 +4,13 @@ title: Getting Started
 description: Getting Started Documentation
 ---
 
+::::info
+This documentation is written for the new frontend system, which is the default
+in new Backstage apps. If your Backstage app still uses the old frontend system,
+read the [old frontend system version of this guide](./getting-started--old.md)
+instead.
+::::
+
 TechDocs functions as a plugin in Backstage and ships with it installed out of the box, so you will need to use Backstage to use TechDocs.
 
 If you haven't setup Backstage already, start [here](../../getting-started/index.md).
@@ -11,87 +18,51 @@ If you haven't setup Backstage already, start [here](../../getting-started/index
 ## Adding TechDocs frontend plugin
 
 The first step is to add the TechDocs plugin to your Backstage application.
-Navigate to your new Backstage application directory. And then to your
-`packages/app` directory, and install the `@backstage/plugin-techdocs` package.
 
 ```bash title="From your Backstage root directory"
 yarn --cwd packages/app add @backstage/plugin-techdocs
 ```
 
-Once the package has been installed, you need to import the plugin in your app.
+Once installed, the plugin is automatically available in your app through the default feature discovery. For more details and alternative installation methods, see [installing plugins](../../frontend-system/building-apps/05-installing-plugins.md).
 
-In `packages/app/src/App.tsx`, import `TechDocsPage` and add the following to
-`FlatRoutes`:
+The plugin provides a docs index page at `/docs` and a reader page for individual documentation sites, along with a "Docs" navigation item in the sidebar and a documentation tab on entity pages.
+
+## Using TechDocs Addons
+
+The TechDocs Addon framework lets you render React components in documentation pages. Addons are provided as separate plugin modules.
+
+For example, to add the Report Issue addon, first install the package:
+
+```bash title="From your Backstage root directory"
+yarn --cwd packages/app add @backstage/plugin-techdocs-module-addons-contrib
+```
+
+Then install the addon module in your app:
 
 ```tsx title="packages/app/src/App.tsx"
-import {
-  DefaultTechDocsHome,
-  TechDocsIndexPage,
-  TechDocsReaderPage,
-} from '@backstage/plugin-techdocs';
+import { createApp } from '@backstage/frontend-defaults';
+import { techDocsReportIssueAddonModule } from '@backstage/plugin-techdocs-module-addons-contrib/alpha';
 
-const AppRoutes = () => {
-  <FlatRoutes>
-    {/* ... other plugin routes */}
-    <Route path="/docs" element={<TechDocsIndexPage />}>
-      <DefaultTechDocsHome />
-    </Route>
-    <Route
-      path="/docs/:namespace/:kind/:name/*"
-      element={<TechDocsReaderPage />}
-    />
-  </FlatRoutes>;
-};
+const app = createApp({
+  features: [techDocsReportIssueAddonModule],
+});
+
+export default app.createRoot();
 ```
 
-It would be nice to decorate your pages with something else... Having a link that redirects you to a new issue page when you highlight text in your documentation would be really cool, right? Let's learn how to do this using the TechDocs Addon Framework!
+The same package also provides `techDocsExpandableNavigationAddonModule`, `techDocsTextSizeAddonModule`, and `techDocsLightBoxAddonModule`.
 
-With the [TechDocs Addon framework](https://backstage.io/docs/features/techdocs/addons#installing-and-using-addons), you can render React components in documentation pages and these Addons can be provided by any Backstage plugin. The framework is exported by the [@backstage/plugin-techdocs-react](https://www.npmjs.com/package/@backstage/plugin-techdocs-react) package and there is a `<ReportIssue />` Addon in the [@backstage/plugin-techdocs-module-addons-contrib](https://www.npmjs.com/package/@backstage/plugin-techdocs-module-addons-contrib) package for you to use once you have these two dependencies installed:
-
-```tsx
-import {
-  DefaultTechDocsHome,
-  TechDocsIndexPage,
-  TechDocsReaderPage,
-} from '@backstage/plugin-techdocs';
-/* highlight-add-start */
-import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
-import { ReportIssue } from '@backstage/plugin-techdocs-module-addons-contrib';
-/* highlight-add-end */
-
-const AppRoutes = () => {
-  <FlatRoutes>
-    {/* ... other plugin routes */}
-    <Route path="/docs" element={<TechDocsIndexPage />}>
-      <DefaultTechDocsHome />
-    </Route>
-    <Route
-      path="/docs/:namespace/:kind/:name/*"
-      element={<TechDocsReaderPage />}
-    >
-      {/* highlight-add-start */}
-      <TechDocsAddons>
-        <ReportIssue />
-      </TechDocsAddons>
-      {/* highlight-add-end */}
-    </Route>
-  </FlatRoutes>;
-};
-```
-
-I know, you're curious to see how it looks, aren't you? See the image below:
+You can see the Report Issue addon in action when you highlight text in your documentation:
 
 <!-- todo: Needs zoomable plugin -->
 
 ![TechDocs Report Issue Add-on](../../assets/techdocs/report-issue-addon.png)
 
-By clicking the open new issue button, you will be redirected to the new issue page according to the source code provider you are using:
+By clicking the open new issue button, you are redirected to the new issue page according to the source code provider you are using:
 
 <!-- todo: Needs zoomable plugin -->
 
 ![TechDocs Report Issue Template](../../assets/techdocs/report-issue-template.png)
-
-That's it! Now, we need the TechDocs Backend plugin for the frontend to work.
 
 ## Adding TechDocs Backend plugin
 
@@ -115,13 +86,11 @@ backend.add(import('@backstage/plugin-techdocs-backend'));
 backend.start();
 ```
 
-That's it! TechDocs frontend and backend have now been added to your Backstage
-app. Now let us tweak some configurations to suit your needs.
+That's it! TechDocs frontend and backend have now been added to your Backstage app. Now let us tweak some configurations to suit your needs.
 
 ## Setting the configuration
 
-**See [TechDocs Configuration Options](configuration.md) for complete
-configuration reference.**
+**See [TechDocs Configuration Options](configuration.md) for complete configuration reference.**
 
 ### Should TechDocs Backend generate docs?
 
@@ -130,28 +99,15 @@ techdocs:
   builder: 'local'
 ```
 
-Note that we recommend generating docs on CI/CD instead. Read more in the
-"Basic" and "Recommended" sections of the
-[TechDocs Architecture](architecture.md). But if you want to get started quickly
-set `techdocs.builder` to `'local'` so that TechDocs Backend is responsible for
-generating documentation sites. If set to `'external'`, Backstage will assume
-that the sites are being generated on each entity's CI/CD pipeline, and are
-being stored in a storage somewhere.
+Note that we recommend generating docs on CI/CD instead. Read more in the "Basic" and "Recommended" sections of the [TechDocs Architecture](architecture.md). But if you want to get started quickly set `techdocs.builder` to `'local'` so that TechDocs Backend is responsible for generating documentation sites. If set to `'external'`, Backstage will assume that the sites are being generated on each entity's CI/CD pipeline, and are being stored in a storage somewhere.
 
-When `techdocs.builder` is set to `'external'`, TechDocs becomes more or less a
-read-only experience where it serves static files from a storage containing all
-the generated documentation.
+When `techdocs.builder` is set to `'external'`, TechDocs becomes more or less a read-only experience where it serves static files from a storage containing all the generated documentation.
 
 ### Choosing storage (publisher)
 
-TechDocs needs to know where to store generated documentation sites and where to
-fetch the sites from. This is managed by a
-[Publisher](./concepts.md#techdocs-publisher). Examples: Google Cloud Storage,
-Amazon S3, or local filesystem of Backstage server.
+TechDocs needs to know where to store generated documentation sites and where to fetch the sites from. This is managed by a [Publisher](./concepts.md#techdocs-publisher). Examples: Google Cloud Storage, Amazon S3, or local filesystem of Backstage server.
 
-It is okay to use the local filesystem in a "basic" setup when you are trying
-out Backstage for the first time. At a later time, review
-[Using Cloud Storage](./using-cloud-storage.md).
+It is okay to use the local filesystem in a "basic" setup when you are trying out Backstage for the first time. At a later time, review [Using Cloud Storage](./using-cloud-storage.md).
 
 ```yaml
 techdocs:
@@ -164,15 +120,9 @@ techdocs:
 
 You can skip this if your `techdocs.builder` is set to `'external'`.
 
-The TechDocs Backend plugin runs a docker container with mkdocs installed to
-generate the frontend of the docs from source files (Markdown). If you are
-deploying Backstage using Docker, this will mean that your Backstage Docker
-container will try to run another Docker container for TechDocs Backend.
+The TechDocs Backend plugin runs a docker container with mkdocs installed to generate the frontend of the docs from source files (Markdown). If you are deploying Backstage using Docker, this will mean that your Backstage Docker container will try to run another Docker container for TechDocs Backend.
 
-To avoid this problem, we have a configuration available. You can set a value in
-your `app-config.yaml` that tells the techdocs generator if it should run the
-`local` mkdocs or run it from `docker`. This defaults to running as `docker` if
-no config is provided.
+To avoid this problem, we have a configuration available. You can set a value in your `app-config.yaml` that tells the techdocs generator if it should run the `local` mkdocs or run it from `docker`. This defaults to running as `docker` if no config is provided.
 
 ```yaml
 techdocs:
@@ -183,15 +133,11 @@ techdocs:
     runIn: local
 ```
 
-Setting `generator.runIn` to `local` means you will have to make sure your
-environment is compatible with techdocs.
+Setting `generator.runIn` to `local` means you will have to make sure your environment is compatible with techdocs.
 
-You will have to install the `mkdocs` and `mkdocs-techdocs-core` package from
-pip, optionally also `graphviz` and `plantuml` from your OS package manager (e.g.
-apt).
+You will have to install the `mkdocs` and `mkdocs-techdocs-core` package from pip, optionally also `graphviz` and `plantuml` from your OS package manager (e.g. apt).
 
-You can do so by including the following lines right above `USER node` of your
-`Dockerfile`:
+You can do so by including the following lines right above `USER node` of your `Dockerfile`:
 
 ```Dockerfile
 RUN apt-get update && \
@@ -205,20 +151,11 @@ ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 RUN pip3 install mkdocs-techdocs-core
 ```
 
-Please be aware that the version requirement could change, you need to check our
-[`Dockerfile`](https://github.com/backstage/techdocs-container/blob/main/Dockerfile)
-and make sure to match with it.
+Please be aware that the version requirement could change, you need to check our [`Dockerfile`](https://github.com/backstage/techdocs-container/blob/main/Dockerfile) and make sure to match with it.
 
-On a Debian-based Docker container, Python packages must be either installed using
-the OS package manager or within a virtual environment (see the
-[related PEP](https://peps.python.org/pep-0668/)). Alternative is to use e.g.
-[pipx](https://pypa.github.io/pipx/) for installing Python packages in an isolated
-environment.
+On a Debian-based Docker container, Python packages must be either installed using the OS package manager or within a virtual environment (see the [related PEP](https://peps.python.org/pep-0668/)). Alternative is to use e.g. [pipx](https://pypa.github.io/pipx/) for installing Python packages in an isolated environment.
 
-The above Dockerfile snippet installs the latest `mkdocs-techdoc-core` package.
-Version numbers can be found in the corresponding
-[changelog](https://github.com/backstage/mkdocs-techdocs-core#changelog). In
-case you want to pin the version, use the example below:
+The above Dockerfile snippet installs the latest `mkdocs-techdocs-core` package. Version numbers can be found in the corresponding [changelog](https://github.com/backstage/mkdocs-techdocs-core#changelog). In case you want to pin the version, use the example below:
 
 ```Dockerfile
 RUN pip3 install mkdocs-techdocs-core==1.2.3
@@ -226,9 +163,7 @@ RUN pip3 install mkdocs-techdocs-core==1.2.3
 
 Note: We recommend Python version 3.11 or higher.
 
-> Caveat: Please install the `mkdocs-techdocs-core` package after all other
-> Python packages. The order is important to make sure we get correct version of
-> some of the dependencies.
+> Caveat: Please install the `mkdocs-techdocs-core` package after all other Python packages. The order is important to make sure we get correct version of some of the dependencies.
 
 ## Additional reading
 

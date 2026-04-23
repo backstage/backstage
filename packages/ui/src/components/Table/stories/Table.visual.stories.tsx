@@ -274,7 +274,7 @@ export const LoadingState: Story = {
       <Table
         columnConfig={columns}
         data={undefined}
-        loading={true}
+        isPending
         pagination={{ type: 'none' }}
       />
     );

@@ -18,6 +18,7 @@ import { CompoundEntityRef, Entity } from '@backstage/catalog-model';
 import { useGetEntities } from './useGetEntities';
 import { renderHook, waitFor } from '@testing-library/react';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
+import qs from 'qs';
 
 const givenParentGroup = 'team.squad1';
 const givenLeafGroup = 'team.squad2';
@@ -45,8 +46,10 @@ const getEntityRelationsMock: jest.Mock<
   [Entity | undefined]
 > = jest.fn();
 jest.mock('@backstage/plugin-catalog-react', () => {
+  const actual = jest.requireActual('@backstage/plugin-catalog-react');
   return {
     catalogApiRef: {},
+    entityPresentationSnapshot: actual.entityPresentationSnapshot,
     getEntityRelations: jest.fn(entity => {
       return getEntityRelationsMock(entity);
     }) as any,
@@ -280,6 +283,144 @@ describe('useGetEntities', () => {
 
       expect(Array.isArray(owners)).toBeTruthy();
       expect(owners.length).toBeLessThanOrEqual(100);
+    });
+  });
+
+  describe('queryParams generation', () => {
+    afterEach(() => {
+      getEntityRelationsMock.mockRestore();
+      catalogApi.getEntities.mockRestore();
+      catalogApi.getEntitiesByRefs.mockRestore();
+    });
+
+    it('should produce query params with humanized entity refs as owners', async () => {
+      getEntityRelationsMock.mockReturnValue([]);
+      catalogApi.getEntities.mockResolvedValueOnce({
+        items: [
+          {
+            kind: 'Component',
+            metadata: { name: 'my-service', namespace: 'default' },
+            spec: { type: 'service' },
+          } as Partial<Entity> as Entity,
+        ],
+      });
+
+      const { result } = renderHook(
+        ({ entity }) => useGetEntities(entity, 'direct'),
+        { initialProps: { entity: givenLeafGroupEntity } },
+      );
+
+      await waitFor(() => expect(result.current.loading).toBe(false));
+
+      expect(result.current.componentsWithCounters).toHaveLength(1);
+      const params = qs.parse(
+        result.current.componentsWithCounters![0].queryParams,
+      );
+      expect(params).toEqual({
+        filters: {
+          kind: 'component',
+          type: 'service',
+          owners: givenLeafGroup,
+          user: 'all',
+        },
+      });
+    });
+
+    it('should include multiple owners as an array in query params', async () => {
+      getEntityRelationsMock
+        .mockReturnValueOnce([createGroupRefFromName(givenLeafGroup)])
+        .mockReturnValue([]);
+
+      catalogApi.getEntitiesByRefs.mockResolvedValueOnce({
+        items: [givenLeafGroupEntity],
+      });
+      catalogApi.getEntities.mockResolvedValueOnce({
+        items: [
+          {
+            kind: 'API',
+            metadata: { name: 'my-api', namespace: 'default' },
+            spec: { type: 'openapi' },
+          } as Partial<Entity> as Entity,
+        ],
+      });
+
+      const { result } = renderHook(
+        ({ entity }) => useGetEntities(entity, 'aggregated'),
+        { initialProps: { entity: givenParentGroupEntity } },
+      );
+
+      await waitFor(() => expect(result.current.loading).toBe(false));
+
+      expect(result.current.componentsWithCounters).toHaveLength(1);
+      const params = qs.parse(
+        result.current.componentsWithCounters![0].queryParams,
+      );
+      expect(params).toEqual({
+        filters: {
+          kind: 'api',
+          type: 'openapi',
+          owners: expect.arrayContaining([givenLeafGroup, givenParentGroup]),
+          user: 'all',
+        },
+      });
+    });
+
+    it('should group entities by kind and type in query params', async () => {
+      getEntityRelationsMock.mockReturnValue([]);
+      catalogApi.getEntities.mockResolvedValueOnce({
+        items: [
+          {
+            kind: 'Component',
+            metadata: { name: 'svc-1', namespace: 'default' },
+            spec: { type: 'service' },
+          } as Partial<Entity> as Entity,
+          {
+            kind: 'Component',
+            metadata: { name: 'svc-2', namespace: 'default' },
+            spec: { type: 'service' },
+          } as Partial<Entity> as Entity,
+          {
+            kind: 'API',
+            metadata: { name: 'api-1', namespace: 'default' },
+            spec: { type: 'openapi' },
+          } as Partial<Entity> as Entity,
+        ],
+      });
+
+      const { result } = renderHook(
+        ({ entity }) => useGetEntities(entity, 'direct'),
+        { initialProps: { entity: givenLeafGroupEntity } },
+      );
+
+      await waitFor(() => expect(result.current.loading).toBe(false));
+
+      expect(result.current.componentsWithCounters).toHaveLength(2);
+
+      const componentEntry = result.current.componentsWithCounters!.find(
+        c => c.kind === 'Component',
+      )!;
+      expect(componentEntry.counter).toBe(2);
+
+      const componentParams = qs.parse(componentEntry.queryParams);
+      expect(componentParams).toEqual({
+        filters: expect.objectContaining({
+          kind: 'component',
+          type: 'service',
+        }),
+      });
+
+      const apiEntry = result.current.componentsWithCounters!.find(
+        c => c.kind === 'API',
+      )!;
+      expect(apiEntry.counter).toBe(1);
+
+      const apiParams = qs.parse(apiEntry.queryParams);
+      expect(apiParams).toEqual({
+        filters: expect.objectContaining({
+          kind: 'api',
+          type: 'openapi',
+        }),
+      });
     });
   });
 

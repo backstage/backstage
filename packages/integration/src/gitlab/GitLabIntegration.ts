@@ -138,6 +138,7 @@ export class GitLabIntegration implements ScmIntegration {
   }
 }
 
+/** @internal */
 export async function sleep(
   durationMs: number,
   abortSignal: AbortSignal | null | undefined,

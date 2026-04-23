@@ -27,7 +27,6 @@ export const PluginHeaderDefinition = defineComponent<PluginHeaderOwnProps>()({
   classNames: {
     root: 'bui-PluginHeader',
     toolbar: 'bui-PluginHeaderToolbar',
-    toolbarWrapper: 'bui-PluginHeaderToolbarWrapper',
     toolbarContent: 'bui-PluginHeaderToolbarContent',
     toolbarControls: 'bui-PluginHeaderToolbarControls',
     toolbarIcon: 'bui-PluginHeaderToolbarIcon',

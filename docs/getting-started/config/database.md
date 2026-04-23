@@ -190,7 +190,7 @@ backend:
       # highlight-remove-end
 ```
 
-[Start the Backstage app](../index.md#2-run-the-backstage-app):
+[Start the Backstage app](../index.md#creating-and-running-a-backstage-application):
 
 ```shell
 yarn start

@@ -111,8 +111,14 @@
 
   .bui-Card:has(.bui-CardHeader) .bui-CardBody {
     padding-block-start: 0;
+  }
 
-    &::before {
+  .bui-Card:has(.bui-CardFooter) .bui-CardBody {
+    padding-block-end: 0;
+  }
+
+  @supports (animation-timeline: scroll()) {
+    .bui-Card:has(.bui-CardHeader) .bui-CardBody::before {
       content: '';
       position: sticky;
       top: 0;
@@ -130,12 +136,8 @@
       animation-timeline: scroll();
       animation-range: 0px 2.5rem;
     }
-  }
 
-  .bui-Card:has(.bui-CardFooter) .bui-CardBody {
-    padding-block-end: 0;
-
-    &::after {
+    .bui-Card:has(.bui-CardFooter) .bui-CardBody::after {
       content: '';
       position: sticky;
       bottom: 0;

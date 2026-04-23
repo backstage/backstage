@@ -24,7 +24,7 @@ import {
 } from 'node:path';
 import { ConfigSchemaPackageEntry } from './types';
 import { JsonObject } from '@backstage/types';
-import { assertError } from '@backstage/errors';
+import { toError } from '@backstage/errors';
 
 type Item = {
   name?: string;
@@ -249,9 +249,9 @@ async function compileTsSchemas(
         );
       }
     } catch (error) {
-      assertError(error);
-      if (error.message !== 'type Config not found') {
-        throw error;
+      const err = toError(error);
+      if (err.message !== 'type Config not found') {
+        throw err;
       }
     }
 

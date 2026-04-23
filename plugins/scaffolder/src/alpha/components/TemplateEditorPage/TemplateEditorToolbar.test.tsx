@@ -102,6 +102,21 @@ describe('TemplateEditorToolbar', () => {
     ).toBeInTheDocument();
   });
 
+  it('should not crash when no custom fields are available', async () => {
+    await renderInTestApp(<TemplateEditorToolbar fieldExtensions={[]} />);
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Custom Fields Explorer' }),
+    );
+
+    expect(
+      screen.getByPlaceholderText('Choose Custom Field Extension'),
+    ).toHaveValue('');
+    expect(
+      screen.getByRole('heading', { name: 'Template Spec' }),
+    ).toBeInTheDocument();
+  });
+
   it('should open the installed actions documentation', async () => {
     await renderInTestApp(
       <ApiProvider apis={apis}>
@@ -114,14 +129,16 @@ describe('TemplateEditorToolbar', () => {
 
     expect(screen.getByLabelText('Search for an action')).toBeInTheDocument();
     expect(screen.getByText('action:example')).toBeInTheDocument();
-    expect(screen.getByText('Example description')).toBeInTheDocument();
-    expect(screen.getByText('Inform the title')).toBeInTheDocument();
+
+    await userEvent.click(screen.getByText('action:example'));
+
+    expect(await screen.findByText('Inform the title')).toBeInTheDocument();
   });
 
   it('should accept custom toolbar actions', async () => {
     await renderInTestApp(
       <TemplateEditorToolbar>
-        <button>Custom action</button>
+        <button type="button">Custom action</button>
       </TemplateEditorToolbar>,
     );
 

@@ -58,7 +58,10 @@ import {
 import { createDefaultFilters } from '../lib/templating/filters/createDefaultFilters';
 import { createRouter } from './router';
 import { DatabaseTaskStore } from '../scaffolder/tasks/DatabaseTaskStore';
-import { actionsRegistryServiceMock } from '@backstage/backend-test-utils/alpha';
+import {
+  actionsRegistryServiceMock,
+  metricsServiceMock,
+} from '@backstage/backend-test-utils/alpha';
 import { ActionsService } from '@backstage/backend-plugin-api/alpha';
 
 function createDatabase(): DatabaseService {
@@ -201,6 +204,7 @@ const createTestRouter = async (
   const httpAuth = mockServices.httpAuth();
   const events = mockServices.events();
 
+  const permissionsRegistry = mockServices.permissionsRegistry.mock();
   const router = await createRouter({
     logger,
     config: new ConfigReader({}),
@@ -208,6 +212,7 @@ const createTestRouter = async (
     catalog,
     taskBroker,
     permissions,
+    permissionsRegistry,
     auth,
     httpAuth,
     events,
@@ -229,6 +234,7 @@ const createTestRouter = async (
       createDebugLogAction(),
     ],
     actionsRegistry: overrides.actionsRegistry ?? actionsRegistryServiceMock(),
+    metrics: metricsServiceMock.mock(),
   });
 
   router.use(mockErrorHandler());
@@ -281,7 +287,6 @@ describe('scaffolder router', () => {
 
       expect(response.body).toContainEqual({
         description: 'Test',
-        examples: [],
         id: 'test:my-demo-action',
         schema: {
           input: {
@@ -1567,6 +1572,46 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
       });
       expect(subscriber!.closed).toBe(true);
     });
+
+    it('should handle after=0 query param correctly', async () => {
+      const { router, taskBroker } = await createTestRouter();
+      (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
+        id: 'a-random-id',
+        spec: {} as any,
+        status: 'completed',
+        createdAt: '',
+        secrets: {
+          __initiatorCredentials: JSON.stringify(credentials),
+        },
+        createdBy: '',
+      });
+      let subscriber: ZenObservable.SubscriptionObserver<{
+        events: SerializedTaskEvent[];
+      }>;
+      (
+        taskBroker.event$ as jest.Mocked<TaskBroker>['event$']
+      ).mockImplementation(() => {
+        return new ObservableImpl(observer => {
+          subscriber = observer;
+          observer.next({ events: [] });
+        });
+      });
+
+      const response = await request(router)
+        .get('/v2/tasks/a-random-id/events')
+        .query({ after: 0 });
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual([]);
+
+      expect(taskBroker.event$).toHaveBeenCalledTimes(1);
+      expect(taskBroker.event$).toHaveBeenCalledWith({
+        taskId: 'a-random-id',
+        after: 0,
+      });
+      expect(subscriber!.closed).toBe(true);
+    });
+
     it('disallows users from seeing events for tasks they do not own', async () => {
       const { permissions, router, taskBroker } = await createTestRouter();
 

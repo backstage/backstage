@@ -156,6 +156,7 @@ import { CreateLocationRequest } from '../models/CreateLocationRequest.model';
 import { GetLocations200ResponseInner } from '../models/GetLocations200ResponseInner.model';
 import { GetLocationsByQueryRequest } from '../models/GetLocationsByQueryRequest.model';
 import { Location } from '../models/Location.model';
+import { LocationInput } from '../models/LocationInput.model';
 import { LocationsQueryResponse } from '../models/LocationsQueryResponse.model';
 
 /**
@@ -218,6 +219,16 @@ export type GetLocationsByQuery = {
   body: GetLocationsByQueryRequest;
   response: LocationsQueryResponse | Error;
 };
+/**
+ * @public
+ */
+export type UpdateLocation = {
+  path: {
+    id: string;
+  };
+  body: LocationInput;
+  response: Location | Error;
+};
 
 export type EndpointMap = {
   '#_delete|/entities/by-uid/{uid}': DeleteEntityByUid;
@@ -257,4 +268,6 @@ export type EndpointMap = {
   '#get|/locations': GetLocations;
 
   '#post|/locations/by-query': GetLocationsByQuery;
+
+  '#put|/locations/{id}': UpdateLocation;
 };

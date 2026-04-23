@@ -1,8 +1,8 @@
 # Knip report
 
-## Unused devDependencies (1)
+## Unused dependencies (1)
 
-| Name      | Location     | Severity |
-| :-------- | :----------- | :------- |
-| jest-when | plugins/scaffolder-backend-module-rails/package.json | error    |
+| Name              | Location          | Severity |
+| :---------------- | :---------------- | :------- |
+| @backstage/config | package.json:47:6 | error    |
 

@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
+import { createCatalogModelLayer } from '../model/createCatalogModelLayer';
 import type { Entity } from '../entity/Entity';
-import schema from '../schema/kinds/API.v1alpha1.schema.json';
+import jsonSchema from '../schema/kinds/API.v1alpha1.schema.json';
 import { ajvCompiledJsonSchemaValidator } from './util';
 
 /**
@@ -45,4 +46,48 @@ export interface ApiEntityV1alpha1 extends Entity {
  * @public
  */
 export const apiEntityV1alpha1Validator =
-  ajvCompiledJsonSchemaValidator(schema);
+  ajvCompiledJsonSchemaValidator(jsonSchema);
+
+/**
+ * Extends the catalog model with the API kind.
+ *
+ * @alpha
+ */
+export const apiEntityModel = createCatalogModelLayer({
+  layerId: 'catalog.backstage.io/kind-api',
+  builder: model => {
+    model.addKind({
+      group: 'backstage.io',
+      names: {
+        kind: 'API',
+        singular: 'api',
+        plural: 'apis',
+      },
+      description:
+        'An API describes an interface that can be exposed by a component.',
+      versions: [
+        {
+          name: ['v1alpha1', 'v1beta1'],
+          relationFields: [
+            {
+              selector: { path: 'spec.owner' },
+              relation: 'ownedBy',
+              defaultKind: 'Group',
+              defaultNamespace: 'inherit',
+              allowedKinds: ['Group', 'User'],
+            },
+            {
+              selector: { path: 'spec.system' },
+              relation: 'partOf',
+              defaultKind: 'System',
+              defaultNamespace: 'inherit',
+            },
+          ],
+          schema: {
+            jsonSchema,
+          },
+        },
+      ],
+    });
+  },
+});

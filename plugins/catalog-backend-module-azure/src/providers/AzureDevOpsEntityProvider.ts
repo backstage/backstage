@@ -29,7 +29,7 @@ import {
 import { LocationSpec } from '@backstage/plugin-catalog-common';
 import { readAzureDevOpsConfigs } from './config';
 import { AzureDevOpsConfig } from './types';
-import * as uuid from 'uuid';
+import { randomUUID } from 'node:crypto';
 import { codeSearch, CodeSearchResultItem } from '../lib';
 import {
   SchedulerService,
@@ -129,7 +129,7 @@ export class AzureDevOpsEntityProvider implements EntityProvider {
           const logger = this.logger.child({
             class: AzureDevOpsEntityProvider.prototype.constructor.name,
             taskId,
-            taskInstanceId: uuid.v4(),
+            taskInstanceId: randomUUID(),
           });
 
           try {

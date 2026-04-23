@@ -27,8 +27,9 @@ import {
 import { JSX } from 'react';
 import {
   FilterPredicate,
-  createZodV3FilterPredicateSchema,
+  createZodV4FilterPredicateSchema,
 } from '@backstage/filter-predicates';
+import { z } from 'zod/v4';
 import { resolveEntityFilterData } from './resolveEntityFilterData';
 import { Entity } from '@backstage/catalog-model';
 
@@ -60,12 +61,11 @@ export const EntityContentLayoutBlueprint = createExtensionBlueprint({
     filterExpression: entityFilterExpressionDataRef,
     component: entityCardLayoutComponentDataRef,
   },
-  config: {
-    schema: {
-      type: z => z.string().optional(),
-      filter: z =>
-        z.union([z.string(), createZodV3FilterPredicateSchema(z)]).optional(),
-    },
+  configSchema: {
+    type: z.string().optional(),
+    filter: z
+      .union([z.string(), createZodV4FilterPredicateSchema()])
+      .optional(),
   },
   *factory(
     {

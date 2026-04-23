@@ -24,7 +24,7 @@ import {
 import { cloneDeep } from 'lodash';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { v4 as uuid } from 'uuid';
+import { randomUUID as uuid } from 'node:crypto';
 
 import { IdentityClient } from './IdentityClient';
 import { DiscoveryService } from '@backstage/backend-plugin-api';

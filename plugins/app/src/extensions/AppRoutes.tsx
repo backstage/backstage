@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
+import { z } from 'zod/v4';
 import {
   createExtension,
   coreExtensionData,
   createExtensionInput,
   NotFoundErrorPage,
 } from '@backstage/frontend-plugin-api';
-import { useRoutes } from 'react-router-dom';
+import { Navigate, useRoutes } from 'react-router-dom';
 
 export const AppRoutes = createExtension({
   name: 'routes',
@@ -32,10 +33,29 @@ export const AppRoutes = createExtension({
       coreExtensionData.reactElement,
     ]),
   },
+  configSchema: {
+    redirects: z
+      .array(
+        z.object({
+          from: z.string(),
+          to: z.string(),
+        }),
+      )
+      .optional(),
+  },
   output: [coreExtensionData.reactElement],
-  factory({ inputs }) {
+  factory({ inputs, config }) {
+    const redirects = config.redirects ?? [];
+
     const Routes = () => {
       const element = useRoutes([
+        ...redirects.map(redirect => ({
+          path:
+            redirect.from === '/'
+              ? redirect.from
+              : `${redirect.from.replace(/\/$/, '')}/*`,
+          element: <Navigate to={redirect.to} replace />,
+        })),
         ...inputs.routes.map(route => {
           const routePath = route.get(coreExtensionData.routePath);
 

@@ -24,10 +24,10 @@ import {
   stringifyLocationRef,
 } from '@backstage/catalog-model';
 import {
-  assertError,
   ConflictError,
   InputError,
   NotAllowedError,
+  toError,
 } from '@backstage/errors';
 import { JsonValue } from '@backstage/types';
 import { ScmIntegrationRegistry } from '@backstage/integration';
@@ -192,10 +192,10 @@ export class DefaultCatalogProcessingOrchestrator
         ok: collectorResults.errors.length === 0,
       };
     } catch (error) {
-      assertError(error);
+      const err = toError(error);
       return {
         ok: false,
-        errors: collector.results().errors.concat(error),
+        errors: collector.results().errors.concat(err),
       };
     }
   }

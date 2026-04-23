@@ -16,11 +16,11 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { errorApiRef, useApi } from '@backstage/core-plugin-api';
-import { assertError } from '@backstage/errors';
+import { toError } from '@backstage/errors';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import {
   catalogApiRef,
-  humanizeEntityRef,
+  entityPresentationApiRef,
 } from '@backstage/plugin-catalog-react';
 import Box from '@material-ui/core/Box';
 import FormHelperText from '@material-ui/core/FormHelperText';
@@ -133,6 +133,7 @@ export const StepPrepareCreatePullRequest = (
   const { t } = useTranslationRef(catalogImportTranslationRef);
   const classes = useStyles();
   const catalogApi = useApi(catalogApiRef);
+  const entityPresentationApi = useApi(entityPresentationApiRef);
   const catalogImportApi = useApi(catalogImportApiRef);
   const errorApi = useApi(errorApiRef);
 
@@ -161,9 +162,13 @@ export const StepPrepareCreatePullRequest = (
       filter: { kind: 'group' },
     });
 
-    return groupEntities.items
-      .map(e => humanizeEntityRef(e, { defaultKind: 'group' }))
-      .sort();
+    const presentations = await Promise.all(
+      groupEntities.items.map(
+        e =>
+          entityPresentationApi.forEntity(e, { defaultKind: 'group' }).promise,
+      ),
+    );
+    return presentations.map(p => p.primaryTitle).sort();
   });
 
   const handleResult = useCallback(
@@ -210,8 +215,7 @@ export const StepPrepareCreatePullRequest = (
           { notRepeatable: true },
         );
       } catch (e) {
-        assertError(e);
-        setError(e.message);
+        setError(toError(e).message);
         setSubmitted(false);
       }
     },

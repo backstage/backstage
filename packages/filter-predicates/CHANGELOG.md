@@ -1,5 +1,31 @@
 # @backstage/filter-predicates
 
+## 0.1.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/config@1.3.8-next.0
+  - @backstage/types@1.2.2
+
+## 0.1.2
+
+### Patch Changes
+
+- 8923d6d: Added `createZodV4FilterPredicateSchema` as a zod v4 counterpart to `createZodV3FilterPredicateSchema`.
+- Updated dependencies
+  - @backstage/errors@1.3.0
+  - @backstage/config@1.3.7
+
+## 0.1.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/config@1.3.7-next.0
+
 ## 0.1.1
 
 ### Patch Changes

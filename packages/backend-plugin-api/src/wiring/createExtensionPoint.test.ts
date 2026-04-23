@@ -18,10 +18,10 @@ import { createExtensionPoint } from './createExtensionPoint';
 
 describe('createExtensionPoint', () => {
   it('should create an ExtensionPoint', () => {
-    const extensionPoint = createExtensionPoint({ id: 'x' });
+    const extensionPoint = createExtensionPoint<string>({ id: 'x' });
     expect(extensionPoint).toBeDefined();
     expect(extensionPoint.id).toBe('x');
-    expect(() => extensionPoint.T).not.toThrow();
+    expect(extensionPoint.T).toBe(null);
     expect(String(extensionPoint)).toBe('extensionPoint{x}');
   });
 });

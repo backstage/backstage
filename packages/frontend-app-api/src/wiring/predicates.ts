@@ -24,6 +24,7 @@ import type {
   EvaluatePermissionRequest,
   EvaluatePermissionResponse,
 } from '@backstage/plugin-permission-common';
+import { ForwardedError } from '@backstage/errors';
 
 export type ExtensionPredicateContext = {
   featureFlags: string[];
@@ -84,17 +85,24 @@ export function createPredicateContextLoader(options: {
     let allowedPermissions: string[] = [];
     const permissionApi = options.apis.get(localPermissionApiRef);
     if (permissionApi) {
-      const permissionNames = options.predicateReferences.permissions;
-      const responses = await Promise.all(
-        permissionNames.map(name =>
-          permissionApi.authorize({
-            permission: { name, type: 'basic', attributes: {} },
-          }),
-        ),
-      );
-      allowedPermissions = permissionNames.filter(
-        (_, i) => responses[i].result === 'ALLOW',
-      );
+      try {
+        const permissionNames = options.predicateReferences.permissions;
+        const responses = await Promise.all(
+          permissionNames.map(name =>
+            permissionApi.authorize({
+              permission: { name, type: 'basic', attributes: {} },
+            }),
+          ),
+        );
+        allowedPermissions = permissionNames.filter(
+          (_, i) => responses[i].result === 'ALLOW',
+        );
+      } catch (error) {
+        throw new ForwardedError(
+          'Failed to authorize extension permissions',
+          error,
+        );
+      }
     }
 
     return {

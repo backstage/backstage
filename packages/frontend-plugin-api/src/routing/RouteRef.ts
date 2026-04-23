@@ -41,23 +41,16 @@ export interface RouteRef<
  * @public
  */
 export function createRouteRef<
-  // Params is the type that we care about and the one to be embedded in the route ref.
-  // For example, given the params ['name', 'kind'], Params will be {name: string, kind: string}
-  TParams extends { [param in TParamKeys]: string } | undefined = undefined,
-  TParamKeys extends string = string,
+  // ParamKey is narrowed to the literal union of param name strings.
+  // Defaulting to never means we get undefined params when the array is empty or omitted.
+  TParamKey extends string = never,
 >(config?: {
   /** A list of parameter names that the path that this route ref is bound to must contain */
-  readonly params?: string extends TParamKeys
-    ? (keyof TParams)[]
-    : TParamKeys[];
+  readonly params?: TParamKey[];
 
   aliasFor?: string;
 }): RouteRef<
-  keyof TParams extends never
-    ? undefined
-    : string extends TParamKeys
-    ? TParams
-    : { [param in TParamKeys]: string }
+  [TParamKey] extends [never] ? undefined : { [param in TParamKey]: string }
 > {
   const params = (config?.params ?? []) as string[];
   const creationSite = describeParentCallSite();
@@ -65,7 +58,7 @@ export function createRouteRef<
   let id: string | undefined = undefined;
 
   return OpaqueRouteRef.createInstance('v1', {
-    T: undefined as unknown as TParams,
+    T: undefined as any,
     getParams() {
       return params;
     },

@@ -23,7 +23,7 @@ exports.up = async function up(knex) {
   // Adds a single 'bootstrap' location that can be used to trigger work in processors.
   // This is primarily here to fulfill foreign key constraints.
   await knex('locations').insert({
-    id: require('uuid').v4(),
+    id: require('node:crypto').randomUUID(),
     type: 'bootstrap',
     target: 'bootstrap',
   });

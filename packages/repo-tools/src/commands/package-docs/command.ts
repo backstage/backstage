@@ -119,6 +119,7 @@ export default async function packageDocs(paths: string[] = [], opts: any) {
 
   const existingDocsJsonPaths = glob.sync(
     targetPaths.resolveRoot('dist-types/**/docs.json'),
+    { windowsPathsNoEscape: true },
   );
   if (existingDocsJsonPaths.length > 0) {
     console.warn(

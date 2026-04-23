@@ -19,7 +19,7 @@ import { ConflictError, NotFoundError } from '@backstage/errors';
 import { CronTime } from 'cron';
 import { Knex } from 'knex';
 import { DateTime, Duration } from 'luxon';
-import { v4 as uuid } from 'uuid';
+import { randomUUID as uuid } from 'node:crypto';
 import { DB_TASKS_TABLE, DbTasksRow } from '../database/tables';
 import {
   TaskSettingsV2,

@@ -4,6 +4,13 @@ title: Writing Custom Field Extensions
 description: How to write your own field extensions
 ---
 
+::::info
+This documentation is written for the new frontend system, which is the default
+in new Backstage apps. If your Backstage app still uses the old frontend system,
+read the [old frontend system version of this guide](./writing-custom-field-extensions--old.md)
+instead.
+::::
+
 Collecting input from the user is a very large part of the scaffolding process
 and Software Templates as a whole. Sometimes the built in components and fields
 just aren't good enough, and sometimes you want to enrich the form that the
@@ -18,26 +25,26 @@ validate the data too.
 ## Creating a Field Extension
 
 Field extensions are a way to combine an ID, a `React` Component and a
-`validation` function together in a modular way that you can then use to pass to
-the `Scaffolder` frontend plugin in your own `App.tsx`.
+`validation` function together in a modular way that you can then register as
+an extension in your Backstage app.
 
-You can create your own Field Extension by using the
-[`createScaffolderFieldExtension`](https://backstage.io/api/stable/variables/_backstage_plugin-scaffolder.index.createScaffolderFieldExtension.html)
-`API` like below.
+You can create your own field extension by using the `FormFieldBlueprint` from
+`@backstage/plugin-scaffolder-react/alpha` together with `createFormField`, which
+types the component, validation, and optional schema.
 
-As an example, we will create a component that validates whether a string is in the `Kebab-case` pattern:
+As an example, we will create a component that validates whether a string is in the `Kebab-case` pattern.
+
+First, create the component and validation function:
 
 ```tsx
-//packages/app/src/scaffolder/ValidateKebabCase/ValidateKebabCaseExtension.tsx
+// packages/app/src/scaffolder/ValidateKebabCase/ValidateKebabCaseExtension.tsx
 import { FieldExtensionComponentProps } from '@backstage/plugin-scaffolder-react';
 import type { FieldValidation } from '@rjsf/utils';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
-/*
- This is the actual component that will get rendered in the form
-*/
+
 export const ValidateKebabCase = ({
   onChange,
   rawErrors,
@@ -63,11 +70,6 @@ export const ValidateKebabCase = ({
   );
 };
 
-/*
- This is a validation function that will run when the form is submitted.
-  You will get the value from the `onChange` handler before as the value here to make sure that the types are aligned\
-*/
-
 export const validateKebabCaseValidation = (
   value: string,
   validation: FieldValidation,
@@ -82,71 +84,58 @@ export const validateKebabCaseValidation = (
 };
 ```
 
+Then, create the extension using `FormFieldBlueprint` and `createFormField`:
+
 ```tsx
 // packages/app/src/scaffolder/ValidateKebabCase/extensions.ts
-
-/*
-  This is where the magic happens and creates the custom field extension.
-
-  Note that if you're writing extensions part of a separate plugin,
-  then please use `scaffolderPlugin.provide` from there instead and export it part of your `plugin.ts` rather than re-using the `scaffolder.plugin`.
-*/
-
-import { scaffolderPlugin } from '@backstage/plugin-scaffolder';
-import { createScaffolderFieldExtension } from '@backstage/plugin-scaffolder-react';
+import {
+  FormFieldBlueprint,
+  createFormField,
+} from '@backstage/plugin-scaffolder-react/alpha';
 import {
   ValidateKebabCase,
   validateKebabCaseValidation,
 } from './ValidateKebabCaseExtension';
 
-export const ValidateKebabCaseFieldExtension = scaffolderPlugin.provide(
-  createScaffolderFieldExtension({
-    name: 'ValidateKebabCase',
-    component: ValidateKebabCase,
-    validation: validateKebabCaseValidation,
-  }),
-);
+export const ValidateKebabCaseFieldExtension = FormFieldBlueprint.make({
+  name: 'validate-kebab-case',
+  params: {
+    field: async () =>
+      createFormField({
+        name: 'ValidateKebabCase',
+        component: ValidateKebabCase,
+        validation: validateKebabCaseValidation,
+      }),
+  },
+});
 ```
 
 ```tsx
 // packages/app/src/scaffolder/ValidateKebabCase/index.ts
-
 export { ValidateKebabCaseFieldExtension } from './extensions';
 ```
 
-Once all these files are in place, you then need to provide your custom
-extension to the `scaffolder` plugin.
+Once the extension is created, install it in your app by wrapping it in a frontend module and passing it to `createApp`:
 
-You do this in `packages/app/src/App.tsx`. You need to provide the
-`customFieldExtensions` as children to the `ScaffolderPage`.
+```tsx title="packages/app/src/scaffolder/scaffolderModule.ts"
+import { createFrontendModule } from '@backstage/frontend-plugin-api';
+import { ValidateKebabCaseFieldExtension } from './ValidateKebabCase';
 
-```tsx
-const routes = (
-  <FlatRoutes>
-    ...
-    <Route path="/create" element={<ScaffolderPage />} />
-    ...
-  </FlatRoutes>
-);
+export const scaffolderCustomizations = createFrontendModule({
+  pluginId: 'scaffolder',
+  extensions: [ValidateKebabCaseFieldExtension],
+});
 ```
 
-Should look something like this instead:
+```tsx title="packages/app/src/App.tsx"
+import { createApp } from '@backstage/frontend-defaults';
+import { scaffolderCustomizations } from './scaffolder/scaffolderModule';
 
-```tsx
-import { ValidateKebabCaseFieldExtension } from './scaffolder/ValidateKebabCase';
-import { ScaffolderFieldExtensions } from '@backstage/plugin-scaffolder-react';
+const app = createApp({
+  features: [scaffolderCustomizations],
+});
 
-const routes = (
-  <FlatRoutes>
-    ...
-    <Route path="/create" element={<ScaffolderPage />}>
-      <ScaffolderFieldExtensions>
-        <ValidateKebabCaseFieldExtension />
-      </ScaffolderFieldExtensions>
-    </Route>
-    ...
-  </FlatRoutes>
-);
+export default app.createRoot();
 ```
 
 ### Async Validation Function
@@ -157,10 +146,6 @@ A validation function can be asynchronous and use [Utility APIs](https://backsta
 import { FieldValidation } from '@rjsf/utils';
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
-
-/*
-  This validation function checks if the submitted entity ref value is present in the catalog.
-*/
 
 export const customFieldExtensionValidator = async (
   value: string,
@@ -177,11 +162,8 @@ export const customFieldExtensionValidator = async (
 
 ## Using the Custom Field Extension
 
-Once it's been passed to the `ScaffolderPage` you should now be able to use the
-`ui:field` property in your templates to point it to the name of the
-`customFieldExtension` that you registered.
-
-Something like this:
+Once registered, you can use the `ui:field` property in your templates to
+reference the name of the custom field extension:
 
 ```yaml
 apiVersion: scaffolder.backstage.io/v1beta3
@@ -212,18 +194,28 @@ is something that we discourage due to the coupling that it creates, but is some
 the most sensible solution.
 
 ```tsx
+import {
+  FormFieldBlueprint,
+  createFormField,
+} from '@backstage/plugin-scaffolder-react/alpha';
+import { FieldExtensionComponentProps } from '@backstage/plugin-scaffolder-react';
+
 const CustomFieldExtensionComponent = (props: FieldExtensionComponentProps<string[]>) => {
   const { formData } = props.formContext;
   ...
 };
 
-const CustomFieldExtension = scaffolderPlugin.provide(
-  createScaffolderFieldExtension({
-    name: ...,
-    component: CustomFieldExtensionComponent,
-    validation: ...
-  })
-);
+const CustomFieldExtension = FormFieldBlueprint.make({
+  name: 'custom-field',
+  params: {
+    field: async () =>
+      createFormField({
+        name: 'custom-field',
+        component: CustomFieldExtensionComponent,
+        validation: ...,
+      }),
+  },
+});
 ```
 
 ## Previewing Custom Field Extensions
@@ -237,7 +229,10 @@ In order to make your new custom field extension available in the explorer you w
 JSON schema that describes the input/output types on your field like in the following example:
 
 ```tsx
-//packages/app/src/scaffolder/MyCustomExtensionWithOptions/MyCustomExtensionWithOptions.tsx
+// packages/app/src/scaffolder/MyCustomExtensionWithOptions/MyCustomExtensionWithOptions.tsx
+import FormControl from '@material-ui/core/FormControl';
+import { FieldExtensionComponentProps } from '@backstage/plugin-scaffolder-react';
+
 export const MyCustomExtensionWithOptionsSchema = {
   uiOptions: {
     type: 'object',
@@ -256,7 +251,10 @@ export const MyCustomExtensionWithOptions = ({
   rawErrors,
   required,
   formData,
+  uiSchema,
 }: FieldExtensionComponentProps<string, { focused?: boolean }>) => {
+  const focused = uiSchema['ui:options']?.focused;
+
   return (
     <FormControl
       margin="normal"
@@ -271,48 +269,60 @@ export const MyCustomExtensionWithOptions = ({
 
 ```tsx
 // packages/app/src/scaffolder/MyCustomExtensionWithOptions/extensions.ts
-...
-import { MyCustomExtensionWithOptions, MyCustomExtensionWithOptionsSchema } from './MyCustomExtensionWithOptions';
+import {
+  FormFieldBlueprint,
+  createFormField,
+} from '@backstage/plugin-scaffolder-react/alpha';
+import {
+  MyCustomExtensionWithOptions,
+  MyCustomExtensionWithOptionsSchema,
+} from './MyCustomExtensionWithOptions';
 
-export const MyCustomFieldWithOptionsExtension = scaffolderPlugin.provide(
-  createScaffolderFieldExtension({
-    name: 'MyCustomExtensionWithOptions',
-    component: MyCustomExtensionWithOptions,
-    schema: MyCustomExtensionWithOptionsSchema,
-  }),
-);
+export const MyCustomFieldWithOptionsExtension = FormFieldBlueprint.make({
+  name: 'MyCustomExtensionWithOptions',
+  params: {
+    field: async () =>
+      createFormField({
+        name: 'MyCustomExtensionWithOptions',
+        component: MyCustomExtensionWithOptions,
+        schema: MyCustomExtensionWithOptionsSchema,
+      }),
+  },
+});
 ```
 
 We recommend using a library like [zod](https://github.com/colinhacks/zod) to define your schema
 and the provided `makeFieldSchemaFromZod` helper utility function to generate both the JSON schema
-and type for your field props to preventing having to duplicate the definitions:
+and type for your field props to prevent having to duplicate the definitions:
 
 ```tsx
-//packages/app/src/scaffolder/MyCustomExtensionWithOptions/MyCustomExtensionWithOptions.tsx
-...
+// packages/app/src/scaffolder/MyCustomExtensionWithOptions/MyCustomExtensionWithOptions.tsx
+import FormControl from '@material-ui/core/FormControl';
 import { z } from 'zod/v3';
 import { makeFieldSchemaFromZod } from '@backstage/plugin-scaffolder';
 
 const MyCustomExtensionWithOptionsFieldSchema = makeFieldSchemaFromZod(
   z.string(),
   z.object({
-    focused: z
-      .boolean()
-      .optional()
-      .describe('Whether to focus this field'),
+    focused: z.boolean().optional().describe('Whether to focus this field'),
   }),
 );
 
-export const MyCustomExtensionWithOptionsSchema = MyCustomExtensionWithOptionsFieldSchema.schema;
+export const MyCustomExtensionWithOptionsSchema =
+  MyCustomExtensionWithOptionsFieldSchema.schema;
 
-type MyCustomExtensionWithOptionsProps = typeof MyCustomExtensionWithOptionsFieldSchema.type;
+type MyCustomExtensionWithOptionsProps =
+  typeof MyCustomExtensionWithOptionsFieldSchema.type;
 
 export const MyCustomExtensionWithOptions = ({
   onChange,
   rawErrors,
   required,
   formData,
+  uiSchema,
 }: MyCustomExtensionWithOptionsProps) => {
+  const focused = uiSchema['ui:options']?.focused;
+
   return (
     <FormControl
       margin="normal"

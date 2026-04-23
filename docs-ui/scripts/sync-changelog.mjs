@@ -99,6 +99,7 @@ function pascalToKebab(str) {
     DataTable: 'datatable',
     ScrollArea: 'scrollarea',
     'Grid.Item': 'grid-item',
+    useTable: 'use-table',
   };
 
   if (specialCases[str]) {
@@ -298,7 +299,7 @@ async function parseListItem(
   if (componentMatch) {
     const componentNames = componentMatch[1]
       .split(',')
-      .map(name => name.trim())
+      .map(name => name.trim().replace(/`/g, ''))
       .filter(Boolean);
 
     componentNames.forEach(name => {

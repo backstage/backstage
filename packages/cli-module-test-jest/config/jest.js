@@ -17,7 +17,7 @@
 const fs = require('fs-extra');
 const path = require('node:path');
 const crypto = require('node:crypto');
-const glob = require('node:util').promisify(require('glob'));
+const { glob } = require('glob');
 const { version } = require('../package.json');
 const paths = require('@backstage/cli-common').findPaths(process.cwd());
 const {
@@ -367,7 +367,9 @@ async function getRootConfig() {
   // workspace and load those in as separate jest projects instead.
   const projectPaths = await Promise.all(
     workspacePatterns.map(pattern =>
-      glob(path.join(paths.targetRoot, pattern)),
+      glob(path.join(paths.targetRoot, pattern), {
+        windowsPathsNoEscape: true,
+      }),
     ),
   ).then(_ => _.flat());
 

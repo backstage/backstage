@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
 import {
   renderInTestApp,
   TestApiProvider,
@@ -46,20 +45,6 @@ describe('<ListTasksPage />', () => {
   const mockPermissionApi = { authorize: jest.fn() };
 
   it('should render the page', async () => {
-    const entity: Entity = {
-      apiVersion: 'v1',
-      kind: 'service',
-      metadata: {
-        name: 'test',
-      },
-      spec: {
-        profile: {
-          displayName: 'BackUser',
-        },
-      },
-    };
-    catalogApi.getEntityByRef.mockResolvedValue(entity);
-
     scaffolderApiMock.listTasks.mockResolvedValue({ tasks: [], totalTasks: 0 });
 
     const { getByText } = await renderInTestApp(
@@ -87,19 +72,6 @@ describe('<ListTasksPage />', () => {
   });
 
   it('should render the task I am owner', async () => {
-    const entity: Entity = {
-      apiVersion: 'v1',
-      kind: 'User',
-      metadata: {
-        name: 'foo',
-      },
-      spec: {
-        profile: {
-          displayName: 'BackUser',
-        },
-      },
-    };
-    catalogApi.getEntityByRef.mockResolvedValue(entity);
     scaffolderApiMock.listTasks.mockResolvedValue({
       tasks: [
         {
@@ -151,34 +123,10 @@ describe('<ListTasksPage />', () => {
     expect(getByText('All tasks that have been started')).toBeInTheDocument();
     expect(getByText('Tasks')).toBeInTheDocument();
     expect(await findByText('One Template')).toBeInTheDocument();
-    expect(await findByText('BackUser')).toBeInTheDocument();
+    expect(await findByText('foo')).toBeInTheDocument();
   });
 
   it('should render all tasks', async () => {
-    const entity: Entity = {
-      apiVersion: 'v1',
-      kind: 'User',
-      metadata: {
-        name: 'foo',
-      },
-      spec: {
-        profile: {
-          displayName: 'BackUser',
-        },
-      },
-    };
-    catalogApi.getEntityByRef
-      .mockResolvedValue(entity)
-      .mockResolvedValue(entity)
-      .mockResolvedValue({
-        ...entity,
-        spec: {
-          profile: {
-            displayName: 'OtherUser',
-          },
-        },
-      });
-
     scaffolderApiMock.listTasks
       .mockResolvedValue({
         tasks: [
@@ -252,6 +200,6 @@ describe('<ListTasksPage />', () => {
       offset: 0,
     });
     expect(await findByText('One Template')).toBeInTheDocument();
-    expect(await findByText('OtherUser')).toBeInTheDocument();
+    expect(await findByText('boo')).toBeInTheDocument();
   });
 });

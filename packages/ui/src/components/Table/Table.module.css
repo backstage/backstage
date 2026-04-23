@@ -41,7 +41,7 @@
     min-height: 0;
 
     &[data-stale='true'],
-    &[data-loading='true'] {
+    &[data-ispending='true'] {
       opacity: 0.6;
     }
   }

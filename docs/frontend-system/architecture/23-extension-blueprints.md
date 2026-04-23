@@ -31,12 +31,12 @@ Every extension blueprint also provides a `makeWithOverrides` method. It is usef
 The following is an example of how one might use the blueprint `makeWithOverrides` method to create a new extension:
 
 ```tsx
+import { z } from 'zod';
+
 const myPageExtension = PageBlueprint.makeWithOverrides({
   // This defines additional configuration options for the extension.
-  config: {
-    schema: {
-      layout: z => z.enum(['grid', 'rows']).default('grid'),
-    },
+  configSchema: {
+    layout: z.enum(['grid', 'rows']).default('grid'),
   },
   // This defines additional inputs for the extension.
   inputs: {
@@ -118,10 +118,8 @@ export interface MyWidgetBlueprintParams {
 export const MyWidgetBlueprint = createExtensionBlueprint({
   kind: 'my-widget',
   attachTo: { id: 'page:my-plugin', input: 'widgets' },
-  config: {
-    schema: {
-      title: z.string().optional(),
-    },
+  configSchema: {
+    title: z.string().optional(),
   },
   output: [coreExtensionData.reactElement],
   factory(params: MyWidgetBlueprintParams, { config }) {
@@ -196,10 +194,8 @@ const widgetTitleRef = createExtensionDataRef<string>().with({
 export const MyWidgetBlueprint = createExtensionBlueprint({
   kind: 'my-widget',
   attachTo: { id: 'page:my-plugin', input: 'widgets' },
-  config: {
-    schema: {
-      title: z.string().optional(),
-    },
+  configSchema: {
+    title: z.string().optional(),
   },
   output: [widgetTitleRef, coreExtensionData.reactElement],
   factory(params: MyWidgetBlueprintParams, { config }) {

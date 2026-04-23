@@ -1,0 +1,11 @@
+---
+title: AWS Config
+author: Amazon Web Services
+authorUrl: https://aws.amazon.com/
+category: Infrastructure
+description: Ingest AWS resources from AWS Config into the Backstage catalog using incremental ingestion.
+documentation: https://github.com/awslabs/backstage-plugins-for-aws/tree/main/plugins/core/catalog-config#readme
+iconUrl: https://raw.githubusercontent.com/awslabs/backstage-plugins-for-aws/main/docs/images/logos/config.png
+npmPackageName: '@aws/aws-config-catalog-module-for-backstage'
+addedDate: '2026-03-26'
+status: active

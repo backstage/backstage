@@ -1,5 +1,38 @@
 # @backstage/cli-common
 
+## 0.2.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.1-next.0
+
+## 0.2.1
+
+### Patch Changes
+
+- 482ceed: Migrated from `assertError` to `toError` for error handling.
+- e928e73: chore(deps): bump `undici` from 7.22.0 to 7.24.0
+- 46ff470: Deprecated `bootstrapEnvProxyAgents()` in favor of Node.js built-in proxy support. Set `NODE_USE_ENV_PROXY=1` alongside your `HTTP_PROXY`/`HTTPS_PROXY` environment variables instead. See the [corporate proxy guide](https://backstage.io/docs/tutorials/corporate-proxy/) for details. This function will be removed in a future release.
+- Updated dependencies
+  - @backstage/errors@1.3.0
+
+## 0.2.1-next.1
+
+### Patch Changes
+
+- 482ceed: Migrated from `assertError` to `toError` for error handling.
+- Updated dependencies
+  - @backstage/errors@1.3.0-next.0
+
+## 0.2.1-next.0
+
+### Patch Changes
+
+- e928e73: chore(deps): bump `undici` from 7.22.0 to 7.24.0
+- Updated dependencies
+  - @backstage/errors@1.2.7
+
 ## 0.2.0
 
 ### Minor Changes

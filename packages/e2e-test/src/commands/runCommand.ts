@@ -35,9 +35,9 @@ const ownPaths = findOwnPaths(__dirname);
 
 const templatePackagePaths = [
   'packages/cli-module-new/templates/frontend-plugin/package.json.hbs',
-  'packages/create-app/templates/next-app/package.json.hbs',
-  'packages/create-app/templates/next-app/packages/app/package.json.hbs',
-  'packages/create-app/templates/next-app/packages/backend/package.json.hbs',
+  'packages/create-app/templates/default-app/package.json.hbs',
+  'packages/create-app/templates/default-app/packages/app/package.json.hbs',
+  'packages/create-app/templates/default-app/packages/backend/package.json.hbs',
 ];
 
 export async function runCommand(opts: OptionValues) {
@@ -344,7 +344,9 @@ async function overrideModuleResolutions(appDir: string, workspaceDir: string) {
 
       pkgJson.dependencies[name] = `file:${pkgPath}`;
       pkgJson.resolutions[name] = `file:${pkgPath}`;
-      delete pkgJson.devDependencies[name];
+      if (pkgJson.devDependencies) {
+        delete pkgJson.devDependencies[name];
+      }
     }
   }
   fs.writeJson(pkgJsonPath, pkgJson, { spaces: 2 });
@@ -456,6 +458,8 @@ async function testBackendStart(appDir: string, ...args: string[]) {
     env: {
       ...process.env,
       GITHUB_TOKEN: 'abc',
+      // Ensure that the backend fails on unhandledRejection errors.
+      NODE_ENV: 'test',
       // TODO: Default auth policy is disabled for e2e tests - replace this with external service auth
       APP_CONFIG_backend_auth_dangerouslyDisableDefaultAuthPolicy: 'true',
     },

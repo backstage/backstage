@@ -1,6 +1,6 @@
 {
   "name": "@backstage/core-components",
-  "version": "0.18.8",
+  "version": "0.18.10-next.0",
   "description": "Core components used by Backstage plugins and apps",
   "backstage": {
     "role": "web-library"
@@ -70,6 +70,7 @@
     "@types/react-sparklines": "^1.7.0",
     "ansi-regex": "^6.0.1",
     "classnames": "^2.2.6",
+    "csstype": "^3.0.2",
     "d3-selection": "^3.0.0",
     "d3-shape": "^3.0.0",
     "d3-zoom": "^3.0.0",
@@ -78,7 +79,6 @@
     "linkifyjs": "4.3.2",
     "lodash": "^4.17.21",
     "parse5": "^6.0.0",
-    "pluralize": "^8.0.0",
     "qs": "^6.9.4",
     "rc-progress": "3.5.1",
     "react-full-screen": "^1.1.1",
@@ -118,6 +118,7 @@
     "@types/react-virtualized-auto-sizer": "^1.0.1",
     "@types/react-window": "^1.8.5",
     "@types/zen-observable": "^0.8.0",
+    "copy-to-clipboard": "^3.3.1",
     "cross-fetch": "^4.0.0",
     "history": "^5.0.0",
     "msw": "^1.0.0",

@@ -49,6 +49,7 @@ bundler
 bundlers
 bursty
 callout
+callouts
 camelCase
 CDNs
 Chai
@@ -59,6 +60,7 @@ chanwit
 Chanwit
 CI/CD
 classname
+cleye
 cli
 CLIs
 cloudbuild
@@ -138,6 +140,7 @@ dyno
 ecco
 elasticsearch
 Entra
+enums
 env
 Env
 esbuild
@@ -248,6 +251,7 @@ lightbox
 Lightsail
 limitranges
 liveness
+LLMs
 LocalStack
 lockdown
 lockfile
@@ -283,6 +287,8 @@ misconfigured
 mkdocs
 Mkdocs
 modularization
+monopackage
+monopackages
 monorepo
 monorepos
 monospace
@@ -394,6 +400,7 @@ repos
 requestors
 rerender
 rerenders
+resizable
 resourcequotas
 retryable
 reusability
@@ -515,6 +522,7 @@ toolsets
 tooltip
 tooltips
 touchpoint
+touchpoints
 transpilation
 transpile
 transpiled
@@ -538,6 +546,7 @@ unmanaged
 unmount
 unregister
 unregistering
+unregisters
 unregistration
 unreviewed
 unstarred
@@ -562,6 +571,8 @@ VMware
 Vodafone
 VPCs
 VSCode
+walkthrough
+walkthroughs
 Wayfair
 Weaveworks
 Webpack
@@ -580,7 +591,3 @@ zod
 Zolotusky
 zoomable
 zsh
-resizable
-enums
-LLMs
-cleye

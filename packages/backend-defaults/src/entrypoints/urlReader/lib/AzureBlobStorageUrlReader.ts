@@ -21,11 +21,7 @@ import {
   StorageSharedKeyCredential,
 } from '@azure/storage-blob';
 import { ReaderFactory, ReadTreeResponseFactory } from './types';
-import {
-  assertError,
-  ForwardedError,
-  NotModifiedError,
-} from '@backstage/errors';
+import { toError, ForwardedError, NotModifiedError } from '@backstage/errors';
 import { Readable } from 'node:stream';
 import { relative } from 'node:path/posix';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
@@ -261,9 +257,8 @@ export class AzureBlobStorageUrlReader implements UrlReaderService {
         ],
         etag: data.etag ?? '',
       };
-    } catch (error) {
-      assertError(error);
-      throw error;
+    } catch (e) {
+      throw toError(e);
     }
   }
 

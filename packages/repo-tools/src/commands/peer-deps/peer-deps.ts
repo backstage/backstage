@@ -143,7 +143,22 @@ export default async ({ fix }: { fix: boolean }) => {
   for (const pkg of packagesWithRelevantDependencies) {
     const packageJson = pkg.packageJson as ExtendedPackageJSON;
     const expectedPeerDeps = getExpectedPeerDependencies(packageJson);
+    const allDeps = {
+      ...packageJson.dependencies,
+      ...packageJson.devDependencies,
+      ...packageJson.peerDependencies,
+    };
     for (const dep of Object.keys(peerDependencies)) {
+      const isReferencedInPackage = !!allDeps[dep];
+      const isInGroupWithReferencedDep = groupsOfPeerDependencies.some(
+        group =>
+          group.includes(dep) && group.some(groupDep => !!allDeps[groupDep]),
+      );
+
+      if (!isReferencedInPackage && !isInGroupWithReferencedDep) {
+        continue;
+      }
+
       // Validate that the peer dependencies are present.
       if (isPeerDependency(dep, packageJson)) {
         if (isOptional(dep) && !isMarkedAsOptional(dep, packageJson)) {

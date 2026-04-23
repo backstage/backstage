@@ -120,11 +120,11 @@ Usage: backstage-cli repo lint [options]
 Lint all packages in the project
 
 Options:
-  --format <format>         Lint report output format (default: "eslint-formatter-friendly")
-  --since <ref>             Only lint packages that changed since the specified ref
-  --successCache            Enable success caching, which skips running tests for unchanged packages that were successful in the previous run
-  --successCacheDir <path>  Set the success cache location, (default: node_modules/.cache/backstage-cli)
-  --fix                     Attempt to automatically fix violations
+  --format <format>           Lint report output format (default: "eslint-formatter-friendly")
+  --since <ref>               Only lint packages that changed since the specified ref
+  --success-cache             Enable success caching, which skips running lint for unchanged packages that were successful in the previous run
+  --success-cache-dir <path>  Set the success cache location, (default: node_modules/.cache/backstage-cli)
+  --fix                       Attempt to automatically fix violations
 ```
 
 ## repo test
@@ -153,7 +153,7 @@ If arguments are provided, they will be forwarded to Jest and used to filter tes
 yarn test packages/app/src/App.test.tsx
 ```
 
-If you want to avoid re-running tests that have not changed since the last successful run in CI, you can use the `--successCache` flag. By default this cache is stored in `node_modules/.cache/backstage-cli`, but you can choose a different directory with the `--successCacheDir <path>`.
+If you want to avoid re-running tests that have not changed since the last successful run in CI, you can use the `--success-cache` flag. By default this cache is stored in `node_modules/.cache/backstage-cli`, but you can choose a different directory with the `--success-cache-dir <path>`.
 
 ```text
 Usage: backstage-cli repo test [options]
@@ -161,11 +161,11 @@ Usage: backstage-cli repo test [options]
 Run tests, forwarding args to Jest, defaulting to watch mode
 
 Options:
-  --since <ref>             Only test packages that changed since the specified ref
-  --successCache            Enable success caching, which skips running tests for unchanged packages that were successful in the previous run
-  --successCacheDir <path>  Set the success cache location, (default: node_modules/.cache/backstage-cli)
-  --jest-help               Show help for Jest CLI options, which are passed through
-  -h, --help                display help for command
+  --since <ref>               Only test packages that changed since the specified ref
+  --success-cache             Enable success caching, which skips running tests for unchanged packages that were successful in the previous run
+  --success-cache-dir <path>  Set the success cache location, (default: node_modules/.cache/backstage-cli)
+  --jest-help                 Show help for Jest CLI options, which are passed through
+  -h, --help                  display help for command
 ```
 
 ## package start
@@ -178,7 +178,7 @@ Usage: backstage-cli package start [options]
 Start a package for local development
 
 Options:
-  --config <path>      Config files to load instead of app-config.yaml (default: [])
+  --config <path>     Config files to load instead of app-config.yaml (default: [])
   --role <name>       Run the command with an explicit package role
   --check             Enable type checking and linting if available
   --inspect           Enable debugger in Node.js environments

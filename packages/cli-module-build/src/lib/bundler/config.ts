@@ -394,5 +394,16 @@ export async function createConfig(
       }),
     },
     plugins,
+    ...(options.moduleFederationRemote && {
+      // TODO: remove this warning skipping as soon as the corresponding bundler limitation
+      // described in issue https://github.com/web-infra-dev/rspack/issues/13635 is fixed
+      // when PR: https://github.com/web-infra-dev/rspack/pull/13636 is merged.
+      ignoreWarnings: [
+        {
+          message:
+            /No version specified and unable to automatically determine one\. No version in description file/,
+        },
+      ],
+    }),
   };
 }

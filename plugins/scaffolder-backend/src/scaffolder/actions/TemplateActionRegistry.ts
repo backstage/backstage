@@ -93,7 +93,6 @@ export class DefaultTemplateActionRegistry implements TemplateActionRegistry {
       ret.set(action.id, {
         id: action.id,
         description: action.description,
-        examples: [],
         supportsDryRun:
           action.attributes?.readOnly === true &&
           action.attributes?.destructive === false,

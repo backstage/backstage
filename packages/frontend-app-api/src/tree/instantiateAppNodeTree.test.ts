@@ -40,7 +40,7 @@ import {
   resolveExtensionDefinition,
 } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { createSchemaFromZod } from '../../../frontend-plugin-api/src/schema/createSchemaFromZod';
+import { createDeprecatedConfigSchema } from '../../../frontend-plugin-api/src/schema/createPortableSchema';
 import { TestApiRegistry, withLogCollector } from '@backstage/test-utils';
 import { createErrorCollector } from '../wiring/createErrorCollector';
 
@@ -181,12 +181,10 @@ describe('instantiateAppNodeTree', () => {
         test: testDataRef,
         other: otherDataRef.optional(),
       },
-      configSchema: createSchemaFromZod(z =>
-        z.object({
-          output: z.string().default('test'),
-          other: z.number().optional(),
-        }),
-      ),
+      configSchema: createDeprecatedConfigSchema({
+        output: z => z.string().default('test'),
+        other: z => z.number().optional(),
+      }),
       factory({ config }) {
         return { test: config.output, other: config.other };
       },

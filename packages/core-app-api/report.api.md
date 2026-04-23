@@ -438,6 +438,7 @@ export interface FetchMiddleware {
 
 // @public
 export class FetchMiddlewares {
+  static clarifyFailures(): FetchMiddleware;
   static injectIdentityAuth(options: {
     identityApi: IdentityApi;
     config?: Config;

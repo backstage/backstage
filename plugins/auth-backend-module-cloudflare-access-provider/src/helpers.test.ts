@@ -23,7 +23,7 @@ import { SignJWT, exportJWK, generateKeyPair } from 'jose';
 import { HttpResponse, http } from 'msw';
 import { setupServer } from 'msw/node';
 import { createRequest } from 'node-mocks-http';
-import { v4 as uuid } from 'uuid';
+import { randomUUID as uuid } from 'node:crypto';
 import { AuthHelper } from './helpers';
 import { CF_JWT_HEADER, CloudflareAccessIdentityProfile } from './types';
 

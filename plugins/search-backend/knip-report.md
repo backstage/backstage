@@ -1,9 +1,8 @@
 # Knip report
 
-## Unused dependencies (2)
+## Unused dependencies (1)
 
-| Name                              | Location     | Severity |
-| :-------------------------------- | :----------- | :------- |
-| @backstage/plugin-permission-node | plugins/search-backend/package.json | error    |
-| yn                                | plugins/search-backend/package.json | error    |
+| Name                              | Location          | Severity |
+| :-------------------------------- | :---------------- | :------- |
+| @backstage/plugin-permission-node | package.json:64:6 | error    |
 

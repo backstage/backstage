@@ -20,6 +20,7 @@ import { Text } from '../components/Text';
 
 const meta = preview.meta({
   title: 'Backstage UI/Colors',
+  tags: ['!manifest'],
 });
 
 export const Default = meta.story({

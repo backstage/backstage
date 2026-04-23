@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-techdocs",
-  "version": "1.17.1",
+  "version": "1.17.6-next.0",
   "description": "The Backstage plugin that renders technical documentation for your components",
   "backstage": {
     "role": "frontend-plugin",
@@ -86,7 +86,8 @@
     "git-url-parse": "^15.0.0",
     "lodash": "^4.17.21",
     "react-helmet": "6.1.0",
-    "react-use": "^17.2.4"
+    "react-use": "^17.2.4",
+    "zod": "^4.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

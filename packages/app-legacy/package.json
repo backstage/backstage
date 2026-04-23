@@ -1,6 +1,6 @@
 {
   "name": "example-app-legacy",
-  "version": "0.2.119",
+  "version": "0.2.121-next.0",
   "backstage": {
     "role": "frontend"
   },
@@ -77,6 +77,7 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.61",
     "@octokit/rest": "^19.0.3",
+    "@rjsf/utils": "5.24.13",
     "history": "^5.0.0",
     "react": "^18.0.2",
     "react-dom": "^18.0.2",
@@ -96,7 +97,7 @@
     "@types/react": "*",
     "@types/react-dom": "*",
     "@types/zen-observable": "^0.8.0",
-    "axios": "^1.13.0",
+    "axios": "^1.15.0",
     "cross-env": "^10.0.0",
     "msw": "^1.0.0"
   },

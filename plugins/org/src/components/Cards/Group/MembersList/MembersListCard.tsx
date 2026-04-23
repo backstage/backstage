@@ -168,12 +168,12 @@ export const MembersListCard = (props: {
 
   const { entity: groupEntity } = useEntity<GroupEntity>();
   const {
-    metadata: { name: groupName, namespace: grpNamespace },
+    metadata: { name: groupName, namespace: grpNamespace, title: groupTitle },
     spec: { profile },
   } = groupEntity;
   const catalogApi = useApi(catalogApiRef);
 
-  const displayName = profile?.displayName ?? groupName;
+  const displayName = profile?.displayName ?? groupTitle ?? groupName;
   const cardTitle =
     memberDisplayTitle ??
     t('membersListCard.title', { groupName: displayName });

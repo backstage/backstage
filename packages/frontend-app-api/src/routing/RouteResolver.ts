@@ -31,15 +31,7 @@ import {
   OpaqueSubRouteRef,
 } from '@internal/frontend';
 import { RouteAliasResolver } from './RouteAliasResolver';
-
-// Joins a list of paths together, avoiding trailing and duplicate slashes
-export function joinPaths(...paths: string[]): string {
-  const normalized = paths.join('/').replace(/\/\/+/g, '/');
-  if (normalized !== '/' && normalized.endsWith('/')) {
-    return normalized.slice(0, -1);
-  }
-  return normalized;
-}
+import { joinPaths } from './joinPaths';
 
 /**
  * Resolves the absolute route ref that our target route ref is pointing pointing to, as well

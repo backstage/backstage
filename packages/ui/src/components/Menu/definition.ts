@@ -100,7 +100,6 @@ export const MenuItemDefinition = defineComponent<MenuItemOwnProps>()({
   styles,
   classNames: {
     root: 'bui-MenuItem',
-    itemWrapper: 'bui-MenuItemWrapper',
     itemContent: 'bui-MenuItemContent',
     itemArrow: 'bui-MenuItemArrow',
   },
@@ -121,7 +120,6 @@ export const MenuListBoxItemDefinition =
     styles,
     classNames: {
       root: 'bui-MenuItemListBox',
-      itemWrapper: 'bui-MenuItemWrapper',
       itemContent: 'bui-MenuItemContent',
       check: 'bui-MenuItemListBoxCheck',
     },

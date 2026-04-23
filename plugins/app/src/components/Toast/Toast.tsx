@@ -15,8 +15,7 @@
  */
 
 import { forwardRef, Ref, useRef, useLayoutEffect, useState } from 'react';
-import { useToast } from '@react-aria/toast';
-import { useButton } from '@react-aria/button';
+import { useToast, useButton } from 'react-aria';
 import { motion } from 'motion/react';
 import { Box } from '@backstage/ui';
 import {

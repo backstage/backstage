@@ -56,12 +56,12 @@ export const Disabled = () => {
   );
 };
 
-export const Loading = () => {
+export const Pending = () => {
   return (
     <ButtonIcon
       icon={<RiCloudLine />}
       variant="primary"
-      loading
+      isPending
       aria-label="Cloud"
     />
   );

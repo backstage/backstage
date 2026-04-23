@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { assertError, InputError } from '@backstage/errors';
+import { InputError, toError } from '@backstage/errors';
 import {
   GithubCredentialsProvider,
   ScmIntegrations,
@@ -175,11 +175,11 @@ export function createGithubActionsDispatchAction(options: {
           }
         }
       } catch (e) {
-        assertError(e);
+        const error = toError(e);
         ctx.logger.warn(
-          `Failed: dispatching workflow '${workflowId}' on repo: '${repo}', ${e.message}`,
+          `Failed: dispatching workflow '${workflowId}' on repo: '${repo}', ${error.message}`,
         );
-        throw e;
+        throw error;
       }
     },
   });

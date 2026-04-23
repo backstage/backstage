@@ -69,8 +69,8 @@ const _default: OverridableFrontendPlugin<
         type: 'content' | 'info' | undefined;
       };
       configInput: {
-        showAggregateMembersToggle?: boolean | undefined;
         initialRelationAggregation?: 'direct' | 'aggregated' | undefined;
+        showAggregateMembersToggle?: boolean | undefined;
         filter?: FilterPredicate | undefined;
         type?: 'content' | 'info' | undefined;
       };
@@ -115,8 +115,8 @@ const _default: OverridableFrontendPlugin<
         type: 'content' | 'info' | undefined;
       };
       configInput: {
-        showAggregateMembersToggle?: boolean | undefined;
         initialRelationAggregation?: 'direct' | 'aggregated' | undefined;
+        showAggregateMembersToggle?: boolean | undefined;
         ownedKinds?: string[] | undefined;
         filter?: FilterPredicate | undefined;
         type?: 'content' | 'info' | undefined;
@@ -161,8 +161,8 @@ const _default: OverridableFrontendPlugin<
         type: 'content' | 'info' | undefined;
       };
       configInput: {
-        hideIcons?: boolean | undefined;
         maxRelations?: number | undefined;
+        hideIcons?: boolean | undefined;
         filter?: FilterPredicate | undefined;
         type?: 'content' | 'info' | undefined;
       };

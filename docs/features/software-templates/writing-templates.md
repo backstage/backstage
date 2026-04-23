@@ -576,7 +576,7 @@ token from the user, which you can do on a per-provider basis, in case your
 template can be published to multiple providers.
 
 Note, that you will need to configure an [authentication provider](../../auth/index.md#configuring-authentication-providers), alongside the
-[`ScmAuthApi`](../../auth/index.md#scaffolder-configuration-software-templates) for your source code management (SCM) service to make this feature work.
+[`ScmAuthApi`](../../auth/index.md#custom-scmauthapi-implementation) for your source code management (SCM) service to make this feature work.
 
 ### The Repository Branch Picker
 
@@ -765,6 +765,26 @@ output:
     - title: More information
       content: |
         **Entity URL:** `${{ steps['publish'].output.remoteUrl }}`
+```
+
+Output `links` and `text` items support an optional `if` condition, using the same syntax as step conditions. Items where the condition evaluates to false are excluded from the output:
+
+```yaml
+output:
+  links:
+    - title: Repository
+      url: ${{ steps['publish'].output.remoteUrl }}
+    - if: ${{ parameters.enableCI === "Yes" }}
+      title: CI Dashboard
+      url: https://ci.example.com/${{ parameters.name }}
+  text:
+    - title: Summary
+      content: |
+        **Component:** `${{ parameters.name }}`
+    - if: ${{ parameters.showDetails }}
+      title: Details
+      content: |
+        **CI enabled:** ${{ parameters.enableCI }}
 ```
 
 ## The templating syntax

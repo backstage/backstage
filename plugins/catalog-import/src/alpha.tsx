@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { RiAddCircleLine } from '@remixicon/react';
+
 import {
   configApiRef,
   discoveryApiRef,
@@ -91,6 +93,8 @@ const catalogImportApi = ApiBlueprint.make({
 /** @alpha */
 export default createFrontendPlugin({
   pluginId: 'catalog-import',
+  title: 'Register Existing Component',
+  icon: <RiAddCircleLine />,
   info: { packageJson: () => import('../package.json') },
   extensions: [catalogImportApi, catalogImportPage],
   routes: {

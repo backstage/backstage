@@ -21,7 +21,7 @@ import {
 } from '@azure/storage-blob';
 import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { assertError, ForwardedError } from '@backstage/errors';
+import { ForwardedError, toError } from '@backstage/errors';
 import express from 'express';
 import JSON5 from 'json5';
 import limiterFactory from 'p-limit';
@@ -152,8 +152,9 @@ export class AzureBlobStoragePublish implements PublisherBase {
         );
       }
     } catch (e) {
-      assertError(e);
-      this.logger.error(`from Azure Blob Storage client library: ${e.message}`);
+      this.logger.error(
+        `from Azure Blob Storage client library: ${toError(e).message}`,
+      );
     }
 
     this.logger.error(
@@ -190,9 +191,10 @@ export class AzureBlobStoragePublish implements PublisherBase {
         maxPageSize: BATCH_CONCURRENCY,
       });
     } catch (e) {
-      assertError(e);
       this.logger.error(
-        `Unable to list files for Entity ${entity.metadata.name}: ${e.message}`,
+        `Unable to list files for Entity ${entity.metadata.name}: ${
+          toError(e).message
+        }`,
       );
     }
 
@@ -421,8 +423,7 @@ export class AzureBlobStoragePublish implements PublisherBase {
     try {
       newPath = lowerCaseEntityTripletInStoragePath(originalPath);
     } catch (e) {
-      assertError(e);
-      this.logger.warn(e.message);
+      this.logger.warn(toError(e).message);
       return;
     }
 
@@ -431,8 +432,9 @@ export class AzureBlobStoragePublish implements PublisherBase {
       this.logger.debug(`Migrating ${originalPath}`);
       await this.renameBlob(originalPath, newPath, removeOriginal);
     } catch (e) {
-      assertError(e);
-      this.logger.warn(`Unable to migrate ${originalPath}: ${e.message}`);
+      this.logger.warn(
+        `Unable to migrate ${originalPath}: ${toError(e).message}`,
+      );
     }
   }
 

@@ -267,6 +267,15 @@ export interface CatalogService {
     options: CatalogServiceRequestOptions,
   ): AsyncIterable<Location_2[]>;
   // (undocumented)
+  updateLocation(
+    id: string,
+    location: {
+      type?: string;
+      target: string;
+    },
+    options: CatalogServiceRequestOptions,
+  ): Promise<Location_2>;
+  // (undocumented)
   validateEntity(
     entity: Entity,
     locationRef: string,

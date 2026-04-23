@@ -17,7 +17,7 @@
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { registerMswTestHooks } from '@backstage/backend-test-utils';
-import { isCimdUrl, validateCimdUrl, fetchCimdMetadata } from './CimdClient';
+import { validateCimdUrl, fetchCimdMetadata } from './CimdClient';
 import * as dns from 'node:dns/promises';
 
 jest.mock('dns/promises');
@@ -43,65 +43,6 @@ describe('CimdClient', () => {
   afterEach(() => {
     (process.env as Record<string, string | undefined>).NODE_ENV =
       originalNodeEnv;
-  });
-
-  describe('isCimdUrl', () => {
-    it('should return true for valid CIMD URLs', () => {
-      expect(isCimdUrl('https://example.com/oauth-metadata.json')).toBe(true);
-      expect(isCimdUrl('https://example.com/path/to/metadata')).toBe(true);
-      expect(
-        isCimdUrl('https://sub.example.com/.well-known/oauth-client'),
-      ).toBe(true);
-    });
-
-    it('should return false for URLs without path', () => {
-      expect(isCimdUrl('https://example.com')).toBe(false);
-      expect(isCimdUrl('https://example.com/')).toBe(false);
-    });
-
-    it('should return false for non-HTTPS URLs on public hosts', () => {
-      expect(isCimdUrl('http://example.com/metadata')).toBe(false);
-    });
-
-    it('should return true for HTTP localhost URLs (development)', () => {
-      expect(
-        isCimdUrl(
-          'http://localhost:7007/api/auth/.well-known/oauth-client/cli',
-        ),
-      ).toBe(true);
-      expect(
-        isCimdUrl(
-          'http://127.0.0.1:7007/api/auth/.well-known/oauth-client/cli',
-        ),
-      ).toBe(true);
-      expect(isCimdUrl('http://localhost/path')).toBe(true);
-    });
-
-    it('should return false for HTTP localhost URLs in production', () => {
-      (process.env as Record<string, string | undefined>).NODE_ENV =
-        'production';
-      expect(isCimdUrl('http://localhost:7007/path')).toBe(false);
-      expect(isCimdUrl('http://127.0.0.1:7007/path')).toBe(false);
-    });
-
-    it('should return false for non-URL strings', () => {
-      expect(isCimdUrl('not-a-url')).toBe(false);
-      expect(isCimdUrl('uuid-like-client-id')).toBe(false);
-      expect(isCimdUrl('')).toBe(false);
-    });
-
-    it('should return false for URLs with query strings', () => {
-      expect(isCimdUrl('https://example.com/metadata?foo=bar')).toBe(false);
-    });
-
-    it('should return false for URLs with dot path segments', () => {
-      expect(isCimdUrl('https://example.com/./metadata')).toBe(false);
-      expect(isCimdUrl('https://example.com/../metadata')).toBe(false);
-    });
-
-    it('should return false for URLs with fragments', () => {
-      expect(isCimdUrl('https://example.com/metadata#section')).toBe(false);
-    });
   });
 
   describe('validateCimdUrl', () => {

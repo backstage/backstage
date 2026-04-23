@@ -17,9 +17,11 @@
 export type {
   Backend,
   CreateSpecializedBackendOptions,
+  ExtensionPointFactoryMiddleware,
   BackendStartupResult,
   PluginStartupResult,
   ModuleStartupResult,
 } from './types';
+export { createExtensionPointFactoryMiddleware } from './types';
 export { createSpecializedBackend } from './createSpecializedBackend';
 export { BackendStartupError } from './BackendStartupError';

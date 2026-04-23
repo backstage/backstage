@@ -14,13 +14,22 @@
  * limitations under the License.
  */
 
-import { useCallback } from 'react';
+import { useAsync, useMountEffect } from '@react-hookz/web';
+import { useCallback, useMemo } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import { Content } from '@backstage/core-components';
+import { useApi } from '@backstage/core-plugin-api';
 import { makeStyles } from '@material-ui/core/styles';
 import { RequirePermission } from '@backstage/plugin-permission-react';
 import { templateManagementPermission } from '@backstage/plugin-scaffolder-common/alpha';
-import { SecretsContextProvider } from '@backstage/plugin-scaffolder-react';
+import {
+  type FieldExtensionOptions,
+  SecretsContextProvider,
+} from '@backstage/plugin-scaffolder-react';
+import type { FormField } from '@backstage/plugin-scaffolder-react/alpha';
+import { OpaqueFormField } from '@internal/scaffolder';
+import { DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS } from '../../extensions/default';
+import { formFieldsApiRef } from '../formFieldsApi';
 import { TemplateEditorIntro } from './TemplateEditorPage/TemplateEditorIntro';
 import { TemplateEditor } from './TemplateEditorPage/TemplateEditor';
 import { TemplateFormPreviewer } from './TemplateEditorPage/TemplateFormPreviewer';
@@ -68,16 +77,40 @@ function EditorIntroContent() {
   );
 }
 
-function EditorContent() {
+export function buildEditorFieldExtensions(
+  formFields: FieldExtensionOptions[] = [],
+): FieldExtensionOptions[] {
+  return [
+    ...formFields,
+    ...(DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS.filter(
+      ({ name }) => !formFields.some(formField => formField.name === name),
+    ) as FieldExtensionOptions[]),
+  ];
+}
+
+export function toFieldExtensionOptions(
+  formField: FormField,
+): FieldExtensionOptions {
+  const internal = OpaqueFormField.toInternal(formField);
+
+  return {
+    ...internal,
+    schema: internal.schema?.schema ?? internal.schema,
+  } as FieldExtensionOptions;
+}
+
+function EditorContent(props: { fieldExtensions: FieldExtensionOptions[] }) {
   const classes = useEditorStyles();
   return (
     <Content className={classes.editorContent}>
-      <TemplateEditor />
+      <TemplateEditor fieldExtensions={props.fieldExtensions} />
     </Content>
   );
 }
 
-function FormPreviewContent() {
+function FormPreviewContent(props: {
+  fieldExtensions: FieldExtensionOptions[];
+}) {
   const classes = useEditorStyles();
   const navigate = useNavigate();
 
@@ -87,15 +120,20 @@ function FormPreviewContent() {
 
   return (
     <Content className={classes.formContent}>
-      <TemplateFormPreviewer onClose={handleClose} />
+      <TemplateFormPreviewer
+        customFieldExtensions={props.fieldExtensions}
+        onClose={handleClose}
+      />
     </Content>
   );
 }
 
-function CustomFieldsContent() {
+function CustomFieldsContent(props: {
+  fieldExtensions: FieldExtensionOptions[];
+}) {
   return (
     <Content>
-      <CustomFieldExplorer />
+      <CustomFieldExplorer customFieldExtensions={props.fieldExtensions} />
     </Content>
   );
 }
@@ -107,14 +145,38 @@ function CustomFieldsContent() {
  * @internal
  */
 export function EditorSubPage() {
+  const formFieldsApi = useApi(formFieldsApiRef);
+  const [{ result: customFieldExtensions = [] }, { execute }] = useAsync(
+    async () => {
+      const formFields = await formFieldsApi.loadFormFields();
+      return formFields.map(toFieldExtensionOptions);
+    },
+  );
+
+  useMountEffect(execute);
+
+  const fieldExtensions = useMemo(
+    () => buildEditorFieldExtensions(customFieldExtensions),
+    [customFieldExtensions],
+  );
+
   return (
     <RequirePermission permission={templateManagementPermission}>
       <SecretsContextProvider>
         <Routes>
           <Route index element={<EditorIntroContent />} />
-          <Route path="template" element={<EditorContent />} />
-          <Route path="template-form" element={<FormPreviewContent />} />
-          <Route path="custom-fields" element={<CustomFieldsContent />} />
+          <Route
+            path="template"
+            element={<EditorContent fieldExtensions={fieldExtensions} />}
+          />
+          <Route
+            path="template-form"
+            element={<FormPreviewContent fieldExtensions={fieldExtensions} />}
+          />
+          <Route
+            path="custom-fields"
+            element={<CustomFieldsContent fieldExtensions={fieldExtensions} />}
+          />
         </Routes>
       </SecretsContextProvider>
     </RequirePermission>

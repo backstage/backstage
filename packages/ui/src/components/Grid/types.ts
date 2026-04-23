@@ -21,6 +21,7 @@ import type {
   Responsive,
   Columns,
   ProviderBg,
+  FlexItemProps,
 } from '../../types';
 
 /** @public */
@@ -34,6 +35,7 @@ export type GridOwnProps = {
 /** @public */
 export interface GridProps
   extends SpaceProps,
+    FlexItemProps,
     GridOwnProps,
     Omit<HTMLAttributes<HTMLDivElement>, 'children'> {
   columns?: Responsive<Columns>;

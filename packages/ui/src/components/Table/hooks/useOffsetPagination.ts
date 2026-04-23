@@ -91,7 +91,7 @@ export function useOffsetPagination<T extends TableItem, TFilter>(
 
   return {
     data: cache.data,
-    loading: cache.loading,
+    isPending: cache.isPending,
     error: cache.error,
     totalCount: cache.totalCount,
     offset: cache.currentCursor ?? 0,

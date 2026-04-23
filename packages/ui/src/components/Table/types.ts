@@ -24,7 +24,7 @@ import {
 } from 'react-aria-components';
 import type { ReactElement, ReactNode } from 'react';
 import type { SortDescriptor as ReactStatelySortDescriptor } from 'react-stately';
-import type { ColumnSize, ColumnStaticSize } from '@react-types/table';
+import type { ColumnSize, ColumnStaticSize } from 'react-stately';
 import type { TextColors } from '../../types';
 import { TablePaginationProps } from '../TablePagination';
 
@@ -42,6 +42,8 @@ export interface SortState {
 /** @public */
 export type TableRootOwnProps = {
   stale?: boolean;
+  isPending?: boolean;
+  /** @deprecated Use `isPending` instead. */
   loading?: boolean;
 };
 
@@ -263,6 +265,8 @@ export type VirtualizedProp =
 export interface TableProps<T extends TableItem> {
   columnConfig: readonly ColumnConfig<T>[];
   data: T[] | undefined;
+  isPending?: boolean;
+  /** @deprecated Use `isPending` instead. */
   loading?: boolean;
   isStale?: boolean;
   error?: Error;

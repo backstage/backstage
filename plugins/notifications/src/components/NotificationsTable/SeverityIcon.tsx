@@ -14,43 +14,56 @@
  * limitations under the License.
  */
 import { NotificationSeverity } from '@backstage/plugin-notifications-common';
-import NormalIcon from '@material-ui/icons/CheckOutlined';
-import CriticalIcon from '@material-ui/icons/ErrorOutline';
-import HighIcon from '@material-ui/icons/WarningOutlined';
-import LowIcon from '@material-ui/icons/InfoOutlined';
-import { makeStyles } from '@material-ui/core/styles';
-
-const useStyles = makeStyles(theme => ({
-  critical: {
-    color: theme.palette.status.error,
-  },
-  high: {
-    color: theme.palette.status.warning,
-  },
-  normal: {
-    color: theme.palette.status.ok,
-  },
-  low: {
-    color: theme.palette.status.running,
-  },
-}));
+import {
+  RiCheckLine,
+  RiErrorWarningLine,
+  RiAlertLine,
+  RiInformationLine,
+} from '@remixicon/react';
+import styles from './SeverityIcon.module.css';
 
 export const SeverityIcon = ({
   severity,
+  className,
+  style,
 }: {
   severity?: NotificationSeverity;
+  className?: string;
+  style?: React.CSSProperties;
 }) => {
-  const classes = useStyles();
-
   switch (severity) {
     case 'critical':
-      return <CriticalIcon className={classes.critical} />;
+      return (
+        <RiErrorWarningLine
+          size={20}
+          className={[styles.critical, className].filter(Boolean).join(' ')}
+          style={style}
+        />
+      );
     case 'high':
-      return <HighIcon className={classes.high} />;
+      return (
+        <RiAlertLine
+          size={20}
+          className={[styles.high, className].filter(Boolean).join(' ')}
+          style={style}
+        />
+      );
     case 'low':
-      return <LowIcon className={classes.low} />;
+      return (
+        <RiInformationLine
+          size={20}
+          className={[styles.low, className].filter(Boolean).join(' ')}
+          style={style}
+        />
+      );
     case 'normal':
     default:
-      return <NormalIcon className={classes.normal} />;
+      return (
+        <RiCheckLine
+          size={20}
+          className={[styles.normal, className].filter(Boolean).join(' ')}
+          style={style}
+        />
+      );
   }
 };

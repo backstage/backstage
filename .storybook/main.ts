@@ -13,7 +13,7 @@ const isChromatic = process.env.STORYBOOK_STORY_SET === 'chromatic';
 
 // All stories for full development
 const allStories = isChromatic
-  ? ['packages/ui']
+  ? ['packages/ui', 'plugins/app']
   : [
       'packages/ui',
       'packages/core-components',
@@ -55,9 +55,8 @@ export default defineMain({
     name: getAbsolutePath('@storybook/react-vite'),
     options: {},
   },
-  features: {
-    experimentalComponentsManifest: true,
-    experimentalCodeExamples: true, // optional
+  typescript: {
+    reactDocgen: 'react-docgen',
   },
   viteFinal: async (config, { configType }) => {
     // Add Node.js polyfills for browser compatibility

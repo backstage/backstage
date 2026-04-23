@@ -17,7 +17,7 @@ Each extensions has a number of different properties that define how it behaves 
 
 The ID of an extension is used to uniquely identity it, and it should ideally be unique across the entire Backstage ecosystem. For each frontend app instance there can only be a single extension for any given ID. Installing multiple extensions with the same ID will either result in an error or one of the extensions will override the others. The ID is also used to reference the extensions from other extensions, in configuration, and in other places such as developer tools and analytics.
 
-When creating an extension you do not provide the ID directly. Instead, you indirectly or directly provide the kind, namespace, and name parts that make up the ID. The kind is always provided by the [extension blueprint](./23-extension-blueprints.md), the only exception is if you use [`createExtension`](#creating-an-extensions) directly. Any extension that is provided by a plugin will by default have its namespace set to the plugin ID, so you generally only need to provide an explicit namespace if you want to override an existing extension. The name is also optional, and primarily used to distinguish between multiple extensions of the same kind and namespace. If a plugin doesn't need to distinguish between different extensions of the same kind, the name can be omitted.
+When creating an extension you do not provide the ID directly. Instead, you indirectly or directly provide the kind, namespace, and name parts that make up the ID. The kind is always provided by the [extension blueprint](./23-extension-blueprints.md), the only exception is if you use [`createExtension`](#creating-an-extension) directly. Any extension that is provided by a plugin will by default have its namespace set to the plugin ID, so you generally only need to provide an explicit namespace if you want to override an existing extension. The name is also optional, and primarily used to distinguish between multiple extensions of the same kind and namespace. If a plugin doesn't need to distinguish between different extensions of the same kind, the name can be omitted.
 
 The extension ID will be constructed using the pattern `[<kind>:][<namespace>][/][<name>]`, where the separating `/` is only present if both a namespace and name are defined.
 
@@ -275,18 +275,18 @@ In addition to being able to access data passed through the input, you also have
 
 ## Extension configuration
 
-With the `app-config.yaml` there is already the option to pass configuration to plugins or the app to e.g. define the `baseURL` of your app. For extensions this concept would be limiting as an extension can be independent of the plugin & initiated several times. Therefore we created a possibility to configure each extension individually through config. The extension config schema is created using the [`zod`](https://zod.dev/) library, which in addition to TypeScript type checking also provides runtime validation and coercion. If we continue with the example of the `navigationExtension` and now want it to contain a configurable title, we could make it available like the following:
+With the `app-config.yaml` there is already the option to pass configuration to plugins or the app to e.g. define the `baseURL` of your app. For extensions this concept would be limiting as an extension can be independent of the plugin & initiated several times. Therefore we created a possibility to configure each extension individually through config. The extension config schema is created using any schema library that implements the [Standard Schema](https://github.com/standard-schema/standard-schema) interface with JSON Schema support, such as [`zod`](https://zod.dev/) v4 (`zod@^4.0.0`). In addition to TypeScript type checking, the schema also provides runtime validation and coercion. If we continue with the example of the `navigationExtension` and now want it to contain a configurable title, we could make it available like the following:
 
 ```tsx
+import { z } from 'zod';
+
 const navigationExtension = createExtension({
   // ...
   namespace: 'app',
   name: 'nav',
   // [3]: Extension `id` will be `app/nav` following the extension naming pattern
-  config: {
-    schema: {
-      title: z => z.string().default('Sidebar Title'),
-    },
+  configSchema: {
+    title: z.string().default('Sidebar Title'),
   },
   factory({ config }) {
     return [
@@ -321,12 +321,12 @@ In all examples so far we have defined the extension factory as a regular functi
 For example, this is how we could define an extension where its output depends on the configuration:
 
 ```tsx
+import { z } from 'zod';
+
 const exampleExtension = createExtension({
   // ...
-  config: {
-    schema: {
-      disableIcon: z.boolean().default(false),
-    },
+  configSchema: {
+    disableIcon: z.boolean().default(false),
   },
   output: [coreExtensionData.reactElement, iconDataRef.optional()],
   *factory({ config }) {

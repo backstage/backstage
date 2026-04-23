@@ -56,9 +56,15 @@ export interface PaginationOptions
       | 'onPreviousPage'
       | 'showPageSizeOptions'
       | 'getLabel'
+      | 'showPaginationLabel'
     >
   > {
   initialOffset?: number;
+}
+
+/** @public */
+export interface CompletePaginationOptions extends PaginationOptions {
+  type?: 'page' | 'none';
 }
 
 /** @public */
@@ -101,7 +107,7 @@ export type UseTableCompleteOptions<
   TFilter = unknown,
 > = QueryOptions<TFilter> & {
   mode: 'complete';
-  paginationOptions?: PaginationOptions;
+  paginationOptions?: CompletePaginationOptions;
   sortFn?: (data: T[], sort: SortDescriptor) => T[];
   filterFn?: (data: T[], filter: TFilter) => T[];
   searchFn?: (data: T[], search: string) => T[];
@@ -152,7 +158,7 @@ export interface UseTableResult<T extends TableItem, TFilter = unknown> {
 /** @internal */
 export interface PaginationResult<T> {
   data: T[] | undefined;
-  loading: boolean;
+  isPending: boolean;
   error: Error | undefined;
   totalCount: number | undefined;
   offset?: number;

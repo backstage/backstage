@@ -20,7 +20,7 @@ import {
   TemplateActionRegistry,
 } from '../actions';
 import { ScmIntegrations } from '@backstage/integration';
-import { JsonObject } from '@backstage/types';
+import { JsonArray, JsonObject } from '@backstage/types';
 import { ConfigReader } from '@backstage/config';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import {
@@ -39,7 +39,10 @@ import {
   mockCredentials,
   mockServices,
 } from '@backstage/backend-test-utils';
-import { actionsRegistryServiceMock } from '@backstage/backend-test-utils/alpha';
+import {
+  actionsRegistryServiceMock,
+  metricsServiceMock,
+} from '@backstage/backend-test-utils/alpha';
 
 describe('NunjucksWorkflowRunner', () => {
   let actionRegistry: TemplateActionRegistry;
@@ -249,6 +252,7 @@ describe('NunjucksWorkflowRunner', () => {
       logger,
       permissions: mockedPermissionApi,
       config,
+      metrics: metricsServiceMock.mock(),
     });
   });
 
@@ -512,6 +516,136 @@ describe('NunjucksWorkflowRunner', () => {
         const { output } = await runner.execute(task);
         expect(output.result).toBeUndefined();
       });
+    });
+  });
+
+  describe('conditional output items', () => {
+    it('should include output links without an if condition', async () => {
+      const task = createMockTaskWithSpec({
+        steps: [{ id: 'test', name: 'test', action: 'jest-mock-action' }],
+        output: {
+          links: [{ title: 'Always', url: 'https://example.com' }],
+        },
+      });
+
+      const { output } = await runner.execute(task);
+      expect(output.links).toEqual([
+        { title: 'Always', url: 'https://example.com' },
+      ]);
+    });
+
+    it('should filter out output links where if is false', async () => {
+      const task = createMockTaskWithSpec({
+        steps: [{ id: 'test', name: 'test', action: 'jest-mock-action' }],
+        output: {
+          links: [
+            { title: 'Always', url: 'https://example.com' },
+            { if: false, title: 'Hidden', url: 'https://hidden.com' },
+          ],
+        },
+      });
+
+      const { output } = await runner.execute(task);
+      expect(output.links).toEqual([
+        { title: 'Always', url: 'https://example.com' },
+      ]);
+    });
+
+    it('should include output links where if is true', async () => {
+      const task = createMockTaskWithSpec({
+        steps: [{ id: 'test', name: 'test', action: 'jest-mock-action' }],
+        output: {
+          links: [{ if: true, title: 'Visible', url: 'https://visible.com' }],
+        },
+      });
+
+      const { output } = await runner.execute(task);
+      expect(output.links).toEqual([
+        { title: 'Visible', url: 'https://visible.com' },
+      ]);
+    });
+
+    it('should filter output links based on templated if condition', async () => {
+      const task = createMockTaskWithSpec({
+        steps: [{ id: 'test', name: 'test', action: 'output-action' }],
+        output: {
+          links: [
+            {
+              if: '${{ parameters.enableCI === "Yes" }}',
+              title: 'CI',
+              url: 'https://ci.example.com',
+            },
+            {
+              if: '${{ parameters.enableCI === "Yes" }}',
+              title: 'CI Docs',
+              url: 'https://ci.example.com/docs',
+            },
+          ],
+        },
+        parameters: { enableCI: 'No' },
+      });
+
+      const { output } = await runner.execute(task);
+      expect(output.links).toEqual([]);
+    });
+
+    it('should include output links when templated if condition is truthy', async () => {
+      const task = createMockTaskWithSpec({
+        steps: [{ id: 'test', name: 'test', action: 'output-action' }],
+        output: {
+          links: [
+            {
+              if: '${{ parameters.enableCI === "Yes" }}',
+              title: 'CI',
+              url: 'https://ci.example.com',
+            },
+          ],
+        },
+        parameters: { enableCI: 'Yes' },
+      });
+
+      const { output } = await runner.execute(task);
+      expect(output.links).toEqual([
+        { title: 'CI', url: 'https://ci.example.com' },
+      ]);
+    });
+
+    it('should filter output text items based on if condition', async () => {
+      const task = createMockTaskWithSpec({
+        steps: [{ id: 'test', name: 'test', action: 'jest-mock-action' }],
+        output: {
+          text: [
+            { title: 'Always', content: 'visible' },
+            { if: false, title: 'Hidden', content: 'hidden' },
+            {
+              if: '${{ parameters.show }}',
+              title: 'Conditional',
+              content: 'conditional',
+            },
+          ],
+        },
+        parameters: { show: true },
+      });
+
+      const { output } = await runner.execute(task);
+      expect(output.text).toEqual([
+        { title: 'Always', content: 'visible' },
+        { title: 'Conditional', content: 'conditional' },
+      ]);
+    });
+
+    it('should strip the if field from output items that pass the condition', async () => {
+      const task = createMockTaskWithSpec({
+        steps: [{ id: 'test', name: 'test', action: 'jest-mock-action' }],
+        output: {
+          links: [{ if: true, title: 'Link', url: 'https://example.com' }],
+          text: [{ if: true, title: 'Text', content: 'content' }],
+        },
+      });
+
+      const { output } = await runner.execute(task);
+      expect((output.links as JsonArray)[0]).not.toHaveProperty('if');
+      expect((output.text as JsonArray)[0]).not.toHaveProperty('if');
     });
   });
 

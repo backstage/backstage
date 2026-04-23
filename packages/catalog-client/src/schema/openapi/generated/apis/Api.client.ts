@@ -40,6 +40,7 @@ import { CreateLocationRequest } from '../models/CreateLocationRequest.model';
 import { GetLocations200ResponseInner } from '../models/GetLocations200ResponseInner.model';
 import { GetLocationsByQueryRequest } from '../models/GetLocationsByQueryRequest.model';
 import { Location } from '../models/Location.model';
+import { LocationInput } from '../models/LocationInput.model';
 import { LocationsQueryResponse } from '../models/LocationsQueryResponse.model';
 
 /**
@@ -216,6 +217,15 @@ export type GetLocations = {};
  */
 export type GetLocationsByQuery = {
   body: GetLocationsByQueryRequest;
+};
+/**
+ * @public
+ */
+export type UpdateLocation = {
+  path: {
+    id: string;
+  };
+  body: LocationInput;
 };
 
 /**
@@ -744,6 +754,34 @@ export class DefaultApiClient {
         ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
       },
       method: 'POST',
+      body: JSON.stringify(request.body),
+    });
+  }
+
+  /**
+   * Update the type and target of an existing location by id.
+   * @param id -
+   * @param locationInput -
+   */
+  public async updateLocation(
+    // @ts-ignore
+    request: UpdateLocation,
+    options?: RequestOptions,
+  ): Promise<TypedResponse<Location>> {
+    const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
+
+    const uriTemplate = `/locations/{id}`;
+
+    const uri = parser.parse(uriTemplate).expand({
+      id: request.path.id,
+    });
+
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+      },
+      method: 'PUT',
       body: JSON.stringify(request.body),
     });
   }

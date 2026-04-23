@@ -20,10 +20,15 @@ import { ctrlc } from 'ctrlc-windows';
 import { IpcServer, ServerDataStore } from '../ipc';
 import debounce from 'lodash/debounce';
 import { fileURLToPath } from 'node:url';
-import { isAbsolute as isAbsolutePath } from 'node:path';
+import {
+  isAbsolute as isAbsolutePath,
+  resolve as resolvePath,
+} from 'node:path';
 import { targetPaths } from '@backstage/cli-common';
+import { ConfigSources } from '@backstage/config-loader';
 
 import spawn from 'cross-spawn';
+import { startEmbeddedDb } from './startEmbeddedDb';
 
 const loaderArgs = [
   '--enable-source-maps',
@@ -45,6 +50,8 @@ export type RunBackendOptions = {
   require?: string | string[];
   /** An external linked workspace to override module resolution towards */
   linkedWorkspace?: string;
+  /** Config file paths from --config flags */
+  configPaths?: string[];
 };
 
 export async function runBackend(options: RunBackendOptions) {
@@ -56,6 +63,22 @@ export async function runBackend(options: RunBackendOptions) {
   // Set up the parent IPC server and bind the available services
   const server = new IpcServer();
   ServerDataStore.bind(server);
+
+  const extraEnv: Record<string, string> = {};
+
+  let embeddedDb: Awaited<ReturnType<typeof startEmbeddedDb>> | undefined;
+
+  const dbClient = await readDatabaseClient(
+    options.configPaths,
+    options.targetDir,
+  );
+  if (dbClient === 'embedded-postgres') {
+    embeddedDb = await startEmbeddedDb();
+    extraEnv.APP_CONFIG_backend_database = JSON.stringify({
+      client: 'pg',
+      connection: embeddedDb.connection,
+    });
+  }
 
   let exiting = false;
   let firstStart = true;
@@ -134,6 +157,7 @@ export async function runBackend(options: RunBackendOptions) {
         cwd: options.targetDir,
         env: {
           ...process.env,
+          ...extraEnv,
           BACKSTAGE_CLI_LINKED_WORKSPACE: options.linkedWorkspace,
           BACKSTAGE_CLI_CHANNEL: '1',
           ESBK_TSCONFIG_PATH: targetPaths.resolveRoot('tsconfig.json'),
@@ -186,6 +210,7 @@ export async function runBackend(options: RunBackendOptions) {
         });
       }
 
+      await embeddedDb?.close();
       resolveExitPromise();
     }
 
@@ -194,4 +219,27 @@ export async function runBackend(options: RunBackendOptions) {
   });
 
   return () => exitPromise;
+}
+
+async function readDatabaseClient(
+  configPaths?: string[],
+  targetDir?: string,
+): Promise<string | undefined> {
+  const rootDir = targetPaths.rootDir;
+  const configBaseDir = targetDir ?? rootDir;
+  const source = ConfigSources.default({
+    rootDir,
+    allowMissingDefaultConfig: true,
+    argv: (configPaths ?? []).flatMap(p => [
+      '--config',
+      isAbsolutePath(p) ? p : resolvePath(configBaseDir, p),
+    ]),
+  });
+
+  const config = await ConfigSources.toConfig(source);
+  try {
+    return config.getOptionalString('backend.database.client');
+  } finally {
+    config.close();
+  }
 }

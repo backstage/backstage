@@ -28,7 +28,11 @@ import { isExternalLink } from '../../../utils/linkUtils';
 import clsx from 'clsx';
 import { Flex } from '../../Flex';
 
-/** @public */
+/**
+ * A table row that can optionally act as a navigation link or trigger an action when clicked, with analytics tracking.
+ *
+ * @public
+ */
 export function Row<T extends object>(props: RowProps<T>) {
   const { ownProps, restProps, dataAttributes, analytics } = useDefinition(
     RowDefinition,

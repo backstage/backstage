@@ -19,6 +19,7 @@ import {
   Dialog as RADialog,
   DialogTrigger as RADialogTrigger,
   Modal,
+  ModalOverlay,
   Heading,
 } from 'react-aria-components';
 import type {
@@ -41,29 +42,37 @@ import { Box } from '../Box';
 import { BgReset } from '../../hooks/useBg';
 import { Flex } from '../Flex';
 
-/** @public */
+/**
+ * A wrapper that connects a trigger element to a Dialog, controlling its open and close state.
+ *
+ * @public
+ */
 export const DialogTrigger = (props: DialogTriggerProps) => {
   return <RADialogTrigger {...props} />;
 };
 
-/** @public */
+/**
+ * A modal overlay that presents content requiring user interaction or acknowledgment, dismissible by clicking outside or pressing Escape.
+ *
+ * @public
+ */
 export const Dialog = forwardRef<React.ElementRef<typeof Modal>, DialogProps>(
   (props, ref) => {
     const { ownProps, restProps } = useDefinition(DialogDefinition, props, {
-      classNameTarget: 'dialog',
+      classNameTarget: 'container',
     });
     const { classes, children, width, height, style } = ownProps;
 
     return (
-      <Modal
-        ref={ref}
+      <ModalOverlay
         className={classes.root}
         isDismissable
         isKeyboardDismissDisabled={false}
         {...restProps}
       >
-        <RADialog
-          className={classes.dialog}
+        <Modal
+          ref={ref}
+          className={classes.container}
           style={{
             ['--bui-dialog-min-width' as keyof React.CSSProperties]:
               typeof width === 'number' ? `${width}px` : width || '400px',
@@ -76,20 +85,26 @@ export const Dialog = forwardRef<React.ElementRef<typeof Modal>, DialogProps>(
             ...style,
           }}
         >
-          <BgReset>
-            <Box bg="neutral" className={classes.content}>
-              {children}
-            </Box>
-          </BgReset>
-        </RADialog>
-      </Modal>
+          <RADialog className={classes.inner}>
+            <BgReset>
+              <Box bg="neutral" className={classes.content}>
+                {children}
+              </Box>
+            </BgReset>
+          </RADialog>
+        </Modal>
+      </ModalOverlay>
     );
   },
 );
 
 Dialog.displayName = 'Dialog';
 
-/** @public */
+/**
+ * The header section of a Dialog, containing the title and a close button.
+ *
+ * @public
+ */
 export const DialogHeader = forwardRef<
   React.ElementRef<'div'>,
   DialogHeaderProps
@@ -110,7 +125,11 @@ export const DialogHeader = forwardRef<
 });
 DialogHeader.displayName = 'DialogHeader';
 
-/** @public */
+/**
+ * The main scrollable content area of a Dialog.
+ *
+ * @public
+ */
 export const DialogBody = forwardRef<React.ElementRef<'div'>, DialogBodyProps>(
   (props, ref) => {
     const { ownProps, restProps } = useDefinition(DialogBodyDefinition, props);
@@ -126,7 +145,11 @@ export const DialogBody = forwardRef<React.ElementRef<'div'>, DialogBodyProps>(
 
 DialogBody.displayName = 'DialogBody';
 
-/** @public */
+/**
+ * The footer section of a Dialog, typically used to place action buttons.
+ *
+ * @public
+ */
 export const DialogFooter = forwardRef<
   React.ElementRef<'div'>,
   DialogFooterProps

@@ -170,7 +170,9 @@ To help your changes get reviewed and merged smoothly, please keep the following
 
 - We really appreciate contributions that improve clarity or fix outdated information. That said, we generally don’t accept changes that are purely stylistic (e.g., rewording a sentence just to tweak the tone or phrasing). If something is **unclear**, **confusing**, or **factually inaccurate**, those are great opportunities to help!
 
-Ready to get started? You can find all the documentation files in the [docs](docs) directory! If you have any questions or need help, feel free to reach out in the [Backstage Discord Docs Channel](https://discord.com/channels/687207715902193673/687994765559463940)
+Ready to get started? You can find all the documentation files in the [docs](docs) directory!
+Please take a look through [our style guide](./docs/contribute/doc-style-guide.md) as well for writing style tips.
+If you have any questions or need help, feel free to reach out in the [Backstage Discord Docs Channel](https://discord.com/channels/687207715902193673/687994765559463940).
 
 Thank you in advance for your contributions! We really appreciate it. 🙏
 
@@ -245,6 +247,10 @@ Changesets **are** needed for new packages, as that is what triggers the package
 Changesets are an important part of the development process. They are used to generate Changelog entries for all changes to the project. Ultimately, they are read by the end users to learn about important changes and fixes to the project. Some of these fixes might require manual intervention from users so it's important to write changesets that users understand and can take action on.
 
 Here are some important do's and don'ts when writing changesets:
+
+### Changeset messages should describe user-facing behavior in plain language
+
+Changeset messages are read by Backstage adopters, not contributors. They should describe what changed from the user's perspective, not how the code was changed internally. Never reference internal implementation details such as function names, class names, variable names, or other code symbols that are not part of the public API. Public API names (exported functions, components, types, etc.) are fine to mention, but internal code structure should not appear in changeset messages.
 
 ### Changeset should give a clear description to what has changed
 

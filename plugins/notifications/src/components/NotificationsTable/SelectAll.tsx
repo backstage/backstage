@@ -13,21 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import { makeStyles } from '@material-ui/core/styles';
-import Tooltip from '@material-ui/core/Tooltip';
-
-const useStyles = makeStyles({
-  label: {
-    marginLeft: '0px',
-    maxWidth: '2rem',
-    '& span': {
-      paddingRight: '0px',
-      marginRight: '2px',
-    },
-  },
-});
+import { Checkbox, Tooltip, TooltipTrigger } from '@backstage/ui';
+import styles from './SelectAll.module.css';
 
 export const SelectAll = ({
   count,
@@ -38,23 +25,19 @@ export const SelectAll = ({
   totalCount: number;
   onSelectAll: () => void;
 }) => {
-  const classes = useStyles();
-
   return (
-    <FormControlLabel
-      label={count > 0 ? `(${count})` : undefined}
-      className={classes.label}
-      control={
-        <Tooltip title="Select all">
-          <Checkbox
-            color="primary"
-            disabled={!totalCount}
-            checked={count > 0}
-            indeterminate={count > 0 && totalCount !== count}
-            onChange={onSelectAll}
-          />
-        </Tooltip>
-      }
-    />
+    <TooltipTrigger>
+      <Checkbox
+        className={styles.label}
+        aria-label="Select all"
+        isDisabled={!totalCount}
+        isSelected={count > 0}
+        isIndeterminate={count > 0 && totalCount !== count}
+        onChange={() => onSelectAll()}
+      >
+        {count > 0 ? `(${count})` : undefined}
+      </Checkbox>
+      <Tooltip>Select all</Tooltip>
+    </TooltipTrigger>
   );
 };

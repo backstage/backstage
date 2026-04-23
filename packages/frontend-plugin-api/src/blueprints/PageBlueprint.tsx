@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { z } from 'zod/v4';
 import { JSX } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { IconElement } from '../icons/types';
@@ -68,11 +69,9 @@ export const PageBlueprint = createExtensionBlueprint({
     coreExtensionData.title.optional(),
     coreExtensionData.icon.optional(),
   ],
-  config: {
-    schema: {
-      path: z => z.string().optional(),
-      title: z => z.string().optional(),
-    },
+  configSchema: {
+    path: z.string().optional(),
+    title: z.string().optional(),
   },
   *factory(
     params: {

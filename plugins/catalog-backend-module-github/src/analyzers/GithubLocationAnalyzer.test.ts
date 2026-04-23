@@ -59,6 +59,7 @@ describe('GithubLocationAnalyzer', () => {
         id: 'test',
         target: location.target,
         type: location.type ?? 'url',
+        entityRef: 'location:default/generated-test',
       },
       exists: false,
       entities: [

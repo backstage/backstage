@@ -26,7 +26,11 @@ import { TableHeaderDefinition } from '../definition';
 import type { TableHeaderProps } from '../types';
 import { Flex } from '../../Flex';
 
-/** @public */
+/**
+ * The header row of a table, rendering column labels and an optional select-all checkbox for toggle selection mode.
+ *
+ * @public
+ */
 export const TableHeader = <T extends object>(props: TableHeaderProps<T>) => {
   let { selectionBehavior, selectionMode } = useTableOptions();
 

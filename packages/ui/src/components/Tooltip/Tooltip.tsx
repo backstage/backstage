@@ -28,14 +28,22 @@ import { TooltipDefinition } from './definition';
 import { Box } from '../Box';
 import { BgReset } from '../../hooks/useBg';
 
-/** @public */
+/**
+ * A wrapper that connects a trigger element to a Tooltip, controlling its show and hide behavior with a configurable delay.
+ *
+ * @public
+ */
 export const TooltipTrigger = (props: TooltipTriggerComponentProps) => {
   const { delay = 600 } = props;
 
   return <AriaTooltipTrigger delay={delay} {...props} />;
 };
 
-/** @public */
+/**
+ * A floating label that provides contextual information about an element when it receives hover or focus.
+ *
+ * @public
+ */
 export const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
   (props, ref) => {
     const { ownProps, restProps } = useDefinition(TooltipDefinition, props);

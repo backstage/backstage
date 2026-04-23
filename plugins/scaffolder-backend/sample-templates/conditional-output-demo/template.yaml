@@ -1,0 +1,62 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: conditional-output-demo
+  title: Conditional Output Demo
+  description: Demonstrates conditional if on output links and text
+spec:
+  owner: backstage/techdocs-core
+  type: service
+
+  parameters:
+    - title: Options
+      required:
+        - name
+      properties:
+        name:
+          title: Name
+          type: string
+          description: Unique name of the component
+          ui:autofocus: true
+        enableCI:
+          title: Enable CI
+          type: string
+          enum:
+            - 'Yes'
+            - 'No'
+          default: 'Yes'
+        showDetails:
+          title: Show Details
+          type: boolean
+          default: true
+
+  steps:
+    - id: log
+      name: Log
+      action: debug:log
+      input:
+        message: 'Creating ${{ parameters.name }}'
+
+  output:
+    links:
+      - title: Backstage Homepage
+        url: https://backstage.io
+      - if: ${{ parameters.enableCI === "Yes" }}
+        title: CI Dashboard
+        icon: dashboard
+        url: https://ci.example.com/${{ parameters.name }}
+      - if: ${{ parameters.enableCI === "Yes" }}
+        title: CI Docs
+        url: https://ci.example.com/docs
+    text:
+      - title: Summary
+        content: |
+          **Component:** `${{ parameters.name }}`
+      - if: ${{ parameters.showDetails }}
+        title: CI Details
+        content: |
+          **CI enabled:** ${{ parameters.enableCI }}
+      - if: ${{ parameters.enableCI === "Yes" }}
+        title: CI Setup Instructions
+        content: |
+          Run `ci-setup --name ${{ parameters.name }}` to configure CI.

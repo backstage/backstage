@@ -21,7 +21,7 @@ import {
 } from '@backstage/backend-test-utils';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { Knex } from 'knex';
-import * as uuid from 'uuid';
+import { randomUUID as uuid } from 'node:crypto';
 import { DefaultProviderDatabase } from './DefaultProviderDatabase';
 import { applyDatabaseMigrations } from './migrations';
 import { DbRefreshStateReferencesRow, DbRefreshStateRow } from './tables';
@@ -62,7 +62,7 @@ describe('DefaultProviderDatabase', () => {
   const createLocations = async (db: Knex, entityRefs: string[]) => {
     for (const ref of entityRefs) {
       await insertRefreshStateRow(db, {
-        entity_id: uuid.v4(),
+        entity_id: uuid(),
         entity_ref: ref,
         unprocessed_entity: '{}',
         processed_entity: '{}',
@@ -501,7 +501,7 @@ describe('DefaultProviderDatabase', () => {
         const { knex, db } = await createDatabase(databaseId);
         await createLocations(knex, ['location:default/removed']);
         await insertRefreshStateRow(knex, {
-          entity_id: uuid.v4(),
+          entity_id: uuid(),
           entity_ref: 'location:default/replaced',
           unprocessed_entity: '{}',
           processed_entity: '{}',

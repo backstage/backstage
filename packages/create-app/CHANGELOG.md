@@ -1,5 +1,49 @@
 # @backstage/create-app
 
+## 0.8.3-next.0
+
+### Patch Changes
+
+- 927c003: Replaced internal error utilities with shared ones from `@backstage/cli-common`.
+- Updated dependencies
+  - @backstage/cli-common@0.2.2-next.0
+
+## 0.8.2
+
+### Patch Changes
+
+- a2cb332: Bumped create-app version.
+- 6c10d88: Bumped create-app version.
+- e8ffac1: Various fixes for the `create-app` template: reorganizing sidebar items, removing redundant config and code, and adding a documentation example.
+- 72a493a: Added the `mcp-actions-backend` and `plugin-auth` plugins
+- 4cf9f3a: Removed the unnecessary `@backstage/cli-module-new` dependency from the `next-app` template, since it is already included through `@backstage/cli-defaults`.
+- 2541837: Renamed the built-in template directories from `next-app` to `default-app` and `default-app` to `legacy-app`.
+- Updated dependencies
+  - @backstage/cli-common@0.2.1
+
+## 0.8.2-next.2
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.2.1-next.1
+
+## 0.8.2-next.1
+
+### Patch Changes
+
+- Bumped create-app version.
+
+## 0.8.2-next.0
+
+### Patch Changes
+
+- e8ffac1: Various fixes for the `create-app` template: reorganizing sidebar items, removing redundant config and code, and adding a documentation example.
+- 4cf9f3a: Removed the unnecessary `@backstage/cli-module-new` dependency from the `next-app` template, since it is already included through `@backstage/cli-defaults`.
+- Updated dependencies
+  - @backstage/cli-common@0.2.1-next.0
+
 ## 0.8.0
 
 ### Minor Changes
@@ -7001,7 +7045,7 @@ The `.fromConfig` of the `DefaultCatalogCollator` also now takes a `tokenManager
 
   To apply this change to an existing plugin, it is important that all plugins that you are using have already been migrated. In this case the most crucial piece is that no entity page cards of contents may require the `entity` prop, and they must instead consume the entity from context using `useEntity`.
 
-  Since this change is large with a lot of repeated changes, we'll describe a couple of common cases rather than the entire change. If your entity pages are unchanged from the `create-app` template, you can also just bring in the latest version directly from the [template itself](https://github.com/backstage/backstage/blob/master/packages/create-app/templates/default-app/packages/app/src/components/catalog/EntityPage.tsx).
+  Since this change is large with a lot of repeated changes, we'll describe a couple of common cases rather than the entire change. If your entity pages are unchanged from the `create-app` template, you can also just bring in the latest version directly from the [template itself](https://github.com/backstage/backstage/blob/master/packages/create-app/templates/legacy-app/packages/app/src/components/catalog/EntityPage.tsx).
 
   The first step of the change is to change the `packages/app/src/components/catalog/EntityPage.tsx` export to `entityPage` rather than `EntityPage`. This will require an update to `App.tsx`, which is the only change we need to do outside of `EntityPage.tsx`:
 

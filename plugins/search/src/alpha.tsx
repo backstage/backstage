@@ -18,6 +18,7 @@ import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import SearchIcon from '@material-ui/icons/Search';
+import { z } from 'zod/v4';
 
 import {
   CatalogIcon,
@@ -93,10 +94,8 @@ const useSearchPageStyles = makeStyles((theme: Theme) => ({
 
 /** @alpha */
 export const searchPage = PageBlueprint.makeWithOverrides({
-  config: {
-    schema: {
-      noTrack: z => z.boolean().default(false),
-    },
+  configSchema: {
+    noTrack: z.boolean().default(false),
   },
   inputs: {
     items: createExtensionInput([SearchResultListItemBlueprint.dataRefs.item]),

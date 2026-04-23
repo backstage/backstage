@@ -15,7 +15,7 @@
  */
 
 import { Children, useRef } from 'react';
-import { useInteractOutside } from '@react-aria/interactions';
+import { useInteractOutside } from 'react-aria';
 import {
   Autocomplete,
   SearchField as RASearchField,
@@ -26,7 +26,7 @@ import {
   ListBoxItem,
   OverlayTriggerStateContext,
 } from 'react-aria-components';
-import { useOverlayTriggerState } from '@react-stately/overlays';
+import { useOverlayTriggerState } from 'react-stately';
 import { RiSearch2Line, RiCloseCircleLine } from '@remixicon/react';
 import { useDefinition } from '../../hooks/useDefinition';
 import {
@@ -47,7 +47,11 @@ const SearchAutocompleteEmptyState = () => {
   return <div className={ownProps.classes.emptyState}>No results found.</div>;
 };
 
-/** @public */
+/**
+ * A search input that shows a dropdown list of suggestions as the user types, with loading and empty states.
+ *
+ * @public
+ */
 export function SearchAutocomplete(props: SearchAutocompleteProps) {
   const { ownProps, dataAttributes } = useDefinition(
     SearchAutocompleteDefinition,
@@ -184,7 +188,11 @@ export function SearchAutocomplete(props: SearchAutocompleteProps) {
   );
 }
 
-/** @public */
+/**
+ * An individual option item within a SearchAutocomplete dropdown.
+ *
+ * @public
+ */
 export function SearchAutocompleteItem(props: SearchAutocompleteItemProps) {
   const { ownProps, restProps } = useDefinition(
     SearchAutocompleteItemDefinition,

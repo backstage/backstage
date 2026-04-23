@@ -20,7 +20,7 @@ See the [Writing Custom Actions guide](./writing-custom-actions.md#naming-conven
 
 ## Prerequisites
 
-These docs assume you have already gone over the [Backstage Getting Started](../../getting-started) section and you are able to run Backstage locally or it has been deployed somewhere.
+These docs assume you have already gone over the [Backstage Getting Started](../../getting-started/index.md) section and you are able to run Backstage locally or it has been deployed somewhere.
 
 ## Getting Started
 
@@ -85,25 +85,9 @@ Once the template has finished running, and from the screenshot above, when its 
 There could be situations where you would like to disable the
 `Register Existing Component` button for your users.
 
-To do so, you need to explicitly disable the default route binding from the `scaffolderPlugin.registerComponent` to the Catalog Import page.
+To do so, you can disable the route binding in your `app-config.yaml`:
 
-This can be done in `backstage/packages/app/src/App.tsx`:
-
-```diff
- const app = createApp({
-   apis,
-   bindRoutes({ bind }) {
-     bind(scaffolderPlugin.externalRoutes, {
-+      registerComponent: false,
--      registerComponent: catalogImportPlugin.routes.importPage,
-       viewTechDoc: techdocsPlugin.routes.docRoot,
-     });
-})
-```
-
-OR in `app-config.yaml`:
-
-```yaml
+```yaml title="app-config.yaml"
 app:
   routes:
     bindings:

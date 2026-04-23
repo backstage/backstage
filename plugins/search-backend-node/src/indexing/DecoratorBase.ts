@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { assertError } from '@backstage/errors';
+import { toError } from '@backstage/errors';
 import { IndexableDocument } from '@backstage/plugin-search-common';
 import { Transform } from 'node:stream';
 
@@ -60,8 +60,7 @@ export abstract class DecoratorBase extends Transform {
       await this.initialize();
       done();
     } catch (e) {
-      assertError(e);
-      done(e);
+      done(toError(e));
     }
   }
 
@@ -96,8 +95,7 @@ export abstract class DecoratorBase extends Transform {
       this.push(decorated);
       done();
     } catch (e) {
-      assertError(e);
-      done(e);
+      done(toError(e));
     }
   }
 
@@ -110,8 +108,7 @@ export abstract class DecoratorBase extends Transform {
       await this.finalize();
       done();
     } catch (e) {
-      assertError(e);
-      done(e);
+      done(toError(e));
     }
   }
 }

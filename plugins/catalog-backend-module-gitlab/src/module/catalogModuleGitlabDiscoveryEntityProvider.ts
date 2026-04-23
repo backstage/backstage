@@ -19,7 +19,9 @@ import {
   createBackendModule,
 } from '@backstage/backend-plugin-api';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
+import { catalogScmEventsServiceRef } from '@backstage/plugin-catalog-node/alpha';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
+import { GitLabScmEventsBridge } from '../events/GitLabScmEventsBridge';
 import { GitlabDiscoveryEntityProvider } from '../providers';
 
 /**
@@ -36,11 +38,21 @@ export const catalogModuleGitlabDiscoveryEntityProvider = createBackendModule({
       deps: {
         config: coreServices.rootConfig,
         catalog: catalogProcessingExtensionPoint,
+        catalogScmEvents: catalogScmEventsServiceRef,
         logger: coreServices.logger,
         scheduler: coreServices.scheduler,
         events: eventsServiceRef,
+        lifecycle: coreServices.lifecycle,
       },
-      async init({ config, catalog, logger, scheduler, events }) {
+      async init({
+        config,
+        catalog,
+        catalogScmEvents,
+        logger,
+        scheduler,
+        events,
+        lifecycle,
+      }) {
         const gitlabDiscoveryEntityProvider =
           GitlabDiscoveryEntityProvider.fromConfig(config, {
             logger,
@@ -48,6 +60,19 @@ export const catalogModuleGitlabDiscoveryEntityProvider = createBackendModule({
             scheduler,
           });
         catalog.addEntityProvider(gitlabDiscoveryEntityProvider);
+
+        const bridge = new GitLabScmEventsBridge({
+          logger,
+          events,
+          catalogScmEvents,
+        });
+
+        lifecycle.addStartupHook(async () => {
+          await bridge.start();
+        });
+        lifecycle.addShutdownHook(async () => {
+          await bridge.stop();
+        });
       },
     });
   },

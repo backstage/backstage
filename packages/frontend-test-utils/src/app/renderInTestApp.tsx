@@ -137,20 +137,22 @@ const appPluginOverride = appPlugin.withOverrides({
           coreExtensionData.reactElement(
             <nav>
               <ul>
-                {inputs.items.map((item, index) => {
-                  const { icon, title, routeRef } = item.get(
-                    NavItemBlueprint.dataRefs.target,
-                  );
+                {inputs.items.map(
+                  (item: (typeof inputs.items)[number], index: number) => {
+                    const { icon, title, routeRef } = item.get(
+                      NavItemBlueprint.dataRefs.target,
+                    );
 
-                  return (
-                    <NavItem
-                      key={index}
-                      icon={icon}
-                      title={title}
-                      routeRef={routeRef}
-                    />
-                  );
-                })}
+                    return (
+                      <NavItem
+                        key={index}
+                        icon={icon}
+                        title={title}
+                        routeRef={routeRef}
+                      />
+                    );
+                  },
+                )}
               </ul>
             </nav>,
           ),

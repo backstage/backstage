@@ -41,7 +41,7 @@ const INTERACTIVE_ELEMENT_SELECTOR =
  * @public
  */
 export const Card = forwardRef<HTMLDivElement, CardProps>((props, ref) => {
-  const { ownProps, restProps, dataAttributes } = useDefinition(
+  const { ownProps, restProps, dataAttributes, utilityStyle } = useDefinition(
     CardDefinition,
     props,
   );
@@ -98,6 +98,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>((props, ref) => {
       {...dataAttributes}
       {...restProps}
       onClick={isInteractive ? handleClick : undefined}
+      style={{ ...utilityStyle, ...ownProps.style }}
     >
       {href && (
         <Link

@@ -86,6 +86,14 @@ export default {
     ...(process.env.GOLDEN_PATH
       ? [
           sidebarElementWithIndex({ label: 'Golden Paths' }, [
+            sidebarElementWithIndex({ label: '000 - Adoption' }, [
+              'golden-path/adoption/getting-started',
+              'golden-path/adoption/leadership-buy-in',
+              'golden-path/adoption/setting-up-a-poc',
+              'golden-path/adoption/first-stakeholder-feedback',
+              'golden-path/adoption/customizing-your-instance',
+              'golden-path/adoption/preparing-for-ga',
+            ]),
             sidebarElementWithIndex({ label: '001 - Create an App' }, [
               'golden-path/create-app/index',
               'golden-path/create-app/npx-create-app',
@@ -100,9 +108,32 @@ export default {
               'golden-path/plugins/why-build-plugins',
               'golden-path/plugins/sustainable-plugin-development',
               sidebarElementWithIndex({ label: 'Backend Plugins' }, [
-                'golden-path/plugins/backend/001-first-steps',
-                'golden-path/plugins/backend/002-poking-around',
+                'golden-path/plugins/backend/first-steps',
+                'golden-path/plugins/backend/poking-around',
+                'golden-path/plugins/backend/persistence',
+                'golden-path/plugins/backend/reading-from-source',
+                'golden-path/plugins/backend/testing',
               ]),
+              sidebarElementWithIndex({ label: 'Frontend Plugins' }, [
+                'golden-path/plugins/frontend/first-steps',
+                'golden-path/plugins/frontend/poking-around',
+                'golden-path/plugins/frontend/dynamic-config',
+                'golden-path/plugins/frontend/http-client',
+                'golden-path/plugins/frontend/testing',
+              ]),
+            ]),
+            sidebarElementWithIndex({ label: '003 - Deployment' }, [
+              'golden-path/deployment/index',
+            ]),
+            sidebarElementWithIndex({ label: '004 - Adoption' }, [
+              'golden-path/adoption/getting-started',
+              'golden-path/adoption/leadership-buy-in',
+              'golden-path/adoption/setting-up-a-poc',
+              'golden-path/adoption/first-stakeholder-feedback',
+              'golden-path/adoption/customize-your-instance',
+              'golden-path/adoption/preparing-for-ga',
+              'golden-path/adoption/plugin-ownership',
+              'golden-path/adoption/full-catalog',
             ]),
           ]),
         ]
@@ -119,7 +150,7 @@ export default {
             description:
               'Features in Backstage you can leverage with your AI tools.',
           },
-          ['ai/mcp-actions', 'ai/well-known-actions'],
+          ['ai/skills', 'ai/mcp-actions', 'ai/well-known-actions'],
         ),
         sidebarElementWithIndex(
           {
@@ -263,6 +294,7 @@ export default {
             'features/software-catalog/extending-the-model',
             'features/software-catalog/external-integrations',
             'features/software-catalog/catalog-customization',
+            'features/software-catalog/entity-presentation',
             'features/software-catalog/audit-events',
             {
               type: 'category',
@@ -647,7 +679,6 @@ export default {
             description: 'Technical tutorials and guides.',
           },
           [
-            'tutorials/quickstart-app-plugin',
             'tutorials/configuring-plugin-databases',
             'tutorials/manual-knex-rollback',
             'tutorials/switching-sqlite-postgres',
@@ -732,6 +763,7 @@ export default {
         'contribute/index',
         'contribute/getting-involved',
         'contribute/project-structure',
+        'contribute/doc-style-guide',
       ],
     ),
     sidebarElementWithIndex(

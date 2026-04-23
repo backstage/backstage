@@ -22,7 +22,7 @@ import {
 import { IndexableDocument } from '@backstage/plugin-search-common';
 import { PgSearchHighlightOptions } from '../PgSearchEngine';
 import { DatabaseDocumentStore } from './DatabaseDocumentStore';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID as uuidv4 } from 'node:crypto';
 
 const highlightOptions: PgSearchHighlightOptions = {
   preTag: '<tag>',

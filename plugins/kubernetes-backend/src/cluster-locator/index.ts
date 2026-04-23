@@ -49,13 +49,9 @@ class CombinedClustersSupplier implements KubernetesClustersSupplier {
   }): Promise<ClusterDetails[]> {
     const clusters = await Promise.all(
       this.clusterSuppliers.map(supplier => supplier.getClusters(options)),
-    )
-      .then(res => {
-        return res.flat();
-      })
-      .catch(e => {
-        throw e;
-      });
+    ).then(res => {
+      return res.flat();
+    });
     return this.warnDuplicates(clusters);
   }
 

@@ -342,7 +342,7 @@ export function prepareSpecializedApp(
   if (providedApis) {
     // Reused session state already carries a fully prepared API holder, so the
     // bootstrap path only needs to register feature flag declarations on top.
-    registerFeatureFlagDeclarationsInHolder(providedApis, features);
+    registerFeatureFlagDeclarationsInHolder(providedApis, features, collector);
   } else {
     // Bootstrap materializes only the immediately visible API factories. Any
     // predicate-gated API roots are revisited during finalization.
@@ -355,7 +355,7 @@ export function prepareSpecializedApp(
     });
     const apiFactories = Array.from(
       bootstrapApiFactoryEntries.values(),
-      entry => wrapFeatureFlagApiFactory(entry.factory, features),
+      entry => wrapFeatureFlagApiFactory(entry.factory, features, collector),
     );
     appApiRegistry.registerAll(apiFactories);
   }

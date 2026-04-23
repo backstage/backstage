@@ -34,6 +34,7 @@ export const ButtonDefinition = defineComponent<ButtonOwnProps>()({
     size: { dataAttribute: true, default: 'small' },
     variant: { dataAttribute: true, default: 'primary' },
     destructive: { dataAttribute: true },
+    isPending: { dataAttribute: true },
     loading: { dataAttribute: true },
     iconStart: {},
     iconEnd: {},

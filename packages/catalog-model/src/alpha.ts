@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
+export type { AlphaEntity } from './entity/AlphaEntity';
 export type {
   EntityStatus,
   EntityStatusItem,
   EntityStatusLevel,
 } from './entity/EntityStatus';
-export type { AlphaEntity } from './entity/AlphaEntity';
+export * from './model';
+export { defaultCatalogEntityModel } from './model/defaultCatalogEntityModel';

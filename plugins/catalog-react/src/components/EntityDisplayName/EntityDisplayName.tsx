@@ -62,6 +62,16 @@ export type EntityDisplayNameProps = {
 /**
  * Shows a nice representation of a reference to an entity.
  *
+ * @remarks
+ *
+ * This component uses the {@link useEntityPresentation} hook internally and
+ * renders the entity's primary title with optional icon and tooltip. It is
+ * the simplest way to display an entity name in JSX.
+ *
+ * For more control over the presentation data, use the
+ * {@link useEntityPresentation} hook directly. For non-React contexts, use
+ * {@link entityPresentationSnapshot}.
+ *
  * @public
  */
 export const EntityDisplayName = (

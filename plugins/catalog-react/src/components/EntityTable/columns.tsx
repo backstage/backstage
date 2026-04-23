@@ -22,26 +22,23 @@ import {
 } from '@backstage/catalog-model';
 import { OverflowTooltip, TableColumn } from '@backstage/core-components';
 import { getEntityRelations } from '../../utils';
-import {
-  EntityRefLink,
-  EntityRefLinks,
-  humanizeEntityRef,
-} from '../EntityRefLink';
+import { EntityRefLink, EntityRefLinks } from '../EntityRefLink';
+import { entityPresentationSnapshot, EntityPresentationApi } from '../../apis';
 import { EntityTableColumnTitle } from './TitleColumn';
 
 /** @public */
 export const columnFactories = Object.freeze({
   createEntityRefColumn<T extends Entity>(options: {
     defaultKind?: string;
+    entityPresentationApi?: EntityPresentationApi;
   }): TableColumn<T> {
-    const { defaultKind } = options;
+    const { defaultKind, entityPresentationApi } = options;
     function formatContent(entity: T): string {
-      return (
-        entity.metadata?.title ||
-        humanizeEntityRef(entity, {
-          defaultKind,
-        })
-      );
+      return entityPresentationSnapshot(
+        entity,
+        { defaultKind },
+        entityPresentationApi,
+      ).primaryTitle;
     }
 
     return {
@@ -75,8 +72,15 @@ export const columnFactories = Object.freeze({
     relation: string;
     defaultKind?: string;
     filter?: { kind: string };
+    entityPresentationApi?: EntityPresentationApi;
   }): TableColumn<T> {
-    const { title, relation, defaultKind, filter: entityFilter } = options;
+    const {
+      title,
+      relation,
+      defaultKind,
+      filter: entityFilter,
+      entityPresentationApi,
+    } = options;
 
     function getRelations(entity: T): CompoundEntityRef[] {
       return getEntityRelations(entity, relation, entityFilter);
@@ -84,7 +88,14 @@ export const columnFactories = Object.freeze({
 
     function formatContent(entity: T): string {
       return getRelations(entity)
-        .map(r => humanizeEntityRef(r, { defaultKind }))
+        .map(
+          r =>
+            entityPresentationSnapshot(
+              r,
+              { defaultKind },
+              entityPresentationApi,
+            ).primaryTitle,
+        )
         .join(', ');
     }
 

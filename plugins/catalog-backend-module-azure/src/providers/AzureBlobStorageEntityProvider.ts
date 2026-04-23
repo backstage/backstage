@@ -32,7 +32,7 @@ import {
   locationSpecToLocationEntity,
 } from '@backstage/plugin-catalog-node';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
-import * as uuid from 'uuid';
+import { randomUUID } from 'node:crypto';
 import { readAzureBlobStorageConfigs } from './config';
 import {
   AzureBlobStorageIntergation,
@@ -134,7 +134,7 @@ export class AzureBlobStorageEntityProvider implements EntityProvider {
           const logger = this.logger.child({
             class: AzureBlobStorageEntityProvider.prototype.constructor.name,
             taskId,
-            taskInstanceId: uuid.v4(),
+            taskInstanceId: randomUUID(),
           });
 
           try {

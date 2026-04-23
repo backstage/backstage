@@ -20,8 +20,8 @@ import { IterationEngine, IterationEngineOptions } from '../types';
 import { IncrementalIngestionDatabaseManager } from '../database/IncrementalIngestionDatabaseManager';
 import { performance } from 'node:perf_hooks';
 import { Duration } from 'luxon';
-import { v4 } from 'uuid';
-import { stringifyError } from '@backstage/errors';
+import { randomUUID as v4 } from 'node:crypto';
+import { stringifyError, toError } from '@backstage/errors';
 import { EventParams } from '@backstage/plugin-events-node';
 import { HumanDuration } from '@backstage/types';
 
@@ -123,17 +123,12 @@ export class IncrementalIngestionEngine implements IterationEngine {
               );
             }
           } catch (error) {
-            if (
-              (error as Error).message &&
-              (error as Error).message === 'CANCEL'
-            ) {
+            const err = toError(error);
+            if (err.message === 'CANCEL') {
               this.options.logger.info(
                 `incremental-engine: Ingestion '${ingestionId}' canceled`,
               );
-              await this.manager.setProviderCanceling(
-                ingestionId,
-                (error as Error).message,
-              );
+              await this.manager.setProviderCanceling(ingestionId, err.message);
             } else {
               const currentBackoff = Duration.fromObject(
                 this.backoff[Math.min(this.backoff.length - 1, attempts)],

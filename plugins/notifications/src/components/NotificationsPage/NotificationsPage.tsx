@@ -21,8 +21,7 @@ import {
   PageWithHeader,
   ResponseErrorPanel,
 } from '@backstage/core-components';
-import Grid from '@material-ui/core/Grid';
-import { ConfirmProvider } from 'material-ui-confirm';
+import { Grid } from '@backstage/ui';
 import { useSignal } from '@backstage/plugin-signals-react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { notificationsTranslationRef } from '../../translation';
@@ -191,43 +190,41 @@ function NotificationsPageContent(
 
   const pageContent = (
     <Content>
-      <ConfirmProvider>
-        <Grid container>
-          <Grid item xs={2}>
-            <NotificationsFilters
-              unreadOnly={unreadOnly}
-              onUnreadOnlyChanged={setUnreadOnly}
-              createdAfter={createdAfter}
-              onCreatedAfterChanged={setCreatedAfter}
-              onSortingChanged={setSorting}
-              sorting={sorting}
-              saved={saved}
-              onSavedChanged={setSaved}
-              severity={severity}
-              onSeverityChanged={setSeverity}
-              topic={topic}
-              onTopicChanged={setTopic}
-              allTopics={allTopics}
-            />
-          </Grid>
-          <Grid item xs={10}>
-            <NotificationsTable
-              title={tableTitle}
-              isLoading={loading}
-              isUnread={isUnread}
-              markAsReadOnLinkOpen={markAsReadOnLinkOpen}
-              notifications={notifications}
-              onUpdate={onUpdate}
-              setContainsText={setContainsText}
-              onPageChange={setPageNumber}
-              onRowsPerPageChange={setPageSize}
-              page={pageNumber}
-              pageSize={pageSize}
-              totalCount={totalCount}
-            />
-          </Grid>
-        </Grid>
-      </ConfirmProvider>
+      <Grid.Root columns="12" gap="6">
+        <Grid.Item colSpan="2">
+          <NotificationsFilters
+            unreadOnly={unreadOnly}
+            onUnreadOnlyChanged={setUnreadOnly}
+            createdAfter={createdAfter}
+            onCreatedAfterChanged={setCreatedAfter}
+            onSortingChanged={setSorting}
+            sorting={sorting}
+            saved={saved}
+            onSavedChanged={setSaved}
+            severity={severity}
+            onSeverityChanged={setSeverity}
+            topic={topic}
+            onTopicChanged={setTopic}
+            allTopics={allTopics}
+          />
+        </Grid.Item>
+        <Grid.Item colSpan="10">
+          <NotificationsTable
+            title={tableTitle}
+            isLoading={loading}
+            isUnread={isUnread}
+            markAsReadOnLinkOpen={markAsReadOnLinkOpen}
+            notifications={notifications}
+            onUpdate={onUpdate}
+            setContainsText={setContainsText}
+            onPageChange={setPageNumber}
+            onRowsPerPageChange={setPageSize}
+            page={pageNumber}
+            pageSize={pageSize}
+            totalCount={totalCount}
+          />
+        </Grid.Item>
+      </Grid.Root>
     </Content>
   );
 

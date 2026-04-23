@@ -16,7 +16,7 @@
 
 import { Knex } from 'knex';
 import splitToChunks from 'lodash/chunk';
-import { v4 as uuid } from 'uuid';
+import { randomUUID as uuid } from 'node:crypto';
 import { StitchingStrategy } from '../../../stitching/types';
 import {
   DbFinalEntitiesRow,

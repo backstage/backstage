@@ -210,4 +210,4 @@ If you've updated the configuration for your integration, it's likely that the b
 Some helpful links, for if you want to learn more about:
 
 - [Other available integrations](../../integrations/index.md)
-- [Using GitHub Apps instead of a Personal Access Token](../../integrations/github/github-apps.md#docsNav)
+- [Using GitHub Apps instead of a Personal Access Token](../../integrations/github/github-apps.md)

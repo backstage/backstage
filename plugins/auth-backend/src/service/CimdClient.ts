@@ -111,19 +111,6 @@ export function validateCimdUrl(clientId: string): URL {
 }
 
 /**
- * Checks if a client_id is a valid CIMD URL.
- * Requires HTTPS for production, but allows HTTP for localhost (development).
- */
-export function isCimdUrl(clientId: string): boolean {
-  try {
-    validateCimdUrl(clientId);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-/**
  * SSRF (Server-Side Request Forgery) Protection
  *
  * When fetching CIMD metadata from client-provided URLs, we must prevent

@@ -35,6 +35,7 @@ export const HeaderDefinition = defineComponent<HeaderOwnProps>()({
     title: {},
     customActions: {},
     tabs: {},
+    activeTabId: {},
     breadcrumbs: {},
     className: {},
   },

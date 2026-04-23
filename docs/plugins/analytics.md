@@ -42,7 +42,6 @@ choice below.
 
 | Analytics Tool                        | Support Status |
 | ------------------------------------- | -------------- |
-| [Google Analytics][ga]                | Yes ✅         |
 | [Google Analytics 4][ga4]             | Yes ✅         |
 | [New Relic Browser][newrelic-browser] | Community ✅   |
 | [Matomo][matomo]                      | Community ✅   |
@@ -53,7 +52,6 @@ To suggest an integration, please [open an issue][add-tool] for the analytics
 tool your organization uses. Or jump to [Writing Integrations][int-howto] to
 learn how to contribute the integration yourself!
 
-[ga]: https://github.com/backstage/community-plugins/blob/main/workspaces/analytics/plugins/analytics-module-ga/README.md
 [ga4]: https://github.com/backstage/community-plugins/blob/main/workspaces/analytics/plugins/analytics-module-ga4/README.md
 [newrelic-browser]: https://github.com/backstage/community-plugins/blob/main/workspaces/analytics/plugins/analytics-module-newrelic-browser/README.md
 [qm]: https://github.com/quantummetric/analytics-module-qm/blob/main/README.md

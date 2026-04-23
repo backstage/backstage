@@ -27,6 +27,12 @@ import { stringifyEntityRef } from '@backstage/catalog-model';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { scaffolderAutocompleteExtensionPoint } from '@backstage/plugin-scaffolder-node/alpha';
+import {
+  scaffolderPermissions,
+  RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
+  RESOURCE_TYPE_SCAFFOLDER_ACTION,
+  RESOURCE_TYPE_SCAFFOLDER_TASK,
+} from '@backstage/plugin-scaffolder-common/alpha';
 
 import { scaffolderPlugin } from './ScaffolderPlugin';
 
@@ -1214,6 +1220,32 @@ describe('scaffolderPlugin', () => {
       resource: 'my-resource',
       token: mockToken,
     });
+  });
+
+  it('exposes permissions metadata via the well-known endpoint', async () => {
+    const { server } = await startTestBackend({
+      features: [scaffolderPlugin],
+    });
+
+    const { body, status } = await request(server).get(
+      '/api/scaffolder/.well-known/backstage/permissions/metadata',
+    );
+
+    expect(status).toBe(200);
+
+    const permissionNames = body.permissions.map(
+      (p: { name: string }) => p.name,
+    );
+    for (const permission of scaffolderPermissions) {
+      expect(permissionNames).toContain(permission.name);
+    }
+
+    const ruleResourceTypes = body.rules.map(
+      (r: { resourceType: string }) => r.resourceType,
+    );
+    expect(ruleResourceTypes).toContain(RESOURCE_TYPE_SCAFFOLDER_TEMPLATE);
+    expect(ruleResourceTypes).toContain(RESOURCE_TYPE_SCAFFOLDER_ACTION);
+    expect(ruleResourceTypes).toContain(RESOURCE_TYPE_SCAFFOLDER_TASK);
   });
 
   it('supports listing templating extensions', async () => {

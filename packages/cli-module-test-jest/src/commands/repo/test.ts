@@ -319,13 +319,13 @@ export default async ({ args, info }: CliCommandContext) => {
     args.push('--help');
   }
 
-  // This code path is enabled by the --successCache flag, which is specific to
+  // This code path is enabled by the --success-cache flag, which is specific to
   // the `repo test` command in the Backstage CLI.
   if (opts.successCache) {
     // Refuse to run if file filters are provided
     if (parsedArgs.length > 0) {
       throw new Error(
-        `The --successCache flag can not be combined with the following arguments: ${parsedArgs.join(
+        `The --success-cache flag can not be combined with the following arguments: ${parsedArgs.join(
           ', ',
         )}`,
       );
@@ -333,7 +333,7 @@ export default async ({ args, info }: CliCommandContext) => {
     // Likewise, it's not possible to combine sharding and the success cache
     if (args.includes('--shard')) {
       throw new Error(
-        `The --successCache flag can not be combined with the --shard flag`,
+        `The --success-cache flag can not be combined with the --shard flag`,
       );
     }
 

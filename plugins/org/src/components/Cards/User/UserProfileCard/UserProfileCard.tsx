@@ -56,7 +56,8 @@ import { orgTranslationRef } from '../../../../translation';
 export type UserProfileCardClassKey =
   | 'closeButton'
   | 'moreButton'
-  | 'dialogPaper';
+  | 'dialogPaper'
+  | 'list';
 
 const useStyles = makeStyles(
   theme =>
@@ -73,6 +74,9 @@ const useStyles = makeStyles(
       },
       dialogPaper: {
         minHeight: 400,
+      },
+      list: {
+        overflowWrap: 'anywhere',
       },
     }),
   { name: 'PluginOrgUserProfileCard' },
@@ -149,7 +153,7 @@ export const UserProfileCard = (props: {
     >
       {description && <Text color="secondary">{description}</Text>}
       <Box p="2">
-        <List>
+        <List className={classes.list}>
           {profile?.email && (
             <ListItem>
               <ListItemIcon>

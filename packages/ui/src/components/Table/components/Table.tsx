@@ -20,7 +20,7 @@ import {
   ResizableTableContainer,
   Virtualizer,
 } from 'react-aria-components';
-import { TableLayout } from '@react-stately/layout';
+import { TableLayout } from 'react-stately';
 import { useDefinition } from '../../../hooks/useDefinition';
 import { TableWrapperDefinition } from '../definition';
 import { TableRoot } from './TableRoot';
@@ -98,10 +98,16 @@ function useLiveRegionLabel(
   return liveRegionLabel;
 }
 
-/** @public */
+/**
+ * A full-featured data table with built-in pagination, sorting, row selection, loading and error states, and optional virtualization.
+ * Pair with `useTable` to manage data fetching and state, or pass `data`, `columnConfig`, and `pagination` directly for manual control.
+ *
+ * @public
+ */
 export function Table<T extends TableItem>({
   columnConfig,
   data,
+  isPending = false,
   loading = false,
   isStale = false,
   error,
@@ -114,6 +120,7 @@ export function Table<T extends TableItem>({
   style,
   virtualized,
 }: TableProps<T>) {
+  const pending = isPending || loading;
   const {
     ownProps: { classes },
   } = useDefinition(TableWrapperDefinition, { className });
@@ -132,7 +139,7 @@ export function Table<T extends TableItem>({
     onSelectionChange,
   } = selection || {};
 
-  const isInitialLoading = loading && !data;
+  const isInitialLoading = pending && !data;
 
   if (error) {
     return (
@@ -197,7 +204,7 @@ export function Table<T extends TableItem>({
             onSortChange={sort?.onSortChange}
             disabledKeys={disabledRows}
             stale={isStale}
-            loading={isInitialLoading}
+            isPending={isInitialLoading}
             aria-describedby={liveRegionId}
           >
             <TableHeader columns={visibleColumns}>
@@ -272,6 +279,7 @@ export function Table<T extends TableItem>({
           onPageSizeChange={pagination.onPageSizeChange}
           showPageSizeOptions={pagination.showPageSizeOptions}
           getLabel={pagination.getLabel}
+          showPaginationLabel={pagination.showPaginationLabel}
         />
       )}
     </div>

@@ -16,6 +16,7 @@
 
 import { OAuthRequestDialog } from '@backstage/core-components';
 import { AppRootElementBlueprint } from '@backstage/frontend-plugin-api';
+import { z } from 'zod/v4';
 import { ToastDisplay } from '../components/Toast';
 
 export const oauthRequestDialogAppRootElement = AppRootElementBlueprint.make({
@@ -28,17 +29,17 @@ export const oauthRequestDialogAppRootElement = AppRootElementBlueprint.make({
 export const alertDisplayAppRootElement =
   AppRootElementBlueprint.makeWithOverrides({
     name: 'alert-display',
-    config: {
-      schema: {
-        transientTimeoutMs: z => z.number().default(5000),
-        anchorOrigin: z =>
-          z
-            .object({
-              vertical: z.enum(['top', 'bottom']).default('top'),
-              horizontal: z.enum(['left', 'center', 'right']).default('center'),
-            })
-            .default({}),
-      },
+    configSchema: {
+      transientTimeoutMs: z.number().default(5000),
+      anchorOrigin: z
+        .object({
+          vertical: z.enum(['top', 'bottom']).default('top'),
+          horizontal: z.enum(['left', 'center', 'right']).default('center'),
+        })
+        .default({
+          vertical: 'top',
+          horizontal: 'center',
+        }),
     },
     factory: (originalFactory, { config }) => {
       return originalFactory({

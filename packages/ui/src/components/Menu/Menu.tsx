@@ -76,7 +76,11 @@ const MenuEmptyState = () => {
   return <div className={ownProps.classes.root}>No results found.</div>;
 };
 
-/** @public */
+/**
+ * A wrapper that connects a trigger element to a dropdown menu, controlling its open and close state.
+ *
+ * @public
+ */
 export const MenuTrigger = (props: MenuTriggerProps) => {
   return <RAMenuTrigger {...props} />;
 };
@@ -308,63 +312,34 @@ export const MenuItem = (props: MenuItemProps) => {
   );
   const { classes, iconStart, children, href } = ownProps;
 
-  const handleAction = () => {
-    if (href) {
-      const text =
-        restProps['aria-label'] ?? getNodeText(children) ?? String(href);
-      analytics.captureEvent('click', text, {
-        attributes: { to: String(href) },
-      });
-    }
-  };
-
-  // External links open in new tab via window.open instead of client-side routing
-  if (href && !isInternalLink(href)) {
-    return (
-      <RAMenuItem
-        className={classes.root}
-        {...dataAttributes}
-        textValue={typeof children === 'string' ? children : undefined}
-        {...restProps}
-        onAction={() => {
-          restProps.onAction?.();
-          handleAction();
-          window.open(href, '_blank', 'noopener,noreferrer');
-        }}
-      >
-        <div className={classes.itemWrapper}>
-          <div className={classes.itemContent}>
-            {iconStart}
-            {children}
-          </div>
-          <div className={classes.itemArrow}>
-            <RiArrowRightSLine />
-          </div>
-        </div>
-      </RAMenuItem>
-    );
-  }
+  const isExternal = href && !isInternalLink(href);
 
   return (
     <RAMenuItem
       className={classes.root}
       {...dataAttributes}
       href={href}
+      target={isExternal ? '_blank' : undefined}
+      rel={isExternal ? 'noopener noreferrer' : undefined}
       textValue={typeof children === 'string' ? children : undefined}
       {...restProps}
       onAction={() => {
         restProps.onAction?.();
-        handleAction();
+        if (href) {
+          const text =
+            restProps['aria-label'] ?? getNodeText(children) ?? String(href);
+          analytics.captureEvent('click', text, {
+            attributes: { to: String(href) },
+          });
+        }
       }}
     >
-      <div className={classes.itemWrapper}>
-        <div className={classes.itemContent}>
-          {iconStart}
-          {children}
-        </div>
-        <div className={classes.itemArrow}>
-          <RiArrowRightSLine />
-        </div>
+      <div className={classes.itemContent}>
+        {iconStart}
+        {children}
+      </div>
+      <div className={classes.itemArrow}>
+        <RiArrowRightSLine />
       </div>
     </RAMenuItem>
   );
@@ -384,13 +359,11 @@ export const MenuListBoxItem = (props: MenuListBoxItemProps) => {
       className={classes.root}
       {...restProps}
     >
-      <div className={classes.itemWrapper}>
-        <div className={classes.itemContent}>
-          <div className={classes.check}>
-            <RiCheckLine />
-          </div>
-          {children}
+      <div className={classes.itemContent}>
+        <div className={classes.check}>
+          <RiCheckLine />
         </div>
+        {children}
       </div>
     </RAListBoxItem>
   );

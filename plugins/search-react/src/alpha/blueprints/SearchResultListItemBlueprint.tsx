@@ -15,6 +15,7 @@
  */
 
 import { lazy, JSX } from 'react';
+import { z } from 'zod/v4';
 import {
   createExtensionBlueprint,
   ExtensionBoundary,
@@ -59,10 +60,8 @@ export const SearchResultListItemBlueprint = createExtensionBlueprint({
     id: 'page:search',
     input: 'items',
   },
-  config: {
-    schema: {
-      noTrack: z => z.boolean().default(false),
-    },
+  configSchema: {
+    noTrack: z.boolean().default(false),
   },
   output: [searchResultListItemDataRef],
   dataRefs: {

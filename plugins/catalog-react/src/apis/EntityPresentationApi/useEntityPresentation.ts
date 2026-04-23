@@ -32,6 +32,19 @@ import { useUpdatingObservable } from './useUpdatingObservable';
 /**
  * Returns information about how to represent an entity in the interface.
  *
+ * @remarks
+ *
+ * This hook subscribes to the {@link EntityPresentationApi} and returns a
+ * snapshot that may update over time as richer data is fetched (for example,
+ * resolving `metadata.title` from a string entity ref). If no presentation
+ * API is registered, it falls back to {@link defaultEntityPresentation}.
+ *
+ * For simple inline rendering, consider using the {@link EntityDisplayName}
+ * component instead, which wraps this hook with icon and tooltip support.
+ *
+ * For non-React contexts such as sort comparators or data mappers, use
+ * {@link entityPresentationSnapshot}.
+ *
  * @public
  * @param entityOrRef - The entity to represent, or an entity ref to it. If you
  *   pass in an entity, it is assumed that it is NOT a partial one - i.e. only

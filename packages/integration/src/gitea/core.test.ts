@@ -15,7 +15,7 @@
  */
 
 import { setupServer } from 'msw/node';
-import { registerMswTestHooks } from '../helpers';
+import { registerMswTestHooks } from '@backstage/backend-test-utils';
 import { GiteaIntegrationConfig } from './config';
 import {
   getGiteaArchiveUrl,

@@ -38,24 +38,33 @@ export function useCompletePagination<T extends TableItem, TFilter>(
     searchFn,
   } = options;
   const hasGetData = 'getData' in options;
+  const noPagination = paginationOptions.type === 'none';
   const { initialOffset = 0 } = paginationOptions;
-  const defaultPageSize = getEffectivePageSize(paginationOptions);
+  const defaultPageSize = noPagination
+    ? Infinity
+    : getEffectivePageSize(paginationOptions);
 
   const getData = useStableCallback(getDataProp);
   const { sort, filter, search } = query;
 
   const [items, setItems] = useState<T[] | undefined>(undefined);
-  const [isLoading, setIsLoading] = useState(!data);
+  const [isPending, setIsPending] = useState(!data);
   const [error, setError] = useState<Error | undefined>(undefined);
   const [loadCount, setLoadCount] = useState(0);
 
   const [offset, setOffset] = useState(initialOffset);
   const [pageSize, setPageSize] = useState(defaultPageSize);
 
+  // Sync pageSize when the caller changes paginationOptions.pageSize
+  useEffect(() => {
+    setPageSize(defaultPageSize);
+    setOffset(0);
+  }, [defaultPageSize]);
+
   // Load data on mount and when loadCount changes (reload trigger)
   useEffect(() => {
     if (data) {
-      setIsLoading(false);
+      setIsPending(false);
       return;
     }
 
@@ -64,7 +73,7 @@ export function useCompletePagination<T extends TableItem, TFilter>(
     }
 
     let cancelled = false;
-    setIsLoading(true);
+    setIsPending(true);
     setError(undefined);
 
     (async () => {
@@ -73,12 +82,12 @@ export function useCompletePagination<T extends TableItem, TFilter>(
         const resolvedData = result instanceof Promise ? await result : result;
         if (!cancelled) {
           setItems(resolvedData);
-          setIsLoading(false);
+          setIsPending(false);
         }
       } catch (err) {
         if (!cancelled) {
           setError(err instanceof Error ? err : new Error(String(err)));
-          setIsLoading(false);
+          setIsPending(false);
         }
       }
     })();
@@ -121,12 +130,15 @@ export function useCompletePagination<T extends TableItem, TFilter>(
 
   // Paginate the processed data
   const paginatedData = useMemo(
-    () => processedData?.slice(offset, offset + pageSize),
-    [processedData, offset, pageSize],
+    () =>
+      noPagination
+        ? processedData
+        : processedData?.slice(offset, offset + pageSize),
+    [processedData, offset, pageSize, noPagination],
   );
 
-  const hasNextPage = offset + pageSize < totalCount;
-  const hasPreviousPage = offset > 0;
+  const hasNextPage = !noPagination && offset + pageSize < totalCount;
+  const hasPreviousPage = !noPagination && offset > 0;
 
   const onNextPage = useCallback(() => {
     if (offset + pageSize < totalCount) {
@@ -152,7 +164,7 @@ export function useCompletePagination<T extends TableItem, TFilter>(
 
   return {
     data: paginatedData,
-    loading: isLoading,
+    isPending: isPending,
     error,
     totalCount,
     offset,

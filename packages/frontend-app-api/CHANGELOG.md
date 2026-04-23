@@ -1,5 +1,76 @@
 # @backstage/frontend-app-api
 
+## 0.16.3-next.0
+
+### Patch Changes
+
+- f79eaf2: Internal cleanup of routing utilities.
+- Updated dependencies
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/frontend-plugin-api@0.17.0-next.0
+  - @backstage/frontend-defaults@0.5.2-next.0
+  - @backstage/core-app-api@1.20.1-next.0
+  - @backstage/config@1.3.8-next.0
+  - @backstage/core-plugin-api@1.12.6-next.0
+  - @backstage/filter-predicates@0.1.3-next.0
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.12
+
+## 0.16.2
+
+### Patch Changes
+
+- 400aa23: Wrapped extension permission authorization in a try/catch to surface errors as `ForwardedError` with a clear message.
+- 364d4fe: Added `apis` to `BootstrapSpecializedApp` and `FinalizedSpecializedApp` types.
+- Updated dependencies
+  - @backstage/errors@1.3.0
+  - @backstage/core-app-api@1.20.0
+  - @backstage/frontend-plugin-api@0.16.0
+  - @backstage/filter-predicates@0.1.2
+  - @backstage/frontend-defaults@0.5.1
+  - @backstage/config@1.3.7
+  - @backstage/core-plugin-api@1.12.5
+
+## 0.16.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/core-app-api@1.20.0-next.2
+  - @backstage/config@1.3.7-next.0
+  - @backstage/core-plugin-api@1.12.5-next.2
+  - @backstage/filter-predicates@0.1.2-next.0
+  - @backstage/frontend-defaults@0.5.1-next.2
+  - @backstage/frontend-plugin-api@0.16.0-next.2
+
+## 0.16.2-next.1
+
+### Patch Changes
+
+- 400aa23: Wrapped extension permission authorization in a try/catch to surface errors as `ForwardedError` with a clear message.
+- Updated dependencies
+  - @backstage/core-app-api@1.20.0-next.1
+  - @backstage/frontend-plugin-api@0.16.0-next.1
+  - @backstage/core-plugin-api@1.12.5-next.1
+  - @backstage/frontend-defaults@0.5.1-next.1
+
+## 0.16.2-next.0
+
+### Patch Changes
+
+- 364d4fe: Added `apis` to `BootstrapSpecializedApp` and `FinalizedSpecializedApp` types.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.15.2-next.0
+  - @backstage/core-app-api@1.19.7-next.0
+  - @backstage/frontend-defaults@0.5.1-next.0
+  - @backstage/core-plugin-api@1.12.5-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/filter-predicates@0.1.1
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.12
+
 ## 0.16.0
 
 ### Minor Changes

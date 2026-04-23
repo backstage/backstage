@@ -25,7 +25,10 @@ export function resolveEntryPath(
   targetDir: string,
 ): string {
   const { dir: entryDir, name: entryName } = parse(entrypoint);
-  const [entryFile] = glob.sync(`${resolve(targetDir, entryDir, entryName)}.*`);
+  const [entryFile] = glob.sync(
+    `${resolve(targetDir, entryDir, entryName)}.*`,
+    { windowsPathsNoEscape: true },
+  );
   if (entryFile) {
     return join(entryDir, entryName);
   }

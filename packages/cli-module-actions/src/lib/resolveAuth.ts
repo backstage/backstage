@@ -15,9 +15,7 @@
  */
 
 import { CliAuth } from '@backstage/cli-node';
-import { z } from 'zod/v3';
-
-const pluginSourcesSchema = z.array(z.string()).default([]);
+import { pluginSourcesSchema } from './pluginSources';
 
 export async function resolveAuth(instanceFlag?: string): Promise<{
   baseUrl: string;

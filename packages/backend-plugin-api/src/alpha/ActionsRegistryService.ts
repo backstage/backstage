@@ -30,6 +30,21 @@ export type ActionsRegistryActionContext<TInputSchema extends AnyZodObject> = {
 };
 
 /**
+ * An example of how to use an action registered in the actions registry.
+ *
+ * @alpha
+ */
+export type ActionsRegistryActionExample<
+  TInputSchema extends AnyZodObject,
+  TOutputSchema extends AnyZodObject,
+> = {
+  title: string;
+  description?: string;
+  input: z.infer<TInputSchema>;
+  output?: z.infer<TOutputSchema>;
+};
+
+/**
  * @alpha
  */
 export type ActionsRegistryActionOptions<
@@ -43,6 +58,7 @@ export type ActionsRegistryActionOptions<
     input: (zod: typeof z) => TInputSchema;
     output: (zod: typeof z) => TOutputSchema;
   };
+  examples?: Array<ActionsRegistryActionExample<TInputSchema, TOutputSchema>>;
   visibilityPermission?: BasicPermission;
   attributes?: {
     destructive?: boolean;

@@ -21,7 +21,11 @@ import { useDefinition } from '../../hooks/useDefinition';
 import { ButtonLinkDefinition } from './definition';
 import { getNodeText } from '../../analytics/getNodeText';
 
-/** @public */
+/**
+ * A button-styled anchor element for navigation, supporting optional start and end icon slots and analytics event tracking.
+ *
+ * @public
+ */
 export const ButtonLink = forwardRef(
   (props: ButtonLinkProps, ref: Ref<HTMLAnchorElement>) => {
     const { ownProps, restProps, dataAttributes, analytics } = useDefinition(

@@ -96,7 +96,7 @@ Utility APIs that are first materialized during bootstrap are frozen for the lif
 
 ## Plugin Info Resolution
 
-When a plugin is installed in an app it may provide sources of information about the plugin that can be useful to end users and admins. This includes things like what version of a plugin is running, what team owns the plugin, and who to contact for support. You can read more about how the plugins provide this information in the [plugins `info` option section](./15-plugins.md#info).
+When a plugin is installed in an app it may provide sources of information about the plugin that can be useful to end users and admins. This includes things like what version of a plugin is running, what team owns the plugin, and who to contact for support. You can read more about how the plugins provide this information in the [plugins `info` option section](./15-plugins.md#info-option).
 
 By default the app will pick a few common fields from `package.json` files, and assume that the opaque manifests are `catalog-info.yaml` files that some information can be gathered from too. This information will then be available via the `info()` method on plugin instances, returning a structure of the `FrontendPluginInfo` type.
 

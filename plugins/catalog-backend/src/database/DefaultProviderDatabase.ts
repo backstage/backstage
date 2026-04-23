@@ -18,7 +18,7 @@ import { stringifyEntityRef } from '@backstage/catalog-model';
 import { DeferredEntity } from '@backstage/plugin-catalog-node';
 import { Knex } from 'knex';
 import lodash from 'lodash';
-import { v4 as uuid } from 'uuid';
+import { randomUUID as uuid } from 'node:crypto';
 import { rethrowError } from './conversion';
 import { deleteWithEagerPruningOfChildren } from './operations/provider/deleteWithEagerPruningOfChildren';
 import { refreshByRefreshKeys } from './operations/provider/refreshByRefreshKeys';

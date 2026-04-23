@@ -17,7 +17,7 @@
 import { ChildProcess, SpawnOptions } from 'node:child_process';
 import spawn from 'cross-spawn';
 import { ExitCodeError } from './errors';
-import { assertError } from '@backstage/errors';
+import { toError } from '@backstage/errors';
 
 /**
  * Callback function that can be used to receive stdout or stderr data from a child process.
@@ -193,14 +193,14 @@ export async function runOutput(
 
     return Buffer.concat(stdoutChunks).toString().trim();
   } catch (error) {
-    assertError(error);
+    const err = toError(error);
 
-    (error as Error & { stdout?: string }).stdout =
+    (err as Error & { stdout?: string }).stdout =
       Buffer.concat(stdoutChunks).toString();
-    (error as Error & { stderr?: string }).stderr =
+    (err as Error & { stderr?: string }).stderr =
       Buffer.concat(stderrChunks).toString();
 
-    throw error;
+    throw err;
   }
 }
 

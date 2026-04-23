@@ -17,6 +17,7 @@
 import { InputError } from '@backstage/errors';
 import { fromZodError } from 'zod-validation-error/v3';
 import * as zodV3 from 'zod/v3';
+import { z as zodV4 } from 'zod/v4';
 import {
   FilterPredicate,
   FilterPredicateExpression,
@@ -65,6 +66,57 @@ export function createZodV3FilterPredicateSchema(
     z.object({ $contains: predicateSchema }),
     z.object({ $hasPrefix: z.string() }),
   ]) as zodV3.ZodType<FilterPredicateValue>;
+
+  return predicateSchema;
+}
+
+/**
+ * Creates a zod v4 schema for validating filter predicates.
+ *
+ * @public
+ */
+export function createZodV4FilterPredicateSchema(): zodV4.ZodType<
+  FilterPredicate,
+  FilterPredicate
+> {
+  const z = zodV4;
+
+  const primitiveSchema = z.union([
+    z.string(),
+    z.number(),
+    z.boolean(),
+  ]) as zodV4.ZodType<FilterPredicatePrimitive, FilterPredicatePrimitive>;
+
+  // eslint-disable-next-line prefer-const
+  let valuePredicateSchema: zodV4.ZodType<
+    FilterPredicateValue,
+    FilterPredicateValue
+  >;
+
+  const expressionSchema = z.lazy(() =>
+    z.union([
+      z.record(z.string().regex(/^(?!\$).*$/), valuePredicateSchema),
+      z.record(z.string().regex(/^\$/), z.never()),
+    ]),
+  ) as zodV4.ZodType<FilterPredicateExpression, FilterPredicateExpression>;
+
+  const predicateSchema = z.lazy(() =>
+    z.union([
+      expressionSchema,
+      primitiveSchema,
+      z.object({ $all: z.array(predicateSchema) }),
+      z.object({ $any: z.array(predicateSchema) }),
+      z.object({ $not: predicateSchema }),
+    ]),
+  ) as zodV4.ZodType<FilterPredicate, FilterPredicate>;
+
+  valuePredicateSchema = z.union([
+    primitiveSchema,
+    z.object({ $exists: z.boolean() }),
+    z.object({ $in: z.array(primitiveSchema) }),
+    z.object({ $contains: predicateSchema }),
+    z.object({ $hasPrefix: z.string() }),
+  ]) as zodV4.ZodType<FilterPredicateValue, FilterPredicateValue>;
 
   return predicateSchema;
 }

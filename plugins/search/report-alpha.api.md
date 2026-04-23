@@ -47,8 +47,12 @@ const _default: OverridableFrontendPlugin<
     'nav-item:search': OverridableExtensionDefinition<{
       kind: 'nav-item';
       name: undefined;
-      config: {};
-      configInput: {};
+      config: {
+        title: string | undefined;
+      };
+      configInput: {
+        title?: string | undefined;
+      };
       output: ExtensionDataRef<
         {
           title: string;
@@ -73,8 +77,8 @@ const _default: OverridableFrontendPlugin<
       };
       configInput: {
         noTrack?: boolean | undefined;
-        title?: string | undefined;
         path?: string | undefined;
+        title?: string | undefined;
       };
       output:
         | ExtensionDataRef<string, 'core.routing.path', {}>
@@ -214,8 +218,12 @@ export const searchApi: OverridableExtensionDefinition<{
 export const searchNavItem: OverridableExtensionDefinition<{
   kind: 'nav-item';
   name: undefined;
-  config: {};
-  configInput: {};
+  config: {
+    title: string | undefined;
+  };
+  configInput: {
+    title?: string | undefined;
+  };
   output: ExtensionDataRef<
     {
       title: string;
@@ -242,8 +250,8 @@ export const searchPage: OverridableExtensionDefinition<{
   };
   configInput: {
     noTrack?: boolean | undefined;
-    title?: string | undefined;
     path?: string | undefined;
+    title?: string | undefined;
   };
   output:
     | ExtensionDataRef<string, 'core.routing.path', {}>

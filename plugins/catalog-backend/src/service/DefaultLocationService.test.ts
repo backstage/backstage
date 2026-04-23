@@ -18,6 +18,7 @@ import { DefaultLocationService } from './DefaultLocationService';
 import { CatalogProcessingOrchestrator } from '../processing/types';
 import { LocationStore } from './types';
 import { InputError } from '@backstage/errors';
+import { mockCredentials } from '@backstage/backend-test-utils';
 
 describe('DefaultLocationServiceTest', () => {
   const orchestrator: jest.Mocked<CatalogProcessingOrchestrator> = {
@@ -29,6 +30,7 @@ describe('DefaultLocationServiceTest', () => {
     listLocations: jest.fn(),
     queryLocations: jest.fn(),
     getLocation: jest.fn(),
+    updateLocation: jest.fn(),
     getLocationByEntity: jest.fn(),
   };
   const locationService = new DefaultLocationService(store, orchestrator);
@@ -144,7 +146,11 @@ describe('DefaultLocationServiceTest', () => {
       });
 
       store.listLocations.mockResolvedValueOnce([
-        { id: '137', ...locationSpec },
+        {
+          id: '137',
+          ...locationSpec,
+          entityRef: 'location:default/generated-137',
+        },
       ]);
 
       const result = await locationService.createLocation(
@@ -226,7 +232,12 @@ describe('DefaultLocationServiceTest', () => {
       });
 
       store.listLocations.mockResolvedValueOnce([
-        { id: '987', type: 'url', target: 'https://example.com' },
+        {
+          id: '987',
+          type: 'url',
+          target: 'https://example.com',
+          entityRef: 'location:default/generated-987',
+        },
       ]);
 
       const result = await locationService.createLocation(
@@ -245,6 +256,7 @@ describe('DefaultLocationServiceTest', () => {
       store.createLocation.mockResolvedValue({
         ...locationSpec,
         id: '123',
+        entityRef: 'location:default/generated-123',
       });
 
       await expect(
@@ -255,6 +267,7 @@ describe('DefaultLocationServiceTest', () => {
           id: '123',
           target: 'https://backstage.io/catalog-info.yaml',
           type: 'url',
+          entityRef: 'location:default/generated-123',
         },
       });
       expect(store.createLocation).toHaveBeenCalledWith(
@@ -275,6 +288,7 @@ describe('DefaultLocationServiceTest', () => {
       store.createLocation.mockResolvedValue({
         ...locationSpec,
         id: '123',
+        entityRef: 'location:default/generated-123',
       });
 
       const locationServiceAllowingUnknownType = new DefaultLocationService(
@@ -293,6 +307,7 @@ describe('DefaultLocationServiceTest', () => {
           id: '123',
           target: 'https://backstage.io/catalog-info.yaml',
           type: 'unknown',
+          entityRef: 'location:default/generated-123',
         },
       });
       expect(store.createLocation).toHaveBeenCalledWith(
@@ -325,6 +340,7 @@ describe('DefaultLocationServiceTest', () => {
       store.createLocation.mockResolvedValueOnce({
         id: 'existing-id',
         ...locationSpec,
+        entityRef: 'location:default/generated-existing-id',
       });
 
       const result = await locationService.createLocation(locationSpec, false, {
@@ -333,7 +349,11 @@ describe('DefaultLocationServiceTest', () => {
       });
 
       expect(result).toEqual({
-        location: { id: 'existing-id', ...locationSpec },
+        location: {
+          id: 'existing-id',
+          ...locationSpec,
+          entityRef: 'location:default/generated-existing-id',
+        },
         entities: [],
       });
       expect(store.createLocation).toHaveBeenCalledWith(locationSpec, {
@@ -395,6 +415,41 @@ describe('DefaultLocationServiceTest', () => {
     it('should call locationStore.getLocation', async () => {
       await locationService.getLocation('123');
       expect(store.getLocation).toHaveBeenCalledWith('123');
+    });
+  });
+
+  describe('updateLocation', () => {
+    it('should not allow locations of disallowed types', async () => {
+      await expect(
+        locationService.updateLocation(
+          'some-id',
+          { type: 'unknown', target: 'https://backstage.io/catalog-info.yaml' },
+          { credentials: mockCredentials.none() },
+        ),
+      ).rejects.toThrow(InputError);
+    });
+
+    it('should delegate to store for allowed types', async () => {
+      const updated = {
+        id: 'some-id',
+        type: 'url',
+        target: 'https://backstage.io/catalog-info.yaml',
+        entityRef: 'location:default/generated-abc',
+      };
+      store.updateLocation.mockResolvedValue(updated);
+
+      await expect(
+        locationService.updateLocation(
+          'some-id',
+          { type: 'url', target: 'https://backstage.io/catalog-info.yaml' },
+          { credentials: mockCredentials.none() },
+        ),
+      ).resolves.toEqual(updated);
+
+      expect(store.updateLocation).toHaveBeenCalledWith('some-id', {
+        type: 'url',
+        target: 'https://backstage.io/catalog-info.yaml',
+      });
     });
   });
 

@@ -30,7 +30,7 @@
     z-index: 1000;
   }
 
-  [data-theme='dark'] .bui-Dialog {
+  [data-theme-mode='dark'] .bui-Dialog {
     background: rgba(0, 0, 0, 0.5);
   }
 
@@ -56,6 +56,13 @@
     max-width: calc(100vw - 3rem);
     height: var(--bui-dialog-height, auto);
     max-height: calc(100vh - 3rem);
+  }
+
+  .bui-DialogInner {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
     outline: none;
   }
 

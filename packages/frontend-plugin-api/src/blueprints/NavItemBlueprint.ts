@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { z } from 'zod/v4';
 import { IconComponent } from '../icons/types';
 import { RouteRef } from '../routing';
 import { createExtensionBlueprint, createExtensionDataRef } from '../wiring';
@@ -59,9 +60,7 @@ export const NavItemBlueprint = createExtensionBlueprint({
       routeRef,
     }),
   ],
-  config: {
-    schema: {
-      title: z => z.string().optional(),
-    },
+  configSchema: {
+    title: z.string().optional(),
   },
 });

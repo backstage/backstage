@@ -1,5 +1,32 @@
 # @backstage/integration
 
+## 2.0.2-next.0
+
+### Patch Changes
+
+- b62781f: Moved `registerMswTestHooks` to test files.
+- Updated dependencies
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/config@1.3.8-next.0
+
+## 2.0.1
+
+### Patch Changes
+
+- d112499: Fixed `SingleInstanceGithubCredentialsProvider` to return app credentials when `getCredentials` is called with a bare host URL (e.g. `https://github.com`) instead of falling back to a personal access token.
+- Updated dependencies
+  - @backstage/errors@1.3.0
+  - @backstage/config@1.3.7
+
+## 2.0.1-next.0
+
+### Patch Changes
+
+- d112499: Fixed `SingleInstanceGithubCredentialsProvider` to return app credentials when `getCredentials` is called with a bare host URL (e.g. `https://github.com`) instead of falling back to a personal access token.
+- Updated dependencies
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/config@1.3.7-next.0
+
 ## 2.0.0
 
 ### Major Changes

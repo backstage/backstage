@@ -2,14 +2,14 @@
 
 ## Unused dependencies (2)
 
-| Name     | Location     | Severity |
-| :------- | :----------- | :------- |
-| passport | plugins/auth-backend-module-okta-provider/package.json | error    |
-| express  | plugins/auth-backend-module-okta-provider/package.json | error    |
+| Name     | Location          | Severity |
+| :------- | :---------------- | :------- |
+| passport | package.json:41:6 | error    |
+| express  | package.json:40:6 | error    |
 
 ## Unlisted dependencies (1)
 
-| Name            | Location       | Severity |
-| :-------------- | :------------- | :------- |
-| passport-oauth2 | plugins/auth-backend-module-okta-provider/src/types.d.ts | error    |
+| Name            | Location             | Severity |
+| :-------------- | :------------------- | :------- |
+| passport-oauth2 | src/types.d.ts:37:15 | error    |
 

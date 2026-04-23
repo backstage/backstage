@@ -13,16 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 
 export type Expanded = { [key: string]: boolean };
 
 export type SchemaRenderContext = {
   parent?: SchemaRenderContext;
   parentId: string;
-  classes: ClassNameMap;
   expanded: [Expanded, React.Dispatch<React.SetStateAction<Expanded>>];
-  headings: [React.JSX.Element, ...React.JSX.Element[]];
 };
 
 export type SchemaRenderStrategy = 'root' | 'properties';

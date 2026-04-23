@@ -23,7 +23,7 @@ import {
   readProviderConfigs,
 } from './PuppetDbEntityProviderConfig';
 import { Config } from '@backstage/config';
-import * as uuid from 'uuid';
+import { randomUUID } from 'node:crypto';
 import { defaultResourceTransformer, ResourceTransformer } from '../puppet';
 import {
   ANNOTATION_LOCATION,
@@ -145,7 +145,7 @@ export class PuppetDbEntityProvider implements EntityProvider {
           const logger = this.logger.child({
             class: PuppetDbEntityProvider.prototype.constructor.name,
             taskId,
-            taskInstanceId: uuid.v4(),
+            taskInstanceId: randomUUID(),
           });
           try {
             await this.refresh(logger);

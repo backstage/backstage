@@ -584,6 +584,13 @@ export class InMemoryCatalogClient implements CatalogApi {
     throw new NotImplementedError('Method not implemented.');
   }
 
+  async updateLocation(
+    _id: string,
+    _location: { type?: string; target: string },
+  ): Promise<Location> {
+    throw new NotImplementedError('Method not implemented.');
+  }
+
   async getLocationByEntity(
     _entityRef: string | CompoundEntityRef,
   ): Promise<Location | undefined> {

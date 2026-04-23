@@ -30,7 +30,7 @@ import {
 } from '@backstage/plugin-catalog-node';
 import { EventsService } from '@backstage/plugin-events-node';
 import { WebhookProjectSchema, WebhookPushEventSchema } from '@gitbeaker/rest';
-import * as uuid from 'uuid';
+import { randomUUID } from 'node:crypto';
 import {
   GitLabClient,
   GitLabGroup,
@@ -180,7 +180,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
           const logger = this.logger.child({
             class: GitlabDiscoveryEntityProvider.prototype.constructor.name,
             taskId,
-            taskInstanceId: uuid.v4(),
+            taskInstanceId: randomUUID(),
           });
 
           try {
@@ -383,7 +383,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
         per_page: 50,
         ...(!this.config.includeArchivedRepos && { archived: false }),
         ...(this.config.membership && { membership: true }),
-        ...(this.config.topics && { topics: this.config.topics }),
+        ...(this.config.topics && { topic: this.config.topics }),
         // Only use simple=true when we don't need to skip forked repos.
         // The simple=true parameter reduces response size by returning fewer fields,
         // but it excludes the 'forked_from_project' field which is required for fork detection.

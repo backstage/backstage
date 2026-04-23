@@ -19,18 +19,31 @@ import { TableDefinition } from '../definition';
 import { Table as ReactAriaTable } from 'react-aria-components';
 import { TableRootProps } from '../types';
 
-/** @public */
+/**
+ * The low-level table root element for building custom table layouts from atomic components.
+ * For most use cases, prefer the `Table` convenience wrapper.
+ *
+ * @public
+ */
 export const TableRoot = (props: TableRootProps) => {
   const { ownProps, restProps, dataAttributes } = useDefinition(
     TableDefinition,
-    props,
+    // Merge deprecated `loading` into `isPending` so data attributes and
+    // internal logic only need to check a single prop.
+    {
+      ...props,
+      isPending:
+        props.isPending || props.loading
+          ? true
+          : props.isPending ?? props.loading,
+    },
   );
 
   return (
     <ReactAriaTable
       className={ownProps.classes.root}
       aria-label="Data table"
-      aria-busy={ownProps.stale || ownProps.loading}
+      aria-busy={ownProps.stale || ownProps.isPending}
       {...dataAttributes}
       {...restProps}
     />

@@ -26,7 +26,11 @@ import { RadioGroupDefinition, RadioDefinition } from './definition';
 
 import type { RadioGroupProps, RadioProps } from './types';
 
-/** @public */
+/**
+ * A group of radio buttons for selecting a single option from a set, with an integrated label, description, and error display.
+ *
+ * @public
+ */
 export const RadioGroup = forwardRef<HTMLDivElement, RadioGroupProps>(
   (props, ref) => {
     const { ownProps, restProps } = useDefinition(RadioGroupDefinition, props);
@@ -60,6 +64,7 @@ export const RadioGroup = forwardRef<HTMLDivElement, RadioGroupProps>(
           label={label}
           secondaryLabel={secondaryLabelText}
           description={description}
+          descriptionSlot="description"
         />
         <div className={classes.content}>{children}</div>
         <FieldError />
@@ -70,7 +75,11 @@ export const RadioGroup = forwardRef<HTMLDivElement, RadioGroupProps>(
 
 RadioGroup.displayName = 'RadioGroup';
 
-/** @public */
+/**
+ * A single radio button for use within a RadioGroup.
+ *
+ * @public
+ */
 export const Radio = forwardRef<HTMLLabelElement, RadioProps>((props, ref) => {
   const { ownProps, restProps } = useDefinition(RadioDefinition, props);
 

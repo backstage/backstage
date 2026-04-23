@@ -15,7 +15,7 @@
  */
 
 import { JsonObject, JsonValue } from '@backstage/types';
-import { assertError } from '@backstage/errors';
+import { toError } from '@backstage/errors';
 import { TransformContext, TransformFunc } from './types';
 import { isObject } from './utils';
 import { createSubstitutionTransform } from './substitution';
@@ -50,8 +50,7 @@ export async function applyConfigTransforms(
           break;
         }
       } catch (error) {
-        assertError(error);
-        throw new Error(`error at ${path}, ${error.message}`);
+        throw new Error(`error at ${path}, ${toError(error).message}`);
       }
     }
 

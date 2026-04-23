@@ -183,6 +183,30 @@ Be careful when overriding this extension, as to do so correctly you must consid
 - Remember to user the route refs for getting paths dynamically, otherwise if an adopter modifies a path through configuration, the route is not going to point to the configured path;
 - Adopters expect to be able to customize the `NotFoundErrorPage` component via Components API, you should render this component for routes not configured.
 
+#### Configurations
+
+| Key         | Type                             | Default value | Description                                                          |
+| ----------- | -------------------------------- | ------------- | -------------------------------------------------------------------- |
+| `redirects` | `{ from: string, to: string }[]` | -             | A list of URL redirects. Navigation to `from` will redirect to `to`. |
+
+##### Configuring redirects
+
+You can configure redirects for the `app/routes` extension to automatically redirect users from one path to another. This is useful when restructuring your app's routes, for example after moving or renaming plugin pages.
+
+```yaml title="app-config.yaml"
+app:
+  extensions:
+    - app/routes:
+        config:
+          redirects:
+            - from: /old-path
+              to: /new-path
+            - from: /legacy/page
+              to: /updated/page
+```
+
+Redirects are matched before any regular routes and use the [`replace`](https://developer.mozilla.org/en-US/docs/Web/API/History/replaceState) strategy, so the old path will not appear in the browser history.
+
 #### Inputs
 
 | Name   | Description             | Type                                                                                                                         | Optional | Default | Extension creator                                                                                  |

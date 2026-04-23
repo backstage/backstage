@@ -45,6 +45,39 @@ function validateRedirectUri(
   }
 }
 
+const LOOPBACK_HOSTS = ['localhost', '127.0.0.1', '[::1]'];
+
+/**
+ * RFC 8252 Section 7.3: For loopback redirect URIs, the authorization server
+ * MUST allow any port to be specified at the time of the request. This matches
+ * redirect URIs by scheme, hostname, and path only, ignoring the port.
+ */
+function matchesRedirectUri(
+  requestUri: string,
+  registeredUris: string[],
+): boolean {
+  const requested = new URL(requestUri);
+
+  if (!LOOPBACK_HOSTS.includes(requested.hostname)) {
+    return registeredUris.includes(requestUri);
+  }
+
+  return registeredUris.some(registered => {
+    let reg: URL;
+    try {
+      reg = new URL(registered);
+    } catch {
+      return false;
+    }
+    return (
+      LOOPBACK_HOSTS.includes(reg.hostname) &&
+      reg.protocol === requested.protocol &&
+      reg.hostname === requested.hostname &&
+      reg.pathname === requested.pathname
+    );
+  });
+}
+
 export class OidcService {
   private readonly auth: AuthService;
   private readonly tokenIssuer: TokenIssuer;
@@ -322,7 +355,7 @@ export class OidcService {
     if (opts.redirectUri) {
       validateRedirectUri(opts.redirectUri, cimd.allowedRedirectUriPatterns);
 
-      if (!cimdClient.redirectUris.includes(opts.redirectUri)) {
+      if (!matchesRedirectUri(opts.redirectUri, cimdClient.redirectUris)) {
         throw new InputError('Redirect URI not registered');
       }
     }

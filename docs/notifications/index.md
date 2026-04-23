@@ -4,6 +4,13 @@ title: Getting Started
 description: How to get started with the notifications and signals
 ---
 
+::::info
+This documentation is written for the new frontend system, which is the default
+in new Backstage apps. If your Backstage app still uses the old frontend system,
+read the [old frontend system version of this guide](./index--old.md)
+instead.
+::::
+
 The Backstage Notifications System provides a way for plugins and external services to send notifications to Backstage users.
 These notifications are displayed in the dedicated page of the Backstage frontend UI or by frontend plugins per specific scenarios.
 Additionally, notifications can be sent to external channels (like email) via "processors" implemented within plugins.
@@ -12,7 +19,7 @@ Notifications can be optionally extended with the signals plugin, which provides
 
 ### Upgrade to the latest version of Backstage
 
-To ensure your version of Backstage has all the latest notifications and signals related functionality, it’s important to upgrade to the latest version. The [Backstage upgrade helper](https://backstage.github.io/upgrade-helper/) is a great tool to help ensure that you’ve made all the necessary changes during the upgrade!
+To ensure your version of Backstage has all the latest notifications and signals related functionality, it's important to upgrade to the latest version. The [Backstage upgrade helper](https://backstage.github.io/upgrade-helper/) is a great tool to help ensure that you've made all the necessary changes during the upgrade!
 
 ## About notifications
 
@@ -35,7 +42,7 @@ Example of use-cases:
 
 :::note
 
-As of the `1.42.0` release of Backstage, Notifications and Signals are installed as part of the default `@backstage/create-app` instance which means you won't need to follow the installations steps outlined here. The only exception to this is adding the [Notifications tab to User Settings](#user-specific-notification-settings) to allow managing these settings.
+As of the `1.42.0` release of Backstage, Notifications and Signals are installed as part of the default `@backstage/create-app` instance which means you won't need to follow the installation steps outlined here. The only exception to this is adding the [Notifications sidebar item](#add-notifications-sidebar-item) and optionally [Notifications tab to User Settings](#user-specific-notification-settings).
 
 :::
 
@@ -65,35 +72,29 @@ First we need to add the frontend package:
 yarn --cwd packages/app add @backstage/plugin-notifications
 ```
 
-To add the notifications main menu, add the following:
+Once installed, the notifications plugin is automatically available in your app through the default feature discovery. It provides a notifications page at `/notifications` and the notifications API. For more details and alternative installation methods, see [installing plugins](../frontend-system/building-apps/05-installing-plugins.md).
 
-```tsx title="packages/app/src/components/Root/Root.tsx"
+### Add Notifications Sidebar Item
+
+The notifications plugin does not yet include a built-in navigation item, so you need to add the `NotificationsSidebarItem` component to your sidebar manually. If you have a custom sidebar through a `NavContentBlueprint`, add the component there:
+
+```tsx
 import { NotificationsSidebarItem } from '@backstage/plugin-notifications';
 
-<SidebarPage>
-  <Sidebar>
-    <SidebarGroup>
-      // ...
-      <NotificationsSidebarItem />
-    </SidebarGroup>
-  </Sidebar>
-</SidebarPage>;
-```
-
-Also add the route to notifications:
-
-```tsx title="packages/app/src/App.tsx"
-import { NotificationsPage } from '@backstage/plugin-notifications';
-
-<FlatRoutes>
-  // ...
-  <Route path="/notifications" element={<NotificationsPage />} />
-</FlatRoutes>;
+// Inside your NavContentBlueprint component:
+<Sidebar>
+  <SidebarGroup label="Menu" icon={<MenuIcon />}>
+    {/* ... other items ... */}
+  </SidebarGroup>
+  <SidebarGroup label="Settings" icon={<SettingsIcon />} to="/settings">
+    <NotificationsSidebarItem />
+  </SidebarGroup>
+</Sidebar>;
 ```
 
 ### Optional: Add Signals
 
-The use of signals is optional but improves the user experience.
+The use of signals is optional but improves the user experience by providing real-time push updates.
 
 #### Optional: Add Signals Backend
 
@@ -119,41 +120,50 @@ Start with adding the frontend package:
 yarn --cwd packages/app add @backstage/plugin-signals
 ```
 
-To install the plugin, add the `SignalsDisplay` to your app root:
-
-```tsx title="packages/app/src/App.tsx"
-import { SignalsDisplay } from '@backstage/plugin-signals';
-
-export default app.createRoot(
-  <>
-    <AlertDisplay transientTimeoutMs={2500} />
-    <OAuthRequestDialog />
-    {/* highlight-add-next-line */}
-    <SignalsDisplay />
-    <AppRouter>
-      <VisitListener />
-      <Root>{routes}</Root>
-    </AppRouter>
-  </>,
-);
-```
-
-If the signals plugin is properly configured, it will be automatically discovered by the notifications plugin and used.
+Once installed, the signals plugin is automatically available in your app through the default feature discovery. No additional configuration is required. If the signals plugin is properly configured, it will be automatically discovered by the notifications plugin and used.
 
 ### User-specific notification settings
 
-The notifications plugin provides a way for users to manage their notification settings. To enable this, you must
-add the `UserNotificationSettingsCard` to your frontend.
+The notifications plugin provides a way for users to manage their notification settings. To enable this, you can create a frontend module that adds a settings tab to the user-settings plugin using the `SubPageBlueprint`:
 
-```tsx title="packages/app/src/App.tsx"
-<Route path="/settings" element={<UserSettingsPage />}>
-  <SettingsLayout.Route path="/notifications" title="Notifications">
-    <UserNotificationSettingsCard
-      originNames={{ 'plugin:scaffolder': 'Scaffolder' }}
-    />
-  </SettingsLayout.Route>
-</Route>
+```tsx title="packages/app/src/modules/NotificationSettingsPage.tsx"
+import { Content } from '@backstage/core-components';
+import { UserNotificationSettingsCard } from '@backstage/plugin-notifications';
+
+export function NotificationSettingsPage() {
+  return (
+    <Content>
+      <UserNotificationSettingsCard
+        originNames={{ 'plugin:scaffolder': 'Scaffolder' }}
+      />
+    </Content>
+  );
+}
 ```
+
+```tsx title="packages/app/src/modules/notificationSettings.tsx"
+import { createFrontendModule } from '@backstage/frontend-plugin-api';
+import { SubPageBlueprint } from '@backstage/frontend-plugin-api';
+
+export const notificationSettingsModule = createFrontendModule({
+  pluginId: 'user-settings',
+  extensions: [
+    SubPageBlueprint.make({
+      name: 'notifications',
+      params: {
+        path: 'notifications',
+        title: 'Notifications',
+        loader: () =>
+          import('./NotificationSettingsPage').then(m => (
+            <m.NotificationSettingsPage />
+          )),
+      },
+    }),
+  ],
+});
+```
+
+Then install the module in your app by adding it to the features array of `createApp`, or through default feature discovery if your app is set up for it.
 
 ![Notification Settings](notificationSettings.png)
 

@@ -27,6 +27,12 @@ export type DbLocationsRow = {
   id: string;
   type: string;
   target: string;
+  /**
+   * The entity ref of the corresponding Location kind entity, e.g.
+   * `location:default/generated-<sha1hex>`. The internal bootstrap location
+   * row uses an empty string as a placeholder.
+   */
+  location_entity_ref: string;
 };
 
 /**

@@ -19,7 +19,11 @@ import { BoxProps } from './types';
 import { useDefinition } from '../../hooks/useDefinition';
 import { BoxDefinition } from './definition';
 
-/** @public */
+/**
+ * A general-purpose layout primitive that can render as any HTML element and supports spacing, sizing, and background props.
+ *
+ * @public
+ */
 export const Box = forwardRef<HTMLDivElement, BoxProps>((props, ref) => {
   const { ownProps, restProps, dataAttributes, utilityStyle } = useDefinition(
     BoxDefinition,
@@ -32,7 +36,7 @@ export const Box = forwardRef<HTMLDivElement, BoxProps>((props, ref) => {
     {
       ref,
       className: classes.root,
-      style: { ...ownProps.style, ...utilityStyle },
+      style: { ...utilityStyle, ...ownProps.style },
       ...dataAttributes,
       ...restProps,
     },

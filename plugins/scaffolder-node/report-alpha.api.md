@@ -4,10 +4,16 @@
 
 ```ts
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
+import type { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
+import { PermissionResourceRef } from '@backstage/plugin-permission-node';
+import type { SerializedTask } from '@backstage/plugin-scaffolder-node';
 import { TaskBroker } from '@backstage/plugin-scaffolder-node';
+import type { TaskFilter } from '@backstage/plugin-scaffolder-node';
+import type { TemplateEntityStepV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateFilter as TemplateFilter_2 } from '@backstage/plugin-scaffolder-node';
 import { TemplateGlobal as TemplateGlobal_2 } from '@backstage/plugin-scaffolder-node';
+import type { TemplateParametersV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { z } from 'zod/v3';
 
 // @alpha
@@ -119,6 +125,14 @@ export const restoreWorkspace: (opts: {
 }) => Promise<void>;
 
 // @alpha
+export const scaffolderActionPermissionResourceRef: PermissionResourceRef<
+  JsonObject,
+  {},
+  'scaffolder-action',
+  'scaffolder'
+>;
+
+// @alpha
 export interface ScaffolderAutocompleteExtensionPoint {
   // (undocumented)
   addAutocompleteProvider(input: {
@@ -138,6 +152,22 @@ export interface ScaffolderTaskBrokerExtensionPoint {
 
 // @alpha @deprecated
 export const scaffolderTaskBrokerExtensionPoint: ExtensionPoint<ScaffolderTaskBrokerExtensionPoint>;
+
+// @alpha
+export const scaffolderTaskPermissionResourceRef: PermissionResourceRef<
+  SerializedTask,
+  TaskFilter,
+  'scaffolder-task',
+  'scaffolder'
+>;
+
+// @alpha
+export const scaffolderTemplatePermissionResourceRef: PermissionResourceRef<
+  TemplateParametersV1beta3 | TemplateEntityStepV1beta3,
+  {},
+  'scaffolder-template',
+  'scaffolder'
+>;
 
 // @alpha
 export interface ScaffolderTemplatingExtensionPoint {

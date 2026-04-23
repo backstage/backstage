@@ -52,7 +52,7 @@ import {
   TeamEvent,
 } from '@octokit/webhooks-types';
 import { merge } from 'lodash';
-import * as uuid from 'uuid';
+import { randomUUID } from 'node:crypto';
 
 import {
   assignGroupsToUsers,
@@ -894,7 +894,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
           const logger = this.options.logger.child({
             class: GithubMultiOrgEntityProvider.prototype.constructor.name,
             taskId: id,
-            taskInstanceId: uuid.v4(),
+            taskInstanceId: randomUUID(),
           });
 
           try {

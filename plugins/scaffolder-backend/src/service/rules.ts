@@ -74,12 +74,6 @@ export const hasActionId = createActionPermissionRule({
   toQuery: () => ({}),
 });
 
-export const hasProperty = buildHasProperty({
-  name: 'HAS_PROPERTY',
-  valueSchema: z.union([z.string(), z.number(), z.boolean(), z.null()]),
-  validateProperty: false,
-});
-
 export const hasBooleanProperty = buildHasProperty({
   name: 'HAS_BOOLEAN_PROPERTY',
   valueSchema: z.boolean(),

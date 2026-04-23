@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { assertError } from '@backstage/errors';
+import { toError } from '@backstage/errors';
 import { Command } from 'commander';
 import { exitWithError } from '../lib/errors';
 
@@ -302,8 +302,7 @@ export function lazy<TModule extends object>(
 
       process.exit(0);
     } catch (error) {
-      assertError(error);
-      exitWithError(error);
+      exitWithError(toError(error));
     }
   };
 }

@@ -40,7 +40,7 @@ describe('ActionsClient', () => {
       expect(mockHttpJson).not.toHaveBeenCalled();
     });
 
-    it('fetches actions from each plugin source', async () => {
+    it('fetches actions from each plugin source grouped by plugin', async () => {
       const catalogActions = [
         {
           id: 'catalog:refresh',
@@ -75,7 +75,10 @@ describe('ActionsClient', () => {
           headers: { Authorization: 'Bearer test-token' },
         }),
       );
-      expect(result).toEqual([...catalogActions, ...scaffolderActions]);
+      expect(result).toEqual([
+        { pluginId: 'catalog', actions: catalogActions },
+        { pluginId: 'scaffolder', actions: scaffolderActions },
+      ]);
     });
 
     it('propagates errors from httpJson', async () => {

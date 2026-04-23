@@ -94,11 +94,11 @@ The extension ID of the work API will be the kind `api:` followed by the plugin 
 Here we will describe how to amend a utility API with the capability of having extension config, which is driven by [your app-config](../../conf/writing.md). You do this by giving an extension config schema to your API extension factory function. Let's refactor the example above to also accept configuration, which will require us to use the [override method of the blueprint](../architecture/23-extension-blueprints.md#creating-an-extension-from-a-blueprint-with-overrides).
 
 ```tsx title="in @internal/plugin-example"
+import { z } from 'zod';
+
 const exampleWorkApi = ApiBlueprint.makeWithOverrides({
-  config: {
-    schema: {
-      goSlow: z => z.boolean().default(false),
-    },
+  configSchema: {
+    goSlow: z.boolean().default(false),
   },
   factory(originalFactory, { config }) {
     return originalFactory({

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { createCatalogModelLayer } from '../model/createCatalogModelLayer';
+
 /*
 Naming rules for relations in priority order:
 
@@ -136,3 +138,98 @@ export const RELATION_PART_OF = 'partOf';
  * @public
  */
 export const RELATION_HAS_PART = 'hasPart';
+
+/**
+ * Extends the catalog model with the well-known Backstage relation pairs.
+ */
+export const wellKnownRelationsModel = createCatalogModelLayer({
+  layerId: 'catalog.backstage.io/well-known-relations',
+  builder: model => {
+    model.addRelationPair({
+      fromKind: [
+        'API',
+        'Component',
+        'Domain',
+        'Group',
+        'Location',
+        'Resource',
+        'System',
+        'User',
+      ],
+      toKind: ['Group', 'User'],
+      description:
+        'An ownership relation where the owner is usually an organizational entity (user or group), and the other entity can be anything.',
+      forward: { type: 'ownedBy', title: 'owned by' },
+      reverse: { type: 'ownerOf', title: 'owner of' },
+    });
+
+    model.addRelationPair({
+      fromKind: 'Component',
+      toKind: 'API',
+      description:
+        'A relation from a component to an API it provides for consumption by others.',
+      forward: { type: 'providesApi', title: 'provides API' },
+      reverse: { type: 'apiProvidedBy', title: 'API provided by' },
+    });
+
+    model.addRelationPair({
+      fromKind: 'Component',
+      toKind: 'API',
+      description: 'A relation from a component to an API it consumes.',
+      forward: { type: 'consumesApi', title: 'consumes API' },
+      reverse: { type: 'apiConsumedBy', title: 'API consumed by' },
+    });
+
+    model.addRelationPair({
+      fromKind: ['Component', 'Resource'],
+      toKind: ['Component', 'Resource'],
+      description:
+        'A dependency relation expressing that an entity needs another entity to function.',
+      forward: { type: 'dependsOn', title: 'depends on' },
+      reverse: { type: 'dependencyOf', title: 'dependency of' },
+    });
+
+    model.addRelationPair({
+      fromKind: 'Group',
+      toKind: 'Group',
+      description:
+        'A parent/child relation to build up a tree, used for example to describe the organizational structure between groups.',
+      forward: { type: 'parentOf', title: 'parent of' },
+      reverse: { type: 'childOf', title: 'child of' },
+    });
+
+    model.addRelationPair({
+      fromKind: 'User',
+      toKind: 'Group',
+      description: 'A membership relation, typically for users in a group.',
+      forward: { type: 'memberOf', title: 'member of' },
+      reverse: { type: 'hasMember', title: 'has member' },
+    });
+
+    model.addRelationPair({
+      fromKind: ['Component', 'API', 'Resource'],
+      toKind: ['Component', 'System'],
+      description:
+        'A part/whole relation where a component, API, or resource belongs to a system or a component is a subcomponent of another.',
+      forward: { type: 'partOf', title: 'part of' },
+      reverse: { type: 'hasPart', title: 'has part' },
+    });
+
+    model.addRelationPair({
+      fromKind: 'System',
+      toKind: 'Domain',
+      description: 'A part/whole relation where a system belongs to a domain.',
+      forward: { type: 'partOf', title: 'part of' },
+      reverse: { type: 'hasPart', title: 'has part' },
+    });
+
+    model.addRelationPair({
+      fromKind: 'Domain',
+      toKind: 'Domain',
+      description:
+        'A part/whole relation where a domain is a subdomain of another domain.',
+      forward: { type: 'partOf', title: 'part of' },
+      reverse: { type: 'hasPart', title: 'has part' },
+    });
+  },
+});

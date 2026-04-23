@@ -14,7 +14,43 @@
  * limitations under the License.
  */
 
-import type { HeaderTab } from '../PluginHeader/types';
+/**
+ * Represents a single navigation tab in the header.
+ *
+ * @public
+ */
+export interface HeaderNavTab {
+  id: string;
+  label: string;
+  href: string;
+}
+
+/** @internal */
+export interface HeaderNavLinkProps extends HeaderNavTab {
+  noTrack?: boolean;
+  active: boolean;
+  registerRef: (key: string, el: HTMLElement | null) => void;
+  onHighlight: (key: string | null) => void;
+  className?: string;
+}
+
+/**
+ * Represents a group of navigation tabs rendered as a dropdown menu.
+ *
+ * @public
+ */
+export interface HeaderNavTabGroup {
+  id: string;
+  label: string;
+  items: HeaderNavTab[];
+}
+
+/**
+ * A navigation tab item — either a flat link or a dropdown group.
+ *
+ * @public
+ */
+export type HeaderNavTabItem = HeaderNavTab | HeaderNavTabGroup;
 
 /**
  * Own props for the Header component.
@@ -24,7 +60,8 @@ import type { HeaderTab } from '../PluginHeader/types';
 export interface HeaderOwnProps {
   title?: string;
   customActions?: React.ReactNode;
-  tabs?: HeaderTab[];
+  tabs?: HeaderNavTabItem[];
+  activeTabId?: string | null;
   breadcrumbs?: HeaderBreadcrumb[];
   className?: string;
 }

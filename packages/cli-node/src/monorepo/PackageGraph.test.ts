@@ -222,4 +222,51 @@ c-dep@^2:
       'origin/master',
     );
   });
+
+  it('detects packages affected by a removed dependency in the lockfile', async () => {
+    const graph = PackageGraph.fromPackages(testPackages);
+
+    mockListChangedFiles.mockResolvedValueOnce(['yarn.lock']);
+
+    // The old lockfile (at the ref) has b depending on b-dep
+    mockReadFileAtRef.mockResolvedValueOnce(`
+a@^1:
+  version: "1.0.0"
+
+b@^1:
+  version: "1.0.0"
+  dependencies:
+      b-dep: ^1
+
+b-dep@^1:
+  version: "1.0.0"
+  integrity: sha512-old
+
+c@^1:
+  version: "1.0.0"
+`);
+
+    // The current lockfile no longer has b-dep at all
+    jest.spyOn(Lockfile, 'load').mockResolvedValueOnce(
+      Lockfile.parse(`
+a@^1:
+  version: "1.0.0"
+
+b@^1:
+  version: "1.0.0"
+
+c@^1:
+  version: "1.0.0"
+`),
+    );
+
+    await expect(
+      graph
+        .listChangedPackages({
+          ref: 'origin/master',
+          analyzeLockfile: true,
+        })
+        .then(pkgs => pkgs.map(pkg => pkg.name)),
+    ).resolves.toEqual(['b']);
+  });
 });

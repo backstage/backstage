@@ -11,7 +11,7 @@ frontend _features_, and what you install to build up a Backstage frontend [app]
 
 ## Creating a new plugin
 
-This guide assumes that you already have a Backstage project set up. Even if you only want to develop a single plugin for publishing, we still recommend that you do so in a standard Backstage monorepo project, as you often end up needing multiple packages. For instructions on how to set up a new project, see our [getting started](../../getting-started/index.md#prerequisites) documentation.
+This guide assumes that you already have a Backstage project set up. Even if you only want to develop a single plugin for publishing, we still recommend that you do so in a standard Backstage monorepo project, as you often end up needing multiple packages. For instructions on how to set up a new project, see our [getting started](../../getting-started/index.md) documentation.
 
 To create a frontend plugin, run `yarn new`, select `plugin`, and fill out the rest of the prompts. This will create a new package at `plugins/<pluginId>`, which will be the main entrypoint for your plugin.
 
@@ -200,7 +200,7 @@ export const examplePlugin = createFrontendPlugin({
 
 ## Plugin specific extensions
 
-There are many different plugins that you can extend with additional functionality through extensions. One such plugin is [the catalog plugin](../../features/software-catalog/), one of the core features of Backstage. It lets you catalog the software in your organization, where each item in the catalog has its own page that can be populated with tools and information relating to that catalog entity. In this example we will explore how our plugin can provide such a tool to display on an entity page.
+There are many different plugins that you can extend with additional functionality through extensions. One such plugin is [the catalog plugin](../../features/software-catalog/index.md), one of the core features of Backstage. It lets you catalog the software in your organization, where each item in the catalog has its own page that can be populated with tools and information relating to that catalog entity. In this example we will explore how our plugin can provide such a tool to display on an entity page.
 
 ```tsx title="in src/plugin.ts - An example entity content extension"
 import { EntityContentBlueprint } from '@backstage/plugin-catalog-react/alpha';
