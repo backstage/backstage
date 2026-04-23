@@ -490,6 +490,119 @@ export const ServerSidePaginationCursor: Story = {
   },
 };
 
+export const InfiniteScrollOffset: Story = {
+  render: () => {
+    const columns: ColumnConfig<Data1Item>[] = [
+      {
+        id: 'name',
+        label: 'Name',
+        isRowHeader: true,
+        cell: item => <CellText title={item.name} />,
+      },
+      {
+        id: 'owner',
+        label: 'Owner',
+        cell: item => <CellText title={item.owner.name} />,
+      },
+      {
+        id: 'type',
+        label: 'Type',
+        cell: item => <CellText title={item.type} />,
+      },
+    ];
+
+    const { tableProps } = useTable({
+      mode: 'offset',
+      getData: async ({ offset, pageSize }) => {
+        await new Promise(resolve => setTimeout(resolve, 500));
+        return {
+          data: data1.slice(offset, offset + pageSize),
+          totalCount: data1.length,
+        };
+      },
+      paginationOptions: { infinite: true, pageSize: 5 },
+    });
+
+    return (
+      <Table columnConfig={columns} {...tableProps} style={{ height: 300 }} />
+    );
+  },
+};
+
+export const InfiniteScrollCursor: Story = {
+  render: () => {
+    const columns: ColumnConfig<Data4Item>[] = [
+      {
+        id: 'name',
+        label: 'Band name',
+        isRowHeader: true,
+        cell: item => <CellProfile name={item.name} src={item.image} />,
+      },
+      {
+        id: 'genre',
+        label: 'Genre',
+        cell: item => <CellText title={item.genre} />,
+      },
+    ];
+
+    const { tableProps } = useTable({
+      mode: 'cursor',
+      getData: async ({ cursor, pageSize }) => {
+        await new Promise(resolve => setTimeout(resolve, 500));
+        const startIndex = cursor ? parseInt(cursor, 10) : 0;
+        const nextIndex = startIndex + pageSize;
+        return {
+          data: data4.slice(startIndex, nextIndex),
+          totalCount: data4.length,
+          nextCursor: nextIndex < data4.length ? String(nextIndex) : undefined,
+          prevCursor:
+            startIndex > 0
+              ? String(Math.max(0, startIndex - pageSize))
+              : undefined,
+        };
+      },
+      paginationOptions: { infinite: true, pageSize: 5 },
+    });
+
+    return (
+      <Table columnConfig={columns} {...tableProps} style={{ height: 300 }} />
+    );
+  },
+};
+
+export const InfiniteScrollComplete: Story = {
+  render: () => {
+    const columns: ColumnConfig<Data1Item>[] = [
+      {
+        id: 'name',
+        label: 'Name',
+        isRowHeader: true,
+        cell: item => <CellText title={item.name} />,
+      },
+      {
+        id: 'owner',
+        label: 'Owner',
+        cell: item => <CellText title={item.owner.name} />,
+      },
+      {
+        id: 'type',
+        label: 'Type',
+        cell: item => <CellText title={item.type} />,
+      },
+    ];
+
+    const { tableProps } = useTable({
+      mode: 'complete',
+      getData: () => data1,
+      paginationOptions: { infinite: true, pageSize: 5 },
+    });
+
+    return (
+      <Table columnConfig={columns} {...tableProps} style={{ height: 300 }} />
+    );
+  },
+};
+
 export const CustomRowRender: Story = {
   render: () => {
     const columns: ColumnConfig<Data1Item>[] = [
