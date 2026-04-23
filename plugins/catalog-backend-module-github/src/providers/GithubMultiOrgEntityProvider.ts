@@ -297,13 +297,12 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       : await this.getAllOrgs(this.options.gitHubConfig);
 
     for (const org of orgsToProcess) {
-      let headers: Record<string, string | undefined> | undefined;
-      let tokenType: string | undefined;
+      let credentials;
       try {
-        ({ headers, type: tokenType } =
+        credentials =
           await this.options.githubCredentialsProvider.getCredentials({
             url: `${this.options.githubUrl}/${org}`,
-          }));
+          });
       } catch (error: any) {
         // When a GitHub App is configured but not installed on one of the
         // orgs listed in the provider config, `getCredentials` throws a
@@ -318,6 +317,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
         }
         throw error;
       }
+      const { headers, type: tokenType } = credentials;
       const client = graphql.defaults({
         baseUrl: this.options.gitHubConfig.apiBaseUrl,
         headers,
