@@ -16,8 +16,10 @@
 
 import { useId } from 'react-aria';
 import {
+  Collection,
   type Key,
   ResizableTableContainer,
+  TableLoadMoreItem,
   Virtualizer,
 } from 'react-aria-components';
 import { TableLayout } from 'react-stately';
@@ -230,37 +232,50 @@ export function Table<T extends TableItem>({
               <TableBodySkeleton columns={visibleColumns} />
             ) : (
               <TableBody
-                items={data}
-                dependencies={[visibleColumns]}
                 renderEmptyState={
                   emptyState ? () => <Flex p="3">{emptyState}</Flex> : undefined
                 }
               >
-                {item => {
-                  const itemIndex = data?.indexOf(item) ?? -1;
+                {pagination.type === 'infinite' &&
+                  pagination.hasPreviousPages && (
+                    <TableLoadMoreItem
+                      onLoadMore={pagination.onLoadPrevious}
+                      isLoading={pagination.isLoading}
+                    />
+                  )}
+                <Collection items={data} dependencies={[visibleColumns]}>
+                  {item => {
+                    const itemIndex = data?.indexOf(item) ?? -1;
 
-                  if (isRowRenderFn(rowConfig)) {
-                    return rowConfig({
-                      item,
-                      index: itemIndex,
-                    });
-                  }
+                    if (isRowRenderFn(rowConfig)) {
+                      return rowConfig({
+                        item,
+                        index: itemIndex,
+                      });
+                    }
 
-                  return (
-                    <Row
-                      id={String(item.id)}
-                      columns={visibleColumns}
-                      href={rowConfig?.getHref?.(item)}
-                      onAction={
-                        rowConfig?.onClick
-                          ? () => rowConfig?.onClick?.(item)
-                          : undefined
-                      }
-                    >
-                      {column => column.cell(item)}
-                    </Row>
-                  );
-                }}
+                    return (
+                      <Row
+                        id={String(item.id)}
+                        columns={visibleColumns}
+                        href={rowConfig?.getHref?.(item)}
+                        onAction={
+                          rowConfig?.onClick
+                            ? () => rowConfig?.onClick?.(item)
+                            : undefined
+                        }
+                      >
+                        {column => column.cell(item)}
+                      </Row>
+                    );
+                  }}
+                </Collection>
+                {pagination.type === 'infinite' && pagination.hasMoreItems && (
+                  <TableLoadMoreItem
+                    onLoadMore={pagination.onLoadMore}
+                    isLoading={pagination.isLoading}
+                  />
+                )}
               </TableBody>
             )}
           </TableRoot>,
