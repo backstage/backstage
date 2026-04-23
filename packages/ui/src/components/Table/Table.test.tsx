@@ -19,18 +19,22 @@ import { Table } from './components/Table';
 import { CellText } from './components/CellText';
 import type { ColumnConfig, InfiniteScrollPagination } from '.';
 
-class MockIntersectionObserver {
+class MockIntersectionObserver implements IntersectionObserver {
+  root: Element | null = null;
+  rootMargin = '';
+  thresholds: ReadonlyArray<number> = [];
+  constructor(
+    _callback: IntersectionObserverCallback,
+    _options?: IntersectionObserverInit,
+  ) {}
   observe() {}
   unobserve() {}
   disconnect() {}
-  takeRecords() {
+  takeRecords(): IntersectionObserverEntry[] {
     return [];
   }
 }
-(
-  globalThis as unknown as { IntersectionObserver: typeof IntersectionObserver }
-).IntersectionObserver =
-  MockIntersectionObserver as unknown as typeof IntersectionObserver;
+globalThis.IntersectionObserver = MockIntersectionObserver;
 
 type Item = { id: string; name: string };
 
