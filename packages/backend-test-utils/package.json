@@ -77,7 +77,7 @@
     "pg-connection-string": "^2.3.0",
     "testcontainers": "^11.9.0",
     "text-extensions": "^2.4.0",
-    "uuid": "^11.0.0",
+    "uuid": "^14.0.0",
     "yn": "^4.0.0",
     "zod": "^3.25.76 || ^4.0.0",
     "zod-to-json-schema": "^3.25.1"

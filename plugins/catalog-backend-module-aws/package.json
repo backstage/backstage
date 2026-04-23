@@ -67,7 +67,7 @@
     "@backstage/plugin-catalog-node": "workspace:^",
     "@backstage/plugin-kubernetes-common": "workspace:^",
     "p-limit": "^3.0.2",
-    "uuid": "^11.0.0"
+    "uuid": "^14.0.0"
   },
   "devDependencies": {
     "@aws-sdk/util-stream-node": "^3.350.0",

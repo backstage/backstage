@@ -2623,7 +2623,7 @@ __metadata:
     supertest: "npm:^7.0.0"
     tar: "npm:^7.5.6"
     triple-beam: "npm:^1.4.1"
-    uuid: "npm:^11.0.0"
+    uuid: "npm:^14.0.0"
     wait-for-expect: "npm:^4.0.0"
     winston: "npm:^3.2.1"
     winston-transport: "npm:^4.5.0"
@@ -2779,7 +2779,7 @@ __metadata:
     supertest: "npm:^7.0.0"
     testcontainers: "npm:^11.9.0"
     text-extensions: "npm:^2.4.0"
-    uuid: "npm:^11.0.0"
+    uuid: "npm:^14.0.0"
     yn: "npm:^4.0.0"
     zod: "npm:^3.25.76 || ^4.0.0"
     zod-to-json-schema: "npm:^3.25.1"
@@ -4340,7 +4340,7 @@ __metadata:
     jose: "npm:^5.0.0"
     msw: "npm:^2.0.0"
     node-mocks-http: "npm:^1.0.0"
-    uuid: "npm:^11.0.0"
+    uuid: "npm:^14.0.0"
     zod: "npm:^3.25.76 || ^4.0.0"
   languageName: unknown
   linkType: soft
@@ -4652,7 +4652,7 @@ __metadata:
     msw: "npm:^1.0.0"
     passport: "npm:^0.7.0"
     supertest: "npm:^7.0.0"
-    uuid: "npm:^11.0.0"
+    uuid: "npm:^14.0.0"
     zod: "npm:^3.25.76 || ^4.0.0"
     zod-validation-error: "npm:^5.0.0"
   languageName: unknown
@@ -4681,7 +4681,7 @@ __metadata:
     msw: "npm:^1.0.0"
     passport: "npm:^0.7.0"
     supertest: "npm:^7.0.0"
-    uuid: "npm:^11.0.0"
+    uuid: "npm:^14.0.0"
     zod: "npm:^3.25.76 || ^4.0.0"
     zod-to-json-schema: "npm:^3.25.1"
     zod-validation-error: "npm:^4.0.2"
@@ -4789,7 +4789,7 @@ __metadata:
     aws-sdk-client-mock: "npm:^4.0.0"
     aws-sdk-client-mock-jest: "npm:^4.0.0"
     p-limit: "npm:^3.0.2"
-    uuid: "npm:^11.0.0"
+    uuid: "npm:^14.0.0"
     yaml: "npm:^2.0.0"
   languageName: unknown
   linkType: soft
@@ -4810,7 +4810,7 @@ __metadata:
     "@backstage/plugin-catalog-node": "workspace:^"
     "@backstage/plugin-events-node": "workspace:^"
     msw: "npm:^1.0.0"
-    uuid: "npm:^11.0.0"
+    uuid: "npm:^14.0.0"
   languageName: unknown
   linkType: soft
 
@@ -4829,7 +4829,7 @@ __metadata:
     lodash: "npm:^4.17.21"
     openapi-merge: "npm:^1.3.2"
     openapi3-ts: "npm:^3.1.2"
-    uuid: "npm:^11.0.0"
+    uuid: "npm:^14.0.0"
     yaml: "npm:^2.7.0"
   languageName: unknown
   linkType: soft
@@ -4851,7 +4851,7 @@ __metadata:
     "@backstage/plugin-events-backend-test-utils": "workspace:^"
     "@backstage/plugin-events-node": "workspace:^"
     msw: "npm:^1.0.0"
-    uuid: "npm:^11.0.0"
+    uuid: "npm:^14.0.0"
   languageName: unknown
   linkType: soft
 
@@ -4871,7 +4871,7 @@ __metadata:
     "@backstage/plugin-events-backend-test-utils": "workspace:^"
     "@backstage/plugin-events-node": "workspace:^"
     msw: "npm:^1.0.0"
-    uuid: "npm:^11.0.0"
+    uuid: "npm:^14.0.0"
   languageName: unknown
   linkType: soft
 
@@ -4906,7 +4906,7 @@ __metadata:
     fs-extra: "npm:^11.2.0"
     msw: "npm:^1.0.0"
     p-limit: "npm:^3.1.0"
-    uuid: "npm:^11.0.0"
+    uuid: "npm:^14.0.0"
   languageName: unknown
   linkType: soft
 
@@ -4923,7 +4923,7 @@ __metadata:
     "@backstage/plugin-catalog-common": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
     p-limit: "npm:^3.0.2"
-    uuid: "npm:^11.0.0"
+    uuid: "npm:^14.0.0"
   languageName: unknown
   linkType: soft
 
@@ -4974,7 +4974,7 @@ __metadata:
     minimatch: "npm:^10.2.1"
     msw: "npm:^2.0.0"
     octokit: "npm:^3.0.0"
-    uuid: "npm:^11.0.0"
+    uuid: "npm:^14.0.0"
   languageName: unknown
   linkType: soft
 
@@ -5012,7 +5012,7 @@ __metadata:
     "@types/lodash": "npm:^4.14.151"
     lodash: "npm:^4.17.21"
     msw: "npm:^1.0.0"
-    uuid: "npm:^11.0.0"
+    uuid: "npm:^14.0.0"
   languageName: unknown
   linkType: soft
 
@@ -5036,7 +5036,7 @@ __metadata:
     express-promise-router: "npm:^4.1.0"
     knex: "npm:^3.0.0"
     luxon: "npm:^3.0.0"
-    uuid: "npm:^11.0.0"
+    uuid: "npm:^14.0.0"
   languageName: unknown
   linkType: soft
 
@@ -5055,7 +5055,7 @@ __metadata:
     "@types/lodash": "npm:^4.14.151"
     ldapts: "npm:^8.0.6"
     lodash: "npm:^4.17.21"
-    uuid: "npm:^11.0.0"
+    uuid: "npm:^14.0.0"
   languageName: unknown
   linkType: soft
 
@@ -5090,7 +5090,7 @@ __metadata:
     msw: "npm:^1.0.0"
     p-limit: "npm:^3.0.2"
     qs: "npm:^6.9.4"
-    uuid: "npm:^11.0.0"
+    uuid: "npm:^14.0.0"
   languageName: unknown
   linkType: soft
 
@@ -5127,7 +5127,7 @@ __metadata:
     "@types/lodash": "npm:^4.14.151"
     lodash: "npm:^4.17.21"
     msw: "npm:^1.0.0"
-    uuid: "npm:^11.0.0"
+    uuid: "npm:^14.0.0"
   languageName: unknown
   linkType: soft
 
@@ -5211,7 +5211,7 @@ __metadata:
     p-limit: "npm:^3.0.2"
     prom-client: "npm:^15.0.0"
     supertest: "npm:^7.0.0"
-    uuid: "npm:^11.0.0"
+    uuid: "npm:^14.0.0"
     wait-for-expect: "npm:^4.0.0"
     winston: "npm:^3.13.0"
     yaml: "npm:^2.0.0"
@@ -6279,7 +6279,7 @@ __metadata:
     knex: "npm:^3.0.0"
     p-throttle: "npm:^4.1.1"
     supertest: "npm:^7.0.0"
-    uuid: "npm:^11.0.0"
+    uuid: "npm:^14.0.0"
   languageName: unknown
   linkType: soft
 
@@ -6480,7 +6480,7 @@ __metadata:
     "@backstage/types": "workspace:^"
     cross-fetch: "npm:^4.0.0"
     msw: "npm:^1.0.0"
-    uuid: "npm:^11.0.0"
+    uuid: "npm:^14.0.0"
     zod: "npm:^3.25.76 || ^4.0.0"
     zod-to-json-schema: "npm:^3.25.1"
   languageName: unknown
@@ -6876,7 +6876,7 @@ __metadata:
     strip-ansi: "npm:^7.1.0"
     supertest: "npm:^7.0.0"
     triple-beam: "npm:^1.4.1"
-    uuid: "npm:^11.0.0"
+    uuid: "npm:^14.0.0"
     wait-for-expect: "npm:^4.0.0"
     winston: "npm:^3.2.1"
     winston-transport: "npm:^4.7.0"
@@ -7165,7 +7165,7 @@ __metadata:
     aws4: "npm:^1.12.0"
     elastic-builder: "npm:^2.16.0"
     lodash: "npm:^4.17.21"
-    uuid: "npm:^11.0.0"
+    uuid: "npm:^14.0.0"
   languageName: unknown
   linkType: soft
 
@@ -7196,7 +7196,7 @@ __metadata:
     "@backstage/plugin-search-common": "workspace:^"
     knex: "npm:^3.0.0"
     lodash: "npm:^4.17.21"
-    uuid: "npm:^11.0.0"
+    uuid: "npm:^14.0.0"
   languageName: unknown
   linkType: soft
 
@@ -7254,7 +7254,7 @@ __metadata:
     lodash: "npm:^4.17.21"
     lunr: "npm:^2.3.9"
     ndjson: "npm:^2.0.0"
-    uuid: "npm:^11.0.0"
+    uuid: "npm:^14.0.0"
   languageName: unknown
   linkType: soft
 
@@ -7326,7 +7326,7 @@ __metadata:
     react-dom: "npm:^18.0.2"
     react-router-dom: "npm:^6.30.2"
     react-use: "npm:^17.3.2"
-    uuid: "npm:^11.0.2"
+    uuid: "npm:^14.0.0"
     zod: "npm:^4.0.0"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
@@ -7403,7 +7403,7 @@ __metadata:
     express: "npm:^4.22.0"
     express-promise-router: "npm:^4.1.0"
     supertest: "npm:^7.0.0"
-    uuid: "npm:^11.0.0"
+    uuid: "npm:^14.0.0"
     ws: "npm:^8.18.0"
   languageName: unknown
   linkType: soft
@@ -7468,7 +7468,7 @@ __metadata:
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
     react-router-dom: "npm:^6.30.2"
-    uuid: "npm:^11.0.0"
+    uuid: "npm:^14.0.0"
     wait-for-expect: "npm:^4.0.0"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
@@ -10076,7 +10076,7 @@ __metadata:
     express: "npm:^4.22.0"
     express-promise-router: "npm:^4.1.0"
     supertest: "npm:^7.0.0"
-    uuid: "npm:^11.0.0"
+    uuid: "npm:^14.0.0"
   languageName: unknown
   linkType: soft
 
@@ -47882,12 +47882,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"uuid@npm:^11.0.0, uuid@npm:^11.0.2, uuid@npm:^11.0.3":
+"uuid@npm:^11.0.3":
   version: 11.1.0
   resolution: "uuid@npm:11.1.0"
   bin:
     uuid: dist/esm/bin/uuid
   checksum: 10/d2da43b49b154d154574891ced66d0c83fc70caaad87e043400cf644423b067542d6f3eb641b7c819224a7cd3b4c2f21906acbedd6ec9c6a05887aa9115a9cf5
+  languageName: node
+  linkType: hard
+
+"uuid@npm:^14.0.0":
+  version: 14.0.0
+  resolution: "uuid@npm:14.0.0"
+  bin:
+    uuid: dist-node/bin/uuid
+  checksum: 10/8ee9b98f9650e25555515f7a28d3c3ae9364e72f7bb19b9e08b681bc135338beba5509b2830f6ae1cfaba4d45401da0d16d4d109b977097bc3d6ba0c5583341b
   languageName: node
   linkType: hard
 

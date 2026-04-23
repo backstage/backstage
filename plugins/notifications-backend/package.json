@@ -55,7 +55,7 @@
     "express-promise-router": "^4.1.0",
     "knex": "^3.0.0",
     "p-throttle": "^4.1.1",
-    "uuid": "^11.0.0"
+    "uuid": "^14.0.0"
   },
   "devDependencies": {
     "@backstage/backend-defaults": "workspace:^",

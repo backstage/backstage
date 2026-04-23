@@ -59,7 +59,7 @@
     "@backstage/types": "workspace:^",
     "@material-ui/core": "^4.12.4",
     "@remixicon/react": "^4.6.0",
-    "uuid": "^11.0.0"
+    "uuid": "^14.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
