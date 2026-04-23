@@ -62,7 +62,7 @@
     "@backstage/plugin-events-node": "workspace:^",
     "@gitbeaker/rest": "^40.0.3",
     "lodash": "^4.17.21",
-    "uuid": "^11.0.0"
+    "uuid": "^14.0.0"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",

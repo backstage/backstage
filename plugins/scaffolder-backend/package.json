@@ -93,7 +93,7 @@
     "p-queue": "^6.6.2",
     "prom-client": "^15.0.0",
     "triple-beam": "^1.4.1",
-    "uuid": "^11.0.0",
+    "uuid": "^14.0.0",
     "winston": "^3.2.1",
     "winston-transport": "^4.7.0",
     "yaml": "^2.0.0",
