@@ -138,42 +138,58 @@ In that case, mind setting the `Content-Type` header to either `application/json
 
 ### Proxy Extension Endpoint
 
-The proxy plugin additionally supports a `proxyExtensionEndpoint` which a proxy
-plugin module can utilize in order to programmatically register additional
-endpoints, whose payloads are specified exactly as in app-config (described
-above). Note that endpoints configured in app-config will always override those
-registered in this manner.
+The proxy plugin additionally supports a `proxyEndpointsExtensionPoint` which a
+proxy plugin module can utilize in order to programmatically register
+additional endpoints, whose payloads are specified exactly as in app-config
+(described above). Note that endpoints configured in app-config will always
+override those registered in this manner.
 
-Example:
+To scaffold a module package, run `yarn new`, select `backend-module`, and
+fill out the prompts with `proxy` as the plugin ID. This will create
+`plugins/proxy-backend-module-<moduleId>` with `src/module.ts` and
+`src/index.ts` files. Replace the generated `src/module.ts` with the example
+below:
 
 ```ts
+// plugins/proxy-backend-module-demo-additional-endpoints/src/module.ts
 import { createBackendModule } from '@backstage/backend-plugin-api';
 import { proxyEndpointsExtensionPoint } from '@backstage/plugin-proxy-node/alpha';
 
-backend.add(
-  createBackendModule({
-    pluginId: 'proxy',
-    moduleId: 'demo-additional-endpoints',
-    register: reg => {
-      reg.registerInit({
-        deps: {
-          proxyEndpoints: proxyEndpointsExtensionPoint,
-        },
-        init: async ({ proxyEndpoints }) => {
-          let largerExampleAuth: string = /* exercise for the reader */;
-          proxyEndpoints.addProxyEndpoints({
-            "/simple-example": "http://simple.example.com:8080",
-            "/larger-example/v1": {
-              target: "http://larger.example.com:8080/svc.v1",
-              credentials: "require",
-              headers: {
-                Authorization: largerExampleAuth
-              },
+export const proxyModuleDemoAdditionalEndpoints = createBackendModule({
+  pluginId: 'proxy',
+  moduleId: 'demo-additional-endpoints',
+  register(reg) {
+    reg.registerInit({
+      deps: {
+        proxyEndpoints: proxyEndpointsExtensionPoint,
+      },
+      async init({ proxyEndpoints }) {
+        const largerExampleAuth: string = /* exercise for the reader */;
+        proxyEndpoints.addProxyEndpoints({
+          '/simple-example': 'http://simple.example.com:8080',
+          '/larger-example/v1': {
+            target: 'http://larger.example.com:8080/svc.v1',
+            credentials: 'require',
+            headers: {
+              Authorization: largerExampleAuth,
             },
-          });
-        },
-      });
-    },
-  }),
-);
+          },
+        });
+      },
+    });
+  },
+});
+```
+
+```ts
+// plugins/proxy-backend-module-demo-additional-endpoints/src/index.ts
+export { proxyModuleDemoAdditionalEndpoints as default } from './module';
+```
+
+Then install the module alongside the proxy plugin in your backend entry
+point (usually `packages/backend/src/index.ts`):
+
+```ts
+backend.add(import('@backstage/plugin-proxy-backend'));
+backend.add(import('@internal/plugin-proxy-backend-module-demo-additional-endpoints'));
 ```
