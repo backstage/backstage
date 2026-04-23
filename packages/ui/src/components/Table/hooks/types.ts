@@ -60,6 +60,13 @@ export interface PaginationOptions
     >
   > {
   initialOffset?: number;
+  infinite?: boolean;
+}
+
+/** @public */
+export interface CursorPaginationOptions
+  extends Omit<PaginationOptions, 'initialOffset'> {
+  initialCursor?: string;
 }
 
 /** @public */
@@ -147,7 +154,7 @@ export interface UseTableCursorOptions<T extends TableItem, TFilter = unknown>
   extends QueryOptions<TFilter> {
   mode: 'cursor';
   getData: (params: CursorParams<TFilter>) => Promise<CursorResponse<T>>;
-  paginationOptions?: Omit<PaginationOptions, 'initialOffset'>;
+  paginationOptions?: CursorPaginationOptions;
 }
 
 /** @public */

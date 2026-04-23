@@ -191,7 +191,20 @@ export interface PagePagination extends TablePaginationProps {
 }
 
 /** @public */
-export type TablePaginationType = NoPagination | PagePagination;
+export interface InfiniteScrollPagination {
+  type: 'infinite';
+  onLoadMore: () => void;
+  onLoadPrevious: () => void;
+  isLoading: boolean;
+  hasMoreItems: boolean;
+  hasPreviousPages: boolean;
+}
+
+/** @public */
+export type TablePaginationType =
+  | NoPagination
+  | PagePagination
+  | InfiniteScrollPagination;
 
 /**
  * Configuration for a single table column.

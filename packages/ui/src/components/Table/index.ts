@@ -53,6 +53,7 @@ export type {
   SortDescriptor,
   NoPagination,
   PagePagination,
+  InfiniteScrollPagination,
   TablePaginationType,
   VirtualizedProp,
 } from './types';
@@ -71,6 +72,7 @@ export type {
   QueryOptions,
   PaginationOptions,
   CompletePaginationOptions,
+  CursorPaginationOptions,
 } from './hooks/types';
 
 export { TableDefinition } from './definition';

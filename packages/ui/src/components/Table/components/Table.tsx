@@ -76,7 +76,7 @@ function useLiveRegionLabel(
     return 'Loading table data.';
   }
 
-  if (!hasData || pagination.type === 'none') {
+  if (!hasData || pagination.type !== 'page') {
     return '';
   }
 
