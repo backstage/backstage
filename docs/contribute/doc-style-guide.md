@@ -233,8 +233,8 @@ helps downstream localization.
   the order explicit, and give readers a clear way to reference a specific
   step.
 
-| Do                                                             | Don't                                                        |
-| :------------------------------------------------------------- | :----------------------------------------------------------- |
+| Do                                                                 | Don't                                                                           |
+| :----------------------------------------------------------------- | :------------------------------------------------------------------------------ |
 | 1) Install the package. 2) Run the migration. 3) Start the server. | First, install the package. Then, run the migration. Finally, start the server. |
 
 ### Tables
