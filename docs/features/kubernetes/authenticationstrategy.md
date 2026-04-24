@@ -44,9 +44,9 @@ export interface AuthenticationStrategy {
 
 The `AuthenticationStrategy` interface defines the following signature:
 
-- `getCredential`: Executes the steps require on the server side to authenticate against a Kubernetes Cluster. It receives the cluster info on the `clusterDetails` parameter and the authentication data provided from the Client Side on the `authConfig` parameter.
-- `presentAuthMetadata`: A Kubernetes cluster configuration could include extra metadata specific to a given authentication flow (like [AWS clusters](authentication.md#aws) do). The `presentAuthMetadata` method receives that metadata and filters/adds information that could be required by the front-end in a client side authentication process. The front-end gets this info via the [`/clusters` endpoint](https://github.com/backstage/backstage/blob/57397e7d6d2d725712c439f4ab93f2ac6aa27bf8/plugins/kubernetes-backend/src/service/KubernetesBuilder.ts#L379).
-- `validateCluster`: Allows strategies to reject clusters if they have invalid metadata. Currently this method only gets invoked when [reading](https://github.com/backstage/backstage/blob/57397e7d6d2d725712c439f4ab93f2ac6aa27bf8/plugins/kubernetes-backend/src/cluster-locator/ConfigClusterLocator.ts#L96) clusters from the app-config.
+- `getCredential`: Executes the steps required on the server side to authenticate against a Kubernetes cluster. It receives the cluster info on the `clusterDetails` parameter and the authentication data provided from the client side on the `authConfig` parameter.
+- `presentAuthMetadata`: A Kubernetes cluster configuration could include extra metadata specific to a given authentication flow (like [AWS clusters](authentication.md#aws) do). The `presentAuthMetadata` method receives that metadata and filters/adds information that could be required by the front-end in a client-side authentication process.
+- `validateCluster`: Allows strategies to reject clusters if they have invalid metadata.
 
 ### KubernetesCredential type
 
@@ -155,7 +155,7 @@ export class AwsIamStrategy implements AuthenticationStrategy {
 
 ## Custom AuthStrategy
 
-Sometimes you need to add a new way to authenticate against a kubernetes cluster not support by default by Backstage. This is how integrators can bring their own kubernetes auth strategies through the use of the [`addAuthStrategy`](https://github.com/backstage/backstage/blob/57397e7d6d2d725712c439f4ab93f2ac6aa27bf8/plugins/kubernetes-backend/src/service/KubernetesBuilder.ts#L211) method on `KubernetesBuilder` or through the [AuthStrategyExtensionPoint](https://github.com/backstage/backstage/blob/57397e7d6d2d725712c439f4ab93f2ac6aa27bf8/plugins/kubernetes-backend/src/plugin.ts#L112). So, on the following sections, we are going to introduce a new AuthStrategy for [Pinniped][1], an authentication service for Kubernetes clusters.
+Sometimes you need to add a new way to authenticate against a Kubernetes cluster not supported by default by Backstage. This is how integrators can bring their own Kubernetes auth strategies through the use of the `kubernetesAuthStrategyExtensionPoint`.
 
 ### Custom Pinniped auth strategy in the backend system
 
@@ -270,38 +270,6 @@ export const kubernetesModulePinniped = createBackendModule({
 });
 ```
 
-### Custom Pinniped auth strategy in the old backend system
-
-To add a new AuthStrategy, You could use [`addAuthStrategy`](https://github.com/backstage/backstage/blob/57397e7d6d2d725712c439f4ab93f2ac6aa27bf8/plugins/kubernetes-backend/src/service/KubernetesBuilder.ts#L211) method on `KubernetesBuilder`.
-We are going to reuse the `PinnipedStrategy` created on the previous section. So when setting up the [Kubernetes Backend plugin](./installation.md#adding-kubernetes-backend-plugin), you could add a new Strategy:
-
-```ts title="packages/backend/src/plugins/kubernetes.ts"
-import { KubernetesBuilder } from '@backstage/plugin-kubernetes-backend';
-import { Router } from 'express';
-import { PluginEnvironment } from '../types';
-import { CatalogClient } from '@backstage/catalog-client';
-import { AuthenticationStrategy } from '@backstage/plugin-kubernetes-node';
-import { PinnipedStrategy } from '@internal/plugin-kubernetes-backend-module-pinniped';
-
-export default async function createPlugin(
-  env: PluginEnvironment,
-): Promise<Router> {
-  const catalogApi = new CatalogClient({ discoveryApi: env.discovery });
-  const pinnipedStrategy: AuthenticationStrategy = new PinnipedStrategy(
-    env.logger,
-  );
-  const { router } = await KubernetesBuilder.createBuilder({
-    logger: env.logger,
-    config: env.config,
-    catalogApi,
-    permissions: env.permissions,
-  })
-    .addAuthStrategy('pinniped', pinnipedStrategy)
-    .build();
-  return router;
-}
-```
-
 [1]: https://pinniped.dev
-[2]: https://github.com/backstage/backstage/blob/57397e7d6d2d725712c439f4ab93f2ac6aa27bf8/plugins/kubernetes-node/src/types/types.ts#L149
-[3]: https://github.com/backstage/backstage/blob/f0ffd38136163edd75ae340e5653cf6b349dcbc1/plugins/kubernetes-backend/src/auth/AwsIamStrategy.ts#L52C40-L52C62
+[2]: https://github.com/backstage/backstage/blob/master/plugins/kubernetes-node/src/types/types.ts
+[3]: https://github.com/backstage/backstage/blob/master/plugins/kubernetes-backend/src/auth/AwsIamStrategy.ts

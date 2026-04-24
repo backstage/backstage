@@ -512,3 +512,88 @@ Entity content extensions can also declare an `icon` parameter. When provided as
 
 - The entity page must have `showNavItemIcons: true` (see configuration above).
 - The icon id must be available in the app's enabled icon bundles.
+
+### Remove or disable a tab
+
+If you want to completely remove or disable a tab (such as the Tech Insights tab), you can do so by disabling the extension in your `app-config.yaml`. For example, to disable the Tech Insights reports tab:
+
+```yaml
+app:
+  extensions:
+    - entity-content:tech-insights/reports: false
+```
+
+### Customize the overview page layout
+
+In the New Frontend System, you can completely replace the layout of the overview page (or any other entity content) using `EntityContentLayoutBlueprint`. The layout components receive the assigned cards as elements and can render them as they see fit based on their `type` (e.g. `'peek'`, `'info'`, `'full'`).
+
+Here is an example of creating a custom overview tab layout and attaching it to the app:
+
+```tsx
+import {
+  EntityContentLayoutProps,
+  EntityContentLayoutBlueprint,
+} from '@backstage/plugin-catalog-react/alpha';
+import { createFrontendModule } from '@backstage/frontend-plugin-api';
+import { Grid } from '@material-ui/core';
+
+function StickyEntityContentOverviewLayout(props: EntityContentLayoutProps) {
+  const { cards } = props;
+  return (
+    <Grid container spacing={3}>
+      <Grid xs={12} md={4} item>
+        <Grid container spacing={3}>
+          {cards
+            .filter(card => card.type === 'info')
+            .map((card, index) => (
+              <Grid key={index} xs={12} item>
+                {card.element}
+              </Grid>
+            ))}
+        </Grid>
+      </Grid>
+      <Grid xs={12} md={8} item>
+        <Grid container spacing={3}>
+          {cards
+            .filter(card => card.type === 'peek')
+            .map((card, index) => (
+              <Grid key={index} xs={12} md={6} item>
+                {card.element}
+              </Grid>
+            ))}
+          {cards
+            .filter(card => !card.type || card.type === 'full')
+            .map((card, index) => (
+              <Grid key={index} xs={12} md={6} item>
+                {card.element}
+              </Grid>
+            ))}
+        </Grid>
+      </Grid>
+    </Grid>
+  );
+}
+
+export const customEntityContentOverviewStickyLayoutModule =
+  createFrontendModule({
+    pluginId: 'app',
+    extensions: [
+      EntityContentLayoutBlueprint.make({
+        name: 'sticky',
+        params: {
+          loader: async () => StickyEntityContentOverviewLayout,
+        },
+      }),
+    ],
+  });
+```
+
+To see this in effect, make sure to install your module in the app. If you want this custom layout to _only_ apply to component entities, you can configure its block filter in `app-config.yaml`:
+
+```yaml
+app:
+  extensions:
+    - entity-content-layout:app/sticky:
+        config:
+          filter: 'kind:component'
+```
