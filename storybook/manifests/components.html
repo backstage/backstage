@@ -576,13 +576,13 @@
 <header>
   <div class="wrap">
     <h1>Manifest Debugger</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">50 components ok</span><span class="filter-pill ok" aria-disabled="true">459 stories ok</span></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">50 components ok</span><span class="filter-pill ok" aria-disabled="true">466 stories ok</span></div>
   </div>
 </header>
 <main>
   <div class="wrap">
     <div class="note info" style="margin-bottom: 16px;">
-            <strong>Tip:</strong> You are using <code>react-docgen</code> (the default). Generation took <strong>3.1s</strong>. For higher quality prop types, consider switching to <code>react-docgen-typescript</code> in your <code>main.ts</code>:
+            <strong>Tip:</strong> You are using <code>react-docgen</code> (the default). Generation took <strong>3.3s</strong>. For higher quality prop types, consider switching to <code>react-docgen-typescript</code> in your <code>main.ts</code>:
             <pre><code>typescript: {
   reactDocgen: 'react-docgen-typescript',
 }</code></pre>
@@ -6926,9 +6926,9 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Header</h2>
       <div class="badges">
-        <label for="c-21-backstage-ui-header-props" class="badge ok as-toggle">6 prop types</label>
+        <label for="c-21-backstage-ui-header-props" class="badge ok as-toggle">9 prop types</label>
         
-        <label for="c-21-backstage-ui-header-stories" class="badge ok as-toggle">8 stories</label>
+        <label for="c-21-backstage-ui-header-stories" class="badge ok as-toggle">15 stories</label>
         
       </div>
     </div>
@@ -6953,19 +6953,32 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types <small>(react-docgen)</small></span>
-              <span class="badge ok">6 prop types</span>
+              <span class="badge ok">9 prop types</span>
             </div>
             <pre><code>Component: packages/ui/src/components/Header/Header.tsx::Header</code></pre>
             <pre><code>Props:</code></pre>
             <pre><code>activeTabId?: string | null
 
+/**
+ * @deprecated The breadcrumbs prop will be removed in a future release.
+ */
 breadcrumbs?: HeaderBreadcrumb[]
 
 className?: string
 
 customActions?: React.ReactNode
 
+/**
+ * Markdown string rendered below the title. Only inline links are supported.
+ * Bold, italic, and block-level markdown are not rendered.
+ */
+description?: string
+
+metadata?: HeaderMetadataItem[]
+
 tabs?: HeaderNavTabItem[]
+
+tags?: HeaderTag[]
 
 title?: string</code></pre>
           </div>
@@ -6979,7 +6992,17 @@ title?: string</code></pre>
                 <div class="row">
                   <span class="ex-name">Imports</span>
                 </div>
-                <pre><code>import { BUIProvider, Button, ButtonIcon, Header, Menu, MenuItem, MenuTrigger } from "@backstage/ui";
+                <pre><code>import {
+    BUIProvider,
+    Button,
+    ButtonIcon,
+    Header,
+    HeaderMetadataStatus,
+    HeaderMetadataUsers,
+    Menu,
+    MenuItem,
+    MenuTrigger,
+} from "@backstage/ui";
 import { MemoryRouter } from "react-router-dom";
 import { RiMore2Line } from "@remixicon/react";</code></pre>
               </div>
@@ -7063,15 +7086,207 @@ import { RiMore2Line } from "@remixicon/react";</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
+                <span class="ex-name">With Description</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithDescription = () =&gt; &lt;Header
+    description=&quot;This is a description of the page. It can include [inline links](https://backstage.io).&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Tags</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithTags = () =&gt; &lt;Header
+    tags={[
+      { label: &#39;TypeScript&#39; },
+      { label: &#39;Platform&#39;, href: &#39;/platform&#39; },
+      { label: &#39;Gold&#39; },
+    ]} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Metadata</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithMetadata = () =&gt; &lt;Header
+    metadata={[
+      { label: &#39;Owner&#39;, value: &#39;platform-team&#39; },
+      { label: &#39;Type&#39;, value: &#39;website&#39; },
+    ]} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Metadata Users</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithMetadataUsers = () =&gt; (
+  &lt;Header
+    {...Default.input.args}
+    metadata={[
+      {
+        label: &#39;Owner&#39;,
+        value: &lt;HeaderMetadataUsers users={[users.giles]} /&gt;,
+      },
+      {
+        label: &#39;Contributors&#39;,
+        value: (
+          &lt;HeaderMetadataUsers
+            users={[users.alice, users.bob, users.carol]}
+          /&gt;
+        ),
+      },
+    ]}
+  /&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Metadata Users No Links</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithMetadataUsersNoLinks = () =&gt; (
+  &lt;Header
+    {...Default.input.args}
+    metadata={[
+      {
+        label: &#39;Owner&#39;,
+        value: (
+          &lt;HeaderMetadataUsers
+            users={[{ name: users.giles.name, src: users.giles.src }]}
+          /&gt;
+        ),
+      },
+      {
+        label: &#39;Contributors&#39;,
+        value: (
+          &lt;HeaderMetadataUsers
+            users={[
+              { name: users.alice.name, src: users.alice.src },
+              { name: users.bob.name, src: users.bob.src },
+              { name: users.carol.name, src: users.carol.src },
+            ]}
+          /&gt;
+        ),
+      },
+    ]}
+  /&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Metadata Status</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithMetadataStatus = () =&gt; (
+  &lt;Header
+    {...Default.input.args}
+    metadata={[
+      {
+        label: &#39;Status&#39;,
+        value: &lt;HeaderMetadataStatus label=&quot;Passing&quot; color=&quot;success&quot; /&gt;,
+      },
+      {
+        label: &#39;Build&#39;,
+        value: (
+          &lt;HeaderMetadataStatus
+            label=&quot;Failed&quot;
+            color=&quot;danger&quot;
+            href=&quot;/builds/123&quot;
+          /&gt;
+        ),
+      },
+      {
+        label: &#39;Coverage&#39;,
+        value: &lt;HeaderMetadataStatus label=&quot;Warning&quot; color=&quot;warning&quot; /&gt;,
+      },
+    ]}
+  /&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Description Tags And Metadata</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithDescriptionTagsAndMetadata = () =&gt; (
+  &lt;Header
+    {...Default.input.args}
+    description=&quot;This is a description of the page. It can include [inline links](https://backstage.io).&quot;
+    tags={[
+      { label: &#39;TypeScript&#39; },
+      { label: &#39;Platform&#39;, href: &#39;/platform&#39; },
+      { label: &#39;Gold&#39; },
+    ]}
+    metadata={[
+      {
+        label: &#39;Owner&#39;,
+        value: &lt;HeaderMetadataUsers users={[users.giles]} /&gt;,
+      },
+      {
+        label: &#39;Contributors&#39;,
+        value: (
+          &lt;HeaderMetadataUsers
+            users={[users.alice, users.bob, users.carol]}
+          /&gt;
+        ),
+      },
+      { label: &#39;Type&#39;, value: &#39;website&#39; },
+      { label: &#39;Tier&#39;, value: &#39;gold&#39; },
+    ]}
+  /&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
                 <span class="ex-name">With Everything</span>
                 <span class="badge ok">story ok</span>
               </div>
               
               
-              <pre><code>const WithEverything = () =&gt; &lt;Header
+              <pre><code>const WithEverything = () =&gt; (
+  &lt;Header
+    {...Default.input.args}
     tabs={tabs}
     customActions={&lt;Button&gt;Custom action&lt;/Button&gt;}
-    breadcrumbs={[{ label: &#39;Home&#39;, href: &#39;/&#39; }]} /&gt;;</code></pre>
+    breadcrumbs={[{ label: &#39;Home&#39;, href: &#39;/&#39; }]}
+    description=&quot;This is a description of the page. It can include [inline links](https://backstage.io).&quot;
+    tags={[
+      { label: &#39;TypeScript&#39; },
+      { label: &#39;Platform&#39;, href: &#39;/platform&#39; },
+      { label: &#39;Gold&#39; },
+    ]}
+    metadata={[
+      { label: &#39;Type&#39;, value: &#39;website&#39; },
+      {
+        label: &#39;Owner&#39;,
+        value: &lt;HeaderMetadataUsers users={[users.giles]} /&gt;,
+      },
+      {
+        label: &#39;Contributors&#39;,
+        value: (
+          &lt;HeaderMetadataUsers
+            users={[users.alice, users.bob, users.carol]}
+          /&gt;
+        ),
+      },
+    ]}
+  /&gt;
+);</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -9498,7 +9713,7 @@ import { RiCloudy2Line, RiEmotionHappyLine, RiHeartLine, RiMore2Line } from "@re
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> PluginHeaderandHeader</h2>
       <div class="badges">
-        <label for="c-30-recipes-pluginheader-and-header-props" class="badge ok as-toggle">6 prop types</label>
+        <label for="c-30-recipes-pluginheader-and-header-props" class="badge ok as-toggle">9 prop types</label>
         
         <label for="c-30-recipes-pluginheader-and-header-stories" class="badge ok as-toggle">5 stories</label>
         
@@ -9525,19 +9740,32 @@ import { RiCloudy2Line, RiEmotionHappyLine, RiHeartLine, RiMore2Line } from "@re
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types <small>(react-docgen)</small></span>
-              <span class="badge ok">6 prop types</span>
+              <span class="badge ok">9 prop types</span>
             </div>
             <pre><code>Component: packages/ui/src/components/Header/Header.tsx::Header</code></pre>
             <pre><code>Props:</code></pre>
             <pre><code>activeTabId?: string | null
 
+/**
+ * @deprecated The breadcrumbs prop will be removed in a future release.
+ */
 breadcrumbs?: HeaderBreadcrumb[]
 
 className?: string
 
 customActions?: React.ReactNode
 
+/**
+ * Markdown string rendered below the title. Only inline links are supported.
+ * Bold, italic, and block-level markdown are not rendered.
+ */
+description?: string
+
+metadata?: HeaderMetadataItem[]
+
 tabs?: HeaderNavTabItem[]
+
+tags?: HeaderTag[]
 
 title?: string</code></pre>
           </div>
