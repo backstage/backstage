@@ -45,6 +45,7 @@ export type DevToolsInfo = {
 
 /** @public */
 export type PackageDependency = {
+  id: string;
   name: string;
   versions: string;
 };

@@ -240,6 +240,7 @@ export class DevToolsBackendApi {
     for (const dep of deps) {
       const versions = new Set(lockfile.get(dep)!.map(i => i.version));
       const infoDependency: PackageDependency = {
+        id: dep,
         name: dep,
         versions: [...versions].join(', '),
       };
