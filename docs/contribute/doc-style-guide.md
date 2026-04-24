@@ -228,6 +228,16 @@ helps downstream localization.
 - Use (`-`) for unordered lists.
 - Leave a blank line after each list.
 - Indent nested lists with two spaces.
+- Use a numbered list for a sequence of steps rather than prose with
+  "First", "Then", and "Finally". Numbered lists are easier to scan, make
+  the order explicit, and give readers a clear way to reference a specific
+  step.
+
+| Do                      | Don't                                     |
+| :---------------------- | :---------------------------------------- |
+| 1. Install the package. | First, install the package. Then, run the |
+| 2. Run the migration.   | migration. Finally, start the server.     |
+| 3. Start the server.    |                                           |
 
 ### Tables
 
