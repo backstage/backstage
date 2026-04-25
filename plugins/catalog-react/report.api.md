@@ -184,6 +184,8 @@ export const catalogReactTranslationRef: TranslationRef<
     readonly 'entityTypePicker.optionAllTitle': 'all';
     readonly 'favoriteEntity.addToFavorites': 'Add to favorites';
     readonly 'favoriteEntity.removeFromFavorites': 'Remove from favorites';
+    readonly 'starredEntityListItem.removeFavoriteEntityTitle': 'Remove entity from favorites';
+    readonly 'starredEntities.noStarredEntitiesMessage': 'Click the star beside an entity name to add it to this list!';
     readonly 'inspectEntityDialog.title': 'Entity Inspector';
     readonly 'inspectEntityDialog.closeButtonTitle': 'Close';
     readonly 'inspectEntityDialog.tabsAriaLabel': 'Inspector options';
@@ -901,6 +903,9 @@ export class MockStarredEntitiesApi implements StarredEntitiesApi {
 export type PaginationMode = 'cursor' | 'offset' | 'none';
 
 // @public
+export const StarredEntities: (input: StarredEntitiesProps) => JSX_2.Element;
+
+// @public
 export interface StarredEntitiesApi {
   starredEntitie$(): Observable<Set<string>>;
   toggleStarred(entityRef: string): Promise<void>;
@@ -908,6 +913,24 @@ export interface StarredEntitiesApi {
 
 // @public
 export const starredEntitiesApiRef: ApiRef_2<StarredEntitiesApi>;
+
+// @public
+export type StarredEntitiesProps = {
+  noStarredEntitiesMessage?: ReactNode | undefined;
+  groupByKind?: boolean;
+};
+
+// @public
+export const StarredEntityListItem: (
+  input: StarredEntityListItemProps,
+) => JSX_2.Element;
+
+// @public
+export type StarredEntityListItemProps = {
+  entity: Entity;
+  onToggleStarredEntity: (entity: Entity) => void;
+  showKind?: boolean;
+};
 
 // @public (undocumented)
 export const UnregisterEntityDialog: (

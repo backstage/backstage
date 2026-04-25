@@ -203,29 +203,6 @@ const homePageToolkitWidget = HomePageCardWidgetBlueprint.makeWithOverrides({
   },
 });
 
-const homePageStarredEntitiesWidget =
-  HomePageCardWidgetBlueprint.makeWithOverrides({
-    name: 'starred-entities',
-    config: {
-      schema: {
-        groupByKind: z => z.boolean().optional(),
-      },
-    },
-    factory(origFactory, { config }) {
-      return origFactory({
-        name: 'HomePageStarredEntities',
-        title: 'Your Starred Entities',
-        components: () =>
-          import('./homePageComponents/StarredEntities').then(m => ({
-            Content: m.Content,
-          })),
-        componentProps: {
-          groupByKind: config.groupByKind,
-        },
-      });
-    },
-  });
-
 const homePageRandomJokeWidget = HomePageCardWidgetBlueprint.make({
   name: 'random-joke',
   params: {
@@ -369,7 +346,6 @@ export default createFrontendPlugin({
     visitsApi,
     visitListenerAppRootElement,
     homePageToolkitWidget,
-    homePageStarredEntitiesWidget,
     homePageRandomJokeWidget,
     homePageTopVisitedWidget,
     homePageRecentlyVisitedWidget,

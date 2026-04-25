@@ -15,3 +15,4 @@
  */
 
 export { StarredEntityListItem } from './StarredEntityListItem';
+export type { StarredEntityListItemProps } from './StarredEntityListItem';

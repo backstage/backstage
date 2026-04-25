@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { HomePageStarredEntities } from '../../plugin';
+import { StarredEntities } from './StarredEntities';
 import { wrapInTestApp, TestApiProvider } from '@backstage/test-utils';
 import {
   catalogApiRef,
@@ -95,7 +95,7 @@ export default {
 export const Default = () => {
   return (
     <Grid item xs={12} md={6}>
-      <HomePageStarredEntities />
+      <StarredEntities />
     </Grid>
   );
 };

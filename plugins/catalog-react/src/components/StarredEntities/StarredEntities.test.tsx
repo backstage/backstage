@@ -15,6 +15,7 @@
  */
 
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
+import { screen } from '@testing-library/react';
 import {
   catalogApiRef,
   starredEntitiesApiRef,
@@ -22,7 +23,7 @@ import {
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
-import { Content } from './Content';
+import { StarredEntities } from './StarredEntities';
 
 const entities = [
   {
@@ -42,7 +43,7 @@ const entities = [
   },
 ];
 
-describe('StarredEntitiesContent', () => {
+describe('StarredEntities', () => {
   it('should render list of starred entities', async () => {
     const mockedApi = new MockStarredEntitiesApi();
     mockedApi.toggleStarred('component:default/mock-starred-entity');
@@ -68,14 +69,14 @@ describe('StarredEntitiesContent', () => {
       }),
     });
 
-    const { getByText, queryByText } = await renderInTestApp(
+    await renderInTestApp(
       <TestApiProvider
         apis={[
           [catalogApiRef, mockCatalogApi],
           [starredEntitiesApiRef, mockedApi],
         ]}
       >
-        <Content />
+        <StarredEntities />
       </TestApiProvider>,
       {
         mountedRoutes: {
@@ -84,14 +85,15 @@ describe('StarredEntitiesContent', () => {
       },
     );
 
-    expect(getByText('mock-starred-entity')).toBeInTheDocument();
-    expect(getByText('Mock Starred Entity 2!')).toBeInTheDocument();
-    expect(queryByText('mock-starred-entity-3')).not.toBeInTheDocument();
-    expect(getByText('mock-starred-entity').closest('a')).toHaveAttribute(
-      'href',
-      '/catalog/default/component/mock-starred-entity',
-    );
-    expect(getByText('Mock Starred Entity 2!').closest('a')).toHaveAttribute(
+    expect(screen.getByText('mock-starred-entity')).toBeInTheDocument();
+    expect(screen.getByText('Mock Starred Entity 2!')).toBeInTheDocument();
+    expect(screen.queryByText('mock-starred-entity-3')).not.toBeInTheDocument();
+    expect(
+      screen.getByText('mock-starred-entity').closest('a'),
+    ).toHaveAttribute('href', '/catalog/default/component/mock-starred-entity');
+    expect(
+      screen.getByText('Mock Starred Entity 2!').closest('a'),
+    ).toHaveAttribute(
       'href',
       '/catalog/default/component/mock-starred-entity-2',
     );
@@ -106,14 +108,14 @@ describe('StarredEntitiesContent', () => {
         .mockImplementation(async () => ({ items: entities })),
     });
 
-    const { getByText } = await renderInTestApp(
+    await renderInTestApp(
       <TestApiProvider
         apis={[
           [catalogApiRef, mockCatalogApi],
           [starredEntitiesApiRef, mockedApi],
         ]}
       >
-        <Content />
+        <StarredEntities />
       </TestApiProvider>,
       {
         mountedRoutes: {
@@ -123,7 +125,9 @@ describe('StarredEntitiesContent', () => {
     );
 
     expect(
-      getByText('Click the star beside an entity name to add it to this list!'),
+      screen.getByText(
+        'Click the star beside an entity name to add it to this list!',
+      ),
     ).toBeInTheDocument();
   });
 
@@ -136,14 +140,14 @@ describe('StarredEntitiesContent', () => {
         .mockImplementation(async () => ({ items: entities })),
     });
 
-    const { getByText } = await renderInTestApp(
+    await renderInTestApp(
       <TestApiProvider
         apis={[
           [catalogApiRef, mockCatalogApi],
           [starredEntitiesApiRef, mockedApi],
         ]}
       >
-        <Content noStarredEntitiesMessage="foo" />
+        <StarredEntities noStarredEntitiesMessage="foo" />
       </TestApiProvider>,
       {
         mountedRoutes: {
@@ -152,6 +156,6 @@ describe('StarredEntitiesContent', () => {
       },
     );
 
-    expect(getByText('foo')).toBeInTheDocument();
+    expect(screen.getByText('foo')).toBeInTheDocument();
   });
 });

@@ -13,11 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/**
- * @deprecated, use the one from @backstage/plugin-catalog-react instead
- */
-export type { StarredEntitiesProps } from '@backstage/plugin-catalog-react';
-/**
- * @deprecated, use the one from @backstage/plugin-catalog-react instead
- */
-export { StarredEntities } from '@backstage/plugin-catalog-react';
+export { StarredEntities } from './StarredEntities';
+export type { StarredEntitiesProps } from './StarredEntities';

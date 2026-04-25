@@ -36,3 +36,5 @@ export * from './EntityNamespacePicker';
 export * from './EntityAutocompletePicker';
 export * from './MissingAnnotationEmptyState';
 export * from './EntityInfoCard';
+export * from './StarredEntities';
+export * from './StarredEntityListItem';

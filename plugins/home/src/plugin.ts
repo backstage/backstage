@@ -31,7 +31,7 @@ import {
 } from './homePageComponents';
 import { rootRouteRef } from './routes';
 import { VisitsStorageApi, visitsApiRef } from './api';
-import { StarredEntitiesProps } from './homePageComponents/StarredEntities/Content';
+import { StarredEntitiesProps } from '@backstage/plugin-catalog-react';
 
 /** @public */
 export const homePlugin = createPlugin({
@@ -173,7 +173,10 @@ export const HomePageStarredEntities = homePlugin.provide(
   createCardExtension<Partial<StarredEntitiesProps>>({
     name: 'HomePageStarredEntities',
     title: 'Your Starred Entities',
-    components: () => import('./homePageComponents/StarredEntities'),
+    components: () =>
+      import('@backstage/plugin-catalog-react').then(m => ({
+        Content: m.StarredEntities,
+      })),
   }),
 );
 

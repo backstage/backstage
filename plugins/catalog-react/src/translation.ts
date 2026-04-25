@@ -65,6 +65,13 @@ export const catalogReactTranslationRef = createTranslationRef({
       addToFavorites: 'Add to favorites',
       removeFromFavorites: 'Remove from favorites',
     },
+    starredEntityListItem: {
+      removeFavoriteEntityTitle: 'Remove entity from favorites',
+    },
+    starredEntities: {
+      noStarredEntitiesMessage:
+        'Click the star beside an entity name to add it to this list!',
+    },
     inspectEntityDialog: {
       title: 'Entity Inspector',
       closeButtonTitle: 'Close',

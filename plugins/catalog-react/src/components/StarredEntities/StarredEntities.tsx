@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import {
-  catalogApiRef,
-  useStarredEntities,
-} from '@backstage/plugin-catalog-react';
+import { catalogApiRef, useStarredEntities } from '../..';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { Progress, ResponseErrorPanel } from '@backstage/core-components';
 import List from '@material-ui/core/List';
 import Typography from '@material-ui/core/Typography';
@@ -27,10 +25,9 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import { ReactNode, useState } from 'react';
 import useAsync from 'react-use/esm/useAsync';
-import { StarredEntityListItem } from '../../components/StarredEntityListItem/StarredEntityListItem';
 import { makeStyles } from '@material-ui/core/styles';
-import { useTranslationRef } from '@backstage/frontend-plugin-api';
-import { homeTranslationRef } from '../../translation';
+import { StarredEntityListItem } from '../StarredEntityListItem';
+import { catalogReactTranslationRef } from '../../translation';
 
 const useStyles = makeStyles(theme => ({
   tabs: {
@@ -57,7 +54,7 @@ export type StarredEntitiesProps = {
  *
  * @public
  */
-export const Content = ({
+export const StarredEntities = ({
   noStarredEntitiesMessage,
   groupByKind,
 }: StarredEntitiesProps) => {
@@ -65,7 +62,7 @@ export const Content = ({
   const catalogApi = useApi(catalogApiRef);
   const { starredEntities, toggleStarredEntity } = useStarredEntities();
   const [activeTab, setActiveTab] = useState(0);
-  const { t } = useTranslationRef(homeTranslationRef);
+  const { t } = useTranslationRef(catalogReactTranslationRef);
 
   // Grab starred entities from catalog to ensure they still exist and also retrieve display titles
   const entities = useAsync(async () => {

@@ -62,6 +62,8 @@ export const catalogReactTranslationRef: TranslationRef<
     readonly 'entityTypePicker.optionAllTitle': 'all';
     readonly 'favoriteEntity.addToFavorites': 'Add to favorites';
     readonly 'favoriteEntity.removeFromFavorites': 'Remove from favorites';
+    readonly 'starredEntityListItem.removeFavoriteEntityTitle': 'Remove entity from favorites';
+    readonly 'starredEntities.noStarredEntitiesMessage': 'Click the star beside an entity name to add it to this list!';
     readonly 'inspectEntityDialog.title': 'Entity Inspector';
     readonly 'inspectEntityDialog.closeButtonTitle': 'Close';
     readonly 'inspectEntityDialog.tabsAriaLabel': 'Inspector options';
