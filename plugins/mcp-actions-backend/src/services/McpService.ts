@@ -79,7 +79,6 @@ export class McpService {
     const server = new McpServer(
       {
         name: serverConfig?.name ?? 'backstage',
-        // TODO: this version will most likely change in the future.
         version,
         ...(serverConfig?.description && {
           description: serverConfig.description,
@@ -103,9 +102,6 @@ export class McpService {
         return {
           tools: actions.map(action => ({
             inputSchema: action.schema.input,
-            // todo(blam): this is unfortunately not supported by most clients yet.
-            // When this is provided you need to provide structuredContent instead.
-            // outputSchema: action.schema.output,
             name: this.getToolName(action),
             description: action.description,
             annotations: {
@@ -157,17 +153,13 @@ export class McpService {
           });
 
           return {
-            // todo(blam): unfortunately structuredContent is not supported by most clients yet.
-            // so the validation for the output happens in the default actions registry
-            // and we return it as json text instead for now.
             content: [
               {
                 type: 'text',
-                text: ['```json', JSON.stringify(output, null, 2), '```'].join(
-                  '\n',
-                ),
+                text: JSON.stringify(output),
               },
             ],
+            structuredContent: output,
           };
         });
 
