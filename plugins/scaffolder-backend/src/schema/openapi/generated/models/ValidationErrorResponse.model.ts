@@ -22,6 +22,6 @@ import { ValidationError } from '../models/ValidationError.model';
 /**
  * @public
  */
-export interface Scaffold400Response {
+export interface ValidationErrorResponse {
   errors: Array<ValidationError>;
 }

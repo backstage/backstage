@@ -30,13 +30,13 @@ import { CancelTask200Response } from '../models/CancelTask200Response.model';
 import { DryRun200Response } from '../models/DryRun200Response.model';
 import { DryRunRequest } from '../models/DryRunRequest.model';
 import { ListTasksResponse } from '../models/ListTasksResponse.model';
-import { ListTemplatingExtensionsResponse } from '../models/ListTemplatingExtensionsResponse.model';
 import { RetryRequest } from '../models/RetryRequest.model';
 import { Scaffold201Response } from '../models/Scaffold201Response.model';
 import { ScaffolderScaffoldOptions } from '../models/ScaffolderScaffoldOptions.model';
 import { SerializedTask } from '../models/SerializedTask.model';
 import { SerializedTaskEvent } from '../models/SerializedTaskEvent.model';
 import { TemplateParameterSchema } from '../models/TemplateParameterSchema.model';
+import { ListTemplatingExtensionsResponse } from '../models/ListTemplatingExtensionsResponse.model';
 
 /**
  * Wraps the Response type to convey a type on the json call.
@@ -55,6 +55,10 @@ export type TypedResponse<T> = Omit<Response, 'json'> & {
 export interface RequestOptions {
   token?: string;
 }
+/**
+ * @public
+ */
+export type ListActions = {};
 /**
  * @public
  */
@@ -90,20 +94,6 @@ export type GetTask = {
 /**
  * @public
  */
-export type GetTemplateParameterSchema = {
-  path: {
-    namespace: string;
-    kind: string;
-    name: string;
-  };
-};
-/**
- * @public
- */
-export type ListActions = {};
-/**
- * @public
- */
 export type ListTasks = {
   query: {
     createdBy?: Array<string>;
@@ -113,10 +103,6 @@ export type ListTasks = {
     status?: Array<string>;
   };
 };
-/**
- * @public
- */
-export type ListTemplatingExtensions = {};
 /**
  * @public
  */
@@ -143,6 +129,20 @@ export type StreamLogsPolling = {
     after?: number;
   };
 };
+/**
+ * @public
+ */
+export type GetTemplateParameterSchema = {
+  path: {
+    namespace: string;
+    kind: string;
+    name: string;
+  };
+};
+/**
+ * @public
+ */
+export type ListTemplatingExtensions = {};
 
 /**
  * @public
@@ -157,6 +157,29 @@ export class DefaultApiClient {
   }) {
     this.discoveryApi = options.discoveryApi;
     this.fetchApi = options.fetchApi || { fetch: crossFetch };
+  }
+
+  /**
+   * Returns a list of all installed actions.
+   */
+  public async listActions(
+    // @ts-ignore
+    request: ListActions,
+    options?: RequestOptions,
+  ): Promise<TypedResponse<Array<Action>>> {
+    const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
+
+    const uriTemplate = `/v2/actions`;
+
+    const uri = parser.parse(uriTemplate).expand({});
+
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+      },
+      method: 'GET',
+    });
   }
 
   /**
@@ -267,59 +290,6 @@ export class DefaultApiClient {
   }
 
   /**
-   * Get template parameter schema.
-   * @param namespace -
-   * @param kind -
-   * @param name -
-   */
-  public async getTemplateParameterSchema(
-    // @ts-ignore
-    request: GetTemplateParameterSchema,
-    options?: RequestOptions,
-  ): Promise<TypedResponse<TemplateParameterSchema>> {
-    const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
-
-    const uriTemplate = `/v2/templates/{namespace}/{kind}/{name}/parameter-schema`;
-
-    const uri = parser.parse(uriTemplate).expand({
-      namespace: request.path.namespace,
-      kind: request.path.kind,
-      name: request.path.name,
-    });
-
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
-      },
-      method: 'GET',
-    });
-  }
-
-  /**
-   * Returns a list of all installed actions.
-   */
-  public async listActions(
-    // @ts-ignore
-    request: ListActions,
-    options?: RequestOptions,
-  ): Promise<TypedResponse<Array<Action>>> {
-    const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
-
-    const uriTemplate = `/v2/actions`;
-
-    const uri = parser.parse(uriTemplate).expand({});
-
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
-      },
-      method: 'GET',
-    });
-  }
-
-  /**
    * Returns a list of tasks, filtering by ownership and/or status if given.
    * @param createdBy - Created by
    * @param limit - Number of records to return in the response.
@@ -339,29 +309,6 @@ export class DefaultApiClient {
     const uri = parser.parse(uriTemplate).expand({
       ...request.query,
     });
-
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
-      },
-      method: 'GET',
-    });
-  }
-
-  /**
-   * Returns a structure describing the available templating extensions.
-   */
-  public async listTemplatingExtensions(
-    // @ts-ignore
-    request: ListTemplatingExtensions,
-    options?: RequestOptions,
-  ): Promise<TypedResponse<ListTemplatingExtensionsResponse>> {
-    const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
-
-    const uriTemplate = `/v2/templating-extensions`;
-
-    const uri = parser.parse(uriTemplate).expand({});
 
     return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
       headers: {
@@ -443,6 +390,59 @@ export class DefaultApiClient {
       taskId: request.path.taskId,
       ...request.query,
     });
+
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+      },
+      method: 'GET',
+    });
+  }
+
+  /**
+   * Get template parameter schema.
+   * @param namespace -
+   * @param kind -
+   * @param name -
+   */
+  public async getTemplateParameterSchema(
+    // @ts-ignore
+    request: GetTemplateParameterSchema,
+    options?: RequestOptions,
+  ): Promise<TypedResponse<TemplateParameterSchema>> {
+    const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
+
+    const uriTemplate = `/v2/templates/{namespace}/{kind}/{name}/parameter-schema`;
+
+    const uri = parser.parse(uriTemplate).expand({
+      namespace: request.path.namespace,
+      kind: request.path.kind,
+      name: request.path.name,
+    });
+
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+      },
+      method: 'GET',
+    });
+  }
+
+  /**
+   * Returns a structure describing the available templating extensions.
+   */
+  public async listTemplatingExtensions(
+    // @ts-ignore
+    request: ListTemplatingExtensions,
+    options?: RequestOptions,
+  ): Promise<TypedResponse<ListTemplatingExtensionsResponse>> {
+    const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
+
+    const uriTemplate = `/v2/templating-extensions`;
+
+    const uri = parser.parse(uriTemplate).expand({});
 
     return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
       headers: {
