@@ -230,6 +230,95 @@ auth:
       - cursor://*
 ```
 
+#### Using Okta with Dynamic Client Registration
+
+If your Backstage instance uses Okta, MCP clients can authenticate through the standard Backstage auth flow without any MCP-specific Okta integration.
+
+You need:
+
+- the Okta auth provider configured in `app-config.yaml`
+- the Okta auth backend module registered in your backend
+- the `@backstage/plugin-auth` frontend plugin enabled in your app
+- `auth.experimentalDynamicClientRegistration.enabled: true`
+
+Register the Okta auth backend module in your backend:
+
+```ts title="packages/backend/src/index.ts"
+const backend = createBackend();
+
+backend.add(import('@backstage/plugin-auth-backend'));
+backend.add(import('@backstage/plugin-auth-backend-module-okta-provider'));
+backend.add(import('@backstage/plugin-mcp-actions-backend'));
+```
+
+Enable the auth frontend plugin in your app:
+
+```tsx title="packages/app/src/App.tsx"
+import authPlugin from '@backstage/plugin-auth';
+
+const app = createApp({
+  features: [
+    authPlugin,
+    // ...other features
+  ],
+});
+```
+
+MCP clients can then connect without a static token:
+
+```json
+{
+  "mcpServers": {
+    "backstage-actions": {
+      "url": "${BACKSTAGE_MCP_URL}"
+    }
+  }
+}
+```
+
+On first use, the client is redirected into the standard Backstage sign-in and approval flow. If Okta is your configured provider, the user authenticates with Okta, approves the client in Backstage, and the client can then continue using the MCP server with the issued token.
+
+#### Testing locally
+
+You can smoke-test the flow locally before connecting a real MCP client:
+
+1. Start Backstage:
+
+   ```bash
+   yarn dev
+   ```
+
+2. Verify that the OAuth discovery endpoints return JSON:
+
+   ```bash
+   curl -s http://localhost:7007/.well-known/oauth-authorization-server | jq .
+   curl -s http://localhost:7007/.well-known/oauth-protected-resource/api/mcp-actions/v1 | jq .
+   ```
+
+3. Add the MCP server to a client that supports OAuth and Dynamic Client Registration:
+
+   ```json
+   {
+     "mcpServers": {
+       "backstage-actions": {
+         "url": "${BACKSTAGE_MCP_URL}"
+       }
+     }
+   }
+   ```
+
+   Set `BACKSTAGE_MCP_URL` to the environment-specific value, for example:
+
+   - dev: `http://localhost:7007/api/mcp-actions/v1`
+   - prod: `https://backstage.example.com/api/mcp-actions/v1`
+
+4. Confirm the expected behavior:
+
+   - the client discovers the `.well-known` metadata
+   - Backstage opens the standard sign-in and approval flow
+   - Okta handles authentication if it is your configured provider
+   - the client can list and invoke MCP tools after approval
+
 ## Configuring MCP Clients
 
 The MCP server supports both **Server-Sent Events (SSE)** and **Streamable HTTP** protocols.
@@ -238,16 +327,32 @@ The MCP server supports both **Server-Sent Events (SSE)** and **Streamable HTTP*
 The SSE protocol is deprecated and will be removed in a future release.
 :::
 
+The recommended setup is to use an environment variable such as `BACKSTAGE_MCP_URL` in your MCP client config so the same config can point at dev or prod. If your client does not support environment variable expansion, replace the example URLs with your deployed Backstage URL directly.
+
 ### Endpoints
 
 - **Streamable HTTP:** `http://localhost:7007/api/mcp-actions/v1`
 - **SSE (deprecated):** `http://localhost:7007/api/mcp-actions/v1/sse`
 
+If your client supports OAuth with Dynamic Client Registration or Client ID Metadata Documents, start with just the MCP server URL:
+
 ```json
 {
   "mcpServers": {
     "backstage-actions": {
-      "url": "http://localhost:7007/api/mcp-actions/v1",
+      "url": "${BACKSTAGE_MCP_URL}"
+    }
+  }
+}
+```
+
+If your client does not support OAuth-based authentication yet, use a static external access token instead:
+
+```json
+{
+  "mcpServers": {
+    "backstage-actions": {
+      "url": "${BACKSTAGE_MCP_URL}",
       "headers": {
         "Authorization": "Bearer ${MCP_TOKEN}"
       }
@@ -258,6 +363,11 @@ The SSE protocol is deprecated and will be removed in a future release.
 
 The `${MCP_TOKEN}` environment variable would be an [external access static token](#external-access-with-static-tokens).
 
+Example values for `BACKSTAGE_MCP_URL`:
+
+- dev: `http://localhost:7007/api/mcp-actions/v1`
+- prod: `https://backstage.example.com/api/mcp-actions/v1`
+
 ### Multiple Servers
 
 When `mcpActions.servers` is configured, each server key becomes part of the URL. For example, with servers named `catalog` and `scaffolder`:
@@ -265,17 +375,34 @@ When `mcpActions.servers` is configured, each server key becomes part of the URL
 - `http://localhost:7007/api/mcp-actions/v1/catalog`
 - `http://localhost:7007/api/mcp-actions/v1/scaffolder`
 
+For OAuth-capable clients, configure just the MCP server URLs:
+
 ```json
 {
   "mcpServers": {
     "backstage-catalog": {
-      "url": "http://localhost:7007/api/mcp-actions/v1/catalog",
+      "url": "${BACKSTAGE_MCP_URL}/catalog"
+    },
+    "backstage-scaffolder": {
+      "url": "${BACKSTAGE_MCP_URL}/scaffolder"
+    }
+  }
+}
+```
+
+For clients that still require static tokens, include the `Authorization` header:
+
+```json
+{
+  "mcpServers": {
+    "backstage-catalog": {
+      "url": "${BACKSTAGE_MCP_URL}/catalog",
       "headers": {
         "Authorization": "Bearer ${MCP_TOKEN}"
       }
     },
     "backstage-scaffolder": {
-      "url": "http://localhost:7007/api/mcp-actions/v1/scaffolder",
+      "url": "${BACKSTAGE_MCP_URL}/scaffolder",
       "headers": {
         "Authorization": "Bearer ${MCP_TOKEN}"
       }

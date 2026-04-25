@@ -283,6 +283,75 @@ describe('Mcp Backend', () => {
   });
 
   describe('OAuth well-known endpoints', () => {
+    it('should proxy oauth-authorization-server metadata when DCR is enabled', async () => {
+      const mockAuthBaseUrl = 'http://auth.local:7007/api/auth';
+      const mockDiscovery = mockServices.discovery.mock({
+        getBaseUrl: async pluginId => {
+          if (pluginId !== 'auth') {
+            throw new Error(`Unexpected plugin ID ${pluginId}`);
+          }
+          return mockAuthBaseUrl;
+        },
+      });
+      const mockFetch = jest.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            issuer: mockAuthBaseUrl,
+            token_endpoint: `${mockAuthBaseUrl}/token`,
+            registration_endpoint: `${mockAuthBaseUrl}/v1/register`,
+          }),
+          {
+            headers: {
+              'content-type': 'application/json',
+            },
+          },
+        ),
+      );
+      const originalFetch = global.fetch;
+      global.fetch = mockFetch;
+
+      try {
+        const { server } = await startTestBackend({
+          features: [
+            mcpPlugin,
+            mockPluginWithActions,
+            mockDiscovery.factory,
+            mockServices.rootConfig.factory({
+              data: {
+                backend: {
+                  actions: {
+                    pluginSources: ['local'],
+                  },
+                },
+                auth: {
+                  experimentalDynamicClientRegistration: {
+                    enabled: true,
+                  },
+                },
+              },
+            }),
+          ],
+        });
+
+        const response = await request(server).get(
+          '/.well-known/oauth-authorization-server',
+        );
+
+        expect(response.status).toBe(200);
+        expect(response.header['content-type']).toMatch(/application\/json/);
+        expect(response.body).toEqual({
+          issuer: mockAuthBaseUrl,
+          token_endpoint: `${mockAuthBaseUrl}/token`,
+          registration_endpoint: `${mockAuthBaseUrl}/v1/register`,
+        });
+        expect(mockFetch).toHaveBeenCalledWith(
+          `${mockAuthBaseUrl}/.well-known/openid-configuration`,
+        );
+      } finally {
+        global.fetch = originalFetch;
+      }
+    });
+
     it('should not expose oauth endpoints when neither DCR nor CIMD is enabled', async () => {
       const { server } = await startTestBackend({
         features: [

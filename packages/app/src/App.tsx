@@ -40,6 +40,7 @@ import {
   EntityTechdocsContent,
 } from '@backstage/plugin-techdocs';
 import appVisualizerPlugin from '@backstage/plugin-app-visualizer';
+import authPlugin from '@backstage/plugin-auth';
 import { convertLegacyAppRoot } from '@backstage/core-compat-api';
 import { FlatRoutes } from '@backstage/core-app-api';
 import { Route } from 'react-router';
@@ -134,6 +135,7 @@ const app = createApp({
     customizedCatalog,
     pagesPlugin,
     convertedTechdocsPlugin,
+    authPlugin,
     userSettingsPlugin,
     homePlugin,
     appVisualizerPlugin,
