@@ -301,6 +301,16 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
         await this.options.githubCredentialsProvider.getCredentials({
           url: `${this.options.githubUrl}/${org}`,
         });
+
+      if (tokenType !== 'app') {
+        logger.warn(
+          `No GitHub App installation found for organization ${org}. ` +
+            `Falling back to token authentication. ` +
+            `This may indicate the GitHub App is not installed for this organization. ` +
+            `See https://backstage.io/docs/integrations/github/github-apps/#troubleshooting`,
+        );
+      }
+
       const client = graphql.defaults({
         baseUrl: this.options.gitHubConfig.apiBaseUrl,
         headers,

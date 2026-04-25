@@ -969,6 +969,94 @@ describe('GithubMultiOrgEntityProvider', () => {
 
       expect(entityProviderConnection.applyMutation).not.toHaveBeenCalled();
     });
+
+    it('should log a warning when GitHub App is not installed for an organization', async () => {
+      const mockGetCredentialsWithTokenFallback = jest.fn().mockReturnValue({
+        headers: { token: 'blah' },
+        type: 'token',
+      });
+
+      entityProvider = new GithubMultiOrgEntityProvider({
+        id: 'my-id',
+        gitHubConfig,
+        githubCredentialsProvider: {
+          getCredentials: mockGetCredentialsWithTokenFallback,
+        },
+        githubUrl: 'https://github.com',
+        logger,
+        orgs: ['orgWithoutApp'],
+      });
+
+      await entityProvider.connect(entityProviderConnection);
+
+      mockClient
+        .mockResolvedValueOnce({
+          organization: {
+            membersWithRole: {
+              pageInfo: { hasNextPage: false },
+              nodes: [],
+            },
+          },
+        })
+        .mockResolvedValueOnce({
+          organization: {
+            teams: {
+              pageInfo: { hasNextPage: false },
+              nodes: [],
+            },
+          },
+        });
+
+      await entityProvider.read();
+
+      expect(logger.warn).toHaveBeenCalledWith(
+        expect.stringContaining(
+          'No GitHub App installation found for organization orgWithoutApp',
+        ),
+      );
+      expect(logger.warn).toHaveBeenCalledWith(
+        expect.stringContaining(
+          'https://backstage.io/docs/integrations/github/github-apps/#troubleshooting',
+        ),
+      );
+    });
+
+    it('should not log a warning when GitHub App is installed for an organization', async () => {
+      entityProvider = new GithubMultiOrgEntityProvider({
+        id: 'my-id',
+        gitHubConfig,
+        githubCredentialsProvider: {
+          getCredentials: mockGetCredentials,
+        },
+        githubUrl: 'https://github.com',
+        logger,
+        orgs: ['orgWithApp'],
+      });
+
+      await entityProvider.connect(entityProviderConnection);
+
+      mockClient
+        .mockResolvedValueOnce({
+          organization: {
+            membersWithRole: {
+              pageInfo: { hasNextPage: false },
+              nodes: [],
+            },
+          },
+        })
+        .mockResolvedValueOnce({
+          organization: {
+            teams: {
+              pageInfo: { hasNextPage: false },
+              nodes: [],
+            },
+          },
+        });
+
+      await entityProvider.read();
+
+      expect(logger.warn).not.toHaveBeenCalled();
+    });
   });
 
   describe('withLocations', () => {
