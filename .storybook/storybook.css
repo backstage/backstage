@@ -36,8 +36,3 @@
   --sb-options-border: 1px solid var(--bui-border-2);
   --sb-options-border-left: 1px solid var(--bui-border-2);
 }
-
-.docs-story {
-  background-color: var(--bui-bg-app) !important;
-  padding-bottom: 3rem !important;
-}

@@ -212,13 +212,10 @@ describe('McpService', () => {
     expect(result.content).toEqual([
       {
         type: 'text',
-        text: [
-          '```json',
-          JSON.stringify({ output: 'test' }, null, 2),
-          '```',
-        ].join('\n'),
+        text: JSON.stringify({ output: 'test' }),
       },
     ]);
+    expect((result as any).structuredContent).toEqual({ output: 'test' });
 
     const histogram = mockMetrics.createHistogram.mock.results[0]?.value;
     expect(histogram.record).toHaveBeenCalledTimes(1);

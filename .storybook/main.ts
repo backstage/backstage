@@ -60,8 +60,24 @@ export default defineMain({
     experimentalCodeExamples: true, // optional
   },
   viteFinal: async (config, { configType }) => {
-    // Provide Node.js polyfills and MSW shims for browser compatibility in Storybook 9.
-    // This prevents runtime errors related to 'process' and 'util' globals.
+    // Add Node.js polyfills for browser compatibility
+    //
+    // When upgrading from Storybook 8 to 9 with the react-vite framework,
+    // Node.js polyfills are no longer automatically included by Vite.
+    // This causes "ReferenceError: process is not defined" errors in the browser
+    // when code tries to access Node.js globals like `process` and `util`.
+    //
+    // The @vitest/mocker (included with Storybook 9) expects MSW v2 APIs,
+    // but we want to keep MSW v1 for the rest of the monorepo to avoid
+    // breaking changes. This configuration provides the necessary polyfills
+    // and handles the MSW compatibility issue specifically for Storybook.
+    //
+    // These polyfills provide browser-compatible versions of Node.js globals:
+    // - process: Node.js process object with env
+    // - global -> globalThis: Maps Node.js global to browser's globalThis
+    //
+    // Without these, Backstage components that rely on Node.js APIs will fail
+    // to load in Storybook's browser environment.
     // Different configurations for development vs production
     if (configType === 'DEVELOPMENT') {
       // Development: Include process polyfill to prevent runtime errors

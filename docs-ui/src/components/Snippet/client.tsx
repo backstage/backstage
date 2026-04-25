@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { Collapsible } from '@base-ui-components/react/collapsible';
-import clsx from 'clsx';
 import styles from './styles.module.css';
 
 interface SnippetProps {
@@ -36,14 +35,8 @@ export const SnippetClient = ({
         </div>
         <div className={styles.sideBySidePreview} style={{ height }}>
           <div
-            className={clsx(
-              styles.previewContent,
-              align === 'center' && styles.center,
-            )}
-            style={{
-              ['--px' as any]: `${px}rem`,
-              ['--py' as any]: `${py}rem`,
-            }}
+            className={`${styles.previewContent} ${styles[align]}`}
+            style={{ padding: `${py}rem ${px}rem` }}
           >
             {preview}
           </div>
@@ -61,14 +54,8 @@ export const SnippetClient = ({
     >
       <div className={styles.preview} style={{ height }}>
         <div
-          className={clsx(
-            styles.previewContent,
-            align === 'center' && styles.center,
-          )}
-          style={{
-            ['--px' as any]: `${px}rem`,
-            ['--py' as any]: `${py}rem`,
-          }}
+          className={`${styles.previewContent} ${styles[align]}`}
+          style={{ padding: `${py}rem ${px}rem` }}
         >
           {preview}
         </div>

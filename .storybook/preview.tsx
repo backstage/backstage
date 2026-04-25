@@ -121,6 +121,10 @@ export default definePreview({
     chromatic: {
       modes: {
         'light backstage': allModes['light backstage'],
+        // TODO: Enable these modes when we have more Chromatic snapshots.
+        // 'dark backstage': allModes['dark backstage'],
+        // 'light spotify': allModes['light spotify'],
+        // 'dark spotify': allModes['dark spotify'],
       },
     },
 
@@ -156,6 +160,10 @@ export default definePreview({
       document.body.style.backgroundColor = 'var(--bui-bg-app)';
       document.body.style.padding =
         isFullscreen && selectedBackground !== 'app' ? '1rem' : '';
+      const docsStoryElements = document.getElementsByClassName('docs-story');
+      Array.from(docsStoryElements).forEach(element => {
+        (element as HTMLElement).style.backgroundColor = 'var(--bui-bg-app)';
+      });
 
       return (
         <UnifiedThemeProvider theme={selectedTheme}>
