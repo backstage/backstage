@@ -10,7 +10,7 @@ app:
             kind: Component
           responseLimit: 2
           subLinkText: Read the docs
-    - home-page-widget:home/starred-entities:
+    - home-page-widget:catalog/starred-entities:
         config:
           groupByKind: true
     - home-page-widget:home/toolkit:

@@ -28,7 +28,6 @@ import '@backstage/ui/css/styles.css';
 import { createFrontendModule } from '@backstage/frontend-plugin-api';
 import {
   HomePageLayoutBlueprint,
-  HomePageCardWidgetBlueprint,
   HomePageWidgetBlueprint,
 } from '@backstage/plugin-home-react/alpha';
 import { HeaderWorldClock, WelcomeTitle, type ClockConfig } from '../src';
@@ -114,7 +113,7 @@ const homePageLayout = HomePageLayoutBlueprint.make({
   },
 });
 
-const homePageToolkitWidget = HomePageCardWidgetBlueprint.make({
+const homePageToolkitWidget = HomePageWidgetBlueprint.make({
   name: 'custom-toolkit',
   params: {
     name: 'HomePageToolkit',
@@ -136,7 +135,7 @@ const homePageToolkitWidget = HomePageCardWidgetBlueprint.make({
   },
 });
 
-const homePageRandomJokeWidget = HomePageCardWidgetBlueprint.make({
+const homePageRandomJokeWidget = HomePageWidgetBlueprint.make({
   name: 'random-joke', // overrides the widget coming from the plugin
   params: {
     name: 'HomePageRandomJoke',
@@ -172,6 +171,7 @@ const homePageRandomJokeWidget = HomePageCardWidgetBlueprint.make({
 const simple = HomePageWidgetBlueprint.make({
   name: 'simple-widget',
   params: {
+    render: 'basic',
     name: 'SimpleWidget',
     title: 'Simple Widget',
     loader: async () =>

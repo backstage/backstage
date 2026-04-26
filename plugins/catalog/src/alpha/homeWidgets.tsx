@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { HomePageCardWidgetBlueprint } from '@backstage/plugin-home-react/alpha';
+import { HomePageWidgetBlueprint } from '@backstage/plugin-home-react/alpha';
 
 const catalogHomePageStarredEntitiesWidget =
-  HomePageCardWidgetBlueprint.makeWithOverrides({
+  HomePageWidgetBlueprint.makeWithOverrides({
     name: 'starred-entities',
     config: {
       schema: {

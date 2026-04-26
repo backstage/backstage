@@ -122,11 +122,10 @@ These are the [extension blueprints](../architecture/23-extension-blueprints.md)
 
 ### HomePageWidgetBlueprint - [Example](https://github.com/backstage/backstage/blob/516b37bf8f655fc4d93ee352852b9daa658bea10/plugins/search/src/alpha.tsx#L278-L285)
 
-Creates generic widgets that can be installed into the home page grid. The component returned by `loader` is rendered directly inside an `ExtensionBoundary` without any wrapping.
+Creates widgets that can be installed into the home page grid. The `render` param controls how the widget is presented:
 
-### HomePageCardWidgetBlueprint - [Example](https://github.com/backstage/backstage/blob/2a2c986a6baf484fbbef411d4fb66d4bb7bba25b/plugins/home/src/alpha.tsx#L162-L194)
-
-Creates card-based widgets that can be installed into the home page grid. Each widget is automatically wrapped in an `InfoCard`, providing a title header, optional secondary action, a settings popover, and a context provider out of the box. The `components` loader returns `ComponentParts` with a required `Content` part for the card body, and optional `Actions`, `Settings`, and `ContextProvider` parts. For widgets that manage their own visual presentation without card chrome, use `HomePageWidgetBlueprint` instead.
+- `render?: 'card'` (default) — wraps the widget in an `InfoCard` with a title header, optional secondary action, settings popover, and context provider.
+- `render: 'basic'` — renders the component without any card chrome. Use this for any widget that manages its own visual presentation.
 
 ### HomePageLayoutBlueprint - [Example](https://github.com/backstage/backstage/blob/05937ec12702f8a521a0b6b634dbec6f4aa1c51d/plugins/home/dev/index.tsx#L92-L117)
 

@@ -23,10 +23,29 @@ import { HomePageWidgetBlueprint } from './HomePageWidgetBlueprint';
 import { homePageWidgetDataRef } from '../dataRefs';
 
 describe('HomePageWidgetBlueprint', () => {
-  it('renders the component directly without InfoCard wrapping', async () => {
+  it('renders the widget content wrapped in an InfoCard with the given title (card render)', async () => {
+    const widget = HomePageWidgetBlueprint.make({
+      name: 'card-widget',
+      params: {
+        title: 'My Card Title',
+        components: async () => ({
+          Content: () => <div data-testid="card-content">Card Content</div>,
+        }),
+      },
+    });
+
+    const data = createExtensionTester(widget).get(homePageWidgetDataRef);
+    renderInTestApp(data.component);
+
+    expect(await screen.findByTestId('card-content')).toBeDefined();
+    expect(await screen.findByText('My Card Title')).toBeDefined();
+  });
+
+  it('renders the component directly without InfoCard wrapping (basic render)', async () => {
     const widget = HomePageWidgetBlueprint.make({
       name: 'search-bar',
       params: {
+        render: 'basic',
         loader: async () =>
           function SearchBar() {
             return <div data-testid="bare-widget">Search Bar</div>;
@@ -51,6 +70,7 @@ describe('HomePageWidgetBlueprint', () => {
     const widget = HomePageWidgetBlueprint.make({
       name: 'greeting',
       params: {
+        render: 'basic',
         loader: async () =>
           function Greeting({ message }: { message?: string }) {
             return <div data-testid="greeting">{message ?? 'no message'}</div>;

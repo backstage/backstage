@@ -29,31 +29,15 @@ export type ComponentParts = {
 };
 
 // @alpha
-export const HomePageCardWidgetBlueprint: ExtensionBlueprint<{
-  kind: 'home-page-widget';
-  params: HomePageCardWidgetBlueprintParams;
-  output: ExtensionDataRef<HomePageWidgetData, 'home.widget.data', {}>;
-  inputs: {};
-  config: {};
-  configInput: {};
-  dataRefs: {
-    widget: ConfigurableExtensionDataRef<
-      HomePageWidgetData,
-      'home.widget.data',
-      {}
-    >;
-  };
-}>;
+export type HomePageBasicWidgetParams = HomePageWidgetBaseParams & {
+  render: 'basic';
+  loader: () => Promise<ComponentType<Record<string, unknown>>>;
+};
 
 // @alpha
-export type HomePageCardWidgetBlueprintParams = {
+export type HomePageCardWidgetParams = HomePageWidgetBaseParams & {
+  render?: 'card';
   components: () => Promise<ComponentParts>;
-  name?: string;
-  title?: string;
-  description?: string;
-  layout?: WidgetLayout;
-  settings?: WidgetSettings;
-  componentProps?: Record<string, unknown>;
 };
 
 // @alpha
@@ -96,6 +80,16 @@ export interface HomePageLayoutProps {
 }
 
 // @alpha
+export type HomePageWidgetBaseParams = {
+  name?: string;
+  title?: string;
+  description?: string;
+  layout?: WidgetLayout;
+  settings?: WidgetSettings;
+  componentProps?: Record<string, unknown>;
+};
+
+// @alpha
 export const HomePageWidgetBlueprint: ExtensionBlueprint<{
   kind: 'home-page-widget';
   params: HomePageWidgetBlueprintParams;
@@ -113,14 +107,9 @@ export const HomePageWidgetBlueprint: ExtensionBlueprint<{
 }>;
 
 // @alpha
-export type HomePageWidgetBlueprintParams = {
-  loader: () => Promise<ComponentType<Record<string, unknown>>>;
-  name?: string;
-  title?: string;
-  description?: string;
-  layout?: WidgetLayout;
-  settings?: WidgetSettings;
-};
+export type HomePageWidgetBlueprintParams =
+  | HomePageCardWidgetParams
+  | HomePageBasicWidgetParams;
 
 // @alpha
 export interface HomePageWidgetData {

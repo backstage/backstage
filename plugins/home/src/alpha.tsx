@@ -25,6 +25,7 @@
  */
 
 import { lazy as reactLazy } from 'react';
+import { z } from 'zod/v4';
 import {
   createExtensionInput,
   PageBlueprint,
@@ -47,7 +48,7 @@ import {
   homePageLayoutComponentDataRef,
   HomePageLayoutBlueprint,
   type HomePageLayoutProps,
-  HomePageCardWidgetBlueprint,
+  HomePageWidgetBlueprint,
 } from '@backstage/plugin-home-react/alpha';
 
 const rootRouteRef = createRouteRef();
@@ -61,31 +62,28 @@ const homePage = PageBlueprint.makeWithOverrides({
       internal: true,
     }),
   },
-  config: {
-    schema: {
-      layoutConfig: z =>
-        z
-          .array(
-            z.object({
-              component: z
-                .string()
-                .describe(
-                  'Widget name or extension ID to position (e.g. HomePageToolkit, home-page-widget:home/toolkit, or home/toolkit)',
-                ),
-              x: z.number().nonnegative(),
-              y: z.number().nonnegative(),
-              width: z.number().positive(),
-              height: z.number().positive(),
-              movable: z.boolean().optional(),
-              deletable: z.boolean().optional(),
-              resizable: z.boolean().optional(),
-            }),
-          )
-          .optional()
-          .describe(
-            'Default widget positions before the user customises the grid.',
-          ),
-    },
+  configSchema: {
+    layoutConfig: z
+      .array(
+        z.object({
+          component: z
+            .string()
+            .describe(
+              'Widget name or extension ID to position (e.g. HomePageToolkit, home-page-widget:home/toolkit, or home/toolkit)',
+            ),
+          x: z.number().nonnegative(),
+          y: z.number().nonnegative(),
+          width: z.number().positive(),
+          height: z.number().positive(),
+          movable: z.boolean().optional(),
+          deletable: z.boolean().optional(),
+          resizable: z.boolean().optional(),
+        }),
+      )
+      .optional()
+      .describe(
+        'Default widget positions before the user customises the grid.',
+      ),
   },
   factory(originalFactory, { node, inputs, config }) {
     return originalFactory({
@@ -151,21 +149,18 @@ const visitsApi = ApiBlueprint.make({
     }),
 });
 
-const homePageToolkitWidget = HomePageCardWidgetBlueprint.makeWithOverrides({
+const homePageToolkitWidget = HomePageWidgetBlueprint.makeWithOverrides({
   name: 'toolkit',
-  config: {
-    schema: {
-      tools: z =>
-        z
-          .array(
-            z.object({
-              url: z.string(),
-              label: z.string(),
-              icon: z.string().optional(),
-            }),
-          )
-          .optional(),
-    },
+  configSchema: {
+    tools: z
+      .array(
+        z.object({
+          url: z.string(),
+          label: z.string(),
+          icon: z.string().optional(),
+        }),
+      )
+      .optional(),
   },
   factory(origFactory, { config }) {
     return origFactory({
@@ -203,7 +198,7 @@ const homePageToolkitWidget = HomePageCardWidgetBlueprint.makeWithOverrides({
   },
 });
 
-const homePageRandomJokeWidget = HomePageCardWidgetBlueprint.make({
+const homePageRandomJokeWidget = HomePageWidgetBlueprint.make({
   name: 'random-joke',
   params: {
     name: 'HomePageRandomJoke',
@@ -237,14 +232,12 @@ const homePageRandomJokeWidget = HomePageCardWidgetBlueprint.make({
   },
 });
 
-const homePageTopVisitedWidget = HomePageCardWidgetBlueprint.makeWithOverrides({
+const homePageTopVisitedWidget = HomePageWidgetBlueprint.makeWithOverrides({
   name: 'top-visited',
   disabled: true,
-  config: {
-    schema: {
-      numVisitsOpen: z => z.number().optional(),
-      numVisitsTotal: z => z.number().optional(),
-    },
+  configSchema: {
+    numVisitsOpen: z.number().optional(),
+    numVisitsTotal: z.number().optional(),
   },
   factory(origFactory, { config }) {
     return origFactory({
@@ -264,15 +257,13 @@ const homePageTopVisitedWidget = HomePageCardWidgetBlueprint.makeWithOverrides({
   },
 });
 
-const homePageRecentlyVisitedWidget =
-  HomePageCardWidgetBlueprint.makeWithOverrides({
+const homePageRecentlyVisitedWidget = HomePageWidgetBlueprint.makeWithOverrides(
+  {
     name: 'recently-visited',
     disabled: true,
-    config: {
-      schema: {
-        numVisitsOpen: z => z.number().optional(),
-        numVisitsTotal: z => z.number().optional(),
-      },
+    configSchema: {
+      numVisitsOpen: z.number().optional(),
+      numVisitsTotal: z.number().optional(),
     },
     factory(origFactory, { config }) {
       return origFactory({
@@ -292,41 +283,36 @@ const homePageRecentlyVisitedWidget =
         },
       });
     },
-  });
+  },
+);
 
-const homePageFeaturedDocsWidget =
-  HomePageCardWidgetBlueprint.makeWithOverrides({
-    name: 'featured-docs',
-    config: {
-      schema: {
-        filter: z =>
-          z
-            .record(z.union([z.string(), z.array(z.string())]))
-            .describe(
-              'Catalog entity filter to select which docs are featured.',
-            ),
-        responseLimit: z => z.number().optional(),
-        linkDestination: z => z.string().optional(),
-        subLinkText: z => z.string().optional(),
+const homePageFeaturedDocsWidget = HomePageWidgetBlueprint.makeWithOverrides({
+  name: 'featured-docs',
+  configSchema: {
+    filter: z
+      .record(z.string(), z.union([z.string(), z.array(z.string())]))
+      .describe('Catalog entity filter to select which docs are featured.'),
+    responseLimit: z.number().optional(),
+    linkDestination: z.string().optional(),
+    subLinkText: z.string().optional(),
+  },
+  factory(origFactory, { config }) {
+    return origFactory({
+      name: 'FeaturedDocsCard',
+      title: 'Featured Docs',
+      components: () =>
+        import('./homePageComponents/FeaturedDocsCard').then(m => ({
+          Content: m.Content,
+        })),
+      componentProps: {
+        filter: config.filter,
+        responseLimit: config.responseLimit,
+        linkDestination: config.linkDestination,
+        subLinkText: config.subLinkText,
       },
-    },
-    factory(origFactory, { config }) {
-      return origFactory({
-        name: 'FeaturedDocsCard',
-        title: 'Featured Docs',
-        components: () =>
-          import('./homePageComponents/FeaturedDocsCard').then(m => ({
-            Content: m.Content,
-          })),
-        componentProps: {
-          filter: config.filter,
-          responseLimit: config.responseLimit,
-          linkDestination: config.linkDestination,
-          subLinkText: config.subLinkText,
-        },
-      });
-    },
-  });
+    });
+  },
+});
 
 /**
  * Home plugin for the new frontend system.

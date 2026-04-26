@@ -33,11 +33,10 @@ export const homeReactTranslationRef = _homeReactTranslationRef;
 export {
   HomePageWidgetBlueprint,
   type HomePageWidgetBlueprintParams,
+  type HomePageWidgetBaseParams,
+  type HomePageCardWidgetParams,
+  type HomePageBasicWidgetParams,
 } from './alpha/blueprints/HomePageWidgetBlueprint';
-export {
-  HomePageCardWidgetBlueprint,
-  type HomePageCardWidgetBlueprintParams,
-} from './alpha/blueprints/HomePageCardWidgetBlueprint';
 export {
   HomePageLayoutBlueprint,
   type HomePageLayoutBlueprintParams,

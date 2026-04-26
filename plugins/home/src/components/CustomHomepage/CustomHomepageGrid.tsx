@@ -145,7 +145,7 @@ const convertConfigToDefaultWidgets = (
   const ret = config.map((conf, i) => {
     const c = LayoutConfigurationSchema.parse(conf);
     const name = isValidElement(c.component)
-      ? (getComponentData(c.component, 'core.extensionName') as string)
+      ? getComponentData<string>(c.component, 'core.extensionName')
       : (c.component as unknown as string);
     if (!name) {
       return null;

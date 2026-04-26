@@ -10,8 +10,8 @@ import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
-import { HomePageCardWidgetBlueprintParams } from '@backstage/plugin-home-react/alpha';
 import { HomePageLayoutProps } from '@backstage/plugin-home-react/alpha';
+import { HomePageWidgetBlueprintParams } from '@backstage/plugin-home-react/alpha';
 import { HomePageWidgetData } from '@backstage/plugin-home-react/alpha';
 import { IconElement } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
@@ -61,16 +61,16 @@ const _default: OverridableFrontendPlugin<
         subLinkText: string | undefined;
       };
       configInput: {
-        filter: Record<string, string | string[]>;
-        linkDestination?: string | undefined;
+        filter?: Record<string, string | string[]> | undefined;
         responseLimit?: number | undefined;
+        linkDestination?: string | undefined;
         subLinkText?: string | undefined;
       };
       output: ExtensionDataRef<HomePageWidgetData, 'home.widget.data', {}>;
       inputs: {};
       kind: 'home-page-widget';
       name: 'featured-docs';
-      params: HomePageCardWidgetBlueprintParams;
+      params: HomePageWidgetBlueprintParams;
     }>;
     'home-page-widget:home/random-joke': OverridableExtensionDefinition<{
       kind: 'home-page-widget';
@@ -79,7 +79,7 @@ const _default: OverridableFrontendPlugin<
       configInput: {};
       output: ExtensionDataRef<HomePageWidgetData, 'home.widget.data', {}>;
       inputs: {};
-      params: HomePageCardWidgetBlueprintParams;
+      params: HomePageWidgetBlueprintParams;
     }>;
     'home-page-widget:home/recently-visited': OverridableExtensionDefinition<{
       config: {
@@ -94,7 +94,7 @@ const _default: OverridableFrontendPlugin<
       inputs: {};
       kind: 'home-page-widget';
       name: 'recently-visited';
-      params: HomePageCardWidgetBlueprintParams;
+      params: HomePageWidgetBlueprintParams;
     }>;
     'home-page-widget:home/toolkit': OverridableExtensionDefinition<{
       config: {
@@ -119,7 +119,7 @@ const _default: OverridableFrontendPlugin<
       inputs: {};
       kind: 'home-page-widget';
       name: 'toolkit';
-      params: HomePageCardWidgetBlueprintParams;
+      params: HomePageWidgetBlueprintParams;
     }>;
     'home-page-widget:home/top-visited': OverridableExtensionDefinition<{
       config: {
@@ -134,20 +134,20 @@ const _default: OverridableFrontendPlugin<
       inputs: {};
       kind: 'home-page-widget';
       name: 'top-visited';
-      params: HomePageCardWidgetBlueprintParams;
+      params: HomePageWidgetBlueprintParams;
     }>;
     'page:home': OverridableExtensionDefinition<{
       config: {
         layoutConfig:
           | {
-              height: number;
-              width: number;
+              component: string;
               x: number;
               y: number;
-              component: string;
-              resizable?: boolean | undefined;
-              deletable?: boolean | undefined;
+              width: number;
+              height: number;
               movable?: boolean | undefined;
+              deletable?: boolean | undefined;
+              resizable?: boolean | undefined;
             }[]
           | undefined;
         path: string | undefined;
@@ -156,14 +156,14 @@ const _default: OverridableFrontendPlugin<
       configInput: {
         layoutConfig?:
           | {
-              height: number;
-              width: number;
+              component: string;
               x: number;
               y: number;
-              component: string;
-              resizable?: boolean | undefined;
-              deletable?: boolean | undefined;
+              width: number;
+              height: number;
               movable?: boolean | undefined;
+              deletable?: boolean | undefined;
+              resizable?: boolean | undefined;
             }[]
           | undefined;
         path?: string | undefined;

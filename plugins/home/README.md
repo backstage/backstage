@@ -118,7 +118,7 @@ app:
 
 Homepage widgets are React components that can be added to customizable home pages.
 
-Create widgets using the `HomePageWidgetBlueprint`:
+Create card-based widgets using the `HomePageWidgetBlueprint` with `render: 'card'` (the default):
 
 ```ts
 import { HomePageWidgetBlueprint } from '@backstage/plugin-home-react/alpha';
@@ -155,6 +155,19 @@ const myWidget = HomePageWidgetBlueprint.make({
 });
 ```
 
+For widgets that manage their own presentation without card chrome (e.g. a search bar or banner), use `render: 'basic'` with a `loader` instead:
+
+```ts
+const myBannerWidget = HomePageWidgetBlueprint.make({
+  name: 'my-banner',
+  params: {
+    render: 'basic',
+    title: 'My Banner',
+    loader: () => import('./MyBanner').then(m => m.MyBanner),
+  },
+});
+```
+
 > **Example**: See [dev/index.tsx](dev/index.tsx) for a comprehensive example of creating multiple homepage widgets and layouts.
 
 ## Included Widgets
@@ -186,9 +199,9 @@ app:
               icon: catalog
 ```
 
-### Starred Entities (`home-page-widget:home/starred-entities`)
+### Starred Entities (`home-page-widget:catalog/starred-entities`)
 
-Shows the catalog entities the current user has starred.
+Shows the catalog entities the current user has starred. This widget is provided by `@backstage/plugin-catalog`.
 
 | Config option | Type               | Description                                                                    |
 | ------------- | ------------------ | ------------------------------------------------------------------------------ |
@@ -197,7 +210,7 @@ Shows the catalog entities the current user has starred.
 ```yaml
 app:
   extensions:
-    - home-page-widget:home/starred-entities:
+    - home-page-widget:catalog/starred-entities:
         config:
           groupByKind: true
 ```
