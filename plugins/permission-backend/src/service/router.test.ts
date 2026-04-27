@@ -16,7 +16,10 @@
 
 import express from 'express';
 import request from 'supertest';
-import { AuthorizeResult } from '@backstage/plugin-permission-common';
+import {
+  AuthorizeResult,
+  createPermission,
+} from '@backstage/plugin-permission-common';
 import {
   ApplyConditionsRequestEntry,
   ApplyConditionsResponseEntry,
@@ -80,6 +83,8 @@ describe('createRouter', () => {
       }),
       userInfo: mockServices.userInfo(),
       policy,
+      systemMetadata: { getInstalledPlugins: async () => [] },
+      ownPluginId: 'permission',
     });
     router.use(middleware.error());
     app = express().use(router);
@@ -981,5 +986,342 @@ describe('createRouter', () => {
         }),
       );
     });
+  });
+});
+
+describe('GET /.well-known/backstage/permissions/installed', () => {
+  const installedPath = '/.well-known/backstage/permissions/installed';
+  const fetchSpy = jest.spyOn(globalThis, 'fetch');
+  const logger = mockServices.logger.mock();
+
+  type MetadataPayload = {
+    permissions?: Array<{
+      type: 'basic' | 'resource';
+      name: string;
+      attributes: { action?: string };
+      resourceType?: string;
+    }>;
+  };
+
+  const buildApp = async (
+    pluginIds: string[],
+    payloads: Record<string, MetadataPayload | { status: number } | 'reject'>,
+    configOverrides: Record<string, unknown> = {},
+  ) => {
+    fetchSpy.mockReset();
+    fetchSpy.mockImplementation(async input => {
+      const url = typeof input === 'string' ? input : (input as URL).toString();
+      const match = url.match(/\/api\/([^/]+)\/\.well-known/);
+      const pluginId = match?.[1] ?? '';
+      const payload = payloads[pluginId];
+      if (payload === 'reject') {
+        throw new Error('boom');
+      }
+      if (payload && 'status' in payload) {
+        return new Response(null, { status: payload.status });
+      }
+      return new Response(JSON.stringify({ rules: [], ...(payload ?? {}) }), {
+        status: 200,
+        headers: { 'content-type': 'application/json' },
+      });
+    });
+
+    const router = await createRouter({
+      config: new ConfigReader({
+        permission: { enabled: true, ...configOverrides },
+      }),
+      logger,
+      discovery: mockServices.discovery(),
+      auth: mockServices.auth(),
+      httpAuth: mockServices.httpAuth({
+        defaultCredentials: mockCredentials.user(),
+      }),
+      userInfo: mockServices.userInfo(),
+      policy,
+      systemMetadata: {
+        getInstalledPlugins: async () =>
+          pluginIds.map(pluginId => ({ pluginId })),
+      },
+      ownPluginId: 'permission',
+    });
+    router.use(middleware.error());
+    return express().use(router);
+  };
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('returns an empty plugins list when nothing is installed', async () => {
+    const app = await buildApp([], {});
+    const response = await request(app).get(installedPath);
+
+    expect(response.status).toEqual(200);
+    expect(response.body).toEqual({ plugins: [] });
+    expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
+  it('aggregates permissions across plugins in deterministic order', async () => {
+    const app = await buildApp(['scaffolder', 'catalog'], {
+      catalog: {
+        permissions: [
+          {
+            type: 'basic',
+            name: 'catalog.entity.create',
+            attributes: { action: 'create' },
+          },
+          {
+            type: 'resource',
+            name: 'catalog.entity.read',
+            attributes: { action: 'read' },
+            resourceType: 'catalog-entity',
+          },
+        ],
+      },
+      scaffolder: {
+        permissions: [
+          {
+            type: 'basic',
+            name: 'scaffolder.task.create',
+            attributes: { action: 'create' },
+          },
+        ],
+      },
+    });
+
+    const response = await request(app).get(installedPath);
+
+    expect(response.status).toEqual(200);
+    expect(response.body.plugins.map((p: any) => p.pluginId)).toEqual([
+      'catalog',
+      'scaffolder',
+    ]);
+    const catalog = response.body.plugins[0];
+    expect(catalog.permissions).toEqual([
+      {
+        type: 'basic',
+        name: 'catalog.entity.create',
+        attributes: { action: 'create' },
+      },
+      {
+        type: 'resource',
+        name: 'catalog.entity.read',
+        attributes: { action: 'read' },
+        resourceType: 'catalog-entity',
+      },
+    ]);
+  });
+
+  it('drops plugins that respond with 404 without warning', async () => {
+    const app = await buildApp(['catalog', 'unmounted'], {
+      catalog: {
+        permissions: [
+          { type: 'basic', name: 'a', attributes: { action: 'read' } },
+        ],
+      },
+      unmounted: { status: 404 },
+    });
+
+    const response = await request(app).get(installedPath);
+
+    expect(response.status).toEqual(200);
+    expect(response.body.plugins).toEqual([
+      {
+        pluginId: 'catalog',
+        permissions: [
+          { type: 'basic', name: 'a', attributes: { action: 'read' } },
+        ],
+      },
+      { pluginId: 'unmounted', permissions: [] },
+    ]);
+    expect(logger.warn).not.toHaveBeenCalled();
+  });
+
+  it('skips fanning out to its own pluginId', async () => {
+    const app = await buildApp(['catalog', 'permission'], {
+      catalog: {
+        permissions: [
+          { type: 'basic', name: 'a', attributes: { action: 'read' } },
+        ],
+      },
+      // No 'permission' payload — fetch would return an unknown-plugin response
+      // if it were called, which it must not be.
+    });
+
+    const response = await request(app).get(installedPath);
+
+    expect(response.status).toEqual(200);
+    expect(
+      response.body.plugins.map((p: { pluginId: string }) => p.pluginId),
+    ).toEqual(['catalog']);
+    // Only one fan-out call: catalog. No call for the own 'permission' plugin.
+    expect(fetchSpy).toHaveBeenCalledTimes(1);
+    expect(fetchSpy.mock.calls[0][0]).toEqual(
+      expect.stringContaining('/api/catalog/'),
+    );
+  });
+
+  it('drops plugins that throw and logs a warning', async () => {
+    const app = await buildApp(['catalog', 'flaky'], {
+      catalog: {
+        permissions: [
+          { type: 'basic', name: 'a', attributes: { action: 'read' } },
+        ],
+      },
+      flaky: 'reject',
+    });
+
+    const response = await request(app).get(installedPath);
+
+    expect(response.status).toEqual(200);
+    expect(response.body.plugins.map((p: any) => p.pluginId)).toEqual([
+      'catalog',
+      'flaky',
+    ]);
+    expect(response.body.plugins[1].permissions).toEqual([]);
+    expect(logger.warn).toHaveBeenCalledWith(
+      expect.stringContaining(`'flaky'`),
+      expect.objectContaining({ error: expect.stringContaining('boom') }),
+    );
+  });
+
+  it('dedupes permission name collisions deterministically and warns', async () => {
+    const app = await buildApp(['plugin-b', 'plugin-a'], {
+      'plugin-a': {
+        permissions: [
+          {
+            type: 'basic',
+            name: 'shared.name',
+            attributes: { action: 'read' },
+          },
+        ],
+      },
+      'plugin-b': {
+        permissions: [
+          {
+            type: 'basic',
+            name: 'shared.name',
+            attributes: { action: 'create' },
+          },
+        ],
+      },
+    });
+
+    const response = await request(app).get(installedPath);
+
+    expect(response.status).toEqual(200);
+    // Sorted plugin ids: plugin-a wins, plugin-b's duplicate is dropped.
+    expect(response.body.plugins[0].permissions).toHaveLength(1);
+    expect(response.body.plugins[0].permissions[0].attributes.action).toBe(
+      'read',
+    );
+    expect(response.body.plugins[1].permissions).toEqual([]);
+    expect(logger.warn).toHaveBeenCalledWith(
+      expect.stringContaining(`Duplicate permission name 'shared.name'`),
+    );
+  });
+
+  it('returns 404 and never fans out when permission.installedPermissions.enabled is false', async () => {
+    const app = await buildApp(
+      ['catalog'],
+      {
+        catalog: {
+          permissions: [
+            { type: 'basic', name: 'a', attributes: { action: 'read' } },
+          ],
+        },
+      },
+      { installedPermissions: { enabled: false } },
+    );
+
+    const response = await request(app).get(installedPath);
+
+    expect(response.status).toEqual(404);
+    expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
+  it('caches the aggregated result on success', async () => {
+    const app = await buildApp(['catalog'], {
+      catalog: {
+        permissions: [
+          { type: 'basic', name: 'a', attributes: { action: 'read' } },
+        ],
+      },
+    });
+
+    await request(app).get(installedPath);
+    await request(app).get(installedPath);
+
+    expect(fetchSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('round-trips Permission objects produced by createPermission() — basic with attributes and resource permissions — without losing fields', async () => {
+    // Use the real public helper rather than literals so we catch any drift
+    // between createPermission() output and the wire format.
+    const catalogCreate = createPermission({
+      name: 'catalog.entity.create',
+      attributes: { action: 'create' },
+    });
+    const catalogRead = createPermission({
+      name: 'catalog.entity.read',
+      attributes: { action: 'read' },
+      resourceType: 'catalog-entity',
+    });
+    const catalogUpdate = createPermission({
+      name: 'catalog.entity.update',
+      attributes: { action: 'update' },
+      resourceType: 'catalog-entity',
+    });
+    const catalogDelete = createPermission({
+      name: 'catalog.entity.delete',
+      attributes: { action: 'delete' },
+      resourceType: 'catalog-entity',
+    });
+    const scaffolderExecute = createPermission({
+      name: 'scaffolder.task.create',
+      attributes: { action: 'create' },
+    });
+
+    const app = await buildApp(['catalog', 'scaffolder'], {
+      catalog: {
+        permissions: [catalogCreate, catalogRead, catalogUpdate, catalogDelete],
+      },
+      scaffolder: { permissions: [scaffolderExecute] },
+    });
+
+    const response = await request(app).get(installedPath);
+
+    expect(response.status).toEqual(200);
+    expect(response.body).toEqual({
+      plugins: [
+        {
+          pluginId: 'catalog',
+          permissions: [
+            catalogCreate,
+            catalogRead,
+            catalogUpdate,
+            catalogDelete,
+          ],
+        },
+        {
+          pluginId: 'scaffolder',
+          permissions: [scaffolderExecute],
+        },
+      ],
+    });
+    // Spot-check the discriminator fields explicitly so a future refactor of
+    // createPermission can't quietly drop attributes or resourceType from the
+    // wire format.
+    const flat = response.body.plugins.flatMap((p: any) => p.permissions);
+    expect(flat).toHaveLength(5);
+    for (const permission of flat) {
+      expect(permission.attributes).toBeDefined();
+      expect(typeof permission.attributes.action).toBe('string');
+    }
+    const resourcePerms = flat.filter((p: any) => p.type === 'resource');
+    expect(resourcePerms).toHaveLength(3);
+    for (const permission of resourcePerms) {
+      expect(permission.resourceType).toBe('catalog-entity');
+    }
   });
 });

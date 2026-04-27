@@ -117,6 +117,21 @@ export type IdentifiedPermissionMessage<T> = T & {
 };
 
 // @public
+export const INSTALLED_PERMISSIONS_PATH =
+  '/.well-known/backstage/permissions/installed';
+
+// @public
+export type InstalledPermissionsResponse = {
+  plugins: InstalledPluginPermissions[];
+};
+
+// @public
+export type InstalledPluginPermissions = {
+  pluginId: string;
+  permissions: Permission[];
+};
+
+// @public
 export function isCreatePermission(permission: Permission): boolean;
 
 // @public
@@ -247,6 +262,10 @@ export type PermissionRuleParam = undefined | JsonPrimitive | JsonPrimitive[];
 export type PermissionRuleParams =
   | undefined
   | Record<string, PermissionRuleParam>;
+
+// @public
+export const PERMISSIONS_METADATA_PATH =
+  '/.well-known/backstage/permissions/metadata';
 
 // @public
 export type PolicyDecision =

@@ -89,19 +89,30 @@ const IndexPage = PageBlueprint.make({
               via the <code>if</code> predicate using permissions. They will
               only appear when the user has the required permissions.
             </p>
+            <p>
+              On startup the app fetches the installed-permissions catalog from
+              the permission backend, so each <code>if</code> predicate
+              authorizes against the full registered <code>Permission</code>{' '}
+              shape — including <code>attributes</code> for basic permissions
+              and <code>resourceType</code> for resource permissions. Policies
+              that branch on those fields work the same way they do for the rest
+              of the app.
+            </p>
             <ul>
               <li>
                 <Link to="/permission-gated-example">
                   Permission Gated Example
                 </Link>{' '}
-                — requires <code>catalog.entity.create</code>
+                — requires <code>catalog.entity.create</code> (basic permission
+                with <code>action: 'create'</code>)
               </li>
               <li>
                 <Link to="/permission-card-example">
                   Permission Card Example
                 </Link>{' '}
-                — a page that is always visible, but individual cards on it are
-                toggled by permissions
+                — a page that is always visible, but individual cards are
+                toggled by basic permissions whose attributes flow through to
+                the policy.
               </li>
             </ul>
 
@@ -408,15 +419,35 @@ const PublicCard = PermissionExampleCardBlueprint.make({
 
 // Permission-gated card — only instantiated when the user has
 // the catalog.entity.create permission.
+//
+// `catalog.entity.create` is a basic permission with `attributes.action =
+// 'create'`. The `if` predicate looks the permission up in the catalog the
+// permission backend exposes at `/.well-known/backstage/permissions/installed`
+// and authorizes with the full registered shape, including those attributes —
+// so attribute-aware policies receive the same request the rest of the app
+// would send. (Before this resolution, `if` always sent
+// `{ type: 'basic', attributes: {} }`, stripping the action and silently
+// breaking any policy that branched on it.)
 const RestrictedCard = PermissionExampleCardBlueprint.make({
   name: 'restricted',
   params: {
-    title: 'Restricted Card',
+    title: 'Restricted Card (basic + action attribute)',
     description:
-      'This card is only visible to users who have the catalog.entity.create permission.',
+      'Visible to users with catalog.entity.create. The if predicate ' +
+      'authorizes with attributes: { action: "create" } resolved from the ' +
+      'installed-permissions catalog.',
   },
   if: { permissions: { $contains: 'catalog.entity.create' } },
 });
+
+// Note: resource permissions (e.g. `catalog.entity.read`) are intentionally
+// not demonstrated here. The permission backend rejects user-initiated
+// authorize requests for resource permissions without a `resourceRef` (to
+// prevent enumeration), and an `if` predicate has no resource context to
+// provide. The predicate loader detects resource permissions resolved from the
+// installed catalog and treats them as ALLOW so the extension still renders;
+// the real gate should be placed at the resource itself, not on the
+// extension's visibility.
 
 // Feature flag-gated card — only instantiated when the user has
 // the experimental-card FF enabled.

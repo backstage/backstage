@@ -23,6 +23,8 @@ import {
   AuthorizeResult,
   EvaluatePermissionResponse,
   IdentifiedPermissionMessage,
+  INSTALLED_PERMISSIONS_PATH,
+  InstalledPermissionsResponse,
   isResourcePermission,
   PermissionAttributes,
   PermissionMessageBatch,
@@ -47,6 +49,8 @@ import {
   RootConfigService,
   UserInfoService,
 } from '@backstage/backend-plugin-api';
+import { RootSystemMetadataService } from '@backstage/backend-plugin-api/alpha';
+import { createInstalledPermissionsLoader } from './installedPermissionsLoader';
 
 const attributesSchema: z.ZodSchema<PermissionAttributes> = z.object({
   action: z
@@ -106,6 +110,8 @@ export interface RouterOptions {
   auth: AuthService;
   httpAuth: HttpAuthService;
   userInfo: UserInfoService;
+  systemMetadata: RootSystemMetadataService;
+  ownPluginId: string;
 }
 
 const handleRequest = async (
@@ -198,8 +204,17 @@ const handleRequest = async (
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { policy, discovery, config, logger, auth, httpAuth, userInfo } =
-    options;
+  const {
+    policy,
+    discovery,
+    config,
+    logger,
+    auth,
+    httpAuth,
+    userInfo,
+    systemMetadata,
+    ownPluginId,
+  } = options;
 
   if (!config.getOptionalBoolean('permission.enabled')) {
     logger.warn(
@@ -223,6 +238,43 @@ export async function createRouter(
   router.get('/health', (_, response) => {
     response.json({ status: 'ok' });
   });
+
+  // Default to enabled so the frontend `if` predicate can resolve permission
+  // attributes out of the box. Adopters who don't want authenticated users to
+  // see the aggregated permission catalog can disable the endpoint with
+  // `permission.installedPermissions.enabled: false`. When disabled, the route
+  // is not registered and the frontend's predicate loader falls back to the
+  // legacy basic-permission shape (with a console warning).
+  const installedPermissionsEnabled =
+    config.getOptionalBoolean('permission.installedPermissions.enabled') ??
+    true;
+
+  if (installedPermissionsEnabled) {
+    const loadInstalledPermissions = createInstalledPermissionsLoader({
+      ownPluginId,
+      systemMetadata,
+      discovery,
+      auth,
+      logger,
+    });
+
+    router.get(
+      INSTALLED_PERMISSIONS_PATH,
+      async (req: Request, res: Response<InstalledPermissionsResponse>) => {
+        await httpAuth.credentials(req, { allow: ['user', 'service'] });
+        try {
+          res.json(await loadInstalledPermissions());
+        } catch (error) {
+          // Log before re-throwing so adopters can correlate the resulting 500
+          // with the underlying credential or fan-out failure.
+          logger.error('Failed to aggregate installed permissions', {
+            error: String(error),
+          });
+          throw error;
+        }
+      },
+    );
+  }
 
   router.post(
     '/authorize',

@@ -41,8 +41,14 @@ export type {
 } from './api';
 export type { DiscoveryApi } from './discovery';
 export type {
+  InstalledPermissionsResponse,
+  InstalledPluginPermissions,
   MetadataResponse,
   MetadataResponseSerializedRule,
+} from './integration';
+export {
+  INSTALLED_PERMISSIONS_PATH,
+  PERMISSIONS_METADATA_PATH,
 } from './integration';
 export type {
   BasicPermission,
