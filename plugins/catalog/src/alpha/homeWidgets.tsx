@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
+import { z } from 'zod/v4';
 import { HomePageWidgetBlueprint } from '@backstage/plugin-home-react/alpha';
 
 const catalogHomePageStarredEntitiesWidget =
   HomePageWidgetBlueprint.makeWithOverrides({
     name: 'starred-entities',
-    config: {
-      schema: {
-        groupByKind: z => z.boolean().optional(),
-      },
+    configSchema: {
+      groupByKind: z.boolean().optional(),
     },
     factory(origFactory, { config }) {
       return origFactory({
