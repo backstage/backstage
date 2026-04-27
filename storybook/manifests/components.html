@@ -576,7 +576,7 @@
 <header>
   <div class="wrap">
     <h1>Manifest Debugger</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">50 components ok</span><span class="filter-pill ok" aria-disabled="true">466 stories ok</span></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">50 components ok</span><span class="filter-pill ok" aria-disabled="true">471 stories ok</span></div>
   </div>
 </header>
 <main>
@@ -6926,9 +6926,9 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Header</h2>
       <div class="badges">
-        <label for="c-21-backstage-ui-header-props" class="badge ok as-toggle">9 prop types</label>
+        <label for="c-21-backstage-ui-header-props" class="badge ok as-toggle">10 prop types</label>
         
-        <label for="c-21-backstage-ui-header-stories" class="badge ok as-toggle">15 stories</label>
+        <label for="c-21-backstage-ui-header-stories" class="badge ok as-toggle">19 stories</label>
         
       </div>
     </div>
@@ -6953,7 +6953,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types <small>(react-docgen)</small></span>
-              <span class="badge ok">9 prop types</span>
+              <span class="badge ok">10 prop types</span>
             </div>
             <pre><code>Component: packages/ui/src/components/Header/Header.tsx::Header</code></pre>
             <pre><code>Props:</code></pre>
@@ -6976,6 +6976,12 @@ description?: string
 
 metadata?: HeaderMetadataItem[]
 
+/**
+ * Makes the title-and-actions row stick to the top of its nearest scroll
+ * container while the rest of the header content scrolls away.
+ */
+sticky?: boolean
+
 tabs?: HeaderNavTabItem[]
 
 tags?: HeaderTag[]
@@ -6996,6 +7002,7 @@ title?: string</code></pre>
     BUIProvider,
     Button,
     ButtonIcon,
+    Container,
     Header,
     HeaderMetadataStatus,
     HeaderMetadataUsers,
@@ -7305,6 +7312,146 @@ import { RiMore2Line } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const WithExplicitActiveTab = () =&gt; &lt;Header tabs={tabs} activeTabId=&quot;campaigns&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Non Sticky</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const NonSticky = () =&gt; (
+  &lt;&gt;
+    &lt;Header
+      title=&quot;Sticky Page Title&quot;
+      description=&quot;This is a description of the page that scrolls away when you scroll down.&quot;
+      tags={[
+        { label: &#39;TypeScript&#39; },
+        { label: &#39;Platform&#39;, href: &#39;/platform&#39; },
+      ]}
+      metadata={[
+        { label: &#39;Owner&#39;, value: &#39;platform-team&#39; },
+        { label: &#39;Type&#39;, value: &#39;website&#39; },
+      ]}
+      customActions={&lt;Button&gt;Custom action&lt;/Button&gt;}
+    /&gt;
+    &lt;Container pb=&quot;3&quot;&gt;
+      {Array.from({ length: 60 }, (_, i) =&gt; (
+        &lt;p key={i} style={{ marginBottom: &#39;16px&#39; }}&gt;
+          Scroll down to see the entire header scroll away with the rest of
+          the page content. Line {i + 1}.
+        &lt;/p&gt;
+      ))}
+    &lt;/Container&gt;
+  &lt;/&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Sticky</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Sticky = () =&gt; (
+  &lt;&gt;
+    &lt;Header
+      title=&quot;Sticky Page Title&quot;
+      sticky
+      description=&quot;This is a description of the page that scrolls away when you scroll down.&quot;
+      tags={[
+        { label: &#39;TypeScript&#39; },
+        { label: &#39;Platform&#39;, href: &#39;/platform&#39; },
+      ]}
+      metadata={[
+        { label: &#39;Owner&#39;, value: &#39;platform-team&#39; },
+        { label: &#39;Type&#39;, value: &#39;website&#39; },
+      ]}
+      customActions={&lt;Button&gt;Custom action&lt;/Button&gt;}
+    /&gt;
+    &lt;Container pb=&quot;3&quot;&gt;
+      {Array.from({ length: 60 }, (_, i) =&gt; (
+        &lt;p key={i} style={{ marginBottom: &#39;16px&#39; }}&gt;
+          Scroll down to see the title bar stick to the top while the tags,
+          description, and metadata scroll away. Line {i + 1}.
+        &lt;/p&gt;
+      ))}
+    &lt;/Container&gt;
+  &lt;/&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Sticky With Long Title</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const StickyWithLongTitle = () =&gt; (
+  &lt;&gt;
+    &lt;Header
+      title=&quot;This is a very long page title that should demonstrate how the sticky Header behaves when the title takes up significantly more horizontal space than usual&quot;
+      sticky
+      description=&quot;This is a description of the page that scrolls away when you scroll down.&quot;
+      tags={[
+        { label: &#39;TypeScript&#39; },
+        { label: &#39;Platform&#39;, href: &#39;/platform&#39; },
+      ]}
+      metadata={[
+        { label: &#39;Owner&#39;, value: &#39;platform-team&#39; },
+        { label: &#39;Type&#39;, value: &#39;website&#39; },
+      ]}
+      customActions={&lt;Button&gt;Custom action&lt;/Button&gt;}
+    /&gt;
+    &lt;Container pb=&quot;3&quot;&gt;
+      {Array.from({ length: 60 }, (_, i) =&gt; (
+        &lt;p key={i} style={{ marginBottom: &#39;16px&#39; }}&gt;
+          Scroll down to see the long title bar stick to the top while the
+          tags, description, and metadata scroll away. Line {i + 1}.
+        &lt;/p&gt;
+      ))}
+    &lt;/Container&gt;
+  &lt;/&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Sticky With Breadcrumbs And Long Title</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const StickyWithBreadcrumbsAndLongTitle = () =&gt; (
+  &lt;&gt;
+    &lt;Header
+      title=&quot;This is a very long page title that should demonstrate how sticky breadcrumbs and titles behave when both need to fit in the compact stuck state&quot;
+      sticky
+      breadcrumbs={[
+        { label: &#39;Home&#39;, href: &#39;/&#39; },
+        { label: &#39;Very Long Breadcrumb Name&#39;, href: &#39;/long-breadcrumb&#39; },
+      ]}
+      description=&quot;This is a description of the page that scrolls away when you scroll down.&quot;
+      tags={[
+        { label: &#39;TypeScript&#39; },
+        { label: &#39;Platform&#39;, href: &#39;/platform&#39; },
+      ]}
+      metadata={[
+        { label: &#39;Owner&#39;, value: &#39;platform-team&#39; },
+        { label: &#39;Type&#39;, value: &#39;website&#39; },
+      ]}
+      customActions={&lt;Button&gt;Custom action&lt;/Button&gt;}
+    /&gt;
+    &lt;Container pb=&quot;3&quot;&gt;
+      {Array.from({ length: 60 }, (_, i) =&gt; (
+        &lt;p key={i} style={{ marginBottom: &#39;16px&#39; }}&gt;
+          Scroll down to see the breadcrumb and long title bar stick to the
+          top while the tags, description, and metadata scroll away. Line{&#39; &#39;}
+          {i + 1}.
+        &lt;/p&gt;
+      ))}
+    &lt;/Container&gt;
+  &lt;/&gt;
+);</code></pre>
             </div>
         </div>
     
@@ -9713,9 +9860,9 @@ import { RiCloudy2Line, RiEmotionHappyLine, RiHeartLine, RiMore2Line } from "@re
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> PluginHeaderandHeader</h2>
       <div class="badges">
-        <label for="c-30-recipes-pluginheader-and-header-props" class="badge ok as-toggle">9 prop types</label>
+        <label for="c-30-recipes-pluginheader-and-header-props" class="badge ok as-toggle">10 prop types</label>
         
-        <label for="c-30-recipes-pluginheader-and-header-stories" class="badge ok as-toggle">5 stories</label>
+        <label for="c-30-recipes-pluginheader-and-header-stories" class="badge ok as-toggle">6 stories</label>
         
       </div>
     </div>
@@ -9740,7 +9887,7 @@ import { RiCloudy2Line, RiEmotionHappyLine, RiHeartLine, RiMore2Line } from "@re
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types <small>(react-docgen)</small></span>
-              <span class="badge ok">9 prop types</span>
+              <span class="badge ok">10 prop types</span>
             </div>
             <pre><code>Component: packages/ui/src/components/Header/Header.tsx::Header</code></pre>
             <pre><code>Props:</code></pre>
@@ -9762,6 +9909,12 @@ customActions?: React.ReactNode
 description?: string
 
 metadata?: HeaderMetadataItem[]
+
+/**
+ * Makes the title-and-actions row stick to the top of its nearest scroll
+ * container while the rest of the header content scrolls away.
+ */
+sticky?: boolean
 
 tabs?: HeaderNavTabItem[]
 
@@ -9898,56 +10051,6 @@ import {
             </div>
             <div class="note ok">
               <div class="row">
-                <span class="ex-name">With Breadcrumb</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const WithBreadcrumb = () =&gt; (
-  &lt;&gt;
-    &lt;PluginHeader
-      icon={&lt;RiGitBranchLine /&gt;}
-      title=&quot;CI/CD&quot;
-      titleLink=&quot;/&quot;
-      tabs={[
-        { id: &#39;builds&#39;, label: &#39;Builds&#39;, href: &#39;/builds&#39; },
-        { id: &#39;pipelines&#39;, label: &#39;Pipelines&#39;, href: &#39;/pipelines&#39; },
-        { id: &#39;deployments&#39;, label: &#39;Deployments&#39;, href: &#39;/deployments&#39; },
-        { id: &#39;settings&#39;, label: &#39;Settings&#39;, href: &#39;/settings&#39; },
-      ]}
-      customActions={
-        &lt;&gt;
-          &lt;ButtonIcon
-            variant=&quot;secondary&quot;
-            icon={&lt;RiRefreshLine /&gt;}
-            aria-label=&quot;Refresh&quot;
-          /&gt;
-        &lt;/&gt;
-      }
-    /&gt;
-    &lt;Header
-      title=&quot;main · #842&quot;
-      breadcrumbs={[
-        { label: &#39;Catalog&#39;, href: &#39;/catalog&#39; },
-        { label: &#39;Services&#39;, href: &#39;/catalog?kind=Component&#39; },
-      ]}
-      customActions={
-        &lt;&gt;
-          &lt;Button variant=&quot;secondary&quot; iconStart={&lt;RiDownloadLine /&gt;}&gt;
-            Download logs
-          &lt;/Button&gt;
-          &lt;Button variant=&quot;primary&quot; iconStart={&lt;RiPlayLine /&gt;}&gt;
-            Re-run pipeline
-          &lt;/Button&gt;
-        &lt;/&gt;
-      }
-    /&gt;
-    &lt;PageContent /&gt;
-  &lt;/&gt;
-);</code></pre>
-            </div>
-            <div class="note ok">
-              <div class="row">
                 <span class="ex-name">With Sub Tabs</span>
                 <span class="badge ok">story ok</span>
               </div>
@@ -9977,11 +10080,61 @@ import {
         }
       /&gt;
       &lt;Header
-        title=&quot;main · #842&quot;
+        title=&quot;Production deployment pipeline run&quot;
         tabs={subTabs}
-        breadcrumbs={[
-          { label: &#39;Catalog&#39;, href: &#39;/catalog&#39; },
-          { label: &#39;Services&#39;, href: &#39;/catalog?kind=Component&#39; },
+        customActions={
+          &lt;&gt;
+            &lt;Button variant=&quot;secondary&quot; iconStart={&lt;RiDownloadLine /&gt;}&gt;
+              Download logs
+            &lt;/Button&gt;
+            &lt;Button variant=&quot;primary&quot; iconStart={&lt;RiPlayLine /&gt;}&gt;
+              Re-run pipeline
+            &lt;/Button&gt;
+          &lt;/&gt;
+        }
+      /&gt;
+      &lt;PageContent /&gt;
+    &lt;/&gt;
+  );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Sub Tabs And Tags</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithSubTabsAndTags = () =&gt; {
+  return (
+    &lt;&gt;
+      &lt;PluginHeader
+        icon={&lt;RiGitBranchLine /&gt;}
+        title=&quot;CI/CD&quot;
+        titleLink=&quot;/&quot;
+        tabs={[
+          { id: &#39;builds&#39;, label: &#39;Builds&#39;, href: &#39;/builds&#39; },
+          { id: &#39;pipelines&#39;, label: &#39;Pipelines&#39;, href: &#39;/pipelines&#39; },
+          { id: &#39;deployments&#39;, label: &#39;Deployments&#39;, href: &#39;/deployments&#39; },
+          { id: &#39;settings&#39;, label: &#39;Settings&#39;, href: &#39;/settings&#39; },
+        ]}
+        customActions={
+          &lt;&gt;
+            &lt;ButtonIcon
+              variant=&quot;secondary&quot;
+              icon={&lt;RiRefreshLine /&gt;}
+              aria-label=&quot;Refresh&quot;
+            /&gt;
+          &lt;/&gt;
+        }
+      /&gt;
+      &lt;Header
+        title=&quot;Production deployment pipeline run&quot;
+        tabs={subTabs}
+        tags={[
+          { label: &#39;Production&#39; },
+          { label: &#39;Owner: Platform&#39;, href: &#39;/catalog?owner=platform&#39; },
+          { label: &#39;Tier 1&#39; },
         ]}
         customActions={
           &lt;&gt;
@@ -9995,6 +10148,56 @@ import {
         }
       /&gt;
       &lt;PageContent /&gt;
+    &lt;/&gt;
+  );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Sticky Header</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithStickyHeader = () =&gt; {
+  return (
+    &lt;&gt;
+      &lt;PluginHeader
+        icon={&lt;RiGitBranchLine /&gt;}
+        title=&quot;CI/CD&quot;
+        titleLink=&quot;/&quot;
+        tabs={[
+          { id: &#39;builds&#39;, label: &#39;Builds&#39;, href: &#39;/builds&#39; },
+          { id: &#39;pipelines&#39;, label: &#39;Pipelines&#39;, href: &#39;/pipelines&#39; },
+          { id: &#39;deployments&#39;, label: &#39;Deployments&#39;, href: &#39;/deployments&#39; },
+          { id: &#39;settings&#39;, label: &#39;Settings&#39;, href: &#39;/settings&#39; },
+        ]}
+        customActions={
+          &lt;&gt;
+            &lt;ButtonIcon
+              variant=&quot;secondary&quot;
+              icon={&lt;RiRefreshLine /&gt;}
+              aria-label=&quot;Refresh&quot;
+            /&gt;
+          &lt;/&gt;
+        }
+      /&gt;
+      &lt;Header
+        title=&quot;Production deployment pipeline run&quot;
+        sticky
+        tabs={subTabs}
+        customActions={
+          &lt;&gt;
+            &lt;Button variant=&quot;secondary&quot; iconStart={&lt;RiDownloadLine /&gt;}&gt;
+              Download logs
+            &lt;/Button&gt;
+            &lt;Button variant=&quot;primary&quot; iconStart={&lt;RiPlayLine /&gt;}&gt;
+              Re-run pipeline
+            &lt;/Button&gt;
+          &lt;/&gt;
+        }
+      /&gt;
+      &lt;LongPageContent /&gt;
     &lt;/&gt;
   );
 };</code></pre>
