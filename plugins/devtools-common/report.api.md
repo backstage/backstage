@@ -80,6 +80,7 @@ export namespace ExternalDependencyStatus {
 
 // @public (undocumented)
 export type PackageDependency = {
+  id: string;
   name: string;
   versions: string;
 };

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { useCallback, useMemo } from 'react';
 import { PackageDependency } from '@backstage/plugin-devtools-common';
 import {
   Card,
@@ -22,6 +23,7 @@ import {
   CellText,
   ColumnConfig,
   SearchField,
+  SortDescriptor,
   Table,
   Text,
   useTable,
@@ -54,41 +56,37 @@ export const InfoDependenciesTable = ({
   infoDependencies: PackageDependency[] | undefined;
 }) => {
   const classes = useStyles();
-  const columns: ColumnConfig<PackageDependency>[] = [
-    {
-      id: 'name',
-      label: 'Name',
-      width: '70%',
-      isSortable: true,
-      isRowHeader: true,
-      cell: item => <CellText title={item.name} />,
-    },
-    {
-      id: 'versions',
-      label: 'Versions',
-      isSortable: true,
-      isRowHeader: true,
-      cell: item => <CellText title={item.versions} />,
-    },
-  ];
+  const columns = useMemo<ColumnConfig<PackageDependency>[]>(
+    () => [
+      {
+        id: 'name',
+        label: 'Name',
+        width: '70%',
+        isSortable: true,
+        isRowHeader: true,
+        cell: item => <CellText title={item.name} />,
+      },
+      {
+        id: 'versions',
+        label: 'Versions',
+        isSortable: true,
+        cell: item => <CellText title={item.versions} />,
+      },
+    ],
+    [],
+  );
 
-  const { tableProps, search } = useTable({
-    mode: 'complete',
-    data: infoDependencies || [],
-    initialSort: { column: 'name', direction: 'ascending' },
-    paginationOptions: {
-      pageSize: 10,
-      pageSizeOptions: [10, 25, 50, 100],
-    },
-    searchFn: (items, query) => {
-      const lowerQuery = query.toLowerCase();
-      return items.filter(
-        item =>
-          item.name.toLowerCase().includes(lowerQuery) ||
-          item.versions.toLowerCase().includes(lowerQuery),
-      );
-    },
-    sortFn: (items, { column, direction }) => {
+  const searchFn = useCallback((items: PackageDependency[], query: string) => {
+    const lowerQuery = query.toLowerCase();
+    return items.filter(
+      item =>
+        item.name.toLowerCase().includes(lowerQuery) ||
+        item.versions.toLowerCase().includes(lowerQuery),
+    );
+  }, []);
+
+  const sortFn = useCallback(
+    (items: PackageDependency[], { column, direction }: SortDescriptor) => {
       if (column !== 'name' && column !== 'versions') {
         return items;
       }
@@ -99,6 +97,19 @@ export const InfoDependenciesTable = ({
         return direction === 'descending' ? -cmp : cmp;
       });
     },
+    [],
+  );
+
+  const { tableProps, search } = useTable({
+    mode: 'complete',
+    data: infoDependencies || [],
+    initialSort: { column: 'name', direction: 'ascending' },
+    paginationOptions: {
+      pageSize: 15,
+      pageSizeOptions: [15, 30, 100],
+    },
+    searchFn,
+    sortFn,
   });
 
   return (
