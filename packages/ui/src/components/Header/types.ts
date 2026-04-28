@@ -116,6 +116,11 @@ export interface HeaderOwnProps {
   tags?: HeaderTag[];
   metadata?: HeaderMetadataItem[];
   className?: string;
+  /**
+   * Makes the title-and-actions row stick to the top of its nearest scroll
+   * container while the rest of the header content scrolls away.
+   */
+  sticky?: boolean;
 }
 
 /**

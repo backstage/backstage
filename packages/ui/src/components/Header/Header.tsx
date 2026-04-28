@@ -21,10 +21,37 @@ import { HeaderNav } from './HeaderNav';
 import { useDefinition } from '../../hooks/useDefinition';
 import { HeaderDefinition } from './definition';
 import { sanitizeUrl } from '@braintree/sanitize-url';
-import { Container } from '../Container';
 import { Lexer } from 'marked';
 import { Link } from '../Link';
-import { Fragment, useMemo } from 'react';
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
+
+const getScrollParent = (element: HTMLElement | null): Element | null => {
+  let parent = element?.parentElement;
+
+  while (parent) {
+    const { overflow, overflowX, overflowY } = window.getComputedStyle(parent);
+
+    if (
+      /(auto|scroll|overlay|hidden)/.test(`${overflow}${overflowX}${overflowY}`)
+    ) {
+      return parent;
+    }
+
+    parent = parent.parentElement;
+  }
+
+  return null;
+};
+
+const isStickySentinelOutOfView = (
+  sentinel: HTMLElement,
+  root: Element | null,
+) => {
+  const sentinelRect = sentinel.getBoundingClientRect();
+  const rootTop = root ? root.getBoundingClientRect().top : 0;
+
+  return sentinelRect.bottom <= rootTop;
+};
 
 /**
  * Parses inline Markdown links in a string and returns an array of React nodes.
@@ -52,7 +79,9 @@ function renderInlineMarkdown(text: string): React.ReactNode[] {
  * @public
  */
 export const Header = (props: HeaderProps) => {
-  const { ownProps } = useDefinition(HeaderDefinition, props);
+  const { ownProps, dataAttributes } = useDefinition(HeaderDefinition, props, {
+    classNameTarget: 'content',
+  });
   const {
     classes,
     title,
@@ -63,6 +92,7 @@ export const Header = (props: HeaderProps) => {
     description,
     tags,
     metadata,
+    sticky,
   } = ownProps;
 
   const descriptionNodes = useMemo(
@@ -70,93 +100,186 @@ export const Header = (props: HeaderProps) => {
     [description],
   );
 
+  // The sentinel sits directly before the sticky content and leaves the
+  // viewport when the content becomes stuck, letting us toggle stuck styling.
+  const stickySentinelRef = useRef<HTMLDivElement>(null);
+  const [isStuck, setIsStuck] = useState(false);
+
+  useEffect(() => {
+    if (!sticky) {
+      setIsStuck(false);
+      return;
+    }
+
+    const sentinel = stickySentinelRef.current;
+    if (!sentinel) {
+      return;
+    }
+
+    const root = getScrollParent(sentinel);
+
+    if (typeof IntersectionObserver === 'undefined') {
+      const updateStuckState = () => {
+        setIsStuck(isStickySentinelOutOfView(sentinel, root));
+      };
+      const scrollTarget = root ?? window;
+
+      updateStuckState();
+      scrollTarget.addEventListener('scroll', updateStuckState, {
+        passive: true,
+      });
+      window.addEventListener('resize', updateStuckState);
+
+      return () => {
+        scrollTarget.removeEventListener('scroll', updateStuckState);
+        window.removeEventListener('resize', updateStuckState);
+      };
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsStuck(!entry.isIntersecting);
+      },
+      { root, threshold: 0 },
+    );
+
+    observer.observe(sentinel);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [sticky]);
+
   return (
-    <Container className={classes.root}>
-      {tags && tags.length > 0 && (
-        <ul className={classes.tags}>
-          {tags.map((tag, i) => (
-            <li
-              key={`${i}:${tag.label}:${tag.href ?? ''}`}
-              className={classes.tag}
-            >
-              {tag.href ? (
-                <Link
-                  href={tag.href}
-                  variant="body-medium"
-                  color="secondary"
-                  standalone
-                >
-                  {tag.label}
-                </Link>
-              ) : (
-                <Text variant="body-medium" color="secondary">
-                  {tag.label}
-                </Text>
-              )}
-            </li>
-          ))}
-        </ul>
-      )}
-      <div className={classes.content}>
-        <div className={classes.breadcrumbs}>
-          {breadcrumbs &&
-            breadcrumbs.map(breadcrumb => (
-              <Fragment key={breadcrumb.label}>
-                <Link
-                  href={breadcrumb.href}
-                  variant="title-small"
-                  weight="bold"
-                  color="secondary"
-                  truncate
-                  style={{ maxWidth: '240px' }}
-                  standalone
-                >
-                  {breadcrumb.label}
-                </Link>
-                <RiArrowRightSLine size={16} color="var(--bui-fg-secondary)" />
-              </Fragment>
+    <>
+      <div className={classes.headerTop} data-sticky={sticky || undefined}>
+        {tags && tags.length > 0 && (
+          <ul className={classes.tags}>
+            {tags.map((tag, i) => (
+              <li
+                key={`${i}:${tag.label}:${tag.href ?? ''}`}
+                className={classes.tag}
+              >
+                {tag.href ? (
+                  <Link
+                    href={tag.href}
+                    variant="body-medium"
+                    color="secondary"
+                    standalone
+                  >
+                    {tag.label}
+                  </Link>
+                ) : (
+                  <Text variant="body-medium" color="secondary">
+                    {tag.label}
+                  </Text>
+                )}
+              </li>
             ))}
-          <Text variant="title-small" weight="bold" as="h2">
-            {title}
-          </Text>
+          </ul>
+        )}
+      </div>
+      {sticky && (
+        <div
+          ref={stickySentinelRef}
+          className={classes.stickySentinel}
+          data-sticky=""
+          aria-hidden="true"
+        />
+      )}
+      <div
+        className={classes.content}
+        data-sticky={sticky || undefined}
+        data-stuck={isStuck || undefined}
+        data-has-tags={tags && tags.length > 0 ? '' : undefined}
+        {...dataAttributes}
+      >
+        <div className={classes.titleStack}>
+          {isStuck ? (
+            <div className={classes.breadcrumbsSmall}>
+              {breadcrumbs &&
+                breadcrumbs.map(breadcrumb => (
+                  <Fragment key={breadcrumb.label}>
+                    <Link
+                      href={breadcrumb.href}
+                      color="secondary"
+                      className={classes.breadcrumbLinkSmall}
+                      standalone
+                    >
+                      {breadcrumb.label}
+                    </Link>
+                    <RiArrowRightSLine
+                      className={classes.breadcrumbSeparator}
+                      size={16}
+                      color="var(--bui-fg-secondary)"
+                    />
+                  </Fragment>
+                ))}
+              <h2 className={classes.titleSmall}>{title}</h2>
+            </div>
+          ) : (
+            <div className={classes.breadcrumbs}>
+              {breadcrumbs &&
+                breadcrumbs.map(breadcrumb => (
+                  <Fragment key={breadcrumb.label}>
+                    <Link
+                      href={breadcrumb.href}
+                      color="secondary"
+                      className={classes.breadcrumbLink}
+                      standalone
+                    >
+                      {breadcrumb.label}
+                    </Link>
+                    <RiArrowRightSLine
+                      className={classes.breadcrumbSeparator}
+                      size={16}
+                      color="var(--bui-fg-secondary)"
+                    />
+                  </Fragment>
+                ))}
+              <h2 className={classes.title}>{title}</h2>
+            </div>
+          )}
         </div>
         <div className={classes.controls}>{customActions}</div>
       </div>
-      {description && (
-        <Text
-          variant="body-medium"
-          color="secondary"
-          className={classes.description}
-        >
-          {descriptionNodes}
-        </Text>
-      )}
-      {metadata && metadata.length > 0 && (
-        <dl className={classes.metaRow}>
-          {metadata.map((item, i) => (
-            <div key={`${i}:${item.label}`} className={classes.metaItem}>
-              <dt>
-                <Text variant="body-medium" color="secondary">
-                  {item.label}
-                </Text>
-              </dt>
-              <dd>
-                {typeof item.value === 'string' ? (
-                  <Text variant="body-medium">{item.value}</Text>
-                ) : (
-                  item.value
-                )}
-              </dd>
-            </div>
-          ))}
-        </dl>
-      )}
-      {tabs && (
-        <div className={classes.tabsWrapper}>
-          <HeaderNav tabs={tabs} activeTabId={activeTabId} />
-        </div>
-      )}
-    </Container>
+      <div className={classes.headerBottom} data-sticky={sticky || undefined}>
+        {description && (
+          <Text
+            variant="body-medium"
+            color="secondary"
+            className={classes.description}
+          >
+            {descriptionNodes}
+          </Text>
+        )}
+        {metadata && metadata.length > 0 && (
+          <dl className={classes.metaRow}>
+            {metadata.map((item, i) => (
+              <div key={`${i}:${item.label}`} className={classes.metaItem}>
+                <dt>
+                  <Text variant="body-medium" color="secondary">
+                    {item.label}
+                  </Text>
+                </dt>
+                <dd>
+                  {typeof item.value === 'string' ? (
+                    <Text variant="body-medium">{item.value}</Text>
+                  ) : (
+                    item.value
+                  )}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        )}
+        {tabs && (
+          <div className={classes.tabsWrapper}>
+            <HeaderNav tabs={tabs} activeTabId={activeTabId} />
+          </div>
+        )}
+      </div>
+    </>
   );
 };
 

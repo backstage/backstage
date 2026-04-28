@@ -8317,8 +8317,8 @@ __metadata:
   linkType: hard
 
 "@codemirror/language@npm:^6.0.0":
-  version: 6.12.2
-  resolution: "@codemirror/language@npm:6.12.2"
+  version: 6.12.3
+  resolution: "@codemirror/language@npm:6.12.3"
   dependencies:
     "@codemirror/state": "npm:^6.0.0"
     "@codemirror/view": "npm:^6.23.0"
@@ -8326,7 +8326,7 @@ __metadata:
     "@lezer/highlight": "npm:^1.0.0"
     "@lezer/lr": "npm:^1.0.0"
     style-mod: "npm:^4.0.0"
-  checksum: 10/9afc704e17cad4782b68ad02869503a27103c4c3ac6927d2ffa3c6decfad627ade40b0ed78d1d6e941b2e879a7a79bda0d573e58604f3923f9e1f3311108ec36
+  checksum: 10/d33f2736138e549e1db268b6539c13bd082c3f96e24384a492db939942ca11ac1da546ef7553e6ea4ee13dcaa6593f64f42b5e5a413d00eba3e996ffe50fe8e7
   languageName: node
   linkType: hard
 
@@ -8361,12 +8361,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/state@npm:^6.0.0, @codemirror/state@npm:^6.1.1, @codemirror/state@npm:^6.5.0":
-  version: 6.5.0
-  resolution: "@codemirror/state@npm:6.5.0"
+"@codemirror/state@npm:^6.0.0, @codemirror/state@npm:^6.1.1, @codemirror/state@npm:^6.6.0":
+  version: 6.6.0
+  resolution: "@codemirror/state@npm:6.6.0"
   dependencies:
     "@marijn/find-cluster-break": "npm:^1.0.0"
-  checksum: 10/7d29461ee05851b03aadd84fed5ce55430b396097954cf47f464840a0b9af3f896375c0fc52726c50039e58bb25755e9a55ad63c6ba65646ac49e62af9cc35b6
+  checksum: 10/5d624f3c8832b287d76ebb5f57c01327641875c12c58ada2a97f958dc4df8c3bb0a1ad08ed370300a4a929ee8d5c7f14a397449a0d075ac3129d60d85f077441
   languageName: node
   linkType: hard
 
@@ -8383,14 +8383,14 @@ __metadata:
   linkType: hard
 
 "@codemirror/view@npm:^6.0.0, @codemirror/view@npm:^6.23.0":
-  version: 6.39.16
-  resolution: "@codemirror/view@npm:6.39.16"
+  version: 6.41.1
+  resolution: "@codemirror/view@npm:6.41.1"
   dependencies:
-    "@codemirror/state": "npm:^6.5.0"
+    "@codemirror/state": "npm:^6.6.0"
     crelt: "npm:^1.0.6"
     style-mod: "npm:^4.1.0"
     w3c-keyname: "npm:^2.2.4"
-  checksum: 10/199576febda2a91fe7676b8708627ed2e38d7e964ec8258331422fe7c7f89003eee2de7dec828e09c046de005742fd476cae6ceebc7bd994744f771253bfcbf3
+  checksum: 10/ab8156db1012f94ac39d603da4c397ab1de8877f941d0cf67f79cd09fffe9f39d5de8a10611a788ce9d5a88cad2633445880955fd0dc1ad67813cbf9be97774a
   languageName: node
   linkType: hard
 
@@ -21043,9 +21043,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@uiw/codemirror-extensions-basic-setup@npm:4.25.8":
-  version: 4.25.8
-  resolution: "@uiw/codemirror-extensions-basic-setup@npm:4.25.8"
+"@uiw/codemirror-extensions-basic-setup@npm:4.25.9":
+  version: 4.25.9
+  resolution: "@uiw/codemirror-extensions-basic-setup@npm:4.25.9"
   dependencies:
     "@codemirror/autocomplete": "npm:^6.0.0"
     "@codemirror/commands": "npm:^6.0.0"
@@ -21062,19 +21062,19 @@ __metadata:
     "@codemirror/search": ">=6.0.0"
     "@codemirror/state": ">=6.0.0"
     "@codemirror/view": ">=6.0.0"
-  checksum: 10/a8d83465f9f3393b6e95d98ae7f3616ad57f819bce64224831d3db19647524538fc013973074a63551afa69daad9a8ab05f2e5c7441db7e30e722495d7e991d3
+  checksum: 10/bab06a40bdd8fb99a0af5115511cdb812c93aac2b93ccd8a02bdf8ea06098d6be2ce1302efc560a3b577171a5cd87d34c3215e523f21450ba100b147dfcb975c
   languageName: node
   linkType: hard
 
 "@uiw/react-codemirror@npm:^4.9.3":
-  version: 4.25.8
-  resolution: "@uiw/react-codemirror@npm:4.25.8"
+  version: 4.25.9
+  resolution: "@uiw/react-codemirror@npm:4.25.9"
   dependencies:
     "@babel/runtime": "npm:^7.18.6"
     "@codemirror/commands": "npm:^6.1.0"
     "@codemirror/state": "npm:^6.1.1"
     "@codemirror/theme-one-dark": "npm:^6.0.0"
-    "@uiw/codemirror-extensions-basic-setup": "npm:4.25.8"
+    "@uiw/codemirror-extensions-basic-setup": "npm:4.25.9"
     codemirror: "npm:^6.0.0"
   peerDependencies:
     "@babel/runtime": ">=7.11.0"
@@ -21084,7 +21084,7 @@ __metadata:
     codemirror: ">=6.0.0"
     react: ">=17.0.0"
     react-dom: ">=17.0.0"
-  checksum: 10/8c974e22dad1ad6231f33f7db42cd5b68caaf9bea545539b06b8a89dda3427eebadf47c8f48ee0d74cdf5a25000a8fcc02bac9fe560b624955eedf1f9bb47a85
+  checksum: 10/02c6ababa9307cf10aee5b32db1a0e5885485960819d708cd154bc218cf4d8b182b5fb49fa7386014401d71c8391ce211b29b2de201ad1fdece2c1716d09a74d
   languageName: node
   linkType: hard
 

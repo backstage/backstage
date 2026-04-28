@@ -50,26 +50,11 @@ export default definePreview({
         dynamicTitle: true,
       },
     },
-    background: {
-      name: 'Background',
-      description: 'Global background for components',
-      defaultValue: 'app',
-      toolbar: {
-        icon: 'contrast',
-        items: [
-          { value: 'app', title: 'App Background' },
-          { value: 'neutral-1', title: 'Neutral 1 Background' },
-          { value: 'neutral-2', title: 'Neutral 2 Background' },
-          { value: 'neutral-3', title: 'Neutral 3 Background' },
-        ],
-      },
-    },
   },
 
   initialGlobals: {
     themeMode: 'light',
     themeName: 'backstage',
-    background: 'app',
   },
 
   parameters: {
@@ -143,7 +128,6 @@ export default definePreview({
         globals.themeMode === 'light' ? themes.light : themes.dark;
       const selectedThemeMode = globals.themeMode || 'light';
       const selectedThemeName = globals.themeName || 'backstage';
-      const selectedBackground = globals.background || 'app';
       const isFullscreen = context.parameters.layout === 'fullscreen';
 
       useEffect(() => {
@@ -155,15 +139,13 @@ export default definePreview({
           document.body.removeAttribute('data-theme-mode');
           document.body.removeAttribute('data-theme-name');
         };
-      }, [selectedTheme, selectedThemeName]);
+      }, [selectedThemeMode, selectedThemeName]);
 
       useEffect(() => {
         appThemeApi.setActiveThemeId(selectedThemeMode);
       }, [selectedThemeMode]);
 
       document.body.style.backgroundColor = 'var(--bui-bg-app)';
-      document.body.style.padding =
-        isFullscreen && selectedBackground !== 'app' ? '1rem' : '';
       const docsStoryElements = document.getElementsByClassName('docs-story');
       Array.from(docsStoryElements).forEach(element => {
         (element as HTMLElement).style.backgroundColor = 'var(--bui-bg-app)';
@@ -174,18 +156,23 @@ export default definePreview({
           {/* @ts-ignore */}
           <TestApiProvider apis={apis}>
             <AlertDisplay />
-            {Array.from({
-              length:
-                selectedBackground === 'app'
-                  ? 0
-                  : parseInt(selectedBackground.split('-')[1], 10),
-            }).reduce<React.ReactNode>(
-              children => (
-                <Box bg="neutral" p="4">
-                  {children}
-                </Box>
-              ),
-              <Story />,
+            {selectedThemeName === 'spotify' ? (
+              <Box
+                bg="neutral"
+                m={isFullscreen ? '4' : undefined}
+                style={{
+                  borderRadius: 'var(--bui-radius-3)',
+                  height: isFullscreen
+                    ? 'calc(100vh - (var(--bui-space-4) * 2))'
+                    : undefined,
+                  overflow: 'auto',
+                  overscrollBehavior: 'none',
+                }}
+              >
+                <Story />
+              </Box>
+            ) : (
+              <Story />
             )}
           </TestApiProvider>
         </UnifiedThemeProvider>

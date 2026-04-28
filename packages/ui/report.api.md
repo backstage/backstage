@@ -1579,10 +1579,20 @@ export const HeaderDefinition: {
   readonly styles: {
     readonly [key: string]: string;
   };
+  readonly bg: 'consumer';
   readonly classNames: {
-    readonly root: 'bui-Header';
+    readonly headerTop: 'bui-HeaderTop';
+    readonly stickySentinel: 'bui-HeaderStickySentinel';
     readonly content: 'bui-HeaderContent';
+    readonly headerBottom: 'bui-HeaderBottom';
     readonly breadcrumbs: 'bui-HeaderBreadcrumbs';
+    readonly breadcrumbsSmall: 'bui-HeaderBreadcrumbsSmall';
+    readonly breadcrumbLink: 'bui-HeaderBreadcrumbLink';
+    readonly breadcrumbLinkSmall: 'bui-HeaderBreadcrumbLinkSmall';
+    readonly breadcrumbSeparator: 'bui-HeaderBreadcrumbSeparator';
+    readonly titleStack: 'bui-HeaderTitleStack';
+    readonly title: 'bui-HeaderTitle';
+    readonly titleSmall: 'bui-HeaderTitleSmall';
     readonly tabsWrapper: 'bui-HeaderTabsWrapper';
     readonly controls: 'bui-HeaderControls';
     readonly tags: 'bui-HeaderTags';
@@ -1601,6 +1611,7 @@ export const HeaderDefinition: {
     readonly tags: {};
     readonly metadata: {};
     readonly className: {};
+    readonly sticky: {};
   };
 };
 
@@ -1731,6 +1742,7 @@ export interface HeaderOwnProps {
   description?: string;
   // (undocumented)
   metadata?: HeaderMetadataItem[];
+  sticky?: boolean;
   // (undocumented)
   tabs?: HeaderNavTabItem[];
   // (undocumented)
@@ -1750,10 +1762,20 @@ export const HeaderPageDefinition: {
   readonly styles: {
     readonly [key: string]: string;
   };
+  readonly bg: 'consumer';
   readonly classNames: {
-    readonly root: 'bui-Header';
+    readonly headerTop: 'bui-HeaderTop';
+    readonly stickySentinel: 'bui-HeaderStickySentinel';
     readonly content: 'bui-HeaderContent';
+    readonly headerBottom: 'bui-HeaderBottom';
     readonly breadcrumbs: 'bui-HeaderBreadcrumbs';
+    readonly breadcrumbsSmall: 'bui-HeaderBreadcrumbsSmall';
+    readonly breadcrumbLink: 'bui-HeaderBreadcrumbLink';
+    readonly breadcrumbLinkSmall: 'bui-HeaderBreadcrumbLinkSmall';
+    readonly breadcrumbSeparator: 'bui-HeaderBreadcrumbSeparator';
+    readonly titleStack: 'bui-HeaderTitleStack';
+    readonly title: 'bui-HeaderTitle';
+    readonly titleSmall: 'bui-HeaderTitleSmall';
     readonly tabsWrapper: 'bui-HeaderTabsWrapper';
     readonly controls: 'bui-HeaderControls';
     readonly tags: 'bui-HeaderTags';
@@ -1772,6 +1794,7 @@ export const HeaderPageDefinition: {
     readonly tags: {};
     readonly metadata: {};
     readonly className: {};
+    readonly sticky: {};
   };
 };
 

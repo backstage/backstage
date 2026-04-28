@@ -24,6 +24,7 @@ import { MemoryRouter } from 'react-router-dom';
 import { BUIProvider } from '../../provider';
 import { Button, ButtonIcon, MenuTrigger, Menu, MenuItem } from '../../';
 import { RiMore2Line } from '@remixicon/react';
+import { Container } from '../Container';
 
 const meta = preview.meta({
   title: 'Backstage UI/Header',
@@ -392,4 +393,128 @@ export const WithExplicitActiveTab = meta.story({
     tabs,
     activeTabId: 'campaigns',
   },
+});
+
+export const NonSticky = meta.story({
+  decorators: [withRouter],
+  render: () => (
+    <>
+      <Header
+        title="Sticky Page Title"
+        description="This is a description of the page that scrolls away when you scroll down."
+        tags={[
+          { label: 'TypeScript' },
+          { label: 'Platform', href: '/platform' },
+        ]}
+        metadata={[
+          { label: 'Owner', value: 'platform-team' },
+          { label: 'Type', value: 'website' },
+        ]}
+        customActions={<Button>Custom action</Button>}
+      />
+      <Container pb="3">
+        {Array.from({ length: 60 }, (_, i) => (
+          <p key={i} style={{ marginBottom: '16px' }}>
+            Scroll down to see the entire header scroll away with the rest of
+            the page content. Line {i + 1}.
+          </p>
+        ))}
+      </Container>
+    </>
+  ),
+});
+
+export const Sticky = meta.story({
+  decorators: [withRouter],
+  render: () => (
+    <>
+      <Header
+        title="Sticky Page Title"
+        sticky
+        description="This is a description of the page that scrolls away when you scroll down."
+        tags={[
+          { label: 'TypeScript' },
+          { label: 'Platform', href: '/platform' },
+        ]}
+        metadata={[
+          { label: 'Owner', value: 'platform-team' },
+          { label: 'Type', value: 'website' },
+        ]}
+        customActions={<Button>Custom action</Button>}
+      />
+      <Container pb="3">
+        {Array.from({ length: 60 }, (_, i) => (
+          <p key={i} style={{ marginBottom: '16px' }}>
+            Scroll down to see the title bar stick to the top while the tags,
+            description, and metadata scroll away. Line {i + 1}.
+          </p>
+        ))}
+      </Container>
+    </>
+  ),
+});
+
+export const StickyWithLongTitle = meta.story({
+  decorators: [withRouter],
+  render: () => (
+    <>
+      <Header
+        title="This is a very long page title that should demonstrate how the sticky Header behaves when the title takes up significantly more horizontal space than usual"
+        sticky
+        description="This is a description of the page that scrolls away when you scroll down."
+        tags={[
+          { label: 'TypeScript' },
+          { label: 'Platform', href: '/platform' },
+        ]}
+        metadata={[
+          { label: 'Owner', value: 'platform-team' },
+          { label: 'Type', value: 'website' },
+        ]}
+        customActions={<Button>Custom action</Button>}
+      />
+      <Container pb="3">
+        {Array.from({ length: 60 }, (_, i) => (
+          <p key={i} style={{ marginBottom: '16px' }}>
+            Scroll down to see the long title bar stick to the top while the
+            tags, description, and metadata scroll away. Line {i + 1}.
+          </p>
+        ))}
+      </Container>
+    </>
+  ),
+});
+
+export const StickyWithBreadcrumbsAndLongTitle = meta.story({
+  decorators: [withRouter],
+  render: () => (
+    <>
+      <Header
+        title="This is a very long page title that should demonstrate how sticky breadcrumbs and titles behave when both need to fit in the compact stuck state"
+        sticky
+        breadcrumbs={[
+          { label: 'Home', href: '/' },
+          { label: 'Very Long Breadcrumb Name', href: '/long-breadcrumb' },
+        ]}
+        description="This is a description of the page that scrolls away when you scroll down."
+        tags={[
+          { label: 'TypeScript' },
+          { label: 'Platform', href: '/platform' },
+        ]}
+        metadata={[
+          { label: 'Owner', value: 'platform-team' },
+          { label: 'Type', value: 'website' },
+        ]}
+        customActions={<Button>Custom action</Button>}
+      />
+      <Container pb="3">
+        {Array.from({ length: 60 }, (_, i) => (
+          <p key={i} style={{ marginBottom: '16px' }}>
+            Scroll down to see the breadcrumb and long title bar stick to the
+            top while the tags, description, and metadata scroll away. Line{' '}
+            {i + 1}.
+          </p>
+        ))}
+      </Container>
+    </>
+  ),
 });
