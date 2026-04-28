@@ -12,8 +12,14 @@ import {
   Searchable,
   MultipleSelection,
   SearchableMultiple,
+  WithSections,
+  SearchableWithSections,
 } from './components';
-import { selectPropDefs } from './props-definition';
+import {
+  selectPropDefs,
+  optionPropDefs,
+  optionSectionPropDefs,
+} from './props-definition';
 import {
   selectUsageSnippet,
   selectDefaultSnippet,
@@ -26,6 +32,8 @@ import {
   selectMultipleSnippet,
   selectSearchableMultipleSnippet,
   selectDisabledOptionsSnippet,
+  selectSectionsSnippet,
+  selectSearchableSectionsSnippet,
 } from './snippets';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
@@ -57,6 +65,18 @@ export const reactAriaUrls = {
 <PropsTable data={selectPropDefs} />
 
 <ReactAriaLink component="Select" href={reactAriaUrls.select} />
+
+### Option types
+
+The `options` prop accepts an array containing either of the following shapes.
+
+#### `Option`
+
+<PropsTable data={optionPropDefs} />
+
+#### `OptionSection`
+
+<PropsTable data={optionSectionPropDefs} />
 
 ## Examples
 
@@ -134,6 +154,29 @@ Combine search and multiple selection.
   open
   preview={<SearchableMultiple />}
   code={selectSearchableMultipleSnippet}
+/>
+
+### With sections
+
+Group options under section headings by passing objects with a `title` and a
+nested `options` array.
+
+<Snippet
+  layout="side-by-side"
+  open
+  preview={<WithSections />}
+  code={selectSectionsSnippet}
+/>
+
+### Searchable with sections
+
+Sections are preserved when filtering with `searchable`.
+
+<Snippet
+  layout="side-by-side"
+  open
+  preview={<SearchableWithSections />}
+  code={selectSearchableSectionsSnippet}
 />
 
 ### Responsive

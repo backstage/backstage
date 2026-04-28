@@ -5,30 +5,48 @@ import {
 } from '@/utils/propDefs';
 import { Chip } from '@/components/Chip';
 
+export const optionPropDefs: Record<string, PropDef> = {
+  value: {
+    type: 'string',
+    required: true,
+    description: 'Unique value for the option.',
+  },
+  label: {
+    type: 'string',
+    required: true,
+    description: 'Display text for the option.',
+  },
+  disabled: {
+    type: 'boolean',
+    description: 'Whether the option is disabled.',
+  },
+};
+
+export const optionSectionPropDefs: Record<string, PropDef> = {
+  title: {
+    type: 'string',
+    required: true,
+    description: 'Heading displayed above the grouped options.',
+  },
+  options: {
+    type: 'enum',
+    values: ['Option[]'],
+    required: true,
+    description: 'Options nested inside the section.',
+  },
+};
+
 export const selectPropDefs: Record<string, PropDef> = {
   options: {
-    type: 'complex',
-    description: 'Array of options to display in the dropdown.',
-    complexType: {
-      name: 'SelectOption[]',
-      properties: {
-        value: {
-          type: 'string',
-          required: true,
-          description: 'Unique value for the option.',
-        },
-        label: {
-          type: 'string',
-          required: true,
-          description: 'Display text for the option.',
-        },
-        disabled: {
-          type: 'boolean',
-          required: false,
-          description: 'Whether the option is disabled.',
-        },
-      },
-    },
+    type: 'enum',
+    values: ['(Option | OptionSection)[]'],
+    description: (
+      <>
+        Options to display in the dropdown. Pass <Chip>Option</Chip> objects
+        directly, or <Chip>OptionSection</Chip> objects to render grouped
+        options under section headings.
+      </>
+    ),
   },
   selectionMode: {
     type: 'enum',

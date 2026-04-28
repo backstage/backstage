@@ -40,6 +40,33 @@ const skills = [
   { value: 'swift', label: 'Swift' },
 ];
 
+const sectionedFonts = [
+  {
+    title: 'Serif Fonts',
+    options: [
+      { value: 'times', label: 'Times New Roman' },
+      { value: 'georgia', label: 'Georgia' },
+      { value: 'garamond', label: 'Garamond' },
+    ],
+  },
+  {
+    title: 'Sans-Serif Fonts',
+    options: [
+      { value: 'arial', label: 'Arial' },
+      { value: 'helvetica', label: 'Helvetica' },
+      { value: 'verdana', label: 'Verdana' },
+    ],
+  },
+  {
+    title: 'Monospace Fonts',
+    options: [
+      { value: 'courier', label: 'Courier New' },
+      { value: 'consolas', label: 'Consolas' },
+      { value: 'fira', label: 'Fira Code' },
+    ],
+  },
+];
+
 export const Preview = () => (
   <Select
     label="Font Family"
@@ -145,6 +172,26 @@ export const SearchableMultiple = () => (
     searchPlaceholder="Filter skills..."
     options={skills}
     name="skills"
+    style={{ width: 300 }}
+  />
+);
+
+export const WithSections = () => (
+  <Select
+    label="Font Family"
+    options={sectionedFonts}
+    name="font"
+    style={{ width: 300 }}
+  />
+);
+
+export const SearchableWithSections = () => (
+  <Select
+    label="Font Family"
+    searchable
+    searchPlaceholder="Search fonts..."
+    options={sectionedFonts}
+    name="font"
     style={{ width: 300 }}
   />
 );
