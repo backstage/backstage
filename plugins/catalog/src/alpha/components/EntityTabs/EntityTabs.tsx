@@ -16,9 +16,12 @@
 import { ReactElement, useMemo } from 'react';
 import { Helmet } from 'react-helmet';
 import { matchRoutes, useParams, useRoutes } from 'react-router-dom';
+import { WarningPanel, Content } from '@backstage/core-components';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { EntityTabsPanel } from './EntityTabsPanel';
 import { EntityTabsList } from './EntityTabsList';
 import { EntityContentGroupDefinitions } from '@backstage/plugin-catalog-react/alpha';
+import { catalogTranslationRef } from '../../translation';
 
 type SubRoute = {
   group?: string;
@@ -27,6 +30,11 @@ type SubRoute = {
   icon?: string | ReactElement;
   children: JSX.Element;
 };
+
+function normalizeRoutePath(path: string): string {
+  const trimmed = path.replace(/^\/+|\/+$/g, '');
+  return trimmed ? `${trimmed}/*` : '';
+}
 
 export function useSelectedSubRoute(subRoutes: SubRoute[]): {
   index: number;
@@ -37,21 +45,17 @@ export function useSelectedSubRoute(subRoutes: SubRoute[]): {
 
   const routes = subRoutes.map(({ path, children }) => ({
     caseSensitive: false,
-    path: `${path}/*`,
+    path: normalizeRoutePath(path),
     element: children,
   }));
 
-  // TODO: remove once react-router updated
-  const sortedRoutes = routes.sort((a, b) =>
-    // remove "/*" symbols from path end before comparing
+  // Sort longer paths first so more specific matches win.
+  const sortedRoutes = [...routes].sort((a, b) =>
     b.path.replace(/\/\*$/, '').localeCompare(a.path.replace(/\/\*$/, '')),
   );
 
-  const element = useRoutes(sortedRoutes) ?? subRoutes[0]?.children;
+  const element = useRoutes(sortedRoutes) ?? undefined;
 
-  // TODO(Rugvip): Once we only support v6 stable we can always prefix
-  // This avoids having a double / prefix for react-router v6 beta, which in turn breaks
-  // the tab highlighting when using relative paths for the tabs.
   let currentRoute = params['*'] ?? '';
   if (!currentRoute.startsWith('/')) {
     currentRoute = `/${currentRoute}`;
@@ -59,13 +63,15 @@ export function useSelectedSubRoute(subRoutes: SubRoute[]): {
 
   const [matchedRoute] = matchRoutes(sortedRoutes, currentRoute) ?? [];
   const foundIndex = matchedRoute
-    ? subRoutes.findIndex(t => `${t.path}/*` === matchedRoute.route.path)
-    : 0;
+    ? subRoutes.findIndex(
+        t => normalizeRoutePath(t.path) === matchedRoute.route.path,
+      )
+    : -1;
 
   return {
-    index: foundIndex === -1 ? 0 : foundIndex,
+    index: foundIndex,
     element,
-    route: subRoutes[foundIndex] ?? subRoutes[0],
+    route: subRoutes[foundIndex],
   };
 }
 
@@ -78,13 +84,14 @@ type EntityTabsProps = {
 
 export function EntityTabs(props: EntityTabsProps) {
   const { routes, groupDefinitions, defaultContentOrder, showIcons } = props;
+  const { t } = useTranslationRef(catalogTranslationRef);
 
   const { index, route, element } = useSelectedSubRoute(routes);
 
   const tabs = useMemo(
     () =>
-      routes.map(t => {
-        const { path, title, group, icon } = t;
+      routes.map(r => {
+        const { path, title, group, icon } = r;
         let to = path;
         // Remove trailing /*
         to = to.replace(/\/\*$/, '');
@@ -112,7 +119,14 @@ export function EntityTabs(props: EntityTabsProps) {
       />
       <EntityTabsPanel>
         <Helmet title={route?.title} />
-        {element}
+        {element ?? (
+          <Content>
+            <WarningPanel
+              title={t('entityTabs.notFoundTitle')}
+              message={t('entityTabs.notFoundMessage')}
+            />
+          </Content>
+        )}
       </EntityTabsPanel>
     </>
   );

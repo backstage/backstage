@@ -139,7 +139,7 @@ describe('EntityTabs', () => {
   ];
 
   describe('useSelectedSubRoute', () => {
-    it('should render the first route at root path', () => {
+    it('should not match when no route is registered for the root path', () => {
       render(
         <MemoryRouter initialEntries={['/']}>
           <Routes>
@@ -151,10 +151,74 @@ describe('EntityTabs', () => {
         </MemoryRouter>,
       );
 
+      expect(screen.getByTestId('selected-index')).toHaveTextContent('-1');
+      expect(screen.getByTestId('element-container')).toBeEmptyDOMElement();
+    });
+
+    it('should match the index route when path is "/"', () => {
+      const subRoutesWithIndex = [
+        {
+          group: 'default',
+          path: '/',
+          title: 'Overview',
+          children: <div>Overview Content</div>,
+        },
+        {
+          group: 'default',
+          path: '/details',
+          title: 'Details',
+          children: <div>Details Content</div>,
+        },
+      ];
+
+      render(
+        <MemoryRouter initialEntries={['/']}>
+          <Routes>
+            <Route
+              path="/*"
+              element={<TestSubRouteHook subRoutes={subRoutesWithIndex} />}
+            />
+          </Routes>
+        </MemoryRouter>,
+      );
+
       expect(screen.getByTestId('selected-index')).toHaveTextContent('0');
       expect(screen.getByTestId('selected-route-title')).toHaveTextContent(
         'Overview',
       );
+      expect(screen.getByText('Overview Content')).toBeInTheDocument();
+    });
+
+    it('should not let the index route swallow unknown sub-paths', () => {
+      const subRoutesWithIndex = [
+        {
+          group: 'default',
+          path: '/',
+          title: 'Overview',
+          children: <div>Overview Content</div>,
+        },
+        {
+          group: 'default',
+          path: '/details',
+          title: 'Details',
+          children: <div>Details Content</div>,
+        },
+      ];
+
+      render(
+        <MemoryRouter initialEntries={['/blob']}>
+          <Routes>
+            <Route
+              path="/*"
+              element={<TestSubRouteHook subRoutes={subRoutesWithIndex} />}
+            />
+          </Routes>
+        </MemoryRouter>,
+      );
+
+      expect(screen.getByTestId('selected-index')).toHaveTextContent('-1');
+      expect(screen.queryByText('Overview Content')).not.toBeInTheDocument();
+      expect(screen.queryByText('Details Content')).not.toBeInTheDocument();
     });
 
     it('should render a route at non-root path', () => {
@@ -276,7 +340,7 @@ describe('EntityTabs', () => {
       );
     });
 
-    it('should fall back to first route for unknown paths', () => {
+    it('should not match unknown paths', () => {
       render(
         <MemoryRouter initialEntries={['/unknown-path']}>
           <Routes>
@@ -288,10 +352,8 @@ describe('EntityTabs', () => {
         </MemoryRouter>,
       );
 
-      expect(screen.getByTestId('selected-index')).toHaveTextContent('0');
-      expect(screen.getByTestId('selected-route-title')).toHaveTextContent(
-        'Overview',
-      );
+      expect(screen.getByTestId('selected-index')).toHaveTextContent('-1');
+      expect(screen.getByTestId('element-container')).toBeEmptyDOMElement();
     });
   });
 });
