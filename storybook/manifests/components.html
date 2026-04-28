@@ -576,13 +576,13 @@
 <header>
   <div class="wrap">
     <h1>Manifest Debugger</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">50 components ok</span><span class="filter-pill ok" aria-disabled="true">471 stories ok</span></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">50 components ok</span><span class="filter-pill ok" aria-disabled="true">473 stories ok</span></div>
   </div>
 </header>
 <main>
   <div class="wrap">
     <div class="note info" style="margin-bottom: 16px;">
-            <strong>Tip:</strong> You are using <code>react-docgen</code> (the default). Generation took <strong>3.4s</strong>. For higher quality prop types, consider switching to <code>react-docgen-typescript</code> in your <code>main.ts</code>:
+            <strong>Tip:</strong> You are using <code>react-docgen</code> (the default). Generation took <strong>3.2s</strong>. For higher quality prop types, consider switching to <code>react-docgen-typescript</code> in your <code>main.ts</code>:
             <pre><code>typescript: {
   reactDocgen: 'react-docgen-typescript',
 }</code></pre>
@@ -11777,7 +11777,7 @@ import { RiCactusLine, RiEBike2Line } from "@remixicon/react";</code></pre>
       <div class="badges">
         <label for="c-35-backstage-ui-select-props" class="badge ok as-toggle">11 prop types</label>
         
-        <label for="c-35-backstage-ui-select-stories" class="badge ok as-toggle">22 stories</label>
+        <label for="c-35-backstage-ui-select-stories" class="badge ok as-toggle">24 stories</label>
         
       </div>
     </div>
@@ -11820,9 +11820,10 @@ isRequired?: boolean
 label?: FieldLabelProps[&#39;label&#39;]
 
 /**
- * The options of the select field
+ * The options of the select field. Pass flat options, option sections for
+ * grouped display, or a mix of both in the same array.
  */
-options?: Array&lt;Option&gt;
+options?: Array&lt;Option | OptionSection&gt;
 
 /**
  * Enable search/filter functionality in the dropdown
@@ -11922,6 +11923,34 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
     selectionMode=&quot;multiple&quot;
     searchPlaceholder=&quot;Filter skills...&quot;
     options={skills} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Sections</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithSections = () =&gt; &lt;Select
+    style={{ width: 300 }}
+    label=&quot;Font Family&quot;
+    options={sectionedOptions}
+    name=&quot;font&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Searchable With Sections</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const SearchableWithSections = () =&gt; &lt;Select
+    style={{ width: 300 }}
+    label=&quot;Font Family&quot;
+    searchable
+    searchPlaceholder=&quot;Search fonts...&quot;
+    options={sectionedOptions}
+    name=&quot;font&quot; /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
