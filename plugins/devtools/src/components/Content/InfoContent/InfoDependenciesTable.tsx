@@ -28,35 +28,27 @@ import {
   Text,
   useTable,
 } from '@backstage/ui';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import styles from './InfoDependenciesTable.module.css';
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    container: {
-      backgroundColor: theme.palette.background.paper,
-      padding: theme.spacing(1),
-      borderRadius: theme.shape.borderRadius,
-      boxShadow: theme.shadows[1],
-    },
-    header: {
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-    },
-    searchField: {
-      width: theme.spacing(36),
-      maxWidth: theme.spacing(36),
-    },
-  }),
-);
+interface PackageDependencyWithId extends PackageDependency {
+  id: string;
+}
 
 export const InfoDependenciesTable = ({
   infoDependencies,
 }: {
   infoDependencies: PackageDependency[] | undefined;
 }) => {
-  const classes = useStyles();
-  const columns = useMemo<ColumnConfig<PackageDependency>[]>(
+  const infoDependenciesWithId = useMemo(
+    () =>
+      (infoDependencies ?? []).map(item => ({
+        ...item,
+        id: item.name,
+      })),
+    [infoDependencies],
+  );
+
+  const columns = useMemo<ColumnConfig<PackageDependencyWithId>[]>(
     () => [
       {
         id: 'name',
@@ -76,17 +68,23 @@ export const InfoDependenciesTable = ({
     [],
   );
 
-  const searchFn = useCallback((items: PackageDependency[], query: string) => {
-    const lowerQuery = query.toLowerCase();
-    return items.filter(
-      item =>
-        item.name.toLowerCase().includes(lowerQuery) ||
-        item.versions.toLowerCase().includes(lowerQuery),
-    );
-  }, []);
+  const searchFn = useCallback(
+    (items: PackageDependencyWithId[], query: string) => {
+      const lowerQuery = query.toLowerCase();
+      return items.filter(
+        item =>
+          item.name.toLowerCase().includes(lowerQuery) ||
+          item.versions.toLowerCase().includes(lowerQuery),
+      );
+    },
+    [],
+  );
 
   const sortFn = useCallback(
-    (items: PackageDependency[], { column, direction }: SortDescriptor) => {
+    (
+      items: PackageDependencyWithId[],
+      { column, direction }: SortDescriptor,
+    ) => {
       if (column !== 'name' && column !== 'versions') {
         return items;
       }
@@ -102,7 +100,7 @@ export const InfoDependenciesTable = ({
 
   const { tableProps, search } = useTable({
     mode: 'complete',
-    data: infoDependencies || [],
+    data: infoDependenciesWithId || [],
     initialSort: { column: 'name', direction: 'ascending' },
     paginationOptions: {
       pageSize: 15,
@@ -113,13 +111,13 @@ export const InfoDependenciesTable = ({
   });
 
   return (
-    <Card className={classes.container}>
-      <CardHeader className={classes.header}>
+    <Card className={styles.container}>
+      <CardHeader className={styles.header}>
         <Text variant="title-small" weight="bold" as="h2">
           Package Dependencies
         </Text>
         <SearchField
-          className={classes.searchField}
+          className={styles.searchField}
           aria-label="Search"
           placeholder="Search..."
           {...search}
