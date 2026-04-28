@@ -1,5 +1,19 @@
 # @backstage/cli-module-build
 
+## 0.1.3-next.0
+
+### Patch Changes
+
+- ed4ee6f: Fixed config path resolution for the embedded-postgres database client detection to resolve paths relative to the target package directory rather than the workspace root.
+- 41070b8: Upgraded `@module-federation/enhanced`, `@module-federation/runtime`, and `@module-federation/sdk` from `^0.21.6` to `^2.3.3` to address known vulnerabilities.
+- Updated dependencies
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/module-federation-common@0.1.4-next.0
+  - @backstage/cli-common@0.2.2-next.0
+  - @backstage/cli-node@0.3.2-next.0
+  - @backstage/config@1.3.8-next.0
+  - @backstage/config-loader@1.10.11-next.0
+
 ## 0.1.1
 
 ### Patch Changes

@@ -1,5 +1,15 @@
 # @backstage/frontend-dynamic-feature-loader
 
+## 0.1.12-next.0
+
+### Patch Changes
+
+- 41070b8: Upgraded `@module-federation/enhanced`, `@module-federation/runtime`, and `@module-federation/sdk` from `^0.21.6` to `^2.3.3` to address known vulnerabilities.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.17.0-next.0
+  - @backstage/module-federation-common@0.1.4-next.0
+  - @backstage/config@1.3.8-next.0
+
 ## 0.1.11
 
 ### Patch Changes

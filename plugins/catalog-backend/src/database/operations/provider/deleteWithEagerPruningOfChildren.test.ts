@@ -16,7 +16,7 @@
 
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { Knex } from 'knex';
-import * as uuid from 'uuid';
+import { randomUUID as uuid } from 'node:crypto';
 import { applyDatabaseMigrations } from '../../migrations';
 import {
   DbRefreshStateReferencesRow,
@@ -64,7 +64,7 @@ describe('deleteWithEagerPruningOfChildren', () => {
   async function insertEntity(knex: Knex, ...entityRefs: string[]) {
     for (const ref of entityRefs) {
       await knex<DbRefreshStateRow>('refresh_state').insert({
-        entity_id: uuid.v4(),
+        entity_id: uuid(),
         entity_ref: ref,
         unprocessed_entity: '{}',
         processed_entity: '{}',

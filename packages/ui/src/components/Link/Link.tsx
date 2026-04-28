@@ -18,6 +18,7 @@ import { forwardRef, useRef } from 'react';
 import { useLink } from 'react-aria';
 import type { LinkProps } from './types';
 import { useDefinition } from '../../hooks/useDefinition';
+import { useResolvedHref } from '../../hooks/useResolvedHref';
 import { LinkDefinition } from './definition';
 import { getNodeText } from '../../analytics/getNodeText';
 
@@ -32,6 +33,7 @@ const LinkInternal = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
   const linkRef = (ref || internalRef) as React.RefObject<HTMLAnchorElement>;
 
   const { linkProps } = useLink(restProps, linkRef);
+  const resolvedHref = useResolvedHref(restProps.href);
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     linkProps.onClick?.(e);
@@ -49,6 +51,7 @@ const LinkInternal = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
       {...linkProps}
       {...dataAttributes}
       {...(restProps as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
+      href={resolvedHref}
       ref={linkRef}
       title={title}
       className={classes.root}

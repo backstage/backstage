@@ -26,6 +26,7 @@ import { EvaluatePermissionResponse } from '@backstage/plugin-permission-common'
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinitionParameters } from '@backstage/frontend-plugin-api';
+import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
 import { FeatureFlag } from '@backstage/frontend-plugin-api';
 import { FeatureFlagsApi } from '@backstage/frontend-plugin-api';
 import { FeatureFlagsSaveOptions } from '@backstage/frontend-plugin-api';
@@ -444,7 +445,7 @@ export type RenderTestAppOptions<TApiPairs extends any[] = any[]> = {
   features?: FrontendFeature[];
   initialRouteEntries?: string[];
   mountedRoutes?: {
-    [path: string]: RouteRef;
+    [path: string]: RouteRef | ExternalRouteRef;
   };
   apis?: readonly [...TestApiPairs<TApiPairs>];
 };
@@ -473,7 +474,7 @@ export type TestApiProviderProps<TApiPairs extends any[]> = {
 // @public
 export type TestAppOptions<TApiPairs extends any[] = any[]> = {
   mountedRoutes?: {
-    [path: string]: RouteRef;
+    [path: string]: RouteRef | ExternalRouteRef;
   };
   config?: JsonObject;
   features?: FrontendFeature[];

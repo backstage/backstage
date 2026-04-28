@@ -1,5 +1,16 @@
 # @backstage/plugin-kubernetes-node
 
+## 0.4.4-next.0
+
+### Patch Changes
+
+- 0c5e41f: Removed unused dependencies that had no imports in source code.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.1-next.0
+  - @backstage/catalog-model@1.8.1-next.0
+  - @backstage/types@1.2.2
+  - @backstage/plugin-kubernetes-common@0.9.12-next.0
+
 ## 0.4.3
 
 ### Patch Changes

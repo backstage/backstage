@@ -25,6 +25,8 @@ export type ButtonOwnProps = {
   destructive?: boolean;
   iconStart?: ReactElement;
   iconEnd?: ReactElement;
+  isPending?: boolean;
+  /** @deprecated Use `isPending` instead. */
   loading?: boolean;
   children?: ReactNode;
   className?: string;

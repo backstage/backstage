@@ -196,7 +196,30 @@ export const utilityClassMap = {
     class: 'bui-row-span',
     values: columnsValues,
   },
+  grow: {
+    class: 'bui-grow',
+    cssVar: '--grow',
+    values: [],
+    transform: input => (typeof input === 'boolean' ? Number(input) : input),
+  },
+  shrink: {
+    class: 'bui-shrink',
+    cssVar: '--shrink',
+    values: [],
+    transform: input => (typeof input === 'boolean' ? Number(input) : input),
+  },
+  basis: {
+    class: 'bui-basis',
+    cssVar: '--basis',
+    values: [],
+    transform: input => (typeof input === 'number' ? `${input}px` : input),
+  },
 } as const satisfies Record<
   string,
-  { class: string; cssVar?: string; values: readonly (string | number)[] }
+  {
+    class: string;
+    cssVar?: string;
+    values: readonly (string | number)[];
+    transform?: (input: unknown) => unknown;
+  }
 >;

@@ -166,7 +166,7 @@ export const useTableReturnPropDefs: Record<string, PropDef> = {
     description: (
       <>
         Props to spread onto the <Chip>Table</Chip> component. Includes data,
-        loading, error, pagination, and sort state.
+        isPending, error, pagination, and sort state.
       </>
     ),
   },
@@ -207,10 +207,15 @@ export const tablePropDefs: Record<string, PropDef> = {
     values: ['T[]'],
     description: 'Array of data items to display in the table.',
   },
+  isPending: {
+    type: 'boolean',
+    default: 'false',
+    description: 'Whether the table is in a pending state.',
+  },
   loading: {
     type: 'boolean',
     default: 'false',
-    description: 'Whether the table is in a loading state.',
+    description: 'Deprecated. Use `isPending` instead.',
   },
   isStale: {
     type: 'boolean',
@@ -466,16 +471,21 @@ export const tableRootPropDefs: Record<string, PropDef> = {
       </>
     ),
   },
-  loading: {
+  isPending: {
     type: 'boolean',
     default: 'false',
     description: (
       <>
-        Whether the table is in a loading state (e.g., initial data fetch). Adds{' '}
-        <Chip>aria-busy</Chip> attribute and <Chip>data-loading</Chip> data
+        Whether the table is in a pending state (e.g., initial data fetch). Adds{' '}
+        <Chip>aria-busy</Chip> attribute and <Chip>data-ispending</Chip> data
         attribute for styling.
       </>
     ),
+  },
+  loading: {
+    type: 'boolean',
+    default: 'false',
+    description: 'Deprecated. Use `isPending` instead.',
   },
 };
 

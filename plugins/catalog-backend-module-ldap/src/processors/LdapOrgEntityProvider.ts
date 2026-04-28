@@ -25,7 +25,7 @@ import {
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
 import { merge } from 'lodash';
-import * as uuid from 'uuid';
+import { randomUUID } from 'node:crypto';
 import {
   GroupTransformer,
   LdapClient,
@@ -324,7 +324,7 @@ export class LdapOrgEntityProvider implements EntityProvider {
           const logger = this.options.logger.child({
             class: LdapOrgEntityProvider.prototype.constructor.name,
             taskId: id,
-            taskInstanceId: uuid.v4(),
+            taskInstanceId: randomUUID(),
           });
 
           try {

@@ -42,7 +42,9 @@ export const CardDefinition = defineComponent<CardOwnProps>()({
     target: {},
     rel: {},
     download: {},
+    style: {},
   },
+  utilityProps: ['grow', 'shrink', 'basis'],
 });
 
 /**

@@ -11,6 +11,7 @@
     "sync:changelog:force": "node scripts/sync-changelog.mjs --force"
   },
   "resolutions": {
+    "@remixicon/react": ">=4.6.0 <4.9.0",
     "@types/react": "19.2.10",
     "@types/react-dom": "19.2.3"
   },
@@ -22,7 +23,7 @@
     "@mdx-js/loader": "^3.1.0",
     "@mdx-js/react": "^3.1.0",
     "@next/mdx": "16.2.1",
-    "@remixicon/react": "^4.6.0",
+    "@remixicon/react": ">=4.6.0 <4.9.0",
     "@uiw/codemirror-themes": "^4.23.7",
     "@uiw/react-codemirror": "^4.23.7",
     "clsx": "^2.1.1",

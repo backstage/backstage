@@ -1,5 +1,21 @@
 # @backstage/plugin-notifications
 
+## 0.5.17-next.0
+
+### Patch Changes
+
+- 3846774: Added missing dependencies that were previously only available transitively.
+- e2d9831: Tightened React Aria dependency version ranges from `^` to `~` to prevent unintended minor version upgrades.
+- Updated dependencies
+  - @backstage/core-components@0.18.10-next.0
+  - @backstage/ui@0.15.0-next.0
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/frontend-plugin-api@0.17.0-next.0
+  - @backstage/plugin-notifications-common@0.2.3-next.0
+  - @backstage/core-plugin-api@1.12.6-next.0
+  - @backstage/theme@0.7.3
+  - @backstage/plugin-signals-react@0.0.22-next.0
+
 ## 0.5.16
 
 ### Patch Changes

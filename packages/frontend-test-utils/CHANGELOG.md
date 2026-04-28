@@ -1,5 +1,26 @@
 # @backstage/frontend-test-utils
 
+## 0.5.3-next.0
+
+### Patch Changes
+
+- 0c298f7: Removed internal `mockWithApiFactory` helper in favor of using `attachMockApiFactory` directly.
+- 9279ea8: Added explicit type annotations to `.map()` callback parameters in `renderInTestApp` to avoid implicit `any` errors with newer TypeScript versions.
+- Updated dependencies
+  - @backstage/plugin-app@0.4.6-next.0
+  - @backstage/frontend-app-api@0.16.3-next.0
+  - @backstage/frontend-plugin-api@0.17.0-next.0
+  - @backstage/core-app-api@1.20.1-next.0
+  - @backstage/config@1.3.8-next.0
+  - @backstage/core-plugin-api@1.12.6-next.0
+  - @backstage/filter-predicates@0.1.3-next.0
+  - @backstage/plugin-permission-common@0.9.9-next.0
+  - @backstage/plugin-app-react@0.2.3-next.0
+  - @backstage/test-utils@1.7.18-next.0
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.12
+  - @backstage/plugin-permission-react@0.5.1-next.0
+
 ## 0.5.2
 
 ### Patch Changes

@@ -1,0 +1,406 @@
+/*
+ * Copyright 2025 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@layer tokens, base, components, utilities;
+
+@layer components {
+  /* ============================================================
+     Root
+  ============================================================ */
+
+  .bui-DateRangePicker {
+    display: flex;
+    flex-direction: column;
+    font-family: var(--bui-font-regular);
+    width: 100%;
+    flex-shrink: 0;
+  }
+
+  /* ============================================================
+     Field group — custom container (not reusing any BUI field)
+  ============================================================ */
+
+  .bui-DateRangePickerGroup {
+    display: flex;
+    align-items: center;
+    background-color: var(--bui-bg-neutral-1);
+    border-radius: var(--bui-radius-2);
+    padding: 0 var(--bui-space-1) 0 var(--bui-space-3);
+    width: fit-content;
+    min-width: 280px;
+    max-width: 100%;
+    overflow: clip;
+    transition: box-shadow 0.2s ease-in-out;
+    cursor: text;
+
+    /* bg consumer — auto-increment background based on parent context */
+    &[data-on-bg='neutral-1'] {
+      background-color: var(--bui-bg-neutral-2);
+    }
+
+    &[data-on-bg='neutral-2'] {
+      background-color: var(--bui-bg-neutral-3);
+    }
+
+    &[data-on-bg='neutral-3'] {
+      background-color: var(--bui-bg-neutral-4);
+    }
+
+    &[data-focus-within] {
+      outline: none;
+      box-shadow: inset 0 0 0 1px var(--bui-ring);
+    }
+
+    &[data-invalid] {
+      box-shadow: inset 0 0 0 1px var(--bui-border-danger);
+    }
+
+    &[data-disabled] {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Sizes */
+    &[data-size='small'] {
+      height: 2rem;
+      padding-inline-start: var(--bui-space-2);
+    }
+
+    &[data-size='medium'] {
+      height: 2.5rem;
+      min-width: 290px;
+      padding-inline-end: var(--bui-space-1);
+
+      & .bui-DateRangePickerButton {
+        width: 2rem;
+        height: 2rem;
+      }
+    }
+  }
+
+  /* ============================================================
+     Date fields wrapper — scrollable row of inputs + separator
+  ============================================================ */
+
+  .bui-DateRangePickerDateFields {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    width: fit-content;
+    overflow-x: auto;
+    overflow-y: clip;
+    scrollbar-width: none;
+  }
+
+  /* ============================================================
+     Date inputs
+  ============================================================ */
+
+  .bui-DateRangePickerDateInput {
+    display: inline-flex;
+    align-items: center;
+    width: unset;
+    min-width: unset;
+    padding: unset;
+    border: unset;
+    box-shadow: none;
+    background: none;
+    height: auto;
+
+    &[slot='end'] {
+      flex: 1;
+    }
+  }
+
+  /* ============================================================
+     Date segments (month, day, year literals and placeholders)
+  ============================================================ */
+
+  .bui-DateRangePickerSegment {
+    display: inline-block;
+    padding: var(--bui-space-0_5) var(--bui-space-1);
+    border-radius: var(--bui-radius-1);
+    font-size: var(--bui-font-size-3);
+    font-family: var(--bui-font-regular);
+    font-weight: var(--bui-font-weight-regular);
+    color: var(--bui-fg-primary);
+    caret-color: transparent;
+    outline: none;
+    font-variant-numeric: tabular-nums;
+
+    &[data-placeholder] {
+      color: var(--bui-fg-secondary);
+    }
+
+    &[data-type='literal'] {
+      color: var(--bui-fg-secondary);
+      padding: 0;
+    }
+
+    &[data-focused] {
+      background-color: var(--bui-bg-solid);
+      color: var(--bui-fg-solid);
+      border-radius: var(--bui-radius-1);
+
+      &[data-placeholder] {
+        color: var(--bui-fg-solid);
+      }
+    }
+
+    &[data-disabled] {
+      color: var(--bui-fg-disabled);
+    }
+  }
+
+  /* ============================================================
+     Separator between start and end
+  ============================================================ */
+
+  .bui-DateRangePickerSeparator {
+    color: var(--bui-fg-secondary);
+    font-size: var(--bui-font-size-3);
+    flex-shrink: 0;
+    user-select: none;
+    padding: 0 var(--bui-space-1);
+  }
+
+  /* ============================================================
+     Calendar trigger button
+  ============================================================ */
+
+  .bui-DateRangePickerButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 1.5rem;
+    height: 1.5rem;
+    padding: 0;
+    background: none;
+    border: none;
+    border-radius: var(--bui-radius-2);
+    color: var(--bui-fg-secondary);
+    cursor: pointer;
+    margin-left: auto;
+    transition: color 0.15s ease-in-out;
+    outline: none;
+
+    &[data-hovered] {
+      color: var(--bui-fg-primary);
+    }
+
+    &[data-focus-visible] {
+      box-shadow: inset 0 0 0 1px var(--bui-ring);
+    }
+
+    &[data-pressed] {
+      color: var(--bui-fg-primary);
+    }
+  }
+
+  /* ============================================================
+     Calendar (inside Popover)
+  ============================================================ */
+
+  .bui-DateRangePickerCalendar {
+    width: fit-content;
+    outline: none;
+  }
+
+  .bui-DateRangePickerCalendarHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--bui-space-3);
+  }
+
+  .bui-DateRangePickerCalendarHeading {
+    font-size: var(--bui-font-size-3);
+    font-weight: var(--bui-font-weight-bold);
+    font-family: var(--bui-font-regular);
+    color: var(--bui-fg-primary);
+    flex: 1;
+    text-align: center;
+  }
+
+  .bui-DateRangePickerCalendarNavButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: var(--bui-space-8);
+    height: var(--bui-space-8);
+    background: none;
+    border: none;
+    border-radius: var(--bui-radius-2);
+    color: var(--bui-fg-secondary);
+    cursor: pointer;
+    transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
+
+    &[data-hovered] {
+      background-color: var(--bui-bg-neutral-2);
+      color: var(--bui-fg-primary);
+    }
+
+    &[data-focus-visible] {
+      outline: 2px solid var(--bui-ring);
+      outline-offset: 1px;
+    }
+
+    &[data-pressed] {
+      background-color: var(--bui-bg-neutral-2);
+    }
+  }
+
+  /* ============================================================
+     Calendar grid
+  ============================================================ */
+
+  .bui-DateRangePickerCalendarGrid {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 2px;
+  }
+
+  .bui-DateRangePickerCalendarHeaderCell {
+    font-size: var(--bui-font-size-2);
+    font-weight: var(--bui-font-weight-regular);
+    color: var(--bui-fg-secondary);
+    text-align: center;
+    padding-bottom: var(--bui-space-2);
+    width: 40px;
+  }
+
+  /* ============================================================
+     Calendar cells
+     
+     Technique: isolation: isolate creates a stacking context so
+     that ::before (range fill, z-index: -2) and ::after (circle,
+     z-index: -1) paint behind the cell's text content while still
+     rendering on top of the page background.
+  ============================================================ */
+
+  .bui-DateRangePickerCalendarCell {
+    isolation: isolate;
+    position: relative;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    outline: none;
+    cursor: default;
+    font-size: var(--bui-font-size-3);
+    font-family: var(--bui-font-regular);
+    color: var(--bui-fg-primary);
+
+    &[data-outside-month] {
+      color: var(--bui-fg-disabled);
+    }
+
+    &[data-disabled] {
+      color: var(--bui-fg-disabled);
+      cursor: not-allowed;
+    }
+
+    &[data-unavailable] {
+      color: var(--bui-fg-disabled);
+      cursor: not-allowed;
+      text-decoration: line-through;
+    }
+
+    &[data-hovered]:not([data-disabled]):not([data-unavailable]):not(
+        [data-selected]
+      ) {
+      background-color: var(--bui-bg-neutral-2);
+      border-radius: var(--bui-radius-full);
+    }
+
+    &[data-focus-visible] {
+      outline: 2px solid var(--bui-ring);
+      outline-offset: -2px;
+      border-radius: var(--bui-radius-full);
+    }
+
+    /* Today marker */
+    &[data-today]:not([data-selected]):not([data-selection-start]):not(
+        [data-selection-end]
+      ) {
+      font-weight: var(--bui-font-weight-bold);
+    }
+
+    /* ── Range fill via ::before ─────────────────────────────── */
+
+    &[data-selected]::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: color-mix(in srgb, var(--bui-bg-solid) 15%, transparent);
+      z-index: -2;
+    }
+
+    /* Start cell: fill only the right half to connect forward */
+    &[data-selection-start]::before {
+      left: 50%;
+    }
+
+    /* End cell: fill only the left half to connect backward */
+    &[data-selection-end]::before {
+      right: 50%;
+    }
+
+    /* Same-day selection: no range fill needed */
+    &[data-selection-start][data-selection-end]::before {
+      display: none;
+    }
+
+    /* ── Solid circle for start / end via ::after ────────────── */
+
+    &[data-selection-start]::after,
+    &[data-selection-end]::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--bui-bg-solid);
+      border-radius: var(--bui-radius-full);
+      z-index: -1;
+    }
+
+    /* Text color on top of the solid circle */
+    &[data-selection-start],
+    &[data-selection-end] {
+      color: var(--bui-fg-solid);
+    }
+  }
+
+  /* Round the left edge of ::before when the cell is the first in its row
+     (our class is on an inner element inside <td>, hence td:first-child > *) */
+  .bui-DateRangePickerCalendarCell[data-selected]:not(
+      [data-selection-start]
+    ):is(td:first-child > *, [aria-disabled] + td > *)::before {
+    border-start-start-radius: var(--bui-radius-full);
+    border-end-start-radius: var(--bui-radius-full);
+  }
+
+  /* Round the right edge of ::before when the cell is the last in its row */
+  .bui-DateRangePickerCalendarCell[data-selected]:not([data-selection-end]):is(
+      td:last-child > *
+    )::before {
+    border-start-end-radius: var(--bui-radius-full);
+    border-end-end-radius: var(--bui-radius-full);
+  }
+}

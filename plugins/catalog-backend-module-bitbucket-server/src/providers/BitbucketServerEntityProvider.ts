@@ -27,7 +27,7 @@ import {
   DeferredEntity,
   CatalogService,
 } from '@backstage/plugin-catalog-node';
-import * as uuid from 'uuid';
+import { randomUUID } from 'node:crypto';
 import { BitbucketServerClient, paginated } from '../lib';
 import {
   BitbucketServerEntityProviderConfig,
@@ -157,7 +157,7 @@ export class BitbucketServerEntityProvider implements EntityProvider {
           const logger = this.logger.child({
             class: BitbucketServerEntityProvider.prototype.constructor.name,
             taskId,
-            taskInstanceId: uuid.v4(),
+            taskInstanceId: randomUUID(),
           });
 
           try {

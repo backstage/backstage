@@ -1,5 +1,17 @@
 # @backstage/plugin-auth-backend-module-oidc-provider
 
+## 0.4.16-next.0
+
+### Patch Changes
+
+- 744fa1f: Removed duplicated entries that appeared in both `dependencies` and `devDependencies`.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.7.1-next.0
+  - @backstage/backend-plugin-api@1.9.1-next.0
+  - @backstage/config@1.3.8-next.0
+  - @backstage/plugin-auth-backend@0.28.1-next.0
+  - @backstage/types@1.2.2
+
 ## 0.4.15
 
 ### Patch Changes

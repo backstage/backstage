@@ -16,7 +16,7 @@
 
 import { randomBytes } from 'node:crypto';
 import knexFactory, { Knex } from 'knex';
-import { v4 as uuid } from 'uuid';
+import { randomUUID as uuid } from 'node:crypto';
 import yn from 'yn';
 import { waitForReady } from '../util/waitForReady';
 import { Engine, LARGER_POOL_CONFIG, TestDatabaseProperties } from './types';

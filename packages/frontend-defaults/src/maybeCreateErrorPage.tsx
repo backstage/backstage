@@ -26,6 +26,7 @@ const DEFAULT_WARNING_CODES: Array<keyof AppErrorTypes> = [
   'EXTENSION_OUTPUT_IGNORED',
   'EXTENSION_BOOTSTRAP_PREDICATE_IGNORED',
   'EXTENSION_BOOTSTRAP_API_UNAVAILABLE',
+  'FEATURE_FLAG_INVALID',
 ];
 
 function AppErrorItem(props: { error: AppError }): JSX.Element {

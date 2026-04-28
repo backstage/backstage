@@ -36,6 +36,7 @@ export { CardDefinition } from './components/Card/definition';
 export { CheckboxDefinition } from './components/Checkbox/definition';
 export { CheckboxGroupDefinition } from './components/CheckboxGroup/definition';
 export { ContainerDefinition } from './components/Container/definition';
+export { DateRangePickerDefinition } from './components/DateRangePicker/definition';
 export { DialogDefinition } from './components/Dialog/definition';
 export { FieldErrorDefinition } from './components/FieldError/definition';
 export { FieldLabelDefinition } from './components/FieldLabel/definition';

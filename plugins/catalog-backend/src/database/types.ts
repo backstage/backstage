@@ -31,9 +31,6 @@ import { Knex } from 'knex';
 export type Transaction = {
   rollback(): Promise<unknown>;
 };
-
-export type AddUnprocessedEntitiesResult = {};
-
 export type UpdateProcessedEntityOptions = {
   id: string;
   processedEntity: Entity;

@@ -54,6 +54,11 @@ export function nowPlus(duration: Duration | undefined, knex: Knex) {
   return knex.raw(`now() + interval '${seconds} seconds'`);
 }
 
+// Node.js setTimeout uses a 32-bit signed integer internally, so timeouts
+// longer than 2^31-1 ms (~24.8 days) fire immediately. We cap each individual
+// wait at 2^30 ms (~12.4 days) and loop until the full duration has elapsed.
+const MAX_TIMEOUT_MS = 2 ** 30;
+
 /**
  * Sleep for the given duration, but return sooner if the abort signal
  * triggers.
@@ -69,19 +74,34 @@ export async function sleep(
     return;
   }
 
-  await new Promise<void>(resolve => {
-    let timeoutHandle: NodeJS.Timeout | undefined = undefined;
+  let remaining = duration.as('milliseconds');
+  if (!Number.isFinite(remaining) || remaining <= 0) {
+    return;
+  }
 
-    const done = () => {
+  await new Promise<void>(resolve => {
+    let timeoutHandle: NodeJS.Timeout | undefined;
+
+    const finish = () => {
       if (timeoutHandle) {
         clearTimeout(timeoutHandle);
       }
-      abortSignal?.removeEventListener('abort', done);
+      abortSignal?.removeEventListener('abort', finish);
       resolve();
     };
 
-    timeoutHandle = setTimeout(done, duration.as('milliseconds'));
-    abortSignal?.addEventListener('abort', done);
+    const tick = () => {
+      if (remaining <= 0) {
+        finish();
+        return;
+      }
+      const chunk = Math.min(remaining, MAX_TIMEOUT_MS);
+      remaining -= chunk;
+      timeoutHandle = setTimeout(tick, chunk);
+    };
+
+    abortSignal?.addEventListener('abort', finish);
+    tick();
   });
 }
 

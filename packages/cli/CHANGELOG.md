@@ -1,5 +1,19 @@
 # @backstage/cli
 
+## 0.36.2-next.0
+
+### Patch Changes
+
+- 744fa1f: Removed duplicated entries that appeared in both `dependencies` and `devDependencies`.
+- Updated dependencies
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/cli-module-build@0.1.3-next.0
+  - @backstage/cli-common@0.2.2-next.0
+  - @backstage/cli-node@0.3.2-next.0
+  - @backstage/cli-defaults@0.1.2-next.0
+  - @backstage/cli-module-test-jest@0.1.2-next.0
+  - @backstage/eslint-plugin@0.2.3
+
 ## 0.36.1
 
 ### Patch Changes

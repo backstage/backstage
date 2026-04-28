@@ -15,7 +15,7 @@
  */
 
 import Keyv, { type KeyvStoreAdapter } from 'keyv';
-import { v4 as uuid } from 'uuid';
+import { randomUUID as uuid } from 'node:crypto';
 import { waitForReady } from '../util/waitForReady';
 import { Instance } from './types';
 

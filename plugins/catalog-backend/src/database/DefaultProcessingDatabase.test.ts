@@ -21,7 +21,7 @@ import {
 } from '@backstage/backend-test-utils';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { Knex } from 'knex';
-import * as uuid from 'uuid';
+import { randomUUID as uuid } from 'node:crypto';
 import { Logger } from 'winston';
 import { DateTime } from 'luxon';
 import { applyDatabaseMigrations } from './migrations';
@@ -80,7 +80,7 @@ describe('DefaultProcessingDatabase', () => {
     let processedEntity: Entity;
 
     beforeEach(() => {
-      id = uuid.v4();
+      id = uuid();
       processedEntity = {
         apiVersion: '1',
         kind: 'Location',

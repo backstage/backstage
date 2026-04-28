@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ExtensionBoundary } from '@backstage/frontend-plugin-api';
+import { ExtensionBoundary } from '../components/ExtensionBoundary';
 import { coreExtensionData, createExtensionBlueprint } from '../wiring';
 
 /**

@@ -81,9 +81,8 @@ export class AwsCodeCommitIntegration implements ScmIntegration {
  *
  * @param url - The original URL
  * @param type - The desired type, e.g. 'blob', 'edit'
- * @public
  */
-export function replaceCodeCommitUrlType(
+function replaceCodeCommitUrlType(
   url: string,
   repositoryName: string,
   type: 'browse' | 'edit',

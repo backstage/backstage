@@ -1,5 +1,14 @@
 # @backstage/plugin-notifications-common
 
+## 0.2.3-next.0
+
+### Patch Changes
+
+- 0c5e41f: Removed unused dependencies that had no imports in source code.
+- Updated dependencies
+  - @backstage/config@1.3.8-next.0
+  - @backstage/types@1.2.2
+
 ## 0.2.2
 
 ### Patch Changes

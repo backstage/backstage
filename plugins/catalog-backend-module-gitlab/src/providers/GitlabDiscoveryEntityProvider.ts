@@ -30,7 +30,7 @@ import {
 } from '@backstage/plugin-catalog-node';
 import { EventsService } from '@backstage/plugin-events-node';
 import { WebhookProjectSchema, WebhookPushEventSchema } from '@gitbeaker/rest';
-import * as uuid from 'uuid';
+import { randomUUID } from 'node:crypto';
 import {
   GitLabClient,
   GitLabGroup,
@@ -180,7 +180,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
           const logger = this.logger.child({
             class: GitlabDiscoveryEntityProvider.prototype.constructor.name,
             taskId,
-            taskInstanceId: uuid.v4(),
+            taskInstanceId: randomUUID(),
           });
 
           try {

@@ -1,5 +1,13 @@
 # @backstage/create-app
 
+## 0.8.3-next.0
+
+### Patch Changes
+
+- 927c003: Replaced internal error utilities with shared ones from `@backstage/cli-common`.
+- Updated dependencies
+  - @backstage/cli-common@0.2.2-next.0
+
 ## 0.8.2
 
 ### Patch Changes

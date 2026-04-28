@@ -36,7 +36,7 @@ export const Box = forwardRef<HTMLDivElement, BoxProps>((props, ref) => {
     {
       ref,
       className: classes.root,
-      style: { ...ownProps.style, ...utilityStyle },
+      style: { ...utilityStyle, ...ownProps.style },
       ...dataAttributes,
       ...restProps,
     },

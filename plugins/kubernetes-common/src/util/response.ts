@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { FetchResponse } from '@backstage/plugin-kubernetes-common';
+import type { FetchResponse } from '@backstage/plugin-kubernetes-common';
 import { GroupedResponses } from '../types';
 
 /** @public */

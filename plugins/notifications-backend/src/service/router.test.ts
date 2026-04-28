@@ -32,7 +32,7 @@ import {
 } from '@backstage/plugin-notifications-node';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 import { DatabaseService } from '@backstage/backend-plugin-api';
-import { v4 as uuid } from 'uuid';
+import { randomUUID as uuid } from 'node:crypto';
 import { DatabaseNotificationsStore, generateSettingsHash } from '../database';
 
 const databases = TestDatabases.create();

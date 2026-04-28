@@ -690,13 +690,24 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       .groupBy(['search.key', 'search.original_value']);
 
     if (request.filter || request.query) {
+      // Build a subquery that finds matching entity IDs via
+      // final_entities, so that the EXISTS-based filters correlate
+      // against one-row-per-entity rather than the much larger search
+      // table. The whereNotNull guard on final_entity excludes
+      // not-yet-stitched (or future tombstoned) entities.
+      const entityIdSubquery = this.database('final_entities')
+        .select('final_entities.entity_id')
+        .whereNotNull('final_entities.final_entity');
+
       applyEntityFilterToQuery({
         filter: request.filter,
         query: request.query,
-        targetQuery: query,
-        onEntityIdField: 'search.entity_id',
+        targetQuery: entityIdSubquery,
+        onEntityIdField: 'final_entities.entity_id',
         knex: this.database,
       });
+
+      query.whereIn('search.entity_id', entityIdSubquery);
     }
 
     const rows = await query;

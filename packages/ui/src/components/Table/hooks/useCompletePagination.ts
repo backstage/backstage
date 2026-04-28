@@ -48,7 +48,7 @@ export function useCompletePagination<T extends TableItem, TFilter>(
   const { sort, filter, search } = query;
 
   const [items, setItems] = useState<T[] | undefined>(undefined);
-  const [isLoading, setIsLoading] = useState(!data);
+  const [isPending, setIsPending] = useState(!data);
   const [error, setError] = useState<Error | undefined>(undefined);
   const [loadCount, setLoadCount] = useState(0);
 
@@ -64,7 +64,7 @@ export function useCompletePagination<T extends TableItem, TFilter>(
   // Load data on mount and when loadCount changes (reload trigger)
   useEffect(() => {
     if (data) {
-      setIsLoading(false);
+      setIsPending(false);
       return;
     }
 
@@ -73,7 +73,7 @@ export function useCompletePagination<T extends TableItem, TFilter>(
     }
 
     let cancelled = false;
-    setIsLoading(true);
+    setIsPending(true);
     setError(undefined);
 
     (async () => {
@@ -82,12 +82,12 @@ export function useCompletePagination<T extends TableItem, TFilter>(
         const resolvedData = result instanceof Promise ? await result : result;
         if (!cancelled) {
           setItems(resolvedData);
-          setIsLoading(false);
+          setIsPending(false);
         }
       } catch (err) {
         if (!cancelled) {
           setError(err instanceof Error ? err : new Error(String(err)));
-          setIsLoading(false);
+          setIsPending(false);
         }
       }
     })();
@@ -164,7 +164,7 @@ export function useCompletePagination<T extends TableItem, TFilter>(
 
   return {
     data: paginatedData,
-    loading: isLoading,
+    isPending: isPending,
     error,
     totalCount,
     offset,

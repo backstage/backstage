@@ -107,6 +107,7 @@ function useLiveRegionLabel(
 export function Table<T extends TableItem>({
   columnConfig,
   data,
+  isPending = false,
   loading = false,
   isStale = false,
   error,
@@ -119,6 +120,7 @@ export function Table<T extends TableItem>({
   style,
   virtualized,
 }: TableProps<T>) {
+  const pending = isPending || loading;
   const {
     ownProps: { classes },
   } = useDefinition(TableWrapperDefinition, { className });
@@ -137,7 +139,7 @@ export function Table<T extends TableItem>({
     onSelectionChange,
   } = selection || {};
 
-  const isInitialLoading = loading && !data;
+  const isInitialLoading = pending && !data;
 
   if (error) {
     return (
@@ -202,7 +204,7 @@ export function Table<T extends TableItem>({
             onSortChange={sort?.onSortChange}
             disabledKeys={disabledRows}
             stale={isStale}
-            loading={isInitialLoading}
+            isPending={isInitialLoading}
             aria-describedby={liveRegionId}
           >
             <TableHeader columns={visibleColumns}>

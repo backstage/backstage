@@ -7,9 +7,9 @@ import {
   variantsSnippet,
   sizesSnippet,
   disabledSnippet,
-  loadingSnippet,
+  isPendingSnippet,
 } from './snippets';
-import { Variants, Sizes, Disabled, Loading } from './components';
+import { Variants, Sizes, Disabled, Pending } from './components';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
 import { ButtonIconDefinition } from '../../../utils/definitions';
@@ -63,7 +63,7 @@ export const reactAriaUrls = {
   code={disabledSnippet}
 />
 
-### Loading
+### Pending
 
 Shows a spinner during async operations.
 
@@ -71,8 +71,8 @@ Shows a spinner during async operations.
   align="center"
   py={4}
   open
-  preview={<Loading />}
-  code={loadingSnippet}
+  preview={<Pending />}
+  code={isPendingSnippet}
 />
 
 <Theming definition={ButtonIconDefinition} />

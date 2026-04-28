@@ -3,17 +3,28 @@ import { CodeBlock } from '@/components/CodeBlock';
 import { Snippet } from '@/components/Snippet';
 import {
   WithEverything,
-  WithLongBreadcrumbs,
   WithTabs,
+  WithTags,
+  WithDescription,
+  WithMetadata,
+  WithMetadataUsers,
+  WithMetadataStatus,
   WithCustomActions,
   WithMenu,
 } from './components';
-import { headerPagePropDefs } from './props-definition';
+import {
+  headerPagePropDefs,
+  headerMetadataUsersPropDefs,
+} from './props-definition';
 import {
   usage,
   defaultSnippet,
   withTabs,
-  withBreadcrumbs,
+  withTags,
+  withDescription,
+  withMetadata,
+  withMetadataUsers,
+  withMetadataStatus,
   withCustomActions,
   withMenu,
 } from './snippets';
@@ -24,7 +35,7 @@ import { ChangelogComponent } from '@/components/ChangelogComponent';
 
 <PageTitle
   title="Header"
-  description="A secondary header with title, breadcrumbs, tabs, and actions."
+  description="A secondary header with title, tags, description, metadata, tabs, and actions."
 />
 
 <Snippet py={4} preview={<WithEverything />} code={defaultSnippet} />
@@ -39,11 +50,37 @@ import { ChangelogComponent } from '@/components/ChangelogComponent';
 
 ## Examples
 
-### Breadcrumbs
+### Tags
 
-Labels are truncated at 240px.
+Tags are rendered above the title. Each tag with an `href` renders as a link; tags without `href` render as plain text. Tags are separated by a small circle divider.
 
-<Snippet open preview={<WithLongBreadcrumbs />} code={withBreadcrumbs} />
+<Snippet open preview={<WithTags />} code={withTags} />
+
+### Description
+
+The description accepts a markdown string with support for inline links. Bold, italic, and block-level markdown are not rendered.
+
+<Snippet open preview={<WithDescription />} code={withDescription} />
+
+### Metadata
+
+Key-value pairs displayed below the description.
+
+<Snippet open preview={<WithMetadata />} code={withMetadata} />
+
+### Metadata with users
+
+Use `HeaderMetadataUsers` as the metadata value to display users as avatars. A single user shows the avatar with their name beside it. Multiple users show a row of avatars — hover to reveal each name via tooltip. When a user has an `href`, the avatar and name become links.
+
+<Snippet open preview={<WithMetadataUsers />} code={withMetadataUsers} />
+
+<PropsTable data={headerMetadataUsersPropDefs} />
+
+### Metadata with status
+
+Use `HeaderMetadataStatus` as the metadata value to display a status indicator. The dot colour is driven by the `color` prop which maps to BUI status tokens. Pass an `href` to make the label a link.
+
+<Snippet open preview={<WithMetadataStatus />} code={withMetadataStatus} />
 
 ### Tabs
 
