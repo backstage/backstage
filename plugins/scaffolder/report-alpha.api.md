@@ -106,34 +106,6 @@ const _default: OverridableFrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
-    'api:scaffolder/form-fields': OverridableExtensionDefinition<{
-      config: {};
-      configInput: {};
-      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
-      inputs: {
-        formFields: ExtensionInput<
-          ConfigurableExtensionDataRef<
-            () => Promise<FormField>,
-            'scaffolder.form-field-loader',
-            {}
-          >,
-          {
-            singleton: false;
-            optional: false;
-            internal: false;
-          }
-        >;
-      };
-      kind: 'api';
-      name: 'form-fields';
-      params: <
-        TApi,
-        TImpl extends TApi,
-        TDeps extends { [name in string]: unknown },
-      >(
-        params: ApiFactory<TApi, TImpl, TDeps>,
-      ) => ExtensionBlueprintParams<AnyApiFactory>;
-    }>;
     'entity-icon-link:scaffolder/launch-template': OverridableExtensionDefinition<{
       kind: 'entity-icon-link';
       name: 'launch-template';
@@ -284,6 +256,76 @@ const _default: OverridableFrontendPlugin<
         loader?: () => Promise<JSX_2.Element>;
         routeRef?: RouteRef_2;
         noHeader?: boolean;
+      };
+    }>;
+    'scaffolder-filter:scaffolder/category': OverridableExtensionDefinition<{
+      kind: 'scaffolder-filter';
+      name: 'category';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
+      inputs: {};
+      params: {
+        loader: () => Promise<JSX.Element>;
+      };
+    }>;
+    'scaffolder-filter:scaffolder/owner': OverridableExtensionDefinition<{
+      kind: 'scaffolder-filter';
+      name: 'owner';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
+      inputs: {};
+      params: {
+        loader: () => Promise<JSX.Element>;
+      };
+    }>;
+    'scaffolder-filter:scaffolder/searchbar': OverridableExtensionDefinition<{
+      kind: 'scaffolder-filter';
+      name: 'searchbar';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
+      inputs: {};
+      params: {
+        loader: () => Promise<JSX.Element>;
+      };
+    }>;
+    'scaffolder-filter:scaffolder/tag': OverridableExtensionDefinition<{
+      kind: 'scaffolder-filter';
+      name: 'tag';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
+      inputs: {};
+      params: {
+        loader: () => Promise<JSX.Element>;
+      };
+    }>;
+    'scaffolder-filter:scaffolder/template-kind': OverridableExtensionDefinition<{
+      kind: 'scaffolder-filter';
+      name: 'template-kind';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
+      inputs: {};
+      params: {
+        loader: () => Promise<JSX.Element>;
+      };
+    }>;
+    'scaffolder-filter:scaffolder/user-list': OverridableExtensionDefinition<{
+      config: {
+        initialFilter: 'all' | 'owned' | 'starred';
+      };
+      configInput: {
+        initialFilter?: 'all' | 'owned' | 'starred' | undefined;
+      };
+      output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
+      inputs: {};
+      kind: 'scaffolder-filter';
+      name: 'user-list';
+      params: {
+        loader: () => Promise<JSX.Element>;
       };
     }>;
     'scaffolder-form-field:scaffolder/entity-name-picker': OverridableExtensionDefinition<{
@@ -577,7 +619,28 @@ const _default: OverridableFrontendPlugin<
               optional: true;
             }
           >;
-      inputs: {};
+      inputs: {
+        filters: ExtensionInput<
+          ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
+          {
+            singleton: false;
+            optional: false;
+            internal: false;
+          }
+        >;
+        groups: ExtensionInput<
+          ConfigurableExtensionDataRef<
+            TemplateGroupFilter,
+            'scaffolder.group-filter',
+            {}
+          >,
+          {
+            singleton: false;
+            optional: false;
+            internal: false;
+          }
+        >;
+      };
       kind: 'sub-page';
       name: 'templates';
       params: {

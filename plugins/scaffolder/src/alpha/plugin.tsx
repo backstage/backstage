@@ -27,31 +27,15 @@ import {
   templatingExtensionsRouteRef,
   viewTechDocRouteRef,
 } from '../routes';
-import {
-  entityNamePickerFormField,
-  entityPickerFormField,
-  entityTagsPickerFormField,
-  multiEntityPickerFormField,
-  myGroupsPickerFormField,
-  ownedEntityPickerFormField,
-  ownerPickerFormField,
-  repoBranchPickerFormField,
-  repoOwnerPickerFormField,
-  repoUrlPickerFormField,
-  scaffolderApi,
-  scaffolderNavItem,
-  scaffolderPage,
-  scaffolderTemplatesSubPage,
-  scaffolderTasksSubPage,
-  scaffolderActionsSubPage,
-  scaffolderEditorSubPage,
-  scaffolderTemplatingExtensionsSubPage,
-} from './extensions';
 import { isTemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
-import { formFieldsApi } from './formFieldsApi';
 import { formDecoratorsApi } from './api';
 import { EntityIconLinkBlueprint } from '@backstage/plugin-catalog-react/alpha';
 import { useScaffolderTemplateIconLinkProps } from './hooks/useScaffolderTemplateIconLinkProps';
+import pages from './pages';
+import apis from './apis';
+import fields from './fields';
+import navItems from './navItems';
+import filters from './filters';
 
 /** @alpha */
 const scaffolderEntityIconLink = EntityIconLinkBlueprint.make({
@@ -82,26 +66,12 @@ export default createFrontendPlugin({
     viewTechDoc: viewTechDocRouteRef,
   },
   extensions: [
-    scaffolderApi,
-    scaffolderPage,
-    scaffolderTemplatesSubPage,
-    scaffolderTasksSubPage,
-    scaffolderActionsSubPage,
-    scaffolderEditorSubPage,
-    scaffolderTemplatingExtensionsSubPage,
-    scaffolderNavItem,
+    ...apis,
+    ...filters,
+    ...pages,
+    ...navItems,
+    ...fields,
     scaffolderEntityIconLink,
     formDecoratorsApi,
-    formFieldsApi,
-    repoUrlPickerFormField,
-    entityNamePickerFormField,
-    entityPickerFormField,
-    ownerPickerFormField,
-    entityTagsPickerFormField,
-    multiEntityPickerFormField,
-    myGroupsPickerFormField,
-    ownedEntityPickerFormField,
-    repoBranchPickerFormField,
-    repoOwnerPickerFormField,
   ],
 });

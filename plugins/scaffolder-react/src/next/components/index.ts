@@ -27,3 +27,4 @@ export * from './TemplateCategoryPicker';
 export * from './ScaffolderPageContextMenu';
 export * from './ScaffolderField';
 export * from './SecretWidget';
+export * from './DefaultFilters';

@@ -14,8 +14,28 @@
  * limitations under the License.
  */
 
-export * from './FormDecoratorBlueprint';
-export * from './FormFieldBlueprint';
-export * from './ScaffolderFilterBlueprint';
-export * from './ScaffolderGroupFilterBlueprint';
-export * from './types';
+import {
+  EntityKindPicker,
+  EntitySearchBar,
+  EntityTagPicker,
+  UserListPicker,
+  EntityOwnerPicker,
+} from '@backstage/plugin-catalog-react';
+import { TemplateCategoryPicker } from '../TemplateCategoryPicker';
+
+/** @public */
+export const DefaultFilters = () => {
+  return (
+    <>
+      <EntitySearchBar />
+      <EntityKindPicker initialFilter="template" hidden />
+      <UserListPicker
+        initialFilter="all"
+        availableFilters={['all', 'starred']}
+      />
+      <TemplateCategoryPicker />
+      <EntityTagPicker />
+      <EntityOwnerPicker />
+    </>
+  );
+};

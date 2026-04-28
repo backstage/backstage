@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,16 @@
  * limitations under the License.
  */
 
-export * from './FormDecoratorBlueprint';
-export * from './FormFieldBlueprint';
-export * from './ScaffolderFilterBlueprint';
-export * from './ScaffolderGroupFilterBlueprint';
-export * from './types';
+import { NavItemBlueprint } from '@backstage/frontend-plugin-api';
+import { rootRouteRef } from '../routes';
+import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
+
+export const scaffolderNavItem = NavItemBlueprint.make({
+  params: {
+    routeRef: rootRouteRef,
+    title: 'Create...',
+    icon: CreateComponentIcon,
+  },
+});
+
+export default [scaffolderNavItem];

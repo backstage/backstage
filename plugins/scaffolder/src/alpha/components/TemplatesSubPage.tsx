@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useCallback } from 'react';
+import { ReactNode, useCallback } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import {
   Content,
@@ -25,21 +25,17 @@ import {
 import { useApp, useRouteRef } from '@backstage/core-plugin-api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import {
-  EntityKindPicker,
   EntityListProvider,
-  EntitySearchBar,
-  EntityTagPicker,
   CatalogFilterLayout,
-  UserListPicker,
-  EntityOwnerPicker,
 } from '@backstage/plugin-catalog-react';
 import {
-  TemplateCategoryPicker,
+  DefaultFilters,
   TemplateGroups,
 } from '@backstage/plugin-scaffolder-react/alpha';
 import {
   FieldExtensionOptions,
   SecretsContextProvider,
+  TemplateGroupFilter,
   useCustomFieldExtensions,
   useCustomLayouts,
 } from '@backstage/plugin-scaffolder-react';
@@ -62,7 +58,29 @@ import {
   TECHDOCS_EXTERNAL_ANNOTATION,
 } from '@backstage/plugin-techdocs-common';
 
-function TemplateListContent() {
+/**
+ * Props for the TemplateListContent component.
+ * Provides configuration for rendering the template list including
+ * filter controls and optional grouping of templates.
+ *
+ * @public
+ */
+export type TemplateListContentProps = {
+  filters: ReactNode;
+  groups?: TemplateGroupFilter[];
+};
+
+/**
+ * Renders the content of the template list page.
+ * Displays the available scaffolder templates with filtering and grouping
+ * support, and provides navigation to the selected template wizard.
+ *
+ * @public
+ */
+export function TemplateListContent({
+  filters,
+  groups,
+}: TemplateListContentProps) {
   const registerComponentLink = useRouteRef(registerComponentRouteRef);
   const viewTechDocsLink = useRouteRef(viewTechDocRouteRef);
   const templateRoute = useRouteRef(selectedTemplateRouteRef);
@@ -70,7 +88,7 @@ function TemplateListContent() {
   const app = useApp();
   const { t } = useTranslationRef(scaffolderTranslationRef);
 
-  const groups = [
+  const defaultGroups = [
     {
       title: t('templateListPage.templateGroups.defaultTitle'),
       filter: () => true,
@@ -129,20 +147,10 @@ function TemplateListContent() {
         </ContentHeader>
 
         <CatalogFilterLayout>
-          <CatalogFilterLayout.Filters>
-            <EntitySearchBar />
-            <EntityKindPicker initialFilter="template" hidden />
-            <UserListPicker
-              initialFilter="all"
-              availableFilters={['all', 'starred']}
-            />
-            <TemplateCategoryPicker />
-            <EntityTagPicker />
-            <EntityOwnerPicker />
-          </CatalogFilterLayout.Filters>
+          <CatalogFilterLayout.Filters>{filters}</CatalogFilterLayout.Filters>
           <CatalogFilterLayout.Content>
             <TemplateGroups
-              groups={groups}
+              groups={groups ?? defaultGroups}
               onTemplateSelected={onTemplateSelected}
               additionalLinksForEntity={additionalLinksForEntity}
             />
@@ -154,18 +162,35 @@ function TemplateListContent() {
 }
 
 /**
+ * Props for the TemplatesSubPage component.
+ * Provides configuration for rendering the template list at the index route
+ * and the template wizard at the parameterized route.
+ *
+ * @public
+ */
+export type TemplatesSubPageProps = {
+  formFields?: Array<FormField>;
+  filters?: ReactNode;
+  groups?: TemplateGroupFilter[];
+};
+
+/**
  * Sub-page for the templates tab. Renders the template list at the index route
  * and the template wizard at the parameterized route.
  *
- * @internal
+ * @public
  */
-export function TemplatesSubPage(props: { formFields?: Array<FormField> }) {
+export function TemplatesSubPage({
+  formFields,
+  filters,
+  groups,
+}: TemplatesSubPageProps) {
   const customFieldExtensions = useCustomFieldExtensions(undefined);
   const customLayouts = useCustomLayouts(undefined);
 
   const fieldExtensions = [
     ...customFieldExtensions,
-    ...(props.formFields?.map(OpaqueFormField.toInternal) ?? []),
+    ...(formFields?.map(OpaqueFormField.toInternal) ?? []),
     ...DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS.filter(
       ({ name }) =>
         !customFieldExtensions.some(
@@ -177,7 +202,15 @@ export function TemplatesSubPage(props: { formFields?: Array<FormField> }) {
 
   return (
     <Routes>
-      <Route index element={<TemplateListContent />} />
+      <Route
+        index
+        element={
+          <TemplateListContent
+            filters={filters ?? <DefaultFilters />}
+            groups={groups}
+          />
+        }
+      />
       <Route
         path=":namespace/:templateName"
         element={

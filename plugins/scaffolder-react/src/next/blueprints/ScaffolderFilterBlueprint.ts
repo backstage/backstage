@@ -14,8 +14,25 @@
  * limitations under the License.
  */
 
-export * from './FormDecoratorBlueprint';
-export * from './FormFieldBlueprint';
-export * from './ScaffolderFilterBlueprint';
-export * from './ScaffolderGroupFilterBlueprint';
-export * from './types';
+import {
+  ExtensionBoundary,
+  coreExtensionData,
+  createExtensionBlueprint,
+} from '@backstage/frontend-plugin-api';
+
+/**
+ * Creates Scaffolder Filter Extensions
+ * @alpha
+ */
+export const ScaffolderFilterBlueprint = createExtensionBlueprint({
+  kind: 'scaffolder-filter',
+  attachTo: { id: 'sub-page:scaffolder/templates', input: 'filters' },
+  output: [coreExtensionData.reactElement],
+  factory(params: { loader: () => Promise<JSX.Element> }, { node }) {
+    return [
+      coreExtensionData.reactElement(
+        ExtensionBoundary.lazy(node, params.loader),
+      ),
+    ];
+  },
+});

@@ -14,8 +14,4 @@
  * limitations under the License.
  */
 
-export * from './FormDecoratorBlueprint';
-export * from './FormFieldBlueprint';
-export * from './ScaffolderFilterBlueprint';
-export * from './ScaffolderGroupFilterBlueprint';
-export * from './types';
+export { DefaultFilters } from './DefaultFilters';

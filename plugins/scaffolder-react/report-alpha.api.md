@@ -21,6 +21,7 @@ import { IconComponent } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
+import { JSX as JSX_3 } from 'react';
 import { LayoutOptions } from '@backstage/plugin-scaffolder-react';
 import { Overrides } from '@material-ui/core/styles/overrides';
 import { PropsWithChildren } from 'react';
@@ -108,6 +109,9 @@ export function createScaffolderFormDecorator<
       : never,
   ) => Promise<void>;
 }): ScaffolderFormDecorator<TInput>;
+
+// @public (undocumented)
+export const DefaultFilters: () => JSX_2.Element;
 
 // @alpha
 export const DefaultTemplateOutputs: (props: {
@@ -257,6 +261,19 @@ export interface ScaffolderFieldProps {
   required?: boolean;
 }
 
+// @alpha
+export const ScaffolderFilterBlueprint: ExtensionBlueprint<{
+  kind: 'scaffolder-filter';
+  params: {
+    loader: () => Promise<JSX.Element>;
+  };
+  output: ExtensionDataRef<JSX_3.Element, 'core.reactElement', {}>;
+  inputs: {};
+  config: {};
+  configInput: {};
+  dataRefs: never;
+}>;
+
 // @alpha (undocumented)
 export type ScaffolderFormDecorator<TInput extends JsonObject = JsonObject> = {
   readonly $$type: '@backstage/scaffolder/FormDecorator';
@@ -283,6 +300,26 @@ export interface ScaffolderFormFieldsApi {
   // (undocumented)
   loadFormFields(): Promise<FormField[]>;
 }
+
+// @alpha
+export const ScaffolderGroupFilterBlueprint: ExtensionBlueprint<{
+  kind: 'scaffolder-filter';
+  params: {
+    group: TemplateGroupFilter;
+  };
+  output: ExtensionDataRef<TemplateGroupFilter, 'scaffolder.group-filter', {}>;
+  inputs: {};
+  config: {};
+  configInput: {};
+  dataRefs: never;
+}>;
+
+// @alpha
+export const scaffolderGroupFilterDataRef: ConfigurableExtensionDataRef<
+  TemplateGroupFilter,
+  'scaffolder.group-filter',
+  {}
+>;
 
 // @alpha (undocumented)
 export function ScaffolderPageContextMenu(
@@ -320,10 +357,10 @@ export const scaffolderReactTranslationRef: TranslationRef<
     readonly 'scaffolderPageContextMenu.tasksLabel': 'Task List';
     readonly 'scaffolderPageContextMenu.templatingExtensionsLabel': 'Templating Extensions';
     readonly 'stepper.backButtonText': 'Back';
-    readonly 'stepper.nextButtonText': 'Next';
     readonly 'stepper.createButtonText': 'Create';
     readonly 'stepper.reviewButtonText': 'Review';
     readonly 'stepper.stepIndexLabel': 'Step {{index, number}}';
+    readonly 'stepper.nextButtonText': 'Next';
     readonly 'templateCategoryPicker.title': 'Categories';
     readonly 'templateCard.noDescription': 'No description';
     readonly 'templateCard.chooseButtonText': 'Choose';
