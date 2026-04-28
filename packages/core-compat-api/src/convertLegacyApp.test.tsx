@@ -317,9 +317,9 @@ describe('convertLegacyApp', () => {
       features: [catalogOverride, ...converted],
       initialRouteEntries: ['/catalog/default/other/x/bar'],
     });
-    // /bar does not exist on the "other" entity layout, expect the not-found panel.
+    // /bar does not exist on the "other" entity layout, expect the not-found page.
     await expect(
-      renderBarOther.findByText(/Route not found/, {}, findOptions),
+      renderBarOther.findByTestId('error', {}, findOptions),
     ).resolves.toBeInTheDocument();
     renderBarOther.unmount();
   });

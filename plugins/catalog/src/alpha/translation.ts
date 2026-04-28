@@ -139,9 +139,6 @@ export const catalogTranslationRef = createTranslationRef({
     },
     entityTabs: {
       tabsAriaLabel: 'Tabs',
-      notFoundTitle: 'Route not found',
-      notFoundMessage:
-        'The requested route does not exist for this entity. Pick one of the available routes above.',
     },
     deleteEntity: {
       dialogTitle: 'Are you sure you want to delete this entity?',

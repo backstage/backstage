@@ -373,7 +373,7 @@ describe('EntityTabs', () => {
       },
     ];
 
-    it('renders the matched route content and no not-found panel', async () => {
+    it('renders the matched route content and no not-found page', async () => {
       await renderInTestApp(
         <Routes>
           <Route
@@ -390,10 +390,10 @@ describe('EntityTabs', () => {
       );
 
       expect(await screen.findByText('Details Content')).toBeInTheDocument();
-      expect(screen.queryByText('Route not found')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('error')).toBeNull();
     });
 
-    it('renders the route-not-found panel for unknown sub-paths', async () => {
+    it('renders the not-found page for unknown sub-paths', async () => {
       await renderInTestApp(
         <Routes>
           <Route
@@ -409,9 +409,44 @@ describe('EntityTabs', () => {
         { initialRouteEntries: ['/blob'] },
       );
 
-      expect(await screen.findByText(/Route not found/)).toBeInTheDocument();
+      expect(await screen.findByTestId('error')).toBeInTheDocument();
       expect(screen.queryByText('Overview Content')).not.toBeInTheDocument();
       expect(screen.queryByText('Details Content')).not.toBeInTheDocument();
+    });
+
+    it('still routes nested sub-paths to the matching tab content', async () => {
+      const nestedRoutes = [
+        {
+          group: 'overview',
+          path: '/',
+          title: 'Overview',
+          children: <div>Overview Content</div>,
+        },
+        {
+          group: 'overview',
+          path: '/docs',
+          title: 'Docs',
+          children: <div>Docs Content</div>,
+        },
+      ];
+
+      await renderInTestApp(
+        <Routes>
+          <Route
+            path="/*"
+            element={
+              <EntityTabs
+                routes={nestedRoutes}
+                groupDefinitions={{ overview: { title: 'Overview' } }}
+              />
+            }
+          />
+        </Routes>,
+        { initialRouteEntries: ['/docs/api/v1'] },
+      );
+
+      expect(await screen.findByText('Docs Content')).toBeInTheDocument();
+      expect(screen.queryByTestId('error')).toBeNull();
     });
   });
 });

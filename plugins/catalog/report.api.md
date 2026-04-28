@@ -295,8 +295,6 @@ export const catalogTranslationRef: TranslationRef<
     readonly 'entityNotFound.description': 'Want to help us build this? Check out our Getting Started documentation.';
     readonly 'entityNotFound.docButtonTitle': 'DOCS';
     readonly 'entityTabs.tabsAriaLabel': 'Tabs';
-    readonly 'entityTabs.notFoundMessage': 'The requested route does not exist for this entity. Pick one of the available routes above.';
-    readonly 'entityTabs.notFoundTitle': 'Route not found';
     readonly entityProcessingErrorsDescription: 'The error below originates from';
     readonly entityRelationWarningDescription: "This entity has relations to other entities, which can't be found in the catalog.\n Entities not found are: ";
     readonly 'hasComponentsCard.title': 'Has components';

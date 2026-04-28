@@ -16,12 +16,10 @@
 import { ReactElement, useMemo } from 'react';
 import { Helmet } from 'react-helmet';
 import { matchRoutes, useParams, useRoutes } from 'react-router-dom';
-import { WarningPanel, Content } from '@backstage/core-components';
-import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { NotFoundErrorPage } from '@backstage/frontend-plugin-api';
 import { EntityTabsPanel } from './EntityTabsPanel';
 import { EntityTabsList } from './EntityTabsList';
 import { EntityContentGroupDefinitions } from '@backstage/plugin-catalog-react/alpha';
-import { catalogTranslationRef } from '../../translation';
 
 type SubRoute = {
   group?: string;
@@ -49,23 +47,14 @@ export function useSelectedSubRoute(subRoutes: SubRoute[]): {
     element: children,
   }));
 
-  // Sort by descending path length so more specific paths match before shorter
-  // prefixes; fall back to lexicographic order for stable output when lengths
-  // are equal.
-  const sortedRoutes = [...routes].sort((a, b) => {
-    const aPath = a.path.replace(/\/\*$/, '');
-    const bPath = b.path.replace(/\/\*$/, '');
-    return bPath.length - aPath.length || aPath.localeCompare(bPath);
-  });
-
-  const element = useRoutes(sortedRoutes) ?? undefined;
+  const element = useRoutes(routes) ?? undefined;
 
   let currentRoute = params['*'] ?? '';
   if (!currentRoute.startsWith('/')) {
     currentRoute = `/${currentRoute}`;
   }
 
-  const [matchedRoute] = matchRoutes(sortedRoutes, currentRoute) ?? [];
+  const [matchedRoute] = matchRoutes(routes, currentRoute) ?? [];
   const foundIndex = matchedRoute
     ? subRoutes.findIndex(
         t => normalizeRoutePath(t.path) === matchedRoute.route.path,
@@ -88,7 +77,6 @@ type EntityTabsProps = {
 
 export function EntityTabs(props: EntityTabsProps) {
   const { routes, groupDefinitions, defaultContentOrder, showIcons } = props;
-  const { t } = useTranslationRef(catalogTranslationRef);
 
   const { index, route, element } = useSelectedSubRoute(routes);
 
@@ -123,14 +111,7 @@ export function EntityTabs(props: EntityTabsProps) {
       />
       <EntityTabsPanel>
         <Helmet title={route?.title} />
-        {element ?? (
-          <Content>
-            <WarningPanel
-              title={t('entityTabs.notFoundTitle')}
-              message={t('entityTabs.notFoundMessage')}
-            />
-          </Content>
-        )}
+        {element ?? <NotFoundErrorPage />}
       </EntityTabsPanel>
     </>
   );
