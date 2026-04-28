@@ -317,9 +317,10 @@ describe('convertLegacyApp', () => {
       features: [catalogOverride, ...converted],
       initialRouteEntries: ['/catalog/default/other/x/bar'],
     });
+    // /bar does not exist on the "other" entity layout, expect the not-found panel.
     await expect(
-      renderBarOther.findByText('other overview content', {}, findOptions),
-    ).resolves.toBeInTheDocument(); // /bar does not exist, fall back to rendering overview
+      renderBarOther.findByText(/Route not found/, {}, findOptions),
+    ).resolves.toBeInTheDocument();
     renderBarOther.unmount();
   });
 });
