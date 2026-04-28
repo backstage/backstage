@@ -15,7 +15,7 @@
  */
 
 import { screen } from '@testing-library/react';
-import { useSelectedSubRoute } from './EntityTabs';
+import { EntityTabs, useSelectedSubRoute } from './EntityTabs';
 import { EntityTabsList } from './EntityTabsList';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { render } from '@testing-library/react';
@@ -354,6 +354,64 @@ describe('EntityTabs', () => {
 
       expect(screen.getByTestId('selected-index')).toHaveTextContent('-1');
       expect(screen.getByTestId('element-container')).toBeEmptyDOMElement();
+    });
+  });
+
+  describe('rendering', () => {
+    const tabRoutes = [
+      {
+        group: 'overview',
+        path: '/',
+        title: 'Overview',
+        children: <div>Overview Content</div>,
+      },
+      {
+        group: 'overview',
+        path: '/details',
+        title: 'Details',
+        children: <div>Details Content</div>,
+      },
+    ];
+
+    it('renders the matched route content and no not-found panel', async () => {
+      await renderInTestApp(
+        <Routes>
+          <Route
+            path="/*"
+            element={
+              <EntityTabs
+                routes={tabRoutes}
+                groupDefinitions={{ overview: { title: 'Overview' } }}
+              />
+            }
+          />
+        </Routes>,
+        { initialRouteEntries: ['/details'] },
+      );
+
+      expect(await screen.findByText('Details Content')).toBeInTheDocument();
+      expect(screen.queryByText('Route not found')).not.toBeInTheDocument();
+    });
+
+    it('renders the route-not-found panel for unknown sub-paths', async () => {
+      await renderInTestApp(
+        <Routes>
+          <Route
+            path="/*"
+            element={
+              <EntityTabs
+                routes={tabRoutes}
+                groupDefinitions={{ overview: { title: 'Overview' } }}
+              />
+            }
+          />
+        </Routes>,
+        { initialRouteEntries: ['/blob'] },
+      );
+
+      expect(await screen.findByText(/Route not found/)).toBeInTheDocument();
+      expect(screen.queryByText('Overview Content')).not.toBeInTheDocument();
+      expect(screen.queryByText('Details Content')).not.toBeInTheDocument();
     });
   });
 });

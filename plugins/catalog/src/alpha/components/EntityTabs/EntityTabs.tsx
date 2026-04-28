@@ -49,10 +49,14 @@ export function useSelectedSubRoute(subRoutes: SubRoute[]): {
     element: children,
   }));
 
-  // Sort longer paths first so more specific matches win.
-  const sortedRoutes = [...routes].sort((a, b) =>
-    b.path.replace(/\/\*$/, '').localeCompare(a.path.replace(/\/\*$/, '')),
-  );
+  // Sort by descending path length so more specific paths match before shorter
+  // prefixes; fall back to lexicographic order for stable output when lengths
+  // are equal.
+  const sortedRoutes = [...routes].sort((a, b) => {
+    const aPath = a.path.replace(/\/\*$/, '');
+    const bPath = b.path.replace(/\/\*$/, '');
+    return bPath.length - aPath.length || aPath.localeCompare(bPath);
+  });
 
   const element = useRoutes(sortedRoutes) ?? undefined;
 
