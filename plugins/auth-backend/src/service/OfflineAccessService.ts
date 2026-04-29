@@ -23,7 +23,7 @@ import {
 import { AuthenticationError } from '@backstage/errors';
 import { readDurationFromConfig } from '@backstage/config';
 import { durationToMilliseconds } from '@backstage/types';
-import { v4 as uuid } from 'uuid';
+import { randomUUID as uuid } from 'node:crypto';
 import { OfflineSessionDatabase } from '../database/OfflineSessionDatabase';
 import {
   generateRefreshToken,

@@ -1,5 +1,18 @@
 # @backstage/plugin-user-settings-backend
 
+## 0.4.3-next.0
+
+### Patch Changes
+
+- 0c5e41f: Removed unused dependencies that had no imports in source code.
+- Updated dependencies
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/plugin-auth-node@0.7.1-next.0
+  - @backstage/plugin-signals-node@0.2.1-next.0
+  - @backstage/backend-plugin-api@1.9.1-next.0
+  - @backstage/types@1.2.2
+  - @backstage/plugin-user-settings-common@0.1.0
+
 ## 0.4.2
 
 ### Patch Changes

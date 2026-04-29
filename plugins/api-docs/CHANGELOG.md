@@ -1,5 +1,32 @@
 # @backstage/plugin-api-docs
 
+## 0.14.1-next.1
+
+### Patch Changes
+
+- f635139: Limited `@remixicon/react` dependency to versions below 4.9.0 due to a license change in that release.
+- Updated dependencies
+  - @backstage/ui@0.15.0-next.1
+  - @backstage/frontend-plugin-api@0.17.0-next.1
+  - @backstage/catalog-model@1.8.1-next.1
+  - @backstage/core-plugin-api@1.12.6-next.1
+  - @backstage/plugin-catalog-react@2.1.5-next.1
+
+## 0.14.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.10-next.0
+  - @backstage/ui@0.15.0-next.0
+  - @backstage/plugin-catalog-react@2.1.5-next.0
+  - @backstage/frontend-plugin-api@0.17.0-next.0
+  - @backstage/plugin-catalog@2.0.5-next.0
+  - @backstage/catalog-model@1.8.1-next.0
+  - @backstage/core-plugin-api@1.12.6-next.0
+  - @backstage/plugin-catalog-common@1.1.10-next.0
+  - @backstage/plugin-permission-react@0.5.1-next.0
+
 ## 0.14.0
 
 ### Minor Changes

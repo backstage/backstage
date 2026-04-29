@@ -15,7 +15,7 @@
  */
 
 import { isDockerDisabledForTests } from '../util/isDockerDisabledForTests';
-import { v4 as uuid } from 'uuid';
+import { randomUUID as uuid } from 'node:crypto';
 import { startValkeyContainer } from './valkey';
 
 const itIfDocker = isDockerDisabledForTests() ? it.skip : it;

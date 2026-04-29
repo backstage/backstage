@@ -41,7 +41,7 @@ import {
   TeamEditedEvent,
   TeamEvent,
 } from '@octokit/webhooks-types';
-import * as uuid from 'uuid';
+import { randomUUID } from 'node:crypto';
 import {
   defaultOrganizationTeamTransformer,
   defaultUserTransformer,
@@ -653,7 +653,7 @@ export class GithubOrgEntityProvider implements EntityProvider {
           const logger = this.options.logger.child({
             class: GithubOrgEntityProvider.prototype.constructor.name,
             taskId: id,
-            taskInstanceId: uuid.v4(),
+            taskInstanceId: randomUUID(),
           });
 
           try {

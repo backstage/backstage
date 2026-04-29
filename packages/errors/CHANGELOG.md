@@ -1,5 +1,13 @@
 # @backstage/errors
 
+## 1.3.1-next.0
+
+### Patch Changes
+
+- 8741e5a: Added explicit `name` property to `ServiceUnavailableError` for consistency with all other error classes, making it resilient to minification.
+- Updated dependencies
+  - @backstage/types@1.2.2
+
 ## 1.3.0
 
 ### Minor Changes

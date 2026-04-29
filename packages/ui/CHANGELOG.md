@@ -1,5 +1,71 @@
 # @backstage/ui
 
+## 0.15.0-next.1
+
+### Minor Changes
+
+- 5351d8a: Added a `sticky` prop to the `Header` component. When `true`, the title-and-actions bar stays fixed to the top of its scroll container while the rest of the header (tags, description, metadata) scrolls away. The sticky bar background color automatically matches the container surface using the bg-consumer system.
+
+  **BREAKING**: Removed the main header class from the `Header` component. Custom styles that target this class should be updated to target the component sections that remain.
+
+  **Affected components:** Header
+
+### Patch Changes
+
+- e7fc79f: Added support for grouping options into sections in the Select component. You can now pass section objects with a `title` and a nested `options` array alongside (or instead of) regular options to render grouped dropdowns with section headers.
+
+  **Affected components:** Select
+
+- 76635ae: Disabled `Card` scroll shadow in browsers that don't support `animation-timeline: scroll()`. Prevents the shadow from being always visible over the `CardBody` when there's nothing to scroll or the body is not scrolled.
+
+  **Affected components:** Card
+
+- de75f7c: Fixed `CardBody` showing an unwanted scrollbar when constrained below the scroll shadow height.
+
+  **Affected components:** Card
+
+- c96e2b3: Added `description`, `tags`, and `metadata` props to the `Header` component. The `description` prop accepts a markdown string with support for inline links. The `tags` prop renders a row of text or link items above the title. The `metadata` prop renders key-value pairs below the description. The `breadcrumbs` prop has been deprecated and will be removed in a future release.
+
+  **Affected components:** Header
+
+- f635139: Limited `@remixicon/react` dependency to versions below 4.9.0 due to a license change in that release.
+- 23ee789: Added invalid-state styling for Checkbox and corresponding Storybook variants for verification.
+
+  **Affected components:** Checkbox, CheckboxGroup
+
+- df705bb: Fixed external URLs in BUI link components being rewritten as in-app paths when the app is served under a non-root base path. Absolute URLs (`http://`, `https://`, `//`, `mailto:`, `tel:`) are now passed through unchanged. Internal `href` values are resolved against the current `basename` exactly once, which also fixes a latent issue where internal link clicks under a non-root base path could navigate to a URL with the `basename` prefix doubled.
+
+  **Affected components:** ButtonLink, Card, Link, Menu, Tab, Table, Tag
+
+## 0.15.0-next.0
+
+### Minor Changes
+
+- a281469: Add support for flex item props (`grow`, `shrink`, and `basis`) to `Box`, `Card`, `Grid`, and `Flex` itself.
+
+  **Affected components:** Box, Card, Grid, Flex
+
+### Patch Changes
+
+- 3846774: Added missing dependencies that were previously only available transitively.
+- e8a1a35: Added `isPending` prop to Alert, Button, ButtonIcon, Table, and TableRoot as a replacement for the `loading` prop, aligning with React Aria naming conventions. The `loading` prop is now deprecated but still supported as an alias. CSS selectors now use `data-ispending` instead of `data-loading` for styling pending states; `data-loading` is still emitted for backward compatibility but will be removed alongside the `loading` prop.
+
+  **Affected components:** Alert, Button, ButtonIcon, Table, TableRoot
+
+- e2d9831: Tightened React Aria dependency version ranges from `^` to `~` to prevent unintended minor version upgrades.
+- a42766e: Fixed dark mode background for Dialog component by correcting the theme attribute selector from `data-theme` to `data-theme-mode`.
+
+  **Affected components:** Dialog
+
+- c6fc76f: Fixed an issue where the active tab indicator would disappear shortly after page load for uncontrolled Tabs.
+
+  **Affected components:** Tabs
+
+- d1be10c: Updated React Aria dependencies to v1.17.0 and migrated imports from individual `@react-aria/*` and `@react-stately/*` packages to the monopackages (`react-aria`, `react-stately`). This fixes a type resolution error for `@react-types/table` that occurred in new app installations.
+- 401916d: Added new `DateRangePicker` component — combines two date fields and a calendar popover for selecting a date range, built on React Aria with full keyboard and screen reader accessibility. Uses BUI design tokens throughout, including auto-incremented backgrounds via the bg consumer pattern.
+- Updated dependencies
+  - @backstage/version-bridge@1.0.12
+
 ## 0.14.0
 
 ### Minor Changes

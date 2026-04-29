@@ -1,5 +1,26 @@
 # @backstage/plugin-app-visualizer
 
+## 0.2.4-next.1
+
+### Patch Changes
+
+- f635139: Limited `@remixicon/react` dependency to versions below 4.9.0 due to a license change in that release.
+- Updated dependencies
+  - @backstage/ui@0.15.0-next.1
+  - @backstage/frontend-plugin-api@0.17.0-next.1
+  - @backstage/core-plugin-api@1.12.6-next.1
+
+## 0.2.4-next.0
+
+### Patch Changes
+
+- e2d9831: Tightened React Aria dependency version ranges from `^` to `~` to prevent unintended minor version upgrades.
+- Updated dependencies
+  - @backstage/core-components@0.18.10-next.0
+  - @backstage/ui@0.15.0-next.0
+  - @backstage/frontend-plugin-api@0.17.0-next.0
+  - @backstage/core-plugin-api@1.12.6-next.0
+
 ## 0.2.2
 
 ### Patch Changes

@@ -1,5 +1,23 @@
 # @backstage/plugin-kubernetes-common
 
+## 0.9.12-next.1
+
+### Patch Changes
+
+- ab1cdbb: Removed a handful of internal imports that referenced the package by its own name. Value imports were switched to relative paths, and type-only imports to `import type`. These self-referential imports could trigger circular initialization errors in bundled ESM and when the package was loaded via `jest.requireActual` — most visibly `Cannot access '_AppRootElementBlueprintesm' before initialization` from `@backstage/frontend-plugin-api`. There are no user-facing API changes.
+- Updated dependencies
+  - @backstage/catalog-model@1.8.1-next.1
+  - @backstage/plugin-permission-common@0.9.9-next.1
+
+## 0.9.12-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.8.1-next.0
+  - @backstage/plugin-permission-common@0.9.9-next.0
+  - @backstage/types@1.2.2
+
 ## 0.9.11
 
 ### Patch Changes

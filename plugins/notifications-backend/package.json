@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-notifications-backend",
-  "version": "0.6.4",
+  "version": "0.6.5-next.1",
   "backstage": {
     "role": "backend-plugin",
     "pluginId": "notifications",
@@ -54,8 +54,7 @@
     "express": "^4.22.0",
     "express-promise-router": "^4.1.0",
     "knex": "^3.0.0",
-    "p-throttle": "^4.1.1",
-    "uuid": "^11.0.0"
+    "p-throttle": "^4.1.1"
   },
   "devDependencies": {
     "@backstage/backend-defaults": "workspace:^",

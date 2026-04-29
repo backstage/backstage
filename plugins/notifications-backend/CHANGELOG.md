@@ -1,5 +1,29 @@
 # @backstage/plugin-notifications-backend
 
+## 0.6.5-next.1
+
+### Patch Changes
+
+- e9b78e9: Removed the `uuid` dependency and replaced usage with the built-in `crypto.randomUUID()`.
+- Updated dependencies
+  - @backstage/catalog-model@1.8.1-next.1
+  - @backstage/plugin-catalog-node@2.2.1-next.1
+
+## 0.6.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/plugin-notifications-common@0.2.3-next.0
+  - @backstage/plugin-notifications-node@0.2.26-next.0
+  - @backstage/plugin-signals-node@0.2.1-next.0
+  - @backstage/backend-plugin-api@1.9.1-next.0
+  - @backstage/catalog-model@1.8.1-next.0
+  - @backstage/config@1.3.8-next.0
+  - @backstage/plugin-catalog-node@2.2.1-next.0
+  - @backstage/types@1.2.2
+
 ## 0.6.4
 
 ### Patch Changes

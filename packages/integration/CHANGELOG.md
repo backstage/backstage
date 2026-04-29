@@ -1,5 +1,14 @@
 # @backstage/integration
 
+## 2.0.2-next.0
+
+### Patch Changes
+
+- b62781f: Moved `registerMswTestHooks` to test files.
+- Updated dependencies
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/config@1.3.8-next.0
+
 ## 2.0.1
 
 ### Patch Changes

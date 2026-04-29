@@ -1,5 +1,24 @@
 # @backstage/core-plugin-api
 
+## 1.12.6-next.1
+
+### Patch Changes
+
+- ab1cdbb: Removed a handful of internal imports that referenced the package by its own name. Value imports were switched to relative paths, and type-only imports to `import type`. These self-referential imports could trigger circular initialization errors in bundled ESM and when the package was loaded via `jest.requireActual` — most visibly `Cannot access '_AppRootElementBlueprintesm' before initialization` from `@backstage/frontend-plugin-api`. There are no user-facing API changes.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.17.0-next.1
+
+## 1.12.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/frontend-plugin-api@0.17.0-next.0
+  - @backstage/config@1.3.8-next.0
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.12
+
 ## 1.12.5
 
 ### Patch Changes

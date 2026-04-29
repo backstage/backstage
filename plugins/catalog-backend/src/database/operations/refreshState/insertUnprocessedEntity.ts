@@ -17,7 +17,7 @@
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { Knex } from 'knex';
 import { DbRefreshStateRow } from '../../tables';
-import { v4 as uuid } from 'uuid';
+import { randomUUID as uuid } from 'node:crypto';
 import {
   LoggerService,
   isDatabaseConflictError,

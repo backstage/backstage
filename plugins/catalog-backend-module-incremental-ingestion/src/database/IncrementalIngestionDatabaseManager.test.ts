@@ -16,7 +16,7 @@
 
 import { TestDatabases } from '@backstage/backend-test-utils';
 import { IncrementalIngestionDatabaseManager } from './IncrementalIngestionDatabaseManager';
-import { v4 as uuid } from 'uuid';
+import { randomUUID as uuid } from 'node:crypto';
 import { DeferredEntity } from '@backstage/plugin-catalog-node';
 
 const migrationsDir = `${__dirname}/../../migrations`;

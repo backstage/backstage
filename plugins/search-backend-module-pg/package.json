@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-search-backend-module-pg",
-  "version": "0.5.54",
+  "version": "0.5.55-next.1",
   "description": "A module for the search backend that implements search using PostgreSQL",
   "backstage": {
     "role": "backend-plugin-module",
@@ -54,8 +54,7 @@
     "@backstage/plugin-search-backend-node": "workspace:^",
     "@backstage/plugin-search-common": "workspace:^",
     "knex": "^3.0.0",
-    "lodash": "^4.17.21",
-    "uuid": "^11.0.0"
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",

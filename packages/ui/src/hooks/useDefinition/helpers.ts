@@ -102,7 +102,7 @@ export function processUtilityProps<Keys extends string>(
 
   const handleUtilityValue = (
     key: string,
-    val: unknown,
+    inputVal: unknown,
     prefix: string = '',
   ) => {
     // Get utility class configuration for this key
@@ -112,6 +112,11 @@ export function processUtilityProps<Keys extends string>(
       // Skip if no config found for this key
       return;
     }
+
+    const val =
+      'transform' in utilityConfig
+        ? utilityConfig.transform(inputVal)
+        : inputVal;
 
     // Check if value is in the list of valid values for this utility
     const values = utilityConfig.values as readonly (string | number)[];

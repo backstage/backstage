@@ -19,7 +19,7 @@ import { ConfigReader } from '@backstage/config';
 import { SignJWT, exportJWK, generateKeyPair } from 'jose';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { v4 as uuid } from 'uuid';
+import { randomUUID as uuid } from 'node:crypto';
 import { jwksTokenHandler } from './jwks';
 
 // Simplified copy of TokenFactory in @backstage/plugin-auth-backend

@@ -1,5 +1,30 @@
 # @backstage/plugin-catalog-node
 
+## 2.2.1-next.1
+
+### Patch Changes
+
+- ab1cdbb: Removed a handful of internal imports that referenced the package by its own name. Value imports were switched to relative paths, and type-only imports to `import type`. These self-referential imports could trigger circular initialization errors in bundled ESM and when the package was loaded via `jest.requireActual` — most visibly `Cannot access '_AppRootElementBlueprintesm' before initialization` from `@backstage/frontend-plugin-api`. There are no user-facing API changes.
+- Updated dependencies
+  - @backstage/catalog-model@1.8.1-next.1
+  - @backstage/backend-test-utils@1.11.3-next.1
+  - @backstage/plugin-permission-common@0.9.9-next.1
+
+## 2.2.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/backend-plugin-api@1.9.1-next.0
+  - @backstage/backend-test-utils@1.11.3-next.0
+  - @backstage/catalog-client@1.15.1-next.0
+  - @backstage/catalog-model@1.8.1-next.0
+  - @backstage/plugin-permission-common@0.9.9-next.0
+  - @backstage/plugin-permission-node@0.10.13-next.0
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-common@1.1.10-next.0
+
 ## 2.2.0
 
 ### Minor Changes

@@ -23,7 +23,7 @@ import {
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { createHash } from 'node:crypto';
 import { Knex } from 'knex';
-import { v4 as uuid } from 'uuid';
+import { randomUUID as uuid } from 'node:crypto';
 import { DefaultCatalogDatabase } from '../database/DefaultCatalogDatabase';
 import { DefaultProcessingDatabase } from '../database/DefaultProcessingDatabase';
 import { applyDatabaseMigrations } from '../database/migrations';

@@ -14,6 +14,7 @@ import { NotificationSettings } from '@backstage/plugin-notifications-common';
 import { NotificationSeverity } from '@backstage/plugin-notifications-common';
 import { NotificationStatus } from '@backstage/plugin-notifications-common';
 import { RouteRef } from '@backstage/core-plugin-api';
+import { SwappableComponentRef } from '@backstage/frontend-plugin-api';
 import { TableProps } from '@backstage/core-components';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
 
@@ -48,6 +49,20 @@ export type GetTopicsOptions = GetNotificationsCommonOptions;
 export type GetTopicsResponse = {
   topics: string[];
 };
+
+// @public
+export const NotificationDescription: {
+  (props: NotificationDescriptionProps): JSX.Element | null;
+  ref: SwappableComponentRef<
+    NotificationDescriptionProps,
+    NotificationDescriptionProps
+  >;
+};
+
+// @public
+export interface NotificationDescriptionProps {
+  description: string;
+}
 
 // @public (undocumented)
 export interface NotificationsApi {

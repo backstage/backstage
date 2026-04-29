@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as uuid from 'uuid';
+import { randomUUID } from 'node:crypto';
 import { Config } from '@backstage/config';
 import { InputError } from '@backstage/errors';
 import {
@@ -141,7 +141,7 @@ export class GiteaEntityProvider implements EntityProvider {
           const logger = this.logger.child({
             class: GiteaEntityProvider.prototype.constructor.name,
             taskId,
-            taskInstanceId: uuid.v4(),
+            taskInstanceId: randomUUID(),
           });
 
           try {

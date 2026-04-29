@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-backend-module-ldap",
-  "version": "0.12.4",
+  "version": "0.12.5-next.1",
   "description": "A Backstage catalog backend module that helps integrate towards LDAP",
   "backstage": {
     "role": "backend-plugin-module",
@@ -46,8 +46,7 @@
     "@backstage/plugin-catalog-node": "workspace:^",
     "@backstage/types": "workspace:^",
     "ldapts": "^8.0.6",
-    "lodash": "^4.17.21",
-    "uuid": "^11.0.0"
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

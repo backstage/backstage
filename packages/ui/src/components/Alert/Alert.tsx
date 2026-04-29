@@ -32,7 +32,7 @@ import { AlertDefinition } from './definition';
  *
  * @remarks
  * The Alert component supports multiple status variants (info, success, warning, danger)
- * and can display icons, loading states, and custom actions. It automatically handles
+ * and can display icons, pending states, and custom actions. It automatically handles
  * icon selection based on status when the icon prop is set to true.
  *
  * @example
@@ -53,14 +53,14 @@ import { AlertDefinition } from './definition';
  * ```
  *
  * @example
- * With custom actions and loading state:
+ * With custom actions and pending state:
  * ```tsx
  * <Alert
  *   status="success"
  *   icon={true}
  *   title="Operation completed"
  *   description="Your changes have been saved successfully."
- *   loading={isProcessing}
+ *   isPending={isProcessing}
  *   customActions={
  *     <>
  *       <Button size="small" variant="tertiary">Dismiss</Button>
@@ -76,13 +76,21 @@ export const Alert = forwardRef(
   (props: AlertProps, ref: Ref<HTMLDivElement>) => {
     const { ownProps, restProps, dataAttributes, utilityStyle } = useDefinition(
       AlertDefinition,
-      props,
+      // Merge deprecated `loading` into `isPending` so data attributes and
+      // internal logic only need to check a single prop.
+      {
+        ...props,
+        isPending:
+          props.isPending || props.loading
+            ? true
+            : props.isPending ?? props.loading,
+      },
     );
     const {
       classes,
       status,
       icon,
-      loading,
+      isPending,
       customActions,
       title,
       description,
@@ -132,7 +140,7 @@ export const Alert = forwardRef(
         data-has-description={description ? 'true' : 'false'}
       >
         <div className={classes.contentWrapper}>
-          {loading ? (
+          {isPending ? (
             <div className={classes.icon}>
               <ProgressBar
                 aria-label="Loading"

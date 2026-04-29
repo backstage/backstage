@@ -1,1 +1,0 @@
-Bump zod dependency to v4 for packages using configSchema and clarify that zod/v4 subpath from v3 is not supported

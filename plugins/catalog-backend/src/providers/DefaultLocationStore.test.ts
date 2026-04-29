@@ -19,7 +19,7 @@ import {
   ANNOTATION_ORIGIN_LOCATION,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import { v4 as uuid } from 'uuid';
+import { randomUUID as uuid } from 'node:crypto';
 import { applyDatabaseMigrations } from '../database/migrations';
 import {
   DbFinalEntitiesRow,

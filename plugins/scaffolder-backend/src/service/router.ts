@@ -84,7 +84,7 @@ import { HumanDuration, JsonObject } from '@backstage/types';
 import express from 'express';
 import { Duration } from 'luxon';
 import { pathToFileURL } from 'node:url';
-import { v4 as uuid } from 'uuid';
+import { randomUUID as uuid } from 'node:crypto';
 import { z } from 'zod/v3';
 import {
   DatabaseTaskStore,

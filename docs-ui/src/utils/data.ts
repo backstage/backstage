@@ -54,6 +54,10 @@ export const components: Page[] = [
     slug: 'container',
   },
   {
+    title: 'DateRangePicker',
+    slug: 'date-range-picker',
+  },
+  {
     title: 'Dialog',
     slug: 'dialog',
   },

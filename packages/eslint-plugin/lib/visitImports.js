@@ -111,7 +111,7 @@ function getImportInfo(node) {
   return {
     path: pathNode.value,
     node: pathNode,
-    kind: anyNode.importKind ?? 'value',
+    kind: anyNode.importKind ?? anyNode.exportKind ?? 'value',
   };
 }
 

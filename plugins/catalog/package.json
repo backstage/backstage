@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog",
-  "version": "2.0.2",
+  "version": "2.0.5-next.0",
   "description": "The Backstage plugin for browsing the Backstage catalog",
   "backstage": {
     "role": "frontend-plugin",

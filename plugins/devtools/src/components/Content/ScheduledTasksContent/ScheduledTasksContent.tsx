@@ -105,7 +105,8 @@ export const ScheduledTasksContent = () => {
   const plugins =
     configApi.getOptionalStringArray('devTools.scheduledTasks.plugins') || [];
   const [selectedPlugin, setSelectedPlugin] = useState(plugins[0] || '');
-  const { scheduledTasks, loading, error } = useScheduledTasks(selectedPlugin);
+  const { scheduledTasks, loading, error, refresh } =
+    useScheduledTasks(selectedPlugin);
   const { triggerTask, cancelTask, isLoading } = useScheduledTasksOperations();
 
   const [inputValue, setInputValue] = useState('');
@@ -227,6 +228,8 @@ export const ScheduledTasksContent = () => {
                       message: `Error triggering task ${rowData.taskId}: ${e.message}`,
                       severity: 'error',
                     });
+                  } finally {
+                    refresh();
                   }
                 }}
               >
@@ -249,6 +252,8 @@ export const ScheduledTasksContent = () => {
                       message: `Error cancelling task ${rowData.taskId}: ${e.message}`,
                       severity: 'error',
                     });
+                  } finally {
+                    refresh();
                   }
                 }}
               >

@@ -1,5 +1,18 @@
 # @backstage/core-components
 
+## 0.18.10-next.0
+
+### Patch Changes
+
+- 3846774: Added missing dependencies that were previously only available transitively.
+- 0c5e41f: Removed unused dependencies that had no imports in source code.
+- Updated dependencies
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/config@1.3.8-next.0
+  - @backstage/core-plugin-api@1.12.6-next.0
+  - @backstage/theme@0.7.3
+  - @backstage/version-bridge@1.0.12
+
 ## 0.18.9
 
 ### Patch Changes

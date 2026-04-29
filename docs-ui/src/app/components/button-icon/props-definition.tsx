@@ -42,10 +42,15 @@ export const buttonIconPropDefs: Record<string, PropDef> = {
     default: 'false',
     description: 'Prevents interaction and applies disabled styling.',
   },
-  loading: {
+  isPending: {
     type: 'boolean',
     default: 'false',
     description: 'Shows a spinner and disables the button.',
+  },
+  loading: {
+    type: 'boolean',
+    default: 'false',
+    description: 'Deprecated. Use `isPending` instead.',
   },
   type: {
     type: 'enum',

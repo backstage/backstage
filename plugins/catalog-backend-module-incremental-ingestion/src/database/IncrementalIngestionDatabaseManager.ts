@@ -18,7 +18,7 @@ import { Knex } from 'knex';
 import type { DeferredEntity } from '@backstage/plugin-catalog-node';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { Duration } from 'luxon';
-import { v4 } from 'uuid';
+import { randomUUID as v4 } from 'node:crypto';
 import {
   IngestionRecord,
   IngestionRecordUpdate,

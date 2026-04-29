@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { createExtensionPoint } from '@backstage/backend-plugin-api';
-import {
+import type {
   AuthenticationStrategy,
   CustomResource,
   ObjectToFetch,

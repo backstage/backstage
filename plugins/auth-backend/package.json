@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-auth-backend",
-  "version": "0.28.0",
+  "version": "0.28.1-next.1",
   "description": "A Backstage backend plugin that handles authentication",
   "backstage": {
     "role": "backend-plugin",
@@ -65,7 +65,6 @@
     "matcher": "^4.0.0",
     "minimatch": "^10.2.1",
     "passport": "^0.7.0",
-    "uuid": "^11.0.0",
     "zod": "^3.25.76 || ^4.0.0",
     "zod-validation-error": "^5.0.0"
   },

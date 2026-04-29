@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-auth-node",
-  "version": "0.7.0",
+  "version": "0.7.1-next.1",
   "backstage": {
     "role": "node-library",
     "pluginId": "auth",
@@ -61,7 +61,6 @@
     "cookie-parser": "^1.4.6",
     "express-promise-router": "^4.1.1",
     "msw": "^1.0.0",
-    "supertest": "^7.0.0",
-    "uuid": "^11.0.0"
+    "supertest": "^7.0.0"
   }
 }

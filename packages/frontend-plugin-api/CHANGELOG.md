@@ -1,5 +1,27 @@
 # @backstage/frontend-plugin-api
 
+## 0.17.0-next.1
+
+### Patch Changes
+
+- ab1cdbb: Removed a handful of internal imports that referenced the package by its own name. Value imports were switched to relative paths, and type-only imports to `import type`. These self-referential imports could trigger circular initialization errors in bundled ESM and when the package was loaded via `jest.requireActual` — most visibly `Cannot access '_AppRootElementBlueprintesm' before initialization` from `@backstage/frontend-plugin-api`. There are no user-facing API changes.
+
+## 0.17.0-next.0
+
+### Minor Changes
+
+- 8738203: **BREAKING**: Removed the deprecated property form of `PortableSchema.schema`. The `schema` member is now a plain method that must be called as `schema()` — direct property access like `schema.type` or `schema.properties` is no longer supported.
+
+### Patch Changes
+
+- cad156e: Replaced old config schema values from existing extensions and blueprints.
+- 72a552f: Updated error messages and deprecation warnings to clarify that the `zod/v4` subpath export from the Zod v3 package is not supported by `configSchema`, since it does not include JSON Schema conversion. The `zod` dependency has been bumped to `^4.0.0`.
+- Updated dependencies
+  - @backstage/errors@1.3.1-next.0
+  - @backstage/filter-predicates@0.1.3-next.0
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.12
+
 ## 0.16.0
 
 ### Minor Changes

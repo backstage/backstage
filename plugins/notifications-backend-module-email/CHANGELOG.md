@@ -1,5 +1,20 @@
 # @backstage/plugin-notifications-backend-module-email
 
+## 0.3.21-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-notifications-common@0.2.3-next.0
+  - @backstage/plugin-notifications-node@0.2.26-next.0
+  - @backstage/backend-plugin-api@1.9.1-next.0
+  - @backstage/catalog-client@1.15.1-next.0
+  - @backstage/catalog-model@1.8.1-next.0
+  - @backstage/config@1.3.8-next.0
+  - @backstage/integration-aws-node@0.1.22-next.0
+  - @backstage/plugin-catalog-node@2.2.1-next.0
+  - @backstage/types@1.2.2
+
 ## 0.3.20
 
 ### Patch Changes

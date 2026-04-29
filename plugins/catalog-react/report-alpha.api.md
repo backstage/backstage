@@ -82,8 +82,8 @@ export const catalogReactTranslationRef: TranslationRef<
     readonly 'inspectEntityDialog.overviewPage.labels': 'Labels';
     readonly 'inspectEntityDialog.overviewPage.status.title': 'Status';
     readonly 'inspectEntityDialog.overviewPage.identity.title': 'Identity';
-    readonly 'inspectEntityDialog.overviewPage.annotations': 'Annotations';
     readonly 'inspectEntityDialog.overviewPage.tags': 'Tags';
+    readonly 'inspectEntityDialog.overviewPage.annotations': 'Annotations';
     readonly 'inspectEntityDialog.overviewPage.relation.title': 'Relations';
     readonly 'inspectEntityDialog.overviewPage.copyAriaLabel': 'Copy {{label}}';
     readonly 'inspectEntityDialog.overviewPage.copiedStatus': 'Copied';
@@ -122,8 +122,8 @@ export const catalogReactTranslationRef: TranslationRef<
     readonly 'entityTableColumnTitle.description': 'Description';
     readonly 'entityTableColumnTitle.system': 'System';
     readonly 'entityTableColumnTitle.namespace': 'Namespace';
-    readonly 'entityTableColumnTitle.domain': 'Domain';
     readonly 'entityTableColumnTitle.tags': 'Tags';
+    readonly 'entityTableColumnTitle.domain': 'Domain';
     readonly 'entityTableColumnTitle.owner': 'Owner';
     readonly 'entityTableColumnTitle.lifecycle': 'Lifecycle';
     readonly 'entityTableColumnTitle.targets': 'Targets';

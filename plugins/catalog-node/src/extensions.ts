@@ -17,7 +17,7 @@
 import { createExtensionPoint } from '@backstage/backend-plugin-api';
 import { Entity, Validators } from '@backstage/catalog-model';
 import { CatalogModelSource } from '@backstage/catalog-model/alpha';
-import {
+import type {
   CatalogProcessor,
   CatalogProcessorParser,
   EntityProvider,

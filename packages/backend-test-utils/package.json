@@ -1,6 +1,6 @@
 {
   "name": "@backstage/backend-test-utils",
-  "version": "1.11.2",
+  "version": "1.11.3-next.1",
   "description": "Test helpers library for Backstage backends",
   "backstage": {
     "role": "node-library"
@@ -77,7 +77,6 @@
     "pg-connection-string": "^2.3.0",
     "testcontainers": "^11.9.0",
     "text-extensions": "^2.4.0",
-    "uuid": "^11.0.0",
     "yn": "^4.0.0",
     "zod": "^3.25.76 || ^4.0.0",
     "zod-to-json-schema": "^3.25.1"

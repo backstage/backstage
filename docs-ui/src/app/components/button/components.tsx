@@ -75,9 +75,9 @@ export const Destructive = () => {
   );
 };
 
-export const Loading = () => {
+export const Pending = () => {
   return (
-    <Button variant="primary" loading={true}>
+    <Button variant="primary" isPending={true}>
       Load more items
     </Button>
   );

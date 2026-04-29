@@ -35,7 +35,7 @@ import { ElasticSearchCustomIndexTemplate } from './types';
 import { ElasticSearchSearchEngineIndexer } from './ElasticSearchSearchEngineIndexer';
 import { MissingIndexError } from '@backstage/plugin-search-backend-node';
 import esb from 'elastic-builder';
-import { v4 as uuid } from 'uuid';
+import { randomUUID as uuid } from 'node:crypto';
 import {
   AwsCredentialProvider,
   DefaultAwsCredentialsManager,

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-auth",
-  "version": "0.1.7",
+  "version": "0.1.8-next.1",
   "backstage": {
     "role": "frontend-plugin",
     "pluginId": "auth",
@@ -51,7 +51,7 @@
     "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/theme": "workspace:^",
     "@backstage/ui": "workspace:^",
-    "@remixicon/react": "^4.6.0",
+    "@remixicon/react": ">=4.6.0 <4.9.0",
     "react-use": "^17.2.4"
   },
   "devDependencies": {
