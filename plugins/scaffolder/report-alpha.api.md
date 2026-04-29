@@ -18,12 +18,13 @@ import { FieldExtensionOptions } from '@backstage/plugin-scaffolder-react';
 import { FilterPredicate } from '@backstage/filter-predicates';
 import { FormField } from '@backstage/plugin-scaffolder-react/alpha';
 import { formFieldsApiRef } from '@backstage/plugin-scaffolder-react/alpha';
-import type { FormProps as FormProps_2 } from '@rjsf/core';
-import { FormProps as FormProps_3 } from '@backstage/plugin-scaffolder-react';
+import { FormProps as FormProps_2 } from '@backstage/plugin-scaffolder-react';
+import type { FormProps as FormProps_3 } from '@rjsf/core';
 import { IconComponent } from '@backstage/frontend-plugin-api';
 import { IconElement } from '@backstage/frontend-plugin-api';
 import { IconLinkVerticalProps } from '@backstage/core-components';
-import { JSX as JSX_2 } from 'react';
+import { JSX as JSX_2 } from 'react/jsx-runtime';
+import { JSX as JSX_3 } from 'react';
 import { LayoutOptions } from '@backstage/plugin-scaffolder-react';
 import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
@@ -188,7 +189,7 @@ const _default: OverridableFrontendPlugin<
               optional: true;
             }
           >
-        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ExtensionDataRef<JSX_3.Element, 'core.reactElement', {}>
         | ExtensionDataRef<
             string,
             'core.title',
@@ -205,7 +206,7 @@ const _default: OverridableFrontendPlugin<
           >;
       inputs: {
         pages: ExtensionInput<
-          | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+          | ConfigurableExtensionDataRef<JSX_3.Element, 'core.reactElement', {}>
           | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
           | ConfigurableExtensionDataRef<
               RouteRef_2<AnyRouteRefParams>,
@@ -253,7 +254,7 @@ const _default: OverridableFrontendPlugin<
         path: string;
         title?: string;
         icon?: IconElement;
-        loader?: () => Promise<JSX_2.Element>;
+        loader?: () => Promise<JSX_3.Element>;
         routeRef?: RouteRef_2;
         noHeader?: boolean;
       };
@@ -263,7 +264,7 @@ const _default: OverridableFrontendPlugin<
       name: 'category';
       config: {};
       configInput: {};
-      output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
+      output: ExtensionDataRef<JSX_3.Element, 'core.reactElement', {}>;
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
@@ -274,7 +275,7 @@ const _default: OverridableFrontendPlugin<
       name: 'owner';
       config: {};
       configInput: {};
-      output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
+      output: ExtensionDataRef<JSX_3.Element, 'core.reactElement', {}>;
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
@@ -285,7 +286,7 @@ const _default: OverridableFrontendPlugin<
       name: 'searchbar';
       config: {};
       configInput: {};
-      output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
+      output: ExtensionDataRef<JSX_3.Element, 'core.reactElement', {}>;
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
@@ -296,7 +297,7 @@ const _default: OverridableFrontendPlugin<
       name: 'tag';
       config: {};
       configInput: {};
-      output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
+      output: ExtensionDataRef<JSX_3.Element, 'core.reactElement', {}>;
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
@@ -307,7 +308,7 @@ const _default: OverridableFrontendPlugin<
       name: 'template-kind';
       config: {};
       configInput: {};
-      output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
+      output: ExtensionDataRef<JSX_3.Element, 'core.reactElement', {}>;
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
@@ -320,7 +321,7 @@ const _default: OverridableFrontendPlugin<
       configInput: {
         initialFilter?: 'all' | 'owned' | 'starred' | undefined;
       };
-      output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
+      output: ExtensionDataRef<JSX_3.Element, 'core.reactElement', {}>;
       inputs: {};
       kind: 'scaffolder-filter';
       name: 'user-list';
@@ -498,7 +499,7 @@ const _default: OverridableFrontendPlugin<
               optional: true;
             }
           >
-        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ExtensionDataRef<JSX_3.Element, 'core.reactElement', {}>
         | ExtensionDataRef<string, 'core.title', {}>
         | ExtensionDataRef<
             IconElement,
@@ -536,7 +537,7 @@ const _default: OverridableFrontendPlugin<
               optional: true;
             }
           >
-        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ExtensionDataRef<JSX_3.Element, 'core.reactElement', {}>
         | ExtensionDataRef<string, 'core.title', {}>
         | ExtensionDataRef<
             IconElement,
@@ -574,7 +575,7 @@ const _default: OverridableFrontendPlugin<
               optional: true;
             }
           >
-        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ExtensionDataRef<JSX_3.Element, 'core.reactElement', {}>
         | ExtensionDataRef<string, 'core.title', {}>
         | ExtensionDataRef<
             IconElement,
@@ -610,7 +611,7 @@ const _default: OverridableFrontendPlugin<
               optional: true;
             }
           >
-        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ExtensionDataRef<JSX_3.Element, 'core.reactElement', {}>
         | ExtensionDataRef<string, 'core.title', {}>
         | ExtensionDataRef<
             IconElement,
@@ -621,7 +622,7 @@ const _default: OverridableFrontendPlugin<
           >;
       inputs: {
         filters: ExtensionInput<
-          ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
+          ConfigurableExtensionDataRef<JSX_3.Element, 'core.reactElement', {}>,
           {
             singleton: false;
             optional: false;
@@ -671,7 +672,7 @@ const _default: OverridableFrontendPlugin<
               optional: true;
             }
           >
-        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ExtensionDataRef<JSX_3.Element, 'core.reactElement', {}>
         | ExtensionDataRef<string, 'core.title', {}>
         | ExtensionDataRef<
             IconElement,
@@ -744,7 +745,7 @@ export { formFieldsApiRef };
 
 // @alpha @deprecated
 export type FormProps = Pick<
-  FormProps_2,
+  FormProps_3,
   'transformErrors' | 'noHtml5Validate'
 >;
 
@@ -969,6 +970,9 @@ export const scaffolderTranslationRef: TranslationRef<
 >;
 
 // @alpha (undocumented)
+export const TemplateListPage: (props: TemplateListPageProps) => JSX_2.Element;
+
+// @alpha (undocumented)
 export type TemplateListPageProps = {
   TemplateCardComponent?: ComponentType<{
     template: TemplateEntityV1beta3;
@@ -988,6 +992,16 @@ export type TemplateListPageProps = {
   };
 };
 
+// @alpha
+export const TemplateWizardPage: (
+  props: TemplateWizardPageProps,
+) => JSX_2.Element;
+
+// @alpha
+export const TemplateWizardPageContent: (
+  props: TemplateWizardPageProps,
+) => JSX_2.Element;
+
 // @alpha (undocumented)
 export type TemplateWizardPageProps = {
   customFieldExtensions: FieldExtensionOptions<any, any>[];
@@ -995,7 +1009,7 @@ export type TemplateWizardPageProps = {
     ReviewStepComponent?: ComponentType<ReviewStepProps>;
   };
   layouts?: LayoutOptions[];
-  formProps?: FormProps_3;
+  formProps?: FormProps_2;
   headerOptions?: {
     pageTitleOverride?: string;
     title?: string;

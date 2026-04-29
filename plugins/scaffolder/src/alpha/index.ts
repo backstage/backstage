@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 export {
+  TemplateWizardPage,
+  TemplateWizardPageContent,
+  TemplateListPage,
   type FormProps,
   type TemplateListPageProps,
   type TemplateWizardPageProps,
