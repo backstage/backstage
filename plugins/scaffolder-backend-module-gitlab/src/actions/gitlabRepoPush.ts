@@ -95,7 +95,8 @@ export const createGitlabRepoPushAction = (options: {
           }),
         commitHash: z =>
           z.string({
-            description: 'The git commit hash of the commit',
+            description:
+              'The git commit hash of the commit. Might be empty if no files to commit.',
           }),
       },
     },
@@ -212,6 +213,12 @@ export const createGitlabRepoPushAction = (options: {
         const commitId = await ctx.checkpoint({
           key: `commit.create.${repoID}.${branchName}`,
           fn: async () => {
+            if (actions.length === 0) {
+              ctx.logger.warn(
+                `No commit created because no files to commit to ${repoID} (branch: ${branchName})`,
+              );
+              return '';
+            }
             const commit = await api.Commits.create(
               repoID,
               branchName,

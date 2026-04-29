@@ -377,6 +377,34 @@ describe('createGitLabCommit', () => {
     });
   });
 
+  describe('when there are no files to commit', () => {
+    it('does not call Commits.create and outputs an empty commit hash', async () => {
+      mockGitlabClient.Commits.create.mockClear();
+      const input = {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        commitMessage: 'Nothing to push',
+        branchName: 'some-branch',
+        sourcePath: 'source',
+      };
+      mockDir.setContent({
+        [workspacePath]: {
+          source: {},
+        },
+      });
+      const ctx = createMockActionContext({ input, workspacePath });
+      const warnSpy = jest.spyOn(ctx.logger, 'warn');
+      await instance.handler(ctx);
+
+      expect(mockGitlabClient.Commits.create).not.toHaveBeenCalled();
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining('No commit created'),
+      );
+      expect(ctx.output).toHaveBeenCalledWith('commitHash', '');
+      expect(ctx.output).toHaveBeenCalledWith('projectid', 'owner/repo');
+      expect(ctx.output).toHaveBeenCalledWith('projectPath', 'owner/repo');
+    });
+  });
+
   describe('error handling', () => {
     it('throws appropriate error for create action when commit fails', async () => {
       const input = {
