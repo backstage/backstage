@@ -47,8 +47,8 @@
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@types/express": "^4.17.6",
-    "@types/supertest": "^6.0.0",
-    "better-sqlite3": "^11.0.0",
+    "@types/supertest": "^2.0.8",
+    "better-sqlite3": "^12.0.0",
     "express": "^4.22.0",
     "supertest": "^7.0.0"
   }
