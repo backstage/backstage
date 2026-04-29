@@ -44,7 +44,7 @@ const scaffolderTemplateKindFilter = ScaffolderFilterBlueprint.make({
 const scaffolderUsersListFilter = ScaffolderFilterBlueprint.makeWithOverrides({
   name: 'user-list',
   configSchema: {
-    initialFilter: z.enum(['owned', 'starred', 'all']).default('owned'),
+    initialFilter: z.enum(['starred', 'all']).default('all'),
   },
   factory(originalFactory, { config }) {
     return originalFactory({

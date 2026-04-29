@@ -26,10 +26,12 @@ import {
   type FieldExtensionOptions,
   SecretsContextProvider,
 } from '@backstage/plugin-scaffolder-react';
-import type { FormField } from '@backstage/plugin-scaffolder-react/alpha';
+import {
+  formFieldsApiRef,
+  type FormField,
+} from '@backstage/plugin-scaffolder-react/alpha';
 import { OpaqueFormField } from '@internal/scaffolder';
 import { DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS } from '../../extensions/default';
-import { formFieldsApiRef } from '../formFieldsApi';
 import { TemplateEditorIntro } from './TemplateEditorPage/TemplateEditorIntro';
 import { TemplateEditor } from './TemplateEditorPage/TemplateEditor';
 import { TemplateFormPreviewer } from './TemplateEditorPage/TemplateFormPreviewer';

@@ -77,10 +77,8 @@ export type TemplateListContentProps = {
  *
  * @public
  */
-export function TemplateListContent({
-  filters,
-  groups,
-}: TemplateListContentProps) {
+export function TemplateListContent(props: TemplateListContentProps) {
+  const { filters, groups } = props;
   const registerComponentLink = useRouteRef(registerComponentRouteRef);
   const viewTechDocsLink = useRouteRef(viewTechDocRouteRef);
   const templateRoute = useRouteRef(selectedTemplateRouteRef);
@@ -180,11 +178,9 @@ export type TemplatesSubPageProps = {
  *
  * @public
  */
-export function TemplatesSubPage({
-  formFields,
-  filters,
-  groups,
-}: TemplatesSubPageProps) {
+export function TemplatesSubPage(props: TemplatesSubPageProps) {
+  const { filters, formFields, groups } = props;
+
   const customFieldExtensions = useCustomFieldExtensions(undefined);
   const customLayouts = useCustomLayouts(undefined);
 

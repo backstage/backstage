@@ -153,7 +153,7 @@ function useTemplateWizard(_props: TemplateWizardPageProps) {
  *
  * @alpha
  */
-export const TemplateWizardPageContent = (props: TemplateWizardPageProps) => {
+export function TemplateWizardPageContent(props: TemplateWizardPageProps) {
   const {
     templateRef,
     templateName,
@@ -178,7 +178,7 @@ export const TemplateWizardPageContent = (props: TemplateWizardPageProps) => {
       />
     </AnalyticsContext>
   );
-};
+}
 
 /**
  * Template wizard, for use within the NFS page layout
@@ -186,7 +186,7 @@ export const TemplateWizardPageContent = (props: TemplateWizardPageProps) => {
  *
  * @alpha
  */
-export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
+export function TemplateWizardPage(props: TemplateWizardPageProps) {
   const {
     templateRef,
     templateName,
@@ -230,4 +230,4 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
       </Page>
     </AnalyticsContext>
   );
-};
+}

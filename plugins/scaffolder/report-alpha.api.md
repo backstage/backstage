@@ -17,7 +17,6 @@ import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { FieldExtensionOptions } from '@backstage/plugin-scaffolder-react';
 import { FilterPredicate } from '@backstage/filter-predicates';
 import { FormField } from '@backstage/plugin-scaffolder-react/alpha';
-import { formFieldsApiRef } from '@backstage/plugin-scaffolder-react/alpha';
 import { FormProps as FormProps_2 } from '@backstage/plugin-scaffolder-react';
 import type { FormProps as FormProps_3 } from '@rjsf/core';
 import { IconComponent } from '@backstage/frontend-plugin-api';
@@ -33,7 +32,6 @@ import { ReviewStepProps } from '@backstage/plugin-scaffolder-react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { RouteRef as RouteRef_2 } from '@backstage/frontend-plugin-api';
 import { ScaffolderFormDecorator } from '@backstage/plugin-scaffolder-react/alpha';
-import { ScaffolderFormFieldsApi } from '@backstage/plugin-scaffolder-react/alpha';
 import { SubRouteRef } from '@backstage/core-plugin-api';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateGroupFilter } from '@backstage/plugin-scaffolder-react';
@@ -99,6 +97,34 @@ const _default: OverridableFrontendPlugin<
       };
       kind: 'api';
       name: 'form-decorators';
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
+    }>;
+    'api:scaffolder/form-fields': OverridableExtensionDefinition<{
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+      inputs: {
+        formFields: ExtensionInput<
+          ConfigurableExtensionDataRef<
+            () => Promise<FormField>,
+            'scaffolder.form-field-loader',
+            {}
+          >,
+          {
+            singleton: false;
+            optional: false;
+            internal: false;
+          }
+        >;
+      };
+      kind: 'api';
+      name: 'form-fields';
       params: <
         TApi,
         TImpl extends TApi,
@@ -316,10 +342,10 @@ const _default: OverridableFrontendPlugin<
     }>;
     'scaffolder-filter:scaffolder/user-list': OverridableExtensionDefinition<{
       config: {
-        initialFilter: 'all' | 'owned' | 'starred';
+        initialFilter: 'all' | 'starred';
       };
       configInput: {
-        initialFilter?: 'all' | 'owned' | 'starred' | undefined;
+        initialFilter?: 'all' | 'starred' | undefined;
       };
       output: ExtensionDataRef<JSX_3.Element, 'core.reactElement', {}>;
       inputs: {};
@@ -741,8 +767,6 @@ export const formDecoratorsApiRef: ApiRef<ScaffolderFormDecoratorsApi> & {
   readonly $$type: '@backstage/ApiRef';
 };
 
-export { formFieldsApiRef };
-
 // @alpha @deprecated
 export type FormProps = Pick<
   FormProps_3,
@@ -761,8 +785,6 @@ export interface ScaffolderFormDecoratorsApi {
   // (undocumented)
   getFormDecorators(): Promise<ScaffolderFormDecorator[]>;
 }
-
-export { ScaffolderFormFieldsApi };
 
 // @public (undocumented)
 export type ScaffolderTemplateEditorClassKey =
@@ -993,14 +1015,14 @@ export type TemplateListPageProps = {
 };
 
 // @alpha
-export const TemplateWizardPage: (
+export function TemplateWizardPage(
   props: TemplateWizardPageProps,
-) => JSX_2.Element;
+): JSX_2.Element;
 
 // @alpha
-export const TemplateWizardPageContent: (
+export function TemplateWizardPageContent(
   props: TemplateWizardPageProps,
-) => JSX_2.Element;
+): JSX_2.Element;
 
 // @alpha (undocumented)
 export type TemplateWizardPageProps = {

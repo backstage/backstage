@@ -33,9 +33,5 @@ import { scaffolderTranslationRef as _scaffolderTranslationRef } from '../transl
  */
 export const scaffolderTranslationRef = _scaffolderTranslationRef;
 export * from './api';
-export {
-  formFieldsApiRef,
-  type ScaffolderFormFieldsApi,
-} from './formFieldsApi';
 
 export { default } from './plugin';

@@ -24,7 +24,7 @@ import {
 import { TemplateCategoryPicker } from '../TemplateCategoryPicker';
 
 /** @public */
-export const DefaultFilters = () => {
+export function DefaultFilters() {
   return (
     <>
       <EntitySearchBar />
@@ -38,4 +38,4 @@ export const DefaultFilters = () => {
       <EntityOwnerPicker />
     </>
   );
-};
+}

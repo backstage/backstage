@@ -111,7 +111,7 @@ export function createScaffolderFormDecorator<
 }): ScaffolderFormDecorator<TInput>;
 
 // @public (undocumented)
-export const DefaultFilters: () => JSX_2.Element;
+export function DefaultFilters(): JSX_2.Element;
 
 // @alpha
 export const DefaultTemplateOutputs: (props: {

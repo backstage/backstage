@@ -26,6 +26,7 @@ import {
   formFieldsApiRef,
   scaffolderGroupFilterDataRef,
 } from '@backstage/plugin-scaffolder-react/alpha';
+import { Fragment } from 'react/jsx-runtime';
 
 export const scaffolderPage = PageBlueprint.makeWithOverrides({
   inputs: {
@@ -56,9 +57,11 @@ export const scaffolderTemplatesSubPage = SubPageBlueprint.makeWithOverrides({
       loader: async () => {
         const formFields = (await formFieldsApi?.loadFormFields()) ?? [];
 
-        const filters = inputs.filters.map(filter =>
-          filter.get(coreExtensionData.reactElement),
-        );
+        const filters = inputs.filters.map((filter, index) => (
+          <Fragment key={index}>
+            {filter.get(coreExtensionData.reactElement)}
+          </Fragment>
+        ));
 
         const groups = inputs.groups.length
           ? inputs.groups.map(group => group.get(scaffolderGroupFilterDataRef))
