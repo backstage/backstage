@@ -1,5 +1,13 @@
 # @backstage/plugin-catalog-backend-module-gitea
 
+## 0.1.12-next.1
+
+### Patch Changes
+
+- e9b78e9: Removed the `uuid` dependency and replaced usage with the built-in `crypto.randomUUID()`.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@2.2.1-next.1
+
 ## 0.1.12-next.0
 
 ### Patch Changes

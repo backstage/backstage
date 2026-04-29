@@ -1,5 +1,11 @@
 # @backstage/eslint-plugin
 
+## 0.3.0-next.0
+
+### Minor Changes
+
+- ab1cdbb: Added a new `no-self-package-imports` lint rule, enabled as `error` in the recommended config, that reports when a package imports itself by its own name instead of using a relative path. This pattern causes circular initialization errors in bundled ESM and with `jest.requireActual`.
+
 ## 0.2.3
 
 ### Patch Changes

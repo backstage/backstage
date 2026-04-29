@@ -1,5 +1,16 @@
 # @backstage/plugin-notifications
 
+## 0.5.17-next.1
+
+### Patch Changes
+
+- f635139: Limited `@remixicon/react` dependency to versions below 4.9.0 due to a license change in that release.
+- 03311e3: The notification description used in the notifications table is now a swappable component, so that apps can replace its rendering with a custom implementation.
+- Updated dependencies
+  - @backstage/ui@0.15.0-next.1
+  - @backstage/frontend-plugin-api@0.17.0-next.1
+  - @backstage/core-plugin-api@1.12.6-next.1
+
 ## 0.5.17-next.0
 
 ### Patch Changes

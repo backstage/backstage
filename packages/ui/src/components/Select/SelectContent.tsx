@@ -25,12 +25,12 @@ import { RiCloseCircleLine } from '@remixicon/react';
 import { useDefinition } from '../../hooks/useDefinition';
 import { SelectContentDefinition } from './definition';
 import { SelectListBox } from './SelectListBox';
-import type { Option } from './types';
+import type { SelectOwnProps } from './types';
 
 interface SelectContentProps {
   searchable?: boolean;
   searchPlaceholder?: string;
-  options?: Array<Option>;
+  options?: SelectOwnProps['options'];
 }
 
 export function SelectContent(props: SelectContentProps) {

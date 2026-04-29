@@ -1,5 +1,17 @@
 # @backstage/frontend-test-utils
 
+## 0.5.3-next.1
+
+### Patch Changes
+
+- fa363f9: Added support for `ExternalRouteRef` in the `mountedRoutes` option of `renderInTestApp` and `renderTestApp`.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.17.0-next.1
+  - @backstage/core-plugin-api@1.12.6-next.1
+  - @backstage/frontend-app-api@0.16.3-next.1
+  - @backstage/plugin-app@0.4.6-next.1
+  - @backstage/plugin-permission-common@0.9.9-next.1
+
 ## 0.5.3-next.0
 
 ### Patch Changes

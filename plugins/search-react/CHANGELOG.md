@@ -1,5 +1,14 @@
 # @backstage/plugin-search-react
 
+## 1.11.4-next.1
+
+### Patch Changes
+
+- e9b78e9: Removed the `uuid` dependency and replaced usage with the built-in `crypto.randomUUID()`.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.17.0-next.1
+  - @backstage/core-plugin-api@1.12.6-next.1
+
 ## 1.11.4-next.0
 
 ### Patch Changes

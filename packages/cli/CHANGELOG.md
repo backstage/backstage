@@ -1,5 +1,13 @@
 # @backstage/cli
 
+## 0.36.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/eslint-plugin@0.3.0-next.0
+  - @backstage/cli-node@0.3.2-next.1
+
 ## 0.36.2-next.0
 
 ### Patch Changes

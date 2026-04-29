@@ -1,5 +1,15 @@
 # @backstage/plugin-scaffolder-node
 
+## 0.13.3-next.1
+
+### Patch Changes
+
+- 77bee9f: Added optional `status` filter to `ScaffolderService.listTasks`, allowing callers to retrieve tasks matching a specific status.
+- Updated dependencies
+  - @backstage/catalog-model@1.8.1-next.1
+  - @backstage/backend-test-utils@1.11.3-next.1
+  - @backstage/plugin-permission-common@0.9.9-next.1
+
 ## 0.13.3-next.0
 
 ### Patch Changes

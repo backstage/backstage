@@ -14,14 +14,24 @@
  * limitations under the License.
  */
 
-import { ListBox, ListBoxItem, Text } from 'react-aria-components';
+import {
+  ListBox,
+  ListBoxItem,
+  ListBoxSection,
+  Header,
+  Text,
+} from 'react-aria-components';
 import { RiCheckLine } from '@remixicon/react';
 import { useDefinition } from '../../hooks/useDefinition';
-import { SelectListBoxDefinition } from './definition';
-import type { Option } from './types';
+import {
+  SelectListBoxDefinition,
+  SelectListBoxItemDefinition,
+  SelectSectionDefinition,
+} from './definition';
+import type { Option, OptionSection, SelectOwnProps } from './types';
 
 interface SelectListBoxProps {
-  options?: Array<Option>;
+  options?: SelectOwnProps['options'];
 }
 
 const NoResults = () => {
@@ -31,28 +41,54 @@ const NoResults = () => {
   return <div className={classes.noResults}>No results found.</div>;
 };
 
+function SelectItem({ option }: { option: Option }) {
+  const { ownProps } = useDefinition(SelectListBoxItemDefinition, {});
+  const { classes } = ownProps;
+
+  return (
+    <ListBoxItem
+      id={option.value}
+      textValue={option.label}
+      className={classes.root}
+      isDisabled={option.disabled}
+    >
+      <div className={classes.indicator}>
+        <RiCheckLine />
+      </div>
+      <Text slot="label" className={classes.label}>
+        {option.label}
+      </Text>
+    </ListBoxItem>
+  );
+}
+
+function SelectSectionItems({ section }: { section: OptionSection }) {
+  const { ownProps } = useDefinition(SelectSectionDefinition, {});
+  const { classes } = ownProps;
+
+  return (
+    <ListBoxSection className={classes.root}>
+      <Header className={classes.header}>{section.title}</Header>
+      {section.options.map(option => (
+        <SelectItem key={option.value} option={option} />
+      ))}
+    </ListBoxSection>
+  );
+}
+
 export function SelectListBox(props: SelectListBoxProps) {
   const { ownProps } = useDefinition(SelectListBoxDefinition, props);
   const { classes, options } = ownProps;
 
   return (
     <ListBox className={classes.root} renderEmptyState={() => <NoResults />}>
-      {options?.map(option => (
-        <ListBoxItem
-          key={option.value}
-          id={option.value}
-          textValue={option.label}
-          className={classes.item}
-          isDisabled={option.disabled}
-        >
-          <div className={classes.itemIndicator}>
-            <RiCheckLine />
-          </div>
-          <Text slot="label" className={classes.itemLabel}>
-            {option.label}
-          </Text>
-        </ListBoxItem>
-      ))}
+      {options?.map(item =>
+        'options' in item ? (
+          <SelectSectionItems key={item.title} section={item} />
+        ) : (
+          <SelectItem key={item.value} option={item} />
+        ),
+      )}
     </ListBox>
   );
 }

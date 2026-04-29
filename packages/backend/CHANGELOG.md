@@ -1,5 +1,23 @@
 # example-backend
 
+## 0.0.50-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend@3.5.0-next.1
+  - @backstage/catalog-model@1.8.1-next.1
+  - @backstage/backend-defaults@0.17.1-next.1
+  - @backstage/plugin-auth-backend@0.28.1-next.1
+  - @backstage/plugin-auth-node@0.7.1-next.1
+  - @backstage/plugin-catalog-backend@3.6.2-next.1
+  - @backstage/plugin-catalog-backend-module-backstage-openapi@0.5.14-next.1
+  - @backstage/plugin-notifications-backend@0.6.5-next.1
+  - @backstage/plugin-permission-common@0.9.9-next.1
+  - @backstage/plugin-search-backend-module-elasticsearch@1.8.3-next.1
+  - @backstage/plugin-search-backend-node@1.4.4-next.1
+  - @backstage/plugin-signals-backend@0.3.15-next.1
+
 ## 0.0.50-next.0
 
 ### Patch Changes

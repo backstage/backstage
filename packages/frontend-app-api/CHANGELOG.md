@@ -1,5 +1,15 @@
 # @backstage/frontend-app-api
 
+## 0.16.3-next.1
+
+### Patch Changes
+
+- b6ca666: Invalid feature flag declarations no longer crash the app during bootstrap. They are now reported through the error collector and skipped, letting the rest of the app load normally.
+- Updated dependencies
+  - @backstage/frontend-defaults@0.5.2-next.1
+  - @backstage/frontend-plugin-api@0.17.0-next.1
+  - @backstage/core-plugin-api@1.12.6-next.1
+
 ## 0.16.3-next.0
 
 ### Patch Changes

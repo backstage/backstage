@@ -1,5 +1,15 @@
 # @backstage/backend-test-utils
 
+## 1.11.3-next.1
+
+### Patch Changes
+
+- e9b78e9: Removed the `uuid` dependency and replaced usage with the built-in `crypto.randomUUID()`.
+- Updated dependencies
+  - @backstage/backend-defaults@0.17.1-next.1
+  - @backstage/plugin-auth-node@0.7.1-next.1
+  - @backstage/plugin-permission-common@0.9.9-next.1
+
 ## 1.11.3-next.0
 
 ### Patch Changes

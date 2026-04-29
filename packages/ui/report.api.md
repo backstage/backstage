@@ -2182,6 +2182,12 @@ type Option_2 = {
 export { Option_2 as Option };
 
 // @public (undocumented)
+export type OptionSection = {
+  title: string;
+  options: Option_2[];
+};
+
+// @public (undocumented)
 export interface PaddingProps {
   // (undocumented)
   p?: Responsive<Space>;
@@ -2667,7 +2673,7 @@ export const SelectDefinition: {
 export type SelectOwnProps = {
   icon?: ReactNode;
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
-  options?: Array<Option_2>;
+  options?: Array<Option_2 | OptionSection>;
   searchable?: boolean;
   searchPlaceholder?: string;
   label?: FieldLabelProps['label'];
