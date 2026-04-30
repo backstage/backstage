@@ -3463,6 +3463,8 @@ export type UseTableCompleteOptions<
   sortFn?: (data: T[], sort: SortDescriptor) => T[];
   filterFn?: (data: T[], filter: TFilter) => T[];
   searchFn?: (data: T[], search: string) => T[];
+  searchDebounceMs?: number;
+  filterDebounceMs?: number;
 } & (
     | {
         data: T[] | undefined;
