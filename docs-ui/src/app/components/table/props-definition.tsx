@@ -157,6 +157,26 @@ export const useTableOptionsPropDefs: Record<string, PropDef> = {
       </>
     ),
   },
+  searchDebounceMs: {
+    type: 'number',
+    description: (
+      <>
+        Trailing-edge debounce delay (ms) applied to the search value before it
+        reaches <Chip>searchFn</Chip>. Defaults to <Chip>0</Chip> (no debounce).
+        Only used with <Chip>complete</Chip> mode.
+      </>
+    ),
+  },
+  filterDebounceMs: {
+    type: 'number',
+    description: (
+      <>
+        Trailing-edge debounce delay (ms) applied to the filter value before it
+        reaches <Chip>filterFn</Chip>. Defaults to <Chip>0</Chip> (no debounce).
+        Only used with <Chip>complete</Chip> mode.
+      </>
+    ),
+  },
 };
 
 export const useTableReturnPropDefs: Record<string, PropDef> = {
