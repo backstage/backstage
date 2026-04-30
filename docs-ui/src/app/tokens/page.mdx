@@ -264,6 +264,42 @@ pressed, and disabled variants for interactive states.
   </Table.Body>
 </Table.Root>
 
+## Inherited background
+
+`--bui-bg-inherit` resolves to the bg color of the nearest enclosing element with a
+`data-bg` attribute (set by `Box`, `Flex`, `Grid`, `Card`, `Accordion`, or any
+element that explicitly sets `data-bg`). When no such ancestor exists it falls
+back to `--bui-bg-app`. Use it from CSS when a sticky, fixed, or otherwise
+overlapping element needs to match its surrounding bg without hardcoding a level.
+
+<CodeBlock
+  code={`.searchBarContainer {
+  position: sticky;
+  top: 0;
+  background-color: var(--bui-bg-inherit);
+}`}
+/>
+
+<Table.Root>
+  <Table.Header>
+    <Table.HeaderRow>
+      <Table.HeaderCell>Prop</Table.HeaderCell>
+      <Table.HeaderCell>Description</Table.HeaderCell>
+    </Table.HeaderRow>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-bg-inherit</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        Resolves to the bg color of the nearest enclosing `data-bg` ancestor,
+        falling back to `--bui-bg-app`.
+      </Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table.Root>
+
 ## Solid background colors
 
 <Table.Root>
