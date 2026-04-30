@@ -20,6 +20,6 @@
  * @packageDocumentation
  */
 
-export { default } from './module';
+export { default, searchModulePostgresEngine } from './module';
 export * from './database';
 export * from './PgSearchEngine';

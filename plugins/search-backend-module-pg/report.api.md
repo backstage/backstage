@@ -205,4 +205,7 @@ export interface RawDocumentRow {
   // (undocumented)
   type: string;
 }
+
+// @public
+export const searchModulePostgresEngine: BackendFeature;
 ```

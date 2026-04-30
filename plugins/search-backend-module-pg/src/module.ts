@@ -15,6 +15,7 @@
  */
 import {
   coreServices,
+  createBackendFeatureLoader,
   createBackendModule,
 } from '@backstage/backend-plugin-api';
 import { searchEngineRegistryExtensionPoint } from '@backstage/plugin-search-backend-node/alpha';
@@ -24,7 +25,7 @@ import { PgSearchEngine } from './PgSearchEngine';
  * @public
  * Search backend module for the Postgres engine.
  */
-export default createBackendModule({
+export const searchModulePostgresEngine = createBackendModule({
   pluginId: 'search',
   moduleId: 'postgres-engine',
   register(env) {
@@ -50,5 +51,21 @@ export default createBackendModule({
         }
       },
     });
+  },
+});
+
+/**
+ * @public
+ * Search backend feature loader for the Postgres engine. Only loads the module
+ * when `backend.database.client` is `pg`.
+ */
+export default createBackendFeatureLoader({
+  deps: {
+    config: coreServices.rootConfig,
+  },
+  *loader({ config }) {
+    if (config.getOptionalString('backend.database.client') === 'pg') {
+      yield searchModulePostgresEngine;
+    }
   },
 });
