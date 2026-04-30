@@ -19,11 +19,13 @@ import { Progress } from '@backstage/core-components';
 import { Alert, Box, Button, Card, CardBody, Flex, Text } from '@backstage/ui';
 import { useInfo } from '../../../hooks';
 import { InfoDependenciesTable } from './InfoDependenciesTable';
-import DescriptionIcon from '@material-ui/icons/Description';
-import MemoryIcon from '@material-ui/icons/Memory';
-import DeveloperBoardIcon from '@material-ui/icons/DeveloperBoard';
+import {
+  RiComputerLine,
+  RiCpuLine,
+  RiFileCopyLine,
+  RiNodejsLine,
+} from '@remixicon/react';
 import { BackstageLogoIcon } from './BackstageLogoIcon';
-import FileCopyIcon from '@material-ui/icons/FileCopy';
 import { DevToolsInfo } from '@backstage/plugin-devtools-common';
 
 const copyToClipboard = ({ about }: { about: DevToolsInfo | undefined }) => {
@@ -87,17 +89,17 @@ export const InfoContent = () => {
                 gap={{ initial: '3', md: '6' }}
               >
                 <InfoCell
-                  icon={<DeveloperBoardIcon />}
+                  icon={<RiComputerLine />}
                   label="Operating System"
                   value={about?.operatingSystem}
                 />
                 <InfoCell
-                  icon={<MemoryIcon />}
+                  icon={<RiCpuLine />}
                   label="Resource utilization"
                   value={about?.resourceUtilization}
                 />
                 <InfoCell
-                  icon={<DescriptionIcon />}
+                  icon={<RiNodejsLine />}
                   label="NodeJS Version"
                   value={about?.nodeJsVersion}
                 />
@@ -109,7 +111,7 @@ export const InfoContent = () => {
               </Flex>
               <Button
                 onPress={() => copyToClipboard({ about })}
-                iconStart={<FileCopyIcon />}
+                iconStart={<RiFileCopyLine />}
               >
                 Copy Info to Clipboard
               </Button>
