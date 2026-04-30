@@ -15,6 +15,7 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
+import { Config } from '@backstage/config';
 import { Writable } from 'node:stream';
 import { Logger } from 'winston';
 import { ParsedLocationAnnotation } from '../../helpers';
@@ -36,9 +37,22 @@ export type GeneratorOptions = {
 };
 
 /**
+ * Built-in generator type identifiers
+ * @public
+ */
+export type BuiltInGeneratorType = 'techdocs-mkdocs' | 'techdocs-zensical';
+
+/**
+ * Generator type identifier (built-in or custom)
+ * @public
+ */
+export type GeneratorType = BuiltInGeneratorType | string;
+
+/**
  * The techdocs generator configurations options.
  */
 export type GeneratorConfig = {
+  type: GeneratorType;
   runIn: GeneratorRunInType;
   dockerImage?: string;
   pullImage?: boolean;
@@ -47,6 +61,16 @@ export type GeneratorConfig = {
   defaultPlugins?: string[];
   dangerouslyAllowAdditionalKeys?: string[];
 };
+
+/**
+ * Factory function that creates a generator instance
+ * @public
+ */
+export type GeneratorFactory = (options: {
+  config: Config;
+  logger: LoggerService;
+  containerRunner?: TechDocsContainerRunner;
+}) => GeneratorBase;
 
 /**
  * The values that the generator will receive.
@@ -90,12 +114,20 @@ export type GeneratorBase = {
 export type SupportedGeneratorKey = 'techdocs' | string;
 
 /**
- * The generator builder holds the generator ready for run time
+ * Interface for retrieving generators by entity
  * @public
  */
-export type GeneratorBuilder = {
-  register(protocol: SupportedGeneratorKey, generator: GeneratorBase): void;
+export type GeneratorGetter = {
   get(entity: Entity): GeneratorBase;
+};
+
+/**
+ * The generator builder holds the generator ready for run time
+ * @public
+ * @deprecated Use GeneratorRegistry instead
+ */
+export type GeneratorBuilder = GeneratorGetter & {
+  register(protocol: SupportedGeneratorKey, generator: GeneratorBase): void;
 };
 
 export type DefaultMkdocsContent = {

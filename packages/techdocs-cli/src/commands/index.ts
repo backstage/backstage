@@ -15,15 +15,18 @@
  */
 
 import { Command } from 'commander';
-import { TechdocsGenerator } from '@backstage/plugin-techdocs-node';
 
-const defaultDockerImage = TechdocsGenerator.defaultDockerImage;
 const defaultPreviewAppPort = '3000';
 
 export function registerCommands(program: Command) {
   program
     .command('generate')
-    .description('Generate TechDocs documentation site using MkDocs.')
+    .description('Generate TechDocs documentation site.')
+    .option(
+      '--generator-type <TYPE>',
+      'Generator type to use: techdocs-mkdocs or techdocs-zensical',
+      'techdocs-mkdocs',
+    )
     .option(
       '--source-dir <PATH>',
       'Source directory containing mkdocs.yml and docs/ directory.',
@@ -36,8 +39,7 @@ export function registerCommands(program: Command) {
     )
     .option(
       '--docker-image <DOCKER_IMAGE>',
-      'The mkdocs docker container to use',
-      defaultDockerImage,
+      'The docker container to use (defaults based on generator type)',
     )
     .option('--no-pull', 'Do not pull the latest docker image')
     .option(
@@ -228,12 +230,19 @@ export function registerCommands(program: Command) {
     .action(lazy(() => import('./publish/publish'), 'default'));
 
   program
-    .command('serve:mkdocs')
-    .description('Serve a documentation project locally using MkDocs serve.')
+    .command('serve:engine')
+    .alias('serve:mkdocs') // Deprecated alias for backward compatibility
+    .description(
+      'Serve a documentation project directly using the docs engine.',
+    )
+    .option(
+      '--generator-type <TYPE>',
+      'Generator type to use: techdocs-mkdocs or techdocs-zensical',
+      'techdocs-mkdocs',
+    )
     .option(
       '-i, --docker-image <DOCKER_IMAGE>',
-      'The mkdocs docker container to use',
-      defaultDockerImage,
+      'The docker container to use (defaults based on generator type)',
     )
     .option(
       '--docker-entrypoint <DOCKER_ENTRYPOINT>',
@@ -245,16 +254,16 @@ export function registerCommands(program: Command) {
     )
     .option(
       '--no-docker',
-      'Do not use Docker, run `mkdocs serve` in current user environment.',
+      'Do not use Docker, run docs server in current user environment.',
     )
     .option(
       '--site-name',
-      'Name for site when using default MkDocs config',
+      'Name for site when using default config',
       'Documentation Site',
     )
     .option('-p, --port <PORT>', 'Port to serve documentation locally', '8000')
     .option('-v, --verbose', 'Enable verbose output.', false)
-    .action(lazy(() => import('./serve/mkdocs'), 'default'));
+    .action(lazy(() => import('./serve/engine'), 'default'));
 
   program
     .command('serve')
@@ -262,9 +271,13 @@ export function registerCommands(program: Command) {
       'Serve a documentation project locally in a Backstage app-like environment',
     )
     .option(
+      '--generator-type <TYPE>',
+      'Generator type to use: techdocs-mkdocs or techdocs-zensical',
+      'techdocs-mkdocs',
+    )
+    .option(
       '-i, --docker-image <DOCKER_IMAGE>',
-      'The mkdocs docker container to use',
-      defaultDockerImage,
+      'The docker container to use (defaults based on generator type)',
     )
     .option(
       '--docker-entrypoint <DOCKER_ENTRYPOINT>',
@@ -276,14 +289,14 @@ export function registerCommands(program: Command) {
     )
     .option(
       '--no-docker',
-      'Do not use Docker, use MkDocs executable in current user environment.',
+      'Do not use Docker, use docs server in current user environment.',
     )
     .option(
       '--site-name',
-      'Name for site when using default MkDocs config',
+      'Name for site when using default config',
       'Documentation Site',
     )
-    .option('--mkdocs-port <PORT>', 'Port for MkDocs server to use', '8000')
+    .option('--docs-port <PORT>', 'Port for docs server to use', '8000')
     .option('-v, --verbose', 'Enable verbose output.', false)
     .option(
       '--preview-app-bundle-path <PATH_TO_BUNDLE>',
@@ -294,29 +307,39 @@ export function registerCommands(program: Command) {
       'Port for the preview app to be served on',
       defaultPreviewAppPort,
     )
+    .option('-c, --config <FILENAME>', 'Docs config file name')
     .option(
-      '-c, --mkdocs-config-file-name <FILENAME>',
-      'Mkdocs config file name',
-    )
-    .option(
-      '--mkdocs-parameter-clean',
-      'Pass "--clean" parameter to mkdocs server running in containerized environment',
+      '--clean',
+      'Pass "--clean" parameter to docs server running in containerized environment',
       false,
     )
     .option(
-      '--mkdocs-parameter-dirtyreload',
-      'Pass "--dirtyreload" parameter to mkdocs server running in containerized environment',
+      '--dirty-reload',
+      'Pass "--dirtyreload" parameter to docs server running in containerized environment',
       false,
     )
     .option(
-      '--mkdocs-parameter-strict',
-      'Pass "--strict" parameter to mkdocs server running in containerized environment',
+      '--strict',
+      'Pass "--strict" parameter to docs server running in containerized environment',
       false,
     )
+    // Deprecated options for backward compatibility
+    .option('--mkdocs-port <PORT>', undefined)
+    .option('--mkdocs-config-file-name <FILENAME>', undefined)
+    .option('--mkdocs-parameter-clean', undefined)
+    .option('--mkdocs-parameter-dirtyreload', undefined)
+    .option('--mkdocs-parameter-strict', undefined)
     .hook('preAction', command => {
+      const opts = command.opts();
+      // Handle deprecated option aliases
+      if (opts.mkdocsPort) opts.docsPort = opts.mkdocsPort;
+      if (opts.mkdocsConfigFileName) opts.config = opts.mkdocsConfigFileName;
+      if (opts.mkdocsParameterClean) opts.clean = true;
+      if (opts.mkdocsParameterDirtyreload) opts.dirtyReload = true;
+      if (opts.mkdocsParameterStrict) opts.strict = true;
       if (
-        command.opts().previewAppPort !== defaultPreviewAppPort &&
-        !command.opts().previewAppBundlePath
+        opts.previewAppPort !== defaultPreviewAppPort &&
+        !opts.previewAppBundlePath
       ) {
         command.error(
           '--preview-app-port can only be used together with --preview-app-bundle-path',

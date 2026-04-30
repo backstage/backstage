@@ -17,18 +17,19 @@
 import { OptionValues } from 'commander';
 import openBrowser from 'react-dev-utils/openBrowser';
 import { createLogger } from '../../lib/utility';
-import { runMkdocsServer } from '../../lib/mkdocsServer';
+import { runDocServer, generatorDefaults } from '../../lib/docServer';
 import { RunOnOutput } from '@backstage/cli-common';
 import { getMkdocsYml } from '@backstage/plugin-techdocs-node';
 import fs from 'fs-extra';
 import { checkIfDockerIsOperational } from './utils';
 
-export default async function serveMkdocs(opts: OptionValues) {
+export default async function serveEngine(opts: OptionValues) {
   const logger = createLogger({ verbose: opts.verbose });
 
-  const dockerAddr = `http://0.0.0.0:${opts.port}`;
+  const generatorType = opts.generatorType || 'techdocs-mkdocs';
+  const defaults =
+    generatorDefaults[generatorType] ?? generatorDefaults['techdocs-mkdocs'];
   const localAddr = `http://127.0.0.1:${opts.port}`;
-  const expectedDevAddr = opts.docker ? dockerAddr : localAddr;
 
   if (opts.docker) {
     const isDockerOperational = await checkIfDockerIsOperational(logger);
@@ -45,36 +46,37 @@ export default async function serveMkdocs(opts: OptionValues) {
   // We want to open browser only once based on a log.
   let boolOpenBrowserTriggered = false;
 
+  const serverName =
+    generatorType === 'techdocs-zensical' ? 'zensical' : 'mkdocs';
   const logFunc: RunOnOutput = data => {
-    // Sometimes the lines contain an unnecessary extra new line in between
-    const logLines = data.toString().split('\n');
-    const logPrefix = opts.docker ? '[docker/mkdocs]' : '[mkdocs]';
+    // Sometimes the lines contain an unnecessary extra new line or carriage return
+    const logLines = data.toString().replace(/\r/g, '\n').split('\n');
+    const logPrefix = opts.docker
+      ? `[docker/${serverName}]`
+      : `[${serverName}]`;
     logLines.forEach(line => {
-      if (line === '') {
+      const cleanLine = line.trim();
+      if (cleanLine === '') {
         return;
       }
 
       // Logs from container is verbose.
-      logger.verbose(`${logPrefix} ${line}`);
+      logger.verbose(`${logPrefix} ${cleanLine}`);
 
       // When the server has started, open a new browser tab for the user.
-      if (
-        !boolOpenBrowserTriggered &&
-        line.includes(`Serving on ${expectedDevAddr}`)
-      ) {
+      if (!boolOpenBrowserTriggered && defaults.servePattern.test(cleanLine)) {
         // Always open the local address, since 0.0.0.0 belongs to docker
-        logger.info(`\nStarting mkdocs server on ${localAddr}\n`);
+        logger.info(`\nStarting ${serverName} server on ${localAddr}\n`);
         openBrowser(localAddr);
         boolOpenBrowserTriggered = true;
       }
     });
   };
-  // mkdocs writes all of its logs to stderr by default, and not stdout.
+  // mkdocs/zensical writes all of its logs to stderr by default, and not stdout.
   // https://github.com/mkdocs/mkdocs/issues/879#issuecomment-203536006
-  // Had me questioning this whole implementation for half an hour.
 
   // Commander stores --no-docker in cmd.docker variable
-  const childProcess = runMkdocsServer({
+  const childProcess = runDocServer({
     port: opts.port,
     dockerImage: opts.dockerImage,
     dockerEntrypoint: opts.dockerEntrypoint,
@@ -82,6 +84,7 @@ export default async function serveMkdocs(opts: OptionValues) {
     useDocker: opts.docker,
     onStdout: logFunc,
     onStderr: logFunc,
+    generatorType,
   });
 
   // Keep waiting for user to cancel the process

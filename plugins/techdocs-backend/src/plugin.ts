@@ -20,7 +20,9 @@ import {
 } from '@backstage/backend-plugin-api';
 import {
   DocsBuildStrategy,
-  Generators,
+  GeneratorBase,
+  GeneratorFactory,
+  GeneratorRegistry,
   PreparerBase,
   Preparers,
   Publisher,
@@ -29,7 +31,8 @@ import {
   PublisherType,
   RemoteProtocol,
   techdocsBuildsExtensionPoint,
-  TechdocsGenerator,
+  TechdocsMkdocsGenerator,
+  TechdocsZensicalGenerator,
   techdocsGeneratorExtensionPoint,
   techdocsPreparerExtensionPoint,
   techdocsPublisherExtensionPoint,
@@ -62,14 +65,20 @@ export const techdocsPlugin = createBackendPlugin({
       },
     });
 
-    let customTechdocsGenerator: TechdocsGenerator | undefined;
+    const customGenerators = new Map<string, GeneratorFactory>();
+    let legacyCustomGenerator: GeneratorBase | undefined;
     env.registerExtensionPoint(techdocsGeneratorExtensionPoint, {
-      setTechdocsGenerator(generator: TechdocsGenerator) {
-        if (customTechdocsGenerator) {
+      registerGenerator(type: string, factory: GeneratorFactory) {
+        if (customGenerators.has(type)) {
+          throw new Error(`Generator for type '${type}' is already registered`);
+        }
+        customGenerators.set(type, factory);
+      },
+      setTechdocsGenerator(generator: GeneratorBase) {
+        if (legacyCustomGenerator) {
           throw new Error('TechdocsGenerator may only be set once');
         }
-
-        customTechdocsGenerator = generator;
+        legacyCustomGenerator = generator;
       },
     });
 
@@ -135,10 +144,28 @@ export const techdocsPlugin = createBackendPlugin({
         }
 
         // Generators are used for generating documentation sites.
-        const generators = await Generators.fromConfig(config, {
+        const generators = GeneratorRegistry.fromConfig(config, {
           logger: logger,
-          customGenerator: customTechdocsGenerator,
         });
+
+        // Register custom generators from extension point first (they take precedence)
+        for (const [type, factory] of customGenerators) {
+          generators.register(type, factory);
+        }
+
+        // Register built-in generators (skip if overridden by extension point or legacy)
+        if (legacyCustomGenerator) {
+          generators.register('techdocs-mkdocs', () => legacyCustomGenerator!);
+        } else if (!customGenerators.has('techdocs-mkdocs')) {
+          generators.register('techdocs-mkdocs', opts =>
+            TechdocsMkdocsGenerator.fromConfig(opts.config, opts),
+          );
+        }
+        if (!customGenerators.has('techdocs-zensical')) {
+          generators.register('techdocs-zensical', opts =>
+            TechdocsZensicalGenerator.fromConfig(opts.config, opts),
+          );
+        }
 
         // Publisher is used for
         // 1. Publishing generated files to storage

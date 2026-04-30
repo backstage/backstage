@@ -20,7 +20,8 @@ import {
   PublisherBase,
   PublisherType,
   RemoteProtocol,
-  TechdocsGenerator,
+  GeneratorBase,
+  GeneratorFactory,
 } from './stages';
 import * as winston from 'winston';
 import { PublisherSettings } from './stages/publish/types';
@@ -51,7 +52,15 @@ export const techdocsBuildsExtensionPoint =
  * @public
  */
 export interface TechdocsGeneratorExtensionPoint {
-  setTechdocsGenerator(generator: TechdocsGenerator): void;
+  /**
+   * Register a custom generator by type name
+   */
+  registerGenerator(type: string, factory: GeneratorFactory): void;
+
+  /**
+   * @deprecated Use registerGenerator() instead
+   */
+  setTechdocsGenerator(generator: GeneratorBase): void;
 }
 
 /**

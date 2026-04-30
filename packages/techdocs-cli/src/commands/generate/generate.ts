@@ -18,9 +18,11 @@ import { resolve } from 'node:path';
 import { OptionValues } from 'commander';
 import fs from 'fs-extra';
 import {
-  TechdocsGenerator,
+  TechdocsMkdocsGenerator,
+  TechdocsZensicalGenerator,
   ParsedLocationAnnotation,
   getMkdocsYml,
+  GeneratorBase,
 } from '@backstage/plugin-techdocs-node';
 import { ConfigReader } from '@backstage/config';
 import {
@@ -38,6 +40,7 @@ export default async function generate(opts: OptionValues) {
 
   const sourceDir = resolve(opts.sourceDir);
   const outputDir = resolve(opts.outputDir);
+  const generatorType = opts.generatorType || 'techdocs-mkdocs';
   const omitTechdocsCorePlugin = opts.omitTechdocsCoreMkdocsPlugin;
   const dockerImage = opts.dockerImage;
   const pullImage = opts.pull;
@@ -58,6 +61,7 @@ export default async function generate(opts: OptionValues) {
   const config = new ConfigReader({
     techdocs: {
       generator: {
+        type: generatorType,
         runIn: opts.docker ? 'docker' : 'local',
         dockerImage,
         pullImage,
@@ -82,9 +86,16 @@ export default async function generate(opts: OptionValues) {
   }
 
   // Generate docs using @backstage/plugin-techdocs-node
-  const techdocsGenerator = await TechdocsGenerator.fromConfig(config, {
-    logger,
-  });
+  let techdocsGenerator: GeneratorBase;
+  if (generatorType === 'techdocs-zensical') {
+    techdocsGenerator = TechdocsZensicalGenerator.fromConfig(config, {
+      logger,
+    });
+  } else {
+    techdocsGenerator = TechdocsMkdocsGenerator.fromConfig(config, {
+      logger,
+    });
+  }
 
   logger.info('Generating documentation...');
 

@@ -19,6 +19,9 @@ import * as winston from 'winston';
 import { Writable } from 'node:stream';
 
 // @public
+export type BuiltInGeneratorType = 'techdocs-mkdocs' | 'techdocs-zensical';
+
+// @public
 export class DirectoryPreparer implements PreparerBase {
   static fromConfig(config: Config, options: PreparerConfig): DirectoryPreparer;
   prepare(entity: Entity, options?: PreparerOptions): Promise<PreparerResponse>;
@@ -39,9 +42,20 @@ export type GeneratorBase = {
   run(opts: GeneratorRunOptions): Promise<void>;
 };
 
-// @public
-export type GeneratorBuilder = {
+// @public @deprecated
+export type GeneratorBuilder = GeneratorGetter & {
   register(protocol: SupportedGeneratorKey, generator: GeneratorBase): void;
+};
+
+// @public
+export type GeneratorFactory = (options: {
+  config: Config;
+  logger: LoggerService;
+  containerRunner?: TechDocsContainerRunner;
+}) => GeneratorBase;
+
+// @public
+export type GeneratorGetter = {
   get(entity: Entity): GeneratorBase;
 };
 
@@ -50,6 +64,19 @@ export type GeneratorOptions = {
   logger: LoggerService;
   containerRunner?: TechDocsContainerRunner;
 };
+
+// @public
+export class GeneratorRegistry {
+  static fromConfig(
+    config: Config,
+    options: {
+      logger: LoggerService;
+      containerRunner?: TechDocsContainerRunner;
+    },
+  ): GeneratorRegistry;
+  get(_entity: Entity): GeneratorBase;
+  register(type: string, factory: GeneratorFactory): void;
+}
 
 // @public
 export type GeneratorRunOptions = {
@@ -65,19 +92,22 @@ export type GeneratorRunOptions = {
   runAsDefaultUser?: boolean;
 };
 
-// @public
+// @public @deprecated
 export class Generators implements GeneratorBuilder {
   static fromConfig(
     config: Config,
     options: {
       logger: LoggerService;
       containerRunner?: TechDocsContainerRunner;
-      customGenerator?: TechdocsGenerator;
+      customGenerator?: TechdocsMkdocsGenerator;
     },
   ): Promise<GeneratorBuilder>;
   get(entity: Entity): GeneratorBase;
   register(generatorKey: SupportedGeneratorKey, generator: GeneratorBase): void;
 }
+
+// @public
+export type GeneratorType = BuiltInGeneratorType | string;
 
 // @public
 export const getDocFilesFromRepository: (
@@ -301,26 +331,14 @@ export interface TechDocsDocument extends IndexableDocument {
   path: string;
 }
 
-// @public
-export class TechdocsGenerator implements GeneratorBase {
-  constructor(options: {
-    logger: LoggerService;
-    containerRunner?: TechDocsContainerRunner;
-    config: Config;
-    scmIntegrations: ScmIntegrationRegistry;
-  });
-  static readonly defaultDockerImage = 'spotify/techdocs:v1.2.8';
-  static fromConfig(
-    config: Config,
-    options: GeneratorOptions,
-  ): TechdocsGenerator;
-  run(options: GeneratorRunOptions): Promise<void>;
-}
+// @public @deprecated (undocumented)
+export const TechdocsGenerator: typeof TechdocsMkdocsGenerator;
 
 // @public
 export interface TechdocsGeneratorExtensionPoint {
-  // (undocumented)
-  setTechdocsGenerator(generator: TechdocsGenerator): void;
+  registerGenerator(type: string, factory: GeneratorFactory): void;
+  // @deprecated (undocumented)
+  setTechdocsGenerator(generator: GeneratorBase): void;
 }
 
 // @public
@@ -334,6 +352,22 @@ export type TechDocsMetadata = {
   build_timestamp: number;
   files?: string[];
 };
+
+// @public
+export class TechdocsMkdocsGenerator implements GeneratorBase {
+  constructor(options: {
+    logger: LoggerService;
+    containerRunner?: TechDocsContainerRunner;
+    config: Config;
+    scmIntegrations: ScmIntegrationRegistry;
+  });
+  static readonly defaultDockerImage = 'spotify/techdocs:v1.2.8';
+  static fromConfig(
+    config: Config,
+    options: GeneratorOptions,
+  ): TechdocsMkdocsGenerator;
+  run(options: GeneratorRunOptions): Promise<void>;
+}
 
 // @public
 export interface TechdocsPreparerExtensionPoint {
@@ -357,6 +391,21 @@ export interface TechdocsPublisherExtensionPoint {
 
 // @public
 export const techdocsPublisherExtensionPoint: ExtensionPoint<TechdocsPublisherExtensionPoint>;
+
+// @public
+export class TechdocsZensicalGenerator implements GeneratorBase {
+  constructor(options: {
+    logger: LoggerService;
+    containerRunner?: TechDocsContainerRunner;
+    config: Config;
+  });
+  static readonly defaultDockerImage = 'spotify/techdocs-zensical:latest';
+  static fromConfig(
+    config: Config,
+    options: GeneratorOptions,
+  ): TechdocsZensicalGenerator;
+  run(options: GeneratorRunOptions): Promise<void>;
+}
 
 // @public
 export const transformDirLocation: (

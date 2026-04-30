@@ -17,7 +17,7 @@ Commands:
   migrate [options]
   publish [options]
   serve [options]
-  serve:mkdocs [options]
+  serve:local|serve:mkdocs [options]
 ```
 
 ### `techdocs-cli generate`
@@ -29,6 +29,7 @@ Options:
   --defaultPlugin [defaultPlugins...]
   --docker-image <DOCKER_IMAGE>
   --etag <ETAG>
+  --generator-type <TYPE>
   --legacyCopyReadmeMdToIndexMd
   --no-docker
   --no-pull
@@ -99,30 +100,32 @@ Options:
 Usage: techdocs-cli serve [options]
 
 Options:
+  --clean
+  --dirty-reload
   --docker-entrypoint <DOCKER_ENTRYPOINT>
   --docker-option <DOCKER_OPTION...>
-  --mkdocs-parameter-clean
-  --mkdocs-parameter-dirtyreload
-  --mkdocs-parameter-strict
-  --mkdocs-port <PORT>
+  --docs-port <PORT>
+  --generator-type <TYPE>
   --no-docker
   --preview-app-bundle-path <PATH_TO_BUNDLE>
   --preview-app-port <PORT>
   --site-name
-  -c, --mkdocs-config-file-name <FILENAME>
+  --strict
+  -c, --config <FILENAME>
   -h, --help
   -i, --docker-image <DOCKER_IMAGE>
   -v, --verbose
 ```
 
-### `techdocs-cli serve:mkdocs`
+### `techdocs-cli serve:local`
 
 ```
-Usage: techdocs-cli serve:mkdocs [options]
+Usage: techdocs-cli serve:local|serve:mkdocs [options]
 
 Options:
   --docker-entrypoint <DOCKER_ENTRYPOINT>
   --docker-option <DOCKER_OPTION...>
+  --generator-type <TYPE>
   --no-docker
   --site-name
   -h, --help

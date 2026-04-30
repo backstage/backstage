@@ -16,7 +16,7 @@
 
 import { ConfigReader } from '@backstage/config';
 import { Generators } from './generators';
-import { TechdocsGenerator } from './techdocs';
+import { TechdocsMkdocsGenerator } from './techdocsMkdocsGenerator';
 import { mockServices } from '@backstage/backend-test-utils';
 
 const logger = mockServices.logger.mock();
@@ -40,7 +40,7 @@ describe('generators', () => {
 
   it('should return correct registered generator', async () => {
     const generators = new Generators();
-    const techdocs = TechdocsGenerator.fromConfig(new ConfigReader({}), {
+    const techdocs = TechdocsMkdocsGenerator.fromConfig(new ConfigReader({}), {
       logger,
     });
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { runMkdocsServer } from './mkdocsServer';
+import { runDocServer } from './docServer';
 import { run } from '@backstage/cli-common';
 
 jest.mock('@backstage/cli-common', () => {
@@ -23,14 +23,14 @@ jest.mock('@backstage/cli-common', () => {
   };
 });
 
-describe('runMkdocsServer', () => {
+describe('runDocServer', () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });
 
   describe('docker', () => {
     it('should run docker directly by default', () => {
-      runMkdocsServer({});
+      runDocServer({});
 
       expect(run).toHaveBeenCalledWith(
         expect.arrayContaining([
@@ -48,7 +48,7 @@ describe('runMkdocsServer', () => {
     });
 
     it('should accept port option', () => {
-      runMkdocsServer({ port: '5678' });
+      runDocServer({ port: '5678' });
       expect(run).toHaveBeenCalledWith(
         expect.arrayContaining(['docker', '5678:5678', '0.0.0.0:5678']),
         expect.objectContaining({}),
@@ -56,7 +56,7 @@ describe('runMkdocsServer', () => {
     });
 
     it('should accept custom docker image', () => {
-      runMkdocsServer({ dockerImage: 'my-org/techdocs' });
+      runDocServer({ dockerImage: 'my-org/techdocs' });
       expect(run).toHaveBeenCalledWith(
         expect.arrayContaining(['docker', 'my-org/techdocs']),
         expect.objectContaining({}),
@@ -64,7 +64,7 @@ describe('runMkdocsServer', () => {
     });
 
     it('should accept custom docker options', () => {
-      runMkdocsServer({
+      runDocServer({
         dockerOptions: [
           '--add-host=internal.host:192.168.11.12',
           '--name',
@@ -83,7 +83,6 @@ describe('runMkdocsServer', () => {
           `${process.cwd()}:/content`,
           '-p',
           '8000:8000',
-          '-it',
           '--add-host=internal.host:192.168.11.12',
           '--name',
           'my-techdocs-container',
@@ -96,10 +95,10 @@ describe('runMkdocsServer', () => {
       );
     });
 
-    it('should accept additinoal mkdocs CLI parameters', () => {
-      runMkdocsServer({
-        mkdocsParameterClean: true,
-        mkdocsParameterStrict: true,
+    it('should accept additional CLI parameters', () => {
+      runDocServer({
+        parameterClean: true,
+        parameterStrict: true,
       });
       expect(run).toHaveBeenCalledWith(
         expect.arrayContaining([
@@ -117,7 +116,7 @@ describe('runMkdocsServer', () => {
 
   describe('mkdocs', () => {
     it('should run mkdocs if specified', () => {
-      runMkdocsServer({ useDocker: false });
+      runDocServer({ useDocker: false });
 
       expect(run).toHaveBeenCalledWith(
         expect.arrayContaining([
@@ -131,9 +130,38 @@ describe('runMkdocsServer', () => {
     });
 
     it('should accept port option', () => {
-      runMkdocsServer({ useDocker: false, port: '5678' });
+      runDocServer({ useDocker: false, port: '5678' });
       expect(run).toHaveBeenCalledWith(
         expect.arrayContaining(['mkdocs', '127.0.0.1:5678']),
+        expect.objectContaining({}),
+      );
+    });
+  });
+
+  describe('zensical', () => {
+    it('should use zensical docker image when generator type is techdocs-zensical', () => {
+      runDocServer({ generatorType: 'techdocs-zensical' });
+
+      expect(run).toHaveBeenCalledWith(
+        expect.arrayContaining([
+          'docker',
+          'spotify/techdocs-zensical:latest',
+          'serve',
+        ]),
+        expect.objectContaining({}),
+      );
+    });
+
+    it('should run zensical command locally when generator type is techdocs-zensical', () => {
+      runDocServer({ useDocker: false, generatorType: 'techdocs-zensical' });
+
+      expect(run).toHaveBeenCalledWith(
+        expect.arrayContaining([
+          'zensical',
+          'serve',
+          '--dev-addr',
+          '127.0.0.1:8000',
+        ]),
         expect.objectContaining({}),
       );
     });

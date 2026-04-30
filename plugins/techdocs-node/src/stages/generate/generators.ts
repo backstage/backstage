@@ -17,7 +17,7 @@
 import { Entity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { getGeneratorKey } from './helpers';
-import { TechdocsGenerator } from './techdocs';
+import { TechdocsMkdocsGenerator } from './techdocsMkdocsGenerator';
 import {
   GeneratorBase,
   GeneratorBuilder,
@@ -29,6 +29,7 @@ import { TechDocsContainerRunner } from './types';
 /**
  * Collection of docs generators
  * @public
+ * @deprecated Use {@link GeneratorRegistry} instead
  */
 export class Generators implements GeneratorBuilder {
   private generatorMap = new Map<SupportedGeneratorKey, GeneratorBase>();
@@ -43,13 +44,14 @@ export class Generators implements GeneratorBuilder {
     options: {
       logger: LoggerService;
       containerRunner?: TechDocsContainerRunner;
-      customGenerator?: TechdocsGenerator;
+      customGenerator?: TechdocsMkdocsGenerator;
     },
   ): Promise<GeneratorBuilder> {
     const generators = new Generators();
 
     const techdocsGenerator =
-      options.customGenerator ?? TechdocsGenerator.fromConfig(config, options);
+      options.customGenerator ??
+      TechdocsMkdocsGenerator.fromConfig(config, options);
     generators.register('techdocs', techdocsGenerator);
 
     return generators;

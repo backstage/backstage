@@ -48,10 +48,10 @@ import { LoggerService } from '@backstage/backend-plugin-api';
 import { TechDocsContainerRunner } from './types';
 
 /**
- * Generates documentation files
+ * Generates documentation files using MkDocs
  * @public
  */
-export class TechdocsGenerator implements GeneratorBase {
+export class TechdocsMkdocsGenerator implements GeneratorBase {
   /**
    * The default docker image (and version) used to generate content. Public
    * and static so that techdocs-node consumers can use the same version.
@@ -65,14 +65,17 @@ export class TechdocsGenerator implements GeneratorBase {
   private readonly scmIntegrations: ScmIntegrationRegistry;
 
   /**
-   * Returns a instance of TechDocs generator
+   * Returns a instance of TechDocs MkDocs generator
    * @param config - A Backstage configuration
    * @param options - Options to configure the generator
    */
-  static fromConfig(config: Config, options: GeneratorOptions) {
+  static fromConfig(
+    config: Config,
+    options: GeneratorOptions,
+  ): TechdocsMkdocsGenerator {
     const { containerRunner, logger } = options;
     const scmIntegrations = ScmIntegrations.fromConfig(config);
-    return new TechdocsGenerator({
+    return new TechdocsMkdocsGenerator({
       logger,
       containerRunner,
       config,
@@ -177,7 +180,8 @@ export class TechdocsGenerator implements GeneratorBase {
             this.containerRunner || new DockerContainerRunner();
           await containerRunner.runContainer({
             imageName:
-              this.options.dockerImage ?? TechdocsGenerator.defaultDockerImage,
+              this.options.dockerImage ??
+              TechdocsMkdocsGenerator.defaultDockerImage,
             args: ['build', '-d', '/output'],
             logStream,
             mountDirs,
@@ -246,6 +250,10 @@ export function readGeneratorConfig(
   }
 
   return {
+    type:
+      (config.getOptionalString('techdocs.generator.type') as
+        | GeneratorConfig['type']
+        | undefined) ?? 'techdocs-mkdocs',
     runIn:
       legacyGeneratorType ??
       config.getOptionalString('techdocs.generator.runIn') ??

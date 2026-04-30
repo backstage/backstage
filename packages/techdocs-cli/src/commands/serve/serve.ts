@@ -19,7 +19,7 @@ import path from 'node:path';
 import openBrowser from 'react-dev-utils/openBrowser';
 import { findOwnPaths, RunOnOutput } from '@backstage/cli-common';
 import HTTPServer from '../../lib/httpServer';
-import { runMkdocsServer } from '../../lib/mkdocsServer';
+import { runDocServer, generatorDefaults } from '../../lib/docServer';
 import { createLogger } from '../../lib/utility';
 import { getMkdocsYml } from '@backstage/plugin-techdocs-node';
 import fs from 'fs-extra';
@@ -60,17 +60,18 @@ export default async function serve(opts: OptionValues) {
 
   const backstageBackendPort = 7007;
 
-  const mkdocsDockerAddr = `http://0.0.0.0:${opts.mkdocsPort}`;
-  const mkdocsLocalAddr = `http://127.0.0.1:${opts.mkdocsPort}`;
-  const mkdocsExpectedDevAddr = opts.docker
-    ? mkdocsDockerAddr
-    : mkdocsLocalAddr;
-  const mkdocsConfigFileName = opts.mkdocsConfigFileName;
+  const generatorType = opts.generatorType || 'techdocs-mkdocs';
+  const defaults =
+    generatorDefaults[generatorType] ?? generatorDefaults['techdocs-mkdocs'];
+  const serverName =
+    generatorType === 'techdocs-zensical' ? 'zensical' : 'mkdocs';
+  const localAddr = `http://127.0.0.1:${opts.docsPort}`;
+  const configFileName = opts.config;
   const siteName = opts.siteName;
 
-  const { path: mkdocsYmlPath, configIsTemporary } = await getMkdocsYml('./', {
+  const { path: configFilePath, configIsTemporary } = await getMkdocsYml('./', {
     name: siteName,
-    mkdocsConfigFileName,
+    mkdocsConfigFileName: configFileName,
   });
 
   // Validate that Docker is up and running
@@ -81,58 +82,58 @@ export default async function serve(opts: OptionValues) {
     }
   }
 
-  let mkdocsServerHasStarted = false;
-  const mkdocsLogFunc: RunOnOutput = data => {
-    // Sometimes the lines contain an unnecessary extra new line
-    const logLines = data.toString().split('\n');
-    const logPrefix = opts.docker ? '[docker/mkdocs]' : '[mkdocs]';
+  let serverHasStarted = false;
+  const logFunc: RunOnOutput = data => {
+    // Sometimes the lines contain an unnecessary extra new line or carriage return
+    const logLines = data.toString().replace(/\r/g, '\n').split('\n');
+    const logPrefix = opts.docker
+      ? `[docker/${serverName}]`
+      : `[${serverName}]`;
     logLines.forEach(line => {
-      if (line === '') {
+      const cleanLine = line.trim();
+      if (cleanLine === '') {
         return;
       }
 
-      logger.verbose(`${logPrefix} ${line}`);
+      logger.verbose(`${logPrefix} ${cleanLine}`);
 
       // When the server has started, open a new browser tab for the user.
-      if (
-        !mkdocsServerHasStarted &&
-        line.includes(`Serving on ${mkdocsExpectedDevAddr}`)
-      ) {
-        mkdocsServerHasStarted = true;
+      if (!serverHasStarted && defaults.servePattern.test(cleanLine)) {
+        serverHasStarted = true;
       }
     });
   };
-  // mkdocs writes all of its logs to stderr by default, and not stdout.
+  // mkdocs/zensical writes all of its logs to stderr by default, and not stdout.
   // https://github.com/mkdocs/mkdocs/issues/879#issuecomment-203536006
-  // Had me questioning this whole implementation for half an hour.
-  logger.info('Starting mkdocs server.');
-  const mkdocsChildProcess = runMkdocsServer({
-    port: opts.mkdocsPort,
+  logger.info(`Starting ${serverName} server.`);
+  const childProcess = runDocServer({
+    port: opts.docsPort,
     dockerImage: opts.dockerImage,
     dockerEntrypoint: opts.dockerEntrypoint,
     dockerOptions: opts.dockerOption,
     useDocker: opts.docker,
-    onStdout: mkdocsLogFunc,
-    onStderr: mkdocsLogFunc,
-    mkdocsConfigFileName: mkdocsYmlPath,
-    mkdocsParameterClean: opts.mkdocsParameterClean,
-    mkdocsParameterDirtyReload: opts.mkdocsParameterDirtyreload,
-    mkdocsParameterStrict: opts.mkdocsParameterStrict,
+    onStdout: logFunc,
+    onStderr: logFunc,
+    configFileName: configFilePath,
+    parameterClean: opts.clean,
+    parameterDirtyReload: opts.dirtyReload,
+    parameterStrict: opts.strict,
+    generatorType,
   });
 
-  // Wait until mkdocs server has started so that Backstage starts with docs loaded
+  // Wait until server has started so that Backstage starts with docs loaded
   // Takes 1-5 seconds
   for (let attempt = 0; attempt < 30; attempt++) {
     await new Promise(r => setTimeout(r, 3000));
-    if (mkdocsServerHasStarted) {
+    if (serverHasStarted) {
       break;
     }
-    logger.info('Waiting for mkdocs server to start...');
+    logger.info(`Waiting for ${serverName} server to start...`);
   }
 
-  if (!mkdocsServerHasStarted) {
+  if (!serverHasStarted) {
     logger.error(
-      'mkdocs server did not start. Exiting. Try re-running command with -v option for more details.',
+      `${serverName} server did not start. Exiting. Try re-running command with -v option for more details.`,
     );
   }
 
@@ -141,7 +142,7 @@ export default async function serve(opts: OptionValues) {
   const httpServer = new HTTPServer(
     previewAppPath,
     port,
-    mkdocsExpectedDevAddr,
+    localAddr,
     opts.verbose,
   );
 
@@ -149,7 +150,7 @@ export default async function serve(opts: OptionValues) {
     .serve()
     .catch(err => {
       logger.error('Failed to start HTTP server', err);
-      mkdocsChildProcess.kill();
+      childProcess.kill();
       process.exit(1);
     })
     .then(() => {
@@ -160,11 +161,11 @@ export default async function serve(opts: OptionValues) {
       );
     });
 
-  await mkdocsChildProcess.waitForExit();
+  await childProcess.waitForExit();
 
   if (configIsTemporary) {
     process.on('exit', async () => {
-      fs.rmSync(mkdocsYmlPath, {});
+      fs.rmSync(configFilePath, {});
     });
   }
 }

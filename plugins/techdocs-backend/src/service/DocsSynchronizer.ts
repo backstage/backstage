@@ -23,7 +23,7 @@ import { Config } from '@backstage/config';
 import { NotFoundError, toError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import {
-  GeneratorBuilder,
+  GeneratorGetter,
   PreparerBuilder,
   PublisherBase,
 } from '@backstage/plugin-techdocs-node';
@@ -88,7 +88,7 @@ export class DocsSynchronizer {
     responseHandler: DocsSynchronizerSyncOpts;
     entity: Entity;
     preparers: PreparerBuilder;
-    generators: GeneratorBuilder;
+    generators: GeneratorGetter;
   }) {
     // create a new logger to log data to the caller
     const taskLogger = winston.createLogger({

@@ -19,7 +19,7 @@ import { Config, readDurationFromConfig } from '@backstage/config';
 import { NotFoundError } from '@backstage/errors';
 import {
   DocsBuildStrategy,
-  GeneratorBuilder,
+  GeneratorGetter,
   getLocationForEntity,
   PreparerBuilder,
   PublisherBase,
@@ -51,7 +51,7 @@ import { durationToMilliseconds } from '@backstage/types';
  */
 export type OutOfTheBoxDeploymentOptions = {
   preparers: PreparerBuilder;
-  generators: GeneratorBuilder;
+  generators: GeneratorGetter;
   publisher: PublisherBase;
   logger: LoggerService;
   discovery: DiscoveryService;

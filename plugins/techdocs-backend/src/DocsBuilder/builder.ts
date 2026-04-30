@@ -23,7 +23,7 @@ import { isError, toError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import {
   GeneratorBase,
-  GeneratorBuilder,
+  GeneratorGetter,
   getLocationForEntity,
   PreparerBase,
   PreparerBuilder,
@@ -39,7 +39,7 @@ import { TechDocsCache } from '../cache';
 
 type DocsBuilderArguments = {
   preparers: PreparerBuilder;
-  generators: GeneratorBuilder;
+  generators: GeneratorGetter;
   publisher: PublisherBase;
   entity: Entity;
   logger: Logger;

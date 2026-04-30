@@ -13,21 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { TechdocsGenerator } from './techdocs';
+export { TechdocsMkdocsGenerator } from './techdocsMkdocsGenerator';
+export { TechdocsZensicalGenerator } from './techdocsZensicalGenerator';
+export { GeneratorRegistry } from './generatorRegistry';
 export { Generators } from './generators';
 export { getMkdocsYml } from './helpers';
 export type {
   GeneratorBase,
   GeneratorOptions,
   GeneratorBuilder,
+  GeneratorGetter,
   GeneratorRunOptions,
+  GeneratorFactory,
+  GeneratorType,
+  BuiltInGeneratorType,
   SupportedGeneratorKey,
   TechDocsContainerRunner,
 } from './types';
+
+import { TechdocsMkdocsGenerator } from './techdocsMkdocsGenerator';
 import { getMkdocsYml } from './helpers';
+
 /**
  * @public
- * @deprecated
- * Deprecated in favor of getMkdocsYml (lowercase 'd')
+ * @deprecated Use {@link TechdocsMkdocsGenerator} instead
+ */
+export const TechdocsGenerator = TechdocsMkdocsGenerator;
+
+/**
+ * @public
+ * @deprecated Deprecated in favor of getMkdocsYml (lowercase 'd')
  */
 export const getMkDocsYml = getMkdocsYml;
