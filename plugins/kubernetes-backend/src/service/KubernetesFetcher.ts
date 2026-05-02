@@ -246,7 +246,20 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     url.search = new URLSearchParams(queryParams).toString();
 
     // Make request
-    const response = await fetch(url, requestInit);
+    let response;
+    try {
+      response = await fetch(url, requestInit);
+    } catch (err) {
+      yield {
+        type: 'ERROR',
+        error: {
+          errorType: 'SYSTEM_ERROR',
+          statusCode: 0,
+          resourcePath,
+        },
+      };
+      return;
+    }
 
     if (!response.ok) {
       yield {
@@ -260,7 +273,18 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     }
 
     // Stream events
-    const stream = response.body!.pipe(split2());
+    if (!response.body) {
+      yield {
+        type: 'ERROR',
+        error: {
+          errorType: 'SYSTEM_ERROR',
+          statusCode: response.status,
+          resourcePath,
+        },
+      };
+      return;
+    }
+    const stream = response.body.pipe(split2());
 
     try {
       for await (const line of stream) {
