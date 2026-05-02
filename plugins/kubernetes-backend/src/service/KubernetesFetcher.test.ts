@@ -1791,5 +1791,99 @@ describe('KubernetesFetcher', () => {
         },
       });
     });
+
+    it('should yield ERROR event for K8s ERROR event in stream', async () => {
+      const errorEvent = JSON.stringify({
+        type: 'ERROR',
+        object: {
+          kind: 'Status',
+          apiVersion: 'v1',
+          metadata: {},
+          status: 'Failure',
+          message: 'too old resource version: 1 (8)',
+          reason: 'Expired',
+          code: 410,
+        },
+      });
+
+      worker.use(
+        rest.get('http://localhost:9999/*', (req, res, ctx) => {
+          if (req.url.searchParams.get('watch') === 'true') {
+            return res(ctx.text(errorEvent));
+          }
+          return res(ctx.status(400));
+        }),
+      );
+
+      const events: KubernetesWatchEvent[] = [];
+      for await (const event of sut.watchResource(
+        {
+          name: 'test-cluster',
+          url: 'http://localhost:9999',
+          authMetadata: {},
+        },
+        { type: 'bearer token', token: 'token' },
+        '',
+        'v1',
+        'pods',
+        { resourceVersion: '1' },
+      )) {
+        events.push(event);
+      }
+
+      expect(events).toHaveLength(1);
+      expect(events[0]).toEqual({
+        type: 'ERROR',
+        error: {
+          statusCode: 410,
+          errorType: 'UNKNOWN_ERROR',
+          resourcePath: '/api/v1/pods',
+        },
+      });
+    });
+
+    it('should handle mix of normal events and ERROR events', async () => {
+      const pod = {
+        apiVersion: 'v1',
+        kind: 'Pod',
+        metadata: { name: 'test-pod', resourceVersion: '100' },
+      };
+
+      const watchData = [
+        JSON.stringify({ type: 'ADDED', object: pod }),
+        JSON.stringify({
+          type: 'ERROR',
+          object: { kind: 'Status', code: 410, reason: 'Expired' },
+        }),
+      ].join('\n');
+
+      worker.use(
+        rest.get('http://localhost:9999/*', (req, res, ctx) => {
+          if (req.url.searchParams.get('watch') === 'true') {
+            return res(ctx.text(watchData));
+          }
+          return res(ctx.status(400));
+        }),
+      );
+
+      const events: KubernetesWatchEvent[] = [];
+      for await (const event of sut.watchResource(
+        {
+          name: 'test-cluster',
+          url: 'http://localhost:9999',
+          authMetadata: {},
+        },
+        { type: 'bearer token', token: 'token' },
+        '',
+        'v1',
+        'pods',
+      )) {
+        events.push(event);
+      }
+
+      expect(events).toHaveLength(2);
+      expect(events[0].type).toBe('ADDED');
+      expect(events[1].type).toBe('ERROR');
+    });
   });
 });
