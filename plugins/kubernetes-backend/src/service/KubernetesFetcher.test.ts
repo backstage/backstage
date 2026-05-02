@@ -1485,5 +1485,46 @@ describe('KubernetesFetcher', () => {
         resourceVersion: '12345',
       });
     });
+
+    it('should yield ERROR event on network failure', async () => {
+      // Mock fetch to throw a network error
+      worker.use(
+        rest.get('http://localhost:9999/*', (_req, res) => {
+          return res.networkError('Failed to connect');
+        }),
+      );
+
+      const events: KubernetesWatchEvent[] = [];
+      for await (const event of sut.watchResource(
+        {
+          name: 'test-cluster',
+          url: 'http://localhost:9999',
+          authMetadata: {},
+        },
+        { type: 'bearer token', token: 'token' },
+        '',
+        'v1',
+        'pods',
+        { namespace: 'default' },
+      )) {
+        events.push(event);
+      }
+
+      expect(events).toHaveLength(1);
+      expect(events[0]).toEqual({
+        type: 'ERROR',
+        error: {
+          errorType: 'SYSTEM_ERROR',
+          statusCode: 0,
+          resourcePath: '/api/v1/namespaces/default/pods',
+        },
+      });
+    });
+
+    // Note: Testing the null response.body check (lines 263-273) is not feasible with MSW.
+    // The Fetch API spec ensures response.body is almost always present for successful responses,
+    // making this a defensive check for an extremely rare edge case. MSW's interception architecture
+    // prevents simulating a null body on a successful response. The code path exists for safety
+    // but cannot be easily unit tested without invasive mocking that would reduce test value.
   });
 });

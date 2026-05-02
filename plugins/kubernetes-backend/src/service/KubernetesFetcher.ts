@@ -250,6 +250,9 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     try {
       response = await fetch(url, requestInit);
     } catch (err) {
+      this.logger.warn(
+        `Network error watching "${resourcePath}" from cluster "${clusterDetails.name}": ${err}`,
+      );
       yield {
         type: 'ERROR',
         error: {
