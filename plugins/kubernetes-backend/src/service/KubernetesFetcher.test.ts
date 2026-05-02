@@ -1885,5 +1885,90 @@ describe('KubernetesFetcher', () => {
       expect(events[0].type).toBe('ADDED');
       expect(events[1].type).toBe('ERROR');
     });
+
+    it('should skip malformed JSON and continue watching', async () => {
+      const pod = {
+        apiVersion: 'v1',
+        kind: 'Pod',
+        metadata: { name: 'test-pod', resourceVersion: '100' },
+      };
+
+      const watchData = [
+        JSON.stringify({ type: 'ADDED', object: pod }),
+        '{ invalid json',
+        JSON.stringify({ type: 'MODIFIED', object: pod }),
+      ].join('\n');
+
+      worker.use(
+        rest.get('http://localhost:9999/*', (req, res, ctx) => {
+          if (req.url.searchParams.get('watch') === 'true') {
+            return res(ctx.text(watchData));
+          }
+          return res(ctx.status(400));
+        }),
+      );
+
+      const events: KubernetesWatchEvent[] = [];
+      for await (const event of sut.watchResource(
+        {
+          name: 'test-cluster',
+          url: 'http://localhost:9999',
+          authMetadata: {},
+        },
+        { type: 'bearer token', token: 'token' },
+        '',
+        'v1',
+        'pods',
+      )) {
+        events.push(event);
+      }
+
+      expect(events).toHaveLength(2);
+      expect(events[0].type).toBe('ADDED');
+      expect(events[1].type).toBe('MODIFIED');
+    });
+
+    it('should skip empty lines', async () => {
+      const pod = {
+        apiVersion: 'v1',
+        kind: 'Pod',
+        metadata: { name: 'test-pod', resourceVersion: '100' },
+      };
+
+      const watchData = [
+        JSON.stringify({ type: 'ADDED', object: pod }),
+        '',
+        '',
+        JSON.stringify({ type: 'MODIFIED', object: pod }),
+      ].join('\n');
+
+      worker.use(
+        rest.get('http://localhost:9999/*', (req, res, ctx) => {
+          if (req.url.searchParams.get('watch') === 'true') {
+            return res(ctx.text(watchData));
+          }
+          return res(ctx.status(400));
+        }),
+      );
+
+      const events: KubernetesWatchEvent[] = [];
+      for await (const event of sut.watchResource(
+        {
+          name: 'test-cluster',
+          url: 'http://localhost:9999',
+          authMetadata: {},
+        },
+        { type: 'bearer token', token: 'token' },
+        '',
+        'v1',
+        'pods',
+      )) {
+        events.push(event);
+      }
+
+      expect(events).toHaveLength(2);
+      expect(events[0].type).toBe('ADDED');
+      expect(events[1].type).toBe('MODIFIED');
+    });
   });
 });
