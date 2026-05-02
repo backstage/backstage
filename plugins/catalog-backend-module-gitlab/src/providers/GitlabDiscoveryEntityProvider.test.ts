@@ -276,6 +276,38 @@ describe('GitlabDiscoveryEntityProvider - refresh', () => {
     });
   });
 
+  it('should filter projects marked for deletion when skipReposMarkedForDeletion is true', async () => {
+    const config = new ConfigReader(
+      mock.config_single_integration_skip_marked_for_deletion,
+    );
+    const schedule = new PersistingTaskRunner();
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+    const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+    })[0];
+
+    await provider.connect(entityProviderConnection);
+
+    await provider.refresh(logger);
+
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+      type: 'full',
+      entities: mock.expected_location_entities_default_branch.filter(
+        entity =>
+          !entity.entity.metadata.annotations[
+            'backstage.io/managed-by-location'
+          ].includes('pending-delete') &&
+          !entity.entity.metadata.annotations[
+            'backstage.io/managed-by-location'
+          ].includes('awesome'),
+      ),
+    });
+  });
+
   it('should filter repositories that are excluded', async () => {
     const config = new ConfigReader(
       mock.config_single_integration_exclude_repos,
@@ -769,6 +801,61 @@ describe('GitlabDiscoveryEntityProvider - simple parameter', () => {
       per_page: 50,
       archived: false,
       simple: true, // Should be set when skipForkedRepos is false
+    });
+  });
+
+  it('should not pass simple when skipReposMarkedForDeletion is true', async () => {
+    const config = new ConfigReader({
+      integrations: {
+        gitlab: [
+          {
+            host: 'example.com',
+            apiBaseUrl: 'https://example.com/api/v4',
+            token: 'test-token',
+          },
+        ],
+      },
+      catalog: {
+        providers: {
+          gitlab: {
+            'test-id': {
+              host: 'example.com',
+              group: 'test-group',
+              skipReposMarkedForDeletion: true,
+            },
+          },
+        },
+      },
+    });
+
+    const schedule = new PersistingTaskRunner();
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+
+    const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+    })[0];
+
+    const mockListProjects = jest.fn().mockResolvedValue({
+      items: [],
+      nextPage: undefined,
+    });
+
+    (provider as any).gitLabClient.listProjects = mockListProjects;
+
+    await provider.connect(entityProviderConnection);
+    await provider.refresh(logger);
+
+    expect(mockListProjects).toHaveBeenCalledWith({
+      group: 'test-group',
+      page: undefined,
+      per_page: 50,
+      archived: false,
+      // simple should not be present when skipReposMarkedForDeletion is true,
+      // because the marked_for_deletion_on field is not returned by simple=true
     });
   });
 

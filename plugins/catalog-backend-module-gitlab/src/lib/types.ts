@@ -43,6 +43,7 @@ export type GitLabProject = {
   web_url: string;
   path_with_namespace?: string;
   forked_from_project?: GitlabProjectForkedFrom;
+  marked_for_deletion_on?: string | null;
 };
 
 export type GitLabCommit = {
@@ -269,6 +270,15 @@ export type GitlabProviderConfig = {
    * If the project is archived, include repository
    */
   includeArchivedRepos?: boolean;
+  /**
+   * If true, projects that GitLab has marked for deletion (reported as a
+   * non-empty `marked_for_deletion_on` timestamp) are skipped during discovery.
+   * Defaults to `false`.
+   *
+   * Setting this to `true` causes the GitLab API call to omit `simple=true`,
+   * since the deletion marker is not returned in the simple project response.
+   */
+  skipReposMarkedForDeletion?: boolean;
   /**
    * List of repositories to exclude from discovery, should be the full path to the repository, e.g. `group/project`
    * Paths should not start or end with a slash.

@@ -384,11 +384,12 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
         ...(!this.config.includeArchivedRepos && { archived: false }),
         ...(this.config.membership && { membership: true }),
         ...(this.config.topics && { topic: this.config.topics }),
-        // Only use simple=true when we don't need to skip forked repos.
-        // The simple=true parameter reduces response size by returning fewer fields,
-        // but it excludes the 'forked_from_project' field which is required for fork detection.
-        // Therefore, we can only optimize with simple=true when skipForkedRepos is false.
-        ...(!this.config.skipForkedRepos && { simple: true }),
+        // The simple=true parameter reduces response size by returning fewer
+        // fields, but it omits both `forked_from_project` and
+        // `marked_for_deletion_on`. Drop the optimization whenever a filter
+        // depends on one of those fields.
+        ...(!this.config.skipForkedRepos &&
+          !this.config.skipReposMarkedForDeletion && { simple: true }),
       },
     );
 
@@ -640,6 +641,16 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
     ) {
       this.logger.debug(
         `Skipping project ${project.path_with_namespace} as it is a forked project.`,
+      );
+      return false;
+    }
+
+    if (
+      this.config.skipReposMarkedForDeletion &&
+      project.marked_for_deletion_on
+    ) {
+      this.logger.debug(
+        `Skipping project ${project.path_with_namespace} as it is marked for deletion.`,
       );
       return false;
     }

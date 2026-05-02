@@ -552,6 +552,48 @@ describe('GitlabDiscoveryProcessor', () => {
       expect(result).toHaveLength(0);
     });
 
+    it('does not set simple when skipReposMarkedForDeletion is true', async () => {
+      const processor = getProcessor({
+        options: { skipReposMarkedForDeletion: true },
+      });
+      setupFakeServer(
+        PROJECTS_URL,
+        _ => {
+          return {
+            data: [
+              {
+                id: 1,
+                archived: false,
+                default_branch: 'main',
+                last_activity_at: '2021-08-05T11:03:05.774Z',
+                web_url: 'https://gitlab.fake/1',
+                path_with_namespace: '1',
+              },
+              {
+                id: 2,
+                archived: false,
+                default_branch: 'main',
+                last_activity_at: '2021-08-05T11:03:05.774Z',
+                web_url: 'https://gitlab.fake/2',
+                path_with_namespace: '2',
+                marked_for_deletion_on: '2025-01-01',
+              },
+            ],
+          };
+        },
+        request => {
+          expect(request.url.searchParams.get('simple')).toBeNull();
+        },
+      );
+
+      const result: any[] = [];
+      await processor.readLocation(PROJECT_LOCATION, false, e => {
+        result.push(e);
+      });
+      // The pending-delete project is filtered out
+      expect(result).toHaveLength(1);
+    });
+
     it('sets default parameters correctly (archived=false, simple=true)', async () => {
       const processor = getProcessor(); // Uses defaults: skipForkedRepos=false, includeArchivedRepos=false
       setupFakeServer(
