@@ -1422,74 +1422,70 @@ describe('KubernetesFetcher', () => {
     });
   });
 
-  describe('KubernetesClientBasedFetcher', () => {
+  describe('watchResource', () => {
     let sut: KubernetesClientBasedFetcher;
+    const logger = mockServices.logger.mock();
 
     beforeEach(() => {
       sut = new KubernetesClientBasedFetcher({
-        logger: mockServices.logger.mock(),
+        logger,
       });
     });
 
-    describe('watchResource', () => {
-      it('should yield ADDED events for pod creation', async () => {
-        const mockPod = {
-          apiVersion: 'v1',
-          kind: 'Pod',
-          metadata: {
-            name: 'test-pod',
-            namespace: 'default',
-            resourceVersion: '12345',
+    it('should yield ADDED events for pod creation', async () => {
+      const mockPod = {
+        apiVersion: 'v1',
+        kind: 'Pod',
+        metadata: {
+          name: 'test-pod',
+          namespace: 'default',
+          resourceVersion: '12345',
+        },
+        spec: {
+          containers: [{ name: 'nginx', image: 'nginx:latest' }],
+        },
+      };
+
+      const watchData = JSON.stringify({
+        type: 'ADDED',
+        object: mockPod,
+      });
+
+      const mockStream = Readable.from([watchData]);
+
+      worker.use(
+        rest.get(
+          'http://localhost:9999/api/v1/namespaces/default/pods',
+          (req, res, ctx) => {
+            if (req.url.searchParams.get('watch') === 'true') {
+              return res(checkToken(req, ctx, 'token'), ctx.body(mockStream));
+            }
+            return res(ctx.status(400));
           },
-          spec: {
-            containers: [{ name: 'nginx', image: 'nginx:latest' }],
-          },
-        };
+        ),
+      );
 
-        const watchData = JSON.stringify({
-          type: 'ADDED',
-          object: mockPod,
-        });
-
-        const mockStream = Readable.from([watchData]);
-
-        const clusterDetails = {
+      const events: KubernetesWatchEvent[] = [];
+      for await (const event of sut.watchResource(
+        {
           name: 'test-cluster',
           url: 'http://localhost:9999',
           authMetadata: {},
-        };
+        },
+        { type: 'bearer token', token: 'token' },
+        '',
+        'v1',
+        'pods',
+        { namespace: 'default' },
+      )) {
+        events.push(event);
+      }
 
-        jest.spyOn(global, 'fetch' as any).mockResolvedValueOnce({
-          ok: true,
-          body: mockStream,
-        } as any);
-
-        const events: KubernetesWatchEvent[] = [];
-        for await (const event of sut.watchResource(
-          clusterDetails,
-          { type: 'bearer token', token: 'token' },
-          '',
-          'v1',
-          'pods',
-          { namespace: 'default' },
-        )) {
-          events.push(event);
-        }
-
-        expect(events).toHaveLength(1);
-        expect(events[0]).toEqual({
-          type: 'ADDED',
-          object: mockPod,
-          resourceVersion: '12345',
-        });
-
-        expect(global.fetch).toHaveBeenCalledWith(
-          expect.objectContaining({
-            pathname: '/api/v1/namespaces/default/pods',
-            search: expect.stringContaining('watch=true'),
-          }),
-          expect.any(Object),
-        );
+      expect(events).toHaveLength(1);
+      expect(events[0]).toEqual({
+        type: 'ADDED',
+        object: mockPod,
+        resourceVersion: '12345',
       });
     });
   });
