@@ -1691,5 +1691,105 @@ describe('KubernetesFetcher', () => {
     // making this a defensive check for an extremely rare edge case. MSW's interception architecture
     // prevents simulating a null body on a successful response. The code path exists for safety
     // but cannot be easily unit tested without invasive mocking that would reduce test value.
+
+    it('should yield ERROR event for 401 Unauthorized', async () => {
+      worker.use(
+        rest.get('http://localhost:9999/*', (req, res, ctx) => {
+          return res(ctx.status(401), ctx.text('authentication required'));
+        }),
+      );
+
+      const events: KubernetesWatchEvent[] = [];
+      for await (const event of sut.watchResource(
+        {
+          name: 'test-cluster',
+          url: 'http://localhost:9999',
+          authMetadata: {},
+        },
+        { type: 'bearer token', token: 'bad-token' },
+        '',
+        'v1',
+        'pods',
+        { namespace: 'default' },
+      )) {
+        events.push(event);
+      }
+
+      expect(events).toHaveLength(1);
+      expect(events[0]).toEqual({
+        type: 'ERROR',
+        error: {
+          errorType: 'UNAUTHORIZED_ERROR',
+          statusCode: 401,
+          resourcePath: '/api/v1/namespaces/default/pods',
+        },
+      });
+    });
+
+    it('should yield ERROR event for 404 Not Found', async () => {
+      worker.use(
+        rest.get('http://localhost:9999/*', (req, res, ctx) => {
+          return res(ctx.status(404), ctx.text('resource not found'));
+        }),
+      );
+
+      const events: KubernetesWatchEvent[] = [];
+      for await (const event of sut.watchResource(
+        {
+          name: 'test-cluster',
+          url: 'http://localhost:9999',
+          authMetadata: {},
+        },
+        { type: 'bearer token', token: 'token' },
+        '',
+        'v1',
+        'invalidresource',
+      )) {
+        events.push(event);
+      }
+
+      expect(events).toHaveLength(1);
+      expect(events[0]).toEqual({
+        type: 'ERROR',
+        error: {
+          errorType: 'NOT_FOUND',
+          statusCode: 404,
+          resourcePath: '/api/v1/invalidresource',
+        },
+      });
+    });
+
+    it('should yield ERROR event for 500 Server Error', async () => {
+      worker.use(
+        rest.get('http://localhost:9999/*', (req, res, ctx) => {
+          return res(ctx.status(500), ctx.text('internal server error'));
+        }),
+      );
+
+      const events: KubernetesWatchEvent[] = [];
+      for await (const event of sut.watchResource(
+        {
+          name: 'test-cluster',
+          url: 'http://localhost:9999',
+          authMetadata: {},
+        },
+        { type: 'bearer token', token: 'token' },
+        '',
+        'v1',
+        'pods',
+      )) {
+        events.push(event);
+      }
+
+      expect(events).toHaveLength(1);
+      expect(events[0]).toEqual({
+        type: 'ERROR',
+        error: {
+          errorType: 'SYSTEM_ERROR',
+          statusCode: 500,
+          resourcePath: '/api/v1/pods',
+        },
+      });
+    });
   });
 });
