@@ -21,6 +21,8 @@ import {
   KubernetesFetchError,
   KubernetesRequestAuth,
   ObjectsByEntityResponse,
+  KubernetesWatchEvent,
+  KubernetesWatchOptions,
 } from '@backstage/plugin-kubernetes-common';
 import { JsonObject } from '@backstage/types';
 
@@ -250,6 +252,25 @@ export interface KubernetesFetcher {
     namespaces: Set<string>,
     labelSelector?: string,
   ): Promise<FetchResponseWrapper>;
+  /**
+   * Watch Kubernetes resources for changes
+   * Returns an async iterator that yields watch events
+   *
+   * @param clusterDetails - Cluster connection details
+   * @param credential - Authentication credentials
+   * @param group - API group (empty string for core resources)
+   * @param apiVersion - API version (e.g., 'v1', 'v1beta1')
+   * @param plural - Resource plural name (e.g., 'pods', 'deployments')
+   * @param options - Optional watch parameters
+   */
+  watchResource(
+    clusterDetails: ClusterDetails,
+    credential: KubernetesCredential,
+    group: string,
+    apiVersion: string,
+    plural: string,
+    options?: KubernetesWatchOptions,
+  ): AsyncGenerator<KubernetesWatchEvent, void, undefined>;
 }
 /**
  * @public
