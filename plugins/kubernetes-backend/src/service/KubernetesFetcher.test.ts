@@ -1674,10 +1674,16 @@ describe('KubernetesFetcher', () => {
       }
 
       expect(events).toHaveLength(2);
-      expect(events[0].type).toBe('ADDED');
-      expect(events[0].object).toEqual(pod1);
-      expect(events[1].type).toBe('MODIFIED');
-      expect(events[1].object).toEqual(pod2);
+      expect(events[0]).toEqual({
+        type: 'ADDED',
+        object: pod1,
+        resourceVersion: '1',
+      });
+      expect(events[1]).toEqual({
+        type: 'MODIFIED',
+        object: pod2,
+        resourceVersion: '2',
+      });
     });
 
     // Note: Testing the null response.body check (lines 263-273) is not feasible with MSW.
