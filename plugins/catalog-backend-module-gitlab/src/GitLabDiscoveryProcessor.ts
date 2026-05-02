@@ -40,6 +40,7 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
   private readonly skipReposWithoutExactFileMatch: boolean;
   private readonly skipForkedRepos: boolean;
   private readonly includeArchivedRepos: boolean;
+  private readonly skipReposMarkedForDeletion: boolean;
 
   static fromConfig(
     config: Config,
@@ -48,6 +49,7 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
       skipReposWithoutExactFileMatch?: boolean;
       skipForkedRepos?: boolean;
       includeArchivedRepos?: boolean;
+      skipReposMarkedForDeletion?: boolean;
     },
   ): GitLabDiscoveryProcessor {
     const integrations = ScmIntegrations.fromConfig(config);
@@ -68,6 +70,7 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
     skipReposWithoutExactFileMatch?: boolean;
     skipForkedRepos?: boolean;
     includeArchivedRepos?: boolean;
+    skipReposMarkedForDeletion?: boolean;
   }) {
     this.integrations = options.integrations;
     this.cache = options.pluginCache;
@@ -76,6 +79,8 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
       options.skipReposWithoutExactFileMatch || false;
     this.skipForkedRepos = options.skipForkedRepos || false;
     this.includeArchivedRepos = options.includeArchivedRepos || false;
+    this.skipReposMarkedForDeletion =
+      options.skipReposMarkedForDeletion || false;
   }
 
   getProcessorName(): string {
@@ -115,11 +120,12 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
       // that the options doesn't include the key so that the API doesn't receive an empty query parameter.
       ...(lastActivity && { last_activity_after: lastActivity }),
       ...(!this.includeArchivedRepos && { archived: false }),
-      // Only use simple=true when we don't need to skip forked repos.
-      // The simple=true parameter reduces response size by returning fewer fields,
-      // but it excludes the 'forked_from_project' field which is required for fork detection.
-      // Therefore, we can only optimize with simple=true when skipForkedRepos is false.
-      ...(!this.skipForkedRepos && { simple: true }),
+      // The simple=true parameter reduces response size by returning fewer
+      // fields, but it omits both `forked_from_project` and
+      // `marked_for_deletion_on`. Drop the optimization whenever a filter
+      // depends on one of those fields.
+      ...(!this.skipForkedRepos &&
+        !this.skipReposMarkedForDeletion && { simple: true }),
     };
 
     const projects = paginated(options => client.listProjects(options), opts);
@@ -153,6 +159,10 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
         this.skipForkedRepos &&
         project.hasOwnProperty('forked_from_project')
       ) {
+        continue;
+      }
+
+      if (this.skipReposMarkedForDeletion && project.marked_for_deletion_on) {
         continue;
       }
 
