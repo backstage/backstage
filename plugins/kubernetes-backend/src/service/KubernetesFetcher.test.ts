@@ -1521,6 +1521,165 @@ describe('KubernetesFetcher', () => {
       });
     });
 
+    it('should yield MODIFIED events for pod updates', async () => {
+      const mockPod = {
+        apiVersion: 'v1',
+        kind: 'Pod',
+        metadata: {
+          name: 'test-pod',
+          namespace: 'default',
+          resourceVersion: '12346',
+        },
+        spec: {
+          containers: [{ name: 'nginx', image: 'nginx:1.21' }],
+        },
+      };
+
+      const watchData = JSON.stringify({
+        type: 'MODIFIED',
+        object: mockPod,
+      });
+
+      worker.use(
+        rest.get(
+          'http://localhost:9999/api/v1/namespaces/default/pods',
+          (req, res, ctx) => {
+            if (req.url.searchParams.get('watch') === 'true') {
+              return res(checkToken(req, ctx, 'token'), ctx.text(watchData));
+            }
+            return res(ctx.status(400));
+          },
+        ),
+      );
+
+      const events: KubernetesWatchEvent[] = [];
+      for await (const event of sut.watchResource(
+        {
+          name: 'test-cluster',
+          url: 'http://localhost:9999',
+          authMetadata: {},
+        },
+        { type: 'bearer token', token: 'token' },
+        '',
+        'v1',
+        'pods',
+        { namespace: 'default' },
+      )) {
+        events.push(event);
+      }
+
+      expect(events).toHaveLength(1);
+      expect(events[0]).toEqual({
+        type: 'MODIFIED',
+        object: mockPod,
+        resourceVersion: '12346',
+      });
+    });
+
+    it('should yield DELETED events for pod deletion', async () => {
+      const mockPod = {
+        apiVersion: 'v1',
+        kind: 'Pod',
+        metadata: {
+          name: 'test-pod',
+          namespace: 'default',
+          resourceVersion: '12347',
+        },
+      };
+
+      const watchData = JSON.stringify({
+        type: 'DELETED',
+        object: mockPod,
+      });
+
+      worker.use(
+        rest.get(
+          'http://localhost:9999/api/v1/namespaces/default/pods',
+          (req, res, ctx) => {
+            if (req.url.searchParams.get('watch') === 'true') {
+              return res(checkToken(req, ctx, 'token'), ctx.text(watchData));
+            }
+            return res(ctx.status(400));
+          },
+        ),
+      );
+
+      const events: KubernetesWatchEvent[] = [];
+      for await (const event of sut.watchResource(
+        {
+          name: 'test-cluster',
+          url: 'http://localhost:9999',
+          authMetadata: {},
+        },
+        { type: 'bearer token', token: 'token' },
+        '',
+        'v1',
+        'pods',
+        { namespace: 'default' },
+      )) {
+        events.push(event);
+      }
+
+      expect(events).toHaveLength(1);
+      expect(events[0]).toEqual({
+        type: 'DELETED',
+        object: mockPod,
+        resourceVersion: '12347',
+      });
+    });
+
+    it('should yield multiple events in sequence', async () => {
+      const pod1 = {
+        apiVersion: 'v1',
+        kind: 'Pod',
+        metadata: { name: 'pod-1', namespace: 'default', resourceVersion: '1' },
+      };
+      const pod2 = {
+        apiVersion: 'v1',
+        kind: 'Pod',
+        metadata: { name: 'pod-2', namespace: 'default', resourceVersion: '2' },
+      };
+
+      const watchData = [
+        JSON.stringify({ type: 'ADDED', object: pod1 }),
+        JSON.stringify({ type: 'MODIFIED', object: pod2 }),
+      ].join('\n');
+
+      worker.use(
+        rest.get(
+          'http://localhost:9999/api/v1/namespaces/default/pods',
+          (req, res, ctx) => {
+            if (req.url.searchParams.get('watch') === 'true') {
+              return res(checkToken(req, ctx, 'token'), ctx.text(watchData));
+            }
+            return res(ctx.status(400));
+          },
+        ),
+      );
+
+      const events: KubernetesWatchEvent[] = [];
+      for await (const event of sut.watchResource(
+        {
+          name: 'test-cluster',
+          url: 'http://localhost:9999',
+          authMetadata: {},
+        },
+        { type: 'bearer token', token: 'token' },
+        '',
+        'v1',
+        'pods',
+        { namespace: 'default' },
+      )) {
+        events.push(event);
+      }
+
+      expect(events).toHaveLength(2);
+      expect(events[0].type).toBe('ADDED');
+      expect(events[0].object).toEqual(pod1);
+      expect(events[1].type).toBe('MODIFIED');
+      expect(events[1].object).toEqual(pod2);
+    });
+
     // Note: Testing the null response.body check (lines 263-273) is not feasible with MSW.
     // The Fetch API spec ensures response.body is almost always present for successful responses,
     // making this a defensive check for an extremely rare edge case. MSW's interception architecture
