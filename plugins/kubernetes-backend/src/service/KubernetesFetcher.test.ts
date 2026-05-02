@@ -1970,5 +1970,259 @@ describe('KubernetesFetcher', () => {
       expect(events[0].type).toBe('ADDED');
       expect(events[1].type).toBe('MODIFIED');
     });
+
+    it('should respect namespace option', async () => {
+      const pod = {
+        apiVersion: 'v1',
+        kind: 'Pod',
+        metadata: {
+          name: 'test-pod',
+          namespace: 'my-namespace',
+          resourceVersion: '100',
+        },
+      };
+
+      const watchData = JSON.stringify({ type: 'ADDED', object: pod });
+
+      let requestedUrl = '';
+      worker.use(
+        rest.get('http://localhost:9999/*', (req, res, ctx) => {
+          requestedUrl = req.url.pathname;
+          if (req.url.searchParams.get('watch') === 'true') {
+            return res(ctx.text(watchData));
+          }
+          return res(ctx.status(400));
+        }),
+      );
+
+      const events: KubernetesWatchEvent[] = [];
+      for await (const event of sut.watchResource(
+        {
+          name: 'test-cluster',
+          url: 'http://localhost:9999',
+          authMetadata: {},
+        },
+        { type: 'bearer token', token: 'token' },
+        '',
+        'v1',
+        'pods',
+        { namespace: 'my-namespace' },
+      )) {
+        events.push(event);
+      }
+
+      expect(events).toHaveLength(1);
+      expect(requestedUrl).toBe('/api/v1/namespaces/my-namespace/pods');
+    });
+
+    it('should respect labelSelector option', async () => {
+      const pod = {
+        apiVersion: 'v1',
+        kind: 'Pod',
+        metadata: {
+          name: 'test-pod',
+          resourceVersion: '100',
+          labels: { app: 'frontend' },
+        },
+      };
+
+      const watchData = JSON.stringify({ type: 'ADDED', object: pod });
+
+      let labelSelectorParam = '';
+      worker.use(
+        rest.get('http://localhost:9999/*', (req, res, ctx) => {
+          labelSelectorParam = req.url.searchParams.get('labelSelector') || '';
+          if (req.url.searchParams.get('watch') === 'true') {
+            return res(ctx.text(watchData));
+          }
+          return res(ctx.status(400));
+        }),
+      );
+
+      const events: KubernetesWatchEvent[] = [];
+      for await (const event of sut.watchResource(
+        {
+          name: 'test-cluster',
+          url: 'http://localhost:9999',
+          authMetadata: {},
+        },
+        { type: 'bearer token', token: 'token' },
+        '',
+        'v1',
+        'pods',
+        { labelSelector: 'app=frontend' },
+      )) {
+        events.push(event);
+      }
+
+      expect(events).toHaveLength(1);
+      expect(labelSelectorParam).toBe('app=frontend');
+    });
+
+    it('should respect resourceVersion option', async () => {
+      const pod = {
+        apiVersion: 'v1',
+        kind: 'Pod',
+        metadata: { name: 'test-pod', resourceVersion: '12345' },
+      };
+
+      const watchData = JSON.stringify({ type: 'ADDED', object: pod });
+
+      let resourceVersionParam = '';
+      worker.use(
+        rest.get('http://localhost:9999/*', (req, res, ctx) => {
+          resourceVersionParam =
+            req.url.searchParams.get('resourceVersion') || '';
+          if (req.url.searchParams.get('watch') === 'true') {
+            return res(ctx.text(watchData));
+          }
+          return res(ctx.status(400));
+        }),
+      );
+
+      const events: KubernetesWatchEvent[] = [];
+      for await (const event of sut.watchResource(
+        {
+          name: 'test-cluster',
+          url: 'http://localhost:9999',
+          authMetadata: {},
+        },
+        { type: 'bearer token', token: 'token' },
+        '',
+        'v1',
+        'pods',
+        { resourceVersion: '12345' },
+      )) {
+        events.push(event);
+      }
+
+      expect(events).toHaveLength(1);
+      expect(resourceVersionParam).toBe('12345');
+    });
+
+    it('should respect timeoutSeconds option', async () => {
+      const pod = {
+        apiVersion: 'v1',
+        kind: 'Pod',
+        metadata: { name: 'test-pod', resourceVersion: '100' },
+      };
+
+      const watchData = JSON.stringify({ type: 'ADDED', object: pod });
+
+      let timeoutSecondsParam = '';
+      worker.use(
+        rest.get('http://localhost:9999/*', (req, res, ctx) => {
+          timeoutSecondsParam =
+            req.url.searchParams.get('timeoutSeconds') || '';
+          if (req.url.searchParams.get('watch') === 'true') {
+            return res(ctx.text(watchData));
+          }
+          return res(ctx.status(400));
+        }),
+      );
+
+      const events: KubernetesWatchEvent[] = [];
+      for await (const event of sut.watchResource(
+        {
+          name: 'test-cluster',
+          url: 'http://localhost:9999',
+          authMetadata: {},
+        },
+        { type: 'bearer token', token: 'token' },
+        '',
+        'v1',
+        'pods',
+        { timeoutSeconds: 300 },
+      )) {
+        events.push(event);
+      }
+
+      expect(events).toHaveLength(1);
+      expect(timeoutSecondsParam).toBe('300');
+    });
+
+    it('should respect allowWatchBookmarks option', async () => {
+      const pod = {
+        apiVersion: 'v1',
+        kind: 'Pod',
+        metadata: { name: 'test-pod', resourceVersion: '100' },
+      };
+
+      const watchData = JSON.stringify({ type: 'ADDED', object: pod });
+
+      let allowWatchBookmarksParam = '';
+      worker.use(
+        rest.get('http://localhost:9999/*', (req, res, ctx) => {
+          allowWatchBookmarksParam =
+            req.url.searchParams.get('allowWatchBookmarks') || '';
+          if (req.url.searchParams.get('watch') === 'true') {
+            return res(ctx.text(watchData));
+          }
+          return res(ctx.status(400));
+        }),
+      );
+
+      const events: KubernetesWatchEvent[] = [];
+      for await (const event of sut.watchResource(
+        {
+          name: 'test-cluster',
+          url: 'http://localhost:9999',
+          authMetadata: {},
+        },
+        { type: 'bearer token', token: 'token' },
+        '',
+        'v1',
+        'pods',
+        { allowWatchBookmarks: true },
+      )) {
+        events.push(event);
+      }
+
+      expect(events).toHaveLength(1);
+      expect(allowWatchBookmarksParam).toBe('true');
+    });
+
+    it('should watch custom resources', async () => {
+      const customResource = {
+        apiVersion: 'example.com/v1',
+        kind: 'CustomThing',
+        metadata: { name: 'test-thing', resourceVersion: '100' },
+        spec: { foo: 'bar' },
+      };
+
+      const watchData = JSON.stringify({
+        type: 'ADDED',
+        object: customResource,
+      });
+
+      let requestedUrl = '';
+      worker.use(
+        rest.get('http://localhost:9999/*', (req, res, ctx) => {
+          requestedUrl = req.url.pathname;
+          if (req.url.searchParams.get('watch') === 'true') {
+            return res(ctx.text(watchData));
+          }
+          return res(ctx.status(400));
+        }),
+      );
+
+      const events: KubernetesWatchEvent[] = [];
+      for await (const event of sut.watchResource(
+        {
+          name: 'test-cluster',
+          url: 'http://localhost:9999',
+          authMetadata: {},
+        },
+        { type: 'bearer token', token: 'token' },
+        'example.com',
+        'v1',
+        'customthings',
+      )) {
+        events.push(event);
+      }
+
+      expect(events).toHaveLength(1);
+      expect(requestedUrl).toBe('/apis/example.com/v1/customthings');
+    });
   });
 });
