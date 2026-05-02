@@ -380,6 +380,7 @@ describe('API integration tests', () => {
           errors: [],
           responses: [{ type: 'pods', resources: [pod] }],
         }),
+        watchResource: jest.fn(),
       };
 
       const { server } = await startTestBackend({
@@ -443,6 +444,7 @@ describe('API integration tests', () => {
             { type: 'pods', resources: [{ metadata: { name: 'pod1' } }] },
           ],
         }),
+        watchResource: jest.fn(),
       };
 
       const { server } = await startTestBackend({

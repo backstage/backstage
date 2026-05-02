@@ -30,7 +30,6 @@ import {
   mockServices,
   registerMswTestHooks,
 } from '@backstage/backend-test-utils';
-import { Readable } from 'node:stream';
 import { KubernetesWatchEvent } from '@backstage/plugin-kubernetes-common';
 
 const mockCertDir = createMockDirectory({
@@ -1451,14 +1450,12 @@ describe('KubernetesFetcher', () => {
         object: mockPod,
       });
 
-      const mockStream = Readable.from([watchData]);
-
       worker.use(
         rest.get(
           'http://localhost:9999/api/v1/namespaces/default/pods',
           (req, res, ctx) => {
             if (req.url.searchParams.get('watch') === 'true') {
-              return res(checkToken(req, ctx, 'token'), ctx.body(mockStream));
+              return res(checkToken(req, ctx, 'token'), ctx.text(watchData));
             }
             return res(ctx.status(400));
           },

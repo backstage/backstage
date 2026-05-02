@@ -21,6 +21,8 @@ import {
   ObjectFetchParams,
   ObjectToFetch,
 } from '@backstage/plugin-kubernetes-node';
+// @ts-ignore - split2 doesn't have types
+import split2 from 'split2';
 import {
   ANNOTATION_KUBERNETES_AUTH_PROVIDER,
   SERVICEACCOUNT_CA_PATH,
@@ -28,6 +30,8 @@ import {
   KubernetesErrorTypes,
   KubernetesFetchError,
   PodStatusFetchResponse,
+  KubernetesWatchEvent,
+  KubernetesWatchOptions,
 } from '@backstage/plugin-kubernetes-common';
 import fetch, { RequestInit, Response } from 'node-fetch';
 import * as https from 'node:https';
@@ -176,6 +180,129 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
       return this.handleUnsuccessfulResponse(clusterDetails.name, podList);
     }
     return this.handleUnsuccessfulResponse(clusterDetails.name, podMetrics);
+  }
+
+  async *watchResource(
+    clusterDetails: ClusterDetails,
+    credential: KubernetesCredential,
+    group: string,
+    apiVersion: string,
+    plural: string,
+    options?: KubernetesWatchOptions,
+  ): AsyncGenerator<KubernetesWatchEvent, void, undefined> {
+    const {
+      namespace,
+      labelSelector,
+      resourceVersion,
+      timeoutSeconds,
+      allowWatchBookmarks,
+    } = options || {};
+
+    // Build resource path
+    const encode = (s: string) => encodeURIComponent(s);
+    let resourcePath = group
+      ? `/apis/${encode(group)}/${encode(apiVersion)}`
+      : `/api/${encode(apiVersion)}`;
+    if (namespace) {
+      resourcePath += `/namespaces/${encode(namespace)}`;
+    }
+    resourcePath += `/${encode(plural)}`;
+
+    // Get auth setup
+    let url: URL;
+    let requestInit: RequestInit;
+    const authProvider =
+      clusterDetails.authMetadata[ANNOTATION_KUBERNETES_AUTH_PROVIDER];
+
+    if (this.isServiceAccountAuthentication(authProvider, clusterDetails)) {
+      [url, requestInit] = await this.fetchArgsInCluster(credential);
+    } else if (!this.isCredentialMissing(authProvider, credential)) {
+      [url, requestInit] = await this.fetchArgs(clusterDetails, credential);
+    } else {
+      yield {
+        type: 'ERROR',
+        error: {
+          errorType: 'UNAUTHORIZED_ERROR',
+          statusCode: 401,
+          resourcePath,
+        },
+      };
+      return;
+    }
+
+    // Set path and query params
+    if (url.pathname === '/') {
+      url.pathname = resourcePath;
+    } else {
+      url.pathname += resourcePath;
+    }
+
+    const queryParams: Record<string, string> = { watch: 'true' };
+    if (labelSelector) queryParams.labelSelector = labelSelector;
+    if (resourceVersion) queryParams.resourceVersion = resourceVersion;
+    if (timeoutSeconds) queryParams.timeoutSeconds = timeoutSeconds.toString();
+    if (allowWatchBookmarks) queryParams.allowWatchBookmarks = 'true';
+
+    url.search = new URLSearchParams(queryParams).toString();
+
+    // Make request
+    const response = await fetch(url, requestInit);
+
+    if (!response.ok) {
+      yield {
+        type: 'ERROR',
+        error: await this.handleUnsuccessfulResponse(
+          clusterDetails.name,
+          response,
+        ),
+      };
+      return;
+    }
+
+    // Stream events
+    const stream = response.body!.pipe(split2());
+
+    try {
+      for await (const line of stream) {
+        if (!line) continue;
+
+        let data;
+        try {
+          data = JSON.parse(line);
+        } catch (err) {
+          this.logger.warn(`Failed to parse watch event: ${err}`);
+          continue;
+        }
+
+        yield this.transformWatchEvent(data, resourcePath);
+      }
+    } finally {
+      if (response.body && 'destroy' in response.body) {
+        (response.body as any).destroy();
+      }
+    }
+  }
+
+  private transformWatchEvent(
+    data: any,
+    resourcePath: string,
+  ): KubernetesWatchEvent {
+    if (data.type === 'ERROR') {
+      return {
+        type: 'ERROR',
+        error: {
+          errorType: statusCodeToErrorType(data.object?.code || 500),
+          statusCode: data.object?.code || 500,
+          resourcePath,
+        },
+      };
+    }
+
+    return {
+      type: data.type,
+      object: data.object,
+      resourceVersion: data.object?.metadata?.resourceVersion,
+    };
   }
 
   private async handleUnsuccessfulResponse(

@@ -47,6 +47,7 @@ import { BackstageCredentials } from '@backstage/backend-plugin-api';
 describe('KubernetesFanOutHandler', () => {
   const fetchObjectsForService = jest.fn();
   const fetchPodMetricsByNamespaces = jest.fn();
+  const watchResource = jest.fn();
   const getClustersByEntity = jest.fn<
     Promise<{ clusters: ClusterDetails[] }>,
     [Entity]
@@ -203,6 +204,7 @@ describe('KubernetesFanOutHandler', () => {
       fetcher: {
         fetchObjectsForService,
         fetchPodMetricsByNamespaces,
+        watchResource,
       },
       serviceLocator: {
         getClustersByEntity,
