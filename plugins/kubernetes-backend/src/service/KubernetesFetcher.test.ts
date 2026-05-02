@@ -2337,5 +2337,61 @@ describe('KubernetesFetcher', () => {
         },
       });
     });
+
+    it('should yield BOOKMARK events for efficient resource version tracking', async () => {
+      const pod = {
+        apiVersion: 'v1',
+        kind: 'Pod',
+        metadata: { name: 'test-pod', resourceVersion: '100' },
+      };
+
+      const bookmark = {
+        apiVersion: 'v1',
+        kind: 'Pod',
+        metadata: { resourceVersion: '12345' },
+      };
+
+      const watchData = [
+        JSON.stringify({ type: 'ADDED', object: pod }),
+        JSON.stringify({ type: 'BOOKMARK', object: bookmark }),
+      ].join('\n');
+
+      worker.use(
+        rest.get('http://localhost:9999/*', (req, res, ctx) => {
+          if (req.url.searchParams.get('watch') === 'true') {
+            return res(ctx.text(watchData));
+          }
+          return res(ctx.status(400));
+        }),
+      );
+
+      const events: KubernetesWatchEvent[] = [];
+      for await (const event of sut.watchResource(
+        {
+          name: 'test-cluster',
+          url: 'http://localhost:9999',
+          authMetadata: {},
+        },
+        { type: 'bearer token', token: 'token' },
+        '',
+        'v1',
+        'pods',
+        { allowWatchBookmarks: true },
+      )) {
+        events.push(event);
+      }
+
+      expect(events).toHaveLength(2);
+      expect(events[0]).toEqual({
+        type: 'ADDED',
+        object: pod,
+        resourceVersion: '100',
+      });
+      expect(events[1]).toEqual({
+        type: 'BOOKMARK',
+        object: bookmark,
+        resourceVersion: '12345',
+      });
+    });
   });
 });
