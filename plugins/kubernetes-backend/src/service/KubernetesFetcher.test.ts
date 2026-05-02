@@ -30,6 +30,8 @@ import {
   mockServices,
   registerMswTestHooks,
 } from '@backstage/backend-test-utils';
+import { Readable } from 'node:stream';
+import { KubernetesWatchEvent } from '@backstage/plugin-kubernetes-common';
 
 const mockCertDir = createMockDirectory({
   content: {
@@ -1417,6 +1419,78 @@ describe('KubernetesFetcher', () => {
         items,
       );
       expect(result).toBe(items);
+    });
+  });
+
+  describe('KubernetesClientBasedFetcher', () => {
+    let sut: KubernetesClientBasedFetcher;
+
+    beforeEach(() => {
+      sut = new KubernetesClientBasedFetcher({
+        logger: mockServices.logger.mock(),
+      });
+    });
+
+    describe('watchResource', () => {
+      it('should yield ADDED events for pod creation', async () => {
+        const mockPod = {
+          apiVersion: 'v1',
+          kind: 'Pod',
+          metadata: {
+            name: 'test-pod',
+            namespace: 'default',
+            resourceVersion: '12345',
+          },
+          spec: {
+            containers: [{ name: 'nginx', image: 'nginx:latest' }],
+          },
+        };
+
+        const watchData = JSON.stringify({
+          type: 'ADDED',
+          object: mockPod,
+        });
+
+        const mockStream = Readable.from([watchData]);
+
+        const clusterDetails = {
+          name: 'test-cluster',
+          url: 'http://localhost:9999',
+          authMetadata: {},
+        };
+
+        jest.spyOn(global, 'fetch' as any).mockResolvedValueOnce({
+          ok: true,
+          body: mockStream,
+        } as any);
+
+        const events: KubernetesWatchEvent[] = [];
+        for await (const event of sut.watchResource(
+          clusterDetails,
+          { type: 'bearer token', token: 'token' },
+          '',
+          'v1',
+          'pods',
+          { namespace: 'default' },
+        )) {
+          events.push(event);
+        }
+
+        expect(events).toHaveLength(1);
+        expect(events[0]).toEqual({
+          type: 'ADDED',
+          object: mockPod,
+          resourceVersion: '12345',
+        });
+
+        expect(global.fetch).toHaveBeenCalledWith(
+          expect.objectContaining({
+            pathname: '/api/v1/namespaces/default/pods',
+            search: expect.stringContaining('watch=true'),
+          }),
+          expect.any(Object),
+        );
+      });
     });
   });
 });
