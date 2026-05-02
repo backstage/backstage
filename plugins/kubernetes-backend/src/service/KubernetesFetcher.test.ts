@@ -2224,5 +2224,118 @@ describe('KubernetesFetcher', () => {
       expect(events).toHaveLength(1);
       expect(requestedUrl).toBe('/apis/example.com/v1/customthings');
     });
+
+    it('should authenticate with bearer token', async () => {
+      const pod = {
+        apiVersion: 'v1',
+        kind: 'Pod',
+        metadata: { name: 'test-pod', resourceVersion: '100' },
+      };
+
+      const watchData = JSON.stringify({ type: 'ADDED', object: pod });
+
+      let authHeader = '';
+      worker.use(
+        rest.get('http://localhost:9999/*', (req, res, ctx) => {
+          authHeader = req.headers.get('Authorization') || '';
+          if (req.url.searchParams.get('watch') === 'true') {
+            return res(ctx.text(watchData));
+          }
+          return res(ctx.status(400));
+        }),
+      );
+
+      const events: KubernetesWatchEvent[] = [];
+      for await (const event of sut.watchResource(
+        {
+          name: 'test-cluster',
+          url: 'http://localhost:9999',
+          authMetadata: {},
+        },
+        { type: 'bearer token', token: 'my-secret-token' },
+        '',
+        'v1',
+        'pods',
+      )) {
+        events.push(event);
+      }
+
+      expect(events).toHaveLength(1);
+      expect(authHeader).toBe('Bearer my-secret-token');
+    });
+
+    it('should use x509 client certificate authentication', async () => {
+      const pod = {
+        apiVersion: 'v1',
+        kind: 'Pod',
+        metadata: { name: 'test-pod', resourceVersion: '100' },
+      };
+
+      const watchData = JSON.stringify({ type: 'ADDED', object: pod });
+
+      worker.use(
+        rest.get('http://localhost:9999/*', (req, res, ctx) => {
+          if (req.url.searchParams.get('watch') === 'true') {
+            return res(ctx.text(watchData));
+          }
+          return res(ctx.status(400));
+        }),
+      );
+
+      const events: KubernetesWatchEvent[] = [];
+      for await (const event of sut.watchResource(
+        {
+          name: 'test-cluster',
+          url: 'http://localhost:9999',
+          authMetadata: {},
+        },
+        {
+          type: 'x509 client certificate',
+          cert: 'MOCKCERT',
+          key: 'MOCKKEY',
+        },
+        '',
+        'v1',
+        'pods',
+      )) {
+        events.push(event);
+      }
+
+      expect(events).toHaveLength(1);
+      expect(events[0].type).toBe('ADDED');
+    });
+
+    it('should yield ERROR event when credentials are missing', async () => {
+      worker.use(
+        rest.get('http://localhost:9999/*', (req, res, ctx) => {
+          return res(ctx.status(401), ctx.text('Unauthorized'));
+        }),
+      );
+
+      const events: KubernetesWatchEvent[] = [];
+      for await (const event of sut.watchResource(
+        {
+          name: 'test-cluster',
+          url: 'http://localhost:9999',
+          authMetadata: {},
+        },
+        { type: 'anonymous' },
+        '',
+        'v1',
+        'pods',
+      )) {
+        events.push(event);
+      }
+
+      expect(events).toHaveLength(1);
+      expect(events[0]).toEqual({
+        type: 'ERROR',
+        error: {
+          errorType: 'UNAUTHORIZED_ERROR',
+          statusCode: 401,
+          resourcePath: '/api/v1/pods',
+        },
+      });
+    });
   });
 });
