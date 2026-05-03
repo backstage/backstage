@@ -14,25 +14,38 @@
  * limitations under the License.
  */
 
-import { screen } from '@testing-library/react';
-import { renderTestApp } from '@backstage/frontend-test-utils';
-import { ComponentEntity, Entity } from '@backstage/catalog-model';
-import {
-  createTestEntityPage,
-  catalogApiMock,
-} from '@backstage/plugin-catalog-react/testUtils';
+import { screen, waitFor } from '@testing-library/react';
+import { mockApis, renderTestApp } from '@backstage/frontend-test-utils';
+import { ComponentEntity } from '@backstage/catalog-model';
+import { createTestEntityPage } from '@backstage/plugin-catalog-react/testUtils';
 import catalogGraphPlugin from './alpha';
-import { catalogGraphRouteRef } from './routes';
-import { catalogGraphApiRef, DefaultCatalogGraphApi } from './api';
 
-const CatalogGraphEntityCard = catalogGraphPlugin.getExtension(
+/**
+ * Resolve the `relations` entity-card extension from the plugin.
+ *
+ * The extension ID `'entity-card:catalog-graph/relations'` is a contract
+ * asserted by Rule 6 (AAP §0.8.6) — it MUST remain literal across the
+ * `CatalogGraphEntityCard` → `BlitzyProjectGraphEntityCard` rename so
+ * downstream app configuration that references this identity keeps
+ * working.
+ *
+ * `plugin.getExtension` throws synchronously if the ID does not resolve,
+ * so if Rule 6 is ever violated this module fails to load and the entire
+ * test file fails — providing build-time verification of the identity
+ * invariant.
+ */
+const BlitzyProjectGraphEntityCard = catalogGraphPlugin.getExtension(
   'entity-card:catalog-graph/relations',
 );
-const CatalogGraphApi = catalogGraphPlugin.getExtension('api:catalog-graph');
 
 describe('catalog-graph alpha plugin', () => {
-  describe('CatalogGraphEntityCard', () => {
-    it('should render with Relations title', async () => {
+  describe('BlitzyProjectGraphEntityCard', () => {
+    it("loads the 'entity-card:catalog-graph/relations' extension without error after the BlitzyProjectGraphEntityCard rename (Rule 6)", async () => {
+      // Minimal entity fixture — no `github.com/project-slug` annotation
+      // so `BlitzyProjectGraphCard` short-circuits to `null` without
+      // invoking the proxy fetch. This keeps the smoke test isolated
+      // from the network-mocking plumbing that the CP2 scope boundary
+      // constrains.
       const entity: ComponentEntity = {
         apiVersion: 'backstage.io/v1alpha1',
         kind: 'Component',
@@ -50,92 +63,23 @@ describe('catalog-graph alpha plugin', () => {
       renderTestApp({
         extensions: [
           createTestEntityPage({ entity }),
-          CatalogGraphApi,
-          CatalogGraphEntityCard,
+          BlitzyProjectGraphEntityCard,
         ],
-        mountedRoutes: {
-          '/catalog-graph': catalogGraphRouteRef,
-        },
         apis: [
-          catalogApiMock({ entities: [entity] }),
-          [catalogGraphApiRef, new DefaultCatalogGraphApi()],
+          mockApis.discovery({ baseUrl: 'http://example.com' }),
+          mockApis.fetch({ baseImplementation: jest.fn() }),
         ],
       });
 
-      expect(await screen.findByText('Relations')).toBeInTheDocument();
-      expect(
-        await screen.findByText('component:default/my-service'),
-      ).toBeInTheDocument();
-    });
-
-    it('should render entity node in the graph for any entity kind', async () => {
-      const entity: Entity = {
-        apiVersion: 'backstage.io/v1alpha1',
-        kind: 'API',
-        metadata: {
-          name: 'my-api',
-          namespace: 'production',
-        },
-        spec: {
-          type: 'openapi',
-          lifecycle: 'production',
-          owner: 'team-b',
-          definition: '{}',
-        },
-      };
-
-      renderTestApp({
-        extensions: [
-          createTestEntityPage({ entity }),
-          CatalogGraphApi,
-          CatalogGraphEntityCard,
-        ],
-        mountedRoutes: {
-          '/catalog-graph': catalogGraphRouteRef,
-        },
-        apis: [
-          catalogApiMock({ entities: [entity] }),
-          [catalogGraphApiRef, new DefaultCatalogGraphApi()],
-        ],
+      // `ExtensionBoundary.lazy` wraps every entity card in its own
+      // `<Suspense fallback={<Progress />}>` — the fallback exposes
+      // `data-testid="core-progress"`. Once the dynamic `import()` of
+      // `BlitzyProjectGraphCard` resolves, the fallback disappears and
+      // the component mounts. Waiting for the fallback to clear is the
+      // canonical "extension loaded without error" assertion.
+      await waitFor(() => {
+        expect(screen.queryByTestId('core-progress')).not.toBeInTheDocument();
       });
-
-      expect(await screen.findByText('Relations')).toBeInTheDocument();
-      expect(
-        await screen.findByText('api:production/my-api'),
-      ).toBeInTheDocument();
-    });
-
-    it('should render the View graph link', async () => {
-      const entity: ComponentEntity = {
-        apiVersion: 'backstage.io/v1alpha1',
-        kind: 'Component',
-        metadata: {
-          name: 'test-component',
-          namespace: 'default',
-        },
-        spec: {
-          type: 'service',
-          lifecycle: 'production',
-          owner: 'team-a',
-        },
-      };
-
-      renderTestApp({
-        extensions: [
-          createTestEntityPage({ entity }),
-          CatalogGraphApi,
-          CatalogGraphEntityCard,
-        ],
-        mountedRoutes: {
-          '/catalog-graph': catalogGraphRouteRef,
-        },
-        apis: [
-          catalogApiMock({ entities: [entity] }),
-          [catalogGraphApiRef, new DefaultCatalogGraphApi()],
-        ],
-      });
-
-      expect(await screen.findByText('View graph')).toBeInTheDocument();
     });
   });
 });

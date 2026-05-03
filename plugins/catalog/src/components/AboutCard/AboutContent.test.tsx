@@ -19,11 +19,32 @@ import {
   RELATION_OWNED_BY,
   RELATION_PART_OF,
 } from '@backstage/catalog-model';
-import { entityRouteRef } from '@backstage/plugin-catalog-react';
-import { renderInTestApp } from '@backstage/test-utils';
-import { screen } from '@testing-library/react';
+import { ConfigReader } from '@backstage/core-app-api';
 import { TooltipProvider } from '@backstage/core-components';
+import {
+  ScmIntegrationsApi,
+  scmIntegrationsApiRef,
+} from '@backstage/integration-react';
+import { entityRouteRef } from '@backstage/plugin-catalog-react';
+import { TestApiProvider, renderInTestApp } from '@backstage/test-utils';
+import { screen } from '@testing-library/react';
 import { AboutContent } from './AboutContent';
+
+const scmIntegrationsApi = ScmIntegrationsApi.fromConfig(new ConfigReader({}));
+
+const renderAboutContent = (entity: Entity) =>
+  renderInTestApp(
+    <TestApiProvider apis={[[scmIntegrationsApiRef, scmIntegrationsApi]]}>
+      <TooltipProvider>
+        <AboutContent entity={entity} />
+      </TooltipProvider>
+    </TestApiProvider>,
+    {
+      mountedRoutes: {
+        '/catalog/:namespace/:kind/:name': entityRouteRef,
+      },
+    },
+  );
 
 describe('<AboutContent />', () => {
   describe('An unknown entity', () => {
@@ -63,21 +84,9 @@ describe('<AboutContent />', () => {
     });
 
     it('renders info', async () => {
-      await renderInTestApp(
-        <TooltipProvider>
-          <AboutContent entity={entity} />
-        </TooltipProvider>,
-        {
-          mountedRoutes: {
-            '/catalog/:namespace/:kind/:name': entityRouteRef,
-          },
-        },
-      );
+      await renderAboutContent(entity);
 
-      expect(screen.getByText('Description')).toBeInTheDocument();
-      expect(screen.getByText('Description').nextSibling).toHaveTextContent(
-        'This is the description',
-      );
+      expect(screen.getByText('This is the description')).toBeInTheDocument();
       expect(screen.getByText('Owner')).toBeInTheDocument();
       expect(screen.getByText('Owner').nextSibling).toHaveTextContent('user:o');
       expect(screen.getByText('Domain')).toBeInTheDocument();
@@ -98,21 +107,9 @@ describe('<AboutContent />', () => {
       entity.spec = {};
       entity.relations = [];
 
-      await renderInTestApp(
-        <TooltipProvider>
-          <AboutContent entity={entity} />
-        </TooltipProvider>,
-        {
-          mountedRoutes: {
-            '/catalog/:namespace/:kind/:name': entityRouteRef,
-          },
-        },
-      );
+      await renderAboutContent(entity);
 
-      expect(screen.getByText('Description')).toBeInTheDocument();
-      expect(screen.getByText('Description').nextSibling).toHaveTextContent(
-        'This is the description',
-      );
+      expect(screen.getByText('This is the description')).toBeInTheDocument();
       expect(screen.getByText('Owner')).toBeInTheDocument();
       expect(screen.getByText('Owner').nextSibling).toHaveTextContent(
         'No Owner',
@@ -158,21 +155,9 @@ describe('<AboutContent />', () => {
     });
 
     it('renders info', async () => {
-      await renderInTestApp(
-        <TooltipProvider>
-          <AboutContent entity={entity} />
-        </TooltipProvider>,
-        {
-          mountedRoutes: {
-            '/catalog/:namespace/:kind/:name': entityRouteRef,
-          },
-        },
-      );
+      await renderAboutContent(entity);
 
-      expect(screen.getByText('Description')).toBeInTheDocument();
-      expect(screen.getByText('Description').nextSibling).toHaveTextContent(
-        'This is the description',
-      );
+      expect(screen.getByText('This is the description')).toBeInTheDocument();
       expect(screen.getByText('Owner')).toBeInTheDocument();
       expect(screen.getByText('Owner').nextSibling).toHaveTextContent(
         'user:guest',
@@ -200,21 +185,9 @@ describe('<AboutContent />', () => {
       delete entity.spec!.system;
       entity.relations = [];
 
-      await renderInTestApp(
-        <TooltipProvider>
-          <AboutContent entity={entity} />
-        </TooltipProvider>,
-        {
-          mountedRoutes: {
-            '/catalog/:namespace/:kind/:name': entityRouteRef,
-          },
-        },
-      );
+      await renderAboutContent(entity);
 
-      expect(screen.getByText('Description')).toBeInTheDocument();
-      expect(screen.getByText('Description').nextSibling).toHaveTextContent(
-        'This is the description',
-      );
+      expect(screen.getByText('This is the description')).toBeInTheDocument();
       expect(screen.getByText('Owner')).toBeInTheDocument();
       expect(screen.getByText('Owner').nextSibling).toHaveTextContent(
         'No Owner',
@@ -273,21 +246,9 @@ describe('<AboutContent />', () => {
     });
 
     it('renders info', async () => {
-      await renderInTestApp(
-        <TooltipProvider>
-          <AboutContent entity={entity} />
-        </TooltipProvider>,
-        {
-          mountedRoutes: {
-            '/catalog/:namespace/:kind/:name': entityRouteRef,
-          },
-        },
-      );
+      await renderAboutContent(entity);
 
-      expect(screen.getByText('Description')).toBeInTheDocument();
-      expect(screen.getByText('Description').nextSibling).toHaveTextContent(
-        'This is the description',
-      );
+      expect(screen.getByText('This is the description')).toBeInTheDocument();
       expect(screen.getByText('Owner')).toBeInTheDocument();
       expect(screen.getByText('Owner').nextSibling).toHaveTextContent(
         'user:guest',
@@ -318,21 +279,9 @@ describe('<AboutContent />', () => {
       delete entity.spec!.system;
       entity.relations = [];
 
-      await renderInTestApp(
-        <TooltipProvider>
-          <AboutContent entity={entity} />
-        </TooltipProvider>,
-        {
-          mountedRoutes: {
-            '/catalog/:namespace/:kind/:name': entityRouteRef,
-          },
-        },
-      );
+      await renderAboutContent(entity);
 
-      expect(screen.getByText('Description')).toBeInTheDocument();
-      expect(screen.getByText('Description').nextSibling).toHaveTextContent(
-        'This is the description',
-      );
+      expect(screen.getByText('This is the description')).toBeInTheDocument();
       expect(screen.getByText('Owner')).toBeInTheDocument();
       expect(screen.getByText('Owner').nextSibling).toHaveTextContent(
         'No Owner',
@@ -379,21 +328,9 @@ describe('<AboutContent />', () => {
     });
 
     it('renders info', async () => {
-      await renderInTestApp(
-        <TooltipProvider>
-          <AboutContent entity={entity} />
-        </TooltipProvider>,
-        {
-          mountedRoutes: {
-            '/catalog/:namespace/:kind/:name': entityRouteRef,
-          },
-        },
-      );
+      await renderAboutContent(entity);
 
-      expect(screen.getByText('Description')).toBeInTheDocument();
-      expect(screen.getByText('Description').nextSibling).toHaveTextContent(
-        'This is the description',
-      );
+      expect(screen.getByText('This is the description')).toBeInTheDocument();
       expect(screen.getByText('Owner')).toBeInTheDocument();
       expect(screen.getByText('Owner').nextSibling).toHaveTextContent(
         'user:guest',
@@ -411,21 +348,9 @@ describe('<AboutContent />', () => {
       delete entity.metadata.tags;
       entity.relations = [];
 
-      await renderInTestApp(
-        <TooltipProvider>
-          <AboutContent entity={entity} />
-        </TooltipProvider>,
-        {
-          mountedRoutes: {
-            '/catalog/:namespace/:kind/:name': entityRouteRef,
-          },
-        },
-      );
+      await renderAboutContent(entity);
 
-      expect(screen.getByText('Description')).toBeInTheDocument();
-      expect(screen.getByText('Description').nextSibling).toHaveTextContent(
-        'This is the description',
-      );
+      expect(screen.getByText('This is the description')).toBeInTheDocument();
       expect(screen.getByText('Owner')).toBeInTheDocument();
       expect(screen.getByText('Owner').nextSibling).toHaveTextContent(
         'No Owner',
@@ -461,21 +386,9 @@ describe('<AboutContent />', () => {
     });
 
     it('renders info', async () => {
-      await renderInTestApp(
-        <TooltipProvider>
-          <AboutContent entity={entity} />
-        </TooltipProvider>,
-        {
-          mountedRoutes: {
-            '/catalog/:namespace/:kind/:name': entityRouteRef,
-          },
-        },
-      );
+      await renderAboutContent(entity);
 
-      expect(screen.getByText('Description')).toBeInTheDocument();
-      expect(screen.getByText('Description').nextSibling).toHaveTextContent(
-        'This is the description',
-      );
+      expect(screen.getByText('This is the description')).toBeInTheDocument();
       expect(screen.getByText('Owner')).toBeInTheDocument();
       expect(screen.getByText('Owner').nextSibling).toHaveTextContent(
         'No Owner',
@@ -498,21 +411,9 @@ describe('<AboutContent />', () => {
       delete entity.metadata.tags;
       delete entity.spec!.type;
 
-      await renderInTestApp(
-        <TooltipProvider>
-          <AboutContent entity={entity} />
-        </TooltipProvider>,
-        {
-          mountedRoutes: {
-            '/catalog/:namespace/:kind/:name': entityRouteRef,
-          },
-        },
-      );
+      await renderAboutContent(entity);
 
-      expect(screen.getByText('Description')).toBeInTheDocument();
-      expect(screen.getByText('Description').nextSibling).toHaveTextContent(
-        'This is the description',
-      );
+      expect(screen.getByText('This is the description')).toBeInTheDocument();
       expect(screen.getByText('Owner')).toBeInTheDocument();
       expect(screen.getByText('Owner').nextSibling).toHaveTextContent(
         'No Owner',
@@ -559,21 +460,9 @@ describe('<AboutContent />', () => {
     });
 
     it('renders info', async () => {
-      await renderInTestApp(
-        <TooltipProvider>
-          <AboutContent entity={entity} />
-        </TooltipProvider>,
-        {
-          mountedRoutes: {
-            '/catalog/:namespace/:kind/:name': entityRouteRef,
-          },
-        },
-      );
+      await renderAboutContent(entity);
 
-      expect(screen.getByText('Description')).toBeInTheDocument();
-      expect(screen.getByText('Description').nextSibling).toHaveTextContent(
-        'This is the description',
-      );
+      expect(screen.getByText('This is the description')).toBeInTheDocument();
       expect(screen.getByText('Owner')).toBeInTheDocument();
       expect(screen.getByText('Owner').nextSibling).toHaveTextContent(
         'user:guest',
@@ -597,21 +486,9 @@ describe('<AboutContent />', () => {
       delete entity.spec!.system;
       entity.relations = [];
 
-      await renderInTestApp(
-        <TooltipProvider>
-          <AboutContent entity={entity} />
-        </TooltipProvider>,
-        {
-          mountedRoutes: {
-            '/catalog/:namespace/:kind/:name': entityRouteRef,
-          },
-        },
-      );
+      await renderAboutContent(entity);
 
-      expect(screen.getByText('Description')).toBeInTheDocument();
-      expect(screen.getByText('Description').nextSibling).toHaveTextContent(
-        'This is the description',
-      );
+      expect(screen.getByText('This is the description')).toBeInTheDocument();
       expect(screen.getByText('Owner')).toBeInTheDocument();
       expect(screen.getByText('Owner').nextSibling).toHaveTextContent(
         'No Owner',
@@ -660,21 +537,9 @@ describe('<AboutContent />', () => {
     });
 
     it('renders info', async () => {
-      await renderInTestApp(
-        <TooltipProvider>
-          <AboutContent entity={entity} />
-        </TooltipProvider>,
-        {
-          mountedRoutes: {
-            '/catalog/:namespace/:kind/:name': entityRouteRef,
-          },
-        },
-      );
+      await renderAboutContent(entity);
 
-      expect(screen.getByText('Description')).toBeInTheDocument();
-      expect(screen.getByText('Description').nextSibling).toHaveTextContent(
-        'This is the description',
-      );
+      expect(screen.getByText('This is the description')).toBeInTheDocument();
       expect(screen.getByText('Owner')).toBeInTheDocument();
       expect(screen.getByText('Owner').nextSibling).toHaveTextContent(
         'user:guest',
@@ -696,21 +561,9 @@ describe('<AboutContent />', () => {
       delete entity.spec!.domain;
       entity.relations = [];
 
-      await renderInTestApp(
-        <TooltipProvider>
-          <AboutContent entity={entity} />
-        </TooltipProvider>,
-        {
-          mountedRoutes: {
-            '/catalog/:namespace/:kind/:name': entityRouteRef,
-          },
-        },
-      );
+      await renderAboutContent(entity);
 
-      expect(screen.getByText('Description')).toBeInTheDocument();
-      expect(screen.getByText('Description').nextSibling).toHaveTextContent(
-        'This is the description',
-      );
+      expect(screen.getByText('This is the description')).toBeInTheDocument();
       expect(screen.getByText('Owner')).toBeInTheDocument();
       expect(screen.getByText('Owner').nextSibling).toHaveTextContent(
         'No Owner',

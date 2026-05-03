@@ -19,7 +19,11 @@ import {
   parseEntityRef,
 } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
-import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import { scmIntegrationsApiRef } from '@backstage/integration-react';
+import {
+  catalogApiRef,
+  getEntitySourceLocation,
+} from '@backstage/plugin-catalog-react';
 import useAsync from 'react-use/lib/useAsync';
 
 // todo: should this be a constant in a scaffolder package?
@@ -53,4 +57,14 @@ export const useSourceTemplateCompoundEntityRef = (entity: Entity) => {
   }, [catalogApi, entity]);
 
   return sourceTemplateRef;
+};
+
+export const useEntitySourceUrl = (entity: Entity): string | undefined => {
+  const scmIntegrationsApi = useApi(scmIntegrationsApiRef);
+  try {
+    return getEntitySourceLocation(entity, scmIntegrationsApi)
+      ?.locationTargetUrl;
+  } catch {
+    return undefined;
+  }
 };

@@ -72,7 +72,13 @@ backend:
       - catalog
 # See README.md in the proxy-backend plugin for information on the configuration format
 proxy:
-  endpoints: {}
+  endpoints:
+    '/github-api':
+      target: https://api.github.com
+      allowedHeaders: ['Authorization', 'User-Agent']
+      headers:
+        Authorization: Bearer ${GITHUB_TOKEN}
+        User-Agent: Backstage-Catalog-Graph
 
 organization:
   name: Blitzy Sandbox

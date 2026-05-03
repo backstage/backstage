@@ -1,68 +1,65 @@
-# Blitzy Project Guide — Backstage Scaffolder Cascading/Dynamic Forms
+# Blitzy Project Guide
+## Catalog Entity Page Redesign — BlitzyProjectGraphCard + About/Links/Labels Card Refresh
+
+---
 
 ## 1. Executive Summary
 
 ### 1.1 Project Overview
 
-This project adds cascading and dynamic form capabilities to the Backstage Scaffolder multi-step wizard (`plugins/scaffolder-react/`). Template authors — typically platform engineers and internal developer-experience teams — can now declare reactive field dependencies directly in their JSON Schema / YAML templates using standard `if/then/else` and `dependencies` keywords, and can attach async `optionsLoader` functions to custom field extensions. The feature closes a long-standing gap where Scaffolder forms could only render static schemas and dependent dropdowns required multi-step workarounds. It is fully backward-compatible (all new API fields are optional), adds zero UI library dependencies, and is entirely scoped to the frontend — no backend changes, no RJSF fork.
+This project delivers four independent but co-delivered frontend changes to the Blitzy-customized Backstage fork, all scoped to the catalog entity page UI. Feature 1 introduces a brand-new `BlitzyProjectGraphCard` that renders GitHub pull requests as an SVG swimlane diagram with color-coded branch lines (open/merged/closed) and a MUI Dialog detail modal. Features 2–4 redesign the About, Entity Links, and Entity Labels cards using Tailwind utility classes on native HTML elements, removing Material UI grid/table/`makeStyles` chrome while preserving backward-compatible prop signatures. Target users are Backstage platform users browsing entity pages; business impact is a cleaner, more information-dense entity page that surfaces PR activity inline without round-tripping to GitHub. Delivery is confined to 14 in-scope files plus decomposed helpers inside the new `BlitzyProjectGraphCard/` directory.
 
 ### 1.2 Completion Status
 
 ```mermaid
-pie showData title Overall Completion — 87.5%
-    "Completed Work (140h)" : 140
-    "Remaining Work (20h)" : 20
+%%{init: {'theme':'base','themeVariables':{'pie1':'#5B39F3','pie2':'#FFFFFF','pieStrokeColor':'#B23AF2','pieOuterStrokeColor':'#B23AF2','pieTitleTextSize':'16px','pieSectionTextSize':'14px','pieLegendTextSize':'14px'}}}%%
+pie showData
+    title Project Completion: 87%
+    "Completed (Dark Blue #5B39F3)" : 80
+    "Remaining (White #FFFFFF)" : 12
 ```
 
-> **Legend:** Completed = Dark Blue (#5B39F3); Remaining = White (#FFFFFF)
-
-| Metric | Value |
-| --- | --- |
-| **Total Hours** | **160** |
-| **Completed Hours (AI + Manual)** | **140** |
-| **Remaining Hours** | **20** |
-| **Percent Complete** | **87.5%** |
-
-**Calculation:** `140 / (140 + 20) × 100 = 87.5%`
+| Metric | Hours |
+|--------|-------|
+| **Total Project Hours** | **92** |
+| Completed Hours (AI + Manual) | 80 |
+| Remaining Hours | 12 |
+| **Completion Percentage** | **87% (80/92 = 86.96%)** |
 
 ### 1.3 Key Accomplishments
 
-- [x] **`resolveConditionalSchema`** pure synchronous utility (380 lines) implemented in `plugins/scaffolder-react/src/next/lib/schema.ts` with prototype-pollution defense and `MAX_CONDITIONAL_DEPTH = 50` safeguard; barrel-exported from `src/next/lib/index.ts`
-- [x] **`useConditionalSchema`** hook (73 lines) wrapping the utility with structural-equality caching to prevent render-loop regressions
-- [x] **`useOptionsLoader`** hook (219 lines) with 300ms-default configurable debounce, `AbortSignal` cancellation, retry, and mount-safety; exported via hooks barrel
-- [x] **`FieldExtensionOptions`** extended with optional `dependencies?: string[]` and `optionsLoader?` — fully backward-compatible
-- [x] **Stepper integration** — reactive schema resolution, `optionsLoaderRegistry` in `formContext`, and dependency-triggered revalidation in `createAsyncValidators.ts`
-- [x] **FieldTemplate loading/error UI** — MUI v4 `LinearProgress` / `FormHelperText` / `Button`, per-field `OptionsLoaderErrorBoundary` class component, 4 analytics event types
-- [x] **17 brand-new unit/integration tests** — 26 suites / 160 tests passing, zero regressions
-- [x] **Documentation** — 248-line Cascading/Dynamic Forms README section with 7-decision Decision Log; 308-line reveal.js executive presentation with 7 Mermaid diagrams
-- [x] **Defensive hardening** — `flatted` CVE remediation (3.3.3 → ^3.4.2) and render-loop fix via structural-equality cache
-- [x] **PR Directive 2** — `packages/backend/src/index.ts` plugin registration reorder
-- [x] **API reports regenerated** — `report.api.md` and `report-alpha.api.md` reflect all new exports
-- [x] **Runtime verification** — scaffolder form renders correctly with MUI v4 theme; screenshot captured at `blitzy/screenshots/form_step1_after_fix_muitheme.png`
+- [x] **Feature 1 delivered**: `BlitzyProjectGraphCard` net-new component (1,233 lines across 5 files) with SVG swimlane, MUI Dialog modal, and pure `visualMergeXs` function
+- [x] **Feature 2 delivered**: About Card redesigned with description-first layout, horizontal flex rows, `useEntitySourceUrl` hook, `hideIcons` on entity refs
+- [x] **Feature 3 delivered**: Entity Links Card converted to native `<a>` rows with Tailwind hover variants; `flex-col` vertical list
+- [x] **Feature 4 delivered**: Entity Labels Card replaces `<Table>` with Tailwind flex list; filters `backstage.io/` prefixed keys; empty-state fallback
+- [x] **All 9 AAP Rules verified**: No inline `style`, Tailwind-only, no `gridSizes` at new call sites, `onClick` (not `<a>`) on expand icon, `visualMergeXs` cap semantics correct, extension `name: 'relations'` preserved, `useEntitySourceUrl` swallows exceptions, labels prefix filter, `null` on missing slug
+- [x] **Refine PR Directives D1–D4 all implemented**: `/github-api` proxy endpoint, responsive SVG, full-card keyboard-clickable with a11y, dashed merge connector
+- [x] **All production-readiness gates passed**: TypeScript (0 in-scope errors), Unit tests (5/5 in-scope + 211/211 catalog), Plugin builds (both PASS), Lint (0 errors)
+- [x] **Security hardening applied**: `isSafeHref` URL allow-list defends against `javascript:` scheme injection in `IconLink` and `ProjectModal`
+- [x] **Clean git history**: 32 commits ahead of master, conventional commits format, all pushed to origin, working tree clean
 
 ### 1.4 Critical Unresolved Issues
 
 | Issue | Impact | Owner | ETA |
-| --- | --- | --- | --- |
-| _No critical unresolved issues._ All five autonomous validation gates pass. | — | — | — |
-| Maintainer code review not yet completed (normal path-to-production activity) | Merge blocker per Backstage governance | Backstage maintainers | 2–4 business days |
-| Staging smoke test against live catalog data pending | Confirms no environment-specific regressions | Platform operator | 1 day |
+|-------|--------|-------|-----|
+| No unresolved issues blocking merge | N/A | — | — |
+| **Informational only:** 26 pre-existing TypeScript errors in 20 out-of-scope files | Does NOT block merge (zero branch diff); blocks full-repo `tsc --noEmit` | Platform team (separate MUI→shadcn migration cleanup) | Post-merge follow-up |
+| **Informational only:** 2 pre-existing test failures in `CatalogGraphPage/DirectionFilter.test.tsx` and `CurveFilter.test.tsx` | Does NOT block merge (zero branch diff, AAP §0.7.2 out-of-scope); blocks full `yarn workspace @backstage/plugin-catalog-graph test` | Platform team | Post-merge follow-up |
 
 ### 1.5 Access Issues
 
 | System/Resource | Type of Access | Issue Description | Resolution Status | Owner |
-| --- | --- | --- | --- | --- |
-| Upstream `github.com/backstage/backstage` repository | Write / maintainer merge rights | Branch `blitzy-17fb4300-b500-45b0-9d70-36bef88d4e92` exists locally; upstream merge requires maintainer approval | Pending review | Backstage maintainers |
-| Production Backstage instance for staging smoke tests | Deploy + SSH / kube-config | A real staging cluster with populated catalog is needed to execute end-to-end cascading-form smoke tests | Pending environment access | Platform / SRE team |
-| `GITHUB_TOKEN` with valid format for backend startup | Runtime secret | Runtime validation earlier required a correctly-formatted stub token (`ghp_...`); production token rotation is a standard operational concern | Pending production token provisioning | Platform operator |
+|-----------------|----------------|-------------------|-------------------|-------|
+| `GITHUB_TOKEN` environment variable | Write (env config) | `app-config.yaml` references `${GITHUB_TOKEN}` for the `/github-api` proxy Authorization header and `integrations.github.token`. Operator must provision a GitHub PAT (classic or fine-grained, `repo:read` scope) in the deployment environment before the card can fetch PR data. | Pending operator action | DevOps / Platform operator |
+| Backstage backend runtime | Deployment | The backend (`packages/backend`) must be running alongside the frontend to serve `/api/proxy/github-api/*` requests. | Pending operator verification | DevOps |
 
 ### 1.6 Recommended Next Steps
 
-1. **[High]** Run `yarn install --immutable && yarn tsc && yarn test --no-watch plugins/scaffolder-react` on a fresh checkout to confirm the branch is green (see Section 9).
-2. **[High]** Request Backstage maintainer code review targeting `plugins/scaffolder-react/` — emphasise the backward-compatibility guarantee and the Decision Log in `README.md`.
-3. **[High]** Deploy to a staging Backstage instance with a seeded catalog and execute the 4 runtime checks documented in the agent logs (permission `ALLOW`, scaffolder `/api/scaffolder/v2/actions`, Template ingestion, Launch Template).
-4. **[Medium]** Draft a short template-author upgrade note for the CHANGELOG highlighting the new `dependencies` / `optionsLoader` fields and YAML `if/then/else` patterns.
-5. **[Medium]** Add one Playwright/Cypress E2E scenario in CI that selects a cloud provider and asserts a dependent region field appears — this closes the path-to-production testing gap.
+1. **[High]** Provision `GITHUB_TOKEN` environment variable in the target Backstage deployment (local, staging, production) — required for the `/github-api` proxy Authorization header.
+2. **[High]** Smoke-test the new `/github-api` proxy endpoint end-to-end: `curl http://localhost:7007/api/proxy/github-api/repos/backstage/backstage/pulls?state=all&per_page=5` should return JSON data.
+3. **[High]** Browser E2E verification: load an entity with a `github.com/project-slug` annotation and visually confirm the swimlane renders with branches and node cards; click expand icon and verify the modal opens.
+4. **[Medium]** Resolve the 26 pre-existing TypeScript errors in 20 out-of-scope files (upstream MUI→shadcn button/Link type residue). These are unrelated to this PR but prevent `tsc --noEmit` from passing cleanly repo-wide.
+5. **[Low]** Resolve the 2 pre-existing test failures in `plugins/catalog-graph/src/components/CatalogGraphPage/` (shadcn Select renders `role="combobox"` instead of `role="button"`). Explicitly out-of-scope per AAP §0.7.2.
 
 ---
 
@@ -71,293 +68,245 @@ pie showData title Overall Completion — 87.5%
 ### 2.1 Completed Work Detail
 
 | Component | Hours | Description |
-| --- | --- | --- |
-| Core Schema Resolution (`resolveConditionalSchema` + 9 unit tests) | 20 | Pure synchronous utility in `plugins/scaffolder-react/src/next/lib/schema.ts` (380 lines total, 237 net insertions). Evaluates `if/then/else`, `dependencies`, `allOf`, `oneOf`. Prototype-pollution defense on `__proto__` / `constructor` / `prototype`. `MAX_CONDITIONAL_DEPTH = 50`. Performance budget: ≤50ms for 20 conditional branches (verified in test). |
-| `FieldExtensionOptions` type extensions | 4 | Added optional `dependencies?: string[]` and `optionsLoader?` to `plugins/scaffolder-react/src/extensions/types.ts`. Rich JSDoc on `createScaffolderFieldExtension.tsx`. API reports regenerated. |
-| `useOptionsLoader` hook implementation | 12 | 219-line hook at `plugins/scaffolder-react/src/next/hooks/useOptionsLoader.ts`. Debounce (300ms default, configurable), `AbortSignal`, `retry()`, tri-state (`loadedOptions`/`loading`/`error`), mount-safety via `mountedRef`. |
-| `useOptionsLoader` unit tests | 6 | 420-line test file with 8 test cases (empty state, debounces, loading state, error, retry, unmount safety, dependency detection, custom `debounceMs`). |
-| `useConditionalSchema` hook | 4 | 73-line `useMemo`-based wrapper at `plugins/scaffolder-react/src/next/hooks/useConditionalSchema.ts`. Structural-equality caching via JSON serialisation to prevent render-loop regressions. |
-| Stepper integration | 12 | `plugins/scaffolder-react/src/next/components/Stepper/Stepper.tsx` wires `useConditionalSchema`, builds `optionsLoaderRegistry` and `fieldDependencies` maps, propagates via `formContext`, structural-equality bail-out in `handleChange`. |
-| Stepper Cascading Forms E2E tests | 4 | 3 new integration tests in `Stepper.test.tsx`: `if/then/else` conditional visibility, form-value preservation across unmount/remount, `dependencies` schema keyword. |
-| `createAsyncValidators` dependency revalidation | 5 | 47-line extension to `plugins/scaffolder-react/src/next/components/Stepper/createAsyncValidators.ts`. New optional `fieldDependencies` parameter; tracks `previousDependencyValues` for dependency-triggered revalidation. |
-| `createAsyncValidators` tests | 3 | 2 new tests in `createAsyncValidators.test.ts` (revalidation when parent changes with `fieldDependencies`; backward-compat when omitted). |
-| `FieldTemplate` loading/error UI + `OptionsLoaderErrorBoundary` | 12 | 251-line bridge in `plugins/scaffolder-react/src/next/components/Form/FieldTemplate.tsx`: per-field error boundary (class component required by React), `useApiHolder` + `useAnalytics` + `useOptionsLoader` composition, MUI v4 `LinearProgress` / `FormHelperText` / `Button`, 4 analytics events (`optionsLoader-load` / `-success` / `-error` / `-render-error`). |
-| `Form.tsx` RJSF material-ui theme refactor | 4 | Major simplification (324 lines changed; net −254) to use `withTheme(MuiTheme)` from `@rjsf/material-ui`. Restores full MUI v4 compliance in the form rendering path. |
-| `ScaffolderField` `isLoading` prop | 1 | Added optional prop and `aria-busy` wiring to `plugins/scaffolder-react/src/next/components/ScaffolderField/ScaffolderField.tsx`. |
-| `schema.test.ts` expansion | 4 | 559 lines changed. 9 new tests for `resolveConditionalSchema` (simple/nested if/then/else, property + schema dependencies, oneOf discrimination, pass-through, purity, 20-branch perf, deep-nesting perf). |
-| `useTemplateSchema.test.tsx` expansion | 3 | 321 lines added. 3 new tests verifying conditional-keyword preservation through the extraction pipeline. |
-| README Cascading/Dynamic Forms documentation | 4 | 248-line documentation section with YAML examples, `optionsLoader` API, debounce guidance, value-preservation semantics, common pitfalls, backward-compatibility statement, and 7-entry Decision Log. |
-| Reveal.js executive presentation | 8 | 308-line `plugins/scaffolder-react/cascading-forms-presentation.html` with 8 sections and 7 Mermaid diagrams covering feature, architecture, schema resolution flow, async options lifecycle, testing, risks, and onboarding. |
-| Observability integration | 6 | `useAnalytics()` tracking with `optionsLoader-*` event names, `AbortSignal` plumbed through `OptionsLoaderFn` signature, `OptionsLoaderErrorBoundary` reporting to analytics on render error. |
-| `flatted` CVE remediation | 2 | Bumped `flatted` dependency from `3.3.3` to `^3.4.2` in `plugins/scaffolder-react/package.json` and `yarn.lock`. |
-| Prototype-pollution defense in `mergeSchemaInto` | 3 | Explicit skipping of `__proto__`, `constructor`, `prototype` keys during recursive schema merging. |
-| Render-loop fix (structural-equality cache) | 5 | Identified and fixed infinite re-render loop: new schema reference → RJSF re-render → `onChange` → `formData` update → new schema reference. Solved via JSON-serialisation equality cache in `useConditionalSchema` and structural bail-out in `Stepper.handleChange`. |
-| QA hardening — MUI v4 compliance, accessibility, code review | 6 | Restored MUI v4 in `FieldTemplate` and `Form`; added `aria-label` / `aria-busy`; removed dead code; tightened `fieldLoadingStates` bridge; addressed 5 QA findings from review. |
-| Backend plugin registration reorder (PR Directive 2) | 1 | Single-line reorder in `packages/backend/src/index.ts`: `plugin-catalog-backend-module-scaffolder-entity-model` now registered AFTER `plugin-catalog-backend`. |
-| Blitzy documentation updates (Project Guide + Technical Specifications) | 11 | 687 lines changed in `blitzy/documentation/Project Guide.md` and 2,083 lines changed in `blitzy/documentation/Technical Specifications.md`. |
-| **Total Completed** | **140** | |
+|-----------|-------|-------------|
+| **Feature 1 — BlitzyProjectGraphCard main component** | 20 | 521-line React component with `useEntity`, `useApi`, `useAsync`, `useState`, `useMemo`, SVG trunk/branches/nodes rendering, state colors, time-scale mapping, expand-icon click handlers, loading/error/null-on-missing-slug states |
+| **Feature 1 — ProjectModal** | 8 | 366-line MUI Dialog component with colored accent bar, state pill, dates, label chips (via CSS custom property pattern), Dismiss + Open PR buttons, Tailwind styling |
+| **Feature 1 — visualMergeXs pure function** | 4 | 152-line pure function reproducing user-supplied algorithm verbatim with Rule 5 cap/no-cap semantics; `BlitzyProject` and `PRState` types exported |
+| **Feature 1 — Barrel + integration** | 3 | `index.ts` barrel (16 lines), `components/index.ts` re-export, `alpha.tsx` rename `CatalogGraphEntityCard → BlitzyProjectGraphEntityCard` preserving `name: 'relations'` |
+| **Feature 1 — Jest unit tests (4 cases)** | 3 | 178-line test file covering cap-applied, no-cap (Rule 5), single-PR `TIMELINE_END` fallback, unmerged-PR null cases with deterministic `toX` stubs |
+| **Feature 1 — alpha.test.tsx update** | 2 | 85-line test asserting `BlitzyProjectGraphEntityCard` extension contract and `name: 'relations'` identity invariance |
+| **Feature 2 — About Card redesign (4 files)** | 10 | `hooks.ts` (+14 lines `useEntitySourceUrl` with try/catch), `AboutField.tsx` (Tailwind horizontal row replacing MUI Grid/Typography), `AboutContent.tsx` (description-first + conditional Source + `hideIcons`), `AboutCard.tsx` (remove `DefaultAboutCardSubheader`, `<Separator />`, unused imports) |
+| **Feature 2 — AboutCard/AboutContent tests** | 6 | 520-line `AboutCard.test.tsx` + 583-line `AboutContent.test.tsx` restored after refactor; 42 suites / 211 tests across `plugin-catalog` pass |
+| **Feature 3 — Entity Links Card (2 files)** | 5 | `IconLink.tsx` (native `<a>` with Tailwind bordered card styling + `isSafeHref` URL allowlist), `LinksGridList.tsx` (`flex-col` vertical list replacing `ImageList`) |
+| **Feature 4 — Entity Labels Card** | 2 | `EntityLabelsCard.tsx` (filter `backstage.io/` prefix, Tailwind flex-col list, `EntityLabelsEmptyState` fallback, `Table`/`TableColumn` imports removed) |
+| **Path-to-production: D1 proxy endpoint** | 1 | `/github-api` proxy config in `app-config.yaml` with Bearer auth and User-Agent header |
+| **Path-to-production: D2 responsive SVG** | 1 | `overflow-hidden` wrapper, `width="100%"` SVG, preserved `viewBox` for scaling |
+| **Path-to-production: D3 full-card keyboard-clickable** | 2 | `onClick` on outer `<g>`, `role="button"`, `aria-label`, `tabIndex={0}`, Enter/Space keyboard handler (supersedes Rule 4 with documented inline comment) |
+| **Path-to-production: D4 dashed merge connector** | 1 | `strokeDasharray="6 4"` horizontal connector from `mergeX` to `NODE_L - 4` for merged PRs only |
+| **Security hardening — `isSafeHref` URL allow-list** | 2 | Defends `IconLink` and `ProjectModal` against `javascript:` scheme injection from untrusted entity/PR URLs |
+| **QA checkpoint fixes (CP2, CP6, CP8)** | 6 | 321 evidence screenshots, CP2 review fixes (sanitize error UI, encode URL segments, minimal alpha.test.tsx delta), CP6 D1-D7 defect fixes, CP8 QA-fix verification |
+| **Documentation artifacts** | 4 | Tech Specs, Project Guide, CODE_REVIEW.md (~1,400 lines); screenshots organized by feature and checkpoint |
+| **Total Completed** | **80** | |
 
 ### 2.2 Remaining Work Detail
 
 | Category | Hours | Priority |
-| --- | --- | --- |
-| Code review by Backstage maintainers & merge preparation | 4 | High |
-| Staging environment smoke tests with live catalog data | 3 | High |
-| Integration testing with upstream `scaffolder-backend` in a running Backstage instance | 2 | High |
-| E2E CI test with a real backend (Playwright or Cypress) for a cascading-field scenario | 3 | Medium |
-| Template-author migration guide / upgrade notes for CHANGELOG | 2 | Medium |
-| Production monitoring setup (dashboards, alerts for `optionsLoader-error` events) | 3 | Medium |
-| Final pre-merge security review (prototype pollution, XSS in markdown error messages) | 2 | Medium |
-| Release note drafting | 1 | Low |
-| **Total Remaining** | **20** | |
+|----------|-------|----------|
+| Operator: Provision `GITHUB_TOKEN` env variable in deployment environments | 0.5 | High |
+| Operator: Smoke-test `/github-api` proxy endpoint with live `curl` call | 1.0 | High |
+| Browser E2E: verify all 4 features on real entity with GitHub proxy data | 3.0 | High |
+| Fix 2 pre-existing out-of-scope test failures (`CatalogGraphPage/DirectionFilter.test.tsx`, `CurveFilter.test.tsx` — shadcn Select role change) | 2.5 | Medium |
+| Fix 26 pre-existing out-of-scope TS errors (upstream MUI→shadcn migration residue in 20 files) | 4.0 | Medium |
+| Production deployment smoke tests and runbook verification | 1.0 | Medium |
+| **Total Remaining** | **12.0** | |
 
-### 2.3 Hours Reconciliation
+### 2.3 Cross-Section Validation
 
-| Check | Value |
-| --- | --- |
-| Section 2.1 Completed sum | **140** |
-| Section 2.2 Remaining sum | **20** |
-| Section 2.1 + 2.2 total | **160** |
-| Section 1.2 Total Hours | **160** ✅ |
-| Completion % (140 ÷ 160) | **87.5%** ✅ |
+- Section 2.1 total: **80** hours ✓
+- Section 2.2 total: **12** hours ✓
+- Sum (2.1 + 2.2): **92** hours = Total Project Hours in Section 1.2 ✓
+- Completion %: **80 / 92 = 86.96% ≈ 87%** — matches Section 1.2 pie chart ✓
 
 ---
 
 ## 3. Test Results
 
-All tests below originate from Blitzy's autonomous test execution logs for this project. Final test run output: **Test Suites: 26 passed, 26 total | Tests: 1 skipped, 160 passed, 161 total | Snapshots: 2 passed, 2 total | Time: 10.909 s**.
+All test counts below originate from Blitzy's autonomous validation logs executed against this branch.
 
 | Test Category | Framework | Total Tests | Passed | Failed | Coverage % | Notes |
-| --- | --- | --- | --- | --- | --- | --- |
-| Unit — Schema Utilities (`schema.test.ts`) | Jest + `@testing-library/react` | 15 | 15 | 0 | 100% of public API | Covers `extractSchemaFromStep` (6) and `resolveConditionalSchema` (9) including simple/nested if/then/else, property + schema dependencies, oneOf discrimination, pass-through, purity, 20-branch <50ms perf, deep-nesting perf. |
-| Unit — `useOptionsLoader` | Jest + `@testing-library/react` + fake timers | 8 | 8 | 0 | All 8 behavioural branches | Empty state, 300ms debounce, loading state, error state, retry, unmount safety, dependency-value detection, custom `debounceMs`. |
-| Unit — `createAsyncValidators` | Jest | 11 | 11 | 0 | Full pipeline | 2 new tests for dependency-triggered revalidation (with `fieldDependencies`; backward-compat when omitted) + 9 pre-existing. |
-| Unit — `useTemplateSchema` | Jest + `@testing-library/react` | 9 | 9 | 0 | Full pipeline | 3 new tests verifying `if/then/else` and `dependencies` keywords survive schema parsing. |
-| Integration — `Stepper` | Jest + `@testing-library/react` + `renderInTestApp` | 19 | 19 | 0 | All Stepper code paths | 3 new Cascading/Dynamic Forms integration tests: `if/then/else` visibility, value preservation across unmount/remount, `dependencies` keyword. |
-| Unit — Other scaffolder-react suites | Jest + `@testing-library/react` | 98 | 98 | 0 | Pre-existing suites untouched | `ReviewState`, `TemplateCard`, `Workflow`, `SecretsContext`, `TaskBorder`, `StepTime`, `utils`, `Form`, extensions, etc. — all continue passing. |
-| Skipped (pre-existing) | Jest | 1 | — | — | — | Pre-existing `test.skip(...)` unchanged from master baseline; not a new failure. |
-| Snapshots | Jest | 2 | 2 | 0 | — | Both pass. |
-| **Total** | | **161** | **160** | **0** | **~100% of AAP in-scope code** | 1 pre-existing skip. |
+|---------------|-----------|-------------|--------|--------|------------|-------|
+| Unit — `visualMergeXs` (Feature 1) | Jest 30 | 4 | 4 | 0 | 100% function | Covers all 4 AAP §0.9.1 cases: cap-applied, no-cap (Rule 5), `TIMELINE_END` fallback, unmerged null |
+| Unit — `alpha.test.tsx` (Feature 1 extension) | Jest 30 | 1 | 1 | 0 | 100% contract | Asserts `BlitzyProjectGraphEntityCard` loads and registers with `name: 'relations'` |
+| Unit/Integration — `@backstage/plugin-catalog` full suite | Jest 30 | 211 (across 42 suites, 11 snapshots) | 211 | 0 | Package-wide | Includes `AboutCard.test.tsx`, `AboutContent.test.tsx`, `EntityLinksCard.test.tsx`, `IconLink.test.tsx`, `EntityLabelsCard.test.tsx` regressions |
+| TypeScript static analysis (14 in-scope files) | TypeScript 5.7 | 14 | 14 | 0 | Strict-mode compile | Zero errors in any of the 14 AAP-scoped files |
+| Lint (ESLint, all 17 modified in-scope files) | ESLint | 17 | 17 | 0 errors / 14 warnings | N/A | 14 `react/forbid-elements` warnings are intentional per AAP Rule 2 (Tailwind-styled native HTML) |
+| Build — `@backstage/plugin-catalog-graph` | Backstage CLI | 1 (build target) | 1 | 0 | Artifacts regenerated | `dist/alpha.esm.js`, `dist/index.esm.js`, `dist/extensions.esm.js`, `.d.ts` types |
+| Build — `@backstage/plugin-catalog` | Backstage CLI | 1 (build target) | 1 | 0 | Artifacts regenerated | 24+ component directories |
+| **Totals (in-scope only)** | — | **249** | **249** | **0** | — | 100% in-scope pass rate |
 
-**Lint result (per Blitzy autonomous lint execution):** `yarn lint` in `plugins/scaffolder-react` returns **0 errors**, **15 warnings** (all pre-existing and unchanged from master baseline: 11 `react/forbid-elements` in non-test files, 4 `func-names` in `setupTests.ts` polyfills).
+**Out-of-scope failures documented (NOT fixed per AAP §0.7.2):**
 
-**Type-check result (per Blitzy autonomous validation):** `yarn tsc` returns the baseline 22 pre-existing errors in 17 out-of-scope files (listed explicitly in AAP §0.7.2) — **zero new errors introduced**.
+| Failure | Location | Root Cause | AAP Status |
+|---------|----------|------------|------------|
+| `DirectionFilter.test.tsx` | `plugins/catalog-graph/src/components/CatalogGraphPage/` | Test queries `within(getByTestId('select')).getByRole('button')` but shadcn Select renders `role="combobox"` | OUT-OF-SCOPE (AAP §0.7.2 explicitly lists `CatalogGraphPage/**`); zero branch diff, zero branch commits |
+| `CurveFilter.test.tsx` | `plugins/catalog-graph/src/components/CatalogGraphPage/` | Same shadcn Select `role` mismatch | OUT-OF-SCOPE; zero branch diff, zero branch commits |
 
 ---
 
 ## 4. Runtime Validation & UI Verification
 
-Runtime health was verified against a live Backstage backend started via `cd packages/backend && GITHUB_TOKEN="ghp_stub_..." yarn start` in the agent session.
+### Component Runtime Status
 
-### 4.1 Backend Runtime — Operational
+- ✅ `BlitzyProjectGraphCard` — SVG swimlane renders with trunk, branches, and node cards (see 321 evidence screenshots in `blitzy/screenshots/`)
+- ✅ `BlitzyProjectGraphCard` — Returns `null` when `github.com/project-slug` annotation is absent (Rule 9 verified via `03-entity-no-slug-rule9-verified.png`)
+- ✅ `BlitzyProjectGraphCard` — MUI Dialog modal opens on expand-icon click (verified via `feature1_modal_open_1280_RESOLVED.png`, `feature1_modal_merged_1280_RESOLVED.png`, `feature1_modal_closed_1280_RESOLVED.png`)
+- ✅ About Card — Description renders first with no "Description" label, source URL conditionally shown (verified via `feature2_about_1280.png`, `feature2_about_1920.png`, `feature2_about_375.png`, `feature2_about_768.png`)
+- ✅ Entity Links Card — Bordered `<a>` rows with Tailwind hover state changes border + background color (verified via `feature3_links_card_hover.png`, `final_ux_03_link_hover.png`)
+- ✅ Entity Labels Card — Tailwind flex list renders bold key / muted value pairs, `backstage.io/` keys filtered, empty state shown for `backstage.io/managed-by-location`-only entities (verified via `feature4_labels_1280.png`, `final_ux_10_rule8_empty_labels.png`)
 
-- ✅ **Backend startup** — Reached `Plugin initialization complete` state in ~10s. All plugins initialised successfully (proxy, techdocs, permission, kubernetes, scaffolder, devtools, signals, mcp-actions, catalog, events, search, auth, notifications, app).
-- ✅ **`POST /api/permission/authorize`** with `scaffolder.task.create` action → `{"items":[{"id":"1","result":"ALLOW"}]}` — the PR Directive 1 `AllowAllPermissionPolicy` behaves unconditionally.
-- ✅ **`GET /api/scaffolder/v2/actions`** → HTTP 200 with **30 scaffolder actions** (`catalog:fetch`, `catalog:register`, `publish:*`, `fetch:*`, etc.).
-- ✅ **`GET /api/catalog/entities?filter=kind=Template`** → HTTP 200; Template ingestion confirmed (`default/notifications-demo`, `apiVersion: scaffolder.backstage.io/v1beta3`, one parameter step, one action step).
-- ✅ **Launch Template permission (`scaffolder.taskCreatePermission`)** → ALLOW.
+### API Integration Status
 
-### 4.2 Scaffolder UI Verification — Operational
+- ⚠ `/api/proxy/github-api/repos/{owner}/{repo}/pulls` — Proxy endpoint configured in `app-config.yaml` (D1 verified); `GITHUB_TOKEN` env variable must be provisioned in target environment before live fetches succeed
+- ✅ `scmIntegrationsApiRef` + `getEntitySourceLocation` — `useEntitySourceUrl` hook wraps call in try/catch and returns `undefined` on exception (Rule 7 verified via `final_ux_11_rule7_malformed.png`, `final_ux_12_rule7_no_scm.png`)
+- ✅ `EntityCardBlueprint.makeWithOverrides` — `BlitzyProjectGraphEntityCard` registered with `name: 'relations'` (Rule 6 verified via `alpha.test.tsx`, static grep, and source line 31)
 
-- ✅ **Scaffolder form "Create React App Template"** renders correctly with the restored MUI v4 theme. Screenshot captured at `blitzy/screenshots/form_step1_after_fix_muitheme.png` shows:
-  - Backstage sidebar navigation (Search, Catalog, Create, APIs, Visualizer, DevTools, Notifications, Settings)
-  - "Create a new component" page header with subtitle
-  - 3-step wizard indicator (step 1 "Provide some simple information" active, step 2 "Choose a location", step 3 "Review")
-  - Form fields rendered correctly: required `Name *` input with helper text "Unique name of the component", `Description` input with helper text "Help others understand what this website is for.", and `Owner` dropdown with helper text "Owner of the component"
-  - Bottom navigation showing `Back` (disabled) and `Next` (enabled, dark-blue) buttons
-- ✅ **Cascading form behaviour** (integration-verified via `Stepper.test.tsx`): `if/then/else` toggles dependent fields inside the same render cycle; dependency-triggered revalidation fires for parent field changes.
-- ✅ **Form value preservation** (integration-verified): unmount/remount of a conditional field restores its previously entered value via the existing `stepsState` accumulator.
-- ✅ **Options-loader loading UI** (integration + unit-verified): `LinearProgress` appears while async fetch is pending; `FormHelperText` error + `Button` retry on rejection.
+### Accessibility Status
 
-### 4.3 API Surface — Operational
+- ✅ Node card `<g>` has `role="button"`, `aria-label={\`Open details for PR ${number}\`}`, `tabIndex={0}`, and `onKeyDown` handling Enter/Space (D3 directive)
+- ✅ Expand-icon `<g>` has `cursor-pointer` Tailwind class (not inline `style`) — Rule 1 compliance
+- ✅ Tab-focus sequence verified via `final_ux_06_tab_focus_search.png`, `final_ux_07_focus_github_repo.png`
 
-- ✅ **`@backstage/plugin-scaffolder-react` public API** (`report.api.md`): new optional fields `dependencies?: string[]` and `optionsLoader?: (...)` on `FieldExtensionOptions`.
-- ✅ **`@backstage/plugin-scaffolder-react/alpha` API** (`report-alpha.api.md`): new exports `resolveConditionalSchema`, `useOptionsLoader`, `OptionsLoaderFn`, `UseOptionsLoaderResult`.
+### Responsive Status
 
-### 4.4 Known Partial States
-
-- ⚠ **End-to-end cascading-form smoke test against a real populated catalog** — Partial. Unit + integration tests pass; a live staging environment run is the path-to-production gap documented in Section 2.2.
-- ⚠ **Production observability dashboards** — Partial. Analytics events are emitted (`optionsLoader-load`, `-success`, `-error`, `-render-error`), but dashboards / alerts must still be provisioned in the operator's monitoring stack.
+- ✅ 1920×1080 desktop: `feature1_svg_1920_fullpage.png`, `feature2_about_1920.png`, `feature3_links_1920.png`, `feature4_labels_1920.png`
+- ✅ 1280×800 laptop: `feature1_svg_1280_fullpage.png`, `feature2_about_1280.png`, `feature3_links_1280.png`, `feature4_labels_1280.png`
+- ✅ 768×1024 tablet: `feature1_svg_768_fullpage.png`, `feature2_about_768.png`, `feature3_links_768.png`, `feature4_labels_768.png`
+- ✅ 375×667 mobile: `feature1_svg_375_fullpage.png`, `feature2_about_375.png`, `feature3_links_375.png`, `feature4_labels_375.png`
 
 ---
 
 ## 5. Compliance & Quality Review
 
-### 5.1 AAP Rule Compliance Matrix
+### AAP Rules Compliance Matrix
 
-| AAP Rule | Requirement | Status | Evidence |
-| --- | --- | --- | --- |
-| Rule 1 | MUST use RJSF's built-in conditional rendering where possible | ✅ PASS | `extractSchemaFromStep` preserves `if/then/else`/`dependencies`; RJSF v5.24.13 evaluates them natively; no fork. |
-| Rule 2 | MUST NOT modify `@rjsf/core` or fork RJSF | ✅ PASS | Zero modifications outside `plugins/scaffolder-react/` + one-line backend reorder; `@rjsf/core` version unchanged at 5.24.13. |
-| Rule 3 | MUST debounce `optionsLoader` calls (300ms default) | ✅ PASS | `useOptionsLoader.ts` lines 1–219 with `debounceMs` parameter defaulted to 300; verified by test "debounces optionsLoader calls with default 300ms delay". |
-| Rule 4 | MUST preserve form values when conditional fields unmount/remount | ✅ PASS | `Stepper.test.tsx` test "should preserve form values when conditional fields unmount and remount" passes. Reuse of `stepsState` accumulator documented in Decision Log. |
-| Rule 5 | Field extensions MUST remain backward-compatible | ✅ PASS | `dependencies?` and `optionsLoader?` are both optional. All pre-existing scaffolder-react tests pass unchanged. |
-| Rule 6 | MUST NOT add UI framework dependencies | ✅ PASS | `package.json` diff adds only already-compatible MUI v4 re-declarations (`@material-ui/core`, `@material-ui/icons`, `@rjsf/material-ui`) that were required by the code path — no new UI libraries. `flatted` bump is a CVE remediation, not a UI library. |
-| Rule 7 | Schema resolution MUST be pure and synchronous | ✅ PASS | `resolveConditionalSchema: (schema: JsonObject, formData: JsonObject) => JsonObject` — no async, no side effects. Verified by purity test in `schema.test.ts`. |
+| Rule | Description | Status | Verification Evidence |
+|------|-------------|--------|----------------------|
+| **Rule 1** | No inline `style` for layout/color (SVG geometry attrs exempt) | ✅ PASS | `grep 'style={{'` on modified non-SVG files returns 0 matches (only comment references) |
+| **Rule 2** | Tailwind-only for non-SVG; no `makeStyles`/`styled`/`sx` | ✅ PASS | `grep 'makeStyles\|styled('` on 10 in-scope non-test files returns 0 matches |
+| **Rule 3** | No `gridSizes` at new `AboutField` call sites in `AboutContent.tsx` | ✅ PASS | `grep gridSizes AboutContent.tsx` returns 0 matches |
+| **Rule 4** | Node cards use `onClick`, not `<a>`-wrapped `<g>` | ✅ PASS (superseded by D3 with documented inline comment) | Source line 406 comment documents D3 supersession; full-card `<g>` uses `onClick` with a11y props; NO `<a>` wraps any `<g>` |
+| **Rule 5** | `visualMergeXs` cap only when `mergeX < nextSplitAfterSplit − 2` | ✅ PASS | Test case (b) asserts `expect(result[0]).toBe(400)` (uncapped), NOT 294 |
+| **Rule 6** | Extension `name: 'relations'` invariant | ✅ PASS | `alpha.tsx` line 31: `name: 'relations'`; `alpha.test.tsx` asserts this contract |
+| **Rule 7** | `useEntitySourceUrl` try/catch, returns `undefined` on exception | ✅ PASS | 2 catch blocks in `hooks.ts` wrap `getEntitySourceLocation`; verified via `final_ux_11_rule7_malformed.png` |
+| **Rule 8** | Labels card filters `backstage.io/` prefix | ✅ PASS | `EntityLabelsCard.tsx:70`: `!k.startsWith('backstage.io/')`; verified via `final_ux_10_rule8_empty_labels.png` |
+| **Rule 9** | `BlitzyProjectGraphCard` returns `null` when slug absent | ✅ PASS | `BlitzyProjectGraphCard.tsx:223` short-circuit; verified via `03-entity-no-slug-rule9-verified.png` |
 
-### 5.2 Non-Functional Requirements (AAP §0.8.3)
+### AAP Scope Boundaries Compliance
 
-| Requirement | Target | Result | Status |
-| --- | --- | --- | --- |
-| Schema re-resolution performance | <50ms for ≤20 conditional branches | Test "resolves a schema with 20 conditional branches in under 50ms" passes | ✅ PASS |
-| `optionsLoader` UI responsiveness | Loading state visible <100ms of parent change | Loading `setState` fires synchronously when debounce is scheduled | ✅ PASS |
-| Memory safety | No leaked subscriptions or stale closures | `useEffect` cleanup + `mountedRef` + `AbortController.abort()` on unmount; verified by test "does not update state after unmount during pending fetch" | ✅ PASS |
-| Bundle size impact | <5KB gzipped additional code | Net +73 (useConditionalSchema) +219 (useOptionsLoader) +237 (schema.ts additions) = ~530 lines of TS; tree-shakable through barrel exports | ✅ PASS |
-| `yarn test --no-watch plugins/scaffolder-react` | All tests pass | 26/26 suites, 160 tests + 1 skip | ✅ PASS |
-| `yarn tsc` | No new errors | 0 new errors (22 pre-existing out-of-scope baseline) | ✅ PASS |
-| `yarn lint --fix` | Clean | 0 errors, 15 pre-existing warnings | ✅ PASS |
-| `yarn build:api-reports` | Regenerated if public API changes | API reports regenerated in commit `446e21ef08` | ✅ PASS |
+| Boundary | Status | Evidence |
+|----------|--------|----------|
+| Only 14 enumerated files modified + new `BlitzyProjectGraphCard/` directory | ✅ PASS | `git diff master...HEAD --name-status` shows 18 code files (14 AAP + `alpha.test.tsx` + 3 extended tests) + `app-config.yaml` for D1 proxy |
+| `globals.css`, theme tokens, `packages/ui`, `packages/backend`, `packages/app` NOT modified | ✅ PASS | `git diff master...HEAD` on these paths returns empty |
+| `EntityRelationsGraph/`, `CatalogGraphCard/`, `CatalogGraphPage/` NOT modified | ✅ PASS | Zero branch diff on these out-of-scope directories |
+| `AboutField.gridSizes` prop signature retained for backward compatibility | ✅ PASS | `AboutFieldProps` interface still declares `gridSizes?: AboutFieldGridSizes` |
+| Minimal change mandate | ✅ PASS | No opportunistic refactoring; every diff maps to an AAP requirement or D1-D4 directive |
 
-### 5.3 Observability / Onboarding / Explainability Deliverables
+### Refine PR Directives (D1–D4)
 
-| Deliverable | Status | Location |
-| --- | --- | --- |
-| Structured logging in `optionsLoader` error paths | ✅ Complete | `FieldTemplate.tsx` analytics events |
-| Metrics tracking via Backstage Analytics API | ✅ Complete | `useAnalytics().captureEvent('optionsLoader-*', ...)` |
-| Error boundary for unhandled failures | ✅ Complete | `OptionsLoaderErrorBoundary` class in `FieldTemplate.tsx` |
-| Health-check/timeout behaviour | ✅ Complete | `AbortSignal` support in `OptionsLoaderFn` signature |
-| README onboarding documentation | ✅ Complete | 248-line section in `plugins/scaffolder-react/README.md` |
-| Inline JSDoc on all new public/alpha exports | ✅ Complete | `types.ts`, `useOptionsLoader.ts`, `schema.ts`, `createScaffolderFieldExtension.tsx` |
-| Decision log (Markdown table, ≥7 decisions) | ✅ Complete | README Decision Log (7 entries: schema resolution, debounce timing, value preservation, loading indicator, type extension, error-boundary scope, analytics location) |
-| Reveal.js executive presentation | ✅ Complete | `cascading-forms-presentation.html` (308 lines, 8 sections, 7 Mermaid diagrams) |
-| Before/after Mermaid diagram of schema resolution pipeline | ✅ Complete | AAP §0.4.1 and Technical Specifications.md |
-| Component-interaction diagram | ✅ Complete | Presentation HTML |
-| Data-flow diagram for async options loading | ✅ Complete | Presentation HTML + AAP §0.4.4 |
+| Directive | Description | Status | Evidence |
+|-----------|-------------|--------|----------|
+| **D1** | `/github-api` proxy block in `app-config.yaml` | ✅ PASS | `app-config.yaml:75-82`: target `https://api.github.com`, allowedHeaders `['Authorization','User-Agent']`, `Bearer ${GITHUB_TOKEN}`, User-Agent header |
+| **D2** | Responsive SVG — `overflow-hidden` + `width="100%"` no fixed height | ✅ PASS | `BlitzyProjectGraphCard.tsx:319` wrapper has `overflow-hidden`; line 321 SVG has `width="100%"` and `viewBox` preserved; NO `height` attribute |
+| **D3** | Full outer card `<g>` is keyboard-clickable | ✅ PASS | Line 414 outer `<g>` has `onClick`; line 406 inline comment documents Rule 4 supersession; `role="button"`, `aria-label`, `tabIndex={0}`, `onKeyDown` handling Enter/Space |
+| **D4** | Dashed merge connector from `mergeX` to `NODE_L - 4` | ✅ PASS | Line 399 `strokeDasharray="6 4"` on horizontal connector at `rowY`, inside `isMerged` conditional only |
 
-### 5.4 Security & Defensive Hardening
+### Build Gates (AAP §0.9.3)
 
-| Item | Status | Evidence |
-| --- | --- | --- |
-| `flatted` CVE remediation | ✅ Complete | `^3.4.2` (up from `3.3.3`) |
-| Prototype-pollution defense in `mergeSchemaInto` | ✅ Complete | Explicit skipping of `__proto__`, `constructor`, `prototype` |
-| `MAX_CONDITIONAL_DEPTH = 50` safeguard | ✅ Complete | Prevents runaway recursion on malicious/cyclic schemas |
-| Top-level try/catch in `resolveConditionalSchema` | ✅ Complete | Returns input schema unchanged on any resolution failure — never throws to RJSF |
-| Render-loop fix | ✅ Complete | Structural-equality caching in `useConditionalSchema` + bail-out in `Stepper.handleChange` |
-| Per-field `OptionsLoaderErrorBoundary` | ✅ Complete | Isolates field failures; logs via `console.error` + `analytics.captureEvent('optionsLoader-render-error', ...)` |
+1. ✅ `yarn tsc --noEmit` — 0 errors in 14 in-scope files
+2. ✅ Unit tests — 4/4 `visualMergeXs` cases pass + 1 `alpha.test.tsx` contract test
+3. ✅ `yarn workspace @backstage/plugin-catalog-graph build` — Exit 0
+4. ✅ `yarn workspace @backstage/plugin-catalog build` — Exit 0
+5. ✅ Browser verification — 321 evidence screenshots confirm all 4 features render without React console errors
+6. ✅ Browser expand-icon click → modal open → Dismiss → modal close — verified via `feature1_modal_*_RESOLVED.png` series
 
 ---
 
 ## 6. Risk Assessment
 
-### 6.1 Risk Register
-
 | Risk | Category | Severity | Probability | Mitigation | Status |
-| --- | --- | --- | --- | --- | --- |
-| RJSF v5 internal changes could alter conditional-rendering semantics in a minor upgrade | Technical | Medium | Low | Version pinned at `5.24.13`; upgrade gated by full test suite; purity test catches behavioural regressions | Monitored |
-| Template authors create circular `dependencies` (field A → B → A) | Technical | Medium | Medium | Documented as a Common Pitfall in README; `MAX_CONDITIONAL_DEPTH = 50` is a defence-in-depth safeguard; no runtime detector implemented | Accepted (documented) |
-| Very large schemas (>20 conditional branches) exceed the 50ms performance budget | Technical | Low | Low | Performance budget verified by Jest perf test; template authors guided to split across steps for complex logic | Accepted (documented) |
-| Malicious JSON Schema triggers prototype pollution via `__proto__` / `constructor` | Security | High | Low | `mergeSchemaInto` explicitly skips polluting keys; verified in unit tests | Mitigated |
-| Malicious schema causes infinite recursion / stack overflow | Security | High | Low | `MAX_CONDITIONAL_DEPTH = 50` + top-level try/catch guarantees bounded execution | Mitigated |
-| Malicious markdown inside dependent-field error messages triggers XSS | Security | Medium | Low | `MarkdownContent` from `@backstage/core-components` sanitises output; no raw HTML injection in `FieldTemplate` | Mitigated |
-| `optionsLoader` returns malformed options shape (e.g., missing `label`/`value`) | Operational | Low | Medium | TypeScript signature enforces `Array<{ label: string; value: string | number }>`; MUI dropdown tolerates unknown keys but should be validated by template authors | Monitored |
-| Slow / unresponsive `optionsLoader` backend blocks the form | Operational | Medium | Medium | `AbortSignal` plumbed through signature; README recommends wrapping with `AbortSignal.timeout()`; per-field error boundary isolates failure | Mitigated |
-| Production monitoring dashboards not yet provisioned | Operational | Medium | High | Analytics events emitted; dashboards are a documented Remaining Work item | Open |
-| Upstream `scaffolder-backend` API drift breaks integration | Integration | Medium | Low | Feature is frontend-only; catalog/scaffolder APIs unchanged; live backend runtime verified | Mitigated |
-| Custom field extensions from third-party plugins rely on internal form context keys | Integration | Low | Low | `formContext` keys are additive (`optionsLoaderRegistry`, `fieldLoadingStates`); no existing keys renamed; backward-compat preserved | Mitigated |
-| Render loop regression if a future `Stepper` refactor removes the structural-equality bail-out | Technical | Medium | Low | Covered by Decision Log explanation; structural cache is centralised in `useConditionalSchema` | Monitored |
-| Deploying without the `packages/backend/src/index.ts` catalog reorder causes Template ingestion to fail | Integration | High | Low | Reorder landed in commit `04e8e84be1`; runtime-verified; covered by PR Directive 2 acceptance | Resolved |
-| `flatted` CVE regression | Security | High | Low | Bumped to `^3.4.2`; `yarn.lock` updated | Mitigated |
-
-### 6.2 Risk Category Summary
-
-```mermaid
-pie showData title Risks by Category
-    "Technical" : 4
-    "Security" : 4
-    "Operational" : 3
-    "Integration" : 3
-```
-
-- **Open:** 1 (production monitoring dashboards — documented Remaining Work)
-- **Mitigated / Resolved:** 10
-- **Monitored:** 3 (version drift, circular deps, render-loop refactor)
-- **Accepted (documented):** 2 (circular deps, large-schema performance)
+|------|----------|----------|-------------|------------|--------|
+| `GITHUB_TOKEN` not provisioned in deployment → proxy returns 401 → card shows error state | Integration | Medium | Medium | Document the env variable requirement in deployment runbook; inline error UI already renders a readable message | Documented; operator action required |
+| GitHub proxy rate-limiting on unauthenticated tokens (60 req/hr) → visible gaps in PR data | Operational | Low | Low | The `per_page=100` query minimizes request volume; authenticated tokens allow 5,000 req/hr which is ample | Monitoring recommended post-deployment |
+| Tailwind `globals.css` tokens (`text-muted-foreground`, `border-border`, `hover:bg-accent`) not resolving in target environment | Technical | Low | Low | Tailwind + globals.css confirmed pre-existing on master in `packages/app/tailwind.config.ts` and `packages/app/src/globals.css`; AAP §0.7.2 forbids modifying these files so they are externally owned | Verified present; no changes required |
+| MUI v4 `Dialog` in `ProjectModal` — dep mismatch if fork migrates to MUI v5 | Technical | Low | Low | `@material-ui/core ^4.12.2` is an existing dependency of `plugins/catalog-graph`; no new dep added by this PR | Monitored |
+| URL injection via `javascript:` scheme in entity link `href` or PR `html_url` | Security | Medium | Low | `isSafeHref` allow-list hardening applied to both `IconLink.tsx` and `ProjectModal.tsx` (commit 337a680ad4) | Mitigated |
+| XSS via GitHub label `name` field rendered into DOM | Security | Low | Low | React auto-escapes all text content; no `dangerouslySetInnerHTML` used | Inherent React protection |
+| 26 pre-existing out-of-scope TS errors block `tsc --noEmit` repo-wide | Technical | Low (does NOT block merge) | — | Zero branch diff on all 20 files; explicitly out-of-scope per AAP §0.7.2; root cause is upstream MUI→shadcn button/Link migration residue | Documented, separate follow-up |
+| 2 pre-existing out-of-scope test failures in `CatalogGraphPage/` block full plugin-catalog-graph test suite | Technical | Low (does NOT block merge) | — | Zero branch diff and zero branch commits; explicitly out-of-scope per AAP §0.7.2 (`CatalogGraphPage/**` listed); root cause is shadcn Select `role="combobox"` vs. legacy `role="button"` assumption | Documented, separate follow-up |
+| React 18 strict-mode double-invocation of `useAsync` fetch could cause duplicate proxy requests in dev | Technical | Low | Low | `useAsync` from `react-use` has internal deduplication; the fetch caller is idempotent (GET) | Inherent react-use behavior |
+| `visualMergeXs` algorithm regression during future refactors | Technical | Medium | Low | Pure function extracted to `visualMergeXs.ts`; 4 Jest test cases lock in cap/no-cap semantics; Rule 5 regression detection via test case (b) assertion `expect(result[0]).toBe(400)` | Mitigated |
 
 ---
 
 ## 7. Visual Project Status
 
-### 7.1 Project Hours Breakdown
+### Overall Project Hours Breakdown
 
 ```mermaid
-pie showData title Project Hours — Completed vs Remaining (Total 160h)
-    "Completed Work (140h)" : 140
-    "Remaining Work (20h)" : 20
+%%{init: {'theme':'base','themeVariables':{'pie1':'#5B39F3','pie2':'#FFFFFF','pieStrokeColor':'#B23AF2','pieOuterStrokeColor':'#B23AF2','pieTitleTextSize':'16px','pieSectionTextSize':'14px','pieLegendTextSize':'14px'}}}%%
+pie showData
+    title Project Hours Breakdown
+    "Completed Work" : 80
+    "Remaining Work" : 12
 ```
 
-> **Color key:** Completed = Dark Blue (#5B39F3); Remaining = White (#FFFFFF). **87.5% complete.**
-
-### 7.2 Remaining Work by Priority
+### Completed Work Breakdown by Feature
 
 ```mermaid
-pie showData title Remaining Hours by Priority (20h total)
-    "High (9h)" : 9
-    "Medium (10h)" : 10
-    "Low (1h)" : 1
+%%{init: {'theme':'base','themeVariables':{'pie1':'#5B39F3','pie2':'#7B5AFF','pie3':'#9B7BFF','pie4':'#BB9CFF','pie5':'#A8FDD9','pie6':'#B23AF2','pie7':'#FFFFFF','pieStrokeColor':'#B23AF2','pieTitleTextSize':'16px','pieSectionTextSize':'12px','pieLegendTextSize':'12px'}}}%%
+pie showData
+    title Completed Hours by Category (80h total)
+    "Feature 1 — BlitzyProjectGraphCard" : 40
+    "Feature 2 — About Card" : 16
+    "Feature 3 — Entity Links Card" : 5
+    "Feature 4 — Entity Labels Card" : 2
+    "Refine PR D1-D4 + Security" : 7
+    "QA fixes + Documentation" : 10
 ```
 
-### 7.3 Remaining Hours by Category (Section 2.2 rollup)
+### Remaining Work Priority Distribution
 
-| Category | Hours |
-| --- | --- |
-| Code review & merge preparation | 4 |
-| Staging & integration testing | 8 |
-| Documentation (migration guide + release notes) | 3 |
-| Monitoring / observability provisioning | 3 |
-| Security review | 2 |
-| **Total** | **20** |
-
-### 7.4 Cross-Section Consistency Confirmation
-
-| Cross-Section Check | Value | Status |
-| --- | --- | --- |
-| Section 1.2 Remaining Hours | 20 | ✅ |
-| Section 2.2 Hours column sum | 20 | ✅ |
-| Section 7.1 "Remaining Work" value | 20 | ✅ |
-| Section 2.1 sum (140) + Section 2.2 sum (20) | 160 | ✅ (equals Total Hours in 1.2) |
-| Completion % from formula (140 / 160) | 87.5% | ✅ (matches Section 1.2, 7.1, 8) |
+```mermaid
+%%{init: {'theme':'base','themeVariables':{'pie1':'#B23AF2','pie2':'#A8FDD9','pieStrokeColor':'#B23AF2','pieTitleTextSize':'16px','pieSectionTextSize':'14px','pieLegendTextSize':'14px'}}}%%
+pie showData
+    title Remaining Work by Priority (12h total)
+    "High Priority (Operator + E2E)" : 4.5
+    "Medium Priority (Post-merge cleanup)" : 7.5
+```
 
 ---
 
 ## 8. Summary & Recommendations
 
-### 8.1 Achievements Summary
+### Achievements
 
-The project delivered, at **87.5% completion (140 of 160 hours)**, a complete, backward-compatible, zero-new-UI-dependency implementation of cascading/dynamic forms in the Backstage Scaffolder. Every AAP-scoped source deliverable (Groups 1–10 in AAP §0.6.1) landed on branch `blitzy-17fb4300-b500-45b0-9d70-36bef88d4e92` across 32 commits. The **core `resolveConditionalSchema` pure utility, the `useConditionalSchema` and `useOptionsLoader` hooks, the `FieldExtensionOptions` type extensions, the Stepper and FieldTemplate integrations, the `OptionsLoaderErrorBoundary`, dependency-triggered revalidation, comprehensive tests, README documentation, Decision Log, and Reveal.js executive presentation** are all present, exercised by tests, and linted cleanly. In addition, two related items of scope — the `flatted` CVE remediation and PR Directive 2's backend plugin reorder — were completed and runtime-verified against a live Backstage backend.
+This delivery is **87% complete** (80 completed hours out of 92 total project hours). All 14 AAP-scoped files have been modified or created according to specification, the 4 Refine PR directives (D1–D4) are implemented and verified, and all 9 AAP invariant rules are preserved. Every production-readiness gate passes for in-scope code: TypeScript (0 errors), unit tests (5/5 in-scope + 211/211 catalog), plugin builds (both PASS), lint (0 errors). The 32-commit branch is fully pushed to origin with a clean working tree.
 
-### 8.2 Critical Path to Production (Remaining 20 Hours)
+### Remaining Gaps
 
-The remaining 20 hours are entirely standard rollout activities — no AAP source code or test deliverables are outstanding. The critical path is:
+The 12 remaining hours divide into two buckets:
 
-1. **Maintainer code review → merge** (4h, High)
-2. **Staging smoke test + upstream integration test** (5h, High)
-3. **CI E2E coverage + migration/release docs** (5h, Medium)
-4. **Production observability dashboards + security sign-off** (5h, Medium)
-5. **Release notes** (1h, Low)
+**High priority (4.5h — operator action)**:
+- Provision `GITHUB_TOKEN` environment variable in the target Backstage deployment.
+- Smoke-test the `/github-api` proxy endpoint with a `curl` call.
+- Browser E2E verification of all four features on a real entity with GitHub data.
 
-### 8.3 Success Metrics
+**Medium priority (7.5h — post-merge cleanup)**:
+- Resolve 26 pre-existing TypeScript errors in 20 out-of-scope files (upstream MUI→shadcn migration residue).
+- Resolve 2 pre-existing test failures in `plugins/catalog-graph/src/components/CatalogGraphPage/` (shadcn Select `role` change).
+- Production deployment smoke test and runbook verification.
+
+Neither bucket blocks merging this PR, since the out-of-scope issues have zero branch diff and zero branch commits, and the operator action items are standard deployment prerequisites.
+
+### Critical Path to Production
+
+1. Provision `GITHUB_TOKEN` → 2. Smoke-test proxy → 3. Browser E2E → 4. Merge PR → 5. Deploy → 6. Post-merge: resolve pre-existing out-of-scope TS/test issues (separate work stream)
+
+### Success Metrics
 
 | Metric | Target | Actual | Status |
-| --- | --- | --- | --- |
-| AAP deliverables completed | 100% of in-scope source files | 100% (all 14 in-scope files modified/created) | ✅ |
-| Test suite pass rate | 100% | 160/160 active tests | ✅ |
-| Lint errors introduced | 0 | 0 | ✅ |
-| New TypeScript errors | 0 | 0 (22 pre-existing out-of-scope baseline) | ✅ |
-| New UI library dependencies | 0 | 0 | ✅ |
-| RJSF forks | 0 | 0 | ✅ |
-| Files modified outside `plugins/scaffolder-react/` | 1 (backend reorder per PR Directive 2) | 1 | ✅ |
-| Debounce default | 300ms | 300ms | ✅ |
-| Schema-resolution perf budget | ≤50ms for 20 branches | Verified in Jest | ✅ |
-| Backward compatibility | 100% | All pre-existing tests pass unchanged | ✅ |
+|--------|--------|--------|--------|
+| AAP in-scope TS errors | 0 | 0 | ✅ Met |
+| AAP in-scope unit test pass rate | 100% | 100% (5/5) | ✅ Met |
+| `plugin-catalog` full test pass rate | 100% | 100% (211/211) | ✅ Met |
+| Plugin builds | Both PASS | Both PASS | ✅ Met |
+| AAP Rule compliance (Rules 1–9) | 9/9 | 9/9 | ✅ Met |
+| Refine PR Directive compliance (D1–D4) | 4/4 | 4/4 | ✅ Met |
+| Lint errors on modified files | 0 | 0 | ✅ Met |
 
-### 8.4 Production Readiness Assessment
+### Production Readiness Assessment
 
-**Production readiness: HIGH** — with the explicit understanding that the remaining 20 hours are standard go-live activities (maintainer review, staging verification, CI E2E, dashboards, release communications). The **feature code itself is production-ready**:
-
-- All five autonomous validation gates (tests, runtime, errors, in-scope files, AAP compatibility) PASSED per the Final Validator's logs.
-- Defensive hardening is in place: prototype-pollution defense, recursion depth cap, top-level try/catch, per-field error boundary, render-loop fix, CVE remediation.
-- API reports are regenerated and the public API is additive-only.
-- Observability hooks are wired; dashboards/alerts are a configuration step.
+The in-scope delivery is **production-ready**. All code quality gates pass, security hardening is in place (`isSafeHref` URL allow-list), accessibility is addressed (`role="button"`, `aria-label`, keyboard handlers), and 321 screenshots provide visual evidence across four viewports. The only gating items are standard operator-side configuration (env variable provisioning) and final browser E2E smoke testing — neither of which can be performed autonomously by an agent because they require live deployment credentials and a running Backstage backend.
 
 ---
 
@@ -365,184 +314,208 @@ The remaining 20 hours are entirely standard rollout activities — no AAP sourc
 
 ### 9.1 System Prerequisites
 
-| Requirement | Version | Notes |
-| --- | --- | --- |
-| Node.js | `22 \|\| 24` (tested on `v22.22.2`) | Enforced by root `package.json` `engines` field |
-| Yarn | `4.8.1` (Berry, via Corepack) | Exact version pinned in `.yarnrc.yml` and `packageManager` |
-| TypeScript | `~5.7.0` (verified `5.7.3`) | Root-level devDependency |
-| Operating system | Linux, macOS, or WSL2 on Windows | Backstage build scripts assume POSIX shell |
-| RAM | ≥ 8 GB recommended | `NODE_OPTIONS='--max-old-space-size=8192'` used during compile/test |
+- **Node.js**: 22 or 24 (verified: `v22.22.2`) — `package.json` engines: `"22 || 24"`
+- **Yarn**: `4.8.1` pinned via `.yarnrc.yml` → `.yarn/releases/yarn-4.8.1.cjs` and `packageManager: yarn@4.8.1`
+- **TypeScript**: `~5.7.0` (declared as `devDependencies` in root `package.json`)
+- **Jest**: `^30` (root `package.json`)
+- **Git**: any recent version
+- **OS**: Linux, macOS, or WSL2 on Windows
+- **Hardware**: 8 GB RAM minimum; 16 GB recommended for the full build (use `NODE_OPTIONS='--max-old-space-size=8192'` for TypeScript checks on machines with less RAM)
 
 ### 9.2 Environment Setup
 
+#### Activate the Yarn version pinned by the repo
+
 ```bash
-# 1. Enable Corepack and activate the pinned Yarn version
 corepack enable
 corepack prepare yarn@4.8.1 --activate
-
-# 2. Clone/checkout and position on the feature branch
-cd /path/to/backstage
-git checkout blitzy-17fb4300-b500-45b0-9d70-36bef88d4e92
-
-# 3. Confirm Node version
-node --version     # expected: v22.x.x
-yarn --version     # expected: 4.8.1
+yarn --version   # Should print: 4.8.1
 ```
+
+#### Configure GitHub token (REQUIRED for Feature 1 runtime)
+
+The `BlitzyProjectGraphCard` fetches PR data through the backend proxy endpoint `/api/proxy/github-api/*`, which requires a GitHub Personal Access Token. Without it, GitHub returns `401 Unauthorized` and the card displays its inline error state.
+
+```bash
+# Create a classic PAT at https://github.com/settings/tokens with scopes:
+#   - public_repo (for public repositories)
+#   - repo        (for private repositories)
+# or a fine-grained PAT with 'Contents: Read' + 'Pull requests: Read'.
+
+export GITHUB_TOKEN="ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+```
+
+`app-config.yaml` also references this variable for `integrations.github.token` — both the proxy Authorization header and the Backstage GitHub integration consume the same token.
 
 ### 9.3 Dependency Installation
 
+From the repository root:
+
 ```bash
-# Install all workspace dependencies; --immutable enforces yarn.lock integrity
-yarn install --immutable
+yarn install --inline-builds
 ```
 
-**Expected result:** Completes in ~6 seconds on a warm cache; no network errors; zero dependency resolution conflicts. Dependencies for `plugins/scaffolder-react` include `@rjsf/core@5.24.13`, `@rjsf/material-ui@5.24.13`, `@material-ui/core@^4.12.2`, `json-schema-library@^9.0.0`, `flatted@^3.4.2`, and `ajv@^8.0.1` — all already present in `yarn.lock`.
-
-### 9.4 Compile / Type-Check
-
-```bash
-# Type-check the whole workspace (expects 22 pre-existing out-of-scope errors)
-NODE_OPTIONS='--max-old-space-size=8192' yarn tsc
+Expected output (tail):
+```
+YN0000: └ Completed
+YN0000: · Done with warnings in XX.XXs
 ```
 
-**Expected result:** `Found 22 errors in 17 files` — all in out-of-scope packages listed in AAP §0.7.2 (`packages/app-legacy`, `plugins/catalog-import`, `plugins/catalog-unprocessed-entities`, `plugins/devtools`, `plugins/home`, `plugins/home-react`, `plugins/kubernetes-react`, `plugins/notifications`, `plugins/org`, `packages/techdocs-cli-embedded-app`). Zero errors in `plugins/scaffolder-react/`.
+No additional steps are required — the four-feature delivery adds zero new runtime dependencies (every library consumed is either an existing workspace package or already-installed MUI v4 / React 18 / `@backstage/*`).
 
-### 9.5 Run Tests
+### 9.4 Verification Steps
+
+Run these commands from the repository root in order. Commands marked `[in-scope]` should exit 0 with no errors. Commands marked `[informational]` include pre-existing out-of-scope failures that are documented but do NOT block merging.
+
+#### 9.4.1 TypeScript verification
 
 ```bash
-# Run the full scaffolder-react test suite (recommended)
-NODE_OPTIONS='--no-node-snapshot --experimental-vm-modules --max-old-space-size=8192' \
-  yarn test --no-watch plugins/scaffolder-react
+# [in-scope] Verify zero errors in 14 AAP-scoped files
+NODE_OPTIONS='--max-old-space-size=8192' yarn tsc --noEmit 2>&1 | \
+  grep -E "plugins/catalog-graph/src/alpha|plugins/catalog-graph/src/components/BlitzyProjectGraphCard|plugins/catalog-graph/src/components/index|plugins/catalog/src/components/AboutCard|plugins/catalog/src/components/EntityLinksCard|plugins/catalog/src/components/EntityLabelsCard"
+# Expected output: (empty — NO errors in in-scope files)
 ```
 
-**Expected result:** `Test Suites: 26 passed, 26 total | Tests: 1 skipped, 160 passed, 161 total | Snapshots: 2 passed, 2 total | Time: ~11 s`.
-
 ```bash
-# Run only the new cascading-forms tests
-cd plugins/scaffolder-react
-NODE_OPTIONS='--no-node-snapshot --experimental-vm-modules --max-old-space-size=8192' \
-  yarn test --no-watch --verbose \
-    src/next/lib/schema.test.ts \
-    src/next/hooks/useOptionsLoader.test.ts \
-    src/next/hooks/useTemplateSchema.test.tsx \
-    src/next/components/Stepper/Stepper.test.tsx \
-    src/next/components/Stepper/createAsyncValidators.test.ts
+# [informational] Full repo tsc shows 26 pre-existing errors in 20 out-of-scope files
+NODE_OPTIONS='--max-old-space-size=8192' yarn tsc --noEmit
+# Expected: "Found 26 errors in 20 files." (all files pre-existing on master)
 ```
 
-### 9.6 Lint
+#### 9.4.2 Unit tests — in-scope only
 
 ```bash
-cd plugins/scaffolder-react
+# [in-scope] BlitzyProjectGraphCard + alpha — 5/5 pass
+CI=true NODE_OPTIONS='--no-node-snapshot --experimental-vm-modules --max-old-space-size=8192' \
+  yarn workspace @backstage/plugin-catalog-graph test \
+  --watchAll=false --testPathPatterns='BlitzyProjectGraphCard|alpha'
+# Expected: "Tests: 5 passed, 5 total"
+```
+
+```bash
+# [in-scope] Full plugin-catalog suite — 211/211 pass
+CI=true NODE_OPTIONS='--no-node-snapshot --experimental-vm-modules --max-old-space-size=8192' \
+  yarn workspace @backstage/plugin-catalog test --watchAll=false
+# Expected: "Tests: 211 passed, 211 total" across 42 suites, 11 snapshots
+```
+
+#### 9.4.3 Plugin builds
+
+```bash
+yarn workspace @backstage/plugin-catalog-graph build
+# Expected: exit 0; artifacts in plugins/catalog-graph/dist/
+```
+
+```bash
+yarn workspace @backstage/plugin-catalog build
+# Expected: exit 0; artifacts in plugins/catalog/dist/
+```
+
+#### 9.4.4 Lint verification
+
+```bash
+# [in-scope] Lint the 17 branch-modified files — 0 errors, 14 expected warnings
+npx eslint --no-fix \
+  plugins/catalog-graph/src/components/BlitzyProjectGraphCard/*.tsx \
+  plugins/catalog-graph/src/components/BlitzyProjectGraphCard/*.ts \
+  plugins/catalog-graph/src/alpha.tsx \
+  plugins/catalog-graph/src/components/index.ts \
+  plugins/catalog/src/components/AboutCard/*.tsx \
+  plugins/catalog/src/components/AboutCard/hooks.ts \
+  plugins/catalog/src/components/EntityLinksCard/IconLink.tsx \
+  plugins/catalog/src/components/EntityLinksCard/LinksGridList.tsx \
+  plugins/catalog/src/components/EntityLabelsCard/EntityLabelsCard.tsx
+# Expected: "✖ 14 problems (0 errors, 14 warnings)"
+# The 14 warnings are `react/forbid-elements` on <span>, <button>, <p>
+# — intentional per AAP Rule 2 (Tailwind-styled native HTML)
+```
+
+```bash
+# [full repo] yarn lint overall
 yarn lint
+# Expected: exit 0
 ```
 
-**Expected result:** `✘ 15 problems (0 errors, 15 warnings)` — all 15 warnings are pre-existing (11 `react/forbid-elements`, 4 `func-names`). The command exits with status 0 when there are zero errors.
-
-### 9.7 Build API Reports (when public API changes)
+#### 9.4.5 AAP rule compliance (static grep)
 
 ```bash
-yarn build:api-reports plugins/scaffolder-react
+# Rule 3: no gridSizes in AboutContent.tsx new call sites
+grep gridSizes plugins/catalog/src/components/AboutCard/AboutContent.tsx
+# Expected: (empty)
+
+# Rule 6: extension name 'relations'
+grep "name: 'relations'" plugins/catalog-graph/src/alpha.tsx
+# Expected: line 31
+
+# Rule 8: labels filter backstage.io/ prefix
+grep "!k.startsWith('backstage.io/')" plugins/catalog/src/components/EntityLabelsCard/EntityLabelsCard.tsx
+# Expected: line 70
+
+# Rule 9: null on missing slug
+grep "github.com/project-slug" plugins/catalog-graph/src/components/BlitzyProjectGraphCard/BlitzyProjectGraphCard.tsx
+# Expected: line 223 plus doc comment line 201
 ```
 
-**Note:** A pre-existing `api-extractor` internal error ("Cannot assign isExternal=true for the symbol TaskStatus...") exists on master and is unrelated to this feature. The reports in this branch were regenerated in an earlier commit (`446e21ef08`) and are in sync with the current public and alpha API surface.
+### 9.5 Application Startup
 
-### 9.8 Application Startup (Dev)
+#### 9.5.1 Start the backend (serves the `/api/proxy/github-api/*` endpoint)
 
 ```bash
-# Start the backend in one terminal
-cd packages/backend
-GITHUB_TOKEN="ghp_stub_with_valid_format_for_dev_startup" yarn start
-# Wait for "Plugin initialization complete" (~10 s)
-
-# Start the frontend in a second terminal
-cd packages/app
-yarn start
-# Open http://localhost:3000/create to exercise the scaffolder form
+# From the repo root
+export GITHUB_TOKEN="ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+yarn start-backend
+# Backend runs on http://localhost:7007
 ```
 
-### 9.9 Runtime Verification (Live Backend)
+#### 9.5.2 Start the frontend (renders the entity page with new cards)
 
-Once the backend is up:
+In a separate terminal:
 
 ```bash
-# 1. Permission authorize — expect ALLOW
-curl -X POST http://localhost:7007/api/permission/authorize \
-  -H "Content-Type: application/json" \
-  -d '{"items":[{"id":"1","permission":{"type":"basic","name":"scaffolder.task.create","attributes":{"action":"create"}}}]}'
-# Expected: {"items":[{"id":"1","result":"ALLOW"}]}
-
-# 2. Scaffolder actions — expect HTTP 200 with ~30 actions
-curl -s http://localhost:7007/api/scaffolder/v2/actions | head -50
-
-# 3. Template ingestion — expect at least one Template entity
-curl -s "http://localhost:7007/api/catalog/entities?filter=kind=Template"
+yarn dev
+# Frontend runs on http://localhost:3000
 ```
 
-### 9.10 Example Usage — YAML Template Authoring
+### 9.6 Example Usage
 
-```yaml
-# Conditional field visibility via if/then/else
-apiVersion: scaffolder.backstage.io/v1beta3
-kind: Template
-metadata:
-  name: deploy-service
-spec:
-  parameters:
-    - title: Infrastructure
-      properties:
-        cloudProvider:
-          type: string
-          title: Cloud Provider
-          enum: [AWS, GCP, Azure]
-      if:
-        properties:
-          cloudProvider: { const: AWS }
-      then:
-        properties:
-          awsRegion:
-            type: string
-            title: AWS Region
-            enum: [us-east-1, us-west-2, eu-west-1]
-        required: [awsRegion]
+#### 9.6.1 Smoke-test the GitHub proxy
+
+```bash
+# With the backend running on localhost:7007:
+curl -s \
+  "http://localhost:7007/api/proxy/github-api/repos/backstage/backstage/pulls?state=all&per_page=3" \
+  | python3 -m json.tool | head -30
+# Expected: JSON array of PR objects with `number`, `title`, `state`, `html_url`, etc.
+# If you see {"error": {"name": "ProxyError", ...}}, the GITHUB_TOKEN is missing or invalid.
 ```
 
-### 9.11 Example Usage — Async `optionsLoader` Registration
+#### 9.6.2 Browser verification
 
-```typescript
-import { createScaffolderFieldExtension } from '@backstage/plugin-scaffolder-react';
-import { catalogApiRef } from '@backstage/plugin-catalog-react';
+1. Open `http://localhost:3000/` in a browser.
+2. Navigate to an entity with the `github.com/project-slug` annotation (e.g., a component backed by a real GitHub repo).
+3. Verify the `BlitzyProjectGraphCard` renders the SVG swimlane with:
+   - A gray trunk line at the top
+   - One branch per PR with state-colored lines (green/purple/red)
+   - White node cards on the right with state-colored accent bars
+4. Click the expand icon on a node card → MUI Dialog modal opens showing PR details.
+5. Click "Dismiss" → modal closes.
+6. Scroll to the About card and verify: description at top, horizontal key/value rows, no kind icons on owner/domain/system refs.
+7. Scroll to the Entity Links card and verify: bordered `<a>` rows; hover changes border and background.
+8. Scroll to the Entity Labels card and verify: Tailwind flex-col list of bold-key / muted-value pairs; no `backstage.io/` labels visible.
+9. Navigate to an entity WITHOUT the `github.com/project-slug` annotation → the `BlitzyProjectGraphCard` should render `null` (no DOM output, no error).
 
-const RegionPickerExtension = createScaffolderFieldExtension({
-  name: 'RegionPicker',
-  component: RegionPickerComponent,
-  dependencies: ['cloudProvider'],
-  optionsLoader: async (formData, { apiHolder, signal }) => {
-    const provider = formData.cloudProvider as string;
-    if (!provider) return [];
-    const catalog = apiHolder.get(catalogApiRef);
-    const regions = await catalog.getEntities(
-      { filter: { kind: 'Resource', 'spec.type': provider } },
-      { signal },
-    );
-    return regions.items.map(e => ({
-      label: e.metadata.title ?? e.metadata.name,
-      value: e.metadata.name,
-    }));
-  },
-});
-```
+### 9.7 Troubleshooting
 
-### 9.12 Common Issues & Resolutions
-
-| Symptom | Cause | Resolution |
-| --- | --- | --- |
-| `yarn install` fails with "The remote server failed to provide the requested resource" | Corporate proxy or registry outage | Set `YARN_NETWORK_CONCURRENCY=1`; retry; or configure `.yarnrc.yml` with the correct npm mirror. |
-| `yarn tsc` reports 22 errors | These are the pre-existing baseline errors in out-of-scope packages | Expected. AAP §0.7.2 explicitly lists these paths as out-of-scope. No action required. |
-| Backend fails to start with "GITHUB_TOKEN is required" | Stubbed/empty token | Use a valid-format dummy token (e.g., `ghp_<anything>`) for dev startup; replace with a real token for production. |
-| Conditional field does not appear when parent value changes | Schema extraction stripped the `if` keyword | Verify `useTemplateSchema.test.tsx` "preserves if/then/else" test still passes on your branch; inspect `extractSchemaFromStep` output via `console.log(currentStep.schema)`. |
-| `optionsLoader` fires on every keystroke | Debounce bypassed by `ui:options.debounceMs: 0` | Remove the override or set a positive value (300ms is the default). |
-| Infinite re-render / browser hangs | Render-loop regression (expected to be impossible; protected by `useConditionalSchema` structural cache) | Verify `useConditionalSchema` is imported and used in the Stepper; inspect React DevTools for unstable memo inputs. |
-| `Cannot assign isExternal=true` during `yarn build:api-reports` | Pre-existing api-extractor quirk | Regenerate only when the public API actually changes; the reports on this branch are in sync. |
+| Symptom | Root Cause | Resolution |
+|---------|------------|------------|
+| `BlitzyProjectGraphCard` shows "Failed to load pull requests: GitHub proxy returned 401" | `GITHUB_TOKEN` env variable is unset or invalid | Set `export GITHUB_TOKEN=...` with a valid PAT and restart the backend |
+| `BlitzyProjectGraphCard` shows empty swimlane (no branches) | Entity's repository has no PRs, or `per_page=100` cap is reached with nothing visible in range | Verify by running the `curl` smoke test in 9.6.1 — if JSON array is empty, no PRs exist |
+| `BlitzyProjectGraphCard` renders `null` (no card visible) on an entity that you expect to have PRs | Missing `github.com/project-slug` annotation in the entity's `catalog-info.yaml` | Add `metadata.annotations: github.com/project-slug: owner/repo` to the entity |
+| About Card shows MUI styling instead of Tailwind | `packages/app/src/globals.css` not loaded or Tailwind not configured | Verify `packages/app/src/globals.css` is imported in the app entry and `packages/app/tailwind.config.ts` includes the plugin paths |
+| `yarn install` fails with "Yarn version mismatch" | Corepack not activated | Run `corepack enable && corepack prepare yarn@4.8.1 --activate` |
+| `yarn tsc` hits out-of-memory | Default Node heap too small | Prefix with `NODE_OPTIONS='--max-old-space-size=8192'` |
+| Tests hang in watch mode | Forgot `--watchAll=false` flag | Always use `CI=true` env var and `--watchAll=false` with Jest |
+| Build artifacts seem stale | `dist/` directory not regenerated | Delete `plugins/catalog-graph/dist` and `plugins/catalog/dist`, then rerun both `yarn workspace ... build` commands |
 
 ---
 
@@ -550,101 +523,131 @@ const RegionPickerExtension = createScaffolderFieldExtension({
 
 ### A. Command Reference
 
-| Command | Purpose |
-| --- | --- |
-| `corepack enable && corepack prepare yarn@4.8.1 --activate` | One-time Yarn version pinning |
-| `yarn install --immutable` | Install all workspace dependencies with lockfile integrity |
-| `NODE_OPTIONS='--max-old-space-size=8192' yarn tsc` | Monorepo type-check |
-| `NODE_OPTIONS='--no-node-snapshot --experimental-vm-modules --max-old-space-size=8192' yarn test --no-watch plugins/scaffolder-react` | Run scaffolder-react test suite |
-| `cd plugins/scaffolder-react && yarn lint` | Lint scaffolder-react (0 errors, 15 pre-existing warnings) |
-| `cd packages/backend && GITHUB_TOKEN="ghp_stub_..." yarn start` | Start Backstage backend |
-| `cd packages/app && yarn start` | Start Backstage frontend at http://localhost:3000 |
-| `yarn build:api-reports plugins/scaffolder-react` | Regenerate API reports (when public API changes) |
+```bash
+# Setup
+corepack enable && corepack prepare yarn@4.8.1 --activate
+yarn install --inline-builds
+
+# Environment
+export GITHUB_TOKEN="ghp_..."
+
+# Type check (repo-wide)
+NODE_OPTIONS='--max-old-space-size=8192' yarn tsc --noEmit
+
+# Tests — in-scope only
+CI=true NODE_OPTIONS='--no-node-snapshot --experimental-vm-modules' \
+  yarn workspace @backstage/plugin-catalog-graph test \
+  --watchAll=false --testPathPatterns='BlitzyProjectGraphCard|alpha'
+
+# Tests — plugin-catalog full suite
+CI=true yarn workspace @backstage/plugin-catalog test --watchAll=false
+
+# Builds
+yarn workspace @backstage/plugin-catalog-graph build
+yarn workspace @backstage/plugin-catalog build
+
+# Lint
+yarn lint
+
+# Dev server
+yarn start-backend   # Terminal 1 (requires GITHUB_TOKEN)
+yarn dev             # Terminal 2
+
+# Proxy smoke test
+curl -s "http://localhost:7007/api/proxy/github-api/repos/backstage/backstage/pulls?state=all&per_page=3"
+```
 
 ### B. Port Reference
 
-| Port | Service | Default binding |
-| --- | --- | --- |
-| 3000 | Backstage frontend (`packages/app` dev server) | `http://localhost:3000` |
-| 7007 | Backstage backend HTTP API | `http://localhost:7007` |
+| Service | Port | Purpose |
+|---------|------|---------|
+| Backstage frontend (dev server) | `3000` | React app serving the entity page |
+| Backstage backend | `7007` | Proxy, catalog, auth, and other backend plugins |
+| `/api/proxy/github-api/*` | via `7007` | Forwards to `https://api.github.com` with `Authorization: Bearer ${GITHUB_TOKEN}` |
 
 ### C. Key File Locations
 
-| Path | Purpose |
-| --- | --- |
-| `plugins/scaffolder-react/src/next/lib/schema.ts` | `extractSchemaFromStep`, `createFieldValidation`, `resolveConditionalSchema` |
-| `plugins/scaffolder-react/src/next/lib/index.ts` | Public barrel export of the lib module |
-| `plugins/scaffolder-react/src/next/hooks/useConditionalSchema.ts` | `useMemo`-based reactive schema resolution with structural-equality cache |
-| `plugins/scaffolder-react/src/next/hooks/useOptionsLoader.ts` | Debounced async options-loader hook with `AbortSignal` + retry |
-| `plugins/scaffolder-react/src/next/hooks/index.ts` | Public barrel export of hooks |
-| `plugins/scaffolder-react/src/next/components/Stepper/Stepper.tsx` | Multi-step wizard orchestrator; wires `useConditionalSchema` + `optionsLoaderRegistry` |
-| `plugins/scaffolder-react/src/next/components/Stepper/createAsyncValidators.ts` | Dependency-triggered revalidation pipeline |
-| `plugins/scaffolder-react/src/next/components/Form/Form.tsx` | RJSF `withTheme(MuiTheme)` wrapper |
-| `plugins/scaffolder-react/src/next/components/Form/FieldTemplate.tsx` | Per-field loading / error UI + `OptionsLoaderErrorBoundary` + analytics |
-| `plugins/scaffolder-react/src/next/components/ScaffolderField/ScaffolderField.tsx` | Accessible field shell with `isLoading` prop |
-| `plugins/scaffolder-react/src/extensions/types.ts` | `FieldExtensionOptions` with `dependencies?` and `optionsLoader?` |
-| `plugins/scaffolder-react/src/extensions/createScaffolderFieldExtension.tsx` | Extension factory (JSDoc updated) |
-| `plugins/scaffolder-react/README.md` | Cascading/Dynamic Forms documentation + Decision Log |
-| `plugins/scaffolder-react/cascading-forms-presentation.html` | Reveal.js executive presentation (8 sections, 7 Mermaid diagrams) |
-| `plugins/scaffolder-react/report.api.md` | Public API surface (`dependencies?`, `optionsLoader?`) |
-| `plugins/scaffolder-react/report-alpha.api.md` | Alpha API surface (`resolveConditionalSchema`, `useOptionsLoader`, …) |
-| `packages/backend/src/index.ts` | Backend plugin registration order (PR Directive 2 reorder) |
-| `blitzy/screenshots/form_step1_after_fix_muitheme.png` | Runtime UI screenshot after MUI v4 theme restoration |
+| File | Role |
+|------|------|
+| `plugins/catalog-graph/src/components/BlitzyProjectGraphCard/BlitzyProjectGraphCard.tsx` | Main Feature 1 React component (521 lines) |
+| `plugins/catalog-graph/src/components/BlitzyProjectGraphCard/ProjectModal.tsx` | MUI Dialog modal (366 lines) |
+| `plugins/catalog-graph/src/components/BlitzyProjectGraphCard/visualMergeXs.ts` | Pure function (152 lines) |
+| `plugins/catalog-graph/src/components/BlitzyProjectGraphCard/BlitzyProjectGraphCard.test.tsx` | Jest unit tests (178 lines) |
+| `plugins/catalog-graph/src/components/BlitzyProjectGraphCard/index.ts` | Barrel export (16 lines) |
+| `plugins/catalog-graph/src/alpha.tsx` | `EntityCardBlueprint` registration with `name: 'relations'` |
+| `plugins/catalog-graph/src/components/index.ts` | Plugin component barrel |
+| `plugins/catalog/src/components/AboutCard/AboutCard.tsx` | Feature 2 — `InternalAboutCard` (subheader/divider removed) |
+| `plugins/catalog/src/components/AboutCard/AboutContent.tsx` | Feature 2 — description-first layout + Source field + `hideIcons` |
+| `plugins/catalog/src/components/AboutCard/AboutField.tsx` | Feature 2 — Tailwind horizontal row (preserves `gridSizes` interface) |
+| `plugins/catalog/src/components/AboutCard/hooks.ts` | Feature 2 — `useEntitySourceUrl` hook (try/catch, returns undefined on exception) |
+| `plugins/catalog/src/components/EntityLinksCard/IconLink.tsx` | Feature 3 — native `<a>` with Tailwind hover variants + `isSafeHref` |
+| `plugins/catalog/src/components/EntityLinksCard/LinksGridList.tsx` | Feature 3 — `flex-col` vertical list (cols prop no longer consumed) |
+| `plugins/catalog/src/components/EntityLabelsCard/EntityLabelsCard.tsx` | Feature 4 — flex-col list with `backstage.io/` prefix filter |
+| `app-config.yaml` | D1 — `/github-api` proxy endpoint with Bearer auth + User-Agent |
 
 ### D. Technology Versions
 
 | Technology | Version | Source |
-| --- | --- | --- |
-| Node.js | `22 \|\| 24` (tested `v22.22.2`) | Root `package.json` `engines` |
-| Yarn | `4.8.1` (Berry) | Root `package.json` `packageManager` |
-| TypeScript | `~5.7.0` (`5.7.3`) | Root `devDependencies` |
-| React | `^18.0.2` | `plugins/scaffolder-react/package.json` `devDependencies` |
-| `@rjsf/core` | `5.24.13` | Pinned exact version — **must not be modified or forked** |
-| `@rjsf/utils` | `5.24.13` | Type definitions |
-| `@rjsf/validator-ajv8` | `5.24.13` | Validator factory |
-| `@rjsf/material-ui` | `5.24.13` | MUI v4 theme for RJSF |
-| `@material-ui/core` | `^4.12.2` | MUI v4 primitives (`LinearProgress`, `FormHelperText`, `Button`, `FormControl`) |
-| `@material-ui/icons` | `^4.9.1` | MUI v4 icons |
-| `ajv` | `^8.0.1` | JSON Schema validator supporting Draft 07 `if/then/else`/`dependencies` |
-| `ajv-errors` | `^3.0.0` | Custom error messages |
-| `json-schema-library` | `^9.0.0` | `Draft07` class for schema traversal |
-| `flatted` | `^3.4.2` | Cyclic-safe JSON clone — **bumped from `3.3.3` for CVE remediation** |
-| `lodash` | `^4.17.21` | `merge()` utilities |
-| `react-use` | `^17.2.4` | Composable React hooks |
+|------------|---------|--------|
+| Node.js | `22 \|\| 24` (runtime: `v22.22.2`) | Root `package.json` engines |
+| Yarn | `4.8.1` | `.yarnrc.yml`, `packageManager` field |
+| TypeScript | `~5.7.0` | Root `package.json` devDependencies |
+| Jest | `^30` | Root `package.json` devDependencies |
+| React | `^18.0.2` | `plugins/catalog-graph/package.json`, `plugins/catalog/package.json` |
+| React-DOM | `^18.0.2` | Same |
+| `@material-ui/core` | `^4.12.2` | `plugins/catalog-graph/package.json` (for `Dialog` in ProjectModal) |
+| `@backstage/cli` | `workspace:^` | All plugin `package.json` files |
+| `@backstage/frontend-plugin-api` | `workspace:^` | For `ApiBlueprint`, `PageBlueprint`, `createFrontendPlugin` |
+| `@backstage/core-plugin-api` | `workspace:^` | For `useApi`, `fetchApiRef`, `discoveryApiRef` |
+| `@backstage/plugin-catalog-react` | `workspace:^` | For `useEntity`, `EntityRefLinks`, `getEntitySourceLocation` |
+| `@backstage/plugin-catalog-react/alpha` | `workspace:^` | For `EntityCardBlueprint` |
+| `@backstage/integration-react` | `workspace:^` | For `scmIntegrationsApiRef` |
+| Tailwind CSS | v4 | `packages/app/tailwind.config.ts` (pre-existing on master) |
 
 ### E. Environment Variable Reference
 
-| Variable | Used By | Required | Notes |
-| --- | --- | --- | --- |
-| `GITHUB_TOKEN` | `packages/backend` | Yes (for dev startup) | Must have valid `ghp_...` format. For production, rotate and secure appropriately. |
-| `NODE_OPTIONS` | `yarn tsc`, `yarn test` | Recommended | Set to `--max-old-space-size=8192` for `tsc`; add `--no-node-snapshot --experimental-vm-modules` for Jest. |
-| `CI` | Test runners | Optional | Set to `true` in CI environments to disable watch modes. |
-| `DEBIAN_FRONTEND` | `apt` operations (Linux CI) | Optional | `noninteractive` prevents prompts. |
+| Variable | Purpose | Required | Default |
+|----------|---------|----------|---------|
+| `GITHUB_TOKEN` | Auth for `/github-api` proxy (line 80 of `app-config.yaml`) AND for `integrations.github.token` (line 113) | **Yes** (for Feature 1 runtime) | — |
+| `NODE_OPTIONS` | Set to `--max-old-space-size=8192` for `tsc --noEmit` on memory-constrained machines | No | — |
+| `CI` | Set to `true` to prevent Jest watch mode | No | — |
 
 ### F. Developer Tools Guide
 
-| Tool | Purpose | When to use |
-| --- | --- | --- |
-| Chrome DevTools React tab | Inspect `useMemo` stability and re-render frequency | When validating `useConditionalSchema` cache behaviour or tuning `debounceMs` |
-| Backstage Analytics API (`useAnalytics`) | Capture `optionsLoader-load` / `-success` / `-error` / `-render-error` events | Integrated into FieldTemplate; route to your analytics backend (Grafana, Segment, etc.) |
-| `AbortSignal.timeout(ms)` | Wrap slow `optionsLoader` calls | In template extension code to enforce an upper bound on fetch latency |
-| React DevTools Profiler | Measure render cost of a single schema change | When debugging performance regressions or validating the 50ms budget |
-| `yarn workspaces focus @backstage/plugin-scaffolder-react --production` | Install only scaffolder-react runtime deps | When producing a minimal install for offline analysis |
+| Tool | When to Use |
+|------|-------------|
+| `yarn tsc --noEmit` | Verify TypeScript compiles without emitting artifacts — use before committing and as a pre-merge gate |
+| `yarn workspace @backstage/plugin-catalog test` | Run plugin-catalog unit + integration test suite (42 suites, 211 tests); use `--testPathPatterns=<pattern>` to focus |
+| `yarn workspace @backstage/plugin-catalog-graph test` | Run catalog-graph tests; use `--testPathPatterns='BlitzyProjectGraphCard\|alpha'` for in-scope only |
+| `yarn workspace @backstage/plugin-catalog-graph build` | Regenerate `plugins/catalog-graph/dist/*` artifacts |
+| `yarn workspace @backstage/plugin-catalog build` | Regenerate `plugins/catalog/dist/*` artifacts |
+| `yarn lint` | Repo-wide ESLint check — should exit 0 |
+| `npx eslint --no-fix <file>` | Lint a single file without auto-fixing; useful for rule-by-rule debugging |
+| `git log master..HEAD --oneline` | Show commits on the branch ahead of master (32 on this branch) |
+| `git diff master...HEAD --stat` | Show summary of file changes relative to master |
+| `git diff master...HEAD --numstat` | Show numeric add/remove counts per file |
+| Chrome DevTools → Network tab | Inspect `/api/proxy/github-api/*` requests during runtime verification |
 
 ### G. Glossary
 
-| Term | Definition |
-| --- | --- |
-| **AAP** | Agent Action Plan — the directive document specifying what to build. |
-| **RJSF** | React JSON Schema Form (`@rjsf/core`) — the underlying form engine. |
-| **Schema resolution** | Evaluating `if/then/else` / `dependencies` / `allOf` / `oneOf` against current `formData` to produce the schema actually passed to RJSF. |
-| **Options loader** | An async function (`optionsLoader`) that fetches dropdown options for a field when its dependencies change. |
-| **Debounce** | Delaying a function call until a period of inactivity elapses — here 300ms by default for `optionsLoader`. |
-| **`AbortSignal`** | Standard Web API for cancelling in-flight `fetch` requests; plumbed through `OptionsLoaderFn` to cancel stale loads. |
-| **`stepsState`** | The Stepper's internal accumulator of all form values across all wizard steps — source of truth for value preservation. |
-| **Structural-equality cache** | Caching a memo by comparing JSON-serialised inputs rather than reference equality — used in `useConditionalSchema` to prevent render loops. |
-| **`OptionsLoaderErrorBoundary`** | Per-field React class-component error boundary (classes are required by React 18 error-boundary API) that isolates rendering failures. |
-| **Prototype pollution** | Attack vector where crafted object keys (`__proto__`, `constructor`, `prototype`) mutate `Object.prototype`. Defended against in `mergeSchemaInto`. |
-| **`MAX_CONDITIONAL_DEPTH`** | Safeguard constant (50) capping recursive schema-resolution depth to prevent stack overflow on malicious / cyclic schemas. |
-| **PR Directive 2** | Backend plugin-registration reordering requirement — `catalog-backend-module-scaffolder-entity-model` must register AFTER `catalog-backend`. Landed in commit `04e8e84be1`. |
-| **Path-to-production** | Standard rollout activities (review, staging, monitoring, release notes) — the remaining 20 hours. |
+| Term | Meaning |
+|------|---------|
+| **AAP** | Agent Action Plan — the user-supplied scope document defining all 14 in-scope files, 4 features, 9 rules, and 6 build gates |
+| **BlitzyProject** | Normalized project record (`branchName`, `prState`, `createdAt`, `mergedAt`, `labels`, `prUrl`, `title`, `number`) derived from a GitHub PR; exported from `visualMergeXs.ts` |
+| **PRState** | `'open' \| 'merged' \| 'closed'` — discriminated union of PR lifecycle states |
+| **visualMergeXs** | Pure function (152 lines) implementing the user-supplied merge-x capping algorithm with Rule 5 cap semantics |
+| **splitX** | X-coordinate on the SVG where a PR's branch splits from the trunk (proportional to `createdAt`) |
+| **mergeX** | X-coordinate on the SVG where a merged PR's branch rejoins the trunk (proportional to `mergedAt`) |
+| **nextSplitAfterSplit** | Minimum `splitX` among OTHER PRs whose split is strictly greater than the current PR's `splitX + 2`; falls back to `TIMELINE_END` if no subsequent split exists |
+| **TIMELINE_END** | `696` — right-most x-coordinate of the SVG timeline domain (AAP 0.1.2 constant) |
+| **TRUNK_START** | `170` — left-most x-coordinate of the SVG timeline domain |
+| **NODE_L** | `724` — left x-coordinate of the node-card drop-shadow rectangle |
+| **MIN_BOX_W** | `80` — minimum visual width of a branch segment between split and merge |
+| **SVG_W** | `940` — SVG viewBox width |
+| **Refine PR Directives D1–D4** | Four supplemental requirements layered on top of AAP Features 1–4: D1 `/github-api` proxy, D2 responsive SVG, D3 full-card keyboard-clickable, D4 dashed merge connector |
+| **EntityCardBlueprint** | Backstage new-frontend-system blueprint used to register entity cards with unique `name` identities |
+| **`'relations'`** | The extension `name` identity for the entity card registered in `plugins/catalog-graph/src/alpha.tsx:31`; invariant across this delivery per AAP Rule 6 |
+| **`hideIcons`** | Prop on `EntityRefLinks` (and `hideIcon` on `EntityRefLink`) that suppresses the kind icon; used by AboutContent for owner/domain/system/parent-component refs |
+| **`useEntitySourceUrl`** | New hook in `hooks.ts` that wraps `getEntitySourceLocation(entity, scmIntegrationsApi)?.locationTargetUrl` in try/catch and returns `undefined` on exception (Rule 7) |
+| **`isSafeHref`** | URL scheme allow-list hardening added to `IconLink` and `ProjectModal` to defend against `javascript:` injection |
+| **Tailwind arbitrary value** | Pattern like `bg-[#22c55e]` or `bg-[color:var(--label-color)]` that the Tailwind JIT compiles to CSS at build time — distinct from inline `style={{...}}` which is prohibited by Rule 1 |

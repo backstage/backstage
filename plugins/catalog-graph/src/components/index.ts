@@ -14,3 +14,4 @@
  * limitations under the License.
  */
 export * from './EntityRelationsGraph';
+export * from './BlitzyProjectGraphCard';

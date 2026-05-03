@@ -16,7 +16,6 @@
 
 import { IconLink } from './IconLink';
 import { ColumnBreakpoints } from './types';
-import { useDynamicColumns } from './useDynamicColumns';
 import { IconComponent } from '@backstage/core-plugin-api';
 
 export interface LinksGridListItem {
@@ -31,18 +30,12 @@ interface LinksGridListProps {
 }
 
 export function LinksGridList(props: LinksGridListProps) {
-  const { items, cols = undefined } = props;
-  const numOfCols = useDynamicColumns(cols);
+  const { items } = props;
 
   return (
-    <div
-      className="grid gap-2 pt-4"
-      style={{ gridTemplateColumns: `repeat(${numOfCols}, minmax(0, 1fr))` }}
-    >
+    <div className="flex flex-col gap-2 pt-2">
       {items.map(({ text, href, Icon }, i) => (
-        <div key={i} className="min-w-0">
-          <IconLink href={href} text={text ?? href} Icon={Icon} />
-        </div>
+        <IconLink key={i} href={href} text={text ?? href} Icon={Icon} />
       ))}
     </div>
   );

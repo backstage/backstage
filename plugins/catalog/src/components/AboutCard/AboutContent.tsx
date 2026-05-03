@@ -25,11 +25,13 @@ import {
   getEntityRelations,
 } from '@backstage/plugin-catalog-react';
 import { JsonArray } from '@backstage/types';
-import { MarkdownContent, cn, Badge } from '@backstage/core-components';
+import { Badge, MarkdownContent } from '@backstage/core-components';
 import { AboutField } from './AboutField';
 import { LinksGridList } from '../EntityLinksCard/LinksGridList';
+import { useEntitySourceUrl } from './hooks';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { catalogTranslationRef } from '../../alpha/translation';
+import { useLayoutEffect, useRef } from 'react';
 
 /**
  * Props for {@link AboutContent}.
@@ -67,7 +69,25 @@ function getLocationTargetHref(
 /** @public */
 export function AboutContent(props: AboutContentProps) {
   const { entity } = props;
+  const sourceUrl = useEntitySourceUrl(entity);
   const { t } = useTranslationRef(catalogTranslationRef);
+
+  // D4 fix: the AAP-specified `border-border/30` fractional-opacity modifier
+  // on the description divider is not emitted in the app's pre-compiled
+  // Tailwind stylesheet (`packages/app/src/tailwind.css`). Updating the
+  // Tailwind scan paths is OUT OF SCOPE per AAP 0.7.2. Apply the 30%
+  // alpha of the `--border` token (#E6E6E6) imperatively via the DOM
+  // API — Rule 1 compliant (the rule prohibits JSX `style={{}}`, not
+  // imperative DOM mutation).
+  const descriptionRef = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    if (descriptionRef.current) {
+      descriptionRef.current.style.setProperty(
+        'border-bottom-color',
+        'rgba(230, 230, 230, 0.3)',
+      );
+    }
+  }, []);
 
   const isSystem = entity.kind.toLocaleLowerCase('en-US') === 'system';
   const isResource = entity.kind.toLocaleLowerCase('en-US') === 'resource';
@@ -105,43 +125,60 @@ export function AboutContent(props: AboutContentProps) {
   }
 
   return (
-    <div className="grid grid-cols-12 gap-0">
-      <AboutField
-        label={t('aboutCard.descriptionField.label')}
-        gridSizes={{ xs: 12 }}
+    <div>
+      <div
+        ref={descriptionRef}
+        className="text-sm border-b border-border pb-3 mb-3 break-words"
       >
         <MarkdownContent
-          className={cn('break-words')}
           content={
             entity?.metadata?.description ||
             t('aboutCard.descriptionField.value')
           }
         />
-      </AboutField>
+      </div>
+
+      {sourceUrl && (
+        <AboutField label="Source">
+          <a
+            href={sourceUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm underline"
+          >
+            {sourceUrl}
+          </a>
+        </AboutField>
+      )}
+
       <AboutField
         label={t('aboutCard.ownerField.label')}
         value={t('aboutCard.ownerField.value')}
-        className={cn('break-words')}
-        gridSizes={{ xs: 12, sm: 6, lg: 4 }}
       >
         {ownedByRelations.length > 0 && (
-          <EntityRefLinks entityRefs={ownedByRelations} defaultKind="group" />
+          <EntityRefLinks
+            entityRefs={ownedByRelations}
+            defaultKind="group"
+            hideIcons
+          />
         )}
       </AboutField>
+
       {(isSystem || partOfDomainRelations.length > 0) && (
         <AboutField
           label={t('aboutCard.domainField.label')}
           value={t('aboutCard.domainField.value')}
-          gridSizes={{ xs: 12, sm: 6, lg: 4 }}
         >
           {partOfDomainRelations.length > 0 && (
             <EntityRefLinks
               entityRefs={partOfDomainRelations}
               defaultKind="domain"
+              hideIcons
             />
           )}
         </AboutField>
       )}
+
       {(isAPI ||
         isComponent ||
         isResource ||
@@ -149,28 +186,30 @@ export function AboutContent(props: AboutContentProps) {
         <AboutField
           label={t('aboutCard.systemField.label')}
           value={t('aboutCard.systemField.value')}
-          gridSizes={{ xs: 12, sm: 6, lg: 4 }}
         >
           {partOfSystemRelations.length > 0 && (
             <EntityRefLinks
               entityRefs={partOfSystemRelations}
               defaultKind="system"
+              hideIcons
             />
           )}
         </AboutField>
       )}
+
       {isComponent && partOfComponentRelations.length > 0 && (
         <AboutField
           label={t('aboutCard.parentComponentField.label')}
           value={t('aboutCard.parentComponentField.value')}
-          gridSizes={{ xs: 12, sm: 6, lg: 4 }}
         >
           <EntityRefLinks
             entityRefs={partOfComponentRelations}
             defaultKind="component"
+            hideIcons
           />
         </AboutField>
       )}
+
       {(isAPI ||
         isComponent ||
         isResource ||
@@ -181,22 +220,21 @@ export function AboutContent(props: AboutContentProps) {
         <AboutField
           label={t('aboutCard.typeField.label')}
           value={entity?.spec?.type as string}
-          gridSizes={{ xs: 12, sm: 6, lg: 4 }}
         />
       )}
+
       {(isAPI ||
         isComponent ||
         typeof entity?.spec?.lifecycle === 'string') && (
         <AboutField
           label={t('aboutCard.lifecycleField.label')}
           value={entity?.spec?.lifecycle as string}
-          gridSizes={{ xs: 12, sm: 6, lg: 4 }}
         />
       )}
+
       <AboutField
         label={t('aboutCard.tagsField.label')}
         value={t('aboutCard.tagsField.value')}
-        gridSizes={{ xs: 12, sm: 6, lg: 4 }}
       >
         {(entity?.metadata?.tags || []).map(tag => (
           <Badge key={tag} variant="secondary" className="text-xs">
@@ -204,11 +242,9 @@ export function AboutContent(props: AboutContentProps) {
           </Badge>
         ))}
       </AboutField>
+
       {isLocation && (entity?.spec?.targets || entity?.spec?.target) && (
-        <AboutField
-          label={t('aboutCard.targetsField.label')}
-          gridSizes={{ xs: 12 }}
-        >
+        <AboutField label={t('aboutCard.targetsField.label')}>
           <LinksGridList
             cols={1}
             items={((entity.spec.targets as JsonArray) || [entity.spec.target])

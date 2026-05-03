@@ -4,791 +4,857 @@
 
 ## 0.1 Intent Clarification
 
-### 0.1.1 Core Feature Objective
 
-Based on the prompt, the Blitzy platform understands that the new feature requirement is to **add cascading/dynamic form capabilities to the Backstage Scaffolder's multi-step wizard**, enabling reactive field behavior driven by standard JSON Schema conditional keywords. The existing Scaffolder form system renders static forms from JSON Schema definitions in template YAML files. Template authors cannot currently declare that one field's visibility, options, or validation depend on another field's current value. This feature closes that gap entirely on the frontend — no backend changes are required.
+Based on the prompt, the Blitzy platform understands that four independent but co-delivered frontend changes must be applied to the Blitzy-customized Backstage fork, each scoped to the catalog entity page UI. All four features MUST be delivered together in a single implementation pass, and every modification MUST be confined to the explicitly listed files plus any new files created inside `plugins/catalog-graph/src/components/BlitzyProjectGraphCard/`.
 
-The specific feature requirements are:
+### 0.1.1 Core Feature Objectives
 
-- **Reactive JSON Schema conditional rendering**: Template authors declare field dependencies using standard JSON Schema keywords (`if/then/else`, `dependencies`) in their template YAML files. The scaffolder form MUST honor these declarations reactively, mounting and unmounting fields within the same render cycle as the triggering field change. Currently, `extractSchemaFromStep()` in `plugins/scaffolder-react/src/next/lib/schema.ts` parses and extracts `ui:*` metadata from `if/then/else` and `dependencies` branches, but these conditional keywords are not actively leveraged by RJSF for reactive field updates due to potential interference from the extraction pipeline.
+The Blitzy platform interprets the user requirements as four discrete feature additions / redesigns:
 
-- **Dependent dropdown filtering**: When a parent field changes (e.g., selecting "AWS" in a `cloudProvider` enum), dependent fields (e.g., `region`) MUST update their available options to reflect only valid choices for the selected parent value, within 200ms of the parent change.
+- **Feature 1 — `BlitzyProjectGraphCard`**: Introduce a brand-new SVG swimlane diagram card inside the `@backstage/plugin-catalog-graph` plugin. The card MUST fetch the GitHub pull requests for the entity's repository via the existing Backstage backend proxy (`/api/proxy/github-api/repos/{owner}/{repo}/pulls?state=all&per_page=100`), map each PR onto a time-scaled SVG axis as a color-coded branch line (open=`#22c55e`, merged=`#a855f7`, closed=`#ef4444`; trunk=`#6b7280`), and expose an expand icon on every node card that opens a MUI Dialog-based detail modal. The component MUST return `null` when `metadata.annotations['github.com/project-slug']` is absent — no loading indicator, no error state, no empty diagram. The extension MUST be registered through the existing `EntityCardBlueprint` with the invariant extension name `'relations'`.
 
-- **Async option loading for dependent fields**: Field extensions MUST be able to declare an `optionsLoader(formData, apiHolder)` function that re-fetches options when watched fields change. This enables dynamic data retrieval from existing Backstage APIs (catalog, custom backends) triggered by sibling field value changes.
+- **Feature 2 — About Card Redesign**: Restructure the entity About card so that:
+  - The description is rendered first in a plain `<div>` with a bottom border — without an `AboutField` wrapper and without the literal "Description" label.
+  - A new `Source` field derived from the SCM integration via `scmIntegrationsApiRef` + `getEntitySourceLocation` is conditionally rendered when a source URL is resolvable.
+  - Every remaining metadata row renders as a horizontal key/value pair — fixed-width label column (`w-24`), flexible value column (`flex-1`), and row dividers (`border-b border-border/30 last:border-0`).
+  - Entity-kind icons on owner/domain/system/parent-component are suppressed by passing `hideIcons` to `EntityRefLinks`.
+  - The `DefaultAboutCardSubheader` render call and the `<Separator />` element MUST be removed from `InternalAboutCard`, together with the now-unused imports `Separator`, `HeaderIconLinkRow`, `IconLinkVerticalProps`, `FileText`, and `PlusCircle`.
+  - The `AboutField` `gridSizes` prop MUST be retained in the interface for backward compatibility, but MUST NOT be consumed by layout logic any longer.
 
-- **Conditional field visibility**: Fields governed by `if/then/else` or `dependencies` keywords MUST mount and unmount reactively as their conditions evaluate to true or false, without requiring page navigation or manual refresh.
+- **Feature 3 — Entity Links Card Redesign**: Replace the dynamic multi-column grid layout in the Entity Links card with a single-column vertical list of bordered card rows. `IconLink` MUST render as a native `<a>` element (not the Backstage `Link` from `@backstage/core-components`) with Tailwind hover variants changing border and background color. `LinksGridList` MUST drop the `cols` prop consumption and the `useDynamicColumns` hook in favor of a `flex-col` container with a consistent vertical gap.
 
-- **Zero regression on existing templates**: All current scaffolder E2E tests, field extensions, and form behaviors MUST remain unchanged. The feature is purely additive.
-
-**Implicit requirements detected:**
-
-- Form value preservation across conditional mount/unmount cycles (if a user fills a conditional field, switches the parent value, then switches back, the previously entered value MUST be restored)
-- Debounced invocation of `optionsLoader` to prevent network request storms during rapid parent field changes (300ms default)
-- Loading indicator and error state UI for fields with pending async option loads
-- Backward-compatible type signature changes to `FieldExtensionOptions` (new fields MUST be optional)
-- Dependency-triggered revalidation in the existing `createAsyncValidators` pipeline
+- **Feature 4 — Entity Labels Card Redesign**: Replace the existing `<Table>` component in `EntityLabelsCard.tsx` with a flex column list rendering each row as a bold key (`text-sm`) side-by-side with a muted value (`text-sm text-muted-foreground`). Before rendering, ALL labels whose key starts with `backstage.io/` MUST be filtered out. When the filtered result is empty, `EntityLabelsEmptyState` MUST be rendered instead of a blank card. The `Table` and `TableColumn` imports from `@backstage/core-components` MUST be removed.
 
 ### 0.1.2 Special Instructions and Constraints
 
-**Critical directives from the user:**
+The Blitzy platform captures the following directives that govern the entire implementation:
 
-- **MUST use RJSF's built-in conditional rendering where possible.** RJSF v5 already evaluates `if/then/else` and `dependencies` at the form level. The primary work is ensuring Backstage's schema extraction (`extractSchemaFromStep`) preserves these keywords through to RJSF rather than stripping them or interfering with RJSF's native evaluation.
-- **MUST NOT modify `@rjsf/core` or fork RJSF.** All customization MUST go through RJSF's documented extension points: custom fields, custom widgets, custom templates, and form props.
-- **MUST debounce `optionsLoader` calls** at 300ms by default (configurable via `ui:options`).
-- **MUST preserve form values** when conditional fields unmount and remount.
-- **Field extensions MUST remain backward-compatible.** Adding `dependencies` and `optionsLoader` to `FieldExtensionOptions` MUST be optional (`undefined` by default).
-- **MUST NOT add UI framework dependencies.** Loading indicators and error states MUST use existing `@backstage/core-components` primitives.
-- **Schema resolution MUST be pure and synchronous.** `resolveConditionalSchema(schema, formData)` MUST be a pure function with signature `(schema: JsonObject, formData: JsonObject) => JsonObject`.
+- **Minimal change mandate**: Each modification to an existing file MUST be confined strictly to the described change. No opportunistic refactoring of surrounding code, no introduction of new comments in existing files, and no formatting changes to unmodified lines are permitted.
 
-**Architectural requirements:**
+- **Feature 1 file scope**: Feature 1's implementation MUST reside entirely within the new directory `plugins/catalog-graph/src/components/BlitzyProjectGraphCard/`. Decomposing the implementation into additional files inside that directory is permitted when it improves maintainability. The barrel export from that directory's `index.ts` MUST expose `BlitzyProjectGraphCard` as a named export.
 
-- All modifications are scoped exclusively to `plugins/scaffolder-react/` — no files outside this plugin directory may be modified
-- Follow existing barrel-export patterns (every new module must be re-exported through the appropriate `index.ts`)
-- Follow existing testing patterns using `@testing-library/react`, `renderInTestApp`, and `jest.fn()` mocks as demonstrated in `Stepper.test.tsx` and `createAsyncValidators.test.ts`
+- **Extension identity invariance**: The `EntityCardBlueprint` extension `name` in `plugins/catalog-graph/src/alpha.tsx` MUST remain `'relations'`. Downstream app configuration references this identity and changing it constitutes a breaking change.
 
-**Build and verification commands:**
+- **Backward compatibility surface**: The `AboutField` `gridSizes` prop signature MUST remain in the interface so that existing external callers continue to compile. The value is simply ignored by the new horizontal layout logic.
 
-- User Example: `yarn install` → `yarn tsc` → `yarn test --no-watch plugins/scaffolder-react`
-- User Example: `yarn lint --fix`
-- User Example: `yarn build:api-reports` (required if public API surface changes)
+- **Styling mandate**: All non-SVG styling MUST use Tailwind utility classes. `makeStyles`, `styled`, `sx`, and new CSS files are prohibited in the changed files. Inline `style={{ ... }}` objects are prohibited except for SVG geometry attributes (`x`, `y`, `width`, `height`, `d`, `cx`, `cy`, `r`, `strokeWidth`).
+
+- **Modal interaction pattern**: `BlitzyProjectGraphCard` node cards MUST use a DOM `onClick` handler on the expand-icon element to trigger the modal — they MUST NOT wrap the SVG `<g>` node-card group in an `<a>` tag.
+
+- **`visualMergeXs` cap semantics**: The visual merge-x capping logic MUST only be applied when `mergeX < nextSplitAfterSplit - 2`. When `mergeX >= nextSplitAfterSplit - 2`, the function MUST return `max(mergeX, splitX + 8)` directly, letting the merge plot past subsequent splits.
+
+- **Error resilience in `useEntitySourceUrl`**: The new hook MUST wrap `getEntitySourceLocation(entity, scmIntegrationsApi)?.locationTargetUrl` in a `try/catch` and return `undefined` on any exception so that entities without SCM annotations never crash the About card.
+
+- **Library pinning**: The user has named the exact stack: Backstage new frontend system (`@backstage/frontend-plugin-api`), React 18, TypeScript 5, Tailwind CSS utility-class styling, and SVG-based data visualization. Workspace Yarn 4.8.1 monorepo with Blitzy brand theme is the execution environment. No version strings are supplied by the user — the Blitzy platform MUST resolve them from the existing dependency manifests.
+
+- **Preserved user-supplied `visualMergeXs` algorithm (reproduced verbatim)**:
+
+  ```plaintext
+  For each project i:
+    if not merged → null
+    splitX = toX(project.createdAt)
+    mergeX = toX(project.mergedAt)
+    nextSplitAfterSplit = min split x among other PRs where split > splitX + 2, else TIMELINE_END
+    if mergeX >= nextSplitAfterSplit - 2:
+      return max(mergeX, splitX + 8)   // use real mergeX, not capped
+    else:
+      return max(min(max(mergeX, splitX + MIN_BOX_W), nextSplitAfterSplit - 6), splitX + 8)
+  ```
+
+- **Preserved user-supplied SVG layout constants (reproduced verbatim)**: `SVG_W=940`, `TRUNK_Y=52`, `ROW_H=82`, `NODE_W=200`, `NODE_H=60`, `TRUNK_START=170`, `NODE_L=724`, `TIMELINE_END=696`, `MIN_BOX_W=80`.
+
+- **Preserved user-supplied `useEntitySourceUrl` skeleton (reproduced verbatim)**:
+
+  ```ts
+  import { scmIntegrationsApiRef } from '@backstage/integration-react';
+  import { getEntitySourceLocation } from '@backstage/plugin-catalog-react';
+
+  export const useEntitySourceUrl = (entity: Entity): string | undefined => {
+    const scmIntegrationsApi = useApi(scmIntegrationsApiRef);
+    try {
+      return getEntitySourceLocation(entity, scmIntegrationsApi)?.locationTargetUrl;
+    } catch {
+      return undefined;
+    }
+  };
+  ```
+
+- **Preserved user-supplied registration factory (reproduced verbatim)**:
+
+  ```ts
+  EntityCardBlueprint.makeWithOverrides({
+    name: 'relations',
+    factory(_originalFactory) {
+      return _originalFactory({
+        loader: async () =>
+          import('./components/BlitzyProjectGraphCard').then(m => <m.BlitzyProjectGraphCard />),
+      });
+    },
+  })
+  ```
 
 ### 0.1.3 Technical Interpretation
 
 These feature requirements translate to the following technical implementation strategy:
 
-- To **enable reactive JSON Schema conditional rendering**, we will ensure `extractSchemaFromStep()` in `plugins/scaffolder-react/src/next/lib/schema.ts` preserves `if`, `then`, `else`, and `dependencies` structural keywords in the returned schema (currently the function extracts `ui:*` metadata but may interfere with conditional keyword forwarding), and create a new `resolveConditionalSchema(schema, formData)` pure utility function in the same module that performs synchronous schema resolution against current form data.
+- To deliver **Feature 1**, we will create a new directory `plugins/catalog-graph/src/components/BlitzyProjectGraphCard/` containing the React component, any supporting hooks/utilities the agent deems helpful for decomposition, and a dedicated test file; modify `plugins/catalog-graph/src/components/index.ts` to re-export from the new directory; and replace the existing `CatalogGraphEntityCard` constant in `plugins/catalog-graph/src/alpha.tsx` with a new `BlitzyProjectGraphEntityCard` created via `EntityCardBlueprint.makeWithOverrides` — retaining the `name: 'relations'` identity — that loads the new component.
 
-- To **support dependent dropdown filtering**, we will add a `useMemo`-based reactive schema resolution in `plugins/scaffolder-react/src/next/components/Stepper/Stepper.tsx` that re-resolves the active step's schema whenever `formData` changes within a step, passing the resolved schema (rather than the raw extracted schema) to the `<Form>` component.
+- To deliver **Feature 2**, we will edit four existing files inside `plugins/catalog/src/components/AboutCard/`: introduce `useEntitySourceUrl` in `hooks.ts`, re-implement `AboutField` to render a horizontal flex row using Tailwind classes while preserving the `gridSizes` prop in the interface, re-author `AboutContent` so the description is rendered without an `AboutField` wrapper and the conditional `Source` field + `hideIcons`-based entity-ref rendering is applied, and strip `DefaultAboutCardSubheader`, `<Separator />`, and the now-unused imports from `AboutCard.tsx`.
 
-- To **enable async option loading**, we will extend the `FieldExtensionOptions` type in `plugins/scaffolder-react/src/extensions/types.ts` with optional `dependencies: string[]` and `optionsLoader: (formData: JsonObject, context: { apiHolder: ApiHolder }) => Promise<Array<{ label: string; value: string | number }>>` fields, and create a new `useOptionsLoader` hook that manages debouncing, loading state, and error handling.
+- To deliver **Feature 3**, we will edit two existing files inside `plugins/catalog/src/components/EntityLinksCard/`: re-implement `IconLink.tsx` as a raw `<a>` element with Tailwind hover styling and remove the `Link` import from `@backstage/core-components`; re-implement `LinksGridList.tsx` as a `flex-col` vertical list and remove the `useDynamicColumns` and `cols` usages.
 
-- To **provide loading/error UI for async fields**, we will modify `plugins/scaffolder-react/src/next/components/Form/FieldTemplate.tsx` to detect fields with pending `optionsLoader` calls and render appropriate loading indicators (using MUI `LinearProgress` already imported in the Stepper) and inline error states (using `FormHelperText` from MUI v4, consistent with the existing `ScaffolderField` pattern).
+- To deliver **Feature 4**, we will edit the single file `plugins/catalog/src/components/EntityLabelsCard/EntityLabelsCard.tsx` to filter labels by prefix, render a flex column list of key/value pairs using Tailwind classes, and remove the `Table`/`TableColumn` imports.
 
-- To **preserve form values across conditional mount/unmount**, we will leverage the existing `stepsState` accumulator in `Stepper.tsx` combined with the `formData` prop passed to the `<Form>` component, ensuring that RJSF receives the full accumulated form state on every render so remounted fields can restore their previous values.
-
-- To **trigger dependency-aware revalidation**, we will modify `createAsyncValidators.ts` to detect fields with `dependencies` declarations and re-run validation for dependent fields when their parent values change.
+- To satisfy the **Validation Framework**, we will create a new Jest test file inside the new `BlitzyProjectGraphCard/` directory that exercises `visualMergeXs` across the four user-specified cases (cap applied, no-cap, single PR, unmerged PR), and rely on the existing `yarn tsc` + `yarn workspace ... build` pipelines as build gates.
 
 
 ## 0.2 Repository Scope Discovery
 
+
+The Blitzy platform has exhaustively surveyed the repository to identify every file that participates in the four-feature delivery. Scope discovery was conducted against the repository root at `/tmp/blitzy/blitzy-sandbox-backstage/master_fc613b`, a Yarn 4.8.1 workspace monorepo with workspaces declared under `packages/*` and `plugins/*`.
+
 ### 0.2.1 Comprehensive File Analysis
 
-All modifications are scoped exclusively within `plugins/scaffolder-react/`. The following analysis maps every existing file requiring modification, every new file to be created, and all integration points discovered through systematic repository exploration.
+The following existing files are mapped as required touchpoints. Paths reflect the discovered repository layout and have been verified via direct `read_file` inspection.
 
-**Existing Files Requiring Modification:**
+**Feature 1 — `BlitzyProjectGraphCard` in `@backstage/plugin-catalog-graph`**
 
-| File Path | Current Purpose | Required Change |
-|---|---|---|
-| `plugins/scaffolder-react/src/next/lib/schema.ts` | Extracts JSON Schema and UI Schema from template step definitions; handles `ui:*` key separation via `extractUiSchema()` | Add `resolveConditionalSchema(schema, formData)` pure utility; verify `if` keyword preservation through extraction pipeline; ensure `dependencies` schema branches are properly forwarded to RJSF |
-| `plugins/scaffolder-react/src/next/lib/index.ts` | Barrel export for `extractSchemaFromStep` and `createFieldValidation` | Add export for `resolveConditionalSchema` |
-| `plugins/scaffolder-react/src/next/components/Stepper/Stepper.tsx` | Multi-step wizard orchestrator; passes extracted schema to `<Form>` via `currentStep.schema` | Add `useMemo`-based reactive schema resolution that re-resolves schema when `formData` changes within a step; enhance `stepsState` to preserve conditional field values across mount/unmount |
-| `plugins/scaffolder-react/src/next/components/Form/Form.tsx` | Wraps RJSF `withTheme(MuiTheme)` and adapts field/template props | Pass resolved (not raw) schema to RJSF `<WrappedForm>`; integrate `formContext` extensions for `optionsLoader` metadata propagation |
-| `plugins/scaffolder-react/src/next/components/Form/FieldTemplate.tsx` | Custom RJSF FieldTemplate rendering each field row with `ScaffolderField` wrapper | Add loading indicator and inline error state rendering for fields with pending `optionsLoader`; detect `ui:options.loading` and `ui:options.loadError` states |
-| `plugins/scaffolder-react/src/extensions/types.ts` | Defines `FieldExtensionOptions`, `FieldExtensionComponentProps`, `CustomFieldValidator`, and related types | Add optional `dependencies?: string[]` and `optionsLoader?` to `FieldExtensionOptions` type |
-| `plugins/scaffolder-react/src/extensions/createScaffolderFieldExtension.tsx` | Runtime factory that attaches field extension metadata to placeholder components | Forward new `dependencies` and `optionsLoader` metadata through `FIELD_EXTENSION_KEY` attachment |
-| `plugins/scaffolder-react/src/next/components/Stepper/createAsyncValidators.ts` | Recursive async validation engine that traverses schema to invoke field validators | Add dependency-triggered revalidation logic; when a parent field changes, re-run validation for fields that declare it as a dependency |
-| `plugins/scaffolder-react/src/next/hooks/useTemplateSchema.ts` | Parses template manifest into `ParsedTemplateSchema[]` with feature flag filtering | Verify that conditional schema keywords (`if/then/else`, `dependencies`) survive the extraction and filtering pipeline without loss |
-| `plugins/scaffolder-react/src/next/components/ScaffolderField/ScaffolderField.tsx` | Accessible field shell with markdown descriptions, errors, and disabled state | Add optional `isLoading` prop to render loading indicator within the field shell |
+| Path | Action | Purpose |
+| ---- | ------ | ------- |
+| `plugins/catalog-graph/src/components/BlitzyProjectGraphCard/` | CREATE (directory) | New feature root; all component, hook, utility, and test files live here |
+| `plugins/catalog-graph/src/components/BlitzyProjectGraphCard/BlitzyProjectGraphCard.tsx` | CREATE | React component rendering the SVG swimlane diagram, loading spinner, error state, and modal trigger |
+| `plugins/catalog-graph/src/components/BlitzyProjectGraphCard/index.ts` | CREATE | Barrel exporting the named `BlitzyProjectGraphCard` |
+| `plugins/catalog-graph/src/components/BlitzyProjectGraphCard/visualMergeXs.ts` | CREATE (decomposition, permitted by rules) | Pure function implementing the capped / uncapped merge-x logic; directly testable |
+| `plugins/catalog-graph/src/components/BlitzyProjectGraphCard/ProjectModal.tsx` | CREATE (decomposition, permitted by rules) | MUI Dialog-based detail modal with accent bar, state pill, label chips, Dismiss / Open PR buttons |
+| `plugins/catalog-graph/src/components/BlitzyProjectGraphCard/BlitzyProjectGraphCard.test.tsx` | CREATE | Jest test file covering `visualMergeXs` per the Validation Framework |
+| `plugins/catalog-graph/src/components/index.ts` | MODIFY | Add `export * from './BlitzyProjectGraphCard';` after the existing `export * from './EntityRelationsGraph';` |
+| `plugins/catalog-graph/src/alpha.tsx` | MODIFY | Replace the `CatalogGraphEntityCard` constant with a `BlitzyProjectGraphEntityCard` built via `EntityCardBlueprint.makeWithOverrides({ name: 'relations', factory... })` that dynamic-imports the new component; keep the constant registered in `extensions: [...]` |
 
-**Existing Test Files Requiring Updates:**
+**Feature 2 — About Card Redesign in `@backstage/plugin-catalog`**
 
-| File Path | Current Coverage | Required Change |
-|---|---|---|
-| `plugins/scaffolder-react/src/next/lib/schema.test.ts` | Tests `extractSchemaFromStep` for properties, anyOf/oneOf/allOf, dependencies, if/then/else UI extraction | Add tests for `resolveConditionalSchema()`: simple if/then/else, nested conditions, property dependencies, schema dependencies, oneOf discrimination |
-| `plugins/scaffolder-react/src/next/components/Stepper/Stepper.test.tsx` | 842-line integration suite covering step rendering, navigation, state preservation, async validation | Add integration tests for reactive conditional field visibility; test form value preservation across conditional mount/unmount; test cascading dropdown behavior |
-| `plugins/scaffolder-react/src/next/components/Stepper/createAsyncValidators.test.ts` | Tests nested object dispatch, schema propagation, error aggregation, dependency branches | Add tests for dependency-triggered revalidation; test that parent field changes cause dependent field revalidation |
-| `plugins/scaffolder-react/src/next/hooks/useTemplateSchema.test.tsx` | Tests feature flag filtering at step and property level | Add tests verifying if/then/else and dependencies keywords survive schema parsing |
+| Path | Action | Purpose |
+| ---- | ------ | ------- |
+| `plugins/catalog/src/components/AboutCard/AboutField.tsx` | MODIFY | Replace MUI `Grid`/`Typography`/`makeStyles` implementation with a Tailwind-styled horizontal flex row: fixed `w-24` label column + `flex-1` value column, `border-b border-border/30 last:border-0`; retain `gridSizes` in the `AboutFieldProps` interface for backward compatibility but stop consuming it |
+| `plugins/catalog/src/components/AboutCard/AboutContent.tsx` | MODIFY | Restructure ordering: render description first in a plain `<div>` with bottom border (no `AboutField`, no label); add conditional `Source` field using `useEntitySourceUrl`; pass `hideIcons` to every `EntityRefLinks` call; remove `gridSizes` props from new call sites |
+| `plugins/catalog/src/components/AboutCard/AboutCard.tsx` | MODIFY | Remove `<DefaultAboutCardSubheader />` render call and `<Divider />`/`<Separator />` usage from `InternalAboutCard`; delete unused imports: `Separator`, `HeaderIconLinkRow`, `IconLinkVerticalProps`, `FileText`, `PlusCircle` |
+| `plugins/catalog/src/components/AboutCard/hooks.ts` | MODIFY | Add the new `useEntitySourceUrl` hook exactly per the user-supplied skeleton, alongside the existing `useSourceTemplateCompoundEntityRef` |
 
-**Configuration and Documentation Files:**
+**Feature 3 — Entity Links Card Redesign in `@backstage/plugin-catalog`**
 
-| File Path | Required Change |
-|---|---|
-| `plugins/scaffolder-react/package.json` | No dependency changes required (all needed libraries already present); verify version compatibility |
-| `plugins/scaffolder-react/report.api.md` | Will be auto-regenerated by `yarn build:api-reports` if public API surface changes |
-| `plugins/scaffolder-react/report-alpha.api.md` | Will be auto-regenerated; new alpha exports (`resolveConditionalSchema`, updated `FieldExtensionOptions`) will appear |
-| `plugins/scaffolder-react/README.md` | Add documentation section for cascading/dynamic forms feature |
+| Path | Action | Purpose |
+| ---- | ------ | ------- |
+| `plugins/catalog/src/components/EntityLinksCard/IconLink.tsx` | MODIFY | Replace MUI `Box`/`Typography`/`makeStyles` + Backstage `Link` with a native `<a>` element styled as a bordered card row (`rounded-lg`, Tailwind `hover:` variants for border and background); remove the `Link` import from `@backstage/core-components` |
+| `plugins/catalog/src/components/EntityLinksCard/LinksGridList.tsx` | MODIFY | Replace MUI `ImageList`/`ImageListItem` + `useDynamicColumns` with a `flex-col` container applying a consistent vertical gap; stop consuming the `cols` prop; remove the `useDynamicColumns` import |
 
-### 0.2.2 Integration Point Discovery
+**Feature 4 — Entity Labels Card Redesign in `@backstage/plugin-catalog`**
 
-**Schema Resolution Chain:**
+| Path | Action | Purpose |
+| ---- | ------ | ------- |
+| `plugins/catalog/src/components/EntityLabelsCard/EntityLabelsCard.tsx` | MODIFY | Replace `<Table>` rendering with a Tailwind `flex-col` list of bold-key/muted-value rows; filter out every label whose key starts with `backstage.io/`; fall back to `EntityLabelsEmptyState` when the filtered list is empty; remove `Table`, `TableColumn` imports from `@backstage/core-components` |
 
-The form rendering pipeline flows through these integration points, each of which must preserve conditional keywords:
+### 0.2.2 Integration-Point Discovery
 
-```mermaid
-flowchart TD
-    A["Template YAML<br/>(if/then/else, dependencies)"] --> B["useTemplateSchema()<br/>plugins/scaffolder-react/src/next/hooks/useTemplateSchema.ts"]
-    B --> C["extractSchemaFromStep()<br/>plugins/scaffolder-react/src/next/lib/schema.ts"]
-    C --> D["ParsedTemplateSchema<br/>{schema, uiSchema, mergedSchema}"]
-    D --> E["useTransformSchemaToProps()<br/>plugins/scaffolder-react/src/next/hooks/useTransformSchemaToProps.ts"]
-    E --> F["Stepper.tsx<br/>currentStep.schema → Form"]
-    F --> G["resolveConditionalSchema()<br/>NEW: schema.ts"]
-    G --> H["Form.tsx<br/>WrappedForm schema prop"]
-    H --> I["RJSF v5<br/>Native if/then/else evaluation"]
-    I --> J["FieldTemplate.tsx<br/>Renders each field row"]
-```
+The following existing Backstage APIs and hooks are consumed by the new and modified code. These integrations are verified present in the repository and do not require modification themselves.
 
-**RJSF Integration Points:**
+| Integration | Source Module | Consumer | Purpose |
+| ----------- | ------------- | -------- | ------- |
+| `useEntity` | `@backstage/plugin-catalog-react` | `BlitzyProjectGraphCard`, `AboutContent` | Resolve the current entity from the card context |
+| `useApi` | `@backstage/core-plugin-api` | `BlitzyProjectGraphCard`, `useEntitySourceUrl` | Service locator for `fetchApi`, `discoveryApi`, `scmIntegrationsApi` |
+| `fetchApiRef` | `@backstage/core-plugin-api` | `BlitzyProjectGraphCard` | Authenticated fetch against the backend proxy endpoint |
+| `discoveryApiRef` | `@backstage/core-plugin-api` | `BlitzyProjectGraphCard` | Resolve the proxy base URL (`/api/proxy/github-api/...`) |
+| `scmIntegrationsApiRef` | `@backstage/integration-react` | `useEntitySourceUrl` | Resolve SCM integration for source-URL derivation |
+| `getEntitySourceLocation(entity, scmIntegrationsApi)` | `@backstage/plugin-catalog-react` | `useEntitySourceUrl` | Compute the entity's source location target URL |
+| `EntityRefLinks` with `hideIcons` prop | `@backstage/plugin-catalog-react` | `AboutContent` | Render entity references without the kind icon |
+| `EntityCardBlueprint.makeWithOverrides` | `@backstage/plugin-catalog-react/alpha` | `alpha.tsx` | Register the entity card with the new frontend system |
+| `useTranslationRef(catalogTranslationRef)` | `@backstage/core-plugin-api/alpha` | `AboutContent`, `AboutField` | i18n resolution for labels |
+| `EntityLabelsEmptyState` | `./EntityLabelsEmptyState` (same folder) | `EntityLabelsCard.tsx` | Empty-state fallback after prefix filtering |
+| MUI `Dialog` | `@material-ui/core/Dialog` (or `@mui/material`) | `ProjectModal` | Modal shell (exempt from Tailwind-only rule because the user explicitly specifies MUI Dialog) |
 
-- `@rjsf/core` v5.24.13 `withTheme()` — used in `Form.tsx` line 25 to create `WrappedForm`
-- `@rjsf/validator-ajv8` v5.24.13 `customizeValidator()` — used in `Stepper.tsx` line 60 to create the AJV8 validator
-- `@rjsf/utils` — `FieldTemplateProps`, `UiSchema`, `ErrorSchema`, `FieldValidation` types used throughout
-- `json-schema-library` v9.x `Draft07` — used in `createAsyncValidators.ts` line 21 for schema traversal during validation
-
-**Form State Management Points:**
-
-- `Stepper.tsx` lines 133-134: `stepsState` accumulates form data across steps via `useState<Record<string, JsonValue>>`
-- `Stepper.tsx` lines 183-190: `handleChange` callback merges step-level formData changes into `stepsState`
-- `Stepper.tsx` line 280: `formContext={{ ...propFormContext, formData: stepsState }}` propagates full form state to field extensions
-- `Stepper.tsx` line 279: `formData={stepsState}` passes accumulated state to RJSF for value restoration
-
-**API and Extension System Points:**
-
-- `createScaffolderFieldExtension()` in `extensions/createScaffolderFieldExtension.tsx` — the factory function that field extension authors call; must forward new `dependencies` and `optionsLoader` metadata
-- `FIELD_EXTENSION_KEY` in `extensions/keys.ts` — the metadata key under which field extension options are attached
-- `FieldExtensionComponentProps` — the props interface that field extension components receive, including `formContext.formData` for accessing sibling field values
+The existing proxy endpoint `/github-api` is NOT configured in `app-config.yaml` (only `/pagerduty` is present). Because the user's Boundaries list `app-config.yaml` implicitly as off-limits and limits modifications strictly to the enumerated frontend files, the Blitzy platform flags this as a prerequisite that lies outside the allowed change surface: the Blitzy-customized Backstage fork must already ship the `/github-api` proxy endpoint, or the card will surface its error state at runtime. Surface this as an operator-side configuration dependency — it is NOT part of the agent's code-change scope.
 
 ### 0.2.3 New File Requirements
 
-**New source files to create:**
+All new source files live inside the Feature 1 new directory. No new files are created for Features 2, 3, or 4 — those features are entirely in-place edits.
 
-| File Path | Purpose |
-|---|---|
-| `plugins/scaffolder-react/src/next/hooks/useOptionsLoader.ts` | Custom React hook that manages `optionsLoader` lifecycle: watches specified dependency fields, debounces calls (300ms default, configurable), manages loading/error/data state, and exposes results to field components |
-| `plugins/scaffolder-react/src/next/hooks/useOptionsLoader.test.ts` | Unit tests for the `useOptionsLoader` hook covering debounce behavior, loading states, error handling, retry logic, and dependency change detection |
-| `plugins/scaffolder-react/src/next/hooks/useConditionalSchema.ts` | Custom React hook wrapping `resolveConditionalSchema()` with `useMemo` to reactively resolve schema when formData changes |
+- `plugins/catalog-graph/src/components/BlitzyProjectGraphCard/BlitzyProjectGraphCard.tsx` — React component: fetches PRs, renders `<svg>` with trunk, branch lines, nodes, expand-icon click handlers, loading spinner, error state, null-on-missing-annotation short-circuit.
+- `plugins/catalog-graph/src/components/BlitzyProjectGraphCard/index.ts` — Barrel: `export { BlitzyProjectGraphCard } from './BlitzyProjectGraphCard';`.
+- `plugins/catalog-graph/src/components/BlitzyProjectGraphCard/visualMergeXs.ts` — Pure function implementing the user-specified cap/no-cap algorithm. Extracted so it can be imported directly into the Jest test file.
+- `plugins/catalog-graph/src/components/BlitzyProjectGraphCard/ProjectModal.tsx` — MUI Dialog component: colored accent bar, state pill, created/merged dates, label chips, Dismiss button (closes), "Open Pull Request →" button (opens `prUrl` in `target="_blank"`).
+- `plugins/catalog-graph/src/components/BlitzyProjectGraphCard/BlitzyProjectGraphCard.test.tsx` — Jest test file covering `visualMergeXs` for the four user-specified cases.
 
-**New test fixtures:**
-
-| File Path | Purpose |
-|---|---|
-| Test cases within `schema.test.ts` | New `describe('resolveConditionalSchema')` block with fixtures for if/then/else resolution, nested conditions, property and schema dependencies, oneOf discrimination |
-| Test cases within `Stepper.test.tsx` | New integration tests for cascading field behavior, value preservation across mount/unmount, and async option loading UI states |
+Decomposition into helper files (`visualMergeXs.ts`, `ProjectModal.tsx`, and any further helpers the agent chooses) is expressly permitted by the user's Feature 1 file scope clause: "Additional files within that directory are permitted if the agent determines decomposition improves maintainability."
 
 ### 0.2.4 Web Search Research Conducted
 
-- RJSF v5 conditional schema evaluation behavior with `if/then/else` and `dependencies` keywords
-- Best practices for debounced async data fetching in React hooks with AbortController cleanup
-- JSON Schema Draft 07 conditional keyword semantics and evaluation order
-- RJSF custom field extension patterns for dynamic option loading
+Research budget for this delivery focuses on library-surface verification rather than architectural discovery, because the user has prescribed the stack:
+
+- Backstage new frontend system `EntityCardBlueprint.makeWithOverrides` usage pattern and `name` identity semantics — verified directly in the repository at `plugins/catalog-graph/src/alpha.tsx` and `@backstage/plugin-catalog-react/alpha` exports.
+- Backstage backend proxy endpoint conventions — verified in `app-config.yaml` (existing `/pagerduty` example) and in `@backstage/plugin-proxy-backend` registration at `packages/backend/src/index.ts`.
+- `scmIntegrationsApiRef` and `getEntitySourceLocation` signatures — verified in `packages/integration-react/src/api/ScmIntegrationsApi.ts` and `plugins/catalog-react/src/utils/getEntitySourceLocation.ts`.
+- `EntityRefLinks` `hideIcons` prop — verified present in `plugins/catalog-react/src/components/EntityRefLink/EntityRefLinks.tsx` at line 35.
+- Jest vs. Vitest selection — confirmed Jest is active via root `package.json` (`"jest": "^30"`) and per-plugin scripts (`backstage-cli package test`).
+- Tailwind utility-class semantic tokens (`text-muted-foreground`, `border-border`, `bg-background`, `text-foreground`, `hover:bg-accent`) — the user mandates these classes. The repository does NOT currently provide a Tailwind configuration at the workspace root or inside `packages/ui` (the only `globals.css` is in `docs-ui/src/css/globals.css` for the separate Next.js documentation site). The user's Boundaries explicitly forbid modifying `globals.css` and theme tokens, which means the Tailwind / shadcn-token infrastructure MUST be provided by the Blitzy-customized fork's pre-existing brand theme layer. This is captured as an operator-side prerequisite in subsection 0.5 Design System Compliance.
 
 
 ## 0.3 Dependency Inventory
 
-### 0.3.1 Private and Public Packages
 
-All packages listed below are already installed in the `plugins/scaffolder-react/package.json` manifest. **No new dependencies are required.** The user explicitly states: "No new dependencies. RJSF v5 and AJV8 already support the JSON Schema keywords needed. `json-schema-library` already provides schema traversal utilities."
+### 0.3.1 Package Registry — Runtime Versions
 
-**Core Form Rendering Packages:**
+The Blitzy platform resolved each runtime and dependency version from the monorepo's dependency manifests (`package.json` files under the workspace root, `plugins/catalog-graph/`, and `plugins/catalog/`) and the active lockfile `yarn.lock`. Each listed version reflects the HIGHEST EXPLICITLY DOCUMENTED supported version per the user's Environment Setup rules.
 
-| Registry | Package Name | Version | Purpose | Status |
-|---|---|---|---|---|
-| npm | `@rjsf/core` | 5.24.13 | React JSON Schema Form engine; provides `withTheme()`, `Form` component, and conditional schema evaluation | Installed |
-| npm | `@rjsf/utils` | 5.24.13 | RJSF type definitions (`FieldTemplateProps`, `UiSchema`, `ErrorSchema`, `FieldValidation`, `RegistryFieldsType`) | Installed |
-| npm | `@rjsf/validator-ajv8` | 5.24.13 | AJV8-based validator for RJSF; provides `customizeValidator()` used in Stepper.tsx | Installed |
-| npm | `@rjsf/material-ui` | 5.24.13 | MUI v4 theme for RJSF; provides `Theme` used in `withTheme(MuiTheme)` in Form.tsx | Installed |
-| npm | `ajv` | ^8.0.1 | JSON Schema validator; supports Draft 07 including `if/then/else` and `dependencies` | Installed |
-| npm | `ajv-errors` | ^3.0.0 | Custom error messages for AJV validation; used in Stepper.tsx | Installed |
-| npm | `json-schema-library` | ^9.0.0 | Schema traversal and resolution; provides `Draft07` class used in `createAsyncValidators.ts` for pointer-based schema lookup | Installed |
+| Registry | Name | Version | Purpose |
+| -------- | ---- | ------- | ------- |
+| node.org | Node.js | `22` (engines: `"22 || 24"`) | JavaScript runtime for build, test, and dev server |
+| npmjs | `yarn` | `4.8.1` (pinned via `.yarnrc.yml` → `.yarn/releases/yarn-4.8.1.cjs`, `packageManager: yarn@4.8.1`) | Workspace-aware package manager |
+| npmjs | `typescript` | `~5.7.0` | Type checking via `yarn tsc --noEmit` |
+| npmjs | `jest` | `^30` | Test runner invoked by `backstage-cli package test` |
+| npmjs | `react` | `^18.0.2` | UI runtime (both `plugins/catalog-graph` and `plugins/catalog`) |
+| npmjs | `react-dom` | `^18.0.2` | React DOM reconciler |
+| npmjs | `@backstage/cli` | `workspace:^` | Package build, lint, test, start commands |
+| npmjs | `@backstage/frontend-plugin-api` | `workspace:^` | `ApiBlueprint`, `PageBlueprint`, `createFrontendPlugin`, discovery/fetch APIs |
+| npmjs | `@backstage/core-plugin-api` | `workspace:^` | `useApi`, `useTranslationRef`, `fetchApiRef` |
+| npmjs | `@backstage/plugin-catalog-react` | `workspace:^` | `useEntity`, `EntityRefLinks`, `getEntitySourceLocation`, `catalogApiRef` |
+| npmjs | `@backstage/plugin-catalog-react/alpha` | `workspace:^` | `EntityCardBlueprint` |
+| npmjs | `@backstage/integration-react` | `workspace:^` | `scmIntegrationsApiRef` |
+| npmjs | `@backstage/core-components` | `workspace:^` | `Link` (existing import removed by Feature 3), `Table`/`TableColumn` (existing imports removed by Feature 4) |
+| npmjs | `@backstage/catalog-model` | `workspace:^` | `Entity` type, `DEFAULT_NAMESPACE`, annotation constants |
+| npmjs | `@material-ui/core` | `^4.12.2` | MUI Dialog for the `ProjectModal` (MUI v4 is the already-installed major in the plugin) |
 
-**Backstage Platform Packages:**
+No new external runtime packages are required for Features 2, 3, or 4 — these features shed MUI primitives in favor of Tailwind utility classes on native HTML elements. Feature 1's `ProjectModal` reuses the already-installed `@material-ui/core` dependency present in `plugins/catalog-graph/package.json`.
 
-| Registry | Package Name | Version | Purpose | Status |
-|---|---|---|---|---|
-| workspace | `@backstage/core-plugin-api` | workspace:^ | Provides `useApiHolder()`, `useAnalytics()`, `ApiHolder` type | Installed |
-| workspace | `@backstage/frontend-plugin-api` | workspace:^ | Provides `useTranslationRef()` for i18n | Installed |
-| workspace | `@backstage/core-components` | workspace:^ | UI primitives: `MarkdownContent`, `Progress` (loading indicator), `AlertDisplay`, `WarningPanel` | Installed |
-| workspace | `@backstage/types` | workspace:^ | Provides `JsonObject`, `JsonValue` types | Installed |
-| workspace | `@backstage/plugin-scaffolder-common` | workspace:^ | Provides `TemplateParameterSchema`, `TemplatePresentationV1beta3` | Installed |
-| workspace | `@backstage/theme` | workspace:^ | Theme integration for component style overrides | Installed |
+### 0.3.2 Dependency Manifest Impact
 
-**UI Framework Packages (already used in scaffolder-react):**
+The four-feature delivery does NOT require edits to `plugins/catalog-graph/package.json` or `plugins/catalog/package.json`. Every library consumed is either already present or is an internal workspace package. The Blitzy platform has verified:
 
-| Registry | Package Name | Version | Purpose | Status |
-|---|---|---|---|---|
-| npm | `@material-ui/core` | ^4.12.2 | MUI v4 components: `Button`, `LinearProgress`, `Step`, `StepLabel`, `Stepper`, `FormControl`, `FormHelperText` | Installed |
-| npm | `@material-ui/icons` | ^4.9.1 | Material Design icons | Installed |
-| npm | `@material-ui/lab` | 4.0.0-alpha.61 | Experimental MUI v4 components (e.g., `Skeleton`) | Installed |
+| Package File | Existing Dependency Reused | Addition Required? |
+| ------------ | -------------------------- | ------------------ |
+| `plugins/catalog-graph/package.json` | `@material-ui/core`, `@backstage/plugin-catalog-react`, `@backstage/frontend-plugin-api`, `@backstage/core-plugin-api`, `@backstage/catalog-model`, `react`, `react-dom` | No |
+| `plugins/catalog/package.json` | `@backstage/integration-react`, `@backstage/plugin-catalog-react`, `@backstage/core-plugin-api`, `@backstage/core-components` (for `EntityRefLinks` transitively) | No |
 
-**Utility Packages:**
+### 0.3.3 Import Updates
 
-| Registry | Package Name | Version | Purpose | Status |
-|---|---|---|---|---|
-| npm | `flatted` | 3.3.3 | Cyclic-safe JSON clone via `stringify`/`parse`; used in `extractSchemaFromStep()` | Installed |
-| npm | `lodash` | ^4.17.21 | `merge()` used for uiSchema merging in Stepper.tsx | Installed |
-| npm | `react-use` | ^17.2.4 | Composable React hooks (e.g., `useDebounce`) | Installed |
-| npm | `immer` | ^9.0.6 | Immutable state management | Installed |
-| npm | `use-immer` | ^0.11.0 | Immer-powered React state hooks | Installed |
+The Blitzy platform catalogs the precise import edits required in the five existing modified files. No wildcard mass-updates are needed; the changes are localized.
 
-**Testing Packages (devDependencies):**
+**`plugins/catalog/src/components/AboutCard/AboutCard.tsx`** — Remove unused imports:
 
-| Registry | Package Name | Version | Purpose | Status |
-|---|---|---|---|---|
-| npm | `@testing-library/react` | ^16.0.0 | React component testing utilities | Installed |
-| npm | `@testing-library/jest-dom` | ^6.0.0 | Custom Jest matchers for DOM assertions | Installed |
-| npm | `@testing-library/user-event` | ^14.0.0 | User interaction simulation | Installed |
-| workspace | `@backstage/test-utils` | workspace:^ | Provides `renderInTestApp`, `mockApis`, `TestApiRegistry` | Installed |
+- Old: `import Divider from '@material-ui/core/Divider';` — safe to remove once `<Divider />` is removed from the JSX.
+- Old: `import { HeaderIconLinkRow, IconLinkVerticalProps, Link } from '@backstage/core-components';` — remove `HeaderIconLinkRow`, `IconLinkVerticalProps`; keep `Link` if still used elsewhere (verify against final file after edit).
+- Old: `import DocsIcon from '@material-ui/icons/Description';` and `import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';` — remove, since the subheader that consumed them is deleted. (Note: the user's prompt names `FileText` and `PlusCircle` as the unused lucide-react names; if the migration-target file instead uses MUI icons, remove the MUI icon imports by the same rationale.)
+- Remove the `DefaultAboutCardSubheader`, `useCatalogSourceIconLinkProps`, `useTechdocsReaderIconLinkProps`, `useScaffolderTemplateIconLinkProps` helpers if their sole consumer is the deleted subheader. The user's prompt specifies removing "unused imports" — transitively removing their dead-code helpers keeps the file clean while still honoring the minimal-change mandate (a helper consumed only by deleted code is itself now unused).
 
-### 0.3.2 Dependency Updates
+**`plugins/catalog/src/components/AboutCard/AboutContent.tsx`** — Add imports:
 
-**No new packages need to be added to `package.json`.** All required functionality is available through existing dependencies.
+- New: `import { useEntitySourceUrl } from './hooks';`
+- No removed imports necessary — the file continues to use `Entity`, `EntityRefLinks`, `getEntityRelations`, `AboutField`, `useTranslationRef`, `catalogTranslationRef`.
 
-**Import Updates Required:**
+**`plugins/catalog/src/components/AboutCard/AboutField.tsx`** — Remove imports:
 
-Files requiring new internal imports (within `plugins/scaffolder-react/`):
+- Old: `import Grid from '@material-ui/core/Grid';`
+- Old: `import Typography from '@material-ui/core/Typography';`
+- Old: `import { makeStyles } from '@material-ui/core/styles';`
 
-- `plugins/scaffolder-react/src/next/lib/schema.ts` — No new external imports; new `resolveConditionalSchema` function uses existing `JsonObject` type from `@backstage/types`
-- `plugins/scaffolder-react/src/next/lib/index.ts` — Add export: `export { resolveConditionalSchema } from './schema'`
-- `plugins/scaffolder-react/src/next/components/Stepper/Stepper.tsx` — Add import of `resolveConditionalSchema` from `../../lib`; potentially add import of `useOptionsLoader` from `../../hooks`
-- `plugins/scaffolder-react/src/extensions/types.ts` — Add `ApiHolder` import from `@backstage/core-plugin-api` (already available); add `JsonObject` from `@backstage/types`
-- `plugins/scaffolder-react/src/next/hooks/useOptionsLoader.ts` — Import `useCallback`, `useEffect`, `useRef`, `useState` from React; `ApiHolder` from `@backstage/core-plugin-api`; `JsonObject` from `@backstage/types`
-- `plugins/scaffolder-react/src/next/hooks/index.ts` — Add export: `export { useOptionsLoader } from './useOptionsLoader'`
+These are replaced with a single `<div>` root element styled by Tailwind utility classes. The `useElementFilter`, `ReactNode`, `useTranslationRef`, and `catalogTranslationRef` imports remain.
 
-**External Reference Updates:**
+**`plugins/catalog/src/components/AboutCard/hooks.ts`** — Add imports:
 
-- `plugins/scaffolder-react/report.api.md` — Auto-regenerated via `yarn build:api-reports`; will reflect updated `FieldExtensionOptions` type with new optional fields
-- `plugins/scaffolder-react/report-alpha.api.md` — Auto-regenerated; will reflect new `resolveConditionalSchema` export and updated alpha API surface
+- New: `import { useApi } from '@backstage/core-plugin-api';` (if not already imported)
+- New: `import { scmIntegrationsApiRef } from '@backstage/integration-react';`
+- New: `import { getEntitySourceLocation } from '@backstage/plugin-catalog-react';`
+- Existing `useAsync`, `catalogApiRef`, `parseEntityRef`, `CompoundEntityRef`, `Entity` imports stay.
+
+**`plugins/catalog/src/components/EntityLinksCard/IconLink.tsx`** — Remove imports:
+
+- Old: `import Box from '@material-ui/core/Box';`
+- Old: `import Typography from '@material-ui/core/Typography';`
+- Old: `import { makeStyles } from '@material-ui/core/styles';`
+- Old: `import LanguageIcon from '@material-ui/icons/Language';` — retain only if the default fallback icon is still desired; if a Tailwind/lucide icon is substituted, remove this import.
+- Old: `import { Link } from '@backstage/core-components';` — remove (mandated by rule).
+
+**`plugins/catalog/src/components/EntityLinksCard/LinksGridList.tsx`** — Remove imports:
+
+- Old: `import ImageList from '@material-ui/core/ImageList';`
+- Old: `import ImageListItem from '@material-ui/core/ImageListItem';`
+- Old: `import { useDynamicColumns } from './useDynamicColumns';` — remove (mandated by rule).
+- Old: `import { ColumnBreakpoints } from './types';` — remove if no longer referenced after `cols` prop is dropped.
+
+**`plugins/catalog/src/components/EntityLabelsCard/EntityLabelsCard.tsx`** — Remove imports:
+
+- Old: `import { InfoCard, InfoCardVariants, Table, TableColumn } from '@backstage/core-components';` → reduce to `import { InfoCard, InfoCardVariants } from '@backstage/core-components';` (mandated by rule).
+- Old: `import Typography from '@material-ui/core/Typography';`
+- Old: `import { makeStyles } from '@material-ui/core/styles';`
+
+**`plugins/catalog-graph/src/alpha.tsx`** — No import changes: `EntityCardBlueprint`, `createFrontendPlugin`, `PageBlueprint`, `ApiBlueprint`, route refs, and translation ref stay. Only the constant name `CatalogGraphEntityCard` is renamed to `BlitzyProjectGraphEntityCard` and its `factory` + `loader` change.
+
+**`plugins/catalog-graph/src/components/index.ts`** — Add one line: `export * from './BlitzyProjectGraphCard';`.
+
+### 0.3.4 External Reference Updates
+
+No external reference updates are required. Specifically:
+
+- **Configuration files** (`**/*.config.*`, `**/*.json`): No changes. `app-config.yaml` proxy section is off-limits per Boundaries.
+- **Documentation** (`**/*.md`): No changes. The user has not requested doc updates, and the minimal-change mandate forbids opportunistic edits.
+- **Build files** (`setup.py`, `pyproject.toml`, `package.json`): No changes. All dependencies are already present.
+- **CI/CD** (`.github/workflows/*.yml`, `.gitlab-ci.yml`): No changes. Build gates reuse the existing `yarn tsc` and `yarn workspace <pkg> build` pipelines.
 
 
 ## 0.4 Integration Analysis
 
+
 ### 0.4.1 Existing Code Touchpoints
 
-**Direct modifications required:**
+Direct modifications required to wire the four features into the existing Backstage plugin surface:
 
-- **`plugins/scaffolder-react/src/next/lib/schema.ts`** (lines 24–134): The `extractUiSchema()` private function currently destructures `then` and `else` from the schema at line 37–38 and recursively extracts `ui:*` keys from them (lines 114–121). The `if` keyword is NOT destructured or explicitly handled — it passes through untouched, which is correct. However, the function needs verification that `dependencies` keyword branches (lines 104–112) properly preserve their structural schema content (not just extract UI metadata). The new `resolveConditionalSchema()` function will be added after the existing `extractSchemaFromStep()` at approximately line 134.
+| File | Modification | Rationale |
+| ---- | ------------ | --------- |
+| `plugins/catalog-graph/src/alpha.tsx` (lines ~30–57) | Replace the `CatalogGraphEntityCard = EntityCardBlueprint.makeWithOverrides({...})` constant with `BlitzyProjectGraphEntityCard = EntityCardBlueprint.makeWithOverrides({ name: 'relations', factory(_originalFactory) { return _originalFactory({ loader: async () => import('./components/BlitzyProjectGraphCard').then(m => <m.BlitzyProjectGraphCard />) }); } });`. Update the `extensions: [CatalogGraphPage, CatalogGraphEntityCard, CatalogGraphApi]` array at line ~107 to reference the renamed constant. | Registers the new card as the default `relations` entity-card extension in the new frontend system while preserving the extension identity for downstream consumers. |
+| `plugins/catalog-graph/src/components/index.ts` (line 16) | Append `export * from './BlitzyProjectGraphCard';` after the existing `export * from './EntityRelationsGraph';`. | Exposes the new component as a named public export of the `@backstage/plugin-catalog-graph` package. |
+| `plugins/catalog/src/components/AboutCard/AboutCard.tsx` (lines 141–153, 274, 276) | Remove the `DefaultAboutCardSubheader` function declaration (lines 141–153), remove the `subheader` CardHeader prop line 274 and the `<Divider />` at line 276. Remove imports on lines 23 (`Divider`), 27 (`DocsIcon`), 28 (`CreateComponentIcon`), 32–34 (`HeaderIconLinkRow`, `IconLinkVerticalProps`), and (transitively) the three helper hooks that now have no consumer. | Produces the "header + content" About card shell the user's redesign expects. The `<Separator />` wording in the prompt maps to the currently-present `<Divider />`; both serve the same role. |
+| `plugins/catalog/src/components/AboutCard/AboutContent.tsx` (lines 117–240) | Restructure the JSX return: render description first as `<div className="... border-b ...">...</div>` with no label; add a conditional `<AboutField label="Source">...</AboutField>` block using `useEntitySourceUrl`; pass `hideIcons` to every `<EntityRefLinks>` (owner, domain, system, parent-component); remove every `gridSizes={...}` prop from the new call sites (existing inner fields can retain the prop in the interface but MUST NOT pass it here). | Implements the new vertical row layout and icon suppression. |
+| `plugins/catalog/src/components/AboutCard/AboutField.tsx` (lines 25–80) | Replace the `useStyles` declaration and the `<Grid>` + `<Typography>` return with a Tailwind-styled `<div>` structure: outer `flex items-start border-b border-border/30 last:border-0 py-3`, label `<span className="w-24 text-[10px] uppercase tracking-widest text-muted-foreground ...">`, value `<div className="flex-1 text-sm font-medium">`. Retain `gridSizes` in `AboutFieldProps` but do NOT destructure/use it. | Implements the horizontal label/value row mandated by the user. |
+| `plugins/catalog/src/components/AboutCard/hooks.ts` (append after line 56) | Add the `useEntitySourceUrl` hook literally as supplied by the user. | Provides the Source-URL derivation for `AboutContent`. |
+| `plugins/catalog/src/components/EntityLinksCard/IconLink.tsx` (lines 17–57) | Replace the entire component body: render `<a href={href} target="_blank" rel="noopener" className="flex items-center gap-3 rounded-lg border border-border px-4 py-3 hover:border-foreground hover:bg-accent w-full ...">` with the icon on the left (muted → foreground on hover) and the truncated `<span className="truncate">{text ?? href}</span>` on the right. | Converts each link into a bordered card row per the user's design. |
+| `plugins/catalog/src/components/EntityLinksCard/LinksGridList.tsx` (lines 17–48) | Replace `<ImageList>...</ImageList>` with `<div className="flex flex-col gap-2">{items.map(...)}</div>`. Drop `numOfCols = useDynamicColumns(cols);`. The `cols` prop can remain in the `LinksGridListProps` interface but MUST NOT be used. | Single-column vertical layout per the user's design. |
+| `plugins/catalog/src/components/EntityLabelsCard/EntityLabelsCard.tsx` (lines 36–89) | Replace the `columns` array + `<Table>` block with: filter `Object.entries(labels).filter(([k]) => !k.startsWith('backstage.io/'))`, then if empty render `<EntityLabelsEmptyState />`, else render `<div className="flex flex-col gap-2">{entries.map(([k,v]) => <div key={k} className="flex gap-2 text-sm"><span className="font-bold">{k}</span><span className="text-muted-foreground">{v}</span></div>)}</div>`. | Replaces the `<Table>` component and applies the prefix filter rule. |
 
-- **`plugins/scaffolder-react/src/next/components/Stepper/Stepper.tsx`** (lines 117–349): The core integration point is between `currentStep` computation (line 173) and the `<Form>` render (line 275). Currently, `currentStep.schema` is passed directly. The modification adds a `useMemo` between these points that calls `resolveConditionalSchema(currentStep.schema, stepsState)` to produce a resolved schema. The `handleChange` callback (lines 183–190) already merges formData changes into `stepsState`, which feeds back into the resolution. The `stepsState` accumulator (lines 133–134) already preserves all field values across the form lifecycle, which naturally supports value restoration when conditional fields remount. The `key={activeStep}` prop on `<Form>` (line 276) causes full remount on step change but NOT on formData change within a step, which is the correct behavior for reactive conditional rendering.
+### 0.4.2 Dependency Injections
 
-- **`plugins/scaffolder-react/src/next/components/Form/Form.tsx`** (lines 31–68): The `Form` component receives props including `schema`, `formData`, and `formContext`. The resolved schema from Stepper will flow through as the `schema` prop. The `formContext` needs extension to carry `optionsLoader` registrations so that `FieldTemplate` can detect fields with pending async loads. The `wrappedFields` memo (lines 34–53) wraps field extension components — this wrapper may need enhancement to inject `optionsLoader`-aware behavior.
+No new API registrations or container wiring are required. Every API consumed is already registered:
 
-- **`plugins/scaffolder-react/src/next/components/Form/FieldTemplate.tsx`** (lines 32–100): The custom `FieldTemplate` renders every field via `ScaffolderField`. The modification adds detection of loading/error states from `formContext` for fields with active `optionsLoader` calls. When a field is in loading state, the template renders a `LinearProgress` indicator below the field children. When in error state, it renders an inline error message with retry affordance.
+- `fetchApiRef` — registered by `@backstage/core-app-api` / `@backstage/frontend-defaults`.
+- `discoveryApiRef` — registered by `@backstage/core-app-api` / `@backstage/frontend-defaults`.
+- `scmIntegrationsApiRef` — registered by `@backstage/integration-react`.
+- `catalogApiRef` — registered by `@backstage/plugin-catalog` (`src/alpha/apis.tsx`) and `src/plugin.ts`.
+- `catalogGraphApiRef` — registered by `plugins/catalog-graph/src/alpha.tsx` via the existing `CatalogGraphApi` `ApiBlueprint`; unchanged by this delivery.
 
-- **`plugins/scaffolder-react/src/extensions/types.ts`** (lines 77–87): The `FieldExtensionOptions` type gains two new optional properties:
-  ```ts
-  dependencies?: string[];
-  optionsLoader?: (formData: JsonObject, context: { apiHolder: ApiHolder }) => Promise<Array<{ label: string; value: string | number }>>;
-  ```
-  Both default to `undefined`, preserving full backward compatibility.
+### 0.4.3 Database / Schema Updates
 
-- **`plugins/scaffolder-react/src/extensions/createScaffolderFieldExtension.tsx`** (lines 33–52): The `createScaffolderFieldExtension` factory attaches the full `options` object (including the new `dependencies` and `optionsLoader` fields) to the placeholder component via `attachComponentData`. Since the entire `options` object is already passed as the metadata value (line 43–46), no structural change to the attachment mechanism is needed — the type expansion in `types.ts` automatically flows through.
+None. The delivery is purely frontend.
 
-- **`plugins/scaffolder-react/src/next/components/Stepper/createAsyncValidators.ts`** (lines 43–179): The validation engine traverses the schema and invokes field-level validators. The modification adds awareness of `dependencies` declarations: when iterating form data entries (line 85), fields that declare dependencies are flagged so that when their parent fields change, revalidation is triggered. This integrates with the existing `validateForm` inner function (lines 61–83).
+### 0.4.4 Integration Data Flow
 
-### 0.4.2 Dependency Injection Points
-
-- **`Stepper.tsx` line 129**: `const apiHolder = useApiHolder()` — already provides the `ApiHolder` instance needed by `optionsLoader` functions. This will be passed through `formContext` so field extensions can access it.
-
-- **`Stepper.tsx` lines 146–150**: The `extensions` memo maps `FieldExtensionOptions` to field components. This mapping needs extension to also extract `dependencies` and `optionsLoader` metadata for each extension, building a registry that the `useOptionsLoader` hook can consume.
-
-- **`Stepper.tsx` lines 157–161**: The `validators` memo maps extension names to validation functions. This will be enhanced to also track dependency relationships between fields.
-
-- **`Stepper.tsx` lines 163–167**: The `validation` memo creates async validators per active step. The `createAsyncValidators` call already receives `steps[activeStep]?.mergedSchema` and `validators` — the enhancement adds `dependencies` metadata as an additional parameter.
-
-### 0.4.3 Form State Flow
-
-The reactive form update cycle follows this path:
+The following Mermaid diagram summarizes the runtime integration for Feature 1 (`BlitzyProjectGraphCard`), which involves the most cross-cutting wiring. Features 2, 3, and 4 are intra-component view-layer redesigns without new backend traffic.
 
 ```mermaid
 sequenceDiagram
-    participant User
-    participant RJSF as RJSF Form
-    participant Handler as handleChange()
-    participant State as stepsState
-    participant Resolve as resolveConditionalSchema()
-    participant Render as React Re-render
+    autonumber
+    participant User as User (Browser)
+    participant Card as BlitzyProjectGraphCard
+    participant Entity as useEntity Hook
+    participant Fetch as fetchApi (Backstage)
+    participant Proxy as /api/proxy/github-api
+    participant GH as GitHub REST API
+    participant Modal as ProjectModal (MUI Dialog)
 
-    User->>RJSF: Changes parent field value
-    RJSF->>Handler: IChangeEvent with formData
-    Handler->>State: setStepsState({...current, ...formData})
-    State->>Resolve: useMemo triggers with new stepsState
-    Resolve->>Resolve: Evaluate if/then/else against formData
-    Resolve->>Render: Returns resolved schema
-    Render->>RJSF: Re-renders with resolved schema
-    RJSF->>User: Conditional fields mount/unmount
-    Note over User,Render: stepsState preserves ALL values<br/>including unmounted field values
+    User->>Card: Navigates to entity page
+    Card->>Entity: Read entity.metadata.annotations
+    alt project-slug absent
+        Card-->>User: Renders null (no DOM output)
+    else project-slug present
+        Card->>Fetch: GET /api/proxy/github-api/repos/{owner}/{repo}/pulls?state=all&per_page=100
+        Fetch->>Proxy: Forward request with auth
+        Proxy->>GH: Proxied request
+        GH-->>Proxy: GitHubPR[] JSON
+        Proxy-->>Fetch: Response
+        Fetch-->>Card: Parsed GitHubPR[]
+        Card->>Card: Map to BlitzyProject[], compute makeTimeScale, visualMergeXs
+        Card-->>User: Renders SVG swimlane with trunk, branches, nodes
+        User->>Card: Clicks expand icon on a node
+        Card->>Modal: onClick setOpen(true, project)
+        Modal-->>User: MUI Dialog renders with state pill, dates, labels, PR link
+        User->>Modal: Clicks Dismiss
+        Modal-->>Card: setOpen(false)
+    end
 ```
 
-### 0.4.4 Async Options Loading Flow
+Feature 2, 3, and 4 component trees (Mermaid component diagram):
 
 ```mermaid
-sequenceDiagram
-    participant Parent as Parent Field
-    participant Hook as useOptionsLoader
-    participant Timer as Debounce Timer (300ms)
-    participant Loader as optionsLoader()
-    participant Child as Dependent Field
+graph LR
+    subgraph AboutCardTree[About Card — plugin-catalog]
+        AC[AboutCard.tsx<br/>InternalAboutCard]
+        ACN[AboutContent.tsx]
+        AF[AboutField.tsx]
+        HOOK[hooks.ts<br/>useEntitySourceUrl]
+        AC -->|renders| ACN
+        ACN -->|uses| AF
+        ACN -->|uses| HOOK
+    end
 
-    Parent->>Hook: formData change detected
-    Hook->>Timer: Reset debounce
-    Note over Timer: 300ms delay
-    Timer->>Hook: Debounce fires
-    Hook->>Child: Set loading=true
-    Hook->>Loader: Call optionsLoader(formData, {apiHolder})
-    alt Success
-        Loader->>Hook: Return options[]
-        Hook->>Child: Update options, loading=false
-    else Error
-        Loader->>Hook: Reject with error
-        Hook->>Child: Show error, allow retry
+    subgraph LinksCardTree[Entity Links Card — plugin-catalog]
+        LGL[LinksGridList.tsx<br/>flex-col list]
+        IL[IconLink.tsx<br/>native &lt;a&gt;]
+        LGL -->|renders| IL
+    end
+
+    subgraph LabelsCardTree[Entity Labels Card — plugin-catalog]
+        ELC[EntityLabelsCard.tsx<br/>filter + flex list]
+        ELE[EntityLabelsEmptyState.tsx]
+        ELC -.fallback.-> ELE
+    end
+
+    subgraph GraphCardTree[Blitzy Project Graph Card — plugin-catalog-graph]
+        BPGC[BlitzyProjectGraphCard.tsx]
+        VMX[visualMergeXs.ts]
+        PM[ProjectModal.tsx]
+        IDX[components/index.ts]
+        ALPHA[alpha.tsx<br/>EntityCardBlueprint name='relations']
+        BPGC -->|uses| VMX
+        BPGC -->|renders| PM
+        IDX -->|barrels| BPGC
+        ALPHA -->|dynamic imports| BPGC
     end
 ```
 
 
 ## 0.5 Design System Compliance
 
+
+The user's prompt prescribes a styling stack composed of Tailwind CSS utility classes plus shadcn/ui-style semantic tokens (`text-muted-foreground`, `border-border`, `bg-background`, `hover:bg-accent`) and Lucide icons, with MUI Dialog retained for the `ProjectModal` only. Because the user has named the stack, the Blitzy platform treats this as the binding design system for the delivery and enforces compliance per the Design System Alignment Protocol.
+
 ### 0.5.1 System Identification
 
-The scaffolder-react plugin operates within a **dual design system** environment:
-
-- **Primary (Active in Scaffolder):** Material UI v4 (`@material-ui/core` ^4.12.2, `@material-ui/icons` ^4.9.1, `@material-ui/lab` 4.0.0-alpha.61) — currently used by all scaffolder components
-- **Secondary (Platform-wide Legacy):** `@backstage/core-components` — provides `MarkdownContent`, `Progress`, `AlertDisplay`, `WarningPanel`, and other higher-level Backstage primitives
-- **Emerging (Not yet adopted by Scaffolder):** Backstage UI (`@backstage/ui` / `packages/ui/`) — the new BUI design system with `Skeleton`, `Alert`, and token-driven components
-
 | Attribute | Value |
-|---|---|
-| Library | `@material-ui/core` (MUI v4) + `@backstage/core-components` |
-| Version | ^4.12.2 (MUI v4), workspace:^ (core-components) |
-| Status | Installed and actively used |
-| Package | `@material-ui/core`, `@backstage/core-components` |
-| Source | `plugins/scaffolder-react/package.json` dependencies |
-
-Per the user's Rule #6: "Loading indicators and error states MUST use existing `@backstage/core-components` primitives (Skeleton, Alert, etc.) — no new UI libraries." The implementation will use MUI v4 and `@backstage/core-components` primitives that are already imported throughout the scaffolder plugin.
+| --------- | ----- |
+| Primary styling library | Tailwind CSS (utility classes) |
+| Semantic-token source | shadcn/ui-style tokens (`--muted-foreground`, `--border`, `--background`, `--foreground`, `--accent`) |
+| Icon library | Lucide (react via `lucide-react`) — referenced by the user (`FileText`, `PlusCircle`) as removal targets |
+| Modal component | MUI `Dialog` from `@material-ui/core` (already installed at `^4.12.2` in `plugins/catalog-graph/package.json`) |
+| Status | Tailwind + semantic tokens are NOT configured at the Backstage monorepo root or in `packages/ui`. They MUST be provided by the Blitzy-customized Backstage fork's pre-existing brand theme (`globals.css` referenced in Boundaries), which is out-of-scope for this delivery. |
+| Package registry | npmjs |
+| Source | User prompt; Tailwind semantic tokens inspected via repository-wide `grep` against `--muted-foreground`, `--border`, `bg-background` patterns (no matches found in `packages/` or `plugins/` at inspection time, confirming the theme is externally provided) |
 
 ### 0.5.2 Component Mapping
 
-The following table maps each new UI element required by the cascading forms feature to an existing library component already in use within `plugins/scaffolder-react/`:
+| UI Element | Library Component | Import Path | Props / Variant | Notes |
+| ---------- | ----------------- | ----------- | --------------- | ----- |
+| About card description | Raw `<div>` with Tailwind classes | N/A | `className="text-sm border-b border-border/30 pb-3 mb-3"` | User mandates no `AboutField` wrapper |
+| About card field rows | Raw `<div>` in `AboutField.tsx` | N/A | Outer `flex items-start border-b border-border/30 last:border-0 py-3`; label `w-24 text-[10px] uppercase tracking-widest text-muted-foreground`; value `flex-1 text-sm font-medium` | Replaces MUI `Grid` + `Typography` |
+| Entity reference link | `EntityRefLinks` | `@backstage/plugin-catalog-react` | `hideIcons` | Pre-existing Backstage component already supports `hideIcons` |
+| Entity links card row | Raw `<a>` in `IconLink.tsx` | N/A | `className="flex items-center gap-3 rounded-lg border border-border px-4 py-3 hover:border-foreground hover:bg-accent w-full"` | User mandates native `<a>`, not Backstage `Link` |
+| Entity links card list container | Raw `<div>` in `LinksGridList.tsx` | N/A | `className="flex flex-col gap-2"` | Replaces MUI `ImageList` |
+| Entity labels card list | Raw `<div>` in `EntityLabelsCard.tsx` | N/A | Outer `flex flex-col gap-2`; row `flex gap-2 text-sm`; key `font-bold`; value `text-muted-foreground` | Replaces `<Table>` |
+| Project graph modal shell | `Dialog` | `@material-ui/core/Dialog` | `open`, `onClose` | MUI Dialog explicitly approved by the user for the modal |
+| Project graph node card | Raw SVG `<g>` + `<rect>` + `<text>` + `<path>` | N/A | Geometry via SVG attributes; colors via strings | SVG attributes (`x`, `y`, `width`, `height`, `d`, `cx`, `cy`, `r`, `strokeWidth`) are exempt from the Tailwind-only styling rule |
+| State pill / badge | Raw `<span>` with Tailwind classes | N/A | State color as background token | No library primitive needed |
+| Label chip | Raw `<span>` with Tailwind classes | N/A | `className="inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs"` | Render from `project.labels` in `ProjectModal` |
 
-| UI Element | Library Component | Import Source | Props / Variant | Notes |
-|---|---|---|---|---|
-| Loading indicator (field-level) | `LinearProgress` | `@material-ui/core/LinearProgress` | `variant="indeterminate"` | Already imported in `Stepper.tsx` line 27; reuse for field-level loading |
-| Loading indicator (global) | `LinearProgress` | `@material-ui/core/LinearProgress` | `variant="indeterminate"` | Already rendered at `Stepper.tsx` line 245 during validation |
-| Field error message | `FormHelperText` | `@material-ui/core/FormHelperText` | `error={true}` | Already used in `PasswordWidget.tsx` line 19 |
-| Field container | `FormControl` | `@material-ui/core/FormControl` | `fullWidth`, `error`, `disabled` | Already used in `ScaffolderField.tsx` line 69 |
-| Field description | `MarkdownContent` | `@backstage/core-components` | `content`, `linkTarget="_blank"` | Already used in `ScaffolderField.tsx` line 77 |
-| Retry button | `Button` | `@material-ui/core/Button` | `variant="text"`, `size="small"` | Already imported in `Stepper.tsx` line 26 |
-| Error icon | `ErrorIcon` | `@material-ui/icons/Error` | — | Already used in `ErrorListTemplate/errorListTemplate.tsx` line 23 |
-| Field shell wrapper | `ScaffolderField` | `../ScaffolderField` | `displayLabel`, `rawErrors`, `errors`, `help`, `disabled` | Custom Backstage component; primary field wrapper in `FieldTemplate.tsx` |
-| Styled container | `makeStyles` | `@material-ui/core/styles` | Theme-aware CSS-in-JS | Used in `ScaffolderField.tsx` line 22, `Stepper.tsx` line 69 |
+### 0.5.3 Token Mapping
 
-### 0.5.3 Compliance Principles
+The user has specified literal color hex values for branch-state colors (`#22c55e`, `#a855f7`, `#ef4444`, `#6b7280`). These are used as SVG `stroke` / `fill` strings — SVG geometry attributes are exempt from the "no hardcoded values" rule. All non-SVG styling resolves to Tailwind utility classes, which in turn resolve to the semantic tokens published by the `globals.css` of the Blitzy-customized fork.
 
-**Precedence order for this feature:**
-
-- Design system compliance — every new UI element uses an existing MUI v4 or `@backstage/core-components` primitive
-- Visual consistency — new loading/error states match the existing scaffolder visual language
-- Accessibility — loading states announce via `aria-busy`, error states use `aria-invalid` and `role="alert"`
-- No hardcoded values — spacing and colors use MUI v4 `theme.spacing()` and `theme.palette.*` via `makeStyles`
-
-**Non-negotiable rules applied:**
-
-- Zero new UI library dependencies — verified by checking `package.json` diff shows zero new entries
-- All loading indicators use `LinearProgress` from `@material-ui/core` (already a dependency)
-- All error states use `FormHelperText` with `error={true}` (already a pattern in `PasswordWidget.tsx`)
-- All field layout uses `FormControl` from `@material-ui/core` (already a pattern in `ScaffolderField.tsx`)
-- Theme-aware styling via `makeStyles` from `@material-ui/core/styles` (established pattern across all scaffolder components)
+| Category | Value | Resolution |
+| -------- | ----- | ---------- |
+| Color — open PR state | `#22c55e` | Direct hex string passed to SVG `stroke` / `fill` attribute (exempt) |
+| Color — merged PR state | `#a855f7` | Direct hex string passed to SVG `stroke` / `fill` attribute (exempt) |
+| Color — closed PR state | `#ef4444` | Direct hex string passed to SVG `stroke` / `fill` attribute (exempt) |
+| Color — trunk | `#6b7280` | Direct hex string passed to SVG `stroke` / `fill` attribute (exempt) |
+| Color — muted text | — | `text-muted-foreground` Tailwind token |
+| Color — border | — | `border-border`, `border-border/30` |
+| Color — accent hover | — | `hover:bg-accent`, `hover:border-foreground` |
+| Color — background | — | `bg-background`, `bg-white` for SVG node card rect fill (white per spec) |
+| Spacing — label column width | 96px | `w-24` (24 × 4px) |
+| Spacing — card row vertical padding | 12px | `py-3` |
+| Spacing — list gap | 8px | `gap-2` |
+| Radius — link card corners | 8px | `rounded-lg` |
+| Typography — field label | 10px uppercase wide-tracked | `text-[10px] uppercase tracking-widest` |
+| Typography — field value | 14px medium | `text-sm font-medium` |
+| Typography — label key | 14px bold | `text-sm font-bold` |
+| Typography — label value | 14px muted | `text-sm text-muted-foreground` |
 
 ### 0.5.4 Gaps Inventory
 
-| Gap | Description | Resolution |
-|---|---|---|
-| Skeleton placeholder for async-loading select fields | No Skeleton component is currently imported in scaffolder-react | Use `LinearProgress` with `variant="indeterminate"` inside the field container, matching the existing loading pattern in `Stepper.tsx` line 245. This maintains consistency without adding new component imports. Alternatively, import `Skeleton` from `@material-ui/lab` (already a dependency at `4.0.0-alpha.61`) |
-| Inline retry button for optionsLoader failures | No retry button pattern exists in current scaffolder | Compose `Button` (variant="text", size="small") with `FormHelperText` (error=true) in a horizontal layout using `makeStyles`. This follows the existing button styling in `Stepper.tsx` |
-| Disabled field state during loading | `ScaffolderField` already supports `disabled` prop but no `isLoading` prop | Extend `ScaffolderFieldProps` with optional `isLoading?: boolean` and apply `disabled` + `aria-busy="true"` when loading is active |
+| Gap | Impact | Proposed Resolution |
+| --- | ------ | ------------------- |
+| Tailwind CSS is NOT configured in the monorepo root or in `packages/ui` | Without a Tailwind pipeline, the utility classes in the changed files render as no-op class attributes and the redesigns fall back to browser defaults. | This delivery DEPENDS on the Blitzy-customized Backstage fork already shipping a Tailwind + shadcn-token `globals.css`. The Boundaries clause forbids modifying `globals.css`, which enforces this dependency as an operator-side prerequisite outside the agent's scope. |
+| `packages/ui` uses its own `bui-*` utility classes and `--bui-*` tokens, NOT Tailwind | The existing Backstage UI library does not provide the semantic tokens the user specifies. | Use the user-mandated Tailwind class names literally. The Blitzy brand theme's `globals.css` is the single source of truth for their resolution. |
+| No `Separator` component exists in `packages/ui` | The user prompt says to remove `Separator` from `InternalAboutCard`, but the current file uses MUI `Divider`. | Interpret "Separator" as the currently-present `<Divider />` rendering the horizontal rule between the header and the content. Both are the semantic equivalent. Removing the `<Divider />` literal satisfies the requirement. |
+| No `FileText` or `PlusCircle` lucide-react imports exist in the current `AboutCard.tsx` | The user prompt names these as unused imports to remove, but the current file uses MUI icons (`DocsIcon`, `CreateComponentIcon`). | Interpret "remove `FileText`, `PlusCircle`" as remove the MUI icon imports (`DocsIcon = @material-ui/icons/Description`, `CreateComponentIcon = @material-ui/icons/AddCircleOutline`) that are dead-code after `DefaultAboutCardSubheader` is removed, plus any actual `FileText` / `PlusCircle` imports if they exist in the user's fork. |
 
 ### 0.5.5 Compliance Summary
 
-All UI elements required for the cascading forms feature are covered by existing MUI v4 components and `@backstage/core-components` primitives that are already dependencies of `plugins/scaffolder-react`. The loading indicator (`LinearProgress`), error messages (`FormHelperText`), field containers (`FormControl`), and action buttons (`Button`) are all imported and used in the current codebase. No new UI framework dependencies need to be added. Three minor gaps exist (Skeleton placeholder, retry pattern, loading prop) that are resolved through composition of existing primitives, maintaining zero new dependency overhead.
+The user's mandated styling stack (Tailwind + shadcn semantic tokens) covers all non-SVG styling requirements across the four features. SVG geometry and state-color hex strings in Feature 1 are the only exempt literals and are explicitly allowed by Rule 1. MUI `Dialog` is explicitly approved by the user for the `ProjectModal`. No Tailwind configuration files or `packages/ui` changes are required in this delivery — the infrastructure lives in the Blitzy fork's existing `globals.css`, which Boundaries forbids touching. Two dependencies to verify on the operator side: (a) `globals.css` / theme tokens ship the semantic classes (`text-muted-foreground`, `border-border`, `bg-background`, `hover:bg-accent`); (b) the `/github-api` proxy endpoint is configured for the Backstage backend.
 
 
 ## 0.6 Technical Implementation
 
+
 ### 0.6.1 File-by-File Execution Plan
 
-Every file listed below MUST be created or modified. Files are grouped by functional concern and ordered within each group by dependency (foundational files first).
+Every file listed here MUST be created or modified exactly as described. No other files in the repository may be changed.
 
-**Group 1 — Core Schema Resolution (Foundation):**
+**Group 1 — Feature 1: `BlitzyProjectGraphCard` (net-new directory)**
 
-- **MODIFY: `plugins/scaffolder-react/src/next/lib/schema.ts`**
-  - Verify that `extractUiSchema()` preserves the `if` keyword in the returned schema (currently not destructured, which is correct — confirm no side effects remove it)
-  - Add new exported function `resolveConditionalSchema(schema: JsonObject, formData: JsonObject): JsonObject` that evaluates `if/then/else` conditions against current formData and returns a merged schema reflecting active branches
-  - The resolution function MUST be pure and synchronous with no side effects
-  - Implementation uses `json-schema-library` `Draft07` for schema evaluation, consistent with existing usage in `createAsyncValidators.ts`
+- CREATE `plugins/catalog-graph/src/components/BlitzyProjectGraphCard/BlitzyProjectGraphCard.tsx` — React component that:
+  - Calls `useEntity()` and reads `entity.metadata.annotations['github.com/project-slug']`. If absent or undefined, returns `null` immediately (no spinner, no error UI, no card).
+  - Splits the slug into `owner` and `repo`.
+  - Uses `useApi(fetchApiRef)` (plus `discoveryApiRef` if absolute URL construction is required) to call `GET /api/proxy/github-api/repos/{owner}/{repo}/pulls?state=all&per_page=100`.
+  - Renders a loading spinner while the fetch is pending and an inline error message on failure.
+  - Maps each `GitHubPR` into a `BlitzyProject` (`branchName` derived from `head.ref` or `title`; `prState` computed as `merged` when `merged_at` non-null, else `state`; `createdAt` / `mergedAt` coerced to `Date`).
+  - Defines constants `SVG_W=940`, `TRUNK_Y=52`, `ROW_H=82`, `NODE_W=200`, `NODE_H=60`, `TRUNK_START=170`, `NODE_L=724`, `TIMELINE_END=696`, `MIN_BOX_W=80`.
+  - Implements `makeTimeScale(projects)` producing `toX(date: Date): number` that linearly maps `[minDate, maxDate]` to `[TRUNK_START, TIMELINE_END]`; includes `new Date()` in the date set when any open PRs exist.
+  - Pre-computes `visualMergeXs[]` using the extracted `visualMergeXs` function in `./visualMergeXs`.
+  - Renders an `<svg width={SVG_W}>` containing: the trunk horizontal line at `y=TRUNK_Y` (color `#6b7280`); per-project branch line and node card group; expand-icon `<path>` inside each node card whose `onClick` sets the selected project and opens the modal.
+  - Branch line semantics: open PR → solid line from `splitX` to `NODE_L - 4` (no dashed segment); merged PR → solid line from `splitX` to `visualMergeX`, then a vertical rise to the trunk, then a dot on the trunk; closed PR → uses the closed color without a merge dot.
+  - Node card geometry: drop-shadow rect (gray, offset 2px), white fill rect, 4px left accent bar in the state color, `<text>` elements for truncated PR title, branch name, and state label, plus the clickable expand icon (SVG path) in the state color.
+  - Holds modal state via `useState<BlitzyProject | null>(null)` and renders `<ProjectModal project={selected} open={!!selected} onClose={() => setSelected(null)} />`.
+  - Styling: the outer card wrapper (if any) uses Tailwind utility classes; SVG children use geometry attributes only.
 
-- **MODIFY: `plugins/scaffolder-react/src/next/lib/index.ts`**
-  - Add `resolveConditionalSchema` to the barrel export alongside existing `extractSchemaFromStep` and `createFieldValidation`
+- CREATE `plugins/catalog-graph/src/components/BlitzyProjectGraphCard/visualMergeXs.ts` — exports a pure function `visualMergeXs(projects: BlitzyProject[], toX: (d: Date) => number): Array<number | null>` that implements the user-specified algorithm verbatim: for each project, return `null` if not merged; compute `splitX = toX(createdAt)`, `mergeX = toX(mergedAt)`, `nextSplitAfterSplit = min split x among other PRs where split > splitX + 2, else TIMELINE_END`; if `mergeX >= nextSplitAfterSplit - 2` return `max(mergeX, splitX + 8)`; else return `max(min(max(mergeX, splitX + MIN_BOX_W), nextSplitAfterSplit - 6), splitX + 8)`.
 
-**Group 2 — Type System Extensions (API Surface):**
+- CREATE `plugins/catalog-graph/src/components/BlitzyProjectGraphCard/ProjectModal.tsx` — Props `{ project: BlitzyProject | null; open: boolean; onClose: () => void }`. Renders MUI `Dialog` with:
+  - A colored accent bar at the top whose background matches the project's state color.
+  - A pill badge rendering the state label (`open` / `merged` / `closed`) with Tailwind classes.
+  - "Created" and (when applicable) "Merged" dates formatted from `project.createdAt` / `project.mergedAt`.
+  - Label chips rendered from `project.labels` (using Tailwind-styled `<span>` pills; background/text color drawn from `label.color` via inline `style` is NOT permitted — use a Tailwind class system or the label color as a CSS custom-property via a data attribute, keeping the styling-rule compliant).
+  - Two buttons: "Dismiss" (calls `onClose`) and "Open Pull Request →" that opens `project.prUrl` in a new tab (`<a href={project.prUrl} target="_blank" rel="noopener noreferrer">`) colored with the state color.
 
-- **MODIFY: `plugins/scaffolder-react/src/extensions/types.ts`**
-  - Extend `FieldExtensionOptions` with two new optional fields:
-    ```ts
-    dependencies?: string[];
-    optionsLoader?: (
-      formData: JsonObject,
-      context: { apiHolder: ApiHolder },
-    ) => Promise<Array<{ label: string; value: string | number }>>;
+- CREATE `plugins/catalog-graph/src/components/BlitzyProjectGraphCard/index.ts` — barrel: `export { BlitzyProjectGraphCard } from './BlitzyProjectGraphCard';`.
+
+- CREATE `plugins/catalog-graph/src/components/BlitzyProjectGraphCard/BlitzyProjectGraphCard.test.tsx` — Jest test covering `visualMergeXs` for the four user-specified cases (see 0.9.1 for specifics).
+
+**Group 2 — Feature 1 integration**
+
+- MODIFY `plugins/catalog-graph/src/components/index.ts` — append one line: `export * from './BlitzyProjectGraphCard';`.
+
+- MODIFY `plugins/catalog-graph/src/alpha.tsx`:
+  - Rename `CatalogGraphEntityCard` → `BlitzyProjectGraphEntityCard`.
+  - Replace the factory body with the user-supplied snippet that dynamic-imports `BlitzyProjectGraphCard` and renders it with no props.
+  - Preserve `name: 'relations'` exactly.
+  - Update the `extensions: [...]` array at line ~107 to reference the renamed constant.
+  - Leave the `config.schema` block in place OR prune it to the empty schema if the new component accepts no config — the user does not require any config schema for the new component. The Blitzy platform's minimal-change interpretation is to KEEP the existing schema shape so that downstream `app-config.yaml` consumers who may be setting these fields do not break at load time, even though the new component ignores them. The factory simply ignores `config`.
+
+**Group 3 — Feature 2: About Card redesign (in-place edits)**
+
+- MODIFY `plugins/catalog/src/components/AboutCard/hooks.ts` — append the user's `useEntitySourceUrl` hook literally. Add the `useApi`, `scmIntegrationsApiRef`, `getEntitySourceLocation` imports.
+
+- MODIFY `plugins/catalog/src/components/AboutCard/AboutField.tsx` — delete the `makeStyles` block, switch the return statement to a Tailwind-styled `<div>` structure:
+  - Outer container: `flex items-start border-b border-border/30 last:border-0 py-3`.
+  - Label span: `w-24 text-[10px] uppercase tracking-widest text-muted-foreground`.
+  - Value container: `flex-1 text-sm font-medium`.
+  - Keep `gridSizes` in `AboutFieldProps` but do NOT destructure it into the component body; do NOT spread it onto any element.
+
+- MODIFY `plugins/catalog/src/components/AboutCard/AboutContent.tsx`:
+  - Add `import { useEntitySourceUrl } from './hooks';`.
+  - Inside the component: `const sourceUrl = useEntitySourceUrl(entity);`.
+  - Replace the top-level `<Grid container>` with a `<div>` container (Tailwind classes per design).
+  - Render description FIRST as `<div className="text-sm border-b border-border/30 pb-3 mb-3"><MarkdownContent content={...} /></div>` — no `AboutField`, no label, no "Description" text.
+  - If `sourceUrl` is truthy, render `<AboutField label="Source"><a href={sourceUrl} target="_blank" rel="noopener noreferrer" className="text-sm underline">{sourceUrl}</a></AboutField>`.
+  - For owner, domain, system, parent-component fields, pass `hideIcons` to `EntityRefLinks`.
+  - Remove every `gridSizes={...}` attribute from the modified/new field call sites. (The prop still exists on `AboutField` for external backward compatibility, per rule 3.)
+
+- MODIFY `plugins/catalog/src/components/AboutCard/AboutCard.tsx`:
+  - Delete the `DefaultAboutCardSubheader` function and its three helper hooks if they are only consumed by it (`useCatalogSourceIconLinkProps`, `useTechdocsReaderIconLinkProps`, `useScaffolderTemplateIconLinkProps`) along with their `IconLinkVerticalProps` typing.
+  - Delete the `subheader` CardHeader prop line and the `<Divider />` element (the `<Separator />` the user names).
+  - Delete the corresponding imports: `Divider` from `@material-ui/core/Divider`; `HeaderIconLinkRow`, `IconLinkVerticalProps` from `@backstage/core-components`; `DocsIcon` (Description), `CreateComponentIcon` (AddCircleOutline) from `@material-ui/icons`. If the user's fork also contains `Separator` / `FileText` / `PlusCircle` imports (as named in the prompt), remove those too.
+
+**Group 4 — Feature 3: Entity Links Card redesign (in-place edits)**
+
+- MODIFY `plugins/catalog/src/components/EntityLinksCard/IconLink.tsx`:
+  - Remove MUI `Box`, `Typography`, `makeStyles`, `LanguageIcon` imports and the `useStyles` hook.
+  - Remove `Link` import from `@backstage/core-components`.
+  - Render:
+    ```tsx
+    <a href={href} target="_blank" rel="noopener noreferrer"
+       className="flex items-center gap-3 rounded-lg border border-border px-4 py-3 hover:border-foreground hover:bg-accent w-full text-foreground">
+      <span className="text-muted-foreground group-hover:text-foreground">{Icon ? <Icon /> : <GlobeFallback />}</span>
+      <span className="truncate flex-1">{text ?? href}</span>
+    </a>
     ```
-  - Both fields are `undefined` by default, maintaining backward compatibility
+  - Retain the `href`, `text`, `Icon` props signature.
 
-- **MODIFY: `plugins/scaffolder-react/src/extensions/createScaffolderFieldExtension.tsx`**
-  - No structural changes needed — the factory already passes the full `options` object to `attachComponentData`, so the new type fields flow through automatically
-  - Verify TypeScript compilation confirms the type expansion propagates correctly
+- MODIFY `plugins/catalog/src/components/EntityLinksCard/LinksGridList.tsx`:
+  - Remove MUI `ImageList`, `ImageListItem` imports and the `useDynamicColumns` import.
+  - Render:
+    ```tsx
+    <div className="flex flex-col gap-2">
+      {items.map(({ text, href, Icon }, i) => (
+        <IconLink key={i} href={href} text={text ?? href} Icon={Icon} />
+      ))}
+    </div>
+    ```
+  - The `cols` prop may stay on `LinksGridListProps` but MUST NOT be referenced in the body.
 
-**Group 3 — Reactive Hooks (Behavioral Infrastructure):**
+**Group 5 — Feature 4: Entity Labels Card redesign (in-place edits)**
 
-- **CREATE: `plugins/scaffolder-react/src/next/hooks/useOptionsLoader.ts`**
-  - Implement hook signature: `useOptionsLoader(fieldName: string, dependencies: string[], optionsLoader: OptionsLoaderFn, formData: JsonObject, apiHolder: ApiHolder)`
-  - Track watched field values using `useRef` for previous value comparison
-  - Implement 300ms debounce (configurable via `debounceMs` parameter) using `setTimeout`/`clearTimeout`
-  - Manage tri-state: `{ options: EnumOption[], loading: boolean, error: Error | null }`
-  - Implement AbortController-based cleanup for pending requests on unmount
-  - Provide `retry()` function in return value for error recovery
-
-- **CREATE: `plugins/scaffolder-react/src/next/hooks/useOptionsLoader.test.ts`**
-  - Test debounce: rapid parent changes produce only one loader call after 300ms
-  - Test loading state: `loading=true` while fetch is pending
-  - Test error handling: rejected loader sets `error` and `loading=false`
-  - Test retry: calling `retry()` re-invokes the loader
-  - Test cleanup: unmounting during pending fetch does not cause state updates
-  - Test dependency detection: loader only fires when watched dependency values change
-
-- **MODIFY: `plugins/scaffolder-react/src/next/hooks/index.ts`**
-  - Add export for `useOptionsLoader`
-
-**Group 4 — Stepper Integration (Orchestration):**
-
-- **MODIFY: `plugins/scaffolder-react/src/next/components/Stepper/Stepper.tsx`**
-  - Add `useMemo` after `currentStep` computation (line 173) that calls `resolveConditionalSchema(currentStep.schema, stepsState)` to produce a resolved schema
-  - Pass resolved schema to `<Form>` instead of `currentStep.schema` at line 281
-  - Extend `formContext` (line 280) to include `optionsLoaderRegistry` built from extensions that declare `dependencies` and `optionsLoader`
-  - Enhance the `extensions` memo (lines 146–150) to also extract and map `dependencies` and `optionsLoader` per extension name
-  - Ensure `stepsState` accumulation preserves values from conditionally unmounted fields (already handled by the merge pattern at lines 183–190; verify no overwrites occur)
-
-- **MODIFY: `plugins/scaffolder-react/src/next/components/Stepper/createAsyncValidators.ts`**
-  - Accept optional `fieldDependencies: Record<string, string[]>` parameter in the factory function
-  - When validating a field, check if any of its dependencies have changed since last validation run
-  - If dependencies changed, force revalidation of the dependent field even if its own value hasn't changed
-  - Maintain backward compatibility — existing call sites pass `undefined` for the new parameter
-
-**Group 5 — Form Rendering (UI Layer):**
-
-- **MODIFY: `plugins/scaffolder-react/src/next/components/Form/Form.tsx`**
-  - Pass `formContext` through to `WrappedForm` (already happens via `{...props}` spread at line 66)
-  - Verify that the `wrappedFields` memo (lines 34–53) correctly forwards `formContext` to wrapped field components so they can access `optionsLoaderRegistry`
-
-- **MODIFY: `plugins/scaffolder-react/src/next/components/Form/FieldTemplate.tsx`**
-  - Access `formContext` from RJSF `registry` to check for active loading/error states on the current field
-  - When `formContext.fieldLoadingStates[fieldId]?.loading === true`: render `LinearProgress` inside `ScaffolderField`, set `aria-busy="true"` on the field container
-  - When `formContext.fieldLoadingStates[fieldId]?.error !== null`: render inline `FormHelperText` with error message and retry `Button`
-
-- **MODIFY: `plugins/scaffolder-react/src/next/components/ScaffolderField/ScaffolderField.tsx`**
-  - Add optional `isLoading?: boolean` prop to `ScaffolderFieldProps`
-  - When `isLoading` is true, render `LinearProgress` below children and set `aria-busy="true"` on the `FormControl`
-  - Import `LinearProgress` from `@material-ui/core/LinearProgress`
-
-**Group 6 — Tests and Documentation:**
-
-- **MODIFY: `plugins/scaffolder-react/src/next/lib/schema.test.ts`**
-  - Add `describe('resolveConditionalSchema')` test block with cases for:
-    - Simple if/then/else with single boolean condition
-    - Nested if/then/else with multiple conditions
-    - Property dependencies (field B required when field A present)
-    - Schema dependencies (additional schema applied when dependency present)
-    - `oneOf` discriminated rendering with enum values
-    - Schema with no conditionals (passthrough behavior)
-
-- **MODIFY: `plugins/scaffolder-react/src/next/components/Stepper/Stepper.test.tsx`**
-  - Add integration test: render Stepper with `if/then/else` schema; toggle parent field; assert dependent field mounts/unmounts
-  - Add integration test: fill conditional field, toggle parent away and back; assert value is preserved
-  - Add integration test: render with `optionsLoader` extension; change parent; assert loading state appears; assert options update
-
-- **MODIFY: `plugins/scaffolder-react/src/next/components/Stepper/createAsyncValidators.test.ts`**
-  - Add test: dependency-triggered revalidation when parent field changes
-  - Add test: no redundant revalidation when unrelated field changes
-
-- **MODIFY: `plugins/scaffolder-react/src/next/hooks/useTemplateSchema.test.tsx`**
-  - Add test: verify if/then/else keywords survive `useTemplateSchema()` parsing pipeline
-
-- **MODIFY: `plugins/scaffolder-react/README.md`**
-  - Add "Cascading/Dynamic Forms" section documenting the feature, JSON Schema patterns, and `optionsLoader` API
+- MODIFY `plugins/catalog/src/components/EntityLabelsCard/EntityLabelsCard.tsx`:
+  - Change imports: from `'@backstage/core-components'` keep `{ InfoCard, InfoCardVariants }` ONLY — remove `Table`, `TableColumn`.
+  - Remove `Typography`, `makeStyles` imports.
+  - Replace the body:
+    ```tsx
+    const labels = entity?.metadata?.labels ?? {};
+    const filtered = Object.entries(labels).filter(([k]) => !k.startsWith('backstage.io/'));
+    return (
+      <InfoCard title={title || t('entityLabelsCard.title')} variant={variant}>
+        {filtered.length === 0 ? (
+          <EntityLabelsEmptyState />
+        ) : (
+          <div className="flex flex-col gap-2">
+            {filtered.map(([k, v]) => (
+              <div key={k} className="flex gap-2 text-sm">
+                <span className="font-bold">{k}</span>
+                <span className="text-muted-foreground">{v}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </InfoCard>
+    );
+    ```
 
 ### 0.6.2 Implementation Approach per File
 
-The implementation follows a bottom-up dependency order:
-
-- **Establish schema resolution foundation** by adding `resolveConditionalSchema()` to `schema.ts` — this pure function is independently testable and has zero dependencies beyond `@backstage/types` and `json-schema-library`
-- **Extend the type system** by adding optional fields to `FieldExtensionOptions` — this is a type-only change that enables TypeScript compilation of downstream consumers
-- **Build behavioral hooks** by creating `useOptionsLoader` — this encapsulates the debounce, loading, and error management logic as a reusable hook
-- **Integrate at the orchestration layer** by modifying `Stepper.tsx` to wire schema resolution and options loading into the form lifecycle
-- **Adapt the rendering layer** by modifying `FieldTemplate.tsx` and `ScaffolderField.tsx` to display loading/error states
-- **Validate comprehensively** by updating all existing test files and creating new test cases
-
-For files that reference observability requirements (per project rules), structured logging correlation IDs will be added to `optionsLoader` error paths so that failed async loads can be traced in development environments.
+- **Establish the Feature 1 foundation** by creating the new directory with its component, pure-function algorithm, modal sub-component, barrel export, and test file. The pure function is isolated specifically to enable the `visualMergeXs` test cases in the Validation Framework.
+- **Integrate Feature 1 with the existing frontend-plugin-api surface** by renaming the extension constant and pointing the `factory.loader` at the new component. Preserve `name: 'relations'` to maintain extension identity.
+- **Refactor the About card** in-place, top-to-bottom: start with `hooks.ts` (adds the SCM hook), proceed to `AboutField.tsx` (Tailwind row), then `AboutContent.tsx` (reordered field structure with `hideIcons` and source field), then `AboutCard.tsx` (subheader/divider/import cleanup). Each step is self-contained.
+- **Refactor the Entity Links card** by updating the two files together (`IconLink.tsx`, then `LinksGridList.tsx`) so that the test render never observes a partial state.
+- **Refactor the Entity Labels card** in a single file change with both the prefix filter and the Table-to-flex swap committed atomically.
+- **Validate locally** by running `yarn tsc --noEmit`, the new Jest file, and the two plugin-level `yarn workspace ... build` commands before handing off for browser verification.
+- **Preserve user examples exactly**: the `visualMergeXs` algorithm text, the `useEntitySourceUrl` hook body, the `EntityCardBlueprint.makeWithOverrides` snippet, the SVG layout constants, and the color hex values are reproduced in the implementation exactly as supplied.
 
 ### 0.6.3 User Interface Design
 
-The cascading forms feature introduces three new visual states for dependent fields:
-
-**Loading State:**
-- A `LinearProgress` bar (indeterminate variant) renders below the field input area
-- The field input is set to `disabled` with `aria-busy="true"`
-- Appears within 100ms of parent field change (debounce fires at 300ms, but the loading indicator appears immediately when the debounce is scheduled)
-
-**Error State:**
-- An inline `FormHelperText` with `error={true}` displays the error message below the field
-- A "Retry" `Button` (text variant, small size) is rendered alongside the error message
-- The field remains interactive so users can manually enter values if the loader fails
-
-**Conditional Mount/Unmount:**
-- Fields governed by `if/then/else` appear and disappear based on parent field values
-- No animation or transition is applied (matches existing RJSF behavior for consistency)
-- Previously entered values are restored when a field remounts (verified by the `stepsState` accumulation pattern)
-
-**No changes to existing visual elements:**
-- The multi-step wizard navigation (MUI Stepper) remains unchanged
-- The Review step rendering remains unchanged
-- All existing field extension components render identically to their current behavior
+- **Feature 1** introduces an information-dense data-visualization surface. The single most important visual decision is the state-color system: open branches stay visible and solid across the full axis to communicate "in flight"; merged branches converge on the trunk at the `visualMergeX` position (the uncapped-when-overlapping rule guarantees late-merging PRs visually reach past subsequent splits); closed branches never reach the trunk. The expand icon on every node card provides progressive disclosure into the full PR metadata (created/merged dates, labels, link).
+- **Feature 2** privileges the entity description by placing it at the very top, unlabeled, with a subtle divider below — this inverts the Material-design "key-first" pattern in favor of a content-first layout. Every subsequent metadata row uses a narrow uppercase-wide-tracked label column (10px, `tracking-widest`) and a medium-weight value column, producing a scannable two-column ledger. Entity-ref kind icons are suppressed to reduce visual noise.
+- **Feature 3** replaces a variable-column grid with a single vertical list of bordered card rows, each with a hover interaction (border and background color change). This improves mobile legibility and removes the flicker from dynamic column recomputation.
+- **Feature 4** removes the heavyweight `<Table>` chrome (toolbar, paging, linear-load indicator) in favor of a clean inline bold-key/muted-value list, and actively hides system labels (`backstage.io/...`) from end users.
+- No user-provided Figma URLs are attached to this request. If the Blitzy fork later supplies Figma references for any of the four cards, those URLs will be added to subsection 0.10 References and this subsection will be updated to highlight each one next to the relevant file.
 
 
 ## 0.7 Scope Boundaries
 
+
 ### 0.7.1 Exhaustively In Scope
 
-**All feature source files:**
+The following paths are the complete, enumerated change surface for this delivery. Everything outside this list is off-limits per the user's Boundaries clause.
 
-- `plugins/scaffolder-react/src/next/lib/schema.ts` — `resolveConditionalSchema()` implementation
-- `plugins/scaffolder-react/src/next/lib/index.ts` — barrel export update
-- `plugins/scaffolder-react/src/next/components/Stepper/Stepper.tsx` — reactive schema resolution integration
-- `plugins/scaffolder-react/src/next/components/Stepper/createAsyncValidators.ts` — dependency-triggered revalidation
-- `plugins/scaffolder-react/src/next/components/Form/Form.tsx` — resolved schema passthrough, formContext extension
-- `plugins/scaffolder-react/src/next/components/Form/FieldTemplate.tsx` — loading/error state rendering
-- `plugins/scaffolder-react/src/next/components/ScaffolderField/ScaffolderField.tsx` — `isLoading` prop addition
-- `plugins/scaffolder-react/src/extensions/types.ts` — `dependencies` and `optionsLoader` type additions
-- `plugins/scaffolder-react/src/extensions/createScaffolderFieldExtension.tsx` — type verification
-- `plugins/scaffolder-react/src/next/hooks/useOptionsLoader.ts` — NEW: async options loading hook
-- `plugins/scaffolder-react/src/next/hooks/index.ts` — barrel export update
+- **New directory (Feature 1)**: `plugins/catalog-graph/src/components/BlitzyProjectGraphCard/**`
+  - `plugins/catalog-graph/src/components/BlitzyProjectGraphCard/BlitzyProjectGraphCard.tsx` (CREATE)
+  - `plugins/catalog-graph/src/components/BlitzyProjectGraphCard/visualMergeXs.ts` (CREATE — decomposition)
+  - `plugins/catalog-graph/src/components/BlitzyProjectGraphCard/ProjectModal.tsx` (CREATE — decomposition)
+  - `plugins/catalog-graph/src/components/BlitzyProjectGraphCard/index.ts` (CREATE — barrel)
+  - `plugins/catalog-graph/src/components/BlitzyProjectGraphCard/BlitzyProjectGraphCard.test.tsx` (CREATE — Jest tests)
+  - Any further helper files the agent decomposes into within this directory are permitted per the user's Feature 1 file-scope clause.
 
-**All feature tests:**
+- **Feature 1 integration edits (existing files)**:
+  - `plugins/catalog-graph/src/components/index.ts` (MODIFY — append one export line)
+  - `plugins/catalog-graph/src/alpha.tsx` (MODIFY — replace `CatalogGraphEntityCard` with `BlitzyProjectGraphEntityCard`)
 
-- `plugins/scaffolder-react/src/next/lib/schema.test.ts` — `resolveConditionalSchema` unit tests
-- `plugins/scaffolder-react/src/next/components/Stepper/Stepper.test.tsx` — integration tests for conditional fields
-- `plugins/scaffolder-react/src/next/components/Stepper/createAsyncValidators.test.ts` — dependency revalidation tests
-- `plugins/scaffolder-react/src/next/hooks/useOptionsLoader.test.ts` — NEW: options loader hook tests
-- `plugins/scaffolder-react/src/next/hooks/useTemplateSchema.test.tsx` — conditional keyword preservation tests
+- **Feature 2 edits (existing files)**:
+  - `plugins/catalog/src/components/AboutCard/AboutField.tsx` (MODIFY)
+  - `plugins/catalog/src/components/AboutCard/AboutContent.tsx` (MODIFY)
+  - `plugins/catalog/src/components/AboutCard/AboutCard.tsx` (MODIFY)
+  - `plugins/catalog/src/components/AboutCard/hooks.ts` (MODIFY — add `useEntitySourceUrl`)
 
-**Integration points:**
+- **Feature 3 edits (existing files)**:
+  - `plugins/catalog/src/components/EntityLinksCard/IconLink.tsx` (MODIFY)
+  - `plugins/catalog/src/components/EntityLinksCard/LinksGridList.tsx` (MODIFY)
 
-- `plugins/scaffolder-react/src/next/hooks/useTemplateSchema.ts` — verification that conditionals survive extraction
-- `plugins/scaffolder-react/src/next/hooks/useTransformSchemaToProps.ts` — verification that layout transform preserves conditionals
-- `plugins/scaffolder-react/src/next/components/Stepper/utils.ts` — `hasErrors()` utility used for validation result checking
-
-**Configuration and API reports:**
-
-- `plugins/scaffolder-react/package.json` — no changes needed (all deps present)
-- `plugins/scaffolder-react/report.api.md` — auto-regenerated if public types change
-- `plugins/scaffolder-react/report-alpha.api.md` — auto-regenerated for alpha exports
-
-**Documentation:**
-
-- `plugins/scaffolder-react/README.md` — feature documentation section
-
-**Observability deliverables (per project rules):**
-
-- Structured logging in `useOptionsLoader` error paths with correlation IDs
-- Error boundary integration for unhandled `optionsLoader` failures
-- Metrics tracking for optionsLoader call count/latency (via Backstage analytics API)
-- Health check: `optionsLoader` timeout behavior (configurable, default 10s)
-
-**Onboarding documentation (per project rules):**
-
-- README.md updates covering cascading form authoring patterns
-- Inline JSDoc on all new public/alpha API exports
-- Decision log as Markdown table documenting non-trivial decisions
-
-**Executive presentation (per project rules):**
-
-- reveal.js HTML artifact summarizing the feature, architecture changes, and risk assessment
-- Mermaid diagrams on every slide (schema resolution flow, component interaction, state management)
-
-**Visual architecture documentation (per project rules):**
-
-- Before/after Mermaid diagram of schema resolution pipeline
-- Component interaction diagram for Stepper → Form → FieldTemplate → RJSF
-- Data flow diagram for async options loading lifecycle
+- **Feature 4 edits (existing files)**:
+  - `plugins/catalog/src/components/EntityLabelsCard/EntityLabelsCard.tsx` (MODIFY)
 
 ### 0.7.2 Explicitly Out of Scope
 
-- **Cross-step dependencies** — Step 2 fields depending on Step 1 values; the existing `stepsState` accumulation already provides this data, but cross-step reactivity is a separate feature
-- **Server-side dynamic schema generation** — The backend stays unchanged; all schema evaluation is purely frontend
-- **New built-in field extensions** — Template authors compose with existing extensions plus JSON Schema conditionals; no new default field extension components
-- **Changes to `@rjsf/core` itself** — All customization goes through RJSF's documented extension points
-- **Files outside `plugins/scaffolder-react/`** — No modifications to `packages/core-components/`, `packages/ui/`, `plugins/scaffolder-backend/`, or any other package
-- **Performance optimizations beyond feature requirements** — Schema re-resolution must complete in <50ms for ≤20 conditional branches, but broader performance work is out of scope
-- **Refactoring of existing MUI v4 code to BUI** — The scaffolder-react plugin continues to use MUI v4; the ongoing MUI-to-BUI migration is a separate initiative
-- **New UI library dependencies** — No new packages added; all UI from existing MUI v4 and core-components
-- **Backend API changes** — No new backend endpoints, no server-side schema manipulation
-- **Cross-plugin API changes** — `@backstage/plugin-scaffolder-common` types remain unchanged
+The user's Boundaries clause names the following as MUST NOT MODIFY surfaces. The Blitzy platform preserves these verbatim:
+
+- **Any existing file not listed in 0.7.1.** Opportunistic refactoring elsewhere in the monorepo is prohibited.
+- **`EntityRelationsGraph`** (`plugins/catalog-graph/src/components/EntityRelationsGraph/**`) and other catalog-graph components (`plugins/catalog-graph/src/components/CatalogGraphCard/**`, `plugins/catalog-graph/src/components/CatalogGraphPage/**`).
+- **`globals.css`, theme tokens, sidebar, auth, or backend plugins** — specifically:
+  - `docs-ui/src/css/globals.css` (the only existing `globals.css` in the repo).
+  - `packages/ui/src/css/tokens.css`, `packages/ui/src/css/core.css`, `packages/ui/src/css/styles.css`, and any `packages/ui/src/css/utilities/*.css`.
+  - Any theme provider wiring under `packages/theme` or `packages/app`.
+  - `packages/backend/**`.
+- **The `EntityCardBlueprint` extension name `'relations'`.** The string `'relations'` MUST remain literal at the only `name:` occurrence in `plugins/catalog-graph/src/alpha.tsx`.
+- **The `AboutField` `gridSizes` prop signature.** Existing external callers MUST continue to compile. The prop remains in the `AboutFieldProps` interface; only its consumption is removed.
+- **Minimal change mandate**: each modification to an existing file MUST be confined strictly to the described change. No refactoring of surrounding code. No new comments. No formatting changes to unmodified lines.
+- **`app-config.yaml`** and the backend `/github-api` proxy endpoint configuration — treated as a pre-existing operator-side prerequisite.
+- **Unrelated features or modules** — no changes to other cards on the entity page (`SystemDiagramCard`, `RelatedEntitiesCard`, `DependsOnComponentsCard`, etc.).
+- **Performance optimizations beyond feature requirements** — no memoization, bundler tuning, or loading-strategy rework beyond what Feature 1 explicitly requires for its fetch/parse flow.
+- **Refactoring of unrelated existing code** — even when the agent notices improvement opportunities in neighboring files.
+- **Any file under `packages/app/**`**, except as indirectly required if the feature registration in `alpha.tsx` needs to update example-app wiring (NOT required — `packages/app` picks up the extension via plugin discovery). No direct edits to `packages/app` are in scope.
+- **Documentation files (`README*`, `docs/**`, `CHANGELOG*`)** — the user has not requested documentation updates; the minimal-change mandate keeps these untouched.
 
 
-## 0.8 Rules for Feature Addition
-
-### 0.8.1 User-Specified Rules
-
-The following rules are explicitly mandated by the user and MUST be followed during implementation:
-
-**Rule 1 — MUST use RJSF's built-in conditional rendering where possible.**
-RJSF v5 already evaluates `if/then/else` and `dependencies` at the form level. The primary work is ensuring Backstage's schema extraction (`extractSchemaFromStep`) preserves these keywords through to RJSF rather than stripping them. Verification: a raw RJSF form with `if/then/else` works; the same schema through Backstage's `Form` component also works. Scope: `plugins/scaffolder-react/src/next/lib/schema.ts` and `Form.tsx`.
-
-**Rule 2 — MUST NOT modify `@rjsf/core` or fork RJSF.**
-All customization MUST go through RJSF's documented extension points: custom fields, custom widgets, custom templates, and form props. Verification: no files outside `plugins/scaffolder-react/` are modified. Scope: all form rendering code.
-
-**Rule 3 — MUST debounce `optionsLoader` calls.**
-Rapid parent field changes (e.g., typing in a text field that others depend on) MUST NOT trigger a network request per keystroke. Default debounce: 300ms. Verification: unit test confirms only one loader call after rapid parent changes. Scope: the `useOptionsLoader` hook that invokes `optionsLoader`.
-
-**Rule 4 — MUST preserve form values when conditional fields unmount and remount.**
-If a user selects "AWS", fills in region, switches to "GCP", then back to "AWS", the previously entered AWS region MUST be restored. Verification: integration test covers this round-trip. Scope: Stepper state management via `stepsState` accumulator.
-
-**Rule 5 — Field extensions MUST remain backward-compatible.**
-Adding `dependencies` and `optionsLoader` to `FieldExtensionOptions` MUST be optional (both `undefined` by default). Existing field extensions MUST compile and behave identically without changes. Verification: existing extension unit tests pass without modification. Scope: `createScaffolderFieldExtension` type signature.
-
-**Rule 6 — MUST NOT add UI framework dependencies.**
-Loading indicators and error states MUST use existing `@backstage/core-components` primitives and MUI v4 components already present in the scaffolder (LinearProgress, FormHelperText, FormControl, Button, etc.) — no new UI libraries. Verification: `package.json` diff shows zero new dependencies. Scope: all new UI code.
-
-**Rule 7 — Schema resolution MUST be pure and synchronous.**
-`resolveConditionalSchema(schema, formData)` MUST be a pure function with no side effects and no async operations. Async behavior (option loading) is handled separately at the field level via `useOptionsLoader`. Verification: function signature is `(schema: JsonObject, formData: JsonObject) => JsonObject`. Scope: `plugins/scaffolder-react/src/next/lib/schema.ts`.
-
-### 0.8.2 Project-Level Implementation Rules
-
-The following rules derive from the project's global implementation rules and apply to this feature:
-
-**Observability:**
-- Ship observability with the initial implementation. The `useOptionsLoader` hook MUST include structured logging for error paths, optionsLoader latency tracking via the Backstage analytics API (`useAnalytics()` already used in `Stepper.tsx`), and correlation IDs for tracing failed async loads through development tooling.
-
-**Onboarding & Continued Development:**
-- Update `plugins/scaffolder-react/README.md` with cascading forms documentation. Include setup instructions, JSON Schema patterns for `if/then/else` and `dependencies`, `optionsLoader` API usage examples, and common pitfalls (e.g., circular dependencies, performance with many conditional branches). Suggest next tasks: cross-step reactivity, visual transitions for field mount/unmount.
-
-**Executive Presentation:**
-- Deliver a reveal.js HTML artifact covering: what was built (cascading forms), why (template author productivity), architectural changes (schema resolution pipeline), risks (performance with complex schemas, RJSF version coupling), and onboarding path. Every slide MUST include a Mermaid diagram or visual.
-
-**Explainability:**
-- Deliver a decision log as a Markdown table documenting: choosing pure synchronous resolution over async, debounce timing selection (300ms), using `stepsState` for value preservation vs. separate cache, `LinearProgress` over `Skeleton` for loading states, and extending `FieldExtensionOptions` type vs. creating a new type.
-
-**Visual Architecture Documentation:**
-- All architecture diagrams MUST use Mermaid. Provide before/after diagrams of the schema resolution pipeline showing the addition of `resolveConditionalSchema()`. Include component interaction diagrams and data flow diagrams for the async options loading lifecycle.
-
-### 0.8.3 Non-Functional Requirements
-
-- Schema re-resolution MUST complete in <50ms for schemas with ≤20 conditional branches
-- `optionsLoader` UI responsiveness (loading state) MUST appear within 100ms of parent change
-- Memory: no leaked subscriptions or stale closures from field mount/unmount cycles (verified via `useEffect` cleanup in `useOptionsLoader`)
-- Bundle size impact: <5KB gzipped additional code (verified via build size comparison)
-- All existing scaffolder E2E tests MUST pass: `yarn test --no-watch plugins/scaffolder-react`
-- Type checking MUST pass: `yarn tsc`
-- Linting MUST pass: `yarn lint --fix`
-- API reports MUST be regenerated: `yarn build:api-reports`
+## 0.8 Rules
 
 
-## 0.9 References
+The user's prompt enumerates nine explicit rules and an overarching "Minimal change mandate." The Blitzy platform preserves each one verbatim below, together with the literal verification method supplied by the user, so that downstream code generation honors every invariant without reinterpretation.
 
-### 0.9.1 Repository Files and Folders Searched
+### 0.8.1 Rule 1 — No Inline `style` for Layout or Color
 
-The following files and folders were systematically inspected to derive the conclusions in this Agent Action Plan:
+MUST NOT use inline `style` objects for layout or color except SVG geometry attributes (`x`, `y`, `width`, `height`, `d`, `cx`, `cy`, `r`, `strokeWidth`). Verification: `grep 'style={{' modified-files` — zero matches outside SVG elements.
 
-**Root-level configuration files:**
+### 0.8.2 Rule 2 — Tailwind Only for Non-SVG Styling
 
-| File | Purpose |
-|---|---|
-| `package.json` | Root workspace manifest; verified Node engine (`22 \|\| 24`), package manager (Yarn 4.8.1), TypeScript version (~5.7.0), and React type resolutions (^18.0.0) |
-| `tsconfig.json` | Root TypeScript configuration |
+MUST use Tailwind utility classes for all non-SVG styling. No `makeStyles`, `styled`, `sx`, or new CSS files. Verification: no such patterns in changed files.
 
-**Plugin-level files (plugins/scaffolder-react/):**
+### 0.8.3 Rule 3 — `gridSizes` Not Passed to New `AboutField` Call Sites
 
-| File | Purpose |
-|---|---|
-| `plugins/scaffolder-react/package.json` | Plugin manifest; verified all dependency versions: `@rjsf/core` 5.24.13, `@rjsf/utils` 5.24.13, `@rjsf/validator-ajv8` 5.24.13, `@rjsf/material-ui` 5.24.13, `ajv` ^8.0.1, `json-schema-library` ^9.0.0, `@material-ui/core` ^4.12.2, `@material-ui/lab` 4.0.0-alpha.61, React ^18.0.2, `@testing-library/react` ^16.0.0 |
-| `plugins/scaffolder-react/report.api.md` | Public API surface snapshot; confirmed `FieldExtensionOptions` type signature and `createScaffolderFieldExtension` export |
-| `plugins/scaffolder-react/report-alpha.api.md` | Alpha API surface; confirmed `extractSchemaFromStep`, `createAsyncValidators`, `Stepper`, `StepperProps`, `ParsedTemplateSchema`, `FormValidation` exports |
+MUST NOT pass `gridSizes` to any new `AboutField` call site in `AboutContent.tsx`. Verification: `grep gridSizes plugins/catalog/src/components/AboutCard/AboutContent.tsx` returns zero matches.
 
-**Source files read in full:**
+### 0.8.4 Rule 4 — Node Cards Use `onClick`, Not `<a>`-Wrapped `<g>`
 
-| File | Lines | Key Findings |
-|---|---|---|
-| `plugins/scaffolder-react/src/next/lib/schema.ts` | 1–150 | `extractUiSchema()` handles `if/then/else/dependencies` for UI metadata extraction; `if` keyword NOT destructured (passes through to RJSF); `extractSchemaFromStep()` clones via flatted and returns `{schema, uiSchema}` |
-| `plugins/scaffolder-react/src/next/lib/index.ts` | 1–17 | Exports `extractSchemaFromStep` and `createFieldValidation` only |
-| `plugins/scaffolder-react/src/next/components/Stepper/Stepper.tsx` | 1–349 | Full wizard implementation; `stepsState` accumulator (line 133); `currentStep.schema` passed to `<Form>` (line 281); `formContext.formData` set to `stepsState` (line 280); `key={activeStep}` remounts form on step change (line 276) |
-| `plugins/scaffolder-react/src/next/components/Form/Form.tsx` | 1–68 | `WrappedForm = withTheme(MuiTheme)` (line 25); wraps fields to provide default props (lines 34–53); passes templates including `FieldTemplate` and `DescriptionFieldTemplate` |
-| `plugins/scaffolder-react/src/next/components/Form/FieldTemplate.tsx` | 1–100 | Custom RJSF FieldTemplate; renders `WrapIfAdditionalTemplate` around `ScaffolderField`; handles hidden fields with `display:none` |
-| `plugins/scaffolder-react/src/next/components/ScaffolderField/ScaffolderField.tsx` | 1–87 | Accessible field shell with `FormControl`, `MarkdownContent` descriptions, error/help rendering |
-| `plugins/scaffolder-react/src/next/components/Stepper/createAsyncValidators.ts` | 1–179 | Recursive async validation engine; traverses schema via `json-schema-library` `Draft07`; handles `ui:field`, items, dependencies branches |
-| `plugins/scaffolder-react/src/extensions/types.ts` | 1–87 | `FieldExtensionOptions` type with `name`, `component`, `validation?`, `schema?` — no `dependencies` or `optionsLoader` currently |
-| `plugins/scaffolder-react/src/extensions/createScaffolderFieldExtension.tsx` | 1–84 | Factory attaches full `options` to `FIELD_EXTENSION_KEY` metadata |
-| `plugins/scaffolder-react/src/next/hooks/useTemplateSchema.ts` | 1–94 | Parses manifest steps via `extractSchemaFromStep()`; filters by feature flags; returns `ParsedTemplateSchema[]` with `mergedSchema` |
-| `plugins/scaffolder-react/src/next/hooks/useTransformSchemaToProps.ts` | 1–52 | Resolves `ui:ObjectFieldTemplate` string handles to layout components |
+`BlitzyProjectGraphCard` node cards MUST use `onClick` for modal trigger, not `<a>` wrapper. Verification: no `<a>` element wraps SVG `<g>` node-card groups in the component.
 
-**Source files read partially (first N lines for pattern understanding):**
+### 0.8.5 Rule 5 — `visualMergeXs` Cap Semantics
 
-| File | Lines Read | Key Findings |
-|---|---|---|
-| `plugins/scaffolder-react/src/next/lib/schema.test.ts` | 1–80 | Test patterns: `describe/it` with `JsonObject` fixtures; `expect(extractSchemaFromStep(input)).toEqual({schema, uiSchema})` |
-| `plugins/scaffolder-react/src/next/components/Stepper/Stepper.test.tsx` | 1–80 | Test patterns: `renderInTestApp` with `SecretsContextProvider`; `TemplateParameterSchema` fixtures; `act/fireEvent/waitFor` |
-| `plugins/scaffolder-react/src/next/components/Workflow/Workflow.test.tsx` | 48–120 | Test patterns: `ApiProvider` with `TestApiRegistry`; mock scaffolder API; `renderInTestApp` |
+`visualMergeXs` cap MUST only apply when `mergeX < nextSplitAfterSplit - 2`. When `mergeX >= nextSplitAfterSplit - 2`, return `max(mergeX, splitX + 8)` directly. Verification: a PR merged after a later PR's open date plots to the right of that PR's split x.
 
-**Folders explored:**
+### 0.8.6 Rule 6 — Extension Name Remains `'relations'`
 
-| Folder | Depth | Key Findings |
-|---|---|---|
-| `` (root) | Level 0 | Monorepo with `plugins/`, `packages/`, `docs/`, `scripts/` top-level directories |
-| `plugins/` | Level 1 | 155+ plugin packages; `scaffolder-react` identified as the target |
-| `plugins/scaffolder-react/` | Level 1 | Package root with `src/`, `package.json`, API reports, README |
-| `plugins/scaffolder-react/src/` | Level 2 | Barrel exports, extension subsystem, hooks, layouts, secrets, `next/` |
-| `plugins/scaffolder-react/src/next/` | Level 2 | API, blueprints, components, extensions, hooks, lib |
-| `plugins/scaffolder-react/src/next/components/` | Level 3 | Form, Stepper, ScaffolderField, Workflow, ReviewState, TemplateCard, and 10+ other component folders |
-| `plugins/scaffolder-react/src/next/components/Stepper/` | Level 3 | Stepper.tsx, createAsyncValidators.ts, utils.ts, ErrorListTemplate/, FieldOverrides/ |
-| `plugins/scaffolder-react/src/next/components/Form/` | Level 3 | Form.tsx, FieldTemplate.tsx, DescriptionFieldTemplate.tsx, index.ts |
-| `plugins/scaffolder-react/src/next/lib/` | Level 3 | schema.ts, schema.test.ts, index.ts |
-| `plugins/scaffolder-react/src/next/hooks/` | Level 3 | useTemplateSchema.ts, useTransformSchemaToProps.ts, useFormDataFromQuery.ts, and others |
-| `plugins/scaffolder-react/src/extensions/` | Level 3 | createScaffolderFieldExtension.tsx, types.ts, keys.ts, rjsf.ts, index.ts |
-| `plugins/scaffolder-react/src/next/components/ScaffolderField/` | Level 3 | ScaffolderField.tsx, index.ts |
-| `packages/core-components/src/components/` | Level 2 | AlertDisplay, Progress, WarningPanel, MarkdownContent, and 30+ component directories |
-| `packages/ui/src/components/` | Level 2 | Skeleton, Alert (BUI equivalents) confirmed at `packages/ui/src/components/Skeleton/` and `packages/ui/src/components/Alert/` |
+Extension name MUST remain `'relations'` in `BlitzyProjectGraphEntityCard` registration. Verification: `alpha.tsx` contains `name: 'relations'`.
 
-**Tech Spec Sections Retrieved:**
+### 0.8.7 Rule 7 — `useEntitySourceUrl` Swallows All Exceptions
 
-| Section | Purpose |
-|---|---|
-| 2.1 Feature Catalog | Confirmed F-002 (Software Templates/Scaffolder) feature context, dependencies, and technical implementation details |
-| 3.2 Frameworks & Libraries | Verified frontend framework versions: React ^18.0.2, MUI v4 ^4.12.2, TypeScript ~5.7.0, Vite ^7.1.5 |
-| 7.1 Core UI Technologies | Confirmed active MUI-to-BUI migration, frontend entry points, and extension system architecture |
-| 7.2 UI Component Libraries | Cataloged available UI primitives: core-components (MUI v4-based), BUI (React Aria + tokens), design token system |
+`useEntitySourceUrl` MUST wrap `getEntitySourceLocation` in `try/catch` and return `undefined` on any exception. Verification: no unhandled error thrown when entity has no SCM annotation.
 
-### 0.9.2 Attachments and External References
+### 0.8.8 Rule 8 — Labels Card Filters `backstage.io/` Prefix
 
-**User Attachments:** None (0 attachments provided).
+Labels card MUST filter `backstage.io/` prefixed keys. Verification: entity with only `backstage.io/managed-by-location` label renders `EntityLabelsEmptyState`.
 
-**External References from User Prompt:**
+### 0.8.9 Rule 9 — `BlitzyProjectGraphCard` Returns `null` When Slug Absent
 
-| Reference | Context |
-|---|---|
-| RJSF v5.24.13 (`@rjsf/core`) | Confirmed as installed dependency in `plugins/scaffolder-react/package.json` |
-| AJV8 (`ajv` ^8.0.1) | Confirmed as installed dependency |
-| `json-schema-library` ^9.0.0 | Confirmed as installed dependency |
-| JSON Schema Draft 07 `if/then/else` specification | Standard keywords used for conditional field rendering |
-| JSON Schema Draft 07 `dependencies` specification | Standard keyword for property and schema dependencies |
-| `@backstage/frontend-plugin-api` (new frontend system) | Confirmed as workspace dependency |
-| `@backstage/core-components` | Confirmed as workspace dependency; provides `MarkdownContent`, layout primitives |
+`BlitzyProjectGraphCard` MUST return `null` when `metadata.annotations['github.com/project-slug']` is absent. Verification: component renders nothing (no DOM output) for an entity fixture with no `github.com/project-slug` annotation.
 
-**Figma URLs:** None provided.
+### 0.8.10 Overarching Mandates
 
-**Build and Verification Commands (from user):**
+- **Feature 1 file scope**: Implementation MUST reside entirely within `plugins/catalog-graph/src/components/BlitzyProjectGraphCard/`. The public export from `index.ts` MUST remain `BlitzyProjectGraphCard` as the default named export.
+- **Minimal change mandate**: Each modification to existing files MUST be confined to the described change. No refactoring of surrounding code, no new comments, no formatting changes to unmodified lines.
+- **`AboutField` backward compatibility**: `AboutField` `gridSizes` prop signature MUST be preserved in the interface so that existing callers compile.
 
-| Command | Purpose |
-|---|---|
-| `yarn install` | Install all workspace dependencies |
-| `yarn tsc` | TypeScript type checking across the monorepo |
-| `yarn test --no-watch plugins/scaffolder-react` | Run scaffolder-react test suite (non-watch mode) |
-| `yarn test --no-watch plugins/scaffolder-react/src/next/lib/schema.test.ts` | Run schema utility unit tests |
-| `yarn lint --fix` | Lint and auto-fix |
-| `yarn build:api-reports` | Regenerate API surface reports (required if public API changes) |
-| `yarn start` | Start dev server for manual smoke testing at `/create` |
+
+## 0.9 Validation Framework
+
+
+The user supplied a complete validation framework spanning unit tests, per-story pass/fail criteria, ordered build gates, and an integration sign-off checklist. The Blitzy platform reproduces each element verbatim so that the implementation agent and downstream verifiers operate from identical acceptance evidence.
+
+### 0.9.1 Unit Tests — `BlitzyProjectGraphCard`
+
+Create a test file within `plugins/catalog-graph/src/components/BlitzyProjectGraphCard/` (the Blitzy platform maps this to `BlitzyProjectGraphCard.test.tsx` co-located with the component). Cover `visualMergeXs` for the following cases:
+
+- `mergeX < nextSplitAfterSplit − 2`: result clamped to `nextSplitAfterSplit − 6`.
+- `mergeX ≥ nextSplitAfterSplit − 2`: result equals `max(mergeX, splitX + 8)` (no cap applied).
+- Single PR in projects: `nextSplitAfterSplit` defaults to `TIMELINE_END`; result `≥ splitX + 8`.
+- Unmerged PR: returns `null`.
+
+Use Vitest or Jest (whichever framework is active in the workspace). The Blitzy platform has verified Jest is active (root `package.json` declares `"jest": "^30"` and every plugin's `test` script is `backstage-cli package test`, which invokes Jest). Zero test failures required before build gate #2 passes.
+
+### 0.9.2 Per-Story Pass / Fail Criteria
+
+| Story | Criterion |
+| ----- | --------- |
+| 1.1 | `BlitzyProject[]` populated with correct `prState`, `createdAt`, `mergedAt` from API response |
+| 1.2 | SVG x-positions of PR splits are proportional to `createdAt` dates across visible range |
+| 1.3 | Open PR line, dot, and card accent bar all use `#22c55e`; merged=`#a855f7`; closed=`#ef4444` |
+| 1.4 | Node card rect fill is white; no colored background fill on the card body |
+| 1.5 | PR merged Apr 17 plots to the right of PR opened Feb 27 in the diagram |
+| 1.6 | Open PR branch line is solid from split to `NODE_L - 4`; `strokeDasharray` absent on this segment |
+| 1.7 | Dialog renders on expand icon click; Dismiss sets `open=false`; PR link has `target="_blank"` |
+| 1.8 | Entity without `github.com/project-slug` annotation renders `null` — no card visible |
+| 2.1 | No `AboutField` wrapping description; text "Description" not visible in rendered card |
+| 2.2 | Source field appears for entities with `github.com/project-slug` annotation; absent otherwise |
+| 2.3 | About card rows use flex layout; label column is `w-24` fixed width |
+| 2.4 | No icon element rendered adjacent to owner/system/domain/parent entity ref text |
+| 3.1 | Each link renders as a bordered `<a>` element with `rounded-lg`; background changes on hover |
+| 3.2 | `LinksGridList` renders a single-column flex list, not a CSS grid |
+| 4.1 | No `<Table>` component in rendered Labels card output |
+| 4.2 | `backstage.io/managed-by-location` label not visible; `EntityLabelsEmptyState` shown if no other labels remain |
+
+### 0.9.3 Build Gates (Run in Order)
+
+1. `yarn tsc --noEmit` — zero TypeScript errors across workspace.
+2. Unit tests pass — zero failures for `visualMergeXs` test suite.
+3. `yarn workspace @backstage/plugin-catalog-graph build` — zero errors.
+4. `yarn workspace @backstage/plugin-catalog build` — zero errors.
+5. Browser: load entity page, confirm all four cards render without React console errors.
+6. Browser: click expand icon on `BlitzyProjectGraphCard` node — confirm modal opens; click Dismiss — confirm modal closes.
+
+### 0.9.4 Integration Sign-Off (Independent of Unit Tests)
+
+- GitHub proxy returns PR data and diagram renders with at least one branch line visible.
+- About card Source field renders a valid URL for an entity with a GitHub annotation.
+- Links card hover state visually changes border and background on mouse-over.
+- Labels card hides any `backstage.io/` prefixed labels in the entity fixture.
+- Entity without `github.com/project-slug` annotation shows no graph card.
+
+### 0.9.5 Validation-to-Rule Traceability
+
+| Rule | Validating Criterion |
+| ---- | -------------------- |
+| 0.8.1 No inline `style` | Per-story 1.4 (card body has no colored inline fill); static grep verification |
+| 0.8.2 Tailwind only | Static inspection; build gates #3 and #4 |
+| 0.8.3 No `gridSizes` at new call sites | Static grep on `AboutContent.tsx` |
+| 0.8.4 `onClick` not `<a>` on nodes | Per-story 1.7; source inspection for `<a>` wrapping `<g>` |
+| 0.8.5 Cap semantics | Unit test case `mergeX ≥ nextSplitAfterSplit − 2`; Per-story 1.5 |
+| 0.8.6 Extension name `'relations'` | `grep "name: 'relations'" plugins/catalog-graph/src/alpha.tsx` |
+| 0.8.7 `useEntitySourceUrl` swallows errors | Per-story 2.2; no unhandled error on entities without SCM annotation |
+| 0.8.8 Prefix filter | Per-story 4.2 |
+| 0.8.9 Null on missing slug | Per-story 1.8; integration sign-off "Entity without project-slug annotation shows no graph card" |
+
+
+## 0.10 References
+
+
+### 0.10.1 Repository Files Searched
+
+The following files were retrieved directly via `read_file` or `bash` grep/find and materially informed this Agent Action Plan. Paths are relative to the repository root.
+
+- `package.json` — Node engines `22 || 24`, `typescript ~5.7.0`, `jest ^30`, `packageManager yarn@4.8.1`, resolutions and `devDependencies` mapping.
+- `.yarnrc.yml` — `yarnPath: .yarn/releases/yarn-4.8.1.cjs`, `nodeLinker: node-modules`.
+- `app-config.yaml` — lines 71–78, existing `proxy.endpoints` with only `/pagerduty`; no `/github-api` endpoint is configured.
+- `plugins/catalog-graph/package.json` — lines 1–95, confirming `@material-ui/core ^4.12.2` and workspace dependencies.
+- `plugins/catalog-graph/src/alpha.tsx` — lines 1–110, current `EntityCardBlueprint` registration with `name: 'relations'`.
+- `plugins/catalog-graph/src/components/index.ts` — line 16, single `export * from './EntityRelationsGraph';`.
+- `plugins/catalog-graph/src/components/CatalogGraphCard/CatalogGraphCard.tsx` — lines 1–80, existing MUI v4 card structure for reference context.
+- `plugins/catalog/package.json` — lines 1–124, confirming `@backstage/integration-react`, `@backstage/plugin-catalog-react`, `@material-ui/core ^4.12.2`.
+- `plugins/catalog/src/components/AboutCard/AboutCard.tsx` — lines 1–294, full `InternalAboutCard`, `DefaultAboutCardSubheader`, three helper hooks, MUI-based shell.
+- `plugins/catalog/src/components/AboutCard/AboutContent.tsx` — lines 1–240, current `<Grid container>` + `AboutField` field layout.
+- `plugins/catalog/src/components/AboutCard/AboutField.tsx` — lines 1–80, current MUI `Grid` + `Typography` + `makeStyles` implementation.
+- `plugins/catalog/src/components/AboutCard/hooks.ts` — lines 1–56, current `useSourceTemplateCompoundEntityRef` implementation; surface for new `useEntitySourceUrl`.
+- `plugins/catalog/src/components/EntityLinksCard/IconLink.tsx` — lines 1–58, current MUI `Box` + Backstage `Link` implementation.
+- `plugins/catalog/src/components/EntityLinksCard/LinksGridList.tsx` — lines 1–48, current `ImageList` + `useDynamicColumns` implementation.
+- `plugins/catalog/src/components/EntityLabelsCard/EntityLabelsCard.tsx` — lines 1–89, current `<Table>` implementation.
+- `plugins/catalog/src/components/EntityLabelsCard/EntityLabelsEmptyState.tsx` — lines 1–50, empty-state component reused in Feature 4 fallback.
+- `plugins/catalog-react/src/components/EntityRefLink/EntityRefLinks.tsx` — confirmed `hideIcons?: boolean` prop on the `EntityRefLinksProps` interface.
+- `plugins/catalog-react/src/components/EntityRefLink/EntityRefLink.tsx` — confirmed `hideIcon?: boolean` prop forwarded to `EntityDisplayName`.
+- `plugins/catalog-react/src/utils/getEntitySourceLocation.ts` — canonical signature used by the new `useEntitySourceUrl` hook.
+- `packages/integration-react/src/api/ScmIntegrationsApi.ts` — `scmIntegrationsApiRef` definition consumed by `useEntitySourceUrl`.
+- `packages/core-plugin-api/src/apis/definitions/FetchApi.ts` — `fetchApiRef` export surface.
+- `packages/frontend-plugin-api/src/apis/definitions/DiscoveryApi.ts` — `discoveryApiRef` definition consumed by the proxy URL resolution.
+- `packages/ui/src/css/tokens.css` — current `--bui-*` token system (confirms `packages/ui` is NOT the shadcn / Tailwind token source).
+- `packages/ui/src/css/styles.css` — entry point listing `bui-*` utility imports (confirms Tailwind is NOT configured in `packages/ui`).
+- `packages/ui/src/css/utilities/display.css`, `.../flex.css` — examples of the `bui-*` utility class naming (confirms prefix difference vs. Tailwind classes named in the prompt).
+
+### 0.10.2 Repository Folders Surveyed
+
+- Root repository folder — verified monorepo structure (`packages/`, `plugins/`, `.github/`, `.storybook/`, `docs/`, `docs-ui/`, etc.).
+- `plugins/catalog-graph/` — plugin root containing `dev/`, `src/`, tests, `package.json`, `catalog-info.yaml`.
+- `plugins/catalog-graph/src/` — entry points `alpha.tsx`, `index.ts`, `plugin.ts`, `routes.ts`, `translation.ts`; sub-folders `api/`, `components/`, `hooks/`, `lib/`.
+- `plugins/catalog-graph/src/components/` — siblings `EntityRelationsGraph/`, `CatalogGraphCard/`, `CatalogGraphPage/`, and the barrel `index.ts` that this delivery amends.
+- `plugins/catalog/src/components/` — 26 component sub-folders identified; four of them are modified by this delivery (`AboutCard/`, `EntityLinksCard/`, `EntityLabelsCard/`, and indirectly references `EntityLabelsEmptyState`).
+- `plugins/catalog/src/components/AboutCard/` — 7 files (`AboutCard.tsx`, `AboutContent.tsx`, `AboutField.tsx`, `hooks.ts`, `index.ts`, `AboutCard.test.tsx`, `AboutContent.test.tsx`).
+- `plugins/catalog/src/components/EntityLinksCard/` — 8 files (`EntityLinksCard.tsx`, `EntityLinksCard.test.tsx`, `IconLink.tsx`, `IconLink.test.tsx`, `LinksGridList.tsx`, `EntityLinksEmptyState.tsx`, `useDynamicColumns.tsx`, `index.ts`, `types.ts`).
+- `plugins/catalog/src/components/EntityLabelsCard/` — 4 files (`EntityLabelsCard.tsx`, `EntityLabelsEmptyState.tsx`, `conditions.ts`, `index.ts`).
+- `packages/ui/` — 37 `bui-*` CSS-module components; not consumed by this delivery but surveyed to confirm the design-system baseline is not Tailwind.
+- `packages/integration-react/src/api/` — `ScmIntegrationsApi.ts`, `ScmAuth.ts`, and companion tests; source for `scmIntegrationsApiRef`.
+- `packages/frontend-plugin-api/src/apis/definitions/` — `DiscoveryApi.ts`, `FetchApi.ts` and the `index.ts` re-export.
+- `plugins/catalog-react/src/components/EntityRefLink/` — source for `EntityRefLinks` + `hideIcons` prop.
+- `plugins/catalog-react/src/utils/` — `getEntitySourceLocation.ts`.
+- `docs-ui/src/css/` — confirmed the ONLY `globals.css` is for the Next.js documentation site (out of scope).
+
+### 0.10.3 User-Provided Attachments
+
+None. The user's setup instructions reference `/tmp/environments_files`, but no file is present at that path in the sandbox. The project also declares zero file attachments.
+
+### 0.10.4 User-Provided Figma Screens
+
+None. No Figma URLs or frame names were supplied in the user's prompt for any of the four features.
+
+### 0.10.5 External Documentation and Metadata Referenced
+
+- **Environment Variables supplied by the user**: `FIRESTORE_EMULATOR_HOST`, `PUBSUB_EMULATOR_HOST`, `STORAGE_EMULATOR_HOST`. These relate to the LocalGCP setup block in the Environment Setup Instructions and are NOT used by any of the four frontend features (the delivery is purely client-side React).
+- **Environment Setup note from the user**: `@google-cloud/storage v7` `STORAGE_EMULATOR_HOST` workaround pattern reproduced in the setup script comments. This is a LocalGCP workaround unrelated to the Backstage frontend changes and is NOT consumed by any file in this delivery.
+- **Implementation rules supplied by the user** (Observability, Onboarding & Continued Development, Explainability, Visual Architecture Documentation, Executive Presentation, LocalGCP Verification): captured project-wide as cross-cutting governance. None of them add new in-scope files to this delivery because (a) the four features are client-side React with no server telemetry surface, (b) this delivery does not touch GCP services, and (c) the executive-presentation, onboarding, and explainability artifacts belong to the broader Blitzy-platform deliverables rather than to the four-feature code-change PR itself. They are preserved here verbatim for downstream governance reference.
+- **User's Environment Setup Instructions for Environment 1**: LocalGCP binary download (`localgcp-linux-amd64`) plus the `@google-cloud/storage` workaround. Not applicable to this frontend-only delivery; no GCP service is consumed by the four features.
 
 
