@@ -371,6 +371,35 @@ export interface KubernetesRequestBody {
 // @public
 export const kubernetesResourcesReadPermission: BasicPermission;
 
+// @public
+export type KubernetesWatchEvent =
+  | {
+      type: 'ADDED' | 'MODIFIED' | 'DELETED' | 'BOOKMARK';
+      object: JsonObject;
+      resourceVersion?: string;
+    }
+  | {
+      type: 'ERROR';
+      error: KubernetesFetchError;
+    };
+
+// @public
+export type KubernetesWatchEventType =
+  | 'ADDED'
+  | 'MODIFIED'
+  | 'DELETED'
+  | 'BOOKMARK'
+  | 'ERROR';
+
+// @public
+export interface KubernetesWatchOptions {
+  allowWatchBookmarks?: boolean;
+  labelSelector?: string;
+  namespace?: string;
+  resourceVersion?: string;
+  timeoutSeconds?: number;
+}
+
 // @public (undocumented)
 export interface LimitRangeFetchResponse {
   // (undocumented)

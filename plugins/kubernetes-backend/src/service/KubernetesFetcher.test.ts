@@ -1694,7 +1694,7 @@ describe('KubernetesFetcher', () => {
 
     it('should yield ERROR event for 401 Unauthorized', async () => {
       worker.use(
-        rest.get('http://localhost:9999/*', (req, res, ctx) => {
+        rest.get('http://localhost:9999/*', (_req, res, ctx) => {
           return res(ctx.status(401), ctx.text('authentication required'));
         }),
       );
@@ -1728,7 +1728,7 @@ describe('KubernetesFetcher', () => {
 
     it('should yield ERROR event for 404 Not Found', async () => {
       worker.use(
-        rest.get('http://localhost:9999/*', (req, res, ctx) => {
+        rest.get('http://localhost:9999/*', (_req, res, ctx) => {
           return res(ctx.status(404), ctx.text('resource not found'));
         }),
       );
@@ -1761,7 +1761,7 @@ describe('KubernetesFetcher', () => {
 
     it('should yield ERROR event for 500 Server Error', async () => {
       worker.use(
-        rest.get('http://localhost:9999/*', (req, res, ctx) => {
+        rest.get('http://localhost:9999/*', (_req, res, ctx) => {
           return res(ctx.status(500), ctx.text('internal server error'));
         }),
       );
@@ -2307,7 +2307,7 @@ describe('KubernetesFetcher', () => {
 
     it('should yield ERROR event when credentials are missing', async () => {
       worker.use(
-        rest.get('http://localhost:9999/*', (req, res, ctx) => {
+        rest.get('http://localhost:9999/*', (_req, res, ctx) => {
           return res(ctx.status(401), ctx.text('Unauthorized'));
         }),
       );

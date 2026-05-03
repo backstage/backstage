@@ -18,6 +18,8 @@ import { KubernetesFetchError } from '@backstage/plugin-kubernetes-common';
 import type { KubernetesObjectsProvider as KubernetesObjectsProvider_2 } from '@backstage/plugin-kubernetes-node';
 import { KubernetesRequestAuth } from '@backstage/plugin-kubernetes-common';
 import type { KubernetesServiceLocator as KubernetesServiceLocator_2 } from '@backstage/plugin-kubernetes-node';
+import { KubernetesWatchEvent } from '@backstage/plugin-kubernetes-common';
+import { KubernetesWatchOptions } from '@backstage/plugin-kubernetes-common';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
 import type { ObjectToFetch as ObjectToFetch_2 } from '@backstage/plugin-kubernetes-node';
@@ -141,6 +143,14 @@ export interface KubernetesFetcher {
     namespaces: Set<string>,
     labelSelector?: string,
   ): Promise<FetchResponseWrapper>;
+  watchResource(
+    clusterDetails: ClusterDetails,
+    credential: KubernetesCredential,
+    group: string,
+    apiVersion: string,
+    plural: string,
+    options?: KubernetesWatchOptions,
+  ): AsyncGenerator<KubernetesWatchEvent, void, undefined>;
 }
 
 // @public
