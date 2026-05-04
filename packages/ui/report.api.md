@@ -10,6 +10,7 @@ import type { CheckboxProps as CheckboxProps_2 } from 'react-aria-components';
 import { ColumnProps as ColumnProps_2 } from 'react-aria-components';
 import type { ColumnSize } from 'react-stately';
 import type { ColumnStaticSize } from 'react-stately';
+import type { ComboBoxProps } from 'react-aria-components';
 import type { ComponentProps } from 'react';
 import type { ComponentPropsWithoutRef } from 'react';
 import type { ComponentPropsWithRef } from 'react';
@@ -1007,6 +1008,54 @@ export type Columns =
   | '11'
   | '12'
   | 'auto';
+
+// @public
+export const Combobox: ForwardRefExoticComponent<
+  ComboboxProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public
+export const ComboboxDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-Combobox';
+    readonly popover: 'bui-ComboboxPopover';
+  };
+  readonly propDefs: {
+    readonly icon: {};
+    readonly size: {
+      readonly dataAttribute: true;
+      readonly default: 'small';
+    };
+    readonly options: {};
+    readonly placeholder: {};
+    readonly label: {};
+    readonly secondaryLabel: {};
+    readonly description: {};
+    readonly isRequired: {};
+    readonly className: {};
+  };
+};
+
+// @public (undocumented)
+export type ComboboxOwnProps = {
+  icon?: ReactNode;
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+  options?: Array<Option_2 | OptionSection>;
+  placeholder?: string;
+  label?: FieldLabelProps['label'];
+  secondaryLabel?: FieldLabelProps['secondaryLabel'];
+  description?: FieldLabelProps['description'];
+  isRequired?: boolean;
+  className?: string;
+};
+
+// @public (undocumented)
+export interface ComboboxProps
+  extends ComboboxOwnProps,
+    Omit<ComboBoxProps<Option_2>, keyof ComboboxOwnProps> {}
 
 // @public (undocumented)
 export interface CompletePaginationOptions extends PaginationOptions {
