@@ -218,7 +218,7 @@ export const WithLongNames = meta.story({
     placeholder: 'Select a document template',
     name: 'template',
     style: { maxWidth: 400 },
-    defaultSelectedKey: 'annual-report-2024',
+    defaultValue: 'annual-report-2024',
   },
 });
 
