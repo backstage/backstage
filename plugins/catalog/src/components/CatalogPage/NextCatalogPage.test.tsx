@@ -15,12 +15,26 @@
  */
 
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
-import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import {
+  catalogApiRef,
+  EntityKindFilter,
+  useEntityList,
+} from '@backstage/plugin-catalog-react';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { screen } from '@testing-library/react';
+import { useEffect } from 'react';
 import type { ReactElement } from 'react';
+import { Cell } from '@backstage/ui';
 import { NextCatalogPage } from './NextCatalogPage';
 import type { CatalogColumnHeader } from '@backstage/plugin-catalog-react/alpha';
+
+function SeedKindFilter() {
+  const { updateFilters } = useEntityList();
+  useEffect(() => {
+    updateFilters({ kind: new EntityKindFilter('component', 'Component') });
+  }, [updateFilters]);
+  return null;
+}
 
 const columns: Array<{
   header: CatalogColumnHeader;
@@ -28,11 +42,11 @@ const columns: Array<{
 }> = [
   {
     header: { id: 'name', label: 'Name', orderField: 'metadata.name' },
-    cell: () => <span>cell-name</span>,
+    cell: () => <Cell>cell-name</Cell>,
   },
   {
     header: { id: 'kind', label: 'Kind' },
-    cell: () => <span>cell-kind</span>,
+    cell: () => <Cell>cell-kind</Cell>,
   },
 ];
 
@@ -58,5 +72,44 @@ describe('NextCatalogPage', () => {
     expect(
       await screen.findByRole('columnheader', { name: 'Kind' }),
     ).toBeInTheDocument();
+  });
+
+  it('renders one row per entity from useEntityList', async () => {
+    const entityA = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Component',
+      metadata: { name: 'alpha', namespace: 'default' },
+    };
+    const entityB = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'API',
+      metadata: { name: 'beta', namespace: 'default' },
+    };
+
+    const catalogApi = catalogApiMock.mock({
+      queryEntities: jest.fn().mockResolvedValue({
+        items: [entityA, entityB],
+        pageInfo: {},
+        totalItems: 2,
+      }),
+    });
+
+    await renderInTestApp(
+      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+        <NextCatalogPage
+          filters={<SeedKindFilter />}
+          columns={[
+            {
+              header: { id: 'name', label: 'Name' },
+              cell: entity => <Cell>{entity.metadata.name}</Cell>,
+            },
+          ]}
+          pagination
+        />
+      </TestApiProvider>,
+    );
+
+    expect(await screen.findByText('alpha')).toBeInTheDocument();
+    expect(await screen.findByText('beta')).toBeInTheDocument();
   });
 });

@@ -18,11 +18,14 @@ import {
   CatalogFilterLayout,
   EntityListPagination,
   EntityListProvider,
+  useEntityList,
 } from '@backstage/plugin-catalog-react';
 import type { CatalogColumnHeader } from '@backstage/plugin-catalog-react/alpha';
 import { Table } from '@backstage/ui';
 import type { ColumnConfig } from '@backstage/ui';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 import type { Entity } from '@backstage/catalog-model';
+import { useMemo } from 'react';
 import type { ReactElement, ReactNode } from 'react';
 
 /**
@@ -48,27 +51,49 @@ export type NextCatalogPageProps = {
     header: CatalogColumnHeader;
     cell: (entity: Entity) => ReactElement;
   }>;
+  /**
+   * Controls the catalog backend pagination mode (forwarded to
+   * `EntityListProvider`). The table itself does not yet render UI
+   * pagination controls — they are scheduled for a future iteration.
+   */
   pagination?: EntityListPagination;
 };
 
 function buildColumnConfig(
   columns: NextCatalogPageProps['columns'],
 ): ColumnConfig<EntityRow>[] {
-  return columns.map(({ header, cell }) => ({
+  return columns.map(({ header, cell }, index) => ({
     id: header.id,
     label: header.label,
     width: header.width,
     isSortable: Boolean(header.orderField),
+    isRowHeader: index === 0,
     cell: row => cell(row.entity),
   }));
 }
 
 function NextCatalogTable(props: { columns: NextCatalogPageProps['columns'] }) {
-  const columnConfig = buildColumnConfig(props.columns);
+  const { entities, loading, error } = useEntityList();
+  const columnConfig = useMemo(
+    () => buildColumnConfig(props.columns),
+    [props.columns],
+  );
+  const rows = useMemo<EntityRow[]>(
+    () =>
+      (entities ?? []).map(entity => ({
+        id: stringifyEntityRef(entity),
+        entity,
+      })),
+    [entities],
+  );
   return (
     <Table<EntityRow>
       columnConfig={columnConfig}
-      data={[]} // wired in Task 5
+      data={rows}
+      isPending={loading}
+      error={error}
+      // Table-level pagination UI is not yet wired; the pagination prop on
+      // NextCatalogPageProps controls EntityListProvider's fetch mode only.
       pagination={{ type: 'none' }}
     />
   );
