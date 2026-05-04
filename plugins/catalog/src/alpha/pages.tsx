@@ -28,6 +28,8 @@ import {
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
 import {
+  catalogColumnCellDataRef,
+  catalogColumnHeaderDataRef,
   defaultEntityContentGroupDefinitions,
   EntityContentBlueprint,
   EntityContextMenuItemBlueprint,
@@ -71,8 +73,13 @@ export const catalogPage = PageBlueprint.makeWithOverrides({
   inputs: {
     filters: createExtensionInput([coreExtensionData.reactElement]),
     exportConfig: createExtensionInput([catalogExportConfigDataRef.optional()]),
+    columns: createExtensionInput([
+      catalogColumnHeaderDataRef.optional(),
+      catalogColumnCellDataRef.optional(),
+    ]),
   },
   configSchema: {
+    version: z.enum(['v1', 'v2']).default('v1'),
     pagination: z
       .union([
         z.boolean(),
@@ -102,12 +109,35 @@ export const catalogPage = PageBlueprint.makeWithOverrides({
       icon: <CategoryIcon fontSize="inherit" />,
       title: 'Catalog',
       loader: async () => {
-        const { NfsDefaultCatalogPage } = await import(
-          '../components/CatalogPage/DefaultCatalogPage'
-        );
         const filters = inputs.filters.map(filter =>
           filter.get(coreExtensionData.reactElement),
         );
+
+        if (config.version === 'v2') {
+          const { NextCatalogPage } = await import(
+            '../components/CatalogPage/NextCatalogPage'
+          );
+          const columns = inputs.columns
+            .map(c => ({
+              header: c.get(catalogColumnHeaderDataRef),
+              cell: c.get(catalogColumnCellDataRef),
+            }))
+            .filter(
+              (
+                c,
+              ): c is {
+                header: NonNullable<typeof c.header>;
+                cell: NonNullable<typeof c.cell>;
+              } => Boolean(c.header && c.cell),
+            );
+          return (
+            <NextCatalogPage
+              filters={<>{filters}</>}
+              columns={columns}
+              pagination={config.pagination}
+            />
+          );
+        }
 
         // Merge export customizers from all attached extensions
         const mergedExportSettings: CatalogExportSettings = {
@@ -135,6 +165,9 @@ export const catalogPage = PageBlueprint.makeWithOverrides({
           }
         }
 
+        const { NfsDefaultCatalogPage } = await import(
+          '../components/CatalogPage/DefaultCatalogPage'
+        );
         return (
           <NfsDefaultCatalogPage
             filters={<>{filters}</>}

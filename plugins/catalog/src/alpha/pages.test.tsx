@@ -20,7 +20,7 @@ import {
   createExtensionTester,
   renderInTestApp,
 } from '@backstage/frontend-test-utils';
-import { catalogEntityPage } from './pages';
+import { catalogEntityPage, catalogPage } from './pages';
 import {
   EntityContentBlueprint,
   EntityContextMenuItemBlueprint,
@@ -890,5 +890,55 @@ describe('Entity page', () => {
         expect(screen.queryByText('Should Not Render')).not.toBeInTheDocument();
       },
     );
+  });
+
+  describe('catalogPage version branching', () => {
+    it('renders the v1 page by default', async () => {
+      const tester = createExtensionTester(
+        Object.assign({ namespace: 'catalog' }, catalogPage),
+      );
+
+      await renderInTestApp(tester.reactElement(), {
+        apis: [
+          [catalogApiRef, mockCatalogApi],
+          [starredEntitiesApiRef, mockStarredEntitiesApi],
+        ],
+        mountedRoutes: { '/catalog': convertLegacyRouteRef(rootRouteRef) },
+      });
+
+      // v1 renders the legacy `NfsDefaultCatalogPage` with a heading
+      // (the v2 page does not render a page-level "Catalog" heading), and
+      // crucially does NOT render the v2 search input (role=searchbox).
+      expect(
+        await screen.findByRole('heading', { name: /catalog/i }),
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByRole('searchbox', { name: /search/i }),
+      ).not.toBeInTheDocument();
+    });
+
+    it('renders the v2 page when version is set to v2', async () => {
+      const tester = createExtensionTester(
+        Object.assign({ namespace: 'catalog' }, catalogPage),
+        { config: { version: 'v2' } },
+      );
+
+      await renderInTestApp(tester.reactElement(), {
+        apis: [
+          [catalogApiRef, mockCatalogApi],
+          [starredEntitiesApiRef, mockStarredEntitiesApi],
+        ],
+        mountedRoutes: {
+          '/catalog': convertLegacyRouteRef(rootRouteRef),
+          '/catalog/:namespace/:kind/:name':
+            convertLegacyRouteRef(entityRouteRef),
+        },
+      });
+
+      // v2's NextCatalogPage shows the search input.
+      expect(
+        await screen.findByRole('searchbox', { name: /search/i }),
+      ).toBeInTheDocument();
+    });
   });
 });
