@@ -35,6 +35,7 @@ import {
 import { convertLegacyRouteRef } from '@backstage/core-compat-api';
 import { rootRouteRef } from '../routes';
 import { Entity } from '@backstage/catalog-model';
+import defaultColumns from './columns';
 
 jest.setTimeout(30_000);
 
@@ -939,6 +940,41 @@ describe('Entity page', () => {
       expect(
         await screen.findByRole('searchbox', { name: /search/i }),
       ).toBeInTheDocument();
+    });
+
+    it('renders the six default columns when v2 is enabled', async () => {
+      const tester = createExtensionTester(
+        Object.assign({ namespace: 'catalog' }, catalogPage),
+        { config: { version: 'v2' } },
+      );
+      for (const column of defaultColumns) {
+        tester.add(column);
+      }
+
+      await renderInTestApp(tester.reactElement(), {
+        apis: [
+          [catalogApiRef, mockCatalogApi],
+          [starredEntitiesApiRef, mockStarredEntitiesApi],
+        ],
+        mountedRoutes: {
+          '/catalog': convertLegacyRouteRef(rootRouteRef),
+          '/catalog/:namespace/:kind/:name':
+            convertLegacyRouteRef(entityRouteRef),
+        },
+      });
+
+      for (const label of [
+        'Name',
+        'Owner',
+        'Type',
+        'Lifecycle',
+        'Description',
+        'Tags',
+      ]) {
+        expect(
+          await screen.findByRole('columnheader', { name: label }),
+        ).toBeInTheDocument();
+      }
     });
   });
 });
