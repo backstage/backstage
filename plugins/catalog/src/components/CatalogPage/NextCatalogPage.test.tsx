@@ -164,4 +164,62 @@ describe('NextCatalogPage', () => {
       );
     });
   });
+
+  it('dispatches an EntityTextFilter with the union of searchFields when typing', async () => {
+    const user = userEvent.setup();
+    const mockCatalogApi = catalogApiMock.mock({
+      queryEntities: jest.fn().mockResolvedValue({
+        items: [],
+        pageInfo: {},
+        totalItems: 0,
+      }),
+    });
+
+    await renderInTestApp(
+      <TestApiProvider apis={[[catalogApiRef, mockCatalogApi]]}>
+        <NextCatalogPage
+          filters={<SeedKindFilter />}
+          columns={[
+            {
+              header: {
+                id: 'name',
+                label: 'Name',
+                searchFields: ['metadata.name', 'metadata.title'],
+              },
+              cell: entity => <Cell>{entity.metadata.name}</Cell>,
+            },
+            {
+              header: {
+                id: 'tags',
+                label: 'Tags',
+                searchFields: ['metadata.tags'],
+              },
+              cell: entity => (
+                <Cell>{(entity.metadata.tags ?? []).join(',')}</Cell>
+              ),
+            },
+          ]}
+          pagination
+        />
+      </TestApiProvider>,
+    );
+
+    // Wait for the page to render.
+    await screen.findByRole('columnheader', { name: 'Name' });
+
+    mockCatalogApi.queryEntities.mockClear();
+    const search = await screen.findByRole('searchbox', { name: /search/i });
+    await user.type(search, 'foo');
+
+    await waitFor(() => {
+      expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith(
+        expect.objectContaining({
+          fullTextFilter: {
+            term: 'foo',
+            fields: ['metadata.name', 'metadata.title', 'metadata.tags'],
+          },
+        }),
+      );
+    });
+  });
 });

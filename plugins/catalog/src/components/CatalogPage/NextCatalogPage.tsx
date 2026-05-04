@@ -19,6 +19,7 @@ import {
   EntityListPagination,
   EntityListProvider,
   EntityOrderFilter,
+  EntityTextFilter,
   useEntityList,
 } from '@backstage/plugin-catalog-react';
 import type { CatalogColumnHeader } from '@backstage/plugin-catalog-react/alpha';
@@ -26,7 +27,7 @@ import { Table } from '@backstage/ui';
 import type { ColumnConfig, SortDescriptor } from '@backstage/ui';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import type { Entity } from '@backstage/catalog-model';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type { ReactElement, ReactNode } from 'react';
 
 /**
@@ -75,7 +76,10 @@ function buildColumnConfig(
 
 function NextCatalogTable(props: { columns: NextCatalogPageProps['columns'] }) {
   const { entities, loading, error, updateFilters } = useEntityList();
-  const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>();
+  const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor | null>(
+    null,
+  );
+  const [searchTerm, setSearchTerm] = useState('');
 
   const headersById = useMemo(
     () => new Map(props.columns.map(c => [c.header.id, c.header])),
@@ -95,6 +99,27 @@ function NextCatalogTable(props: { columns: NextCatalogPageProps['columns'] }) {
     [entities],
   );
 
+  const searchFields = useMemo(() => {
+    const seen = new Set<string>();
+    for (const { header } of props.columns) {
+      for (const f of header.searchFields ?? []) {
+        seen.add(f);
+      }
+    }
+    return [...seen];
+  }, [props.columns]);
+
+  useEffect(() => {
+    const handle = setTimeout(() => {
+      updateFilters({
+        text: searchTerm
+          ? new EntityTextFilter([searchTerm, ...searchFields])
+          : undefined,
+      });
+    }, 250);
+    return () => clearTimeout(handle);
+  }, [searchTerm, searchFields, updateFilters]);
+
   const onSortChange = (descriptor: SortDescriptor) => {
     setSortDescriptor(descriptor);
     const header = headersById.get(String(descriptor.column));
@@ -112,16 +137,24 @@ function NextCatalogTable(props: { columns: NextCatalogPageProps['columns'] }) {
   };
 
   return (
-    <Table<EntityRow>
-      columnConfig={columnConfig}
-      data={rows}
-      isPending={loading}
-      error={error}
-      // Table-level pagination UI is not yet wired; the pagination prop on
-      // NextCatalogPageProps controls EntityListProvider's fetch mode only.
-      pagination={{ type: 'none' }}
-      sort={{ descriptor: sortDescriptor ?? null, onSortChange }}
-    />
+    <>
+      <input
+        type="search"
+        aria-label="Search entities"
+        value={searchTerm}
+        onChange={e => setSearchTerm(e.target.value)}
+      />
+      <Table<EntityRow>
+        columnConfig={columnConfig}
+        data={rows}
+        isPending={loading}
+        error={error}
+        // Table-level pagination UI is not yet wired; the pagination prop on
+        // NextCatalogPageProps controls EntityListProvider's fetch mode only.
+        pagination={{ type: 'none' }}
+        sort={{ descriptor: sortDescriptor, onSortChange }}
+      />
+    </>
   );
 }
 
