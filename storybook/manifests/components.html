@@ -576,7 +576,7 @@
 <header>
   <div class="wrap">
     <h1>Manifest Debugger</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">50 components ok</span><span class="filter-pill ok" aria-disabled="true">473 stories ok</span></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">1/50 prop type error</a><a class="filter-pill info" data-k="infos" href="#filter-infos">1/50 info</a><span class="filter-pill ok" aria-disabled="true">476 stories ok</span></div>
   </div>
 </header>
 <main>
@@ -9850,79 +9850,75 @@ import { RiCloudy2Line, RiEmotionHappyLine, RiHeartLine, RiMore2Line } from "@re
 </article>
 <article
   class="card 
-  no-error 
-  no-info 
+  has-error 
+  has-info 
   no-story-error
   no-doc-error"
   role="listitem"
   aria-label="PluginHeaderandHeader">
   <div class="head">
     <div class="title">
-      <h2><span class="status-dot dot-ok"></span> PluginHeaderandHeader</h2>
+      <h2><span class="status-dot dot-err"></span> PluginHeaderandHeader</h2>
       <div class="badges">
-        <label for="c-30-recipes-pluginheader-and-header-props" class="badge ok as-toggle">10 prop types</label>
-        
-        <label for="c-30-recipes-pluginheader-and-header-stories" class="badge ok as-toggle">6 stories</label>
+        <label for="c-30-recipes-pluginheader-and-header-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-30-recipes-pluginheader-and-header-info" class="badge info as-toggle">1 info</label>
+        <label for="c-30-recipes-pluginheader-and-header-stories" class="badge ok as-toggle">9 stories</label>
         
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/recipes/PluginHeaderAndHeader.stories.tsx">recipes-pluginheader-and-header · ./packages/ui/src/recipes/PluginHeaderAndHeader.stories.tsx</div>
     
-    <div class="hint">A secondary header with title, breadcrumbs, tabs, and actions.</div>
-    <div class="kv"><span class="chip">public:  </span></div>
+    
+    
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  
-  
+  <input id="c-30-recipes-pluginheader-and-header-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-30-recipes-pluginheader-and-header-info" class="tg tg-info" type="checkbox" hidden />
   <input id="c-30-recipes-pluginheader-and-header-stories" class="tg tg-stories" type="checkbox" hidden />
   
-  <input id="c-30-recipes-pluginheader-and-header-props" class="tg tg-props" type="checkbox" hidden />
+  
 
   <div class="panels">
     
-    
-    
-        <div class="panel panel-props">
-          <div class="note ok">
-            <div class="row">
-              <span class="ex-name">Prop types <small>(react-docgen)</small></span>
-              <span class="badge ok">10 prop types</span>
-            </div>
-            <pre><code>Component: packages/ui/src/components/Header/Header.tsx::Header</code></pre>
-            <pre><code>Props:</code></pre>
-            <pre><code>activeTabId?: string | null
+        <div class="panel panel-err">
+          
+    <div class="note err">
+      <div class="note-title">Prop type error</div>
+      <div class="note-body"><pre><code>File: /home/runner/work/backstage/backstage/node_modules/@backstage/core-components/src/index.ts
+Error:
+Component files in node_modules are not supported.
+The distributed files in node_modules usually don&#39;t contain the necessary comments or types needed to analyze component information.
+Configure TypeScript path aliases to map your package name to the source file instead.
 
-/**
- * @deprecated The breadcrumbs prop will be removed in a future release.
- */
-breadcrumbs?: HeaderBreadcrumb[]
+Example (tsconfig.json):
+{
+  &quot;compilerOptions&quot;: {
+    &quot;baseUrl&quot;: &quot;.&quot;,
+    &quot;paths&quot;: {
+      &quot;@design-system/button&quot;: [&quot;src/components/Button.tsx&quot;],
+      &quot;@design-system/*&quot;: [&quot;src/components/*&quot;]
+    }
+  }
+}
 
-className?: string
+Then import using:
+import { Button } from &#39;@design-system/button&#39;
 
-customActions?: React.ReactNode
-
-/**
- * Markdown string rendered below the title. Only inline links are supported.
- * Bold, italic, and block-level markdown are not rendered.
- */
-description?: string
-
-metadata?: HeaderMetadataItem[]
-
-/**
- * Makes the title-and-actions row stick to the top of its nearest scroll
- * container while the rest of the header content scrolls away.
- */
-sticky?: boolean
-
-tabs?: HeaderNavTabItem[]
-
-tags?: HeaderTag[]
-
-title?: string</code></pre>
-          </div>
+Storybook resolves tsconfig paths automatically.
+Code:
+/* File in node_modules */</code></pre></div>
+    </div>
         </div>
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
     
         <div class="panel panel-stories">
           
@@ -9938,13 +9934,15 @@ title?: string</code></pre>
     ButtonIcon,
     Card,
     Container,
+    Header as CoreHeader,
+    Page as CorePage,
     Flex,
     Header,
     Menu,
     MenuItem,
     MenuTrigger,
     PluginHeader,
-} from "@backstage/ui";
+} from "@backstage/core-components";
 import { MemoryRouter } from "react-router-dom";
 import {
     RiBox3Line,
@@ -9977,6 +9975,32 @@ import {
             </div>
             <div class="note ok">
               <div class="row">
+                <span class="ex-name">No Header With Tabs</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const NoHeaderWithTabs = () =&gt; (
+  &lt;&gt;
+    &lt;PluginHeader
+      icon={&lt;RiCodeSSlashLine /&gt;}
+      title=&quot;APIs&quot;
+      tabs={[
+        { id: &#39;overview&#39;, label: &#39;Overview&#39;, href: &#39;/apis&#39; },
+        {
+          id: &#39;definitions&#39;,
+          label: &#39;Definitions&#39;,
+          href: &#39;/apis/definitions&#39;,
+        },
+        { id: &#39;consumers&#39;, label: &#39;Consumers&#39;, href: &#39;/apis/consumers&#39; },
+      ]}
+    /&gt;
+    &lt;PageContent /&gt;
+  &lt;/&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
                 <span class="ex-name">Simple Header</span>
                 <span class="badge ok">story ok</span>
               </div>
@@ -9987,6 +10011,52 @@ import {
     &lt;PluginHeader icon={&lt;RiCodeSSlashLine /&gt;} title=&quot;APIs&quot; /&gt;
     &lt;Header title=&quot;payments-api&quot; /&gt;
     &lt;PageContent /&gt;
+  &lt;/&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Core Components Header</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const CoreComponentsHeader = () =&gt; (
+  &lt;&gt;
+    &lt;PluginHeader icon={&lt;RiCodeSSlashLine /&gt;} title=&quot;APIs&quot; /&gt;
+    &lt;CorePage themeId=&quot;home&quot;&gt;
+      &lt;CoreHeader title=&quot;payments-api&quot; /&gt;
+      &lt;PageContent /&gt;
+    &lt;/CorePage&gt;
+  &lt;/&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Core Components Header With Tabs</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const CoreComponentsHeaderWithTabs = () =&gt; (
+  &lt;&gt;
+    &lt;PluginHeader
+      icon={&lt;RiCodeSSlashLine /&gt;}
+      title=&quot;APIs&quot;
+      tabs={[
+        { id: &#39;overview&#39;, label: &#39;Overview&#39;, href: &#39;/apis&#39; },
+        {
+          id: &#39;definitions&#39;,
+          label: &#39;Definitions&#39;,
+          href: &#39;/apis/definitions&#39;,
+        },
+        { id: &#39;consumers&#39;, label: &#39;Consumers&#39;, href: &#39;/apis/consumers&#39; },
+      ]}
+    /&gt;
+    &lt;CorePage themeId=&quot;home&quot;&gt;
+      &lt;CoreHeader title=&quot;payments-api&quot; /&gt;
+      &lt;PageContent /&gt;
+    &lt;/CorePage&gt;
   &lt;/&gt;
 );</code></pre>
             </div>
@@ -16147,7 +16217,445 @@ virtualized?: | boolean
   </div>
 </article>
     </div>
+    <div class="error-groups" role="region" aria-label="Prop type error groups">
+        <section class="group">
+          <input id="component-file-in-node-modules-toggle" class="group-tg" type="checkbox" hidden />
+          <label for="component-file-in-node-modules-toggle" class="group-header">
+            <span class="caret">▸</span>
+            <span class="group-title">Component file in node_modules</span>
+            <span class="group-count">1</span>
+          </label>
+          <div class="group-cards">
+<article
+  class="card 
+  has-error 
+  has-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="PluginHeaderandHeader">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-err"></span> PluginHeaderandHeader</h2>
+      <div class="badges">
+        <label for="c-error-0-recipes-pluginheader-and-header-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-0-recipes-pluginheader-and-header-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-0-recipes-pluginheader-and-header-stories" class="badge ok as-toggle">9 stories</label>
+        
+      </div>
+    </div>
+    <div class="meta" title="./packages/ui/src/recipes/PluginHeaderAndHeader.stories.tsx">recipes-pluginheader-and-header · ./packages/ui/src/recipes/PluginHeaderAndHeader.stories.tsx</div>
     
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  <input id="c-error-0-recipes-pluginheader-and-header-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-0-recipes-pluginheader-and-header-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-0-recipes-pluginheader-and-header-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  
+
+  <div class="panels">
+    
+        <div class="panel panel-err">
+          
+    <div class="note err">
+      <div class="note-title">Prop type error</div>
+      <div class="note-body"><pre><code>File: /home/runner/work/backstage/backstage/node_modules/@backstage/core-components/src/index.ts
+Error:
+Component files in node_modules are not supported.
+The distributed files in node_modules usually don&#39;t contain the necessary comments or types needed to analyze component information.
+Configure TypeScript path aliases to map your package name to the source file instead.
+
+Example (tsconfig.json):
+{
+  &quot;compilerOptions&quot;: {
+    &quot;baseUrl&quot;: &quot;.&quot;,
+    &quot;paths&quot;: {
+      &quot;@design-system/button&quot;: [&quot;src/components/Button.tsx&quot;],
+      &quot;@design-system/*&quot;: [&quot;src/components/*&quot;]
+    }
+  }
+}
+
+Then import using:
+import { Button } from &#39;@design-system/button&#39;
+
+Storybook resolves tsconfig paths automatically.
+Code:
+/* File in node_modules */</code></pre></div>
+    </div>
+        </div>
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import {
+    BUIProvider,
+    Button,
+    ButtonIcon,
+    Card,
+    Container,
+    Header as CoreHeader,
+    Page as CorePage,
+    Flex,
+    Header,
+    Menu,
+    MenuItem,
+    MenuTrigger,
+    PluginHeader,
+} from "@backstage/core-components";
+import { MemoryRouter } from "react-router-dom";
+import {
+    RiBox3Line,
+    RiCodeSSlashLine,
+    RiDownloadLine,
+    RiEdit2Line,
+    RiGitBranchLine,
+    RiMore2Line,
+    RiPlayLine,
+    RiRefreshLine,
+    RiSettings4Line,
+    RiShareBoxLine,
+} from "@remixicon/react";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">No Header</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const NoHeader = () =&gt; (
+  &lt;&gt;
+    &lt;PluginHeader icon={&lt;RiCodeSSlashLine /&gt;} title=&quot;APIs&quot; /&gt;
+    &lt;PageContent /&gt;
+  &lt;/&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">No Header With Tabs</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const NoHeaderWithTabs = () =&gt; (
+  &lt;&gt;
+    &lt;PluginHeader
+      icon={&lt;RiCodeSSlashLine /&gt;}
+      title=&quot;APIs&quot;
+      tabs={[
+        { id: &#39;overview&#39;, label: &#39;Overview&#39;, href: &#39;/apis&#39; },
+        {
+          id: &#39;definitions&#39;,
+          label: &#39;Definitions&#39;,
+          href: &#39;/apis/definitions&#39;,
+        },
+        { id: &#39;consumers&#39;, label: &#39;Consumers&#39;, href: &#39;/apis/consumers&#39; },
+      ]}
+    /&gt;
+    &lt;PageContent /&gt;
+  &lt;/&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Simple Header</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const SimpleHeader = () =&gt; (
+  &lt;&gt;
+    &lt;PluginHeader icon={&lt;RiCodeSSlashLine /&gt;} title=&quot;APIs&quot; /&gt;
+    &lt;Header title=&quot;payments-api&quot; /&gt;
+    &lt;PageContent /&gt;
+  &lt;/&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Core Components Header</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const CoreComponentsHeader = () =&gt; (
+  &lt;&gt;
+    &lt;PluginHeader icon={&lt;RiCodeSSlashLine /&gt;} title=&quot;APIs&quot; /&gt;
+    &lt;CorePage themeId=&quot;home&quot;&gt;
+      &lt;CoreHeader title=&quot;payments-api&quot; /&gt;
+      &lt;PageContent /&gt;
+    &lt;/CorePage&gt;
+  &lt;/&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Core Components Header With Tabs</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const CoreComponentsHeaderWithTabs = () =&gt; (
+  &lt;&gt;
+    &lt;PluginHeader
+      icon={&lt;RiCodeSSlashLine /&gt;}
+      title=&quot;APIs&quot;
+      tabs={[
+        { id: &#39;overview&#39;, label: &#39;Overview&#39;, href: &#39;/apis&#39; },
+        {
+          id: &#39;definitions&#39;,
+          label: &#39;Definitions&#39;,
+          href: &#39;/apis/definitions&#39;,
+        },
+        { id: &#39;consumers&#39;, label: &#39;Consumers&#39;, href: &#39;/apis/consumers&#39; },
+      ]}
+    /&gt;
+    &lt;CorePage themeId=&quot;home&quot;&gt;
+      &lt;CoreHeader title=&quot;payments-api&quot; /&gt;
+      &lt;PageContent /&gt;
+    &lt;/CorePage&gt;
+  &lt;/&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Tabs</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithTabs = () =&gt; (
+  &lt;&gt;
+    &lt;PluginHeader
+      icon={&lt;RiBox3Line /&gt;}
+      title=&quot;Catalog&quot;
+      titleLink=&quot;/&quot;
+      tabs={[
+        { id: &#39;catalog&#39;, label: &#39;Catalog&#39;, href: &#39;/catalog&#39; },
+        { id: &#39;apis&#39;, label: &#39;APIs&#39;, href: &#39;/apis&#39; },
+        { id: &#39;resources&#39;, label: &#39;Resources&#39;, href: &#39;/resources&#39; },
+        { id: &#39;templates&#39;, label: &#39;Templates&#39;, href: &#39;/templates&#39; },
+        { id: &#39;docs&#39;, label: &#39;Docs&#39;, href: &#39;/docs&#39; },
+      ]}
+      customActions={
+        &lt;&gt;
+          &lt;ButtonIcon
+            variant=&quot;secondary&quot;
+            icon={&lt;RiSettings4Line /&gt;}
+            aria-label=&quot;Settings&quot;
+          /&gt;
+          &lt;MenuTrigger&gt;
+            &lt;ButtonIcon
+              variant=&quot;secondary&quot;
+              icon={&lt;RiMore2Line /&gt;}
+              aria-label=&quot;More options&quot;
+            /&gt;
+            &lt;Menu placement=&quot;bottom end&quot;&gt;
+              &lt;MenuItem href=&quot;/catalog/import&quot;&gt;Import component&lt;/MenuItem&gt;
+              &lt;MenuItem href=&quot;/catalog/register&quot;&gt;Register existing&lt;/MenuItem&gt;
+              &lt;MenuItem href=&quot;/catalog/docs&quot;&gt;View documentation&lt;/MenuItem&gt;
+            &lt;/Menu&gt;
+          &lt;/MenuTrigger&gt;
+        &lt;/&gt;
+      }
+    /&gt;
+    &lt;Header
+      title=&quot;payment-service&quot;
+      customActions={
+        &lt;&gt;
+          &lt;Button variant=&quot;secondary&quot; iconStart={&lt;RiEdit2Line /&gt;}&gt;
+            Edit
+          &lt;/Button&gt;
+          &lt;Button variant=&quot;primary&quot; iconStart={&lt;RiShareBoxLine /&gt;}&gt;
+            Unregister
+          &lt;/Button&gt;
+        &lt;/&gt;
+      }
+    /&gt;
+    &lt;PageContent /&gt;
+  &lt;/&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Sub Tabs</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithSubTabs = () =&gt; {
+  return (
+    &lt;&gt;
+      &lt;PluginHeader
+        icon={&lt;RiGitBranchLine /&gt;}
+        title=&quot;CI/CD&quot;
+        titleLink=&quot;/&quot;
+        tabs={[
+          { id: &#39;builds&#39;, label: &#39;Builds&#39;, href: &#39;/builds&#39; },
+          { id: &#39;pipelines&#39;, label: &#39;Pipelines&#39;, href: &#39;/pipelines&#39; },
+          { id: &#39;deployments&#39;, label: &#39;Deployments&#39;, href: &#39;/deployments&#39; },
+          { id: &#39;settings&#39;, label: &#39;Settings&#39;, href: &#39;/settings&#39; },
+        ]}
+        customActions={
+          &lt;&gt;
+            &lt;ButtonIcon
+              variant=&quot;secondary&quot;
+              icon={&lt;RiRefreshLine /&gt;}
+              aria-label=&quot;Refresh&quot;
+            /&gt;
+          &lt;/&gt;
+        }
+      /&gt;
+      &lt;Header
+        title=&quot;Production deployment pipeline run&quot;
+        tabs={subTabs}
+        customActions={
+          &lt;&gt;
+            &lt;Button variant=&quot;secondary&quot; iconStart={&lt;RiDownloadLine /&gt;}&gt;
+              Download logs
+            &lt;/Button&gt;
+            &lt;Button variant=&quot;primary&quot; iconStart={&lt;RiPlayLine /&gt;}&gt;
+              Re-run pipeline
+            &lt;/Button&gt;
+          &lt;/&gt;
+        }
+      /&gt;
+      &lt;PageContent /&gt;
+    &lt;/&gt;
+  );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Sub Tabs And Tags</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithSubTabsAndTags = () =&gt; {
+  return (
+    &lt;&gt;
+      &lt;PluginHeader
+        icon={&lt;RiGitBranchLine /&gt;}
+        title=&quot;CI/CD&quot;
+        titleLink=&quot;/&quot;
+        tabs={[
+          { id: &#39;builds&#39;, label: &#39;Builds&#39;, href: &#39;/builds&#39; },
+          { id: &#39;pipelines&#39;, label: &#39;Pipelines&#39;, href: &#39;/pipelines&#39; },
+          { id: &#39;deployments&#39;, label: &#39;Deployments&#39;, href: &#39;/deployments&#39; },
+          { id: &#39;settings&#39;, label: &#39;Settings&#39;, href: &#39;/settings&#39; },
+        ]}
+        customActions={
+          &lt;&gt;
+            &lt;ButtonIcon
+              variant=&quot;secondary&quot;
+              icon={&lt;RiRefreshLine /&gt;}
+              aria-label=&quot;Refresh&quot;
+            /&gt;
+          &lt;/&gt;
+        }
+      /&gt;
+      &lt;Header
+        title=&quot;Production deployment pipeline run&quot;
+        tabs={subTabs}
+        tags={[
+          { label: &#39;Production&#39; },
+          { label: &#39;Owner: Platform&#39;, href: &#39;/catalog?owner=platform&#39; },
+          { label: &#39;Tier 1&#39; },
+        ]}
+        customActions={
+          &lt;&gt;
+            &lt;Button variant=&quot;secondary&quot; iconStart={&lt;RiDownloadLine /&gt;}&gt;
+              Download logs
+            &lt;/Button&gt;
+            &lt;Button variant=&quot;primary&quot; iconStart={&lt;RiPlayLine /&gt;}&gt;
+              Re-run pipeline
+            &lt;/Button&gt;
+          &lt;/&gt;
+        }
+      /&gt;
+      &lt;PageContent /&gt;
+    &lt;/&gt;
+  );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Sticky Header</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithStickyHeader = () =&gt; {
+  return (
+    &lt;&gt;
+      &lt;PluginHeader
+        icon={&lt;RiGitBranchLine /&gt;}
+        title=&quot;CI/CD&quot;
+        titleLink=&quot;/&quot;
+        tabs={[
+          { id: &#39;builds&#39;, label: &#39;Builds&#39;, href: &#39;/builds&#39; },
+          { id: &#39;pipelines&#39;, label: &#39;Pipelines&#39;, href: &#39;/pipelines&#39; },
+          { id: &#39;deployments&#39;, label: &#39;Deployments&#39;, href: &#39;/deployments&#39; },
+          { id: &#39;settings&#39;, label: &#39;Settings&#39;, href: &#39;/settings&#39; },
+        ]}
+        customActions={
+          &lt;&gt;
+            &lt;ButtonIcon
+              variant=&quot;secondary&quot;
+              icon={&lt;RiRefreshLine /&gt;}
+              aria-label=&quot;Refresh&quot;
+            /&gt;
+          &lt;/&gt;
+        }
+      /&gt;
+      &lt;Header
+        title=&quot;Production deployment pipeline run&quot;
+        sticky
+        tabs={subTabs}
+        customActions={
+          &lt;&gt;
+            &lt;Button variant=&quot;secondary&quot; iconStart={&lt;RiDownloadLine /&gt;}&gt;
+              Download logs
+            &lt;/Button&gt;
+            &lt;Button variant=&quot;primary&quot; iconStart={&lt;RiPlayLine /&gt;}&gt;
+              Re-run pipeline
+            &lt;/Button&gt;
+          &lt;/&gt;
+        }
+      /&gt;
+      &lt;LongPageContent /&gt;
+    &lt;/&gt;
+  );
+};</code></pre>
+            </div>
+        </div>
+    
+  </div>
+</article></div>
+        </section>
+      </div>
     
     
   </div>
