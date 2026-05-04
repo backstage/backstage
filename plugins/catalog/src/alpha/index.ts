@@ -25,6 +25,8 @@ export type {
 } from '../components/CatalogExportButton';
 export { NfsDefaultCatalogPage as CatalogIndexPage } from '../components/CatalogPage';
 export type { DefaultCatalogPageProps as CatalogIndexPageProps } from '../components/CatalogPage';
+export { NextCatalogPage } from '../components/CatalogPage/NextCatalogPage';
+export type { NextCatalogPageProps } from '../components/CatalogPage/NextCatalogPage';
 export type {
   CatalogTableRow,
   CatalogTableColumnsFunc,
