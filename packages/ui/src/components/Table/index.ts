@@ -35,6 +35,7 @@ export type {
   CellProfileProps,
   ColumnOwnProps,
   ColumnProps,
+  ColumnSize,
   RowOwnProps,
   RowProps,
   TableBodyOwnProps,

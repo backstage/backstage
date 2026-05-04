@@ -24,9 +24,21 @@ import {
 } from 'react-aria-components';
 import type { ReactElement, ReactNode } from 'react';
 import type { SortDescriptor as ReactStatelySortDescriptor } from 'react-stately';
-import type { ColumnSize, ColumnStaticSize } from 'react-stately';
+import type {
+  ColumnSize as ReactStatelyColumnSize,
+  ColumnStaticSize,
+} from 'react-stately';
 import type { TextColors } from '../../types';
 import { TablePaginationProps } from '../TablePagination';
+
+/**
+ * Width descriptor for a {@link ColumnConfig} column. Accepts a number
+ * (pixels), a percentage string (`'50%'`), or a fractional value such as
+ * `'1fr'`.
+ *
+ * @public
+ */
+export type ColumnSize = ReactStatelyColumnSize;
 
 /**
  * @public

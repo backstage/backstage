@@ -16,6 +16,7 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { createExtensionDataRef } from '@backstage/frontend-plugin-api';
+import type { ColumnSize } from '@backstage/ui';
 import { ReactElement } from 'react';
 
 /** @internal */
@@ -112,3 +113,30 @@ export const entityCardTypeDataRef =
   createExtensionDataRef<EntityCardType>().with({
     id: 'catalog.entity-card-type',
   });
+
+/**
+ * Header descriptor for a `CatalogColumnBlueprint` column.
+ *
+ * @alpha
+ */
+export type CatalogColumnHeader = {
+  id: string;
+  label: string;
+  orderField?: string;
+  searchFields?: string[];
+  filter?: (entity: Entity) => boolean;
+  width?: ColumnSize;
+};
+
+/** @alpha */
+export const catalogColumnHeaderDataRef =
+  createExtensionDataRef<CatalogColumnHeader>().with({
+    id: 'catalog.column-header',
+  });
+
+/** @alpha */
+export const catalogColumnCellDataRef = createExtensionDataRef<
+  (entity: Entity) => ReactElement
+>().with({
+  id: 'catalog.column-cell',
+});
