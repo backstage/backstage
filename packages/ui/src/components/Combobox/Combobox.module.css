@@ -84,6 +84,7 @@
     place-content: center;
     flex-shrink: 0;
     color: var(--bui-fg-secondary);
+    pointer-events: none;
 
     .bui-Combobox[data-size='small'] & svg {
       width: 1rem;
@@ -99,6 +100,7 @@
   .bui-ComboboxInputField {
     flex: 1;
     min-width: 0;
+    width: 100%;
     border: none;
     outline: none;
     background-color: transparent;

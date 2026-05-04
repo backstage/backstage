@@ -151,7 +151,7 @@ export const WithLabelAndDescription = meta.story({
 export const WithDefaultValue = meta.story({
   args: {
     ...Default.input.args,
-    defaultSelectedKey: 'serif',
+    defaultValue: 'serif',
   },
 });
 
@@ -179,8 +179,8 @@ export const DisabledOption = meta.story({
 export const WithValue = meta.story({
   args: {
     ...Default.input.args,
-    selectedKey: 'mono',
-    defaultSelectedKey: 'serif',
+    value: 'mono',
+    defaultValue: 'serif',
   },
 });
 

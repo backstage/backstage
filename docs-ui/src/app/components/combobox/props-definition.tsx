@@ -19,17 +19,22 @@ export const comboboxPropDefs: Record<string, PropDef> = {
   },
   allowsCustomValue: {
     type: 'boolean',
-    default: false,
+    default: 'false',
     description:
       'When true, the typed text is accepted as the value on blur or Enter even if it does not match any option.',
   },
-  selectedKey: {
+  value: {
     type: 'string',
     description: 'Controlled selected value.',
   },
-  defaultSelectedKey: {
+  defaultValue: {
     type: 'string',
     description: 'Initial value for uncontrolled usage.',
+  },
+  onChange: {
+    type: 'enum',
+    values: ['(value: Key | null) => void'],
+    description: 'Called when the selected option changes.',
   },
   inputValue: {
     type: 'string',
@@ -43,11 +48,6 @@ export const comboboxPropDefs: Record<string, PropDef> = {
     type: 'enum',
     values: ['(value: string) => void'],
     description: 'Called when the input text changes.',
-  },
-  onSelectionChange: {
-    type: 'enum',
-    values: ['(key: Key | null) => void'],
-    description: 'Called when the selected option changes.',
   },
   label: {
     type: 'string',
