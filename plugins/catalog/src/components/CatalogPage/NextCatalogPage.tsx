@@ -20,6 +20,8 @@ import {
   EntityListProvider,
   EntityOrderFilter,
   EntityTextFilter,
+  entityRouteParams,
+  entityRouteRef,
   useEntityList,
 } from '@backstage/plugin-catalog-react';
 import type { CatalogColumnHeader } from '@backstage/plugin-catalog-react/alpha';
@@ -27,6 +29,7 @@ import { Table } from '@backstage/ui';
 import type { ColumnConfig, SortDescriptor } from '@backstage/ui';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import type { Entity } from '@backstage/catalog-model';
+import { useRouteRef } from '@backstage/core-plugin-api';
 import { useEffect, useMemo, useState } from 'react';
 import type { ReactElement, ReactNode } from 'react';
 
@@ -76,6 +79,7 @@ function buildColumnConfig(
 
 function NextCatalogTable(props: { columns: NextCatalogPageProps['columns'] }) {
   const { entities, loading, error, updateFilters } = useEntityList();
+  const entityRoute = useRouteRef(entityRouteRef);
   const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor | null>(
     null,
   );
@@ -89,6 +93,12 @@ function NextCatalogTable(props: { columns: NextCatalogPageProps['columns'] }) {
   const columnConfig = useMemo(
     () => buildColumnConfig(props.columns),
     [props.columns],
+  );
+  const rowConfig = useMemo(
+    () => ({
+      getHref: (row: EntityRow) => entityRoute(entityRouteParams(row.entity)),
+    }),
+    [entityRoute],
   );
   const rows = useMemo<EntityRow[]>(
     () =>
@@ -153,6 +163,7 @@ function NextCatalogTable(props: { columns: NextCatalogPageProps['columns'] }) {
         // NextCatalogPageProps controls EntityListProvider's fetch mode only.
         pagination={{ type: 'none' }}
         sort={{ descriptor: sortDescriptor, onSortChange }}
+        rowConfig={rowConfig}
       />
     </>
   );

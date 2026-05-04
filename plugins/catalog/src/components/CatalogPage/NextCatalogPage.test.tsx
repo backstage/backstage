@@ -17,6 +17,7 @@
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import {
   catalogApiRef,
+  entityRouteRef,
   EntityKindFilter,
   useEntityList,
 } from '@backstage/plugin-catalog-react';
@@ -65,6 +66,11 @@ describe('NextCatalogPage', () => {
       <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
         <NextCatalogPage filters={null} columns={columns} pagination />
       </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
     );
 
     expect(
@@ -108,6 +114,11 @@ describe('NextCatalogPage', () => {
           pagination
         />
       </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
     );
 
     expect(await screen.findByText('alpha')).toBeInTheDocument();
@@ -141,6 +152,11 @@ describe('NextCatalogPage', () => {
           pagination
         />
       </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
     );
 
     // Wait for the initial fetch to settle.
@@ -202,6 +218,11 @@ describe('NextCatalogPage', () => {
           pagination
         />
       </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
     );
 
     // Wait for the page to render.
@@ -221,5 +242,50 @@ describe('NextCatalogPage', () => {
         }),
       );
     });
+  });
+
+  it('links each row to the entity page route', async () => {
+    const mockCatalogApi = catalogApiMock.mock({
+      queryEntities: jest.fn().mockResolvedValueOnce({
+        items: [
+          {
+            apiVersion: 'backstage.io/v1alpha1',
+            kind: 'Component',
+            metadata: { name: 'alpha', namespace: 'default' },
+          },
+        ],
+        pageInfo: {},
+        totalItems: 1,
+      }),
+    });
+
+    await renderInTestApp(
+      <TestApiProvider apis={[[catalogApiRef, mockCatalogApi]]}>
+        <NextCatalogPage
+          filters={<SeedKindFilter />}
+          columns={[
+            {
+              header: { id: 'name', label: 'Name' },
+              cell: entity => <Cell>{entity.metadata.name}</Cell>,
+            },
+          ]}
+          pagination
+        />
+      </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
+    );
+
+    // BUI's `Table` exposes the resolved row href via the `data-href`
+    // attribute on the row element rather than rendering an inner `<a>`.
+    const cell = await screen.findByRole('rowheader', { name: 'alpha' });
+    const row = cell.closest('[role="row"]');
+    expect(row).toHaveAttribute(
+      'data-href',
+      '/catalog/default/component/alpha',
+    );
   });
 });
