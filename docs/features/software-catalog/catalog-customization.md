@@ -319,6 +319,76 @@ periodically.
 For more details on extension overrides and the different override patterns
 available, see the [extension overrides](../../frontend-system/architecture/25-extension-overrides.md) documentation.
 
+## Catalog index page v2
+
+The catalog index page has an opt-in v2 implementation that uses the `@backstage/ui` table and supports columns contributed by frontend plugins and modules. Enable it through the `page:catalog` extension config:
+
+```yaml title="app-config.yaml"
+app:
+  extensions:
+    - page:catalog:
+        config:
+          version: 'v2'
+```
+
+When v2 is enabled, the catalog plugin registers six default columns: `name`, `owner`, `type`, `lifecycle`, `description`, and `tags`.
+
+### Adding a column
+
+Frontend modules contribute columns by creating an extension with `CatalogColumnBlueprint` from `@backstage/plugin-catalog-react/alpha`:
+
+```tsx title="packages/app/src/catalog/CostColumn.tsx"
+import { CatalogColumnBlueprint } from '@backstage/plugin-catalog-react/alpha';
+import { CellText } from '@backstage/ui';
+
+export const costColumn = CatalogColumnBlueprint.make({
+  name: 'cost',
+  params: {
+    id: 'cost',
+    label: 'Monthly cost',
+    cell: entity => (
+      <CellText
+        title={entity.metadata.annotations?.['cost.io/monthly'] ?? '—'}
+      />
+    ),
+    orderField: 'metadata.annotations.cost.io/monthly',
+    searchFields: ['metadata.annotations.cost.io/monthly'],
+  },
+});
+```
+
+Then install it as a frontend module:
+
+```tsx title="packages/app/src/catalog/catalogCustomizations.tsx"
+import { createFrontendModule } from '@backstage/frontend-plugin-api';
+import { costColumn } from './CostColumn';
+
+export default createFrontendModule({
+  pluginId: 'catalog',
+  extensions: [costColumn],
+});
+```
+
+The `orderField` parameter makes the column header sortable, and the catalog backend handles the ordering. The `searchFields` parameter lists the entity fields the page includes in `fullTextFilter` when the user types in the search box. Both parameters are optional — omit them for purely visual columns.
+
+:::note Note
+
+The `cell` callback must return a BUI cell element such as `<Cell>`, `<CellText>`, or `<CellProfile>` from `@backstage/ui`. A bare React node like `<span>...</span>` renders as an empty cell.
+
+:::
+
+### Disabling a default column
+
+To hide a default column, disable its extension through `app-config.yaml`:
+
+```yaml title="app-config.yaml"
+app:
+  extensions:
+    - catalog-column:catalog/tags: false
+```
+
+The same pattern applies to the other default columns: `catalog-column:catalog/name`, `catalog-column:catalog/owner`, `catalog-column:catalog/type`, `catalog-column:catalog/lifecycle`, and `catalog-column:catalog/description`.
+
 ## Entity page
 
 ### Entity filters
