@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+export { CatalogColumnBlueprint } from './CatalogColumnBlueprint';
 export { CatalogFilterBlueprint } from './CatalogFilterBlueprint';
 export { EntityCardBlueprint } from './EntityCardBlueprint';
 export { EntityContentBlueprint } from './EntityContentBlueprint';
@@ -22,8 +23,11 @@ export {
 } from './EntityContentLayoutBlueprint';
 export { EntityHeaderBlueprint } from './EntityHeaderBlueprint';
 export {
+  catalogColumnCellDataRef,
+  catalogColumnHeaderDataRef,
   defaultEntityContentGroups,
   defaultEntityContentGroupDefinitions,
+  type CatalogColumnHeader,
   type EntityContentGroupDefinitions,
 } from './extensionData';
 export type { EntityCardType } from './extensionData';
