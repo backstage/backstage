@@ -97,14 +97,25 @@ export class EntityTagFilter implements EntityFilter {
 }
 
 /**
- * Filters entities where the text matches spec, title or tags.
+ * Filters entities where the text matches name, title, tags, or other fields.
+ *
+ * Accepts either a search term as a string, or an array of `[term, ...fields]`
+ * to override which fields are searched server-side.
+ *
  * @public
  */
 export class EntityTextFilter implements EntityFilter {
   readonly value: string;
+  readonly fields?: string[];
 
-  constructor(value: string) {
-    this.value = value;
+  constructor(value: string | string[]) {
+    if (typeof value === 'string') {
+      this.value = value;
+    } else {
+      const [term, ...fields] = value;
+      this.value = term ?? '';
+      this.fields = fields.length ? fields : undefined;
+    }
   }
 
   filterEntity(entity: Entity): boolean {
@@ -131,13 +142,16 @@ export class EntityTextFilter implements EntityFilter {
   getFullTextFilters() {
     return {
       term: this.value,
-      // Update this to be more dynamic based on table columns.
-      fields: ['metadata.name', 'metadata.title', 'spec.profile.displayName'],
+      fields: this.fields ?? [
+        'metadata.name',
+        'metadata.title',
+        'spec.profile.displayName',
+      ],
     };
   }
 
-  toQueryValue() {
-    return this.value;
+  toQueryValue(): string | string[] {
+    return this.fields ? [this.value, ...this.fields] : this.value;
   }
 
   private toUpperArray(

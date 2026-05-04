@@ -129,6 +129,62 @@ describe('EntityTextFilter', () => {
     expect(filter.filterEntity(users[0])).toBeTruthy();
     expect(filter.filterEntity(users[1])).toBeFalsy();
   });
+
+  it('accepts a string and uses default search fields', () => {
+    const filter = new EntityTextFilter('hello');
+    expect(filter.value).toBe('hello');
+    expect(filter.fields).toBeUndefined();
+    expect(filter.getFullTextFilters()).toEqual({
+      term: 'hello',
+      fields: ['metadata.name', 'metadata.title', 'spec.profile.displayName'],
+    });
+  });
+
+  it('accepts an array as [term, ...fields] and uses the override fields', () => {
+    const filter = new EntityTextFilter([
+      'cost',
+      'metadata.tags',
+      'spec.owner',
+    ]);
+    expect(filter.value).toBe('cost');
+    expect(filter.fields).toEqual(['metadata.tags', 'spec.owner']);
+    expect(filter.getFullTextFilters()).toEqual({
+      term: 'cost',
+      fields: ['metadata.tags', 'spec.owner'],
+    });
+  });
+
+  it('treats a single-element array as term-only with default fields', () => {
+    const filter = new EntityTextFilter(['hello']);
+    expect(filter.value).toBe('hello');
+    expect(filter.fields).toBeUndefined();
+    expect(filter.getFullTextFilters().fields).toEqual([
+      'metadata.name',
+      'metadata.title',
+      'spec.profile.displayName',
+    ]);
+  });
+
+  it('serializes to a string when no override fields are set', () => {
+    const filter = new EntityTextFilter('hello');
+    expect(filter.toQueryValue()).toBe('hello');
+  });
+
+  it('serializes to [term, ...fields] when override fields are set', () => {
+    const filter = new EntityTextFilter(['cost', 'metadata.tags']);
+    expect(filter.toQueryValue()).toEqual(['cost', 'metadata.tags']);
+  });
+
+  it('round-trips through toQueryValue / constructor', () => {
+    const original = new EntityTextFilter([
+      'cost',
+      'metadata.tags',
+      'spec.owner',
+    ]);
+    const restored = new EntityTextFilter(original.toQueryValue());
+    expect(restored.value).toBe(original.value);
+    expect(restored.fields).toEqual(original.fields);
+  });
 });
 
 describe('EntityOrphanFilter', () => {
