@@ -25,7 +25,7 @@ import {
   useEntityList,
 } from '@backstage/plugin-catalog-react';
 import type { CatalogColumnHeader } from '@backstage/plugin-catalog-react/alpha';
-import { Table } from '@backstage/ui';
+import { Cell, Table } from '@backstage/ui';
 import type { ColumnConfig, SortDescriptor } from '@backstage/ui';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import type { Entity } from '@backstage/catalog-model';
@@ -73,7 +73,8 @@ function buildColumnConfig(
     width: header.width,
     isSortable: Boolean(header.orderField),
     isRowHeader: index === 0,
-    cell: row => cell(row.entity),
+    cell: row =>
+      header.filter && !header.filter(row.entity) ? <Cell /> : cell(row.entity),
   }));
 }
 

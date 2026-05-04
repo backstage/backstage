@@ -288,4 +288,59 @@ describe('NextCatalogPage', () => {
       '/catalog/default/component/alpha',
     );
   });
+
+  it('renders an empty cell for entities the column filter rejects', async () => {
+    const componentEntity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Component',
+      metadata: { name: 'alpha', namespace: 'default' },
+    };
+    const apiEntity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'API',
+      metadata: { name: 'beta', namespace: 'default' },
+    };
+
+    const mockCatalogApi = catalogApiMock.mock({
+      queryEntities: jest.fn().mockResolvedValueOnce({
+        items: [componentEntity, apiEntity],
+        pageInfo: {},
+        totalItems: 2,
+      }),
+    });
+
+    await renderInTestApp(
+      <TestApiProvider apis={[[catalogApiRef, mockCatalogApi]]}>
+        <NextCatalogPage
+          filters={<SeedKindFilter />}
+          columns={[
+            {
+              header: {
+                id: 'lifecycle',
+                label: 'Lifecycle',
+                filter: entity => entity.kind === 'Component',
+              },
+              cell: () => (
+                <Cell>
+                  <span data-testid="lifecycle-cell">prod</span>
+                </Cell>
+              ),
+            },
+          ]}
+          pagination
+        />
+      </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
+    );
+
+    // Wait for both data rows (plus the header row) to render.
+    await waitFor(() => expect(screen.getAllByRole('row')).toHaveLength(3));
+
+    // Only one of the two entity rows should render the lifecycle cell content.
+    expect(screen.getAllByTestId('lifecycle-cell')).toHaveLength(1);
+  });
 });
