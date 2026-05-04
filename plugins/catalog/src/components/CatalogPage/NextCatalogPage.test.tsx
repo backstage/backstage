@@ -21,7 +21,8 @@ import {
   useEntityList,
 } from '@backstage/plugin-catalog-react';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { useEffect } from 'react';
 import type { ReactElement } from 'react';
 import { Cell } from '@backstage/ui';
@@ -111,5 +112,56 @@ describe('NextCatalogPage', () => {
 
     expect(await screen.findByText('alpha')).toBeInTheDocument();
     expect(await screen.findByText('beta')).toBeInTheDocument();
+  });
+
+  it('dispatches an EntityOrderFilter when a sortable header is clicked', async () => {
+    const user = userEvent.setup();
+    const mockCatalogApi = catalogApiMock.mock({
+      queryEntities: jest.fn().mockResolvedValue({
+        items: [],
+        pageInfo: {},
+        totalItems: 0,
+      }),
+    });
+
+    await renderInTestApp(
+      <TestApiProvider apis={[[catalogApiRef, mockCatalogApi]]}>
+        <NextCatalogPage
+          filters={<SeedKindFilter />}
+          columns={[
+            {
+              header: {
+                id: 'name',
+                label: 'Name',
+                orderField: 'metadata.name',
+              },
+              cell: entity => <Cell>{entity.metadata.name}</Cell>,
+            },
+          ]}
+          pagination
+        />
+      </TestApiProvider>,
+    );
+
+    // Wait for the initial fetch to settle.
+    await screen.findByRole('columnheader', { name: 'Name' });
+    await waitFor(() => {
+      expect(mockCatalogApi.queryEntities).toHaveBeenCalled();
+    });
+
+    mockCatalogApi.queryEntities.mockClear();
+    // Click twice so the toggle yields a descending sort that differs from
+    // the provider's default ascending order — otherwise the second fetch is
+    // skipped because the backend filter is unchanged.
+    await user.click(screen.getByRole('columnheader', { name: 'Name' }));
+    await user.click(screen.getByRole('columnheader', { name: 'Name' }));
+
+    await waitFor(() => {
+      expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith(
+        expect.objectContaining({
+          orderFields: [{ field: 'metadata.name', order: 'desc' }],
+        }),
+      );
+    });
   });
 });

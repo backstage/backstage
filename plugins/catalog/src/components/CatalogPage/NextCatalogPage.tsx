@@ -18,14 +18,15 @@ import {
   CatalogFilterLayout,
   EntityListPagination,
   EntityListProvider,
+  EntityOrderFilter,
   useEntityList,
 } from '@backstage/plugin-catalog-react';
 import type { CatalogColumnHeader } from '@backstage/plugin-catalog-react/alpha';
 import { Table } from '@backstage/ui';
-import type { ColumnConfig } from '@backstage/ui';
+import type { ColumnConfig, SortDescriptor } from '@backstage/ui';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import type { Entity } from '@backstage/catalog-model';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import type { ReactElement, ReactNode } from 'react';
 
 /**
@@ -73,7 +74,14 @@ function buildColumnConfig(
 }
 
 function NextCatalogTable(props: { columns: NextCatalogPageProps['columns'] }) {
-  const { entities, loading, error } = useEntityList();
+  const { entities, loading, error, updateFilters } = useEntityList();
+  const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>();
+
+  const headersById = useMemo(
+    () => new Map(props.columns.map(c => [c.header.id, c.header])),
+    [props.columns],
+  );
+
   const columnConfig = useMemo(
     () => buildColumnConfig(props.columns),
     [props.columns],
@@ -86,6 +94,23 @@ function NextCatalogTable(props: { columns: NextCatalogPageProps['columns'] }) {
       })),
     [entities],
   );
+
+  const onSortChange = (descriptor: SortDescriptor) => {
+    setSortDescriptor(descriptor);
+    const header = headersById.get(String(descriptor.column));
+    if (!header?.orderField) {
+      return;
+    }
+    updateFilters({
+      order: new EntityOrderFilter([
+        [
+          header.orderField,
+          descriptor.direction === 'descending' ? 'desc' : 'asc',
+        ],
+      ]),
+    });
+  };
+
   return (
     <Table<EntityRow>
       columnConfig={columnConfig}
@@ -95,6 +120,7 @@ function NextCatalogTable(props: { columns: NextCatalogPageProps['columns'] }) {
       // Table-level pagination UI is not yet wired; the pagination prop on
       // NextCatalogPageProps controls EntityListProvider's fetch mode only.
       pagination={{ type: 'none' }}
+      sort={{ descriptor: sortDescriptor ?? null, onSortChange }}
     />
   );
 }
