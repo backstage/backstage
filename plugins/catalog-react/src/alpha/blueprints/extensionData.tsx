@@ -122,6 +122,8 @@ export const entityCardTypeDataRef =
 export type CatalogColumnHeader = {
   id: string;
   label: string;
+  /** Optional render function for the column header — overrides the `label` text. Use this to supply a translated element. */
+  header?: () => ReactElement;
   orderField?: string;
   searchFields?: string[];
   filter?: (entity: Entity) => boolean;

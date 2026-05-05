@@ -48,6 +48,7 @@ export const CatalogColumnBlueprint = createExtensionBlueprint({
       id: string;
       label: string;
       cell: (entity: Entity) => ReactElement;
+      header?: () => ReactElement;
       orderField?: string;
       searchFields?: string[];
       filter?: (entity: Entity) => boolean;

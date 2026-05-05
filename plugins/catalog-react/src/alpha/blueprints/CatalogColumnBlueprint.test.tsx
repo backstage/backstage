@@ -94,4 +94,21 @@ describe('CatalogColumnBlueprint', () => {
     const header = tester.get(catalogColumnHeaderDataRef);
     expect(header?.filter).toBe(filter);
   });
+
+  it('preserves the optional header render function', () => {
+    const headerFn = () => <span>custom</span>;
+    const ext = CatalogColumnBlueprint.make({
+      name: 'demo',
+      params: {
+        id: 'demo',
+        label: 'Demo',
+        header: headerFn,
+        cell: () => <span />,
+      },
+    });
+
+    const tester = createExtensionTester(ext);
+    const header = tester.get(catalogColumnHeaderDataRef);
+    expect(header?.header).toBe(headerFn);
+  });
 });

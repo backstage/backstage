@@ -32,6 +32,7 @@ export const CatalogColumnBlueprint: ExtensionBlueprint<{
     id: string;
     label: string;
     cell: (entity: Entity) => ReactElement;
+    header?: () => ReactElement;
     orderField?: string;
     searchFields?: string[];
     filter?: (entity: Entity) => boolean;
@@ -84,6 +85,7 @@ export const catalogColumnCellDataRef: ConfigurableExtensionDataRef<
 export type CatalogColumnHeader = {
   id: string;
   label: string;
+  header?: () => ReactElement;
   orderField?: string;
   searchFields?: string[];
   filter?: (entity: Entity) => boolean;
@@ -740,13 +742,13 @@ export const EntityTableColumnTitle: (
 ) =>
   | 'System'
   | 'Domain'
-  | 'Name'
-  | 'Description'
   | 'Lifecycle'
   | 'Namespace'
   | 'Owner'
   | 'Tags'
   | 'Type'
+  | 'Name'
+  | 'Description'
   | 'Targets'
   | 'Title'
   | 'Label';

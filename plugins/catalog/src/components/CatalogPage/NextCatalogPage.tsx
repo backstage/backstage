@@ -75,6 +75,7 @@ function buildColumnConfig(
   return columns.map(({ header, cell }, index) => ({
     id: header.id,
     label: header.label,
+    header: header.header,
     width: header.width,
     isSortable: Boolean(header.orderField),
     isRowHeader: index === 0,
