@@ -627,3 +627,4 @@ zoomable
 zsh
 Zensical
 zensical
+oxlint
