@@ -29,6 +29,9 @@ type SubRoute = {
   children: JSX.Element;
 };
 
+// Strip leading and trailing slashes, then append `/*` for nested matching.
+// A bare `/` becomes the empty string so it acts as an index route instead of
+// a wildcard that would catch every sub-path.
 function normalizeRoutePath(path: string): string {
   const trimmed = path.replace(/^\/+/, '').replace(/\/+$/, '');
   return trimmed ? `${trimmed}/*` : '';
@@ -41,11 +44,15 @@ export function useSelectedSubRoute(subRoutes: SubRoute[]): {
 } {
   const params = useParams();
 
-  const routes = subRoutes.map(({ path, children }) => ({
-    caseSensitive: false,
-    path: normalizeRoutePath(path),
-    element: children,
-  }));
+  const routes = useMemo(
+    () =>
+      subRoutes.map(({ path, children }) => ({
+        caseSensitive: false,
+        path: normalizeRoutePath(path),
+        element: children,
+      })),
+    [subRoutes],
+  );
 
   const element = useRoutes(routes) ?? undefined;
 
@@ -56,9 +63,7 @@ export function useSelectedSubRoute(subRoutes: SubRoute[]): {
 
   const [matchedRoute] = matchRoutes(routes, currentRoute) ?? [];
   const foundIndex = matchedRoute
-    ? subRoutes.findIndex(
-        t => normalizeRoutePath(t.path) === matchedRoute.route.path,
-      )
+    ? routes.findIndex(r => r.path === matchedRoute.route.path)
     : -1;
 
   return {
