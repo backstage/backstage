@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import {
+  catalogReactTranslationRef,
+  EntityFilter,
   EntityTextFilter,
   useEntityList,
 } from '@backstage/plugin-catalog-react';
-import { SearchField } from '@backstage/ui';
+import { Box, SearchField } from '@backstage/ui';
 import { useEffect, useMemo, useState } from 'react';
 import useDebounce from 'react-use/lib/useDebounce';
 
@@ -31,14 +34,13 @@ import useDebounce from 'react-use/lib/useDebounce';
  *
  * Mirrors `EntitySearchBar`'s URL query-parameter sync and debounce
  * behavior so the search term round-trips through `?text=...`.
- *
- * @alpha
  */
 export function NextCatalogSearchBar(props: { searchFields: string[] }) {
   const {
     updateFilters,
     queryParameters: { text: textParameter },
   } = useEntityList();
+  const { t } = useTranslationRef(catalogReactTranslationRef);
 
   const queryParamTextFilter = useMemo(
     () => [textParameter].flat()[0],
@@ -49,15 +51,22 @@ export function NextCatalogSearchBar(props: { searchFields: string[] }) {
 
   useDebounce(
     () => {
-      updateFilters({
-        text: search
-          ? new EntityTextFilter(
-              props.searchFields.length
-                ? [search, ...props.searchFields]
-                : search,
-            )
-          : undefined,
-      });
+      if (search) {
+        const filter = new EntityTextFilter(
+          props.searchFields.length ? [search, ...props.searchFields] : search,
+        );
+        // remove filterEntity from the filter to prevent it from being used for client-side filtering in the table;
+        // this filter is meant to be used for server-side filtering only, and the table should render all entities returned by the backend without further client-side filtering
+        (filter as EntityFilter).filterEntity = undefined;
+
+        updateFilters({
+          text: filter,
+        });
+      } else {
+        updateFilters({
+          text: undefined,
+        });
+      }
     },
     250,
     [search, props.searchFields, updateFilters],
@@ -70,11 +79,13 @@ export function NextCatalogSearchBar(props: { searchFields: string[] }) {
   }, [queryParamTextFilter]);
 
   return (
-    <SearchField
-      aria-label="Search entities"
-      placeholder="Search"
-      value={search}
-      onChange={setSearch}
-    />
+    <Box>
+      <SearchField
+        aria-label="Search entities"
+        placeholder={t('entitySearchBar.placeholder')}
+        value={search}
+        onChange={setSearch}
+      />
+    </Box>
   );
 }
