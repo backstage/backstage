@@ -30,6 +30,10 @@
 
   .bui-ComboboxPopover {
     min-width: var(--trigger-width);
+
+    .bui-PopoverContent {
+      padding: 0;
+    }
   }
 
   .bui-ComboboxInput {
