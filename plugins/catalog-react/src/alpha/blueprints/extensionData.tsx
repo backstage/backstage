@@ -16,7 +16,16 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { createExtensionDataRef } from '@backstage/frontend-plugin-api';
-import { ReactElement } from 'react';
+import { JSX, ReactElement } from 'react';
+
+/** @alpha */
+export type EntityContextMenuItemData = {
+  icon: JSX.Element;
+  title: string;
+  href?: string;
+  onClick?: () => void | Promise<void>;
+  disabled?: boolean;
+};
 
 /** @internal */
 export const entityContentTitleDataRef = createExtensionDataRef<string>().with({
@@ -94,6 +103,12 @@ export const defaultEntityContentGroups = Object.fromEntries(
 export const entityContentGroupDataRef = createExtensionDataRef<string>().with({
   id: 'catalog.entity-content-group',
 });
+
+/** @internal */
+export const entityContextMenuItemDataRef =
+  createExtensionDataRef<EntityContextMenuItemData>().with({
+    id: 'catalog.entity-context-menu-item-data',
+  });
 
 /**
  * @internal

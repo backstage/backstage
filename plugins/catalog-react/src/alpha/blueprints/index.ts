@@ -25,6 +25,7 @@ export {
   defaultEntityContentGroups,
   defaultEntityContentGroupDefinitions,
   type EntityContentGroupDefinitions,
+  type EntityContextMenuItemData,
 } from './extensionData';
 export type { EntityCardType } from './extensionData';
 export {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ReactNode, JSX } from 'react';
+import { JSX, ReactNode } from 'react';
 import {
   coreExtensionData,
   createExtensionBlueprint,
@@ -30,7 +30,12 @@ import {
   createZodV4FilterPredicateSchema,
 } from '@backstage/filter-predicates';
 import type { Entity } from '@backstage/catalog-model';
-import { entityFilterFunctionDataRef } from './extensionData';
+import {
+  entityContextMenuItemDataRef,
+  entityFilterFunctionDataRef,
+  type EntityContextMenuItemData,
+} from './extensionData';
+
 /** @alpha */
 export type UseProps = () =>
   | {
@@ -45,8 +50,17 @@ export type UseProps = () =>
     };
 
 /** @alpha */
-export type EntityContextMenuItemParams = {
-  useProps: UseProps;
+export type EntityContextMenuItemParams = (
+  | {
+      useProps: UseProps;
+    }
+  | {
+      title: string;
+      href?: string;
+      onClick?: () => void | Promise<void>;
+      disabled?: boolean;
+    }
+) & {
   icon: JSX.Element;
   filter?: FilterPredicate | ((entity: Entity) => boolean);
 };
@@ -56,45 +70,62 @@ export const EntityContextMenuItemBlueprint = createExtensionBlueprint({
   kind: 'entity-context-menu-item',
   attachTo: { id: 'page:catalog/entity', input: 'contextMenuItems' },
   output: [
-    coreExtensionData.reactElement,
+    coreExtensionData.reactElement.optional(),
+    entityContextMenuItemDataRef.optional(),
     entityFilterFunctionDataRef.optional(),
   ],
   dataRefs: {
+    data: entityContextMenuItemDataRef,
     filterFunction: entityFilterFunctionDataRef,
   },
   configSchema: {
     filter: createZodV4FilterPredicateSchema().optional(),
   },
   *factory(params: EntityContextMenuItemParams, { node, config }) {
-    const loader = async () => {
-      const Component = () => {
-        const { onMenuClose } = useEntityContextMenu();
-        const { title, ...menuItemProps } = params.useProps();
-        let handleClick = undefined;
+    if ('useProps' in params) {
+      const useProps = params.useProps;
+      const icon = params.icon;
+      const loader = async () => {
+        const Component = () => {
+          const { onMenuClose } = useEntityContextMenu();
+          const { title, ...menuItemProps } = useProps();
+          let handleClick = undefined;
 
-        if ('onClick' in menuItemProps) {
-          handleClick = () => {
-            const result = menuItemProps.onClick();
-            if (result && 'then' in result) {
-              result.then(onMenuClose, onMenuClose);
-            } else {
-              onMenuClose();
-            }
-          };
-        }
+          if ('onClick' in menuItemProps) {
+            handleClick = () => {
+              const result = menuItemProps.onClick();
+              if (result && 'then' in result) {
+                result.then(onMenuClose, onMenuClose);
+              } else {
+                onMenuClose();
+              }
+            };
+          }
 
-        return (
-          <MenuItem {...menuItemProps} onClick={handleClick}>
-            <ListItemIcon>{params.icon}</ListItemIcon>
-            <ListItemText primary={title} />
-          </MenuItem>
-        );
+          return (
+            <MenuItem {...menuItemProps} onClick={handleClick}>
+              <ListItemIcon>{icon}</ListItemIcon>
+              <ListItemText primary={title} />
+            </MenuItem>
+          );
+        };
+
+        return <Component />;
       };
 
-      return <Component />;
-    };
-
-    yield coreExtensionData.reactElement(ExtensionBoundary.lazy(node, loader));
+      yield coreExtensionData.reactElement(
+        ExtensionBoundary.lazy(node, loader),
+      );
+    } else {
+      const data: EntityContextMenuItemData = {
+        icon: params.icon,
+        title: params.title,
+        href: params.href,
+        onClick: params.onClick,
+        disabled: params.disabled,
+      };
+      yield entityContextMenuItemDataRef(data);
+    }
 
     if (config.filter) {
       yield entityFilterFunctionDataRef(

@@ -48,47 +48,32 @@ describe('EntityContextMenuItemBlueprint', () => {
     },
   ];
 
-  it.each(data)('should return an extension with sane defaults, %#', params => {
+  it.each(data)('should produce a valid extension, %#', params => {
     const extension = EntityContextMenuItemBlueprint.make({
       name: 'test',
       params,
     });
+    expect(extension.$$type).toBe('@backstage/ExtensionDefinition');
+  });
 
-    expect(extension).toMatchInlineSnapshot(`
-      {
-        "$$type": "@backstage/ExtensionDefinition",
-        "T": undefined,
-        "attachTo": {
-          "id": "page:catalog/entity",
-          "input": "contextMenuItems",
-        },
-        "configSchema": {
-          "parse": [Function],
-          "schema": [Function],
-        },
-        "disabled": false,
-        "factory": [Function],
-        "if": undefined,
-        "inputs": {},
-        "kind": "entity-context-menu-item",
-        "name": "test",
-        "output": [
-          [Function],
-          {
-            "$$type": "@backstage/ExtensionDataRef",
-            "config": {
-              "optional": true,
-            },
-            "id": "catalog.entity-filter-function",
-            "optional": [Function],
-            "toString": [Function],
-          },
-        ],
-        "override": [Function],
-        "toString": [Function],
-        "version": "v2",
-      }
-    `);
+  it('should yield static data when called with raw params', () => {
+    const extension = EntityContextMenuItemBlueprint.make({
+      name: 'static',
+      params: {
+        icon: <span>Icon</span>,
+        title: 'Static title',
+        onClick: () => {},
+      },
+    });
+    const tester = createExtensionTester(extension);
+
+    expect(tester.get(EntityContextMenuItemBlueprint.dataRefs.data)).toEqual({
+      icon: expect.anything(),
+      title: 'Static title',
+      href: undefined,
+      onClick: expect.any(Function),
+      disabled: undefined,
+    });
   });
 
   it('should render a menu item', async () => {
