@@ -28,7 +28,7 @@ TechDocs uses the following artifacts to generate the documentation for a compon
 
 For example:
 
-```
+```code
    your-great-component/
      docs/
        index.md
