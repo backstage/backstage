@@ -576,13 +576,13 @@
 <header>
   <div class="wrap">
     <h1>Manifest Debugger</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">1/50 prop type error</a><a class="filter-pill info" data-k="infos" href="#filter-infos">1/50 info</a><span class="filter-pill ok" aria-disabled="true">476 stories ok</span></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">1/51 prop type error</a><a class="filter-pill info" data-k="infos" href="#filter-infos">1/51 info</a><span class="filter-pill ok" aria-disabled="true">495 stories ok</span></div>
   </div>
 </header>
 <main>
   <div class="wrap">
     <div class="note info" style="margin-bottom: 16px;">
-            <strong>Tip:</strong> You are using <code>react-docgen</code> (the default). Generation took <strong>3.1s</strong>. For higher quality prop types, consider switching to <code>react-docgen-typescript</code> in your <code>main.ts</code>:
+            <strong>Tip:</strong> You are using <code>react-docgen</code> (the default). Generation took <strong>3.2s</strong>. For higher quality prop types, consider switching to <code>react-docgen-typescript</code> in your <code>main.ts</code>:
             <pre><code>typescript: {
   reactDocgen: 'react-docgen-typescript',
 }</code></pre>
@@ -4157,14 +4157,368 @@ secondaryLabel?: FieldLabelProps[&#39;secondaryLabel&#39;]</code></pre>
   no-story-error
   no-doc-error"
   role="listitem"
+  aria-label="Combobox">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> Combobox</h2>
+      <div class="badges">
+        <label for="c-13-backstage-ui-combobox-props" class="badge ok as-toggle">9 prop types</label>
+        
+        <label for="c-13-backstage-ui-combobox-stories" class="badge ok as-toggle">18 stories</label>
+        
+      </div>
+    </div>
+    <div class="meta" title="./packages/ui/src/components/Combobox/Combobox.stories.tsx">backstage-ui-combobox · ./packages/ui/src/components/Combobox/Combobox.stories.tsx</div>
+    
+    <div class="hint">A text input combined with a dropdown list of options. The user can type to filter suggestions, navigate with the keyboard, and pick a value. With `allowsCustomValue` the typed text can be committed even if no option matches.</div>
+    <div class="kv"><span class="chip">public:  </span></div>
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  
+  <input id="c-13-backstage-ui-combobox-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  <input id="c-13-backstage-ui-combobox-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen)</small></span>
+              <span class="badge ok">9 prop types</span>
+            </div>
+            <pre><code>Component: packages/ui/src/components/Combobox/Combobox.tsx::Combobox</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>className?: string
+
+description?: FieldLabelProps[&#39;description&#39;]
+
+/**
+ * An icon to render before the input
+ */
+icon?: ReactNode
+
+isRequired?: boolean
+
+label?: FieldLabelProps[&#39;label&#39;]
+
+/**
+ * The options of the combobox field. Pass flat options, option sections for
+ * grouped display, or a mix of both in the same array.
+ */
+options?: Array&lt;Option | OptionSection&gt;
+
+/**
+ * Placeholder text for the input.
+ */
+placeholder?: string
+
+secondaryLabel?: FieldLabelProps[&#39;secondaryLabel&#39;]
+
+/**
+ * The size of the combobox field
+ * @defaultValue &#39;small&#39;
+ */
+size?: &#39;small&#39; | &#39;medium&#39; | Partial&lt;Record&lt;Breakpoint, &#39;small&#39; | &#39;medium&#39;&gt;&gt;</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { Box, Combobox, Flex, Text } from "@backstage/ui";
+import { Form } from "react-aria-components";
+import { RiCloudLine } from "@remixicon/react";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Default</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Default = () =&gt; &lt;Combobox
+    style={{ width: 300 }}
+    label=&quot;Font Family&quot;
+    options={fontOptions}
+    placeholder=&quot;Pick a font&quot;
+    name=&quot;font&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Icon</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithIcon = () =&gt; &lt;Combobox style={{ width: 300 }} icon={&lt;RiCloudLine /&gt;} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Sections</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithSections = () =&gt; &lt;Combobox
+    style={{ width: 300 }}
+    label=&quot;Font Family&quot;
+    options={sectionedOptions}
+    placeholder=&quot;Pick a font&quot;
+    name=&quot;font&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Allows Custom Value</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const AllowsCustomValue = () =&gt; &lt;Combobox
+    style={{ width: 300 }}
+    label=&quot;Country&quot;
+    options={countries}
+    placeholder=&quot;Type any country&quot;
+    allowsCustomValue
+    name=&quot;country&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Sizes</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Sizes = () =&gt; &lt;Flex direction=&quot;row&quot; gap=&quot;2&quot;&gt;
+    &lt;Combobox style={{ width: 300 }} size=&quot;small&quot; icon={&lt;RiCloudLine /&gt;} /&gt;
+    &lt;Combobox style={{ width: 300 }} size=&quot;medium&quot; icon={&lt;RiCloudLine /&gt;} /&gt;
+&lt;/Flex&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Required</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Required = () =&gt; &lt;Combobox style={{ width: 300 }} isRequired /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Disabled</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Disabled = () =&gt; &lt;Combobox style={{ width: 300 }} isDisabled /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Label And Description</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithLabelAndDescription = () =&gt; &lt;Combobox
+    style={{ width: 300 }}
+    description=&quot;Choose a font family for your document&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Default Value</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithDefaultValue = () =&gt; &lt;Combobox style={{ width: 300 }} defaultValue=&quot;serif&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Full Width</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithFullWidth = () =&gt; &lt;Combobox style={{ width: &#39;100%&#39; }} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">No Options</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const NoOptions = () =&gt; &lt;Combobox style={{ width: 300 }} options={undefined} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Disabled Option</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const DisabledOption = () =&gt; &lt;Combobox style={{ width: 300 }} disabledKeys={[&#39;cursive&#39;, &#39;serif&#39;]} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Value</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithValue = () =&gt; &lt;Combobox style={{ width: 300 }} value=&quot;mono&quot; defaultValue=&quot;serif&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Error</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithError = () =&gt; &lt;Form validationErrors={{ font: &#39;Invalid font family&#39; }}&gt;
+    &lt;Combobox style={{ width: 300 }} /&gt;
+&lt;/Form&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Long Names</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithLongNames = () =&gt; &lt;Combobox
+    style={{ maxWidth: 400 }}
+    label=&quot;Document Template&quot;
+    options={[
+      {
+        value: &#39;annual-report-2024&#39;,
+        label:
+          &#39;Annual Financial Report and Strategic Planning Document for Fiscal Year 2024 with Comprehensive Analysis of Market Trends, Competitive Landscape, Financial Performance Metrics, Revenue Projections, Cost Optimization Strategies, Risk Assessment, and Long-term Growth Initiatives Across All Business Units and Geographical Regions&#39;,
+      },
+      {
+        value: &#39;product-roadmap&#39;,
+        label:
+          &#39;Comprehensive Product Development Roadmap and Feature Implementation Timeline Including Detailed Technical Specifications, Resource Allocation Plans, Cross-functional Team Dependencies, Milestone Tracking, Quality Assurance Procedures, User Acceptance Testing Protocols, and Post-launch Support Strategy for All Product Lines and Service Offerings&#39;,
+      },
+      {
+        value: &#39;user-guide&#39;,
+        label:
+          &#39;Detailed User Guide and Technical Documentation for Advanced System Features Covering Installation Procedures, Configuration Settings, Security Protocols, Troubleshooting Guidelines, Best Practices, Common Use Cases, Performance Optimization Tips, Integration Methods, API Documentation, and Frequently Asked Questions with Step-by-Step Solutions&#39;,
+      },
+    ]}
+    placeholder=&quot;Select a document template&quot;
+    name=&quot;template&quot;
+    defaultValue=&quot;annual-report-2024&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Long Names And Padding</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithLongNamesAndPadding = () =&gt; &lt;Combobox style={{ width: 300 }} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Auto Bg</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const AutoBg = () =&gt; (
+  &lt;Flex direction=&quot;column&quot; gap=&quot;4&quot;&gt;
+    &lt;div style={{ maxWidth: &#39;600px&#39; }}&gt;
+      Combobox automatically detects its parent bg context and increments the
+      neutral level by 1. No prop is needed — it&#39;s fully automatic.
+    &lt;/div&gt;
+    &lt;Box bg=&quot;neutral&quot; p=&quot;4&quot;&gt;
+      &lt;Text&gt;Neutral 1 container&lt;/Text&gt;
+      &lt;Flex mt=&quot;2&quot; style={{ maxWidth: &#39;300px&#39; }}&gt;
+        &lt;Combobox options={fontOptions} aria-label=&quot;Font family&quot; /&gt;
+      &lt;/Flex&gt;
+    &lt;/Box&gt;
+    &lt;Box bg=&quot;neutral&quot;&gt;
+      &lt;Box bg=&quot;neutral&quot; p=&quot;4&quot;&gt;
+        &lt;Text&gt;Neutral 2 container&lt;/Text&gt;
+        &lt;Flex mt=&quot;2&quot; style={{ maxWidth: &#39;300px&#39; }}&gt;
+          &lt;Combobox options={fontOptions} aria-label=&quot;Font family&quot; /&gt;
+        &lt;/Flex&gt;
+      &lt;/Box&gt;
+    &lt;/Box&gt;
+    &lt;Box bg=&quot;neutral&quot;&gt;
+      &lt;Box bg=&quot;neutral&quot;&gt;
+        &lt;Box bg=&quot;neutral&quot; p=&quot;4&quot;&gt;
+          &lt;Text&gt;Neutral 3 container&lt;/Text&gt;
+          &lt;Flex mt=&quot;2&quot; style={{ maxWidth: &#39;300px&#39; }}&gt;
+            &lt;Combobox options={fontOptions} aria-label=&quot;Font family&quot; /&gt;
+          &lt;/Flex&gt;
+        &lt;/Box&gt;
+      &lt;/Box&gt;
+    &lt;/Box&gt;
+  &lt;/Flex&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Accessibility Props</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithAccessibilityProps = () =&gt; &lt;Flex direction=&quot;column&quot; gap=&quot;4&quot;&gt;
+    &lt;div&gt;
+        &lt;h3 style={{ marginBottom: 8 }}&gt;With aria-label&lt;/h3&gt;
+        &lt;Combobox
+            style={{ width: 300 }}
+            label={undefined}
+            aria-label=&quot;Choose font family&quot;
+            placeholder=&quot;Select a font family&quot;
+            name=&quot;font-aria&quot; /&gt;
+    &lt;/div&gt;
+    &lt;div&gt;
+        &lt;h3 style={{ marginBottom: 8 }}&gt;With aria-labelledby&lt;/h3&gt;
+        &lt;div id=&quot;combobox-font-label&quot; style={{ marginBottom: 8, fontWeight: 600 }}&gt;Font Family Selection
+                    &lt;/div&gt;
+        &lt;Combobox
+            style={{ width: 300 }}
+            label={undefined}
+            aria-labelledby=&quot;combobox-font-label&quot;
+            placeholder=&quot;Select a font family&quot;
+            name=&quot;font-labelledby&quot; /&gt;
+    &lt;/div&gt;
+&lt;/Flex&gt;;</code></pre>
+            </div>
+        </div>
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  no-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
   aria-label="Container">
   <div class="head">
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Container</h2>
       <div class="badges">
-        <label for="c-13-backstage-ui-container-props" class="badge ok as-toggle">9 prop types</label>
+        <label for="c-14-backstage-ui-container-props" class="badge ok as-toggle">9 prop types</label>
         
-        <label for="c-13-backstage-ui-container-stories" class="badge ok as-toggle">8 stories</label>
+        <label for="c-14-backstage-ui-container-stories" class="badge ok as-toggle">8 stories</label>
         
       </div>
     </div>
@@ -4177,9 +4531,9 @@ secondaryLabel?: FieldLabelProps[&#39;secondaryLabel&#39;]</code></pre>
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-13-backstage-ui-container-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-14-backstage-ui-container-stories" class="tg tg-stories" type="checkbox" hidden />
   
-  <input id="c-13-backstage-ui-container-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-14-backstage-ui-container-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -4317,9 +4671,9 @@ style?: React.CSSProperties</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> DateRangePicker</h2>
       <div class="badges">
-        <label for="c-14-backstage-ui-daterangepicker-props" class="badge ok as-toggle">5 prop types</label>
+        <label for="c-15-backstage-ui-daterangepicker-props" class="badge ok as-toggle">5 prop types</label>
         
-        <label for="c-14-backstage-ui-daterangepicker-stories" class="badge ok as-toggle">10 stories</label>
+        <label for="c-15-backstage-ui-daterangepicker-stories" class="badge ok as-toggle">10 stories</label>
         
       </div>
     </div>
@@ -4332,9 +4686,9 @@ style?: React.CSSProperties</code></pre>
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-14-backstage-ui-daterangepicker-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-15-backstage-ui-daterangepicker-stories" class="tg tg-stories" type="checkbox" hidden />
   
-  <input id="c-14-backstage-ui-daterangepicker-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-15-backstage-ui-daterangepicker-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -4543,9 +4897,9 @@ import { Form } from "react-aria-components";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> dev</h2>
       <div class="badges">
-        <label for="c-15-backstage-ui-table-dev-props" class="badge ok as-toggle">14 prop types</label>
+        <label for="c-16-backstage-ui-table-dev-props" class="badge ok as-toggle">14 prop types</label>
         
-        <label for="c-15-backstage-ui-table-dev-stories" class="badge ok as-toggle">24 stories</label>
+        <label for="c-16-backstage-ui-table-dev-stories" class="badge ok as-toggle">25 stories</label>
         
       </div>
     </div>
@@ -4558,9 +4912,9 @@ import { Form } from "react-aria-components";</code></pre>
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-15-backstage-ui-table-dev-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-16-backstage-ui-table-dev-stories" class="tg tg-stories" type="checkbox" hidden />
   
-  <input id="c-15-backstage-ui-table-dev-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-16-backstage-ui-table-dev-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -4811,6 +5165,100 @@ import { Fragment } from "react";</code></pre>
         }
         {...tableProps}
       /&gt;
+    &lt;/div&gt;
+  );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Search With Debounce</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const SearchWithDebounce = () =&gt; {
+  // Amplify the ~100-row mocked dataset to several thousand rows so the
+  // perf difference between debounced and non-debounced typing is visible.
+  const largeData = useMemo(() =&gt; {
+    const result: Data1Item[] = [];
+    for (let i = 0; i &lt; 50; i++) {
+      for (const item of data1) {
+        result.push({ ...item, id: `${item.id}-${i}` });
+      }
+    }
+    return result;
+  }, []);
+
+  const columns: ColumnConfig&lt;Data1Item&gt;[] = [
+    {
+      id: &#39;name&#39;,
+      label: &#39;Name&#39;,
+      isRowHeader: true,
+      cell: item =&gt; &lt;CellText title={item.name} /&gt;,
+    },
+    {
+      id: &#39;owner&#39;,
+      label: &#39;Owner&#39;,
+      cell: item =&gt; &lt;CellText title={item.owner.name} /&gt;,
+    },
+    {
+      id: &#39;type&#39;,
+      label: &#39;Type&#39;,
+      cell: item =&gt; &lt;CellText title={item.type} /&gt;,
+    },
+  ];
+
+  const searchFn = (items: Data1Item[], query: string) =&gt; {
+    const lowerQuery = query.toLowerCase();
+    return items.filter(
+      item =&gt;
+        item.name.toLowerCase().includes(lowerQuery) ||
+        item.owner.name.toLowerCase().includes(lowerQuery) ||
+        item.type.toLowerCase().includes(lowerQuery),
+    );
+  };
+
+  const immediate = useTable({
+    mode: &#39;complete&#39;,
+    data: largeData,
+    paginationOptions: { pageSize: 10 },
+    searchFn,
+  });
+
+  const debounced = useTable({
+    mode: &#39;complete&#39;,
+    data: largeData,
+    paginationOptions: { pageSize: 10 },
+    searchFn,
+    searchDebounceMs: 200,
+  });
+
+  return (
+    &lt;div style={{ display: &#39;grid&#39;, gap: &#39;32px&#39; }}&gt;
+      &lt;div&gt;
+        &lt;h3 style={{ marginBottom: &#39;8px&#39; }}&gt;
+          Immediate (searchDebounceMs: 0)
+        &lt;/h3&gt;
+        &lt;SearchField
+          aria-label=&quot;Immediate search&quot;
+          placeholder=&quot;Type to search...&quot;
+          style={{ marginBottom: &#39;16px&#39; }}
+          {...immediate.search}
+        /&gt;
+        &lt;Table columnConfig={columns} {...immediate.tableProps} /&gt;
+      &lt;/div&gt;
+      &lt;div&gt;
+        &lt;h3 style={{ marginBottom: &#39;8px&#39; }}&gt;
+          Debounced (searchDebounceMs: 200)
+        &lt;/h3&gt;
+        &lt;SearchField
+          aria-label=&quot;Debounced search&quot;
+          placeholder=&quot;Type to search...&quot;
+          style={{ marginBottom: &#39;16px&#39; }}
+          {...debounced.search}
+        /&gt;
+        &lt;Table columnConfig={columns} {...debounced.tableProps} /&gt;
+      &lt;/div&gt;
     &lt;/div&gt;
   );
 };</code></pre>
@@ -5827,9 +6275,9 @@ import { Fragment } from "react";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Dialog</h2>
       <div class="badges">
-        <label for="c-16-backstage-ui-dialog-props" class="badge ok as-toggle">5 prop types</label>
+        <label for="c-17-backstage-ui-dialog-props" class="badge ok as-toggle">5 prop types</label>
         
-        <label for="c-16-backstage-ui-dialog-stories" class="badge ok as-toggle">12 stories</label>
+        <label for="c-17-backstage-ui-dialog-stories" class="badge ok as-toggle">12 stories</label>
         
       </div>
     </div>
@@ -5842,9 +6290,9 @@ import { Fragment } from "react";</code></pre>
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-16-backstage-ui-dialog-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-17-backstage-ui-dialog-stories" class="tg tg-stories" type="checkbox" hidden />
   
-  <input id="c-16-backstage-ui-dialog-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-17-backstage-ui-dialog-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -6147,9 +6595,9 @@ width?: number | string</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> FieldError</h2>
       <div class="badges">
-        <label for="c-17-backstage-ui-fielderror-props" class="badge ok as-toggle">1 prop type</label>
+        <label for="c-18-backstage-ui-fielderror-props" class="badge ok as-toggle">1 prop type</label>
         
-        <label for="c-17-backstage-ui-fielderror-stories" class="badge ok as-toggle">3 stories</label>
+        <label for="c-18-backstage-ui-fielderror-stories" class="badge ok as-toggle">3 stories</label>
         
       </div>
     </div>
@@ -6162,9 +6610,9 @@ width?: number | string</code></pre>
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-17-backstage-ui-fielderror-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-18-backstage-ui-fielderror-stories" class="tg tg-stories" type="checkbox" hidden />
   
-  <input id="c-17-backstage-ui-fielderror-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-18-backstage-ui-fielderror-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -6283,9 +6731,9 @@ import { Form, Input, TextField } from "react-aria-components";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> FieldLabel</h2>
       <div class="badges">
-        <label for="c-18-backstage-ui-fieldlabel-props" class="badge ok as-toggle">8 prop types</label>
+        <label for="c-19-backstage-ui-fieldlabel-props" class="badge ok as-toggle">8 prop types</label>
         
-        <label for="c-18-backstage-ui-fieldlabel-stories" class="badge ok as-toggle">4 stories</label>
+        <label for="c-19-backstage-ui-fieldlabel-stories" class="badge ok as-toggle">4 stories</label>
         
       </div>
     </div>
@@ -6298,9 +6746,9 @@ import { Form, Input, TextField } from "react-aria-components";</code></pre>
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-18-backstage-ui-fieldlabel-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-19-backstage-ui-fieldlabel-stories" class="tg tg-stories" type="checkbox" hidden />
   
-  <input id="c-18-backstage-ui-fieldlabel-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-19-backstage-ui-fieldlabel-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -6417,9 +6865,9 @@ secondaryLabel?: string | null</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Flex</h2>
       <div class="badges">
-        <label for="c-19-backstage-ui-flex-props" class="badge ok as-toggle">25 prop types</label>
+        <label for="c-20-backstage-ui-flex-props" class="badge ok as-toggle">25 prop types</label>
         
-        <label for="c-19-backstage-ui-flex-stories" class="badge ok as-toggle">16 stories</label>
+        <label for="c-20-backstage-ui-flex-stories" class="badge ok as-toggle">16 stories</label>
         
       </div>
     </div>
@@ -6432,9 +6880,9 @@ secondaryLabel?: string | null</code></pre>
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-19-backstage-ui-flex-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-20-backstage-ui-flex-stories" class="tg tg-stories" type="checkbox" hidden />
   
-  <input id="c-19-backstage-ui-flex-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-20-backstage-ui-flex-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -6794,9 +7242,9 @@ style?: CSSProperties</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> FullPage</h2>
       <div class="badges">
-        <label for="c-20-backstage-ui-fullpage-props" class="badge ok as-toggle">1 prop type</label>
+        <label for="c-21-backstage-ui-fullpage-props" class="badge ok as-toggle">1 prop type</label>
         
-        <label for="c-20-backstage-ui-fullpage-stories" class="badge ok as-toggle">3 stories</label>
+        <label for="c-21-backstage-ui-fullpage-stories" class="badge ok as-toggle">3 stories</label>
         
       </div>
     </div>
@@ -6809,9 +7257,9 @@ style?: CSSProperties</code></pre>
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-20-backstage-ui-fullpage-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-21-backstage-ui-fullpage-stories" class="tg tg-stories" type="checkbox" hidden />
   
-  <input id="c-20-backstage-ui-fullpage-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-21-backstage-ui-fullpage-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -6926,9 +7374,9 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Header</h2>
       <div class="badges">
-        <label for="c-21-backstage-ui-header-props" class="badge ok as-toggle">10 prop types</label>
+        <label for="c-22-backstage-ui-header-props" class="badge ok as-toggle">10 prop types</label>
         
-        <label for="c-21-backstage-ui-header-stories" class="badge ok as-toggle">19 stories</label>
+        <label for="c-22-backstage-ui-header-stories" class="badge ok as-toggle">19 stories</label>
         
       </div>
     </div>
@@ -6941,9 +7389,9 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-21-backstage-ui-header-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-22-backstage-ui-header-stories" class="tg tg-stories" type="checkbox" hidden />
   
-  <input id="c-21-backstage-ui-header-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-22-backstage-ui-header-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -7469,9 +7917,9 @@ import { RiMore2Line } from "@remixicon/react";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Link</h2>
       <div class="badges">
-        <label for="c-22-backstage-ui-link-props" class="badge ok as-toggle">9 prop types</label>
+        <label for="c-23-backstage-ui-link-props" class="badge ok as-toggle">9 prop types</label>
         
-        <label for="c-22-backstage-ui-link-stories" class="badge ok as-toggle">9 stories</label>
+        <label for="c-23-backstage-ui-link-stories" class="badge ok as-toggle">9 stories</label>
         
       </div>
     </div>
@@ -7484,9 +7932,9 @@ import { RiMore2Line } from "@remixicon/react";</code></pre>
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-22-backstage-ui-link-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-23-backstage-ui-link-stories" class="tg tg-stories" type="checkbox" hidden />
   
-  <input id="c-22-backstage-ui-link-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-23-backstage-ui-link-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -7806,9 +8254,9 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> List</h2>
       <div class="badges">
-        <label for="c-23-backstage-ui-list-props" class="badge ok as-toggle">4 prop types</label>
+        <label for="c-24-backstage-ui-list-props" class="badge ok as-toggle">4 prop types</label>
         
-        <label for="c-23-backstage-ui-list-stories" class="badge ok as-toggle">11 stories</label>
+        <label for="c-24-backstage-ui-list-stories" class="badge ok as-toggle">11 stories</label>
         
       </div>
     </div>
@@ -7821,9 +8269,9 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-23-backstage-ui-list-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-24-backstage-ui-list-stories" class="tg tg-stories" type="checkbox" hidden />
   
-  <input id="c-23-backstage-ui-list-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-24-backstage-ui-list-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -8114,7 +8562,7 @@ import {
       <div class="badges">
         
         
-        <label for="c-24-backstage-ui-menu-stories" class="badge ok as-toggle">16 stories</label>
+        <label for="c-25-backstage-ui-menu-stories" class="badge ok as-toggle">16 stories</label>
         
       </div>
     </div>
@@ -8127,7 +8575,7 @@ import {
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-24-backstage-ui-menu-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-25-backstage-ui-menu-stories" class="tg tg-stories" type="checkbox" hidden />
   
   
 
@@ -8595,7 +9043,7 @@ import {
       <div class="badges">
         
         
-        <label for="c-25-backstage-ui-menuautocomplete-stories" class="badge ok as-toggle">5 stories</label>
+        <label for="c-26-backstage-ui-menuautocomplete-stories" class="badge ok as-toggle">5 stories</label>
         
       </div>
     </div>
@@ -8608,7 +9056,7 @@ import {
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-25-backstage-ui-menuautocomplete-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-26-backstage-ui-menuautocomplete-stories" class="tg tg-stories" type="checkbox" hidden />
   
   
 
@@ -8812,7 +9260,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
       <div class="badges">
         
         
-        <label for="c-26-backstage-ui-menuautocompletelistbox-stories" class="badge ok as-toggle">6 stories</label>
+        <label for="c-27-backstage-ui-menuautocompletelistbox-stories" class="badge ok as-toggle">6 stories</label>
         
       </div>
     </div>
@@ -8825,7 +9273,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-26-backstage-ui-menuautocompletelistbox-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-27-backstage-ui-menuautocompletelistbox-stories" class="tg tg-stories" type="checkbox" hidden />
   
   
 
@@ -9096,7 +9544,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
       <div class="badges">
         
         
-        <label for="c-27-backstage-ui-menulistbox-stories" class="badge ok as-toggle">4 stories</label>
+        <label for="c-28-backstage-ui-menulistbox-stories" class="badge ok as-toggle">4 stories</label>
         
       </div>
     </div>
@@ -9109,7 +9557,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-27-backstage-ui-menulistbox-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-28-backstage-ui-menulistbox-stories" class="tg tg-stories" type="checkbox" hidden />
   
   
 
@@ -9277,9 +9725,9 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> PasswordField</h2>
       <div class="badges">
-        <label for="c-28-backstage-ui-passwordfield-props" class="badge ok as-toggle">7 prop types</label>
+        <label for="c-29-backstage-ui-passwordfield-props" class="badge ok as-toggle">7 prop types</label>
         
-        <label for="c-28-backstage-ui-passwordfield-stories" class="badge ok as-toggle">12 stories</label>
+        <label for="c-29-backstage-ui-passwordfield-stories" class="badge ok as-toggle">12 stories</label>
         
       </div>
     </div>
@@ -9292,9 +9740,9 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-28-backstage-ui-passwordfield-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-29-backstage-ui-passwordfield-stories" class="tg tg-stories" type="checkbox" hidden />
   
-  <input id="c-28-backstage-ui-passwordfield-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-29-backstage-ui-passwordfield-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -9496,9 +9944,9 @@ import { RiSparklingLine } from "@remixicon/react";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> PluginHeader</h2>
       <div class="badges">
-        <label for="c-29-backstage-ui-pluginheader-props" class="badge ok as-toggle">7 prop types</label>
+        <label for="c-30-backstage-ui-pluginheader-props" class="badge ok as-toggle">7 prop types</label>
         
-        <label for="c-29-backstage-ui-pluginheader-stories" class="badge ok as-toggle">10 stories</label>
+        <label for="c-30-backstage-ui-pluginheader-stories" class="badge ok as-toggle">10 stories</label>
         
       </div>
     </div>
@@ -9511,9 +9959,9 @@ import { RiSparklingLine } from "@remixicon/react";</code></pre>
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-29-backstage-ui-pluginheader-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-30-backstage-ui-pluginheader-stories" class="tg tg-stories" type="checkbox" hidden />
   
-  <input id="c-29-backstage-ui-pluginheader-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-30-backstage-ui-pluginheader-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -9860,9 +10308,9 @@ import { RiCloudy2Line, RiEmotionHappyLine, RiHeartLine, RiMore2Line } from "@re
     <div class="title">
       <h2><span class="status-dot dot-err"></span> PluginHeaderandHeader</h2>
       <div class="badges">
-        <label for="c-30-recipes-pluginheader-and-header-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-30-recipes-pluginheader-and-header-info" class="badge info as-toggle">1 info</label>
-        <label for="c-30-recipes-pluginheader-and-header-stories" class="badge ok as-toggle">9 stories</label>
+        <label for="c-31-recipes-pluginheader-and-header-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-31-recipes-pluginheader-and-header-info" class="badge info as-toggle">1 info</label>
+        <label for="c-31-recipes-pluginheader-and-header-stories" class="badge ok as-toggle">9 stories</label>
         
       </div>
     </div>
@@ -9873,9 +10321,9 @@ import { RiCloudy2Line, RiEmotionHappyLine, RiHeartLine, RiMore2Line } from "@re
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-30-recipes-pluginheader-and-header-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-30-recipes-pluginheader-and-header-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-30-recipes-pluginheader-and-header-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-31-recipes-pluginheader-and-header-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-31-recipes-pluginheader-and-header-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-31-recipes-pluginheader-and-header-stories" class="tg tg-stories" type="checkbox" hidden />
   
   
 
@@ -10288,9 +10736,9 @@ import {
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Popover</h2>
       <div class="badges">
-        <label for="c-31-backstage-ui-popover-props" class="badge ok as-toggle">3 prop types</label>
+        <label for="c-32-backstage-ui-popover-props" class="badge ok as-toggle">3 prop types</label>
         
-        <label for="c-31-backstage-ui-popover-stories" class="badge ok as-toggle">13 stories</label>
+        <label for="c-32-backstage-ui-popover-stories" class="badge ok as-toggle">13 stories</label>
         
       </div>
     </div>
@@ -10303,9 +10751,9 @@ import {
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-31-backstage-ui-popover-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-32-backstage-ui-popover-stories" class="tg tg-stories" type="checkbox" hidden />
   
-  <input id="c-31-backstage-ui-popover-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-32-backstage-ui-popover-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -10690,9 +11138,9 @@ hideArrow?: boolean</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> RadioGroup</h2>
       <div class="badges">
-        <label for="c-32-backstage-ui-radiogroup-props" class="badge ok as-toggle">6 prop types</label>
+        <label for="c-33-backstage-ui-radiogroup-props" class="badge ok as-toggle">6 prop types</label>
         
-        <label for="c-32-backstage-ui-radiogroup-stories" class="badge ok as-toggle">9 stories</label>
+        <label for="c-33-backstage-ui-radiogroup-stories" class="badge ok as-toggle">9 stories</label>
         
       </div>
     </div>
@@ -10705,9 +11153,9 @@ hideArrow?: boolean</code></pre>
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-32-backstage-ui-radiogroup-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-33-backstage-ui-radiogroup-stories" class="tg tg-stories" type="checkbox" hidden />
   
-  <input id="c-32-backstage-ui-radiogroup-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-33-backstage-ui-radiogroup-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -10887,9 +11335,9 @@ secondaryLabel?: FieldLabelProps[&#39;secondaryLabel&#39;]</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> SearchAutocomplete</h2>
       <div class="badges">
-        <label for="c-33-backstage-ui-searchautocomplete-props" class="badge ok as-toggle">13 prop types</label>
+        <label for="c-34-backstage-ui-searchautocomplete-props" class="badge ok as-toggle">13 prop types</label>
         
-        <label for="c-33-backstage-ui-searchautocomplete-stories" class="badge ok as-toggle">9 stories</label>
+        <label for="c-34-backstage-ui-searchautocomplete-stories" class="badge ok as-toggle">9 stories</label>
         
       </div>
     </div>
@@ -10902,9 +11350,9 @@ secondaryLabel?: FieldLabelProps[&#39;secondaryLabel&#39;]</code></pre>
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-33-backstage-ui-searchautocomplete-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-34-backstage-ui-searchautocomplete-stories" class="tg tg-stories" type="checkbox" hidden />
   
-  <input id="c-33-backstage-ui-searchautocomplete-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-34-backstage-ui-searchautocomplete-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -11403,9 +11851,9 @@ import { RiCactusLine } from "@remixicon/react";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> SearchField</h2>
       <div class="badges">
-        <label for="c-34-backstage-ui-searchfield-props" class="badge ok as-toggle">8 prop types</label>
+        <label for="c-35-backstage-ui-searchfield-props" class="badge ok as-toggle">8 prop types</label>
         
-        <label for="c-34-backstage-ui-searchfield-stories" class="badge ok as-toggle">21 stories</label>
+        <label for="c-35-backstage-ui-searchfield-stories" class="badge ok as-toggle">21 stories</label>
         
       </div>
     </div>
@@ -11418,9 +11866,9 @@ import { RiCactusLine } from "@remixicon/react";</code></pre>
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-34-backstage-ui-searchfield-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-35-backstage-ui-searchfield-stories" class="tg tg-stories" type="checkbox" hidden />
   
-  <input id="c-34-backstage-ui-searchfield-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-35-backstage-ui-searchfield-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -11845,9 +12293,9 @@ import { RiCactusLine, RiEBike2Line } from "@remixicon/react";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Select</h2>
       <div class="badges">
-        <label for="c-35-backstage-ui-select-props" class="badge ok as-toggle">11 prop types</label>
+        <label for="c-36-backstage-ui-select-props" class="badge ok as-toggle">11 prop types</label>
         
-        <label for="c-35-backstage-ui-select-stories" class="badge ok as-toggle">24 stories</label>
+        <label for="c-36-backstage-ui-select-stories" class="badge ok as-toggle">24 stories</label>
         
       </div>
     </div>
@@ -11860,9 +12308,9 @@ import { RiCactusLine, RiEBike2Line } from "@remixicon/react";</code></pre>
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-35-backstage-ui-select-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-36-backstage-ui-select-stories" class="tg tg-stories" type="checkbox" hidden />
   
-  <input id="c-35-backstage-ui-select-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-36-backstage-ui-select-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -12302,9 +12750,9 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Skeleton</h2>
       <div class="badges">
-        <label for="c-36-backstage-ui-skeleton-props" class="badge ok as-toggle">5 prop types</label>
+        <label for="c-37-backstage-ui-skeleton-props" class="badge ok as-toggle">5 prop types</label>
         
-        <label for="c-36-backstage-ui-skeleton-stories" class="badge ok as-toggle">4 stories</label>
+        <label for="c-37-backstage-ui-skeleton-stories" class="badge ok as-toggle">4 stories</label>
         
       </div>
     </div>
@@ -12317,9 +12765,9 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-36-backstage-ui-skeleton-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-37-backstage-ui-skeleton-stories" class="tg tg-stories" type="checkbox" hidden />
   
-  <input id="c-36-backstage-ui-skeleton-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-37-backstage-ui-skeleton-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -12428,9 +12876,9 @@ width?: number | string</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Slider</h2>
       <div class="badges">
-        <label for="c-37-backstage-ui-slider-props" class="badge ok as-toggle">5 prop types</label>
+        <label for="c-38-backstage-ui-slider-props" class="badge ok as-toggle">5 prop types</label>
         
-        <label for="c-37-backstage-ui-slider-stories" class="badge ok as-toggle">10 stories</label>
+        <label for="c-38-backstage-ui-slider-stories" class="badge ok as-toggle">10 stories</label>
         
       </div>
     </div>
@@ -12443,9 +12891,9 @@ width?: number | string</code></pre>
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-37-backstage-ui-slider-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-38-backstage-ui-slider-stories" class="tg tg-stories" type="checkbox" hidden />
   
-  <input id="c-37-backstage-ui-slider-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-38-backstage-ui-slider-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -12619,9 +13067,9 @@ secondaryLabel?: FieldLabelProps[&#39;secondaryLabel&#39;]</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Switch</h2>
       <div class="badges">
-        <label for="c-38-backstage-ui-switch-props" class="badge ok as-toggle">2 prop types</label>
+        <label for="c-39-backstage-ui-switch-props" class="badge ok as-toggle">2 prop types</label>
         
-        <label for="c-38-backstage-ui-switch-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-39-backstage-ui-switch-stories" class="badge ok as-toggle">2 stories</label>
         
       </div>
     </div>
@@ -12634,9 +13082,9 @@ secondaryLabel?: FieldLabelProps[&#39;secondaryLabel&#39;]</code></pre>
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-38-backstage-ui-switch-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-39-backstage-ui-switch-stories" class="tg tg-stories" type="checkbox" hidden />
   
-  <input id="c-38-backstage-ui-switch-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-39-backstage-ui-switch-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -12705,9 +13153,9 @@ label?: string</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> TablePagination</h2>
       <div class="badges">
-        <label for="c-39-backstage-ui-tablepagination-props" class="badge ok as-toggle">12 prop types</label>
+        <label for="c-40-backstage-ui-tablepagination-props" class="badge ok as-toggle">12 prop types</label>
         
-        <label for="c-39-backstage-ui-tablepagination-stories" class="badge ok as-toggle">8 stories</label>
+        <label for="c-40-backstage-ui-tablepagination-stories" class="badge ok as-toggle">8 stories</label>
         
       </div>
     </div>
@@ -12720,9 +13168,9 @@ label?: string</code></pre>
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-39-backstage-ui-tablepagination-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-40-backstage-ui-tablepagination-stories" class="tg tg-stories" type="checkbox" hidden />
   
-  <input id="c-39-backstage-ui-tablepagination-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-40-backstage-ui-tablepagination-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -12882,9 +13330,9 @@ totalCount?: number</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Tabs</h2>
       <div class="badges">
-        <label for="c-40-backstage-ui-tabs-props" class="badge ok as-toggle">2 prop types</label>
+        <label for="c-41-backstage-ui-tabs-props" class="badge ok as-toggle">2 prop types</label>
         
-        <label for="c-40-backstage-ui-tabs-stories" class="badge ok as-toggle">14 stories</label>
+        <label for="c-41-backstage-ui-tabs-stories" class="badge ok as-toggle">14 stories</label>
         
       </div>
     </div>
@@ -12897,9 +13345,9 @@ totalCount?: number</code></pre>
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-40-backstage-ui-tabs-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-41-backstage-ui-tabs-stories" class="tg tg-stories" type="checkbox" hidden />
   
-  <input id="c-40-backstage-ui-tabs-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-41-backstage-ui-tabs-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -13528,9 +13976,9 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> TagGroup</h2>
       <div class="badges">
-        <label for="c-41-backstage-ui-taggroup-props" class="badge ok as-toggle">4 prop types</label>
+        <label for="c-42-backstage-ui-taggroup-props" class="badge ok as-toggle">4 prop types</label>
         
-        <label for="c-41-backstage-ui-taggroup-stories" class="badge ok as-toggle">9 stories</label>
+        <label for="c-42-backstage-ui-taggroup-stories" class="badge ok as-toggle">9 stories</label>
         
       </div>
     </div>
@@ -13543,9 +13991,9 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-41-backstage-ui-taggroup-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-42-backstage-ui-taggroup-stories" class="tg tg-stories" type="checkbox" hidden />
   
-  <input id="c-41-backstage-ui-taggroup-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-42-backstage-ui-taggroup-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -13779,9 +14227,9 @@ import { RiAccountCircleLine, RiBugLine, RiEyeLine, RiHeartLine } from "@remixic
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Text</h2>
       <div class="badges">
-        <label for="c-42-backstage-ui-text-props" class="badge ok as-toggle">6 prop types</label>
+        <label for="c-43-backstage-ui-text-props" class="badge ok as-toggle">6 prop types</label>
         
-        <label for="c-42-backstage-ui-text-stories" class="badge ok as-toggle">9 stories</label>
+        <label for="c-43-backstage-ui-text-stories" class="badge ok as-toggle">9 stories</label>
         
       </div>
     </div>
@@ -13794,9 +14242,9 @@ import { RiAccountCircleLine, RiBugLine, RiEyeLine, RiHeartLine } from "@remixic
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-42-backstage-ui-text-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-43-backstage-ui-text-stories" class="tg tg-stories" type="checkbox" hidden />
   
-  <input id="c-42-backstage-ui-text-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-43-backstage-ui-text-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -14030,9 +14478,9 @@ weight?: TextWeights | Partial&lt;Record&lt;Breakpoint, TextWeights&gt;&gt;</cod
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> TextField</h2>
       <div class="badges">
-        <label for="c-43-backstage-ui-textfield-props" class="badge ok as-toggle">8 prop types</label>
+        <label for="c-44-backstage-ui-textfield-props" class="badge ok as-toggle">8 prop types</label>
         
-        <label for="c-43-backstage-ui-textfield-stories" class="badge ok as-toggle">13 stories</label>
+        <label for="c-44-backstage-ui-textfield-stories" class="badge ok as-toggle">13 stories</label>
         
       </div>
     </div>
@@ -14045,9 +14493,9 @@ weight?: TextWeights | Partial&lt;Record&lt;Breakpoint, TextWeights&gt;&gt;</cod
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-43-backstage-ui-textfield-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-44-backstage-ui-textfield-stories" class="tg tg-stories" type="checkbox" hidden />
   
-  <input id="c-43-backstage-ui-textfield-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-44-backstage-ui-textfield-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -14306,9 +14754,9 @@ import { RiEyeLine, RiSparklingLine } from "@remixicon/react";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> ToastContainer</h2>
       <div class="badges">
-        <label for="c-44-app-toast-props" class="badge ok as-toggle">2 prop types</label>
+        <label for="c-45-app-toast-props" class="badge ok as-toggle">2 prop types</label>
         
-        <label for="c-44-app-toast-stories" class="badge ok as-toggle">11 stories</label>
+        <label for="c-45-app-toast-stories" class="badge ok as-toggle">11 stories</label>
         
       </div>
     </div>
@@ -14321,9 +14769,9 @@ import { RiEyeLine, RiSparklingLine } from "@remixicon/react";</code></pre>
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-44-app-toast-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-45-app-toast-stories" class="tg tg-stories" type="checkbox" hidden />
   
-  <input id="c-44-app-toast-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-45-app-toast-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -14836,9 +15284,9 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> ToggleButton</h2>
       <div class="badges">
-        <label for="c-45-backstage-ui-togglebutton-props" class="badge ok as-toggle">5 prop types</label>
+        <label for="c-46-backstage-ui-togglebutton-props" class="badge ok as-toggle">5 prop types</label>
         
-        <label for="c-45-backstage-ui-togglebutton-stories" class="badge ok as-toggle">10 stories</label>
+        <label for="c-46-backstage-ui-togglebutton-stories" class="badge ok as-toggle">10 stories</label>
         
       </div>
     </div>
@@ -14851,9 +15299,9 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-45-backstage-ui-togglebutton-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-46-backstage-ui-togglebutton-stories" class="tg tg-stories" type="checkbox" hidden />
   
-  <input id="c-45-backstage-ui-togglebutton-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-46-backstage-ui-togglebutton-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -15197,9 +15645,9 @@ import { RiArrowRightSLine, RiCheckLine, RiCloudLine, RiStarFill, RiStarLine } f
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> ToggleButtonGroup</h2>
       <div class="badges">
-        <label for="c-46-backstage-ui-togglebuttongroup-props" class="badge ok as-toggle">2 prop types</label>
+        <label for="c-47-backstage-ui-togglebuttongroup-props" class="badge ok as-toggle">2 prop types</label>
         
-        <label for="c-46-backstage-ui-togglebuttongroup-stories" class="badge ok as-toggle">10 stories</label>
+        <label for="c-47-backstage-ui-togglebuttongroup-stories" class="badge ok as-toggle">10 stories</label>
         
       </div>
     </div>
@@ -15212,9 +15660,9 @@ import { RiArrowRightSLine, RiCheckLine, RiCloudLine, RiStarFill, RiStarLine } f
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-46-backstage-ui-togglebuttongroup-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-47-backstage-ui-togglebuttongroup-stories" class="tg tg-stories" type="checkbox" hidden />
   
-  <input id="c-46-backstage-ui-togglebuttongroup-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-47-backstage-ui-togglebuttongroup-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -15487,7 +15935,7 @@ import { RiArrowRightSLine, RiCloudLine, RiStarFill, RiStarLine } from "@remixic
       <div class="badges">
         
         
-        <label for="c-47-backstage-ui-tooltip-stories" class="badge ok as-toggle">6 stories</label>
+        <label for="c-48-backstage-ui-tooltip-stories" class="badge ok as-toggle">6 stories</label>
         
       </div>
     </div>
@@ -15500,7 +15948,7 @@ import { RiArrowRightSLine, RiCloudLine, RiStarFill, RiStarLine } from "@remixic
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-47-backstage-ui-tooltip-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-48-backstage-ui-tooltip-stories" class="tg tg-stories" type="checkbox" hidden />
   
   
 
@@ -15651,9 +16099,9 @@ import { RiArrowRightSLine, RiCloudLine, RiStarFill, RiStarLine } from "@remixic
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> visual</h2>
       <div class="badges">
-        <label for="c-48-backstage-ui-table-visual-props" class="badge ok as-toggle">14 prop types</label>
+        <label for="c-49-backstage-ui-table-visual-props" class="badge ok as-toggle">14 prop types</label>
         
-        <label for="c-48-backstage-ui-table-visual-stories" class="badge ok as-toggle">9 stories</label>
+        <label for="c-49-backstage-ui-table-visual-stories" class="badge ok as-toggle">9 stories</label>
         
       </div>
     </div>
@@ -15666,9 +16114,9 @@ import { RiArrowRightSLine, RiCloudLine, RiStarFill, RiStarLine } from "@remixic
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-48-backstage-ui-table-visual-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-49-backstage-ui-table-visual-stories" class="tg tg-stories" type="checkbox" hidden />
   
-  <input id="c-48-backstage-ui-table-visual-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-49-backstage-ui-table-visual-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -16118,9 +16566,9 @@ virtualized?: | boolean
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> VisuallyHidden</h2>
       <div class="badges">
-        <label for="c-49-backstage-ui-visuallyhidden-props" class="badge ok as-toggle">1 prop type</label>
+        <label for="c-50-backstage-ui-visuallyhidden-props" class="badge ok as-toggle">1 prop type</label>
         
-        <label for="c-49-backstage-ui-visuallyhidden-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-50-backstage-ui-visuallyhidden-stories" class="badge ok as-toggle">2 stories</label>
         
       </div>
     </div>
@@ -16133,9 +16581,9 @@ virtualized?: | boolean
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-49-backstage-ui-visuallyhidden-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-50-backstage-ui-visuallyhidden-stories" class="tg tg-stories" type="checkbox" hidden />
   
-  <input id="c-49-backstage-ui-visuallyhidden-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-50-backstage-ui-visuallyhidden-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
