@@ -177,6 +177,54 @@ The configuration factory also provides utilities for extending the configuratio
 | `restrictedSrcSyntax`      | Additional patterns to add to `no-restricted-syntax` in src files  |
 | `restrictedTestSyntax`     | Additional patterns to add to `no-restricted-syntax` in test files |
 
+### oxlint (experimental)
+
+The `@backstage/cli-module-oxlint` package provides an alternative lint engine
+powered by [oxlint](https://oxc.rs/docs/guide/usage/linter.html), a Rust-based
+linter that is significantly faster than ESLint. It includes all Backstage-specific
+lint rules ported as oxlint JS plugins.
+
+#### Switching to oxlint
+
+To switch from ESLint to oxlint, install the package alongside your existing
+CLI setup:
+
+```sh
+yarn add --dev @backstage/cli-module-oxlint oxlint
+```
+
+The oxlint module registers the same `package lint` and `repo lint` commands as
+the ESLint module. When both are installed, the oxlint module takes priority and
+overrides the ESLint-based commands.
+
+Next, create an `oxlint.config.mts` file at the root of your project:
+
+```ts title="oxlint.config.mts"
+import { defineBackstageConfig } from '@backstage/cli-module-oxlint/defineBackstageConfig';
+
+export default await defineBackstageConfig({
+  ignorePatterns: ['**/dist/**', '**/node_modules/**'],
+});
+```
+
+The `backstage-cli package lint` and `backstage-cli repo lint` commands will now
+use oxlint. Both commands accept `--fix` for auto-fixing violations. The
+`repo lint` command also accepts `--since <ref>` to limit linting to packages
+changed since a given git ref.
+
+#### Configuration
+
+The `defineBackstageConfig` factory scans the monorepo package graph, classifies
+each package by its `backstage.role` into web or node groups, and returns a
+complete oxlint configuration object. The following options are available:
+
+| Option           | Description                                                                                                                               |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `jsPlugins`      | Additional JS plugin file paths to load. The bundled Backstage plugin is included automatically; use this for custom third-party plugins. |
+| `ignorePatterns` | Glob patterns to exclude from linting, such as build output or generated files.                                                           |
+| `overrides`      | File-scoped rule overrides. Each entry has a `files` array and a `rules` map.                                                             |
+| `rules`          | Rules applied to all files. Merges on top of the 7 built-in Backstage rules.                                                              |
+
 ## Type Checking
 
 Just like formatting, the Backstage CLI does not have its own command for type
