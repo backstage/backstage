@@ -1,17 +1,4 @@
 .container {
-  background-color: var(--bui-bg-neutral-1);
-  padding: var(--bui-space-2);
   border-radius: var(--bui-space-1);
   box-shadow: var(--bui-shadow);
-}
-
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.searchField {
-  width: 100%;
-  max-width: 288px;
 }

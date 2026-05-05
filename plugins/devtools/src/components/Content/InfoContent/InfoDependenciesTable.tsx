@@ -17,11 +17,10 @@
 import { useCallback, useMemo } from 'react';
 import { PackageDependency } from '@backstage/plugin-devtools-common';
 import {
-  Card,
-  CardBody,
-  CardHeader,
+  Box,
   CellText,
   ColumnConfig,
+  Flex,
   SearchField,
   SortDescriptor,
   Table,
@@ -111,31 +110,36 @@ export const InfoDependenciesTable = ({
   });
 
   return (
-    <Card className={styles.container}>
-      <CardHeader className={styles.header}>
+    <Flex
+      direction="column"
+      gap="2"
+      p="4"
+      bg="neutral"
+      className={styles.container}
+    >
+      <Flex justify="between" align="center">
         <Text variant="title-small" weight="bold" as="h2">
           Package Dependencies
         </Text>
-        <SearchField
-          className={styles.searchField}
-          aria-label="Search"
-          placeholder="Search..."
-          {...search}
-        />
-      </CardHeader>
-      <CardBody>
-        <Table
-          columnConfig={columns}
-          {...tableProps}
-          emptyState={
-            search.value ? (
-              <Text>No results match "{search.value}"</Text>
-            ) : (
-              <Text>No records to display.</Text>
-            )
-          }
-        />
-      </CardBody>
-    </Card>
+        <Box maxWidth="288px" width="100%">
+          <SearchField
+            aria-label="Search"
+            placeholder="Search..."
+            {...search}
+          />
+        </Box>
+      </Flex>
+      <Table
+        columnConfig={columns}
+        {...tableProps}
+        emptyState={
+          search.value ? (
+            <Text>No results match "{search.value}"</Text>
+          ) : (
+            <Text>No records to display.</Text>
+          )
+        }
+      />
+    </Flex>
   );
 };
