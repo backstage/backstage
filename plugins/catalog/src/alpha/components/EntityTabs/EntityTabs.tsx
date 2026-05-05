@@ -30,7 +30,7 @@ type SubRoute = {
 };
 
 function normalizeRoutePath(path: string): string {
-  const trimmed = path.replace(/^\/+|\/+$/g, '');
+  const trimmed = path.replace(/^\/+/, '').replace(/\/+$/, '');
   return trimmed ? `${trimmed}/*` : '';
 }
 
