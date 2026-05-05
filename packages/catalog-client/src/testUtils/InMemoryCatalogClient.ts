@@ -55,6 +55,7 @@ import {
   FilterPredicate,
   filterPredicateToFilterFunction,
 } from '@backstage/filter-predicates';
+import { entityFilterOptions } from '../entityFilterResolver';
 import lodash from 'lodash';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { traverse } from '../../../../plugins/catalog-backend/src/database/operations/stitcher/buildEntitySearch';
@@ -362,7 +363,7 @@ export class InMemoryCatalogClient implements CatalogApi {
   ): Promise<GetEntitiesByRefsResponse> {
     const filter = createFilter(request.filter);
     const queryFilter = request.query
-      ? filterPredicateToFilterFunction(request.query)
+      ? filterPredicateToFilterFunction(request.query, entityFilterOptions)
       : undefined;
     const refMap = this.#createEntityRefMap();
     const items = request.entityRefs
@@ -415,7 +416,9 @@ export class InMemoryCatalogClient implements CatalogApi {
 
     // Apply predicate-based query filter
     if (query) {
-      items = items.filter(filterPredicateToFilterFunction(query));
+      items = items.filter(
+        filterPredicateToFilterFunction(query, entityFilterOptions),
+      );
     }
 
     // Apply full-text filter, defaulting to the sort field or metadata.uid
@@ -514,7 +517,7 @@ export class InMemoryCatalogClient implements CatalogApi {
     let filteredEntities = this.#entities.filter(filter);
     if (request.query) {
       filteredEntities = filteredEntities.filter(
-        filterPredicateToFilterFunction(request.query),
+        filterPredicateToFilterFunction(request.query, entityFilterOptions),
       );
     }
     const facets = Object.fromEntries(

@@ -23,6 +23,7 @@ export {
   evaluateFilterPredicate,
   filterPredicateToFilterFunction,
 } from './evaluate';
+export type { FilterPredicateOptions } from './evaluate';
 export { getJsonValueAtPath } from './getJsonValueAtPath';
 export {
   createZodV3FilterPredicateSchema,

@@ -18,7 +18,10 @@ import {
   evaluateFilterPredicate,
   filterPredicateToFilterFunction,
 } from './evaluate';
+import type { FilterPredicateOptions } from './evaluate';
 import { FilterPredicate } from './types';
+import { getJsonValueAtPath } from './getJsonValueAtPath';
+import { JsonValue } from '@backstage/types';
 
 describe('evaluate', () => {
   const entities = [
@@ -265,5 +268,131 @@ describe('evaluate', () => {
     expect(evaluateFilterPredicate(value, entities[0])).toBe(false);
     expect(filterPredicateToFilterFunction(operator)(entities[0])).toBe(false);
     expect(filterPredicateToFilterFunction(value)(entities[0])).toBe(false);
+  });
+
+  describe('with resolveValue option (relations support)', () => {
+    const resolveValue: FilterPredicateOptions['resolveValue'] = (
+      target,
+      key,
+    ) => {
+      if (key.toLocaleLowerCase('en-US').startsWith('relations.')) {
+        const relationType = key.slice('relations.'.length);
+        const relations = (target as any)?.relations;
+        if (!Array.isArray(relations)) return undefined;
+        const targetRefs = relations
+          .filter(
+            (r: any) =>
+              r.type.toLocaleLowerCase('en-US') ===
+              relationType.toLocaleLowerCase('en-US'),
+          )
+          .map((r: any) => r.targetRef);
+        return targetRefs.length > 0 ? targetRefs : undefined;
+      }
+      return getJsonValueAtPath(target as JsonValue, key);
+    };
+
+    const options: FilterPredicateOptions = { resolveValue };
+
+    it('matches relations by type and targetRef', () => {
+      const filter: FilterPredicate = {
+        'relations.ownedBy': 'group:default/g',
+      };
+      const filtered = entities.filter(e =>
+        evaluateFilterPredicate(filter, e, options),
+      );
+      expect(filtered.map(e => e.metadata.name).sort()).toEqual([
+        'a',
+        's',
+        'w',
+      ]);
+    });
+
+    it('matches relations with $in operator', () => {
+      const filter: FilterPredicate = {
+        'relations.providesApi': {
+          $in: ['api:default/a', 'api:default/b'],
+        },
+      };
+      const filtered = entities.filter(e =>
+        evaluateFilterPredicate(filter, e, options),
+      );
+      expect(filtered.map(e => e.metadata.name)).toEqual(['s']);
+    });
+
+    it('matches relations with $exists', () => {
+      const filter: FilterPredicate = {
+        'relations.dependsOn': { $exists: true },
+      };
+      const filtered = entities.filter(e =>
+        evaluateFilterPredicate(filter, e, options),
+      );
+      expect(filtered.map(e => e.metadata.name)).toEqual(['w']);
+    });
+
+    it('matches non-existent relation type with $exists false', () => {
+      const filter: FilterPredicate = {
+        'relations.dependsOn': { $exists: false },
+      };
+      const filtered = entities.filter(e =>
+        evaluateFilterPredicate(filter, e, options),
+      );
+      expect(filtered.map(e => e.metadata.name).sort()).toEqual([
+        'a',
+        'g',
+        's',
+      ]);
+    });
+
+    it('matches relations case-insensitively', () => {
+      const filter: FilterPredicate = {
+        'relations.OWNEDBY': 'GROUP:DEFAULT/G',
+      };
+      const filtered = entities.filter(e =>
+        evaluateFilterPredicate(filter, e, options),
+      );
+      expect(filtered.map(e => e.metadata.name).sort()).toEqual([
+        'a',
+        's',
+        'w',
+      ]);
+    });
+
+    it('combines relation filter with other field filters', () => {
+      const filter: FilterPredicate = {
+        kind: 'Component',
+        'relations.ownedBy': 'group:default/g',
+      };
+      const filtered = entities.filter(e =>
+        evaluateFilterPredicate(filter, e, options),
+      );
+      expect(filtered.map(e => e.metadata.name).sort()).toEqual(['s', 'w']);
+    });
+
+    it('works with filterPredicateToFilterFunction', () => {
+      const fn = filterPredicateToFilterFunction(
+        { 'relations.ownerOf': { $exists: true } },
+        options,
+      );
+      const filtered = entities.filter(fn);
+      expect(filtered.map(e => e.metadata.name)).toEqual(['g']);
+    });
+
+    it('works with $not on relations', () => {
+      const filter: FilterPredicate = {
+        $not: { 'relations.ownedBy': 'group:default/g' },
+      };
+      const filtered = entities.filter(e =>
+        evaluateFilterPredicate(filter, e, options),
+      );
+      expect(filtered.map(e => e.metadata.name)).toEqual(['g']);
+    });
+
+    it('still supports regular path lookups', () => {
+      const filter: FilterPredicate = { 'spec.type': 'service' };
+      const filtered = entities.filter(e =>
+        evaluateFilterPredicate(filter, e, options),
+      );
+      expect(filtered.map(e => e.metadata.name)).toEqual(['s']);
+    });
   });
 });

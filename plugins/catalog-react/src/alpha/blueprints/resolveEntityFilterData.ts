@@ -18,6 +18,7 @@ import {
   entityFilterExpressionDataRef,
   entityFilterFunctionDataRef,
 } from './extensionData';
+import { entityFilterOptions } from '@backstage/catalog-client';
 import {
   FilterPredicate,
   filterPredicateToFilterFunction,
@@ -38,7 +39,7 @@ export function* resolveEntityFilterData(
     yield entityFilterExpressionDataRef(config.filter);
   } else if (config.filter) {
     yield entityFilterFunctionDataRef(
-      filterPredicateToFilterFunction(config.filter),
+      filterPredicateToFilterFunction(config.filter, entityFilterOptions),
     );
   } else if (typeof filter === 'function') {
     yield entityFilterFunctionDataRef(filter);
@@ -49,6 +50,8 @@ export function* resolveEntityFilterData(
     );
     yield entityFilterExpressionDataRef(filter);
   } else if (filter) {
-    yield entityFilterFunctionDataRef(filterPredicateToFilterFunction(filter));
+    yield entityFilterFunctionDataRef(
+      filterPredicateToFilterFunction(filter, entityFilterOptions),
+    );
   }
 }

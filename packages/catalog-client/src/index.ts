@@ -21,4 +21,8 @@
  */
 
 export { CatalogClient } from './CatalogClient';
+export {
+  entityFilterOptions,
+  resolveEntityFilterValue,
+} from './entityFilterResolver';
 export * from './types';
