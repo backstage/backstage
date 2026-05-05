@@ -16,4 +16,10 @@
 
 export * from './Combobox';
 export * from './types';
-export { ComboboxDefinition } from './definition';
+export {
+  ComboboxDefinition,
+  ComboboxInputDefinition,
+  ComboboxListBoxDefinition,
+  ComboboxListBoxItemDefinition,
+  ComboboxSectionDefinition,
+} from './definition';

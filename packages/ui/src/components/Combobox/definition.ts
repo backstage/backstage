@@ -49,7 +49,7 @@ export const ComboboxDefinition = defineComponent<ComboboxOwnProps>()({
 
 /**
  * Component definition for ComboboxInput
- * @internal
+ * @public
  */
 export const ComboboxInputDefinition = defineComponent<ComboboxInputOwnProps>()(
   {
@@ -70,7 +70,7 @@ export const ComboboxInputDefinition = defineComponent<ComboboxInputOwnProps>()(
 
 /**
  * Component definition for ComboboxListBox
- * @internal
+ * @public
  */
 export const ComboboxListBoxDefinition =
   defineComponent<ComboboxListBoxOwnProps>()({
@@ -86,7 +86,7 @@ export const ComboboxListBoxDefinition =
 
 /**
  * Component definition for ComboboxListBoxItem
- * @internal
+ * @public
  */
 export const ComboboxListBoxItemDefinition =
   defineComponent<ComboboxListBoxItemOwnProps>()({
@@ -101,7 +101,7 @@ export const ComboboxListBoxItemDefinition =
 
 /**
  * Component definition for ComboboxSection
- * @internal
+ * @public
  */
 export const ComboboxSectionDefinition =
   defineComponent<ComboboxSectionOwnProps>()({

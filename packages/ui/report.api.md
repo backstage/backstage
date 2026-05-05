@@ -1039,6 +1039,51 @@ export const ComboboxDefinition: {
   };
 };
 
+// @public
+export const ComboboxInputDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-ComboboxInput';
+    readonly icon: 'bui-ComboboxInputIcon';
+    readonly input: 'bui-ComboboxInputField';
+    readonly chevron: 'bui-ComboboxInputChevron';
+  };
+  readonly bg: 'consumer';
+  readonly propDefs: {
+    readonly icon: {};
+    readonly placeholder: {};
+  };
+};
+
+// @public
+export const ComboboxListBoxDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-ComboboxList';
+    readonly noResults: 'bui-ComboboxNoResults';
+  };
+  readonly propDefs: {
+    readonly options: {};
+  };
+};
+
+// @public
+export const ComboboxListBoxItemDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-ComboboxItem';
+    readonly indicator: 'bui-ComboboxItemIndicator';
+    readonly label: 'bui-ComboboxItemLabel';
+  };
+  readonly propDefs: {};
+};
+
 // @public (undocumented)
 export type ComboboxOwnProps = {
   icon?: ReactNode;
@@ -1056,6 +1101,18 @@ export type ComboboxOwnProps = {
 export interface ComboboxProps
   extends ComboboxOwnProps,
     Omit<ComboBoxProps<Option_2>, keyof ComboboxOwnProps> {}
+
+// @public
+export const ComboboxSectionDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-ComboboxSection';
+    readonly header: 'bui-ComboboxSectionHeader';
+  };
+  readonly propDefs: {};
+};
 
 // @public (undocumented)
 export interface CompletePaginationOptions extends PaginationOptions {

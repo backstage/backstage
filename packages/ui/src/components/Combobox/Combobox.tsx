@@ -15,13 +15,12 @@
  */
 
 import { forwardRef, useEffect } from 'react';
-import { ComboBox as AriaComboBox, Popover } from 'react-aria-components';
+import { ComboBox as AriaComboBox } from 'react-aria-components';
 import { useFilter } from 'react-aria';
-import clsx from 'clsx';
 import { ComboboxProps } from './types';
 import { useDefinition } from '../../hooks/useDefinition';
 import { ComboboxDefinition } from './definition';
-import { PopoverDefinition } from '../Popover/definition';
+import { Popover } from '../Popover';
 import { FieldLabel } from '../FieldLabel';
 import { FieldError } from '../FieldError';
 import { ComboboxInput } from './ComboboxInput';
@@ -41,8 +40,6 @@ export const Combobox = forwardRef<HTMLDivElement, ComboboxProps>(
       ComboboxDefinition,
       props,
     );
-    const { ownProps: popoverOwnProps } = useDefinition(PopoverDefinition, {});
-
     const {
       classes,
       label,
@@ -84,10 +81,7 @@ export const Combobox = forwardRef<HTMLDivElement, ComboboxProps>(
         />
         <ComboboxInput icon={icon} placeholder={placeholder} />
         <FieldError />
-        <Popover
-          className={clsx(popoverOwnProps.classes.root, classes.popover)}
-          {...dataAttributes}
-        >
+        <Popover className={classes.popover} hideArrow {...dataAttributes}>
           <ComboboxListBox options={options} />
         </Popover>
       </AriaComboBox>

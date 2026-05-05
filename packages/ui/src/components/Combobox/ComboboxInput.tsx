@@ -14,18 +14,13 @@
  * limitations under the License.
  */
 
-import { ReactNode } from 'react';
 import { Button, Group, Input } from 'react-aria-components';
 import { RiArrowDownSLine } from '@remixicon/react';
 import { useDefinition } from '../../hooks/useDefinition';
 import { ComboboxInputDefinition } from './definition';
+import type { ComboboxInputOwnProps } from './types';
 
-interface ComboboxInputProps {
-  icon?: ReactNode;
-  placeholder?: string;
-}
-
-export function ComboboxInput(props: ComboboxInputProps) {
+export function ComboboxInput(props: ComboboxInputOwnProps) {
   const { ownProps, dataAttributes } = useDefinition(
     ComboboxInputDefinition,
     props,

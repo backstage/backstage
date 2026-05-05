@@ -28,11 +28,7 @@ import {
   ComboboxListBoxItemDefinition,
   ComboboxSectionDefinition,
 } from './definition';
-import type { Option, OptionSection, ComboboxOwnProps } from './types';
-
-interface ComboboxListBoxProps {
-  options?: ComboboxOwnProps['options'];
-}
+import type { Option, OptionSection, ComboboxListBoxOwnProps } from './types';
 
 const NoResults = () => {
   const { ownProps } = useDefinition(ComboboxListBoxDefinition, {});
@@ -53,7 +49,7 @@ function ComboboxItem({ option }: { option: Option }) {
       isDisabled={option.disabled}
     >
       <div className={classes.indicator}>
-        <RiCheckLine />
+        <RiCheckLine aria-hidden="true" />
       </div>
       <Text slot="label" className={classes.label}>
         {option.label}
@@ -76,7 +72,7 @@ function ComboboxSectionItems({ section }: { section: OptionSection }) {
   );
 }
 
-export function ComboboxListBox(props: ComboboxListBoxProps) {
+export function ComboboxListBox(props: ComboboxListBoxOwnProps) {
   const { ownProps } = useDefinition(ComboboxListBoxDefinition, props);
   const { classes, options } = ownProps;
 
