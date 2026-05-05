@@ -22,6 +22,7 @@ import {
   useEntityList,
 } from '@backstage/plugin-catalog-react';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
+import { permissionApiRef } from '@backstage/plugin-permission-react';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useEffect } from 'react';
@@ -29,6 +30,10 @@ import type { ReactElement } from 'react';
 import { Cell } from '@backstage/ui';
 import { NextCatalogPage } from './NextCatalogPage';
 import type { CatalogColumnHeader } from '@backstage/plugin-catalog-react/alpha';
+
+const mockPermissionApi = {
+  authorize: jest.fn().mockResolvedValue([{ result: 'ALLOW' }]),
+};
 
 function SeedKindFilter() {
   const { updateFilters } = useEntityList();
@@ -63,8 +68,13 @@ describe('NextCatalogPage', () => {
     });
 
     await renderInTestApp(
-      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
-        <NextCatalogPage filters={null} columns={columns} pagination />
+      <TestApiProvider
+        apis={[
+          [catalogApiRef, catalogApi],
+          [permissionApiRef, mockPermissionApi],
+        ]}
+      >
+        <NextCatalogPage filters={null} columns={columns} />
       </TestApiProvider>,
       {
         mountedRoutes: {
@@ -102,7 +112,12 @@ describe('NextCatalogPage', () => {
     });
 
     await renderInTestApp(
-      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+      <TestApiProvider
+        apis={[
+          [catalogApiRef, catalogApi],
+          [permissionApiRef, mockPermissionApi],
+        ]}
+      >
         <NextCatalogPage
           filters={<SeedKindFilter />}
           columns={[
@@ -111,7 +126,6 @@ describe('NextCatalogPage', () => {
               cell: entity => <Cell>{entity.metadata.name}</Cell>,
             },
           ]}
-          pagination
         />
       </TestApiProvider>,
       {
@@ -136,7 +150,12 @@ describe('NextCatalogPage', () => {
     });
 
     await renderInTestApp(
-      <TestApiProvider apis={[[catalogApiRef, mockCatalogApi]]}>
+      <TestApiProvider
+        apis={[
+          [catalogApiRef, mockCatalogApi],
+          [permissionApiRef, mockPermissionApi],
+        ]}
+      >
         <NextCatalogPage
           filters={<SeedKindFilter />}
           columns={[
@@ -149,7 +168,6 @@ describe('NextCatalogPage', () => {
               cell: entity => <Cell>{entity.metadata.name}</Cell>,
             },
           ]}
-          pagination
         />
       </TestApiProvider>,
       {
@@ -192,7 +210,12 @@ describe('NextCatalogPage', () => {
     });
 
     await renderInTestApp(
-      <TestApiProvider apis={[[catalogApiRef, mockCatalogApi]]}>
+      <TestApiProvider
+        apis={[
+          [catalogApiRef, mockCatalogApi],
+          [permissionApiRef, mockPermissionApi],
+        ]}
+      >
         <NextCatalogPage
           filters={<SeedKindFilter />}
           columns={[
@@ -215,7 +238,6 @@ describe('NextCatalogPage', () => {
               ),
             },
           ]}
-          pagination
         />
       </TestApiProvider>,
       {
@@ -260,7 +282,12 @@ describe('NextCatalogPage', () => {
     });
 
     await renderInTestApp(
-      <TestApiProvider apis={[[catalogApiRef, mockCatalogApi]]}>
+      <TestApiProvider
+        apis={[
+          [catalogApiRef, mockCatalogApi],
+          [permissionApiRef, mockPermissionApi],
+        ]}
+      >
         <NextCatalogPage
           filters={<SeedKindFilter />}
           columns={[
@@ -269,7 +296,6 @@ describe('NextCatalogPage', () => {
               cell: entity => <Cell>{entity.metadata.name}</Cell>,
             },
           ]}
-          pagination
         />
       </TestApiProvider>,
       {
@@ -310,7 +336,12 @@ describe('NextCatalogPage', () => {
     });
 
     await renderInTestApp(
-      <TestApiProvider apis={[[catalogApiRef, mockCatalogApi]]}>
+      <TestApiProvider
+        apis={[
+          [catalogApiRef, mockCatalogApi],
+          [permissionApiRef, mockPermissionApi],
+        ]}
+      >
         <NextCatalogPage
           filters={<SeedKindFilter />}
           columns={[
@@ -327,7 +358,6 @@ describe('NextCatalogPage', () => {
               ),
             },
           ]}
-          pagination
         />
       </TestApiProvider>,
       {

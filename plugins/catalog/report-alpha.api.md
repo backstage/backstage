@@ -1056,26 +1056,11 @@ const _default: OverridableFrontendPlugin<
     'page:catalog': OverridableExtensionDefinition<{
       config: {
         version: 'v1' | 'v2';
-        pagination:
-          | boolean
-          | {
-              mode: 'offset' | 'cursor';
-              limit?: number | undefined;
-              offset?: number | undefined;
-            };
         path: string | undefined;
         title: string | undefined;
       };
       configInput: {
         version?: 'v1' | 'v2' | undefined;
-        pagination?:
-          | boolean
-          | {
-              mode: 'offset' | 'cursor';
-              limit?: number | undefined;
-              offset?: number | undefined;
-            }
-          | undefined;
         path?: string | undefined;
         title?: string | undefined;
       };
@@ -1397,7 +1382,6 @@ export type NextCatalogPageProps = {
     header: CatalogColumnHeader;
     cell: (entity: Entity) => ReactElement;
   }>;
-  pagination?: EntityListPagination;
 };
 
 // (No @packageDocumentation comment for this package)

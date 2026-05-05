@@ -16,22 +16,33 @@
 
 import {
   CatalogFilterLayout,
-  EntityListPagination,
   EntityListProvider,
   EntityOrderFilter,
-  EntityTextFilter,
   entityRouteParams,
   entityRouteRef,
   useEntityList,
 } from '@backstage/plugin-catalog-react';
+import { NextCatalogSearchBar } from './NextCatalogSearchBar';
 import type { CatalogColumnHeader } from '@backstage/plugin-catalog-react/alpha';
-import { Cell, Table } from '@backstage/ui';
+import { Box, Card, Cell, Flex, Header, Table, Text } from '@backstage/ui';
 import type { ColumnConfig, SortDescriptor } from '@backstage/ui';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import type { Entity } from '@backstage/catalog-model';
-import { useRouteRef } from '@backstage/core-plugin-api';
-import { useEffect, useMemo, useState } from 'react';
+import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
+import { useMemo, useState } from 'react';
 import type { ReactElement, ReactNode } from 'react';
+import { catalogTranslationRef } from '../..';
+import {
+  Content,
+  CreateButton,
+  SupportButton,
+} from '@backstage/core-components';
+import { usePermission } from '@backstage/plugin-permission-react';
+import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
+import { createComponentRouteRef } from '../../routes';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import capitalize from 'lodash/capitalize';
+import pluralize from 'pluralize';
 
 /**
  * BUI's `Table<T>` requires `T extends { id: string | number }`.
@@ -56,12 +67,6 @@ export type NextCatalogPageProps = {
     header: CatalogColumnHeader;
     cell: (entity: Entity) => ReactElement;
   }>;
-  /**
-   * Controls the catalog backend pagination mode (forwarded to
-   * `EntityListProvider`). The table itself does not yet render UI
-   * pagination controls — they are scheduled for a future iteration.
-   */
-  pagination?: EntityListPagination;
 };
 
 function buildColumnConfig(
@@ -84,7 +89,8 @@ function NextCatalogTable(props: { columns: NextCatalogPageProps['columns'] }) {
   const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor | null>(
     null,
   );
-  const [searchTerm, setSearchTerm] = useState('');
+
+  const { setLimit, setOffset, limit, totalItems, offset } = useEntityList();
 
   const headersById = useMemo(
     () => new Map(props.columns.map(c => [c.header.id, c.header])),
@@ -120,17 +126,6 @@ function NextCatalogTable(props: { columns: NextCatalogPageProps['columns'] }) {
     return [...seen];
   }, [props.columns]);
 
-  useEffect(() => {
-    const handle = setTimeout(() => {
-      updateFilters({
-        text: searchTerm
-          ? new EntityTextFilter([searchTerm, ...searchFields])
-          : undefined,
-      });
-    }, 250);
-    return () => clearTimeout(handle);
-  }, [searchTerm, searchFields, updateFilters]);
-
   const onSortChange = (descriptor: SortDescriptor) => {
     setSortDescriptor(descriptor);
     const header = headersById.get(String(descriptor.column));
@@ -147,26 +142,47 @@ function NextCatalogTable(props: { columns: NextCatalogPageProps['columns'] }) {
     });
   };
 
+  const handleNextPage = () => {
+    const total = totalItems ?? 0;
+
+    if ((offset ?? 0) + (limit ?? 0) >= total) {
+      setOffset!(Math.max(0, total - (limit ?? 0)));
+    } else {
+      setOffset!(Math.max(0, (offset ?? 0) + (limit ?? 0)));
+    }
+  };
+
+  const handlePreviousPage = () => {
+    setOffset!(Math.max(0, (offset ?? 0) - (limit ?? 0)));
+  };
+
   return (
-    <>
-      <input
-        type="search"
-        aria-label="Search entities"
-        value={searchTerm}
-        onChange={e => setSearchTerm(e.target.value)}
-      />
+    <Card>
+      <Flex direction="row" justify="between" mb="4" mx="2">
+        <TableTitle />
+        <NextCatalogSearchBar searchFields={searchFields} />
+      </Flex>
       <Table<EntityRow>
         columnConfig={columnConfig}
         data={rows}
         isPending={loading}
         error={error}
-        // Table-level pagination UI is not yet wired; the pagination prop on
-        // NextCatalogPageProps controls EntityListProvider's fetch mode only.
-        pagination={{ type: 'none' }}
+        pagination={{
+          type: 'page',
+          pageSize: limit,
+          onNextPage: handleNextPage,
+          onPreviousPage: handlePreviousPage,
+          hasNextPage: totalItems
+            ? (offset ?? 0) + (limit ?? 0) < totalItems
+            : false,
+          hasPreviousPage: (offset ?? 0) > 0,
+          onPageSizeChange: setLimit,
+          pageSizeOptions: [50],
+        }}
         sort={{ descriptor: sortDescriptor, onSortChange }}
         rowConfig={rowConfig}
       />
-    </>
+    </Card>
   );
 }
 
@@ -177,15 +193,67 @@ function NextCatalogTable(props: { columns: NextCatalogPageProps['columns'] }) {
  * @alpha
  */
 export function NextCatalogPage(props: NextCatalogPageProps) {
-  const { filters, columns, pagination } = props;
+  const { filters, columns } = props;
+  const orgName =
+    useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
+  const { t } = useTranslationRef(catalogTranslationRef);
+  const createComponentLink = useRouteRef(createComponentRouteRef);
+  const { allowed } = usePermission({
+    permission: catalogEntityCreatePermission,
+  });
+
   return (
-    <EntityListProvider pagination={pagination}>
-      <CatalogFilterLayout>
-        <CatalogFilterLayout.Filters>{filters}</CatalogFilterLayout.Filters>
-        <CatalogFilterLayout.Content>
-          <NextCatalogTable columns={columns} />
-        </CatalogFilterLayout.Content>
-      </CatalogFilterLayout>
-    </EntityListProvider>
+    <>
+      <Header
+        title={t('indexPage.title', { orgName })}
+        customActions={
+          <>
+            {allowed && (
+              <CreateButton
+                title={t('indexPage.createButtonTitle')}
+                to={createComponentLink && createComponentLink()}
+              />
+            )}
+            <SupportButton>{t('indexPage.supportButtonContent')}</SupportButton>
+          </>
+        }
+      />
+      <Content>
+        <EntityListProvider pagination={{ mode: 'offset' }}>
+          <CatalogFilterLayout>
+            <CatalogFilterLayout.Filters>{filters}</CatalogFilterLayout.Filters>
+            <CatalogFilterLayout.Content>
+              <NextCatalogTable columns={columns} />
+            </CatalogFilterLayout.Content>
+          </CatalogFilterLayout>
+        </EntityListProvider>
+      </Content>
+    </>
+  );
+}
+
+function TableTitle() {
+  const { t } = useTranslationRef(catalogTranslationRef);
+  const { filters, totalItems, loading } = useEntityList();
+
+  const currentKind = filters.kind?.label || '';
+  const currentType = filters.type?.value || '';
+  const currentCount = typeof totalItems === 'number' ? `(${totalItems})` : '';
+  const titlePreamble = capitalize(
+    filters.user?.value ?? t('catalogTable.allFilters'),
+  );
+  const titleText = [
+    titlePreamble,
+    currentType,
+    pluralize(currentKind),
+    currentCount,
+  ]
+    .filter(s => s)
+    .join(' ');
+
+  return (
+    <Box pt="4">
+      <Text variant="title-small">{loading ? '' : titleText}</Text>
+    </Box>
   );
 }

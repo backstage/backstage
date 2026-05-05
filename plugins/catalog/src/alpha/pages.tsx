@@ -92,12 +92,7 @@ export const catalogPage = PageBlueprint.makeWithOverrides({
       .default(true),
     exportSettings: z
       .object({
-        /** When true, displays the export button in the catalog interface. */
         enabled: z.boolean().optional(),
-        /**
-         * When true, hides the built-in CSV and JSON export options.
-         * Useful when only custom exporters (provided via extensions) should be available.
-         */
         disableBuiltinExporters: z.boolean().optional(),
       })
       .optional(),
@@ -130,13 +125,7 @@ export const catalogPage = PageBlueprint.makeWithOverrides({
                 cell: NonNullable<typeof c.cell>;
               } => Boolean(c.header && c.cell),
             );
-          return (
-            <NextCatalogPage
-              filters={<>{filters}</>}
-              columns={columns}
-              pagination={config.pagination}
-            />
-          );
+          return <NextCatalogPage filters={<>{filters}</>} columns={columns} />;
         }
 
         // Merge export customizers from all attached extensions
