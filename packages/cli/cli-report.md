@@ -556,7 +556,7 @@ Usage: backstage-cli package lint [flags...] [directories...]
 Options:
   --fix
   --format <string>
-  --max-warnings <string>
+  --max-warnings <number>
   --output-file <string>
   -h, --help
 ```
@@ -795,11 +795,9 @@ Usage: backstage-cli repo lint [flags...]
 Options:
   --fix
   --format <string>
-  --max-warnings <string>
+  --max-warnings <number>
   --output-file <string>
   --since <string>
-  --success-cache
-  --success-cache-dir <string>
   -h, --help
 ```
 
