@@ -23554,14 +23554,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:^1.0.0, axios@npm:^1.12.2, axios@npm:^1.13.5, axios@npm:^1.13.6, axios@npm:^1.15.0, axios@npm:^1.7.4":
-  version: 1.15.0
-  resolution: "axios@npm:1.15.0"
+"axios@npm:^1.0.0, axios@npm:^1.12.2, axios@npm:^1.13.5, axios@npm:^1.13.6, axios@npm:^1.15.2, axios@npm:^1.7.4":
+  version: 1.16.0
+  resolution: "axios@npm:1.16.0"
   dependencies:
-    follow-redirects: "npm:^1.15.11"
+    follow-redirects: "npm:^1.16.0"
     form-data: "npm:^4.0.5"
     proxy-from-env: "npm:^2.1.0"
-  checksum: 10/d39a2c0ebc7ff4739401b282e726cc2673377949d6c46d60eb619458f8d7a2f7eadbcada7097f4dbc7d5c59abb4d3bf6fac33d474412bc3415d3f5aa7ed45530
+  checksum: 10/cf8b521ff732c21550b38c8739aef556ea5e14b268468bb89e4307416ab262b462e582474e810963a3d61c2392ab47ad35c11d05eff027de7c97113bc7411623
   languageName: node
   linkType: hard
 
@@ -28983,7 +28983,7 @@ __metadata:
     "@types/react": "npm:*"
     "@types/react-dom": "npm:*"
     "@types/zen-observable": "npm:^0.8.0"
-    axios: "npm:^1.15.0"
+    axios: "npm:^1.15.2"
     cross-env: "npm:^10.0.0"
     history: "npm:^5.0.0"
     msw: "npm:^1.0.0"
@@ -29967,7 +29967,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"follow-redirects@npm:^1.0.0, follow-redirects@npm:^1.15.11":
+"follow-redirects@npm:^1.0.0, follow-redirects@npm:^1.16.0":
   version: 1.16.0
   resolution: "follow-redirects@npm:1.16.0"
   peerDependenciesMeta:
