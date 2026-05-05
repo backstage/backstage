@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Fragment } from 'react';
 import { convertLegacyRouteRef } from '@backstage/core-compat-api';
 import {
   coreExtensionData,
@@ -36,6 +37,10 @@ import CategoryIcon from '@material-ui/icons/Category';
 import { rootRouteRef } from '../routes';
 import { useEntityFromUrl } from '../components/CatalogEntityPage/useEntityFromUrl';
 import { buildFilterFn } from './filter/FilterWrapper';
+import {
+  BuiContextMenuItem,
+  MuiContextMenuItem,
+} from './components/EntityContextMenu/items';
 
 export const catalogPage = PageBlueprint.makeWithOverrides({
   inputs: {
@@ -95,7 +100,8 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
       EntityContentBlueprint.dataRefs.icon.optional(),
     ]),
     contextMenuItems: createExtensionInput([
-      coreExtensionData.reactElement,
+      coreExtensionData.reactElement.optional(),
+      EntityContextMenuItemBlueprint.dataRefs.data.optional(),
       EntityContextMenuItemBlueprint.dataRefs.filterFunction.optional(),
     ]),
   },
@@ -118,11 +124,12 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
       .optional()
       .default('title'),
     showNavItemIcons: z.boolean().optional().default(false),
+    useBuiHeader: z.boolean().optional().default(false),
   },
   factory(originalFactory, { config, inputs }) {
     return originalFactory({
       path: '/catalog/:namespace/:kind/:name',
-      noHeader: true,
+      noHeader: !config.useBuiHeader,
       title: 'Catalog Entity',
       // NOTE: The `convertLegacyRouteRef` call here ensures that this route ref
       // is mutated to support the new frontend system. Removing this conversion
@@ -132,18 +139,21 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
       // `core-compat-api` package.
       routeRef: convertLegacyRouteRef(entityRouteRef), // READ THE ABOVE
       loader: async () => {
-        const { EntityLayout } = await import('./components/EntityLayout');
+        const [{ EntityLayout }, { EntityLayoutBui }] = await Promise.all([
+          import('./components/EntityLayout'),
+          import('./components/EntityLayout/EntityLayoutBui'),
+        ]);
 
         const menuItems = inputs.contextMenuItems.map(item => ({
           element: item.get(coreExtensionData.reactElement),
+          data: item.get(EntityContextMenuItemBlueprint.dataRefs.data),
           filter:
             item.get(EntityContextMenuItemBlueprint.dataRefs.filterFunction) ??
             (() => true),
         }));
 
-        // Get available headers, sorted by if they have a filter function or not.
-        // TODO(blam): we should really have priority or some specificity here which can be used to sort the headers.
-        // That can be done with embedding the priority in the dataRef alongside the filter function.
+        // TODO(blam): support a priority on EntityHeaderBlueprint dataRefs so
+        // header selection isn't a binary "has filter" sort.
         const headers = inputs.headers
           .map(header => ({
             element: header.get(EntityHeaderBlueprint.dataRefs.element),
@@ -161,45 +171,75 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
             {} as EntityContentGroupDefinitions,
           ) ?? defaultEntityContentGroupDefinitions;
 
+        const routes = inputs.contents.map(output => (
+          <EntityLayout.Route
+            group={output.get(EntityContentBlueprint.dataRefs.group)}
+            key={output.get(coreExtensionData.routePath)}
+            path={output.get(coreExtensionData.routePath)}
+            title={output.get(EntityContentBlueprint.dataRefs.title)}
+            icon={output.get(EntityContentBlueprint.dataRefs.icon)}
+            if={buildFilterFn(
+              output.get(EntityContentBlueprint.dataRefs.filterFunction),
+              output.get(EntityContentBlueprint.dataRefs.filterExpression),
+            )}
+          >
+            {output.get(coreExtensionData.reactElement)}
+          </EntityLayout.Route>
+        ));
+
         const Component = () => {
           const entityFromUrl = useEntityFromUrl();
           const { entity } = entityFromUrl;
-          const filteredMenuItems = entity
-            ? menuItems.filter(i => i.filter(entity)).map(i => i.element)
+          const filteredItems = entity
+            ? menuItems.filter(i => i.filter(entity))
             : [];
 
-          const header = headers.find(
-            h => !h.filter || h.filter(entity!),
-          )?.element;
+          const header = entity
+            ? headers.find(h => !h.filter || h.filter(entity))?.element
+            : undefined;
+
+          // BUI header is incompatible with custom MUI headers from
+          // EntityHeaderBlueprint, so legacy wins whenever one matches
+          // even if BUI is opted into.
+          const useBui = config.useBuiHeader && !header;
+
+          if (useBui) {
+            const buiContextMenuItems = filteredItems.flatMap((item, index) =>
+              item.data
+                ? [<BuiContextMenuItem key={index} data={item.data} />]
+                : [],
+            );
+            return (
+              <AsyncEntityProvider {...entityFromUrl}>
+                <EntityLayoutBui
+                  groupDefinitions={groupDefinitions}
+                  defaultContentOrder={config.defaultContentOrder}
+                  contextMenuItems={buiContextMenuItems}
+                >
+                  {routes}
+                </EntityLayoutBui>
+              </AsyncEntityProvider>
+            );
+          }
+
+          const muiContextMenuItems = filteredItems.flatMap((item, index) => {
+            if (item.element)
+              return [<Fragment key={index}>{item.element}</Fragment>];
+            if (item.data)
+              return [<MuiContextMenuItem key={index} data={item.data} />];
+            return [];
+          });
 
           return (
             <AsyncEntityProvider {...entityFromUrl}>
               <EntityLayout
                 header={header}
-                contextMenuItems={filteredMenuItems}
+                contextMenuItems={muiContextMenuItems}
                 groupDefinitions={groupDefinitions}
                 defaultContentOrder={config.defaultContentOrder}
                 showNavItemIcons={config.showNavItemIcons}
               >
-                {inputs.contents.map(output => (
-                  <EntityLayout.Route
-                    group={output.get(EntityContentBlueprint.dataRefs.group)}
-                    key={output.get(coreExtensionData.routePath)}
-                    path={output.get(coreExtensionData.routePath)}
-                    title={output.get(EntityContentBlueprint.dataRefs.title)}
-                    icon={output.get(EntityContentBlueprint.dataRefs.icon)}
-                    if={buildFilterFn(
-                      output.get(
-                        EntityContentBlueprint.dataRefs.filterFunction,
-                      ),
-                      output.get(
-                        EntityContentBlueprint.dataRefs.filterExpression,
-                      ),
-                    )}
-                  >
-                    {output.get(coreExtensionData.reactElement)}
-                  </EntityLayout.Route>
-                ))}
+                {routes}
               </EntityLayout>
             </AsyncEntityProvider>
           );

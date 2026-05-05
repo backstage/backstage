@@ -74,6 +74,8 @@ app:
     - page:catalog/entity:
         config:
           showNavItemIcons: true
+          # opt in to the BUI-based entity page header and tabs
+          useBuiHeader: true
           # default content order for all groups, can be 'title' or 'natural'
           # defaultContentOrder: title
           groups:

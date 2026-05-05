@@ -16,6 +16,7 @@
 import {
   createVersionedContext,
   createVersionedValueMap,
+  useVersionedContext,
 } from '@backstage/version-bridge';
 import { ReactNode } from 'react';
 
@@ -49,3 +50,23 @@ export const EntityContextMenuProvider = (
     </EntityContextMenuContext.Provider>
   );
 };
+
+/** @internal */
+export function useEntityContextMenu(): EntityContextMenuContextValue {
+  const versionedHolder = useVersionedContext<{
+    1: EntityContextMenuContextValue;
+  }>('entity-context-menu-context');
+
+  if (!versionedHolder) {
+    throw new Error(
+      'useEntityContextMenu must be used within an EntityContextMenuProvider',
+    );
+  }
+
+  const value = versionedHolder.atVersion(1);
+  if (!value) {
+    throw new Error('EntityContextMenu v1 is not available');
+  }
+
+  return value;
+}

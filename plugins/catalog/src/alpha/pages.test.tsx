@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { screen, waitFor } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {
   createExtensionTester,
@@ -650,6 +650,184 @@ describe('Entity page', () => {
 
       expect(screen.getAllByRole('tab')[0]).toHaveTextContent('Overview');
       expect(screen.getAllByRole('tab')[1]).toHaveTextContent('Documentation');
+    });
+  });
+
+  describe('Entity Page Groups (BUI header)', () => {
+    const renderEntityPage = async (
+      tester: ReturnType<typeof createExtensionTester>,
+    ) => {
+      await renderInTestApp(tester.reactElement(), {
+        apis: [
+          [catalogApiRef, mockCatalogApi],
+          [starredEntitiesApiRef, mockStarredEntitiesApi],
+        ],
+        config: {
+          app: { title: 'Custom app' },
+          backend: { baseUrl: 'http://localhost:7000' },
+        },
+        mountedRoutes: {
+          '/catalog': convertLegacyRouteRef(rootRouteRef),
+          '/catalog/:namespace/:kind/:name':
+            convertLegacyRouteRef(entityRouteRef),
+        },
+      });
+    };
+
+    it('Should render a multi-content group as a dropdown menu', async () => {
+      const tester = createExtensionTester(
+        Object.assign({ namespace: 'catalog' }, catalogEntityPage),
+        { config: { useBuiHeader: true } },
+      )
+        .add(techdocsEntityContent)
+        .add(apidocsEntityContent);
+
+      await renderEntityPage(tester);
+
+      const nav = await screen.findByRole('navigation', {
+        name: 'Content navigation',
+      });
+      const groupTrigger = await screen.findByRole('button', {
+        name: /Documentation/,
+      });
+      expect(nav).toContainElement(groupTrigger);
+
+      await userEvent.click(groupTrigger);
+
+      await waitFor(() => {
+        expect(
+          screen.getByRole('menuitemradio', { name: /TechDocs/ }),
+        ).toBeInTheDocument();
+        expect(
+          screen.getByRole('menuitemradio', { name: /ApiDocs/ }),
+        ).toBeInTheDocument();
+      });
+    });
+
+    it('Should render a single-content group as a flat link', async () => {
+      const tester = createExtensionTester(
+        Object.assign({ namespace: 'catalog' }, catalogEntityPage),
+        { config: { useBuiHeader: true } },
+      )
+        .add(techdocsEntityContent)
+        .add(apidocsEntityContent)
+        .add(overviewEntityContent, {
+          config: { group: 'development' },
+        });
+
+      await renderEntityPage(tester);
+
+      const nav = await screen.findByRole('navigation', {
+        name: 'Content navigation',
+      });
+      const overviewLink = await screen.findByRole('link', {
+        name: /Overview/,
+      });
+      expect(nav).toContainElement(overviewLink);
+      expect(
+        within(nav).queryByRole('button', { name: /Development/ }),
+      ).not.toBeInTheDocument();
+    });
+
+    it('Should honor a content group override from extension config', async () => {
+      const apidocsWithDevGroup = EntityContentBlueprint.make({
+        name: 'apidocs',
+        params: {
+          path: '/apidocs',
+          title: 'ApiDocs',
+          group: 'development',
+          loader: async () => <div>Mock ApiDocs content</div>,
+        },
+      });
+
+      const tester = createExtensionTester(
+        Object.assign({ namespace: 'catalog' }, catalogEntityPage),
+        { config: { useBuiHeader: true } },
+      )
+        .add(techdocsEntityContent)
+        .add(apidocsWithDevGroup, {
+          config: { group: 'documentation' },
+        });
+
+      await renderEntityPage(tester);
+
+      const groupTrigger = await screen.findByRole('button', {
+        name: /Documentation/,
+      });
+      await userEvent.click(groupTrigger);
+
+      await waitFor(() => {
+        expect(
+          screen.getByRole('menuitemradio', { name: /TechDocs/ }),
+        ).toBeInTheDocument();
+        expect(
+          screen.getByRole('menuitemradio', { name: /ApiDocs/ }),
+        ).toBeInTheDocument();
+      });
+    });
+
+    it('Should honor overrides under a custom group title', async () => {
+      const apidocsWithDevGroup = EntityContentBlueprint.make({
+        name: 'apidocs',
+        params: {
+          path: '/apidocs',
+          title: 'ApiDocs',
+          group: 'development',
+          loader: async () => <div>Mock ApiDocs content</div>,
+        },
+      });
+
+      const tester = createExtensionTester(
+        Object.assign({ namespace: 'catalog' }, catalogEntityPage),
+        {
+          config: {
+            useBuiHeader: true,
+            groups: [{ documentation: { title: 'Docs' } }],
+          },
+        },
+      )
+        .add(techdocsEntityContent)
+        .add(apidocsWithDevGroup, {
+          config: { group: 'documentation' },
+        });
+
+      await renderEntityPage(tester);
+
+      const groupTrigger = await screen.findByRole('button', {
+        name: /Docs/,
+      });
+      await userEvent.click(groupTrigger);
+
+      await waitFor(() => {
+        expect(
+          screen.getByRole('menuitemradio', { name: /TechDocs/ }),
+        ).toBeInTheDocument();
+        expect(
+          screen.getByRole('menuitemradio', { name: /ApiDocs/ }),
+        ).toBeInTheDocument();
+      });
+    });
+
+    it('Should render groups before flat tabs', async () => {
+      const tester = createExtensionTester(
+        Object.assign({ namespace: 'catalog' }, catalogEntityPage),
+        { config: { useBuiHeader: true } },
+      )
+        .add(techdocsEntityContent)
+        .add(apidocsEntityContent)
+        .add(overviewEntityContent);
+
+      await renderEntityPage(tester);
+
+      const nav = await screen.findByRole('navigation', {
+        name: 'Content navigation',
+      });
+      await waitFor(() =>
+        expect(within(nav).getAllByRole('listitem')).toHaveLength(2),
+      );
+      const items = within(nav).getAllByRole('listitem');
+      expect(items[0]).toHaveTextContent('Documentation');
+      expect(items[1]).toHaveTextContent('Overview');
     });
   });
 
