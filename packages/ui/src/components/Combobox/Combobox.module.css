@@ -31,7 +31,7 @@
   .bui-ComboboxPopover {
     min-width: var(--trigger-width);
 
-    .bui-PopoverContent {
+    :global(.bui-PopoverContent) {
       padding: 0;
     }
   }
