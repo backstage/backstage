@@ -20,6 +20,5 @@ As part of this change, the `data-bg` painting rules previously duplicated in
 `Box`, `Flex`, `Grid`, `Accordion`, and `Card` have been centralized into a
 single source in `core.css`. Painting and component behavior are unchanged for
 all existing usages, with one minor expansion: any element with a `data-bg`
-attribute (including consumer elements that set it directly, e.g. via
-`useBgConsumer`) is now painted, not only `Box`/`Flex`/`Grid`/`Card`/`Accordion`
-elements.
+attribute (including provider elements and any element that sets it directly)
+is now painted, not only `Box`/`Flex`/`Grid`/`Card`/`Accordion` elements.
