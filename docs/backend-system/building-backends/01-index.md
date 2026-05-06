@@ -182,11 +182,11 @@ backend:
     plugins:
       catalog:
         modules:
-          githubEntityProvider:
+          github: # moduleId as declared in createBackendModule({ moduleId: '...' })
             onPluginModuleBootFailure: continue
 ```
 
-This allows the `githubEntityProvider` module to fail without bringing down the `catalog` plugin or the rest of the backend.
+This allows the `github` catalog module to fail without bringing down the `catalog` plugin or the rest of the backend. Note that the key under `modules` is the `moduleId` declared in `createBackendModule`, not the plugin or entity provider name.
 
 ### Setting a Global Default
 
@@ -214,7 +214,7 @@ backend:
     plugins:
       catalog:
         modules:
-          githubEntityProvider:
+          github:
             onPluginModuleBootFailure: abort
 ```
 
@@ -226,17 +226,17 @@ backend:
     # Global defaults applied when not specified per-plugin or per-module
     default:
       # Defaults to 'abort'. Set to 'continue' to make all plugins optional by default.
-      onPluginBootFailure: abort | continue
+      onPluginBootFailure: abort # or continue
       # Defaults to 'abort'. Set to 'continue' to make all plugin modules optional by default.
-      onPluginModuleBootFailure: abort | continue
+      onPluginModuleBootFailure: abort # or continue
 
     # Per-plugin and per-module overrides
     plugins:
       <pluginId>:
         # Override the default boot failure behavior for this specific plugin.
-        onPluginBootFailure: abort | continue
+        onPluginBootFailure: abort # or continue
         modules:
           <moduleId>:
             # Override the default boot failure behavior for this specific plugin module.
-            onPluginModuleBootFailure: abort | continue
+            onPluginModuleBootFailure: abort # or continue
 ```
