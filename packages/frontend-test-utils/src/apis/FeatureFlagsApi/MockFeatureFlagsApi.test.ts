@@ -140,4 +140,33 @@ describe('MockFeatureFlagsApi', () => {
     expect(api.isActive('flag-1')).toBe(false);
     expect(api.getState()).toEqual({});
   });
+
+  describe('state$', () => {
+    it('emits the current snapshot on subscription and on every mutation', async () => {
+      const api = new MockFeatureFlagsApi({
+        initialStates: { 'flag-1': FeatureFlagState.Active },
+      });
+      const next = jest.fn();
+      const subscription = api.state$().subscribe({ next });
+
+      api.save({ states: { 'flag-2': FeatureFlagState.Active } });
+      api.setState({ 'flag-1': FeatureFlagState.Active });
+      api.clearState();
+
+      await Promise.resolve();
+
+      subscription.unsubscribe();
+      api.save({ states: { 'flag-3': FeatureFlagState.Active } });
+
+      await Promise.resolve();
+
+      expect(next).toHaveBeenCalledTimes(4);
+      expect(next.mock.calls[0][0].active).toEqual(new Set(['flag-1']));
+      expect(next.mock.calls[1][0].active).toEqual(new Set(['flag-2']));
+      expect(next.mock.calls[2][0].active).toEqual(
+        new Set(['flag-1', 'flag-2']),
+      );
+      expect(next.mock.calls[3][0].active).toEqual(new Set());
+    });
+  });
 });

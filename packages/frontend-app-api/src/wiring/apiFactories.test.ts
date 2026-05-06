@@ -32,6 +32,12 @@ function createValidatingMockFeatureFlagsApi(): FeatureFlagsApi & {
 } {
   const flagNameRegex = /^[a-z]+[a-z0-9-]+$/;
   const flags = new Array<{ name: string; pluginId: string }>();
+  const noopObservable = {
+    [Symbol.observable]() {
+      return noopObservable;
+    },
+    subscribe: () => ({ unsubscribe: () => {}, closed: false }),
+  } as ReturnType<FeatureFlagsApi['state$']>;
   return {
     flags,
     registerFlag(flag) {
@@ -49,6 +55,9 @@ function createValidatingMockFeatureFlagsApi(): FeatureFlagsApi & {
       return false;
     },
     save() {},
+    state$() {
+      return noopObservable;
+    },
   };
 }
 
@@ -182,6 +191,12 @@ describe('registerFeatureFlagDeclarationsInHolder', () => {
   });
 
   it('should isolate non-validation errors thrown by registerFlag', () => {
+    const noopObservable = {
+      [Symbol.observable]() {
+        return noopObservable;
+      },
+      subscribe: () => ({ unsubscribe: () => {}, closed: false }),
+    } as ReturnType<FeatureFlagsApi['state$']>;
     const featureFlagsApi: FeatureFlagsApi = {
       registerFlag() {
         throw new Error('database connection lost');
@@ -189,6 +204,7 @@ describe('registerFeatureFlagDeclarationsInHolder', () => {
       getRegisteredFlags: () => [],
       isActive: () => false,
       save() {},
+      state$: () => noopObservable,
     };
     const collector = createErrorCollector();
 

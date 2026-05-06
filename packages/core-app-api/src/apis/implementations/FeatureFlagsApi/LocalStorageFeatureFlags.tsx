@@ -20,6 +20,8 @@ import {
   FeatureFlag,
   FeatureFlagsSaveOptions,
 } from '@backstage/core-plugin-api';
+import { Observable } from '@backstage/types';
+import ObservableImpl from 'zen-observable';
 
 export function validateFlagName(name: string): void {
   if (name.length < 3) {
@@ -51,6 +53,20 @@ export function validateFlagName(name: string): void {
 export class LocalStorageFeatureFlags implements FeatureFlagsApi {
   private registeredFeatureFlags: FeatureFlag[] = [];
   private flags?: Map<string, FeatureFlagState>;
+
+  private readonly subscribers = new Set<
+    ZenObservable.SubscriptionObserver<{ active: ReadonlySet<string> }>
+  >();
+
+  private readonly observable = new ObservableImpl<{
+    active: ReadonlySet<string>;
+  }>(subscriber => {
+    subscriber.next(this.snapshotActive());
+    this.subscribers.add(subscriber);
+    return () => {
+      this.subscribers.delete(subscriber);
+    };
+  });
 
   registerFlag(flag: FeatureFlag) {
     validateFlagName(flag.name);
@@ -86,6 +102,28 @@ export class LocalStorageFeatureFlags implements FeatureFlagsApi {
       'featureFlags',
       JSON.stringify(Object.fromEntries(enabled)),
     );
+
+    const snapshot = this.snapshotActive();
+    for (const subscriber of this.subscribers) {
+      subscriber.next(snapshot);
+    }
+  }
+
+  state$(): Observable<{ active: ReadonlySet<string> }> {
+    return this.observable;
+  }
+
+  private snapshotActive(): { active: ReadonlySet<string> } {
+    if (!this.flags) {
+      this.flags = this.load();
+    }
+    const active = new Set<string>();
+    for (const [name, state] of this.flags.entries()) {
+      if (state === FeatureFlagState.Active) {
+        active.add(name);
+      }
+    }
+    return { active };
   }
 
   private load(): Map<string, FeatureFlagState> {

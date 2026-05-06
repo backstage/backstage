@@ -170,6 +170,7 @@ export namespace mockApis {
       getRegisteredFlags: jest.fn(),
       isActive: jest.fn(),
       save: jest.fn(),
+      state$: jest.fn(),
     }));
   }
 

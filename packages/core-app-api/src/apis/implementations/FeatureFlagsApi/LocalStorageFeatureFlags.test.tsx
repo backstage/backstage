@@ -112,6 +112,96 @@ describe('FeatureFlags', () => {
     });
   });
 
+  describe('state$', () => {
+    let featureFlags: FeatureFlagsApi;
+
+    beforeEach(() => {
+      featureFlags = new LocalStorageFeatureFlags();
+    });
+
+    it('emits the current snapshot on subscription', async () => {
+      window.localStorage.setItem(
+        'featureFlags',
+        JSON.stringify({
+          'flag-one': FeatureFlagState.Active,
+          'flag-two': FeatureFlagState.Active,
+        }),
+      );
+
+      const snapshot = await new Promise<{ active: ReadonlySet<string> }>(
+        resolve => {
+          featureFlags.state$().subscribe({ next: resolve });
+        },
+      );
+
+      expect(snapshot.active).toEqual(new Set(['flag-one', 'flag-two']));
+    });
+
+    it('emits a fresh snapshot on every save, reflecting only active flags', async () => {
+      const next = jest.fn();
+      featureFlags.state$().subscribe({ next });
+
+      featureFlags.save({
+        states: {
+          'flag-one': FeatureFlagState.Active,
+          'flag-two': FeatureFlagState.None,
+        },
+      });
+      featureFlags.save({
+        states: { 'flag-two': FeatureFlagState.Active },
+        merge: true,
+      });
+      featureFlags.save({ states: {} });
+
+      await Promise.resolve();
+
+      expect(next).toHaveBeenCalledTimes(4);
+      expect(next.mock.calls[0][0].active).toEqual(new Set());
+      expect(next.mock.calls[1][0].active).toEqual(new Set(['flag-one']));
+      expect(next.mock.calls[2][0].active).toEqual(
+        new Set(['flag-one', 'flag-two']),
+      );
+      expect(next.mock.calls[3][0].active).toEqual(new Set());
+    });
+
+    it('stops emitting after unsubscribe', async () => {
+      const next = jest.fn();
+      const subscription = featureFlags.state$().subscribe({ next });
+
+      featureFlags.save({
+        states: { 'flag-one': FeatureFlagState.Active },
+      });
+      await Promise.resolve();
+      expect(next).toHaveBeenCalledTimes(2);
+
+      subscription.unsubscribe();
+
+      featureFlags.save({
+        states: { 'flag-two': FeatureFlagState.Active },
+      });
+      await Promise.resolve();
+      expect(next).toHaveBeenCalledTimes(2);
+    });
+
+    it('delivers snapshots to multiple independent subscribers', async () => {
+      const first = jest.fn();
+      const second = jest.fn();
+
+      featureFlags.state$().subscribe({ next: first });
+      featureFlags.save({
+        states: { 'flag-one': FeatureFlagState.Active },
+      });
+      featureFlags.state$().subscribe({ next: second });
+
+      await Promise.resolve();
+
+      expect(first).toHaveBeenCalledTimes(2);
+      expect(second).toHaveBeenCalledTimes(1);
+      expect(first.mock.calls[1][0].active).toEqual(new Set(['flag-one']));
+      expect(second.mock.calls[0][0].active).toEqual(new Set(['flag-one']));
+    });
+  });
+
   describe('getRegisteredFlags', () => {
     let featureFlags: FeatureFlagsApi;
 

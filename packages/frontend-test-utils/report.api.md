@@ -338,6 +338,10 @@ export class MockFeatureFlagsApi implements FeatureFlagsApi {
   // (undocumented)
   save(options: FeatureFlagsSaveOptions): void;
   setState(states: Record<string, FeatureFlagState>): void;
+  // (undocumented)
+  state$(): Observable<{
+    active: ReadonlySet<string>;
+  }>;
 }
 
 // @public @deprecated

@@ -16,6 +16,7 @@
 /* We want to maintain the same information as an enum, so we disable the redeclaration warning */
 /* eslint-disable @typescript-eslint/no-redeclare */
 
+import { Observable } from '@backstage/types';
 import { createApiRef } from '../system';
 
 /**
@@ -114,6 +115,20 @@ export interface FeatureFlagsApi {
    * Save the user's choice of feature flag states.
    */
   save(options: FeatureFlagsSaveOptions): void;
+
+  /**
+   * Observe the user's saved feature flag state.
+   *
+   * @remarks
+   *
+   * The returned observable emits the current snapshot on subscription, and a fresh
+   * snapshot whenever {@link FeatureFlagsApi.save} is called. Each snapshot contains
+   * the names of the flags that are currently active.
+   *
+   * Useful for triggering UI updates when feature flags change without requiring a full
+   * page reload, for example refreshing a Sidebar whose entries are gated on flags.
+   */
+  state$(): Observable<{ active: ReadonlySet<string> }>;
 }
 
 /**

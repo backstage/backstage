@@ -502,6 +502,10 @@ export class LocalStorageFeatureFlags implements FeatureFlagsApi {
   registerFlag(flag: FeatureFlag): void;
   // (undocumented)
   save(options: FeatureFlagsSaveOptions): void;
+  // (undocumented)
+  state$(): Observable<{
+    active: ReadonlySet<string>;
+  }>;
 }
 
 // @public

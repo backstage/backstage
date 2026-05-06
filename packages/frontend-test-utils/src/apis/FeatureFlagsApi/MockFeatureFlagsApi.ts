@@ -20,6 +20,8 @@ import {
   FeatureFlagsSaveOptions,
   FeatureFlagState,
 } from '@backstage/frontend-plugin-api';
+import { Observable } from '@backstage/types';
+import ObservableImpl from 'zen-observable';
 
 /**
  * Options for configuring {@link MockFeatureFlagsApi}.
@@ -51,6 +53,20 @@ export class MockFeatureFlagsApi implements FeatureFlagsApi {
   private readonly registeredFlags: FeatureFlag[] = [];
   private readonly states: Map<string, FeatureFlagState>;
 
+  private readonly subscribers = new Set<
+    ZenObservable.SubscriptionObserver<{ active: ReadonlySet<string> }>
+  >();
+
+  private readonly observable = new ObservableImpl<{
+    active: ReadonlySet<string>;
+  }>(subscriber => {
+    subscriber.next(this.snapshotActive());
+    this.subscribers.add(subscriber);
+    return () => {
+      this.subscribers.delete(subscriber);
+    };
+  });
+
   constructor(options?: MockFeatureFlagsApiOptions) {
     this.states = new Map(Object.entries(options?.initialStates ?? {}));
   }
@@ -80,6 +96,11 @@ export class MockFeatureFlagsApi implements FeatureFlagsApi {
         this.states.set(name, state);
       }
     }
+    this.notify();
+  }
+
+  state$(): Observable<{ active: ReadonlySet<string> }> {
+    return this.observable;
   }
 
   /**
@@ -96,6 +117,7 @@ export class MockFeatureFlagsApi implements FeatureFlagsApi {
     for (const [name, state] of Object.entries(states)) {
       this.states.set(name, state);
     }
+    this.notify();
   }
 
   /**
@@ -103,5 +125,23 @@ export class MockFeatureFlagsApi implements FeatureFlagsApi {
    */
   clearState(): void {
     this.states.clear();
+    this.notify();
+  }
+
+  private snapshotActive(): { active: ReadonlySet<string> } {
+    const active = new Set<string>();
+    for (const [name, state] of this.states.entries()) {
+      if (state === FeatureFlagState.Active) {
+        active.add(name);
+      }
+    }
+    return { active };
+  }
+
+  private notify(): void {
+    const snapshot = this.snapshotActive();
+    for (const subscriber of this.subscribers) {
+      subscriber.next(snapshot);
+    }
   }
 }
