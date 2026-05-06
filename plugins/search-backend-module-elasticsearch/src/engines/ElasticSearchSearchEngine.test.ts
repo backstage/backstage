@@ -34,7 +34,7 @@ jest.mock('node:crypto', () => ({
 
 class ElasticSearchSearchEngineForTranslatorTests extends ElasticSearchSearchEngine {
   getTranslator() {
-    return this.translator;
+    return this.translator.bind(this);
   }
 }
 
@@ -1107,6 +1107,233 @@ describe('ElasticSearchSearchEngine', () => {
         'Custom auth provider is not supported with AWS provider',
       );
     });
+  });
+});
+
+type EsJsonValue = string | number | boolean | EsJson | EsJsonValue[];
+type EsJson = { [key: string]: EsJsonValue };
+
+const collectMultiMatchQueries = (queries: EsJson | EsJson[]): EsJson[] => {
+  const queryList = Array.isArray(queries) ? queries : [queries];
+  return queryList.flatMap(query => {
+    if (query.multi_match) {
+      return [query];
+    }
+    const bool = query.bool as EsJson | undefined;
+    if (bool?.should) {
+      return collectMultiMatchQueries(bool.should as EsJson | EsJson[]);
+    }
+    return [];
+  });
+};
+
+class ElasticSearchSearchEngineForScoringTests extends ElasticSearchSearchEngine {
+  getTranslator() {
+    return this.translator.bind(this);
+  }
+}
+
+describe('ElasticSearchSearchEngine with scoring', () => {
+  const baseScoringConfig = {
+    enabled: true,
+    documentTypeProfiles: {
+      'software-catalog': {
+        title: 16,
+        text: 4,
+        kind: 3,
+      },
+      techdocs: {
+        title: 24,
+        entityTitle: 18,
+        text: 1,
+      },
+    },
+  };
+
+  let scoringEngine: ElasticSearchSearchEngineForScoringTests;
+
+  beforeEach(() => {
+    scoringEngine = new ElasticSearchSearchEngineForScoringTests(
+      options,
+      'search',
+      '',
+      mockServices.logger.mock(),
+      1000,
+      undefined,
+      undefined,
+      undefined,
+      baseScoringConfig,
+    );
+  });
+
+  it('should produce phrase and best_fields queries with default fuzziness for single type', () => {
+    const translator = scoringEngine.getTranslator();
+    const result = translator({
+      types: ['software-catalog'],
+      term: 'testTerm',
+    }) as ElasticSearchConcreteQuery;
+
+    const queryBody = result.elasticSearchQuery as EsJson;
+    const should = (queryBody.query as EsJson).bool as EsJson;
+    const queries = collectMultiMatchQueries(
+      should.should as EsJson | EsJson[],
+    );
+
+    // phrase boost = matchBoosts.phrase (1.5)
+    const phraseQuery = queries.find(
+      q => (q.multi_match as EsJson | undefined)?.boost === 1.5,
+    );
+    expect(phraseQuery).toBeDefined();
+    // For software-catalog profile: title^16, weighted with phrase boost 1.5 => title^24
+    expect((phraseQuery!.multi_match as EsJson).fields).toContain('title^24');
+
+    const bestFieldsQuery = queries.find(
+      q => (q.multi_match as EsJson | undefined)?.type === 'best_fields',
+    );
+    expect(bestFieldsQuery).toBeDefined();
+    const bestFields = bestFieldsQuery!.multi_match as EsJson;
+    expect(bestFields.boost).toBe(0.8); // fuzzy match boost
+    expect(bestFields.fuzziness).toBe('AUTO');
+    expect(bestFields.prefix_length).toBe(0);
+  });
+
+  it('should respect queryOptions for fuzziness and prefixLength on the scoring path', () => {
+    scoringEngine = new ElasticSearchSearchEngineForScoringTests(
+      options,
+      'search',
+      '',
+      mockServices.logger.mock(),
+      1000,
+      undefined,
+      undefined,
+      { fuzziness: 1, prefixLength: 3 },
+      baseScoringConfig,
+    );
+
+    const translator = scoringEngine.getTranslator();
+    const result = translator({
+      types: ['software-catalog'],
+      term: 'test',
+    }) as ElasticSearchConcreteQuery;
+
+    const queryBody = result.elasticSearchQuery as EsJson;
+    const should = (queryBody.query as EsJson).bool as EsJson;
+    const queries = collectMultiMatchQueries(
+      should.should as EsJson | EsJson[],
+    );
+    const bestFieldsQuery = queries.find(
+      q => (q.multi_match as EsJson | undefined)?.type === 'best_fields',
+    );
+    const bestFields = bestFieldsQuery!.multi_match as EsJson;
+
+    expect(bestFields.fuzziness).toBe(1);
+    expect(bestFields.prefix_length).toBe(3);
+  });
+
+  it('should create per-type scoring branches for multi-type search', () => {
+    const translator = scoringEngine.getTranslator();
+    const result = translator({
+      types: ['software-catalog', 'techdocs'],
+      term: 'testTerm',
+    }) as ElasticSearchConcreteQuery;
+
+    const queryBody = result.elasticSearchQuery as EsJson;
+    const rootShould = ((queryBody.query as EsJson).bool as EsJson)
+      .should as EsJson[];
+    const typeBranches = rootShould.filter(
+      q => ((q.bool as EsJson)?.filter as EsJson)?.wildcard !== undefined,
+    );
+    const branchIndex = (branch: EsJson) =>
+      (((branch.bool as EsJson).filter as EsJson).wildcard as EsJson)._index;
+    const catalogBranch = typeBranches.find(
+      q => branchIndex(q) === 'software-catalog-index__*',
+    )!;
+    const techdocsBranch = typeBranches.find(
+      q => branchIndex(q) === 'techdocs-index__*',
+    )!;
+
+    expect(catalogBranch).toBeDefined();
+    expect(techdocsBranch).toBeDefined();
+
+    const branchPhraseQuery = (branch: EsJson) =>
+      ((branch.bool as EsJson).should as EsJson[]).find(
+        q => (q.multi_match as EsJson | undefined)?.boost === 1.5,
+      )!;
+    const catalogPhraseFields = (
+      branchPhraseQuery(catalogBranch).multi_match as EsJson
+    ).fields as string[];
+    const techdocsPhraseFields = (
+      branchPhraseQuery(techdocsBranch).multi_match as EsJson
+    ).fields as string[];
+
+    expect(catalogPhraseFields).toContain('title^24');
+    expect(catalogPhraseFields).not.toContain('title^36');
+    expect(techdocsPhraseFields).toContain('title^36');
+    expect(techdocsPhraseFields).not.toContain('title^24');
+  });
+
+  it('should create per-type branches and a default branch for global search', () => {
+    const translator = scoringEngine.getTranslator();
+    const result = translator({
+      types: [],
+      term: 'testTerm',
+    }) as ElasticSearchConcreteQuery;
+
+    const queryBody = result.elasticSearchQuery as EsJson;
+    const rootShould = ((queryBody.query as EsJson).bool as EsJson)
+      .should as EsJson[];
+    const typeBranches = rootShould.filter(
+      q => ((q.bool as EsJson)?.filter as EsJson)?.wildcard !== undefined,
+    );
+    expect(typeBranches.length).toBeGreaterThan(0);
+
+    const defaultBranch = rootShould.find(
+      q => (q.bool as EsJson)?.must_not !== undefined,
+    )!;
+    expect(defaultBranch).toBeDefined();
+
+    const defaultPhrase = (
+      (defaultBranch.bool as EsJson).should as EsJson[]
+    ).find(q => (q.multi_match as EsJson | undefined)?.boost === 1.5)!;
+    // Default field weights: title: 10, phrase boost 1.5 => 15
+    expect((defaultPhrase.multi_match as EsJson).fields).toContain('title^15');
+  });
+
+  it('should use match_all when scoring is enabled and term is blank', () => {
+    const translator = scoringEngine.getTranslator();
+    const result = translator({
+      types: ['software-catalog'],
+      term: '',
+    }) as ElasticSearchConcreteQuery;
+
+    const queryBody = result.elasticSearchQuery as EsJson;
+    expect(((queryBody.query as EsJson).bool as EsJson).should).toEqual({
+      match_all: {},
+    });
+  });
+
+  it('should include a catch-all multi_match for recall on non-blank terms', () => {
+    const translator = scoringEngine.getTranslator();
+    const result = translator({
+      types: ['software-catalog'],
+      term: 'testTerm',
+    }) as ElasticSearchConcreteQuery;
+
+    const queryBody = result.elasticSearchQuery as EsJson;
+    const rootShould = ((queryBody.query as EsJson).bool as EsJson)
+      .should as EsJson[];
+    const catchAll = rootShould.find(q => {
+      const mm = q.multi_match as EsJson | undefined;
+      return (
+        mm !== undefined &&
+        Array.isArray(mm.fields) &&
+        (mm.fields as string[]).length === 1 &&
+        (mm.fields as string[])[0] === '*'
+      );
+    });
+    expect(catchAll).toBeDefined();
+    expect((catchAll!.multi_match as EsJson).query).toBe('testTerm');
+    expect((catchAll!.multi_match as EsJson).boost).toBeUndefined();
   });
 });
 

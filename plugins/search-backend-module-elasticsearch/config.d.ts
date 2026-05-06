@@ -73,6 +73,56 @@ export interface Config {
         prefixLength?: number;
       };
 
+      /**
+       * Scoring configuration for search result ranking.
+       *
+       * When enabled, search queries are constructed using configurable per-field
+       * boosts and document type profiles to improve result relevance. When disabled
+       * (the default), the legacy search behavior is used.
+       *
+       * Fuzzy matching mechanics (fuzziness and prefix length) for the scoring path
+       * are controlled by `search.elasticsearch.queryOptions`.
+       */
+      scoring?: {
+        /**
+         * Enable scoring enhancements.
+         * When false, uses legacy search behavior.
+         * @default false
+         */
+        enabled?: boolean;
+
+        /**
+         * Default field weights applied to document types without a specific profile.
+         * Higher values prioritize matches in those fields. Adopters with collators
+         * that index different field names should override this.
+         * Defaults: title: 10, text: 5, description: 3, content: 1
+         */
+        defaultFieldWeights?: {
+          [field: string]: number;
+        };
+
+        /**
+         * Document-type specific field weights. No profiles are configured by default;
+         * document types without an entry here fall back to `defaultFieldWeights`.
+         */
+        documentTypeProfiles?: {
+          [documentType: string]: {
+            [field: string]: number;
+          };
+        };
+
+        /**
+         * Match type boosts.
+         * Controls scoring based on match type.
+         * Defaults: exact: 2.0, phrase: 1.5, fuzzy: 0.8
+         */
+        matchBoosts?: {
+          exact?: number;
+          phrase?: number;
+          fuzzy?: number;
+        };
+      };
+
       /** Elasticsearch specific index template bodies */
       indexTemplates?: Array<{
         name: string;

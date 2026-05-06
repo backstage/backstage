@@ -47,6 +47,47 @@ import {
   createElasticSearchAuthTransport,
 } from './ElasticSearchAuthTransport';
 
+type FieldWeights = Record<string, number>;
+
+type ScoringConfig = {
+  enabled: boolean;
+  defaultFieldWeights: FieldWeights;
+  documentTypeProfiles: Record<string, FieldWeights>;
+  matchBoosts: { exact: number; phrase: number; fuzzy: number };
+};
+
+type ScoringConfigInput = {
+  enabled?: boolean;
+  defaultFieldWeights?: FieldWeights;
+  documentTypeProfiles?: Record<string, FieldWeights>;
+  matchBoosts?: Partial<ScoringConfig['matchBoosts']>;
+};
+
+const DEFAULT_FIELD_WEIGHTS: FieldWeights = {
+  title: 10,
+  text: 5,
+  description: 3,
+  content: 1,
+};
+
+const DEFAULT_MATCH_BOOSTS: ScoringConfig['matchBoosts'] = {
+  exact: 2.0,
+  phrase: 1.5,
+  fuzzy: 0.8,
+};
+
+function buildScoringConfig(input?: ScoringConfigInput): ScoringConfig {
+  return {
+    enabled: input?.enabled ?? false,
+    defaultFieldWeights: {
+      ...DEFAULT_FIELD_WEIGHTS,
+      ...input?.defaultFieldWeights,
+    },
+    documentTypeProfiles: { ...input?.documentTypeProfiles },
+    matchBoosts: { ...DEFAULT_MATCH_BOOSTS, ...input?.matchBoosts },
+  };
+}
+
 export type { ElasticSearchClientOptions };
 
 /**
@@ -153,6 +194,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
   private readonly elasticSearchClientWrapper: ElasticSearchClientWrapper;
   private readonly highlightOptions: ElasticSearchHighlightConfig;
   private readonly queryOptions?: ElasticSearchQueryConfig;
+  private readonly scoringConfig: ScoringConfig;
 
   private readonly elasticSearchClientOptions: ElasticSearchClientOptions;
   private readonly aliasPostfix: string;
@@ -170,6 +212,12 @@ export class ElasticSearchSearchEngine implements SearchEngine {
     batchKeyField?: string,
     highlightOptions?: ElasticSearchHighlightOptions,
     queryOptions?: ElasticSearchQueryConfig,
+    scoringConfig?: {
+      enabled?: boolean;
+      defaultFieldWeights?: Record<string, number>;
+      documentTypeProfiles?: Record<string, Record<string, number>>;
+      matchBoosts?: { exact?: number; phrase?: number; fuzzy?: number };
+    },
   ) {
     this.elasticSearchClientOptions = elasticSearchClientOptions;
     this.aliasPostfix = aliasPostfix;
@@ -189,6 +237,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
       ...highlightOptions,
     };
     this.queryOptions = queryOptions;
+    this.scoringConfig = buildScoringConfig(scoringConfig);
   }
 
   static async fromConfig(options: ElasticSearchOptions) {
@@ -230,7 +279,17 @@ export class ElasticSearchSearchEngine implements SearchEngine {
       config.getOptional<ElasticSearchQueryConfig>(
         'search.elasticsearch.queryOptions',
       ),
+      config.getOptional<ScoringConfigInput>('search.elasticsearch.scoring'),
     );
+
+    if (
+      engine.scoringConfig.enabled &&
+      Object.keys(engine.scoringConfig.documentTypeProfiles).length === 0
+    ) {
+      logger.info(
+        'Search scoring is enabled with default field weights only. Configure `search.elasticsearch.scoring.documentTypeProfiles` for per-document-type relevance tuning.',
+      );
+    }
 
     for (const indexTemplate of this.readIndexTemplateConfig(
       config.getConfig('search.elasticsearch'),
@@ -269,6 +328,40 @@ export class ElasticSearchSearchEngine implements SearchEngine {
     return create(this.elasticSearchClientOptions);
   }
 
+  private buildFieldsForTypes(types?: string[]): {
+    phrase: string[];
+    regular: string[];
+  } {
+    const { defaultFieldWeights, documentTypeProfiles, matchBoosts } =
+      this.scoringConfig;
+
+    let weights: FieldWeights;
+    if (!types || types.length === 0) {
+      weights = defaultFieldWeights;
+    } else if (types.length === 1 && documentTypeProfiles[types[0]]) {
+      weights = documentTypeProfiles[types[0]];
+    } else {
+      weights = { ...defaultFieldWeights };
+      for (const type of types) {
+        for (const [field, weight] of Object.entries(
+          documentTypeProfiles[type] ?? {},
+        )) {
+          if ((weights[field] ?? 0) < weight) {
+            weights[field] = weight;
+          }
+        }
+      }
+    }
+
+    const phrase: string[] = [];
+    const regular: string[] = [];
+    for (const [field, weight] of Object.entries(weights)) {
+      phrase.push(`${field}^${weight * matchBoosts.phrase}`);
+      regular.push(`${field}^${weight}`);
+    }
+    return { phrase, regular };
+  }
+
   protected translator(
     query: SearchQuery,
     options?: ElasticSearchQueryTranslatorOptions,
@@ -297,43 +390,152 @@ export class ElasticSearchSearchEngine implements SearchEngine {
         );
       });
 
-    const esbQueries = [];
-    // https://regex101.com/r/Lr0MqS/1
-    const phraseTerms = term.match(/"[^"]*"/g);
+    const esbQueries: esb.Query[] = [];
 
-    if (isBlank(term)) {
-      const esbQuery = esb.matchAllQuery();
-      esbQueries.push(esbQuery);
-    } else if (phraseTerms && phraseTerms.length > 0) {
-      let restTerm = term;
-      for (const phraseTerm of phraseTerms) {
-        restTerm = restTerm.replace(phraseTerm, '');
-        const esbPhraseQuery = esb
-          .multiMatchQuery(['*'], phraseTerm.replace(/"/g, ''))
-          .type('phrase');
-        esbQueries.push(esbPhraseQuery);
-      }
-      if (restTerm?.length > 0) {
-        const esbRestQuery = esb
-          .multiMatchQuery(['*'], restTerm.trim())
+    if (!this.scoringConfig.enabled) {
+      // https://regex101.com/r/Lr0MqS/1
+      const phraseTerms = term.match(/"[^"]*"/g);
+
+      if (isBlank(term)) {
+        const esbQuery = esb.matchAllQuery();
+        esbQueries.push(esbQuery);
+      } else if (phraseTerms && phraseTerms.length > 0) {
+        let restTerm = term;
+        for (const phraseTerm of phraseTerms) {
+          restTerm = restTerm.replace(phraseTerm, '');
+          const esbPhraseQuery = esb
+            .multiMatchQuery(['*'], phraseTerm.replace(/"/g, ''))
+            .type('phrase');
+          esbQueries.push(esbPhraseQuery);
+        }
+        if (restTerm?.length > 0) {
+          const esbRestQuery = esb
+            .multiMatchQuery(['*'], restTerm.trim())
+            .fuzziness(options?.queryOptions?.fuzziness ?? 'auto')
+            .prefixLength(options?.queryOptions?.prefixLength ?? 0);
+          esbQueries.push(esbRestQuery);
+        }
+      } else {
+        const esbQuery = esb
+          .multiMatchQuery(['*'], term)
           .fuzziness(options?.queryOptions?.fuzziness ?? 'auto')
           .prefixLength(options?.queryOptions?.prefixLength ?? 0);
-        esbQueries.push(esbRestQuery);
+        esbQueries.push(esbQuery);
       }
     } else {
-      const esbQuery = esb
-        .multiMatchQuery(['*'], term)
-        .fuzziness(options?.queryOptions?.fuzziness ?? 'auto')
-        .prefixLength(options?.queryOptions?.prefixLength ?? 0);
-      esbQueries.push(esbQuery);
+      const matchBoosts = this.scoringConfig.matchBoosts;
+      const fuzziness = this.queryOptions?.fuzziness ?? 'AUTO';
+      const prefixLength = this.queryOptions?.prefixLength ?? 0;
+
+      const buildScoredQueries = (
+        fieldsWithBoosts: { phrase: string[]; regular: string[] },
+        searchTermInput: string,
+      ) => {
+        const queries: esb.Query[] = [];
+        const phraseTerms = searchTermInput.match(/"[^"]*"/g);
+        let searchTerm = searchTermInput;
+
+        if (phraseTerms && phraseTerms.length > 0) {
+          for (const phraseTerm of phraseTerms) {
+            const cleanPhrase = phraseTerm.replace(/"/g, '');
+            const esbPhraseQuery = esb
+              .multiMatchQuery(fieldsWithBoosts.phrase, cleanPhrase)
+              .type('phrase')
+              .boost(matchBoosts.exact);
+            queries.push(esbPhraseQuery);
+            searchTerm = searchTerm.replace(phraseTerm, '');
+          }
+        }
+
+        const remainingTerm = searchTerm.trim();
+        if (remainingTerm.length > 0) {
+          const esbPhraseQuery = esb
+            .multiMatchQuery(fieldsWithBoosts.phrase, remainingTerm)
+            .type('phrase')
+            .boost(matchBoosts.phrase);
+          queries.push(esbPhraseQuery);
+
+          const esbBestFieldsQuery = esb
+            .multiMatchQuery(fieldsWithBoosts.regular, remainingTerm)
+            .type('best_fields')
+            .fuzziness(fuzziness)
+            .prefixLength(prefixLength)
+            .boost(matchBoosts.fuzzy);
+          queries.push(esbBestFieldsQuery);
+        } else if (queries.length === 0) {
+          const esbBestFieldsQuery = esb
+            .multiMatchQuery(
+              fieldsWithBoosts.regular,
+              searchTermInput.replace(/"/g, ''),
+            )
+            .type('best_fields');
+          queries.push(esbBestFieldsQuery);
+        }
+
+        return queries;
+      };
+
+      const indexPatternForType = (documentType: string) =>
+        `${this.indexPrefix}${documentType}${this.indexSeparator}*`;
+
+      const buildTypeBranch = (documentType: string) =>
+        esb
+          .boolQuery()
+          .filter(
+            esb.wildcardQuery('_index', indexPatternForType(documentType)),
+          )
+          .should(
+            buildScoredQueries(this.buildFieldsForTypes([documentType]), term),
+          )
+          .minimumShouldMatch(1);
+
+      if (isBlank(term)) {
+        esbQueries.push(esb.matchAllQuery());
+      } else if (types && types.length === 1) {
+        esbQueries.push(
+          ...buildScoredQueries(this.buildFieldsForTypes(types), term),
+        );
+      } else if (types && types.length > 1) {
+        for (const documentType of types) {
+          esbQueries.push(buildTypeBranch(documentType));
+        }
+      } else {
+        const documentTypes = Object.keys(
+          this.scoringConfig.documentTypeProfiles,
+        );
+
+        for (const documentType of documentTypes) {
+          esbQueries.push(buildTypeBranch(documentType));
+        }
+        esbQueries.push(
+          esb
+            .boolQuery()
+            .mustNot(
+              documentTypes.map(documentType =>
+                esb.wildcardQuery('_index', indexPatternForType(documentType)),
+              ),
+            )
+            .should(buildScoredQueries(this.buildFieldsForTypes(), term))
+            .minimumShouldMatch(1),
+        );
+      }
+
+      if (!isBlank(term)) {
+        esbQueries.push(esb.multiMatchQuery(['*'], term));
+      }
     }
 
     const pageSize = query.pageLimit || 25;
     const { page } = decodePageCursor(pageCursor);
 
+    const baseBoolQuery = esb.boolQuery().filter(filter).should(esbQueries);
+    if (this.scoringConfig.enabled) {
+      baseBoolQuery.minimumShouldMatch(1);
+    }
+
     let esbRequestBodySearch = esb
       .requestBodySearch()
-      .query(esb.boolQuery().filter(filter).should(esbQueries))
+      .query(baseBoolQuery)
       .from(page * pageSize)
       .size(pageSize);
 

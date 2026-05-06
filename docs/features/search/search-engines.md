@@ -292,6 +292,108 @@ search:
       prefixLength: 3;
 ```
 
+### Search Result Scoring
+
+Elasticsearch search results can be enhanced with configurable scoring to improve relevance. Scoring is opt-in and disabled by default; the legacy search behavior is preserved when scoring is not enabled. This feature is specific to the Elasticsearch search engine — adopters using the Postgres or in-memory engines will not see ranking changes from this configuration.
+
+When enabled, the scoring path:
+
+- Applies per-field boosts (e.g. `title`, `description`) so important fields rank higher.
+- Provides per-document-type scoring profiles so different content types can use different field weights in the same query.
+- Boosts exact and phrase matches over fuzzy matches.
+- Preserves recall by including a catch-all match against all fields, so documents that don't have any of the configured weighted fields still surface in results — scoring only re-ranks the matches.
+
+Fuzzy matching mechanics (the Levenshtein distance and prefix length) are controlled by `search.elasticsearch.queryOptions` (see above). When scoring is enabled, the `best_fields` query in the scoring path uses `queryOptions.fuzziness` (defaulting to `AUTO`) and `queryOptions.prefixLength` (defaulting to `0`).
+
+#### Enabling scoring
+
+```yaml
+search:
+  elasticsearch:
+    scoring:
+      enabled: true
+```
+
+#### Default field weights
+
+When scoring is enabled, `defaultFieldWeights` provide baseline weights for document types without a specific profile:
+
+- `title` fields: 10x weight
+- `text` fields: 5x weight
+- `description` fields: 3x weight
+- `content` fields: 1x weight
+
+The defaults cover the field names indexed by Backstage's bundled catalog and techdocs collators (`title` and `text`), plus `description` and `content` for collators that follow those conventions. If your collators use different field names (for example `name`, `displayName`, or `entityTitle`), override `defaultFieldWeights` to include them.
+
+Additionally, exact phrase matches receive a 2x boost, plain phrase matches a 1.5x boost, and the fuzzy/best-fields query is weighted at 0.8x.
+
+You can override these baselines:
+
+```yaml
+search:
+  elasticsearch:
+    scoring:
+      enabled: true
+      defaultFieldWeights:
+        title: 15
+        name: 10
+        description: 5
+        content: 1
+```
+
+> **Field name contract:** The default weights only take effect on fields that your collators actually index. If a collator (yours or one shipped by another plugin) uses different field names — or changes its schema in a future version — scoring for documents from that collator will silently fall back to the recall catch-all and rank by full-text match alone. Override `defaultFieldWeights` or add a `documentTypeProfiles` entry to compensate when you notice this.
+
+#### Document type profiles
+
+Different document types can have their own scoring profiles. No profiles are configured by default — when a document type has no profile, it is scored against `defaultFieldWeights`. The example below is a recommended starting point covering common Backstage plugins; adjust or extend it to match the document types you have indexed and the field schemas your collators produce.
+
+```yaml
+search:
+  elasticsearch:
+    scoring:
+      enabled: true
+      documentTypeProfiles:
+        software-catalog:
+          title: 15
+          text: 5
+          kind: 3
+          componentType: 2
+          type: 2
+          owner: 2
+          lifecycle: 1
+        techdocs:
+          title: 20
+          entityTitle: 15
+          text: 1
+          owner: 2
+          lifecycle: 1
+        tools:
+          title: 15
+          text: 3
+        stack-overflow:
+          title: 15
+          text: 3
+          tags: 5
+          answers: 2
+```
+
+When users search across all document types, each configured profile is applied as its own scoring branch, scoped to that document type's index. When a search is filtered to a single document type, that document type profile is used directly. When filtered to multiple document types, one scoring branch per requested type is generated so each type keeps its own field weights. Document types without a profile fall back to `defaultFieldWeights`.
+
+#### Match type boosts
+
+Configure how different match types are scored:
+
+```yaml
+search:
+  elasticsearch:
+    scoring:
+      enabled: true
+      matchBoosts:
+        exact: 2.0
+        phrase: 1.5
+        fuzzy: 0.8
+```
+
 ### Custom Authentication Extension Point
 
 For enterprise environments that require dynamic authentication mechanisms such as bearer tokens with automatic rotation, the Elasticsearch module provides an authentication extension point. This is useful when:

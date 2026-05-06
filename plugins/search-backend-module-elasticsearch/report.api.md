@@ -365,6 +365,16 @@ export class ElasticSearchSearchEngine implements SearchEngine {
     batchKeyField?: string,
     highlightOptions?: ElasticSearchHighlightOptions,
     queryOptions?: ElasticSearchQueryConfig,
+    scoringConfig?: {
+      enabled?: boolean;
+      defaultFieldWeights?: Record<string, number>;
+      documentTypeProfiles?: Record<string, Record<string, number>>;
+      matchBoosts?: {
+        exact?: number;
+        phrase?: number;
+        fuzzy?: number;
+      };
+    },
   );
   // (undocumented)
   static fromConfig(
