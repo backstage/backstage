@@ -23,6 +23,24 @@ const meta = preview.meta({
   tags: ['!manifest'],
 });
 
+/**
+ * A `<div>` styled with `background: var(--bui-bg-inherit)` should always
+ * resolve to the same color as the surrounding bg provider — at every level
+ * of the neutral chain and inside intent surfaces.
+ */
+const Probe = ({ label }: { label: string }) => (
+  <div
+    style={{
+      backgroundColor: 'var(--bui-bg-inherit)',
+      padding: '0.5rem 0.75rem',
+      borderRadius: '0.25rem',
+      outline: '1px dashed var(--bui-fg-secondary)',
+    }}
+  >
+    <Text>{label}</Text>
+  </div>
+);
+
 export const Default = meta.story({
   render: () => (
     <div style={{ backgroundColor: 'var(--bui-bg-app)' }}>
@@ -149,5 +167,39 @@ export const Default = meta.story({
         </Box>
       </Box>
     </div>
+  ),
+});
+
+export const BgInherit = meta.story({
+  render: () => (
+    <Flex direction="column" gap="4">
+      <Probe label="App level (no provider) — resolves to --bui-bg-app" />
+
+      <Box bg="neutral" p="4">
+        <Flex direction="column" gap="3">
+          <Probe label="Inside neutral-1 — resolves to --bui-bg-neutral-1" />
+          <Box bg="neutral" p="4">
+            <Flex direction="column" gap="3">
+              <Probe label="Inside neutral-2 — resolves to --bui-bg-neutral-2" />
+              <Box bg="neutral" p="4">
+                <Probe label="Inside neutral-3 — resolves to --bui-bg-neutral-3" />
+              </Box>
+            </Flex>
+          </Box>
+        </Flex>
+      </Box>
+
+      <Box bg="danger" p="4">
+        <Probe label="Inside danger — resolves to --bui-bg-danger" />
+      </Box>
+
+      <Box bg="warning" p="4">
+        <Probe label="Inside warning — resolves to --bui-bg-warning" />
+      </Box>
+
+      <Box bg="success" p="4">
+        <Probe label="Inside success — resolves to --bui-bg-success" />
+      </Box>
+    </Flex>
   ),
 });

@@ -260,7 +260,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
 
     // For performance reasons we invoke the count query only on the first
     // request. The result is then embedded into the cursor for subsequent
-    // requests. Threfore this can be undefined here, but will then get
+    // requests. Therefore this can be undefined here, but will then get
     // populated further down.
     const shouldComputeTotalItems =
       cursor.totalItems === undefined && !cursor.skipTotalItems;

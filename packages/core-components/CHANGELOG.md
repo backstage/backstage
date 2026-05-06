@@ -1,5 +1,11 @@
 # @backstage/core-components
 
+## 0.18.10-next.1
+
+### Patch Changes
+
+- 021b368: Added stable DOM markers to the legacy Page and Header so adjacent layout components can coordinate spacing without relying on generated class names.
+
 ## 0.18.10-next.0
 
 ### Patch Changes

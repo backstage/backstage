@@ -100,7 +100,7 @@ export function prepareRuntimeSharedDependenciesScript(
       return {
         name,
         version: sharedDep.version,
-        lib: name as unknown as () => Promise<unknown>, // Coverted into import below
+        lib: name as unknown as () => Promise<unknown>, // Converted into import below
         shareConfig: {
           singleton: sharedDep.singleton,
           requiredVersion: sharedDep.requiredVersion,

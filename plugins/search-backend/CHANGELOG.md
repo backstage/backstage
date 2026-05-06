@@ -1,5 +1,11 @@
 # @backstage/plugin-search-backend
 
+## 2.1.2-next.1
+
+### Patch Changes
+
+- 303954b: Added action for search backend to query search engine using the actions registry
+
 ## 2.1.2-next.0
 
 ### Patch Changes

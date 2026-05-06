@@ -476,6 +476,7 @@ describe('OidcRouter', () => {
 
         expect(response.body).toEqual({
           id: authSession.id,
+          clientId: client.clientId,
           clientName: 'Test Client',
           scope: 'openid',
           redirectUri: 'https://example.com/callback',

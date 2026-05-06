@@ -476,12 +476,12 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
     );
 
     // Modified files will be scheduled to a refresh
-    const addedEntities = this.createLocationSpecCommitedFiles(
+    const addedEntities = this.createLocationSpecCommittedFiles(
       event.project,
       added,
     );
 
-    const removedEntities = this.createLocationSpecCommitedFiles(
+    const removedEntities = this.createLocationSpecCommittedFiles(
       event.project,
       removed,
     );
@@ -563,7 +563,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
    * @param addedFiles - The array of added file paths.
    * @returns An array of location specs.
    */
-  private createLocationSpecCommitedFiles(
+  private createLocationSpecCommittedFiles(
     project: WebhookProjectSchema,
     addedFiles: string[],
   ): LocationSpec[] {

@@ -68,7 +68,7 @@ export interface Config {
 
         fuzziness?: 'AUTO' | number;
         /**
-         * Minimum number of characters that must match exactly at the beginning of the qeury. Defaults to 0.
+         * Minimum number of characters that must match exactly at the beginning of the query. Defaults to 0.
          */
         prefixLength?: number;
       };

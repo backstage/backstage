@@ -10,6 +10,7 @@ import type { CheckboxProps as CheckboxProps_2 } from 'react-aria-components';
 import { ColumnProps as ColumnProps_2 } from 'react-aria-components';
 import type { ColumnSize } from 'react-stately';
 import type { ColumnStaticSize } from 'react-stately';
+import type { ComboBoxProps } from 'react-aria-components';
 import type { ComponentProps } from 'react';
 import type { ComponentPropsWithoutRef } from 'react';
 import type { ComponentPropsWithRef } from 'react';
@@ -1007,6 +1008,111 @@ export type Columns =
   | '11'
   | '12'
   | 'auto';
+
+// @public
+export const Combobox: ForwardRefExoticComponent<
+  ComboboxProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public
+export const ComboboxDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-Combobox';
+    readonly popover: 'bui-ComboboxPopover';
+  };
+  readonly propDefs: {
+    readonly icon: {};
+    readonly size: {
+      readonly dataAttribute: true;
+      readonly default: 'small';
+    };
+    readonly options: {};
+    readonly placeholder: {};
+    readonly label: {};
+    readonly secondaryLabel: {};
+    readonly description: {};
+    readonly isRequired: {};
+    readonly className: {};
+  };
+};
+
+// @public
+export const ComboboxInputDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-ComboboxInput';
+    readonly icon: 'bui-ComboboxInputIcon';
+    readonly input: 'bui-ComboboxInputField';
+    readonly chevron: 'bui-ComboboxInputChevron';
+  };
+  readonly bg: 'consumer';
+  readonly propDefs: {
+    readonly icon: {};
+    readonly placeholder: {};
+  };
+};
+
+// @public
+export const ComboboxListBoxDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-ComboboxList';
+    readonly noResults: 'bui-ComboboxNoResults';
+  };
+  readonly propDefs: {
+    readonly options: {};
+  };
+};
+
+// @public
+export const ComboboxListBoxItemDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-ComboboxItem';
+    readonly indicator: 'bui-ComboboxItemIndicator';
+    readonly label: 'bui-ComboboxItemLabel';
+  };
+  readonly propDefs: {};
+};
+
+// @public (undocumented)
+export type ComboboxOwnProps = {
+  icon?: ReactNode;
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+  options?: Array<Option_2 | OptionSection>;
+  placeholder?: string;
+  label?: FieldLabelProps['label'];
+  secondaryLabel?: FieldLabelProps['secondaryLabel'];
+  description?: FieldLabelProps['description'];
+  isRequired?: boolean;
+  className?: string;
+};
+
+// @public (undocumented)
+export interface ComboboxProps
+  extends ComboboxOwnProps,
+    Omit<ComboBoxProps<Option_2>, keyof ComboboxOwnProps> {}
+
+// @public
+export const ComboboxSectionDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-ComboboxSection';
+    readonly header: 'bui-ComboboxSectionHeader';
+  };
+  readonly propDefs: {};
+};
 
 // @public (undocumented)
 export interface CompletePaginationOptions extends PaginationOptions {
@@ -3463,6 +3569,8 @@ export type UseTableCompleteOptions<
   sortFn?: (data: T[], sort: SortDescriptor) => T[];
   filterFn?: (data: T[], filter: TFilter) => T[];
   searchFn?: (data: T[], search: string) => T[];
+  searchDebounceMs?: number;
+  filterDebounceMs?: number;
 } & (
     | {
         data: T[] | undefined;

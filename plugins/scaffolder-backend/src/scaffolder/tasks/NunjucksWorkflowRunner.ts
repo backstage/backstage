@@ -804,7 +804,7 @@ function scaffoldingTracker(metrics: MetricsService) {
     help: 'Duration of a task run',
     labelNames: ['template', 'result'],
   });
-  const promtStepCount = createCounterMetric({
+  const promStepCount = createCounterMetric({
     name: 'scaffolder_step_count',
     help: 'Count of step runs',
     labelNames: ['template', 'step', 'result'],
@@ -942,7 +942,7 @@ function scaffoldingTracker(metrics: MetricsService) {
         stepId: step.id,
         status: 'completed',
       });
-      promtStepCount.inc({
+      promStepCount.inc({
         template,
         step: step.name,
         result: 'ok',
@@ -958,7 +958,7 @@ function scaffoldingTracker(metrics: MetricsService) {
     }
 
     async function markCancelled() {
-      promtStepCount.inc({
+      promStepCount.inc({
         template,
         step: step.name,
         result: 'cancelled',
@@ -974,7 +974,7 @@ function scaffoldingTracker(metrics: MetricsService) {
     }
 
     async function markFailed() {
-      promtStepCount.inc({
+      promStepCount.inc({
         template,
         step: step.name,
         result: 'failed',

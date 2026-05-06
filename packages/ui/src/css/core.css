@@ -47,4 +47,38 @@
   [data-theme-mode='light'] {
     color-scheme: light;
   }
+
+  :root {
+    --bui-bg-inherit: var(--bui-bg-app);
+  }
+
+  [data-bg='neutral-1'] {
+    background-color: var(--bui-bg-neutral-1);
+    --bui-bg-inherit: var(--bui-bg-neutral-1);
+  }
+
+  [data-bg='neutral-2'] {
+    background-color: var(--bui-bg-neutral-2);
+    --bui-bg-inherit: var(--bui-bg-neutral-2);
+  }
+
+  [data-bg='neutral-3'] {
+    background-color: var(--bui-bg-neutral-3);
+    --bui-bg-inherit: var(--bui-bg-neutral-3);
+  }
+
+  [data-bg='danger'] {
+    background-color: var(--bui-bg-danger);
+    --bui-bg-inherit: var(--bui-bg-danger);
+  }
+
+  [data-bg='warning'] {
+    background-color: var(--bui-bg-warning);
+    --bui-bg-inherit: var(--bui-bg-warning);
+  }
+
+  [data-bg='success'] {
+    background-color: var(--bui-bg-success);
+    --bui-bg-inherit: var(--bui-bg-success);
+  }
 }

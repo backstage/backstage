@@ -1,5 +1,17 @@
 # @backstage/plugin-techdocs-backend
 
+## 2.2.0-next.1
+
+### Minor Changes
+
+- 5ef8d16: Add support for disabling external font downloads via app-config option `techdocs.generator.mkdocs.disableExternalFonts`, useful for air-gapped Backstage instances.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.0.2-next.1
+  - @backstage/plugin-techdocs-node@1.15.0-next.1
+
 ## 2.1.8-next.0
 
 ### Patch Changes
