@@ -78,12 +78,6 @@ export function createFormField<
 >(opts: FormFieldExtensionData<TReturnValue, TUiOptions>): FormField;
 
 // @alpha
-export const createGroupsWithOther: (
-  groups: TemplateGroupFilter[],
-  otherTitle: string,
-) => TemplateGroupFilter[];
-
-// @alpha
 export function createScaffolderFormDecorator<
   TInputSchema extends {
     [key in string]: (zImpl: typeof z) => z.ZodType;

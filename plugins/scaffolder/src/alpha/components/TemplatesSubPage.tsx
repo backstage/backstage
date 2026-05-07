@@ -34,10 +34,10 @@ import {
   EntityOwnerPicker,
 } from '@backstage/plugin-catalog-react';
 import {
-  createGroupsWithOther,
   TemplateCategoryPicker,
   TemplateGroups,
 } from '@backstage/plugin-scaffolder-react/alpha';
+import { createGroupsWithOther } from '../lib/createGroupsWithOther';
 import {
   FieldExtensionOptions,
   FormProps,

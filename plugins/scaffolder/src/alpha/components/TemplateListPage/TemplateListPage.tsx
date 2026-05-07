@@ -37,11 +37,11 @@ import {
   EntityOwnerPicker,
 } from '@backstage/plugin-catalog-react';
 import {
-  createGroupsWithOther,
   ScaffolderPageContextMenu,
   TemplateCategoryPicker,
   TemplateGroups,
 } from '@backstage/plugin-scaffolder-react/alpha';
+import { createGroupsWithOther } from '../../lib/createGroupsWithOther';
 
 import { RegisterExistingButton } from './RegisterExistingButton';
 import {

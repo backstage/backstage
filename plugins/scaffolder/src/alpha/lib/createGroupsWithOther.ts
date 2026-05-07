@@ -19,8 +19,6 @@ import { TemplateGroupFilter } from '@backstage/plugin-scaffolder-react';
 /**
  * Appends an "Other" group matching templates not matched by any of the
  * configured groups. The `otherTitle` should already be translated.
- *
- * @alpha
  */
 export const createGroupsWithOther = (
   groups: TemplateGroupFilter[],
