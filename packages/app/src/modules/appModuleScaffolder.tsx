@@ -17,7 +17,6 @@
 import { createFrontendModule } from '@backstage/frontend-plugin-api';
 import { SwappableComponentBlueprint } from '@backstage/plugin-app-react';
 import { TemplateCard } from '@backstage/plugin-scaffolder-react/alpha';
-import { BuiTemplateCard } from './BuiTemplateCard';
 
 export const appModuleScaffolder = createFrontendModule({
   pluginId: 'app',
@@ -27,7 +26,8 @@ export const appModuleScaffolder = createFrontendModule({
       params: defineParams =>
         defineParams({
           component: TemplateCard,
-          loader: async () => BuiTemplateCard,
+          loader: () =>
+            import('./BuiTemplateCard').then(m => m.BuiTemplateCard),
         }),
     }),
   ],

@@ -163,7 +163,7 @@ customisations are configured rather than passed as JSX props.
 
 The `sub-page:scaffolder/templates` extension accepts a `groups` config field.
 Each group has a `title` and a `filter` predicate (using
-[`@backstage/filter-predicates`](https://www.npmjs.com/package/@backstage/filter-predicates)).
+[entity predicate queries](https://backstage.io/docs/features/software-catalog/catalog-customization#entity-predicate-queries)).
 Templates not matched by any group fall into an automatically appended
 "Other" group. With no groups configured the page renders a single "All
 Templates" group.
@@ -185,7 +185,7 @@ app:
 Predicate values are matched case-insensitively. The matchers `$exists`,
 `$in`, `$contains`, `$hasPrefix` and the logical operators `$all`, `$any`, `$not`
 are also supported — see the
-[filter predicates reference](https://github.com/backstage/backstage/blob/master/packages/filter-predicates/README.md)
+[entity predicate queries reference](https://backstage.io/docs/features/software-catalog/catalog-customization#entity-predicate-queries)
 for the full grammar.
 
 ### Replacing the default `TemplateCard`

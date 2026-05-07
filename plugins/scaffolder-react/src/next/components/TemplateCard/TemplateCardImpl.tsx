@@ -54,8 +54,6 @@ export interface TemplateCardProps {
 /**
  * Default implementation of the `TemplateCard`. The exported `TemplateCard`
  * is a swappable wrapper around this component.
- *
- * @alpha
  */
 export const TemplateCardImpl = (props: TemplateCardProps) => {
   const { additionalLinks, onSelected, template } = props;

@@ -101,7 +101,7 @@ export function BuiTemplateCard(props: TemplateCardProps) {
                 Created by
               </Text>
               <Text variant="body-x-small" color="primary">
-                <EntityRefLink entityRef={owner} hideIcon disableTooltip />
+                <EntityRefLink entityRef={owner} hideIcon />
               </Text>
             </Flex>
           )}
