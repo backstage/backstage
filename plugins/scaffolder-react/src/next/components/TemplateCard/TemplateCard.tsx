@@ -15,9 +15,12 @@
  */
 
 import { createSwappableComponent } from '@backstage/frontend-plugin-api';
-import type { TemplateCardProps } from './TemplateCardImpl';
+import type { TemplateCardComponentProps } from './TemplateCardImpl';
 
-export type { TemplateCardProps } from './TemplateCardImpl';
+export type {
+  TemplateCardProps,
+  TemplateCardComponentProps,
+} from './TemplateCardImpl';
 
 /**
  * The `TemplateCard` component that is rendered in a list for each template.
@@ -26,7 +29,8 @@ export type { TemplateCardProps } from './TemplateCardImpl';
  *
  * @alpha
  */
-export const TemplateCard = createSwappableComponent<TemplateCardProps>({
-  id: 'scaffolder.templateCard',
-  loader: () => import('./TemplateCardImpl').then(m => m.TemplateCardImpl),
-});
+export const TemplateCard =
+  createSwappableComponent<TemplateCardComponentProps>({
+    id: 'scaffolder.templateCard',
+    loader: () => import('./TemplateCardImpl').then(m => m.TemplateCardImpl),
+  });

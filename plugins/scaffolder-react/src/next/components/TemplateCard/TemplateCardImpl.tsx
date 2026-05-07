@@ -38,7 +38,7 @@ const useStyles = makeStyles<Theme>(() => ({
 }));
 
 /**
- * The Props for the {@link TemplateCard} component
+ * The legacy Props for the `CardComponent` slot in {@link TemplateGroupsProps}.
  * @alpha
  */
 export interface TemplateCardProps {
@@ -52,10 +52,26 @@ export interface TemplateCardProps {
 }
 
 /**
+ * The Props for components used as the swappable {@link TemplateCard}. The
+ * surrounding list takes care of binding the template to `onSelected`, so
+ * implementations only need to invoke it without arguments.
+ * @alpha
+ */
+export interface TemplateCardComponentProps {
+  template: TemplateEntityV1beta3;
+  additionalLinks?: {
+    icon: IconComponent;
+    text: string;
+    url: string;
+  }[];
+  onSelected?: () => void;
+}
+
+/**
  * Default implementation of the `TemplateCard`. The exported `TemplateCard`
  * is a swappable wrapper around this component.
  */
-export const TemplateCardImpl = (props: TemplateCardProps) => {
+export const TemplateCardImpl = (props: TemplateCardComponentProps) => {
   const { additionalLinks, onSelected, template } = props;
   const styles = useStyles();
   const analytics = useAnalytics();
@@ -70,8 +86,8 @@ export const TemplateCardImpl = (props: TemplateCardProps) => {
   });
   const handleChoose = useCallback(() => {
     analytics.captureEvent('click', `Template has been opened`);
-    onSelected?.(template);
-  }, [analytics, onSelected, template]);
+    onSelected?.();
+  }, [analytics, onSelected]);
 
   return (
     <Card>

@@ -323,10 +323,10 @@ export const scaffolderReactTranslationRef: TranslationRef<
     readonly 'scaffolderPageContextMenu.tasksLabel': 'Task List';
     readonly 'scaffolderPageContextMenu.templatingExtensionsLabel': 'Templating Extensions';
     readonly 'stepper.backButtonText': 'Back';
-    readonly 'stepper.nextButtonText': 'Next';
     readonly 'stepper.createButtonText': 'Create';
     readonly 'stepper.reviewButtonText': 'Review';
     readonly 'stepper.stepIndexLabel': 'Step {{index, number}}';
+    readonly 'stepper.nextButtonText': 'Next';
     readonly 'templateCategoryPicker.title': 'Categories';
     readonly 'templateCard.noDescription': 'No description';
     readonly 'templateCard.chooseButtonText': 'Choose';
@@ -391,9 +391,26 @@ export interface TaskStepsProps {
 
 // @alpha
 export const TemplateCard: {
-  (props: TemplateCardProps): JSX.Element | null;
-  ref: SwappableComponentRef<TemplateCardProps, TemplateCardProps>;
+  (props: TemplateCardComponentProps): JSX.Element | null;
+  ref: SwappableComponentRef<
+    TemplateCardComponentProps,
+    TemplateCardComponentProps
+  >;
 };
+
+// @alpha
+export interface TemplateCardComponentProps {
+  // (undocumented)
+  additionalLinks?: {
+    icon: IconComponent;
+    text: string;
+    url: string;
+  }[];
+  // (undocumented)
+  onSelected?: () => void;
+  // (undocumented)
+  template: TemplateEntityV1beta3;
+}
 
 // @alpha
 export interface TemplateCardProps {

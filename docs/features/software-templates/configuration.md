@@ -219,7 +219,9 @@ export const appModuleScaffolder = createFrontendModule({
 Wire the module into your app by adding `appModuleScaffolder` to the
 `features` array of `createApp` in `packages/app/src/App.tsx`.
 
-`MyTemplateCard` receives the standard `TemplateCardProps`
-(`{ template, additionalLinks?, onSelected? }`). The example app under
+`MyTemplateCard` receives `TemplateCardComponentProps`
+(`{ template, additionalLinks?, onSelected? }`). The list takes care of
+binding the template to `onSelected`, so the card just calls
+`props.onSelected?.()` to choose itself. The example app under
 `packages/app/src/modules/BuiTemplateCard.tsx` shows a Backstage UI (BUI)
 implementation you can use as a starting point.

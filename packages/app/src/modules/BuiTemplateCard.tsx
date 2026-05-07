@@ -32,12 +32,12 @@ import {
   TagGroup,
   Text,
 } from '@backstage/ui';
-import type { TemplateCardProps } from '@backstage/plugin-scaffolder-react/alpha';
+import type { TemplateCardComponentProps } from '@backstage/plugin-scaffolder-react/alpha';
 import styles from './BuiTemplateCard.module.css';
 
 const MAX_TAGS = 4;
 
-export function BuiTemplateCard(props: TemplateCardProps) {
+export function BuiTemplateCard(props: TemplateCardComponentProps) {
   const { template, onSelected } = props;
   const analytics = useAnalytics();
 
@@ -55,7 +55,7 @@ export function BuiTemplateCard(props: TemplateCardProps) {
 
   const handleRun = () => {
     analytics.captureEvent('click', 'Template has been opened');
-    onSelected?.(template);
+    onSelected?.();
   };
 
   return (
