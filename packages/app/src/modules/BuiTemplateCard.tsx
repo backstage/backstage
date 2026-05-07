@@ -47,7 +47,11 @@ export function BuiTemplateCard(props: TemplateCardComponentProps) {
   } = template;
 
   const visibleTags = useMemo(
-    () => [type, ...(tags ?? [])].filter(Boolean).slice(0, MAX_TAGS),
+    () =>
+      Array.from(new Set([type, ...(tags ?? [])].filter(Boolean))).slice(
+        0,
+        MAX_TAGS,
+      ),
     [type, tags],
   );
 

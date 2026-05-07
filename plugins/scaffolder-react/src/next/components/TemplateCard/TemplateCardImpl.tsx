@@ -85,7 +85,7 @@ export const TemplateCardImpl = (props: TemplateCardComponentProps) => {
     permission: taskCreatePermission,
   });
   const handleChoose = useCallback(() => {
-    analytics.captureEvent('click', `Template has been opened`);
+    analytics.captureEvent('click', 'Template has been opened');
     onSelected?.();
   }, [analytics, onSelected]);
 

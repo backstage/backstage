@@ -25,7 +25,7 @@ export type {
 /**
  * The `TemplateCard` component that is rendered in a list for each template.
  * Apps using the new frontend system can replace it by registering a
- * `SwappableComponentBlueprint` against `TemplateCard.ref`.
+ * `SwappableComponentBlueprint` that targets `TemplateCard`.
  *
  * @alpha
  */

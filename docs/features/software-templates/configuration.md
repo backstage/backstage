@@ -192,14 +192,13 @@ for the full grammar.
 
 The `TemplateCard` exported from `@backstage/plugin-scaffolder-react/alpha`
 is a swappable component. Apps can replace it by registering a
-`SwappableComponentBlueprint` extension against `TemplateCard.ref`:
+`SwappableComponentBlueprint` extension that targets `TemplateCard`:
 
 ```tsx
 // packages/app/src/modules/appModuleScaffolder.tsx
 import { createFrontendModule } from '@backstage/frontend-plugin-api';
 import { SwappableComponentBlueprint } from '@backstage/plugin-app-react';
 import { TemplateCard } from '@backstage/plugin-scaffolder-react/alpha';
-import { MyTemplateCard } from './MyTemplateCard';
 
 export const appModuleScaffolder = createFrontendModule({
   pluginId: 'app',
@@ -209,7 +208,7 @@ export const appModuleScaffolder = createFrontendModule({
       params: defineParams =>
         defineParams({
           component: TemplateCard,
-          loader: async () => MyTemplateCard,
+          loader: () => import('./MyTemplateCard').then(m => m.MyTemplateCard),
         }),
     }),
   ],

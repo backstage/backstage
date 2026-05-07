@@ -23,10 +23,13 @@ import { TemplateGroupFilter } from '@backstage/plugin-scaffolder-react';
 export const createGroupsWithOther = (
   groups: TemplateGroupFilter[],
   otherTitle: string,
-): TemplateGroupFilter[] => [
-  ...groups,
-  {
-    title: otherTitle,
-    filter: e => !groups.some(({ filter }) => filter(e)),
-  },
-];
+): TemplateGroupFilter[] => {
+  const baseGroups = [...groups];
+  return [
+    ...baseGroups,
+    {
+      title: otherTitle,
+      filter: e => !baseGroups.some(({ filter }) => filter(e)),
+    },
+  ];
+};
