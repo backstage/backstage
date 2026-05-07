@@ -29,11 +29,19 @@ type SubRoute = {
   children: JSX.Element;
 };
 
-// Strip leading and trailing slashes, then append `/*` for nested matching.
-// A bare `/` becomes the empty string so it acts as an index route instead of
-// a wildcard that would catch every sub-path.
+// Normalize a route path so it can be matched correctly:
+//   - strip leading slashes
+//   - if the path already ends with a `*`, keep it as-is so explicit wildcards
+//     like `/*` or `/foo/*` aren't double-suffixed into `*/*` / `foo/*/*`
+//   - otherwise strip trailing slashes and append `/*` for nested matching;
+//     a bare `/` collapses to the empty string so it acts as an index route
+//     rather than a wildcard that would swallow every sub-path
 function normalizeRoutePath(path: string): string {
-  const trimmed = path.replace(/^\/+/, '').replace(/\/+$/, '');
+  const withoutLeading = path.replace(/^\/+/, '');
+  if (withoutLeading.endsWith('*')) {
+    return withoutLeading;
+  }
+  const trimmed = withoutLeading.replace(/\/+$/, '');
   return trimmed ? `${trimmed}/*` : '';
 }
 

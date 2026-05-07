@@ -355,6 +355,40 @@ describe('EntityTabs', () => {
       expect(screen.getByTestId('selected-index')).toHaveTextContent('-1');
       expect(screen.getByTestId('element-container')).toBeEmptyDOMElement();
     });
+
+    it('should accept paths that already include an explicit wildcard', () => {
+      const wildcardSubRoutes = [
+        {
+          group: 'default',
+          path: '/',
+          title: 'Overview',
+          children: <div>Overview Content</div>,
+        },
+        {
+          group: 'default',
+          path: '/docs/*',
+          title: 'Docs',
+          children: <div>Docs Content</div>,
+        },
+      ];
+
+      render(
+        <MemoryRouter initialEntries={['/docs/api/v1']}>
+          <Routes>
+            <Route
+              path="/*"
+              element={<TestSubRouteHook subRoutes={wildcardSubRoutes} />}
+            />
+          </Routes>
+        </MemoryRouter>,
+      );
+
+      expect(screen.getByTestId('selected-index')).toHaveTextContent('1');
+      expect(screen.getByTestId('selected-route-title')).toHaveTextContent(
+        'Docs',
+      );
+      expect(screen.getByText('Docs Content')).toBeInTheDocument();
+    });
   });
 
   describe('rendering', () => {
