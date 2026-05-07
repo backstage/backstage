@@ -75,10 +75,10 @@ export const EntityNamePickerFieldExtension: FieldExtensionComponent_2<
 export const EntityPickerFieldExtension: FieldExtensionComponent_2<
   string,
   {
+    autoSelect?: boolean | undefined;
     defaultKind?: string | undefined;
     defaultNamespace?: string | false | undefined;
     allowedKinds?: string[] | undefined;
-    autoSelect?: boolean | undefined;
     catalogFilter?:
       | Record<
           string,
@@ -105,10 +105,10 @@ export const EntityPickerFieldExtension: FieldExtensionComponent_2<
 export const EntityPickerFieldSchema: FieldSchema_2<
   string,
   {
+    autoSelect?: boolean | undefined;
     defaultKind?: string | undefined;
     defaultNamespace?: string | false | undefined;
     allowedKinds?: string[] | undefined;
-    autoSelect?: boolean | undefined;
     catalogFilter?:
       | Record<
           string,
@@ -252,10 +252,10 @@ export type MyGroupsPickerUiOptions = NonNullable<
 export const OwnedEntityPickerFieldExtension: FieldExtensionComponent_2<
   string,
   {
+    autoSelect?: boolean | undefined;
     defaultKind?: string | undefined;
     defaultNamespace?: string | false | undefined;
     allowedKinds?: string[] | undefined;
-    autoSelect?: boolean | undefined;
     catalogFilter?:
       | Record<
           string,
@@ -282,10 +282,10 @@ export const OwnedEntityPickerFieldExtension: FieldExtensionComponent_2<
 export const OwnedEntityPickerFieldSchema: FieldSchema_2<
   string,
   {
+    autoSelect?: boolean | undefined;
     defaultKind?: string | undefined;
     defaultNamespace?: string | false | undefined;
     allowedKinds?: string[] | undefined;
-    autoSelect?: boolean | undefined;
     catalogFilter?:
       | Record<
           string,
@@ -385,10 +385,10 @@ export const RepoBranchPickerFieldExtension: FieldExtensionComponent_2<
             | {
                 azure?: string[] | undefined;
                 github?: string[] | undefined;
-                gerrit?: string[] | undefined;
                 gitlab?: string[] | undefined;
-                gitea?: string[] | undefined;
                 bitbucket?: string[] | undefined;
+                gerrit?: string[] | undefined;
+                gitea?: string[] | undefined;
               }
             | undefined;
         }
@@ -408,10 +408,10 @@ export const RepoOwnerPickerFieldExtension: FieldExtensionComponent_2<
             | {
                 azure?: string[] | undefined;
                 github?: string[] | undefined;
-                gerrit?: string[] | undefined;
                 gitlab?: string[] | undefined;
-                gitea?: string[] | undefined;
                 bitbucket?: string[] | undefined;
+                gerrit?: string[] | undefined;
+                gitea?: string[] | undefined;
               }
             | undefined;
         }
@@ -445,10 +445,10 @@ export const RepoUrlPickerFieldExtension: FieldExtensionComponent_2<
             | {
                 azure?: string[] | undefined;
                 github?: string[] | undefined;
-                gerrit?: string[] | undefined;
                 gitlab?: string[] | undefined;
-                gitea?: string[] | undefined;
                 bitbucket?: string[] | undefined;
+                gerrit?: string[] | undefined;
+                gitea?: string[] | undefined;
               }
             | undefined;
         }
@@ -472,10 +472,10 @@ export const RepoUrlPickerFieldSchema: FieldSchema_2<
             | {
                 azure?: string[] | undefined;
                 github?: string[] | undefined;
-                gerrit?: string[] | undefined;
                 gitlab?: string[] | undefined;
-                gitea?: string[] | undefined;
                 bitbucket?: string[] | undefined;
+                gerrit?: string[] | undefined;
+                gitea?: string[] | undefined;
               }
             | undefined;
         }
@@ -689,17 +689,17 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'ownerListPicker.options.owned': 'Owned';
     readonly 'ongoingTask.title': 'Run of';
     readonly 'ongoingTask.contextMenu.cancel': 'Cancel';
-    readonly 'ongoingTask.contextMenu.startOver': 'Start Over';
     readonly 'ongoingTask.contextMenu.retry': 'Retry';
+    readonly 'ongoingTask.contextMenu.startOver': 'Start Over';
     readonly 'ongoingTask.contextMenu.moreOptions': 'More options';
     readonly 'ongoingTask.contextMenu.hideLogs': 'Hide Logs';
     readonly 'ongoingTask.contextMenu.showLogs': 'Show Logs';
     readonly 'ongoingTask.contextMenu.hideButtonBar': 'Hide Button Bar';
     readonly 'ongoingTask.contextMenu.showButtonBar': 'Show Button Bar';
     readonly 'ongoingTask.subtitle': 'Task {{taskId}}';
-    readonly 'ongoingTask.cancelButtonTitle': 'Cancel';
     readonly 'ongoingTask.pageTitle.hasTemplateName': 'Run of {{templateName}}';
     readonly 'ongoingTask.pageTitle.noTemplateName': 'Scaffolder Run';
+    readonly 'ongoingTask.cancelButtonTitle': 'Cancel';
     readonly 'ongoingTask.retryButtonTitle': 'Retry';
     readonly 'ongoingTask.startOverButtonTitle': 'Start Over';
     readonly 'ongoingTask.hideLogsButtonTitle': 'Hide Logs';
@@ -722,13 +722,13 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'templatingExtensions.content.filters.examples': 'Examples';
     readonly 'templatingExtensions.content.filters.notAvailable': 'There are no template filters defined.';
     readonly 'templatingExtensions.content.filters.metadataAbsent': 'Filter metadata unavailable';
-    readonly 'templatingExtensions.content.searchFieldPlaceholder': 'Search for an extension';
     readonly 'templatingExtensions.content.functions.title': 'Functions';
     readonly 'templatingExtensions.content.functions.schema.output': 'Output';
     readonly 'templatingExtensions.content.functions.schema.arguments': 'Arguments';
     readonly 'templatingExtensions.content.functions.examples': 'Examples';
     readonly 'templatingExtensions.content.functions.notAvailable': 'There are no global template functions defined.';
     readonly 'templatingExtensions.content.functions.metadataAbsent': 'Function metadata unavailable';
+    readonly 'templatingExtensions.content.searchFieldPlaceholder': 'Search for an extension';
     readonly 'templatingExtensions.title': 'Templating Extensions';
     readonly 'templatingExtensions.subtitle': 'This is the collection of available templating extensions';
     readonly 'templatingExtensions.pageTitle': 'Templating Extensions';
@@ -778,8 +778,8 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'templateListPage.pageTitle': 'Create a new component';
     readonly 'templateListPage.templateGroups.defaultTitle': 'Templates';
     readonly 'templateListPage.templateGroups.otherTitle': 'Other Templates';
-    readonly 'templateListPage.contentHeader.registerExistingButtonTitle': 'Register Existing Component';
     readonly 'templateListPage.contentHeader.supportButtonTitle': 'Create new software components using standard templates. Different templates create different kinds of components (services, websites, documentation, ...).';
+    readonly 'templateListPage.contentHeader.registerExistingButtonTitle': 'Register Existing Component';
     readonly 'templateListPage.additionalLinksForEntity.viewTechDocsTitle': 'View TechDocs';
     readonly 'templateWizardPage.title': 'Create a new component';
     readonly 'templateWizardPage.subtitle': 'Create new software components using standard templates in your organization';
@@ -793,8 +793,8 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'templateEditorToolbar.addToCatalogDialogTitle': 'Publish changes';
     readonly 'templateEditorToolbar.addToCatalogDialogContent.stepsIntroduction': 'Follow the instructions below to create or update a template:';
     readonly 'templateEditorToolbar.addToCatalogDialogContent.stepsListItems': 'Save the template files in a local directory\nCreate a pull request to a new or existing git repository\nIf the template already exists, the changes will be reflected in the software catalog once the pull request gets merged\nBut if you are creating a new template, follow the documentation linked below to register the new template repository in software catalog';
-    readonly 'templateEditorToolbar.addToCatalogDialogActions.documentationButton': 'Go to the documentation';
     readonly 'templateEditorToolbar.addToCatalogDialogActions.documentationUrl': 'https://backstage.io/docs/features/software-templates/adding-templates/';
+    readonly 'templateEditorToolbar.addToCatalogDialogActions.documentationButton': 'Go to the documentation';
     readonly 'templateEditorToolbarFileMenu.button': 'File';
     readonly 'templateEditorToolbarFileMenu.options.openDirectory': 'Open template directory';
     readonly 'templateEditorToolbarFileMenu.options.createDirectory': 'Create template directory';
