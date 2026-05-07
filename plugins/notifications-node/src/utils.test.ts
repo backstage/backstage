@@ -17,13 +17,24 @@
 import { resolveNotificationLink } from './utils';
 
 describe('resolveNotificationLink', () => {
-  it('resolves relative links when baseUrl has a sub-path', () => {
+  it('resolves relative links when baseUrl has no sub-path', () => {
     expect(
       resolveNotificationLink(
         '/catalog/default/component/example',
         'https://backstage.example.com',
       ),
     ).toBe('https://backstage.example.com/catalog/default/component/example');
+  });
+
+  it('resolves relative links when baseUrl has a sub-path', () => {
+    expect(
+      resolveNotificationLink(
+        '/catalog/default/component/example',
+        'https://backstage.example.com/backstage',
+      ),
+    ).toBe(
+      'https://backstage.example.com/backstage/catalog/default/component/example',
+    );
   });
 
   it('normalizes links with multiple leading slashes', () => {
