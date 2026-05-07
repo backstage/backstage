@@ -130,18 +130,16 @@ const useStyles = makeStyles((theme: Theme) => ({
 function MyComponent() {
   const classes = useStyles();
   return (
-    <div className = {classes.container} >
-    <Typography className = {classes.title} > Title < /Typography>
-      < div
-  className = {classes.listItem} >
-  <div className = {classes.icon} >
-    <SomeIcon / >
+    <div className={classes.container}>
+      <Typography className={classes.title}>Title</Typography>
+      <div className={classes.listItem}>
+        <div className={classes.icon}>
+          <SomeIcon />
+        </div>
+        <span>Content</span>
+      </div>
     </div>
-    < span > Content < /span>
-    < /div>
-    < /div>
-)
-  ;
+  );
 }
 ```
 
@@ -179,25 +177,22 @@ function MyComponent() {
 
 ```typescript
 // MyComponent.tsx
-import {Box, Text} from '@backstage/ui';
-import {RiSomeIcon} from '@remixicon/react';
+import { Box, Text } from '@backstage/ui';
+import { RiSomeIcon } from '@remixicon/react';
 import styles from './MyComponent.module.css';
 
 function MyComponent() {
   return (
-    <Box className = {styles.container} >
-    <Text className = {styles.title} > Title < /Text>
-      < div
-  className = {styles.listItem} >
-  <div className = {styles.icon} >
-  <RiSomeIcon size = {24}
-  />
-  < /div>
-  < span > Content < /span>
-  < /div>
-  < /Box>
-)
-  ;
+    <Box className={styles.container}>
+      <Text className={styles.title}>Title</Text>
+      <div className={styles.listItem}>
+        <div className={styles.icon}>
+          <RiSomeIcon size={24} />
+        </div>
+        <span>Content</span>
+      </div>
+    </Box>
+  );
 }
 ```
 
@@ -207,36 +202,38 @@ function MyComponent() {
 
 ```typescript
 <Box
-  display = "flex"
-flexDirection = "column"
-alignItems = "center"
-justifyContent = "space-between"
+  display="flex"
+  flexDirection="column"
+  alignItems="center"
+  justifyContent="space-between"
 >
-<Box display = "flex"
-flexDirection = "row"
-gap = {2} >
-  {children}
-  < /Box>
-  < /Box>
+  <Box
+    display="flex"
+    flexDirection="row"
+    gap={2}
+  >
+    {children}
+  </Box>
+</Box>
 ```
 
 **After (BUI `Flex` component):**
 
 ```typescript
-<Flex direction = "column"
-align = "center"
-justify = "between" >
-<Flex direction = "row"
-style = {
-{
-  gap: 'var(--bui-space-4)'
-}
-}>
-{
-  children
-}
+<Flex
+  direction="column"
+  align="center"
+  justify="between"
+>
+  <Flex
+    direction="row"
+    style={{
+      gap: 'var(--bui-space-4)',
+    }}
+  >
+    {children}
+  </Flex>
 </Flex>
-< /Flex>
 ```
 
 Note: BUI `Flex` uses `justify="between"` not `justify="space-between"`.
@@ -246,37 +243,38 @@ Note: BUI `Flex` uses `justify="between"` not `justify="space-between"`.
 **Before (MUI Grid):**
 
 ```typescript
-<Grid container
-spacing = {3} >
-  <Grid item
-xs = {12}
-md = {6} >
-  {content}
-  < /Grid>
-  < /Grid>
+<Grid
+  container
+  spacing={3}
+>
+  <Grid
+    item
+    xs={12}
+    md={6}
+  >
+    {content}
+  </Grid>
+</Grid>
 ```
 
 **After (BUI Grid):**
 
 ```typescript
-<Grid.Root columns = {
-{
-  sm: '12'
-}
-}
-gap = "6" >
-<Grid.Item colSpan = {
-{
-  sm: '12', md
-:
-  '6'
-}
-}>
-{
-  content
-}
-</Grid.Item>
-< /Grid.Root>
+<Grid.Root
+  columns={{
+    sm: '12',
+  }}
+  gap="6"
+>
+  <Grid.Item
+    colSpan={{
+      sm: '12',
+      md: '6',
+    }}
+  >
+    {content}
+  </Grid.Item>
+</Grid.Root>
 ```
 
 ### 5. Typography to Text
@@ -284,31 +282,23 @@ gap = "6" >
 **Before (MUI Typography):**
 
 ```typescript
-<Typography variant = "h1" > Heading < /Typography>
-  < Typography
-variant = "h6" > Subheading < /Typography>
-  < Typography
-variant = "body1" > Body
-text < /Typography>
-< Typography
-variant = "body2"
-color = "textSecondary" > Secondary
-text < /Typography>
+<Typography variant="h1">Heading</Typography>
+<Typography variant="h6">Subheading</Typography>
+<Typography variant="body1">Body text</Typography>
+<Typography variant="body2" color="textSecondary">
+  Secondary text
+</Typography>
 ```
 
 **After (BUI Text):**
 
 ```typescript
-<Text variant = "title-large" > Heading < /Text>
-  < Text
-variant = "title-small" > Subheading < /Text>
-  < Text
-variant = "body-medium" > Body
-text < /Text>
-< Text
-variant = "body-small"
-color = "secondary" > Secondary
-text < /Text>
+<Text variant="title-large">Heading</Text>
+<Text variant="title-small">Subheading</Text>
+<Text variant="body-medium">Body text</Text>
+<Text variant="body-small" color="secondary">
+  Secondary text
+</Text>
 ```
 
 Valid Text variants: `title-large`, `title-medium`, `title-small`, `title-x-small`, `body-large`, `body-medium`,
@@ -319,13 +309,11 @@ Valid Text variants: `title-large`, `title-medium`, `title-small`, `title-x-smal
 **Before (MUI Tooltip):**
 
 ```typescript
-import {Tooltip, Typography} from '@material-ui/core';
+import { Tooltip, Typography } from '@material-ui/core';
 
-<Tooltip title = { < Typography > Tooltip
-content < /Typography>}>
-< span > Hover
-me < /span>
-< /Tooltip>;
+<Tooltip title={<Typography>Tooltip content</Typography>}>
+  <span>Hover me</span>
+</Tooltip>;
 ```
 
 **After (BUI TooltipTrigger pattern):**
@@ -344,20 +332,17 @@ import { Tooltip, TooltipTrigger, Text } from '@backstage/ui';
 **Before (MUI Dialog):**
 
 ```typescript
-import {Dialog, DialogTitle, DialogActions, Button} from '@material-ui/core';
+import { Dialog, DialogTitle, DialogActions, Button } from '@material-ui/core';
 
-<Dialog open = {isOpen}
-onClose = {onClose} >
-<DialogTitle>Title < /DialogTitle>
-< DialogActions >
-<Button onClick = {onClose} > Cancel < /Button>
-  < Button
-onClick = {onConfirm}
-color = "primary" >
-  Confirm
-  < /Button>
-  < /DialogActions>
-  < /Dialog>;
+<Dialog open={isOpen} onClose={onClose}>
+  <DialogTitle>Title</DialogTitle>
+  <DialogActions>
+    <Button onClick={onClose}>Cancel</Button>
+    <Button onClick={onConfirm} color="primary">
+      Confirm
+    </Button>
+  </DialogActions>
+</Dialog>;
 ```
 
 **After (BUI Dialog):**
@@ -373,30 +358,27 @@ import {
 
 <DialogTrigger>
   <Dialog
-    isOpen = {isOpen}
-isDismissable
-onOpenChange = {open
-=>
-{
-  if (!open) onClose();
-}
-}
->
-<DialogHeader>Title < /DialogHeader>
-< DialogFooter >
-<Button onClick = {onConfirm}
-variant = "primary" >
-  Confirm
-  < /Button>
-  < Button
-onClick = {onClose}
-variant = "secondary"
-slot = "close" >
-  Cancel
-  < /Button>
-  < /DialogFooter>
-  < /Dialog>
-  < /DialogTrigger>;
+    isOpen={isOpen}
+    isDismissable
+    onOpenChange={(open) => {
+      if (!open) onClose();
+    }}
+  >
+    <DialogHeader>Title</DialogHeader>
+    <DialogFooter>
+      <Button onClick={onConfirm} variant="primary">
+        Confirm
+      </Button>
+      <Button
+        onClick={onClose}
+        variant="secondary"
+        slot="close"
+      >
+        Cancel
+      </Button>
+    </DialogFooter>
+  </Dialog>
+</DialogTrigger>;
 ```
 
 ### 8. Button Changes
@@ -404,40 +386,39 @@ slot = "close" >
 **Before (MUI Button):**
 
 ```typescript
-<Button variant = "contained"
-color = "primary"
-disabled = {loading}
-onClick = {handleClick} >
+<Button
+  variant="contained"
+  color="primary"
+  disabled={loading}
+  onClick={handleClick}
+>
   Submit
-  < /Button>
-  < IconButton
-onClick = {handleDelete}
-disabled = {!
-canDelete
-}>
-<DeleteIcon / >
+</Button>
+<IconButton
+  onClick={handleDelete}
+  disabled={!canDelete}
+>
+  <DeleteIcon />
 </IconButton>
 ```
 
 **After (BUI Button):**
 
 ```typescript
-<Button variant = "primary"
-isDisabled = {loading}
-onClick = {handleClick} >
+<Button
+  variant="primary"
+  isDisabled={loading}
+  onClick={handleClick}
+>
   Submit
-  < /Button>
-  < ButtonIcon
-aria - label = "delete"
-isDisabled = {!
-canDelete
-}
-onPress = {handleDelete}
-icon = { < RiDeleteBinLine
-size = {16}
-/>}
-variant = "secondary"
-  / >
+</Button>
+<ButtonIcon
+  aria-label="delete"
+  isDisabled={!canDelete}
+  onPress={handleDelete}
+  icon={<RiDeleteBinLine size={16} />}
+  variant="secondary"
+/>
 ```
 
 ### 9. TextField Changes
@@ -474,45 +455,32 @@ Note: BUI TextField `onChange` receives the string value directly, not an event 
 **Before (MUI Tabs):**
 
 ```typescript
-import {Tab} from '@material-ui/core';
-import {TabContext, TabList, TabPanel} from '@material-ui/lab';
+import { Tab } from '@material-ui/core';
+import { TabContext, TabList, TabPanel } from '@material-ui/lab';
 
-<TabContext value = {tab} >
-<TabList onChange = {handleChange} >
-<Tab label = "Tab 1"
-value = "tab1" / >
-<Tab label = "Tab 2"
-value = "tab2" / >
+<TabContext value={tab}>
+  <TabList onChange={handleChange}>
+    <Tab label="Tab 1" value="tab1" />
+    <Tab label="Tab 2" value="tab2" />
   </TabList>
-  < TabPanel
-value = "tab1" > Content
-1 < /TabPanel>
-< TabPanel
-value = "tab2" > Content
-2 < /TabPanel>
-< /TabContext>;
+  <TabPanel value="tab1">Content 1</TabPanel>
+  <TabPanel value="tab2">Content 2</TabPanel>
+</TabContext>;
 ```
 
 **After (BUI Tabs):**
 
 ```typescript
-import {Tabs, TabList, Tab, TabPanel} from '@backstage/ui';
+import { Tabs, TabList, Tab, TabPanel } from '@backstage/ui';
 
-<Tabs defaultSelectedKey = "tab1" >
-<TabList>
-  <Tab id = "tab1" > Tab
-1 < /Tab>
-< Tab
-id = "tab2" > Tab
-2 < /Tab>
-< /TabList>
-< TabPanel
-id = "tab1" > Content
-1 < /TabPanel>
-< TabPanel
-id = "tab2" > Content
-2 < /TabPanel>
-< /Tabs>;
+<Tabs defaultSelectedKey="tab1">
+  <TabList>
+    <Tab id="tab1">Tab 1</Tab>
+    <Tab id="tab2">Tab 2</Tab>
+  </TabList>
+  <TabPanel id="tab1">Content 1</TabPanel>
+  <TabPanel id="tab2">Content 2</TabPanel>
+</Tabs>;
 ```
 
 ### 11. Menu Pattern
@@ -520,35 +488,39 @@ id = "tab2" > Content
 **Before (MUI Menu):**
 
 ```typescript
-import {IconButton, Popover, MenuList, MenuItem} from '@material-ui/core';
+import { IconButton, Popover, MenuList, MenuItem } from '@material-ui/core';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 
-<IconButton onClick = {handleOpen} > <MoreVertIcon / > </IconButton>
-  < Popover
-open = {open}
-anchorEl = {anchorEl}
-onClose = {handleClose} >
-<MenuList>
-  <MenuItem onClick = {handleAction} > Action < /MenuItem>
-  < /MenuList>
-  < /Popover>
+<IconButton onClick={handleOpen}>
+  <MoreVertIcon />
+</IconButton>
+<Popover
+  open={open}
+  anchorEl={anchorEl}
+  onClose={handleClose}
+>
+  <MenuList>
+    <MenuItem onClick={handleAction}>Action</MenuItem>
+  </MenuList>
+</Popover>
 ```
 
 **After (BUI Menu):**
 
 ```typescript
-import {ButtonIcon, Menu, MenuItem, MenuTrigger} from '@backstage/ui';
-import {RiMore2Line} from '@remixicon/react';
+import { ButtonIcon, Menu, MenuItem, MenuTrigger } from '@backstage/ui';
+import { RiMore2Line } from '@remixicon/react';
 
 <MenuTrigger>
-  <ButtonIcon aria - label = "more"
-icon = { < RiMore2Line / >
-}
-variant = "secondary" / >
-<Menu>
-  <MenuItem onAction = {handleAction} > Action < /MenuItem>
-  < /Menu>
-  < /MenuTrigger>;
+  <ButtonIcon
+    aria-label="more"
+    icon={<RiMore2Line />}
+    variant="secondary"
+  />
+  <Menu>
+    <MenuItem onAction={handleAction}>Action</MenuItem>
+  </Menu>
+</MenuTrigger>;
 ```
 
 ### 12. List to BUI List
@@ -598,7 +570,7 @@ import { Chip } from '@material-ui/core';
 ```typescript
 import {Tag} from '@backstage/ui';
 
-<Tag size = "small" > Category < /Tag>;
+<Tag size="small">Category</Tag>;
 ```
 
 ### 14. Alert Pattern
@@ -641,18 +613,17 @@ Use `loading` for a loading spinner, and `customActions` for action buttons.
 import CloseIcon from '@material-ui/icons/Close';
 import SearchIcon from '@material-ui/icons/Search';
 
-<CloseIcon / >
-<SearchIcon fontSize = "small" / >
+<CloseIcon />
+<SearchIcon fontSize="small" />
 ```
 
 **After (Remix Icons):**
 
 ```typescript
-import {RiCloseLine, RiSearchLine} from '@remixicon/react';
+import { RiCloseLine, RiSearchLine } from '@remixicon/react';
 
-<RiCloseLine / >
-<RiSearchLine size = {16}
-/>
+<RiCloseLine />
+<RiSearchLine size={16} />
 ```
 
 Common icon mappings:
