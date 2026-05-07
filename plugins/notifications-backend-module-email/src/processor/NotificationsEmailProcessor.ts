@@ -327,11 +327,9 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
 
   private getNotificationLink(notification: Notification) {
     if (notification.payload.link) {
-      return (
-        resolveNotificationLink(
-          notification.payload.link,
-          this.frontendBaseUrl,
-        ) ?? notification.payload.link
+      return resolveNotificationLink(
+        notification.payload.link,
+        this.frontendBaseUrl,
       );
     }
     return `${this.frontendBaseUrl}/notifications`;

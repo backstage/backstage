@@ -269,6 +269,9 @@ export class SlackNotificationProcessor implements NotificationProcessor {
     const metadataChannel = options.payload.metadata?.slackChannel as
       | string
       | undefined;
+    const formattedPayload = await this.formatPayloadDescriptionForSlack(
+      options.payload,
+    );
 
     const outbound: ChatPostMessageArguments[] = [];
     await Promise.all(
@@ -306,13 +309,7 @@ export class SlackNotificationProcessor implements NotificationProcessor {
 
         const payload = toChatPostMessageArgs({
           channel,
-          payload: {
-            ...options.payload,
-            link: resolveNotificationLink(
-              options.payload.link,
-              this.frontendBaseUrl,
-            ),
-          },
+          payload: formattedPayload,
           username: this.username,
           blockKitRenderer: this.blockKitRenderer,
         });
