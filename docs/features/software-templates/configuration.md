@@ -109,6 +109,10 @@ Default secrets are resolved from environment variables and accessible via `${{ 
 
 ## Customizing the ScaffolderPage with Grouping and Filtering
 
+The sections below cover the legacy (JSX) frontend system. For the new
+frontend system, see [Customizing the templates page in the new frontend system](#customizing-the-templates-page-in-the-new-frontend-system)
+below.
+
 Once you have more than a few software templates you may want to customize your
 `ScaffolderPage` by grouping and surfacing certain templates together. You can
 accomplish this by creating `groups` and passing them to your `ScaffolderPage`
@@ -149,3 +153,73 @@ You can have several use cases for that:
   }
 />
 ```
+
+## Customizing the templates page in the new frontend system
+
+In the new frontend system the templates page is built from extensions, so
+customisations are configured rather than passed as JSX props.
+
+### Defining template groups in `app-config.yaml`
+
+The `sub-page:scaffolder/templates` extension accepts a `groups` config field.
+Each group has a `title` and a `filter` predicate (using
+[`@backstage/filter-predicates`](https://www.npmjs.com/package/@backstage/filter-predicates)).
+Templates not matched by any group fall into an automatically appended
+"Other" group. With no groups configured the page renders a single "All
+Templates" group.
+
+```yaml
+app:
+  extensions:
+    - sub-page:scaffolder/templates:
+        config:
+          groups:
+            - title: Recommended Services
+              filter:
+                spec.type: service
+            - title: Documentation
+              filter:
+                spec.type: documentation
+```
+
+Predicate values are matched case-insensitively. The matchers `$exists`,
+`$in`, `$contains`, `$hasPrefix` and the logical operators `$all`, `$any`, `$not`
+are also supported — see the
+[filter predicates reference](https://github.com/backstage/backstage/blob/master/packages/filter-predicates/README.md)
+for the full grammar.
+
+### Replacing the default `TemplateCard`
+
+The `TemplateCard` exported from `@backstage/plugin-scaffolder-react/alpha`
+is a swappable component. Apps can replace it by registering a
+`SwappableComponentBlueprint` extension against `TemplateCard.ref`:
+
+```tsx
+// packages/app/src/modules/appModuleScaffolder.tsx
+import { createFrontendModule } from '@backstage/frontend-plugin-api';
+import { SwappableComponentBlueprint } from '@backstage/plugin-app-react';
+import { TemplateCard } from '@backstage/plugin-scaffolder-react/alpha';
+import { MyTemplateCard } from './MyTemplateCard';
+
+export const appModuleScaffolder = createFrontendModule({
+  pluginId: 'app',
+  extensions: [
+    SwappableComponentBlueprint.make({
+      name: 'scaffolder-template-card',
+      params: defineParams =>
+        defineParams({
+          component: TemplateCard,
+          loader: async () => MyTemplateCard,
+        }),
+    }),
+  ],
+});
+```
+
+Wire the module into your app by adding `appModuleScaffolder` to the
+`features` array of `createApp` in `packages/app/src/App.tsx`.
+
+`MyTemplateCard` receives the standard `TemplateCardProps`
+(`{ template, additionalLinks?, onSelected? }`). The example app under
+`packages/app/src/modules/BuiTemplateCard.tsx` shows a Backstage UI (BUI)
+implementation you can use as a starting point.

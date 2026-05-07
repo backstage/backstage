@@ -1,0 +1,28 @@
+.templateCard {
+  height: 212px;
+  display: flex;
+}
+
+.templateName {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+}
+
+.templateDescription {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+}
+
+.templateBody {
+  display: flex;
+  flex: 1;
+  gap: var(--bui-space-3);
+  flex-direction: column;
+  justify-content: space-between;
+}

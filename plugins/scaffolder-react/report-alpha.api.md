@@ -32,6 +32,7 @@ import { ScaffolderStep } from '@backstage/plugin-scaffolder-react';
 import { ScaffolderTaskOutput } from '@backstage/plugin-scaffolder-react';
 import { SetStateAction } from 'react';
 import { StyleRules } from '@material-ui/core/styles/withStyles';
+import { SwappableComponentRef } from '@backstage/frontend-plugin-api';
 import { TaskStep } from '@backstage/plugin-scaffolder-common';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateGroupFilter } from '@backstage/plugin-scaffolder-react';
@@ -75,6 +76,12 @@ export function createFormField<
   TReturnValue extends z.ZodType,
   TUiOptions extends z.ZodType,
 >(opts: FormFieldExtensionData<TReturnValue, TUiOptions>): FormField;
+
+// @alpha
+export const createGroupsWithOther: (
+  groups: TemplateGroupFilter[],
+  otherTitle: string,
+) => TemplateGroupFilter[];
 
 // @alpha
 export function createScaffolderFormDecorator<
@@ -389,7 +396,10 @@ export interface TaskStepsProps {
 }
 
 // @alpha
-export const TemplateCard: (props: TemplateCardProps) => JSX_2.Element;
+export const TemplateCard: {
+  (props: TemplateCardProps): JSX.Element | null;
+  ref: SwappableComponentRef<TemplateCardProps, TemplateCardProps>;
+};
 
 // @alpha
 export interface TemplateCardProps {
