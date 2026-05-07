@@ -23,7 +23,7 @@ export function resolveNotificationLink(
   baseUrl: string,
 ): string | undefined {
   if (!link) return undefined;
-  const stripLeadingSlash = (s: string) => s.replace(/^\//, '');
+  const stripLeadingSlash = (s: string) => s.replace(/^\/+/, '');
   const ensureTrailingSlash = (s: string) => s.replace(/\/?$/, '/');
   try {
     return new URL(
