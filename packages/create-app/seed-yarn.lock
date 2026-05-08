@@ -80,3 +80,12 @@ fast-xml-builder@*:
   version "7.5.5"
   resolved "https://registry.yarnpkg.com/protobufjs/-/protobufjs-7.5.5.tgz#b7089ca4410374c75150baf277353ef76db69f96"
   integrity sha512-3wY1AxV+VBNW8Yypfd1yQY9pXnqTAN+KwQxL8iYm3/BjKYMNg4i0owhEe26PWDOMaIrzeeF98Lqd5NGz4omiIg==
+
+// jest@30.4.0 introduced a runtime rewrite that breaks the CachingJestRuntime
+// used for frontend tests. ESM-only dependencies (like d3-zoom) fail to load
+// because the new runtime bypasses the SWC transform for type:module packages.
+// Pin to 30.2.0 until the custom runtime is updated to support jest 30.4+.
+jest@^30.2.0:
+  version "30.2.0"
+  resolved "https://registry.yarnpkg.com/jest/-/jest-30.2.0.tgz#9f0a71e734af968f26952b5ae4b724af82681630"
+  integrity sha512-F26gjC0yWN8uAA5m5Ss8ZQf5nDHWGlN/xWZIh8S5SRbsEKBovwZhxGd6LJlbZYxBgCYOtreSUyb8hpXyGC5O4A==
