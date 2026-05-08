@@ -19,6 +19,7 @@ import { renderHook } from '@testing-library/react';
 import {
   useEntity,
   useAsyncEntity,
+  useEntityOptional,
   EntityProvider,
   AsyncEntityProvider,
 } from './useEntity';
@@ -169,5 +170,52 @@ describe('useAsyncEntity', () => {
     expect(
       analyticsSpy.captureEvent.mock.calls[0][0].context,
     ).not.toHaveProperty('entityRef');
+  });
+});
+
+describe('useEntityOptional', () => {
+  it('should return undefined when called outside of an EntityProvider', () => {
+    const { result } = renderHook(() => useEntityOptional());
+    expect(result.current).toBeUndefined();
+  });
+
+  it('should return undefined when EntityProvider has no entity', () => {
+    const { result } = renderHook(() => useEntityOptional(), {
+      wrapper: ({ children }: PropsWithChildren<{}>) => (
+        <EntityProvider children={children} />
+      ),
+    });
+    expect(result.current).toBeUndefined();
+  });
+
+  it('should return undefined when AsyncEntityProvider has no entity', () => {
+    const { result } = renderHook(() => useEntityOptional(), {
+      wrapper: ({ children }: PropsWithChildren<{}>) => (
+        <AsyncEntityProvider loading={false} children={children} />
+      ),
+    });
+    expect(result.current).toBeUndefined();
+  });
+
+  it('should return the entity when EntityProvider has one', () => {
+    const { result } = renderHook(() => useEntityOptional(), {
+      wrapper: ({ children }: PropsWithChildren<{}>) => (
+        <EntityProvider entity={entity} children={children} />
+      ),
+    });
+    expect(result.current).toBe(entity);
+  });
+
+  it('should return the entity when AsyncEntityProvider has one', () => {
+    const { result } = renderHook(() => useEntityOptional(), {
+      wrapper: ({ children }: PropsWithChildren<{}>) => (
+        <AsyncEntityProvider
+          loading={false}
+          entity={entity}
+          children={children}
+        />
+      ),
+    });
+    expect(result.current).toBe(entity);
   });
 });
