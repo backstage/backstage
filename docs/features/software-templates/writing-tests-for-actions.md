@@ -29,14 +29,17 @@ expect(mockContext.output).toHaveBeenCalledWith(
 
 ### Mocking a Workspace within the Context object
 
-One thing to be aware about: if you would like to call `createMockActionContext` inside `it`,
-you have to provide a `workspacePath`. By default, `createMockActionContext` uses
-`import { createMockDirectory } from '@backstage/backend-test-utils';` to create it for you. You can use the code below to customize the `workspacePath` without using the default workspace of the `createMockActionContext` function.
+If you would like to call `createMockActionContext` inside `it`, you have to
+provide a `workspacePath`. By default, `createMockActionContext` uses
+`createMockDirectory` from `@backstage/backend-test-utils` to create one for
+you. You can use the code below to customize the `workspacePath` without using
+the default workspace of the `createMockActionContext` function.
 
 ```typescript
 describe('github:autolinks:create', async () => {
-  const workspacePath = createMockDirectory().resolve('workspace');
-  // ...
+  const mockDir = createMockDirectory();
+
+  beforeEach(mockDir.clear);
 
   it('should call the githubApis for creating alphanumeric autolink reference', async () => {
     // ...
@@ -47,13 +50,47 @@ describe('github:autolinks:create', async () => {
           keyPrefix: 'TICKET-',
           urlTemplate: 'https://example.com/TICKET?query=<num>',
         },
-        workspacePath,
+        workspacePath: mockDir.resolve('workspace'),
       }),
     );
     //...
   });
 });
 ```
+
+### How many mock directories to create
+
+A test file should typically create only one `createMockDirectory` and organize
+different fixtures as folders inside it. Use `setContent` or `addContent` to
+set up the data each individual test needs, and call `mockDir.clear` in
+`beforeEach` to reset between tests.
+
+```typescript
+describe('my-action', () => {
+  const mockDir = createMockDirectory();
+
+  beforeEach(mockDir.clear);
+
+  it('should handle JSON input', async () => {
+    mockDir.setContent({
+      'workspace/data.json': '{ "key": "value" }',
+    });
+    // ... use mockDir.resolve('workspace') as workspacePath
+  });
+
+  it('should handle YAML input', async () => {
+    mockDir.setContent({
+      'workspace/data.yaml': 'key: value',
+    });
+    // ... use mockDir.resolve('workspace') as workspacePath
+  });
+});
+```
+
+Multiple `createMockDirectory` calls are fine when a test file genuinely needs
+distinct directory categories at the same time, for example a source directory
+and an output directory. Do not call `createMockDirectory` once per test case —
+this creates unnecessary temporary directories and slows down the test suite.
 
 ## Mocking a Config Core Service
 

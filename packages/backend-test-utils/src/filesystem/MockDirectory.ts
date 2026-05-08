@@ -403,17 +403,68 @@ registerTestHooks();
  * within a `describe` block. It will call `afterAll` to make sure that the mock directory
  * is removed after the tests have run.
  *
+ * A test file should almost always create a single mock directory and organize
+ * different fixtures as sub-folders inside it. Use `setContent` or `addContent`
+ * with nested objects to set up the data needed by each individual test. Never
+ * call `createMockDirectory` once per test case — doing so creates a new
+ * temporary directory for every test, which is wasteful and slow. Instead,
+ * call `setContent` at the start of each test to reset the directory.
+ *
+ * Multiple `createMockDirectory` calls should be reserved for the rare test
+ * file that genuinely needs distinct categories of directories at the same
+ * time, for example a source directory and a separate output directory.
+ *
  * @example
+ *
+ * Recommended: one mock directory with per-test content.
+ *
  * ```ts
  * describe('MySubject', () => {
  *   const mockDir = createMockDirectory();
  *
- *   beforeEach(mockDir.clear);
+ *   it('should read a simple file', () => {
+ *     mockDir.setContent({
+ *       'workspace/file.txt': 'hello',
+ *     });
+ *     // ... test using mockDir.resolve('workspace') ...
+ *   });
  *
- *   it('should work', () => {
- *     // ... use mockDir
- *   })
- * })
+ *   it('should read files', () => {
+ *     mockDir.setContent({
+ *       'input/data.json': '{}',
+ *     });
+ *     // ... test reading
+ *   });
+ *
+ *   it('should write files', () => {
+ *     mockDir.setContent({
+ *       'workspace/existing.txt': 'hello',
+ *     });
+ *     // ... test writing
+ *   });
+ * });
+ * ```
+ *
+ * @example
+ *
+ * Acceptable: separate directories for genuinely distinct categories.
+ *
+ * ```ts
+ * describe('copy', () => {
+ *   const sourceDir = createMockDirectory();
+ *   const outputDir = createMockDirectory();
+ *
+ *   beforeEach(() => {
+ *     sourceDir.clear();
+ *     outputDir.clear();
+ *   });
+ *
+ *   it('should copy files', () => {
+ *     sourceDir.setContent({ 'a.txt': 'hello' });
+ *     copyFiles(sourceDir.path, outputDir.path);
+ *     expect(outputDir.content()).toEqual({ 'a.txt': 'hello' });
+ *   });
+ * });
  * ```
  */
 export function createMockDirectory(
