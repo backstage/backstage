@@ -38,7 +38,7 @@ import {
   readProviderConfigs,
 } from './GithubEntityProviderConfig';
 import {
-  createGraphqlClient,
+  createOctokit,
   getOrganizationRepositories,
   getOrganizationRepository,
   RepositoryResponse,
@@ -241,17 +241,14 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
       .filter(Boolean) as string[];
   }
 
-  private async createGraphqlClient(organization: string) {
+  private createOctokitForOrg(organization: string) {
     const host = this.integration.host;
     const orgUrl = `https://${host}/${organization}`;
 
-    const { headers } = await this.githubCredentialsProvider.getCredentials({
-      url: orgUrl,
-    });
-
-    return createGraphqlClient({
-      headers,
-      baseUrl: this.integration.apiBaseUrl!,
+    return createOctokit({
+      baseUrl: this.integration.apiBaseUrl,
+      orgUrl,
+      credentialsProvider: this.githubCredentialsProvider,
       logger: this.logger,
     });
   }
@@ -263,7 +260,7 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
 
     let repositories: Repository[] = [];
     for (const organization of organizations) {
-      const client = await this.createGraphqlClient(organization);
+      const client = this.createOctokitForOrg(organization);
 
       const pageSizes: GithubPageSizes = {
         ...DEFAULT_PAGE_SIZES,
@@ -659,7 +656,7 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
     if (this.config.validateLocationsExist) {
       const organization = repository.organization;
       const catalogPath = this.config.catalogPath;
-      const client = await this.createGraphqlClient(organization);
+      const client = this.createOctokitForOrg(organization);
 
       const repositoryFromGithub = await getOrganizationRepository(
         client,

@@ -265,18 +265,16 @@ export interface Config {
             orgs?: string[];
 
             /**
-             * (Optional) Only for GitHub Enterprise. Whether to exclude suspended users when querying organization users.
+             * (Optional) Whether to skip the suspended user check. By default,
+             * suspended users are automatically excluded on GitHub Enterprise
+             * instances using the REST API (without requiring site_admin scope).
+             * Set to `true` to disable the check if needed.
+             * Be aware that if this check is disabled, suspended
+             * users will appear in the catalog with no way of distinguishing
+             * them from active valid users.
              * Default: `false`.
              */
-            excludeSuspendedUsers?: boolean;
-
-            /**
-             * (Optional) When set to true alongside `excludeSuspendedUsers`, use the GitHub REST API
-             * to check for suspended users instead of the GraphQL `suspendedAt` field.
-             * REST responses are cached using conditional HTTP requests to minimize rate limit usage.
-             * Default: `false`.
-             */
-            experimental_checkForSuspendedUsersWithRest?: boolean;
+            dangerouslySkipSuspendedUserCheck?: boolean;
 
             /**
              * (Optional) Configuration for the default user transformer.
@@ -348,18 +346,16 @@ export interface Config {
             orgs?: string[];
 
             /**
-             * (Optional) Only for GitHub Enterprise. Whether to exclude suspended users when querying organization users.
+             * (Optional) Whether to skip the suspended user check. By default,
+             * suspended users are automatically excluded on GitHub Enterprise
+             * instances using the REST API (without requiring site_admin scope).
+             * Set to `true` to disable the check if needed.
+             * Be aware that if this check is disabled, suspended
+             * users will appear in the catalog with no way of distinguishing
+             * them from active valid users.
              * Default: `false`.
              */
-            excludeSuspendedUsers?: boolean;
-
-            /**
-             * (Optional) When set to true alongside `excludeSuspendedUsers`, use the GitHub REST API
-             * to check for suspended users instead of the GraphQL `suspendedAt` field.
-             * REST responses are cached using conditional HTTP requests to minimize rate limit usage.
-             * Default: `false`.
-             */
-            experimental_checkForSuspendedUsersWithRest?: boolean;
+            dangerouslySkipSuspendedUserCheck?: boolean;
 
             /**
              * (Optional) Configuration for the default user transformer.

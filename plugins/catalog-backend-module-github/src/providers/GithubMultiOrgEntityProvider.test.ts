@@ -22,23 +22,17 @@ import {
   DefaultEventsService,
   EventsService,
 } from '@backstage/plugin-events-node';
-import { graphql } from '@octokit/graphql';
 import {
   GithubMultiOrgEntityProvider,
   withLocations,
 } from './GithubMultiOrgEntityProvider';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { mockServices } from '@backstage/backend-test-utils';
-import {
-  createRestClient,
-  isGitHubEnterprise,
-  isSuspended,
-} from '../lib/github';
+import { createOctokit, isGitHubEnterprise, isSuspended } from '../lib/github';
 
-jest.mock('@octokit/graphql');
 jest.mock('../lib/github', () => ({
   ...jest.requireActual('../lib/github'),
-  createRestClient: jest.fn(),
+  createOctokit: jest.fn(),
   isGitHubEnterprise: jest.fn(),
   isSuspended: jest.fn(),
 }));
@@ -64,7 +58,13 @@ describe('GithubMultiOrgEntityProvider', () => {
 
     beforeEach(() => {
       mockClient = jest.fn();
-      (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+      (createOctokit as jest.Mock).mockReturnValue({
+        graphql: mockClient,
+        request: jest.fn().mockResolvedValue({ headers: {} }),
+        auth: jest
+          .fn()
+          .mockResolvedValue({ type: 'app', headers: { token: 'blah' } }),
+      });
 
       entityProviderConnection = {
         applyMutation: jest.fn(),
@@ -93,6 +93,7 @@ describe('GithubMultiOrgEntityProvider', () => {
         githubUrl: 'https://github.com',
         logger,
         orgs: ['orgA', 'orgB'],
+        cache: mockServices.cache.mock(),
       });
 
       await entityProvider.connect(entityProviderConnection);
@@ -211,16 +212,26 @@ describe('GithubMultiOrgEntityProvider', () => {
           },
         });
 
-      (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+      (createOctokit as jest.Mock).mockReturnValue({
+        graphql: mockClient,
+        request: jest.fn().mockResolvedValue({ headers: {} }),
+        auth: jest
+          .fn()
+          .mockResolvedValue({ type: 'app', headers: { token: 'blah' } }),
+      });
 
       await entityProvider.read();
 
-      expect(mockGetCredentials).toHaveBeenCalledWith({
-        url: 'https://github.com/orgA',
-      });
-      expect(mockGetCredentials).toHaveBeenCalledWith({
-        url: 'https://github.com/orgB',
-      });
+      expect(createOctokit).toHaveBeenCalledWith(
+        expect.objectContaining({
+          orgUrl: 'https://github.com/orgA',
+        }),
+      );
+      expect(createOctokit).toHaveBeenCalledWith(
+        expect.objectContaining({
+          orgUrl: 'https://github.com/orgB',
+        }),
+      );
 
       expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
         entities: expect.arrayContaining([
@@ -378,6 +389,7 @@ describe('GithubMultiOrgEntityProvider', () => {
         githubUrl: 'https://github.com',
         logger,
         orgs: ['orgA', 'orgB'],
+        cache: mockServices.cache.mock(),
       });
 
       await entityProvider.connect(entityProviderConnection);
@@ -511,7 +523,13 @@ describe('GithubMultiOrgEntityProvider', () => {
           },
         });
 
-      (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+      (createOctokit as jest.Mock).mockReturnValue({
+        graphql: mockClient,
+        request: jest.fn().mockResolvedValue({ headers: {} }),
+        auth: jest
+          .fn()
+          .mockResolvedValue({ type: 'app', headers: { token: 'blah' } }),
+      });
 
       const githubCredentialsProvider: GithubCredentialsProvider = {
         getCredentials: mockGetCredentials,
@@ -523,18 +541,23 @@ describe('GithubMultiOrgEntityProvider', () => {
         githubCredentialsProvider,
         githubUrl: 'https://github.com',
         logger,
+        cache: mockServices.cache.mock(),
       });
 
       entityProvider.connect(entityProviderConnection);
 
       await entityProvider.read();
 
-      expect(mockGetCredentials).toHaveBeenCalledWith({
-        url: 'https://github.com/orgC',
-      });
-      expect(mockGetCredentials).toHaveBeenCalledWith({
-        url: 'https://github.com/orgD',
-      });
+      expect(createOctokit).toHaveBeenCalledWith(
+        expect.objectContaining({
+          orgUrl: 'https://github.com/orgC',
+        }),
+      );
+      expect(createOctokit).toHaveBeenCalledWith(
+        expect.objectContaining({
+          orgUrl: 'https://github.com/orgD',
+        }),
+      );
 
       expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
         entities: expect.arrayContaining([
@@ -797,7 +820,13 @@ describe('GithubMultiOrgEntityProvider', () => {
           },
         });
 
-      (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+      (createOctokit as jest.Mock).mockReturnValue({
+        graphql: mockClient,
+        request: jest.fn().mockResolvedValue({ headers: {} }),
+        auth: jest
+          .fn()
+          .mockResolvedValue({ type: 'app', headers: { token: 'blah' } }),
+      });
 
       entityProvider = new GithubMultiOrgEntityProvider({
         id: 'my-id',
@@ -809,6 +838,7 @@ describe('GithubMultiOrgEntityProvider', () => {
         logger,
         orgs: ['orgA', 'orgB'],
         alwaysUseDefaultNamespace: true,
+        cache: mockServices.cache.mock(),
       });
 
       await entityProvider.connect(entityProviderConnection);
@@ -968,6 +998,7 @@ describe('GithubMultiOrgEntityProvider', () => {
         githubUrl: 'https://github.com',
         logger,
         orgs: ['orgA', 'orgB'],
+        cache: mockServices.cache.mock(),
       });
 
       await entityProvider.connect(entityProviderConnection);
@@ -1063,6 +1094,14 @@ describe('GithubMultiOrgEntityProvider', () => {
     };
 
     beforeEach(async () => {
+      (createOctokit as jest.Mock).mockReturnValue({
+        graphql: jest.fn(),
+        request: jest.fn().mockResolvedValue({ headers: {} }),
+        auth: jest
+          .fn()
+          .mockResolvedValue({ type: 'app', headers: { token: 'blah' } }),
+      });
+
       const logger = mockServices.logger.mock();
       events = DefaultEventsService.create({ logger });
       const config = new ConfigReader({
@@ -1091,6 +1130,7 @@ describe('GithubMultiOrgEntityProvider', () => {
         githubUrl: 'https://github.com',
         logger,
         orgs: ['orgA', 'orgB'],
+        cache: mockServices.cache.mock(),
       });
 
       await entityProvider.connect(entityProviderConnection);
@@ -1232,7 +1272,13 @@ describe('GithubMultiOrgEntityProvider', () => {
             },
           });
 
-        (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+        (createOctokit as jest.Mock).mockReturnValue({
+          graphql: mockClient,
+          request: jest.fn().mockResolvedValue({ headers: {} }),
+          auth: jest
+            .fn()
+            .mockResolvedValue({ type: 'app', headers: { token: 'blah' } }),
+        });
 
         await events.publish({
           topic: 'github.installation',
@@ -1365,7 +1411,13 @@ describe('GithubMultiOrgEntityProvider', () => {
             },
           });
 
-        (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+        (createOctokit as jest.Mock).mockReturnValue({
+          graphql: mockClient,
+          request: jest.fn().mockResolvedValue({ headers: {} }),
+          auth: jest
+            .fn()
+            .mockResolvedValue({ type: 'app', headers: { token: 'blah' } }),
+        });
 
         await events.publish({
           topic: 'github.organization',
@@ -1437,7 +1489,13 @@ describe('GithubMultiOrgEntityProvider', () => {
           },
         });
 
-        (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+        (createOctokit as jest.Mock).mockReturnValue({
+          graphql: mockClient,
+          request: jest.fn().mockResolvedValue({ headers: {} }),
+          auth: jest
+            .fn()
+            .mockResolvedValue({ type: 'app', headers: { token: 'blah' } }),
+        });
 
         await events.publish({
           topic: 'github.organization',
@@ -1534,7 +1592,13 @@ describe('GithubMultiOrgEntityProvider', () => {
             },
           });
 
-        (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+        (createOctokit as jest.Mock).mockReturnValue({
+          graphql: mockClient,
+          request: jest.fn().mockResolvedValue({ headers: {} }),
+          auth: jest
+            .fn()
+            .mockResolvedValue({ type: 'app', headers: { token: 'blah' } }),
+        });
 
         await events.publish({
           topic: 'github.organization',
@@ -1863,7 +1927,13 @@ describe('GithubMultiOrgEntityProvider', () => {
             },
           });
 
-        (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+        (createOctokit as jest.Mock).mockReturnValue({
+          graphql: mockClient,
+          request: jest.fn().mockResolvedValue({ headers: {} }),
+          auth: jest
+            .fn()
+            .mockResolvedValue({ type: 'app', headers: { token: 'blah' } }),
+        });
 
         await events.publish({
           topic: 'github.team',
@@ -2058,7 +2128,13 @@ describe('GithubMultiOrgEntityProvider', () => {
             },
           });
 
-        (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+        (createOctokit as jest.Mock).mockReturnValue({
+          graphql: mockClient,
+          request: jest.fn().mockResolvedValue({ headers: {} }),
+          auth: jest
+            .fn()
+            .mockResolvedValue({ type: 'app', headers: { token: 'blah' } }),
+        });
 
         await events.publish({
           topic: 'github.team',
@@ -2237,7 +2313,13 @@ describe('GithubMultiOrgEntityProvider', () => {
             },
           });
 
-        (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+        (createOctokit as jest.Mock).mockReturnValue({
+          graphql: mockClient,
+          request: jest.fn().mockResolvedValue({ headers: {} }),
+          auth: jest
+            .fn()
+            .mockResolvedValue({ type: 'app', headers: { token: 'blah' } }),
+        });
 
         await events.publish({
           topic: 'github.membership',
@@ -2395,7 +2477,13 @@ describe('GithubMultiOrgEntityProvider', () => {
             },
           });
 
-        (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+        (createOctokit as jest.Mock).mockReturnValue({
+          graphql: mockClient,
+          request: jest.fn().mockResolvedValue({ headers: {} }),
+          auth: jest
+            .fn()
+            .mockResolvedValue({ type: 'app', headers: { token: 'blah' } }),
+        });
 
         await events.publish({
           topic: 'github.membership',
@@ -2486,6 +2574,7 @@ describe('GithubMultiOrgEntityProvider', () => {
     describe('suspended user handling', () => {
       let suspendedEvents: EventsService;
       let suspendedConnection: EntityProviderConnection;
+      let suspendedMockClient: jest.Mock;
 
       beforeEach(async () => {
         const logger = mockServices.logger.mock();
@@ -2507,7 +2596,14 @@ describe('GithubMultiOrgEntityProvider', () => {
           type: 'app',
         });
 
-        (createRestClient as jest.Mock).mockReturnValue({});
+        suspendedMockClient = jest.fn();
+        (createOctokit as jest.Mock).mockReturnValue({
+          graphql: suspendedMockClient,
+          request: jest.fn().mockResolvedValue({ headers: {} }),
+          auth: jest
+            .fn()
+            .mockResolvedValue({ type: 'app', headers: { token: 'blah' } }),
+        });
         (isGitHubEnterprise as jest.Mock).mockResolvedValue(true);
         (isSuspended as jest.Mock).mockResolvedValue(true);
 
@@ -2518,8 +2614,6 @@ describe('GithubMultiOrgEntityProvider', () => {
           githubUrl: 'https://github.com',
           logger,
           orgs: ['orgA', 'orgB'],
-          excludeSuspendedUsers: true,
-          experimental_checkForSuspendedUsersWithRest: true,
           cache: mockServices.cache.mock(),
         });
 
@@ -2551,9 +2645,7 @@ describe('GithubMultiOrgEntityProvider', () => {
       });
 
       it('should exclude suspended user on membership event', async () => {
-        const mockClient = jest.fn();
-
-        mockClient.mockResolvedValueOnce({
+        suspendedMockClient.mockResolvedValueOnce({
           organization: {
             team: {
               slug: 'team',
@@ -2569,8 +2661,6 @@ describe('GithubMultiOrgEntityProvider', () => {
             },
           },
         });
-
-        (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
 
         await suspendedEvents.publish({
           topic: 'github.membership',

@@ -25,21 +25,13 @@ import {
   DefaultEventsService,
   EventParams,
 } from '@backstage/plugin-events-node';
-import { graphql } from '@octokit/graphql';
-import {
-  createGraphqlClient,
-  createRestClient,
-  isGitHubEnterprise,
-  isSuspended,
-} from '../lib/github';
+import { createOctokit, isGitHubEnterprise, isSuspended } from '../lib/github';
 import { withLocations } from '../lib/withLocations';
 import { GithubOrgEntityProvider } from './GithubOrgEntityProvider';
 
-jest.mock('@octokit/graphql');
 jest.mock('../lib/github', () => ({
   ...jest.requireActual('../lib/github'),
-  createGraphqlClient: jest.fn(),
-  createRestClient: jest.fn(),
+  createOctokit: jest.fn(),
   isGitHubEnterprise: jest.fn(),
   isSuspended: jest.fn(),
 }));
@@ -47,12 +39,13 @@ jest.mock('../lib/github', () => ({
 describe('GithubOrgEntityProvider', () => {
   describe('read', () => {
     let mockClient: any;
+    let mockOctokit: any;
     let entityProviderConnection: EntityProviderConnection;
     let entityProvider: GithubOrgEntityProvider;
 
     const setupMocks = (response: ((...args: any) => any) | undefined) => {
       mockClient = jest.fn().mockImplementation(response);
-      (createGraphqlClient as jest.Mock).mockReturnValue(mockClient);
+      mockOctokit.graphql = mockClient;
     };
 
     beforeEach(() => {
@@ -60,6 +53,15 @@ describe('GithubOrgEntityProvider', () => {
         applyMutation: jest.fn(),
         refresh: jest.fn(),
       };
+
+      mockOctokit = {
+        graphql: jest.fn(),
+        request: jest.fn().mockResolvedValue({ headers: {} }),
+        auth: jest
+          .fn()
+          .mockResolvedValue({ type: 'app', headers: { token: 'blah' } }),
+      };
+      (createOctokit as jest.Mock).mockReturnValue(mockOctokit);
 
       const logger = mockServices.logger.mock();
       const gitHubConfig = {
@@ -81,6 +83,7 @@ describe('GithubOrgEntityProvider', () => {
         orgUrl: 'https://github.com/backstage',
         gitHubConfig,
         logger,
+        cache: mockServices.cache.mock(),
       });
 
       entityProvider.connect(entityProviderConnection);
@@ -276,6 +279,16 @@ describe('GithubOrgEntityProvider', () => {
   });
 
   describe('receiving events from github', () => {
+    beforeEach(() => {
+      (createOctokit as jest.Mock).mockReturnValue({
+        graphql: jest.fn(),
+        request: jest.fn().mockResolvedValue({ headers: {} }),
+        auth: jest
+          .fn()
+          .mockResolvedValue({ type: 'app', headers: { token: 'blah' } }),
+      });
+    });
+
     afterEach(() => jest.resetAllMocks());
 
     it('should apply delta added on receive a new member in the organization', async () => {
@@ -306,6 +319,7 @@ describe('GithubOrgEntityProvider', () => {
         orgUrl: 'https://github.com/backstage',
         gitHubConfig,
         logger,
+        cache: mockServices.cache.mock(),
       });
 
       await entityProvider.connect(entityProviderConnection);
@@ -395,6 +409,7 @@ describe('GithubOrgEntityProvider', () => {
         orgUrl: 'https://github.com/backstage',
         gitHubConfig,
         logger,
+        cache: mockServices.cache.mock(),
       });
 
       await entityProvider.connect(entityProviderConnection);
@@ -456,6 +471,153 @@ describe('GithubOrgEntityProvider', () => {
       });
     });
 
+    it('should skip adding a suspended user on member_added event', async () => {
+      const entityProviderConnection: EntityProviderConnection = {
+        applyMutation: jest.fn(),
+        refresh: jest.fn(),
+      };
+
+      const logger = mockServices.logger.mock();
+      const events = DefaultEventsService.create({ logger });
+      const gitHubConfig: GithubIntegrationConfig = {
+        host: 'github.com',
+      };
+
+      const mockGetCredentials = jest.fn().mockReturnValue({
+        headers: { token: 'blah' },
+        type: 'app',
+        token: 'blah',
+      });
+
+      const githubCredentialsProvider: GithubCredentialsProvider = {
+        getCredentials: mockGetCredentials,
+      };
+
+      (createOctokit as jest.Mock).mockReturnValue({
+        graphql: jest.fn(),
+        request: jest.fn().mockResolvedValue({ headers: {} }),
+        auth: jest
+          .fn()
+          .mockResolvedValue({ type: 'app', headers: { token: 'blah' } }),
+      });
+      (isGitHubEnterprise as jest.Mock).mockResolvedValue(true);
+      (isSuspended as jest.Mock).mockResolvedValue(true);
+
+      const entityProvider = new GithubOrgEntityProvider({
+        events,
+        id: 'my-id',
+        githubCredentialsProvider,
+        orgUrl: 'https://github.com/backstage',
+        gitHubConfig,
+        logger,
+        cache: mockServices.cache.mock(),
+      });
+
+      await entityProvider.connect(entityProviderConnection);
+
+      const event: EventParams = {
+        topic: 'github.organization',
+        eventPayload: {
+          action: 'member_added',
+          membership: {
+            user: {
+              name: 'githubuser',
+              login: 'githubuser',
+              node_id: 'githubuserId',
+              avatar_url: 'https://avatars.githubusercontent.com/u/83820368',
+              email: 'user1@test.com',
+            },
+          },
+          organization: {
+            login: 'test-org',
+          },
+        },
+      };
+      await events.publish(event);
+
+      expect(entityProviderConnection.applyMutation).not.toHaveBeenCalled();
+      expect(isSuspended).toHaveBeenCalledWith(
+        'githubuser',
+        expect.anything(),
+        { org: 'test-org' },
+      );
+    });
+
+    it('should add suspended user on member_added when dangerouslySkipSuspendedUserCheck is set', async () => {
+      const entityProviderConnection: EntityProviderConnection = {
+        applyMutation: jest.fn(),
+        refresh: jest.fn(),
+      };
+
+      const logger = mockServices.logger.mock();
+      const events = DefaultEventsService.create({ logger });
+      const gitHubConfig: GithubIntegrationConfig = {
+        host: 'github.com',
+      };
+
+      const mockGetCredentials = jest.fn().mockReturnValue({
+        headers: { token: 'blah' },
+        type: 'app',
+        token: 'blah',
+      });
+
+      const githubCredentialsProvider: GithubCredentialsProvider = {
+        getCredentials: mockGetCredentials,
+      };
+
+      (isGitHubEnterprise as jest.Mock).mockResolvedValue(true);
+      (isSuspended as jest.Mock).mockResolvedValue(true);
+
+      const entityProvider = new GithubOrgEntityProvider({
+        events,
+        id: 'my-id',
+        githubCredentialsProvider,
+        orgUrl: 'https://github.com/backstage',
+        gitHubConfig,
+        logger,
+        dangerouslySkipSuspendedUserCheck: true,
+        cache: mockServices.cache.mock(),
+      });
+
+      await entityProvider.connect(entityProviderConnection);
+
+      const event: EventParams = {
+        topic: 'github.organization',
+        eventPayload: {
+          action: 'member_added',
+          membership: {
+            user: {
+              name: 'githubuser',
+              login: 'githubuser',
+              node_id: 'githubuserId',
+              avatar_url: 'https://avatars.githubusercontent.com/u/83820368',
+              email: 'user1@test.com',
+            },
+          },
+          organization: {
+            login: 'test-org',
+          },
+        },
+      };
+      await events.publish(event);
+
+      expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
+      expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+        type: 'delta',
+        added: [
+          {
+            locationKey: 'github-org-provider:my-id',
+            entity: expect.objectContaining({
+              kind: 'User',
+              metadata: expect.objectContaining({ name: 'githubuser' }),
+            }),
+          },
+        ],
+        removed: [],
+      });
+      expect(isSuspended).not.toHaveBeenCalled();
+    });
+
     it('should apply delta added on receive a created team', async () => {
       const entityProviderConnection: EntityProviderConnection = {
         applyMutation: jest.fn(),
@@ -484,6 +646,7 @@ describe('GithubOrgEntityProvider', () => {
         orgUrl: 'https://github.com/backstage',
         gitHubConfig,
         logger,
+        cache: mockServices.cache.mock(),
       });
 
       entityProvider.connect(entityProviderConnection);
@@ -577,6 +740,7 @@ describe('GithubOrgEntityProvider', () => {
         orgUrl: 'https://github.com/backstage',
         gitHubConfig,
         logger,
+        cache: mockServices.cache.mock(),
       });
 
       entityProvider.connect(entityProviderConnection);
@@ -666,6 +830,7 @@ describe('GithubOrgEntityProvider', () => {
         orgUrl: 'https://github.com/backstage',
         gitHubConfig,
         logger,
+        cache: mockServices.cache.mock(),
       });
 
       await entityProvider.connect(entityProviderConnection);
@@ -753,15 +918,6 @@ describe('GithubOrgEntityProvider', () => {
         getCredentials: mockGetCredentials,
       };
 
-      const entityProvider = new GithubOrgEntityProvider({
-        events,
-        id: 'my-id',
-        githubCredentialsProvider,
-        orgUrl: 'https://github.com/backstage',
-        gitHubConfig,
-        logger,
-      });
-
       const mockClient = jest.fn();
 
       mockClient
@@ -836,7 +992,23 @@ describe('GithubOrgEntityProvider', () => {
           },
         });
 
-      (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+      (createOctokit as jest.Mock).mockReturnValue({
+        graphql: mockClient,
+        request: jest.fn().mockResolvedValue({ headers: {} }),
+        auth: jest
+          .fn()
+          .mockResolvedValue({ type: 'app', headers: { token: 'blah' } }),
+      });
+
+      const entityProvider = new GithubOrgEntityProvider({
+        events,
+        id: 'my-id',
+        githubCredentialsProvider,
+        orgUrl: 'https://github.com/backstage',
+        gitHubConfig,
+        logger,
+        cache: mockServices.cache.mock(),
+      });
 
       await entityProvider.connect(entityProviderConnection);
 
@@ -1011,15 +1183,6 @@ describe('GithubOrgEntityProvider', () => {
         getCredentials: mockGetCredentials,
       };
 
-      const entityProvider = new GithubOrgEntityProvider({
-        events,
-        id: 'my-id',
-        githubCredentialsProvider,
-        orgUrl: 'https://github.com/backstage',
-        gitHubConfig,
-        logger,
-      });
-
       const mockClient = jest.fn();
 
       mockClient
@@ -1065,7 +1228,24 @@ describe('GithubOrgEntityProvider', () => {
           },
         });
 
-      (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+      (createOctokit as jest.Mock).mockReturnValue({
+        graphql: mockClient,
+        request: jest.fn().mockResolvedValue({ headers: {} }),
+        auth: jest
+          .fn()
+          .mockResolvedValue({ type: 'app', headers: { token: 'blah' } }),
+      });
+
+      const entityProvider = new GithubOrgEntityProvider({
+        events,
+        id: 'my-id',
+        githubCredentialsProvider,
+        orgUrl: 'https://github.com/backstage',
+        gitHubConfig,
+        logger,
+        cache: mockServices.cache.mock(),
+      });
+
       await entityProvider.connect(entityProviderConnection);
 
       const event: EventParams = {
@@ -1181,15 +1361,6 @@ describe('GithubOrgEntityProvider', () => {
         getCredentials: mockGetCredentials,
       };
 
-      const entityProvider = new GithubOrgEntityProvider({
-        events,
-        id: 'my-id',
-        githubCredentialsProvider,
-        orgUrl: 'https://github.com/backstage',
-        gitHubConfig,
-        logger,
-      });
-
       const mockClient = jest.fn();
 
       mockClient
@@ -1224,7 +1395,24 @@ describe('GithubOrgEntityProvider', () => {
           },
         });
 
-      (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+      (createOctokit as jest.Mock).mockReturnValue({
+        graphql: mockClient,
+        request: jest.fn().mockResolvedValue({ headers: {} }),
+        auth: jest
+          .fn()
+          .mockResolvedValue({ type: 'app', headers: { token: 'blah' } }),
+      });
+
+      const entityProvider = new GithubOrgEntityProvider({
+        events,
+        id: 'my-id',
+        githubCredentialsProvider,
+        orgUrl: 'https://github.com/backstage',
+        gitHubConfig,
+        logger,
+        cache: mockServices.cache.mock(),
+      });
+
       await entityProvider.connect(entityProviderConnection);
 
       const event: EventParams = {
@@ -1319,131 +1507,6 @@ describe('GithubOrgEntityProvider', () => {
       });
     });
 
-    it('should skip adding a suspended user on member_added event', async () => {
-      const entityProviderConnection: EntityProviderConnection = {
-        applyMutation: jest.fn(),
-        refresh: jest.fn(),
-      };
-
-      const logger = mockServices.logger.mock();
-      const events = DefaultEventsService.create({ logger });
-      const gitHubConfig: GithubIntegrationConfig = {
-        host: 'github.com',
-      };
-
-      const mockGetCredentials = jest.fn().mockReturnValue({
-        headers: { token: 'blah' },
-        type: 'app',
-        token: 'blah',
-      });
-
-      const githubCredentialsProvider: GithubCredentialsProvider = {
-        getCredentials: mockGetCredentials,
-      };
-
-      (createRestClient as jest.Mock).mockReturnValue({});
-      (isGitHubEnterprise as jest.Mock).mockResolvedValue(true);
-      (isSuspended as jest.Mock).mockResolvedValue(true);
-
-      const entityProvider = new GithubOrgEntityProvider({
-        events,
-        id: 'my-id',
-        githubCredentialsProvider,
-        orgUrl: 'https://github.com/backstage',
-        gitHubConfig,
-        logger,
-        excludeSuspendedUsers: true,
-        experimental_checkForSuspendedUsersWithRest: true,
-        cache: mockServices.cache.mock(),
-      });
-
-      await entityProvider.connect(entityProviderConnection);
-
-      const event: EventParams = {
-        topic: 'github.organization',
-        eventPayload: {
-          action: 'member_added',
-          membership: {
-            user: {
-              name: 'githubuser',
-              login: 'githubuser',
-              node_id: 'githubuserId',
-              avatar_url: 'https://avatars.githubusercontent.com/u/83820368',
-              email: 'user1@test.com',
-            },
-          },
-          organization: {
-            login: 'test-org',
-          },
-        },
-      };
-      await events.publish(event);
-
-      expect(entityProviderConnection.applyMutation).not.toHaveBeenCalled();
-      expect(isSuspended).toHaveBeenCalledWith(
-        'githubuser',
-        expect.anything(),
-        { org: 'test-org' },
-      );
-    });
-
-    it('should not skip member_added when experimental flag is off', async () => {
-      const entityProviderConnection: EntityProviderConnection = {
-        applyMutation: jest.fn(),
-        refresh: jest.fn(),
-      };
-
-      const logger = mockServices.logger.mock();
-      const events = DefaultEventsService.create({ logger });
-      const gitHubConfig: GithubIntegrationConfig = {
-        host: 'github.com',
-      };
-
-      const mockGetCredentials = jest.fn().mockReturnValue({
-        headers: { token: 'blah' },
-        type: 'app',
-      });
-
-      const githubCredentialsProvider: GithubCredentialsProvider = {
-        getCredentials: mockGetCredentials,
-      };
-
-      const entityProvider = new GithubOrgEntityProvider({
-        events,
-        id: 'my-id',
-        githubCredentialsProvider,
-        orgUrl: 'https://github.com/backstage',
-        gitHubConfig,
-        logger,
-        excludeSuspendedUsers: true,
-      });
-
-      await entityProvider.connect(entityProviderConnection);
-
-      const event: EventParams = {
-        topic: 'github.organization',
-        eventPayload: {
-          action: 'member_added',
-          membership: {
-            user: {
-              name: 'githubuser',
-              login: 'githubuser',
-              node_id: 'githubuserId',
-              avatar_url: 'https://avatars.githubusercontent.com/u/83820368',
-              email: 'user1@test.com',
-            },
-          },
-          organization: {
-            login: 'test-org',
-          },
-        },
-      };
-      await events.publish(event);
-
-      expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
-      expect(isSuspended).not.toHaveBeenCalled();
-    });
-
     it.each(['added', 'removed'])(
       'should exclude suspended user on membership %s event',
       async action => {
@@ -1468,9 +1531,41 @@ describe('GithubOrgEntityProvider', () => {
           getCredentials: mockGetCredentials,
         };
 
-        (createRestClient as jest.Mock).mockReturnValue({});
         (isGitHubEnterprise as jest.Mock).mockResolvedValue(true);
         (isSuspended as jest.Mock).mockResolvedValue(true);
+
+        const mockClient = jest.fn();
+
+        mockClient
+          // getOrganizationTeam
+          .mockResolvedValueOnce({
+            organization: {
+              team: {
+                slug: 'team',
+                combinedSlug: 'blah/team',
+                name: 'Team',
+                description: 'The one and only team',
+                avatarUrl: 'http://example.com/team.jpeg',
+                parentTeam: {
+                  slug: 'parent',
+                  combinedSlug: '',
+                  members: { pageInfo: { hasNextPage: false }, nodes: [] },
+                },
+                members: {
+                  pageInfo: { hasNextPage: false },
+                  nodes: [{ login: 'a' }, { login: 'githubuser' }],
+                },
+              },
+            },
+          });
+
+        (createOctokit as jest.Mock).mockReturnValue({
+          graphql: mockClient,
+          request: jest.fn().mockResolvedValue({ headers: {} }),
+          auth: jest
+            .fn()
+            .mockResolvedValue({ type: 'app', headers: { token: 'blah' } }),
+        });
 
         const entityProvider = new GithubOrgEntityProvider({
           events,
@@ -1479,35 +1574,9 @@ describe('GithubOrgEntityProvider', () => {
           orgUrl: 'https://github.com/backstage',
           gitHubConfig,
           logger,
-          excludeSuspendedUsers: true,
-          experimental_checkForSuspendedUsersWithRest: true,
           cache: mockServices.cache.mock(),
         });
 
-        const mockClient = jest.fn();
-
-        mockClient.mockResolvedValueOnce({
-          organization: {
-            team: {
-              slug: 'team',
-              combinedSlug: 'blah/team',
-              name: 'Team',
-              description: 'The one and only team',
-              avatarUrl: 'http://example.com/team.jpeg',
-              parentTeam: {
-                slug: 'parent',
-                combinedSlug: '',
-                members: { pageInfo: { hasNextPage: false }, nodes: [] },
-              },
-              members: {
-                pageInfo: { hasNextPage: false },
-                nodes: [{ login: 'a' }, { login: 'githubuser' }],
-              },
-            },
-          },
-        });
-
-        (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
         await entityProvider.connect(entityProviderConnection);
 
         const event: EventParams = {

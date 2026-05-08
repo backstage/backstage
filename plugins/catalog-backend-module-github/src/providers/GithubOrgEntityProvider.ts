@@ -34,7 +34,6 @@ import {
 } from '@backstage/plugin-catalog-node';
 import { EventParams, EventsService } from '@backstage/plugin-events-node';
 import { Octokit } from '@octokit/core';
-import { graphql } from '@octokit/graphql';
 import {
   MembershipEvent,
   OrganizationEvent,
@@ -52,9 +51,8 @@ import {
 } from '../lib/defaultTransformers';
 import {
   createAddEntitiesOperation,
-  createGraphqlClient,
+  createOctokit,
   createRemoveEntitiesOperation,
-  createRestClient,
   DEFAULT_PAGE_SIZES,
   DeferredEntitiesBuilder,
   getOrganizationTeam,
@@ -75,7 +73,6 @@ import {
 } from '../lib/org';
 import { parseGithubOrgUrl } from '../lib/util';
 import { withLocations } from '../lib/withLocations';
-import { memoize } from 'lodash';
 
 const EVENT_TOPICS = [
   'github.membership',
@@ -129,6 +126,14 @@ export interface GithubOrgEntityProviderOptions {
   logger: LoggerService;
 
   /**
+   * Cache service used to make conditional HTTP requests when checking for
+   * suspended users. Responses are cached and revalidated using
+   * Last-Modified/ETag headers, so unchanged responses from GitHub don't count
+   * against the REST API rate limit.
+   */
+  cache: CacheService;
+
+  /**
    * Optionally supply a custom credentials provider, replacing the default one.
    */
   githubCredentialsProvider?: GithubCredentialsProvider;
@@ -150,27 +155,15 @@ export interface GithubOrgEntityProviderOptions {
   pageSizes?: Partial<GithubPageSizes>;
 
   /**
-   * Optionally exclude suspended users when querying organization users.
-   * @defaultValue false
-   * @remarks
-   * Only for GitHub Enterprise instances. Will error if used against GitHub.com API.
-   */
-  excludeSuspendedUsers?: boolean;
-
-  /**
-   * Optional cache service used for conditional HTTP request caching when
-   * checking suspended users via the REST API.
-   */
-  cache?: CacheService;
-
-  /**
-   * When set to true alongside `excludeSuspendedUsers`, use the GitHub REST API
-   * to check for suspended users instead of the GraphQL `suspendedAt` field.
-   * REST responses are cached using conditional HTTP requests to minimize rate
-   * limit usage.
+   * Whether to skip the suspended user check when querying organization users.
+   * By default, suspended users are automatically excluded on GitHub Enterprise
+   * instances using the REST API (without requiring site_admin scope).
+   * Set this to true to disable the check if needed.
+   * Be aware that if this check is disabled, suspended users will appear in the
+   * catalog with no way of distinguishing them from active valid users.
    * @defaultValue false
    */
-  experimental_checkForSuspendedUsersWithRest?: boolean;
+  dangerouslySkipSuspendedUserCheck?: boolean;
 }
 
 /**
@@ -180,7 +173,7 @@ export interface GithubOrgEntityProviderOptions {
  */
 export class GithubOrgEntityProvider implements EntityProvider {
   private readonly credentialsProvider: GithubCredentialsProvider;
-  private cachedRestClient?: Octokit;
+  private readonly octokit: Octokit;
   private connection?: EntityProviderConnection;
   private scheduleFn?: () => Promise<void>;
 
@@ -210,10 +203,9 @@ export class GithubOrgEntityProvider implements EntityProvider {
       teamTransformer: options.teamTransformer,
       events: options.events,
       pageSizes: options.pageSizes,
-      excludeSuspendedUsers: options.excludeSuspendedUsers,
+      dangerouslySkipSuspendedUserCheck:
+        options.dangerouslySkipSuspendedUserCheck,
       cache: options.cache,
-      experimental_checkForSuspendedUsersWithRest:
-        options.experimental_checkForSuspendedUsersWithRest,
     });
 
     provider.schedule(options.schedule);
@@ -232,14 +224,21 @@ export class GithubOrgEntityProvider implements EntityProvider {
       userTransformer?: UserTransformer;
       teamTransformer?: TeamTransformer;
       pageSizes?: Partial<GithubPageSizes>;
-      excludeSuspendedUsers?: boolean;
-      cache?: CacheService;
-      experimental_checkForSuspendedUsersWithRest?: boolean;
+      dangerouslySkipSuspendedUserCheck?: boolean;
+      cache: CacheService;
     },
   ) {
     this.credentialsProvider =
       options.githubCredentialsProvider ||
       SingleInstanceGithubCredentialsProvider.create(this.options.gitHubConfig);
+
+    this.octokit = createOctokit({
+      baseUrl: this.options.gitHubConfig.apiBaseUrl,
+      orgUrl: this.options.orgUrl,
+      credentialsProvider: this.credentialsProvider,
+      logger: this.options.logger,
+      cache: this.options.cache,
+    });
   }
 
   /** {@inheritdoc @backstage/plugin-catalog-node#EntityProvider.getProviderName} */
@@ -247,46 +246,25 @@ export class GithubOrgEntityProvider implements EntityProvider {
     return `GithubOrgEntityProvider:${this.options.id}`;
   }
 
+  private async shouldFilterSuspendedUsers(): Promise<boolean> {
+    if (this.options.dangerouslySkipSuspendedUserCheck) {
+      return false;
+    }
+    return isGitHubEnterprise(this.octokit);
+  }
+
+  private async shouldExclude(login: string, org: string): Promise<boolean> {
+    return (
+      (await this.shouldFilterSuspendedUsers()) &&
+      (await isSuspended(login, this.octokit, { org }))
+    );
+  }
+
   private getPageSizes(): GithubPageSizes {
     return {
       ...DEFAULT_PAGE_SIZES,
       ...this.options.pageSizes,
     };
-  }
-
-  private get useRestSuspendedCheck(): boolean {
-    return (
-      !!this.options.excludeSuspendedUsers &&
-      !!this.options.experimental_checkForSuspendedUsersWithRest
-    );
-  }
-
-  private isGitHubEnterprise = memoize(() =>
-    isGitHubEnterprise(this.getRestClient()),
-  );
-
-  private getRestClient(): Octokit {
-    if (!this.cachedRestClient) {
-      this.cachedRestClient = createRestClient({
-        baseUrl: this.options.gitHubConfig.apiBaseUrl,
-        orgUrl: this.options.orgUrl,
-        credentialsProvider: this.credentialsProvider,
-        logger: this.options.logger,
-        cache: this.options.cache,
-      });
-    }
-    return this.cachedRestClient;
-  }
-
-  private async shouldExclude(login: string, org: string): Promise<boolean> {
-    if (!this.useRestSuspendedCheck) {
-      return false;
-    }
-    const restClient = this.getRestClient();
-    return (
-      (await this.isGitHubEnterprise()) &&
-      (await isSuspended(login, restClient, { org }))
-    );
   }
 
   /** {@inheritdoc @backstage/plugin-catalog-node#EntityProvider.connect} */
@@ -312,31 +290,18 @@ export class GithubOrgEntityProvider implements EntityProvider {
     const logger = options?.logger ?? this.options.logger;
     const { markReadComplete } = trackProgress(logger);
 
-    const { headers, type: tokenType } =
-      await this.credentialsProvider.getCredentials({
-        url: this.options.orgUrl,
-      });
-
-    const client = createGraphqlClient({
-      headers,
-      baseUrl: this.options.gitHubConfig.apiBaseUrl!,
-      logger,
-    });
-
     const { org } = parseGithubOrgUrl(this.options.orgUrl);
     const pageSizes = this.getPageSizes();
-
+    const shouldFilter = await this.shouldFilterSuspendedUsers();
     const { users } = await getOrganizationUsers(
-      client,
+      this.octokit,
       org,
-      tokenType,
       this.options.userTransformer,
       pageSizes,
-      this.options.excludeSuspendedUsers,
-      this.useRestSuspendedCheck ? this.getRestClient() : undefined,
+      shouldFilter,
     );
     const { teams } = await getOrganizationTeams(
-      client,
+      this.octokit,
       org,
       this.options.teamTransformer,
       pageSizes,
@@ -439,32 +404,22 @@ export class GithubOrgEntityProvider implements EntityProvider {
     }
 
     const teamSlug = event.team.slug;
-    const { headers, type: tokenType } =
-      await this.credentialsProvider.getCredentials({
-        url: this.options.orgUrl,
-      });
-    const client = graphql.defaults({
-      baseUrl: this.options.gitHubConfig.apiBaseUrl,
-      headers,
-    });
 
     const { org } = parseGithubOrgUrl(this.options.orgUrl);
     const pageSizes = this.getPageSizes();
     const { team } = await getOrganizationTeam(
-      client,
+      this.octokit,
       org,
       teamSlug,
       this.options.teamTransformer,
     );
 
     const { users } = await getOrganizationUsers(
-      client,
+      this.octokit,
       org,
-      tokenType,
       this.options.userTransformer,
       pageSizes,
-      this.options.excludeSuspendedUsers,
-      this.useRestSuspendedCheck ? this.getRestClient() : undefined,
+      await this.shouldFilterSuspendedUsers(),
     );
 
     if (!isGroupEntity(team)) {
@@ -477,7 +432,7 @@ export class GithubOrgEntityProvider implements EntityProvider {
     );
 
     const { teams } = await getOrganizationTeamsFromUsers(
-      client,
+      this.octokit,
       org,
       usersToRebuild.map(u => u.metadata.name),
       this.options.teamTransformer,
@@ -510,7 +465,7 @@ export class GithubOrgEntityProvider implements EntityProvider {
       },
       {
         org,
-        client,
+        client: this.octokit.graphql,
         query: '',
       },
     )) as Entity;
@@ -543,18 +498,11 @@ export class GithubOrgEntityProvider implements EntityProvider {
     }
 
     const teamSlug = event.team.slug;
-    const { headers } = await this.credentialsProvider.getCredentials({
-      url: this.options.orgUrl,
-    });
-    const client = graphql.defaults({
-      baseUrl: this.options.gitHubConfig.apiBaseUrl,
-      headers,
-    });
 
     const { org } = parseGithubOrgUrl(this.options.orgUrl);
     const pageSizes = this.getPageSizes();
     const { team } = await getOrganizationTeam(
-      client,
+      this.octokit,
       org,
       teamSlug,
       this.options.teamTransformer,
@@ -574,7 +522,7 @@ export class GithubOrgEntityProvider implements EntityProvider {
       },
       {
         org,
-        client,
+        client: this.octokit.graphql,
         query: '',
       },
     );
@@ -583,13 +531,17 @@ export class GithubOrgEntityProvider implements EntityProvider {
     const removedEntities: Entity[] = [];
 
     if (user && isUserEntity(user)) {
+      // This event is nothing to do with the user's status, but any changes to
+      // their membership can affect their access, so it's a good moment to
+      // recheck whether they're suspended and remove them from the org if
+      // needed.
       if (await this.shouldExclude(login, org)) {
         removedEntities.push(user);
       } else {
         const teamTransformer =
           this.options.teamTransformer || defaultOrganizationTeamTransformer;
         const { teams } = await getOrganizationTeamsForUser(
-          client,
+          this.octokit,
           org,
           login,
           teamTransformer,
@@ -600,6 +552,10 @@ export class GithubOrgEntityProvider implements EntityProvider {
           assignGroupsToUser(user, teams);
         }
 
+        // This function handles both added and removed events, but the
+        // additions are to teams in the org, implying that in either case,
+        // they're a member of the org itself. So either way, an event implies
+        // that the user should be added to the catalog.
         addedEntities.push(user);
       }
     }
@@ -635,13 +591,6 @@ export class GithubOrgEntityProvider implements EntityProvider {
       this.options.teamTransformer || defaultOrganizationTeamTransformer;
     const { name, html_url: url, description, slug } = event.team;
     const org = event.organization.login;
-    const { headers } = await this.credentialsProvider.getCredentials({
-      url: this.options.orgUrl,
-    });
-    const client = graphql.defaults({
-      baseUrl: this.options.gitHubConfig.apiBaseUrl,
-      headers,
-    });
 
     const group = (await organizationTeamTransformer(
       {
@@ -658,7 +607,7 @@ export class GithubOrgEntityProvider implements EntityProvider {
       },
       {
         org,
-        client,
+        client: this.octokit.graphql,
         query: '',
       },
     )) as Entity;
@@ -698,14 +647,6 @@ export class GithubOrgEntityProvider implements EntityProvider {
       return;
     }
 
-    const { headers } = await this.credentialsProvider.getCredentials({
-      url: this.options.orgUrl,
-    });
-    const client = graphql.defaults({
-      baseUrl: this.options.gitHubConfig.apiBaseUrl,
-      headers,
-    });
-
     const user = (await userTransformer(
       {
         name,
@@ -718,7 +659,7 @@ export class GithubOrgEntityProvider implements EntityProvider {
       },
       {
         org,
-        client,
+        client: this.octokit.graphql,
         query: '',
       },
     )) as Entity;

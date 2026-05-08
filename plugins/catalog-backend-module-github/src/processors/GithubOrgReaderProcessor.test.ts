@@ -20,11 +20,14 @@ import {
   ScmIntegrations,
 } from '@backstage/integration';
 import { LocationSpec } from '@backstage/plugin-catalog-node';
-import { graphql } from '@octokit/graphql';
 import { GithubOrgReaderProcessor } from './GithubOrgReaderProcessor';
 import { mockServices } from '@backstage/backend-test-utils';
+import { createOctokit } from '../lib';
 
-jest.mock('@octokit/graphql');
+jest.mock('../lib', () => ({
+  ...jest.requireActual('../lib'),
+  createOctokit: jest.fn(),
+}));
 
 describe('GithubOrgReaderProcessor', () => {
   describe('implementation', () => {
@@ -107,7 +110,13 @@ describe('GithubOrgReaderProcessor', () => {
           },
         });
 
-      (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+      (createOctokit as jest.Mock).mockReturnValue({
+        graphql: mockClient,
+        request: jest.fn().mockResolvedValue({ headers: {} }),
+        auth: jest
+          .fn()
+          .mockResolvedValue({ type: 'app', headers: { token: 'blah' } }),
+      });
 
       const processor = new GithubOrgReaderProcessor({
         integrations,
@@ -164,7 +173,13 @@ describe('GithubOrgReaderProcessor', () => {
           },
         });
 
-      (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+      (createOctokit as jest.Mock).mockReturnValue({
+        graphql: mockClient,
+        request: jest.fn().mockResolvedValue({ headers: {} }),
+        auth: jest
+          .fn()
+          .mockResolvedValue({ type: 'token', headers: { token: 'blah' } }),
+      });
 
       const processor = new GithubOrgReaderProcessor({
         integrations,

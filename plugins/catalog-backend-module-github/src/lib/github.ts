@@ -18,7 +18,6 @@ import { Entity } from '@backstage/catalog-model';
 import {
   GithubCredentials,
   GithubCredentialsProvider,
-  GithubCredentialType,
 } from '@backstage/integration';
 import { graphql } from '@octokit/graphql';
 import { OctokitResponse, RequestParameters } from '@octokit/types';
@@ -125,7 +124,6 @@ export type GithubUser = {
   email?: string;
   name?: string;
   organizationVerifiedDomainEmails?: string[];
-  suspendedAt?: string;
 };
 
 /**
@@ -185,26 +183,19 @@ export type Connection<T> = {
  *
  * Note that the users will not have their memberships filled in.
  *
- * @param client - An octokit graphql client
+ * @param octokit - An octokit client
  * @param org - The slug of the org to read
- * @param tokenType - The type of GitHub credential
  * @param userTransformer - Optional transformer for user entities
  * @param pageSizes - Optional page sizes configuration
- * @param excludeSuspendedUsers - Optional flag to exclude suspended users (only for GitHub Enterprise instances)
- * @param restClient - Optional Octokit REST client; when provided alongside excludeSuspendedUsers, the REST API is used instead of the GraphQL suspendedAt field
+ * @param filterSuspendedUsers - When true, suspended users are excluded using the REST API. Callers should resolve this by checking isGitHubEnterprise() once at the start of a provider run.
  */
 export async function getOrganizationUsers(
-  client: typeof graphql,
+  octokit: Octokit,
   org: string,
-  tokenType: GithubCredentialType,
   userTransformer: UserTransformer = defaultUserTransformer,
   pageSizes: GithubPageSizes = DEFAULT_PAGE_SIZES,
-  excludeSuspendedUsers: boolean = false,
-  restClient?: Octokit,
+  filterSuspendedUsers: boolean = false,
 ): Promise<{ users: Entity[] }> {
-  const useRestForSuspension = excludeSuspendedUsers && !!restClient;
-  const suspendedAtField =
-    excludeSuspendedUsers && !useRestForSuspension ? 'suspendedAt,' : '';
   const query = `
     query users($org: String!, $email: Boolean!, $cursor: String, $organizationMembersPageSize: Int!) {
       organization(login: $org) {
@@ -217,42 +208,30 @@ export async function getOrganizationUsers(
             id,
             login,
             name,
-            ${suspendedAtField}
             organizationVerifiedDomainEmails(login: $org)
           }
         }
       }
     }`;
 
-  let restFilter:
-    | ((user: GithubUser) => Promise<boolean> | boolean)
-    | undefined;
-
-  if (useRestForSuspension) {
-    const isEnterprise = await isGitHubEnterprise(restClient);
-    if (isEnterprise) {
-      restFilter = async (user: GithubUser) =>
-        !(await isSuspended(user.login, restClient, { org }));
-    }
-  }
+  const email = ((await octokit.auth()) as GithubCredentials).type === 'token';
 
   // There is no user -> teams edge, so we leave the memberships empty for
   // now and let the team iteration handle it instead
-
   const users = await queryWithPaging({
-    client,
+    client: octokit.graphql,
     query,
     org,
     connection: r => r.organization?.membersWithRole,
     transformer: userTransformer,
     variables: {
       org,
-      email: tokenType === 'token',
+      email,
       organizationMembersPageSize: pageSizes.organizationMembers,
     },
-    filter: useRestForSuspension
-      ? restFilter
-      : u => (excludeSuspendedUsers ? !u.suspendedAt : true),
+    filter: filterSuspendedUsers
+      ? async user => !(await isSuspended(user.login, octokit, { org }))
+      : undefined,
   });
 
   return { users };
@@ -263,13 +242,13 @@ export async function getOrganizationUsers(
  *
  * Note that the teams will not have any relations apart from parent filled in.
  *
- * @param client - An octokit graphql client
+ * @param octokit - An octokit client
  * @param org - The slug of the org to read
  * @param teamTransformer - Optional transformer for team entities
  * @param pageSizes - Optional page sizes configuration
  */
 export async function getOrganizationTeams(
-  client: typeof graphql,
+  octokit: Octokit,
   org: string,
   teamTransformer: TeamTransformer = defaultOrganizationTeamTransformer,
   pageSizes: GithubPageSizes = DEFAULT_PAGE_SIZES,
@@ -340,7 +319,7 @@ export async function getOrganizationTeams(
   };
 
   const teams = await queryWithPaging({
-    client,
+    client: octokit.graphql,
     query,
     org,
     connection: r => r.organization?.teams,
@@ -356,7 +335,7 @@ export async function getOrganizationTeams(
 }
 
 export async function getOrganizationTeamsFromUsers(
-  client: typeof graphql,
+  octokit: Octokit,
   org: string,
   userLogins: string[],
   teamTransformer: TeamTransformer = defaultOrganizationTeamTransformer,
@@ -435,7 +414,7 @@ export async function getOrganizationTeamsFromUsers(
   };
 
   const teams = await queryWithPaging({
-    client,
+    client: octokit.graphql,
     query,
     org,
     connection: r => r.organization?.teams,
@@ -452,7 +431,7 @@ export async function getOrganizationTeamsFromUsers(
 }
 
 export async function getOrganizationTeamsForUser(
-  client: typeof graphql,
+  octokit: Octokit,
   org: string,
   userLogin: string,
   teamTransformer: TeamTransformer,
@@ -494,7 +473,7 @@ export async function getOrganizationTeamsForUser(
   };
 
   const teams = await queryWithPaging({
-    client,
+    client: octokit.graphql,
     query,
     org,
     connection: r => r.organization?.teams,
@@ -506,7 +485,7 @@ export async function getOrganizationTeamsForUser(
 }
 
 export async function getOrganizationsFromUser(
-  client: typeof graphql,
+  octokit: Octokit,
   user: string,
 ): Promise<{
   orgs: string[];
@@ -522,7 +501,7 @@ export async function getOrganizationsFromUser(
   }`;
 
   const orgs = await queryWithPaging({
-    client,
+    client: octokit.graphql,
     query,
     org: '',
     connection: r => r.user?.organizations,
@@ -534,7 +513,7 @@ export async function getOrganizationsFromUser(
 }
 
 export async function getOrganizationTeam(
-  client: typeof graphql,
+  octokit: Octokit,
   org: string,
   teamSlug: string,
   teamTransformer: TeamTransformer = defaultOrganizationTeamTransformer,
@@ -594,7 +573,7 @@ export async function getOrganizationTeam(
     return await teamTransformer(team, ctx);
   };
 
-  const response: QueryResponse = await client(query, {
+  const response: QueryResponse = await octokit.graphql(query, {
     org,
     teamSlug,
     membersPageSize: pageSizes.teamMembers,
@@ -605,7 +584,7 @@ export async function getOrganizationTeam(
 
   const team = await materialisedTeam(response.organization?.team, {
     query,
-    client,
+    client: octokit.graphql,
     org,
   });
 
@@ -615,7 +594,7 @@ export async function getOrganizationTeam(
 }
 
 export async function getOrganizationRepositories(
-  client: typeof graphql,
+  octokit: Octokit,
   org: string,
   catalogPath: string,
   pageSizes: GithubPageSizes = DEFAULT_PAGE_SIZES,
@@ -670,7 +649,7 @@ export async function getOrganizationRepositories(
     }`;
 
   const repositories = await queryWithPaging({
-    client,
+    client: octokit.graphql,
     query,
     org,
     connection: r => r.repositoryOwner?.repositories,
@@ -686,7 +665,7 @@ export async function getOrganizationRepositories(
 }
 
 export async function getOrganizationRepository(
-  client: typeof graphql,
+  octokit: Octokit,
   org: string,
   repoName: string,
   catalogPath: string,
@@ -733,7 +712,7 @@ export async function getOrganizationRepository(
       }
     }`;
 
-  const response: QueryResponse = await client(query, {
+  const response: QueryResponse = await octokit.graphql(query, {
     org,
     repoName,
     catalogPathRef,
@@ -836,17 +815,18 @@ export async function queryWithPaging<
       throw new Error(`Found no match for ${JSON.stringify(variables)}`);
     }
 
-    for (const node of conn.nodes) {
-      if (filter && !(await filter(node))) {
-        continue;
-      }
-      const transformedNode = await transformer(node, {
-        client,
-        query,
-        org,
-      });
-      if (transformedNode) {
-        result.push(transformedNode);
+    const transformed = await Promise.all(
+      conn.nodes.map(async node => {
+        if (filter && !(await filter(node))) {
+          return undefined;
+        }
+        return transformer(node, { client, query, org });
+      }),
+    );
+
+    for (const node of transformed) {
+      if (node) {
+        result.push(node);
       }
     }
 
@@ -897,61 +877,6 @@ export const createReplaceEntitiesOperation =
     };
   };
 
-/**
- * Creates a GraphQL Client with Throttling and Retries
- */
-export const createGraphqlClient = (args: {
-  headers:
-    | {
-        [name: string]: string;
-      }
-    | undefined;
-  baseUrl: string;
-  logger: LoggerService;
-}): typeof graphql => {
-  const { headers, baseUrl, logger } = args;
-  const ThrottledOctokit = Octokit.plugin(throttling, retry);
-  const octokit = new ThrottledOctokit({
-    throttle: {
-      onRateLimit: (retryAfter, rateLimitData, _, retryCount) => {
-        logger.warn(
-          `Request quota exhausted for request ${rateLimitData?.method} ${rateLimitData?.url}`,
-        );
-
-        if (retryCount < 2) {
-          logger.warn(
-            `Retrying after ${retryAfter} seconds for the ${retryCount} time due to Rate Limit!`,
-          );
-          return true;
-        }
-
-        return false;
-      },
-      onSecondaryRateLimit: (retryAfter, rateLimitData, _, retryCount) => {
-        logger.warn(
-          `Secondary Rate Limit Exhausted for request ${rateLimitData?.method} ${rateLimitData?.url}`,
-        );
-
-        if (retryCount < 2) {
-          logger.warn(
-            `Retrying after ${retryAfter} seconds for the ${retryCount} time due to Secondary Rate Limit!`,
-          );
-          return true;
-        }
-
-        return false;
-      },
-    },
-  });
-
-  const client = octokit.graphql.defaults({
-    headers,
-    baseUrl,
-  });
-
-  return client;
-};
-
 function octokitThrottlingOptions(logger: LoggerService): ThrottlingOptions {
   return {
     onRateLimit: (retryAfter, rateLimitData, _, retryCount) => {
@@ -991,7 +916,7 @@ function octokitThrottlingOptions(logger: LoggerService): ThrottlingOptions {
  *
  * @public
  */
-export function createRestClient(options: {
+export function createOctokit(options: {
   baseUrl: string | undefined;
   orgUrl: string;
   credentialsProvider: GithubCredentialsProvider;
@@ -1046,24 +971,23 @@ function installConditionalRequestCache(
   octokit: Octokit,
   cache: CacheService,
 ): void {
-  octokit.hook.wrap('request', async (request, wrappedOptions) => {
-    const resolvedUrl = (wrappedOptions.url || '').replace(
-      /\{([^}]+)\}/g,
-      (_, key) => encodeURIComponent((wrappedOptions as any)[key]),
+  octokit.hook.wrap('request', async (request, options) => {
+    const resolvedUrl = (options.url || '').replace(/\{([^}]+)\}/g, (_, key) =>
+      encodeURIComponent((options as any)[key]),
     );
-    const cacheKey = `catalog-backend-module-github:${wrappedOptions.method}:${wrappedOptions.baseUrl}${resolvedUrl}`;
+    const cacheKey = `catalog-backend-module-github:${options.method}:${options.baseUrl}${resolvedUrl}`;
     const cached = await cache
       .get<CachedGitHubResponse>(cacheKey)
       .catch(() => undefined);
 
     if (cached?.lastModified) {
-      wrappedOptions.headers['if-modified-since'] = cached.lastModified;
+      options.headers['if-modified-since'] = cached.lastModified;
     } else if (cached?.etag) {
-      wrappedOptions.headers['if-none-match'] = cached.etag;
+      options.headers['if-none-match'] = cached.etag;
     }
 
     try {
-      const response = await request(wrappedOptions);
+      const response = await request(options);
 
       const lastModified = response.headers['last-modified'];
       const etag = response.headers.etag;
@@ -1141,10 +1065,6 @@ export async function isSuspended(
  * Checks whether the GitHub instance is a GitHub Enterprise server.
  */
 export async function isGitHubEnterprise(octokit: Octokit): Promise<boolean> {
-  try {
-    const response = await octokit.request('GET /versions');
-    return !!response.headers['x-github-enterprise-version'];
-  } catch {
-    return false;
-  }
+  const response = await octokit.request('GET /versions');
+  return !!response.headers['x-github-enterprise-version'];
 }

@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import { Octokit } from '@octokit/core';
 import { Config } from '@backstage/config';
 import {
   DefaultGithubCredentialsProvider,
   GithubCredentialsProvider,
-  GithubCredentialType,
   ScmIntegrationRegistry,
   ScmIntegrations,
 } from '@backstage/integration';
@@ -28,18 +28,16 @@ import {
   LocationSpec,
   processingResult,
 } from '@backstage/plugin-catalog-node';
-import { graphql } from '@octokit/graphql';
 import {
   assignGroupsToUsers,
   buildOrgHierarchy,
+  createOctokit,
   getOrganizationTeams,
   getOrganizationUsers,
   parseGithubOrgUrl,
 } from '../lib';
 import { areGroupEntities, areUserEntities } from '../lib/guards';
 import { LoggerService } from '@backstage/backend-plugin-api';
-
-type GraphQL = typeof graphql;
 
 /**
  * Extracts teams and users out of a GitHub org.
@@ -94,15 +92,15 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
       return false;
     }
 
-    const { client, tokenType } = await this.createClient(location.target);
+    const octokit = this.createClient(location.target);
     const { org } = parseGithubOrgUrl(location.target);
 
     // Read out all of the raw data
     const startTimestamp = Date.now();
     this.logger.info('Reading GitHub users and groups');
 
-    const { users } = await getOrganizationUsers(client, org, tokenType);
-    const { teams } = await getOrganizationTeams(client, org);
+    const { users } = await getOrganizationUsers(octokit, org);
+    const { teams } = await getOrganizationTeams(octokit, org);
 
     const duration = ((Date.now() - startTimestamp) / 1000).toFixed(1);
     this.logger.debug(
@@ -127,9 +125,7 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
     return true;
   }
 
-  private async createClient(
-    orgUrl: string,
-  ): Promise<{ client: GraphQL; tokenType: GithubCredentialType }> {
+  private createClient(orgUrl: string): Octokit {
     const gitHubConfig = this.integrations.github.byUrl(orgUrl)?.config;
 
     if (!gitHubConfig) {
@@ -138,16 +134,11 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
       );
     }
 
-    const { headers, type: tokenType } =
-      await this.githubCredentialsProvider.getCredentials({
-        url: orgUrl,
-      });
-
-    const client = graphql.defaults({
-      baseUrl: gitHubConfig.apiBaseUrl,
-      headers,
+    return createOctokit({
+      baseUrl: gitHubConfig.apiBaseUrl!,
+      orgUrl: orgUrl,
+      credentialsProvider: this.githubCredentialsProvider,
+      logger: this.logger,
     });
-
-    return { client, tokenType };
   }
 }

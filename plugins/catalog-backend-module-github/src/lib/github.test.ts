@@ -37,8 +37,7 @@ import {
   createAddEntitiesOperation,
   createRemoveEntitiesOperation,
   createReplaceEntitiesOperation,
-  createGraphqlClient,
-  createRestClient,
+  createOctokit,
   getOrganizationTeamsForUser,
   isSuspended,
   isGitHubEnterprise,
@@ -56,6 +55,24 @@ describe('github', () => {
   registerMswTestHooks(server);
 
   const graphql = graphqlOctokit.defaults({});
+
+  function createMockOctokit(overrides?: {
+    auth?: Record<string, unknown>;
+    request?: jest.Mock;
+  }) {
+    return {
+      graphql,
+      request:
+        overrides?.request ?? jest.fn().mockResolvedValue({ headers: {} }),
+      auth: jest.fn().mockResolvedValue({
+        type: 'token',
+        headers: {},
+        ...overrides?.auth,
+      }),
+    } as any;
+  }
+
+  const mockOctokit = createMockOctokit();
 
   describe('getOrganizationTeamsForUser', () => {
     const org = 'my-org';
@@ -93,7 +110,7 @@ describe('github', () => {
       }));
 
       const { teams } = await getOrganizationTeamsForUser(
-        graphql as any,
+        mockOctokit,
         org,
         userLogin,
         mockTransformer as any,
@@ -120,7 +137,7 @@ describe('github', () => {
       );
       const mockTransformer = jest.fn().mockResolvedValue(undefined);
       const { teams } = await getOrganizationTeamsForUser(
-        graphql as any,
+        mockOctokit,
         org,
         userLogin,
         mockTransformer as any,
@@ -165,60 +182,12 @@ describe('github', () => {
         graphqlMsw.query('users', () => HttpResponse.json({ data: input })),
       );
 
-      await expect(
-        getOrganizationUsers(graphql, 'a', 'token'),
-      ).resolves.toEqual(output);
+      await expect(getOrganizationUsers(mockOctokit, 'a')).resolves.toEqual(
+        output,
+      );
     });
 
     it('reads members excluding suspended users', async () => {
-      const input: QueryResponse = {
-        organization: {
-          membersWithRole: {
-            pageInfo: { hasNextPage: false },
-            nodes: [
-              {
-                login: 'a',
-                name: 'b',
-                bio: 'c',
-                email: 'd',
-                avatarUrl: 'e',
-                suspendedAt: '2025-01-01',
-              },
-              {
-                login: 'a',
-                name: 'b',
-                bio: 'c',
-                email: 'd',
-                avatarUrl: 'e',
-                suspendedAt: undefined,
-              },
-            ],
-          },
-        },
-      };
-
-      const output = {
-        users: [
-          expect.objectContaining({
-            metadata: expect.objectContaining({ name: 'a', description: 'c' }),
-            spec: {
-              profile: { displayName: 'b', email: 'd', picture: 'e' },
-              memberOf: [],
-            },
-          }),
-        ],
-      };
-
-      server.use(
-        graphqlMsw.query('users', () => HttpResponse.json({ data: input })),
-      );
-
-      await expect(
-        getOrganizationUsers(graphql, 'a', 'token', undefined, undefined, true),
-      ).resolves.toEqual(output);
-    });
-
-    it('reads members excluding suspended users via REST when restClient provided', async () => {
       const input: QueryResponse = {
         organization: {
           membersWithRole: {
@@ -262,7 +231,7 @@ describe('github', () => {
         graphqlMsw.query('users', () => HttpResponse.json({ data: input })),
       );
 
-      const mockRestClient = {
+      const octokitWithSuspended = createMockOctokit({
         request: jest.fn().mockImplementation((route: string, params: any) => {
           if (route === 'GET /versions') {
             return Promise.resolve({
@@ -277,22 +246,20 @@ describe('github', () => {
           }
           return { data: { role: 'member', state: 'active' } };
         }),
-      } as any;
+      });
 
       await expect(
         getOrganizationUsers(
-          graphql,
+          octokitWithSuspended,
           'a',
-          'token',
           undefined,
           undefined,
           true,
-          mockRestClient,
         ),
       ).resolves.toEqual(output);
     });
 
-    it('reads members excluding org-membership-suspended users via REST', async () => {
+    it('reads members excluding org-membership-suspended users', async () => {
       const input: QueryResponse = {
         organization: {
           membersWithRole: {
@@ -321,7 +288,7 @@ describe('github', () => {
         graphqlMsw.query('users', () => HttpResponse.json({ data: input })),
       );
 
-      const mockRestClient = {
+      const octokitWithOrgSuspended = createMockOctokit({
         request: jest.fn().mockImplementation((route: string, params: any) => {
           if (route === 'GET /versions') {
             return Promise.resolve({
@@ -339,23 +306,21 @@ describe('github', () => {
           }
           return { data: {} };
         }),
-      } as any;
+      });
 
       const result = await getOrganizationUsers(
-        graphql,
+        octokitWithOrgSuspended,
         'a',
-        'token',
         undefined,
         undefined,
         true,
-        mockRestClient,
       );
 
       expect(result.users).toHaveLength(1);
       expect(result.users[0].metadata.name).toBe('active-user');
     });
 
-    it('skips REST suspended user check on non-enterprise GitHub', async () => {
+    it('returns all users when filterSuspendedUsers is false', async () => {
       const input: QueryResponse = {
         organization: {
           membersWithRole: {
@@ -384,32 +349,10 @@ describe('github', () => {
         graphqlMsw.query('users', () => HttpResponse.json({ data: input })),
       );
 
-      const nonEnterpriseRestClient = {
-        request: jest.fn().mockImplementation((route: string) => {
-          if (route === 'GET /versions') {
-            return Promise.resolve({ headers: {} });
-          }
-          throw new Error('isSuspended should not be called');
-        }),
-      } as any;
+      const result = await getOrganizationUsers(mockOctokit, 'a');
 
-      const result = await getOrganizationUsers(
-        graphql,
-        'a',
-        'token',
-        undefined,
-        undefined,
-        true,
-        nonEnterpriseRestClient,
-      );
-
-      // Both users should be returned because the REST check is skipped
-      // on non-enterprise (no suspendedAt field in query either since restClient is provided)
       expect(result.users).toHaveLength(2);
-      expect(nonEnterpriseRestClient.request).toHaveBeenCalledTimes(1);
-      expect(nonEnterpriseRestClient.request).toHaveBeenCalledWith(
-        'GET /versions',
-      );
+      expect(mockOctokit.request).not.toHaveBeenCalled();
     });
   });
 
@@ -471,7 +414,7 @@ describe('github', () => {
       );
 
       await expect(
-        getOrganizationUsers(graphql, 'a', 'token', customUserTransformer),
+        getOrganizationUsers(mockOctokit, 'a', customUserTransformer),
       ).resolves.toEqual(output);
     });
 
@@ -515,9 +458,8 @@ describe('github', () => {
       );
 
       const users = await getOrganizationUsers(
-        graphql,
+        mockOctokit,
         'a',
-        'token',
         customUserTransformer,
       );
 
@@ -525,7 +467,7 @@ describe('github', () => {
       expect(users).toEqual(output);
     });
 
-    it('reads members including suspended users', async () => {
+    it('returns all users when filterSuspendedUsers is false', async () => {
       const input: QueryResponse = {
         organization: {
           membersWithRole: {
@@ -544,7 +486,6 @@ describe('github', () => {
                 bio: 'cc',
                 email: 'dd',
                 avatarUrl: 'ee',
-                suspendedAt: '2025-01-01',
               },
             ],
           },
@@ -572,9 +513,8 @@ describe('github', () => {
 
       await expect(
         getOrganizationUsers(
-          graphql,
+          mockOctokit,
           'a',
-          'token',
           customUserTransformer,
           undefined,
           false,
@@ -646,7 +586,9 @@ describe('github', () => {
         graphqlMsw.query('teams', () => HttpResponse.json({ data: input })),
       );
 
-      await expect(getOrganizationTeams(graphql, 'a')).resolves.toEqual(output);
+      await expect(getOrganizationTeams(mockOctokit, 'a')).resolves.toEqual(
+        output,
+      );
     });
   });
 
@@ -747,7 +689,7 @@ describe('github', () => {
       );
 
       await expect(
-        getOrganizationTeams(graphql, 'a', customTeamTransformer),
+        getOrganizationTeams(mockOctokit, 'a', customTeamTransformer),
       ).resolves.toEqual(output);
     });
 
@@ -827,7 +769,7 @@ describe('github', () => {
       );
 
       const teams = await getOrganizationTeams(
-        graphql,
+        mockOctokit,
         'a',
         customTeamTransformer,
       );
@@ -862,7 +804,9 @@ describe('github', () => {
         graphqlMsw.query('orgs', () => HttpResponse.json({ data: input })),
       );
 
-      await expect(getOrganizationsFromUser(graphql, 'foo')).resolves.toEqual({
+      await expect(
+        getOrganizationsFromUser(mockOctokit, 'foo'),
+      ).resolves.toEqual({
         orgs: ['a', 'b', 'c'],
       });
     });
@@ -982,7 +926,7 @@ describe('github', () => {
       );
 
       await expect(
-        getOrganizationRepositories(graphql, 'a', 'catalog-info.yaml'),
+        getOrganizationRepositories(mockOctokit, 'a', 'catalog-info.yaml'),
       ).resolves.toEqual(output);
     });
 
@@ -1015,7 +959,7 @@ describe('github', () => {
       );
 
       await getOrganizationRepositories(
-        graphql as any,
+        mockOctokit,
         'my-org',
         '/catalog-info.yaml',
         undefined,
@@ -1049,7 +993,7 @@ describe('github', () => {
       );
 
       await getOrganizationRepository(
-        graphql as any,
+        mockOctokit,
         'my-org',
         'my-repo',
         'catalog-info.yaml',
@@ -1067,7 +1011,7 @@ describe('github', () => {
       );
 
       await getOrganizationRepository(
-        graphql as any,
+        mockOctokit,
         'my-org',
         'my-repo',
         'catalog-info.yaml',
@@ -1179,105 +1123,7 @@ describe('github', () => {
     });
   });
 
-  describe('createGraphqlClient', () => {
-    const headers = {};
-
-    const baseUrl = 'https://api.github.com';
-
-    const logger = mockServices.rootLogger();
-
-    const mockClient = jest.fn().mockImplementation();
-
-    const graphqlDefaults = jest.fn().mockReturnValue(mockClient);
-    const mockedOctokit = jest.fn().mockImplementation(() => ({
-      graphql: {
-        defaults: graphqlDefaults,
-      },
-    }));
-
-    let pluginSpy: jest.SpyInstance;
-
-    beforeEach(() => {
-      pluginSpy = jest
-        .spyOn(Octokit, 'plugin')
-        .mockReturnValue(mockedOctokit as any);
-    });
-
-    afterEach(() => {
-      pluginSpy.mockRestore();
-    });
-
-    const rateLimitOptions = {
-      method: 'POST',
-      url: '/graphql',
-    };
-
-    it('should return a graphql client with throttling and retry', async () => {
-      const client = createGraphqlClient({
-        headers,
-        baseUrl,
-        logger,
-      });
-      expect(client).toBeDefined();
-      expect(Octokit.plugin).toHaveBeenCalledWith(throttling, retry);
-    });
-
-    it('should return a graphql client with the correct options', async () => {
-      createGraphqlClient({
-        headers,
-        baseUrl,
-        logger,
-      });
-      expect(graphqlDefaults).toHaveBeenCalledWith({
-        baseUrl,
-        headers,
-      });
-    });
-
-    describe('onRateLimit', () => {
-      it.each([
-        { retryCount: 0, expectedResult: true },
-        { retryCount: 1, expectedResult: true },
-        { retryCount: 2, expectedResult: false },
-      ])('should return %s', async ({ retryCount, expectedResult }) => {
-        createGraphqlClient({ headers, baseUrl, logger });
-
-        const throttleOptions = mockedOctokit.mock.calls[0][0].throttle;
-
-        const result = throttleOptions.onRateLimit(
-          60,
-          rateLimitOptions,
-          undefined,
-          retryCount,
-        );
-
-        expect(result).toBe(expectedResult);
-      });
-    });
-
-    describe('onSecondaryRateLimit', () => {
-      it.each([
-        { retryCount: 0, expectedResult: true },
-        { retryCount: 1, expectedResult: true },
-        { retryCount: 2, expectedResult: false },
-      ])('should return %s', async ({ retryCount, expectedResult }) => {
-        createGraphqlClient({ headers, baseUrl, logger });
-
-        const throttleOptions = mockedOctokit.mock.calls[0][0].throttle;
-
-        const result = throttleOptions.onSecondaryRateLimit(
-          60,
-          rateLimitOptions,
-          undefined,
-          retryCount,
-        );
-
-        expect(result).toBe(expectedResult);
-      });
-    });
-  });
-
-  describe('createRestClient', () => {
+  describe('createOctokit', () => {
     const baseUrl = 'https://api.github.com';
     const orgUrl = 'https://github.com/my-org';
 
@@ -1287,6 +1133,92 @@ describe('github', () => {
         headers: { authorization: 'token test-token' },
       }),
     };
+
+    let pluginSpy: jest.SpyInstance;
+
+    beforeEach(() => {
+      pluginSpy = jest.spyOn(Octokit, 'plugin');
+    });
+
+    it('should construct an octokit with throttling and retry', async () => {
+      const octokit = createOctokit({
+        baseUrl,
+        orgUrl,
+        credentialsProvider: mockCredentialsProvider,
+        logger: mockServices.logger.mock(),
+        cache: mockServices.cache.mock(),
+      });
+
+      expect(octokit).toBeDefined();
+      expect(Octokit.plugin).toHaveBeenCalledWith(throttling, retry);
+    });
+
+    it('should construct an octokit with the correct options', async () => {
+      const mockedOctokitConstructor = jest.fn(() => ({
+        hook: { wrap: jest.fn() },
+      }));
+
+      pluginSpy.mockReturnValue(mockedOctokitConstructor);
+
+      try {
+        createOctokit({
+          baseUrl,
+          orgUrl,
+          credentialsProvider: mockCredentialsProvider,
+          logger: mockServices.logger.mock(),
+          cache: mockServices.cache.mock(),
+        });
+
+        expect(mockedOctokitConstructor).toHaveBeenCalledWith(
+          expect.objectContaining({
+            baseUrl,
+          }),
+        );
+      } finally {
+        pluginSpy.mockRestore();
+      }
+    });
+
+    it('auth() returns credentials from the provider', async () => {
+      const octokit = createOctokit({
+        baseUrl,
+        orgUrl,
+        credentialsProvider: mockCredentialsProvider,
+        logger: mockServices.logger.mock(),
+      });
+
+      const credentials = await octokit.auth();
+      expect(credentials).toEqual({
+        type: 'token',
+        headers: { authorization: 'token test-token' },
+      });
+      expect(mockCredentialsProvider.getCredentials).toHaveBeenCalledWith({
+        url: orgUrl,
+      });
+    });
+
+    it('auth strategy hook injects credentials headers into requests', async () => {
+      let receivedHeaders: Record<string, string> = {};
+      server.use(
+        http.get(`${baseUrl}/users/testuser`, ({ request }) => {
+          receivedHeaders = Object.fromEntries(request.headers.entries());
+          return HttpResponse.json({ login: 'testuser' });
+        }),
+      );
+
+      const octokit = createOctokit({
+        baseUrl,
+        orgUrl,
+        credentialsProvider: mockCredentialsProvider,
+        logger: mockServices.logger.mock(),
+      });
+
+      await octokit.request('GET /users/{username}', {
+        username: 'testuser',
+      });
+
+      expect(receivedHeaders.authorization).toBe('token test-token');
+    });
 
     describe('conditional request caching', () => {
       function createMockCache(): CacheService & {
@@ -1324,7 +1256,7 @@ describe('github', () => {
         );
 
         const cache = createMockCache();
-        const octokit = createRestClient({
+        const octokit = createOctokit({
           baseUrl,
           orgUrl,
           credentialsProvider: mockCredentialsProvider,
@@ -1365,7 +1297,7 @@ describe('github', () => {
           },
         );
 
-        const octokit = createRestClient({
+        const octokit = createOctokit({
           baseUrl,
           orgUrl,
           credentialsProvider: mockCredentialsProvider,
@@ -1403,7 +1335,7 @@ describe('github', () => {
           },
         );
 
-        const octokit = createRestClient({
+        const octokit = createOctokit({
           baseUrl,
           orgUrl,
           credentialsProvider: mockCredentialsProvider,
@@ -1442,7 +1374,7 @@ describe('github', () => {
           },
         );
 
-        const octokit = createRestClient({
+        const octokit = createOctokit({
           baseUrl,
           orgUrl,
           credentialsProvider: mockCredentialsProvider,
@@ -1469,7 +1401,7 @@ describe('github', () => {
         );
 
         const cache = createMockCache();
-        const octokit = createRestClient({
+        const octokit = createOctokit({
           baseUrl,
           orgUrl,
           credentialsProvider: mockCredentialsProvider,
@@ -1501,7 +1433,7 @@ describe('github', () => {
           },
         );
 
-        const octokit = createRestClient({
+        const octokit = createOctokit({
           baseUrl,
           orgUrl,
           credentialsProvider: mockCredentialsProvider,
@@ -1530,7 +1462,7 @@ describe('github', () => {
         );
 
         const cache = createMockCache();
-        const octokit = createRestClient({
+        const octokit = createOctokit({
           baseUrl,
           orgUrl,
           credentialsProvider: mockCredentialsProvider,
@@ -1564,7 +1496,7 @@ describe('github', () => {
           }),
         );
 
-        const octokit = createRestClient({
+        const octokit = createOctokit({
           baseUrl,
           orgUrl,
           credentialsProvider: mockCredentialsProvider,
@@ -1669,12 +1601,12 @@ describe('github', () => {
       await expect(isGitHubEnterprise(octokit)).resolves.toBe(false);
     });
 
-    it('returns false when the request throws', async () => {
+    it('propagates errors from the request', async () => {
       const octokit = {
         request: jest.fn().mockRejectedValue(new Error('Not Found')),
       } as any;
 
-      await expect(isGitHubEnterprise(octokit)).resolves.toBe(false);
+      await expect(isGitHubEnterprise(octokit)).rejects.toThrow('Not Found');
     });
   });
 
@@ -1713,7 +1645,7 @@ describe('github', () => {
         }),
       );
 
-      await getOrganizationTeams(graphql as any, org, undefined, {
+      await getOrganizationTeams(mockOctokit, org, undefined, {
         teams: 10,
         teamMembers: 20,
         organizationMembers: 20,
@@ -1747,7 +1679,7 @@ describe('github', () => {
         }),
       );
 
-      await getOrganizationUsers(graphql as any, org, 'token', undefined, {
+      await getOrganizationUsers(mockOctokit, org, undefined, {
         teams: 10,
         teamMembers: 20,
         organizationMembers: 30,
@@ -1784,7 +1716,7 @@ describe('github', () => {
       );
 
       await getOrganizationRepositories(
-        graphql as any,
+        mockOctokit,
         org,
         '/catalog-info.yaml',
         {
@@ -1814,7 +1746,7 @@ describe('github', () => {
         }),
       );
 
-      await getOrganizationTeams(graphql as any, org);
+      await getOrganizationTeams(mockOctokit, org);
     });
   });
 });

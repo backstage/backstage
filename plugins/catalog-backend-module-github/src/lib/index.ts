@@ -17,10 +17,10 @@
 export { readGithubMultiOrgConfig } from './config';
 export type { GithubMultiOrgConfig } from './config';
 export {
+  createOctokit,
   getOrganizationRepositories,
   getOrganizationTeams,
   getOrganizationUsers,
-  createRestClient,
   type GithubUser,
   type GithubTeam,
   type GithubPageSizes,

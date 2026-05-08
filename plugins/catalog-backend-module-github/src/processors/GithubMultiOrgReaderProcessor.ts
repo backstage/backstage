@@ -35,10 +35,10 @@ import {
   LocationSpec,
   processingResult,
 } from '@backstage/plugin-catalog-node';
-import { graphql } from '@octokit/graphql';
 import {
   assignGroupsToUsers,
   buildOrgHierarchy,
+  createOctokit,
   defaultOrganizationTeamTransformer,
   defaultUserTransformer,
   getOrganizationTeams,
@@ -131,13 +131,11 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
 
     for (const orgConfig of orgsToProcess) {
       try {
-        const { headers, type: tokenType } =
-          await this.githubCredentialsProvider.getCredentials({
-            url: `${baseUrl}/${orgConfig.name}`,
-          });
-        const client = graphql.defaults({
+        const octokit = createOctokit({
           baseUrl: gitHubConfig.apiBaseUrl,
-          headers,
+          orgUrl: `${baseUrl}/${orgConfig.name}`,
+          credentialsProvider: this.githubCredentialsProvider,
+          logger: this.logger,
         });
 
         const startTimestamp = Date.now();
@@ -145,9 +143,8 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
           `Reading GitHub users and teams for org: ${orgConfig.name}`,
         );
         const { users } = await getOrganizationUsers(
-          client,
+          octokit,
           orgConfig.name,
-          tokenType,
           async (githubUser, ctx): Promise<Entity | undefined> => {
             const result = this.options.userTransformer
               ? await this.options.userTransformer(githubUser, ctx)
@@ -162,7 +159,7 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
         );
 
         const { teams } = await getOrganizationTeams(
-          client,
+          octokit,
           orgConfig.name,
           async (team, ctx): Promise<Entity | undefined> => {
             const result = this.options.teamTransformer

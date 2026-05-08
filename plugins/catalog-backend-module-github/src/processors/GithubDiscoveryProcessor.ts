@@ -27,8 +27,7 @@ import {
   LocationSpec,
   processingResult,
 } from '@backstage/plugin-catalog-node';
-import { graphql } from '@octokit/graphql';
-import { getOrganizationRepositories } from '../lib';
+import { createOctokit, getOrganizationRepositories } from '../lib';
 import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**
@@ -108,13 +107,11 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
     // about how to handle the wild card which is special for this processor.
     const orgUrl = `https://${host}/${org}`;
 
-    const { headers } = await this.githubCredentialsProvider.getCredentials({
-      url: orgUrl,
-    });
-
-    const client = graphql.defaults({
+    const octokit = createOctokit({
       baseUrl: gitHubConfig.apiBaseUrl,
-      headers,
+      orgUrl: orgUrl,
+      credentialsProvider: this.githubCredentialsProvider,
+      logger: this.logger,
     });
 
     // Read out all of the raw data
@@ -122,7 +119,7 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
     this.logger.info(`Reading GitHub repositories from ${location.target}`);
 
     const { repositories } = await getOrganizationRepositories(
-      client,
+      octokit,
       org,
       catalogPath,
     );

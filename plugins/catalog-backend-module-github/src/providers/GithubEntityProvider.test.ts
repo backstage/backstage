@@ -47,7 +47,20 @@ type PartialDeep<T> = T extends (...args: unknown[]) => unknown
 jest.mock('../lib/github', () => {
   return {
     getOrganizationRepositories: jest.fn(),
-    createGraphqlClient: jest.fn().mockReturnValue(jest.fn()),
+    getOrganizationRepository: jest.fn(),
+    createOctokit: jest.fn().mockReturnValue({
+      graphql: jest.fn(),
+      request: jest.fn().mockResolvedValue({ headers: {} }),
+      auth: jest
+        .fn()
+        .mockResolvedValue({ type: 'app', headers: { token: 'blah' } }),
+    }),
+    DEFAULT_PAGE_SIZES: {
+      teams: 25,
+      teamMembers: 50,
+      organizationMembers: 50,
+      repositories: 25,
+    },
   };
 });
 class PersistingTaskRunner implements SchedulerServiceTaskRunner {
