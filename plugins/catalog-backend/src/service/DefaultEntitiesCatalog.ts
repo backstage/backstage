@@ -122,67 +122,62 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
   async entities(request?: EntitiesRequest): Promise<EntitiesResponse> {
     const db = this.database;
     const { limit, offset } = parsePagination(request?.pagination);
-
-    // When an order field is specified, build the query so that the search
-    // table for that key is the driving table. The `(key, value, entity_id)`
-    // index then walks rows already in sort order, letting LIMIT short-circuit
-    // before the entire filtered set is materialized. The previous shape used
-    // a LEFT JOIN to fetch the order column for every matched row and sorted
-    // afterwards, which was orders of magnitude slower on broad filters.
     const primaryOrder = request?.order?.[0];
 
-    let entitiesQuery: Knex.QueryBuilder<DbFinalEntitiesRow>;
+    // When an order field is specified we run a two-phase fetch:
+    //
+    //   1. A "with-field" phase that drives from the search-by-key index for
+    //      the order column. Because that index walks rows already in sort
+    //      order, the planner can short-circuit on LIMIT instead of having
+    //      to materialize and sort the full filtered set. Entities that
+    //      lack the order field are *excluded* from this phase.
+    //
+    //   2. A "without-field" phase that picks up the entities that lack the
+    //      order field, in entity_id order, to preserve the established
+    //      `NULLS LAST` semantics. This phase is only consulted when the
+    //      first phase did not produce enough rows to satisfy
+    //      `offset + limit + 1` -- in the common UI case where every entity
+    //      has the order field (e.g. `metadata.name`), the second phase is
+    //      never run.
+    //
+    // The previous shape used a LEFT OUTER JOIN to side-fetch the order
+    // column and sorted afterwards, which on broad filters was orders of
+    // magnitude slower because the planner could not short-circuit on LIMIT.
+    let rows: DbFinalEntitiesRow[];
     if (primaryOrder) {
-      entitiesQuery = db('search as order_0')
-        .innerJoin(
-          'final_entities',
-          'final_entities.entity_id',
-          'order_0.entity_id',
-        )
-        .where('order_0.key', primaryOrder.field)
-        .whereNotNull('final_entities.final_entity')
-        .select('final_entities.*');
+      rows = await this.runOrderedEntitiesQuery(
+        request!,
+        primaryOrder,
+        limit,
+        offset,
+      );
     } else {
-      entitiesQuery = db<DbFinalEntitiesRow>('final_entities')
-        .select('final_entities.*')
-        .whereNotNull('final_entities.final_entity');
-    }
+      let entitiesQuery: Knex.QueryBuilder<DbFinalEntitiesRow> =
+        db<DbFinalEntitiesRow>('final_entities')
+          .select('final_entities.*')
+          .whereNotNull('final_entities.final_entity');
 
-    if (request?.filter) {
-      entitiesQuery = applyEntityFilterToQuery({
-        filter: request.filter,
-        targetQuery: entitiesQuery,
-        onEntityIdField: 'final_entities.entity_id',
-        knex: db,
-      });
-    }
-
-    if (primaryOrder) {
-      const { order } = primaryOrder;
-      if (db.client.config.client === 'pg') {
-        entitiesQuery = entitiesQuery.orderBy([
-          { column: 'order_0.value', order, nulls: 'last' },
-          { column: 'final_entities.entity_id', order: 'asc' },
-        ]);
-      } else {
-        entitiesQuery = entitiesQuery.orderBy([
-          { column: 'order_0.value', order: undefined, nulls: 'last' },
-          { column: 'order_0.value', order },
-          { column: 'final_entities.entity_id', order: 'asc' },
-        ]);
+      if (request?.filter) {
+        entitiesQuery = applyEntityFilterToQuery({
+          filter: request.filter,
+          targetQuery: entitiesQuery,
+          onEntityIdField: 'final_entities.entity_id',
+          knex: db,
+        });
       }
-    } else {
+
       entitiesQuery = entitiesQuery.orderBy('final_entities.entity_ref', 'asc');
+
+      if (limit !== undefined) {
+        entitiesQuery = entitiesQuery.limit(limit + 1);
+      }
+      if (offset !== undefined) {
+        entitiesQuery = entitiesQuery.offset(offset);
+      }
+
+      rows = await entitiesQuery;
     }
 
-    if (limit !== undefined) {
-      entitiesQuery = entitiesQuery.limit(limit + 1);
-    }
-    if (offset !== undefined) {
-      entitiesQuery = entitiesQuery.offset(offset);
-    }
-
-    let rows: DbFinalEntitiesRow[] = await entitiesQuery;
     let pageInfo: DbPageInfo;
     if (limit === undefined || rows.length <= limit) {
       pageInfo = { hasNextPage: false };
@@ -212,6 +207,100 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       ),
       pageInfo,
     };
+  }
+
+  /**
+   * Two-phase fetch used when the caller has specified an order field.
+   * See entities() for a longer description of the rationale.
+   */
+  private async runOrderedEntitiesQuery(
+    request: EntitiesRequest,
+    primaryOrder: EntityOrder,
+    limit: number | undefined,
+    offset: number | undefined,
+  ): Promise<DbFinalEntitiesRow[]> {
+    const db = this.database;
+    const isPg = db.client.config.client === 'pg';
+    const wantedRows =
+      limit === undefined ? Number.MAX_SAFE_INTEGER : (offset ?? 0) + limit + 1;
+
+    const applyFilter = <T extends object>(
+      query: Knex.QueryBuilder<T>,
+    ): Knex.QueryBuilder<T> => {
+      if (!request.filter) {
+        return query;
+      }
+      return applyEntityFilterToQuery({
+        filter: request.filter,
+        targetQuery: query,
+        onEntityIdField: 'final_entities.entity_id',
+        knex: db,
+      });
+    };
+
+    // Phase 1 -- entities that have the order field, walked in sort order.
+    let withField = db('search as order_0')
+      .innerJoin(
+        'final_entities',
+        'final_entities.entity_id',
+        'order_0.entity_id',
+      )
+      .where('order_0.key', primaryOrder.field)
+      .whereNotNull('final_entities.final_entity')
+      .select<DbFinalEntitiesRow[]>('final_entities.*');
+    withField = applyFilter(withField);
+    withField = isPg
+      ? withField.orderBy([
+          { column: 'order_0.value', order: primaryOrder.order, nulls: 'last' },
+          { column: 'final_entities.entity_id', order: 'asc' },
+        ])
+      : withField.orderBy([
+          { column: 'order_0.value', order: undefined, nulls: 'last' },
+          { column: 'order_0.value', order: primaryOrder.order },
+          { column: 'final_entities.entity_id', order: 'asc' },
+        ]);
+    if (wantedRows < Number.MAX_SAFE_INTEGER) {
+      withField = withField.limit(wantedRows);
+    }
+    const withFieldRows = await withField;
+
+    // If phase 1 already covered everything we asked for, skip the second
+    // phase entirely. This is the common UI case where every entity in the
+    // filtered set has the order field.
+    if (withFieldRows.length >= wantedRows) {
+      const skip = offset ?? 0;
+      return withFieldRows.slice(skip, skip + (limit ?? wantedRows) + 1);
+    }
+
+    // Phase 2 -- entities that lack the order field, appended after.
+    let withoutField = db<DbFinalEntitiesRow>('final_entities')
+      .select<DbFinalEntitiesRow[]>('final_entities.*')
+      .whereNotNull('final_entities.final_entity')
+      .whereNotExists(qb =>
+        qb
+          .from('search')
+          .where('search.entity_id', db.raw('"final_entities"."entity_id"'))
+          .andWhere('search.key', primaryOrder.field),
+      );
+    withoutField = applyFilter(withoutField);
+    withoutField = withoutField.orderBy(
+      'final_entities.entity_id',
+      primaryOrder.order,
+    );
+    if (limit !== undefined) {
+      // Phase 2 only contributes the rows that phase 1 didn't cover.
+      const remaining =
+        wantedRows - Math.min(withFieldRows.length, (offset ?? 0) + limit + 1);
+      withoutField = withoutField.limit(Math.max(0, remaining));
+    }
+    const withoutFieldRows = await withoutField;
+
+    const combined = [...withFieldRows, ...withoutFieldRows];
+    if (limit === undefined) {
+      return combined;
+    }
+    const skip = offset ?? 0;
+    return combined.slice(skip, skip + limit + 1);
   }
 
   async entitiesBatch(
