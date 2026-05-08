@@ -110,6 +110,7 @@ export const InfoContent = () => {
                 />
               </Flex>
               <Button
+                variant="secondary"
                 onPress={() => copyToClipboard({ about })}
                 iconStart={<RiFileCopyLine />}
               >
