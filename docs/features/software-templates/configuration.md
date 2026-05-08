@@ -165,8 +165,8 @@ The `sub-page:scaffolder/templates` extension accepts a `groups` config field.
 Each group has a `title` and a `filter` predicate (using
 [entity predicate queries](https://backstage.io/docs/features/software-catalog/catalog-customization#entity-predicate-queries)).
 Templates not matched by any group fall into an automatically appended
-"Other" group. With no groups configured the page renders a single "All
-Templates" group.
+"Other Templates" group. With no groups configured the page renders a single
+"Templates" group.
 
 ```yaml
 app:
