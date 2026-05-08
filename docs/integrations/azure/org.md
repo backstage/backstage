@@ -26,7 +26,7 @@ catalog:
       default:
         tenantId: ${AZURE_TENANT_ID}
         user:
-          filter: accountEnabled eq true and userType eq 'member'
+          filter: userType eq 'member'
         group:
           filter: >
             securityEnabled eq false
@@ -121,8 +121,9 @@ To grant the managed identity the same permissions as mentioned in _App Registra
 
 ## Filtering imported Users and Groups
 
-By default, the plugin will import all users and groups from your directory.
-This can be customized through [filters](https://learn.microsoft.com/en-us/graph/filter-query-parameter) and [search](https://learn.microsoft.com/en-us/graph/search-query-parameter) queries. Keep in mind that if you omit filters and search queries for the user or group properties, the plugin will automatically import all available users or groups.
+By default, the plugin will import all **enabled** users and all groups from your directory.
+Disabled user accounts (`accountEnabled eq false`) are automatically excluded.
+This can be further customized through [filters](https://learn.microsoft.com/en-us/graph/filter-query-parameter) and [search](https://learn.microsoft.com/en-us/graph/search-query-parameter) queries. Any custom `user.filter` is combined with the base `accountEnabled eq true` filter using `and`.
 
 ### Groups
 
@@ -156,12 +157,13 @@ By default the provider will get groups using the msgraph `/group` endpoint, but
 ### Users
 
 There are two modes for importing users - You can import all user objects matching a `filter`.
+The `accountEnabled eq true` base filter is applied automatically and combined with any custom filter you provide.
 
 ```yaml
 microsoftGraphOrg:
   providerId:
     user:
-      filter: accountEnabled eq true and userType eq 'member'
+      filter: userType eq 'member'
 ```
 
 Alternatively you can import users that are members of specific groups.

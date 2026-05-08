@@ -52,8 +52,8 @@ catalog:
           # Optional filter for user, see Microsoft Graph API for the syntax
           # See https://docs.microsoft.com/en-us/graph/api/resources/user?view=graph-rest-1.0#properties
           # and for the syntax https://docs.microsoft.com/en-us/graph/query-parameters#filter-parameter
-          # This and userGroupMemberFilter are mutually exclusive, only one can be specified
-          filter: accountEnabled eq true and userType eq 'member'
+          # This filter is combined with the base `accountEnabled eq true` filter.
+          filter: userType eq 'member'
           # Set to false to not load user photos.
           loadPhotos: true
           # See  https://docs.microsoft.com/en-us/graph/api/resources/schemaextension?view=graph-rest-1.0
@@ -64,12 +64,10 @@ catalog:
         userGroupMember:
           # Optional filter for users, use group membership to get users.
           # (Filtered groups and fetch their members.)
-          # This and userFilter are mutually exclusive, only one can be specified
           # See https://docs.microsoft.com/en-us/graph/search-query-parameter
           filter: "displayName eq 'Backstage Users'"
           # Optional search for users, use group membership to get users.
           # (Search for groups and fetch their members.)
-          # This and userFilter are mutually exclusive, only one can be specified
           search: '"description:One" AND ("displayName:Video" OR "displayName:Drive")'
           # Optional /groups by default but allow to query groups from different msgraph endpoints
           path: /groups
@@ -101,8 +99,6 @@ catalog:
           # supports ISO duration, "human duration" as used in code
           initialDelay: { seconds: 15},
 ```
-
-`user.filter` and `userGroupMember.filter` are mutually exclusive, only one can be provided. If both are provided, an error will be thrown.
 
 By default, all users are loaded. If you want to filter users based on their attributes, use `user.filter`. `userGroupMember.filter` can be used if you want to load users based on their group membership.
 
