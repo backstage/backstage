@@ -123,22 +123,30 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     const db = this.database;
     const { limit, offset } = parsePagination(request?.pagination);
 
-    let entitiesQuery =
-      db<DbFinalEntitiesRow>('final_entities').select('final_entities.*');
+    // When an order field is specified, build the query so that the search
+    // table for that key is the driving table. The `(key, value, entity_id)`
+    // index then walks rows already in sort order, letting LIMIT short-circuit
+    // before the entire filtered set is materialized. The previous shape used
+    // a LEFT JOIN to fetch the order column for every matched row and sorted
+    // afterwards, which was orders of magnitude slower on broad filters.
+    const primaryOrder = request?.order?.[0];
 
-    request?.order?.forEach(({ field }, index) => {
-      const alias = `order_${index}`;
-      entitiesQuery = entitiesQuery.leftOuterJoin(
-        { [alias]: 'search' },
-        function search(inner) {
-          inner
-            .on(`${alias}.entity_id`, 'final_entities.entity_id')
-            .andOn(`${alias}.key`, db.raw('?', [field]));
-        },
-      );
-    });
-
-    entitiesQuery = entitiesQuery.whereNotNull('final_entities.final_entity');
+    let entitiesQuery: Knex.QueryBuilder<DbFinalEntitiesRow>;
+    if (primaryOrder) {
+      entitiesQuery = db('search as order_0')
+        .innerJoin(
+          'final_entities',
+          'final_entities.entity_id',
+          'order_0.entity_id',
+        )
+        .where('order_0.key', primaryOrder.field)
+        .whereNotNull('final_entities.final_entity')
+        .select('final_entities.*');
+    } else {
+      entitiesQuery = db<DbFinalEntitiesRow>('final_entities')
+        .select('final_entities.*')
+        .whereNotNull('final_entities.final_entity');
+    }
 
     if (request?.filter) {
       entitiesQuery = applyEntityFilterToQuery({
@@ -149,27 +157,22 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       });
     }
 
-    request?.order?.forEach(({ order }, index) => {
+    if (primaryOrder) {
+      const { order } = primaryOrder;
       if (db.client.config.client === 'pg') {
-        // pg correctly orders by the column value and handling nulls in one go
         entitiesQuery = entitiesQuery.orderBy([
-          { column: `order_${index}.value`, order, nulls: 'last' },
+          { column: 'order_0.value', order, nulls: 'last' },
+          { column: 'final_entities.entity_id', order: 'asc' },
         ]);
       } else {
-        // sqlite and mysql translate the above statement ONLY into "order by (value is null) asc"
-        // no matter what the order is, for some reason, so we have to manually add back the statement
-        // that translates to "order by value <order>" while avoiding to give an order
         entitiesQuery = entitiesQuery.orderBy([
-          { column: `order_${index}.value`, order: undefined, nulls: 'last' },
-          { column: `order_${index}.value`, order },
+          { column: 'order_0.value', order: undefined, nulls: 'last' },
+          { column: 'order_0.value', order },
+          { column: 'final_entities.entity_id', order: 'asc' },
         ]);
       }
-    });
-
-    if (!request?.order) {
-      entitiesQuery = entitiesQuery.orderBy('final_entities.entity_ref', 'asc'); // default sort
     } else {
-      entitiesQuery.orderBy('final_entities.entity_id', 'asc'); // stable sort
+      entitiesQuery = entitiesQuery.orderBy('final_entities.entity_ref', 'asc');
     }
 
     if (limit !== undefined) {
@@ -179,7 +182,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       entitiesQuery = entitiesQuery.offset(offset);
     }
 
-    let rows = await entitiesQuery;
+    let rows: DbFinalEntitiesRow[] = await entitiesQuery;
     let pageInfo: DbPageInfo;
     if (limit === undefined || rows.length <= limit) {
       pageInfo = { hasNextPage: false };
