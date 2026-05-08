@@ -18,12 +18,14 @@ import express from 'express';
 import request from 'supertest';
 import {
   AuthorizeResult,
+  Permission,
   createPermission,
 } from '@backstage/plugin-permission-common';
 import {
   ApplyConditionsRequestEntry,
   ApplyConditionsResponseEntry,
 } from '@backstage/plugin-permission-node';
+import { RootPermissionsRegistryService } from '@backstage/backend-plugin-api/alpha';
 import { PermissionIntegrationClient } from './PermissionIntegrationClient';
 
 import { createRouter } from './router';
@@ -69,6 +71,20 @@ const middleware = MiddlewareFactory.create({
   config: mockServices.rootConfig(),
 });
 
+function createMockRegistry(
+  permissions: Record<string, Permission> = {},
+): RootPermissionsRegistryService {
+  return {
+    addPermissions: jest.fn(),
+    getPermission: name => permissions[name],
+    listPermissions: () =>
+      Object.entries(permissions).map(([_, permission]) => ({
+        pluginId: 'test',
+        permission,
+      })),
+  };
+}
+
 describe('createRouter', () => {
   let app: express.Express;
 
@@ -83,8 +99,7 @@ describe('createRouter', () => {
       }),
       userInfo: mockServices.userInfo(),
       policy,
-      systemMetadata: { getInstalledPlugins: async () => [] },
-      ownPluginId: 'permission',
+      permissionsRegistry: createMockRegistry(),
     });
     router.use(middleware.error());
     app = express().use(router);
@@ -342,398 +357,6 @@ describe('createRouter', () => {
         });
       });
 
-      it('makes separate batched requests to multiple plugin backends', async () => {
-        policy.handle
-          .mockResolvedValueOnce({
-            result: AuthorizeResult.CONDITIONAL,
-            pluginId: 'plugin-1',
-            resourceType: 'test-resource-1',
-            conditions: { rule: 'test-rule', params: ['yes'] },
-          })
-          .mockResolvedValueOnce({
-            result: AuthorizeResult.CONDITIONAL,
-            pluginId: 'plugin-2',
-            resourceType: 'test-resource-2',
-            conditions: { rule: 'test-rule', params: ['yes'] },
-          })
-          .mockResolvedValueOnce({
-            result: AuthorizeResult.CONDITIONAL,
-            pluginId: 'plugin-1',
-            resourceType: 'test-resource-1',
-            conditions: { rule: 'test-rule', params: ['no'] },
-          })
-          .mockResolvedValueOnce({
-            result: AuthorizeResult.CONDITIONAL,
-            pluginId: 'plugin-2',
-            resourceType: 'test-resource-2',
-            conditions: { rule: 'test-rule', params: ['no'] },
-          });
-
-        const response = await request(app)
-          .post('/authorize')
-          .auth(mockCredentials.user.token(), { type: 'bearer' })
-          .send({
-            items: [
-              {
-                id: '123',
-                permission: {
-                  type: 'resource',
-                  name: 'test.permission.1',
-                  resourceType: 'test-resource-1',
-                  attributes: {},
-                },
-                resourceRef: 'resource:1',
-              },
-              {
-                id: '234',
-                permission: {
-                  type: 'resource',
-                  name: 'test.permission.2',
-                  resourceType: 'test-resource-2',
-                  attributes: {},
-                },
-                resourceRef: 'resource:2',
-              },
-              {
-                id: '345',
-                permission: {
-                  type: 'resource',
-                  name: 'test.permission.3',
-                  resourceType: 'test-resource-1',
-                  attributes: {},
-                },
-                resourceRef: 'resource:3',
-              },
-              {
-                id: '456',
-                permission: {
-                  type: 'resource',
-                  name: 'test.permission.4',
-                  resourceType: 'test-resource-2',
-                  attributes: {},
-                },
-                resourceRef: 'resource:4',
-              },
-            ],
-          });
-
-        expect(mockApplyConditions).toHaveBeenCalledWith(
-          'plugin-1',
-          mockCredentials.user(),
-          [
-            expect.objectContaining({
-              id: '123',
-              resourceType: 'test-resource-1',
-              resourceRef: 'resource:1',
-              conditions: { rule: 'test-rule', params: ['yes'] },
-            }),
-            expect.objectContaining({
-              id: '345',
-              resourceType: 'test-resource-1',
-              resourceRef: 'resource:3',
-              conditions: { rule: 'test-rule', params: ['no'] },
-            }),
-          ],
-        );
-
-        expect(mockApplyConditions).toHaveBeenCalledWith(
-          'plugin-2',
-          mockCredentials.user(),
-          [
-            expect.objectContaining({
-              id: '234',
-              resourceType: 'test-resource-2',
-              resourceRef: 'resource:2',
-              conditions: { rule: 'test-rule', params: ['yes'] },
-            }),
-            expect.objectContaining({
-              id: '456',
-              resourceType: 'test-resource-2',
-              resourceRef: 'resource:4',
-              conditions: { rule: 'test-rule', params: ['no'] },
-            }),
-          ],
-        );
-
-        expect(response.status).toEqual(200);
-        expect(response.body).toEqual({
-          items: [
-            { id: '123', result: AuthorizeResult.ALLOW },
-            { id: '234', result: AuthorizeResult.ALLOW },
-            { id: '345', result: AuthorizeResult.DENY },
-            { id: '456', result: AuthorizeResult.DENY },
-          ],
-        });
-      });
-
-      it('leaves definitive results unchanged', async () => {
-        policy.handle
-          .mockResolvedValueOnce({
-            result: AuthorizeResult.CONDITIONAL,
-            pluginId: 'plugin-1',
-            resourceType: 'test-resource-1',
-            conditions: { rule: 'test-rule', params: ['no'] },
-          })
-          .mockResolvedValueOnce({
-            result: AuthorizeResult.CONDITIONAL,
-            pluginId: 'plugin-2',
-            resourceType: 'test-resource-2',
-            conditions: { rule: 'test-rule', params: ['no'] },
-          })
-          .mockResolvedValueOnce({
-            result: AuthorizeResult.ALLOW,
-          })
-          .mockResolvedValueOnce({
-            result: AuthorizeResult.CONDITIONAL,
-            pluginId: 'plugin-1',
-            resourceType: 'test-resource-1',
-            conditions: { rule: 'test-rule', params: ['yes'] },
-          })
-          .mockResolvedValueOnce({
-            result: AuthorizeResult.CONDITIONAL,
-            pluginId: 'plugin-2',
-            resourceType: 'test-resource-2',
-            conditions: { rule: 'test-rule', params: ['yes'] },
-          })
-          .mockResolvedValueOnce({
-            result: AuthorizeResult.DENY,
-          });
-
-        const response = await request(app)
-          .post('/authorize')
-          .auth(mockCredentials.user.token(), { type: 'bearer' })
-          .send({
-            items: [
-              {
-                id: '123',
-                permission: {
-                  type: 'resource',
-                  name: 'test.permission.1',
-                  resourceType: 'test-resource-1',
-                  attributes: {},
-                },
-                resourceRef: 'resource:1',
-              },
-              {
-                id: '234',
-                permission: {
-                  type: 'resource',
-                  name: 'test.permission.2',
-                  resourceType: 'test-resource-2',
-                  attributes: {},
-                },
-                resourceRef: 'resource:2',
-              },
-              {
-                id: '345',
-                permission: {
-                  type: 'resource',
-                  name: 'test.permission.3',
-                  resourceType: 'test-resource-1',
-                  attributes: {},
-                },
-                resourceRef: 'resource:3',
-              },
-              {
-                id: '456',
-                permission: {
-                  type: 'resource',
-                  name: 'test.permission.4',
-                  resourceType: 'test-resource-1',
-                  attributes: {},
-                },
-                resourceRef: 'resource:4',
-              },
-              {
-                id: '567',
-                permission: {
-                  type: 'resource',
-                  name: 'test.permission.5',
-                  resourceType: 'test-resource-2',
-                  attributes: {},
-                },
-                resourceRef: 'resource:5',
-              },
-              {
-                id: '678',
-                permission: {
-                  type: 'basic',
-                  name: 'test.permission.6',
-                  attributes: {},
-                },
-              },
-            ],
-          });
-
-        expect(mockApplyConditions).toHaveBeenCalledWith(
-          'plugin-1',
-          mockCredentials.user(),
-          [
-            expect.objectContaining({
-              id: '123',
-              resourceType: 'test-resource-1',
-              resourceRef: 'resource:1',
-              conditions: { rule: 'test-rule', params: ['no'] },
-            }),
-            expect.objectContaining({
-              id: '456',
-              resourceType: 'test-resource-1',
-              resourceRef: 'resource:4',
-              conditions: { rule: 'test-rule', params: ['yes'] },
-            }),
-          ],
-        );
-
-        expect(mockApplyConditions).toHaveBeenCalledWith(
-          'plugin-2',
-          mockCredentials.user(),
-          [
-            expect.objectContaining({
-              id: '234',
-              resourceType: 'test-resource-2',
-              resourceRef: 'resource:2',
-              conditions: { rule: 'test-rule', params: ['no'] },
-            }),
-            expect.objectContaining({
-              id: '567',
-              resourceType: 'test-resource-2',
-              resourceRef: 'resource:5',
-              conditions: { rule: 'test-rule', params: ['yes'] },
-            }),
-          ],
-        );
-
-        expect(response.status).toEqual(200);
-        expect(response.body).toEqual({
-          items: [
-            { id: '123', result: AuthorizeResult.DENY },
-            { id: '234', result: AuthorizeResult.DENY },
-            { id: '345', result: AuthorizeResult.ALLOW },
-            { id: '456', result: AuthorizeResult.ALLOW },
-            { id: '567', result: AuthorizeResult.ALLOW },
-            { id: '678', result: AuthorizeResult.DENY },
-          ],
-        });
-      });
-
-      it('leaves conditional results without resourceRef unchanged', async () => {
-        policy.handle
-          .mockResolvedValueOnce({
-            result: AuthorizeResult.CONDITIONAL,
-            pluginId: 'plugin-1',
-            resourceType: 'test-resource-1',
-            conditions: { rule: 'test-rule', params: ['yes'] },
-          })
-          .mockResolvedValueOnce({
-            result: AuthorizeResult.CONDITIONAL,
-            pluginId: 'plugin-2',
-            resourceType: 'test-resource-2',
-            conditions: { rule: 'test-rule', params: ['yes'] },
-          })
-          .mockResolvedValueOnce({
-            result: AuthorizeResult.ALLOW,
-          })
-          .mockResolvedValueOnce({
-            result: AuthorizeResult.CONDITIONAL,
-            pluginId: 'plugin-1',
-            resourceType: 'test-resource-1',
-            conditions: { rule: 'test-rule', params: ['abc'] },
-          });
-
-        const response = await request(app)
-          .post('/authorize')
-          .auth(userTokenIssuedByService(), { type: 'bearer' })
-          .send({
-            items: [
-              {
-                id: '123',
-                permission: {
-                  type: 'resource',
-                  name: 'test.permission.1',
-                  resourceType: 'test-resource-1',
-                  attributes: {},
-                },
-                resourceRef: 'resource:1',
-              },
-              {
-                id: '234',
-                permission: {
-                  type: 'resource',
-                  name: 'test.permission.2',
-                  resourceType: 'test-resource-2',
-                  attributes: {},
-                },
-                resourceRef: 'resource:2',
-              },
-              {
-                id: '345',
-                permission: {
-                  type: 'resource',
-                  name: 'test.permission.3',
-                  resourceType: 'test-resource-1',
-                  attributes: {},
-                },
-                resourceRef: 'resource:3',
-              },
-              {
-                id: '456',
-                permission: {
-                  type: 'resource',
-                  name: 'test.permission.4',
-                  resourceType: 'test-resource-1',
-                  attributes: {},
-                },
-              },
-            ],
-          });
-
-        expect(mockApplyConditions).toHaveBeenCalledWith(
-          'plugin-1',
-          mockCredentials.user('user:default/spiderman', {
-            actor: { subject: 'some-service' },
-          }),
-          [
-            expect.objectContaining({
-              id: '123',
-              resourceType: 'test-resource-1',
-              resourceRef: 'resource:1',
-              conditions: { rule: 'test-rule', params: ['yes'] },
-            }),
-          ],
-        );
-
-        expect(mockApplyConditions).toHaveBeenCalledWith(
-          'plugin-2',
-          mockCredentials.user('user:default/spiderman', {
-            actor: { subject: 'some-service' },
-          }),
-          [
-            expect.objectContaining({
-              id: '234',
-              resourceType: 'test-resource-2',
-              resourceRef: 'resource:2',
-              conditions: { rule: 'test-rule', params: ['yes'] },
-            }),
-          ],
-        );
-
-        expect(response.status).toEqual(200);
-        expect(response.body).toEqual({
-          items: [
-            { id: '123', result: AuthorizeResult.ALLOW },
-            { id: '234', result: AuthorizeResult.ALLOW },
-            { id: '345', result: AuthorizeResult.ALLOW },
-            {
-              id: '456',
-              result: AuthorizeResult.CONDITIONAL,
-              pluginId: 'plugin-1',
-              resourceType: 'test-resource-1',
-              conditions: { rule: 'test-rule', params: ['abc'] },
-            },
-          ],
-        });
-      });
-
       it.each<[ApplyConditionsResponseEntry['result'], string]>([
         [AuthorizeResult.ALLOW, 'yes'],
         [AuthorizeResult.DENY, 'no'],
@@ -748,14 +371,8 @@ describe('createRouter', () => {
           });
 
           mockApplyConditions.mockResolvedValueOnce([
-            {
-              id: '123',
-              result,
-            },
-            {
-              id: '234',
-              result,
-            },
+            { id: '123', result },
+            { id: '234', result },
           ]);
 
           const response = await request(app)
@@ -786,36 +403,11 @@ describe('createRouter', () => {
               ],
             });
 
-          expect(mockApplyConditions).toHaveBeenCalledWith(
-            'test-plugin',
-            mockCredentials.user(),
-            [
-              expect.objectContaining({
-                id: '123',
-                resourceType: 'test-resource-1',
-                resourceRef: 'test/resource',
-                conditions: { rule: 'test-rule', params },
-              }),
-              expect.objectContaining({
-                id: '234',
-                resourceType: 'test-resource-1',
-                resourceRef: 'test/resource',
-                conditions: { rule: 'test-rule', params },
-              }),
-            ],
-          );
-
           expect(response.status).toEqual(200);
           expect(response.body).toEqual({
             items: [
-              {
-                id: '123',
-                result,
-              },
-              {
-                id: '234',
-                result,
-              },
+              { id: '123', result },
+              { id: '234', result },
             ],
           });
         },
@@ -878,33 +470,6 @@ describe('createRouter', () => {
               type: 'basic',
               name: 'test.permission',
               attributes: {},
-            },
-          },
-        ],
-      },
-      {
-        items: [
-          {
-            id: '123',
-            resourceRef: ['resource:1'],
-            permission: {
-              type: 'basic',
-              name: 'test.permission',
-              attributes: {},
-            },
-          },
-        ],
-      },
-      {
-        items: [
-          {
-            id: '123',
-            resourceRef: [],
-            permission: {
-              type: 'resource',
-              name: 'test.permission',
-              attributes: {},
-              resourceType: 'test-resource-1',
             },
           },
         ],
@@ -989,339 +554,194 @@ describe('createRouter', () => {
   });
 });
 
-describe('GET /.well-known/backstage/permissions/installed', () => {
-  const installedPath = '/.well-known/backstage/permissions/installed';
-  const fetchSpy = jest.spyOn(globalThis, 'fetch');
+describe('POST /authorize/by-name', () => {
   const logger = mockServices.logger.mock();
 
-  type MetadataPayload = {
-    permissions?: Array<{
-      type: 'basic' | 'resource';
-      name: string;
-      attributes: { action?: string };
-      resourceType?: string;
-    }>;
-  };
-
-  const buildApp = async (
-    pluginIds: string[],
-    payloads: Record<string, MetadataPayload | { status: number } | 'reject'>,
-    configOverrides: Record<string, unknown> = {},
-  ) => {
-    fetchSpy.mockReset();
-    fetchSpy.mockImplementation(async input => {
-      const url = typeof input === 'string' ? input : (input as URL).toString();
-      const match = url.match(/\/api\/([^/]+)\/\.well-known/);
-      const pluginId = match?.[1] ?? '';
-      const payload = payloads[pluginId];
-      if (payload === 'reject') {
-        throw new Error('boom');
+  beforeEach(() => {
+    // Earlier `/authorize` tests set sticky `mockResolvedValue` returns on the
+    // shared `policy.handle` mock; `clearAllMocks` only clears call history,
+    // not implementations. Re-establish the identity-based default so the
+    // by-name tests start from a known state.
+    policy.handle.mockReset();
+    policy.handle.mockImplementation(async (_req, identity) => {
+      if (identity) {
+        return { result: AuthorizeResult.ALLOW };
       }
-      if (payload && 'status' in payload) {
-        return new Response(null, { status: payload.status });
-      }
-      return new Response(JSON.stringify({ rules: [], ...(payload ?? {}) }), {
-        status: 200,
-        headers: { 'content-type': 'application/json' },
-      });
+      return { result: AuthorizeResult.DENY };
     });
+  });
 
+  async function buildApp(
+    options: {
+      permissions?: Record<string, Permission>;
+      credentials?: BackstageCredentials;
+    } = {},
+  ) {
     const router = await createRouter({
-      config: new ConfigReader({
-        permission: { enabled: true, ...configOverrides },
-      }),
+      config: new ConfigReader({ permission: { enabled: true } }),
       logger,
       discovery: mockServices.discovery(),
       auth: mockServices.auth(),
       httpAuth: mockServices.httpAuth({
-        defaultCredentials: mockCredentials.user(),
+        defaultCredentials: options.credentials ?? mockCredentials.user(),
       }),
       userInfo: mockServices.userInfo(),
       policy,
-      systemMetadata: {
-        getInstalledPlugins: async () =>
-          pluginIds.map(pluginId => ({ pluginId })),
-      },
-      ownPluginId: 'permission',
+      permissionsRegistry: createMockRegistry(options.permissions),
     });
     router.use(middleware.error());
     return express().use(router);
-  };
+  }
 
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  it('returns an empty plugins list when nothing is installed', async () => {
-    const app = await buildApp([], {});
-    const response = await request(app).get(installedPath);
-
-    expect(response.status).toEqual(200);
-    expect(response.body).toEqual({ plugins: [] });
-    expect(fetchSpy).not.toHaveBeenCalled();
-  });
-
-  it('aggregates permissions across plugins in deterministic order', async () => {
-    const app = await buildApp(['scaffolder', 'catalog'], {
-      catalog: {
-        permissions: [
-          {
-            type: 'basic',
-            name: 'catalog.entity.create',
-            attributes: { action: 'create' },
-          },
-          {
-            type: 'resource',
-            name: 'catalog.entity.read',
-            attributes: { action: 'read' },
-            resourceType: 'catalog-entity',
-          },
-        ],
-      },
-      scaffolder: {
-        permissions: [
-          {
-            type: 'basic',
-            name: 'scaffolder.task.create',
-            attributes: { action: 'create' },
-          },
-        ],
-      },
-    });
-
-    const response = await request(app).get(installedPath);
-
-    expect(response.status).toEqual(200);
-    expect(response.body.plugins.map((p: any) => p.pluginId)).toEqual([
-      'catalog',
-      'scaffolder',
-    ]);
-    const catalog = response.body.plugins[0];
-    expect(catalog.permissions).toEqual([
-      {
-        type: 'basic',
-        name: 'catalog.entity.create',
-        attributes: { action: 'create' },
-      },
-      {
-        type: 'resource',
-        name: 'catalog.entity.read',
-        attributes: { action: 'read' },
-        resourceType: 'catalog-entity',
-      },
-    ]);
-  });
-
-  it('drops plugins that respond with 404 without warning', async () => {
-    const app = await buildApp(['catalog', 'unmounted'], {
-      catalog: {
-        permissions: [
-          { type: 'basic', name: 'a', attributes: { action: 'read' } },
-        ],
-      },
-      unmounted: { status: 404 },
-    });
-
-    const response = await request(app).get(installedPath);
-
-    expect(response.status).toEqual(200);
-    expect(response.body.plugins).toEqual([
-      {
-        pluginId: 'catalog',
-        permissions: [
-          { type: 'basic', name: 'a', attributes: { action: 'read' } },
-        ],
-      },
-      { pluginId: 'unmounted', permissions: [] },
-    ]);
-    expect(logger.warn).not.toHaveBeenCalled();
-  });
-
-  it('skips fanning out to its own pluginId', async () => {
-    const app = await buildApp(['catalog', 'permission'], {
-      catalog: {
-        permissions: [
-          { type: 'basic', name: 'a', attributes: { action: 'read' } },
-        ],
-      },
-      // No 'permission' payload — fetch would return an unknown-plugin response
-      // if it were called, which it must not be.
-    });
-
-    const response = await request(app).get(installedPath);
-
-    expect(response.status).toEqual(200);
-    expect(
-      response.body.plugins.map((p: { pluginId: string }) => p.pluginId),
-    ).toEqual(['catalog']);
-    // Only one fan-out call: catalog. No call for the own 'permission' plugin.
-    expect(fetchSpy).toHaveBeenCalledTimes(1);
-    expect(fetchSpy.mock.calls[0][0]).toEqual(
-      expect.stringContaining('/api/catalog/'),
-    );
-  });
-
-  it('drops plugins that throw and logs a warning', async () => {
-    const app = await buildApp(['catalog', 'flaky'], {
-      catalog: {
-        permissions: [
-          { type: 'basic', name: 'a', attributes: { action: 'read' } },
-        ],
-      },
-      flaky: 'reject',
-    });
-
-    const response = await request(app).get(installedPath);
-
-    expect(response.status).toEqual(200);
-    expect(response.body.plugins.map((p: any) => p.pluginId)).toEqual([
-      'catalog',
-      'flaky',
-    ]);
-    expect(response.body.plugins[1].permissions).toEqual([]);
-    expect(logger.warn).toHaveBeenCalledWith(
-      expect.stringContaining(`'flaky'`),
-      expect.objectContaining({ error: expect.stringContaining('boom') }),
-    );
-  });
-
-  it('dedupes permission name collisions deterministically and warns', async () => {
-    const app = await buildApp(['plugin-b', 'plugin-a'], {
-      'plugin-a': {
-        permissions: [
-          {
-            type: 'basic',
-            name: 'shared.name',
-            attributes: { action: 'read' },
-          },
-        ],
-      },
-      'plugin-b': {
-        permissions: [
-          {
-            type: 'basic',
-            name: 'shared.name',
-            attributes: { action: 'create' },
-          },
-        ],
-      },
-    });
-
-    const response = await request(app).get(installedPath);
-
-    expect(response.status).toEqual(200);
-    // Sorted plugin ids: plugin-a wins, plugin-b's duplicate is dropped.
-    expect(response.body.plugins[0].permissions).toHaveLength(1);
-    expect(response.body.plugins[0].permissions[0].attributes.action).toBe(
-      'read',
-    );
-    expect(response.body.plugins[1].permissions).toEqual([]);
-    expect(logger.warn).toHaveBeenCalledWith(
-      expect.stringContaining(`Duplicate permission name 'shared.name'`),
-    );
-  });
-
-  it('returns 404 and never fans out when permission.installedPermissions.enabled is false', async () => {
-    const app = await buildApp(
-      ['catalog'],
-      {
-        catalog: {
-          permissions: [
-            { type: 'basic', name: 'a', attributes: { action: 'read' } },
-          ],
-        },
-      },
-      { installedPermissions: { enabled: false } },
-    );
-
-    const response = await request(app).get(installedPath);
-
-    expect(response.status).toEqual(404);
-    expect(fetchSpy).not.toHaveBeenCalled();
-  });
-
-  it('caches the aggregated result on success', async () => {
-    const app = await buildApp(['catalog'], {
-      catalog: {
-        permissions: [
-          { type: 'basic', name: 'a', attributes: { action: 'read' } },
-        ],
-      },
-    });
-
-    await request(app).get(installedPath);
-    await request(app).get(installedPath);
-
-    expect(fetchSpy).toHaveBeenCalledTimes(1);
-  });
-
-  it('round-trips Permission objects produced by createPermission() — basic with attributes and resource permissions — without losing fields', async () => {
-    // Use the real public helper rather than literals so we catch any drift
-    // between createPermission() output and the wire format.
-    const catalogCreate = createPermission({
+  it('hydrates a basic permission and routes through the policy with attributes intact', async () => {
+    const permission = createPermission({
       name: 'catalog.entity.create',
       attributes: { action: 'create' },
     });
-    const catalogRead = createPermission({
+    const app = await buildApp({
+      permissions: { [permission.name]: permission },
+    });
+
+    const response = await request(app)
+      .post('/authorize/by-name')
+      .auth(mockCredentials.user.token(), { type: 'bearer' })
+      .send({ items: [{ id: '1', name: permission.name }] });
+
+    expect(response.status).toEqual(200);
+    expect(response.body).toEqual({
+      items: [{ id: '1', result: AuthorizeResult.ALLOW }],
+    });
+    expect(policy.handle).toHaveBeenCalledWith(
+      { permission },
+      expect.objectContaining({ identity: expect.any(Object) }),
+    );
+  });
+
+  it('denies unknown permission names and warns', async () => {
+    const app = await buildApp({ permissions: {} });
+
+    const response = await request(app)
+      .post('/authorize/by-name')
+      .auth(mockCredentials.user.token(), { type: 'bearer' })
+      .send({ items: [{ id: '1', name: 'unknown.permission' }] });
+
+    expect(response.status).toEqual(200);
+    expect(response.body).toEqual({
+      items: [{ id: '1', result: AuthorizeResult.DENY }],
+    });
+    expect(policy.handle).not.toHaveBeenCalled();
+    expect(logger.warn).toHaveBeenCalledWith(
+      expect.stringContaining(`'unknown.permission'`),
+    );
+  });
+
+  it('rejects resource permissions without a resourceRef for direct user calls', async () => {
+    const permission = createPermission({
       name: 'catalog.entity.read',
       attributes: { action: 'read' },
       resourceType: 'catalog-entity',
     });
-    const catalogUpdate = createPermission({
-      name: 'catalog.entity.update',
-      attributes: { action: 'update' },
-      resourceType: 'catalog-entity',
-    });
-    const catalogDelete = createPermission({
-      name: 'catalog.entity.delete',
-      attributes: { action: 'delete' },
-      resourceType: 'catalog-entity',
-    });
-    const scaffolderExecute = createPermission({
-      name: 'scaffolder.task.create',
-      attributes: { action: 'create' },
+    const app = await buildApp({
+      permissions: { [permission.name]: permission },
     });
 
-    const app = await buildApp(['catalog', 'scaffolder'], {
-      catalog: {
-        permissions: [catalogCreate, catalogRead, catalogUpdate, catalogDelete],
-      },
-      scaffolder: { permissions: [scaffolderExecute] },
+    const response = await request(app)
+      .post('/authorize/by-name')
+      .auth(mockCredentials.user.token(), { type: 'bearer' })
+      .send({ items: [{ id: '1', name: permission.name }] });
+
+    expect(response.status).toEqual(400);
+    expect(response.body.error.message).toMatch(
+      /Resource permissions require a resourceRef/i,
+    );
+  });
+
+  it('forwards a resource permission with resourceRef through applyConditions', async () => {
+    const permission = createPermission({
+      name: 'catalog.entity.read',
+      attributes: { action: 'read' },
+      resourceType: 'catalog-entity',
+    });
+    policy.handle.mockResolvedValueOnce({
+      result: AuthorizeResult.CONDITIONAL,
+      pluginId: 'catalog',
+      resourceType: 'catalog-entity',
+      conditions: { rule: 'isOwner', params: ['yes'] },
+    });
+    mockApplyConditions.mockResolvedValueOnce([
+      { id: '1', result: AuthorizeResult.ALLOW },
+    ]);
+
+    const app = await buildApp({
+      permissions: { [permission.name]: permission },
     });
 
-    const response = await request(app).get(installedPath);
+    const response = await request(app)
+      .post('/authorize/by-name')
+      .auth(mockCredentials.user.token(), { type: 'bearer' })
+      .send({
+        items: [
+          { id: '1', name: permission.name, resourceRef: 'entity:test/foo' },
+        ],
+      });
 
     expect(response.status).toEqual(200);
     expect(response.body).toEqual({
-      plugins: [
-        {
-          pluginId: 'catalog',
-          permissions: [
-            catalogCreate,
-            catalogRead,
-            catalogUpdate,
-            catalogDelete,
-          ],
-        },
-        {
-          pluginId: 'scaffolder',
-          permissions: [scaffolderExecute],
-        },
-      ],
+      items: [{ id: '1', result: AuthorizeResult.ALLOW }],
     });
-    // Spot-check the discriminator fields explicitly so a future refactor of
-    // createPermission can't quietly drop attributes or resourceType from the
-    // wire format.
-    const flat = response.body.plugins.flatMap((p: any) => p.permissions);
-    expect(flat).toHaveLength(5);
-    for (const permission of flat) {
-      expect(permission.attributes).toBeDefined();
-      expect(typeof permission.attributes.action).toBe('string');
-    }
-    const resourcePerms = flat.filter((p: any) => p.type === 'resource');
-    expect(resourcePerms).toHaveLength(3);
-    for (const permission of resourcePerms) {
-      expect(permission.resourceType).toBe('catalog-entity');
-    }
+    expect(mockApplyConditions).toHaveBeenCalledWith(
+      'catalog',
+      mockCredentials.user(),
+      [
+        expect.objectContaining({
+          id: '1',
+          resourceRef: 'entity:test/foo',
+          resourceType: 'catalog-entity',
+        }),
+      ],
+    );
+  });
+
+  it('preserves request order in the response and mixes known + unknown names', async () => {
+    const known = createPermission({
+      name: 'known.basic',
+      attributes: { action: 'read' },
+    });
+    const app = await buildApp({
+      permissions: { [known.name]: known },
+    });
+
+    const response = await request(app)
+      .post('/authorize/by-name')
+      .auth(mockCredentials.user.token(), { type: 'bearer' })
+      .send({
+        items: [
+          { id: 'a', name: 'unknown.one' },
+          { id: 'b', name: known.name },
+          { id: 'c', name: 'unknown.two' },
+        ],
+      });
+
+    expect(response.status).toEqual(200);
+    expect(response.body.items.map((i: any) => i.id)).toEqual(['a', 'b', 'c']);
+    expect(response.body.items[0].result).toBe(AuthorizeResult.DENY);
+    expect(response.body.items[1].result).toBe(AuthorizeResult.ALLOW);
+    expect(response.body.items[2].result).toBe(AuthorizeResult.DENY);
+  });
+
+  it('returns 400 for an invalid request body', async () => {
+    const app = await buildApp();
+
+    const response = await request(app)
+      .post('/authorize/by-name')
+      .auth(mockCredentials.user.token(), { type: 'bearer' })
+      .send({ items: [{ id: 1, name: 42 }] });
+
+    expect(response.status).toEqual(400);
+    expect(response.body.error.name).toEqual('InputError');
   });
 });

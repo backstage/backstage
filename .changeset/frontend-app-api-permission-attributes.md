@@ -2,4 +2,4 @@
 '@backstage/frontend-app-api': patch
 ---
 
-The `if` predicate now resolves permission attributes and resource types from the permission backend's installed-permissions catalog, so attribute-aware policies evaluate predicates correctly. Falls back to the previous basic-permission shape when the catalog isn't available.
+The `if` predicate now authorizes referenced permissions through the permission backend's name-based authorize endpoint in a single batched request. Predicates that gate on attribute-aware policies (for example, `attributes.action === 'create'`) now evaluate correctly because the backend hydrates the registered `Permission` — including its `attributes` and resource type — before running the policy.

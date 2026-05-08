@@ -18,6 +18,16 @@ export type AnyOfCriteria<TQuery> = {
 };
 
 // @public
+export type AuthorizeByNameRequest = PermissionMessageBatch<{
+  name: string;
+  resourceRef?: string | string[];
+}>;
+
+// @public
+export type AuthorizeByNameResponse =
+  PermissionMessageBatch<EvaluatePermissionResponse>;
+
+// @public
 export type AuthorizePermissionRequest =
   | {
       permission: Exclude<Permission, ResourcePermission>;
@@ -114,21 +124,6 @@ export interface EvaluatorRequestOptions {}
 // @public
 export type IdentifiedPermissionMessage<T> = T & {
   id: string;
-};
-
-// @public
-export const INSTALLED_PERMISSIONS_PATH =
-  '/.well-known/backstage/permissions/installed';
-
-// @public
-export type InstalledPermissionsResponse = {
-  plugins: InstalledPluginPermissions[];
-};
-
-// @public
-export type InstalledPluginPermissions = {
-  pluginId: string;
-  permissions: Permission[];
 };
 
 // @public

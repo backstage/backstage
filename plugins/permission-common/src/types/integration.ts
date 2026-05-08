@@ -15,6 +15,7 @@
  */
 
 import zodToJsonSchema from 'zod-to-json-schema';
+import { EvaluatePermissionResponse, PermissionMessageBatch } from './api';
 import { Permission } from './permission';
 
 /**
@@ -42,29 +43,6 @@ export type MetadataResponse = {
 };
 
 /**
- * The permissions registered by a single plugin, as exposed by the
- * installed-permissions endpoint.
- *
- * @public
- */
-export type InstalledPluginPermissions = {
-  pluginId: string;
-  permissions: Permission[];
-};
-
-/**
- * Aggregated catalog of every permission registered across the deployment,
- * grouped by the plugin that registered it. Returned by the permission backend
- * to allow clients to look up the full {@link Permission} definition (including
- * attributes and resource type) by name.
- *
- * @public
- */
-export type InstalledPermissionsResponse = {
-  plugins: InstalledPluginPermissions[];
-};
-
-/**
  * Path of the metadata endpoint mounted by
  * {@link @backstage/plugin-permission-node#createPermissionIntegrationRouter}
  * on every plugin that registers permissions or rules.
@@ -75,10 +53,26 @@ export const PERMISSIONS_METADATA_PATH =
   '/.well-known/backstage/permissions/metadata';
 
 /**
- * Path of the aggregated installed-permissions endpoint exposed by the
- * permission backend, mounted under its plugin base URL.
+ * Request payload for the permission backend's `POST /authorize/by-name`
+ * endpoint. Each item references a registered permission by `name`; the
+ * backend resolves it to the full {@link Permission} (preserving `attributes`
+ * and the basic / resource discriminator) before authorizing. `resourceRef`
+ * is required for resource permissions for the same reason as on
+ * `/authorize`.
  *
  * @public
  */
-export const INSTALLED_PERMISSIONS_PATH =
-  '/.well-known/backstage/permissions/installed';
+export type AuthorizeByNameRequest = PermissionMessageBatch<{
+  name: string;
+  resourceRef?: string | string[];
+}>;
+
+/**
+ * Response payload for the permission backend's `POST /authorize/by-name`
+ * endpoint. Each entry mirrors the `id` of the corresponding request entry.
+ * Unknown permission names resolve to a `DENY` decision.
+ *
+ * @public
+ */
+export type AuthorizeByNameResponse =
+  PermissionMessageBatch<EvaluatePermissionResponse>;

@@ -10,6 +10,7 @@ import { JsonObject } from '@backstage/types';
 import { JSONSchema7 } from 'json-schema';
 import { JsonValue } from '@backstage/types';
 import { LoggerService } from '@backstage/backend-plugin-api';
+import { Permission } from '@backstage/plugin-permission-common';
 import { ServiceRef } from '@backstage/backend-plugin-api';
 import { z } from 'zod/v3';
 
@@ -267,6 +268,28 @@ export interface MetricsServiceUpDownCounter<
   // (undocumented)
   add(value: number, attributes?: TAttributes): void;
 }
+
+// @alpha
+export interface RootPermissionsRegistryEntry {
+  // (undocumented)
+  permission: Permission;
+  // (undocumented)
+  pluginId: string;
+}
+
+// @alpha
+export interface RootPermissionsRegistryService {
+  addPermissions(pluginId: string, permissions: Permission[]): void;
+  getPermission(name: string): Permission | undefined;
+  listPermissions(): ReadonlyArray<RootPermissionsRegistryEntry>;
+}
+
+// @alpha
+export const rootPermissionsRegistryServiceRef: ServiceRef<
+  RootPermissionsRegistryService,
+  'root',
+  'singleton'
+>;
 
 // @public (undocumented)
 export interface RootSystemMetadataService {

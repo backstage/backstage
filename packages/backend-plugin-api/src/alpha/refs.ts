@@ -58,6 +58,21 @@ export const rootSystemMetadataServiceRef = createServiceRef<
 });
 
 /**
+ * Root-scoped permission registry that aggregates per-plugin permission
+ * registrations.
+ *
+ * See {@link RootPermissionsRegistryService} for usage.
+ *
+ * @alpha
+ */
+export const rootPermissionsRegistryServiceRef = createServiceRef<
+  import('./RootPermissionsRegistryService').RootPermissionsRegistryService
+>({
+  id: 'alpha.core.rootPermissionsRegistry',
+  scope: 'root',
+});
+
+/**
  * Service for managing metrics.
  *
  * @alpha

@@ -20,109 +20,90 @@ import {
   discoveryApiRef,
   fetchApiRef,
 } from '@backstage/frontend-plugin-api';
-import { createPermission } from '@backstage/plugin-permission-common';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import {
   createPredicateContextLoader,
   localPermissionApiRef,
 } from './predicates';
 
-function makeApis(options: { authorize?: jest.Mock; fetch?: jest.Mock }): {
+function makeApis(options: { fetch?: jest.Mock; authorize?: jest.Mock }): {
   apis: ApiHolder;
-  authorize: jest.Mock;
   fetch: jest.Mock;
+  authorize: jest.Mock;
 } {
-  const authorize =
-    options.authorize ?? jest.fn().mockResolvedValue({ result: 'ALLOW' });
   const fetch =
     options.fetch ??
     jest.fn().mockResolvedValue({
       ok: true,
-      json: async () => ({ plugins: [] }),
+      json: async () => ({ items: [] }),
     });
+  const authorize =
+    options.authorize ?? jest.fn().mockResolvedValue({ result: 'ALLOW' });
   const map = new Map<ApiRef<unknown>, unknown>([
     [localPermissionApiRef, { authorize }],
     [discoveryApiRef, { getBaseUrl: async () => 'http://x/api/permission' }],
     [fetchApiRef, { fetch }],
   ]);
   return {
-    // Each call returns a fresh object so the WeakMap-based registry cache
-    // doesn't leak between tests.
     apis: { get: <T>(ref: ApiRef<T>) => map.get(ref) as T | undefined },
-    authorize,
     fetch,
+    authorize,
   };
 }
 
 describe('createPredicateContextLoader', () => {
-  beforeEach(() => {
-    // Silence the resource-permission warning emitted by the predicate loader
-    // during tests that exercise resource permissions.
-    jest.spyOn(console, 'warn').mockImplementation(() => {});
-  });
-
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
-
-  it('authorizes referenced basic permissions using the full Permission shape from the registry', async () => {
+  it('issues a single batched authorize-by-name request and reports allowed names', async () => {
     const fetch = jest.fn().mockResolvedValue({
       ok: true,
       json: async () => ({
-        plugins: [
-          {
-            pluginId: 'catalog',
-            permissions: [
-              {
-                type: 'basic',
-                name: 'catalog.entity.create',
-                attributes: { action: 'create' },
-              },
-              {
-                type: 'basic',
-                name: 'catalog.location.create',
-                attributes: { action: 'create' },
-              },
-            ],
-          },
+        items: [
+          { id: '0', result: AuthorizeResult.ALLOW },
+          { id: '1', result: AuthorizeResult.DENY },
+          { id: '2', result: AuthorizeResult.ALLOW },
         ],
       }),
     });
-    const { apis, authorize } = makeApis({ fetch });
+    const { apis } = makeApis({ fetch });
 
     const result = await createPredicateContextLoader({
       apis,
       predicateReferences: {
         featureFlags: [],
-        permissions: ['catalog.entity.create', 'catalog.location.create'],
+        permissions: [
+          'catalog.entity.create',
+          'catalog.entity.delete',
+          'scaffolder.task.create',
+        ],
       },
     }).load();
 
-    expect(fetch).toHaveBeenCalledWith(
-      'http://x/api/permission/.well-known/backstage/permissions/installed',
-    );
-    expect(authorize).toHaveBeenNthCalledWith(1, {
-      permission: {
-        type: 'basic',
-        name: 'catalog.entity.create',
-        attributes: { action: 'create' },
-      },
+    expect(fetch).toHaveBeenCalledTimes(1);
+    const [url, init] = fetch.mock.calls[0];
+    expect(url).toEqual('http://x/api/permission/authorize/by-name');
+    expect(init).toMatchObject({
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
     });
-    expect(authorize).toHaveBeenNthCalledWith(2, {
-      permission: {
-        type: 'basic',
-        name: 'catalog.location.create',
-        attributes: { action: 'create' },
-      },
+    expect(JSON.parse(init.body)).toEqual({
+      items: [
+        { id: '0', name: 'catalog.entity.create' },
+        { id: '1', name: 'catalog.entity.delete' },
+        { id: '2', name: 'scaffolder.task.create' },
+      ],
     });
     expect(result.permissions).toEqual([
       'catalog.entity.create',
-      'catalog.location.create',
+      'scaffolder.task.create',
     ]);
   });
 
-  it('falls back to a basic-permission shape and warns when the registry endpoint is unavailable', async () => {
-    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
-    const fetch = jest.fn().mockResolvedValue({ ok: false, status: 404 });
+  it('does not call the local permissionApi.authorize — naming is the only input', async () => {
+    const fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        items: [{ id: '0', result: AuthorizeResult.ALLOW }],
+      }),
+    });
     const { apis, authorize } = makeApis({ fetch });
 
     await createPredicateContextLoader({
@@ -133,181 +114,37 @@ describe('createPredicateContextLoader', () => {
       },
     }).load();
 
-    expect(authorize).toHaveBeenCalledWith({
-      permission: {
-        type: 'basic',
-        name: 'some.permission',
-        attributes: {},
-      },
-    });
-    expect(warnSpy).toHaveBeenCalledWith(
-      expect.stringContaining('falling back to basic-permission requests'),
-    );
-    warnSpy.mockRestore();
+    expect(authorize).not.toHaveBeenCalled();
   });
 
-  it('skips authorize for resource permissions (no resourceRef context) and treats them as ALLOW with a warning', async () => {
-    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+  it('forwards backend errors as ForwardedError so the app surfaces them', async () => {
     const fetch = jest.fn().mockResolvedValue({
-      ok: true,
-      json: async () => ({
-        plugins: [
-          {
-            pluginId: 'catalog',
-            permissions: [
-              {
-                type: 'resource',
-                name: 'catalog.entity.read',
-                attributes: { action: 'read' },
-                resourceType: 'catalog-entity',
-              },
-              {
-                type: 'basic',
-                name: 'catalog.entity.create',
-                attributes: { action: 'create' },
-              },
-            ],
-          },
-        ],
-      }),
+      ok: false,
+      status: 500,
+      statusText: 'Server Error',
     });
-    const { apis, authorize } = makeApis({ fetch });
+    const { apis } = makeApis({ fetch });
 
-    const result = await createPredicateContextLoader({
-      apis,
-      predicateReferences: {
-        featureFlags: [],
-        permissions: ['catalog.entity.read', 'catalog.entity.create'],
-      },
-    }).load();
-
-    // Resource permission is never sent to the backend.
-    expect(authorize).toHaveBeenCalledTimes(1);
-    expect(authorize).toHaveBeenCalledWith({
-      permission: {
-        type: 'basic',
-        name: 'catalog.entity.create',
-        attributes: { action: 'create' },
-      },
-    });
-    // Both names are reported as allowed: the resource one is treated as
-    // ALLOW without a backend round-trip; the basic one is allowed by the
-    // mocked authorize.
-    expect(result.permissions).toEqual([
-      'catalog.entity.read',
-      'catalog.entity.create',
-    ]);
-    expect(warnSpy).toHaveBeenCalledWith(
-      expect.stringContaining(`'catalog.entity.read'`),
-    );
-    warnSpy.mockRestore();
+    await expect(
+      createPredicateContextLoader({
+        apis,
+        predicateReferences: {
+          featureFlags: [],
+          permissions: ['p'],
+        },
+      }).load(),
+    ).rejects.toThrow('Failed to authorize extension permissions');
   });
 
-  it('reuses the cached registry across loaders sharing an ApiHolder', async () => {
+  it('returns no allowed permissions when there are no referenced names (no backend round-trip)', async () => {
     const { apis, fetch } = makeApis({});
 
-    await createPredicateContextLoader({
-      apis,
-      predicateReferences: { featureFlags: [], permissions: ['a'] },
-    }).load();
-    await createPredicateContextLoader({
-      apis,
-      predicateReferences: { featureFlags: [], permissions: ['b'] },
-    }).load();
-
-    expect(fetch).toHaveBeenCalledTimes(1);
-  });
-
-  // This is the regression test for backstage/backstage#33912: previously the
-  // `if` predicate built every authorize request as `{ name, type: 'basic',
-  // attributes: {} }`, which caused attribute-based policies to deny actions
-  // they should have allowed. With the registry, the predicate must pass the
-  // exact Permission registered by the backend for basic permissions —
-  // including their action attributes — so attribute-aware policies see the
-  // same request the rest of the app would send. Resource permissions are
-  // skipped at predicate time (they need a resourceRef) and treated as ALLOW.
-  it('routes the correct basic Permission (with action attribute) to authorize and skips resource permissions', async () => {
-    const catalogCreate = createPermission({
-      name: 'catalog.entity.create',
-      attributes: { action: 'create' },
-    });
-    const catalogRead = createPermission({
-      name: 'catalog.entity.read',
-      attributes: { action: 'read' },
-      resourceType: 'catalog-entity',
-    });
-    const catalogDelete = createPermission({
-      name: 'catalog.entity.delete',
-      attributes: { action: 'delete' },
-      resourceType: 'catalog-entity',
-    });
-    const scaffolderExecute = createPermission({
-      name: 'scaffolder.task.create',
-      attributes: { action: 'create' },
-    });
-
-    // The authorize mock branches on attributes the way a realistic policy
-    // would, so the test fails loudly if the predicate strips attributes
-    // before they reach the policy.
-    const authorize = jest.fn(async (req: { permission: any }) => {
-      const { name, attributes, type } = req.permission;
-      if (
-        name === 'catalog.entity.create' &&
-        attributes?.action === 'create' &&
-        type === 'basic'
-      ) {
-        return { result: 'ALLOW' };
-      }
-      if (
-        name === 'scaffolder.task.create' &&
-        attributes?.action === 'create' &&
-        type === 'basic'
-      ) {
-        return { result: 'ALLOW' };
-      }
-      // Any miss — including the legacy "stripped attributes" shape — denies.
-      return { result: 'DENY' };
-    });
-    const fetch = jest.fn().mockResolvedValue({
-      ok: true,
-      json: async () => ({
-        plugins: [
-          {
-            pluginId: 'catalog',
-            permissions: [catalogCreate, catalogRead, catalogDelete],
-          },
-          { pluginId: 'scaffolder', permissions: [scaffolderExecute] },
-        ],
-      }),
-    });
-    const { apis } = makeApis({ authorize, fetch });
-
     const result = await createPredicateContextLoader({
       apis,
-      predicateReferences: {
-        featureFlags: [],
-        permissions: [
-          'catalog.entity.create',
-          'catalog.entity.read',
-          'catalog.entity.delete',
-          'scaffolder.task.create',
-        ],
-      },
+      predicateReferences: { featureFlags: [], permissions: [] },
     }).load();
 
-    // Only basic permissions reach authorize — and they carry the correct
-    // attributes, so the attribute-aware mock policy ALLOWs them.
-    expect(authorize).toHaveBeenCalledTimes(2);
-    expect(authorize).toHaveBeenCalledWith({ permission: catalogCreate });
-    expect(authorize).toHaveBeenCalledWith({ permission: scaffolderExecute });
-
-    // Resource permissions are treated as ALLOW without a backend round-trip;
-    // basic permissions are filtered by the policy decision.
-    expect(result.permissions).toEqual([
-      'catalog.entity.create',
-      'catalog.entity.read',
-      'catalog.entity.delete',
-      'scaffolder.task.create',
-    ]);
+    expect(fetch).not.toHaveBeenCalled();
+    expect(result.permissions).toEqual([]);
   });
 });

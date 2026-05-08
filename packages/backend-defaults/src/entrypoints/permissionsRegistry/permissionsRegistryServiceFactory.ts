@@ -19,6 +19,7 @@ import {
   coreServices,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
+import { rootPermissionsRegistryServiceRef } from '@backstage/backend-plugin-api/alpha';
 import {
   PermissionResourceRef,
   createPermissionIntegrationRouter,
@@ -51,8 +52,16 @@ export const permissionsRegistryServiceFactory = createServiceFactory({
     lifecycle: coreServices.lifecycle,
     httpRouter: coreServices.httpRouter,
     pluginMetadata: coreServices.pluginMetadata,
+    rootPermissionsRegistry: rootPermissionsRegistryServiceRef,
   },
-  async factory({ auth, httpAuth, httpRouter, lifecycle, pluginMetadata }) {
+  async factory({
+    auth,
+    httpAuth,
+    httpRouter,
+    lifecycle,
+    pluginMetadata,
+    rootPermissionsRegistry,
+  }) {
     const router = createPermissionIntegrationRouter();
 
     const pluginId = pluginMetadata.getId();
@@ -93,6 +102,12 @@ export const permissionsRegistryServiceFactory = createServiceFactory({
           ...resource,
           resourceType: resource.resourceRef.resourceType,
         });
+        if (resource.permissions?.length) {
+          rootPermissionsRegistry.addPermissions(
+            pluginId,
+            resource.permissions,
+          );
+        }
       },
       addPermissions(permissions) {
         if (started) {
@@ -101,6 +116,7 @@ export const permissionsRegistryServiceFactory = createServiceFactory({
           );
         }
         router.addPermissions(permissions);
+        rootPermissionsRegistry.addPermissions(pluginId, permissions);
       },
       addPermissionRules(rules) {
         if (started) {

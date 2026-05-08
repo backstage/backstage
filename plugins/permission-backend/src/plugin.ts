@@ -18,7 +18,7 @@ import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
-import { rootSystemMetadataServiceRef } from '@backstage/backend-plugin-api/alpha';
+import { rootPermissionsRegistryServiceRef } from '@backstage/backend-plugin-api/alpha';
 import { PermissionPolicy } from '@backstage/plugin-permission-node';
 import {
   policyExtensionPoint,
@@ -58,8 +58,7 @@ export const permissionPlugin = createBackendPlugin({
         auth: coreServices.auth,
         httpAuth: coreServices.httpAuth,
         userInfo: coreServices.userInfo,
-        systemMetadata: rootSystemMetadataServiceRef,
-        pluginMetadata: coreServices.pluginMetadata,
+        permissionsRegistry: rootPermissionsRegistryServiceRef,
       },
       async init({
         http,
@@ -69,8 +68,7 @@ export const permissionPlugin = createBackendPlugin({
         auth,
         httpAuth,
         userInfo,
-        systemMetadata,
-        pluginMetadata,
+        permissionsRegistry,
       }) {
         if (!policies.policy) {
           throw new Error(
@@ -87,8 +85,7 @@ export const permissionPlugin = createBackendPlugin({
             auth,
             httpAuth,
             userInfo,
-            systemMetadata,
-            ownPluginId: pluginMetadata.getId(),
+            permissionsRegistry,
           }),
         );
         http.addAuthPolicy({

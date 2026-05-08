@@ -20,6 +20,11 @@ export type {
 } from './RootSystemMetadataService';
 
 export type {
+  RootPermissionsRegistryEntry,
+  RootPermissionsRegistryService,
+} from './RootPermissionsRegistryService';
+
+export type {
   ActionsRegistryService,
   ActionsRegistryActionOptions,
   ActionsRegistryActionContext,
@@ -50,5 +55,6 @@ export {
   actionsRegistryServiceRef,
   actionsServiceRef,
   metricsServiceRef,
+  rootPermissionsRegistryServiceRef,
   rootSystemMetadataServiceRef,
 } from './refs';

@@ -20,12 +20,12 @@ import Router from 'express-promise-router';
 import { InputError } from '@backstage/errors';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import {
+  AuthorizeByNameResponse,
   AuthorizeResult,
   EvaluatePermissionResponse,
   IdentifiedPermissionMessage,
-  INSTALLED_PERMISSIONS_PATH,
-  InstalledPermissionsResponse,
   isResourcePermission,
+  Permission,
   PermissionAttributes,
   PermissionMessageBatch,
 } from '@backstage/plugin-permission-common';
@@ -49,8 +49,7 @@ import {
   RootConfigService,
   UserInfoService,
 } from '@backstage/backend-plugin-api';
-import { RootSystemMetadataService } from '@backstage/backend-plugin-api/alpha';
-import { createInstalledPermissionsLoader } from './installedPermissionsLoader';
+import { RootPermissionsRegistryService } from '@backstage/backend-plugin-api/alpha';
 
 const attributesSchema: z.ZodSchema<PermissionAttributes> = z.object({
   action: z
@@ -95,6 +94,18 @@ const evaluatePermissionRequestBatchSchema = z.object({
   items: z.array(evaluatePermissionRequestSchema),
 });
 
+const authorizeByNameRequestBatchSchema = z.object({
+  items: z.array(
+    z.object({
+      id: z.string(),
+      name: z.string(),
+      resourceRef: z
+        .union([z.string(), z.array(z.string()).nonempty()])
+        .optional(),
+    }),
+  ),
+});
+
 /**
  * Options required when constructing a new {@link express#Router} using
  * {@link createRouter}.
@@ -110,12 +121,17 @@ export interface RouterOptions {
   auth: AuthService;
   httpAuth: HttpAuthService;
   userInfo: UserInfoService;
-  systemMetadata: RootSystemMetadataService;
-  ownPluginId: string;
+  permissionsRegistry: RootPermissionsRegistryService;
 }
 
+type ResolvedRequest = {
+  id: string;
+  permission: Permission;
+  resourceRef?: string | string[];
+};
+
 const handleRequest = async (
-  requests: z.infer<typeof evaluatePermissionRequestBatchSchema>['items'],
+  requests: ResolvedRequest[],
   policy: PermissionPolicy,
   permissionIntegrationClient: PermissionIntegrationClient,
   credentials: BackstageCredentials<
@@ -212,8 +228,7 @@ export async function createRouter(
     auth,
     httpAuth,
     userInfo,
-    systemMetadata,
-    ownPluginId,
+    permissionsRegistry,
   } = options;
 
   if (!config.getOptionalBoolean('permission.enabled')) {
@@ -239,42 +254,96 @@ export async function createRouter(
     response.json({ status: 'ok' });
   });
 
-  // Default to enabled so the frontend `if` predicate can resolve permission
-  // attributes out of the box. Adopters who don't want authenticated users to
-  // see the aggregated permission catalog can disable the endpoint with
-  // `permission.installedPermissions.enabled: false`. When disabled, the route
-  // is not registered and the frontend's predicate loader falls back to the
-  // legacy basic-permission shape (with a console warning).
-  const installedPermissionsEnabled =
-    config.getOptionalBoolean('permission.installedPermissions.enabled') ??
-    true;
+  router.post(
+    '/authorize/by-name',
+    async (req: Request, res: Response<AuthorizeByNameResponse>) => {
+      const credentials = await httpAuth.credentials(req, {
+        allow: ['user', 'none'],
+      });
 
-  if (installedPermissionsEnabled) {
-    const loadInstalledPermissions = createInstalledPermissionsLoader({
-      ownPluginId,
-      systemMetadata,
-      discovery,
-      auth,
-      logger,
-    });
+      const parseResult = authorizeByNameRequestBatchSchema.safeParse(req.body);
+      if (!parseResult.success) {
+        throw new InputError(parseResult.error.toString());
+      }
 
-    router.get(
-      INSTALLED_PERMISSIONS_PATH,
-      async (req: Request, res: Response<InstalledPermissionsResponse>) => {
-        await httpAuth.credentials(req, { allow: ['user', 'service'] });
-        try {
-          res.json(await loadInstalledPermissions());
-        } catch (error) {
-          // Log before re-throwing so adopters can correlate the resulting 500
-          // with the underlying credential or fan-out failure.
-          logger.error('Failed to aggregate installed permissions', {
-            error: String(error),
-          });
-          throw error;
+      const items = parseResult.data.items;
+
+      // Hydrate name -> Permission via the root registry. Unknown names short-
+      // circuit to DENY: the by-name route is meant for callers that have a
+      // name but not the full Permission shape (e.g. the frontend predicate
+      // loader); an unknown name almost always means the calling deployment
+      // is missing the plugin that registers it, in which case denying access
+      // is the safer default.
+      const denied: IdentifiedPermissionMessage<EvaluatePermissionResponse>[] =
+        [];
+      const resolved: ResolvedRequest[] = [];
+      for (const item of items) {
+        const permission = permissionsRegistry.getPermission(item.name);
+        if (!permission) {
+          logger.warn(
+            `Permission '${item.name}' is not registered with the root permission registry; denying authorize-by-name request`,
+          );
+          denied.push({ id: item.id, result: AuthorizeResult.DENY });
+          continue;
         }
-      },
-    );
-  }
+        resolved.push({
+          id: item.id,
+          permission,
+          resourceRef: item.resourceRef,
+        });
+      }
+
+      if (
+        (auth.isPrincipal(credentials, 'none') && !disabledDefaultAuthPolicy) ||
+        (auth.isPrincipal(credentials, 'user') && !credentials.principal.actor)
+      ) {
+        if (
+          resolved.some(
+            r =>
+              isResourcePermission(r.permission) && r.resourceRef === undefined,
+          )
+        ) {
+          throw new InputError(
+            'Resource permissions require a resourceRef to be set. Direct user requests without a resourceRef are not allowed.',
+          );
+        }
+      }
+
+      const evaluated = await handleRequest(
+        resolved,
+        policy,
+        permissionIntegrationClient,
+        credentials,
+        auth,
+        userInfo,
+      );
+
+      // Preserve the order of the incoming items so callers can correlate by
+      // index without having to read `id` back.
+      const byId = new Map<
+        string,
+        IdentifiedPermissionMessage<EvaluatePermissionResponse>
+      >();
+      for (const entry of evaluated) {
+        byId.set(
+          entry.id,
+          entry as IdentifiedPermissionMessage<EvaluatePermissionResponse>,
+        );
+      }
+      for (const entry of denied) {
+        byId.set(entry.id, entry);
+      }
+      res.json({
+        items: items.map(
+          item =>
+            byId.get(item.id) ?? {
+              id: item.id,
+              result: AuthorizeResult.DENY,
+            },
+        ),
+      });
+    },
+  );
 
   router.post(
     '/authorize',

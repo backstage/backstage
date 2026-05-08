@@ -2,4 +2,4 @@
 '@backstage/plugin-permission-common': patch
 ---
 
-Added the `InstalledPermissionsResponse` and `InstalledPluginPermissions` types and the `INSTALLED_PERMISSIONS_PATH` and `PERMISSIONS_METADATA_PATH` path constants.
+Added the `AuthorizeByNameRequest` / `AuthorizeByNameResponse` types describing the permission backend's name-based authorize endpoint, used by callers that have a permission name but not the full `Permission` shape.
