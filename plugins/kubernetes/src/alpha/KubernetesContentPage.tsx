@@ -13,11 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { useEntity } from '@backstage/plugin-catalog-react';
+import { useEntityOptional } from '@backstage/plugin-catalog-react';
 import { KubernetesContent } from '../KubernetesContent';
 
 export function KubernetesContentPage() {
-  const { entity } = useEntity();
+  // useEntityOptional is used instead of useEntity to avoid the
+  // "Entity context is not available" error in the new frontend system,
+  // where the EntityContentBlueprint loader is evaluated outside of
+  // EntityProvider when building the sidebar/nav items.
+  // In the legacy plugin system this is a no-op: the component is always
+  // mounted inside EntityLayout so the entity is always available.
+  const entity = useEntityOptional();
+
+  if (!entity) return null;
+
   return <KubernetesContent entity={entity} />;
 }
