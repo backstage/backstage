@@ -15,6 +15,7 @@
  */
 export {
   useEntity,
+  useEntityOptional,
   EntityProvider,
   AsyncEntityProvider,
   useAsyncEntity,
