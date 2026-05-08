@@ -104,7 +104,7 @@ export const EntityProvider = (props: EntityProviderProps) => (
  *
  * @public
  */
-export function useEntity<TEntity extends Entity = Entity>(): {
+ export function useEntityOptional<TEntity extends Entity = Entity>(): TEntity | undefined {  
   entity: TEntity;
 } {
   const versionedHolder = useVersionedContext<{ 1: EntityLoadingStatus }>(
