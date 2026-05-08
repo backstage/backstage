@@ -163,9 +163,9 @@ export function useAsyncEntity<
  *
  * @public
  */
-export function useEntityOptional<
-  TEntity extends Entity = Entity,
->(): TEntity | undefined {
+export function useEntityOptional<TEntity extends Entity = Entity>():
+  | TEntity
+  | undefined {
   const versionedHolder = useVersionedContext<{ 1: EntityLoadingStatus }>(
     'entity-context',
   );
