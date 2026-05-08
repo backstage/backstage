@@ -58,40 +58,6 @@ describe('github:autolinks:create', async () => {
 });
 ```
 
-### How many mock directories to create
-
-A test file should typically create only one `createMockDirectory` and organize
-different fixtures as folders inside it. Use `setContent` or `addContent` to
-set up the data each individual test needs, and call `mockDir.clear` in
-`beforeEach` to reset between tests.
-
-```typescript
-describe('my-action', () => {
-  const mockDir = createMockDirectory();
-
-  beforeEach(mockDir.clear);
-
-  it('should handle JSON input', async () => {
-    mockDir.setContent({
-      'workspace/data.json': '{ "key": "value" }',
-    });
-    // ... use mockDir.resolve('workspace') as workspacePath
-  });
-
-  it('should handle YAML input', async () => {
-    mockDir.setContent({
-      'workspace/data.yaml': 'key: value',
-    });
-    // ... use mockDir.resolve('workspace') as workspacePath
-  });
-});
-```
-
-Multiple `createMockDirectory` calls are fine when a test file genuinely needs
-distinct directory categories at the same time, for example a source directory
-and an output directory. Do not call `createMockDirectory` once per test case —
-this creates unnecessary temporary directories and slows down the test suite.
-
 ## Mocking a Config Core Service
 
 If your custom Action requires the Config Core Service within execution of the `handler(ctx)` such as the custom action below, mocking the context object can be done by building a `mockContext` with the `ConfigReader` function within the `@backstage/config` package.
