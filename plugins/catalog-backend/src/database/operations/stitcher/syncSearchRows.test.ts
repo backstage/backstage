@@ -190,20 +190,17 @@ describe.each(databases.eachSupportedId())('syncSearchRows, %p', databaseId => {
     );
   });
 
-  it('inserts a row when only original_value casing differs from existing', async () => {
-    // Two rows with the same (key, value) but different original_value
-    // casing must coexist — the case-insensitive MySQL collation must not
-    // cause the INSERT to skip the second row.
+  it('keeps one row when original_value casing differs for same key+value', async () => {
+    // Two entries with the same lowercased (key, value) but different
+    // original_value casing are deduplicated — the UNIQUE constraint on
+    // (entity_id, key, value) allows only one. The last occurrence wins.
     await syncSearchRows(knex, 'e1', [row('a', 'v', 'V')]);
     await syncSearchRows(knex, 'e1', [row('a', 'v', 'V'), row('a', 'v', 'v')]);
 
     const rows = await getSearchRows();
-    expect(rows).toHaveLength(2);
-    expect(rows).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({ key: 'a', value: 'v', original_value: 'V' }),
-        expect.objectContaining({ key: 'a', value: 'v', original_value: 'v' }),
-      ]),
+    expect(rows).toHaveLength(1);
+    expect(rows[0]).toEqual(
+      expect.objectContaining({ key: 'a', value: 'v', original_value: 'v' }),
     );
   });
 

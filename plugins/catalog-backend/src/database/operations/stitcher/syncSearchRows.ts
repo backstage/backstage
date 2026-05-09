@@ -48,14 +48,24 @@ export async function syncSearchRows(
   entityId: string,
   searchEntries: DbSearchRow[],
 ): Promise<void> {
+  // Dedup by (key, value) — the UNIQUE constraint on (entity_id, key, value)
+  // rejects duplicates, and the same lowercased value with different original
+  // casing is semantically a single entry. Keep the last occurrence so that
+  // if the entity data has e.g. tags: ['Java', 'java'], the later one wins.
+  const dedupMap = new Map<string, DbSearchRow>();
+  for (const entry of searchEntries) {
+    dedupMap.set(`${entry.key}\0${entry.value ?? ''}`, entry);
+  }
+  const deduped = [...dedupMap.values()];
+
   const client = knex.client.config.client;
 
   if (client === 'pg') {
-    await syncPostgres(knex, entityId, searchEntries);
+    await syncPostgres(knex, entityId, deduped);
   } else if (client.includes('mysql')) {
-    await syncMysql(knex, entityId, searchEntries);
+    await syncMysql(knex, entityId, deduped);
   } else {
-    await syncBulkReplace(knex, entityId, searchEntries);
+    await syncBulkReplace(knex, entityId, deduped);
   }
 }
 
@@ -110,6 +120,8 @@ async function syncPostgres(
         AND COALESCE(s.value, chr(1)) = COALESCE(d.value, chr(1))
         AND COALESCE(s.original_value, chr(1)) = COALESCE(d.original_value, chr(1))
     )
+    ON CONFLICT (entity_id, key, value)
+    DO UPDATE SET original_value = EXCLUDED.original_value
     `,
     [keys, values, originalValues, entityId, entityId, entityId],
   );

@@ -228,5 +228,16 @@ export function buildEntitySearch(
     );
   }
 
-  return mapToRows(raw, entityId);
+  const rows = mapToRows(raw, entityId);
+
+  // Deduplicate by (key, value). Duplicate array values in the entity data
+  // (e.g. tags: ['java', 'java']) produce identical search rows which would
+  // violate the unique constraint on (entity_id, key, value).
+  const seen = new Set<string>();
+  return rows.filter(row => {
+    const k = `${row.key}\0${row.value ?? ''}`;
+    if (seen.has(k)) return false;
+    seen.add(k);
+    return true;
+  });
 }

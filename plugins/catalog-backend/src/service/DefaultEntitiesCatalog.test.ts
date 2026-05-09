@@ -1973,11 +1973,10 @@ describe('DefaultEntitiesCatalog', () => {
     );
 
     it.each(databases.eachSupportedId())(
-      'should not return duplicate entities when using orderField, %p',
+      'unique constraint prevents duplicate search rows from affecting results, %p',
       async databaseId => {
         await createDatabase(databaseId);
 
-        // Create a few test entities with different names to sort by
         const entities = [
           {
             apiVersion: 'a',
@@ -2013,22 +2012,27 @@ describe('DefaultEntitiesCatalog', () => {
 
         await Promise.all(entities.map(e => addEntityToSearch(e)));
 
-        // Manually insert duplicate search entries for the same entities
-        // I'm not sure exactly how this happens but I have seen it in the real world
-        await knex<DbSearchRow>('search').insert([
-          {
-            entity_id: 'uid-a',
-            key: 'metadata.title',
-            value: 'a test entity',
-            original_value: 'A Test Entity',
-          },
-          {
-            entity_id: 'uid-b',
-            key: 'metadata.title',
-            value: 'b test entity',
-            original_value: 'B Test Entity',
-          },
-        ]);
+        // The UNIQUE constraint on (entity_id, key, value) prevents
+        // duplicate search rows from being inserted. Verify that the
+        // constraint silently rejects duplicates via ON CONFLICT and that
+        // the result is correct without DISTINCT.
+        await knex<DbSearchRow>('search')
+          .insert([
+            {
+              entity_id: 'uid-a',
+              key: 'metadata.title',
+              value: 'a test entity',
+              original_value: 'A Test Entity',
+            },
+            {
+              entity_id: 'uid-b',
+              key: 'metadata.title',
+              value: 'b test entity',
+              original_value: 'B Test Entity',
+            },
+          ])
+          .onConflict(['entity_id', 'key', 'value'])
+          .ignore();
 
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
@@ -2036,15 +2040,12 @@ describe('DefaultEntitiesCatalog', () => {
           stitcher,
         });
 
-        // Query with orderField
         const response = await catalog.queryEntities({
           orderFields: [{ field: 'metadata.title', order: 'asc' }],
           credentials: mockCredentials.none(),
         });
 
         const resultEntities = entitiesResponseToObjects(response.items);
-
-        // Ensure we get exactly 3 entities back, sorted, with no duplicates
         expect(resultEntities.map(e => e!.metadata.name)).toEqual([
           'a-entity',
           'b-entity',
@@ -2407,15 +2408,19 @@ describe('DefaultEntitiesCatalog', () => {
           spec: {},
         });
 
-        // Manually insert a duplicate search entry, this shouldn't happen but does in reality
-        await knex<DbSearchRow>('search').insert([
-          {
-            entity_id: 'uid-a',
-            key: 'metadata.name',
-            value: 'one',
-            original_value: 'one',
-          },
-        ]);
+        // Attempt to insert a duplicate — the UNIQUE constraint silently
+        // rejects it via ON CONFLICT IGNORE.
+        await knex<DbSearchRow>('search')
+          .insert([
+            {
+              entity_id: 'uid-a',
+              key: 'metadata.name',
+              value: 'one',
+              original_value: 'one',
+            },
+          ])
+          .onConflict(['entity_id', 'key', 'value'])
+          .ignore();
 
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
